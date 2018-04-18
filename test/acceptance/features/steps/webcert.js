@@ -125,7 +125,7 @@ Given(/^ska jag inte se utkast av annan typ än "([^"]*)"$/, function(typer) {
     return checkElementsForText(els, typer);
 });
 
-Given(/^jag ska endast ha möjlighet att skapa nya "([^"]*)" utkast$/, function(typer) {
+Given(/^jag ska endast se intygstyperna "([^"]*)" i Skapa intyg listan$/, function(typer) {
     typer = typer.split(',');
     var els = element(by.id('intygType')).all(by.css('option'));
     return checkElementsForText(els, typer);
