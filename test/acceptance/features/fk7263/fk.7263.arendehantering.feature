@@ -1,5 +1,5 @@
 # language: sv
-@arendehantering @fk7263 @NOTREADY @DEPRICATED @MOVE TO SMI
+@arendehantering @fk7263 @NOTREADY @DEPRICATED @MOVE_TO_SMI
 Egenskap: FK7263 Ärendehantering
 
 Bakgrund: Jag är inloggad och inne på ett skickat intyg
@@ -55,8 +55,7 @@ Scenario: Skicka fråga till Försäkringskassan genom att gå in på en befintl
 
       När jag skickar en fråga med slumpat ämne till Försäkringskassan
 
-      Så ska ett info-meddelande visa "Frågan är skickad till Försäkringskassan"
-      Och ska jag se min fråga under ohanterade frågor
+      Så ska jag se min fråga som ohanterad
 
 
 
