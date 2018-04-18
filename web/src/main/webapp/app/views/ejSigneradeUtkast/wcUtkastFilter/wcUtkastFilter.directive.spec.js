@@ -81,8 +81,8 @@ describe('wcUtkastFilterSpec', function() {
             setupHttp(500);
 
             expect(element.isolateScope().widgetState.savedByList.length).toBe(1);
-            expect(element.isolateScope().widgetState.savedByList[0].hsaId).toBe(undefined);
-            expect(element.isolateScope().widgetState.savedByList[0].name).toBe('<Kunde inte hämta lista>');
+            expect(element.isolateScope().widgetState.savedByList[0].id).toBe(undefined);
+            expect(element.isolateScope().widgetState.savedByList[0].label).toBe('<Kunde inte hämta lista>');
         });
     });
 
