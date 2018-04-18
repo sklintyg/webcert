@@ -9,17 +9,17 @@
     {
       "type": "object",
       "properties": {
-        "hsaId": {
+        "id": {
           "type": "string"
         },
-        "name": {
+        "label": {
           "type": "string"
         }
       },
       "additionalProperties": false,
       "required": [
-        "hsaId",
-        "name"
+        "id",
+        "label"
       ]
     }
   ]

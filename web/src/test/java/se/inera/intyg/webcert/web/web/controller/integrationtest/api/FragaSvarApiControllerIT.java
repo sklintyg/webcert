@@ -86,7 +86,7 @@ public class FragaSvarApiControllerIT extends BaseRestIntegrationTest {
                 .expect().statusCode(200)
                 .when().get("api/fragasvar/lakare")
                 .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-fragasvar-get-lakare-med-fragasvar-response-schema.json"))
-                .body("", hasSize(greaterThan(0))).body("hsaId", hasItem(DEFAULT_LAKARE.getHsaId()));
+                .body("", hasSize(greaterThan(0))).body("id", hasItem(DEFAULT_LAKARE.getHsaId()));
     }
 
 }
