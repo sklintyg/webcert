@@ -10,6 +10,11 @@
                       alert-id="ersattUtkastPaborjat"
                       alert-severity="info"
                       alert-message-id="intyg.status.replacement.utkast.exists"></wc-alert-message>
+
+    <wc-alert-message ng-if="model.infoMessage"
+                      alert-id="ersattInfoMessage"
+                      alert-severity="info"
+                      alert-message-id="{{::model.infoMessage}}"></wc-alert-message>
     <p>
       <span dynamic-label key="{{bodyText}}"></span>
     </p>
@@ -25,7 +30,7 @@
       <i ng-hide="model.acceptprogressdone" class="icon-wc-ikon-02 animate-spin"></i>
       <span dynamic-label key="{{button2text}}"></span>
     </button>
-    <button type="button" id="{{button3id}}" class="btn btn-secondary" ng-click="button3click()">
+    <button type="button" id="{{button3id}}" class="btn btn-default" ng-click="button3click()">
       <span dynamic-label key="{{button3text}}"></span>
     </button>
     <div class="webcert-top-padding-section" ng-show="model.showerror">
