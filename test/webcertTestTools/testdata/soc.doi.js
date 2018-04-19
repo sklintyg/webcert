@@ -17,7 +17,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* globals intyg*/
 
 'use strict';
 
@@ -30,11 +29,8 @@ var today = new Date();
 
 var deathDate = new Date();
 
-if (typeof(global.intyg) !== 'undefined' && typeof(global.intyg.dbIntyg) !== 'undefined') {
-    deathDate = intyg.dbIntyg.deathDate;
-} else {
-    deathDate.setDate(today.getDate() - Math.floor(Math.random() * 365));
-}
+deathDate.setDate(today.getDate() - Math.floor(Math.random() * 365));
+
 
 var dayBeforeDeath = new Date(deathDate);
 dayBeforeDeath.setDate(deathDate.getDate() - 1);
@@ -48,12 +44,15 @@ function getDodsdatum(datumSakert) {
             }
         };
     } else {
-        var monthArr = ['00 (ej känt)', '01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12'];
+        let monthArr = ['00 (ej känt)', '01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12'];
+        let year = deathDate.getYear() + 1900;
+
+
         return {
             inteSakert: {
-                year: shuffle(['2017', '2018', '0000 (ej känt)'])[0],
+                year: shuffle([String(year), String(year - 1), '0000 (ej känt)'])[0],
                 month: shuffle(monthArr.slice(0, today.getMonth() - 1))[0],
-                antraffadDod: testdataHelper.dateFormat(today)
+                antraffadDod: testdataHelper.dateFormat(deathDate)
             }
         };
     }
@@ -66,15 +65,20 @@ function getDodsOrsak() {
     };
     if (n >= 1) {
         obj.b = getDodsOrsakObj(2);
-    } else if (n >= 2) {
+    }
+    if (n >= 2) {
         obj.c = getDodsOrsakObj(3);
-    } else if (n >= 3) {
+    }
+    if (n >= 3) {
         obj.d = getDodsOrsakObj(4);
     }
 
-    obj.bidragande = {
+    let datum = new Date(dayBeforeDeath);
+    datum.setDate(deathDate.getDate() - 1);
+
+    obj.andraSjukdomarSkador = {
         beskrivning: testdataHelper.randomTextString(5, 45),
-        datum: testdataHelper.dateFormat(new Date(dayBeforeDeath)),
+        datum: testdataHelper.dateFormat(datum),
         tillstandSpec: shuffle(['Akut', 'Kronisk', 'Uppgift saknas'])[0]
     };
 
@@ -82,9 +86,8 @@ function getDodsOrsak() {
 }
 
 function getDodsOrsakObj(n) {
-    var datum = new Date(dayBeforeDeath);
+    let datum = new Date(dayBeforeDeath);
     datum.setDate(deathDate.getDate() - n);
-
     var obj = {
         beskrivning: testdataHelper.randomTextString(5, 140),
         datum: testdataHelper.dateFormat(datum),
@@ -123,7 +126,12 @@ module.exports = {
             intygsID = testdataHelper.generateTestGuid();
         }
     },
-    getRandom: function(intygsID, patient) {
+    getRandom: function(intygsID, customDeathDate) {
+
+        if (customDeathDate) {
+            deathDate.setDate(customDeathDate.getDate());
+        }
+
         if (!intygsID) {
             intygsID = testdataHelper.generateTestGuid();
         }

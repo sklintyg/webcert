@@ -12,7 +12,6 @@ Scenario: Kan markera som klart för signering men inte signera
     Och jag fyller i alla nödvändiga fält för intyget
 
     Så ska det finnas en knapp för att skriva ut utkastet
-    Och ska ett info-meddelande visa "Endast läkare får signera intyget."
 	Så visas inte signera knappen
 
 	När jag markerar intyget som klart för signering
@@ -32,5 +31,4 @@ Scenario: Kan inte signera FK7263-utkast
     Och jag fyller i alla nödvändiga fält för intyget
 
     Så ska det finnas en knapp för att skriva ut utkastet
-    Och ska ett info-meddelande visa "Endast läkare får signera intyget."
 	Så visas inte signera knappen
