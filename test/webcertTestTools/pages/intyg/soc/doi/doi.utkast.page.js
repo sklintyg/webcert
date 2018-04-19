@@ -154,6 +154,7 @@ var doiUtkast = BaseSocUtkast._extend({
         } else {
             return moveAndSendKeys(dodsdatumElm.inteSakert.checkbox, protractor.Key.SPACE).then(function() {
                 return dodsdatumElm.inteSakert.year.dropDown.click();
+
             }).then(function() {
                 //Väntar på drop-down att öppnas
                 return browser.sleep(500);
@@ -161,6 +162,7 @@ var doiUtkast = BaseSocUtkast._extend({
                 return dodsdatumElm.inteSakert.year.options.getByText(dodsdatum.inteSakert.year);
             }).then(function(elm) {
                 return elm.click();
+
             }).then(function() {
                 if (dodsdatum.inteSakert.year !== '0000 (ej känt)') {
                     return dodsdatumElm.inteSakert.month.dropDown.click().then(function() {
@@ -213,7 +215,6 @@ var doiUtkast = BaseSocUtkast._extend({
     },
     angeUtlatandeOmDodsorsak: function angeUtlatandeOmDodsorsak(dodsorsak) {
         var utlatandeOmDodsorsakElm = this.utlatandeOmDodsorsak;
-        console.log(dodsorsak);
 
         return Object.keys(dodsorsak).reduce((prev, sektion) => prev.then(() => moveAndSendKeys(utlatandeOmDodsorsakElm[sektion].beskrivning, dodsorsak[sektion].beskrivning).then(function() {
             return moveAndSendKeys(utlatandeOmDodsorsakElm[sektion].datum, dodsorsak[sektion].datum);

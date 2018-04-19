@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*global testdata, logger, pages, Promise, browser, commonTools, person, protractor*/
+/*global testdata, logger, pages, Promise, browser, commonTools, person, protractor */
 'use strict';
 // var fkIntygPage = pages.intyg.fk['7263'].intyg;
 var fkLusePage = pages.intyg.luse.intyg;
@@ -131,7 +131,7 @@ module.exports = {
         } else if (typ === 'Dödsbevis') {
             return testdata.skv.db.getRandom(id);
         } else if (typ === 'Dödsorsaksintyg') {
-            return testdata.soc.doi.getRandom(id);
+            return testdata.soc.doi.getRandom(id, global.dbIntyg.deathDate);
         }
     },
     fetch: {

@@ -42,6 +42,7 @@ const fkUtkastPage = pages.intyg.fk['7263'].utkast;
 const utkastPage = pages.intyg.base.utkast;
 const helpers = require('./helpers.js');
 const moveAndSendKeys = helpers.moveAndSendKeys;
+const fillInCommon = require('./fillIn/common.js');
 
 /*
  *	Stödfunktioner
@@ -53,7 +54,7 @@ function signeraUtkast() {
     var uppdateraAdressOmErsattandeIntyg = function() {
         if (global.ersattintyg) {
             logger.info('Intyget ersätter ett annat intyg');
-            return require('./fillIn/common.js').setPatientAdressIfNotGiven();
+            return fillInCommon.setPatientAdressIfNotGiven();
         }
 
         return Promise.resolve();
@@ -191,7 +192,7 @@ Given(/^ska signera\-knappen inte vara klickbar$/, function(callback) {
 });
 
 Given(/^jag uppdaterar enhetsaddress$/, function() {
-    return require('./fillIn/common.js').fillInEnhetAdress();
+    return fillInCommon.fillInEnhetAdress();
 });
 
 Given(/^jag makulerar intyget$/, function() {
@@ -288,40 +289,46 @@ When(/^jag fyller i nödvändig information \( om intygstyp är "([^"]*)"\)$/, f
             var doiUtkastPage = pages.intyg.soc.doi.utkast;
 
             //Läkarens utlåtande om dödsorsaken 
-            return doiUtkastPage.angeUtlatandeOmDodsorsak(intyg.dodsorsak)
-                .then(function() {
-                    logger.info('OK - angeUtlatandeOmDodsorsak');
-                }, function(reason) {
-                    console.trace(reason);
-                    throw ('FEL, angeUtlatandeOmDodsorsak,' + reason);
-                }).then(function() {
-                    //Opererad inom fyra veckor före döden
-                    return doiUtkastPage.angeOperation(intyg.operation)
-                        .then(function() {
-                            logger.info('OK - angeOperation');
-                        }, function(reason) {
-                            console.trace(reason);
-                            throw ('FEL, angeOperation,' + reason);
-                        });
-                }).then(function() {
-                    //SkadaForgiftning
-                    return doiUtkastPage.angeSkadaForgiftning(intyg.skadaForgiftning)
-                        .then(function() {
-                            logger.info('OK - angeSkadaForgiftning');
-                        }, function(reason) {
-                            console.trace(reason);
-                            throw ('FEL, angeSkadaForgiftning,' + reason);
-                        });
-                }).then(function() {
-                    //Dödsorsaksuppgifter
-                    return doiUtkastPage.angeDodsorsaksuppgifterna(intyg.dodsorsaksuppgifter)
-                        .then(function() {
-                            logger.info('OK - angeDodsorsaksuppgifterna');
-                        }, function(reason) {
-                            console.trace(reason);
-                            throw ('FEL, angeDodsorsaksuppgifterna,' + reason);
-                        });
-                });
+            return doiUtkastPage.angeUtlatandeOmDodsorsak(intyg.dodsorsak).then(function() {
+                logger.info('OK - angeUtlatandeOmDodsorsak');
+            }, function(reason) {
+                console.trace(reason);
+                throw ('FEL, angeUtlatandeOmDodsorsak,' + reason);
+            }).then(function() {
+                //TODO Patientaddress ska vara förifylld INTYG-6091
+                return fillInCommon.setPatientAdressIfNotGiven();
+            }).then(function() {
+                //Opererad inom fyra veckor före döden
+                return doiUtkastPage.angeOperation(intyg.operation)
+                    .then(function() {
+                        logger.info('OK - angeOperation');
+                    }, function(reason) {
+                        console.trace(reason);
+                        throw ('FEL, angeOperation,' + reason);
+                    });
+            }).then(function() {
+                //SkadaForgiftning
+                return doiUtkastPage.angeSkadaForgiftning(intyg.skadaForgiftning)
+                    .then(function() {
+                        logger.info('OK - angeSkadaForgiftning');
+                    }, function(reason) {
+                        console.trace(reason);
+                        throw ('FEL, angeSkadaForgiftning,' + reason);
+                    });
+            }).then(function() {
+                //Dödsorsaksuppgifter
+                return doiUtkastPage.angeDodsorsaksuppgifterna(intyg.dodsorsaksuppgifter)
+                    .then(function() {
+                        logger.info('OK - angeDodsorsaksuppgifterna');
+                    }, function(reason) {
+                        console.trace(reason);
+                        throw ('FEL, angeDodsorsaksuppgifterna,' + reason);
+                    });
+            }).then(function() {
+                browser.ignoreSynchronization = false;
+                logger.info('Intyget klart att signeras');
+                return;
+            });
 
 
         } else if (intyg.typ === 'Läkarintyg för sjukpenning') {

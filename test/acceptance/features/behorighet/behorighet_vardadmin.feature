@@ -29,7 +29,6 @@ Scenario: Kan inte signera Läkarintyg för sjukpenning
     Och jag går in på utkastet
 	Och jag fyller i alla nödvändiga fält för intyget
 	Så ska signera-knappen inte vara synlig
-	Och ska ett info-meddelande visa "Endast läkare får signera intyget."
 	
 @skriv-ut @ts @bas
 Scenario: Kan inte signera Transportstyrelsens läkarintyg
