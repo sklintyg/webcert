@@ -21,9 +21,7 @@ package se.inera.intyg.webcert.web.web.controller.monitoring;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
-import se.inera.intyg.infra.cache.metrics.CacheStatisticsService;
 import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
-import se.inera.intyg.infra.cache.metrics.model.CacheStatistics;
 import se.inera.intyg.webcert.web.service.monitoring.HealthCheckService;
 import se.inera.intyg.webcert.web.service.monitoring.dto.HealthStatus;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
@@ -33,7 +31,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.Optional;
 
 /**
  * RESTinterface for checking the general health status of the application.
@@ -46,9 +43,6 @@ public class HealthCheckApiController extends AbstractApiController {
 
     @Autowired
     private HealthCheckService healthCheck;
-
-    @Autowired(required = false)
-    private Optional<CacheStatisticsService> cacheStatisticsService;
 
     private ObjectMapper objectMapper = new CustomObjectMapper();
 
@@ -118,15 +112,7 @@ public class HealthCheckApiController extends AbstractApiController {
     @Path("/cachemetrics")
     @Produces(MediaType.APPLICATION_JSON)
     public Response cacheMetricsJson() {
-        if (!cacheStatisticsService.isPresent()) {
-            return Response.serverError().entity("{\"msg\":\"Caching not enabled\"}").build();
-        }
-        try {
-            CacheStatistics data = cacheStatisticsService.get().getCacheStatistics();
-            return Response.ok(objectMapper.writeValueAsString(data)).build();
-        } catch (Exception jpe) {
-            return Response.serverError().entity(jpe.getMessage()).build();
-        }
+            return Response.serverError().entity("{\"msg\":\"Caching does not support statistics\"}").build();
     }
 
     private String buildXMLResponse(HealthStatus status) {
