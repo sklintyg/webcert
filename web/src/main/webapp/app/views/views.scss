@@ -43,12 +43,23 @@ h2 {
     padding-top: 10px;
   }
 }
+/**
+ This is a workaround class to get rounded borders on tables. IE 11 will render artifacts between columns if the table itself
+ has border-radius, so we wrap the entire table and let the wrapper have rounder border.
+ */
+.rounded-table-wrapper {
+  border-radius: $table-striped-border-radius;
+  overflow: hidden;
+  display: inline-block;
+  margin-bottom: 15px;
+}
 
 /* table striped style for all webcert */
 .wc-table-striped {
   border-collapse: separate;
   border-spacing: 0 0;
   display: block;
+  margin-bottom: 0;
 
   .btn-primary {
     padding: 7px 15px;
@@ -70,10 +81,6 @@ h2 {
 
     &:first-child {
       padding-left: 21px;
-      border-radius: $table-striped-border-radius 0 0 0;
-    }
-    &:last-child {
-      border-radius: 0 $table-striped-border-radius 0 0;
     }
   }
   // Table body ---------------
@@ -114,16 +121,6 @@ h2 {
       &.nopadding {
         padding: 0;
       }
-    }
-
-    &:last-child > td {
-      &:first-child {
-        border-radius: 0 0 0 $table-striped-border-radius;
-      }
-      &:last-child {
-        border-radius: 0 0 $table-striped-border-radius 0;
-      }
-
     }
   }
 }

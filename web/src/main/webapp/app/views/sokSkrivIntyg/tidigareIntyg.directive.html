@@ -45,58 +45,61 @@
 
           <!-- Previous intyg table -->
           <div class="row" ng-show="viewState.currentList.length>0" id="prevIntygTable">
-            <table class="col-md-12 table table-striped wc-table-striped">
-              <thead>
-                 <tr>
-                  <th wc-table-head label-key="th.label.intyg-type" help-key="th.help.intyg-type"></th>
-                  <th wc-table-head label-key="th.label.status" help-key="th.help.status"></th>
-                  <th wc-table-head label-key="th.label.saved-date" help-key="th.help.saved-date"></th>
-                  <th wc-table-head label-key="th.label.saved-signed-by" help-key="th.help.saved-signed-by"></th>
-                  <th ng-if="!patientModel.avliden"></th>
-                  <th></th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr ng-repeat="intyg in viewState.currentList">
-                  <td>{{getTypeName(intyg.intygType)}}</td>
-                  <td class="unbreakable"><span dynamic-label key="intyg.status.{{intyg.status}}"></span></td>
-                  <td class="unbreakable">{{intyg.lastUpdatedSigned | date:'short'}}</td>
-                  <td class="unbreakable">{{intyg.updatedSignedBy}}</td>
-                  <td ng-if="!patientModel.avliden">
-                    <button type="button"
-                            wc-authority="FORNYA_INTYG"
-                            feature="FORNYA_INTYG"
-                            intygstyp="{{intyg.intygType}}"
-                            id="fornyaBtn-{{intyg.intygId}}"
-                            class="btn btn-secondary"
-                            ng-if="isRenewalAllowed(intyg)"
-                            ng-click="fornyaIntygBtnPopOver=false;fornyaIntyg(intyg)"
-                            uib-popover="{{ resolveTooltipText(intyg) }}"
-                            popover-trigger="mouseenter"
-                            popover-popup-delay="300"
-                            popover-append-to-body="true"
-                            popover-placement="auto top"
-                            popover-is-open="fornyaIntygBtnPopOver">
-                      {{messageService.getProperty('common.fornya')}}
-                    </button>
-                  </td>
-                  <td>
-                    <button type="button"
-                            id="showBtn-{{intyg.intygId}}"
-                            class="btn btn-secondary"
-                            ng-click="openIntyg(intyg)"
-                            uib-popover="{{messageService.getProperty('common.show.tooltip')}}"
-                            popover-trigger="mouseenter"
-                            popover-popup-delay="300"
-                            popover-append-to-body="true"
-                            popover-placement="auto top">
-                      {{messageService.getProperty('common.show')}}
-                    </button>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-
+            <div class="col-md-12">
+              <div class="rounded-table-wrapper">
+              <table class="table table-striped wc-table-striped">
+                <thead>
+                   <tr>
+                    <th wc-table-head label-key="th.label.intyg-type" help-key="th.help.intyg-type"></th>
+                    <th wc-table-head label-key="th.label.status" help-key="th.help.status"></th>
+                    <th wc-table-head label-key="th.label.saved-date" help-key="th.help.saved-date"></th>
+                    <th wc-table-head label-key="th.label.saved-signed-by" help-key="th.help.saved-signed-by"></th>
+                    <th ng-if="!patientModel.avliden"></th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr ng-repeat="intyg in viewState.currentList">
+                    <td>{{getTypeName(intyg.intygType)}}</td>
+                    <td class="unbreakable"><span dynamic-label key="intyg.status.{{intyg.status}}"></span></td>
+                    <td class="unbreakable">{{intyg.lastUpdatedSigned | date:'short'}}</td>
+                    <td class="unbreakable">{{intyg.updatedSignedBy}}</td>
+                    <td ng-if="!patientModel.avliden">
+                      <button type="button"
+                              wc-authority="FORNYA_INTYG"
+                              feature="FORNYA_INTYG"
+                              intygstyp="{{intyg.intygType}}"
+                              id="fornyaBtn-{{intyg.intygId}}"
+                              class="btn btn-secondary"
+                              ng-if="isRenewalAllowed(intyg)"
+                              ng-click="fornyaIntygBtnPopOver=false;fornyaIntyg(intyg)"
+                              uib-popover="{{ resolveTooltipText(intyg) }}"
+                              popover-trigger="mouseenter"
+                              popover-popup-delay="300"
+                              popover-append-to-body="true"
+                              popover-placement="auto top"
+                              popover-is-open="fornyaIntygBtnPopOver">
+                        {{messageService.getProperty('common.fornya')}}
+                      </button>
+                    </td>
+                    <td>
+                      <button type="button"
+                              id="showBtn-{{intyg.intygId}}"
+                              class="btn btn-secondary"
+                              ng-click="openIntyg(intyg)"
+                              uib-popover="{{messageService.getProperty('common.show.tooltip')}}"
+                              popover-trigger="mouseenter"
+                              popover-popup-delay="300"
+                              popover-append-to-body="true"
+                              popover-placement="auto top">
+                        {{messageService.getProperty('common.show')}}
+                      </button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+          </div>
+        </div>
           </div>
           <span class="{{viewState.unsigned}}"></span>
         </div>

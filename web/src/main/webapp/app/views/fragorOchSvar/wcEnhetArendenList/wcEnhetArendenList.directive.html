@@ -33,50 +33,54 @@
 
       <!-- arende table - Frågor och svar-tabell -->
       <div class="row" ng-show="listModel.arendenList.length > 0" id="arendeTable">
-        <table class="col-md-12 table table-striped wc-table-striped">
-          <thead>
-          <tr>
-            <th wc-table-head label-key="th.label.arende-action" help-key="th.help.arende-action"></th>
-            <th wc-table-head label-key="th.label.arende-sender" help-key="th.help.arende-sender"></th>
-            <th wc-table-head label-key="th.label.arende-patient" help-key="th.help.arende-patient"></th>
-            <th wc-table-head label-key="th.label.arende-signed-by" help-key="th.help.arende-signed-by"></th>
-            <th wc-table-head label-key="th.label.arende-sent-recv-date" help-key="th.help.arende-sent-recv-date"></th>
-            <th wc-table-head label-key="th.label.arende-forwarded" help-key="th.help.arende-forwarded" wc-authority="VIDAREBEFORDRA_FRAGASVAR" class="center"></th>
-            <th wc-authority="VIDAREBEFORDRA_FRAGASVAR"></th>
-            <th></th>
-          </tr>
-          </thead>
-          <tbody>
-          <tr ng-repeat="arende in listModel.arendenList">
-            <td><span ng-show="arende.paminnelse">Påminnelse:</span> <span dynamic-label key="arende.measure.{{arende.measureResKey}}"></span></td>
-            <td><span dynamic-label key="common.arende.fragestallare.{{arende.fragestallare}}"></span></td>
-            <td id="patientId-{{arende.meddelandeId}}" class="unbreakable">{{arende.patientId | PersonIdFormatter}} <span wc-sekretess-avliden uuid="arende.meddelandeId" sekretessmarkering="arende.sekretessmarkering"></span></td>
-            <td>{{arende.signeratAvNamn}}</td>
-            <td class="unbreakable wc-table-striped-last">{{arende.receivedDate | date:'short'}}</td>
-            <td wc-authority="VIDAREBEFORDRA_FRAGASVAR" class="center">
-              <div wc-authority="VIDAREBEFORDRA_FRAGASVAR" intygstyp="{{::arende.intygTyp}}">
-                <div ng-if="arende.vidarebefordrad"><i class="material-icons">check</i></div>
-              </div>
-            </td>
-            <td wc-authority="VIDAREBEFORDRA_FRAGASVAR">
-              <button type="button"
-                      class="btn"
-                      ng-class="{'btn-primary': !arende.vidarebefordrad, 'btn-secondary' : arende.vidarebefordrad}"
-                      uib-popover-html="forwardTooltip" popover-trigger="mouseenter" popover-placement="top" popover-popup-delay="300" popover-append-to-body="true"
-                      ng-click="openMailDialog(arende)"
-                      wc-authority="VIDAREBEFORDRA_FRAGASVAR" intygstyp="{{::arende.intygTyp}}">
-                <i class="icon-wc-ikon-reply"></i> Vidarebefordra
-              </button>
-            </td>
-            <td>
-              <button type="button"
-                      class="btn btn-primary"
-                      uib-popover-html="openTooltip" popover-trigger="mouseenter" popover-placement="top" popover-popup-delay="300" popover-append-to-body="true"
-                      ng-click="openIntyg(arende.intygId, arende.intygTyp)"
-                      id="showarendeBtn-{{arende.meddelandeId}}"
-                ><i class="icon-wc-ikon-19"></i> <span>Öppna</span></button>
-            </td>
-        </table>
+        <div class="col-md-12">
+          <div class="rounded-table-wrapper">
+          <table class="table table-striped wc-table-striped">
+            <thead>
+            <tr>
+              <th wc-table-head label-key="th.label.arende-action" help-key="th.help.arende-action"></th>
+              <th wc-table-head label-key="th.label.arende-sender" help-key="th.help.arende-sender"></th>
+              <th wc-table-head label-key="th.label.arende-patient" help-key="th.help.arende-patient"></th>
+              <th wc-table-head label-key="th.label.arende-signed-by" help-key="th.help.arende-signed-by"></th>
+              <th wc-table-head label-key="th.label.arende-sent-recv-date" help-key="th.help.arende-sent-recv-date"></th>
+              <th wc-table-head label-key="th.label.arende-forwarded" help-key="th.help.arende-forwarded" wc-authority="VIDAREBEFORDRA_FRAGASVAR" class="center"></th>
+              <th wc-authority="VIDAREBEFORDRA_FRAGASVAR"></th>
+              <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="arende in listModel.arendenList">
+              <td><span ng-show="arende.paminnelse">Påminnelse:</span> <span dynamic-label key="arende.measure.{{arende.measureResKey}}"></span></td>
+              <td><span dynamic-label key="common.arende.fragestallare.{{arende.fragestallare}}"></span></td>
+              <td id="patientId-{{arende.meddelandeId}}" class="unbreakable">{{arende.patientId | PersonIdFormatter}} <span wc-sekretess-avliden uuid="arende.meddelandeId" sekretessmarkering="arende.sekretessmarkering"></span></td>
+              <td>{{arende.signeratAvNamn}}</td>
+              <td class="unbreakable wc-table-striped-last">{{arende.receivedDate | date:'short'}}</td>
+              <td wc-authority="VIDAREBEFORDRA_FRAGASVAR" class="center">
+                <div wc-authority="VIDAREBEFORDRA_FRAGASVAR" intygstyp="{{::arende.intygTyp}}">
+                  <div ng-if="arende.vidarebefordrad"><i class="material-icons">check</i></div>
+                </div>
+              </td>
+              <td wc-authority="VIDAREBEFORDRA_FRAGASVAR">
+                <button type="button"
+                        class="btn"
+                        ng-class="{'btn-primary': !arende.vidarebefordrad, 'btn-secondary' : arende.vidarebefordrad}"
+                        uib-popover-html="forwardTooltip" popover-trigger="mouseenter" popover-placement="top" popover-popup-delay="300" popover-append-to-body="true"
+                        ng-click="openMailDialog(arende)"
+                        wc-authority="VIDAREBEFORDRA_FRAGASVAR" intygstyp="{{::arende.intygTyp}}">
+                  <i class="icon-wc-ikon-reply"></i> Vidarebefordra
+                </button>
+              </td>
+              <td>
+                <button type="button"
+                        class="btn btn-primary"
+                        uib-popover-html="openTooltip" popover-trigger="mouseenter" popover-placement="top" popover-popup-delay="300" popover-append-to-body="true"
+                        ng-click="openIntyg(arende.intygId, arende.intygTyp)"
+                        id="showarendeBtn-{{arende.meddelandeId}}"
+                  ><i class="icon-wc-ikon-19"></i> <span>Öppna</span></button>
+              </td>
+          </table>
+        </div>
+       </div>
       </div>
       <div ng-show="listModel.arendenList.length < listModel.totalCount">
         <button type="button"
