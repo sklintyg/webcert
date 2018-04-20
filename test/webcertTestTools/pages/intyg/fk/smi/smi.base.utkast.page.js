@@ -34,26 +34,7 @@ function sendEnterToElement(el) {
     };
 }
 
-var intellektuellForm = element(by.id('form_check-funktionsnedsattningIntellektuell'));
-var kommunikationForm = element(by.id('form_check-funktionsnedsattningKommunikation'));
-var koncentrationForm = element(by.id('form_check-funktionsnedsattningKoncentration'));
-var psykiskForm = element(by.id('form_check-funktionsnedsattningPsykisk'));
-var horselTalForm = element(by.id('form_check-funktionsnedsattningSynHorselTal'));
-var balansForm = element(by.id('form_check-funktionsnedsattningBalansKoordination'));
-var annanForm = element(by.id('form_check-funktionsnedsattningAnnan'));
 
-var avslutadForm = element(by.id('form_avslutadBehandling'));
-var planeradForm = element(by.id('form_planeradBehandling'));
-var pagaendeForm = element(by.id('form_pagaendeBehandling'));
-var substansintagForm = element(by.id('form_substansintag'));
-
-function getCheckbox(el) {
-    return el.element(by.css('input'));
-}
-
-function getTextarea(el) {
-    return el.element(by.css('textarea'));
-}
 
 function checkAndSendTextToForm(checkboxEL, textEL, text) {
     return moveAndSendKeys(checkboxEL, protractor.Key.SPACE)
@@ -92,57 +73,60 @@ var BaseSmiUtkast = FkBaseUtkast._extend({
         this.ovrigt = element(by.id('ovrigt'));
         this.tillaggsfragor0svar = this.getTillaggsfraga(0);
         this.tillaggsfragor1svar = this.getTillaggsfraga(1);
-
         this.funktionsnedsattning = {
             intellektuell: {
-                checkbox: getCheckbox(intellektuellForm),
-                text: getTextarea(intellektuellForm)
-
+                container: element(by.id('form_check-funktionsnedsattningIntellektuell')),
+                checkbox: element(by.id('toggle-funktionsnedsattningIntellektuell')),
+                text: element(by.id('funktionsnedsattningIntellektuell'))
             },
             kommunikation: {
-                checkbox: getCheckbox(kommunikationForm),
-                text: getTextarea(kommunikationForm)
+                container: element(by.id('form_check-funktionsnedsattningKommunikation')),
+                checkbox: element(by.id('toggle-funktionsnedsattningKommunikation')),
+                text: element(by.id('funktionsnedsattningKommunikation'))
             },
-
             koncentration: {
-                checkbox: getCheckbox(koncentrationForm),
-                text: getTextarea(koncentrationForm)
+                container: element(by.id('form_check-funktionsnedsattningKoncentration')),
+                checkbox: element(by.id('toggle-funktionsnedsattningKoncentration')),
+                text: element(by.id('funktionsnedsattningKoncentration'))
             },
-
             annanPsykisk: {
-                checkbox: getCheckbox(psykiskForm),
-                text: getTextarea(psykiskForm)
+                container: element(by.id('form_check-funktionsnedsattningPsykisk')),
+                checkbox: element(by.id('toggle-funktionsnedsattningPsykisk')),
+                text: element(by.id('funktionsnedsattningPsykisk'))
             },
-
             synHorselTal: {
-                checkbox: getCheckbox(horselTalForm),
-                text: getTextarea(horselTalForm)
-
+                container: element(by.id('form_check-funktionsnedsattningSynHorselTal')),
+                checkbox: element(by.id('toggle-funktionsnedsattningSynHorselTal')),
+                text: element(by.id('funktionsnedsattningSynHorselTal'))
             },
-
             balansKoordination: {
-                checkbox: getCheckbox(balansForm),
-                text: getTextarea(balansForm)
+                container: element(by.id('form_check-funktionsnedsattningBalansKoordination')),
+                checkbox: element(by.id('toggle-funktionsnedsattningBalansKoordination')),
+                text: element(by.id('funktionsnedsattningBalansKoordination'))
             },
-
             annanKroppslig: {
-                checkbox: getCheckbox(annanForm),
-                text: getTextarea(annanForm)
+                container: element(by.id('form_check-funktionsnedsattningAnnan')),
+                checkbox: element(by.id('toggle-funktionsnedsattningAnnan')),
+                text: element(by.id('funktionsnedsattningAnnan'))
             }
         };
 
         this.medicinskBehandling = {
             avslutad: {
-                text: getTextarea(avslutadForm)
+                container: element(by.id('form_avslutadBehandling')),
+                text: element(by.id('avslutadBehandling'))
             },
             pagaende: {
-                text: getTextarea(pagaendeForm)
+                container: element(by.id('form_pagaendeBehandling')),
+                text: element(by.id('pagaendeBehandling'))
             },
             planerad: {
-                text: getTextarea(planeradForm)
+                container: element(by.id('form_planeradBehandling')),
+                text: element(by.id('planeradBehandling'))
             },
             substansintag: {
-                text: getTextarea(substansintagForm)
+                container: element(by.id('form_substansintag')),
+                text: element(by.id('substansintag'))
             }
         };
 

@@ -37,21 +37,22 @@ const {
 
 
 /*jshint maxcomplexity:false */
-var fillIn = require('./').fillIn;
-var generateIntygByType = require('../helpers.js').generateIntygByType;
-var helpers = require('../helpers');
-var fkUtkastPage = wcTestTools.pages.intyg.fk['7263'].utkast;
-var luseUtkastPage = wcTestTools.pages.intyg.luse.utkast;
-var lisjpUtkastPage = wcTestTools.pages.intyg.lisjp.utkast;
-var luaeFSUtkastPage = wcTestTools.pages.intyg.luaeFS.utkast;
-var tsBasUtkastPage = wcTestTools.pages.intyg.ts.bas.utkast;
-var tsDiabetesUtkastPage = wcTestTools.pages.intyg.ts.diabetes.utkast;
-var dbUtkastPage = wcTestTools.pages.intyg.skv.db.utkast;
-var doiUtkastPage = wcTestTools.pages.intyg.soc.doi.utkast;
-var moveAndSendKeys = helpers.moveAndSendKeys;
+const fillIn = require('./').fillIn;
+const generateIntygByType = require('../helpers.js').generateIntygByType;
+const helpers = require('../helpers');
+const fkUtkastPage = wcTestTools.pages.intyg.fk['7263'].utkast;
+const luseUtkastPage = wcTestTools.pages.intyg.luse.utkast;
+const lisjpUtkastPage = wcTestTools.pages.intyg.lisjp.utkast;
+const luaeFSUtkastPage = wcTestTools.pages.intyg.luaeFS.utkast;
+const luaeNAUtkastPage = wcTestTools.pages.intyg.luaeNA.utkast;
+const tsBasUtkastPage = wcTestTools.pages.intyg.ts.bas.utkast;
+const tsDiabetesUtkastPage = wcTestTools.pages.intyg.ts.diabetes.utkast;
+const dbUtkastPage = wcTestTools.pages.intyg.skv.db.utkast;
+const doiUtkastPage = wcTestTools.pages.intyg.soc.doi.utkast;
+const moveAndSendKeys = helpers.moveAndSendKeys;
 
-var td = wcTestTools.testdata;
-var fkValues = wcTestTools.testdata.values.fk;
+const td = wcTestTools.testdata;
+const fkValues = wcTestTools.testdata.values.fk;
 
 /*
  *	Stödfunktioner
@@ -178,15 +179,14 @@ function changeField(intygShortcode, field) {
             intyg.funktionsnedsattning.intellektuell = helpers.randomTextString();
 
             return moveAndSendKeys(luseUtkastPage.funktionsnedsattning.intellektuell.checkbox, protractor.Key.SPACE).then(function() {
-                return helpers.largeDelay().then(function() {
-                    return moveAndSendKeys(luseUtkastPage.funktionsnedsattning.intellektuell.text, intyg.funktionsnedsattning.intellektuell)
-                        .then(function() {
-                            logger.info('OK - Angav: ' + intyg.funktionsnedsattning.intellektuell);
-                            return;
-                        }, function(reason) {
-                            console.trace(reason);
-                            throw ('FEL - Angav: ' + intyg.funktionsnedsattning.intellektuell + ' ' + reason);
-                        });
+                return helpers.largeDelay();
+            }).then(function() {
+                return moveAndSendKeys(luseUtkastPage.funktionsnedsattning.intellektuell.text, intyg.funktionsnedsattning.intellektuell).then(function() {
+                    logger.info('OK - Angav: ' + intyg.funktionsnedsattning.intellektuell);
+                    return;
+                }, function(reason) {
+                    console.trace(reason);
+                    throw ('FEL - Angav: ' + intyg.funktionsnedsattning.intellektuell + ' ' + reason);
                 });
             });
         }
@@ -211,9 +211,7 @@ function changeField(intygShortcode, field) {
         } else if (field === 'ovrigt') {
             return moveAndSendKeys(element(by.id('ovrigt')), helpers.randomTextString());
         } else if (field === 'sjukdomsforlopp') {
-            return lisjpUtkastPage.angeSysselsattning({
-                typ: 'ARBETSSOKANDE'
-            });
+            return moveAndSendKeys(luaeNAUtkastPage.sjukdomsforlopp, helpers.randomTextString());
         }
     } else if (intygShortcode === 'LUAE_FS') {
         if (field === 'funktionsnedsattningDebut') {
@@ -346,12 +344,10 @@ Given(/^jag ändrar i fältet (arbetsförmåga|sjukskrivningsperiod|diagnoskod)$
 });
 
 Given(/^jag ändrar i slumpat fält$/, function() {
-    var isSMIIntyg = helpers.isSMIIntyg(intyg.typ);
-    var intygShortcode = helpers.getAbbrev(intyg.typ);
-
+    let intygShortcode = helpers.getAbbrev(intyg.typ);
 
     if (isValid(intygShortcode)) {
-        var field = helpers.randomPageField(isSMIIntyg, intygShortcode);
+        let field = helpers.randomPageField(helpers.isSMIIntyg(intyg.typ), intygShortcode);
         return changeField(intygShortcode, field);
     } else {
         throw Error('Intyg code not valid \'' + intygShortcode + '\'');
@@ -368,7 +364,6 @@ Given(/^jag fyller i resten av de nödvändiga fälten\.$/, function() {
         });
     });
 });
-
 
 Given(/^jag fyller i ett intyg som( inte)? är smitta$/, function(isSmitta) {
     isSmitta = (typeof isSmitta === 'undefined');
