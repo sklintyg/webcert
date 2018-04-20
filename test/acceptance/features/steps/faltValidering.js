@@ -332,11 +332,33 @@ When(/^jag kryssar i "([^"]+)"$/, text => checkboxVal(text));
 
 When(/^jag anger ett tidigare datum för anträffad död$/, () => fillInDates(helpers.getCurrentDate().replace(/^\d{4}/, '2017')));
 
-When(/^jag anger dagens datum som dödsdatum$/, () => dropdownVal(currentYear(), 'År').then(() => dropdownVal(currentMonth(), 'Månad')));
-
-When(/^jag anger ett dödsdatum i framtiden$/, () => fillInDates(helpers.getCurrentDate().replace(/^\d{4}/, '2099')));
-
 When(/^jag fyller i "(.*)" i fältet "(.*)"$/, (text, field) => fyllTextfalt(field, text));
+
+When(/^jag anger dagens datum som ej säkert dödsdatum$/, () => dropdownVal(currentYear(), 'År').then(() => dropdownVal(currentMonth(), 'Månad')));
+
+When(/^jag anger ett säkert dödsdatum i framtiden$/, () => pages.getUtkastPageByType(intyg.typ).angeDodsdatum({
+    sakert: {
+        datum: helpers.getCurrentDate().replace(/^\d{4}/, '2099')
+    }
+}));
+
+When(/^jag anger 31 december förrförra året som säkert dödsdatum$/, () => pages.getUtkastPageByType(intyg.typ).angeDodsdatum({
+    sakert: {
+        datum: `${Number.parseInt(currentYear())-2}-12-31`
+    }
+}));
+
+When(/^jag anger 31 december förrförra året som operationsdatum$/, () => doiUtkastPage.angeOperation({
+    ja: {
+        datum: `${Number.parseInt(currentYear())-2}-12-31`,
+        beskrivning: 'Hej'
+    }
+}));
+When(/^jag anger 31 december förrförra året som anträffad död$/, () => pages.getUtkastPageByType(intyg.typ)
+    .dodsdatum.inteSakert.antraffadDod.sendKeys(`${Number.parseInt(currentYear())-2}-12-31`));
+
+When(/^jag anger 31 december förrförra året som skada\/förgiftnings-datum$/, () => fyllTextfalt('Datum för skada/förgiftning', `${Number.parseInt(currentYear())-2}-12-31`));
+
 
 When(/^jag anger dödsorsaker med datum i stigande ordning$/, () =>
     doiUtkastPage.angeUtlatandeOmDodsorsak({

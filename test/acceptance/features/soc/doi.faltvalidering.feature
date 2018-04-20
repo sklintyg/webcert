@@ -2,7 +2,7 @@
 @FALTVALIDERING @DOI
 Egenskap: Fältvalidering för DOI
 
-Bakgrund: DB/DOI måste vara rensat för patienten.
+Bakgrund: DOI måste vara rensat för patienten.
     Givet jag har raderat alla intyg och utkast för "Fältvalidering" testpatienten
     Och att jag är inloggad som läkare
     Och jag går in på testpatienten för "Fältvalidering"
@@ -37,3 +37,11 @@ Scenario: Datum för en föregående dödsorsak kan inte vara senare än datumet
     Och jag klickar på signera-knappen
     Så ska "1" valideringsfel visas med texten "Datumet får inte vara senare än datumet för den terminala dödsorsaken."
     Så ska "2" valideringsfel visas med texten "Datumet får inte vara senare än datumet för sjukdomen eller skadan som angavs under den föregående "Som var en följd av"."
+
+@F.VAL-054
+Scenario: Dödsdatum får inte vara före 1 januari föregående år
+    När jag väljer alternativet "Ja" i frågan "Dödsfall i samband med skada/förgiftning?"
+    Och jag anger 31 december förrförra året som skada/förgiftnings-datum
+    Och jag väljer alternativet "Ja" i frågan "Opererad inom 4 veckor före döden?"
+    Och jag anger 31 december förrförra året som operationsdatum
+    Så ska "2" valideringsfel visas med texten "Datumet får inte vara tidigare än 1 januari föregående året."
