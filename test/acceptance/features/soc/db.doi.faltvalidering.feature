@@ -28,7 +28,7 @@ Exempel:
 Scenariomall: Dödsdatum kan inte vara i framtiden
     Givet jag går in på att skapa ett "<intyg>" intyg
     När jag väljer alternativet "Säkert" i frågan "Dödsdatum"
-    Och jag anger ett dödsdatum i framtiden
+    Och jag anger ett säkert dödsdatum i framtiden
     Och jag klickar på signera-knappen
     Så ska "1" valideringsfel visas med texten "Datumet får inte vara senare än dagens datum."
 
@@ -42,7 +42,7 @@ Exempel:
 Scenariomall: Anträffad död kan inte vara tidigare än dödsdatum
     Givet jag går in på att skapa ett "<intyg>" intyg
     När jag väljer alternativet "Ej säkert" i frågan "Dödsdatum"
-    Och jag anger dagens datum som dödsdatum
+    Och jag anger dagens datum som ej säkert dödsdatum
     Och jag anger ett tidigare datum för anträffad död
     Och jag klickar på signera-knappen
     Så ska "1" valideringsfel visas med texten "Datumet får inte vara tidigare än "Dödsdatum""
@@ -51,3 +51,20 @@ Exempel:
     | intyg           |
     | Dödsbevis       |
     | Dödsorsaksintyg |
+
+@F.VAL-054
+Scenariomall: Dödsdatum får inte vara före 1 januari föregående år
+    Givet jag går in på att skapa ett "<intyg>" intyg
+    När jag väljer alternativet "Säkert" i frågan "Dödsdatum"
+    Och jag anger 31 december förrförra året som säkert dödsdatum
+    Och jag klickar på signera-knappen
+    Så ska "1" valideringsfel visas med texten "Datumet får inte vara tidigare än 1 januari föregående året."
+    När jag väljer alternativet "Ej säkert" i frågan "Dödsdatum"
+    När jag anger 31 december förrförra året som anträffad död
+    Så ska "1" valideringsfel visas med texten "Datumet får inte vara tidigare än 1 januari föregående året."
+
+Exempel:
+    | intyg           |
+    | Dödsbevis       |
+    | Dödsorsaksintyg |
+
