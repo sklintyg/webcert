@@ -126,12 +126,11 @@ module.exports = {
             intygsID = testdataHelper.generateTestGuid();
         }
     },
-    getRandom: function(intygsID, customDeathDate) {
-
-        if (customDeathDate) {
-            deathDate.setDate(customDeathDate.getDate());
+    getRandom: function(intygsID, customFields) {
+        let currentDeathDate = deathDate;
+        if (customFields && customFields.deathDate) {
+            currentDeathDate = customFields.deathDate;
         }
-
         if (!intygsID) {
             intygsID = testdataHelper.generateTestGuid();
         }
@@ -141,7 +140,7 @@ module.exports = {
         var obj = {
             id: intygsID,
             typ: "Dödsorsaksintyg",
-            deathDate: deathDate, //datumvariabel som används för att ta fram test-data till andra variablar.
+            deathDate: currentDeathDate, //datumvariabel som används för att ta fram test-data till andra variablar.
             identitetStyrktGenom: shuffle(["körkort", "pass", "fingeravtryck", "tandavgjutning", testdataHelper.randomTextString(5, 100)])[0],
             land: shuffle(["Norge", "Danmark", "Finland", "Island", testdataHelper.randomTextString(5, 100)])[0], //?
             dodsdatum: getDodsdatum(datumSakert),

@@ -113,7 +113,7 @@ module.exports = {
 
         }
     },
-    generateIntygByType: function(typ, id) {
+    generateIntygByType: function(typ, id, customFields) {
         if (typ === 'Transportstyrelsens läkarintyg') {
             return testdata.ts.bas.getRandom(id, person);
         } else if (typ === 'Transportstyrelsens läkarintyg, diabetes') {
@@ -131,7 +131,7 @@ module.exports = {
         } else if (typ === 'Dödsbevis') {
             return testdata.skv.db.getRandom(id);
         } else if (typ === 'Dödsorsaksintyg') {
-            return testdata.soc.doi.getRandom(id, global.dbIntyg.deathDate);
+            return testdata.soc.doi.getRandom(id, customFields);
         }
     },
     fetch: {

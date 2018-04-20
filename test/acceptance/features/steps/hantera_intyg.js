@@ -136,35 +136,24 @@ Given(/^jag signerar intyget$/, function() {
     return signeraUtkast();
 });
 
-Then(/^klickar jag på knappen "([^"]*)"$/, function(knapp) {
-    if (knapp === 'Skriv dödsorsaksintyg') {
-        intyg.typ = 'Dödsorsaksintyg';
+Then(/^klickar jag på knappen "Skriv dödsorsaksintyg"$/, function() {
+    intyg.typ = 'Dödsorsaksintyg';
 
-        return moveAndSendKeys(pages.intyg.skv.db.utkast.skrivDoi.knapp, protractor.Key.SPACE).then(function() {
-            return helpers.mediumDelay();
-        }).then(function() {
-            return moveAndSendKeys(pages.intyg.skv.db.utkast.skrivDoi.fortsatt, protractor.Key.SPACE);
-        }).then(function() {
+    return moveAndSendKeys(pages.intyg.skv.db.utkast.skrivDoi.knapp, protractor.Key.SPACE).then(function() {
+        return helpers.mediumDelay();
+    }).then(function() {
+        return moveAndSendKeys(pages.intyg.skv.db.utkast.skrivDoi.fortsatt, protractor.Key.SPACE);
+    }).then(function() {
+        return browser.getCurrentUrl();
+    }).then(function(text) {
+        intyg.id = text.split('/').slice(-2)[0];
+        intyg.id = intyg.id.split('?')[0];
 
-            return browser.getCurrentUrl().then(function(text) {
-                global.dbIntyg = intyg;
-
-                logger.info('global.dbIntyg.id: ' + global.dbIntyg.id);
-
-                intyg.id = text.split('/').slice(-2)[0];
-                intyg.id = intyg.id.split('?')[0];
-
-                global.intyg = helpers.generateIntygByType(intyg.typ, intyg.id);
-                logger.info('intyg.id: ' + intyg.id);
-
-                return intyg;
-            });
-            //TODO: Uppdatera testdata så att den matchar med dödsdatum.
+        global.intyg = helpers.generateIntygByType(intyg.typ, intyg.id, {
+            customDeathDate: intyg.deathDate
         });
-
-    } else {
-        return;
-    }
+        logger.info('intyg.id: ' + intyg.id);
+    });
 });
 
 Given(/^jag signerar och skickar kompletteringen$/, function() {
