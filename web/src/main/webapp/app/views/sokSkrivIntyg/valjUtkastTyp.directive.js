@@ -1,6 +1,6 @@
 angular.module('webcert').directive('wcValjUtkastTyp',
     [ '$log', '$location', 'webcert.SokSkrivIntygViewstate', 'webcert.IntygTypeSelectorModel', 'common.messageService', 'common.featureService',
-        'common.PatientModel', 'common.UtkastProxy', 'common.dialogService',
+        'common.PatientModel', 'webcert.UtkastProxy', 'common.dialogService',
     function($log, $location, ViewState, IntygTypeSelectorModel, messageService, featureService, PatientModel, UtkastProxy, DialogService) {
         'use strict';
 
@@ -36,7 +36,7 @@ angular.module('webcert').directive('wcValjUtkastTyp',
                     createDraftRequestPayload.patientEfternamn = PatientModel.efternamn;
                     createDraftRequestPayload.patientPostadress = PatientModel.postadress;
                     createDraftRequestPayload.patientPostnummer = PatientModel.postnummer;
-                    createDraftRequestPayload.patientPostort = PatientModel.postor;
+                    createDraftRequestPayload.patientPostort = PatientModel.postort;
                     ViewState.createErrorMessageKey = undefined;
 
                     UtkastProxy.createUtkast(createDraftRequestPayload, function(data) {
@@ -69,15 +69,14 @@ angular.module('webcert').directive('wcValjUtkastTyp',
                         return intygTypes[0].detailedDescription;
                     }
                 };
-                scope.isCreateUtkastEnabled = function () {
+                scope.isCreateUtkastEnabled = function (intygType) {
                     // Måste ha valt en intygstyp
                     // Intygstypen får inte vara deprecated
                     // Måste uppfylla ev unikhetskrav för intyg/utkast inom/utom vg
-                    return IntygTypeSelectorModel.intygType !== 'default' &&
-                        !scope.intygReplacement[IntygTypeSelectorModel.intygType] &&
-                        scope.passesUniqueIntygWithinCareGiverCheck(IntygTypeSelectorModel.intygType) &&
-                        scope.passesUniqueUtkastWithinCareGiverCheck(IntygTypeSelectorModel.intygType) &&
-                        scope.passedUniqueGlobalCheck(IntygTypeSelectorModel.intygType);
+                    return !scope.intygReplacement[intygType] &&
+                        scope.passesUniqueIntygWithinCareGiverCheck(intygType) &&
+                        scope.passesUniqueUtkastWithinCareGiverCheck(intygType) &&
+                        scope.passedUniqueGlobalCheck(intygType);
                 };
 
                 // Har intygstypen begränsning som säger att inga andra intyg av typen får finnas på samma vg för patienten?

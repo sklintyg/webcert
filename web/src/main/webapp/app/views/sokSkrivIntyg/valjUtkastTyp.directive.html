@@ -20,7 +20,7 @@
                 <td>
                   <span id="fortsattBtn">
                     <button id="intygTypeFortsatt-{{type.id}}" class="btn btn-primary continue-btn" ng-click="createDraft(type.id)"
-                            ng-disabled="!isCreateUtkastEnabled()"><i class="material-icons">description</i> Skapa intyg</button>
+                            ng-disabled="!isCreateUtkastEnabled(type.id)"><i class="material-icons">description</i> Skapa intyg</button>
                   </span>
                 </td>
               </tr>
