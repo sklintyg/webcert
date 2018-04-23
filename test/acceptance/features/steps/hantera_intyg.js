@@ -225,6 +225,11 @@ Given(/^jag skriver ut intyget$/, function() {
     }
 });
 
+Given(/^jag skriver ut det makulerade intyget$/, function() {
+    //Utskrift av makulerat intyg är samma för alla intygstyper.
+    return moveAndSendKeys(element(by.id('downloadprint')), protractor.Key.SPACE);
+});
+
 Given(/^jag skriver ut utkastet$/, function() {
     return moveAndSendKeys(utkastPage.skrivUtBtn, protractor.Key.SPACE).then(function() {
         return helpers.pageReloadDelay(); // Page reload
