@@ -48,6 +48,6 @@ Scenario: Svara med nytt intyg
    Så ska jag se kompletteringsfrågan på utkast-sidan
 
    När jag signerar och skickar kompletteringen
-   Och ska intygets status vara "Intyget är skickat till Försäkringskassan"
+   Och ska intygets första status vara "Intyget är skickat till Försäkringskassan"
 
   

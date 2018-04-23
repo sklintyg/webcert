@@ -12,7 +12,7 @@ Scenariomall: Skapa och signera ett intyg för <intygKod>
 	Och jag fyller i alla nödvändiga fält för intyget
 	Och jag signerar intyget
 	Och jag ska se den data jag angett för intyget
-	Så ska intygets status vara "Intyget är signerat"
+	Så ska intygets första status vara "Intyget är signerat"
 
 	När jag går till Mina intyg för patienten
 	Så ska intyget finnas i Mina intyg
@@ -46,8 +46,8 @@ Exempel:
 Scenariomall: Skicka ett befintligt <intygKod> intyg till Försäkringskassan
 	När jag går in på ett <intyg> med status "Signerat"
 	Och jag skickar intyget till Försäkringskassan
-	Så ska intygets status vara "Intyget är skickat till Försäkringskassan"
-	Och ska intygets status vara "Intyget är tillgängligt för patienten"
+	Så ska intygets första status vara "Intyget är skickat till Försäkringskassan"
+	Och ska intygets andra status vara "Intyget är tillgängligt för patienten"
 
 	När jag går till Mina intyg för patienten
 	Så ska intygets status i Mina intyg visa "Skickat till Försäkringskassan"

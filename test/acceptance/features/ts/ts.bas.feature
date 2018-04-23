@@ -12,19 +12,19 @@ Scenario: Skapa och signera ett TS bas intyg
     När jag går in på att skapa ett "Transportstyrelsens läkarintyg" intyg
     Och jag fyller i alla nödvändiga fält för intyget
     Och jag signerar intyget
-    Så ska intygets status vara "Intyget är signerat"
+    Så ska intygets första status vara "Intyget är signerat"
     Och jag ska se den data jag angett för intyget
 
 @keepIntyg @skicka @smoke
 Scenario: Skicka ett signerat intyg till Transportstyrelsen
     När jag går in på ett "Transportstyrelsens läkarintyg" med status "Signerat"
     Och jag skickar intyget till Transportstyrelsen
-    Så ska intygets status vara "Intyget är skickat till Transportstyrelsen"
+    Så ska intygets första status vara "Intyget är skickat till Transportstyrelsen"
 
 @makulera @smoke
 Scenario: Makulera ett skickat TS Bas intyg
 	När jag går in på ett "Transportstyrelsens läkarintyg" med status "Skickat"
-    Så ska intygets status vara "Intyget är skickat till Transportstyrelsen"
+    Så ska intygets första status vara "Intyget är skickat till Transportstyrelsen"
 	Och jag makulerar intyget
 	Så ska intyget visa varningen "Intyget är makulerat"
     

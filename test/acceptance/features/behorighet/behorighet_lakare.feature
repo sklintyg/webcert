@@ -31,6 +31,6 @@ Scenario: Kan se intyg på underenheter när jag loggar in på överliggande enh
 
 	Givet att jag är inloggad som läkare på vårdenhet "TSTNMT2321000156-107Q"
 	Och går till den sparade länken
-	Så ska intygets status vara "Intyget är signerat"
+	Så ska intygets första status vara "Intyget är signerat"
 
 

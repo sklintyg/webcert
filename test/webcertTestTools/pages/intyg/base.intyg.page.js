@@ -48,7 +48,11 @@ var BaseIntyg = JClass._extend({
 
             statusRevoked: element(by.css('#intygstatus1 [data-intyg-status-code="is-004"]'))
         };
-        this.intygStatus = element(by.id('intygstatus1'));
+        this.intygHeader = element(by.id('intyg-vy-laddad'));
+        this.intygStatus = [
+            element(by.id('intygstatus1')),
+            element(by.id('intygstatus2'))
+        ];
         this.patientNamnOchPersonnummer = element(by.id('patientNamnPersonnummer'));
         this.FdPersonnummer = element(by.css('.old-person-id'));
         this.skicka = {

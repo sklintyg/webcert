@@ -18,10 +18,9 @@ Scenario: När man ersatt intyg så ska informationstext på ett ersatt intyg fi
 	När jag klickar på ersätt-knappen i dialogen
 	Och jag fyller i nödvändig information ( om intygstyp är "Läkarintyg för sjukpenning")
 	Och jag signerar intyget
-	#Och jag skickar intyget till Försäkringskassan
 
 	Och jag går tillbaka till det ersatta intyget
-	Så ska jag se texten "Intyget har ersatts av detta intyg" som innehåller en länk till det ersatta intyget
+	Så ska intygets första status vara "Intyget har ersatts av detta intyg"
 
 @ersatt-intyg-buttons
 Scenario: När man ersatt ett intyg så ska det ersatta intyg inte gå att skicka,ersätta,förnya

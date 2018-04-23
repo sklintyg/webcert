@@ -31,7 +31,7 @@ Scenario: Ska kunna fortsätta besvara kompletterande SMI-intyg
    Och jag väljer att svara med ett nytt intyg
    Och jag sparar länken till aktuell sida
    Och jag går tillbaka till intyget som behöver kompletteras
-   Så ska intygets status vara "Det finns redan en påbörjad komplettering."
+   Så ska intygets första status vara "Det finns redan en påbörjad komplettering."
    Så ska det finnas en länk med texten "Öppna utkastet"
    Och jag klickar på länk med texten "Öppna utkastet"
    Så jag verifierar att URL:en är samma som den sparade länken

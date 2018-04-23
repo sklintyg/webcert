@@ -37,7 +37,7 @@ const {
 
 
 var fk7263Utkast = pages.intyg.fk['7263'].utkast;
-var fk7263Intyg = pages.intyg.fk['7263'].intyg;
+var baseIntyg = pages.intyg.base.intyg;
 var sokSkrivIntygUtkastTypePage = pages.sokSkrivIntyg.valjUtkastType;
 var sokSkrivIntygPage = pages.sokSkrivIntyg.pickPatient;
 // var webcertBase = pages.webcertBase;
@@ -442,9 +442,11 @@ Then(/^ska jag varnas om(?: att) "([^"]*)"( i nytt fönster)?$/, function(msg, n
         });
 });
 
-Then(/^ska intygets status vara "([^"]*)"$/, function(statustext, callback) {
-    expect(fk7263Intyg.intygStatus.getText()).to.eventually.contain(statustext).and.notify(callback);
-    // expect(element(by.id('intyg-vy-laddad')).getText()).to.eventually.contain(statustext).and.notify(callback);
+Then(/^ska intygets första status vara "([^"]*)"$/, function(statustext) {
+    return expect(baseIntyg.intygStatus[0].getText()).to.eventually.contain(statustext);
+});
+Then(/^ska intygets andra status vara "([^"]*)"$/, function(statustext) {
+    return expect(baseIntyg.intygStatus[1].getText()).to.eventually.contain(statustext);
 });
 
 Then(/^(?:ska jag|jag ska) se den data jag angett för intyget$/, function() {
