@@ -50,6 +50,7 @@ import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.GroupableItem;
 import se.inera.intyg.webcert.common.model.UtkastStatus;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
+import se.inera.intyg.webcert.persistence.utkast.model.Signatur;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
@@ -66,6 +67,7 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.util.StatisticsGroupByUtil;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftRequest;
 import se.inera.intyg.webcert.web.service.utkast.dto.DraftValidation;
+import se.inera.intyg.webcert.web.service.utkast.dto.PreviousIntyg;
 import se.inera.intyg.webcert.web.service.utkast.dto.SaveDraftResponse;
 import se.inera.intyg.webcert.web.service.utkast.dto.UpdatePatientOnDraftRequest;
 import se.inera.intyg.webcert.web.service.utkast.util.CreateIntygsIdStrategy;
@@ -73,6 +75,7 @@ import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationPara
 
 import javax.persistence.OptimisticLockException;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.*;
 
 import static org.junit.Assert.*;
@@ -187,8 +190,8 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
         hoSPerson.setVardenhet(vardenhet);
 
-        utkast = createUtkast(INTYG_ID, UTKAST_VERSION, INTYG_TYPE, UtkastStatus.DRAFT_INCOMPLETE, INTYG_JSON, vardperson, PERSONNUMMER);
-        signedUtkast = createUtkast(INTYG_ID, INTYG_VERSION, INTYG_TYPE, UtkastStatus.SIGNED, INTYG_JSON, vardperson, PERSONNUMMER);
+        utkast = createUtkast(INTYG_ID, UTKAST_VERSION, INTYG_TYPE, UtkastStatus.DRAFT_INCOMPLETE, null, INTYG_JSON, vardperson, PERSONNUMMER);
+        signedUtkast = createUtkast(INTYG_ID, INTYG_VERSION, INTYG_TYPE, UtkastStatus.SIGNED, LocalDateTime.parse("2018-04-23T00:00:00"), INTYG_JSON, vardperson, PERSONNUMMER);
 
     }
 
@@ -692,27 +695,129 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
     }
 
     @Test
-    public void testCheckIfPersonHasExistingIntyg() {
+    public void testCheckIfPersonHasExistingUtkast() {
         final String personId = PERSON_ID;
         final Set activeModules = new HashSet<>(Arrays.asList("db", "doi"));
         final String vardgivareId = "vardgivarid";
 
-        Utkast db1 = createUtkast("db1", 1L, "db", UtkastStatus.SIGNED, "", null, PERSONNUMMER);
+        Utkast db1 = createUtkast("db1", 1L, "db", UtkastStatus.DRAFT_INCOMPLETE, null,"", null, PERSONNUMMER);
         db1.setVardgivarId("other");
-        Utkast db2 = createUtkast("db2", 1L, "db", UtkastStatus.SIGNED, "", null, PERSONNUMMER);
+        Utkast db2 = createUtkast("db2", 1L, "db", UtkastStatus.DRAFT_INCOMPLETE, null,"", null, PERSONNUMMER);
         db2.setVardgivarId(vardgivareId);
-        Utkast doi = createUtkast("doi1", 1L, "doi", UtkastStatus.SIGNED, "", null, PERSONNUMMER);
+        Utkast doi = createUtkast("doi1", 1L, "doi", UtkastStatus.DRAFT_INCOMPLETE, null,"", null, PERSONNUMMER);
         doi.setVardgivarId("other");
 
         when(authoritiesHelper.getIntygstyperForFeature(any(), any(), any())).thenReturn(activeModules);
         when(mockUtkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(PERSONNUMMER.getPersonnummerWithDash(), activeModules))
                 .thenReturn(Arrays.asList(db1, db2, doi));
 
-        Map<String, Map<String, Boolean>> res = draftService.checkIfPersonHasExistingIntyg(PERSONNUMMER, createUser());
+        Map<String, Map<String, PreviousIntyg>> res = draftService.checkIfPersonHasExistingIntyg(PERSONNUMMER, createUser());
+
+        assertNotNull(res.get("utkast"));
+        assertTrue(res.get("utkast").get("db").isSameVardgivare());
+        assertEquals(res.get("utkast").get("db").getLatestIntygsId(), "db2");
+        assertFalse(res.get("utkast").get("doi").isSameVardgivare());
+
+        verify(mockUtkastRepository).findAllByPatientPersonnummerAndIntygsTypIn(eq(PERSONNUMMER.getPersonnummerWithDash()), eq(activeModules));
+    }
+
+    @Test
+    public void testCheckIfPersonHasExistingUtkastLatest() {
+        final String personId = PERSON_ID;
+        final Set activeModules = new HashSet<>(Arrays.asList("db", "doi"));
+        final String vardgivareId = "vardgivarid";
+
+        Utkast db1 = createUtkast("db1", 1L, "db", UtkastStatus.DRAFT_INCOMPLETE, null,"", null, PERSONNUMMER);
+        db1.setVardgivarId(vardgivareId);
+        db1.setSkapad(LocalDateTime.parse("2018-04-24T00:00:00"));
+        Utkast db2 = createUtkast("db2", 1L, "db", UtkastStatus.DRAFT_INCOMPLETE, null,"", null, PERSONNUMMER);
+        db2.setVardgivarId(vardgivareId);
+        db2.setSkapad(LocalDateTime.parse("2018-04-23T00:00:00"));
+
+        when(authoritiesHelper.getIntygstyperForFeature(any(), any(), any())).thenReturn(activeModules);
+        when(mockUtkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(PERSONNUMMER.getPersonnummerWithDash(), activeModules))
+                .thenReturn(Arrays.asList(db1, db2));
+
+        Map<String, Map<String, PreviousIntyg>> res = draftService.checkIfPersonHasExistingIntyg(PERSONNUMMER, createUser());
+
+        assertNotNull(res.get("utkast"));
+        assertTrue(res.get("utkast").get("db").isSameVardgivare());
+        assertEquals(res.get("utkast").get("db").getLatestIntygsId(), "db1");
+
+        verify(mockUtkastRepository).findAllByPatientPersonnummerAndIntygsTypIn(eq(PERSONNUMMER.getPersonnummerWithDash()), eq(activeModules));
+    }
+
+    @Test
+    public void testCheckIfPersonHasExistingIntyg() {
+        final String personId = PERSON_ID;
+        final Set activeModules = new HashSet<>(Arrays.asList("db", "doi"));
+        final String vardgivareId = "vardgivarid";
+
+        Utkast db1 = createUtkast("db1", 1L, "db", UtkastStatus.SIGNED, LocalDateTime.parse("2018-04-23T00:00:00"),"", null, PERSONNUMMER);
+        db1.setVardgivarId("other");
+        Utkast db2 = createUtkast("db2", 1L, "db", UtkastStatus.SIGNED, LocalDateTime.parse("2018-04-24T00:00:00"),"", null, PERSONNUMMER);
+        db2.setVardgivarId(vardgivareId);
+        Utkast doi = createUtkast("doi1", 1L, "doi", UtkastStatus.SIGNED, LocalDateTime.parse("2018-04-25T00:00:00"),"", null, PERSONNUMMER);
+        doi.setVardgivarId("other");
+
+        when(authoritiesHelper.getIntygstyperForFeature(any(), any(), any())).thenReturn(activeModules);
+        when(mockUtkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(PERSONNUMMER.getPersonnummerWithDash(), activeModules))
+                .thenReturn(Arrays.asList(db1, db2, doi));
+
+        Map<String, Map<String, PreviousIntyg>> res = draftService.checkIfPersonHasExistingIntyg(PERSONNUMMER, createUser());
 
         assertNotNull(res.get("intyg"));
-        assertTrue(res.get("intyg").get("db"));
-        assertFalse(res.get("intyg").get("doi"));
+        assertTrue(res.get("intyg").get("db").isSameVardgivare());
+        assertEquals(res.get("intyg").get("db").getLatestIntygsId(), "db2");
+        assertFalse(res.get("intyg").get("doi").isSameVardgivare());
+
+        verify(mockUtkastRepository).findAllByPatientPersonnummerAndIntygsTypIn(eq(PERSONNUMMER.getPersonnummerWithDash()), eq(activeModules));
+    }
+
+    @Test
+    public void testCheckIfPersonHasExistingIntygReverseOrder() {
+        final String personId = PERSON_ID;
+        final Set activeModules = new HashSet<>(Arrays.asList("db", "doi"));
+        final String vardgivareId = "vardgivarid";
+
+        Utkast db1 = createUtkast("db1", 1L, "db", UtkastStatus.SIGNED, LocalDateTime.parse("2018-04-24T00:00:00"),"", null, PERSONNUMMER);
+        db1.setVardgivarId("other");
+        Utkast db2 = createUtkast("db2", 1L, "db", UtkastStatus.SIGNED, LocalDateTime.parse("2018-04-23T00:00:00"),"", null, PERSONNUMMER);
+        db2.setVardgivarId(vardgivareId);
+
+        when(authoritiesHelper.getIntygstyperForFeature(any(), any(), any())).thenReturn(activeModules);
+        when(mockUtkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(PERSONNUMMER.getPersonnummerWithDash(), activeModules))
+                .thenReturn(Arrays.asList(db1, db2));
+
+        Map<String, Map<String, PreviousIntyg>> res = draftService.checkIfPersonHasExistingIntyg(PERSONNUMMER, createUser());
+
+        assertNotNull(res.get("intyg"));
+        assertTrue(res.get("intyg").get("db").isSameVardgivare());
+        assertEquals(res.get("intyg").get("db").getLatestIntygsId(), "db2");
+
+        verify(mockUtkastRepository).findAllByPatientPersonnummerAndIntygsTypIn(eq(PERSONNUMMER.getPersonnummerWithDash()), eq(activeModules));
+    }
+
+    @Test
+    public void testCheckIfPersonHasExistingIntygReverseOrderSamevardgivare() {
+        final String personId = PERSON_ID;
+        final Set activeModules = new HashSet<>(Arrays.asList("db", "doi"));
+        final String vardgivareId = "vardgivarid";
+
+        Utkast db1 = createUtkast("db1", 1L, "db", UtkastStatus.SIGNED, LocalDateTime.parse("2018-04-24T00:00:00"),"", null, PERSONNUMMER);
+        db1.setVardgivarId(vardgivareId);
+        Utkast db2 = createUtkast("db2", 1L, "db", UtkastStatus.SIGNED, LocalDateTime.parse("2018-04-23T00:00:00"),"", null, PERSONNUMMER);
+        db2.setVardgivarId(vardgivareId);
+
+        when(authoritiesHelper.getIntygstyperForFeature(any(), any(), any())).thenReturn(activeModules);
+        when(mockUtkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(PERSONNUMMER.getPersonnummerWithDash(), activeModules))
+                .thenReturn(Arrays.asList(db1, db2));
+
+        Map<String, Map<String, PreviousIntyg>> res = draftService.checkIfPersonHasExistingIntyg(PERSONNUMMER, createUser());
+
+        assertNotNull(res.get("intyg"));
+        assertTrue(res.get("intyg").get("db").isSameVardgivare());
+        assertEquals(res.get("intyg").get("db").getLatestIntygsId(), "db1");
 
         verify(mockUtkastRepository).findAllByPatientPersonnummerAndIntygsTypIn(eq(PERSONNUMMER.getPersonnummerWithDash()), eq(activeModules));
     }
@@ -765,8 +870,8 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         return p;
     }
 
-    private Utkast createUtkast(String intygId, long version, String type, UtkastStatus status, String model,
-            VardpersonReferens vardperson, Personnummer personnummer) {
+    private Utkast createUtkast(String intygId, long version, String type, UtkastStatus status, LocalDateTime signeringsDatum, String model,
+                                VardpersonReferens vardperson, Personnummer personnummer) {
 
         Utkast utkast = new Utkast();
         utkast.setIntygsId(intygId);
@@ -777,6 +882,10 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         utkast.setSkapadAv(vardperson);
         utkast.setSenastSparadAv(vardperson);
         utkast.setPatientPersonnummer(personnummer);
+
+        if (status == UtkastStatus.SIGNED) {
+            utkast.setSignatur( new Signatur(signeringsDatum, "", "", "", "", ""));
+        }
 
         return utkast;
     }

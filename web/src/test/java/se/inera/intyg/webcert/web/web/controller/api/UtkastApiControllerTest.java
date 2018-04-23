@@ -50,6 +50,7 @@ import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftRequest;
+import se.inera.intyg.webcert.web.service.utkast.dto.PreviousIntyg;
 import se.inera.intyg.webcert.web.web.controller.api.dto.CreateUtkastRequest;
 import se.inera.intyg.webcert.web.web.controller.api.dto.QueryIntygParameter;
 import se.inera.intyg.webcert.web.web.controller.api.dto.QueryIntygResponse;
@@ -112,9 +113,9 @@ public class UtkastApiControllerTest {
         when(moduleRegistry.getIntygModule(eq(LuseEntryPoint.MODULE_ID))).thenReturn(new IntygModule("luse", "", "", "", "", "", "", "","", false));
         when(moduleRegistry.getIntygModule(eq(Fk7263EntryPoint.MODULE_ID))).thenReturn(new IntygModule("fk7263", "", "", "", "", "", "", "","", true));
 
-        Map<String, Map<String, Boolean>> hasPrevious = new HashMap<>();
-        Map<String, Boolean> hasPreviousIntyg = new HashMap<>();
-        hasPreviousIntyg.put("luse", true);
+        Map<String, Map<String, PreviousIntyg>> hasPrevious = new HashMap<>();
+        Map<String, PreviousIntyg> hasPreviousIntyg = new HashMap<>();
+        hasPreviousIntyg.put("luse", new PreviousIntyg(true, "intygsId"));
         hasPrevious.put("intyg", hasPreviousIntyg);
         when(utkastService.checkIfPersonHasExistingIntyg(eq(PATIENT_PERSONNUMMER), any())).thenReturn(hasPrevious);
 
@@ -306,9 +307,9 @@ public class UtkastApiControllerTest {
         Response response = utkastController.getPreviousCertificateWarnings(PATIENT_PERSONNUMMER.getPersonnummer());
 
         assertNotNull(response);
-        Map<String, Map<String, Boolean>> responseBody = (Map<String, Map<String, Boolean>>) response.readEntity(HashMap.class);
+        Map<String, Map<String, PreviousIntyg>> responseBody = (Map<String, Map<String, PreviousIntyg>>) response.readEntity(HashMap.class);
         assertEquals(1, responseBody.size());
-        assertTrue(responseBody.get("intyg").get("luse"));
+        assertTrue(responseBody.get("intyg").get("luse").isSameVardgivare());
     }
 
     private QueryIntygParameter buildQueryIntygParameter() {

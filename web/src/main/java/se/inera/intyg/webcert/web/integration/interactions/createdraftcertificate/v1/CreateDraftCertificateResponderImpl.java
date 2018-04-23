@@ -47,6 +47,7 @@ import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftRequest;
+import se.inera.intyg.webcert.web.service.utkast.dto.PreviousIntyg;
 import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.CreateDraftCertificateResponderInterface;
 import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.CreateDraftCertificateResponseType;
 import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v1.CreateDraftCertificateType;
@@ -137,8 +138,8 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
                     ErrorIdType.APPLICATION_ERROR);
         }
 
-        Map<String, Map<String, Boolean>> intygstypToBoolean = utkastService.checkIfPersonHasExistingIntyg(personnummer, user);
-        String uniqueErrorString = AuthoritiesHelperUtil.validateMustBeUnique(user, intygsTyp, intygstypToBoolean);
+        Map<String, Map<String, PreviousIntyg>> intygstypToPreviousIntyg = utkastService.checkIfPersonHasExistingIntyg(personnummer, user);
+        String uniqueErrorString = AuthoritiesHelperUtil.validateMustBeUnique(user, intygsTyp, intygstypToPreviousIntyg);
 
         if (!uniqueErrorString.isEmpty()) {
             return createErrorResponse(uniqueErrorString, ErrorIdType.APPLICATION_ERROR);

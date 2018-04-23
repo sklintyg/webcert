@@ -47,18 +47,18 @@ angular.module('webcert').directive('wcValjUtkastTyp',
                 // Har intygstypen begränsning som säger att inga andra intyg av typen får finnas på samma vg för patienten?
                 scope.passesUniqueIntygWithinCareGiverCheck = function (intygType) {
                     var featureActive = featureService.isFeatureActive(featureService.features.UNIKT_INTYG_INOM_VG, intygType);
-                    return featureActive ? !IntygTypeSelectorModel.previousIntygWarnings[intygType] : true;
+                    return !featureActive || !IntygTypeSelectorModel.previousIntygWarnings[intygType] || !IntygTypeSelectorModel.previousIntygWarnings[intygType].sameVardgivare;
                 };
                 // Har intygstypen begränsning som säger att inga andra utkast av typen får finnas på samma vg för patienten?
                 scope.passesUniqueUtkastWithinCareGiverCheck = function (intygType) {
                     var featureActive = featureService.isFeatureActive(featureService.features.UNIKT_UTKAST_INOM_VG, intygType);
-                    return featureActive ? !IntygTypeSelectorModel.previousUtkastWarnings[intygType] : true;
+                    return !featureActive || !IntygTypeSelectorModel.previousUtkastWarnings[intygType] || !IntygTypeSelectorModel.previousUtkastWarnings[intygType].sameVardgivare;
                 };
 
                 // Har intygstypen begränsning som säger att inga andra intyg av typen får finnas utfärdade på någon vg för patienten?
                 scope.passedUniqueGlobalCheck = function (intygType) {
                     var featureActive = featureService.isFeatureActive(featureService.features.UNIKT_INTYG, intygType);
-                    return featureActive ? IntygTypeSelectorModel.previousIntygWarnings[intygType] === undefined : true;
+                    return !featureActive || !IntygTypeSelectorModel.previousIntygWarnings[intygType];
                 };
             }
         };

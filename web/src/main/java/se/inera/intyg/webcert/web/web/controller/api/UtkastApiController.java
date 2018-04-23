@@ -40,6 +40,7 @@ import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftRequest;
+import se.inera.intyg.webcert.web.service.utkast.dto.PreviousIntyg;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
 import se.inera.intyg.webcert.web.web.controller.api.dto.CreateUtkastRequest;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
@@ -136,13 +137,13 @@ public class UtkastApiController extends AbstractApiController {
                 .features(AuthoritiesConstants.FEATURE_UNIKT_INTYG, AuthoritiesConstants.FEATURE_UNIKT_INTYG_INOM_VG,
                         AuthoritiesConstants.FEATURE_UNIKT_UTKAST_INOM_VG).isVerified()) {
 
-            Map<String, Map<String, Boolean>> intygstypToStringToBoolean = utkastService.checkIfPersonHasExistingIntyg(
+            Map<String, Map<String, PreviousIntyg>> intygstypToStringToBoolean = utkastService.checkIfPersonHasExistingIntyg(
                     request.getPatientPersonnummer(), getWebCertUserService().getUser());
 
-            Boolean utkastExists = intygstypToStringToBoolean.get("utkast").get(intygsTyp);
-            Boolean intygExists = intygstypToStringToBoolean.get("intyg").get(intygsTyp);
+            PreviousIntyg utkastExists = intygstypToStringToBoolean.get("utkast").get(intygsTyp);
+            PreviousIntyg intygExists = intygstypToStringToBoolean.get("intyg").get(intygsTyp);
 
-            if (utkastExists != null && utkastExists) {
+            if (utkastExists != null && utkastExists.isSameVardgivare()) {
                 if (authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
                         .features(AuthoritiesConstants.FEATURE_UNIKT_UTKAST_INOM_VG).isVerified()) {
                     return Response.status(Status.BAD_REQUEST).build();
@@ -153,7 +154,7 @@ public class UtkastApiController extends AbstractApiController {
                 if (authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
                         .features(AuthoritiesConstants.FEATURE_UNIKT_INTYG).isVerified()) {
                     return Response.status(Status.BAD_REQUEST).build();
-                } else if (intygExists && authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
+                } else if (intygExists.isSameVardgivare() && authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
                         .features(AuthoritiesConstants.FEATURE_UNIKT_INTYG_INOM_VG).isVerified()) {
                     return Response.status(Status.BAD_REQUEST).build();
                 }
@@ -223,7 +224,7 @@ public class UtkastApiController extends AbstractApiController {
     @Path("/previousIntyg/{personnummer}")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public Response getPreviousCertificateWarnings(@PathParam("personnummer") String personnummer) {
-        Map<String, Map<String, Boolean>> res = utkastService
+        Map<String, Map<String, PreviousIntyg>> res = utkastService
                 .checkIfPersonHasExistingIntyg(Personnummer.createPersonnummer(personnummer).get(),
                         getWebCertUserService().getUser());
         return Response.ok(res).build();

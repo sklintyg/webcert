@@ -31,17 +31,17 @@
     </wc-alert-message>
 
 
-    <div id="intyg-exists-warning" ng-if="intygTypeModel.previousIntygWarnings[intygTypeModel.intygType] !== undefined">
+    <div id="intyg-exists-warning" ng-if="intygTypeModel.previousIntygWarnings[intygTypeModel.intygType]">
       <wc-alert-message alert-severity="warning" class="col-lg-7">
-        <span ng-if="intygTypeModel.previousIntygWarnings[intygTypeModel.intygType] === true" dynamic-label key="{{intygTypeModel.intygType}}.warn.previouscertificate.samevg"></span>
-        <span ng-if="intygTypeModel.previousIntygWarnings[intygTypeModel.intygType] === false" dynamic-label key="{{intygTypeModel.intygType}}.warn.previouscertificate.differentvg"></span>
+        <span ng-if="intygTypeModel.previousIntygWarnings[intygTypeModel.intygType].sameVardgivare" dynamic-label key="{{intygTypeModel.intygType}}.warn.previouscertificate.samevg"></span>
+        <span ng-if="!intygTypeModel.previousIntygWarnings[intygTypeModel.intygType].sameVardgivare" dynamic-label key="{{intygTypeModel.intygType}}.warn.previouscertificate.differentvg"></span>
       </wc-alert-message>
     </div>
 
-    <div id="utkast-exists-warning" ng-if="intygTypeModel.previousUtkastWarnings[intygTypeModel.intygType] !== undefined">
+    <div id="utkast-exists-warning" ng-if="intygTypeModel.previousUtkastWarnings[intygTypeModel.intygType]">
       <wc-alert-message alert-severity="warning" class="col-lg-7">
-        <span ng-if="intygTypeModel.previousUtkastWarnings[intygTypeModel.intygType] === true" dynamic-label key="{{intygTypeModel.intygType}}.warn.previousdraft.samevg"></span>
-        <span ng-if="intygTypeModel.previousUtkastWarnings[intygTypeModel.intygType] === false" dynamic-label key="{{intygTypeModel.intygType}}.warn.previousdraft.differentvg"></span>
+        <span ng-if="intygTypeModel.previousUtkastWarnings[intygTypeModel.intygType].sameVardgivare" dynamic-label key="{{intygTypeModel.intygType}}.warn.previousdraft.samevg"></span>
+        <span ng-if="!intygTypeModel.previousUtkastWarnings[intygTypeModel.intygType].sameVardgivare" dynamic-label key="{{intygTypeModel.intygType}}.warn.previousdraft.differentvg"></span>
       </wc-alert-message>
     </div>
 

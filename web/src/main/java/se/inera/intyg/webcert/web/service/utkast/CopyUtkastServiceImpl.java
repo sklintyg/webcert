@@ -63,6 +63,7 @@ import se.inera.intyg.webcert.web.service.utkast.dto.CreateReplacementCopyReques
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateReplacementCopyResponse;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateUtkastFromTemplateRequest;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateUtkastFromTemplateResponse;
+import se.inera.intyg.webcert.web.service.utkast.dto.PreviousIntyg;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -266,13 +267,13 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
                 Personnummer personnummer = copyRequest.containsNyttPatientPersonnummer() ? copyRequest.getNyttPatientPersonnummer()
                         : copyRequest.getPatient().getPersonId();
 
-                Map<String, Map<String, Boolean>> intygstypToStringToBoolean = utkastService.checkIfPersonHasExistingIntyg(
+                Map<String, Map<String, PreviousIntyg>> intygstypToStringToPreviousIntyg = utkastService.checkIfPersonHasExistingIntyg(
                         personnummer, user);
 
-                Boolean utkastExists = intygstypToStringToBoolean.get("utkast").get(intygsTyp);
-                Boolean intygExists = intygstypToStringToBoolean.get("intyg").get(intygsTyp);
+                PreviousIntyg utkastExists = intygstypToStringToPreviousIntyg.get("utkast").get(intygsTyp);
+                PreviousIntyg intygExists = intygstypToStringToPreviousIntyg.get("intyg").get(intygsTyp);
 
-                if (utkastExists != null && utkastExists) {
+                if (utkastExists != null && utkastExists.isSameVardgivare()) {
                     if (authoritiesValidator.given(user, intygsTyp).features(AuthoritiesConstants.FEATURE_UNIKT_UTKAST_INOM_VG)
                             .isVerified()) {
                         throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE,
@@ -284,7 +285,7 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
                     if (authoritiesValidator.given(user, intygsTyp).features(AuthoritiesConstants.FEATURE_UNIKT_INTYG).isVerified()) {
                         throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE,
                                 "Certificates of this type must be globally unique.");
-                    } else if (intygExists && authoritiesValidator.given(user, intygsTyp)
+                    } else if (intygExists.isSameVardgivare() && authoritiesValidator.given(user, intygsTyp)
                             .features(AuthoritiesConstants.FEATURE_UNIKT_INTYG_INOM_VG).isVerified()) {
                         throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE,
                                 "Certificates of this type must be unique within this caregiver.");

@@ -181,7 +181,7 @@ public class UtkastServiceImpl implements UtkastService {
     }
 
     @Override
-    public Map<String, Map<String, Boolean>> checkIfPersonHasExistingIntyg(Personnummer personnummer, IntygUser user) {
+    public Map<String, Map<String, PreviousIntyg>> checkIfPersonHasExistingIntyg(Personnummer personnummer, IntygUser user) {
         List<Utkast> toFilter = utkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(personnummer.getPersonnummerWithDash(),
                 authoritiesHelper.getIntygstyperForFeature(user, AuthoritiesConstants.FEATURE_UNIKT_INTYG,
                         AuthoritiesConstants.FEATURE_UNIKT_INTYG_INOM_VG));
@@ -189,20 +189,24 @@ public class UtkastServiceImpl implements UtkastService {
         List<Utkast> signedList = toFilter.stream()
                 .filter(utkast -> utkast.getStatus() == UtkastStatus.SIGNED)
                 .filter(utkast -> utkast.getAterkalladDatum() == null)
+                .sorted(Comparator.comparing(u -> u.getSignatur().getSigneringsDatum()))
                 .collect(Collectors.toList());
 
-        Map<String, Map<String, Boolean>> ret = new HashMap<>();
+        Map<String, Map<String, PreviousIntyg>> ret = new HashMap<>();
 
         ret.put(INTYG_INDICATOR, signedList.stream()
                 .collect(Collectors.groupingBy(Utkast::getIntygsTyp,
-                        Collectors.mapping(utkast -> Objects.equals(user.getValdVardgivare().getId(), utkast.getVardgivarId()),
-                                Collectors.reducing(false, (a, b) -> a || b)))));
+                        Collectors.mapping(utkast -> new PreviousIntyg(Objects.equals(user.getValdVardgivare().getId(),
+                                utkast.getVardgivarId()), utkast.getIntygsId()),
+                                Collectors.reducing(new PreviousIntyg(), (a, b) -> b.isSameVardgivare() ? b : a)))));
 
         ret.put(UTKAST_INDICATOR, toFilter.stream()
                 .filter(utkast -> utkast.getStatus() != UtkastStatus.SIGNED)
+                .sorted(Comparator.comparing(Utkast::getSkapad, Comparator.nullsFirst(Comparator.naturalOrder())))
                 .collect(Collectors.groupingBy(Utkast::getIntygsTyp,
-                        Collectors.mapping(utkast -> Objects.equals(user.getValdVardgivare().getId(), utkast.getVardgivarId()),
-                                Collectors.reducing(false, (a, b) -> a || b)))));
+                        Collectors.mapping(utkast -> new PreviousIntyg(Objects.equals(user.getValdVardgivare().getId(),
+                                utkast.getVardgivarId()), utkast.getIntygsId()),
+                                Collectors.reducing(new PreviousIntyg(), (a, b) -> b.isSameVardgivare() ? b : a)))));
 
         return ret;
     }
