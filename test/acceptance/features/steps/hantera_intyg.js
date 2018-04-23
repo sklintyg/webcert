@@ -277,7 +277,7 @@ When(/^jag fyller i nödvändig information \( om intygstyp är "([^"]*)"\)$/, f
     } else {
         browser.ignoreSynchronization = true;
         logger.info('Intygstyp är: ' + intyg.typ);
-        logger.info(intyg);
+        logger.info(JSON.stringify(intyg));
 
         if (intyg.typ === 'Dödsorsaksintyg') {
             var doiUtkastPage = pages.intyg.soc.doi.utkast;
