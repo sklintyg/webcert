@@ -209,7 +209,7 @@ function changeField(intygShortcode, field) {
             intyg.aktivitetsbegransning = helpers.randomTextString();
             return moveAndSendKeys(lisjpUtkastPage.konsekvenser.aktivitetsbegransning, intyg.aktivitetsbegransning);
         } else if (field === 'ovrigt') {
-            return moveAndSendKeys(element(by.id('ovrigt')), helpers.randomTextString());
+            return moveAndSendKeys(luaeNAUtkastPage.ovrigt, helpers.randomTextString());
         } else if (field === 'sjukdomsforlopp') {
             return moveAndSendKeys(luaeNAUtkastPage.sjukdomsforlopp, helpers.randomTextString());
         }
@@ -258,8 +258,8 @@ function changeField(intygShortcode, field) {
                 return moveAndSendKeys(tsDiabetesUtkastPage.allmant.annanbehandling, helpers.randomTextString());
             });
         } else if (field === 'specialist') {
-            return element(by.id('specialist')).clear().then(function() {
-                return moveAndSendKeys(element(by.id('specialist')), helpers.randomTextString());
+            return tsDiabetesUtkastPage.specialist.clear().then(function() {
+                return moveAndSendKeys(tsDiabetesUtkastPage.specialist, helpers.randomTextString());
             });
 
 

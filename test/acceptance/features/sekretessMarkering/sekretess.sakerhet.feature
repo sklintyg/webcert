@@ -46,15 +46,15 @@ Scenario: Läkare ska kunna makulera intyg med s-markering
 	Så ska det finnas en knapp med texten "Makulera"
 
 	
-@TS @BAS @notReady
+@TS @BAS
 Scenario: TS-intyg utkast ska inte kunna skapas på s-markerad patient på ts bas
 	Så ska jag inte ha alternativet att skapa "Transportstyrelsens läkarintyg" intyg
 	Så ska vårdsystemet inte ha möjlighet att skapa "Transportstyrelsens läkarintyg" utkast
 
-@TS @DIABETES @notReady
+@TS @DIABETES
 Scenario: TS-intyg utkast ska inte kunna skapas på s-markerad patient på ts diabetes
-	Så ska jag inte ha alternativet att skapa "Transportstyrelsens, diabetes" intyg
-	Så ska vårdsystemet inte ha möjlighet att skapa "Transportstyrelsens, diabetes" utkast
+	Så ska jag inte ha alternativet att skapa "Transportstyrelsens läkarintyg, diabetes" intyg
+	Så ska vårdsystemet inte ha möjlighet att skapa "Transportstyrelsens läkarintyg, diabetes" utkast
 	
 @rehabstod @rehabKoordinator
 Scenario: Rehabkoordinator ska inte kunna se sekrettessmarkerade intyg.

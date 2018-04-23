@@ -202,7 +202,6 @@ Given(/^jag har raderat alla intyg och utkast för (?:"([^"]*)?" )?"([^"]*)" tes
     var testvalues = wcTestTools.testdata.values;
 
     var patient = testvalues.dedikeradeTestPatienter.medSyfte[testSyfte][helpers.getIntFromTxt(testPatientBeskrivning || 'första')];
-    console.log(patient);
 
     return Promise.all([
         wcTestTools.restUtil.deleteAllUtkastForPatient(helpers.insertDashInPnr(patient.id)),
