@@ -256,7 +256,7 @@ When(/^jag markerar intyget som klart för signering$/, function() {
     return moveAndSendKeys(element(by.id('markeraKlartForSigneringButton')), protractor.Key.SPACE);
 });
 
-When(/^ska jag se texten "([^"]*)"$/, function(msg) {
+When(/^ska jag se KFSIGN infotexten "([^"]*)"$/, function(msg) {
     return expect(element(by.id('draft-marked-ready-text')).getText()).to.eventually.contain(msg);
 });
 

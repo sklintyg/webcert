@@ -176,7 +176,7 @@ var Fk7263Intyg = BaseIntyg._extend({
             sendButton: element(by.id('sendQuestionBtn'))
         };
         this.forwardBtn = element(by.css('.btn.btn-default.vidarebefordra-btn.btn-info'));
-        this.intygStatus = element(by.id('intyg-vy-laddad'));
+        //this.intygStatus = element(by.id('intyg-vy-laddad')); Ersatt av intygHeader i baseintyg
         this.komplettera = {
             dialog: {
                 modal: element(by.id('komplettering-modal-dialog')),

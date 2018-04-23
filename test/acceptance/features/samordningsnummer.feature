@@ -15,7 +15,7 @@ Scenario: Det ska gå att öppna ett signerat SMI-intyg i Mina intyg för en pat
 	Och jag fyller i alla nödvändiga fält för intyget
 	Och jag signerar intyget
 	Och jag ska se den data jag angett för intyget
-	Så ska intygets status vara "Intyget är signerat"
+	Så ska intygets första status vara "Intyget är signerat"
 	När jag går till Mina intyg för patienten
 	Så ska intyget finnas i Mina intyg
 	

@@ -92,18 +92,6 @@ Given(/^jag går tillbaka till det ersatta intyget$/, function() {
     });
 });
 
-Given(/^ska jag se texten "([^"]*)" som innehåller en länk till det ersatta intyget$/, function(replacedMessage) {
-    var replaceMsg = element(by.id('wc-intyg-replaced-message'));
-    return replaceMsg.isPresent().then(function(isPresent) {
-        if (isPresent) {
-            return expect(replaceMsg.getText()).to.eventually.contain(replacedMessage);
-        } else {
-            return expect(element(by.id('intyg-already-replaced-warning')).getText()).to.eventually.contain(replacedMessage);
-        }
-
-    });
-});
-
 Given(/^ska meddelandet som visas innehålla texten "([^"]*)"$/, function(modalMsg) {
     return expect(element(by.css('.modal-body')).getText()).to.eventually.contain(modalMsg);
 });

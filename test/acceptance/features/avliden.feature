@@ -15,8 +15,8 @@ Egenskap: Avliden patient
      När jag skickar ett SMI-intyg till intygstjänsten på en avliden person
      Och jag går in på intyget via djupintegrationslänk och har parametern "avliden" satt till "true"
      Och jag skickar intyget till Försäkringskassan
-     Så ska intygets status vara "Intyget är skickat till Försäkringskassan"
-	 Och ska intygets status vara "Intyget är tillgängligt för patienten"
+     Så ska intygets första status vara "Intyget är skickat till Försäkringskassan"
+	 Och ska intygets andra status vara "Intyget är tillgängligt för patienten"
 
 	 
  @svara-på-fråga @smi @integration
@@ -47,5 +47,5 @@ Scenario: Kan svara på komplettering med ett nytt intyg
     Och jag väljer att svara med ett nytt intyg
     Så ska jag se kompletteringsfrågan på utkast-sidan
     Och jag signerar intyget
-    Så ska intygets status vara "Intyget är skickat till Försäkringskassan"
-	Och ska intygets status vara "Intyget är tillgängligt för patienten"
+    Så ska intygets första status vara "Intyget är skickat till Försäkringskassan"
+	Och ska intygets andra status vara "Intyget är tillgängligt för patienten"
