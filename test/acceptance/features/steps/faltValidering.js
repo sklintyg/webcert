@@ -324,17 +324,17 @@ When(/^jag anger anhörigs beskrivning senare än patientkännedom$/, () =>
     })
 );
 
-When(/^jag väljer "([^"]+)" i dropdownen "([^"]*)"$/, (val, text) => dropdownVal(val, text));
+When(/^jag väljer "([^"]+)" i dropdownen "([^"]*)"$/, (val, text) => dropdownVal(val, text).then(helpers.mediumDelay()));
 
-When(/^jag väljer alternativet "([^"]+)" i frågan "([^"]*)"$/, (val, text) => radioknappVal(val, text));
+When(/^jag väljer alternativet "([^"]+)" i frågan "([^"]*)"$/, (val, text) => radioknappVal(val, text).then(helpers.mediumDelay()));
 
-When(/^jag kryssar i "([^"]+)"$/, text => checkboxVal(text));
+When(/^jag kryssar i "([^"]+)"$/, text => checkboxVal(text).then(helpers.mediumDelay()));
 
-When(/^jag anger ett tidigare datum för anträffad död$/, () => fillInDates(helpers.getCurrentDate().replace(/^\d{4}/, '2017')));
+When(/^jag anger ett tidigare datum för anträffad död$/, () => fillInDates(helpers.getCurrentDate().replace(/^\d{4}/, '2017')).then(helpers.mediumDelay()));
 
-When(/^jag fyller i "(.*)" i fältet "(.*)"$/, (text, field) => fyllTextfalt(field, text));
+When(/^jag fyller i "(.*)" i fältet "(.*)"$/, (text, field) => fyllTextfalt(field, text).then(helpers.mediumDelay()));
 
-When(/^jag anger dagens datum som ej säkert dödsdatum$/, () => dropdownVal(currentYear(), 'År').then(() => dropdownVal(currentMonth(), 'Månad')));
+When(/^jag anger dagens datum som ej säkert dödsdatum$/, () => dropdownVal(currentYear(), 'År').then(() => dropdownVal(currentMonth(), 'Månad')).then(helpers.mediumDelay()));
 
 When(/^jag anger ett säkert dödsdatum i framtiden$/, () => pages.getUtkastPageByType(intyg.typ).angeDodsdatum({
     sakert: {
