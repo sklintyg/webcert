@@ -105,14 +105,17 @@ function createBody(intygstyp, callback) {
  */
 
 Given(/^ska vårdsystemet inte ha möjlighet att skapa "([^"]*)" utkast$/, function(intygstyp) {
+    global.intyg.typ = intygstyp;
+
     let body = soapMessageBodies.CreateDraftCertificateV3(
         global.user,
         intygstyp
     );
     let url = helpers.stripTrailingSlash(process.env.WEBCERT_URL) + path;
     url = url.replace('https', 'http');
+    logger.silly(body);
 
-    soap.createClient(url, function(err, client) {
+    return soap.createClient(url, function(err, client) {
         logger.info(url);
         if (err) {
             logger.error('sendCreateDraft misslyckades' + err);
