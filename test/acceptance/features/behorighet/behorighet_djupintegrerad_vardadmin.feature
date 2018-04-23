@@ -22,7 +22,7 @@ Scenario: Kan markera som klart för signering men inte signera
     Och ska svaret visa intyghändelse "KFSIGN"
 
     När laddar om sidan
-	Så ska jag se texten "Utkastet är sparat och markerat som klart för signering."
+	Så ska jag se texten "Utkastet är sparat och markerat klart för signering."
 
 @signera @klar-för-signering-sparat @LegacyFK7263
 Scenario: Kan inte signera FK7263-utkast
