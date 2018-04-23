@@ -1,6 +1,7 @@
 <div id="{{dialogId}}" class="modal-header">
 	<button type="button" class="close" ng-click="button2click()"><i class="material-icons">close</i></button>
 	<h3 ng-focus="model.focus" tabindex="-1">
+		<span ng-bind-html="titleText"></span>
 		<span dynamic-label key="{{titleId}}"></span>
 	</h3>
 </div>

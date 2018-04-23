@@ -20,12 +20,12 @@ angular.module('webcert').controller('webcert.SokSkrivValjUtkastTypeCtrl',
     ['$filter', '$log', '$scope', '$stateParams', '$state', '$location',
         'webcert.SokSkrivIntygViewstate', 'webcert.IntygTypeSelectorModel', 'common.PatientModel',
         'webcert.IntygProxy', 'webcert.UtkastProxy', 'webcert.SokSkrivValjUtkastService', 'common.ObjectHelper',
-        'common.UtkastProxy', 'common.authorityService', 'common.UserModel',
+        'common.UtkastProxy', 'common.authorityService', 'common.UserModel', 'common.moduleService',
 
         function($filter, $log, $scope, $stateParams, $state, $location,
             Viewstate, IntygTypeSelectorModel, PatientModel,
             IntygProxy, UtkastProxy, Service, ObjectHelper,
-            commonUtkastProxy, authorityService, UserModel) {
+            commonUtkastProxy, authorityService, UserModel, moduleService) {
             'use strict';
 
             /**
@@ -81,6 +81,11 @@ angular.module('webcert').controller('webcert.SokSkrivValjUtkastTypeCtrl',
                 // Load intyg types user can choose from
                 UtkastProxy.getUtkastTypesForPatient(PatientModel.personnummer, function(types) {
                     IntygTypeSelectorModel.userIntygTypes = types;
+
+                    IntygTypeSelectorModel.userIntygTypes.forEach(function(intygTypeData){
+                        var intygsModule = moduleService.getModule(intygTypeData.id);
+                        intygTypeData.issuerTypeId = intygsModule.issuerTypeId;
+                    });
                 });
 
                 // Also load global set of modules
@@ -128,32 +133,6 @@ angular.module('webcert').controller('webcert.SokSkrivValjUtkastTypeCtrl',
                 if (intygTypes && intygTypes.length > 0) {
                     return intygTypes[0].label;
                 }
-            };
-
-            $scope.createDraft = function() {
-
-                var createDraftRequestPayload = {
-                    intygType: IntygTypeSelectorModel.intygType,
-                    patientPersonnummer: PatientModel.personnummer
-                };
-                createDraftRequestPayload.patientFornamn = PatientModel.fornamn;
-                createDraftRequestPayload.patientMellannamn = PatientModel.mellannamn;
-                createDraftRequestPayload.patientEfternamn = PatientModel.efternamn;
-                createDraftRequestPayload.patientPostadress = PatientModel.postadress;
-                createDraftRequestPayload.patientPostnummer = PatientModel.postnummer;
-                createDraftRequestPayload.patientPostort = PatientModel.postor;
-                Viewstate.createErrorMessageKey = undefined;
-
-                UtkastProxy.createUtkast(createDraftRequestPayload, function(data) {
-                    $location.url('/' + createDraftRequestPayload.intygType + '/edit/' + data.intygsId + '/', true);
-                }, function(error) {
-                    $log.debug('Create draft failed: ' + error);
-                    if (error && error.errorCode === 'PU_PROBLEM') {
-                        Viewstate.createErrorMessageKey = 'error.pu_problem';
-                    } else {
-                        Viewstate.createErrorMessageKey = 'error.failedtocreateintyg';
-                    }
-                });
             };
 
             $scope.hasPrivilege = function () {

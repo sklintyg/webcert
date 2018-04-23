@@ -113,9 +113,7 @@ angular.module('webcert').factory('webcert.UtkastProxy',
                 $http.get(restPath).then(function(response) {
                     $log.debug('got data:', response.data);
                     var sortValue = 0;
-                    var types = [
-                        { sortValue: sortValue++, id: 'default', label: messageService.getProperty('label.default-intyg-type') }
-                    ];
+                    var types = [];
                     for (var i = 0; i < response.data.length; i++) {
                         var m = response.data[i];
 

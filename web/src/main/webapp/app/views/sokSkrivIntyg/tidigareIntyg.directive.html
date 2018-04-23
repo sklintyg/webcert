@@ -70,7 +70,7 @@
                               feature="FORNYA_INTYG"
                               intygstyp="{{intyg.intygType}}"
                               id="fornyaBtn-{{intyg.intygId}}"
-                              class="btn btn-secondary"
+                              class="btn btn-primary"
                               ng-if="isRenewalAllowed(intyg)"
                               ng-click="fornyaIntygBtnPopOver=false;fornyaIntyg(intyg)"
                               uib-popover="{{ resolveTooltipText(intyg) }}"
@@ -79,20 +79,20 @@
                               popover-append-to-body="true"
                               popover-placement="auto top"
                               popover-is-open="fornyaIntygBtnPopOver">
-                        {{messageService.getProperty('common.fornya')}}
+                        <i class="material-icons">autorenew</i> {{messageService.getProperty('common.fornya')}}
                       </button>
                     </td>
                     <td>
                       <button type="button"
                               id="showBtn-{{intyg.intygId}}"
-                              class="btn btn-secondary"
+                              class="btn btn-primary"
                               ng-click="openIntyg(intyg)"
                               uib-popover="{{messageService.getProperty('common.show.tooltip')}}"
                               popover-trigger="mouseenter"
                               popover-popup-delay="300"
                               popover-append-to-body="true"
                               popover-placement="auto top">
-                        {{messageService.getProperty('common.show')}}
+                        <i class="icon-wc-ikon-19"></i> {{messageService.getProperty('common.open')}}
                       </button>
                     </td>
                   </tr>

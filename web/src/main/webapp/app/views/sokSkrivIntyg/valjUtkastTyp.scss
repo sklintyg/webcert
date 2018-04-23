@@ -20,4 +20,27 @@
 wc-valj-utkast-typ {
   display: block;
   padding-top: 35px;
+
+  .intygLabel {
+    @extend %wc-typo-06;
+    color: $wc-color-07;
+  }
+
+  .issuerTypeId {
+    @extend %wc-typo-07;
+    color: $wc-color-09;
+  }
+
+  .card {
+    box-shadow: 0 2px 4px 0 $black_12;
+    border: 1px solid $wc-color-27;
+    max-height: 320px;
+    overflow: hidden;
+    overflow-y: auto;
+  }
+
+  table.table {
+    margin: 0
+  }
+
 }

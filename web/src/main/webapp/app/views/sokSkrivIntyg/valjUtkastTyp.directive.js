@@ -1,6 +1,7 @@
 angular.module('webcert').directive('wcValjUtkastTyp',
-    ['webcert.SokSkrivIntygViewstate', 'webcert.IntygTypeSelectorModel', 'common.messageService', 'common.featureService',
-    function(ViewState, IntygTypeSelectorModel, messageService, featureService) {
+    [ '$log', '$location', 'webcert.SokSkrivIntygViewstate', 'webcert.IntygTypeSelectorModel', 'common.messageService', 'common.featureService',
+        'common.PatientModel', 'common.UtkastProxy', 'common.dialogService',
+    function($log, $location, ViewState, IntygTypeSelectorModel, messageService, featureService, PatientModel, UtkastProxy, DialogService) {
         'use strict';
 
         return {
@@ -13,6 +14,41 @@ angular.module('webcert').directive('wcValjUtkastTyp',
                 scope.intygTypeModel = IntygTypeSelectorModel.build();
                 scope.intygReplacement = {
                     'fk7263':'lisjp'
+                };
+
+                scope.openIntygTypeDetailsDialog = function(intygTypeData) {
+
+                    DialogService.showMessageDialogText(
+                        'intyg-detail-description-intygType',
+                        'Om ' + intygTypeData.label,
+                        scope.getDetailedDescription(intygTypeData.id));
+
+                };
+
+                scope.createDraft = function(intygType) {
+
+                    var createDraftRequestPayload = {
+                        intygType: intygType,
+                        patientPersonnummer: PatientModel.personnummer
+                    };
+                    createDraftRequestPayload.patientFornamn = PatientModel.fornamn;
+                    createDraftRequestPayload.patientMellannamn = PatientModel.mellannamn;
+                    createDraftRequestPayload.patientEfternamn = PatientModel.efternamn;
+                    createDraftRequestPayload.patientPostadress = PatientModel.postadress;
+                    createDraftRequestPayload.patientPostnummer = PatientModel.postnummer;
+                    createDraftRequestPayload.patientPostort = PatientModel.postor;
+                    ViewState.createErrorMessageKey = undefined;
+
+                    UtkastProxy.createUtkast(createDraftRequestPayload, function(data) {
+                        $location.url('/' + createDraftRequestPayload.intygType + '/edit/' + data.intygsId + '/', true);
+                    }, function(error) {
+                        $log.debug('Create draft failed: ' + error);
+                        if (error && error.errorCode === 'PU_PROBLEM') {
+                            ViewState.createErrorMessageKey = 'error.pu_problem';
+                        } else {
+                            ViewState.createErrorMessageKey = 'error.failedtocreateintyg';
+                        }
+                    });
                 };
 
                 scope.resolveIntygReplacedText = function (selectedIntygType) {
@@ -33,7 +69,7 @@ angular.module('webcert').directive('wcValjUtkastTyp',
                         return intygTypes[0].detailedDescription;
                     }
                 };
-                scope.showCreateUtkast = function () {
+                scope.isCreateUtkastEnabled = function () {
                     // Måste ha valt en intygstyp
                     // Intygstypen får inte vara deprecated
                     // Måste uppfylla ev unikhetskrav för intyg/utkast inom/utom vg

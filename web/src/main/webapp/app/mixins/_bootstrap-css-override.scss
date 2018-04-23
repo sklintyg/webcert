@@ -91,6 +91,8 @@
 
 .btn-link {
   color: inherit;
+  text-decoration: underline;
+
   &:hover {
     color: $wc-color-21;
   }
