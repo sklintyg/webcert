@@ -4,7 +4,7 @@ Egenskap: Behörigheter för en vårdadministratör
 
 Bakgrund: Logga in och gå in på en patient
 	Givet att jag är inloggad som vårdadministratör
-	Så ska jag se en rubrik med texten "Frågor och svar"
+	Så ska det finnas en länk med texten "Frågor & svar"
 	Och går in på Sök/skriv intyg
 	Och jag går in på en patient
 	
