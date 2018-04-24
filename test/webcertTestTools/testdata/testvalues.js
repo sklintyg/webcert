@@ -28,35 +28,65 @@ module.exports = {
         id: '200001152388', // Boende utomlands
         kon: 'kvinna',
         namn: 'Anna Karin',
-        efternamn: 'Levin'
+        efternamn: 'Levin',
+		adress: {
+            postadress: 'EU',
+            postort: 'UK',
+            postnummer: '12345'
+        }
     }, {
         //Testfamilj
         //Är vårdnadshavare för barn 1 och barn 2.
         id: '198311209285',
         kon: 'kvinna',
         namn: 'Pernilla',
-        efternamn: 'Backman'
+        efternamn: 'Backman',
+		adress: {
+            postadress: 'Testfamiljgatan 10',
+            postort: 'Lönneberga',
+            postnummer: '20000'
+        }
     }, {
         //Är vårdnadshavare för barn 1.
         id: '199003122398',
         kon: 'man',
         namn: 'Sune',
-        efternamn: 'Backman'
+        efternamn: 'Backman',
+		adress: {
+            postadress: 'Testfamiljgatan 10',
+            postort: 'Lönneberga',
+            postnummer: '20000'
+        }
     }, {
         //Barn 1, Har mor och far där båda är vårdnadshavare.		
         id: '201602092387',
         kon: 'kvinna',
         namn: 'Malin',
-        efternamn: 'Backman'
+        efternamn: 'Backman',
+		adress: {
+            postadress: 'Testfamiljgatan 10',
+            postort: 'Lönneberga',
+            postnummer: '20000'
+        }
     }, {
         //Barn 2 Har mor och far men endast mor är vårdnadshavare.
         id: '201510262395',
         kon: 'man',
         namn: 'Erik',
-        efternamn: 'Backman'
+        efternamn: 'Backman',
+		adress: {
+            postadress: 'Testfamiljgatan 10',
+            postort: 'Lönneberga',
+            postnummer: '20000'
+        }
     }, {
         id: '190007179815', // Har adress i PU
-        kon: 'man'
+        kon: 'man',
+		adress: {
+            postadress: 'Norra storgatan 30',
+            postort: 'Katthult',
+            postnummer: '10000'
+        }
     }, {
         id: '199004242385',
         adress: {
