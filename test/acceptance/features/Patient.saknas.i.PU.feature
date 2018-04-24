@@ -6,10 +6,10 @@ Egenskap: Personnummer ej i PU
 Bakgrund: Jag befinner mig på webcerts förstasida
 	Givet att jag är inloggad som läkare
 
-@PnrEjPU
+@PNR-EJ-I-PU
 Scenario: Jag ska få ett felmeddelande när jag skriver in ett personnummer som inte finns i PU
 	När jag anger ett personnummer som inte finns i PUtjänsten
-	Så ska ett fel-meddelande visa "Personnumret du har angivit finns inte i folkbokföringsregistret. Kontrollera om du har skrivit rätt."
+	Så ska jag varnas om att "Personnumret du har angivit finns inte i folkbokföringsregistret. Kontrollera om du har skrivit rätt."
 
 # Om PU tjänsten är ligger nere
 @patientSaknarNamn

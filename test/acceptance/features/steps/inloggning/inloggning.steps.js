@@ -120,10 +120,11 @@ Given(/^jag går in på patienten$/, function() {
 
 Given(/^jag anger ett (samordningsnummer|personnummer) som inte finns i PUtjänsten$/, function(typAvNum) {
     if (typAvNum === 'samordningsnummer') {
-        return gotoPatient(testdataHelpers.shuffle(testdata.values.patienterMedSamordningsnummerEjPU)[0]); //personnummret finns inte med i PU-tjänsten
+        global.person = testdata.values.patienterMedSamordningsnummerEjPU[0];
     } else {
-        return gotoPatient(testdataHelpers.shuffle(testdata.values.patienterEjPU)[0]);
+        global.person = testdata.values.patienterEjPU[0];
     }
+    return sokSkrivIntygPage.selectPersonnummer(person.id);
 
 });
 
