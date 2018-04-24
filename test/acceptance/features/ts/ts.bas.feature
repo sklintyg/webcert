@@ -26,7 +26,7 @@ Scenario: Makulera ett skickat TS Bas intyg
 	När jag går in på ett "Transportstyrelsens läkarintyg" med status "Skickat"
     Så ska intygets första status vara "Intyget är skickat till Transportstyrelsen"
 	Och jag makulerar intyget
-	Så ska intyget visa varningen "Intyget är makulerat"
+	Så ska intygets första status vara "Intyget är makulerat"
     
     När jag går till Mina intyg för patienten
     Så ska intyget inte finnas i Mina intyg

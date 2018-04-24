@@ -11,7 +11,7 @@ Bakgrund: Logga in och gå in på en patient
 Scenario: Kan makulera sjukintyg
 	När jag går in på ett "Läkarintyg för sjukpenning" med status "Signerat"
 	Och jag makulerar intyget
-	Så ska intyget visa varningen "Intyget är makulerat"
+	Så ska intygets första status vara "Intyget är makulerat"
 
 @fornya @lisjp @skriv-ut
 Scenario: Kan förnya och signera ett läkarintyg

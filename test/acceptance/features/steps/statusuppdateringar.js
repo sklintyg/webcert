@@ -38,7 +38,7 @@ const {
 
 var fk7263Utkast = pages.intyg.fk['7263'].utkast;
 var db = require('./dbActions');
-var tsBasintygtPage = pages.intyg.ts.bas.intyg;
+var tsBasintygPage = pages.intyg.ts.bas.intyg;
 var statusuppdateringarRows;
 var helpers = require('./helpers');
 
@@ -127,10 +127,6 @@ function waitForEntries(intygsId, statusValue, numEvents, cb) {
  *	Test steg
  *
  */
-
-Then(/^ska intygsutkastets status vara "([^"]*)"$/, function(statustext, callback) {
-    expect(tsBasintygtPage.intygStatus.getText()).to.eventually.contain(statustext).and.notify(callback);
-});
 
 Given(/^ska statusuppdatering "([^"]*)" skickas till vårdsystemet\. Totalt: "([^"]*)"$/, function(handelsekod, antal, callback) {
     waitForEntries(global.intyg.id, handelsekod, parseInt(antal, 10), callback);
