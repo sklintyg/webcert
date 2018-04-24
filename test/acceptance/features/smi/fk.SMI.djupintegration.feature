@@ -84,7 +84,4 @@ Scenario: GE-003 - Det ska vara möjligt att gå in på utkast och intyg utan in
 	Och jag signerar intyget
 	Och jag skickar intyget till Försäkringskassan
 	
-	Givet att jag är inloggad som djupintegrerad läkare på vårdenhet "TSTNMT2321000156-INT2"
-	När jag går in på intyget utan integrations parametrar
-	Och jag väljer vårdenheten "TSTNMT2321000156-INT2"
 	Så ska det finnas knappar för "förnya,ersätta,makulera,fråga/svar"
