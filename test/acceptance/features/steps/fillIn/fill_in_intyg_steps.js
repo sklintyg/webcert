@@ -197,7 +197,7 @@ function changeField(intygShortcode, field) {
             return moveAndSendKeys(lisjpUtkastPage.konsekvenser.aktivitetsbegransning, intyg.aktivitetsbegransning);
         } else if (field === 'funktionsnedsattning') {
             intyg.funktionsnedsattning = helpers.randomTextString();
-            return moveAndSendKeys(lisjpUtkastPage.konsekvenser.funktionsnedsattning, intyg.sjukdomsforlopp);
+            return moveAndSendKeys(lisjpUtkastPage.konsekvenser.funktionsnedsattning, intyg.funktionsnedsattning);
         } else if (field === 'sysselsattning') {
             return lisjpUtkastPage.angeSysselsattning({
                 typ: 'ARBETSSOKANDE'
@@ -209,9 +209,11 @@ function changeField(intygShortcode, field) {
             intyg.aktivitetsbegransning = helpers.randomTextString();
             return moveAndSendKeys(lisjpUtkastPage.konsekvenser.aktivitetsbegransning, intyg.aktivitetsbegransning);
         } else if (field === 'ovrigt') {
-            return moveAndSendKeys(luaeNAUtkastPage.ovrigt, helpers.randomTextString());
+            intyg.ovrigt = helpers.randomTextString();
+            return moveAndSendKeys(luaeNAUtkastPage.ovrigt, intyg.ovrigt);
         } else if (field === 'sjukdomsforlopp') {
-            return moveAndSendKeys(luaeNAUtkastPage.sjukdomsforlopp, helpers.randomTextString());
+            intyg.sjukdomsforlopp = helpers.randomTextString();
+            return moveAndSendKeys(luaeNAUtkastPage.sjukdomsforlopp, intyg.sjukdomsforlopp);
         }
     } else if (intygShortcode === 'LUAE_FS') {
         if (field === 'funktionsnedsattningDebut') {
