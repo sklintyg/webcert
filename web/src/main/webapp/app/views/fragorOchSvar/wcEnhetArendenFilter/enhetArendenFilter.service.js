@@ -28,10 +28,8 @@ angular.module('webcert').factory('webcert.enhetArendenFilterService',
             enhetArendenProxy.getArendenLakareList(lakareUnitId, function(list) {
                 enhetArendenFilterModel.viewState.loadingLakare = false;
                 enhetArendenFilterModel.lakareList = list;
-                //if (list && (list.length > 0)) {
-                    enhetArendenFilterModel.lakareList.unshift(enhetArendenFilterModel.lakareListEmptyChoice);
-                    enhetArendenFilterModel.filterForm.lakareSelector = enhetArendenFilterModel.lakareList[0].id;
-                //}
+                enhetArendenFilterModel.lakareList.unshift(enhetArendenFilterModel.lakareListEmptyChoice);
+                enhetArendenFilterModel.filterForm.lakareSelector = enhetArendenFilterModel.lakareList[0].id;
             }, function() {
                 enhetArendenFilterModel.viewState.loadingLakare = false;
                 enhetArendenFilterModel.lakareList = [];

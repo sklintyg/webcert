@@ -14,7 +14,7 @@
 
       <!-- No results message for query -->
       <div id="current-list-noResults-query"
-           ng-show="listModel.totalCount < 1 && listModel.viewState.runningQuery && !listModel.viewState.activeErrorMessageKey">
+           ng-show="listModel.totalCount < 1 && !listModel.viewState.runningQuery && !listModel.viewState.activeErrorMessageKey">
         <span dynamic-label key="info.query.noresults"></span>
       </div>
 
@@ -54,7 +54,7 @@
               <td><span dynamic-label key="common.arende.fragestallare.{{arende.fragestallare}}"></span></td>
               <td id="patientId-{{arende.meddelandeId}}" class="unbreakable">{{arende.patientId | PersonIdFormatter}} <span wc-sekretess-avliden uuid="arende.meddelandeId" sekretessmarkering="arende.sekretessmarkering"></span></td>
               <td>{{arende.signeratAvNamn}}</td>
-              <td class="unbreakable wc-table-striped-last">{{arende.receivedDate | date:'short'}}</td>
+              <td class="unbreakable">{{arende.receivedDate | date:'short'}}</td>
               <td wc-authority="VIDAREBEFORDRA_FRAGASVAR" class="center">
                 <div wc-authority="VIDAREBEFORDRA_FRAGASVAR" intygstyp="{{::arende.intygTyp}}">
                   <div ng-if="arende.vidarebefordrad"><i class="material-icons">check</i></div>
