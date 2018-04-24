@@ -274,9 +274,12 @@ var LisjpUtkast = BaseSmiUtkast._extend({
                 frontEndJS += ' window.scrollTo( 0, top );';
 
                 return browser.executeScript(frontEndJS).then(function() {
-                    return prognosEL.select.click().then(function() {
-                        return prognosEL.inom.element(by.cssContainingText('div', prognos.within)).click();
-                    });
+                    return prognosEL.select.click();
+                }).then(function() {
+                    // Vänta på att drop-down meny öppnas.
+                    return browser.sleep(500);
+                }).then(function() {
+                    return prognosEL.inom.element(by.cssContainingText('div', prognos.within)).click();
                 });
             } else {
                 return Promise.resolve();

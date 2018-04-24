@@ -36,11 +36,11 @@ const {
 } = require('cucumber');
 
 
-var fk7263Utkast = pages.intyg.fk['7263'].utkast;
-var db = require('./dbActions');
-var tsBasintygPage = pages.intyg.ts.bas.intyg;
-var statusuppdateringarRows;
-var helpers = require('./helpers');
+const fk7263Utkast = pages.intyg.fk['7263'].utkast;
+const db = require('./dbActions');
+const helpers = require('./helpers');
+
+let statusuppdateringarRows;
 
 /*
  *	Stödfunktioner
