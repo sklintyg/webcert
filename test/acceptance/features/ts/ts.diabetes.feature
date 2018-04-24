@@ -28,7 +28,7 @@ Scenario: Skicka ett befintligt intyg till Transportstyrelsen
 Scenario: Makulera ett skickat TS Diabetes intyg
 	När jag går in på ett "Transportstyrelsens läkarintyg, diabetes" med status "Skickat"
     Och jag makulerar intyget
-	Så ska intyget visa varningen "Intyget är makulerat"
+	Så ska intygets första status vara "Intyget är makulerat"
 
     När jag går till Mina intyg för patienten
     Så ska intyget inte finnas i Mina intyg

@@ -40,7 +40,7 @@ Scenario: Skapa, Skicka och Makulera Läkarintyg för sjukpenning
 	Så ska det finnas en knapp för att förnya intyget
 
 	När jag makulerar intyget
-	Så ska intyget visa varningen "Intyget är makulerat"
+	Så ska intygets första status vara "Intyget är makulerat"
 
 @LISJP @FRAGASVAR @FRÅGA-FRÅN-FK
 Scenario: Svara och skicka fråga till Försäkringskassan

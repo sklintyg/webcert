@@ -71,7 +71,7 @@ Exempel:
 Scenario: Makulera ett skickat ett SMI-intyg
 	När jag går in på ett slumpat SMI-intyg med status "Skickat"
 	Och jag makulerar intyget
-	Så ska intyget visa varningen "Intyget är makulerat"
+	Så ska intygets första status vara "Intyget är makulerat"
 
 	När jag går till Mina intyg för patienten
     Så ska intyget inte finnas i Mina intyg
