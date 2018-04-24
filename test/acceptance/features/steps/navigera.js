@@ -160,6 +160,12 @@ function getIntegrationUrl(origin) {
  *	Test steg
  *
  */
+Given(/^jag uppdaterar sidan$/, function() {
+    return browser.refresh().then(function() {
+        return helpers.pageReloadDelay();
+    });
+});
+
 Given(/^jag trycker på visa intyget$/, function() {
     return element(by.id('showBtn-' + intyg.id)).sendKeys(protractor.Key.SPACE);
 });

@@ -9,6 +9,7 @@ Bakgrund:
 @LISJP @FORNYA @INTYGSTJÄNSTEN
 Scenario: PS-002 - Varningmeddelanden när man går in på patient
    När jag skickar ett "Läkarintyg för sjukpenning" intyg till Intygstjänsten
+   Och jag uppdaterar sidan
    Så ska det finnas en knapp med texten "Förnya"
    Så ska jag varnas om att "Patienten har en sekretessmarkering"
 
