@@ -56,7 +56,7 @@ function signeraUtkast() {
             logger.info('Intyget ersätter ett annat intyg');
             return fillInCommon.setPatientAdressIfNotGiven().then(function() {
                 //Väntar på validering
-				return helpers.hugeDelay();
+                return helpers.hugeDelay();
             });
         }
 
