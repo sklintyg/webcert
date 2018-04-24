@@ -149,7 +149,7 @@ xdescribe('Testa sekretessmarkering för läkare', function() {
     describe('Skapa ett LUSE utkast', function() {
         it('Skapa utkast', function() {
             SokSkrivIntygPage.get();
-            specHelper.createUtkastForPatient('191212121212', 'Läkarutlåtande för sjukersättning');
+            specHelper.createUtkastForPatient('191212121212', 'luse');
 
             specHelper.getUtkastIdFromUrl().then(function(id) {
                 utkastId = id;

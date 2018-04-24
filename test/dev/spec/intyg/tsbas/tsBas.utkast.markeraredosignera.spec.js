@@ -35,7 +35,7 @@ describe('INTYG-4083: Create partially complete tsbas utkast and mark as ready t
         restUtil.registerEnhetAsDjupintegrerad('TSTNMT2321000156-1039', 'Vårdenhetens namn', 'vgid', 'vgnamn', false,
             true);
         specHelper.login();
-        specHelper.createUtkastForPatient('191212121212', 'Transportstyrelsens läkarintyg');
+        specHelper.createUtkastForPatient('191212121212', 'ts-bas');
     });
 
     describe('Skapa tsbas', function() {

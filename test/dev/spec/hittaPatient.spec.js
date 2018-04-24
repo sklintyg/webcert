@@ -24,7 +24,7 @@ var specHelper = wcTestTools.helpers.spec;
 var SokSkrivIntygPage = wcTestTools.pages.sokSkrivIntyg.pickPatient;
 var SokSkrivValjUtkastType = wcTestTools.pages.sokSkrivIntyg.valjUtkastType;
 
-describe('Create and Sign FK utkast', function() {
+describe('Find person with personnummer', function() {
 
     describe('Login through the welcome page', function() {
         it('with user', function() {

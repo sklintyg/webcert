@@ -93,30 +93,26 @@ module.exports = {
     },
     createUtkastForPatient: function(patientId, intygType) {
         SokSkrivIntygPage.selectPersonnummer(patientId);
-        SokSkrivValjUtkastType.selectIntygTypeByLabel(intygType);
-        SokSkrivValjUtkastType.intygTypeButton.click();
+        SokSkrivValjUtkastType.createIntygType(intygType);
         var utkastPage;
 
-        if (intygType === 'Läkarintyg FK 7263') {
+        if (intygType === 'fk7263') {
             utkastPage = pages.intyg.fk['7263'].utkast;
         }
-        if (intygType === 'Läkarutlåtande för aktivitetsersättning vid förlängd skolgång') {
+        else if (intygType === 'luae_fs') {
             utkastPage = pages.intyg.luaeFS.utkast;
         }
-        if (intygType === 'Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga') {
+        else if (intygType === 'luae_na') {
             utkastPage = pages.intyg.luaeNA.utkast;
         }
-        if (intygType === 'Läkarintyg för sjukpenning') {
-            utkastPage = pages.intyg.lisjp.utkast;
-        }
-        if (intygType === 'Läkarutlåtande för sjukersättning') {
-            utkastPage = pages.intyg.luse.utkast;
-        }
-        if (intygType === 'Transportstyrelsens läkarintyg') {
+        else if (intygType === 'ts-bas') {
             utkastPage = pages.intyg.ts.bas.utkast;
         }
-        if (intygType === 'Transportstyrelsens läkarintyg, diabetes') {
+        else if (intygType === 'ts-diabetes') {
             utkastPage = pages.intyg.ts.diabetes.utkast;
+        }
+        else {
+            utkastPage = pages.intyg[intygType].utkast;
         }
 
         expect(utkastPage.isAt()).toBe(true);

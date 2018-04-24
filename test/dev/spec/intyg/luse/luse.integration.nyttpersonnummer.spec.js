@@ -102,7 +102,7 @@ describe('Djupintegration on luse with updated personnummer', function() {
             browser.ignoreSynchronization = false;
             specHelper.login();
 
-            specHelper.createUtkastForPatient(personnummer1, 'Läkarutlåtande för sjukersättning');
+            specHelper.createUtkastForPatient(personnummer1, 'luse');
 
             specHelper.getUtkastIdFromUrl().then(function(id) {
                utkastId = id;

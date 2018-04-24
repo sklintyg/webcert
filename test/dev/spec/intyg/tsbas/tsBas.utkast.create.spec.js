@@ -38,7 +38,7 @@ describe('Create and Sign ts-bas utkast', function() {
     beforeAll(function() {
         browser.ignoreSynchronization = false;
         specHelper.login();
-        specHelper.createUtkastForPatient('191212121212', 'Transportstyrelsens läkarintyg');
+        specHelper.createUtkastForPatient('191212121212', 'ts-bas');
     });
 
     it('Spara undan intygsId från URL', function() {

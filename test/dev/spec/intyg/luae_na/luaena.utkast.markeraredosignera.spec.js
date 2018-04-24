@@ -35,8 +35,7 @@ describe('Create partially complete luae_na utkast and mark as ready to sign', f
         restUtil.registerEnhetAsDjupintegrerad('TSTNMT2321000156-1039', 'Vårdenhetens namn', 'vgid', 'vgnamn', false,
             true);
         specHelper.login();
-        specHelper.createUtkastForPatient('191212121212',
-            'Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga');
+        specHelper.createUtkastForPatient('191212121212', 'luae_na');
     });
 
     describe('Skapa luae_na', function() {

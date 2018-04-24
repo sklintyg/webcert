@@ -60,7 +60,7 @@ xdescribe('Testa sekretessmarkering för vårdadmin', function() {
     describe('Skapa ett utkast', function() {
         it('Skapa utkast för Tolvansson', function() {
             SokSkrivIntygPage.get();
-            specHelper.createUtkastForPatient('191212121212', 'Läkarutlåtande för sjukersättning');
+            specHelper.createUtkastForPatient('191212121212', 'luse');
             specHelper.getUtkastIdFromUrl().then(function(id) {
                 utkastId = id;
             });

@@ -33,8 +33,7 @@ xdescribe('Create and Sign luae_fs utkast', function() {
     beforeAll(function() {
         browser.ignoreSynchronization = false;
         specHelper.login();
-        specHelper.createUtkastForPatient('191212121212',
-            'Läkarutlåtande för aktivitetsersättning vid förlängd skolgång');
+        specHelper.createUtkastForPatient('191212121212', 'luae_fs');
     });
 
     describe('Fyll i intyget', function() {

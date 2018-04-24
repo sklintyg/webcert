@@ -24,18 +24,32 @@
                   </span>
                 </td>
               </tr>
+              <tr ng-if="intygReplacement[type.id] || intygTypeModel.previousIntygWarnings[type.id] || intygTypeModel.previousUtkastWarnings[type.id]">
+
+                <wc-alert-message id="intyg-replaced-warning" ng-if="intygReplacement[type.id]"
+                                  alert-severity="warning">
+                  <span ng-bind-html="resolveIntygReplacedText(type.id)" class="multiline"></span>
+                </wc-alert-message>
+
+
+                <div id="intyg-exists-warning" ng-if="intygTypeModel.previousIntygWarnings[type.id]">
+                  <wc-alert-message alert-severity="warning" ng-switch="intygTypeModel.previousIntygWarnings[type.id].sameVardgivare">
+                    <span ng-switch-when="true" dynamic-label key="{{type.id}}.warn.previouscertificate.samevg"></span>
+                    <span ng-switch-when="false" dynamic-label key="{{type.id}}.warn.previouscertificate.differentvg"></span>
+                  </wc-alert-message>
+                </div>
+
+                <div id="utkast-exists-warning" ng-if="intygTypeModel.previousUtkastWarnings[type.id]">
+                  <wc-alert-message alert-severity="warning" ng-switch="intygTypeModel.previousUtkastWarnings[type.id].sameVardgivare">
+                    <span ng-switch-when="true" dynamic-label key="{{type.id}}.warn.previousdraft.samevg"></span>
+                    <span ng-switch-when="false" dynamic-label key="{{type.id}}.warn.previousdraft.differentvg"></span>
+                  </wc-alert-message>
+                </div>
+
+              </tr>
             </tbody>
           </table>
         </div>
-
-        <!--select id="intygType" class="form-control" name="intygType" ng-model="intygTypeModel.intygType"
-                ng-options="type.id as type.label for type in intygTypeModel.userIntygTypes"
-                wc-focus-me="viewState.focusFirstInput"
-                ng-disabled="intygTypeModel.userIntygTypes.length < 2"></select>
-        <span id="fortsattBtn">
-          <button id="intygTypeFortsatt" class="btn btn-primary continue-btn" type="submit"
-                  ng-disabled="!showCreateUtkast()">Skapa intyg</button>
-        </span-->
       </div>
     </div>
   </div>
@@ -45,33 +59,6 @@
                       alert-severity="danger"
                       alert-message-id="{{viewState.createErrorMessageKey}}"
                       class="col-lg-7">
-    </wc-alert-message>
-
-    <wc-alert-message id="intyg-replaced-warning" ng-if="intygReplacement[intygTypeModel.intygType]"
-                      alert-severity="warning"
-                      class="col-lg-7">
-       <span ng-bind-html="resolveIntygReplacedText(intygTypeModel.intygType)" class="multiline"></span>
-    </wc-alert-message>
-
-
-    <div id="intyg-exists-warning" ng-if="intygTypeModel.previousIntygWarnings[intygTypeModel.intygType]">
-      <wc-alert-message alert-severity="warning" class="col-lg-7">
-        <span ng-if="intygTypeModel.previousIntygWarnings[intygTypeModel.intygType].sameVardgivare" dynamic-label key="{{intygTypeModel.intygType}}.warn.previouscertificate.samevg"></span>
-        <span ng-if="!intygTypeModel.previousIntygWarnings[intygTypeModel.intygType].sameVardgivare" dynamic-label key="{{intygTypeModel.intygType}}.warn.previouscertificate.differentvg"></span>
-      </wc-alert-message>
-    </div>
-
-    <div id="utkast-exists-warning" ng-if="intygTypeModel.previousUtkastWarnings[intygTypeModel.intygType]">
-      <wc-alert-message alert-severity="warning" class="col-lg-7">
-        <span ng-if="intygTypeModel.previousUtkastWarnings[intygTypeModel.intygType].sameVardgivare" dynamic-label key="{{intygTypeModel.intygType}}.warn.previousdraft.samevg"></span>
-        <span ng-if="!intygTypeModel.previousUtkastWarnings[intygTypeModel.intygType].sameVardgivare" dynamic-label key="{{intygTypeModel.intygType}}.warn.previousdraft.differentvg"></span>
-      </wc-alert-message>
-    </div>
-
-    <wc-alert-message alert-severity="info" class="col-lg-7"
-      ng-show="intygTypeModel.intygType != 'default' && intygTypeModel.intygType != undefined"
-      id="intygTypeWarning">
-      <span ng-bind-html="getDetailedDescription(intygTypeModel.intygType)" class="multiline"></span>
     </wc-alert-message>
   </div>
   <div class="clearfix"></div>

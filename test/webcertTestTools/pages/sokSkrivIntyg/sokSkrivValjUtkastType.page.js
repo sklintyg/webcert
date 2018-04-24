@@ -23,9 +23,6 @@
 /* globals browser */
 'use strict';
 
-var intygTypeSelector = element(by.id('intygType'));
-var intygTypeButton = element(by.id('intygTypeFortsatt'));
-
 module.exports = {
     sekretessmarkering: element(by.id('sekretessmarkering')),
     namnFortsatt: element(by.id('namnFortsatt')),
@@ -34,17 +31,12 @@ module.exports = {
         browser.get('#/create/choose-intyg-type/default/index');
     },
     isAt: function() {
-        return intygTypeSelector.isDisplayed();
+        return element(by.id('sokSkrivValjUtkastType')).isDisplayed();
     },
-    // selectIntygType: function (index) {
-    //     intygTypeSelector.all(by.css('option[value="' + index + '"]')).click();
-    // },
-    selectIntygTypeByLabel: function(val) {
-        return intygTypeSelector.all(by.css('option[label="' + val + '"]')).click();
+    createIntygType: function(val) {
+        return element(by.id('intygTypeFortsatt-' + val)).click();
     },
     clickFornyaBtnById: function(id) {
         return element(by.id('fornyaBtn-' + id)).click();
     },
-    intygTypeSelector: intygTypeSelector,
-    intygTypeButton: intygTypeButton
 };

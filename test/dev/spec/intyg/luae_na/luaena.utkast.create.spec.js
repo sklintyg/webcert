@@ -25,7 +25,7 @@ var testdataHelper = wcTestTools.helpers.restTestdata;
 var UtkastPage = wcTestTools.pages.intyg.luaeNA.utkast;
 var IntygPage = wcTestTools.pages.intyg.luaeNA.intyg;
 
-describe('Create and Sign luae_na utkast', function() {
+fdescribe('Create and Sign luae_na utkast', function() {
 
     var utkastId = null,
         data = null;
@@ -33,7 +33,7 @@ describe('Create and Sign luae_na utkast', function() {
     beforeAll(function() {
         browser.ignoreSynchronization = false;
         specHelper.login();
-        specHelper.createUtkastForPatient('191212121212', 'Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga');
+        specHelper.createUtkastForPatient('191212121212', 'luae_na');
     });
 
     describe('Skapa luae_na', function() {
@@ -103,8 +103,6 @@ describe('Create and Sign luae_na utkast', function() {
             IntygPage.whenCertificateLoaded().then(function() {
                 IntygPage.verify(data);
             });
-
-            
         });
     });
 

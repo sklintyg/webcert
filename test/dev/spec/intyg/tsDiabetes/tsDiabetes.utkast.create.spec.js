@@ -37,7 +37,7 @@ describe('Create and Sign ts-diabetes utkast', function() {
     beforeAll(function() {
         browser.ignoreSynchronization = false;
         specHelper.login();
-        specHelper.createUtkastForPatient('191212121212', 'Transportstyrelsens läkarintyg, diabetes');
+        specHelper.createUtkastForPatient('191212121212', 'ts-diabetes');
     });
 
     it('Spara undan intygsId från URL', function() {

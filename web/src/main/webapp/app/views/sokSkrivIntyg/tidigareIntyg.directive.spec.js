@@ -113,6 +113,9 @@ describe('SokSkrivValjUtkastTypeCtrl', function() {
                 }
             };
             $provide.value('common.authorityService', AuthorityService);
+
+            var moduleService  = jasmine.createSpyObj('common.moduleService', [ 'getModuleName' ]);
+            $provide.value('common.moduleService', moduleService);
         });
 
         inject(function($rootScope, _$location_, _$controller_, _$q_, _$compile_) {

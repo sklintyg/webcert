@@ -41,7 +41,7 @@ describe('Create and Sign luse utkast', function() {
     describe('Fyll i intyget', function() {
         beforeAll(function() {
             ValjIntygPage.get();
-            specHelper.createUtkastForPatient('191212121212', 'Läkarutlåtande för sjukersättning');
+            specHelper.createUtkastForPatient('191212121212', 'luse');
         });
 
         it('Spara undan intygsId från URL', function() {

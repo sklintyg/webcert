@@ -83,7 +83,7 @@ describe('Djupintegration on luse intyg', function() {
             browser.ignoreSynchronization = false;
             specHelper.login();
 
-            specHelper.createUtkastForPatient('191212121212', 'Läkarutlåtande för sjukersättning');
+            specHelper.createUtkastForPatient('191212121212', 'luse');
 
             specHelper.getUtkastIdFromUrl().then(function(id) {
                utkastId = id;
