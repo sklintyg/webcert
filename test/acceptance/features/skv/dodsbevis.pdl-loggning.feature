@@ -107,7 +107,6 @@ Scenario: GE-005 - Ersätta Dödsbevis
 		Och jag signerar intyget
 		Och jag klickar på ersätta knappen
 		Och jag klickar på ersätt-knappen i dialogen
-		Och jag fyller i nödvändig information ( om intygstyp är "Dödsbevis")
 		Och jag signerar intyget
 		Så ska loggaktivitet "Läsa" skickas till loggtjänsten
 		Och ska loggaktivitet "Skriva" skickas till loggtjänsten

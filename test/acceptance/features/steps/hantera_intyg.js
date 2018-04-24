@@ -54,7 +54,10 @@ function signeraUtkast() {
     var uppdateraAdressOmErsattandeIntyg = function() {
         if (global.ersattintyg) {
             logger.info('Intyget ersätter ett annat intyg');
-            return fillInCommon.setPatientAdressIfNotGiven();
+            return fillInCommon.setPatientAdressIfNotGiven().then(function() {
+                //Väntar på validering
+				return helpers.hugeDelay();
+            });
         }
 
         return Promise.resolve();
@@ -65,9 +68,7 @@ function signeraUtkast() {
     return uppdateraAdressOmErsattandeIntyg().then(function() {
         return helpers.tinyDelay();
     }).then(function() { // fix för nåt med animering?
-
         return expect(fkUtkastPage.klartAttSigneraStatus.getText()).to.eventually.contain('Klart');
-
     }).then(function() {
         return moveAndSendKeys(fkUtkastPage.signeraButton, protractor.Key.SPACE);
     }).then(function() {
