@@ -120,7 +120,10 @@ var DbUtkast = BaseSkvUtkast._extend({
                 return moveAndSendKeys(dodsdatumElm.sakert.datePicker, dodsdatum.sakert.datum);
             });
         } else {
-            return moveAndSendKeys(dodsdatumElm.inteSakert.checkbox, protractor.Key.SPACE).then(function() {
+            return moveAndSendKeys(dodsdatumElm.inteSakert.checkbox, protractor.Key.SPACE).then(function(){
+				//Väntar på att fältet ska expandera
+				return browser.sleep(500);
+			}).then(function() {
                 return dodsdatumElm.inteSakert.year.dropDown.click();
             }).then(function() {
                 return browser.sleep(500);
