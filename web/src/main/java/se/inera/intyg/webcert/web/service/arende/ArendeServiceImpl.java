@@ -18,21 +18,9 @@
  */
 package se.inera.intyg.webcert.web.service.arende;
 
-import java.time.Clock;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
-
-import javax.xml.bind.JAXBException;
-
+import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,11 +28,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Preconditions;
-import com.google.common.base.Strings;
-
 import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.common.ts_bas.support.TsBasEntryPoint;
 import se.inera.intyg.common.ts_diabetes.support.TsDiabetesEntryPoint;
@@ -91,6 +74,20 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.AnsweredWithIntyg;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeConversationView;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeListItem;
 import se.riv.clinicalprocess.healthcond.certificate.sendMessageToRecipient.v2.SendMessageToRecipientType;
+
+import javax.xml.bind.JAXBException;
+import java.time.Clock;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional("jpaTransactionManager")
@@ -156,6 +153,10 @@ public class ArendeServiceImpl implements ArendeService {
     public Arende processIncomingMessage(Arende arende) {
         if (arendeRepository.findOneByMeddelandeId(arende.getMeddelandeId()) != null) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, "meddelandeId not unique");
+        }
+
+        if (arende.getSvarPaId() != null && !arendeRepository.findBySvarPaId(arende.getSvarPaId()).isEmpty()) {
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, "answer already exist for this message");
         }
 
         Utkast utkast = utkastRepository.findOne(arende.getIntygsId());
