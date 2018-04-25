@@ -66,7 +66,7 @@ public class IntygApiController extends AbstractApiController {
     private static final Logger LOG = LoggerFactory.getLogger(IntygApiController.class);
 
     private static final List<UtkastStatus> ALL_DRAFTS = Arrays.asList(UtkastStatus.DRAFT_COMPLETE,
-            UtkastStatus.DRAFT_INCOMPLETE);
+            UtkastStatus.DRAFT_INCOMPLETE, UtkastStatus.DRAFT_LOCKED);
 
     private static final String OFFLINE_MODE = "offline_mode";
 
