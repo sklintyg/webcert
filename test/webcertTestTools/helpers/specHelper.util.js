@@ -93,25 +93,20 @@ module.exports = {
     },
     createUtkastForPatient: function(patientId, intygType) {
         SokSkrivIntygPage.selectPersonnummer(patientId);
-        SokSkrivValjUtkastType.createIntygType(intygType);
+        SokSkrivValjUtkastType.createUtkast(intygType);
         var utkastPage;
 
         if (intygType === 'fk7263') {
             utkastPage = pages.intyg.fk['7263'].utkast;
-        }
-        else if (intygType === 'luae_fs') {
+        } else if (intygType === 'luae_fs') {
             utkastPage = pages.intyg.luaeFS.utkast;
-        }
-        else if (intygType === 'luae_na') {
+        } else if (intygType === 'luae_na') {
             utkastPage = pages.intyg.luaeNA.utkast;
-        }
-        else if (intygType === 'ts-bas') {
+        } else if (intygType === 'ts-bas') {
             utkastPage = pages.intyg.ts.bas.utkast;
-        }
-        else if (intygType === 'ts-diabetes') {
+        } else if (intygType === 'ts-diabetes') {
             utkastPage = pages.intyg.ts.diabetes.utkast;
-        }
-        else {
+        } else {
             utkastPage = pages.intyg[intygType].utkast;
         }
 

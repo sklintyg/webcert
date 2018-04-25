@@ -116,7 +116,7 @@ function loginIfSessionUsed() {
 
 function getIntegrationUrl(origin) {
     var url;
-    var intygUrlShortCode = helpers.getPathShortcode(intyg.typ);
+    var intygUrlShortCode = helpers.getInternShortcode(intyg.typ);
 
     switch (origin) {
         case ' via djupintegrationslänk':
@@ -171,7 +171,7 @@ Given(/^jag trycker på visa intyget$/, function() {
 });
 
 Given(/^(jag går in på utkastet|jag går in på intyget med edit länken)$/, function(arg1) {
-    var intygUrlShortcode = helpers.getPathShortcode(intyg.typ).toLowerCase();
+    var intygUrlShortcode = helpers.getInternShortcode(intyg.typ).toLowerCase();
     var link = '/#/' + intygUrlShortcode + '/edit/' + intyg.id + '/';
     return helpers.getUrl(link).then(function() {
         return helpers.pageReloadDelay();
@@ -179,7 +179,7 @@ Given(/^(jag går in på utkastet|jag går in på intyget med edit länken)$/, f
 });
 
 Given(/^ska jag komma till intygssidan$/, function() {
-    var intygUrlShortcode = helpers.getPathShortcode(intyg.typ).toLowerCase();
+    var intygUrlShortcode = helpers.getInternShortcode(intyg.typ).toLowerCase();
     var link = '/#/intyg/' + intygUrlShortcode + '/' + intyg.id;
     return browser.getCurrentUrl().then(function(currentUrl) {
         expect(currentUrl).to.contain(link);

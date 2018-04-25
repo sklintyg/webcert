@@ -50,16 +50,16 @@ function writeNewIntyg(typ, status) {
             // Väj samma person som tidigare
             .then(function() {
                 return sokSkrivIntygPage.selectPersonnummer(person.id)
+                    .then(function() {
+                        browser.ignoreSynchronization = false;
+                        helpers.tinyDelay();
+                    })
                     .then(function() { // Välj rätt typ av utkast
                         logger.silly('Väljer typ av utkast..');
-                        return sokSkrivIntygUtkastTypePage.selectIntygTypeByLabel(typ);
-                    })
-                    .then(function() { // Klicka på skapa nytt utkast
-                        logger.silly('Klickar på nytt utkast knapp');
-                        return sokSkrivIntygUtkastTypePage.intygTypeButton.sendKeys(protractor.Key.SPACE);
+                        sokSkrivIntygUtkastTypePage.createUtkast(helpers.getInternShortcode(typ));
                     })
                     .then(function() {
-                        return helpers.pageReloadDelay();
+                        helpers.pageReloadDelay();
                     })
                     .then(function() { // Spara intygsid för kommande steg
                         return browser.getCurrentUrl().then(function(text) {

@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* globals pages, protractor, person, browser, intyg, logger,wcTestTools, Promise*/
+/* globals pages, protractor, person, browser, intyg, logger,wcTestTools*/
 
 'use strict';
 /*jshint newcap:false */
@@ -89,8 +89,9 @@ function setForkedBrowser(forkedBrowser2) {
 
 function gotoIntygUtkast(intygtyp) {
     intyg.typ = intygtyp;
-    return sokSkrivIntygUtkastTypePage.selectIntygTypeByLabel(intygtyp).then(function() {
-        return sokSkrivIntygUtkastTypePage.intygTypeButton.sendKeys(protractor.Key.SPACE);
+    browser.ignoreSynchronization = true;
+    return sokSkrivIntygUtkastTypePage.createUtkast(helpers.getInternShortcode(intygtyp)).then(function() {
+        return helpers.hugeDelay();
     }).then(function() {
         // Spara intygsid för kommande steg
         return browser.getCurrentUrl().then(function(text) {
@@ -233,10 +234,10 @@ Given(/^jag går in på att skapa ett slumpat SMI\-intyg$/, function() {
         'Läkarutlåtande för aktivitetsersättning vid förlängd skolgång'
     ])[0];
     logger.silly('intyg.typ: ' + intyg.typ);
-    return Promise.all([
-        sokSkrivIntygUtkastTypePage.selectIntygTypeByLabel(intyg.typ),
-        sokSkrivIntygUtkastTypePage.intygTypeButton.sendKeys(protractor.Key.SPACE)
-    ]).then(function() {
+    browser.ignoreSynchronization = true;
+    return sokSkrivIntygUtkastTypePage.createUtkast(helpers.getInternShortcode(intyg.typ)).then(function() {
+        return helpers.hugeDelay();
+    }).then(function() {
         // Spara intygsid för kommande steg
         return browser.getCurrentUrl().then(function(text) {
             intyg.id = text.split('/').slice(-2)[0];
@@ -251,10 +252,10 @@ Given(/^jag går in på att skapa ett slumpat TS\-intyg$/, function() {
         'Transportstyrelsens läkarintyg, diabetes'
     ])[0];
     logger.silly('intyg.typ: ' + intyg.typ);
-    return Promise.all([
-        sokSkrivIntygUtkastTypePage.selectIntygTypeByLabel(intyg.typ),
-        sokSkrivIntygUtkastTypePage.intygTypeButton.sendKeys(protractor.Key.SPACE)
-    ]).then(function() {
+    browser.ignoreSynchronization = true;
+    return sokSkrivIntygUtkastTypePage.createUtkast(helpers.getInternShortcode(intyg.typ)).then(function() {
+        return helpers.hugeDelay();
+    }).then(function() {
         // Spara intygsid för kommande steg
         return browser.getCurrentUrl().then(function(text) {
             intyg.id = text.split('/').slice(-2)[0];

@@ -38,7 +38,6 @@ const {
 var fkUtkastPage = pages.intyg.fk['7263'].utkast;
 var fkIntygPage = pages.intyg.fk['7263'].intyg;
 var tsIntygPage = pages.intyg.ts.bas.intyg;
-var sokSkrivIntygUtkastTypePage = pages.sokSkrivIntyg.valjUtkastType;
 var basePage = pages.webcertBase;
 var utkastPage = pages.intyg.base.utkast;
 var unsignedPage = pages.unsignedPage;
@@ -322,15 +321,6 @@ Given(/^meddelas jag om spärren$/, function(callback) {
 
 });
 
-Given(/^jag kan inte gå in på att skapa ett "([^"]*)" intyg$/, function(arg1, callback) {
-    sokSkrivIntygUtkastTypePage.intygTypeButton.isDisplayed().then(function(isVisible) {
-        if (isVisible) {
-            callback('FEL - ' + arg1 + ' synlig!');
-        } else {
-            logger.debug('OK -' + arg1 + ' ej synlig!');
-        }
-    }).then(callback);
-});
 Given(/^jag byter vårdenhet till "([^"]*)"$/, function(id) {
     return helpers.moveAndSendKeys(basePage.expandUnitMenu, protractor.Key.SPACE)
         .then(function() {

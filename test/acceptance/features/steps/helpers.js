@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*global testdata, logger, pages, Promise, browser, commonTools, person, protractor */
+/*global testdata, logger, pages, Promise, browser, person, protractor */
 'use strict';
 // var fkIntygPage = pages.intyg.fk['7263'].intyg;
 var fkLusePage = pages.intyg.luse.intyg;
@@ -28,7 +28,8 @@ function sh(value) {
     return (value.search(/\s-\s/g) !== -1) ? value.split(/\s-\s/g)[0].replace('Ämne: ', '') : value.split(/\n/g)[0].replace('Ämne: ', '');
 }
 
-var moveAndSendKeys = require('common-testtools').protractorHelpers.moveAndSendKeys;
+const commonTools = require('common-testtools');
+const moveAndSendKeys = commonTools.protractorHelpers.moveAndSendKeys;
 
 module.exports = {
     elementIsUsable: function(elm) {
@@ -93,7 +94,7 @@ module.exports = {
         return pnrString.slice(0, 8) + '-' + pnrString.slice(8);
     },
     intygShortcode: commonTools.helpers.intygShortcode,
-    intygUrlShortcode: commonTools.helpers.intygUrlShortcode,
+    internalIntygShortcode: commonTools.helpers.internalIntygShortcode,
 
     //TODO Kan vi hantera detta bättre, Om HSA ändras så behöver vi uppdatera denna data vilket inte är optimalt
     // TSTNMT2321000156-ULLA saknar enhetadress i hsa, dvs behåll tidigare angivet enhetAdress objekt
@@ -158,50 +159,6 @@ module.exports = {
             return attributes;
         }
     },
-    /* Deptricated*/
-    /*fetchMessageIds: function(intygtyp) {
-        logger.silly('Hämtar meddelande-id:n');
-
-        // var isSMIIntyg = this.isSMIIntyg(intygtyp);
-
-        if (!intyg.messages) {
-            intyg.messages = [];
-        }
-        var panels = fkLusePage.qaPanels;
-
-
-        var messageIdAttributes = panels.map(function(elm) {
-            return Promise.all([
-                elm.getAttribute('id'),
-                elm.element(by.css('.fraga-status-header')).getText()
-            ]);
-        });
-
-        return messageIdAttributes.then(function(result) {
-            for (var i = 0; i < result.length; i++) {
-                var messageId, messageAmne;
-                var idAttr = result[i][0];
-                var headerText = result[i][1];
-                var isHandled = false;
-
-                messageId = idAttr.replace('arende-unhandled-', '');
-
-                //Är ärende hanterat?
-                isHandled = (messageId.indexOf('arende-handled') === 0);
-                messageId = messageId.replace('arende-handled-', '');
-
-                //Fånga ämne
-                messageAmne = sh(headerText);
-
-                logger.info('Meddelanden som finns på intyget: ' + messageId + ', ' + messageAmne + ' Hanterad:' + isHandled);
-                intyg.messages.push({
-                    id: messageId,
-                    amne: messageAmne,
-                    isHandled: isHandled
-                });
-            }
-        });
-    },*/
     stripTrailingSlash: function(str) {
         if (str.substr(-1) === '/') {
             return str.substr(0, str.length - 1);
@@ -239,7 +196,7 @@ module.exports = {
         return n;
     },
     getIntyg: function(intygsTyp, patient, makulerad) {
-        var intygShortCode = this.getPathShortcode(intygsTyp);
+        var intygShortCode = this.getInternShortcode(intygsTyp);
         var insertDashInPnr = this.insertDashInPnr;
         return new Promise(function(resolve, reject) {
             return pool.getConnection().then(function(connection) {
@@ -275,7 +232,7 @@ module.exports = {
         });
     },
     getUtkast: function(intygsTyp, patient) {
-        var intygShortCode = this.getPathShortcode(intygsTyp);
+        var intygShortCode = this.getInternShortcode(intygsTyp);
         var insertDashInPnr = this.insertDashInPnr;
         return new Promise(function(resolve, reject) {
             return pool.getConnection().then(function(connection) {
@@ -352,9 +309,9 @@ module.exports = {
         }
         return null;
     },
-    getPathShortcode: function(value) {
-        for (var key in this.intygUrlShortcode) {
-            if (this.intygUrlShortcode[key] === value) {
+    getInternShortcode: function(value) {
+        for (var key in this.internalIntygShortcode) {
+            if (this.internalIntygShortcode[key] === value) {
                 return key.toString();
             }
         }

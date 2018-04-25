@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/* globals browser,logger, wcTestTools,commonTools, pages */
+/* globals browser,logger, wcTestTools, pages */
 'use strict';
 /*jshint newcap:false */
 //TODO Uppgradera Jshint p.g.a. newcap kommer bli depricated. (klarade inte att ignorera i grunt-task)
@@ -33,12 +33,13 @@ const {
     Then // jshint ignore:line
 } = require('cucumber');
 
-var loginHelper = require('./login.helpers.js');
-var logInAsUserRole = loginHelper.logInAsUserRole;
-var logInAsUser = loginHelper.logInAsUser;
-var shuffle = wcTestTools.helpers.testdata.shuffle;
-var users = commonTools.HSAusers;
-var helpers = require('../helpers');
+const commonTools = require('common-testtools');
+const loginHelper = require('./login.helpers.js');
+const logInAsUserRole = loginHelper.logInAsUserRole;
+const logInAsUser = loginHelper.logInAsUser;
+const shuffle = wcTestTools.helpers.testdata.shuffle;
+const users = commonTools.HSAusers;
+const helpers = require('../helpers');
 
 
 

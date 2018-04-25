@@ -87,6 +87,7 @@ Given(/^jag går till Sök\/skriv intyg$/, function() {
 });
 
 Given(/^ska jag inte ha alternativet att skapa "([^"]*)" intyg$/, function(intygsTyp) {
+    //TODO: kontrollera selector i nästa bygge.
     return expect(element(by.id('intygType')).getText()).to.eventually.not.contain(intygsTyp);
 });
 
@@ -95,9 +96,10 @@ Given(/^det finns ett "([^"]*)"$/, function(intygtyp) {
         if (text.indexOf(intygtyp) >= 0) {
             return Promise.resolve('Intyg finns');
         } else {
+            browser.ignoreSynchronization = true;
             return browser.getCurrentUrl().then(function(currentUrl) {
-                return sokSkrivIntygUtkastTypePage.selectIntygTypeByLabel(intygtyp).then(function() {
-                    return sokSkrivIntygUtkastTypePage.intygTypeButton.sendKeys(protractor.Key.SPACE).then(function() {
+                return sokSkrivIntygUtkastTypePage.createUtkast(helpers.getInternShortcode(intygtyp)).then(function() {
+                    return helpers.hugeDelay().then(function() {
                         return helpers.getUrl(currentUrl);
                     });
                 });

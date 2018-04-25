@@ -29,7 +29,7 @@ module.exports = {
         kon: 'kvinna',
         namn: 'Anna Karin',
         efternamn: 'Levin',
-		adress: {
+        adress: {
             postadress: 'EU',
             postort: 'UK',
             postnummer: '12345'
@@ -41,7 +41,7 @@ module.exports = {
         kon: 'kvinna',
         namn: 'Pernilla',
         efternamn: 'Backman',
-		adress: {
+        adress: {
             postadress: 'Testfamiljgatan 10',
             postort: 'Lönneberga',
             postnummer: '20000'
@@ -52,7 +52,7 @@ module.exports = {
         kon: 'man',
         namn: 'Sune',
         efternamn: 'Backman',
-		adress: {
+        adress: {
             postadress: 'Testfamiljgatan 10',
             postort: 'Lönneberga',
             postnummer: '20000'
@@ -63,7 +63,7 @@ module.exports = {
         kon: 'kvinna',
         namn: 'Malin',
         efternamn: 'Backman',
-		adress: {
+        adress: {
             postadress: 'Testfamiljgatan 10',
             postort: 'Lönneberga',
             postnummer: '20000'
@@ -74,7 +74,7 @@ module.exports = {
         kon: 'man',
         namn: 'Erik',
         efternamn: 'Backman',
-		adress: {
+        adress: {
             postadress: 'Testfamiljgatan 10',
             postort: 'Lönneberga',
             postnummer: '20000'
@@ -82,7 +82,7 @@ module.exports = {
     }, {
         id: '190007179815', // Har adress i PU
         kon: 'man',
-		adress: {
+        adress: {
             postadress: 'Norra storgatan 30',
             postort: 'Katthult',
             postnummer: '10000'

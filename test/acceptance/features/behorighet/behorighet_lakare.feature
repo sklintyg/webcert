@@ -1,8 +1,8 @@
 # language: sv
-@behorighet @lakare @hurr
+@behorighet @lakare
 Egenskap: GE-007 - Behörigheter för en läkare
 
-@smi @inloggad-enhet @VA-002 @F.BE-009
+@SMI @inloggad-enhet @VA-002 @F.BE-009
 Scenario: Kan endast nå intyg på inloggad vårdenhet
 	Givet att jag är inloggad som läkare utan angiven vårdenhet
 	Så ska jag se en rubrik med texten "Välj din vårdenhet"

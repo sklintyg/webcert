@@ -20,7 +20,7 @@
 /**
  * Created by bennysce on 17/12/15.
  */
-/* globals browser */
+/* globals browser, protractor */
 'use strict';
 
 module.exports = {
@@ -33,8 +33,8 @@ module.exports = {
     isAt: function() {
         return element(by.id('sokSkrivValjUtkastType')).isDisplayed();
     },
-    createIntygType: function(val) {
-        return element(by.id('intygTypeFortsatt-' + val)).click();
+    createUtkast: function(IntygTypShortcode) {
+        return element(by.id('intygTypeFortsatt-' + IntygTypShortcode)).sendKeys(protractor.Key.SPACE);
     },
     clickFornyaBtnById: function(id) {
         return element(by.id('fornyaBtn-' + id)).click();
