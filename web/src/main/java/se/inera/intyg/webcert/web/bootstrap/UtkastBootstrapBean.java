@@ -97,7 +97,11 @@ public class UtkastBootstrapBean {
                 Utlatande utlatande = buildUtlatande(resource, moduleName);
 
                 if (utkastRepo.findOne(utlatande.getId()) == null) {
-                    utkastRepo.save(createUtkast(utlatande));
+                    UtkastStatus status = UtkastStatus.SIGNED;
+                    if (resource.getFilename().contains("locked")) {
+                        status = UtkastStatus.DRAFT_LOCKED;
+                    }
+                    utkastRepo.save(createUtkast(utlatande, status));
                     switch (utlatande.getTyp()) {
                     case Fk7263EntryPoint.MODULE_ID:
                         fragaRepo.save(createFragaSvar(utlatande, FrageStallare.FORSAKRINGSKASSAN, true, false));
@@ -251,12 +255,15 @@ public class UtkastBootstrapBean {
         return fs;
     }
 
-    private Utkast createUtkast(Utlatande json) throws JsonProcessingException {
+    private Utkast createUtkast(Utlatande json, UtkastStatus status) throws JsonProcessingException {
         Utkast utkast = new Utkast();
         utkast.setEnhetsId(json.getGrundData().getSkapadAv().getVardenhet().getEnhetsid());
         utkast.setEnhetsNamn(json.getGrundData().getSkapadAv().getVardenhet().getEnhetsnamn());
         utkast.setIntygsId(json.getId());
         utkast.setIntygsTyp(json.getTyp());
+        if (status != UtkastStatus.SIGNED) {
+            json.getGrundData().setSigneringsdatum(null);
+        }
         utkast.setModel(mapper.writeValueAsString(json));
         utkast.setPatientEfternamn(json.getGrundData().getPatient().getEfternamn());
         utkast.setPatientFornamn(json.getGrundData().getPatient().getFornamn());
@@ -272,13 +279,15 @@ public class UtkastBootstrapBean {
         utkast.setSenastSparadAv(vardRef);
         utkast.setSkapadAv(vardRef);
 
-        utkast.setSignatur(new Signatur(json.getGrundData().getSigneringsdatum(), json.getGrundData().getSkapadAv().getPersonId(),
-                json.getId(), "intygData",
-                "intygHash", "signatur"));
-        utkast.setStatus(UtkastStatus.SIGNED);
+        utkast.setStatus(status);
+        if (status == UtkastStatus.SIGNED) {
+            utkast.setSignatur(new Signatur(json.getGrundData().getSigneringsdatum(), json.getGrundData().getSkapadAv().getPersonId(),
+                    json.getId(), "intygData",
+                    "intygHash", "signatur"));
+            utkast.setSkickadTillMottagare("FKASSA");
+            utkast.setSkickadTillMottagareDatum(json.getGrundData().getSigneringsdatum().plusMinutes(2));
+        }
         utkast.setSenastSparadDatum(json.getGrundData().getSigneringsdatum());
-        utkast.setSkickadTillMottagare("FKASSA");
-        utkast.setSkickadTillMottagareDatum(json.getGrundData().getSigneringsdatum().plusMinutes(2));
         utkast.setVardgivarId(json.getGrundData().getSkapadAv().getVardenhet().getVardgivare().getVardgivarid());
         utkast.setVardgivarNamn(json.getGrundData().getSkapadAv().getVardenhet().getVardgivare().getVardgivarnamn());
         utkast.setVersion(1);

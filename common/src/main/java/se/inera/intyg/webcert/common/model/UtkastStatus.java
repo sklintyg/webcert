@@ -36,6 +36,11 @@ public enum UtkastStatus {
     DRAFT_COMPLETE,
 
     /**
+     * Locked journalhandling.
+     */
+    DRAFT_LOCKED,
+
+    /**
      * Signed and valid.
      */
     SIGNED;
