@@ -44,12 +44,9 @@
 @mixin btn-common-mixin($color, $background, $border) {
   @extend %btn-common;
 
-  &,
-   {
-    border-color: $border;
-    background-color: $background;
-    color: $color;
-  }
+  border-color: $border;
+  background-color: $background;
+  color: $color;
 
   &:focus,
   &:active,
