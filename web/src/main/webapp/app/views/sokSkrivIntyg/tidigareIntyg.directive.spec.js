@@ -221,6 +221,12 @@ describe('SokSkrivValjUtkastTypeCtrl', function() {
             expect($location.path()).toBe('/' + intyg.intygType + '/edit/' + intyg.intygId + '/');
         });
 
+        it('should set utkast path', function() {
+            intyg.status = 'DRAFT_LOCKED';
+            element.isolateScope().openIntyg(intyg);
+            expect($location.path()).toBe('/' + intyg.intygType + '/edit/' + intyg.intygId + '/');
+        });
+
         it('should set signed path', function() {
             intyg.status = 'RECEIVED';
             element.isolateScope().openIntyg(intyg);

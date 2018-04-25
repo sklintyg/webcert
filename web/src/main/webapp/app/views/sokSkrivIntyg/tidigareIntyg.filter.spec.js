@@ -29,7 +29,11 @@ describe('Filter: TidigareIntygFilter', function() {
         status: 'SIGNED'
     };
 
-    var list = [ ersatt, kompletterat, revoked, normal ];
+    var draftLocked = {
+        status: 'DRAFT_LOCKED'
+    };
+
+    var list = [ ersatt, kompletterat, revoked, normal, draftLocked ];
 
     beforeEach(angular.mock.module('webcert'));
 
@@ -38,13 +42,13 @@ describe('Filter: TidigareIntygFilter', function() {
     }));
 
     it('using "all" should return all intyg', function() {
-        expect(_filter(list, 'all').length).toBe(4);
+        expect(_filter(list, 'all').length).toBe(5);
         expect(_filter(list, 'all')).toContain(ersatt, kompletterat, revoked, normal);
     });
 
     it('using "revoked" should not return normal intyg', function() {
-        expect(_filter(list, 'revoked').length).toBe(3);
-        expect(_filter(list, 'revoked')).toContain(ersatt, kompletterat, revoked);
+        expect(_filter(list, 'revoked').length).toBe(4);
+        expect(_filter(list, 'revoked')).toContain(ersatt, kompletterat, revoked, draftLocked);
     });
 
     it('using "current" should only return normal intyg', function() {
