@@ -7,7 +7,8 @@ angular.module('webcert').directive('wcValjUtkastTyp',
         return {
             restrict: 'E',
             scope: {
-                viewState: '='
+                viewState: '=',
+                domId: '@'
             },
             templateUrl: '/app/views/sokSkrivIntyg/valjUtkastTyp.directive.html',
             link: function(scope, element, attrs) {
