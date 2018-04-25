@@ -38,7 +38,9 @@
   &:focus,
   &:active,
   &:active:focus,
-  &.active {
+  &.active,
+  &.active:hover,
+  &.active:focus{
     background-color: $btn-common-hover-background-color;
     border-color: $btn-common-hover-background-color;
     color: $wc-color-00;
