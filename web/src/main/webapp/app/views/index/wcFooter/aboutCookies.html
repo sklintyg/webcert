@@ -3,34 +3,11 @@
     <button type="button" class="close" data-ng-click="button1click()">×</button>
     <h3 class="modal-title">Om kakor (cookies)</h3>
   </div>
-  <div class="modal-body">
-    <p>
-      Vi använder kakor (cookies) för att den här webbplatsen ska fungera på ett bra sätt för dig.
-      Genom att logga in accepterar du vår användning av kakor.
-    </p>
-
-    <h4>Så här använder vi kakor</h4>
-    <ul>
-      <li>En sessionskaka som innehåller ett unikt slumptal för att identifiera just din inloggning och försvinner när webbläsaren stängs av. </li>
-      <li>En informationskaka om vilken av servrarna på vår webbplats som hanterade din inloggning och den kakan finns kvar i webbläsaren även efter omstart.</li>
-    </ul>
-    <p>
-      Dessa två kakor behövs för att på ett säkert sätt låta dig komma åt olika e-tjänster som en inloggad och identifierad användare.
-      Kakorna i sig innehåller inga personliga uppgifter och används inte av någon annan.
-    </p>
-
-    <h4>Undvika kakor</h4>
-    <p>
-      Vill du inte acceptera kakor kan din webbläsare ställas in så att du automatiskt nekar till lagring av kakor eller informeras varje gång en webbplats begär att få lagra en kaka.
-      Genom webbläsaren kan också tidigare lagrade kakor raderas. Se webbläsarens hjälpsidor för mer information.
-    </p>
-    <p>
-      Väljer du att inte acceptera kakor så kan du inte identifiera dig med e-legitimation i denna e-tjänst.
-    </p>
-    <p>
-      Mer information om kakor kan du finna på <span dynamiclink key="ptsCookiesAbout"></span>.
-    </p>
-  </div>
+  <wc-bottom-fadeout>
+    <div
+        class="modal-body"
+        ng-include="'/web/webjars/common/webcert/components/headers/wcAppHeader/wcHeaderHelp/about/kakor-partial.html'"></div>
+  </wc-bottom-fadeout>
   <div class="modal-footer">
     <button class="btn btn-default" type="button" ng-click="button1click()">Stäng</button>
   </div>
