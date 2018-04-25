@@ -30,17 +30,41 @@
  * --------------------------------------- */
 %btn-common {
   font-weight: normal;
-  padding: 7px 15px;
   cursor: pointer;
   white-space: nowrap;
+}
 
-  &:hover,
+.btn {
+  line-height: 18px;
+  padding: 7px 12px;
+  text-overflow: ellipsis;
+  border-radius: 4px;
+}
+
+@mixin btn-common-mixin($color, $background, $border) {
+  @extend %btn-common;
+
+  &,
+   {
+    border-color: $border;
+    background-color: $background;
+    color: $color;
+  }
+
   &:focus,
   &:active,
-  &:active:focus,
+  &:active:focus {
+    border-color: $border;
+    background-color: $background;
+    color: $color;
+    box-shadow: 0 0 8px 0 $black_24;
+  }
+
+  &:hover,
+  &:active:hover,
   &.active,
   &.active:hover,
-  &.active:focus{
+  &.active:focus {
     background-color: $btn-common-hover-background-color;
     border-color: $btn-common-hover-background-color;
     color: $wc-color-00;
@@ -62,33 +86,24 @@
   }
 }
 
-.btn {
-  line-height: 18px;
-  padding: 7px 12px;
-  text-overflow: ellipsis;
-  border-radius: 4px;
+.btn-primary {
+  @include btn-common-mixin($wc-color-00, $wc-color-14, $wc-color-14);
 }
 
-.btn-primary, .btn-secondary, .btn-default, .btn-success, .btn-type-8 {
-  @extend %btn-common;
+.btn-success {
+  @include btn-common-mixin($wc-color-00, $wc-color-16, $wc-color-16);
 }
 
 .btn-default {
-  border-color: $wc-color-17;
-  background-color: $wc-color-00;
-  color: $wc-color-17;
+  @include btn-common-mixin($wc-color-17, $wc-color-00, $wc-color-17);
 }
 
 .btn-secondary {
-  border-color: $wc-color-15;
-  background-color: $wc-color-15;
-  color: $wc-color-08;
+  @include btn-common-mixin($wc-color-08, $wc-color-15, $wc-color-15);
 }
 
 .btn-type-8 {
-  border-color: $wc-color-15;
-  background-color: $wc-color-00;
-  color: $wc-color-07;
+  @include btn-common-mixin($wc-color-07, $wc-color-00, $wc-color-15);
 }
 
 .btn-link {
