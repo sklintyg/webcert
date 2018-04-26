@@ -23,8 +23,9 @@ angular.module('webcert').constant('webcert.messages', {
         'webcert.header': 'Webcert',
         'webcert.description': 'Välkommen till Webcert.',
         'dashboard.title': 'Mina andra enheter',
-        'dashboard.unanswered.title': 'Ej hanterade frågor och svar',
+        'dashboard.unanswered.title': 'Ej hanterade ärenden',
         'dashboard.unsigned.title': 'Ej signerade utkast',
+        'dashboard.unsigned.subtitle': 'Nedan visas alla ej signerade utkast för den enhet du är inloggad på.',
         'dashboard.about.title': 'Om Webcert',
 
         //labels
@@ -67,9 +68,8 @@ angular.module('webcert').constant('webcert.messages', {
         'info.noreadytosignintygfound': '<strong>Inga klarmarkerade intyg hittades.</strong>',
         'info.loadingintyg': '<strong>Laddar intyg...</strong>',
         'info.loadingdata': '<strong>Uppdaterar lista...</strong>',
-        'info.nounanswered.arende.for.unit': 'Samtliga frågor och svar är hanterade. Det finns inget att åtgärda.',
+        'info.nounanswered.arende.for.unit': 'Det finns inga ohanterade ärenden för den enhet eller de enheter du är inloggad på.',
         'info.nointygfound': 'Det finns inga tidigare intyg för denna patient.',
-        'info.query.noresults': '<strong>Sökningen gav inga resultat.</strong>',
         'info.query.error': '<strong>Sökningen kunde inte utföras.</strong>',
         'info.intygload.error': '<strong>Kunde inte hämta intyg.</strong>',
         'info.intygload.offline': '<strong>Intygstjänsten ej tillgänglig, endast Intyg utfärdade av Webcert visas.</strong>',

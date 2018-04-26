@@ -41,6 +41,16 @@ angular.module('webcert').directive('wcEnhetArendenList', [
                 $scope.openTooltip = messageService.getProperty('th.help.open');
                 $scope.moreHitsTooltip = messageService.getProperty('th.help.morehits');
 
+                $scope.$watch('vardenhetFilterModel.selectedUnit', function() {
+                    if (vardenhetFilterModel.selectedUnit) {
+                        $scope.selectedUnitName = vardenhetFilterModel.selectedUnit.namn;
+
+                        if (vardenhetFilterModel.selectedUnit.id === vardenhetFilterModel.ALL_ARENDEN) {
+                            $scope.selectedUnitName = $scope.selectedUnitName.toLowerCase();
+                        }
+                    }
+                });
+
                 var vidarebefordraArendeMailModel = null;
 
                 updateArenden(null, {startFrom: 0});

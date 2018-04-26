@@ -18,8 +18,8 @@
  */
 
 angular.module('webcert').service('webcert.vardenhetFilterModel', [
-    '$cookies', 'common.User', 'webcert.enhetArendenModel',
-    function($cookies, User, enhetArendenModel) {
+    '$cookies',
+    function($cookies) {
         'use strict';
 
         this.units = null;

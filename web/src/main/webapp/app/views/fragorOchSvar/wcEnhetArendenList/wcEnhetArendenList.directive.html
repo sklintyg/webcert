@@ -2,7 +2,7 @@
 
   <div ng-show="listModel.totalCount > 0"> <!-- NOTE: must be ng-show since event from vardenhetfilter is sent to filter controller which doesnt exist with ng-if -->
     <h2 class="page-heading1"  ng-class="{'less-top-padding' : vardenhetFilterModel.units.length < 3}">
-      {{vardenhetFilterModel.selectedUnit.namn}}
+      Ärenden visas för {{ selectedUnitName }}
     </h2>
     <wc-enhet-arenden-filter></wc-enhet-arenden-filter>
   </div>
@@ -12,18 +12,12 @@
 
     <div class="arende-table-section">
 
-      <!-- No results message for query -->
-      <div id="current-list-noResults-query"
-           ng-show="listModel.totalCount < 1 && !listModel.viewState.runningQuery && !listModel.viewState.activeErrorMessageKey">
-        <span dynamic-label key="info.query.noresults"></span>
-      </div>
-
       <!-- error message -->
       <wc-alert-message id="current-list-noResults-error" ng-show="listModel.viewState.activeErrorMessageKey"
                         alert-severity="danger"
                         alert-message-id="{{listModel.viewState.activeErrorMessageKey}}"></wc-alert-message>
 
-      <wc-no-arenden-message ng-show="listModel.totalCount == 0"></wc-no-arenden-message>
+      <wc-no-arenden-message ng-if="listModel.totalCount == 0"></wc-no-arenden-message>
 
       <!-- Search hits -->
       <div id="showing-nr-hits" ng-show="listModel.totalCount > 0">Visar
