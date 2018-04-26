@@ -25,12 +25,69 @@ var BaseSkvIntygPage = require('../skv.base.intyg.page.js');
 var DbIntyg = BaseSkvIntygPage._extend({
     init: function init() {
         init._super.call(this);
+
+        this.identitetStyrkt = element(by.id('identitetStyrkt'));
+        this.dodsdatumSakert = element(by.id('dodsdatumSakert'));
+        this.dodsplats = {
+            kommun: element(by.id('dodsplatsKommun')),
+            boende: element(by.id('dodsplatsBoende'))
+        };
+
+        this.explosivImplantat = {
+            value: element(by.id('explosivImplantat')),
+            avlagsnat: element(by.id('explosivAvlagsnat'))
+        };
+
+        this.yttreUndersokning = {
+            value: element(by.id('undersokningYttre')),
+            datum: element(by.id('undersokningDatum'))
+        };
+
+        this.polisanmalan = element(by.id('polisanmalan'));
     },
 
     get: function get(intygId) {
         get._super.call(this, intygId);
     },
 
-    verify: function(data) {}
+    verifyDodsdatum: function(dodsdatum) {
+
+    },
+
+    verifyDodsPlats: function(dodsPlats) {
+        expect(this.dodsplats.kommun.getText()).toBe(dodsPlats.kommun);
+        //expect(this.dodsplats.boende.getText()).toBe(dodsPlats.boende);
+    },
+
+    verifyExplosivImplantat: function(explosivImplantat) {
+        if (explosivImplantat) {
+            expect(this.explosivImplantat.value.getText()).toBe('Ja');
+            expect(this.explosivImplantat.avlagsnat.getText()).toBe(explosivImplantat.avlagsnat ? 'Ja' : 'Nej');
+        } else {
+            expect(this.explosivImplantat.value.getText()).toBe('Nej');
+            expect(this.explosivImplantat.avlagsnat.getText()).toBe('Ej angivet');
+        }
+    },
+
+    verifyYttreUndersokning: function(yttreUndersokning) {
+        if (yttreUndersokning.datum) {
+            expect(this.yttreUndersokning.datum.getText()).toBe(yttreUndersokning.datum);
+        } else {
+            expect(this.yttreUndersokning.datum.getText()).toBe('Ej angivet');
+        }
+    },
+
+    verifyPolisanmalan: function(polisanmalan) {
+        expect(this.polisanmalan.getText()).toBe(polisanmalan ? 'Ja' : 'Nej');
+    },
+
+    verify: function(data) {
+        expect(this.identitetStyrkt.getText()).toBe(data.identitetStyrktGenom);
+        this.verifyDodsdatum(data.dodsdatum);
+        this.verifyDodsPlats(data.dodsPlats);
+        this.verifyExplosivImplantat(data.explosivImplantat);
+        this.verifyYttreUndersokning(data.yttreUndersokning);
+        this.verifyPolisanmalan(data.polisanmalan);
+    }
 });
 module.exports = new DbIntyg();
