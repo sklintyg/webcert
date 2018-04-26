@@ -19,7 +19,6 @@
 package se.inera.intyg.webcert.web.web.controller.api;
 
 import io.swagger.annotations.Api;
-import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -287,7 +286,8 @@ public class UtkastApiController extends AbstractApiController {
         filter.setPageSize(null);
 
         List<ListIntygEntry> listIntygEntries = IntygDraftsConverter
-                .convertUtkastsToListIntygEntries(utkastService.filterIntyg(filter), getIntygComparator(filter.getOrderBy(), filter.getOrderAscending()));
+                .convertUtkastsToListIntygEntries(utkastService.filterIntyg(filter),
+                        getIntygComparator(filter.getOrderBy(), filter.getOrderAscending()));
 
         // INTYG-4486, INTYG-4086: Always filter out any items with UNDEFINED sekretessmarkering status and not
         // authorized
