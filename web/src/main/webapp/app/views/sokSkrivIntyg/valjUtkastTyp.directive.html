@@ -11,9 +11,7 @@
           <div class="flex-list" id="{{domId}}">
             <div class="flex-list-col" ng-repeat="type in intygTypeModel.userIntygTypes track by $index">
               <div id="list-intyg-data" class="flex-list-row">
-                <div class="flex-list-row unbreakable" style="flex: 1">
-                  <span class="intyg-label">{{type.label}}</span> <span class="issuer-type-id">{{type.issuerTypeId}}</span>
-                </div>
+                <span style="flex: 1"><span class="intyg-label">{{type.label}}</span> <span class="issuer-type-id">{{type.issuerTypeId}}</span></span>
                 <div class="about-intyg">
                   <button class="btn btn-link btn-link__purelink" ng-click="openIntygTypeDetailsDialog(type)">Om intyget</button>
                 </div>
