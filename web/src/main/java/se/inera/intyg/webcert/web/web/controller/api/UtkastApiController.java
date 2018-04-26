@@ -71,9 +71,8 @@ public class UtkastApiController extends AbstractApiController {
 
     private static final Logger LOG = LoggerFactory.getLogger(UtkastApiController.class);
 
-    private static final List<UtkastStatus> ALL_DRAFTS = Arrays.asList(UtkastStatus.DRAFT_COMPLETE, UtkastStatus.DRAFT_INCOMPLETE);
-    private static final List<UtkastStatus> COMPLETE_DRAFTS = Collections.singletonList(UtkastStatus.DRAFT_COMPLETE);
-    private static final List<UtkastStatus> INCOMPLETE_DRAFTS = Collections.singletonList(UtkastStatus.DRAFT_INCOMPLETE);
+    private static final List<UtkastStatus> ALL_DRAFTS = Arrays.asList(UtkastStatus.DRAFT_COMPLETE, UtkastStatus.DRAFT_INCOMPLETE,
+            UtkastStatus.DRAFT_LOCKED);
 
     private static final Integer DEFAULT_PAGE_SIZE = 10;
 
@@ -255,12 +254,10 @@ public class UtkastApiController extends AbstractApiController {
         UtkastFilter utkastFilter = new UtkastFilter(selectedUnitHsaId);
 
         if (filterParameters != null) {
-            if (Boolean.FALSE.equals(filterParameters.getComplete())) {
-                utkastFilter.setStatusList(INCOMPLETE_DRAFTS);
-            } else if (Boolean.TRUE.equals(filterParameters.getComplete())) {
-                utkastFilter.setStatusList(COMPLETE_DRAFTS);
-            } else {
+            if (filterParameters.getStatus() == null) {
                 utkastFilter.setStatusList(ALL_DRAFTS);
+            } else {
+                utkastFilter.setStatusList(Arrays.asList(filterParameters.getStatus()));
             }
 
             utkastFilter.setSavedFrom(filterParameters.getSavedFrom());

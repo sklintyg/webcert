@@ -18,6 +18,8 @@
  */
 package se.inera.intyg.webcert.web.web.controller.api.dto;
 
+import se.inera.intyg.webcert.common.model.UtkastStatus;
+
 import java.time.LocalDateTime;
 
 public class QueryIntygParameter {
@@ -30,7 +32,7 @@ public class QueryIntygParameter {
 
     private Boolean notified;
 
-    private Boolean complete;
+    private UtkastStatus status;
 
     private LocalDateTime savedFrom;
 
@@ -72,12 +74,12 @@ public class QueryIntygParameter {
         this.notified = notified;
     }
 
-    public Boolean getComplete() {
-        return complete;
+    public UtkastStatus getStatus() {
+        return status;
     }
 
-    public void setComplete(Boolean complete) {
-        this.complete = complete;
+    public void setStatus(UtkastStatus status) {
+        this.status = status;
     }
 
     public LocalDateTime getSavedFrom() {
