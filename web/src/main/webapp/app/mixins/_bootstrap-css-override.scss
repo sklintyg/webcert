@@ -74,7 +74,7 @@
   &:active,
   &:active:focus,
   &.active {
-    &:disabled {
+    &:disabled, fieldset[disabled] & {
       background-color: $wc-color-13;
       border-color: $wc-color-13;
       color: $wc-color-22;
