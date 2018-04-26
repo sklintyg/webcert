@@ -24,4 +24,21 @@ wc-tidigare-intyg {
   .gutter-icon {
     top: -10px;
   }
+
+  .sokskriv-container {
+      display: flex;
+      flex-direction: column;
+      max-width: 300px;
+      align-items: center;
+      margin-left: 112px;
+      color: #6a6a6a;
+
+    #sokskriv-image-wrapper {
+      width: 121px;
+      height: 95px;
+      margin-bottom: 12px;
+    }
+  }
 }
+
+
