@@ -21,26 +21,57 @@ wc-valj-utkast-typ {
   display: block;
   padding-top: 35px;
 
-  .intygLabel {
+  .intyg-label {
     @extend %wc-typo-06;
     color: $wc-color-07;
+    padding-right: 5px;
   }
 
-  .issuerTypeId {
+  .issuer-type-id {
     @extend %wc-typo-07;
     color: $wc-color-09;
+  }
+
+  .about-intyg {
+    padding-right: 30px;
   }
 
   .card {
     box-shadow: 0 2px 4px 0 $black_12;
     border: 1px solid $wc-color-27;
-    max-height: 320px;
+    max-height: 380px;
     overflow: hidden;
     overflow-y: auto;
   }
 
-  table.table {
-    margin: 0
+  wc-alert-message {
+    display: block;
+
+    .alert {
+      display: block;
+      margin: 5px 0 0 0;
+    }
   }
 
+  .flex-list {
+    display: flex;
+    flex-direction: column;
+
+    > .flex-list-col {
+      border-bottom: 1px solid $wc-color-15;
+    }
+
+    .flex-list-row {
+      display: flex;
+      align-items: center;
+      flex-direction: row;
+      flex: 1;
+    }
+
+    .flex-list-col {
+      display: flex;
+      flex-direction: column;
+      padding: 10px 10px 10px 25px;
+    }
+  }
 }

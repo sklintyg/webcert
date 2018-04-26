@@ -8,24 +8,24 @@
       <div class="col-md-9">
 
         <div class="card">
-          <table class="table" id="{{domId}}">
-            <tbody>
-              <tr ng-repeat="type in intygTypeModel.userIntygTypes track by $index">
-                <td class="unbreakable" style="width: 100%">
-                  <span class="intygLabel">{{type.label}}</span> <span class="issuerTypeId">{{type.issuerTypeId}}</span>
-                </td>
-                <td>
-                  <button class="btn btn-link" ng-click="openIntygTypeDetailsDialog(type)">Om intyget</button>
-                </td>
-                <td>
+          <div class="flex-list" id="{{domId}}">
+            <div class="flex-list-col" ng-repeat="type in intygTypeModel.userIntygTypes track by $index">
+              <div id="list-intyg-data" class="flex-list-row">
+                <div class="flex-list-row unbreakable" style="flex: 1">
+                  <span class="intyg-label">{{type.label}}</span> <span class="issuer-type-id">{{type.issuerTypeId}}</span>
+                </div>
+                <div class="about-intyg">
+                  <button class="btn btn-link btn-link__purelink" ng-click="openIntygTypeDetailsDialog(type)">Om intyget</button>
+                </div>
+                <div>
                   <span id="fortsattBtn">
                     <button id="intygTypeFortsatt-{{type.id}}" class="btn btn-primary continue-btn" ng-click="createDraft(type.id)"
                             ng-disabled="!isCreateUtkastEnabled(type.id)"><i class="material-icons">description</i> Skapa intyg</button>
                   </span>
-                </td>
-              </tr>
-              <tr ng-if="intygReplacement[type.id] || intygTypeModel.previousIntygWarnings[type.id] || intygTypeModel.previousUtkastWarnings[type.id]">
+                </div>
+              </div>
 
+              <div id="list-intyg-alerts">
                 <wc-alert-message id="intyg-replaced-warning" ng-if="intygReplacement[type.id]"
                                   alert-severity="warning">
                   <span ng-bind-html="resolveIntygReplacedText(type.id)" class="multiline"></span>
@@ -45,10 +45,9 @@
                     <span ng-switch-when="false" dynamic-label key="{{type.id}}.warn.previousdraft.differentvg"></span>
                   </wc-alert-message>
                 </div>
-
-              </tr>
-            </tbody>
-          </table>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
