@@ -16,6 +16,7 @@
           wc-authority="VIDAREBEFORDRA_UTKAST" ng-click="orderByProperty('vidarebefordrad')"
           ng-class="{'sorting': sortingProperty == 'vidarebefordrad', 'ascending': sortingAscending}"></th>
       <th></th>
+      <th></th>
     </tr>
   </thead>
   <tbody>
@@ -37,13 +38,15 @@
       <td class="unbreakable">
         <button ng-attr-id="vidarebefordraBtn-{{intyg.intygId}}" type="button" class="btn btn-primary"
                 ng-click="openMailDialog(intyg)" wc-authority="VIDAREBEFORDRA_UTKAST" intygstyp="{{::intyg.intygType}}"
+                ng-if="intyg.status != 'DRAFT_LOCKED'"
                 uib-popover-html="'Skapar ett e-postmeddelande i din e-postklient med en direktlänk till utkastet.'"
                 popover-trigger="mouseenter" popover-placement="top" popover-popup-delay="300"
                 popover-append-to-body="true">
           <i class="icon-wc-ikon-reply"></i> Vidarebefordra
 
         </button>
-
+      </td>
+      <td class="unbreakable">
         <button ng-attr-id="showBtn-{{intyg.intygId}}" type="button" class="btn btn-primary" ng-click="openIntyg(intyg)"
                 uib-popover-html="'Öppnar utkastet.'" popover-trigger="mouseenter" popover-placement="top"
                 popover-popup-delay="300" popover-append-to-body="true">
@@ -98,6 +101,7 @@
       <div class="col-xs-12">
         <button type="button" class="btn btn-primary"
                 ng-click="openMailDialog(intyg)" wc-authority="VIDAREBEFORDRA_UTKAST" intygstyp="{{::intyg.intygType}}"
+                ng-if="intyg.status != 'DRAFT_LOCKED'"
                 uib-popover-html="'Skapar ett e-postmeddelande i din e-postklient med en direktlänk till utkastet.'"
                 popover-trigger="mouseenter" popover-placement="top" popover-popup-delay="300"
                 popover-append-to-body="true">
