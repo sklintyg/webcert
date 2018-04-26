@@ -48,7 +48,8 @@
 
 
           <div class="row ng-hide" id="unsignedCertTable" ng-show="!widgetState.initialQueryWasEmpty">
-            <wc-utkast-list utkast-list="widgetState.currentList" class="col-md-12"></wc-utkast-list>
+            <wc-utkast-list utkast-list="widgetState.currentList" class="col-md-12"
+                            on-order="orderByProperty(property, ascending)" filter="filter"></wc-utkast-list>
             <!-- No results message for query -->
             <div id="current-list-noResults-query" class="col-xs-12"
                  ng-if="widgetState.doneLoading && widgetState.totalCount < 1  && widgetState.filteredYet">

@@ -2,13 +2,19 @@
 <table class="table table-striped wc-table-striped hidden-xs hidden-sm">
   <thead>
     <tr>
-      <th wc-table-head label-key="th.label.draft-type" help-key="th.help.draft-type"></th>
-      <th wc-table-head label-key="th.label.draft-status" help-key="th.help.draft-status"></th>
-      <th wc-table-head label-key="th.label.draft-saved-date" help-key="th.help.draft-saved-date"></th>
-      <th wc-table-head label-key="th.label.draft-patient" help-key="th.help.draft-patient"></th>
-      <th wc-table-head label-key="th.label.draft-saved-by" help-key="th.help.draft-saved-by"></th>
+      <th wc-table-head label-key="th.label.draft-type" help-key="th.help.draft-type" ng-click="orderByProperty('intygsTyp')"
+          ng-class="{'sorting': sortingProperty == 'intygsTyp', 'ascending': sortingAscending}"></th>
+      <th wc-table-head label-key="th.label.draft-status" help-key="th.help.draft-status" ng-click="orderByProperty('status')"
+          ng-class="{'sorting': sortingProperty == 'status', 'ascending': sortingAscending}"></th>
+      <th wc-table-head label-key="th.label.draft-saved-date" help-key="th.help.draft-saved-date" ng-click="orderByProperty('senastSparadDatum')"
+          ng-class="{'sorting': sortingProperty == 'senastSparadDatum', 'ascending': sortingAscending}"></th>
+      <th wc-table-head label-key="th.label.draft-patient" help-key="th.help.draft-patient" ng-click="orderByProperty('patientPersonnummer')"
+          ng-class="{'sorting': sortingProperty == 'patientPersonnummer', 'ascending': sortingAscending}"></th>
+      <th wc-table-head label-key="th.label.draft-saved-by" help-key="th.help.draft-saved-by" ng-click="orderByProperty('senastSparadAv')"
+          ng-class="{'sorting': sortingProperty == 'senastSparadAv', 'ascending': sortingAscending}"></th>
       <th wc-table-head label-key="th.label.draft-forwarded" help-key="th.help.draft-forwarded" class="center"
-          wc-authority="VIDAREBEFORDRA_UTKAST"></th>
+          wc-authority="VIDAREBEFORDRA_UTKAST" ng-click="orderByProperty('vidarebefordrad')"
+          ng-class="{'sorting': sortingProperty == 'vidarebefordrad', 'ascending': sortingAscending}"></th>
       <th></th>
     </tr>
   </thead>

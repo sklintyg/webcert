@@ -59,6 +59,8 @@ angular.module('webcert').factory('webcert.UtkastFilterModel', [ '$filter', func
         this.savedTo = undefined; //Date
         this.savedBy = undefined; // selected doctors hasId
         this.savedByOptions = this.savedByOptions || [];
+        this.orderBy = undefined;
+        this.orderAscending = undefined;
     };
 
     UtkastFilterModel.prototype.convertToPayload = function() {
@@ -100,6 +102,9 @@ angular.module('webcert').factory('webcert.UtkastFilterModel', [ '$filter', func
             to.add(1, 'd');
             query.savedTo = to.format('YYYY-MM-DD');
         }
+
+        query.orderBy = this.orderBy;
+        query.orderAscending = this.orderAscending;
         return query;
     };
 

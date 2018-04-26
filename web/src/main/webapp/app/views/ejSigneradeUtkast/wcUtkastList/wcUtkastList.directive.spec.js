@@ -60,10 +60,11 @@ describe('wcUtkastListSpec', function() {
                 mockResponse = _mockResponse_;
 
                 var tpl = angular.element(
-                    '<wc-utkast-list utkast-list="testList"></wc-utkast-list>'
+                    '<wc-utkast-list utkast-list="testList" filter="testFilter"></wc-utkast-list>'
                 );
                 $scope = $rootScope.$new();
                 $scope.testList = mockResponse.utkastList;
+                $scope.testFilter = {orderBy: '', orderAscending: ''};
                 element = $compile(tpl)($scope);
                 $scope.$digest();
             }

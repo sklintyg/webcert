@@ -36,6 +36,10 @@ public class QueryIntygParameter {
 
     private LocalDateTime savedTo;
 
+    private String orderBy;
+
+    private Boolean orderAscending;
+
     public Integer getStartFrom() {
         return startFrom;
     }
@@ -92,4 +96,19 @@ public class QueryIntygParameter {
         this.savedTo = savedTo;
     }
 
+    public String getOrderBy() {
+        return orderBy;
+    }
+
+    public void setOrderBy(String orderBy) {
+        this.orderBy = orderBy;
+    }
+
+    public Boolean getOrderAscending() {
+        return orderAscending;
+    }
+
+    public void setOrderAscending(Boolean orderAscending) {
+        this.orderAscending = orderAscending;
+    }
 }

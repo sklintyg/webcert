@@ -42,6 +42,10 @@ public class UtkastFilter {
 
     private Integer pageSize;
 
+    private String orderBy;
+
+    private Boolean orderAscending;
+
     public UtkastFilter(String unitHsaId) {
         this.unitHsaId = unitHsaId;
     }
@@ -112,6 +116,22 @@ public class UtkastFilter {
 
     public void setPageSize(Integer pageSize) {
         this.pageSize = pageSize;
+    }
+
+    public String getOrderBy() {
+        return orderBy;
+    }
+
+    public void setOrderBy(String orderBy) {
+        this.orderBy = orderBy;
+    }
+
+    public Boolean getOrderAscending() {
+        return orderAscending;
+    }
+
+    public void setOrderAscending(Boolean orderAscending) {
+        this.orderAscending = orderAscending;
     }
 
 }

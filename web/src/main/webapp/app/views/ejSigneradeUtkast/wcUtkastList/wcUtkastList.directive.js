@@ -26,35 +26,50 @@ angular.module('webcert').directive('wcUtkastList',
                 restrict: 'E',
                 replace: false,
                 scope: {
-                    utkastList: '='
+                    utkastList: '=',
+                    filter: '=',
+                    onOrder: '&'
                 },
                 templateUrl: '/app/views/ejSigneradeUtkast/wcUtkastList/wcUtkastList.directive.html',
                 controller: function($scope) {
 
-                $scope.getTypeName = function(intygsType) {
-                    return moduleService.getModuleName(intygsType);
-                };
+                    $scope.sortingProperty = $scope.filter.orderBy;
+                    $scope.sortingAscending = $scope.filter.orderAscending;
 
-                $scope.openIntyg = function(intyg) {
-                    $state.go(intyg.intygType + '-edit', {
-                        certificateId: intyg.intygId
-                    });
-                };
-
-                // Handle forwarding
-                $scope.openMailDialog = function(utkast) {
-                    utkast.updateState = {
-                        vidarebefordraInProgress: false
+                    $scope.getTypeName = function(intygsType) {
+                        return moduleService.getModuleName(intygsType);
                     };
-                    utkastNotifyService.notifyUtkast(utkast.intygId, utkast.intygType, utkast, utkast.updateState);
-                };
 
-                $scope.onNotifyChange = function(utkast) {
-                    utkast.updateState = {
-                        vidarebefordraInProgress: false
+                    $scope.openIntyg = function(intyg) {
+                        $state.go(intyg.intygType + '-edit', {
+                            certificateId: intyg.intygId
+                        });
                     };
-                    utkastNotifyService.onNotifyChange(utkast.intygId, utkast.intygType, utkast, utkast.updateState);
-                };
+
+                    // Handle forwarding
+                    $scope.openMailDialog = function(utkast) {
+                        utkast.updateState = {
+                            vidarebefordraInProgress: false
+                        };
+                        utkastNotifyService.notifyUtkast(utkast.intygId, utkast.intygType, utkast, utkast.updateState);
+                    };
+
+                    $scope.onNotifyChange = function(utkast) {
+                        utkast.updateState = {
+                            vidarebefordraInProgress: false
+                        };
+                        utkastNotifyService.onNotifyChange(utkast.intygId, utkast.intygType, utkast, utkast.updateState);
+                    };
+
+                    $scope.orderByProperty = function(property) {
+                        var ascending = false;
+                        if ($scope.filter.orderBy === property) {
+                            ascending = !$scope.filter.orderAscending;
+                        }
+                        $scope.sortingProperty = property;
+                        $scope.sortingAscending = ascending;
+                        $scope.onOrder({property: property, ascending: ascending});
+                    };
                 }
             };
         }

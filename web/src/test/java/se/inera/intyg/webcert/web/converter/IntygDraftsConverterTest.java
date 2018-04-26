@@ -81,7 +81,7 @@ public class IntygDraftsConverterTest {
         List<Utkast> utkastList = Collections.singletonList(TestIntygFactory.createUtkast(id, modfied, type, updatedSignedBy,
                 updatedSignedByHsaId, UtkastStatus.DRAFT_COMPLETE, patientId));
 
-        List<ListIntygEntry> res = IntygDraftsConverter.convertUtkastsToListIntygEntries(utkastList);
+        List<ListIntygEntry> res = IntygDraftsConverter.convertUtkastsToListIntygEntries(utkastList, null);
 
         assertNotNull(res);
         assertEquals(1, res.size());

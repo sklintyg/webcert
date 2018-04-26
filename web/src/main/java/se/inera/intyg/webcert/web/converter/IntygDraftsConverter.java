@@ -65,11 +65,15 @@ public class IntygDraftsConverter {
                 .collect(Collectors.toList());
     }
 
-    public static List<ListIntygEntry> convertUtkastsToListIntygEntries(List<Utkast> utkastList) {
+    public static List<ListIntygEntry> convertUtkastsToListIntygEntries(List<Utkast> utkastList, Comparator<ListIntygEntry> comparator) {
+
+        if (comparator == null) {
+            comparator = INTYG_ENTRY_DATE_COMPARATOR_DESC;
+        }
 
         return utkastList.stream()
                 .map(IntygDraftsConverter::convertUtkastToListIntygEntry)
-                .sorted(INTYG_ENTRY_DATE_COMPARATOR_DESC)
+                .sorted(comparator)
                 .collect(Collectors.toList());
     }
 

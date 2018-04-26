@@ -334,7 +334,7 @@ public class IntygServiceImpl implements IntygService {
     }
 
     private List<ListIntygEntry> buildIntygItemListFromDrafts(List<Utkast> drafts) {
-        return IntygDraftsConverter.convertUtkastsToListIntygEntries(drafts);
+        return IntygDraftsConverter.convertUtkastsToListIntygEntries(drafts, null);
     }
 
     private List<ListIntygEntry> getIntygFromWebcert(List<String> enhetId, Personnummer personnummer) {

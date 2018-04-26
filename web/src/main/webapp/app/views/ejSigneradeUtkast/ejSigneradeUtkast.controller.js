@@ -21,8 +21,8 @@
  * Controller for logic related to listing unsigned certs
  */
 angular.module('webcert').controller('webcert.EjSigneradeUtkastCtrl',
-    [ '$log', '$scope', '$timeout', '$window', 'common.dialogService', 'webcert.UtkastFilterModel', 'webcert.UtkastProxy', 'common.User',
-        function($log, $scope, $timeout, $window, dialogService, UtkastFilterModel, UtkastProxy, User) {
+    [ '$log', '$scope', '$timeout', '$window', 'common.dialogService', 'webcert.UtkastFilterModel', 'webcert.UtkastProxy', 'common.User', '$filter',
+        function($log, $scope, $timeout, $window, dialogService, UtkastFilterModel, UtkastProxy, User, $filter) {
             'use strict';
 
             // Constant settings
@@ -120,6 +120,38 @@ angular.module('webcert').controller('webcert.EjSigneradeUtkastCtrl',
                     $log.debug('Query Error');
                     $scope.widgetState.activeErrorMessageKey = 'info.query.error';
                 });
+            };
+
+            var propertyMap = {'intygsTyp': 'intygType',
+                'status':'status',
+                'senastSparadDatum':'lastUpdatedSigned',
+                'patientPersonnummer': 'patientId',
+                'senastSparadAv': 'updatedSignedBy',
+                'vidarebefordrad': 'vidarebefordrad'};
+
+            $scope.orderByProperty = function(property, ascending) {
+                $log.debug('orderByProperty');
+                $scope.filter.orderBy = property;
+                $scope.filter.orderAscending = ascending;
+                if(!$scope.showFetchMore()) {
+                    $scope.widgetState.currentList = $filter('orderBy')($scope.widgetState.currentList, propertyMap[property], ascending);
+                } else {
+                    $scope.widgetState.activeErrorMessageKey = null;
+                    $scope.filter.startFrom = 0;
+                    $scope.widgetState.initialQueryWasEmpty = false;
+                    $scope.widgetState.runningQuery = true;
+                    var filterQuery = $scope.filter.convertToPayload();
+
+                    UtkastProxy.getUtkastFetchMore(filterQuery, function(successData) {
+                        $scope.widgetState.runningQuery = false;
+                        $scope.widgetState.currentList = successData.results;
+                        $scope.widgetState.totalCount = successData.totalCount;
+                    }, function() {
+                        $scope.widgetState.runningQuery = false;
+                        $log.debug('Query Error');
+                        $scope.widgetState.activeErrorMessageKey = 'info.query.error';
+                    });
+                }
             };
 
         }]);

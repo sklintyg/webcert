@@ -19,6 +19,7 @@
 package se.inera.intyg.webcert.web.web.controller.api;
 
 import io.swagger.annotations.Api;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,10 +58,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -272,6 +270,8 @@ public class UtkastApiController extends AbstractApiController {
             utkastFilter.setNotified(filterParameters.getNotified());
             utkastFilter.setPageSize(filterParameters.getPageSize() == null ? DEFAULT_PAGE_SIZE : filterParameters.getPageSize());
             utkastFilter.setStartFrom(filterParameters.getStartFrom() == null ? 0 : filterParameters.getStartFrom());
+            utkastFilter.setOrderBy(filterParameters.getOrderBy() == null ? "" : filterParameters.getOrderBy());
+            utkastFilter.setOrderAscending(filterParameters.getOrderAscending() == null ? false : filterParameters.getOrderAscending());
         }
 
         return utkastFilter;
@@ -287,7 +287,7 @@ public class UtkastApiController extends AbstractApiController {
         filter.setPageSize(null);
 
         List<ListIntygEntry> listIntygEntries = IntygDraftsConverter
-                .convertUtkastsToListIntygEntries(utkastService.filterIntyg(filter));
+                .convertUtkastsToListIntygEntries(utkastService.filterIntyg(filter), getIntygComparator(filter.getOrderBy(), filter.getOrderAscending()));
 
         // INTYG-4486, INTYG-4086: Always filter out any items with UNDEFINED sekretessmarkering status and not
         // authorized
@@ -321,6 +321,37 @@ public class UtkastApiController extends AbstractApiController {
         QueryIntygResponse response = new QueryIntygResponse(listIntygEntries);
         response.setTotalCount(totalCountOfFilteredIntyg);
         return response;
+    }
+
+    private Comparator<ListIntygEntry> getIntygComparator(String orderBy, Boolean ascending) {
+        Comparator<ListIntygEntry> comparator;
+        switch (orderBy) {
+        case "intygsTyp":
+            comparator = Comparator.comparing(ListIntygEntry::getIntygType);
+            break;
+        case "status":
+            comparator = Comparator.comparing(ListIntygEntry::getStatus);
+            break;
+        case "patientPersonnummer":
+            comparator = (ie1, ie2) -> ie2.getPatientId().toString()
+                    .compareTo(ie1.getPatientId().toString());
+            break;
+        case "senastSparadAv":
+            comparator = Comparator.comparing(ListIntygEntry::getUpdatedSignedBy);
+            break;
+        case "vidareBefodrad":
+            comparator = (ie1, ie2) -> Boolean.compare(ie2.isVidarebefordrad(), ie1.isVidarebefordrad());
+            break;
+        case "senasteSparadDatum":
+        default:
+            comparator = Comparator.comparing(ListIntygEntry::getLastUpdatedSigned);
+            break;
+        }
+
+        if (!ascending) {
+            comparator = comparator.reversed();
+        }
+        return comparator;
     }
 
     private boolean passesSekretessCheck(Personnummer patientId, String intygsTyp, WebCertUser user,
