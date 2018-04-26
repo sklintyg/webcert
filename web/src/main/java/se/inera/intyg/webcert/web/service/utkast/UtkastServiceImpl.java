@@ -73,7 +73,7 @@ import java.util.stream.Collectors;
 public class UtkastServiceImpl implements UtkastService {
 
     private static final List<UtkastStatus> ALL_DRAFT_STATUSES = Arrays.asList(UtkastStatus.DRAFT_COMPLETE,
-            UtkastStatus.DRAFT_INCOMPLETE);
+            UtkastStatus.DRAFT_INCOMPLETE, UtkastStatus.DRAFT_LOCKED);
 
     private static final Logger LOG = LoggerFactory.getLogger(UtkastServiceImpl.class);
     private static final String INTYG_INDICATOR = "intyg";
