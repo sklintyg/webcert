@@ -115,7 +115,7 @@ angular.module('webcert').constant('webcert.messages', {
         'th.label.draft-type': 'Typ av intyg',
         'th.help.draft-type': 'Typ av intyg.',
         'th.label.draft-status': 'Status',
-        'th.help.draft-status': 'Visar utkastets status:<ul><li>Utkast, uppgifter saknas = utkastet är sparat, men obligatoriska uppgifter saknas</li><li>Utkast, kan signeras = utkastet är komplett, sparat och kan signeras</li></ul>',
+        'th.help.draft-status': 'Visar utkastets status:<ul><li>Utkast, uppgifter saknas = utkastet är sparat, men obligatoriska uppgifter saknas.</li><li>Utkast, kan signeras = utkastet är komplett, sparat och kan signeras.</li><li>Utkast, låst = Utkastet är låst.</li></ul>',
         'th.label.draft-saved-date': 'Senast sparat',
         'th.help.draft-saved-date': 'Datum och klockslag då utkastet senast sparades.',
         'th.label.draft-patient': 'Patient',

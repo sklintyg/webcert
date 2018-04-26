@@ -52,7 +52,7 @@ describe('wcUtkastFilterModel', function() {
 
         expect(payload.pageSize).toEqual(100);
         expect(payload.startFrom).toEqual(0);
-        expect(payload.complete).toBe(true); //soon change to status
+        expect(payload.status).toBe('DRAFT_COMPLETE');
         expect(payload.notified).toBe(false);
         expect(payload.savedFrom).toEqual('2018-02-03');
         expect(payload.savedTo).toEqual('2018-02-10');

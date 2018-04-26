@@ -43,9 +43,9 @@ angular.module('webcert').factory('webcert.UtkastFilterModel', [ '$filter', func
             label: 'Ej vidarebefordrade'
         } ];
 
-        this.status = 'STATUS_ALL';
+        this.status = null;
         this.statusOptions = [ {
-            id: 'STATUS_ALL',
+            id: null,
             label: 'Visa alla'
         }, {
             id: 'DRAFT_INCOMPLETE',
@@ -53,6 +53,9 @@ angular.module('webcert').factory('webcert.UtkastFilterModel', [ '$filter', func
         }, {
             id: 'DRAFT_COMPLETE',
             label: 'Kan signeras'
+        }, {
+            id: 'DRAFT_LOCKED',
+            label: 'Låsta'
         } ];
 
         this.savedFrom = undefined; //Date
@@ -76,24 +79,13 @@ angular.module('webcert').factory('webcert.UtkastFilterModel', [ '$filter', func
             }
         }
 
-        function convertStatus(value) {
-            //Can be removed when using status string (to be able to indicate LOCKED status) and no longer 3-state boolean in api.
-            switch (value) {
-            case 'DRAFT_INCOMPLETE':
-                return false;
-            case 'DRAFT_COMPLETE':
-                return true;
-            default:
-                return undefined;
-            }
-        }
         var query = {
             startFrom: this.startFrom,
             pageSize: this.pageSize
         };
         query.savedBy = this.savedBy;
         query.notified = convertNotified(this.notified);
-        query.complete = convertStatus(this.status); //change to status when converted to utkaststatus
+        query.status = this.status;
 
         query.savedFrom = $filter('date')(this.savedFrom, 'yyyy-MM-dd');
         if (this.savedTo) {
