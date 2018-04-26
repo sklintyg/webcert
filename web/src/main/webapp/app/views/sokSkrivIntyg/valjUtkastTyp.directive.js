@@ -60,7 +60,12 @@ angular.module('webcert').directive('wcValjUtkastTyp',
                     var replacedIntyg = IntygTypeSelectorModel.intygTypes.filter(function (intygType) {
                         return (intygType.id === replacedIntygsType);
                     })[0];
-                    return messageService.getProperty('info.intygstyp.replaced', {oldIntygstyp: selectedIntyg.label, newIntygstyp: replacedIntyg.label});
+
+                    if(selectedIntyg && replacedIntyg){
+                        return messageService.getProperty('info.intygstyp.replaced', {oldIntygstyp: selectedIntyg.label, newIntygstyp: replacedIntyg.label});
+                    }
+
+                    return null;
                 };
                 scope.getDetailedDescription = function (intygsType) {
                     var intygTypes = IntygTypeSelectorModel.intygTypes.filter(function (intygType) {
