@@ -23,7 +23,7 @@
 /* globals browser */
 'use strict';
 
-var intygTypeSelector = element(by.id('intygType'));
+var intygTypeSelector = element(by.id('select-intyg-type-table'));
 
 module.exports = {
 

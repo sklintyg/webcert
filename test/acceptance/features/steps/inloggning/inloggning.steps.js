@@ -204,8 +204,11 @@ Given(/^jag går in på att skapa ett "([^"]*)" intyg$/, function(intygsTyp) {
 
 
 Given(/^ska jag inte kunna skapa ett "([^"]*)" intyg$/, function(intygsTyp) {
-    return expect(sokSkrivIntygUtkastTypePage.intygTypeSelector.all(by.css('option[label="' + intygsTyp + '"]')).first().isPresent()).to.become(false).then(function() {
-        logger.info('OK - intygstypen finns i listan med valbara intygstyper');
+    return sokSkrivIntygUtkastTypePage.intygTypeTable.getText().then(function(txt) {
+        console.log(txt);
+        return expect(txt).to.not.contain(intygsTyp);
+    }).then(function() {
+        logger.info('OK - intygstypen finns inte i listan med valbara intygstyper');
     }, function(reason) {
         throw ('FEL : ' + reason);
     });

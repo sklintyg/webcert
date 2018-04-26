@@ -26,7 +26,7 @@
 module.exports = {
     sekretessmarkering: element(by.id('sekretessmarkering')),
     namnFortsatt: element(by.id('namnFortsatt')),
-
+    intygTypeTable: element(by.id('select-intyg-type-table')),
     get: function() {
         browser.get('#/create/choose-intyg-type/default/index');
     },
