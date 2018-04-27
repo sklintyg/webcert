@@ -1,15 +1,7 @@
-<!-- No intyg for person -->
-
-<div ng-if="!viewState.intygListErrorMessageKey && viewState.currentList.length < 1">
-  <div id="current-list-noResults-unit" class="sokskriv-container">
-     <img id="sokskriv-image-wrapper" src="/img/sok_skriv.png"/>
-    <span dynamic-label key="info.nointygfound"></span>
-  </div>
-</div>
 
 <!-- Tidigare intyg table -->
 
-<div ng-if="viewState.intygListErrorMessageKey">
+<div>
   <div class="wc-patient-icon-gutter sok-skriv-gutter" style="padding-left: 98px;"> <!-- style overrides to compensate for 15px container padding -->
     <i class="icon-wc-ikon-24 gutter-icon icon-wc-32" style="left: 31px;"></i> <!-- style overrides to compensate for 15px container padding -->
     <h2 class="patient-intyg-heading">Tidigare intyg</h2>
