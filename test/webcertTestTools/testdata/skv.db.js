@@ -37,10 +37,12 @@ function getDodsdatum(datumSakert) {
             }
         };
     } else {
-        var monthArr = ['00 (ej känt)', '01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12'];
+        var monthArr = ['00', '01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12'];
+        let year = deathDate.getYear() + 1900;
+
         return {
             inteSakert: {
-                year: shuffle(['2017', '2018', '0000 (ej känt)'])[0],
+                year: shuffle([String(year), String(year - 1), '0000'])[0],
                 month: shuffle(monthArr.slice(0, today.getMonth() - 1))[0],
                 antraffadDod: testdataHelper.dateFormat(today)
             }
@@ -67,7 +69,7 @@ module.exports = {
             intygsID = testdataHelper.generateTestGuid();
         }
 
-        var datumSakert = testdataHelper.randomTrueFalse();
+        let datumSakert = testdataHelper.randomTrueFalse();
 
         var obj = {
             id: intygsID,

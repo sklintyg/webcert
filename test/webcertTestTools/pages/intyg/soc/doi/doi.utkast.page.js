@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*globals element,by, Promise, protractor, browser*/
+/*globals element,by, Promise, protractor, browser */
 'use strict';
 
 var BaseSocUtkast = require('../soc.base.utkast.page.js');
@@ -43,11 +43,15 @@ var doiUtkast = BaseSocUtkast._extend({
                 checkbox: element(by.id('dodsdatumSakertNo')),
                 month: {
                     dropDown: element(by.id('dodsdatum-month')),
-                    options: element(by.id('dodsdatum-month')).all(by.css('span'))
+                    option: function(month) {
+                        return element(by.id('dodsdatum-month-' + month));
+                    }
                 },
                 year: {
                     dropDown: element(by.id('dodsdatum-year')),
-                    options: element(by.id('dodsdatum-year')).all(by.css('span'))
+                    option: function(year) {
+                        return element(by.id('dodsdatum-year-' + year));
+                    }
                 },
                 antraffadDod: element(by.id('datepicker_antraffatDodDatum'))
             }
@@ -161,19 +165,13 @@ var doiUtkast = BaseSocUtkast._extend({
                 //Väntar på drop-down att öppnas
                 return browser.sleep(500);
             }).then(function() {
-                return dodsdatumElm.inteSakert.year.options.getByText(dodsdatum.inteSakert.year);
-            }).then(function(elm) {
-                return elm.click();
-
+                return dodsdatumElm.inteSakert.year.option(dodsdatum.inteSakert.year).click();
             }).then(function() {
-                if (dodsdatum.inteSakert.year !== '0000 (ej känt)') {
+                if (dodsdatum.inteSakert.year !== '0000') {
                     return dodsdatumElm.inteSakert.month.dropDown.click().then(function() {
-                        //Väntar på drop-down att öppnas
                         return browser.sleep(500);
                     }).then(function() {
-                        return dodsdatumElm.inteSakert.month.options.getByText(dodsdatum.inteSakert.month);
-                    }).then(function(monthElm) {
-                        return monthElm.click();
+                        return dodsdatumElm.inteSakert.month.option(dodsdatum.inteSakert.month).click();
                     });
                 }
                 return;

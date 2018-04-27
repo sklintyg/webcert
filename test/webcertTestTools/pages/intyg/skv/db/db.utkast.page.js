@@ -43,11 +43,15 @@ var DbUtkast = BaseSkvUtkast._extend({
                 checkbox: element(by.id('dodsdatumSakertNo')),
                 month: {
                     dropDown: element(by.id('dodsdatum-month')),
-                    options: element(by.id('dodsdatum-month')).all(by.css('span'))
+                    option: function(month) {
+                        return element(by.id('dodsdatum-month-' + month));
+                    }
                 },
                 year: {
                     dropDown: element(by.id('dodsdatum-year')),
-                    options: element(by.id('dodsdatum-year')).all(by.css('span'))
+                    option: function(year) {
+                        return element(by.id('dodsdatum-year-' + year));
+                    }
                 },
                 antraffadDod: element(by.id('datepicker_antraffatDodDatum'))
             }
@@ -121,28 +125,24 @@ var DbUtkast = BaseSkvUtkast._extend({
             });
         } else {
             return moveAndSendKeys(dodsdatumElm.inteSakert.checkbox, protractor.Key.SPACE).then(function() {
-                //Väntar på att fältet ska expandera
                 return browser.sleep(500);
             }).then(function() {
                 return dodsdatumElm.inteSakert.year.dropDown.click();
+
             }).then(function() {
+                //Väntar på drop-down att öppnas
                 return browser.sleep(500);
             }).then(function() {
-                return dodsdatumElm.inteSakert.year.options.getByText(dodsdatum.inteSakert.year);
-            }).then(function(elm) {
-                return elm.click();
+                return dodsdatumElm.inteSakert.year.option(dodsdatum.inteSakert.year).click();
             }).then(function() {
-                if (dodsdatum.inteSakert.year !== '0000 (ej känt)') {
+                if (dodsdatum.inteSakert.year !== '0000') {
                     return dodsdatumElm.inteSakert.month.dropDown.click().then(function() {
                         return browser.sleep(500);
                     }).then(function() {
-                        return dodsdatumElm.inteSakert.month.options.getByText(dodsdatum.inteSakert.month);
-                    }).then(function(monthElm) {
-                        return monthElm.click();
+                        return dodsdatumElm.inteSakert.month.option(dodsdatum.inteSakert.month).click();
                     });
-                } else {
-                    return;
                 }
+                return;
             }).then(function() {
                 return moveAndSendKeys(dodsdatumElm.inteSakert.antraffadDod, dodsdatum.inteSakert.antraffadDod);
             });
