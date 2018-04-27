@@ -1,9 +1,9 @@
 angular.module('webcert').directive('wcTidigareIntyg',
-    ['common.PatientModel', 'common.messageService', 'common.authorityService', 'common.UserModel',
+    ['$filter','common.PatientModel', 'common.messageService', 'common.authorityService', 'common.UserModel',
     'webcert.IntygTypeSelectorModel', '$location', 'common.IntygCopyActions',
-    'common.IntygFornyaRequestModel',
-    function(PatientModel, messageService, authorityService, UserModel, IntygTypeSelectorModel, 
-        $location, CommonIntygCopyActions, IntygFornyaRequestModel) {
+    'common.IntygFornyaRequestModel', 'webcert.SokSkrivValjUtkastService',
+    function($filter, PatientModel, messageService, authorityService, UserModel, IntygTypeSelectorModel,
+        $location, CommonIntygCopyActions, IntygFornyaRequestModel, SokSkrivValjUtkastService) {
         'use strict';
 
         return {
@@ -65,6 +65,10 @@ angular.module('webcert').directive('wcTidigareIntyg',
                         return intygTypes[0].label;
                     }
                 };
+                scope.$watch('viewState.intygFilter', function() {
+                    SokSkrivValjUtkastService.updateIntygList(scope.viewState);
+                });
+
             },
             templateUrl: '/app/views/sokSkrivIntyg/tidigareIntyg.directive.html'
         };

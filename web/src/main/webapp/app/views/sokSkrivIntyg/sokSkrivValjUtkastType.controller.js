@@ -17,12 +17,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 angular.module('webcert').controller('webcert.SokSkrivValjUtkastTypeCtrl',
-    ['$filter', '$log', '$scope', '$stateParams', '$state', '$location',
+    ['$log', '$scope', '$stateParams', '$state', '$location',
         'webcert.SokSkrivIntygViewstate', 'webcert.IntygTypeSelectorModel', 'common.PatientModel',
         'webcert.IntygProxy', 'webcert.UtkastProxy', 'webcert.SokSkrivValjUtkastService', 'common.ObjectHelper',
         'common.UtkastProxy', 'common.authorityService', 'common.UserModel', 'common.moduleService',
 
-        function($filter, $log, $scope, $stateParams, $state, $location,
+        function($log, $scope, $stateParams, $state, $location,
             Viewstate, IntygTypeSelectorModel, PatientModel,
             IntygProxy, UtkastProxy, Service, ObjectHelper,
             commonUtkastProxy, authorityService, UserModel, moduleService) {
@@ -103,7 +103,7 @@ angular.module('webcert').controller('webcert.SokSkrivValjUtkastTypeCtrl',
                 Viewstate.tidigareIntygLoading = true;
                 IntygProxy.getIntygForPatient(PatientModel.personnummer, function(data) {
                     Viewstate.intygListUnhandled = data;
-                    $scope.updateIntygList();
+                    Service.updateIntygList(Viewstate);
                     Viewstate.unsigned = Service.hasUnsigned(Viewstate.currentList);
                     Viewstate.tidigareIntygLoading = false;
                 }, function(errorData, errorCode) {
@@ -116,14 +116,6 @@ angular.module('webcert').controller('webcert.SokSkrivValjUtkastTypeCtrl',
             /**
              * Watches
              */
-            $scope.$watch('viewState.intygFilter', function() {
-                $scope.updateIntygList();
-            });
-
-            $scope.updateIntygList = function() {
-                Viewstate.currentList =
-                    $filter('TidigareIntygFilter')(Viewstate.intygListUnhandled, Viewstate.intygFilter);
-            };
 
             //Use loaded module metadata to look up name for a intygsType
             $scope.getTypeName = function(intygsType) {

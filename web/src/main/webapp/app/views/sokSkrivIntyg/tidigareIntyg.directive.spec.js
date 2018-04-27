@@ -102,6 +102,8 @@ describe('SokSkrivValjUtkastTypeCtrl', function() {
                     PatientModelMock.personnummer = personnummer;
                     deferred.resolve(PatientModelMock);
                     return deferred.promise;
+                },
+                updateIntygList: function updateIntygList(viewState) {
                 }
             };
             $provide.value('webcert.SokSkrivValjUtkastService', SokSkrivValjUtkastService);

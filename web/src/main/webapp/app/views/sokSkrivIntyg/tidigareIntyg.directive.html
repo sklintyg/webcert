@@ -1,7 +1,16 @@
+<!-- Inga tidigare intyg att visa -->
+
+<div ng-if="!viewState.intygListErrorMessageKey && viewState.intygListUnhandled.length === 0">
+  <div id="current-list-noResults-unit" class="sokskriv-container">
+    <img id="sokskriv-image-wrapper" src="/img/sok_skriv.png"/>
+    <span dynamic-label key="info.nointygfound"></span>
+  </div>
+</div>
 
 <!-- Tidigare intyg table -->
 
-<div>
+<wc-spinner label="info.loadingdata" show-spinner="viewState.tidigareIntygLoading">
+<div ng-if="viewState.intygListUnhandled.length > 0">
   <div class="wc-patient-icon-gutter sok-skriv-gutter">
     <i class="icon-wc-ikon-24 gutter-icon icon-wc-32"></i>
     <h2 class="patient-intyg-heading">Tidigare intyg</h2>
@@ -27,7 +36,6 @@
         </wc-radio-wrapper>
       </div>
 
-      <wc-spinner label="info.loadingdata" show-spinner="viewState.tidigareIntygLoading">
         <div id="intygLista">
 
           <!-- error message -->

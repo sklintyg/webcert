@@ -18,8 +18,8 @@
  */
 
 angular.module('webcert').factory('webcert.SokSkrivValjUtkastService',
-    [ '$q', 'common.PersonIdValidatorService', 'common.PatientProxy', 'common.ObjectHelper',
-        function($q, PersonIdValidator, PatientProxy, ObjectHelper) {
+    [ '$q', '$filter', 'common.PersonIdValidatorService', 'common.PatientProxy', 'common.ObjectHelper',
+        function($q, $filter, PersonIdValidator, PatientProxy, ObjectHelper) {
             'use strict';
 
             function _setupPatientModel(PatientModel, patientIdParam){
@@ -112,10 +112,18 @@ angular.module('webcert').factory('webcert.SokSkrivValjUtkastService',
                 }
             }
 
+
+            function _updateIntygList(Viewstate) {
+                Viewstate.currentList =
+                    $filter('TidigareIntygFilter')(Viewstate.intygListUnhandled, Viewstate.intygFilter);
+            }
+
+
             // Return public API for the service
             return {
                 setupPatientModel: _setupPatientModel,
                 lookupPatient: _lookupPatient,
-                hasUnsigned: _hasUnsigned
+                hasUnsigned: _hasUnsigned,
+                updateIntygList: _updateIntygList
             };
         }]);
