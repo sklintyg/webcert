@@ -41,6 +41,8 @@ exports.config = {
         shardTestFiles: false,
         maxInstances: 1,
         browserName: 'firefox',
+		marionette: true,
+		acceptInsecureCerts: true,
         // browserName: 'internet explorer',
         // 'phantomjs.binary.path': './node_modules/karma-phantomjs-launcher/node_modules/phantomjs/bin/phantomjs',
         //'phantomjs.cli.args': '--debug=true --webdriver --webdriver-logfile=webdriver.log --webdriver-loglevel=DEBUG',
