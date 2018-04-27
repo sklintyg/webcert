@@ -39,7 +39,7 @@ wc-valj-utkast-typ {
   .card {
     box-shadow: 0 2px 4px 0 $black_12;
     border: 1px solid $wc-color-27;
-    max-height: 380px;
+    max-height: 390px;
     overflow: hidden;
     overflow-y: auto;
   }
@@ -72,7 +72,7 @@ wc-valj-utkast-typ {
     .flex-list-col {
       display: flex;
       flex-direction: column;
-      padding: 10px 10px 10px 25px;
+      padding: 8px 8px 8px 20px;
     }
   }
 }
