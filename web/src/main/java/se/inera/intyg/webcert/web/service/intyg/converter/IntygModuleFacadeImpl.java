@@ -25,6 +25,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.common.support.model.CertificateState;
 import se.inera.intyg.common.support.model.Status;
+import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
@@ -56,17 +57,17 @@ public class IntygModuleFacadeImpl implements IntygModuleFacade {
 
     @Override
     public IntygPdf convertFromInternalToPdfDocument(String intygType, String internalIntygJsonModel, List<Status> statuses,
-            boolean isEmployer)
+                                                     UtkastStatus utkastStatus, boolean isEmployer)
             throws IntygModuleFacadeException {
-        boolean isUtkast = isUtkast(statuses);
+
         try {
             ModuleApi moduleApi = moduleRegistry.getModuleApi(intygType);
             PdfResponse pdfResponse;
             if (!isEmployer) {
-                pdfResponse = moduleApi.pdf(internalIntygJsonModel, statuses, ApplicationOrigin.WEBCERT, isUtkast);
+                pdfResponse = moduleApi.pdf(internalIntygJsonModel, statuses, ApplicationOrigin.WEBCERT, utkastStatus);
             } else {
                 pdfResponse = moduleApi.pdfEmployer(internalIntygJsonModel, statuses, ApplicationOrigin.WEBCERT, Collections.emptyList(),
-                        isUtkast);
+                        utkastStatus);
             }
             return new IntygPdf(pdfResponse.getPdfData(), pdfResponse.getFilename());
         } catch (ModuleException me) {

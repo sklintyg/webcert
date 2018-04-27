@@ -27,7 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
-import se.inera.intyg.webcert.common.model.UtkastStatus;
+import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.webcert.common.model.WebcertCertificateRelation;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepositoryCustom;
 import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;

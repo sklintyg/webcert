@@ -18,7 +18,7 @@
  */
 package se.inera.intyg.webcert.web.web.controller.api.dto;
 
-import se.inera.intyg.webcert.common.model.UtkastStatus;
+import se.inera.intyg.common.support.model.UtkastStatus;
 
 import java.time.LocalDateTime;
 

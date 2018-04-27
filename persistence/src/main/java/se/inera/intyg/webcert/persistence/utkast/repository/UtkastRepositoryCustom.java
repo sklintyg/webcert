@@ -26,7 +26,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
 import se.inera.intyg.webcert.common.model.GroupableItem;
-import se.inera.intyg.webcert.common.model.UtkastStatus;
+import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.webcert.common.model.WebcertCertificateRelation;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 

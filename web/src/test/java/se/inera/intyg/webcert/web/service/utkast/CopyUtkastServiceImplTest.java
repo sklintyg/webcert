@@ -35,7 +35,7 @@ import se.inera.intyg.infra.integration.pu.model.Person;
 import se.inera.intyg.infra.integration.pu.model.PersonSvar;
 import se.inera.intyg.infra.integration.pu.services.PUService;
 import se.inera.intyg.schemas.contract.Personnummer;
-import se.inera.intyg.webcert.common.model.UtkastStatus;
+import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.webcert.common.model.WebcertCertificateRelation;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;

@@ -22,7 +22,7 @@ import org.hibernate.annotations.Type;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.peristence.dao.util.DaoUtil;
 import se.inera.intyg.schemas.contract.Personnummer;
-import se.inera.intyg.webcert.common.model.UtkastStatus;
+import se.inera.intyg.common.support.model.UtkastStatus;
 
 import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;

@@ -20,7 +20,7 @@ package se.inera.intyg.webcert.persistence.utkast.repository;
 
 import com.google.common.base.Strings;
 import org.springframework.transaction.annotation.Transactional;
-import se.inera.intyg.webcert.common.model.UtkastStatus;
+import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 
 import javax.persistence.EntityManager;

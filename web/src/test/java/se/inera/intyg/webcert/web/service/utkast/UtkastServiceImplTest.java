@@ -48,7 +48,7 @@ import se.inera.intyg.infra.security.common.model.Role;
 import se.inera.intyg.infra.security.common.model.UserDetails;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.GroupableItem;
-import se.inera.intyg.webcert.common.model.UtkastStatus;
+import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Signatur;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;

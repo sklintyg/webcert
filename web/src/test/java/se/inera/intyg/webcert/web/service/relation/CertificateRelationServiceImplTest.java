@@ -41,7 +41,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
-import se.inera.intyg.webcert.common.model.UtkastStatus;
+import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.webcert.common.model.WebcertCertificateRelation;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepositoryCustom;
 import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;

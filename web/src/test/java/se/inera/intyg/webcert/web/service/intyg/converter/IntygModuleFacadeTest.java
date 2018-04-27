@@ -27,6 +27,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.test.util.ReflectionTestUtils;
 import se.inera.intyg.common.support.model.CertificateState;
 import se.inera.intyg.common.support.model.Status;
+import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
@@ -84,23 +85,23 @@ public class IntygModuleFacadeTest {
     public void testConvertFromInternalToPdfDocument() throws IntygModuleFacadeException, ModuleException {
         byte[] pdfData = "PDFDATA".getBytes();
         PdfResponse pdfResp = new PdfResponse(pdfData, "file.pdf");
-        when(moduleApi.pdf(anyString(), anyList(), any(ApplicationOrigin.class), eq(false))).thenReturn(pdfResp);
+        when(moduleApi.pdf(anyString(), anyList(), any(ApplicationOrigin.class), eq(UtkastStatus.SIGNED))).thenReturn(pdfResp);
 
         IntygPdf intygPdf = moduleFacade.convertFromInternalToPdfDocument(CERTIFICATE_TYPE, INT_JSON,
-                Arrays.asList(new Status(CertificateState.RECEIVED, "", LocalDateTime.now())), false);
+                Arrays.asList(new Status(CertificateState.RECEIVED, "", LocalDateTime.now())), UtkastStatus.SIGNED, false);
         assertNotNull(intygPdf.getPdfData());
         assertEquals("file.pdf", intygPdf.getFilename());
 
-        verify(moduleApi).pdf(anyString(), anyList(), eq(ApplicationOrigin.WEBCERT), eq(false));
+        verify(moduleApi).pdf(anyString(), anyList(), eq(ApplicationOrigin.WEBCERT), eq(UtkastStatus.SIGNED));
     }
 
     @SuppressWarnings("unchecked")
     @Test(expected = IntygModuleFacadeException.class)
     public void testConvertFromInternalToPdfDocumentModuleException() throws IntygModuleFacadeException, ModuleException {
-        when(moduleApi.pdf(anyString(), anyList(), any(ApplicationOrigin.class), eq(false))).thenThrow(new ModuleException(""));
+        when(moduleApi.pdf(anyString(), anyList(), any(ApplicationOrigin.class), eq(UtkastStatus.SIGNED))).thenThrow(new ModuleException(""));
 
         moduleFacade.convertFromInternalToPdfDocument(CERTIFICATE_TYPE, INT_JSON,
-                Arrays.asList(new Status(CertificateState.RECEIVED, "", LocalDateTime.now())), false);
+                Arrays.asList(new Status(CertificateState.RECEIVED, "", LocalDateTime.now())), UtkastStatus.SIGNED, false);
     }
 
     @Test(expected = IntygModuleFacadeException.class)
@@ -109,7 +110,7 @@ public class IntygModuleFacadeTest {
         when(moduleRegistry.getModuleApi(CERTIFICATE_TYPE)).thenThrow(new ModuleNotFoundException());
 
         moduleFacade.convertFromInternalToPdfDocument(CERTIFICATE_TYPE, INT_JSON,
-                Arrays.asList(new Status(CertificateState.RECEIVED, "", LocalDateTime.now())), false);
+                Arrays.asList(new Status(CertificateState.RECEIVED, "", LocalDateTime.now())), UtkastStatus.SIGNED, false);
     }
 
     @SuppressWarnings("unchecked")
@@ -117,14 +118,14 @@ public class IntygModuleFacadeTest {
     public void testConvertFromInternalToPdfDocumentEmployer() throws IntygModuleFacadeException, ModuleException {
         byte[] pdfData = "PDFDATA".getBytes();
         PdfResponse pdfResp = new PdfResponse(pdfData, "file.pdf");
-        when(moduleApi.pdfEmployer(anyString(), anyList(), any(ApplicationOrigin.class), anyList(), eq(false))).thenReturn(pdfResp);
+        when(moduleApi.pdfEmployer(anyString(), anyList(), any(ApplicationOrigin.class), anyList(), eq(UtkastStatus.SIGNED))).thenReturn(pdfResp);
 
         IntygPdf intygPdf = moduleFacade.convertFromInternalToPdfDocument(CERTIFICATE_TYPE, INT_JSON,
-                Arrays.asList(new Status(CertificateState.RECEIVED, "", LocalDateTime.now())), true);
+                Arrays.asList(new Status(CertificateState.RECEIVED, "", LocalDateTime.now())), UtkastStatus.SIGNED, true);
         assertNotNull(intygPdf.getPdfData());
         assertEquals("file.pdf", intygPdf.getFilename());
 
-        verify(moduleApi).pdfEmployer(anyString(), anyList(), eq(ApplicationOrigin.WEBCERT), anyList(), eq(false));
+        verify(moduleApi).pdfEmployer(anyString(), anyList(), eq(ApplicationOrigin.WEBCERT), anyList(), eq(UtkastStatus.SIGNED));
     }
 
     @Test

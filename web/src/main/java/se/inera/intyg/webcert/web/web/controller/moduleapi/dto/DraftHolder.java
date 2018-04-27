@@ -19,7 +19,7 @@
 package se.inera.intyg.webcert.web.web.controller.moduleapi.dto;
 
 import com.fasterxml.jackson.annotation.JsonRawValue;
-import se.inera.intyg.webcert.common.model.UtkastStatus;
+import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
 
 import java.time.LocalDateTime;

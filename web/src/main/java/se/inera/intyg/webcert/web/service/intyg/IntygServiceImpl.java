@@ -55,7 +55,7 @@ import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.SekretessStatus;
-import se.inera.intyg.webcert.common.model.UtkastStatus;
+import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.webcert.common.model.WebcertCertificateRelation;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
@@ -369,9 +369,11 @@ public class IntygServiceImpl implements IntygService {
         try {
             LOG.debug("Fetching intyg '{}' as PDF", intygsId);
 
-            IntygContentHolder intyg = getIntygDataPreferWebcert(intygsId, intygsTyp);
+            Utkast utkast = utkastRepository.findOne(intygsId);
+            IntygContentHolder intyg = (utkast != null) ? buildIntygContentHolderForUtkast(utkast, false)
+                    : getIntygData(intygsId, intygsTyp, false);
+            UtkastStatus utkastStatus = (utkast != null) ? utkast.getStatus() : UtkastStatus.SIGNED;
 
-            //
             verifyPuServiceAvailable(intyg);
 
             boolean coherentJournaling = userIsDjupintegreradWithSjf();
@@ -380,7 +382,7 @@ public class IntygServiceImpl implements IntygService {
             }
 
             IntygPdf intygPdf = modelFacade.convertFromInternalToPdfDocument(intygsTyp, intyg.getContents(), intyg.getStatuses(),
-                    isEmployer);
+                    utkastStatus, isEmployer);
 
             // Log print as PDF to PDL log
             logPdfPrinting(intyg, coherentJournaling);

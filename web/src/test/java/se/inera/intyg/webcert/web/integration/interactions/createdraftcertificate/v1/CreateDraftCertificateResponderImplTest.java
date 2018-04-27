@@ -31,7 +31,7 @@ import se.inera.intyg.common.support.model.common.internal.Vardgivare;
 import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
 import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.infra.security.exception.MissingMedarbetaruppdragException;
-import se.inera.intyg.webcert.common.model.UtkastStatus;
+import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.webcert.integration.tak.model.TakResult;
 import se.inera.intyg.webcert.integration.tak.service.TakService;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;

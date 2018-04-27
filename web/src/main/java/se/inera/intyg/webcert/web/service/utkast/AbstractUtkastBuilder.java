@@ -38,7 +38,7 @@ import se.inera.intyg.common.support.modules.support.api.dto.ValidateDraftRespon
 import se.inera.intyg.common.support.modules.support.api.dto.ValidationStatus;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
 import se.inera.intyg.infra.integration.pu.model.Person;
-import se.inera.intyg.webcert.common.model.UtkastStatus;
+import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;

@@ -37,7 +37,7 @@ import se.inera.intyg.infra.security.common.model.AuthenticationMethod;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.infra.xmldsig.model.SignatureType;
-import se.inera.intyg.webcert.common.model.UtkastStatus;
+import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.PagaendeSignering;

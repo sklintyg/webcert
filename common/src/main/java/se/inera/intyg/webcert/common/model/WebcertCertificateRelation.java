@@ -19,6 +19,7 @@
 package se.inera.intyg.webcert.common.model;
 
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
+import se.inera.intyg.common.support.model.UtkastStatus;
 
 import java.time.LocalDateTime;
 

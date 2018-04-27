@@ -20,7 +20,7 @@ package se.inera.intyg.webcert.web.test;
 
 import se.inera.intyg.common.support.model.CertificateState;
 import se.inera.intyg.schemas.contract.Personnummer;
-import se.inera.intyg.webcert.common.model.UtkastStatus;
+import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;

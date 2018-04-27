@@ -27,7 +27,7 @@ import org.springframework.core.io.ClassPathResource;
 import se.inera.intyg.common.fk7263.model.internal.Fk7263Utlatande;
 import se.inera.intyg.common.support.modules.support.api.dto.CertificateMetaData;
 import se.inera.intyg.common.support.modules.support.api.dto.CertificateResponse;
-import se.inera.intyg.webcert.common.model.UtkastStatus;
+import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.web.service.certificatesender.CertificateSenderException;

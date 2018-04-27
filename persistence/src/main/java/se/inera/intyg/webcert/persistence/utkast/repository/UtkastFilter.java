@@ -18,7 +18,7 @@
  */
 package se.inera.intyg.webcert.persistence.utkast.repository;
 
-import se.inera.intyg.webcert.common.model.UtkastStatus;
+import se.inera.intyg.common.support.model.UtkastStatus;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;

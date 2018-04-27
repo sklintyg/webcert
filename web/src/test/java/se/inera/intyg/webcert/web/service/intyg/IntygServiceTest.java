@@ -37,7 +37,6 @@ import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.model.CertificateState;
-import se.inera.intyg.common.support.model.StatusKod;
 import se.inera.intyg.common.support.model.common.internal.Patient;
 import se.inera.intyg.common.support.modules.registry.IntygModule;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
@@ -53,7 +52,7 @@ import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.SekretessStatus;
-import se.inera.intyg.webcert.common.model.UtkastStatus;
+import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
 import se.inera.intyg.webcert.persistence.utkast.model.Signatur;
@@ -776,7 +775,7 @@ public class IntygServiceTest {
     @Test
     public void testFetchIntygAsPdfFromWebCert() throws IOException, IntygModuleFacadeException {
         when(utkastRepository.findOne(CERTIFICATE_ID)).thenReturn(getIntyg(CERTIFICATE_ID, LocalDateTime.now(), null));
-        when(moduleFacade.convertFromInternalToPdfDocument(anyString(), anyString(), anyList(), anyBoolean()))
+        when(moduleFacade.convertFromInternalToPdfDocument(anyString(), anyString(), anyList(), any(UtkastStatus.class), anyBoolean()))
                 .thenReturn(buildPdfDocument());
         IntygPdf intygPdf = intygService.fetchIntygAsPdf(CERTIFICATE_ID, CERTIFICATE_TYPE, false);
         assertNotNull(intygPdf);
@@ -794,7 +793,7 @@ public class IntygServiceTest {
     @Test
     public void testFetchRevokedIntygAsPdfFromWebCert() throws IOException, IntygModuleFacadeException {
         when(utkastRepository.findOne(CERTIFICATE_ID)).thenReturn(getIntyg(CERTIFICATE_ID, LocalDateTime.now(), LocalDateTime.now()));
-        when(moduleFacade.convertFromInternalToPdfDocument(anyString(), anyString(), anyList(), anyBoolean()))
+        when(moduleFacade.convertFromInternalToPdfDocument(anyString(), anyString(), anyList(), any(UtkastStatus.class), anyBoolean()))
                 .thenReturn(buildPdfDocument());
         IntygPdf intygPdf = intygService.fetchIntygAsPdf(CERTIFICATE_ID, CERTIFICATE_TYPE, false);
         assertNotNull(intygPdf);
@@ -809,7 +808,7 @@ public class IntygServiceTest {
     @Test
     public void testFetchIntygAsPdfFromIntygstjansten() throws IOException, IntygModuleFacadeException {
         when(utkastRepository.findOne(CERTIFICATE_ID)).thenReturn(null);
-        when(moduleFacade.convertFromInternalToPdfDocument(anyString(), anyString(), anyList(), anyBoolean()))
+        when(moduleFacade.convertFromInternalToPdfDocument(anyString(), anyString(), anyList(), any(UtkastStatus.class), anyBoolean()))
                 .thenReturn(buildPdfDocument());
         IntygPdf intygPdf = intygService.fetchIntygAsPdf(CERTIFICATE_ID, CERTIFICATE_TYPE, false);
         assertNotNull(intygPdf);
@@ -845,7 +844,7 @@ public class IntygServiceTest {
         Fk7263Utlatande utlatande = objectMapper.readValue(draft.getModel(), Fk7263Utlatande.class);
 
         when(moduleFacade.getUtlatandeFromInternalModel(anyString(), anyString())).thenReturn(utlatande);
-        when(moduleFacade.convertFromInternalToPdfDocument(anyString(), anyString(), anyList(), anyBoolean()))
+        when(moduleFacade.convertFromInternalToPdfDocument(anyString(), anyString(), anyList(), any(UtkastStatus.class), anyBoolean()))
                 .thenReturn(buildPdfDocument());
 
         IntygPdf intygPdf = intygService.fetchIntygAsPdf(CERTIFICATE_ID, CERTIFICATE_TYPE, false);
@@ -872,7 +871,7 @@ public class IntygServiceTest {
         Fk7263Utlatande utlatande = objectMapper.readValue(draft.getModel(), Fk7263Utlatande.class);
 
         when(moduleFacade.getUtlatandeFromInternalModel(anyString(), anyString())).thenReturn(utlatande);
-        when(moduleFacade.convertFromInternalToPdfDocument(anyString(), anyString(), anyList(), anyBoolean()))
+        when(moduleFacade.convertFromInternalToPdfDocument(anyString(), anyString(), anyList(), any(UtkastStatus.class), anyBoolean()))
                 .thenReturn(buildPdfDocument());
         intygService.fetchIntygAsPdf(CERTIFICATE_ID, CERTIFICATE_TYPE, false);
 

@@ -18,7 +18,7 @@
  */
 package se.inera.intyg.webcert.web.service.utkast.dto;
 
-import se.inera.intyg.webcert.common.model.UtkastStatus;
+import se.inera.intyg.common.support.model.UtkastStatus;
 
 public class SaveDraftResponse {
 
