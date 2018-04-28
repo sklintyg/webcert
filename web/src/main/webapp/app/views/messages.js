@@ -79,7 +79,7 @@ angular.module('webcert').constant('webcert.messages', {
 
         //error messages
         'error.unsignedintyg.couldnotbeloaded': '<strong>Kunde inte hämta ej signerade intyg.</strong>',
-        'error.unansweredintyg.couldnotbeloaded': '<strong>Kunde inte hämta listan med ej hanterade frågor och svar.</strong>',
+        'error.unansweredintyg.couldnotbeloaded': '<strong>Kunde inte hämta listan med ej hanterade ärenden.</strong>',
         'error.readytosignintyg.couldnotbeloaded': '<strong>Kunde inte hämta intyg klara för signering.</strong>',
         'error.failedtocreateintyg': 'Kunde inte skapa intyget. Försök igen senare.',
         'error.failedtomakuleraintyg': 'Kunde inte makulera intyget. Försök igen senare.',
