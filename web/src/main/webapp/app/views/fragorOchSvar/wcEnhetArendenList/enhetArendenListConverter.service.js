@@ -36,7 +36,10 @@ angular.module('webcert').factory('webcert.enhetArendenConverterService',
             changedFrom: undefined,
             changedTo: undefined,
 
-            vantarPa: undefined
+            vantarPa: undefined,
+
+            orderBy: undefined,
+            orderAscending: false
         };
 
         function _convertFormModelToFilterQuery(filterForm, enhetId) {
@@ -82,6 +85,17 @@ angular.module('webcert').factory('webcert.enhetArendenConverterService',
                 filterQuery.vidarebefordrad = undefined;
             } else {
                 filterQuery.vidarebefordrad = filterForm.vidarebefordrad;
+            }
+
+            if (filterForm.orderAscending) {
+                filterQuery.orderAscending = filterForm.orderAscending;
+            } else {
+                filterQuery.orderAscending = filterForm.orderAscending;
+            }
+            if (filterForm.orderBy) {
+                filterQuery.orderBy = filterForm.orderBy;
+            } else {
+                filterQuery.orderBy = '';
             }
 
             return filterQuery;

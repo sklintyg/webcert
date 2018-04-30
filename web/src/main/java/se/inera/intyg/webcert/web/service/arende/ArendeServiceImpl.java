@@ -93,6 +93,18 @@ import java.util.stream.Collectors;
 @Transactional("jpaTransactionManager")
 public class ArendeServiceImpl implements ArendeService {
 
+    private static final String MAKULERING = "MAKULERING";
+    private static final String PAMINNELSE = "PAMINNELSE";
+    private static final String PAMINN = "PAMINN";
+    private static final String KOMPLETTERING_AV_LAKARINTYG = "KOMPLETTERING_AV_LAKARINTYG";
+    private static final String KOMPLT = "KOMPLT";
+
+    private static final String INGET = "Inget";
+    private static final String HANTERAT = "Markera som hanterad";
+    private static final String KOMPLETTERA = "Komplettera";
+    private static final String SVARA = "Svara";
+    private static final String INVANTA_SVAR = "Invänta svar från Försäkringskassan";
+
     private static final Logger LOG = LoggerFactory.getLogger(ArendeServiceImpl.class);
 
     private static final List<String> BLACKLISTED = Arrays.asList(Fk7263EntryPoint.MODULE_ID, TsBasEntryPoint.MODULE_ID,
@@ -442,7 +454,7 @@ public class ArendeServiceImpl implements ArendeService {
 
         QueryFragaSvarResponse fsResults = fragaSvarService.filterFragaSvar(filter);
         results.addAll(fsResults.getResults());
-        results.sort(Comparator.comparing(ArendeListItem::getReceivedDate).reversed());
+        results.sort(getComparator(filterParameters.getOrderBy(), filterParameters.getOrderAscending()));
         QueryFragaSvarResponse response = new QueryFragaSvarResponse();
 
         Map<Personnummer, SekretessStatus> sekretessStatusMap = patientDetailsResolver.getSekretessStatusForList(results.stream()
@@ -467,6 +479,62 @@ public class ArendeServiceImpl implements ArendeService {
             response.setResults(results.subList(originalStartFrom, Math.min(originalPageSize + originalStartFrom, results.size())));
         }
         return response;
+    }
+
+    private static String getAmneString(String amne, Status status, Boolean paminnelse) {
+        String amneString = "";
+        if (paminnelse) {
+            amneString = "Påminnelse: ";
+        }
+        if (status == Status.CLOSED) {
+            return amneString + INGET;
+        } else if (status == Status.ANSWERED || amne.equals(MAKULERING) || amne.equals(PAMINNELSE) || amne.equals(PAMINN)) {
+            return amneString + HANTERAT;
+        } else if (amne.equals(KOMPLETTERING_AV_LAKARINTYG) || amne.equals(KOMPLT)) {
+            return amneString + KOMPLETTERA;
+        } else if (status == Status.PENDING_INTERNAL_ACTION) {
+            return amneString + SVARA;
+        } else if (status == Status.PENDING_EXTERNAL_ACTION) {
+            return amneString + INVANTA_SVAR;
+        }
+        return "";
+    }
+
+    private Comparator<ArendeListItem> getComparator(String orderBy, Boolean ascending) {
+        Comparator<ArendeListItem> comparator;
+        if (orderBy == null) {
+            comparator = Comparator.comparing(ArendeListItem::getReceivedDate);
+        } else {
+            switch (orderBy) {
+                case "amne":
+                    comparator = (a1, a2) -> {
+                        return getAmneString(a1.getAmne(), a1.getStatus(), a1.isPaminnelse())
+                            .compareTo(getAmneString(a2.getAmne(), a2.getStatus(), a2.isPaminnelse()));
+                    };
+                    break;
+                case "fragestallare":
+                    comparator = Comparator.comparing(ArendeListItem::getFragestallare);
+                    break;
+                case "patientId":
+                    comparator = Comparator.comparing(ArendeListItem::getPatientId);
+                    break;
+                case "signeratAvNamn":
+                    comparator = Comparator.comparing(ArendeListItem::getSigneratAvNamn);
+                    break;
+                case "vidarebefodrad":
+                    comparator = Comparator.comparing(ArendeListItem::isVidarebefordrad);
+                    break;
+                case "receivedDate":
+                default:
+                    comparator = Comparator.comparing(ArendeListItem::getReceivedDate);
+                    break;
+            }
+        }
+
+        if (ascending == null || !ascending) {
+            comparator = comparator.reversed();
+        }
+        return comparator;
     }
 
     private boolean passesSekretessCheck(String patientId, String intygsTyp, WebCertUser user,

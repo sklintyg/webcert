@@ -32,12 +32,19 @@
           <table class="table table-striped wc-table-striped">
             <thead>
             <tr>
-              <th wc-table-head label-key="th.label.arende-action" help-key="th.help.arende-action"></th>
-              <th wc-table-head label-key="th.label.arende-sender" help-key="th.help.arende-sender"></th>
-              <th wc-table-head label-key="th.label.arende-patient" help-key="th.help.arende-patient"></th>
-              <th wc-table-head label-key="th.label.arende-signed-by" help-key="th.help.arende-signed-by"></th>
-              <th wc-table-head label-key="th.label.arende-sent-recv-date" help-key="th.help.arende-sent-recv-date"></th>
-              <th wc-table-head label-key="th.label.arende-forwarded" help-key="th.help.arende-forwarded" wc-authority="VIDAREBEFORDRA_FRAGASVAR" class="center"></th>
+              <th wc-table-head label-key="th.label.arende-action" help-key="th.help.arende-action"
+                  sorting="true" sorting-current="orderBy == 'amne'" sorting-ascending="orderAscending" ng-click="orderByProperty('amne')"></th>
+              <th wc-table-head label-key="th.label.arende-sender" help-key="th.help.arende-sender"
+                  sorting="true" sorting-current="orderBy == 'fragestallare'" sorting-ascending="orderAscending" ng-click="orderByProperty('fragestallare')"></th>
+              <th wc-table-head label-key="th.label.arende-patient" help-key="th.help.arende-patient"
+                  sorting="true" sorting-current="orderBy == 'patientId'" sorting-ascending="orderAscending" ng-click="orderByProperty('patientId')"></th>
+              <th wc-table-head label-key="th.label.arende-signed-by" help-key="th.help.arende-signed-by"
+                  sorting="true" sorting-current="orderBy == 'signeratAvNamn'" sorting-ascending="orderAscending" ng-click="orderByProperty('signeratAvNamn')"></th>
+              <th wc-table-head label-key="th.label.arende-sent-recv-date" help-key="th.help.arende-sent-recv-date"
+                  sorting="true" sorting-current="orderBy == 'receivedDate'" sorting-ascending="orderAscending" ng-click="orderByProperty('receivedDate')"></th>
+              <th wc-table-head label-key="th.label.arende-forwarded" help-key="th.help.arende-forwarded"
+                  sorting="true" sorting-current="orderBy == 'vidarebefodrad'" sorting-ascending="orderAscending" wc-authority="VIDAREBEFORDRA_FRAGASVAR" class="center"
+                  ng-click="orderByProperty('vidarebefodrad')"></th>
               <th wc-authority="VIDAREBEFORDRA_FRAGASVAR"></th>
               <th></th>
             </tr>

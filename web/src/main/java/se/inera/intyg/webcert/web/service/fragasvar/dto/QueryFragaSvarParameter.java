@@ -42,6 +42,9 @@ public class QueryFragaSvarParameter {
     private Integer startFrom;
     private Integer pageSize;
 
+    private String orderBy;
+    private Boolean orderAscending;
+
     public String getEnhetId() {
         return enhetId;
     }
@@ -128,5 +131,21 @@ public class QueryFragaSvarParameter {
 
     public void setPageSize(Integer pageSize) {
         this.pageSize = pageSize;
+    }
+
+    public String getOrderBy() {
+        return orderBy;
+    }
+
+    public void setOrderBy(String orderBy) {
+        this.orderBy = orderBy;
+    }
+
+    public Boolean getOrderAscending() {
+        return orderAscending;
+    }
+
+    public void setOrderAscending(Boolean orderAscending) {
+        this.orderAscending = orderAscending;
     }
 }

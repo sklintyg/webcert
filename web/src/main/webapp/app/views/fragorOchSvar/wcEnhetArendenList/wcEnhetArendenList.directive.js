@@ -20,10 +20,11 @@
 angular.module('webcert').directive('wcEnhetArendenList', [
     '$location', '$log', '$timeout', '$window',
     'common.ArendeVidarebefordraHelper', 'common.ArendeProxy', 'common.dialogService',
-    'webcert.enhetArendenListService', 'webcert.enhetArendenModel', 'webcert.enhetArendenListModel', 'common.messageService', 'webcert.vardenhetFilterModel',
+    'webcert.enhetArendenListService', 'webcert.enhetArendenModel', 'webcert.enhetArendenListModel',
+    'common.messageService', 'webcert.vardenhetFilterModel', 'webcert.enhetArendenFilterModel',
     function($location, $log, $timeout, $window,
         ArendeVidarebefordraHelper, ArendeProxy, dialogService,
-        enhetArendenListService, enhetArendenModel, enhetArendenListModel, messageService, vardenhetFilterModel) {
+        enhetArendenListService, enhetArendenModel, enhetArendenListModel, messageService, vardenhetFilterModel, enhetArendenFilterModel) {
         'use strict';
 
         return {
@@ -33,13 +34,15 @@ angular.module('webcert').directive('wcEnhetArendenList', [
             scope: {},
             templateUrl: '/app/views/fragorOchSvar/wcEnhetArendenList/wcEnhetArendenList.directive.html',
             controller: function($scope) {
-
                 $scope.listModel = enhetArendenListModel;
                 $scope.vardenhetFilterModel = vardenhetFilterModel;
 
                 $scope.forwardTooltip = messageService.getProperty('th.help.forward');
                 $scope.openTooltip = messageService.getProperty('th.help.open');
                 $scope.moreHitsTooltip = messageService.getProperty('th.help.morehits');
+
+                $scope.orderBy = enhetArendenFilterModel.filterForm.orderBy;
+                $scope.orderAscending = enhetArendenFilterModel.filterForm.orderAscending;
 
                 $scope.$watch('vardenhetFilterModel.selectedUnit', function() {
                     if (vardenhetFilterModel.selectedUnit) {
@@ -129,6 +132,19 @@ angular.module('webcert').directive('wcEnhetArendenList', [
                                         'Annars kan du kontakta supporten');
                             }
                         });
+                };
+
+                $scope.orderByProperty = function(property) {
+                    if(enhetArendenFilterModel.filterForm.orderBy === property) {
+                        enhetArendenFilterModel.filterForm.orderAscending = !enhetArendenFilterModel.filterForm.orderAscending;
+                    } else {
+                        enhetArendenFilterModel.filterForm.orderAscending = false;
+                    }
+                    enhetArendenFilterModel.filterForm.orderBy = property;
+                    $scope.orderBy = enhetArendenFilterModel.filterForm.orderBy;
+                    $scope.orderAscending = enhetArendenFilterModel.filterForm.orderAscending;
+
+                    updateArenden(null, {startFrom: 0});
                 };
             }
         };

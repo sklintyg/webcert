@@ -2,19 +2,19 @@
 <table class="table table-striped wc-table-striped hidden-xs hidden-sm">
   <thead>
     <tr>
-      <th wc-table-head label-key="th.label.draft-type" help-key="th.help.draft-type" ng-click="orderByProperty('intygsTyp')"
-          ng-class="{'sorting': sortingProperty == 'intygsTyp', 'ascending': sortingAscending}"></th>
-      <th wc-table-head label-key="th.label.draft-status" help-key="th.help.draft-status" ng-click="orderByProperty('status')"
-          ng-class="{'sorting': sortingProperty == 'status', 'ascending': sortingAscending}"></th>
-      <th wc-table-head label-key="th.label.draft-saved-date" help-key="th.help.draft-saved-date" ng-click="orderByProperty('senastSparadDatum')"
-          ng-class="{'sorting': sortingProperty == 'senastSparadDatum', 'ascending': sortingAscending}"></th>
-      <th wc-table-head label-key="th.label.draft-patient" help-key="th.help.draft-patient" ng-click="orderByProperty('patientPersonnummer')"
-          ng-class="{'sorting': sortingProperty == 'patientPersonnummer', 'ascending': sortingAscending}"></th>
-      <th wc-table-head label-key="th.label.draft-saved-by" help-key="th.help.draft-saved-by" ng-click="orderByProperty('senastSparadAv')"
-          ng-class="{'sorting': sortingProperty == 'senastSparadAv', 'ascending': sortingAscending}"></th>
+      <th wc-table-head label-key="th.label.draft-type" help-key="th.help.draft-type"
+          sorting="true" sorting-current="sortingProperty == 'intygsTyp'" sorting-ascending="sortingAscending" ng-click="orderByProperty('intygsTyp')"></th>
+      <th wc-table-head label-key="th.label.draft-status" help-key="th.help.draft-status"
+          sorting="true" sorting-current="sortingProperty == 'status'" sorting-ascending="sortingAscending" ng-click="orderByProperty('status')"></th>
+      <th wc-table-head label-key="th.label.draft-saved-date" help-key="th.help.draft-saved-date"
+          sorting="true" sorting-current="sortingProperty == 'senastSparadDatum'" sorting-ascending="sortingAscending" ng-click="orderByProperty('senastSparadDatum')"></th>
+      <th wc-table-head label-key="th.label.draft-patient" help-key="th.help.draft-patient"
+          sorting="true" sorting-current="sortingProperty == 'patientPersonnummer'" sorting-ascending="sortingAscending" ng-click="orderByProperty('patientPersonnummer')"></th>
+      <th wc-table-head label-key="th.label.draft-saved-by" help-key="th.help.draft-saved-by"
+          sorting="true" sorting-current="sortingProperty == 'senastSparadAv'" sorting-ascending="sortingAscending" ng-click="orderByProperty('senastSparadAv')"></th>
       <th wc-table-head label-key="th.label.draft-forwarded" help-key="th.help.draft-forwarded" class="center"
-          wc-authority="VIDAREBEFORDRA_UTKAST" ng-click="orderByProperty('vidarebefordrad')"
-          ng-class="{'sorting': sortingProperty == 'vidarebefordrad', 'ascending': sortingAscending}"></th>
+          sorting="true" sorting-current="sortingProperty == 'vidarebefordrad'" sorting-ascending="sortingAscending"
+          wc-authority="VIDAREBEFORDRA_UTKAST" ng-click="orderByProperty('vidarebefordrad')"></th>
       <th></th>
       <th></th>
     </tr>

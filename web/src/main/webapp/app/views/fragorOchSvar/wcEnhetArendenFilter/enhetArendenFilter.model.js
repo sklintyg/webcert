@@ -98,7 +98,9 @@ angular.module('webcert').service('webcert.enhetArendenFilterModel', [
                 questionFrom: 'default',
                 vidarebefordrad: 'default',
                 changedFrom: undefined,
-                changedTo: undefined
+                changedTo: undefined,
+                orderBy: '',
+                orderAscending: false
             };
         };
 
