@@ -49,11 +49,11 @@
                             alert-severity="danger"></wc-alert-message>
 
           <!-- Previous intyg table -->
-          
-          <div class="row" ng-show="viewState.currentList.length>0" id="prevIntygTable">
+
+          <div class="row" id="prevIntygTable">
             <div class="col-md-12">
               <div class="rounded-table-wrapper">
-              <table class="table table-striped wc-table-striped">
+              <table class="table table-striped wc-table-striped" ng-class="{'filter-no-result' : viewState.currentList.length===0}">
                 <thead>
                    <tr>
                     <th wc-table-head label-key="th.label.intyg-type" help-key="th.help.intyg-type"></th>
@@ -64,6 +64,19 @@
                     <th></th>
                   </tr>
                 </thead>
+
+                <!-- If filtering gives no results -->
+                <tbody ng-if="viewState.currentList.length===0">
+                <tr>
+                  <td class="td-padding" dynamic-label key="th.no-result"></td>
+                  <td class="td-padding"></td>
+                  <td class="td-padding"></td>
+                  <td class="td-padding"></td>
+                  <td class="td-padding"></td>
+                  <td class="td-padding"></td>
+                </tr>
+                </tbody>
+
                 <tbody>
                   <tr ng-repeat="intyg in viewState.currentList">
                     <td>{{getTypeName(intyg.intygType)}}</td>
