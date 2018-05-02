@@ -1,6 +1,6 @@
 #!groovy
 
-def baseVersion = "6.0.0.*"
+def baseVersion = "6.0.1.*"
 def logsenderBaseVersion = "6.0.0.*"
 
 stage('checkout tools') {
