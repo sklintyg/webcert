@@ -157,7 +157,17 @@ Given(/^att jag är inloggad som läkare(?: "([^"]*)")?$/, function(lakarNamn) {
             userObj.forNamn = lakarNamn.split(' ')[0];
             userObj.efterNamn = lakarNamn.split(' ')[1] + ' ' + lakarNamn.split(' ')[2];
 
-        }
+        } else if (lakarNamn && lakarNamn === 'Lennart Johansson Persson'){
+			userObj.hsaId = 'TSTNMT2321000156-1016';
+			userObj.enhetId = 'TSTNMT2321000156-1013';
+			userObj.forNamn = lakarNamn.split(' ')[0];
+			userObj.efterNamn = lakarNamn.split(' ')[1] + ' ' + lakarNamn.split(' ')[2]
+		} else if (lakarNamn && lakarNamn === 'Karin Johansson'){
+			userObj.hsaId = 'TSTNMT2321000156-1015';
+			userObj.enhetId = 'TSTNMT2321000156-1013';
+			userObj.forNamn = lakarNamn.split(' ')[0];
+			userObj.efterNamn = lakarNamn.split(' ')[1];
+		
     }
 
     return logInAsUserRole(userObj, 'Läkare');

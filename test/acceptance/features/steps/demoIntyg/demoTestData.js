@@ -73,6 +73,10 @@ function getDemoData(typ, index) {
     }
 }
 
+function getStatistikData(typ, index){
+	return statistikData.get(index, id);
+}
+
 /*
  *	Test steg
  *
@@ -85,4 +89,14 @@ Given(/^jag fyller i alla nödvändiga fält för intyget med demodata "([^"]*)"
         logger.silly(intyg);
         return fillIn(global.intyg);
     }
+});
+
+Given(/^jag fyller i alla nödvändiga fält för intyget med statistikdata "([^"]*)"$/, function(index) {
+	if (!intyg.typ) {
+		throw 'intyg.typ odefinierad';
+	} else {
+		global.intyg = getStatistikData(intyg.typ, index);
+		logger.silly(intyg);
+		return fillIn(global.intyg);
+	}
 });
