@@ -174,7 +174,9 @@ module.exports = function(grunt) {
 
         if (!grunt.option('local-selenium')) {
             grunt.config.set('protractor.acc.options.args.seleniumAddress', 'http://selenium1.nordicmedtest.se:4444/wd/hub');
-        }
+        } else {
+			grunt.config.set('protractor.acc.options.args.directConnect', true);
+		}
 
 		//Använder tag expressions
 		//https://github.com/cucumber/cucumber/tree/master/tag-expressions
