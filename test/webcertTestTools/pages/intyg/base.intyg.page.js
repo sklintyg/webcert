@@ -137,26 +137,40 @@ var BaseIntyg = JClass._extend({
         }
     },
     pickMakuleraOrsak: function(optionalOrsak) {
-        var makuleraDialog = element(by.cssContainingText('.modal-dialog', 'Makulera intyg'));
-        var getMojligaOrsaker = makuleraDialog.all(by.css('label')).map(function(elm, index) {
-            return elm.getText();
-        });
-
-        return getMojligaOrsaker.then(function(orsaker) {
-            logger.debug(orsaker);
-            var reason = shuffle(orsaker)[0];
-            if (optionalOrsak) {
-                reason = optionalOrsak;
+        let mojligaOrsaker = {
+            felPatient: {
+                labelTxt: 'Intyget har utfärdats på fel patient.',
+                radio: this.makulera.dialogRadioFelPatient,
+                txt: this.makulera.dialogRadioFelPatientClarification
+            },
+            annatAlvarligtFel: {
+                labelTxt: 'Annat allvarligt fel.',
+                radio: this.makulera.dialogRadioAnnatAllvarligtFel,
+                txt: this.makulera.dialogRadioAnnatAllvarligtFelClarification
             }
-            logger.debug('Väljer orsak: ' + reason);
-            return pageHelpers.moveAndSendKeys(element(by.cssContainingText('label', reason)), protractor.Key.SPACE)
-                .then(function() {
-                    return browser.sleep(1500);
-                })
-                .then(function() {
-                    return pageHelpers.moveAndSendKeys(makuleraDialog.element(by.css('textarea')), 'Beskrivning för ' + reason);
-                });
-        });
+        };
+
+        let radioElm;
+        let txtElm;
+        let orsak = (optionalOrsak) ? optionalOrsak : shuffle(['fel patient', 'allvarligt fel'])[0];
+
+        if (orsak && mojligaOrsaker.felPatient.labelTxt.indexOf(orsak) !== -1) {
+            radioElm = mojligaOrsaker.felPatient.radio;
+            txtElm = mojligaOrsaker.felPatient.txt;
+        } else if (orsak && mojligaOrsaker.annatAlvarligtFel.labelTxt.indexOf(orsak) !== -1) {
+            radioElm = mojligaOrsaker.felPatient.radio;
+            txtElm = mojligaOrsaker.felPatient.txt;
+        }
+        logger.debug('Väljer orsak: ' + orsak);
+
+        return pageHelpers.moveAndSendKeys(radioElm, protractor.Key.SPACE)
+            .then(function() {
+                return browser.sleep(1500);
+            })
+            .then(function() {
+                return pageHelpers.moveAndSendKeys(txtElm, 'Beskrivning för ' + orsak);
+            });
+
     },
 
     getIntegration: function(intygId, params) {
