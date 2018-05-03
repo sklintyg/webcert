@@ -4,7 +4,7 @@ Egenskap: Fältvalidering för LISJP
 
 Bakgrund:
     Givet att jag är inloggad som läkare
-    Och jag går in på testpatienten för "Fältvalidering"
+    Och jag går in på testpatienten för "fältvalidering"
     Och jag går in på att skapa ett "Läkarintyg för sjukpenning" intyg
 
 @F.VAL-005

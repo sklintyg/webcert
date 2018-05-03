@@ -3,9 +3,9 @@
 Egenskap: Fältvalidering för DOI
 
 Bakgrund: DOI måste vara rensat för patienten.
-    Givet jag har raderat alla intyg och utkast för "Fältvalidering" testpatienten
+    Givet jag har raderat alla intyg och utkast för "andra" "Dödsorsaksintyg" testpatienten
     Och att jag är inloggad som läkare
-    Och jag går in på testpatienten för "Fältvalidering"
+    Och jag går in på "andra" testpatienten för "Dödsorsaksintyg"
     Och jag går in på att skapa ett "Dödsorsaksintyg" intyg
 
 @F.VAL-039

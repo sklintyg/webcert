@@ -172,7 +172,6 @@ var BaseIntyg = JClass._extend({
             });
 
     },
-
     getIntegration: function(intygId, params) {
         var url = '/visa/intyg/' + intygId;
         var first = true;
