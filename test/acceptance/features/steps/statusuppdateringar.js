@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* global pages, protractor, ursprungligtIntyg, Promise, JSON, intyg, logger */
+/* global ursprungligtIntyg, Promise, JSON, intyg, logger */
 
 'use strict';
 /*jshint newcap:false */
@@ -35,8 +35,6 @@ const {
     Then // jshint ignore:line
 } = require('cucumber');
 
-
-const fk7263Utkast = pages.intyg.fk['7263'].utkast;
 const db = require('./dbActions');
 const helpers = require('./helpers');
 
@@ -134,12 +132,6 @@ Given(/^ska statusuppdatering "([^"]*)" skickas till vårdsystemet\. Totalt: "([
 
 Given(/^ska (\d+) statusuppdatering "([^"]*)" skickas för det ursprungliga intyget$/, function(antal, handelsekod, callback) {
     waitForEntries(ursprungligtIntyg.id, handelsekod, parseInt(antal, 10), callback);
-});
-
-Given(/^jag raderar intyget$/, function(callback) {
-    fk7263Utkast.radera.knapp.sendKeys(protractor.Key.SPACE).then(function() {
-        fk7263Utkast.radera.bekrafta.sendKeys(protractor.Key.SPACE).then(callback);
-    });
 });
 
 Given(/^ska statusuppdateringen visa att parametern "([^"]*)" är mottagen med värdet "([^"]*)"$/, function(param, paramValue) {

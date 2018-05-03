@@ -254,7 +254,9 @@ When(/^jag går in på intyget via djupintegrationslänk och har parametern "([^
 });
 
 Given(/^jag går till ej signerade utkast$/, function() {
-    return element(by.id('menu-unsigned')).click();
+    return element(by.id('menu-unsigned')).click().then(function() {
+        helpers.pageReloadDelay();
+    });
 });
 var savedLink;
 Given(/^jag sparar länken till aktuell sida$/, function() {

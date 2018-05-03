@@ -29,9 +29,9 @@ Scenario: Statusuppdateringar då TS bas intyg makuleras
     Så ska statusuppdatering "MAKULE" skickas till vårdsystemet. Totalt: "1"
 
 @radera
-Scenario: Statusuppdateringar då TS bas intyg raderas
+Scenario: Statusuppdateringar då TS bas utkast raderas
     När jag fyller i alla nödvändiga fält för intyget
-    Och jag raderar intyget
+    Och jag raderar utkastet
     Så ska statusuppdatering "RADERA" skickas till vårdsystemet. Totalt: "1"
 
 @vardkontakt-skickas-med

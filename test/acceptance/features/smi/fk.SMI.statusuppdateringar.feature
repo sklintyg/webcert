@@ -7,7 +7,7 @@ Bakgrund: Jag har skickat en CreateDraft:2 till Webcert.
    Och att vårdsystemet skapat ett intygsutkast för slumpat SMI-intyg
    Och jag går in på intygsutkastet via djupintegrationslänk
 
-@skicka-till-fk @SIGNAT @SKAPAT @SKICKA
+@SKICKA-TILL-FK @SIGNAT @SKAPAT @SKICKA
 Scenario: Statusuppdateringar då SMI-intyg skickas till Försäkringskassan
     Så ska statusuppdatering "SKAPAT" skickas till vårdsystemet. Totalt: "1"
 
@@ -18,7 +18,7 @@ Scenario: Statusuppdateringar då SMI-intyg skickas till Försäkringskassan
     När jag skickar intyget till Försäkringskassan
     Så ska statusuppdatering "SKICKA" skickas till vårdsystemet. Totalt: "1"
 
-@makulera
+@MAKULERA
 Scenario: Statusuppdateringar då SMI-intyg makuleras
     När jag fyller i alla nödvändiga fält för intyget
     Och jag signerar intyget
@@ -27,17 +27,17 @@ Scenario: Statusuppdateringar då SMI-intyg makuleras
     När jag makulerar intyget
     Så ska statusuppdatering "MAKULE" skickas till vårdsystemet. Totalt: "1"
 
-@radera
-Scenario: Statusuppdateringar då SMI-intyg raderas
+@RADERA
+Scenario: Statusuppdateringar då SMI-utkast raderas
     När jag fyller i alla nödvändiga fält för intyget
-    Och jag raderar intyget
+    Och jag raderar utkastet
     Så ska statusuppdatering "RADERA" skickas till vårdsystemet. Totalt: "1"
 
     Och jag försöker gå in på intygsutkastet via djupintegrationslänk
 	Så ska jag varnas om att "Intyget gick inte att läsa in"
 	Så ska jag varnas om att "Intygsutkastet är raderat och kan därför inte längre visas."
 
-@fråga-från-fk @NYFRFM
+@FRÅGA-FRÅN-FK @NYFRFM
 Scenario: Statusuppdateringar vid fråga från FK
     När jag fyller i alla nödvändiga fält för intyget
     Och jag signerar intyget
@@ -56,7 +56,7 @@ Scenario: Statusuppdateringar vid fråga från FK
     Och ska statusuppdateringen visa skickade frågor totalt 0,ej besvarade 0,besvarade 0, hanterade 0
 
 
-@fråga-till-fk
+@FRÅGA-TILL-FK
 Scenario: Statusuppdateringar vid fråga från vården
     När jag fyller i alla nödvändiga fält för intyget
     Och jag signerar intyget
@@ -88,7 +88,7 @@ Scenario: Statusuppdateringar vid fråga från vården
     Och ska statusuppdateringen visa skickade frågor totalt 1,ej besvarade 0,besvarade 1, hanterade 0
     # Och ska statusuppdateringen visa frågor 0, hanterade frågor 0,antal svar 1, hanterade svar 0
 
-@fråga-till-fk @hantera @fksmoke
+@FRÅGA-TILL-FK @hantera @fksmoke
 Scenario: Statusuppdateringar vid hantering av fråga från vården
     När jag fyller i alla nödvändiga fält för intyget
     Och jag signerar intyget
@@ -109,7 +109,7 @@ Scenario: Statusuppdateringar vid ändring av utkast
     När jag ändrar i slumpat fält
     Så ska statusuppdatering "ANDRAT" skickas till vårdsystemet. Totalt: "1"
 
-@referens-skickas-med
+@REFERENS-SKICKAS-MED
 Scenario: Referens skickas med statusuppdateringar
     När jag går in på intyget via djupintegrationslänk och har parametern "ref" satt till "testref-X"
 
