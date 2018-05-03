@@ -1,5 +1,5 @@
 # language: sv
-@statusuppdateringar @smi
+@STATUSUPPDATERINGAR @SMI
 Egenskap: Statusuppdateringar för SMI intyg
 
 Bakgrund: Jag har skickat en CreateDraft:2 till Webcert.
@@ -131,7 +131,7 @@ Scenario: Referens skickas med statusuppdateringar
     Och ska svaret innehålla ref med värdet "testref-X"
 
 	
-@fornya @ANDRAT @SKICKA @NYFRFV @NYSVFM @HANFRFV
+@FORNYA @ANDRAT @SKICKA @NYFRFV @NYSVFM @HANFRFV
 Scenario: Testa att statusuppdateringar fungerar efter intyget är förnyat
 	
 	När jag fyller i alla nödvändiga fält för intyget
@@ -169,7 +169,7 @@ Scenario: Testa att statusuppdateringar fungerar efter intyget är förnyat
     Och ska statusuppdateringen visa skickade frågor totalt 1,ej besvarade 0,besvarade 1, hanterade 0
 	
 	
-@ersätt @ANDRAT @SKICKA @NYFRFV @NYSVFM @HANFRFV
+@ERSÄTT @ANDRAT @SKICKA @NYFRFV @NYSVFM @HANFRFV
 Scenario: Testa att statusuppdateringar fungerar efter intyget är ersatt
 	
 	När jag fyller i alla nödvändiga fält för intyget
