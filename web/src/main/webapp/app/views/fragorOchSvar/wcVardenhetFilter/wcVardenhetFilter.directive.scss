@@ -28,6 +28,11 @@ wc-vardenhet-filter {
     padding-bottom: 5px;
     width: 100%;
 
+    button {
+      display: flex;
+      align-items: center;
+    }
+
     button.selected {
       color: $unit-table-button-selected-color;
       font-weight: bold;
