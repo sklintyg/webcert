@@ -174,14 +174,16 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
 
     @Override
     public boolean isPatientAddressChanged(Patient oldPatient, Patient newPatient) {
-        return (oldPatient != null && newPatient == null) || (oldPatient.getPostadress() != null && !oldPatient.getPostadress().equals(newPatient.getPostadress()))
+        return (oldPatient != null && newPatient == null)
+                || (oldPatient.getPostadress() != null && !oldPatient.getPostadress().equals(newPatient.getPostadress()))
                 || (oldPatient.getPostnummer() != null && !oldPatient.getPostnummer().equals(newPatient.getPostnummer()))
                 || (oldPatient.getPostort() != null && !oldPatient.getPostort().equals(newPatient.getPostort()));
     }
 
     @Override
     public boolean isPatientNamedChanged(Patient oldPatient, Patient newPatient) {
-        return (oldPatient != null && newPatient == null) || (oldPatient.getFornamn() != null && !oldPatient.getFornamn().equals(newPatient.getFornamn()))
+        return (oldPatient != null && newPatient == null)
+                || (oldPatient.getFornamn() != null && !oldPatient.getFornamn().equals(newPatient.getFornamn()))
                 || (oldPatient.getEfternamn() != null && !oldPatient.getEfternamn().equals(newPatient.getEfternamn()));
     }
 
