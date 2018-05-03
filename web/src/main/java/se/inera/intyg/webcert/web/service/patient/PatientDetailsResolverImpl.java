@@ -32,6 +32,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
+
 import se.inera.intyg.common.support.model.common.internal.Patient;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
@@ -174,17 +175,17 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
 
     @Override
     public boolean isPatientAddressChanged(Patient oldPatient, Patient newPatient) {
-        return (oldPatient != null && newPatient == null)
+        return oldPatient != null && (newPatient == null
                 || (oldPatient.getPostadress() != null && !oldPatient.getPostadress().equals(newPatient.getPostadress()))
                 || (oldPatient.getPostnummer() != null && !oldPatient.getPostnummer().equals(newPatient.getPostnummer()))
-                || (oldPatient.getPostort() != null && !oldPatient.getPostort().equals(newPatient.getPostort()));
+                || (oldPatient.getPostort() != null && !oldPatient.getPostort().equals(newPatient.getPostort())));
     }
 
     @Override
     public boolean isPatientNamedChanged(Patient oldPatient, Patient newPatient) {
-        return (oldPatient != null && newPatient == null)
+        return oldPatient != null && (newPatient == null
                 || (oldPatient.getFornamn() != null && !oldPatient.getFornamn().equals(newPatient.getFornamn()))
-                || (oldPatient.getEfternamn() != null && !oldPatient.getEfternamn().equals(newPatient.getEfternamn()));
+                || (oldPatient.getEfternamn() != null && !oldPatient.getEfternamn().equals(newPatient.getEfternamn())));
     }
 
     private PersonSvar getPersonSvar(Personnummer personnummer) {
