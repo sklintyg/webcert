@@ -290,11 +290,11 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
         // Find ALL existing intyg for this patient, filter out so we only have DB left.
         List<Utkast> utkastList = new ArrayList<>();
         if (user.getOrigin().equals(UserOriginType.DJUPINTEGRATION.name())) {
-            utkastList.addAll(utkastRepository.findDraftsByPatientAndVardgivareAndStatus(personnummer.getPersonnummer(),
+            utkastList.addAll(utkastRepository.findDraftsByPatientAndVardgivareAndStatus(personnummer.getPersonnummerWithDash(),
                     user.getValdVardgivare().getId(),
                     UTKAST_STATUSES, Sets.newHashSet("db")));
         } else {
-            utkastList.addAll(utkastRepository.findDraftsByPatientAndEnhetAndStatus(personnummer.getPersonnummer(),
+            utkastList.addAll(utkastRepository.findDraftsByPatientAndEnhetAndStatus(personnummer.getPersonnummerWithDash(),
                     Arrays.asList(user.getValdVardenhet().getId()), UTKAST_STATUSES,
                     Sets.newHashSet("db")));
         }
@@ -321,11 +321,11 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
                                 || (personSvar.getStatus() != PersonSvar.Status.FOUND && user.getParameters() == null));
                 return patient;
             } catch (ModuleNotFoundException | IOException e) {
-                // No usabe DB exist
+                // No usable DB exist
                 return handleDoiNoExistingDb(personnummer, personSvar, user);
             }
         } else {
-            // No usabe DB exist
+            // No usable DB exist
             return handleDoiNoExistingDb(personnummer, personSvar, user);
         }
     }
