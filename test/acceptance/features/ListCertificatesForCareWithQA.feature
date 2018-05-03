@@ -16,9 +16,9 @@ Scenario: DI-002 - Hämta en lista med intyg och utkast för en specifik vården
     Och ska svaret endast innehålla intyg för utvald patient
     Och ska svaret endast innehålla intyg för vårdenheten
 
-@samordningsnummer @ts @ts-diabetes
+@SAMORDNINGSNUMMER @TS @TS-DIABETES
 Scenariomall: DI-002 - Hämta en lista med intyg och utkast för en patient med samordningsnummer
-    Givet att vårdsystemet skapat ett intygsutkast för <intygsTyp>
+    Givet att vårdsystemet skapat ett intygsutkast för <intygsTyp> med samordningsnummer
     Och jag går in på intygsutkastet via djupintegrationslänk
     När jag skickar en ListCertificateForCareWithQA för patienten och vårdenheten
     Så ska svaret innehålla intyget jag var inne på
@@ -29,7 +29,10 @@ Exempel:
 	|	"Transportstyrelsens läkarintyg"			|
 	|	"Transportstyrelsens läkarintyg, diabetes"	|
 
-@händelser @makulera @signera @forsakringskassan @smi
+@HÄNDELSER
+@SKAPAT @ANDRAT @SIGNAT @SKICKA @MAKULE 
+
+@MAKULERA @SIGNERA @FK @SMI
 Scenario: DI-027 - Hämta händelser för ett intyg
     Givet att vårdsystemet skapat ett intygsutkast för slumpat SMI-intyg
     När jag går in på intygsutkastet via djupintegrationslänk
@@ -48,11 +51,8 @@ Scenario: DI-027 - Hämta händelser för ett intyg
     Och ska svaret visa intyghändelse "SIGNAT"
     Och ska svaret visa intyghändelse "SKICKA"
     Och ska svaret visa intyghändelse "MAKULE"
-
-
-    # skapat, skickat, ändrat,makulerat
    
-@fråga-från-vården @smi
+@FRÅGA-FRÅN-VÅRDEN @SMI
 Scenario: DI-027 - Hämta fråga/svar händelser för frågor från vården
     Givet att vårdsystemet skapat ett intygsutkast för slumpat SMI-intyg
     När jag går in på intygsutkastet via djupintegrationslänk
@@ -80,7 +80,10 @@ Scenario: DI-027 - Hämta fråga/svar händelser för frågor från vården
     Så ska responsen visa mottagna frågor totalt 0,ej besvarade 0,besvarade 0, hanterade 0
     Och ska responsen visa skickade frågor totalt 1,ej besvarade 0,besvarade 1, hanterade 0
 
-@fråga-från-fk @smi
+@HÄNDELSER
+@KONTKT
+
+@FRÅGA-FRÅN-FK @SMI
 Scenario: DI-027 - Hämta fråga/svar händelser för frågor från FK
     Givet att vårdsystemet skapat ett intygsutkast för slumpat SMI-intyg
     När jag går in på intygsutkastet via djupintegrationslänk
@@ -101,7 +104,7 @@ Scenario: DI-027 - Hämta fråga/svar händelser för frågor från FK
     Så ska responsen visa mottagna frågor totalt 1,ej besvarade 0,besvarade 0, hanterade 1
     Och ska responsen visa skickade frågor totalt 0,ej besvarade 0,besvarade 0, hanterade 0
 
-@radera @smi
+@RADERA @SMI
 Scenario: DI-027 - Hämta radera händelse för ett intygutkast
     Givet att vårdsystemet skapat ett intygsutkast för slumpat SMI-intyg
     När jag går in på intygsutkastet via djupintegrationslänk
