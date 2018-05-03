@@ -3,13 +3,13 @@
 Egenskap: Generella valideringsegenskaper som gäller samtliga intyg
 
 Bakgrund: DB/DOI måste vara rensat för patienten.
-    Givet jag har raderat alla intyg och utkast för "Fältvalidering" testpatienten
+    Givet jag har raderat alla intyg och utkast för "fältvalidering" testpatienten
 
 
 @WC-F006 @GIK-005 @GIK-001b
 Scenariomall: Alla sektioner som är markerade med obligatoriska fält ska generera valideringsfel när de inte är ifyllda.
     Givet att jag är inloggad som läkare
-    Och jag går in på testpatienten för "Fältvalidering"
+    Och jag går in på testpatienten för "fältvalidering"
     Och jag går in på att skapa ett "<intyg>" intyg
     Och att textfält i intyget är rensade
     När jag klickar på signera-knappen
@@ -33,7 +33,7 @@ Exempel:
 
 Scenariomall: Expanderar intyget så maximalt antal fält blir synliga och kontrollera att olika typer av valideringsfel visas för olika fält i olika intyg.
   Givet att jag är inloggad som läkare
-  Och jag går in på testpatienten för "Fältvalidering"
+  Och jag går in på testpatienten för "fältvalidering"
   Och jag går in på att skapa ett "<intyg>" intyg
   Och att textfält i intyget är rensade
   

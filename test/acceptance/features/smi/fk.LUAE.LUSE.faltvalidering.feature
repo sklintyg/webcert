@@ -4,7 +4,7 @@ Egenskap: Fältvalidering för LUAE
 
 Bakgrund:
     Givet att jag är inloggad som läkare
-    Och jag går in på testpatienten för "Fältvalidering"
+    Och jag går in på testpatienten för "fältvalidering"
 
 @F.VAL-012
 Scenariomall: Man kan inte undersöka en patient senare än man känt patienten

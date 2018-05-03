@@ -6,7 +6,7 @@ Egenskap: Fältvalidering för TS Diabetes
 @F.VAL-029
 Scenario:
     Givet att jag är inloggad som läkare
-    Och jag går in på testpatienten för "Fältvalidering"
+    Och jag går in på testpatienten för "fältvalidering"
     Och jag går in på att skapa ett "Transportstyrelsens läkarintyg, diabetes" intyg
     När jag klickar på signera-knappen
     Så ska "1" valideringsfel visas med texten "Minst en behandling måste väljas."

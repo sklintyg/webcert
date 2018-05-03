@@ -62,7 +62,6 @@ var FkBaseUtkast = BaseUtkast._extend({
 
         this.nedsattMed25Checkbox = element(by.id('nedsattMed25'));
 
-        this.signeraButton = element(by.id('signera-utkast-button'));
         this.fetchPatientButton = element(by.id('fetchPatientButton'));
 
         this.travelRadioButtonJa = element(by.id('rekommendationRessatt'));
