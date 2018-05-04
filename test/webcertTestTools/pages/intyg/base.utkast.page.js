@@ -126,20 +126,22 @@ var BaseUtkast = JClass._extend({
         var enhetTelefonEL = this.enhetensAdress.enhetsTelefon;
         var postNummerEL = this.enhetensAdress.postNummer;
 
-        return Promise.all([
-            postAddrEL.clear().then(function() {
-                return pageHelpers.moveAndSendKeys(postAddrEL, adressObj.postadress);
-            }),
-            postNummerEL.clear().then(function() {
-                return pageHelpers.moveAndSendKeys(postNummerEL, adressObj.postnummer);
-            }),
-            postOrtEL.clear().then(function() {
-                return pageHelpers.moveAndSendKeys(postOrtEL, adressObj.postort);
-            }),
-            enhetTelefonEL.clear().then(function() {
-                return pageHelpers.moveAndSendKeys(enhetTelefonEL, adressObj.telefon);
-            })
-        ]);
+
+        return postAddrEL.clear().then(function() {
+            return pageHelpers.moveAndSendKeys(postAddrEL, adressObj.postadress);
+        }).then(function() {
+            return postNummerEL.clear();
+        }).then(function() {
+            return pageHelpers.moveAndSendKeys(postNummerEL, adressObj.postnummer);
+        }).then(function() {
+            return postOrtEL.clear();
+        }).then(function() {
+            return pageHelpers.moveAndSendKeys(postOrtEL, adressObj.postort);
+        }).then(function() {
+            enhetTelefonEL.clear();
+        }).then(function() {
+            return pageHelpers.moveAndSendKeys(enhetTelefonEL, adressObj.telefon);
+        });
     },
 
     angePatientAdress: function(adressObj) {

@@ -215,13 +215,15 @@ var LisjpUtkast = BaseSmiUtkast._extend({
         var el = this.sjukskrivning.arbetstidsforlaggning;
         if (!arbetstidsforlaggning) {
             return Promise.resolve();
-        } else if (arbetstidsforlaggning.val === 'Ja') {
-            return pageHelpers.moveAndSendKeys(el.ja, protractor.Key.SPACE)
-                .then(function() {
-                    return pageHelpers.moveAndSendKeys(el.beskrivning, arbetstidsforlaggning.beskrivning, arbetstidsforlaggning.beskrivning);
-                });
         } else {
-            return pageHelpers.moveAndSendKeys(el.nej, protractor.Key.SPACE);
+            if (arbetstidsforlaggning.val === 'Ja') {
+                return pageHelpers.moveAndSendKeys(el.ja, protractor.Key.SPACE)
+                    .then(function() {
+                        return pageHelpers.moveAndSendKeys(el.beskrivning, arbetstidsforlaggning.beskrivning, arbetstidsforlaggning.beskrivning);
+                    });
+            } else {
+                return pageHelpers.moveAndSendKeys(el.nej, protractor.Key.SPACE);
+            }
         }
     },
     angeAtgarder: function(atgarder) {

@@ -350,9 +350,6 @@ var statistikDataLisjp = [{
             "tom": idag()
         }
     },
-    "arbetstidsforlaggning": {
-        "val": "Nej"
-    },
     "atgarder": [{
         namn: 'Arbetsanspassning',
         beskrivning: 'Arbetsanspassning-beskrivning',
