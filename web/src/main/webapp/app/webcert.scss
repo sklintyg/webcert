@@ -30,6 +30,8 @@
 
 // Component styles are injected through grunt
 // injector
+@import 'partials/discard-dialog.scss';
+@import 'partials/ersatt-dialog.scss';
 @import 'partials/fornya-dialog.scss';
 @import 'partials/preference-dialog.scss';
 @import 'views/ejSigneradeUtkast/ejSigneradeUtkast.scss';
