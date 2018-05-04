@@ -1,23 +1,36 @@
-<div id="{{dialogId}}" class="modal-header">
-    <button type="button" class="close" ng-click="button2click()">×</button>
-    <h3 ng-focus="dialog.focus" tabindex="-1">
-        <span dynamic-label key="{{titleId}}"></span>
-    </h3>
-</div>
-<wc-bottom-fadeout>
-  <div class="modal-body">
-    <p>
-      <span dynamic-label key="{{bodyText}}"></span>
-    </p>
-  </div>
-</wc-bottom-fadeout>
-<div class="modal-footer">
-    <div class="webcert-top-padding-section form-inline">
-        <button type="button" id="{{button1id}}" class="btn btn-primary" ng-click="button1click()">
-            <span dynamic-label key="{{button1text}}"></span>
-        </button>
-        <button type="button" id="{{button2id}}" class="btn btn-secondary" ng-click="button2click()">
-            <span dynamic-label key="{{button2text}}"></span>
-        </button>
+<div class="arende-draft-dialog">
+    <div id="{{dialogId}}" class="modal-header">
+        <button type="button" class="close" ng-click="button2click()"><i class="material-icons">close</i></button>
+        <h3 ng-focus="dialog.focus" tabindex="-1">
+            <span dynamic-label key="{{titleId}}"></span>
+        </h3>
+    </div>
+    <wc-bottom-fadeout>
+      <div class="modal-body">
+        <p>
+          <span dynamic-label key="{{bodyText}}"></span>
+        </p>
+      </div>
+    </wc-bottom-fadeout>
+    <div class="modal-footer">
+        <div class="webcert-top-padding-section form-inline">
+            <div class="button-wrapper">
+                <wc-button
+                        btn-id="{{button1id}}"
+                        btn-class="btn btn-primary"
+                        btn-click="button1click()"
+                >
+                    <span dynamic-label key="{{button1text}}"></span>
+                </wc-button>
+                <wc-button
+                        btn-id="{{button2id}}"
+                        btn-class="btn btn-default"
+                        btn-click="button2click()"
+                >
+                    <span dynamic-label key="{{button2text}}"></span>
+                </wc-button>
+
+            </div>
+        </div>
     </div>
 </div>
