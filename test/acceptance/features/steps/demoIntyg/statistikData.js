@@ -162,6 +162,9 @@ var statistikDataLisjp = [{
             "tom": idag(100)
         }
     },
+    "arbetstidsforlaggning": {
+        "val": "Nej"
+    },
     "atgarder": [{
         namn: 'Inte aktuellt',
         key: 'EJ_AKTUELLT'
@@ -224,6 +227,9 @@ var statistikDataLisjp = [{
             "tom": idag(73)
         }
     },
+    "arbetstidsforlaggning": {
+        "val": "Nej"
+    },
     "atgarder": [{
         namn: 'Söka nytt arbete',
         beskrivning: 'Söka nytt arbete-beskrivning',
@@ -277,7 +283,7 @@ var statistikDataLisjp = [{
         "yrkesAktiviteter": "Elektriker"
     },
     "diagnos": {
-        "kod": "F00"
+        "kod": "F000"
     },
     "funktionsnedsattning": "Personen har nedsatt förmåga att fungera fysiskt och psykiskt",
     "aktivitetsbegransning": "Kan inte lyfta höger ben",
@@ -319,6 +325,9 @@ var statistikDataLisjp = [{
             "from": idag(-45),
             "tom": idag()
         }
+    },
+    "arbetstidsforlaggning": {
+        "val": "Nej"
     },
     "atgarder": [{
         namn: 'Arbetsanspassning',
