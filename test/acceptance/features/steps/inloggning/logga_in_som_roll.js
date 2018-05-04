@@ -169,9 +169,8 @@ Given(/^att jag är inloggad som läkare(?: "([^"]*)")?$/, function(lakarNamn) {
             userObj.efterNamn = lakarNamn.split(' ')[1];
 
         }
-
-        return logInAsUserRole(userObj, 'Läkare');
     }
+    return logInAsUserRole(userObj, 'Läkare');
 });
 
 Given(/^att jag är inloggad som läkare utan angiven vårdenhet$/, function() {
