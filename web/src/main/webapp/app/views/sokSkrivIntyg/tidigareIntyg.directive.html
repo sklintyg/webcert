@@ -7,6 +7,16 @@
   </div>
 </div>
 
+<!-- error message -->
+
+<wc-alert-message ng-show="viewState.intygListErrorMessageKey"
+                  alert-message-id="{{viewState.intygListErrorMessageKey}}"
+                  alert-severity="danger"
+                  id="current-list-noResults-error"></wc-alert-message>
+<wc-alert-message ng-show="viewState.inlineErrorMessageKey"
+                  alert-message-id="{{viewState.inlineErrorMessageKey}}"
+                  alert-severity="danger"></wc-alert-message>
+
 <!-- Tidigare intyg table -->
 
 <wc-spinner label="info.loadingdata" show-spinner="viewState.tidigareIntygLoading">
@@ -37,16 +47,6 @@
       </div>
 
         <div id="intygLista">
-
-          <!-- error message -->
-
-          <wc-alert-message ng-show="viewState.intygListErrorMessageKey"
-                            alert-message-id="{{viewState.intygListErrorMessageKey}}"
-                            alert-severity="danger"
-                            id="current-list-noResults-error"></wc-alert-message>
-          <wc-alert-message ng-show="viewState.inlineErrorMessageKey"
-                            alert-message-id="{{viewState.inlineErrorMessageKey}}"
-                            alert-severity="danger"></wc-alert-message>
 
           <!-- Previous intyg table -->
 
