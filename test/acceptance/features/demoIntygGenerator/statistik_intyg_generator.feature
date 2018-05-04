@@ -8,7 +8,7 @@ Bakgrund: Inloggad som läkare
 @WIP
 Scenariomall: [Statistik] - Generera intyg för <Patient> med statistikData <statistikData>
 	
-	Givet att jag är inloggad som läkare "Karin Johansson"
+	Givet att jag är inloggad som läkare "Karl Johansson"
 	När jag går in på testpatienten "<Patient>"
 	Och jag går in på att skapa ett "Läkarintyg för sjukpenning" intyg
 	Och jag fyller i alla nödvändiga fält för intyget med statistikdata "<statistikData>"
@@ -38,8 +38,8 @@ Scenariomall: [Statistik] - Generera intyg för <Patient> med statistikData <sta
 
 Exempel:
 	|Patient|statistikData|
-	|201201252382|5|
+	|197001239297|5|
 	|201301062384|6|
 	|201301182380|7|
 	|201301202386|8|
-	|201301302384|9|
+	|198005149284|9|

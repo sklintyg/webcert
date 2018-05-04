@@ -39,6 +39,7 @@ const {
 /*jshint maxcomplexity:false */
 var fillIn = require('../fillIn').fillIn;
 var demoDataLisjp = require('./demoDataLisjp.js');
+var statistikData = require('./statistikData.js');
 /*
  *	Stödfunktioner
  *
@@ -73,8 +74,9 @@ function getDemoData(typ, index) {
     }
 }
 
-function getStatistikData(typ, index){
-	return statistikData.get(index, id);
+function getStatistikData(typ, index) {
+    var id = intyg.id;
+    return statistikData.get(index, id);
 }
 
 /*
@@ -92,11 +94,11 @@ Given(/^jag fyller i alla nödvändiga fält för intyget med demodata "([^"]*)"
 });
 
 Given(/^jag fyller i alla nödvändiga fält för intyget med statistikdata "([^"]*)"$/, function(index) {
-	if (!intyg.typ) {
-		throw 'intyg.typ odefinierad';
-	} else {
-		global.intyg = getStatistikData(intyg.typ, index);
-		logger.silly(intyg);
-		return fillIn(global.intyg);
-	}
+    if (!intyg.typ) {
+        throw 'intyg.typ odefinierad';
+    } else {
+        global.intyg = getStatistikData(intyg.typ, index);
+        logger.silly(intyg);
+        return fillIn(global.intyg);
+    }
 });

@@ -34,22 +34,22 @@ var testdataHelper = require('common-testtools').testdataHelper;
  *	Stödfunktioner
  *
  */
- function idag(modifyer) {
-	 if(!modifyer){
-		 modifyer = 0;
-	 }
-	 
-	 var datum = new Date();
-	 
-	 datum.SetDate(datum.getDate() + modifyer);
-	 
-	 return testdataHelper.dateFormat(datum);
- }
- /*
+function idag(modifyer) {
+    if (!modifyer) {
+        modifyer = 0;
+    }
+
+    var datum = new Date();
+
+    datum.setDate(datum.getDate() + modifyer);
+
+    return testdataHelper.dateFormat(datum);
+}
+/*
  *	Demo Data Lisjp
  *
  */
- var statistikDataLisjp = [{
+var statistikDataLisjp = [{
     // 0 Föräldraledig
     "smittskydd": false,
     "baseratPa": {
@@ -59,14 +59,14 @@ var testdataHelper = require('common-testtools').testdataHelper;
         "typ": "FORALDRALEDIG"
     },
     "diagnos": {
-        "kod": "J36"
+        "kod": "E90"
     },
     "funktionsnedsattning": "Personen har nedsatt förmåga att fungera fysiskt och psykiskt",
     "aktivitetsbegransning": "Kan inte lyfta armarna över axelhöjd",
     "arbetsformaga": {
         "nedsattMed50": {
             "from": idag(),
-            "tom": idag(ö14)
+            "tom": idag(89)
         }
     },
     "arbetsformagaFMB": "Prognosen är oklar",
@@ -81,7 +81,7 @@ var testdataHelper = require('common-testtools').testdataHelper;
     "prognosForArbetsformaga": {
         "name": "PROGNOS_OKLAR"
     },
-    "ovrigt": "Detta är ett Demo-Intyg"
+    "ovrigt": "Detta är ett Statistik-Intyg"
 }, {
     // 1 Byggnadsarbetare
     "smittskydd": false,
@@ -93,14 +93,14 @@ var testdataHelper = require('common-testtools').testdataHelper;
         "yrkesAktiviteter": "Byggnadsarbetare"
     },
     "diagnos": {
-        "kod": "F412"
+        "kod": "L99"
     },
     "funktionsnedsattning": "Personen har nedsatt förmåga att fungera fysiskt och psykiskt",
     "aktivitetsbegransning": "Svårt att röra fingrarna",
     "arbetsformaga": {
         "nedsattMed100": {
-            "from": idag(),
-            "tom": idag(15)
+            "from": idag(2),
+            "tom": idag(85)
         }
     },
     "atgarder": [{
@@ -111,7 +111,7 @@ var testdataHelper = require('common-testtools').testdataHelper;
     "prognosForArbetsformaga": {
         "name": "PROGNOS_OKLAR"
     },
-    "ovrigt": "Detta är ett Demo-Intyg"
+    "ovrigt": "Detta är ett Statistik-Intyg"
 }, {
     // 2 Student
     "smittskydd": false,
@@ -122,14 +122,14 @@ var testdataHelper = require('common-testtools').testdataHelper;
         "typ": "STUDIER"
     },
     "diagnos": {
-        "kod": "S53"
+        "kod": "M00"
     },
     "funktionsnedsattning": "Personen har nedsatt förmåga att fungera fysiskt och psykiskt",
     "aktivitetsbegransning": "Kan inte lyfta armarna över axelhöjd",
     "arbetsformaga": {
         "nedsattMed100": {
-            "from": idag(),
-            "tom": idag(14)
+            "from": idag(-2),
+            "tom": idag(93)
         }
     },
     "atgarder": [{
@@ -140,7 +140,7 @@ var testdataHelper = require('common-testtools').testdataHelper;
     "prognosForArbetsformaga": {
         "name": "PROGNOS_OKLAR"
     },
-    "ovrigt": "Detta är ett Demo-Intyg"
+    "ovrigt": "Detta är ett Statistik-Intyg"
 }, {
     // 3 Lärare
     "smittskydd": false,
@@ -152,14 +152,14 @@ var testdataHelper = require('common-testtools').testdataHelper;
         "yrkesAktiviteter": "Lärare"
     },
     "diagnos": {
-        "kod": "F321"
+        "kod": "M99"
     },
     "funktionsnedsattning": "Personen har nedsatt förmåga att fungera fysiskt och psykiskt",
     "aktivitetsbegransning": "Kan inte lyfta armarna över axelhöjd",
     "arbetsformaga": {
-        "nedsattMed100": {
+        "nedsattMed50": {
             "from": idag(),
-            "tom": idag(4)
+            "tom": idag(100)
         }
     },
     "atgarder": [{
@@ -169,7 +169,7 @@ var testdataHelper = require('common-testtools').testdataHelper;
     "prognosForArbetsformaga": {
         "name": "PROGNOS_OKLAR"
     },
-    "ovrigt": "Detta är ett Demo-Intyg"
+    "ovrigt": "Detta är ett Statistik-Intyg"
 }, {
     // 4 Ekonomichef
     "smittskydd": false,
@@ -181,14 +181,14 @@ var testdataHelper = require('common-testtools').testdataHelper;
         "yrkesAktiviteter": "Ekonomichef"
     },
     "diagnos": {
-        "kod": "M15"
+        "kod": "Y1113"
     },
     "funktionsnedsattning": "Personen har nedsatt förmåga att fungera fysiskt och psykiskt",
     "aktivitetsbegransning": "Svårt att röra fingrarna",
     "arbetsformaga": {
-        "nedsattMed50": {
-            "from": idag(-167),
-            "tom": idag(-148)
+        "nedsattMed25": {
+            "from": idag(),
+            "tom": idag(26)
         }
     },
     "arbetstidsforlaggning": {
@@ -202,7 +202,7 @@ var testdataHelper = require('common-testtools').testdataHelper;
     "prognosForArbetsformaga": {
         "name": "PROGNOS_OKLAR"
     },
-    "ovrigt": "Detta är ett Demo-Intyg"
+    "ovrigt": "Detta är ett Statistik-Intyg"
 }, {
     // 5 Ekonomichef
     "smittskydd": false,
@@ -214,14 +214,14 @@ var testdataHelper = require('common-testtools').testdataHelper;
         "yrkesAktiviteter": "Ekonomichef"
     },
     "diagnos": {
-        "kod": "F018"
+        "kod": "Q00"
     },
     "funktionsnedsattning": "Personen har nedsatt förmåga att fungera fysiskt och psykiskt",
     "aktivitetsbegransning": "Svårt att röra fingrarna",
     "arbetsformaga": {
-        "nedsattMed100": {
-            "from": idag(-147),
-            "tom": idag(-21)
+        "nedsattMed75": {
+            "from": idag(-3),
+            "tom": idag(73)
         }
     },
     "atgarder": [{
@@ -232,7 +232,7 @@ var testdataHelper = require('common-testtools').testdataHelper;
     "prognosForArbetsformaga": {
         "name": "PROGNOS_OKLAR"
     },
-    "ovrigt": "Detta är ett Demo-Intyg"
+    "ovrigt": "Detta är ett Statistik-Intyg"
 }, {
     // 6 Ekonomichef
     "smittskydd": false,
@@ -244,14 +244,14 @@ var testdataHelper = require('common-testtools').testdataHelper;
         "yrkesAktiviteter": "Ekonomichef"
     },
     "diagnos": {
-        "kod": "F334"
+        "kod": "Z99"
     },
     "funktionsnedsattning": "Personen har nedsatt förmåga att fungera fysiskt och psykiskt",
     "aktivitetsbegransning": "Svårt att röra fingrarna",
     "arbetsformaga": {
-        "nedsattMed50": {
-            "from": idag(-20),
-            "tom": idag(47)
+        "nedsattMed25": {
+            "from": idag(5),
+            "tom": idag(105)
         }
     },
     "arbetstidsforlaggning": {
@@ -265,7 +265,7 @@ var testdataHelper = require('common-testtools').testdataHelper;
     "prognosForArbetsformaga": {
         "name": "PROGNOS_OKLAR"
     },
-    "ovrigt": "Detta är ett Demo-Intyg"
+    "ovrigt": "Detta är ett Statistik-Intyg"
 }, {
     // 7 Elektriker
     "smittskydd": false,
@@ -277,14 +277,14 @@ var testdataHelper = require('common-testtools').testdataHelper;
         "yrkesAktiviteter": "Elektriker"
     },
     "diagnos": {
-        "kod": "M47"
+        "kod": "F00"
     },
     "funktionsnedsattning": "Personen har nedsatt förmåga att fungera fysiskt och psykiskt",
     "aktivitetsbegransning": "Kan inte lyfta höger ben",
     "arbetsformaga": {
         "nedsattMed25": {
-            "from": idag(-207),
-            "tom": idag(-89)
+            "from": idag(-20),
+            "tom": idag(200)
         }
     },
     "arbetstidsforlaggning": {
@@ -298,7 +298,7 @@ var testdataHelper = require('common-testtools').testdataHelper;
     "prognosForArbetsformaga": {
         "name": "PROGNOS_OKLAR"
     },
-    "ovrigt": "Detta är ett Demo-Intyg"
+    "ovrigt": "Detta är ett Statistik-Intyg"
 }, {
     // 8 Elektriker
     "smittskydd": false,
@@ -310,14 +310,14 @@ var testdataHelper = require('common-testtools').testdataHelper;
         "yrkesAktiviteter": "Elektriker"
     },
     "diagnos": {
-        "kod": "M47"
+        "kod": "O99"
     },
     "funktionsnedsattning": "Personen har nedsatt förmåga att fungera fysiskt och psykiskt",
     "aktivitetsbegransning": "Kan inte lyfta höger ben",
     "arbetsformaga": {
-        "nedsattMed100": {
-            "from": idag(-88),
-            "tom": idag(-35)
+        "nedsattMed50": {
+            "from": idag(-45),
+            "tom": idag()
         }
     },
     "atgarder": [{
@@ -328,7 +328,7 @@ var testdataHelper = require('common-testtools').testdataHelper;
     "prognosForArbetsformaga": {
         "name": "PROGNOS_OKLAR"
     },
-    "ovrigt": "Detta är ett Demo-Intyg"
+    "ovrigt": "Detta är ett Statistik-Intyg"
 }, {
     // 9 Elektriker
     "smittskydd": false,
@@ -340,14 +340,14 @@ var testdataHelper = require('common-testtools').testdataHelper;
         "yrkesAktiviteter": "Elektriker"
     },
     "diagnos": {
-        "kod": "M47"
+        "kod": "R99"
     },
     "funktionsnedsattning": "Personen har nedsatt förmåga att fungera fysiskt och psykiskt",
     "aktivitetsbegransning": "Kan inte lyfta höger ben",
     "arbetsformaga": {
-        "nedsattMed75": {
-            "from": idag(-34),
-            "tom": idag(-33)
+        "nedsattMed100": {
+            "from": idag(-89),
+            "tom": idag()
         }
     },
     "arbetstidsforlaggning": {
@@ -361,18 +361,20 @@ var testdataHelper = require('common-testtools').testdataHelper;
     "prognosForArbetsformaga": {
         "name": "PROGNOS_OKLAR"
     },
-    "ovrigt": "Detta är ett Demo-Intyg"
+    "ovrigt": "Detta är ett Statistik-Intyg"
 }];
- 
- 
- 
- 
- 
- 
- module.exports = {
+
+
+
+
+
+
+module.exports = {
     get: function(index, id) {
         var obj = statistikDataLisjp[index];
         obj.id = id; /*("id": testdataHelper.generateTestGuid(),)*/
         obj.typ = "Läkarintyg för sjukpenning";
         logger.silly(JSON.stringify(obj));
         return obj;
+    }
+};
