@@ -8,8 +8,7 @@ Bakgrund: Inloggad som demoläkare
 @DEMODATA-REHABSTOD-RADERA
 Scenariomall: Ta bort intyg för <Patient>
    Givet att jag har raderat alla intyg för "<Patient>" via testAPI
-   #Och att jag har raderat alla utkast för "<Patient>" via testAPI   
-   #tabort utkast när demo har version 6.0.0.506 eller senare
+   Och att jag har raderat alla utkast för "<Patient>" via testAPI   
 
 Exempel:
   | Patient |
