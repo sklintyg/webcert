@@ -1,5 +1,5 @@
 # language: sv
-@sakerhet
+@SAKERHET
 Egenskap: Tester för säkerhet
 
 Bakgrund: Jag befinner mig på webcerts förstasida
@@ -7,7 +7,7 @@ Bakgrund: Jag befinner mig på webcerts förstasida
 	När jag går in på en patient
 
 Scenario: Vidarebefodrad till intygs-Vy
-   Givet att vårdsystemet skapat ett intygsutkast för "Läkarintyg FK 7263"
+   Givet att vårdsystemet skapat ett intygsutkast för "Läkarintyg för sjukpenning"
    Och jag går in på utkastet 
    Och jag fyller i alla nödvändiga fält för intyget
    Och jag signerar intyget
