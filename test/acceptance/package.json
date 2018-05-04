@@ -36,7 +36,7 @@
         "phantomjs": "^2.1.7",
         "protractor": "^5.3.0",
         "protractor-cucumber-framework": "^4.2.0",
-        "request": "^2.83.0",
+        "request": "^2.85.0",
         "soap": "^0.16.0",
         "webcert-testtools": "file:../webcertTestTools",
         "winston": "^2.4.0",
