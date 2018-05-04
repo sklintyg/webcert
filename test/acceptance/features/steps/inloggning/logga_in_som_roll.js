@@ -300,12 +300,11 @@ Given(/^att jag är inloggad som( djupintegrerad)? läkare på (underenhet|vård
 
 
 
-Given(/^ska jag ha rollen "([^"]*)"$/, function(roll, callback) {
-    checkUserRole().then(function(value) {
+Given(/^ska jag ha rollen "([^"]*)"$/, function(roll) {
+    return checkUserRole().then(function(value) {
         var re = /\[\"(.*)\"\]/;
         value = value.replace(re, '$1');
-        expect(value).to.equal(roll);
-        callback();
+        return expect(value).to.equal(roll);
     });
 });
 
