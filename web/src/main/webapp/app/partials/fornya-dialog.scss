@@ -3,4 +3,11 @@
   .padding-bottom {
     padding-bottom: 60px;
   }
+  wc-button {
+    padding: 0 10px 0 0;
+  }
+  .webcert-top-padding-section.form-inline {
+    display: flex;
+    flex-direction: row;
+  }
 }
