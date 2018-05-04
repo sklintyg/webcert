@@ -103,5 +103,11 @@
     "text": "Ineras nationella kundservice",
     "target": "_blank",
     "tooltip": "Öppnar Ineras nationella kundservice"
+  },
+  {
+    "key": "ineraPersonuppgifter",
+    "url": "https://www.inera.se/om-inera/behandling-av-personuppgifter/",
+    "text": "Ineras hemsida",
+    "target": "_blank"
   }
 ]
