@@ -24,6 +24,7 @@ import static com.jayway.restassured.module.jsv.JsonSchemaValidator.matchesJsonS
 import java.util.Arrays;
 import java.util.List;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.jayway.restassured.RestAssured;
@@ -37,6 +38,7 @@ import se.inera.intyg.webcert.web.web.controller.integrationtest.BaseRestIntegra
  *
  * Created by carlf on 08/09/17.
  */
+@Ignore
 public class SrsApiControllerIT extends BaseRestIntegrationTest {
 
     private static final int OK = 200;
