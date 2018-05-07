@@ -18,8 +18,8 @@
  */
 
 
-angular.module('webcert').directive('wcUtkastFilter', ['webcert.UtkastProxy',
-        function(UtkastProxy) {
+angular.module('webcert').directive('wcUtkastFilter', ['$timeout', 'webcert.UtkastProxy',
+        function($timeout, UtkastProxy) {
             'use strict';
 
             return {
@@ -47,7 +47,10 @@ angular.module('webcert').directive('wcUtkastFilter', ['webcert.UtkastProxy',
                     $scope.resetFilter = function() {
                         resetFilterState();
                         $scope.widgetState.searched = false;
-                        $scope.onSearch();
+                        $timeout (function (){
+                            $scope.onSearch();
+                        });
+
                     };
 
                     function resetFilterState() {
@@ -69,7 +72,7 @@ angular.module('webcert').directive('wcUtkastFilter', ['webcert.UtkastProxy',
                             $scope.filter.savedByOptions = $scope.widgetState.savedByList;
                             //if only 1 option avaiable it must be 'Visa alla'
                             if ($scope.filter.savedByOptions.length === 1) {
-                                $scope.filter.savedBy = undefined;
+                                $scope.filter.selection.savedBy = undefined;
                             }
                         }, function() {
                             $scope.widgetState.loadingSavedByList = false;

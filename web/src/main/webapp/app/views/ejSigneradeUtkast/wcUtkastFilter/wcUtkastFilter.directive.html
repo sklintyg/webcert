@@ -3,19 +3,19 @@
 
   <div class="filter-field" wc-authority="VIDAREBEFORDRA_UTKAST" id="filterFormVidarebefordrad">
     <label>Vidarebefordrat</label><br>
-    <wc-dropdown id="filter-notified" ng-model="filter.notified" items="filter.notifiedOptions"
+    <wc-dropdown id="filter-notified" ng-model="filter.selection.notified" items="filter.notifiedOptions"
                  use-dynamic-label="false"></wc-dropdown>
   </div>
 
   <div class="filter-field">
     <label>Utkast</label><br>
-    <wc-dropdown id="filter-status" ng-model="filter.status" items="filter.statusOptions"
+    <wc-dropdown id="filter-status" ng-model="filter.selection.status" items="filter.statusOptions"
                  use-dynamic-label="false"></wc-dropdown>
   </div>
 
   <div class="filter-field" wc-authority="FILTRERA_PA_LAKARE" id="filterFormSparatAv">
     <label>Sparat av</label><br>
-    <wc-dropdown id="filter-notified" ng-model="filter.savedBy" items="filter.savedByOptions"
+    <wc-dropdown id="filter-notified" ng-model="filter.selection.savedBy" items="filter.savedByOptions"
                  use-dynamic-label="false"></wc-dropdown>
   </div>
 
@@ -23,10 +23,10 @@
   <div class="filter-field date-group">
     <label class="offset-label">Sparat datum</label><br>
     <label class="inline-label">Från</label>
-    <span dom-id="filter-changedate-from" target-model="filter.savedFrom" wc-date-picker-field
+    <span dom-id="filter-changedate-from" target-model="filter.selection.savedFrom" wc-date-picker-field
           add-date-parser="strict"></span>
     <label class="inline-label">till</label>
-    <span dom-id="filter-changedate-to" target-model="filter.savedTo" wc-date-picker-field add-date-parser="strict"
+    <span dom-id="filter-changedate-to" target-model="filter.selection.savedTo" wc-date-picker-field add-date-parser="strict"
           wc-date-is-after-validator="filter-changedate-from"></span>
   </div>
 
@@ -49,5 +49,4 @@
   <p ng-show="filterForm['filter-changedate-to'].$error.isBefore">
     <span dynamic-label key="validation.invalidtobeforefromdate"></span>
   </p>
-
 </wc-alert-message>

@@ -23,6 +23,7 @@ describe('wcUtkastFilterSpec', function() {
 
     var $scope;
     var $httpBackend;
+    var $timeout;
     var mockFactory;
     var element;
     var utkastFilterModel;
@@ -49,12 +50,13 @@ describe('wcUtkastFilterSpec', function() {
             $provide.value('common.statService', jasmine.createSpyObj('common.statService', [ 'refreshStat' ]));
         }]);
 
-        inject(['$rootScope', '$compile', '$httpBackend', 'webcert.UtkastFilterModel', '$templateCache',
-            function($rootScope, $compile, _$httpBackend_, _utkastFilterModel_, $templateCache) {
+        inject(['$rootScope', '$compile', '$httpBackend', '$timeout', 'webcert.UtkastFilterModel', '$templateCache',
+            function($rootScope, $compile, _$httpBackend_, _$timeout_, _utkastFilterModel_, $templateCache) {
 
                 $templateCache.put('/web/webjars/common/webcert/components/headers/wcHeader.partial.html', '');
 
                 $httpBackend = _$httpBackend_;
+                $timeout = _$timeout_;
                 utkastFilterModel = _utkastFilterModel_;
                 emptyFilter = _utkastFilterModel_.build();
 
@@ -93,7 +95,7 @@ describe('wcUtkastFilterSpec', function() {
             setupHttp(200);
 
             spyOn($scope, 'testFilter');
-            $scope.filter.status = 'DRAFT_COMPLETE';
+            $scope.filter.selection.status = 'DRAFT_COMPLETE';
             $scope.$digest();
 
             var button = element.find('#uc-filter-btn')[0];
@@ -112,6 +114,7 @@ describe('wcUtkastFilterSpec', function() {
             spyOn($scope, 'testFilter');
             element.isolateScope().resetFilter();
             $scope.$digest();
+            $timeout.flush();
             expect($scope.testFilter).toHaveBeenCalled();
         });
     });

@@ -112,7 +112,7 @@ angular.module('webcert').constant('webcert.messages', {
 
         //Ej signerade utkast
         'th.label.draft-forwarded': 'Vidarebefordrad',
-        'th.help.draft-forwarded': 'Här markerar du om utkastet är vidarebefordrat till den som ska signera det.',
+        'th.help.draft-forwarded': 'Visar om utkastet är vidarebefordrat.',
         'th.label.draft-type': 'Typ av intyg',
         'th.help.draft-type': 'Typ av intyg.',
         'th.label.draft-status': 'Status',
@@ -120,7 +120,7 @@ angular.module('webcert').constant('webcert.messages', {
         'th.label.draft-saved-date': 'Senast sparat',
         'th.help.draft-saved-date': 'Datum och klockslag då utkastet senast sparades.',
         'th.label.draft-patient': 'Patient',
-        'th.help.draft-patient': 'Personnummer för patient som utkastet gäller.',
+        'th.help.draft-patient': 'Patientens personnummer.',
         'th.label.draft-saved-by': 'Sparat av',
         'th.help.draft-saved-by': 'Person som senast sparade utkastet.',
 

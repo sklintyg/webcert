@@ -44,10 +44,10 @@ describe('wcUtkastFilterModel', function() {
 
     it('should convertToPayload correctly', function() {
         var model = wcUtkastFilterModel.build(100);
-        model.status = 'DRAFT_COMPLETE';
-        model.notified = 'NOTIFIED_NO';
-        model.savedFrom = new Date('2018-02-03T16:24:00');
-        model.savedTo = new Date('2018-02-09T16:24:00');
+        model.selection.status = 'DRAFT_COMPLETE';
+        model.selection.notified = 'NOTIFIED_NO';
+        model.selection.savedFrom = new Date('2018-02-03T16:24:00');
+        model.selection.savedTo = new Date('2018-02-09T16:24:00');
         var payload = model.convertToPayload();
 
         expect(payload.pageSize).toEqual(100);
@@ -63,10 +63,10 @@ describe('wcUtkastFilterModel', function() {
     it('should reset correctly', function() {
         var pristine = wcUtkastFilterModel.build(100);
         var model = wcUtkastFilterModel.build(100);
-        model.status = 'DRAFT_COMPLETE';
-        model.notified = 'NOTIFIED_NO';
-        model.savedFrom = new Date();
-        model.savedTo = new Date();
+        model.selection.status = 'DRAFT_COMPLETE';
+        model.selection.notified = 'NOTIFIED_NO';
+        model.selection.savedFrom = new Date();
+        model.selection.savedTo = new Date();
 
         model.reset();
 

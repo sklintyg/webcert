@@ -64,7 +64,7 @@ describe('wcUtkastListSpec', function() {
                 );
                 $scope = $rootScope.$new();
                 $scope.testList = mockResponse.utkastList;
-                $scope.testFilter = {orderBy: '', orderAscending: ''};
+                $scope.testFilter = {selection: { orderBy: '', orderAscending: '' }};
                 element = $compile(tpl)($scope);
                 $scope.$digest();
             }

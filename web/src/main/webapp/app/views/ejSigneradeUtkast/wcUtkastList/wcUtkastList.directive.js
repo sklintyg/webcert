@@ -33,8 +33,8 @@ angular.module('webcert').directive('wcUtkastList',
                 templateUrl: '/app/views/ejSigneradeUtkast/wcUtkastList/wcUtkastList.directive.html',
                 controller: function($scope) {
 
-                    $scope.sortingProperty = $scope.filter.orderBy;
-                    $scope.sortingAscending = $scope.filter.orderAscending;
+                    $scope.sortingProperty = $scope.filter.selection.orderBy;
+                    $scope.sortingAscending = $scope.filter.selection.orderAscending;
 
                     $scope.getTypeName = function(intygsType) {
                         return moduleService.getModuleName(intygsType);
@@ -63,8 +63,8 @@ angular.module('webcert').directive('wcUtkastList',
 
                     $scope.orderByProperty = function(property) {
                         var ascending = false;
-                        if ($scope.filter.orderBy === property) {
-                            ascending = !$scope.filter.orderAscending;
+                        if ($scope.filter.selection.orderBy === property) {
+                            ascending = !$scope.filter.selection.orderAscending;
                         }
                         $scope.sortingProperty = property;
                         $scope.sortingAscending = ascending;

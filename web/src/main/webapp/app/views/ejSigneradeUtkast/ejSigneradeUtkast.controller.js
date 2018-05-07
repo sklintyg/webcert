@@ -47,12 +47,21 @@ angular.module('webcert').controller('webcert.EjSigneradeUtkastCtrl',
 
                 // Search states
                 filteredYet: false,
+                filterIsDirty: false,
                 initialQueryWasEmpty: true,
 
                 // List data
                 totalCount: 0,
                 currentList: undefined
             };
+
+            //Determine if user has changed anything
+            $scope.$watch('filter.selection', function(newVal, oldVal) {
+                if (newVal !== oldVal) {
+                    $scope.filter.filterIsDirty = true;
+                   // $scope.filterDrafts();
+                }
+            }, true);
 
             /**
              *  Load initial data
@@ -85,6 +94,7 @@ angular.module('webcert').controller('webcert.EjSigneradeUtkastCtrl',
                 $scope.widgetState.initialQueryWasEmpty = false;
 
                 $scope.filter.startFrom = 0;
+                $scope.filter.filterIsDirty = false;
 
                 var filterQuery = $scope.filter.convertToPayload();
                 $scope.widgetState.runningQuery = true;
@@ -100,7 +110,7 @@ angular.module('webcert').controller('webcert.EjSigneradeUtkastCtrl',
             };
 
             $scope.showFetchMore = function() {
-                return ($scope.filter.startFrom + PAGE_SIZE < $scope.widgetState.totalCount) || $scope.widgetState.fetchingMoreInProgress;
+                return !$scope.filter.filterIsDirty && (($scope.filter.startFrom + PAGE_SIZE < $scope.widgetState.totalCount) || $scope.widgetState.fetchingMoreInProgress);
             };
 
             $scope.fetchMore = function() {
@@ -110,7 +120,9 @@ angular.module('webcert').controller('webcert.EjSigneradeUtkastCtrl',
                 var filterQuery = $scope.filter.convertToPayload();
                 $scope.widgetState.fetchingMoreInProgress = true;
 
+
                 UtkastProxy.getUtkastFetchMore(filterQuery, function(successData) {
+                    $scope.filter.filterIsDirty = false;
                     $scope.widgetState.fetchingMoreInProgress = false;
                     for (var i = 0; i < successData.results.length; i++) {
                         $scope.widgetState.currentList.push(successData.results[i]);
@@ -131,8 +143,8 @@ angular.module('webcert').controller('webcert.EjSigneradeUtkastCtrl',
 
             $scope.orderByProperty = function(property, ascending) {
                 $log.debug('orderByProperty');
-                $scope.filter.orderBy = property;
-                $scope.filter.orderAscending = ascending;
+                $scope.filter.selection.orderBy = property;
+                $scope.filter.selection.orderAscending = ascending;
                 if(!$scope.showFetchMore()) {
                     $scope.widgetState.currentList = $filter('orderBy')($scope.widgetState.currentList, propertyMap[property], ascending);
                 } else {

@@ -25,13 +25,15 @@ angular.module('webcert').factory('webcert.UtkastFilterModel', [ '$filter', func
      */
     function UtkastFilterModel(pageSize) {
         this.pageSize = pageSize;
+        this.selection = {};
         this.reset();
     }
 
     UtkastFilterModel.prototype.reset = function() {
+        this.filterIsDirty = false;
         this.startFrom = 0;
 
-        this.notified = 'NOTIFIED_ALL'; // 3-state, undefined, true, false
+        this.selection.notified = 'NOTIFIED_ALL'; // 3-state, undefined, true, false
         this.notifiedOptions = [ {
             id: 'NOTIFIED_ALL',
             label: 'Visa alla'
@@ -43,7 +45,7 @@ angular.module('webcert').factory('webcert.UtkastFilterModel', [ '$filter', func
             label: 'Ej vidarebefordrade'
         } ];
 
-        this.status = null;
+        this.selection.status = null;
         this.statusOptions = [ {
             id: null,
             label: 'Visa alla'
@@ -58,12 +60,12 @@ angular.module('webcert').factory('webcert.UtkastFilterModel', [ '$filter', func
             label: 'Låsta'
         } ];
 
-        this.savedFrom = undefined; //Date
-        this.savedTo = undefined; //Date
-        this.savedBy = undefined; // selected doctors hasId
+        this.selection.savedFrom = undefined; //Date
+        this.selection.savedTo = undefined; //Date
+        this.selection.savedBy = undefined; // selected doctors hasId
         this.savedByOptions = this.savedByOptions || [];
-        this.orderBy = undefined;
-        this.orderAscending = undefined;
+        this.selection.orderBy = undefined;
+        this.selection.orderAscending = undefined;
     };
 
     UtkastFilterModel.prototype.convertToPayload = function() {
@@ -83,20 +85,20 @@ angular.module('webcert').factory('webcert.UtkastFilterModel', [ '$filter', func
             startFrom: this.startFrom,
             pageSize: this.pageSize
         };
-        query.savedBy = this.savedBy;
-        query.notified = convertNotified(this.notified);
-        query.status = this.status;
+        query.savedBy = this.selection.savedBy;
+        query.notified = convertNotified(this.selection.notified);
+        query.status = this.selection.status;
 
-        query.savedFrom = $filter('date')(this.savedFrom, 'yyyy-MM-dd');
-        if (this.savedTo) {
+        query.savedFrom = $filter('date')(this.selection.savedFrom, 'yyyy-MM-dd');
+        if (this.selection.savedTo) {
             // Date is used as datetime on backend
-            var to = moment(this.savedTo);
+            var to = moment(this.selection.savedTo);
             to.add(1, 'd');
             query.savedTo = to.format('YYYY-MM-DD');
         }
 
-        query.orderBy = this.orderBy;
-        query.orderAscending = this.orderAscending;
+        query.orderBy = this.selection.orderBy;
+        query.orderAscending = this.selection.orderAscending;
         return query;
     };
 
