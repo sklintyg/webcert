@@ -1,12 +1,12 @@
 # language: sv
-@sekretessmarkering @sakerhet
+@SEKRETESSMARKERING @SAKERHET
 Egenskap: Säkerhet - Sekretessmarkerad patient
 
 Bakgrund: 
 	Givet att jag är inloggad som läkare
 	Och jag går in på en patient med sekretessmarkering
 	
-@vårdadmin @utkast
+@VÅRDADMIN @UTKAST
 Scenario: Kontrollera att vårdadmin inte kan se eller öppna något intygsutkast på s-markerad patient
 	När jag går in på att skapa ett slumpat SMI-intyg
 	
@@ -20,7 +20,7 @@ Scenario: Kontrollera att vårdadmin inte kan se eller öppna något intygsutkas
 	Så ska intyget inte finnas i listan
 
 	
-@vårdadmin @signeratintyg @frågasvar
+@VÅRDADMIN @SIGNERATINTYG @FRÅGASVAR
 Scenario: Kontrollera att vårdadmin inte kan se eller öppna något signerat intyg eller fråga på s-markerad patient
 	När jag går in på att skapa ett slumpat SMI-intyg
 	Och jag fyller i alla nödvändiga fält för intyget
@@ -39,7 +39,7 @@ Scenario: Kontrollera att vårdadmin inte kan se eller öppna något signerat in
 	Och jag går till sidan Frågor och svar
 	Så ska frågan inte finnas i listan
 
-@makulera @smi @fornya
+@MAKULERA @SMI @FORNYA
 Scenario: Läkare ska kunna makulera intyg med s-markering
 	När jag går in på ett slumpat SMI-intyg med status "Skickat"
 	Så ska det finnas en knapp med texten "Förnya"
@@ -56,7 +56,7 @@ Scenario: TS-intyg utkast ska inte kunna skapas på s-markerad patient på ts di
 	Så ska jag inte ha alternativet att skapa "Transportstyrelsens läkarintyg, diabetes" intyg
 	Så ska vårdsystemet inte ha möjlighet att skapa "Transportstyrelsens läkarintyg, diabetes" utkast
 	
-@rehabstod @rehabKoordinator
+@REHABSTOD @REHABKOORDINATOR
 Scenario: Rehabkoordinator ska inte kunna se sekrettessmarkerade intyg.
 	Givet vårdenhet ska vara "TestEnhet2"
 	#TSTNMT2321000156-107Q

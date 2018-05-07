@@ -1,5 +1,5 @@
 # language: sv
-@komplettering @smi @INTYG-2642 @INTYG-3778
+@KOMPLETTERING @SMI
  # kompletteringsfråga saknas på utkast-sida
 Egenskap: Komplettering av SMI-intyg
 
@@ -7,7 +7,7 @@ Bakgrund: Jag befinner mig på webcerts förstasida
    Givet att jag är inloggad som läkare
    När jag går in på en patient
    
-@nyttIntyg
+@NYTTINTYG
 Scenario: Ska kunna besvara komplettering med nytt SMI-intyg
    När jag går in på att skapa ett slumpat SMI-intyg
    Och jag fyller i alla nödvändiga fält för intyget
@@ -22,7 +22,7 @@ Scenario: Ska kunna besvara komplettering med nytt SMI-intyg
    När jag signerar intyget
    Så jag ska se den data jag angett för intyget
 
-@komplettering @utkast @fortsattUtkast
+@KOMPLETTERING @UTKAST @FORTSATT-PA-UTKAST
 Scenario: Ska kunna fortsätta besvara kompletterande SMI-intyg 
    När jag går in på ett slumpat SMI-intyg med status "Signerat" 
    Och jag skickar intyget till Försäkringskassan

@@ -1,5 +1,5 @@
 # language: sv
-@visning @fmb
+@VISNING @FMB @LISJP @SMI
 Egenskap: Visning av FMB information
 
 Bakgrund: Jag befinner mig på webcerts förstasida
@@ -12,12 +12,11 @@ Scenariomall: Visas vid rätt fält för <intygKod>
 	Och jag fyller i diagnoskod
 	Så ska rätt info gällande FMB visas
 
-@lisjp @smi
   Exempel:
   |intygKod | intyg                        |
   |LISJP    | "Läkarintyg för sjukpenning" |
 
-@treställig
+@TRESTÄLLIG
 Scenariomall: FMB information för treställig diagnoskod ska visas vid rätt fält då koden inte har egen FMB info när <intygKod> skapas
 	Givet att vårdsystemet skapat ett intygsutkast för <intyg>
 	Och jag går in på utkastet
