@@ -111,8 +111,8 @@ var doiUtkast = BaseSocUtkast._extend({
                 beskrivning: element(by.id('orsak-multi-0-beskrivning')),
                 datum: element(by.id('orsak-multi-0-datum')),
                 specifikation: {
-                    dropDown: element(by.id('orsak-0-specifikation')),
-                    options: element(by.id('orsak-0-specifikation')).all(by.css('span'))
+                    dropDown: element(by.id('orsak-multi-0-specifikation')),
+                    options: element(by.id('orsak-multi-0-specifikation')).all(by.css('span'))
                 }
             }
         };

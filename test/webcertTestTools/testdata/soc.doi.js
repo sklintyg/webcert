@@ -50,7 +50,7 @@ function getDodsdatum(datumSakert) {
 
         return {
             inteSakert: {
-                year: shuffle([String(year), String(year - 1), '0000'])[0],
+                year: shuffle([String(year), '0000'])[0],
                 month: shuffle(monthArr.slice(0, today.getMonth() - 1))[0],
                 antraffadDod: testdataHelper.dateFormat(deathDate)
             }
@@ -59,7 +59,8 @@ function getDodsdatum(datumSakert) {
 }
 
 function getDodsOrsak() {
-    var n = Math.floor(Math.random() * 4);
+    let n = Math.floor(Math.random() * 4);
+
     var obj = {
         a: getDodsOrsakObj(1)
     };
@@ -73,14 +74,10 @@ function getDodsOrsak() {
         obj.d = getDodsOrsakObj(4);
     }
 
-    let datum = new Date(dayBeforeDeath);
-    datum.setDate(deathDate.getDate() - 1);
+    /*let datum = new Date(dayBeforeDeath);
+    datum.setDate(deathDate.getDate() - 1);*/
 
-    obj.andraSjukdomarSkador = {
-        beskrivning: testdataHelper.randomTextString(5, 45),
-        datum: testdataHelper.dateFormat(datum),
-        tillstandSpec: shuffle(['Akut', 'Kronisk', 'Uppgift saknas'])[0]
-    };
+    obj.andraSjukdomarSkador = getDodsOrsakObj(5);
 
     return obj;
 }

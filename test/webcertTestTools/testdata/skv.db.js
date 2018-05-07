@@ -42,7 +42,7 @@ function getDodsdatum(datumSakert) {
 
         return {
             inteSakert: {
-                year: shuffle([String(year), String(year - 1), '0000'])[0],
+                year: shuffle([String(year), '0000'])[0],
                 month: shuffle(monthArr.slice(0, today.getMonth() - 1))[0],
                 antraffadDod: testdataHelper.dateFormat(today)
             }
