@@ -122,8 +122,13 @@ Given(/^ska jag inte se utkast av annan typ än "([^"]*)"$/, function(typer) {
     return checkElementsForText(els, typer);
 });
 
-Given(/^jag ska endast se intygstyperna "([^"]*)" i Skapa intyg listan$/, function(typer) {
+Given(/^jag ska( inte)? se intygstyperna "([^"]*)" i Skapa intyg listan$/, function(inte, typer) {
     typer = typer.split(',');
-    var els = element(by.id('intygType')).all(by.css('option'));
-    return checkElementsForText(els, typer);
+    let elm = sokSkrivIntygUtkastTypePage.intygTypeTable;
+
+    if (inte) {
+        return Promise.all(typer.map(typ => expect(elm.getText()).to.eventually.not.contain(typ)));
+    } else {
+        return Promise.all(typer.map(typ => expect(elm.getText()).to.eventually.contain(typ)));
+    }
 });

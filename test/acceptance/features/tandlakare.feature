@@ -16,7 +16,8 @@ Scenario: Ska endast kunna hantera Läkarintyg för sjukpenning
 	När jag går in på patienten
 	#Uppdatera när @LegacyFK7263 försvinner
 	Så ska jag inte se intyg av annan typ än "Läkarintyg FK 7263,Läkarintyg för sjukpenning"
-	Och jag ska endast se intygstyperna "Läkarintyg FK 7263,Läkarintyg för sjukpenning" i Skapa intyg listan
+	Och jag ska se intygstyperna "Läkarintyg FK 7263,Läkarintyg för sjukpenning" i Skapa intyg listan
+	Och jag ska inte se intygstyperna "Transportstyrelsens, Läkarutlåtande för sjukersättning, nedsatt arbetsförmåga, förlängd skolgång, Dödsbevis, Dödsorsaksintyg" i Skapa intyg listan
 
 	När jag går till ej signerade utkast
 	#Uppdatera när @LegacyFK7263 försvinner
