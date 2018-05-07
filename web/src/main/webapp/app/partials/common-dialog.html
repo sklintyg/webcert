@@ -1,29 +1,51 @@
-<div id="{{dialogId}}" class="modal-header">
-	<button type="button" class="close" ng-click="button2click()"><i class="material-icons">close</i></button>
-	<h3 ng-focus="model.focus" tabindex="-1">
-		<span dynamic-label key="{{titleId}}"></span>
-	</h3>
-</div>
-<div class="modal-body">
-	<div ng-bind-html="bodyText"><span ng-if="bodyTextId != undefined" dynamic-label key="{{bodyTextId}}"></span></div>
-</div>
-<div class="modal-footer">
-	<button type="button" id="{{button1id}}" class="btn btn-primary" ng-disabled="!model.acceptprogressdone" ng-click="button1click()">
-		<i ng-hide="model.acceptprogressdone" class="icon-wc-ikon-02 animate-spin"></i>
-		<span dynamic-label key="{{button1text}}"></span>
-	</button>
-	<button type="button" id="{{button2id}}" class="btn btn-secondary" ng-click="button2click()">
-		<span dynamic-label key="{{button2text}}"></span>
-	</button>
-	<button type="button" id="{{button3id}}" ng-show="button3visible" class="btn btn-secondary" ng-click="button3click()">
-		<span dynamic-label key="{{button3text}}"></span>
-	</button>
-	<div class="webcert-top-padding-section" ng-show="model.showerror">
-    <wc-alert-message alert-severity="danger" class="alert-dialog-error" ng-if="model.errormessage">
-      <span ng-bind-html="model.errormessage"></span>
-    </wc-alert-message>
-		<wc-alert-message alert-severity="danger" class="alert-dialog-error" ng-if="model.errormessageid">
-			<span dynamic-label key="{{model.errormessageid}}"></span>
-    </wc-alert-message>
+<div class="common-dialog">
+	<div id="{{dialogId}}" class="modal-header">
+		<button type="button" class="close" ng-click="button2click()"><i class="material-icons">close</i></button>
+		<h3 ng-focus="model.focus" tabindex="-1">
+			<span ng-bind-html="titleText"></span>
+			<span dynamic-label key="{{titleId}}"></span>
+		</h3>
+	</div>
+	<wc-bottom-fadeout>
+	  <div class="modal-body">
+		<div ng-bind-html="bodyText"><span ng-if="bodyTextId != undefined" dynamic-label key="{{bodyTextId}}"></span></div>
+	  </div>
+	</wc-bottom-fadeout>
+	<div class="modal-footer">
+		COMMON
+		<div class="button-wrapper">
+			<wc-button
+					btn-id="{{button1id}}"
+					btn-class="btn btn-primary"
+					btn-click="button1click()"
+					btn-disabled="!model.acceptprogressdone"
+					loading="!model.acceptprogressdone"
+			>
+				<span dynamic-label key="{{button1text}}"></span>
+			</wc-button>
+			<wc-button
+					btn-id="{{button2id}}"
+					btn-class="btn btn-secondary"
+					btn-click="button2click()"
+			>
+				<span dynamic-label key="{{button2text}}"></span>
+			</wc-button>
+			<wc-button
+					ng-show="button3visible"
+					btn-id="{{button3id}}"
+					btn-class="btn btn-default"
+					btn-click="button3click()"
+			>
+				<span dynamic-label key="{{button3text}}"></span>
+			</wc-button>
+		</div>
+		<div class="webcert-top-padding-section" ng-show="model.showerror">
+		<wc-alert-message alert-severity="danger" class="alert-dialog-error" ng-if="model.errormessage">
+		  <span ng-bind-html="model.errormessage"></span>
+		</wc-alert-message>
+			<wc-alert-message alert-severity="danger" class="alert-dialog-error" ng-if="model.errormessageid">
+				<span dynamic-label key="{{model.errormessageid}}"></span>
+		</wc-alert-message>
+		</div>
 	</div>
 </div>

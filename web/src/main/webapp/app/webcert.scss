@@ -30,6 +30,10 @@
 
 // Component styles are injected through grunt
 // injector
+@import 'partials/arende-draft-dialog.scss';
+@import 'partials/common-dialog.scss';
+@import 'partials/copy-dialog.scss';
+@import 'partials/createfromtemplate-dialog.scss';
 @import 'partials/discard-dialog.scss';
 @import 'partials/ersatt-dialog.scss';
 @import 'partials/fornya-dialog.scss';
