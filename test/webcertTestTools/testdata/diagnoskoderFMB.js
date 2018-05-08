@@ -107,7 +107,8 @@ module.exports = {
             funktionsnedsattning: 'Skadorna minskar förmågan',
             aktivitetsbegransning: null,
             beslutsunderlag: 'knäets leder och ligament eller leder och ligament på fotleds- och fotnivå där arbetsbelastningen innefattar krav på kroppslig rörlighet och belastning rekommenderas sjukskrivning upp till',
-            overliggande: 'Det FMB-stöd som visas är för koden S83'
+            overliggandeTxt: 'Det FMB-stöd som visas är för koden S83',
+            overliggandeDiagnos: 'S83'
 
         }, {
             kod: 'S831',
@@ -116,24 +117,9 @@ module.exports = {
             funktionsnedsattning: 'Skadorna minskar förmågan',
             aktivitetsbegransning: null,
             beslutsunderlag: 'knäets leder och ligament eller leder och ligament på fotleds- och fotnivå där arbetsbelastningen innefattar krav på kroppslig rörlighet och belastning rekommenderas sjukskrivning upp till',
-            overliggande: 'Det FMB-stöd som visas är för koden S83'
+            overliggandeTxt: 'Det FMB-stöd som visas är för koden S83',
+            overliggandeDiagnos: 'S83'
 
-        }, {
-            kod: 'R010',
-            symptomPrognosBehandling: null,
-            generellInfo: 'Sjukskrivning enbart utifrån ',
-            funktionsnedsattning: null,
-            aktivitetsbegransning: null,
-            beslutsunderlag: null,
-            overliggande: 'Det FMB-stöd som visas är för koden R01'
-        }, {
-            kod: 'R090',
-            symptomPrognosBehandling: null,
-            generellInfo: 'Sjukskrivning enbart utifrån symtom',
-            funktionsnedsattning: null,
-            aktivitetsbegransning: null,
-            beslutsunderlag: null,
-            overliggande: 'Det FMB-stöd som visas är för koden R09'
         }, {
             kod: 'N210',
             symptomPrognosBehandling: 'Symtomen vid njursten är svåra smärtor',
@@ -141,8 +127,8 @@ module.exports = {
             funktionsnedsattning: 'Vid akuta njurstensanfall',
             aktivitetsbegransning: null,
             beslutsunderlag: 'Vid njursten och utförd åtgärd avlägsnande av urinvägssten rekommenderas sjukskrivning upp till ',
-            overliggande: 'Det FMB-stöd som visas är för koden N21'
-
+            overliggandeTxt: 'Det FMB-stöd som visas är för koden N21',
+            overliggandeDiagnos: 'N21'
         }, {
             kod: 'S302',
             symptomPrognosBehandling: 'Skador orsakade av yttre',
@@ -150,8 +136,8 @@ module.exports = {
             funktionsnedsattning: 'Skadorna minskar förmågan att gå och stå',
             aktivitetsbegransning: null,
             beslutsunderlag: 'Vid skador på nedre extremiteten (frakturer, luxationer, distorsioner, sårskador)',
-            overliggande: 'Det FMB-stöd som visas är för koden S30'
-
+            overliggandeTxt: 'Det FMB-stöd som visas är för koden S30',
+            overliggandeDiagnos: 'S30'
         }, {
             kod: 'F420',
             symptomPrognosBehandling: 'Tvångssyndrom kännetecknas',
@@ -159,8 +145,8 @@ module.exports = {
             funktionsnedsattning: 'Tvångssyndrom karakteriseras av problem med tvångstankar',
             aktivitetsbegransning: null,
             beslutsunderlag: 'Vid lindrigt till medelsvårt tvångssyndrom kan sjukskrivning i många fall undvikas',
-            overliggande: 'Det FMB-stöd som visas är för koden F42'
-
+            overliggandeTxt: 'Det FMB-stöd som visas är för koden F42',
+            overliggandeDiagnos: 'F42'
         }, {
             kod: 'G359',
             symptomPrognosBehandling: 'Multipel skleros',
@@ -168,8 +154,8 @@ module.exports = {
             funktionsnedsattning: 'Hur MS påverkar',
             aktivitetsbegransning: null,
             beslutsunderlag: 'Vid primär progressiv multipel skleros eller sekundär progressiv multipel skleros krävs ofta en längre tids sjukskrivning',
-            overliggande: 'Det FMB-stöd som visas är för koden G35'
-
+            overliggandeTxt: 'Det FMB-stöd som visas är för koden G35',
+            overliggandeDiagnos: 'G35'
         }]
 
     },

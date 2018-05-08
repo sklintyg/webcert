@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* globals protractor, browser*/
+/* globals protractor, browser */
 
 'use strict';
 
@@ -102,9 +102,60 @@ var hogerfalt = WebcertBasePage._extend({
                 }
             }
         };
+
+        let fmb = {
+
+            tab: element(by.id('tab-link-wc-fmb-panel-tab')),
+            container: element(by.id('fmb-panel-scrollable-body')),
+            dialogs: {
+                symptomPrognosBehandling: element(by.id('fmb_text_SYMPTOM_PROGNOS_BEHANDLING')),
+                generellInfo: element(by.id('fmb_text_GENERELL_INFO')),
+                funktionsnedsattning: element(by.id('fmb_text_FUNKTIONSNEDSATTNING')),
+                aktivitetsbegransning: element(by.id('fmb_text_AKTIVITETSBEGRANSNING')),
+                beslutsunderlag: element(by.id('fmb_text_BESLUTSUNDERLAG_TEXTUELLT_list'))
+            },
+            alert: {
+                diagnosHittadesInte: element(by.id('fmb_diagnos_not_in_fmb_alert')),
+                overOrdnadDiagnos: function(overOrdnadDiagnos) {
+                    return element(by.id('fmb-not-original-diagnose-for-' + overOrdnadDiagnos));
+                }
+            },
+            visaMer: {
+                lankar: {
+                    funktionsnedsattning: element(by.id('fmb-text-expandable-content-link-FUNKTIONSNEDSATTNING')),
+                    symptomPrognosBehandling: element(by.id('fmb-text-expandable-content-link-SYMPTOM_PROGNOS_BEHANDLING')),
+                    generellt: element(by.id('fmb-text-expandable-content-link-GENERELL_INFO'))
+                },
+                klickaAlla: function() {
+                    let lankar = fmb.visaMer.lankar;
+                    //return new Promise(
+                    return lankar.funktionsnedsattning.isPresent().then(function(present) {
+                        if (present) {
+                            return lankar.funktionsnedsattning.click();
+                        }
+                    }).then(function() {
+                        return lankar.symptomPrognosBehandling.isPresent();
+                    }).then(function(present) {
+                        if (present) {
+                            return lankar.symptomPrognosBehandling.click();
+                        }
+                        return;
+                    }).then(function() {
+                        return lankar.generellt.isPresent();
+                    }).then(function(present) {
+                        if (present) {
+                            return lankar.generellt.click();
+                        }
+                    });
+                    //);
+
+                }
+            }
+        };
+
         this.fragaSvar = fragaSvar;
         this.tipsOchTricks = { /*TODO*/ };
-        this.fmb = { /*TODO*/ };
+        this.fmb = fmb;
     }
 });
 

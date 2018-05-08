@@ -30,21 +30,7 @@ var hogerfaltet = require('./hogerfaltet');
 
 var BaseUtkast = JClass._extend({
     init: function() {
-        this.fmbDialogs = {
-            symptomPrognosBehandling: element(by.id('fmb_text_SYMPTOM_PROGNOS_BEHANDLING')),
-            generellInfo: element(by.id('fmb_text_GENERELL_INFO')),
-            funktionsnedsattning: element(by.id('fmb_text_FUNKTIONSNEDSATTNING')),
-            aktivitetsbegransning: element(by.id('fmb_text_AKTIVITETSBEGRANSNING')),
-            beslutsunderlag: element(by.id('fmb_text_BESLUTSUNDERLAG_TEXTUELLT_list'))
-        };
-        this.fmbTab = element(by.id('tab-link-wc-fmb-panel-tab'));
-        /*this.fmbButtons = {
-            falt2: element(by.id('FALT2-fmb-button')),
-            falt4: element(by.id('FALT4-fmb-button')),
-            falt5: element(by.id('FALT5-fmb-button')),
-            falt8: element(by.id('FALT8B-fmb-button'))
-        };*/
-        this.fmbAlertText = element(by.id('fmb_diagnos_not_in_fmb_alert'));
+
         this.at = null;
         this.signeraButton = element(by.id('signera-utkast-button'));
         this.radera = {

@@ -55,14 +55,6 @@ function sendTextToForm(textEL, text) {
 var BaseSmiUtkast = FkBaseUtkast._extend({
     init: function init() {
         init._super.call(this);
-        // this.fmbButtons = ['diagnos-fmb-button', 'funktionsnedsattning-fmb-button', 'aktivitetsbegransning-fmb-button', 'bedomning-fmb-button'];
-        this.fmbTab = element(by.id('tab-link-wc-fmb-panel-tab'));
-        /*this.fmbButtons = {
-            falt2: element(by.id('diagnos-fmb-button')),
-            falt4: element(by.id('funktionsnedsattning-fmb-button')),
-            falt5: element(by.id('aktivitetsbegransning-fmb-button')),
-            falt8: element(by.id('bedomning-fmb-button'))
-        };*/
 
         this.at = element(by.css('.edit-form'));
 
