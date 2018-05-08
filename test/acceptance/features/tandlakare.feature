@@ -8,25 +8,26 @@ Egenskap: Tandläkare
 Scenario: Ska endast kunna hantera Läkarintyg för sjukpenning
 	Givet att jag är inloggad som läkare på vårdenhet "TSTNMT2321000156-107Q"
 	När jag går in på en patient
-	Och det finns ett "Transportstyrelsens läkarintyg"
-	Och det finns ett "Transportstyrelsens läkarintyg, diabetes"
-	Och det finns ett "Läkarutlåtande för sjukersättning" 
-
+	
+	Givet att vårdsystemet skapat ett intygsutkast för samma patient för "Läkarintyg för sjukpenning"
+	Och att vårdsystemet skapat ett intygsutkast för samma patient för "Transportstyrelsens läkarintyg"
+	Och att vårdsystemet skapat ett intygsutkast för samma patient för "Transportstyrelsens läkarintyg, diabetes"
+	Och att vårdsystemet skapat ett intygsutkast för samma patient för "Läkarutlåtande för sjukersättning"
+	Och att vårdsystemet skapat ett intygsutkast för samma patient för "Läkarutlåtande för sjukersättning"
+	
 	Givet att jag är inloggad som tandläkare på vårdenhet "TSTNMT2321000156-107Q"
 	När jag går in på patienten
-	#Uppdatera när @LegacyFK7263 försvinner
+	
 	Så ska jag inte se intyg av annan typ än "Läkarintyg FK 7263,Läkarintyg för sjukpenning"
-	Och jag ska se intygstyperna "Läkarintyg FK 7263,Läkarintyg för sjukpenning" i Skapa intyg listan
-	Och jag ska inte se intygstyperna "Transportstyrelsens, Läkarutlåtande för sjukersättning, nedsatt arbetsförmåga, förlängd skolgång, Dödsbevis, Dödsorsaksintyg" i Skapa intyg listan
+	Så ska jag se intygstyperna "Läkarintyg FK 7263 & Läkarintyg för sjukpenning" i Skapa intyg listan
+	Så ska jag inte se intygstyperna "Transportstyrelsens & Läkarutlåtande för sjukersättning & nedsatt arbetsförmåga & förlängd skolgång & Dödsbevis & Dödsorsaksintyg" i Skapa intyg listan
 
 	När jag går till ej signerade utkast
-	#Uppdatera när @LegacyFK7263 försvinner
 	Så ska jag inte se utkast av annan typ än "Läkarintyg FK 7263,Läkarintyg för sjukpenning"
 
 @LISJP @SIGNERA @SKICKA @MAKULERA @FORNYA
 Scenario: Skapa, Skicka och Makulera Läkarintyg för sjukpenning
 	Givet att jag är inloggad som tandläkare
-	När jag går in på en patient
 	Givet att vårdsystemet skapat ett intygsutkast för "Läkarintyg för sjukpenning"
 	Och jag går in på utkastet
 	Och jag fyller i alla nödvändiga fält för intyget

@@ -115,22 +115,25 @@ Given(/^ska vårdsystemet inte ha möjlighet att skapa "([^"]*)" utkast$/, funct
     url = url.replace('https', 'http');
     logger.silly(body);
 
-    return soap.createClient(url, function(err, client) {
-        logger.info(url);
-        if (err) {
-            logger.error('sendCreateDraft misslyckades' + err);
-            throw (err);
-        } else {
-            client.CreateDraftCertificate(body, function(err, result, resBody) {
-                logger.silly(resBody);
-                if (err) {
-                    throw (err);
-                } else {
-                    return expect(resBody).to.contain('Cannot issue intyg type');
-                }
-            });
-        }
+    return new Promise(function(resolve, reject) {
+        soap.createClient(url, function(err, client) {
+            logger.info(url);
+            if (err) {
+                logger.error('sendCreateDraft misslyckades' + err);
+                throw (err);
+            } else {
+                client.CreateDraftCertificate(body, function(err, result, resBody) {
+                    logger.silly(resBody);
+                    if (err) {
+                        throw (err);
+                    } else {
+                        resolve(expect(resBody).to.contain('Cannot issue intyg type'));
+                    }
+                });
+            }
+        });
     });
+
 
 });
 

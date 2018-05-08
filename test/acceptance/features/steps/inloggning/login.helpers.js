@@ -106,11 +106,11 @@ module.exports = {
         return logInAsUser(userObj, skipCookieConsent, secondBrowser)
             .then(function() {
                 logger.info((secondBrowser) ? 'Login second browser successful' : 'Login default browser successful');
-                var wcHeader = secondBrowser ? secondBrowser.findElement(by.id('wcHeader')) : element(by.id('wcHeader'));
 
                 return element(by.id('wcHeader')).getText().then(function(txt) {
                     logger.info('Webcert Header: ' + txt);
                 }).then(function() {
+                    let wcHeader = secondBrowser ? secondBrowser.findElement(by.id('wcHeader')) : element(by.id('wcHeader'));
                     return Promise.all([
                         expect(wcHeader.getText()).to.eventually.contain(userObj.forNamn + ' ' + userObj.efterNamn),
                         expect(wcHeader.getText()).to.eventually.contain(roleName)

@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* global pages, browser, protractor, Promise, logger */
+/* global pages, protractor, Promise, logger */
 
 'use strict';
 /*jshint newcap:false */
@@ -35,7 +35,6 @@ const {
     Then // jshint ignore:line
 } = require('cucumber');
 
-var helpers = require('./helpers');
 var sokSkrivIntygUtkastTypePage = pages.sokSkrivIntyg.valjUtkastType;
 
 var testTools = require('common-testtools');
@@ -86,29 +85,6 @@ Given(/^jag går till Sök\/skriv intyg$/, function() {
     return element(by.id('menu-skrivintyg')).typeKeys(protractor.Key.SPACE);
 });
 
-Given(/^ska jag inte ha alternativet att skapa "([^"]*)" intyg$/, function(intygsTyp) {
-    //TODO: kontrollera selector i nästa bygge.
-    return expect(element(by.id('intygType')).getText()).to.eventually.not.contain(intygsTyp);
-});
-
-Given(/^det finns ett "([^"]*)"$/, function(intygtyp) {
-    return element(by.id('prevIntygTable')).getText().then(function(text) {
-        if (text.indexOf(intygtyp) >= 0) {
-            return Promise.resolve('Intyg finns');
-        } else {
-            browser.ignoreSynchronization = true;
-            return browser.getCurrentUrl().then(function(currentUrl) {
-                return sokSkrivIntygUtkastTypePage.createUtkast(helpers.getInternShortcode(intygtyp)).then(function() {
-                    return helpers.hugeDelay().then(function() {
-                        return helpers.getUrl(currentUrl);
-                    });
-                });
-            });
-        }
-    });
-});
-
-
 
 Given(/^ska jag inte se intyg av annan typ än "([^"]*)"$/, function(typer) {
     typer = typer.split(',');
@@ -122,8 +98,8 @@ Given(/^ska jag inte se utkast av annan typ än "([^"]*)"$/, function(typer) {
     return checkElementsForText(els, typer);
 });
 
-Given(/^jag ska( inte)? se intygstyperna "([^"]*)" i Skapa intyg listan$/, function(inte, typer) {
-    typer = typer.split(',');
+Given(/^ska jag( inte)? se (?:intygstypen|intygstyperna) "([^"]*)" i Skapa intyg listan$/, function(inte, typer) {
+    typer = typer.split(' & ');
     let elm = sokSkrivIntygUtkastTypePage.intygTypeTable;
 
     if (inte) {

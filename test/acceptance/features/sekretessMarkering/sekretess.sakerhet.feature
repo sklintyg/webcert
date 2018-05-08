@@ -48,12 +48,12 @@ Scenario: Läkare ska kunna makulera intyg med s-markering
 	
 @TS @BAS
 Scenario: TS-intyg utkast ska inte kunna skapas på s-markerad patient på ts bas
-	Så ska jag inte ha alternativet att skapa "Transportstyrelsens läkarintyg" intyg
+	Så ska jag inte se intygstypen "Transportstyrelsens läkarintyg" i Skapa intyg listan
 	Så ska vårdsystemet inte ha möjlighet att skapa "Transportstyrelsens läkarintyg" utkast
 
 @TS @DIABETES
 Scenario: TS-intyg utkast ska inte kunna skapas på s-markerad patient på ts diabetes
-	Så ska jag inte ha alternativet att skapa "Transportstyrelsens läkarintyg, diabetes" intyg
+	Så ska jag inte se intygstypen "Transportstyrelsens läkarintyg, diabetes" i Skapa intyg listan
 	Så ska vårdsystemet inte ha möjlighet att skapa "Transportstyrelsens läkarintyg, diabetes" utkast
 	
 @REHABSTOD @REHABKOORDINATOR
@@ -64,9 +64,6 @@ Scenario: Rehabkoordinator ska inte kunna se sekrettessmarkerade intyg.
 	#Säkerställer att det finns ett lisjp intyg på patienten.
 	När jag går in på ett "Läkarintyg för sjukpenning" med status "Skickat"
 		
-	#Säkerställer att det finns ett fk7263 intyg på patienten.
-	#@LegacyFK7263
-	Och att vårdsystemet skapat ett intygsutkast för samma patient för "Läkarintyg FK 7263"
 	Och jag går in på utkastet
 	Och jag fyller i alla nödvändiga fält för intyget
 	Och jag signerar intyget
