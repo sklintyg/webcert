@@ -10,35 +10,33 @@
         <div class="card">
           <div class="flex-list" id="{{domId}}">
             <div class="flex-list-col" ng-repeat="type in intygTypeModel.userIntygTypes track by $index">
-              <div id="list-intyg-data" class="flex-list-row">
+              <div class="flex-list-row" ng-attr-id="intygType-row-{{type.id}}">
                 <span style="flex: 1"><span class="intyg-label">{{type.label}}</span> <span class="issuer-type-id">{{type.issuerTypeId}}</span></span>
                 <div class="about-intyg">
-                  <button class="btn btn-link btn-link__purelink" ng-click="openIntygTypeDetailsDialog(type)">Om intyget</button>
+                  <button ng-attr-id="intygTypeAbout-{{type.id}}" class="btn btn-link btn-link__purelink" ng-click="openIntygTypeDetailsDialog(type)">Om intyget</button>
                 </div>
                 <div>
-                  <span id="fortsattBtn">
-                    <button id="intygTypeFortsatt-{{type.id}}" class="btn btn-primary continue-btn" ng-click="createDraft(type.id)"
+                    <button ng-attr-id="intygTypeFortsatt-{{type.id}}" class="btn btn-primary continue-btn" ng-click="createDraft(type.id)"
                             ng-disabled="!isCreateUtkastEnabled(type.id)"><i class="material-icons">description</i> Skapa intyg</button>
-                  </span>
                 </div>
               </div>
 
-              <div id="list-intyg-alerts">
-                <wc-alert-message id="intyg-replaced-warning" ng-if="intygReplacement[type.id]"
+              <div>
+                <wc-alert-message alert-id="intyg-replaced-warning-{{type.id}}" ng-if="intygReplacement[type.id]"
                                   alert-severity="warning">
                   <span ng-bind-html="resolveIntygReplacedText(type.id)" class="multiline"></span>
                 </wc-alert-message>
 
 
-                <div id="intyg-exists-warning" ng-if="intygTypeModel.previousIntygWarnings[type.id]">
-                  <wc-alert-message alert-severity="warning" ng-switch="intygTypeModel.previousIntygWarnings[type.id].sameVardgivare">
+                <div ng-if="intygTypeModel.previousIntygWarnings[type.id]">
+                  <wc-alert-message alert-id="intyg-previousintyg-warning-{{type.id}}" alert-severity="warning" ng-switch="intygTypeModel.previousIntygWarnings[type.id].sameVardgivare">
                     <span ng-switch-when="true" dynamic-label key="{{type.id}}.warn.previouscertificate.samevg"></span>
                     <span ng-switch-when="false" dynamic-label key="{{type.id}}.warn.previouscertificate.differentvg"></span>
                   </wc-alert-message>
                 </div>
 
-                <div id="utkast-exists-warning" ng-if="intygTypeModel.previousUtkastWarnings[type.id]">
-                  <wc-alert-message alert-severity="warning" ng-switch="intygTypeModel.previousUtkastWarnings[type.id].sameVardgivare">
+                <div ng-if="intygTypeModel.previousUtkastWarnings[type.id]">
+                  <wc-alert-message alert-id="intyg-previousutkast-warning-{{type.id}}" alert-severity="warning" ng-switch="intygTypeModel.previousUtkastWarnings[type.id].sameVardgivare">
                     <span ng-switch-when="true" dynamic-label key="{{type.id}}.warn.previousdraft.samevg"></span>
                     <span ng-switch-when="false" dynamic-label key="{{type.id}}.warn.previousdraft.differentvg"></span>
                   </wc-alert-message>
