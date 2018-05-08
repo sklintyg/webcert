@@ -265,41 +265,46 @@ module.exports = {
     getIntygElementRow: function(intygstyp, status, cb) {
         var qaTable = element(by.css('.wc-table-striped'));
 
-        pool.getConnection().then(function(connection) {
-            qaTable.all(by.cssContainingText('tr', status)).filter(function(elem, index) {
-                    return elem.all(by.css('td')).get(2).getText().then(function(text) {
-                        return (text === intygstyp);
-                    });
-                })
-                // Kontrollera att intyget ej är ersatt
-                // Förhoppningsvis temporärt tills vi har någon label att gå på istället
-                .filter(function(el, i) {
-                    return el.element(by.cssContainingText('button', 'Visa')).getAttribute('id')
-                        .then(function(id) {
-                            id = id.replace('showBtn-', '');
-                            var query = 'SELECT RELATION_KOD FROM ' + process.env.DATABASE_NAME + '.INTYG where RELATION_INTYG_ID = "' + id + '"  AND RELATION_KOD = "ERSATT"';
-
-                            return new Promise(function(resolve, reject) {
-                                connection.query(query,
-                                    function(err, rows, fields) {
-                                        if (err) {
-                                            throw (err);
-                                        }
-                                        resolve(rows.length <= 0);
-                                    });
-
+        element(by.id('current-list-noResults-unit')).isPresent().then(function(present) {
+            if (!present) {
+                //Finns inga tidigare intyg!
+                cb();
+            } else {
+                pool.getConnection().then(function(connection) {
+                    qaTable.all(by.cssContainingText('tr', status)).filter(function(elem, index) {
+                            return elem.all(by.css('td')).get(2).getText().then(function(text) {
+                                return (text === intygstyp);
                             });
+                        })
+                        // Kontrollera att intyget ej är ersatt
+                        // Förhoppningsvis temporärt tills vi har någon label att gå på istället
+                        .filter(function(el, i) {
+                            return el.element(by.cssContainingText('button', 'Visa')).getAttribute('id')
+                                .then(function(id) {
+                                    id = id.replace('showBtn-', '');
+                                    var query = 'SELECT RELATION_KOD FROM ' + process.env.DATABASE_NAME + '.INTYG where RELATION_INTYG_ID = "' + id + '"  AND RELATION_KOD = "ERSATT"';
+
+                                    return new Promise(function(resolve, reject) {
+                                        connection.query(query,
+                                            function(err, rows, fields) {
+                                                if (err) {
+                                                    throw (err);
+                                                }
+                                                resolve(rows.length <= 0);
+                                            });
+
+                                    });
+                                });
+                        })
+                        .then(function(filteredElements) {
+                            connection.release();
+                            cb(filteredElements[0]);
                         });
-                })
-                .then(function(filteredElements) {
-                    connection.release();
-                    cb(filteredElements[0]);
+
                 });
 
+            }
         });
-
-
-
     },
     getAbbrev: function(value) {
         for (var key in this.intygShortcode) {
