@@ -136,7 +136,7 @@ describe('EjSigneradeUtkastCtrlSpec', function() {
             $httpBackend.expectGET('/api/utkast?pageSize=10&startFrom=10').respond(200, {results:[]});
             $scope.fetchMore();
             $httpBackend.flush();
-            expect($scope.filter.startFrom).toBe(10);
+            expect($scope.widgetState.currentFilterRequest.startFrom).toBe(10);
             expect($scope.widgetState.activeErrorMessageKey).toBeNull();
         });
 
@@ -144,7 +144,7 @@ describe('EjSigneradeUtkastCtrlSpec', function() {
             $httpBackend.expectGET('/api/utkast?pageSize=10&startFrom=10').respond(500);
             $scope.fetchMore();
             $httpBackend.flush();
-            expect($scope.filter.startFrom).toBe(10);
+            expect($scope.widgetState.currentFilterRequest.startFrom).toBe(10);
             expect($scope.widgetState.activeErrorMessageKey).not.toBeNull();
         });
     });

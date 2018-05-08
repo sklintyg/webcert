@@ -30,7 +30,6 @@ angular.module('webcert').factory('webcert.UtkastFilterModel', [ '$filter', func
     }
 
     UtkastFilterModel.prototype.reset = function() {
-        this.filterIsDirty = false;
         this.startFrom = 0;
 
         this.selection.notified = 'NOTIFIED_ALL'; // 3-state, undefined, true, false

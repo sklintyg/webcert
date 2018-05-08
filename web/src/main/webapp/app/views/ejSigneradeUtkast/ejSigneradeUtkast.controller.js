@@ -21,8 +21,8 @@
  * Controller for logic related to listing unsigned certs
  */
 angular.module('webcert').controller('webcert.EjSigneradeUtkastCtrl',
-    [ '$log', '$scope', '$timeout', '$window', 'common.dialogService', 'webcert.UtkastFilterModel', 'webcert.UtkastProxy', 'common.User', '$filter',
-        function($log, $scope, $timeout, $window, dialogService, UtkastFilterModel, UtkastProxy, User, $filter) {
+    [ '$log', '$scope', '$timeout', '$window', 'common.dialogService', 'webcert.UtkastFilterModel', 'webcert.UtkastProxy', 'common.User',
+        function($log, $scope, $timeout, $window, dialogService, UtkastFilterModel, UtkastProxy, User) {
             'use strict';
 
             // Constant settings
@@ -37,7 +37,7 @@ angular.module('webcert').controller('webcert.EjSigneradeUtkastCtrl',
                 // User context
                 valdVardenhet: User.getValdVardenhet(),
 
-                // Loadíng states
+                // Loading states
                 doneLoading: true,
                 runningQuery: false,
                 fetchingMoreInProgress: false,
@@ -47,21 +47,15 @@ angular.module('webcert').controller('webcert.EjSigneradeUtkastCtrl',
 
                 // Search states
                 filteredYet: false,
-                filterIsDirty: false,
                 initialQueryWasEmpty: true,
+
+                //Active query
+                currentFilterRequest :  $scope.filter.convertToPayload(),
 
                 // List data
                 totalCount: 0,
                 currentList: undefined
             };
-
-            //Determine if user has changed anything
-            $scope.$watch('filter.selection', function(newVal, oldVal) {
-                if (newVal !== oldVal) {
-                    $scope.filter.filterIsDirty = true;
-                   // $scope.filterDrafts();
-                }
-            }, true);
 
             /**
              *  Load initial data
@@ -75,7 +69,6 @@ angular.module('webcert').controller('webcert.EjSigneradeUtkastCtrl',
                 $scope.widgetState.currentList = data.results;
                 $scope.widgetState.totalCount = data.totalCount;
                 $scope.widgetState.initialQueryWasEmpty = (data.totalCount === 0 && !$scope.widgetState.filteredYet);
-
 
             }, function() {
                 $log.debug('Query Error');
@@ -93,12 +86,11 @@ angular.module('webcert').controller('webcert.EjSigneradeUtkastCtrl',
                 $scope.widgetState.filteredYet = true;
                 $scope.widgetState.initialQueryWasEmpty = false;
 
-                $scope.filter.startFrom = 0;
-                $scope.filter.filterIsDirty = false;
+                $scope.widgetState.currentFilterRequest.startFrom = 0;
 
-                var filterQuery = $scope.filter.convertToPayload();
+                $scope.widgetState.currentFilterRequest = $scope.filter.convertToPayload();
                 $scope.widgetState.runningQuery = true;
-                UtkastProxy.getUtkastFetchMore(filterQuery, function(successData) {
+                UtkastProxy.getUtkastFetchMore($scope.widgetState.currentFilterRequest, function(successData) {
                     $scope.widgetState.runningQuery = false;
                     $scope.widgetState.currentList = successData.results;
                     $scope.widgetState.totalCount = successData.totalCount;
@@ -110,19 +102,17 @@ angular.module('webcert').controller('webcert.EjSigneradeUtkastCtrl',
             };
 
             $scope.showFetchMore = function() {
-                return !$scope.filter.filterIsDirty && (($scope.filter.startFrom + PAGE_SIZE < $scope.widgetState.totalCount) || $scope.widgetState.fetchingMoreInProgress);
+                return ($scope.widgetState.currentFilterRequest.startFrom + PAGE_SIZE < $scope.widgetState.totalCount) || $scope.widgetState.fetchingMoreInProgress;
             };
 
             $scope.fetchMore = function() {
                 $log.debug('fetchMore');
                 $scope.widgetState.activeErrorMessageKey = null;
-                $scope.filter.startFrom += PAGE_SIZE;
-                var filterQuery = $scope.filter.convertToPayload();
                 $scope.widgetState.fetchingMoreInProgress = true;
+                //Change nothing but
+                $scope.widgetState.currentFilterRequest.startFrom += PAGE_SIZE;
 
-
-                UtkastProxy.getUtkastFetchMore(filterQuery, function(successData) {
-                    $scope.filter.filterIsDirty = false;
+                UtkastProxy.getUtkastFetchMore($scope.widgetState.currentFilterRequest, function(successData) {
                     $scope.widgetState.fetchingMoreInProgress = false;
                     for (var i = 0; i < successData.results.length; i++) {
                         $scope.widgetState.currentList.push(successData.results[i]);
@@ -134,36 +124,13 @@ angular.module('webcert').controller('webcert.EjSigneradeUtkastCtrl',
                 });
             };
 
-            var propertyMap = {'intygsTyp': 'intygType',
-                'status':'status',
-                'senastSparadDatum':'lastUpdatedSigned',
-                'patientPersonnummer': 'patientId',
-                'senastSparadAv': 'updatedSignedBy',
-                'vidarebefordrad': 'vidarebefordrad'};
-
             $scope.orderByProperty = function(property, ascending) {
                 $log.debug('orderByProperty');
                 $scope.filter.selection.orderBy = property;
                 $scope.filter.selection.orderAscending = ascending;
-                if(!$scope.showFetchMore()) {
-                    $scope.widgetState.currentList = $filter('orderBy')($scope.widgetState.currentList, propertyMap[property], ascending);
-                } else {
-                    $scope.widgetState.activeErrorMessageKey = null;
-                    $scope.filter.startFrom = 0;
-                    $scope.widgetState.initialQueryWasEmpty = false;
-                    $scope.widgetState.runningQuery = true;
-                    var filterQuery = $scope.filter.convertToPayload();
 
-                    UtkastProxy.getUtkastFetchMore(filterQuery, function(successData) {
-                        $scope.widgetState.runningQuery = false;
-                        $scope.widgetState.currentList = successData.results;
-                        $scope.widgetState.totalCount = successData.totalCount;
-                    }, function() {
-                        $scope.widgetState.runningQuery = false;
-                        $log.debug('Query Error');
-                        $scope.widgetState.activeErrorMessageKey = 'info.query.error';
-                    });
-                }
+                $scope.filterDrafts();
+
             };
 
         }]);
