@@ -1,12 +1,11 @@
 <!-- Inga tidigare intyg att visa -->
 
-<div class="ng-cloak" ng-cloak ng-if="!viewState.intygListErrorMessageKey && viewState.intygListUnhandled.length === 0">
+<div ng-if="!viewState.intygListErrorMessageKey && viewState.intygListUnhandled.length === 0 && !viewState.tidigareIntygLoading">
   <div id="current-list-noResults-unit" class="sokskriv-container">
     <img id="sokskriv-image-wrapper" src="/img/sok_skriv.png"/>
     <span dynamic-label key="info.nointygfound"></span>
   </div>
 </div>
-
 <!-- error message -->
 
 <wc-alert-message ng-show="viewState.intygListErrorMessageKey"
