@@ -31,6 +31,9 @@ wc-vardenhet-filter {
     button {
       display: flex;
       align-items: center;
+      &#ovriga {
+        padding-left: 8px;
+      }
     }
 
     button.selected {
@@ -51,6 +54,8 @@ wc-vardenhet-filter {
     position: relative;
     width: 100%;
 
+
+
     transition: none;
     &:focus {
       outline: none;
@@ -65,10 +70,7 @@ wc-vardenhet-filter {
       background-color: $wc-color-00;
     }
 
-    .ovrigt-icon {
-      position: absolute;
-      margin-left: -24px;
-    }
+
 
   }
 
