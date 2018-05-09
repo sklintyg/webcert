@@ -26,15 +26,15 @@ var testdataHelper = require('common-testtools').testdataHelper;
 var shuffle = testdataHelper.shuffle;
 
 var today = new Date();
-
 var deathDate = new Date();
-
 deathDate.setDate(today.getDate() - Math.floor(Math.random() * 365));
 
-
-var dayBeforeDeath = new Date(deathDate);
-dayBeforeDeath.setDate(deathDate.getDate() - 1);
-
+function getRelativeDeathDate(modifier) {
+    // Modifier : days
+    let datum = new Date(deathDate);
+    datum.setDate(deathDate.getDate() + modifier);
+    return datum;
+}
 
 function getDodsdatum(datumSakert) {
     if (datumSakert === true) {
@@ -46,7 +46,6 @@ function getDodsdatum(datumSakert) {
     } else {
         let monthArr = ['00', '01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12'];
         let year = deathDate.getYear() + 1900;
-
 
         return {
             inteSakert: {
@@ -74,20 +73,16 @@ function getDodsOrsak() {
         obj.d = getDodsOrsakObj(4);
     }
 
-    /*let datum = new Date(dayBeforeDeath);
-    datum.setDate(deathDate.getDate() - 1);*/
-
     obj.andraSjukdomarSkador = getDodsOrsakObj(5);
 
     return obj;
 }
 
 function getDodsOrsakObj(n) {
-    let datum = new Date(dayBeforeDeath);
-    datum.setDate(deathDate.getDate() - n);
+
     var obj = {
         beskrivning: testdataHelper.randomTextString(5, 140),
-        datum: testdataHelper.dateFormat(datum),
+        datum: testdataHelper.dateFormat(getRelativeDeathDate(-n)),
         tillstandSpec: shuffle(['Akut', 'Kronisk', 'Uppgift saknas'])[0]
     };
     return obj;
@@ -97,7 +92,7 @@ function getSkadaForgiftning() {
     var ja = {
         ja: {
             orsakAvsikt: shuffle(['Olycksfall', 'Självmord', 'Avsiktligt vållad av annan', 'Oklart om avsikt förelegat'])[0],
-            datum: testdataHelper.dateFormat(dayBeforeDeath),
+            datum: testdataHelper.dateFormat(getRelativeDeathDate(-1)),
             beskrivning: testdataHelper.randomTextString(5, 400)
         }
     };
@@ -109,7 +104,7 @@ function getSkadaForgiftning() {
 function getOperation() {
     var ja = {
         ja: {
-            datum: testdataHelper.dateFormat(dayBeforeDeath),
+            datum: testdataHelper.dateFormat(getRelativeDeathDate(-1)),
             beskrivning: testdataHelper.randomTextString(5, 100)
         }
     };

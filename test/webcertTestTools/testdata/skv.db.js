@@ -26,8 +26,14 @@ var today = new Date();
 var deathDate = new Date();
 deathDate.setDate(today.getDate() - Math.floor(Math.random() * 365));
 
-var dayBeforeDeath = new Date(deathDate);
-dayBeforeDeath.setDate(deathDate.getDate() - 1);
+
+function getRelativeDeathDate(modifier) {
+    // Modifier : days
+    let datum = new Date(deathDate);
+    datum.setDate(deathDate.getDate() + modifier);
+    return datum;
+}
+
 
 function getDodsdatum(datumSakert) {
     if (datumSakert === true) {
@@ -90,7 +96,7 @@ module.exports = {
             obj.barn = testdataHelper.randomTrueFalse();
         }
         if (obj.yttreUndersokning.value === 'nejUndersokningGjortKortFore') {
-            obj.yttreUndersokning.datum = testdataHelper.dateFormat(dayBeforeDeath);
+            obj.yttreUndersokning.datum = testdataHelper.dateFormat(getRelativeDeathDate(-1));
         }
         if (obj.yttreUndersokning.value !== 'nejUndersokningSkaGoras') {
             obj.polisanmalan = testdataHelper.randomTrueFalse();

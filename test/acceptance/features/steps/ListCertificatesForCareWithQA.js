@@ -99,6 +99,10 @@
                      logger.silly(JSON.stringify(responseIntyg));
                  }
              });
+         } else {
+             response.list = {
+                 item: []
+             };
          }
 
      });

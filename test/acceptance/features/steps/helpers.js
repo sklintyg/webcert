@@ -263,13 +263,12 @@ module.exports = {
         });
     },
     getIntygElementRow: function(intygstyp, status, cb) {
-        var qaTable = element(by.css('.wc-table-striped'));
-
         element(by.id('current-list-noResults-unit')).isPresent().then(function(present) {
-            if (!present) {
+            if (present) {
                 //Finns inga tidigare intyg!
                 cb();
             } else {
+                let qaTable = element(by.css('.wc-table-striped'));
                 pool.getConnection().then(function(connection) {
                     qaTable.all(by.cssContainingText('tr', status)).filter(function(elem, index) {
                             return elem.all(by.css('td')).get(2).getText().then(function(text) {

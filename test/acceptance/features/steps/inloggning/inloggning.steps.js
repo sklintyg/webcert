@@ -91,7 +91,7 @@ function gotoIntygUtkast(intygtyp) {
     intyg.typ = intygtyp;
     browser.ignoreSynchronization = true;
     return sokSkrivIntygUtkastTypePage.createUtkast(helpers.getInternShortcode(intygtyp)).then(function() {
-        return helpers.hugeDelay();
+        return helpers.pageReloadDelay();
     }).then(function() {
         // Spara intygsid för kommande steg
         return browser.getCurrentUrl().then(function(text) {
