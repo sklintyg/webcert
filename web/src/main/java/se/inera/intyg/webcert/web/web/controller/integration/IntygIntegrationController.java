@@ -25,6 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.infra.security.authorities.CommonAuthoritiesResolver;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
@@ -101,6 +102,9 @@ public class IntygIntegrationController extends BaseIntegrationController {
     @Autowired
     private ReferensService referensService;
 
+    @Autowired
+    private IntygModuleRegistry moduleRegistry;
+
     /**
      * Fetches a certificate from IT or webcert and then performs a redirect to the view that displays
      * the certificate. Can be used for all types of certificates.
@@ -129,7 +133,8 @@ public class IntygIntegrationController extends BaseIntegrationController {
             @DefaultValue("true") @QueryParam(PARAM_COPY_OK) boolean copyOk) {
 
         Map<String, Object> pathParameters = new HashMap<>();
-        pathParameters.put(PARAM_CERT_TYPE, intygTyp);
+        String internIntygTyp = moduleRegistry.getModuleIdFromExternalId(intygTyp.toUpperCase());
+        pathParameters.put(PARAM_CERT_TYPE, internIntygTyp);
         pathParameters.put(PARAM_CERT_ID, intygId);
 
         // validate the request
@@ -142,7 +147,7 @@ public class IntygIntegrationController extends BaseIntegrationController {
         WebCertUser user = getWebCertUser();
         user.setParameters(integrationParameters);
 
-        return handleRedirectToIntyg(uriInfo, intygTyp, intygId, enhetId, user);
+        return handleRedirectToIntyg(uriInfo, internIntygTyp, intygId, enhetId, user);
     }
 
     /**
@@ -208,7 +213,8 @@ public class IntygIntegrationController extends BaseIntegrationController {
             @DefaultValue("true") @FormParam(PARAM_COPY_OK) boolean copyOk) {
 
         Map<String, Object> params = new HashMap<>();
-        params.put(PARAM_CERT_TYPE, intygTyp);
+        String internIntygTyp = moduleRegistry.getModuleIdFromExternalId(intygTyp.toUpperCase());
+        params.put(PARAM_CERT_TYPE, internIntygTyp);
         params.put(PARAM_CERT_ID, intygId);
 
         // validate the request
@@ -221,7 +227,7 @@ public class IntygIntegrationController extends BaseIntegrationController {
         WebCertUser user = getWebCertUser();
         user.setParameters(integrationParameters);
 
-        return handleRedirectToIntyg(uriInfo, intygTyp, intygId, enhetId, user);
+        return handleRedirectToIntyg(uriInfo, internIntygTyp, intygId, enhetId, user);
     }
 
     @GET

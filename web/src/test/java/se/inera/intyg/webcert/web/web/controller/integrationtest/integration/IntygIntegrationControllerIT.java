@@ -71,6 +71,36 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
                 .header(HttpHeaders.LOCATION, endsWith("/ts-bas/edit/" + utkastId + "/"))
                 .header(XFRAME_OPTIONS_HEADER, equalToIgnoringCase("DENY"));
     }
+    /**
+     * Verify that a djupintegrerad lakare can use a utkast redirect link and gets redirected to the correct url.
+     */
+    @Test
+    public void testRedirectSuccessUtkastUsingGETWithIntygTyp() {
+
+        RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
+
+        String utkastId = createUtkast("ts-bas", DEFAULT_PATIENT_PERSONNUMMER);
+
+        changeOriginTo("DJUPINTEGRATION");
+
+        Map<String, String> pathParams = new HashMap<>();
+        pathParams.put("intygsId", utkastId);
+        pathParams.put("intygsTyp", "TSTRK1007");
+
+        Map<String, String> queryParams = new HashMap<>();
+        queryParams.put("alternatePatientSSn", DEFAULT_PATIENT_PERSONNUMMER);
+        queryParams.put("responsibleHospName", "HrDoktor");
+        queryParams.put("enhet", "IFV1239877878-1042");
+
+        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId).redirects().follow(false)
+                .and().pathParams(pathParams)
+                .and().queryParams(queryParams)
+                .expect().statusCode(HttpServletResponse.SC_TEMPORARY_REDIRECT)
+                .when().get("/visa/intyg/{intygsTyp}/{intygsId}")
+                .then()
+                .header(HttpHeaders.LOCATION, endsWith("/ts-bas/edit/" + utkastId + "/"))
+                .header(XFRAME_OPTIONS_HEADER, equalToIgnoringCase("DENY"));
+    }
 
     /**
      * Verify that a djupintegrerad lakare can use a utkast redirect link and gets redirected to the correct url.
@@ -85,7 +115,7 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
         changeOriginTo("DJUPINTEGRATION");
 
         Map<String, String> pathParams = new HashMap<>();
-        pathParams.put("intygsTyp", "ts-bas");
+        pathParams.put("intygsTyp", "TSTRK1007");
         pathParams.put("intygsId", utkastId);
 
         Map<String, String> formParams = new HashMap<>();
@@ -129,7 +159,7 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
         String intygsId = createSignedIntyg("ts-bas", DEFAULT_PATIENT_PERSONNUMMER);
 
         Map<String, String> pathParams = new HashMap<>();
-        pathParams.put("intygsTyp", "ts-bas");
+        pathParams.put("intygsTyp", "TSTRK1007");
         pathParams.put("intygsId", intygsId);
 
         changeOriginTo("DJUPINTEGRATION");
