@@ -24,6 +24,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
 import se.inera.intyg.infra.integration.hsa.model.Vardgivare;
 import se.inera.intyg.infra.security.authorities.CommonAuthoritiesResolver;
@@ -81,6 +82,9 @@ public class IntygIntegrationControllerTest {
 
     @Mock
     private ReferensService referensService;
+
+    @Mock
+    private IntygModuleRegistry moduleRegistry;
 
     @InjectMocks
     private IntygIntegrationController testee;
@@ -148,6 +152,14 @@ public class IntygIntegrationControllerTest {
 
         assertEquals(Response.Status.TEMPORARY_REDIRECT.getStatusCode(), res.getStatus());
         verify(authoritiesResolver).getFeatures(Arrays.asList(user.getValdVardenhet().getId(), user.getValdVardgivare().getId()));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testIntygsTypLookupFailGet() {
+        String intygTyp = "nonExistant";
+        when(moduleRegistry.getModuleIdFromExternalId(intygTyp.toUpperCase())).thenReturn("");
+        testee.getRedirectToIntyg(null, intygTyp, "intygId", null, null, null, null, null, null, null, null, null, null, false, false,
+                false, true);
     }
 
     private PrepareRedirectToIntyg createPrepareRedirectToIntyg() {

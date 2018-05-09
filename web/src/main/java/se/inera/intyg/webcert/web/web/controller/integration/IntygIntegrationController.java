@@ -25,6 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.infra.security.authorities.CommonAuthoritiesResolver;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
@@ -107,6 +108,9 @@ public class IntygIntegrationController extends BaseIntegrationController {
     @Qualifier("intygIntegrationServiceImpl")
     private IntegrationService integrationService;
 
+    @Autowired
+    private IntygModuleRegistry moduleRegistry;
+
     /**
      * Fetches a certificate from IT or webcert and then performs a redirect to the view that displays
      * the certificate. Can be used for all types of certificates.
@@ -134,8 +138,9 @@ public class IntygIntegrationController extends BaseIntegrationController {
             @DefaultValue("false") @QueryParam(PARAM_PATIENT_DECEASED) boolean deceased,
             @DefaultValue("true") @QueryParam(PARAM_COPY_OK) boolean copyOk) {
 
+        String internIntygTyp = moduleRegistry.getModuleIdFromExternalId(intygTyp.toUpperCase());
         Map<String, Object> pathParameters = ImmutableMap.of(
-                PARAM_CERT_TYPE, intygTyp,
+                PARAM_CERT_TYPE, internIntygTyp,
                 PARAM_CERT_ID, intygId);
 
         validateRequest(pathParameters);
@@ -147,7 +152,7 @@ public class IntygIntegrationController extends BaseIntegrationController {
         WebCertUser user = getWebCertUser();
         user.setParameters(integrationParameters);
 
-        return handleRedirectToIntyg(uriInfo, intygTyp, intygId, enhetId, user);
+        return handleRedirectToIntyg(uriInfo, internIntygTyp, intygId, enhetId, user);
     }
 
     /**
@@ -231,7 +236,6 @@ public class IntygIntegrationController extends BaseIntegrationController {
             @PathParam(PARAM_CERT_TYPE) String intygTyp,
             @PathParam(PARAM_CERT_ID) String intygId,
             @DefaultValue("") @QueryParam(PARAM_ENHET_ID) String enhetId) {
-
 
         Map<String, Object> params = ImmutableMap.of(
                 INTYG_TYP, intygTyp,
