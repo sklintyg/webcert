@@ -307,7 +307,7 @@ public class DiagnosServiceImplTest {
 
     @Test
     public void testValidateDiagnosisCodeKsh97p() throws Exception {
-        final List<String> codes = Arrays.asList("A11", "A11-P", "A11-", "A111", "A111P");
+        final List<String> codes = Arrays.asList("A11", "A11-P", "A11-", "A111", "A111P", "F438A");
 
         for (String code : codes) {
             final boolean result = service.validateDiagnosisCode(code, "KSH_97_P");

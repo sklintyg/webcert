@@ -45,30 +45,33 @@ import se.inera.intyg.webcert.web.service.diagnos.repo.DiagnosRepositoryFactory;
  * or searching for diagnosies.
  *
  * @author npet
- *
  */
 @Service
 public class DiagnosServiceImpl implements DiagnosService {
 
     /**
      * A regular expression for validating a 'swedish' ICD-10 code.
-     *
+     * <p/>
      * The code should start with an upper-case letter
      * and should be followed by two digits,
      * then an optional '.',
      * followed by an optional digit,
      * finishing with an optional upper-case letter.
-     *
+     * <p/>
      * Tested with: A11, A11.1, A11.1X, A111, A111X, A1111
      */
     private static final String ICD10_CODE_REGEXP = "^[A-Z]\\d{2}\\.{0,1}\\d{0,1}[0-9A-Z]{0,1}$";
 
     /**
      * A regular expression for validating a specialization of ICD-10 code called KSH97P.
-     *
-     * Tested with: A11, A11-P, A11-, A111, A111P
+     * <p/>
+     * All codes should begin with a letter followed by 2 digits, then a dash, a digit and the letter P follows where each
+     * is optional.
+     * Additionally allow F438A, which seems like a special case in the documents published by Socialstyrelsen.
+     * <p/>
+     * Tested with: A11, A11-P, A11-, A111, A111P, F438A.
      */
-    private static final String KSH97P_CODE_REGEXP = "^[A-Z]\\d{2}\\-{0,1}\\d{0,1}[P]{0,1}$";
+    private static final String KSH97P_CODE_REGEXP = "^([A-Z]\\d{2}\\-{0,1}\\d{0,1}[P]{0,1}|F438A)$";
 
     private static final String COMMA = ",";
 
