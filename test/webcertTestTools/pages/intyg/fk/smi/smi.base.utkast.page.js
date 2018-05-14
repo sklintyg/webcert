@@ -176,25 +176,21 @@ var BaseSmiUtkast = FkBaseUtkast._extend({
                 if (baseratPa.minUndersokningAvPatienten) {
                     return moveAndSendKeys(baseratPaElmObj.minUndersokningAvPatienten.datum, baseratPa.minUndersokningAvPatienten);
                 }
-                return;
             })
             .then(function() {
                 if (baseratPa.journaluppgifter) {
                     return moveAndSendKeys(baseratPaElmObj.journaluppgifter.datum, baseratPa.journaluppgifter);
                 }
-                return;
             })
             .then(function() {
                 if (baseratPa.telefonkontakt) {
                     return moveAndSendKeys(baseratPaElmObj.telefonkontakt.datum, baseratPa.telefonkontakt);
                 }
-                return;
             })
             .then(function() {
                 if (baseratPa.anhorigsBeskrivning) {
                     return moveAndSendKeys(baseratPaElmObj.anhorigBeskrivning.datum, baseratPa.anhorigsBeskrivning);
                 }
-                return;
             })
             .then(function() {
                 if (baseratPa.annat) {
@@ -203,13 +199,11 @@ var BaseSmiUtkast = FkBaseUtkast._extend({
                             return moveAndSendKeys(baseratPaElmObj.annat.beskrivning, baseratPa.annatBeskrivning);
                         });
                 }
-                return;
             })
             .then(function() {
                 if (baseratPa.personligKannedom) {
                     return moveAndSendKeys(baseratPaElmObj.kannedomOmPatient.datum, baseratPa.personligKannedom);
                 }
-                return;
             });
     },
     angeFunktionsnedsattning: function(nedsattning) {

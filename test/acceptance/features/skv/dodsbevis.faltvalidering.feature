@@ -28,7 +28,7 @@ Scenario: Undersökningsdatum kan inte vara efter ej säkert dödsdatum
     När jag klickar på signera-knappen
     Så ska "1" valideringsfel visas med texten "Datumet får inte vara senare än datumet för "Anträffad död"."
 
-@F.VAL-054
+@F.VAL-054 @WAITINGFORFIX @UTR-2014 @INTYG-5683
 Scenario: Undersökningsdatum får inte vara före 1 januari föregående år
     Givet jag väljer alternativet "Säkert" i frågan "Dödsdatum"
     Och jag fyller i "2018-03-19" i fältet "Datum"

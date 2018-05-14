@@ -52,7 +52,7 @@ Exempel:
     | Dödsbevis       |
     | Dödsorsaksintyg |
 
-@F.VAL-054
+@F.VAL-054 @WAITINGFORFIX @UTR-2014 @INTYG-5683
 Scenariomall: Dödsdatum får inte vara före 1 januari föregående år
     Givet jag går in på att skapa ett "<intyg>" intyg
     När jag väljer alternativet "Säkert" i frågan "Dödsdatum"

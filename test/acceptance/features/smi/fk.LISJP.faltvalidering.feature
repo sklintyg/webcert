@@ -48,9 +48,10 @@ Scenario: Intyget kan inte signeras om slut är före startdatum
     Och jag klickar på signera-knappen
     Så ska "4" valideringsfel visas med texten "Startdatum får inte vara efter slutdatum."
 
-@F.VAL-046
+@F.VAL-046 @WAITINGFORFIX @INTYG-6323
 Scenario: Undersökningsdatum i framtiden ska ge varning
     När jag anger undersökningsdatum i framtiden
+	Och jag klickar på signera-knappen
     Så ska "4" varningsmeddelande visas med texten "Observera att du valt ett datum framåt i tiden."
 
 
