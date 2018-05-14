@@ -42,14 +42,19 @@ Scenario: PS-007 - Patienten har fått ett reservnummer
     Och jag signerar intyget
     Så ska intyget visa det gamla person-id:numret
 
+@RESPONSIBLEHOSPNAME	
+Scenario: [responsibleHospName] - Endast vårdadmin ska se signerande läkare
+	Givet att vårdsystemet skapat ett intygsutkast för slumpat SMI-intyg
+    När jag går in på intyget via djupintegrationslänk och har parametern "responsibleHospName" satt till "Peter Parameter"
+	Så ska jag inte se signerande läkare "Peter Parameter"		
+	#Endast vårdadmin ska se signerande läkare 
+    
+	
 @INTYGSDELNING-VÅRDENHET @GE-003
 Scenario: GE-003 - Parametrar i djupintegrationslänk, och intygsdelning mellan vårdenheter
     Givet att vårdsystemet skapat ett intygsutkast för slumpat SMI-intyg
     När jag går in på intygsutkastet via djupintegrationslänk
     Och jag fyller i alla nödvändiga fält för intyget
-
-    När jag går in på intyget via djupintegrationslänk och har parametern "responsibleHospName" satt till "Peter Parameter"
-    Så ska jag se signerande läkare "Peter Parameter"
     Och jag signerar intyget
 
     När jag går in på intyget via djupintegrationslänk och har parametern "kopieringOK" satt till "false"

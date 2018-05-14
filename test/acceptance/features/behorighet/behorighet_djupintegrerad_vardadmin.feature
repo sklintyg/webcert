@@ -25,6 +25,13 @@ Scenario: Kan markera som klart för signering men inte signera
 	
 	Så ska jag se KFSIGN infotexten "Utkastet är sparat och markerat klart för signering."
 
+@RESPONSIBLEHOSPNAME
+Scenario: [responsibleHospName] - Vårdadmin ska se signerande läkare
+	Givet att vårdsystemet skapat ett intygsutkast för slumpat SMI-intyg
+    När jag går in på intyget via djupintegrationslänk och har parametern "responsibleHospName" satt till "Peter Parameter"
+	Så ska jag se signerande läkare "Peter Parameter"		
+	
+	
 @signera @klar-för-signering-sparat @LegacyFK7263
 Scenario: Kan inte signera FK7263-utkast
 	När att vårdsystemet skapat ett intygsutkast för "Läkarintyg FK 7263"

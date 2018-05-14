@@ -95,6 +95,14 @@ Given(/^ska adressen vara ifylld på det förnyade intyget$/, function() {
 
 });
 
-Then(/^ska jag se signerande läkare "([^"]*)"$/, function(name) {
-    return expect(fkUtkastPage.signingDoctorName.getText()).to.eventually.equal(name);
+Then(/^ska jag( inte)? se signerande läkare "([^"]*)"$/, function(inte, name) {
+    if (typeof(inte) === 'undefined') {
+        return expect(fkUtkastPage.signingDoctorName.getText()).to.eventually.equal(name);
+    } else {
+        return helpers.largeDelay().then(function() {
+            return fkUtkastPage.signingDoctorName.isPresent();
+        }).then(function(present) {
+            return expect(present).to.equal.false;
+        });
+    }
 });
