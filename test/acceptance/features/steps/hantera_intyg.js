@@ -35,7 +35,7 @@ const {
     Then // jshint ignore:line
 } = require('cucumber');
 
-
+const baseIntyg = pages.intyg.base.intyg;
 const fkIntygPage = pages.intyg.fk['7263'].intyg;
 const lisjpIntygPage = pages.intyg.lisjp.intyg;
 const fkUtkastPage = pages.intyg.fk['7263'].utkast;
@@ -166,7 +166,9 @@ Given(/^ska det inte finnas någon knapp för "([^"]*)"$/, function(texten) {
 });
 
 Given(/^jag klickar på signera\-knappen$/, function() {
-    return moveAndSendKeys(fkUtkastPage.signeraButton, protractor.Key.SPACE);
+    return expect(baseIntyg.intygStatus[1].getText()).to.eventually.contain('Utkastet är sparat').then(function() {
+        return moveAndSendKeys(fkUtkastPage.signeraButton, protractor.Key.SPACE);
+    });
 });
 
 

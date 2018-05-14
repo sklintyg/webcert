@@ -36,19 +36,16 @@ const {
 } = require('cucumber');
 
 
-var fk7263Utkast = pages.intyg.fk['7263'].utkast;
-var baseIntyg = pages.intyg.base.intyg;
-var sokSkrivIntygUtkastTypePage = pages.sokSkrivIntyg.valjUtkastType;
-var sokSkrivIntygPage = pages.sokSkrivIntyg.pickPatient;
-// var webcertBase = pages.webcertBase;
-var checkValues = require('../checkValues');
-var testdataHelpers = wcTestTools.helpers.testdata;
-var testdata = wcTestTools.testdata;
-var testpatienter = testdata.values.patienter;
-//var testpatientAvliden = testdata.values.patientAvliden;
-// var logInAsUserRole = require('./login.helpers.js').logInAsUserRole;
-var parallell = require('./parallellt_util.js');
-var helpers = require('../helpers.js');
+const fk7263Utkast = pages.intyg.fk['7263'].utkast;
+const baseIntyg = pages.intyg.base.intyg;
+const sokSkrivIntygUtkastTypePage = pages.sokSkrivIntyg.valjUtkastType;
+const sokSkrivIntygPage = pages.sokSkrivIntyg.pickPatient;
+const checkValues = require('../checkValues');
+const testdataHelpers = wcTestTools.helpers.testdata;
+const testdata = wcTestTools.testdata;
+const testpatienter = testdata.values.patienter;
+const parallell = require('./parallellt_util.js');
+const helpers = require('../helpers.js');
 
 
 
