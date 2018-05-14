@@ -4,7 +4,7 @@ environment_name: "demo"
 
 proxy_host: http://bf-proxy.sth
 proxy_port: 8888
-proxy_ignore: "qa.ntjp.se"
+proxy_ignore: "qa.esb.ntjp.se"
 
 proxy_env:
   http_proxy: "{{ proxy_host }}:{{ proxy_port }}"
