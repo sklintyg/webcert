@@ -183,12 +183,11 @@ Given(/^jag är inloggad som läkare i Statistiktjänsten$/, function() {
 });
 
 Given(/^jag ändrar diagnoskoden till "([^"]*)"$/, function(diagnosKod) {
+    diagnosKod = slumpaDiagnosKod(diagnosKod);
+
     var diagnos = {
         kod: diagnosKod
     };
-    if (diagnosKod === 'slumpad') {
-        diagnos.kod = slumpaDiagnosKod(diagnosKod);
-    }
 
     return lisjpUtkastPage.diagnoseCode.clear().then(function() {
         return lisjpUtkastPage.angeDiagnos(diagnos);

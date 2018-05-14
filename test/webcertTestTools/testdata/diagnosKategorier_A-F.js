@@ -1701,10 +1701,10 @@ var diagnosKategorier = [{
         diagnosKod: 'F05',
         beskrivning: 'Delirium ej framkallat av alkohol eller andra psykoaktiva substanser'
     },
-    {
+    /*{ Kan inte användas
         diagnosKod: 'F06',
         beskrivning: 'Andra psykiska storningar orsakade av hjarnskada, cerebral dysfunktion eller kroppslig sjukdom'
-    },
+    },*/
     {
         diagnosKod: 'F07',
         beskrivning: 'Personlighets- och beteendestorningar orsakade av hjarnsjukdom, hjarnskada eller cerebral dysfunktion'
