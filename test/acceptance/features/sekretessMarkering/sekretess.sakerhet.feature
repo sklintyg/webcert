@@ -64,11 +64,6 @@ Scenario: Rehabkoordinator ska inte kunna se sekrettessmarkerade intyg.
 	#Säkerställer att det finns ett lisjp intyg på patienten.
 	När jag går in på ett "Läkarintyg för sjukpenning" med status "Skickat"
 		
-	Och jag går in på utkastet
-	Och jag fyller i alla nödvändiga fält för intyget
-	Och jag signerar intyget
-	Och jag skickar intyget till Försäkringskassan
-		
 	När jag är inloggad som rehabkoordinator
 	Och jag väljer enhet "TSTNMT2321000156-107Q"
 	Och jag går till pågående sjukfall i Rehabstöd
