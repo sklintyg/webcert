@@ -21,8 +21,8 @@
 browser, JSON
 */
 'use strict';
-var winston = require('winston');
-var fs = require('fs');
+const winston = require('winston');
+const fs = require('fs');
 
 exports.config = {
     baseUrl: process.env.WEBCERT_URL,
@@ -41,8 +41,16 @@ exports.config = {
         shardTestFiles: false,
         maxInstances: 1,
         browserName: 'firefox',
+        'moz:firefoxOptions': {
+			//'args': ['--safe-mode']
+			prefs: {'devtools.jsonview.enabled': false},
+			log: {
+			    level: "trace"
+		    }
+		},
 		marionette: true,
 		acceptInsecureCerts: true,
+		unexpectedAlertBehaviour: 'accept',
         // browserName: 'internet explorer',
         // 'phantomjs.binary.path': './node_modules/karma-phantomjs-launcher/node_modules/phantomjs/bin/phantomjs',
         //'phantomjs.cli.args': '--debug=true --webdriver --webdriver-logfile=webdriver.log --webdriver-loglevel=DEBUG',
