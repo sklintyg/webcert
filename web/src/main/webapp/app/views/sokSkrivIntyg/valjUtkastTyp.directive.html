@@ -16,7 +16,7 @@
                   <button ng-attr-id="intygTypeAbout-{{type.id}}" class="btn btn-link btn-link__purelink" ng-click="openIntygTypeDetailsDialog(type)">Om intyget</button>
                 </div>
                 <div>
-                    <button ng-attr-id="intygTypeFortsatt-{{type.id}}" class="btn btn-primary continue-btn" ng-click="createDraft(type.id)"
+                    <button ng-attr-id="intygTypeFortsatt-{{type.id}}" class="btn btn-primary continue-btn" ng-click="checkType(type.id)"
                             ng-disabled="!isCreateUtkastEnabled(type.id)"><i class="material-icons">description</i> Skapa intyg</button>
                 </div>
               </div>

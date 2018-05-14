@@ -26,6 +26,46 @@ angular.module('webcert').directive('wcValjUtkastTyp',
 
                 };
 
+                scope.checkType = function(intygType) {
+
+                    //Om utkastet är av typ DOI så ska en informationsdialog visas om ett Dödsbevis inte finns eller inte är skickat
+                    if(intygType === 'doi') {
+                        var intygList = ViewState.intygListUnhandled;
+                        var dbExists = false;
+
+                        for(var i = 0; i < intygList.length; i++) {
+                           if(intygList[i].intygType === 'db' && intygList[i].status === 'SENT') {
+                              dbExists = true;
+                           }
+                        }
+                            if (!dbExists) {
+                                DialogService.showDialog({
+                                    dialogId: 'doi-info-dialog',
+                                    titleText: 'doi.label.titleText',
+                                    bodyText: 'doi.label.bodyText',
+                                    templateUrl: '/app/partials/doiInfo.dialog.html',
+
+                                    button1click: function(modalInstance) {
+                                        scope.createDraft(intygType);
+                                        modalInstance.close();
+                                    },
+                                    button2click: function(modalInstance){
+                                        modalInstance.close();
+                                    },
+                                    button1text: 'doi.label.button1text',
+                                    button2text: 'common.cancel',
+                                    autoClose: false
+                                });                                                                                                                      
+                            } else {
+                               scope.createDraft(intygType);  
+                            }
+
+
+                    } else {
+                        scope.createDraft(intygType);
+                    }
+                };
+
                 scope.createDraft = function(intygType) {
 
                     var createDraftRequestPayload = {

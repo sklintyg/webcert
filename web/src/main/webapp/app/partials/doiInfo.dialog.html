@@ -1,0 +1,38 @@
+<div class="doi-info">
+    <div id="{{dialogId}}" class="modal-header">
+        <button type="button" class="close" ng-click="button2click()"><i class="material-icons">close</i></button>
+        <h3 ng-focus="model.focus" tabindex="-1">
+            <span dynamic-label key="{{titleText}}"></span>
+        </h3>
+    </div>
+    <wc-bottom-fadeout>
+        <div class="modal-body">
+            <span dynamic-label key="{{bodyText}}"></span>
+        </div>
+    </wc-bottom-fadeout>
+    <div class="modal-footer">
+        <div class="form-inline">
+            <div class="button-wrapper">
+                <wc-button
+                        btn-id="{{button1id}}"
+                        btn-class="btn btn-primary"
+                        btn-click="button1click()"
+                >
+                    <span dynamic-label key="{{button1text}}"></span>
+                </wc-button>
+                <wc-button
+                        btn-id="{{button2id}}"
+                        btn-class="btn btn-default"
+                        btn-click="button2click()"
+                >
+                    <span dynamic-label key="{{button2text}}"></span>
+                </wc-button>
+            </div>
+            <div class="webcert-top-padding-section" ng-show="model.showerror">
+                <wc-alert-message alert-severity="danger" class="alert-dialog-error"
+                                  alert-message-id="{{model.errormessageid}}">
+                </wc-alert-message>
+            </div>
+        </div>
+    </div>
+</div>

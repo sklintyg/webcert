@@ -148,7 +148,12 @@ angular.module('webcert').constant('webcert.messages', {
         'th.help.arende-forwarded': 'Visar om ärendet är vidarebefordrat.',
         'th.help.forward': 'Skapar ett e-postmeddelande i din e-postklient med en direktlänk till frågan/svaret.',
         'th.help.open': 'Öppnar intyget och frågan/svaret.',
-        'th.help.morehits': 'Visa fler frågor/svar.'
+        'th.help.morehits': 'Visa fler frågor/svar.',
+
+        //DOI Dialog
+        'doi.label.titleText': 'Dödsbevis saknas',
+        'doi.label.bodyText': 'Är du säker att du vill skapa ett dödsorsaksintyg? Det finns inget dödsbevis i nuläget inom vårdgivaren.<br><br> Dödsorsaksintyget bör alltid skapas efter dödsbeviset.',
+        'doi.label.button1text': 'Skapa dödsorsaksintyg'
     },
     'en': {
         'webcert.header': 'Webcert Application (en)'
