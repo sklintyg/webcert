@@ -38,8 +38,8 @@ angular.module('webcert').factory('webcert.enhetArendenConverterService',
 
             vantarPa: undefined,
 
-            orderBy: undefined,
-            orderAscending: false
+            orderBy: 'receivedDate',
+            orderAscending: true
         };
 
         function _convertFormModelToFilterQuery(filterForm, enhetId) {
@@ -90,12 +90,13 @@ angular.module('webcert').factory('webcert.enhetArendenConverterService',
             if (filterForm.orderAscending) {
                 filterQuery.orderAscending = filterForm.orderAscending;
             } else {
-                filterQuery.orderAscending = filterForm.orderAscending;
+                filterQuery.orderAscending = false;
             }
+
             if (filterForm.orderBy) {
                 filterQuery.orderBy = filterForm.orderBy;
             } else {
-                filterQuery.orderBy = '';
+                filterQuery.orderBy = 'receivedDate';
             }
 
             return filterQuery;

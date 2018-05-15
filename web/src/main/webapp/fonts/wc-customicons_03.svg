@@ -3,8 +3,8 @@
 <svg xmlns="http://www.w3.org/2000/svg">
 <metadata>Copyright (C) 2018 by original authors @ fontello.com</metadata>
 <defs>
-<font id="wc-customicons_03" horiz-adv-x="1000" >
-<font-face font-family="wc-customicons_03" font-weight="400" font-stretch="normal" units-per-em="1000" ascent="850" descent="-150" />
+<font id="fontello" horiz-adv-x="1000" >
+<font-face font-family="fontello" font-weight="400" font-stretch="normal" units-per-em="1000" ascent="850" descent="-150" />
 <missing-glyph horiz-adv-x="1000" />
 <glyph glyph-name="wc-ikon-02" unicode="&#xe800;" d="M884 670c73-87 116-198 116-320 0-276-224-500-500-500-276 0-500 224-500 500 0 276 224 500 500 500l0-100c-221 0-400-179-400-400 0-221 179-400 400-400 221 0 400 179 400 400 0 95-33 184-92 256l76 64z m116-320c0-276-224-500-500-500-276 0-500 224-500 500 0 276 224 500 500 500l0-100c-221 0-400-179-400-400 0-221 179-400 400-400 221 0 400 179 400 400 0 95-33 184-92 256l76 64c73-87 116-198 116-320z" horiz-adv-x="1000" />
 
@@ -31,6 +31,12 @@
 <glyph glyph-name="ic_question_answer_24px" unicode="&#xe80b;" d="M928 645l-96 0 0-434-627 0 0-96c0-27 22-48 48-48l530 0 193-193 0 723c0 27-21 48-48 48z m-193-289c0-27-22-48-48-48l-482 0-193-193 0 675c0 26 22 48 48 48l627 0c26 0 48-22 48-48l0-434z m-314 172l0 221-56 0 0-221 56 0z m0-113l0 54-56 0 0-54 56 0z" horiz-adv-x="1000" />
 
 <glyph glyph-name="asterisk" unicode="&#xe80c;" d="M0 395l57 176 351-116 0 370 184 0 0-370 351 116 57-176-352-113 217-299-148-108-217 299-217-299-148 108 217 299z" horiz-adv-x="1000" />
+
+<glyph glyph-name="up_down" unicode="&#xe80d;" d="M392 474h-392l194 188 198 188 194-188 195-188h-389z m-392-247l194-189 195-188 194 188 195 189h-386-392z" horiz-adv-x="784" />
+
+<glyph glyph-name="down" unicode="&#xe80e;" d="M0 227l194-189 195-188 194 188 195 189h-386-392z" horiz-adv-x="784" />
+
+<glyph glyph-name="up" unicode="&#xe80f;" d="M392 474h-392l194 188 198 188 194-188 195-188h-389z" horiz-adv-x="784" />
 </font>
 </defs>
 </svg>

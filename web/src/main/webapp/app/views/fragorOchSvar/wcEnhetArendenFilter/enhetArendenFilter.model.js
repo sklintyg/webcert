@@ -99,8 +99,8 @@ angular.module('webcert').service('webcert.enhetArendenFilterModel', [
                 vidarebefordrad: 'default',
                 changedFrom: undefined,
                 changedTo: undefined,
-                orderBy: '',
-                orderAscending: false
+                orderBy: 'receivedDate',
+                orderAscending: true
             };
         };
 

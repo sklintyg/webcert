@@ -89,15 +89,24 @@ angular.module('webcert').controller('webcert.EjSigneradeUtkastCtrl',
                 $scope.widgetState.currentFilterRequest.startFrom = 0;
 
                 $scope.widgetState.currentFilterRequest = $scope.filter.convertToPayload();
-                $scope.widgetState.runningQuery = true;
+
+                var spinnerWaiting = $timeout(function() {
+                        $scope.widgetState.runningQuery = true;
+                    }, 700);
                 UtkastProxy.getUtkastFetchMore($scope.widgetState.currentFilterRequest, function(successData) {
-                    $scope.widgetState.runningQuery = false;
                     $scope.widgetState.currentList = successData.results;
                     $scope.widgetState.totalCount = successData.totalCount;
+                    if (spinnerWaiting) {
+                        $timeout.cancel(spinnerWaiting);
+                    }
+                    $scope.widgetState.runningQuery = false;
                 }, function() {
                     $log.debug('Query Error');
-                    $scope.widgetState.runningQuery = false;
                     $scope.widgetState.activeErrorMessageKey = 'info.query.error';
+                    if (spinnerWaiting) {
+                        $timeout.cancel(spinnerWaiting);
+                    }
+                    $scope.widgetState.runningQuery = false;
                 });
             };
 

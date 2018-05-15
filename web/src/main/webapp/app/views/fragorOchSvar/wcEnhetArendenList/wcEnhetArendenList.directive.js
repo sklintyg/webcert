@@ -59,21 +59,30 @@ angular.module('webcert').directive('wcEnhetArendenList', [
                 updateArenden(null, {startFrom: 0});
 
                 // When other directives want to request list update
-                function updateArenden(event, data){
-                    enhetArendenListModel.viewState.runningQuery = true;
+                function updateArenden(event, data, waitWithSpinner){
+                    var spinnerWaiting;
+                    if (waitWithSpinner) {
+                        spinnerWaiting = $timeout(function() {
+                            enhetArendenListModel.viewState.runningQuery = true;
+                        }, 700);
+                    } else {
+                        enhetArendenListModel.viewState.runningQuery = true;
+                    }
                     enhetArendenListModel.viewState.activeErrorMessageKey = null;
-                    enhetArendenListService.getArenden(data.startFrom).then(function(arendenListResult){
 
+                    enhetArendenListService.getArenden(data.startFrom).then(function(arendenListResult){
                         enhetArendenListModel.prevFilterQuery = arendenListResult.query;
                         enhetArendenListModel.totalCount = arendenListResult.totalCount;
                         enhetArendenListModel.arendenList = arendenListResult.arendenList;
 
-                        enhetArendenListModel.viewState.runningQuery = false;
-
                     }, function(errorData){
                         $log.debug('Query Error: ' + errorData);
-                        enhetArendenListModel.viewState.runningQuery = false;
                         enhetArendenListModel.viewState.activeErrorMessageKey = 'info.query.error';
+                    }).finally(function() {
+                        if (spinnerWaiting) {
+                            $timeout.cancel(spinnerWaiting);
+                        }
+                        enhetArendenListModel.viewState.runningQuery = false;
                     });
                 }
                 $scope.$on('enhetArendenList.requestListUpdate', updateArenden);
@@ -144,7 +153,7 @@ angular.module('webcert').directive('wcEnhetArendenList', [
                     $scope.orderBy = enhetArendenFilterModel.filterForm.orderBy;
                     $scope.orderAscending = enhetArendenFilterModel.filterForm.orderAscending;
 
-                    updateArenden(null, {startFrom: 0});
+                    updateArenden(null, {startFrom: 0}, true);
                 };
             }
         };

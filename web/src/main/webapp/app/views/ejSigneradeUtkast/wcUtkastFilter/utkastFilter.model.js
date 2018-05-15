@@ -63,8 +63,8 @@ angular.module('webcert').factory('webcert.UtkastFilterModel', [ '$filter', func
         this.selection.savedTo = undefined; //Date
         this.selection.savedBy = undefined; // selected doctors hasId
         this.savedByOptions = this.savedByOptions || [];
-        this.selection.orderBy = undefined;
-        this.selection.orderAscending = undefined;
+        this.selection.orderBy = 'senastSparadDatum';
+        this.selection.orderAscending = true;
     };
 
     UtkastFilterModel.prototype.convertToPayload = function() {
