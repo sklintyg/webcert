@@ -78,7 +78,7 @@ angular.module('webcert').directive('wcEnhetArendenList', [
                     }, function(errorData){
                         $log.debug('Query Error: ' + errorData);
                         enhetArendenListModel.viewState.activeErrorMessageKey = 'info.query.error';
-                    }).finally(function() {
+                    }).finally(function() {  // jshint ignore:line
                         if (spinnerWaiting) {
                             $timeout.cancel(spinnerWaiting);
                         }
