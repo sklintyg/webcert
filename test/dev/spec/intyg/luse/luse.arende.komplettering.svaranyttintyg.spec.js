@@ -111,7 +111,7 @@ describe('svaranyttintyg - arende on luse intyg', function() {
         });
     });
 
-    xdescribe('make sure "Svara med nytt intyg" button have changed to "Fortsätt på intygsutkast"', function() {
+    describe('make sure "Svara med nytt intyg" button have changed to "Fortsätt på intygsutkast"', function() {
         it('Is showing the Fortsatt button in arende view', function() {
             LuseIntygPage.get(intygId);
             expect(LuseIntygPage.isAt()).toBeTruthy();
