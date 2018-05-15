@@ -114,7 +114,7 @@ describe('EjSigneradeUtkastCtrlSpec', function() {
 
 
         it('should get utkast list based on date filter', function() {
-            $httpBackend.expectGET('/api/utkast?pageSize=10&savedFrom=2015-10-10&savedTo=2015-01-11&startFrom=0').respond(200, {results: [], totalCount: 0});
+            $httpBackend.expectGET('/api/utkast?orderAscending=true&orderBy=senastSparadDatum&pageSize=10&savedFrom=2015-10-10&savedTo=2015-01-11&startFrom=0').respond(200, {results: [], totalCount: 0});
 
             $scope.filter.selection.savedTo = '2015-01-10';
             $scope.filter.selection.savedFrom = '2015-10-10';
@@ -124,7 +124,7 @@ describe('EjSigneradeUtkastCtrlSpec', function() {
         });
 
         it('should handle error if list could not be fetched from server', function() {
-            $httpBackend.expectGET('/api/utkast?pageSize=10&startFrom=0').respond(500);
+            $httpBackend.expectGET('/api/utkast?orderAscending=true&orderBy=senastSparadDatum&pageSize=10&startFrom=0').respond(500);
             $scope.filterDrafts();
             $httpBackend.flush();
             expect($scope.widgetState.activeErrorMessageKey).not.toBeNull();
@@ -133,7 +133,7 @@ describe('EjSigneradeUtkastCtrlSpec', function() {
 
     describe('fetch more button', function() {
         it('should fetch PAGE_SIZE more results if user clicks', function() {
-            $httpBackend.expectGET('/api/utkast?pageSize=10&startFrom=10').respond(200, {results:[]});
+            $httpBackend.expectGET('/api/utkast?orderAscending=true&orderBy=senastSparadDatum&pageSize=10&startFrom=10').respond(200, {results:[]});
             $scope.fetchMore();
             $httpBackend.flush();
             expect($scope.widgetState.currentFilterRequest.startFrom).toBe(10);
@@ -141,7 +141,7 @@ describe('EjSigneradeUtkastCtrlSpec', function() {
         });
 
         it('should update error message if fetch failed', function() {
-            $httpBackend.expectGET('/api/utkast?pageSize=10&startFrom=10').respond(500);
+            $httpBackend.expectGET('/api/utkast?orderAscending=true&orderBy=senastSparadDatum&pageSize=10&startFrom=10').respond(500);
             $scope.fetchMore();
             $httpBackend.flush();
             expect($scope.widgetState.currentFilterRequest.startFrom).toBe(10);
