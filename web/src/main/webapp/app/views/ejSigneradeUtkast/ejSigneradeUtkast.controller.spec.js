@@ -114,7 +114,8 @@ describe('EjSigneradeUtkastCtrlSpec', function() {
 
 
         it('should get utkast list based on date filter', function() {
-            $httpBackend.expectGET('/api/utkast?orderAscending=true&orderBy=senastSparadDatum&pageSize=10&savedFrom=2015-10-10&savedTo=2015-01-11&startFrom=0').respond(200, {results: [], totalCount: 0});
+            $httpBackend.expectGET('/api/utkast?orderAscending=true&orderBy=senastSparadDatum&pageSize=10&savedFrom=2015-10-10&savedTo=2015-01-11&startFrom=0')
+              .respond(200, {results: [], totalCount: 0});
 
             $scope.filter.selection.savedTo = '2015-01-10';
             $scope.filter.selection.savedFrom = '2015-10-10';
