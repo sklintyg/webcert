@@ -1,0 +1,107 @@
+apiVersion: v1
+kind: DeploymentConfig
+metadata:
+  generation: 1
+  labels:
+    app: webcert
+    environment: test
+  name: webcert
+spec:
+  replicas: 1
+  selector:
+    app: webcert
+    deploymentconfig: webcert
+  template:
+    metadata:
+      labels:
+        app: webcert
+        deploymentconfig: webcert
+        environment: test
+    spec:
+      containers:
+      - env:
+        - name: APP_JVM_ENV
+          value: -Dntjp.base.url=$NTJP_BASE_URL -Ddb_server=$DB_SERVER -Ddb_port=$DB_PORT -Ddb_name=$DB_NAME -Ddb_username=$DB_USERNAME -Ddb_password=$DB_PASSWORD -Dactivemq_username=$ACTIVEMQ_USERNAME -Dactivemq_password=$ACTIVEMQ_PASSWORD -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5006 -Dwebcert.stubs.port=8080 -Dwebcert.stub.data.folder=/opt/inera -Dorg.apache.activemq.SERIALIZABLE_PACKAGES=\\\"*\\\" -Dwebcert.stubs.port=8080 -Dwebcert.resources.folder=/opt/inera/resources -Dcredentials.file=/opt/inera/credentials/credentials.properties -Dwebcert.config.folder=/opt/inera -Dwebcert.config.file=/opt/inera/webcert-konfiguration/webcert.properties -Dwebcert.logback.file=/opt/inera/webcert-konfiguration/webcert-logback.xml
+        - name: NTJP_BASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: webcert-env
+              key: ntjp_base_url
+        - name: ACTIVE_SPRING_PROFILES
+          value: test,wc-all-stubs,wc-security-test,testability-api,caching-enabled,wc-init-db
+        - name: DB_SERVER
+          value: mysql
+        - name: DB_PORT
+          value: '3306'
+        - name: DB_NAME
+          value: webcert
+        - name: DB_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: webcert-credentials
+              key: db_username
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: webcert-credentials
+              key: db_password
+        - name: ACTIVEMQ_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: webcert-credentials
+              key: activemq_username
+        - name: ACTIVEMQ_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: webcert-credentials
+              key: activemq_password
+        image: 172.30.1.1:5000/intygstjanster-test/webcert:latest
+        imagePullPolicy: Always
+        name: webcert
+        ports:
+        - containerPort: 8080
+          protocol: TCP
+        - containerPort: 5006
+          protocol: TCP
+        readinessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /services
+            port: 8080
+            scheme: HTTP
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 1
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+         - mountPath: /opt/inera/webcert-konfiguration
+           name: webcert-konfiguration-test
+           readOnly: true
+         - mountPath: /opt/inera/certifikat
+           name: webcert-certifikat-test
+           readOnly: true
+         - mountPath: /opt/inera/credentials
+           name: webcert-credentials-test
+           readOnly: true
+
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+      volumes:
+       - configMap:
+           defaultMode: 420
+           name: webcert-konfiguration-test
+         name: webcert-konfiguration-test
+       - name: webcert-certifikat-test
+         secret:
+           defaultMode: 420
+           secretName: webcert-certifikat-test
+       - name: webcert-credentials-test
+         secret:
+           defaultMode: 420
+           secretName: webcert-credentials-test
+  test: false

@@ -1,0 +1,37 @@
+apiVersion: v1
+kind: BuildConfig
+metadata:
+  labels:
+    app: webcert
+    name: webcert-pipeline
+    template: application-template-sample-pipeline
+  name: webcert-pipeline
+  namespace: intygstjanster-test
+spec:
+  nodeSelector: null
+  output: {}
+  postCommit: {}
+  resources: {}
+  runPolicy: Serial
+  source:
+    type: None
+  strategy:
+    jenkinsPipelineStrategy:
+      jenkinsfile: |-
+        try {
+           timeout(time: 20, unit: 'MINUTES') {
+              node {
+                  stage('build') {
+                    openshiftBuild(buildConfig: 'webcert', showBuildLogs: 'true')
+                  }
+                }
+           }
+        } catch (err) {
+           echo "in catch block"
+           echo "Caught: ${err}"
+           currentBuild.result = 'FAILURE'
+           throw err
+        }
+    type: JenkinsPipeline
+status:
+  lastVersion: 0

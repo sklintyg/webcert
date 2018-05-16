@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ImageStream
+metadata:
+  labels:
+    app: webcert
+    template: application-template-sample-pipeline
+  name: webcert
+  namespace: intygstjanster-test
+spec:
+  lookupPolicy:
+    local: false
