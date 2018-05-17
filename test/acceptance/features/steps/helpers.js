@@ -93,7 +93,7 @@ module.exports = {
         return pnrString.slice(0, 8) + '-' + pnrString.slice(8);
     },
     intygShortcode: commonTools.helpers.intygShortcode,
-    intygUrlShortcode: commonTools.helpers.intygUrlShortcode,
+    intygUrlShortcode: commonTools.helpers.internalIntygShortcode,
 
     //TODO Kan vi hantera detta bättre, Om HSA ändras så behöver vi uppdatera denna data vilket inte är optimalt
     // TSTNMT2321000156-ULLA saknar enhetadress i hsa, dvs behåll tidigare angivet enhetAdress objekt
