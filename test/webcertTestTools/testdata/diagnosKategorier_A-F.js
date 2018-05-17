@@ -1913,10 +1913,10 @@ var diagnosKategorier = [{
         diagnosKod: 'F71',
         beskrivning: 'Medelsvar psykisk utvecklingsstorning'
     },
-    {
+    /*{
         diagnosKod: 'F72',
         beskrivning: 'Svar psykisk utvecklingsstorning'
-    },
+    },*/
     {
         diagnosKod: 'F73',
         beskrivning: 'Grav psykisk utvecklingsstorning'
