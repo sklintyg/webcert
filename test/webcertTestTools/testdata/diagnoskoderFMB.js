@@ -71,7 +71,7 @@ module.exports = {
 
         }, {
             kod: 'O267',
-            symptomPrognosBehandling: 'Smärtor i bäckenet och',
+            symptomPrognosBehandling: 'rygg eller bäcken med debut under aktuell graviditet',
             generellInfo: 'Observandum',
             funktionsnedsattning: 'begränsas förmågan att lyfta',
             aktivitetsbegransning: 'Gå, stå, sitta',
