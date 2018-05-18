@@ -84,10 +84,20 @@ function setForkedBrowser(forkedBrowser2) {
     forkedBrowser = forkedBrowser2;
 }
 
+
 function gotoIntygUtkast(intygtyp) {
     intyg.typ = intygtyp;
     browser.ignoreSynchronization = true;
+    let skapadoiknapp = element(by.id('button1doi-info-dialog'));
+
     return sokSkrivIntygUtkastTypePage.createUtkast(helpers.getInternShortcode(intygtyp)).then(function() {
+        return skapadoiknapp.isPresent();
+    }).then(function(present) {
+        if (present) {
+            logger.info('Specialhantering för Dödsbevis saknas modalen');
+            return skapadoiknapp.click();
+        }
+    }).then(function() {
         return helpers.pageReloadDelay();
     }).then(function() {
         // Spara intygsid för kommande steg
