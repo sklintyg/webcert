@@ -181,13 +181,19 @@ function changeField(intygShortcode, field) {
             return moveAndSendKeys(luseUtkastPage.funktionsnedsattning.intellektuell.checkbox, protractor.Key.SPACE).then(function() {
                 return helpers.largeDelay();
             }).then(function() {
-                return moveAndSendKeys(luseUtkastPage.funktionsnedsattning.intellektuell.text, intyg.funktionsnedsattning.intellektuell).then(function() {
-                    logger.info('OK - Angav: ' + intyg.funktionsnedsattning.intellektuell);
-                    return;
-                }, function(reason) {
-                    console.trace(reason);
-                    throw ('FEL - Angav: ' + intyg.funktionsnedsattning.intellektuell + ' ' + reason);
-                });
+                //return intyg.funktionsnedsattning.intellektuell.text.isPresent();
+                return luseUtkastPage.funktionsnedsattning.intellektuell.text.isPresent();
+            }).then(function(present) {
+                if (present) {
+                    return moveAndSendKeys(luseUtkastPage.funktionsnedsattning.intellektuell.text, intyg.funktionsnedsattning.intellektuell);
+                }
+            }).then(function() {
+                logger.info('OK - Angav: ' + intyg.funktionsnedsattning.intellektuell);
+                return;
+            }, function(reason) {
+                console.trace(reason);
+                throw ('FEL - Angav: ' + intyg.funktionsnedsattning.intellektuell + ' ' + reason);
+
             });
         }
 
