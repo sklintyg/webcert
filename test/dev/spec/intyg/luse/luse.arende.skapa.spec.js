@@ -85,7 +85,7 @@ describe('Skapa ärende luse intyg', function() {
             LuseIntygPage.sendNewArende('Här kommer en liten fråga till FK', 'Övrigt').then(function(arendeId) {
                 // When arende is sent the textarea and subject should be cleared
                 expect(LuseIntygPage.arendeText.getText()).toBe('');
-                expect(LuseIntygPage.arendeAmneSelected.getText()).toBe('Välj typ av fråga');
+                expect(LuseIntygPage.arendeAmneSelected.getText()).toBe('Välj ämne');
                 expect(LuseIntygPage.arendeSend.isEnabled()).toBeFalsy();
 
                 expect(LuseIntygPage.getArendeAdministrativaFragorAmneById(arendeId)).toBe('Övrigt');
