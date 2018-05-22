@@ -234,12 +234,12 @@ Given(/^jag går till statistiksidan för diagnoskod "([^"]*)"$/, function(diagn
 
 
     var url = {
-        A: process.env.STATISTIKTJANST_URL + '/#/verksamhet/jamforDiagnoser/2d4fd1c2a5b880350fc1c606970cc51e?vgid=TSTNMT2321000156-107M',
-        B: process.env.STATISTIKTJANST_URL + '/#/verksamhet/jamforDiagnoser/73afd9510058d0b8f9a18e7e3a1b0b78?vgid=TSTNMT2321000156-107M',
-        C: process.env.STATISTIKTJANST_URL + '/#/verksamhet/jamforDiagnoser/493616c14076d5a2e7c7b3d34e357b2b?vgid=TSTNMT2321000156-107M',
-        D: process.env.STATISTIKTJANST_URL + '/#/verksamhet/jamforDiagnoser/d9999cb555e54f7e4bb4991e38c5eb3b?vgid=TSTNMT2321000156-107M',
-        E: process.env.STATISTIKTJANST_URL + '/#/verksamhet/jamforDiagnoser/583abd26f6fc34d556d8743c540c74ee?vgid=TSTNMT2321000156-107M',
-        F: process.env.STATISTIKTJANST_URL + '/#/verksamhet/jamforDiagnoser/768a292b2f9bd2827f155b28a8f9443d?vgid=TSTNMT2321000156-107M'
+        A: process.env.STATISTIKTJANST_URL + '/#/verksamhet/jamforDiagnoser/e82017388289b39cd4e8b51a94378d77?vgid=TSTNMT2321000156-107M',
+        B: process.env.STATISTIKTJANST_URL + '/#/verksamhet/jamforDiagnoser/3221d5e01e8a13f2ff386f6fb40387c7?vgid=TSTNMT2321000156-107M',
+        C: process.env.STATISTIKTJANST_URL + '/#/verksamhet/jamforDiagnoser/5b886bedc781a2c0d4a3afbc6c0ef705?vgid=TSTNMT2321000156-107M',
+        D: process.env.STATISTIKTJANST_URL + '/#/verksamhet/jamforDiagnoser/21e26707d18d1cf721f949a2e091c30f?vgid=TSTNMT2321000156-107M',
+        E: process.env.STATISTIKTJANST_URL + '/#/verksamhet/jamforDiagnoser/941e5ccdc0cc69b17d583416279e264e?vgid=TSTNMT2321000156-107M',
+        F: process.env.STATISTIKTJANST_URL + '/#/verksamhet/jamforDiagnoser/11f649d230516c4caa7242d042ea6deb?vgid=TSTNMT2321000156-107M'
     };
 
     logger.silly('diagnosKod.charAt(0) - ' + diagnosKod.charAt(0));
@@ -251,10 +251,14 @@ Given(/^jag går till statistiksidan för diagnoskod "([^"]*)"$/, function(diagn
 });
 
 Given(/^jag kollar totala "([^"]*)" diagnoser som finns$/, function(diagnosKod) {
-    diagnosKod = slumpaDiagnosKod(diagnosKod);
+    diagnosKod = slumpaDiagnosKod(diagnosKod).substring(0, 3);
 
 
     return element.all(by.css('.table-condensed')).all(by.tagName('tr')).then(function(arr) {
+        if (arr.length === 0) {
+            throw ('Inga rader i tabellen hittades!');
+        }
+
         //return
         var statistik = [];
         logger.silly('Statistik Tabell Längd (arr.length): ' + arr.length);
@@ -335,7 +339,7 @@ Then(/^ska "([^"]*)" i "([^"]*)" vara "([^"]*)" (extra|mindre)$/, function(colum
 
 
 Given(/^ska totala "([^"]*)" diagnoser som finns (?:vara|är) "([^"]*)" (extra|mindre)$/, function(diagnosKod, nrOfIntyg, modifier) {
-    diagnosKod = slumpaDiagnosKod(diagnosKod);
+    diagnosKod = slumpaDiagnosKod(diagnosKod).substring(0, 3);
 
 
     logger.silly(global.person);
@@ -372,6 +376,9 @@ Given(/^ska totala "([^"]*)" diagnoser som finns (?:vara|är) "([^"]*)" (extra|m
         //return
         var statistik = [];
         logger.info('Antal rader i tabellen: ' + arr.length);
+        if (arr.length < 1) {
+            throw ('Inga rader hittades i tabellen');
+        }
 
         arr.forEach(function(entry, index) {
 
@@ -420,5 +427,7 @@ Given(/^ska totala "([^"]*)" diagnoser som finns (?:vara|är) "([^"]*)" (extra|m
 });
 
 Given(/^jag anropar statitisk-APIet processIntyg$/, function() {
-    return statistikAPI.processIntyg();
+    return statistikAPI.processIntyg().then(function() {
+        return helpers.pageReloadDelay();
+    });
 });

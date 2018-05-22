@@ -1682,311 +1682,311 @@ var diagnosKategorier = [{
         beskrivning: 'Demens vid Alzheimers sjukdom'
     },
     {
-        diagnosKod: 'F01',
+        diagnosKod: 'F010',
         beskrivning: 'Vaskular demens'
     },
     {
-        diagnosKod: 'F02',
+        diagnosKod: 'F020',
         beskrivning: 'Demens vid andra sjukdomar som klassificeras annorstades'
     },
     {
-        diagnosKod: 'F03',
+        diagnosKod: 'F030',
         beskrivning: 'Ospecificerad demens'
     },
     {
-        diagnosKod: 'F04',
+        diagnosKod: 'F040',
         beskrivning: 'Organiska amnesisyndrom ej framkallade av alkohol eller andra psykoaktiva substanser'
     },
     {
-        diagnosKod: 'F05',
+        diagnosKod: 'F050',
         beskrivning: 'Delirium ej framkallat av alkohol eller andra psykoaktiva substanser'
     },
-    /*{ Kan inte användas
-        diagnosKod: 'F06',
-        beskrivning: 'Andra psykiska storningar orsakade av hjarnskada, cerebral dysfunktion eller kroppslig sjukdom'
-    },*/
     {
-        diagnosKod: 'F07',
-        beskrivning: 'Personlighets- och beteendestorningar orsakade av hjarnsjukdom, hjarnskada eller cerebral dysfunktion'
+        diagnosKod: 'F060',
+        beskrivning: 'Andra psykiska storningar orsakade av hjarnskada, cerebral dysfunktion eller kroppslig sjukdom'
     },
     {
-        diagnosKod: 'F09',
+        diagnosKod: 'F070',
+        beskrivning: 'Organisk personlighetsstörning'
+    },
+    {
+        diagnosKod: 'F090',
         beskrivning: 'Ospecificerad organisk eller symtomatisk psykisk storning'
     },
     {
-        diagnosKod: 'F10',
+        diagnosKod: 'F100',
         beskrivning: 'Psykiska storningar och beteendestorningar orsakade av alkohol'
     },
     {
-        diagnosKod: 'F11',
+        diagnosKod: 'F110',
         beskrivning: 'Psykiska storningar och beteendestorningar orsakade av opioider'
     },
     {
-        diagnosKod: 'F12',
+        diagnosKod: 'F120',
         beskrivning: 'Psykiska storningar och beteendestorningar orsakade av cannabis'
     },
     {
-        diagnosKod: 'F13',
+        diagnosKod: 'F130',
         beskrivning: 'Psykiska storningar och beteendestorningar orsakade av sedativa och hypnotika'
     },
     {
-        diagnosKod: 'F14',
+        diagnosKod: 'F140',
         beskrivning: 'Psykiska storningar och beteendestorningar orsakade av kokain'
     },
     {
-        diagnosKod: 'F15',
+        diagnosKod: 'F150',
         beskrivning: 'Psykiska storningar och beteendestorningar orsakade av andra stimulantia, daribland koffein'
     },
     {
-        diagnosKod: 'F16',
+        diagnosKod: 'F160',
         beskrivning: 'Psykiska storningar och beteendestorningar orsakade av hallucinogener'
     },
     {
-        diagnosKod: 'F17',
+        diagnosKod: 'F170',
         beskrivning: 'Psykiska storningar och beteendestorningar orsakade av tobak'
     },
     {
-        diagnosKod: 'F18',
+        diagnosKod: 'F180',
         beskrivning: 'Psykiska storningar och beteendestorningar orsakade av flyktiga losningsmedel'
     },
     {
-        diagnosKod: 'F19',
+        diagnosKod: 'F190',
         beskrivning: 'Psykiska storningar och beteendestorningar orsakade av flera droger i kombination och av andra psykoaktiva substanser'
     },
     {
-        diagnosKod: 'F20',
+        diagnosKod: 'F200',
         beskrivning: 'Schizofreni'
     },
     {
-        diagnosKod: 'F21',
+        diagnosKod: 'F210',
         beskrivning: 'Schizotyp storning'
     },
     {
-        diagnosKod: 'F22',
+        diagnosKod: 'F220',
         beskrivning: 'Kroniska vanforestallningssyndrom'
     },
     {
-        diagnosKod: 'F23',
+        diagnosKod: 'F230',
         beskrivning: 'Akuta och overgaende psykotiska syndrom'
     },
     {
-        diagnosKod: 'F24',
+        diagnosKod: 'F240',
         beskrivning: 'Inducerat vanforestallningssyndrom'
     },
     {
-        diagnosKod: 'F25',
+        diagnosKod: 'F250',
         beskrivning: 'Schizoaffektiva syndrom'
     },
     {
-        diagnosKod: 'F28',
+        diagnosKod: 'F280',
         beskrivning: 'Andra icke organiska psykotiska storningar'
     },
     {
-        diagnosKod: 'F29',
+        diagnosKod: 'F290',
         beskrivning: 'Ospecificerad icke organisk psykos'
     },
     {
-        diagnosKod: 'F30',
+        diagnosKod: 'F300',
         beskrivning: 'Manisk episod'
     },
     {
-        diagnosKod: 'F31',
+        diagnosKod: 'F310',
         beskrivning: 'Bipolar sjukdom'
     },
     {
-        diagnosKod: 'F32',
+        diagnosKod: 'F320',
         beskrivning: 'Depressiv episod'
     },
     {
-        diagnosKod: 'F33',
+        diagnosKod: 'F330',
         beskrivning: 'Recidiverande depressioner'
     },
     {
-        diagnosKod: 'F34',
+        diagnosKod: 'F340',
         beskrivning: 'Kroniska forstamningssyndrom'
     },
     {
-        diagnosKod: 'F38',
+        diagnosKod: 'F380',
         beskrivning: 'Andra forstamningssyndrom'
     },
     {
-        diagnosKod: 'F39',
+        diagnosKod: 'F390',
         beskrivning: 'Ospecificerat forstamningssyndrom'
     },
     {
-        diagnosKod: 'F40',
+        diagnosKod: 'F400',
         beskrivning: 'Fobiska syndrom'
     },
     {
-        diagnosKod: 'F41',
+        diagnosKod: 'F410',
         beskrivning: 'Andra angestsyndrom'
     },
     {
-        diagnosKod: 'F42',
+        diagnosKod: 'F420',
         beskrivning: 'Tvangssyndrom'
     },
     {
-        diagnosKod: 'F43',
+        diagnosKod: 'F430',
         beskrivning: 'Anpassningsstorningar och reaktion pa svar stress'
     },
     {
-        diagnosKod: 'F44',
+        diagnosKod: 'F440',
         beskrivning: 'Dissociativa syndrom'
     },
     {
-        diagnosKod: 'F45',
+        diagnosKod: 'F450',
         beskrivning: 'Somatoforma syndrom'
     },
     {
-        diagnosKod: 'F48',
+        diagnosKod: 'F480',
         beskrivning: 'Andra neurotiska syndrom'
     },
     {
-        diagnosKod: 'F50',
+        diagnosKod: 'F500',
         beskrivning: 'atstorningar'
     },
     {
-        diagnosKod: 'F51',
+        diagnosKod: 'F510',
         beskrivning: 'Icke organiska somnstorningar'
     },
     {
-        diagnosKod: 'F52',
+        diagnosKod: 'F520',
         beskrivning: 'Sexuell dysfunktion, ej orsakad av organisk storning eller sjukdom'
     },
     {
-        diagnosKod: 'F53',
+        diagnosKod: 'F530',
         beskrivning: 'Psykiska storningar och beteendestorningar sammanhangande med barnsangstiden, vilka ej klassificeras annorstades'
     },
     {
-        diagnosKod: 'F54',
+        diagnosKod: 'F540',
         beskrivning: 'Psykologiska faktorer och beteendefaktorer med betydelse for storningar eller sjukdomar som klassificeras annorstades'
     },
     {
-        diagnosKod: 'F55',
+        diagnosKod: 'F550',
         beskrivning: 'Missbruk av substanser som ej ar beroendeframkallande'
     },
     {
-        diagnosKod: 'F59',
+        diagnosKod: 'F590',
         beskrivning: 'Ospecificerade beteendesyndrom forenade med fysiologiska storningar och fysiska faktorer'
     },
     {
-        diagnosKod: 'F60',
+        diagnosKod: 'F600',
         beskrivning: 'Specifika personlighetsstorningar'
     },
     {
-        diagnosKod: 'F61',
+        diagnosKod: 'F610',
         beskrivning: 'Personlighetsstorningar av blandtyp och andra personlighetsstorningar'
     },
     {
-        diagnosKod: 'F62',
+        diagnosKod: 'F620',
         beskrivning: 'Kroniska personlighetsforandringar ej orsakade av hjarnskada eller hjarnsjukdom'
     },
     {
-        diagnosKod: 'F63',
+        diagnosKod: 'F630',
         beskrivning: 'Impulskontrollstorningar'
     },
     {
-        diagnosKod: 'F64',
+        diagnosKod: 'F640',
         beskrivning: 'Konsidentitetsstorningar'
     },
     {
-        diagnosKod: 'F65',
+        diagnosKod: 'F650',
         beskrivning: 'Storningar av sexuell preferens'
     },
     {
-        diagnosKod: 'F66',
+        diagnosKod: 'F660',
         beskrivning: 'Psykiska storningar och beteendestorningar sammanhangande med sexuell utveckling och orientering'
     },
     {
-        diagnosKod: 'F68',
+        diagnosKod: 'F680',
         beskrivning: 'Andra storningar av personlighet och beteende hos vuxna'
     },
     {
-        diagnosKod: 'F69',
+        diagnosKod: 'F690',
         beskrivning: 'Ospecificerad storning av personlighet och beteende hos vuxna'
     },
     {
-        diagnosKod: 'F70',
+        diagnosKod: 'F700',
         beskrivning: 'Lindrig psykisk utvecklingsstorning'
     },
     {
-        diagnosKod: 'F71',
+        diagnosKod: 'F710',
         beskrivning: 'Medelsvar psykisk utvecklingsstorning'
     },
-    /*{
-        diagnosKod: 'F72',
-        beskrivning: 'Svar psykisk utvecklingsstorning'
-    },*/
     {
-        diagnosKod: 'F73',
+        diagnosKod: 'F720',
+        beskrivning: 'Svar psykisk utvecklingsstorning'
+    },
+    {
+        diagnosKod: 'F730',
         beskrivning: 'Grav psykisk utvecklingsstorning'
     },
     {
-        diagnosKod: 'F78',
+        diagnosKod: 'F780',
         beskrivning: 'Annan psykisk utvecklingsstorning'
     },
     {
-        diagnosKod: 'F79',
+        diagnosKod: 'F790',
         beskrivning: 'Ospecificerad psykisk utvecklingsstorning'
     },
     {
-        diagnosKod: 'F80',
+        diagnosKod: 'F800',
         beskrivning: 'Specifika storningar av tal- och sprakutvecklingen'
     },
     {
-        diagnosKod: 'F81',
+        diagnosKod: 'F810',
         beskrivning: 'Specifika utvecklingsstorningar av inlarningsfardigheter'
     },
     {
-        diagnosKod: 'F82',
+        diagnosKod: 'F820',
         beskrivning: 'Specifik motorisk utvecklingsstorning'
     },
     {
-        diagnosKod: 'F83',
+        diagnosKod: 'F830',
         beskrivning: 'Blandade specifika utvecklingsstorningar'
     },
     {
-        diagnosKod: 'F84',
+        diagnosKod: 'F840',
         beskrivning: 'Genomgripande utvecklingsstorningar'
     },
     {
-        diagnosKod: 'F88',
+        diagnosKod: 'F880',
         beskrivning: 'Andra specificerade storningar av psykisk utveckling'
     },
     {
-        diagnosKod: 'F89',
+        diagnosKod: 'F890',
         beskrivning: 'Ospecificerad storning av psykisk utveckling'
     },
     {
-        diagnosKod: 'F90',
+        diagnosKod: 'F900',
         beskrivning: 'Hyperaktivitetsstorningar'
     },
     {
-        diagnosKod: 'F91',
+        diagnosKod: 'F910',
         beskrivning: 'Beteendestorningar av utagerande slag'
     },
     {
-        diagnosKod: 'F92',
+        diagnosKod: 'F920',
         beskrivning: 'Blandade storningar av beteende och kansloliv'
     },
     {
-        diagnosKod: 'F93',
+        diagnosKod: 'F930',
         beskrivning: 'Emotionella storningar med debut sarskilt under barndomen'
     },
     {
-        diagnosKod: 'F94',
+        diagnosKod: 'F940',
         beskrivning: 'Storningar av social funktion med debut sarskilt under barndom och ungdomstid'
     },
     {
-        diagnosKod: 'F95',
+        diagnosKod: 'F950',
         beskrivning: 'Tics'
     },
     {
-        diagnosKod: 'F98',
+        diagnosKod: 'F980',
         beskrivning: 'Andra beteendestorningar och emotionella storningar med debut vanligen under barndom och ungdomstid'
     },
     {
-        diagnosKod: 'F99',
+        diagnosKod: 'F990',
         beskrivning: 'Psykisk storning ej specificerad pa annat satt'
     }
 ];

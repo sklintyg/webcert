@@ -5,7 +5,7 @@ Egenskap: Regressionstest på Statistiktjänsten med ökad test teckning.
 
 Bakgrund: Jag befinner mig på webcerts förstasida
 
-@MAKULERA @VERKSAMHETSSTATISTIK @LISJP
+@MAKULERA @VERKSAMHETSSTATISTIK @LISJP @WIP
 Scenario: Ett nyskapat och makulerat Läkarintyg för sjukpenning intyg ska finnas och senare tas bort från Statistiktjänsten
     När jag är inloggad som läkare i Webcert med enhet "TSTNMT2321000156-107Q"
 	Och jag går in på en patient

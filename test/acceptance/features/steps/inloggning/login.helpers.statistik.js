@@ -63,7 +63,7 @@ module.exports = {
         var self = this;
         return logInAsUserStatistik(userObj, roleName, skipCookieConsent, self).then(function() {
             logger.info('Login default browser successful');
-            var headerboxUserProfile = element(by.css('.headerbox-user-profile'));
+            var headerboxUserProfile = element(by.css('.header-container'));
             browser.driver.switchTo().alert().then(function(alert) {
                     alert.accept();
                     return expect(headerboxUserProfile.getText()).to.eventually.contain(userObj.fornamn + ' ' + userObj.efternamn);
