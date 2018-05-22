@@ -30,14 +30,13 @@ var logInAsUserRehabstod = function(userObj, roleName, skipCookieConsent) {
     // Fattigmans-kloning av användar-hashen.
     global.user = JSON.parse(JSON.stringify(userObj));
 
-    var login;
+
     browser.ignoreSynchronization = true;
 
-    login = pages.welcome.loginByJSON(JSON.stringify(userObj), !skipCookieConsent);
     global.user.roleName = roleName;
 
     return helpers.getUrl('welcome.html').then(function() {
-        return login();
+        return pages.welcome.loginByJSON(JSON.stringify(userObj), !skipCookieConsent);
     }).then(function() {
         return helpers.pageReloadDelay();
     }).then(function() {
