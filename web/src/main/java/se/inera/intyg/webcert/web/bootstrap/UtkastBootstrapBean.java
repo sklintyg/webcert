@@ -192,7 +192,7 @@ public class UtkastBootstrapBean {
             ma.setText("Kompletteringstext");
             arende.setKomplettering(Arrays.asList(ma));
         }
-        arende.setMeddelande("Meddelandetext");
+        arende.setMeddelande("Meddelandetext\n\nblablablablabla\n\n\nArmen");
         String meddelandeId = UUID.randomUUID().toString();
         arende.setMeddelandeId(meddelandeId);
         arende.setPaminnelseMeddelandeId(paminnelseMeddelandeId);
