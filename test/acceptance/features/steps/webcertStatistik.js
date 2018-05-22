@@ -411,8 +411,11 @@ Given(/^ska totala "([^"]*)" diagnoser som finns (?:vara|är) "([^"]*)" (extra|m
 
                         var promiseArr = [];
                         promiseArr.push(expect(global.statistik.nrOfSjukfall.totalt).to.equal(statistik[secondIndex].totalt));
-                        promiseArr.push(expect(global.statistik.nrOfSjukfall.kvinna).to.equal(statistik[secondIndex].kvinna));
-                        promiseArr.push(expect(global.statistik.nrOfSjukfall.man).to.equal(statistik[secondIndex].man));
+                        if (modifier < 2 && modifier > -2) {
+                            //Kontrollera bara man/kvinna statistik om modifer är -1, 0 eller 1 eftersom om det är fler så vet vi inte kön på samtliga intyg.
+                            promiseArr.push(expect(global.statistik.nrOfSjukfall.kvinna).to.equal(statistik[secondIndex].kvinna));
+                            promiseArr.push(expect(global.statistik.nrOfSjukfall.man).to.equal(statistik[secondIndex].man));
+                        }
 
                         return Promise.all(promiseArr);
 

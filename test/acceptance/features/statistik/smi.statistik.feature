@@ -5,44 +5,62 @@ Egenskap: Regressionstest på Statistiktjänsten med ökad test teckning.
 
 Bakgrund: Jag befinner mig på webcerts förstasida
 
-@MAKULERA @VERKSAMHETSSTATISTIK @LISJP @WIP
+@MAKULERA @VERKSAMHETSSTATISTIK @LISJP
 Scenario: Ett nyskapat och makulerat Läkarintyg för sjukpenning intyg ska finnas och senare tas bort från Statistiktjänsten
-    När jag är inloggad som läkare i Webcert med enhet "TSTNMT2321000156-107Q"
+	#### Kolla nuvarande statistik
+	När jag går in på Statistiktjänsten
+	Och jag anropar statitisk-APIet processIntyg
+    Och jag är inloggad som läkare i Statistiktjänsten
+    Och jag går till statistiksidan för diagnoskod "slumpad"
+    Och jag kollar totala "samma som ovan" diagnoser som finns
+	
+	#### Skapa intyget
+	När jag är inloggad som läkare i Webcert med enhet "TSTNMT2321000156-107Q"
 	Och jag går in på en patient
     Och jag går in på att skapa ett "Läkarintyg för sjukpenning" intyg
 	Och jag fyller i alla nödvändiga fält för intyget
-    Och jag ändrar diagnoskoden till "slumpad"
+    Och jag ändrar diagnoskoden till "samma som ovan"
 	Och jag signerar intyget
     Så ska jag se intyget i databasen
-
-    När jag går in på Statistiktjänsten
+ 
+	#### Kontrollera statistiken
+	När jag går in på Statistiktjänsten
+	Och jag anropar statitisk-APIet processIntyg
     Och jag är inloggad som läkare i Statistiktjänsten
-    Och jag går till statistiksidan för diagnoskod "samma som ovan"
-    Och jag kollar totala "samma som ovan" diagnoser som finns
-    Och jag anropar statitisk-APIet processIntyg
-    Och laddar om sidan
+	Och jag går till statistiksidan för diagnoskod "samma som ovan"
     Så ska totala "samma som ovan" diagnoser som finns vara "1" extra
 
+	#### Makulera intyget
     När jag är inloggad som läkare i Webcert med enhet "TSTNMT2321000156-107Q"
     Och jag går in på intyget som tidigare skapats
     Och jag makulerar intyget
-    Och jag anropar statitisk-APIet processIntyg
 
+	#### Kontrollera statistiken
     När jag går in på Statistiktjänsten
+	Och jag anropar statitisk-APIet processIntyg
     Och jag är inloggad som läkare i Statistiktjänsten
     Och jag går till statistiksidan för diagnoskod "samma som ovan"
     Så ska totala "samma som ovan" diagnoser som finns vara "1" mindre
 
 @VERKSAMHETSSTATISTIK @LISJP
 Scenario: Två nyskapade LISJP intyg på samma person ska räknas som en i Statistiktjänstens GUI
-    När jag är inloggad som läkare i Webcert med enhet "TSTNMT2321000156-107Q"
+	#### Kolla nuvarande statistik
+	När jag går in på Statistiktjänsten
+	Och jag anropar statitisk-APIet processIntyg
+    Och jag är inloggad som läkare i Statistiktjänsten
+    Och jag går till statistiksidan för diagnoskod "slumpad"
+    Och jag kollar totala "samma som ovan" diagnoser som finns
+
+	#### Skapa första intyget
+	När jag är inloggad som läkare i Webcert med enhet "TSTNMT2321000156-107Q"
 	Och jag går in på en patient
     Och jag går in på att skapa ett "Läkarintyg för sjukpenning" intyg
 	Och jag fyller i alla nödvändiga fält för intyget
-    Och jag ändrar diagnoskoden till "slumpad"
+    Och jag ändrar diagnoskoden till "samma som ovan"
 	Och jag signerar intyget
     Så ska jag se intyget i databasen
 	
+	#### Skapa andra intyget på samma patient
 	När jag är inloggad som läkare i Webcert med enhet "TSTNMT2321000156-107Q"
 	Och jag går in på patienten
 	Och jag går in på att skapa ett "Läkarintyg för sjukpenning" intyg
@@ -51,24 +69,32 @@ Scenario: Två nyskapade LISJP intyg på samma person ska räknas som en i Stati
 	Och jag signerar intyget
     Så ska jag se intyget i databasen
 
-    När jag går in på Statistiktjänsten
+	#### Kontrollera uppdaterad statistik
+	När jag går in på Statistiktjänsten
+	Och jag anropar statitisk-APIet processIntyg
     Och jag är inloggad som läkare i Statistiktjänsten
     Och jag går till statistiksidan för diagnoskod "samma som ovan"
-    Och jag kollar totala "samma som ovan" diagnoser som finns
-    Och jag anropar statitisk-APIet processIntyg
-    Och laddar om sidan
     Så ska totala "samma som ovan" diagnoser som finns vara "1" extra
 
 @VERKSAMHETSSTATISTIK
 Scenario: Två nyskapade LISJP intyg på olika personer ska räknas som två i Statistiktjänstens GUI
+	#### Kolla nuvarande statistik
+	När jag går in på Statistiktjänsten
+	Och jag anropar statitisk-APIet processIntyg
+    Och jag är inloggad som läkare i Statistiktjänsten
+    Och jag går till statistiksidan för diagnoskod "slumpad"
+    Och jag kollar totala "samma som ovan" diagnoser som finns
+
+	#### Skapa första intyget
     När jag är inloggad som läkare i Webcert med enhet "TSTNMT2321000156-107Q"
 	Och jag går in på en patient
     Och jag går in på att skapa ett "Läkarintyg för sjukpenning" intyg
 	Och jag fyller i alla nödvändiga fält för intyget
-    Och jag ändrar diagnoskoden till "slumpad"
+    Och jag ändrar diagnoskoden till "samma som ovan"
 	Och jag signerar intyget
     Så ska jag se intyget i databasen
 	
+	#### Skapa andra intyget på annan patient
 	När jag är inloggad som läkare i Webcert med enhet "TSTNMT2321000156-107Q"
 	Och jag går in på en annan patient
     Givet att vårdsystemet skapat ett intygsutkast för "Läkarintyg för sjukpenning"
@@ -78,12 +104,11 @@ Scenario: Två nyskapade LISJP intyg på olika personer ska räknas som två i S
 	Och jag signerar intyget
     Så ska jag se intyget i databasen
 
-    När jag går in på Statistiktjänsten
+	#### Kontrollera uppdaterad statistik
+	När jag går in på Statistiktjänsten
+	Och jag anropar statitisk-APIet processIntyg
     Och jag är inloggad som läkare i Statistiktjänsten
     Och jag går till statistiksidan för diagnoskod "samma som ovan"
-    Och jag kollar totala "samma som ovan" diagnoser som finns
-    Och jag anropar statitisk-APIet processIntyg
-    Och laddar om sidan
     Så ska totala "samma som ovan" diagnoser som finns vara "2" extra
 
 @STATISTIKAPIET @FRAGASVAR @LISJP @NOTREADY
