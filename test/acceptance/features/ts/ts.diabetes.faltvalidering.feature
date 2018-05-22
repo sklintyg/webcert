@@ -1,5 +1,5 @@
 # language: sv
-@FALTVALIDERING @TS_DIABETES
+@FALTVALIDERING @TS_DIABETES @WAITINGFORFIX @TI-594
 Egenskap: Fältvalidering för TS Diabetes
 
 @F.VAL-028

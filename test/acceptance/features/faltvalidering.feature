@@ -1,5 +1,5 @@
 # language: sv
-@FALTVALIDERING
+@FALTVALIDERING @WAITINGFORFIX @TI-594
 Egenskap: Generella valideringsegenskaper som gäller samtliga intyg
 
 Bakgrund: DB/DOI måste vara rensat för patienten.

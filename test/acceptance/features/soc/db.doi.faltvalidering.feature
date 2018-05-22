@@ -1,5 +1,5 @@
 # language: sv
-@FALTVALIDERING @DB @DOI
+@FALTVALIDERING @DB @DOI @WAITINGFORFIX @TI-594
 Egenskap: Fältvalidering för DB/DOI
 
 Bakgrund: DB/DOI måste vara rensat för patienten.

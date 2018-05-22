@@ -1,5 +1,5 @@
 # language: sv
-@FALTVALIDERING @LUAE_FS @LUAE_AF @LUSE
+@FALTVALIDERING @LUAE_FS @LUAE_AF @LUSE @WAITINGFORFIX @TI-594
 Egenskap: Fältvalidering för LUAE
 
 Bakgrund:
