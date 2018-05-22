@@ -157,7 +157,7 @@ Given(/^jag går in på en patient med sekretessmarkering$/, function() {
 
 Given(/^jag går in på en patient som saknar namn i PU\-tjänsten$/, function() {
     var patient = {
-        id: '193804139149'
+        id: '201203122393'
     };
     return element(by.id('pnr')).sendKeys(patient.id).then(function() {
         return element(by.id('skapapersonnummerfortsatt')).sendKeys(protractor.Key.SPACE);
