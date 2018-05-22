@@ -17,7 +17,9 @@
                 </div>
                 <div>
                     <button ng-attr-id="intygTypeFortsatt-{{type.id}}" class="btn btn-primary continue-btn" ng-click="checkType(type.id)"
-                            ng-disabled="!isCreateUtkastEnabled(type.id)"><i class="material-icons">description</i> Skapa intyg</button>
+                            ng-disabled="!isCreateUtkastEnabled(type.id)" uib-popover="Skapa ett intygsutkast."
+                            popover-trigger="mouseenter" popover-popup-delay="300" popover-append-to-body="true"
+                            popover-placement="auto top"><i class="material-icons">description</i> Skapa intyg</button>
                 </div>
               </div>
 
