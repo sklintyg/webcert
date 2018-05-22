@@ -766,6 +766,34 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         verifyZeroInteractions(notificationService);
     }
 
+    @Test
+    public void setForwardedWithAnswerTest() {
+
+        final Arende arende = buildArende(MEDDELANDE_ID, ENHET_ID);
+        final Arende vidareBefordrat = arende;
+        final String svarid = "svarid";
+
+        Arende svararende = buildArende(svarid, ENHET_ID);
+        svararende.setSvarPaId(MEDDELANDE_ID);
+
+        arende.setArendeToVidareBerordrat();
+
+        when(arendeRepository.findByIntygsId(INTYG_ID)).thenReturn(ImmutableList.of(arende,svararende));
+        when(webcertUserService.getUser()).thenReturn(createUser());
+        when(arendeRepository.save(anyList())).thenReturn(ImmutableList.of(vidareBefordrat));
+
+        final List<ArendeConversationView> arendeConversationViews = service.setForwarded(INTYG_ID);
+
+        assertTrue(arendeConversationViews.stream()
+                .allMatch(arendeConversationView -> arendeConversationView.getFraga().getVidarebefordrad()));
+
+        // Should contain both fraga and svar
+        assertNotNull(arendeConversationViews.get(0).getFraga());
+        assertNotNull(arendeConversationViews.get(0).getSvar());
+
+        verifyZeroInteractions(notificationService);
+    }
+
     @Test(expected = WebCertServiceException.class)
     public void closeArendeAsHandledArendeNotFoundTest() {
         try {

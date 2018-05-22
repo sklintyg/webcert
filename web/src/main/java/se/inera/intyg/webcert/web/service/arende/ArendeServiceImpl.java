@@ -324,8 +324,10 @@ public class ArendeServiceImpl implements ArendeService {
 
         WebCertUser user = webcertUserService.getUser();
 
+        List<Arende> allArende = arendeRepository.findByIntygsId(intygsId);
+
         List<Arende> arendenToForward = arendeRepository.save(
-                arendeRepository.findByIntygsId(intygsId)
+                allArende
                         .stream()
                         .filter(isCorrectEnhet(user))
                         .filter(isQuestion())
@@ -342,7 +344,7 @@ public class ArendeServiceImpl implements ArendeService {
                     "Could not find any arende related to IntygsId: " + intygsId);
         }
 
-        return getArendeConversationViewList(intygsId, arendenToForward);
+        return getArendeConversationViewList(intygsId, allArende);
     }
 
     @Override
