@@ -69,6 +69,20 @@ angular.module('webcert').directive('wcTidigareIntyg',
                     SokSkrivValjUtkastService.updateIntygList(scope.viewState);
                 });
 
+                scope.orderProperty = 'lastUpdatedSigned';
+                scope.orderAscending = true;
+                scope.orderByProperty = function(property) {
+                    if (scope.orderProperty === property) {
+                        scope.orderAscending = !scope.orderAscending;
+                    } else {
+                        scope.orderAscending = true;
+                    }
+                    scope.orderProperty = property;
+                };
+
+                scope.nameComparator = function(a, b) {
+                    return (scope.getTypeName(a.value) < scope.getTypeName(b.value)) ? -1 : 1;
+                };
             },
             templateUrl: '/app/views/sokSkrivIntyg/tidigareIntyg.directive.html'
         };

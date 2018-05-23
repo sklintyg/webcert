@@ -55,10 +55,14 @@
               <table class="table table-striped wc-table-striped" ng-class="{'filter-no-result' : viewState.currentList.length===0}">
                 <thead>
                    <tr>
-                    <th wc-table-head label-key="th.label.intyg-type" help-key="th.help.intyg-type"></th>
-                    <th wc-table-head label-key="th.label.status" help-key="th.help.status"></th>
-                    <th wc-table-head label-key="th.label.saved-date" help-key="th.help.saved-date"></th>
-                    <th wc-table-head label-key="th.label.saved-signed-by" help-key="th.help.saved-signed-by"></th>
+                    <th wc-table-head label-key="th.label.intyg-type" help-key="th.help.intyg-type" ng-click="orderByProperty('intygType')"
+                        data-sorting="true" data-sorting-current="orderProperty == 'intygType'" data-sorting-ascending="orderAscending"></th>
+                    <th wc-table-head label-key="th.label.status" help-key="th.help.status" ng-click="orderByProperty('status')"
+                        data-sorting="true" data-sorting-current="orderProperty == 'status'" data-sorting-ascending="orderAscending"></th>
+                    <th wc-table-head label-key="th.label.saved-date" help-key="th.help.saved-date" ng-click="orderByProperty('lastUpdatedSigned')"
+                        data-sorting="true" data-sorting-current="orderProperty == 'lastUpdatedSigned'" data-sorting-ascending="orderAscending"></th>
+                    <th wc-table-head label-key="th.label.saved-signed-by" help-key="th.help.saved-signed-by" ng-click="orderByProperty('updatedSignedBy')"
+                        data-sorting="true" data-sorting-current="orderProperty == 'updatedSignedBy'" data-sorting-ascending="orderAscending"></th>
                     <th ng-if="!patientModel.avliden"></th>
                     <th></th>
                   </tr>
@@ -77,10 +81,10 @@
                 </tbody>
 
                 <tbody>
-                  <tr ng-repeat="intyg in viewState.currentList">
+                  <tr ng-repeat="intyg in viewState.currentList | orderBy: orderProperty: orderAscending: (orderProperty === 'intygType' ? nameComparator : undefined) " class="intygList">
                     <td>{{getTypeName(intyg.intygType)}}</td>
                     <td class="unbreakable"><span dynamic-label key="intyg.status.{{intyg.status}}"></span></td>
-                    <td class="unbreakable">{{intyg.lastUpdatedSigned | date:'short'}}</td>
+                    <td class="unbreakable">{{intyg.lastUpdatedSigned |    date:'short'}}</td>
                     <td class="unbreakable">{{intyg.updatedSignedBy}}</td>
                     <td ng-if="!patientModel.avliden">
                       <button type="button"
@@ -97,7 +101,7 @@
                               popover-append-to-body="true"
                               popover-placement="auto top"
                               popover-is-open="fornyaIntygBtnPopOver">
-                        <i class="material-icons">autorenew</i> {{messageService.getProperty('common.fornya')}}
+                        <i class="material-icons md-18">autorenew</i> {{messageService.getProperty('common.fornya')}}
                       </button>
                     </td>
                     <td>

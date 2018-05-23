@@ -45,4 +45,13 @@ wc-tidigare-intyg {
   .td-padding {
       padding: 15px 15px 15px 21px !important;
   }
+  .intygList td {
+    max-height: 48px;
+    .btn {
+      min-height: 38px;
+    }
+    .icon-wc-ikon-19 {
+      margin-right: 3px;
+    }
+  }
 }
