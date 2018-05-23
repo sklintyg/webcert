@@ -54,7 +54,10 @@ angular.module('webcert').directive('wcTidigareIntyg',
                     );
                 };
                 scope.resolveTooltipText = function (intyg) {
-                    return messageService.getProperty(intyg.intygType + '.fornya.tooltip');
+                    if(intyg.intygType === 'lisjp' || intyg.intygType === 'fk7263') {
+                        return messageService.getProperty('common.fornya.sjukskrivning.tooltip');
+                    }
+                    return messageService.getProperty('common.fornya.tooltip');
                 };
                 //Use loaded module metadata to look up name for a intygsType
                 scope.getTypeName = function (intygsType) {
