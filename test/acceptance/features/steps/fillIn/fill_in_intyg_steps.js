@@ -245,9 +245,15 @@ function changeField(intygShortcode, field) {
             });
         } else if (field === 'hjartKarlsjukdom') {
             return moveAndSendKeys(tsBasUtkastPage.hjartKarl.cYes, protractor.Key.SPACE).then(function() {
-                return tsBasUtkastPage.hjartKarl.cText.clear().then(function() {
-                    return moveAndSendKeys(tsBasUtkastPage.hjartKarl.cText, helpers.randomTextString());
-                });
+                return helpers.largeDelay();
+            }).then(function() {
+                return tsBasUtkastPage.hjartKarl.cText.isPresent();
+            }).then(function(present) {
+                if (present) {
+                    return tsBasUtkastPage.hjartKarl.cText.clear().then(function() {
+                        return moveAndSendKeys(tsBasUtkastPage.hjartKarl.cText, helpers.randomTextString());
+                    });
+                }
             });
         } else if (field === 'utanKorrektion') {
             return tsBasUtkastPage.syn.hoger.utan.clear().then(function() {
