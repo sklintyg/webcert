@@ -115,11 +115,23 @@ angular.module('webcert').directive('wcValjUtkastTyp',
                         return intygTypes[0].detailedDescription;
                     }
                 };
+                
+                function existsInUserTypes(intygTypeId) {
+                    for (var i = 0; i < IntygTypeSelectorModel.userIntygTypes.length; i++) {
+                        if(IntygTypeSelectorModel.userIntygTypes[i].id === intygTypeId) {
+                            return true;
+                        }
+                    }
+                    return false;
+                }
+
                 scope.isCreateUtkastEnabled = function (intygType) {
                     // Måste ha valt en intygstyp
                     // Intygstypen får inte vara deprecated
                     // Måste uppfylla ev unikhetskrav för intyg/utkast inom/utom vg
+                    // Måste finnas med i listan över användarutkast
                     return !scope.intygReplacement[intygType] &&
+                        existsInUserTypes(intygType) &&
                         scope.passesUniqueIntygWithinCareGiverCheck(intygType) &&
                         scope.passesUniqueUtkastWithinCareGiverCheck(intygType) &&
                         scope.passedUniqueGlobalCheck(intygType);
