@@ -1,5 +1,5 @@
 # language: sv
-@BEHORIGHET @UTHOPP
+@BEHÖRIGHET @UTHOPP
 Egenskap: Behörigheter för en uthoppsläkare
 
 Bakgrund: Inloggad som uthoppsläkare
@@ -19,21 +19,21 @@ Scenario: Kan signera intyg på lisjp
    När jag signerar intyget
    Så ska jag se den data jag angett för intyget
 
-@FORNYA @LISJP
+@FÖRNYA @LISJP
 Scenario: Kan inte förnya intyg Läkarintyg för sjukpenning
    När går in på Sök/skriv intyg
    Och jag går in på en patient
    Och jag går in på ett "Läkarintyg för sjukpenning" med status "Signerat"
    Så ska det inte finnas en knapp för att förnya intyget
 
-@FORNYA @TS @BAS
+@FÖRNYA @TS @BAS
 Scenario: Kan inte förnya Transportstyrelsens läkarintyg
    När går in på Sök/skriv intyg
    Och jag går in på en patient
    Och jag går in på ett "Transportstyrelsens läkarintyg" med status "Signerat"
    Så ska det inte finnas en knapp för att förnya intyget
 
-@FORNYA @TS @DIABETES
+@FÖRNYA @TS @DIABETES
 Scenario: Kan inte förnya Transportstyrelsens läkarintyg, diabetes intyg
    När går in på Sök/skriv intyg
    Och jag går in på en patient
@@ -46,9 +46,3 @@ Scenario: Kan inte makulera intyg
    Och jag skickar intyget direkt till Försäkringskassan
    Och jag går in på intyget via uthoppslänk
    Så ska makuleraknappen inte vara tillgänglig
-
-@filtrera @osignerade-intyg @notReady
-Scenario: Kan inte filtrera osignerade intyg på läkare
-   När går in på Ej signerade utkast
-   Och väljer att visa sökfilter
-   Så ska sökfiltret Sparat av inte vara tillgängligt

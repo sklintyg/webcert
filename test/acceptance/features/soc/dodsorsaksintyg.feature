@@ -8,7 +8,7 @@ Bakgrund: Jag befinner mig på webcerts förstasida
 		  Och att jag är inloggad som läkare
 		  När jag går in på "första" testpatienten för "Dödsorsaksintyg"
 
-@signera
+@SIGNERA
 Scenario: Kan signera Dödsorsaksintyg 
 		  Och jag går in på att skapa ett "Dödsorsaksintyg" intyg
 		  Och jag fyller i alla nödvändiga fält för intyget

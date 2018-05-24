@@ -6,14 +6,14 @@ Bakgrund:
 	Givet att jag är inloggad som läkare
 	Och jag går in på en patient med sekretessmarkering
 
-@LISJP @FORNYA @INTYGSTJÄNSTEN
+@LISJP @FÖRNYA @INTYGSTJÄNSTEN
 Scenario: PS-002 - Varningmeddelanden när man går in på patient
    När jag skickar ett "Läkarintyg för sjukpenning" intyg till Intygstjänsten
    Och jag uppdaterar sidan
    Så ska det finnas en knapp med texten "Förnya"
    Så ska jag varnas om att "Patienten har en sekretessmarkering"
 
-@SIGNERA @FRÅGASVAR @SMI @SKRIV-UT @MO-007 @SE-011 @WAITINGFORFIX @INTYG-6149
+@SIGNERA @FRÅGASVAR @SMI @UTSKRIFT @MO-007 @SE-011 @WAITINGFORFIX @INTYG-6149
 Scenario: SE-011 - Varningmeddelanden i fråga-svar för sekretessmarkerad person
 	Så ska jag varnas om att "Patienten har en sekretessmarkering"
 	

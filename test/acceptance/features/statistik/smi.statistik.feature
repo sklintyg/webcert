@@ -111,7 +111,7 @@ Scenario: Två nyskapade LISJP intyg på olika personer ska räknas som två i S
     Och jag går till statistiksidan för diagnoskod "samma som ovan"
     Så ska totala "samma som ovan" diagnoser som finns vara "2" extra
 
-@STATISTIKAPIET @FRAGASVAR @LISJP @NOTREADY
+@STATISTIK-APIET @FRAGASVAR @LISJP @NOTREADY
 Scenariomall: Statistik - <beskrivning> <ämne>  ska finnas i statistiktjänsten
     När jag är inloggad som läkare i Webcert med enhet "TSTNMT2321000156-107Q"
 	Och jag går in på en patient

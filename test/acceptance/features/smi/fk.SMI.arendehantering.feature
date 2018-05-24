@@ -1,5 +1,5 @@
 #language: sv
-@luse @fråga-från-fk @vårdadmin @SMI
+@LUSE @FRÅGA-FRÅN-FK @VÅRDADMIN @SMI
 Egenskap: Försäkringskassan kan skicka frågor på sjukintyg LUSE
 
 Bakgrund: Jag befinner mig på webcerts förstasida
@@ -25,9 +25,10 @@ Scenariomall: FK skickar fråga på "LUSE"
     |  "KONTKT"	    	|	
   	| "OVRIGT"		    |
 
-  @vidarebefordra-mail
-	Scenario: Det är möjligt att vidarebefordra frågan
-  När jag går in på ett "Läkarutlåtande för sjukersättning" med status "Skickad"
-  Och jag skickar intyget till Försäkringskassan
-  När Försäkringskassan ställer en "OVRIGT" fråga om intyget	
-  Så ska jag ha möjlighet att vidarebefordra frågan
+
+@VIDAREBEFORDRA-MAIL
+Scenario: Det är möjligt att vidarebefordra frågan
+    När jag går in på ett "Läkarutlåtande för sjukersättning" med status "Skickad"
+    Och jag skickar intyget till Försäkringskassan
+    När Försäkringskassan ställer en "OVRIGT" fråga om intyget	
+    Så ska jag ha möjlighet att vidarebefordra frågan

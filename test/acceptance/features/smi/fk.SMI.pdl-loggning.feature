@@ -9,7 +9,7 @@ Bakgrund: Jag är inloggad
 
 #1 #4
 # Första ändring per ändringssession ska loggas
-@skapa @skriva @läsa
+ @SKRIVA @LÄSA
 Scenario: GE-005 - Skapa SMI-intyg
 	När jag går in på att skapa ett slumpat SMI-intyg
 	Så ska det nu finnas 1 loggaktivitet "Skriva" för intyget
@@ -20,13 +20,13 @@ Scenario: GE-005 - Skapa SMI-intyg
 	Så ska det nu finnas 2 loggaktivitet "Skriva" för intyget
 
 #2
-@öppna @läsa
+ @LÄSA
 Scenario: GE-005 - Öppna SMI-intyg
 	När jag går in på ett slumpat SMI-intyg med status "Signerat"
 	Så ska loggaktivitet "Läsa" skickas till loggtjänsten
 
 #3 #8
-@olika-vårdgivare @skriv-ut @utskrift @läsa
+@SJF @UTSKRIFT @LÄSA
 Scenario: GE-005 - Händelser på SMI-intyg utfärdat på annan vårdgivare ska PDL-loggas
 	Givet att jag är inloggad som djupintegrerad läkare på vårdenhet "TSTNMT2321000156-INT2"
 	Och att vårdsystemet skapat ett intygsutkast för slumpat SMI-intyg
@@ -50,7 +50,7 @@ Scenario: GE-005 - Händelser på SMI-intyg utfärdat på annan vårdgivare ska 
 	Så ska loggaktivitet "Utskrift" skickas till loggtjänsten med argument "Makulerat intyg utskrivet. Läsning i enlighet med sammanhållen journalföring"
 
 #5 #7
-@skriv-ut @utskrift
+@UTSKRIFT
 Scenario: GE-005 - Skriv ut SMI-intyg
 	När att vårdsystemet skapat ett intygsutkast för slumpat SMI-intyg
 	Och jag går in på utkastet
@@ -70,28 +70,28 @@ Scenario: GE-005 - Skriv ut SMI-intyg
 
 
 #6
-@skicka @utskrift
+@SKICKA @UTSKRIFT
 Scenario: GE-005 - PDL - Skicka SMI-intyg till Försäkringskassan
     När jag går in på ett slumpat SMI-intyg med status "Signerat"
     Och jag skickar intyget till Försäkringskassan
     Så ska loggaktivitet "Utskrift" skickas till loggtjänsten med argument "Intyg skickat till mottagare FKASSA"
 
 #9
-@radera
+@RADERA
 Scenario: GE-005 - PDL - Radera SMI utkast
   När jag går in på att skapa ett slumpat SMI-intyg
 	Och jag raderar utkastet
 	Så ska loggaktivitet "Radera" skickas till loggtjänsten
 
 #10
-@makulera
+@MAKULERA
 Scenario: GE-005 - Makulera SMI-intyg
 	När jag går in på ett slumpat SMI-intyg med status "Skickat"
 	Och jag makulerar intyget
 	Så ska loggaktivitet "Radera" skickas till loggtjänsten
 
 #11
-@fornya @läsa @skriva
+@FÖRNYA @LÄSA @SKRIVA
 Scenario: GE-005 - Förnya SMI-intyg
 	När jag går in på ett slumpat SMI-intyg med status "Signerat"
 	Och jag förnyar intyget
@@ -101,7 +101,7 @@ Scenario: GE-005 - Förnya SMI-intyg
 	Och ska loggaktivitet "Skriva" skickas till loggtjänsten
 
 #11
-@ersatt @läsa @skriva
+@ERSÄTT @LÄSA @SKRIVA
 Scenario: GE-005 - Ersätta SMI-intyg
 	När jag går in på ett slumpat SMI-intyg med status "Signerat"
 	Och jag klickar på ersätta knappen

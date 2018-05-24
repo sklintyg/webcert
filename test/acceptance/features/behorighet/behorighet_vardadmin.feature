@@ -8,17 +8,17 @@ Bakgrund: Logga in och gå in på en patient
 	Och går in på Sök/skriv intyg
 	Och jag går in på en patient
 	
-@FORNYA @LISJP
+@FÖRNYA @LISJP
 Scenario: Kan förnya Läkarintyg för sjukpenning
    När jag går in på ett "Läkarintyg för sjukpenning" med status "Signerat"
    Så ska det finnas en knapp för att förnya intyget
 
-@FORNYA @TS
+@FÖRNYA @TS
 Scenario: Kan inte förnya Transportstyrelsens läkarintyg 
    När jag går in på ett "Transportstyrelsens läkarintyg" med status "Signerat"
    Så ska det inte finnas en knapp för att förnya intyget
 
-@DIABETES @FORNYA @TS
+@DIABETES @FÖRNYA @TS
 Scenario: Kan förnya Transportstyrelsens läkarintyg, diabetes intyg
    När jag går in på ett "Transportstyrelsens läkarintyg, diabetes" med status "Signerat"
    Så ska det inte finnas en knapp för att förnya intyget
@@ -38,7 +38,7 @@ Scenario: Kan inte signera Transportstyrelsens läkarintyg
 
 	Och ska det finnas en knapp för att skriva ut utkastet
 
-@DIABETES @SKRIV-UT
+@DIABETES @UTSKRIFT
 Scenario: Kan inte signera Transportstyrelsens läkarintyg, diabetes
 	När jag går in på att skapa ett "Transportstyrelsens läkarintyg, diabetes" intyg
 	Och jag fyller i alla nödvändiga fält för intyget

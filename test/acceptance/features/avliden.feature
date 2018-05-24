@@ -3,27 +3,31 @@
 Egenskap: Avliden patient
 
 @PS-001
-  Scenario: Varning om patient är avliden
-     Givet att jag är inloggad som läkare
-     När jag går in på en patient som är avliden
-     Så ska jag varnas om att "Patienten är avliden"
+Scenario: Varning om patient är avliden
+    Givet att jag är inloggad som läkare
+    När jag går in på en patient som är avliden
+    Så ska jag varnas om att "Patienten är avliden"
 
-# TODO: Skriv om detta och sätt patient till avliden via APIet för avliden
- @SKICKA-FRÅGA-TILL-FK @INTEGRATION @notReady
- Scenario: Avliden Patient - Vården kan ställa frågor på ett intyg
-     Givet att jag är inloggad som djupintegrerad läkare
-     När jag skickar ett SMI-intyg till intygstjänsten på en avliden person
-     Och jag går in på intyget via djupintegrationslänk och har parametern "avliden" satt till "true"
-     Och jag skickar intyget till Försäkringskassan
-     Så ska intygets första status vara "Intyget är skickat till Försäkringskassan"
-	 Och ska intygets andra status vara "Intyget är tillgängligt för patienten"
-
+@FRÅGA-FRÅN-VÅRDEN @INTEGRATION
+Scenario: Avliden Patient - Vården kan ställa frågor på ett intyg
+    Givet att jag är inloggad som djupintegrerad läkare
+	Och att vårdsystemet skapat ett intygsutkast för slumpat SMI-intyg
+	Och jag går in på intyget via djupintegrationslänk
+    Och jag fyller i alla nödvändiga fält för intyget
+    Och jag signerar intyget
+	Och jag skickar intyget till Försäkringskassan
+	
+	Och jag går in på intyget via djupintegrationslänk och har parametern "avliden" satt till "true"
+	Och jag skickar en fråga med ämnet "Kontakt" till Försäkringskassan
+	Och Försäkringskassan skickar ett svar
+	Så ska intygets första status vara "Intyget är skickat till Försäkringskassan"
+    Och ska intygets andra status vara "Intyget är tillgängligt för patienten"
 	 
- @SVARA-PÅ-FRÅGA @SMI @INTEGRATION
- Scenario: Avliden Patient - Försäkringskassan kan ställa frågor på ett intyg 
+@FRÅGA-FRÅN-FK @SMI @INTEGRATION
+Scenario: Avliden Patient - Försäkringskassan kan ställa frågor på ett intyg 
     Givet att jag är inloggad som djupintegrerad läkare på vårdenhet "TSTNMT2321000156-INT2"
     Och att vårdsystemet skapat ett intygsutkast för slumpat SMI-intyg
-    När jag går in på intygsutkastet via djupintegrationslänk
+	När jag går in på intygsutkastet via djupintegrationslänk
     Och jag fyller i alla nödvändiga fält för intyget
     Och jag signerar intyget
     När jag går in på intyget via djupintegrationslänk och har parametern "avliden" satt till "true"

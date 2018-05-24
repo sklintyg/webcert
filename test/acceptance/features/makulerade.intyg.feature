@@ -1,6 +1,6 @@
 # language: sv
 
-@FORNYA @MAKULERAT
+@FÖRNYA @MAKULERAT
 Egenskap: Makulerat intyg ska kunna förnyas
 
 Bakgrund: Jag befinner mig på webcerts förstasida

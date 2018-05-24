@@ -1,13 +1,13 @@
 #language: sv
 
-@ersatt
+@ERSÄTT
 Egenskap: Ersätta intyg
 
 Bakgrund: Jag befinner mig på webcerts förstasida
 	Givet att jag är inloggad som läkare
     När jag går in på en patient
 
-@ersatt-intyg-lank @ersatta-text
+@ERSATTINTYG-LÄNK
 Scenario: När man ersatt intyg så ska informationstext på ett ersatt intyg finnas
 	När jag går in på att skapa ett slumpat intyg
 	Och jag fyller i alla nödvändiga fält för intyget
@@ -22,7 +22,7 @@ Scenario: När man ersatt intyg så ska informationstext på ett ersatt intyg fi
 	Och jag går tillbaka till det ersatta intyget
 	Så ska intygets första status vara "Intyget har ersatts av detta intyg"
 
-@ersatt-intyg-buttons
+@KNAPPAR
 Scenario: När man ersatt ett intyg så ska det ersatta intyg inte gå att skicka,ersätta,förnya
 	När jag går in på att skapa ett slumpat intyg
 	Och jag fyller i alla nödvändiga fält för intyget

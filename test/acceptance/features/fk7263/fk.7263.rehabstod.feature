@@ -5,7 +5,7 @@ Egenskap: FK7263-integration med rehabstöd
 
 Bakgrund: Jag befinner mig på Rehabstöds förstasida
 
-@integration @skapa
+@integration 
 Scenario: Ett nyskapat FK7263 intyg ska finnas i Rehabstöd
     När jag är inloggad som läkare i Rehabstöd
     Och jag väljer enhet "TSTNMT2321000156-107P"
@@ -25,7 +25,7 @@ Scenario: Ett nyskapat FK7263 intyg ska finnas i Rehabstöd
     Och jag går till pågående sjukfall i Rehabstöd
     Så ska antalet intyg ökat med 1 på patient som sparats från Rehabstöd
 
-@integration @makulera
+@integration @MAKULERA
 Scenario: Ett makulerat FK7263 intyg ska tas bort från Rehabstöd
     När jag är inloggad som läkare i Rehabstöd
     Och jag väljer enhet "TSTNMT2321000156-107P"

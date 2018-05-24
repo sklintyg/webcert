@@ -1,5 +1,5 @@
 # language: sv
-@FALTVALIDERING @LISJP @WAITINGFORFIX @TI-594
+@FALTVALIDERING @LISJP 
 Egenskap: Fältvalidering för LISJP
 
 Bakgrund:

@@ -7,7 +7,7 @@ Bakgrund: Jag är inloggad
     Givet att jag är inloggad som läkare
     När jag går in på en patient
 
-@tsbas @keepIntyg @signera @smoke
+@tsbas  @SIGNERA @SMOKE
 Scenario: Skapa och signera ett TS bas intyg
     När jag går in på att skapa ett "Transportstyrelsens läkarintyg" intyg
     Och jag fyller i alla nödvändiga fält för intyget
@@ -15,13 +15,13 @@ Scenario: Skapa och signera ett TS bas intyg
     Så ska intygets första status vara "Intyget är signerat"
     Och jag ska se den data jag angett för intyget
 
-@keepIntyg @skicka @smoke
+ @SKICKA @SMOKE
 Scenario: Skicka ett signerat intyg till Transportstyrelsen
     När jag går in på ett "Transportstyrelsens läkarintyg" med status "Signerat"
     Och jag skickar intyget till Transportstyrelsen
     Så ska intygets första status vara "Intyget är skickat till Transportstyrelsen"
 
-@makulera @smoke
+@MAKULERA @SMOKE
 Scenario: Makulera ett skickat TS Bas intyg
 	När jag går in på ett "Transportstyrelsens läkarintyg" med status "Skickat"
     Så ska intygets första status vara "Intyget är skickat till Transportstyrelsen"

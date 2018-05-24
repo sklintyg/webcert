@@ -1,12 +1,12 @@
 # language: sv
-@kortkommando @notReady
+@KORTKOMMANDO @NOTREADY
 Egenskap: Kortkommandon för slutdatum 
 
 Bakgrund: Jag befinner mig på webcerts förstasida
 	Givet att jag är inloggad som läkare
 	När jag går in på en patient
 
-@lisjp
+@LISJP
 Scenario: Kortkommando för slutdatum på Läkarintyg för sjukpenning
 	Givet att vårdsystemet skapat ett intygsutkast för "Läkarintyg för sjukpenning"
 	Och jag går in på utkastet

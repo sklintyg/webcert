@@ -7,7 +7,7 @@ Bakgrund: Jag har skickat en CreateDraft:2 till Webcert.
    Och att vårdsystemet skapat ett intygsutkast för slumpat SMI-intyg
    Och jag går in på intygsutkastet via djupintegrationslänk
 
-@SKICKA-TILL-FK @SIGNAT @SKAPAT @SKICKA
+@SKICKA-TILL-FK @SIGNAT T @SKICKA
 Scenario: Statusuppdateringar då SMI-intyg skickas till Försäkringskassan
     Så ska statusuppdatering "SKAPAT" skickas till vårdsystemet. Totalt: "1"
 
@@ -131,7 +131,7 @@ Scenario: Referens skickas med statusuppdateringar
     Och ska svaret innehålla ref med värdet "testref-X"
 
 	
-@FORNYA @ANDRAT @SKICKA @NYFRFV @NYSVFM @HANFRFV
+@FÖRNYA @ANDRAT @SKICKA @NYFRFV @NYSVFM @HANFRFV
 Scenario: Testa att statusuppdateringar fungerar efter intyget är förnyat
 	
 	När jag fyller i alla nödvändiga fält för intyget

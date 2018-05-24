@@ -1,12 +1,12 @@
 # language: sv
-@fornya
+@FÖRNYA
 Egenskap: Förnya FK-intyg
 
 Bakgrund: Jag är inne på en patient
 	Givet att jag är inloggad som läkare utan adress till enheten
 	När jag går in på en patient
 
-@enhetsaddress
+@ENHETSADDRESS
 Scenariomall: Enhetens adress ska följa med när jag förnyar ett <intygKod>-intyg om adress saknas i HSA
 	När jag går in på att skapa ett <intyg> intyg
 	Och jag fyller i alla nödvändiga fält för intyget
@@ -21,7 +21,7 @@ Exempel:
   |LUSE		|  	"Läkarutlåtande för sjukersättning" | 
 
   
-@FORNYA-UTKAST @LISJP @WC-AF1-A01
+@FÖRNYA-UTKAST @LISJP @WC-AF1-A01
 Scenario: Det går att förnya signerade och mottagna intyg från intygslistan men inte utkast
 	Givet att jag är inloggad som läkare
 	Och jag går in på en patient

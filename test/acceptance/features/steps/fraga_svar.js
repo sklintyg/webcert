@@ -332,17 +332,17 @@ Given(/^Försäkringskassan (?:har ställt|ställer) en "([^"]*)" fråga om inty
 
 Given(/^Försäkringskassan skickar ett svar$/, function(callback) {
     function callSendMessageToCare() {
-		var url = '';
-		var body = '';
+        var url = '';
+        var body = '';
 
-		
-		var path = '/send-message-to-care/v2.0?wsdl';
-		url = process.env.INTYGTJANST_URL + path;
-		url = url.replace('https', 'http');
-			
-		body = soapMessageBodies.SendMessageToCare(global.user, global.person, global.intyg, 'Ett svar ', testdataHelper.generateTestGuid(), false);
-		logger.silly(body);
-		
+
+        var path = '/send-message-to-care/v2.0?wsdl';
+        url = process.env.INTYGTJANST_URL + path;
+        url = url.replace('https', 'http');
+
+        body = soapMessageBodies.SendMessageToCare(global.user, global.person, global.intyg, 'Ett svar ', testdataHelper.generateTestGuid(), false);
+        logger.silly(body);
+
         soap.createClient(url, function(err, client) {
             logger.info(url);
             if (err) {
@@ -369,7 +369,7 @@ Given(/^Försäkringskassan skickar ett svar$/, function(callback) {
             }
         });
     }
-	//Vänta 1 sec på att frågan kommer till Intygstjänsten
+    //Vänta 1 sec på att frågan kommer till Intygstjänsten
     setTimeout(callSendMessageToCare, 1000);
 });
 

@@ -6,7 +6,7 @@ Bakgrund: Jag befinner mig på webcerts förstasida
 	Givet att jag är inloggad som läkare
 	När jag går in på en patient
 
-@KEEPINTYG @SIGNERA
+ @SIGNERA
 Scenariomall: Skapa och signera ett intyg för <intygKod>
 	När jag går in på att skapa ett <intyg> intyg
 	Och jag fyller i alla nödvändiga fält för intyget
@@ -42,7 +42,7 @@ Exempel:
     |LUAE_NA    | 	"Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga" |
     |LUAE_FS    | 	"Läkarutlåtande för aktivitetsersättning vid förlängd skolgång"     |
 
-@MINAINTYG @KEEPINTYG @INTYGTILLFK @SKICKA @MI-F010
+@MINAINTYG  @INTYGTILLFK @SKICKA @MI-F010
 Scenariomall: Skicka ett befintligt <intygKod> intyg till Försäkringskassan
 	När jag går in på ett <intyg> med status "Signerat"
 	Och jag skickar intyget till Försäkringskassan

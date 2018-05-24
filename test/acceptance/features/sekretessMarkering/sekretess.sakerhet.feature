@@ -39,7 +39,7 @@ Scenario: Kontrollera att vårdadmin inte kan se eller öppna något signerat in
 	Och jag går till sidan Frågor och svar
 	Så ska frågan inte finnas i listan
 
-@MAKULERA @SMI @FORNYA
+@MAKULERA @SMI @FÖRNYA
 Scenario: Läkare ska kunna makulera intyg med s-markering
 	När jag går in på ett slumpat SMI-intyg med status "Skickat"
 	Så ska det finnas en knapp med texten "Förnya"

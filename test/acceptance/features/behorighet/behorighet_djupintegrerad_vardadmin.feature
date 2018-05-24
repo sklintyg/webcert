@@ -1,11 +1,11 @@
 # language: sv
-@behorighet @djupintegration @vårdadmin
+@BEHÖRIGHET @DJUPINTEGRATION @VÅRDADMIN
 Egenskap: Behörigheter för en djupintegrerad vårdadministratör
 
 Bakgrund: Logga in
 	Givet att jag är inloggad som djupintegrerad vårdadministratör
 
-@signera @skriv-ut @klar-för-signering
+@SIGNERA @UTSKRIFT @KFSIGN
 Scenario: Kan markera som klart för signering men inte signera
 	När att vårdsystemet skapat ett intygsutkast för slumpat SMI-intyg
     Och jag går in på intygsutkastet via djupintegrationslänk
@@ -32,9 +32,9 @@ Scenario: [responsibleHospName] - Vårdadmin ska se signerande läkare
 	Så ska jag se signerande läkare "Peter Parameter"		
 	
 	
-@signera @klar-för-signering-sparat @LegacyFK7263
-Scenario: Kan inte signera FK7263-utkast
-	När att vårdsystemet skapat ett intygsutkast för "Läkarintyg FK 7263"
+@SIGNERA
+Scenario: Kan inte signera SMI-Utkast
+	När att vårdsystemet skapat ett intygsutkast för slumpat SMI-intyg
     Och jag går in på intygsutkastet via djupintegrationslänk
     Och jag fyller i alla nödvändiga fält för intyget
 

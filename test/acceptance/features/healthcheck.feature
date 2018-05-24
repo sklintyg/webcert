@@ -1,5 +1,5 @@
 # language: sv
-@healthcheck
+@HEALTHCHECK
 Egenskap: Healthcheck-sida
 
 Scenario: Kontrollera applikationens status

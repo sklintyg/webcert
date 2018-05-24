@@ -25,7 +25,7 @@ Scenario: Ska endast kunna hantera Läkarintyg för sjukpenning
 	När jag går till ej signerade utkast
 	Så ska jag inte se utkast av annan typ än "Läkarintyg FK 7263,Läkarintyg för sjukpenning"
 
-@LISJP @SIGNERA @SKICKA @MAKULERA @FORNYA
+@LISJP @SIGNERA @SKICKA @MAKULERA @FÖRNYA
 Scenario: Skapa, Skicka och Makulera Läkarintyg för sjukpenning
 	Givet att jag är inloggad som tandläkare
 	Givet att vårdsystemet skapat ett intygsutkast för "Läkarintyg för sjukpenning"

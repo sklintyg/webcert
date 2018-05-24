@@ -10,7 +10,7 @@ Bakgrund: Jag befinner mig på webcerts förstasida
 		  
 #1 #4
 # Första ändring per ändringssession ska loggas
-@skapa @skriva @läsa
+ @SKRIVA @LÄSA
 Scenario: GE-005 - Skapa Dödsbevis 
 		Och jag går in på att skapa ett "Dödsbevis" intyg
 		Så ska det nu finnas 1 loggaktivitet "Skriva" för intyget
@@ -22,7 +22,7 @@ Scenario: GE-005 - Skapa Dödsbevis
 		Så ska det nu finnas 2 loggaktivitet "Skriva" för intyget
 		
 #2
-@öppna @läsa
+ @LÄSA
 Scenario: GE-005 - Öppna Dödsbevis
 		När jag går in på att skapa ett "Dödsbevis" intyg
 		Och jag fyller i alla nödvändiga fält för intyget
@@ -32,7 +32,7 @@ Scenario: GE-005 - Öppna Dödsbevis
 		Så ska loggaktivitet "Läsa" skickas till loggtjänsten
 		
 #3 #8
-@OLIKA-VÅRDGIVARE @SKRIV-UT @UTSKRIFT @LÄSA
+@SJF @UTSKRIFT @UTSKRIFT @LÄSA
 Scenario: GE-005 - Händelser på Dödsbevis utfärdat på annan vårdgivare ska PDL-loggas
 		Givet att jag är inloggad som djupintegrerad läkare på vårdenhet "TSTNMT2321000156-INT2"
 		Och att vårdsystemet skapat ett intygsutkast för samma patient för "Dödsbevis"
@@ -57,7 +57,7 @@ Scenario: GE-005 - Händelser på Dödsbevis utfärdat på annan vårdgivare ska
 
 	
 #5 #7
-@skriv-ut @utskrift
+@UTSKRIFT
 Scenario: GE-005 - Skriv ut Dödsbevis
 		Och jag går in på att skapa ett "Dödsbevis" intyg
 		Och jag skriver ut utkastet
@@ -75,7 +75,7 @@ Scenario: GE-005 - Skriv ut Dödsbevis
 		Så ska loggaktivitet "Utskrift" skickas till loggtjänsten med argument "Makulerat intyg utskrivet"
 
 #6
-@skicka @utskrift
+@SKICKA @UTSKRIFT
 Scenario: GE-005 - PDL - Skicka Dödsbevis till Skatteverket
 		När jag går in på att skapa ett "Dödsbevis" intyg
 		Och jag fyller i alla nödvändiga fält för intyget
@@ -84,14 +84,14 @@ Scenario: GE-005 - PDL - Skicka Dödsbevis till Skatteverket
 		Så ska loggaktivitet "Utskrift" skickas till loggtjänsten med argument "Intyg skickat till mottagare SKV"
 
 #9
-@radera
+@RADERA
 Scenario: GE-005 - PDL - Radera Dödsbevis utkast
 		När jag går in på att skapa ett "Dödsbevis" intyg
 		Och jag raderar utkastet
 		Så ska loggaktivitet "Radera" skickas till loggtjänsten
 
 #10
-@makulera
+@MAKULERA
 Scenario: GE-005 - Makulera Dödsbevis
 		När jag går in på att skapa ett "Dödsbevis" intyg
 		Och jag fyller i alla nödvändiga fält för intyget
@@ -100,7 +100,7 @@ Scenario: GE-005 - Makulera Dödsbevis
 		Så ska loggaktivitet "Radera" skickas till loggtjänsten
 
 #11
-@ersatt @läsa @skriva
+@ERSÄTT @LÄSA @SKRIVA
 Scenario: GE-005 - Ersätta Dödsbevis
 		När jag går in på att skapa ett "Dödsbevis" intyg
 		Och jag fyller i alla nödvändiga fält för intyget

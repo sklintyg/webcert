@@ -1,5 +1,5 @@
 # language: sv
-@statusuppdateringar @ts @bas
+@STATUSUPPDATERINGAR @TS @bas
 Egenskap: Statusuppdateringar för TS-bas intyg
 
 Bakgrund: Jag har skickat en CreateDraft till Webcert.
@@ -7,7 +7,7 @@ Bakgrund: Jag har skickat en CreateDraft till Webcert.
    Och att vårdsystemet skapat ett intygsutkast för "Transportstyrelsens läkarintyg"
    Och jag går in på intygsutkastet via djupintegrationslänk
 
-@skicka-till-ts @SIGNAT
+@SKICKA-till-ts @SIGNAT
 Scenario: Statusuppdateringar då TS bas intyg skickas till Transportstyrelsen
     Så ska statusuppdatering "SKAPAT" skickas till vårdsystemet. Totalt: "1"
 
@@ -19,7 +19,7 @@ Scenario: Statusuppdateringar då TS bas intyg skickas till Transportstyrelsen
     Så ska statusuppdatering "SKICKA" skickas till vårdsystemet. Totalt: "1"
 
 
-@makulera
+@MAKULERA
 Scenario: Statusuppdateringar då TS bas intyg makuleras
     När jag fyller i alla nödvändiga fält för intyget
     Och jag signerar intyget
@@ -28,7 +28,7 @@ Scenario: Statusuppdateringar då TS bas intyg makuleras
     När jag makulerar intyget
     Så ska statusuppdatering "MAKULE" skickas till vårdsystemet. Totalt: "1"
 
-@radera
+@RADERA
 Scenario: Statusuppdateringar då TS bas utkast raderas
     När jag fyller i alla nödvändiga fält för intyget
     Och jag raderar utkastet

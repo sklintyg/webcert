@@ -1,5 +1,5 @@
 # language: sv
-@FALTVALIDERING @DB @WAITINGFORFIX @TI-594
+@FALTVALIDERING @DB 
 Egenskap: Fältvalidering för DB
 
 Bakgrund: DB måste vara rensat för patienten.

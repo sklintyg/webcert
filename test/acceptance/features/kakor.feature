@@ -1,5 +1,5 @@
 # language: sv
-@kakor @cookies
+@COOKIES
 Egenskap: Samtycke för kakor
 
 Bakgrund: Jag befinner mig på webcerts förstasida
