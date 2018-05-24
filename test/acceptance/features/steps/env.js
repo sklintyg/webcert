@@ -146,9 +146,10 @@ Before(function() {
     global.intyg = {};
     global.user = {};
     global.ursprungligtIntyg = {};
+    global.ursprungligPerson = {};
+
     hasFoundConsoleErrors = false;
     duplicateIds = [];
-
     //return browser.executeScript('window.autoSave = false;');
 
 });

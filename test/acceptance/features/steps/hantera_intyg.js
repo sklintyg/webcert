@@ -166,7 +166,11 @@ Given(/^ska det inte finnas någon knapp för "([^"]*)"$/, function(texten) {
 });
 
 Given(/^jag klickar på signera\-knappen$/, function() {
-    return expect(baseIntyg.intygStatus[1].getText()).to.eventually.contain('Utkastet är sparat').then(function() {
+    return browser.wait(function() {
+        return baseIntyg.intygStatus[1].getText().then(function(txt) {
+            return (txt.indexOf('Utkastet är sparat') !== -1);
+        });
+    }, 10000).then(function() {
         return moveAndSendKeys(fkUtkastPage.signeraButton, protractor.Key.SPACE);
     });
 });

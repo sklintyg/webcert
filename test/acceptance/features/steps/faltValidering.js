@@ -134,7 +134,19 @@ let chainDropdownActions = intygsTyp => () => Object.keys(valideringsVal[intygsT
 let chainTextFieldActions = intygsTyp => valideringsVal[intygsTyp].text
     .reduce((prev, text) => prev.then(() => fyllText(text)), Promise.resolve());
 
-let changeFocus = () => browser.driver.switchTo().activeElement().sendKeys(protractor.Key.TAB);
+let domElmsWithOnBlur = {
+    'Transportstyrelsens läkarintyg, diabetes': 'kommentar',
+    'Transportstyrelsens läkarintyg': 'kommentar',
+    'Läkarintyg för sjukpenning': 'diagnoseCode-0',
+    'Läkarutlåtande för sjukersättning': 'diagnoseCode-0',
+    'Läkarutlåtande för aktivitetsersättning vid förlängd skolgång': 'diagnoseCode-0',
+    'Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga': 'diagnoseCode-0',
+    'Dödsbevis': 'dodsplatsKommun',
+    'Dödsorsaksintyg': 'dodsplatsKommun'
+};
+
+
+let changeFocus = intygsTyp => browser.executeScript('document.getElementById("' + domElmsWithOnBlur[intygsTyp] + '").onblur();');
 
 let currentYear = () => `${new Date().getFullYear()}`;
 
@@ -267,7 +279,7 @@ When(/^jag anger start- och slutdatum med mer än 6 månaders mellanrum$/, () =>
             from: '2015-03-27',
             tom: '2017-09-25'
         }
-    }).then(changeFocus)
+    }).then(changeFocus(intyg.typ))
 );
 
 When(/^jag anger startdatum mer än en vecka före dagens datum$/, () =>
@@ -276,7 +288,7 @@ When(/^jag anger startdatum mer än en vecka före dagens datum$/, () =>
             from: '2015-03-27',
             tom: '2017-09-25'
         }
-    }).then(changeFocus)
+    }).then(changeFocus(intyg.typ))
 );
 
 When(/^jag anger ogiltiga datum$/, () =>
@@ -307,7 +319,7 @@ When(/^jag anger undersökningsdatum i framtiden$/, () =>
         telefonkontakt: '2021-09-27',
         annat: '2021-09-27',
         annatBeskrivning: '',
-    }).then(changeFocus)
+    }).then(changeFocus(intyg.typ))
 );
 
 When(/^jag anger undersökningsdatum senare än patientkännedom$/, () =>
