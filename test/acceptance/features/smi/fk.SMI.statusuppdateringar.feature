@@ -7,7 +7,7 @@ Bakgrund: Jag har skickat en CreateDraft:2 till Webcert.
    Och att vårdsystemet skapat ett intygsutkast för slumpat SMI-intyg
    Och jag går in på intygsutkastet via djupintegrationslänk
 
-@SKICKA-TILL-FK @SIGNAT T @SKICKA
+@SKICKA-TILL-FK @SIGNAT @SKAPAT @SKICKA
 Scenario: Statusuppdateringar då SMI-intyg skickas till Försäkringskassan
     Så ska statusuppdatering "SKAPAT" skickas till vårdsystemet. Totalt: "1"
 
@@ -109,7 +109,7 @@ Scenario: Statusuppdateringar vid ändring av utkast
     När jag ändrar i slumpat fält
     Så ska statusuppdatering "ANDRAT" skickas till vårdsystemet. Totalt: "1"
 
-@REFERENS-SKICKAS-MED
+@VÅRDKONTAKT @REF
 Scenario: Referens skickas med statusuppdateringar
     När jag går in på intyget via djupintegrationslänk och har parametern "ref" satt till "testref-X"
 
