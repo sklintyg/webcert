@@ -331,41 +331,46 @@ Given(/^Försäkringskassan (?:har ställt|ställer) en "([^"]*)" fråga om inty
 });
 
 Given(/^Försäkringskassan skickar ett svar$/, function(callback) {
-    var url = '';
-    var body = '';
+    function callSendMessageToCare() {
+		var url = '';
+		var body = '';
 
-
-    body = soapMessageBodies.SendMessageToCare(global.user, global.person, global.intyg, 'Ett svar ', testdataHelper.generateTestGuid(), false);
-    logger.silly(body);
-    var path = '/send-message-to-care/v2.0?wsdl';
-    url = process.env.INTYGTJANST_URL + path;
-    url = url.replace('https', 'http');
-
-    soap.createClient(url, function(err, client) {
-        logger.info(url);
-        if (err) {
-            callback(err);
-        } else {
-            client.SendMessageToCare(body, function(err, result, resBody) {
-                logger.silly(resBody);
-                if (err) {
-                    callback(err);
-                } else {
-                    var resultcode = result.result.resultCode;
-                    logger.info('ResultCode: ' + resultcode);
-                    // logger.silly(result);
-                    if (resultcode !== 'OK') {
-                        logger.info(result);
-                        callback('ResultCode: ' + resultcode + '\n' + resBody);
+		
+		var path = '/send-message-to-care/v2.0?wsdl';
+		url = process.env.INTYGTJANST_URL + path;
+		url = url.replace('https', 'http');
+			
+		body = soapMessageBodies.SendMessageToCare(global.user, global.person, global.intyg, 'Ett svar ', testdataHelper.generateTestGuid(), false);
+		logger.silly(body);
+		
+        soap.createClient(url, function(err, client) {
+            logger.info(url);
+            if (err) {
+                callback(err);
+            } else {
+                client.SendMessageToCare(body, function(err, result, resBody) {
+                    logger.silly(resBody);
+                    if (err) {
+                        callback(err);
                     } else {
+                        var resultcode = result.result.resultCode;
                         logger.info('ResultCode: ' + resultcode);
-                        callback();
-                    }
+                        // logger.silly(result);
+                        if (resultcode !== 'OK') {
+                            logger.info(result);
+                            callback('ResultCode: ' + resultcode + '\n' + resBody);
+                        } else {
+                            logger.info('ResultCode: ' + resultcode);
+                            callback();
+                        }
 
-                }
-            });
-        }
-    });
+                    }
+                });
+            }
+        });
+    }
+	//Vänta 1 sec på att frågan kommer till Intygstjänsten
+    setTimeout(callSendMessageToCare, 1000);
 });
 
 Given(/^jag markerar frågan från vården som hanterad$/, function() {
