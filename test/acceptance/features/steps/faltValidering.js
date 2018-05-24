@@ -134,19 +134,10 @@ let chainDropdownActions = intygsTyp => () => Object.keys(valideringsVal[intygsT
 let chainTextFieldActions = intygsTyp => valideringsVal[intygsTyp].text
     .reduce((prev, text) => prev.then(() => fyllText(text)), Promise.resolve());
 
-let domElmsWithOnBlur = {
-    'Transportstyrelsens läkarintyg, diabetes': 'kommentar',
-    'Transportstyrelsens läkarintyg': 'kommentar',
-    'Läkarintyg för sjukpenning': 'diagnoseCode-0',
-    'Läkarutlåtande för sjukersättning': 'diagnoseCode-0',
-    'Läkarutlåtande för aktivitetsersättning vid förlängd skolgång': 'diagnoseCode-0',
-    'Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga': 'diagnoseCode-0',
-    'Dödsbevis': 'dodsplatsKommun',
-    'Dödsorsaksintyg': 'dodsplatsKommun'
-};
+let focusOmWebcertLink = intygsTyp => browser.executeScript('document.getElementById("aboutLink").focus();');
+let blurOmWebcertLink = intygsTyp => browser.executeScript('document.getElementById("aboutLink").blur();');
 
-
-let changeFocus = intygsTyp => browser.executeScript('document.getElementById("' + domElmsWithOnBlur[intygsTyp] + '").onblur();');
+let changeFocus = intygsTyp => focusOmWebcertLink(intygsTyp).then(blurOmWebcertLink(intygsTyp));
 
 let currentYear = () => `${new Date().getFullYear()}`;
 

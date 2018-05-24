@@ -175,8 +175,6 @@ Given(/^jag klickar på signera\-knappen$/, function() {
     });
 });
 
-
-
 Given(/^ska signera\-knappen inte vara klickbar$/, function(callback) {
     utkastPage.signeraButton.isEnabled().then(function(isVisible) {
         if (isVisible) {
