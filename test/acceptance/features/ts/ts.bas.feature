@@ -1,6 +1,6 @@
 # language: sv
 
-@ts @bas
+@TS @BAS
 Egenskap: Hantera Transportstyrelsens basintyg
 
 Bakgrund: Jag är inloggad

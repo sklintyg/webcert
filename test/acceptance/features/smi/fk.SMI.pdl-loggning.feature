@@ -1,6 +1,6 @@
 # language: sv
 
-@pdl @GE-005 @SMI
+@PDL @GE-005 @SMI
 Egenskap: GE-005 - PDL-loggning för SMI-intyg
 
 Bakgrund: Jag är inloggad

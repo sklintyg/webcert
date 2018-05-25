@@ -1,5 +1,5 @@
 # language: sv
-@BEHÖRIGHET @lakare
+@BEHÖRIGHET @LAKARE
 Egenskap: GE-007 - Behörigheter för en läkare
 
 @SMI @INLOGGAD-ENHET @VA-002 @F.BE-009

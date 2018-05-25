@@ -1,6 +1,6 @@
 # language: sv
 
-@DB @DODSBEVIS @SKATTEVERKET @SKV @PDL @GE-005
+@DB @SKV @PDL @GE-005
 Egenskap: GE-005 - PDL-loggning för Dödsbevis
 
 Bakgrund: Jag befinner mig på webcerts förstasida

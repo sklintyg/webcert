@@ -1,5 +1,5 @@
 # language: sv
-@STATUSUPPDATERINGAR @TS @bas
+@STATUSUPPDATERINGAR @TS @BAS
 Egenskap: Statusuppdateringar för TS-bas intyg
 
 Bakgrund: Jag har skickat en CreateDraft till Webcert.

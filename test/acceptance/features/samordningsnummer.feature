@@ -1,6 +1,5 @@
 #language: sv
 
-@samordningsnummer
 @SAMORDNINGSNUMMER
 Egenskap: Samordningsnummer
 

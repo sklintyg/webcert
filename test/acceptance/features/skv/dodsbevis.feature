@@ -1,6 +1,6 @@
 # language: sv
 
-@DB @DODSBEVIS @SKATTEVERKET @SKV
+@DB @SKV
 Egenskap: Dödsbevis
 
 Bakgrund: Jag befinner mig på webcerts förstasida
