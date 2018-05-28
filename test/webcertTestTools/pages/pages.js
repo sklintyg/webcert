@@ -93,9 +93,9 @@ module.exports = {
 
     getIntygPageByType: function(typ) {
         switch (typ) {
-            case 'Transportstyrelsens läkarintyg':
+            case 'Transportstyrelsens läkarintyg högre körkortsbehörighet':
                 return this.intyg.ts.bas.intyg;
-            case 'Transportstyrelsens läkarintyg, diabetes':
+            case 'Transportstyrelsens läkarintyg diabetes':
                 return this.intyg.ts.diabetes.intyg;
             case 'Läkarintyg FK 7263':
                 return this.intyg.fk['7263'].intyg;
@@ -117,9 +117,9 @@ module.exports = {
     },
     getUtkastPageByType: function(typ) {
         switch (typ) {
-            case 'Transportstyrelsens läkarintyg':
+            case 'Transportstyrelsens läkarintyg högre körkortsbehörighet':
                 return this.intyg.ts.bas.utkast;
-            case 'Transportstyrelsens läkarintyg, diabetes':
+            case 'Transportstyrelsens läkarintyg diabetes':
                 return this.intyg.ts.diabetes.utkast;
             case 'Läkarintyg FK 7263':
                 return this.intyg.fk['7263'].utkast;

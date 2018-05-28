@@ -31,7 +31,7 @@ module.exports = {
         }
         return {
             "id": intygsID,
-            "typ": "Transportstyrelsens läkarintyg",
+            "typ": "Transportstyrelsens läkarintyg högre körkortsbehörighet",
             "korkortstyper": ["C1", "CE", "DE", "C1E", "D", "C", "Taxi", "D1E"],
             "identitetStyrktGenom": "Försäkran enligt 18 kap. 4§",
             "allmant": {
@@ -126,7 +126,7 @@ module.exports = {
 
         return {
             id: intygsID,
-            typ: 'Transportstyrelsens läkarintyg',
+            typ: 'Transportstyrelsens läkarintyg högre körkortsbehörighet',
             korkortstyper: randomKorkortstyper,
             identitetStyrktGenom: testValues.getRandomIdentitetStyrktGenom(),
             allmant: {

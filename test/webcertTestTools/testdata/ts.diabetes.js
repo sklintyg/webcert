@@ -31,7 +31,7 @@ module.exports = {
         }
         return {
             "id": intygsID,
-            "typ": "Transportstyrelsens läkarintyg, diabetes",
+            "typ": "Transportstyrelsens läkarintyg diabetes",
             "korkortstyper": ["A1", "B", "D", "DE", "D1", "Taxi", "BE", "A2", "Traktor", "D1E", "C1", "A"],
             "identitetStyrktGenom": "Försäkran enligt 18 kap. 4§",
             "allmant": {
@@ -81,7 +81,7 @@ module.exports = {
 
         return {
             id: intygsID,
-            typ: 'Transportstyrelsens läkarintyg, diabetes',
+            typ: 'Transportstyrelsens läkarintyg diabetes',
             korkortstyper: randomKorkortstyper,
             identitetStyrktGenom: testValues.getRandomIdentitetStyrktGenom(),
             allmant: {
