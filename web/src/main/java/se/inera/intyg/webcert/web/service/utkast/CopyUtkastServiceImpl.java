@@ -373,7 +373,7 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
         Person patientDetails = updatePatientDetails(copyRequest);
 
         CopyUtkastBuilderResponse builderResponse;
-        if (utkastRepository.exists(originalIntygId)) {
+        if (utkastRepository.existsById(originalIntygId)) {
             builderResponse = copyCompletionUtkastBuilder.populateCopyUtkastFromOrignalUtkast(copyRequest, patientDetails, addRelation,
                     false, false);
         } else {
@@ -390,7 +390,7 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
         Person patientDetails = updatePatientDetails(copyRequest);
 
         CopyUtkastBuilderResponse builderResponse;
-        if (utkastRepository.exists(originalIntygId)) {
+        if (utkastRepository.existsById(originalIntygId)) {
             builderResponse = createRenewalUtkastBuilder.populateCopyUtkastFromOrignalUtkast(copyRequest, patientDetails, false,
                     coherentJournaling, false);
         } else {
@@ -407,7 +407,7 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
         Person patientDetails = updatePatientDetails(copyRequest);
 
         CopyUtkastBuilderResponse builderResponse;
-        if (utkastRepository.exists(originalIntygId)) {
+        if (utkastRepository.existsById(originalIntygId)) {
             builderResponse = createUtkastFromTemplateBuilder.populateCopyUtkastFromOrignalUtkast(copyRequest, patientDetails, addRelation,
                     coherentJournaling, false);
         } else {
@@ -424,7 +424,7 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
         Person patientDetails = updatePatientDetails(replacementCopyRequest);
 
         CopyUtkastBuilderResponse builderResponse;
-        if (utkastRepository.exists(originalIntygId)) {
+        if (utkastRepository.existsById(originalIntygId)) {
             builderResponse = createReplacementUtkastBuilder.populateCopyUtkastFromOrignalUtkast(replacementCopyRequest, patientDetails,
                     true, replacementCopyRequest.isCoherentJournaling(), true);
         } else {

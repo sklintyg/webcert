@@ -90,7 +90,7 @@ public class FragaSvarRepositoryTest {
     public void testFindOne() {
         FragaSvar saved = buildFragaSvarFraga(ENHET_1_ID);
         fragasvarRepository.save(saved);
-        FragaSvar read = fragasvarRepository.findOne(saved.getInternReferens());
+        FragaSvar read = fragasvarRepository.findById(saved.getInternReferens()).get();
         assertEquals(read.getInternReferens(), saved.getInternReferens());
         assertEquals(read.getAmne(), saved.getAmne());
         assertEquals(read.getExternReferens(), saved.getExternReferens());

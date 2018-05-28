@@ -27,6 +27,8 @@ import se.inera.intyg.webcert.persistence.privatlakaravtal.repository.AvtalRepos
 import se.inera.intyg.webcert.persistence.privatlakaravtal.repository.GodkantAvtalRepository;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 
+import java.util.Optional;
+
 /**
  * Created by eriklupander on 2015-08-05.
  */
@@ -49,9 +51,9 @@ public class AvtalServiceImpl implements AvtalService {
     }
 
     @Override
-    public Avtal getLatestAvtal() {
+    public Optional<Avtal> getLatestAvtal() {
         Integer latestAvtalVersion = avtalRepository.getLatestAvtalVersion();
-        return avtalRepository.findOne(latestAvtalVersion);
+        return avtalRepository.findById(latestAvtalVersion);
     }
 
     @Override

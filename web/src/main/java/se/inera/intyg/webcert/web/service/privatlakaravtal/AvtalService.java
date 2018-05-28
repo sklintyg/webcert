@@ -20,6 +20,8 @@ package se.inera.intyg.webcert.web.service.privatlakaravtal;
 
 import se.inera.intyg.webcert.persistence.privatlakaravtal.model.Avtal;
 
+import java.util.Optional;
+
 /**
  * Created by eriklupander on 2015-08-05.
  */
@@ -32,7 +34,7 @@ public interface AvtalService {
     /**
      * Returns the latest avtal stored in the database.
      */
-    Avtal getLatestAvtal();
+    Optional<Avtal> getLatestAvtal();
 
     /**
      * Stores approval for the specicfied user for the currently latest avtal.

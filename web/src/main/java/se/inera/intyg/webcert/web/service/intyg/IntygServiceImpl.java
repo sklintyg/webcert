@@ -51,6 +51,7 @@ import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.model.CertificateState;
 import se.inera.intyg.common.support.model.Status;
+import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.model.common.internal.Patient;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
@@ -71,7 +72,6 @@ import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.SekretessStatus;
-import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.webcert.common.model.WebcertCertificateRelation;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
@@ -374,7 +374,9 @@ public class IntygServiceImpl implements IntygService {
         try {
             LOG.debug("Fetching intyg '{}' as PDF", intygsId);
 
-            Utkast utkast = utkastRepository.findOne(intygsId);
+            Optional<Utkast> utkastOptional = utkastRepository.findById(intygsId);
+
+            Utkast utkast = utkastOptional.orElse(null);
             IntygContentHolder intyg = (utkast != null) ? buildIntygContentHolderForUtkast(utkast, false)
                     : getIntygData(intygsId, intygsTyp, false);
             UtkastStatus utkastStatus = (utkast != null) ? utkast.getStatus() : UtkastStatus.SIGNED;
@@ -804,7 +806,7 @@ public class IntygServiceImpl implements IntygService {
             }
             final boolean sekretessmarkering = SekretessStatus.TRUE.equals(sekretessStatus);
 
-            Utkast utkast = utkastRepository.findOneByIntygsIdAndIntygsTyp(intygId, typ);
+            Utkast utkast = utkastRepository.findByIntygsIdAndIntygsTyp(intygId, typ);
             final LocalDateTime created = utkast != null ? utkast.getSkapad() : null;
 
             return IntygContentHolder.builder()
@@ -823,14 +825,14 @@ public class IntygServiceImpl implements IntygService {
         } catch (IntygModuleFacadeException me) {
             // It's possible the Intygstjanst hasn't received the Intyg yet, look for it locally before rethrowing
             // exception
-            Utkast utkast = utkastRepository.findOneByIntygsIdAndIntygsTyp(intygId, typ);
+            Utkast utkast = utkastRepository.findByIntygsIdAndIntygsTyp(intygId, typ);
             if (utkast == null) {
                 throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, me);
             }
             return buildIntygContentHolderForUtkast(utkast, relations);
         } catch (WebServiceException wse) {
             // Something went wrong communication-wise, try to find a matching Utkast instead.
-            Utkast utkast = utkastRepository.findOneByIntygsIdAndIntygsTyp(intygId, typ);
+            Utkast utkast = utkastRepository.findByIntygsIdAndIntygsTyp(intygId, typ);
             if (utkast == null) {
                 throw new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND,
                         "Cannot get intyg. Intygstjansten was not reachable and the Utkast could "
@@ -848,8 +850,9 @@ public class IntygServiceImpl implements IntygService {
      * instead.
      */
     private IntygContentHolder getIntygDataPreferWebcert(String intygId, String intygTyp) {
-        Utkast utkast = utkastRepository.findOne(intygId);
-        return (utkast != null) ? buildIntygContentHolderForUtkast(utkast, false) : getIntygData(intygId, intygTyp, false);
+        Optional<Utkast> utkastOptional = utkastRepository.findById(intygId);
+        return utkastOptional.isPresent() ? buildIntygContentHolderForUtkast(utkastOptional.get(), false)
+                : getIntygData(intygId, intygTyp, false);
     }
 
     // NOTE! INTYG-4086. This method is used when fetching Intyg/Utkast from WC locally. The question is, should we
@@ -915,8 +918,9 @@ public class IntygServiceImpl implements IntygService {
     }
 
     private Utlatande getUtlatandeForIntyg(String intygId, String typ) {
-        Utkast utkast = utkastRepository.findOne(intygId);
-        return (utkast != null) ? modelFacade.getUtlatandeFromInternalModel(utkast.getIntygsTyp(), utkast.getModel())
+        Optional<Utkast> utkastOptional = utkastRepository.findById(intygId);
+        return utkastOptional.isPresent()
+                ? modelFacade.getUtlatandeFromInternalModel(utkastOptional.get().getIntygsTyp(), utkastOptional.get().getModel())
                 : getIntygData(intygId, typ, false).getUtlatande();
     }
 
@@ -948,8 +952,9 @@ public class IntygServiceImpl implements IntygService {
     }
 
     private void markUtkastWithSendDateAndRecipient(String intygsId, String recipient) {
-        Utkast utkast = utkastRepository.findOne(intygsId);
-        if (utkast != null) {
+        Optional<Utkast> utkastOptional = utkastRepository.findById(intygsId);
+        if (utkastOptional.isPresent()) {
+            Utkast utkast = utkastOptional.get();
             utkast.setSkickadTillMottagareDatum(LocalDateTime.now());
             utkast.setSkickadTillMottagare(recipient);
             utkastRepository.save(utkast);
@@ -957,8 +962,9 @@ public class IntygServiceImpl implements IntygService {
     }
 
     private void markUtkastWithRevokedDate(String intygsId) {
-        Utkast utkast = utkastRepository.findOne(intygsId);
-        if (utkast != null) {
+        Optional<Utkast> utkastOptional = utkastRepository.findById(intygsId);
+        if (utkastOptional.isPresent()) {
+            Utkast utkast = utkastOptional.get();
             utkast.setAterkalladDatum(LocalDateTime.now());
             utkastRepository.save(utkast);
         }

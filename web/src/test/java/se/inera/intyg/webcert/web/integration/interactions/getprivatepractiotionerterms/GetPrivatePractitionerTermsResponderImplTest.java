@@ -31,6 +31,7 @@ import se.riv.infrastructure.directory.privatepractitioner.getprivatepractitione
 import se.riv.infrastructure.directory.privatepractitioner.terms.v1.ResultCodeEnum;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
@@ -62,17 +63,17 @@ public class GetPrivatePractitionerTermsResponderImplTest {
 
     @Test
     public void testGetAvtalNoAvtalExists() {
-        when(avtalService.getLatestAvtal()).thenReturn(null);
+        when(avtalService.getLatestAvtal()).thenReturn(Optional.empty());
         GetPrivatePractitionerTermsType request = new GetPrivatePractitionerTermsType();
         GetPrivatePractitionerTermsResponseType response = testee.getPrivatePractitionerTerms("", request);
         assertEquals(ResultCodeEnum.ERROR, response.getResultCode());
     }
 
-    private Avtal buildAvtal(int version) {
+    private Optional<Avtal> buildAvtal(int version) {
         Avtal avtal = new Avtal();
         avtal.setAvtalVersion(version);
         avtal.setAvtalText(AVTAL_TEXT);
         avtal.setVersionDatum(LocalDateTime.parse(AVTAL_DATE));
-        return avtal;
+        return Optional.of(avtal);
     }
 }

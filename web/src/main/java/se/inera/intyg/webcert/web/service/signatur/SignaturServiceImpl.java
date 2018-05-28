@@ -70,6 +70,7 @@ import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -319,12 +320,13 @@ public class SignaturServiceImpl implements SignaturService {
 
         validateUniqueIntyg(user, utkast);
 
-        PagaendeSignering pagaendeSignering = pagaendeSigneringRepository.findOne(ticket.getPagaendeSigneringId());
-        if (pagaendeSignering == null) {
+        Optional<PagaendeSignering> pagaendeSigneringOptional = pagaendeSigneringRepository.findById(ticket.getPagaendeSigneringId());
+        if (!pagaendeSigneringOptional.isPresent()) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE,
                     "Can't complete signing of certificate, no PagaendeSignering found for interreferens "
                             + ticket.getPagaendeSigneringId());
         }
+        PagaendeSignering pagaendeSignering = pagaendeSigneringOptional.get();
         String payload = pagaendeSignering.getIntygData();
 
         if (!pagaendeSignering.getIntygsId().equals(utkast.getIntygsId())) {
@@ -370,7 +372,7 @@ public class SignaturServiceImpl implements SignaturService {
         intygService.storeIntyg(savedUtkast);
 
         // Remove PagaendeSignering
-        pagaendeSigneringRepository.delete(ticket.getPagaendeSigneringId());
+        pagaendeSigneringRepository.deleteById(ticket.getPagaendeSigneringId());
 
         return ticket;
     }
@@ -444,14 +446,16 @@ public class SignaturServiceImpl implements SignaturService {
     }
 
     private Utkast getUtkastForSignering(String intygId, long version, WebCertUser user) {
-        Utkast utkast = utkastRepository.findOne(intygId);
+        Optional<Utkast> utkastOptional = utkastRepository.findById(intygId);
 
-        if (utkast == null) {
+        if (!utkastOptional.isPresent()) {
             LOG.warn("Utkast '{}' was not found", intygId);
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND,
                     "Internal error signing utkast, the utkast '" + intygId
                             + "' could not be found");
-        } else if (!user.getIdsOfAllVardenheter().contains(utkast.getEnhetsId())) {
+        }
+        Utkast utkast = utkastOptional.get();
+        if (!user.getIdsOfAllVardenheter().contains(utkast.getEnhetsId())) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM,
                     "User does not have privileges to sign utkast '" + intygId + "'");
         } else if (utkast.getVersion() != version) {

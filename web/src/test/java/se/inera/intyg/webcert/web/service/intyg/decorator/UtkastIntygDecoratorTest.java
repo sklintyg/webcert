@@ -26,16 +26,17 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import se.inera.intyg.common.support.model.CertificateState;
 import se.inera.intyg.common.support.model.Status;
+import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.modules.support.api.dto.CertificateMetaData;
 import se.inera.intyg.common.support.modules.support.api.dto.CertificateResponse;
-import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -53,7 +54,7 @@ public class UtkastIntygDecoratorTest {
 
     private static final String INTYG_ID = "123";
 
-    private Utkast signedUtkast;
+    private Optional<Utkast> signedUtkast;
 
     @Mock
     private UtkastRepository utkastRepository;
@@ -71,7 +72,7 @@ public class UtkastIntygDecoratorTest {
 
     @Test
     public void testNotAWebcertIntygDoesNotAddAnyStatuses() {
-        when(utkastRepository.findOne(any())).thenReturn(null);
+        when(utkastRepository.findById(any())).thenReturn(Optional.empty());
 
         CertificateResponse response = buildCertificateResponse();
 
@@ -112,9 +113,9 @@ public class UtkastIntygDecoratorTest {
 
     @Test
     public void testSentIntygWithRevokedUtkastDoesAddsRevokedStatus() {
-        signedUtkast.setSkickadTillMottagareDatum(LocalDateTime.now());
-        signedUtkast.setAterkalladDatum(LocalDateTime.now());
-        when(utkastRepository.findOne(isNull())).thenReturn(signedUtkast);
+        signedUtkast.get().setSkickadTillMottagareDatum(LocalDateTime.now());
+        signedUtkast.get().setAterkalladDatum(LocalDateTime.now());
+        when(utkastRepository.findById(isNull())).thenReturn(signedUtkast);
         CertificateResponse response = buildCertificateResponse();
         response.getMetaData().getStatus().add(new Status(CertificateState.SENT, "FKASSA", LocalDateTime.now()));
 
@@ -124,8 +125,8 @@ public class UtkastIntygDecoratorTest {
 
     @Test
     public void testSentStatusIsAddedFromUtkast() {
-        signedUtkast.setSkickadTillMottagareDatum(LocalDateTime.now());
-        when(utkastRepository.findOne(isNull())).thenReturn(signedUtkast);
+        signedUtkast.get().setSkickadTillMottagareDatum(LocalDateTime.now());
+        when(utkastRepository.findById(isNull())).thenReturn(signedUtkast);
 
         CertificateResponse response = buildCertificateResponse();
 
@@ -138,9 +139,9 @@ public class UtkastIntygDecoratorTest {
 
     @Test
     public void testRevokedStatusIsAddedFromUtkast() {
-        signedUtkast.setSkickadTillMottagareDatum(LocalDateTime.now());
-        signedUtkast.setAterkalladDatum(LocalDateTime.now());
-        when(utkastRepository.findOne(isNull())).thenReturn(signedUtkast);
+        signedUtkast.get().setSkickadTillMottagareDatum(LocalDateTime.now());
+        signedUtkast.get().setAterkalladDatum(LocalDateTime.now());
+        when(utkastRepository.findById(isNull())).thenReturn(signedUtkast);
 
         CertificateResponse response = buildCertificateResponse();
 
@@ -172,7 +173,7 @@ public class UtkastIntygDecoratorTest {
         return person;
     }
 
-    private Utkast buildUtkast(String intygId, String type, UtkastStatus status, String model, VardpersonReferens vardperson) {
+    private Optional<Utkast> buildUtkast(String intygId, String type, UtkastStatus status, String model, VardpersonReferens vardperson) {
 
         Utkast intyg = new Utkast();
         intyg.setIntygsId(intygId);
@@ -182,7 +183,7 @@ public class UtkastIntygDecoratorTest {
         intyg.setSkapadAv(vardperson);
         intyg.setSenastSparadAv(vardperson);
 
-        return intyg;
+        return Optional.of(intyg);
     }
 
     private VardpersonReferens buildVardpersonReferens(HoSPersonal person) {

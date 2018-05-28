@@ -20,6 +20,7 @@ package se.inera.intyg.webcert.web.service.signatur.nias;
 
 import java.io.StringReader;
 import java.nio.charset.Charset;
+import java.util.Optional;
 
 import javax.xml.bind.JAXB;
 
@@ -83,9 +84,10 @@ public class NiasSignaturServiceImpl implements NiasSignaturService {
 
     @Override
     public SignaturTicket startNiasAuthentication(String intygId, long version) {
-        Utkast utkast = utkastRepository.findOne(intygId);
-        validateUtkast(intygId, utkast);
+        Optional<Utkast> utkastOptional = utkastRepository.findById(intygId);
+        validateUtkast(intygId, utkastOptional);
 
+        Utkast utkast = utkastOptional.get();
         WebCertUser webCertUser = webCertUserService.getUser();
         validateWebCertUser(webCertUser);
 
@@ -145,8 +147,8 @@ public class NiasSignaturServiceImpl implements NiasSignaturService {
         }
     }
 
-    private void validateUtkast(String intygId, Utkast utkast) {
-        if (utkast == null) {
+    private void validateUtkast(String intygId, Optional<Utkast> utkastOptional) {
+        if (!utkastOptional.isPresent()) {
             throw new IllegalArgumentException("Could not send GRP authenticate request, no Utkast found for intygId '" + intygId + "'");
         }
     }

@@ -49,6 +49,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -104,7 +105,7 @@ public class IntygIntegrationServiceImplTest {
     @Test
     public void prepareRedirectToIntygSuccess() {
         // given
-        when(utkastRepository.findOne(anyString())).thenReturn(createUtkast());
+        when(utkastRepository.findById(anyString())).thenReturn(createUtkast());
         when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.FALSE);
 
         IntegrationParameters parameters = new IntegrationParameters(null, null, ALTERNATE_SSN,
@@ -118,7 +119,7 @@ public class IntygIntegrationServiceImplTest {
         PrepareRedirectToIntyg prepareRedirectToIntyg = testee.prepareRedirectToIntyg(INTYGSTYP, INTYGSID, user);
 
         // then
-        verify(utkastRepository).findOne(anyString());
+        verify(utkastRepository).findById(anyString());
         verify(patientDetailsResolver).getSekretessStatus(any(Personnummer.class));
 
         assertEquals(INTYGSTYP, prepareRedirectToIntyg.getIntygTyp());
@@ -129,7 +130,7 @@ public class IntygIntegrationServiceImplTest {
     @Test
     public void userIsAuthorizedToHandleSekretessmarkeradPatient() {
         // given
-        when(utkastRepository.findOne(anyString())).thenReturn(createUtkast());
+        when(utkastRepository.findById(anyString())).thenReturn(createUtkast());
         when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.TRUE);
 
         IntegrationParameters parameters = new IntegrationParameters(null, null, ALTERNATE_SSN,
@@ -150,7 +151,7 @@ public class IntygIntegrationServiceImplTest {
         PrepareRedirectToIntyg prepareRedirectToIntyg = testee.prepareRedirectToIntyg(INTYGSTYP, INTYGSID, user);
 
         // then
-        verify(utkastRepository).findOne(anyString());
+        verify(utkastRepository).findById(anyString());
         verify(patientDetailsResolver).getSekretessStatus(any(Personnummer.class));
 
         assertEquals(INTYGSTYP, prepareRedirectToIntyg.getIntygTyp());
@@ -161,7 +162,7 @@ public class IntygIntegrationServiceImplTest {
     @Test
     public void verifyMonitoringWhenSammanhallenSjukforingAndOtherVardgivare() {
         // given
-        when(utkastRepository.findOne(anyString())).thenReturn(createUtkast());
+        when(utkastRepository.findById(anyString())).thenReturn(createUtkast());
         when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.FALSE);
 
         IntegrationParameters parameters = new IntegrationParameters(null, null, ALTERNATE_SSN,
@@ -182,7 +183,7 @@ public class IntygIntegrationServiceImplTest {
     @Test
     public void verifyMonitoringWhenSammanhallenSjukforingAndOtherVardenhet() {
         // given
-        when(utkastRepository.findOne(anyString())).thenReturn(createUtkast());
+        when(utkastRepository.findById(anyString())).thenReturn(createUtkast());
         when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.FALSE);
 
         IntegrationParameters parameters = new IntegrationParameters(null, null, ALTERNATE_SSN,
@@ -204,7 +205,7 @@ public class IntygIntegrationServiceImplTest {
     @Test(expected = WebCertServiceException.class)
     public void expectExceptionWhenSekretessStatusIsUndefined() {
         // given
-        when(utkastRepository.findOne(anyString())).thenReturn(createUtkast());
+        when(utkastRepository.findById(anyString())).thenReturn(createUtkast());
         when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.UNDEFINED);
 
         IntegrationParameters parameters = new IntegrationParameters(null, null, ALTERNATE_SSN,
@@ -274,13 +275,13 @@ public class IntygIntegrationServiceImplTest {
         return selectableVardenhet;
     }
 
-    private Utkast createUtkast() {
+    private Optional<Utkast> createUtkast() {
         Utkast utkast = TestIntygFactory.createUtkast(INTYGSID, LocalDateTime.now());
         utkast.setIntygsTyp(INTYGSTYP);
         utkast.setVardgivarId(VARDGIVAREID_UTKAST);
         utkast.setVardgivarNamn(VARDGIVARENAMN_UTKAST);
         utkast.setEnhetsId(ENHETSID);
-        return utkast;
+        return Optional.of(utkast);
     }
 
     private RequestOrigin createRequestOrigin(String name, List<String> intygstyper) {

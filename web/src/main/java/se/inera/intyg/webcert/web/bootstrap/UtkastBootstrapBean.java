@@ -20,6 +20,8 @@ package se.inera.intyg.webcert.web.bootstrap;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.base.Charsets;
+import com.google.common.base.Splitter;
+import com.google.common.collect.Iterables;
 import com.google.common.io.Resources;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,6 +31,7 @@ import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import se.inera.ifv.insuranceprocess.healthreporting.registermedicalcertificateresponder.v3.RegisterMedicalCertificateType;
 import se.inera.ifv.insuranceprocess.healthreporting.v2.PatientType;
 import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
+import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
@@ -36,7 +39,6 @@ import se.inera.intyg.common.support.modules.support.api.exception.ModuleExcepti
 import se.inera.intyg.common.ts_bas.support.TsBasEntryPoint;
 import se.inera.intyg.common.ts_diabetes.support.TsDiabetesEntryPoint;
 import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
-import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.persistence.arende.model.MedicinsktArende;
@@ -66,6 +68,7 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Random;
 import java.util.UUID;
 
@@ -90,38 +93,43 @@ public class UtkastBootstrapBean {
     public void init() throws IOException {
 
         for (Resource resource : getResourceListing("classpath*:module-bootstrap-certificate/*.xml")) {
+
+            String filename = resource.getFilename();
             try {
-                String moduleName = resource.getFilename().split("__")[0];
-                LOG.info("Bootstrapping certificate '{}' from module ", resource.getFilename(), moduleName);
+                if (filename != null) {
 
-                Utlatande utlatande = buildUtlatande(resource, moduleName);
+                    String moduleName = Iterables.get(Splitter.on("__").split(Objects.requireNonNull(filename)), 0);
+                    LOG.info("Bootstrapping certificate '{}' from module ", filename, moduleName);
 
-                if (utkastRepo.findOne(utlatande.getId()) == null) {
-                    UtkastStatus status = UtkastStatus.SIGNED;
-                    if (resource.getFilename().contains("locked")) {
-                        status = UtkastStatus.DRAFT_LOCKED;
-                    }
-                    utkastRepo.save(createUtkast(utlatande, status));
-                    switch (utlatande.getTyp()) {
-                    case Fk7263EntryPoint.MODULE_ID:
-                        fragaRepo.save(createFragaSvar(utlatande, FrageStallare.FORSAKRINGSKASSAN, true, false));
-                        fragaRepo.save(createFragaSvar(utlatande, FrageStallare.WEBCERT, false, false));
-                        fragaRepo.save(createFragaSvar(utlatande, FrageStallare.FORSAKRINGSKASSAN, false, true));
-                        fragaRepo.save(createFragaSvar(utlatande, FrageStallare.FORSAKRINGSKASSAN, false, false));
-                        break;
-                    case TsBasEntryPoint.MODULE_ID:
-                    case TsDiabetesEntryPoint.MODULE_ID:
-                        // These certificates does not support arende or fragaSvar
-                        break;
-                    default: // SIT certificates
-                        setupArende(utlatande, true, true, FrageStallare.FORSAKRINGSKASSAN);
-                        setupArende(utlatande, false, false, FrageStallare.WEBCERT);
-                        setupArende(utlatande, false, false, FrageStallare.FORSAKRINGSKASSAN);
-                        break;
+                    Utlatande utlatande = buildUtlatande(resource, moduleName);
+
+                    if (!utkastRepo.findById(utlatande.getId()).isPresent()) {
+                        UtkastStatus status = UtkastStatus.SIGNED;
+                        if (filename.contains("locked")) {
+                            status = UtkastStatus.DRAFT_LOCKED;
+                        }
+                        utkastRepo.save(createUtkast(utlatande, status));
+                        switch (utlatande.getTyp()) {
+                            case Fk7263EntryPoint.MODULE_ID:
+                                fragaRepo.save(createFragaSvar(utlatande, FrageStallare.FORSAKRINGSKASSAN, true, false));
+                                fragaRepo.save(createFragaSvar(utlatande, FrageStallare.WEBCERT, false, false));
+                                fragaRepo.save(createFragaSvar(utlatande, FrageStallare.FORSAKRINGSKASSAN, false, true));
+                                fragaRepo.save(createFragaSvar(utlatande, FrageStallare.FORSAKRINGSKASSAN, false, false));
+                                break;
+                            case TsBasEntryPoint.MODULE_ID:
+                            case TsDiabetesEntryPoint.MODULE_ID:
+                                // These certificates does not support arende or fragaSvar
+                                break;
+                            default: // SIT certificates
+                                setupArende(utlatande, true, true, FrageStallare.FORSAKRINGSKASSAN);
+                                setupArende(utlatande, false, false, FrageStallare.WEBCERT);
+                                setupArende(utlatande, false, false, FrageStallare.FORSAKRINGSKASSAN);
+                                break;
+                        }
                     }
                 }
             } catch (ModuleException | ModuleNotFoundException | IOException e) {
-                LOG.error("Could not bootstrap {}", resource.getFilename(), e);
+                LOG.error("Could not bootstrap {}", filename, e);
             }
         }
     }

@@ -20,8 +20,20 @@ package se.inera.intyg.webcert.web.service.fragasvar;
 
 // CHECKSTYLE:OFF LineLength
 
-import com.google.common.base.Preconditions;
-import com.google.common.base.Strings;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+
+import javax.xml.ws.soap.SOAPFaultException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +41,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.w3.wsaddressing10.AttributedURIType;
+
+import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
+
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateanswer.rivtabp20.v1.SendMedicalCertificateAnswerResponderInterface;
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateanswerresponder.v1.AnswerToFkType;
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateanswerresponder.v1.SendMedicalCertificateAnswerResponseType;
@@ -81,18 +97,6 @@ import se.inera.intyg.webcert.web.service.util.StatisticsGroupByUtil;
 import se.inera.intyg.webcert.web.web.controller.api.dto.AnsweredWithIntyg;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeListItem;
 import se.inera.intyg.webcert.web.web.controller.api.dto.FragaSvarView;
-
-import javax.xml.ws.soap.SOAPFaultException;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 /**
  * @author andreaskaltenbach
@@ -168,12 +172,12 @@ public class FragaSvarServiceImpl implements FragaSvarService {
     public FragaSvar processIncomingAnswer(Long internId, String svarsText, LocalDateTime svarSigneringsDatum) {
 
         // lookup question in database
-        FragaSvar fragaSvar = fragaSvarRepository.findOne(internId);
+        Optional<FragaSvar> fragaSvarOptional = fragaSvarRepository.findById(internId);
 
-        if (fragaSvar == null) {
+        if (!fragaSvarOptional.isPresent()) {
             throw new IllegalStateException("No question found with internal ID " + internId);
         }
-
+        FragaSvar fragaSvar = fragaSvarOptional.get();
         if (FrageStallare.FORSAKRINGSKASSAN.isKodEqual(fragaSvar.getFrageStallare())) {
             throw new IllegalStateException("Incoming answer refers to question initiated by Försäkringskassan.");
         }
@@ -205,8 +209,8 @@ public class FragaSvarServiceImpl implements FragaSvarService {
 
         // Filter questions to that current user only sees questions issued to
         // units with active employment role
-        fragaSvarList.removeIf(fragaSvar ->
-                fragaSvar.getVardperson() != null && !hsaEnhetIds.contains(fragaSvar.getVardperson().getEnhetsId()));
+        fragaSvarList
+                .removeIf(fragaSvar -> fragaSvar.getVardperson() != null && !hsaEnhetIds.contains(fragaSvar.getVardperson().getEnhetsId()));
 
         // Finally sort by senasteHandelseDatum
         // We do the sorting in code, since we need to sort on a derived
@@ -278,7 +282,6 @@ public class FragaSvarServiceImpl implements FragaSvarService {
                     + fragaSvar.getInternReferens().toString() + " has invalid Amne(" + fragaSvar.getAmne()
                     + ") for saving answer");
         }
-
 
         WebCertUser user = webCertUserService.getUser();
         if (Amne.KOMPLETTERING_AV_LAKARINTYG.equals(fragaSvar.getAmne())) {
@@ -446,7 +449,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
                 .peek(FragaSvar::setToVidareBefordrad)
                 .collect(Collectors.toList());
 
-        return fragaSvarRepository.save(fragaSvarList);
+        return fragaSvarRepository.saveAll(fragaSvarList);
     }
 
     @Override
@@ -469,7 +472,8 @@ public class FragaSvarServiceImpl implements FragaSvarService {
      * Looks upp all questions related to a specific certificate and
      * sets a question's status to CLOSED if not already closed.
      *
-     * @param intygsId the certificates unique identifier
+     * @param intygsId
+     *            the certificates unique identifier
      */
     @Override
     public void closeAllNonClosedQuestions(String intygsId) {
@@ -641,12 +645,12 @@ public class FragaSvarServiceImpl implements FragaSvarService {
     }
 
     private FragaSvar lookupFragaSvar(Long fragaSvarId) {
-        FragaSvar fragaSvar = fragaSvarRepository.findOne(fragaSvarId);
-        if (fragaSvar == null) {
+        Optional<FragaSvar> fragaSvarOptional = fragaSvarRepository.findById(fragaSvarId);
+        if (!fragaSvarOptional.isPresent()) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM,
                     "Could not find FragaSvar with id:" + fragaSvarId);
         }
-        return fragaSvar;
+        return fragaSvarOptional.get();
     }
 
     private void sendNotification(FragaSvar fragaSvar, NotificationEvent event) {

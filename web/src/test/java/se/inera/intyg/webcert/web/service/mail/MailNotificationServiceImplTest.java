@@ -43,6 +43,8 @@ import se.riv.infrastructure.directory.privatepractitioner.v1.HoSPersonType;
 import javax.mail.Address;
 import javax.mail.internet.MimeMessage;
 
+import java.util.Optional;
+
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.isNull;
@@ -215,14 +217,14 @@ public class MailNotificationServiceImplTest {
         //Given
         MailNotification mailNotification = mailNotification(intygsId, null);
 
-        when(utkastRepository.findOne(intygsId)).thenReturn(null);
+        when(utkastRepository.findById(intygsId)).thenReturn(Optional.empty());
 
         //When
         final String url = mailNotificationService.intygsUrl(mailNotification);
 
         //Then
         assertEquals("WebCertHostUrl/webcert/web/user/certificate/intygsId/questions", url);
-        verify(utkastRepository).findOne(intygsId);
+        verify(utkastRepository).findById(intygsId);
     }
 
     @Test
@@ -232,14 +234,14 @@ public class MailNotificationServiceImplTest {
         MailNotification mailNotification = mailNotification(intygsId, null);
 
         Utkast utkast = new Utkast();
-        when(utkastRepository.findOne(intygsId)).thenReturn(utkast);
+        when(utkastRepository.findById(intygsId)).thenReturn(Optional.of(utkast));
 
         //When
         final String url = mailNotificationService.intygsUrl(mailNotification);
 
         //Then
         assertEquals("WebCertHostUrl/webcert/web/user/basic-certificate/intygsId/questions", url);
-        verify(utkastRepository).findOne(intygsId);
+        verify(utkastRepository).findById(intygsId);
     }
 
     @Test
@@ -262,14 +264,14 @@ public class MailNotificationServiceImplTest {
         //Given
         MailNotification mailNotification = mailNotification(intygsId, null, LuseEntryPoint.MODULE_ID);
 
-        when(utkastRepository.findOne(intygsId)).thenReturn(null);
+        when(utkastRepository.findById(intygsId)).thenReturn(Optional.empty());
 
         //When
         final String url = mailNotificationService.intygsUrl(mailNotification);
 
         //Then
         assertEquals("WebCertHostUrl/webcert/web/user/certificate/luse/intygsId/questions", url);
-        verify(utkastRepository).findOne(intygsId);
+        verify(utkastRepository).findById(intygsId);
     }
 
     @Test
@@ -279,14 +281,14 @@ public class MailNotificationServiceImplTest {
         MailNotification mailNotification = mailNotification(intygsId, null, LuseEntryPoint.MODULE_ID);
 
         Utkast utkast = new Utkast();
-        when(utkastRepository.findOne(intygsId)).thenReturn(utkast);
+        when(utkastRepository.findById(intygsId)).thenReturn(Optional.of(utkast));
 
         //When
         final String url = mailNotificationService.intygsUrl(mailNotification);
 
         //Then
         assertEquals("WebCertHostUrl/webcert/web/user/basic-certificate/luse/intygsId/questions", url);
-        verify(utkastRepository).findOne(intygsId);
+        verify(utkastRepository).findById(intygsId);
     }
 
     @Test

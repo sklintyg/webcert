@@ -18,6 +18,18 @@
  */
 package se.inera.intyg.webcert.web.integration.registry;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
+import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
+import se.inera.intyg.webcert.persistence.integreradenhet.model.IntegreradEnhet;
+import se.inera.intyg.webcert.persistence.integreradenhet.repository.IntegreradEnhetRepository;
+import se.inera.intyg.webcert.web.integration.registry.dto.IntegreradEnhetEntry;
+import se.inera.intyg.webcert.web.web.controller.testability.dto.IntegreradEnhetEntryWithSchemaVersion;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,19 +37,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
-import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
-import se.inera.intyg.webcert.persistence.integreradenhet.model.IntegreradEnhet;
-import se.inera.intyg.webcert.persistence.integreradenhet.repository.IntegreradEnhetRepository;
-import se.inera.intyg.webcert.web.integration.registry.dto.IntegreradEnhetEntry;
-import se.inera.intyg.webcert.web.web.controller.testability.dto.IntegreradEnhetEntryWithSchemaVersion;
 
 @Service
 public class IntegreradeEnheterRegistryImpl implements IntegreradeEnheterRegistry {
@@ -60,9 +59,10 @@ public class IntegreradeEnheterRegistryImpl implements IntegreradeEnheterRegistr
     public void putIntegreradEnhet(IntegreradEnhetEntry entry, boolean schemaVersion1, boolean schemaVersion3) {
 
         String enhetsId = entry.getEnhetsId();
-
-        IntegreradEnhet intEnhet = integreradEnhetRepository.findOne(enhetsId);
-        if (intEnhet != null) {
+        IntegreradEnhet intEnhet = null;
+        Optional<IntegreradEnhet> integreradEnhetOptional = integreradEnhetRepository.findById(enhetsId);
+        if (integreradEnhetOptional.isPresent()) {
+            intEnhet = integreradEnhetOptional.get();
             LOG.debug("Updating existing integrerad enhet", enhetsId);
             if (schemaVersion1) {
                 intEnhet.setSchemaVersion1(schemaVersion1);
@@ -111,9 +111,9 @@ public class IntegreradeEnheterRegistryImpl implements IntegreradeEnheterRegistr
     @Override
     @Transactional("jpaTransactionManager")
     public void deleteIntegreradEnhet(String enhetsHsaId) {
-        IntegreradEnhet unit = integreradEnhetRepository.findOne(enhetsHsaId);
-        if (unit != null) {
-            integreradEnhetRepository.delete(unit);
+        Optional<IntegreradEnhet> unitOptional = integreradEnhetRepository.findById(enhetsHsaId);
+        if (unitOptional.isPresent()) {
+            integreradEnhetRepository.delete(unitOptional.get());
             LOG.debug("IntegreradEnhet {} deleted", enhetsHsaId);
         }
     }
@@ -159,12 +159,13 @@ public class IntegreradeEnheterRegistryImpl implements IntegreradeEnheterRegistr
     }
 
     private IntegreradEnhet getIntegreradEnhet(String enhetsHsaId) {
-        IntegreradEnhet enhet = integreradEnhetRepository.findOne(enhetsHsaId);
+        Optional<IntegreradEnhet> enhetOptional = integreradEnhetRepository.findById(enhetsHsaId);
 
-        if (enhet == null) {
+        if (!enhetOptional.isPresent()) {
             LOG.debug("Unit {} is not in the registry of integrated units", enhetsHsaId);
             return null;
         }
+        IntegreradEnhet enhet = enhetOptional.get();
 
         // update entity with control date
         enhet.setSenasteKontrollDatum(LocalDateTime.now());

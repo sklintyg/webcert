@@ -18,14 +18,45 @@
  */
 package se.inera.intyg.webcert.web.web.controller.testability;
 
-import java.io.IOException;
-import java.io.StringWriter;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.secmaker.netid.nias.v1.ResultCollect;
+import com.secmaker.netid.nias.v1.SignResponse;
+import io.swagger.annotations.Api;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
+import org.springframework.transaction.annotation.Transactional;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
+import se.inera.intyg.common.support.common.enumerations.RelationKod;
+import se.inera.intyg.common.support.model.UtkastStatus;
+import se.inera.intyg.common.support.model.common.internal.Patient;
+import se.inera.intyg.common.support.model.common.internal.Utlatande;
+import se.inera.intyg.common.support.model.common.internal.Vardenhet;
+import se.inera.intyg.common.support.model.common.internal.Vardgivare;
+import se.inera.intyg.common.support.modules.registry.IntygModule;
+import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
+import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
+import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
+import se.inera.intyg.webcert.persistence.arende.model.Arende;
+import se.inera.intyg.webcert.persistence.arende.repository.ArendeRepository;
+import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
+import se.inera.intyg.webcert.persistence.fragasvar.repository.FragaSvarRepository;
+import se.inera.intyg.webcert.persistence.utkast.model.Signatur;
+import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
+import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
+import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
+import se.inera.intyg.webcert.web.service.intyg.converter.IntygModuleFacade;
+import se.inera.intyg.webcert.web.service.signatur.SignaturTicketTracker;
+import se.inera.intyg.webcert.web.service.signatur.dto.SignaturTicket;
+import se.inera.intyg.webcert.web.service.signatur.nias.NiasSignaturService;
+import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftRequest;
+import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
+import se.inera.intyg.webcert.web.web.controller.testability.dto.SigningUnit;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -44,48 +75,15 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.ResourceLoader;
-import org.springframework.transaction.annotation.Transactional;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
-
-import com.fasterxml.jackson.databind.JsonNode;
-import com.secmaker.netid.nias.v1.ResultCollect;
-import com.secmaker.netid.nias.v1.SignResponse;
-
-import io.swagger.annotations.Api;
-import se.inera.intyg.common.support.common.enumerations.RelationKod;
-import se.inera.intyg.common.support.model.common.internal.Patient;
-import se.inera.intyg.common.support.model.common.internal.Utlatande;
-import se.inera.intyg.common.support.model.common.internal.Vardenhet;
-import se.inera.intyg.common.support.model.common.internal.Vardgivare;
-import se.inera.intyg.common.support.modules.registry.IntygModule;
-import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
-import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
-import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
-import se.inera.intyg.common.support.model.UtkastStatus;
-import se.inera.intyg.webcert.persistence.arende.model.Arende;
-import se.inera.intyg.webcert.persistence.arende.repository.ArendeRepository;
-import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
-import se.inera.intyg.webcert.persistence.fragasvar.repository.FragaSvarRepository;
-import se.inera.intyg.webcert.persistence.utkast.model.Signatur;
-import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
-import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
-import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
-import se.inera.intyg.webcert.web.service.intyg.converter.IntygModuleFacade;
-import se.inera.intyg.webcert.web.service.signatur.SignaturTicketTracker;
-import se.inera.intyg.webcert.web.service.signatur.dto.SignaturTicket;
-import se.inera.intyg.webcert.web.service.signatur.nias.NiasSignaturService;
-import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftRequest;
-import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
-import se.inera.intyg.webcert.web.web.controller.testability.dto.SigningUnit;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Transactional
 @Api(value = "services intyg", description = "REST API för testbarhet - Utkast")
@@ -226,7 +224,7 @@ public class IntygResource {
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response deleteDraft(@PathParam("id") String id) {
-        Utkast utkast = utkastRepository.findOne(id);
+        Utkast utkast = utkastRepository.findById(id).get();
         deleteDraftAndRelatedQAs(utkast);
         return Response.ok().build();
     }
@@ -356,7 +354,7 @@ public class IntygResource {
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response updateDraft(@PathParam("id") String id, String model) {
-        Utkast utkast = utkastRepository.findOne(id);
+        Utkast utkast = utkastRepository.findById(id).get();
         if (utkast != null) {
             utkast.setModel(model);
             utkastRepository.save(utkast);
@@ -421,16 +419,17 @@ public class IntygResource {
     }
 
     private void setRelationToKompletterandeIntyg(String id, String oldIntygId) {
-        Utkast utkast = utkastRepository.findOne(id);
-        Utkast relatedUtkast = utkastRepository.findOne(oldIntygId);
-        if ((utkast != null)
-                && (relatedUtkast != null)
-                && (relatedUtkast.getSignatur() != null)
-                && (relatedUtkast.getSkickadTillMottagareDatum() != null)) {
+        Optional<Utkast> utkastOptional = utkastRepository.findById(id);
+        Optional<Utkast> relatedUtkastOptional = utkastRepository.findById(id);
+        if (utkastOptional.isPresent()
+                && relatedUtkastOptional.isPresent()
+                && relatedUtkastOptional.get().getSignatur() != null
+                && relatedUtkastOptional.get().getSkickadTillMottagareDatum() != null) {
+            Utkast utkast = utkastOptional.get();
             utkast.setRelationIntygsId(oldIntygId);
             utkast.setRelationKod(RelationKod.KOMPLT);
+            utkastRepository.saveAndFlush(utkast);
         }
-        utkastRepository.saveAndFlush(utkast);
     }
 
     private void deleteDraftAndRelatedQAs(Utkast utkast) {
@@ -448,15 +447,15 @@ public class IntygResource {
     }
 
     private void updateStatus(String id, UtkastStatus status) {
-        Utkast utkast = utkastRepository.findOne(id);
+        Utkast utkast = utkastRepository.findById(id).get();
         if (utkast != null) {
             utkast.setStatus(status);
             utkastRepository.save(utkast);
         }
     }
 
-    private void updateUtkastForSign(@PathParam("id") String id, String signeratAv) {
-        Utkast utkast = utkastRepository.findOne(id);
+    private void updateUtkastForSign(String id, String signeratAv) {
+        Utkast utkast = utkastRepository.findById(id).get();
         if (utkast != null) {
             utkast.setStatus(UtkastStatus.SIGNED);
             Signatur sig = new Signatur(LocalDateTime.now(), signeratAv != null ? signeratAv : "", id, "", "", "");
@@ -465,8 +464,8 @@ public class IntygResource {
         }
     }
 
-    private void updateUtkastForSend(@PathParam("id") String id) {
-        Utkast utkast = utkastRepository.findOne(id);
+    private void updateUtkastForSend(String id) {
+        Utkast utkast = utkastRepository.findById(id).get();
         if (utkast != null) {
             utkast.setStatus(UtkastStatus.SIGNED);
             Utlatande utlatande = moduleFacade.getUtlatandeFromInternalModel(utkast.getIntygsTyp(), utkast.getModel());

@@ -62,6 +62,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
@@ -202,7 +203,7 @@ public class CopyCompletionUtkastBuilderTest {
     public void testPopulateCompletionFromOriginal() throws Exception {
 
         Utkast orgUtkast = createOriginalUtkast();
-        when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(orgUtkast);
+        when(mockUtkastRepository.findById(INTYG_ID)).thenReturn(Optional.of(orgUtkast));
 
         CreateCompletionCopyRequest copyRequest = buildCompletionRequest();
 
@@ -267,7 +268,7 @@ public class CopyCompletionUtkastBuilderTest {
         Arende arende = new Arende();
         arende.setReferensId(referensId);
         when(moduleRegistry.getModuleApi(intygsTyp)).thenReturn(mockModuleApi);
-        when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(createOriginalUtkast());
+        when(mockUtkastRepository.findById(INTYG_ID)).thenReturn(Optional.of(createOriginalUtkast()));
         when(mockModuleApi.validateDraft(isNull()))
                 .thenReturn(new ValidateDraftResponse(ValidationStatus.VALID, new ArrayList<>()));
         when(arendeService.getArende(meddelandeId)).thenReturn(arende);

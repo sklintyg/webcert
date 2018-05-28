@@ -39,6 +39,7 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -67,7 +68,8 @@ public class ArendeRepositoryTest {
     public void testFindOne() {
         Arende saved = buildArende();
         repo.save(saved);
-        Arende read = repo.findOne(saved.getId());
+        Optional<Arende> readOptional = repo.findById(saved.getId());
+        Arende read = readOptional.get();
         assertEquals(read.getId(), saved.getId());
         assertEquals(read.getAmne(), saved.getAmne());
         assertEquals(read.getIntygsId(), saved.getIntygsId());

@@ -68,7 +68,7 @@ public class UtkastRepositoryTest {
     @Test
     public void testFindOne() {
         Utkast saved = utkastRepository.save(UtkastTestUtil.buildUtkast(UtkastTestUtil.ENHET_1_ID));
-        Utkast read = utkastRepository.findOne(saved.getIntygsId());
+        Utkast read = utkastRepository.findById(saved.getIntygsId()).get();
 
         assertThat(read.getIntygsId(), is(equalTo(saved.getIntygsId())));
         assertThat(read.getPatientPersonnummer(), is(equalTo(saved.getPatientPersonnummer())));
@@ -91,7 +91,7 @@ public class UtkastRepositoryTest {
         utkast.setSignatur(UtkastTestUtil.buildSignatur(intygsId, "A", LocalDateTime.now()));
 
         Utkast saved = utkastRepository.save(utkast);
-        Utkast read = utkastRepository.findOne(intygsId);
+        Utkast read = utkastRepository.findById(intygsId).get();
 
         assertThat(read.getIntygsId(), is(equalTo(saved.getIntygsId())));
         assertThat(read.getSignatur(), is(notNullValue()));
@@ -210,9 +210,9 @@ public class UtkastRepositoryTest {
 
         utkastRepository.save(UtkastTestUtil.buildUtkast("intyg-1", UtkastTestUtil.ENHET_1_ID, UtkastStatus.DRAFT_INCOMPLETE));
 
-        utkastRepository.delete("intyg-1");
+        utkastRepository.deleteById("intyg-1");
 
-        assertThat(utkastRepository.findOne("intyg-1"), is(nullValue()));
+        assertThat(utkastRepository.findById("intyg-1").isPresent(), is(false));
     }
 
     @Test
@@ -227,7 +227,7 @@ public class UtkastRepositoryTest {
         final String relationIntygsId = "relationIntygsId";
         final RelationKod relationKod = RelationKod.FRLANG;
         Utkast saved = utkastRepository.save(UtkastTestUtil.buildUtkast(UtkastTestUtil.ENHET_1_ID, relationIntygsId, relationKod));
-        Utkast read = utkastRepository.findOne(saved.getIntygsId());
+        Utkast read = utkastRepository.findById(saved.getIntygsId()).get();
 
         assertEquals(UtkastTestUtil.ENHET_1_ID, read.getEnhetsId());
         assertEquals(relationIntygsId, read.getRelationIntygsId());
@@ -263,7 +263,7 @@ public class UtkastRepositoryTest {
         utkast.setIntygsTyp(intygsTyp);
         utkastRepository.save(utkast);
 
-        Utkast res = utkastRepository.findOneByIntygsIdAndIntygsTyp(intygsId, intygsTyp);
+        Utkast res = utkastRepository.findByIntygsIdAndIntygsTyp(intygsId, intygsTyp);
         assertNotNull(res);
     }
 
@@ -272,7 +272,7 @@ public class UtkastRepositoryTest {
         final String intygsId = "intygsId";
         final String intygsTyp = "intygsTyp";
 
-        Utkast res = utkastRepository.findOneByIntygsIdAndIntygsTyp(intygsId, intygsTyp);
+        Utkast res = utkastRepository.findByIntygsIdAndIntygsTyp(intygsId, intygsTyp);
         assertNull(res);
     }
 
@@ -285,7 +285,7 @@ public class UtkastRepositoryTest {
         utkast.setIntygsTyp(intygsTyp);
         utkastRepository.save(utkast);
 
-        Utkast res = utkastRepository.findOneByIntygsIdAndIntygsTyp(intygsId, "anotherIntygsTyp");
+        Utkast res = utkastRepository.findByIntygsIdAndIntygsTyp(intygsId, "anotherIntygsTyp");
         assertNull(res);
     }
 

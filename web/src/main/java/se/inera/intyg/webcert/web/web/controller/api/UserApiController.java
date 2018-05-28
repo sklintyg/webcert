@@ -51,6 +51,7 @@ import javax.ws.rs.core.Response.Status;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Controller for accessing the users security context.
@@ -163,8 +164,8 @@ public class UserApiController extends AbstractApiController {
     @Path("/latestavtal")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public Response getAvtal() {
-        Avtal avtal = avtalService.getLatestAvtal();
-        return Response.ok(avtal).build();
+        Optional<Avtal> avtal = avtalService.getLatestAvtal();
+        return Response.ok(avtal.orElse(null)).build();
     }
 
     @GET

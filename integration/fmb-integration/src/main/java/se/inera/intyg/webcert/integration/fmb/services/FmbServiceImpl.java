@@ -18,11 +18,6 @@
  */
 package se.inera.intyg.webcert.integration.fmb.services;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Locale;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +27,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import se.inera.intyg.webcert.integration.fmb.consumer.FailedToFetchFmbDataException;
 import se.inera.intyg.webcert.integration.fmb.consumer.FmbConsumer;
 import se.inera.intyg.webcert.integration.fmb.model.Kod;
@@ -52,6 +46,10 @@ import se.inera.intyg.webcert.persistence.fmb.repository.FmbRepository;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Locale;
 
 @Service
 @Transactional("jpaTransactionManager")
@@ -101,7 +99,7 @@ public class FmbServiceImpl implements FmbService {
     private void updateFmbDb(List<Fmb> updatedFmbs) {
         if (!updatedFmbs.isEmpty()) {
             fmbRepository.deleteAllInBatch();
-            fmbRepository.save(updatedFmbs);
+            fmbRepository.saveAll(updatedFmbs);
             LOG.info("Inserted {} rows for FMB", updatedFmbs.size());
         }
     }

@@ -37,6 +37,8 @@ import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.PrepareRedirectToIntyg;
 
+import java.util.Optional;
+
 /**
  * @author Magnus Ekstrand on 2017-10-24.
  */
@@ -61,8 +63,13 @@ public abstract class IntegrationServiceImpl implements IntegrationService {
 
     @Override
     public PrepareRedirectToIntyg prepareRedirectToIntyg(String intygTyp, String intygId, WebCertUser user) {
-        Utkast utkast = utkastRepository.findOne(intygId);
+        Optional<Utkast> utkastOptional = utkastRepository.findById(intygId);
 
+        if (!utkastOptional.isPresent()) {
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND, "Could not find intyg '" + intygId + "'");
+        }
+
+        Utkast utkast = utkastOptional.get();
         // INTYG-4336: If intygTyp can't be established,
         // fetch certificate from IT and then get the type
         String typ = resolveIntygsTyp(intygTyp, intygId, utkast);

@@ -18,15 +18,6 @@
  */
 package se.inera.intyg.webcert.persistence.privatlakaravtal.repository;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
-import java.time.LocalDateTime;
-
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,8 +25,16 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
-
 import se.inera.intyg.webcert.persistence.privatlakaravtal.model.Avtal;
+
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import java.time.LocalDateTime;
+import java.util.Optional;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Created by eriklupander on 2015-08-05.
@@ -59,11 +58,11 @@ public class AvtalRepositoryTest {
     private EntityManager em;
 
     @Test
-    public void testFindOne() {
+    public void testFindById() {
         Avtal saved = buildAvtal(1, AVTAL_TEXT);
         avtalRepository.save(saved);
-        Avtal read = avtalRepository.findOne(saved.getAvtalVersion());
-        assertEquals(read.getAvtalText(), AVTAL_TEXT);
+        Optional<Avtal> read = avtalRepository.findById(saved.getAvtalVersion());
+        assertEquals(read.get().getAvtalText(), AVTAL_TEXT);
     }
 
     @Test

@@ -58,6 +58,7 @@ import se.inera.intyg.webcert.web.service.utkast.util.CreateIntygsIdStrategy;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Optional;
 
 public abstract class AbstractUtkastBuilder<T extends AbstractCreateCopyRequest> implements CopyUtkastBuilder<T> {
     private static final String SPACE = " ";
@@ -166,9 +167,13 @@ public abstract class AbstractUtkastBuilder<T extends AbstractCreateCopyRequest>
 
         String orignalIntygsId = copyRequest.getOriginalIntygId();
 
-        Utkast orgUtkast = utkastRepository.findOne(orignalIntygsId);
+        Optional<Utkast> orgUtkastOptional = utkastRepository.findById(orignalIntygsId);
         ModuleApi orgModuleApi = moduleRegistry.getModuleApi(copyRequest.getOriginalIntygTyp());
         Utlatande orgUtlatande;
+        if (!orgUtkastOptional.isPresent()) {
+            throw new ModuleException("Could not convert original certificate to Utlatande. Original certificate not found");
+        }
+        Utkast orgUtkast = orgUtkastOptional.get();
         try {
             orgUtlatande = orgModuleApi.getUtlatandeFromJson(orgUtkast.getModel());
         } catch (IOException e) {

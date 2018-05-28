@@ -229,14 +229,15 @@ public class UtkastServiceImpl implements UtkastService {
 
         LOG.debug("Deleting utkast '{}'", intygId);
 
-        Utkast utkast = utkastRepository.findOne(intygId);
+        Optional<Utkast> utkastOptional = utkastRepository.findById(intygId);
 
         // check that the draft exists
-        if (utkast == null) {
+        if (!utkastOptional.isPresent()) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND,
                     "The draft could not be deleted since it could not be found");
         }
 
+        Utkast utkast = utkastOptional.get();
         // check that the draft hasn't been modified concurrently
         if (utkast.getVersion() != version) {
             LOG.debug("Utkast '{}' was concurrently modified", intygId);
@@ -336,13 +337,14 @@ public class UtkastServiceImpl implements UtkastService {
     public SaveDraftResponse saveDraft(String intygId, long version, String draftAsJson, boolean createPdlLogEvent) {
         LOG.debug("Saving and validating utkast '{}'", intygId);
 
-        Utkast utkast = utkastRepository.findOne(intygId);
+        Optional<Utkast> utkastOptional = utkastRepository.findById(intygId);
 
-        if (utkast == null) {
+        if (!utkastOptional.isPresent()) {
             LOG.warn("Utkast '{}' was not found", intygId);
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND, "The utkast could not be found");
         }
 
+        Utkast utkast = utkastOptional.get();
         // check that the draft hasn't been modified concurrently
         if (utkast.getVersion() != version) {
             LOG.debug("Utkast '{}' was concurrently modified", intygId);
@@ -405,13 +407,14 @@ public class UtkastServiceImpl implements UtkastService {
 
         LOG.debug("Checking that Patient is up-to-date on Utkast '{}'", draftId);
 
-        Utkast utkast = utkastRepository.findOne(draftId);
+        Optional<Utkast> utkastOptional = utkastRepository.findById(draftId);
 
-        if (utkast == null) {
+        if (!utkastOptional.isPresent()) {
             LOG.warn("Utkast '{}' was not found", draftId);
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND, "The utkast could not be found");
         }
 
+        Utkast utkast = utkastOptional.get();
         if (webCertUserService.getUser().getIdsOfAllVardenheter().stream()
                 .noneMatch(enhet -> enhet.equalsIgnoreCase(utkast.getEnhetsId()))) {
             LOG.error("User did not have any medarbetaruppdrag for enhet '{}'", utkast.getEnhetsId());
@@ -475,13 +478,14 @@ public class UtkastServiceImpl implements UtkastService {
     @Transactional
     public Utkast setNotifiedOnDraft(String intygsId, long version, Boolean notified) {
 
-        Utkast utkast = utkastRepository.findOne(intygsId);
+        Optional<Utkast> utkastOptional = utkastRepository.findById(intygsId);
 
-        if (utkast == null) {
+        if (!utkastOptional.isPresent()) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND,
                     "Could not find Utkast with id: " + intygsId);
         }
 
+        Utkast utkast = utkastOptional.get();
         // check that the draft hasn't been modified concurrently
         if (utkast.getVersion() != version) {
             LOG.debug("Utkast '{}' was concurrently modified", intygsId);
@@ -596,7 +600,7 @@ public class UtkastServiceImpl implements UtkastService {
 
         LOG.debug("Fetching utkast '{}'", intygsId);
 
-        Utkast utkast = utkastRepository.findOneByIntygsIdAndIntygsTyp(intygsId, intygType);
+        Utkast utkast = utkastRepository.findByIntygsIdAndIntygsTyp(intygsId, intygType);
 
         if (utkast == null) {
             LOG.warn("Utkast '{}' of type {} was not found", intygsId, intygType);

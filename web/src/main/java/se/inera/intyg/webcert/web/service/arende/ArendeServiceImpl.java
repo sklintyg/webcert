@@ -85,6 +85,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -171,10 +172,11 @@ public class ArendeServiceImpl implements ArendeService {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, "answer already exist for this message");
         }
 
-        Utkast utkast = utkastRepository.findOne(arende.getIntygsId());
+        Optional<Utkast> utkastOptional = utkastRepository.findById(arende.getIntygsId());
 
-        validateArende(arende.getIntygsId(), utkast);
+        validateArende(arende.getIntygsId(), utkastOptional);
 
+        Utkast utkast = utkastOptional.get();
         ArendeConverter.decorateArendeFromUtkast(arende, utkast, LocalDateTime.now(systemClock), hsaEmployeeService);
 
         updateRelated(arende);
@@ -199,10 +201,11 @@ public class ArendeServiceImpl implements ArendeService {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, "Invalid Amne " + amne
                     + " for new question from vard!");
         }
-        Utkast utkast = utkastRepository.findOne(intygId);
+        Optional<Utkast> utkastOptional = utkastRepository.findById(intygId);
 
-        validateArende(intygId, utkast);
+        validateArende(intygId, utkastOptional);
 
+        Utkast utkast = utkastOptional.get();
         verifyEnhetsAuth(utkast.getEnhetsId(), false);
 
         Arende arende = ArendeConverter.createArendeFromUtkast(amne, rubrik, meddelande, utkast, LocalDateTime.now(systemClock),
@@ -326,7 +329,7 @@ public class ArendeServiceImpl implements ArendeService {
 
         List<Arende> allArende = arendeRepository.findByIntygsId(intygsId);
 
-        List<Arende> arendenToForward = arendeRepository.save(
+        List<Arende> arendenToForward = arendeRepository.saveAll(
                 allArende
                         .stream()
                         .filter(isCorrectEnhet(user))
@@ -705,17 +708,17 @@ public class ArendeServiceImpl implements ArendeService {
         return arende;
     }
 
-    private void validateArende(String arendeIntygsId, Utkast utkast) {
-        if (utkast == null) {
+    private void validateArende(String arendeIntygsId, Optional<Utkast> utkastOptional) {
+        if (!utkastOptional.isPresent()) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND,
                     "Certificate " + arendeIntygsId + " not found.");
-        } else if (utkast.getSignatur() == null) {
+        } else if (utkastOptional.get().getSignatur() == null) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE,
                     "Certificate " + arendeIntygsId + " not signed.");
-        } else if (BLACKLISTED.contains(utkast.getIntygsTyp())) {
+        } else if (BLACKLISTED.contains(utkastOptional.get().getIntygsTyp())) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE,
-                    "Certificate " + arendeIntygsId + " has wrong type. " + utkast.getIntygsTyp() + " is blacklisted.");
-        } else if (utkast.getAterkalladDatum() != null) {
+                    "Certificate " + arendeIntygsId + " has wrong type. " + utkastOptional.get().getIntygsTyp() + " is blacklisted.");
+        } else if (utkastOptional.get().getAterkalladDatum() != null) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.CERTIFICATE_REVOKED,
                     "Certificate " + arendeIntygsId + " is revoked.");
         }

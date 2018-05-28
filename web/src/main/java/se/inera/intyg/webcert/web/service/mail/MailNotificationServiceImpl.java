@@ -292,7 +292,7 @@ public class MailNotificationServiceImpl implements MailNotificationService {
         }
         // We can't check the WebcertUser role since there is no logged in user here
         // Assume that the receiving user should have UTHOPP role if the certificate was not registered through webcert
-        if (utkastRepository.findOne(intygsId) == null) {
+        if (!utkastRepository.findById(intygsId).isPresent()) {
             return QA_NOTIFICATION_UTHOPP_PATH_SEGMENT;
         }
         return QA_NOTIFICATION_DEFAULT_PATH_SEGMENT;

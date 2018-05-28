@@ -18,6 +18,21 @@
  */
 package se.inera.intyg.webcert.web.integration.registry;
 
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
+import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
+import se.inera.intyg.common.luse.support.LuseEntryPoint;
+import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
+import se.inera.intyg.webcert.persistence.integreradenhet.model.IntegreradEnhet;
+import se.inera.intyg.webcert.persistence.integreradenhet.repository.IntegreradEnhetRepository;
+import se.inera.intyg.webcert.web.integration.registry.dto.IntegreradEnhetEntry;
+
+import java.util.Optional;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -28,22 +43,6 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-
-import java.util.Optional;
-
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
-
-import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
-import se.inera.intyg.common.luse.support.LuseEntryPoint;
-import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
-import se.inera.intyg.webcert.persistence.integreradenhet.model.IntegreradEnhet;
-import se.inera.intyg.webcert.persistence.integreradenhet.repository.IntegreradEnhetRepository;
-import se.inera.intyg.webcert.web.integration.registry.dto.IntegreradEnhetEntry;
 
 @RunWith(MockitoJUnitRunner.class)
 public class IntegreradeEnheterRegistryImplTest {
@@ -59,7 +58,7 @@ public class IntegreradeEnheterRegistryImplTest {
         final String enhetsId = "enhetsId";
         IntegreradEnhetEntry entry = new IntegreradEnhetEntry(enhetsId, "vardgivareId");
 
-        when(integreradEnhetRepository.findOne(enhetsId)).thenReturn(null); // not found
+        when(integreradEnhetRepository.findById(enhetsId)).thenReturn(Optional.empty()); // not found
         when(integreradEnhetRepository.save(any(IntegreradEnhet.class))).thenReturn(new IntegreradEnhet());
 
         registry.putIntegreradEnhet(entry, false, true);
@@ -78,7 +77,7 @@ public class IntegreradeEnheterRegistryImplTest {
         integreradEnhet.setSchemaVersion1(false);
         integreradEnhet.setSchemaVersion3(true);
 
-        when(integreradEnhetRepository.findOne(enhetsId)).thenReturn(integreradEnhet);
+        when(integreradEnhetRepository.findById(enhetsId)).thenReturn(Optional.of(integreradEnhet));
         when(integreradEnhetRepository.save(any(IntegreradEnhet.class))).thenReturn(new IntegreradEnhet());
 
         registry.putIntegreradEnhet(entry, true, false);
@@ -96,7 +95,7 @@ public class IntegreradeEnheterRegistryImplTest {
 
         IntegreradEnhet enhet = new IntegreradEnhet();
         enhet.setSchemaVersion1(true);
-        when(integreradEnhetRepository.findOne(eq(enhetsId))).thenReturn(enhet); // exists
+        when(integreradEnhetRepository.findById(eq(enhetsId))).thenReturn(Optional.of(enhet)); // exists
 
         boolean result = registry.isEnhetIntegrerad(enhetsId, Fk7263EntryPoint.MODULE_ID);
         assertTrue(result);
@@ -106,7 +105,7 @@ public class IntegreradeEnheterRegistryImplTest {
     public void testIsEnhetIntegreradFalse() {
         final String enhetsId = "enhetsId";
 
-        when(integreradEnhetRepository.findOne(eq(enhetsId))).thenReturn(null);
+        when(integreradEnhetRepository.findById(eq(enhetsId))).thenReturn(Optional.empty());
 
         boolean result = registry.isEnhetIntegrerad(enhetsId, Fk7263EntryPoint.MODULE_ID);
         assertFalse(result);
@@ -123,7 +122,7 @@ public class IntegreradeEnheterRegistryImplTest {
         integreradEnhet.setVardgivarId(vardgivarId);
 
         // already exists
-        when(integreradEnhetRepository.findOne(eq(enhetsId))).thenReturn(integreradEnhet);
+        when(integreradEnhetRepository.findById(eq(enhetsId))).thenReturn(Optional.of(integreradEnhet));
         when(integreradEnhetRepository.save(any(IntegreradEnhet.class))).thenReturn(new IntegreradEnhet());
 
         registry.addIfSameVardgivareButDifferentUnits(enhetsId, entry, LuseEntryPoint.MODULE_ID);
@@ -145,7 +144,7 @@ public class IntegreradeEnheterRegistryImplTest {
         integreradEnhet.setSchemaVersion3(true);
         integreradEnhet.setVardgivarId(vardgivarId);
 
-        when(integreradEnhetRepository.findOne(eq(enhetsId))).thenReturn(integreradEnhet);
+        when(integreradEnhetRepository.findById(eq(enhetsId))).thenReturn(Optional.of(integreradEnhet));
 
         registry.addIfSameVardgivareButDifferentUnits(enhetsId, entry, LuseEntryPoint.MODULE_ID);
 
@@ -160,7 +159,7 @@ public class IntegreradeEnheterRegistryImplTest {
         final String enhetsId = "enhetsId";
         IntegreradEnhet integreradEnhet = new IntegreradEnhet();
 
-        when(integreradEnhetRepository.findOne(eq(enhetsId))).thenReturn(integreradEnhet);
+        when(integreradEnhetRepository.findById(eq(enhetsId))).thenReturn(Optional.of(integreradEnhet));
         registry.deleteIntegreradEnhet(enhetsId);
 
         verify(integreradEnhetRepository).delete(integreradEnhet);
@@ -170,7 +169,7 @@ public class IntegreradeEnheterRegistryImplTest {
     public void testDeleteIntegreradEnhetNotFound() {
         final String enhetsId = "enhetsId";
 
-        when(integreradEnhetRepository.findOne(enhetsId)).thenReturn(null); // not found
+        when(integreradEnhetRepository.findById(enhetsId)).thenReturn(Optional.empty()); // not found
         registry.deleteIntegreradEnhet(enhetsId);
 
         verify(integreradEnhetRepository, never()).delete(any(IntegreradEnhet.class));
@@ -182,7 +181,7 @@ public class IntegreradeEnheterRegistryImplTest {
 
         IntegreradEnhet enhet = new IntegreradEnhet();
         enhet.setSchemaVersion1(true);
-        when(integreradEnhetRepository.findOne(eq(enhetsId))).thenReturn(enhet);
+        when(integreradEnhetRepository.findById(eq(enhetsId))).thenReturn(Optional.of(enhet));
 
         Optional<SchemaVersion> result = registry.getSchemaVersion(enhetsId, Fk7263EntryPoint.MODULE_ID);
         assertTrue(result.isPresent());
@@ -196,7 +195,7 @@ public class IntegreradeEnheterRegistryImplTest {
         IntegreradEnhet enhet = new IntegreradEnhet();
         enhet.setSchemaVersion1(true);
         enhet.setSchemaVersion3(true);
-        when(integreradEnhetRepository.findOne(eq(enhetsId))).thenReturn(enhet);
+        when(integreradEnhetRepository.findById(eq(enhetsId))).thenReturn(Optional.of(enhet));
 
         Optional<SchemaVersion> result = registry.getSchemaVersion(enhetsId, Fk7263EntryPoint.MODULE_ID);
         assertTrue(result.isPresent());
@@ -210,7 +209,7 @@ public class IntegreradeEnheterRegistryImplTest {
         IntegreradEnhet enhet = new IntegreradEnhet();
         enhet.setSchemaVersion1(false);
         enhet.setSchemaVersion3(false);
-        when(integreradEnhetRepository.findOne(eq(enhetsId))).thenReturn(enhet);
+        when(integreradEnhetRepository.findById(eq(enhetsId))).thenReturn(Optional.of(enhet));
 
         assertFalse(registry.getSchemaVersion(enhetsId, Fk7263EntryPoint.MODULE_ID).isPresent());
         assertFalse(registry.getSchemaVersion(enhetsId, LuseEntryPoint.MODULE_ID).isPresent());
@@ -223,7 +222,7 @@ public class IntegreradeEnheterRegistryImplTest {
         IntegreradEnhet enhet = new IntegreradEnhet();
         enhet.setSchemaVersion1(false);
         enhet.setSchemaVersion3(true);
-        when(integreradEnhetRepository.findOne(enhetsId)).thenReturn(enhet);
+        when(integreradEnhetRepository.findById(enhetsId)).thenReturn(Optional.of(enhet));
 
         Optional<SchemaVersion> result = registry.getSchemaVersion(enhetsId, LuseEntryPoint.MODULE_ID);
         assertTrue(result.isPresent());

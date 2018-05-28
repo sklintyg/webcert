@@ -198,7 +198,7 @@ public class FragaSvarResource {
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response deleteFragaSvarById(@PathParam("id") Long id) {
-        fragasvarRepository.delete(id);
+        fragasvarRepository.deleteById(id);
         return Response.ok().build();
     }
 

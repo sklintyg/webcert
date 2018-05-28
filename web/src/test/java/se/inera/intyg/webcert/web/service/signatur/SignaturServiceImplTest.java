@@ -29,6 +29,7 @@ import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.core.io.ClassPathResource;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
+import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.GrundData;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
@@ -45,7 +46,6 @@ import se.inera.intyg.infra.security.common.model.Feature;
 import se.inera.intyg.infra.security.common.model.Privilege;
 import se.inera.intyg.infra.security.common.model.Role;
 import se.inera.intyg.schemas.contract.Personnummer;
-import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.PagaendeSignering;
@@ -71,6 +71,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.util.Collections;
+import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -169,7 +170,7 @@ public class SignaturServiceImplTest extends AuthoritiesConfigurationTestSetup {
         when(pagaendeSignering.getSigneradAvHsaId()).thenReturn(hoSPerson.getPersonId());
         when(pagaendeSignering.getSigneradAvNamn()).thenReturn(hoSPerson.getFullstandigtNamn());
 
-        when(pagaendeSigneringRepository.findOne(any())).thenReturn(pagaendeSignering);
+        when(pagaendeSigneringRepository.findById(any())).thenReturn(Optional.of(pagaendeSignering));
         when(pagaendeSigneringRepository.save(any(PagaendeSignering.class))).thenReturn(pagaendeSignering);
     }
 
@@ -194,25 +195,25 @@ public class SignaturServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
     @Test(expected = WebCertServiceException.class)
     public void getSignatureHashReturnsErrorIfIntygNotCompleted() {
-        when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(utkast);
+        when(mockUtkastRepository.findById(INTYG_ID)).thenReturn(Optional.of(utkast));
         intygSignatureService.createDraftHash(INTYG_ID, utkast.getVersion());
     }
 
     @Test(expected = WebCertServiceException.class)
     public void getSignatureHashReturnsErrorIfIntygAlreadySigned() {
-        when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(signedUtkast);
+        when(mockUtkastRepository.findById(INTYG_ID)).thenReturn(Optional.of(signedUtkast));
         intygSignatureService.createDraftHash(INTYG_ID, signedUtkast.getVersion());
     }
 
     @Test(expected = OptimisticLockException.class)
     public void getSignatureHashReturnsErrorIfWrongVersion() {
-        when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(signedUtkast);
+        when(mockUtkastRepository.findById(INTYG_ID)).thenReturn(Optional.of(signedUtkast));
         intygSignatureService.createDraftHash(INTYG_ID, signedUtkast.getVersion() - 1);
     }
 
     @Test
     public void getSignatureHashReturnsTicket() throws ModuleNotFoundException, ModuleException {
-        when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(completedUtkast);
+        when(mockUtkastRepository.findById(INTYG_ID)).thenReturn(Optional.of(completedUtkast));
         SignaturTicket ticket = intygSignatureService.createDraftHash(INTYG_ID, completedUtkast.getVersion());
         assertEquals(INTYG_ID, ticket.getIntygsId());
         assertEquals(completedUtkast.getVersion(), ticket.getVersion());
@@ -227,7 +228,7 @@ public class SignaturServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
     @Test(expected = WebCertServiceException.class)
     public void clientSignatureFailsIfIntygWasModified() throws IOException {
-        when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(completedUtkast);
+        when(mockUtkastRepository.findById(INTYG_ID)).thenReturn(Optional.of(completedUtkast));
         SignaturTicket ticket = intygSignatureService.createDraftHash(INTYG_ID, completedUtkast.getVersion());
 
         completedUtkast.setModel("{}");
@@ -240,7 +241,7 @@ public class SignaturServiceImplTest extends AuthoritiesConfigurationTestSetup {
     @Test
     public void clientSignatureSuccess() throws IOException {
 
-        when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(completedUtkast);
+        when(mockUtkastRepository.findById(INTYG_ID)).thenReturn(Optional.of(completedUtkast));
         when(mockUtkastRepository.save(any(Utkast.class))).thenReturn(completedUtkast);
 
         user.setHsaId("TSTNMT2321000156-1025");
@@ -283,10 +284,10 @@ public class SignaturServiceImplTest extends AuthoritiesConfigurationTestSetup {
     @Test
     public void clientSignatureKOMPLTSuccess() throws IOException, ModuleNotFoundException {
 
-        when(pagaendeSigneringRepository.findOne(anyLong())).thenReturn(pagaendeSignering);
+        when(pagaendeSigneringRepository.findById(anyLong())).thenReturn(Optional.of(pagaendeSignering));
 
         completedUtkast.setRelationKod(RelationKod.KOMPLT);
-        when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(completedUtkast);
+        when(mockUtkastRepository.findById(INTYG_ID)).thenReturn(Optional.of(completedUtkast));
         user.setHsaId("TSTNMT2321000156-1025");
 
         SignaturTicket ticket = intygSignatureService.createDraftHash(INTYG_ID, completedUtkast.getVersion());
@@ -317,7 +318,7 @@ public class SignaturServiceImplTest extends AuthoritiesConfigurationTestSetup {
     @Test
     public void clientGrpSignatureSuccess() throws IOException {
 
-        when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(completedUtkast);
+        when(mockUtkastRepository.findById(INTYG_ID)).thenReturn(Optional.of(completedUtkast));
         when(mockUtkastRepository.save(any(Utkast.class))).thenReturn(completedUtkast);
 
         SignaturTicket ticket = intygSignatureService.createDraftHash(INTYG_ID, completedUtkast.getVersion());
@@ -347,7 +348,7 @@ public class SignaturServiceImplTest extends AuthoritiesConfigurationTestSetup {
     @Test
     public void clientGrpSignatureKOMPLTSuccess() throws IOException, ModuleNotFoundException {
         completedUtkast.setRelationKod(RelationKod.KOMPLT);
-        when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(completedUtkast);
+        when(mockUtkastRepository.findById(INTYG_ID)).thenReturn(Optional.of(completedUtkast));
 
         SignaturTicket ticket = intygSignatureService.createDraftHash(INTYG_ID, completedUtkast.getVersion());
         SignaturTicket status = intygSignatureService.ticketStatus(ticket.getId());
@@ -377,7 +378,7 @@ public class SignaturServiceImplTest extends AuthoritiesConfigurationTestSetup {
     @Test
     public void serverSignatureSuccess() throws IOException {
 
-        when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(completedUtkast);
+        when(mockUtkastRepository.findById(INTYG_ID)).thenReturn(Optional.of(completedUtkast));
         when(mockUtkastRepository.save(any(Utkast.class))).thenReturn(completedUtkast);
 
         // Do the call
@@ -413,7 +414,7 @@ public class SignaturServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
         completedUtkast.setRelationIntygsId(replacedId);
 
-        when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(completedUtkast);
+        when(mockUtkastRepository.findById(INTYG_ID)).thenReturn(Optional.of(completedUtkast));
         when(mockUtkastRepository.save(any(Utkast.class))).thenReturn(completedUtkast);
         when(mockUtkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(any(String.class), anySet()))
                 .thenReturn(ImmutableList.of(revoked, replaced));
@@ -438,7 +439,7 @@ public class SignaturServiceImplTest extends AuthoritiesConfigurationTestSetup {
         f.setGlobal(true);
         user.getFeatures().put(AuthoritiesConstants.FEATURE_UNIKT_INTYG, f);
 
-        when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(completedUtkast);
+        when(mockUtkastRepository.findById(INTYG_ID)).thenReturn(Optional.of(completedUtkast));
 
         Utkast otherUtkast = createUtkast("otherId", 1L, INTYG_TYPE, UtkastStatus.SIGNED, "", null, "otherEnhet", PERSON_ID);
         otherUtkast.setSignatur(new Signatur());
@@ -455,7 +456,7 @@ public class SignaturServiceImplTest extends AuthoritiesConfigurationTestSetup {
     @Test
     public void serverSignatureKOMPLTSuccess() throws IOException, ModuleNotFoundException {
         completedUtkast.setRelationKod(RelationKod.KOMPLT);
-        when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(completedUtkast);
+        when(mockUtkastRepository.findById(INTYG_ID)).thenReturn(Optional.of(completedUtkast));
         when(mockUtkastRepository.save(any(Utkast.class))).thenReturn(completedUtkast);
 
         // Do the call
@@ -474,7 +475,7 @@ public class SignaturServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
     @Test(expected = WebCertServiceException.class)
     public void signeraServerIntygIdDiffers() {
-        when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(completedUtkast);
+        when(mockUtkastRepository.findById(INTYG_ID)).thenReturn(Optional.of(completedUtkast));
 
         when(pagaendeSignering.getIntygsId()).thenReturn("something-else");
 
@@ -488,7 +489,7 @@ public class SignaturServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
     @Test(expected = WebCertServiceException.class)
     public void signeraServerHashDiffers() {
-        when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(completedUtkast);
+        when(mockUtkastRepository.findById(INTYG_ID)).thenReturn(Optional.of(completedUtkast));
 
         when(pagaendeSignering.getIntygData()).thenReturn(INTYG_JSON + "-invalid");
 
@@ -502,9 +503,9 @@ public class SignaturServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
     @Test(expected = WebCertServiceException.class)
     public void signeraServerNoPagaendeSignaturFound() {
-        when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(completedUtkast);
+        when(mockUtkastRepository.findById(INTYG_ID)).thenReturn(Optional.of(completedUtkast));
 
-        when(pagaendeSigneringRepository.findOne(anyLong())).thenReturn(null);
+        when(pagaendeSigneringRepository.findById(anyLong())).thenReturn(Optional.empty());
 
         // Do the call
         try {
@@ -516,7 +517,7 @@ public class SignaturServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
     @Test(expected = WebCertServiceException.class)
     public void userNotAuthorizedDraft() throws IOException {
-        when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(completedUtkast);
+        when(mockUtkastRepository.findById(INTYG_ID)).thenReturn(Optional.of(completedUtkast));
         user.setVardgivare(Collections.<Vardgivare>emptyList());
 
         intygSignatureService.createDraftHash(INTYG_ID, 1);
@@ -533,7 +534,7 @@ public class SignaturServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
     @Test(expected = WebCertServiceException.class)
     public void userNotAuthorizedClientSignature() throws IOException {
-        when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(completedUtkast);
+        when(mockUtkastRepository.findById(INTYG_ID)).thenReturn(Optional.of(completedUtkast));
         SignaturTicket ticket = intygSignatureService.createDraftHash(INTYG_ID, completedUtkast.getVersion());
         user.setVardgivare(Collections.<Vardgivare>emptyList());
 
@@ -553,7 +554,7 @@ public class SignaturServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
     @Test(expected = WebCertServiceException.class)
     public void userNotAuthorizedServerSignature() throws IOException {
-        when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(completedUtkast);
+        when(mockUtkastRepository.findById(INTYG_ID)).thenReturn(Optional.of(completedUtkast));
         user.setVardgivare(Collections.<Vardgivare>emptyList());
 
         intygSignatureService.serverSignature(INTYG_ID, completedUtkast.getVersion());
@@ -571,7 +572,7 @@ public class SignaturServiceImplTest extends AuthoritiesConfigurationTestSetup {
     @Test(expected = WebCertServiceException.class)
     public void abortClientSignIfHsaIdOnSigDoesNotMatchSession() throws IOException {
 
-        when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(completedUtkast);
+        when(mockUtkastRepository.findById(INTYG_ID)).thenReturn(Optional.of(completedUtkast));
 
         user = createWebCertUser(true);
         user.setAuthenticationMethod(AuthenticationMethod.SITHS);
@@ -594,7 +595,7 @@ public class SignaturServiceImplTest extends AuthoritiesConfigurationTestSetup {
         user.setPrivatLakareAvtalGodkand(true);
         user.setPersonId(PERSON_ID);
 
-        when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(completedUtkast);
+        when(mockUtkastRepository.findById(INTYG_ID)).thenReturn(Optional.of(completedUtkast));
         when(webcertUserService.getUser()).thenReturn(user);
 
         SignaturTicket ticket = intygSignatureService.createDraftHash(INTYG_ID, completedUtkast.getVersion());

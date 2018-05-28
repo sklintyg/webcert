@@ -30,6 +30,8 @@ import se.riv.infrastructure.directory.privatepractitioner.getprivatepractitione
 import se.riv.infrastructure.directory.privatepractitioner.terms.v1.AvtalType;
 import se.riv.infrastructure.directory.privatepractitioner.terms.v1.ResultCodeEnum;
 
+import java.util.Optional;
+
 // CHECKSTYLE:ON LineLength
 
 /**
@@ -44,14 +46,16 @@ public class GetPrivatePractitionerTermsResponderImpl implements GetPrivatePract
     public GetPrivatePractitionerTermsResponseType getPrivatePractitionerTerms(String logicalAddress,
             GetPrivatePractitionerTermsType parameters) {
 
-        Avtal latestAvtal = avtalService.getLatestAvtal();
+        Optional<Avtal> latestAvtalOptional = avtalService.getLatestAvtal();
         GetPrivatePractitionerTermsResponseType response = new GetPrivatePractitionerTermsResponseType();
 
-        if (latestAvtal == null) {
+        if (!latestAvtalOptional.isPresent()) {
             response.setResultCode(ResultCodeEnum.ERROR);
             response.setResultText("No private practitioner terms found");
             return response;
         }
+
+        Avtal latestAvtal = latestAvtalOptional.get();
 
         AvtalType avtalType = new AvtalType();
         avtalType.setAvtalText(latestAvtal.getAvtalText());

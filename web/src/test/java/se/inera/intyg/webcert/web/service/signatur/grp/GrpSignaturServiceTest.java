@@ -45,6 +45,7 @@ import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -101,7 +102,7 @@ public class GrpSignaturServiceTest extends AuthoritiesConfigurationTestSetup {
     public void testSuccessfulAuthenticationRequest() throws GrpFault {
         when(grpCollectPollerFactory.getInstance()).thenReturn(mock(GrpCollectPoller.class));
         when(webCertUserService.getUser()).thenReturn(webCertUser);
-        when(utkastRepository.findOne(INTYG_ID)).thenReturn(buildUtkast());
+        when(utkastRepository.findById(INTYG_ID)).thenReturn(buildUtkast());
         when(signaturService.createDraftHash(INTYG_ID, VERSION)).thenReturn(buildSignaturTicket());
         when(grpService.authenticate(any(AuthenticateRequestType.class))).thenReturn(buildOrderResponse());
 
@@ -111,7 +112,7 @@ public class GrpSignaturServiceTest extends AuthoritiesConfigurationTestSetup {
 
     @Test(expected = IllegalArgumentException.class)
     public void testAuthenticateRequestFailsWhenUtkastIsNotFound() {
-        when(utkastRepository.findOne(INTYG_ID)).thenReturn(null);
+        when(utkastRepository.findById(INTYG_ID)).thenReturn(Optional.empty());
         try {
             grpSignaturService.startGrpAuthentication(INTYG_ID, VERSION);
         } finally {
@@ -121,7 +122,7 @@ public class GrpSignaturServiceTest extends AuthoritiesConfigurationTestSetup {
 
     @Test(expected = IllegalArgumentException.class)
     public void testAuthenticateRequestFailsWhenNoWebCertUserIsFound() {
-        when(utkastRepository.findOne(INTYG_ID)).thenReturn(buildUtkast());
+        when(utkastRepository.findById(INTYG_ID)).thenReturn(buildUtkast());
         when(webCertUserService.getUser()).thenReturn(null);
         try {
             grpSignaturService.startGrpAuthentication(INTYG_ID, VERSION);
@@ -133,7 +134,7 @@ public class GrpSignaturServiceTest extends AuthoritiesConfigurationTestSetup {
     @Test(expected = IllegalArgumentException.class)
     public void testAuthenticateRequestFailsWhenWebCertUserHasNoPersonId() {
 
-        when(utkastRepository.findOne(INTYG_ID)).thenReturn(buildUtkast());
+        when(utkastRepository.findById(INTYG_ID)).thenReturn(buildUtkast());
         when(webCertUserService.getUser()).thenReturn(createUser());
 
         try {
@@ -146,7 +147,7 @@ public class GrpSignaturServiceTest extends AuthoritiesConfigurationTestSetup {
     @Test(expected = RuntimeException.class)
     public void testAuthenticateRequestThrowsExceptionWhenGrpCallFails() throws GrpFault {
         when(webCertUserService.getUser()).thenReturn(webCertUser);
-        when(utkastRepository.findOne(INTYG_ID)).thenReturn(buildUtkast());
+        when(utkastRepository.findById(INTYG_ID)).thenReturn(buildUtkast());
         when(signaturService.createDraftHash(INTYG_ID, VERSION)).thenReturn(buildSignaturTicket());
         when(grpService.authenticate(any(AuthenticateRequestType.class))).thenThrow(new GrpFault("grp-fault"));
 
@@ -170,13 +171,13 @@ public class GrpSignaturServiceTest extends AuthoritiesConfigurationTestSetup {
         return ticket;
     }
 
-    private Utkast buildUtkast() {
+    private Optional<Utkast> buildUtkast() {
         Utkast utkast = new Utkast();
         utkast.setIntygsId(INTYG_ID);
         utkast.setIntygsTyp("fk7263");
         utkast.setStatus(UtkastStatus.DRAFT_COMPLETE);
         utkast.setVersion(VERSION);
-        return utkast;
+        return Optional.of(utkast);
     }
 
     private WebCertUser createUser() {

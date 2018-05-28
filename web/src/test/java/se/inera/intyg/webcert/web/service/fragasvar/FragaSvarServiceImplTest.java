@@ -18,25 +18,6 @@
  */
 package se.inera.intyg.webcert.web.service.fragasvar;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.anySet;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.verifyZeroInteractions;
-import static org.mockito.Mockito.when;
-import static se.inera.intyg.webcert.web.util.ReflectionUtils.setStaticFinalAttribute;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -54,7 +35,6 @@ import org.slf4j.Logger;
 import org.springframework.core.io.ClassPathResource;
 import org.w3.wsaddressing10.AttributedURIType;
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateanswer.rivtabp20.v1.SendMedicalCertificateAnswerResponderInterface;
-import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateanswerresponder.v1.AnswerToFkType;
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateanswerresponder.v1.SendMedicalCertificateAnswerResponseType;
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateanswerresponder.v1.SendMedicalCertificateAnswerType;
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificatequestion.rivtabp20.v1.SendMedicalCertificateQuestionResponderInterface;
@@ -88,7 +68,6 @@ import se.inera.intyg.webcert.persistence.model.Filter;
 import se.inera.intyg.webcert.persistence.model.Status;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.auth.bootstrap.AuthoritiesConfigurationTestSetup;
-import se.inera.intyg.webcert.web.converter.FKAnswerConverter;
 import se.inera.intyg.webcert.web.service.arende.ArendeDraftService;
 import se.inera.intyg.webcert.web.service.dto.Lakare;
 import se.inera.intyg.webcert.web.service.fragasvar.dto.FrageStallare;
@@ -101,7 +80,6 @@ import se.inera.intyg.webcert.web.service.notification.NotificationService;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
-import se.inera.intyg.webcert.web.service.util.FragaSvarSenasteHandelseDatumComparator;
 import se.inera.intyg.webcert.web.service.util.StatisticsGroupByUtil;
 import se.inera.intyg.webcert.web.web.controller.api.dto.FragaSvarView;
 import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
@@ -119,8 +97,28 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.anySet;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.when;
+import static se.inera.intyg.webcert.web.util.ReflectionUtils.setStaticFinalAttribute;
 
 @RunWith(MockitoJUnitRunner.class)
 public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup {
@@ -524,7 +522,7 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
         assertFalse(fraga.getVidarebefordrad());
         List<FragaSvar> fragaSvarList = service.setVidareBefordrad(fraga.getIntygsReferens().getIntygsId());
 
-        verify(fragasvarRepositoryMock).save(anyList());
+        verify(fragasvarRepositoryMock).saveAll(anyList());
         verifyZeroInteractions(notificationServiceMock);
 
         assertTrue(fragaSvarList
@@ -537,7 +535,7 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
         FragaSvar fragaSvar = buildFragaSvar(1L, LocalDateTime.now(), LocalDateTime.now());
 
         when(webCertUserService.getUser()).thenReturn(createUser());
-        when(fragasvarRepositoryMock.findOne(1L)).thenReturn(fragaSvar);
+        when(fragasvarRepositoryMock.findById(1L)).thenReturn(Optional.of(fragaSvar));
         when(webCertUserService.getUser()).thenReturn(createUser());
         when(webCertUserService.isAuthorizedForUnit(any(String.class), eq(false))).thenReturn(true);
         when(fragasvarRepositoryMock.save(fragaSvar)).thenReturn(fragaSvar);
@@ -551,7 +549,7 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
 
         FragaSvar result = service.saveSvar(1L, "svarsText");
 
-        verify(fragasvarRepositoryMock).findOne(1L);
+        verify(fragasvarRepositoryMock).findById(1L);
         verify(webCertUserService).getUser();
         verify(webCertUserService).isAuthorizedForUnit(anyString(), eq(false));
         verify(fragasvarRepositoryMock).save(fragaSvar);
@@ -635,7 +633,7 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
         wsResponse.setResult(ResultOfCallUtil.okResult());
 
         when(webCertUserService.isAuthorizedForUnit(any(String.class), eq(false))).thenReturn(true);
-        when(fragasvarRepositoryMock.findOne(eq(1L))).thenReturn(fragaSvar);
+        when(fragasvarRepositoryMock.findById(eq(1L))).thenReturn(Optional.of(fragaSvar));
 
         service.saveSvar(fragaSvar.getInternReferens(), "svarsText");
     }
@@ -742,7 +740,7 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
     public void testSaveSvarWsError() {
         FragaSvar fragaSvar = buildFragaSvar(1L, LocalDateTime.now(), LocalDateTime.now());
 
-        when(fragasvarRepositoryMock.findOne(1L)).thenReturn(fragaSvar);
+        when(fragasvarRepositoryMock.findById(1L)).thenReturn(Optional.of(fragaSvar));
         when(webCertUserService.getUser()).thenReturn(createUser());
         when(webCertUserService.isAuthorizedForUnit(any(String.class), eq(false))).thenReturn(true);
         when(fragasvarRepositoryMock.save(fragaSvar)).thenReturn(fragaSvar);
@@ -765,7 +763,7 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
         FragaSvar fragaSvar = buildFragaSvar(1L, LocalDateTime.now(), LocalDateTime.now());
 
         when(webCertUserService.getUser()).thenReturn(createUser());
-        when(fragasvarRepositoryMock.findOne(1L)).thenReturn(fragaSvar);
+        when(fragasvarRepositoryMock.findById(1L)).thenReturn(Optional.of(fragaSvar));
         when(webCertUserService.getUser()).thenReturn(createUser());
         when(webCertUserService.isAuthorizedForUnit(any(String.class), eq(false))).thenReturn(true);
         when(fragasvarRepositoryMock.save(fragaSvar)).thenReturn(fragaSvar);
@@ -789,7 +787,7 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
         FragaSvar fragaSvar = buildFragaSvar(1L, LocalDateTime.now(), LocalDateTime.now());
         fragaSvar.setStatus(Status.ANSWERED);
 
-        when(fragasvarRepositoryMock.findOne(1L)).thenReturn(fragaSvar);
+        when(fragasvarRepositoryMock.findById(1L)).thenReturn(Optional.of(fragaSvar));
         when(webCertUserService.isAuthorizedForUnit(any(String.class), eq(false))).thenReturn(true);
 
         try {
@@ -814,7 +812,7 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
     public void testSaveSvarForPaminnelse() {
         FragaSvar fragaSvar = buildFragaSvar(1L, LocalDateTime.now(), LocalDateTime.now());
         fragaSvar.setAmne(Amne.PAMINNELSE);
-        when(fragasvarRepositoryMock.findOne(1L)).thenReturn(fragaSvar);
+        when(fragasvarRepositoryMock.findById(1L)).thenReturn(Optional.of(fragaSvar));
 
         try {
             service.saveSvar(1L, "svarsText");
@@ -827,7 +825,7 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
     @Test(expected = WebCertServiceException.class)
     public void testSaveSvarNotAuthorizedForunit() {
         FragaSvar fragaSvar = buildFragaSvar(1L, LocalDateTime.now(), LocalDateTime.now());
-        when(fragasvarRepositoryMock.findOne(1L)).thenReturn(fragaSvar);
+        when(fragasvarRepositoryMock.findById(1L)).thenReturn(Optional.of(fragaSvar));
         when(webCertUserService.isAuthorizedForUnit(any(String.class), eq(false))).thenReturn(false);
 
         try {
@@ -861,7 +859,7 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
 
     @Test(expected = WebCertServiceException.class)
     public void testSaveSvarIntygNotFound() {
-        when(fragasvarRepositoryMock.findOne(1L)).thenReturn(null);
+        when(fragasvarRepositoryMock.findById(1L)).thenReturn(Optional.empty());
         try {
             service.saveSvar(1L, "svarsText");
         } finally {
@@ -879,13 +877,13 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
         fragaSvar.setStatus(Status.PENDING_EXTERNAL_ACTION);
 
         ArgumentCaptor<FragaSvar> fsCapture = ArgumentCaptor.forClass(FragaSvar.class);
-        when(fragasvarRepositoryMock.findOne(1L)).thenReturn(fragaSvar);
+        when(fragasvarRepositoryMock.findById(1L)).thenReturn(Optional.of(fragaSvar));
         when(fragasvarRepositoryMock.save(fsCapture.capture())).thenReturn(fragaSvar);
 
         service.closeQuestionAsHandled(1L);
 
         verify(notificationServiceMock).sendNotificationForQAs(INTYG_ID, NotificationEvent.QUESTION_FROM_CARE_HANDLED);
-        verify(fragasvarRepositoryMock).findOne(1L);
+        verify(fragasvarRepositoryMock).findById(1L);
         verify(fragasvarRepositoryMock).save(any(FragaSvar.class));
         assertEquals(Status.CLOSED, fsCapture.getValue().getStatus());
         verifyZeroInteractions(arendeDraftService);
@@ -900,13 +898,13 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
         fragaSvar.setStatus(Status.PENDING_INTERNAL_ACTION);
 
         ArgumentCaptor<FragaSvar> fsCapture = ArgumentCaptor.forClass(FragaSvar.class);
-        when(fragasvarRepositoryMock.findOne(1L)).thenReturn(fragaSvar);
+        when(fragasvarRepositoryMock.findById(1L)).thenReturn(Optional.of(fragaSvar));
         when(fragasvarRepositoryMock.save(fsCapture.capture())).thenReturn(fragaSvar);
 
         service.closeQuestionAsHandled(1L);
 
         verify(notificationServiceMock).sendNotificationForQAs(INTYG_ID, NotificationEvent.QUESTION_FROM_RECIPIENT_HANDLED);
-        verify(fragasvarRepositoryMock).findOne(1L);
+        verify(fragasvarRepositoryMock).findById(1L);
         verify(fragasvarRepositoryMock).save(any(FragaSvar.class));
 
         assertEquals(Status.CLOSED, fsCapture.getValue().getStatus());
@@ -923,13 +921,13 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
         fragaSvar.setSvarsText("Med ett svar från FK");
 
         ArgumentCaptor<FragaSvar> fsCapture = ArgumentCaptor.forClass(FragaSvar.class);
-        when(fragasvarRepositoryMock.findOne(1L)).thenReturn(fragaSvar);
+        when(fragasvarRepositoryMock.findById(1L)).thenReturn(Optional.of(fragaSvar));
         when(fragasvarRepositoryMock.save(fsCapture.capture())).thenReturn(fragaSvar);
 
         service.closeQuestionAsHandled(1L);
 
         verify(notificationServiceMock).sendNotificationForQAs(INTYG_ID, NotificationEvent.QUESTION_FROM_CARE_WITH_ANSWER_HANDLED);
-        verify(fragasvarRepositoryMock).findOne(1L);
+        verify(fragasvarRepositoryMock).findById(1L);
         verify(fragasvarRepositoryMock).save(any(FragaSvar.class));
 
         assertEquals(Status.CLOSED, fsCapture.getValue().getStatus());
@@ -938,7 +936,7 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
 
     @Test(expected = WebCertServiceException.class)
     public void testCloseAshandledNotFound() {
-        when(fragasvarRepositoryMock.findOne(1L)).thenReturn(null);
+        when(fragasvarRepositoryMock.findById(1L)).thenReturn(Optional.empty());
         try {
             service.closeQuestionAsHandled(1L);
         } finally {
@@ -955,13 +953,13 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
         fragaSvar.setStatus(Status.CLOSED);
 
         ArgumentCaptor<FragaSvar> capture = ArgumentCaptor.forClass(FragaSvar.class);
-        when(fragasvarRepositoryMock.findOne(1L)).thenReturn(fragaSvar);
+        when(fragasvarRepositoryMock.findById(1L)).thenReturn(Optional.of(fragaSvar));
         when(fragasvarRepositoryMock.save(capture.capture())).thenReturn(fragaSvar);
 
         service.openQuestionAsUnhandled(1L);
 
         verify(notificationServiceMock).sendNotificationForQAs(INTYG_ID, NotificationEvent.QUESTION_FROM_RECIPIENT_UNHANDLED);
-        verify(fragasvarRepositoryMock).findOne(1L);
+        verify(fragasvarRepositoryMock).findById(1L);
         verify(fragasvarRepositoryMock).save(any(FragaSvar.class));
         assertEquals(Status.PENDING_INTERNAL_ACTION, capture.getValue().getStatus());
     }
@@ -974,13 +972,13 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
         fragaSvar.setStatus(Status.CLOSED);
 
         ArgumentCaptor<FragaSvar> capture = ArgumentCaptor.forClass(FragaSvar.class);
-        when(fragasvarRepositoryMock.findOne(1L)).thenReturn(fragaSvar);
+        when(fragasvarRepositoryMock.findById(1L)).thenReturn(Optional.of(fragaSvar));
         when(fragasvarRepositoryMock.save(capture.capture())).thenReturn(fragaSvar);
 
         service.openQuestionAsUnhandled(1L);
 
         verify(notificationServiceMock).sendNotificationForQAs(INTYG_ID, NotificationEvent.QUESTION_FROM_CARE_UNHANDLED);
-        verify(fragasvarRepositoryMock).findOne(1L);
+        verify(fragasvarRepositoryMock).findById(1L);
         verify(fragasvarRepositoryMock).save(any(FragaSvar.class));
         assertEquals(Status.PENDING_EXTERNAL_ACTION, capture.getValue().getStatus());
     }
@@ -994,20 +992,20 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
         fragaSvar.setStatus(Status.CLOSED);
 
         ArgumentCaptor<FragaSvar> capture = ArgumentCaptor.forClass(FragaSvar.class);
-        when(fragasvarRepositoryMock.findOne(1L)).thenReturn(fragaSvar);
+        when(fragasvarRepositoryMock.findById(1L)).thenReturn(Optional.of(fragaSvar));
         when(fragasvarRepositoryMock.save(capture.capture())).thenReturn(fragaSvar);
 
         service.openQuestionAsUnhandled(1L);
 
         verify(notificationServiceMock).sendNotificationForQAs(INTYG_ID, NotificationEvent.QUESTION_FROM_CARE_WITH_ANSWER_UNHANDLED);
-        verify(fragasvarRepositoryMock).findOne(1L);
+        verify(fragasvarRepositoryMock).findById(1L);
         verify(fragasvarRepositoryMock).save(any(FragaSvar.class));
         assertEquals(Status.ANSWERED, capture.getValue().getStatus());
     }
 
     @Test(expected = WebCertServiceException.class)
     public void testOpenAsUnhandledNotFound() {
-        when(fragasvarRepositoryMock.findOne(1L)).thenReturn(null);
+        when(fragasvarRepositoryMock.findById(1L)).thenReturn(Optional.empty());
         try {
             service.openQuestionAsUnhandled(1L);
         } finally {
@@ -1024,7 +1022,7 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
         fragaSvar.setSvarsText("Svar till FK från WC");
         fragaSvar.setStatus(Status.CLOSED);
 
-        when(fragasvarRepositoryMock.findOne(1L)).thenReturn(fragaSvar);
+        when(fragasvarRepositoryMock.findById(1L)).thenReturn(Optional.of(fragaSvar));
 
         try {
             service.openQuestionAsUnhandled(1L);

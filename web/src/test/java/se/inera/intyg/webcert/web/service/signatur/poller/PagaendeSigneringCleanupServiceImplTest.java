@@ -48,7 +48,7 @@ public class PagaendeSigneringCleanupServiceImplTest {
     public void testCleanupNothingToDo() {
         when(pagaendeSigneringRepository.findAll()).thenReturn(new ArrayList<>());
         testee.cleanup();
-        verify(pagaendeSigneringRepository, times(0)).delete(anyLong());
+        verify(pagaendeSigneringRepository, times(0)).deleteById(anyLong());
     }
 
     @Test
@@ -63,7 +63,7 @@ public class PagaendeSigneringCleanupServiceImplTest {
         when(pagaendeSigneringRepository.findAll()).thenReturn(list);
 
         testee.cleanup();
-        verify(pagaendeSigneringRepository, times(1)).delete(anyLong());
+        verify(pagaendeSigneringRepository, times(1)).deleteById(anyLong());
     }
 
     @Test
@@ -78,7 +78,7 @@ public class PagaendeSigneringCleanupServiceImplTest {
         when(pagaendeSigneringRepository.findAll()).thenReturn(list);
 
         testee.cleanup();
-        verify(pagaendeSigneringRepository, times(0)).delete(anyLong());
+        verify(pagaendeSigneringRepository, times(0)).deleteById(anyLong());
     }
 
     private PagaendeSignering buildOngoingSignature(String intygsId, long internReferens, LocalDateTime signeringsDatum) {
