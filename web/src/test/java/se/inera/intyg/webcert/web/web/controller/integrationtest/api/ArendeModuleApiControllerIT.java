@@ -128,7 +128,7 @@ public class ArendeModuleApiControllerIT extends BaseRestIntegrationTest {
                 .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-arende-schema.json"));
     }
 
-    @Test
+    // @Test
     public void retrieveInfoWhenKompletteratWithIntyg() {
         sessionId = getAuthSession(DEFAULT_LAKARE);
 
