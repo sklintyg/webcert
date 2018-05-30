@@ -218,7 +218,7 @@ features:
   - &f170
     name: *kf170
     desc: Kontrollera TAK uppsättning
-    global: true
+    global: false
     intygstyper:
       - *ki010 # FK7263
       - *ki020 # TS-BAS
@@ -232,7 +232,7 @@ features:
   - &f180
     name: *kf180
     desc: Använd trädklättring i HSA
-    global: true
+    global: false
   - &f190
     name: *kf190
     desc: Sekretessmarkering tillåten
