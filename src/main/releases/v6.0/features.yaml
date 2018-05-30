@@ -220,13 +220,13 @@ features:
     desc: Kontrollera TAK uppsättning
     global: false
     intygstyper:
-      - *ki010 # FK7263
-      - *ki020 # TS-BAS
-      - *ki030 # TS-DIABETES
-      - *ki040 # LUSE
-      - *ki050 # LISJP
-      - *ki060 # LUAE_NA
-      - *ki070 # LUAE_FS
+#      - *ki010 # FK7263
+#      - *ki020 # TS-BAS
+#      - *ki030 # TS-DIABETES
+#      - *ki040 # LUSE
+#      - *ki050 # LISJP
+#      - *ki060 # LUAE_NA
+#      - *ki070 # LUAE_FS
 #      - *ki080 # DB
 #      - *ki090 # DOI
   - &f180
