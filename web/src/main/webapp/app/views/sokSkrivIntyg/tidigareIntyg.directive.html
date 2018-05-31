@@ -6,15 +6,6 @@
     <span dynamic-label key="info.nointygfound"></span>
   </div>
 </div>
-<!-- error message -->
-
-<wc-alert-message ng-show="viewState.intygListErrorMessageKey"
-                  alert-message-id="{{viewState.intygListErrorMessageKey}}"
-                  alert-severity="danger"
-                  id="current-list-noResults-error"></wc-alert-message>
-<wc-alert-message ng-show="viewState.inlineErrorMessageKey"
-                  alert-message-id="{{viewState.inlineErrorMessageKey}}"
-                  alert-severity="danger"></wc-alert-message>
 
 <!-- Tidigare intyg table -->
 
@@ -44,7 +35,15 @@
           </label>
         </wc-radio-wrapper>
       </div>
+      <!-- error message -->
 
+      <wc-alert-message ng-show="viewState.intygListErrorMessageKey"
+                        alert-message-id="{{viewState.intygListErrorMessageKey}}"
+                        alert-severity="danger"
+                        id="current-list-noResults-error"></wc-alert-message>
+      <wc-alert-message ng-show="viewState.inlineErrorMessageKey"
+                        alert-message-id="{{viewState.inlineErrorMessageKey}}"
+                        alert-severity="danger"></wc-alert-message>
         <div id="intygLista">
 
           <!-- Previous intyg table -->
