@@ -18,19 +18,17 @@
  */
 package se.inera.intyg.webcert.web.web.controller.integrationtest.api;
 
-import static com.jayway.restassured.RestAssured.given;
-import static com.jayway.restassured.RestAssured.sessionId;
-import static com.jayway.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.equalTo;
-
-import org.junit.Test;
-
 import com.jayway.restassured.http.ContentType;
-
+import org.junit.Test;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.web.web.controller.integrationtest.BaseRestIntegrationTest;
 import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.CreateMessageParameter;
+
+import static com.jayway.restassured.RestAssured.given;
+import static com.jayway.restassured.RestAssured.sessionId;
+import static com.jayway.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasSize;
 
 public class ArendeModuleApiControllerIT extends BaseRestIntegrationTest {
 
