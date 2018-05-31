@@ -19,7 +19,7 @@
 
 module.exports = {
     val: {
-        'Transportstyrelsens läkarintyg, diabetes': {
+        'Transportstyrelsens läkarintyg diabetes': {
             radioknappar: {
                 'a) Ögonläkarintyg kommer att skickas in separat': 'Nej',
                 'b) Förekommer hypoglykemier med tecken på nedsatt hjärnfunktion (neuroglukopena symtom) som bedöms kunna innebära en trafiksäkerhetsrisk?': 'Ja',
@@ -39,7 +39,7 @@ module.exports = {
             ],
             dropdowns: {}
         },
-        'Transportstyrelsens läkarintyg': {
+        'Transportstyrelsens läkarintyg högre körkortsbehörighet': {
             radioknappar: {
                 'Har patienten diabetes?': 'Ja',
                 'Vilken typ?': 'Typ 2',
@@ -152,51 +152,5 @@ module.exports = {
                 'Specificera tillståndet': 'Kronisk'
             }
         }
-    },
-
-    meddelanden: [ // Listan kommer ifrån https://inera-certificate.atlassian.net/wiki/spaces/IT/pages/320176155/Valideringsmeddelanden
-        'Postnummer måste anges med fem siffror.',
-        'Datum får inte ligga för långt fram eller tillbaka i tiden.',
-        'Sjukskrivningsperiod med överlappande datum har angetts.',
-        'Får inte vara senare än "Min undersökning av patienten"',
-        'Får inte vara senare än "Anhörigs beskrivning av patienten".',
-        'Minst en rad måste fyllas i.',
-        'Du måste ange ett underlag.',
-        'Du måste ange datum för underlaget.',
-        'Du måste ange var Försäkringskassan kan få information om utredningen.',
-        'Minst en diagnos måste anges.',
-        'Diagnoskod måste anges.',
-        'Funktionsnedsättningens debut och utveckling måste fyllas i.',
-        'Funktionsnedsättningens påverkan måste fyllas i.',
-        'Minst en sjukskrivningsperiod måste anges.',
-        'Felaktigt datumformat.',
-        'Arbetstidsförläggning måste fyllas i om period 75%, 50% eller 25% har valts.',
-        'Åtgärder måste väljas eller Inte aktuellt.',
-        'Minst en behandling måste väljas.',
-        'År då behandling med insulin påbörjades måste anges.',
-        'År måste anges enligt formatet ÅÅÅÅ. Det går inte att ange årtal som är senare än innevarande år eller tidigare än år 1900.',
-        'År måste anges enligt formatet ÅÅÅÅ. Det går inte att ange årtal som är senare än innevarande år eller tidigare än patientens födelseår.',
-        'Datum behöver skrivas på formatet ÅÅÅÅ-MM-DD.',
-        'Ogiltigt datum.',
-        'Fältet får inte vara tomt.',
-        'Du måste välja minst ett alternativ.',
-        'Du måste välja ett alternativ.',
-        'Du måste välja datum.',
-        'Du måste ange år och månad.',
-        'Du måste ange månad.',
-        'Datumet får inte vara senare än "Dödsdatum".',
-        'Datumet får inte vara senare än datumet för "Anträffad död".',
-        'Datumet får inte vara senare än dagens datum.',
-        'Observera att de kontaktuppgifter du ändrat inte ändras i HSA. Om vårdenhetens kontaktuppgifter inte stämmer kontakta HSA för att ändra dem.',
-        'Det datum du angett innebär en period på mer än 6 månader. Du bör kontrollera att tidsperioderna är korrekta.',
-        'Det startdatum du angett är mer än en vecka före dagens datum. Du bör kontrollera att tidsperioderna är korrekta.',
-        'Du måste ange ett startdatum innan du använder kortkommando i fältet "till och med".',
-        'Startdatum får inte vara efter slutdatum.',
-        'Ange underlag eller utredning i den översta raden först.',
-        'Observera att du valt ett datum framåt i tiden.',
-        'Du måste ange ett giltligt personnummer eller samordningsnummer.',
-        '' // Valideringsmeddelanden kan alltid vara tomma.
-    ]
-
-
+    }
 };

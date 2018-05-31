@@ -55,8 +55,8 @@ let synVarBAS = tsBasUtkastPage.syn;
 let synVarArrayTSD = [synVarTSD.hoger.utan, synVarTSD.hoger.med, synVarTSD.vanster.utan, synVarTSD.vanster.med, synVarTSD.binokulart.utan, synVarTSD.binokulart.med];
 let synVarArrayBAS = [synVarBAS.hoger.utan, synVarBAS.hoger.med, synVarBAS.vanster.utan, synVarBAS.vanster.med, synVarBAS.binokulart.utan, synVarBAS.binokulart.med];
 
-let valideringsData = require('./faltvalidering_testdata.js');
-let valideringsVal = valideringsData.val;
+let valideringsData = require('./faltvalidering_krav.js');
+let valideringsVal = require('./faltvalidering_testdata.js').val;
 let meddelanden = valideringsData.meddelanden;
 
 
@@ -65,6 +65,7 @@ let meddelanden = valideringsData.meddelanden;
  *	Stödfunktioner
  *
  */
+
 let synLoop = (array, keyToSend) => Promise.all(array.map(el => helpers.moveAndSendKeys(el, keyToSend)));
 
 let populateSyn = typAvSyn => {
@@ -72,13 +73,13 @@ let populateSyn = typAvSyn => {
     let slumpatSynFaltTSD = testdataHelpers.shuffle([synVarTSD.hoger, synVarTSD.vanster, synVarTSD.binokulart])[0];
     let slumpatSynFaltBAS = testdataHelpers.shuffle([synVarBAS.hoger, synVarBAS.vanster, synVarBAS.binokulart])[0];
 
-    if (typAvSyn === 'slumpat synfält' && intyg.typ === 'Transportstyrelsens läkarintyg, diabetes') {
+    if (typAvSyn === 'slumpat synfält' && intyg.typ === 'Transportstyrelsens läkarintyg diabetes') {
         return slumpatSynFaltTSD.utan.typeKeys('9').then(() => slumpatSynFaltTSD.med.typeKeys('8').typeKeys(protractor.Key.TAB));
-    } else if (typAvSyn === 'alla synfält' && intyg.typ === 'Transportstyrelsens läkarintyg, diabetes') {
+    } else if (typAvSyn === 'alla synfält' && intyg.typ === 'Transportstyrelsens läkarintyg diabetes') {
         return synLoop(synVarArrayTSD, 9);
-    } else if (typAvSyn === 'slumpat synfält' && intyg.typ === 'Transportstyrelsens läkarintyg') {
+    } else if (typAvSyn === 'slumpat synfält' && intyg.typ === 'Transportstyrelsens läkarintyg högre körkortsbehörighet') {
         return slumpatSynFaltBAS.utan.typeKeys('9').then(() => slumpatSynFaltBAS.med.typeKeys('8').typeKeys(protractor.Key.TAB));
-    } else if (typAvSyn === 'alla synfält' && intyg.typ === 'Transportstyrelsens läkarintyg') {
+    } else if (typAvSyn === 'alla synfält' && intyg.typ === 'Transportstyrelsens läkarintyg högre körkortsbehörighet') {
         return synLoop(synVarArrayBAS, 9);
     }
 };
@@ -143,7 +144,31 @@ let currentYear = () => `${new Date().getFullYear()}`;
 
 let currentMonth = () => `0${new Date().getMonth()}`.slice(-2);
 
+let validateValidation = (intygsTyp, valideringsTyp) => {
+    let antal = valideringsData.antalValideringsMeddelanden;
 
+    return Object.keys(antal[intygsTyp][valideringsTyp]).reduce((acc, valideringsMeddelande) => acc.then(function(results) {
+        return findValidationErrorsWithText(valideringsData.kravTxt[valideringsTyp][valideringsMeddelande]).count().then(actual => {
+            let result = {};
+            let expected = antal[intygsTyp][valideringsTyp][valideringsMeddelande];
+            result.equal = (expected === actual);
+            result.expected = expected;
+            result.actual = actual;
+            result.shorthand = valideringsMeddelande;
+            result.txt = valideringsData.kravTxt[valideringsTyp][valideringsMeddelande];
+
+            if (!result.equal) {
+                logger.warn(JSON.stringify(result));
+            } else {
+                logger.info(JSON.stringify(result));
+            }
+
+
+            results.push(result);
+            return Promise.resolve(results);
+        });
+    }), Promise.resolve([]));
+};
 
 /*
  *	Teststeg
@@ -162,7 +187,12 @@ Then(/^ska alla valideringsmeddelanden finnas med i listan över godkända medde
     })
 );
 
-Given(/^att textfält i intyget är rensade$/, () => element.all(by.css('input[type=text]')).filter(el => el.isEnabled()).each(i => i.clear()));
+Given(/^att textfält i intyget är rensade$/, () => {
+    //Vänta på att alla element finns på sidan.
+    return helpers.pageReloadDelay().then(element.all(by.css('input[type=text]')).filter(el => {
+        return el.getAttribute('id').then(id => logger.silly('tar bort value ifrån element: ' + id)).then(() => el.isEnabled());
+    }).each(i => i.clear()));
+});
 
 Then(/^ska alla sektioner innehållandes valideringsfel listas$/, () =>
     Promise.all([findSectionsWithRequiredFields(), // expected
@@ -191,6 +221,16 @@ Then(/^ska inga valideringsfel listas$/, () =>
 Then(/^ska statusmeddelande att obligatoriska uppgifter saknas visas$/, () => expect(utkastPage.utkastStatus.getText()).to.eventually.contain('Obligatoriska uppgifter saknas'));
 
 Then(/^ska statusmeddelande att intyget är klart att signera visas$/, () => expect(utkastPage.utkastStatus.getText()).to.eventually.contain('Klart att signera'));
+
+Then(/^ska alla "([^"]*)" valideringsfel för "([^"]*)" visas$/, (valideringsTyp, intygsTyp) =>
+    validateValidation(intygsTyp, valideringsTyp).then(results => {
+        return Promise.all([
+            expect(JSON.stringify(results)).to.not.contain('"equal":false'),
+            expect(JSON.stringify(results)).to.contain('"equal":true') //avoid false positive
+        ]);
+    })
+);
+
 
 Then(/^ska "(\d+)" valideringsfel visas med texten "(.+)"$/, (antal, text) =>
     expect(findValidationErrorsWithText(text).count()).to.eventually.equal(antal)
@@ -327,7 +367,7 @@ When(/^jag anger anhörigs beskrivning senare än patientkännedom$/, () =>
     })
 );
 
-When(/^jag väljer "([^"]+)" i dropdownen "([^"]*)"$/, (val, text) => dropdownVal(val, text).then(helpers.mediumDelay()));
+When(/^jag väljer "([^"]+)" i dropdownen "([^"]*)"$/, (val, text) => dropdownVal(val, text).then(changeFocus(intyg.typ)));
 
 When(/^jag väljer alternativet "([^"]+)" i frågan "([^"]*)"$/, (val, text) => radioknappVal(val, text).then(helpers.mediumDelay()));
 

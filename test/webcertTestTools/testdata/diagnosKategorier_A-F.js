@@ -1710,7 +1710,7 @@ var diagnosKategorier = [{
         beskrivning: 'Organisk personlighetsstörning'
     },
     {
-        diagnosKod: 'F090',
+        diagnosKod: 'F099',
         beskrivning: 'Ospecificerad organisk eller symtomatisk psykisk storning'
     },
     {
