@@ -34,7 +34,7 @@ var tsBasIntygPage = pages.intyg.ts.bas.intyg;
 }*/
 module.exports = {
     checkValues: function(intyg) {
-        logger.info('-- Kontrollerar Transportstyrelsens läkarintyg, diabetes & Transportstyrelsens läkarintyg (gemensama fält) --');
+        logger.info('-- Kontrollerar Transportstyrelsens läkarintyg diabetes & Transportstyrelsens läkarintyg högre körkortsbehörighet (gemensama fält) --');
 
         var promiseArr = [];
 

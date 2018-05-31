@@ -14,13 +14,13 @@ Scenario: Kan förnya Läkarintyg för sjukpenning
    Så ska det finnas en knapp för att förnya intyget
 
 @FÖRNYA @TS
-Scenario: Kan inte förnya Transportstyrelsens läkarintyg 
-   När jag går in på ett "Transportstyrelsens läkarintyg" med status "Signerat"
+Scenario: Kan inte förnya Transportstyrelsens läkarintyg högre körkortsbehörighet 
+   När jag går in på ett "Transportstyrelsens läkarintyg högre körkortsbehörighet" med status "Signerat"
    Så ska det inte finnas en knapp för att förnya intyget
 
 @DIABETES @FÖRNYA @TS
-Scenario: Kan förnya Transportstyrelsens läkarintyg, diabetes intyg
-   När jag går in på ett "Transportstyrelsens läkarintyg, diabetes" med status "Signerat"
+Scenario: Kan förnya Transportstyrelsens läkarintyg diabetes intyg
+   När jag går in på ett "Transportstyrelsens läkarintyg diabetes" med status "Signerat"
    Så ska det inte finnas en knapp för att förnya intyget
 
 @LISJP
@@ -30,17 +30,17 @@ Scenario: Kan inte signera Läkarintyg för sjukpenning
 	Och jag fyller i alla nödvändiga fält för intyget
 	Så ska signera-knappen inte vara synlig
 	
-@SKRIV-UT @TS @BAS
-Scenario: Kan inte signera Transportstyrelsens läkarintyg
-	När jag går in på att skapa ett "Transportstyrelsens läkarintyg" intyg
+@SKRIV-UT @TS @KORKORTSBEHORIGHET
+Scenario: Kan inte signera Transportstyrelsens läkarintyg högre körkortsbehörighet
+	När jag går in på att skapa ett "Transportstyrelsens läkarintyg högre körkortsbehörighet" intyg
 	Och jag fyller i alla nödvändiga fält för intyget
 	Så ska signera-knappen inte vara synlig
 
 	Och ska det finnas en knapp för att skriva ut utkastet
 
 @DIABETES @UTSKRIFT
-Scenario: Kan inte signera Transportstyrelsens läkarintyg, diabetes
-	När jag går in på att skapa ett "Transportstyrelsens läkarintyg, diabetes" intyg
+Scenario: Kan inte signera Transportstyrelsens läkarintyg diabetes
+	När jag går in på att skapa ett "Transportstyrelsens läkarintyg diabetes" intyg
 	Och jag fyller i alla nödvändiga fält för intyget
 	Så ska signera-knappen inte vara synlig
 

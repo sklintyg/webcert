@@ -81,7 +81,7 @@ function checkKorrektionsglasensStyrka(styrkor) {
 
 module.exports = {
     checkValues: function(intyg, callback) {
-        logger.info('-- Kontrollerar Transportstyrelsens läkarintyg --');
+        logger.info('-- Kontrollerar Transportstyrelsens läkarintyg högre körkortsbehörighet --');
         var promiseArr = [];
 
         promiseArr.push(expect(tsBasIntygPage.synfaltsdefekter.getText()).to.eventually.equal(intyg.synDonder).then(function(value) {

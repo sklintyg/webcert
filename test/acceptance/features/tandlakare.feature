@@ -10,8 +10,8 @@ Scenario: Ska endast kunna hantera Läkarintyg för sjukpenning
 	När jag går in på en patient
 	
 	Givet att vårdsystemet skapat ett intygsutkast för samma patient för "Läkarintyg för sjukpenning"
-	Och att vårdsystemet skapat ett intygsutkast för samma patient för "Transportstyrelsens läkarintyg"
-	Och att vårdsystemet skapat ett intygsutkast för samma patient för "Transportstyrelsens läkarintyg, diabetes"
+	Och att vårdsystemet skapat ett intygsutkast för samma patient för "Transportstyrelsens läkarintyg högre körkortsbehörighet"
+	Och att vårdsystemet skapat ett intygsutkast för samma patient för "Transportstyrelsens läkarintyg diabetes"
 	Och att vårdsystemet skapat ett intygsutkast för samma patient för "Läkarutlåtande för sjukersättning"
 	Och att vårdsystemet skapat ett intygsutkast för samma patient för "Läkarutlåtande för sjukersättning"
 	

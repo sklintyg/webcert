@@ -174,8 +174,8 @@ Given(/^(?:att )vårdsystemet skapat ett intygsutkast( för samma patient)? för
                 'Läkarutlåtande för aktivitetsersättning vid förlängd skolgång'
             );
         } else if (ts) {
-            intygtyper.push('Transportstyrelsens läkarintyg',
-                'Transportstyrelsens läkarintyg, diabetes');
+            intygtyper.push('Transportstyrelsens läkarintyg högre körkortsbehörighet',
+                'Transportstyrelsens läkarintyg diabetes');
         } else {
             intygtyper.push(
                 'Läkarintyg för sjukpenning',
@@ -183,8 +183,8 @@ Given(/^(?:att )vårdsystemet skapat ett intygsutkast( för samma patient)? för
                 'Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga',
                 'Läkarutlåtande för aktivitetsersättning vid förlängd skolgång',
                 'Läkarintyg FK 7263',
-                'Transportstyrelsens läkarintyg',
-                'Transportstyrelsens läkarintyg, diabetes'
+                'Transportstyrelsens läkarintyg högre körkortsbehörighet',
+                'Transportstyrelsens läkarintyg diabetes'
                 //TODO aktivera DB-DOI
                 //'Dödsbevis',
                 //'Dödsorsaksintyg'

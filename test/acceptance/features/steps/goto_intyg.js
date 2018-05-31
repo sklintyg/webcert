@@ -121,8 +121,8 @@ Given(/^jag går in på ett slumpat intyg med status "([^"]*)"$/, {
         'Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga',
         'Läkarutlåtande för aktivitetsersättning vid förlängd skolgång',
         //'Läkarintyg FK 7263', //Disabled i fristående läge och ersätts av Lisjp.
-        'Transportstyrelsens läkarintyg',
-        'Transportstyrelsens läkarintyg, diabetes'
+        'Transportstyrelsens läkarintyg högre körkortsbehörighet',
+        'Transportstyrelsens läkarintyg diabetes'
     ])[0];
     logger.info('Intyg type: ' + randomIntyg);
     intyg.typ = randomIntyg;
@@ -133,8 +133,8 @@ Given(/^jag går in på ett slumpat TS\-intyg med status "([^"]*)"$/, {
     timeout: 700 * 1000
 }, function(status, callback) {
     var randomIntyg = shuffle([
-        'Transportstyrelsens läkarintyg',
-        'Transportstyrelsens läkarintyg, diabetes'
+        'Transportstyrelsens läkarintyg högre körkortsbehörighet',
+        'Transportstyrelsens läkarintyg diabetes'
     ])[0];
     logger.info('Intyg type: ' + randomIntyg);
     intyg.typ = randomIntyg;

@@ -47,13 +47,13 @@ module.exports = {
     forIntyg: function(intyg) {
         'use strict';
         var promiseArr = [commonCheckValues(intyg)];
-        if (intyg.typ === 'Transportstyrelsens läkarintyg, diabetes') {
+        if (intyg.typ === 'Transportstyrelsens läkarintyg diabetes') {
             promiseArr.push(
                 tsCommonCheckValues(intyg).then(function() {
                     return tsDiabetesCheckValues(intyg);
                 })
             );
-        } else if (intyg.typ === 'Transportstyrelsens läkarintyg') {
+        } else if (intyg.typ === 'Transportstyrelsens läkarintyg högre körkortsbehörighet') {
             promiseArr.push(
                 tsCommonCheckValues(intyg).then(function() {
                     return tsBasCheckValues(intyg);

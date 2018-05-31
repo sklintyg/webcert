@@ -115,9 +115,9 @@ module.exports = {
         }
     },
     generateIntygByType: function(typ, id, customFields) {
-        if (typ === 'Transportstyrelsens läkarintyg') {
+        if (typ === 'Transportstyrelsens läkarintyg högre körkortsbehörighet') {
             return testdata.ts.bas.getRandom(id, person);
-        } else if (typ === 'Transportstyrelsens läkarintyg, diabetes') {
+        } else if (typ === 'Transportstyrelsens läkarintyg diabetes') {
             return testdata.ts.diabetes.getRandom(id, person);
         } else if (typ === 'Läkarintyg FK 7263') {
             return testdata.fk['7263'].getRandom(id);
@@ -428,9 +428,9 @@ module.exports = {
             url = process.env.WEBCERT_URL + '#/intyg/luae_na/' + intygsId + '/';
         } else if (typAvIntyg === 'Läkarintyg FK 7263') {
             url = process.env.WEBCERT_URL + '#/intyg/fk7263/' + intygsId + '/';
-        } else if (typAvIntyg === 'Transportstyrelsens läkarintyg, diabetes') {
+        } else if (typAvIntyg === 'Transportstyrelsens läkarintyg diabetes') {
             url = process.env.WEBCERT_URL + '#/intyg/ts-diabetes/' + intygsId + '/';
-        } else if (typAvIntyg === 'Transportstyrelsens läkarintyg') {
+        } else if (typAvIntyg === 'Transportstyrelsens läkarintyg högre körkortsbehörighet') {
             url = process.env.WEBCERT_URL + '#/intyg/ts-bas/' + intygsId + '/';
         }
         return url;

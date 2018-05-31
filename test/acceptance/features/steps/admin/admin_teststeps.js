@@ -52,9 +52,9 @@ function getDemoData(typ, index) {
     }*/
     var id = intyg.id;
 
-    if (typ === 'Transportstyrelsens läkarintyg') {
+    if (typ === 'Transportstyrelsens läkarintyg högre körkortsbehörighet') {
         return testdata.ts.bas.getRandom(id, person);
-    } else if (typ === 'Transportstyrelsens läkarintyg, diabetes') {
+    } else if (typ === 'Transportstyrelsens läkarintyg diabetes') {
         return testdata.ts.diabetes.getRandom(id, person);
     } else if (typ === 'Läkarintyg FK 7263') {
         return testdata.fk['7263'].getRandom(id);

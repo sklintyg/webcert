@@ -9,7 +9,7 @@ Bakgrund: Jag befinner mig på webcerts förstasida
 
 @SIGNERA @SMOKE
 Scenario: Skapa och signera ett TS diabetes intyg
-    När jag går in på att skapa ett "Transportstyrelsens läkarintyg, diabetes" intyg
+    När jag går in på att skapa ett "Transportstyrelsens läkarintyg diabetes" intyg
     Och jag fyller i alla nödvändiga fält för intyget
     Och jag signerar intyget
     Så ska intygets första status vara "Intyget är signerat"
@@ -17,7 +17,7 @@ Scenario: Skapa och signera ett TS diabetes intyg
 
 @SKICKA @SMOKE MI-F010
 Scenario: Skicka ett befintligt intyg till Transportstyrelsen
-	När jag går in på ett "Transportstyrelsens läkarintyg, diabetes" med status "Signerat"
+	När jag går in på ett "Transportstyrelsens läkarintyg diabetes" med status "Signerat"
     Och jag skickar intyget till Transportstyrelsen
     Så ska intygets första status vara "Intyget är skickat till Transportstyrelsen"
 
@@ -26,7 +26,7 @@ Scenario: Skicka ett befintligt intyg till Transportstyrelsen
 
 @MAKULERA @SMOKE
 Scenario: Makulera ett skickat TS Diabetes intyg
-	När jag går in på ett "Transportstyrelsens läkarintyg, diabetes" med status "Skickat"
+	När jag går in på ett "Transportstyrelsens läkarintyg diabetes" med status "Skickat"
     Och jag makulerar intyget
 	Så ska intygets första status vara "Intyget är makulerat"
 

@@ -24,9 +24,9 @@ module.exports = {
     fillIn: function(intyg) {
         return (() => {
             switch (intyg.typ) {
-                case 'Transportstyrelsens läkarintyg':
+                case 'Transportstyrelsens läkarintyg högre körkortsbehörighet':
                     return require('./ts.bas.js').fillIn(intyg);
-                case 'Transportstyrelsens läkarintyg, diabetes':
+                case 'Transportstyrelsens läkarintyg diabetes':
                     return require('./ts.diabetes.js').fillIn(intyg);
                 case 'Läkarintyg FK 7263':
                     return require('./fk.7263.js').fillIn(intyg);

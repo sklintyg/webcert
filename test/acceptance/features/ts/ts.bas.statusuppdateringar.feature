@@ -1,10 +1,10 @@
 # language: sv
-@STATUSUPPDATERINGAR @TS @BAS
+@STATUSUPPDATERINGAR @TS @KORKORTSBEHORIGHET
 Egenskap: Statusuppdateringar för TS-bas intyg
 
 Bakgrund: Jag har skickat en CreateDraft till Webcert.
    Givet att jag är inloggad som djupintegrerad läkare på vårdenhet "TSTNMT2321000156-INT2"
-   Och att vårdsystemet skapat ett intygsutkast för "Transportstyrelsens läkarintyg"
+   Och att vårdsystemet skapat ett intygsutkast för "Transportstyrelsens läkarintyg högre körkortsbehörighet"
    Och jag går in på intygsutkastet via djupintegrationslänk
 
 @SKICKA-TILL-TS @SKAPAT @SIGNAT @SKICKA

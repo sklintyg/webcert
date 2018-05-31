@@ -228,8 +228,8 @@ Given(/^jag går in på att skapa ett slumpat intyg$/, function() {
         'Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga',
         'Läkarutlåtande för aktivitetsersättning vid förlängd skolgång',
         //'Läkarintyg FK 7263', //Disabled i fristående läge och ersätts av Lisjp.
-        'Transportstyrelsens läkarintyg',
-        'Transportstyrelsens läkarintyg, diabetes'
+        'Transportstyrelsens läkarintyg högre körkortsbehörighet',
+        'Transportstyrelsens läkarintyg diabetes'
     ])[0];
     logger.silly('intyg.typ: ' + intyg.typ);
     return gotoIntygUtkast(intyg.typ);
@@ -258,8 +258,8 @@ Given(/^jag går in på att skapa ett slumpat SMI\-intyg$/, function() {
 
 Given(/^jag går in på att skapa ett slumpat TS\-intyg$/, function() {
     intyg.typ = testdataHelpers.shuffle([
-        'Transportstyrelsens läkarintyg',
-        'Transportstyrelsens läkarintyg, diabetes'
+        'Transportstyrelsens läkarintyg högre körkortsbehörighet',
+        'Transportstyrelsens läkarintyg diabetes'
     ])[0];
     logger.silly('intyg.typ: ' + intyg.typ);
     browser.ignoreSynchronization = true;

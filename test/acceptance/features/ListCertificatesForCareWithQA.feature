@@ -26,8 +26,8 @@ Scenariomall: DI-002 - Hämta en lista med intyg och utkast för en patient med 
 	
 Exempel: 
 	|	intygsTyp									|
-	|	"Transportstyrelsens läkarintyg"			|
-	|	"Transportstyrelsens läkarintyg, diabetes"	|
+	|	"Transportstyrelsens läkarintyg högre körkortsbehörighet"			|
+	|	"Transportstyrelsens läkarintyg diabetes"	|
 
 @HÄNDELSER
 @SKAPAT @ANDRAT @SIGNAT @SKICKA @MAKULE 

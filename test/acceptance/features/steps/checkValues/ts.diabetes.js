@@ -136,7 +136,7 @@ function checkHypoglykemier(hypo) {
 
 module.exports = {
     checkValues: function(intyg) {
-        logger.info('-- Kontrollerar Transportstyrelsens läkarintyg, diabetes --');
+        logger.info('-- Kontrollerar Transportstyrelsens läkarintyg diabetes --');
         var promiseArr = [];
 
         var selectedTypes = intyg.korkortstyper.sort(function(a, b) {
