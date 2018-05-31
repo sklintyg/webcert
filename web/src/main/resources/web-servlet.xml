@@ -26,7 +26,10 @@
     http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd">
 
   <mvc:annotation-driven/>
-  <mvc:resources mapping="/webjars/**" location="classpath:/META-INF/resources/webjars/"/>
+  <mvc:resources mapping="/webjars/**" location="classpath:/META-INF/resources/webjars/">
+    <mvc:resource-chain resource-cache="true" />
+  </mvc:resources>
+
   <context:annotation-config/>
   <context:component-scan base-package="se.inera.intyg.webcert.web.web.controller"/>
 

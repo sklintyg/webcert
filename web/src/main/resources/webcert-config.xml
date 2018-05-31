@@ -48,6 +48,7 @@
   <import resource="classpath*:wc-module-cxf-servlet.xml" />
   <import resource="classpath:/notification-sender-config.xml" />
   <import resource="classpath:/certificate-sender-config.xml" />
+  <import resource="classpath:/web-servlet.xml" />
 
   <context:annotation-config />
 
