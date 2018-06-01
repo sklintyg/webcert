@@ -63,7 +63,7 @@ exports.config = {
     },
     onPrepare: function() {
 		// Stor skärm på höjden för att slippa scrolla
-        browser.manage().window().setSize(1600, 20000); 
+        browser.manage().window().setSize(1600, 10000); 
         //http://chaijs.com/
         global.chai = require('chai');
 

@@ -29,7 +29,11 @@ var LisjpIntyg = BaseSmiIntygPage._extend({
         this.intygType = 'lisjp';
         this.funktionsnedsattning = element(by.id('funktionsnedsattning'));
         this.aktivitetsbegransning = element(by.id('aktivitetsbegransning'));
-
+        this.smittskydd = element(by.id('avstangningSmittskydd'));
+        this.sysselsattning = {
+            list: element(by.id('sysselsattning-list')),
+            yrkesAktiviteter: element(by.id('nuvarandeArbete'))
+        };
         this.sjukskrivningar = {
             grad: function(index) {
                 return element(by.id('sjukskrivningar-row' + index + '-col0'));
@@ -40,6 +44,13 @@ var LisjpIntyg = BaseSmiIntygPage._extend({
             to: function(index) {
                 return element(by.id('sjukskrivningar-row' + index + '-col2'));
             }
+        };
+        this.arbetsformagaFMB = element(by.id('forsakringsmedicinsktBeslutsstod'));
+
+
+        this.arbetstidsforlaggning = {
+            val: element(by.id('arbetstidsforlaggning')),
+            motivering: element(by.id('arbetstidsforlaggningMotivering'))
         };
     },
 

@@ -27,6 +27,9 @@ var intygPath = './intyg/'; // should point to intyg folder
 var WebcertBasePage = require('./webcert.base.page.js');
 var BaseUtkastPage = require(intygPath + 'base.utkast.page.js');
 var BaseIntygPage = require(intygPath + 'base.intyg.page.js');
+var baseSMIIntyg = require(intygPath + 'fk/smi/smi.base.intyg.page.js');
+var baseSMIUtkast = require(intygPath + 'fk/smi/smi.base.utkast.page.js');
+
 
 module.exports = {
     'webcertBase': new WebcertBasePage(),
@@ -48,6 +51,10 @@ module.exports = {
         base: {
             intyg: new BaseIntygPage(),
             utkast: new BaseUtkastPage()
+        },
+        smi: {
+            utkast: baseSMIUtkast(),
+            intyg: new baseSMIIntyg(),
         },
         luse: {
             utkast: require(intygPath + 'fk/smi/luse/luse.utkast.page.js'),

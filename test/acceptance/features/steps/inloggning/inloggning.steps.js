@@ -40,7 +40,6 @@ const fk7263Utkast = pages.intyg.fk['7263'].utkast;
 const baseIntyg = pages.intyg.base.intyg;
 const sokSkrivIntygUtkastTypePage = pages.sokSkrivIntyg.valjUtkastType;
 const sokSkrivIntygPage = pages.sokSkrivIntyg.pickPatient;
-const checkValues = require('../checkValues');
 const testdataHelpers = wcTestTools.helpers.testdata;
 const testdata = wcTestTools.testdata;
 const testpatienter = testdata.values.patienter;
@@ -459,10 +458,6 @@ Then(/^ska intygets första status vara "([^"]*)"$/, function(statustext) {
 });
 Then(/^ska intygets andra status vara "([^"]*)"$/, function(statustext) {
     return expect(baseIntyg.intygStatus[1].getText()).to.eventually.contain(statustext);
-});
-
-Then(/^(?:ska jag|jag ska) se den data jag angett för intyget$/, function() {
-    return checkValues.forIntyg(intyg);
 });
 
 Given(/^ska signera\-knappen inte vara synlig$/, function(callback) {

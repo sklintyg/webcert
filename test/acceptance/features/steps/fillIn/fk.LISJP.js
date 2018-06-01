@@ -75,8 +75,14 @@
                  return elm.typeKeys(data);
              })
              .then(function() {
-                 logger.info('TODO - Medicinsk behandling');
-                 return;
+                 //Medicinsk behandling
+                 return lisjpUtkastPage.angeMedicinskBehandling(intyg.medicinskbehandling)
+                     .then(function(value) {
+                         logger.info('OK - angeMedicinskBehandling: ' + JSON.stringify(intyg.medicinskbehandling));
+                     }, function(reason) {
+                         console.trace(reason);
+                         throw ('FEL, angeMedicinskBehandling: ' + reason);
+                     });
              })
              .then(function() {
                  // Bedöming Arbetsförmåga
@@ -97,12 +103,13 @@
                  });
              })
              .then(function() {
-                 var elm = lisjpUtkastPage.sjukskrivning.forsakringsmedicinsktBeslutsstodBeskrivning;
-                 var data = intyg.arbetsformagaFMB;
-                 if (data) {
-                     return elm.typeKeys(data);
+                 if (intyg.arbetsformagaFMB) {
+                     var elm = lisjpUtkastPage.sjukskrivning.forsakringsmedicinsktBeslutsstodBeskrivning;
+                     var data = intyg.arbetsformagaFMB;
+                     if (data) {
+                         return elm.typeKeys(data);
+                     }
                  }
-                 return;
              })
              .then(function() {
                  //Resor till arbete

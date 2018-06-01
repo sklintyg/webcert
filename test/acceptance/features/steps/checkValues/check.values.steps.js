@@ -40,12 +40,17 @@ var lusePage = pages.intyg.luse.intyg;
 var fkUtkastPage = pages.intyg.fk['7263'].utkast;
 var luseUtkastPage = pages.intyg.luse.utkast;
 var helpers = require('../helpers');
-
+const checkValues = require('../checkValues');
 
 /*
  *	Test steg
  *
  */
+
+Then(/^(?:ska jag|jag ska) se den data jag angett för intyget$/, function() {
+    return checkValues.forIntyg(intyg);
+});
+
 
 Given(/^ska intyget visa den nya addressen$/, function() {
     return Promise.all([
