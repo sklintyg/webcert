@@ -19,7 +19,7 @@
     "dependencies": {
         "chai": "^3.5.0",
         "chai-as-promised": "^6.0.0",
-        "common-testtools": "^0.3.0",
+        "common-testtools": "^0.4.0",
         "cucumber": "^4.0.0",
 		"cucumber-pretty": "^1.4.0",
         "grunt": "^0.4.5",
