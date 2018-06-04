@@ -92,6 +92,23 @@ function verifyArbetstidsforlaggning(data) {
     return Promise.all([promiseArr]);
 }
 
+function verifyResorTillArbete(data) {
+
+    return expect(lisjpPage.resorTillArbete.getText()).to.eventually.equal(data.resorTillArbete);
+}
+
+function verifyPrognosForArbetsformaga(data) {
+    let promiseArr = [];
+
+    promiseArr.push(expect(lisjpPage.prognosForArbetsformaga.getText()).to.eventually.equal(data.prognosForArbetsformaga.name));
+
+    if (data.prognosForArbetsformaga.within) {
+        promiseArr.push(expect(lisjpPage.prognosForArbetsformaga.getText()).to.eventually.equal(data.prognosForArbetsformaga));
+    }
+    return Promise.all([promiseArr]);
+}
+
+
 function forkLisjpIntyg(intyg) {
     let data = Object.create(intyg);
 
@@ -123,6 +140,23 @@ function forkLisjpIntyg(intyg) {
     data.arbetstidsforlaggning = testdataHelper.ejAngivetIfNull(intyg.arbetstidsforlaggning);
     data.arbetstidsforlaggning.beskrivning = testdataHelper.ejAngivetIfNull(intyg.arbetstidsforlaggning.beskrivning);
 
+    data.resorTillArbete = testdataHelper.boolTillJaEllerEjAngivet(intyg.resorTillArbete);
+    data.prognosForArbetsformaga = testdataHelper.ejAngivetIfNull(intyg.prognosForArbetsformaga);
+    switch (data.prognosForArbetsformaga.name) {
+        case 'STOR_SANNOLIKHET':
+            data.prognosForArbetsformaga = 'Patienten kommer med stor sannolikhet att kunna återgå helt i nuvarande sysselsättning efter denna sjukskrivning.';
+            break;
+        case 'SANNOLIKT_INTE':
+            data.prognosForArbetsformaga = 'Patienten kommer med stor sannolikhet inte att kunna återgå helt i nuvarande sysselsättning inom 12 månader.';
+            break;
+        case 'PROGNOS_OKLAR':
+            data.prognosForArbetsformaga = '';
+            break;
+    }
+
+    //TODO HANDLE WITHIN
+    //            name: 'ATER_X_ANTAL_DGR',
+    //           within: shuffle(['1 månad', '2 månader', '3 månader'])[0]
 
 
     return data;
@@ -194,6 +228,23 @@ module.exports = {
                 logger.info('OK - Arbetstidsforlaggning');
             }, function(reason) {
                 throw ('FEL, Arbetstidsforlaggning: ' + reason);
+            })
+            .then(verifyResorTillArbete(data))
+            .then(value => {
+                logger.info('OK - ResorTillArbete');
+            }, function(reason) {
+                throw ('FEL, ResorTillArbete: ' + reason);
+            })
+            .then(verifyPrognosForArbetsformaga(data))
+            .then(value => {
+                logger.info('OK - PrognosForArbetsformaga');
+            }, function(reason) {
+                throw ('FEL, PrognosForArbetsformaga: ' + reason);
             });
+
+
+        //atgarder
+        //övriga upplysningar  innan / efter pagereload
+        //kontaktMedFk
     }
 };

@@ -52,6 +52,8 @@ var LisjpIntyg = BaseSmiIntygPage._extend({
             val: element(by.id('arbetstidsforlaggning')),
             motivering: element(by.id('arbetstidsforlaggningMotivering'))
         };
+        this.resorTillArbete = element(by.id('arbetsresor'));
+        this.prognosForArbetsformaga = element(by.id('prognos-typ'));
     },
 
     get: function get(intygId) {
