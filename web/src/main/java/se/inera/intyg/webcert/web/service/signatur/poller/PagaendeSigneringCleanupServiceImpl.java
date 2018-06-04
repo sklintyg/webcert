@@ -63,7 +63,7 @@ public class PagaendeSigneringCleanupServiceImpl {
             PagaendeSignering pagaendeSignering = iterator.next();
             Long id = pagaendeSignering.getInternReferens();
             String intygsId = pagaendeSignering.getIntygsId();
-            pagaendeSigneringRepository.deleteById(pagaendeSignering.getInternReferens());
+            pagaendeSigneringRepository.delete(pagaendeSignering.getInternReferens());
             LOG.info("Removed stale PagaendeSignering with id '{}' for intygs-id '{}'. "
                     + "This is perfectly normal if the signing user didn't complete the signing.", id, intygsId);
         }

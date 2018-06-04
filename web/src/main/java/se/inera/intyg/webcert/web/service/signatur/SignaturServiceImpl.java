@@ -27,6 +27,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
@@ -37,7 +38,6 @@ import se.inera.intyg.infra.security.common.model.AuthenticationMethod;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.infra.xmldsig.model.SignatureType;
-import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.PagaendeSignering;
@@ -70,7 +70,6 @@ import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -320,13 +319,12 @@ public class SignaturServiceImpl implements SignaturService {
 
         validateUniqueIntyg(user, utkast);
 
-        Optional<PagaendeSignering> pagaendeSigneringOptional = pagaendeSigneringRepository.findById(ticket.getPagaendeSigneringId());
-        if (!pagaendeSigneringOptional.isPresent()) {
+        PagaendeSignering pagaendeSignering = pagaendeSigneringRepository.findOne(ticket.getPagaendeSigneringId());
+        if (pagaendeSignering == null) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE,
                     "Can't complete signing of certificate, no PagaendeSignering found for interreferens "
                             + ticket.getPagaendeSigneringId());
         }
-        PagaendeSignering pagaendeSignering = pagaendeSigneringOptional.get();
         String payload = pagaendeSignering.getIntygData();
 
         if (!pagaendeSignering.getIntygsId().equals(utkast.getIntygsId())) {
@@ -372,7 +370,7 @@ public class SignaturServiceImpl implements SignaturService {
         intygService.storeIntyg(savedUtkast);
 
         // Remove PagaendeSignering
-        pagaendeSigneringRepository.deleteById(ticket.getPagaendeSigneringId());
+        pagaendeSigneringRepository.delete(ticket.getPagaendeSigneringId());
 
         return ticket;
     }
@@ -446,15 +444,15 @@ public class SignaturServiceImpl implements SignaturService {
     }
 
     private Utkast getUtkastForSignering(String intygId, long version, WebCertUser user) {
-        Optional<Utkast> utkastOptional = utkastRepository.findById(intygId);
+        Utkast utkast = utkastRepository.findOne(intygId);
 
-        if (!utkastOptional.isPresent()) {
+        if (utkast == null) {
             LOG.warn("Utkast '{}' was not found", intygId);
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND,
                     "Internal error signing utkast, the utkast '" + intygId
                             + "' could not be found");
         }
-        Utkast utkast = utkastOptional.get();
+
         if (!user.getIdsOfAllVardenheter().contains(utkast.getEnhetsId())) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM,
                     "User does not have privileges to sign utkast '" + intygId + "'");

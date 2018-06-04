@@ -59,7 +59,7 @@ public class MigratedMedcertIntygRepositoryTest {
 
         medcertIntygRepository.save(intyg1);
 
-        MigreratMedcertIntyg intyg2 = medcertIntygRepository.findById("intyg1").get();
+        MigreratMedcertIntyg intyg2 = medcertIntygRepository.findOne("intyg1");
         assertNotNull(intyg2);
         assertEquals("intyg1", intyg2.getIntygsId());
         assertEquals("Test Testsson", intyg2.getPatientNamn());

@@ -27,8 +27,8 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
-import se.inera.intyg.webcert.common.model.GroupableItem;
 import se.inera.intyg.common.support.model.UtkastStatus;
+import se.inera.intyg.webcert.common.model.GroupableItem;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 
 import javax.persistence.EntityManager;
@@ -68,7 +68,7 @@ public class UtkastRepositoryTest {
     @Test
     public void testFindOne() {
         Utkast saved = utkastRepository.save(UtkastTestUtil.buildUtkast(UtkastTestUtil.ENHET_1_ID));
-        Utkast read = utkastRepository.findById(saved.getIntygsId()).get();
+        Utkast read = utkastRepository.findOne(saved.getIntygsId());
 
         assertThat(read.getIntygsId(), is(equalTo(saved.getIntygsId())));
         assertThat(read.getPatientPersonnummer(), is(equalTo(saved.getPatientPersonnummer())));
@@ -91,7 +91,7 @@ public class UtkastRepositoryTest {
         utkast.setSignatur(UtkastTestUtil.buildSignatur(intygsId, "A", LocalDateTime.now()));
 
         Utkast saved = utkastRepository.save(utkast);
-        Utkast read = utkastRepository.findById(intygsId).get();
+        Utkast read = utkastRepository.findOne(intygsId);
 
         assertThat(read.getIntygsId(), is(equalTo(saved.getIntygsId())));
         assertThat(read.getSignatur(), is(notNullValue()));
@@ -210,9 +210,9 @@ public class UtkastRepositoryTest {
 
         utkastRepository.save(UtkastTestUtil.buildUtkast("intyg-1", UtkastTestUtil.ENHET_1_ID, UtkastStatus.DRAFT_INCOMPLETE));
 
-        utkastRepository.deleteById("intyg-1");
-
-        assertThat(utkastRepository.findById("intyg-1").isPresent(), is(false));
+        utkastRepository.delete("intyg-1");
+        Utkast one = utkastRepository.findOne("intyg-1");
+        assertNull(one);
     }
 
     @Test
@@ -227,7 +227,7 @@ public class UtkastRepositoryTest {
         final String relationIntygsId = "relationIntygsId";
         final RelationKod relationKod = RelationKod.FRLANG;
         Utkast saved = utkastRepository.save(UtkastTestUtil.buildUtkast(UtkastTestUtil.ENHET_1_ID, relationIntygsId, relationKod));
-        Utkast read = utkastRepository.findById(saved.getIntygsId()).get();
+        Utkast read = utkastRepository.findOne(saved.getIntygsId());
 
         assertEquals(UtkastTestUtil.ENHET_1_ID, read.getEnhetsId());
         assertEquals(relationIntygsId, read.getRelationIntygsId());

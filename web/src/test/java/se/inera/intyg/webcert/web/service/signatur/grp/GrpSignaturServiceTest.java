@@ -29,11 +29,11 @@ import se.funktionstjanster.grp.v1.AuthenticateRequestType;
 import se.funktionstjanster.grp.v1.GrpFault;
 import se.funktionstjanster.grp.v1.GrpServicePortType;
 import se.funktionstjanster.grp.v1.OrderResponseType;
+import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.infra.security.authorities.AuthoritiesResolverUtil;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.Privilege;
 import se.inera.intyg.infra.security.common.model.Role;
-import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.auth.bootstrap.AuthoritiesConfigurationTestSetup;
@@ -45,7 +45,6 @@ import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -64,7 +63,7 @@ public class GrpSignaturServiceTest extends AuthoritiesConfigurationTestSetup {
     private static final String PERSON_ID = "19121212-1212";
     private static final String TX_ID = "webcert-tx-1";
     private static final String ORDER_REF = "order-ref-1";
-    private static final Long PAGAENDE_SIG_ID  = 1L;
+    private static final Long PAGAENDE_SIG_ID = 1L;
 
     @Mock
     WebCertUserService webCertUserService;
@@ -102,7 +101,7 @@ public class GrpSignaturServiceTest extends AuthoritiesConfigurationTestSetup {
     public void testSuccessfulAuthenticationRequest() throws GrpFault {
         when(grpCollectPollerFactory.getInstance()).thenReturn(mock(GrpCollectPoller.class));
         when(webCertUserService.getUser()).thenReturn(webCertUser);
-        when(utkastRepository.findById(INTYG_ID)).thenReturn(buildUtkast());
+        when(utkastRepository.findOne(INTYG_ID)).thenReturn(buildUtkast());
         when(signaturService.createDraftHash(INTYG_ID, VERSION)).thenReturn(buildSignaturTicket());
         when(grpService.authenticate(any(AuthenticateRequestType.class))).thenReturn(buildOrderResponse());
 
@@ -112,7 +111,7 @@ public class GrpSignaturServiceTest extends AuthoritiesConfigurationTestSetup {
 
     @Test(expected = IllegalArgumentException.class)
     public void testAuthenticateRequestFailsWhenUtkastIsNotFound() {
-        when(utkastRepository.findById(INTYG_ID)).thenReturn(Optional.empty());
+        when(utkastRepository.findOne(INTYG_ID)).thenReturn(null);
         try {
             grpSignaturService.startGrpAuthentication(INTYG_ID, VERSION);
         } finally {
@@ -122,7 +121,7 @@ public class GrpSignaturServiceTest extends AuthoritiesConfigurationTestSetup {
 
     @Test(expected = IllegalArgumentException.class)
     public void testAuthenticateRequestFailsWhenNoWebCertUserIsFound() {
-        when(utkastRepository.findById(INTYG_ID)).thenReturn(buildUtkast());
+        when(utkastRepository.findOne(INTYG_ID)).thenReturn(buildUtkast());
         when(webCertUserService.getUser()).thenReturn(null);
         try {
             grpSignaturService.startGrpAuthentication(INTYG_ID, VERSION);
@@ -134,7 +133,7 @@ public class GrpSignaturServiceTest extends AuthoritiesConfigurationTestSetup {
     @Test(expected = IllegalArgumentException.class)
     public void testAuthenticateRequestFailsWhenWebCertUserHasNoPersonId() {
 
-        when(utkastRepository.findById(INTYG_ID)).thenReturn(buildUtkast());
+        when(utkastRepository.findOne(INTYG_ID)).thenReturn(buildUtkast());
         when(webCertUserService.getUser()).thenReturn(createUser());
 
         try {
@@ -147,7 +146,7 @@ public class GrpSignaturServiceTest extends AuthoritiesConfigurationTestSetup {
     @Test(expected = RuntimeException.class)
     public void testAuthenticateRequestThrowsExceptionWhenGrpCallFails() throws GrpFault {
         when(webCertUserService.getUser()).thenReturn(webCertUser);
-        when(utkastRepository.findById(INTYG_ID)).thenReturn(buildUtkast());
+        when(utkastRepository.findOne(INTYG_ID)).thenReturn(buildUtkast());
         when(signaturService.createDraftHash(INTYG_ID, VERSION)).thenReturn(buildSignaturTicket());
         when(grpService.authenticate(any(AuthenticateRequestType.class))).thenThrow(new GrpFault("grp-fault"));
 
@@ -167,17 +166,18 @@ public class GrpSignaturServiceTest extends AuthoritiesConfigurationTestSetup {
     }
 
     private SignaturTicket buildSignaturTicket() {
-        SignaturTicket ticket = new SignaturTicket(TX_ID, PAGAENDE_SIG_ID, SignaturTicket.Status.OKAND, INTYG_ID, VERSION, null, "hash", LocalDateTime.now());
+        SignaturTicket ticket = new SignaturTicket(TX_ID, PAGAENDE_SIG_ID, SignaturTicket.Status.OKAND, INTYG_ID, VERSION, null, "hash",
+                LocalDateTime.now());
         return ticket;
     }
 
-    private Optional<Utkast> buildUtkast() {
+    private Utkast buildUtkast() {
         Utkast utkast = new Utkast();
         utkast.setIntygsId(INTYG_ID);
         utkast.setIntygsTyp("fk7263");
         utkast.setStatus(UtkastStatus.DRAFT_COMPLETE);
         utkast.setVersion(VERSION);
-        return Optional.of(utkast);
+        return utkast;
     }
 
     private WebCertUser createUser() {

@@ -23,10 +23,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.infra.security.authorities.validation.AuthoritiesValidator;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.webcert.common.model.SekretessStatus;
-import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
@@ -36,8 +37,6 @@ import se.inera.intyg.webcert.web.service.intyg.IntygServiceImpl;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.PrepareRedirectToIntyg;
-
-import java.util.Optional;
 
 /**
  * @author Magnus Ekstrand on 2017-10-24.
@@ -58,18 +57,16 @@ public abstract class IntegrationServiceImpl implements IntegrationService {
     @Autowired
     private UtkastRepository utkastRepository;
 
-
     // api
 
     @Override
     public PrepareRedirectToIntyg prepareRedirectToIntyg(String intygTyp, String intygId, WebCertUser user) {
-        Optional<Utkast> utkastOptional = utkastRepository.findById(intygId);
+        Utkast utkast = utkastRepository.findOne(intygId);
 
-        if (!utkastOptional.isPresent()) {
+        if (utkast == null) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND, "Could not find intyg '" + intygId + "'");
         }
 
-        Utkast utkast = utkastOptional.get();
         // INTYG-4336: If intygTyp can't be established,
         // fetch certificate from IT and then get the type
         String typ = resolveIntygsTyp(intygTyp, intygId, utkast);
@@ -83,11 +80,9 @@ public abstract class IntegrationServiceImpl implements IntegrationService {
         return createPrepareRedirectToIntyg(typ, intygId, isUtkast(utkast));
     }
 
-
     // protected scope
 
     abstract void ensurePreparation(String intygTyp, String intygId, Utkast utkast, WebCertUser user);
-
 
     // default scope
 
@@ -108,7 +103,6 @@ public abstract class IntegrationServiceImpl implements IntegrationService {
                 .orThrow(new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM_SEKRETESSMARKERING,
                         "User missing required privilege or cannot handle sekretessmarkerad patient"));
     }
-
 
     // private scope
 
@@ -142,6 +136,5 @@ public abstract class IntegrationServiceImpl implements IntegrationService {
         }
         return null;
     }
-
 
 }

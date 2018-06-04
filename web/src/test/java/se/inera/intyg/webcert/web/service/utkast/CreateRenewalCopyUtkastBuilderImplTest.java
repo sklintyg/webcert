@@ -208,7 +208,7 @@ public class CreateRenewalCopyUtkastBuilderImplTest {
     public void testPopulateRenewalUtkastFromOriginal() throws Exception {
 
         Utkast orgUtkast = createOriginalUtkast();
-        when(mockUtkastRepository.findById(INTYG_ID)).thenReturn(Optional.of(orgUtkast));
+        when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(orgUtkast);
 
         CreateRenewalCopyRequest renewalRequest = buildRenewalRequest();
         Person patientDetails = new Person(PATIENT_SSN, false, false, PATIENT_FNAME, PATIENT_MNAME, PATIENT_LNAME, "Postadr", "12345",
@@ -236,7 +236,7 @@ public class CreateRenewalCopyUtkastBuilderImplTest {
 
         Utkast orgUtkast = createOriginalUtkast();
         orgUtkast.setEnhetsId("OTHER_ID");
-        when(mockUtkastRepository.findById(INTYG_ID)).thenReturn(Optional.of(orgUtkast));
+        when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(orgUtkast);
 
         CreateRenewalCopyRequest renewalRequest = buildRenewalRequest();
         Person patientDetails = new Person(PATIENT_SSN, false, false, PATIENT_FNAME, PATIENT_MNAME, PATIENT_LNAME, "Postadr", "12345",
@@ -249,7 +249,7 @@ public class CreateRenewalCopyUtkastBuilderImplTest {
     public void testPopulateRenewalUtkastFromOriginalWhenIntegratedAndWithUpdatedSSN() throws Exception {
 
         Utkast orgUtkast = createOriginalUtkast();
-        when(mockUtkastRepository.findById(INTYG_ID)).thenReturn(Optional.of(orgUtkast));
+        when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(orgUtkast);
 
         CreateRenewalCopyRequest renewalRequest = buildRenewalRequest();
         renewalRequest.setNyttPatientPersonnummer(PATIENT_NEW_SSN);

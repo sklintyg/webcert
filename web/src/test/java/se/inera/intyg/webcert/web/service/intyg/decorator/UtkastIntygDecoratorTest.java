@@ -36,11 +36,9 @@ import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.when;
 
 /**
@@ -54,7 +52,7 @@ public class UtkastIntygDecoratorTest {
 
     private static final String INTYG_ID = "123";
 
-    private Optional<Utkast> signedUtkast;
+    private Utkast signedUtkast;
 
     @Mock
     private UtkastRepository utkastRepository;
@@ -72,7 +70,6 @@ public class UtkastIntygDecoratorTest {
 
     @Test
     public void testNotAWebcertIntygDoesNotAddAnyStatuses() {
-        when(utkastRepository.findById(any())).thenReturn(Optional.empty());
 
         CertificateResponse response = buildCertificateResponse();
 
@@ -113,9 +110,10 @@ public class UtkastIntygDecoratorTest {
 
     @Test
     public void testSentIntygWithRevokedUtkastDoesAddsRevokedStatus() {
-        signedUtkast.get().setSkickadTillMottagareDatum(LocalDateTime.now());
-        signedUtkast.get().setAterkalladDatum(LocalDateTime.now());
-        when(utkastRepository.findById(isNull())).thenReturn(signedUtkast);
+        signedUtkast.setSkickadTillMottagareDatum(LocalDateTime.now());
+        signedUtkast.setAterkalladDatum(LocalDateTime.now());
+        when(utkastRepository.findOne(nullable(String.class))).thenReturn(signedUtkast);
+
         CertificateResponse response = buildCertificateResponse();
         response.getMetaData().getStatus().add(new Status(CertificateState.SENT, "FKASSA", LocalDateTime.now()));
 
@@ -125,8 +123,8 @@ public class UtkastIntygDecoratorTest {
 
     @Test
     public void testSentStatusIsAddedFromUtkast() {
-        signedUtkast.get().setSkickadTillMottagareDatum(LocalDateTime.now());
-        when(utkastRepository.findById(isNull())).thenReturn(signedUtkast);
+        signedUtkast.setSkickadTillMottagareDatum(LocalDateTime.now());
+        when(utkastRepository.findOne(nullable(String.class))).thenReturn(signedUtkast);
 
         CertificateResponse response = buildCertificateResponse();
 
@@ -139,9 +137,9 @@ public class UtkastIntygDecoratorTest {
 
     @Test
     public void testRevokedStatusIsAddedFromUtkast() {
-        signedUtkast.get().setSkickadTillMottagareDatum(LocalDateTime.now());
-        signedUtkast.get().setAterkalladDatum(LocalDateTime.now());
-        when(utkastRepository.findById(isNull())).thenReturn(signedUtkast);
+        signedUtkast.setSkickadTillMottagareDatum(LocalDateTime.now());
+        signedUtkast.setAterkalladDatum(LocalDateTime.now());
+        when(utkastRepository.findOne(nullable(String.class))).thenReturn(signedUtkast);
 
         CertificateResponse response = buildCertificateResponse();
 
@@ -173,7 +171,7 @@ public class UtkastIntygDecoratorTest {
         return person;
     }
 
-    private Optional<Utkast> buildUtkast(String intygId, String type, UtkastStatus status, String model, VardpersonReferens vardperson) {
+    private Utkast buildUtkast(String intygId, String type, UtkastStatus status, String model, VardpersonReferens vardperson) {
 
         Utkast intyg = new Utkast();
         intyg.setIntygsId(intygId);
@@ -183,7 +181,7 @@ public class UtkastIntygDecoratorTest {
         intyg.setSkapadAv(vardperson);
         intyg.setSenastSparadAv(vardperson);
 
-        return Optional.of(intyg);
+        return intyg;
     }
 
     private VardpersonReferens buildVardpersonReferens(HoSPersonal person) {

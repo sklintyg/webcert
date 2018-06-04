@@ -24,6 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
+import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.GrundData;
 import se.inera.intyg.common.support.model.common.internal.Patient;
 import se.inera.intyg.common.support.model.common.internal.Relation;
@@ -38,7 +39,6 @@ import se.inera.intyg.common.support.modules.support.api.dto.ValidateDraftRespon
 import se.inera.intyg.common.support.modules.support.api.dto.ValidationStatus;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
 import se.inera.intyg.infra.integration.pu.model.Person;
-import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
@@ -58,7 +58,6 @@ import se.inera.intyg.webcert.web.service.utkast.util.CreateIntygsIdStrategy;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.Optional;
 
 public abstract class AbstractUtkastBuilder<T extends AbstractCreateCopyRequest> implements CopyUtkastBuilder<T> {
     private static final String SPACE = " ";
@@ -167,13 +166,12 @@ public abstract class AbstractUtkastBuilder<T extends AbstractCreateCopyRequest>
 
         String orignalIntygsId = copyRequest.getOriginalIntygId();
 
-        Optional<Utkast> orgUtkastOptional = utkastRepository.findById(orignalIntygsId);
+        Utkast orgUtkast = utkastRepository.findOne(orignalIntygsId);
         ModuleApi orgModuleApi = moduleRegistry.getModuleApi(copyRequest.getOriginalIntygTyp());
         Utlatande orgUtlatande;
-        if (!orgUtkastOptional.isPresent()) {
+        if (orgUtkast == null) {
             throw new ModuleException("Could not convert original certificate to Utlatande. Original certificate not found");
         }
-        Utkast orgUtkast = orgUtkastOptional.get();
         try {
             orgUtlatande = orgModuleApi.getUtlatandeFromJson(orgUtkast.getModel());
         } catch (IOException e) {

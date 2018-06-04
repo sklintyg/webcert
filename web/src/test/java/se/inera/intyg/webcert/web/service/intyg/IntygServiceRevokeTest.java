@@ -47,7 +47,6 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -111,7 +110,7 @@ public class IntygServiceRevokeTest extends AbstractIntygServiceTest {
     @Test
     public void testRevokeIntyg() throws Exception {
 
-        when(intygRepository.findById(INTYG_ID)).thenReturn(Optional.of(signedUtkast));
+        when(intygRepository.findOne(INTYG_ID)).thenReturn(signedUtkast);
 
         // do the call
         IntygServiceResult res = intygService.revokeIntyg(INTYG_ID, INTYG_TYP_FK, REVOKE_MSG, REVOKE_REASON);

@@ -58,7 +58,7 @@ public class IntegreradeEnheterRegistryImplTest {
         final String enhetsId = "enhetsId";
         IntegreradEnhetEntry entry = new IntegreradEnhetEntry(enhetsId, "vardgivareId");
 
-        when(integreradEnhetRepository.findById(enhetsId)).thenReturn(Optional.empty()); // not found
+        when(integreradEnhetRepository.findOne(enhetsId)).thenReturn(null); // not found
         when(integreradEnhetRepository.save(any(IntegreradEnhet.class))).thenReturn(new IntegreradEnhet());
 
         registry.putIntegreradEnhet(entry, false, true);
@@ -77,7 +77,7 @@ public class IntegreradeEnheterRegistryImplTest {
         integreradEnhet.setSchemaVersion1(false);
         integreradEnhet.setSchemaVersion3(true);
 
-        when(integreradEnhetRepository.findById(enhetsId)).thenReturn(Optional.of(integreradEnhet));
+        when(integreradEnhetRepository.findOne(enhetsId)).thenReturn(integreradEnhet);
         when(integreradEnhetRepository.save(any(IntegreradEnhet.class))).thenReturn(new IntegreradEnhet());
 
         registry.putIntegreradEnhet(entry, true, false);
@@ -95,7 +95,7 @@ public class IntegreradeEnheterRegistryImplTest {
 
         IntegreradEnhet enhet = new IntegreradEnhet();
         enhet.setSchemaVersion1(true);
-        when(integreradEnhetRepository.findById(eq(enhetsId))).thenReturn(Optional.of(enhet)); // exists
+        when(integreradEnhetRepository.findOne(eq(enhetsId))).thenReturn(enhet); // exists
 
         boolean result = registry.isEnhetIntegrerad(enhetsId, Fk7263EntryPoint.MODULE_ID);
         assertTrue(result);
@@ -105,7 +105,7 @@ public class IntegreradeEnheterRegistryImplTest {
     public void testIsEnhetIntegreradFalse() {
         final String enhetsId = "enhetsId";
 
-        when(integreradEnhetRepository.findById(eq(enhetsId))).thenReturn(Optional.empty());
+        when(integreradEnhetRepository.findOne(eq(enhetsId))).thenReturn(null);
 
         boolean result = registry.isEnhetIntegrerad(enhetsId, Fk7263EntryPoint.MODULE_ID);
         assertFalse(result);
@@ -122,7 +122,7 @@ public class IntegreradeEnheterRegistryImplTest {
         integreradEnhet.setVardgivarId(vardgivarId);
 
         // already exists
-        when(integreradEnhetRepository.findById(eq(enhetsId))).thenReturn(Optional.of(integreradEnhet));
+        when(integreradEnhetRepository.findOne(eq(enhetsId))).thenReturn(integreradEnhet);
         when(integreradEnhetRepository.save(any(IntegreradEnhet.class))).thenReturn(new IntegreradEnhet());
 
         registry.addIfSameVardgivareButDifferentUnits(enhetsId, entry, LuseEntryPoint.MODULE_ID);
@@ -144,7 +144,7 @@ public class IntegreradeEnheterRegistryImplTest {
         integreradEnhet.setSchemaVersion3(true);
         integreradEnhet.setVardgivarId(vardgivarId);
 
-        when(integreradEnhetRepository.findById(eq(enhetsId))).thenReturn(Optional.of(integreradEnhet));
+        when(integreradEnhetRepository.findOne(eq(enhetsId))).thenReturn(integreradEnhet);
 
         registry.addIfSameVardgivareButDifferentUnits(enhetsId, entry, LuseEntryPoint.MODULE_ID);
 
@@ -159,7 +159,7 @@ public class IntegreradeEnheterRegistryImplTest {
         final String enhetsId = "enhetsId";
         IntegreradEnhet integreradEnhet = new IntegreradEnhet();
 
-        when(integreradEnhetRepository.findById(eq(enhetsId))).thenReturn(Optional.of(integreradEnhet));
+        when(integreradEnhetRepository.findOne(eq(enhetsId))).thenReturn(integreradEnhet);
         registry.deleteIntegreradEnhet(enhetsId);
 
         verify(integreradEnhetRepository).delete(integreradEnhet);
@@ -169,7 +169,7 @@ public class IntegreradeEnheterRegistryImplTest {
     public void testDeleteIntegreradEnhetNotFound() {
         final String enhetsId = "enhetsId";
 
-        when(integreradEnhetRepository.findById(enhetsId)).thenReturn(Optional.empty()); // not found
+        when(integreradEnhetRepository.findOne(enhetsId)).thenReturn(null); // not found
         registry.deleteIntegreradEnhet(enhetsId);
 
         verify(integreradEnhetRepository, never()).delete(any(IntegreradEnhet.class));
@@ -181,7 +181,7 @@ public class IntegreradeEnheterRegistryImplTest {
 
         IntegreradEnhet enhet = new IntegreradEnhet();
         enhet.setSchemaVersion1(true);
-        when(integreradEnhetRepository.findById(eq(enhetsId))).thenReturn(Optional.of(enhet));
+        when(integreradEnhetRepository.findOne(eq(enhetsId))).thenReturn(enhet);
 
         Optional<SchemaVersion> result = registry.getSchemaVersion(enhetsId, Fk7263EntryPoint.MODULE_ID);
         assertTrue(result.isPresent());
@@ -195,7 +195,7 @@ public class IntegreradeEnheterRegistryImplTest {
         IntegreradEnhet enhet = new IntegreradEnhet();
         enhet.setSchemaVersion1(true);
         enhet.setSchemaVersion3(true);
-        when(integreradEnhetRepository.findById(eq(enhetsId))).thenReturn(Optional.of(enhet));
+        when(integreradEnhetRepository.findOne(eq(enhetsId))).thenReturn(enhet);
 
         Optional<SchemaVersion> result = registry.getSchemaVersion(enhetsId, Fk7263EntryPoint.MODULE_ID);
         assertTrue(result.isPresent());
@@ -209,7 +209,7 @@ public class IntegreradeEnheterRegistryImplTest {
         IntegreradEnhet enhet = new IntegreradEnhet();
         enhet.setSchemaVersion1(false);
         enhet.setSchemaVersion3(false);
-        when(integreradEnhetRepository.findById(eq(enhetsId))).thenReturn(Optional.of(enhet));
+        when(integreradEnhetRepository.findOne(eq(enhetsId))).thenReturn(enhet);
 
         assertFalse(registry.getSchemaVersion(enhetsId, Fk7263EntryPoint.MODULE_ID).isPresent());
         assertFalse(registry.getSchemaVersion(enhetsId, LuseEntryPoint.MODULE_ID).isPresent());
@@ -222,7 +222,7 @@ public class IntegreradeEnheterRegistryImplTest {
         IntegreradEnhet enhet = new IntegreradEnhet();
         enhet.setSchemaVersion1(false);
         enhet.setSchemaVersion3(true);
-        when(integreradEnhetRepository.findById(enhetsId)).thenReturn(Optional.of(enhet));
+        when(integreradEnhetRepository.findOne(enhetsId)).thenReturn(enhet);
 
         Optional<SchemaVersion> result = registry.getSchemaVersion(enhetsId, LuseEntryPoint.MODULE_ID);
         assertTrue(result.isPresent());

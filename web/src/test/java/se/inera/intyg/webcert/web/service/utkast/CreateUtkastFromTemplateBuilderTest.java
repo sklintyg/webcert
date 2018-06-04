@@ -59,7 +59,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -198,7 +197,7 @@ public class CreateUtkastFromTemplateBuilderTest {
     public void testPopulateRenewalUtkastFromOriginal() throws Exception {
 
         Utkast orgUtkast = createOriginalUtkast();
-        when(mockUtkastRepository.findById(INTYG_ID)).thenReturn(Optional.of(orgUtkast));
+        when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(orgUtkast);
 
         CreateUtkastFromTemplateRequest createUtkastFromTemplateRequest = buildCreateUtkastFromTemplateRequest();
         Person patientDetails = new Person(PATIENT_SSN, false, false, PATIENT_FNAME, PATIENT_MNAME, PATIENT_LNAME, "Postadr", "12345",

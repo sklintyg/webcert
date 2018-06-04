@@ -99,7 +99,7 @@ public class ArendeResource {
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     public Arende getArende(@PathParam("id") Long id) {
-        return arendeRepository.findById(id).get();
+        return arendeRepository.findOne(id);
     }
 
     @POST

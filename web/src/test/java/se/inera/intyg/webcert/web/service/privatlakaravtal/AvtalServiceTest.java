@@ -68,7 +68,7 @@ public class AvtalServiceTest {
     @Test
     public void testGetLatestAvtal() {
         when(avtalRepository.getLatestAvtalVersion()).thenReturn(AVTAL_VERSION_1);
-        when(avtalRepository.findById(AVTAL_VERSION_1)).thenReturn(Optional.of(buildAvtal(AVTAL_VERSION_1)));
+        when(avtalRepository.findOne(AVTAL_VERSION_1)).thenReturn(buildAvtal(AVTAL_VERSION_1));
         Optional<Avtal> avtal = avtalService.getLatestAvtal();
         assertEquals(AVTAL_VERSION_1, avtal.get().getAvtalVersion());
         assertEquals("TEXT", avtal.get().getAvtalText());

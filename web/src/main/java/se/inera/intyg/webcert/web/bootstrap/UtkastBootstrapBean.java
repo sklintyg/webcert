@@ -103,28 +103,28 @@ public class UtkastBootstrapBean {
 
                     Utlatande utlatande = buildUtlatande(resource, moduleName);
 
-                    if (!utkastRepo.findById(utlatande.getId()).isPresent()) {
+                    if (utkastRepo.findOne(utlatande.getId()) == null) {
                         UtkastStatus status = UtkastStatus.SIGNED;
                         if (filename.contains("locked")) {
                             status = UtkastStatus.DRAFT_LOCKED;
                         }
                         utkastRepo.save(createUtkast(utlatande, status));
                         switch (utlatande.getTyp()) {
-                            case Fk7263EntryPoint.MODULE_ID:
-                                fragaRepo.save(createFragaSvar(utlatande, FrageStallare.FORSAKRINGSKASSAN, true, false));
-                                fragaRepo.save(createFragaSvar(utlatande, FrageStallare.WEBCERT, false, false));
-                                fragaRepo.save(createFragaSvar(utlatande, FrageStallare.FORSAKRINGSKASSAN, false, true));
-                                fragaRepo.save(createFragaSvar(utlatande, FrageStallare.FORSAKRINGSKASSAN, false, false));
-                                break;
-                            case TsBasEntryPoint.MODULE_ID:
-                            case TsDiabetesEntryPoint.MODULE_ID:
-                                // These certificates does not support arende or fragaSvar
-                                break;
-                            default: // SIT certificates
-                                setupArende(utlatande, true, true, FrageStallare.FORSAKRINGSKASSAN);
-                                setupArende(utlatande, false, false, FrageStallare.WEBCERT);
-                                setupArende(utlatande, false, false, FrageStallare.FORSAKRINGSKASSAN);
-                                break;
+                        case Fk7263EntryPoint.MODULE_ID:
+                            fragaRepo.save(createFragaSvar(utlatande, FrageStallare.FORSAKRINGSKASSAN, true, false));
+                            fragaRepo.save(createFragaSvar(utlatande, FrageStallare.WEBCERT, false, false));
+                            fragaRepo.save(createFragaSvar(utlatande, FrageStallare.FORSAKRINGSKASSAN, false, true));
+                            fragaRepo.save(createFragaSvar(utlatande, FrageStallare.FORSAKRINGSKASSAN, false, false));
+                            break;
+                        case TsBasEntryPoint.MODULE_ID:
+                        case TsDiabetesEntryPoint.MODULE_ID:
+                            // These certificates does not support arende or fragaSvar
+                            break;
+                        default: // SIT certificates
+                            setupArende(utlatande, true, true, FrageStallare.FORSAKRINGSKASSAN);
+                            setupArende(utlatande, false, false, FrageStallare.WEBCERT);
+                            setupArende(utlatande, false, false, FrageStallare.FORSAKRINGSKASSAN);
+                            break;
                         }
                     }
                 }

@@ -195,9 +195,9 @@ public class NotificationServiceImpl implements NotificationService {
      */
     @Override
     public void sendNotificationForIntygSent(String intygsId) {
-        Optional<Utkast> utkast = getUtkast(intygsId);
-        if (utkast.isPresent()) {
-            createAndSendNotification(utkast.get(), SKICKA);
+        Utkast utkast = getUtkast(intygsId);
+        if (utkast != null) {
+            createAndSendNotification(utkast, SKICKA);
         }
     }
 
@@ -211,9 +211,9 @@ public class NotificationServiceImpl implements NotificationService {
      */
     @Override
     public void sendNotificationForIntygRevoked(String intygsId) {
-        Optional<Utkast> utkast = getUtkast(intygsId);
-        if (utkast.isPresent()) {
-            createAndSendNotification(utkast.get(), MAKULE);
+        Utkast utkast = getUtkast(intygsId);
+        if (utkast != null) {
+            createAndSendNotification(utkast, MAKULE);
         }
     }
 
@@ -274,9 +274,9 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     protected void sendNotificationForQAs(String intygsId, NotificationEvent event, LocalDate date, ArendeAmne amne) {
-        Optional<Utkast> utkast = getUtkast(intygsId);
-        if (utkast.isPresent()) {
-            createAndSendNotificationForQAs(utkast.get(), event, amne, date);
+        Utkast utkast = getUtkast(intygsId);
+        if (utkast != null) {
+            createAndSendNotificationForQAs(utkast, event, amne, date);
         }
     }
 
@@ -285,7 +285,7 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     protected void createAndSendNotification(Utkast utkast, HandelsekodEnum handelse,
-                                             ArendeAmne amne, LocalDate sistaDatumForSvar) {
+            ArendeAmne amne, LocalDate sistaDatumForSvar) {
 
         Optional<SchemaVersion> version = sendNotificationStrategy.decideNotificationForIntyg(utkast);
         if (!version.isPresent()) {
@@ -297,7 +297,7 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     private void createAndSendNotification(Utkast utkast, HandelsekodEnum handelse,
-                                           ArendeAmne amne, LocalDate sistaDatumForSvar, SchemaVersion version) {
+            ArendeAmne amne, LocalDate sistaDatumForSvar, SchemaVersion version) {
         Amneskod amneskod = null;
         if (amne != null) {
             amneskod = AmneskodCreator.create(amne.name(), amne.getDescription());
@@ -339,49 +339,49 @@ public class NotificationServiceImpl implements NotificationService {
 
     private HandelsekodEnum getHandelseV1(NotificationEvent event) {
         switch (event) {
-            case QUESTION_FROM_CARE_WITH_ANSWER_HANDLED:
-                return HANFRFV;
-            case QUESTION_FROM_CARE_WITH_ANSWER_UNHANDLED:
-            case NEW_ANSWER_FROM_RECIPIENT:
-                return NYSVFM;
-            case NEW_ANSWER_FROM_CARE:
-            case QUESTION_FROM_RECIPIENT_HANDLED:
-                return HANFRFM;
-            case NEW_QUESTION_FROM_RECIPIENT:
-            case QUESTION_FROM_RECIPIENT_UNHANDLED:
-                return NYFRFM;
-            case NEW_QUESTION_FROM_CARE:
-                return NYFRFV;
-            case QUESTION_FROM_CARE_HANDLED:
-            case QUESTION_FROM_CARE_UNHANDLED:
-                return null;
+        case QUESTION_FROM_CARE_WITH_ANSWER_HANDLED:
+            return HANFRFV;
+        case QUESTION_FROM_CARE_WITH_ANSWER_UNHANDLED:
+        case NEW_ANSWER_FROM_RECIPIENT:
+            return NYSVFM;
+        case NEW_ANSWER_FROM_CARE:
+        case QUESTION_FROM_RECIPIENT_HANDLED:
+            return HANFRFM;
+        case NEW_QUESTION_FROM_RECIPIENT:
+        case QUESTION_FROM_RECIPIENT_UNHANDLED:
+            return NYFRFM;
+        case NEW_QUESTION_FROM_CARE:
+            return NYFRFV;
+        case QUESTION_FROM_CARE_HANDLED:
+        case QUESTION_FROM_CARE_UNHANDLED:
+            return null;
         }
         return null;
     }
 
     private HandelsekodEnum getHandelseV3(NotificationEvent event) {
         switch (event) {
-            case QUESTION_FROM_CARE_WITH_ANSWER_HANDLED:
-            case QUESTION_FROM_CARE_WITH_ANSWER_UNHANDLED:
-            case QUESTION_FROM_CARE_HANDLED:
-            case QUESTION_FROM_CARE_UNHANDLED:
-                return HANFRFV;
-            case NEW_ANSWER_FROM_CARE:
-            case QUESTION_FROM_RECIPIENT_HANDLED:
-            case QUESTION_FROM_RECIPIENT_UNHANDLED:
-                return HANFRFM;
-            case NEW_QUESTION_FROM_CARE:
-                return NYFRFV;
-            case NEW_QUESTION_FROM_RECIPIENT:
-                return NYFRFM;
-            case NEW_ANSWER_FROM_RECIPIENT:
-                return NYSVFM;
+        case QUESTION_FROM_CARE_WITH_ANSWER_HANDLED:
+        case QUESTION_FROM_CARE_WITH_ANSWER_UNHANDLED:
+        case QUESTION_FROM_CARE_HANDLED:
+        case QUESTION_FROM_CARE_UNHANDLED:
+            return HANFRFV;
+        case NEW_ANSWER_FROM_CARE:
+        case QUESTION_FROM_RECIPIENT_HANDLED:
+        case QUESTION_FROM_RECIPIENT_UNHANDLED:
+            return HANFRFM;
+        case NEW_QUESTION_FROM_CARE:
+            return NYFRFV;
+        case NEW_QUESTION_FROM_RECIPIENT:
+            return NYFRFM;
+        case NEW_ANSWER_FROM_RECIPIENT:
+            return NYSVFM;
         }
         return null;
     }
 
     private void save(NotificationMessage notificationMessage, String enhetsId, String vardgivarId, String personnummer,
-                      ArendeAmne amne, LocalDate sistaDatumForSvar) {
+            ArendeAmne amne, LocalDate sistaDatumForSvar) {
 
         Handelse handelse = new Handelse();
         handelse.setCode(notificationMessage.getHandelse());
@@ -418,8 +418,8 @@ public class NotificationServiceImpl implements NotificationService {
         monitoringLog.logNotificationSent(notificationMessage.getHandelse().name(), enhetsId);
     }
 
-    private Optional<Utkast> getUtkast(String intygsId) {
-        return utkastRepo.findById(intygsId);
+    private Utkast getUtkast(String intygsId) {
+        return utkastRepo.findOne(intygsId);
     }
 
     private String notificationMessageToJson(NotificationMessage notificationMessage) {

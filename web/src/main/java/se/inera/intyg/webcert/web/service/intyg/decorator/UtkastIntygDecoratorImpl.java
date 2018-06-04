@@ -27,7 +27,6 @@ import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 
 import java.util.List;
-import java.util.Optional;
 
 /**
  * This is a bit of a hack to mitigate states when an intyg is on a resend queue due to a 3rd party being unavailable
@@ -54,14 +53,13 @@ public class UtkastIntygDecoratorImpl implements UtkastIntygDecorator {
         if (isSent && isRevoked) {
             return;
         }
-        Optional<Utkast> utkastOptional = utkastRepository.findById(certificate.getMetaData().getCertificateId());
+        Utkast utkast = utkastRepository.findOne(certificate.getMetaData().getCertificateId());
 
         // Don't try to decorate if utkast not found. May be a non-webcert intyg.
-        if (!utkastOptional.isPresent()) {
+        if (utkast == null) {
             return;
         }
 
-        Utkast utkast = utkastOptional.get();
         if (utkast.getSkickadTillMottagareDatum() != null && !isSent) {
             // Add sent status flag
             Status sentStatus = new Status(CertificateState.SENT, utkast.getSkickadTillMottagare(), utkast.getSkickadTillMottagareDatum());

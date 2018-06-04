@@ -27,7 +27,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -172,12 +171,11 @@ public class FragaSvarServiceImpl implements FragaSvarService {
     public FragaSvar processIncomingAnswer(Long internId, String svarsText, LocalDateTime svarSigneringsDatum) {
 
         // lookup question in database
-        Optional<FragaSvar> fragaSvarOptional = fragaSvarRepository.findById(internId);
+        FragaSvar fragaSvar = fragaSvarRepository.findOne(internId);
 
-        if (!fragaSvarOptional.isPresent()) {
+        if (fragaSvar == null) {
             throw new IllegalStateException("No question found with internal ID " + internId);
         }
-        FragaSvar fragaSvar = fragaSvarOptional.get();
         if (FrageStallare.FORSAKRINGSKASSAN.isKodEqual(fragaSvar.getFrageStallare())) {
             throw new IllegalStateException("Incoming answer refers to question initiated by Försäkringskassan.");
         }
@@ -449,7 +447,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
                 .peek(FragaSvar::setToVidareBefordrad)
                 .collect(Collectors.toList());
 
-        return fragaSvarRepository.saveAll(fragaSvarList);
+        return fragaSvarRepository.save(fragaSvarList);
     }
 
     @Override
@@ -645,12 +643,12 @@ public class FragaSvarServiceImpl implements FragaSvarService {
     }
 
     private FragaSvar lookupFragaSvar(Long fragaSvarId) {
-        Optional<FragaSvar> fragaSvarOptional = fragaSvarRepository.findById(fragaSvarId);
-        if (!fragaSvarOptional.isPresent()) {
+        FragaSvar fragaSvar = fragaSvarRepository.findOne(fragaSvarId);
+        if (fragaSvar == null) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM,
                     "Could not find FragaSvar with id:" + fragaSvarId);
         }
-        return fragaSvarOptional.get();
+        return fragaSvar;
     }
 
     private void sendNotification(FragaSvar fragaSvar, NotificationEvent event) {

@@ -59,28 +59,26 @@ public class IntegreradeEnheterRegistryImpl implements IntegreradeEnheterRegistr
     public void putIntegreradEnhet(IntegreradEnhetEntry entry, boolean schemaVersion1, boolean schemaVersion3) {
 
         String enhetsId = entry.getEnhetsId();
-        IntegreradEnhet intEnhet = null;
-        Optional<IntegreradEnhet> integreradEnhetOptional = integreradEnhetRepository.findById(enhetsId);
-        if (integreradEnhetOptional.isPresent()) {
-            intEnhet = integreradEnhetOptional.get();
+        IntegreradEnhet integreradEnhet = integreradEnhetRepository.findOne(enhetsId);
+        if (integreradEnhet != null) {
             LOG.debug("Updating existing integrerad enhet", enhetsId);
             if (schemaVersion1) {
-                intEnhet.setSchemaVersion1(schemaVersion1);
+                integreradEnhet.setSchemaVersion1(schemaVersion1);
             }
             if (schemaVersion3) {
-                intEnhet.setSchemaVersion3(schemaVersion3);
+                integreradEnhet.setSchemaVersion3(schemaVersion3);
             }
         } else {
-            intEnhet = new IntegreradEnhet();
-            intEnhet.setEnhetsId(enhetsId);
-            intEnhet.setEnhetsNamn(entry.getEnhetsNamn());
-            intEnhet.setVardgivarId(entry.getVardgivareId());
-            intEnhet.setVardgivarNamn(entry.getVardgivareNamn());
-            intEnhet.setSchemaVersion1(schemaVersion1);
-            intEnhet.setSchemaVersion3(schemaVersion3);
-            LOG.debug("Adding unit to registry: {}", intEnhet.toString());
+            integreradEnhet = new IntegreradEnhet();
+            integreradEnhet.setEnhetsId(enhetsId);
+            integreradEnhet.setEnhetsNamn(entry.getEnhetsNamn());
+            integreradEnhet.setVardgivarId(entry.getVardgivareId());
+            integreradEnhet.setVardgivarNamn(entry.getVardgivareNamn());
+            integreradEnhet.setSchemaVersion1(schemaVersion1);
+            integreradEnhet.setSchemaVersion3(schemaVersion3);
+            LOG.debug("Adding unit to registry: {}", integreradEnhet.toString());
         }
-        integreradEnhetRepository.save(intEnhet);
+        integreradEnhetRepository.save(integreradEnhet);
     }
 
     /*
@@ -111,9 +109,9 @@ public class IntegreradeEnheterRegistryImpl implements IntegreradeEnheterRegistr
     @Override
     @Transactional("jpaTransactionManager")
     public void deleteIntegreradEnhet(String enhetsHsaId) {
-        Optional<IntegreradEnhet> unitOptional = integreradEnhetRepository.findById(enhetsHsaId);
-        if (unitOptional.isPresent()) {
-            integreradEnhetRepository.delete(unitOptional.get());
+        IntegreradEnhet unit = integreradEnhetRepository.findOne(enhetsHsaId);
+        if (unit != null) {
+            integreradEnhetRepository.delete(unit);
             LOG.debug("IntegreradEnhet {} deleted", enhetsHsaId);
         }
     }
@@ -159,13 +157,12 @@ public class IntegreradeEnheterRegistryImpl implements IntegreradeEnheterRegistr
     }
 
     private IntegreradEnhet getIntegreradEnhet(String enhetsHsaId) {
-        Optional<IntegreradEnhet> enhetOptional = integreradEnhetRepository.findById(enhetsHsaId);
+        IntegreradEnhet enhet = integreradEnhetRepository.findOne(enhetsHsaId);
 
-        if (!enhetOptional.isPresent()) {
+        if (enhet == null) {
             LOG.debug("Unit {} is not in the registry of integrated units", enhetsHsaId);
             return null;
         }
-        IntegreradEnhet enhet = enhetOptional.get();
 
         // update entity with control date
         enhet.setSenasteKontrollDatum(LocalDateTime.now());

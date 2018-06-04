@@ -231,7 +231,7 @@ public class CopyUtkastServiceImplTest {
         user.setParameters(new IntegrationParameters(reference, "", "", "", "", "", "", "", "", false, false, false, true));
         when(userService.getUser()).thenReturn(user);
 
-        when(mockUtkastRepository.existsById(INTYG_ID)).thenReturn(Boolean.FALSE);
+        when(mockUtkastRepository.exists(INTYG_ID)).thenReturn(Boolean.FALSE);
 
         CopyUtkastBuilderResponse resp = createCopyUtkastBuilderResponse();
         when(createReplacementUtkastBuilder.populateCopyUtkastFromSignedIntyg(any(CreateReplacementCopyRequest.class), any(Person.class),
@@ -296,7 +296,7 @@ public class CopyUtkastServiceImplTest {
         user.setParameters(new IntegrationParameters(reference, "", "", "", "", "", "", "", "", true, false, false, true));
         when(userService.getUser()).thenReturn(user);
 
-        when(mockUtkastRepository.existsById(INTYG_ID)).thenReturn(Boolean.TRUE);
+        when(mockUtkastRepository.exists(INTYG_ID)).thenReturn(Boolean.TRUE);
 
         CopyUtkastBuilderResponse resp = createCopyUtkastBuilderResponse();
         when(copyCompletionUtkastBuilder.populateCopyUtkastFromOrignalUtkast(any(CreateCompletionCopyRequest.class), any(Person.class),
@@ -328,7 +328,7 @@ public class CopyUtkastServiceImplTest {
         user.setParameters(new IntegrationParameters(reference, "", "", "", "", "", "", "", "", false, false, false, true));
         when(userService.getUser()).thenReturn(user);
 
-        when(mockUtkastRepository.existsById(INTYG_ID)).thenReturn(Boolean.TRUE);
+        when(mockUtkastRepository.exists(INTYG_ID)).thenReturn(Boolean.TRUE);
 
         CopyUtkastBuilderResponse resp = createCopyUtkastBuilderResponse();
         when(createRenewalCopyUtkastBuilder.populateCopyUtkastFromOrignalUtkast(any(CreateRenewalCopyRequest.class), any(Person.class),
@@ -392,7 +392,7 @@ public class CopyUtkastServiceImplTest {
         user.setParameters(new IntegrationParameters(reference, "", "", "", "", "", "", "", "", true, false, false, true));
         when(userService.getUser()).thenReturn(user);
 
-        when(mockUtkastRepository.existsById(INTYG_ID)).thenReturn(Boolean.TRUE);
+        when(mockUtkastRepository.exists(INTYG_ID)).thenReturn(Boolean.TRUE);
 
         CopyUtkastBuilderResponse resp = createCopyUtkastBuilderResponse();
         when(createRenewalCopyUtkastBuilder.populateCopyUtkastFromOrignalUtkast(
@@ -434,7 +434,7 @@ public class CopyUtkastServiceImplTest {
         user.setParameters(new IntegrationParameters(reference, "", "", "", "", "", "", "", "", false, false, false, true));
         when(userService.getUser()).thenReturn(user);
 
-        when(mockUtkastRepository.existsById(INTYG_ID)).thenReturn(Boolean.FALSE);
+        when(mockUtkastRepository.exists(INTYG_ID)).thenReturn(Boolean.FALSE);
 
         CopyUtkastBuilderResponse resp = createCopyUtkastBuilderResponse();
         when(createRenewalCopyUtkastBuilder.populateCopyUtkastFromSignedIntyg(
@@ -480,7 +480,7 @@ public class CopyUtkastServiceImplTest {
         user.setParameters(new IntegrationParameters(reference, "", "", "", "", "", "", "", "", false, false, false, true));
         when(userService.getUser()).thenReturn(user);
 
-        when(mockUtkastRepository.existsById(INTYG_ID)).thenReturn(Boolean.FALSE);
+        when(mockUtkastRepository.exists(INTYG_ID)).thenReturn(Boolean.FALSE);
 
         CopyUtkastBuilderResponse resp = createCopyUtkastBuilderResponse();
         when(createRenewalCopyUtkastBuilder.populateCopyUtkastFromSignedIntyg(

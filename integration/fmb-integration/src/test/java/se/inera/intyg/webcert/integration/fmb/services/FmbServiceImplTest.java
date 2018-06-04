@@ -85,7 +85,7 @@ public class FmbServiceImplTest {
         fmbServiceImpl.updateData();
 
         //Then
-        Mockito.verify(fmbRepository, times(1)).saveAll(fmbCaptor.capture());
+        Mockito.verify(fmbRepository, times(1)).save(fmbCaptor.capture());
         List<Fmb> fmbCaptorAllValues = fmbCaptor.getValue();
         assertEquals(1865, fmbCaptorAllValues.size());
         assertEquals(100, getCount(fmbCaptorAllValues, FmbType.AKTIVITETSBEGRANSNING));
@@ -110,7 +110,7 @@ public class FmbServiceImplTest {
         fmbServiceImpl.updateData();
 
         //Then
-        Mockito.verify(fmbRepository, times(1)).saveAll(fmbCaptor.capture());
+        Mockito.verify(fmbRepository, times(1)).save(fmbCaptor.capture());
         List<List<Fmb>> fmbCaptorAllValues = fmbCaptor.getAllValues();
         assertEquals("J222", fmbCaptorAllValues.get(0).get(0).getIcd10());
         assertEquals("J224", fmbCaptorAllValues.get(0).get(1).getIcd10());
@@ -128,7 +128,7 @@ public class FmbServiceImplTest {
 
         //Then
         Mockito.verify(fmbRepository, times(1)).deleteAllInBatch();
-        Mockito.verify(fmbRepository, times(1)).saveAll(fmbCaptor.capture());
+        Mockito.verify(fmbRepository, times(1)).save(fmbCaptor.capture());
         assertEquals(1, fmbCaptor.getValue().size());
         assertEquals(beskrivning, findFmbType(FmbType.FUNKTIONSNEDSATTNING, fmbCaptor.getValue()).getText());
     }
@@ -145,7 +145,7 @@ public class FmbServiceImplTest {
 
         //Then
         Mockito.verify(fmbRepository, times(1)).deleteAllInBatch();
-        Mockito.verify(fmbRepository, times(1)).saveAll(fmbCaptor.capture());
+        Mockito.verify(fmbRepository, times(1)).save(fmbCaptor.capture());
         assertEquals(1, fmbCaptor.getValue().size());
         assertEquals(beskrivning, findFmbType(FmbType.FUNKTIONSNEDSATTNING, fmbCaptor.getValue()).getText());
     }
@@ -162,7 +162,7 @@ public class FmbServiceImplTest {
 
         //Then
         Mockito.verify(fmbRepository, times(0)).deleteAllInBatch();
-        Mockito.verify(fmbRepository, times(0)).saveAll(fmbCaptor.capture());
+        Mockito.verify(fmbRepository, times(0)).save(fmbCaptor.capture());
     }
 
     @Test
@@ -177,7 +177,7 @@ public class FmbServiceImplTest {
 
         //Then
         Mockito.verify(fmbRepository, times(0)).deleteAllInBatch();
-        Mockito.verify(fmbRepository, times(0)).saveAll(fmbCaptor.capture());
+        Mockito.verify(fmbRepository, times(0)).save(fmbCaptor.capture());
     }
 
     private Fmb createFmbDi(String icd10, String text) {

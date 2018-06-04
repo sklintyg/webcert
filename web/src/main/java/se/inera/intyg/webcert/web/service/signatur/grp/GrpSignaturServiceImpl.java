@@ -90,8 +90,8 @@ public class GrpSignaturServiceImpl implements GrpSignaturService {
     @Override
     public SignaturTicket startGrpAuthentication(String intygId, long version) {
 
-        Optional<Utkast> utkastOptional = utkastRepository.findById(intygId);
-        validateUtkast(intygId, utkastOptional);
+        Utkast utkast = utkastRepository.findOne(intygId);
+        validateUtkast(intygId, utkast);
 
         WebCertUser webCertUser = webCertUserService.getUser();
         validateWebCertUser(webCertUser);
@@ -99,7 +99,7 @@ public class GrpSignaturServiceImpl implements GrpSignaturService {
         String personId = webCertUser.getPersonId();
         validatePersonId(personId);
 
-        SignaturTicket draftHash = signaturService.createDraftHash(intygId, utkastOptional.get().getVersion());
+        SignaturTicket draftHash = signaturService.createDraftHash(intygId, utkast.getVersion());
 
         AuthenticateRequestType authRequest = buildAuthRequest(personId, draftHash);
 
@@ -158,8 +158,8 @@ public class GrpSignaturServiceImpl implements GrpSignaturService {
         }
     }
 
-    private void validateUtkast(String intygId, Optional<Utkast> utkast) {
-        if (!utkast.isPresent()) {
+    private void validateUtkast(String intygId, Utkast utkast) {
+        if (utkast == null) {
             throw new IllegalArgumentException("Could not send GRP authenticate request, no Utkast found for intygId '" + intygId + "'");
         }
     }

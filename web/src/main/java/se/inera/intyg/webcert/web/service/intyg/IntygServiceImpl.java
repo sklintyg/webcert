@@ -374,9 +374,7 @@ public class IntygServiceImpl implements IntygService {
         try {
             LOG.debug("Fetching intyg '{}' as PDF", intygsId);
 
-            Optional<Utkast> utkastOptional = utkastRepository.findById(intygsId);
-
-            Utkast utkast = utkastOptional.orElse(null);
+            Utkast utkast = utkastRepository.findOne(intygsId);
             IntygContentHolder intyg = (utkast != null) ? buildIntygContentHolderForUtkast(utkast, false)
                     : getIntygData(intygsId, intygsTyp, false);
             UtkastStatus utkastStatus = (utkast != null) ? utkast.getStatus() : UtkastStatus.SIGNED;
@@ -850,8 +848,8 @@ public class IntygServiceImpl implements IntygService {
      * instead.
      */
     private IntygContentHolder getIntygDataPreferWebcert(String intygId, String intygTyp) {
-        Optional<Utkast> utkastOptional = utkastRepository.findById(intygId);
-        return utkastOptional.isPresent() ? buildIntygContentHolderForUtkast(utkastOptional.get(), false)
+        Utkast utkast = utkastRepository.findOne(intygId);
+        return utkast != null ? buildIntygContentHolderForUtkast(utkast, false)
                 : getIntygData(intygId, intygTyp, false);
     }
 
@@ -918,9 +916,9 @@ public class IntygServiceImpl implements IntygService {
     }
 
     private Utlatande getUtlatandeForIntyg(String intygId, String typ) {
-        Optional<Utkast> utkastOptional = utkastRepository.findById(intygId);
-        return utkastOptional.isPresent()
-                ? modelFacade.getUtlatandeFromInternalModel(utkastOptional.get().getIntygsTyp(), utkastOptional.get().getModel())
+        Utkast utkast = utkastRepository.findOne(intygId);
+        return utkast != null
+                ? modelFacade.getUtlatandeFromInternalModel(utkast.getIntygsTyp(), utkast.getModel())
                 : getIntygData(intygId, typ, false).getUtlatande();
     }
 
@@ -952,9 +950,9 @@ public class IntygServiceImpl implements IntygService {
     }
 
     private void markUtkastWithSendDateAndRecipient(String intygsId, String recipient) {
-        Optional<Utkast> utkastOptional = utkastRepository.findById(intygsId);
-        if (utkastOptional.isPresent()) {
-            Utkast utkast = utkastOptional.get();
+        Utkast utkast = utkastRepository.findOne(intygsId);
+        if (utkast != null) {
+
             utkast.setSkickadTillMottagareDatum(LocalDateTime.now());
             utkast.setSkickadTillMottagare(recipient);
             utkastRepository.save(utkast);
@@ -962,9 +960,9 @@ public class IntygServiceImpl implements IntygService {
     }
 
     private void markUtkastWithRevokedDate(String intygsId) {
-        Optional<Utkast> utkastOptional = utkastRepository.findById(intygsId);
-        if (utkastOptional.isPresent()) {
-            Utkast utkast = utkastOptional.get();
+        Utkast utkast = utkastRepository.findOne(intygsId);
+        if (utkast != null) {
+
             utkast.setAterkalladDatum(LocalDateTime.now());
             utkastRepository.save(utkast);
         }

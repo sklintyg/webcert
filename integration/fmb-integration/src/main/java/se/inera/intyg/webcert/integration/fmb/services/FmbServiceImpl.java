@@ -99,7 +99,7 @@ public class FmbServiceImpl implements FmbService {
     private void updateFmbDb(List<Fmb> updatedFmbs) {
         if (!updatedFmbs.isEmpty()) {
             fmbRepository.deleteAllInBatch();
-            fmbRepository.saveAll(updatedFmbs);
+            fmbRepository.save(updatedFmbs);
             LOG.info("Inserted {} rows for FMB", updatedFmbs.size());
         }
     }
