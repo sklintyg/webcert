@@ -136,10 +136,12 @@ var LisjpUtkast = BaseSmiUtkast._extend({
         return pageHelpers.moveAndSendKeys(this.konsekvenser.funktionsnedsattning, text, text);
     },
     angeMedicinskBehandling: function(behandling) {
-        var fn = this.medicinskbehandling;
-        return pageHelpers.moveAndSendKeys(fn.pagaende, behandling.pagaende, behandling.pagaende).then(function() {
-            return pageHelpers.moveAndSendKeys(fn.planerad, behandling.planerad, behandling.planerad);
-        });
+		if (behandling) {
+			var fn = this.medicinskbehandling;
+			return pageHelpers.moveAndSendKeys(fn.pagaende, behandling.pagaende, behandling.pagaende).then(function() {
+				return pageHelpers.moveAndSendKeys(fn.planerad, behandling.planerad, behandling.planerad);
+			});
+		}
     },
     angeArbetsformaga: function(arbetsformaga) {
         var el25 = this.sjukskrivning['25'];
