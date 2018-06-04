@@ -100,11 +100,8 @@ function verifyResorTillArbete(data) {
 function verifyPrognosForArbetsformaga(data) {
     let promiseArr = [];
 
-    promiseArr.push(expect(lisjpPage.prognosForArbetsformaga.getText()).to.eventually.equal(data.prognosForArbetsformaga.name));
+    promiseArr.push(expect(lisjpPage.prognosForArbetsformaga.getText()).to.eventually.equal(data.prognosForArbetsformaga));
 
-    if (data.prognosForArbetsformaga.within) {
-        promiseArr.push(expect(lisjpPage.prognosForArbetsformaga.getText()).to.eventually.equal(data.prognosForArbetsformaga));
-    }
     return Promise.all([promiseArr]);
 }
 
@@ -137,28 +134,34 @@ function forkLisjpIntyg(intyg) {
 
     data.arbetsformagaFMB = testdataHelper.ejAngivetIfNull(intyg.arbetsformagaFMB);
 
-    data.arbetstidsforlaggning = testdataHelper.ejAngivetIfNull(intyg.arbetstidsforlaggning);
-    data.arbetstidsforlaggning.beskrivning = testdataHelper.ejAngivetIfNull(intyg.arbetstidsforlaggning.beskrivning);
+    if (intyg.arbetstidsforlaggning) {
+        data.arbetstidsforlaggning.val = testdataHelper.ejAngivetIfNull(intyg.arbetstidsforlaggning.val);
+        data.arbetstidsforlaggning.beskrivning = testdataHelper.ejAngivetIfNull(intyg.arbetstidsforlaggning.beskrivning);
+    } else {
+        data.arbetstidsforlaggning = {
+            val: 'Ej angivet',
+            beskrivning: 'Ej angivet'
+        };
+    }
 
     data.resorTillArbete = testdataHelper.boolTillJaEllerEjAngivet(intyg.resorTillArbete);
     data.prognosForArbetsformaga = testdataHelper.ejAngivetIfNull(intyg.prognosForArbetsformaga);
-    switch (data.prognosForArbetsformaga.name) {
-        case 'STOR_SANNOLIKHET':
-            data.prognosForArbetsformaga = 'Patienten kommer med stor sannolikhet att kunna återgå helt i nuvarande sysselsättning efter denna sjukskrivning.';
-            break;
-        case 'SANNOLIKT_INTE':
-            data.prognosForArbetsformaga = 'Patienten kommer med stor sannolikhet inte att kunna återgå helt i nuvarande sysselsättning inom 12 månader.';
-            break;
-        case 'PROGNOS_OKLAR':
-            data.prognosForArbetsformaga = '';
-            break;
+
+    if (data.prognosForArbetsformaga.within) {
+        data.prognosForArbetsformaga = ' månader';
+    } else {
+        switch (data.prognosForArbetsformaga.name) {
+            case 'STOR_SANNOLIKHET':
+                data.prognosForArbetsformaga = 'Patienten kommer med stor sannolikhet att kunna återgå helt i nuvarande sysselsättning efter denna sjukskrivning.';
+                break;
+            case 'SANNOLIKT_INTE':
+                data.prognosForArbetsformaga = 'Patienten kommer med stor sannolikhet inte att kunna återgå helt i nuvarande sysselsättning inom 12 månader.';
+                break;
+            case 'PROGNOS_OKLAR':
+                data.prognosForArbetsformaga = 'Återgång i nuvarande sysselsättning är oklar.';
+                break;
+        }
     }
-
-    //TODO HANDLE WITHIN
-    //            name: 'ATER_X_ANTAL_DGR',
-    //           within: shuffle(['1 månad', '2 månader', '3 månader'])[0]
-
-
     return data;
 }
 

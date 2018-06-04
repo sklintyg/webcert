@@ -76,21 +76,19 @@ module.exports = {
     },
     medicinskbehandling: function(data) {
         let promiseArr = [];
-
-        if (data.medicinskbehandling.avslutad) {
-            promiseArr.push(expect(smipage.behandling.avslutad.getText()).to.eventually.equal(data.medicinskbehandling.avslutad));
-        }
-
-        if (data.medicinskbehandling.pagaende) {
-            promiseArr.push(expect(smipage.behandling.pagaende.getText()).to.eventually.equal(data.medicinskbehandling.pagaende));
-        }
-
-        if (data.medicinskbehandling.planerad) {
-            promiseArr.push(expect(smipage.behandling.planerad.getText()).to.eventually.equal(data.medicinskbehandling.planerad));
-        }
-
-        if (data.medicinskbehandling.substansintag) {
-            promiseArr.push(expect(smipage.behandling.substansintag.getText()).to.eventually.equal(data.medicinskbehandling.substansintag));
+        if (data.medicinskbehandling) {
+            if (data.medicinskbehandling.avslutad) {
+                promiseArr.push(expect(smipage.behandling.avslutad.getText()).to.eventually.equal(data.medicinskbehandling.avslutad));
+            }
+            if (data.medicinskbehandling.pagaende) {
+                promiseArr.push(expect(smipage.behandling.pagaende.getText()).to.eventually.equal(data.medicinskbehandling.pagaende));
+            }
+            if (data.medicinskbehandling.planerad) {
+                promiseArr.push(expect(smipage.behandling.planerad.getText()).to.eventually.equal(data.medicinskbehandling.planerad));
+            }
+            if (data.medicinskbehandling.substansintag) {
+                promiseArr.push(expect(smipage.behandling.substansintag.getText()).to.eventually.equal(data.medicinskbehandling.substansintag));
+            }
         }
         logger.silly('Medicinskbehandling: ' + promiseArr.length + ' assertions made');
         return Promise.all([promiseArr]);
