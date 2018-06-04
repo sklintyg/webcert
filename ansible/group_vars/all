@@ -61,7 +61,7 @@ async_activemq_broker_url: "tcp://localhost:61616?jms.nonBlockingRedelivery=true
 activemq_conf: "{{ inera_root }}/activemq/conf"
 
 # Logsender configuration
-logsender_version: 6.1.0.99
+logsender_version: 6.1.0.154
 
 # Stub data folder
 stubdata_folder: "{{ inera_root }}/stubdata/webcert"
