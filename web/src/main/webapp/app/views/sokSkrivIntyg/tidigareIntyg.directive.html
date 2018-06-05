@@ -10,40 +10,40 @@
 <!-- Tidigare intyg table -->
 
 <wc-spinner label="info.loadingdata" show-spinner="viewState.tidigareIntygLoading">
-<div ng-if="viewState.intygListUnhandled.length > 0">
-  <div class="wc-patient-icon-gutter sok-skriv-gutter">
-    <i class="icon-wc-ikon-24 gutter-icon icon-wc-32"></i>
-    <h2 class="patient-intyg-heading">Tidigare intyg</h2>
+  <div ng-if="viewState.intygListUnhandled.length > 0">
+    <div class="wc-patient-icon-gutter sok-skriv-gutter">
+      <i class="icon-wc-ikon-24 gutter-icon icon-wc-32"></i>
+      <h2 class="patient-intyg-heading">Tidigare intyg</h2>
 
-    <div class="inline-block">
-      <div class="form-group">
-        <wc-radio-wrapper>
-          <input id="intygFilterAktuella" name="intygFilter" type="radio" value="current"
-                 ng-model="viewState.intygFilter" checked="checked">
-          <label for="intygFilterAktuella">Aktuella intyg</label>
-        </wc-radio-wrapper>
-        <wc-radio-wrapper>
-          <input id="intygFilterRattade" name="intygFilter" type="radio" value="revoked"
-                 ng-model="viewState.intygFilter" checked="checked">
-          <label for="intygFilterRattade">Ersatta, makulerade, låsta och kompletterade intyg
-          </label>
-        </wc-radio-wrapper>
-        <wc-radio-wrapper>
-          <input id="intygFilterSamtliga" name="intygFilter" type="radio" value="all" ng-model="viewState.intygFilter"
-                 checked="checked">
-          <label for="intygFilterSamtliga">Alla intyg
-          </label>
-        </wc-radio-wrapper>
-      </div>
-      <!-- error message -->
+      <div class="inline-block">
+        <div class="form-group">
+          <wc-radio-wrapper>
+            <input id="intygFilterAktuella" name="intygFilter" type="radio" value="current"
+                   ng-model="viewState.intygFilter" checked="checked">
+            <label for="intygFilterAktuella">Aktuella intyg</label>
+          </wc-radio-wrapper>
+          <wc-radio-wrapper>
+            <input id="intygFilterRattade" name="intygFilter" type="radio" value="revoked"
+                   ng-model="viewState.intygFilter" checked="checked">
+            <label for="intygFilterRattade">Ersatta, makulerade, låsta och kompletterade intyg
+            </label>
+          </wc-radio-wrapper>
+          <wc-radio-wrapper>
+            <input id="intygFilterSamtliga" name="intygFilter" type="radio" value="all" ng-model="viewState.intygFilter"
+                   checked="checked">
+            <label for="intygFilterSamtliga">Alla intyg
+            </label>
+          </wc-radio-wrapper>
+        </div>
+        <!-- error message -->
 
-      <wc-alert-message ng-show="viewState.intygListErrorMessageKey"
-                        alert-message-id="{{viewState.intygListErrorMessageKey}}"
-                        alert-severity="danger"
-                        id="current-list-noResults-error"></wc-alert-message>
-      <wc-alert-message ng-show="viewState.inlineErrorMessageKey"
-                        alert-message-id="{{viewState.inlineErrorMessageKey}}"
-                        alert-severity="danger"></wc-alert-message>
+        <wc-alert-message ng-show="viewState.intygListErrorMessageKey"
+                          alert-message-id="{{viewState.intygListErrorMessageKey}}"
+                          alert-severity="danger"
+                          id="current-list-noResults-error"></wc-alert-message>
+        <wc-alert-message ng-show="viewState.inlineErrorMessageKey"
+                          alert-message-id="{{viewState.inlineErrorMessageKey}}"
+                          alert-severity="danger"></wc-alert-message>
         <div id="intygLista">
 
           <!-- Previous intyg table -->
@@ -69,14 +69,14 @@
 
                 <!-- If filtering gives no results -->
                 <tbody ng-if="viewState.currentList.length===0">
-                <tr>
-                  <td class="td-padding" dynamic-label key="th.no-result"></td>
-                  <td class="td-padding"></td>
-                  <td class="td-padding"></td>
-                  <td class="td-padding"></td>
-                  <td class="td-padding"></td>
-                  <td class="td-padding"></td>
-                </tr>
+                  <tr>
+                    <td class="td-padding" dynamic-label key="th.no-result"></td>
+                    <td class="td-padding"></td>
+                    <td class="td-padding"></td>
+                    <td class="td-padding"></td>
+                    <td class="td-padding"></td>
+                    <td class="td-padding"></td>
+                  </tr>
                 </tbody>
 
                 <tbody>
@@ -119,14 +119,12 @@
                   </tr>
                 </tbody>
               </table>
-          </div>
-        </div>
+            </div>
           </div>
           <span class="{{viewState.unsigned}}"></span>
         </div>
-
-      </wc-spinner>
+      </div>
     </div>
-    <!-- spinner tidigare intyg end -->
   </div>
-</div>
+</wc-spinner>
+<!-- spinner tidigare intyg end -->
