@@ -10,7 +10,7 @@ Scenario: Inloggad som uthoppsläkare
    Så ska jag ha rollen "LAKARE"
    Och jag ska ha origin "UTHOPP"
 
-@SIGNERA @LISJP @WIP
+@SIGNERA @LISJP
 Scenario: Kan signera intyg på lisjp
    När jag går in på en patient
    Och jag går in på att skapa ett "Läkarintyg för sjukpenning" intyg

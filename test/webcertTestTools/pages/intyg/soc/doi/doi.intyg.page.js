@@ -27,6 +27,19 @@ var DoiIntyg = BaseSocIntygPage._extend({
         this.barn = {
             value: element(by.id('barn'))
         };
+        this.terminalDodsorsak = element(by.id('terminalDodsorsak'));
+        this.skadaForgiftning = {
+            val: element(by.id('forgiftning')),
+            orsak: element(by.id('forgiftningOrsak')),
+            datum: element(by.id('forgiftningDatum')),
+            beskrivning: element(by.id('forgiftningUppkommelse'))
+        };
+        this.operation = {
+            val: element(by.id('operation')),
+            datum: element(by.id('operationDatum')),
+            beskrivning: element(by.id('operationAnledning'))
+        };
+        this.grunderLista = element(by.id('grunder-list'));
     },
 
     get: function get(intygId) {

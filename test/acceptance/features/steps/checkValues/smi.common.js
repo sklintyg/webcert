@@ -68,7 +68,7 @@ module.exports = {
             promiseArr.push(expect(smipage.diagnoser.getDiagnos(0).beskrivning.getText()).to.eventually.equal(data.diagnos.beskrivning));
         }
 
-        logger.silly('Diagnos' + promiseArr.length + ' assertions made');
+        logger.silly('Diagnos: ' + promiseArr.length + ' assertions made');
         return Promise.all([promiseArr]);
     },
     aktivitetsbegransning: function(data) {
@@ -92,6 +92,13 @@ module.exports = {
         }
         logger.silly('Medicinskbehandling: ' + promiseArr.length + ' assertions made');
         return Promise.all([promiseArr]);
+    },
+    ovrigt: function(data) {
+        expect(smipage.ovrigt.getText()).to.eventually.equal(data.ovrigt);
+    },
+    kontaktFK: function(data) {
+        expect(smipage.kontaktFK.value.getText()).to.eventually.equal(data.kontaktMedFk);
+        expect(smipage.kontaktFK.anledning.getText()).to.eventually.equal(data.kontaktAnledning);
     }
 
 };

@@ -24,25 +24,8 @@
 var lusePage = pages.intyg.luse.intyg;
 var testdataHelper = wcTestTools.helpers.testdata;
 var regExp = require('./common.js').regExp;
+let checkSMICommon = require('./smi.common.js');
 
-
-function checkBaseratPa(baseratPa) {
-    var minUndersokningText = testdataHelper.ejAngivetIfNull(baseratPa.minUndersokningAvPatienten);
-    var journaluppgifterText = testdataHelper.ejAngivetIfNull(baseratPa.journaluppgifter);
-    var anhorigBeskrivningText = testdataHelper.ejAngivetIfNull(baseratPa.anhorigsBeskrivning);
-    var annatText = testdataHelper.ejAngivetIfNull(baseratPa.annat);
-    var annatBeskrivningText = testdataHelper.ejAngivetIfNull(baseratPa.annatBeskrivning);
-    var personligKannedomText = testdataHelper.ejAngivetIfNull(baseratPa.personligKannedom);
-
-    return Promise.all([
-        expect(lusePage.baseratPa.minUndersokningAvPatienten.getText()).to.eventually.equal(minUndersokningText),
-        expect(lusePage.baseratPa.journaluppgifter.getText()).to.eventually.equal(journaluppgifterText),
-        expect(lusePage.baseratPa.anhorigsBeskrivning.getText()).to.eventually.equal(anhorigBeskrivningText),
-        expect(lusePage.baseratPa.annat.getText()).to.eventually.equal(annatText),
-        expect(lusePage.baseratPa.annatBeskrivning.getText()).to.eventually.equal(annatBeskrivningText),
-        expect(lusePage.baseratPa.personligKannedom.getText()).to.eventually.equal(personligKannedomText)
-    ]);
-}
 
 function checkAndraMedicinskaUtredningar(andraMedicinskaUtredningar) {
     if (andraMedicinskaUtredningar) {
@@ -133,15 +116,23 @@ function checkTillaggsfragor(fragor) {
     return Promise.all(promiseArr);
 }
 
+
+
 module.exports = {
     checkValues: function(intyg) {
         logger.info('-- Kontrollerar Läkarutlåtande för sjukersättning --');
-        logger.warn('intyg med typ: ' + intyg.typ + ' saknar vissa funktioner för kontroll av data');
+        let data = intyg;
 
         return Promise.all([
             //Baserat på
-            checkBaseratPa(intyg.baseratPa)
+            /*checkBaseratPa(intyg.baseratPa)
             .then(function(value) {
+                logger.info('OK - Baseras på');
+            }, function(reason) {
+                throw ('FEL, Baseras på: ' + reason);
+            }),*/
+            checkSMICommon.baseratPa(data)
+            .then(value => {
                 logger.info('OK - Baseras på');
             }, function(reason) {
                 throw ('FEL, Baseras på: ' + reason);

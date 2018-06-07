@@ -45,11 +45,11 @@ function getDodsdatum(datumSakert) {
     } else {
         var monthArr = ['00', '01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12'];
         let year = deathDate.getYear() + 1900;
-
+        year = shuffle([String(year), '0000'])[0];
         return {
             inteSakert: {
-                year: shuffle([String(year), '0000'])[0],
-                month: shuffle(monthArr.slice(0, today.getMonth() - 1))[0],
+                year: year,
+                month: (year === '0000') ? '00' : shuffle(monthArr.slice(0, today.getMonth() - 1))[0],
                 antraffadDod: testdataHelper.dateFormat(today)
             }
         };
@@ -85,20 +85,20 @@ module.exports = {
             dodsdatum: getDodsdatum(datumSakert),
             dodsPlats: {
                 kommun: shuffle(["Karlstad", "Forshaga", "Hagfors", "Munkfors", "Torsby", testdataHelper.randomTextString(5, 100)])[0],
-                boende: shuffle(["sjukhus", "ordinartBoende", "sarskiltBoende", "annan"])[0]
+                boende: shuffle(["Sjukhus", "Ordinärt boende", "Särskilt boende", "Annan/okänd"])[0]
             },
             explosivImplantat: getExplosivImplantat(),
             yttreUndersokning: {
-                value: shuffle(["ja", "nejUndersokningSkaGoras", "nejUndersokningGjortKortFore"])[0]
+                value: shuffle(["Ja", "Nej, rättsmedicinsk undersökning ska göras", "Nej, den avlidne undersökt kort före döden"])[0]
             }
         };
         if (datumSakert === false) {
             obj.barn = testdataHelper.randomTrueFalse();
         }
-        if (obj.yttreUndersokning.value === 'nejUndersokningGjortKortFore') {
+        if (obj.yttreUndersokning.value === 'Nej, den avlidne undersökt kort före döden') {
             obj.yttreUndersokning.datum = testdataHelper.dateFormat(getRelativeDeathDate(-1));
         }
-        if (obj.yttreUndersokning.value !== 'nejUndersokningSkaGoras') {
+        if (obj.yttreUndersokning.value !== 'Nej, rättsmedicinsk undersökning ska göras') {
             obj.polisanmalan = testdataHelper.randomTrueFalse();
         }
 

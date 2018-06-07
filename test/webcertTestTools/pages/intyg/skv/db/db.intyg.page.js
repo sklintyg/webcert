@@ -27,12 +27,16 @@ var DbIntyg = BaseSkvIntygPage._extend({
         init._super.call(this);
 
         this.identitetStyrkt = element(by.id('identitetStyrkt'));
-        this.dodsdatumSakert = element(by.id('dodsdatumSakert'));
+        this.dodsdatum = {
+            dodsdatumSakert: element(by.id('dodsdatumSakert')),
+            datum: element(by.id('dodsdatum')),
+            antraffatDodDatum: element(by.id('antraffatDodDatum'))
+        };
         this.dodsplats = {
             kommun: element(by.id('dodsplatsKommun')),
             boende: element(by.id('dodsplatsBoende'))
         };
-
+        this.barn = element(by.id('barn'));
         this.explosivImplantat = {
             value: element(by.id('explosivImplantat')),
             avlagsnat: element(by.id('explosivAvlagsnat'))
@@ -42,7 +46,6 @@ var DbIntyg = BaseSkvIntygPage._extend({
             value: element(by.id('undersokningYttre')),
             datum: element(by.id('undersokningDatum'))
         };
-
         this.polisanmalan = element(by.id('polisanmalan'));
     },
 

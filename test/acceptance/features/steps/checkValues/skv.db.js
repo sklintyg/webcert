@@ -17,34 +17,86 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* globals logger, Promise */
+/* globals logger, Promise, pages, wcTestTools */
 
 'use strict';
 
-//var dbPage = pages.intyg.skv.db.intyg;
-//var testdataHelper = wcTestTools.helpers.testdata;
-//var regExp = require('./common.js').regExp;
+const dbPage = pages.intyg.skv.db.intyg;
+const testdataHelper = wcTestTools.helpers.testdata;
+const verifyDBDOI = require('./db.doi.common.js');
 
-function checkBarn(barn) {
-    if (barn) {
-        //TODO
-        //return expect(dbPage.barn.value.getText()).to.eventually.contain(testdataHelper.boolTillJaNej(barn));
-        return Promise.all([expect('dummy').to.equal('dummy')]);
-    } else {
-        return Promise.resolve();
+function verifyExplosivImplantat(data) {
+    return Promise.all([
+        expect(dbPage.explosivImplantat.value.getText()).to.eventually.equal(testdataHelper.boolTillJaNej(data.explosivImplantat)),
+        expect(dbPage.explosivImplantat.avlagsnat.getText()).to.eventually.equal(data.explosivImplantat ? testdataHelper.boolTillJaNej(data.explosivImplantat.avlagsnat) : testdataHelper.ejAngivetIfNull(data.explosivImplantat.avlagsnat))
+    ]);
+}
+
+function verifyYttreundersokning(data) {
+    return Promise.all([
+        expect(dbPage.yttreUndersokning.value.getText()).to.eventually.equal(data.yttreUndersokning.value),
+        expect(dbPage.yttreUndersokning.datum.getText()).to.eventually.equal(testdataHelper.ejAngivetIfNull(data.yttreUndersokning.datum))
+    ]);
+}
+
+function verifyPolisanmalan(data) {
+    if (data.yttreUndersokning.value === 'Nej, rättsmedicinsk undersökning ska göras') {
+        data.polisanmalan = 'Ja';
     }
+
+    return Promise.all([
+        expect(dbPage.polisanmalan.getText()).to.eventually.equal(testdataHelper.boolTillJaNej(data.polisanmalan))
+    ]);
 }
 
 module.exports = {
     checkValues: function(intyg) {
         logger.info('-- Kontrollerar Dödsbevis --');
+        logger.silly(JSON.stringify(intyg));
 
-        //Barn 
-        return checkBarn(intyg.barn)
-            .then(function(value) {
+        let data = intyg;
+
+        return verifyDBDOI.identitetenStyrkt(data).then(value => {
+                logger.info('OK - identitetenStyrkt');
+            }, reason => {
+                throw ('FEL, identitetenStyrkt: ' + reason);
+            })
+            .then(() => verifyDBDOI.dodsdatum(data))
+            .then(value => {
+                logger.info('OK - Dödsdatum');
+            }, reason => {
+                throw ('FEL, Dödsdatum: ' + reason);
+            })
+            .then(() => verifyDBDOI.dodsplats(data))
+            .then(value => {
+                logger.info('OK - Dödsplats');
+            }, reason => {
+                throw ('FEL, Dödsplats: ' + reason);
+            })
+            .then(() => verifyDBDOI.barn(data))
+            .then(value => {
                 logger.info('OK - Barn');
-            }, function(reason) {
+            }, reason => {
                 throw ('FEL, Barn: ' + reason);
+            })
+            .then(() => verifyExplosivImplantat(data))
+            .then(value => {
+                logger.info('OK - ExplosivImplantat');
+            }, reason => {
+                throw ('FEL, ExplosivImplantat: ' + reason);
+            })
+            .then(() => verifyYttreundersokning(data))
+            .then(value => {
+                logger.info('OK - Yttreundersökning');
+            }, reason => {
+                throw ('FEL, Yttreundersökning: ' + reason);
+            })
+            .then(() => verifyPolisanmalan(data))
+            .then(value => {
+                logger.info('OK - Polisanmälan');
+            }, reason => {
+                throw ('FEL, Polisanmälan: ' + reason);
             });
+        //polisanmälan
     }
 };

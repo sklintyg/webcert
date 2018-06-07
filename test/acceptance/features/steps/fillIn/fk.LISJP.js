@@ -139,15 +139,25 @@
                  });
              })
              .then(function() {
-                 logger.info('TODO - Övriga Upplysningar');
-                 return;
+                 if (intyg.ovrigt) {
+                     return lisjpUtkastPage.ovrigt.typeKeys(intyg.ovrigt).then(function() {
+                         logger.info('OK - Övriga Upplysningar');
+                     }, function(reason) {
+                         console.trace(reason);
+                         throw ('FEL, Övriga Upplysningar,' + reason);
+                     });
+                 }
              })
              .then(function() {
-                 logger.info('TODO - Kontakt med FK');
-                 return;
+                 lisjpUtkastPage.angeKontaktMedFK(intyg.kontaktFK).then(function() {
+                     logger.info('OK - KontaktMedFK');
+                 }, function(reason) {
+                     console.trace(reason);
+                     throw ('FEL, KontaktMedFK,' + reason);
+                 });
              })
              .then(function() {
-                 logger.info('TODO - Tillägsfrågor');
+                 logger.info('Skipped - Tillägsfrågor');
                  return;
              });
 

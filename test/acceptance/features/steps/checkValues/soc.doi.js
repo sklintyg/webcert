@@ -17,32 +17,112 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* globals logger, pages, Promise, wcTestTools */
+/* globals logger, pages, Promise */
 
 'use strict';
 
-var doiPage = pages.intyg.soc.doi.intyg;
-var testdataHelper = wcTestTools.helpers.testdata;
-//var regExp = require('./common.js').regExp;
+const doiPage = pages.intyg.soc.doi.intyg;
+const verifyDBDOI = require('./db.doi.common.js');
 
-function checkBarn(barn) {
-    if (barn) {
-        return expect(doiPage.barn.value.getText()).to.eventually.contain(testdataHelper.boolTillJaNej(barn));
+function verifyTerminalDodsorsak(data) {
+    return Promise.all([
+        expect(doiPage.terminalDodsorsak.getText()).to.eventually.contain(data.dodsorsak.a.tillstandSpec),
+        expect(doiPage.terminalDodsorsak.getText()).to.eventually.contain(data.dodsorsak.a.beskrivning),
+        expect(doiPage.terminalDodsorsak.getText()).to.eventually.contain(data.dodsorsak.a.datum)
+    ]);
+}
+
+function verifyOperation(data) {
+    let promiseArr = [];
+    if (typeof(data.operation) === 'object') {
+        console.log(data.operation);
+        promiseArr.push(expect(doiPage.operation.val.getText()).to.eventually.equal('Ja'));
+        promiseArr.push(expect(doiPage.operation.datum.getText()).to.eventually.equal(data.operation.datum));
+        promiseArr.push(expect(doiPage.operation.beskrivning.getText()).to.eventually.equal(data.operation.beskrivning));
     } else {
-        return Promise.resolve();
+        promiseArr.push(expect(doiPage.operation.val.getText()).to.eventually.equal(data.operation));
     }
+    return Promise.all(promiseArr);
+}
+
+function verifySkadaForgiftning(data) {
+    let promiseArr = [];
+
+    if (data.skadaForgiftning === true) {
+        promiseArr.push(expect(doiPage.skadaForgiftning.val.getText()).to.eventually.equal('Ja'));
+        promiseArr.push(expect(doiPage.skadaForgiftning.orsak.getText()).to.eventually.equal(data.skadaForgiftning.orsakAvsikt));
+        promiseArr.push(expect(doiPage.skadaForgiftning.datum.getText()).to.eventually.equal(data.skadaForgiftning.datum));
+        promiseArr.push(expect(doiPage.skadaForgiftning.beskrivning.getText()).to.eventually.equal(data.skadaForgiftning.beskrivning));
+    } else {
+        promiseArr.push(expect(doiPage.skadaForgiftning.val.getText()).to.eventually.equal('Nej'));
+    }
+    return Promise.all(promiseArr);
+}
+
+function verifyGrunder(data) {
+    let promiseArr = [];
+    Object.keys(data.dodsorsaksuppgifter).forEach(grund => {
+        if (data.dodsorsaksuppgifter[grund] !== false) {
+            promiseArr.push(expect(doiPage.grunderLista.getText()).to.eventually.contain(data.dodsorsaksuppgifter[grund]));
+        }
+    });
+    return Promise.all(promiseArr);
 }
 
 module.exports = {
     checkValues: function(intyg) {
         logger.info('-- Kontrollerar Dödsorsaksintyg --');
+        let data = intyg;
+        logger.silly(JSON.stringify(intyg));
 
-        //Barn 
-        return checkBarn(intyg.barn)
-            .then(function(value) {
+        return new Promise(resolve => resolve())
+            .then(verifyDBDOI.identitetenStyrkt(data).then(value => {
+                logger.info('OK - identitetenStyrkt');
+            }, reason => {
+                console.trace(reason);
+                throw ('FEL, identitetenStyrkt: ' + reason);
+            }))
+            .then(() => verifyDBDOI.dodsdatum(data).then(value => {
+                logger.info('OK - Dödsdatum');
+            }, reason => {
+                console.trace(reason);
+                throw ('FEL, Dödsdatum: ' + reason);
+            }))
+            .then(() => verifyDBDOI.dodsplats(data).then(value => {
+                logger.info('OK - Dödsplats');
+            }, reason => {
+                console.trace(reason);
+                throw ('FEL, Dödsplats: ' + reason);
+            }))
+            .then(() => verifyDBDOI.barn(data).then(value => {
                 logger.info('OK - Barn');
-            }, function(reason) {
+            }, reason => {
+                console.trace(reason);
                 throw ('FEL, Barn: ' + reason);
-            });
+            }))
+            .then(() => verifyTerminalDodsorsak(data).then(value => {
+                logger.info('OK - TerminalDödsorsak');
+            }, reason => {
+                console.trace(reason);
+                throw ('FEL, TerminalDödsorsak: ' + reason);
+            }))
+            .then(() => verifyOperation(data).then(value => {
+                logger.info('OK - Operation');
+            }, reason => {
+                console.trace(reason);
+                throw ('FEL, Operation: ' + reason);
+            }))
+            .then(() => verifySkadaForgiftning(data).then(value => {
+                logger.info('OK - Skada/förgiftning');
+            }, reason => {
+                console.trace(reason);
+                throw ('FEL, Skada/förgiftning: ' + reason);
+            }))
+            .then(() => verifyGrunder(data).then(value => {
+                logger.info('OK - Grunder');
+            }, reason => {
+                console.trace(reason);
+                throw ('FEL, Grunder: ' + reason);
+            }));
     }
 };

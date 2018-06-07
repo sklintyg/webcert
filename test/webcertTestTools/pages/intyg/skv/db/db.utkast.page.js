@@ -154,13 +154,13 @@ var DbUtkast = BaseSkvUtkast._extend({
         return moveAndSendKeys(dodsPlatsElm.kommun.inputText, dodsPlats.kommun)
             .then(function() {
                 switch (dodsPlats.boende) {
-                    case 'sjukhus':
+                    case 'Sjukhus':
                         return moveAndSendKeys(dodsPlatsElm.boende.sjukhus, protractor.Key.SPACE);
-                    case 'ordinartBoende':
+                    case 'Ordinärt boende':
                         return moveAndSendKeys(dodsPlatsElm.boende.ordinartBoende, protractor.Key.SPACE);
-                    case 'sarskiltBoende':
+                    case 'Särskilt boende':
                         return moveAndSendKeys(dodsPlatsElm.boende.sarskiltBoende, protractor.Key.SPACE);
-                    case 'annan':
+                    case 'Annan/okänd':
                         return moveAndSendKeys(dodsPlatsElm.boende.annan, protractor.Key.SPACE);
                     default:
                         throw ('dodsPlats.boende hittades inte');
@@ -200,11 +200,11 @@ var DbUtkast = BaseSkvUtkast._extend({
         var yttreUndersokningElm = this.yttreUndersokning;
 
         switch (yttreUndersokning.value) {
-            case 'ja':
+            case 'Ja':
                 return moveAndSendKeys(yttreUndersokningElm.ja, protractor.Key.SPACE);
-            case 'nejUndersokningSkaGoras':
+            case 'Nej, rättsmedicinsk undersökning ska göras':
                 return moveAndSendKeys(yttreUndersokningElm.nejUndersokningSkaGoras, protractor.Key.SPACE);
-            case 'nejUndersokningGjortKortFore':
+            case 'Nej, den avlidne undersökt kort före döden':
                 return moveAndSendKeys(yttreUndersokningElm.nejUndersokningGjortKortFore.checkbox, protractor.Key.SPACE).then(function() {
                     return moveAndSendKeys(yttreUndersokningElm.nejUndersokningGjortKortFore.datePicker, yttreUndersokning.datum);
                 });

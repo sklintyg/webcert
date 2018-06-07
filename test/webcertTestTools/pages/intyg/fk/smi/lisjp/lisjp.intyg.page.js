@@ -54,6 +54,8 @@ var LisjpIntyg = BaseSmiIntygPage._extend({
         };
         this.resorTillArbete = element(by.id('arbetsresor'));
         this.prognosForArbetsformaga = element(by.id('prognos-typ'));
+        this.atgarder = element(by.id('arbetslivsinriktadeAtgarder'));
+        this.atgarderBeskrivning = element(by.id('arbetslivsinriktadeAtgarderBeskrivning'));
     },
 
     get: function get(intygId) {

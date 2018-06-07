@@ -105,6 +105,12 @@ function verifyPrognosForArbetsformaga(data) {
     return Promise.all([promiseArr]);
 }
 
+function verifyAtgarder(data) {
+    return data.atgarder.reduce((prev, obj) => prev
+        .then(() => expect(lisjpPage.atgarder.getText()).to.eventually.contain(obj.namn))
+        .then(() => expect(lisjpPage.atgarderBeskrivning.getText()).to.eventually.contain(obj.beskrivning)), Promise.resolve());
+}
+
 
 function forkLisjpIntyg(intyg) {
     let data = Object.create(intyg);
@@ -148,7 +154,7 @@ function forkLisjpIntyg(intyg) {
     data.prognosForArbetsformaga = testdataHelper.ejAngivetIfNull(intyg.prognosForArbetsformaga);
 
     if (data.prognosForArbetsformaga.within) {
-        data.prognosForArbetsformaga = ' månader';
+        data.prognosForArbetsformaga = 'Patienten kommer med stor sannolikhet att kunna återgå helt i nuvarande sysselsättning inom';
     } else {
         switch (data.prognosForArbetsformaga.name) {
             case 'STOR_SANNOLIKHET':
@@ -162,6 +168,14 @@ function forkLisjpIntyg(intyg) {
                 break;
         }
     }
+
+    if (data.atgarder[0].key === 'EJ_AKTUELLT') {
+        data.atgarder[0].beskrivning = testdataHelper.ejAngivetIfNull(intyg.atgarder[0].beskrivning);
+    }
+
+    data.ovrigt = testdataHelper.ejAngivetIfNull(intyg.ovrigt);
+    data.kontaktMedFk = testdataHelper.boolTillJaEllerEjAngivet(intyg.kontaktFK);
+    data.kontaktAnledning = testdataHelper.ejAngivetIfNull(intyg.kontaktAnledning);
     return data;
 }
 
@@ -178,76 +192,89 @@ module.exports = {
             }, function(reason) {
                 throw ('FEL, Smittskydd: ' + reason);
             })
-            .then(checkSMICommon.baseratPa(data))
+            .then(() => checkSMICommon.baseratPa(data))
             .then(value => {
                 logger.info('OK - Baseras på');
             }, function(reason) {
                 throw ('FEL, Baseras på: ' + reason);
             })
-            .then(checkSMICommon.diagnos(data))
+            .then(() => checkSMICommon.diagnos(data))
             .then(value => {
                 logger.info('OK - Diagnos');
             }, function(reason) {
                 throw ('FEL, Diagnos: ' + reason);
             })
-            .then(verifySysselsattning(data))
+            .then(() => verifySysselsattning(data))
             .then(value => {
                 logger.info('OK - Sysselsättning');
             }, function(reason) {
                 throw ('FEL, Sysselsättning: ' + reason);
             })
-            .then(verifyFunktionsnedsattning(data.funktionsnedsattning))
+            .then(() => verifyFunktionsnedsattning(data.funktionsnedsattning))
             .then(value => {
                 logger.info('OK - Funktionsnedsättning');
             }, function(reason) {
                 throw ('FEL, Funktionsnedsättning: ' + reason);
             })
-            .then(checkSMICommon.aktivitetsbegransning(data))
+            .then(() => checkSMICommon.aktivitetsbegransning(data))
             .then(value => {
                 logger.info('OK - Aktivitestbegränsning');
             }, function(reason) {
                 throw ('FEL, Aktivitestbegränsning: ' + reason);
             })
-            .then(checkSMICommon.medicinskbehandling(data))
+            .then(() => checkSMICommon.medicinskbehandling(data))
             .then(value => {
                 logger.info('OK - Medicinskbehandling');
             }, function(reason) {
                 throw ('FEL, Medicinskbehandling: ' + reason);
             })
-            .then(verifyArbetsformaga(data))
+            .then(() => verifyArbetsformaga(data))
             .then(value => {
                 logger.info('OK - Arbetsformaga');
             }, function(reason) {
                 throw ('FEL, Arbetsformaga: ' + reason);
             })
-            .then(verifyArbetsformagaFMB(data))
+            .then(() => verifyArbetsformagaFMB(data))
             .then(value => {
                 logger.info('OK - ArbetsformagaFMB');
             }, function(reason) {
                 throw ('FEL, ArbetsformagaFMB: ' + reason);
             })
-            .then(verifyArbetstidsforlaggning(data))
+            .then(() => verifyArbetstidsforlaggning(data))
             .then(value => {
                 logger.info('OK - Arbetstidsforlaggning');
             }, function(reason) {
                 throw ('FEL, Arbetstidsforlaggning: ' + reason);
             })
-            .then(verifyResorTillArbete(data))
+            .then(() => verifyResorTillArbete(data))
             .then(value => {
                 logger.info('OK - ResorTillArbete');
             }, function(reason) {
                 throw ('FEL, ResorTillArbete: ' + reason);
             })
-            .then(verifyPrognosForArbetsformaga(data))
+            .then(() => verifyPrognosForArbetsformaga(data))
             .then(value => {
                 logger.info('OK - PrognosForArbetsformaga');
             }, function(reason) {
                 throw ('FEL, PrognosForArbetsformaga: ' + reason);
+            })
+            .then(() => verifyAtgarder(data))
+            .then(value => {
+                logger.info('OK - Atgarder');
+            }, function(reason) {
+                throw ('FEL, Atgarder: ' + reason);
+            })
+            .then(() => checkSMICommon.ovrigt(data))
+            .then(value => {
+                logger.info('OK - Ovrigt');
+            }, function(reason) {
+                throw ('FEL, Ovrigt: ' + reason);
+            })
+            .then(() => checkSMICommon.kontaktFK(data))
+            .then(value => {
+                logger.info('OK - Kontakt med FK');
+            }, function(reason) {
+                throw ('FEL, Kontakt med FK: ' + reason);
             });
-
-
-        //atgarder
-        //övriga upplysningar  innan / efter pagereload
-        //kontaktMedFk
     }
 };

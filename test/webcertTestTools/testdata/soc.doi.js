@@ -44,14 +44,14 @@ function getDodsdatum(datumSakert) {
             }
         };
     } else {
-        let monthArr = ['00', '01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12'];
+        var monthArr = ['00', '01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12'];
         let year = deathDate.getYear() + 1900;
-
+        year = shuffle([String(year), '0000'])[0];
         return {
             inteSakert: {
-                year: shuffle([String(year), '0000'])[0],
-                month: shuffle(monthArr.slice(0, today.getMonth() - 1))[0],
-                antraffadDod: testdataHelper.dateFormat(deathDate)
+                year: year,
+                month: (year === '0000') ? '00' : shuffle(monthArr.slice(0, today.getMonth() - 1))[0],
+                antraffadDod: testdataHelper.dateFormat(today)
             }
         };
     }
@@ -137,17 +137,17 @@ module.exports = {
             dodsdatum: getDodsdatum(datumSakert),
             dodsPlats: {
                 kommun: shuffle(["Karlstad", "Forshaga", "Hagfors", "Munkfors", "Torsby", testdataHelper.randomTextString(5, 100)])[0],
-                boende: shuffle(["sjukhus", "ordinartBoende", "sarskiltBoende", "annan"])[0]
+                boende: shuffle(["Sjukhus", "Ordinärt boende", "Särskilt boende", "Annan/okänd"])[0]
             },
             dodsorsak: getDodsOrsak(),
             operation: getOperation(),
             skadaForgiftning: getSkadaForgiftning(),
             dodsorsaksuppgifter: {
-                foreDoden: testdataHelper.randomTrueFalse(),
-                efterDoden: testdataHelper.randomTrueFalse(),
-                kliniskObduktion: testdataHelper.randomTrueFalse(),
-                rattsmedicinskObduktion: testdataHelper.randomTrueFalse(),
-                rattsmedicinskBesiktning: testdataHelper.randomTrueFalse()
+                foreDoden: shuffle(["Undersökning före döden", false])[0],
+                efterDoden: shuffle(["Yttre undersökning efter döden", false])[0],
+                kliniskObduktion: shuffle(["Klinisk obduktion", false])[0],
+                rattsmedicinskObduktion: shuffle(["Rättsmedicinsk obduktion", false])[0],
+                rattsmedicinskBesiktning: shuffle(["Rättsmedicinsk likbesiktning", false])[0]
             }
         };
         if (datumSakert === false) {

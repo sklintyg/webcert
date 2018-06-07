@@ -186,13 +186,13 @@ var doiUtkast = BaseSocUtkast._extend({
         return moveAndSendKeys(dodsPlatsElm.kommun.inputText, dodsPlats.kommun)
             .then(function() {
                 switch (dodsPlats.boende) {
-                    case 'sjukhus':
+                    case 'Sjukhus':
                         return moveAndSendKeys(dodsPlatsElm.boende.sjukhus, protractor.Key.SPACE);
-                    case 'ordinartBoende':
+                    case 'Ordinärt boende':
                         return moveAndSendKeys(dodsPlatsElm.boende.ordinartBoende, protractor.Key.SPACE);
-                    case 'sarskiltBoende':
+                    case 'Särskilt boende':
                         return moveAndSendKeys(dodsPlatsElm.boende.sarskiltBoende, protractor.Key.SPACE);
-                    case 'annan':
+                    case 'Annan/okänd':
                         return moveAndSendKeys(dodsPlatsElm.boende.annan, protractor.Key.SPACE);
                     default:
                         throw ('dodsPlats.boende hittades inte');
@@ -257,31 +257,31 @@ var doiUtkast = BaseSocUtkast._extend({
 
         return Promise.resolve()
             .then(function() {
-                if (dodsorsaksuppgifter.foreDoden === true) {
+                if (dodsorsaksuppgifter.foreDoden !== false) {
                     return moveAndSendKeys(dodsorsaksuppgifterElm.foreDoden, protractor.Key.SPACE);
                 } else {
                     return;
                 }
             }).then(function() {
-                if (dodsorsaksuppgifter.efterDoden === true) {
+                if (dodsorsaksuppgifter.efterDoden !== false) {
                     return moveAndSendKeys(dodsorsaksuppgifterElm.efterDoden, protractor.Key.SPACE);
                 } else {
                     return;
                 }
             }).then(function() {
-                if (dodsorsaksuppgifter.kliniskObduktion === true) {
+                if (dodsorsaksuppgifter.kliniskObduktion !== false) {
                     return moveAndSendKeys(dodsorsaksuppgifterElm.kliniskObduktion, protractor.Key.SPACE);
                 } else {
                     return;
                 }
             }).then(function() {
-                if (dodsorsaksuppgifter.rattsmedicinskObduktion === true) {
+                if (dodsorsaksuppgifter.rattsmedicinskObduktion !== false) {
                     return moveAndSendKeys(dodsorsaksuppgifterElm.rattsmedicinskObduktion, protractor.Key.SPACE);
                 } else {
                     return;
                 }
             }).then(function() {
-                if (dodsorsaksuppgifter.rattsmedicinskBesiktning === true) {
+                if (dodsorsaksuppgifter.rattsmedicinskBesiktning !== false) {
                     return moveAndSendKeys(dodsorsaksuppgifterElm.rattsmedicinskBesiktning, protractor.Key.SPACE);
                 } else {
                     return;

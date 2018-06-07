@@ -14,7 +14,14 @@ Scenario: Kan signera dödsbevisintyg
 		  Och jag fyller i alla nödvändiga fält för intyget
 		  Och jag signerar intyget
 		  Så ska jag se den data jag angett för intyget
-	
+
+		  
+@SIGNERATVY @SIGNERA
+Scenario: Signera Dödsbevis och kontrollera fält i signerat vyn
+		  Och jag går in på att skapa ett "Dödsbevis" intyg
+		  Och jag fyller i alla nödvändiga fält för intyget
+		  Och jag signerar intyget
+		  Så ska jag se den data jag angett för intyget
 	
 @DOI
 Scenario: Ska kunna skapa Dödsorsaksintyg utifrån ett Dödsbevis
