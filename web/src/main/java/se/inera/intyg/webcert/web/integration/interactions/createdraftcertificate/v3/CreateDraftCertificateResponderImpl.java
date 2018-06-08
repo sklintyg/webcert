@@ -117,6 +117,15 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
             return createValidationErrorResponse(resultsValidator);
         }
 
+        // Check if the invoking health personal has MIU rights on care unit
+        if (!HoSPersonHelper.findVardenhetEllerMottagning(user, invokingUnitHsaId).isPresent()) {
+            return createMIUErrorResponse(utkastsParams);
+        }
+
+        user.changeValdVardenhet(invokingUnitHsaId);
+        // Make sure pilots and features are loaded!
+        webcertUserDetailsService.decorateIntygUserWithAvailableFeatures(user);
+
         ResultValidator appErrorsValidator = validator.validateApplicationErrors(utkastsParams, user);
         if (appErrorsValidator.hasErrors()) {
             return createApplicationErrorResponse(appErrorsValidator);
@@ -124,13 +133,6 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
 
         LOG.debug("Creating draft for invoker '{}' on unit '{}'", utkastsParams.getSkapadAv().getPersonalId().getExtension(),
                 invokingUnitHsaId);
-
-        // Check if the invoking health personal has MIU rights on care unit
-        if (!HoSPersonHelper.findVardenhetEllerMottagning(user, invokingUnitHsaId).isPresent()) {
-            return createMIUErrorResponse(utkastsParams);
-        }
-
-        user.changeValdVardenhet(invokingUnitHsaId);
 
         String intygsTyp =
                 moduleRegistry.getModuleIdFromExternalId(utkastsParams.getTypAvIntyg().getCode());

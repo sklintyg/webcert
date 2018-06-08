@@ -110,12 +110,6 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
             return createValidationErrorResponse(resultsValidator);
         }
 
-        ResultValidator appErrorsValidator = validator.validateApplicationErrors(utkastsParams, user);
-        if (appErrorsValidator.hasErrors()) {
-            return createApplicationErrorResponse(appErrorsValidator);
-        }
-
-        LOG.debug("Creating draft for invoker '{}' on unit '{}'", invokingUserHsaId, invokingUnitHsaId);
 
         // Check if the invoking health personal has MIU rights on care unit
         if (!checkMIU(user, invokingUnitHsaId)) {
@@ -123,6 +117,15 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
         }
 
         user.changeValdVardenhet(invokingUnitHsaId);
+        // Make sure pilots and features are loaded!
+        webcertUserDetailsService.decorateIntygUserWithAvailableFeatures(user);
+
+        ResultValidator appErrorsValidator = validator.validateApplicationErrors(utkastsParams, user);
+        if (appErrorsValidator.hasErrors()) {
+            return createApplicationErrorResponse(appErrorsValidator);
+        }
+
+        LOG.debug("Creating draft for invoker '{}' on unit '{}'", invokingUserHsaId, invokingUnitHsaId);
 
         String intygsTyp = utkastsParams.getTypAvUtlatande().getCode().toLowerCase();
         Personnummer personnummer = Personnummer
