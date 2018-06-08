@@ -15,7 +15,7 @@ Scenario: Skapa och signera ett TS diabetes intyg
     Så ska intygets första status vara "Intyget är signerat"
     Och jag ska se den data jag angett för intyget
 
-@SKICKA @SMOKE MI-F010
+@SKICKA @SMOKE @MI-F010
 Scenario: Skicka ett befintligt intyg till Transportstyrelsen
 	När jag går in på ett "Transportstyrelsens läkarintyg diabetes" med status "Signerat"
     Och jag skickar intyget till Transportstyrelsen

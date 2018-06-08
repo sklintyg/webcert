@@ -34,11 +34,11 @@ function verifyTerminalDodsorsak(data) {
 
 function verifyOperation(data) {
     let promiseArr = [];
-    if (typeof(data.operation) === 'object') {
+    if (data.operation.ja) {
         console.log(data.operation);
         promiseArr.push(expect(doiPage.operation.val.getText()).to.eventually.equal('Ja'));
-        promiseArr.push(expect(doiPage.operation.datum.getText()).to.eventually.equal(data.operation.datum));
-        promiseArr.push(expect(doiPage.operation.beskrivning.getText()).to.eventually.equal(data.operation.beskrivning));
+        promiseArr.push(expect(doiPage.operation.datum.getText()).to.eventually.equal(data.operation.ja.datum));
+        promiseArr.push(expect(doiPage.operation.beskrivning.getText()).to.eventually.equal(data.operation.ja.beskrivning));
     } else {
         promiseArr.push(expect(doiPage.operation.val.getText()).to.eventually.equal(data.operation));
     }

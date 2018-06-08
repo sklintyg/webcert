@@ -81,7 +81,7 @@ function getDodsOrsak() {
 function getDodsOrsakObj(n) {
 
     var obj = {
-        beskrivning: testdataHelper.randomTextString(5, 140),
+        beskrivning: testdataHelper.randomTextString(5, 10),
         datum: testdataHelper.dateFormat(getRelativeDeathDate(-n)),
         tillstandSpec: shuffle(['Akut', 'Kronisk', 'Uppgift saknas'])[0]
     };
@@ -119,8 +119,9 @@ module.exports = {
         }
     },
     getRandom: function(intygsID, customFields) {
-        if (customFields && customFields.deathDate) {
-            deathDate = customFields.deathDate;
+        if (customFields) {
+            //deathDate används av många andra funktioner så vi ändrar det först
+            deathDate = customFields.deathDate ? customFields.deathDate : deathDate;
         }
         if (!intygsID) {
             intygsID = testdataHelper.generateTestGuid();
@@ -133,7 +134,7 @@ module.exports = {
             typ: "Dödsorsaksintyg",
             deathDate: deathDate, //datumvariabel som används för att ta fram test-data till andra variablar.
             identitetStyrktGenom: shuffle(["körkort", "pass", "fingeravtryck", "tandavgjutning", testdataHelper.randomTextString(5, 100)])[0],
-            land: shuffle(["Norge", "Danmark", "Finland", "Island", testdataHelper.randomTextString(5, 100)])[0], //?
+            land: shuffle(["Norge", "Danmark", "Finland", "Island", testdataHelper.randomTextString(5, 100)])[0],
             dodsdatum: getDodsdatum(datumSakert),
             dodsPlats: {
                 kommun: shuffle(["Karlstad", "Forshaga", "Hagfors", "Munkfors", "Torsby", testdataHelper.randomTextString(5, 100)])[0],
@@ -154,6 +155,17 @@ module.exports = {
             obj.barn = testdataHelper.randomTrueFalse();
         }
 
+        function useCustom(field) {
+            obj[field] = customFields[field] ? customFields[field] : obj[field];
+        }
+        if (customFields) {
+            //Skriv över 
+            useCustom('identitetStyrktGenom');
+            useCustom('land');
+            useCustom('dodsdatum');
+            useCustom('dodsPlats');
+            useCustom('barn');
+        }
         return obj;
 
     }
