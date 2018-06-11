@@ -36,7 +36,7 @@ Scenario: Statusuppdateringar då TS bas utkast raderas
 
 @VÅRDKONTAKT @REF
 Scenario: TS bas - ref (vårdkontakt) skickas med statusuppdateringar 
-    När jag går in på intyget via djupintegrationslänk och har parametern "ref" satt till "testref"
+    När jag går in på intyget via djupintegrationslänk med parameter "ref=testref"
 
     Och jag fyller i alla nödvändiga fält för intyget
     Och jag signerar intyget

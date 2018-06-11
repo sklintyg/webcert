@@ -111,7 +111,7 @@ Scenario: Statusuppdateringar vid ändring av utkast
 
 @VÅRDKONTAKT @REF
 Scenario: Referens skickas med statusuppdateringar
-    När jag går in på intyget via djupintegrationslänk och har parametern "ref" satt till "testref-X"
+    När jag går in på intyget via djupintegrationslänk med parameter "ref=testref-X"
 
     Och jag fyller i alla nödvändiga fält för intyget
     Och jag signerar intyget

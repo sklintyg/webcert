@@ -41,7 +41,7 @@ Scenario: GE-005 - Händelser på Dödsbevis utfärdat på annan vårdgivare ska
 		Och jag signerar intyget
 		
 		Givet att jag är inloggad som djupintegrerad läkare på vårdenhet "TSTNMT2321000156-1077" och inte har uppdrag på "TSTNMT2321000156-INT2"
-		När jag går in på intyget via djupintegrationslänk och har parametern "sjf" satt till "true"
+		När jag går in på intyget via djupintegrationslänk med parameter "sjf=true"
 		Så ska loggaktivitet "Läsa" skickas till loggtjänsten med argument "Läsning i enlighet med sammanhållen journalföring"
 		
 		Och jag skriver ut intyget
@@ -51,7 +51,7 @@ Scenario: GE-005 - Händelser på Dödsbevis utfärdat på annan vårdgivare ska
 		Och jag går in på intyget via djupintegrationslänk
 		Och jag makulerar intyget
 		Och att jag är inloggad som djupintegrerad läkare på vårdenhet "TSTNMT2321000156-1077" och inte har uppdrag på "TSTNMT2321000156-INT2"
-		Och jag går in på intyget via djupintegrationslänk och har parametern "sjf" satt till "true"
+		Och jag går in på intyget via djupintegrationslänk med parameter "sjf=true"
 		Och jag skriver ut intyget
 		Så ska loggaktivitet "Utskrift" skickas till loggtjänsten med argument "Makulerat intyg utskrivet. Läsning i enlighet med sammanhållen journalföring"
 

@@ -150,9 +150,7 @@ Then(/^klickar jag på knappen "Skriv dödsorsaksintyg"$/, function() {
         intyg.id = text.split('/').slice(-2)[0];
         intyg.id = intyg.id.split('?')[0];
 
-        global.intyg = helpers.generateIntygByType(intyg.typ, intyg.id, {
-            deathDate: intyg.deathDate
-        });
+        global.intyg = helpers.generateIntygByType(intyg.typ, intyg.id, intyg);
         logger.info('intyg.id: ' + intyg.id);
     });
 });

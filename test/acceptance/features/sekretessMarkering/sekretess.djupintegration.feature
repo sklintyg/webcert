@@ -13,5 +13,5 @@ Scenario: Vid djupintegration ska SJF flaggan inte ge några extra rättigheter 
 	Och jag signerar intyget
    
 	Givet att jag är inloggad som djupintegrerad läkare på vårdenhet "TSTNMT2321000156-1077" och inte har uppdrag på "TSTNMT2321000156-INT2"
-    När jag går in på intyget via djupintegrationslänk och har parametern "sjf" satt till "true"
+    När jag går in på intyget via djupintegrationslänk med parameter "sjf=true"
 	Så ska jag varnas om att "Behörighet saknas"

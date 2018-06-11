@@ -28,7 +28,8 @@ Scenario: Kan markera som klart för signering men inte signera
 @RESPONSIBLEHOSPNAME
 Scenario: [responsibleHospName] - Vårdadmin ska se signerande läkare
 	Givet att vårdsystemet skapat ett intygsutkast för slumpat SMI-intyg
-    När jag går in på intyget via djupintegrationslänk och har parametern "responsibleHospName" satt till "Peter Parameter"
+	När jag går in på intyget via djupintegrationslänk med parameter "responsibleHospName=Peter Parameter"
+    När jag går in på intyget via djupintegrationslänk med parameter "responsibleHospName=Peter Parameter"
 	Så ska jag se signerande läkare "Peter Parameter"		
 	
 	

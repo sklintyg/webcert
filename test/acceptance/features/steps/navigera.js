@@ -240,6 +240,14 @@ Given(/jag försöker gå in på intygsutkastet via djupintegrationslänk$/, fun
         return helpers.getUrl(getIntegrationUrl(' via djupintegrationslänk'));
     });
 });
+Given(/jag försöker gå in på intygsutkastet via djupintegrationslänk och har parameter "([^"]*)"$/, function(param) {
+    //"Försöker gå in" är inte samma steg som "går in". p.g.a. expect logiken.
+    return loginIfSessionUsed().then(function() {
+        let url = getIntegrationUrl(' via djupintegrationslänk');
+        url += param;
+        return helpers.getUrl(url);
+    });
+});
 
 Given(/^jag går in på (intygsutkastet|intyget)( via djupintegrationslänk| via uthoppslänk| utan integrations parametrar)*$/, function(intygstyp, origin) {
     return gotoIntyg(intygstyp, origin);
@@ -249,8 +257,8 @@ Given(/^jag trycker på knappen med texten "([^"]*)"$/, function(BtnText) {
     return element(by.cssContainingText('.btn', BtnText)).sendKeys(protractor.Key.SPACE);
 });
 
-When(/^jag går in på intyget via djupintegrationslänk och har parametern "([^"]*)" satt till "([^"]*)"$/, function(param, paramValue) {
-    return gotoIntyg('intyget', ' via djupintegrationslänk', param + '=' + paramValue);
+When(/^jag går in på intyget via djupintegrationslänk med parameter "([^"]*)"$/, function(param) {
+    return gotoIntyg('intyget', ' via djupintegrationslänk', param);
 });
 
 Given(/^jag går till ej signerade utkast$/, function() {

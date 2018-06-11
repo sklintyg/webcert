@@ -17,7 +17,7 @@ Scenario: Avliden Patient - Vården kan ställa frågor på ett intyg
     Och jag signerar intyget
 	Och jag skickar intyget till Försäkringskassan
 	
-	Och jag går in på intyget via djupintegrationslänk och har parametern "avliden" satt till "true"
+	Och jag går in på intyget via djupintegrationslänk med parameter "avliden=true"
 	Och jag skickar en fråga med ämnet "Kontakt" till Försäkringskassan
 	Och Försäkringskassan skickar ett svar
 	Så ska intygets första status vara "Intyget är skickat till Försäkringskassan"
@@ -30,7 +30,7 @@ Scenario: Avliden Patient - Försäkringskassan kan ställa frågor på ett inty
 	När jag går in på intygsutkastet via djupintegrationslänk
     Och jag fyller i alla nödvändiga fält för intyget
     Och jag signerar intyget
-    När jag går in på intyget via djupintegrationslänk och har parametern "avliden" satt till "true"
+	Och jag går in på intyget via djupintegrationslänk med parameter "avliden=true"
     Och jag skickar intyget till Försäkringskassan
     När Försäkringskassan ställer en "OVRIGT" fråga om intyget
     Och jag svarar på frågan
@@ -44,7 +44,7 @@ Scenario: Avliden Patient - Vården kan svara på komplettering med ett nytt int
     Och jag fyller i alla nödvändiga fält för intyget
     Och jag signerar intyget
 
-    När jag går in på intyget via djupintegrationslänk och har parametern "avliden" satt till "true"
+	När jag går in på intyget via djupintegrationslänk med parameter "avliden=true"
     Och jag skickar intyget till Försäkringskassan
     När Försäkringskassan skickar ett "KOMPLT" meddelande på intyget
     Och jag går in på intyget via djupintegrationslänk

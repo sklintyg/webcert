@@ -45,40 +45,11 @@ Scenario: PS-007 - Patienten har fått ett reservnummer
 @RESPONSIBLEHOSPNAME	
 Scenario: [responsibleHospName] - Endast vårdadmin ska se signerande läkare
 	Givet att vårdsystemet skapat ett intygsutkast för slumpat SMI-intyg
-    När jag går in på intyget via djupintegrationslänk och har parametern "responsibleHospName" satt till "Peter Parameter"
+    När jag går in på intyget via djupintegrationslänk med parameter "responsibleHospName=Peter Parameter"
 	Så ska jag inte se signerande läkare "Peter Parameter"		
 	#Endast vårdadmin ska se signerande läkare 
-    
+
 	
-@INTYGSDELNING-VÅRDENHET @GE-003
-Scenario: GE-003 - Parametrar i djupintegrationslänk, och intygsdelning mellan vårdenheter
-    Givet att vårdsystemet skapat ett intygsutkast för slumpat SMI-intyg
-    När jag går in på intygsutkastet via djupintegrationslänk
-    Och jag fyller i alla nödvändiga fält för intyget
-    Och jag signerar intyget
-
-    När jag går in på intyget via djupintegrationslänk och har parametern "kopieringOK" satt till "false"
-    Så ska det inte finnas knappar för "förnya"
-
-    När jag går in på intyget via djupintegrationslänk och har parametern "inaktivEnhet" satt till "true"
-    Så ska det inte finnas knappar för "förnya"
-
-    När jag går in på intyget via djupintegrationslänk och har parametern "avliden" satt till "true"
-    Så ska jag varnas om att "Patienten är avliden"
-    Så ska det inte finnas knappar för "ersätta,förnya"
-	
-	Givet jag skickar intyget till Försäkringskassan
-	#Behövs för att kontrollera att fråga/svar inte visas vid SJF = false
-
-    Givet att jag är inloggad som djupintegrerad läkare på vårdenhet "TSTNMT2321000156-1077" och inte har uppdrag på "TSTNMT2321000156-INT2"
-    När jag går in på intyget via djupintegrationslänk och har parametern "sjf" satt till "true"
-    Så ska det finnas knappar för "förnya"
-    Och ska det inte finnas knappar för "ersätta,makulera"
-	
-    Och att jag är inloggad som djupintegrerad läkare på vårdenhet "TSTNMT2321000156-107P"
-	När jag går in på intyget via djupintegrationslänk och har parametern "sjf" satt till "false"
-	Så ska det inte finnas knappar för "ersätta,makulera,fråga/svar"
-	Så ska det finnas knappar för "förnya" om intygstyp är "Läkarintyg för sjukpenning"
 
 @GE-003 @INGAPARAMETRAR
 Scenario: GE-003 - Det ska vara möjligt att gå in på utkast och intyg utan integrationsparametrar.
@@ -90,3 +61,147 @@ Scenario: GE-003 - Det ska vara möjligt att gå in på utkast och intyg utan in
 	Och jag skickar intyget till Försäkringskassan
 	
 	Så ska det finnas knappar för "förnya,ersätta,makulera,fråga/svar"
+	
+@GE-003 
+Scenario: GE-003 - Tillgängliga funktioner #1 - enhetId=medskickad enhetId och parameter: kopieringOK=false
+
+	#Kontrollerar att det går att radera intygsutkast
+	Givet att vårdsystemet skapat ett intygsutkast för slumpat SMI-intyg
+    När jag går in på intyget via djupintegrationslänk med parameter "kopieringOK=false"
+    Och jag raderar utkastet
+
+	#Kontrollerar att det går att skapa, skriva, signera och skriva ut intyg
+	Givet att vårdsystemet skapat ett intygsutkast för slumpat SMI-intyg
+	När jag går in på intyget via djupintegrationslänk med parameter "kopieringOK=false"
+	Och jag fyller i alla nödvändiga fält för intyget
+    Och jag signerar intyget
+	
+	Och jag skriver ut intyget
+	
+	#Kontrollerar att det inte går att förnya med att det går att ersätta, makulera och använda ärendekommunikation
+	Så ska det inte finnas knappar för "förnya"
+	Så ska det finnas knappar för "ersätta,makulera"
+	
+	När jag skickar intyget till Försäkringskassan
+	Så ska det finnas knappar för "fråga/svar"
+
+@GE-003
+Scenario: GE-003 - Tillgängliga funktioner #2 - enhetId!=medskickad enhetId och parametrar: kopieringOK=false & sjf=true
+	#Kontrollerar utkast
+	Givet att vårdsystemet skapat ett intygsutkast för slumpat SMI-intyg
+	
+	Givet att jag är inloggad som djupintegrerad läkare på vårdenhet "TSTNMT2321000156-1077" och inte har uppdrag på "TSTNMT2321000156-INT2"
+	När jag försöker gå in på intygsutkastet via djupintegrationslänk och har parameter "kopieringOK=false&sjf=true"
+	Så ska jag varnas om att "Behörighet saknas"
+	
+	Givet att jag är inloggad som djupintegrerad läkare på vårdenhet "TSTNMT2321000156-INT2"
+	När jag går in på intyget via djupintegrationslänk
+	Och jag fyller i alla nödvändiga fält för intyget
+	Och jag signerar intyget
+	Och jag skickar intyget till Försäkringskassan
+	
+	#Kontrollerar signerat intyg
+	Givet att jag är inloggad som djupintegrerad läkare på vårdenhet "TSTNMT2321000156-1077" och inte har uppdrag på "TSTNMT2321000156-INT2"
+	När jag går in på intyget via djupintegrationslänk med parameter "kopieringOK=false&sjf=true"
+	
+	Så ska det inte finnas knappar för "skicka,ersätta,förnya,makulera,fråga/svar"
+	
+	#Kontrollerar att det går att skriva ut intyget
+	Och jag skriver ut intyget
+	
+	
+@GE-003
+Scenario: GE-003 - Tillgängliga funktioner #3 - enhetId=medskickad enhetId och parameter: kopieringOK=true
+	Givet att vårdsystemet skapat ett intygsutkast för slumpat SMI-intyg
+	När jag går in på intyget via djupintegrationslänk med parameter "kopieringOK=true"
+	Och jag fyller i alla nödvändiga fält för intyget
+	Och jag signerar intyget
+	Och jag skickar intyget till Försäkringskassan
+	Så ska det finnas knappar för "ersätta,förnya,makulera,fråga/svar"
+	Och jag skriver ut intyget
+	
+@GE-003 @WC-F017
+Scenario: GE-003 - Tillgängliga funktioner #4 - enhetId!=medskickad enhetId och parameter: kopieringOK=true
+	#Kontrollerar utkast
+	Givet att vårdsystemet skapat ett intygsutkast för slumpat SMI-intyg
+	Och att jag är inloggad som djupintegrerad läkare på vårdenhet "TSTNMT2321000156-1077" och inte har uppdrag på "TSTNMT2321000156-INT2"
+	När jag försöker gå in på intygsutkastet via djupintegrationslänk och har parameter "kopieringOK=true&sjf=true"
+	Så ska jag varnas om att "Behörighet saknas"
+	
+	Givet att jag är inloggad som djupintegrerad läkare på vårdenhet "TSTNMT2321000156-INT2"
+	När jag går in på intyget via djupintegrationslänk
+	Och jag fyller i alla nödvändiga fält för intyget
+	Och jag signerar intyget
+	Och jag skickar intyget till Försäkringskassan
+	
+	#Kontrollerar signerat intyg
+	Givet att jag är inloggad som djupintegrerad läkare på vårdenhet "TSTNMT2321000156-1077" och inte har uppdrag på "TSTNMT2321000156-INT2"
+	När jag går in på intyget via djupintegrationslänk med parameter "kopieringOK=true&sjf=true"
+	
+	Så ska det inte finnas knappar för "skicka,ersätta,makulera,fråga/svar"
+	
+	#Gäller SMI; WC-F017
+	Så ska det finnas knappar för "förnya"
+	
+	#Kontrollerar att det går att skriva ut intyget
+	Och jag skriver ut intyget
+	
+@GE-003 @WC-F017
+Scenario: GE-003 - Tillgängliga funktioner #5 - enhetId!=medskickad enhetId och patienten är sekretessmarkerad &sjf=true
+	Givet jag går in på en patient med sekretessmarkering
+	Och att vårdsystemet skapat ett intygsutkast för samma patient för slumpat SMI-intyg
+	
+	När jag går in på intyget via djupintegrationslänk
+	Och jag fyller i alla nödvändiga fält för intyget
+	Och jag signerar intyget
+	
+	Givet att jag är inloggad som djupintegrerad läkare på vårdenhet "TSTNMT2321000156-1077" och inte har uppdrag på "TSTNMT2321000156-INT2"
+	När jag försöker gå in på intygsutkastet via djupintegrationslänk och har parameter "kopieringOK=true&sjf=true"
+	Så ska jag varnas om att "Behörighet saknas"
+
+@GE-003	
+Scenario: GE-003 - Tillgängliga funktioner #6 - avliden=true
+	Givet att vårdsystemet skapat ett intygsutkast för slumpat SMI-intyg
+	När jag går in på intyget via djupintegrationslänk med parameter "avliden=true"
+	Så ska jag varnas om att "Patienten är avliden"
+	Och jag fyller i alla nödvändiga fält för intyget
+    Och jag signerar intyget
+    Så ska det inte finnas knappar för "förnya,ersätta"
+	
+	Och jag skickar intyget till Försäkringskassan
+	Så ska det finnas knappar för "fråga/svar,makulera"	
+	
+	
+@GE-003	
+Scenario: GE-003 - Tillgängliga funktioner #8 - inaktivEnhet=true
+	Givet att vårdsystemet skapat ett intygsutkast för slumpat SMI-intyg
+	När jag går in på intyget via djupintegrationslänk med parameter "inaktivEnhet=true"
+	Och jag fyller i alla nödvändiga fält för intyget
+    Och jag signerar intyget
+    Så ska det inte finnas knappar för "förnya,ersätta"
+	
+	Och jag skickar intyget till Försäkringskassan
+	Så ska det finnas knappar för "fråga/svar,makulera"	
+    
+	
+@GE-003
+Scenario: GE-003 - Ej tillgängliga funktioner #2 och #4 - enhetId!=medskickad enhetId och parameter: sjf=false
+	#Utkast
+	Givet att vårdsystemet skapat ett intygsutkast för slumpat SMI-intyg
+	
+	Givet att jag är inloggad som djupintegrerad läkare på vårdenhet "TSTNMT2321000156-1077" och inte har uppdrag på "TSTNMT2321000156-INT2"
+	När jag försöker gå in på intygsutkastet via djupintegrationslänk
+	Så ska jag varnas om att "Behörighet saknas"
+	
+	#Intyg
+	Givet att jag är inloggad som djupintegrerad läkare på vårdenhet "TSTNMT2321000156-INT2"
+	Och att vårdsystemet skapat ett intygsutkast för slumpat SMI-intyg
+	När jag går in på intyget via djupintegrationslänk
+	Och jag fyller i alla nödvändiga fält för intyget
+	Och jag signerar intyget
+	
+	Givet att jag är inloggad som djupintegrerad läkare på vårdenhet "TSTNMT2321000156-1077" och inte har uppdrag på "TSTNMT2321000156-INT2"
+	När jag försöker gå in på intygsutkastet via djupintegrationslänk
+	Så ska jag varnas om att "Kunde inte hämta intyget eftersom du saknar behörighet."
+	
+	
