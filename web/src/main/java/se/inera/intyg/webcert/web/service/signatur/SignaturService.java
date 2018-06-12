@@ -18,7 +18,7 @@
  */
 package se.inera.intyg.webcert.web.service.signatur;
 
-import se.inera.intyg.infra.xmldsig.model.SignatureType;
+import org.w3._2000._09.xmldsig_.SignatureType;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.signatur.dto.SignaturTicket;
 

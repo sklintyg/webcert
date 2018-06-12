@@ -29,14 +29,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.w3._2000._09.xmldsig_.SignatureType;
 
 import com.secmaker.netid.nias.v1.AuthenticateResponse;
 import com.secmaker.netid.nias.v1.NetiDAccessServerSoap;
 import com.secmaker.netid.nias.v1.ResultCollect;
 import com.secmaker.netid.nias.v1.SignResponse;
 
-import se.inera.intyg.infra.xmldsig.XMLDSigService;
-import se.inera.intyg.infra.xmldsig.model.SignatureType;
+import se.inera.intyg.infra.xmldsig.service.XMLDSigService;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;

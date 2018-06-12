@@ -19,7 +19,7 @@
 package se.inera.intyg.webcert.web.service.signatur.nias;
 
 import org.springframework.security.core.context.SecurityContext;
-import se.inera.intyg.infra.xmldsig.model.SignatureType;
+import org.w3._2000._09.xmldsig_.SignatureType;
 
 /**
  * Created by eriklupander on 2015-08-25.

@@ -18,6 +18,8 @@
  */
 package se.inera.intyg.webcert.web.service.signatur.nias;
 
+import java.nio.charset.Charset;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,20 +27,18 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
+import org.w3._2000._09.xmldsig_.KeyInfoType;
+import org.w3._2000._09.xmldsig_.SignatureType;
+import org.w3._2000._09.xmldsig_.SignatureValueType;
 
 import com.secmaker.netid.nias.v1.NetiDAccessServerSoap;
 import com.secmaker.netid.nias.v1.ResultCollect;
 
-import se.inera.intyg.infra.xmldsig.XMLDSigService;
-import se.inera.intyg.infra.xmldsig.model.KeyInfoType;
-import se.inera.intyg.infra.xmldsig.model.SignatureType;
-import se.inera.intyg.infra.xmldsig.model.SignatureValueType;
+import se.inera.intyg.infra.xmldsig.service.XMLDSigService;
 import se.inera.intyg.webcert.web.service.signatur.SignaturService;
 import se.inera.intyg.webcert.web.service.signatur.SignaturTicketTracker;
 import se.inera.intyg.webcert.web.service.signatur.dto.SignaturTicket;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
-
-import java.nio.charset.Charset;
 
 /**
  * Runnable implementation / spring prototype bean responsible for performing once NIAP collect lifecycle for a single
