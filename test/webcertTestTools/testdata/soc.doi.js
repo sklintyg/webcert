@@ -127,7 +127,7 @@ module.exports = {
             intygsID = testdataHelper.generateTestGuid();
         }
 
-        let datumSakert = testdataHelper.randomTrueFalse();
+        let datumSakert = (customFields && customFields.dodsdatum && customFields.dodsdatum.sakert) ? true : testdataHelper.randomTrueFalse();
 
         var obj = {
             id: intygsID,
@@ -152,7 +152,7 @@ module.exports = {
             }
         };
         if (datumSakert === false) {
-            obj.barn = testdataHelper.randomTrueFalse();
+            obj.barn = (customFields && customFields.barn) ? customFields.barn : testdataHelper.randomTrueFalse();
         }
 
         function useCustom(field) {
@@ -164,7 +164,6 @@ module.exports = {
             useCustom('land');
             useCustom('dodsdatum');
             useCustom('dodsPlats');
-            useCustom('barn');
         }
         return obj;
 

@@ -5,7 +5,7 @@ Egenskap: Regressionstest på Statistiktjänsten med ökad test teckning.
 
 Bakgrund: Jag befinner mig på webcerts förstasida
 
-@MAKULERA @VERKSAMHETSSTATISTIK @LISJP
+@MAKULERA @VERKSAMHETSSTATISTIK @WAITINGFORFIX @INTYG-6598 @LISJP
 Scenario: Ett nyskapat och makulerat Läkarintyg för sjukpenning intyg ska finnas och senare tas bort från Statistiktjänsten
 	#### Kolla nuvarande statistik
 	När jag går in på Statistiktjänsten
@@ -42,7 +42,7 @@ Scenario: Ett nyskapat och makulerat Läkarintyg för sjukpenning intyg ska finn
     Och jag går till statistiksidan för diagnoskod "samma som ovan"
     Så ska totala "samma som ovan" diagnoser som finns vara "1" mindre
 
-@VERKSAMHETSSTATISTIK @LISJP
+@VERKSAMHETSSTATISTIK @WAITINGFORFIX @INTYG-6598 @LISJP
 Scenario: Två nyskapade LISJP intyg på samma person ska räknas som en i Statistiktjänstens GUI
 	#### Kolla nuvarande statistik
 	När jag går in på Statistiktjänsten
@@ -76,7 +76,7 @@ Scenario: Två nyskapade LISJP intyg på samma person ska räknas som en i Stati
     Och jag går till statistiksidan för diagnoskod "samma som ovan"
     Så ska totala "samma som ovan" diagnoser som finns vara "1" extra
 
-@VERKSAMHETSSTATISTIK
+@VERKSAMHETSSTATISTIK @WAITINGFORFIX @INTYG-6598
 Scenario: Två nyskapade LISJP intyg på olika personer ska räknas som två i Statistiktjänstens GUI
 	#### Kolla nuvarande statistik
 	När jag går in på Statistiktjänsten
