@@ -33,6 +33,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
+import se.inera.intyg.common.support.common.enumerations.SignaturTyp;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.Patient;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
@@ -297,7 +298,7 @@ public class IntygResource {
         if (utkast.getStatus() == UtkastStatus.SIGNED) {
             Signatur signatur = new Signatur(LocalDateTime.now(), utlatande.getGrundData().getSkapadAv().getPersonId(), utlatande.getId(),
                     model,
-                    "ruffel", "fusk");
+                    "ruffel", "fusk", SignaturTyp.LEGACY);
             utkast.setSignatur(signatur);
         }
         VardpersonReferens vardpersonReferens = new VardpersonReferens();
@@ -457,7 +458,7 @@ public class IntygResource {
         Utkast utkast = utkastRepository.findOne(id);
         if (utkast != null) {
             utkast.setStatus(UtkastStatus.SIGNED);
-            Signatur sig = new Signatur(LocalDateTime.now(), signeratAv != null ? signeratAv : "", id, "", "", "");
+            Signatur sig = new Signatur(LocalDateTime.now(), signeratAv != null ? signeratAv : "", id, "", "", "", SignaturTyp.LEGACY);
             utkast.setSignatur(sig);
             utkastRepository.save(utkast);
         }
@@ -479,7 +480,7 @@ public class IntygResource {
             }
 
             if (utkast.getSignatur() == null) {
-                Signatur sig = new Signatur(LocalDateTime.now(), "", id, "", "", "");
+                Signatur sig = new Signatur(LocalDateTime.now(), "", id, "", "", "", SignaturTyp.LEGACY);
                 utkast.setSignatur(sig);
             }
 

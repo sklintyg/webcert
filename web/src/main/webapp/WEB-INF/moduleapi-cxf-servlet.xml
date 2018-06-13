@@ -41,6 +41,7 @@
       <bean class="se.inera.intyg.webcert.web.web.controller.moduleapi.DiagnosModuleApiController" />
       <bean class="se.inera.intyg.webcert.web.web.controller.moduleapi.UtkastModuleApiController" />
       <bean class="se.inera.intyg.webcert.web.web.controller.moduleapi.ArendeModuleApiController" />
+      <bean class="se.inera.intyg.webcert.web.web.controller.moduleapi.UtkastModuleApiController" />
     </jaxrs:serviceBeans>
     <jaxrs:providers>
       <ref bean="jacksonJsonProvider" />

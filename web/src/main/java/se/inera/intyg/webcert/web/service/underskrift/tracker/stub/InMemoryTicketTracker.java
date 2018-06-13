@@ -23,4 +23,9 @@ public class InMemoryTicketTracker implements RedisTicketTracker {
     public SignaturBiljett findBiljett(String ticketId) {
         return map.get(ticketId);
     }
+
+    @Override
+    public SignaturBiljett updateBiljett(SignaturBiljett biljett) {
+        return map.replace(biljett.getTicketId(), biljett);
+    }
 }

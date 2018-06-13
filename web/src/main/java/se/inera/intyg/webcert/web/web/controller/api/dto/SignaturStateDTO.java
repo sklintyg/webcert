@@ -1,26 +1,14 @@
 package se.inera.intyg.webcert.web.web.controller.api.dto;
 
-import se.inera.intyg.webcert.web.service.underskrift.model.SignaturBiljett;
+import se.inera.intyg.webcert.web.service.underskrift.model.SignaturStatus;
 
 public class SignaturStateDTO {
     private String ticketId;
     private String intygsId;
     private long version;
-    private String status;
+    private SignaturStatus status;
     private String intygDigest;
     private String signableDigest;
-
-    private SignaturStateDTO() {
-    }
-
-    public SignaturStateDTO(SignaturBiljett signaturBiljett) {
-        this.ticketId = signaturBiljett.getTicketId();
-        this.intygsId = signaturBiljett.getIntygsId();
-        this.version = signaturBiljett.getVersion();
-        this.status = signaturBiljett.getStatus();
-        this.intygDigest = signaturBiljett.getIntygDigest();
-        this.signableDigest = signaturBiljett.getSignableDigest();
-    }
 
     public String getTicketId() {
         return ticketId;
@@ -46,11 +34,11 @@ public class SignaturStateDTO {
         this.version = version;
     }
 
-    public String getStatus() {
+    public SignaturStatus getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(SignaturStatus status) {
         this.status = status;
     }
 
@@ -70,12 +58,11 @@ public class SignaturStateDTO {
         this.signableDigest = signableDigest;
     }
 
-
     public static final class SignaturStateDTOBuilder {
         private String ticketId;
         private String intygsId;
         private long version;
-        private String status;
+        private SignaturStatus status;
         private String intygDigest;
         private String signableDigest;
 
@@ -101,7 +88,7 @@ public class SignaturStateDTO {
             return this;
         }
 
-        public SignaturStateDTOBuilder withStatus(String status) {
+        public SignaturStateDTOBuilder withStatus(SignaturStatus status) {
             this.status = status;
             return this;
         }

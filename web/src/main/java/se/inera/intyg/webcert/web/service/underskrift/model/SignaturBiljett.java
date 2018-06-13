@@ -1,6 +1,7 @@
 package se.inera.intyg.webcert.web.service.underskrift.model;
 
-import org.w3._2000._09.xmldsig_.SignatureType;
+import se.inera.intyg.common.support.common.enumerations.SignaturTyp;
+import se.inera.intyg.infra.xmldsig.model.IntygSignature;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -10,10 +11,9 @@ public class SignaturBiljett implements Serializable {
     private String intygsId;
     private long version;
     private SignaturStatus status;
-    private String intygDigest;
-    private String signableDigest;
-    private SignatureType signatureType;
+    private IntygSignature intygSignature;
     private LocalDateTime skapad;
+    private SignaturTyp signaturTyp;
 
     public String getTicketId() {
         return ticketId;
@@ -47,28 +47,12 @@ public class SignaturBiljett implements Serializable {
         this.status = status;
     }
 
-    public String getIntygDigest() {
-        return intygDigest;
+    public IntygSignature getIntygSignature() {
+        return intygSignature;
     }
 
-    public void setIntygDigest(String intygDigest) {
-        this.intygDigest = intygDigest;
-    }
-
-    public String getSignableDigest() {
-        return signableDigest;
-    }
-
-    public void setSignableDigest(String signableDigest) {
-        this.signableDigest = signableDigest;
-    }
-
-    public SignatureType getSignatureType() {
-        return signatureType;
-    }
-
-    public void setSignatureType(SignatureType signatureType) {
-        this.signatureType = signatureType;
+    public void setIntygSignature(IntygSignature intygSignature) {
+        this.intygSignature = intygSignature;
     }
 
     public LocalDateTime getSkapad() {
@@ -79,16 +63,23 @@ public class SignaturBiljett implements Serializable {
         this.skapad = skapad;
     }
 
+    public SignaturTyp getSignaturTyp() {
+        return signaturTyp;
+    }
+
+    public void setSignaturTyp(SignaturTyp signaturTyp) {
+        this.signaturTyp = signaturTyp;
+    }
+
 
     public static final class SignaturBiljettBuilder {
         private String ticketId;
         private String intygsId;
         private long version;
         private SignaturStatus status;
-        private String intygDigest;
-        private String signableDigest;
-        private SignatureType signatureType;
+        private IntygSignature intygSignature;
         private LocalDateTime skapad;
+        private SignaturTyp signaturTyp;
 
         private SignaturBiljettBuilder() {
         }
@@ -117,23 +108,18 @@ public class SignaturBiljett implements Serializable {
             return this;
         }
 
-        public SignaturBiljettBuilder withIntygDigest(String intygDigest) {
-            this.intygDigest = intygDigest;
-            return this;
-        }
-
-        public SignaturBiljettBuilder withSignableDigest(String signableDigest) {
-            this.signableDigest = signableDigest;
-            return this;
-        }
-
-        public SignaturBiljettBuilder withSignatureType(SignatureType signatureType) {
-            this.signatureType = signatureType;
+        public SignaturBiljettBuilder withIntygSignature(IntygSignature intygSignature) {
+            this.intygSignature = intygSignature;
             return this;
         }
 
         public SignaturBiljettBuilder withSkapad(LocalDateTime skapad) {
             this.skapad = skapad;
+            return this;
+        }
+
+        public SignaturBiljettBuilder withSignaturTyp(SignaturTyp signaturTyp) {
+            this.signaturTyp = signaturTyp;
             return this;
         }
 
@@ -143,10 +129,9 @@ public class SignaturBiljett implements Serializable {
             signaturBiljett.setIntygsId(intygsId);
             signaturBiljett.setVersion(version);
             signaturBiljett.setStatus(status);
-            signaturBiljett.setIntygDigest(intygDigest);
-            signaturBiljett.setSignableDigest(signableDigest);
-            signaturBiljett.setSignatureType(signatureType);
+            signaturBiljett.setIntygSignature(intygSignature);
             signaturBiljett.setSkapad(skapad);
+            signaturBiljett.setSignaturTyp(signaturTyp);
             return signaturBiljett;
         }
     }

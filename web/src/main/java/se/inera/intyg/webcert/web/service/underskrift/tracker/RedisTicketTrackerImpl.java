@@ -19,4 +19,9 @@ public class RedisTicketTrackerImpl implements RedisTicketTracker {
     public SignaturBiljett findBiljett(String ticketId) {
         return null;
     }
+
+    @Override
+    public SignaturBiljett updateBiljett(SignaturBiljett biljett) {
+        return null;
+    }
 }

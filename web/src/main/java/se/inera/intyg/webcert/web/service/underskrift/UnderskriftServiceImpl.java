@@ -16,6 +16,12 @@ import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.converter.util.IntygConverterUtil;
+import se.inera.intyg.webcert.web.service.intyg.IntygService;
+import se.inera.intyg.webcert.web.service.log.LogRequestFactory;
+import se.inera.intyg.webcert.web.service.log.LogService;
+import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
+import se.inera.intyg.webcert.web.service.notification.NotificationService;
+import se.inera.intyg.webcert.web.service.underskrift.fake.FakeUnderskriftService;
 import se.inera.intyg.webcert.web.service.underskrift.grp.GrpUnderskriftServiceImpl;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturBiljett;
 import se.inera.intyg.webcert.web.service.underskrift.xmldsig.XmlUnderskriftServiceImpl;
@@ -47,6 +53,18 @@ public class UnderskriftServiceImpl implements UnderskriftService {
     @Autowired
     private IntygModuleRegistry moduleRegistry;
 
+    @Autowired(required = false)
+    private FakeUnderskriftService fakeUnderskriftService;
+
+    @Autowired
+    private NotificationService notificationService;
+
+    @Autowired
+    private LogService logService;
+
+    @Autowired
+    private IntygService intygService;
+
     @Override
     public SignaturBiljett startSigningProcess(String intygsId, String intygsTyp, long version) {
         WebCertUser user = webCertUserService.getUser();
@@ -64,18 +82,39 @@ public class UnderskriftServiceImpl implements UnderskriftService {
         case NET_ID:
         case EFOS:
         case FAKE:
-            return xmlUnderskriftService.startSigningProcess(intygsId, intygsTyp, version);
+            return xmlUnderskriftService.skapaSigneringsBiljettMedDigest(intygsId, intygsTyp, version, updatedJson);
         case BANK_ID:
         case MOBILT_BANK_ID:
-            return grpUnderskriftService.startSigningProcess(intygsId, intygsTyp, version);
+            return grpUnderskriftService.skapaSigneringsBiljettMedDigest(intygsId, intygsTyp, version, updatedJson);
         }
         throw new WebCertServiceException(WebCertServiceErrorCodeEnum.UNKNOWN_INTERNAL_PROBLEM,
                 "Unhandled user state for signing: " + user.getAuthenticationMethod());
     }
 
+    @Override
+    public SignaturBiljett fakeSignature(String intygsId, String intygsTyp, long version, String ticketId) {
+        WebCertUser user = webCertUserService.getUser();
+        Utkast utkast = getUtkastForSignering(intygsId, version, user);
 
+        SignaturBiljett signaturBiljett = fakeUnderskriftService.finalizeFakeSignature(ticketId, utkast, user);
 
+        finalizeSignature(utkast, user);
+        return signaturBiljett;
+    }
 
+    private void finalizeSignature(Utkast utkast, WebCertUser user) {
+        // Notify stakeholders when certificate has been signed
+        notificationService.sendNotificationForDraftSigned(utkast);
+
+        LogRequest logRequest = LogRequestFactory.createLogRequestFromUtkast(utkast);
+
+        // Note that we explictly supplies the WebCertUser here. The NIAS finalization is not executed in a HTTP
+        // request context and thus we need to supply the user instance manually.
+        logService.logSignIntyg(logRequest, logService.getLogUser(user));
+
+        // Sends intyg to Intygstjänsten.
+        intygService.handleAfterSigned(utkast);
+    }
 
 
     private Utkast getUtkastForSignering(String intygId, long version, WebCertUser user) {
