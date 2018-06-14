@@ -14,6 +14,7 @@ public class SignaturBiljett implements Serializable {
     private IntygSignature intygSignature;
     private LocalDateTime skapad;
     private SignaturTyp signaturTyp;
+    private String hash;
 
     public String getTicketId() {
         return ticketId;
@@ -71,6 +72,14 @@ public class SignaturBiljett implements Serializable {
         this.signaturTyp = signaturTyp;
     }
 
+    public String getHash() {
+        return hash;
+    }
+
+    public void setHash(String hash) {
+        this.hash = hash;
+    }
+
 
     public static final class SignaturBiljettBuilder {
         private String ticketId;
@@ -80,6 +89,7 @@ public class SignaturBiljett implements Serializable {
         private IntygSignature intygSignature;
         private LocalDateTime skapad;
         private SignaturTyp signaturTyp;
+        private String hash;
 
         private SignaturBiljettBuilder() {
         }
@@ -123,6 +133,11 @@ public class SignaturBiljett implements Serializable {
             return this;
         }
 
+        public SignaturBiljettBuilder withHash(String hash) {
+            this.hash = hash;
+            return this;
+        }
+
         public SignaturBiljett build() {
             SignaturBiljett signaturBiljett = new SignaturBiljett();
             signaturBiljett.setTicketId(ticketId);
@@ -132,6 +147,7 @@ public class SignaturBiljett implements Serializable {
             signaturBiljett.setIntygSignature(intygSignature);
             signaturBiljett.setSkapad(skapad);
             signaturBiljett.setSignaturTyp(signaturTyp);
+            signaturBiljett.setHash(hash);
             return signaturBiljett;
         }
     }

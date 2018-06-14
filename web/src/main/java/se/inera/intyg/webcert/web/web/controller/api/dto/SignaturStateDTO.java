@@ -1,21 +1,23 @@
 package se.inera.intyg.webcert.web.web.controller.api.dto;
 
+import java.nio.charset.Charset;
+import java.util.Base64;
+
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturStatus;
 
 public class SignaturStateDTO {
-    private String ticketId;
+    private String id;
     private String intygsId;
     private long version;
     private SignaturStatus status;
-    private String intygDigest;
-    private String signableDigest;
+    private String hash;
 
-    public String getTicketId() {
-        return ticketId;
+    public String getId() {
+        return id;
     }
 
-    public void setTicketId(String ticketId) {
-        this.ticketId = ticketId;
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getIntygsId() {
@@ -42,29 +44,25 @@ public class SignaturStateDTO {
         this.status = status;
     }
 
-    public String getIntygDigest() {
-        return intygDigest;
+    public void setHash(String hash) {
+        this.hash = hash;
     }
 
-    public void setIntygDigest(String intygDigest) {
-        this.intygDigest = intygDigest;
-    }
-
-    public String getSignableDigest() {
-        return signableDigest;
-    }
-
-    public void setSignableDigest(String signableDigest) {
-        this.signableDigest = signableDigest;
+    /**
+     * The hash MUST be the Base64 encoded representation of the canonicalized XML of the
+     * <SignedInfo xmlns="http://www.w3.org/2000/09/xmldsig#"></SignedInfo> element on a single row, with all elements
+     * properly closed. I.e. <MyElement algo="1337" /> == WRONG, <MyElement algo="1337"></MyElement> == CORRECT.
+     */
+    public String getHash() {
+        return Base64.getEncoder().encodeToString(hash.getBytes(Charset.forName("UTF-8")));
     }
 
     public static final class SignaturStateDTOBuilder {
-        private String ticketId;
+        private String id;
         private String intygsId;
         private long version;
         private SignaturStatus status;
-        private String intygDigest;
-        private String signableDigest;
+        private String hash;
 
         private SignaturStateDTOBuilder() {
         }
@@ -73,8 +71,8 @@ public class SignaturStateDTO {
             return new SignaturStateDTOBuilder();
         }
 
-        public SignaturStateDTOBuilder withTicketId(String ticketId) {
-            this.ticketId = ticketId;
+        public SignaturStateDTOBuilder withId(String id) {
+            this.id = id;
             return this;
         }
 
@@ -93,24 +91,18 @@ public class SignaturStateDTO {
             return this;
         }
 
-        public SignaturStateDTOBuilder withIntygDigest(String intygDigest) {
-            this.intygDigest = intygDigest;
-            return this;
-        }
-
-        public SignaturStateDTOBuilder withSignableDigest(String signableDigest) {
-            this.signableDigest = signableDigest;
+        public SignaturStateDTOBuilder withHash(String hash) {
+            this.hash = hash;
             return this;
         }
 
         public SignaturStateDTO build() {
             SignaturStateDTO signaturStateDTO = new SignaturStateDTO();
-            signaturStateDTO.setTicketId(ticketId);
+            signaturStateDTO.setId(id);
             signaturStateDTO.setIntygsId(intygsId);
             signaturStateDTO.setVersion(version);
             signaturStateDTO.setStatus(status);
-            signaturStateDTO.setIntygDigest(intygDigest);
-            signaturStateDTO.setSignableDigest(signableDigest);
+            signaturStateDTO.setHash(hash);
             return signaturStateDTO;
         }
     }

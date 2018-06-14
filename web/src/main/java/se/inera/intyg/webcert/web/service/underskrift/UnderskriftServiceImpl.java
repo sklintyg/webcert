@@ -24,6 +24,7 @@ import se.inera.intyg.webcert.web.service.notification.NotificationService;
 import se.inera.intyg.webcert.web.service.underskrift.fake.FakeUnderskriftService;
 import se.inera.intyg.webcert.web.service.underskrift.grp.GrpUnderskriftServiceImpl;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturBiljett;
+import se.inera.intyg.webcert.web.service.underskrift.tracker.RedisTicketTracker;
 import se.inera.intyg.webcert.web.service.underskrift.xmldsig.XmlUnderskriftServiceImpl;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
@@ -65,6 +66,9 @@ public class UnderskriftServiceImpl implements UnderskriftService {
     @Autowired
     private IntygService intygService;
 
+    @Autowired
+    private RedisTicketTracker redisTicketTracker;
+
     @Override
     public SignaturBiljett startSigningProcess(String intygsId, String intygsTyp, long version) {
         WebCertUser user = webCertUserService.getUser();
@@ -101,6 +105,31 @@ public class UnderskriftServiceImpl implements UnderskriftService {
         finalizeSignature(utkast, user);
         return signaturBiljett;
     }
+
+    @Override
+    public SignaturBiljett netidPluginSignature(String biljettId, byte[] signatur, String certifikat) {
+        SignaturBiljett sb = redisTicketTracker.findBiljett(biljettId);
+
+        WebCertUser user = webCertUserService.getUser();
+        Utkast utkast = getUtkastForSignering(sb.getIntygsId(), sb.getVersion(), user);
+
+        sb = xmlUnderskriftService.finalizeXmlSignature(sb, signatur, certifikat, utkast, user);
+        finalizeSignature(utkast, user);
+        return sb;
+    }
+
+    @Override
+    public SignaturBiljett signeringsStatus(String intygsTyp, String ticketId) {
+         LOG.info("ENTER - signeringsStatus for ticketId '{}'", ticketId);
+         SignaturBiljett sb = redisTicketTracker.findBiljett(ticketId);
+         if (sb == null) {
+             LOG.error("No SignaturBiljett found for ticketId '{}'", ticketId);
+             throw new IllegalStateException("No SignaturBiljett found for ticketId " + ticketId);
+         }
+         return sb;
+    }
+
+
 
     private void finalizeSignature(Utkast utkast, WebCertUser user) {
         // Notify stakeholders when certificate has been signed

@@ -34,12 +34,16 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.bind.Marshaller;
 import java.io.StringWriter;
 import java.nio.charset.Charset;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 import java.util.Base64;
 
 public abstract class BaseXMLSignatureService {
 
     private static final Logger LOG = LoggerFactory.getLogger(BaseXMLSignatureService.class);
+    private static final String DIGEST_ALGORITHM = "SHA-256";
+    private static final Charset UTF_8 = Charset.forName("UTF-8");
 
     @Autowired
     private UtkastModelToXMLConverter utkastModelToXMLConverter;
@@ -60,7 +64,7 @@ public abstract class BaseXMLSignatureService {
     private XMLDSigService xmldSigService;
 
     protected SignaturBiljett finalizeXMLDSigSignature(String x509certificate, WebCertUser user, SignaturBiljett biljett,
-            String rawSignature,
+            byte[] rawSignature,
             Utkast utkast) {
         IntygXMLDSignature intygXmldSignature = (IntygXMLDSignature) biljett.getIntygSignature();
 
@@ -120,11 +124,13 @@ public abstract class BaseXMLSignatureService {
         }
     }
 
-    private void applySignature(WebCertUser user, String rawSignature, IntygXMLDSignature intygXmldSignature) {
+    private void applySignature(WebCertUser user, byte[] rawSignature, IntygXMLDSignature intygXmldSignature) {
         SignatureValueType svt = new SignatureValueType();
         if (user.getAuthenticationMethod() == AuthenticationMethod.SITHS) {
             // Don't decode RAW signatures from the NetiD plugin.
-            svt.setValue(rawSignature.getBytes(Charset.forName("UTF-8")));
+            svt.setValue(rawSignature); //rawSignature.getBytes(Charset.forName("UTF-8")));
+        } else if (user.getAuthenticationMethod() == AuthenticationMethod.FAKE) {
+            svt.setValue(rawSignature);
         } else {
             svt.setValue(Base64.getDecoder().decode(rawSignature)); // Remember to decode signature from Base64 to binary.
         }
@@ -179,6 +185,17 @@ public abstract class BaseXMLSignatureService {
         intygService.storeIntyg(savedUtkast);
 
         return biljett;
+    }
+
+    protected String generateDigest(String stringToDigest) {
+        try {
+            MessageDigest digest = MessageDigest.getInstance(DIGEST_ALGORITHM);
+            byte[] sha256 = digest.digest(stringToDigest.getBytes(UTF_8));
+            return Base64.getEncoder().encodeToString(sha256);
+        } catch (NoSuchAlgorithmException e) {
+            LOG.error("{} caught during digest and base64-encoding, message: {}", e.getClass().getSimpleName(), e.getMessage());
+            throw new IllegalArgumentException(e.getMessage());
+        }
     }
 
     private Utkast updateAndSaveUtkast(Utkast utkast, String payloadJson, Signatur signatur, WebCertUser user) {
