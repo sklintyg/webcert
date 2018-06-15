@@ -16,7 +16,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.web.service.signatur.grp;
+package se.inera.intyg.webcert.web.service.underskrift.grp;
+
+import java.nio.charset.Charset;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,17 +29,16 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
+
 import se.funktionstjanster.grp.v1.CollectRequestType;
 import se.funktionstjanster.grp.v1.CollectResponseType;
 import se.funktionstjanster.grp.v1.GrpFault;
 import se.funktionstjanster.grp.v1.GrpServicePortType;
 import se.funktionstjanster.grp.v1.Property;
-import se.inera.intyg.webcert.web.service.signatur.SignaturService;
-import se.inera.intyg.webcert.web.service.signatur.SignaturTicketTracker;
-import se.inera.intyg.webcert.web.service.signatur.dto.SignaturTicket;
+import se.inera.intyg.webcert.web.service.underskrift.UnderskriftService;
+import se.inera.intyg.webcert.web.service.underskrift.model.SignaturStatus;
+import se.inera.intyg.webcert.web.service.underskrift.tracker.RedisTicketTracker;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
-
-import java.util.List;
 
 /**
  * Runnable implementation / spring prototype bean responsible for performing once GRP collect lifecycle for a single
@@ -65,7 +67,7 @@ public class GrpCollectPollerImpl implements GrpCollectPoller {
     private static final long TIMEOUT = 240000L; // 4 minutes, normally an EXPIRED_TRANSACTION will be returned after 3.
 
     private String orderRef;
-    private String transactionId;
+    private String ticketId;
 
     @Value("${cgi.grp.serviceId}")
     private String serviceId;
@@ -74,10 +76,10 @@ public class GrpCollectPollerImpl implements GrpCollectPoller {
     private String displayName;
 
     @Autowired
-    private SignaturTicketTracker signaturTicketTracker;
+    private RedisTicketTracker redisTicketTracker;
 
     @Autowired
-    private SignaturService signaturService;
+    private UnderskriftService underskriftService;
 
     @Autowired
     private GrpServicePortType grpService;
@@ -110,18 +112,18 @@ public class GrpCollectPollerImpl implements GrpCollectPoller {
                         }
 
                         String signature = resp.getSignature();
-                        signaturService.clientGrpSignature(resp.getTransactionId(), signature, webCertUser);
+                        underskriftService.grpSignature(ticketId, signature.getBytes(Charset.forName("UTF-8")));
                         LOG.info("Signature was successfully persisted and ticket updated.");
                         return;
                     case USER_SIGN:
-                        signaturTicketTracker.updateStatus(transactionId, SignaturTicket.Status.VANTA_SIGN);
+                        redisTicketTracker.updateStatus(ticketId, SignaturStatus.VANTA_SIGN);
                         break;
                     case OUTSTANDING_TRANSACTION:
                     case STARTED:
                     case USER_REQ:
                         break;
                     case NO_CLIENT:
-                        signaturTicketTracker.updateStatus(transactionId, SignaturTicket.Status.NO_CLIENT);
+                        redisTicketTracker.updateStatus(ticketId, SignaturStatus.NO_CLIENT);
                         LOG.info("GRP collect returned ProgressStatusType: {}, "
                                 + "has the user started their BankID or Mobilt BankID application?",
                                 resp.getProgressStatus());
@@ -171,7 +173,7 @@ public class GrpCollectPollerImpl implements GrpCollectPoller {
     }
 
     private void handleGrpFault(GrpFault grpFault) {
-        signaturTicketTracker.updateStatus(transactionId, SignaturTicket.Status.OKAND);
+        redisTicketTracker.updateStatus(ticketId, SignaturStatus.OKAND);
         switch (grpFault.getFaultInfo().getFaultStatus()) {
         case CLIENT_ERR:
             LOG.error("GRP collect failed with CLIENT_ERR, message: {}", grpFault.getFaultInfo().getDetailedDescription());
@@ -196,10 +198,10 @@ public class GrpCollectPollerImpl implements GrpCollectPoller {
     private CollectRequestType buildCollectRequest() {
         CollectRequestType req = new CollectRequestType();
         req.setOrderRef(orderRef);
-        req.setTransactionId(transactionId);
+        req.setTransactionId(ticketId);
         req.setPolicy(serviceId);
         req.setDisplayName(displayName);
-        req.setProvider(GrpSignaturServiceImpl.BANK_ID_PROVIDER);
+        req.setProvider(GrpUnderskriftServiceImpl.BANK_ID_PROVIDER);
         return req;
     }
 
@@ -224,8 +226,8 @@ public class GrpCollectPollerImpl implements GrpCollectPoller {
     }
 
     @Override
-    public void setTransactionId(String transactionId) {
-        this.transactionId = transactionId;
+    public void setTicketId(String ticketId) {
+        this.ticketId = ticketId;
     }
 
     @Override

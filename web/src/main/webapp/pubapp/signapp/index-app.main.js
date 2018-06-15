@@ -366,67 +366,7 @@ angular.module('rhsIndexApp')
         };
 
 
-        $scope.signeraKlient = function() {
-            if (!isDefined($scope.ticketId)) {
-                return;
-            }
-
-            $http.post('/moduleapi/utkast/' + $scope.utkast.intygsTyp + '/' + $scope.ticketId + '/signeraklient', '{"signatur":"' + testsignatur + '"}',
-                null)
-                .then(
-                    function(response) {
-                        console.log("Signing successful: " + JSON.stringify(response));
-                        cleanup();
-                    },
-                    function(response) {
-                        // failure callback
-                        alert('Failure: ' + JSON.stringify(response.data));
-                    }
-                )
-        };
-
-        $scope.startNetIDSign = function() {
-            if (!isDefined($scope.utkast)) {
-                alert('No utkast selected');
-                return;
-            }
-            $scope.isNetID = true;
-            $scope.isBankID = false;
-            $scope.isNias = false;
-
-            // Start by issuing client sign to server and start polling backend.
-            $http.post('/moduleapi/utkast/' + $scope.utkast.intygsTyp + '/' + $scope.utkast.intygsId + '/' +
-                $scope.utkast.version + '/signeringshash', null, null)
-                .then(
-                    function(response) {
-                        // success callback
-                        console.log(JSON.stringify(response));
-                        $scope.ticketId = response.data.id;
-                        $scope.newVersion = response.data.version;
-                        $scope.statusMessage = response.data.status;
-
-                        // Got ticket id. Start poller and activate Confirm / Cancel buttons
-                        $scope.pollHandle = setInterval(function() {
-                            $http({
-                                method: 'GET',
-                                url: '/moduleapi/utkast/' + $scope.utkast.intygsTyp + '/' + $scope.ticketId +
-                                '/signeringsstatus'
-                            })
-                                .then(function successCallback(response) {
-                                    console.log(JSON.stringify(response.data));
-                                    $scope.statusMessage = response.data.status;
-                                }, function errorCallback(response) {
-                                    console.log('Error during poll, cancelling interval. Msg: ' + JSON.stringify(response.data));
-                                    clearInterval($scope.pollHandle);
-                                });
-                        }, 3000);
-                    },
-                    function(response) {
-                        // failure callback
-                        alert('Failure: ' + JSON.stringify(response));
-                    }
-                );
-        };
+        // NiasCollectPollerImpl
 
         $scope.openForm = function(intyg) {
             $scope.q.intygsId = intyg.intygsId;

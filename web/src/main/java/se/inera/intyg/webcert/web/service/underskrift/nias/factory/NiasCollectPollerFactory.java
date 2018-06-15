@@ -16,14 +16,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.web.service.signatur.grp.factory;
+package se.inera.intyg.webcert.web.service.underskrift.nias.factory;
 
-import se.inera.intyg.webcert.web.service.signatur.grp.GrpCollectPoller;
+import se.inera.intyg.webcert.web.service.underskrift.nias.NiasCollectPoller;
 
 /**
  * Created by eriklupander on 2015-08-25.
  */
-public interface GrpCollectPollerFactory {
+public interface NiasCollectPollerFactory {
 
-    GrpCollectPoller getInstance();
+    NiasCollectPoller getInstance();
 }

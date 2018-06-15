@@ -98,7 +98,8 @@ public class Signatur {
         this.signaturTyp = SignaturTyp.LEGACY;
     }
 
-    public Signatur(LocalDateTime signeringsDatum, String signeradAv, String intygId, String intygData, String intygHash, String signatur, SignaturTyp signaturTyp) {
+    public Signatur(LocalDateTime signeringsDatum, String signeradAv, String intygId, String intygData, String intygHash, String signatur,
+            SignaturTyp signaturTyp) {
         this.signeringsDatum = signeringsDatum;
         this.signeradAv = signeradAv;
         this.intygsId = intygId;

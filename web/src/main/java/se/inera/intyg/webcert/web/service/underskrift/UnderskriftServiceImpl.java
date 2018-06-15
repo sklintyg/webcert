@@ -1,3 +1,21 @@
+/*
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
+ *
+ * This file is part of sklintyg (https://github.com/sklintyg).
+ *
+ * sklintyg is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * sklintyg is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package se.inera.intyg.webcert.web.service.underskrift;
 
 import org.slf4j.Logger;
@@ -13,7 +31,6 @@ import se.inera.intyg.common.support.modules.support.api.exception.ModuleExcepti
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
-import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.converter.util.IntygConverterUtil;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
@@ -24,15 +41,19 @@ import se.inera.intyg.webcert.web.service.notification.NotificationService;
 import se.inera.intyg.webcert.web.service.underskrift.fake.FakeUnderskriftService;
 import se.inera.intyg.webcert.web.service.underskrift.grp.GrpUnderskriftServiceImpl;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturBiljett;
+import se.inera.intyg.webcert.web.service.underskrift.nias.NiasUnderskriftService;
 import se.inera.intyg.webcert.web.service.underskrift.tracker.RedisTicketTracker;
 import se.inera.intyg.webcert.web.service.underskrift.xmldsig.XmlUnderskriftServiceImpl;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
-import se.inera.intyg.webcert.web.service.util.UpdateUserUtil;
 
 import javax.persistence.OptimisticLockException;
 import java.io.IOException;
 import java.time.LocalDateTime;
+
+import static se.inera.intyg.infra.security.common.model.AuthenticationMethod.BANK_ID;
+import static se.inera.intyg.infra.security.common.model.AuthenticationMethod.EFOS;
+import static se.inera.intyg.infra.security.common.model.AuthenticationMethod.MOBILT_BANK_ID;
 
 @Service
 public class UnderskriftServiceImpl implements UnderskriftService {
@@ -69,6 +90,9 @@ public class UnderskriftServiceImpl implements UnderskriftService {
     @Autowired
     private RedisTicketTracker redisTicketTracker;
 
+    @Autowired
+    private NiasUnderskriftService niasUnderskriftService;
+
     @Override
     public SignaturBiljett startSigningProcess(String intygsId, String intygsTyp, long version) {
         WebCertUser user = webCertUserService.getUser();
@@ -79,22 +103,38 @@ public class UnderskriftServiceImpl implements UnderskriftService {
         // Update JSON with current user as vardperson
         String updatedJson = updateJsonWithVardpersonAndSigneringsTid(utkast, user);
 
-        // Determine which method to use for this signing
-
+        // Determine which method to use for creating the SignaturBiljett that contains the payload to sign etc.
+        SignaturBiljett signaturBiljett = null;
         switch (user.getAuthenticationMethod()) {
         case SITHS:
         case NET_ID:
         case EFOS:
         case FAKE:
-            return xmlUnderskriftService.skapaSigneringsBiljettMedDigest(intygsId, intygsTyp, version, updatedJson);
+            signaturBiljett = xmlUnderskriftService.skapaSigneringsBiljettMedDigest(intygsId, intygsTyp, version, updatedJson);
+            break;
         case BANK_ID:
         case MOBILT_BANK_ID:
-            return grpUnderskriftService.skapaSigneringsBiljettMedDigest(intygsId, intygsTyp, version, updatedJson);
+            signaturBiljett = grpUnderskriftService.skapaSigneringsBiljettMedDigest(intygsId, intygsTyp, version, updatedJson);
+            break;
+        default:
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.UNKNOWN_INTERNAL_PROBLEM,
+                    "Unhandled user state for signing: " + user.getAuthenticationMethod());
         }
-        throw new WebCertServiceException(WebCertServiceErrorCodeEnum.UNKNOWN_INTERNAL_PROBLEM,
-                "Unhandled user state for signing: " + user.getAuthenticationMethod());
+
+        // Finally, for GRP and NIAS, we need to kick off the Collect pollers.
+        if (user.getAuthenticationMethod() == EFOS) {
+            niasUnderskriftService.startNiasCollectPoller(user.getHsaId(), signaturBiljett);
+        }
+        if (user.getAuthenticationMethod() == BANK_ID || user.getAuthenticationMethod() == MOBILT_BANK_ID) {
+            grpUnderskriftService.startGrpCollectPoller(user.getHsaId(), signaturBiljett);
+        }
+
+        return signaturBiljett;
     }
 
+    /**
+     * Called through the /api/signature endpoint when finalizing a FakeSignature.
+     */
     @Override
     public SignaturBiljett fakeSignature(String intygsId, String intygsTyp, long version, String ticketId) {
         WebCertUser user = webCertUserService.getUser();
@@ -106,6 +146,9 @@ public class UnderskriftServiceImpl implements UnderskriftService {
         return signaturBiljett;
     }
 
+    /**
+     * Called through the /api/signature endpoint when the NetiD plugin has signed the Base64-encoded SignedInfo XML.
+     */
     @Override
     public SignaturBiljett netidPluginSignature(String biljettId, byte[] signatur, String certifikat) {
         SignaturBiljett sb = redisTicketTracker.findBiljett(biljettId);
@@ -119,17 +162,39 @@ public class UnderskriftServiceImpl implements UnderskriftService {
     }
 
     @Override
-    public SignaturBiljett signeringsStatus(String intygsTyp, String ticketId) {
-         LOG.info("ENTER - signeringsStatus for ticketId '{}'", ticketId);
-         SignaturBiljett sb = redisTicketTracker.findBiljett(ticketId);
-         if (sb == null) {
-             LOG.error("No SignaturBiljett found for ticketId '{}'", ticketId);
-             throw new IllegalStateException("No SignaturBiljett found for ticketId " + ticketId);
-         }
-         return sb;
+    public SignaturBiljett niasSignature(String biljettId, byte[] signatur, String certifikat) {
+        SignaturBiljett sb = redisTicketTracker.findBiljett(biljettId);
+
+        WebCertUser user = webCertUserService.getUser();
+        Utkast utkast = getUtkastForSignering(sb.getIntygsId(), sb.getVersion(), user);
+
+        sb = xmlUnderskriftService.finalizeXmlSignature(sb, signatur, certifikat, utkast, user);
+        finalizeSignature(utkast, user);
+        return sb;
     }
 
+    @Override
+    public SignaturBiljett grpSignature(String biljettId, byte[] signatur) {
+        SignaturBiljett sb = redisTicketTracker.findBiljett(biljettId);
 
+        WebCertUser user = webCertUserService.getUser();
+        Utkast utkast = getUtkastForSignering(sb.getIntygsId(), sb.getVersion(), user);
+
+        sb = grpUnderskriftService.finalizeGrpSignature(sb, signatur, null, utkast, user);
+        finalizeSignature(utkast, user);
+        return sb;
+    }
+
+    @Override
+    public SignaturBiljett signeringsStatus(String ticketId) {
+        LOG.info("ENTER - signeringsStatus for ticketId '{}'", ticketId);
+        SignaturBiljett sb = redisTicketTracker.findBiljett(ticketId);
+        if (sb == null) {
+            LOG.error("No SignaturBiljett found for ticketId '{}'", ticketId);
+            throw new IllegalStateException("No SignaturBiljett found for ticketId " + ticketId);
+        }
+        return sb;
+    }
 
     private void finalizeSignature(Utkast utkast, WebCertUser user) {
         // Notify stakeholders when certificate has been signed
@@ -144,7 +209,6 @@ public class UnderskriftServiceImpl implements UnderskriftService {
         // Sends intyg to Intygstjänsten.
         intygService.handleAfterSigned(utkast);
     }
-
 
     private Utkast getUtkastForSignering(String intygId, long version, WebCertUser user) {
         Utkast utkast = utkastRepository.findOne(intygId);
@@ -169,22 +233,19 @@ public class UnderskriftServiceImpl implements UnderskriftService {
                     "Internal error signing utkast, the utkast '" + intygId
                             + "' was not in state " + UtkastStatus.DRAFT_COMPLETE);
         }
-
         return utkast;
     }
-
 
     private String updateJsonWithVardpersonAndSigneringsTid(Utkast utkast, WebCertUser user) {
         LocalDateTime signeringstid = LocalDateTime.now();
 
         try {
-            VardpersonReferens vardpersonReferens = UpdateUserUtil.createVardpersonFromWebCertUser(user);
+            // VardpersonReferens vardpersonReferens = UpdateUserUtil.createVardpersonFromWebCertUser(user);
             ModuleApi moduleApi = moduleRegistry.getModuleApi(utkast.getIntygsTyp());
             Vardenhet vardenhetFromJson = moduleApi.getUtlatandeFromJson(utkast.getModel()).getGrundData().getSkapadAv().getVardenhet();
             return moduleApi
                     .updateBeforeSigning(utkast.getModel(), IntygConverterUtil.buildHosPersonalFromWebCertUser(user, vardenhetFromJson),
                             signeringstid);
-
 
         } catch (ModuleNotFoundException | IOException | ModuleException e) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM,

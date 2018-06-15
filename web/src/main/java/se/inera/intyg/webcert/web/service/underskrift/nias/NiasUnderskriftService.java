@@ -16,17 +16,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.web.service.signatur.grp;
+package se.inera.intyg.webcert.web.service.underskrift.nias;
 
-import org.springframework.security.core.context.SecurityContext;
+import se.inera.intyg.webcert.web.service.underskrift.model.SignaturBiljett;
 
-/**
- * Created by eriklupander on 2015-08-25.
- */
-public interface GrpCollectPoller extends Runnable {
-
-    void setOrderRef(String orderRef);
-    void setTransactionId(String transactionId);
-
-    void setSecurityContext(SecurityContext securityContext);
+public interface NiasUnderskriftService {
+    void startNiasCollectPoller(String personId, SignaturBiljett signaturBiljett);
 }

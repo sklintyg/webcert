@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.web.service.signatur.nias;
+package se.inera.intyg.webcert.web.service.underskrift.nias;
 
 import java.nio.charset.Charset;
 
@@ -27,17 +27,13 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
-import org.w3._2000._09.xmldsig_.KeyInfoType;
-import org.w3._2000._09.xmldsig_.SignatureType;
-import org.w3._2000._09.xmldsig_.SignatureValueType;
 
 import com.secmaker.netid.nias.v1.NetiDAccessServerSoap;
 import com.secmaker.netid.nias.v1.ResultCollect;
 
-import se.inera.intyg.infra.xmldsig.service.XMLDSigService;
-import se.inera.intyg.webcert.web.service.signatur.SignaturService;
-import se.inera.intyg.webcert.web.service.signatur.SignaturTicketTracker;
-import se.inera.intyg.webcert.web.service.signatur.dto.SignaturTicket;
+import se.inera.intyg.webcert.web.service.underskrift.UnderskriftService;
+import se.inera.intyg.webcert.web.service.underskrift.model.SignaturStatus;
+import se.inera.intyg.webcert.web.service.underskrift.tracker.RedisTicketTracker;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 /**
@@ -67,24 +63,20 @@ public class NiasCollectPollerImpl implements NiasCollectPoller {
     private static final long TIMEOUT = 240000L; // 4 minutes, normally an EXPIRED_TRANSACTION will be returned after 3.
 
     private String orderRef;
-    private String transactionId;
+    private String ticketId;
 
     @Autowired
-    private SignaturTicketTracker signaturTicketTracker;
+    private RedisTicketTracker redisTicketTracker;
 
     @Autowired
-    private SignaturService signaturService;
+    private UnderskriftService underskriftService;
 
     @Autowired
     private NetiDAccessServerSoap netiDAccessServerSoap;
 
-    @Autowired
-    private XMLDSigService xmldSigService;
-
     private final long defaultSleepMs = 3000L;
     private long ms = defaultSleepMs;
     private SecurityContext securityContext;
-    private SignatureType signatureType;
 
     @Override
     public void run() {
@@ -99,6 +91,7 @@ public class NiasCollectPollerImpl implements NiasCollectPoller {
 
                     ResultCollect resp = netiDAccessServerSoap.collect(orderRef);
                     LOG.info("NIAS collect for '{}' returned progressStatus: '{}'", orderRef, resp.getProgressStatus());
+
                     switch (resp.getProgressStatus()) {
                     case "COMPLETE":
                         String subjectSerialNumber = resp.getUserInfo().getPersonalNumber();
@@ -116,28 +109,19 @@ public class NiasCollectPollerImpl implements NiasCollectPoller {
                                             + "issuing WebCertUser.");
                         }
 
-                        SignatureValueType signatureValueType = new SignatureValueType();
-                        signatureValueType.setValue(resp.getSignature().getBytes(Charset.forName("UTF-8")));
-                        signatureType.setSignatureValue(signatureValueType);
-
-                        KeyInfoType keyInfo = xmldSigService.buildKeyInfoForCertificate(resp.getUserInfo().getCertificate());
-                        signatureType.setKeyInfo(keyInfo);
-
-                        // Perform validation against XSD.
-                        // xmldSigService.validate(signatureType);
-
-                        signaturService.clientNiasSignature(transactionId, signatureType, resp.getUserInfo().getCertificate(), webCertUser);
+                        underskriftService.niasSignature(ticketId, resp.getSignature().getBytes(Charset.forName("UTF-8")),
+                                resp.getUserInfo().getCertificate());
                         LOG.info("NetiD Access Server Signature was successfully persisted and ticket updated.");
                         return;
                     case "USER_SIGN":
-                        signaturTicketTracker.updateStatus(transactionId, SignaturTicket.Status.VANTA_SIGN);
+                        redisTicketTracker.updateStatus(ticketId, SignaturStatus.VANTA_SIGN);
                         break;
                     case "OUTSTANDING_TRANSACTION":
                     case "STARTED":
                     case "USER_REQ":
                         break;
                     case "NO_CLIENT":
-                        signaturTicketTracker.updateStatus(transactionId, SignaturTicket.Status.NO_CLIENT);
+                        redisTicketTracker.updateStatus(ticketId, SignaturStatus.NO_CLIENT);
                         LOG.info("NIAS collect returned ProgressStatusType: {}, "
                                 + "has the user started their NetID Access application?",
                                 resp.getProgressStatus());
@@ -146,8 +130,8 @@ public class NiasCollectPollerImpl implements NiasCollectPoller {
                     case "EXPIRED_TRANSACTION":
                     case "CANCELLED":
                     case "ALREADY_COLLECTED":
-                        signaturTicketTracker.updateStatus(transactionId, SignaturTicket.Status.OKAND);
-                        LOG.error("NIAS signing {} aborted due to progress state {}", transactionId, resp.getProgressStatus());
+                        redisTicketTracker.updateStatus(ticketId, SignaturStatus.OKAND);
+                        LOG.error("NIAS signing {} aborted due to progress state {}", ticketId, resp.getProgressStatus());
                         return;
                     }
 
@@ -203,17 +187,12 @@ public class NiasCollectPollerImpl implements NiasCollectPoller {
     }
 
     @Override
-    public void setTransactionId(String transactionId) {
-        this.transactionId = transactionId;
+    public void setTicketId(String ticketId) {
+        this.ticketId = ticketId;
     }
 
     @Override
     public void setSecurityContext(SecurityContext securityContext) {
         this.securityContext = securityContext;
-    }
-
-    @Override
-    public void setSignature(SignatureType signatureType) {
-        this.signatureType = signatureType;
     }
 }

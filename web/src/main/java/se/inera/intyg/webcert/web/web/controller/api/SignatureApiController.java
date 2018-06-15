@@ -1,3 +1,21 @@
+/*
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
+ *
+ * This file is part of sklintyg (https://github.com/sklintyg).
+ *
+ * sklintyg is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * sklintyg is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package se.inera.intyg.webcert.web.web.controller.api;
 
 import com.google.common.base.Strings;
@@ -111,7 +129,7 @@ public class SignatureApiController extends AbstractApiController {
     public SignaturStateDTO signeringsStatus(@PathParam("intygsTyp") String intygsTyp, @PathParam("ticketId") String ticketId) {
         authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp).features(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
                 .orThrow();
-        SignaturBiljett sb = underskriftService.signeringsStatus(intygsTyp, ticketId);
+        SignaturBiljett sb = underskriftService.signeringsStatus(ticketId);
 
         return convertToSignatureStateDTO(sb);
     }
@@ -121,7 +139,7 @@ public class SignatureApiController extends AbstractApiController {
     @Consumes({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_OCTET_STREAM })
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public SignaturStateDTO klientSigneraUtkast(@PathParam("intygsTyp") String intygsTyp, @PathParam("biljettId") String biljettId,
-                                                      @Context HttpServletRequest request, KlientSignaturRequest signaturRequest) {
+            @Context HttpServletRequest request, KlientSignaturRequest signaturRequest) {
 
         verifyIsAuthorizedToSignIntyg(intygsTyp);
 
@@ -140,7 +158,7 @@ public class SignatureApiController extends AbstractApiController {
         try {
             sb = underskriftService.netidPluginSignature(biljettId, signaturRequest.getSignatur(), signaturRequest.getCertifikat());
         } catch (OptimisticLockException | OptimisticLockingFailureException e) {
-            sb = underskriftService.signeringsStatus(null, biljettId);
+            sb = underskriftService.signeringsStatus(biljettId);
             monitoringLogService.logUtkastConcurrentlyEdited(sb.getIntygsId(), intygsTyp);
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.CONCURRENT_MODIFICATION, e.getMessage());
         }

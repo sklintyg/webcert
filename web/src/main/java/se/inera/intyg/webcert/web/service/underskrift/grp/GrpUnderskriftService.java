@@ -16,14 +16,16 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.web.service.signatur.grp;
+package se.inera.intyg.webcert.web.service.underskrift.grp;
 
-import se.inera.intyg.webcert.web.service.signatur.dto.SignaturTicket;
+import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
+import se.inera.intyg.webcert.web.service.underskrift.model.SignaturBiljett;
+import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
-/**
- * Created by eriklupander on 2015-08-21.
- */
-public interface GrpSignaturService {
+public interface GrpUnderskriftService {
 
-    SignaturTicket startGrpAuthentication(String intygId, long version);
+    void startGrpCollectPoller(String personId, SignaturBiljett signaturBiljett);
+
+    SignaturBiljett finalizeGrpSignature(SignaturBiljett biljett, byte[] signatur, String certifikat, Utkast utkast,
+            WebCertUser user);
 }

@@ -1,3 +1,21 @@
+/*
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
+ *
+ * This file is part of sklintyg (https://github.com/sklintyg).
+ *
+ * sklintyg is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * sklintyg is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package se.inera.intyg.webcert.web.service.underskrift;
 
 import org.slf4j.Logger;
@@ -9,8 +27,6 @@ import org.w3._2000._09.xmldsig_.SignatureType;
 import org.w3._2000._09.xmldsig_.SignatureValueType;
 import org.w3._2002._06.xmldsig_filter2.XPathType;
 import se.inera.intyg.common.support.common.enumerations.SignaturTyp;
-import se.inera.intyg.common.support.model.UtkastStatus;
-import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
 import se.inera.intyg.infra.security.common.model.AuthenticationMethod;
@@ -21,9 +37,6 @@ import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEn
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Signatur;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
-import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
-import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
-import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturBiljett;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturStatus;
 import se.inera.intyg.webcert.web.service.underskrift.xmldsig.UtkastModelToXMLConverter;
@@ -34,12 +47,10 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.bind.Marshaller;
 import java.io.StringWriter;
 import java.nio.charset.Charset;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 import java.util.Base64;
 
-public abstract class BaseXMLSignatureService {
+public abstract class BaseXMLSignatureService extends BaseSignatureService {
 
     private static final Logger LOG = LoggerFactory.getLogger(BaseXMLSignatureService.class);
     private static final String DIGEST_ALGORITHM = "SHA-256";
@@ -50,15 +61,6 @@ public abstract class BaseXMLSignatureService {
 
     @Autowired
     private PrepareSignatureService prepareSignatureService;
-
-    @Autowired
-    private IntygModuleRegistry moduleRegistry;
-
-    @Autowired
-    private UtkastRepository utkastRepository;
-
-    @Autowired
-    private IntygService intygService;
 
     @Autowired
     private XMLDSigService xmldSigService;
@@ -185,60 +187,5 @@ public abstract class BaseXMLSignatureService {
         intygService.storeIntyg(savedUtkast);
 
         return biljett;
-    }
-
-    protected String generateDigest(String stringToDigest) {
-        try {
-            MessageDigest digest = MessageDigest.getInstance(DIGEST_ALGORITHM);
-            byte[] sha256 = digest.digest(stringToDigest.getBytes(UTF_8));
-            return Base64.getEncoder().encodeToString(sha256);
-        } catch (NoSuchAlgorithmException e) {
-            LOG.error("{} caught during digest and base64-encoding, message: {}", e.getClass().getSimpleName(), e.getMessage());
-            throw new IllegalArgumentException(e.getMessage());
-        }
-    }
-
-    private Utkast updateAndSaveUtkast(Utkast utkast, String payloadJson, Signatur signatur, WebCertUser user) {
-        utkast.setSenastSparadAv(new VardpersonReferens(user.getHsaId(), user.getNamn()));
-
-        // Write the JSON to the final utkast model. We've re-digested it above so we're sure it was what was signed.
-        utkast.setModel(payloadJson);
-        utkast.setSignatur(signatur);
-        utkast.setStatus(UtkastStatus.SIGNED);
-
-        // Persist utkast with added signature
-        return utkastRepository.save(utkast);
-    }
-
-    private void checkVersion(Utkast utkast, SignaturBiljett biljett) {
-        if (utkast.getVersion() != biljett.getVersion()) {
-            LOG.error(
-                    "Signing of utkast '{}' failed since the version on the utkast ({}) differs from when the signing was initialized ({})",
-                    utkast.getIntygsId(), utkast.getVersion(), biljett.getVersion());
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.CONCURRENT_MODIFICATION,
-                    "Cannot complete signing, Utkast version differs from signature ticket version.");
-        }
-    }
-
-    private void checkDigests(Utkast utkast, String computedHash, String signatureHash) {
-        if (!computedHash.equals(signatureHash)) {
-            LOG.error("Signing of utkast '{}' failed since the payload has been modified since signing was initialized",
-                    utkast.getIntygsId());
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE,
-                    "Internal error signing utkast, the payload of utkast "
-                            + utkast.getIntygsId() + " has been modified since signing was initialized");
-        }
-    }
-
-    private void checkIntysId(Utkast utkast, SignaturBiljett biljett) {
-        if (!biljett.getIntygsId().equals(utkast.getIntygsId())) {
-            LOG.error(
-                    "Signing of utkast '{}' failed since the intygsId ({}) on the Utkast is different from the one "
-                            + "on the signing operation ({})",
-                    utkast.getIntygsId(), biljett.getIntygsId());
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE,
-                    "Internal error signing utkast, the payload of utkast "
-                            + utkast.getIntygsId() + " has been modified since signing was initialized");
-        }
     }
 }

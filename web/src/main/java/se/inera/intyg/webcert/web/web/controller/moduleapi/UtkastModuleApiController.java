@@ -37,10 +37,6 @@ import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 import se.inera.intyg.webcert.web.service.relation.CertificateRelationService;
-import se.inera.intyg.webcert.web.service.signatur.SignaturService;
-import se.inera.intyg.webcert.web.service.signatur.dto.SignaturTicket;
-import se.inera.intyg.webcert.web.service.signatur.grp.GrpSignaturService;
-import se.inera.intyg.webcert.web.service.signatur.nias.NiasSignaturService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 import se.inera.intyg.webcert.web.service.utkast.dto.DraftValidation;
@@ -48,7 +44,6 @@ import se.inera.intyg.webcert.web.service.utkast.dto.SaveDraftResponse;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
 import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
 import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.DraftHolder;
-import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.SignaturTicketResponse;
 
 import javax.persistence.OptimisticLockException;
 import javax.servlet.http.HttpServletRequest;
@@ -86,15 +81,6 @@ public class UtkastModuleApiController extends AbstractApiController {
     private UtkastService utkastService;
 
     @Autowired
-    private SignaturService signaturService;
-
-    @Autowired
-    private GrpSignaturService grpSignaturService;
-
-    @Autowired
-    private NiasSignaturService niasSignaturService;
-
-    @Autowired
     private MonitoringLogService monitoringLogService;
 
     @Autowired
@@ -112,7 +98,8 @@ public class UtkastModuleApiController extends AbstractApiController {
     /**
      * Returns the draft certificate as JSON identified by the intygId.
      *
-     * @param intygsId The id of the certificate
+     * @param intygsId
+     *            The id of the certificate
      * @return a JSON object
      */
     @GET
@@ -166,8 +153,8 @@ public class UtkastModuleApiController extends AbstractApiController {
 
             if (completeAddressProvided(resolvedPatient)) {
                 draftHolder.setValidPatientAddressAquiredFromPU(true);
-                    draftHolder.setPatientAddressChangedInPU(patientDetailsResolver.isPatientAddressChanged(
-                            utlatande.getGrundData().getPatient(), resolvedPatient));
+                draftHolder.setPatientAddressChangedInPU(patientDetailsResolver.isPatientAddressChanged(
+                        utlatande.getGrundData().getPatient(), resolvedPatient));
             } else {
                 // Overwrite retrieved address data with saved one.
                 draftHolder.setValidPatientAddressAquiredFromPU(false);
@@ -233,8 +220,10 @@ public class UtkastModuleApiController extends AbstractApiController {
     /**
      * Persists the supplied draft certificate using the intygId as key.
      *
-     * @param intygsId The id of the certificate.
-     * @param payload  Object holding the certificate and its current status.
+     * @param intygsId
+     *            The id of the certificate.
+     * @param payload
+     *            Object holding the certificate and its current status.
      */
     @PUT
     @Path("/{intygsTyp}/{intygsId}/{version}")
@@ -276,8 +265,10 @@ public class UtkastModuleApiController extends AbstractApiController {
     /**
      * Validate the supplied draft certificate.
      *
-     * @param intygsId The id of the certificate.
-     * @param payload  Object holding the certificate and its current status.
+     * @param intygsId
+     *            The id of the certificate.
+     * @param payload
+     *            Object holding the certificate and its current status.
      */
     @POST
     @Path("/{intygsTyp}/{intygsId}/validate")
@@ -314,7 +305,8 @@ public class UtkastModuleApiController extends AbstractApiController {
     /**
      * Deletes a draft certificate identified by the certificateId.
      *
-     * @param intygsId The id of the certificate
+     * @param intygsId
+     *            The id of the certificate
      */
     @DELETE
     @Path("/{intygsTyp}/{intygsId}/{version}")
@@ -340,172 +332,5 @@ public class UtkastModuleApiController extends AbstractApiController {
         request.getSession(true).removeAttribute(LAST_SAVED_DRAFT);
 
         return Response.ok().build();
-    }
-
-    /**
-     * Signera utkast. Endast fejkinloggning.
-     *
-     * @param intygsId intyg id
-     * @return SignaturTicketResponse
-     */
-    @POST
-    @Path("/{intygsTyp}/{intygsId}/{version}/signeraserver")
-    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    public SignaturTicketResponse serverSigneraUtkast(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId,
-            @PathParam("version") long version, @Context HttpServletRequest request) {
-        verifyIsAuthorizedToSignIntyg(intygsTyp);
-        SignaturTicket ticket;
-        try {
-            ticket = signaturService.serverSignature(intygsId, version);
-        } catch (OptimisticLockException | OptimisticLockingFailureException e) {
-            monitoringLogService.logUtkastConcurrentlyEdited(intygsId, intygsTyp);
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.CONCURRENT_MODIFICATION, e.getMessage());
-        }
-
-        request.getSession(true).removeAttribute(LAST_SAVED_DRAFT);
-
-        return new SignaturTicketResponse(ticket);
-    }
-
-    private void verifyIsAuthorizedToSignIntyg(String intygsTyp) {
-        authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
-                .features(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
-                .privilege(AuthoritiesConstants.PRIVILEGE_SIGNERA_INTYG)
-                .orThrow();
-    }
-
-    /**
-     * Signera utkast mha Bank ID GRP API.
-     *
-     * @param intygsId intyg id
-     * @return SignaturTicketResponse
-     */
-    @POST
-    @Path("/{intygsTyp}/{intygsId}/{version}/grp/signeraserver")
-    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    public SignaturTicketResponse serverSigneraUtkastMedGrp(@PathParam("intygsTyp") String intygsTyp,
-            @PathParam("intygsId") String intygsId,
-            @PathParam("version") long version, @Context HttpServletRequest request) {
-
-        verifyIsAuthorizedToSignIntyg(intygsTyp);
-
-        SignaturTicket ticket;
-        try {
-            ticket = grpSignaturService.startGrpAuthentication(intygsId, version);
-        } catch (OptimisticLockException | OptimisticLockingFailureException e) {
-            monitoringLogService.logUtkastConcurrentlyEdited(intygsId, intygsTyp);
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.CONCURRENT_MODIFICATION, e.getMessage());
-        }
-
-        request.getSession(true).removeAttribute(LAST_SAVED_DRAFT);
-
-        return new SignaturTicketResponse(ticket);
-    }
-
-
-    /**
-     * Signera utkast mha NetiD Access Server (nias).
-     *
-     * @param intygsId intyg id
-     * @return SignaturTicketResponse
-     */
-    @POST
-    @Path("/{intygsTyp}/{intygsId}/{version}/nias/signeraserver")
-    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    public SignaturTicketResponse serverSigneraUtkastMedNias(@PathParam("intygsTyp") String intygsTyp,
-                                                            @PathParam("intygsId") String intygsId,
-                                                            @PathParam("version") long version, @Context HttpServletRequest request) {
-
-        verifyIsAuthorizedToSignIntyg(intygsTyp);
-
-        SignaturTicket ticket;
-        try {
-            ticket = niasSignaturService.startNiasAuthentication(intygsId, version);
-        } catch (OptimisticLockException | OptimisticLockingFailureException e) {
-            monitoringLogService.logUtkastConcurrentlyEdited(intygsId, intygsTyp);
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.CONCURRENT_MODIFICATION, e.getMessage());
-        }
-
-        request.getSession(true).removeAttribute(LAST_SAVED_DRAFT);
-
-        return new SignaturTicketResponse(ticket);
-    }
-
-    /**
-     * Signera utkast.
-     *
-     * @param biljettId biljett id
-     * @return BiljettResponse
-     */
-    @POST
-    @Path("/{intygsTyp}/{biljettId}/signeraklient")
-    @Consumes({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_OCTET_STREAM })
-    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    public SignaturTicketResponse klientSigneraUtkast(@PathParam("intygsTyp") String intygsTyp, @PathParam("biljettId") String biljettId,
-            @Context HttpServletRequest request, byte[] rawSignatur) {
-
-        verifyIsAuthorizedToSignIntyg(intygsTyp);
-
-        LOG.debug("Signerar intyg med biljettId {}", biljettId);
-
-        if (rawSignatur.length == 0) {
-            LOG.error("Inkommande signatur parameter saknas");
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, "Signatur saknas");
-        }
-
-        String rawSignaturString = fromBytesToString(rawSignatur);
-        SignaturTicket ticket;
-        try {
-            ticket = signaturService.clientSignature(biljettId, rawSignaturString);
-        } catch (OptimisticLockException | OptimisticLockingFailureException e) {
-            ticket = signaturService.ticketStatus(biljettId);
-            monitoringLogService.logUtkastConcurrentlyEdited(ticket.getIntygsId(), intygsTyp);
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.CONCURRENT_MODIFICATION, e.getMessage());
-        }
-
-        request.getSession(true).removeAttribute(LAST_SAVED_DRAFT);
-
-        return new SignaturTicketResponse(ticket);
-    }
-
-    /**
-     * Skapa signeringshash.
-     *
-     * @param intygsId intyg id
-     * @return SignaturTicketResponse
-     */
-    @POST
-    @Path("/{intygsTyp}/{intygsId}/{version}/signeringshash")
-    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    public SignaturTicketResponse signeraUtkast(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId,
-            @PathParam("version") long version) {
-        authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp).features(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
-                .orThrow();
-
-        SignaturTicket ticket;
-        try {
-            ticket = signaturService.createDraftHash(intygsId, version);
-        } catch (OptimisticLockException | OptimisticLockingFailureException e) {
-            monitoringLogService.logUtkastConcurrentlyEdited(intygsId, intygsTyp);
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.CONCURRENT_MODIFICATION, e.getMessage());
-        }
-        return new SignaturTicketResponse(ticket);
-    }
-
-    /**
-     * Hamta signeringsstatus.
-     *
-     * @param biljettId biljett id
-     * @return SignaturTicketResponse
-     */
-    @GET
-    @Path("/{intygsTyp}/{biljettId}/signeringsstatus")
-    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    public SignaturTicketResponse biljettStatus(@PathParam("intygsTyp") String intygsTyp, @PathParam("biljettId") String biljettId) {
-        authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp).features(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
-                .orThrow();
-
-        SignaturTicket ticket = signaturService.ticketStatus(biljettId);
-        return new SignaturTicketResponse(ticket);
     }
 }

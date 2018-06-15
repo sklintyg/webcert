@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.web.service.signatur.grp;
+package se.inera.intyg.webcert.web.service.underskrift.grp;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -40,14 +40,13 @@ import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.Privilege;
 import se.inera.intyg.infra.security.common.model.Role;
 import se.inera.intyg.webcert.web.auth.bootstrap.AuthoritiesConfigurationTestSetup;
-import se.inera.intyg.webcert.web.service.signatur.SignaturService;
-import se.inera.intyg.webcert.web.service.signatur.SignaturTicketTracker;
-import se.inera.intyg.webcert.web.service.signatur.dto.SignaturTicket;
+import se.inera.intyg.webcert.web.service.underskrift.UnderskriftService;
+import se.inera.intyg.webcert.web.service.underskrift.model.SignaturStatus;
+import se.inera.intyg.webcert.web.service.underskrift.tracker.RedisTicketTracker;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -63,10 +62,10 @@ public class GrpCollectPollerTest extends AuthoritiesConfigurationTestSetup {
     private static final String ORDER_REF = "order-ref-1";
 
     @Mock
-    private SignaturService signaturService;
+    private UnderskriftService underskriftService;
 
     @Mock
-    private SignaturTicketTracker signaturTicketTracker;
+    private RedisTicketTracker redisTicketTracker;
 
     @Mock
     private GrpServicePortType grpService;
@@ -80,13 +79,13 @@ public class GrpCollectPollerTest extends AuthoritiesConfigurationTestSetup {
         when(grpService.collect(any(CollectRequestType.class))).thenReturn(buildResp(COMPLETE));
 
         grpCollectPoller.setOrderRef(ORDER_REF);
-        grpCollectPoller.setTransactionId(TX_ID);
+        grpCollectPoller.setTicketId(TX_ID);
         grpCollectPoller.setSecurityContext(buildAuthentication());
         grpCollectPoller.setMs(50L);
         grpCollectPoller.run();
 
-        verify(signaturService, times(1)).clientGrpSignature(isNull(), isNull(), any(WebCertUser.class));
-        verify(signaturTicketTracker, times(0)).updateStatus(TX_ID, SignaturTicket.Status.OKAND);
+        verify(underskriftService, times(1)).grpSignature(anyString(), any(byte[].class));
+        verify(redisTicketTracker, times(0)).updateStatus(TX_ID, SignaturStatus.OKAND);
     }
 
     @Test
@@ -97,13 +96,13 @@ public class GrpCollectPollerTest extends AuthoritiesConfigurationTestSetup {
                 buildResp(OUTSTANDING_TRANSACTION),
                 buildResp(COMPLETE));
         grpCollectPoller.setOrderRef(ORDER_REF);
-        grpCollectPoller.setTransactionId(TX_ID);
+        grpCollectPoller.setTicketId(TX_ID);
         grpCollectPoller.setSecurityContext(buildAuthentication());
         grpCollectPoller.setMs(50L);
         grpCollectPoller.run();
 
-        verify(signaturService, times(1)).clientGrpSignature(isNull(), isNull(), any(WebCertUser.class));
-        verify(signaturTicketTracker, times(0)).updateStatus(TX_ID, SignaturTicket.Status.OKAND);
+        verify(underskriftService, times(1)).grpSignature(anyString(), any(byte[].class));
+        verify(redisTicketTracker, times(0)).updateStatus(TX_ID, SignaturStatus.OKAND);
     }
 
     @Test
@@ -111,13 +110,13 @@ public class GrpCollectPollerTest extends AuthoritiesConfigurationTestSetup {
 
         when(grpService.collect(any(CollectRequestType.class))).thenThrow(buildFault(FaultStatusType.USER_CANCEL));
         grpCollectPoller.setOrderRef(ORDER_REF);
-        grpCollectPoller.setTransactionId(TX_ID);
+        grpCollectPoller.setTicketId(TX_ID);
         grpCollectPoller.setSecurityContext(buildAuthentication());
         grpCollectPoller.setMs(50L);
         grpCollectPoller.run();
 
-        verify(signaturService, times(0)).clientGrpSignature(anyString(), anyString(), any(WebCertUser.class));
-        verify(signaturTicketTracker, times(1)).updateStatus(TX_ID, SignaturTicket.Status.OKAND);
+        verify(underskriftService, times(0)).grpSignature(anyString(), any(byte[].class));
+        verify(redisTicketTracker, times(1)).updateStatus(TX_ID, SignaturStatus.OKAND);
     }
 
     @Test
@@ -125,13 +124,13 @@ public class GrpCollectPollerTest extends AuthoritiesConfigurationTestSetup {
 
         when(grpService.collect(any(CollectRequestType.class))).thenThrow(buildFault(FaultStatusType.EXPIRED_TRANSACTION));
         grpCollectPoller.setOrderRef(ORDER_REF);
-        grpCollectPoller.setTransactionId(TX_ID);
+        grpCollectPoller.setTicketId(TX_ID);
         grpCollectPoller.setSecurityContext(buildAuthentication());
         grpCollectPoller.setMs(50L);
         grpCollectPoller.run();
 
-        verify(signaturService, times(0)).clientGrpSignature(anyString(), anyString(), any(WebCertUser.class));
-        verify(signaturTicketTracker, times(1)).updateStatus(TX_ID, SignaturTicket.Status.OKAND);
+        verify(underskriftService, times(0)).grpSignature(anyString(), any(byte[].class));
+        verify(redisTicketTracker, times(1)).updateStatus(TX_ID, SignaturStatus.OKAND);
     }
 
     private GrpFault buildFault(FaultStatusType faultStatusType) {
@@ -149,6 +148,7 @@ public class GrpCollectPollerTest extends AuthoritiesConfigurationTestSetup {
         p.setName("Subject.SerialNumber");
         p.setValue(PERSON_ID);
         resp.getAttributes().add(p);
+        resp.setSignature("signature");
         return resp;
     }
 

@@ -16,16 +16,16 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.web.service.underskrift.tracker;
+package se.inera.intyg.webcert.web.service.underskrift.nias;
 
-import se.inera.intyg.webcert.web.service.underskrift.model.SignaturBiljett;
-import se.inera.intyg.webcert.web.service.underskrift.model.SignaturStatus;
+import org.springframework.security.core.context.SecurityContext;
 
-public interface RedisTicketTracker {
-    void trackBiljett(SignaturBiljett signaturBiljett);
-    SignaturBiljett findBiljett(String ticketId);
+/**
+ * Created by eriklupander on 2015-08-25.
+ */
+public interface NiasCollectPoller extends Runnable {
 
-    SignaturBiljett updateBiljett(SignaturBiljett biljett);
-
-    void updateStatus(String ticketId, SignaturStatus status);
+    void setOrderRef(String orderRef);
+    void setTicketId(String ticketId);
+    void setSecurityContext(SecurityContext securityContext);
 }
