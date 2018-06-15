@@ -20,13 +20,15 @@ package se.inera.intyg.webcert.web.auth.eleg;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import se.inera.intyg.webcert.web.auth.common.FakeCredential;
+
 /**
  * Fake container for approx. CGI SAML ticket attributes.
  *
  * Created by eriklupander on 2015-06-16.
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class FakeElegCredentials {
+public class FakeElegCredentials implements FakeCredential {
 
     // Subject_SerialNumber
     private String personId;
@@ -40,6 +42,8 @@ public class FakeElegCredentials {
     private boolean privatLakare;
 
     private boolean sekretessMarkerad;
+
+    private String authenticationMethod;
 
     public String getPersonId() {
         return personId;
@@ -79,5 +83,14 @@ public class FakeElegCredentials {
 
     public void setSekretessMarkerad(boolean sekretessMarkerad) {
         this.sekretessMarkerad = sekretessMarkerad;
+    }
+
+    @Override
+    public String getAuthenticationMethod() {
+        return authenticationMethod;
+    }
+
+    public void setAuthenticationMethod(String authenticationMethod) {
+        this.authenticationMethod = authenticationMethod;
     }
 }

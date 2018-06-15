@@ -18,10 +18,6 @@
  */
 package se.inera.intyg.webcert.web.auth.eleg;
 
-import static se.inera.intyg.webcert.web.auth.common.AuthConstants.FAKE_AUTHENTICATION_ELEG_CONTEXT_REF;
-
-import java.util.ArrayList;
-
 import org.opensaml.saml2.core.Assertion;
 import org.opensaml.saml2.core.AttributeStatement;
 import org.opensaml.saml2.core.NameID;
@@ -33,8 +29,11 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.providers.ExpiringUsernameAuthenticationToken;
 import org.springframework.security.saml.SAMLCredential;
-
 import se.inera.intyg.webcert.web.auth.common.BaseFakeAuthenticationProvider;
+
+import java.util.ArrayList;
+
+import static se.inera.intyg.webcert.web.auth.common.AuthConstants.FAKE_AUTHENTICATION_ELEG_CONTEXT_REF;
 
 /**
  * AuthenticationProvider for fake logged in private practitioners.
@@ -50,6 +49,9 @@ public class FakeElegAuthenticationProvider extends BaseFakeAuthenticationProvid
 
         SAMLCredential credential = createSamlCredential(authentication);
         Object details = elegWebCertUserDetailsService.loadUserBySAML(credential);
+
+        // Allow fake e-leg logins to change authenticationMethod after login.
+        applyAuthenticationMethod(authentication, details);
 
         ExpiringUsernameAuthenticationToken result = new ExpiringUsernameAuthenticationToken(null, details, credential,
                 new ArrayList<>());

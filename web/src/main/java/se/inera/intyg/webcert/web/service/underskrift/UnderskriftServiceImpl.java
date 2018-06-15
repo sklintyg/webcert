@@ -126,7 +126,7 @@ public class UnderskriftServiceImpl implements UnderskriftService {
             niasUnderskriftService.startNiasCollectPoller(user.getHsaId(), signaturBiljett);
         }
         if (user.getAuthenticationMethod() == BANK_ID || user.getAuthenticationMethod() == MOBILT_BANK_ID) {
-            grpUnderskriftService.startGrpCollectPoller(user.getHsaId(), signaturBiljett);
+            grpUnderskriftService.startGrpCollectPoller(user.getPersonId(), signaturBiljett);
         }
 
         return signaturBiljett;

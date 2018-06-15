@@ -20,6 +20,7 @@ package se.inera.intyg.webcert.web.auth.fake;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
+import se.inera.intyg.webcert.web.auth.common.FakeCredential;
 
 import java.io.Serializable;
 import java.util.List;
@@ -27,7 +28,7 @@ import java.util.List;
 /**
  * @author andreaskaltenbach
  */
-public class FakeCredentials implements Serializable {
+public class FakeCredentials implements Serializable, FakeCredential {
 
     private static final long serialVersionUID = -7620199916206349045L;
 
@@ -102,6 +103,7 @@ public class FakeCredentials implements Serializable {
         this.sekretessMarkerad = sekretessMarkerad;
     }
 
+    @Override
     public String getAuthenticationMethod() {
         return authenticationMethod;
     }

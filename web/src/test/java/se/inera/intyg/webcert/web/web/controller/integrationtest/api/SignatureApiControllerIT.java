@@ -29,6 +29,7 @@ import com.jayway.restassured.response.Response;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 import se.funktionstjanster.grp.v1.ProgressStatusType;
+import se.inera.intyg.infra.security.common.model.AuthenticationMethod;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.web.auth.eleg.FakeElegCredentials;
 import se.inera.intyg.webcert.web.web.controller.integrationtest.BaseRestIntegrationTest;
@@ -92,12 +93,13 @@ public class SignatureApiControllerIT extends BaseRestIntegrationTest {
                 .extract().response();
     }
 
-    // @Test
+    @Test
     public void testServerSigneraUtkastMedGrp() throws IOException {
 
         FakeElegCredentials fakeElegCredentials = new FakeElegCredentials();
         fakeElegCredentials.setPersonId("19121212-1212");
         fakeElegCredentials.setPrivatLakare(true);
+        fakeElegCredentials.setAuthenticationMethod(AuthenticationMethod.MOBILT_BANK_ID.name());
 
         RestAssured.sessionId = getAuthSession(fakeElegCredentials);
 

@@ -46,7 +46,6 @@ import se.inera.intyg.webcert.web.auth.fake.FakeCredentials;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.stream.Collectors;
 
 import static se.inera.intyg.webcert.web.auth.common.AuthConstants.FAKE_AUTHENTICATION_SITHS_CONTEXT_REF;
 
@@ -96,29 +95,6 @@ public class CommonFakeAuthenticationProvider extends BaseFakeAuthenticationProv
             if (user.getValdVardenhet() != null && user.getValdVardgivare() != null) {
                 user.setFeatures(
                         authoritiesResolver.getFeatures(Arrays.asList(user.getValdVardenhet().getId(), user.getValdVardgivare().getId())));
-            }
-        }
-    }
-
-    private void applyAuthenticationMethod(Authentication token, Object details) {
-        if (details instanceof IntygUser) {
-            if (token.getCredentials() != null && ((FakeCredentials) token.getCredentials()).getOrigin() != null) {
-                String authenticationMethod = ((FakeCredentials) token.getCredentials()).getAuthenticationMethod();
-                try {
-                    if (authenticationMethod != null && !authenticationMethod.isEmpty()) {
-                        IntygUser user = (IntygUser) details;
-                        AuthenticationMethod newAuthMethod = AuthenticationMethod.valueOf(authenticationMethod);
-                        user.setAuthenticationMethod(newAuthMethod);
-                    }
-                } catch (IllegalArgumentException e) {
-                    String allowedTypes = Arrays.asList(AuthenticationMethod.values())
-                            .stream()
-                            .map(val -> val.name())
-                            .collect(Collectors.joining(", "));
-                    throw new AuthoritiesException(
-                            "Could not set authenticationMethod '" + authenticationMethod + "'. Unknown, allowed types are "
-                                    + allowedTypes);
-                }
             }
         }
     }
