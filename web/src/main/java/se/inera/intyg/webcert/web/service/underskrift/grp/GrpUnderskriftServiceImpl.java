@@ -133,7 +133,9 @@ public class GrpUnderskriftServiceImpl extends BaseSignatureService implements C
     @Override
     public SignaturBiljett finalizeGrpSignature(SignaturBiljett biljett, byte[] signatur, String certifikat, Utkast utkast,
             WebCertUser user) {
-        return finalizePkcs7Signature(user, biljett, new String(signatur, Charset.forName("UTF-8")), utkast);
+        SignaturBiljett sb = finalizePkcs7Signature(user, biljett, new String(signatur, Charset.forName("UTF-8")), utkast);
+        redisTicketTracker.updateBiljett(sb);
+        return sb;
     }
 
     // Used for BankID / Mobilt BankID.
