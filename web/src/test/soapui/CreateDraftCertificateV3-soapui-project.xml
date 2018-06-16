@@ -75,7 +75,7 @@
  under the License.-->
 <xs:schema targetNamespace="urn:riv:clinicalprocess:healthcond:certificate:CreateDraftCertificateResponder:3" elementFormDefault="qualified" attributeFormDefault="unqualified" version="3.0" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tns="urn:riv:clinicalprocess:healthcond:certificate:CreateDraftCertificateResponder:3" xmlns:core="urn:riv:clinicalprocess:healthcond:certificate:3" xmlns:types="urn:riv:clinicalprocess:healthcond:certificate:types:3">
   <xs:import schemaLocation="../../core_components/clinicalprocess_healthcond_certificate_3.0.xsd" namespace="urn:riv:clinicalprocess:healthcond:certificate:3"/>
-  <xs:import namespace="urn:riv:clinicalprocess:healthcond:certificate:types:3" schemaLocation="../../core_components/clinicalprocess_healthcond_certificate_types_3.0.xsd"/>
+  <xs:import namespace="urn:riv:clinicalprocess:healthcond:certificate:types:3" schemaLocation="../../core_components/clinicalprocess_healthcond_certificate_types_3.2.xsd"/>
   <xs:element name="CreateDraftCertificate" type="tns:CreateDraftCertificateType"/>
   <xs:element name="CreateDraftCertificateResponse" type="tns:CreateDraftCertificateResponseType"/>
   <xs:complexType name="CreateDraftCertificateType">
@@ -131,7 +131,7 @@
     </xs:sequence>
   </xs:complexType>
 </xs:schema>]]></con:content><con:type>http://www.w3.org/2001/XMLSchema</con:type></con:part><con:part><con:url>file:/Users/mango/Projects/Inera/Develop/sklintyg/schemas/rivta/clinicalprocess-healthcond-certificate/schemas/core_components/clinicalprocess_healthcond_certificate_3.0.xsd</con:url><con:content><![CDATA[<xs:schema targetNamespace="urn:riv:clinicalprocess:healthcond:certificate:3" elementFormDefault="qualified" attributeFormDefault="unqualified" version="3.0" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="urn:riv:clinicalprocess:healthcond:certificate:3" xmlns:types="urn:riv:clinicalprocess:healthcond:certificate:types:3">
-  <xs:import namespace="urn:riv:clinicalprocess:healthcond:certificate:types:3" schemaLocation="clinicalprocess_healthcond_certificate_types_3.0.xsd"/>
+  <xs:import namespace="urn:riv:clinicalprocess:healthcond:certificate:types:3" schemaLocation="clinicalprocess_healthcond_certificate_types_3.2.xsd"/>
   <xs:complexType name="Intyg">
     <xs:annotation>
       <xs:documentation>Ett intyg.</xs:documentation>
@@ -389,7 +389,7 @@
       <xs:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
     </xs:sequence>
   </xs:complexType>
-</xs:schema>]]></con:content><con:type>http://www.w3.org/2001/XMLSchema</con:type></con:part><con:part><con:url>file:/Users/mango/Projects/Inera/Develop/sklintyg/schemas/rivta/clinicalprocess-healthcond-certificate/schemas/core_components/clinicalprocess_healthcond_certificate_types_3.0.xsd</con:url><con:content><![CDATA[<xs:schema targetNamespace="urn:riv:clinicalprocess:healthcond:certificate:types:3" elementFormDefault="qualified" attributeFormDefault="unqualified" version="3.0" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="urn:riv:clinicalprocess:healthcond:certificate:types:3">
+</xs:schema>]]></con:content><con:type>http://www.w3.org/2001/XMLSchema</con:type></con:part><con:part><con:url>file:/Users/mango/Projects/Inera/Develop/sklintyg/schemas/rivta/clinicalprocess-healthcond-certificate/schemas/core_components/clinicalprocess_healthcond_certificate_types_3.2.xsd</con:url><con:content><![CDATA[<xs:schema targetNamespace="urn:riv:clinicalprocess:healthcond:certificate:types:3" elementFormDefault="qualified" attributeFormDefault="unqualified" version="3.0" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="urn:riv:clinicalprocess:healthcond:certificate:types:3">
   <xs:complexType name="IntygId">
     <xs:complexContent>
       <xs:restriction base="IIType">

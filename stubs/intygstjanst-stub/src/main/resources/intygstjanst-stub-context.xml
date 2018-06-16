@@ -34,7 +34,7 @@
     <jaxws:endpoint address="/send-certificate-to-recipient-stub" implementor="se.inera.intyg.webcert.intygstjanststub.SendCertificateToRecipientResponderStub">
         <jaxws:schemaLocations>
             <jaxws:schemaLocation>classpath:/core_components/clinicalprocess_healthcond_certificate_3.2.xsd</jaxws:schemaLocation>
-            <jaxws:schemaLocation>classpath:/core_components/clinicalprocess_healthcond_certificate_types_3.0.xsd</jaxws:schemaLocation>
+            <jaxws:schemaLocation>classpath:/core_components/clinicalprocess_healthcond_certificate_types_3.2.xsd</jaxws:schemaLocation>
             <jaxws:schemaLocation>classpath:/interactions/SendCertificateToRecipientInteraction/SendCertificateToRecipientResponder_2.0.xsd</jaxws:schemaLocation>
         </jaxws:schemaLocations>
     </jaxws:endpoint>
