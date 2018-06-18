@@ -58,8 +58,7 @@ public class NiasUnderskriftServiceImpl implements NiasUnderskriftService {
             response = JAXB.unmarshal(new StringReader(result), SignResponse.class);
 
         } catch (Exception ex) {
-            signaturBiljett.setStatus(SignaturStatus.OKAND);
-            redisTicketTracker.updateBiljett(signaturBiljett);
+            redisTicketTracker.updateStatus(signaturBiljett.getTicketId(), SignaturStatus.OKAND);
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.UNKNOWN_INTERNAL_PROBLEM, ex.getMessage());
         }
 

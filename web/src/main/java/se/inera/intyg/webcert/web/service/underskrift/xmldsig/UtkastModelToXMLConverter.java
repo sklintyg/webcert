@@ -85,10 +85,4 @@ public class UtkastModelToXMLConverter {
         marshaller.marshal(root, sw);
         return sw.toString();
     }
-
-    private String marshal(Marshaller marshaller, JAXBElement<Intyg> root) throws JAXBException {
-        StringWriter sw = new StringWriter();
-        marshaller.marshal(root, sw);
-        return sw.toString();
-    }
 }

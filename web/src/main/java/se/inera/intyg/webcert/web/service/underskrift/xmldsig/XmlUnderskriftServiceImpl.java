@@ -21,7 +21,7 @@ package se.inera.intyg.webcert.web.service.underskrift.xmldsig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.infra.xmldsig.model.IntygXMLDSignature;
-import se.inera.intyg.infra.xmldsig.service.PrepareSignatureServiceImpl;
+import se.inera.intyg.infra.xmldsig.service.PrepareSignatureService;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.underskrift.BaseXMLSignatureService;
@@ -41,7 +41,7 @@ public class XmlUnderskriftServiceImpl extends BaseXMLSignatureService implement
     private UtkastModelToXMLConverter utkastModelToXMLConverter;
 
     @Autowired
-    private PrepareSignatureServiceImpl prepareSignatureService;
+    private PrepareSignatureService prepareSignatureService;
 
     @Autowired
     private RedisTicketTracker redisTicketTracker;
@@ -69,14 +69,14 @@ public class XmlUnderskriftServiceImpl extends BaseXMLSignatureService implement
         return biljett;
     }
 
-    public SignaturBiljett finalizeXmlSignature(SignaturBiljett biljett, byte[] signatur, String certifikat, Utkast utkast,
+    @Override
+    public SignaturBiljett finalizeSignature(final SignaturBiljett biljett, final byte[] signatur, final String certifikat,
+            final Utkast utkast,
             WebCertUser user) {
+        SignaturBiljett sb = finalizeXMLDSigSignature(certifikat, user, biljett, signatur, utkast);
         monitoringLogService.logIntygSigned(utkast.getIntygsId(), utkast.getIntygsTyp(), user.getHsaId(), user.getAuthenticationScheme(),
                 utkast.getRelationKod());
 
-        finalizeXMLDSigSignature(certifikat, user, biljett, signatur, utkast);
-        redisTicketTracker.updateBiljett(biljett);
-        return biljett;
-
+        return redisTicketTracker.updateStatus(sb.getTicketId(), sb.getStatus());
     }
 }

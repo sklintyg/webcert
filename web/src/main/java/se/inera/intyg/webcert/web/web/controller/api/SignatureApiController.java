@@ -156,7 +156,7 @@ public class SignatureApiController extends AbstractApiController {
 
         SignaturBiljett sb = null;
         try {
-            sb = underskriftService.netidPluginSignature(biljettId, signaturRequest.getSignatur(), signaturRequest.getCertifikat());
+            sb = underskriftService.netidSignature(biljettId, signaturRequest.getSignatur(), signaturRequest.getCertifikat());
         } catch (OptimisticLockException | OptimisticLockingFailureException e) {
             sb = underskriftService.signeringsStatus(biljettId);
             monitoringLogService.logUtkastConcurrentlyEdited(sb.getIntygsId(), intygsTyp);

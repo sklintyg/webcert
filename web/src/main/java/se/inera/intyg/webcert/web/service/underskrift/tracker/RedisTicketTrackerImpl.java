@@ -58,18 +58,11 @@ public class RedisTicketTrackerImpl implements RedisTicketTracker {
     }
 
     @Override
-    public SignaturBiljett updateBiljett(SignaturBiljett biljett) {
-        SignaturBiljett sb = cache.get(biljett.getTicketId(), SignaturBiljett.class);
-        sb.setStatus(biljett.getStatus());
-        cache.put(sb.getTicketId(), sb);
-        return sb;
-    }
-
-    @Override
-    public void updateStatus(String ticketId, SignaturStatus status) {
+    public SignaturBiljett updateStatus(String ticketId, SignaturStatus status) {
         SignaturBiljett sb = cache.get(ticketId, SignaturBiljett.class);
         sb.setStatus(status);
         cache.put(ticketId, sb);
+        return sb;
     }
 
     private Cache getCache() {

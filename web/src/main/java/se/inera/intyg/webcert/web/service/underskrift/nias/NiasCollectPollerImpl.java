@@ -109,7 +109,7 @@ public class NiasCollectPollerImpl implements NiasCollectPoller {
                                             + "issuing WebCertUser.");
                         }
 
-                        underskriftService.niasSignature(ticketId, resp.getSignature().getBytes(Charset.forName("UTF-8")),
+                        underskriftService.netidSignature(ticketId, resp.getSignature().getBytes(Charset.forName("UTF-8")),
                                 resp.getUserInfo().getCertificate());
                         LOG.info("NetiD Access Server Signature was successfully persisted and ticket updated.");
                         return;

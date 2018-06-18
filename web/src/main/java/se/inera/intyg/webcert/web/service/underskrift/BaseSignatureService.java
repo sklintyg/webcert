@@ -47,7 +47,6 @@ public abstract class BaseSignatureService {
     @Autowired
     protected IntygService intygService;
 
-
     protected Utkast updateAndSaveUtkast(Utkast utkast, String payloadJson, Signatur signatur, WebCertUser user) {
         utkast.setSenastSparadAv(new VardpersonReferens(user.getHsaId(), user.getNamn()));
 

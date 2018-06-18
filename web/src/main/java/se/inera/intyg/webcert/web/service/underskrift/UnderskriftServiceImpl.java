@@ -147,28 +147,18 @@ public class UnderskriftServiceImpl implements UnderskriftService {
     }
 
     /**
-     * Called through the /api/signature endpoint when the NetiD plugin has signed the Base64-encoded SignedInfo XML.
+     * Called either when:
+     * - the /api/signature endpoint when the NetiD plugin has signed the Base64-encoded SignedInfo XML
+     * - the NIAS collect returns with a COMPLETE response.
      */
     @Override
-    public SignaturBiljett netidPluginSignature(String biljettId, byte[] signatur, String certifikat) {
+    public SignaturBiljett netidSignature(String biljettId, byte[] signatur, String certifikat) {
         SignaturBiljett sb = redisTicketTracker.findBiljett(biljettId);
 
         WebCertUser user = webCertUserService.getUser();
         Utkast utkast = getUtkastForSignering(sb.getIntygsId(), sb.getVersion(), user);
 
-        sb = xmlUnderskriftService.finalizeXmlSignature(sb, signatur, certifikat, utkast, user);
-        finalizeSignature(utkast, user);
-        return sb;
-    }
-
-    @Override
-    public SignaturBiljett niasSignature(String biljettId, byte[] signatur, String certifikat) {
-        SignaturBiljett sb = redisTicketTracker.findBiljett(biljettId);
-
-        WebCertUser user = webCertUserService.getUser();
-        Utkast utkast = getUtkastForSignering(sb.getIntygsId(), sb.getVersion(), user);
-
-        sb = xmlUnderskriftService.finalizeXmlSignature(sb, signatur, certifikat, utkast, user);
+        sb = xmlUnderskriftService.finalizeSignature(sb, signatur, certifikat, utkast, user);
         finalizeSignature(utkast, user);
         return sb;
     }
@@ -180,7 +170,7 @@ public class UnderskriftServiceImpl implements UnderskriftService {
         WebCertUser user = webCertUserService.getUser();
         Utkast utkast = getUtkastForSignering(sb.getIntygsId(), sb.getVersion(), user);
 
-        sb = grpUnderskriftService.finalizeGrpSignature(sb, signatur, null, utkast, user);
+        sb = grpUnderskriftService.finalizeSignature(sb, signatur, null, utkast, user);
         finalizeSignature(utkast, user);
         return sb;
     }
@@ -191,7 +181,8 @@ public class UnderskriftServiceImpl implements UnderskriftService {
         SignaturBiljett sb = redisTicketTracker.findBiljett(ticketId);
         if (sb == null) {
             LOG.error("No SignaturBiljett found for ticketId '{}'", ticketId);
-            throw new IllegalStateException("No SignaturBiljett found for ticketId " + ticketId);
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND,
+                    "No SignaturBiljett found for ticketId '" + ticketId + "'");
         }
         return sb;
     }

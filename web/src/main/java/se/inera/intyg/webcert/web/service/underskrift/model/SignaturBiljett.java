@@ -23,6 +23,7 @@ import se.inera.intyg.infra.xmldsig.model.IntygSignature;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 public class SignaturBiljett implements Serializable {
     private String ticketId;
@@ -98,6 +99,24 @@ public class SignaturBiljett implements Serializable {
         this.hash = hash;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        SignaturBiljett that = (SignaturBiljett) o;
+        return version == that.version
+                && Objects.equals(ticketId, that.ticketId)
+                && Objects.equals(intygsId, that.intygsId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(ticketId, intygsId, version);
+    }
 
     public static final class SignaturBiljettBuilder {
         private String ticketId;

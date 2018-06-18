@@ -145,8 +145,6 @@ public abstract class BaseXMLSignatureService extends BaseSignatureService {
 
         final String payloadJson = intygXMLDSignature.getIntygJson();
 
-        // SigningXml is the <intyg>...</intyg> and the hash below is the sha256 digest of it.
-        final String signingXml = intygXMLDSignature.getCanonicalizedIntyg();
         final String signingXmlHash = Base64.getEncoder()
                 .encodeToString(intygXMLDSignature.getSignatureType().getSignedInfo().getReference().get(0).getDigestValue());
 
@@ -154,7 +152,7 @@ public abstract class BaseXMLSignatureService extends BaseSignatureService {
 
         // Use the JSON from the DB temp storage. Convert it (again) into XML and do a digest on it. It MUST
         // match the digest used in the signing process or we have a problem.
-        String utkastXml = utkastModelToXMLConverter.utkastToXml(biljett.getIntygSignature().getIntygJson(), utkast.getIntygsTyp());
+        String utkastXml = utkastModelToXMLConverter.utkastToXml(utkast.getModel(), utkast.getIntygsTyp());
 
         // Use the JSON->XML converted XML and perform a _new_ prepare on it so we can compare digests.
         IntygXMLDSignature intygSignature = prepareSignatureService.prepareSignature(utkastXml, biljett.getIntygsId());
@@ -168,7 +166,8 @@ public abstract class BaseXMLSignatureService extends BaseSignatureService {
         // INTYG_HASH - the hash of the canonicalized <intyg>...</intyg> we've signed on.
         // SIGNATUR_DATA - the base64-encoded <intyg>...<Signature>...</Signature></intyg> containing the canonicalized
         // intyg data and the XMLDSig.
-        Signatur signatur = new Signatur(LocalDateTime.now(), user.getHsaId(), biljett.getIntygsId(), signingXml,
+        final String signingXml = intygXMLDSignature.getCanonicalizedIntyg();
+        final Signatur signatur = new Signatur(LocalDateTime.now(), user.getHsaId(), biljett.getIntygsId(), signingXml,
                 signingXmlHash, signaturXml, SignaturTyp.XMLDSIG);
 
         // Encode the DSIG signature into the JSON model.

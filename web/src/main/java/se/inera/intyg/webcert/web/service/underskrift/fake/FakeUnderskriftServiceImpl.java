@@ -72,8 +72,7 @@ public class FakeUnderskriftServiceImpl extends BaseXMLSignatureService implemen
         monitoringLogService.logIntygSigned(utkast.getIntygsId(), utkast.getIntygsTyp(), user.getHsaId(), user.getAuthenticationScheme(),
                 utkast.getRelationKod());
 
-        finalizeXMLDSigSignature(FAKE_CERT, user, biljett, Base64.getDecoder().decode(fakeSignatureData), utkast);
-        redisTicketTracker.updateBiljett(biljett);
-        return biljett;
+        biljett = finalizeXMLDSigSignature(FAKE_CERT, user, biljett, Base64.getDecoder().decode(fakeSignatureData), utkast);
+        return redisTicketTracker.updateStatus(biljett.getTicketId(), biljett.getStatus());
     }
 }

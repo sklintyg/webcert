@@ -23,9 +23,8 @@ import se.inera.intyg.webcert.web.service.underskrift.model.SignaturStatus;
 
 public interface RedisTicketTracker {
     void trackBiljett(SignaturBiljett signaturBiljett);
+
     SignaturBiljett findBiljett(String ticketId);
 
-    SignaturBiljett updateBiljett(SignaturBiljett biljett);
-
-    void updateStatus(String ticketId, SignaturStatus status);
+    SignaturBiljett updateStatus(String ticketId, SignaturStatus status);
 }

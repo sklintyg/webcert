@@ -18,14 +18,10 @@
  */
 package se.inera.intyg.webcert.web.service.underskrift.grp;
 
-import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturBiljett;
-import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 public interface GrpUnderskriftService {
 
     void startGrpCollectPoller(String personId, SignaturBiljett signaturBiljett);
 
-    SignaturBiljett finalizeGrpSignature(SignaturBiljett biljett, byte[] signatur, String certifikat, Utkast utkast,
-            WebCertUser user);
 }

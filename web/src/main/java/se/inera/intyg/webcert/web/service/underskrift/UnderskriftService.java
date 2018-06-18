@@ -25,11 +25,9 @@ public interface UnderskriftService {
 
     SignaturBiljett fakeSignature(String intygsId, String intygsTyp, long version, String ticketId);
 
-    SignaturBiljett niasSignature(String biljettId, byte[] signatur, String certifikat);
+    SignaturBiljett netidSignature(String biljettId, byte[] signatur, String certifikat);
 
     SignaturBiljett grpSignature(String biljettId, byte[] signatur);
 
     SignaturBiljett signeringsStatus(String ticketId);
-
-    SignaturBiljett netidPluginSignature(String biljettId, byte[] signatur, String certifikat);
 }
