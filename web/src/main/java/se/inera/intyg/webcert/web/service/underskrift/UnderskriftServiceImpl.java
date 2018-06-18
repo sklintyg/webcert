@@ -177,7 +177,6 @@ public class UnderskriftServiceImpl implements UnderskriftService {
 
     @Override
     public SignaturBiljett signeringsStatus(String ticketId) {
-        LOG.info("ENTER - signeringsStatus for ticketId '{}'", ticketId);
         SignaturBiljett sb = redisTicketTracker.findBiljett(ticketId);
         if (sb == null) {
             LOG.error("No SignaturBiljett found for ticketId '{}'", ticketId);

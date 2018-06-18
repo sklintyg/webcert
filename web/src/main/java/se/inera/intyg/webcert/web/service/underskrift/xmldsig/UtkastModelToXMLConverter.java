@@ -29,6 +29,7 @@ import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
 import se.riv.clinicalprocess.healthcond.certificate.registerCertificate.v3.RegisterCertificateType;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.DatePeriodType;
+import se.riv.clinicalprocess.healthcond.certificate.types.v3.PartialDateType;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
 
 import javax.xml.bind.JAXBContext;
@@ -63,7 +64,7 @@ public class UtkastModelToXMLConverter {
 
         // This context may need to be created dynamically based on the Intygstyp, given that not all intygstyper
         // are based on the same contract / domain version. Get from ModuleApi?
-        JAXBContext context = JAXBContext.newInstance(RegisterCertificateType.class, DatePeriodType.class);
+        JAXBContext context = JAXBContext.newInstance(RegisterCertificateType.class, DatePeriodType.class, PartialDateType.class);
         QName qname = new QName("urn:riv:clinicalprocess:healthcond:certificate:RegisterCertificateResponder:3", "RegisterCertificateType");
         JAXBElement<RegisterCertificateType> root = new JAXBElement<>(qname, RegisterCertificateType.class, registerCertificateType);
         return marshalRegisterCertificateV3(context.createMarshaller(), root);

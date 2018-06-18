@@ -69,8 +69,6 @@ public class SignatureApiController extends AbstractApiController {
     public SignaturStateDTO signeraUtkast(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId,
             @PathParam("version") long version) {
 
-        LOG.info("ENTER - signeraUtkast");
-
         authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp).features(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
                 .orThrow();
 
