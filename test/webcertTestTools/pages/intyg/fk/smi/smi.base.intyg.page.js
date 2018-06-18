@@ -263,7 +263,7 @@ var BaseSmiIntygPage = FkBaseIntyg._extend({
     whenCertificateLoaded: function() {
         var that = this;
 
-        return browser.sleep(1000).then(function() {
+        return browser.sleep(2000).then(function() {
             //1 sec sleep för GET request och page/angular reload
             return browser.wait(that.certficate.isPresent(), 15000).then(function() {
                 //15sec är timeout
