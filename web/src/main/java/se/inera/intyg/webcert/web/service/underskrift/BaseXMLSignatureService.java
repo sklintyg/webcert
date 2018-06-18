@@ -152,7 +152,8 @@ public abstract class BaseXMLSignatureService extends BaseSignatureService {
 
         // Use the JSON from the DB temp storage. Convert it (again) into XML and do a digest on it. It MUST
         // match the digest used in the signing process or we have a problem.
-        String utkastXml = utkastModelToXMLConverter.utkastToXml(utkast.getModel(), utkast.getIntygsTyp());
+        // Note: Determine whether we should use the payload json here or the utkast.getModel.
+        String utkastXml = utkastModelToXMLConverter.utkastToXml(payloadJson, utkast.getIntygsTyp());
 
         // Use the JSON->XML converted XML and perform a _new_ prepare on it so we can compare digests.
         IntygXMLDSignature intygSignature = prepareSignatureService.prepareSignature(utkastXml, biljett.getIntygsId());

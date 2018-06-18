@@ -86,7 +86,7 @@ public abstract class BaseSignatureService {
                             + "on the signing operation ({})",
                     utkast.getIntygsId(), biljett.getIntygsId());
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE,
-                    "Internal error signing utkast, the payload of utkast "
+                    "Internal error signing utkast, the intygsId of utkast "
                             + utkast.getIntygsId() + " has been modified since signing was initialized");
         }
     }
