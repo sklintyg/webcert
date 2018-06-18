@@ -18,11 +18,19 @@
  */
 package se.inera.intyg.webcert.persistence.utkast.model;
 
-import java.time.LocalDateTime;
-
-import javax.persistence.*;
-
 import org.hibernate.annotations.Type;
+import se.inera.intyg.common.support.common.enumerations.SignaturTyp;
+
+import javax.persistence.Basic;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
+import javax.persistence.Lob;
+import javax.persistence.Table;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "SIGNATUR")
@@ -69,6 +77,13 @@ public class Signatur {
     @Column(name = "SIGNATUR_DATA")
     private String signatur;
 
+    /**
+     * HSA id of the person performing the signing.
+     */
+    @Column(name = "SIGNATUR_TYP")
+    @Enumerated(EnumType.STRING)
+    private SignaturTyp signaturTyp;
+
     public Signatur() {
         // default constructor for hibernate
     }
@@ -80,6 +95,18 @@ public class Signatur {
         this.intygData = intygData;
         this.intygHash = intygHash;
         this.signatur = signatur;
+        this.signaturTyp = SignaturTyp.LEGACY;
+    }
+
+    public Signatur(LocalDateTime signeringsDatum, String signeradAv, String intygId, String intygData, String intygHash, String signatur,
+            SignaturTyp signaturTyp) {
+        this.signeringsDatum = signeringsDatum;
+        this.signeradAv = signeradAv;
+        this.intygsId = intygId;
+        this.intygData = intygData;
+        this.intygHash = intygHash;
+        this.signatur = signatur;
+        this.signaturTyp = signaturTyp;
     }
 
     @Override
@@ -119,5 +146,9 @@ public class Signatur {
 
     public String getSignatur() {
         return signatur;
+    }
+
+    public SignaturTyp getSignaturTyp() {
+        return signaturTyp;
     }
 }

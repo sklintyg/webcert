@@ -1045,4 +1045,13 @@
     </addColumn>
   </changeSet>
 
+  <changeSet id="54" author="el">
+    <addColumn tableName="SIGNATUR">
+      <column name="SIGNATUR_TYP" type="varchar(64)">
+        <constraints nullable="false"/>
+      </column>
+    </addColumn>
+    <sql>UPDATE SIGNATUR SET SIGNATUR_TYP='LEGACY' WHERE SIGNATUR_TYP IS NULL</sql>
+  </changeSet>
+
 </databaseChangeLog>

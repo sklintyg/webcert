@@ -19,6 +19,7 @@
 package se.inera.intyg.webcert.persistence.utkast.repository;
 
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
+import se.inera.intyg.common.support.common.enumerations.SignaturTyp;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.webcert.persistence.utkast.model.Signatur;
@@ -145,7 +146,7 @@ public final class UtkastTestUtil {
     }
 
     public static Signatur buildSignatur(String intygId, String signeradAv, LocalDateTime signeringsDatum) {
-        return new Signatur(signeringsDatum, signeradAv, intygId, "<intygs-data>", "<intyg-hash>", "<signatur-data>");
+        return new Signatur(signeringsDatum, signeradAv, intygId, "<intygs-data>", "<intyg-hash>", "<signatur-data>", SignaturTyp.LEGACY);
     }
 
 }

@@ -46,8 +46,8 @@
     <!-- When enabled, this will create a stub service for CertificateStatusUpdateForCare v3 -->
     <jaxws:endpoint address="/stubs/clinicalprocess/healthcond/certificate/CertificateStatusUpdateForCare/3/rivtabp21" implementor="se.inera.intyg.webcert.notificationstub.v3.CertificateStatusUpdateForCareResponderStub">
         <jaxws:schemaLocations>
-            <jaxws:schemaLocation>classpath:/core_components/clinicalprocess_healthcond_certificate_3.0.xsd</jaxws:schemaLocation>
-            <jaxws:schemaLocation>classpath:/core_components/clinicalprocess_healthcond_certificate_types_3.0.xsd</jaxws:schemaLocation>
+            <jaxws:schemaLocation>classpath:/core_components/clinicalprocess_healthcond_certificate_3.2.xsd</jaxws:schemaLocation>
+            <jaxws:schemaLocation>classpath:/core_components/clinicalprocess_healthcond_certificate_types_3.2.xsd</jaxws:schemaLocation>
             <jaxws:schemaLocation>classpath:/interactions/CertificateStatusUpdateForCareInteraction/CertificateStatusUpdateForCareResponder_3.0.xsd</jaxws:schemaLocation>
         </jaxws:schemaLocations>
     </jaxws:endpoint>

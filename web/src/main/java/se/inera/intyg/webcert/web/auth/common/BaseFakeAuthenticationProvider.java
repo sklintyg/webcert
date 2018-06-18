@@ -18,11 +18,6 @@
  */
 package se.inera.intyg.webcert.web.auth.common;
 
-import javax.xml.namespace.QName;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-
 import org.opensaml.saml2.core.Assertion;
 import org.opensaml.saml2.core.Attribute;
 import org.opensaml.saml2.core.AuthnContext;
@@ -35,8 +30,19 @@ import org.opensaml.saml2.core.impl.AuthnStatementBuilder;
 import org.opensaml.xml.XMLObject;
 import org.opensaml.xml.schema.impl.XSStringBuilder;
 import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.core.Authentication;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import se.inera.intyg.infra.security.authorities.AuthoritiesException;
+import se.inera.intyg.infra.security.common.model.AuthenticationMethod;
+import se.inera.intyg.infra.security.common.model.IntygUser;
+
+import javax.xml.namespace.QName;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 /**
  * Provides some common functionality for Fake authentication providers.
@@ -79,6 +85,29 @@ public abstract class BaseFakeAuthenticationProvider implements AuthenticationPr
         attribute.getAttributeValues().add(xmlObject);
 
         return attribute;
+    }
+
+    protected void applyAuthenticationMethod(Authentication token, Object details) {
+        if (details instanceof IntygUser) {
+            if (token.getCredentials() != null && ((FakeCredential) token.getCredentials()).getAuthenticationMethod() != null) {
+                String authenticationMethod = ((FakeCredential) token.getCredentials()).getAuthenticationMethod();
+                try {
+                    if (authenticationMethod != null && !authenticationMethod.isEmpty()) {
+                        IntygUser user = (IntygUser) details;
+                        AuthenticationMethod newAuthMethod = AuthenticationMethod.valueOf(authenticationMethod);
+                        user.setAuthenticationMethod(newAuthMethod);
+                    }
+                } catch (IllegalArgumentException e) {
+                    String allowedTypes = Arrays.asList(AuthenticationMethod.values())
+                            .stream()
+                            .map(val -> val.name())
+                            .collect(Collectors.joining(", "));
+                    throw new AuthoritiesException(
+                            "Could not set authenticationMethod '" + authenticationMethod + "'. Unknown, allowed types are "
+                                    + allowedTypes);
+                }
+            }
+        }
     }
 
 }

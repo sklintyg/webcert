@@ -19,8 +19,6 @@
 package se.inera.intyg.webcert.web.web.controller.testability;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.secmaker.netid.nias.v1.ResultCollect;
-import com.secmaker.netid.nias.v1.SignResponse;
 import io.swagger.annotations.Api;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,6 +31,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
+import se.inera.intyg.common.support.common.enumerations.SignaturTyp;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.Patient;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
@@ -51,9 +50,8 @@ import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.service.intyg.converter.IntygModuleFacade;
-import se.inera.intyg.webcert.web.service.signatur.SignaturTicketTracker;
-import se.inera.intyg.webcert.web.service.signatur.dto.SignaturTicket;
-import se.inera.intyg.webcert.web.service.signatur.nias.NiasSignaturService;
+import se.inera.intyg.webcert.web.service.underskrift.model.SignaturBiljett;
+import se.inera.intyg.webcert.web.service.underskrift.tracker.RedisTicketTracker;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftRequest;
 import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
 import se.inera.intyg.webcert.web.web.controller.testability.dto.SigningUnit;
@@ -110,10 +108,9 @@ public class IntygResource {
     private ResourceLoader resourceLoader;
 
     @Autowired
-    private SignaturTicketTracker signaturTicketTracker;
-
-    @Autowired
-    private NiasSignaturService niasSignaturService;
+    private RedisTicketTracker redisTicketTracker;
+    // @Autowired
+    // private NiasSignaturService niasSignaturService;
 
     @Autowired
     private IntygModuleRegistry moduleRegistry;
@@ -297,7 +294,7 @@ public class IntygResource {
         if (utkast.getStatus() == UtkastStatus.SIGNED) {
             Signatur signatur = new Signatur(LocalDateTime.now(), utlatande.getGrundData().getSkapadAv().getPersonId(), utlatande.getId(),
                     model,
-                    "ruffel", "fusk");
+                    "ruffel", "fusk", SignaturTyp.LEGACY);
             utkast.setSignatur(signatur);
         }
         VardpersonReferens vardpersonReferens = new VardpersonReferens();
@@ -397,25 +394,25 @@ public class IntygResource {
     @Path("/ticket/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getSigningTicket(@PathParam("id") String id) {
-        SignaturTicket ticket = signaturTicketTracker.getTicket(id);
+        SignaturBiljett ticket = redisTicketTracker.findBiljett(id);
         return Response.ok(ticket).build();
     }
 
-    @GET
-    @Path("/nias/sign/{personId}")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response netiDSign(@PathParam("personId") String personId) {
-        SignResponse signResponse = niasSignaturService.sign(personId, "", "", "");
-        return Response.ok(signResponse.getSignResult()).build();
-    }
-
-    @GET
-    @Path("/nias/collect/{orderRef}")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response netiDCollect(@PathParam("orderRef") String orderRef) {
-        ResultCollect resultCollect = niasSignaturService.collect(orderRef);
-        return Response.ok(resultCollect).build();
-    }
+    // @GET
+    // @Path("/nias/sign/{personId}")
+    // @Produces(MediaType.APPLICATION_JSON)
+    // public Response netiDSign(@PathParam("personId") String personId) {
+    // SignResponse signResponse = niasSignaturService.sign(personId, "", "", "");
+    // return Response.ok(signResponse.getSignResult()).build();
+    // }
+    //
+    // @GET
+    // @Path("/nias/collect/{orderRef}")
+    // @Produces(MediaType.APPLICATION_JSON)
+    // public Response netiDCollect(@PathParam("orderRef") String orderRef) {
+    // ResultCollect resultCollect = niasSignaturService.collect(orderRef);
+    // return Response.ok(resultCollect).build();
+    // }
 
     private void setRelationToKompletterandeIntyg(String id, String oldIntygId) {
         Utkast utkast = utkastRepository.findOne(id);
@@ -457,7 +454,7 @@ public class IntygResource {
         Utkast utkast = utkastRepository.findOne(id);
         if (utkast != null) {
             utkast.setStatus(UtkastStatus.SIGNED);
-            Signatur sig = new Signatur(LocalDateTime.now(), signeratAv != null ? signeratAv : "", id, "", "", "");
+            Signatur sig = new Signatur(LocalDateTime.now(), signeratAv != null ? signeratAv : "", id, "", "", "", SignaturTyp.LEGACY);
             utkast.setSignatur(sig);
             utkastRepository.save(utkast);
         }
@@ -479,7 +476,7 @@ public class IntygResource {
             }
 
             if (utkast.getSignatur() == null) {
-                Signatur sig = new Signatur(LocalDateTime.now(), "", id, "", "", "");
+                Signatur sig = new Signatur(LocalDateTime.now(), "", id, "", "", "", SignaturTyp.LEGACY);
                 utkast.setSignatur(sig);
             }
 

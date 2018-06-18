@@ -14,10 +14,10 @@ ext {
     schemasContractVersion = "2.1.7"
 
     funktionstjansterGrpSchemasVersion = "1.0.3"
-    intygClinicalprocessSchemasVersion = "1.0.9"
+    intygClinicalprocessSchemasVersion = "0-SNAPSHOT"//"1.0.9"
     ppSchemasVersion = "1.0.4"
     ppTermsSchemasVersion = "1.0.4"
-    rivtaClinicalprocessSchemasVersion = "3.2.0-RC1"
+    rivtaClinicalprocessSchemasVersion = "0-SNAPSHOT" //"3.2.0-RC1"
     rivtaItintegrationMonitoringSchemasVersion = "1.0.0.3"
 
     activeMqVersion = "5.13.4"

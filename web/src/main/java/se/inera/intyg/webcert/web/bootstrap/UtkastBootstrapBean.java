@@ -31,6 +31,7 @@ import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import se.inera.ifv.insuranceprocess.healthreporting.registermedicalcertificateresponder.v3.RegisterMedicalCertificateType;
 import se.inera.ifv.insuranceprocess.healthreporting.v2.PatientType;
 import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
+import se.inera.intyg.common.support.common.enumerations.SignaturTyp;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
@@ -291,7 +292,7 @@ public class UtkastBootstrapBean {
         if (status == UtkastStatus.SIGNED) {
             utkast.setSignatur(new Signatur(json.getGrundData().getSigneringsdatum(), json.getGrundData().getSkapadAv().getPersonId(),
                     json.getId(), "intygData",
-                    "intygHash", "signatur"));
+                    "intygHash", "signatur", SignaturTyp.LEGACY));
             utkast.setSkickadTillMottagare("FKASSA");
             utkast.setSkickadTillMottagareDatum(json.getGrundData().getSigneringsdatum().plusMinutes(2));
         }
