@@ -26,12 +26,12 @@ wc-tidigare-intyg {
   }
 
   .sokskriv-container {
-      display: flex;
-      flex-direction: column;
-      max-width: 300px;
-      align-items: center;
-      margin-left: 57px;
-      color: #6a6a6a;
+    display: flex;
+    flex-direction: column;
+    max-width: 300px;
+    align-items: center;
+    margin-left: 57px;
+    color: #6a6a6a;
 
     #sokskriv-image-wrapper {
       width: 121px;
@@ -39,11 +39,11 @@ wc-tidigare-intyg {
       margin-bottom: 12px;
     }
   }
-  .filter-no-result>thead>tr>th {
+  .filter-no-result > thead > tr > th {
     width: 19%;
   }
   .td-padding {
-      padding: 15px 15px 15px 21px !important;
+    padding: 15px 15px 15px 21px !important;
   }
   .intygList td {
     max-height: 48px;
@@ -52,6 +52,14 @@ wc-tidigare-intyg {
     }
     .icon-wc-ikon-19 {
       margin-right: 3px;
+    }
+  }
+
+  wc-alert-message {
+    display: block;
+
+    .alert {
+      display: block;
     }
   }
 }
