@@ -23,7 +23,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.OptimisticLockingFailureException;
-import se.inera.intyg.infra.security.common.model.AuthenticationMethod;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.xmldsig.service.FakeSignatureServiceImpl;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
@@ -31,7 +30,6 @@ import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.underskrift.UnderskriftService;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturBiljett;
-import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
 import se.inera.intyg.webcert.web.web.controller.api.dto.KlientSignaturRequest;
 import se.inera.intyg.webcert.web.web.controller.api.dto.SignaturStateDTO;
@@ -91,35 +89,7 @@ public class SignatureApiController extends AbstractApiController {
                 .build();
     }
 
-    /**
-     * Signera utkast. Endast fejkinloggning.
-     *
-     * FLYTTA TILL EGEN BEAN som är !prod annoterad!!!!
-     *
-     * @param intygsId
-     *            intyg id
-     * @return SignaturTicketResponse
-     */
-    @POST
-    @Path("/{intygsTyp}/{intygsId}/{version}/fejksignera/{ticketId}")
-    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    public SignaturStateDTO fejkSigneraUtkast(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId,
-            @PathParam("version") long version, @PathParam("ticketId") String ticketId, @Context HttpServletRequest request) {
 
-        // Start by doing an extra server-side check of FAKE authentication.
-        WebCertUser user = getWebCertUserService().getUser();
-        if (user.getAuthenticationMethod() != AuthenticationMethod.FAKE) {
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM,
-                    "Fake signing is only allowed for users logged in by FAKE AuthenticationMethod.");
-        }
-        verifyIsAuthorizedToSignIntyg(intygsTyp);
-
-        request.getSession(true).removeAttribute(LAST_SAVED_DRAFT);
-
-        SignaturBiljett sb = underskriftService.fakeSignature(intygsId, intygsTyp, version, ticketId);
-
-        return convertToSignatureStateDTO(sb);
-    }
 
     @GET
     @Path("/{intygsTyp}/{ticketId}/signeringsstatus")

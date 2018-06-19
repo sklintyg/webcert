@@ -66,6 +66,29 @@
     </jaxrs:server>
   </beans>
 
+  <!-- Controllern för fejksignering får endast vara aktiv i !prod miljö -->
+  <beans profile="!prod">
+    <jaxrs:server address="/fake">
+      <jaxrs:properties>
+        <!-- Configure ServerProviderFactory to make default exceptionhandler less specific so
+        that our webcertRestExceptionHandler gets to handle exceptions (see WEBCERT-1978) for these controllers -->
+        <entry key="default.wae.mapper.least.specific" value-type="boolean" value="true"/>
+      </jaxrs:properties>
+      <jaxrs:serviceBeans>
+        <bean class="se.inera.intyg.webcert.web.web.controller.api.FakeSignatureApiController" />
+      </jaxrs:serviceBeans>
+      <jaxrs:providers>
+        <ref bean="jacksonJsonProvider" />
+        <ref bean="webcertRestExceptionHandler"/>
+        <ref bean="localDateTimeHandler"/>
+      </jaxrs:providers>
+      <jaxrs:extensionMappings>
+        <entry key="json" value="application/json" />
+      </jaxrs:extensionMappings>
+    </jaxrs:server>
+  </beans>
+
+
   <!--
   <beans profile="dev,testability-api">
     <jaxrs:server address="/testability">

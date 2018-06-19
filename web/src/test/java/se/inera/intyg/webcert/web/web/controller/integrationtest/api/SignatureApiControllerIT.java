@@ -48,6 +48,7 @@ public class SignatureApiControllerIT extends BaseRestIntegrationTest {
     private static final String DEFAULT_LAKARE_NAME = "Jan Nilsson";
 
     private static final String SIGNATURE_API_BASE = "/api/signature";
+    private static final String SIGNATURE_FAKE_API_BASE = "/api/fake/signature";
     private static final String MODULEAPI_UTKAST_BASE = "moduleapi/utkast";
 
     @Test
@@ -86,7 +87,7 @@ public class SignatureApiControllerIT extends BaseRestIntegrationTest {
 
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId).contentType(ContentType.JSON)
                 .expect().statusCode(200)
-                .when().post(SIGNATURE_API_BASE + "/" + intyg.getIntygsTyp() + "/" + intyg.getId() + "/" + intyg.getVersion()
+                .when().post(SIGNATURE_FAKE_API_BASE + "/" + intyg.getIntygsTyp() + "/" + intyg.getId() + "/" + intyg.getVersion()
                         + "/fejksignera/" + ticketId)
                 .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-signatur-response-schema.json"))
                 .body("status", equalTo("SIGNERAD"))
