@@ -416,16 +416,15 @@ public class IntygResource {
 
     private void setRelationToKompletterandeIntyg(String id, String oldIntygId) {
         Utkast utkast = utkastRepository.findOne(id);
-        Utkast relatedUtkast = utkastRepository.findOne(id);
-        if (utkast != null
-                && relatedUtkast != null
-                && relatedUtkast.getSignatur() != null
-                && relatedUtkast.getSkickadTillMottagareDatum() != null) {
-
+        Utkast relatedUtkast = utkastRepository.findOne(oldIntygId);
+        if ((utkast != null)
+                && (relatedUtkast != null)
+                && (relatedUtkast.getSignatur() != null)
+                && (relatedUtkast.getSkickadTillMottagareDatum() != null)) {
             utkast.setRelationIntygsId(oldIntygId);
             utkast.setRelationKod(RelationKod.KOMPLT);
-            utkastRepository.saveAndFlush(utkast);
         }
+        utkastRepository.saveAndFlush(utkast);
     }
 
     private void deleteDraftAndRelatedQAs(Utkast utkast) {

@@ -126,7 +126,7 @@ public class ArendeModuleApiControllerIT extends BaseRestIntegrationTest {
                 .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-arende-schema.json"));
     }
 
-    // @Test
+    @Test
     public void retrieveInfoWhenKompletteratWithIntyg() {
         sessionId = getAuthSession(DEFAULT_LAKARE);
 
@@ -135,7 +135,7 @@ public class ArendeModuleApiControllerIT extends BaseRestIntegrationTest {
         sendIntyg(originalIntygId);
 
         // Create a message from FK, asking for komplettering on the sent intyg (the one above)
-        String messageId = createArendeQuestion(INTYGSTYP, originalIntygId, DEFAULT_PATIENT_PERSONNUMMER, ArendeAmne.KOMPLT);
+        createArendeQuestion(INTYGSTYP, originalIntygId, DEFAULT_PATIENT_PERSONNUMMER, ArendeAmne.KOMPLT);
 
         // A new kompletterande intyg is created and also marked as sent to FK
         String answerIntygId = createSentIntygAsKompletteringToIntyg(originalIntygId, INTYGSTYP, DEFAULT_PATIENT_PERSONNUMMER);
