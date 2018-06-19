@@ -1054,4 +1054,9 @@
     <sql>UPDATE SIGNATUR SET SIGNATUR_TYP='LEGACY' WHERE SIGNATUR_TYP IS NULL</sql>
   </changeSet>
 
+  <!-- Last changeset sql only worked on H2 -->
+  <changeSet id="55" author="el">
+    <sql>UPDATE SIGNATUR SET SIGNATUR_TYP='LEGACY' WHERE (SIGNATUR_TYP IS NULL OR SIGNATUR_TYP = '')</sql>
+  </changeSet>
+
 </databaseChangeLog>
