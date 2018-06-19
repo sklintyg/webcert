@@ -17,22 +17,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* globals pages, logger, JSON, Promise,intyg, browser, protractor */
+/* globals pages, logger, JSON, Promise, browser, protractor */
 
 'use strict';
 var utkastPage;
 var helpers = require('../helpers');
 module.exports = {
-    fillInEnhetAdress: function() {
-        return utkastPage.angeEnhetAdress(global.user.enhetsAdress)
+    fillInEnhetAdress: function(user) {
+        return utkastPage.angeEnhetAdress(user.enhetsAdress)
             .then(function() {
-                logger.info('OK - angeEnhetAdress :' + JSON.stringify(global.user.enhetsAdress));
+                logger.info('OK - angeEnhetAdress :' + JSON.stringify(user.enhetsAdress));
             }, function(reason) {
                 throw ('FEL, angeEnhetAdress,' + reason);
             });
     },
-    setPatientAdressIfNotGiven: function() {
-        var isSMI = helpers.isSMIIntyg(global.intyg.typ);
+    setPatientAdressIfNotGiven: function(world) {
+        var isSMI = helpers.isSMIIntyg(world.intyg.typ);
 
         // Regler som bör stämmas av med krav:
         // SMI har inte patientadress i och med sekretessmarkering
@@ -40,27 +40,27 @@ module.exports = {
         // DO/DOI har patientadress, men bara om patientadress saknas i PU (våra test-patienter har inte adress i PU för DB/DOI)
         // Djupintegration har inte adress
 
-        utkastPage = pages.getUtkastPageByType(intyg.typ);
+        utkastPage = pages.getUtkastPageByType(world.intyg.typ);
 
-        if (global.person.adress && global.person.adress.postadress && !isSMI && global.user.origin !== 'DJUPINTEGRATION') {
-            return utkastPage.angePatientAdress(global.person.adress).then(function() {
-                logger.info('OK - setPatientAdress: ' + JSON.stringify(global.person.adress));
+        if (world.patient.adress && world.patient.adress.postadress && !isSMI && world.user.origin !== 'DJUPINTEGRATION') {
+            return utkastPage.angePatientAdress(world.patient.adress).then(function() {
+                logger.info('OK - setPatientAdress: ' + JSON.stringify(world.patient.adress));
             }, function(reason) {
                 throw ('FEL - setPatientAdress: ' + reason);
             }).catch(msg => logger.warn(msg));
         } else {
             logger.info('Ingen patientadress ändras');
-            if (!isSMI && global.user.origin !== 'DJUPINTEGRATION') {
-                global.person.adress = {};
+            if (!isSMI && world.user.origin !== 'DJUPINTEGRATION') {
+                world.patient.adress = {};
                 return Promise.all([
                     utkastPage.patientAdress.postAdress.getText().then(function(text) {
-                        global.person.adress.postadress = text;
+                        world.patient.adress.postadress = text;
                     }),
                     utkastPage.patientAdress.postNummer.getText().then(function(text) {
-                        global.person.adress.postnummer = text;
+                        world.patient.adress.postnummer = text;
                     }),
                     utkastPage.patientAdress.postOrt.getText().then(function(text) {
-                        global.person.adress.postort = text;
+                        world.patient.adress.postort = text;
                     })
                 ]);
             } else {
@@ -69,10 +69,10 @@ module.exports = {
         }
 
     },
-    fillIn: function(intyg) {
-        utkastPage = pages.getUtkastPageByType(intyg.typ);
-        return this.fillInEnhetAdress()
-            .then(() => this.setPatientAdressIfNotGiven())
+    fillIn: function(world) {
+        utkastPage = pages.getUtkastPageByType(world.intyg.typ);
+        return this.fillInEnhetAdress(world.user)
+            .then(() => this.setPatientAdressIfNotGiven(world))
             .then(() => browser.driver.switchTo().activeElement().sendKeys(protractor.Key.TAB));
     }
 

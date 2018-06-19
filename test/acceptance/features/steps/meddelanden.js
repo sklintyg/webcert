@@ -56,7 +56,7 @@ Given(/^ska (intyget|frågan) ha en indikator som indikerar sekretessmarkering$/
 });
 
 Given(/^Försäkringskassan skickar ett "([^"]*)" meddelande på intyget$/, function(amne, callback) {
-    var body = soapMessageBodies.SendMessageToCare(global.user, global.person, global.intyg, 'Begär ' + helpers.getSubjectFromCode(amne), testdataHelper.generateTestGuid(), amne);
+    var body = soapMessageBodies.SendMessageToCare(this.user, this.patient, this.intyg, 'Begär ' + helpers.getSubjectFromCode(amne), testdataHelper.generateTestGuid(), amne);
     logger.silly(body);
     var path = '/send-message-to-care/v2.0?wsdl';
     var url = process.env.INTYGTJANST_URL + path;

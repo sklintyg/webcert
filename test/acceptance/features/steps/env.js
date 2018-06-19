@@ -142,11 +142,12 @@ Before(function() {
     global.scenario = this;
     ScenarioLogg = '';
     logger.info('Återställer globala variabler');
-    global.person = {};
-    global.intyg = {};
-    global.user = {};
+    this.patient = {};
+    this.intyg = {};
+
+    this.user = {};
     global.ursprungligtIntyg = {};
-    global.ursprungligPerson = {};
+    this.ursprungligPatient = {};
 
     hasFoundConsoleErrors = false;
     duplicateIds = [];

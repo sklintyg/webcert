@@ -23,7 +23,7 @@
 
 
 module.exports.RegisterMedicalCertificate = function(personId, personNamn, personEfternamn, doctorHsa, doctorName, unitHsa, unitName, intygsId) {
-    //global.intyg = generateIntygByType(intyg.typ);
+    //this.intyg = generateIntygByType(intyg.typ);
 
     return '    <ns3:RegisterMedicalCertificate\n' +
         ' xmlns="urn:riv:insuranceprocess:healthreporting:mu7263:3"\n' +

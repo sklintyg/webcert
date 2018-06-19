@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* globals pages, protractor, logger, Promise, intyg, browser */
+/* globals pages, protractor, logger, Promise, browser */
 'use strict';
 /*jshint newcap:false */
 //TODO Uppgradera Jshint p.g.a. newcap kommer bli depricated. (klarade inte att ignorera i grunt-task)
@@ -87,7 +87,7 @@ Given(/^ska det finnas en knapp för att skriva ut utkastet$/, function() {
 });
 
 Given(/^ska det finnas en knapp för att skriva ut intyget$/, function() {
-    if (intyg.typ.indexOf('Transportstyrelsen') >= 0) {
+    if (this.intyg.typ.indexOf('Transportstyrelsen') >= 0) {
         return expect(tsIntygPage.printBtn.isPresent()).to.become(true);
     } else {
         return expect(fkIntygPage.selectUtskriftButton.isPresent()).to.become(true);

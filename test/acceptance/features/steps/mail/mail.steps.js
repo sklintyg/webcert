@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*global intyg, browser, user, logger*/
+/*global browser, user, logger*/
 
 'use strict';
 /*jshint newcap:false */
@@ -43,8 +43,8 @@ var mail = require('./mail');
  */
 
 Given(/^ska jag få ett mejl med ämnet "([^"]*)"$/, function(amne) {
-    logger.silly('intygsid:' + intyg.id);
-    var textToSearchFor = process.env.WEBCERT_URL + 'webcert/web/user/certificate/' + intyg.id + '/questions?enhet=' + user.enhetId;
+    logger.silly('intygsid:' + this.intyg.id);
+    var textToSearchFor = process.env.WEBCERT_URL + 'webcert/web/user/certificate/' + this.intyg.id + '/questions?enhet=' + user.enhetId;
 
     logger.silly(textToSearchFor);
     return browser.sleep(30000).then(function() {

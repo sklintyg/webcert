@@ -31,8 +31,8 @@ module.exports.SendMessageToCare = function(user, person, intyg, message, testSt
     var skickatTidpunkt = new Date();
 
 
-    if (!global.intyg.messages) {
-        global.intyg.messages = [];
+    if (!intyg.messages) {
+        intyg.messages = [];
     }
 
 
@@ -40,7 +40,7 @@ module.exports.SendMessageToCare = function(user, person, intyg, message, testSt
     var sistaDatumForSvar = '<urn1:sistaDatumForSvar>' + testdataHelper.dateFormat(addDays(skickatTidpunkt, 5)) + '</urn1:sistaDatumForSvar>';
 
     if (amneCode) {
-        global.intyg.messages.unshift({
+        intyg.messages.unshift({
             id: messageID,
             typ: 'Fråga',
             amne: amneCode,
@@ -49,11 +49,11 @@ module.exports.SendMessageToCare = function(user, person, intyg, message, testSt
     } else {
         // Om ämne inte skickas med till funktionen så behandlar vi det som
         // ett svarsmeddelande och kopierar ämne från tidigare
-        amneCode = global.intyg.messages[0].amne;
-        svarPa = '<urn1:svarPa>' + '<urn3:meddelande-id>' + global.intyg.messages[0].id + '</urn3:meddelande-id>' + '</urn1:svarPa>';
+        amneCode = intyg.messages[0].amne;
+        svarPa = '<urn1:svarPa>' + '<urn3:meddelande-id>' + intyg.messages[0].id + '</urn3:meddelande-id>' + '</urn1:svarPa>';
         sistaDatumForSvar = '';
 
-        global.intyg.messages.unshift({
+        intyg.messages.unshift({
             id: messageID,
             typ: 'Svar',
             amne: amneCode,
@@ -62,12 +62,12 @@ module.exports.SendMessageToCare = function(user, person, intyg, message, testSt
 
     }
 
-    logger.silly('global.intyg.messages: ' + JSON.stringify(global.intyg.messages));
+    logger.silly('this.intyg.messages: ' + JSON.stringify(intyg.messages));
 
     var kompletteringar = '';
     var paminnelseMeddelandeId = '';
-    if (global.intyg.messages[0].id && amneCode === 'PAMINN') {
-        paminnelseMeddelandeId = '<urn1:paminnelseMeddelande-id>' + global.intyg.messages[1].id + '</urn1:paminnelseMeddelande-id>';
+    if (intyg.messages[0].id && amneCode === 'PAMINN') {
+        paminnelseMeddelandeId = '<urn1:paminnelseMeddelande-id>' + intyg.messages[1].id + '</urn1:paminnelseMeddelande-id>';
     } else if (amneCode === 'KOMPLT') {
 
         kompletteringar = [];

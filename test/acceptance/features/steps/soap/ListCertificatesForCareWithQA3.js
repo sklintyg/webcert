@@ -21,10 +21,9 @@
 
 'use strict';
 module.exports.getBody = function(personID, enhetHSA) {
-    //global.intyg = generateIntygByType(intyg.typ);
     var personIDRoot = '1.2.752.129.2.1.3.1';
     var isSamordningsnummer = parseInt(personID.slice(6, 8), 10) > 31;
-    //logger.silly(parseInt(personID.slice(6, 8), 10));
+
     logger.silly('isSamordningsnummer : ' + isSamordningsnummer);
     if (isSamordningsnummer) {
         personIDRoot = '1.2.752.129.2.1.3.3';

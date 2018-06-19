@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*global browser, logger, pages, person, wcTestTools, testdata, intyg, Promise, protractor */
+/*global browser, logger, pages, wcTestTools, testdata, Promise, protractor */
 'use strict';
 /*jshint newcap:false */
 //TODO Uppgradera Jshint p.g.a. newcap kommer bli depricated. (klarade inte att ignorera i grunt-task)
@@ -91,18 +91,17 @@ function extractDigit(intyg) {
     return parseInt(result, 10);
 }
 
-function gotoPatient(patient) { //förutsätter  att personen finns i PU-tjänsten
-    global.person = patient;
+function gotoPatient(patient, user) { //förutsätter  att personen finns i PU-tjänsten
 
-    if (global.user.origin !== 'DJUPINTEGRATION') {
+    if (user.origin !== 'DJUPINTEGRATION') {
         element(by.id('menu-skrivintyg')).click();
         browser.sleep(1000);
     }
-    sokSkrivIntygPage.selectPersonnummer(person.id);
-    logger.info('Går in på patient ' + person.id);
+    sokSkrivIntygPage.selectPersonnummer(patient.id);
+    logger.info('Går in på patient ' + patient.id);
     //Patientuppgifter visas
     var patientUppgifter = sokSkrivIntygPage.sokSkrivIntygForm;
-    return expect(patientUppgifter.getText()).to.eventually.contain(person.id);
+    return expect(patientUppgifter.getText()).to.eventually.contain(patient.id);
 }
 
 function sattNySjukskrivningsPeriod(intyg) {
@@ -173,7 +172,7 @@ Given(/^jag går in på Rehabstöd$/, function() {
 
 Given(/^jag väljer enhet "([^"]*)"$/, function(enhet) {
     var elementId = 'rhs-vardenhet-selector-select-active-unit-' + enhet + '-link';
-    var userObj = global.user;
+    var userObj = this.user;
 
 
 
@@ -215,10 +214,10 @@ When(/^ska jag inte se patientens personnummer bland pågående sjukfall$/, func
         return tableRows.forEach(function(row) {
             row = row.replace('-', '');
 
-            logger.info('letar efter "' + global.person.id + '" i :');
+            logger.info('letar efter "' + this.patient.id + '" i :');
             logger.debug(row);
 
-            return expect(row).to.not.contain(global.person.id);
+            return expect(row).to.not.contain(this.patient.id);
         });
 
 
@@ -244,7 +243,7 @@ Given(/^jag söker efter slumpvald patient och sparar antal intyg$/, function(ca
 Given(/^jag går in på en patient som sparats från Rehabstöd$/, function() {
     return gotoPatient({
         id: global.rehabstod.user.ssn
-    });
+    }, this.user);
 });
 
 Given(/^jag är inloggad som läkare i Rehabstöd$/, function() {
@@ -287,13 +286,13 @@ Given(/^jag är inloggad som läkare i Webcert med enhet "([^"]*)"$/, function(e
 
 Given(/^jag fyller i ett "([^"]*)" intyg som inte är smitta med ny sjukskrivningsperiod$/, function(intygsKod) {
     if ('FK7263' === intygsKod) {
-        global.intyg = testdata.fk['7263'].getRandom(intyg.id, false);
+        this.intyg = testdata.fk['7263'].getRandom(this.intyg.id, false);
     }
 
-    global.rehabstod.user.intygId = global.intyg.id;
-    sattNySjukskrivningsPeriod(global.intyg);
-    logger.info(global.intyg);
-    return fillIn(global.intyg);
+    global.rehabstod.user.intygId = this.intyg.id;
+    sattNySjukskrivningsPeriod(this.intyg);
+    logger.info(this.intyg);
+    return fillIn(this);
 });
 
 Given(/^ska antalet intyg ökat med (\d+) på patient som sparats från Rehabstöd$/, function(antal) {

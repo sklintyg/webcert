@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* globals person, ursprungligPerson, Promise,pages,intyg*/
+/* globals Promise, pages*/
 
 'use strict';
 /*jshint newcap:false */
@@ -48,15 +48,15 @@ const checkValues = require('../checkValues');
  */
 
 Then(/^(?:ska jag|jag ska) se den data jag angett för intyget$/, function() {
-    return checkValues.forIntyg(intyg);
+    return checkValues.forIntyg(this.intyg);
 });
 
 
 Given(/^ska intyget visa den nya addressen$/, function() {
     return Promise.all([
-        expect(lusePage.patientAdress.postadress.getText()).to.eventually.contain(person.adress.postadress),
-        expect(lusePage.patientAdress.postort.getText()).to.eventually.contain(person.adress.postort),
-        expect(lusePage.patientAdress.postnummer.getText()).to.eventually.contain(person.adress.postnummer)
+        expect(lusePage.patientAdress.postadress.getText()).to.eventually.contain(this.patient.adress.postadress),
+        expect(lusePage.patientAdress.postort.getText()).to.eventually.contain(this.patient.adress.postort),
+        expect(lusePage.patientAdress.postnummer.getText()).to.eventually.contain(this.patient.adress.postnummer)
     ]);
 });
 
@@ -69,10 +69,10 @@ Given(/^ska intyget visa det (gamla|nya) person-id:numret$/, function(arg1) {
     let elm;
 
     if (arg1 === 'nya') {
-        id = person.id;
+        id = this.patient.id;
         elm = lusePage.patientNamnOchPersonnummer;
     } else {
-        id = ursprungligPerson.id;
+        id = this.ursprungligPatient.id;
         elm = lusePage.FdPersonnummer;
     }
 
@@ -82,19 +82,19 @@ Given(/^ska intyget visa det (gamla|nya) person-id:numret$/, function(arg1) {
 
 Given(/^ska adressen vara ifylld på det förnyade intyget$/, function() {
     var promiseArray = [];
-    var isSMIIntyg = helpers.isSMIIntyg(intyg.typ);
+    var isSMIIntyg = helpers.isSMIIntyg(this.intyg.typ);
     if (isSMIIntyg) {
-        promiseArray.push(expect(luseUtkastPage.enhetensAdress.enhetsTelefon.getAttribute('value')).to.eventually.equal(global.user.enhetsAdress.telefon));
-        promiseArray.push(expect(luseUtkastPage.enhetensAdress.postAdress.getAttribute('value')).to.eventually.equal(global.user.enhetsAdress.postadress));
-        promiseArray.push(expect(luseUtkastPage.enhetensAdress.postNummer.getAttribute('value')).to.eventually.equal(global.user.enhetsAdress.postnummer));
-        promiseArray.push(expect(luseUtkastPage.enhetensAdress.postOrt.getAttribute('value')).to.eventually.equal(global.user.enhetsAdress.postort));
+        promiseArray.push(expect(luseUtkastPage.enhetensAdress.enhetsTelefon.getAttribute('value')).to.eventually.equal(this.user.enhetsAdress.telefon));
+        promiseArray.push(expect(luseUtkastPage.enhetensAdress.postAdress.getAttribute('value')).to.eventually.equal(this.user.enhetsAdress.postadress));
+        promiseArray.push(expect(luseUtkastPage.enhetensAdress.postNummer.getAttribute('value')).to.eventually.equal(this.user.enhetsAdress.postnummer));
+        promiseArray.push(expect(luseUtkastPage.enhetensAdress.postOrt.getAttribute('value')).to.eventually.equal(this.user.enhetsAdress.postort));
 
     } else {
 
-        promiseArray.push(expect(fkUtkastPage.enhetensAdress.postAdress.getAttribute('value')).to.eventually.equal(global.user.enhetsAdress.postadress));
-        promiseArray.push(expect(fkUtkastPage.enhetensAdress.postNummer.getAttribute('value')).to.eventually.equal(global.user.enhetsAdress.postnummer));
-        promiseArray.push(expect(fkUtkastPage.enhetensAdress.postOrt.getAttribute('value')).to.eventually.equal(global.user.enhetsAdress.postort));
-        promiseArray.push(expect(fkUtkastPage.enhetensAdress.enhetsTelefon.getAttribute('value')).to.eventually.equal(global.user.enhetsAdress.telefon));
+        promiseArray.push(expect(fkUtkastPage.enhetensAdress.postAdress.getAttribute('value')).to.eventually.equal(this.user.enhetsAdress.postadress));
+        promiseArray.push(expect(fkUtkastPage.enhetensAdress.postNummer.getAttribute('value')).to.eventually.equal(this.user.enhetsAdress.postnummer));
+        promiseArray.push(expect(fkUtkastPage.enhetensAdress.postOrt.getAttribute('value')).to.eventually.equal(this.user.enhetsAdress.postort));
+        promiseArray.push(expect(fkUtkastPage.enhetensAdress.enhetsTelefon.getAttribute('value')).to.eventually.equal(this.user.enhetsAdress.telefon));
     }
     return Promise.all(promiseArray);
 

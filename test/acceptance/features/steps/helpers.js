@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*global testdata, logger, pages, Promise, browser, person, protractor */
+/*global testdata, logger, pages, Promise, browser, protractor */
 'use strict';
 // var fkIntygPage = pages.intyg.fk['7263'].intyg;
 var fkLusePage = pages.intyg.luse.intyg;
@@ -100,39 +100,39 @@ module.exports = {
     // TSTNMT2321000156-ULLA saknar enhetadress i hsa, dvs behåll tidigare angivet enhetAdress objekt
     updateEnhetAdressForNewIntyg: function() {
 
-        if (global.user.enhetId !== 'TSTNMT2321000156-ULLA') {
-            global.user.enhetsAdress = {
+        if (this.user.enhetId !== 'TSTNMT2321000156-ULLA') {
+            this.user.enhetsAdress = {
                 postnummer: '65340',
                 postort: 'Karlstad',
                 postadress: 'Bryggaregatan 11',
                 telefon: '054100000'
             };
 
-            if (global.user.enhetId === 'TSTNMT2321000156-107P') {
-                global.user.enhetsAdress.telefon = '054121314';
+            if (this.user.enhetId === 'TSTNMT2321000156-107P') {
+                this.user.enhetsAdress.telefon = '054121314';
             }
 
         }
     },
-    generateIntygByType: function(typ, id, customFields) {
-        if (typ === 'Transportstyrelsens läkarintyg högre körkortsbehörighet') {
-            return testdata.ts.bas.getRandom(id, person);
-        } else if (typ === 'Transportstyrelsens läkarintyg diabetes') {
-            return testdata.ts.diabetes.getRandom(id, person);
-        } else if (typ === 'Läkarintyg FK 7263') {
-            return testdata.fk['7263'].getRandom(id);
-        } else if (typ === 'Läkarutlåtande för sjukersättning') {
-            return testdata.fk.LUSE.getRandom(id);
-        } else if (typ === 'Läkarintyg för sjukpenning') {
-            return testdata.fk.LISJP.getRandom(id);
-        } else if (typ === 'Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga') {
-            return testdata.fk.LUAE_NA.getRandom(id);
-        } else if (typ === 'Läkarutlåtande för aktivitetsersättning vid förlängd skolgång') {
-            return testdata.fk.LUAE_FS.getRandom(id);
-        } else if (typ === 'Dödsbevis') {
-            return testdata.skv.db.getRandom(id);
-        } else if (typ === 'Dödsorsaksintyg') {
-            return testdata.soc.doi.getRandom(id, customFields);
+    generateIntygByType: function(intyg, patient, customFields) {
+        if (intyg.typ === 'Transportstyrelsens läkarintyg högre körkortsbehörighet') {
+            return testdata.ts.bas.getRandom(intyg.id, patient);
+        } else if (intyg.typ === 'Transportstyrelsens läkarintyg diabetes') {
+            return testdata.ts.diabetes.getRandom(intyg.id, patient);
+        } else if (intyg.typ === 'Läkarintyg FK 7263') {
+            return testdata.fk['7263'].getRandom(intyg.id);
+        } else if (intyg.typ === 'Läkarutlåtande för sjukersättning') {
+            return testdata.fk.LUSE.getRandom(intyg.id);
+        } else if (intyg.typ === 'Läkarintyg för sjukpenning') {
+            return testdata.fk.LISJP.getRandom(intyg.id);
+        } else if (intyg.typ === 'Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga') {
+            return testdata.fk.LUAE_NA.getRandom(intyg.id);
+        } else if (intyg.typ === 'Läkarutlåtande för aktivitetsersättning vid förlängd skolgång') {
+            return testdata.fk.LUAE_FS.getRandom(intyg.id);
+        } else if (intyg.typ === 'Dödsbevis') {
+            return testdata.skv.db.getRandom(intyg.id);
+        } else if (intyg.typ === 'Dödsorsaksintyg') {
+            return testdata.soc.doi.getRandom(intyg.id, customFields);
         }
     },
     fetch: {
@@ -416,22 +416,22 @@ module.exports = {
         return browser.executeScript('window.errs=typeof(errs)=="undefined" ? [] : window.errs; window.console.error = function(msg){window.errs.push(msg); }; ');
     },
 
-    intygURL: function(typAvIntyg, intygsId) {
+    intygURL: function(intyg) {
         var url = '';
-        if (typAvIntyg === 'Läkarutlåtande för sjukersättning') {
-            url = process.env.WEBCERT_URL + '#/intyg/luse/' + intygsId + '/';
-        } else if (typAvIntyg === 'Läkarintyg för sjukpenning') {
-            url = process.env.WEBCERT_URL + '#/intyg/lisjp/' + intygsId + '/';
-        } else if (typAvIntyg === 'Läkarutlåtande för aktivitetsersättning vid förlängd skolgång') {
-            url = process.env.WEBCERT_URL + '#/intyg/luae_fs/' + intygsId + '/';
-        } else if (typAvIntyg === 'Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga') {
-            url = process.env.WEBCERT_URL + '#/intyg/luae_na/' + intygsId + '/';
-        } else if (typAvIntyg === 'Läkarintyg FK 7263') {
-            url = process.env.WEBCERT_URL + '#/intyg/fk7263/' + intygsId + '/';
-        } else if (typAvIntyg === 'Transportstyrelsens läkarintyg diabetes') {
-            url = process.env.WEBCERT_URL + '#/intyg/ts-diabetes/' + intygsId + '/';
-        } else if (typAvIntyg === 'Transportstyrelsens läkarintyg högre körkortsbehörighet') {
-            url = process.env.WEBCERT_URL + '#/intyg/ts-bas/' + intygsId + '/';
+        if (intyg.typ === 'Läkarutlåtande för sjukersättning') {
+            url = process.env.WEBCERT_URL + '#/intyg/luse/' + intyg.id + '/';
+        } else if (intyg.typ === 'Läkarintyg för sjukpenning') {
+            url = process.env.WEBCERT_URL + '#/intyg/lisjp/' + intyg.id + '/';
+        } else if (intyg.typ === 'Läkarutlåtande för aktivitetsersättning vid förlängd skolgång') {
+            url = process.env.WEBCERT_URL + '#/intyg/luae_fs/' + intyg.id + '/';
+        } else if (intyg.typ === 'Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga') {
+            url = process.env.WEBCERT_URL + '#/intyg/luae_na/' + intyg.id + '/';
+        } else if (intyg.typ === 'Läkarintyg FK 7263') {
+            url = process.env.WEBCERT_URL + '#/intyg/fk7263/' + intyg.id + '/';
+        } else if (intyg.typ === 'Transportstyrelsens läkarintyg diabetes') {
+            url = process.env.WEBCERT_URL + '#/intyg/ts-diabetes/' + intyg.id + '/';
+        } else if (intyg.typ === 'Transportstyrelsens läkarintyg högre körkortsbehörighet') {
+            url = process.env.WEBCERT_URL + '#/intyg/ts-bas/' + intyg.id + '/';
         }
         return url;
     },

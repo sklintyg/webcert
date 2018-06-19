@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* global ursprungligtIntyg, Promise, JSON, intyg, logger */
+/* global ursprungligtIntyg, Promise, JSON, logger */
 
 'use strict';
 /*jshint newcap:false */
@@ -46,7 +46,7 @@ let statusuppdateringarRows;
  */
 
 
-function getNotificationEntries(intygsId, value, numEvents) {
+function getNotificationEntries(intygsId, value, numEvents, intyg) {
     var isSMIIntyg = helpers.isSMIIntyg(intyg.typ);
     var isTSIntyg = helpers.isTSIntyg(intyg.typ);
     var table = 'webcert_requests.requests';
@@ -99,10 +99,10 @@ function getNotificationEntries(intygsId, value, numEvents) {
     return promise;
 }
 
-function waitForEntries(intygsId, statusValue, numEvents, cb) {
+function waitForEntries(intygsId, statusValue, numEvents, intyg, cb) {
     var intervall = 5000;
 
-    getNotificationEntries(intygsId, statusValue, numEvents).then(function(result) {
+    getNotificationEntries(intygsId, statusValue, numEvents, intyg).then(function(result) {
         if (result.length >= numEvents) {
             logger.silly('Hittade rader: ' + JSON.stringify(result));
             statusuppdateringarRows = result;
@@ -111,7 +111,7 @@ function waitForEntries(intygsId, statusValue, numEvents, cb) {
             logger.silly('Hittade färre än ' + numEvents + 'rader i databasen');
             logger.silly('Ny kontroll sker efter ' + intervall + 'ms');
             setTimeout(function() {
-                waitForEntries(intygsId, statusValue, numEvents, cb);
+                waitForEntries(intygsId, statusValue, numEvents, intyg, cb);
             }, intervall);
         }
 
@@ -127,11 +127,11 @@ function waitForEntries(intygsId, statusValue, numEvents, cb) {
  */
 
 Given(/^ska statusuppdatering "([^"]*)" skickas till vårdsystemet\. Totalt: "([^"]*)"$/, function(handelsekod, antal, callback) {
-    waitForEntries(global.intyg.id, handelsekod, parseInt(antal, 10), callback);
+    waitForEntries(this.intyg.id, handelsekod, parseInt(antal, 10), this.intyg, callback);
 });
 
 Given(/^ska (\d+) statusuppdatering "([^"]*)" skickas för det ursprungliga intyget$/, function(antal, handelsekod, callback) {
-    waitForEntries(ursprungligtIntyg.id, handelsekod, parseInt(antal, 10), callback);
+    waitForEntries(ursprungligtIntyg.id, handelsekod, parseInt(antal, 10), this.intyg, callback);
 });
 
 Given(/^ska statusuppdateringen visa att parametern "([^"]*)" är mottagen med värdet "([^"]*)"$/, function(param, paramValue) {

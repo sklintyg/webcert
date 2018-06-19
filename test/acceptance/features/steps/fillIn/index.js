@@ -21,31 +21,31 @@
 'use strict';
 
 module.exports = {
-    fillIn: function(intyg) {
+    fillIn: function(world) {
         return (() => {
-            switch (intyg.typ) {
+            switch (world.intyg.typ) {
                 case 'Transportstyrelsens läkarintyg högre körkortsbehörighet':
-                    return require('./ts.bas.js').fillIn(intyg);
+                    return require('./ts.bas.js').fillIn(world.intyg);
                 case 'Transportstyrelsens läkarintyg diabetes':
-                    return require('./ts.diabetes.js').fillIn(intyg);
+                    return require('./ts.diabetes.js').fillIn(world.intyg);
                 case 'Läkarintyg FK 7263':
-                    return require('./fk.7263.js').fillIn(intyg);
+                    return require('./fk.7263.js').fillIn(world.intyg);
                 case 'Läkarutlåtande för sjukersättning':
-                    return require('./fk.LUSE.js').fillIn(intyg);
+                    return require('./fk.LUSE.js').fillIn(world.intyg);
                 case 'Läkarintyg för sjukpenning':
-                    return require('./fk.LISJP.js').fillIn(intyg);
+                    return require('./fk.LISJP.js').fillIn(world.intyg);
                 case 'Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga':
-                    return require('./fk.LUAE_NA.js').fillIn(intyg);
+                    return require('./fk.LUAE_NA.js').fillIn(world.intyg);
                 case 'Läkarutlåtande för aktivitetsersättning vid förlängd skolgång':
-                    return require('./fk.LUAE_FS.js').fillIn(intyg);
+                    return require('./fk.LUAE_FS.js').fillIn(world.intyg);
                 case 'Dödsbevis':
-                    return require('./skv.db.js').fillIn(intyg);
+                    return require('./skv.db.js').fillIn(world.intyg);
                 case 'Dödsorsaksintyg':
-                    return require('./soc.doi.js').fillIn(intyg);
+                    return require('./soc.doi.js').fillIn(world.intyg);
                 default:
                     throw 'Intyg.typ odefinierad.';
             }
-        })().then(() => require('./common.js').fillIn(intyg)
+        })().then(() => require('./common.js').fillIn(world)
             .then(() => browser.ignoreSynchronization = false));
     }
 };

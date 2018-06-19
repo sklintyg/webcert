@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* global intyg, logger,wcTestTools */
+/* global logger, wcTestTools */
 
 'use strict';
 /*jshint newcap:false */
@@ -49,55 +49,55 @@ const path = '/services/create-draft-certificate/v3.0?wsdl';
  */
 
 
-function sendCreateDraft(url, body, callback) {
-    soap.createClient(url, function(err, client) {
-        logger.info(url);
-        if (err) {
-            logger.error('sendCreateDraft misslyckades' + err);
-            callback(err);
-        } else {
-            client.CreateDraftCertificate(body, function(err, result, resBody) {
-                logger.silly(resBody);
-                if (err) {
-                    callback(err);
-                } else {
-                    var resultcode = result.result.resultCode;
-                    logger.info('ResultCode: ' + resultcode);
-                    logger.silly(result);
-                    if (resultcode !== 'OK') {
-                        logger.info(result);
-                        callback('ResultCode: ' + resultcode + '\n' + resBody);
-                    } else if (result['utlatande-id']) { //CD V1
-                        intyg.id = result['utlatande-id'].attributes.extension;
-                        logger.info('intyg.id: ' + intyg.id);
-                        callback();
-                    } else if (result['intygs-id']) { //CD V2
-                        intyg.id = result['intygs-id'].extension;
-                        logger.info('intyg.id: ' + intyg.id);
-                        callback();
+function sendCreateDraft(url, body, intyg) {
+    return new Promise(function(resolve, reject) {
+        soap.createClient(url, function(err, client) {
+            logger.info(url);
+            if (err) {
+                logger.error('sendCreateDraft misslyckades' + err);
+                throw (err);
+            } else {
+                client.CreateDraftCertificate(body, function(err, result, resBody) {
+                    logger.silly(resBody);
+                    if (err) {
+                        throw (err);
                     } else {
-                        callback('Kunde inte hitta intygsid i svar');
+                        var resultcode = result.result.resultCode;
+                        logger.info('ResultCode: ' + resultcode);
+                        logger.silly(result);
+                        if (resultcode !== 'OK') {
+                            logger.info(result);
+                            logger.warn('ResultCode: ' + resultcode + '\n' + resBody);
+                        } else if (result['utlatande-id']) { //CD V1
+                            intyg.id = result['utlatande-id'].attributes.extension;
+                            logger.info('intyg.id: ' + intyg.id);
+                        } else if (result['intygs-id']) { //CD V2
+                            intyg.id = result['intygs-id'].extension;
+                            logger.info('intyg.id: ' + intyg.id);
+                        } else {
+                            throw ('Kunde inte hitta intygsid i svar');
+                        }
+                        resolve(expect(resBody).to.contain('OK'));
                     }
-                }
-            });
-        }
+                });
+            }
+        });
     });
 }
 
-function createBody(intygstyp, callback) {
-    global.intyg.typ = intygstyp;
-
+function createDraft(intyg, patient, user) {
     var body;
     body = soapMessageBodies.CreateDraftCertificateV3(
-        global.user,
-        intygstyp
+        user,
+        intyg.typ,
+        patient
     );
 
     logger.silly(body);
     var url = helpers.stripTrailingSlash(process.env.WEBCERT_URL) + path;
     url = url.replace('https', 'http');
 
-    sendCreateDraft(url, body, callback);
+    return sendCreateDraft(url, body, intyg);
 }
 /*
  *	Test steg
@@ -105,11 +105,12 @@ function createBody(intygstyp, callback) {
  */
 
 Given(/^ska vårdsystemet inte ha möjlighet att skapa "([^"]*)" utkast$/, function(intygstyp) {
-    global.intyg.typ = intygstyp;
+    this.intyg.typ = intygstyp;
 
     let body = soapMessageBodies.CreateDraftCertificateV3(
-        global.user,
-        intygstyp
+        this.user,
+        intygstyp,
+        this.patient
     );
     let url = helpers.stripTrailingSlash(process.env.WEBCERT_URL) + path;
     url = url.replace('https', 'http');
@@ -137,26 +138,27 @@ Given(/^ska vårdsystemet inte ha möjlighet att skapa "([^"]*)" utkast$/, funct
 
 });
 
-Given(/^(?:att )vårdsystemet skapat ett intygsutkast( för samma patient)? för "([^"]*)"( med samordningsnummer)?$/, function(sammaPatient, intygstyp, samordningsnummer, callback) {
+Given(/^(?:att )vårdsystemet skapat ett intygsutkast( för samma patient)? för "([^"]*)"( med samordningsnummer)?$/, function(sammaPatient, intygstyp, samordningsnummer) {
 
     if (!sammaPatient) {
-        global.person = testdataHelpers.shuffle(testvalues.patienter)[0];
+        this.patient = testdataHelpers.shuffle(testvalues.patienter)[0];
         if (samordningsnummer) {
-            global.person = testdataHelpers.shuffle(testvalues.patienterMedSamordningsnummer)[0];
+            this.patient = testdataHelpers.shuffle(testvalues.patienterMedSamordningsnummer)[0];
         }
     }
-    createBody(intygstyp, callback);
+    this.intyg.typ = intygstyp;
+    return createDraft(this.intyg, this.patient, this.user);
 });
 
 //Vid givet samEllerPersonNummer så shufflas det mellan person med vanligt personnummer och person med samordningsnummer
 Given(/^(?:att )vårdsystemet skapat ett intygsutkast( för samma patient)? för slumpat (SMI\-)?(TS\-)?intyg( med samordningsnummer eller personnummer)?$/,
-    function(sammaPatient, smi, ts, samEllerPersonNummer, callback) {
+    function(sammaPatient, smi, ts, samEllerPersonNummer) {
 
         if (!sammaPatient) {
-            global.person = testdataHelpers.shuffle(testvalues.patienter)[0];
+            this.patient = testdataHelpers.shuffle(testvalues.patienter)[0];
             if (samEllerPersonNummer) {
                 var shuffladPID = testdataHelpers.shuffle([testvalues.patienter, testvalues.patienterMedSamordningsnummer])[0];
-                global.person = testdataHelpers.shuffle(shuffladPID)[0];
+                this.patient = testdataHelpers.shuffle(shuffladPID)[0];
             }
         }
 
@@ -191,7 +193,7 @@ Given(/^(?:att )vårdsystemet skapat ett intygsutkast( för samma patient)? för
             );
         }
 
-        var randomIntygType = testdataHelpers.shuffle(intygtyper)[0];
-        logger.info('Intyg typ: ' + randomIntygType + '\n');
-        createBody(randomIntygType, callback);
+        this.intyg.typ = testdataHelpers.shuffle(intygtyper)[0];
+        logger.info('Intyg typ: ' + this.intyg.typ + '\n');
+        return createDraft(this.intyg, this.patient, this.user);
     });

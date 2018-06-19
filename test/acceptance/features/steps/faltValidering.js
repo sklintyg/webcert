@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*globals pages, intyg, protractor, wcTestTools, Promise, logger, assert, browser*/
+/*globals pages, protractor, wcTestTools, Promise, logger, assert, browser*/
 
 
 'use strict';
@@ -68,7 +68,7 @@ let meddelanden = valideringsData.meddelanden;
 
 let synLoop = (array, keyToSend) => Promise.all(array.map(el => helpers.moveAndSendKeys(el, keyToSend)));
 
-let populateSyn = typAvSyn => {
+let populateSyn = (typAvSyn, intyg) => {
 
     let slumpatSynFaltTSD = testdataHelpers.shuffle([synVarTSD.hoger, synVarTSD.vanster, synVarTSD.binokulart])[0];
     let slumpatSynFaltBAS = testdataHelpers.shuffle([synVarBAS.hoger, synVarBAS.vanster, synVarBAS.binokulart])[0];
@@ -104,7 +104,7 @@ let findValidationWarningsWithText = text => element.all(by.cssContainingText('d
 
 let fillInDates = date => element.all(by.css('.wc-datepicker-wrapper input')).each(el => el.clear().then(() => el.sendKeys(date)));
 
-let fyllText = fieldtype => {
+let fyllText = (fieldtype, intyg) => {
     switch (fieldtype) {
         case 'datum':
             return fillInDates('2fjesk');
@@ -117,7 +117,7 @@ let fyllText = fieldtype => {
                 return tsdUtkastPage.allmant.insulinbehandlingsperiod.sendKeys('1000', protractor.Key.TAB);
             });
         case 'alla synfält':
-            return populateSyn(fieldtype);
+            return populateSyn(fieldtype, intyg);
         default:
             return logger.error(`Klarade inte att matcha fieldtype ${fieldtype}`);
     }
@@ -132,8 +132,8 @@ let chainRadiobuttonActions = intygsTyp => () => Object.keys(valideringsVal[inty
 let chainDropdownActions = intygsTyp => () => Object.keys(valideringsVal[intygsTyp].dropdowns)
     .reduce((prev, text) => prev.then(() => dropdownVal(valideringsVal[intygsTyp].dropdowns[text], text)), Promise.resolve());
 
-let chainTextFieldActions = intygsTyp => valideringsVal[intygsTyp].text
-    .reduce((prev, text) => prev.then(() => fyllText(text)), Promise.resolve());
+let chainTextFieldActions = intyg => valideringsVal[intyg.typ].text
+    .reduce((prev, text) => prev.then(() => fyllText(text, intyg)), Promise.resolve());
 
 let focusOmWebcertLink = () => browser.executeScript('document.getElementById("aboutLink").focus();').then(() => logger.silly('OmWebcert länk - focus'));
 let blurOmWebcertLink = () => browser.executeScript('document.getElementById("aboutLink").blur();').then(() => logger.silly('OmWebcert länk - blur'));
@@ -247,11 +247,11 @@ When(/^jag gör val för att få fram maximalt antal fält i "([^"]+)"$/, intyg 
     .then(chainDropdownActions(intyg))
 );
 
-When(/^jag fyller i textfält med felaktiga värden i "([^"]+)"$/, intyg => chainTextFieldActions(intyg).then(changeFocus));
+When(/^jag fyller i textfält med felaktiga värden$/, () => chainTextFieldActions(this.intyg).then(changeFocus));
 
 
 When(/^jag anger slutdatum som är tidigare än startdatum$/, () =>
-    pages.getUtkastPageByType(intyg.typ).angeArbetsformaga({
+    pages.getUtkastPageByType(this.intyg.typ).angeArbetsformaga({
         nedsattMed25: {
             from: '2017-03-27',
             tom: '2016-04-01'
@@ -272,7 +272,7 @@ When(/^jag anger slutdatum som är tidigare än startdatum$/, () =>
 );
 
 When(/^jag anger start- och slutdatum för långt bort i tiden$/, () =>
-    pages.getUtkastPageByType(intyg.typ).angeArbetsformaga({
+    pages.getUtkastPageByType(this.intyg.typ).angeArbetsformaga({
         nedsattMed25: {
             from: '1700-03-27',
             tom: '2116-04-01'
@@ -293,7 +293,7 @@ When(/^jag anger start- och slutdatum för långt bort i tiden$/, () =>
 );
 
 When(/^jag anger överlappande start- och slutdatum$/, () =>
-    pages.getUtkastPageByType(intyg.typ).angeArbetsformaga({
+    pages.getUtkastPageByType(this.intyg.typ).angeArbetsformaga({
         nedsattMed25: {
             from: '2016-03-27',
             tom: '2016-09-25'
@@ -306,7 +306,7 @@ When(/^jag anger överlappande start- och slutdatum$/, () =>
 );
 
 When(/^jag anger start- och slutdatum med mer än 6 månaders mellanrum$/, () =>
-    pages.getUtkastPageByType(intyg.typ).angeArbetsformaga({
+    pages.getUtkastPageByType(this.intyg.typ).angeArbetsformaga({
         nedsattMed25: {
             from: '2015-03-27',
             tom: '2017-09-25'
@@ -315,7 +315,7 @@ When(/^jag anger start- och slutdatum med mer än 6 månaders mellanrum$/, () =>
 );
 
 When(/^jag anger startdatum mer än en vecka före dagens datum$/, () =>
-    pages.getUtkastPageByType(intyg.typ).angeArbetsformaga({
+    pages.getUtkastPageByType(this.intyg.typ).angeArbetsformaga({
         nedsattMed25: {
             from: '2015-03-27',
             tom: '2017-09-25'
@@ -324,7 +324,7 @@ When(/^jag anger startdatum mer än en vecka före dagens datum$/, () =>
 );
 
 When(/^jag anger ogiltiga datum$/, () =>
-    pages.getUtkastPageByType(intyg.typ).angeArbetsformaga({
+    pages.getUtkastPageByType(this.intyg.typ).angeArbetsformaga({
         nedsattMed25: {
             from: '2016-03-32',
             tom: '2016-09-32'
@@ -345,7 +345,7 @@ When(/^jag anger ogiltiga datum$/, () =>
 );
 
 When(/^jag anger undersökningsdatum i framtiden$/, () =>
-    pages.getUtkastPageByType(intyg.typ).angeBaseratPa({
+    pages.getUtkastPageByType(this.intyg.typ).angeBaseratPa({
         minUndersokningAvPatienten: '2021-09-27',
         journaluppgifter: '2021-09-27',
         telefonkontakt: '2021-09-27',
@@ -355,14 +355,14 @@ When(/^jag anger undersökningsdatum i framtiden$/, () =>
 );
 
 When(/^jag anger undersökningsdatum senare än patientkännedom$/, () =>
-    pages.getUtkastPageByType(intyg.typ).angeBaseratPa({
+    pages.getUtkastPageByType(this.intyg.typ).angeBaseratPa({
         minUndersokningAvPatienten: '2017-09-27',
         personligKannedom: '2017-09-28'
     }).then(changeFocus)
 );
 
 When(/^jag anger anhörigs beskrivning senare än patientkännedom$/, () =>
-    pages.getUtkastPageByType(intyg.typ).angeBaseratPa({
+    pages.getUtkastPageByType(this.intyg.typ).angeBaseratPa({
         anhorigsBeskrivning: '2017-09-27',
         personligKannedom: '2017-09-28'
     }).then(changeFocus)
@@ -380,13 +380,13 @@ When(/^jag fyller i "(.*)" i fältet "(.*)"$/, (text, field) => fyllTextfalt(fie
 
 When(/^jag anger dagens datum som ej säkert dödsdatum$/, () => dropdownVal(currentYear(), 'År').then(() => dropdownVal(currentMonth(), 'Månad')).then(changeFocus));
 
-When(/^jag anger ett säkert dödsdatum i framtiden$/, () => pages.getUtkastPageByType(intyg.typ).angeDodsdatum({
+When(/^jag anger ett säkert dödsdatum i framtiden$/, () => pages.getUtkastPageByType(this.intyg.typ).angeDodsdatum({
     sakert: {
         datum: helpers.getCurrentDate().replace(/^\d{4}/, '2099')
     }
 }).then(changeFocus));
 
-When(/^jag anger 31 december förrförra året som säkert dödsdatum$/, () => pages.getUtkastPageByType(intyg.typ).angeDodsdatum({
+When(/^jag anger 31 december förrförra året som säkert dödsdatum$/, () => pages.getUtkastPageByType(this.intyg.typ).angeDodsdatum({
     sakert: {
         datum: `${Number.parseInt(currentYear())-2}-12-31`
     }
@@ -398,7 +398,7 @@ When(/^jag anger 31 december förrförra året som operationsdatum$/, () => doiU
         beskrivning: 'Hej'
     }
 }).then(changeFocus));
-When(/^jag anger 31 december förrförra året som anträffad död$/, () => pages.getUtkastPageByType(intyg.typ)
+When(/^jag anger 31 december förrförra året som anträffad död$/, () => pages.getUtkastPageByType(this.intyg.typ)
     .dodsdatum.inteSakert.antraffadDod.sendKeys(`${Number.parseInt(currentYear())-2}-12-31`).then(changeFocus));
 
 When(/^jag anger 31 december förrförra året som skada\/förgiftnings-datum$/, () => fyllTextfalt('Datum för skada/förgiftning', `${Number.parseInt(currentYear())-2}-12-31`).then(changeFocus));

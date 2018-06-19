@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* globals pages, intyg, protractor, browser, logger, browser, Promise, wcTestTools*/
+/* globals pages, protractor, browser, logger, browser, Promise, wcTestTools*/
 
 'use strict';
 /*jshint newcap:false */
@@ -49,12 +49,12 @@ const fillInCommon = require('./fillIn/common.js');
  *
  */
 
-function signeraUtkast() {
+function signeraUtkast(world) {
 
     var uppdateraAdressOmErsattandeIntyg = function() {
         if (global.ersattintyg) {
             logger.info('Intyget ersätter ett annat intyg');
-            return fillInCommon.setPatientAdressIfNotGiven().then(function() {
+            return fillInCommon.setPatientAdressIfNotGiven(world).then(function() {
                 //Väntar på validering
                 return helpers.hugeDelay();
             });
@@ -87,7 +87,7 @@ function signeraUtkast() {
     });
 }
 
-function makuleraIntyget() {
+function makuleraIntyget(intyg) {
     return browser.getCurrentUrl()
         .then(function(text) {
             intyg.id = text.split('/').slice(-2)[0];
@@ -134,10 +134,12 @@ Given(/^jag klickar på länk med texten "([^"]*)"$/, function(txt) {
 });
 
 Given(/^jag signerar intyget$/, function() {
-    return signeraUtkast();
+    return signeraUtkast(this);
 });
 
 Then(/^klickar jag på knappen "Skriv dödsorsaksintyg"$/, function() {
+    let intyg = this.intyg;
+    let patient = this.patient;
     intyg.typ = 'Dödsorsaksintyg';
 
     return moveAndSendKeys(pages.intyg.skv.db.utkast.skrivDoi.knapp, protractor.Key.SPACE).then(function() {
@@ -150,13 +152,13 @@ Then(/^klickar jag på knappen "Skriv dödsorsaksintyg"$/, function() {
         intyg.id = text.split('/').slice(-2)[0];
         intyg.id = intyg.id.split('?')[0];
 
-        global.intyg = helpers.generateIntygByType(intyg.typ, intyg.id, intyg);
+        this.intyg = helpers.generateIntygByType(intyg, patient, intyg);
         logger.info('intyg.id: ' + intyg.id);
     });
 });
 
 Given(/^jag signerar och skickar kompletteringen$/, function() {
-    return signeraUtkast();
+    return signeraUtkast(this);
 });
 
 Given(/^ska det inte finnas någon knapp för "([^"]*)"$/, function(texten) {
@@ -189,7 +191,7 @@ Given(/^jag uppdaterar enhetsaddress$/, function() {
 
 Given(/^jag makulerar intyget$/, function() {
 
-    return makuleraIntyget();
+    return makuleraIntyget(this.intyg);
 });
 
 Given(/^att jag har raderat alla intyg för "([^"]*)" via testAPI$/, function(personnummer) {
@@ -220,7 +222,7 @@ Given(/^jag raderar utkastet$/, function() {
 
 Given(/^jag skriver ut intyget$/, function() {
     //Specifika krav på lisjp utskrift se: D3. PDF utskrift
-    if (intyg.typ !== 'Läkarintyg för sjukpenning') {
+    if (this.intyg.typ !== 'Läkarintyg för sjukpenning') {
         return moveAndSendKeys(element(by.id('downloadprint')), protractor.Key.SPACE);
     } else {
         return lisjpIntygPage.skrivUtFullstandigtIntyg();
@@ -239,6 +241,7 @@ Given(/^jag skriver ut utkastet$/, function() {
 });
 
 Given(/^ska det finnas en referens till gamla intyget$/, function() {
+    let intyg = this.intyg;
     return element(by.id('wc-intyg-relations-button')).click().then(function() { // May not be needed. Only to graphically illustrate normal user behavior.
         return browser.findElement(by.css('.btn-info')).sendKeys(protractor.Key.SPACE).then(function() {
             return browser.getCurrentUrl().then(function(text) {
@@ -249,7 +252,7 @@ Given(/^ska det finnas en referens till gamla intyget$/, function() {
     });
 });
 Given(/^ska intyget inte innehålla gamla personuppgifter$/, function() {
-    var namn = global.intyg.person.forNamn + ' ' + global.intyg.person.efterNamn;
+    var namn = this.intyg.patient.forNamn + ' ' + this.intyg.patient.efterNamn;
     return expect(element(by.id('patientNamnPersonnummer')).getText()).to.eventually.not.contain(namn);
 
 });
@@ -263,7 +266,7 @@ When(/^ska jag se KFSIGN infotexten "([^"]*)"$/, function(msg) {
 });
 
 Given(/^ska intyget inte finnas i listan$/, function() {
-
+    let intyg = this.intyg;
     return expect(element(by.id('wc-sekretessmarkering-icon-' + intyg.id)).isPresent()).to.become(false).then(function() {
 
         return expect(element(by.id('showBtn-' + intyg.id)).isPresent()).to.become(false);
@@ -272,7 +275,7 @@ Given(/^ska intyget inte finnas i listan$/, function() {
 });
 
 When(/^jag fyller i nödvändig information \( om intygstyp är "([^"]*)"\)$/, function(intygstyp) {
-
+    let intyg = this.intyg;
     if (intygstyp !== intyg.typ) {
         logger.info('Intygstyp är inte ' + intygstyp);
         return Promise.resolve();
@@ -292,7 +295,7 @@ When(/^jag fyller i nödvändig information \( om intygstyp är "([^"]*)"\)$/, f
                 throw ('FEL, angeUtlatandeOmDodsorsak,' + reason);
             }).then(function() {
                 //TODO Patientaddress ska vara förifylld INTYG-6091
-                return fillInCommon.setPatientAdressIfNotGiven();
+                return fillInCommon.setPatientAdressIfNotGiven(intyg);
             }).then(function() {
                 //Opererad inom fyra veckor före döden
                 return doiUtkastPage.angeOperation(intyg.operation)
@@ -330,7 +333,8 @@ When(/^jag fyller i nödvändig information \( om intygstyp är "([^"]*)"\)$/, f
         } else if (intyg.typ === 'Läkarintyg för sjukpenning') {
 
             if (typeof(intyg.baseratPa) === 'undefined') {
-                global.intyg = helpers.generateIntygByType(intyg.typ, intyg.id);
+                this.intyg = helpers.generateIntygByType(intyg);
+                intyg = this.intyg;
             }
             return pages.intyg.lisjp.utkast.angeBaseratPa(intyg.baseratPa)
                 .then(function() {

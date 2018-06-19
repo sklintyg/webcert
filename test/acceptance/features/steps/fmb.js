@@ -40,7 +40,7 @@ const fmb = pages.intyg.hogerfaltet.fmb;
  *  Stödfunktioner
  *
  */
-function checkFMB(fmbDiagnos) {
+function checkFMB(fmbDiagnos, intyg) {
     var isSMIIntyg = helpers.isSMIIntyg(intyg.typ);
     var page;
     if (isSMIIntyg) {
@@ -118,13 +118,13 @@ Given(/^jag fyller i diagnoskod utan egen FMB info$/, function() {
 Given(/^ska rätt info gällande FMB visas$/, function() {
 
     logger.info(global.tmpDiagnos);
-    return checkFMB(global.tmpDiagnos);
+    return checkFMB(global.tmpDiagnos, this.intyg);
 
 });
 
 Given(/^ska FMB info för överliggande diagnoskod visas$/, function() {
     logger.info(global.tmpDiagnos);
-    return checkFMB(global.tmpDiagnos); //kontrollerar även allert texten
+    return checkFMB(global.tmpDiagnos, this.intyg); //kontrollerar även allert texten
 });
 Given(/^jag fyller i diagnoskod utan FMB info$/, function() {
     var diagnos = testdataHelpers.shuffle(testdata.fmb.utanFMBInfo.diagnoser)[0];

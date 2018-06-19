@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* globals pages, protractor, person, browser, intyg, logger,wcTestTools*/
+/* globals pages, protractor, browser, logger,wcTestTools*/
 
 'use strict';
 /*jshint newcap:false */
@@ -54,22 +54,21 @@ const helpers = require('../helpers.js');
  */
 var insertDashInPnr = helpers.insertDashInPnr;
 
-function gotoPatient(patient) { //förutsätter  att personen finns i PU-tjänsten
-    global.person = patient;
+function gotoPatient(patient, user) { //förutsätter  att personen finns i PU-tjänsten
 
-    if (global.user.origin !== 'DJUPINTEGRATION') {
+    if (user.origin !== 'DJUPINTEGRATION') {
         element(by.id('menu-skrivintyg')).click().then(function() {
             return helpers.pageReloadDelay();
         });
     }
-    return sokSkrivIntygPage.selectPersonnummer(person.id).then(function() {
+    return sokSkrivIntygPage.selectPersonnummer(patient.id).then(function() {
             return helpers.pageReloadDelay();
         })
         .then(function() {
-            logger.info('Går in på patient ' + person.id);
+            logger.info('Går in på patient ' + patient.id);
             //Patientuppgifter visas
             var patientUppgifter = sokSkrivIntygPage.patientNamn;
-            return expect(patientUppgifter.getText()).to.eventually.contain(insertDashInPnr(person.id)).then(function() {
+            return expect(patientUppgifter.getText()).to.eventually.contain(insertDashInPnr(patient.id)).then(function() {
                 return helpers.smallDelay();
             });
         });
@@ -84,12 +83,11 @@ function setForkedBrowser(forkedBrowser2) {
 }
 
 
-function gotoIntygUtkast(intygtyp) {
-    intyg.typ = intygtyp;
+function gotoIntygUtkast(intyg) {
     browser.ignoreSynchronization = true;
     let skapadoiknapp = element(by.id('button1doi-info-dialog'));
 
-    return sokSkrivIntygUtkastTypePage.createUtkast(helpers.getInternShortcode(intygtyp)).then(function() {
+    return sokSkrivIntygUtkastTypePage.createUtkast(helpers.getInternShortcode(intyg.typ)).then(function() {
         return skapadoiknapp.isPresent();
     }).then(function(present) {
         if (present) {
@@ -113,7 +111,7 @@ function gotoIntygUtkast(intygtyp) {
  */
 
 Given(/^jag går in på en patient med samordningsnummer$/, function() {
-    return gotoPatient(testdataHelpers.shuffle(testdata.values.patienterMedSamordningsnummer)[0]);
+    return gotoPatient(testdataHelpers.shuffle(testdata.values.patienterMedSamordningsnummer)[0], this.user);
 });
 
 // When(/^jag väljer patienten "([^"]*)"$/, function(personnummer) { //förutsätter att personen finns i PU-tjänsten
@@ -121,37 +119,37 @@ Given(/^jag går in på en patient med samordningsnummer$/, function() {
 // });
 
 Given(/^jag går in på patienten$/, function() {
-    return gotoPatient(global.person);
+    return gotoPatient(this.patient, this.user);
 });
 
 
 Given(/^jag anger ett (samordningsnummer|personnummer) som inte finns i PUtjänsten$/, function(typAvNum) {
     if (typAvNum === 'samordningsnummer') {
-        global.person = testdata.values.patienterMedSamordningsnummerEjPU[0];
+        this.patient = testdata.values.patienterMedSamordningsnummerEjPU[0];
     } else {
-        global.person = testdata.values.patienterEjPU[0];
+        this.patient = testdata.values.patienterEjPU[0];
     }
-    return sokSkrivIntygPage.selectPersonnummer(person.id);
+    return sokSkrivIntygPage.selectPersonnummer(this.patient.id);
 
 });
 
 Then(/^jag går in på (?:"([^"]*)" )?testpatienten för "([^"]*)"$/, function(index, testSyfte) {
-    var testvalues = wcTestTools.testdata.values;
-    var patient = testvalues.dedikeradeTestPatienter.medSyfte[testSyfte][helpers.getIntFromTxt(index || 'första')];
-    return gotoPatient(patient);
+    const testvalues = wcTestTools.testdata.values;
+    let patient = testvalues.dedikeradeTestPatienter.medSyfte[testSyfte][helpers.getIntFromTxt(index || 'första')];
+    return gotoPatient(patient, this.user);
 });
 
 Then(/^jag går in på testpatienten "([^"]*)"$/, function(personnummer) {
-    var patient = {
+    let patient = {
         id: personnummer.replace("-", "")
     };
-    return gotoPatient(patient);
+    return gotoPatient(patient, this.user);
 });
 
 
 Given(/^jag går in på en patient med sekretessmarkering$/, function() {
     var patient = testdataHelpers.shuffle(testdata.values.patienterMedSekretessmarkering)[0];
-    return gotoPatient(patient);
+    return gotoPatient(patient, this.user);
 });
 
 Given(/^jag går in på en patient som saknar namn i PU\-tjänsten$/, function() {
@@ -164,30 +162,27 @@ Given(/^jag går in på en patient som saknar namn i PU\-tjänsten$/, function()
 });
 
 Given(/^jag går in på en patient som är avliden$/, function() {
-    //return gotoPatient(testdataHelpers.shuffle(testdata.values.patienterMedSamordningsnummer)[0]);
     var patient = testdataHelpers.shuffle(testdata.values.patienterAvlidna)[0];
     logger.silly(patient);
-    return gotoPatient(patient);
+    return gotoPatient(patient, this.user);
 
 });
 
 Given(/^jag går in på en( annan)? patient$/, function(annan) {
     if (annan) {
         var andraPatienter = testpatienter;
-        andraPatienter.splice(testpatienter.indexOf(global.person), 1);
+        andraPatienter.splice(testpatienter.indexOf(this.patient), 1);
         logger.silly('testpatienter: ');
         logger.silly(testpatienter);
 
         logger.silly('andraPatienter: ');
         logger.silly(andraPatienter);
 
-        return gotoPatient(testdataHelpers.shuffle(andraPatienter)[0]);
+        return gotoPatient(testdataHelpers.shuffle(andraPatienter)[0], this.user);
     } else {
-        return gotoPatient(testdataHelpers.shuffle(testpatienter)[0]);
+        return gotoPatient(testdataHelpers.shuffle(testpatienter)[0], this.user);
     }
 });
-
-Given(/^jag går in på en patient med personnummer "(\d{12})"$/, pnr => gotoPatient(testpatienter.filter(pat => pat.id === pnr)[0]));
 
 Given(/^ska en varningsruta innehålla texten "([^"]*)"$/, function(text) {
     var alertWarnings = element.all(by.css('.alert-warning'));
@@ -203,8 +198,11 @@ Given(/^ska en varningsruta innehålla texten "([^"]*)"$/, function(text) {
 });
 
 Given(/^jag går in på att skapa ett "([^"]*)" intyg$/, function(intygsTyp) {
-    intyg.typ = intygsTyp;
-    return gotoIntygUtkast(intyg.typ);
+    //intyg.typ = intygsTyp;
+    this.intyg = {
+        typ: intygsTyp
+    };
+    return gotoIntygUtkast(this.intyg);
 
 });
 
@@ -221,41 +219,46 @@ Given(/^ska jag inte kunna skapa ett "([^"]*)" intyg$/, function(intygsTyp) {
 });
 
 Given(/^jag går in på att skapa ett slumpat intyg$/, function() {
-    intyg.typ = testdataHelpers.shuffle([
-        'Läkarintyg för sjukpenning',
-        'Läkarutlåtande för sjukersättning',
-        'Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga',
-        'Läkarutlåtande för aktivitetsersättning vid förlängd skolgång',
-        //'Läkarintyg FK 7263', //Disabled i fristående läge och ersätts av Lisjp.
-        'Transportstyrelsens läkarintyg högre körkortsbehörighet',
-        'Transportstyrelsens läkarintyg diabetes'
-    ])[0];
-    logger.silly('intyg.typ: ' + intyg.typ);
-    return gotoIntygUtkast(intyg.typ);
+    this.intyg = {
+        typ: testdataHelpers.shuffle([
+            'Läkarintyg för sjukpenning',
+            'Läkarutlåtande för sjukersättning',
+            'Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga',
+            'Läkarutlåtande för aktivitetsersättning vid förlängd skolgång',
+            //'Läkarintyg FK 7263', //Disabled i fristående läge och ersätts av Lisjp.
+            'Transportstyrelsens läkarintyg högre körkortsbehörighet',
+            'Transportstyrelsens läkarintyg diabetes'
+        ])[0]
+    };
+    logger.silly('intyg.typ: ' + this.intyg.typ);
 
+
+    return gotoIntygUtkast(this.intyg);
 });
 
 Given(/^jag går in på att skapa ett slumpat SMI\-intyg$/, function() {
-    intyg.typ = testdataHelpers.shuffle([
+    this.intyg.typ = testdataHelpers.shuffle([
         'Läkarintyg för sjukpenning',
         'Läkarutlåtande för sjukersättning',
         'Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga',
         'Läkarutlåtande för aktivitetsersättning vid förlängd skolgång'
     ])[0];
-    logger.silly('intyg.typ: ' + intyg.typ);
+    logger.silly('intyg.typ: ' + this.intyg.typ);
     browser.ignoreSynchronization = true;
-    return sokSkrivIntygUtkastTypePage.createUtkast(helpers.getInternShortcode(intyg.typ)).then(function() {
+    return sokSkrivIntygUtkastTypePage.createUtkast(helpers.getInternShortcode(this.intyg.typ)).then(function() {
         return helpers.hugeDelay();
     }).then(function() {
         // Spara intygsid för kommande steg
         return browser.getCurrentUrl().then(function(text) {
-            intyg.id = text.split('/').slice(-2)[0];
-            return logger.info('intyg.id: ' + intyg.id);
+            this.intyg.id = text.split('/').slice(-2)[0];
+            return logger.info('intyg.id: ' + this.intyg.id);
         });
     });
 });
 
 Given(/^jag går in på att skapa ett slumpat TS\-intyg$/, function() {
+    let intyg = this.intyg;
+
     intyg.typ = testdataHelpers.shuffle([
         'Transportstyrelsens läkarintyg högre körkortsbehörighet',
         'Transportstyrelsens läkarintyg diabetes'
@@ -298,7 +301,7 @@ Given(/^sedan öppnar intyget i två webbläsarinstanser$/, function(callback) {
     //     });
     // } else {
     // throw new Error(intyg.typ + ' is not implemented.');
-    intygtyp = helpers.getAbbrev(intyg.typ);
+    intygtyp = helpers.getAbbrev(this.intyg.typ);
 
     // User
     userObj = {
@@ -311,7 +314,7 @@ Given(/^sedan öppnar intyget i två webbläsarinstanser$/, function(callback) {
 
     // Browser & URL
     forkedBrowser = browser.forkNewDriverInstance(true);
-    intygEditUrl = process.env.WEBCERT_URL + '#/' + intygtyp.toLowerCase() + '/edit/' + intyg.id + '/';
+    intygEditUrl = process.env.WEBCERT_URL + '#/' + intygtyp.toLowerCase() + '/edit/' + this.intyg.id + '/';
 
     parallell.login({
         userObj: userObj,
@@ -335,7 +338,7 @@ Given(/^ska ett felmeddelande visas som innehåller texten "([^"]*)"$/, function
 
 Given(/^ska ett felmeddelande visas$/, function(callback) {
 
-    var intygShortCode = helpers.getAbbrev(intyg.typ);
+    var intygShortCode = helpers.getAbbrev(this.intyg.typ);
     var elemntId = 'aktivitetsbegransning';
     if ('LUAE_FS' === intygShortCode) {
         elemntId = 'funktionsnedsattningDebut';
@@ -410,7 +413,7 @@ Then(/^ska varningen "([^"]*)" visas$/, function(msg) {
 
 Then(/^ska jag varnas om(?: att) "([^"]*)"( i nytt fönster)?$/, function(msg, nyttFonster) {
     var elementArray = [
-        element(by.id('wc-avliden-text-' + person.id.replace(/(\d{8})(\d{4})/, '$1-$2'))), //.patient-alert? db/doi?
+        element(by.id('wc-avliden-text-' + this.patient.id.replace(/(\d{8})(\d{4})/, '$1-$2'))), //.patient-alert? db/doi?
         element(by.id('intyg-load-error')), //?
         element(by.id('errorPage')), //Raderat utkast
         element(by.id('error-panel')) //Behörighet saknas => sekretessmarkering

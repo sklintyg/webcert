@@ -17,7 +17,7 @@ Scenario: Datum får inte ligga för långt fram eller bak i tiden
 Scenario: Sjukskrivningsperiod med överlappande datum får inte anges
     När jag anger överlappande start- och slutdatum
     Och jag klickar på signera-knappen
-    Så ska "1" valideringsfel visas med texten "Sjukskrivningsperiod med överlappande datum har angetts."
+    Så ska "1" valideringsfel visas med texten "Sjukskrivningsperioder med överlappande datum har angetts."
 
 @F.VAL-022 
 @F.VAL-025

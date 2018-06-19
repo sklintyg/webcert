@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* globals browser, intyg, logger, protractor */
+/* globals browser, logger, protractor */
 
 'use strict';
 /*jshint newcap:false */
@@ -62,7 +62,7 @@ function stringToArray(text) {
 
 Given(/^ska intyget( inte)? finnas i Mina intyg$/, function(inte) {
     var skaFinnas = typeof(inte) === 'undefined';
-    var intygElement = element(by.id('certificate-' + intyg.id));
+    var intygElement = element(by.id('certificate-' + this.intyg.id));
     return expect(intygElement.isPresent()).to.eventually.equal(skaFinnas).then(function(value) {
         logger.info('OK - skaFinnas=' + skaFinnas + ':' + value);
     }, function(reason) {
@@ -72,7 +72,7 @@ Given(/^ska intyget( inte)? finnas i Mina intyg$/, function(inte) {
 
 Given(/^jag går till Mina intyg för patienten$/, function() {
     browser.ignoreSynchronization = true;
-    return helpers.getUrl(process.env.MINAINTYG_URL + '/web/sso?guid=' + global.person.id).then(function() {
+    return helpers.getUrl(process.env.MINAINTYG_URL + '/web/sso?guid=' + this.patient.id).then(function() {
         // Om samtyckesruta visas
         return element(by.id('consentTerms')).isPresent();
     }).then(function(present) {
@@ -97,7 +97,7 @@ Given(/^jag går till Mina intyg för patienten$/, function() {
 Given(/^ska intygets status i Mina intyg visa "([^"]*)"$/, function(status) {
     // STATUS_REGEX = status.replace(/(\{).+?(\})/g, '(.*)');
     STATUS_REGEX = status;
-    var intygElement = element(by.id('certificate-' + intyg.id));
+    var intygElement = element(by.id('certificate-' + this.intyg.id));
     return intygElement.getText().then(function(text) {
         text = stringToArray(text);
         var match = text.find(matchString);
@@ -106,12 +106,12 @@ Given(/^ska intygets status i Mina intyg visa "([^"]*)"$/, function(status) {
 });
 
 Given(/^jag går in på intyget i Mina intyg$/, function(callback) {
-    element(by.id('viewCertificateBtn-' + intyg.id)).sendKeys(protractor.Key.SPACE).then(callback());
+    element(by.id('viewCertificateBtn-' + this.intyg.id)).sendKeys(protractor.Key.SPACE).then(callback());
 });
 
 Given(/^ska intygets information i Mina intyg vara den jag angett$/, function(callback) {
-    if (intyg.typ === 'Läkarutlåtande för sjukersättning') {
-        miCheckValues.fk.LUSE(intyg).then(function(value) {
+    if (this.intyg.typ === 'Läkarutlåtande för sjukersättning') {
+        miCheckValues.fk.LUSE(this.intyg).then(function(value) {
             logger.info('Alla kontroller utförda OK');
             callback();
         }, function(reason) {

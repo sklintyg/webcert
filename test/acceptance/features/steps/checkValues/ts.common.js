@@ -51,7 +51,7 @@ module.exports = {
 
         logger.info('Kontrollera inte address då denna är hämtad från PU och inget testfallet angett');
         /* Kontrollera inte address då denna är hämtad från PU och inget testfallet angett */
-        /*promiseArr.push(checkPatientadress(person.adress).then(function(value) {
+        /*promiseArr.push(checkPatientadress(this.patient.adress).then(function(value) {
             logger.info('OK - checkPatientadress = ' + value);
         }, function(reason) {
             throw ('FEL - checkPatientadress: ' + reason);

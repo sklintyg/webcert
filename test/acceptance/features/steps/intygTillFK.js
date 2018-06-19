@@ -17,7 +17,7 @@
   * along with this program.  If not, see <http://www.gnu.org/licenses/>.
   */
 
- /* globals intyg, logger*/
+ /* globals logger*/
 
  'use strict';
  /*jshint newcap:false */
@@ -58,8 +58,8 @@
      var body;
      //logger.silly(intyg);
      var isSMIIntyg;
-     if (intyg && intyg.typ) {
-         isSMIIntyg = helpers.isSMIIntyg(intyg.typ);
+     if (this.intyg && this.intyg.typ) {
+         isSMIIntyg = helpers.isSMIIntyg(this.intyg.typ);
      }
 
      if (isSMIIntyg) {
@@ -70,12 +70,12 @@
 
          //function(personId, doctorHsa, doctorName, unitHsa, unitName, intygsId)
          body = soapMessageBodies.SendMedicalCertificate(
-             global.person.id,
-             global.user.hsaId,
-             global.user.forNamn + ' ' + global.user.efterNamn,
-             global.user.enhetId,
-             global.user.enhetId,
-             global.intyg.id);
+             this.patient.id,
+             this.user.hsaId,
+             this.user.forNamn + ' ' + this.user.efterNamn,
+             this.user.enhetId,
+             this.user.enhetId,
+             this.intyg.id);
          logger.silly(body);
          soap.createClient(url, function(err, client) {
              if (err) {

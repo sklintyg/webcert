@@ -81,17 +81,19 @@ function performUserCheck(userconfig) {
 
 Given(/^att jag är inloggad som tandläkare$/, function() {
     var roll = 'Tandläkare';
-    return logInAsUserRole(shuffle(users[roll])[0], roll);
+    this.user = shuffle(users[roll])[0];
+
+    return logInAsUserRole(this.user, roll);
 });
 
 Given(/^att jag är inloggad som tandläkare på vårdenhet "([^"]*)"$/, function(ve) {
     var roll = 'Tandläkare';
-    var user = shuffle(users[roll])[0];
-    user.enhetId = ve;
-    return logInAsUserRole(user, roll);
+    this.user = shuffle(users[roll])[0];
+    this.user.enhetId = ve;
+    return logInAsUserRole(this.user, roll);
 });
 Given(/^att jag är inloggad som läkare utan adress till enheten$/, function() {
-    var userObj = {
+    this.user = {
         forNamn: 'Johan',
         efterNamn: 'Johansson',
         hsaId: 'TSTNMT2321000156-107V',
@@ -99,44 +101,46 @@ Given(/^att jag är inloggad som läkare utan adress till enheten$/, function() 
         lakare: 'true',
         origin: 'NORMAL'
     };
-    return logInAsUserRole(userObj, 'Läkare');
+    return logInAsUserRole(this.user, 'Läkare');
 });
 
 
 Given(/^att jag är inloggad som vårdadministratör$/, function() {
     var roll = 'Vårdadministratör';
-    return logInAsUserRole(shuffle(users[roll])[0], roll);
+    this.user = shuffle(users[roll])[0];
+    return logInAsUserRole(this.user, roll);
 });
 
 Given(/^att jag är inloggad som uthoppad vårdadministratör$/, function() {
     var roll = 'Vårdadministratör';
-    var user = shuffle(users[roll])[0];
-    user.origin = 'UTHOPP';
-    return logInAsUserRole(user, roll);
+    this.user = shuffle(users[roll])[0];
+    this.user.origin = 'UTHOPP';
+    return logInAsUserRole(this.user, roll);
 });
 
 Given(/^att jag är inloggad i uthoppsläge$/, function() {
     var roll = shuffle(['Läkare', 'Vårdadministratör', 'Tandläkare'])[0];
-    var user = shuffle(users[roll])[0];
+    this.user = shuffle(users[roll])[0];
     logger.info('Loggar in som uthoppad ' + roll);
-    user.origin = 'UTHOPP';
-    return logInAsUserRole(user, roll);
+    this.user.origin = 'UTHOPP';
+    return logInAsUserRole(this.user, roll);
 });
 
 Given(/^att jag är inloggad som djupintegrerad vårdadministratör$/, function() {
     var roll = 'Vårdadministratör';
-    var user = shuffle(users[roll])[0];
-    user.origin = 'DJUPINTEGRATION';
-    return logInAsUserRole(user, roll);
+    this.user = shuffle(users[roll])[0];
+    this.user.origin = 'DJUPINTEGRATION';
+    return logInAsUserRole(this.user, roll);
 });
 
 Given(/^att jag är inloggad som läkare som inte accepterat kakor$/, function() {
     var roll = 'Läkare';
-    return logInAsUserRole(shuffle(users[roll])[0], roll, true);
+    this.user = shuffle(users[roll])[0];
+    return logInAsUserRole(this.user, roll, true);
 });
 
 Given(/^att jag är inloggad som läkare(?: "([^"]*)")?$/, function(lakarNamn) {
-    var userObj = {
+    this.user = {
         forNamn: 'Johan',
         efterNamn: 'Johansson',
         hsaId: 'TSTNMT2321000156-107V',
@@ -144,67 +148,67 @@ Given(/^att jag är inloggad som läkare(?: "([^"]*)")?$/, function(lakarNamn) {
     };
 
     if (lakarNamn) {
-        userObj.enhetId = 'TSTNMT2321000156-107Q';
-        userObj.forNamn = lakarNamn.split(' ')[0];
-        userObj.efterNamn = lakarNamn.split(' ')[1];
+        this.user.enhetId = 'TSTNMT2321000156-107Q';
+        this.user.forNamn = lakarNamn.split(' ')[0];
+        this.user.efterNamn = lakarNamn.split(' ')[1];
 
         if (lakarNamn && lakarNamn === 'Karin Persson') {
-            userObj.hsaId = 'TSTNMT2321000156-107T';
+            this.user.hsaId = 'TSTNMT2321000156-107T';
 
         } else if (lakarNamn && lakarNamn === 'Ingrid Nilsson Olsson') {
-            userObj.hsaId = 'TSTNMT2321000156-105T';
-            userObj.enhetId = 'TSTNMT2321000156-105P';
-            userObj.forNamn = lakarNamn.split(' ')[0];
-            userObj.efterNamn = lakarNamn.split(' ')[1] + ' ' + lakarNamn.split(' ')[2];
+            this.user.hsaId = 'TSTNMT2321000156-105T';
+            this.user.enhetId = 'TSTNMT2321000156-105P';
+            this.user.forNamn = lakarNamn.split(' ')[0];
+            this.user.efterNamn = lakarNamn.split(' ')[1] + ' ' + lakarNamn.split(' ')[2];
 
         } else if (lakarNamn && lakarNamn === 'Lennart Johansson Persson') {
-            userObj.hsaId = 'TSTNMT2321000156-1016';
-            userObj.enhetId = 'TSTNMT2321000156-1013';
-            userObj.forNamn = lakarNamn.split(' ')[0];
-            userObj.efterNamn = lakarNamn.split(' ')[1] + ' ' + lakarNamn.split(' ')[2];
+            this.user.hsaId = 'TSTNMT2321000156-1016';
+            this.user.enhetId = 'TSTNMT2321000156-1013';
+            this.user.forNamn = lakarNamn.split(' ')[0];
+            this.user.efterNamn = lakarNamn.split(' ')[1] + ' ' + lakarNamn.split(' ')[2];
         } else if (lakarNamn && lakarNamn === 'Karl Johansson') {
-            userObj.hsaId = 'TSTNMT2321000156-1014';
-            userObj.enhetId = 'TSTNMT2321000156-1013';
-            userObj.forNamn = lakarNamn.split(' ')[0];
-            userObj.efterNamn = lakarNamn.split(' ')[1];
+            this.user.hsaId = 'TSTNMT2321000156-1014';
+            this.user.enhetId = 'TSTNMT2321000156-1013';
+            this.user.forNamn = lakarNamn.split(' ')[0];
+            this.user.efterNamn = lakarNamn.split(' ')[1];
 
         }
     }
-    return logInAsUserRole(userObj, 'Läkare');
+    return logInAsUserRole(this.user, 'Läkare');
 });
 
 Given(/^att jag är inloggad som läkare utan angiven vårdenhet$/, function() {
     var roll = 'Läkare';
-    var user = shuffle(users[roll])[0];
-    user.enhetId = '';
-    return logInAsUserRole(user, roll);
+    this.user = shuffle(users[roll])[0];
+    this.user.enhetId = '';
+    return logInAsUserRole(this.user, roll);
 });
 
 Given(/^att jag är inloggad som läkare på (vårdenhet|underenhet) "([^"]*)"$/, function(enhettyp, ve) {
-    var userObj = {
+    this.user = {
         forNamn: 'Johan',
         efterNamn: 'Johansson',
         hsaId: 'TSTNMT2321000156-107V',
         enhetId: ve,
         'origin': 'NORMAL'
     };
-    return logInAsUserRole(userObj, 'Läkare');
+    return logInAsUserRole(this.user, 'Läkare');
 });
 
 Given(/^att jag är inloggad som djupintegrerad läkare$/, function() {
 
-    var userObj = {
+    this.user = {
         forNamn: 'Johan',
         efterNamn: 'Johansson',
         hsaId: 'TSTNMT2321000156-107V',
         enhetId: 'TSTNMT2321000156-INT1',
         origin: 'DJUPINTEGRATION'
     };
-    return logInAsUserRole(userObj, 'Läkare');
+    return logInAsUserRole(this.user, 'Läkare');
 });
 
 Given(/^att jag är inloggad som djupintegrerad läkare på vårdenhet "([^"]*)"$/, function(enhetHsa) {
-    var userObj = {
+    this.user = {
         forNamn: 'Johan',
         efterNamn: 'Johansson',
         hsaId: 'TSTNMT2321000156-107V',
@@ -212,28 +216,30 @@ Given(/^att jag är inloggad som djupintegrerad läkare på vårdenhet "([^"]*)"
         forskrivarKod: '2481632',
         origin: 'DJUPINTEGRATION'
     };
-    return logInAsUserRole(userObj, 'Läkare');
+    return logInAsUserRole(this.user, 'Läkare');
 });
 
 
 Given(/^att jag är inloggad som uthoppsläkare$/, function() {
-    var userObj = {
+    this.user = {
         forNamn: 'Johan',
         efterNamn: 'Johansson',
         hsaId: 'TSTNMT2321000156-107V',
         enhetId: 'TSTNMT2321000156-107Q',
         origin: 'UTHOPP'
     };
-    return logInAsUserRole(userObj, 'Läkare');
+    return logInAsUserRole(this.user, 'Läkare');
 });
 
 Given(/^att jag loggar in som läkare utan medarbetaruppdrag$/, function() {
-    var userObj = {
+    this.user = {
         forNamn: 'Johnny',
         efterNamn: 'Drama',
         hsaId: 'TSTNMT2321000156-6789',
         enhetId: 'TSTNMT2321000156-107P'
     };
+    let user = this.user;
+
     browser.ignoreSynchronization = true;
     return pages.welcome.get()
         .then(function() {
@@ -243,7 +249,7 @@ Given(/^att jag loggar in som läkare utan medarbetaruppdrag$/, function() {
             return helpers.mediumDelay();
         })
         .then(function() {
-            return pages.welcome.loginByJSON(JSON.stringify(userObj));
+            return pages.welcome.loginByJSON(JSON.stringify(user));
         })
         .then(function() {
             return helpers.mediumDelay();
@@ -256,9 +262,8 @@ Given(/^att jag är inloggad som( djupintegrerad)? läkare på (underenhet|vård
     if (selectedOrigin === ' djupintegrerad') {
         origin = 'DJUPINTEGRATION';
     }
-    var userObj;
     if (harInteEnhet === 'TSTNMT2321000156-107P') {
-        userObj = {
+        this.user = {
             'forNamn': 'Karin',
             'efterNamn': 'Persson',
             'hsaId': 'TSTNMT2321000156-107T',
@@ -266,7 +271,7 @@ Given(/^att jag är inloggad som( djupintegrerad)? läkare på (underenhet|vård
             'origin': origin
         };
     } else if (harInteEnhet === 'TSTNMT2321000156-107J') {
-        userObj = {
+        this.user = {
             forNamn: 'Johan',
             efterNamn: 'Johansson',
             hsaId: 'TSTNMT2321000156-107V',
@@ -274,7 +279,7 @@ Given(/^att jag är inloggad som( djupintegrerad)? läkare på (underenhet|vård
             'origin': origin
         };
     } else if (harInteEnhet === 'TSTNMT2321000156-INT2') {
-        userObj = {
+        this.user = {
             forNamn: 'Jenny',
             efterNamn: 'Larsson',
             hsaId: 'TSTNMT2321000156-1084',
@@ -282,18 +287,19 @@ Given(/^att jag är inloggad som( djupintegrerad)? läkare på (underenhet|vård
             'origin': origin
         };
     } else {
-        throw 'Användare för detta saknas';
+        throw 'Användare som ska sakna medarbetaruppdrag på ' + harInteEnhet + ' hittades inte';
     }
 
+    let user = this.user;
     //Kontrollera att inte medarbetaruppdrag finns på den andra enheten
-    return logInAsUserRole(userObj, 'Läkare')
+    return logInAsUserRole(user, 'Läkare')
         .then(function() {
                 throw ('Lyckades logga in med den enheten som inte ska fungera');
             },
             function(err) {
                 logger.info('FICK FEL: ' + err.message);
-                userObj.enhetId = harEnhet;
-                return logInAsUserRole(userObj, 'Läkare');
+                user.enhetId = harEnhet;
+                return logInAsUserRole(user, 'Läkare');
             });
 });
 

@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* globals intyg, logger*/
+/* globals logger*/
 'use strict';
 /*jshint newcap:false */
 //TODO Uppgradera Jshint p.g.a. newcap kommer bli depricated. (klarade inte att ignorera i grunt-task)
@@ -44,9 +44,9 @@ var db = require('./dbActions');
 Given(/^ska loggaktivitet "([^"]*)" skickas till loggtjänsten(?: med argument "([^"]*)")?$/, function(activity, activityarg) {
     logger.silly(activity);
     logger.silly(activityarg);
-    return db.storeLog.waitForCount(activity, 1, intyg.id, global.user.hsaId, activityarg);
+    return db.storeLog.waitForCount(activity, 1, this.intyg.id, this.user.hsaId, activityarg);
 });
 
 Given(/^ska det nu finnas (\d+) loggaktivitet "([^"]*)" för intyget$/, function(count, activity) {
-    return db.storeLog.waitForCount(activity, count, intyg.id, global.user.hsaId);
+    return db.storeLog.waitForCount(activity, count, this.intyg.id, this.user.hsaId);
 });

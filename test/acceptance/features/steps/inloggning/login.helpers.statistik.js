@@ -43,8 +43,8 @@ var logInAsUserStatistik = function(userObj, roleName, skipCookieConsent, self) 
     logger.info('Loggar in som ' + userObj.fornamn + ' ' + userObj.efternamn);
 
     // Fattigmans-kloning av användar-hashen.
-    global.user = JSON.parse(JSON.stringify(userObj));
-    global.user.roleName = roleName;
+    this.user = JSON.parse(JSON.stringify(userObj));
+    this.user.roleName = roleName;
 
     browser.ignoreSynchronization = true;
     return helpers.getUrl('/#/fakelogin').then(function() {
@@ -59,7 +59,7 @@ module.exports = {
     logInAsUserStatistik: logInAsUserStatistik,
     logInAsUserRoleStatistik: function(userObj, roleName, skipCookieConsent) {
         logger.silly(userObj);
-        global.user.roleName = roleName;
+        this.user.roleName = roleName;
         var self = this;
         return logInAsUserStatistik(userObj, roleName, skipCookieConsent, self).then(function() {
             logger.info('Login default browser successful');

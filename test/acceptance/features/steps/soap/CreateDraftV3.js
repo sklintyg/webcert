@@ -19,21 +19,21 @@
 
 'use strict';
 var helpers = require('../helpers');
-module.exports.CreateDraftCertificateV3 = function(user, intygstyp) {
+module.exports.CreateDraftCertificateV3 = function(user, intygstyp, patient) {
     var typCode = helpers.getAbbrev(intygstyp);
 
     if (user.enhetId === 'TSTNMT2321000156-102R') {
         throw 'Enhet TSTNMT2321000156-102R är reserverad för djupintegration v1';
     }
 
-    if (!global.person.forNamn || !global.person.efterNamn) {
-        global.person.forNamn = 'test';
-        global.person.efterNamn = 'testsson';
+    if (!patient.forNamn || !patient.efterNamn) {
+        patient.forNamn = 'test';
+        patient.efterNamn = 'testsson';
     }
 
-    if (!global.person.adress) {
+    if (!patient.adress) {
 
-        global.person.adress = {
+        patient.adress = {
             postadress: 'Langgatan 12',
             postort: 'Simrishamn',
             postnummer: '990 90'
@@ -56,13 +56,13 @@ module.exports.CreateDraftCertificateV3 = function(user, intygstyp) {
         '            <urn1:patient>' +
         '               <urn3:person-id>' +
         '                  <urn2:root>1.2.752.129.2.1.3.1</urn2:root>' +
-        '                  <urn2:extension>' + global.person.id.replace('-', '') + '</urn2:extension>' +
+        '                  <urn2:extension>' + patient.id.replace('-', '') + '</urn2:extension>' +
         '               </urn3:person-id>' +
-        '               <urn3:fornamn>' + global.person.forNamn + '</urn3:fornamn>' +
-        '               <urn3:efternamn>' + global.person.efterNamn + '</urn3:efternamn>' +
-        '               <urn3:postadress>' + global.person.adress.postadress + '</urn3:postadress>' +
-        '               <urn3:postnummer>' + global.person.adress.postnummer + '</urn3:postnummer>' +
-        '               <urn3:postort>' + global.person.adress.postort + '</urn3:postort>' +
+        '               <urn3:fornamn>' + patient.forNamn + '</urn3:fornamn>' +
+        '               <urn3:efternamn>' + patient.efterNamn + '</urn3:efternamn>' +
+        '               <urn3:postadress>' + patient.adress.postadress + '</urn3:postadress>' +
+        '               <urn3:postnummer>' + patient.adress.postnummer + '</urn3:postnummer>' +
+        '               <urn3:postort>' + patient.adress.postort + '</urn3:postort>' +
         '            </urn1:patient>' +
         '            <urn1:skapadAv>' +
         '               <urn1:personal-id>' +

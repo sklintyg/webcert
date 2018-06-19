@@ -18,7 +18,7 @@
  */
 
 /* globals pages */
-/* globals browser, intyg, logger, protractor */
+/* globals browser, logger, protractor */
 
 'use strict';
 /*jshint newcap:false */
@@ -48,15 +48,15 @@ var helpers = require('./helpers');
 
 Given(/^jag skickar intyget till Transportstyrelsen/, function() {
 
-    if (!intyg.id) {
+    if (!this.intyg.id) {
         //Fånga intygets id
         browser.getCurrentUrl().then(function(text) {
-            intyg.id = text.split('/').slice(-2)[0];
-            logger.info('Intygsid: ' + intyg.id);
-            intyg.id = intyg.id.split('?')[0];
+            this.intyg.id = text.split('/').slice(-2)[0];
+            logger.info('Intygsid: ' + this.intyg.id);
+            this.intyg.id = this.intyg.id.split('?')[0];
         });
     } else {
-        logger.info('Följande intygs id skickas till Transportstyrelsen: ' + intyg.id);
+        logger.info('Följande intygs id skickas till Transportstyrelsen: ' + this.intyg.id);
     }
     return helpers.moveAndSendKeys(fkIntygPage.skicka.knapp, protractor.Key.SPACE).then(function() {
         helpers.moveAndSendKeys(fkIntygPage.skicka.dialogKnapp, protractor.Key.SPACE);
@@ -66,14 +66,14 @@ Given(/^jag skickar intyget till Transportstyrelsen/, function() {
 Given(/^jag skickar intyget till Försäkringskassan$/, function() {
 
 
-    if (!intyg.id) {
+    if (!this.intyg.id) {
         browser.getCurrentUrl().then(function(text) {
-            intyg.id = text.split('/').slice(-2)[0];
-            intyg.id = intyg.id.split('?')[0];
-            logger.info('Följande intygs id skickas till Försäkringskassan: ' + intyg.id);
+            this.intyg.id = text.split('/').slice(-2)[0];
+            this.intyg.id = this.intyg.id.split('?')[0];
+            logger.info('Följande intygs id skickas till Försäkringskassan: ' + this.intyg.id);
         });
     } else {
-        logger.info('Följande intygs id skickas till Försäkringskassan: ' + intyg.id);
+        logger.info('Följande intygs id skickas till Försäkringskassan: ' + this.intyg.id);
     }
 
 

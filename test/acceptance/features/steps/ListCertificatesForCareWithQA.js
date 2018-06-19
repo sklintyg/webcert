@@ -16,7 +16,7 @@
   * You should have received a copy of the GNU General Public License
   * along with this program.  If not, see <http://www.gnu.org/licenses/>.
   */
- /* globals logger, intyg, Promise, logger*/
+ /* globals logger, Promise, logger*/
 
  'use strict';
  /*jshint newcap:false */
@@ -80,8 +80,8 @@
 
  When(/^jag skickar en ListCertificateForCareWithQA för patienten och vårdenheten$/, function() {
      var body = soapMessageBodies.ListCertificatesForCareWithQA.getBody(
-         global.person.id,
-         global.user.enhetId
+         this.patient.id,
+         this.user.enhetId
      );
 
      //Vänta på att intyget/intygen ska vara tillgänligt i webcert.
@@ -93,8 +93,7 @@
          //Spara svar för aktuellt intyg i responseIntyg variabel
          if (response.list && response.list.item) {
              response.list.item.forEach(function(element) {
-                 var intygID = element.intyg['intygs-id'].extension;
-                 if (intygID === intyg.id) {
+                 if (element.intyg['intygs-id'].extension === this.intyg.id) {
                      responseIntyg = element;
                      logger.silly(JSON.stringify(responseIntyg));
                  }
@@ -144,18 +143,18 @@
      });
      logger.silly('idn:');
      logger.silly(idn);
-     logger.silly('letar efter: ' + intyg.id);
+     logger.silly('letar efter: ' + this.intyg.id);
      if (inte) {
-         return expect(idn).to.not.include(intyg.id);
+         return expect(idn).to.not.include(this.intyg.id);
      }
-     return expect(idn).to.include(intyg.id);
+     return expect(idn).to.include(this.intyg.id);
  });
 
  Then(/^ska svaret endast innehålla intyg för utvald patient$/, function() {
      var idPromises = [];
      response.list.item.forEach(function(element) {
          var personID = element.intyg.patient['person-id'].extension;
-         idPromises.push(expect(personID).to.contain(global.person.id));
+         idPromises.push(expect(personID).to.contain(this.patient.id));
      });
      return Promise.all(idPromises);
  });
@@ -164,7 +163,7 @@
      var idPromises = [];
      response.list.item.forEach(function(element) {
          var enhetID = element.intyg.skapadAv.enhet['enhets-id'].extension;
-         idPromises.push(expect(enhetID).to.contain(global.user.enhetId));
+         idPromises.push(expect(enhetID).to.contain(this.user.enhetId));
      });
      return Promise.all(idPromises);
  });

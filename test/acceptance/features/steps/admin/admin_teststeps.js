@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*global intyg, testdata, person, logger*/
+/*global testdata, logger*/
 
 'use strict';
 /*jshint newcap:false */
@@ -45,38 +45,28 @@ var statistikData = require('./statistikData.js');
  *
  */
 
-function getDemoData(typ, index) {
+function getDemoData(intyg, index, patient) {
 
-    /*if (!intyg.id) {
-    	global.intyg.id = testdataHelper.generateTestGuid();
-    }*/
-    var id = intyg.id;
-
-    if (typ === 'Transportstyrelsens läkarintyg högre körkortsbehörighet') {
-        return testdata.ts.bas.getRandom(id, person);
-    } else if (typ === 'Transportstyrelsens läkarintyg diabetes') {
-        return testdata.ts.diabetes.getRandom(id, person);
-    } else if (typ === 'Läkarintyg FK 7263') {
-        return testdata.fk['7263'].getRandom(id);
-    } else if (typ === 'Läkarutlåtande för sjukersättning') {
-        return testdata.fk.LUSE.getRandom(id);
-    } else if (typ === 'Läkarintyg för sjukpenning') {
+    if (intyg.typ === 'Transportstyrelsens läkarintyg högre körkortsbehörighet') {
+        return testdata.ts.bas.getRandom(intyg.id, patient);
+    } else if (intyg.typ === 'Transportstyrelsens läkarintyg diabetes') {
+        return testdata.ts.diabetes.getRandom(intyg.id, patient);
+    } else if (intyg.typ === 'Läkarintyg FK 7263') {
+        return testdata.fk['7263'].getRandom(intyg.id);
+    } else if (intyg.typ === 'Läkarutlåtande för sjukersättning') {
+        return testdata.fk.LUSE.getRandom(intyg.id);
+    } else if (intyg.typ === 'Läkarintyg för sjukpenning') {
         //Hårdkodad demo data för lisjp
-        return demoDataLisjp.get(index, id);
-    } else if (typ === 'Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga') {
-        return testdata.fk.LUAE_NA.getRandom(id);
-    } else if (typ === 'Läkarutlåtande för aktivitetsersättning vid förlängd skolgång') {
-        return testdata.fk.LUAE_FS.getRandom(id);
-    } else if (typ === 'Dödsbevis') {
-        return testdata.skv.db.getRandom(id);
-    } else if (typ === 'Dödsorsaksintyg') {
-        return testdata.soc.doi.getRandom(id);
+        return demoDataLisjp.get(index, intyg.id);
+    } else if (intyg.typ === 'Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga') {
+        return testdata.fk.LUAE_NA.getRandom(intyg.id);
+    } else if (intyg.typ === 'Läkarutlåtande för aktivitetsersättning vid förlängd skolgång') {
+        return testdata.fk.LUAE_FS.getRandom(intyg.id);
+    } else if (intyg.typ === 'Dödsbevis') {
+        return testdata.skv.db.getRandom(intyg.id);
+    } else if (intyg.typ === 'Dödsorsaksintyg') {
+        return testdata.soc.doi.getRandom(intyg.id);
     }
-}
-
-function getStatistikData(typ, index) {
-    var id = intyg.id;
-    return statistikData.get(index, id);
 }
 
 /*
@@ -84,21 +74,21 @@ function getStatistikData(typ, index) {
  *
  */
 Given(/^jag fyller i alla nödvändiga fält för intyget med demodata "([^"]*)"$/, function(index) {
-    if (!intyg.typ) {
+    if (!this.intyg.typ) {
         throw 'intyg.typ odefinierad.';
     } else {
-        global.intyg = getDemoData(intyg.typ, index);
-        logger.silly(intyg);
-        return fillIn(global.intyg);
+        this.intyg = getDemoData(this.intyg, index, this.patient);
+        logger.silly(this.intyg);
+        return fillIn(this);
     }
 });
 
 Given(/^jag fyller i alla nödvändiga fält för intyget med statistikdata "([^"]*)"$/, function(index) {
-    if (!intyg.typ) {
+    if (!this.intyg.typ) {
         throw 'intyg.typ odefinierad';
     } else {
-        global.intyg = getStatistikData(intyg.typ, index);
-        logger.silly(intyg);
-        return fillIn(global.intyg);
+        this.intyg = statistikData.get(index, this.intyg.id);
+        logger.silly(this.intyg);
+        return fillIn(this);
     }
 });

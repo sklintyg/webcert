@@ -21,19 +21,16 @@
 'use strict';
 var helpers = require('../helpers');
 
-var logInAsUser = function(userObj, skipCookieConsent, secondBrowser) {
+var logInAsUser = function(user, skipCookieConsent, secondBrowser) {
     if (skipCookieConsent) {
         logger.info('Lämnar inte samtycke för kakor');
     }
-    logger.info('Loggar in som ' + userObj.forNamn + ' ' + userObj.efterNamn);
+    logger.info('Loggar in som ' + user.forNamn + ' ' + user.efterNamn);
 
-    // Fattigmans-kloning av användar-hashen.
-    global.user = JSON.parse(JSON.stringify(userObj));
-
-    logger.silly(global.user);
+    logger.silly(user);
 
     //Lägg till en adress för vårdenheten
-    global.user.enhetsAdress = {
+    user.enhetsAdress = {
         postnummer: '66130',
         postort: 'Karlstad',
         postadress: 'Testsvängen 3',
@@ -41,6 +38,17 @@ var logInAsUser = function(userObj, skipCookieConsent, secondBrowser) {
     };
 
     global.sessionUsed = false;
+
+    //Ta ut dom variablar som behövs vid inloggning.
+    let userObj = {
+        forNamn: user.forNamn,
+        efterNamn: user.efterNamn,
+        hsaId: user.hsaId,
+        enhetId: user.enhetId
+    };
+    if (user.origin) {
+        userObj.origin = user.origin;
+    }
 
     if (!secondBrowser) {
         browser.ignoreSynchronization = true;
@@ -99,11 +107,11 @@ var logInAsUser = function(userObj, skipCookieConsent, secondBrowser) {
 
 module.exports = {
     logInAsUser: logInAsUser,
-    logInAsUserRole: function(userObj, roleName, skipCookieConsent, secondBrowser) {
-        logger.silly(userObj);
-        global.user.roleName = roleName;
+    logInAsUserRole: function(user, roleName, skipCookieConsent, secondBrowser) {
+        logger.silly(user);
+        user.roleName = roleName;
 
-        return logInAsUser(userObj, skipCookieConsent, secondBrowser)
+        return logInAsUser(user, skipCookieConsent, secondBrowser)
             .then(function() {
                 logger.info((secondBrowser) ? 'Login second browser successful' : 'Login default browser successful');
 
@@ -112,7 +120,7 @@ module.exports = {
                 }).then(function() {
                     let wcHeader = secondBrowser ? secondBrowser.findElement(by.id('wcHeader')) : element(by.id('wcHeader'));
                     return Promise.all([
-                        expect(wcHeader.getText()).to.eventually.contain(userObj.forNamn + ' ' + userObj.efterNamn),
+                        expect(wcHeader.getText()).to.eventually.contain(user.forNamn + ' ' + user.efterNamn),
                         expect(wcHeader.getText()).to.eventually.contain(roleName)
                     ]);
                 });

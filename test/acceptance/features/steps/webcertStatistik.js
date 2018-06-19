@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* globals intyg, browser, logger, wcTestTools, Promise */
+/* globals browser, logger, wcTestTools, Promise */
 'use strict';
 /*jshint newcap:false */
 //TODO Uppgradera Jshint p.g.a. newcap kommer bli depricated. (klarade inte att ignorera i grunt-task)
@@ -155,12 +155,12 @@ function getColumnDataFromTable(table, subject, column) {
 
 
 Given(/^ska jag se intyget i databasen$/, function(callback) {
-    db.statistics.lookUp(1, intyg.id, callback);
+    db.statistics.lookUp(1, this.intyg.id, callback);
 });
 
 
 Given(/^jag går in på Statistiktjänsten$/, function() {
-    global.statistik.intygsId = intyg.id;
+    global.statistik.intygsId = this.intyg.id;
     var url = process.env.STATISTIKTJANST_URL + '/#/fakelogin';
     return helpers.getUrl(url);
 });
@@ -342,9 +342,9 @@ Given(/^ska totala "([^"]*)" diagnoser som finns (?:vara|är) "([^"]*)" (extra|m
     diagnosKod = slumpaDiagnosKod(diagnosKod).substring(0, 3);
 
 
-    logger.silly(global.person);
+    logger.silly(this.patient);
 
-    var gender = global.person.kon;
+    var gender = this.patient.kon;
 
     logger.info('====== Kollar statistik på kön: ' + gender + '==========');
 
@@ -366,7 +366,7 @@ Given(/^ska totala "([^"]*)" diagnoser som finns (?:vara|är) "([^"]*)" (extra|m
         } else if (gender === 'kvinna') {
             nuvarandeStatistik.kvinna = forvantatAntal(nuvarandeStatistik.kvinna, modifier, nrOfIntyg);
         } else {
-            throw ('Kunde inte fastställa kön på person: ' + global.person);
+            throw ('Kunde inte fastställa kön på patient: ' + this.patient);
         }
     }
     global.statistik.nrOfSjukfall = nuvarandeStatistik;

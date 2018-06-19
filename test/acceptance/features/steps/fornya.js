@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*globals intyg, logger, Promise, protractor, pages, wcTestTools, JSON, browser*/
+/*globals logger, Promise, protractor, pages, wcTestTools, JSON, browser*/
 
 'use strict';
 /*jshint newcap:false */
@@ -47,17 +47,20 @@ var helpers = require('./helpers.js');
  */
 
 Given(/^jag förnyar intyget$/, function(callback) {
+
+    global.fornyatIntyg = this.intyg;
+    let intyg = this.intyg;
+
     helpers.updateEnhetAdressForNewIntyg();
     fkIntygPage.fornyaBtn.sendKeys(protractor.Key.SPACE).then(function() {
-
-        return fkIntygPage.fornyaDialog.btn.sendKeys(protractor.Key.SPACE)
+        this.intyg = fkIntygPage.fornyaDialog.btn.sendKeys(protractor.Key.SPACE)
             .then(function() {
                 return helpers.pageReloadDelay();
             })
             .then(function() {
                 return browser.getCurrentUrl()
                     .then(function(text) {
-                        global.fornyatIntyg = intyg;
+
 
                         logger.info('global.fornyatIntyg.id: ' + global.fornyatIntyg.id);
 
@@ -68,7 +71,6 @@ Given(/^jag förnyar intyget$/, function(callback) {
                     });
 
             });
-
     }).then(callback);
 });
 
@@ -80,7 +82,7 @@ Given(/^ska fält för Baserat på vara tomma$/, function(callback) {
     var annat = baserasPa.annat.datum;
 
 
-    if (intyg.smittskydd) {
+    if (this.intyg.smittskydd) {
         logger.info('Eftersom intyget är ett smittskyddsintyg så kontrolleras att baserat-på fälten inte visas');
         Promise.all([
             expect(minUndersokning.isDisplayed()).to.become(false),
@@ -133,10 +135,10 @@ Given(/^ska fält för Bedömning av arbetsförmåga vara tomma$/, function(call
 });
 
 Given(/^jag anger datum för Baserat på$/, function(callback) {
-    intyg.baserasPa = fkValues.getRandomBaserasPa(intyg.smittskydd);
+    this.intyg.baserasPa = fkValues.getRandomBaserasPa(this.intyg.smittskydd);
     //Ange baseras på
-    fkUtkastPage.angeIntygetBaserasPa(intyg.baserasPa).then(function() {
-        logger.info('OK - angeIntygetBaserasPa :' + JSON.stringify(intyg.baserasPa));
+    fkUtkastPage.angeIntygetBaserasPa(this.intyg.baserasPa).then(function() {
+        logger.info('OK - angeIntygetBaserasPa :' + JSON.stringify(this.intyg.baserasPa));
         callback();
     }, function(reason) {
         callback('FEL, angeIntygetBaserasPa,' + reason);
@@ -144,10 +146,10 @@ Given(/^jag anger datum för Baserat på$/, function(callback) {
 });
 
 Given(/^jag anger datum för arbetsförmåga$/, function(callback) {
-    intyg.arbetsformaga = fkValues.getRandomArbetsformaga();
+    this.intyg.arbetsformaga = fkValues.getRandomArbetsformaga();
 
-    fkUtkastPage.angeArbetsformaga(intyg.arbetsformaga).then(function() {
-        logger.info('OK - angeArbetsformaga :' + JSON.stringify(intyg.arbetsformaga));
+    fkUtkastPage.angeArbetsformaga(this.intyg.arbetsformaga).then(function() {
+        logger.info('OK - angeArbetsformaga :' + JSON.stringify(this.intyg.arbetsformaga));
         callback();
     }, function(reason) {
         callback('FEL, angeArbetsformaga,' + reason);
@@ -166,9 +168,9 @@ Given(/^ska fält för Kontakt med FK vara tom$/, function(callback) {
 });
 
 Given(/^jag anger kontakt med FK$/, function(callback) {
-    intyg.kontaktOnskasMedFK = fkValues.getRandomKontaktOnskasMedFK();
-    fkUtkastPage.angeKontaktOnskasMedFK(intyg.kontaktOnskasMedFK).then(function() {
-        logger.info('OK - angeKontaktOnskasMedFK :' + JSON.stringify(intyg.kontaktOnskasMedFK));
+    this.intyg.kontaktOnskasMedFK = fkValues.getRandomKontaktOnskasMedFK();
+    fkUtkastPage.angeKontaktOnskasMedFK(this.intyg.kontaktOnskasMedFK).then(function() {
+        logger.info('OK - angeKontaktOnskasMedFK :' + JSON.stringify(this.intyg.kontaktOnskasMedFK));
         callback();
     }, function(reason) {
         callback('FEL, angeKontaktOnskasMedFK,' + reason);

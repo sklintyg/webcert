@@ -24,7 +24,7 @@
 
 module.exports.RegisterCertificate = function(personId, personName1, personName2, doctorHsa, doctorName, unitHsa, unitName, intygsId) { //, intygsTyp) {
 
-    //global.intyg = generateIntygByType(intyg.typ);
+    //this.intyg = generateIntygByType(intyg.typ);
     // if (intygsTyp === 'Läkarutlåtande för sjukersättning') {
     return '<urn2:RegisterCertificate \n' +
         '               xmlns="urn:riv:clinicalprocess:healthcond:certificate:3" \n' +

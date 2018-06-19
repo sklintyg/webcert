@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*global intyg,wcTestTools, protractor, browser, testdata, logger, Promise*/
+/*global wcTestTools, protractor, browser, testdata, logger */
 
 'use strict';
 /*jshint newcap:false */
@@ -59,87 +59,7 @@ const fkValues = wcTestTools.testdata.values.fk;
  *
  */
 
-function clearField(intygShortcode, field) {
-    logger.info('Fältet som tas bort ' + field + ' i intyg ' + intygShortcode);
-    if (intygShortcode === 'LUSE') {
-        if (field === 'aktivitetsbegransning') {
-            return luseUtkastPage.aktivitetsbegransning.clear();
-        } else if (field === 'sjukdomsforlopp') {
-            return luseUtkastPage.sjukdomsforlopp.clear();
-        } else if (field === 'funktionsnedsattning') {
-            var fnElm = luseUtkastPage.funktionsnedsattning;
-            var promiseArr = [];
-
-            if (intyg.funktionsnedsattning.intellektuell) {
-                promiseArr.push(fnElm.intellektuell.checkbox.click());
-            }
-            if (intyg.funktionsnedsattning.kommunikation) {
-                promiseArr.push(fnElm.kommunikation.checkbox.click());
-            }
-            if (intyg.funktionsnedsattning.koncentration) {
-                promiseArr.push(fnElm.koncentration.checkbox.click());
-            }
-            if (intyg.funktionsnedsattning.annanPsykisk) {
-                promiseArr.push(fnElm.annanPsykisk.checkbox.click());
-            }
-            if (intyg.funktionsnedsattning.synHorselTal) {
-                promiseArr.push(fnElm.synHorselTal.checkbox.click());
-            }
-            if (intyg.funktionsnedsattning.balansKoordination) {
-                promiseArr.push(fnElm.balansKoordination.checkbox.click());
-            }
-            if (intyg.funktionsnedsattning.annanKroppslig) {
-                promiseArr.push(fnElm.annanKroppslig.checkbox.click());
-            }
-
-            return Promise.all(promiseArr);
-
-        }
-
-    } else if (intygShortcode === 'LISJP') {
-        if (field === 'aktivitetsbegransning') {
-            return lisjpUtkastPage.konsekvenser.aktivitetsbegransning.clear();
-        } else if (field === 'funktionsnedsattning') {
-            return lisjpUtkastPage.konsekvenser.funktionsnedsattning.clear();
-        } else if (field === 'sysselsattning') {
-            if (intyg.sysselsattning.typ === 'NUVARANDE_ARBETE') {
-                return lisjpUtkastPage.sysselsattning.typ.nuvarandeArbete.click();
-            } else if (intyg.sysselsattning.typ === 'ARBETSSOKANDE') {
-                return lisjpUtkastPage.sysselsattning.typ.arbetssokande.click();
-            } else if (intyg.sysselsattning.typ === 'FORALDRALEDIG') {
-                return lisjpUtkastPage.sysselsattning.typ.foraldraledighet.click();
-            } else if (intyg.sysselsattning.typ === 'STUDIER') {
-                return lisjpUtkastPage.sysselsattning.typ.studier.click();
-            }
-        }
-    } else if (intygShortcode === 'LUAE_NA') {
-        if (field === 'aktivitetsbegransning') {
-            return lisjpUtkastPage.konsekvenser.aktivitetsbegransning.clear();
-        } else if (field === 'ovrigt') {
-            return element(by.id('ovrigt')).clear();
-        } else if (field === 'sjukdomsforlopp') {
-            return;
-            //TODO
-        }
-    } else if (intygShortcode === 'LUAE_FS') {
-
-        if (field === 'funktionsnedsattningDebut') {
-            return luaeFSUtkastPage.funktionsnedsattning.debut.clear();
-        } else if (field === 'funktionsnedsattningPaverkan') {
-            return luaeFSUtkastPage.funktionsnedsattning.paverkan.clear();
-        }
-
-
-        //TODO} else if (intygShortcode === 'TSTRK1007') {
-
-        //TODO} else if (intygShortcode === 'TSTRK1031') {
-
-    }
-    throw ('intygShortcode' + intygShortcode + ' och eller field ' + field + ' matchar inte med något av alternativen i clearField funktionen');
-}
-
-
-function changeField(intygShortcode, field) {
+function changeField(intygShortcode, field, intyg) {
     logger.info('Fältet som ändras är: ' + field + ' i intyg ' + intygShortcode);
 
     var dodsdatumObj = {
@@ -288,15 +208,6 @@ function isValid(intygShortcode) {
     return (intygShortcode in helpers.intygShortcode);
 }
 
-module.exports.changingFields = function(isSMIIntyg, intygShortcode, clearFlag) {
-    var field = helpers.randomPageField(isSMIIntyg, intygShortcode);
-    if (!clearFlag) {
-        return changeField(intygShortcode, field);
-    } else {
-        return clearField(intygShortcode, field);
-    }
-};
-
 
 /*
  *	Test steg
@@ -304,17 +215,17 @@ module.exports.changingFields = function(isSMIIntyg, intygShortcode, clearFlag) 
  */
 
 Given(/^jag fyller i alla nödvändiga fält för intyget(?:\s"([^"]*)")?$/, function(intygsTyp) {
-    if (!intyg.typ && !intygsTyp) {
+    if (!this.intyg.typ && !intygsTyp) {
         throw 'intyg.typ odefinierad.';
     } else {
-        global.intyg = generateIntygByType(intygsTyp || intyg.typ, intyg.id);
-        logger.silly(intyg);
-        return fillIn(global.intyg);
+        this.intyg = generateIntygByType(this.intyg, this.patient);
+        logger.silly(this.intyg);
+        return fillIn(this);
     }
 });
 
 Given(/^jag ändrar diagnoskod$/, function() {
-    var isSMIIntyg = helpers.isSMIIntyg(intyg.typ);
+    var isSMIIntyg = helpers.isSMIIntyg(this.intyg.typ);
     var diagnos = {
         kod: td.values.fk.getRandomDiagnoskod()
     };
@@ -342,7 +253,7 @@ Given(/^jag ändrar i fältet (arbetsförmåga|sjukskrivningsperiod|diagnoskod)$
     } else if (field === 'diagnoskod') {
         var diagnosKod = td.values.fk.getRandomDiagnoskod();
 
-        var isSMIIntyg = helpers.isSMIIntyg(intyg.typ);
+        var isSMIIntyg = helpers.isSMIIntyg(this.intyg.typ);
         if (isSMIIntyg) {
             return lisjpUtkastPage.angeDiagnosKoder([diagnosKod]);
         } else {
@@ -358,10 +269,10 @@ Given(/^jag ändrar i fältet (arbetsförmåga|sjukskrivningsperiod|diagnoskod)$
 });
 
 Given(/^jag ändrar i slumpat fält$/, function() {
-    let intygShortcode = helpers.getAbbrev(intyg.typ);
+    let intygShortcode = helpers.getAbbrev(this.intyg.typ);
 
     if (isValid(intygShortcode)) {
-        let field = helpers.randomPageField(helpers.isSMIIntyg(intyg.typ), intygShortcode);
+        let field = helpers.randomPageField(helpers.isSMIIntyg(this.intyg.typ), intygShortcode);
         return changeField(intygShortcode, field);
     } else {
         throw Error('Intyg code not valid \'' + intygShortcode + '\'');
@@ -382,7 +293,7 @@ Given(/^jag fyller i resten av de nödvändiga fälten\.$/, function() {
 Given(/^jag fyller i ett intyg som( inte)? är smitta$/, function(isSmitta) {
     isSmitta = (typeof isSmitta === 'undefined');
     logger.silly('isSmitta : ' + isSmitta);
-    global.intyg = testdata.fk['7263'].getRandom(false, isSmitta);
-    logger.silly(intyg);
-    return fillIn(global.intyg);
+    this.intyg = testdata.fk['7263'].getRandom(false, isSmitta);
+    logger.silly(this.intyg);
+    return fillIn(this);
 });

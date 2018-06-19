@@ -231,7 +231,7 @@ module.exports = {
     meddelanden: [ // Listan kommer ifrån https://inera-certificate.atlassian.net/wiki/spaces/IT/pages/320176155/Valideringsmeddelanden
         'Postnummer måste anges med fem siffror.',
         'Datum får inte ligga för långt fram eller tillbaka i tiden.',
-        'Sjukskrivningsperiod med överlappande datum har angetts.',
+        'Sjukskrivningsperioder med överlappande datum har angetts.',
         'Får inte vara senare än "Min undersökning av patienten"',
         'Får inte vara senare än "Anhörigs beskrivning av patienten".',
         'Minst en rad måste fyllas i.',

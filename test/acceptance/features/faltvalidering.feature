@@ -63,7 +63,7 @@ Scenariomall: <intyg> - valideringsfel vid otillåten input
   Och jag går in på att skapa ett "<intyg>" intyg 
   Och att textfält i intyget är rensade
   Och jag gör val för att få fram maximalt antal fält i "<intyg>"
-  Och jag fyller i textfält med felaktiga värden i "<intyg>"
+  Och jag fyller i textfält med felaktiga värden
   Och jag klickar på signera-knappen 
 
   Så ska alla "otillåten input" valideringsfel för "<intyg>" visas

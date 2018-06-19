@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* globals protractor, intyg, browser, logger, Promise, wcTestTools */
+/* globals protractor, browser, logger, Promise, wcTestTools */
 
 'use strict';
 /*jshint newcap:false */
@@ -70,7 +70,8 @@ Given(/^om jag klickar på ersätta knappen så ska det finnas en avbryt\-knapp 
 });
 
 When(/^jag klickar på ersätt\-knappen i dialogen$/, function() {
-    global.ersattintyg = JSON.parse(JSON.stringify(intyg));
+    let intyg = this.intyg;
+    global.ersattintyg = JSON.parse(JSON.stringify(this.intyg));
 
 
     return element(by.id('button1ersatt-dialog')).sendKeys(protractor.Key.SPACE).then(function() {
@@ -87,7 +88,7 @@ When(/^jag klickar på ersätt\-knappen i dialogen$/, function() {
 
 Given(/^jag går tillbaka till det ersatta intyget$/, function() {
     return helpers.pageReloadDelay().then(function() {
-        var url = intygURL(global.ersattintyg.typ, global.ersattintyg.id);
+        var url = intygURL(global.ersattintyg);
         return helpers.getUrl(url);
     });
 });
@@ -98,7 +99,7 @@ Given(/^ska meddelandet som visas innehålla texten "([^"]*)"$/, function(modalM
 
 Given(/^ska det( inte)? finnas knappar för "([^"]*)"( om intygstyp är "([^"]*)")?$/, function(inte, buttons, typ) {
 
-    if (typ && intyg.typ !== typ) {
+    if (typ && this.intyg.typ !== typ) {
         logger.silly('Intygstyp är inte ' + typ);
         return Promise.resolve();
     }

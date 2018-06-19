@@ -38,7 +38,7 @@ module.exports = {
     checkValues: function(intyg) {
         intygPage = pages.getIntygPageByType(intyg.typ);
 
-        return checkEnhetAdress(global.user.enhetsAdress).then(function(value) {
+        return checkEnhetAdress(this.user.enhetsAdress).then(function(value) {
             logger.info('OK - checkEnhetAdress = ' + value);
         }, function(reason) {
             throw ('FEL - checkEnhetAdress: ' + reason);

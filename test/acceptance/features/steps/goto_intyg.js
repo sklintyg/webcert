@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/*global browser, intyg, logger,protractor, JSON,wcTestTools */
+/*global browser, logger, protractor, JSON, wcTestTools */
 'use strict';
 /*jshint newcap:false */
 //TODO Uppgradera Jshint p.g.a. newcap kommer bli depricated. (klarade inte att ignorera i grunt-task)
@@ -46,15 +46,14 @@ var shuffle = wcTestTools.helpers.testdata.shuffle;
  *
  */
 
-function gotoIntyg(intygstyp, status, intygRadElement, cb) {
-
+function gotoIntyg(world, status, intygRadElement, cb) {
     //Om det inte finns några intyg att använda
     if (!intygRadElement) {
         logger.info('Hittade inget intyg, skapar ett nytt..');
-        createIntygWithStatus(intygstyp, status).then(function() {
+        createIntygWithStatus(world, status).then(function() {
 
             //Gå till det nyskapade intyget
-            helpers.getUrl(helpers.intygURL(intygstyp, global.intyg.id)).then(function() {
+            helpers.getUrl(helpers.intygURL(world.intyg)).then(function() {
                 cb();
             });
         });
@@ -66,9 +65,10 @@ function gotoIntyg(intygstyp, status, intygRadElement, cb) {
     }
 }
 
-function getIER(intygstyp, status, callback) {
-    getIntygElementRow(intygstyp, status, function(el) {
-        gotoIntyg(intygstyp, status, el, function(err) {
+function getIER(world, status, callback) {
+    let intyg = world.intyg;
+    getIntygElementRow(intyg.typ, status, function(el) {
+        gotoIntyg(world, status, el, function(err) {
             browser.getCurrentUrl().then(function(text) {
                 intyg.id = text.split('/').slice(-2)[0];
                 intyg.id = intyg.id.split('?')[0];
@@ -93,8 +93,8 @@ function getIER(intygstyp, status, callback) {
 Given(/^jag går in på ett "([^"]*)" med status "([^"]*)"$/, {
     timeout: 700 * 1000
 }, function(intygstyp, status, callback) {
-    intyg.typ = intygstyp;
-    getIER(intygstyp, status, callback);
+    this.intyg.typ = intygstyp;
+    getIER(this, status, callback);
 });
 
 
@@ -109,8 +109,8 @@ Given(/^jag går in på ett slumpat SMI\-intyg med status "([^"]*)"$/, {
         'Läkarutlåtande för aktivitetsersättning vid förlängd skolgång'
     ])[0];
     logger.info('Intyg type: ' + randomIntyg);
-    intyg.typ = randomIntyg;
-    getIER(randomIntyg, status, callback);
+    this.intyg.typ = randomIntyg;
+    getIER(this, status, callback);
 });
 
 Given(/^jag går in på ett slumpat intyg med status "([^"]*)"$/, {
@@ -125,8 +125,8 @@ Given(/^jag går in på ett slumpat intyg med status "([^"]*)"$/, {
         'Transportstyrelsens läkarintyg diabetes'
     ])[0];
     logger.info('Intyg type: ' + randomIntyg);
-    intyg.typ = randomIntyg;
-    getIER(randomIntyg, status, callback);
+    this.intyg.typ = randomIntyg;
+    getIER(this, status, callback);
 });
 
 Given(/^jag går in på ett slumpat TS\-intyg med status "([^"]*)"$/, {
@@ -137,6 +137,6 @@ Given(/^jag går in på ett slumpat TS\-intyg med status "([^"]*)"$/, {
         'Transportstyrelsens läkarintyg diabetes'
     ])[0];
     logger.info('Intyg type: ' + randomIntyg);
-    intyg.typ = randomIntyg;
-    getIER(randomIntyg, status, callback);
+    this.intyg.typ = randomIntyg;
+    getIER(this, status, callback);
 });

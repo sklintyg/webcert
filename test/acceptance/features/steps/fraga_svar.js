@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* globals intyg, browser, protractor, logger, JSON, wcTestTools, Promise, person*/
+/* globals browser, protractor, logger, JSON, wcTestTools, Promise*/
 
 'use strict';
 /*jshint newcap:false */
@@ -55,7 +55,7 @@ testTools.protractorHelpers.init();
  *
  */
 
-function sendQuestionToFK(amne) {
+function sendQuestionToFK(amne, intyg) {
     var testString = testdataHelper.generateTestGuid();
     var fragaText = 'En ' + amne + '-fråga';
 
@@ -76,10 +76,10 @@ function sendQuestionToFK(amne) {
         logger.debug('Frågans ID: ' + fragaId);*/
 
         if (!intyg.messages) {
-            global.intyg.messages = [];
+            this.intyg.messages = [];
         }
         messageID = fragaId;
-        global.intyg.messages.unshift({
+        this.intyg.messages.unshift({
             typ: 'Fråga',
             amne: helpers.subjectCodes[amne],
             id: fragaId,
@@ -116,12 +116,13 @@ function hamtaAllaTraffar() {
  */
 
 Given(/^jag skickar en fråga med ämnet "([^"]*)" till Försäkringskassan$/, function(amne) {
-    return sendQuestionToFK(amne);
+    return sendQuestionToFK(amne, this.intyg);
 });
 Given(/^jag väljer att svara med ett nytt intyg$/, function() {
     helpers.updateEnhetAdressForNewIntyg();
     var page = fkLusePage;
-
+    let intyg = this.intyg;
+    let ursprungligtIntyg = this.ursprungligtIntyg;
 
     if (!intyg.messages || intyg.messages.length <= 0) {
         throw ('Inga frågor hittades');
@@ -137,7 +138,7 @@ Given(/^jag väljer att svara med ett nytt intyg$/, function() {
                 .then(function() {
                     //Fulhack för att inte global ska innehålla en referens
                     logger.info('OK clickKompletteraIntyg(' + intyg.messages[0].id + ');');
-                    global.ursprungligtIntyg = JSON.parse(JSON.stringify(intyg));
+                    ursprungligtIntyg = JSON.parse(JSON.stringify(intyg));
                     return;
 
                 });
@@ -167,18 +168,18 @@ Given(/^ska jag se kompletteringsfrågan på (intygs|utkast)\-sidan$/, function(
     var fragaDeltext;
 
     if (typ === 'intygs') {
-        messageID = global.intyg.messages[0].id;
-        fragaDeltext = global.intyg.messages[0].testString;
+        messageID = this.intyg.messages[0].id;
+        fragaDeltext = this.intyg.messages[0].testString;
     } else {
-        messageID = global.ursprungligtIntyg.messages[0].id;
-        fragaDeltext = global.ursprungligtIntyg.messages[0].testString;
+        messageID = this.ursprungligtIntyg.messages[0].id;
+        fragaDeltext = this.ursprungligtIntyg.messages[0].testString;
     }
     return expect(fragaSvar.meddelande(messageID).frageText.getText()).to.eventually.contain(fragaDeltext);
 });
 
 
 Given(/^jag ska inte kunna komplettera med nytt intyg från webcert/, function() {
-    var komplettera = element(by.id('komplettera-intyg-' + global.intyg.messages[0].id));
+    var komplettera = element(by.id('komplettera-intyg-' + this.intyg.messages[0].id));
 
     return expect(komplettera.isPresent()).to.become(false);
 
@@ -196,7 +197,7 @@ Given(/^ska kompletteringsdialogen innehålla texten "([^"]*)"$/, function(text)
 });
 
 Given(/^jag klickar på svara knappen, fortfarande i uthoppsläge$/, function() {
-    return element(by.id('uthopp-svara-med-meddelande-' + global.intyg.messages[0].id)).typeKeys(protractor.Key.SPACE)
+    return element(by.id('uthopp-svara-med-meddelande-' + this.intyg.messages[0].id)).typeKeys(protractor.Key.SPACE)
         .then(function() {
             return helpers.pageReloadDelay();
         });
@@ -205,8 +206,8 @@ Given(/^jag klickar på svara knappen, fortfarande i uthoppsläge$/, function() 
 
 Given(/^jag ska kunna svara med textmeddelande/, function() {
     browser.ignoreSynchronization = false;
-    var kompletteringsFraga = fkIntygPage.getQAElementByText(global.intyg.messages[0].testString).panel;
-    var textSvar = 'Ett kompletteringssvar: ' + global.intyg.messages[0].testString;
+    var kompletteringsFraga = fkIntygPage.getQAElementByText(this.intyg.messages[0].testString).panel;
+    var textSvar = 'Ett kompletteringssvar: ' + this.intyg.messages[0].testString;
 
     var svaraPaKomplettering = kompletteringsFraga.element(by.cssContainingText('.btn-default', 'Kan inte komplettera')).typeKeys(protractor.Key.SPACE)
         .then(function() {
@@ -247,9 +248,10 @@ Given(/^jag ska kunna svara med textmeddelande/, function() {
 });
 
 Given(/^jag svarar på frågan$/, function() {
+    let intyg = this.intyg;
     messageID = intyg.messages[0].id;
 
-    intyg.messages[0].answer = 'Ett svar till FK, på frågan: ' + global.intyg.messages[0].testString;
+    intyg.messages[0].answer = 'Ett svar till FK, på frågan: ' + intyg.messages[0].testString;
 
     return browser.refresh()
         .then(function() {
@@ -258,11 +260,11 @@ Given(/^jag svarar på frågan$/, function() {
 });
 
 Given(/^kan jag se mitt svar i högerfältet$/, function() {
-    return expect(fragaSvar.container.getText()).to.eventually.contain(intyg.messages[0].answer);
+    return expect(fragaSvar.container.getText()).to.eventually.contain(this.intyg.messages[0].answer);
 });
 
 Given(/^ska jag se påminnelsen på intygssidan$/, function() {
-    var fragaText = global.intyg.messages[0].testString;
+    var fragaText = this.intyg.messages[0].testString;
 
     return browser.refresh()
         .then(function() {
@@ -278,9 +280,9 @@ Given(/^jag markerar (svaret|frågan)? från Försäkringskassan som( INTE)? han
 
     let tempMessageID;
     if (meddelandeTyp === 'svaret') {
-        tempMessageID = global.intyg.messages[1].id;
+        tempMessageID = this.intyg.messages[1].id;
     } else {
-        tempMessageID = global.intyg.messages[0].id;
+        tempMessageID = this.intyg.messages[0].id;
     }
     return browser.refresh().then(function() {
         return helpers.pageReloadDelay();
@@ -299,7 +301,7 @@ Given(/^Försäkringskassan (?:har ställt|ställer) en "([^"]*)" fråga om inty
     var body;
     var amneCode = amne;
 
-    body = soapMessageBodies.SendMessageToCare(global.user, global.person, global.intyg, 'Begär ' + amne, testdataHelper.generateTestGuid(), amneCode);
+    body = soapMessageBodies.SendMessageToCare(this.user, this.patient, this.intyg, 'Begär ' + amne, testdataHelper.generateTestGuid(), amneCode);
     logger.silly(body);
     var path = '/send-message-to-care/v2.0?wsdl';
     url = process.env.INTYGTJANST_URL + path;
@@ -331,6 +333,10 @@ Given(/^Försäkringskassan (?:har ställt|ställer) en "([^"]*)" fråga om inty
 });
 
 Given(/^Försäkringskassan skickar ett svar$/, function(callback) {
+    let intyg = this.intyg;
+    let patient = this.patient;
+    let user = this.user;
+
     function callSendMessageToCare() {
         var url = '';
         var body = '';
@@ -340,7 +346,7 @@ Given(/^Försäkringskassan skickar ett svar$/, function(callback) {
         url = process.env.INTYGTJANST_URL + path;
         url = url.replace('https', 'http');
 
-        body = soapMessageBodies.SendMessageToCare(global.user, global.person, global.intyg, 'Ett svar ', testdataHelper.generateTestGuid(), false);
+        body = soapMessageBodies.SendMessageToCare(user, patient, intyg, 'Ett svar ', testdataHelper.generateTestGuid(), false);
         logger.silly(body);
 
         soap.createClient(url, function(err, client) {
@@ -386,7 +392,7 @@ Given(/^jag går till sidan Frågor och svar$/, function() {
 });
 
 Given(/^ska frågan inte finnas i listan$/, function() {
-
+    let intyg = this.intyg;
     return expect(element(by.id('wc-sekretessmarkering-icon-' + intyg.id)).isPresent()).to.become(false).then(function() {
 
         return expect(element(by.id('showqaBtn-' + intyg.id)).isPresent()).to.become(false);
@@ -396,14 +402,16 @@ Given(/^ska frågan inte finnas i listan$/, function() {
 
 var matchingQARow;
 Given(/^ska det (inte )?finnas en rad med texten "([^"]*)" för frågan$/, function(inte, atgard) {
-    logger.info('Letar efter rader som innehåller text: ' + atgard + ' + ' + person.id);
+    let patient = this.patient;
+
+    logger.info('Letar efter rader som innehåller text: ' + atgard + ' + ' + patient.id);
     return wcTestTools.pages.fragorOchSvar.qaTable.all(by.css('tr')).filter(function(row) {
         return row.all(by.css('td')).getText().then(function(text) {
             logger.silly(text);
-            if (person.id.indexOf('-') === -1) {
-                person.id = person.id.replace(/(\d{8})(\d{4})/, '$1-$2');
+            if (patient.id.indexOf('-') === -1) {
+                patient.id = patient.id.replace(/(\d{8})(\d{4})/, '$1-$2');
             }
-            var hasPersonnummer = (text.indexOf(person.id) > -1);
+            var hasPersonnummer = (text.indexOf(patient.id) > -1);
             var hasAtgard = (text.indexOf(atgard) > -1);
             return hasAtgard && hasPersonnummer;
         });
@@ -428,14 +436,15 @@ Given(/^jag väljer att visa intyget som har en fråga att hantera$/, function()
 });
 
 Given(/^jag väljer att visa intyget med frågan$/, function() {
-    logger.silly(global.intyg.messages);
+    logger.silly(this.intyg.messages);
     var atgard = 'Svara';
+    let patient = this.patient;
 
-    logger.info('Letar efter rader som innehåller text: ' + atgard + ' + ' + person.id);
+    logger.info('Letar efter rader som innehåller text: ' + atgard + ' + ' + patient.id);
     return wcTestTools.pages.fragorOchSvar.qaTable.all(by.css('tr')).filter(function(row) {
         return row.all(by.css('td')).getText().then(function(text) {
             logger.silly(text);
-            var hasPersonnummer = (text.indexOf(person.id) > -1);
+            var hasPersonnummer = (text.indexOf(patient.id) > -1);
             var hasAtgard = (text.indexOf(atgard) > -1);
             return hasAtgard && hasPersonnummer;
         });
@@ -535,10 +544,10 @@ Given(/^ska jag se min fråga som ohanterad$/, function() {
     return expect(fragaSvar.meddelande(messageID).administrativFraga.hanterad.isSelected()).to.eventually.become(false);
 });
 
-Given(/^jag skickar en fråga med slumpat ämne till Försäkringskassan$/, function(callback) {
-    sendQuestionToFK(
+Given(/^jag skickar en fråga med slumpat ämne till Försäkringskassan$/, function() {
+    return sendQuestionToFK(
         testdataHelper.shuffle(['Arbetstidsförläggning', 'Avstämningsmöte', 'Kontakt', 'Övrigt'])[0],
-        callback
+        this.intyg
     );
 });
 
@@ -552,7 +561,7 @@ Given(/^ska jag ha möjlighet att vidarebefordra frågan$/, function() {
     });
 });
 Then(/^ska det synas vem som svarat$/, function() {
-    var name = global.user.forNamn + ' ' + global.user.efterNamn;
+    var name = this.user.forNamn + ' ' + this.user.efterNamn;
     return element.all(by.css('.arende-sender.ng-binding.ng-scope')).map(function(data) {
         return data.getText();
     }).then(function(theNames) {

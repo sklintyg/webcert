@@ -16,16 +16,16 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/* globals logger, Promise, person, wcTestTools */
+/* globals logger, Promise, wcTestTools */
 
 'use strict';
 var testdataHelper = wcTestTools.helpers.testdata;
 
 module.exports = {
     fk: {
-        LUSE: function(intyg) {
+        LUSE: function(intyg, patient) {
             return Promise.all([
-                expect(element(by.id('patient-crn')).getText()).to.eventually.equal(person.id.replace('-', ''))
+                expect(element(by.id('patient-crn')).getText()).to.eventually.equal(patient.id.replace('-', ''))
                 .then(function(value) {
                     logger.info('OK - Personnummer');
                 }, function(reason) {

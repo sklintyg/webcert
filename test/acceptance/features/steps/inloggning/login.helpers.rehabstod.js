@@ -28,12 +28,12 @@ var logInAsUserRehabstod = function(userObj, roleName, skipCookieConsent) {
     logger.info('Loggar in som ' + userObj.forNamn + ' ' + userObj.efterNamn);
 
     // Fattigmans-kloning av användar-hashen.
-    global.user = JSON.parse(JSON.stringify(userObj));
+    this.user = JSON.parse(JSON.stringify(userObj));
 
 
     browser.ignoreSynchronization = true;
 
-    global.user.roleName = roleName;
+    this.user.roleName = roleName;
 
     return helpers.getUrl('welcome.html').then(function() {
         return pages.welcome.loginByJSON(JSON.stringify(userObj), !skipCookieConsent);
@@ -50,7 +50,7 @@ module.exports = {
     logInAsUserRoleRehabstod: function(userObj, roleName, skipCookieConsent) {
         logger.info('Loggar in som ' + roleName);
         logger.silly(userObj);
-        global.user.roleName = roleName;
+        this.user.roleName = roleName;
 
         return logInAsUserRehabstod(userObj, roleName, skipCookieConsent).then(function() {
             logger.info('Login default browser successful');
