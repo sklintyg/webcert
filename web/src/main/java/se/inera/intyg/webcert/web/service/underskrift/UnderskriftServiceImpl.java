@@ -155,6 +155,15 @@ public class UnderskriftServiceImpl implements UnderskriftService {
     public SignaturBiljett netidSignature(String biljettId, byte[] signatur, String certifikat) {
         SignaturBiljett sb = redisTicketTracker.findBiljett(biljettId);
 
+        // Highly unlikely, but if the redis cache have crashed in between or similar, we need to handle that the there's
+        // no SignaturBiljett to be had.
+        if (sb == null) {
+            String errMsg = "No SignaturBiljett found for ticketId '{}' when finalizing signature. "
+                + "Has Redis evicted the ticket early or has Redis crashed during the signature process?";
+            LOG.error(errMsg);
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, errMsg);
+        }
+
         WebCertUser user = webCertUserService.getUser();
         Utkast utkast = getUtkastForSignering(sb.getIntygsId(), sb.getVersion(), user);
 

@@ -18,61 +18,61 @@
  */
 package se.inera.intyg.webcert.web.service.underskrift.tracker;
 
+import java.util.concurrent.TimeUnit;
+
+import javax.annotation.Resource;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.Cache;
-import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.DependsOn;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
+
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturBiljett;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturStatus;
 
-import javax.annotation.PostConstruct;
-
+/**
+ * Stores {@link SignaturBiljett} instances in Redis, using {@link RedisTicketTrackerImpl#SIGNATURE_CACHE} + ticketId
+ * as key.
+ *
+ * Uses the RedisTemplate directly to allow fine-grained control over entry expiry.
+ *
+ * @author eriklupander
+ */
 @Service
-@DependsOn("cacheManager")
+@DependsOn("redisTemplate")
 public class RedisTicketTrackerImpl implements RedisTicketTracker {
 
     private static final String SIGNATURE_CACHE = "webcert.signature.ticket";
+    private static final long TICKET_EXPIRY_MINUTES = 15L;
 
     @Autowired
-    private CacheManager cacheManager;
+    private RedisTemplate<Object, Object> redisTemplate;
 
-    private Cache cache;
-
-    @PostConstruct
-    public void init() {
-        cache = getCache();
-    }
-
+    // inject the template as ValueOperations
+    @Resource(name = "redisTemplate")
+    private ValueOperations<String, SignaturBiljett> valueOps;
 
     @Override
     public void trackBiljett(SignaturBiljett signaturBiljett) {
-        cache.put(signaturBiljett.getTicketId(), signaturBiljett);
+        valueOps.set(buildKey(signaturBiljett.getTicketId()), signaturBiljett, TICKET_EXPIRY_MINUTES,
+                TimeUnit.MINUTES);
     }
-
-
 
     @Override
     public SignaturBiljett findBiljett(String ticketId) {
-        return cache.get(ticketId, SignaturBiljett.class);
+        return valueOps.get(buildKey(ticketId));
     }
 
     @Override
     public SignaturBiljett updateStatus(String ticketId, SignaturStatus status) {
-        SignaturBiljett sb = cache.get(ticketId, SignaturBiljett.class);
+        SignaturBiljett sb = valueOps.get(buildKey(ticketId));
         sb.setStatus(status);
-        cache.put(ticketId, sb);
+        valueOps.set(buildKey(ticketId), sb);
         return sb;
     }
 
-    private Cache getCache() {
-        if (cacheManager == null) {
-            throw new IllegalStateException("No CacheManager (Redis) injected into RedisTicketTrackerImpl.");
-        }
-        Cache cache = cacheManager.getCache(SIGNATURE_CACHE);
-        if (cache == null) {
-            throw new IllegalStateException("CacheManager (Redis) contains no cache " + SIGNATURE_CACHE);
-        }
-        return cache;
+    private String buildKey(String ticketId) {
+        return SIGNATURE_CACHE + ticketId;
     }
 }
