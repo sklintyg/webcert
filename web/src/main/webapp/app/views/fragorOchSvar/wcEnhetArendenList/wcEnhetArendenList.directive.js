@@ -21,10 +21,11 @@ angular.module('webcert').directive('wcEnhetArendenList', [
     '$location', '$log', '$timeout', '$window',
     'common.ArendeVidarebefordraHelper', 'common.ArendeProxy', 'common.dialogService',
     'webcert.enhetArendenListService', 'webcert.enhetArendenModel', 'webcert.enhetArendenListModel',
-    'common.messageService', 'webcert.vardenhetFilterModel', 'webcert.enhetArendenFilterModel',
+    'common.messageService', 'webcert.vardenhetFilterModel', 'webcert.enhetArendenFilterModel', 'common.statService',
     function($location, $log, $timeout, $window,
         ArendeVidarebefordraHelper, ArendeProxy, dialogService,
-        enhetArendenListService, enhetArendenModel, enhetArendenListModel, messageService, vardenhetFilterModel, enhetArendenFilterModel) {
+        enhetArendenListService, enhetArendenModel, enhetArendenListModel, messageService, 
+        vardenhetFilterModel, enhetArendenFilterModel, statService) {
         'use strict';
 
         return {
@@ -34,6 +35,11 @@ angular.module('webcert').directive('wcEnhetArendenList', [
             scope: {},
             templateUrl: '/app/views/fragorOchSvar/wcEnhetArendenList/wcEnhetArendenList.directive.html',
             controller: function($scope) {
+                $scope.stat = statService.getLatestData();
+                $scope.$on('statService.stat-update', function(event, message) {
+                    $scope.stat = message;
+                });
+
                 $scope.listModel = enhetArendenListModel;
                 $scope.vardenhetFilterModel = vardenhetFilterModel;
 
