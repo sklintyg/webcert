@@ -31,6 +31,7 @@ describe('wcEnhetArendenList', function() {
     var enhetArendenListService;
     var ArendeVidarebefordraHelper;
     var ArendeProxy;
+    var statService;
 
     var testQAResponse = {
         'totalCount': 3,
@@ -121,6 +122,8 @@ describe('wcEnhetArendenList', function() {
             $provide.value('common.UserModel', jasmine.createSpyObj('common.UserModel', ['isLakare', 'isTandlakare', 'isPrivatLakare']));
             $provide.value('common.messageService', jasmine.createSpyObj('common.messageService', ['getProperty']));
 
+            $provide.value('common.statService', {getLatestData:function(){}});
+
             // To prevent $window.location from reloading the page
             var $window = {};
             $window.location = {};
@@ -131,9 +134,9 @@ describe('wcEnhetArendenList', function() {
         }]);
 
         inject(['$rootScope', '$compile', '$q', '$location', '$timeout', 'common.ArendeProxy', 'webcert.enhetArendenListModel',
-            'webcert.enhetArendenListService', '$templateCache', 'webcert.enhetArendenFilterService',
+            'webcert.enhetArendenListService', '$templateCache', 'webcert.enhetArendenFilterService', 'common.statService',
             function(_$rootScope_, _$compile_, _$q_, _$location_, _$timeout_, _ArendeProxy_, _enhetArendenListModel_,
-                _enhetArendenListService_, $templateCache, _enhetArendenFilterService_) {
+                _enhetArendenListService_, $templateCache, _enhetArendenFilterService_, _statService_) {
 
                 $templateCache.put('/web/webjars/common/webcert/components/headers/wcHeader.partial.html', '');
 
@@ -144,6 +147,7 @@ describe('wcEnhetArendenList', function() {
                 $timeout = _$timeout_;
                 enhetArendenListModel = _enhetArendenListModel_;
                 enhetArendenListService = _enhetArendenListService_;
+                statService = _statService_;
                 ArendeProxy = _ArendeProxy_;
 
                 spyOn(_enhetArendenFilterService_, 'initLakareList').and.stub();
