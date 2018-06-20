@@ -26,7 +26,7 @@
       </div>
 
       <!-- arende table - Frågor och svar-tabell -->
-      <div class="row" id="arendeTable">
+      <div class="row" id="arendeTable" ng-show="stat.fragaSvarValdEnhet > 0">
         <div class="col-md-12">
           <div class="rounded-table-wrapper">
           <table class="table table-striped wc-table-striped">
@@ -83,7 +83,7 @@
         </div>
        </div>
       </div>
-      <div ng-if="listModel.totalCount == 0">Inga resultat att visa.</div>
+      <div ng-if="listModel.totalCount == 0 && stat.fragaSvarValdEnhet > 0">Inga resultat att visa.</div>
       <div ng-show="listModel.arendenList.length < listModel.totalCount">
         <button type="button"
                 id="hamtaFler"
