@@ -141,7 +141,7 @@ Klicka på "E-legitimation" och logga in mha BankID eller Mobilt BankID
 
 ### Restassured
 
-Restassured-tester kan köras från roten av /minaintyg
+Restassured-tester kan köras från roten av /webcert
 
     # Alla testklasser i ett paket
     ./gradlew restAssured --tests se.inera.intyg.webcert.web.integration.integrationtest.*
