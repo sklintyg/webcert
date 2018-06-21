@@ -53,7 +53,7 @@ angular.module('webcert').factory('webcert.enhetArendenConverterService',
                 filterQuery.enhetId = enhetId;
             }
 
-            filterQuery.vantarPa = filterForm.vantarPaSelector.value;
+            filterQuery.vantarPa = filterForm.vantarPaSelector;
 
             if (filterForm.lakareSelector) {
                 filterQuery.hsaId = filterForm.lakareSelector;
