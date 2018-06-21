@@ -100,7 +100,8 @@ public class ArendeServiceImpl implements ArendeService {
     private static final String KOMPLT = "KOMPLT";
 
     private static final String INGET = "Inget";
-    private static final String HANTERAT = "Markera som hanterad";
+    private static final String HANTERAT_AV_FK = "Hanterat ärende";
+    private static final String HANTERAT_AV_ANNAT = "Läs inkommet svar";
     private static final String KOMPLETTERA = "Komplettera";
     private static final String SVARA = "Svara";
     private static final String INVANTA_SVAR = "Invänta svar från Försäkringskassan";
@@ -483,7 +484,7 @@ public class ArendeServiceImpl implements ArendeService {
         return response;
     }
 
-    private static String getAmneString(String amne, Status status, Boolean paminnelse) {
+    private static String getAmneString(String amne, Status status, Boolean paminnelse, String fragestallare) {
         String amneString = "";
         if (paminnelse) {
             amneString = "Påminnelse: ";
@@ -491,7 +492,11 @@ public class ArendeServiceImpl implements ArendeService {
         if (status == Status.CLOSED) {
             return amneString + INGET;
         } else if (status == Status.ANSWERED || amne.equals(MAKULERING) || amne.equals(PAMINNELSE) || amne.equals(PAMINN)) {
-            return amneString + HANTERAT;
+            if (fragestallare == "FK") {
+                return amneString + HANTERAT_AV_FK;
+            } else {
+                return amneString + HANTERAT_AV_ANNAT;
+            }
         } else if (amne.equals(KOMPLETTERING_AV_LAKARINTYG) || amne.equals(KOMPLT)) {
             return amneString + KOMPLETTERA;
         } else if (status == Status.PENDING_INTERNAL_ACTION) {
@@ -510,8 +515,8 @@ public class ArendeServiceImpl implements ArendeService {
             switch (orderBy) {
                 case "amne":
                     comparator = (a1, a2) -> {
-                        return getAmneString(a1.getAmne(), a1.getStatus(), a1.isPaminnelse())
-                            .compareTo(getAmneString(a2.getAmne(), a2.getStatus(), a2.isPaminnelse()));
+                        return getAmneString(a1.getAmne(), a1.getStatus(), a1.isPaminnelse(), a1.getFragestallare())
+                            .compareTo(getAmneString(a2.getAmne(), a2.getStatus(), a2.isPaminnelse(), a2.getFragestallare()));
                     };
                     break;
                 case "fragestallare":
