@@ -71,10 +71,12 @@
   <!-- buttons -->
   <div>
     <div>
-      <button type="button" id="filter-arende-btn" class="btn btn-success" ng-click="filterList()">
+      <button type="button" id="filter-arende-btn" class="btn btn-success" ng-click="filterList()" uib-popover="Sök efter frågor och svar." 
+        popover-trigger="mouseenter" popover-placement="top" popover-popup-delay="300" popover-append-to-body="true">
         Sök
       </button>
-      <button type="button" class="btn btn-default" ng-click="resetFilterForm()" id="reset-search-form">
+      <button type="button" class="btn btn-default" ng-click="resetFilterForm()" id="reset-search-form" uib-popover="Rensa sökfiltret." 
+        popover-trigger="mouseenter" popover-placement="top" popover-popup-delay="300" popover-append-to-body="true">
         Återställ sökfilter
       </button>
     </div>

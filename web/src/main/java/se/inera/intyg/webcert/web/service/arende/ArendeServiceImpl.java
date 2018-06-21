@@ -492,7 +492,7 @@ public class ArendeServiceImpl implements ArendeService {
         if (status == Status.CLOSED) {
             return amneString + INGET;
         } else if (status == Status.ANSWERED || amne.equals(MAKULERING) || amne.equals(PAMINNELSE) || amne.equals(PAMINN)) {
-            if (fragestallare == "FK") {
+            if ("FK".equals(fragestallare)) {
                 return amneString + HANTERAT_AV_FK;
             } else {
                 return amneString + HANTERAT_AV_ANNAT;
