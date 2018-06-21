@@ -85,14 +85,14 @@
       </div>
       <div ng-if="listModel.totalCount == 0 && stat.fragaSvarValdEnhet > 0">Inga resultat att visa.</div>
       <div ng-show="listModel.arendenList.length < listModel.totalCount">
-        <button type="button"
-                id="hamtaFler"
-                class="btn btn-primary"
-                uib-popover-html="moreHitsTooltip" popover-trigger="mouseenter" popover-placement="top" popover-popup-delay="300" popover-append-to-body="true"
-                ng-click="fetchMore()"
-                ng-disabled="listModel.fetchingMoreInProgress">
-          <img src="/img/loader-small.gif" ng-show="listModel.viewState.fetchingMoreInProgress"> Visa fler träffar
-        </button>
+        <wc-button
+            btn-id="hamtaFler"
+            btn-class="btn-primary"
+            btn-click="fetchMore()"
+            loading="listModel.fetchingMoreInProgress"
+            btn-tooltip="{{moreHitsTooltip}}">
+          Visa fler träffar
+        </wc-button>
       </div>
     </div>
   </wc-spinner>
