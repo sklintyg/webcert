@@ -126,7 +126,7 @@ angular.module('webcert').constant('webcert.messages', {
 
         //Fraga/Svar
         'arende.measure.svarfranvarden': 'Svara',
-        'arende.measure.svarfranfk': 'Invänta svar från Försäkringskassan',
+        'arende.measure.svarfranfk': 'Invänta svar',
         'arende.measure.komplettering': 'Komplettera',
         'arende.measure.markhandled.fk': 'Hanterat ärende',
         'arende.measure.markhandled.wc': 'Läs inkommet svar',

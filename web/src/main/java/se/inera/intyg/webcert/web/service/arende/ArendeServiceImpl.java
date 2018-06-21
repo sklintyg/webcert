@@ -104,7 +104,7 @@ public class ArendeServiceImpl implements ArendeService {
     private static final String HANTERAT_AV_ANNAT = "Läs inkommet svar";
     private static final String KOMPLETTERA = "Komplettera";
     private static final String SVARA = "Svara";
-    private static final String INVANTA_SVAR = "Invänta svar från Försäkringskassan";
+    private static final String INVANTA_SVAR = "Invänta svar";
 
     private static final Logger LOG = LoggerFactory.getLogger(ArendeServiceImpl.class);
 

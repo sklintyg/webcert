@@ -6,7 +6,7 @@
        class="wc-filter-panel row">
 
     <div wc-authority="VIDAREBEFORDRA_FRAGASVAR" class="col-md-2 form-group" id="filterFormVidarebefordrad">
-      <label class="control-label">Vidarebefordrad</label><br>
+      <label class="control-label">Vidarebefordrat</label><br>
       <wc-dropdown data-items="enhetArendenFilterModel.vidarebefordradOptions"
                    ng-model="enhetArendenFilterModel.filterForm.vidarebefordrad"
                    data-on-select="validate()"
@@ -58,7 +58,7 @@
 
     <!-- Skickat/mottaget -->
     <div class="col-md-4 form-group">
-      <label class="control-label">Skickat/mottaget</label><br>
+      <label class="control-label">Skickat datum</label><br>
       <div class="form-inline">
         Från
         <span dom-id="filter-changedate-from" target-model="enhetArendenFilterModel.filterForm.changedFrom" wc-date-picker-field add-date-parser="strict"></span>
