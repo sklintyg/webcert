@@ -278,7 +278,8 @@ Given(/^jag är inloggad som läkare i Webcert med enhet "([^"]*)"$/, function(e
         forNamn: 'Johan',
         efterNamn: 'Johansson',
         hsaId: 'TSTNMT2321000156-107V',
-        enhetId: enhetsId
+        enhetId: enhetsId,
+        lakare: true
     };
 
     return logInAsUserRole(userObj, 'Läkare', true);

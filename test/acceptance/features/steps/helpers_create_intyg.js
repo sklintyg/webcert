@@ -22,7 +22,7 @@
 var testdataHelper = wcTestTools.helpers.testdata;
 var loginHelpers = require('./inloggning/login.helpers.js');
 // var restTestdataHelper = wcTestTools.helpers.restTestdata;
-var sokSkrivIntygPage = pages.sokSkrivIntyg.pickPatient;
+//var sokSkrivIntygPage = pages.sokSkrivIntyg.pickPatient;
 var sokSkrivIntygUtkastTypePage = pages.sokSkrivIntyg.valjUtkastType;
 var fkUtkastPage = pages.intyg.fk['7263'].utkast;
 var fkIntygPage = pages.intyg.fk['7263'].intyg;
@@ -30,78 +30,46 @@ var helpers = require('./helpers');
 
 
 function writeNewIntyg(world, status) {
-    world.user = {
-        forNamn: 'Johan',
-        efterNamn: 'Johansson',
-        hsaId: 'TSTNMT2321000156-107V',
-        enhetId: world.user.enhetId,
-        lakare: true
-    };
-
-
     if (world.intyg.typ === 'Läkarintyg FK 7263') {
         throw ('Det går inte längre skapa nytt intygs utkast för FK7263');
     } else {
-        // Logga in med en användare som garanterat kan signera intyg
-        return loginHelpers.logInAsUserRole(world.user, 'Läkare')
-            // Väj samma person som tidigare
+        logger.silly('Väljer typ av utkast..');
+        return sokSkrivIntygUtkastTypePage.createUtkast(helpers.getInternShortcode(world.intyg.typ))
             .then(function() {
-                return sokSkrivIntygPage.selectPersonnummer(world.patient.id)
-                    .then(function() {
-                        browser.ignoreSynchronization = false;
-                        helpers.tinyDelay();
-                    })
-                    .then(function() { // Välj rätt typ av utkast
-                        logger.silly('Väljer typ av utkast..');
-                        sokSkrivIntygUtkastTypePage.createUtkast(helpers.getInternShortcode(world.intyg.typ));
-                    })
-                    .then(function() {
-                        helpers.pageReloadDelay();
-                    })
-                    .then(function() { // Spara intygsid för kommande steg
-                        return browser.getCurrentUrl().then(function(text) {
-                            world.intyg.id = text.split('/').slice(-2)[0];
-                            return logger.info('intyg.id: ' + world.intyg.id);
-                        });
+                return helpers.pageReloadDelay();
+            })
+            .then(function() { // Spara intygsid för kommande steg
+                return browser.getCurrentUrl().then(function(text) {
+                    world.intyg.id = text.split('/').slice(-2)[0];
+                    return logger.info('intyg.id: ' + world.intyg.id);
+                });
 
-                    })
-                    .then(function() { // Ange intygsdata
-                        logger.silly('Anger intygsdata..');
-                        world.intyg = helpers.generateIntygByType(world.intyg);
-                        logger.silly(world.intyg);
-                        return require('./fillIn').fillIn(world);
-                    })
-                    .then(function() { //Klicka på signera
-                        logger.silly('Klickar på signera..');
-                        return fkUtkastPage.signeraButton.sendKeys(protractor.Key.SPACE);
-                    })
-                    .then(function() {
-                        return helpers.largeDelay();
-                    })
-                    .then(function() { // Skicka till mottagare om intyget ska vara Skickat
-                        if (status === 'Skickat') {
-                            logger.silly('Klickar på skicka knapp..');
-                            return fkIntygPage.skicka.knapp.sendKeys(protractor.Key.SPACE)
-                                .then(function() {
-                                    logger.silly('Klickar skicka knapp i skicka-dialog..');
-                                    return fkIntygPage.skicka.dialogKnapp.sendKeys(protractor.Key.SPACE);
-                                });
-                        } else {
-                            logger.silly('Klar utan att skicka till mottagare..');
-                            return Promise.resolve();
-                        }
-                    })
-                    .then(function() { // Logga in med tidigare användare
-                        logger.silly('Loggar in med tidigare användare..');
-                        return loginHelpers.logInAsUser({
-                            forNamn: world.user.forNamn,
-                            efterNamn: world.user.efterNamn,
-                            hsaId: world.user.hsaId,
-                            enhetId: world.user.enhetId,
-                            lakare: world.user.lakare,
-                            origin: world.user.origin
+            })
+            .then(function() { // Ange intygsdata
+                logger.silly('Anger intygsdata..');
+                world.intyg = helpers.generateIntygByType(world.intyg);
+                logger.silly(world.intyg);
+                return require('./fillIn').fillIn(world);
+            })
+            .then(function() { //Klicka på signera
+                logger.silly('Klickar på signera..');
+                return fkUtkastPage.signeraButton.sendKeys(protractor.Key.SPACE);
+            })
+            .then(function() {
+                return helpers.largeDelay();
+            })
+            .then(function() { // Skicka till mottagare om intyget ska vara Skickat
+                if (status === 'Skickat') {
+                    logger.silly('Klickar på skicka knapp..');
+                    return fkIntygPage.skicka.knapp.sendKeys(protractor.Key.SPACE)
+                        .then(function() {
+                            logger.silly('Klickar skicka knapp i skicka-dialog..');
+                            return fkIntygPage.skicka.dialogKnapp.sendKeys(protractor.Key.SPACE);
                         });
-                    });
+                } else {
+                    logger.silly('Klar utan att skicka till mottagare..');
+                    return Promise.resolve();
+                }
             });
     }
 }
@@ -111,6 +79,39 @@ module.exports = {
 
         world.intyg.id = testdataHelper.generateTestGuid();
         logger.debug('intyg.id = ' + world.intyg.id);
-        return writeNewIntyg(world, status);
+
+
+        let previousUser;
+        if (!world.user.lakare) {
+            previousUser = Object.create(world.user);
+            world.user = {
+                forNamn: 'Johan',
+                efterNamn: 'Johansson',
+                hsaId: 'TSTNMT2321000156-107V',
+                enhetId: world.user.enhetId,
+                lakare: true
+            };
+            return loginHelpers.logInAsUserRole(world.user, 'Läkare')
+				.then(function(){
+					logger.silly('Väjer samma person som tidigare..');
+					return sokSkrivIntygPage.selectPersonnummer(world.patient.id);
+				})			
+				.then(function() {
+					browser.ignoreSynchronization = false;
+					return helpers.tinyDelay();
+				})
+			    .then(function() {
+					logger.silly('Fyller i utkast och signerar..');
+                    return writeNewIntyg(world, status);
+                })
+                .then(function() {
+                    logger.silly('Loggar in med tidigare användare..');
+                    world.user = previousUser;
+                    return loginHelpers.logInAsUser(world.user);
+
+                });
+        } else {
+            return writeNewIntyg(world, status);
+        }
     }
 };

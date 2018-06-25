@@ -40,6 +40,7 @@ var logInAsUser = function(user, skipCookieConsent, secondBrowser) {
     global.sessionUsed = false;
 
     //Ta ut dom variablar som behövs vid inloggning.
+    console.log(JSON.stringify(user));
     let userObj = {
         forNamn: user.forNamn,
         efterNamn: user.efterNamn,

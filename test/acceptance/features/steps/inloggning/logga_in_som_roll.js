@@ -98,7 +98,7 @@ Given(/^att jag är inloggad som läkare utan adress till enheten$/, function() 
         efterNamn: 'Johansson',
         hsaId: 'TSTNMT2321000156-107V',
         enhetId: 'TSTNMT2321000156-ULLA',
-        lakare: 'true',
+        lakare: true,
         origin: 'NORMAL'
     };
     return logInAsUserRole(this.user, 'Läkare');
@@ -144,7 +144,8 @@ Given(/^att jag är inloggad som läkare(?: "([^"]*)")?$/, function(lakarNamn) {
         forNamn: 'Johan',
         efterNamn: 'Johansson',
         hsaId: 'TSTNMT2321000156-107V',
-        enhetId: 'TSTNMT2321000156-107Q'
+        enhetId: 'TSTNMT2321000156-107Q',
+        lakare: true
     };
 
     if (lakarNamn) {
@@ -190,7 +191,8 @@ Given(/^att jag är inloggad som läkare på (vårdenhet|underenhet) "([^"]*)"$/
         efterNamn: 'Johansson',
         hsaId: 'TSTNMT2321000156-107V',
         enhetId: ve,
-        'origin': 'NORMAL'
+        origin: 'NORMAL',
+        lakare: true
     };
     return logInAsUserRole(this.user, 'Läkare');
 });
@@ -202,7 +204,8 @@ Given(/^att jag är inloggad som djupintegrerad läkare$/, function() {
         efterNamn: 'Johansson',
         hsaId: 'TSTNMT2321000156-107V',
         enhetId: 'TSTNMT2321000156-INT1',
-        origin: 'DJUPINTEGRATION'
+        origin: 'DJUPINTEGRATION',
+        lakare: true
     };
     return logInAsUserRole(this.user, 'Läkare');
 });
@@ -214,7 +217,8 @@ Given(/^att jag är inloggad som djupintegrerad läkare på vårdenhet "([^"]*)"
         hsaId: 'TSTNMT2321000156-107V',
         enhetId: enhetHsa,
         forskrivarKod: '2481632',
-        origin: 'DJUPINTEGRATION'
+        origin: 'DJUPINTEGRATION',
+        lakare: true
     };
     return logInAsUserRole(this.user, 'Läkare');
 });
@@ -226,7 +230,8 @@ Given(/^att jag är inloggad som uthoppsläkare$/, function() {
         efterNamn: 'Johansson',
         hsaId: 'TSTNMT2321000156-107V',
         enhetId: 'TSTNMT2321000156-107Q',
-        origin: 'UTHOPP'
+        origin: 'UTHOPP',
+        lakare: true
     };
     return logInAsUserRole(this.user, 'Läkare');
 });
@@ -276,7 +281,8 @@ Given(/^att jag är inloggad som( djupintegrerad)? läkare på (underenhet|vård
             efterNamn: 'Johansson',
             hsaId: 'TSTNMT2321000156-107V',
             enhetId: harInteEnhet,
-            'origin': origin
+            'origin': origin,
+            lakare: true
         };
     } else if (harInteEnhet === 'TSTNMT2321000156-INT2') {
         this.user = {
@@ -322,7 +328,8 @@ Given(/^jag loggar in med felaktig uppgift om telefonuppgift i HSAkatalogen$/, f
         forNamn: 'Johan',
         efterNamn: 'Johansson',
         hsaId: 'TSTNMT2321000156-107V',
-        enhetId: 'TSTNMT2321000156-107Q'
+        enhetId: 'TSTNMT2321000156-107Q',
+        lakare: true
     };
     return logInAsUser(userObj);
 });

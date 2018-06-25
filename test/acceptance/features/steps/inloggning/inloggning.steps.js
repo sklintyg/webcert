@@ -309,7 +309,8 @@ Given(/^sedan öppnar intyget i två webbläsarinstanser$/, function(callback) {
         forNamn: 'Johan',
         efterNamn: 'Johansson',
         hsaId: 'TSTNMT2321000156-107V',
-        enhetId: 'TSTNMT2321000156-107Q'
+        enhetId: 'TSTNMT2321000156-107Q',
+        lakare: true
     };
     //inteAccepteratKakor = true;
 

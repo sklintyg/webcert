@@ -236,16 +236,16 @@ Given(/^jag går in på intygsutkastet via djupintegrationslänk med ett reservn
 
 Given(/jag försöker gå in på intygsutkastet via djupintegrationslänk$/, function() {
     //"Försöker gå in" är inte samma steg som "går in". p.g.a. expect logiken.
-    let user = this.user;
-    return loginIfSessionUsed(user).then(function() {
-        return helpers.getUrl(getIntegrationUrl(user, ' via djupintegrationslänk', this.intyg));
+    let world = this;
+    return loginIfSessionUsed(world.user).then(function() {
+        return helpers.getUrl(getIntegrationUrl(world.user, ' via djupintegrationslänk', world.intyg));
     });
 });
 Given(/jag försöker gå in på intygsutkastet via djupintegrationslänk och har parameter "([^"]*)"$/, function(param) {
     //"Försöker gå in" är inte samma steg som "går in". p.g.a. expect logiken.
-    let user = this.user;
-    return loginIfSessionUsed(user).then(function() {
-        let url = getIntegrationUrl(user, ' via djupintegrationslänk', this.intyg, this.patient);
+    let world = this;
+    return loginIfSessionUsed(world.user).then(function() {
+        let url = getIntegrationUrl(world.user, ' via djupintegrationslänk', world.intyg, world.patient);
         url += param;
         return helpers.getUrl(url);
     });
