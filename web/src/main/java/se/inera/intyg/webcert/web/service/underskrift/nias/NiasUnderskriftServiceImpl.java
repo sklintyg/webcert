@@ -18,12 +18,20 @@
  */
 package se.inera.intyg.webcert.web.service.underskrift.nias;
 
-import com.secmaker.netid.nias.v1.NetiDAccessServerSoap;
-import com.secmaker.netid.nias.v1.SignResponse;
+import java.nio.charset.Charset;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.Base64;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+
+import com.secmaker.netid.nias.v1.NetiDAccessServerSoap;
+
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturBiljett;
@@ -31,11 +39,10 @@ import se.inera.intyg.webcert.web.service.underskrift.model.SignaturStatus;
 import se.inera.intyg.webcert.web.service.underskrift.nias.factory.NiasCollectPollerFactory;
 import se.inera.intyg.webcert.web.service.underskrift.tracker.RedisTicketTracker;
 
-import javax.xml.bind.JAXB;
-import java.io.StringReader;
-
 @Service
 public class NiasUnderskriftServiceImpl implements NiasUnderskriftService {
+
+    private static final Logger LOG = LoggerFactory.getLogger(NiasUnderskriftServiceImpl.class);
 
     @Autowired
     private NetiDAccessServerSoap netiDAccessServerSoap;
@@ -51,21 +58,25 @@ public class NiasUnderskriftServiceImpl implements NiasUnderskriftService {
 
     @Override
     public void startNiasCollectPoller(String personId, SignaturBiljett signaturBiljett) {
-        SignResponse response;
         try {
-            String result = netiDAccessServerSoap.sign(personId, "Inera Webcert: Signera intyg " + signaturBiljett.getIntygsId(),
-                    signaturBiljett.getIntygSignature().getSigningData(), null);
-            response = JAXB.unmarshal(new StringReader(result), SignResponse.class);
-
+            String base64digest = sha256AsBase64(signaturBiljett.getIntygSignature().getSigningData());
+            String orderRef = netiDAccessServerSoap.sign(personId, null, base64digest, null);
+            LOG.info("NIAS Sign(..) request returned orderRef {}", orderRef);
+            startAsyncNiasCollectPoller(orderRef, signaturBiljett.getTicketId());
         } catch (Exception ex) {
             redisTicketTracker.updateStatus(signaturBiljett.getTicketId(), SignaturStatus.OKAND);
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.UNKNOWN_INTERNAL_PROBLEM, ex.getMessage());
         }
+    }
 
-        // If we could init the authentication, we create a SignaturTicket, reusing
-        // the mechanism already present for SITHS
-        String orderRef = response.getSignResult();
-        startAsyncNiasCollectPoller(orderRef, signaturBiljett.getTicketId());
+    private String sha256AsBase64(String signingData) {
+        try {
+            MessageDigest sha = MessageDigest.getInstance("SHA-256");
+            sha.update(signingData.getBytes(Charset.forName("UTF-8")));
+            return Base64.getEncoder().encodeToString(sha.digest());
+        } catch (NoSuchAlgorithmException e) {
+            throw new IllegalArgumentException("Unable to digest signingData, unknown algorithm");
+        }
     }
 
     private void startAsyncNiasCollectPoller(String orderRef, String ticketId) {

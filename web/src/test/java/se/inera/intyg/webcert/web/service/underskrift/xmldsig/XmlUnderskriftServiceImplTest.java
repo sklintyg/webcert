@@ -32,6 +32,8 @@ import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
+import se.inera.intyg.infra.xmldsig.model.ValidationResponse;
+import se.inera.intyg.infra.xmldsig.model.ValidationResult;
 import se.inera.intyg.infra.xmldsig.service.PrepareSignatureService;
 import se.inera.intyg.infra.xmldsig.service.XMLDSigServiceImpl;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
@@ -71,6 +73,12 @@ public class XmlUnderskriftServiceImplTest {
     private static final String PERSON_ID = "19121212-1212";
     private static final String TICKET_ID = "ticket-1";
     private static final Long VERSION = 1L;
+
+    private static final ValidationResponse okValidationResult = ValidationResponse.ValidationResponseBuilder.aValidationResponse()
+            .withSignatureValid(ValidationResult.OK).withReferencesValid(ValidationResult.OK).build();
+
+    private static final ValidationResponse failedValidationResult = ValidationResponse.ValidationResponseBuilder.aValidationResponse()
+            .withSignatureValid(ValidationResult.INVALID).withReferencesValid(ValidationResult.NOT_CHCEKED).build();
 
     @Mock
     private UtkastModelToXMLConverter utkastModelToXMLConverter;
@@ -122,12 +130,15 @@ public class XmlUnderskriftServiceImplTest {
         when(xmldSigService.buildKeyInfoForCertificate(anyString())).thenReturn(new ObjectFactory().createKeyInfoType());
         when(prepareSignatureService.encodeSignatureIntoSignedXml(any(SignatureType.class), anyString())).thenReturn("<final-xml/>");
         when(utkastModelToXMLConverter.utkastToXml(anyString(), anyString())).thenReturn("json");
-        when(xmldSigService.validateSignatureValidity(anyString(), anyBoolean())).thenReturn(true);
+
+        when(xmldSigService.validateSignatureValidity(anyString(), anyBoolean())).thenReturn(okValidationResult);
         when(utkastModelToXMLConverter.utkastToXml(anyString(), anyString())).thenReturn("<xml/>");
         when(prepareSignatureService.prepareSignature(anyString(), anyString())).thenReturn(UnderskriftTestUtil.buildIntygXMLSignature());
-        when(utkastRepository.save(any(Utkast.class))).thenReturn(createUtkast(INTYG_ID, 2L, INTYG_TYP, UtkastStatus.SIGNED, "model", createVardperson(),
-                ENHET_ID, PERSON_ID));
-        when(redisTicketTracker.updateStatus(TICKET_ID, SignaturStatus.SIGNERAD)).thenReturn(createSignaturBiljett(SignaturStatus.SIGNERAD));
+        when(utkastRepository.save(any(Utkast.class)))
+                .thenReturn(createUtkast(INTYG_ID, 2L, INTYG_TYP, UtkastStatus.SIGNED, "model", createVardperson(),
+                        ENHET_ID, PERSON_ID));
+        when(redisTicketTracker.updateStatus(TICKET_ID, SignaturStatus.SIGNERAD))
+                .thenReturn(createSignaturBiljett(SignaturStatus.SIGNERAD));
 
         WebCertUser user = mock(WebCertUser.class);
         when(user.getAuthenticationScheme()).thenReturn("scheme");
@@ -150,7 +161,7 @@ public class XmlUnderskriftServiceImplTest {
         when(xmldSigService.buildKeyInfoForCertificate(anyString())).thenReturn(new ObjectFactory().createKeyInfoType());
         when(prepareSignatureService.encodeSignatureIntoSignedXml(any(SignatureType.class), anyString())).thenReturn("<final-xml/>");
         when(utkastModelToXMLConverter.utkastToXml(anyString(), anyString())).thenReturn("json");
-        when(xmldSigService.validateSignatureValidity(anyString(), anyBoolean())).thenReturn(false);
+        when(xmldSigService.validateSignatureValidity(anyString(), anyBoolean())).thenReturn(failedValidationResult);
 
         try {
             testee.finalizeSignature(createSignaturBiljett(SignaturStatus.BEARBETAR),
@@ -160,7 +171,7 @@ public class XmlUnderskriftServiceImplTest {
                     new WebCertUser());
         } finally {
             verifyZeroInteractions(monitoringLogService);
-            verify(redisTicketTracker, times(0)).updateStatus(anyString(), eq(SignaturStatus.OKAND));
+            verify(redisTicketTracker, times(1)).updateStatus(anyString(), eq(SignaturStatus.OKAND));
             verify(intygService, times(0)).storeIntyg(any(Utkast.class));
         }
     }
@@ -170,7 +181,7 @@ public class XmlUnderskriftServiceImplTest {
         when(xmldSigService.buildKeyInfoForCertificate(anyString())).thenReturn(new ObjectFactory().createKeyInfoType());
         when(prepareSignatureService.encodeSignatureIntoSignedXml(any(SignatureType.class), anyString())).thenReturn("<final-xml/>");
         when(utkastModelToXMLConverter.utkastToXml(anyString(), anyString())).thenReturn("json");
-        when(xmldSigService.validateSignatureValidity(anyString(), anyBoolean())).thenReturn(true);
+        when(xmldSigService.validateSignatureValidity(anyString(), anyBoolean())).thenReturn(okValidationResult);
         when(utkastModelToXMLConverter.utkastToXml(anyString(), anyString())).thenReturn("<xml/>");
         when(prepareSignatureService.prepareSignature(anyString(), anyString())).thenReturn(UnderskriftTestUtil.buildIntygXMLSignature());
 
@@ -182,7 +193,7 @@ public class XmlUnderskriftServiceImplTest {
                     new WebCertUser());
         } finally {
             verifyZeroInteractions(monitoringLogService);
-            verify(redisTicketTracker, times(0)).updateStatus(anyString(), eq(SignaturStatus.OKAND));
+            verify(redisTicketTracker, times(1)).updateStatus(anyString(), eq(SignaturStatus.OKAND));
             verify(intygService, times(0)).storeIntyg(any(Utkast.class));
         }
     }
@@ -192,18 +203,19 @@ public class XmlUnderskriftServiceImplTest {
         when(xmldSigService.buildKeyInfoForCertificate(anyString())).thenReturn(new ObjectFactory().createKeyInfoType());
         when(prepareSignatureService.encodeSignatureIntoSignedXml(any(SignatureType.class), anyString())).thenReturn("<final-xml/>");
         when(utkastModelToXMLConverter.utkastToXml(anyString(), anyString())).thenReturn("json");
-        when(xmldSigService.validateSignatureValidity(anyString(), anyBoolean())).thenReturn(true);
+        when(xmldSigService.validateSignatureValidity(anyString(), anyBoolean())).thenReturn(okValidationResult);
         when(utkastModelToXMLConverter.utkastToXml(anyString(), anyString())).thenReturn("<xml/>");
 
         try {
             testee.finalizeSignature(createSignaturBiljett(SignaturStatus.BEARBETAR),
                     "signatur".getBytes(Charset.forName("UTF-8")),
-                    "certifikat", createUtkast(INTYG_ID + "-difference", 1L, INTYG_TYP, UtkastStatus.DRAFT_COMPLETE, "model", createVardperson(),
+                    "certifikat",
+                    createUtkast(INTYG_ID + "-difference", 1L, INTYG_TYP, UtkastStatus.DRAFT_COMPLETE, "model", createVardperson(),
                             ENHET_ID, PERSON_ID),
                     new WebCertUser());
         } finally {
             verifyZeroInteractions(monitoringLogService);
-            verify(redisTicketTracker, times(0)).updateStatus(anyString(), eq(SignaturStatus.OKAND));
+            verify(redisTicketTracker, times(1)).updateStatus(anyString(), eq(SignaturStatus.OKAND));
             verify(intygService, times(0)).storeIntyg(any(Utkast.class));
         }
     }

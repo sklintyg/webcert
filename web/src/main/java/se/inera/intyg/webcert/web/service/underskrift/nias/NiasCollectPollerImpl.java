@@ -97,10 +97,12 @@ public class NiasCollectPollerImpl implements NiasCollectPoller {
                         String subjectSerialNumber = resp.getUserInfo().getPersonalNumber();
                         boolean isValid = false;
                         if (webCertUser.getPersonId() != null) {
-                            isValid = subjectSerialNumber.replaceAll("\\-", "").equals(webCertUser.getPersonId().replaceAll("\\-", ""));
+                            isValid = subjectSerialNumber.replaceAll("\\-", "")
+                                    .equals(webCertUser.getPersonId().replaceAll("\\-", ""));
                         }
                         if (!isValid && webCertUser.getHsaId() != null) {
-                            isValid = subjectSerialNumber.replaceAll("\\-", "").equals(webCertUser.getHsaId().replaceAll("\\-", ""));
+                            isValid = subjectSerialNumber.replaceAll("\\-", "")
+                                    .equals(webCertUser.getHsaId().replaceAll("\\-", ""));
                         }
 
                         if (!isValid) {
@@ -117,9 +119,8 @@ public class NiasCollectPollerImpl implements NiasCollectPoller {
                         redisTicketTracker.updateStatus(ticketId, SignaturStatus.VANTA_SIGN);
                         break;
                     case "OUTSTANDING_TRANSACTION":
-                    case "STARTED":
-                    case "USER_REQ":
                         break;
+
                     case "NO_CLIENT":
                         redisTicketTracker.updateStatus(ticketId, SignaturStatus.NO_CLIENT);
                         LOG.info("NIAS collect returned ProgressStatusType: {}, "
@@ -132,6 +133,34 @@ public class NiasCollectPollerImpl implements NiasCollectPoller {
                     case "ALREADY_COLLECTED":
                         redisTicketTracker.updateStatus(ticketId, SignaturStatus.OKAND);
                         LOG.error("NIAS signing {} aborted due to progress state {}", ticketId, resp.getProgressStatus());
+                        return;
+                    case "SIGN_VALIDATION_FAILED":
+                        redisTicketTracker.updateStatus(ticketId, SignaturStatus.OKAND);
+                        LOG.error("NIAS signing {} failed, NetiD Access did not accept the sign validation. "
+                                + "Progress state {}", ticketId, resp.getProgressStatus());
+                        return;
+                    case "UNKNOWN_USER":
+                        redisTicketTracker.updateStatus(ticketId, SignaturStatus.OKAND);
+                        LOG.error("NIAS signing {} failed, NetiD Access did not accept the specified user. "
+                                + "Progress state {}", ticketId, resp.getProgressStatus());
+                        return;
+                    case "INVALID_DEVICESW":
+                    case "ACCESS_DENIED_RP":
+                    case "INVALID_PARAMETERS":
+                        redisTicketTracker.updateStatus(ticketId, SignaturStatus.OKAND);
+                        LOG.error("NIAS signing {} failed, NetiD Access reported a technical problem or bad signing request. "
+                                + "Progress state {}", ticketId, resp.getProgressStatus());
+                        return;
+                    case "INTERNAL_ERROR":
+                        redisTicketTracker.updateStatus(ticketId, SignaturStatus.OKAND);
+                        LOG.error("NIAS signing {} failed, NetiD Access reported an unspecified internal error. Progress "
+                                + "state {}", ticketId, resp.getProgressStatus());
+                        return;
+
+                    case "RETRY":
+                        redisTicketTracker.updateStatus(ticketId, SignaturStatus.OKAND);
+                        LOG.error("NIAS signing {} failed, NetiD Access reported retry, which may indicate an internal "
+                                + "intermittent issue on their side. Progress state {}", ticketId, resp.getProgressStatus());
                         return;
                     }
 

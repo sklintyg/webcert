@@ -68,27 +68,33 @@ public abstract class BaseXMLSignatureService extends BaseSignatureService {
     protected SignaturBiljett finalizeXMLDSigSignature(String x509certificate, WebCertUser user, SignaturBiljett biljett,
             byte[] rawSignature,
             Utkast utkast) {
-        IntygXMLDSignature intygXmldSignature = (IntygXMLDSignature) biljett.getIntygSignature();
+        try {
+            IntygXMLDSignature intygXmldSignature = (IntygXMLDSignature) biljett.getIntygSignature();
 
-        applySignature(user, rawSignature, intygXmldSignature);
+            applySignature(user, rawSignature, intygXmldSignature);
 
-        // Store X509 in SignatureType
-        if (x509certificate != null && !x509certificate.isEmpty()) {
-            KeyInfoType keyInfoType = xmldSigService.buildKeyInfoForCertificate(x509certificate);
-            intygXmldSignature.getSignatureType().setKeyInfo(keyInfoType);
+            // Store X509 in SignatureType
+            if (x509certificate != null && !x509certificate.isEmpty()) {
+                KeyInfoType keyInfoType = xmldSigService.buildKeyInfoForCertificate(x509certificate);
+                intygXmldSignature.getSignatureType().setKeyInfo(keyInfoType);
+            }
+
+            // This isn't strictly necessary...
+            performBasicSignatureValidation(x509certificate, utkast, intygXmldSignature);
+
+            String signatureXml = marshallSignatureToString(intygXmldSignature.getSignatureType());
+
+            createAndPersistSignatureForXMLDSig(utkast, biljett, signatureXml, user);
+
+            // If all good, change status of ticket
+            biljett.setStatus(SignaturStatus.SIGNERAD);
+
+            return biljett;
+        } catch (Throwable e) {
+            // For ANY type of exception, update the ticket tracker and then rethrow.
+            redisTicketTracker.updateStatus(biljett.getTicketId(), SignaturStatus.OKAND);
+            throw e;
         }
-
-        // This isn't strictly necessary...
-        performBasicSignatureValidation(x509certificate, utkast, intygXmldSignature);
-
-        String signatureXml = marshallSignatureToString(intygXmldSignature.getSignatureType());
-
-        createAndPersistSignatureForXMLDSig(utkast, biljett, signatureXml, user);
-
-        // If all good, change status of ticket
-        biljett.setStatus(SignaturStatus.SIGNERAD);
-
-        return biljett;
     }
 
     private void performBasicSignatureValidation(String x509certificate, Utkast utkast, IntygXMLDSignature intygXmldSignature) {
@@ -105,7 +111,7 @@ public abstract class BaseXMLSignatureService extends BaseSignatureService {
         if (x509certificate != null && !x509certificate.isEmpty()) {
 
             // Due to a bug with SAXON and the JDK DSIG validator, do NOT check references.
-            boolean validationResult = xmldSigService.validateSignatureValidity(finalXml, false);
+            boolean validationResult = xmldSigService.validateSignatureValidity(finalXml, false).isValid();
             if (!validationResult) {
                 throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, "Signature is invalid.");
             }

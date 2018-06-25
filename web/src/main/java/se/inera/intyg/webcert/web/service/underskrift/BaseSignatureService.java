@@ -32,6 +32,7 @@ import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturBiljett;
+import se.inera.intyg.webcert.web.service.underskrift.tracker.RedisTicketTracker;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 public abstract class BaseSignatureService {
@@ -46,6 +47,9 @@ public abstract class BaseSignatureService {
 
     @Autowired
     protected IntygService intygService;
+
+    @Autowired
+    protected RedisTicketTracker redisTicketTracker;
 
     protected Utkast updateAndSaveUtkast(Utkast utkast, String payloadJson, Signatur signatur, WebCertUser user) {
         utkast.setSenastSparadAv(new VardpersonReferens(user.getHsaId(), user.getNamn()));

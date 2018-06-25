@@ -63,7 +63,7 @@ public class NiasUnderskriftServiceImplTest {
 
     @Test
     public void testSignOk() {
-        when(netiDAccessServerSoap.sign(anyString(),anyString(), anyString(), ArgumentMatchers.isNull()))
+        when(netiDAccessServerSoap.sign(anyString(), ArgumentMatchers.isNull(), anyString(), ArgumentMatchers.isNull()))
                 .thenReturn(buildSignResponse());
         when(niasCollectPollerFactory.getInstance()).thenReturn(mock(NiasCollectPoller.class));
 
@@ -74,7 +74,7 @@ public class NiasUnderskriftServiceImplTest {
 
     @Test(expected = WebCertServiceException.class)
     public void testSignFails() {
-        when(netiDAccessServerSoap.sign(anyString(),anyString(), anyString(), ArgumentMatchers.isNull()))
+        when(netiDAccessServerSoap.sign(anyString(), ArgumentMatchers.isNull(), anyString(), ArgumentMatchers.isNull()))
                 .thenThrow(new RuntimeException("some exception"));
 
         try {
