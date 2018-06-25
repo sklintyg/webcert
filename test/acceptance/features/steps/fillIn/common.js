@@ -24,6 +24,10 @@ var utkastPage;
 var helpers = require('../helpers');
 module.exports = {
     fillInEnhetAdress: function(user) {
+        if (!user.enhetsAdress) {
+            logger.warn('Enhetsaddress ändras inte');
+            return new Promise(resolve => resolve());
+        }
         return utkastPage.angeEnhetAdress(user.enhetsAdress)
             .then(function() {
                 logger.info('OK - angeEnhetAdress :' + JSON.stringify(user.enhetsAdress));

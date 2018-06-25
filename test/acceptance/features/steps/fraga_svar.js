@@ -120,9 +120,10 @@ Given(/^jag skickar en fråga med ämnet "([^"]*)" till Försäkringskassan$/, f
 });
 Given(/^jag väljer att svara med ett nytt intyg$/, function() {
     helpers.updateEnhetAdressForNewIntyg(this.user);
-    var page = fkLusePage;
+    const page = fkLusePage;
     let intyg = this.intyg;
-    let ursprungligtIntyg = this.ursprungligtIntyg;
+
+    let world = this;
 
     if (!intyg.messages || intyg.messages.length <= 0) {
         throw ('Inga frågor hittades');
@@ -138,14 +139,11 @@ Given(/^jag väljer att svara med ett nytt intyg$/, function() {
                 .then(function() {
                     //Fulhack för att inte global ska innehålla en referens
                     logger.info('OK clickKompletteraIntyg(' + intyg.messages[0].id + ');');
-                    ursprungligtIntyg = JSON.parse(JSON.stringify(intyg));
+                    world.ursprungligtIntyg = JSON.parse(JSON.stringify(intyg));
                     return;
-
                 });
 
         });
-
-
     }
 });
 Given(/^jag går tillbaka till intyget som behöver kompletteras$/, function() {

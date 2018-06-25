@@ -44,9 +44,9 @@ module.exports = {
         bas: tsBasCheckValues,
         diabetes: tsDiabetesCheckValues
     },
-    forIntyg: function(intyg) {
+    forIntyg: function(intyg, user) {
         'use strict';
-        var promiseArr = [commonCheckValues(intyg)];
+        var promiseArr = [commonCheckValues(intyg, user)];
         if (intyg.typ === 'Transportstyrelsens läkarintyg diabetes') {
             promiseArr.push(
                 tsCommonCheckValues(intyg).then(function() {

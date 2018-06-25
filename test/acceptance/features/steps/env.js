@@ -146,7 +146,7 @@ Before(function() {
     this.intyg = {};
 
     this.user = {};
-    global.ursprungligtIntyg = {};
+    this.ursprungligtIntyg = {};
     this.ursprungligPatient = {};
 
     hasFoundConsoleErrors = false;

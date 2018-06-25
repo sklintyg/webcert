@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* global ursprungligtIntyg, Promise, JSON, logger */
+/* global Promise, JSON, logger */
 
 'use strict';
 /*jshint newcap:false */
@@ -131,7 +131,7 @@ Given(/^ska statusuppdatering "([^"]*)" skickas till vårdsystemet\. Totalt: "([
 });
 
 Given(/^ska (\d+) statusuppdatering "([^"]*)" skickas för det ursprungliga intyget$/, function(antal, handelsekod, callback) {
-    waitForEntries(ursprungligtIntyg.id, handelsekod, parseInt(antal, 10), this.intyg, callback);
+    waitForEntries(this.ursprungligtIntyg.id, handelsekod, parseInt(antal, 10), this.intyg, callback);
 });
 
 Given(/^ska statusuppdateringen visa att parametern "([^"]*)" är mottagen med värdet "([^"]*)"$/, function(param, paramValue) {

@@ -54,6 +54,7 @@ function lookUp(count, intygsID, cb) {
                 connection.release();
                 cb();
             } else {
+                connection.release();
                 logger.info('Hittade färre än ' + count + 'rader i databasen');
                 logger.silly('Ny kontroll sker efter ' + intervall + 'ms');
                 setTimeout(function() {

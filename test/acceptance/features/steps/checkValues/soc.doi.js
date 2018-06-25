@@ -35,7 +35,6 @@ function verifyTerminalDodsorsak(data) {
 function verifyOperation(data) {
     let promiseArr = [];
     if (data.operation.ja) {
-        console.log(data.operation);
         promiseArr.push(expect(doiPage.operation.val.getText()).to.eventually.equal('Ja'));
         promiseArr.push(expect(doiPage.operation.datum.getText()).to.eventually.equal(data.operation.ja.datum));
         promiseArr.push(expect(doiPage.operation.beskrivning.getText()).to.eventually.equal(data.operation.ja.beskrivning));

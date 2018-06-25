@@ -35,10 +35,10 @@ function checkEnhetAdress(adressObj) {
 
 
 module.exports = {
-    checkValues: function(intyg) {
+    checkValues: function(intyg, user) {
         intygPage = pages.getIntygPageByType(intyg.typ);
 
-        return checkEnhetAdress(this.user.enhetsAdress).then(function(value) {
+        return checkEnhetAdress(user.enhetsAdress).then(function(value) {
             logger.info('OK - checkEnhetAdress = ' + value);
         }, function(reason) {
             throw ('FEL - checkEnhetAdress: ' + reason);

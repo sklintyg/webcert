@@ -169,7 +169,7 @@ Given(/^jag är inloggad som läkare i Statistiktjänsten$/, function() {
     // Setting Statistiktjänsten to new bas url
     browser.baseUrl = process.env.STATISTIKTJANST_URL;
     // VG_TestAutomation => TSTNMT2321000156-107M => TSTNMT2321000156-107Q
-    var userObj = {
+    this.user = {
         fornamn: 'Johan',
         efternamn: 'Johansson',
         hsaId: 'TSTNMT2321000156-107V',
@@ -179,7 +179,7 @@ Given(/^jag är inloggad som läkare i Statistiktjänsten$/, function() {
         vardgivarniva: 'true'
     };
 
-    return logInAsUserRoleStatistik(userObj, 'Läkare', true);
+    return logInAsUserRoleStatistik(this.user, 'Läkare', true);
 });
 
 Given(/^jag ändrar diagnoskoden till "([^"]*)"$/, function(diagnosKod) {

@@ -48,7 +48,7 @@ const checkValues = require('../checkValues');
  */
 
 Then(/^(?:ska jag|jag ska) se den data jag angett för intyget$/, function() {
-    return checkValues.forIntyg(this.intyg);
+    return checkValues.forIntyg(this.intyg, this.user);
 });
 
 

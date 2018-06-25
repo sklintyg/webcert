@@ -111,7 +111,8 @@ function gotoIntygUtkast(intyg) {
  */
 
 Given(/^jag går in på en patient med samordningsnummer$/, function() {
-    return gotoPatient(testdataHelpers.shuffle(testdata.values.patienterMedSamordningsnummer)[0], this.user);
+    this.patient = testdataHelpers.shuffle(testdata.values.patienterMedSamordningsnummer)[0];
+    return gotoPatient(this.patient, this.user);
 });
 
 // When(/^jag väljer patienten "([^"]*)"$/, function(personnummer) { //förutsätter att personen finns i PU-tjänsten
@@ -177,11 +178,11 @@ Given(/^jag går in på en( annan)? patient$/, function(annan) {
 
         logger.silly('andraPatienter: ');
         logger.silly(andraPatienter);
-
-        return gotoPatient(testdataHelpers.shuffle(andraPatienter)[0], this.user);
+        this.patient = testdataHelpers.shuffle(andraPatienter)[0];
     } else {
-        return gotoPatient(testdataHelpers.shuffle(testpatienter)[0], this.user);
+        this.patient = testdataHelpers.shuffle(testpatienter)[0];
     }
+    return gotoPatient(this.patient, this.user);
 });
 
 Given(/^ska en varningsruta innehålla texten "([^"]*)"$/, function(text) {

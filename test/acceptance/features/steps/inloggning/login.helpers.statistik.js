@@ -36,15 +36,19 @@ function loginByJSON(userJson, giveCookieConsent, self) {
 
 }
 
-var logInAsUserStatistik = function(userObj, roleName, skipCookieConsent, self) {
+var logInAsUserStatistik = function(user, roleName, skipCookieConsent, self) {
     if (skipCookieConsent) {
         logger.info('Lämnar inte samtycke för kakor');
     }
-    logger.info('Loggar in som ' + userObj.fornamn + ' ' + userObj.efternamn);
+    logger.info('Loggar in som ' + user.fornamn + ' ' + user.efternamn);
 
-    // Fattigmans-kloning av användar-hashen.
-    this.user = JSON.parse(JSON.stringify(userObj));
-    this.user.roleName = roleName;
+    let userObj = {
+        fornamn: user.fornamn,
+        efternamn: user.efternamn,
+        hsaId: user.hsaId,
+        vardgivarIdSomProcessLedare: user.vardgivarIdSomProcessLedare,
+        vardgivarniva: user.vardgivarniva
+    };
 
     browser.ignoreSynchronization = true;
     return helpers.getUrl('/#/fakelogin').then(function() {
@@ -57,20 +61,19 @@ var logInAsUserStatistik = function(userObj, roleName, skipCookieConsent, self) 
 
 module.exports = {
     logInAsUserStatistik: logInAsUserStatistik,
-    logInAsUserRoleStatistik: function(userObj, roleName, skipCookieConsent) {
-        logger.silly(userObj);
-        this.user.roleName = roleName;
+    logInAsUserRoleStatistik: function(user, roleName, skipCookieConsent) {
+        logger.silly(user);
         var self = this;
-        return logInAsUserStatistik(userObj, roleName, skipCookieConsent, self).then(function() {
+        return logInAsUserStatistik(user, roleName, skipCookieConsent, self).then(function() {
             logger.info('Login default browser successful');
             var headerboxUserProfile = element(by.css('.header-container'));
             browser.driver.switchTo().alert().then(function(alert) {
                     alert.accept();
-                    return expect(headerboxUserProfile.getText()).to.eventually.contain(userObj.fornamn + ' ' + userObj.efternamn);
+                    return expect(headerboxUserProfile.getText()).to.eventually.contain(user.fornamn + ' ' + user.efternamn);
 
                 },
                 function(err) {
-                    return expect(headerboxUserProfile.getText()).to.eventually.contain(userObj.fornamn + ' ' + userObj.efternamn);
+                    return expect(headerboxUserProfile.getText()).to.eventually.contain(user.fornamn + ' ' + user.efternamn);
                 });
         });
 
