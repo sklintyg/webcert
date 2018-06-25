@@ -65,23 +65,19 @@ angular.module('webcert').directive('wcEnhetArendenList', [
                 updateArenden(null, {startFrom: 0});
 
                 // When other directives want to request list update
-                function updateArenden(event, data, waitWithSpinner){
-                    var spinnerWaiting;
-                    if (waitWithSpinner) {
-                        spinnerWaiting = $timeout(function() {
-                            enhetArendenListModel.viewState.runningQuery = true;
-                        }, 700);
-                    } else {
+                function updateArenden(event, data) {
+                    var spinnerWaiting = $timeout(function() {       
                         enhetArendenListModel.viewState.runningQuery = true;
-                    }
+                    }, 700);
+
                     enhetArendenListModel.viewState.activeErrorMessageKey = null;
 
-                    enhetArendenListService.getArenden(data.startFrom).then(function(arendenListResult){
+                    enhetArendenListService.getArenden(data.startFrom).then(function(arendenListResult) {
                         enhetArendenListModel.prevFilterQuery = arendenListResult.query;
                         enhetArendenListModel.totalCount = arendenListResult.totalCount;
                         enhetArendenListModel.arendenList = arendenListResult.arendenList;
 
-                    }, function(errorData){
+                    }, function(errorData) {
                         $log.debug('Query Error: ' + errorData);
                         enhetArendenListModel.viewState.activeErrorMessageKey = 'info.query.error';
                     }).finally(function() {  // jshint ignore:line
@@ -91,6 +87,15 @@ angular.module('webcert').directive('wcEnhetArendenList', [
                         enhetArendenListModel.viewState.runningQuery = false;
                     });
                 }
+                
+                function setVidarebefordradStateInView(intygId) {
+                    for (var i in $scope.listModel.arendenList) {
+                        if ($scope.listModel.arendenList[i].intygId === intygId) {
+                            $scope.listModel.arendenList[i].vidarebefordrad = true;
+                        }
+                    }
+                }
+
                 $scope.$on('enhetArendenList.requestListUpdate', updateArenden);
 
                 $scope.fetchMore = function() {
@@ -134,13 +139,13 @@ angular.module('webcert').directive('wcEnhetArendenList', [
                 };
 
                 $scope.onVidareBefordradChange = function() {
-                    $log.debug('onVidareBefordradChange: intygId: ' + vidarebefordraArendeMailModel.intygId + ' intysTyp: ' +
-                        vidarebefordraArendeMailModel.intygType);
                     ArendeProxy.setVidarebefordradState(
                         vidarebefordraArendeMailModel.intygId,
                         vidarebefordraArendeMailModel.intygType,
                         function(result) {
-                            if (!result) {
+                            if (result) {
+                                setVidarebefordradStateInView(vidarebefordraArendeMailModel.intygId);
+                            } else {
                                 dialogService
                                     .showErrorMessageDialog('Kunde inte markera/avmarkera frågan som ' +
                                         'vidarebefordrad. Försök gärna igen för att se om felet är tillfälligt. ' +
@@ -159,7 +164,7 @@ angular.module('webcert').directive('wcEnhetArendenList', [
                     $scope.orderBy = enhetArendenFilterModel.filterForm.orderBy;
                     $scope.orderAscending = enhetArendenFilterModel.filterForm.orderAscending;
 
-                    updateArenden(null, {startFrom: 0}, true);
+                    updateArenden(null, {startFrom: 0});
                 };
             }
         };
