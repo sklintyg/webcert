@@ -134,37 +134,37 @@ Given(/^jag anger ett (samordningsnummer|personnummer) som inte finns i PUtjäns
 });
 
 Then(/^jag går in på (?:"([^"]*)" )?testpatienten för "([^"]*)"$/, function(index, testSyfte) {
-    const testvalues = wcTestTools.testdata.values;
-    let patient = testvalues.dedikeradeTestPatienter.medSyfte[testSyfte][helpers.getIntFromTxt(index || 'första')];
-    return gotoPatient(patient, this.user);
+    let patienter = wcTestTools.testdata.values.dedikeradeTestPatienter.medSyfte[testSyfte];
+    this.patient = patienter[helpers.getIntFromTxt(index || 'första')];
+    return gotoPatient(this.patient, this.user);
 });
 
 Then(/^jag går in på testpatienten "([^"]*)"$/, function(personnummer) {
-    let patient = {
+    this.patient = {
         id: personnummer.replace("-", "")
     };
-    return gotoPatient(patient, this.user);
+    return gotoPatient(this.patient, this.user);
 });
 
 
 Given(/^jag går in på en patient med sekretessmarkering$/, function() {
-    var patient = testdataHelpers.shuffle(testdata.values.patienterMedSekretessmarkering)[0];
-    return gotoPatient(patient, this.user);
+    this.patient = testdataHelpers.shuffle(testdata.values.patienterMedSekretessmarkering)[0];
+    return gotoPatient(this.patient, this.user);
 });
 
 Given(/^jag går in på en patient som saknar namn i PU\-tjänsten$/, function() {
-    var patient = {
+    this.patient = {
         id: '201203122393'
     };
-    return element(by.id('pnr')).sendKeys(patient.id).then(function() {
+    return element(by.id('pnr')).sendKeys(this.patient.id).then(function() {
         return element(by.id('skapapersonnummerfortsatt')).sendKeys(protractor.Key.SPACE);
     });
 });
 
 Given(/^jag går in på en patient som är avliden$/, function() {
-    var patient = testdataHelpers.shuffle(testdata.values.patienterAvlidna)[0];
-    logger.silly(patient);
-    return gotoPatient(patient, this.user);
+    this.patient = testdataHelpers.shuffle(testdata.values.patienterAvlidna)[0];
+    logger.silly(this.patient);
+    return gotoPatient(this.patient, this.user);
 
 });
 

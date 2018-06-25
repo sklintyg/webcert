@@ -98,18 +98,18 @@ module.exports = {
 
     //TODO Kan vi hantera detta bättre, Om HSA ändras så behöver vi uppdatera denna data vilket inte är optimalt
     // TSTNMT2321000156-ULLA saknar enhetadress i hsa, dvs behåll tidigare angivet enhetAdress objekt
-    updateEnhetAdressForNewIntyg: function() {
+    updateEnhetAdressForNewIntyg: function(user) {
 
-        if (this.user.enhetId !== 'TSTNMT2321000156-ULLA') {
-            this.user.enhetsAdress = {
+        if (user.enhetId !== 'TSTNMT2321000156-ULLA') {
+            user.enhetsAdress = {
                 postnummer: '65340',
                 postort: 'Karlstad',
                 postadress: 'Bryggaregatan 11',
                 telefon: '054100000'
             };
 
-            if (this.user.enhetId === 'TSTNMT2321000156-107P') {
-                this.user.enhetsAdress.telefon = '054121314';
+            if (user.enhetId === 'TSTNMT2321000156-107P') {
+                user.enhetsAdress.telefon = '054121314';
             }
 
         }

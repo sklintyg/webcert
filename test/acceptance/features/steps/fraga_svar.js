@@ -76,10 +76,10 @@ function sendQuestionToFK(amne, intyg) {
         logger.debug('Frågans ID: ' + fragaId);*/
 
         if (!intyg.messages) {
-            this.intyg.messages = [];
+            intyg.messages = [];
         }
         messageID = fragaId;
-        this.intyg.messages.unshift({
+        intyg.messages.unshift({
             typ: 'Fråga',
             amne: helpers.subjectCodes[amne],
             id: fragaId,
@@ -119,7 +119,7 @@ Given(/^jag skickar en fråga med ämnet "([^"]*)" till Försäkringskassan$/, f
     return sendQuestionToFK(amne, this.intyg);
 });
 Given(/^jag väljer att svara med ett nytt intyg$/, function() {
-    helpers.updateEnhetAdressForNewIntyg();
+    helpers.updateEnhetAdressForNewIntyg(this.user);
     var page = fkLusePage;
     let intyg = this.intyg;
     let ursprungligtIntyg = this.ursprungligtIntyg;

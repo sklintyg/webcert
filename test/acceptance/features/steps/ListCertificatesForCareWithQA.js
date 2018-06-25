@@ -83,7 +83,7 @@
          this.patient.id,
          this.user.enhetId
      );
-
+     let intyg = this.intyg;
      //Vänta på att intyget/intygen ska vara tillgänligt i webcert.
      return helpers.largeDelay().then(function() {
          logger.silly(body);
@@ -93,7 +93,7 @@
          //Spara svar för aktuellt intyg i responseIntyg variabel
          if (response.list && response.list.item) {
              response.list.item.forEach(function(element) {
-                 if (element.intyg['intygs-id'].extension === this.intyg.id) {
+                 if (element.intyg['intygs-id'].extension === intyg.id) {
                      responseIntyg = element;
                      logger.silly(JSON.stringify(responseIntyg));
                  }

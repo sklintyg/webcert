@@ -51,7 +51,7 @@ Given(/^jag förnyar intyget$/, function(callback) {
     global.fornyatIntyg = this.intyg;
     let intyg = this.intyg;
 
-    helpers.updateEnhetAdressForNewIntyg();
+    helpers.updateEnhetAdressForNewIntyg(this.user);
     fkIntygPage.fornyaBtn.sendKeys(protractor.Key.SPACE).then(function() {
         this.intyg = fkIntygPage.fornyaDialog.btn.sendKeys(protractor.Key.SPACE)
             .then(function() {
