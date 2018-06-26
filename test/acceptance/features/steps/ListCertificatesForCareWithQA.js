@@ -151,10 +151,11 @@
  });
 
  Then(/^ska svaret endast innehålla intyg för utvald patient$/, function() {
-     var idPromises = [];
+     let idPromises = [];
+     let patient = this.patient;
      response.list.item.forEach(function(element) {
          var personID = element.intyg.patient['person-id'].extension;
-         idPromises.push(expect(personID).to.contain(this.patient.id));
+         idPromises.push(expect(personID).to.contain(patient.id));
      });
      return Promise.all(idPromises);
  });

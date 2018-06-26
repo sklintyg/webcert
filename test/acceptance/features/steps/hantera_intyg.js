@@ -138,9 +138,8 @@ Given(/^jag signerar intyget$/, function() {
 });
 
 Then(/^klickar jag på knappen "Skriv dödsorsaksintyg"$/, function() {
-    let intyg = this.intyg;
-    let patient = this.patient;
-    intyg.typ = 'Dödsorsaksintyg';
+    let world = this;
+    world.intyg.typ = 'Dödsorsaksintyg';
 
     return moveAndSendKeys(pages.intyg.skv.db.utkast.skrivDoi.knapp, protractor.Key.SPACE).then(function() {
         return helpers.mediumDelay();
@@ -149,11 +148,11 @@ Then(/^klickar jag på knappen "Skriv dödsorsaksintyg"$/, function() {
     }).then(function() {
         return browser.getCurrentUrl();
     }).then(function(text) {
-        intyg.id = text.split('/').slice(-2)[0];
-        intyg.id = intyg.id.split('?')[0];
+        world.intyg.id = text.split('/').slice(-2)[0];
+        world.intyg.id = world.intyg.id.split('?')[0];
 
-        this.intyg = helpers.generateIntygByType(intyg, patient, intyg);
-        logger.info('intyg.id: ' + intyg.id);
+        world.intyg = helpers.generateIntygByType(world.intyg, world.patient, world.intyg);
+        logger.info('intyg.id: ' + world.intyg.id);
     });
 });
 

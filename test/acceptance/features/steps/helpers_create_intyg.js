@@ -22,7 +22,7 @@
 var testdataHelper = wcTestTools.helpers.testdata;
 var loginHelpers = require('./inloggning/login.helpers.js');
 // var restTestdataHelper = wcTestTools.helpers.restTestdata;
-//var sokSkrivIntygPage = pages.sokSkrivIntyg.pickPatient;
+var sokSkrivIntygPage = pages.sokSkrivIntyg.pickPatient;
 var sokSkrivIntygUtkastTypePage = pages.sokSkrivIntyg.valjUtkastType;
 var fkUtkastPage = pages.intyg.fk['7263'].utkast;
 var fkIntygPage = pages.intyg.fk['7263'].intyg;
@@ -92,16 +92,16 @@ module.exports = {
                 lakare: true
             };
             return loginHelpers.logInAsUserRole(world.user, 'Läkare')
-				.then(function(){
-					logger.silly('Väjer samma person som tidigare..');
-					return sokSkrivIntygPage.selectPersonnummer(world.patient.id);
-				})			
-				.then(function() {
-					browser.ignoreSynchronization = false;
-					return helpers.tinyDelay();
-				})
-			    .then(function() {
-					logger.silly('Fyller i utkast och signerar..');
+                .then(function() {
+                    logger.silly('Väjer samma person som tidigare..');
+                    return sokSkrivIntygPage.selectPersonnummer(world.patient.id);
+                })
+                .then(function() {
+                    browser.ignoreSynchronization = false;
+                    return helpers.tinyDelay();
+                })
+                .then(function() {
+                    logger.silly('Fyller i utkast och signerar..');
                     return writeNewIntyg(world, status);
                 })
                 .then(function() {

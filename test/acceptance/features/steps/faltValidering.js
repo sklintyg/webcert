@@ -250,8 +250,8 @@ When(/^jag gör val för att få fram maximalt antal fält i "([^"]+)"$/, intyg 
 When(/^jag fyller i textfält med felaktiga värden$/, () => chainTextFieldActions(this.intyg).then(changeFocus));
 
 
-When(/^jag anger slutdatum som är tidigare än startdatum$/, () =>
-    pages.getUtkastPageByType(this.intyg.typ).angeArbetsformaga({
+When(/^jag anger slutdatum som är tidigare än startdatum$/, function() {
+    return pages.getUtkastPageByType(this.intyg.typ).angeArbetsformaga({
         nedsattMed25: {
             from: '2017-03-27',
             tom: '2016-04-01'
@@ -268,11 +268,11 @@ When(/^jag anger slutdatum som är tidigare än startdatum$/, () =>
             from: '2017-03-27',
             tom: '2016-04-01'
         },
-    }).then(changeFocus)
-);
+    }).then(changeFocus);
+});
 
-When(/^jag anger start- och slutdatum för långt bort i tiden$/, () =>
-    pages.getUtkastPageByType(this.intyg.typ).angeArbetsformaga({
+When(/^jag anger start- och slutdatum för långt bort i tiden$/, function() {
+    return pages.getUtkastPageByType(this.intyg.typ).angeArbetsformaga({
         nedsattMed25: {
             from: '1700-03-27',
             tom: '2116-04-01'
@@ -289,11 +289,11 @@ When(/^jag anger start- och slutdatum för långt bort i tiden$/, () =>
             from: '1700-03-27',
             tom: '2116-04-01'
         },
-    }).then(changeFocus)
-);
+    }).then(changeFocus);
+});
 
-When(/^jag anger överlappande start- och slutdatum$/, () =>
-    pages.getUtkastPageByType(this.intyg.typ).angeArbetsformaga({
+When(/^jag anger överlappande start- och slutdatum$/, function() {
+    return pages.getUtkastPageByType(this.intyg.typ).angeArbetsformaga({
         nedsattMed25: {
             from: '2016-03-27',
             tom: '2016-09-25'
@@ -302,29 +302,29 @@ When(/^jag anger överlappande start- och slutdatum$/, () =>
             from: '2016-04-27',
             tom: '2016-10-25'
         }
-    }).then(changeFocus)
-);
+    }).then(changeFocus);
+});
 
-When(/^jag anger start- och slutdatum med mer än 6 månaders mellanrum$/, () =>
+When(/^jag anger start- och slutdatum med mer än 6 månaders mellanrum$/, function() {
+    return pages.getUtkastPageByType(this.intyg.typ).angeArbetsformaga({
+        nedsattMed25: {
+            from: '2015-03-27',
+            tom: '2017-09-25'
+        }
+    }).then(changeFocus);
+});
+
+When(/^jag anger startdatum mer än en vecka före dagens datum$/, function() {
     pages.getUtkastPageByType(this.intyg.typ).angeArbetsformaga({
         nedsattMed25: {
             from: '2015-03-27',
             tom: '2017-09-25'
         }
-    }).then(changeFocus)
-);
+    }).then(changeFocus);
+});
 
-When(/^jag anger startdatum mer än en vecka före dagens datum$/, () =>
-    pages.getUtkastPageByType(this.intyg.typ).angeArbetsformaga({
-        nedsattMed25: {
-            from: '2015-03-27',
-            tom: '2017-09-25'
-        }
-    }).then(changeFocus)
-);
-
-When(/^jag anger ogiltiga datum$/, () =>
-    pages.getUtkastPageByType(this.intyg.typ).angeArbetsformaga({
+When(/^jag anger ogiltiga datum$/, function() {
+    return pages.getUtkastPageByType(this.intyg.typ).angeArbetsformaga({
         nedsattMed25: {
             from: '2016-03-32',
             tom: '2016-09-32'
@@ -341,32 +341,32 @@ When(/^jag anger ogiltiga datum$/, () =>
             from: '2016-03-32',
             tom: '2016-09-32'
         },
-    }).then(changeFocus)
-);
+    }).then(changeFocus);
+});
 
-When(/^jag anger undersökningsdatum i framtiden$/, () =>
-    pages.getUtkastPageByType(this.intyg.typ).angeBaseratPa({
+When(/^jag anger undersökningsdatum i framtiden$/, function() {
+    return pages.getUtkastPageByType(this.intyg.typ).angeBaseratPa({
         minUndersokningAvPatienten: '2021-09-27',
         journaluppgifter: '2021-09-27',
         telefonkontakt: '2021-09-27',
         annat: '2021-09-27',
         annatBeskrivning: '',
-    }).then(changeFocus)
-);
+    }).then(changeFocus);
+});
 
-When(/^jag anger undersökningsdatum senare än patientkännedom$/, () =>
-    pages.getUtkastPageByType(this.intyg.typ).angeBaseratPa({
+When(/^jag anger undersökningsdatum senare än patientkännedom$/, function() {
+    return pages.getUtkastPageByType(this.intyg.typ).angeBaseratPa({
         minUndersokningAvPatienten: '2017-09-27',
         personligKannedom: '2017-09-28'
-    }).then(changeFocus)
-);
+    }).then(changeFocus);
+});
 
-When(/^jag anger anhörigs beskrivning senare än patientkännedom$/, () =>
-    pages.getUtkastPageByType(this.intyg.typ).angeBaseratPa({
+When(/^jag anger anhörigs beskrivning senare än patientkännedom$/, function() {
+    return pages.getUtkastPageByType(this.intyg.typ).angeBaseratPa({
         anhorigsBeskrivning: '2017-09-27',
         personligKannedom: '2017-09-28'
-    }).then(changeFocus)
-);
+    }).then(changeFocus);
+});
 
 When(/^jag väljer "([^"]+)" i dropdownen "([^"]*)"$/, (val, text) => dropdownVal(val, text).then(changeFocus));
 
@@ -380,17 +380,21 @@ When(/^jag fyller i "(.*)" i fältet "(.*)"$/, (text, field) => fyllTextfalt(fie
 
 When(/^jag anger dagens datum som ej säkert dödsdatum$/, () => dropdownVal(currentYear(), 'År').then(() => dropdownVal(currentMonth(), 'Månad')).then(changeFocus));
 
-When(/^jag anger ett säkert dödsdatum i framtiden$/, () => pages.getUtkastPageByType(this.intyg.typ).angeDodsdatum({
-    sakert: {
-        datum: helpers.getCurrentDate().replace(/^\d{4}/, '2099')
-    }
-}).then(changeFocus));
+When(/^jag anger ett säkert dödsdatum i framtiden$/, function() {
+    return pages.getUtkastPageByType(this.intyg.typ).angeDodsdatum({
+        sakert: {
+            datum: helpers.getCurrentDate().replace(/^\d{4}/, '2099')
+        }
+    }).then(changeFocus);
+});
 
-When(/^jag anger 31 december förrförra året som säkert dödsdatum$/, () => pages.getUtkastPageByType(this.intyg.typ).angeDodsdatum({
-    sakert: {
-        datum: `${Number.parseInt(currentYear())-2}-12-31`
-    }
-}).then(changeFocus));
+When(/^jag anger 31 december förrförra året som säkert dödsdatum$/, function() {
+    return pages.getUtkastPageByType(this.intyg.typ).angeDodsdatum({
+        sakert: {
+            datum: `${Number.parseInt(currentYear())-2}-12-31`
+        }
+    }).then(changeFocus);
+});
 
 When(/^jag anger 31 december förrförra året som operationsdatum$/, () => doiUtkastPage.angeOperation({
     ja: {
@@ -398,8 +402,10 @@ When(/^jag anger 31 december förrförra året som operationsdatum$/, () => doiU
         beskrivning: 'Hej'
     }
 }).then(changeFocus));
-When(/^jag anger 31 december förrförra året som anträffad död$/, () => pages.getUtkastPageByType(this.intyg.typ)
-    .dodsdatum.inteSakert.antraffadDod.sendKeys(`${Number.parseInt(currentYear())-2}-12-31`).then(changeFocus));
+When(/^jag anger 31 december förrförra året som anträffad död$/, function() {
+    return pages.getUtkastPageByType(this.intyg.typ)
+        .dodsdatum.inteSakert.antraffadDod.sendKeys(`${Number.parseInt(currentYear())-2}-12-31`).then(changeFocus);
+});
 
 When(/^jag anger 31 december förrförra året som skada\/förgiftnings-datum$/, () => fyllTextfalt('Datum för skada/förgiftning', `${Number.parseInt(currentYear())-2}-12-31`).then(changeFocus));
 
