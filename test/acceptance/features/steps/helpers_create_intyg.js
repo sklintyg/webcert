@@ -47,7 +47,7 @@ function writeNewIntyg(world, status) {
             })
             .then(function() { // Ange intygsdata
                 logger.silly('Anger intygsdata..');
-                world.intyg = helpers.generateIntygByType(world.intyg);
+                world.intyg = helpers.generateIntygByType(world.intyg, world.patient);
                 logger.silly(world.intyg);
                 return require('./fillIn').fillIn(world);
             })

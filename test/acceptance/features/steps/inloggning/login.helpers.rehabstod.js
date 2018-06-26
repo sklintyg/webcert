@@ -21,23 +21,26 @@
 'use strict';
 var helpers = require('../helpers');
 
-var logInAsUserRehabstod = function(userObj, roleName, skipCookieConsent) {
+var logInAsUserRehabstod = function(user, roleName, skipCookieConsent) {
     if (skipCookieConsent) {
         logger.info('Lämnar inte samtycke för kakor');
     }
-    logger.info('Loggar in som ' + userObj.forNamn + ' ' + userObj.efterNamn);
-
-    // Fattigmans-kloning av användar-hashen.
-    this.user = JSON.parse(JSON.stringify(userObj));
+    logger.info('Loggar in som ' + user.forNamn + ' ' + user.efterNamn);
 
 
     browser.ignoreSynchronization = true;
 
-    this.user.roleName = roleName;
+    let userObj = {
+        forNamn: user.forNamn,
+        efterNamn: user.efterNamn,
+        hsaId: user.hsaId,
+        enhetId: user.enhetId
+    };
 
     return helpers.getUrl('welcome.html').then(function() {
         return pages.welcome.loginByJSON(JSON.stringify(userObj), !skipCookieConsent);
     }).then(function() {
+
         return helpers.pageReloadDelay();
     }).then(function() {
         browser.ignoreSynchronization = false;
@@ -47,12 +50,12 @@ var logInAsUserRehabstod = function(userObj, roleName, skipCookieConsent) {
 
 module.exports = {
     logInAsUserRehabstod: logInAsUserRehabstod,
-    logInAsUserRoleRehabstod: function(userObj, roleName, skipCookieConsent) {
+    logInAsUserRoleRehabstod: function(user, roleName, skipCookieConsent) {
         logger.info('Loggar in som ' + roleName);
-        logger.silly(userObj);
-        this.user.roleName = roleName;
+        logger.silly(user);
+        user.roleName = roleName;
 
-        return logInAsUserRehabstod(userObj, roleName, skipCookieConsent).then(function() {
+        return logInAsUserRehabstod(user, roleName, skipCookieConsent).then(function() {
             logger.info('Login default browser successful');
             element.all(by.css('.container h2')).getText().then(function(headings) {
                 var index = headings.indexOf('Logga in');

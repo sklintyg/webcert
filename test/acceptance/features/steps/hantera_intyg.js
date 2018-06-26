@@ -185,7 +185,7 @@ Given(/^ska signera\-knappen inte vara klickbar$/, function(callback) {
 });
 
 Given(/^jag uppdaterar enhetsaddress$/, function() {
-    return fillInCommon.fillInEnhetAdress();
+    return fillInCommon.fillInEnhetAdress(this.user);
 });
 
 Given(/^jag makulerar intyget$/, function() {

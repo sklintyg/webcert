@@ -171,30 +171,29 @@ Given(/^jag går in på Rehabstöd$/, function() {
 });
 
 Given(/^jag väljer enhet "([^"]*)"$/, function(enhet) {
-    var elementId = 'rhs-vardenhet-selector-select-active-unit-' + enhet + '-link';
-    var userObj = this.user;
-
-
+    let elementId = 'rhs-vardenhet-selector-select-active-unit-' + enhet + '-link';
+    let user = this.user;
+    let headerboxUser = element(by.css('.header-user'));
+    let promiseArr = [];
 
     return element(by.id(elementId)).click().then(function() {
-        return browser.sleep(2000).then(function() {
+        return browser.sleep(2000);
+    }).then(function() {
+        return headerboxUser.getText();
+    }).then(function(txt) {
+        if (user.roleName !== 'rehabkoordinator') {
+            promiseArr.push(expect(txt).to.eventually.contain(user.roleName));
+        }
+        promiseArr.push(expect(txt).to.eventually.contain(user.forNamn));
+        promiseArr.push(expect(txt).to.eventually.contain(user.efterNamn));
 
+        return Promise.all(promiseArr);
+    }).then(function() {
+        element(by.id('verksamhetsNameLabel')).getText().then(function(txt) {
             logger.info('Inloggad på: ');
-            element(by.id('location')).getText().then(function(txt) {
-                logger.info(txt);
-            });
-
-            var headerboxUser = element(by.css('.headerbox-user-profile'));
-
-            var compareStr = '';
-
-            if (userObj.roleName !== 'rehabkoordinator') {
-                compareStr = userObj.roleName + ' - ';
-            }
-            compareStr += userObj.forNamn + ' ' + userObj.efterNamn;
-
-            return expect(headerboxUser.getText()).to.eventually.contain(compareStr);
+            logger.info(txt);
         });
+        return;
     });
 });
 
@@ -249,26 +248,26 @@ Given(/^jag går in på en patient som sparats från Rehabstöd$/, function() {
 Given(/^jag är inloggad som läkare i Rehabstöd$/, function() {
     // Setting rehabstod to new bas url
     browser.baseUrl = process.env.REHABSTOD_URL;
-    var userObj = {
+    this.user = {
         forNamn: 'Johan',
         efterNamn: 'Johansson',
         hsaId: 'TSTNMT2321000156-107V',
         enhetId: 'TSTNMT2321000156-107P'
     };
 
-    return logInAsUserRoleRehabstod(userObj, 'Läkare', true);
+    return logInAsUserRoleRehabstod(this.user, 'Läkare', true);
 });
 
 Given(/^jag är inloggad som rehabkoordinator$/, function() {
     // Setting rehabstod to new bas url
     browser.baseUrl = process.env.REHABSTOD_URL;
-    var userObj = {
+    this.user = {
         forNamn: 'Automatkoordinator',
         efterNamn: 'Rehab',
         hsaId: 'TSTNMT2321000156-REKO',
         enhetId: 'TSTNMT2321000156-107Q'
     };
-    return logInAsUserRoleRehabstod(userObj, 'rehabkoordinator', true);
+    return logInAsUserRoleRehabstod(this.user, 'rehabkoordinator', true);
 });
 
 Given(/^jag är inloggad som läkare i Webcert med enhet "([^"]*)"$/, function(enhetsId) {

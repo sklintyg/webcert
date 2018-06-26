@@ -238,7 +238,7 @@ Given(/jag försöker gå in på intygsutkastet via djupintegrationslänk$/, fun
     //"Försöker gå in" är inte samma steg som "går in". p.g.a. expect logiken.
     let world = this;
     return loginIfSessionUsed(world.user).then(function() {
-        return helpers.getUrl(getIntegrationUrl(world.user, ' via djupintegrationslänk', world.intyg));
+        return helpers.getUrl(getIntegrationUrl(world.user, ' via djupintegrationslänk', world.intyg, world.patient));
     });
 });
 Given(/jag försöker gå in på intygsutkastet via djupintegrationslänk och har parameter "([^"]*)"$/, function(param) {

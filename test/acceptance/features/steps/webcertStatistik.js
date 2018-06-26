@@ -132,16 +132,14 @@ function mergeTables() {
 
 function getColumnDataFromTable(table, subject, column) {
     var data = table[subjects[subject].labels].split(' ');
-    console.log('data');
-    console.log(data);
+    logger.silly(JSON.stringify(data));
 
     var values = {};
     values.totalt = parseInt(data[subjects[subject].column[column].totalt], 10);
     values.man = parseInt(data[subjects[subject].column[column].man], 10);
     values.kvinnor = parseInt(data[subjects[subject].column[column].kvinnor], 10);
 
-    console.log('values');
-    console.log(values);
+    logger.silly(JSON.stringify(values));
 
     return values;
 }
@@ -215,10 +213,10 @@ Given(/^jag kollar värdena i tabellen$/, function() {
 
     return mergeTables().then(function(table) {
         global.statistik.table = table;
-        console.log('global.statistik.table');
-        console.log(global.statistik.table);
-        console.log('global.statistik.oldTable');
-        console.log(global.statistik.oldTable);
+        logger.silly('global.statistik.table');
+        logger.silly(JSON.stringify(global.statistik.table));
+        logger.silly('global.statistik.oldTable');
+        logger.silly(JSON.stringify(global.statistik.oldTable));
         return;
     });
 });

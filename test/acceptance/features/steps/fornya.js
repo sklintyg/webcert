@@ -46,32 +46,31 @@ var helpers = require('./helpers.js');
  *
  */
 
-Given(/^jag förnyar intyget$/, function(callback) {
+Given(/^jag förnyar intyget$/, function() {
 
-    global.fornyatIntyg = this.intyg;
+    let fornyatIntyg = Object.create(this.intyg);
+
     let intyg = this.intyg;
 
-    helpers.updateEnhetAdressForNewIntyg(this.user);
-    fkIntygPage.fornyaBtn.sendKeys(protractor.Key.SPACE).then(function() {
-        this.intyg = fkIntygPage.fornyaDialog.btn.sendKeys(protractor.Key.SPACE)
-            .then(function() {
-                return helpers.pageReloadDelay();
-            })
-            .then(function() {
-                return browser.getCurrentUrl()
-                    .then(function(text) {
+    return fkIntygPage.fornyaBtn.sendKeys(protractor.Key.SPACE)
+        .then(function() {
+            return fkIntygPage.fornyaDialog.btn.sendKeys(protractor.Key.SPACE)
+                .then(function() {
+                    return helpers.pageReloadDelay();
+                })
+                .then(function() {
+                    return browser.getCurrentUrl()
+                        .then(function(text) {
 
+                            logger.info('fornyatIntyg.id: ' + fornyatIntyg.id);
+                            intyg.id = text.split('/').slice(-2)[0];
+                            intyg.id = intyg.id.split('?')[0];
 
-                        logger.info('global.fornyatIntyg.id: ' + global.fornyatIntyg.id);
+                            logger.info('intyg.id: ' + intyg.id);
+                        });
+                });
+        });
 
-                        intyg.id = text.split('/').slice(-2)[0];
-                        intyg.id = intyg.id.split('?')[0];
-
-                        logger.info('intyg.id: ' + intyg.id);
-                    });
-
-            });
-    }).then(callback);
 });
 
 Given(/^ska fält för Baserat på vara tomma$/, function(callback) {

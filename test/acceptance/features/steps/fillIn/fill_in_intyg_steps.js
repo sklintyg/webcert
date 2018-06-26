@@ -273,7 +273,7 @@ Given(/^jag ändrar i slumpat fält$/, function() {
 
     if (isValid(intygShortcode)) {
         let field = helpers.randomPageField(helpers.isSMIIntyg(this.intyg.typ), intygShortcode);
-        return changeField(intygShortcode, field);
+        return changeField(intygShortcode, field, this.intyg);
     } else {
         throw Error('Intyg code not valid \'' + intygShortcode + '\'');
     }

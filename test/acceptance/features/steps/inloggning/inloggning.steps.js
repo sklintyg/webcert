@@ -210,7 +210,6 @@ Given(/^jag går in på att skapa ett "([^"]*)" intyg$/, function(intygsTyp) {
 
 Given(/^ska jag inte kunna skapa ett "([^"]*)" intyg$/, function(intygsTyp) {
     return sokSkrivIntygUtkastTypePage.intygTypeTable.getText().then(function(txt) {
-        console.log(txt);
         return expect(txt).to.not.contain(intygsTyp);
     }).then(function() {
         logger.info('OK - intygstypen finns inte i listan med valbara intygstyper');
@@ -246,13 +245,15 @@ Given(/^jag går in på att skapa ett slumpat SMI\-intyg$/, function() {
     ])[0];
     logger.silly('intyg.typ: ' + this.intyg.typ);
     browser.ignoreSynchronization = true;
-    return sokSkrivIntygUtkastTypePage.createUtkast(helpers.getInternShortcode(this.intyg.typ)).then(function() {
+
+    let intyg = this.intyg;
+    return sokSkrivIntygUtkastTypePage.createUtkast(helpers.getInternShortcode(intyg.typ)).then(function() {
         return helpers.hugeDelay();
     }).then(function() {
         // Spara intygsid för kommande steg
         return browser.getCurrentUrl().then(function(text) {
-            this.intyg.id = text.split('/').slice(-2)[0];
-            return logger.info('intyg.id: ' + this.intyg.id);
+            intyg.id = text.split('/').slice(-2)[0];
+            return logger.info('intyg.id: ' + intyg.id);
         });
     });
 });
