@@ -174,7 +174,6 @@ Given(/^jag väljer enhet "([^"]*)"$/, function(enhet) {
     let elementId = 'rhs-vardenhet-selector-select-active-unit-' + enhet + '-link';
     let user = this.user;
     let headerboxUser = element(by.css('.header-user'));
-    let promiseArr = [];
 
     return element(by.id(elementId)).click().then(function() {
         return browser.sleep(2000);
@@ -182,18 +181,15 @@ Given(/^jag väljer enhet "([^"]*)"$/, function(enhet) {
         return headerboxUser.getText();
     }).then(function(txt) {
         if (user.roleName !== 'rehabkoordinator') {
-            promiseArr.push(expect(txt).to.eventually.contain(user.roleName));
+            expect(txt).to.contain(user.roleName);
         }
-        promiseArr.push(expect(txt).to.eventually.contain(user.forNamn));
-        promiseArr.push(expect(txt).to.eventually.contain(user.efterNamn));
-
-        return Promise.all(promiseArr);
+        expect(txt).to.contain(user.forNamn);
+        expect(txt).to.contain(user.efterNamn);
     }).then(function() {
-        element(by.id('verksamhetsNameLabel')).getText().then(function(txt) {
-            logger.info('Inloggad på: ');
-            logger.info(txt);
-        });
-        return;
+        return element(by.id('verksamhetsNameLabel')).getText();
+    }).then(function(txt) {
+        logger.info('Inloggad på: ');
+        logger.info(txt);
     });
 });
 
@@ -209,14 +205,15 @@ When(/^jag går till pågående sjukfall i Rehabstöd$/, function() {
     });
 });
 When(/^ska jag inte se patientens personnummer bland pågående sjukfall$/, function() {
+    let patient = this.patient;
     return element.all(by.css('.rhs-table-row')).getText().then(function(tableRows) {
         return tableRows.forEach(function(row) {
             row = row.replace('-', '');
 
-            logger.info('letar efter "' + this.patient.id + '" i :');
+            logger.info('letar efter "' + patient.id + '" i :');
             logger.debug(row);
 
-            return expect(row).to.not.contain(this.patient.id);
+            return expect(row).to.not.contain(patient.id);
         });
 
 

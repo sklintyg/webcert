@@ -162,9 +162,10 @@
 
  Then(/^ska svaret endast innehålla intyg för vårdenheten$/, function() {
      var idPromises = [];
+     let user = this.user;
      response.list.item.forEach(function(element) {
          var enhetID = element.intyg.skapadAv.enhet['enhets-id'].extension;
-         idPromises.push(expect(enhetID).to.contain(this.user.enhetId));
+         idPromises.push(expect(enhetID).to.contain(user.enhetId));
      });
      return Promise.all(idPromises);
  });

@@ -58,6 +58,7 @@
      if (intyg && intyg.typ) {
          isSMIIntyg = helpers.isSMIIntyg(intyg.typ);
      }
+     console.log('isSMIIntyg: ' + isSMIIntyg);
 
      if (isSMIIntyg) {
          logger.silly('is isSMIIntyg');
@@ -65,28 +66,21 @@
          url = url.replace('https', 'http');
          logger.silly(user);
          body = soapMessageBodies.RegisterCertificate(
-             patient.id,
-             patient.forNamn,
-             patient.efterNamn,
-             user.hsaId,
-             user.forNamn + ' ' + user.efterNamn,
-             user.enhetId,
-             user.enhetName,
-             intyg.id);
+             patient,
+             user,
+             intyg);
          logger.silly('URL - ' + url);
          logger.silly('BODY - ' + body);
          soap.createClient(url, function(err, client) {
              if (err) {
                  callback(err);
              }
-             logger.silly(client);
              client.RegisterCertificate(body, function(err, result, body) {
                  logger.silly(err);
                  logger.silly(result);
                  var resultcodeSMI = result.result.resultCode;
                  logger.info('ResultCode: ' + resultcodeSMI);
                  if (resultcodeSMI !== 'OK') {
-                     logger.info(result);
                      callback('ResultCode: ' + resultcodeSMI + '\n' + body);
                  } else {
                      callback();
@@ -148,6 +142,7 @@
 
  Given(/^jag skickar ett "([^"]*)" intyg till Intygstjänsten$/, function(intygCode, callback) {
      this.intyg.id = testdataHelper.generateTestGuid();
+     this.intyg.typ = intygCode;
 
      if (!this.patient || !this.patient.id) {
          this.patient = testdataHelper.shuffle(testvalues.patienter)[0];

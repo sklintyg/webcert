@@ -275,6 +275,7 @@ Given(/^ska intyget inte finnas i listan$/, function() {
 
 When(/^jag fyller i nödvändig information \( om intygstyp är "([^"]*)"\)$/, function(intygstyp) {
     let intyg = this.intyg;
+    let world = this;
     if (intygstyp !== intyg.typ) {
         logger.info('Intygstyp är inte ' + intygstyp);
         return Promise.resolve();
@@ -294,7 +295,7 @@ When(/^jag fyller i nödvändig information \( om intygstyp är "([^"]*)"\)$/, f
                 throw ('FEL, angeUtlatandeOmDodsorsak,' + reason);
             }).then(function() {
                 //TODO Patientaddress ska vara förifylld INTYG-6091
-                return fillInCommon.setPatientAdressIfNotGiven(intyg);
+                return fillInCommon.setPatientAdressIfNotGiven(world);
             }).then(function() {
                 //Opererad inom fyra veckor före döden
                 return doiUtkastPage.angeOperation(intyg.operation)

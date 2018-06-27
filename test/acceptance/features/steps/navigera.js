@@ -213,11 +213,11 @@ Given(/^jag går in på intygsutkastet via djupintegrationslänk med annan adres
 });
 
 Given(/^jag går in på intygsutkastet via djupintegrationslänk med ett annat personnummer$/, function() {
-    global.ursprungligPerson = JSON.parse(JSON.stringify(this.patient));
-
+    this.ursprungligPatient = JSON.parse(JSON.stringify(this.patient));
+    let ursprungligPatient = this.ursprungligPatient;
     // Ta bort tidigare person så att vi inte råkar välja samma
     var valbaraPatienter = testpatienter.filter(function(el) {
-        return el.id !== global.ursprungligPerson.id;
+        return el.id !== ursprungligPatient.id;
     });
     logger.silly(testpatienter);
     logger.silly(valbaraPatienter);
@@ -228,7 +228,7 @@ Given(/^jag går in på intygsutkastet via djupintegrationslänk med ett annat p
 });
 
 Given(/^jag går in på intygsutkastet via djupintegrationslänk med ett reservnummer$/, function() {
-    global.ursprungligPerson = JSON.parse(JSON.stringify(this.patient));
+    this.ursprungligPatient = JSON.parse(JSON.stringify(this.patient));
     this.patient.id = '3243342';
     return gotoIntyg(this.user, this.intyg, this.patient, ' via djupintegrationslänk', 'alternatePatientSSn=' + this.patient.id);
 });

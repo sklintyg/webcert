@@ -80,7 +80,7 @@ function checkFMB(fmbDiagnos, intyg) {
 }
 
 
-function fillInDiagnoskod(diagnos) {
+function fillInDiagnoskod(diagnos, intyg) {
     logger.info('Anger diagnos:', diagnos.kod);
     global.tmpDiagnos = diagnos;
     var isSMIIntyg = helpers.isSMIIntyg(intyg.typ);
@@ -100,19 +100,20 @@ function fillInDiagnoskod(diagnos) {
 
 Given(/^jag fyller i "([^"]*)" som diagnoskod$/, function(dKod) {
     return fillInDiagnoskod({
-        kod: dKod
+        kod: dKod,
+		this.intyg
     });
 });
 
 Given(/^jag fyller i diagnoskod$/, function() {
     let diagnos = testdataHelpers.shuffle(testdata.fmb.fmbInfo.diagnoser)[0];
-    return fillInDiagnoskod(diagnos);
+    return fillInDiagnoskod(diagnos, this.intyg);
 
 });
 
 Given(/^jag fyller i diagnoskod utan egen FMB info$/, function() {
     var diagnos = testdataHelpers.shuffle(testdata.fmb.utanEgenFMBInfo.diagnoser)[0];
-    return fillInDiagnoskod(diagnos);
+    return fillInDiagnoskod(diagnos, this.intyg);
 });
 
 Given(/^ska rätt info gällande FMB visas$/, function() {
@@ -128,7 +129,7 @@ Given(/^ska FMB info för överliggande diagnoskod visas$/, function() {
 });
 Given(/^jag fyller i diagnoskod utan FMB info$/, function() {
     var diagnos = testdataHelpers.shuffle(testdata.fmb.utanFMBInfo.diagnoser)[0];
-    fillInDiagnoskod(diagnos);
+    fillInDiagnoskod(diagnos, this.intyg);
 });
 
 Given(/^ska ingen info gällande FMB visas$/, function() {
