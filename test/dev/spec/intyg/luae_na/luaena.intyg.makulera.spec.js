@@ -64,6 +64,9 @@ describe('Validera makulering av luae_na Intyg', function() {
             });
 
             expect(IntygPage.makulera.statusRevoked.isDisplayed()).toBeTruthy();
+
+            // Print button should not exist
+            expect(IntygPage.skrivUtBtn.isPresent()).toBeFalsy();
         });
 
     });

@@ -69,7 +69,7 @@ describe('verify luaena\'s print buttons', function() {
     });
 
     it('verify the normal print button is not displayed', function() {
-        expect(element(by.id('downloadprint')).isDisplayed()).toBeTruthy();
+        expect(IntygPage.skrivUtBtn.isDisplayed()).toBeTruthy();
     });
 
 });

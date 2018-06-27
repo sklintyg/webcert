@@ -117,6 +117,7 @@ var BaseIntyg = JClass._extend({
             enhetsTelefon: element(by.id('vardperson_telefonnummer'))
         };
 
+        this.skrivUtBtn = element(by.id('downloadprint'));
         this.selectUtskriftButton = element(by.id('intyg-header-dropdown-select-pdf-type'));
 
         this.newPersonIdMessage = element(by.id('wc-new-person-id-message'));

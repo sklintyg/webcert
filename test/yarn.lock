@@ -177,9 +177,9 @@ combined-stream@1.0.6, combined-stream@~1.0.5:
   dependencies:
     delayed-stream "~1.0.0"
 
-common-testtools@^0.3.0:
-  version "0.3.7"
-  resolved "https://build-inera.nordicmedtest.se/nexus/repository/npm-all/common-testtools/-/common-testtools-0.3.7.tgz#cf5dc9fba9cd5430eb11e6d4d10e2f812c2b1357"
+common-testtools@^0.4.0:
+  version "0.4.0"
+  resolved "https://build-inera.nordicmedtest.se/nexus/repository/npm-all/common-testtools/-/common-testtools-0.4.0.tgz#fa38b680b1ae916a00bfe1ba3066ff2bd52140d6"
 
 concat-map@0.0.1:
   version "0.0.1"
