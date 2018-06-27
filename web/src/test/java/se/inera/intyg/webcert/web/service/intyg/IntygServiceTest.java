@@ -787,18 +787,33 @@ public class IntygServiceTest {
     }
 
     @SuppressWarnings("unchecked")
-    @Test
+    @Test(expected = WebCertServiceException.class)
     public void testFetchRevokedIntygAsPdfFromWebCert() throws IOException, IntygModuleFacadeException {
         when(utkastRepository.findOne(CERTIFICATE_ID)).thenReturn(getIntyg(CERTIFICATE_ID, LocalDateTime.now(), LocalDateTime.now()));
-        when(moduleFacade.convertFromInternalToPdfDocument(anyString(), anyString(), anyList(), any(UtkastStatus.class), anyBoolean()))
-                .thenReturn(buildPdfDocument());
-        IntygPdf intygPdf = intygService.fetchIntygAsPdf(CERTIFICATE_ID, CERTIFICATE_TYPE, false);
-        assertNotNull(intygPdf);
 
-        verify(utkastRepository, times(1)).findOne(anyString());
-        verify(logservice).logPrintRevokedIntygAsPDF(any(LogRequest.class));
-        verifyNoMoreInteractions(logservice);
-        verify(moduleFacade, times(0)).getCertificate(CERTIFICATE_ID, CERTIFICATE_TYPE);
+        try {
+            intygService.fetchIntygAsPdf(CERTIFICATE_ID, CERTIFICATE_TYPE, false);
+        } catch (Exception e) {
+            verify(utkastRepository, times(1)).findOne(CERTIFICATE_ID);
+            verifyZeroInteractions(logservice);
+            verify(moduleFacade, times(0)).getCertificate(CERTIFICATE_ID, CERTIFICATE_TYPE);
+            throw e;
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test(expected = WebCertServiceException.class)
+    public void testFetchLockedDraftAsPdfFromWebCert() throws IOException, IntygModuleFacadeException {
+        when(utkastRepository.findOne(CERTIFICATE_ID)).thenReturn(getDraft(CERTIFICATE_ID, UtkastStatus.DRAFT_LOCKED));
+
+        try {
+            intygService.fetchIntygAsPdf(CERTIFICATE_ID, CERTIFICATE_TYPE, false);
+        } catch (Exception e) {
+            verify(utkastRepository, times(1)).findOne(CERTIFICATE_ID);
+            verifyZeroInteractions(logservice);
+            verify(moduleFacade, times(0)).getCertificate(CERTIFICATE_ID, CERTIFICATE_TYPE);
+            throw e;
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -1283,6 +1298,10 @@ public class IntygServiceTest {
     }
 
     private Utkast getDraft(String intygsId) throws IOException {
+        return getDraft(intygsId, UtkastStatus.DRAFT_INCOMPLETE);
+    }
+
+    private Utkast getDraft(String intygsId, UtkastStatus utkastStatus) throws IOException {
         Utkast utkast = new Utkast();
         String json = IOUtils.toString(new ClassPathResource(
                 "IntygServiceTest/utkast-utlatande.json").getInputStream(), "UTF-8");
@@ -1290,7 +1309,7 @@ public class IntygServiceTest {
         utkast.setIntygsId(intygsId);
         utkast.setIntygsTyp(CERTIFICATE_TYPE);
         utkast.setPatientPersonnummer(PERSNR);
-        utkast.setStatus(UtkastStatus.DRAFT_INCOMPLETE);
+        utkast.setStatus(utkastStatus);
 
         return utkast;
     }
