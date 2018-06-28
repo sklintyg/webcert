@@ -21,11 +21,11 @@ angular.module('webcert').directive('wcEnhetArendenList', [
     '$location', '$log', '$timeout', '$window',
     'common.ArendeVidarebefordraHelper', 'common.ArendeProxy', 'common.dialogService',
     'webcert.enhetArendenListService', 'webcert.enhetArendenModel', 'webcert.enhetArendenListModel',
-    'common.messageService', 'webcert.vardenhetFilterModel', 'webcert.enhetArendenFilterModel', 'common.statService',
+    'common.messageService', 'webcert.vardenhetFilterModel', 'webcert.enhetArendenFilterModel',
     function($location, $log, $timeout, $window,
         ArendeVidarebefordraHelper, ArendeProxy, dialogService,
         enhetArendenListService, enhetArendenModel, enhetArendenListModel, messageService, 
-        vardenhetFilterModel, enhetArendenFilterModel, statService) {
+        vardenhetFilterModel, enhetArendenFilterModel) {
         'use strict';
 
         return {
@@ -35,11 +35,6 @@ angular.module('webcert').directive('wcEnhetArendenList', [
             scope: {},
             templateUrl: '/app/views/fragorOchSvar/wcEnhetArendenList/wcEnhetArendenList.directive.html',
             controller: function($scope) {
-                $scope.stat = statService.getLatestData();
-                $scope.$on('statService.stat-update', function(event, message) {
-                    $scope.stat = message;
-                });
-
                 $scope.listModel = enhetArendenListModel;
                 $scope.vardenhetFilterModel = vardenhetFilterModel;
 
@@ -62,10 +57,10 @@ angular.module('webcert').directive('wcEnhetArendenList', [
 
                 var vidarebefordraArendeMailModel = null;
 
-                updateArenden(null, {startFrom: 0});
+                updateArenden(null, {startFrom: 0}, true);
 
                 // When other directives want to request list update
-                function updateArenden(event, data) {
+                function updateArenden(event, data, firstRun) {
                     var spinnerWaiting = $timeout(function() {       
                         enhetArendenListModel.viewState.runningQuery = true;
                     }, 700);
@@ -76,7 +71,9 @@ angular.module('webcert').directive('wcEnhetArendenList', [
                         enhetArendenListModel.prevFilterQuery = arendenListResult.query;
                         enhetArendenListModel.totalCount = arendenListResult.totalCount;
                         enhetArendenListModel.arendenList = arendenListResult.arendenList;
-
+                        if (firstRun) {
+                           $scope.totalCount = arendenListResult.totalCount;
+                        }
                     }, function(errorData) {
                         $log.debug('Query Error: ' + errorData);
                         enhetArendenListModel.viewState.activeErrorMessageKey = 'info.query.error';

@@ -1,6 +1,6 @@
 <div>
 
-  <div ng-show="stat.fragaSvarValdEnhet > 0"> <!-- NOTE: must be ng-show since event from vardenhetfilter is sent to filter controller which doesnt exist with ng-if -->
+  <div ng-show="totalCount > 0"> <!-- NOTE: must be ng-show since event from vardenhetfilter is sent to filter controller which doesnt exist with ng-if -->
     <h2 class="page-heading1"  ng-class="{'less-top-padding' : vardenhetFilterModel.units.length < 3}">
       Ärenden visas för {{ selectedUnitName }}
     </h2>
@@ -17,7 +17,7 @@
                         alert-severity="danger"
                         alert-message-id="{{listModel.viewState.activeErrorMessageKey}}"></wc-alert-message>
 
-      <wc-no-arenden-message ng-if="stat.fragaSvarValdEnhet == 0"></wc-no-arenden-message>
+      <wc-no-arenden-message ng-if="totalCount == 0"></wc-no-arenden-message>
 
       <!-- Search hits -->
       <div id="showing-nr-hits" ng-show="listModel.totalCount > 0">Visar
@@ -26,7 +26,7 @@
       </div>
 
       <!-- arende table - Frågor och svar-tabell -->
-      <div class="row" id="arendeTable" ng-show="stat.fragaSvarValdEnhet > 0">
+      <div class="row" id="arendeTable" ng-show="totalCount > 0">
         <div class="col-md-12">
           <div class="rounded-table-wrapper">
           <table class="table table-striped wc-table-striped">
@@ -85,7 +85,7 @@
         </div>
        </div>
       </div>
-      <div ng-if="listModel.totalCount == 0 && stat.fragaSvarValdEnhet > 0">Inga resultat att visa.</div>
+      <div ng-if="listModel.totalCount == 0 && totalCount > 0">Inga resultat att visa.</div>
       <div ng-show="listModel.arendenList.length < listModel.totalCount">
         <wc-button
             btn-id="hamtaFler"
