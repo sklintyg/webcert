@@ -85,6 +85,7 @@ public class SignatureApiController extends AbstractApiController {
                 .withIntygsId(sb.getIntygsId())
                 .withStatus(sb.getStatus())
                 .withVersion(sb.getVersion())
+                .withSignaturTyp(sb.getSignaturTyp())
                 .withHash(sb.getHash()) // This is what you stuff into NetiD SIGN.
                 .build();
     }

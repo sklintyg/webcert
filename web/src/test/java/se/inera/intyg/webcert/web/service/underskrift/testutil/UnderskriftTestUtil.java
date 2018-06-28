@@ -22,6 +22,7 @@ import org.w3._2000._09.xmldsig_.ObjectFactory;
 import org.w3._2000._09.xmldsig_.ReferenceType;
 import org.w3._2000._09.xmldsig_.SignatureType;
 import org.w3._2000._09.xmldsig_.SignedInfoType;
+import se.inera.intyg.common.support.common.enumerations.SignaturTyp;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.infra.xmldsig.model.IntygXMLDSignature;
@@ -61,8 +62,7 @@ public class UnderskriftTestUtil {
     }
 
     public static SignaturBiljett createSignaturBiljett(SignaturStatus status) {
-        return SignaturBiljett.SignaturBiljettBuilder.aSignaturBiljett()
-                .withTicketId(TICKET_ID)
+        return SignaturBiljett.SignaturBiljettBuilder.aSignaturBiljett(TICKET_ID, SignaturTyp.XMLDSIG)
                 .withIntygsId(INTYG_ID)
                 .withVersion(VERSION)
                 .withStatus(status)

@@ -20,6 +20,7 @@ package se.inera.intyg.webcert.web.service.underskrift.xmldsig;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import se.inera.intyg.common.support.common.enumerations.SignaturTyp;
 import se.inera.intyg.infra.xmldsig.model.IntygXMLDSignature;
 import se.inera.intyg.infra.xmldsig.service.PrepareSignatureService;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
@@ -28,7 +29,6 @@ import se.inera.intyg.webcert.web.service.underskrift.BaseXMLSignatureService;
 import se.inera.intyg.webcert.web.service.underskrift.CommonUnderskriftService;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturBiljett;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturStatus;
-import se.inera.intyg.webcert.web.service.underskrift.tracker.RedisTicketTracker;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 import java.time.LocalDateTime;
@@ -44,9 +44,6 @@ public class XmlUnderskriftServiceImpl extends BaseXMLSignatureService implement
     private PrepareSignatureService prepareSignatureService;
 
     @Autowired
-    private RedisTicketTracker redisTicketTracker;
-
-    @Autowired
     private MonitoringLogService monitoringLogService;
 
     @Override
@@ -55,8 +52,7 @@ public class XmlUnderskriftServiceImpl extends BaseXMLSignatureService implement
         IntygXMLDSignature intygSignature = prepareSignatureService.prepareSignature(registerCertificateXml, intygsId);
         intygSignature.setIntygJson(utkastJson);
 
-        SignaturBiljett biljett = SignaturBiljett.SignaturBiljettBuilder.aSignaturBiljett()
-                .withTicketId(UUID.randomUUID().toString())
+        SignaturBiljett biljett = SignaturBiljett.SignaturBiljettBuilder.aSignaturBiljett(UUID.randomUUID().toString(), SignaturTyp.XMLDSIG)
                 .withIntygsId(intygsId)
                 .withVersion(version)
                 .withIntygSignature(intygSignature)

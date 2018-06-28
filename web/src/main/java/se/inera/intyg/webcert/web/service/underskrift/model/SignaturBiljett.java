@@ -25,6 +25,9 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
+import static com.google.common.base.Preconditions.checkArgument;
+import static java.util.Objects.nonNull;
+
 public class SignaturBiljett implements Serializable {
     private String ticketId;
     private String intygsId;
@@ -118,6 +121,7 @@ public class SignaturBiljett implements Serializable {
         return Objects.hash(ticketId, intygsId, version);
     }
 
+
     public static final class SignaturBiljettBuilder {
         private String ticketId;
         private String intygsId;
@@ -128,16 +132,13 @@ public class SignaturBiljett implements Serializable {
         private SignaturTyp signaturTyp;
         private String hash;
 
-        private SignaturBiljettBuilder() {
-        }
-
-        public static SignaturBiljettBuilder aSignaturBiljett() {
-            return new SignaturBiljettBuilder();
-        }
-
-        public SignaturBiljettBuilder withTicketId(String ticketId) {
+        private SignaturBiljettBuilder(String ticketId, SignaturTyp signaturTyp) {
             this.ticketId = ticketId;
-            return this;
+            this.signaturTyp = signaturTyp;
+        }
+
+        public static SignaturBiljettBuilder aSignaturBiljett(String ticketId, SignaturTyp signaturTyp) {
+            return new SignaturBiljettBuilder(ticketId, signaturTyp);
         }
 
         public SignaturBiljettBuilder withIntygsId(String intygsId) {
@@ -165,17 +166,15 @@ public class SignaturBiljett implements Serializable {
             return this;
         }
 
-        public SignaturBiljettBuilder withSignaturTyp(SignaturTyp signaturTyp) {
-            this.signaturTyp = signaturTyp;
-            return this;
-        }
-
         public SignaturBiljettBuilder withHash(String hash) {
             this.hash = hash;
             return this;
         }
 
         public SignaturBiljett build() {
+            checkArgument(nonNull(ticketId));
+            checkArgument(nonNull(signaturTyp));
+
             SignaturBiljett signaturBiljett = new SignaturBiljett();
             signaturBiljett.setTicketId(ticketId);
             signaturBiljett.setIntygsId(intygsId);

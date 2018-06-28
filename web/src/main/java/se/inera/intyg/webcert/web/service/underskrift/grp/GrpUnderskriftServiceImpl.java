@@ -52,7 +52,6 @@ import se.inera.intyg.webcert.web.service.underskrift.grp.dto.IntygGRPSignature;
 import se.inera.intyg.webcert.web.service.underskrift.grp.factory.GrpCollectPollerFactory;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturBiljett;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturStatus;
-import se.inera.intyg.webcert.web.service.underskrift.tracker.RedisTicketTracker;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 @Service
@@ -73,9 +72,6 @@ public class GrpUnderskriftServiceImpl extends BaseSignatureService implements C
     private String displayName;
 
     @Autowired
-    private RedisTicketTracker redisTicketTracker;
-
-    @Autowired
     private GrpServicePortType grpService;
 
     @Autowired
@@ -90,8 +86,7 @@ public class GrpUnderskriftServiceImpl extends BaseSignatureService implements C
 
         IntygGRPSignature intygGRPSignature = new IntygGRPSignature(intygJson, hash);
 
-        SignaturBiljett biljett = SignaturBiljett.SignaturBiljettBuilder.aSignaturBiljett()
-                .withTicketId(UUID.randomUUID().toString())
+        SignaturBiljett biljett = SignaturBiljett.SignaturBiljettBuilder.aSignaturBiljett(UUID.randomUUID().toString(), SignaturTyp.PKCS7)
                 .withIntygsId(intygsId)
                 .withVersion(version)
                 .withIntygSignature(intygGRPSignature)

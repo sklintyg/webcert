@@ -116,9 +116,6 @@ public class UnderskriftServiceImpl implements UnderskriftService {
         case MOBILT_BANK_ID:
             signaturBiljett = grpUnderskriftService.skapaSigneringsBiljettMedDigest(intygsId, intygsTyp, version, updatedJson);
             break;
-        default:
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.UNKNOWN_INTERNAL_PROBLEM,
-                    "Unhandled user state for signing: " + user.getAuthenticationMethod());
         }
 
         // Finally, for GRP and NIAS, we need to kick off the Collect pollers.

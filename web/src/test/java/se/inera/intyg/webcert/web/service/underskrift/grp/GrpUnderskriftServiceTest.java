@@ -28,6 +28,7 @@ import se.funktionstjanster.grp.v1.AuthenticateRequestType;
 import se.funktionstjanster.grp.v1.GrpFault;
 import se.funktionstjanster.grp.v1.GrpServicePortType;
 import se.funktionstjanster.grp.v1.OrderResponseType;
+import se.inera.intyg.common.support.common.enumerations.SignaturTyp;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.infra.security.authorities.AuthoritiesResolverUtil;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
@@ -149,8 +150,7 @@ public class GrpUnderskriftServiceTest extends AuthoritiesConfigurationTestSetup
 
     private SignaturBiljett buildSignaturBiljett() {
         SignaturBiljett ticket = SignaturBiljett.SignaturBiljettBuilder
-                .aSignaturBiljett()
-        .withTicketId(TX_ID)
+                .aSignaturBiljett(TX_ID, SignaturTyp.PKCS7)
                 .withHash("hash")
                 .withSkapad(LocalDateTime.now())
                 .withStatus(SignaturStatus.OKAND)

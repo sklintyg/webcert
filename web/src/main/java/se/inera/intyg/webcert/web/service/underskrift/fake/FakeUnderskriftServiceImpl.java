@@ -25,7 +25,6 @@ import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.underskrift.BaseXMLSignatureService;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturBiljett;
-import se.inera.intyg.webcert.web.service.underskrift.tracker.RedisTicketTracker;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 import java.nio.charset.Charset;
@@ -47,9 +46,6 @@ public class FakeUnderskriftServiceImpl extends BaseXMLSignatureService implemen
 
     @Autowired
     private FakeSignatureServiceImpl fakeSignatureService;
-
-    @Autowired
-    private RedisTicketTracker redisTicketTracker;
 
     @Autowired
     private MonitoringLogService monitoringLogService;
