@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*globals pages,intyg,wcTestTools,Promise,logger */
+/*globals pages,wcTestTools,Promise,logger */
 
 
 'use strict';
@@ -100,9 +100,9 @@ function fillInDiagnoskod(diagnos, intyg) {
 
 Given(/^jag fyller i "([^"]*)" som diagnoskod$/, function(dKod) {
     return fillInDiagnoskod({
-        kod: dKod,
-		this.intyg
-    });
+        kod: dKod
+
+    }, this.intyg);
 });
 
 Given(/^jag fyller i diagnoskod$/, function() {

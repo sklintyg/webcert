@@ -8,6 +8,28 @@ Scenario: Varning om patient är avliden
     När jag går in på en patient som är avliden
     Så ska jag varnas om att "Patienten är avliden"
 
+@GE-003 @INTEGRATION @WIP
+Scenario: Dödsbevis utkast ska kunna skapas på avliden patient
+    Givet jag har raderat alla intyg och utkast för "första" "avliden" testpatienten
+	Och att jag är inloggad som djupintegrerad läkare
+
+    När jag går in på en patient som är avliden
+	Och att vårdsystemet skapat ett intygsutkast för samma patient för "Dödsbevis"
+	Och jag går in på intyget via djupintegrationslänk
+	Och jag fyller i alla nödvändiga fält för intyget
+    Och jag signerar intyget
+
+@GE-003 @INTEGRATION @WIP
+Scenario: Dödsorsaksintyg utkast ska kunna skapas på avliden patient
+    Givet jag har raderat alla intyg och utkast för "första" "avliden" testpatienten
+	Och att jag är inloggad som djupintegrerad läkare
+
+    När jag går in på en patient som är avliden
+	Och att vårdsystemet skapat ett intygsutkast för samma patient för "Dödsorsaksintyg"
+	Och jag går in på intyget via djupintegrationslänk
+	Och jag fyller i alla nödvändiga fält för intyget
+    Och jag signerar intyget
+
 @FRÅGA-FRÅN-VÅRDEN @INTEGRATION
 Scenario: Avliden Patient - Vården kan ställa frågor på ett intyg
     Givet att jag är inloggad som djupintegrerad läkare

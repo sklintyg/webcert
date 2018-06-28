@@ -186,6 +186,11 @@ module.exports = {
     }],
     dedikeradeTestPatienter: {
         medSyfte: {
+            'avliden': [{
+                id: '190001309814',
+                namn: '',
+                efternamn: ''
+            }],
             'Dödsorsaksintyg': [{
                 id: '199912212397',
                 adress: {
