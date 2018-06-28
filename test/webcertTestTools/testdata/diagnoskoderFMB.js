@@ -72,7 +72,7 @@ module.exports = {
         }, {
             kod: 'O267',
             symptomPrognosBehandling: 'rygg eller bäcken med debut under aktuell graviditet',
-            generellInfo: 'Observandum',
+            generellInfo: 'Det finns erkända test för att mäta bäckenledsmärtor och allvarlighetsgrad (exempelvis P4 test).',
             funktionsnedsattning: 'begränsas förmågan att lyfta',
             aktivitetsbegransning: 'Gå, stå, sitta',
             beslutsunderlag: 'medelsvår graviditetsrelaterad rygg- och bäckensmärta (inklusive symfyseolys)'
