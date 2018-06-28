@@ -41,14 +41,21 @@ Scenario: GE-005 - Händelser på TS-intyg utfärdat på annan vårdgivare ska P
 	Och jag skriver ut intyget
 	Så ska loggaktivitet "Utskrift" skickas till loggtjänsten med argument "Intyg utskrivet. Läsning i enlighet med sammanhållen journalföring"
 	
+#3
+@SJF @LÄSA @MAKULERAT
+Scenario: GE-005 - Händelser på makulerat TS-intyg utfärdat på annan vårdgivare ska PDL-loggas
 	Givet att jag är inloggad som djupintegrerad läkare på vårdenhet "TSTNMT2321000156-INT2"
-	Och jag går in på intyget via djupintegrationslänk
+	Och att vårdsystemet skapat ett intygsutkast för slumpat TS-intyg
+    Och jag går in på intygsutkastet via djupintegrationslänk
+    Och jag fyller i alla nödvändiga fält för intyget
+	Och jag signerar intyget	
+	Och jag skickar intyget till Transportstyrelsen
 	Och jag makulerar intyget
+	
 	Och att jag är inloggad som djupintegrerad läkare på vårdenhet "TSTNMT2321000156-1077" och inte har uppdrag på "TSTNMT2321000156-INT2"
-	Och jag går in på intyget via djupintegrationslänk med parameter "sjf=true"
-	Och jag skriver ut intyget
-	Så ska loggaktivitet "Utskrift" skickas till loggtjänsten med argument "Makulerat intyg utskrivet. Läsning i enlighet med sammanhållen journalföring"
-
+    När jag går in på intyget via djupintegrationslänk med parameter "sjf=true"
+	Så ska loggaktivitet "Läsa" skickas till loggtjänsten med argument "Läsning i enlighet med sammanhållen journalföring"
+	
 #5 #7
 @UTSKRIFT
 Scenario: GE-005 - Skriv ut TS-intyg
@@ -63,11 +70,6 @@ Scenario: GE-005 - Skriv ut TS-intyg
    
 	Och jag skriver ut intyget
 	Så ska loggaktivitet "Utskrift" skickas till loggtjänsten med argument "Intyg utskrivet"
-	
-	Och jag makulerar intyget
-	Och jag skriver ut intyget
-	Så ska loggaktivitet "Utskrift" skickas till loggtjänsten med argument "Makulerat intyg utskrivet"
-
 
 #6
 @SKICKA @UTSKRIFT
@@ -86,7 +88,7 @@ Scenario: GE-005 - PDL - Radera TS-utkast
 #10
 @MAKULERA
 Scenario: GE-005 - Makulera TS-intyg
-	När  jag går in på ett slumpat TS-intyg med status "Skickat"
+	När jag går in på ett slumpat TS-intyg med status "Skickat"
 	Och jag makulerar intyget
 	Så ska loggaktivitet "Radera" skickas till loggtjänsten
 

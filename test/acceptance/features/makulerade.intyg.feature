@@ -7,7 +7,7 @@ Bakgrund: Jag befinner mig på webcerts förstasida
 	Givet att jag är inloggad som läkare
 	När jag går in på en patient
 
-@SMI
+@SMI WC-F017 RÄ-002
 Scenario: Det ska inte gå att förnya makulerat SMI-intyg
 	När jag går in på ett slumpat SMI-intyg med status "Signerat"
 	Och jag skickar intyget till Försäkringskassan
@@ -15,12 +15,12 @@ Scenario: Det ska inte gå att förnya makulerat SMI-intyg
 	Så ska intygets första status vara "Intyget är makulerat"
 	Så ska det inte finnas en knapp med texten "Förnya"
 
-@SMI
-Scenario: Användaren ska kunna skriva ut ett makulerat intyg
+@SMI WC-F015
+Scenario: Användaren ska inte kunna skriva ut ett makulerat intyg
 	När jag går in på ett slumpat SMI-intyg med status "Signerat"
 
 	Och jag makulerar intyget
-	Så ska det finnas en knapp med texten "Skriv ut"
+	Så ska det inte finnas en knapp med texten "Skriv ut"
 
 @NOTREADY
 Scenario: Ersatt intyg vid makulering ska innehålla uppdaterade personuppgifter

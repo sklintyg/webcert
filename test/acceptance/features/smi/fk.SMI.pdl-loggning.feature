@@ -40,15 +40,23 @@ Scenario: GE-005 - Händelser på SMI-intyg utfärdat på annan vårdgivare ska 
 	
 	Och jag skriver ut intyget
 	Så ska loggaktivitet "Utskrift" skickas till loggtjänsten med argument "Intyg utskrivet. Läsning i enlighet med sammanhållen journalföring"
-	
-	Givet att jag är inloggad som djupintegrerad läkare på vårdenhet "TSTNMT2321000156-INT2"
-	Och jag går in på intyget via djupintegrationslänk
-	Och jag makulerar intyget
-	Och att jag är inloggad som djupintegrerad läkare på vårdenhet "TSTNMT2321000156-1077" och inte har uppdrag på "TSTNMT2321000156-INT2"
-	Och jag går in på intyget via djupintegrationslänk med parameter "sjf=true"
-	Och jag skriver ut det makulerade intyget
-	Så ska loggaktivitet "Utskrift" skickas till loggtjänsten med argument "Makulerat intyg utskrivet. Läsning i enlighet med sammanhållen journalföring"
 
+#3
+@SJF @UTSKRIFT @LÄSA @MAKULERAT
+Scenario: GE-005 - Händelser på SMI-intyg utfärdat på annan vårdgivare ska PDL-loggas
+	Givet att jag är inloggad som djupintegrerad läkare på vårdenhet "TSTNMT2321000156-INT2"
+	Och att vårdsystemet skapat ett intygsutkast för slumpat SMI-intyg
+    Och jag går in på intygsutkastet via djupintegrationslänk
+    Och jag fyller i alla nödvändiga fält för intyget
+	Och jag signerar intyget
+	Och jag skickar intyget till Försäkringskassan 
+	Och jag makulerar intyget
+	
+	Och att jag är inloggad som djupintegrerad läkare på vårdenhet "TSTNMT2321000156-1077" och inte har uppdrag på "TSTNMT2321000156-INT2"
+	När jag går in på intyget via djupintegrationslänk med parameter "sjf=true"
+	Så ska loggaktivitet "Läsa" skickas till loggtjänsten med argument "Läsning i enlighet med sammanhållen journalföring"
+
+	
 #5 #7
 @UTSKRIFT
 Scenario: GE-005 - Skriv ut SMI-intyg
@@ -63,10 +71,6 @@ Scenario: GE-005 - Skriv ut SMI-intyg
    
 	Och jag skriver ut intyget
 	Så ska loggaktivitet "Utskrift" skickas till loggtjänsten med argument "Intyg utskrivet"
-	
-	Och jag makulerar intyget
-	Och jag skriver ut det makulerade intyget
-	Så ska loggaktivitet "Utskrift" skickas till loggtjänsten med argument "Makulerat intyg utskrivet"
 
 
 #6
