@@ -383,9 +383,9 @@ public class IntygServiceImpl implements IntygService {
                 throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, "Can't print locked draft");
             }
 
-            boolean revoked = intyg.getStatuses()
+            boolean revoked = intyg.getStatuses() != null && intyg.getStatuses()
                     .stream()
-                    .anyMatch(s -> s.getType().equals(CertificateState.DELETED) || s.getType().equals(CertificateState.CANCELLED));
+                    .anyMatch(s -> s.getType().equals(CertificateState.CANCELLED));
             if (revoked) {
                 throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, "Can't print revoked certificate.");
             }
