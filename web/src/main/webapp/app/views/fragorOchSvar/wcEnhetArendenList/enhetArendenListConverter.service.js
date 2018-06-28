@@ -18,8 +18,8 @@
  */
 
 angular.module('webcert').factory('webcert.enhetArendenConverterService',
-    [ '$filter', 'webcert.enhetArendenModel',
-    function($filter, enhetArendenModel) {
+    [ '$filter', 'webcert.enhetArendenModel', 'common.UserModel',
+    function($filter, enhetArendenModel, UserModel) {
         'use strict';
 
         // Filter query request model. Actual model expected by backend proxy
@@ -39,17 +39,18 @@ angular.module('webcert').factory('webcert.enhetArendenConverterService',
             vantarPa: undefined,
 
             orderBy: 'receivedDate',
-            orderAscending: true
+            orderAscending: false,
+
+            patientPersonId: undefined
         };
 
         function _convertFormModelToFilterQuery(filterForm, enhetId) {
+            /*jshint maxcomplexity:false */
 
             // Converts view values and sets them on a copy of query object
             var filterQuery = angular.copy(defaultFilterQuery);
 
-            if (enhetId === enhetArendenModel.ALL_UNITS) {
-                filterQuery.enhetId = undefined;
-            } else {
+            if (enhetId !== enhetArendenModel.ALL_UNITS) {
                 filterQuery.enhetId = enhetId;
             }
 
@@ -61,14 +62,10 @@ angular.module('webcert').factory('webcert.enhetArendenConverterService',
 
             if (filterForm.changedFrom) {
                 filterQuery.changedFrom = $filter('date')(filterForm.changedFrom, 'yyyy-MM-dd');
-            } else {
-                filterQuery.changedFrom = undefined;
             }
 
             if (filterForm.changedTo) {
                 filterQuery.changedTo = $filter('date')(filterForm.changedTo, 'yyyy-MM-dd');
-            } else {
-                filterQuery.changedTo = undefined;
             }
 
             if (filterForm.questionFrom === 'FK') {
@@ -81,22 +78,21 @@ angular.module('webcert').factory('webcert.enhetArendenConverterService',
                 filterQuery.questionFromFK = false;
                 filterQuery.questionFromWC = false;
             }
-            if (filterForm.vidarebefordrad === 'default') {
-                filterQuery.vidarebefordrad = undefined;
-            } else {
+
+            if (filterForm.vidarebefordrad !== 'default') {
                 filterQuery.vidarebefordrad = filterForm.vidarebefordrad;
             }
 
             if (filterForm.orderAscending) {
                 filterQuery.orderAscending = filterForm.orderAscending;
-            } else {
-                filterQuery.orderAscending = false;
             }
 
             if (filterForm.orderBy) {
                 filterQuery.orderBy = filterForm.orderBy;
-            } else {
-                filterQuery.orderBy = 'receivedDate';
+            }
+
+            if (filterForm.patientPersonId) {
+                filterQuery.patientPersonId = filterForm.patientPersonId.replace('-', '');
             }
 
             return filterQuery;

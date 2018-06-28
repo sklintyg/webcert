@@ -45,6 +45,8 @@ public class QueryFragaSvarParameter {
     private String orderBy;
     private Boolean orderAscending;
 
+    private String patientPersonId;
+
     public String getEnhetId() {
         return enhetId;
     }
@@ -147,5 +149,13 @@ public class QueryFragaSvarParameter {
 
     public void setOrderAscending(Boolean orderAscending) {
         this.orderAscending = orderAscending;
+    }
+
+    public String getPatientPersonId() {
+        return patientPersonId;
+    }
+
+    public void setPatientPersonId(String patientPersonId) {
+        this.patientPersonId = patientPersonId;
     }
 }

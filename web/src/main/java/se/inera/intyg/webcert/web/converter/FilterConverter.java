@@ -58,6 +58,10 @@ public final class FilterConverter {
 
         filter.setIntygsTyper(intygsTyper);
 
+        if (source.getPatientPersonId() != null) {
+            filter.setPatientPersonId(source.getPatientPersonId());
+        }
+
         return filter;
     }
 

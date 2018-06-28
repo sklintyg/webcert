@@ -142,6 +142,11 @@ public class ArendeRepositoryImpl implements ArendeFilteredRepositoryCustom {
             case ALLA:
                 break;
         }
+
+        if (filter.getPatientPersonId() != null) {
+            pred = builder.and(pred, builder.equal(root.get("patientPersonId"), filter.getPatientPersonId()));
+        }
+
         return pred;
     }
 }

@@ -49,6 +49,8 @@ public class Filter {
 
     private Set<String> intygsTyper = new HashSet<>();
 
+    private String patientPersonId;
+
     public boolean hasPageSizeAndStartFrom() {
         return pageSize != null && startFrom != null;
     }
@@ -147,5 +149,13 @@ public class Filter {
 
     public void setIntygsTyper(Set<String>  intygsTyper) {
         this.intygsTyper = intygsTyper;
+    }
+
+    public String getPatientPersonId() {
+        return patientPersonId;
+    }
+
+    public void setPatientPersonId(String patientPersonId) {
+        this.patientPersonId = patientPersonId;
     }
 }

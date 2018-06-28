@@ -151,6 +151,11 @@ public class FragaSvarRepositoryImpl implements FragaSvarFilteredRepositoryCusto
         case ALLA:
             break;
         }
+
+        if (filter.getPatientPersonId() != null) {
+            pred = builder.and(pred, builder.equal(root.get("intygsReferens").get("patientId"), filter.getPatientPersonId()));
+        }
+
         return pred;
     }
 }

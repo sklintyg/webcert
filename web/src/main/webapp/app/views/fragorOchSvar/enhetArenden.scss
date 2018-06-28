@@ -55,6 +55,12 @@
 
 }
 
+wc-enhet-arenden-filter {
+  .form-group:last-child {
+    padding-bottom: 15px;
+  }
+}
+
 #arendeTable {
   .icon-wc-ikon-19 {
     margin-right: 6px;

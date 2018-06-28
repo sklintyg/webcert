@@ -56,6 +56,15 @@
       </wc-dropdown>
     </div>
 
+    <div class="col-md-2 form-group">
+        <label class="control-label">Personnummer</label>
+        <input class="form-control" name="pnr" type="text"
+               placeholder="ååååmmdd-nnnn"
+               ng-model="enhetArendenFilterModel.filterForm.patientPersonId"
+               wc-person-number
+               required maxlength="13"/>
+      </div>
+
     <!-- Skickat/mottaget -->
     <div class="col-md-4 form-group">
       <label class="control-label">Skickat datum</label><br>
