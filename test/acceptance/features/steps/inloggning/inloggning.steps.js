@@ -138,8 +138,6 @@ Then(/^jag går in på (?:"([^"]*)" )?testpatienten för "([^"]*)"$/, function(i
     let patienter = wcTestTools.testdata.values.dedikeradeTestPatienter.medSyfte(testSyfte);
 
     this.patient = patienter[helpers.getIntFromTxt(index || 'första')];
-
-    console.log(this.patient);
     return gotoPatient(this.patient, this.user);
 });
 
