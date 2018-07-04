@@ -379,10 +379,6 @@ public class IntygServiceImpl implements IntygService {
                     : getIntygData(intygsId, intygsTyp, false);
             UtkastStatus utkastStatus = (utkast != null) ? utkast.getStatus() : UtkastStatus.SIGNED;
 
-            if (UtkastStatus.DRAFT_LOCKED.equals(utkastStatus)) {
-                throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, "Can't print locked draft");
-            }
-
             boolean revoked = intyg.getStatuses() != null && intyg.getStatuses()
                     .stream()
                     .anyMatch(s -> s.getType().equals(CertificateState.CANCELLED));

@@ -62,7 +62,7 @@ describe('Luse locked utkast tests', function() {
         // Signera button should not exist
         expect(LuseUtkastPage.signeraButton.isPresent()).toBeFalsy();
 
-        // Print button should not exist
-        expect(LuseUtkastPage.skrivUtBtn.isPresent()).toBeFalsy();
+        // Print button should exist
+        expect(LuseUtkastPage.skrivUtBtn.isPresent()).toBeTruthy();
     });
 });
