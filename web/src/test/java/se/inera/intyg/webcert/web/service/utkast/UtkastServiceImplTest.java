@@ -18,6 +18,18 @@
  */
 package se.inera.intyg.webcert.web.service.utkast;
 
+import javax.persistence.OptimisticLockException;
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -26,6 +38,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
+
+import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.GrundData;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
@@ -73,21 +87,10 @@ import se.inera.intyg.webcert.web.service.utkast.dto.UpdatePatientOnDraftRequest
 import se.inera.intyg.webcert.web.service.utkast.util.CreateIntygsIdStrategy;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
 
-import javax.persistence.OptimisticLockException;
-import java.io.IOException;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -867,6 +870,35 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         assertEquals(1, result.size());
         assertEquals(2L, result.get("HSA1").longValue());
 
+    }
+
+    @Test
+    public void testLockOldDrafts() {
+        int lockedAfterDay = 14;
+
+        Utkast utkast1 = new Utkast();
+        utkast1.setIntygsId("id1");
+        utkast1.setRelationIntygsId("id2");
+        utkast1.setRelationKod(RelationKod.ERSATT);
+
+        Utkast utkast2 = new Utkast();
+        utkast2.setIntygsId("id2");
+
+        List<Utkast> utkastList = Arrays.asList(utkast1, utkast2);
+
+        when(mockUtkastRepository.findDraftsByNotLockedOrSignedAndSkapadBefore(any())).thenReturn(utkastList);
+
+        int changed = draftService.lockOldDrafts(lockedAfterDay);
+
+        assertEquals(2 , changed);
+        verify(mockUtkastRepository, times(2)).save(any(Utkast.class));
+        verify(mockUtkastRepository, times(2)).removeRelationsToDraft(anyString());
+
+        assertNull(utkast1.getRelationIntygsId());
+        assertNull(utkast1.getRelationKod());
+        assertEquals(UtkastStatus.DRAFT_LOCKED, utkast1.getStatus());
+
+        assertEquals(UtkastStatus.DRAFT_LOCKED, utkast2.getStatus());
     }
 
     private Patient getUpdatedPatient() {

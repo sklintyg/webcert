@@ -101,7 +101,7 @@ public interface UtkastRepositoryCustom extends UtkastFilteredRepositoryCustom {
      * @return
      */
     @Query("SELECT u from Utkast u WHERE u.status NOT IN(se.inera.intyg.common.support.model.UtkastStatus.DRAFT_LOCKED, se.inera.intyg.common.support.model.UtkastStatus.SIGNED) AND u.skapad <= :skapad")
-    List<Utkast> findDraftsByNotLockedAndSkapad(@Param("skapad") LocalDateTime skapad);
+    List<Utkast> findDraftsByNotLockedOrSignedAndSkapadBefore(@Param("skapad") LocalDateTime skapad);
 
     /**
      * Remove all relations to Utkast with id intygsId
@@ -110,7 +110,7 @@ public interface UtkastRepositoryCustom extends UtkastFilteredRepositoryCustom {
      */
     @Modifying(clearAutomatically = true)
     @Query("UPDATE Utkast u SET u.relationIntygsId = null, u.relationKod = null WHERE u.relationIntygsId = :intygsId")
-    void removeRelationToDraft(@Param("intygsId") String intygsId);
+    void removeRelationsToDraft(@Param("intygsId") String intygsId);
 
     /**
      * Returns a list of all unique hsaId and name (of vardperson who edited the draft) which matches the supplied

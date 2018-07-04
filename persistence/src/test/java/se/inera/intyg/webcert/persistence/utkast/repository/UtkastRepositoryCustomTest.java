@@ -18,8 +18,11 @@
  */
 package se.inera.intyg.webcert.persistence.utkast.repository;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -37,6 +40,7 @@ import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "classpath:repository-context.xml" })
@@ -110,7 +114,7 @@ public class UtkastRepositoryCustomTest {
     }
 
     @Test
-    public void testRemoveRelationToDraft() {
+    public void testRemoveRelationsToDraft() {
         // Create two hierarchies
         String intygIdParent = "intyg-1";
         String intygIdChild1 = "intyg-1-1";
@@ -129,11 +133,57 @@ public class UtkastRepositoryCustomTest {
         assertEquals(intygIdParent, intygChild1.getRelationIntygsId());
 
         // Remove relations
-        utkastRepositoryCustom.removeRelationToDraft(intygIdParent);
+        utkastRepositoryCustom.removeRelationsToDraft(intygIdParent);
 
         intygChild1 = utkastRepository.findOne(intygIdChild1);
 
         assertNull(intygChild1.getRelationKod());
         assertNull(intygChild1.getRelationIntygsId());
+    }
+
+    @Test
+    public void testFindDraftsByNotLockedOrSignedAndSkapadBefore() {
+        // Create two hierarchies
+        String intygId_signed = "intyg-1";
+        String intygId_locked = "intyg-2";
+        String intygId_draft_complete = "intyg-3";
+        String intygId_draft_incomplete = "intyg-4";
+
+        String intygId_draft_10_days = "intyg-10";
+        String intygId_draft_14_days = "intyg-14";
+        String intygId_draft_15_days = "intyg-15";
+        String intygId_draft_20_days = "intyg-20";
+
+
+        // Hierarchy 1, one parent, three children
+        utkastRepository.save(UtkastTestUtil.buildUtkast(intygId_signed, UtkastTestUtil.ENHET_1_ID, UtkastStatus.SIGNED, null, null,
+                LocalDateTime.now().minusDays(20L)));
+        utkastRepository.save(UtkastTestUtil.buildUtkast(intygId_locked, UtkastTestUtil.ENHET_1_ID, UtkastStatus.DRAFT_LOCKED, null,
+                null, LocalDateTime.now().minusDays(25L)));
+
+
+        utkastRepository.save(UtkastTestUtil.buildUtkast(intygId_draft_complete, UtkastTestUtil.ENHET_1_ID, UtkastStatus.DRAFT_COMPLETE, null,
+                null, LocalDateTime.now().minusDays(25L)));
+        utkastRepository.save(UtkastTestUtil.buildUtkast(intygId_draft_incomplete, UtkastTestUtil.ENHET_1_ID, UtkastStatus.DRAFT_INCOMPLETE, null,
+                null, LocalDateTime.now().minusDays(25L)));
+
+        utkastRepository.save(UtkastTestUtil.buildUtkast(intygId_draft_10_days, UtkastTestUtil.ENHET_1_ID, UtkastStatus.DRAFT_INCOMPLETE, null,
+                null, LocalDateTime.now().minusDays(10L)));
+        utkastRepository.save(UtkastTestUtil.buildUtkast(intygId_draft_14_days, UtkastTestUtil.ENHET_1_ID, UtkastStatus.DRAFT_INCOMPLETE, null,
+                null, LocalDateTime.now().minusDays(14L)));
+        utkastRepository.save(UtkastTestUtil.buildUtkast(intygId_draft_15_days, UtkastTestUtil.ENHET_1_ID, UtkastStatus.DRAFT_INCOMPLETE, null,
+                null, LocalDateTime.now().minusDays(15L)));
+        utkastRepository.save(UtkastTestUtil.buildUtkast(intygId_draft_20_days, UtkastTestUtil.ENHET_1_ID, UtkastStatus.DRAFT_INCOMPLETE, null,
+                null, LocalDateTime.now().minusDays(20L)));
+
+
+        LocalDateTime skapad = LocalDate.now().minusDays(14L).atStartOfDay();
+        List<Utkast> utkasts = utkastRepositoryCustom.findDraftsByNotLockedOrSignedAndSkapadBefore(skapad);
+
+        List<String> ids = utkasts.stream().map(Utkast::getIntygsId).collect(Collectors.toList());
+        List<String> intygsIdn = Arrays.asList(intygId_draft_complete, intygId_draft_incomplete, intygId_draft_15_days, intygId_draft_20_days);
+
+        assertEquals(4, utkasts.size());
+        assertTrue(ids.containsAll(intygsIdn));
     }
 }

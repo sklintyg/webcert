@@ -537,11 +537,11 @@ public class UtkastServiceImpl implements UtkastService {
         LocalDate lastCreatedDate = today.minusDays(lockedAfterDay);
         LocalDateTime lastCreatedDateTime = lastCreatedDate.atStartOfDay();
 
-        List<Utkast> utkasts = utkastRepository.findDraftsByNotLockedAndSkapad(lastCreatedDateTime);
+        List<Utkast> utkasts = utkastRepository.findDraftsByNotLockedOrSignedAndSkapadBefore(lastCreatedDateTime);
 
         utkasts.forEach(utkast -> {
             // Remove relations from other intyg
-            utkastRepository.removeRelationToDraft(utkast.getIntygsId());
+            utkastRepository.removeRelationsToDraft(utkast.getIntygsId());
 
             // Remove relations to other intyg
             utkast.setRelationKod(null);
