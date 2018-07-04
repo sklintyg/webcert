@@ -18,6 +18,9 @@
  */
 package se.inera.intyg.webcert.web.service.utkast;
 
+import java.util.List;
+import java.util.Map;
+
 import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
@@ -28,9 +31,6 @@ import se.inera.intyg.webcert.web.service.utkast.dto.DraftValidation;
 import se.inera.intyg.webcert.web.service.utkast.dto.PreviousIntyg;
 import se.inera.intyg.webcert.web.service.utkast.dto.SaveDraftResponse;
 import se.inera.intyg.webcert.web.service.utkast.dto.UpdatePatientOnDraftRequest;
-
-import java.util.List;
-import java.util.Map;
 
 public interface UtkastService {
 
@@ -70,4 +70,6 @@ public interface UtkastService {
      * @return
      */
     Map<String, Map<String, PreviousIntyg>> checkIfPersonHasExistingIntyg(Personnummer personnummer, IntygUser user);
+
+    int lockOldDrafts(int lockedAfterDay);
 }

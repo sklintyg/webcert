@@ -47,6 +47,7 @@ ext {
     stAntlr4Version = "4.0.8"
     xmlToolingVersion = "1.3.2"
     xmlUnitVersion = "1.4"
+    shedlockSpringVersion = "0.18.2"
 
     mockitoVersion = "2.16.0"
     springockitoVersion = "1.0.8"

@@ -18,17 +18,17 @@
  */
 package se.inera.intyg.webcert.persistence.utkast.repository;
 
-import se.inera.intyg.common.support.common.enumerations.RelationKod;
-import se.inera.intyg.common.support.common.enumerations.SignaturTyp;
-import se.inera.intyg.schemas.contract.Personnummer;
-import se.inera.intyg.common.support.model.UtkastStatus;
-import se.inera.intyg.webcert.persistence.utkast.model.Signatur;
-import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
-import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
+
+import se.inera.intyg.common.support.common.enumerations.RelationKod;
+import se.inera.intyg.common.support.common.enumerations.SignaturTyp;
+import se.inera.intyg.common.support.model.UtkastStatus;
+import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.persistence.utkast.model.Signatur;
+import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
+import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
 
 public final class UtkastTestUtil {
 
@@ -130,9 +130,11 @@ public final class UtkastTestUtil {
         intyg.setSenastSparadAv(vardpersonReferens);
         intyg.setSenastSparadDatum(LocalDateTime.now());
         intyg.setSkapadAv(vardpersonReferens);
+        intyg.setSkapad(LocalDateTime.now());
 
         if (senastSparadDatum != null) {
             intyg.setSenastSparadDatum(senastSparadDatum);
+            intyg.setSkapad(senastSparadDatum);
         }
 
         intyg.setStatus(status);
