@@ -104,7 +104,7 @@ public interface UtkastRepositoryCustom extends UtkastFilteredRepositoryCustom {
     List<Utkast> findDraftsByNotLockedOrSignedAndSkapadBefore(@Param("skapad") LocalDateTime skapad);
 
     /**
-     * Remove all relations to Utkast with id intygsId
+     * Remove all relations to Utkast with id intygsId.
      *
      * @param intygsId
      */
