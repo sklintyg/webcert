@@ -18,14 +18,36 @@
  */
 package se.inera.intyg.webcert.web.service.utkast;
 
-import com.google.common.base.Strings;
+import javax.persistence.OptimisticLockException;
+import java.io.IOException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.google.common.base.Strings;
 import se.inera.intyg.common.services.texts.IntygTextsService;
-import se.inera.intyg.common.support.model.common.internal.*;
+import se.inera.intyg.common.support.model.UtkastStatus;
+import se.inera.intyg.common.support.model.common.internal.GrundData;
+import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
+import se.inera.intyg.common.support.model.common.internal.Patient;
+import se.inera.intyg.common.support.model.common.internal.Vardenhet;
+import se.inera.intyg.common.support.model.common.internal.Vardgivare;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
@@ -40,7 +62,6 @@ import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.GroupableItem;
-import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
@@ -60,14 +81,13 @@ import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.util.StatisticsGroupByUtil;
 import se.inera.intyg.webcert.web.service.util.UpdateUserUtil;
-import se.inera.intyg.webcert.web.service.utkast.dto.*;
+import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftRequest;
+import se.inera.intyg.webcert.web.service.utkast.dto.DraftValidation;
+import se.inera.intyg.webcert.web.service.utkast.dto.DraftValidationMessage;
+import se.inera.intyg.webcert.web.service.utkast.dto.PreviousIntyg;
+import se.inera.intyg.webcert.web.service.utkast.dto.SaveDraftResponse;
+import se.inera.intyg.webcert.web.service.utkast.dto.UpdatePatientOnDraftRequest;
 import se.inera.intyg.webcert.web.service.utkast.util.CreateIntygsIdStrategy;
-
-import javax.persistence.OptimisticLockException;
-import java.io.IOException;
-import java.time.LocalDateTime;
-import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class UtkastServiceImpl implements UtkastService {
@@ -508,6 +528,31 @@ public class UtkastServiceImpl implements UtkastService {
         } catch (ModuleException | ModuleNotFoundException me) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, me);
         }
+    }
+
+    @Override
+    public int lockOldDrafts(int lockedAfterDay) {
+
+        LocalDate today = LocalDate.now();
+        LocalDate lastCreatedDate = today.minusDays(lockedAfterDay);
+        LocalDateTime lastCreatedDateTime = lastCreatedDate.atStartOfDay();
+
+        List<Utkast> utkasts = utkastRepository.findDraftsByNotLockedAndSkapad(lastCreatedDateTime);
+
+        utkasts.forEach(utkast -> {
+            // Remove relations from other intyg
+            utkastRepository.removeRelationToDraft(utkast.getIntygsId());
+
+            // Remove relations to other intyg
+            utkast.setRelationKod(null);
+            utkast.setRelationIntygsId(null);
+
+            // Set status locked
+            utkast.setStatus(UtkastStatus.DRAFT_LOCKED);
+            utkastRepository.save(utkast);
+        });
+
+        return utkasts.size();
     }
 
     private void abortIfUserNotAuthorizedForUnit(String vardgivarHsaId, String enhetsHsaId) {

@@ -18,15 +18,17 @@
  */
 package se.inera.intyg.webcert.persistence.utkast.repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
-import se.inera.intyg.webcert.common.model.GroupableItem;
 import se.inera.intyg.common.support.model.UtkastStatus;
+import se.inera.intyg.webcert.common.model.GroupableItem;
 import se.inera.intyg.webcert.common.model.WebcertCertificateRelation;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 
@@ -90,6 +92,25 @@ public interface UtkastRepositoryCustom extends UtkastFilteredRepositoryCustom {
     @Query("SELECT u from Utkast u WHERE u.patientPersonnummer = :patientPnr AND u.vardgivarId = :vardgivarId AND u.status IN (:statuses) AND u.intygsTyp IN (:intygsTyper)")
     List<Utkast> findDraftsByPatientAndVardgivareAndStatus(@Param("patientPnr") String patientPnr, @Param("vardgivarId") String vardgivarId,
             @Param("statuses") List<UtkastStatus> statuses, @Param("intygsTyper") Set<String> intygsTyper);
+
+
+    /**
+     * Returns all {@link Utkast} entities with status not DRAFT_LOCKED or SIGNED that were created before skapad.
+     *
+     * @param skapad
+     * @return
+     */
+    @Query("SELECT u from Utkast u WHERE u.status NOT IN(se.inera.intyg.common.support.model.UtkastStatus.DRAFT_LOCKED, se.inera.intyg.common.support.model.UtkastStatus.SIGNED) AND u.skapad <= :skapad")
+    List<Utkast> findDraftsByNotLockedAndSkapad(@Param("skapad") LocalDateTime skapad);
+
+    /**
+     * Remove all relations to Utkast with id intygsId
+     *
+     * @param intygsId
+     */
+    @Modifying(clearAutomatically = true)
+    @Query("UPDATE Utkast u SET u.relationIntygsId = null, u.relationKod = null WHERE u.relationIntygsId = :intygsId")
+    void removeRelationToDraft(@Param("intygsId") String intygsId);
 
     /**
      * Returns a list of all unique hsaId and name (of vardperson who edited the draft) which matches the supplied

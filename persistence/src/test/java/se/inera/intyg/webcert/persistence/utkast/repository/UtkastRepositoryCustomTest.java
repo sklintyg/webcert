@@ -18,6 +18,9 @@
  */
 package se.inera.intyg.webcert.persistence.utkast.repository;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,15 +28,15 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
+
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.webcert.common.model.WebcertCertificateRelation;
-
-import java.time.LocalDateTime;
-import java.util.List;
+import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "classpath:repository-context.xml" })
@@ -104,5 +107,33 @@ public class UtkastRepositoryCustomTest {
 
         assertEquals(intygIdChild1, childRelations.get(2).getIntygsId());
         assertEquals(UtkastStatus.SIGNED, childRelations.get(2).getStatus());
+    }
+
+    @Test
+    public void testRemoveRelationToDraft() {
+        // Create two hierarchies
+        String intygIdParent = "intyg-1";
+        String intygIdChild1 = "intyg-1-1";
+
+        // Hierarchy 1, one parent, three children
+        utkastRepository.save(UtkastTestUtil.buildUtkast(intygIdParent, UtkastTestUtil.ENHET_1_ID, UtkastStatus.SIGNED, null, null,
+                LocalDateTime.now().minusDays(10L)));
+        utkastRepository.save(UtkastTestUtil.buildUtkast(intygIdChild1, UtkastTestUtil.ENHET_1_ID, UtkastStatus.SIGNED, intygIdParent,
+                RelationKod.ERSATT, LocalDateTime.now().minusDays(5L)));
+
+
+        // Verify relation
+        Utkast intygChild1 = utkastRepository.findOne(intygIdChild1);
+
+        assertEquals(RelationKod.ERSATT, intygChild1.getRelationKod());
+        assertEquals(intygIdParent, intygChild1.getRelationIntygsId());
+
+        // Remove relations
+        utkastRepositoryCustom.removeRelationToDraft(intygIdParent);
+
+        intygChild1 = utkastRepository.findOne(intygIdChild1);
+
+        assertNull(intygChild1.getRelationKod());
+        assertNull(intygChild1.getRelationIntygsId());
     }
 }
