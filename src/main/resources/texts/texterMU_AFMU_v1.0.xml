@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<texter xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" giltigFrom="2016-10-25" typ="AFMU" version="1.0"
+        xmlns="http://schema.forsakringskassan.se/vardgivare_sjukvard">
+
+    <text id="FRM_1.RBK">Arbetsförmedlingen behöver ett medicinskt utlåtande för att klargöra förutsättningarna för arbetssökande som har ett behov av fördjupat stöd. Bland annat för att kunna:
+
+        – utreda och bedöma om den arbetssökande har en funktionsnedsättning som medför nedsatt arbetsförmåga
+        – göra en lämplig anpassning för en arbetssökande som deltar i ett arbetsmarknadspolitiskt program och som har blivit sjuk
+        – erbjuda (lämpliga) utredande, vägledande, rehabiliterande eller arbetsförberedande insatser</text>
+
+    <!-- KAT 1 -->
+    <text id="KAT_1.RBK">Funktionsnedsättning</text>
+    <text id="FRG_1.HLP">Med besvär avses sådant som påverkar psykiska, psykosociala eller kroppsliga funktioner.</text>
+    <text id="FRG_1.RBK">Finns besvär på grund av sjukdom eller skada som medför funktionsnedsättning?</text>
+    <text id="DFR_1.2.RBK">Beskriv de funktionsnedsättningar som har observerats (undersökningsfynd).
+        Ange, om möjligt, varaktighet.
+    </text>
+    <text id="DFR_1.2.HLP">Ange de nedsättningar som har framkommit vid undersökning eller utredning.
+
+        Till exempel:
+
+        * Medvetenhet, uppmärksamhet, orienteringsförmåga
+        * Social interaktion, agitation
+        * Kognitiva störningar som t ex minnessvårigheter
+        * Störningar på sinnesorganen som t ex syn- och hörselnedsättning, balansrubbningar
+        * Smärta i rörelseorganen
+        * Rörelseinskränkning, rörelseomfång, smidighet
+        * Uthållighet, koordination
+
+        Med varaktighet menas permanent eller övergående. Ange i så fall tidsangivelse vid övergående.
+    </text>
+
+    <!-- KAT 2 -->
+    <text id="KAT_2.RBK">Aktivitetsbegränsning</text>
+    <text id="FRG_2.RBK">Leder funktionsnedsättningarna till aktivitetsbegränsningar i relation till arbete eller studier?</text>
+    <text id="FRG_2.HLP">Aktivitet innebär personens möjlighet att genomföra en uppgift eller handling. Aktivitetsbegränsning ska bedömas utifrån de begränsningar personen har kopplat till att kunna söka arbete, genomföra en arbetsuppgift/arbetsuppgifter, kunna studera eller delta i aktivitet hos Arbetsförmedlingen.</text>
+    <text id="DFR_2.2.RBK">Ange vilka aktivitetsbegränsningar? Ange hur och om möjligt varaktighet/prognos.</text>
+    <text id="DFR_2.2.HLP">Ge konkreta exempel på aktivitetsbegränsningar utifrån personens planerade insatser hos Arbetsförmedlingen eller personens möjlighet att söka arbete, genomföra en arbetsuppgift/arbetsuppgifter eller studera. Till exempel:
+
+        * att ta till sig en instruktion
+        * att ta reda på och förstå muntlig eller skriftlig information
+        * att kunna fokusera
+        * att kunna bära eller lyfta
+        * att kunna hantera statiskt arbete</text>
+
+    <!-- KAT 3 -->
+    <text id="KAT_3.RBK">Utredning och behandling</text>
+    <text id="FRG_3.RBK">Finns pågående eller planerade utredningar/behandlingar som påverkar den planering som Arbetsförmedlingen har beskrivit i förfrågan?</text>
+    <text id="FRG_3.HLP">Till exempel remiss för bedömning eller åtgärd inom annan vårdenhet eller aktiviteter inom egna verksamheten.</text>
+    <text id="DFR_3.2.RBK">Hur påverkar utredningarna/behandlingarna planeringen? När planeras utredningarna/behandlingarna att vara avslutade?</text>
+    <text id="DFR_3.2.HLP">Utgå från den beskrivning Arbetsförmedlingen har gjort av personen och Arbetsförmedlingens planerade aktiviteter.
+
+        Ange förväntat resultat för de utredningar eller behandlingar som ska genomföras i vården och när personen kan genomföra/delta i Arbetsförmedlingens planerade aktiviteter.</text>
+
+    <!-- KAT 4 -->
+    <text id="KAT_4.RBK">Arbetets påverkan på sjukdom/skada</text>
+    <text id="FRG_4.RBK">Kan sjukdomen/skadan förvärras av vissa arbetsuppgifter/arbetsmoment?</text>
+    <text id="FRG_4.HLP">Utgå från den beskrivning Arbetsförmedlingen har gjort av personen och Arbetsförmedlingens planerade aktiviteter.</text>
+    <text id="DFR_4.2.RBK">Vilken typ av arbetsuppgifter/arbetsmoment?</text>
+    <text id="DFR_4.2.HLP">Utgå från den beskrivning Arbetsförmedlingen har gjort av personen och Arbetsförmedlingens planerade aktiviteter.
+
+        Till exempel:
+
+        * armarbete ovan axelhöjd
+        * arbete på höga höjder
+        * skärmarbete vid dator under längre tid
+        * statiskt arbete</text>
+
+    <!-- KAT 5 -->
+    <text id="KAT_5.RBK">Övrigt</text>
+    <text id="FRG_5.RBK">Övrigt som Arbetsförmedlingen bör känna till?</text>
+    <text id="DFR_5.1.HLP">Som t ex risker för försämring vid andra aktiviteter än de som Arbetsförmedlingen har beskrivit i förfrågan.</text>
+
+    <text id="SVAR_JA.RBK">Ja</text>
+    <text id="SVAR_NEJ.RBK">Nej</text>
+</texter>
