@@ -43,7 +43,7 @@ knownIntygstyper:
   - &ki070 luae_fs
   - &ki080 db
   - &ki090 doi
-  - &ki100 afmu
+  - &ki100 af00213
 
 knownFeatures:
   - &kf010 HANTERA_FRAGOR
@@ -91,7 +91,7 @@ features:
       - *ki070 # LUAE_FS
       - *ki080 # DB
       - *ki090 # DOI
-      - *ki100 # AFMU
+      - *ki100 # AF00213
   - &f030
     name: *kf030
     desc: Förnya intyg
@@ -119,7 +119,7 @@ features:
       - *ki070 # LUAE_FS
       - *ki080 # DB
       - *ki090 # DOI
-      - *ki100 # AFMU
+      - *ki100 # AF00213
   - &f050
     name: *kf050
     desc: Makulera intyg kräver anledning
@@ -160,7 +160,7 @@ features:
       - *ki070 # LUAE_FS
       - *ki080 # DB
       - *ki090 # DOI
-      - *ki100 # AFMU
+      - *ki100 # AF00213
   - &f080
     name: *kf080
     desc: Signera skicka direkt
@@ -182,7 +182,7 @@ features:
       - *ki070 # LUAE_FS
       - *ki080 # DB
       - *ki090 # DOI
-      - *ki100 # AFMU
+      - *ki100 # AF00213
   - &f100
     name: *kf100
     desc: Arbetsgivarutskrift
@@ -234,7 +234,7 @@ features:
       - *ki070 # LUAE_FS
       - *ki080 # DB
       - *ki090 # DOI
-      - *ki100 # AFMU
+      - *ki100 # AF00213
   - &f180
     name: *kf180
     desc: Använd trädklättring i HSA

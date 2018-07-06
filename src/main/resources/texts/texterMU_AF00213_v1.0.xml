@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<texter xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" giltigFrom="2016-10-25" typ="AFMU" version="1.0"
+<texter xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" giltigFrom="2016-10-25" typ="AF00213" version="1.0"
         xmlns="http://schema.forsakringskassan.se/vardgivare_sjukvard">
 
     <text id="FRM_1.RBK">Arbetsförmedlingen behöver ett medicinskt utlåtande för att klargöra förutsättningarna för arbetssökande som har ett behov av fördjupat stöd. Bland annat för att kunna:
