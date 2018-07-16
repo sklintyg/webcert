@@ -22,8 +22,18 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns:jaxws="http://cxf.apache.org/jaxws"
     xmlns:jaxrs="http://cxf.apache.org/jaxrs"
-    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+      http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd
+      http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd
+      http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd"
     >
+
+  <context:annotation-config />
+  <context:property-placeholder location="classpath:default.properties"
+                                order="2"
+                                ignore-unresolvable="true"
+                                ignore-resource-not-found="true" />
 
   <beans profile="dev,wc-all-stubs,wc-notificationsender-stub,testability-api">
     <bean id="notificationStore" class="se.inera.intyg.webcert.notificationstub.v1.NotificationStoreImpl">
@@ -35,6 +45,11 @@
       <constructor-arg type="java.lang.String" value="notificationsv3" />
       <constructor-arg type="int" value="100" />
     </bean>
+
+    <context:property-placeholder location="file:${webcert.config.file}"
+                                  order="1"
+                                  ignore-unresolvable="true"
+                                  ignore-resource-not-found="true" />
   </beans>
 
   <beans profile="dev,wc-all-stubs,wc-notificationsender-stub">

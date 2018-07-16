@@ -63,6 +63,7 @@ knownFeatures:
   - &kf170 TAK_KONTROLL
   - &kf180 TAK_KONTROLL_TRADKLATTRING
   - &kf190 SEKRETESSMARKERING
+  - &kf200 NOTIFICATION_DISCARD_FELB
 
 # Aktiverade features i Webcert
 features:
@@ -243,5 +244,9 @@ features:
       - *ki050 # LISJP
       - *ki060 # LUAE_NA
       - *ki070 # LUAE_FS
+  - &f200
+    name: *kf200
+    desc: Rensning av meddelanden av fel B
+    global: false
 
 pilots:

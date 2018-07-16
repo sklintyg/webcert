@@ -31,6 +31,7 @@ import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
 import se.inera.intyg.webcert.common.Constants;
+import se.inera.intyg.webcert.common.sender.exception.DiscardCandidateException;
 import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareType;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.DatePeriodType;
@@ -44,6 +45,7 @@ public class NotificationRouteBuilder extends SpringRouteBuilder {
     private static final Logger LOG = LoggerFactory.getLogger(NotificationRouteBuilder.class);
 
     private static final long DEFAULT_TIMEOUT = 60000L;
+    private static final int DEFAULT_MAXREDELIVERIES = 5;
 
     @Value("${receiveNotificationForAggregationRequestEndpointUri}")
     private String notificationForAggregationQueue;
@@ -53,6 +55,9 @@ public class NotificationRouteBuilder extends SpringRouteBuilder {
 
     @Value("${notificationSender.batchTimeout}")
     private Long batchAggregationTimeout = DEFAULT_TIMEOUT;
+
+    @Value("${notificationSender.maximumRedeliveries}")
+    private int maximumRedeliveries = DEFAULT_MAXREDELIVERIES;
 
     /*
      * The second half of this route, sendNotificationToWS, is supposed to be used with redelivery. The
@@ -120,6 +125,8 @@ public class NotificationRouteBuilder extends SpringRouteBuilder {
         from("sendNotificationWSEndpoint").routeId("sendNotificationToWS")
                 .errorHandler(transactionErrorHandler().logExhausted(false))
                 .onException(TemporaryException.class).to("direct:temporaryErrorHandlerEndpoint").end()
+                .onException(DiscardCandidateException.class)
+                .handled(isTimeToDiscard()).to("direct:discardCandidateErrorHandlerEndpoint").end()
                 .onException(Exception.class).handled(true).to("direct:permanentErrorHandlerEndpoint").end()
                 .transacted()
                 .choice()
@@ -136,6 +143,24 @@ public class NotificationRouteBuilder extends SpringRouteBuilder {
                         simple("Permanent exception for intygs-id: ${header[intygsId]}, with message: "
                                 + "${exception.message}\n ${exception.stacktrace}")
                                         .getText())
+                .stop();
+
+        from("direct:discardCandidateErrorHandlerEndpoint").routeId("discardCandidateErrorLogging")
+                .choice()
+                .when(isTimeToDiscard())
+                .log(LoggingLevel.WARN, LOG,
+                        simple("Throwing away notification (COSMIC typ B) after trying to deliver ${header[handelse]} "
+                                + "notification ${header[JMSXDeliveryCount]} times for intygs-id: ${header[intygsId]}")
+                                .getText())
+                .when(header("JMSRedelivered").isEqualTo(false))
+                .log(LoggingLevel.INFO, LOG,
+                        simple("Caught error for ${header[handelse]} notification (total delivery count 1) "
+                                + "of COSMIC typ B for intygs-id: ${header[intygsId]}") .getText())
+                .otherwise()
+                .log(LoggingLevel.INFO, LOG,
+                        simple("Caught error for ${header[handelse]} notification (total delivery count "
+                                + "${header[JMSXDeliveryCount]}) of COSMIC typ B for intygs-id: ${header[intygsId]}")
+                                .getText())
                 .stop();
 
         from("direct:temporaryErrorHandlerEndpoint").routeId("temporaryErrorLogging")
@@ -162,6 +187,23 @@ public class NotificationRouteBuilder extends SpringRouteBuilder {
                 .and(
                         header(NotificationRouteHeaders.HANDELSE).isNotEqualTo(HandelsekodEnum.ANDRAT.value()),
                         header(NotificationRouteHeaders.HANDELSE).isNotEqualTo(HandelsekodEnum.SIGNAT.value()));
+    }
+
+    private Predicate isTimeToDiscard(final int limit) {
+        if (limit == -1) {
+            return PredicateBuilder.constant(false);
+        } else if (limit == 0) {
+            return PredicateBuilder.constant(true);
+        } else {
+            return PredicateBuilder.and(
+                    header("JMSRedelivered").isEqualTo(true),
+                    header("JMSXDeliveryCount").isGreaterThan(limit));
+        }
+    }
+
+    private Predicate isTimeToDiscard() {
+        // Using property instead of trying to get the configured maximumRedeliveries from the ConnectionFactory
+        return isTimeToDiscard(maximumRedeliveries);
     }
 
     // CHECKSTYLE:OFF LineLength

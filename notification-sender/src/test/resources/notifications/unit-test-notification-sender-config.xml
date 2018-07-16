@@ -51,6 +51,17 @@
   <bean id="certificateStatusUpdateForCareResponderV1" class="se.inera.intyg.webcert.notification_sender.mocks.v1.CertificateStatusUpdateForCareResponderStub"/>
   <bean id="certificateStatusUpdateForCareResponderV3" class="se.inera.intyg.webcert.notification_sender.mocks.v3.CertificateStatusUpdateForCareResponderStub"/>
 
+  <bean id="configurationLoader" class="se.inera.intyg.infra.security.authorities.bootstrap.SecurityConfigurationLoader">
+    <constructor-arg name="authoritiesConfigurationFile" value="${authorities.configuration.file}" />
+    <constructor-arg name="featuresConfigurationFile" value="${features.configuration.file}" />
+  </bean>
+
+  <bean id="commonAuthoritiesResolver" class="se.inera.intyg.infra.security.authorities.CommonAuthoritiesResolver" />
+  <bean id="authoritiesHelper" class="se.inera.intyg.infra.security.authorities.AuthoritiesHelper" />
+
+  <bean id="commonFeaturesResolver" class="se.inera.intyg.infra.security.authorities.CommonFeaturesResolver" />
+  <bean id="featuresHelper" class="se.inera.intyg.infra.security.authorities.FeaturesHelper" />
+
   <bean id="mockFk7263Converter" class="org.mockito.Mockito" factory-method="mock">
     <constructor-arg value="se.inera.intyg.common.fk7263.model.converter.Fk7263InternalToNotification" />
   </bean>
