@@ -58,4 +58,7 @@
     </property>
   </bean>
 
+  <bean id="commonFeaturesResolver" class="se.inera.intyg.infra.security.authorities.CommonFeaturesResolver" />
+  <bean id="featuresHelper" class="se.inera.intyg.infra.security.authorities.FeaturesHelper" />
+
 </beans>

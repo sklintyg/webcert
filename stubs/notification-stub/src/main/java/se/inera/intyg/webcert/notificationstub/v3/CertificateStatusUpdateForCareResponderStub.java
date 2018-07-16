@@ -22,10 +22,12 @@ import org.apache.cxf.annotations.SchemaValidation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 
 import se.inera.intyg.common.support.integration.converter.util.ResultTypeUtil;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.*;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Arenden;
+import se.riv.clinicalprocess.healthcond.certificate.v3.ErrorIdType;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
 
 @SchemaValidation
@@ -35,6 +37,9 @@ public class CertificateStatusUpdateForCareResponderStub implements CertificateS
 
     @Autowired
     private NotificationStoreV3 notificationStoreV3;
+
+    @Value("${certificatestatusupdateforcare.emulateError}")
+    private String emulateError;
 
     @Override
     public CertificateStatusUpdateForCareResponseType certificateStatusUpdateForCare(String logicalAddress,
@@ -82,6 +87,29 @@ public class CertificateStatusUpdateForCareResponderStub implements CertificateS
         response.setResult(ResultTypeUtil.okResult());
         LOG.debug("Request set to 'OK'");
 
+        LOG.debug("emulateError: " + emulateError);
+        if (handelseKod.matches("^ANDRAT$")) {
+            switch (emulateError) {
+                case "1":
+                    LOG.debug("Stub messing upp response. Fel B.");
+                    response.setResult(ResultTypeUtil.errorResult(ErrorIdType.TECHNICAL_ERROR, "Certificate not found "
+                            + "in COSMIC and ref field is missing, cannot store certificate. "
+                            + "Possible race condition. Retry later when the certificate may have been stored in COSMIC. "
+                            + "| Log Id: 01182b7d-9d19-4d5a-b892-18342670668c"));
+                    break;
+                case "2":
+                    LOG.debug("Stub messing upp response. TechError null.");
+                    response.setResult(ResultTypeUtil.errorResult(ErrorIdType.TECHNICAL_ERROR, null));
+                    break;
+                case "3":
+                    LOG.debug("Stub messing upp response. TechError Unspecified Service.");
+                    response.setResult(ResultTypeUtil.errorResult(ErrorIdType.TECHNICAL_ERROR, "Unspecified service error"));
+                    break;
+                default:
+                    LOG.debug("Stub OK. No error emulated.");
+                    break;
+            }
+        }
         return response;
     }
 

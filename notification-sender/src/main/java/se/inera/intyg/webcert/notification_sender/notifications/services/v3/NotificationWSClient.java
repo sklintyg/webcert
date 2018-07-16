@@ -24,7 +24,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import se.inera.intyg.infra.security.authorities.FeaturesHelper;
+import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.webcert.common.sender.exception.PermanentException;
+import se.inera.intyg.webcert.common.sender.exception.DiscardCandidateException;
 import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
 import se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareResponderInterface;
@@ -41,8 +44,12 @@ public class NotificationWSClient {
     @Autowired
     private CertificateStatusUpdateForCareResponderInterface statusUpdateForCareClient;
 
+    @Autowired
+    private FeaturesHelper featuresHelper;
+
     public void sendStatusUpdate(CertificateStatusUpdateForCareType request,
-            @Header(NotificationRouteHeaders.LOGISK_ADRESS) String logicalAddress) throws TemporaryException, PermanentException {
+            @Header(NotificationRouteHeaders.LOGISK_ADRESS) String logicalAddress)
+            throws TemporaryException, DiscardCandidateException, PermanentException {
 
         LOG.debug("Sending status update with version 2 to '{}' for intyg '{}'", logicalAddress,
                 request.getIntyg().getIntygsId().getExtension());
@@ -60,6 +67,18 @@ public class NotificationWSClient {
         switch (result.getResultCode()) {
         case ERROR:
             if (ErrorIdType.TECHNICAL_ERROR.equals(result.getErrorId())) {
+                // Added ugly null check to make notification_sender testSendStatusUpdateErrorTechnical pass
+                // The featuresHelper does not seem to load properly in the gradle tests
+                if (featuresHelper != null && featuresHelper.isFeatureActive(AuthoritiesConstants.FEATURE_NOTIFICATION_DISCARD_FELB)) {
+                    if (result.getResultText()
+                            .startsWith("Certificate not found in COSMIC and ref field is missing, cannot store certificate. "
+                            + "Possible race condition. Retry later when the certificate may have been stored in COSMIC.")) {
+                        throw new DiscardCandidateException(
+                                String.format("NotificationWSClient caught COSMIC-typB with error code: %s and message %s",
+                                result.getErrorId(),
+                                result.getResultText()));
+                    }
+                }
                 throw new TemporaryException(String.format("NotificationWSClient failed with error code: %s and message %s",
                         result.getErrorId(),
                         result.getResultText()));
