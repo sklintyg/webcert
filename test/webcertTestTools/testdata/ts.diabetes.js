@@ -48,7 +48,7 @@ module.exports = {
                 "b": "Ja",
                 "f": "Ja",
                 "g": "Ja",
-                "gDatum": "2017-07-04",
+                "gDatum": "2017-08-04",
                 "c": "Ja",
                 "d": "Nej",
                 "e": "Nej"
