@@ -23,7 +23,7 @@ Scenario: Statusuppdateringar då TS diabetes intyg skickas till Transportstyrel
 Scenario: Statusuppdateringar då TS diabetes intyg makuleras
     När jag fyller i alla nödvändiga fält för intyget
     Och jag signerar intyget
-    Och jag skickar intyget till Försäkringskassan
+    Och jag skickar intyget till Transportstyrelsen
 
     När jag makulerar intyget
     Så ska statusuppdatering "MAKULE" skickas till vårdsystemet. Totalt: "1"
