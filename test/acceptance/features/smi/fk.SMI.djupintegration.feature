@@ -5,8 +5,8 @@ Egenskap: IWC-AF1 - Djupintegration SMI intyg
 Bakgrund: Jag är inloggad som djupintegrerad läkare
    Givet att jag är inloggad som djupintegrerad läkare på vårdenhet "TSTNMT2321000156-INT2"
 
-@NAMNBYTE @PS-004
-Scenario: PS-004 - Informera om patienten har bytt namn
+@NAMNBYTE @PS-04
+Scenario: PS-04 - Informera om patienten har bytt namn
 	När att vårdsystemet skapat ett intygsutkast för slumpat SMI-intyg
     Och jag går in på intygsutkastet via djupintegrationslänk
     Och jag fyller i alla nödvändiga fält för intyget
@@ -14,8 +14,8 @@ Scenario: PS-004 - Informera om patienten har bytt namn
     Och jag går in på intygsutkastet via djupintegrationslänk med annat namn
     Så ska ett info-meddelande visa "Patientens namn skiljer sig från det i journalsystemet"
 
-@NYTT-PERSONNUMMER @PS-003
-Scenario: PS-003 - Patienten har fått ett nytt personnummer
+@NYTT-PERSONNUMMER @PS-03
+Scenario: PS-03 - Patienten har fått ett nytt personnummer
 	När att vårdsystemet skapat ett intygsutkast för slumpat SMI-intyg med samordningsnummer eller personnummer
 	Och jag går in på intygsutkastet via djupintegrationslänk
     Och jag fyller i alla nödvändiga fält för intyget
@@ -28,8 +28,8 @@ Scenario: PS-003 - Patienten har fått ett nytt personnummer
     Och jag signerar intyget
     Så ska intyget visa det nya person-id:numret
 
-@RESERVNUMMER @PS-007
-Scenario: PS-007 - Patienten har fått ett reservnummer
+@RESERVNUMMER @PS-07
+Scenario: PS-07 - Patienten har fått ett reservnummer
 	När att vårdsystemet skapat ett intygsutkast för slumpat SMI-intyg med samordningsnummer eller personnummer
 	Och jag går in på intygsutkastet via djupintegrationslänk
     Och jag fyller i alla nödvändiga fält för intyget

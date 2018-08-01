@@ -1,6 +1,6 @@
 # language: sv
 @FALTVALIDERING @LUAE_FS @LUAE_AF @LUSE 
-Egenskap: Fältvalidering för LUAE
+Egenskap: Fältvalidering för LUAE & LUSE
 
 Bakgrund:
     Givet att jag är inloggad som läkare
@@ -9,7 +9,7 @@ Bakgrund:
 @F.VAL-012
 Scenariomall: Man kan inte undersöka en patient senare än man känt patienten
     Givet jag går in på att skapa ett "<intyg>" intyg
-    När jag anger undersökningsdatum senare än patientkännedom
+    När jag anger patientkännedom senare än undersökningsdatum
     Och jag klickar på signera-knappen
     Så ska "1" valideringsfel visas med texten "Får inte vara senare än 'Min undersökning av patienten'."
 

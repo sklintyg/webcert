@@ -2,7 +2,7 @@
 @AVLIDEN
 Egenskap: Avliden patient
 
-@PS-001
+@PS-01
 Scenario: Varning om patient är avliden
     Givet att jag är inloggad som läkare
     När jag går in på en patient som är avliden
@@ -16,6 +16,8 @@ Scenario: Dödsbevis utkast ska kunna skapas på avliden patient
     När jag går in på en patient som är avliden
 	Och att vårdsystemet skapat ett intygsutkast för samma patient för "Dödsbevis"
 	Och jag går in på intyget via djupintegrationslänk
+	Så ska jag varnas om att "Patienten är avliden"
+	
 	Och jag fyller i alla nödvändiga fält för intyget
     Och jag signerar intyget
 
@@ -27,6 +29,8 @@ Scenario: Dödsorsaksintyg utkast ska kunna skapas på avliden patient
     När jag går in på en patient som är avliden
 	Och att vårdsystemet skapat ett intygsutkast för samma patient för "Dödsorsaksintyg"
 	Och jag går in på intyget via djupintegrationslänk
+	Så ska jag varnas om att "Patienten är avliden"
+	
 	Och jag fyller i alla nödvändiga fält för intyget
     Och jag signerar intyget
 

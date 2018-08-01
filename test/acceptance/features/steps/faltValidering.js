@@ -247,7 +247,9 @@ When(/^jag gör val för att få fram maximalt antal fält i "([^"]+)"$/, intyg 
     .then(chainDropdownActions(intyg))
 );
 
-When(/^jag fyller i textfält med felaktiga värden$/, () => chainTextFieldActions(this.intyg).then(changeFocus));
+When(/^jag fyller i textfält med felaktiga värden$/, function() {
+    return chainTextFieldActions(this.intyg).then(changeFocus);
+});
 
 
 When(/^jag anger slutdatum som är tidigare än startdatum$/, function() {
@@ -354,7 +356,7 @@ When(/^jag anger undersökningsdatum i framtiden$/, function() {
     }).then(changeFocus);
 });
 
-When(/^jag anger undersökningsdatum senare än patientkännedom$/, function() {
+When(/^jag anger patientkännedom senare än undersökningsdatum$/, function() {
     return pages.getUtkastPageByType(this.intyg.typ).angeBaseratPa({
         minUndersokningAvPatienten: '2017-09-27',
         personligKannedom: '2017-09-28'

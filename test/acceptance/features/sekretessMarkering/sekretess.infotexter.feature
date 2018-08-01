@@ -1,5 +1,5 @@
 # language: sv
-@SEKRETESSMARKERING @VARNINGMEDDELANDEN @GE-008 @PS-002
+@SEKRETESSMARKERING @VARNINGMEDDELANDEN @GE-008 @PS-02
 Egenskap: GE-008 - Sekretessmarkerad patient
 
 Bakgrund:
@@ -7,7 +7,7 @@ Bakgrund:
 	Och jag går in på en patient med sekretessmarkering
 
 @LISJP @FÖRNYA @INTYGSTJÄNSTEN
-Scenario: PS-002 - Varningmeddelanden när man går in på patient
+Scenario: PS-02 - Varningmeddelanden när man går in på patient
    När jag skickar ett "Läkarintyg för sjukpenning" intyg till Intygstjänsten
    Och jag uppdaterar sidan
    Så ska det finnas en knapp med texten "Förnya"

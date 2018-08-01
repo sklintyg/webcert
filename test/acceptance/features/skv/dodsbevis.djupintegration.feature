@@ -9,24 +9,17 @@ Bakgrund: Jag befinner mig på webcerts förstasida
 		  När jag går in på "fjärde" testpatienten för "Dödsbevis"
 		  Och att vårdsystemet skapat ett intygsutkast för samma patient för "Dödsbevis"
 
-@NAMNBYTE @PS-004
-Scenario: PS-004 - Informera om patienten har bytt namn
-    När jag går in på intygsutkastet via djupintegrationslänk
-    Och jag fyller i alla nödvändiga fält för intyget
-    Och jag signerar intyget
-    Och jag går in på intygsutkastet via djupintegrationslänk med annat namn
-    Så ska ett info-meddelande visa "Patientens namn skiljer sig från det i journalsystemet"
 
-@NYTT-PERSONNUMMER @PS-003
-Scenario: PS-003 - Patienten har fått ett nytt personnummer
+@NYTT-PERSONNUMMER @PS-03
+Scenario: PS-03 - Patienten har fått ett nytt personnummer
 	När jag går in på intygsutkastet via djupintegrationslänk
     Och jag fyller i alla nödvändiga fält för intyget
     Och jag signerar intyget
     Och jag går in på intygsutkastet via djupintegrationslänk med ett annat personnummer
     Så ska ett varning-meddelande visa "Patientens personummer har ändrats"
 
-@RESERVNUMMER @PS-007
-Scenario: PS-007 - Patienten har fått ett reservnummer
+@RESERVNUMMER @PS-07
+Scenario: PS-07 - Patienten har fått ett reservnummer
 	När jag går in på intygsutkastet via djupintegrationslänk
     Och jag fyller i alla nödvändiga fält för intyget
     Och jag signerar intyget
@@ -43,7 +36,6 @@ Scenario: [responsibleHospName] - Endast vårdadmin ska se signerande läkare
 @GE-007
 Scenario: GE-003 - Det ska vara möjligt att gå in på utkast och intyg utan integrationsparametrar.
     När jag går in på intygsutkastet utan integrations parametrar
-	Och jag väljer vårdenheten "TSTNMT2321000156-INT2"
     Och jag fyller i alla nödvändiga fält för intyget
 	Och jag signerar intyget
 	
