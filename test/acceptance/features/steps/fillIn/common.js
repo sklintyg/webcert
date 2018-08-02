@@ -46,15 +46,27 @@ module.exports = {
 
         utkastPage = pages.getUtkastPageByType(world.intyg.typ);
 
-        if (world.patient.adress && world.patient.adress.postadress && !isSMI && world.user.origin !== 'DJUPINTEGRATION') {
+
+
+
+        if (!isSMI && world.user.origin !== 'DJUPINTEGRATION') {
+
+            if (world.intyg.typ.indexOf("Transport") !== -1 && !world.patient.adress || !world.patient.adress.postadress) {
+                world.patient.adress = {
+                    postadress: 'Hardcodegatan 1',
+                    postnummer: 66700,
+                    postort: 'Hardcode'
+                };
+            }
+
             return utkastPage.angePatientAdress(world.patient.adress).then(function() {
                 logger.info('OK - setPatientAdress: ' + JSON.stringify(world.patient.adress));
             }, function(reason) {
                 throw ('FEL - setPatientAdress: ' + reason);
             }).catch(msg => logger.warn(msg));
         } else {
-            logger.info('Ingen patientadress ändras');
             if (!isSMI && world.user.origin !== 'DJUPINTEGRATION') {
+                logger.info('Ingen patientadress ändras');
                 world.patient.adress = {};
                 return Promise.all([
                     utkastPage.patientAdress.postAdress.getText().then(function(text) {
