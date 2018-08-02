@@ -43,7 +43,7 @@ Exempel:
 	| 20130120-2386 | 8 |
 	| 19800514-9284 | 9 |
 	
-@TESTDATA-STATISTIK @WIP
+@TESTDATA-STATISTIK
 Scenariomall: [Statistik] - Generera <intygstyp> på <Patient> för <lakare>
 	Givet att jag är inloggad som läkare <lakare>
 	När jag går in på testpatienten "<Patient>"

@@ -6,7 +6,7 @@ Bakgrund: Jag befinner mig på webcerts förstasida
 	Givet att jag är inloggad som läkare
 	När jag går in på en patient
 
-Scenariomall: Visas vid rätt fält för <intygKod>
+Scenariomall: FMB ska visas vid rätt fält för <intygKod>
 	Givet att vårdsystemet skapat ett intygsutkast för <intyg>
 	Och jag går in på utkastet
 	Och jag fyller i diagnoskod
@@ -27,7 +27,7 @@ Exempel:
   |intygKod | 	intyg 								|
   |LISJP		| 	"Läkarintyg för sjukpenning" |
 
-Scenariomall: Ska inte visas för alla diagnoskoder då man skapar <intygKod>
+Scenariomall: FMB ska inte visas för alla diagnoskoder då man skapar <intygKod>
 	Givet att vårdsystemet skapat ett intygsutkast för <intyg>
 	Och jag går in på utkastet
 	Och jag fyller i diagnoskod utan FMB info
