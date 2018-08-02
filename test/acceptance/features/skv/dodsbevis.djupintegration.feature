@@ -118,7 +118,6 @@ Scenario: GE-003 - Tillgängliga funktioner #4 - enhetId!=medskickad enhetId och
 @GE-003	
 Scenario: GE-003 - Tillgängliga funktioner #6 - avliden=true
 	När jag går in på intyget via djupintegrationslänk med parameter "avliden=true"
-	Så ska jag varnas om att "Patienten är avliden"
 	Och jag fyller i alla nödvändiga fält för intyget
     Och jag signerar intyget
     Så ska det inte finnas knappar för "förnya,ersätta"
@@ -144,7 +143,8 @@ Scenario: GE-003 - Ej tillgängliga funktioner #2 och #4 - enhetId!=medskickad e
 	Så ska jag varnas om att "Behörighet saknas"
 	
 	#Intyg
-	Givet att jag är inloggad som djupintegrerad läkare på vårdenhet "TSTNMT2321000156-INT2"
+	Givet jag har raderat alla intyg och utkast för "fjärde" "Dödsbevis" testpatienten
+	Och att jag är inloggad som djupintegrerad läkare på vårdenhet "TSTNMT2321000156-INT2"
 	Och att vårdsystemet skapat ett intygsutkast för samma patient för "Dödsbevis"
 	När jag går in på intyget via djupintegrationslänk
 	Och jag fyller i alla nödvändiga fält för intyget
