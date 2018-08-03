@@ -317,7 +317,7 @@ When(/^jag anger start- och slutdatum med mer än 6 månaders mellanrum$/, funct
 });
 
 When(/^jag anger startdatum mer än en vecka före dagens datum$/, function() {
-    pages.getUtkastPageByType(this.intyg.typ).angeArbetsformaga({
+    return pages.getUtkastPageByType(this.intyg.typ).angeArbetsformaga({
         nedsattMed25: {
             from: '2015-03-27',
             tom: '2017-09-25'
