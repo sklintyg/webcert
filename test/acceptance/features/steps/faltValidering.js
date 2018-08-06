@@ -192,7 +192,7 @@ Given(/^att textfält i intyget är rensade$/, () => {
     //Vänta på att alla element finns på sidan.
     return helpers.pageReloadDelay().then(element.all(by.css('input[type=text]')).filter(el => {
         return el.getAttribute('id').then(id => logger.silly('tar bort value ifrån element: ' + id)).then(() => el.isEnabled());
-    }).each(i => i.clear()));
+    }).each(i => i.typeKeys("a").then(i.clear()))).then(changeFocus);
 });
 
 Then(/^ska alla sektioner innehållandes valideringsfel listas$/, () =>
