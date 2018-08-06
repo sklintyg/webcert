@@ -2,6 +2,9 @@
 
 ## Installations anvisningar [Windows]
 
+### Prerequisites
+* [Java] - minst Java 8. Krävs för selenium-webdriver
+
 ### Installera NodeJS 6.11.0
 https://nodejs.org/dist/v6.11.0/node-v6.11.0-x64.msi
 
@@ -11,7 +14,7 @@ https://ftp.mozilla.org/pub/firefox/releases/58.0.2/win32/sv-SE/Firefox%20Setup%
 ### Installera git for windows
 https://gitforwindows.org/
 
-### Starta git bash for windows
+### Starta "git bash for windows" och gå till din git mapp där du önskar att lagra repot.
  ```
 cd din_git_mapp
  ```
@@ -35,7 +38,6 @@ npm install grunt-cli -g
 ### Sätt default nedladdnings mapp till "c:/temp/autotester" i firefox
 ### Slå av automatiska uppdateringar i firefox
 
-
 ### Kör autotesterna
  ```
 DATABASE_PASSWORD=xxxxxxxxx grunt acc:ip30 --tags='@SMI' --local-selenium
@@ -44,6 +46,10 @@ DATABASE_PASSWORD=xxxxxxxxx grunt acc:ip30 --tags='@SMI' --local-selenium
 
 ## Linux
 
+### Prerequisites
+* [Node]
+* [Npm]
+* [Java] - minst Java 8. Krävs för selenium-webdriver
 ### Klona och ladda ner npm-paket
  ```sh
 $ git clone https://github.com/sklintyg/webcert.git
