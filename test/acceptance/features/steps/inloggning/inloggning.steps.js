@@ -210,13 +210,7 @@ Given(/^jag går in på att skapa ett "([^"]*)" intyg$/, function(intygsTyp) {
 
 
 Given(/^ska jag inte kunna skapa ett "([^"]*)" intyg$/, function(intygsTyp) {
-    return sokSkrivIntygUtkastTypePage.intygTypeTable.getText().then(function(txt) {
-        return expect(txt).to.not.contain(intygsTyp);
-    }).then(function() {
-        logger.info('OK - intygstypen finns inte i listan med valbara intygstyper');
-    }, function(reason) {
-        throw ('FEL : ' + reason);
-    });
+    return expect(element(by.id('intygTypeFortsatt-' + helpers.getInternShortcode(intygsTyp))).isEnabled()).to.eventually.equal(false);
 });
 
 Given(/^jag går in på att skapa ett slumpat intyg$/, function() {

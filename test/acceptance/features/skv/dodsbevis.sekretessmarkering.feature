@@ -8,7 +8,7 @@ Bakgrund: Jag befinner mig på webcerts förstasida
 		Och att jag är inloggad som läkare
 		  
 		  
-@WAITINGFORFIX @KRAV
+@WIP
 Scenario: Ska inte kunna utfärda Dödsbevis på patienter med sekretessmarkering
 		När jag går in på "första" testpatienten för "sekretessmarkering"
 		Så ska jag inte kunna skapa ett "Dödsbevis" intyg
