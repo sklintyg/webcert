@@ -1,15 +1,53 @@
 # Automatiska acceptanstest
 
-### Installera dessa
-* [Java] - Krävs för selenium-webdriver
-* [Node]
-* [Npm]
+## Installations anvisningar [Windows]
 
+### Installera NodeJS 6.11.0
+https://nodejs.org/dist/v6.11.0/node-v6.11.0-x64.msi
+
+### Installera Firefox 58.x
+https://ftp.mozilla.org/pub/firefox/releases/58.0.2/win32/sv-SE/Firefox%20Setup%2058.0.2.exe
+
+### Installera git for windows
+https://gitforwindows.org/
+
+### Starta git bash for windows
+ ```
+cd din_git_mapp
+ ```
+### Clona webcert repot
+ ```
+git clone https://github.com/sklintyg/webcert.git
+ ```
+### Installera node_modules
+ ```
+cd webcert/test/acceptance/
+npm install
+ ```
+### Installera grunt-cli
+ ```
+npm install grunt-cli -g
+ ```
+### Installera webdriver-manager
+ ```
+./node_modules/protractor/bin/webdriver-manager update
+ ```
+### Sätt default nedladdnings mapp till "c:/temp/autotester" i firefox
+### Slå av automatiska uppdateringar i firefox
+
+
+### Kör autotesterna
+ ```
+DATABASE_PASSWORD=xxxxxxxxx grunt acc:ip30 --tags='@SMI' --local-selenium
+ ```
+### Installationen är nu klar om du ser testerna köra!
+
+## Linux
 
 ### Klona och ladda ner npm-paket
  ```sh
 $ git clone https://github.com/sklintyg/webcert.git
-$ cd test
+$ cd test/acceptance
 $ npm install
 ```
   
@@ -28,24 +66,24 @@ $ npm install
  grunt acc:ip20 --tags='@smoke'
 ```
 
-### Köra testfall med taggar
+## Köra testfall med taggar
 
-#### För att använda logiskt OCH med taggar, använd --tags och ange en sträng med kommaseparerade taggar. Exempel i ip20-mijö 
+### För att använda logiskt OCH med taggar, använd --tags och ange en sträng med kommaseparerade taggar. Exempel i ip20-mijö 
 för att köra alla tester som är taggade med @smoke OCH inte @notReady
  ```sh
- grunt acc:ip20 --tags='@smoke,~@notReady'
+ grunt acc:ip20 --tags='not @notReady and @smoke'
 ```
 
-#### För att använda logiskt ELLER med taggar, använd --tags och ange en sträng med mellanslagsseparerade taggar. Exempel i 
+#### För att använda logiskt ELLER med taggar, använd --tags och ange en sträng med taggar. Exempel i 
 ip20-mijö som är taggade med @smoke ELLER som är taggade med @behorighet.
  ```sh
- grunt acc:ip20 --tags='@smoke @behorighet'
+ grunt acc:ip20 --tags='@smoke or @behorighet'
 ```
 
-#### För att blanda logiskt ELLER och logiskt OCH med taggar, använd --tags och ange en sträng med mellanslagsseparerade och kommaseparade taggar. Exempel i 
+#### För att blanda logiskt ELLER och logiskt OCH med taggar, använd --tags och ange en sträng med taggar. Exempel i 
 ip20-mijö som är taggade med @smoke OCH inte är taggade med ~@notReady ELLER som är taggade med @behorighet.
  ```sh
- grunt acc:ip20 --tags='@smoke,~@notReady @behorighet'
+ grunt acc:ip20 --tags='@smoke and @behorighet and not @notReady'
 ```
 ### Exekvera testfall på flera noder och instanser parallellt.
 Default är att alla tester utförs sekventiellt på 1 nod med 1 browser-instans. 
