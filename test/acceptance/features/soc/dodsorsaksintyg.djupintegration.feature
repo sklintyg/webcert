@@ -114,7 +114,7 @@ Scenario: GE-003 - Tillgängliga funktioner #4 - enhetId!=medskickad enhetId och
 	#Kontrollerar att det går att skriva ut intyget
 	Och jag skriver ut intyget
 
-@GE-003	@WIP
+@GE-003
 Scenario: GE-003 - Tillgängliga funktioner #6 - avliden=true
 	När jag går in på intyget via djupintegrationslänk med parameter "avliden=true"
 	Och jag fyller i alla nödvändiga fält för intyget

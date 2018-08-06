@@ -115,7 +115,7 @@ Scenario: GE-003 - Tillgängliga funktioner #4 - enhetId!=medskickad enhetId och
 	#Kontrollerar att det går att skriva ut intyget
 	Och jag skriver ut intyget
 
-@GE-003	@WIP
+@GE-003
 Scenario: GE-003 - Tillgängliga funktioner #6 - avliden=true
 	När jag går in på intyget via djupintegrationslänk med parameter "avliden=true"
 	Och jag fyller i alla nödvändiga fält för intyget
@@ -134,7 +134,7 @@ Scenario: GE-003 - Tillgängliga funktioner #8 - inaktivEnhet=true
 	Så ska det finnas knappar för "makulera"	
     
 	
-@GE-003
+@GE-003 @WIP
 Scenario: GE-003 - Ej tillgängliga funktioner #2 och #4 - enhetId!=medskickad enhetId och parameter: sjf=false
 	#Utkast
 	Givet att jag är inloggad som djupintegrerad läkare på vårdenhet "TSTNMT2321000156-1077" och inte har uppdrag på "TSTNMT2321000156-INT2"

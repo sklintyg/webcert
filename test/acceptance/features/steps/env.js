@@ -34,11 +34,11 @@ function writeScreenShot(data, filename, cb) {
     stream.on('finish', cb);
 }
 
-function checkConsoleErrors() {
+function checkConsoleErrors(world) {
     if (hasFoundConsoleErrors) {
 
         // 500-error är ett godkänt fel i detta test, se INTYG-3524
-        if (global.scenario.getName().indexOf('Kan byta vårdenhet') >= 0 && hasFoundConsoleErrors.indexOf('error 500') > -1) {
+        if (world.scenario.getName().indexOf('Kan byta vårdenhet') >= 0 && hasFoundConsoleErrors.indexOf('error 500') > -1) {
             return logger.info('Hittade 500-fel. Detta fel är accepterat, se INTYG-3524');
         } else if (hasFoundConsoleErrors.indexOf('ID-dubletter') > -1) {
             return logger.warn(hasFoundConsoleErrors);
@@ -139,7 +139,6 @@ global.externalPageLinks = [];
 });*/
 
 Before(function() {
-    global.scenario = this;
     ScenarioLogg = '';
     logger.info('Återställer globala variabler');
     this.patient = {};
@@ -188,7 +187,7 @@ After(function(testCase) {
                         if (err) {
                             throw err;
                         }
-                        return checkConsoleErrors();
+                        return checkConsoleErrors(world);
                     });
                 });
             }).then(function() {
@@ -212,7 +211,7 @@ After(function(testCase) {
     } else {
         logger.silly('Rensar session-storage');
         return browser.executeScript('window.sessionStorage.clear();').then(function() {
-            return checkConsoleErrors();
+            return checkConsoleErrors(world);
         }).then(function() {
             logger.silly('Rensar local-storage');
             return browser.executeScript('window.localStorage.clear();');

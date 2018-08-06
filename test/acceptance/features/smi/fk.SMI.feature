@@ -82,8 +82,10 @@ Scenario: IS-010 - Samtida användare ska generera felmeddelande (SMI-intyg)
 	Och sedan öppnar intyget i två webbläsarinstanser
 	Så ska ett felmeddelande visas
 
-@SAMTIDAANVANDARE @MAKULERA @SMOKE
+@SAMTIDAANVANDARE @MAKULERA @WAITINGFORFIX @NOTREADY
 #Krav diskutteras i kommentarfältet "Felmeddelanden, Webcert" - "Generella"
+#Samtida användare testat bäst manuellt. Hålla två sessioner igång samtidigt är komplext i autotest och ökar komplexitet i kodbas.
+#Eftersom att det inte finns specifikt krav på detta scenario taggas det @WAITINGFORFIX @NOTREADY
 Scenario: Samtida användare ska generera felmeddelande (SMI-intyg) efter att intyg blivit makulerat
 	När jag går in på att skapa ett slumpat SMI-intyg
 	Och jag fyller i alla nödvändiga fält för intyget
@@ -94,11 +96,11 @@ Scenario: Samtida användare ska generera felmeddelande (SMI-intyg) efter att in
 
 @SAMTIDAANVANDARE @SKICKA-MAKULERA @NOTREADY
 Scenario: Samtida användare ska generera felmeddelande om fråga/svar skickas efter makulering (LISJP)
-		När jag går in på att skapa ett "Läkarintyg för sjukpenning" intyg
-		Och jag fyller i alla nödvändiga fält för intyget
-		Och jag klickar på signera-knappen
-		Och sedan öppnar intyget i två webbläsarinstanser
-		Och jag klickar på skicka knappen
-		Och jag makulerar intyget
-		Och jag skickar en fråga till Försäkringskassan
-		Så ska varningen "Förmodligen har en annan användare makulerat intyget medan du arbetat på samma post. Ladda om sidan och försök igen" visas
+	När jag går in på att skapa ett "Läkarintyg för sjukpenning" intyg
+	Och jag fyller i alla nödvändiga fält för intyget
+	Och jag klickar på signera-knappen
+	Och sedan öppnar intyget i två webbläsarinstanser
+	Och jag klickar på skicka knappen
+	Och jag makulerar intyget
+	Och jag skickar en fråga till Försäkringskassan
+	Så ska varningen "Förmodligen har en annan användare makulerat intyget medan du arbetat på samma post. Ladda om sidan och försök igen" visas

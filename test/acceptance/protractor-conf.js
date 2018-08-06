@@ -63,7 +63,7 @@ exports.config = {
     },
     onPrepare: function() {
 		// Stor skärm på höjden för att slippa scrolla
-        browser.manage().window().setSize(1600, 10000); 
+        browser.manage().window().setSize(1600, 6000); 
         //http://chaijs.com/
         global.chai = require('chai');
 
@@ -146,7 +146,7 @@ exports.config = {
 		// Winston Logger level. Logging levels are prioritized from 0 to 5 (highest to lowest):
 		// error: 0, warn: 1, info: 2, verbose: 3, debug: 4, silly: 5
 		
-		logger.transports.console.level = 'info';
+		logger.transports.console.level = 'silly';
 		
 
         //Set window size

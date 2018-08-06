@@ -228,9 +228,9 @@ Given(/^jag går in på intygsutkastet via djupintegrationslänk med ett annat p
 });
 
 Given(/^jag går in på intygsutkastet via djupintegrationslänk med ett reservnummer$/, function() {
-    this.ursprungligPatient = JSON.parse(JSON.stringify(this.patient));
-    this.patient.id = '3243342';
-    return gotoIntyg(this.user, this.intyg, this.patient, ' via djupintegrationslänk', 'alternatePatientSSn=' + this.patient.id);
+    //this.ursprungligPatient = JSON.parse(JSON.stringify(this.patient));
+    //this.patient.id = '3243342';
+    return gotoIntyg(this.user, this.intyg, this.patient, ' via djupintegrationslänk', 'alternatePatientSSn=3243342');
 });
 
 
@@ -238,7 +238,10 @@ Given(/jag försöker gå in på intygsutkastet via djupintegrationslänk$/, fun
     //"Försöker gå in" är inte samma steg som "går in". p.g.a. expect logiken.
     let world = this;
     return loginIfSessionUsed(world.user).then(function() {
+        logger.info('Försöker att gå in på ' + world.intyg.id);
         return helpers.getUrl(getIntegrationUrl(world.user, ' via djupintegrationslänk', world.intyg, world.patient));
+    }).then(function() {
+        return helpers.pageReloadDelay();
     });
 });
 Given(/jag försöker gå in på intygsutkastet via djupintegrationslänk och har parameter "([^"]*)"$/, function(param) {
