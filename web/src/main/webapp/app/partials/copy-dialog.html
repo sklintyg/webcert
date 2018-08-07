@@ -7,16 +7,11 @@
   </div>
   <wc-bottom-fadeout>
     <div class="modal-body">
-      <p>
-        <span dynamic-label key="{{bodyText}}"></span>
-      </p>
+      <span dynamic-label key="{{bodyTextId}}"></span>
     </div>
   </wc-bottom-fadeout>
   <div class="modal-footer">
-    <div class="webcert-top-padding-section form-inline">
-      <label id="dontShowAgain" class="checkbox"><input type="checkbox" ng-model="model.dontShowInfo"> Visa inte denna information igen</label>
-    </div>
-    <div class="webcert-top-padding-section form-inline">
+    <div class="form-inline">
       <div class="button-wrapper">
         <wc-button
                 btn-id="{{button1id}}"
@@ -34,11 +29,11 @@
         >
           <span dynamic-label key="{{button2text}}"></span>
         </wc-button>
-
       </div>
       <div class="webcert-top-padding-section" ng-show="model.showerror">
         <wc-alert-message alert-severity="danger" class="alert-dialog-error"
-                          alert-message-id="{{model.errormessageid}}"></wc-alert-message>
+                          alert-message-id="{{model.errormessageid}}">
+        </wc-alert-message>
       </div>
     </div>
   </div>
