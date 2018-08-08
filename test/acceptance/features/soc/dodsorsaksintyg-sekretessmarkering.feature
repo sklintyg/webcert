@@ -8,7 +8,6 @@ Bakgrund: Jag befinner mig på webcerts förstasida
 		Och att jag är inloggad som läkare
 		  
 
-@WIP
 Scenario: Ska inte kunna utfärda DOI på patienter med sekretessmarkering
 		När jag går in på "första" testpatienten för "sekretessmarkering"
 		#TODO behöver en till testpatient med sekretessmarkering p.g.a. att denna redan används för test av Dödsbevis

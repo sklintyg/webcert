@@ -156,6 +156,14 @@ function getIntegrationUrl(user, origin, intyg, patient) {
 
 }
 
+function vantaPaAttIntygHamtas() {
+    return browser.wait(function() {
+        return element(by.id('loading-message')).isPresent().then(function(present) {
+            return present === false;
+        });
+    });
+}
+
 /*
  *	Test steg
  *
@@ -240,9 +248,7 @@ Given(/jag försöker gå in på intygsutkastet via djupintegrationslänk$/, fun
     return loginIfSessionUsed(world.user).then(function() {
         logger.info('Försöker att gå in på ' + world.intyg.id);
         return helpers.getUrl(getIntegrationUrl(world.user, ' via djupintegrationslänk', world.intyg, world.patient));
-    }).then(function() {
-        return helpers.pageReloadDelay();
-    });
+    }).then(vantaPaAttIntygHamtas);
 });
 Given(/jag försöker gå in på intygsutkastet via djupintegrationslänk och har parameter "([^"]*)"$/, function(param) {
     //"Försöker gå in" är inte samma steg som "går in". p.g.a. expect logiken.
@@ -251,7 +257,7 @@ Given(/jag försöker gå in på intygsutkastet via djupintegrationslänk och ha
         let url = getIntegrationUrl(world.user, ' via djupintegrationslänk', world.intyg, world.patient);
         url += param;
         return helpers.getUrl(url);
-    });
+    }).then(vantaPaAttIntygHamtas);
 });
 
 Given(/^jag går in på (intygsutkastet|intyget)( via djupintegrationslänk| via uthoppslänk| utan integrations parametrar)*$/, function(intygstyp, origin) {

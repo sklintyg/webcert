@@ -46,12 +46,12 @@ Scenario: Läkare ska kunna makulera intyg med s-markering
 	Så ska det finnas en knapp med texten "Makulera"
 
 	
-@TS @KORKORTSBEHORIGHET @WIP
+@TS @KORKORTSBEHORIGHET
 Scenario: TS-intyg utkast ska inte kunna skapas på s-markerad patient på ts bas
 	Så ska jag inte kunna skapa ett "Transportstyrelsens läkarintyg högre körkortsbehörighet" intyg
 	Så ska vårdsystemet inte ha möjlighet att skapa "Transportstyrelsens läkarintyg högre körkortsbehörighet" utkast
 
-@TS @DIABETES @WIP
+@TS @DIABETES
 Scenario: TS-intyg utkast ska inte kunna skapas på s-markerad patient på ts diabetes
 	Så ska jag inte kunna skapa ett "Transportstyrelsens läkarintyg diabetes" intyg
 	Så ska vårdsystemet inte ha möjlighet att skapa "Transportstyrelsens läkarintyg diabetes" utkast
