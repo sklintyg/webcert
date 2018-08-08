@@ -26,6 +26,9 @@ var testValues = require('./testvalues.js').ts;
 
 module.exports = {
     get: function(intygsID) {
+        //a valid hypoglykemidatum must be < today and > 1 year ago.
+        var yesterday = testdataHelper.dateFormat(new Date(new Date().getTime() - 24 * 60 * 60 * 1000));
+
         if (!intygsID) {
             intygsID = testdataHelper.generateTestGuid();
         }
@@ -48,7 +51,7 @@ module.exports = {
                 "b": "Ja",
                 "f": "Ja",
                 "g": "Ja",
-                "gDatum": "2017-08-04",
+                "gDatum": yesterday,
                 "c": "Ja",
                 "d": "Nej",
                 "e": "Nej"
