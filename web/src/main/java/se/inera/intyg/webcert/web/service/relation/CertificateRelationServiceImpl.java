@@ -61,6 +61,7 @@ public class CertificateRelationServiceImpl implements CertificateRelationServic
         latestChildRelations.setReplacedByUtkast(findRelationOfType(childRelations, RelationKod.ERSATT, false));
         latestChildRelations.setComplementedByIntyg(findRelationOfType(childRelations, RelationKod.KOMPLT, true));
         latestChildRelations.setComplementedByUtkast(findRelationOfType(childRelations, RelationKod.KOMPLT, false));
+        latestChildRelations.setUtkastCopy(findRelationOfType(childRelations, RelationKod.COPY, false));
         return latestChildRelations;
     }
 

@@ -128,6 +128,8 @@ public class IntygRelationHelperImpl implements IntygRelationHelper {
                     break;
                 case FRLANG:
                     break;
+                case COPY:
+                    break;
             }
         } else if (r.getFranIntygsId().getExtension().equals(intygId)) {
             certificateRelations.setParent(createWebcertCertificateRelation(r, false));

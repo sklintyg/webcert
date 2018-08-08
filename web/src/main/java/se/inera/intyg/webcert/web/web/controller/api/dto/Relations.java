@@ -33,6 +33,7 @@ public class Relations {
         WebcertCertificateRelation replacedByIntyg;
         WebcertCertificateRelation complementedByUtkast;
         WebcertCertificateRelation complementedByIntyg;
+        WebcertCertificateRelation utkastCopy;
 
         public WebcertCertificateRelation getReplacedByUtkast() {
             return replacedByUtkast;
@@ -64,6 +65,14 @@ public class Relations {
 
         public void setComplementedByIntyg(WebcertCertificateRelation complementedByIntyg) {
             this.complementedByIntyg = complementedByIntyg;
+        }
+
+        public WebcertCertificateRelation getUtkastCopy() {
+            return utkastCopy;
+        }
+
+        public void setUtkastCopy(WebcertCertificateRelation utkastCopy) {
+            this.utkastCopy = utkastCopy;
         }
     }
 

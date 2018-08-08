@@ -226,7 +226,8 @@ public class IntygModuleApiController extends AbstractApiController {
 
         String meddelandeId = arendeService.getLatestMeddelandeIdForCurrentCareUnit(orgIntygsId);
 
-        CreateCompletionCopyRequest serviceRequest = copyUtkastServiceHelper.createCompletionCopyRequest(orgIntygsId, intygsTyp, meddelandeId, request);
+        CreateCompletionCopyRequest serviceRequest = copyUtkastServiceHelper.createCompletionCopyRequest(orgIntygsId, intygsTyp,
+                meddelandeId, request);
         CreateCompletionCopyResponse serviceResponse = copyUtkastService.createCompletion(serviceRequest);
 
         LOG.debug("Created a new draft with id: '{}' and type: {}, completing certificate with id '{}'.",
@@ -310,8 +311,8 @@ public class IntygModuleApiController extends AbstractApiController {
             LOG.error("Request to create utkast from certificate '{}' as template is not valid", orgIntygsId);
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, "Missing vital arguments in payload");
         }
-        CreateUtkastFromTemplateRequest serviceRequest = copyUtkastServiceHelper.createUtkastFromDifferentIntygTypeRequest(orgIntygsId, newIntygsTyp, orgIntygsTyp,
-                request);
+        CreateUtkastFromTemplateRequest serviceRequest = copyUtkastServiceHelper.createUtkastFromDifferentIntygTypeRequest(orgIntygsId,
+                newIntygsTyp, orgIntygsTyp, request);
         CreateUtkastFromTemplateResponse serviceResponse = copyUtkastService.createUtkastFromTemplate(serviceRequest);
 
         LOG.debug("Created a new draft with id: '{}' and type: {} from certificate with type: {} and id '{}'.",

@@ -326,10 +326,6 @@ public class UtkastModuleApiController extends AbstractApiController {
 
         Utkast utkast = utkastService.getDraft(orgIntygsId, intygsTyp);
 
-        // TODO: Validate draft locked
-        // TODO: Set relation
-        // TODO: Validate only one copy
-
         WebCertUser user = getWebCertUserService().getUser();
 
         boolean copyOkParam = user.getParameters() == null || user.getParameters().isCopyOk();
@@ -342,7 +338,7 @@ public class UtkastModuleApiController extends AbstractApiController {
         request.setPatientPersonnummer(utkast.getPatientPersonnummer());
 
         CreateUtkastFromTemplateRequest serviceRequest = copyUtkastServiceHelper.createUtkastFromUtkast(orgIntygsId, intygsTyp, request);
-        CreateUtkastFromTemplateResponse serviceResponse = copyUtkastService.createUtkastFromTemplate(serviceRequest);
+        CreateUtkastFromTemplateResponse serviceResponse = copyUtkastService.createUtkastCopy(serviceRequest);
 
         LOG.debug("Created a new draft with id: '{}' and type: {} from certificate with type: {} and id '{}'.",
                 serviceResponse.getNewDraftIntygId(), serviceResponse.getNewDraftIntygType(), intygsTyp, orgIntygsId);

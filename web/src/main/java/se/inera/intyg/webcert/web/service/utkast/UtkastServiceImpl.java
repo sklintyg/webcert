@@ -221,7 +221,7 @@ public class UtkastServiceImpl implements UtkastService {
                                 Collectors.reducing(new PreviousIntyg(), (a, b) -> b.isSameVardgivare() ? b : a)))));
 
         ret.put(UTKAST_INDICATOR, toFilter.stream()
-                .filter(utkast -> utkast.getStatus() != UtkastStatus.SIGNED)
+                .filter(utkast -> utkast.getStatus() != UtkastStatus.SIGNED && utkast.getStatus() != UtkastStatus.DRAFT_LOCKED)
                 .sorted(Comparator.comparing(Utkast::getSkapad, Comparator.nullsFirst(Comparator.naturalOrder())))
                 .collect(Collectors.groupingBy(Utkast::getIntygsTyp,
                         Collectors.mapping(utkast -> new PreviousIntyg(Objects.equals(user.getValdVardgivare().getId(),
