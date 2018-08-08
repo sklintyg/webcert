@@ -63,9 +63,11 @@ Exempel:
 @LUSE
 Exempel:
     |intygKod   | 	intyg                                                               |
-    |LUSE       | 	"Läkarutlåtande för sjukersättning"                                 |
-    #|LISJP      | 	"Läkarintyg för sjukpenning"                                        |
-	#TODO undersök om vi kan inkludera LISJP i detta scenario
+    #|LUSE       | 	"Läkarutlåtande för sjukersättning"                                 |
+@LISJP
+Exempel:
+    |intygKod   | 	intyg                                                               |
+    |LISJP      | 	"Läkarintyg för sjukpenning"                                        |
 
 @MAKULERA @SMOKE @FKSMOKE
 Scenario: Makulera ett skickat ett SMI-intyg

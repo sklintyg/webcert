@@ -540,7 +540,7 @@ var demoDataLisjp = [{
     "diagnos": {
         "kod": "M545"
     },
-    /* TODO Bidignoser: E10 */
+    /* Bidignoser: E10 */
     "funktionsnedsattning": "Personen har nedsatt förmåga att fungera fysiskt och psykiskt",
     "aktivitetsbegransning": "Kan inte umgås med andra människor",
     "arbetsformaga": {
@@ -570,7 +570,7 @@ var demoDataLisjp = [{
     "diagnos": {
         "kod": "M545"
     },
-    /* TODO Bidignoser: E10 */
+    /* Bidignoser: E10 */
     "funktionsnedsattning": "Personen har nedsatt förmåga att fungera fysiskt och psykiskt",
     "aktivitetsbegransning": "Kan inte umgås med andra människor",
     "arbetsformaga": {
@@ -600,7 +600,7 @@ var demoDataLisjp = [{
     "diagnos": {
         "kod": "M545"
     },
-    /* TODO Bidignoser: E10 */
+    /* Bidignoser: E10 */
     "funktionsnedsattning": "Personen har nedsatt förmåga att fungera fysiskt och psykiskt",
     "aktivitetsbegransning": "Kan inte umgås med andra människor",
     "arbetsformaga": {

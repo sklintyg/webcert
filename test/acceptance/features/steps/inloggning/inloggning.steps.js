@@ -55,7 +55,6 @@ const helpers = require('../helpers.js');
 var insertDashInPnr = helpers.insertDashInPnr;
 
 function gotoPatient(patient, user) { //förutsätter  att personen finns i PU-tjänsten
-
     if (user.origin !== 'DJUPINTEGRATION') {
         element(by.id('menu-skrivintyg')).click().then(function() {
             return helpers.pageReloadDelay();
@@ -72,7 +71,6 @@ function gotoPatient(patient, user) { //förutsätter  att personen finns i PU-t
                 return helpers.smallDelay();
             });
         });
-
 }
 
 var forkedBrowser;

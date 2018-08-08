@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*global browser, logger, pages, wcTestTools, testdata, Promise, protractor */
+/*global browser, logger, pages, wcTestTools, Promise, protractor */
 'use strict';
 /*jshint newcap:false */
 //TODO Uppgradera Jshint p.g.a. newcap kommer bli depricated. (klarade inte att ignorera i grunt-task)
@@ -92,19 +92,25 @@ function extractDigit(intyg) {
 }
 
 function gotoPatient(patient, user) { //förutsätter  att personen finns i PU-tjänsten
-
     if (user.origin !== 'DJUPINTEGRATION') {
-        element(by.id('menu-skrivintyg')).click();
-        browser.sleep(1000);
+        element(by.id('menu-skrivintyg')).click().then(function() {
+            return helpers.pageReloadDelay();
+        });
     }
-    sokSkrivIntygPage.selectPersonnummer(patient.id);
-    logger.info('Går in på patient ' + patient.id);
-    //Patientuppgifter visas
-    var patientUppgifter = sokSkrivIntygPage.sokSkrivIntygForm;
-    return expect(patientUppgifter.getText()).to.eventually.contain(patient.id);
+    return sokSkrivIntygPage.selectPersonnummer(patient.id).then(function() {
+            return helpers.pageReloadDelay();
+        })
+        .then(function() {
+            logger.info('Går in på patient ' + patient.id);
+            //Patientuppgifter visas
+            var patientUppgifter = sokSkrivIntygPage.patientNamn;
+            return expect(patientUppgifter.getText()).to.eventually.contain(helpers.insertDashInPnr(patient.id)).then(function() {
+                return helpers.smallDelay();
+            });
+        });
 }
 
-function sattNySjukskrivningsPeriod(intyg) {
+/*function sattNySjukskrivningsPeriod(intyg) {
     var newStartDate = createDateString(global.rehabstod.user.endDate, 3, true);
     intyg.arbetsformaga.nedsattMed25.from = newStartDate;
     intyg.arbetsformaga.nedsattMed25.tom = createDateString(newStartDate, 4, false);
@@ -114,7 +120,7 @@ function sattNySjukskrivningsPeriod(intyg) {
     intyg.arbetsformaga.nedsattMed75.tom = createDateString(newStartDate, 20, false);
     intyg.arbetsformaga.nedsattMed100.from = createDateString(newStartDate, 21, false);
     intyg.arbetsformaga.nedsattMed100.tom = createDateString(newStartDate, 28, false);
-}
+}*/
 
 function createDateString(date, daysToAdd, subtraction) {
     var tmpDate = new Date(date);
@@ -237,9 +243,11 @@ Given(/^jag söker efter slumpvald patient och sparar antal intyg$/, function(ca
 });
 
 Given(/^jag går in på en patient som sparats från Rehabstöd$/, function() {
-    return gotoPatient({
-        id: global.rehabstod.user.ssn
-    }, this.user);
+    this.patient = {
+        id: global.rehabstod.user.ssn.replace('-', '')
+    };
+
+    return gotoPatient(this.patient, this.user);
 });
 
 Given(/^jag är inloggad som läkare i Rehabstöd$/, function() {
@@ -281,13 +289,10 @@ Given(/^jag är inloggad som läkare i Webcert med enhet "([^"]*)"$/, function(e
     return logInAsUserRole(userObj, 'Läkare', true);
 });
 
-Given(/^jag fyller i ett "([^"]*)" intyg som inte är smitta med ny sjukskrivningsperiod$/, function(intygsKod) {
-    if ('FK7263' === intygsKod) {
-        this.intyg = testdata.fk['7263'].getRandom(this.intyg.id, false);
-    }
-
+Given(/^jag fyller i ett "([^"]*)" intyg som inte är smitta med ny sjukskrivningsperiod$/, function(intygsTyp) {
+    this.intyg.typ = intygsTyp;
     global.rehabstod.user.intygId = this.intyg.id;
-    sattNySjukskrivningsPeriod(this.intyg);
+    //sattNySjukskrivningsPeriod(this.intyg);
     logger.info(this.intyg);
     return fillIn(this);
 });
@@ -308,7 +313,7 @@ Given(/^ska antalet intyg ökat med (\d+) på patient som sparats från Rehabst�
 Given(/^jag går in på intyget som tidigare skapats$/, function() {
     var url;
     if (global.rehabstod) {
-        url = process.env.WEBCERT_URL + '#/intyg/lisjp/' + global.rehabstod.user.intygId + '/';
+        url = process.env.WEBCERT_URL + '#/intyg/lisjp/' + this.intyg.id + '/';
     } else if (global.statistik) {
         url = process.env.WEBCERT_URL + '#/intyg/lisjp/' + global.statistik.intygsId + '/';
     }
