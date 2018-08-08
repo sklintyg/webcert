@@ -65,18 +65,14 @@ Given(/^ska intyget visa den nya addressen$/, function() {
 // });
 
 Given(/^ska intyget visa det (gamla|nya) person-id:numret$/, function(arg1) {
-    let id;
     let elm;
-
     if (arg1 === 'nya') {
-        id = this.patient.id;
         elm = lusePage.patientNamnOchPersonnummer;
     } else {
-        id = this.ursprungligPatient.id;
         elm = lusePage.FdPersonnummer;
     }
 
-    return expect(elm.getText()).to.eventually.contain(helpers.insertDashInPnr(id));
+    return expect(elm.getText()).to.eventually.contain(helpers.insertDashInPnr(this.patient.id));
 
 });
 
