@@ -57,8 +57,16 @@ public interface CopyUtkastService {
      * Create a new utkast from template.
      *
      * @param copyRequest
-     * @return {@link CreateRenewalCopyRequest}
+     * @return {@link CreateUtkastFromTemplateRequest}
      */
     CreateUtkastFromTemplateResponse createUtkastFromTemplate(CreateUtkastFromTemplateRequest copyRequest);
+
+    /**
+     * Create a new utkast from utkast.
+     *
+     * @param copyRequest
+     * @return {@link CreateUtkastFromTemplateRequest}
+     */
+    CreateUtkastFromTemplateResponse createUtkastCopy(CreateUtkastFromTemplateRequest copyRequest);
 
 }

@@ -18,13 +18,26 @@
  */
 package se.inera.intyg.webcert.web.web.controller.moduleapi;
 
+import javax.ws.rs.core.Response;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
+
 import se.inera.intyg.common.fk7263.model.internal.Fk7263Utlatande;
 import se.inera.intyg.common.support.model.CertificateState;
 import se.inera.intyg.common.support.model.Status;
@@ -56,21 +69,12 @@ import se.inera.intyg.webcert.web.service.utkast.dto.CreateReplacementCopyReques
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateReplacementCopyResponse;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateUtkastFromTemplateRequest;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateUtkastFromTemplateResponse;
+import se.inera.intyg.webcert.web.service.utkast.util.CopyUtkastServiceHelper;
 import se.inera.intyg.webcert.web.web.controller.api.dto.CopyIntygRequest;
 import se.inera.intyg.webcert.web.web.controller.api.dto.CopyIntygResponse;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
 import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.RevokeSignedIntygParameter;
 import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.SendSignedIntygParameter;
-
-import javax.ws.rs.core.Response;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static javax.ws.rs.core.Response.Status.OK;
 import static org.junit.Assert.assertEquals;
@@ -115,6 +119,8 @@ public class IntygModuleApiControllerTest {
     private AuthoritiesHelper authoritiesHelper;
     @Mock
     private ArendeService arendeService;
+    @Spy
+    private CopyUtkastServiceHelper copyUtkastServiceHelper = new CopyUtkastServiceHelper();
 
     @InjectMocks
     private IntygModuleApiController moduleApiController = new IntygModuleApiController();
@@ -135,6 +141,11 @@ public class IntygModuleApiControllerTest {
         List<Status> status = new ArrayList<>();
         status.add(new Status(CertificateState.RECEIVED, "HSVARD", LocalDateTime.now()));
         status.add(new Status(CertificateState.SENT, "FKASSA", LocalDateTime.now()));
+    }
+
+    @Before
+    public void setup() {
+        copyUtkastServiceHelper.setWebCertUserService(webcertUserService);
     }
 
     @Test

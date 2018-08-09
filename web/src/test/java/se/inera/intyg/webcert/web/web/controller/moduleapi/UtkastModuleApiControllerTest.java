@@ -18,6 +18,18 @@
  */
 package se.inera.intyg.webcert.web.web.controller.moduleapi;
 
+import javax.persistence.OptimisticLockException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+import javax.ws.rs.core.Response;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -25,9 +37,12 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
+
 import se.inera.intyg.common.fk7263.model.internal.Fk7263Utlatande;
 import se.inera.intyg.common.services.texts.IntygTextsService;
+import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.Patient;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
@@ -41,7 +56,6 @@ import se.inera.intyg.infra.security.common.model.Feature;
 import se.inera.intyg.infra.security.common.model.Privilege;
 import se.inera.intyg.infra.security.common.model.RequestOrigin;
 import se.inera.intyg.schemas.contract.Personnummer;
-import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
@@ -49,24 +63,17 @@ import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 import se.inera.intyg.webcert.web.service.relation.CertificateRelationService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
+import se.inera.intyg.webcert.web.service.utkast.CopyUtkastService;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
+import se.inera.intyg.webcert.web.service.utkast.dto.CreateUtkastFromTemplateRequest;
+import se.inera.intyg.webcert.web.service.utkast.dto.CreateUtkastFromTemplateResponse;
 import se.inera.intyg.webcert.web.service.utkast.dto.DraftValidation;
 import se.inera.intyg.webcert.web.service.utkast.dto.DraftValidationMessage;
 import se.inera.intyg.webcert.web.service.utkast.dto.SaveDraftResponse;
+import se.inera.intyg.webcert.web.service.utkast.util.CopyUtkastServiceHelper;
+import se.inera.intyg.webcert.web.web.controller.api.dto.CopyIntygResponse;
 import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
-
-import javax.persistence.OptimisticLockException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-import javax.ws.rs.core.Response;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static javax.ws.rs.core.Response.Status.OK;
 import static org.junit.Assert.assertEquals;
@@ -76,6 +83,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
@@ -123,11 +131,19 @@ public class UtkastModuleApiControllerTest {
     @Mock
     private ModuleApi moduleApi;
 
+    @Mock
+    private CopyUtkastService copyUtkastService;
+
+    @Spy
+    private CopyUtkastServiceHelper copyUtkastServiceHelper = new CopyUtkastServiceHelper();
+
     @InjectMocks
     private UtkastModuleApiController moduleApiController = new UtkastModuleApiController();
 
     @Before
     public void setup() throws ModuleNotFoundException, ModuleException, IOException {
+        copyUtkastServiceHelper.setWebCertUserService(webcertUserService);
+
         session = mock(HttpSession.class);
         request = mock(HttpServletRequest.class);
         Mockito.doNothing().when(session).removeAttribute("lastSavedDraft");
@@ -335,6 +351,30 @@ public class UtkastModuleApiControllerTest {
         assertEquals(ValidationStatus.VALID, entity.getStatus());
         assertEquals(0, entity.getMessages().size());
         assertEquals(1, entity.getWarnings().size());
+    }
+
+    @Test
+    public void testCopyUtkast() {
+        String intygId = "intygId";
+        String newIntygId = "newIntygId";
+        String intygTyp = "fk7263";
+
+        setupUser(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG, intygTyp, false, AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);
+
+        Utkast utkast = new Utkast();
+        utkast.setPatientPersonnummer(Personnummer.createPersonnummer("19121212-1212").get());
+        when(utkastService.getDraft(eq(intygId), eq(intygTyp))).thenReturn(utkast);
+
+        ArgumentCaptor<CreateUtkastFromTemplateRequest> captor = ArgumentCaptor.forClass(CreateUtkastFromTemplateRequest.class);
+        when(copyUtkastService.createUtkastCopy(captor.capture()))
+                .thenReturn(new CreateUtkastFromTemplateResponse(intygTyp, newIntygId, intygId));
+
+        Response response = moduleApiController.copyUtkast(intygTyp, intygId);
+
+        verify(copyUtkastService).createUtkastCopy(any());
+        verifyNoMoreInteractions(copyUtkastService);
+        assertEquals(newIntygId, ((CopyIntygResponse) response.getEntity()).getIntygsUtkastId());
+        assertEquals(intygTyp, ((CopyIntygResponse) response.getEntity()).getIntygsTyp());
     }
 
     private DraftValidation buildDraftValidation() {

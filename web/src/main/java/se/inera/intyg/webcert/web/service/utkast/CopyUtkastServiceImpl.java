@@ -18,14 +18,21 @@
  */
 package se.inera.intyg.webcert.web.service.utkast;
 
-import com.google.common.base.Strings;
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.Map;
+import java.util.Optional;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.google.common.base.Strings;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
+import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.Patient;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
@@ -35,7 +42,6 @@ import se.inera.intyg.infra.integration.pu.services.PUService;
 import se.inera.intyg.infra.security.authorities.validation.AuthoritiesValidator;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.schemas.contract.Personnummer;
-import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.webcert.common.model.WebcertCertificateRelation;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
@@ -64,11 +70,6 @@ import se.inera.intyg.webcert.web.service.utkast.dto.CreateReplacementCopyRespon
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateUtkastFromTemplateRequest;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateUtkastFromTemplateResponse;
 import se.inera.intyg.webcert.web.service.utkast.dto.PreviousIntyg;
-
-import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.Map;
-import java.util.Optional;
 
 @Service
 public class CopyUtkastServiceImpl implements CopyUtkastService {
@@ -102,6 +103,10 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
     @Autowired
     @Qualifier("createUtkastFromTemplateBuilder")
     private CopyUtkastBuilder<CreateUtkastFromTemplateRequest> createUtkastFromTemplateBuilder;
+
+    @Autowired
+    @Qualifier("createUtkastCopyBuilder")
+    private CopyUtkastBuilder<CreateUtkastFromTemplateRequest> createUtkastCopyBuilder;
 
     @Autowired
     private IntegreradeEnheterRegistry integreradeEnheterRegistry;
@@ -259,39 +264,7 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
                 throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, "Original certificate is revoked");
             }
 
-            String intygsTyp = copyRequest.getTyp();
-            if (authoritiesValidator.given(user, intygsTyp)
-                    .features(AuthoritiesConstants.FEATURE_UNIKT_INTYG, AuthoritiesConstants.FEATURE_UNIKT_INTYG_INOM_VG,
-                            AuthoritiesConstants.FEATURE_UNIKT_UTKAST_INOM_VG).isVerified()) {
-
-                Personnummer personnummer = copyRequest.containsNyttPatientPersonnummer() ? copyRequest.getNyttPatientPersonnummer()
-                        : copyRequest.getPatient().getPersonId();
-
-                Map<String, Map<String, PreviousIntyg>> intygstypToStringToPreviousIntyg = utkastService.checkIfPersonHasExistingIntyg(
-                        personnummer, user);
-
-                PreviousIntyg utkastExists = intygstypToStringToPreviousIntyg.get("utkast").get(intygsTyp);
-                PreviousIntyg intygExists = intygstypToStringToPreviousIntyg.get("intyg").get(intygsTyp);
-
-                if (utkastExists != null && utkastExists.isSameVardgivare()) {
-                    if (authoritiesValidator.given(user, intygsTyp).features(AuthoritiesConstants.FEATURE_UNIKT_UTKAST_INOM_VG)
-                            .isVerified()) {
-                        throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE,
-                                "Drafts of this type must be unique within this caregiver.");
-                    }
-                }
-
-                if (intygExists != null) {
-                    if (authoritiesValidator.given(user, intygsTyp).features(AuthoritiesConstants.FEATURE_UNIKT_INTYG).isVerified()) {
-                        throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE,
-                                "Certificates of this type must be globally unique.");
-                    } else if (intygExists.isSameVardgivare() && authoritiesValidator.given(user, intygsTyp)
-                            .features(AuthoritiesConstants.FEATURE_UNIKT_INTYG_INOM_VG).isVerified()) {
-                        throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE,
-                                "Certificates of this type must be unique within this caregiver.");
-                    }
-                }
-            }
+            verifyUniktIntyg(user, copyRequest);
 
             verifyNotReplacedWithSigned(copyRequest.getOriginalIntygId(), "create utkast from template");
 
@@ -309,6 +282,99 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
         } catch (ModuleException | ModuleNotFoundException me) {
             LOG.error("Module exception occured when trying to make a copy of " + originalIntygId);
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, me);
+        }
+    }
+
+    @Override
+    public CreateUtkastFromTemplateResponse createUtkastCopy(CreateUtkastFromTemplateRequest copyRequest) {
+        String originalIntygId = copyRequest.getOriginalIntygId();
+
+        LOG.debug("Creating utkast from utkast certificate '{}'", originalIntygId);
+
+        WebCertUser user = userService.getUser();
+        boolean coherentJournaling = user != null && user.getParameters() != null && user.getParameters().isSjf();
+
+        try {
+            if (intygService.isRevoked(copyRequest.getOriginalIntygId(), copyRequest.getOriginalIntygTyp(), coherentJournaling)) {
+                LOG.debug("Cannot create utkast from utkast certificate with id '{}', the certificate is revoked", originalIntygId);
+                throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, "Original certificate is revoked");
+            }
+
+            Utkast utkast = utkastService.getDraft(copyRequest.getOriginalIntygId(), copyRequest.getOriginalIntygTyp());
+
+            // Validate draft locked
+            if (!UtkastStatus.DRAFT_LOCKED.equals(utkast.getStatus())) {
+                LOG.info("User is not allowed to copy intyg with status: {}", utkast.getStatus());
+                final String message = "Copy failed due to wrong utkast status";
+                throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, message);
+            }
+
+            verifyNoDraftCopy(copyRequest.getOriginalIntygId(), "create utkast copy");
+
+            verifyUniktIntyg(user, copyRequest);
+
+            CopyUtkastBuilderResponse builderResponse = buildUtkastCopyBuilderResponse(copyRequest, originalIntygId, coherentJournaling);
+
+            Utkast savedUtkast = saveAndNotify(builderResponse, user);
+
+            if (copyRequest.isDjupintegrerad()) {
+                checkIntegreradEnhet(builderResponse);
+            }
+
+            return new CreateUtkastFromTemplateResponse(savedUtkast.getIntygsTyp(), savedUtkast.getIntygsId(), originalIntygId);
+
+        } catch (ModuleException | ModuleNotFoundException me) {
+            LOG.error("Module exception occured when trying to make a copy of " + originalIntygId);
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, me);
+        }
+    }
+
+    private void verifyUniktIntyg(WebCertUser user, CreateUtkastFromTemplateRequest copyRequest) {
+        String intygsTyp = copyRequest.getTyp();
+
+        if (authoritiesValidator.given(user, intygsTyp)
+                .features(AuthoritiesConstants.FEATURE_UNIKT_INTYG, AuthoritiesConstants.FEATURE_UNIKT_INTYG_INOM_VG,
+                        AuthoritiesConstants.FEATURE_UNIKT_UTKAST_INOM_VG).isVerified()) {
+
+            Personnummer personnummer = copyRequest.containsNyttPatientPersonnummer() ? copyRequest.getNyttPatientPersonnummer()
+                    : copyRequest.getPatient().getPersonId();
+
+            Map<String, Map<String, PreviousIntyg>> intygstypToStringToPreviousIntyg = utkastService.checkIfPersonHasExistingIntyg(
+                    personnummer, user);
+
+            PreviousIntyg utkastExists = intygstypToStringToPreviousIntyg.get("utkast").get(intygsTyp);
+            PreviousIntyg intygExists = intygstypToStringToPreviousIntyg.get("intyg").get(intygsTyp);
+
+            if (utkastExists != null && utkastExists.isSameVardgivare()) {
+                if (authoritiesValidator.given(user, intygsTyp).features(AuthoritiesConstants.FEATURE_UNIKT_UTKAST_INOM_VG)
+                        .isVerified()) {
+                    throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE,
+                            "Drafts of this type must be unique within this caregiver.");
+                }
+            }
+
+            if (intygExists != null) {
+                if (authoritiesValidator.given(user, intygsTyp).features(AuthoritiesConstants.FEATURE_UNIKT_INTYG).isVerified()) {
+                    throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE,
+                            "Certificates of this type must be globally unique.");
+                } else if (intygExists.isSameVardgivare() && authoritiesValidator.given(user, intygsTyp)
+                        .features(AuthoritiesConstants.FEATURE_UNIKT_INTYG_INOM_VG).isVerified()) {
+                    throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE,
+                            "Certificates of this type must be unique within this caregiver.");
+                }
+            }
+        }
+    }
+
+    private void verifyNoDraftCopy(String originalIntygId, String operation) {
+        final Optional<WebcertCertificateRelation> copiedByRelation = certificateRelationService.getNewestRelationOfType(originalIntygId,
+                RelationKod.COPY, Arrays.asList(UtkastStatus.DRAFT_COMPLETE, UtkastStatus.DRAFT_INCOMPLETE));
+        if (copiedByRelation.isPresent()) {
+            String errorString = String.format("Cannot %s for certificate id '%s', copy already exist with id '%s'",
+                    operation, originalIntygId, copiedByRelation.get().getIntygsId());
+            LOG.debug(errorString);
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE,
+                    errorString);
         }
     }
 
@@ -413,6 +479,22 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
         } else {
             builderResponse = createUtkastFromTemplateBuilder.populateCopyUtkastFromSignedIntyg(copyRequest, patientDetails, addRelation,
                     coherentJournaling, false);
+        }
+
+        return builderResponse;
+    }
+
+    private CopyUtkastBuilderResponse buildUtkastCopyBuilderResponse(CreateUtkastFromTemplateRequest copyRequest,
+             String originalIntygId, boolean coherentJournaling) throws ModuleNotFoundException, ModuleException {
+
+        Person patientDetails = updatePatientDetails(copyRequest);
+
+        CopyUtkastBuilderResponse builderResponse;
+        if (utkastRepository.exists(originalIntygId)) {
+            builderResponse = createUtkastCopyBuilder.populateCopyUtkastFromOrignalUtkast(copyRequest, patientDetails, true,
+                    coherentJournaling, false);
+        } else {
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND, "Certificates not found.");
         }
 
         return builderResponse;
