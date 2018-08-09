@@ -54,9 +54,7 @@ var TABLEROW_SUBST = '\$1, \$2, \$3, \$4';
 
 var getObjFromList;
 
-
-//TODO ändra från "user" till "patient" i funktioner för readablity
-function createUser(id) {
+function createPatient(id) {
     var date = new Date();
     var startDate = createDateString(date);
     var endDate = createDateString(date, 30);
@@ -67,19 +65,20 @@ function createObj(row) {
     logger.silly('row:');
     logger.silly(row);
     var elements = row.split(',');
-    var ssn = elements[0].trim();
-    logger.silly('ssn: ' + ssn);
+    var id = elements[0].trim();
+    logger.silly('id: ' + id);
     var startDate = elements[1].trim();
     logger.silly('startDate: ' + startDate);
     var endDate = elements[2].trim();
     logger.silly('endDate: ' + endDate);
     var noOfIntyg = extractDigit(elements[3]);
     logger.silly('noOfIntyg: ' + noOfIntyg);
-    var obj = {};
-    obj.ssn = ssn;
-    obj.startDate = startDate;
-    obj.endDate = endDate;
-    obj.noOfIntyg = noOfIntyg;
+    var obj = {
+		id : id,
+		startDate : startDate,
+		endDate : endDate,
+		noOfIntyg : noOfIntyg
+	};
     return obj;
 }
 
@@ -110,18 +109,6 @@ function gotoPatient(patient, user) { //förutsätter  att personen finns i PU-t
         });
 }
 
-/*function sattNySjukskrivningsPeriod(intyg) {
-    var newStartDate = createDateString(global.rehabstod.user.endDate, 3, true);
-    intyg.arbetsformaga.nedsattMed25.from = newStartDate;
-    intyg.arbetsformaga.nedsattMed25.tom = createDateString(newStartDate, 4, false);
-    intyg.arbetsformaga.nedsattMed50.from = createDateString(newStartDate, 5, false);
-    intyg.arbetsformaga.nedsattMed50.tom = createDateString(newStartDate, 12, false);
-    intyg.arbetsformaga.nedsattMed75.from = createDateString(newStartDate, 13, false);
-    intyg.arbetsformaga.nedsattMed75.tom = createDateString(newStartDate, 20, false);
-    intyg.arbetsformaga.nedsattMed100.from = createDateString(newStartDate, 21, false);
-    intyg.arbetsformaga.nedsattMed100.tom = createDateString(newStartDate, 28, false);
-}*/
-
 function createDateString(date, daysToAdd, subtraction) {
     var tmpDate = new Date(date);
     if (daysToAdd) {
@@ -132,37 +119,38 @@ function createDateString(date, daysToAdd, subtraction) {
     return newDateString;
 }
 
-function createUserArr(getObjFromList) {
-    var personArr = [];
+function createPatientArr(getObjFromList) {
+    var patientArr = [];
     return element.all(by.css('.rhs-table-row')).getText().then(function(tableRows) {
         tableRows.forEach(function(row) {
             if (getObjFromList) {
                 var savedObj = getObjFromList();
                 var newObj = createObj(row.replace(TABLEROW_REGEX, TABLEROW_SUBST));
-                if (savedObj.ssn === newObj.ssn) {
-                    personArr.push(newObj);
+                if (savedObj.id === newObj.id) {
+                    patientArr.push(newObj);
                 }
                 logger.silly(newObj);
             } else {
                 var obj = createObj(row.replace(TABLEROW_REGEX, TABLEROW_SUBST));
-                personArr.push(obj);
+                patientArr.push(obj);
                 logger.silly(obj);
             }
         });
     }).then(function() {
-        return Promise.resolve(personArr);
+        return Promise.resolve(patientArr);
     });
 }
 
-function objList(arr) {
+/*function objList(arr) {
     return function() {
-        return arr.find(findSsn);
+        function findid(obj) {
+            return obj.id === glob.rehabstod.patient.id;
+        }
+        return arr.find(findid);
     };
-}
+}*/
 
-function findSsn(obj) {
-    return obj.ssn === global.rehabstod.user.ssn;
-}
+
 
 /*
  *	Test steg
@@ -229,22 +217,31 @@ When(/^ska jag inte se patientens personnummer bland pågående sjukfall$/, func
 
 
 Given(/^jag söker efter slumpvald patient och sparar antal intyg$/, function(callback) {
-    createUserArr().then(function(personArr) {
-        getObjFromList = objList(personArr);
-        var usrObj = testdataHelpers.shuffle(personArr)[0];
-        global.rehabstod = {};
+    let world = this;
+    createPatientArr().then(function(patientArr) {
+        //getObjFromList = objList(patientArr);
+
+        getObjFromList = function() {
+            return patientArr.find(function(obj) {
+                return obj.id === world.rehabstod.patient.id;
+            });
+        };
+
+        //console.log(JSON.stringify(getObjFromList));
+        var usrObj = testdataHelpers.shuffle(patientArr)[0];
+        world.rehabstod = {};
         if (usrObj) {
-            global.rehabstod.user = usrObj;
+            world.rehabstod.patient = usrObj;
         } else {
-            global.rehabstod.user = createUser();
+            world.rehabstod.patient = createPatient();
         }
-        logger.info('Saved rehab user ( ssn: ' + global.rehabstod.user.ssn + ', noOfIntyg: ' + global.rehabstod.user.noOfIntyg + '). Saved for next steps.');
+        logger.info('Saved rehab patient ( id: ' + world.rehabstod.patient.id + ', noOfIntyg: ' + world.rehabstod.patient.noOfIntyg + '). Saved for next steps.');
     }).then(callback);
 });
 
 Given(/^jag går in på en patient som sparats från Rehabstöd$/, function() {
     this.patient = {
-        id: global.rehabstod.user.ssn.replace('-', '')
+        id: this.rehabstod.patient.id.replace('-', '')
     };
 
     return gotoPatient(this.patient, this.user);
@@ -291,28 +288,29 @@ Given(/^jag är inloggad som läkare i Webcert med enhet "([^"]*)"$/, function(e
 
 Given(/^jag fyller i ett "([^"]*)" intyg som inte är smitta med ny sjukskrivningsperiod$/, function(intygsTyp) {
     this.intyg.typ = intygsTyp;
-    global.rehabstod.user.intygId = this.intyg.id;
+    this.rehabstod.patient.intygId = this.intyg.id;
     //sattNySjukskrivningsPeriod(this.intyg);
     logger.info(this.intyg);
     return fillIn(this);
 });
 
 Given(/^ska antalet intyg ökat med (\d+) på patient som sparats från Rehabstöd$/, function(antal) {
-    return createUserArr(getObjFromList).then(function(personArr) {
-        logger.info('Rehabpatient: ( ssn: ' + global.rehabstod.user.ssn + ', Antal intyg: ' + personArr[0].noOfIntyg + ').');
+    let world = this;
+    return createPatientArr(getObjFromList).then(function(patientArr) {
+        logger.info('Rehabpatient: ( id: ' + world.rehabstod.patient.id + ', Antal intyg: ' + patientArr[0].noOfIntyg + ').');
 
-        logger.info('Förväntar oss att global.rehabstod.user.noOfIntyg + ' + antal + ' => ');
-        logger.info(global.rehabstod.user.noOfIntyg + parseInt(antal, 10));
-        logger.info('Ska vara lika mycket som personArr[0].noOfIntyg => ');
-        logger.info(personArr[0].noOfIntyg);
+        logger.info('Förväntar oss att world.rehabstod.patient.noOfIntyg + ' + antal + ' => ');
+        logger.info(world.rehabstod.patient.noOfIntyg + parseInt(antal, 10));
+        logger.info('Ska vara lika mycket som patientArr[0].noOfIntyg => ');
+        logger.info(patientArr[0].noOfIntyg);
 
-        return expect(global.rehabstod.user.noOfIntyg + parseInt(antal, 10)).to.equal(personArr[0].noOfIntyg);
+        return expect(world.rehabstod.patient.noOfIntyg + parseInt(antal, 10)).to.equal(patientArr[0].noOfIntyg);
     });
 });
 
 Given(/^jag går in på intyget som tidigare skapats$/, function() {
     var url;
-    if (global.rehabstod) {
+    if (this.rehabstod) {
         url = process.env.WEBCERT_URL + '#/intyg/lisjp/' + this.intyg.id + '/';
     } else if (global.statistik) {
         url = process.env.WEBCERT_URL + '#/intyg/lisjp/' + global.statistik.intygsId + '/';
