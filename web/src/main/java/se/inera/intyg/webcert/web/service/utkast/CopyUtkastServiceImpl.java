@@ -295,12 +295,12 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
         boolean coherentJournaling = user != null && user.getParameters() != null && user.getParameters().isSjf();
 
         try {
-            Utkast utkast = utkastService.getDraft(copyRequest.getOriginalIntygId(), copyRequest.getOriginalIntygTyp());
-
             if (intygService.isRevoked(copyRequest.getOriginalIntygId(), copyRequest.getOriginalIntygTyp(), coherentJournaling)) {
                 LOG.debug("Cannot create utkast from utkast certificate with id '{}', the certificate is revoked", originalIntygId);
                 throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, "Original certificate is revoked");
             }
+
+            Utkast utkast = utkastService.getDraft(copyRequest.getOriginalIntygId(), copyRequest.getOriginalIntygTyp());
 
             // Validate draft locked
             if (!UtkastStatus.DRAFT_LOCKED.equals(utkast.getStatus())) {
@@ -309,9 +309,9 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
                 throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, message);
             }
 
-            verifyUniktIntyg(user, copyRequest);
+            verifyNoDraftCopy(copyRequest.getOriginalIntygId(), "create utkast copy");
 
-            verifyNotCopied(copyRequest.getOriginalIntygId(), "create utkast copy");
+            verifyUniktIntyg(user, copyRequest);
 
             CopyUtkastBuilderResponse builderResponse = buildUtkastCopyBuilderResponse(copyRequest, originalIntygId, coherentJournaling);
 
@@ -366,9 +366,9 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
         }
     }
 
-    private void verifyNotCopied(String originalIntygId, String operation) {
+    private void verifyNoDraftCopy(String originalIntygId, String operation) {
         final Optional<WebcertCertificateRelation> copiedByRelation = certificateRelationService.getNewestRelationOfType(originalIntygId,
-                RelationKod.COPY, Arrays.asList(UtkastStatus.values()));
+                RelationKod.COPY, Arrays.asList(UtkastStatus.DRAFT_COMPLETE, UtkastStatus.DRAFT_INCOMPLETE));
         if (copiedByRelation.isPresent()) {
             String errorString = String.format("Cannot %s for certificate id '%s', copy already exist with id '%s'",
                     operation, originalIntygId, copiedByRelation.get().getIntygsId());

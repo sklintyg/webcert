@@ -31,6 +31,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.core.io.ClassPathResource;
 
 import se.inera.intyg.common.db.model.internal.DbUtlatande;
+import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.model.CertificateState;
 import se.inera.intyg.common.support.model.Status;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
@@ -48,6 +49,7 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
@@ -55,7 +57,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class CreateUtkastFromTemplateBuilderTest extends AbstractBuilderTest {
+public class CreateUtkastCopyBuilderTest extends AbstractBuilderTest {
 
     private static final String INTYG_TYPE_1 = "db";
     private static final String INTYG_TYPE_2 = "doi";
@@ -64,7 +66,7 @@ public class CreateUtkastFromTemplateBuilderTest extends AbstractBuilderTest {
     private ModuleApi mockModuleApi2;
 
     @InjectMocks
-    private CreateUtkastFromTemplateBuilder createUtkastFromTemplateBuilder = new CreateUtkastFromTemplateBuilder();
+    private CreateUtkastCopyBuilder createUtkastCopyBuilder = new CreateUtkastCopyBuilder();
 
     @Before
     public void expectCallToModuleRegistry() throws Exception {
@@ -89,7 +91,7 @@ public class CreateUtkastFromTemplateBuilderTest extends AbstractBuilderTest {
         ValidateDraftResponse vdr = new ValidateDraftResponse(ValidationStatus.VALID, new ArrayList<>());
         when(mockModuleApi2.validateDraft(anyString())).thenReturn(vdr);
 
-        CopyUtkastBuilderResponse builderResponse = createUtkastFromTemplateBuilder
+        CopyUtkastBuilderResponse builderResponse = createUtkastCopyBuilder
                 .populateCopyUtkastFromSignedIntyg(createUtkastFromTemplateRequest, patientDetails, false,
                         false, false);
 
@@ -108,10 +110,13 @@ public class CreateUtkastFromTemplateBuilderTest extends AbstractBuilderTest {
         assertNotNull(requestCaptor.getValue().getPatient().getFullstandigtNamn());
         assertEquals(PATIENT_FNAME + " " + PATIENT_MNAME + " " + PATIENT_LNAME,
                 requestCaptor.getValue().getPatient().getFullstandigtNamn());
+
+        assertNull(builderResponse.getUtkastCopy().getRelationKod());
+        assertNull(builderResponse.getUtkastCopy().getRelationIntygsId());
     }
 
     @Test
-    public void testPopulateRenewalUtkastFromOriginal() throws Exception {
+    public void testPopulateCopyUtkastFromOriginalUtkast() throws Exception {
 
         Utkast orgUtkast = createOriginalUtkast();
         when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(orgUtkast);
@@ -125,8 +130,8 @@ public class CreateUtkastFromTemplateBuilderTest extends AbstractBuilderTest {
         ValidateDraftResponse vdr = new ValidateDraftResponse(ValidationStatus.VALID, new ArrayList<>());
         when(mockModuleApi2.validateDraft(anyString())).thenReturn(vdr);
 
-        CopyUtkastBuilderResponse builderResponse = createUtkastFromTemplateBuilder
-                .populateCopyUtkastFromOrignalUtkast(createUtkastFromTemplateRequest, patientDetails, false,
+        CopyUtkastBuilderResponse builderResponse = createUtkastCopyBuilder
+                .populateCopyUtkastFromOrignalUtkast(createUtkastFromTemplateRequest, patientDetails, true,
                         false, false);
 
         assertNotNull(builderResponse.getUtkastCopy());
@@ -136,6 +141,9 @@ public class CreateUtkastFromTemplateBuilderTest extends AbstractBuilderTest {
         assertEquals(PATIENT_FNAME, builderResponse.getUtkastCopy().getPatientFornamn());
         assertNotNull(builderResponse.getUtkastCopy().getPatientMellannamn());
         assertEquals(PATIENT_LNAME, builderResponse.getUtkastCopy().getPatientEfternamn());
+
+        assertEquals(RelationKod.COPY, builderResponse.getUtkastCopy().getRelationKod());
+        assertEquals(INTYG_ID, builderResponse.getUtkastCopy().getRelationIntygsId());
     }
 
     private CreateUtkastFromTemplateRequest buildCreateUtkastFromTemplateRequest() {

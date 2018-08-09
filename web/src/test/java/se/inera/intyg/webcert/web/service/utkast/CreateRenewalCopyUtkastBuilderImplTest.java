@@ -18,49 +18,35 @@
  */
 package se.inera.intyg.webcert.web.service.utkast;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.core.io.ClassPathResource;
+
 import se.inera.intyg.common.fk7263.model.internal.Fk7263Utlatande;
 import se.inera.intyg.common.support.model.CertificateState;
 import se.inera.intyg.common.support.model.Status;
-import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
-import se.inera.intyg.common.support.model.common.internal.Patient;
-import se.inera.intyg.common.support.model.common.internal.Vardenhet;
-import se.inera.intyg.common.support.model.common.internal.Vardgivare;
-import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.common.support.modules.support.api.dto.CreateDraftCopyHolder;
 import se.inera.intyg.common.support.modules.support.api.dto.ValidateDraftResponse;
 import se.inera.intyg.common.support.modules.support.api.dto.ValidationStatus;
 import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
-import se.inera.intyg.infra.integration.hsa.model.AbstractVardenhet;
 import se.inera.intyg.infra.integration.pu.model.Person;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
-import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
-import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
-import se.inera.intyg.webcert.web.service.user.WebCertUserService;
-import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.utkast.dto.CopyUtkastBuilderResponse;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateRenewalCopyRequest;
-import se.inera.intyg.webcert.web.service.utkast.util.CreateIntygsIdStrategy;
 import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
-
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -72,87 +58,21 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class CreateRenewalCopyUtkastBuilderImplTest {
+public class CreateRenewalCopyUtkastBuilderImplTest extends AbstractBuilderTest {
 
-    private static final String INTYG_ID = "abc123";
-    private static final String INTYG_COPY_ID = "def456";
-    private static final String INTYG_JSON = "A bit of text representing json";
     private static final String INTYG_TYPE = "fk7263";
 
-    private static final String PATIENT_FNAME = "Adam";
-    private static final String PATIENT_MNAME = "Bertil";
-    private static final String PATIENT_LNAME = "Caesarsson";
-
-    private static final Personnummer PATIENT_SSN = createPnr("19121212-1212");
     private static final Personnummer PATIENT_NEW_SSN = createPnr("19121212-1414");
 
-    private static final String VARDENHET_ID = "SE00001234-5678";
-    private static final String VARDENHET_NAME = "Vårdenheten 1";
-
-    private static final String VARDGIVARE_ID = "SE00001234-1234";
-    private static final String VARDGIVARE_NAME = "Vårdgivaren 1";
-
-    private static final String HOSPERSON_ID = "SE12345678-0001";
-    private static final String HOSPERSON_NAME = "Dr Börje Dengroth";
-
-    @Mock
-    private IntygService mockIntygService;
-
-    @Mock
-    private UtkastRepository mockUtkastRepository;
-
-    @Mock
-    private IntygModuleRegistry moduleRegistry;
-
-    @Mock
-    private WebCertUserService webcertUserService;
-
-    @Spy
-    private CreateIntygsIdStrategy mockIdStrategy = new CreateIntygsIdStrategy() {
-        @Override
-        public String createId() {
-            return INTYG_COPY_ID;
-        }
-    };
-
     private ModuleApi mockModuleApi;
-
-    private HoSPersonal hoSPerson;
-
-    private Patient patient;
 
     @InjectMocks
     private CreateRenewalCopyUtkastBuilder renewalBuilder = new CreateRenewalCopyUtkastBuilder();
 
     @Before
-    public void setup() {
-        hoSPerson = new HoSPersonal();
-        hoSPerson.setPersonId(HOSPERSON_ID);
-        hoSPerson.setFullstandigtNamn(HOSPERSON_NAME);
-
-        Vardgivare vardgivare = new Vardgivare();
-        vardgivare.setVardgivarid(VARDGIVARE_ID);
-        vardgivare.setVardgivarnamn(VARDGIVARE_NAME);
-
-        Vardenhet vardenhet = new Vardenhet();
-        vardenhet.setEnhetsid(VARDENHET_ID);
-        vardenhet.setEnhetsnamn(VARDENHET_NAME);
-        vardenhet.setVardgivare(vardgivare);
-        hoSPerson.setVardenhet(vardenhet);
-
-        patient = new Patient();
-        patient.setPersonId(PATIENT_SSN);
-    }
-
-    @Before
     public void expectCallToModuleRegistry() throws Exception {
         this.mockModuleApi = mock(ModuleApi.class);
         when(moduleRegistry.getModuleApi(INTYG_TYPE)).thenReturn(mockModuleApi);
-    }
-
-    @Before
-    public void expectCallToWebcertUserService() {
-        when(webcertUserService.isAuthorizedForUnit(VARDGIVARE_ID, VARDENHET_ID, true)).thenReturn(true);
     }
 
     @Test
@@ -372,26 +292,4 @@ public class CreateRenewalCopyUtkastBuilderImplTest {
 
         return orgUtkast;
     }
-
-    private WebCertUser createWebcertUser() {
-        WebCertUser user = new WebCertUser();
-        user.setHsaId(HOSPERSON_ID);
-        user.setNamn(HOSPERSON_NAME);
-        se.inera.intyg.infra.integration.hsa.model.Vardgivare vGivare = new se.inera.intyg.infra.integration.hsa.model.Vardgivare();
-        vGivare.setId(VARDGIVARE_ID);
-        vGivare.setNamn(VARDENHET_NAME);
-        user.setVardgivare(Arrays.asList(vGivare));
-        AbstractVardenhet vardenhet = new se.inera.intyg.infra.integration.hsa.model.Vardenhet();
-        vardenhet.setId(VARDENHET_ID);
-        vardenhet.setNamn(VARDENHET_NAME);
-        user.setValdVardenhet(vardenhet);
-        user.setValdVardgivare(vGivare);
-        return user;
-    }
-
-    private static Personnummer createPnr(String personId) {
-        return Personnummer.createPersonnummer(personId)
-                .orElseThrow(() -> new IllegalArgumentException("Could not parse passed personnummer: " + personId));
-    }
-
 }

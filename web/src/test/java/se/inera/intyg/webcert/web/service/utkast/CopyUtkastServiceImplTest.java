@@ -18,20 +18,24 @@
  */
 package se.inera.intyg.webcert.web.service.utkast;
 
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.model.common.internal.Patient;
 import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.common.support.model.common.internal.Vardgivare;
-import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
-import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
 import se.inera.intyg.infra.integration.pu.model.Person;
 import se.inera.intyg.infra.integration.pu.model.PersonSvar;
 import se.inera.intyg.infra.integration.pu.services.PUService;
@@ -59,12 +63,9 @@ import se.inera.intyg.webcert.web.service.utkast.dto.CreateRenewalCopyRequest;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateRenewalCopyResponse;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateReplacementCopyRequest;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateReplacementCopyResponse;
+import se.inera.intyg.webcert.web.service.utkast.dto.CreateUtkastFromTemplateRequest;
+import se.inera.intyg.webcert.web.service.utkast.dto.CreateUtkastFromTemplateResponse;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
-
-import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -86,6 +87,9 @@ public class CopyUtkastServiceImplTest {
     private static final String INTYG_COPY_ID = "def456";
     private static final String INTYG_JSON = "A bit of text representing json";
     private static final String INTYG_TYPE = "fk7263";
+
+    private static final String INTYG_TYPE_1 = "db";
+    private static final String INTYG_TYPE_2 = "doi";
 
     private static final Personnummer PATIENT_SSN = createPnr("19121212-1212");
     private static final Personnummer PATIENT_NEW_SSN = createPnr("19121212-1414");
@@ -127,6 +131,12 @@ public class CopyUtkastServiceImplTest {
     @Mock(name = "createReplacementUtkastBuilder")
     private CopyUtkastBuilder<CreateReplacementCopyRequest> createReplacementUtkastBuilder;
 
+    @Mock(name = "createUtkastCopyBuilder")
+    private CopyUtkastBuilder<CreateUtkastFromTemplateRequest> createUtkastCopyBuilder;
+
+    @Mock(name = "createUtkastFromTemplateBuilder")
+    private CopyUtkastBuilder<CreateUtkastFromTemplateRequest> createUtkastFromTemplateBuilder;
+
     @Mock
     private NotificationService mockNotificationService;
 
@@ -144,6 +154,9 @@ public class CopyUtkastServiceImplTest {
 
     @Mock
     private ReferensService referensService;
+
+    @Mock
+    private UtkastService utkastService;
 
     @InjectMocks
     private CopyUtkastService copyService = new CopyUtkastServiceImpl();
@@ -519,8 +532,104 @@ public class CopyUtkastServiceImplTest {
 
     }
 
+    @Test
+    public void testCreateUtkastFromTemplate() throws Exception {
+
+        final String reference = "ref";
+        WebCertUser user = new WebCertUser();
+        user.setParameters(new IntegrationParameters(reference, "", "", "", "", "", "", "", "", false, false, false, true));
+        when(userService.getUser()).thenReturn(user);
+
+        when(mockUtkastRepository.exists(INTYG_ID)).thenReturn(Boolean.TRUE);
+
+        CopyUtkastBuilderResponse resp = createCopyUtkastBuilderResponse();
+        when(createUtkastFromTemplateBuilder.populateCopyUtkastFromOrignalUtkast(any(CreateUtkastFromTemplateRequest.class), any(Person.class),
+                any(boolean.class), any(boolean.class), eq(false))).thenReturn(resp);
+
+        CreateUtkastFromTemplateRequest copyReq = buildUtkastFromTemplateRequest();
+
+        CreateUtkastFromTemplateResponse utkastCopyResponse = copyService.createUtkastFromTemplate(copyReq);
+
+        assertNotNull(utkastCopyResponse);
+        assertEquals(INTYG_COPY_ID, utkastCopyResponse.getNewDraftIntygId());
+        assertEquals(INTYG_TYPE, utkastCopyResponse.getNewDraftIntygType());
+        assertEquals(INTYG_ID, utkastCopyResponse.getOriginalIntygId());
+
+        verify(mockPUService).getPerson(PATIENT_SSN);
+        verify(createUtkastFromTemplateBuilder).populateCopyUtkastFromOrignalUtkast(any(CreateUtkastFromTemplateRequest.class), any(Person.class),
+                any(boolean.class), eq(false), eq(false));
+        verify(mockUtkastRepository).save(any(Utkast.class));
+        verify(referensService).saveReferens(eq(INTYG_COPY_ID), eq(reference));
+        verify(mockNotificationService).sendNotificationForDraftCreated(any(Utkast.class));
+        verify(intygService).isRevoked(INTYG_ID, INTYG_TYPE_2, false);
+    }
+
+    @Test
+    public void testCreateUtkastCopy() throws Exception {
+
+        final String reference = "ref";
+        WebCertUser user = new WebCertUser();
+        user.setParameters(new IntegrationParameters(reference, "", "", "", "", "", "", "", "", false, false, false, true));
+        when(userService.getUser()).thenReturn(user);
+
+        when(mockUtkastRepository.exists(INTYG_ID)).thenReturn(Boolean.TRUE);
+
+        CopyUtkastBuilderResponse resp = createCopyUtkastBuilderResponse();
+        when(createUtkastCopyBuilder.populateCopyUtkastFromOrignalUtkast(any(CreateUtkastFromTemplateRequest.class), any(Person.class),
+                any(boolean.class), any(boolean.class), eq(false))).thenReturn(resp);
+
+        Utkast utkast = new Utkast();
+        utkast.setStatus(UtkastStatus.DRAFT_LOCKED);
+
+        when(utkastService.getDraft(INTYG_ID, INTYG_TYPE)).thenReturn(utkast);
+
+        CreateUtkastFromTemplateRequest copyReq = buildUtkastCopyRequest();
+
+        CreateUtkastFromTemplateResponse utkastCopyResponse = copyService.createUtkastCopy(copyReq);
+
+        assertNotNull(utkastCopyResponse);
+        assertEquals(INTYG_COPY_ID, utkastCopyResponse.getNewDraftIntygId());
+        assertEquals(INTYG_TYPE, utkastCopyResponse.getNewDraftIntygType());
+        assertEquals(INTYG_ID, utkastCopyResponse.getOriginalIntygId());
+
+        verify(mockPUService).getPerson(PATIENT_SSN);
+        verify(createUtkastCopyBuilder).populateCopyUtkastFromOrignalUtkast(any(CreateUtkastFromTemplateRequest.class), any(Person.class),
+                any(boolean.class), eq(false), eq(false));
+        verify(mockUtkastRepository).save(any(Utkast.class));
+        verify(referensService).saveReferens(eq(INTYG_COPY_ID), eq(reference));
+        verify(mockNotificationService).sendNotificationForDraftCreated(any(Utkast.class));
+        verify(intygService).isRevoked(INTYG_ID, INTYG_TYPE, false);
+    }
+
     @Test(expected = WebCertServiceException.class)
-    public void testRenewThrowsExceptionWhenOriginalCertificateIsRevoked() throws ModuleException, ModuleNotFoundException {
+    public void testCreateUtkastCopyWhenStatusNotLocked() {
+        Utkast utkast = new Utkast();
+        utkast.setStatus(UtkastStatus.DRAFT_COMPLETE);
+
+        when(utkastService.getDraft(INTYG_ID, INTYG_TYPE)).thenReturn(utkast);
+
+        CreateUtkastFromTemplateRequest copyReq = buildUtkastCopyRequest();
+
+        copyService.createUtkastCopy(copyReq);
+    }
+
+    @Test(expected = WebCertServiceException.class)
+    public void testCreateUtkastCopyWhenCopyAlreadyExists() {
+        Utkast utkast = new Utkast();
+        utkast.setStatus(UtkastStatus.DRAFT_LOCKED);
+
+        when(utkastService.getDraft(INTYG_ID, INTYG_TYPE)).thenReturn(utkast);
+
+        WebcertCertificateRelation webcertRelation = new WebcertCertificateRelation(INTYG_COPY_ID, RelationKod.COPY, LocalDateTime.now(), UtkastStatus.DRAFT_INCOMPLETE);
+        when(certificateRelationService.getNewestRelationOfType(eq(INTYG_ID), eq(RelationKod.COPY), any())).thenReturn(Optional.of(webcertRelation));
+
+        CreateUtkastFromTemplateRequest copyReq = buildUtkastCopyRequest();
+
+        copyService.createUtkastCopy(copyReq);
+    }
+
+    @Test(expected = WebCertServiceException.class)
+    public void testRenewThrowsExceptionWhenOriginalCertificateIsRevoked() {
         when(intygService.isRevoked(anyString(), anyString(), anyBoolean())).thenReturn(true);
 
         CreateRenewalCopyRequest copyReq = buildRenewalRequest();
@@ -528,7 +637,7 @@ public class CopyUtkastServiceImplTest {
     }
 
     @Test(expected = WebCertServiceException.class)
-    public void testCompletionThrowsExceptionWhenOriginalCertificateIsRevoked() throws ModuleException, ModuleNotFoundException {
+    public void testCompletionThrowsExceptionWhenOriginalCertificateIsRevoked() {
         when(intygService.isRevoked(anyString(), anyString(), anyBoolean())).thenReturn(true);
 
         CreateCompletionCopyRequest completionRequest = buildCompletionRequest();
@@ -536,11 +645,27 @@ public class CopyUtkastServiceImplTest {
     }
 
     @Test(expected = WebCertServiceException.class)
-    public void testRenewalThrowsExceptionWhenOriginalCertificateIsRevoked() throws ModuleException, ModuleNotFoundException {
+    public void testRenewalThrowsExceptionWhenOriginalCertificateIsRevoked() {
         when(intygService.isRevoked(anyString(), anyString(), anyBoolean())).thenReturn(true);
 
         CreateRenewalCopyRequest renewalRequest = buildRenewalRequest();
         copyService.createRenewalCopy(renewalRequest);
+    }
+
+    @Test(expected = WebCertServiceException.class)
+    public void testUtkastFromTemplateThrowsExceptionWhenOriginalCertificateIsRevoked() {
+        when(intygService.isRevoked(anyString(), anyString(), anyBoolean())).thenReturn(true);
+
+        CreateUtkastFromTemplateRequest renewalRequest = buildUtkastFromTemplateRequest();
+        copyService.createUtkastFromTemplate(renewalRequest);
+    }
+
+    @Test(expected = WebCertServiceException.class)
+    public void testUtkastCopyThrowsExceptionWhenOriginalCertificateIsRevoked() {
+        when(intygService.isRevoked(anyString(), anyString(), anyBoolean())).thenReturn(true);
+
+        CreateUtkastFromTemplateRequest renewalRequest = buildUtkastCopyRequest();
+        copyService.createUtkastCopy(renewalRequest);
     }
 
     private CopyUtkastBuilderResponse createCopyUtkastBuilderResponse() {
@@ -585,7 +710,14 @@ public class CopyUtkastServiceImplTest {
 
     private CreateReplacementCopyRequest buildReplacementCopyRequest() {
         return new CreateReplacementCopyRequest(INTYG_ID, INTYG_TYPE, patient, hoSPerson, false);
+    }
 
+    private CreateUtkastFromTemplateRequest buildUtkastFromTemplateRequest() {
+        return new CreateUtkastFromTemplateRequest(INTYG_ID, INTYG_TYPE_1, patient, hoSPerson, INTYG_TYPE_2);
+    }
+
+    private CreateUtkastFromTemplateRequest buildUtkastCopyRequest() {
+        return new CreateUtkastFromTemplateRequest(INTYG_ID, INTYG_TYPE, patient, hoSPerson, INTYG_TYPE);
     }
 
     private static Personnummer createPnr(String personId) {

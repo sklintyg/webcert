@@ -324,8 +324,6 @@ public class UtkastModuleApiController extends AbstractApiController {
         LOG.debug("Attempting to create a new certificate from certificate with type {} and id '{}'",
                 intygsTyp, orgIntygsId);
 
-        Utkast utkast = utkastService.getDraft(orgIntygsId, intygsTyp);
-
         WebCertUser user = getWebCertUserService().getUser();
 
         boolean copyOkParam = user.getParameters() == null || user.getParameters().isCopyOk();
@@ -334,6 +332,9 @@ public class UtkastModuleApiController extends AbstractApiController {
             final String message = "Authorization failed due to false kopieraOK-parameter";
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM, message);
         }
+
+        Utkast utkast = utkastService.getDraft(orgIntygsId, intygsTyp);
+
         CopyIntygRequest request = new CopyIntygRequest();
         request.setPatientPersonnummer(utkast.getPatientPersonnummer());
 

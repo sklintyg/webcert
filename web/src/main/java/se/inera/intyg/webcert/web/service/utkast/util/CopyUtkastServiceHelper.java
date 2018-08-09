@@ -59,19 +59,8 @@ public class CopyUtkastServiceHelper {
 
     public CreateUtkastFromTemplateRequest createUtkastFromUtkast(String orgIntygsId, String intygsTyp,
                                                                   CopyIntygRequest request) {
-        HoSPersonal hosPerson = createHoSPersonFromUser();
-        Patient patient = createPatientFromCopyIntygRequest(request);
 
-        CreateUtkastFromTemplateRequest req = new CreateUtkastFromTemplateRequest(orgIntygsId, intygsTyp, patient,
-                hosPerson, intygsTyp);
-
-        // Add new personnummer to request
-        addPersonnummerToRequest(req, webCertUserService.getUser().getParameters());
-
-        // Set djupintegrerad flag on request to true if origin is DJUPINTEGRATION
-        setDeepIntegrationFlagOnRequest(req);
-
-        return req;
+        return createUtkastFromDifferentIntygTypeRequest(orgIntygsId, intygsTyp, intygsTyp, request);
     }
 
     public CreateUtkastFromTemplateRequest createUtkastFromDifferentIntygTypeRequest(String orgIntygsId, String newIntygsTyp,
@@ -83,11 +72,7 @@ public class CopyUtkastServiceHelper {
         CreateUtkastFromTemplateRequest req = new CreateUtkastFromTemplateRequest(orgIntygsId, newIntygsTyp, patient,
                 hosPerson, orgIntygsTyp);
 
-        // Add new personnummer to request
-        addPersonnummerToRequest(req, webCertUserService.getUser().getParameters());
-
-        // Set djupintegrerad flag on request to true if origin is DJUPINTEGRATION
-        setDeepIntegrationFlagOnRequest(req);
+        addValuesOnRequest(req, webCertUserService.getUser().getParameters());
 
         return req;
     }
@@ -102,11 +87,7 @@ public class CopyUtkastServiceHelper {
 
         CreateReplacementCopyRequest req = new CreateReplacementCopyRequest(orgIntygsId, intygsTyp, patient, hosPerson, coherentJournaling);
 
-        // Add new personnummer to request
-        addPersonnummerToRequest(req, parameters);
-
-        // Set djupintegrerad flag on request to true if origin is DJUPINTEGRATION
-        setDeepIntegrationFlagOnRequest(req);
+        addValuesOnRequest(req, parameters);
 
         return req;
     }
@@ -117,11 +98,7 @@ public class CopyUtkastServiceHelper {
 
         CreateRenewalCopyRequest req = new CreateRenewalCopyRequest(orgIntygsId, intygsTyp, patient, hosPerson);
 
-        // Add new personnummer to request
-        addPersonnummerToRequest(req, webCertUserService.getUser().getParameters());
-
-        // Set djupintegrerad flag on request to true if origin is DJUPINTEGRATION
-        setDeepIntegrationFlagOnRequest(req);
+        addValuesOnRequest(req, webCertUserService.getUser().getParameters());
 
         return req;
     }
@@ -134,11 +111,7 @@ public class CopyUtkastServiceHelper {
         CreateCompletionCopyRequest req = new CreateCompletionCopyRequest(orgIntygsId, intygsTyp, meddelandeId,
                 patient, hosPerson, copyRequest.getKommentar());
 
-        // Add new personnummer to request
-        addPersonnummerToRequest(req, webCertUserService.getUser().getParameters());
-
-        // Set djupintegrerad flag on request to true if origin is DJUPINTEGRATION
-        setDeepIntegrationFlagOnRequest(req);
+        addValuesOnRequest(req, webCertUserService.getUser().getParameters());
 
         return req;
     }
@@ -171,6 +144,14 @@ public class CopyUtkastServiceHelper {
         }
         return patient;
 
+    }
+
+    private void addValuesOnRequest(AbstractCreateCopyRequest req, IntegrationParameters parameters) {
+        // Add new personnummer to request
+        addPersonnummerToRequest(req, parameters);
+
+        // Set djupintegrerad flag on request to true if origin is DJUPINTEGRATION
+        setDeepIntegrationFlagOnRequest(req);
     }
 
     private void setDeepIntegrationFlagOnRequest(AbstractCreateCopyRequest req) {
