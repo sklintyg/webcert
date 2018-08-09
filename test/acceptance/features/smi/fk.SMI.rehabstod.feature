@@ -1,5 +1,5 @@
 # language: sv
-@REHABSTÖD @SMI @INTEGRATION @WIP
+@REHABSTÖD @SMI @INTEGRATION
 Egenskap: Integration mellan webcert och rehabstöd för SMI intyg
 
 Bakgrund: Jag befinner mig på Rehabstöds förstasida

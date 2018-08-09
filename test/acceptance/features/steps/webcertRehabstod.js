@@ -74,11 +74,11 @@ function createObj(row) {
     var noOfIntyg = extractDigit(elements[3]);
     logger.silly('noOfIntyg: ' + noOfIntyg);
     var obj = {
-		id : id,
-		startDate : startDate,
-		endDate : endDate,
-		noOfIntyg : noOfIntyg
-	};
+        id: id,
+        startDate: startDate,
+        endDate: endDate,
+        noOfIntyg: noOfIntyg
+    };
     return obj;
 }
 

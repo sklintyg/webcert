@@ -8,7 +8,7 @@ Scenario: Varning om patient är avliden
     När jag går in på en patient som är avliden
     Så ska jag varnas om att "Patienten är avliden"
 
-@GE-003 @INTEGRATION
+@GE-003 @PS-01
 Scenario: Dödsbevis utkast ska kunna skapas på avliden patient
     Givet jag har raderat alla intyg och utkast för "första" "avliden" testpatienten
 	Och att jag är inloggad som djupintegrerad läkare
@@ -21,7 +21,7 @@ Scenario: Dödsbevis utkast ska kunna skapas på avliden patient
 	Och jag fyller i alla nödvändiga fält för intyget
     Och jag signerar intyget
 
-@GE-003 @INTEGRATION
+@GE-003 @PS-01
 Scenario: Dödsorsaksintyg utkast ska kunna skapas på avliden patient
     Givet jag har raderat alla intyg och utkast för "första" "avliden" testpatienten
 	Och att jag är inloggad som djupintegrerad läkare
@@ -34,7 +34,7 @@ Scenario: Dödsorsaksintyg utkast ska kunna skapas på avliden patient
 	Och jag fyller i alla nödvändiga fält för intyget
     Och jag signerar intyget
 
-@FRÅGA-FRÅN-VÅRDEN @INTEGRATION
+@FRÅGA-FRÅN-VÅRDEN
 Scenario: Avliden Patient - Vården kan ställa frågor på ett intyg
     Givet att jag är inloggad som djupintegrerad läkare
 	Och att vårdsystemet skapat ett intygsutkast för slumpat SMI-intyg
@@ -49,7 +49,7 @@ Scenario: Avliden Patient - Vården kan ställa frågor på ett intyg
 	Så ska intygets första status vara "Intyget är skickat till Försäkringskassan"
     Och ska intygets andra status vara "Intyget är tillgängligt för patienten"
 	 
-@FRÅGA-FRÅN-FK @SMI @INTEGRATION
+@FRÅGA-FRÅN-FK @SMI
 Scenario: Avliden Patient - Försäkringskassan kan ställa frågor på ett intyg 
     Givet att jag är inloggad som djupintegrerad läkare på vårdenhet "TSTNMT2321000156-INT2"
     Och att vårdsystemet skapat ett intygsutkast för slumpat SMI-intyg
@@ -62,7 +62,7 @@ Scenario: Avliden Patient - Försäkringskassan kan ställa frågor på ett inty
     Och jag svarar på frågan
     Så ska det synas vem som svarat
 
-@SVARA-PA-KOMPLETTERING @INTEGRATION @SMI
+@SVARA-PA-KOMPLETTERING @SMI
 Scenario: Avliden Patient - Vården kan svara på komplettering med ett nytt intyg
     Givet att jag är inloggad som djupintegrerad läkare på vårdenhet "TSTNMT2321000156-INT2"
     Och att vårdsystemet skapat ett intygsutkast för slumpat SMI-intyg
