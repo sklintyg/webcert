@@ -111,6 +111,26 @@ function getOperation() {
     return shuffle([ja, 'Nej', 'Uppgift om operation saknas'])[0];
 }
 
+function getDodsOrsakUppgifter() {
+    let obj = {
+        foreDoden: shuffle(["Undersökning före döden", false, false, false, false, false, false, false, false, false])[0],
+        efterDoden: shuffle(["Yttre undersökning efter döden", false, false, false, false, false, false, false, false, false])[0],
+        kliniskObduktion: shuffle(["Klinisk obduktion", false, false, false, false, false, false, false, false, false])[0],
+        rattsmedicinskObduktion: shuffle(["Rättsmedicinsk obduktion", false, false, false, false, false, false, false, false, false])[0],
+        rattsmedicinskBesiktning: shuffle(["Rättsmedicinsk likbesiktning", false, false, false, false, false, false, false, false, false])[0]
+    };
+
+    let objHasSomeValue = false;
+
+    for (var key in obj) {
+        if (obj.hasOwnProperty(key) && obj[key] !== false) {
+            objHasSomeValue = true;
+        }
+    }
+
+    return (objHasSomeValue === true) ? obj : getDodsOrsakUppgifter();
+}
+
 
 module.exports = {
     get: function(intygsID) {
@@ -143,13 +163,7 @@ module.exports = {
             dodsorsak: getDodsOrsak(),
             operation: getOperation(),
             skadaForgiftning: getSkadaForgiftning(),
-            dodsorsaksuppgifter: {
-                foreDoden: shuffle(["Undersökning före döden", false])[0],
-                efterDoden: shuffle(["Yttre undersökning efter döden", false])[0],
-                kliniskObduktion: shuffle(["Klinisk obduktion", false])[0],
-                rattsmedicinskObduktion: shuffle(["Rättsmedicinsk obduktion", false])[0],
-                rattsmedicinskBesiktning: shuffle(["Rättsmedicinsk likbesiktning", false])[0]
-            }
+            dodsorsaksuppgifter: getDodsOrsakUppgifter()
         };
         if (datumSakert === false) {
             obj.barn = (customFields && customFields.barn) ? customFields.barn : testdataHelper.randomTrueFalse();
