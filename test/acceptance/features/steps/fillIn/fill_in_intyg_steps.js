@@ -137,7 +137,7 @@ let changeActions = {
             return moveAndSendKeys(lisjpUtkastPage.konsekvenser.funktionsnedsattning, intyg.funktionsnedsattning);
         },
         'sysselsattning': function(intyg) {
-            if (intyg.sysselsattning.typ === 'ARBETSSOKANDE') {
+            if (intyg.sysselsattning && intyg.sysselsattning.typ === 'ARBETSSOKANDE') {
                 intyg.sysselsattning = {
                     typ: 'FORALDRALEDIG'
                 };
