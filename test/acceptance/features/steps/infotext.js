@@ -48,7 +48,7 @@ const {
  *
  */
 
-Given(/^ska ett info\-meddelande visa "([^"]*)"$/, function(text) {
+Then(/^ska ett info\-meddelande visa "([^"]*)"$/, function(text) {
     var alerts = element.all(by.css('.alert-info')).map(function(elm, index) {
         return elm.getText();
     });
@@ -62,7 +62,7 @@ Given(/^ska ett info\-meddelande visa "([^"]*)"$/, function(text) {
 
 });
 
-Given(/^ska ett varning\-meddelande visa "([^"]*)"$/, function(text) {
+Then(/^ska ett varning\-meddelande visa "([^"]*)"$/, function(text) {
     var alerts = element.all(by.css('.alert-warning')).map(function(elm, index) {
         return elm.getText();
     });
@@ -76,7 +76,7 @@ Given(/^ska ett varning\-meddelande visa "([^"]*)"$/, function(text) {
 
 });
 
-Given(/^ska ett fel\-meddelande visa "([^"]*)"$/, function(text) {
+Then(/^ska ett fel\-meddelande visa "([^"]*)"$/, function(text) {
     var alerts = element.all(by.css('.alert-danger')).map(function(elm, index) {
         return elm.getText();
     });
@@ -88,7 +88,7 @@ Given(/^ska ett fel\-meddelande visa "([^"]*)"$/, function(text) {
     });
 });
 
-Given(/^ska jag få en dialog med texten "([^"]*)"$/, function(text) {
+Then(/^ska jag få en dialog med texten "([^"]*)"$/, function(text) {
     var alerts = element.all(by.css('.modal-content')).map(function(elm, index) {
         return elm.getText();
     });
@@ -103,7 +103,7 @@ Given(/^ska jag få en dialog med texten "([^"]*)"$/, function(text) {
 
 
 
-Given(/^ska jag (se|inte se) en rubrik med texten "([^"]*)"$/, function(synlighet, text) {
+Then(/^ska jag (se|inte se) en rubrik med texten "([^"]*)"$/, function(synlighet, text) {
 
     var headers = element.all(by.css('h3, h1')).map(function(elm, index) {
         return elm.getText();
@@ -124,7 +124,7 @@ Given(/^ska jag (se|inte se) en rubrik med texten "([^"]*)"$/, function(synlighe
 });
 
 
-Given(/^ska jag (se|inte se) en lista med vad som saknas$/, function(synlighet) {
+Then(/^ska jag (se|inte se) en lista med vad som saknas$/, function(synlighet) {
     if (synlighet === 'se') {
         return expect(element(by.id('visa-vad-som-saknas-lista')).isDisplayed()).to.eventually.equal(true);
     } else {
@@ -134,7 +134,7 @@ Given(/^ska jag (se|inte se) en lista med vad som saknas$/, function(synlighet) 
 
 });
 
-Given(/^ska jag se en lista med endast det saknade "([^"]*)"$/, function(saknat) {
+Then(/^ska jag se en lista med endast det saknade "([^"]*)"$/, function(saknat) {
     var str = 'Utkastet saknar uppgifter i följande avsnitt\n' + saknat;
     var promiseArray = []; // Write code here that turns the phrase above into concrete actions  
     promiseArray.push(expect(element(by.id('visa-vad-som-saknas-lista')).isDisplayed()).to.eventually.equal(true));
@@ -142,10 +142,10 @@ Given(/^ska jag se en lista med endast det saknade "([^"]*)"$/, function(saknat)
     return Promise.all(promiseArray);
 
 });
-Given(/^ska utkastets statusheader meddela "([^"]*)"$/, function(meddelande) {
+Then(/^ska utkastets statusheader meddela "([^"]*)"$/, function(meddelande) {
     return expect(element(by.id('intyget-sparat-och-ej-komplett-meddelande')).getText()).to.eventually.contain(meddelande);
 });
-Given(/^ska inget valideringsfel visas$/, function() {
+Then(/^ska inget valideringsfel visas$/, function() {
     return expect(element(by.css('.alert-danger')).isDisplayed()).to.eventually.equal(false);
 
 });

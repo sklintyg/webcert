@@ -46,7 +46,7 @@ var helpers = require('./helpers');
  *
  */
 
-Given(/^jag skickar intyget till Transportstyrelsen/, function() {
+When(/^jag skickar intyget till Transportstyrelsen/, function() {
 
     if (!this.intyg.id) {
         //Fånga intygets id
@@ -63,7 +63,7 @@ Given(/^jag skickar intyget till Transportstyrelsen/, function() {
     });
 });
 
-Given(/^jag skickar intyget till Försäkringskassan$/, function() {
+When(/^jag skickar intyget till Försäkringskassan$/, function() {
 
 
     if (!this.intyg.id) {

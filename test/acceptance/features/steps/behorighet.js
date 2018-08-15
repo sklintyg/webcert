@@ -70,7 +70,7 @@ Given(/^går in på Ej signerade utkast$/, function() {
     });
 });*/
 
-Given(/^ska det( inte)? finnas en knapp för att förnya intyget$/, function(inte) {
+Then(/^ska det( inte)? finnas en knapp för att förnya intyget$/, function(inte) {
     var skaFinnas = typeof(inte) === 'undefined';
     logger.debug('skaFinnas:' + skaFinnas);
 
@@ -82,11 +82,11 @@ Given(/^ska det( inte)? finnas en knapp för att förnya intyget$/, function(int
 });
 
 
-Given(/^ska det finnas en knapp för att skriva ut utkastet$/, function() {
+Then(/^ska det finnas en knapp för att skriva ut utkastet$/, function() {
     return expect(fkUtkastPage.skrivUtBtn.isPresent()).to.become(true);
 });
 
-Given(/^ska det finnas en knapp för att skriva ut intyget$/, function() {
+Then(/^ska det finnas en knapp för att skriva ut intyget$/, function() {
     if (this.intyg.typ.indexOf('Transportstyrelsen') >= 0) {
         return expect(tsIntygPage.printBtn.isPresent()).to.become(true);
     } else {
@@ -117,7 +117,7 @@ Given(/^väljer att visa sökfilter/, function() {
     return unsignedPage.showSearchFilters();
 });
 
-Given(/^ska sökfiltret Sparat av inte vara tillgängligt/, function(callback) {
+Then(/^ska sökfiltret Sparat av inte vara tillgängligt/, function(callback) {
     expect(unsignedPage.filterSavedBy.form.isPresent()).to.eventually.be.not.ok.then(function(value) {
         logger.info('Filter \"Sparat av\" inte tillgängligt för uthoppsläkare ' + value);
     }, function(reason) {
@@ -165,7 +165,7 @@ Given(/^att det finns intygsutkast$/, function() {
 
 });
 
-Given(/^ska Förnya\-knappen inte visas för något utkast$/, function() {
+Then(/^ska Förnya\-knappen inte visas för något utkast$/, function() {
     var utkastRows = element.all(by.cssContainingText('tr', 'Utkast')).map(function(elm, index) {
         return elm.getText();
     });
@@ -183,7 +183,7 @@ Given(/^ska Förnya\-knappen inte visas för något utkast$/, function() {
 });
 
 
-Given(/^ska Förnya\-knappen visas för( alla)?( aktuella)? signerade eller mottagna "([^"]*)"\-intyg$/, function(alla, aktuella, intygstyp) {
+Then(/^ska Förnya\-knappen visas för( alla)?( aktuella)? signerade eller mottagna "([^"]*)"\-intyg$/, function(alla, aktuella, intygstyp) {
 
     if (alla) {
         element(by.id('intygFilterSamtliga')).sendKeys(protractor.Key.SPACE);
@@ -250,7 +250,7 @@ Given(/^är signeraknappen tillgänglig$/, function() {
     }));
 });
 
-Given(/^ska makuleraknappen inte vara tillgänglig$/, function() {
+Then(/^ska makuleraknappen inte vara tillgänglig$/, function() {
     return expect(fkIntygPage.makulera.btn.isPresent()).to.eventually.be.not.ok.then(function(value) {
         logger.info('Makuleraknappen syns inte (ok)' + value);
     }, function(reason) {
@@ -270,7 +270,7 @@ Given(/^vårdenhet ska vara "([^"]*)"$/, function(arg1, callback) {
     }).then(callback);
 });
 
-Given(/^jag väljer flik "([^"]*)"$/, function(arg1, callback) {
+When(/^jag väljer flik "([^"]*)"$/, function(arg1, callback) {
     expect(basePage.flikar.sokSkrivIntyg.getText()).to.eventually.contain(arg1).then(function(value) {
         element(basePage.flikar.sokSkrivIntyg).sendKeys(protractor.Key.SPACE);
         logger.info('OK - byta flik till = ' + value);
@@ -279,7 +279,7 @@ Given(/^jag väljer flik "([^"]*)"$/, function(arg1, callback) {
     }).then(callback);
 });
 
-Given(/^jag väljer att byta vårdenhet$/, function(callback) {
+When(/^jag väljer att byta vårdenhet$/, function(callback) {
     basePage.changeUnit.sendKeys(protractor.Key.SPACE).then(callback);
 });
 
@@ -319,7 +319,7 @@ Given(/^meddelas jag om spärren$/, function(callback) {
 
 });
 
-Given(/^jag byter vårdenhet till "([^"]*)"$/, function(id) {
+When(/^jag byter vårdenhet till "([^"]*)"$/, function(id) {
     return helpers.moveAndSendKeys(basePage.expandUnitMenu, protractor.Key.SPACE)
         .then(function() {
             return helpers.mediumDelay();

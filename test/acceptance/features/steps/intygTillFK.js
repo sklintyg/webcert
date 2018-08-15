@@ -52,7 +52,7 @@
   *
   */
 
- Given(/^jag skickar intyget direkt till Försäkringskassan$/, function(callback) {
+ When(/^jag skickar intyget direkt till Försäkringskassan$/, function(callback) {
      //logger.silly(personId);
      var url;
      var body;

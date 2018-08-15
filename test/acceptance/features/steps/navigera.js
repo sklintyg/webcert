@@ -168,13 +168,13 @@ function vantaPaAttIntygHamtas() {
  *	Test steg
  *
  */
-Given(/^jag uppdaterar sidan$/, function() {
+When(/^jag uppdaterar sidan$/, function() {
     return browser.refresh().then(function() {
         return helpers.pageReloadDelay();
     });
 });
 
-Given(/^jag trycker på visa intyget$/, function() {
+When(/^jag trycker på visa intyget$/, function() {
     return element(by.id('showBtn-' + this.intyg.id)).sendKeys(protractor.Key.SPACE);
 });
 
@@ -186,7 +186,7 @@ Given(/^(jag går in på utkastet|jag går in på intyget med edit länken)$/, f
     });
 });
 
-Given(/^ska jag komma till intygssidan$/, function() {
+Then(/^ska jag komma till intygssidan$/, function() {
     var intygUrlShortcode = helpers.getInternShortcode(this.intyg.typ).toLowerCase();
     var link = '/#/intyg/' + intygUrlShortcode + '/' + this.intyg.id;
     return browser.getCurrentUrl().then(function(currentUrl) {
@@ -195,7 +195,7 @@ Given(/^ska jag komma till intygssidan$/, function() {
     });
 });
 
-Given(/^jag väljer vårdenheten "([^"]*)"$/, function(enhetHSA) {
+When(/^jag väljer vårdenheten "([^"]*)"$/, function(enhetHSA) {
     var enhetSelectorLink = element(by.id('wc-integration-enhet-selector-select-active-unit-' + enhetHSA + '-link'));
     this.user.enhetId = enhetHSA;
 
@@ -205,12 +205,12 @@ Given(/^jag väljer vårdenheten "([^"]*)"$/, function(enhetHSA) {
     //return element.all(by.cssContainingText('.enhet', ve)).sendKeys(protractor.Key.ENTER);
 });
 
-Given(/^jag går in på intygsutkastet via djupintegrationslänk med annat namn$/, function() {
+When(/^jag går in på intygsutkastet via djupintegrationslänk med annat namn$/, function() {
     this.patient.forNamn = testdataHelpers.shuffle(['Anna', 'Torsten', 'Anton', 'Jonas', 'Nisse', 'Sture'])[0];
     this.patient.efterNamn = testdataHelpers.shuffle(['Andersson', 'Svensson', 'Klint', 'Ingves', 'Persson'])[0];
     return gotoIntyg(this.user, this.intyg, this.patient, ' via djupintegrationslänk');
 });
-Given(/^jag går in på intygsutkastet via djupintegrationslänk med annan adress$/, function() {
+When(/^jag går in på intygsutkastet via djupintegrationslänk med annan adress$/, function() {
     this.patient.adress = {
         postadress: 'Västra storgatan 20',
         postort: 'Karlstad',
@@ -220,7 +220,7 @@ Given(/^jag går in på intygsutkastet via djupintegrationslänk med annan adres
     return gotoIntyg(this.user, this.intyg, this.patient, ' via djupintegrationslänk');
 });
 
-Given(/^jag går in på intygsutkastet via djupintegrationslänk med ett annat personnummer$/, function() {
+When(/^jag går in på intygsutkastet via djupintegrationslänk med ett annat personnummer$/, function() {
     this.ursprungligPatient = JSON.parse(JSON.stringify(this.patient));
     let ursprungligPatient = this.ursprungligPatient;
     // Ta bort tidigare person så att vi inte råkar välja samma
@@ -235,7 +235,7 @@ Given(/^jag går in på intygsutkastet via djupintegrationslänk med ett annat p
     return gotoIntyg(this.user, this.intyg, this.patient, ' via djupintegrationslänk', 'alternatePatientSSn=' + this.patient.id);
 });
 
-Given(/^jag går in på intygsutkastet via djupintegrationslänk med ett reservnummer$/, function() {
+When(/^jag går in på intygsutkastet via djupintegrationslänk med ett reservnummer$/, function() {
     //this.ursprungligPatient = JSON.parse(JSON.stringify(this.patient));
     //this.patient.id = '3243342';
     return gotoIntyg(this.user, this.intyg, this.patient, ' via djupintegrationslänk', 'alternatePatientSSn=3243342');
@@ -260,11 +260,11 @@ Given(/jag försöker gå in på intygsutkastet via djupintegrationslänk och ha
     }).then(vantaPaAttIntygHamtas);
 });
 
-Given(/^jag går in på (intygsutkastet|intyget)( via djupintegrationslänk| via uthoppslänk| utan integrations parametrar)*$/, function(intygstyp, origin) {
+When(/^jag går in på (intygsutkastet|intyget)( via djupintegrationslänk| via uthoppslänk| utan integrations parametrar)*$/, function(intygstyp, origin) {
     return gotoIntyg(this.user, this.intyg, this.patient, origin);
 });
 
-Given(/^jag trycker på knappen med texten "([^"]*)"$/, function(BtnText) {
+When(/^jag trycker på knappen med texten "([^"]*)"$/, function(BtnText) {
     return element(by.cssContainingText('.btn', BtnText)).sendKeys(protractor.Key.SPACE);
 });
 
@@ -272,13 +272,13 @@ When(/^jag går in på intyget via djupintegrationslänk med parameter "([^"]*)"
     return gotoIntyg(this.user, this.intyg, this.patient, ' via djupintegrationslänk', param);
 });
 
-Given(/^jag går till ej signerade utkast$/, function() {
+When(/^jag går till ej signerade utkast$/, function() {
     return element(by.id('menu-unsigned')).click().then(function() {
         helpers.pageReloadDelay();
     });
 });
 var savedLink;
-Given(/^jag sparar länken till aktuell sida$/, function() {
+When(/^jag sparar länken till aktuell sida$/, function() {
     return browser.getCurrentUrl().then(function(currentUrl) {
         logger.info('Aktuell sida: ' + currentUrl);
         savedLink = currentUrl;
@@ -289,7 +289,7 @@ Given(/^går till den sparade länken$/, function() {
     return helpers.getUrl(savedLink);
 });
 
-Given(/^jag verifierar att URL:en är samma som den sparade länken$/, function() {
+When(/^jag verifierar att URL:en är samma som den sparade länken$/, function() {
     return browser.getCurrentUrl().then(function(currentUrl) {
         expect(currentUrl).to.equal(savedLink);
         logger.info('Sida som verifieras: ' + currentUrl);
@@ -297,17 +297,17 @@ Given(/^jag verifierar att URL:en är samma som den sparade länken$/, function(
     });
 });
 
-Given(/^jag går in på healthcheck\-sidan$/, function() {
+When(/^jag går in på healthcheck\-sidan$/, function() {
     browser.ignoreSynchronization = true;
     return helpers.getUrl('healthcheck.jsp');
 });
 
-Given(/^ska status för "([^"]*)" vara "([^"]*)"$/, function(checknamn, varaText) {
+Then(/^ska status för "([^"]*)" vara "([^"]*)"$/, function(checknamn, varaText) {
     var tr = element(by.cssContainingText('tr', checknamn));
     return expect(tr.getText()).to.eventually.contain(varaText);
 });
 
-Given(/^jag byter fokus från fält$/, function() {
+When(/^jag byter fokus från fält$/, function() {
     var activeEle = browser.driver.switchTo().activeElement();
     return activeEle.sendKeys(protractor.Key.TAB);
 });

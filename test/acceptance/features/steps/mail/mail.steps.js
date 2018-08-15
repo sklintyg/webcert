@@ -42,7 +42,7 @@ var mail = require('./mail');
  *
  */
 
-Given(/^ska jag få ett mejl med ämnet "([^"]*)"$/, function(amne) {
+Then(/^ska jag få ett mejl med ämnet "([^"]*)"$/, function(amne) {
     logger.silly('intygsid:' + this.intyg.id);
     var textToSearchFor = process.env.WEBCERT_URL + 'webcert/web/user/certificate/' + this.intyg.id + '/questions?enhet=' + user.enhetId;
 

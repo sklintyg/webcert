@@ -311,7 +311,7 @@ Given(/^att jag är inloggad som( djupintegrerad)? läkare på (underenhet|vård
 
 
 
-Given(/^ska jag ha rollen "([^"]*)"$/, function(roll) {
+Then(/^ska jag ha rollen "([^"]*)"$/, function(roll) {
     return checkUserRole().then(function(value) {
         var re = /\[\"(.*)\"\]/;
         value = value.replace(re, '$1');
@@ -319,11 +319,11 @@ Given(/^ska jag ha rollen "([^"]*)"$/, function(roll) {
     });
 });
 
-Given(/^jag ska ha origin "([^"]*)"/, function(origin) {
+When(/^jag ska ha origin "([^"]*)"/, function(origin) {
     return expect(checkUserOrigin()).to.eventually.be.equal(origin);
 });
 //För att se vilka felaktigheter som bör finnas i HSA se https://inera-certificate.atlassian.net/wiki/display/IT/Negativa+tester+HSA
-Given(/^jag loggar in med felaktig uppgift om telefonuppgift i HSAkatalogen$/, function() {
+When(/^jag loggar in med felaktig uppgift om telefonuppgift i HSAkatalogen$/, function() {
     var userObj = {
         forNamn: 'Johan',
         efterNamn: 'Johansson',
@@ -333,7 +333,7 @@ Given(/^jag loggar in med felaktig uppgift om telefonuppgift i HSAkatalogen$/, f
     };
     return logInAsUser(userObj);
 });
-Given(/^jag loggar in med felaktig uppgift om befattning i HSAkatalogen$/, function() {
+When(/^jag loggar in med felaktig uppgift om befattning i HSAkatalogen$/, function() {
     var userObj = {
         forNamn: 'Susanne Gustafsson',
         efterNamn: 'Ericsson',
@@ -343,7 +343,7 @@ Given(/^jag loggar in med felaktig uppgift om befattning i HSAkatalogen$/, funct
     return logInAsUser(userObj);
 });
 
-Given(/^jag loggar in med felaktig uppgift om adress i HSAkatalogen$/, function() {
+When(/^jag loggar in med felaktig uppgift om adress i HSAkatalogen$/, function() {
     var userObj = {
         forNamn: 'Karin',
         efterNamn: 'Persson',
@@ -352,7 +352,7 @@ Given(/^jag loggar in med felaktig uppgift om adress i HSAkatalogen$/, function(
     };
     return logInAsUser(userObj);
 });
-Given(/^ska jag vara inloggad som 'Läkare'$/, function() {
+Then(/^ska jag vara inloggad som 'Läkare'$/, function() {
     var wcHeader = element(by.id('wcHeader'));
     return expect(wcHeader.getText()).to.eventually.contain('Läkare');
 });

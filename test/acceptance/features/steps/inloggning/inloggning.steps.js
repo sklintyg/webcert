@@ -108,7 +108,7 @@ function gotoIntygUtkast(intyg) {
  *
  */
 
-Given(/^jag går in på en patient med samordningsnummer$/, function() {
+When(/^jag går in på en patient med samordningsnummer$/, function() {
     this.patient = testdataHelpers.shuffle(testdata.values.patienterMedSamordningsnummer)[0];
     return gotoPatient(this.patient, this.user);
 });
@@ -117,12 +117,12 @@ Given(/^jag går in på en patient med samordningsnummer$/, function() {
 //     return gotoPatient(personnummer);
 // });
 
-Given(/^jag går in på patienten$/, function() {
+When(/^jag går in på patienten$/, function() {
     return gotoPatient(this.patient, this.user);
 });
 
 
-Given(/^jag anger ett (samordningsnummer|personnummer) som inte finns i PUtjänsten$/, function(typAvNum) {
+When(/^jag anger ett (samordningsnummer|personnummer) som inte finns i PUtjänsten$/, function(typAvNum) {
     if (typAvNum === 'samordningsnummer') {
         this.patient = testdata.values.patienterMedSamordningsnummerEjPU[0];
     } else {
@@ -147,12 +147,12 @@ Then(/^jag går in på testpatienten "([^"]*)"$/, function(personnummer) {
 });
 
 
-Given(/^jag går in på en patient med sekretessmarkering$/, function() {
+When(/^jag går in på en patient med sekretessmarkering$/, function() {
     this.patient = testdataHelpers.shuffle(testdata.values.patienterMedSekretessmarkering)[0];
     return gotoPatient(this.patient, this.user);
 });
 
-Given(/^jag går in på en patient som saknar namn i PU\-tjänsten$/, function() {
+When(/^jag går in på en patient som saknar namn i PU\-tjänsten$/, function() {
     this.patient = {
         id: '201203122393'
     };
@@ -161,14 +161,14 @@ Given(/^jag går in på en patient som saknar namn i PU\-tjänsten$/, function()
     });
 });
 
-Given(/^jag går in på en patient som är avliden$/, function() {
+When(/^jag går in på en patient som är avliden$/, function() {
     this.patient = testdataHelpers.shuffle(testdata.values.patienterAvlidna)[0];
     logger.silly(this.patient);
     return gotoPatient(this.patient, this.user);
 
 });
 
-Given(/^jag går in på en( annan)? patient$/, function(annan) {
+When(/^jag går in på en( annan)? patient$/, function(annan) {
     if (annan) {
         var andraPatienter = testpatienter;
         andraPatienter.splice(testpatienter.indexOf(this.patient), 1);
@@ -184,7 +184,7 @@ Given(/^jag går in på en( annan)? patient$/, function(annan) {
     return gotoPatient(this.patient, this.user);
 });
 
-Given(/^ska en varningsruta innehålla texten "([^"]*)"$/, function(text) {
+Then(/^ska en varningsruta innehålla texten "([^"]*)"$/, function(text) {
     var alertWarnings = element.all(by.css('.alert-warning'));
     var warnings = [];
     return alertWarnings.each(function(element) {
@@ -197,7 +197,7 @@ Given(/^ska en varningsruta innehålla texten "([^"]*)"$/, function(text) {
     });
 });
 
-Given(/^jag går in på att skapa ett "([^"]*)" intyg$/, function(intygsTyp) {
+When(/^jag går in på att skapa ett "([^"]*)" intyg$/, function(intygsTyp) {
     //intyg.typ = intygsTyp;
     this.intyg = {
         typ: intygsTyp
@@ -207,11 +207,11 @@ Given(/^jag går in på att skapa ett "([^"]*)" intyg$/, function(intygsTyp) {
 });
 
 
-Given(/^ska jag inte kunna skapa ett "([^"]*)" intyg$/, function(intygsTyp) {
+Then(/^ska jag inte kunna skapa ett "([^"]*)" intyg$/, function(intygsTyp) {
     return expect(element(by.id('intygTypeFortsatt-' + helpers.getInternShortcode(intygsTyp))).isEnabled()).to.eventually.equal(false);
 });
 
-Given(/^jag går in på att skapa ett slumpat intyg$/, function() {
+When(/^jag går in på att skapa ett slumpat intyg$/, function() {
     this.intyg = {
         typ: testdataHelpers.shuffle([
             'Läkarintyg för sjukpenning',
@@ -229,7 +229,7 @@ Given(/^jag går in på att skapa ett slumpat intyg$/, function() {
     return gotoIntygUtkast(this.intyg);
 });
 
-Given(/^jag går in på att skapa ett slumpat SMI\-intyg$/, function() {
+When(/^jag går in på att skapa ett slumpat SMI\-intyg$/, function() {
     this.intyg.typ = testdataHelpers.shuffle([
         'Läkarintyg för sjukpenning',
         'Läkarutlåtande för sjukersättning',
@@ -251,7 +251,7 @@ Given(/^jag går in på att skapa ett slumpat SMI\-intyg$/, function() {
     });
 });
 
-Given(/^jag går in på att skapa ett slumpat TS\-intyg$/, function() {
+When(/^jag går in på att skapa ett slumpat TS\-intyg$/, function() {
     let intyg = this.intyg;
 
     intyg.typ = testdataHelpers.shuffle([
@@ -323,7 +323,7 @@ Given(/^sedan öppnar intyget i två webbläsarinstanser$/, function(callback) {
 
 });
 
-Given(/^ska ett felmeddelande visas som innehåller texten "([^"]*)"$/, function(errorMsg) {
+Then(/^ska ett felmeddelande visas som innehåller texten "([^"]*)"$/, function(errorMsg) {
     var alertTexts = element.all(by.css('.alert-danger')).map(function(elm) {
         return elm.getText();
     });
@@ -332,7 +332,7 @@ Given(/^ska ett felmeddelande visas som innehåller texten "([^"]*)"$/, function
     });
 });
 
-Given(/^ska ett felmeddelande visas$/, function(callback) {
+Then(/^ska ett felmeddelande visas$/, function(callback) {
 
     var intygShortCode = helpers.getAbbrev(this.intyg.typ);
     var elemntId = 'aktivitetsbegransning';
@@ -351,7 +351,7 @@ Given(/^ska ett felmeddelande visas$/, function(callback) {
     });
 });
 
-Given(/^ska varningen "([^"]*)" visas om man försöker (skicka|förnya|makulera) intyget i andra webbläsarinstansen$/, function(msg, action, callback) {
+Then(/^ska varningen "([^"]*)" visas om man försöker (skicka|förnya|makulera) intyget i andra webbläsarinstansen$/, function(msg, action, callback) {
     var elemntIds;
     if ('förnya' === action) {
         elemntIds = {
@@ -459,11 +459,11 @@ Then(/^ska intygets andra status vara "([^"]*)"$/, function(statustext) {
     return expect(baseIntyg.intygStatus[1].getText()).to.eventually.contain(statustext);
 });
 
-Given(/^ska signera\-knappen inte vara synlig$/, function(callback) {
+Then(/^ska signera\-knappen inte vara synlig$/, function(callback) {
     expect(fk7263Utkast.signeraButton.isPresent()).to.eventually.become(false).and.notify(callback);
 });
 
-Given(/^ska jag bli inloggad som "([^"]*)"$/, function(arg1) {
+Then(/^ska jag bli inloggad som "([^"]*)"$/, function(arg1) {
     var wcHeader = element(by.id('wcHeader'));
     return expect(wcHeader.getText()).to.eventually.contain(arg1);
 });

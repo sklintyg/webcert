@@ -73,7 +73,7 @@ function getDemoData(intyg, index, patient) {
  *	Test steg
  *
  */
-Given(/^jag fyller i alla nödvändiga fält för intyget med demodata "([^"]*)"$/, function(index) {
+When(/^jag fyller i alla nödvändiga fält för intyget med demodata "([^"]*)"$/, function(index) {
     if (!this.intyg.typ) {
         throw 'intyg.typ odefinierad.';
     } else {
@@ -83,7 +83,7 @@ Given(/^jag fyller i alla nödvändiga fält för intyget med demodata "([^"]*)"
     }
 });
 
-Given(/^jag fyller i alla nödvändiga fält för intyget med statistikdata "([^"]*)"$/, function(index) {
+When(/^jag fyller i alla nödvändiga fält för intyget med statistikdata "([^"]*)"$/, function(index) {
     if (!this.intyg.typ) {
         throw 'intyg.typ odefinierad';
     } else {

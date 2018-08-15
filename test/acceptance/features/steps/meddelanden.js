@@ -51,7 +51,7 @@ var helpers = require('./helpers');
  */
 
 
-Given(/^ska (intyget|frågan) ha en indikator som indikerar sekretessmarkering$/, function(typ) {
+Then(/^ska (intyget|frågan) ha en indikator som indikerar sekretessmarkering$/, function(typ) {
     return expect(element(by.css('wc-sekretess-avliden-ikon')).isPresent()).to.eventually.become(true);
 });
 

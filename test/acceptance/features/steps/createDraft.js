@@ -104,7 +104,7 @@ function createDraft(intyg, patient, user) {
  *
  */
 
-Given(/^ska vårdsystemet inte ha möjlighet att skapa "([^"]*)" utkast$/, function(intygstyp) {
+Then(/^ska vårdsystemet inte ha möjlighet att skapa "([^"]*)" utkast$/, function(intygstyp) {
     this.intyg.typ = intygstyp;
 
     let body = soapMessageBodies.CreateDraftCertificateV3(

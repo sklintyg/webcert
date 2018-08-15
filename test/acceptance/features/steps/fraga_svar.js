@@ -115,10 +115,10 @@ function hamtaAllaTraffar() {
  *
  */
 
-Given(/^jag skickar en fråga med ämnet "([^"]*)" till Försäkringskassan$/, function(amne) {
+When(/^jag skickar en fråga med ämnet "([^"]*)" till Försäkringskassan$/, function(amne) {
     return sendQuestionToFK(amne, this.intyg);
 });
-Given(/^jag väljer att svara med ett nytt intyg$/, function() {
+When(/^jag väljer att svara med ett nytt intyg$/, function() {
     helpers.updateEnhetAdressForNewIntyg(this.user);
     const page = fkLusePage;
     let intyg = this.intyg;
@@ -146,7 +146,7 @@ Given(/^jag väljer att svara med ett nytt intyg$/, function() {
         });
     }
 });
-Given(/^jag går tillbaka till intyget som behöver kompletteras$/, function() {
+When(/^jag går tillbaka till intyget som behöver kompletteras$/, function() {
     return helpers.getUrl(global.behoverKompletterasLink);
 
     // Denna funktionalitet användes när relations-valen fanns kvar
@@ -155,14 +155,14 @@ Given(/^jag går tillbaka till intyget som behöver kompletteras$/, function() {
     // });
 
 });
-Given(/^ska det finnas en knapp med texten "([^"]*)"$/, function(texten) {
+Then(/^ska det finnas en knapp med texten "([^"]*)"$/, function(texten) {
     return expect(element(by.cssContainingText('.btn', texten)).isPresent()).to.become(true);
 });
-Given(/^ska det inte finnas en knapp med texten "([^"]*)"$/, function(texten) {
+Then(/^ska det inte finnas en knapp med texten "([^"]*)"$/, function(texten) {
     return expect(element(by.cssContainingText('.btn', texten)).isPresent()).to.become(false);
 });
 
-Given(/^ska jag se kompletteringsfrågan på (intygs|utkast)\-sidan$/, function(typ) {
+Then(/^ska jag se kompletteringsfrågan på (intygs|utkast)\-sidan$/, function(typ) {
     var fragaDeltext;
 
     if (typ === 'intygs') {
@@ -176,25 +176,25 @@ Given(/^ska jag se kompletteringsfrågan på (intygs|utkast)\-sidan$/, function(
 });
 
 
-Given(/^jag ska inte kunna komplettera med nytt intyg från webcert/, function() {
+When(/^jag ska inte kunna komplettera med nytt intyg från webcert/, function() {
     var komplettera = element(by.id('komplettera-intyg-' + this.intyg.messages[0].id));
 
     return expect(komplettera.isPresent()).to.become(false);
 
 });
 
-Given(/^ska svara med textmeddelande vara tillgängligt i dialogen/, function() {
+Then(/^ska svara med textmeddelande vara tillgängligt i dialogen/, function() {
     var svaraMedMeddelande = element(by.id('komplettering-modal-dialog-answerWithMessage-button'));
 
     return expect(svaraMedMeddelande.isDisplayed()).to.become(true);
 
 });
 
-Given(/^ska kompletteringsdialogen innehålla texten "([^"]*)"$/, function(text) {
+Then(/^ska kompletteringsdialogen innehålla texten "([^"]*)"$/, function(text) {
     return expect(element(by.css('.modal-body')).getText()).to.eventually.contain(text);
 });
 
-Given(/^jag klickar på svara knappen, fortfarande i uthoppsläge$/, function() {
+When(/^jag klickar på svara knappen, fortfarande i uthoppsläge$/, function() {
     return element(by.id('uthopp-svara-med-meddelande-' + this.intyg.messages[0].id)).typeKeys(protractor.Key.SPACE)
         .then(function() {
             return helpers.pageReloadDelay();
@@ -202,7 +202,7 @@ Given(/^jag klickar på svara knappen, fortfarande i uthoppsläge$/, function() 
 });
 
 
-Given(/^jag ska kunna svara med textmeddelande/, function() {
+When(/^jag ska kunna svara med textmeddelande/, function() {
     browser.ignoreSynchronization = false;
     var kompletteringsFraga = fkIntygPage.getQAElementByText(this.intyg.messages[0].testString).panel;
     var textSvar = 'Ett kompletteringssvar: ' + this.intyg.messages[0].testString;
@@ -245,7 +245,7 @@ Given(/^jag ska kunna svara med textmeddelande/, function() {
         });
 });
 
-Given(/^jag svarar på frågan$/, function() {
+When(/^jag svarar på frågan$/, function() {
     let intyg = this.intyg;
     messageID = intyg.messages[0].id;
 
@@ -261,7 +261,7 @@ Given(/^kan jag se mitt svar i högerfältet$/, function() {
     return expect(fragaSvar.container.getText()).to.eventually.contain(this.intyg.messages[0].answer);
 });
 
-Given(/^ska jag se påminnelsen på intygssidan$/, function() {
+Then(/^ska jag se påminnelsen på intygssidan$/, function() {
     var fragaText = this.intyg.messages[0].testString;
 
     return browser.refresh()
@@ -274,7 +274,7 @@ Given(/^ska jag se påminnelsen på intygssidan$/, function() {
         });
 });
 
-Given(/^jag markerar (svaret|frågan)? från Försäkringskassan som( INTE)? hanterad$/, function(meddelandeTyp, inte) {
+When(/^jag markerar (svaret|frågan)? från Försäkringskassan som( INTE)? hanterad$/, function(meddelandeTyp, inte) {
 
     let tempMessageID;
     if (meddelandeTyp === 'svaret') {
@@ -377,19 +377,19 @@ Given(/^Försäkringskassan skickar ett svar$/, function(callback) {
     setTimeout(callSendMessageToCare, 1000);
 });
 
-Given(/^jag markerar frågan från vården som hanterad$/, function() {
+When(/^jag markerar frågan från vården som hanterad$/, function() {
     return fragaSvar.meddelande(messageID).administrativFraga.togglaHanterad();
     //return fkLusePage.getQAElementByText(fragaText).panel.element(by.css('input[type=checkbox]')).typeKeys(protractor.Key.SPACE);
 });
 
 
-Given(/^jag går till sidan Frågor och svar$/, function() {
+When(/^jag går till sidan Frågor och svar$/, function() {
     return wcTestTools.pages.fragorOchSvar.get().then(function() {
         return helpers.pageReloadDelay();
     });
 });
 
-Given(/^ska frågan inte finnas i listan$/, function() {
+Then(/^ska frågan inte finnas i listan$/, function() {
     let intyg = this.intyg;
     return expect(element(by.id('wc-sekretessmarkering-icon-' + intyg.id)).isPresent()).to.become(false).then(function() {
 
@@ -399,7 +399,7 @@ Given(/^ska frågan inte finnas i listan$/, function() {
 });
 
 var matchingQARow;
-Given(/^ska det (inte )?finnas en rad med texten "([^"]*)" för frågan$/, function(inte, atgard) {
+Then(/^ska det (inte )?finnas en rad med texten "([^"]*)" för frågan$/, function(inte, atgard) {
     let patient = this.patient;
 
     logger.info('Letar efter rader som innehåller text: ' + atgard + ' + ' + patient.id);
@@ -424,7 +424,7 @@ Given(/^ska det (inte )?finnas en rad med texten "([^"]*)" för frågan$/, funct
 });
 
 var buttonId;
-Given(/^jag väljer att visa intyget som har en fråga att hantera$/, function() {
+When(/^jag väljer att visa intyget som har en fråga att hantera$/, function() {
     var btn = matchingQARow.element(by.cssContainingText('button', 'Visa'));
     return btn.getAttribute('id').then(function(id) {
         logger.info('knapp-id: ' + id);
@@ -433,7 +433,7 @@ Given(/^jag väljer att visa intyget som har en fråga att hantera$/, function()
     });
 });
 
-Given(/^jag väljer att visa intyget med frågan$/, function() {
+When(/^jag väljer att visa intyget med frågan$/, function() {
     logger.silly(this.intyg.messages);
     var atgard = 'Svara';
     let patient = this.patient;
@@ -459,23 +459,23 @@ Given(/^jag väljer att visa intyget med frågan$/, function() {
     });
 });
 
-Given(/^jag lämnar intygssidan$/, function() {
+When(/^jag lämnar intygssidan$/, function() {
     return fkIntygPage.backBtn.click();
 });
 
-Given(/^ska jag få dialogen "([^"]*)"$/, function(text) {
+Then(/^ska jag få dialogen "([^"]*)"$/, function(text) {
     return expect(element(by.cssContainingText('.modal-dialog', text)).isPresent()).to.eventually.become(true);
 });
 
-Given(/^jag väljer valet att markera som hanterade$/, function() {
+When(/^jag väljer valet att markera som hanterade$/, function() {
     return element(by.cssContainingText('button', 'Hanterade')).typeKeys(protractor.Key.SPACE);
 });
 
-Given(/^ska den tidigare raden inte finnas kvar i tabellen för Frågor och svar$/, function() {
+Then(/^ska den tidigare raden inte finnas kvar i tabellen för Frågor och svar$/, function() {
     return expect(element(by.id(buttonId)).isPresent()).to.eventually.not.be.ok;
 });
 
-Given(/^jag väljer åtgärden "([^"]*)"$/, function(atgard) {
+When(/^jag väljer åtgärden "([^"]*)"$/, function(atgard) {
     var showFilter = element(by.cssContainingText('button', 'Visa sökfilter'));
     return showFilter.isPresent().then(function(isPresent) {
         if (isPresent) {
@@ -501,13 +501,13 @@ Given(/^jag väljer åtgärden "([^"]*)"$/, function(atgard) {
 
 
 
-Given(/^ska jag se flera frågor$/, function() {
+Then(/^ska jag se flera frågor$/, function() {
     return wcTestTools.pages.fragorOchSvar.qaTable.all(by.css('tr')).count().then(function(count) {
         return expect(count).to.be.above(1); // mer än 1 pga att table-header är en rad
     });
 });
 
-Given(/^jag väljer att filtrera på läkare "([^"]*)"$/, function(lakare) {
+When(/^jag väljer att filtrera på läkare "([^"]*)"$/, function(lakare) {
     var showFilter = element(by.cssContainingText('button', 'Visa sökfilter'));
     return showFilter.isPresent().then(function(isPresent) {
         if (isPresent) {
@@ -526,7 +526,7 @@ Given(/^jag väljer att filtrera på läkare "([^"]*)"$/, function(lakare) {
 });
 
 
-Given(/^ska jag bara se frågor på intyg signerade av "([^"]*)"$/, function(lakare) {
+Then(/^ska jag bara se frågor på intyg signerade av "([^"]*)"$/, function(lakare) {
     logger.silly('Kontrollerar att varje rad innehåller texten ' + lakare);
     return wcTestTools.pages.fragorOchSvar.qaTable.all(by.css('tr')).getText()
         .then(function(textArr) {
@@ -538,18 +538,18 @@ Given(/^ska jag bara se frågor på intyg signerade av "([^"]*)"$/, function(lak
         });
 });
 
-Given(/^ska jag se min fråga som ohanterad$/, function() {
+Then(/^ska jag se min fråga som ohanterad$/, function() {
     return expect(fragaSvar.meddelande(messageID).administrativFraga.hanterad.isSelected()).to.eventually.become(false);
 });
 
-Given(/^jag skickar en fråga med slumpat ämne till Försäkringskassan$/, function() {
+When(/^jag skickar en fråga med slumpat ämne till Försäkringskassan$/, function() {
     return sendQuestionToFK(
         testdataHelper.shuffle(['Arbetstidsförläggning', 'Avstämningsmöte', 'Kontakt', 'Övrigt'])[0],
         this.intyg
     );
 });
 
-Given(/^ska jag ha möjlighet att vidarebefordra frågan$/, function() {
+Then(/^ska jag ha möjlighet att vidarebefordra frågan$/, function() {
     return browser.refresh().then(function() {
         return helpers.pageReloadDelay();
     }).then(function() {

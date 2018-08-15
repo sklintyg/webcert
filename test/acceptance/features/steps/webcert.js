@@ -81,24 +81,24 @@ function checkElementsForText(els, checkValues) {
  *
  */
 
-Given(/^jag går till Sök\/skriv intyg$/, function() {
+When(/^jag går till Sök\/skriv intyg$/, function() {
     return element(by.id('menu-skrivintyg')).typeKeys(protractor.Key.SPACE);
 });
 
 
-Given(/^ska jag inte se intyg av annan typ än "([^"]*)"$/, function(typer) {
+Then(/^ska jag inte se intyg av annan typ än "([^"]*)"$/, function(typer) {
     typer = typer.split(',');
     var els = element(by.id('prevIntygTable')).all(by.css('tr'));
     return checkElementsForText(els, typer);
 });
 
-Given(/^ska jag inte se utkast av annan typ än "([^"]*)"$/, function(typer) {
+Then(/^ska jag inte se utkast av annan typ än "([^"]*)"$/, function(typer) {
     typer = typer.split(',');
     var els = element(by.id('unsignedCertTable')).all(by.css('tr'));
     return checkElementsForText(els, typer);
 });
 
-Given(/^ska jag( inte)? se (?:intygstypen|intygstyperna) "([^"]*)" i Skapa intyg listan$/, function(inte, typer) {
+Then(/^ska jag( inte)? se (?:intygstypen|intygstyperna) "([^"]*)" i Skapa intyg listan$/, function(inte, typer) {
     typer = typer.split(' & ');
     let elm = sokSkrivIntygUtkastTypePage.intygTypeTable;
 

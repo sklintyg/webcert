@@ -90,7 +90,7 @@ function getIER(world, status, callback) {
  *
  */
 
-Given(/^jag går in på ett "([^"]*)" med status "([^"]*)"$/, {
+When(/^jag går in på ett "([^"]*)" med status "([^"]*)"$/, {
     timeout: 700 * 1000
 }, function(intygstyp, status, callback) {
     this.intyg.typ = intygstyp;
@@ -99,7 +99,7 @@ Given(/^jag går in på ett "([^"]*)" med status "([^"]*)"$/, {
 
 
 
-Given(/^jag går in på ett slumpat SMI\-intyg med status "([^"]*)"$/, {
+When(/^jag går in på ett slumpat SMI\-intyg med status "([^"]*)"$/, {
     timeout: 700 * 1000
 }, function(status, callback) {
     var randomIntyg = shuffle([
@@ -113,7 +113,7 @@ Given(/^jag går in på ett slumpat SMI\-intyg med status "([^"]*)"$/, {
     getIER(this, status, callback);
 });
 
-Given(/^jag går in på ett slumpat intyg med status "([^"]*)"$/, {
+When(/^jag går in på ett slumpat intyg med status "([^"]*)"$/, {
     timeout: 700 * 1000
 }, function(status, callback) {
     var randomIntyg = shuffle([
@@ -129,7 +129,7 @@ Given(/^jag går in på ett slumpat intyg med status "([^"]*)"$/, {
     getIER(this, status, callback);
 });
 
-Given(/^jag går in på ett slumpat TS\-intyg med status "([^"]*)"$/, {
+When(/^jag går in på ett slumpat TS\-intyg med status "([^"]*)"$/, {
     timeout: 700 * 1000
 }, function(status, callback) {
     var randomIntyg = shuffle([

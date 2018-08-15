@@ -152,18 +152,18 @@ function getColumnDataFromTable(table, subject, column) {
  */
 
 
-Given(/^ska jag se intyget i databasen$/, function(callback) {
+Then(/^ska jag se intyget i databasen$/, function(callback) {
     db.statistics.lookUp(1, this.intyg.id, callback);
 });
 
 
-Given(/^jag går in på Statistiktjänsten$/, function() {
+When(/^jag går in på Statistiktjänsten$/, function() {
     global.statistik.intygsId = this.intyg.id;
     var url = process.env.STATISTIKTJANST_URL + '/#/fakelogin';
     return helpers.getUrl(url);
 });
 
-Given(/^jag är inloggad som läkare i Statistiktjänsten$/, function() {
+When(/^jag är inloggad som läkare i Statistiktjänsten$/, function() {
     // Setting Statistiktjänsten to new bas url
     browser.baseUrl = process.env.STATISTIKTJANST_URL;
     // VG_TestAutomation => TSTNMT2321000156-107M => TSTNMT2321000156-107Q
@@ -180,7 +180,7 @@ Given(/^jag är inloggad som läkare i Statistiktjänsten$/, function() {
     return logInAsUserRoleStatistik(this.user, 'Läkare', true);
 });
 
-Given(/^jag ändrar diagnoskoden till "([^"]*)"$/, function(diagnosKod) {
+When(/^jag ändrar diagnoskoden till "([^"]*)"$/, function(diagnosKod) {
     diagnosKod = slumpaDiagnosKod(diagnosKod);
 
     var diagnos = {
@@ -192,7 +192,7 @@ Given(/^jag ändrar diagnoskoden till "([^"]*)"$/, function(diagnosKod) {
     });
 });
 
-Given(/^jag går till statistiksidan för "([^"]*)"$/, function(sida) {
+When(/^jag går till statistiksidan för "([^"]*)"$/, function(sida) {
     var url = '';
     switch (sida) {
         case 'Meddelande per ämne':
@@ -207,7 +207,7 @@ Given(/^jag går till statistiksidan för "([^"]*)"$/, function(sida) {
     return helpers.getUrl(url);
 });
 
-Given(/^jag kollar värdena i tabellen$/, function() {
+When(/^jag kollar värdena i tabellen$/, function() {
     //spara undan gamla tabellen
     global.statistik.oldTable = global.statistik.table;
 
@@ -222,7 +222,7 @@ Given(/^jag kollar värdena i tabellen$/, function() {
 });
 
 
-Given(/^jag går till statistiksidan för diagnoskod "([^"]*)"$/, function(diagnosKod) {
+When(/^jag går till statistiksidan för diagnoskod "([^"]*)"$/, function(diagnosKod) {
     diagnosKod = slumpaDiagnosKod(diagnosKod);
 
 
@@ -248,7 +248,7 @@ Given(/^jag går till statistiksidan för diagnoskod "([^"]*)"$/, function(diagn
     });
 });
 
-Given(/^jag kollar totala "([^"]*)" diagnoser som finns$/, function(diagnosKod) {
+When(/^jag kollar totala "([^"]*)" diagnoser som finns$/, function(diagnosKod) {
     diagnosKod = slumpaDiagnosKod(diagnosKod).substring(0, 3);
 
 
@@ -295,27 +295,27 @@ Given(/^jag kollar totala "([^"]*)" diagnoser som finns$/, function(diagnosKod) 
 
 
 
-Given(/^jag hämtar "([^"]*)" från Statistik APIet \- getMeddelandenPerAmne$/, function(beskrivning) {
+When(/^jag hämtar "([^"]*)" från Statistik APIet \- getMeddelandenPerAmne$/, function(beskrivning) {
     return statistikAPI.getMeddelandenPerAmne('TSTNMT2321000156-107M').then(function(statistik) {
         global.statistik.tempArr.push(statistik);
     });
 });
-Given(/^jag hämtar "([^"]*)" från Statistik APIet \- getMeddelandenPerAmneLandsting$/, function(beskrivning) {
+When(/^jag hämtar "([^"]*)" från Statistik APIet \- getMeddelandenPerAmneLandsting$/, function(beskrivning) {
     return statistikAPI.getMeddelandenPerAmneLandsting().then(function(statistik) {
         global.statistik.tempArr.push(statistik);
     });
 });
-Given(/^jag hämtar "([^"]*)" från Statistik APIet \- getMeddelandenPerAmneOchEnhetLandsting$/, function(beskrivning) {
+When(/^jag hämtar "([^"]*)" från Statistik APIet \- getMeddelandenPerAmneOchEnhetLandsting$/, function(beskrivning) {
     return statistikAPI.getMeddelandenPerAmneOchEnhetLandsting().then(function(statistik) {
         global.statistik.tempArr.push(statistik);
     });
 });
-Given(/^jag hämtar "([^"]*)" från Statistik APIet \- getMeddelandenPerAmneOchEnhetTvarsnittVerksamhet$/, function(beskrivning) {
+When(/^jag hämtar "([^"]*)" från Statistik APIet \- getMeddelandenPerAmneOchEnhetTvarsnittVerksamhet$/, function(beskrivning) {
     return statistikAPI.getMeddelandenPerAmneOchEnhetTvarsnittVerksamhet().then(function(statistik) {
         global.statistik.tempArr.push(statistik);
     });
 });
-Given(/^jag hämtar "([^"]*)" från Statistik APIet \- getMeddelandenPerAmneOchEnhetVerksamhet$/, function(beskrivning) {
+When(/^jag hämtar "([^"]*)" från Statistik APIet \- getMeddelandenPerAmneOchEnhetVerksamhet$/, function(beskrivning) {
     return statistikAPI.getMeddelandenPerAmneOchEnhetVerksamhet().then(function(statistik) {
         global.statistik.tempArr.push(statistik);
     });
@@ -336,7 +336,7 @@ Then(/^ska "([^"]*)" i "([^"]*)" vara "([^"]*)" (extra|mindre)$/, function(colum
 });
 
 
-Given(/^ska totala "([^"]*)" diagnoser som finns (?:vara|är) "([^"]*)" (extra|mindre)$/, function(diagnosKod, nrOfIntyg, modifier) {
+Then(/^ska totala "([^"]*)" diagnoser som finns (?:vara|är) "([^"]*)" (extra|mindre)$/, function(diagnosKod, nrOfIntyg, modifier) {
     diagnosKod = slumpaDiagnosKod(diagnosKod).substring(0, 3);
 
 
@@ -427,7 +427,7 @@ Given(/^ska totala "([^"]*)" diagnoser som finns (?:vara|är) "([^"]*)" (extra|m
     });
 });
 
-Given(/^jag anropar statitisk-APIet processIntyg$/, function() {
+When(/^jag anropar statitisk-APIet processIntyg$/, function() {
     return statistikAPI.processIntyg().then(function() {
         return helpers.pageReloadDelay();
     });

@@ -46,7 +46,7 @@ var helpers = require('./helpers.js');
  *
  */
 
-Given(/^jag förnyar intyget$/, function() {
+When(/^jag förnyar intyget$/, function() {
 
     let fornyatIntyg = Object.create(this.intyg);
 
@@ -73,7 +73,7 @@ Given(/^jag förnyar intyget$/, function() {
 
 });
 
-Given(/^ska fält för Baserat på vara tomma$/, function(callback) {
+Then(/^ska fält för Baserat på vara tomma$/, function(callback) {
     var baserasPa = fkUtkastPage.baserasPa;
     var minUndersokning = baserasPa.minUndersokning.datum;
     var minTelefonkontakt = baserasPa.minTelefonkontakt.datum;
@@ -109,7 +109,7 @@ Given(/^ska fält för Baserat på vara tomma$/, function(callback) {
     }
 
 });
-Given(/^ska fält för Bedömning av arbetsförmåga vara tomma$/, function(callback) {
+Then(/^ska fält för Bedömning av arbetsförmåga vara tomma$/, function(callback) {
     var nedsatt = fkUtkastPage.nedsatt;
 
     Promise.all([
@@ -133,7 +133,7 @@ Given(/^ska fält för Bedömning av arbetsförmåga vara tomma$/, function(call
     });
 });
 
-Given(/^jag anger datum för Baserat på$/, function(callback) {
+When(/^jag anger datum för Baserat på$/, function(callback) {
     this.intyg.baserasPa = fkValues.getRandomBaserasPa(this.intyg.smittskydd);
     //Ange baseras på
     fkUtkastPage.angeIntygetBaserasPa(this.intyg.baserasPa).then(function() {
@@ -144,7 +144,7 @@ Given(/^jag anger datum för Baserat på$/, function(callback) {
     });
 });
 
-Given(/^jag anger datum för arbetsförmåga$/, function(callback) {
+When(/^jag anger datum för arbetsförmåga$/, function(callback) {
     this.intyg.arbetsformaga = fkValues.getRandomArbetsformaga();
 
     fkUtkastPage.angeArbetsformaga(this.intyg.arbetsformaga).then(function() {
@@ -155,7 +155,7 @@ Given(/^jag anger datum för arbetsförmåga$/, function(callback) {
     });
 });
 
-Given(/^ska fält för Kontakt med FK vara tom$/, function(callback) {
+Then(/^ska fält för Kontakt med FK vara tom$/, function(callback) {
     // Write code here that turns the phrase above into concrete actions
     expect(fkUtkastPage.kontaktFk.getAttribute('checked')).to.eventually.be.a('null')
         .then(function(value) {
@@ -166,7 +166,7 @@ Given(/^ska fält för Kontakt med FK vara tom$/, function(callback) {
         });
 });
 
-Given(/^jag anger kontakt med FK$/, function(callback) {
+When(/^jag anger kontakt med FK$/, function(callback) {
     this.intyg.kontaktOnskasMedFK = fkValues.getRandomKontaktOnskasMedFK();
     fkUtkastPage.angeKontaktOnskasMedFK(this.intyg.kontaktOnskasMedFK).then(function() {
         logger.info('OK - angeKontaktOnskasMedFK :' + JSON.stringify(this.intyg.kontaktOnskasMedFK));

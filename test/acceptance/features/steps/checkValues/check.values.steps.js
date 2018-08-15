@@ -52,7 +52,7 @@ Then(/^(?:ska jag|jag ska) se den data jag angett för intyget$/, function() {
 });
 
 
-Given(/^ska intyget visa den nya addressen$/, function() {
+Then(/^ska intyget visa den nya addressen$/, function() {
     return Promise.all([
         expect(lusePage.patientAdress.postadress.getText()).to.eventually.contain(this.patient.adress.postadress),
         expect(lusePage.patientAdress.postort.getText()).to.eventually.contain(this.patient.adress.postort),
@@ -60,11 +60,11 @@ Given(/^ska intyget visa den nya addressen$/, function() {
     ]);
 });
 
-// Given(/^ska intyget visa det nya namnet$/, function() {
+// Then(/^ska intyget visa det nya namnet$/, function() {
 //     return expect(lusePage.patientNamnOchPersonnummer.getText()).to.eventually.contain(person.forNamn + ' ' + person.efterNamn);
 // });
 
-Given(/^ska intyget visa det (gamla|nya) person-id:numret$/, function(arg1) {
+Then(/^ska intyget visa det (gamla|nya) person-id:numret$/, function(arg1) {
     let elm;
     if (arg1 === 'nya') {
         elm = lusePage.patientNamnOchPersonnummer;
@@ -76,7 +76,7 @@ Given(/^ska intyget visa det (gamla|nya) person-id:numret$/, function(arg1) {
 
 });
 
-Given(/^ska adressen vara ifylld på det förnyade intyget$/, function() {
+Then(/^ska adressen vara ifylld på det förnyade intyget$/, function() {
     var promiseArray = [];
     var isSMIIntyg = helpers.isSMIIntyg(this.intyg.typ);
     if (isSMIIntyg) {

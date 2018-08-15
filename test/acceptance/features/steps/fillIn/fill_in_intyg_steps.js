@@ -246,7 +246,7 @@ function isValid(intygShortcode) {
  *
  */
 
-Given(/^jag fyller i alla nödvändiga fält för intyget(?:\s"([^"]*)")?$/, function(intygsTyp) {
+When(/^jag fyller i alla nödvändiga fält för intyget(?:\s"([^"]*)")?$/, function(intygsTyp) {
     if (!this.intyg.typ && !intygsTyp) {
         throw 'intyg.typ odefinierad.';
     } else {
@@ -256,7 +256,7 @@ Given(/^jag fyller i alla nödvändiga fält för intyget(?:\s"([^"]*)")?$/, fun
     }
 });
 
-Given(/^jag ändrar diagnoskod$/, function() {
+When(/^jag ändrar diagnoskod$/, function() {
     var isSMIIntyg = helpers.isSMIIntyg(this.intyg.typ);
     var diagnos = {
         kod: td.values.fk.getRandomDiagnoskod()
@@ -270,7 +270,7 @@ Given(/^jag ändrar diagnoskod$/, function() {
 });
 
 
-Given(/^jag ändrar i fältet (arbetsförmåga|sjukskrivningsperiod|diagnoskod)$/, function(field) {
+When(/^jag ändrar i fältet (arbetsförmåga|sjukskrivningsperiod|diagnoskod)$/, function(field) {
     logger.info('Fältet som ändras är: ' + field);
 
     if (field === 'sjukskrivningsperiod') {
@@ -300,7 +300,7 @@ Given(/^jag ändrar i fältet (arbetsförmåga|sjukskrivningsperiod|diagnoskod)$
 
 });
 
-Given(/^jag ändrar i slumpat fält$/, function() {
+When(/^jag ändrar i slumpat fält$/, function() {
     let intygShortcode = helpers.getAbbrev(this.intyg.typ);
 
     if (isValid(intygShortcode)) {
@@ -312,7 +312,7 @@ Given(/^jag ändrar i slumpat fält$/, function() {
 
 });
 
-Given(/^jag fyller i resten av de nödvändiga fälten\.$/, function() {
+When(/^jag fyller i resten av de nödvändiga fälten\.$/, function() {
     return moveAndSendKeys(fkUtkastPage.baserasPa.minUndersokning.checkbox, protractor.Key.SPACE).then(function() {
         return moveAndSendKeys(fkUtkastPage.funktionsNedsattning, 'Halt och lytt').then(function() {
             return moveAndSendKeys(fkUtkastPage.aktivitetsBegransning, 'Orkar inget').then(function() {
@@ -322,7 +322,7 @@ Given(/^jag fyller i resten av de nödvändiga fälten\.$/, function() {
     });
 });
 
-Given(/^jag fyller i ett intyg som( inte)? är smitta$/, function(isSmitta) {
+When(/^jag fyller i ett intyg som( inte)? är smitta$/, function(isSmitta) {
     isSmitta = (typeof isSmitta === 'undefined');
     logger.silly('isSmitta : ' + isSmitta);
     this.intyg = testdata.fk['7263'].getRandom(false, isSmitta);

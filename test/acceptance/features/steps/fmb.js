@@ -98,41 +98,41 @@ function fillInDiagnoskod(diagnos, intyg) {
  *
  */
 
-Given(/^jag fyller i "([^"]*)" som diagnoskod$/, function(dKod) {
+When(/^jag fyller i "([^"]*)" som diagnoskod$/, function(dKod) {
     return fillInDiagnoskod({
         kod: dKod
 
     }, this.intyg);
 });
 
-Given(/^jag fyller i diagnoskod$/, function() {
+When(/^jag fyller i diagnoskod$/, function() {
     let diagnos = testdataHelpers.shuffle(testdata.fmb.fmbInfo.diagnoser)[0];
     return fillInDiagnoskod(diagnos, this.intyg);
 
 });
 
-Given(/^jag fyller i diagnoskod utan egen FMB info$/, function() {
+When(/^jag fyller i diagnoskod utan egen FMB info$/, function() {
     var diagnos = testdataHelpers.shuffle(testdata.fmb.utanEgenFMBInfo.diagnoser)[0];
     return fillInDiagnoskod(diagnos, this.intyg);
 });
 
-Given(/^ska rätt info gällande FMB visas$/, function() {
+Then(/^ska rätt info gällande FMB visas$/, function() {
 
     logger.info(global.tmpDiagnos);
     return checkFMB(global.tmpDiagnos, this.intyg);
 
 });
 
-Given(/^ska FMB info för överliggande diagnoskod visas$/, function() {
+Then(/^ska FMB info för överliggande diagnoskod visas$/, function() {
     logger.info(global.tmpDiagnos);
     return checkFMB(global.tmpDiagnos, this.intyg); //kontrollerar även allert texten
 });
-Given(/^jag fyller i diagnoskod utan FMB info$/, function() {
+When(/^jag fyller i diagnoskod utan FMB info$/, function() {
     var diagnos = testdataHelpers.shuffle(testdata.fmb.utanFMBInfo.diagnoser)[0];
     fillInDiagnoskod(diagnos, this.intyg);
 });
 
-Given(/^ska ingen info gällande FMB visas$/, function() {
+Then(/^ska ingen info gällande FMB visas$/, function() {
 
     var promiseArray = [];
 

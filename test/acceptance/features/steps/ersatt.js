@@ -53,11 +53,11 @@ const fragaSvar = wcTestTools.pages.intyg.hogerfaltet.fragaSvar;
  *
  */
 
-Given(/^ska jag se en knapp med texten "([^"]*)"$/, function(btnTxt) {
+Then(/^ska jag se en knapp med texten "([^"]*)"$/, function(btnTxt) {
     return expect(element(by.id('ersattBtn')).getText()).to.eventually.equal(btnTxt);
 });
 
-Given(/^jag klickar på ersätta knappen$/, function() {
+When(/^jag klickar på ersätta knappen$/, function() {
     return element(by.id('ersattBtn')).sendKeys(protractor.Key.SPACE);
 });
 
@@ -86,18 +86,18 @@ When(/^jag klickar på ersätt\-knappen i dialogen$/, function() {
     });
 });
 
-Given(/^jag går tillbaka till det ersatta intyget$/, function() {
+When(/^jag går tillbaka till det ersatta intyget$/, function() {
     return helpers.pageReloadDelay().then(function() {
         var url = intygURL(global.ersattintyg);
         return helpers.getUrl(url);
     });
 });
 
-Given(/^ska meddelandet som visas innehålla texten "([^"]*)"$/, function(modalMsg) {
+Then(/^ska meddelandet som visas innehålla texten "([^"]*)"$/, function(modalMsg) {
     return expect(element(by.css('.modal-body')).getText()).to.eventually.contain(modalMsg);
 });
 
-Given(/^ska det( inte)? finnas knappar för "([^"]*)"( om intygstyp är "([^"]*)")?$/, function(inte, buttons, typ) {
+Then(/^ska det( inte)? finnas knappar för "([^"]*)"( om intygstyp är "([^"]*)")?$/, function(inte, buttons, typ) {
 
     if (typ && this.intyg.typ !== typ) {
         logger.silly('Intygstyp är inte ' + typ);

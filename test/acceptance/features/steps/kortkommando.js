@@ -61,7 +61,7 @@ var pattern = /\d{4}\-\d{2}\-\d{2}/g;
 
 
 
-Given(/^jag fyller i ett from datum$/, function() {
+When(/^jag fyller i ett from datum$/, function() {
     key = testdataHelper.shuffle(['med25', 'med50', 'med75', 'med100'])[0];
     var start = testdataHelper.dateFormat(startDate);
     logger.info('Startdatum: ' + start);
@@ -69,7 +69,7 @@ Given(/^jag fyller i ett from datum$/, function() {
 });
 
 
-Given(/^jag fyller i kortkommando som till och med datum$/, function() {
+When(/^jag fyller i kortkommando som till och med datum$/, function() {
     digit = Math.floor(Math.random() * 999);
     var shortcode = 'd' + digit;
     logger.info('Kortkommando:' + shortcode);
@@ -87,7 +87,7 @@ Given(/^jag fyller i kortkommando som till och med datum$/, function() {
     });
 });
 
-Given(/^ska till och med datum räknas ut automatiskt$/, function() {
+Then(/^ska till och med datum räknas ut automatiskt$/, function() {
     logger.silly(date);
     var result = pattern.test(date);
     if (result) {

@@ -60,7 +60,7 @@ function stringToArray(text) {
  *
  */
 
-Given(/^ska intyget( inte)? finnas i Mina intyg$/, function(inte) {
+Then(/^ska intyget( inte)? finnas i Mina intyg$/, function(inte) {
     var skaFinnas = typeof(inte) === 'undefined';
     var intygElement = element(by.id('certificate-' + this.intyg.id));
     return expect(intygElement.isPresent()).to.eventually.equal(skaFinnas).then(function(value) {
@@ -70,7 +70,7 @@ Given(/^ska intyget( inte)? finnas i Mina intyg$/, function(inte) {
     });
 });
 
-Given(/^jag går till Mina intyg för patienten$/, function() {
+When(/^jag går till Mina intyg för patienten$/, function() {
     browser.ignoreSynchronization = true;
     return helpers.getUrl(process.env.MINAINTYG_URL + '/web/sso?guid=' + this.patient.id).then(function() {
         // Om samtyckesruta visas
@@ -94,7 +94,7 @@ Given(/^jag går till Mina intyg för patienten$/, function() {
     });
 });
 
-Given(/^ska intygets status i Mina intyg visa "([^"]*)"$/, function(status) {
+Then(/^ska intygets status i Mina intyg visa "([^"]*)"$/, function(status) {
     // STATUS_REGEX = status.replace(/(\{).+?(\})/g, '(.*)');
     STATUS_REGEX = status;
     var intygElement = element(by.id('certificate-' + this.intyg.id));
@@ -105,11 +105,11 @@ Given(/^ska intygets status i Mina intyg visa "([^"]*)"$/, function(status) {
     });
 });
 
-Given(/^jag går in på intyget i Mina intyg$/, function(callback) {
+When(/^jag går in på intyget i Mina intyg$/, function(callback) {
     element(by.id('viewCertificateBtn-' + this.intyg.id)).sendKeys(protractor.Key.SPACE).then(callback());
 });
 
-Given(/^ska intygets information i Mina intyg vara den jag angett$/, function(callback) {
+Then(/^ska intygets information i Mina intyg vara den jag angett$/, function(callback) {
     if (this.intyg.typ === 'Läkarutlåtande för sjukersättning') {
         miCheckValues.fk.LUSE(this.intyg).then(function(value) {
             logger.info('Alla kontroller utförda OK');
@@ -122,7 +122,7 @@ Given(/^ska intygets information i Mina intyg vara den jag angett$/, function(ca
     }
 });
 
-Given(/^jag loggar ut ur Mina intyg$/, function() {
+When(/^jag loggar ut ur Mina intyg$/, function() {
     return element(by.id('mvklogoutLink')).sendKeys(protractor.Key.SPACE).then(function() {
         return helpers.hugeDelay();
     });

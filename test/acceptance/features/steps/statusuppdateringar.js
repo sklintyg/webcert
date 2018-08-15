@@ -126,15 +126,15 @@ function waitForEntries(intygsId, statusValue, numEvents, intyg, cb) {
  *
  */
 
-Given(/^ska statusuppdatering "([^"]*)" skickas till vårdsystemet\. Totalt: "([^"]*)"$/, function(handelsekod, antal, callback) {
+Then(/^ska statusuppdatering "([^"]*)" skickas till vårdsystemet\. Totalt: "([^"]*)"$/, function(handelsekod, antal, callback) {
     waitForEntries(this.intyg.id, handelsekod, parseInt(antal, 10), this.intyg, callback);
 });
 
-Given(/^ska (\d+) statusuppdatering "([^"]*)" skickas för det ursprungliga intyget$/, function(antal, handelsekod, callback) {
+Then(/^ska (\d+) statusuppdatering "([^"]*)" skickas för det ursprungliga intyget$/, function(antal, handelsekod, callback) {
     waitForEntries(this.ursprungligtIntyg.id, handelsekod, parseInt(antal, 10), this.intyg, callback);
 });
 
-Given(/^ska statusuppdateringen visa att parametern "([^"]*)" är mottagen med värdet "([^"]*)"$/, function(param, paramValue) {
+Then(/^ska statusuppdateringen visa att parametern "([^"]*)" är mottagen med värdet "([^"]*)"$/, function(param, paramValue) {
     logger.silly(statusuppdateringarRows[0]);
     var row = statusuppdateringarRows[0];
     var dbParam = (param === 'ref') ? 'intygRef' : 'undefined';
@@ -142,7 +142,7 @@ Given(/^ska statusuppdateringen visa att parametern "([^"]*)" är mottagen med v
     expect(paramValue).to.equal(row[dbParam]);
 });
 
-Given(/^ska statusuppdateringen visa frågor (\d+), hanterade frågor (\d+),antal svar (\d+), hanterade svar (\d+)$/, function(fragor, hanFragor, svar, hanSvar) {
+Then(/^ska statusuppdateringen visa frågor (\d+), hanterade frågor (\d+),antal svar (\d+), hanterade svar (\d+)$/, function(fragor, hanFragor, svar, hanSvar) {
     logger.info(statusuppdateringarRows[0]);
     var row = statusuppdateringarRows[0];
     return Promise.all([
@@ -154,7 +154,7 @@ Given(/^ska statusuppdateringen visa frågor (\d+), hanterade frågor (\d+),anta
 });
 
 
-Given(/^ska statusuppdateringen visa mottagna frågor totalt (\d+),ej besvarade (\d+),besvarade (\d+), hanterade (\d+)$/,
+Then(/^ska statusuppdateringen visa mottagna frågor totalt (\d+),ej besvarade (\d+),besvarade (\d+), hanterade (\d+)$/,
     function(totalt, ejBesvarade, besvarade, hanterade) {
         logger.info(statusuppdateringarRows[0]);
         var row = statusuppdateringarRows[0];
@@ -168,7 +168,7 @@ Given(/^ska statusuppdateringen visa mottagna frågor totalt (\d+),ej besvarade 
     }
 );
 
-Given(/^ska statusuppdateringen visa skickade frågor totalt (\d+),ej besvarade (\d+),besvarade (\d+), hanterade (\d+)$/,
+Then(/^ska statusuppdateringen visa skickade frågor totalt (\d+),ej besvarade (\d+),besvarade (\d+), hanterade (\d+)$/,
     function(totalt, ejBesvarade, besvarade, hanterade) {
         logger.info(statusuppdateringarRows[0]);
         var row = statusuppdateringarRows[0];

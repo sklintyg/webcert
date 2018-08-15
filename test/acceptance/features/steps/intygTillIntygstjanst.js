@@ -140,7 +140,7 @@
   */
 
 
- Given(/^jag skickar ett "([^"]*)" intyg till Intygstjänsten$/, function(intygCode, callback) {
+ When(/^jag skickar ett "([^"]*)" intyg till Intygstjänsten$/, function(intygCode, callback) {
      this.intyg.id = testdataHelper.generateTestGuid();
      this.intyg.typ = intygCode;
 
@@ -155,7 +155,7 @@
      intygTillIntygtjanst(this.intyg, this.patient, this.user, callback);
 
  });
- Given(/^jag skickar ett intyg med ändrade personuppgifter till Intygstjänsten$/, function(callback) {
+ When(/^jag skickar ett intyg med ändrade personuppgifter till Intygstjänsten$/, function(callback) {
      this.intyg.id = testdataHelper.generateTestGuid();
      this.intyg.typ = 'Läkarintyg FK 7263';
 

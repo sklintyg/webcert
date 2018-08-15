@@ -123,17 +123,17 @@ function raderaUtkastet() {
  *	Test steg
  *
  */
-Given(/^ska det finnas en länk med texten "([^"]*)"$/, function(txt) {
+Then(/^ska det finnas en länk med texten "([^"]*)"$/, function(txt) {
     return expect(element(by.cssContainingText('a', txt)).isPresent()).to.eventually.be.true;
 });
 
-Given(/^jag klickar på länk med texten "([^"]*)"$/, function(txt) {
+When(/^jag klickar på länk med texten "([^"]*)"$/, function(txt) {
     return element(by.cssContainingText('a', txt)).click().then(function() {
         return helpers.pageReloadDelay();
     });
 });
 
-Given(/^jag signerar intyget$/, function() {
+When(/^jag signerar intyget$/, function() {
     return signeraUtkast(this);
 });
 
@@ -156,15 +156,15 @@ Then(/^klickar jag på knappen "Skriv dödsorsaksintyg"$/, function() {
     });
 });
 
-Given(/^jag signerar och skickar kompletteringen$/, function() {
+When(/^jag signerar och skickar kompletteringen$/, function() {
     return signeraUtkast(this);
 });
 
-Given(/^ska det inte finnas någon knapp för "([^"]*)"$/, function(texten) {
+Then(/^ska det inte finnas någon knapp för "([^"]*)"$/, function(texten) {
     return expect(element(by.cssContainingText('.btn', texten)).isPresent()).to.become(false);
 });
 
-Given(/^jag klickar på signera\-knappen$/, function() {
+When(/^jag klickar på signera\-knappen$/, function() {
     return browser.wait(function() {
         return baseIntyg.intygStatus[1].getText().then(function(txt) {
             return (txt.indexOf('Utkastet är sparat') !== -1);
@@ -174,7 +174,7 @@ Given(/^jag klickar på signera\-knappen$/, function() {
     });
 });
 
-Given(/^ska signera\-knappen inte vara klickbar$/, function(callback) {
+Then(/^ska signera\-knappen inte vara klickbar$/, function(callback) {
     utkastPage.signeraButton.isEnabled().then(function(isVisible) {
         if (isVisible) {
             callback('FEL - Signera-knappen är klickbar!');
@@ -184,11 +184,11 @@ Given(/^ska signera\-knappen inte vara klickbar$/, function(callback) {
     }).then(callback);
 });
 
-Given(/^jag uppdaterar enhetsaddress$/, function() {
+When(/^jag uppdaterar enhetsaddress$/, function() {
     return fillInCommon.fillInEnhetAdress(this.user);
 });
 
-Given(/^jag makulerar intyget$/, function() {
+When(/^jag makulerar intyget$/, function() {
 
     return makuleraIntyget(this.intyg);
 });
@@ -202,7 +202,7 @@ Given(/^att jag har raderat alla utkast för "([^"]*)" via testAPI$/, function(p
 });
 
 
-Given(/^jag har raderat alla intyg och utkast för (?:"([^"]*)?" )?"([^"]*)" testpatienten$/, function(testPatientBeskrivning, testSyfte) {
+When(/^jag har raderat alla intyg och utkast för (?:"([^"]*)?" )?"([^"]*)" testpatienten$/, function(testPatientBeskrivning, testSyfte) {
     var testvalues = wcTestTools.testdata.values;
 
     var patient = testvalues.dedikeradeTestPatienter.medSyfte(testSyfte)[helpers.getIntFromTxt(testPatientBeskrivning || 'första')];
@@ -214,12 +214,12 @@ Given(/^jag har raderat alla intyg och utkast för (?:"([^"]*)?" )?"([^"]*)" tes
 });
 
 
-Given(/^jag raderar utkastet$/, function() {
+When(/^jag raderar utkastet$/, function() {
     return raderaUtkastet();
 });
 
 
-Given(/^jag skriver ut intyget$/, function() {
+When(/^jag skriver ut intyget$/, function() {
     //Specifika krav på lisjp utskrift se: D3. PDF utskrift
     if (this.intyg.typ !== 'Läkarintyg för sjukpenning') {
         return moveAndSendKeys(element(by.id('downloadprint')), protractor.Key.SPACE);
@@ -228,18 +228,18 @@ Given(/^jag skriver ut intyget$/, function() {
     }
 });
 
-Given(/^jag skriver ut det makulerade intyget$/, function() {
+When(/^jag skriver ut det makulerade intyget$/, function() {
     //Utskrift av makulerat intyg är samma för alla intygstyper.
     return moveAndSendKeys(element(by.id('downloadprint')), protractor.Key.SPACE);
 });
 
-Given(/^jag skriver ut utkastet$/, function() {
+When(/^jag skriver ut utkastet$/, function() {
     return moveAndSendKeys(utkastPage.skrivUtBtn, protractor.Key.SPACE).then(function() {
         return helpers.pageReloadDelay(); // Page reload
     });
 });
 
-Given(/^ska det finnas en referens till gamla intyget$/, function() {
+Then(/^ska det finnas en referens till gamla intyget$/, function() {
     let intyg = this.intyg;
     return element(by.id('wc-intyg-relations-button')).click().then(function() { // May not be needed. Only to graphically illustrate normal user behavior.
         return browser.findElement(by.css('.btn-info')).sendKeys(protractor.Key.SPACE).then(function() {
@@ -250,7 +250,7 @@ Given(/^ska det finnas en referens till gamla intyget$/, function() {
         });
     });
 });
-Given(/^ska intyget inte innehålla gamla personuppgifter$/, function() {
+Then(/^ska intyget inte innehålla gamla personuppgifter$/, function() {
     var namn = this.intyg.patient.forNamn + ' ' + this.intyg.patient.efterNamn;
     return expect(element(by.id('patientNamnPersonnummer')).getText()).to.eventually.not.contain(namn);
 
@@ -260,11 +260,11 @@ When(/^jag markerar intyget som klart för signering$/, function() {
     return moveAndSendKeys(element(by.id('markeraKlartForSigneringButton')), protractor.Key.SPACE);
 });
 
-When(/^ska jag se KFSIGN infotexten "([^"]*)"$/, function(msg) {
+Then(/^ska jag se KFSIGN infotexten "([^"]*)"$/, function(msg) {
     return expect(element(by.id('draft-marked-ready-text')).getText()).to.eventually.contain(msg);
 });
 
-Given(/^ska intyget inte finnas i listan$/, function() {
+Then(/^ska intyget inte finnas i listan$/, function() {
     let intyg = this.intyg;
     return expect(element(by.id('wc-sekretessmarkering-icon-' + intyg.id)).isPresent()).to.become(false).then(function() {
 

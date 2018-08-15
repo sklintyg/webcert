@@ -157,14 +157,14 @@ function createPatientArr(getObjFromList) {
  *
  */
 
-Given(/^jag går in på Rehabstöd$/, function() {
+When(/^jag går in på Rehabstöd$/, function() {
     var url = process.env.REHABSTOD_URL + 'welcome.html';
     return helpers.getUrl(url).then(function() {
         logger.info('Går till url: ' + url);
     });
 });
 
-Given(/^jag väljer enhet "([^"]*)"$/, function(enhet) {
+When(/^jag väljer enhet "([^"]*)"$/, function(enhet) {
     let elementId = 'rhs-vardenhet-selector-select-active-unit-' + enhet + '-link';
     let user = this.user;
     let headerboxUser = element(by.css('.header-user'));
@@ -198,7 +198,7 @@ When(/^jag går till pågående sjukfall i Rehabstöd$/, function() {
         });
     });
 });
-When(/^ska jag inte se patientens personnummer bland pågående sjukfall$/, function() {
+Then(/^ska jag inte se patientens personnummer bland pågående sjukfall$/, function() {
     let patient = this.patient;
     return element.all(by.css('.rhs-table-row')).getText().then(function(tableRows) {
         return tableRows.forEach(function(row) {
@@ -216,7 +216,7 @@ When(/^ska jag inte se patientens personnummer bland pågående sjukfall$/, func
 });
 
 
-Given(/^jag söker efter slumpvald patient och sparar antal intyg$/, function(callback) {
+When(/^jag söker efter slumpvald patient och sparar antal intyg$/, function(callback) {
     let world = this;
     createPatientArr().then(function(patientArr) {
         //getObjFromList = objList(patientArr);
@@ -239,7 +239,7 @@ Given(/^jag söker efter slumpvald patient och sparar antal intyg$/, function(ca
     }).then(callback);
 });
 
-Given(/^jag går in på en patient som sparats från Rehabstöd$/, function() {
+When(/^jag går in på en patient som sparats från Rehabstöd$/, function() {
     this.patient = {
         id: this.rehabstod.patient.id.replace('-', '')
     };
@@ -247,7 +247,7 @@ Given(/^jag går in på en patient som sparats från Rehabstöd$/, function() {
     return gotoPatient(this.patient, this.user);
 });
 
-Given(/^jag är inloggad som läkare i Rehabstöd$/, function() {
+When(/^jag är inloggad som läkare i Rehabstöd$/, function() {
     // Setting rehabstod to new bas url
     browser.baseUrl = process.env.REHABSTOD_URL;
     this.user = {
@@ -260,7 +260,7 @@ Given(/^jag är inloggad som läkare i Rehabstöd$/, function() {
     return logInAsUserRoleRehabstod(this.user, 'Läkare', true);
 });
 
-Given(/^jag är inloggad som rehabkoordinator$/, function() {
+When(/^jag är inloggad som rehabkoordinator$/, function() {
     // Setting rehabstod to new bas url
     browser.baseUrl = process.env.REHABSTOD_URL;
     this.user = {
@@ -272,7 +272,7 @@ Given(/^jag är inloggad som rehabkoordinator$/, function() {
     return logInAsUserRoleRehabstod(this.user, 'rehabkoordinator', true);
 });
 
-Given(/^jag är inloggad som läkare i Webcert med enhet "([^"]*)"$/, function(enhetsId) {
+When(/^jag är inloggad som läkare i Webcert med enhet "([^"]*)"$/, function(enhetsId) {
     // Setting webcert to new bas url
     browser.baseUrl = process.env.WEBCERT_URL;
     var userObj = {
@@ -286,7 +286,7 @@ Given(/^jag är inloggad som läkare i Webcert med enhet "([^"]*)"$/, function(e
     return logInAsUserRole(userObj, 'Läkare', true);
 });
 
-Given(/^jag fyller i ett "([^"]*)" intyg som inte är smitta med ny sjukskrivningsperiod$/, function(intygsTyp) {
+When(/^jag fyller i ett "([^"]*)" intyg som inte är smitta med ny sjukskrivningsperiod$/, function(intygsTyp) {
     this.intyg.typ = intygsTyp;
     this.rehabstod.patient.intygId = this.intyg.id;
     //sattNySjukskrivningsPeriod(this.intyg);
@@ -294,7 +294,7 @@ Given(/^jag fyller i ett "([^"]*)" intyg som inte är smitta med ny sjukskrivnin
     return fillIn(this);
 });
 
-Given(/^ska antalet intyg ökat med (\d+) på patient som sparats från Rehabstöd$/, function(antal) {
+Then(/^ska antalet intyg ökat med (\d+) på patient som sparats från Rehabstöd$/, function(antal) {
     let world = this;
     return createPatientArr(getObjFromList).then(function(patientArr) {
         logger.info('Rehabpatient: ( id: ' + world.rehabstod.patient.id + ', Antal intyg: ' + patientArr[0].noOfIntyg + ').');
@@ -308,7 +308,7 @@ Given(/^ska antalet intyg ökat med (\d+) på patient som sparats från Rehabst�
     });
 });
 
-Given(/^jag går in på intyget som tidigare skapats$/, function() {
+When(/^jag går in på intyget som tidigare skapats$/, function() {
     var url;
     if (this.rehabstod) {
         url = process.env.WEBCERT_URL + '#/intyg/lisjp/' + this.intyg.id + '/';

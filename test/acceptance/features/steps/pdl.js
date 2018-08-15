@@ -41,12 +41,12 @@ var db = require('./dbActions');
  *
  */
 
-Given(/^ska loggaktivitet "([^"]*)" skickas till loggtjänsten(?: med argument "([^"]*)")?$/, function(activity, activityarg) {
+Then(/^ska loggaktivitet "([^"]*)" skickas till loggtjänsten(?: med argument "([^"]*)")?$/, function(activity, activityarg) {
     logger.silly(activity);
     logger.silly(activityarg);
     return db.storeLog.waitForCount(activity, 1, this.intyg.id, this.user.hsaId, activityarg);
 });
 
-Given(/^ska det nu finnas (\d+) loggaktivitet "([^"]*)" för intyget$/, function(count, activity) {
+Then(/^ska det nu finnas (\d+) loggaktivitet "([^"]*)" för intyget$/, function(count, activity) {
     return db.storeLog.waitForCount(activity, count, this.intyg.id, this.user.hsaId);
 });
