@@ -238,26 +238,24 @@ Given(/^ska Förnya\-knappen visas för( alla)?( aktuella)? signerade eller mott
     ]);
 });
 
-Given(/^är signeraknappen tillgänglig$/, function(callback) {
-    expect(utkastPage.signeraButton.isPresent()).to.eventually.be.ok.then(function(value) {
+Given(/^är signeraknappen tillgänglig$/, function() {
+    return expect(utkastPage.signeraButton.isPresent()).to.eventually.be.ok.then(function(value) {
         logger.info('Signeringsknapp existerar ' + value);
     }, function(reason) {
-        callback('FEL, Signeringsknapp finns inte på sidan,' + reason);
-    });
-
-    expect(utkastPage.signeraButton.isEnabled()).to.eventually.be.ok.then(function(value) {
+        throw ('FEL, Signeringsknapp finns inte på sidan,' + reason);
+    }).then(expect(utkastPage.signeraButton.isEnabled()).to.eventually.be.ok.then(function(value) {
         logger.info('Signeringsknapp är klickbar' + value);
     }, function(reason) {
-        callback('FEL, Signeringsknapp är inte klickbar,' + reason);
-    }).then(callback);
+        throw ('FEL, Signeringsknapp är inte klickbar,' + reason);
+    }));
 });
 
-Given(/^ska makuleraknappen inte vara tillgänglig$/, function(callback) {
-    expect(fkIntygPage.makulera.btn.isPresent()).to.eventually.be.not.ok.then(function(value) {
+Given(/^ska makuleraknappen inte vara tillgänglig$/, function() {
+    return expect(fkIntygPage.makulera.btn.isPresent()).to.eventually.be.not.ok.then(function(value) {
         logger.info('Makuleraknappen syns inte (ok)' + value);
     }, function(reason) {
-        callback('FEL, Makuleraknappen finns tillgänglig,' + reason);
-    }).then(callback);
+        throw ('FEL, Makuleraknappen finns tillgänglig,' + reason);
+    });
 });
 
 Given(/^väljer att byta vårdenhet$/, function(callback) {

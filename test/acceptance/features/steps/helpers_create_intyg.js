@@ -19,6 +19,8 @@
 
 /*global logger,pages,Promise,wcTestTools, protractor,browser*/
 'use strict';
+let testTools = require('common-testtools');
+testTools.protractorHelpers.init();
 var testdataHelper = wcTestTools.helpers.testdata;
 var loginHelpers = require('./inloggning/login.helpers.js');
 // var restTestdataHelper = wcTestTools.helpers.restTestdata;
@@ -61,10 +63,10 @@ function writeNewIntyg(world, status) {
             .then(function() { // Skicka till mottagare om intyget ska vara Skickat
                 if (status === 'Skickat') {
                     logger.silly('Klickar på skicka knapp..');
-                    return fkIntygPage.skicka.knapp.sendKeys(protractor.Key.SPACE)
+                    return fkIntygPage.skicka.knapp.typeKeys(protractor.Key.SPACE)
                         .then(function() {
                             logger.silly('Klickar skicka knapp i skicka-dialog..');
-                            return fkIntygPage.skicka.dialogKnapp.sendKeys(protractor.Key.SPACE);
+                            return fkIntygPage.skicka.dialogKnapp.typeKeys(protractor.Key.SPACE);
                         });
                 } else {
                     logger.silly('Klar utan att skicka till mottagare..');
