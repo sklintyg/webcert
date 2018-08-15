@@ -68,6 +68,7 @@ Annan/okänd: övrigt</text>
     <text id="DFR_7.1.OBS">Du har angett att det finns skäl för polisanmälan, därmed bör du även skriva ut dödsbeviset och skicka det till polisen per post/fax.</text>
     <text id="DFR_7.1_UNDERSOKNINGS_SKA_GORAS.INFO">Du har angivit att en rättsmedicinsk undersökning ska göras. Detta kräver att en polisanmälan görs och fältet har därför förifyllts.</text>
     <text id="DFR_7.1.SVA_1.RBK">Ja, om dödsfallet har eller kan ha orsakats av yttre påverkan (skada/förgiftning) eller fel/försummelse i vården eller den dödes identitet är okänd, ska polisanmälan göras och dödsbeviset lämnas till Polismyndigheten</text>
+    <text id="DFR_7.1.SVAR_NEJ.RBK">Nej</text>
 
     <text id="DETALJER_UNDERSOKNING.JA.RBK">Ja</text>
     <text id="DETALJER_UNDERSOKNING.UNDERSOKNING_SKA_GORAS.RBK">Nej, rättsmedicinsk undersökning ska göras</text>
