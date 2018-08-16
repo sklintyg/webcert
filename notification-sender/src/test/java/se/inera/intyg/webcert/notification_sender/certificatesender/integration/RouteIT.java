@@ -18,14 +18,9 @@
  */
 package se.inera.intyg.webcert.notification_sender.certificatesender.integration;
 
-import static com.jayway.awaitility.Awaitility.await;
+import static org.awaitility.Awaitility.await;
 
-import java.util.Enumeration;
-import java.util.concurrent.TimeUnit;
-
-import javax.jms.Queue;
-import javax.jms.TextMessage;
-
+import com.google.common.base.Throwables;
 import org.apache.camel.test.spring.CamelSpringJUnit4ClassRunner;
 import org.apache.camel.test.spring.CamelTestContextBootstrapper;
 import org.junit.Before;
@@ -36,13 +31,16 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.*;
+import org.springframework.test.context.BootstrapWith;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
 import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
-
-import com.google.common.base.Throwables;
-
+import javax.jms.Queue;
+import javax.jms.TextMessage;
+import java.util.Enumeration;
+import java.util.concurrent.TimeUnit;
 import se.inera.intyg.webcert.common.Constants;
 import se.inera.intyg.webcert.notification_sender.certificatesender.services.mock.MockSendCertificateServiceClientImpl;
 

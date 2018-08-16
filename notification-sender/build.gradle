@@ -24,7 +24,7 @@ dependencies {
 
     testCompile("se.inera.intyg.common:lisjp:${commonVersion}")
 
-    testCompile "com.jayway.awaitility:awaitility:${awaitilityVersion}"
+    testCompile "org.awaitility:awaitility:${awaitilityVersion}"
     testCompile "org.kubek2k:springockito:${springockitoVersion}"
     testCompile "org.apache.camel:camel-test-spring:${camelVersion}"
     testCompile "org.springframework:spring-test:${springVersion}"
