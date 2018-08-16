@@ -368,7 +368,7 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
 
     private void verifyNoDraftCopy(String originalIntygId, String operation) {
         final Optional<WebcertCertificateRelation> copiedByRelation = certificateRelationService.getNewestRelationOfType(originalIntygId,
-                RelationKod.COPY, Arrays.asList(UtkastStatus.DRAFT_COMPLETE, UtkastStatus.DRAFT_INCOMPLETE));
+                RelationKod.KOPIA, Arrays.asList(UtkastStatus.DRAFT_COMPLETE, UtkastStatus.DRAFT_INCOMPLETE));
         if (copiedByRelation.isPresent()) {
             String errorString = String.format("Cannot %s for certificate id '%s', copy already exist with id '%s'",
                     operation, originalIntygId, copiedByRelation.get().getIntygsId());

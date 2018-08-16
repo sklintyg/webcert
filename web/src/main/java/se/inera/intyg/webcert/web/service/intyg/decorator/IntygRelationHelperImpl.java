@@ -128,7 +128,7 @@ public class IntygRelationHelperImpl implements IntygRelationHelper {
                     break;
                 case FRLANG:
                     break;
-                case COPY:
+                case KOPIA:
                     break;
             }
         } else if (r.getFranIntygsId().getExtension().equals(intygId)) {

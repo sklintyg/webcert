@@ -620,8 +620,8 @@ public class CopyUtkastServiceImplTest {
 
         when(utkastService.getDraft(INTYG_ID, INTYG_TYPE)).thenReturn(utkast);
 
-        WebcertCertificateRelation webcertRelation = new WebcertCertificateRelation(INTYG_COPY_ID, RelationKod.COPY, LocalDateTime.now(), UtkastStatus.DRAFT_INCOMPLETE);
-        when(certificateRelationService.getNewestRelationOfType(eq(INTYG_ID), eq(RelationKod.COPY), any())).thenReturn(Optional.of(webcertRelation));
+        WebcertCertificateRelation webcertRelation = new WebcertCertificateRelation(INTYG_COPY_ID, RelationKod.KOPIA, LocalDateTime.now(), UtkastStatus.DRAFT_INCOMPLETE);
+        when(certificateRelationService.getNewestRelationOfType(eq(INTYG_ID), eq(RelationKod.KOPIA), any())).thenReturn(Optional.of(webcertRelation));
 
         CreateUtkastFromTemplateRequest copyReq = buildUtkastCopyRequest();
 

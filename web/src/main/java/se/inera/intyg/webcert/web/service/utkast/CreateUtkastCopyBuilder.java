@@ -31,7 +31,7 @@ public class CreateUtkastCopyBuilder  extends AbstractUtkastBuilder<CreateUtkast
     public Relation createRelation(CreateUtkastFromTemplateRequest request) {
         Relation relation = new Relation();
         relation.setRelationIntygsId(request.getOriginalIntygId());
-        relation.setRelationKod(RelationKod.COPY);
+        relation.setRelationKod(RelationKod.KOPIA);
         return relation;
     }
 }

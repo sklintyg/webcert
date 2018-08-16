@@ -142,7 +142,7 @@ public class CreateUtkastCopyBuilderTest extends AbstractBuilderTest {
         assertNotNull(builderResponse.getUtkastCopy().getPatientMellannamn());
         assertEquals(PATIENT_LNAME, builderResponse.getUtkastCopy().getPatientEfternamn());
 
-        assertEquals(RelationKod.COPY, builderResponse.getUtkastCopy().getRelationKod());
+        assertEquals(RelationKod.KOPIA, builderResponse.getUtkastCopy().getRelationKod());
         assertEquals(INTYG_ID, builderResponse.getUtkastCopy().getRelationIntygsId());
     }
 
