@@ -20,6 +20,7 @@ package se.inera.intyg.webcert.web.service.utkast;
 
 import javax.persistence.OptimisticLockException;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -884,11 +885,13 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         Utkast utkast2 = new Utkast();
         utkast2.setIntygsId("id2");
 
+        LocalDate today = LocalDate.now();
+
         List<Utkast> utkastList = Arrays.asList(utkast1, utkast2);
 
         when(mockUtkastRepository.findDraftsByNotLockedOrSignedAndSkapadBefore(any())).thenReturn(utkastList);
 
-        int changed = draftService.lockOldDrafts(lockedAfterDay);
+        int changed = draftService.lockOldDrafts(lockedAfterDay, today);
 
         assertEquals(2 , changed);
         verify(mockUtkastRepository, times(2)).save(any(Utkast.class));

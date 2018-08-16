@@ -18,6 +18,7 @@
  */
 package se.inera.intyg.webcert.web.service.utkast;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
@@ -71,5 +72,5 @@ public interface UtkastService {
      */
     Map<String, Map<String, PreviousIntyg>> checkIfPersonHasExistingIntyg(Personnummer personnummer, IntygUser user);
 
-    int lockOldDrafts(int lockedAfterDay);
+    int lockOldDrafts(int lockedAfterDay, LocalDate today);
 }

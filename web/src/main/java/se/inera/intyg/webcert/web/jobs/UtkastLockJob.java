@@ -18,6 +18,8 @@
  */
 package se.inera.intyg.webcert.web.jobs;
 
+import java.time.LocalDate;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,7 +47,9 @@ public class UtkastLockJob {
     public void run() {
         LOG.info("Staring job to set utkast to locked");
 
-        int numberOfLocked = utkastService.lockOldDrafts(lockedAfterDay);
+        LocalDate today = LocalDate.now();
+
+        int numberOfLocked = utkastService.lockOldDrafts(lockedAfterDay, today);
 
         LOG.info("{} utkast set to locked", numberOfLocked);
     }
