@@ -1,0 +1,65 @@
+@startuml
+participant Browser
+participant Journalsystem
+participant NTjP
+box "Webcert" #F8F8F8
+	participant "WC GetAuthTokenResponder"
+	participant "WC TokenUserDetailsService"
+	participant "Webcert backend"
+end box
+
+participant HSA
+
+Browser -> Journalsystem: Open webcert
+activate Browser
+activate Journalsystem
+
+Journalsystem -> "NTjP": Authentication Request
+
+activate NTjP
+NTjP -> "WC GetAuthTokenResponder": Authentication Request
+deactivate NTjP
+
+activate "WC GetAuthTokenResponder"
+
+"WC GetAuthTokenResponder" -> "WC GetAuthTokenResponder": Validate request and generate JWS token
+
+"WC GetAuthTokenResponder" --> NTjP: Response <JWS token>
+deactivate "WC GetAuthTokenResponder"
+activate NTjP
+"NTjP" --> Journalsystem: Response <JWS token>
+deactivate NTjP
+|||
+Journalsystem -> Journalsystem: Build request
+Journalsystem --> Browser: Sends redirect
+deactivate Journalsystem
+
+|||
+Browser -> "WC TokenUserDetailsService": /jwtauth with Authorization: Bearer <JWS>
+
+
+activate  "WC TokenUserDetailsService"
+
+
+|||
+"WC TokenUserDetailsService" -> "WC TokenUserDetailsService": Validate token and extract HSA-id
+
+|||
+"WC TokenUserDetailsService" -> HSA: Get user authorizations using HSA-id
+activate HSA
+HSA --> "WC TokenUserDetailsService": HSA details
+deactivate HSA
+|||
+"WC TokenUserDetailsService" -> "WC TokenUserDetailsService": Build principal, start session
+"WC TokenUserDetailsService" -> "Browser": Authenticated, Set-Cookie with JSESSIONID
+deactivate  "WC TokenUserDetailsService"
+Browser -> "Webcert backend": Request resource /visa/intyg/{guid}
+activate "Webcert backend"
+|||
+"Webcert backend" --> Browser: Requested resource
+
+deactivate "Webcert backend"
+
+deactivate Browser
+
+@enduml

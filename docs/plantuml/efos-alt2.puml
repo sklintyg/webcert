@@ -1,0 +1,47 @@
+@startuml
+participant Browser
+participant Journalsystem
+box "Webcert" #F8F8F8
+	participant "WC SAMLUserDetailsService"
+	participant "Webcert backend"
+end box
+participant HSA
+activate Browser
+Browser -> Journalsystem: Open webcert
+
+activate Journalsystem
+Journalsystem -> Journalsystem: Generate SAML-certificate for session.
+
+|||
+Journalsystem -> Journalsystem: Build request
+Journalsystem --> Browser: Sends redirect with SAML-token
+deactivate Journalsystem
+
+|||
+Browser -> "WC SAMLUserDetailsService": /visa/intyg/efos/{intygId}?samltoken=<BASE64 saml>
+
+
+activate  "WC SAMLUserDetailsService"
+
+
+"WC SAMLUserDetailsService" -> "WC SAMLUserDetailsService": Decode and verify SAML-cert
+
+|||
+"WC SAMLUserDetailsService" -> HSA: Get user authorizations using HSA-id
+activate HSA
+HSA --> "WC SAMLUserDetailsService": HSA details
+deactivate HSA
+|||
+
+"WC SAMLUserDetailsService" -> "WC SAMLUserDetailsService": Build principal, start session
+"WC SAMLUserDetailsService" -> "Webcert backend": Authenticated, serve resource
+ deactivate "WC SAMLUserDetailsService"
+activate "Webcert backend"
+|||
+"Webcert backend" --> Browser: Requested resource
+
+deactivate "Webcert backend"
+
+deactivate Browser
+
+@enduml
