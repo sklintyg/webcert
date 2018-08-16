@@ -89,7 +89,7 @@ public class RouteTest {
         permanentErrorHandlerEndpoint.expectedMessageCount(0);
 
         // When
-        producerTemplate.sendBodyAndHeaders(MESSAGE_BODY, ImmutableMap.<String, Object> of(Constants.MESSAGE_TYPE, Constants.STORE_MESSAGE));
+        producerTemplate.sendBodyAndHeaders(MESSAGE_BODY, ImmutableMap.of(Constants.MESSAGE_TYPE, Constants.STORE_MESSAGE));
 
         // Then
         assertIsSatisfied(storeProcessor);
@@ -111,7 +111,7 @@ public class RouteTest {
         permanentErrorHandlerEndpoint.expectedMessageCount(0);
 
         // When
-        producerTemplate.sendBodyAndHeaders(MESSAGE_BODY, ImmutableMap.<String, Object> of(Constants.MESSAGE_TYPE, Constants.SEND_MESSAGE));
+        producerTemplate.sendBodyAndHeaders(MESSAGE_BODY, ImmutableMap.of(Constants.MESSAGE_TYPE, Constants.SEND_MESSAGE));
 
         // Then
         assertIsSatisfied(storeProcessor);
@@ -133,7 +133,7 @@ public class RouteTest {
         permanentErrorHandlerEndpoint.expectedMessageCount(0);
 
         // When
-        producerTemplate.sendBodyAndHeaders(MESSAGE_BODY, ImmutableMap.<String, Object> of(Constants.MESSAGE_TYPE, Constants.REVOKE_MESSAGE));
+        producerTemplate.sendBodyAndHeaders(MESSAGE_BODY, ImmutableMap.of(Constants.MESSAGE_TYPE, Constants.REVOKE_MESSAGE));
 
         // Then
         assertIsSatisfied(storeProcessor);
@@ -155,7 +155,7 @@ public class RouteTest {
         permanentErrorHandlerEndpoint.expectedMessageCount(0);
 
         // When
-        producerTemplate.sendBodyAndHeaders(MESSAGE_BODY, ImmutableMap.<String, Object> of(Constants.MESSAGE_TYPE, Constants.SEND_MESSAGE_TO_RECIPIENT));
+        producerTemplate.sendBodyAndHeaders(MESSAGE_BODY, ImmutableMap.of(Constants.MESSAGE_TYPE, Constants.SEND_MESSAGE_TO_RECIPIENT));
 
         // Then
         assertIsSatisfied(storeProcessor);
@@ -177,7 +177,7 @@ public class RouteTest {
         permanentErrorHandlerEndpoint.expectedMessageCount(0);
 
         // When
-        producerTemplate.sendBodyAndHeaders(MESSAGE_BODY, ImmutableMap.<String, Object> of(Constants.MESSAGE_TYPE, "non-existant"));
+        producerTemplate.sendBodyAndHeaders(MESSAGE_BODY, ImmutableMap.of(Constants.MESSAGE_TYPE, "non-existant"));
 
         // Then
         assertIsSatisfied(storeProcessor);
@@ -191,11 +191,8 @@ public class RouteTest {
     @Test
     public void testPermanentException() throws InterruptedException {
         // Given
-        sendProcessor.whenAnyExchangeReceived(new Processor() {
-            @Override
-            public void process(Exchange exchange) throws Exception {
-                throw new PermanentException("");
-            }
+        sendProcessor.whenAnyExchangeReceived(exchange -> {
+            throw new PermanentException("");
         });
 
         storeProcessor.expectedMessageCount(0);
@@ -206,7 +203,7 @@ public class RouteTest {
         permanentErrorHandlerEndpoint.expectedMessageCount(1);
 
         // When
-        producerTemplate.sendBodyAndHeaders(MESSAGE_BODY, ImmutableMap.<String, Object> of(Constants.MESSAGE_TYPE, Constants.SEND_MESSAGE));
+        producerTemplate.sendBodyAndHeaders(MESSAGE_BODY, ImmutableMap.of(Constants.MESSAGE_TYPE, Constants.SEND_MESSAGE));
 
         // Then
         assertIsSatisfied(storeProcessor);
@@ -220,11 +217,8 @@ public class RouteTest {
     @Test(expected = CamelExecutionException.class)
     public void testTemporaryException() throws InterruptedException {
         // Given
-        revokeProcessor.whenAnyExchangeReceived(new Processor() {
-            @Override
-            public void process(Exchange exchange) throws Exception {
-                throw new TemporaryException("");
-            }
+        revokeProcessor.whenAnyExchangeReceived(exchange -> {
+            throw new TemporaryException("");
         });
 
         storeProcessor.expectedMessageCount(0);
@@ -235,7 +229,7 @@ public class RouteTest {
         permanentErrorHandlerEndpoint.expectedMessageCount(0);
 
         // When
-        producerTemplate.sendBodyAndHeaders(MESSAGE_BODY, ImmutableMap.<String, Object> of(Constants.MESSAGE_TYPE, Constants.REVOKE_MESSAGE));
+        producerTemplate.sendBodyAndHeaders(MESSAGE_BODY, ImmutableMap.of(Constants.MESSAGE_TYPE, Constants.REVOKE_MESSAGE));
 
         // Then
         assertIsSatisfied(storeProcessor);
@@ -249,11 +243,8 @@ public class RouteTest {
     @Test
     public void testUnexpectedException() throws InterruptedException {
         // Given
-        storeProcessor.whenAnyExchangeReceived(new Processor() {
-            @Override
-            public void process(Exchange exchange) throws Exception {
-                throw new IllegalArgumentException();
-            }
+        storeProcessor.whenAnyExchangeReceived(exchange -> {
+            throw new IllegalArgumentException();
         });
 
         storeProcessor.expectedMessageCount(1);
@@ -264,7 +255,7 @@ public class RouteTest {
         permanentErrorHandlerEndpoint.expectedMessageCount(1);
 
         // When
-        producerTemplate.sendBodyAndHeaders(MESSAGE_BODY, ImmutableMap.<String, Object> of(Constants.MESSAGE_TYPE, Constants.STORE_MESSAGE));
+        producerTemplate.sendBodyAndHeaders(MESSAGE_BODY, ImmutableMap.of(Constants.MESSAGE_TYPE, Constants.STORE_MESSAGE));
 
         // Then
         assertIsSatisfied(storeProcessor);

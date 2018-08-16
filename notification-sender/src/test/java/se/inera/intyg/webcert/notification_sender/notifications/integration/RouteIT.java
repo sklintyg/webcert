@@ -30,60 +30,20 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import javax.jms.Queue;
-import javax.jms.TextMessage;
-
-import org.apache.camel.test.spring.CamelSpringJUnit4ClassRunner;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.jms.core.JmsTemplate;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.base.Throwables;
 
 import se.inera.intyg.common.fk7263.model.internal.Fk7263Utlatande;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
-import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
-import se.inera.intyg.common.support.modules.support.api.ModuleApi;
-import se.inera.intyg.common.support.modules.support.api.notification.ArendeCount;
+
 import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
 import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
-import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
 import se.inera.intyg.webcert.notification_sender.mocks.NotificationStubEntry;
-import se.inera.intyg.webcert.notification_sender.mocks.v3.CertificateStatusUpdateForCareResponderStub;
 import se.inera.intyg.webcert.notification_sender.notifications.helper.NotificationTestHelper;
-import se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders;
 
-@RunWith(CamelSpringJUnit4ClassRunner.class)
 @ContextConfiguration("/notifications/integration-test-notification-sender-config.xml")
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
-public class RouteIT {
-
-    private static final int SECONDS_TO_WAIT = 20;
-    private static final String INTYG_JSON = "{\"id\":\"1234\",\"typ\":\"fk7263\"}";
-
-    @Autowired
-    private IntygModuleRegistry mockIntygModuleRegistry;
-
-    @Autowired
-    private ModuleApi fk7263ModuleApi;
-
-    @Autowired
-    private JmsTemplate jmsTemplate;
-
-    @Autowired
-    @Qualifier("notificationQueueForAggregation")
-    private Queue sendQueue;
-
-    @Autowired
-    private CertificateStatusUpdateForCareResponderStub certificateStatusUpdateForCareResponderV3;
-
-    private ObjectMapper objectMapper = new CustomObjectMapper();
+public class RouteIT extends AbstractBaseIT {
 
     @Before
     public void init() throws Exception {
@@ -262,42 +222,6 @@ public class RouteIT {
                         && utlatandeIds.get(1).equals(intygsId1));
             }
             return false;
-        });
-    }
-
-    private NotificationMessage createNotificationMessage(String intygsId1, String intygsTyp, HandelsekodEnum handelseType) {
-        return createNotificationMessage(intygsId1, LocalDateTime.now(), handelseType, intygsTyp, SchemaVersion.VERSION_3);
-    }
-
-    private NotificationMessage createNotificationMessage(String intygsId, LocalDateTime handelseTid, HandelsekodEnum handelseType,
-            String intygsTyp,
-            SchemaVersion schemaVersion) {
-        if (SchemaVersion.VERSION_3 == schemaVersion) {
-            return new NotificationMessage(intygsId, intygsTyp, handelseTid, handelseType, "address2", INTYG_JSON, null,
-                    ArendeCount.getEmpty(), ArendeCount.getEmpty(),
-                    schemaVersion, "ref");
-        } else {
-            throw new IllegalArgumentException("SchemaVersion 1 not supported anymore.");
-            // return new NotificationMessage(intygsId, intygsTyp, handelseTid, handelseType, "address2", INTYG_JSON,
-            // FragorOchSvar.getEmpty(),
-            // null, null, schemaVersion, "ref");
-        }
-    }
-
-    private String notificationMessageToJson(NotificationMessage notificationMessage) throws Exception {
-        return objectMapper.writeValueAsString(notificationMessage);
-    }
-
-    private void sendMessage(final NotificationMessage message) throws Exception {
-        jmsTemplate.send(sendQueue, session -> {
-            try {
-                TextMessage textMessage = session.createTextMessage(notificationMessageToJson(message));
-                textMessage.setStringProperty(NotificationRouteHeaders.INTYGS_TYP, message.getIntygsTyp());
-                textMessage.setStringProperty(NotificationRouteHeaders.HANDELSE, message.getHandelse().value());
-                return textMessage;
-            } catch (Exception e) {
-                throw Throwables.propagate(e);
-            }
         });
     }
 }

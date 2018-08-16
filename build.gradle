@@ -24,7 +24,7 @@ ext {
     assertjVersion = "3.6.2"
     aspectJWeaverVersion = "1.7.1"
     autovalueVersion = "1.5"
-    awaitilityVersion = "2.0.0"
+    awaitilityVersion = "3.1.2"
     camelVersion = "2.16.0"
     dbUnitVersion = "2.4.9"
     geronimoJmsVersion = "1.1.1"

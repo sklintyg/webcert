@@ -24,7 +24,7 @@
     http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache.xsd">
 
   <context:property-placeholder
-      location="classpath:notifications/integration-test.properties" order="1" ignore-resource-not-found="false" />
+          location="classpath:notifications/integration-test-fel-b.properties" order="1" ignore-resource-not-found="false" />
 
   <context:annotation-config/>
 
@@ -43,6 +43,7 @@
   <import resource="camel-context.xml"/>
   <import resource="../integration-test-broker-context.xml"/>
 
+  <bean id="certificateStatusUpdateForCareResponderV1" class="se.inera.intyg.webcert.notification_sender.mocks.v1.CertificateStatusUpdateForCareResponderStub"/>
   <bean id="certificateStatusUpdateForCareResponderV3" class="se.inera.intyg.webcert.notification_sender.mocks.v3.CertificateStatusUpdateForCareResponderStub"/>
 
   <bean id="moduleApi" class="org.mockito.Mockito" factory-method="mock">
@@ -52,4 +53,9 @@
   <bean id="mockIntygModuleRegistry" class="org.mockito.Mockito" factory-method="mock">
     <constructor-arg value="se.inera.intyg.common.support.modules.registry.IntygModuleRegistry" />
   </bean>
+
+  <bean id="mockFk7263Converter" class="org.mockito.Mockito" factory-method="mock">
+    <constructor-arg value="se.inera.intyg.common.fk7263.model.converter.Fk7263InternalToNotification" />
+  </bean>
+
 </beans>

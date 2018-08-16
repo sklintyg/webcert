@@ -18,26 +18,33 @@
  */
 package se.inera.intyg.webcert.notification_sender.mocks.v3;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.atomic.AtomicInteger;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import se.inera.intyg.webcert.notification_sender.mocks.NotificationStubEntry;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareResponderInterface;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareResponseType;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareType;
+import se.riv.clinicalprocess.healthcond.certificate.v3.ErrorIdType;
 import se.riv.clinicalprocess.healthcond.certificate.v3.ResultCodeType;
 import se.riv.clinicalprocess.healthcond.certificate.v3.ResultType;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.atomic.AtomicInteger;
+import se.inera.intyg.common.support.integration.converter.util.ResultTypeUtil;
+import se.inera.intyg.webcert.notification_sender.mocks.NotificationStubEntry;
 
 public class CertificateStatusUpdateForCareResponderStub implements CertificateStatusUpdateForCareResponderInterface {
 
+    @Autowired
+    private ApplicationContext applicationContext;
+
     public static final String FALLERAT_MEDDELANDE = "fallerat-meddelande-";
     private static final Logger LOG = LoggerFactory.getLogger(CertificateStatusUpdateForCareResponderStub.class);
+
     private ConcurrentHashMap<String, AtomicInteger> attemptsPerMessage = new ConcurrentHashMap<>();
     private List<CertificateStatusUpdateForCareType> store = new CopyOnWriteArrayList<>();
 
@@ -72,6 +79,38 @@ public class CertificateStatusUpdateForCareResponderStub implements CertificateS
         result.setResultCode(ResultCodeType.OK);
         response.setResult(result);
         LOG.debug("Request set to 'OK'");
+
+        String handelseKod = request.getHandelse().getHandelsekod().getCode();
+
+
+        final String emulateError =
+                Optional.ofNullable(applicationContext.getEnvironment().getProperty("certificatestatusupdateforcare.emulateError"))
+                        .orElse("0");
+
+        LOG.debug("emulateError: " + emulateError);
+        if (handelseKod.matches("^ANDRAT$")) {
+            switch (emulateError) {
+                case "1":
+                    LOG.debug("Stub messing upp response. Fel B.");
+                    response.setResult(ResultTypeUtil.errorResult(ErrorIdType.TECHNICAL_ERROR, "Certificate not found "
+                            + "in COSMIC and ref field is missing, cannot store certificate. "
+                            + "Possible race condition. Retry later when the certificate may have been stored in COSMIC. "
+                            + "| Log Id: 01182b7d-9d19-4d5a-b892-18342670668c"));
+                    break;
+                case "2":
+                    LOG.debug("Stub messing upp response. TechError null.");
+                    response.setResult(ResultTypeUtil.errorResult(ErrorIdType.TECHNICAL_ERROR, null));
+                    break;
+                case "3":
+                    LOG.debug("Stub messing upp response. TechError Unspecified Service.");
+                    response.setResult(ResultTypeUtil.errorResult(ErrorIdType.TECHNICAL_ERROR, "Unspecified service error"));
+                    break;
+                default:
+                    LOG.debug("Stub OK. No error emulated.");
+                    break;
+            }
+        }
+
         return response;
     }
 
