@@ -106,8 +106,12 @@ public class NotificationTransformerTest {
         verifyZeroInteractions(notificationPatientEnricher);
     }
 
+    /**
+     * Note that this test used to assert that V1 was forced when no schemaversion was specified for FK7263. After the
+     * retirement of v1 we force V3 instead which is tested now.
+     */
     @Test
-    public void testSendBackwardsCompatibility() throws Exception {
+    public void testSendBackwardsCompatibilityForcesV3() throws Exception {
         // Given
         NotificationMessage notificationMessage = new NotificationMessage(INTYGS_ID, FK7263, LocalDateTime.now(), HandelsekodEnum.SKAPAT,
                 LOGISK_ADRESS, "{ }", FragorOchSvar.getEmpty(), null, null, null, "ref");
@@ -124,12 +128,12 @@ public class NotificationTransformerTest {
         assertEquals(HandelsekodEnum.SKAPAT.value(), message.getHeader(NotificationRouteHeaders.HANDELSE));
         assertEquals(INTYGS_ID, message.getHeader(NotificationRouteHeaders.INTYGS_ID));
         assertEquals(LOGISK_ADRESS, message.getHeader(NotificationRouteHeaders.LOGISK_ADRESS));
-        assertEquals(SchemaVersion.VERSION_1.name(), message.getHeader(NotificationRouteHeaders.VERSION));
+        assertEquals(SchemaVersion.VERSION_3.name(), message.getHeader(NotificationRouteHeaders.VERSION));
 
         verify(message, times(1)).setHeader(eq(NotificationRouteHeaders.LOGISK_ADRESS), eq(LOGISK_ADRESS));
         verify(message, times(1)).setHeader(eq(NotificationRouteHeaders.INTYGS_ID), eq(INTYGS_ID));
         verify(message, times(1)).setHeader(eq(NotificationRouteHeaders.HANDELSE), eq(HandelsekodEnum.SKAPAT.value()));
-        verify(message, times(1)).setHeader(eq(NotificationRouteHeaders.VERSION), eq(SchemaVersion.VERSION_1.name()));
+        verify(message, times(1)).setHeader(eq(NotificationRouteHeaders.VERSION), eq(SchemaVersion.VERSION_3.name()));
         verify(internalToNotification, times(1)).createCertificateStatusUpdateForCareType(any());
         verifyZeroInteractions(notificationPatientEnricher);
     }

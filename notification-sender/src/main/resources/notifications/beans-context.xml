@@ -26,8 +26,6 @@
 
   <bean id="notificationAggregator" class="se.inera.intyg.webcert.notification_sender.notifications.services.NotificationAggregator"/>
 
-  <bean id="notificationWSClient" class="se.inera.intyg.webcert.notification_sender.notifications.services.v1.NotificationWSClient"></bean>
-
   <bean id="notificationWSClientV3" class="se.inera.intyg.webcert.notification_sender.notifications.services.v3.NotificationWSClient"></bean>
 
   <bean id="processNotificationRequestRouteBuilder" class="se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteBuilder"/>
@@ -39,6 +37,7 @@
     <constructor-arg value="se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage"/>
   </bean>
 
+  <!--
   <bean id="jaxbMessageDataFormat" class="org.apache.camel.converter.jaxb.JaxbDataFormat">
     <constructor-arg value="se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1"/>
     <property name="partClass" value="se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.CertificateStatusUpdateForCareType"/>
@@ -49,5 +48,6 @@
       </bean>
     </property>
   </bean>
+  -->
 
 </beans>

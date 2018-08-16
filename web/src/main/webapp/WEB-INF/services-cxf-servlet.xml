@@ -56,15 +56,6 @@
   </cxf:bus>
 
   <!-- ws endpoints -->
-  <jaxws:endpoint address="/create-draft-certificate/v1.0" implementor="se.inera.intyg.webcert.web.integration.interactions.createdraftcertificate.v1.CreateDraftCertificateResponderImpl">
-    <jaxws:outFaultInterceptors>
-      <bean
-        class="se.inera.intyg.common.util.integration.interceptor.SoapFaultToSoapResponseTransformerInterceptor">
-        <constructor-arg value="transform/create-draft-certificate.xslt" />
-      </bean>
-    </jaxws:outFaultInterceptors>
-  </jaxws:endpoint>
-
   <jaxws:endpoint address="/create-draft-certificate/v3.0" implementor="se.inera.intyg.webcert.web.integration.interactions.createdraftcertificate.v3.CreateDraftCertificateResponderImpl">
     <jaxws:outFaultInterceptors>
       <bean

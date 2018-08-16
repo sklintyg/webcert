@@ -66,7 +66,7 @@ import se.inera.intyg.webcert.notification_sender.notifications.routes.Notificat
 @RunWith(CamelSpringJUnit4ClassRunner.class)
 @ContextConfiguration("/notifications/unit-test-notification-sender-config.xml")
 @BootstrapWith(CamelTestContextBootstrapper.class)
-@MockEndpointsAndSkip("bean:notificationAggregator|direct:signatWireTap|bean:notificationWSClient|bean:notificationWSClientV3|direct:permanentErrorHandlerEndpoint|direct:temporaryErrorHandlerEndpoint")
+@MockEndpointsAndSkip("bean:notificationAggregator|direct:signatWireTap|bean:notificationWSClientV3|direct:permanentErrorHandlerEndpoint|direct:temporaryErrorHandlerEndpoint")
 public class RouteTest {
 
     private static int currentId = 1000;
@@ -89,8 +89,6 @@ public class RouteTest {
     private MockEndpoint notificationAggregator;
     @EndpointInject(uri = "mock:direct:signatWireTap")
     private MockEndpoint signatWireTap;
-    @EndpointInject(uri = "mock:bean:notificationWSClient")
-    private MockEndpoint notificationWSClient;
     @EndpointInject(uri = "mock:bean:notificationWSClientV3")
     private MockEndpoint notificationWSClientV3;
     @EndpointInject(uri = "mock:direct:permanentErrorHandlerEndpoint")
@@ -123,7 +121,6 @@ public class RouteTest {
         // Given
         when(moduleApi.getIntygFromUtlatande(any())).thenReturn(NotificationTestHelper.createIntyg("luae_fs"));
 
-        notificationWSClient.expectedMessageCount(0);
         notificationWSClientV3.expectedMessageCount(0);
         notificationAggregator.expectedMessageCount(0);
         permanentErrorHandlerEndpoint.expectedMessageCount(0);
@@ -137,7 +134,6 @@ public class RouteTest {
         producerTemplate.sendBodyAndHeaders(createNotificationMessage(SchemaVersion.VERSION_3, "luae_fs"), headers);
 
         // Then
-        assertIsSatisfied(notificationWSClient);
         assertIsSatisfied(notificationWSClientV3);
         assertIsSatisfied(notificationAggregator);
         assertIsSatisfied(permanentErrorHandlerEndpoint);
@@ -149,8 +145,7 @@ public class RouteTest {
     public void testRoutesDirectlyToNotificationQueueForFK7263Andrat() throws ModuleException, InterruptedException {
         // Given
         when(moduleApi.getIntygFromUtlatande(any())).thenReturn(NotificationTestHelper.createIntyg("fk7263"));
-        notificationWSClient.expectedMessageCount(1);
-        notificationWSClientV3.expectedMessageCount(0);
+        notificationWSClientV3.expectedMessageCount(1);
         notificationAggregator.expectedMessageCount(0);
         permanentErrorHandlerEndpoint.expectedMessageCount(0);
         temporaryErrorHandlerEndpoint.expectedMessageCount(0);
@@ -163,7 +158,6 @@ public class RouteTest {
         producerTemplate.sendBodyAndHeaders(createNotificationMessage(null), headers);
 
         // Then
-        assertIsSatisfied(notificationWSClient);
         assertIsSatisfied(notificationWSClientV3);
         assertIsSatisfied(notificationAggregator);
         assertIsSatisfied(permanentErrorHandlerEndpoint);
@@ -183,7 +177,7 @@ public class RouteTest {
         });
 
         // Given
-        notificationWSClient.expectedMessageCount(0);
+        notificationWSClientV3.expectedMessageCount(0);
         notificationAggregator.expectedMessageCount(1);
         permanentErrorHandlerEndpoint.expectedMessageCount(0);
         temporaryErrorHandlerEndpoint.expectedMessageCount(0);
@@ -196,7 +190,7 @@ public class RouteTest {
         producerTemplate.sendBodyAndHeaders(createNotificationMessage(SchemaVersion.VERSION_3, "luae_fs"), headers);
 
         // Then
-        assertIsSatisfied(notificationWSClient);
+        assertIsSatisfied(notificationWSClientV3);
         assertIsSatisfied(notificationAggregator);
         assertIsSatisfied(permanentErrorHandlerEndpoint);
         assertIsSatisfied(temporaryErrorHandlerEndpoint);
@@ -230,7 +224,7 @@ public class RouteTest {
     @Test
     public void testRoutesDirectlyToNotificationQueueForLuaeFsSkickad() throws InterruptedException {
         // Given
-        notificationWSClient.expectedMessageCount(1);
+        notificationWSClientV3.expectedMessageCount(1);
         notificationAggregator.expectedMessageCount(0);
         permanentErrorHandlerEndpoint.expectedMessageCount(0);
         temporaryErrorHandlerEndpoint.expectedMessageCount(0);
@@ -243,7 +237,7 @@ public class RouteTest {
         producerTemplate.sendBodyAndHeaders(createNotificationMessage(null), headers);
 
         // Then
-        assertIsSatisfied(notificationWSClient);
+        assertIsSatisfied(notificationWSClientV3);
         assertIsSatisfied(notificationAggregator);
         assertIsSatisfied(permanentErrorHandlerEndpoint);
         assertIsSatisfied(temporaryErrorHandlerEndpoint);
@@ -253,8 +247,7 @@ public class RouteTest {
     @Test
     public void testNormalRoute() throws InterruptedException {
         // Given
-        notificationWSClient.expectedMessageCount(1);
-        notificationWSClientV3.expectedMessageCount(0);
+        notificationWSClientV3.expectedMessageCount(1);
         permanentErrorHandlerEndpoint.expectedMessageCount(0);
         temporaryErrorHandlerEndpoint.expectedMessageCount(0);
         signatWireTap.expectedMessageCount(0);
@@ -266,7 +259,6 @@ public class RouteTest {
         producerTemplate.sendBodyAndHeaders(createNotificationMessage(null), headers);
 
         // Then
-        assertIsSatisfied(notificationWSClient);
         assertIsSatisfied(notificationWSClientV3);
         assertIsSatisfied(permanentErrorHandlerEndpoint);
         assertIsSatisfied(temporaryErrorHandlerEndpoint);
@@ -276,8 +268,7 @@ public class RouteTest {
     @Test
     public void testNormalRouteExplicitNotificationVersion1() throws InterruptedException {
         // Given
-        notificationWSClient.expectedMessageCount(1);
-        notificationWSClientV3.expectedMessageCount(0);
+        notificationWSClientV3.expectedMessageCount(1);
         permanentErrorHandlerEndpoint.expectedMessageCount(0);
         temporaryErrorHandlerEndpoint.expectedMessageCount(0);
 
@@ -285,7 +276,6 @@ public class RouteTest {
         producerTemplate.sendBody(createNotificationMessage(SchemaVersion.VERSION_1, "fk7263"));
 
         // Then
-        assertIsSatisfied(notificationWSClient);
         assertIsSatisfied(notificationWSClientV3);
         assertIsSatisfied(permanentErrorHandlerEndpoint);
         assertIsSatisfied(temporaryErrorHandlerEndpoint);
@@ -296,7 +286,6 @@ public class RouteTest {
         when(moduleApi.getIntygFromUtlatande(any())).thenReturn(NotificationTestHelper.createIntyg("lisjp"));
 
         // Given
-        notificationWSClient.expectedMessageCount(0);
         notificationWSClientV3.expectedMessageCount(1);
         permanentErrorHandlerEndpoint.expectedMessageCount(0);
         temporaryErrorHandlerEndpoint.expectedMessageCount(0);
@@ -305,7 +294,6 @@ public class RouteTest {
         producerTemplate.sendBody(createNotificationMessage(SchemaVersion.VERSION_3, "lisjp"));
 
         // Then
-        assertIsSatisfied(notificationWSClient);
         assertIsSatisfied(notificationWSClientV3);
         assertIsSatisfied(permanentErrorHandlerEndpoint);
         assertIsSatisfied(temporaryErrorHandlerEndpoint);
@@ -317,7 +305,6 @@ public class RouteTest {
         when(mockInternalToNotification.createCertificateStatusUpdateForCareType(any()))
                 .thenThrow(new ModuleException("Testing runtime exception"));
 
-        notificationWSClient.expectedMessageCount(0);
         notificationWSClientV3.expectedMessageCount(0);
         permanentErrorHandlerEndpoint.expectedMessageCount(1);
         temporaryErrorHandlerEndpoint.expectedMessageCount(0);
@@ -326,18 +313,16 @@ public class RouteTest {
         producerTemplate.sendBody(createNotificationMessage(null));
 
         // Then
-        assertIsSatisfied(notificationWSClient);
         assertIsSatisfied(notificationWSClientV3);
         assertIsSatisfied(permanentErrorHandlerEndpoint);
         assertIsSatisfied(temporaryErrorHandlerEndpoint);
     }
 
     @Test
-    public void testTransformationExceptionNotificationVersion2() throws Exception {
+    public void testTransformationExceptionNotificationVersion3() throws Exception {
         // Given
         when(moduleRegistry.getModuleApi(anyString())).thenThrow(new ModuleNotFoundException("Testing checked exception"));
 
-        notificationWSClient.expectedMessageCount(0);
         notificationWSClientV3.expectedMessageCount(0);
         permanentErrorHandlerEndpoint.expectedMessageCount(1);
         temporaryErrorHandlerEndpoint.expectedMessageCount(0);
@@ -346,18 +331,16 @@ public class RouteTest {
         producerTemplate.sendBody(createNotificationMessage(SchemaVersion.VERSION_3, "fk7263"));
 
         // Then
-        assertIsSatisfied(notificationWSClient);
         assertIsSatisfied(notificationWSClientV3);
         assertIsSatisfied(permanentErrorHandlerEndpoint);
         assertIsSatisfied(temporaryErrorHandlerEndpoint);
     }
 
     @Test
-    public void testRuntimeExceptionNotificationVersion2() throws Exception {
+    public void testRuntimeExceptionNotificationVersion3() throws Exception {
         // Given
         when(moduleRegistry.getModuleApi(anyString())).thenThrow(new RuntimeException("Testing runtime exception"));
 
-        notificationWSClient.expectedMessageCount(0);
         notificationWSClientV3.expectedMessageCount(0);
         permanentErrorHandlerEndpoint.expectedMessageCount(1);
         temporaryErrorHandlerEndpoint.expectedMessageCount(0);
@@ -366,7 +349,6 @@ public class RouteTest {
         producerTemplate.sendBody(createNotificationMessage(SchemaVersion.VERSION_3, "fk7263"));
 
         // Then
-        assertIsSatisfied(notificationWSClient);
         assertIsSatisfied(notificationWSClientV3);
         assertIsSatisfied(permanentErrorHandlerEndpoint);
         assertIsSatisfied(temporaryErrorHandlerEndpoint);
@@ -375,11 +357,10 @@ public class RouteTest {
     @Test
     public void testTemporaryException() throws InterruptedException, ModuleException {
         // Given
-        notificationWSClient.whenAnyExchangeReceived(exchange -> {
+        notificationWSClientV3.whenAnyExchangeReceived(exchange -> {
             throw new TemporaryException("Testing application error, with exhausted retries");
         });
 
-        notificationWSClient.expectedMessageCount(1);
         notificationWSClientV3.expectedMessageCount(0);
         permanentErrorHandlerEndpoint.expectedMessageCount(0);
         temporaryErrorHandlerEndpoint.expectedMessageCount(1);
@@ -388,22 +369,20 @@ public class RouteTest {
         producerTemplate.sendBody(createNotificationMessage(SchemaVersion.VERSION_1, "fk7263"));
 
         // Then
-        assertIsSatisfied(notificationWSClient);
         assertIsSatisfied(notificationWSClientV3);
         assertIsSatisfied(permanentErrorHandlerEndpoint);
         assertIsSatisfied(temporaryErrorHandlerEndpoint);
     }
 
     @Test
-    public void testTemporaryExceptionNotificationVersion2() throws Exception {
+    public void testTemporaryExceptionNotificationVersion3() throws Exception {
         // Given
         notificationWSClientV3.whenAnyExchangeReceived(exchange -> {
             throw new TemporaryException("Testing application error, with exhausted retries");
         });
         when(moduleApi.getIntygFromUtlatande(any())).thenReturn(NotificationTestHelper.createIntyg("fk7263"));
 
-        notificationWSClient.expectedMessageCount(0);
-        notificationWSClientV3.expectedMessageCount(1);
+        notificationWSClientV3.expectedMessageCount(0);
         permanentErrorHandlerEndpoint.expectedMessageCount(0);
         temporaryErrorHandlerEndpoint.expectedMessageCount(1);
 
@@ -411,7 +390,6 @@ public class RouteTest {
         producerTemplate.sendBody(createNotificationMessage(SchemaVersion.VERSION_3, "fk7263"));
 
         // Then
-        assertIsSatisfied(notificationWSClient);
         assertIsSatisfied(notificationWSClientV3);
         assertIsSatisfied(permanentErrorHandlerEndpoint);
         assertIsSatisfied(temporaryErrorHandlerEndpoint);
@@ -420,11 +398,10 @@ public class RouteTest {
     @Test
     public void testPermanentException() throws InterruptedException {
         // Given
-        notificationWSClient.whenAnyExchangeReceived(exchange -> {
+        notificationWSClientV3.whenAnyExchangeReceived(exchange -> {
             throw new PermanentException("Testing technical error");
         });
 
-        notificationWSClient.expectedMessageCount(1);
         notificationWSClientV3.expectedMessageCount(0);
         permanentErrorHandlerEndpoint.expectedMessageCount(1);
         temporaryErrorHandlerEndpoint.expectedMessageCount(0);
@@ -433,22 +410,20 @@ public class RouteTest {
         producerTemplate.sendBody(createNotificationMessage(null));
 
         // Then
-        assertIsSatisfied(notificationWSClient);
         assertIsSatisfied(notificationWSClientV3);
         assertIsSatisfied(permanentErrorHandlerEndpoint);
         assertIsSatisfied(temporaryErrorHandlerEndpoint);
     }
 
     @Test
-    public void testPermanentExceptionNotificationVersion2() throws Exception {
+    public void testPermanentExceptionNotificationVersion3() throws Exception {
         // Given
         notificationWSClientV3.whenAnyExchangeReceived(exchange -> {
             throw new PermanentException("Testing technical error");
         });
         when(moduleApi.getIntygFromUtlatande(any())).thenReturn(NotificationTestHelper.createIntyg("fk7263"));
 
-        notificationWSClient.expectedMessageCount(0);
-        notificationWSClientV3.expectedMessageCount(1);
+        notificationWSClientV3.expectedMessageCount(0);
         permanentErrorHandlerEndpoint.expectedMessageCount(1);
         temporaryErrorHandlerEndpoint.expectedMessageCount(0);
 
@@ -456,7 +431,6 @@ public class RouteTest {
         producerTemplate.sendBody(createNotificationMessage(SchemaVersion.VERSION_3, "fk7263"));
 
         // Then
-        assertIsSatisfied(notificationWSClient);
         assertIsSatisfied(notificationWSClientV3);
         assertIsSatisfied(permanentErrorHandlerEndpoint);
         assertIsSatisfied(temporaryErrorHandlerEndpoint);
@@ -468,7 +442,6 @@ public class RouteTest {
         when(mockInternalToNotification.createCertificateStatusUpdateForCareType(any()))
                 .thenThrow(new RuntimeException("Testing runtime exception"));
 
-        notificationWSClient.expectedMessageCount(0);
         notificationWSClientV3.expectedMessageCount(0);
         permanentErrorHandlerEndpoint.expectedMessageCount(1);
         temporaryErrorHandlerEndpoint.expectedMessageCount(0);
@@ -477,7 +450,6 @@ public class RouteTest {
         producerTemplate.sendBody(createNotificationMessage(null));
 
         // Then
-        assertIsSatisfied(notificationWSClient);
         assertIsSatisfied(notificationWSClientV3);
         assertIsSatisfied(permanentErrorHandlerEndpoint);
         assertIsSatisfied(temporaryErrorHandlerEndpoint);

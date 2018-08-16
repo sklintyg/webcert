@@ -71,7 +71,8 @@ public class NotificationTransformer {
         if (notificationMessage.getVersion() != null) {
             message.setHeader(NotificationRouteHeaders.VERSION, notificationMessage.getVersion().name());
         } else {
-            message.setHeader(NotificationRouteHeaders.VERSION, SchemaVersion.VERSION_1.name());
+            LOG.warn("Recieved notificationMessage with unknown VERSION header, forcing V3");
+            message.setHeader(NotificationRouteHeaders.VERSION, SchemaVersion.VERSION_3.name());
         }
 
         if (SchemaVersion.VERSION_3.equals(notificationMessage.getVersion())) {

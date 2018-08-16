@@ -29,7 +29,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
-import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
 import se.inera.intyg.webcert.common.Constants;
 import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareType;
@@ -109,12 +108,7 @@ public class NotificationRouteBuilder extends SpringRouteBuilder {
                 .transacted()
                 .unmarshal("notificationMessageDataFormat")
                 .to("bean:notificationTransformer")
-                .choice()
-                .when(header(NotificationRouteHeaders.VERSION).isEqualTo(SchemaVersion.VERSION_3.name()))
                 .marshal(jaxbMessageDataFormatV3)
-                .otherwise()
-                .marshal("jaxbMessageDataFormat")
-                .end()
                 .to("sendNotificationWSEndpoint");
 
         from("sendNotificationWSEndpoint").routeId("sendNotificationToWS")
@@ -122,14 +116,8 @@ public class NotificationRouteBuilder extends SpringRouteBuilder {
                 .onException(TemporaryException.class).to("direct:temporaryErrorHandlerEndpoint").end()
                 .onException(Exception.class).handled(true).to("direct:permanentErrorHandlerEndpoint").end()
                 .transacted()
-                .choice()
-                .when(header(NotificationRouteHeaders.VERSION).isEqualTo(SchemaVersion.VERSION_3.name()))
                 .unmarshal(jaxbMessageDataFormatV3)
-                .to("bean:notificationWSClientV3")
-                .otherwise()
-                .unmarshal("jaxbMessageDataFormat")
-                .to("bean:notificationWSClient")
-                .end();
+                .to("bean:notificationWSClientV3");
 
         from("direct:permanentErrorHandlerEndpoint").routeId("errorLogging")
                 .log(LoggingLevel.ERROR, LOG,
