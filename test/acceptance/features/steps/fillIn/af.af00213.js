@@ -30,7 +30,40 @@ module.exports = {
             browser.ignoreSynchronization = true;
             resolve('Fyller i ' + intyg.typ + '  formuläret synkront');
         }).then(function() {
-            return af00213UtkastPage.fillInOvrigt(intyg.ovrigt);
+            return af00213UtkastPage.angeFunktionsnedsattning(intyg.funktionsnedsattning).then(function() {
+                logger.info('OK - angeFunktionsnedsattning');
+            }, function(reason) {
+                console.trace(reason);
+                throw ('FEL, angeFunktionsnedsattning ' + reason);
+            });
+        }).then(function() {
+            return af00213UtkastPage.angeAktivitetsbegransning(intyg.aktivitetsbegransning).then(function() {
+                logger.info('OK - angeAktivitetsbegransning');
+            }, function(reason) {
+                console.trace(reason);
+                throw ('FEL, angeAktivitetsbegransning,' + reason);
+            });
+        }).then(function() {
+            return af00213UtkastPage.angeUtredningBehandling(intyg.utredningBehandling).then(function() {
+                logger.info('OK - angeUtredningBehandling');
+            }, function(reason) {
+                console.trace(reason);
+                throw ('FEL, angeUtredningBehandling,' + reason);
+            });
+        }).then(function() {
+            return af00213UtkastPage.angeArbetetsPaverkan(intyg.arbetetsPaverkan).then(function() {
+                logger.info('OK - angeArbetetsPaverkan');
+            }, function(reason) {
+                console.trace(reason);
+                throw ('FEL, angeArbetetsPaverkan,' + reason);
+            });
+        }).then(function() {
+            return af00213UtkastPage.angeOvrigt(intyg.ovrigt).then(function() {
+                logger.info('OK - angeOvrigt');
+            }, function(reason) {
+                console.trace(reason);
+                throw ('FEL, angeOvrigt,' + reason);
+            });
         });
 
     }

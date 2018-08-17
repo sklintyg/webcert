@@ -17,23 +17,103 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/* globals protractor */
 /**
  * Created by bennysce on 09/06/15.
  */
 
 'use strict';
 
-var BaseAfUtkast = require('../af.base.utkast.page.js');
+const BaseAfUtkast = require('../af.base.utkast.page.js');
+const pageHelpers = require('../../../pageHelper.util.js');
 
-var Af00213Utkast = BaseAfUtkast._extend({
+
+const Af00213Utkast = BaseAfUtkast._extend({
     init: function init() {
-
         init._super.call(this);
         this.intygType = 'af00213';
         this.ovrigt = element(by.id('ovrigt'));
+        this.funktionsnedsattning = {
+            ja: element(by.id('harFunktionsnedsattningYes')),
+            nej: element(by.id('harFunktionsnedsattningNo')),
+            text: element(by.id('funktionsnedsattning'))
+        };
+        this.aktivitetsbegransning = {
+            ja: element(by.id('harAktivitetsbegransningYes')),
+            nej: element(by.id('harAktivitetsbegransningNo')),
+            text: element(by.id('aktivitetsbegransning'))
+        };
+        this.utredningBehandling = {
+            ja: element(by.id('harUtredningBehandlingYes')),
+            nej: element(by.id('harUtredningBehandlingNo')),
+            text: element(by.id('utredningBehandling'))
+        };
+        this.arbetetsPaverkan = {
+            ja: element(by.id('harArbetetsPaverkanYes')),
+            nej: element(by.id('harArbetetsPaverkanNo')),
+            text: element(by.id('arbetetsPaverkan'))
+        };
     },
-    fillInOvrigt: function(ovrigt) {
+    angeOvrigt: function(ovrigt) {
         return this.ovrigt.sendKeys(ovrigt);
+    },
+    angeFunktionsnedsattning: function(funktionsnedsattning) {
+        let elm = {
+            funktionsnedsattning: this.funktionsnedsattning
+        };
+
+        if (funktionsnedsattning === false) {
+            return pageHelpers.moveAndSendKeys(elm.funktionsnedsattning.nej, protractor.Key.SPACE);
+        } else {
+            return pageHelpers.moveAndSendKeys(elm.funktionsnedsattning.ja, protractor.Key.SPACE).then(function() {
+                return pageHelpers.moveAndSendKeys(elm.funktionsnedsattning.text, funktionsnedsattning);
+            });
+        }
+    },
+    angeAktivitetsbegransning: function(aktivitetsbegransning) {
+        let elm = {
+            aktivitetsbegransning: this.aktivitetsbegransning
+        };
+
+        if (typeof(aktivitetsbegransning) === 'undefined') {
+            return;
+        }
+
+        if (aktivitetsbegransning === false) {
+            return pageHelpers.moveAndSendKeys(elm.aktivitetsbegransning.nej, protractor.Key.SPACE);
+        } else {
+            return pageHelpers.moveAndSendKeys(elm.aktivitetsbegransning.ja, protractor.Key.SPACE).then(function() {
+                return pageHelpers.moveAndSendKeys(elm.aktivitetsbegransning.text, aktivitetsbegransning);
+            });
+        }
+    },
+    angeUtredningBehandling: function(utredningBehandling) {
+        let elm = {
+            utredningBehandling: this.utredningBehandling
+        };
+        if (typeof(utredningBehandling) === 'undefined') {
+            return;
+        }
+
+        if (utredningBehandling === false) {
+            return pageHelpers.moveAndSendKeys(elm.utredningBehandling.nej, protractor.Key.SPACE);
+        } else {
+            return pageHelpers.moveAndSendKeys(elm.utredningBehandling.ja, protractor.Key.SPACE).then(function() {
+                return pageHelpers.moveAndSendKeys(elm.utredningBehandling.text, utredningBehandling);
+            });
+        }
+    },
+    angeArbetetsPaverkan: function(arbetetsPaverkan) {
+        let elm = {
+            arbetetsPaverkan: this.arbetetsPaverkan
+        };
+        if (arbetetsPaverkan === false) {
+            return pageHelpers.moveAndSendKeys(elm.arbetetsPaverkan.nej, protractor.Key.SPACE);
+        } else {
+            return pageHelpers.moveAndSendKeys(elm.arbetetsPaverkan.ja, protractor.Key.SPACE).then(function() {
+                return pageHelpers.moveAndSendKeys(elm.arbetetsPaverkan.text, arbetetsPaverkan);
+            });
+        }
     }
 });
 

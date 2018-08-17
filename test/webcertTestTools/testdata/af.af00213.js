@@ -32,6 +32,10 @@ module.exports = {
         return {
             "id": intygsID,
             "typ": "Arbetsförmedlingens medicinska utlåtande",
+            "funktionsnedsattning": "funktionsnedsattning text",
+            "aktivitetsbegransning": "aktivitetsbegransning text",
+            "utredningBehandling": "utredningBehandling text",
+            "arbetetsPaverkan": "arbetetsPaverkan",
             "ovrigt": "Övrigt kommentar"
         };
     },
@@ -41,10 +45,22 @@ module.exports = {
             intygsID = testdataHelper.generateTestGuid();
         }
 
-        return {
+        let obj = {
             id: intygsID,
             typ: 'Arbetsförmedlingens medicinska utlåtande',
+            "funktionsnedsattning": testdataHelper.shuffle([testdataHelper.randomTextString(5, 1000), false])[0],
+            "arbetetsPaverkan": testdataHelper.shuffle([testdataHelper.randomTextString(5, 1000), false])[0],
             ovrigt: testdataHelper.randomTextString(5, 1000)
         };
+
+        if (obj.funktionsnedsattning !== false) {
+            obj.aktivitetsbegransning = testdataHelper.shuffle([testdataHelper.randomTextString(5, 1000), false])[0];
+        }
+
+        if (Math.random() > 0.5) {
+            obj.utredningBehandling = testdataHelper.shuffle([testdataHelper.randomTextString(5, 1000), false])[0];
+        }
+
+        return obj;
     }
 };
