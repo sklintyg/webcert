@@ -46,9 +46,13 @@ public class NotificationTestHelper {
     }
 
     public static Intyg createIntyg(String intygsTyp) {
+        return createIntyg(intygsTyp, "intyg123");
+    }
+
+    public static Intyg createIntyg(String intygsTyp, String intygsId) {
         Intyg intyg = new Intyg();
         IntygId intygId = new IntygId();
-        intygId.setExtension("intyg123");
+        intygId.setExtension(intygsId);
         intyg.setIntygsId(intygId);
 
         TypAvIntyg typAvIntyg = new TypAvIntyg();

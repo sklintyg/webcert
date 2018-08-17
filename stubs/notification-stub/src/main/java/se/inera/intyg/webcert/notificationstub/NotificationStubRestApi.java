@@ -19,11 +19,9 @@
 package se.inera.intyg.webcert.notificationstub;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import se.inera.intyg.webcert.notificationstub.v1.NotificationStore;
 import se.inera.intyg.webcert.notificationstub.v3.NotificationStoreV3;
 import se.inera.intyg.webcert.notificationstub.v3.stat.NotificationStubEntry;
 import se.inera.intyg.webcert.notificationstub.v3.stat.StatTransformerUtil;
-import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.CertificateStatusUpdateForCareType;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -31,7 +29,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-
 import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 import java.util.Comparator;
@@ -42,17 +39,7 @@ import java.util.Map;
 public class NotificationStubRestApi {
 
     @Autowired
-    private NotificationStore notificationStore;
-
-    @Autowired
     private NotificationStoreV3 notificationStoreV3;
-
-    @GET
-    @Path("/notifieringar")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Collection<CertificateStatusUpdateForCareType> notifieringar() {
-        return notificationStore.getNotifications();
-    }
 
     @GET
     @Path("/notifieringar/v3")
@@ -84,6 +71,5 @@ public class NotificationStubRestApi {
     @Path("/clear")
     public void clear() {
         notificationStoreV3.clear();
-        notificationStore.clear();
     }
 }

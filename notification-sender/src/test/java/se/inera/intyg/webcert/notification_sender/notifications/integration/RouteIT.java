@@ -24,7 +24,7 @@ import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
-import static se.inera.intyg.webcert.notification_sender.mocks.v1.CertificateStatusUpdateForCareResponderStub.FALLERAT_MEDDELANDE;
+import static se.inera.intyg.webcert.notification_sender.mocks.v3.CertificateStatusUpdateForCareResponderStub.FALLERAT_MEDDELANDE;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -53,17 +53,16 @@ import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
 import se.inera.intyg.common.support.modules.support.api.notification.ArendeCount;
-import se.inera.intyg.common.support.modules.support.api.notification.FragorOchSvar;
 import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
 import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
 import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
 import se.inera.intyg.webcert.notification_sender.mocks.NotificationStubEntry;
-import se.inera.intyg.webcert.notification_sender.mocks.v1.CertificateStatusUpdateForCareResponderStub;
+import se.inera.intyg.webcert.notification_sender.mocks.v3.CertificateStatusUpdateForCareResponderStub;
 import se.inera.intyg.webcert.notification_sender.notifications.helper.NotificationTestHelper;
 import se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders;
-import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.CertificateStatusUpdateForCareType;
-import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.UtlatandeType;
-import se.riv.clinicalprocess.healthcond.certificate.types.v1.UtlatandeId;
+import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareType;
+import se.riv.clinicalprocess.healthcond.certificate.types.v3.IntygId;
+import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
 
 @RunWith(CamelSpringJUnit4ClassRunner.class)
 @ContextConfiguration("/notifications/integration-test-notification-sender-config.xml")
@@ -89,11 +88,11 @@ public class RouteIT {
     @Qualifier("notificationQueueForAggregation")
     private Queue sendQueue;
 
-    @Autowired
-    private CertificateStatusUpdateForCareResponderStub certificateStatusUpdateForCareResponderStub;
+    // @Autowired
+    // private CertificateStatusUpdateForCareResponderStub certificateStatusUpdateForCareResponderStub;
 
     @Autowired
-    private se.inera.intyg.webcert.notification_sender.mocks.v3.CertificateStatusUpdateForCareResponderStub certificateStatusUpdateForCareResponderV3;
+    private CertificateStatusUpdateForCareResponderStub certificateStatusUpdateForCareResponderV3;
 
     private ObjectMapper objectMapper = new CustomObjectMapper();
 
@@ -103,7 +102,7 @@ public class RouteIT {
         when(fk7263ModuleApi.getUtlatandeFromJson(anyString())).thenReturn(new Fk7263Utlatande());
         when(mockIntygModuleRegistry.getModuleApi(anyString())).thenReturn(fk7263ModuleApi);
 
-        certificateStatusUpdateForCareResponderStub.reset();
+        // certificateStatusUpdateForCareResponderStub.reset();
         certificateStatusUpdateForCareResponderV3.reset();
         setupConverter();
     }
@@ -231,9 +230,8 @@ public class RouteIT {
         sendMessage(luaefs5);
 
         await().atMost(SECONDS_TO_WAIT, TimeUnit.SECONDS).until(() -> {
-            int numberOfReceivedMessagesV1 = certificateStatusUpdateForCareResponderStub.getNumberOfReceivedMessages();
             int numberOfReceivedMessagesV3 = certificateStatusUpdateForCareResponderV3.getNumberOfReceivedMessages();
-            return (numberOfReceivedMessagesV1 == 3 && numberOfReceivedMessagesV3 == 4);
+            return (numberOfReceivedMessagesV3 == 7);
         });
     }
 
@@ -248,7 +246,7 @@ public class RouteIT {
         sendMessage(notificationMessage3);
 
         await().atMost(SECONDS_TO_WAIT, TimeUnit.SECONDS).until(() -> {
-            int numberOfReceivedMessages = certificateStatusUpdateForCareResponderStub.getNumberOfReceivedMessages();
+            int numberOfReceivedMessages = certificateStatusUpdateForCareResponderV3.getNumberOfReceivedMessages();
             return (numberOfReceivedMessages == 3);
         });
     }
@@ -257,6 +255,11 @@ public class RouteIT {
     public void ensureMessagesAreResentAndDoNotBlockEachOther() throws Exception {
         final String intygsId1 = FALLERAT_MEDDELANDE + "2";
         final String intygsId2 = "korrekt-meddelande-1";
+
+        when(fk7263ModuleApi.getIntygFromUtlatande(any()))
+                .thenReturn(NotificationTestHelper.createIntyg("fk7263", FALLERAT_MEDDELANDE + "2"))
+                .thenReturn(NotificationTestHelper.createIntyg("fk7263", "korrekt-meddelande-1"));
+
         NotificationMessage notificationMessage1 = createNotificationMessage(intygsId1, "fk7263", HandelsekodEnum.SKAPAT);
         NotificationMessage notificationMessage2 = createNotificationMessage(intygsId2, "fk7263", HandelsekodEnum.ANDRAT);
 
@@ -264,10 +267,9 @@ public class RouteIT {
         sendMessage(notificationMessage2);
 
         await().atMost(SECONDS_TO_WAIT, TimeUnit.SECONDS).until(() -> {
-            int numberOfSuccessfulMessages = certificateStatusUpdateForCareResponderStub.getNumberOfSentMessages();
+            int numberOfSuccessfulMessages = certificateStatusUpdateForCareResponderV3.getNumberOfSentMessages();
             if (numberOfSuccessfulMessages == 2) {
-                List<String> utlatandeIds = certificateStatusUpdateForCareResponderStub.getIntygsIdsInOrder();
-                System.err.println(utlatandeIds);
+                List<String> utlatandeIds = certificateStatusUpdateForCareResponderV3.getIntygsIdsInOrder();
                 return (utlatandeIds.size() == 2
                         && utlatandeIds.get(0).equals(intygsId2)
                         && utlatandeIds.get(1).equals(intygsId1));
@@ -277,7 +279,7 @@ public class RouteIT {
     }
 
     private NotificationMessage createNotificationMessage(String intygsId1, String intygsTyp, HandelsekodEnum handelseType) {
-        return createNotificationMessage(intygsId1, LocalDateTime.now(), handelseType, intygsTyp, SchemaVersion.VERSION_1);
+        return createNotificationMessage(intygsId1, LocalDateTime.now(), handelseType, intygsTyp, SchemaVersion.VERSION_3);
     }
 
     private NotificationMessage createNotificationMessage(String intygsId, LocalDateTime handelseTid, HandelsekodEnum handelseType,
@@ -288,8 +290,10 @@ public class RouteIT {
                     ArendeCount.getEmpty(), ArendeCount.getEmpty(),
                     schemaVersion, "ref");
         } else {
-            return new NotificationMessage(intygsId, intygsTyp, handelseTid, handelseType, "address2", INTYG_JSON, FragorOchSvar.getEmpty(),
-                    null, null, schemaVersion, "ref");
+            throw new IllegalArgumentException("SchemaVersion 1 not supported anymore.");
+            // return new NotificationMessage(intygsId, intygsTyp, handelseTid, handelseType, "address2", INTYG_JSON,
+            // FragorOchSvar.getEmpty(),
+            // null, null, schemaVersion, "ref");
         }
     }
 
@@ -304,11 +308,11 @@ public class RouteIT {
                 return null;
             }
             CertificateStatusUpdateForCareType request = new CertificateStatusUpdateForCareType();
-            UtlatandeType utlatande = new UtlatandeType();
-            UtlatandeId id = new UtlatandeId();
+            Intyg intyg = new Intyg();
+            IntygId id = new IntygId();
             id.setExtension(msg.getIntygsId());
-            utlatande.setUtlatandeId(id);
-            request.setUtlatande(utlatande);
+            intyg.setIntygsId(id);
+            request.setIntyg(intyg);
             return request;
         });
 

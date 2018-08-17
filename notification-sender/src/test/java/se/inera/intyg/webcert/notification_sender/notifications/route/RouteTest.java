@@ -155,7 +155,7 @@ public class RouteTest {
         Map<String, Object> headers = new HashMap<>();
         headers.put(NotificationRouteHeaders.INTYGS_TYP, "fk7263");
         headers.put(NotificationRouteHeaders.HANDELSE, HandelsekodEnum.ANDRAT.value());
-        producerTemplate.sendBodyAndHeaders(createNotificationMessage(null), headers);
+        producerTemplate.sendBodyAndHeaders(createNotificationMessage(SchemaVersion.VERSION_3), headers);
 
         // Then
         assertIsSatisfied(notificationWSClientV3);
@@ -234,7 +234,7 @@ public class RouteTest {
         Map<String, Object> headers = new HashMap<>();
         headers.put(NotificationRouteHeaders.INTYGS_TYP, "luae_fs");
         headers.put(NotificationRouteHeaders.HANDELSE, HandelsekodEnum.SKICKA.value());
-        producerTemplate.sendBodyAndHeaders(createNotificationMessage(null), headers);
+        producerTemplate.sendBodyAndHeaders(createNotificationMessage(SchemaVersion.VERSION_3), headers);
 
         // Then
         assertIsSatisfied(notificationWSClientV3);
@@ -256,7 +256,7 @@ public class RouteTest {
         Map<String, Object> headers = new HashMap<>();
         headers.put(NotificationRouteHeaders.INTYGS_TYP, "fk7263");
         headers.put(NotificationRouteHeaders.HANDELSE, HandelsekodEnum.ANDRAT.value());
-        producerTemplate.sendBodyAndHeaders(createNotificationMessage(null), headers);
+        producerTemplate.sendBodyAndHeaders(createNotificationMessage(SchemaVersion.VERSION_3), headers);
 
         // Then
         assertIsSatisfied(notificationWSClientV3);
@@ -266,10 +266,10 @@ public class RouteTest {
     }
 
     @Test
-    public void testNormalRouteExplicitNotificationVersion1() throws InterruptedException {
+    public void testNormalRouteExplicitNotificationVersion1ResultsInPermanentException() throws InterruptedException {
         // Given
-        notificationWSClientV3.expectedMessageCount(1);
-        permanentErrorHandlerEndpoint.expectedMessageCount(0);
+        notificationWSClientV3.expectedMessageCount(0);
+        permanentErrorHandlerEndpoint.expectedMessageCount(1);
         temporaryErrorHandlerEndpoint.expectedMessageCount(0);
 
         // When
@@ -366,7 +366,7 @@ public class RouteTest {
         temporaryErrorHandlerEndpoint.expectedMessageCount(1);
 
         // When
-        producerTemplate.sendBody(createNotificationMessage(SchemaVersion.VERSION_1, "fk7263"));
+        producerTemplate.sendBody(createNotificationMessage(SchemaVersion.VERSION_3, "fk7263"));
 
         // Then
         assertIsSatisfied(notificationWSClientV3);

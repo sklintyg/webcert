@@ -30,15 +30,11 @@ import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
-import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
 import se.inera.intyg.common.support.modules.support.api.notification.ArendeCount;
 import se.inera.intyg.common.support.modules.support.api.notification.FragorOchSvar;
 import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
 import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
 import se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders;
-import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.CertificateStatusUpdateForCareType;
-import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.UtlatandeType;
-import se.riv.clinicalprocess.healthcond.certificate.types.v1.UtlatandeId;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.ArbetsplatsKod;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.IntygId;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Enhet;
@@ -78,64 +74,20 @@ public class NotificationTransformerTest {
     @InjectMocks
     private NotificationTransformer transformer;
 
-    @Test
-    public void testSend() throws Exception {
+    @Test(expected = IllegalArgumentException.class)
+    public void testSendVersion1ThrowsException() throws Exception {
         // Given
         NotificationMessage notificationMessage = new NotificationMessage(INTYGS_ID, FK7263, LocalDateTime.now(), HandelsekodEnum.SKAPAT,
                 LOGISK_ADRESS, "{ }", FragorOchSvar.getEmpty(), null, null, SchemaVersion.VERSION_1, "ref");
         Message message = spy(new DefaultMessage());
         message.setBody(notificationMessage);
 
-        setupInternalToNotification();
-
         // When
-        transformer.process(message);
-
-        // Then
-        assertEquals(INTYGS_ID, ((CertificateStatusUpdateForCareType) message.getBody()).getUtlatande().getUtlatandeId().getExtension());
-        assertEquals(HandelsekodEnum.SKAPAT.value(), message.getHeader(NotificationRouteHeaders.HANDELSE));
-        assertEquals(INTYGS_ID, message.getHeader(NotificationRouteHeaders.INTYGS_ID));
-        assertEquals(LOGISK_ADRESS, message.getHeader(NotificationRouteHeaders.LOGISK_ADRESS));
-        assertEquals(SchemaVersion.VERSION_1.name(), message.getHeader(NotificationRouteHeaders.VERSION));
-
-        verify(message, times(1)).setHeader(eq(NotificationRouteHeaders.LOGISK_ADRESS), eq(LOGISK_ADRESS));
-        verify(message, times(1)).setHeader(eq(NotificationRouteHeaders.INTYGS_ID), eq(INTYGS_ID));
-        verify(message, times(1)).setHeader(eq(NotificationRouteHeaders.HANDELSE), eq(HandelsekodEnum.SKAPAT.value()));
-        verify(message, times(1)).setHeader(eq(NotificationRouteHeaders.VERSION), eq(SchemaVersion.VERSION_1.name()));
-        verify(internalToNotification, times(1)).createCertificateStatusUpdateForCareType(any());
-        verifyZeroInteractions(notificationPatientEnricher);
-    }
-
-    /**
-     * Note that this test used to assert that V1 was forced when no schemaversion was specified for FK7263. After the
-     * retirement of v1 we force V3 instead which is tested now.
-     */
-    @Test
-    public void testSendBackwardsCompatibilityForcesV3() throws Exception {
-        // Given
-        NotificationMessage notificationMessage = new NotificationMessage(INTYGS_ID, FK7263, LocalDateTime.now(), HandelsekodEnum.SKAPAT,
-                LOGISK_ADRESS, "{ }", FragorOchSvar.getEmpty(), null, null, null, "ref");
-        Message message = spy(new DefaultMessage());
-        message.setBody(notificationMessage);
-
-        setupInternalToNotification();
-
-        // When
-        transformer.process(message);
-
-        // Then
-        assertEquals(INTYGS_ID, ((CertificateStatusUpdateForCareType) message.getBody()).getUtlatande().getUtlatandeId().getExtension());
-        assertEquals(HandelsekodEnum.SKAPAT.value(), message.getHeader(NotificationRouteHeaders.HANDELSE));
-        assertEquals(INTYGS_ID, message.getHeader(NotificationRouteHeaders.INTYGS_ID));
-        assertEquals(LOGISK_ADRESS, message.getHeader(NotificationRouteHeaders.LOGISK_ADRESS));
-        assertEquals(SchemaVersion.VERSION_3.name(), message.getHeader(NotificationRouteHeaders.VERSION));
-
-        verify(message, times(1)).setHeader(eq(NotificationRouteHeaders.LOGISK_ADRESS), eq(LOGISK_ADRESS));
-        verify(message, times(1)).setHeader(eq(NotificationRouteHeaders.INTYGS_ID), eq(INTYGS_ID));
-        verify(message, times(1)).setHeader(eq(NotificationRouteHeaders.HANDELSE), eq(HandelsekodEnum.SKAPAT.value()));
-        verify(message, times(1)).setHeader(eq(NotificationRouteHeaders.VERSION), eq(SchemaVersion.VERSION_3.name()));
-        verify(internalToNotification, times(1)).createCertificateStatusUpdateForCareType(any());
-        verifyZeroInteractions(notificationPatientEnricher);
+        try {
+            transformer.process(message);
+        } finally {
+            verifyZeroInteractions(notificationPatientEnricher);
+        }
     }
 
     @Test
@@ -188,21 +140,5 @@ public class NotificationTransformerTest {
         message.setBody(notificationMessage);
         transformer.process(message);
         verifyZeroInteractions(notificationPatientEnricher);
-    }
-
-    private void setupInternalToNotification() throws ModuleException {
-        when(internalToNotification.createCertificateStatusUpdateForCareType(any())).thenAnswer(invocation -> {
-            NotificationMessage msg = (NotificationMessage) invocation.getArguments()[0];
-            if (msg == null) {
-                return null;
-            }
-            CertificateStatusUpdateForCareType request = new CertificateStatusUpdateForCareType();
-            UtlatandeType utlatande = new UtlatandeType();
-            UtlatandeId utlatandeId = new UtlatandeId();
-            utlatandeId.setExtension(msg.getIntygsId());
-            utlatande.setUtlatandeId(utlatandeId);
-            request.setUtlatande(utlatande);
-            return request;
-        });
     }
 }

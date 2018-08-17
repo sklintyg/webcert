@@ -26,11 +26,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import se.inera.intyg.webcert.notificationstub.v1.NotificationStore;
-import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.CertificateStatusUpdateForCareType;
-import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.Handelse;
-import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.UtlatandeType;
-import se.riv.clinicalprocess.healthcond.certificate.types.v1.UtlatandeId;
+import se.inera.intyg.webcert.notificationstub.v3.NotificationStoreV3;
+import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareType;
+import se.riv.clinicalprocess.healthcond.certificate.types.v3.IntygId;
+import se.riv.clinicalprocess.healthcond.certificate.v3.Handelse;
+import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
 
 import java.io.File;
 import java.time.LocalDateTime;
@@ -47,10 +47,9 @@ import static org.junit.Assert.assertEquals;
 public class IntegrationTest {
 
     @Autowired
-    private NotificationStore notificationStore;
-
+    private NotificationStoreV3 notificationStore;
     @Autowired
-    private NotificationStore notificationStore2;
+    private NotificationStoreV3 notificationStore2;
 
     @Before
     @After
@@ -64,31 +63,31 @@ public class IntegrationTest {
 
     @Test
     public void testPut() {
-        notificationStore.put(buildNotificationV1());
+        notificationStore.put(buildNotificationV3());
         assertEquals(1, notificationStore.getNotifications().size());
     }
 
     @Test
     public void testSyncWorks() {
-        notificationStore.put(buildNotificationV1());
-        notificationStore2.put(buildNotificationV1());
-        notificationStore2.put(buildNotificationV1());
+        notificationStore.put(buildNotificationV3());
+        notificationStore2.put(buildNotificationV3());
+        notificationStore2.put(buildNotificationV3());
 
-        assertEquals(3, notificationStore.getNotifications().size());
         assertEquals(3, notificationStore2.getNotifications().size());
     }
 
-    private CertificateStatusUpdateForCareType buildNotificationV1() {
+    private CertificateStatusUpdateForCareType buildNotificationV3() {
         Handelse handelse = new Handelse();
-        handelse.setHandelsetidpunkt(LocalDateTime.now().minusMinutes(1));
+        handelse.setTidpunkt(LocalDateTime.now().minusMinutes(1));
 
-        UtlatandeType utl = new UtlatandeType();
-        utl.setHandelse(handelse);
-        utl.setUtlatandeId(new UtlatandeId());
-        utl.getUtlatandeId().setExtension(UUID.randomUUID().toString());
+        Intyg intyg = new Intyg();
+        IntygId intygId = new IntygId();
+        intygId.setExtension(UUID.randomUUID().toString());
+        intyg.setIntygsId(intygId);
 
         CertificateStatusUpdateForCareType type = new CertificateStatusUpdateForCareType();
-        type.setUtlatande(utl);
+        type.setIntyg(intyg);
+        type.setHandelse(handelse);
 
         return type;
     }

@@ -24,11 +24,11 @@ import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import se.inera.intyg.webcert.notificationstub.v1.NotificationStoreImpl;
-import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.CertificateStatusUpdateForCareType;
-import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.Handelse;
-import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v1.UtlatandeType;
-import se.riv.clinicalprocess.healthcond.certificate.types.v1.UtlatandeId;
+import se.inera.intyg.webcert.notificationstub.v3.NotificationStoreV3Impl;
+import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareType;
+import se.riv.clinicalprocess.healthcond.certificate.types.v3.IntygId;
+import se.riv.clinicalprocess.healthcond.certificate.v3.Handelse;
+import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
 
 import java.io.File;
 import java.time.LocalDateTime;
@@ -44,7 +44,8 @@ public class NotificationStoreTest {
 
     private static final Logger LOG = LoggerFactory.getLogger(NotificationStoreTest.class);
 
-    private static List<String> INTYG_IDS = Arrays.asList("intyg1", "intyg2", "intyg3", "intyg4", "intyg5", "intyg6", "intyg7", "intyg8", "intyg9",
+    private static List<String> INTYG_IDS = Arrays.asList("intyg1", "intyg2", "intyg3", "intyg4", "intyg5", "intyg6", "intyg7", "intyg8",
+            "intyg9",
             "intyg10");
 
     @Before
@@ -59,19 +60,19 @@ public class NotificationStoreTest {
     @Test
     public void testPurge() {
 
-        NotificationStoreImpl notificationStore = new NotificationStoreImpl(UUID.randomUUID().toString(), 100);
+        NotificationStoreV3Impl notificationStore = new NotificationStoreV3Impl(UUID.randomUUID().toString(), 100);
         LocalDateTime now = LocalDateTime.now();
         populateNotificationsMap(100, notificationStore, now);
 
         notificationStore.purge();
         assertEquals(80, notificationStore.getNotifications().size());
 
-        LOG.info(notificationStore.getNotifications().stream().map(n -> n.getUtlatande().getHandelse().getHandelsetidpunkt().toString()).sorted()
+        LOG.info(notificationStore.getNotifications().stream().map(n -> n.getHandelse().getTidpunkt().toString()).sorted()
                 .collect(Collectors.joining("\n")));
         LOG.info("Oldest should be: {}", now.minusMinutes(100).toString());
     }
 
-    private void populateNotificationsMap(int nbr, NotificationStoreImpl notificationStore, LocalDateTime baseTime) {
+    private void populateNotificationsMap(int nbr, NotificationStoreV3Impl notificationStore, LocalDateTime baseTime) {
 
         Iterator<String> intygsIdIter = Iterables.cycle(INTYG_IDS).iterator();
 
@@ -79,18 +80,19 @@ public class NotificationStoreTest {
 
             String intygsId = intygsIdIter.next();
 
+            CertificateStatusUpdateForCareType statusUpdate = new CertificateStatusUpdateForCareType();
+
             Handelse handelse = new Handelse();
-            handelse.setHandelsetidpunkt(baseTime.minusMinutes(nbr - i));
+            handelse.setTidpunkt(baseTime.minusMinutes(nbr - i));
 
-            UtlatandeType utl = new UtlatandeType();
-            utl.setHandelse(handelse);
-            utl.setUtlatandeId(new UtlatandeId());
-            utl.getUtlatandeId().setExtension(intygsId);
+            statusUpdate.setHandelse(handelse);
+            Intyg intyg = new Intyg();
+            IntygId intygId = new IntygId();
+            intygId.setExtension(intygsId);
+            intyg.setIntygsId(intygId);
+            statusUpdate.setIntyg(intyg);
 
-            CertificateStatusUpdateForCareType type = new CertificateStatusUpdateForCareType();
-            type.setUtlatande(utl);
-
-            notificationStore.put(type);
+            notificationStore.put(statusUpdate);
         }
     }
 

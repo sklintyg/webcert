@@ -24,7 +24,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.intyg.common.fk7263.model.converter.Fk7263InternalToNotification;
-import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
@@ -83,8 +82,6 @@ public class NotificationTransformer {
             notificationPatientEnricher.enrichWithPatient(intyg);
             message.setBody(NotificationTypeConverter.convert(notificationMessage,
                     intyg));
-        } else if (Fk7263EntryPoint.MODULE_ID.equals(notificationMessage.getIntygsTyp())) {
-            message.setBody(fk7263Transform.createCertificateStatusUpdateForCareType(notificationMessage));
         } else {
             throw new IllegalArgumentException("Unsupported combination of version '" + notificationMessage.getVersion() + "' and type '"
                     + notificationMessage.getIntygsTyp() + "'");

@@ -48,7 +48,6 @@
      <property name="puService" ref="mockedPuService" />
   </bean>
 
-  <bean id="certificateStatusUpdateForCareResponderV1" class="se.inera.intyg.webcert.notification_sender.mocks.v1.CertificateStatusUpdateForCareResponderStub"/>
   <bean id="certificateStatusUpdateForCareResponderV3" class="se.inera.intyg.webcert.notification_sender.mocks.v3.CertificateStatusUpdateForCareResponderStub"/>
 
   <bean id="mockFk7263Converter" class="org.mockito.Mockito" factory-method="mock">
