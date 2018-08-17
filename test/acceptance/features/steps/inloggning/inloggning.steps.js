@@ -181,7 +181,9 @@ When(/^jag går in på en( annan)? patient$/, function(annan) {
     } else {
         this.patient = testdataHelpers.shuffle(testpatienter)[0];
     }
+
     return gotoPatient(this.patient, this.user);
+
 });
 
 Then(/^ska en varningsruta innehålla texten "([^"]*)"$/, function(text) {
@@ -197,8 +199,8 @@ Then(/^ska en varningsruta innehålla texten "([^"]*)"$/, function(text) {
     });
 });
 
+
 When(/^jag går in på att skapa ett "([^"]*)" intyg$/, function(intygsTyp) {
-    //intyg.typ = intygsTyp;
     this.intyg = {
         typ: intygsTyp
     };

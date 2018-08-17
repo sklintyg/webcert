@@ -19,28 +19,32 @@
 
 'use strict';
 
+var testdataHelper = require('common-testtools').testdataHelper;
+//var shuffle = testdataHelper.shuffle;
+
+//var testValues = require('./testvalues.js').ts;
+
 module.exports = {
-    fk: {
-        '7263': require('./fk.7263.js'),
-        LUSE: require('./fk.LUSE.js'),
-        LISJP: require('./fk.LISJP.js'),
-        LUAE_FS: require('./fk.LUAE_FS.js'),
-        LUAE_NA: require('./fk.LUAE_NA.js')
+    get: function(intygsID) {
+        if (!intygsID) {
+            intygsID = testdataHelper.generateTestGuid();
+        }
+        return {
+            "id": intygsID,
+            "typ": "Arbetsförmedlingens medicinska utlåtande",
+            "ovrigt": "Övrigt kommentar"
+        };
     },
-    ts: {
-        bas: require('./ts.bas.js'),
-        diabetes: require('./ts.diabetes.js')
-    },
-    skv: {
-        db: require('./skv.db.js')
-    },
-    soc: {
-        doi: require('./soc.doi.js')
-    },
-    af: {
-        'af00213': require('./af.af00213.js')
-    },
-    values: require('./testvalues.js'),
-    fmb: require('./diagnoskoderFMB.js'),
-    diagnosKategorier: require('./diagnosKategorier_A-F.js')
+    getRandom: function(intygsID, patient) {
+
+        if (!intygsID) {
+            intygsID = testdataHelper.generateTestGuid();
+        }
+
+        return {
+            id: intygsID,
+            typ: 'Arbetsförmedlingens medicinska utlåtande',
+            ovrigt: testdataHelper.randomTextString(5, 1000)
+        };
+    }
 };

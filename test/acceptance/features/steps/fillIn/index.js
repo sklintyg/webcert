@@ -42,6 +42,8 @@ module.exports = {
                     return require('./skv.db.js').fillIn(world.intyg);
                 case 'Dödsorsaksintyg':
                     return require('./soc.doi.js').fillIn(world.intyg);
+                case 'Arbetsförmedlingens medicinska utlåtande':
+                    return require('./af.af00213.js').fillIn(world.intyg);
                 default:
                     throw 'Intyg.typ odefinierad.';
             }

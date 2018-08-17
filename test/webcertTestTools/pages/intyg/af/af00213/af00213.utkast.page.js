@@ -17,30 +17,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * Created by bennysce on 09/06/15.
+ */
+
 'use strict';
 
-module.exports = {
-    fk: {
-        '7263': require('./fk.7263.js'),
-        LUSE: require('./fk.LUSE.js'),
-        LISJP: require('./fk.LISJP.js'),
-        LUAE_FS: require('./fk.LUAE_FS.js'),
-        LUAE_NA: require('./fk.LUAE_NA.js')
+var BaseAfUtkast = require('../af.base.utkast.page.js');
+
+var Af00213Utkast = BaseAfUtkast._extend({
+    init: function init() {
+
+        init._super.call(this);
+        this.intygType = 'af00213';
+        this.ovrigt = element(by.id('ovrigt'));
     },
-    ts: {
-        bas: require('./ts.bas.js'),
-        diabetes: require('./ts.diabetes.js')
-    },
-    skv: {
-        db: require('./skv.db.js')
-    },
-    soc: {
-        doi: require('./soc.doi.js')
-    },
-    af: {
-        'af00213': require('./af.af00213.js')
-    },
-    values: require('./testvalues.js'),
-    fmb: require('./diagnoskoderFMB.js'),
-    diagnosKategorier: require('./diagnosKategorier_A-F.js')
-};
+    fillInOvrigt: function(ovrigt) {
+        return this.ovrigt.sendKeys(ovrigt);
+    }
+});
+
+module.exports = new Af00213Utkast();

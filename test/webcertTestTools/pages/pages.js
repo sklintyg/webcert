@@ -93,6 +93,12 @@ module.exports = {
                 utkast: require(intygPath + 'soc/doi/doi.utkast.page.js'),
                 intyg: require(intygPath + 'soc/doi/doi.intyg.page.js')
             }
+        },
+        af: {
+            af00213: {
+                utkast: require(intygPath + 'af/af00213/af00213.utkast.page.js'),
+                intyg: require(intygPath + 'af/af00213/af00213.intyg.page.js')
+            }
         }
     },
     'unsignedPage': require('./unsignedPage.js'),
@@ -118,8 +124,11 @@ module.exports = {
                 return this.intyg.skv.db.intyg;
             case 'Dödsorsaksintyg':
                 return this.intyg.soc.doi.intyg;
+            case 'Arbetsförmedlingens medicinska utlåtande':
+                return this.intyg.af.af00213.intyg;
             default:
-                throw 'Intyg-typ odefinierad.';
+                console.trace(typ);
+                throw 'Intyg-typ ' + typ + 'hittades inte i pages i getIntygPageByType.';
         }
     },
     getUtkastPageByType: function(typ) {
@@ -142,8 +151,11 @@ module.exports = {
                 return this.intyg.skv.db.utkast;
             case 'Dödsorsaksintyg':
                 return this.intyg.soc.doi.utkast;
+            case 'Arbetsförmedlingens medicinska utlåtande':
+                return this.intyg.af.af00213.utkast;
             default:
-                throw 'Intyg-typ odefinierad.';
+                console.trace(typ);
+                throw 'Intyg-typ ' + typ + 'hittades inte i pages i getUtkastPageByType.';
         }
     }
 };

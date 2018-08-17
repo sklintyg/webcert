@@ -17,30 +17,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-'use strict';
+/* globals logger, pages, browser, Promise */
 
+
+var af00213UtkastPage = pages.intyg.af.af00213.utkast;
 module.exports = {
-    fk: {
-        '7263': require('./fk.7263.js'),
-        LUSE: require('./fk.LUSE.js'),
-        LISJP: require('./fk.LISJP.js'),
-        LUAE_FS: require('./fk.LUAE_FS.js'),
-        LUAE_NA: require('./fk.LUAE_NA.js')
-    },
-    ts: {
-        bas: require('./ts.bas.js'),
-        diabetes: require('./ts.diabetes.js')
-    },
-    skv: {
-        db: require('./skv.db.js')
-    },
-    soc: {
-        doi: require('./soc.doi.js')
-    },
-    af: {
-        'af00213': require('./af.af00213.js')
-    },
-    values: require('./testvalues.js'),
-    fmb: require('./diagnoskoderFMB.js'),
-    diagnosKategorier: require('./diagnosKategorier_A-F.js')
+    fillIn: function(intyg) {
+        'use strict';
+        //Returnera Promise kedja
+        return new Promise(function(resolve) {
+            logger.info('Fyller i ' + intyg.typ + ' formuläret synkront');
+            browser.ignoreSynchronization = true;
+            resolve('Fyller i ' + intyg.typ + '  formuläret synkront');
+        }).then(function() {
+            return af00213UtkastPage.fillInOvrigt(intyg.ovrigt);
+        });
+
+    }
 };
