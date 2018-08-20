@@ -87,7 +87,6 @@ module.exports = {
     },
     fillIn: function(world) {
         utkastPage = pages.getUtkastPageByType(world.intyg.typ);
-        console.log(utkastPage);
         return this.fillInEnhetAdress(world.user)
             .then(() => this.setPatientAdressIfNotGiven(world))
             .then(() => browser.driver.switchTo().activeElement().sendKeys(protractor.Key.TAB));

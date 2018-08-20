@@ -17,7 +17,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*globals element, by*/
 'use strict';
 
 var BaseIntyg = require('../base.intyg.page.js');

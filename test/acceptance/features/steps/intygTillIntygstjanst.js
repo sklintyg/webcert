@@ -58,7 +58,7 @@
      if (intyg && intyg.typ) {
          isSMIIntyg = helpers.isSMIIntyg(intyg.typ);
      }
-     console.log('isSMIIntyg: ' + isSMIIntyg);
+     logger.silly('isSMIIntyg: ' + isSMIIntyg);
 
      if (isSMIIntyg) {
          logger.silly('is isSMIIntyg');

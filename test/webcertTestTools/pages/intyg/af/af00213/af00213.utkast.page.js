@@ -61,7 +61,7 @@ var Af00213Utkast = AfBaseUtkast._extend({
             if (funktionsnedsattning.val === 'Ja') {
                 return pageHelpers.moveAndSendKeys(el.yes, protractor.Key.SPACE)
                     .then(function() {
-                        return pageHelpers.moveAndSendKeys(el.text, funktionsnedsattning.text, funktionsnedsattning.text);
+                        return pageHelpers.moveAndSendKeys(el.text, funktionsnedsattning.text);
                     });
             } else {
                 return pageHelpers.moveAndSendKeys(el.no, protractor.Key.SPACE);
@@ -69,31 +69,31 @@ var Af00213Utkast = AfBaseUtkast._extend({
         }
     },
     angeAktivitetsbegransning: function(aktivitetsbegransning) {
-        var el = this.aktivitetsbegransning;
         if (!aktivitetsbegransning) {
             return Promise.resolve();
         } else {
-            if (aktivitetsbegransning.val !== undefined) {
-                if (aktivitetsbegransning.val === 'Ja') {
-                    return pageHelpers.moveAndSendKeys(el.yes, protractor.Key.SPACE)
-                        .then(function() {
-                            return pageHelpers.moveAndSendKeys(el.text, aktivitetsbegransning.text, aktivitetsbegransning.text);
-                        });
-                } else {
-                    return pageHelpers.moveAndSendKeys(el.no, protractor.Key.SPACE);
-                }
+            var el = this.aktivitetsbegransning;
+
+            if (aktivitetsbegransning.val === 'Ja') {
+                return pageHelpers.moveAndSendKeys(el.yes, protractor.Key.SPACE)
+                    .then(function() {
+                        return pageHelpers.moveAndSendKeys(el.text, aktivitetsbegransning.text);
+                    });
+            } else {
+                return pageHelpers.moveAndSendKeys(el.no, protractor.Key.SPACE);
             }
         }
+
     },
     angeUtredningBehandling: function(utredningBehandling) {
-        var el = this.utredningBehandling;
         if (!utredningBehandling) {
             return Promise.resolve();
         } else {
+            var el = this.utredningBehandling;
             if (utredningBehandling.val === 'Ja') {
                 return pageHelpers.moveAndSendKeys(el.yes, protractor.Key.SPACE)
                     .then(function() {
-                        return pageHelpers.moveAndSendKeys(el.text, utredningBehandling.text, utredningBehandling.text);
+                        return pageHelpers.moveAndSendKeys(el.text, utredningBehandling.text);
                     });
             } else {
                 return pageHelpers.moveAndSendKeys(el.no, protractor.Key.SPACE);
@@ -108,7 +108,7 @@ var Af00213Utkast = AfBaseUtkast._extend({
             if (arbetetsPaverkan.val === 'Ja') {
                 return pageHelpers.moveAndSendKeys(el.yes, protractor.Key.SPACE)
                     .then(function() {
-                        return pageHelpers.moveAndSendKeys(el.text, arbetetsPaverkan.text, arbetetsPaverkan.text);
+                        return pageHelpers.moveAndSendKeys(el.text, arbetetsPaverkan.text);
                     });
             } else {
                 return pageHelpers.moveAndSendKeys(el.no, protractor.Key.SPACE);

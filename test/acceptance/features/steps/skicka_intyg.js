@@ -45,7 +45,7 @@ var helpers = require('./helpers');
  *	Test steg
  *
  */
-When(/^jag skickar intyget till (.*)$/, function(mottagare) {´
+When(/^jag skickar intyget till (.*)$/, function(mottagare) {
     if (!this.intyg.id) {
         browser.getCurrentUrl().then(function(text) {
             this.intyg.id = text.split('/').slice(-2)[0];

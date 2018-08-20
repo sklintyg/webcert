@@ -50,78 +50,33 @@ module.exports = {
         };
     },
     getRandom: function(intygsID) {
-        var harFunktionsnedsattning, funktionsnedsattning;
-        var harAktivitetsbegransning, aktivitetsbegransning;
-        var harUtredningBehandling, utredningBehandling;
-        var harArbetetsPaverkan, arbetetsPaverkan;
-
-        harFunktionsnedsattning = testdataHelper.randomTrueFalse();
-        if (harFunktionsnedsattning) {
-            funktionsnedsattning = testdataHelper.randomTextString();
-            harAktivitetsbegransning = testdataHelper.randomTrueFalse();
-            if (harAktivitetsbegransning) {
-                aktivitetsbegransning = testdataHelper.randomTextString();
-            }
-        }
-
-        harUtredningBehandling = testdataHelper.randomTrueFalse();
-        if (harUtredningBehandling) {
-            utredningBehandling = testdataHelper.randomTextString();
-        }
-
-        harArbetetsPaverkan = testdataHelper.randomTrueFalse();
-        if (harArbetetsPaverkan) {
-            arbetetsPaverkan = testdataHelper.randomTextString();
+        function slumpaValOchText() {
+            return testdataHelper.shuffle([{
+                val: 'Ja',
+                text: testdataHelper.randomTextString(5, 1000)
+            }, {
+                val: 'Nej'
+            }][0]);
         }
 
         if (!intygsID) {
             intygsID = testdataHelper.generateTestGuid();
         }
 
-        if (harFunktionsnedsattning === false) {
-            return {
-                id: intygsID,
-                typ: 'Arbetsförmedlingens medicinska utlåtande',
-                funktionsnedsattning: {
-                    val: testdataHelper.boolTillJaNej(harFunktionsnedsattning),
-                    text: funktionsnedsattning
-                },
-                aktivitetsbegransning: {
-                    val: undefined,
-                    text: undefined
-                },
-                utredningBehandling: {
-                    val: testdataHelper.boolTillJaNej(harUtredningBehandling),
-                    text: utredningBehandling
-                },
-                arbetetsPaverkan: {
-                    val: testdataHelper.boolTillJaNej(harArbetetsPaverkan),
-                    text: arbetetsPaverkan
-                },
-                ovrigt: testdataHelper.randomTextString()
-            };
-        }
-
-        return {
+        let obj = {
             id: intygsID,
             typ: 'Arbetsförmedlingens medicinska utlåtande',
-            funktionsnedsattning: {
-                val: testdataHelper.boolTillJaNej(harFunktionsnedsattning),
-                text: funktionsnedsattning
-            },
-            aktivitetsbegransning: {
-                val: testdataHelper.boolTillJaNej(harAktivitetsbegransning),
-                text: aktivitetsbegransning
-            },
-            utredningBehandling: {
-                val: testdataHelper.boolTillJaNej(harUtredningBehandling),
-                text: utredningBehandling
-            },
-            arbetetsPaverkan: {
-                val: testdataHelper.boolTillJaNej(harArbetetsPaverkan),
-                text: arbetetsPaverkan
-            },
-            ovrigt: testdataHelper.randomTextString()
+            funktionsnedsattning: slumpaValOchText(),
+            arbetetsPaverkan: slumpaValOchText(),
+            ovrigt: testdataHelper.randomTextString(5, 1000)
         };
+
+        if (obj.funktionsnedsattning.val === 'Ja') {
+            obj.aktivitetsbegransning = slumpaValOchText();
+        }
+        if (Math.random() > 0.5) {
+            obj.utredningBehandling = slumpaValOchText();
+        }
+        return obj;
     }
 };

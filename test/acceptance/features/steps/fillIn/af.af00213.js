@@ -20,7 +20,7 @@
 /* globals logger, pages, browser, Promise */
 
 
-var af00213UtkastPage = pages.intyg.af.af00213.utkast;
+var af00213UtkastPage = pages.intyg.af['00213'].utkast;
 module.exports = {
     fillIn: function(intyg) {
         'use strict';
@@ -37,19 +37,23 @@ module.exports = {
                 throw ('FEL, angeFunktionsnedsattning ' + reason);
             });
         }).then(function() {
-            return af00213UtkastPage.angeAktivitetsbegransning(intyg.aktivitetsbegransning).then(function() {
-                logger.info('OK - angeAktivitetsbegransning');
-            }, function(reason) {
-                console.trace(reason);
-                throw ('FEL, angeAktivitetsbegransning,' + reason);
-            });
+            if (typeof(intyg.aktivitetsbegransning) !== 'undefined') {
+                return af00213UtkastPage.angeAktivitetsbegransning(intyg.aktivitetsbegransning).then(function() {
+                    logger.info('OK - angeAktivitetsbegransning');
+                }, function(reason) {
+                    console.trace(reason);
+                    throw ('FEL, angeAktivitetsbegransning,' + reason);
+                });
+            }
         }).then(function() {
-            return af00213UtkastPage.angeUtredningBehandling(intyg.utredningBehandling).then(function() {
-                logger.info('OK - angeUtredningBehandling');
-            }, function(reason) {
-                console.trace(reason);
-                throw ('FEL, angeUtredningBehandling,' + reason);
-            });
+            if (typeof(intyg.utredningBehandling) !== 'undefined') {
+                return af00213UtkastPage.angeUtredningBehandling(intyg.utredningBehandling).then(function() {
+                    logger.info('OK - angeUtredningBehandling');
+                }, function(reason) {
+                    console.trace(reason);
+                    throw ('FEL, angeUtredningBehandling,' + reason);
+                });
+            }
         }).then(function() {
             return af00213UtkastPage.angeArbetetsPaverkan(intyg.arbetetsPaverkan).then(function() {
                 logger.info('OK - angeArbetetsPaverkan');
@@ -58,11 +62,11 @@ module.exports = {
                 throw ('FEL, angeArbetetsPaverkan,' + reason);
             });
         }).then(function() {
-            return af00213UtkastPage.angeOvrigt(intyg.ovrigt).then(function() {
-                logger.info('OK - angeOvrigt');
+            return af00213UtkastPage.angeOvrigaUpplysningar(intyg.ovrigt).then(function() {
+                logger.info('OK - angeOvrigaUpplysningar');
             }, function(reason) {
                 console.trace(reason);
-                throw ('FEL, angeOvrigt,' + reason);
+                throw ('FEL, angeOvrigaUpplysningar,' + reason);
             });
         });
 
