@@ -17,28 +17,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * Created by bennysce on 09/06/15.
- */
-
 'use strict';
 
-//var pageHelpers = require('../../pageHelper.util.js');
 var BaseUtkast = require('../base.utkast.page.js');
 
-
-var BaseAfUtkast = BaseUtkast._extend({
+var AfBaseUtkast = BaseUtkast._extend({
     init: function init() {
         init._super.call(this);
-
-        //this.markeraKlartForSigneringButton = element(by.id('markeraKlartForSigneringButton'));
-        //this.markeraKlartForSigneringModalYesButton = element(by.id('buttonYes'));
-        //this.markeradKlartForSigneringText = element(by.id('draft-marked-ready-text'));
-
     },
     get: function get(intygId) {
         get._super.call(this, this.intygType, intygId);
-    },
+    }
 });
 
-module.exports = BaseAfUtkast;
+module.exports = AfBaseUtkast;

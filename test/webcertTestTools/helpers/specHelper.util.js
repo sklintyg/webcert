@@ -108,6 +108,8 @@ module.exports = {
             utkastPage = pages.intyg.ts.diabetes.utkast;
         } else if (intygType === 'db') {
             utkastPage = pages.intyg.skv.db.utkast;
+        } else if (intygType === 'af00213') {
+            utkastPage = pages.intyg.af['00213'].utkast;
         } else {
             utkastPage = pages.intyg[intygType].utkast;
         }

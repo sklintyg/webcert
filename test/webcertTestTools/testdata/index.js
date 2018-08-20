@@ -38,7 +38,7 @@ module.exports = {
         doi: require('./soc.doi.js')
     },
     af: {
-        'af00213': require('./af.af00213.js')
+        af00213: require('./af.00213.js')
     },
     values: require('./testvalues.js'),
     fmb: require('./diagnoskoderFMB.js'),

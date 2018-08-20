@@ -17,20 +17,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/*globals element, by*/
 'use strict';
 
-/**
- * This is a base (view) page for fk SIT family of intyg (luse, lusi, luae_fs, luae_na).
- * Only things relevant to ALL such types should end up here.
- */
-
 var BaseIntyg = require('../base.intyg.page.js');
-//var _ = require('lodash');
 
 var AfBaseIntyg = BaseIntyg._extend({
     init: function init() {
         init._super.call(this);
-
     }
 });
 

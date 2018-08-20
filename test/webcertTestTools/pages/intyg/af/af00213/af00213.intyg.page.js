@@ -17,26 +17,76 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * Created by bennysce on 09/06/15.
- */
 'use strict';
 
-var AfBaseIntyg = require('../af.base.intyg.page');
-//var testValues = require('../../../../testdata/testvalues.ts');
-//var _ = require('lodash');
+var AfBaseIntyg = require('../af.base.intyg.page.js');
 
 var Af00213Intyg = AfBaseIntyg._extend({
     init: function init() {
         init._super.call(this);
         this.intygType = 'af00213';
 
+        this.funktionsnedsattning = {
+            value: element(by.id('harFunktionsnedsattning')),
+            text: element(by.id('funktionsnedsattning'))
+        };
 
-        //this.intygStatus = element(by.id('intyget-sparat-och-ej-komplett-meddelande'));
+        this.aktivitetsbegransning = {
+            value: element(by.id('harAktivitetsbegransning')),
+            text: element(by.id('aktivitetsbegransning'))
+        };
 
+        this.utredningBehandling = {
+            value: element(by.id('harUtredningBehandling')),
+            text: element(by.id('utredningBehandling'))
+        };
+
+        this.arbetetsPaverkan = {
+            value: element(by.id('harArbetetsPaverkan')),
+            text: element(by.id('arbetetsPaverkan'))
+        };
+
+        this.ovrigt = element(by.id('ovrigt'));
     },
+
     get: function get(intygId) {
         get._super.call(this, intygId);
+    },
+    verify: function(data) {
+        this.verifieraFunktionsnedsattning(data);
+        this.verifieraAktivitetsbegransning(data);
+        this.verifieraUtredningBehandling(data);
+        this.verifieraArbetetsPaverkan(data);
+        this.verifieraOvrigt(data);
+    },
+    verifieraFunktionsnedsattning: function(data) {
+        expect(this.funktionsnedsattning.value.getText()).toBe(data.funktionsnedsattning.val);
+        if (data.funktionsnedsattning.text !== undefined) {
+            expect(this.funktionsnedsattning.text.getText()).toBe(data.funktionsnedsattning.text);
+        }
+    },
+    verifieraAktivitetsbegransning: function(data) {
+        if (data.aktivitetsbegransning.val !== undefined) {
+            expect(this.aktivitetsbegransning.value.getText()).toBe(data.aktivitetsbegransning.val);
+            if (data.aktivitetsbegransning.text !== undefined) {
+                expect(this.aktivitetsbegransning.text.getText()).toBe(data.aktivitetsbegransning.text);
+            }
+        }
+    },
+    verifieraUtredningBehandling: function(data) {
+        expect(this.utredningBehandling.value.getText()).toBe(data.utredningBehandling.val);
+        if (data.utredningBehandling.text !== undefined) {
+            expect(this.utredningBehandling.text.getText()).toBe(data.utredningBehandling.text);
+        }
+    },
+    verifieraArbetetsPaverkan: function(data) {
+        expect(this.arbetetsPaverkan.value.getText()).toBe(data.arbetetsPaverkan.val);
+        if (data.arbetetsPaverkan.text !== undefined) {
+            expect(this.arbetetsPaverkan.text.getText()).toBe(data.arbetetsPaverkan.text);
+        }
+    },
+    verifieraOvrigt: function(data) {
+        expect(this.ovrigt.getText()).toBe(data.ovrigt);
     }
 });
 

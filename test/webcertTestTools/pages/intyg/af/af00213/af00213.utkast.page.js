@@ -17,104 +17,114 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* globals protractor */
-/**
- * Created by bennysce on 09/06/15.
- */
-
+/*globals element, by, Promise, protractor*/
 'use strict';
 
-const BaseAfUtkast = require('../af.base.utkast.page.js');
-const pageHelpers = require('../../../pageHelper.util.js');
+var AfBaseUtkast = require('../af.base.utkast.page.js');
+var pageHelpers = require('../../../pageHelper.util.js');
 
-
-const Af00213Utkast = BaseAfUtkast._extend({
+var Af00213Utkast = AfBaseUtkast._extend({
     init: function init() {
         init._super.call(this);
-        this.intygType = 'af00213';
-        this.ovrigt = element(by.id('ovrigt'));
+
         this.funktionsnedsattning = {
-            ja: element(by.id('harFunktionsnedsattningYes')),
-            nej: element(by.id('harFunktionsnedsattningNo')),
+            yes: element(by.id('harFunktionsnedsattningYes')),
+            no: element(by.id('harFunktionsnedsattningNo')),
             text: element(by.id('funktionsnedsattning'))
         };
+
         this.aktivitetsbegransning = {
-            ja: element(by.id('harAktivitetsbegransningYes')),
-            nej: element(by.id('harAktivitetsbegransningNo')),
+            yes: element(by.id('harAktivitetsbegransningYes')),
+            no: element(by.id('harAktivitetsbegransningNo')),
             text: element(by.id('aktivitetsbegransning'))
         };
+
         this.utredningBehandling = {
-            ja: element(by.id('harUtredningBehandlingYes')),
-            nej: element(by.id('harUtredningBehandlingNo')),
+            yes: element(by.id('harUtredningBehandlingYes')),
+            no: element(by.id('harUtredningBehandlingNo')),
             text: element(by.id('utredningBehandling'))
         };
+
         this.arbetetsPaverkan = {
-            ja: element(by.id('harArbetetsPaverkanYes')),
-            nej: element(by.id('harArbetetsPaverkanNo')),
+            yes: element(by.id('harArbetetsPaverkanYes')),
+            no: element(by.id('harArbetetsPaverkanNo')),
             text: element(by.id('arbetetsPaverkan'))
         };
-    },
-    angeOvrigt: function(ovrigt) {
-        return this.ovrigt.sendKeys(ovrigt);
+
+        this.ovrigt = element(by.id('ovrigt'));
     },
     angeFunktionsnedsattning: function(funktionsnedsattning) {
-        let elm = {
-            funktionsnedsattning: this.funktionsnedsattning
-        };
-
-        if (funktionsnedsattning === false) {
-            return pageHelpers.moveAndSendKeys(elm.funktionsnedsattning.nej, protractor.Key.SPACE);
+        var el = this.funktionsnedsattning;
+        if (!funktionsnedsattning) {
+            return Promise.resolve();
         } else {
-            return pageHelpers.moveAndSendKeys(elm.funktionsnedsattning.ja, protractor.Key.SPACE).then(function() {
-                return pageHelpers.moveAndSendKeys(elm.funktionsnedsattning.text, funktionsnedsattning);
-            });
+            if (funktionsnedsattning.val === 'Ja') {
+                return pageHelpers.moveAndSendKeys(el.yes, protractor.Key.SPACE)
+                    .then(function() {
+                        return pageHelpers.moveAndSendKeys(el.text, funktionsnedsattning.text, funktionsnedsattning.text);
+                    });
+            } else {
+                return pageHelpers.moveAndSendKeys(el.no, protractor.Key.SPACE);
+            }
         }
     },
     angeAktivitetsbegransning: function(aktivitetsbegransning) {
-        let elm = {
-            aktivitetsbegransning: this.aktivitetsbegransning
-        };
-
-        if (typeof(aktivitetsbegransning) === 'undefined') {
-            return;
-        }
-
-        if (aktivitetsbegransning === false) {
-            return pageHelpers.moveAndSendKeys(elm.aktivitetsbegransning.nej, protractor.Key.SPACE);
+        var el = this.aktivitetsbegransning;
+        if (!aktivitetsbegransning) {
+            return Promise.resolve();
         } else {
-            return pageHelpers.moveAndSendKeys(elm.aktivitetsbegransning.ja, protractor.Key.SPACE).then(function() {
-                return pageHelpers.moveAndSendKeys(elm.aktivitetsbegransning.text, aktivitetsbegransning);
-            });
+            if (aktivitetsbegransning.val !== undefined) {
+                if (aktivitetsbegransning.val === 'Ja') {
+                    return pageHelpers.moveAndSendKeys(el.yes, protractor.Key.SPACE)
+                        .then(function() {
+                            return pageHelpers.moveAndSendKeys(el.text, aktivitetsbegransning.text, aktivitetsbegransning.text);
+                        });
+                } else {
+                    return pageHelpers.moveAndSendKeys(el.no, protractor.Key.SPACE);
+                }
+            }
         }
     },
     angeUtredningBehandling: function(utredningBehandling) {
-        let elm = {
-            utredningBehandling: this.utredningBehandling
-        };
-        if (typeof(utredningBehandling) === 'undefined') {
-            return;
-        }
-
-        if (utredningBehandling === false) {
-            return pageHelpers.moveAndSendKeys(elm.utredningBehandling.nej, protractor.Key.SPACE);
+        var el = this.utredningBehandling;
+        if (!utredningBehandling) {
+            return Promise.resolve();
         } else {
-            return pageHelpers.moveAndSendKeys(elm.utredningBehandling.ja, protractor.Key.SPACE).then(function() {
-                return pageHelpers.moveAndSendKeys(elm.utredningBehandling.text, utredningBehandling);
-            });
+            if (utredningBehandling.val === 'Ja') {
+                return pageHelpers.moveAndSendKeys(el.yes, protractor.Key.SPACE)
+                    .then(function() {
+                        return pageHelpers.moveAndSendKeys(el.text, utredningBehandling.text, utredningBehandling.text);
+                    });
+            } else {
+                return pageHelpers.moveAndSendKeys(el.no, protractor.Key.SPACE);
+            }
         }
     },
     angeArbetetsPaverkan: function(arbetetsPaverkan) {
-        let elm = {
-            arbetetsPaverkan: this.arbetetsPaverkan
-        };
-        if (arbetetsPaverkan === false) {
-            return pageHelpers.moveAndSendKeys(elm.arbetetsPaverkan.nej, protractor.Key.SPACE);
+        var el = this.arbetetsPaverkan;
+        if (!arbetetsPaverkan) {
+            return Promise.resolve();
         } else {
-            return pageHelpers.moveAndSendKeys(elm.arbetetsPaverkan.ja, protractor.Key.SPACE).then(function() {
-                return pageHelpers.moveAndSendKeys(elm.arbetetsPaverkan.text, arbetetsPaverkan);
-            });
+            if (arbetetsPaverkan.val === 'Ja') {
+                return pageHelpers.moveAndSendKeys(el.yes, protractor.Key.SPACE)
+                    .then(function() {
+                        return pageHelpers.moveAndSendKeys(el.text, arbetetsPaverkan.text, arbetetsPaverkan.text);
+                    });
+            } else {
+                return pageHelpers.moveAndSendKeys(el.no, protractor.Key.SPACE);
+            }
         }
+    },
+    angeOvrigaUpplysningar: function(ovrigt) {
+        var el = this.ovrigt;
+        return el.clear().then(function() {
+            return pageHelpers.moveAndSendKeys(el, ovrigt);
+        });
+    },
+    get: function get(intygId) {
+        get._super.call(this, 'af00213', intygId);
     }
+
 });
 
 module.exports = new Af00213Utkast();
