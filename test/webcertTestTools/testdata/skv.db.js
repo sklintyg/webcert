@@ -29,7 +29,7 @@ deathDate.setDate(today.getDate() - Math.floor(Math.random() * 365));
 
 function getRelativeDeathDate(modifier) {
     // Modifier : days
-    var datum = new Date(deathDate);
+    let datum = new Date(deathDate);
     datum.setDate(deathDate.getDate() + modifier);
     return datum;
 }
@@ -44,7 +44,7 @@ function getDodsdatum(datumSakert) {
         };
     } else {
         var monthArr = ['00', '01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12'];
-        var year = deathDate.getYear() + 1900;
+        let year = deathDate.getYear() + 1900;
         year = shuffle([String(year), '0000'])[0];
         return {
             inteSakert: {
@@ -75,7 +75,7 @@ module.exports = {
             intygsID = testdataHelper.generateTestGuid();
         }
 
-        var datumSakert = testdataHelper.randomTrueFalse();
+        let datumSakert = testdataHelper.randomTrueFalse();
 
         var obj = {
             id: intygsID,
