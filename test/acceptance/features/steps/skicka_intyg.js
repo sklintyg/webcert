@@ -45,35 +45,15 @@ var helpers = require('./helpers');
  *	Test steg
  *
  */
-
-When(/^jag skickar intyget till Transportstyrelsen/, function() {
-
-    if (!this.intyg.id) {
-        //Fånga intygets id
-        browser.getCurrentUrl().then(function(text) {
-            this.intyg.id = text.split('/').slice(-2)[0];
-            logger.info('Intygsid: ' + this.intyg.id);
-            this.intyg.id = this.intyg.id.split('?')[0];
-        });
-    } else {
-        logger.info('Följande intygs id skickas till Transportstyrelsen: ' + this.intyg.id);
-    }
-    return helpers.moveAndSendKeys(fkIntygPage.skicka.knapp, protractor.Key.SPACE).then(function() {
-        helpers.moveAndSendKeys(fkIntygPage.skicka.dialogKnapp, protractor.Key.SPACE);
-    });
-});
-
-When(/^jag skickar intyget till Försäkringskassan$/, function() {
-
-
+When(/^jag skickar intyget till (.*)$/, function(mottagare) {´
     if (!this.intyg.id) {
         browser.getCurrentUrl().then(function(text) {
             this.intyg.id = text.split('/').slice(-2)[0];
             this.intyg.id = this.intyg.id.split('?')[0];
-            logger.info('Följande intygs id skickas till Försäkringskassan: ' + this.intyg.id);
+            logger.info('Följande intygs id skickas till ' + mottagare + ': ' + this.intyg.id);
         });
     } else {
-        logger.info('Följande intygs id skickas till Försäkringskassan: ' + this.intyg.id);
+        logger.info('Följande intygs id skickas till ' + mottagare + ': ' + this.intyg.id);
     }
 
 
