@@ -55,7 +55,7 @@ module.exports = {
             },
             "sjukdomsForlopp": "wT0e1BYOsxb9q2ZI",
             "funktionsnedsattning": {
-                "intellektuell": "Intelektuell funktionsnedsättningstext",
+                "intellektuell": "Intellektuell funktionsnedsättningstext",
                 "kommunikation": "kommunikation funktionsnedsättningstext",
                 "koncentration": "koncentration funktionsnedsättningstext",
                 "psykisk": "psykisk funktionsnedsättningstext",
