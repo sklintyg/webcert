@@ -45,7 +45,7 @@ function verifyPolisanmalan(data) {
     }
 
     return Promise.all([
-        expect(dbPage.polisanmalan.getText()).to.eventually.equal(testdataHelper.boolTillJaNej(data.polisanmalan))
+        expect(dbPage.polisanmalan.getText()).to.eventually.contain(testdataHelper.boolTillJaNej(data.polisanmalan))
     ]);
 }
 
