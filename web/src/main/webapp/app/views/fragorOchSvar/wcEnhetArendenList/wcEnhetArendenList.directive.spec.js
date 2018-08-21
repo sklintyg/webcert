@@ -120,7 +120,7 @@ describe('wcEnhetArendenList', function() {
             featureService.features = {};
             $provide.value('common.featureService', featureService);
 
-            var UserModel = jasmine.createSpyObj('common.UserModel', ['isLakare', 'isTandlakare', 'isPrivatLakare', 'isDjupintegration'])
+            var UserModel = jasmine.createSpyObj('common.UserModel', ['isLakare', 'isTandlakare', 'isPrivatLakare', 'isDjupintegration']);
             UserModel.isVardAdministrator = function() { return true; };
 
             $provide.value('common.UserModel', UserModel);
