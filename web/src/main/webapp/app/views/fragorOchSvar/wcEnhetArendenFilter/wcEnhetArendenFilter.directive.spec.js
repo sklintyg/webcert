@@ -33,6 +33,7 @@ describe('wcEnhetArendenFilter', function() {
         module('webcertTest');
         module('webcert', ['$provide', function($provide) {
             $provide.value('webcert.vardenhetFilterModel', {});
+            $provide.value('common.UserModel', jasmine.createSpyObj('common.UserModel', ['isLakare', 'isTandlakare', 'isPrivatLakare', 'isDjupintegration', 'isVardAdministrator']));
         }]);
 
         inject(['$rootScope', '$compile', 'webcert.enhetArendenFilterModel', 'webcert.enhetArendenFilterService', '$httpBackend',

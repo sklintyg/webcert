@@ -119,7 +119,11 @@ describe('wcEnhetArendenList', function() {
             var featureService = jasmine.createSpyObj('common.featureService', [ 'isFeatureActive' ]);
             featureService.features = {};
             $provide.value('common.featureService', featureService);
-            $provide.value('common.UserModel', jasmine.createSpyObj('common.UserModel', ['isLakare', 'isTandlakare', 'isPrivatLakare']));
+
+            var UserModel = jasmine.createSpyObj('common.UserModel', ['isLakare', 'isTandlakare', 'isPrivatLakare', 'isDjupintegration'])
+            UserModel.isVardAdministrator = function() { return true; };
+
+            $provide.value('common.UserModel', UserModel);
             $provide.value('common.messageService', jasmine.createSpyObj('common.messageService', ['getProperty']));
 
             $provide.value('common.statService', {getLatestData:function(){}});
