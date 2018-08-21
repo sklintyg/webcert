@@ -531,6 +531,7 @@ public class UtkastServiceImpl implements UtkastService {
     }
 
     @Override
+    @Transactional
     public int lockOldDrafts(int lockedAfterDay, LocalDate today) {
 
         LocalDate lastCreatedDate = today.minusDays(lockedAfterDay);
