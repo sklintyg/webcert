@@ -18,8 +18,8 @@
  */
 
 angular.module('webcert').factory('webcert.enhetArendenFilterService',
-    [ 'webcert.enhetArendenProxy', 'webcert.enhetArendenModel', 'webcert.enhetArendenFilterModel',
-    function(enhetArendenProxy, enhetArendenModel, enhetArendenFilterModel) {
+    [ 'webcert.enhetArendenProxy', 'webcert.enhetArendenModel', 'webcert.enhetArendenFilterModel', 'common.UserModel',
+    function(enhetArendenProxy, enhetArendenModel, enhetArendenFilterModel, UserModel) {
         'use strict';
 
         function _initLakareList(unitId) {
@@ -29,7 +29,11 @@ angular.module('webcert').factory('webcert.enhetArendenFilterService',
                 enhetArendenFilterModel.viewState.loadingLakare = false;
                 enhetArendenFilterModel.lakareList = list;
                 enhetArendenFilterModel.lakareList.unshift(enhetArendenFilterModel.lakareListEmptyChoice);
-                enhetArendenFilterModel.filterForm.lakareSelector = enhetArendenFilterModel.lakareList[0].id;
+                if (!UserModel.isDjupintegration() && !UserModel.isVardAdministrator()) {
+                    enhetArendenFilterModel.filterForm.lakareSelector = UserModel.user.hsaId;
+                } else {
+                    enhetArendenFilterModel.filterForm.lakareSelector = enhetArendenFilterModel.lakareList[0].id;
+                }
             }, function() {
                 enhetArendenFilterModel.viewState.loadingLakare = false;
                 enhetArendenFilterModel.lakareList = [];

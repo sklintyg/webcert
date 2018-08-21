@@ -22,10 +22,11 @@ angular.module('webcert').directive('wcEnhetArendenList', [
     'common.ArendeVidarebefordraHelper', 'common.ArendeProxy', 'common.dialogService',
     'webcert.enhetArendenListService', 'webcert.enhetArendenModel', 'webcert.enhetArendenListModel',
     'common.messageService', 'webcert.vardenhetFilterModel', 'webcert.enhetArendenFilterModel',
+    'common.UserModel',
     function($location, $log, $timeout, $window,
         ArendeVidarebefordraHelper, ArendeProxy, dialogService,
         enhetArendenListService, enhetArendenModel, enhetArendenListModel, messageService, 
-        vardenhetFilterModel, enhetArendenFilterModel) {
+        vardenhetFilterModel, enhetArendenFilterModel, UserModel) {
         'use strict';
 
         return {
@@ -56,6 +57,12 @@ angular.module('webcert').directive('wcEnhetArendenList', [
                 });
 
                 var vidarebefordraArendeMailModel = null;
+
+                if (!UserModel.isDjupintegration() && !UserModel.isVardAdministrator()) {
+                    enhetArendenFilterModel.filterForm.lakareSelector = UserModel.user.hsaId;
+                } else {
+                    enhetArendenFilterModel.filterForm.lakareSelector = enhetArendenFilterModel.lakareList[0].id;
+                }
 
                 updateArenden(null, {startFrom: 0}, true);
 
