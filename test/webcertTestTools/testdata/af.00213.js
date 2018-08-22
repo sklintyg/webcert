@@ -63,20 +63,19 @@ module.exports = {
             intygsID = testdataHelper.generateTestGuid();
         }
 
-        let obj = {
+        var obj = {
             id: intygsID,
             typ: 'Arbetsförmedlingens medicinska utlåtande',
             funktionsnedsattning: slumpaValOchText(),
             arbetetsPaverkan: slumpaValOchText(),
+            utredningBehandling: slumpaValOchText(),
             ovrigt: testdataHelper.randomTextString(5, 1000)
         };
 
         if (obj.funktionsnedsattning.val === 'Ja') {
             obj.aktivitetsbegransning = slumpaValOchText();
         }
-        if (Math.random() > 0.5) {
-            obj.utredningBehandling = slumpaValOchText();
-        }
+
         return obj;
     }
 };
