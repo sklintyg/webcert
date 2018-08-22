@@ -34,6 +34,8 @@ import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 public class UtkastLockJob {
     private static final Logger LOG = LoggerFactory.getLogger(UtkastLockJob.class);
     private static final String JOB_NAME = "UtkastLockJob.run";
+    private static final long LOCK_AT_LEAST = 1000 * 60L;
+    private static final long LOCK_AT_MOST = 1000 * 240L;
 
 
     @Autowired
@@ -43,7 +45,7 @@ public class UtkastLockJob {
     private int lockedAfterDay;
 
     @Scheduled(cron = "${job.utkastlock.cron}")
-    @SchedulerLock(name = JOB_NAME)
+    @SchedulerLock(name = JOB_NAME, lockAtLeastFor = LOCK_AT_LEAST, lockAtMostFor = LOCK_AT_MOST)
     public void run() {
         LOG.info("Staring job to set utkast to locked");
 
