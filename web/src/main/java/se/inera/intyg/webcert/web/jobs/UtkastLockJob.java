@@ -34,8 +34,8 @@ import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 public class UtkastLockJob {
     private static final Logger LOG = LoggerFactory.getLogger(UtkastLockJob.class);
     private static final String JOB_NAME = "UtkastLockJob.run";
-    private static final long LOCK_AT_LEAST = 1000 * 60L;
-    private static final long LOCK_AT_MOST = 1000 * 240L;
+    private static final int LOCK_AT_MOST = 10 * 60 * 1000;
+    private static final int LOCK_AT_LEAST = 30 * 1000;
 
 
     @Autowired
