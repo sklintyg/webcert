@@ -48,7 +48,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.BootstrapWith;
 import org.springframework.test.context.ContextConfiguration;
 
-import se.inera.intyg.common.fk7263.model.converter.Fk7263InternalToNotification;
 import se.inera.intyg.common.fk7263.model.internal.Fk7263Utlatande;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
@@ -80,9 +79,7 @@ public class RouteTest {
 
     @Autowired
     private IntygModuleRegistry moduleRegistry; // this is a mock from unit-test-notification-sender-config.xml
-    @Autowired
-    private Fk7263InternalToNotification mockInternalToNotification; // this is a mock from
-                                                                     // unit-test-notification-sender-config.xml
+
     @Produce(uri = "direct:receiveNotificationForAggregationRequestEndpoint")
     private ProducerTemplate producerTemplate;
     @EndpointInject(uri = "mock:bean:notificationAggregator")
@@ -108,7 +105,7 @@ public class RouteTest {
 
     @After
     public void cleanup() {
-        Mockito.reset(moduleRegistry, moduleApi, mockInternalToNotification, mockedPuService);
+        Mockito.reset(moduleRegistry, moduleApi, mockedPuService);
     }
 
     @Test
@@ -302,8 +299,7 @@ public class RouteTest {
     @Test
     public void testTransformationException() throws Exception {
         // Given
-        when(mockInternalToNotification.createCertificateStatusUpdateForCareType(any()))
-                .thenThrow(new ModuleException("Testing runtime exception"));
+        when(moduleRegistry.getModuleApi(anyString())).thenThrow(new ModuleNotFoundException("Testing runtime exception"));
 
         notificationWSClientV3.expectedMessageCount(0);
         permanentErrorHandlerEndpoint.expectedMessageCount(1);
@@ -435,26 +431,6 @@ public class RouteTest {
         assertIsSatisfied(permanentErrorHandlerEndpoint);
         assertIsSatisfied(temporaryErrorHandlerEndpoint);
     }
-
-    @Test
-    public void testZRuntimeException() throws Exception {
-        // Given
-        when(mockInternalToNotification.createCertificateStatusUpdateForCareType(any()))
-                .thenThrow(new RuntimeException("Testing runtime exception"));
-
-        notificationWSClientV3.expectedMessageCount(0);
-        permanentErrorHandlerEndpoint.expectedMessageCount(1);
-        temporaryErrorHandlerEndpoint.expectedMessageCount(0);
-
-        // When
-        producerTemplate.sendBody(createNotificationMessage(null));
-
-        // Then
-        assertIsSatisfied(notificationWSClientV3);
-        assertIsSatisfied(permanentErrorHandlerEndpoint);
-        assertIsSatisfied(temporaryErrorHandlerEndpoint);
-    }
-
 
     private String createNotificationMessage(SchemaVersion version) {
         return createNotificationMessage(version, "fk7263");

@@ -23,7 +23,6 @@ import org.apache.camel.Message;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import se.inera.intyg.common.fk7263.model.converter.Fk7263InternalToNotification;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
@@ -42,9 +41,6 @@ public class NotificationTransformer {
 
     @Autowired
     private IntygModuleRegistry moduleRegistry;
-
-    @Autowired
-    private Fk7263InternalToNotification fk7263Transform;
 
     @Autowired
     private NotificationPatientEnricher notificationPatientEnricher;

@@ -110,9 +110,6 @@
   </beans>
 
   <beans>
-    <!--<context:property-placeholder-->
-      <!--location="classpath:webcert-notification-route-params.properties, classpath:webcert-certificate-route-params.properties, classpath:version.properties"-->
-      <!--order="4" ignore-unresolvable="true" ignore-resource-not-found="false" />-->
 
     <bean id="moduleRegistry" class="se.inera.intyg.common.support.modules.registry.IntygModuleRegistryImpl">
       <property name="origin" value="WEBCERT" />
@@ -122,9 +119,6 @@
     <bean id="intygTextsRepository" class="se.inera.intyg.common.services.texts.repo.IntygTextsRepositoryImpl" />
 
     <bean id="befattningService" class="se.inera.intyg.common.support.services.BefattningService" />
-
-    <!-- Used to send notifications of type fk7263 on schema version 1 -->
-    <bean class="se.inera.intyg.common.fk7263.model.converter.Fk7263InternalToNotification" />
 
     <bean id="messageSource"
       class="org.springframework.context.support.ResourceBundleMessageSource">

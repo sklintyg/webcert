@@ -46,12 +46,10 @@ import org.springframework.test.context.ContextConfiguration;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Throwables;
 
-import se.inera.intyg.common.fk7263.model.converter.Fk7263InternalToNotification;
 import se.inera.intyg.common.fk7263.model.internal.Fk7263Utlatande;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
-import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
 import se.inera.intyg.common.support.modules.support.api.notification.ArendeCount;
 import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
 import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
@@ -60,9 +58,6 @@ import se.inera.intyg.webcert.notification_sender.mocks.NotificationStubEntry;
 import se.inera.intyg.webcert.notification_sender.mocks.v3.CertificateStatusUpdateForCareResponderStub;
 import se.inera.intyg.webcert.notification_sender.notifications.helper.NotificationTestHelper;
 import se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders;
-import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareType;
-import se.riv.clinicalprocess.healthcond.certificate.types.v3.IntygId;
-import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
 
 @RunWith(CamelSpringJUnit4ClassRunner.class)
 @ContextConfiguration("/notifications/integration-test-notification-sender-config.xml")
@@ -76,9 +71,6 @@ public class RouteIT {
     private IntygModuleRegistry mockIntygModuleRegistry;
 
     @Autowired
-    private Fk7263InternalToNotification mockFk7263Transform;
-
-    @Autowired
     private ModuleApi fk7263ModuleApi;
 
     @Autowired
@@ -87,9 +79,6 @@ public class RouteIT {
     @Autowired
     @Qualifier("notificationQueueForAggregation")
     private Queue sendQueue;
-
-    // @Autowired
-    // private CertificateStatusUpdateForCareResponderStub certificateStatusUpdateForCareResponderStub;
 
     @Autowired
     private CertificateStatusUpdateForCareResponderStub certificateStatusUpdateForCareResponderV3;
@@ -102,9 +91,7 @@ public class RouteIT {
         when(fk7263ModuleApi.getUtlatandeFromJson(anyString())).thenReturn(new Fk7263Utlatande());
         when(mockIntygModuleRegistry.getModuleApi(anyString())).thenReturn(fk7263ModuleApi);
 
-        // certificateStatusUpdateForCareResponderStub.reset();
         certificateStatusUpdateForCareResponderV3.reset();
-        setupConverter();
     }
 
     @Test
@@ -299,23 +286,6 @@ public class RouteIT {
 
     private String notificationMessageToJson(NotificationMessage notificationMessage) throws Exception {
         return objectMapper.writeValueAsString(notificationMessage);
-    }
-
-    private void setupConverter() throws ModuleException {
-        when(mockFk7263Transform.createCertificateStatusUpdateForCareType(any(NotificationMessage.class))).thenAnswer(invocation -> {
-            NotificationMessage msg = (NotificationMessage) invocation.getArguments()[0];
-            if (msg == null) {
-                return null;
-            }
-            CertificateStatusUpdateForCareType request = new CertificateStatusUpdateForCareType();
-            Intyg intyg = new Intyg();
-            IntygId id = new IntygId();
-            id.setExtension(msg.getIntygsId());
-            intyg.setIntygsId(id);
-            request.setIntyg(intyg);
-            return request;
-        });
-
     }
 
     private void sendMessage(final NotificationMessage message) throws Exception {

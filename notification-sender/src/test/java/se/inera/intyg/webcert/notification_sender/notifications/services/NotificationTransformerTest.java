@@ -25,7 +25,6 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import se.inera.intyg.common.fk7263.model.converter.Fk7263InternalToNotification;
 import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
@@ -64,9 +63,6 @@ public class NotificationTransformerTest {
 
     @Mock
     private IntygModuleRegistry moduleRegistry;
-
-    @Mock
-    private Fk7263InternalToNotification internalToNotification;
 
     @Mock
     private NotificationPatientEnricher notificationPatientEnricher;
