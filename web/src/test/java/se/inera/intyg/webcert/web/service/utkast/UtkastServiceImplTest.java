@@ -165,6 +165,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
     private ModuleApi mockModuleApi;
 
     private Utkast utkast;
+    private Utkast lockedUtkast;
     private Utkast signedUtkast;
     private HoSPersonal hoSPerson;
     private Patient defaultPatient;
@@ -214,6 +215,8 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         utkast = createUtkast(INTYG_ID, UTKAST_VERSION, INTYG_TYPE, UtkastStatus.DRAFT_INCOMPLETE, null, INTYG_JSON, vardperson,
                 PERSONNUMMER);
         signedUtkast = createUtkast(INTYG_ID, INTYG_VERSION, INTYG_TYPE, UtkastStatus.SIGNED, LocalDateTime.parse("2018-04-23T00:00:00"),
+                INTYG_JSON, vardperson, PERSONNUMMER);
+        lockedUtkast = createUtkast(INTYG_ID, INTYG_VERSION, INTYG_TYPE, UtkastStatus.DRAFT_LOCKED, null,
                 INTYG_JSON, vardperson, PERSONNUMMER);
 
     }
@@ -337,6 +340,20 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         draftService.deleteUnsignedDraft(INTYG_ID, signedUtkast.getVersion() - 1);
     }
 
+    @Test(expected = WebCertServiceException.class)
+    public void testDeleteDraftThatIsLocked() {
+        when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(lockedUtkast);
+        draftService.deleteUnsignedDraft(INTYG_ID, lockedUtkast.getVersion());
+
+        // Assert notification message
+        verifyZeroInteractions(notificationService);
+
+        // Assert pdl log
+        verifyZeroInteractions(logService);
+
+        verifyZeroInteractions(mockMonitoringService);
+    }
+
     @Test
     public void testSaveDraftDraftFirstSave() throws Exception {
         ValidationMessage valMsg = new ValidationMessage("a.category", "a.field.somewhere", ValidationMessageType.OTHER,
@@ -420,6 +437,16 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         verify(mockUtkastRepository).findOne(INTYG_ID);
     }
 
+    @Test(expected = WebCertServiceException.class)
+    public void testSaveDraftThatIsLocked() {
+
+        when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(lockedUtkast);
+
+        draftService.saveDraft(INTYG_ID, INTYG_VERSION, INTYG_JSON, false);
+
+        verify(mockUtkastRepository).findOne(INTYG_ID);
+    }
+
     @SuppressWarnings("unchecked")
     @Test(expected = WebCertServiceException.class)
     public void testSaveDraftWithExceptionInModule() throws Exception {
@@ -482,6 +509,22 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(utkast);
 
         draftService.setNotifiedOnDraft(INTYG_ID, utkast.getVersion() - 1, true);
+    }
+
+    @Test(expected = WebCertServiceException.class)
+    public void testNotifyDraftThatIsSigned() {
+
+        when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(signedUtkast);
+
+        draftService.setNotifiedOnDraft(INTYG_ID, 0, true);
+    }
+
+    @Test(expected = WebCertServiceException.class)
+    public void testNotifyDraftThatIsLocked() {
+
+        when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(lockedUtkast);
+
+        draftService.setNotifiedOnDraft(INTYG_ID, 0, true);
     }
 
     @Test
@@ -619,7 +662,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
     }
 
     @Test(expected = WebCertServiceException.class)
-    public void testUpdatePatientOnDraftNoMedarbetaruppdragThrowsException() throws Exception {
+    public void testUpdatePatientOnDraftNoMedarbetaruppdragThrowsException() {
         utkast.setEnhetsId("<unknownenhet>");
         Patient newPatient = getUpdatedPatient();
 
@@ -642,7 +685,30 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         draftService.updatePatientOnDraft(request);
 
         verifyNoMoreInteractions(mockUtkastRepository, notificationService);
+    }
 
+    @Test(expected = WebCertServiceException.class)
+    public void testUpdatePatientOnDraftThatIsLocked() {
+        UpdatePatientOnDraftRequest request = new UpdatePatientOnDraftRequest(defaultPatient.getPersonId(), lockedUtkast.getIntygsId(),
+                lockedUtkast.getVersion());
+
+        WebCertUser user = createUser();
+
+        when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(lockedUtkast);
+        when(userService.getUser()).thenReturn(user);
+
+        draftService.updatePatientOnDraft(request);
+
+        verify(mockUtkastRepository, never()).save(any(Utkast.class));
+        verify(utkast, never()).setPatientPersonnummer(any(Personnummer.class));
+
+        // Assert notification message
+        verifyZeroInteractions(notificationService);
+
+        // Assert pdl log
+        verifyZeroInteractions(logService);
+
+        verifyZeroInteractions(mockMonitoringService);
     }
 
     @Test
@@ -715,6 +781,38 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         when(authoritiesHelper.getIntygstyperForPrivilege(any(), any()))
                 .thenReturn(new HashSet<>(Arrays.asList("lisjp", "luse", "luae_fs", "luae_na")));
         draftService.setKlarForSigneraAndSendStatusMessage(INTYG_ID, INTYG_TYPE);
+    }
+
+    @Test(expected = WebCertServiceException.class)
+    public void testSetKlarForSigneraStatusMessageSentThatIsSigned() {
+        WebCertUser user = createUser();
+        when(userService.getUser()).thenReturn(user);
+        when(authoritiesHelper.getIntygstyperForPrivilege(any(UserDetails.class), anyString()))
+                .thenReturn(new HashSet<>(Arrays.asList("lisjp", "luse", "luae_fs", "luae_na")));
+        when(mockUtkastRepository.findByIntygsIdAndIntygsTyp(INTYG_ID, "luae_fs")).thenReturn(signedUtkast);
+
+        draftService.setKlarForSigneraAndSendStatusMessage(INTYG_ID, "luae_fs");
+
+        // Assert notification message
+        verifyZeroInteractions(notificationService);
+
+        verifyZeroInteractions(mockMonitoringService);
+    }
+
+    @Test(expected = WebCertServiceException.class)
+    public void testSetKlarForSigneraStatusMessageSentThatIsLocked() {
+        WebCertUser user = createUser();
+        when(userService.getUser()).thenReturn(user);
+        when(authoritiesHelper.getIntygstyperForPrivilege(any(UserDetails.class), anyString()))
+                .thenReturn(new HashSet<>(Arrays.asList("lisjp", "luse", "luae_fs", "luae_na")));
+        when(mockUtkastRepository.findByIntygsIdAndIntygsTyp(INTYG_ID, "luae_fs")).thenReturn(lockedUtkast);
+
+        draftService.setKlarForSigneraAndSendStatusMessage(INTYG_ID, "luae_fs");
+
+        // Assert notification message
+        verifyZeroInteractions(notificationService);
+
+        verifyZeroInteractions(mockMonitoringService);
     }
 
     @Test

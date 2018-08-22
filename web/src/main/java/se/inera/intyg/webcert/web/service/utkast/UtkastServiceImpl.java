@@ -93,6 +93,8 @@ import se.inera.intyg.webcert.web.service.utkast.util.CreateIntygsIdStrategy;
 public class UtkastServiceImpl implements UtkastService {
 
     private static final List<UtkastStatus> ALL_DRAFT_STATUSES = Arrays.asList(UtkastStatus.DRAFT_COMPLETE,
+            UtkastStatus.DRAFT_INCOMPLETE);
+    private static final List<UtkastStatus> ALL_DRAFT_STATUSES_INCLUDE_LOCKED = Arrays.asList(UtkastStatus.DRAFT_COMPLETE,
             UtkastStatus.DRAFT_INCOMPLETE, UtkastStatus.DRAFT_LOCKED);
 
     private static final Logger LOG = LoggerFactory.getLogger(UtkastServiceImpl.class);
@@ -191,6 +193,14 @@ public class UtkastServiceImpl implements UtkastService {
         validateUserAllowedToSendKFSignNotification(intygsId, intygType);
 
         Utkast utkast = getIntygAsDraft(intygsId, intygType);
+
+        // check that the draft is still unsigned
+        if (!isTheDraftStillADraft(utkast.getStatus())) {
+            LOG.error("Intyg '{}' can not be set to klart for signera since it is no longer a draft", intygsId);
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE,
+                    "The draft can not be set to klart for signera since it is no longer a draft");
+        }
+
         if (utkast.getKlartForSigneringDatum() == null) {
             notificationService.sendNotificationForDraftReadyToSign(utkast);
             utkast.setKlartForSigneringDatum(LocalDateTime.now());
@@ -322,7 +332,7 @@ public class UtkastServiceImpl implements UtkastService {
 
         List<Lakare> lakareList = new ArrayList<>();
 
-        List<Object[]> result = utkastRepository.findDistinctLakareFromIntygEnhetAndStatuses(enhetsId, ALL_DRAFT_STATUSES);
+        List<Object[]> result = utkastRepository.findDistinctLakareFromIntygEnhetAndStatuses(enhetsId, ALL_DRAFT_STATUSES_INCLUDE_LOCKED);
 
         for (Object[] lakareArr : result) {
             lakareList.add(new Lakare((String) lakareArr[0], (String) lakareArr[1]));
@@ -347,7 +357,8 @@ public class UtkastServiceImpl implements UtkastService {
         // Get intygstyper from write privilege
         Set<String> intygsTyper = authoritiesHelper.getIntygstyperForPrivilege(user, AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG);
 
-        List<GroupableItem> resultArr = utkastRepository.getIntygWithStatusesByEnhetsId(careUnitIds, ALL_DRAFT_STATUSES, intygsTyper);
+        List<GroupableItem> resultArr = utkastRepository.getIntygWithStatusesByEnhetsId(careUnitIds, ALL_DRAFT_STATUSES_INCLUDE_LOCKED,
+                intygsTyper);
         return statisticsGroupByUtil.toSekretessFilteredMap(resultArr);
     }
 
@@ -504,6 +515,12 @@ public class UtkastServiceImpl implements UtkastService {
                     "Could not find Utkast with id: " + intygsId);
         }
 
+        // check that the draft is still unsigned
+        if (!isTheDraftStillADraft(utkast.getStatus())) {
+            LOG.error("Intyg '{}' can not be set to notified since it is no longer a draft", intygsId);
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE,
+                    "The draft can not be set to notified since it is no longer a draft");
+        }
 
         // check that the draft hasn't been modified concurrently
         if (utkast.getVersion() != version) {
