@@ -74,6 +74,7 @@ import se.inera.intyg.webcert.web.service.utkast.util.CopyUtkastServiceHelper;
 import se.inera.intyg.webcert.web.web.controller.api.dto.CopyIntygResponse;
 import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
+import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.RevokeSignedIntygParameter;
 
 import static javax.ws.rs.core.Response.Status.OK;
 import static org.junit.Assert.assertEquals;
@@ -375,6 +376,42 @@ public class UtkastModuleApiControllerTest {
         verifyNoMoreInteractions(copyUtkastService);
         assertEquals(newIntygId, ((CopyIntygResponse) response.getEntity()).getIntygsUtkastId());
         assertEquals(intygTyp, ((CopyIntygResponse) response.getEntity()).getIntygsTyp());
+    }
+
+    @Test(expected = AuthoritiesException.class)
+    public void testCopyUtkastUnauthorized() {
+        String intygTyp = "fk7263";
+        String intygId = "intyg1";
+        setupUser("", intygTyp, false, AuthoritiesConstants.FEATURE_MAKULERA_INTYG);
+
+        moduleApiController.copyUtkast(intygTyp, intygId);
+
+        verifyZeroInteractions(utkastService);
+    }
+
+    @Test
+    public void testRevokeLockedDraft() {
+        String intygTyp = "fk7263";
+        String intygId = "intyg1";
+        setupUser(AuthoritiesConstants.PRIVILEGE_MAKULERA_INTYG, intygTyp, false, AuthoritiesConstants.FEATURE_MAKULERA_INTYG);
+        RevokeSignedIntygParameter param = new RevokeSignedIntygParameter();
+
+        Response response = moduleApiController.revokeLockedDraft(intygTyp, intygId, param);
+
+        verify(utkastService).revokeLockedDraft(intygId, intygTyp, param.getMessage(), param.getReason());
+        assertEquals(OK.getStatusCode(), response.getStatus());
+    }
+
+    @Test(expected = AuthoritiesException.class)
+    public void testRevokeLockedDraftUnauthorized() {
+        String intygTyp = "fk7263";
+        String intygId = "intyg1";
+        setupUser("", intygTyp, false, AuthoritiesConstants.FEATURE_MAKULERA_INTYG);
+        RevokeSignedIntygParameter param = new RevokeSignedIntygParameter();
+
+        moduleApiController.revokeLockedDraft(intygTyp, intygId, param);
+
+        verifyZeroInteractions(utkastService);
     }
 
     private DraftValidation buildDraftValidation() {

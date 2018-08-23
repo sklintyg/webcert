@@ -38,6 +38,21 @@ var BaseUtkast = JClass._extend({
             bekrafta: element(by.id('confirm-draft-delete-button'))
         };
         this.skrivUtBtn = element(by.id('skriv-ut-utkast'));
+        this.makulera = {
+            btn: element(by.id('makulera-utkast')),
+            dialogMakulera: element(by.id('button1makulera-dialog')),
+
+            dialogRadioFelPatient: element(by.id('reason-FEL_PATIENT')),
+            dialogRadioFelPatientClarification: element(by.id('clarification-FEL_PATIENT')),
+            dialogRadioAnnatAllvarligtFel: element(by.id('reason-ANNAT_ALLVARLIGT_FEL')),
+            dialogRadioAnnatAllvarligtFelClarification: element(by.id('clarification-ANNAT_ALLVARLIGT_FEL')),
+
+            statusRevoked: element(by.css('#intygstatus1 [data-intyg-status-code="lus-02"]'))
+        };
+        this.kopiera = {
+            btn: element(by.id('copy-utkast')),
+            confirm: element(by.id('confirm-draft-copy-button'))
+        };
         this.signingDoctorName = element(by.id('signingDoctor'));
         this.arendeQuestion = {
             newArendeButton: element(by.id('askArendeBtn')),

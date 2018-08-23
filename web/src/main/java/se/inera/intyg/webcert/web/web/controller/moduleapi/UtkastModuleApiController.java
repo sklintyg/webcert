@@ -70,6 +70,7 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.CopyIntygRequest;
 import se.inera.intyg.webcert.web.web.controller.api.dto.CopyIntygResponse;
 import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
 import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.DraftHolder;
+import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.RevokeSignedIntygParameter;
 
 /**
  * Controller for module interaction with drafts.
@@ -152,6 +153,7 @@ public class UtkastModuleApiController extends AbstractApiController {
         draftHolder.setRelations(relations1);
         draftHolder.setKlartForSigneringDatum(utkast.getKlartForSigneringDatum());
         draftHolder.setCreated(utkast.getSkapad());
+        draftHolder.setRevokedAt(utkast.getAterkalladDatum());
         // The patientResolved is unnecessary?
         draftHolder.setPatientResolved(true);
         draftHolder.setSekretessmarkering(resolvedPatient.isSekretessmarkering());
@@ -387,5 +389,37 @@ public class UtkastModuleApiController extends AbstractApiController {
         request.getSession(true).removeAttribute(LAST_SAVED_DRAFT);
 
         return Response.ok().build();
+    }
+
+    /**
+     * Revoke a locked draft.
+     *
+     * @param intygsId The id of the intyg to revoke
+     * @param param    A JSON struct containing an optional message
+     */
+    @POST
+    @Path("/{intygsTyp}/{intygsId}/aterkalla")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    public Response revokeLockedDraft(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId,
+                                      RevokeSignedIntygParameter param) {
+        validateRevokeAuthority(intygsTyp);
+
+        if (authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
+                .features(AuthoritiesConstants.FEATURE_MAKULERA_INTYG_KRAVER_ANLEDNING).isVerified() && !param.isValid()) {
+            LOG.warn("Request to revoke '{}' is not valid", intygsId);
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, "Missing vital arguments in payload");
+        }
+
+        utkastService.revokeLockedDraft(intygsId, intygsTyp, param.getMessage(), param.getReason());
+
+        return Response.ok().build();
+    }
+
+    private void validateRevokeAuthority(String intygsTyp) {
+        authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
+                .features(AuthoritiesConstants.FEATURE_MAKULERA_INTYG)
+                .privilege(AuthoritiesConstants.PRIVILEGE_MAKULERA_INTYG)
+                .orThrow();
     }
 }

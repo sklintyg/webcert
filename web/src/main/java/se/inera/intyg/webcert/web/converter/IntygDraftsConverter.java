@@ -18,12 +18,20 @@
  */
 package se.inera.intyg.webcert.web.converter;
 
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
 import se.inera.intyg.common.support.model.CertificateState;
 import se.inera.intyg.common.support.model.StatusKod;
+import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
@@ -31,12 +39,6 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.IntygSource;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
 import se.riv.clinicalprocess.healthcond.certificate.v3.IntygsStatus;
-
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Component
 public class IntygDraftsConverter {
@@ -114,6 +116,9 @@ public class IntygDraftsConverter {
     }
 
     public static String resolveStatus(Utkast draft) {
+        if (draft.getAterkalladDatum() != null && draft.getStatus().equals(UtkastStatus.DRAFT_LOCKED)) {
+            return draft.getStatus().name() + "_" + CertificateState.CANCELLED.name();
+        }
         if (draft.getAterkalladDatum() != null) {
             return CertificateState.CANCELLED.name();
         }

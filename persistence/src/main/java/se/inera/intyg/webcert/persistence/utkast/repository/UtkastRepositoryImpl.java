@@ -18,11 +18,6 @@
  */
 package se.inera.intyg.webcert.persistence.utkast.repository;
 
-import com.google.common.base.Strings;
-import org.springframework.transaction.annotation.Transactional;
-import se.inera.intyg.common.support.model.UtkastStatus;
-import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
-
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
@@ -35,6 +30,12 @@ import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import org.springframework.transaction.annotation.Transactional;
+
+import com.google.common.base.Strings;
+import se.inera.intyg.common.support.model.UtkastStatus;
+import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 
 public class UtkastRepositoryImpl implements UtkastFilteredRepositoryCustom {
 
@@ -82,6 +83,8 @@ public class UtkastRepositoryImpl implements UtkastFilteredRepositoryCustom {
 
         Predicate pred = builder.conjunction();
         pred = builder.and(pred, builder.equal(root.get("enhetsId"), filter.getUnitHsaId()));
+
+        pred = builder.and(pred, builder.isNull(root.get("aterkalladDatum")));
 
         if (!Strings.isNullOrEmpty(filter.getSavedByHsaId())) {
             pred = builder.and(pred, builder.equal(root.get("senastSparadAv").get("hsaId"), filter.getSavedByHsaId()));

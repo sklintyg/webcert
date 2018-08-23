@@ -309,6 +309,11 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
                 throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, message);
             }
 
+            if (utkast.getAterkalladDatum() != null) {
+                LOG.debug("Cannot create utkast from utkast certificate with id '{}', the certificate is revoked", originalIntygId);
+                throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, "Original certificate is revoked");
+            }
+
             verifyNoDraftCopy(copyRequest.getOriginalIntygId(), "create utkast copy");
 
             verifyUniktIntyg(user, copyRequest);

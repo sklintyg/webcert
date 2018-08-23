@@ -572,6 +572,57 @@ public class UtkastServiceImpl implements UtkastService {
         return utkasts.size();
     }
 
+    @Override
+    public void revokeLockedDraft(String intygId, String intygTyp, String revokeMessage, String reason) {
+
+        Utkast utkast = utkastRepository.findOne(intygId);
+
+        if (utkast == null) {
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND,
+                    "Could not find Utkast with id: " + intygId);
+        }
+
+        if (!utkast.getIntygsTyp().equals(intygTyp)) {
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE,
+                    "IntygTyp did not match : " + intygTyp + " " + utkast.getIntygsTyp());
+        }
+
+        // Validate draft locked
+        if (!UtkastStatus.DRAFT_LOCKED.equals(utkast.getStatus())) {
+            LOG.info("User is not allowed to revoke intyg with status: {}", utkast.getStatus());
+            final String message = "Revoke failed due to wrong utkast status";
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, message);
+        }
+
+        if (utkast.getAterkalladDatum() != null) {
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE,
+                    "Already revoked : " + utkast.getAterkalladDatum());
+        }
+
+        abortIfUserNotAuthorizedForUnit(utkast.getVardgivarId(), utkast.getEnhetsId());
+
+        revokeUtkast(utkast, reason);
+    }
+
+    /**
+     * Send a notification message to stakeholders informing that
+     * a question related to a revoked certificate has been closed.
+     */
+    private void revokeUtkast(Utkast utkast, String reason) {
+        String intygsId = utkast.getIntygsId();
+
+        String hsaId = webCertUserService.getUser().getHsaId();
+        monitoringService.logIntygRevoked(intygsId, hsaId, reason);
+
+        // First: mark the originating Utkast as REVOKED
+        utkast.setAterkalladDatum(LocalDateTime.now());
+        utkastRepository.save(utkast);
+
+        // Third: create a log event
+        LogRequest logRequest = LogRequestFactory.createLogRequestFromUtkast(utkast);
+        logService.logRevokeIntyg(logRequest);
+    }
+
     private void abortIfUserNotAuthorizedForUnit(String vardgivarHsaId, String enhetsHsaId) {
         if (!webCertUserService.isAuthorizedForUnit(vardgivarHsaId, enhetsHsaId, false)) {
             LOG.debug("User not authorized for enhet");
@@ -835,15 +886,6 @@ public class UtkastServiceImpl implements UtkastService {
         if (utkast.getPatientEfternamn() != null && !utkast.getPatientEfternamn().equals(patient.getEfternamn())) {
             utkast.setPatientEfternamn(patient.getEfternamn());
         }
-    }
-
-    private String getUserReference() {
-        if (!webCertUserService.hasAuthenticationContext()) {
-            return null;
-        }
-
-        WebCertUser user = webCertUserService.getUser();
-        return user != null && user.getParameters() != null ? user.getParameters().getReference() : null;
     }
 
     public enum Event {

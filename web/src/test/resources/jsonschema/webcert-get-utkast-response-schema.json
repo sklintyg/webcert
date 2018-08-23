@@ -79,6 +79,9 @@
     "created": {
       "type": "string"
     },
+    "revokedAt": {
+      "type": "string"
+    },
     "validPatientAddressAquiredFromPU": {
       "type": "boolean"
     }

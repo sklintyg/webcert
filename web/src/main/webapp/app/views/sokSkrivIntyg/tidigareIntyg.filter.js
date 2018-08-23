@@ -45,14 +45,16 @@ angular.module('webcert').filter('TidigareIntygFilter',
             switch(intygToInclude) {
             case 'revoked':
                 angular.forEach(intygList, function(intyg) {
-                    if (intyg.status === 'CANCELLED' || intyg.status === 'DRAFT_LOCKED' || isErsatt(intyg) || isKompletterad(intyg)) {
+                    if (intyg.status === 'CANCELLED' || intyg.status === 'DRAFT_LOCKED' || intyg.status === 'DRAFT_LOCKED_CANCELLED' ||
+                        isErsatt(intyg) || isKompletterad(intyg)) {
                         result.push(intyg);
                     }
                 });
                 break;
             case 'current':
                 angular.forEach(intygList, function(intyg) {
-                    if (intyg.status !== 'CANCELLED' && intyg.status !== 'DRAFT_LOCKED' && !isErsatt(intyg) && !isKompletterad(intyg)) {
+                    if (intyg.status !== 'CANCELLED' && intyg.status !== 'DRAFT_LOCKED' && intyg.status !== 'DRAFT_LOCKED_CANCELLED' &&
+                        !isErsatt(intyg) && !isKompletterad(intyg)) {
                         result.push(intyg);
                     }
                 });

@@ -14,7 +14,7 @@ angular.module('webcert').directive('wcTidigareIntyg',
             link: function(scope, element, attrs) {
                 scope.PatientModel = PatientModel;
                 scope.openIntyg = function (intyg) {
-                    if (intyg.status === 'DRAFT_INCOMPLETE' || intyg.status === 'DRAFT_COMPLETE' || intyg.status === 'DRAFT_LOCKED') {
+                    if (intyg.status === 'DRAFT_INCOMPLETE' || intyg.status === 'DRAFT_COMPLETE' || intyg.status === 'DRAFT_LOCKED' || intyg.status === 'DRAFT_LOCKED_CANCELLED') {
                         $location.path('/' + intyg.intygType + '/edit/' + intyg.intygId + '/');
                     } else {
                         $location.path('/intyg/' + intyg.intygType + '/' + intyg.intygId + '/');

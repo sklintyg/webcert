@@ -117,6 +117,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
     private static final String INTYG_COPY_ID = "def456";
     private static final String INTYG_JSON = "A bit of text representing json";
     private static final String INTYG_TYPE = "fk7263";
+    private static final String INTYG_TYPE2 = "lisjp";
 
     private static final String UTKAST_ENHETS_ID = "hsa123";
     private static final String USER_REFERENCE = "some-ref";
@@ -166,6 +167,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
     private Utkast utkast;
     private Utkast lockedUtkast;
+    private Utkast revokedLockedUtkast;
     private Utkast signedUtkast;
     private HoSPersonal hoSPerson;
     private Patient defaultPatient;
@@ -218,6 +220,10 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
                 INTYG_JSON, vardperson, PERSONNUMMER);
         lockedUtkast = createUtkast(INTYG_ID, INTYG_VERSION, INTYG_TYPE, UtkastStatus.DRAFT_LOCKED, null,
                 INTYG_JSON, vardperson, PERSONNUMMER);
+
+        revokedLockedUtkast = createUtkast(INTYG_ID, INTYG_VERSION, INTYG_TYPE, UtkastStatus.DRAFT_LOCKED, null,
+                INTYG_JSON, vardperson, PERSONNUMMER);
+        revokedLockedUtkast.setAterkalladDatum(LocalDateTime.now());
 
     }
 
@@ -1000,6 +1006,67 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         assertEquals(UtkastStatus.DRAFT_LOCKED, utkast1.getStatus());
 
         assertEquals(UtkastStatus.DRAFT_LOCKED, utkast2.getStatus());
+    }
+
+    @Test
+    public void testRevokeLockedDraft() {
+        WebCertUser user = createUser();
+        when(userService.getUser()).thenReturn(user);
+        when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(lockedUtkast);
+        when(userService.isAuthorizedForUnit(any(), any(), eq(false))).thenReturn(true);
+
+        String reason = "";
+
+        draftService.revokeLockedDraft(INTYG_ID, INTYG_TYPE, "", reason);
+
+        verify(mockUtkastRepository, times(1)).save(lockedUtkast);
+        verify(mockMonitoringService).logIntygRevoked(INTYG_ID, user.getHsaId(), reason);
+        verify(logService).logRevokeIntyg(any());
+    }
+
+    @Test(expected = WebCertServiceException.class)
+    public void testRevokeLockedDraftWrongUnit() {
+        when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(lockedUtkast);
+        when(userService.isAuthorizedForUnit(any(), any(), eq(false))).thenReturn(false);
+
+        String reason = "";
+
+        draftService.revokeLockedDraft(INTYG_ID, INTYG_TYPE, "", reason);
+    }
+
+    @Test(expected = WebCertServiceException.class)
+    public void testRevokeLockedDraftNull() {
+        when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(null);
+
+        draftService.revokeLockedDraft(INTYG_ID, INTYG_TYPE, "", "");
+    }
+
+    @Test(expected = WebCertServiceException.class)
+    public void testRevokeLockedDraftNotLocked() {
+        when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(utkast);
+
+        draftService.revokeLockedDraft(INTYG_ID, INTYG_TYPE, "", "");
+    }
+
+    @Test(expected = WebCertServiceException.class)
+    public void testRevokeLockedDraftSigned() {
+        when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(signedUtkast);
+
+        draftService.revokeLockedDraft(INTYG_ID, INTYG_TYPE, "", "");
+    }
+
+    @Test(expected = WebCertServiceException.class)
+    public void testRevokeLockedDraftTypeMissMatch() {
+        when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(lockedUtkast);
+
+        draftService.revokeLockedDraft(INTYG_ID, INTYG_TYPE2, "", "");
+    }
+
+    @Test(expected = WebCertServiceException.class)
+    public void testRevokeLockedDraftAlreadyRevoked() {
+        when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(lockedUtkast);
+
+        draftService.revokeLockedDraft(INTYG_ID, INTYG_TYPE2, "", "");
     }
 
     private Patient getUpdatedPatient() {

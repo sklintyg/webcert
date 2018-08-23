@@ -614,6 +614,19 @@ public class CopyUtkastServiceImplTest {
     }
 
     @Test(expected = WebCertServiceException.class)
+    public void testCreateUtkastCopyWhenRevoked() {
+        Utkast utkast = new Utkast();
+        utkast.setStatus(UtkastStatus.DRAFT_LOCKED);
+        utkast.setAterkalladDatum(LocalDateTime.now());
+
+        when(utkastService.getDraft(INTYG_ID, INTYG_TYPE)).thenReturn(utkast);
+
+        CreateUtkastFromTemplateRequest copyReq = buildUtkastCopyRequest();
+
+        copyService.createUtkastCopy(copyReq);
+    }
+
+    @Test(expected = WebCertServiceException.class)
     public void testCreateUtkastCopyWhenCopyAlreadyExists() {
         Utkast utkast = new Utkast();
         utkast.setStatus(UtkastStatus.DRAFT_LOCKED);

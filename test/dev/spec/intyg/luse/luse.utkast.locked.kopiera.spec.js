@@ -30,7 +30,7 @@ var testdataHelper = wcTestTools.helpers.restTestdata;
 var intygGenerator = wcTestTools.intygGenerator;
 var restTestdataHelper = wcTestTools.helpers.restTestdata;
 
-describe('Luse locked utkast tests', function() {
+describe('Luse locked utkast kopiera tests', function() {
     var intygId = 'luse-locked-utkast-1';
 
     beforeAll(function() {
@@ -48,26 +48,27 @@ describe('Luse locked utkast tests', function() {
         testdataHelper.deleteUtkast(intygId);
     });
 
-    it('should load utkast', function() {
+    it('should load utkast and possible to copy', function() {
         LuseUtkastPage.get(intygId);
-    });
-
-    it('input should be disabled', function() {
-        // All input fields should be disabled
-        expect(element.all(by.css('#certificate INPUT')).count()).toBeGreaterThan(0);
-        expect(element.all(by.css('#certificate INPUT:not(:disabled)')).count()).toEqual(0);
-        expect(element.all(by.css('#certificate TEXTAREA:not(:disabled)')).count()).toEqual(0);
-        expect(element.all(by.css('#certificate BUTTON:not(:disabled)')).count()).toEqual(0);
-    });
-
-    it('Correct buttons visible in header', function() {
-        // Should not exist
-        expect(LuseUtkastPage.signeraButton.isPresent()).toBeFalsy();
-        expect(LuseUtkastPage.radera.knapp.isPresent()).toBeFalsy();
-
-        // Should exist
-        expect(LuseUtkastPage.skrivUtBtn.isPresent()).toBeTruthy();
         expect(LuseUtkastPage.kopiera.btn.isPresent()).toBeTruthy();
-        expect(LuseUtkastPage.makulera.btn.isPresent()).toBeTruthy();
+    });
+
+    it('copy draft', function() {
+        LuseUtkastPage.kopiera.btn.sendKeys(protractor.Key.SPACE);
+
+        LuseUtkastPage.kopiera.confirm.sendKeys(protractor.Key.SPACE);
+    });
+
+    it('Validate', function() {
+        expect(LuseUtkastPage.skrivUtBtn.isPresent()).toBeTruthy();
+        expect(LuseUtkastPage.radera.knapp.isPresent()).toBeTruthy();
+        expect(LuseUtkastPage.signeraButton.isPresent()).toBeTruthy();
+
+        expect(LuseUtkastPage.makulera.btn.isPresent()).toBeFalsy();
+        expect(LuseUtkastPage.kopiera.btn.isPresent()).toBeFalsy();
+
+        specHelper.getUtkastIdFromUrl().then(function(id) {
+            expect(intygId).not.toEqual(id);
+        });
     });
 });

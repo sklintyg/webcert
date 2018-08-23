@@ -30,7 +30,7 @@ var testdataHelper = wcTestTools.helpers.restTestdata;
 var intygGenerator = wcTestTools.intygGenerator;
 var restTestdataHelper = wcTestTools.helpers.restTestdata;
 
-describe('Luse locked utkast tests', function() {
+describe('Luse locked utkast makulera tests', function() {
     var intygId = 'luse-locked-utkast-1';
 
     beforeAll(function() {
@@ -48,26 +48,25 @@ describe('Luse locked utkast tests', function() {
         testdataHelper.deleteUtkast(intygId);
     });
 
-    it('should load utkast', function() {
+    it('should load utkast and possible to copy', function() {
         LuseUtkastPage.get(intygId);
+        expect(LuseUtkastPage.makulera.btn.isPresent()).toBeTruthy();
     });
 
-    it('input should be disabled', function() {
-        // All input fields should be disabled
-        expect(element.all(by.css('#certificate INPUT')).count()).toBeGreaterThan(0);
-        expect(element.all(by.css('#certificate INPUT:not(:disabled)')).count()).toEqual(0);
-        expect(element.all(by.css('#certificate TEXTAREA:not(:disabled)')).count()).toEqual(0);
-        expect(element.all(by.css('#certificate BUTTON:not(:disabled)')).count()).toEqual(0);
-    });
+    it('revoke draft', function() {
+        LuseUtkastPage.makulera.btn.sendKeys(protractor.Key.SPACE);
+        LuseUtkastPage.makulera.dialogRadioAnnatAllvarligtFel.sendKeys(protractor.Key.SPACE);
+        browser.wait(LuseUtkastPage.makulera.dialogRadioAnnatAllvarligtFelClarification.isDisplayed())
+            .then(LuseUtkastPage.makulera.dialogRadioAnnatAllvarligtFelClarification.sendKeys("Patienten har en helt annan diagnos än den angivna, blandade ihop mjältbrand med nageltrång. Lätt hänt..."));
 
-    it('Correct buttons visible in header', function() {
-        // Should not exist
+        LuseUtkastPage.makulera.dialogMakulera.sendKeys(protractor.Key.SPACE);
+
+        expect(LuseUtkastPage.makulera.statusRevoked.isDisplayed()).toBeTruthy();
+
+        expect(LuseUtkastPage.makulera.btn.isPresent()).toBeFalsy();
+        expect(LuseUtkastPage.skrivUtBtn.isPresent()).toBeFalsy();
+        expect(LuseUtkastPage.kopiera.btn.isPresent()).toBeFalsy();
         expect(LuseUtkastPage.signeraButton.isPresent()).toBeFalsy();
         expect(LuseUtkastPage.radera.knapp.isPresent()).toBeFalsy();
-
-        // Should exist
-        expect(LuseUtkastPage.skrivUtBtn.isPresent()).toBeTruthy();
-        expect(LuseUtkastPage.kopiera.btn.isPresent()).toBeTruthy();
-        expect(LuseUtkastPage.makulera.btn.isPresent()).toBeTruthy();
     });
 });

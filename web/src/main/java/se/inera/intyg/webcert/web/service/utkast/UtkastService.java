@@ -73,4 +73,6 @@ public interface UtkastService {
     Map<String, Map<String, PreviousIntyg>> checkIfPersonHasExistingIntyg(Personnummer personnummer, IntygUser user);
 
     int lockOldDrafts(int lockedAfterDay, LocalDate today);
+
+    void revokeLockedDraft(String intygId, String intygTyp, String revokeMessage, String reason);
 }

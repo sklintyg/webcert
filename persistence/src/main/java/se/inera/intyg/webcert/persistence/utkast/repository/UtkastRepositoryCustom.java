@@ -63,7 +63,7 @@ public interface UtkastRepositoryCustom extends UtkastFilteredRepositoryCustom {
      * @param enhetsIds
      *            List of hsa unit id's that should match the counted intyg entities
      */
-    @Query("SELECT new se.inera.intyg.webcert.common.model.GroupableItem(u.intygsId, u.enhetsId, u.patientPersonnummer, u.intygsTyp) FROM Utkast u WHERE u.enhetsId IN (:enhetsIds) AND u.status IN (:statuses) AND u.intygsTyp IN (:intygsTyper)")
+    @Query("SELECT new se.inera.intyg.webcert.common.model.GroupableItem(u.intygsId, u.enhetsId, u.patientPersonnummer, u.intygsTyp) FROM Utkast u WHERE u.aterkalladDatum IS NULL AND u.enhetsId IN (:enhetsIds) AND u.status IN (:statuses) AND u.intygsTyp IN (:intygsTyper)")
     List<GroupableItem> getIntygWithStatusesByEnhetsId(@Param("enhetsIds") List<String> enhetsIds,
                                                        @Param("statuses") List<UtkastStatus> statuses, @Param("intygsTyper") Set<String> intygsTyper);
 
@@ -120,7 +120,7 @@ public interface UtkastRepositoryCustom extends UtkastFilteredRepositoryCustom {
      * @return A list of Object[] where the first [0] value is the HsaId and the second [1] is the name
      */
     @Query("SELECT DISTINCT u.senastSparadAv.hsaId, u.senastSparadAv.namn FROM Utkast u "
-            + "WHERE u.enhetsId = :enhetsid AND u.status IN (:statuses) "
+            + "WHERE u.aterkalladDatum IS NULL AND u.enhetsId = :enhetsid AND u.status IN (:statuses) "
             + "ORDER BY u.senastSparadAv.namn ASC")
     List<Object[]> findDistinctLakareFromIntygEnhetAndStatuses(@Param("enhetsid") String enhetsid,
             @Param("statuses") List<UtkastStatus> statuses);
