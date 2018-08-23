@@ -54,6 +54,7 @@
         <bean class="se.inera.intyg.webcert.web.web.controller.api.ConfigApiController" />
         <bean class="se.inera.intyg.webcert.web.web.controller.api.ArendeDraftApiController" />
         <bean class="se.inera.intyg.webcert.web.web.controller.api.SignatureApiController" />
+        <bean class="se.inera.intyg.webcert.web.web.controller.api.ReceiverApiController" />
       </jaxrs:serviceBeans>
       <jaxrs:providers>
         <ref bean="jacksonJsonProvider" />

@@ -94,6 +94,14 @@
     <jaxws:client id="listRelationsForCertificateClient" serviceClass="se.inera.intyg.clinicalprocess.healthcond.certificate.listrelationsforcertificate.v1.ListRelationsForCertificateResponderInterface"
         address="${intygstjanst.listrelationsforcertificate.endpoint.url}">
     </jaxws:client>
+
+    <jaxws:client id="listPossibleReceiversClient" serviceClass="se.inera.intyg.clinicalprocess.healthcond.certificate.listpossiblereceivers.v1.ListPossibleReceiversResponderInterface"
+                  address="${intygstjanst.listpossiblereceivers.endpoint.url}">
+    </jaxws:client>
+
+    <jaxws:client id="registerApprovedReceiversClient" serviceClass="se.inera.intyg.clinicalprocess.healthcond.certificate.registerapprovedreceivers.v1.RegisterApprovedReceiversResponderInterface"
+                  address="${intygstjanst.registerapprovedreceivers.endpoint.url}">
+    </jaxws:client>
   </beans>
 
 
