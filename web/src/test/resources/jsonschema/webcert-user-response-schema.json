@@ -1178,6 +1178,9 @@
         },
         "vardgivareHsaId": {
           "type": "string"
+        },
+        "vardgivareOrgnr": {
+          "type": "string"
         }
       },
       "type": "object"
