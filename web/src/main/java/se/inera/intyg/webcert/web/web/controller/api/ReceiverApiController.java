@@ -44,7 +44,7 @@ public class ReceiverApiController extends AbstractApiController {
     @GET
     @Path("/possiblereceivers/{intygsTyp}")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    public Response getPersonuppgifter(@PathParam("intygsTyp") String intygsTyp) {
+    public Response listPossibleReceivers(@PathParam("intygsTyp") String intygsTyp) {
         List<IntygReceiver> intygReceivers = certificateReceiverService.listPossibleReceivers(intygsTyp);
         return Response.ok(intygReceivers).build();
     }

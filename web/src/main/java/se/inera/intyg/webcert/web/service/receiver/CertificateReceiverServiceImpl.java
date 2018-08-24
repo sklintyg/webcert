@@ -28,11 +28,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import com.google.common.base.Strings;
+
 import se.inera.intyg.clinicalprocess.healthcond.certificate.listpossiblereceivers.v1.ListPossibleReceiversResponderInterface;
 import se.inera.intyg.clinicalprocess.healthcond.certificate.listpossiblereceivers.v1.ListPossibleReceiversResponseType;
 import se.inera.intyg.clinicalprocess.healthcond.certificate.listpossiblereceivers.v1.ListPossibleReceiversType;
 import se.inera.intyg.clinicalprocess.healthcond.certificate.registerapprovedreceivers.v1.RegisterApprovedReceiversResponderInterface;
 import se.inera.intyg.clinicalprocess.healthcond.certificate.registerapprovedreceivers.v1.RegisterApprovedReceiversType;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.web.web.controller.api.dto.IntygReceiver;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.IntygId;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.TypAvIntyg;
@@ -53,6 +57,11 @@ public class CertificateReceiverServiceImpl implements CertificateReceiverServic
 
     @Override
     public List<IntygReceiver> listPossibleReceivers(String intygsTyp) {
+
+        if (Strings.isNullOrEmpty(intygsTyp)) {
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MISSING_PARAMETER,
+                    "intygsTyp must be specified");
+        }
 
         ListPossibleReceiversType request = new ListPossibleReceiversType();
         TypAvIntyg typAvIntyg = new TypAvIntyg();
@@ -76,6 +85,11 @@ public class CertificateReceiverServiceImpl implements CertificateReceiverServic
 
     @Override
     public void registerApprovedReceivers(String intygsId, List<String> receiverIds) {
+        if (Strings.isNullOrEmpty(intygsId)) {
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MISSING_PARAMETER,
+                    "intygsId must be specified");
+        }
+
         RegisterApprovedReceiversType req = new RegisterApprovedReceiversType();
         IntygId intygId = new IntygId();
         intygId.setExtension(intygsId);
