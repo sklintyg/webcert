@@ -1,6 +1,6 @@
 # language: sv
 
-@AF @AMU
+@AF @AMU @NOTREADY
 Egenskap: Hantera Arbetsförmedlingens medicinska utlåtande intyg
 
 Bakgrund: Jag är inloggad
