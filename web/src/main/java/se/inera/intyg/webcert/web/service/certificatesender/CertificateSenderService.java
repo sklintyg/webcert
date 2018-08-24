@@ -42,4 +42,6 @@ public interface CertificateSenderService {
     void revokeCertificate(String intygsId, String xmlBody, String intygsTyp) throws CertificateSenderException;
 
     void sendMessageToRecipient(String intygsId, String xmlBody) throws CertificateSenderException;
+
+    void sendRegisterApprovedReceivers(String intygsId, String jsonBody);
 }

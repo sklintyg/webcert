@@ -51,12 +51,12 @@ public class ReceiverApiControllerTest {
     private ReceiverApiController receiverApiController;
 
     @Test
-    public void testListPossibleReceivers() {
-        when(certificateReceiverService.listPossibleReceivers("LISJP")).thenReturn(buildReceiverList());
-        Response resp = receiverApiController.listPossibleReceivers("LISJP");
+    public void testListPossibleWithApprovedReceivers() {
+        when(certificateReceiverService.listPossibleReceiversWithApprovedInfo("LISJP", INTYG_ID)).thenReturn(buildReceiverList());
+        Response resp = receiverApiController.listApprovedReceivers("LISJP", INTYG_ID);
         assertNotNull(resp);
         assertEquals(200, resp.getStatus());
-        verify(certificateReceiverService, times(1)).listPossibleReceivers("LISJP");
+        verify(certificateReceiverService, times(1)).listPossibleReceiversWithApprovedInfo("LISJP", INTYG_ID);
     }
 
     @Test
@@ -73,7 +73,8 @@ public class ReceiverApiControllerTest {
                 .withId("1")
                 .withName("namnet")
                 .withReceiverType("HUVUDMOTTAGARE")
-                .withSelected(false)
+                .withApprovalStatus(IntygReceiver.ApprovalStatus.UNDEFINED)
+                .withLocked(false)
                 .build());
         return list;
     }

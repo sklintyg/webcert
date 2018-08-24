@@ -82,6 +82,11 @@ public class CertificateSenderServiceImpl implements CertificateSenderService {
         send(new SendMessageToRecipientMessageCreator(intygsId, xmlBody, logicalAddress));
     }
 
+    @Override
+    public void sendRegisterApprovedReceivers(String intygsId, String jsonBody) {
+        send(new RegisterApprovedReceiversMessageCreator(intygsId, jsonBody, logicalAddress));
+    }
+
     private void send(MessageCreator messageCreator) {
         try {
             jmsTemplate.send(messageCreator);
@@ -191,6 +196,27 @@ public class CertificateSenderServiceImpl implements CertificateSenderService {
             Message message = session.createTextMessage(xmlBody);
             message.setStringProperty(Constants.MESSAGE_TYPE, Constants.SEND_MESSAGE_TO_RECIPIENT);
 
+            message.setStringProperty(Constants.INTYGS_ID, intygsId);
+            message.setStringProperty(Constants.LOGICAL_ADDRESS, logicalAddress);
+            return message;
+        }
+    }
+
+    static final class RegisterApprovedReceiversMessageCreator implements MessageCreator {
+        private final String intygsId;
+        private final String jsonBody;
+        private final String logicalAddress;
+
+        private RegisterApprovedReceiversMessageCreator(String intygsId, String jsonBody, String logicalAddress) {
+            this.intygsId = intygsId;
+            this.jsonBody = jsonBody;
+            this.logicalAddress = logicalAddress;
+        }
+
+        @Override
+        public Message createMessage(Session session) throws JMSException {
+            Message message = session.createTextMessage(jsonBody);
+            message.setStringProperty(Constants.MESSAGE_TYPE, Constants.REGISTER_APPROVED_RECEIVERS_MESSAGE);
             message.setStringProperty(Constants.INTYGS_ID, intygsId);
             message.setStringProperty(Constants.LOGICAL_ADDRESS, logicalAddress);
             return message;

@@ -30,6 +30,7 @@ public final class Constants {
     public static final String SEND_MESSAGE = "SEND";
     public static final String REVOKE_MESSAGE = "REVOKE";
     public static final String SEND_MESSAGE_TO_RECIPIENT = "SEND_MESSAGE_TO_RECIPIENT";
+    public static final String REGISTER_APPROVED_RECEIVERS_MESSAGE = "REGISTER_APPROVED_RECEIVERS";
     public static final String MESSAGE_TYPE = "MESSAGE_TYPE";
 
     public static final String INTYGS_ID = "INTYGS_ID";

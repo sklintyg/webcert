@@ -20,10 +20,15 @@ package se.inera.intyg.webcert.web.web.controller.api.dto;
 
 public class IntygReceiver {
 
+    public enum ApprovalStatus {
+        UNDEFINED, YES, NO
+    }
+
     private String id;
     private String name;
     private String receiverType;
-    private boolean selected;
+    private ApprovalStatus approvalStatus;
+    private boolean locked;
 
     public String getId() {
         return id;
@@ -49,12 +54,20 @@ public class IntygReceiver {
         this.receiverType = receiverType;
     }
 
-    public boolean isSelected() {
-        return selected;
+    public ApprovalStatus getApprovalStatus() {
+        return approvalStatus;
     }
 
-    public void setSelected(boolean selected) {
-        this.selected = selected;
+    public void setApprovalStatus(ApprovalStatus approvalStatus) {
+        this.approvalStatus = approvalStatus;
+    }
+
+    public boolean isLocked() {
+        return locked;
+    }
+
+    public void setLocked(boolean locked) {
+        this.locked = locked;
     }
 
 
@@ -62,7 +75,8 @@ public class IntygReceiver {
         private String id;
         private String name;
         private String receiverType;
-        private boolean selected;
+        private ApprovalStatus approvalStatus;
+        private boolean locked;
 
         private IntygReceiverBuilder() {
         }
@@ -86,8 +100,13 @@ public class IntygReceiver {
             return this;
         }
 
-        public IntygReceiverBuilder withSelected(boolean selected) {
-            this.selected = selected;
+        public IntygReceiverBuilder withApprovalStatus(ApprovalStatus approvalStatus) {
+            this.approvalStatus = approvalStatus;
+            return this;
+        }
+
+        public IntygReceiverBuilder withLocked(boolean locked) {
+            this.locked = locked;
             return this;
         }
 
@@ -96,7 +115,8 @@ public class IntygReceiver {
             intygReceiver.setId(id);
             intygReceiver.setName(name);
             intygReceiver.setReceiverType(receiverType);
-            intygReceiver.setSelected(selected);
+            intygReceiver.setApprovalStatus(approvalStatus);
+            intygReceiver.setLocked(locked);
             return intygReceiver;
         }
     }

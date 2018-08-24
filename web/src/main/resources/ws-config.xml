@@ -95,6 +95,11 @@
         address="${intygstjanst.listrelationsforcertificate.endpoint.url}">
     </jaxws:client>
 
+    <!-- Vårdens intyg -->
+    <jaxws:client id="listApprovedReceiversClient" serviceClass="se.inera.intyg.clinicalprocess.healthcond.certificate.listapprovedreceivers.v1.ListApprovedReceiversResponderInterface"
+                  address="${intygstjanst.listapprovedreceivers.endpoint.url}">
+    </jaxws:client>
+
     <jaxws:client id="listPossibleReceiversClient" serviceClass="se.inera.intyg.clinicalprocess.healthcond.certificate.listpossiblereceivers.v1.ListPossibleReceiversResponderInterface"
                   address="${intygstjanst.listpossiblereceivers.endpoint.url}">
     </jaxws:client>
@@ -102,6 +107,7 @@
     <jaxws:client id="registerApprovedReceiversClient" serviceClass="se.inera.intyg.clinicalprocess.healthcond.certificate.registerapprovedreceivers.v1.RegisterApprovedReceiversResponderInterface"
                   address="${intygstjanst.registerapprovedreceivers.endpoint.url}">
     </jaxws:client>
+    <!-- Slut vårdens intyg -->
   </beans>
 
 

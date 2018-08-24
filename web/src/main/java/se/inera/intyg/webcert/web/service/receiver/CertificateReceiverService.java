@@ -23,7 +23,8 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.IntygReceiver;
 import java.util.List;
 
 public interface CertificateReceiverService {
-    List<IntygReceiver> listPossibleReceivers(String intygsTyp);
 
     void registerApprovedReceivers(String intygsId, List<String> receiverIds);
+
+    List<IntygReceiver> listPossibleReceiversWithApprovedInfo(String intygsTyp, String intygsId);
 }

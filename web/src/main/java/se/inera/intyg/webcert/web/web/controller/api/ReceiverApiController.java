@@ -41,11 +41,17 @@ public class ReceiverApiController extends AbstractApiController {
     @Autowired
     private CertificateReceiverService certificateReceiverService;
 
+    /**
+     * Used after the signing of the intyg if the doctor wants to see (and possibly edit) approved receivers.
+     *
+     * @param intygsId
+     * @return
+     */
     @GET
-    @Path("/possiblereceivers/{intygsTyp}")
+    @Path("/approvedreceivers/{intygsTyp}/{intygsId}")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    public Response listPossibleReceivers(@PathParam("intygsTyp") String intygsTyp) {
-        List<IntygReceiver> intygReceivers = certificateReceiverService.listPossibleReceivers(intygsTyp);
+    public Response listApprovedReceivers(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId) {
+        List<IntygReceiver> intygReceivers = certificateReceiverService.listPossibleReceiversWithApprovedInfo(intygsTyp, intygsId);
         return Response.ok(intygReceivers).build();
     }
 

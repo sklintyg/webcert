@@ -30,4 +30,6 @@
 
   <bean id="sendMessageToRecipientProcessor" class="se.inera.intyg.webcert.notification_sender.certificatesender.services.SendMessageToRecipientProcessor"/>
 
+  <bean id="registerApprovedReceiversProcessor" class="se.inera.intyg.webcert.notification_sender.certificatesender.services.RegisterApprovedReceiversProcessor"/>
+
 </beans>

@@ -25,12 +25,14 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.test.util.ReflectionTestUtils;
+import se.inera.intyg.clinicalprocess.healthcond.certificate.listapprovedreceivers.v1.ListApprovedReceiversResponderInterface;
+import se.inera.intyg.clinicalprocess.healthcond.certificate.listapprovedreceivers.v1.ListApprovedReceiversResponseType;
+import se.inera.intyg.clinicalprocess.healthcond.certificate.listapprovedreceivers.v1.ListApprovedReceiversType;
 import se.inera.intyg.clinicalprocess.healthcond.certificate.listpossiblereceivers.v1.ListPossibleReceiversResponderInterface;
 import se.inera.intyg.clinicalprocess.healthcond.certificate.listpossiblereceivers.v1.ListPossibleReceiversResponseType;
 import se.inera.intyg.clinicalprocess.healthcond.certificate.listpossiblereceivers.v1.ListPossibleReceiversType;
-import se.inera.intyg.clinicalprocess.healthcond.certificate.registerapprovedreceivers.v1.RegisterApprovedReceiversResponderInterface;
-import se.inera.intyg.clinicalprocess.healthcond.certificate.registerapprovedreceivers.v1.RegisterApprovedReceiversType;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
+import se.inera.intyg.webcert.web.service.certificatesender.CertificateSenderService;
 import se.inera.intyg.webcert.web.web.controller.api.dto.IntygReceiver;
 import se.riv.clinicalprocess.healthcond.certificate.receiver.types.v1.CertificateReceiverType;
 import se.riv.clinicalprocess.healthcond.certificate.receiver.types.v1.CertificateReceiverTypeType;
@@ -50,11 +52,15 @@ public class CertificateReceiverServiceImplTest {
 
     private static final String RECEIVER_ID = "FKASSA";
     private static final String RECEIVER_NAME = "Försäkringskassan";
+
+    @Mock
+    private ListApprovedReceiversResponderInterface listApprovedReceiversClient;
+
     @Mock
     private ListPossibleReceiversResponderInterface listPossibleReceiversClient;
 
     @Mock
-    private RegisterApprovedReceiversResponderInterface registerApprovedReceiversClient;
+    private CertificateSenderService certificateSenderService;
 
     @InjectMocks
     private CertificateReceiverServiceImpl testee;
@@ -65,29 +71,43 @@ public class CertificateReceiverServiceImplTest {
     }
 
     @Test
-    public void testListAllowedReceivers() {
+    public void testListAllowedAndApprovedReceivers() {
         when(listPossibleReceiversClient.listPossibleReceivers(anyString(), any(ListPossibleReceiversType.class)))
                 .thenReturn(buildPossibleReceivers());
-        List<IntygReceiver> resp = testee.listPossibleReceivers("LISJP");
+        when(listApprovedReceiversClient.listApprovedReceivers(anyString(), any(ListApprovedReceiversType.class)))
+                .thenReturn(buildApprovedReceivers());
+        List<IntygReceiver> resp = testee.listPossibleReceiversWithApprovedInfo("LISJP", "intyg-123");
         assertEquals(1, resp.size());
 
         verify(listPossibleReceiversClient, times(1)).listPossibleReceivers(anyString(), any(ListPossibleReceiversType.class));
     }
 
-    @Test(expected = WebCertServiceException.class)
-    public void testListAllowedReceiversNullIntygsTyp() {
-        testee.listPossibleReceivers(null);
+    private ListApprovedReceiversResponseType buildApprovedReceivers() {
+        ListApprovedReceiversResponseType resp = new ListApprovedReceiversResponseType();
+
+        CertificateReceiverType certReceiverType = new CertificateReceiverType();
+        certReceiverType.setReceiverId(RECEIVER_ID);
+        certReceiverType.setReceiverName(RECEIVER_NAME);
+        certReceiverType.setReceiverType(CertificateReceiverTypeType.HUVUDMOTTAGARE);
+        certReceiverType.setTrusted(true);
+        resp.getReceiverList().add(certReceiverType);
+        return resp;
     }
 
     @Test(expected = WebCertServiceException.class)
-    public void testListAllowedReceiversBlankIntygsTyp() {
-        testee.listPossibleReceivers("");
+    public void testListAllowedWithApprovedNullIntygsTyp() {
+        testee.listPossibleReceiversWithApprovedInfo(null, "intyg-123");
+    }
+
+    @Test(expected = WebCertServiceException.class)
+    public void testListAllowedWithApprovedReceiversBlankIntygsTyp() {
+        testee.listPossibleReceiversWithApprovedInfo("", "intyg-123");
     }
 
     @Test
     public void testRegisterApproved() {
         testee.registerApprovedReceivers("intyg-123", Arrays.asList("FKASSA", "TRANSP"));
-        verify(registerApprovedReceiversClient, times(1)).registerApprovedReceivers(anyString(), any(RegisterApprovedReceiversType.class));
+        verify(certificateSenderService, times(1)).sendRegisterApprovedReceivers(anyString(), anyString());
     }
 
     @Test(expected = WebCertServiceException.class)

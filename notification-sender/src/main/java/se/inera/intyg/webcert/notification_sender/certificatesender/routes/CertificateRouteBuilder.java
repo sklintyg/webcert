@@ -41,7 +41,8 @@ public class CertificateRouteBuilder extends SpringRouteBuilder {
      *
      * Any permanent exception is handled by the route, however, and will NOT trigger a redelivery.
      *
-     * A message may supply a DELAY_MESSAGE header, which will delay processing of that message for ${camel.message.delay.millis}
+     * A message may supply a DELAY_MESSAGE header, which will delay processing of that message for
+     * ${camel.message.delay.millis}
      * milliseconds.
      */
     @Override
@@ -67,7 +68,10 @@ public class CertificateRouteBuilder extends SpringRouteBuilder {
                 .when(header(Constants.MESSAGE_TYPE).isEqualTo(Constants.SEND_MESSAGE)).to("bean:certificateSendProcessor").stop()
                 .when(header(Constants.MESSAGE_TYPE).isEqualTo(Constants.REVOKE_MESSAGE)).to("bean:certificateRevokeProcessor").stop()
                 .when(header(Constants.MESSAGE_TYPE).isEqualTo(Constants.SEND_MESSAGE_TO_RECIPIENT))
-                .to("bean:sendMessageToRecipientProcessor").stop()
+                    .to("bean:sendMessageToRecipientProcessor").stop()
+                .when(header(Constants.MESSAGE_TYPE).isEqualTo(Constants.REGISTER_APPROVED_RECEIVERS_MESSAGE))
+                    .to("bean:registerApprovedReceiversProcessor").stop()
+
                 .otherwise()
                 .log(LoggingLevel.ERROR, LOG, simple("Unknown message type: ${in.headers.MESSAGE_TYPE}").getText()).stop();
 
