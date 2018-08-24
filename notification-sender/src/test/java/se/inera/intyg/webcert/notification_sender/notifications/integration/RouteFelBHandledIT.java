@@ -22,11 +22,17 @@ import static com.google.common.collect.MoreCollectors.toOptional;
 import static org.awaitility.Awaitility.await;
 import static org.junit.Assert.assertEquals;
 
+import com.google.common.collect.ImmutableList;
 import org.apache.activemq.ActiveMQConnection;
 import org.apache.activemq.command.ActiveMQQueue;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.support.TestPropertySourceUtils;
+
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -41,8 +47,16 @@ import se.inera.intyg.common.support.modules.support.api.notification.SchemaVers
 @ContextConfiguration("/notifications/integration-test-notification-sender-config-felb.xml")
 public class RouteFelBHandledIT extends AbstractBaseIT {
 
+    @Autowired
+    private ConfigurableApplicationContext applicationContext;
+
     @Test
     public void testFelBHandled() throws Exception {
+
+        //this enables a stub to create FelB responses and
+        final List<String> properties = ImmutableList.of("certificatestatusupdateforcare.emulateError=1");
+
+        TestPropertySourceUtils.addInlinedPropertiesToEnvironment(applicationContext, properties.toArray(ArrayUtils.toArray()));
 
         NotificationMessage message = createNotificationMessage("intyg1", LocalDateTime.now(), HandelsekodEnum.ANDRAT, "luae_fs", SchemaVersion.VERSION_3);
 
