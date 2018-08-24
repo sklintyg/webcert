@@ -1,0 +1,68 @@
+@startuml
+participant Browser
+participant Journalsystem
+
+participant "Säkerhetstjänsten"
+
+box "Webcert" #F8F8F8
+	participant "JwtAuthenticationProvider"
+	participant "Webcert backend"
+end box
+
+participant HSA
+
+Browser -> Journalsystem: Open webcert
+activate Browser
+activate Journalsystem
+Journalsystem -> Journalsystem: Checks for valid OAuth token
+|||
+alt No valid token
+Journalsystem -> Säkerhetstjänsten: Request authorization code
+activate "Säkerhetstjänsten"
+
+"Säkerhetstjänsten" -> "Säkerhetstjänsten": Inits user authentication\nusing NetiD Access Server,\nincluding PIN challenge
+
+"Säkerhetstjänsten" --> Journalsystem: Authorization code
+deactivate "Säkerhetstjänsten"
+Journalsystem -> Säkerhetstjänsten: Exchange auth code for token
+activate "Säkerhetstjänsten"
+"Säkerhetstjänsten" --> Journalsystem: Access Token + Refresh token
+deactivate "Säkerhetstjänsten"
+
+Journalsystem -> Journalsystem: Stores AccessToken &\nRefresh Token
+end
+|||
+alt Has refresh token
+Journalsystem -> Säkerhetstjänsten: Exchange refresh token for id token
+activate "Säkerhetstjänsten"
+"Säkerhetstjänsten" --> Journalsystem: Access Token
+deactivate "Säkerhetstjänsten"
+Journalsystem -> Journalsystem: Stores AccessToken
+end
+
+Journalsystem --> Browser: Redirect to Webcert with token
+deactivate Journalsystem
+|||
+Browser -> "JwtAuthenticationProvider": /jwtauth with Authorization: Bearer <JWS>
+
+
+activate  "JwtAuthenticationProvider"
+"JwtAuthenticationProvider" -> "JwtAuthenticationProvider": Validate token signature\nusing PKI and extract\nHSA-id
+"JwtAuthenticationProvider" -> HSA: Get user authorizations using HSA-id
+activate HSA
+HSA --> "JwtAuthenticationProvider": HSA details
+deactivate HSA
+
+"JwtAuthenticationProvider" -> "JwtAuthenticationProvider": Build principal, start session
+"JwtAuthenticationProvider" -> "Browser": Authenticated, Set-Cookie with JSESSIONID
+deactivate  "JwtAuthenticationProvider"
+Browser -> "Webcert backend": Request resource /visa/intyg/{guid}
+activate "Webcert backend"
+|||
+"Webcert backend" --> Browser: Requested resource
+
+deactivate "Webcert backend"
+
+deactivate Browser
+
+@enduml
