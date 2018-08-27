@@ -30,7 +30,7 @@
                 </wc-alert-message>
 
 
-                <div ng-if="intygTypeModel.previousIntygWarnings[type.id]">
+                <div ng-if="intygTypeModel.previousIntygWarnings[type.id] && !intygTypeModel.previousUtkastWarnings[type.id]">
                   <wc-alert-message alert-id="intyg-previousintyg-warning-{{type.id}}" alert-severity="warning" ng-switch="intygTypeModel.previousIntygWarnings[type.id].sameVardgivare">
                     <span ng-switch-when="true" dynamic-label key="{{type.id}}.warn.previouscertificate.samevg"></span>
                     <span ng-switch-when="false" dynamic-label key="{{type.id}}.warn.previouscertificate.differentvg"></span>
