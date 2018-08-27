@@ -61,8 +61,4 @@
   <bean id="commonFeaturesResolver" class="se.inera.intyg.infra.security.authorities.CommonFeaturesResolver" />
   <bean id="featuresHelper" class="se.inera.intyg.infra.security.authorities.FeaturesHelper" />
 
-  <bean id="mockFk7263Converter" class="org.mockito.Mockito" factory-method="mock">
-    <constructor-arg value="se.inera.intyg.common.fk7263.model.converter.Fk7263InternalToNotification" />
-  </bean>
-
 </beans>
