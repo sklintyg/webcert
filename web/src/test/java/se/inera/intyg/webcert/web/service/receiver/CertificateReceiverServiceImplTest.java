@@ -34,6 +34,7 @@ import se.inera.intyg.clinicalprocess.healthcond.certificate.listpossiblereceive
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.web.service.certificatesender.CertificateSenderService;
 import se.inera.intyg.webcert.web.web.controller.api.dto.IntygReceiver;
+import se.riv.clinicalprocess.healthcond.certificate.receiver.types.v1.CertificateReceiverRegistrationType;
 import se.riv.clinicalprocess.healthcond.certificate.receiver.types.v1.CertificateReceiverType;
 import se.riv.clinicalprocess.healthcond.certificate.receiver.types.v1.CertificateReceiverTypeType;
 
@@ -85,7 +86,7 @@ public class CertificateReceiverServiceImplTest {
     private ListApprovedReceiversResponseType buildApprovedReceivers() {
         ListApprovedReceiversResponseType resp = new ListApprovedReceiversResponseType();
 
-        CertificateReceiverType certReceiverType = new CertificateReceiverType();
+        CertificateReceiverRegistrationType certReceiverType = new CertificateReceiverRegistrationType();
         certReceiverType.setReceiverId(RECEIVER_ID);
         certReceiverType.setReceiverName(RECEIVER_NAME);
         certReceiverType.setReceiverType(CertificateReceiverTypeType.HUVUDMOTTAGARE);
@@ -106,18 +107,18 @@ public class CertificateReceiverServiceImplTest {
 
     @Test
     public void testRegisterApproved() {
-        testee.registerApprovedReceivers("intyg-123", Arrays.asList("FKASSA", "TRANSP"));
-        verify(certificateSenderService, times(1)).sendRegisterApprovedReceivers(anyString(), anyString());
+        testee.registerApprovedReceivers("intyg-123", "lijsp", Arrays.asList("FKASSA", "TRANSP"));
+        verify(certificateSenderService, times(1)).sendRegisterApprovedReceivers(anyString(), anyString(), anyString());
     }
 
     @Test(expected = WebCertServiceException.class)
     public void testRegisterApprovedNullIntygsId() {
-        testee.registerApprovedReceivers(null, Arrays.asList("FKASSA"));
+        testee.registerApprovedReceivers(null, "lijsp", Arrays.asList("FKASSA"));
     }
 
     @Test(expected = WebCertServiceException.class)
     public void testListAllowedReceiversBlankIntygsId() {
-        testee.registerApprovedReceivers("", Arrays.asList("FKASSA"));
+        testee.registerApprovedReceivers("", "lijsp", Arrays.asList("FKASSA"));
     }
 
     private ListPossibleReceiversResponseType buildPossibleReceivers() {

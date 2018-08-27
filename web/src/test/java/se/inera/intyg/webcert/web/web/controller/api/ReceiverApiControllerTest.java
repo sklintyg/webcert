@@ -61,10 +61,10 @@ public class ReceiverApiControllerTest {
 
     @Test
     public void testRegisterApprovedReceivers() {
-        Response resp = receiverApiController.registerApprovedReceivers(INTYG_ID, Arrays.asList("FKASSA"));
+        Response resp = receiverApiController.registerApprovedReceivers(INTYG_ID, "lijsp", Arrays.asList("FKASSA"));
         assertNotNull(resp);
         assertEquals(200, resp.getStatus());
-        verify(certificateReceiverService, times(1)).registerApprovedReceivers(anyString(), anyList());
+        verify(certificateReceiverService, times(1)).registerApprovedReceivers(anyString(), anyString(), anyList());
     }
 
     private List<IntygReceiver> buildReceiverList() {

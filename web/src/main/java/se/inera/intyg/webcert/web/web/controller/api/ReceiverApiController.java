@@ -18,11 +18,7 @@
  */
 package se.inera.intyg.webcert.web.web.controller.api;
 
-import io.swagger.annotations.Api;
-import org.springframework.beans.factory.annotation.Autowired;
-import se.inera.intyg.webcert.web.service.receiver.CertificateReceiverService;
-import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
-import se.inera.intyg.webcert.web.web.controller.api.dto.IntygReceiver;
+import java.util.List;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -32,7 +28,13 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
+import io.swagger.annotations.Api;
+import se.inera.intyg.webcert.web.service.receiver.CertificateReceiverService;
+import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
+import se.inera.intyg.webcert.web.web.controller.api.dto.IntygReceiver;
 
 @Path("/receiver")
 @Api(value = "receiver", description = "REST API för hantering av intygsmottagare", produces = MediaType.APPLICATION_JSON)
@@ -55,12 +57,27 @@ public class ReceiverApiController extends AbstractApiController {
         return Response.ok(intygReceivers).build();
     }
 
+    /**
+     * Lists possible receivers for the intygstyp.
+     *
+     * @param intygsTyp
+     * @return
+     */
+    @GET
+    @Path("/possiblereceivers/{intygsTyp}")
+    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    public Response listApprovedReceivers(@PathParam("intygsTyp") String intygsTyp) {
+        List<IntygReceiver> intygReceivers = certificateReceiverService.listPossibleReceivers(intygsTyp);
+        return Response.ok(intygReceivers).build();
+    }
+
     @POST
-    @Path("/registerapproved/{intygsId}")
+    @Path("/registerapproved/{intygsTyp}/{intygsId}")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @Consumes(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    public Response registerApprovedReceivers(@PathParam("intygsId") String intygsId, List<String> receiverIds) {
-        certificateReceiverService.registerApprovedReceivers(intygsId, receiverIds);
+    public Response registerApprovedReceivers(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId,
+            List<String> receiverIds) {
+        certificateReceiverService.registerApprovedReceivers(intygsId, intygsTyp, receiverIds);
         return Response.ok().build();
     }
 }

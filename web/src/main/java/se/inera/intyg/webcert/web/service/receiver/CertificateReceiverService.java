@@ -24,7 +24,9 @@ import java.util.List;
 
 public interface CertificateReceiverService {
 
-    void registerApprovedReceivers(String intygsId, List<String> receiverIds);
+    void registerApprovedReceivers(String intygsId, String intygsTyp, List<String> receiverIds);
 
     List<IntygReceiver> listPossibleReceiversWithApprovedInfo(String intygsTyp, String intygsId);
+
+    List<IntygReceiver> listPossibleReceivers(String intygsTyp);
 }

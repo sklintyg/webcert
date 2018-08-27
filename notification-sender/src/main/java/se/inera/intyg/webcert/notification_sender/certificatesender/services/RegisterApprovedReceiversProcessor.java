@@ -32,6 +32,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import se.inera.intyg.clinicalprocess.healthcond.certificate.registerapprovedreceivers.v1.ReceiverApprovalStatus;
 import se.inera.intyg.clinicalprocess.healthcond.certificate.registerapprovedreceivers.v1.RegisterApprovedReceiversResponderInterface;
 import se.inera.intyg.clinicalprocess.healthcond.certificate.registerapprovedreceivers.v1.RegisterApprovedReceiversResponseType;
 import se.inera.intyg.clinicalprocess.healthcond.certificate.registerapprovedreceivers.v1.RegisterApprovedReceiversType;
@@ -39,6 +40,7 @@ import se.inera.intyg.webcert.common.Constants;
 import se.inera.intyg.webcert.common.sender.exception.PermanentException;
 import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.IntygId;
+import se.riv.clinicalprocess.healthcond.certificate.types.v3.TypAvIntyg;
 import se.riv.clinicalprocess.healthcond.certificate.v3.ResultCodeType;
 
 public class RegisterApprovedReceiversProcessor {
@@ -50,16 +52,21 @@ public class RegisterApprovedReceiversProcessor {
 
     private ObjectMapper objectMapper = new ObjectMapper();
 
-    public void process(@Body String jsonBody, @Header(Constants.INTYGS_ID) String intygsId,
+    public void process(@Body String jsonBody, @Header(Constants.INTYGS_ID) String intygsId, @Header(Constants.INTYGS_ID) String intygsTyp,
             @Header(Constants.LOGICAL_ADDRESS) String logicalAddress) throws TemporaryException, PermanentException {
 
-        List<String> receiverIds = transformMessageBodyToReceiverList(jsonBody);
+        List<ReceiverApprovalStatus> receiverIds = transformMessageBodyToReceiverList(jsonBody);
 
         try {
             RegisterApprovedReceiversType req = new RegisterApprovedReceiversType();
             IntygId intygId = new IntygId();
             intygId.setExtension(intygsId);
             req.setIntygId(intygId);
+
+            TypAvIntyg typAvIntyg = new TypAvIntyg();
+            typAvIntyg.setCode(intygsTyp);
+            req.setTypAvIntyg(typAvIntyg);
+
             req.getApprovedReceivers().addAll(receiverIds);
 
             RegisterApprovedReceiversResponseType responseType = registerApprovedReceiversClient.registerApprovedReceivers(logicalAddress,
@@ -76,9 +83,9 @@ public class RegisterApprovedReceiversProcessor {
         }
     }
 
-    private List<String> transformMessageBodyToReceiverList(@Body String jsonBody) throws PermanentException {
+    private List<ReceiverApprovalStatus> transformMessageBodyToReceiverList(@Body String jsonBody) throws PermanentException {
         try {
-            return objectMapper.readValue(jsonBody, new TypeReference<List<String>>() {
+            return objectMapper.readValue(jsonBody, new TypeReference<List<ReceiverApprovalStatus>>() {
             });
         } catch (IOException e) {
             throw new PermanentException("Could not parse message body into list of approved receivers.");

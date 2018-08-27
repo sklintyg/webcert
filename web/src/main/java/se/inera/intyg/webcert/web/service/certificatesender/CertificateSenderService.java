@@ -43,5 +43,5 @@ public interface CertificateSenderService {
 
     void sendMessageToRecipient(String intygsId, String xmlBody) throws CertificateSenderException;
 
-    void sendRegisterApprovedReceivers(String intygsId, String jsonBody);
+    void sendRegisterApprovedReceivers(String intygsId, String intygsTyp, String jsonBody);
 }

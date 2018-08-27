@@ -25,13 +25,13 @@ import java.util.stream.Collectors;
 
 import javax.xml.ws.WebServiceException;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
 
@@ -41,12 +41,14 @@ import se.inera.intyg.clinicalprocess.healthcond.certificate.listapprovedreceive
 import se.inera.intyg.clinicalprocess.healthcond.certificate.listpossiblereceivers.v1.ListPossibleReceiversResponderInterface;
 import se.inera.intyg.clinicalprocess.healthcond.certificate.listpossiblereceivers.v1.ListPossibleReceiversResponseType;
 import se.inera.intyg.clinicalprocess.healthcond.certificate.listpossiblereceivers.v1.ListPossibleReceiversType;
+import se.inera.intyg.clinicalprocess.healthcond.certificate.registerapprovedreceivers.v1.ReceiverApprovalStatus;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.support.ModuleEntryPoint;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.web.service.certificatesender.CertificateSenderService;
 import se.inera.intyg.webcert.web.web.controller.api.dto.IntygReceiver;
+import se.riv.clinicalprocess.healthcond.certificate.receiver.types.v1.ApprovalStatusType;
 import se.riv.clinicalprocess.healthcond.certificate.receiver.types.v1.CertificateReceiverTypeType;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.IntygId;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.TypAvIntyg;
@@ -80,14 +82,28 @@ public class CertificateReceiverServiceImpl implements CertificateReceiverServic
      * @param receiverIds
      */
     @Override
-    public void registerApprovedReceivers(String intygsId, List<String> receiverIds) {
+    public void registerApprovedReceivers(String intygsId, String intygsTyp, List<String> receiverIds) {
         if (Strings.isNullOrEmpty(intygsId)) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MISSING_PARAMETER,
                     "intygsId must be specified");
         }
+        if (Strings.isNullOrEmpty(intygsTyp)) {
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MISSING_PARAMETER,
+                    "intygsTyp must be specified");
+        }
+
+        List<IntygReceiver> intygReceivers = listPossibleReceivers(intygsTyp);
+
+        final List<ReceiverApprovalStatus> receiverApprovalStatuses = intygReceivers.stream().map(ir -> {
+            ReceiverApprovalStatus receiverApprovalStatus = new ReceiverApprovalStatus();
+            receiverApprovalStatus.setReceiverId(ir.getId());
+            receiverApprovalStatus.setApprovalStatus(receiverIds.contains(ir.getId()) ? ApprovalStatusType.YES : ApprovalStatusType.NO);
+            return receiverApprovalStatus;
+        }).collect(Collectors.toList());
 
         try {
-            certificateSenderService.sendRegisterApprovedReceivers(intygsId, objectMapper.writeValueAsString(receiverIds));
+            certificateSenderService.sendRegisterApprovedReceivers(intygsId, intygsTyp,
+                    objectMapper.writeValueAsString(receiverApprovalStatuses));
         } catch (JsonProcessingException e) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM,
                     "Could not convert list of approved receivers to JSON array.");
@@ -112,7 +128,6 @@ public class CertificateReceiverServiceImpl implements CertificateReceiverServic
             IntygId intygId = new IntygId();
             intygId.setExtension(intygsId);
             req.setIntygsId(intygId);
-
 
             ListApprovedReceiversResponseType resp = listApprovedReceiversClient.listApprovedReceivers(logicalAddress, req);
             List<String> approvedReceiverIds = resp.getReceiverList().stream().map(receiver -> receiver.getReceiverId())
@@ -144,7 +159,8 @@ public class CertificateReceiverServiceImpl implements CertificateReceiverServic
         }
     }
 
-    private List<IntygReceiver> listPossibleReceivers(String intygsTyp) {
+    @Override
+    public List<IntygReceiver> listPossibleReceivers(String intygsTyp) {
 
         if (Strings.isNullOrEmpty(intygsTyp)) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MISSING_PARAMETER,
