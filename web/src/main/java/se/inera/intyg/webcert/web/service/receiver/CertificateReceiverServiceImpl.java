@@ -135,7 +135,7 @@ public class CertificateReceiverServiceImpl implements CertificateReceiverServic
                     .collect(Collectors.toList());
 
             for (IntygReceiver ir : intygReceivers) {
-                boolean isHuvudmottagare = CertificateReceiverTypeType.HUVUDMOTTAGARE.name().equalsIgnoreCase(ir.getReceiverType())
+                boolean isHuvudmottagare = CertificateReceiverTypeType.HUVUDMOTTAGARE.name().equalsIgnoreCase(ir.getReceiverType());
                 ir.setApprovalStatus(isHuvudmottagare ||
                         approvedReceiverIds.contains(ir.getId()) ? IntygReceiver.ApprovalStatus.YES : IntygReceiver.ApprovalStatus.NO);
                 ir.setLocked(isHuvudmottagare);
