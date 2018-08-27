@@ -1,0 +1,60 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "array",
+  "items": [
+    {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "receiverType": {
+          "type": "string"
+        },
+        "approvalStatus": {
+          "type": "string"
+        },
+        "locked": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "receiverType",
+        "approvalStatus",
+        "locked"
+      ]
+    },
+    {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "receiverType": {
+          "type": "string"
+        },
+        "approvalStatus": {
+          "type": "string"
+        },
+        "locked": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "receiverType",
+        "approvalStatus",
+        "locked"
+      ]
+    }
+  ]
+}
