@@ -18,7 +18,11 @@
  */
 package se.inera.intyg.webcert.web.web.controller.api;
 
-import java.util.List;
+import io.swagger.annotations.Api;
+import org.springframework.beans.factory.annotation.Autowired;
+import se.inera.intyg.webcert.web.service.receiver.CertificateReceiverService;
+import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
+import se.inera.intyg.webcert.web.web.controller.api.dto.IntygReceiver;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -28,13 +32,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-
-import org.springframework.beans.factory.annotation.Autowired;
-
-import io.swagger.annotations.Api;
-import se.inera.intyg.webcert.web.service.receiver.CertificateReceiverService;
-import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
-import se.inera.intyg.webcert.web.web.controller.api.dto.IntygReceiver;
+import java.util.List;
 
 @Path("/receiver")
 @Api(value = "receiver", description = "REST API för hantering av intygsmottagare", produces = MediaType.APPLICATION_JSON)

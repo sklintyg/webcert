@@ -49,6 +49,7 @@ import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.web.service.certificatesender.CertificateSenderService;
 import se.inera.intyg.webcert.web.web.controller.api.dto.IntygReceiver;
 import se.riv.clinicalprocess.healthcond.certificate.receiver.types.v1.ApprovalStatusType;
+import se.riv.clinicalprocess.healthcond.certificate.receiver.types.v1.CertificateReceiverRegistrationType;
 import se.riv.clinicalprocess.healthcond.certificate.receiver.types.v1.CertificateReceiverTypeType;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.IntygId;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.TypAvIntyg;
@@ -130,13 +131,14 @@ public class CertificateReceiverServiceImpl implements CertificateReceiverServic
             req.setIntygsId(intygId);
 
             ListApprovedReceiversResponseType resp = listApprovedReceiversClient.listApprovedReceivers(logicalAddress, req);
-            List<String> approvedReceiverIds = resp.getReceiverList().stream().map(receiver -> receiver.getReceiverId())
+            List<String> approvedReceiverIds = resp.getReceiverList().stream().map(CertificateReceiverRegistrationType::getReceiverId)
                     .collect(Collectors.toList());
 
             for (IntygReceiver ir : intygReceivers) {
-                ir.setApprovalStatus(
+                boolean isHuvudmottagare = CertificateReceiverTypeType.HUVUDMOTTAGARE.name().equalsIgnoreCase(ir.getReceiverType())
+                ir.setApprovalStatus(isHuvudmottagare ||
                         approvedReceiverIds.contains(ir.getId()) ? IntygReceiver.ApprovalStatus.YES : IntygReceiver.ApprovalStatus.NO);
-                ir.setLocked(CertificateReceiverTypeType.HUVUDMOTTAGARE.name().equalsIgnoreCase(ir.getReceiverType()));
+                ir.setLocked(isHuvudmottagare);
             }
             return intygReceivers;
         } catch (WebServiceException wse) {
