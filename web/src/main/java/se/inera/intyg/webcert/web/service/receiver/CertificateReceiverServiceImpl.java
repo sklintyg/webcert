@@ -25,6 +25,7 @@ import java.util.stream.Collectors;
 
 import javax.xml.ws.WebServiceException;
 
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -140,21 +141,26 @@ public class CertificateReceiverServiceImpl implements CertificateReceiverServic
             return intygReceivers;
         } catch (WebServiceException wse) {
             LOG.warn("Caught WebServiceException fetching approved or possible receivers, only returning Huvudmottagare.");
-            try {
-                ModuleEntryPoint moduleEntryPoint = intygModuleRegistry.getModuleEntryPoint(intygsTyp);
-                String recipientId = moduleEntryPoint.getDefaultRecipient();
-                IntygReceiver intygReceiver = IntygReceiver.IntygReceiverBuilder.anIntygReceiver()
-                        .withId(recipientId)
-                        .withReceiverType(CertificateReceiverTypeType.HUVUDMOTTAGARE.name())
-                        .withApprovalStatus(IntygReceiver.ApprovalStatus.YES)
-                        .withLocked(true)
-                        .withName(recipientId)
-                        .build();
-                return Arrays.asList(intygReceiver);
-            } catch (Exception e) {
-                LOG.error("Unable to resolve default recipient using ModuleEntryPoint for '{}', throwing exception.", intygsTyp);
-                throw new WebCertServiceException(WebCertServiceErrorCodeEnum.UNKNOWN_INTERNAL_PROBLEM, e);
-            }
+            return getIntygReceiverFromEntryPoint(intygsTyp);
+        }
+    }
+
+    @NotNull
+    private List<IntygReceiver> getIntygReceiverFromEntryPoint(String intygsTyp) {
+        try {
+            ModuleEntryPoint moduleEntryPoint = intygModuleRegistry.getModuleEntryPoint(intygsTyp);
+            String recipientId = moduleEntryPoint.getDefaultRecipient();
+            IntygReceiver intygReceiver = IntygReceiver.IntygReceiverBuilder.anIntygReceiver()
+                    .withId(recipientId)
+                    .withReceiverType(CertificateReceiverTypeType.HUVUDMOTTAGARE.name())
+                    .withApprovalStatus(IntygReceiver.ApprovalStatus.YES)
+                    .withLocked(true)
+                    .withName(recipientId)
+                    .build();
+            return Arrays.asList(intygReceiver);
+        } catch (Exception e) {
+            LOG.error("Unable to resolve default recipient using ModuleEntryPoint for '{}', throwing exception.", intygsTyp);
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.UNKNOWN_INTERNAL_PROBLEM, e);
         }
     }
 
@@ -191,22 +197,28 @@ public class CertificateReceiverServiceImpl implements CertificateReceiverServic
         TypAvIntyg typAvIntyg = new TypAvIntyg();
         typAvIntyg.setCode(intygsTyp);
         request.setIntygTyp(typAvIntyg);
-        ListPossibleReceiversResponseType response = listPossibleReceiversClient.listPossibleReceivers(logicalAddress, request);
+        try {
+            ListPossibleReceiversResponseType response = listPossibleReceiversClient.listPossibleReceivers(logicalAddress, request);
 
-        if (response == null || response.getReceiverList() == null || response.getReceiverList().size() == 0) {
-            LOG.warn("Call to ListPossibleReceivers for intygstyp '{}' returned no possible receivers, check recipient "
-                    + "configuration in intygstjänsten.");
-            return new ArrayList<>();
+            if (response == null || response.getReceiverList() == null || response.getReceiverList().size() == 0) {
+                LOG.warn("Call to ListPossibleReceivers for intygstyp '{}' returned no possible receivers, check recipient "
+                        + "configuration in intygstjänsten.");
+                return new ArrayList<>();
+            }
+
+            return response.getReceiverList().stream().map(rcpt -> IntygReceiver.IntygReceiverBuilder.anIntygReceiver()
+                    .withId(rcpt.getReceiverId())
+                    .withName(rcpt.getReceiverName())
+                    .withReceiverType(rcpt.getReceiverType().name())
+                    .withApprovalStatus(
+                            rcpt.getReceiverType() == CertificateReceiverTypeType.HUVUDMOTTAGARE ? IntygReceiver.ApprovalStatus.YES
+                                    : IntygReceiver.ApprovalStatus.UNDEFINED)
+                    .withLocked(rcpt.getReceiverType() == CertificateReceiverTypeType.HUVUDMOTTAGARE)
+                    .build())
+                    .collect(Collectors.toList());
+        } catch (WebServiceException e) {
+            LOG.warn("Caught WebServiceException fetching approved or possible receivers, only returning Huvudmottagare.");
+            return getIntygReceiverFromEntryPoint(intygsTyp);
         }
-
-        return response.getReceiverList().stream().map(rcpt -> IntygReceiver.IntygReceiverBuilder.anIntygReceiver()
-                .withId(rcpt.getReceiverId())
-                .withName(rcpt.getReceiverName())
-                .withReceiverType(rcpt.getReceiverType().name())
-                .withApprovalStatus(rcpt.getReceiverType() == CertificateReceiverTypeType.HUVUDMOTTAGARE ? IntygReceiver.ApprovalStatus.YES
-                        : IntygReceiver.ApprovalStatus.UNDEFINED)
-                .withLocked(rcpt.getReceiverType() == CertificateReceiverTypeType.HUVUDMOTTAGARE)
-                .build())
-                .collect(Collectors.toList());
     }
 }
