@@ -131,13 +131,10 @@ public class CertificateReceiverServiceImpl implements CertificateReceiverServic
             req.setIntygsId(intygId);
 
             ListApprovedReceiversResponseType resp = listApprovedReceiversClient.listApprovedReceivers(logicalAddress, req);
-            List<String> approvedReceiverIds = resp.getReceiverList().stream().map(CertificateReceiverRegistrationType::getReceiverId)
-                    .collect(Collectors.toList());
 
             for (IntygReceiver ir : intygReceivers) {
                 boolean isHuvudmottagare = CertificateReceiverTypeType.HUVUDMOTTAGARE.name().equalsIgnoreCase(ir.getReceiverType());
-                ir.setApprovalStatus(isHuvudmottagare ||
-                        approvedReceiverIds.contains(ir.getId()) ? IntygReceiver.ApprovalStatus.YES : IntygReceiver.ApprovalStatus.NO);
+                ir.setApprovalStatus(resolveApprovalStatus(isHuvudmottagare, ir.getId(), resp.getReceiverList()));
                 ir.setLocked(isHuvudmottagare);
             }
             return intygReceivers;
@@ -159,6 +156,27 @@ public class CertificateReceiverServiceImpl implements CertificateReceiverServic
                 throw new WebCertServiceException(WebCertServiceErrorCodeEnum.UNKNOWN_INTERNAL_PROBLEM, e);
             }
         }
+    }
+
+    private IntygReceiver.ApprovalStatus resolveApprovalStatus(boolean isHuvudmottagare, String receiverId,
+            List<CertificateReceiverRegistrationType> receiverList) {
+        if (isHuvudmottagare) {
+            return IntygReceiver.ApprovalStatus.YES;
+        }
+        for (CertificateReceiverRegistrationType crrt : receiverList) {
+            if (crrt.getReceiverId().equalsIgnoreCase(receiverId)) {
+                switch (crrt.getApprovalStatus()) {
+                case YES:
+                    return IntygReceiver.ApprovalStatus.YES;
+                case NO:
+                    return IntygReceiver.ApprovalStatus.NO;
+                case UNDEFINED:
+                    return IntygReceiver.ApprovalStatus.UNDEFINED;
+                }
+                break;
+            }
+        }
+        return IntygReceiver.ApprovalStatus.UNDEFINED;
     }
 
     @Override

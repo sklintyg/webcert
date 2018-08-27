@@ -52,7 +52,7 @@ public class RegisterApprovedReceiversProcessor {
 
     private ObjectMapper objectMapper = new ObjectMapper();
 
-    public void process(@Body String jsonBody, @Header(Constants.INTYGS_ID) String intygsId, @Header(Constants.INTYGS_ID) String intygsTyp,
+    public void process(@Body String jsonBody, @Header(Constants.INTYGS_ID) String intygsId, @Header(Constants.INTYGS_TYP) String intygsTyp,
             @Header(Constants.LOGICAL_ADDRESS) String logicalAddress) throws TemporaryException, PermanentException {
 
         List<ReceiverApprovalStatus> receiverIds = transformMessageBodyToReceiverList(jsonBody);
