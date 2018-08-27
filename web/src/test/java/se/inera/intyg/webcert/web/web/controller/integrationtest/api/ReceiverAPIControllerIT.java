@@ -33,7 +33,8 @@ public class ReceiverAPIControllerIT extends BaseRestIntegrationTest {
     @Test
     public void listPossibleReceivers() {
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
-        given().expect().statusCode(200).when().get("api/receiver/possiblereceivers/af00213")
+        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
+                .expect().statusCode(200).when().get("api/receiver/possiblereceivers/af00213")
                 .then()
                 .body(matchesJsonSchemaInClasspath("jsonschema/webcert-list-possible-receivers-response-schema.json"));
     }
@@ -41,7 +42,8 @@ public class ReceiverAPIControllerIT extends BaseRestIntegrationTest {
     @Test
     public void listPossibleReceiversWithApprovedForUnknownIntygsId() {
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
-        given().expect().statusCode(200).when().get("api/receiver/approvedreceivers/af00213/123").then()
+        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
+                .expect().statusCode(200).when().get("api/receiver/approvedreceivers/af00213/123").then()
                 .body(matchesJsonSchemaInClasspath("jsonschema/webcert-list-approved-receivers-response-schema.json"));
 
     }
