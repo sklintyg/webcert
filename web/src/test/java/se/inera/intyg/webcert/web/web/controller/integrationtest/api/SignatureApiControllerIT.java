@@ -171,6 +171,7 @@ public class SignatureApiControllerIT extends BaseRestIntegrationTest {
 
         // Simulera väntetid vid pollning mot riktig GPR-tjänst
         sleep();
+        sleep();
 
         given()
                 .cookie("ROUTEID", BaseRestIntegrationTest.routeId)
