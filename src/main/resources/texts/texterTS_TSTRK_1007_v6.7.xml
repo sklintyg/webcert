@@ -10,16 +10,17 @@
   <text id="FRG_1.RBK">Detta intyg ska användas vid förlängd giltighet av högre behörighet, ansökan om körkortstillstånd för grupp II och III och vid ansökan om taxiförarlegitimation.</text>
   <text id="FRG_1.HLP">Grupp II omfattar behörigheterna AM, A1, A2, A, B, BE, C1, C1E, C och CE.<br/> Grupp III omfattar behörigheterna AM, A1, A2, A, B, BE, C1, C1E, C, CE, D1, D1E, D och DE.</text>
   <text id="FRG_1.2.RBK">Intyget kan också användas när Transportstyrelsen i andra fall begärt ett läkarintyg. Markera då endast i rutan Annat nedan.</text>
-  <text id="KORKORT_C1.RBK">C1</text>
-  <text id="KORKORT_C1E.RBK">C1E</text>
-  <text id="KORKORT_C.RBK">C</text>
-  <text id="KORKORT_CE.RBK">CE</text>
-  <text id="KORKORT_D1.RBK">D1</text>
-  <text id="KORKORT_D1E.RBK">D1E</text>
-  <text id="KORKORT_D.RBK">D</text>
-  <text id="KORKORT_DE.RBK">DE</text>
-  <text id="KORKORT_TAXI.RBK">Taxi</text>
-  <text id="KORKORT_ANNAT.RBK">Annat</text>
+  <text id="KORKORT.C1.RBK">C1</text>
+  <text id="KORKORT.C1E.RBK">C1E</text>
+  <text id="KORKORT.C.RBK">C</text>
+  <text id="KORKORT.CE.RBK">CE</text>
+  <text id="KORKORT.D1.RBK">D1</text>
+  <text id="KORKORT.D1E.RBK">D1E</text>
+  <text id="KORKORT.D.RBK">D</text>
+  <text id="KORKORT.DE.RBK">DE</text>
+  <text id="KORKORT.TAXI.RBK">Taxi</text>
+  <text id="KORKORT.ANNAT.RBK">Annat</text>
+	<text id="KORKORT.KAN_INTE_TA_STALLNING.RBK">Kan inte ta ställning</text>
 
 	<!--
 	===============================================
