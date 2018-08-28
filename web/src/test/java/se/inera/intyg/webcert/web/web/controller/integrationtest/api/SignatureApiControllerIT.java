@@ -18,6 +18,20 @@
  */
 package se.inera.intyg.webcert.web.web.controller.integrationtest.api;
 
+import static com.jayway.restassured.RestAssured.given;
+import static com.jayway.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
+import static org.awaitility.Awaitility.await;
+import static org.hamcrest.Matchers.isEmptyString;
+import static org.hamcrest.core.IsEqual.equalTo;
+import static org.hamcrest.core.IsNot.not;
+import static se.inera.intyg.webcert.web.web.controller.integrationtest.moduleapi.UtkastModuleApiControllerIT.GRPAPI_STUBBE_BASE;
+
+import java.io.IOException;
+import java.util.concurrent.TimeUnit;
+
+import org.hamcrest.Matchers;
+import org.junit.Test;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
@@ -26,22 +40,12 @@ import com.jayway.restassured.RestAssured;
 import com.jayway.restassured.http.ContentType;
 import com.jayway.restassured.path.json.JsonPath;
 import com.jayway.restassured.response.Response;
-import org.hamcrest.Matchers;
-import org.junit.Test;
+
 import se.funktionstjanster.grp.v1.ProgressStatusType;
 import se.inera.intyg.infra.security.common.model.AuthenticationMethod;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.web.auth.eleg.FakeElegCredentials;
 import se.inera.intyg.webcert.web.web.controller.integrationtest.BaseRestIntegrationTest;
-
-import java.io.IOException;
-
-import static com.jayway.restassured.RestAssured.given;
-import static com.jayway.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
-import static org.hamcrest.Matchers.isEmptyString;
-import static org.hamcrest.core.IsEqual.equalTo;
-import static org.hamcrest.core.IsNot.not;
-import static se.inera.intyg.webcert.web.web.controller.integrationtest.moduleapi.UtkastModuleApiControllerIT.GRPAPI_STUBBE_BASE;
 
 public class SignatureApiControllerIT extends BaseRestIntegrationTest {
 
@@ -61,7 +65,7 @@ public class SignatureApiControllerIT extends BaseRestIntegrationTest {
                 .contentType(ContentType.JSON)
                 .expect().statusCode(200)
                 .when().post(SIGNATURE_API_BASE + "/" + intyg.getIntygsTyp() + "/" + intyg.getId() + "/" + intyg.getVersion()
-                + "/signeringshash")
+                        + "/signeringshash")
                 .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-signatur-response-schema.json"))
                 .body("hash", Matchers.notNullValue())
                 .extract().response();
@@ -77,7 +81,7 @@ public class SignatureApiControllerIT extends BaseRestIntegrationTest {
                 .contentType(ContentType.JSON)
                 .expect().statusCode(200)
                 .when().post(SIGNATURE_API_BASE + "/" + intyg.getIntygsTyp() + "/" + intyg.getId() + "/" + intyg.getVersion()
-                + "/signeringshash")
+                        + "/signeringshash")
                 .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-signatur-response-schema.json"))
                 .body("hash", Matchers.notNullValue())
                 .body("status", equalTo("BEARBETAR"))
@@ -147,10 +151,8 @@ public class SignatureApiControllerIT extends BaseRestIntegrationTest {
                 .when()
                 .put(GRPAPI_STUBBE_BASE + "/status");
 
-        // Simulera väntetid vid pollning mot riktig GPR-tjänst
-        sleep();
-
-        given()
+        // Verifiera att vi får status VANTA_SIGN inom 6 sekunder.
+        await().atMost(6, TimeUnit.SECONDS).until(() -> given()
                 .cookie("ROUTEID", BaseRestIntegrationTest.routeId)
                 .contentType(ContentType.JSON)
                 .expect().statusCode(200)
@@ -158,7 +160,7 @@ public class SignatureApiControllerIT extends BaseRestIntegrationTest {
                 .get(SIGNATURE_API_BASE + "/" + intyg.getIntygsTyp() + "/" + biljettId + "/signeringsstatus")
                 .then()
                 .body(matchesJsonSchemaInClasspath("jsonschema/webcert-signatur-response-schema.json"))
-                .body("status", equalTo("VANTA_SIGN"));
+                .body("status", equalTo("VANTA_SIGN")));
 
         // Ändra GRP-status till COMPLETE och kontrollera
         given()
@@ -169,11 +171,7 @@ public class SignatureApiControllerIT extends BaseRestIntegrationTest {
                 .when()
                 .put(GRPAPI_STUBBE_BASE + "/status");
 
-        // Simulera väntetid vid pollning mot riktig GPR-tjänst
-        sleep();
-        sleep();
-
-        given()
+        await().atMost(6, TimeUnit.SECONDS).until(() -> given()
                 .cookie("ROUTEID", BaseRestIntegrationTest.routeId)
                 .contentType(ContentType.JSON)
                 .expect().statusCode(200)
@@ -181,7 +179,8 @@ public class SignatureApiControllerIT extends BaseRestIntegrationTest {
                 .get(SIGNATURE_API_BASE + "/" + intyg.getIntygsTyp() + "/" + biljettId + "/signeringsstatus")
                 .then()
                 .body(matchesJsonSchemaInClasspath("jsonschema/webcert-signatur-response-schema.json"))
-                .body("status", equalTo("SIGNERAD"));
+                .body("status", equalTo("SIGNERAD")));
+
     }
 
     @Test
@@ -289,14 +288,6 @@ public class SignatureApiControllerIT extends BaseRestIntegrationTest {
 
     private String createGrpSignatureStatus(String biljettId, ProgressStatusType status) {
         return "{ \"orderRef\": \"" + biljettId + "\", \"status\": \"" + status.value() + "\" }";
-    }
-
-    private void sleep() {
-        try {
-            Thread.sleep(3000);
-        } catch (InterruptedException e) {
-            // Do nothing
-        }
     }
 
     private class Intyg {

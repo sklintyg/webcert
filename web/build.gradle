@@ -179,6 +179,7 @@ dependencies {
     testCompile "javax.servlet:javax.servlet-api:${servletApiVersion}"
     testCompile "org.kubek2k:springockito:${springockitoVersion}"
     testCompile "xmlunit:xmlunit:${xmlUnitVersion}"
+    testCompile "org.awaitility:awaitility:${awaitilityVersion}"
     testCompile "com.jayway.restassured:rest-assured:${restassuredVersion}"
     testCompile "com.jayway.restassured:json-schema-validator:${jsonSchemaValidatorVersion}"
     testCompile "org.antlr:ST4:${stAntlr4Version}"
