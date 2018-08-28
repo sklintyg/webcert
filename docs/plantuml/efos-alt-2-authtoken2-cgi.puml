@@ -1,0 +1,79 @@
+@startuml
+participant b as "Browser"
+participant j as "Journalsystem"
+
+participant s as "Säkerhetstjänsten"
+
+box "Webcert" #F8F8F8
+	participant wj as "JwtAuthenticationProvider"
+	participant wb as "Webcert backend"
+end box
+
+participant HSA
+
+b -> j: Open webcert
+activate b
+activate j
+j -> j: Checks for valid OAuth token
+|||
+alt No valid token
+j -> b: Redirect to IdP
+
+b <-> s: Inits user authentication\nusing NetiD Access Server,\nincluding PIN challenge
+activate s
+s -> b: Redirect with Authorization Code
+b -> j:
+
+deactivate s
+j -> s: Exchange auth code for token
+activate s
+s --> j: Access Token + Refresh token
+deactivate s
+
+j -> j: Stores AccessToken &\nRefresh Token
+end
+
+|||
+alt No valid token, but has valid SAML assertion
+j -> s: Request access token\n with SAML assertion (RFC7522)
+activate s
+s -> s: Validate assertion\n and client
+s -> j: Access Token + Refresh Token
+deactivate s
+end
+
+|||
+alt Has refresh token
+j -> s: Exchange refresh token for id token
+activate s
+s --> j: Access Token
+deactivate s
+j -> j: Stores AccessToken
+end
+
+j --> b: Redirect to Webcert with token
+deactivate j
+|||
+b -> wj: /jwtauth with Authorization: Bearer <JWS>
+
+
+activate  wj
+wj -> wj: Validate token signature\nusing PKI and extract\nHSA-id
+wj -> HSA: Get user authorizations using HSA-id
+activate HSA
+HSA --> wj: HSA details
+deactivate HSA
+
+wj -> wj: Build principal, start session
+wj -> b: Authenticated, Set-Cookie with JSESSIONID
+deactivate  wj
+b -> wb: Request resource /visa/intyg/{guid}
+activate wb
+|||
+wb --> b: Requested resource
+
+deactivate wb
+
+deactivate b
+
+@enduml
