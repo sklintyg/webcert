@@ -18,20 +18,6 @@
  */
 package se.inera.intyg.webcert.web.web.controller.integrationtest.api;
 
-import static com.jayway.restassured.RestAssured.given;
-import static com.jayway.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
-import static org.awaitility.Awaitility.await;
-import static org.hamcrest.Matchers.isEmptyString;
-import static org.hamcrest.core.IsEqual.equalTo;
-import static org.hamcrest.core.IsNot.not;
-import static se.inera.intyg.webcert.web.web.controller.integrationtest.moduleapi.UtkastModuleApiControllerIT.GRPAPI_STUBBE_BASE;
-
-import java.io.IOException;
-import java.util.concurrent.TimeUnit;
-
-import org.hamcrest.Matchers;
-import org.junit.Test;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
@@ -40,12 +26,24 @@ import com.jayway.restassured.RestAssured;
 import com.jayway.restassured.http.ContentType;
 import com.jayway.restassured.path.json.JsonPath;
 import com.jayway.restassured.response.Response;
-
+import org.hamcrest.Matchers;
+import org.junit.Test;
 import se.funktionstjanster.grp.v1.ProgressStatusType;
 import se.inera.intyg.infra.security.common.model.AuthenticationMethod;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.web.auth.eleg.FakeElegCredentials;
 import se.inera.intyg.webcert.web.web.controller.integrationtest.BaseRestIntegrationTest;
+
+import java.io.IOException;
+import java.util.concurrent.TimeUnit;
+
+import static com.jayway.restassured.RestAssured.given;
+import static com.jayway.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
+import static org.awaitility.Awaitility.await;
+import static org.hamcrest.Matchers.isEmptyString;
+import static org.hamcrest.core.IsEqual.equalTo;
+import static org.hamcrest.core.IsNot.not;
+import static se.inera.intyg.webcert.web.web.controller.integrationtest.moduleapi.UtkastModuleApiControllerIT.GRPAPI_STUBBE_BASE;
 
 public class SignatureApiControllerIT extends BaseRestIntegrationTest {
 
