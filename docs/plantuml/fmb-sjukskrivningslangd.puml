@@ -1,0 +1,32 @@
+@startuml
+actor Användare
+participant Browser
+participant Webcert
+participant Sjukfallsmotor
+participant Intygstjansten
+database Databas
+Användare -/ Browser: Författar utkast,\nhar angivit diagnoskod samt\nminst en period på\nutkastet.
+Browser -> Webcert: GetSickLeavesForPatient (REST)
+activate Webcert
+Webcert -> Intygstjansten: ListActiveSickLeavesForCare (SOAP)
+activate Intygstjansten
+Intygstjansten -> Databas: Hämtar intyg för patient
+activate Databas
+Databas --> Intygstjansten: Intyg för patient
+deactivate Databas
+
+Intygstjansten --> Webcert: Sjukfallsgrundande intyg (SOAP)
+deactivate Intygstjansten
+Webcert -> Sjukfallsmotor: Sjukfallsgrundande intyg
+activate Sjukfallsmotor
+Sjukfallsmotor -> Sjukfallsmotor: Beräknar sjukfall
+Sjukfallsmotor --> Webcert: Sjukfall
+deactivate Sjukfallsmotor
+Webcert -> Webcert: Ta fram total sjukskrivningslängd
+Webcert --> Browser: <Antal dagar innevarande sjukfall>
+deactivate Webcert
+alt Om <dagar> > rekommendation från FMB
+Browser -/ Användare: Visar varningsruta
+end
+
+@enduml

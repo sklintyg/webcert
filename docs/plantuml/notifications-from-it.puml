@@ -1,0 +1,31 @@
+@startuml
+actor Invånare
+participant "Mina Intyg"
+participant Intygstjänsten
+participant Webcert
+queue ActiveMQ
+participant NotificationSender
+participant Journalsystem
+
+Invånare -> "Mina Intyg": Skickar intyg\ntill mottagare.
+activate "Mina Intyg"
+"Mina Intyg" -> "Intygstjänsten": SendCertificateToRecipient (SOAP)
+activate Intygstjänsten
+Intygstjänsten -> Intygstjänsten: Skickar till mottagare
+Intygstjänsten -> Webcert: SendInternalNotificationToCare (SOAP)
+activate Webcert
+Webcert -> Webcert: Kontrollerar mottagare\noch bygger notificationMessage
+Webcert -/ ActiveMQ: Lägger på kö
+Webcert --> Intygstjänsten: <OK> (SOAP)
+deactivate Webcert
+Intygstjänsten --> "Mina Intyg": <OK> (SOAP)
+deactivate Intygstjänsten
+"Mina Intyg" --> Invånare: Intyget skickades!
+deactivate "Mina Intyg"
+
+ActiveMQ -/ NotificationSender: Processar meddelande
+activate NotificationSender
+NotificationSender -> Journalsystem: CertficateStatusUpdateForCare (SOAP)
+Journalsystem --> NotificationSender: <OK> (SOAP)
+deactivate NotificationSender
+@enduml

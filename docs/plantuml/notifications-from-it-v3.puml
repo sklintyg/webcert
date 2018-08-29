@@ -1,0 +1,38 @@
+@startuml
+actor Invånare
+participant "Mina Intyg"
+participant Intygstjänsten
+queue "AMQ:internal.queue"
+participant Webcert
+queue "AMQ:notification.queue"
+participant NotificationSender
+participant Journalsystem
+
+Invånare -> "Mina Intyg": Skickar intyg\ntill mottagare.
+activate "Mina Intyg"
+"Mina Intyg" -> "Intygstjänsten": SendCertificateToRecipient
+activate Intygstjänsten
+Intygstjänsten -> Intygstjänsten: Skickar till mottagare
+Intygstjänsten -/ "AMQ:internal.queue": Lägger intern\nminimal notifiering\npå kö.
+
+Intygstjänsten --> "Mina Intyg": <OK>
+deactivate Intygstjänsten
+"Mina Intyg" --> Invånare: Intyget skickades!
+deactivate "Mina Intyg"
+
+"AMQ:internal.queue" -/ Webcert: Konsumerar\nmeddelande
+activate Webcert
+Webcert -> Intygstjänsten: GetCertificate
+activate Intygstjänsten
+Intygstjänsten --> Webcert: <Intyg XML>
+deactivate Intygstjänsten
+Webcert -> Webcert: Kontrollerar mottagare\noch bygger notificationMessage
+Webcert -/ "AMQ:notification.queue": Lägger på kö
+deactivate Webcert
+
+"AMQ:notification.queue" -/ NotificationSender: Konsumerar\nmeddelande
+activate NotificationSender
+NotificationSender -> Journalsystem: CertficateStatusUpdateForCare
+Journalsystem --> NotificationSender: <OK>
+deactivate NotificationSender
+@enduml
