@@ -2,6 +2,7 @@
          trimDirectiveWhitespaces="true" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <%--
   ~ Copyright (C) 2016 Inera AB (http://www.inera.se)
@@ -133,7 +134,7 @@
               <h1><spring:message code="error.missing-parameter.title" /></h1>
               <wc-alert-message alert-id="missingParameter" alert-severity="danger">
                 <spring:message code="error.missing-parameter.text" />
-                <div>${param.message}</div>
+                <div>${fn:escapeXml(param.message)}</div>
               </wc-alert-message>
             </c:when>
             <c:when test="${param.reason eq 'integration.nocontent'}">
@@ -163,7 +164,7 @@
             <c:when test="${param.reason eq 'enhet.auth.exception'}">
               <h1><spring:message code="error.enhet.auth.exception.title" /></h1>
               <wc-alert-message alert-id="notFound" alert-severity="danger">
-                <spring:message code="error.enhet.auth.exception.text" arguments="${param.enhetHsaId}" />
+                <spring:message code="error.enhet.auth.exception.text" arguments="${fn:escapeXml(param.enhetHsaId)}" />
               </wc-alert-message>
             </c:when>
             <c:when test="${param.reason eq 'pu-problem'}">
