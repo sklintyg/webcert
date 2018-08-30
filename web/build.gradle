@@ -129,6 +129,7 @@ dependencies {
     compile "se.inera.intyg.infra:pu-integration:${infraVersion}"
     compile "se.inera.intyg.infra:srs-integration:${infraVersion}"
     compile "se.inera.intyg.infra:loggtjanst-stub:${infraVersion}"
+    compile "se.inera.intyg.infra:security-filter:${infraVersion}"
     compile "se.inera.intyg.infra:security-siths:${infraVersion}"
     compile "se.inera.intyg.infra:dynamiclink:${infraVersion}"
     compile "se.inera.intyg.infra:grp-stub:${infraVersion}"
