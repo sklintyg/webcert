@@ -18,19 +18,6 @@
  */
 package se.inera.intyg.webcert.web.web.controller.api;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
-import se.inera.intyg.webcert.web.service.receiver.CertificateReceiverService;
-import se.inera.intyg.webcert.web.web.controller.api.dto.IntygReceiver;
-
-import javax.ws.rs.core.Response;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.anyList;
@@ -39,6 +26,28 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+
+import javax.ws.rs.core.Response;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
+
+import se.inera.intyg.infra.security.authorities.AuthoritiesException;
+import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.infra.security.common.model.Privilege;
+import se.inera.intyg.infra.security.common.model.RequestOrigin;
+import se.inera.intyg.webcert.web.service.receiver.CertificateReceiverService;
+import se.inera.intyg.webcert.web.service.user.WebCertUserService;
+import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
+import se.inera.intyg.webcert.web.web.controller.api.dto.IntygReceiver;
+
 @RunWith(MockitoJUnitRunner.class)
 public class ReceiverApiControllerTest {
 
@@ -46,6 +55,9 @@ public class ReceiverApiControllerTest {
 
     @Mock
     private CertificateReceiverService certificateReceiverService;
+
+    @Mock
+    private WebCertUserService webcertUserService;
 
     @InjectMocks
     private ReceiverApiController receiverApiController;
@@ -61,7 +73,17 @@ public class ReceiverApiControllerTest {
 
     @Test
     public void testRegisterApprovedReceivers() {
-        Response resp = receiverApiController.registerApprovedReceivers(INTYG_ID, "lijsp", Arrays.asList("FKASSA"));
+        setupUser(AuthoritiesConstants.PRIVILEGE_GODKANNA_MOTTAGARE,"LISJP");
+        Response resp = receiverApiController.registerApprovedReceivers("LISJP", INTYG_ID, Arrays.asList("FKASSA"));
+        assertNotNull(resp);
+        assertEquals(200, resp.getStatus());
+        verify(certificateReceiverService, times(1)).registerApprovedReceivers(anyString(), anyString(), anyList());
+    }
+
+    @Test(expected = AuthoritiesException.class)
+    public void testRegisterApprovedReceiversFailsIfNotAuth() {
+        setupUser(AuthoritiesConstants.PRIVILEGE_GODKANNA_MOTTAGARE,"ts-bas");
+        Response resp = receiverApiController.registerApprovedReceivers("LISJP", INTYG_ID, Arrays.asList("FKASSA"));
         assertNotNull(resp);
         assertEquals(200, resp.getStatus());
         verify(certificateReceiverService, times(1)).registerApprovedReceivers(anyString(), anyString(), anyList());
@@ -79,4 +101,19 @@ public class ReceiverApiControllerTest {
         return list;
     }
 
+    private void setupUser(String privilegeString, String intygType) {
+        WebCertUser user = new WebCertUser();
+        user.setAuthorities(new HashMap<>());
+
+        Privilege privilege = new Privilege();
+        privilege.setIntygstyper(Arrays.asList(intygType));
+        RequestOrigin requestOrigin = new RequestOrigin();
+        requestOrigin.setName("NORMAL");
+        requestOrigin.setIntygstyper(privilege.getIntygstyper());
+        privilege.setRequestOrigins(Arrays.asList(requestOrigin));
+        user.getAuthorities().put(privilegeString, privilege);
+        user.setOrigin("NORMAL");
+
+        when(webcertUserService.getUser()).thenReturn(user);
+    }
 }

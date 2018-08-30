@@ -74,6 +74,8 @@ describe('Create and Sign lisjp utkast', function() {
             UtkastPage.signeraButtonClick();
 
             expect(IntygPage.isAt()).toBeTruthy();
+            expect(IntygPage.getReceiverApprovalDialog().isDisplayed()).toBeTruthy();
+
         });
 
         it('Verifiera intyg', function() {
@@ -84,6 +86,9 @@ describe('Create and Sign lisjp utkast', function() {
             browser.refresh();
 
             IntygPage.whenCertificateLoaded().then(function() {
+                IntygPage.clickReceiverApprovalOption('FBA', 'yes');
+                IntygPage.closeReceiverApproval(true);
+
 		        IntygPage.verify(data);
 		    });
         });
@@ -169,6 +174,7 @@ describe('Create and Sign lisjp utkast', function() {
             UtkastPage.signeraButtonClick();
 
             expect(IntygPage.isAt()).toBeTruthy();
+            expect(IntygPage.getReceiverApprovalDialog().isDisplayed()).toBeTruthy();
         });
 
         it('Wait until intyg in IT', function() {
@@ -181,10 +187,18 @@ describe('Create and Sign lisjp utkast', function() {
 
         it('Verifiera intyg', function() {
             IntygPage.whenCertificateLoaded().then(function() {
+                IntygPage.clickReceiverApprovalOption('FBA', 'yes');
+                IntygPage.closeReceiverApproval(true);
 		        IntygPage.verify(data);
 		    });
         });
-
+        it('Verifiera kan öppna Godkänna Mottagare dialog och avbryta', function() {
+            IntygPage.openReceiverApprovalDialog().then(function() {
+                expect(IntygPage.getReceiverApprovalDialog().isDisplayed()).toBeTruthy();
+                IntygPage.closeReceiverApproval(false);
+                expect(IntygPage.getReceiverApprovalDialog().isPresent()).toBeFalsy();
+            });
+        });
         afterAll(function() {
             testdataHelper.deleteIntyg(utkastId);
             testdataHelper.deleteUtkast(utkastId);

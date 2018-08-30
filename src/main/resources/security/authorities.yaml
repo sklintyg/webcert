@@ -80,6 +80,7 @@ knownPrivileges:
   - &kp120 SVARA_MED_NYTT_INTYG
   - &kp130 NOTIFIERING_UTKAST
   - &kp140 HANTERA_SEKRETESSMARKERAD_PATIENT
+  - &kp150 GODKANNA_MOTTAGARE
 
 # De roller som systemet har
 knownRoles:
@@ -275,6 +276,14 @@ privileges:
       - *ki060 # luae_na
       - *ki070 # luae_fs
     requestOrigins: # Implicit alla
+  - &p150
+    name: *kp150
+    desc: Hantera godkända intygsmottagare
+    intygstyper:
+      - *ki040 # lisjp
+    requestOrigins:
+      - *ro010 # NORMAL
+      - *ro020 # DJUPINTEGRATION
 
 # Roller
 roles:
@@ -382,6 +391,7 @@ roles:
           - <<: *ro020 # DJUPINTEGRATION
           - <<: *ro030 # UTHOPP
           - <<: *ro040 # READONLY
+      - <<: *p150 # GODKANNA_MOTTAGARE
   - &r020
     name: *kr020 # PRIVATLAKARE
     desc: Privatläkare
@@ -444,6 +454,7 @@ roles:
       - <<: *p140 # HANTERA_SEKRETESSMARKERAD_PATIENT
         requestOrigins:
           - <<: *ro010 # NORMAL
+      - <<: *p150 # GODKANNA_MOTTAGARE
   - &r030
     name: *kr030 # TANDLAKARE
     desc: Tandläkare
@@ -645,6 +656,7 @@ roles:
           - <<: *ro030 # UTHOPP
             intygstyper:
               - *ki010
+      - <<: *p150 # GODKANNA_MOTTAGARE
   - &r040
     name: *kr040 # VARDADMINISTRATOR
     desc: Vårdadministratör

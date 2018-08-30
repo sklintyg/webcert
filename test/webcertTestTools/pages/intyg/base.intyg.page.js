@@ -298,6 +298,23 @@ var BaseIntyg = JClass._extend({
             });
             return innerDefer.promise;
         }, 10000);
+    },
+    openReceiverApprovalDialog: function() {
+        return element(by.id('open-approve-receivers-dialog-btn')).click();
+    },
+    getReceiverApprovalDialog: function() {
+        return element(by.id('wc-approvereceivers-dialog'));
+    },
+    clickReceiverApprovalOption: function(receiverId, value) {
+        return element(by.id('approve-receiver-' + receiverId + '-radio-' + value)).click();
+    },
+    closeReceiverApproval: function(save) {
+        if (save) {
+            return element(by.id('save-approval-settings-btn')).click();
+        } else {
+            return element(by.id('cancel-approval-settings-btn')).click();
+        }
+
     }
 });
 
