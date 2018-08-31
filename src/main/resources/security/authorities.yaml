@@ -53,6 +53,7 @@ knownIntygstyper:
   - &ki010 fk7263
   - &ki020 ts-bas
   - &ki030 ts-diabetes
+  - &ki032 ts-diabetes-2
   - &ki040 lisjp
   - &ki050 luse
   - &ki060 luae_na
@@ -158,6 +159,7 @@ privileges:
         intygstyper: # EJ fk7263
           - *ki020 # ts-bas
           - *ki030 # ts-diabetes
+          - *ki032 # ts-diabetes-2
           - *ki040 # lisjp
           - *ki050 # luse
           - *ki060 # luae_na
@@ -171,6 +173,7 @@ privileges:
     intygstyper: # EJ fk7263
       - *ki020 # ts-bas
       - *ki030 # ts-diabetes
+      - *ki032 # ts-diabetes-2
       - *ki040 # lisjp
       - *ki050 # luse
       - *ki060 # luae_na
@@ -258,6 +261,7 @@ privileges:
     intygstyper:
       - *ki020 # ts-bas
       - *ki030 # ts-diabetes
+      - *ki032 # ts-diabetes-2
       - *ki040 # lisjp
       - *ki050 # luse
       - *ki060 # luae_na
@@ -326,6 +330,7 @@ roles:
             intygstyper: # EJ fk7263
               - *ki020 # ts-bas
               - *ki030 # ts-diabetes
+              - *ki032 # ts-diabetes-2
               - *ki040 # lisjp
               - *ki050 # luse
               - *ki060 # luae_na
@@ -336,6 +341,7 @@ roles:
             intygstyper: # EJ fk7263
               - *ki020 # ts-bas
               - *ki030 # ts-diabetes
+              - *ki032 # ts-diabetes-2
               - *ki040 # lisjp
               - *ki050 # luse
               - *ki060 # luae_na
@@ -422,6 +428,7 @@ roles:
             intygstyper: # EJ fk7263
               - *ki020 # ts-bas
               - *ki030 # ts-diabetes
+              - *ki032 # ts-diabetes-2
               - *ki040 # lisjp
               - *ki050 # luse
               - *ki060 # luae_na
