@@ -150,7 +150,7 @@ public class SignatureApiControllerIT extends BaseRestIntegrationTest {
                 .put(GRPAPI_STUBBE_BASE + "/status");
 
         // Verifiera att vi får status VANTA_SIGN inom 6 sekunder.
-        await().atMost(6, TimeUnit.SECONDS).until(() -> given()
+        await().atMost(6, TimeUnit.SECONDS).untilAsserted(() -> given()
                 .cookie("ROUTEID", BaseRestIntegrationTest.routeId)
                 .contentType(ContentType.JSON)
                 .expect().statusCode(200)
@@ -169,7 +169,7 @@ public class SignatureApiControllerIT extends BaseRestIntegrationTest {
                 .when()
                 .put(GRPAPI_STUBBE_BASE + "/status");
 
-        await().atMost(6, TimeUnit.SECONDS).until(() -> given()
+        await().atMost(6, TimeUnit.SECONDS).untilAsserted(() -> given()
                 .cookie("ROUTEID", BaseRestIntegrationTest.routeId)
                 .contentType(ContentType.JSON)
                 .expect().statusCode(200)
