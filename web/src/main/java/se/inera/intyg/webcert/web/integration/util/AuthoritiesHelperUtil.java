@@ -27,6 +27,7 @@ import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.web.service.utkast.dto.PreviousIntyg;
 
 import java.util.Map;
+import java.util.Optional;
 
 public final class AuthoritiesHelperUtil {
     private static AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
@@ -35,7 +36,7 @@ public final class AuthoritiesHelperUtil {
     }
 
     public static boolean mayNotCreateUtkastForSekretessMarkerad(SekretessStatus sekretessStatus, IntygUser user,
-            String intygsTyp) {
+                                                                 String intygsTyp) {
 
         if (SekretessStatus.UNDEFINED.equals(sekretessStatus)) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.PU_PROBLEM,
@@ -46,7 +47,12 @@ public final class AuthoritiesHelperUtil {
                 .privilege(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT).isVerified());
     }
 
-    public static String validateMustBeUnique(IntygUser user, String intygsTyp, Map<String, Map<String,
+    /**
+     * Used for checking if utkast conforms to uniqueness-rules.
+     *
+     * @return Nothing if utkast conforms, otherwise an error message why it doesn't
+     */
+    public static Optional<String> validateMustBeUnique(IntygUser user, String intygsTyp, Map<String, Map<String,
             PreviousIntyg>> intygstypToStringToPreviousIntyg) {
         if (authoritiesValidator.given(user, intygsTyp).features(AuthoritiesConstants.FEATURE_UNIKT_INTYG,
                 AuthoritiesConstants.FEATURE_UNIKT_INTYG_INOM_VG).isVerified()) {
@@ -57,19 +63,19 @@ public final class AuthoritiesHelperUtil {
             if (utkastExists != null && utkastExists.isSameVardgivare()) {
                 if (authoritiesValidator.given(user, intygsTyp).features(
                         AuthoritiesConstants.FEATURE_UNIKT_UTKAST_INOM_VG).isVerified()) {
-                    return "Draft of this type must be unique within caregiver";
+                    return Optional.of("Draft of this type must be unique within caregiver");
                 }
             }
 
             if (intygExists != null) {
                 if (authoritiesValidator.given(user, intygsTyp).features(AuthoritiesConstants.FEATURE_UNIKT_INTYG).isVerified()) {
-                    return "Certificates of this type must be globally unique.";
+                    return Optional.of("Certificates of this type must be globally unique.");
                 } else if (intygExists.isSameVardgivare() && authoritiesValidator.given(user, intygsTyp).features(
                         AuthoritiesConstants.FEATURE_UNIKT_INTYG_INOM_VG).isVerified()) {
-                    return "Certificates of this type must be unique within this caregiver.";
+                    return Optional.of("Certificates of this type must be unique within this caregiver.");
                 }
             }
         }
-        return "";
+        return Optional.empty();
     }
 }

@@ -59,6 +59,7 @@ import se.riv.clinicalprocess.healthcond.certificate.v3.ErrorIdType;
 import se.riv.clinicalprocess.healthcond.certificate.v3.ResultType;
 
 import java.util.Map;
+import java.util.Optional;
 
 @SchemaValidation
 public class CreateDraftCertificateResponderImpl implements CreateDraftCertificateResponderInterface {
@@ -149,10 +150,10 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
         }
 
         Map<String, Map<String, PreviousIntyg>> intygstypToPreviousIntyg = utkastService.checkIfPersonHasExistingIntyg(personnummer, user);
-        String uniqueErrorString = AuthoritiesHelperUtil.validateMustBeUnique(user, intygsTyp, intygstypToPreviousIntyg);
+        Optional<String> uniqueErrorString = AuthoritiesHelperUtil.validateMustBeUnique(user, intygsTyp, intygstypToPreviousIntyg);
 
-        if (!uniqueErrorString.isEmpty()) {
-            return createErrorResponse(uniqueErrorString, ErrorIdType.APPLICATION_ERROR);
+        if (uniqueErrorString.isPresent()) {
+            return createErrorResponse(uniqueErrorString.get(), ErrorIdType.APPLICATION_ERROR);
         }
 
         if (authoritiesValidator.given(user, intygsTyp).features(AuthoritiesConstants.FEATURE_TAK_KONTROLL).isVerified()) {
