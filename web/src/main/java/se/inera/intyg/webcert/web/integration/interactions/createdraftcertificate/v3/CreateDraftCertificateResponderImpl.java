@@ -150,10 +150,14 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
         }
 
         Map<String, Map<String, PreviousIntyg>> intygstypToPreviousIntyg = utkastService.checkIfPersonHasExistingIntyg(personnummer, user);
-        Optional<String> uniqueErrorString = AuthoritiesHelperUtil.validateMustBeUnique(user, intygsTyp, intygstypToPreviousIntyg);
-
-        if (uniqueErrorString.isPresent()) {
-            return createErrorResponse(uniqueErrorString.get(), ErrorIdType.APPLICATION_ERROR);
+        Optional<String> uniqueUtkastErrorString =
+                AuthoritiesHelperUtil.validateUtkastMustBeUnique(user, intygsTyp, intygstypToPreviousIntyg);
+        Optional<String> uniqueIntygErrorString =
+                AuthoritiesHelperUtil.validateIntygMustBeUnique(user, intygsTyp, intygstypToPreviousIntyg);
+        if (uniqueUtkastErrorString.isPresent()) {
+            return createErrorResponse(uniqueUtkastErrorString.get(), ErrorIdType.APPLICATION_ERROR);
+        } else if (uniqueIntygErrorString.isPresent()) {
+            return createErrorResponse(uniqueIntygErrorString.get(), ErrorIdType.APPLICATION_ERROR);
         }
 
         if (authoritiesValidator.given(user, intygsTyp).features(AuthoritiesConstants.FEATURE_TAK_KONTROLL).isVerified()) {

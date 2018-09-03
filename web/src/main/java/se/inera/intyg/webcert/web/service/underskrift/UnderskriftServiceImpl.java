@@ -28,11 +28,13 @@ import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
+import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.converter.util.IntygConverterUtil;
+import se.inera.intyg.webcert.web.integration.util.AuthoritiesHelperUtil;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.log.LogRequestFactory;
 import se.inera.intyg.webcert.web.service.log.LogService;
@@ -46,10 +48,14 @@ import se.inera.intyg.webcert.web.service.underskrift.tracker.RedisTicketTracker
 import se.inera.intyg.webcert.web.service.underskrift.xmldsig.XmlUnderskriftServiceImpl;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
+import se.inera.intyg.webcert.web.service.utkast.UtkastService;
+import se.inera.intyg.webcert.web.service.utkast.dto.PreviousIntyg;
 
 import javax.persistence.OptimisticLockException;
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.Map;
+import java.util.Optional;
 
 import static se.inera.intyg.infra.security.common.model.AuthenticationMethod.BANK_ID;
 import static se.inera.intyg.infra.security.common.model.AuthenticationMethod.EFOS;
@@ -71,6 +77,9 @@ public class UnderskriftServiceImpl implements UnderskriftService {
 
     @Autowired
     private UtkastRepository utkastRepository;
+
+    @Autowired
+    private UtkastService utkastService;
 
     @Autowired
     private IntygModuleRegistry moduleRegistry;
@@ -206,6 +215,15 @@ public class UnderskriftServiceImpl implements UnderskriftService {
         intygService.handleAfterSigned(utkast);
     }
 
+    /**
+     * Makes sure the specified Utkast is ready for signing, and then returns it. If Utkast is not ready for signing,
+     * a WebCertServiceException is thrown.
+     *
+     * @param intygId id of utkast to be signed
+     * @param version used to detect concurrent modification
+     * @param user    the user that is signing the utkast
+     * @return the specified Utkast iff it's ready to be signed
+     */
     private Utkast getUtkastForSignering(String intygId, long version, WebCertUser user) {
         Utkast utkast = utkastRepository.findOne(intygId);
 
@@ -228,6 +246,20 @@ public class UnderskriftServiceImpl implements UnderskriftService {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE,
                     "Internal error signing utkast, the utkast '" + intygId
                             + "' was not in state " + UtkastStatus.DRAFT_COMPLETE);
+        } else {
+            // Additional constraints for specific types of intyg.
+            Personnummer patientPersonnummer = utkast.getPatientPersonnummer();
+            Map<String, Map<String, PreviousIntyg>> intygstypToPreviousIntyg =
+                    utkastService.checkIfPersonHasExistingIntyg(patientPersonnummer, user);
+            Optional<String> uniqueErrorString =
+                    AuthoritiesHelperUtil.validateIntygMustBeUnique(user, utkast.getIntygsTyp(), intygstypToPreviousIntyg);
+            if (uniqueErrorString.isPresent()) {
+                LOG.warn("Utkast '{}' av typ {} kan inte signeras då det redan existerar ett signerat intyg för samma personnummer",
+                        intygId, utkast.getIntygsTyp());
+                throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE,
+                        "An intyg already exists, application rules forbide signing another");
+            }
+
         }
         return utkast;
     }

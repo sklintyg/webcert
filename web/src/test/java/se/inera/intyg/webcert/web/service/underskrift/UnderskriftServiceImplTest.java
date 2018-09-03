@@ -18,6 +18,7 @@
  */
 package se.inera.intyg.webcert.web.service.underskrift;
 
+import com.google.common.collect.ImmutableMap;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -58,6 +59,7 @@ import se.inera.intyg.webcert.web.service.underskrift.tracker.RedisTicketTracker
 import se.inera.intyg.webcert.web.service.underskrift.xmldsig.XmlUnderskriftServiceImpl;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
+import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 
 import javax.persistence.OptimisticLockException;
 import java.io.IOException;
@@ -97,6 +99,9 @@ public class UnderskriftServiceImplTest extends AuthoritiesConfigurationTestSetu
 
     @Mock
     private UtkastRepository utkastRepository;
+
+    @Mock
+    private UtkastService utkastService;
 
     @Mock
     private IntygModuleRegistry moduleRegistry;
@@ -148,8 +153,12 @@ public class UnderskriftServiceImplTest extends AuthoritiesConfigurationTestSetu
         when(moduleApi.getUtlatandeFromJson(anyString())).thenReturn(utlatande);
         when(moduleApi
                 .updateBeforeSigning(anyString(), any(), any(LocalDateTime.class)))
-                        .thenReturn("json");
+                .thenReturn("json");
 
+        when(utkastService.checkIfPersonHasExistingIntyg(any(), any())).thenReturn(ImmutableMap.of(
+                "utkast", ImmutableMap.of(),
+                "intyg", ImmutableMap.of()
+        ));
     }
 
     @Test
@@ -231,7 +240,7 @@ public class UnderskriftServiceImplTest extends AuthoritiesConfigurationTestSetu
         when(redisTicketTracker.findBiljett(TICKET_ID)).thenReturn(signaturBiljett);
         when(xmlUnderskriftService.finalizeSignature(any(SignaturBiljett.class), any(byte[].class), anyString(), any(Utkast.class),
                 any(WebCertUser.class)))
-                        .thenReturn(createSignaturBiljett(SIGNERAD));
+                .thenReturn(createSignaturBiljett(SIGNERAD));
 
         SignaturBiljett sb = testee.netidSignature(TICKET_ID, "signatur".getBytes(Charset.forName("UTF-8")), "certifikat");
         assertNotNull(sb);
@@ -248,7 +257,7 @@ public class UnderskriftServiceImplTest extends AuthoritiesConfigurationTestSetu
         when(redisTicketTracker.findBiljett(TICKET_ID)).thenReturn(signaturBiljett);
         when(grpUnderskriftService.finalizeSignature(any(SignaturBiljett.class), any(byte[].class), ArgumentMatchers.isNull(),
                 any(Utkast.class), any(WebCertUser.class)))
-                        .thenReturn(createSignaturBiljett(SIGNERAD));
+                .thenReturn(createSignaturBiljett(SIGNERAD));
 
         SignaturBiljett sb = testee.grpSignature(TICKET_ID, "signatur".getBytes(Charset.forName("UTF-8")));
         assertNotNull(sb);

@@ -52,20 +52,29 @@ public final class AuthoritiesHelperUtil {
      *
      * @return Nothing if utkast conforms, otherwise an error message why it doesn't
      */
-    public static Optional<String> validateMustBeUnique(IntygUser user, String intygsTyp, Map<String, Map<String,
+    public static Optional<String> validateUtkastMustBeUnique(IntygUser user, String intygsTyp, Map<String, Map<String,
+            PreviousIntyg>> intygstypToStringToPreviousIntyg) {
+        PreviousIntyg utkastExists = intygstypToStringToPreviousIntyg.get("utkast").get(intygsTyp);
+
+        if (utkastExists != null && utkastExists.isSameVardgivare()
+                && authoritiesValidator.given(user, intygsTyp).features(AuthoritiesConstants.FEATURE_UNIKT_UTKAST_INOM_VG).isVerified()) {
+            return Optional.of("Draft of this type must be unique within caregiver");
+        } else {
+            return Optional.empty();
+        }
+    }
+
+    /**
+     * Used for checking if intyg (signed utkast) conforms to uniqueness-rules.
+     *
+     * @return Nothing if intyg conforms, otherwise an error message why it doesn't
+     */
+    public static Optional<String> validateIntygMustBeUnique(IntygUser user, String intygsTyp, Map<String, Map<String,
             PreviousIntyg>> intygstypToStringToPreviousIntyg) {
         if (authoritiesValidator.given(user, intygsTyp).features(AuthoritiesConstants.FEATURE_UNIKT_INTYG,
                 AuthoritiesConstants.FEATURE_UNIKT_INTYG_INOM_VG).isVerified()) {
 
-            PreviousIntyg utkastExists = intygstypToStringToPreviousIntyg.get("utkast").get(intygsTyp);
             PreviousIntyg intygExists = intygstypToStringToPreviousIntyg.get("intyg").get(intygsTyp);
-
-            if (utkastExists != null && utkastExists.isSameVardgivare()) {
-                if (authoritiesValidator.given(user, intygsTyp).features(
-                        AuthoritiesConstants.FEATURE_UNIKT_UTKAST_INOM_VG).isVerified()) {
-                    return Optional.of("Draft of this type must be unique within caregiver");
-                }
-            }
 
             if (intygExists != null) {
                 if (authoritiesValidator.given(user, intygsTyp).features(AuthoritiesConstants.FEATURE_UNIKT_INTYG).isVerified()) {

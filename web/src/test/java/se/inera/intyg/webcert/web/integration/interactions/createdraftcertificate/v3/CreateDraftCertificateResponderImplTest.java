@@ -18,6 +18,7 @@
  */
 package se.inera.intyg.webcert.web.integration.interactions.createdraftcertificate.v3;
 
+import com.google.common.collect.ImmutableMap;
 import org.assertj.core.util.Lists;
 import org.junit.Before;
 import org.junit.Test;
@@ -25,6 +26,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.common.support.model.common.internal.Vardgivare;
@@ -33,7 +35,6 @@ import se.inera.intyg.common.support.modules.support.api.notification.SchemaVers
 import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.SekretessStatus;
-import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.webcert.integration.tak.model.TakResult;
 import se.inera.intyg.webcert.integration.tak.service.TakService;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
@@ -106,6 +107,10 @@ public class CreateDraftCertificateResponderImplTest extends BaseCreateDraftCert
         super.setup();
         when(mockValidator.validateApplicationErrors(any(Intyg.class), any(IntygUser.class))).thenReturn(ResultValidator.newInstance());
         when(moduleRegistry.getModuleIdFromExternalId(any())).thenReturn(UTKAST_TYPE);
+        when(mockUtkastService.checkIfPersonHasExistingIntyg(any(), any())).thenReturn(ImmutableMap.of(
+                "utkast", ImmutableMap.of(),
+                "intyg", ImmutableMap.of()
+        ));
     }
 
     @Test
@@ -324,7 +329,7 @@ public class CreateDraftCertificateResponderImplTest extends BaseCreateDraftCert
     }
 
     private Utkast createUtkast(String intygId, long version, String type, UtkastStatus status, String model,
-            VardpersonReferens vardperson) {
+                                VardpersonReferens vardperson) {
 
         Utkast utkast = new Utkast();
         utkast.setIntygsId(intygId);
