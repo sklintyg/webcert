@@ -39,7 +39,6 @@
         </jaxws:schemaLocations>
     </jaxws:endpoint>
     <jaxws:endpoint address="/register-medical-certificate-stub" implementor="se.inera.intyg.webcert.intygstjanststub.RegisterMedicalCertificateResponderStub"/>
-    <jaxws:endpoint address="/register-ts-bas-certificate-stub" implementor="se.inera.intyg.webcert.intygstjanststub.RegisterTSBasResponderStub"/>
     <jaxws:endpoint address="/register-ts-diabetes-certificate-stub" implementor="se.inera.intyg.webcert.intygstjanststub.RegisterTSDiabetesResponderStub"/>
 
     <bean id="intygstjanstStubBootstrapBean" class="se.inera.intyg.webcert.intygstjanststub.BootstrapBean"/>
