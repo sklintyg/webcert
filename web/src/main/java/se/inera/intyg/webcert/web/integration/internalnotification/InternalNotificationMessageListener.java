@@ -18,6 +18,7 @@
  */
 package se.inera.intyg.webcert.web.integration.internalnotification;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,14 +40,16 @@ import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.TextMessage;
 
+import static com.google.common.base.Preconditions.checkArgument;
+
 @Service
 public class InternalNotificationMessageListener implements MessageListener {
 
     private static final Logger LOG = LoggerFactory.getLogger(InternalNotificationMessageListener.class);
 
-    private static final String CERTIFICATE_ID = "certificate-id";
-    private static final String CERTIFICATE_TYPE = "certificate-type";
-    private static final String CARE_UNIT_ID = "care-unit-id";
+    static final String CERTIFICATE_ID = "certificate-id";
+    static final String CERTIFICATE_TYPE = "certificate-type";
+    static final String CARE_UNIT_ID = "care-unit-id";
 
     @Autowired
     private IntygModuleRegistry intygModuleRegistry;
@@ -68,8 +71,12 @@ public class InternalNotificationMessageListener implements MessageListener {
             TextMessage textMessage = (TextMessage) message;
             try {
                 String intygsId = textMessage.getStringProperty(CERTIFICATE_ID);
-                String enhetsId = textMessage.getStringProperty(CARE_UNIT_ID);
                 String intygsTyp = textMessage.getStringProperty(CERTIFICATE_TYPE);
+                String enhetsId = textMessage.getStringProperty(CARE_UNIT_ID);
+
+                checkArgument(StringUtils.isNotEmpty(intygsId), intygsId);
+                checkArgument(StringUtils.isNotEmpty(intygsTyp), intygsTyp);
+                checkArgument(StringUtils.isNotEmpty(enhetsId), enhetsId);
 
                 if (!integreradeEnheterRegistry.isEnhetIntegrerad(enhetsId, intygsTyp)) {
                     LOG.debug("Not forwarding internal notification to care system, care unit '{}' is not integrated.", enhetsId);
@@ -81,6 +88,8 @@ public class InternalNotificationMessageListener implements MessageListener {
                 Utlatande utlatande = certificateResponse.getUtlatande();
                 notificationService.forwardInternalNotification(utlatande.getId(), utlatande.getTyp(), utlatande, HandelsekodEnum.SKICKA);
 
+            } catch (IllegalArgumentException e) {
+                LOG.error("Could not process internal notification, message is missing required header: {}", e.getMessage());
             } catch (JMSException | ModuleNotFoundException | ModuleException e) {
                 LOG.error("Caught {} transforming internal notification to external notification. Message: {}", e.getMessage());
             }
