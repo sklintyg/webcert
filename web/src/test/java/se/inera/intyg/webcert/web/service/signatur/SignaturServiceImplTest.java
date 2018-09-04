@@ -390,7 +390,7 @@ public class SignaturServiceImplTest extends AuthoritiesConfigurationTestSetup {
     // try {
     // intygSignatureService.serverSignature(INTYG_ID, completedUtkast.getVersion());
     // } catch (WebCertServiceException e) {
-    // assertEquals(WebCertServiceErrorCodeEnum.INVALID_STATE_INTYG_EXISTS, e.getErrorCode());
+    // assertEquals(WebCertServiceErrorCodeEnum.INTYG_FROM_OTHER_VARDGIVARE_EXISTS, e.getErrorCode());
     // }
     // }
     //

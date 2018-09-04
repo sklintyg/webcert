@@ -415,8 +415,8 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
             String errorString = String.format("Cannot %s for certificate id '%s', the certificate is complemented by certificate '%s'",
                     operation, originalIntygId, complementedByRelation.get().getIntygsId());
             LOG.debug(errorString);
-            // INVALID_STATE_COMPLEMENT is needed to provide specific error message in frontend, in intyg list view
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE_COMPLEMENT,
+            // COMPLEMENT_INTYG_EXISTS is needed to provide specific error message in frontend, in intyg list view
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.COMPLEMENT_INTYG_EXISTS,
                     errorString);
         }
     }

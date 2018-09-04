@@ -28,8 +28,11 @@ public enum WebCertServiceErrorCodeEnum {
                                      // temporary fix until we can get relations for intyg from IT and therefore disable certain
                                      // actions in gui, (see INTYG-3619)
 
-    INVALID_STATE_COMPLEMENT,        // Due to existence of complement intyg, operation is not allowed.
-    INVALID_STATE_INTYG_EXISTS,      // Due to existence of signed intyg, operation is not allowed.
+    COMPLEMENT_INTYG_EXISTS,            // Due to existence of complement intyg, operation is not allowed.
+
+    UTKAST_FROM_SAME_VARDGIVARE_EXISTS, // Due to existence of (unsigned) utkast, operation is not allowed.
+    INTYG_FROM_OTHER_VARDGIVARE_EXISTS, // Due to existence of signed intyg, operation is not allowed.
+    INTYG_FROM_SAME_VARDGIVARE_EXISTS,  // Due to existence of signed intyg, operation is not allowed.
 
     AUTHORIZATION_PROBLEM,           // User is not authorized for the operation
     AUTHORIZATION_PROBLEM_SEKRETESSMARKERING,

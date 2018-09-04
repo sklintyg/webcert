@@ -150,14 +150,29 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
         }
 
         Map<String, Map<String, PreviousIntyg>> intygstypToPreviousIntyg = utkastService.checkIfPersonHasExistingIntyg(personnummer, user);
-        Optional<String> uniqueUtkastErrorString =
+        Optional<WebCertServiceErrorCodeEnum> utkastUnique =
                 AuthoritiesHelperUtil.validateUtkastMustBeUnique(user, intygsTyp, intygstypToPreviousIntyg);
-        Optional<String> uniqueIntygErrorString =
+        Optional<WebCertServiceErrorCodeEnum> intygUnique =
                 AuthoritiesHelperUtil.validateIntygMustBeUnique(user, intygsTyp, intygstypToPreviousIntyg);
-        if (uniqueUtkastErrorString.isPresent()) {
-            return createErrorResponse(uniqueUtkastErrorString.get(), ErrorIdType.APPLICATION_ERROR);
-        } else if (uniqueIntygErrorString.isPresent()) {
-            return createErrorResponse(uniqueIntygErrorString.get(), ErrorIdType.APPLICATION_ERROR);
+        WebCertServiceErrorCodeEnum uniqueErrorCode = utkastUnique.orElse(intygUnique.orElse(null));
+
+        if (uniqueErrorCode != null) {
+            String uniqueErrorString = null;
+            switch (uniqueErrorCode) {
+                case UTKAST_FROM_SAME_VARDGIVARE_EXISTS:
+                    uniqueErrorString = "Draft of this type must be unique within caregiver.";
+                    break;
+                case INTYG_FROM_SAME_VARDGIVARE_EXISTS:
+                    uniqueErrorString = "Certificates of this type must be unique within this caregiver.";
+                    break;
+                case INTYG_FROM_OTHER_VARDGIVARE_EXISTS:
+                    uniqueErrorString = "Certificates of this type must be globally unique.";
+                    break;
+                default:
+                    uniqueErrorString = "Unexpected error occurred.";
+                    break;
+            }
+            return createErrorResponse(uniqueErrorString, ErrorIdType.APPLICATION_ERROR);
         }
 
         if (authoritiesValidator.given(user, intygsTyp).features(AuthoritiesConstants.FEATURE_TAK_KONTROLL).isVerified()) {

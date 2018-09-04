@@ -251,12 +251,12 @@ public class UnderskriftServiceImpl implements UnderskriftService {
             Personnummer patientPersonnummer = utkast.getPatientPersonnummer();
             Map<String, Map<String, PreviousIntyg>> intygstypToPreviousIntyg =
                     utkastService.checkIfPersonHasExistingIntyg(patientPersonnummer, user);
-            Optional<String> uniqueErrorString =
+            Optional<WebCertServiceErrorCodeEnum> uniqueErrorCode =
                     AuthoritiesHelperUtil.validateIntygMustBeUnique(user, utkast.getIntygsTyp(), intygstypToPreviousIntyg);
-            if (uniqueErrorString.isPresent()) {
+            if (uniqueErrorCode.isPresent()) {
                 LOG.warn("Utkast '{}' av typ {} kan inte signeras då det redan existerar ett signerat intyg för samma personnummer",
                         intygId, utkast.getIntygsTyp());
-                throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE,
+                throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTYG_FROM_OTHER_VARDGIVARE_EXISTS,
                         "An intyg already exists, application rules forbide signing another");
             }
 

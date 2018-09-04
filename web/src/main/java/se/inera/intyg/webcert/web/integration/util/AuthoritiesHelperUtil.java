@@ -52,13 +52,14 @@ public final class AuthoritiesHelperUtil {
      *
      * @return Nothing if utkast conforms, otherwise an error message why it doesn't
      */
-    public static Optional<String> validateUtkastMustBeUnique(IntygUser user, String intygsTyp, Map<String, Map<String,
+    public static Optional<WebCertServiceErrorCodeEnum> validateUtkastMustBeUnique(IntygUser user, String intygsTyp, Map<String, Map<String,
             PreviousIntyg>> intygstypToStringToPreviousIntyg) {
         PreviousIntyg utkastExists = intygstypToStringToPreviousIntyg.get("utkast").get(intygsTyp);
 
         if (utkastExists != null && utkastExists.isSameVardgivare()
                 && authoritiesValidator.given(user, intygsTyp).features(AuthoritiesConstants.FEATURE_UNIKT_UTKAST_INOM_VG).isVerified()) {
-            return Optional.of("Draft of this type must be unique within caregiver");
+            // Draft of this type must be unique within caregiver.
+            return Optional.of(WebCertServiceErrorCodeEnum.UTKAST_FROM_SAME_VARDGIVARE_EXISTS);
         } else {
             return Optional.empty();
         }
@@ -69,7 +70,7 @@ public final class AuthoritiesHelperUtil {
      *
      * @return Nothing if intyg conforms, otherwise an error message why it doesn't
      */
-    public static Optional<String> validateIntygMustBeUnique(IntygUser user, String intygsTyp, Map<String, Map<String,
+    public static Optional<WebCertServiceErrorCodeEnum> validateIntygMustBeUnique(IntygUser user, String intygsTyp, Map<String, Map<String,
             PreviousIntyg>> intygstypToStringToPreviousIntyg) {
         if (authoritiesValidator.given(user, intygsTyp).features(AuthoritiesConstants.FEATURE_UNIKT_INTYG,
                 AuthoritiesConstants.FEATURE_UNIKT_INTYG_INOM_VG).isVerified()) {
@@ -77,11 +78,14 @@ public final class AuthoritiesHelperUtil {
             PreviousIntyg intygExists = intygstypToStringToPreviousIntyg.get("intyg").get(intygsTyp);
 
             if (intygExists != null) {
-                if (authoritiesValidator.given(user, intygsTyp).features(AuthoritiesConstants.FEATURE_UNIKT_INTYG).isVerified()) {
-                    return Optional.of("Certificates of this type must be globally unique.");
+                if (!intygExists.isSameVardgivare() && authoritiesValidator.given(user, intygsTyp).features(
+                        AuthoritiesConstants.FEATURE_UNIKT_INTYG).isVerified()) {
+                    // Certificates of this type must be globally unique.
+                    return Optional.of(WebCertServiceErrorCodeEnum.INTYG_FROM_OTHER_VARDGIVARE_EXISTS);
                 } else if (intygExists.isSameVardgivare() && authoritiesValidator.given(user, intygsTyp).features(
                         AuthoritiesConstants.FEATURE_UNIKT_INTYG_INOM_VG).isVerified()) {
-                    return Optional.of("Certificates of this type must be unique within this caregiver.");
+                    // Certificates of this type must be unique within this caregiver.
+                    return Optional.of(WebCertServiceErrorCodeEnum.INTYG_FROM_SAME_VARDGIVARE_EXISTS);
                 }
             }
         }
