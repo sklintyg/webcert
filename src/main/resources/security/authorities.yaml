@@ -177,6 +177,7 @@ privileges:
       - *ki070 # luae_fs
       - *ki080 # db
       - *ki090 # doi
+      - *ki100 # af00213
     requestOrigins:
       - *ro010 # NORMAL
       - *ro030 # UTHOPP
@@ -264,6 +265,7 @@ privileges:
       - *ki070 # luae_fs
       - *ki080 # db
       - *ki090 # doi
+      - *ki100 # af00213
     requestOrigins:
       - *ro020 # DJUPINTEGRATION
   - &p140
