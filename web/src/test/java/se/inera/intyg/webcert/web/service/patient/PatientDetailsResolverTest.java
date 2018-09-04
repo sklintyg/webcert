@@ -270,7 +270,7 @@ public class PatientDetailsResolverTest {
         when(puService.getPerson(any(Personnummer.class))).thenReturn(buildPersonSvar());
         when(webCertUserService.getUser()).thenReturn(integratedWebCertUser);
 
-        Patient patient = testee.resolvePatient(PNR, "ts-bas");
+        Patient patient = testee.resolvePatient(PNR, "ts-diabetes");
         assertEquals(PNR, patient.getPersonId());
         assertEquals(FNAMN, patient.getFornamn());
         assertEquals(MNAMN, patient.getMellannamn());
@@ -291,7 +291,7 @@ public class PatientDetailsResolverTest {
         when(webCertUserService.getUser()).thenReturn(integratedWebCertUser);
         when(integratedWebCertUser.getParameters()).thenReturn(buildIntegrationParametersWithNullAddress());
 
-        Patient patient = testee.resolvePatient(PNR, "ts-bas");
+        Patient patient = testee.resolvePatient(PNR, "ts-diabetes");
         assertEquals(PNR, patient.getPersonId());
         assertEquals(FNAMN, patient.getFornamn());
         assertEquals(MNAMN, patient.getMellannamn());
@@ -311,7 +311,7 @@ public class PatientDetailsResolverTest {
         when(puService.getPerson(any(Personnummer.class))).thenReturn(buildErrorPersonSvar());
         when(webCertUserService.getUser()).thenReturn(integratedWebCertUser);
 
-        Patient patient = testee.resolvePatient(PNR, "ts-bas");
+        Patient patient = testee.resolvePatient(PNR, "ts-diabetes");
         assertEquals(PNR, patient.getPersonId());
         assertEquals(INTEGR_FNAMN, patient.getFornamn());
         assertEquals(INTEGR_MNAMN, patient.getMellannamn());
@@ -331,7 +331,7 @@ public class PatientDetailsResolverTest {
         when(puService.getPerson(any(Personnummer.class))).thenReturn(buildPersonSvar());
         when(webCertUserService.getUser()).thenReturn(freeWebCertUser);
 
-        Patient patient = testee.resolvePatient(PNR, "ts-bas");
+        Patient patient = testee.resolvePatient(PNR, "ts-diabetes");
         assertEquals(PNR, patient.getPersonId());
         assertEquals(FNAMN, patient.getFornamn());
         assertEquals(MNAMN, patient.getMellannamn());
@@ -351,7 +351,7 @@ public class PatientDetailsResolverTest {
         when(puService.getPerson(any(Personnummer.class))).thenReturn(buildErrorPersonSvar());
         when(webCertUserService.getUser()).thenReturn(freeWebCertUser);
 
-        Patient patient = testee.resolvePatient(PNR, "ts-bas");
+        Patient patient = testee.resolvePatient(PNR, "ts-diabetes");
         assertNull(patient);
     }
 
