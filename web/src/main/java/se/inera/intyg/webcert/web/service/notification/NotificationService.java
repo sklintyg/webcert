@@ -18,6 +18,8 @@
  */
 package se.inera.intyg.webcert.web.service.notification;
 
+import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
+import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
 import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
@@ -98,4 +100,6 @@ public interface NotificationService {
      * @return a list of all the notifications
      */
     List<Handelse> getNotifications(String intygsId);
+
+    void forwardInternalNotification(String intygsId, String intygstyp, Utlatande utlatande, HandelsekodEnum handelsekodEnum);
 }

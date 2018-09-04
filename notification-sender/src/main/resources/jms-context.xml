@@ -31,9 +31,9 @@
   <!-- The aggregation route needs to supply the destination option consumer.exclusive=true directly when connecting to the broker. -->
   <bean id="activemq"
       class="org.apache.activemq.camel.component.ActiveMQComponent">
-    <property name="brokerURL" value="${amq.broker.url}"/>
-    <property name="userName" value="${amq.broker.username}"/>
-    <property name="password" value="${amq.broker.password}" />
+    <property name="brokerURL" value="${activemq.broker.url}"/>
+    <property name="userName" value="${activemq.broker.username}"/>
+    <property name="password" value="${activemq.broker.password}" />
   </bean>
 
   <bean id="jmsConfig" class="org.apache.camel.component.jms.JmsConfiguration">

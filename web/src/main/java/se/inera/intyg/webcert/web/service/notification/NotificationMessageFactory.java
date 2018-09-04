@@ -28,7 +28,18 @@ import java.time.LocalDate;
 
 public interface NotificationMessageFactory {
 
+    /**
+     * Creates a NotificationMessage instance from the supplied {@link Utkast} and supplied parameters.
+     */
     NotificationMessage createNotificationMessage(Utkast utkast, HandelsekodEnum handelse, SchemaVersion version,
                                                   String reference, Amneskod amne, LocalDate sistaSvarsDatum);
 
+    /**
+     * Creates a NotificationMessage instance where the fields from Utkast has been extracted into separate parameters.
+     */
+    // CHECKSTYLE:OFF ParameterNumber
+    NotificationMessage createNotificationMessage(String intygsId, String intygsTyp, String logiskAdress, String utkastJson,
+                                                  HandelsekodEnum handelse, SchemaVersion version,
+                                                  String reference, Amneskod amne, LocalDate sistaSvarsDatum);
+    // CHECKSTYLE:ON ParameterNumber
 }

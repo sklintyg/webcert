@@ -43,6 +43,7 @@ public class IntegreradeEnheterRegistryImpl implements IntegreradeEnheterRegistr
 
     private static final Logger LOG = LoggerFactory.getLogger(IntegreradeEnheterRegistryImpl.class);
     private final Set<String> oldIntygTypes = Stream.of(Fk7263EntryPoint.MODULE_ID).collect(Collectors.toSet());
+
     @Autowired
     private IntegreradEnhetRepository integreradEnhetRepository;
 

@@ -31,6 +31,7 @@ import org.springframework.mail.MailSendException;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
+import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
 import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
@@ -273,18 +274,41 @@ public class NotificationServiceImpl implements NotificationService {
         sendNotificationForQAs(intygsId, event, null, null);
     }
 
-    protected void sendNotificationForQAs(String intygsId, NotificationEvent event, LocalDate date, ArendeAmne amne) {
+    @Override
+    public void forwardInternalNotification(final String intygsId, final String intygstyp, final Utlatande utlatande,
+            final HandelsekodEnum handelse) {
+        final String careUnitId = utlatande.getGrundData().getSkapadAv().getVardenhet().getEnhetsid();
+        final String careGiverId = utlatande.getGrundData().getSkapadAv().getVardenhet().getVardgivare().getVardgivarid();
+        final String reference = referensService.getReferensForIntygsId(intygsId);
+
+        try {
+            String json = objectMapper.writeValueAsString(utlatande);
+            NotificationMessage notificationMessage = notificationMessageFactory.createNotificationMessage(intygsId, intygstyp, careUnitId,
+                    json, handelse,
+                    SchemaVersion.VERSION_3, reference, null, null);
+
+            save(notificationMessage, careUnitId, careGiverId,
+                    utlatande.getGrundData().getPatient().getPersonId().getPersonnummerWithDash(), null, null);
+
+            send(notificationMessage, careUnitId);
+        } catch (JsonProcessingException e) {
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, e.getMessage());
+        }
+
+    }
+
+    private void sendNotificationForQAs(String intygsId, NotificationEvent event, LocalDate date, ArendeAmne amne) {
         Utkast utkast = getUtkast(intygsId);
         if (utkast != null) {
             createAndSendNotificationForQAs(utkast, event, amne, date);
         }
     }
 
-    protected void createAndSendNotification(Utkast utkast, HandelsekodEnum handelse) {
+    private void createAndSendNotification(Utkast utkast, HandelsekodEnum handelse) {
         createAndSendNotification(utkast, handelse, null, null);
     }
 
-    protected void createAndSendNotification(Utkast utkast, HandelsekodEnum handelse,
+    private void createAndSendNotification(Utkast utkast, HandelsekodEnum handelse,
             ArendeAmne amne, LocalDate sistaDatumForSvar) {
 
         Optional<SchemaVersion> version = sendNotificationStrategy.decideNotificationForIntyg(utkast);
@@ -314,7 +338,7 @@ public class NotificationServiceImpl implements NotificationService {
         send(notificationMessage, utkast.getEnhetsId());
     }
 
-    protected void createAndSendNotificationForQAs(Utkast utkast, NotificationEvent event, ArendeAmne amne, LocalDate sistaDatumForSvar) {
+    private void createAndSendNotificationForQAs(Utkast utkast, NotificationEvent event, ArendeAmne amne, LocalDate sistaDatumForSvar) {
 
         Optional<SchemaVersion> version = sendNotificationStrategy.decideNotificationForIntyg(utkast);
         if (!version.isPresent()) {

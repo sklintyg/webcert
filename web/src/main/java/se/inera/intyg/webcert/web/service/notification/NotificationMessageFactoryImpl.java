@@ -18,15 +18,9 @@
  */
 package se.inera.intyg.webcert.web.service.notification;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.List;
-
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.modules.support.api.notification.ArendeCount;
 import se.inera.intyg.common.support.modules.support.api.notification.FragorOchSvar;
@@ -34,6 +28,11 @@ import se.inera.intyg.common.support.modules.support.api.notification.Notificati
 import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.Amneskod;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.List;
 
 @Component
 public class NotificationMessageFactoryImpl implements NotificationMessageFactory {
@@ -47,15 +46,17 @@ public class NotificationMessageFactoryImpl implements NotificationMessageFactor
 
     @Override
     public NotificationMessage createNotificationMessage(Utkast utkast, HandelsekodEnum handelse, SchemaVersion version,
-                                                         String reference, Amneskod amne, LocalDate sistaSvarsDatum) {
+            String reference, Amneskod amne, LocalDate sistaSvarsDatum) {
+        return createNotificationMessage(utkast.getIntygsId(), utkast.getIntygsTyp(), utkast.getEnhetsId(), utkast.getModel(),
+                handelse, version, reference, amne, sistaSvarsDatum);
+    }
 
-        String intygsId = utkast.getIntygsId();
-        String intygsTyp = utkast.getIntygsTyp();
+    // CHECKSTYLE:OFF ParameterNumber
+    @Override
+    public NotificationMessage createNotificationMessage(String intygsId, String intygsTyp, String logiskAdress, String utkastJson,
+            HandelsekodEnum handelse, SchemaVersion version, String reference, Amneskod amne, LocalDate sistaSvarsDatum) {
 
         LocalDateTime handelseTid = LocalDateTime.now();
-        String logiskAdress = utkast.getEnhetsId();
-
-        String utkastJson = utkast.getModel();
 
         FragorOchSvar fragaSvar = null;
         ArendeCount skickadeFragor = null;
@@ -84,5 +85,5 @@ public class NotificationMessageFactoryImpl implements NotificationMessageFactor
         return new NotificationMessage(intygsId, intygsTyp, handelseTid, handelse, logiskAdress, utkastJson,
                 fragaSvar, skickadeFragor, mottagnaFragor, version, reference, amne, sistaSvarsDatum);
     }
-
+    // CHECKSTYLE:ON ParameterNumber
 }
