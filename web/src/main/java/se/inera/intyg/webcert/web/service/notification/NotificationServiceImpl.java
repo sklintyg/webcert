@@ -304,7 +304,7 @@ public class NotificationServiceImpl implements NotificationService {
         }
     }
 
-    private void createAndSendNotification(Utkast utkast, HandelsekodEnum handelse) {
+    void createAndSendNotification(Utkast utkast, HandelsekodEnum handelse) {
         createAndSendNotification(utkast, handelse, null, null);
     }
 
