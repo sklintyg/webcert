@@ -59,15 +59,6 @@ angular.module('webcert').directive('wcTidigareIntyg',
                     }
                     return messageService.getProperty('common.fornya.tooltip');
                 };
-                //Use loaded module metadata to look up name for a intygsType
-                scope.getTypeName = function (intygsType) {
-                    var intygTypes = IntygTypeSelectorModel.intygTypes.filter(function (intygType) {
-                        return (intygType.id === intygsType);
-                    });
-                    if (intygTypes && intygTypes.length > 0) {
-                        return intygTypes[0].label;
-                    }
-                };
                 scope.$watch('viewState.intygFilter', function() {
                     SokSkrivValjUtkastService.updateIntygList(scope.viewState);
                 });

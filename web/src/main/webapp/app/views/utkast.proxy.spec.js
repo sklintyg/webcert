@@ -72,6 +72,28 @@ describe('UtkastProxy', function() {
         $provide.value('common.statService', statService);
         $provide.value('common.User', User);
         $provide.value('common.messageService', {});
+        $provide.value('common.moduleService', {
+            getModules: function() {
+                return [
+                    {
+                        sortValue: 1,
+                        id: 'fk7263',
+                        label: 'Läkarintyg FK 7263',
+                        detailedDescription: 'beskrivning',
+                        url: 'fk7263',
+                        fragaSvarAvailable: true
+                    },
+                    {
+                        sortValue: 2,
+                        id: 'ts-bas',
+                        label: 'Transportstyrelsens läkarintyg, bas',
+                        detailedDescription: 'beskrivning2',
+                        url: 'ts-bas',
+                        fragaSvarAvailable: false
+                    }
+                ];
+            }
+        });
         $provide.value('common.UserModel', {
             userContext: {authenticationScheme: null},
             user: {origin: 'NORMAL'},
@@ -139,33 +161,11 @@ describe('UtkastProxy', function() {
 
     describe('#getUtkastTypes', function() {
 
-        it('should call onSuccess callback with list of intyg types from the server', function() {
-            var onSuccess = jasmine.createSpy('onSuccess');
-            var onError = jasmine.createSpy('onError');
+        it('should return list of intyg types from module service', function() {
 
-            $httpBackend.expectGET('/api/modules/map').respond([
-                {
-                    sortValue: 1,
-                    id: 'fk7263',
-                    label: 'Läkarintyg FK 7263',
-                    detailedDescription: 'beskrivning',
-                    url: 'fk7263',
-                    fragaSvarAvailable: true
-                },
-                {
-                    sortValue: 2,
-                    id: 'ts-bas',
-                    label: 'Transportstyrelsens läkarintyg, bas',
-                    detailedDescription: 'beskrivning2',
-                    url: 'ts-bas',
-                    fragaSvarAvailable: false
-                }
-            ]);
+            var result = UtkastProxy.getUtkastTypes();
 
-            UtkastProxy.getUtkastTypes(onSuccess, onError);
-            $httpBackend.flush();
-
-            expect(onSuccess).toHaveBeenCalledWith([
+            expect(result).toEqual([
                 {
                     sortValue: 0,
                     id: 'default',
@@ -186,19 +186,7 @@ describe('UtkastProxy', function() {
                     fragaSvarAvailable: false
                 }
             ]);
-            expect(onError).not.toHaveBeenCalled();
         });
 
-        it('should call onError if the list cannot be fetched from the server', function() {
-            var onSuccess = jasmine.createSpy('onSuccess');
-            var onError = jasmine.createSpy('onError');
-            $httpBackend.expectGET('/api/modules/map').respond(500);
-
-            UtkastProxy.getUtkastTypes(onSuccess, onError);
-            $httpBackend.flush();
-
-            expect(onSuccess).not.toHaveBeenCalled();
-            expect(onError).toHaveBeenCalled();
-        });
     });
 });

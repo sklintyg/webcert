@@ -47,6 +47,7 @@ describe('wcUtkastFilterSpec', function() {
             $provide.value('common.featureService', featureService);
             $provide.value('common.authorityService', jasmine.createSpyObj('common.authorityService', [ 'isAuthorityActive' ]));
             $provide.value('common.messageService', {});
+            $provide.value('common.moduleService', {});
             $provide.value('common.statService', jasmine.createSpyObj('common.statService', [ 'refreshStat' ]));
         }]);
 

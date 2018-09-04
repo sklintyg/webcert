@@ -1,7 +1,7 @@
 angular.module('webcert').directive('wcValjUtkastTyp',
-    [ '$log', '$location', 'webcert.SokSkrivIntygViewstate', 'webcert.IntygTypeSelectorModel', 'common.messageService', 'common.featureService',
+    [ '$log', '$location', 'webcert.SokSkrivIntygViewstate', 'common.messageService', 'common.featureService',
         'common.PatientModel', 'webcert.UtkastProxy', 'common.dialogService',
-    function($log, $location, ViewState, IntygTypeSelectorModel, messageService, featureService, PatientModel, UtkastProxy, DialogService) {
+    function($log, $location, ViewState, messageService, featureService, PatientModel, UtkastProxy, DialogService) {
         'use strict';
 
         return {
@@ -12,7 +12,9 @@ angular.module('webcert').directive('wcValjUtkastTyp',
             },
             templateUrl: '/app/views/sokSkrivIntyg/valjUtkastTyp.directive.html',
             link: function(scope, element, attrs) {
-                scope.intygTypeModel = IntygTypeSelectorModel.build();
+
+                var IntygTypeSelectorModel = scope.viewState.IntygTypeSelectorModel;
+                scope.intygTypeModel = IntygTypeSelectorModel;
                 scope.intygReplacement = {
                     'fk7263':'lisjp'
                 };
@@ -37,6 +39,7 @@ angular.module('webcert').directive('wcValjUtkastTyp',
                            if(intygList[i].intygType === 'db' && intygList[i].status === 'SENT') {
                               dbExists = true;
                            }
+
                         }
                             if (!dbExists) {
                                 DialogService.showDialog({
@@ -55,9 +58,9 @@ angular.module('webcert').directive('wcValjUtkastTyp',
                                     button1text: 'doi.label.button1text',
                                     button2text: 'common.cancel',
                                     autoClose: false
-                                });                                                                                                                      
+                                });
                             } else {
-                               scope.createDraft(intygType);  
+                               scope.createDraft(intygType);
                             }
 
 
@@ -115,7 +118,7 @@ angular.module('webcert').directive('wcValjUtkastTyp',
                         return intygTypes[0].detailedDescription;
                     }
                 };
-                
+
                 function existsInUserTypes(intygTypeId) {
                     for (var i = 0; i < IntygTypeSelectorModel.userIntygTypes.length; i++) {
                         if(IntygTypeSelectorModel.userIntygTypes[i].id === intygTypeId) {

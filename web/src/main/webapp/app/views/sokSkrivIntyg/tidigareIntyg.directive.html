@@ -97,7 +97,7 @@
                                     <tbody>
                                     <tr ng-repeat="intyg in viewState.currentList | orderBy: orderProperty: orderAscending: (orderProperty === 'intygType' ? nameComparator : undefined) "
                                         class="intygList">
-                                        <td>{{getTypeName(intyg.intygType)}}</td>
+                                        <td>{{intyg.intygTypeName}}</td>
                                         <td class="unbreakable"><span dynamic-label
                                                                       key="intyg.status.{{intyg.status}}"></span></td>
                                         <td class="unbreakable">{{intyg.lastUpdatedSigned | date:'short'}}</td>

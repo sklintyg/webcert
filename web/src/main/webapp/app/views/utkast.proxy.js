@@ -20,12 +20,10 @@
 angular.module('webcert').factory('webcert.UtkastProxy',
     [ '$q', '$http', '$stateParams', '$log', '$location', '$window', '$timeout',
         'common.User', 'common.dialogService', 'common.authorityService', 'common.featureService',
-        'common.messageService', 'common.statService', 'common.UserModel',
+        'common.messageService', 'common.statService', 'common.UserModel', 'common.moduleService',
         function($q, $http, $stateParams, $log, $location, $window, $timeout, User, dialogService,
-            authorityService, featureService, messageService, statService, UserModel) {
+            authorityService, featureService, messageService, statService, UserModel, moduleService) {
             'use strict';
-
-            var cachedIntygTypes = null;
 
             /**
              * createUtkast
@@ -49,60 +47,29 @@ angular.module('webcert').factory('webcert.UtkastProxy',
 
             /**
              * Load list of all certificates types
-             * Remove when INTYG-6009 is done
+             * TODO: THIS SHOULD BE MOVED TO A SERVICE SINCE NO REST CALL IS MADE ANYMORE
              */
-            function _getUtkastTypesCachedUnfiltered(onSuccess, onError) {
-                if (cachedIntygTypes !== null) {
-                    $log.debug('returning cached response');
-                    onSuccess(cachedIntygTypes);
-                } else {
-                    var restPath = '/api/modules/map';
-                    $http.get(restPath).then(function(response) {
-                        $log.debug('got data:', response.data);
-                        cachedIntygTypes = response.data;
-                        onSuccess(response.data);
-                    }, function(response) {
-                        $log.error('error ' + response.status);
-                        if (onError) {
-                            onError();
-                        }
-                    });
+            function _getUtkastTypes() {
+                var data = moduleService.getModules();
+                $log.debug('got data:', data);
+                var sortValue = 0;
+                var types = [
+                    { sortValue: sortValue++, id: 'default', label: messageService.getProperty('label.default-intyg-type') }
+                ];
+                for (var i = 0; i < data.length; i++) {
+                    var m = data[i];
+                    var options = {
+                        feature: featureService.features.HANTERA_INTYGSUTKAST,
+                        authority: UserModel.privileges.SKRIVA_INTYG,
+                        requestOrigin: UserModel.user.origin,
+                        intygstyp: m.id};
+
+                    // Only add type if feature is active and user has global intygTyp access through their role.
+                    if (authorityService.isAuthorityActive(options)) {
+                        types.push({sortValue: sortValue++, id: m.id, label: m.label, detailedDescription: m.detailedDescription, fragaSvarAvailable: m.fragaSvarAvailable});
+                    }
                 }
-            }
-
-            /**
-             * Load list of all certificates types
-             */
-            function _getUtkastTypes(onSuccess, onError) {
-                var restPath = '/api/modules/map';
-                $http.get(restPath).then(function(response) {
-                    var data = response.data;
-                    $log.debug('got data:', data);
-                    var sortValue = 0;
-                    var types = [
-                        { sortValue: sortValue++, id: 'default', label: messageService.getProperty('label.default-intyg-type') }
-                    ];
-                    for (var i = 0; i < data.length; i++) {
-                        var m = data[i];
-
-                        var options = {
-                            feature: featureService.features.HANTERA_INTYGSUTKAST,
-                            authority: UserModel.privileges.SKRIVA_INTYG,
-                            requestOrigin: UserModel.user.origin,
-                            intygstyp: m.id};
-
-                        // Only add type if feature is active and user has global intygTyp access through their role.
-                        if (authorityService.isAuthorityActive(options)) {
-                            types.push({sortValue: sortValue++, id: m.id, label: m.label, detailedDescription: m.detailedDescription, fragaSvarAvailable: m.fragaSvarAvailable});
-                        }
-                    }
-                    onSuccess(types);
-                }, function(response) {
-                    $log.error('error ' + response.status);
-                    if (onError) {
-                        onError();
-                    }
-                });
+                return types;
             }
 
             /**
@@ -142,18 +109,17 @@ angular.module('webcert').factory('webcert.UtkastProxy',
              */
             function _getUtkastType(intygType, onSuccess) {
 
-                _getUtkastTypesCachedUnfiltered(function(types) {
+                var types = moduleService.getModules();
 
-                    var intygTypeMeta = {};
-                    for (var i = 0; i < types.length; i++) {
-                        if (types[i].id === intygType) {
-                            intygTypeMeta = types[i];
-                            break;
-                        }
+                var intygTypeMeta = {};
+                for (var i = 0; i < types.length; i++) {
+                    if (types[i].id === intygType) {
+                        intygTypeMeta = types[i];
+                        break;
                     }
+                }
 
-                    onSuccess(intygTypeMeta);
-                });
+                onSuccess(intygTypeMeta);
             }
 
             /*
