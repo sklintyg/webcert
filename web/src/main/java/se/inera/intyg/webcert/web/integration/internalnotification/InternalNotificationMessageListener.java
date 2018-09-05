@@ -51,6 +51,8 @@ public class InternalNotificationMessageListener implements MessageListener {
     static final String CERTIFICATE_TYPE = "certificate-type";
     static final String CARE_UNIT_ID = "care-unit-id";
 
+    private static final String INTERNAL_NOTIFICATION_QUEUE = "internal.notification.queue";
+
     @Autowired
     private IntygModuleRegistry intygModuleRegistry;
 
@@ -65,7 +67,7 @@ public class InternalNotificationMessageListener implements MessageListener {
 
     // How to fix hard-coding in JmsListener?
     @Override
-    @JmsListener(destination = "internal.notification.queue")
+    @JmsListener(destination = INTERNAL_NOTIFICATION_QUEUE)
     public void onMessage(Message message) {
         if (message instanceof TextMessage) {
             TextMessage textMessage = (TextMessage) message;
@@ -74,9 +76,12 @@ public class InternalNotificationMessageListener implements MessageListener {
                 String intygsTyp = textMessage.getStringProperty(CERTIFICATE_TYPE);
                 String enhetsId = textMessage.getStringProperty(CARE_UNIT_ID);
 
-                checkArgument(StringUtils.isNotEmpty(intygsId), intygsId);
-                checkArgument(StringUtils.isNotEmpty(intygsTyp), intygsTyp);
-                checkArgument(StringUtils.isNotEmpty(enhetsId), enhetsId);
+                checkArgument(StringUtils.isNotEmpty(intygsId), "Message on queue %s does not have a %s header.",
+                        INTERNAL_NOTIFICATION_QUEUE, CERTIFICATE_ID);
+                checkArgument(StringUtils.isNotEmpty(intygsTyp), "Message on queue %s does not have a %s header.",
+                        INTERNAL_NOTIFICATION_QUEUE, CERTIFICATE_TYPE);
+                checkArgument(StringUtils.isNotEmpty(enhetsId), "Message on queue %s does not have a %s header.",
+                        INTERNAL_NOTIFICATION_QUEUE, CARE_UNIT_ID);
 
                 if (!integreradeEnheterRegistry.isEnhetIntegrerad(enhetsId, intygsTyp)) {
                     LOG.debug("Not forwarding internal notification to care system, care unit '{}' is not integrated.", enhetsId);

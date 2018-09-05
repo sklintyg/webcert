@@ -18,6 +18,8 @@
  */
 package se.inera.intyg.webcert.notification_sender.certificatesender.services;
 
+import static com.google.common.base.Preconditions.checkArgument;
+
 import java.io.IOException;
 import java.util.List;
 
@@ -25,6 +27,7 @@ import javax.xml.ws.WebServiceException;
 
 import org.apache.camel.Body;
 import org.apache.camel.Header;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,6 +61,13 @@ public class RegisterApprovedReceiversProcessor {
         List<ReceiverApprovalStatus> receiverIds = transformMessageBodyToReceiverList(jsonBody);
 
         try {
+            checkArgument(StringUtils.isNotEmpty(intygsId), "Message of type %s does not have a %s header.",
+                    Constants.REGISTER_APPROVED_RECEIVERS_MESSAGE,
+                    Constants.INTYGS_ID);
+            checkArgument(StringUtils.isNotEmpty(intygsTyp), "Message of type %s does not have a %s header.",
+                    Constants.REGISTER_APPROVED_RECEIVERS_MESSAGE,
+                    Constants.INTYGS_TYP);
+
             RegisterApprovedReceiversType req = new RegisterApprovedReceiversType();
             IntygId intygId = new IntygId();
             intygId.setExtension(intygsId);
@@ -76,8 +86,12 @@ public class RegisterApprovedReceiversProcessor {
             if (responseType.getResult().getResultCode() == ResultCodeType.ERROR) {
                 throw new PermanentException(responseType.getResult().getResultText());
             }
+        } catch (IllegalArgumentException e) {
+            LOG.error("RegisterApprovedReceiversProcessor message processing failed due to IllegalArgumentException, message: {}",
+                    e.getMessage());
+            throw new PermanentException(e.getMessage());
         } catch (WebServiceException e) {
-            LOG.error("Call to sendMessageToRecipient for intyg {} caused an error: {}. Will retry",
+            LOG.error("Call to RegisterApprovedReceivers for intyg {} caused an error: {}. Will retry.",
                     intygsId, e.getMessage());
             throw new TemporaryException(e.getMessage());
         }
