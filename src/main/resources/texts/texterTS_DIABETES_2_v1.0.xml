@@ -1,75 +1,163 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <texter typ="TS-DIABETES-2" giltigFrom="2018-08-01" version="1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 
-    <text id="FRM_1.RBK">TRANSPOSTSTYRELSENS TS_DIABETES_2 är ett intyg som:
+    <!--
+    =====================================================
+    Informationstexter
+    =====================================================
+    -->
 
-        – utreda och bedöma om den arbetssökande har en funktionsnedsättning som medför nedsatt arbetsförmåga
-        – göra en lämplig anpassning för en arbetssökande som deltar i ett arbetsmarknadspolitiskt program och som har blivit sjuk
-        – erbjuda (lämpliga) utredande, vägledande, rehabiliterande eller arbetsförberedande insatser</text>
-
-    <!-- KAT 1 -->
-    <text id="KAT_1.RBK">Funktionsnedsättning</text>
-    <text id="FRG_1.HLP">Med besvär avses sådant som påverkar psykiska, psykosociala eller kroppsliga funktioner.</text>
-    <text id="FRG_1.RBK">Finns besvär på grund av sjukdom eller skada som medför funktionsnedsättning?</text>
-    <text id="DFR_1.2.RBK">Beskriv de funktionsnedsättningar som har observerats (undersökningsfynd).
-        Ange, om möjligt, varaktighet.
-    </text>
-    <text id="DFR_1.2.HLP">Ange de nedsättningar som har framkommit vid undersökning eller utredning.
-
-        Till exempel:
-
-        * Medvetenhet, uppmärksamhet, orienteringsförmåga
-        * Social interaktion, agitation
-        * Kognitiva störningar som t ex minnessvårigheter
-        * Störningar på sinnesorganen som t ex syn- och hörselnedsättning, balansrubbningar
-        * Smärta i rörelseorganen
-        * Rörelseinskränkning, rörelseomfång, smidighet
-        * Uthållighet, koordination
-
-        Med varaktighet menas permanent eller övergående. Ange i så fall tidsangivelse vid övergående.
+    <text id="FRM_1.RBK">
+        Läkarintyg diabetes TSTRK1031-002
+        Transportstyrelsens läkarintyg diabetes ska användas vid diabetessjukdom. Föreskrivna krav på läkarens specialistkompetens vid diabetessjukdom framgår av 17 kap. i Transportstyrelsens föreskrifter (TSFS 2010:125) och allmänna råd om medicinska krav för innehav av körkort m.m.
+        
+        Har du frågor?
+        Kontakta körkortsenheten på Transportstyrelsen, telefon 0771-81 81 81. Transportstyrelsens föreskrifter kan
+        hämtas på www.transportstyrelsen.se.
     </text>
 
-    <!-- KAT 2 -->
-    <text id="KAT_2.RBK">Aktivitetsbegränsning</text>
-    <text id="FRG_2.RBK">Leder funktionsnedsättningarna till aktivitetsbegränsningar i relation till arbete eller studier?</text>
-    <text id="FRG_2.HLP">Aktivitet innebär personens möjlighet att genomföra en uppgift eller handling. Aktivitetsbegränsning ska bedömas utifrån de begränsningar personen har kopplat till att kunna söka arbete, genomföra en arbetsuppgift/arbetsuppgifter, kunna studera eller delta i aktivitet hos Arbetsförmedlingen.</text>
-    <text id="DFR_2.2.RBK">Ange vilka aktivitetsbegränsningar? Ange hur och om möjligt varaktighet/prognos.</text>
-    <text id="DFR_2.2.HLP">Ge konkreta exempel på aktivitetsbegränsningar utifrån personens planerade insatser hos Arbetsförmedlingen eller personens möjlighet att söka arbete, genomföra en arbetsuppgift/arbetsuppgifter eller studera. Till exempel:
+    <!--
+    =====================================================
+    KATEGORI 1: Intyget avser behörighet (svar och delsvar)
+    =====================================================
+    -->
+    <text id="KAT_1.RBK">Intyget avser</text>
+    <text id="FRG_1.RBK">Intyget avser följande behörigheter</text>
+    <text id="FRG_1.HLP"><![CDATA[<span style="text-align:left">AM = moped klass I<br>A1 - lätt motorcykel<br>A2 - mellanstor motorcykel<br>A - motorcykel<br>B - personbil, lätt lastbil och enbart ett lätt släpfordon<br>BE - personbil, lätt lastbil och ett eller flera släpfordon *<br>C1 = medeltung lastbil och enbart ett lätt släpfordon<br/>C1E = medeltung lastbil och ett eller flera släpfordon oavsett vikt<br/>C = tung lastbil och enbart ett lätt släpfordon<br/>CE = tung lastbil och ett eller flera släpfordon oavsett vikt<br/>D1 = mellanstor buss och enbart ett lätt släpfordon<br/>D1E = mellanstor buss och ett eller flera släpfordon oavsett vikt<br/>D = buss och enbart ett lätt släpfordon<br/>DE = buss och ett eller flera släpfordon oavsett vikt<br/>Taxi = taxiförarlegitimation<br>* Släpens totalvikt får inte överstiga 3,5 ton.</span>]]></text>
+    <text id="KORKORT_AM.RBK">AM</text>
+    <text id="KORKORT_A1.RBK">A1</text>
+    <text id="KORKORT_A2.RBK">A2</text>
+    <text id="KORKORT_A.RBK">A</text>
+    <text id="KORKORT_B.RBK">B</text>
+    <text id="KORKORT_BE.RBK">BE</text>
+    <text id="KORKORT_TRAKTOR.RBK">Traktor</text>
+    <text id="KORKORT_C1.RBK">C1</text>
+    <text id="KORKORT_C1E.RBK">C1E</text>
+    <text id="KORKORT_C.RBK">C</text>
+    <text id="KORKORT_CE.RBK">CE</text>
+    <text id="KORKORT_D1.RBK">D1</text>
+    <text id="KORKORT_D1E.RBK">D1E</text>
+    <text id="KORKORT_D.RBK">D</text>
+    <text id="KORKORT_DE.RBK">DE</text>
+    <text id="KORKORT_TAXI.RBK">Taxi</text>
 
-        * att ta till sig en instruktion
-        * att ta reda på och förstå muntlig eller skriftlig information
-        * att kunna fokusera
-        * att kunna bära eller lyfta
-        * att kunna hantera statiskt arbete</text>
+    <!--
+    ===============================================
+    KATEGORI 2: Identitet styrkt genom
+    ===============================================
+    -->
+    <text id="KAT_2.RBK">Identitet</text>
+    <text id="FRG_2.RBK">Identitet styrkt genom</text>
 
-    <!-- KAT 3 -->
-    <text id="KAT_3.RBK">Utredning och behandling</text>
-    <text id="FRG_3.RBK">Finns pågående eller planerade utredningar/behandlingar som påverkar den planering som Arbetsförmedlingen har beskrivit i förfrågan?</text>
-    <text id="FRG_3.HLP">Till exempel remiss för bedömning eller åtgärd inom annan vårdenhet eller aktiviteter inom egna verksamheten.</text>
-    <text id="DFR_3.2.RBK">Hur påverkar utredningarna/behandlingarna planeringen? När planeras utredningarna/behandlingarna att vara avslutade?</text>
-    <text id="DFR_3.2.HLP">Utgå från den beskrivning Arbetsförmedlingen har gjort av personen och Arbetsförmedlingens planerade aktiviteter.
+    <text id="IDENTITET_ID_KORT.RBK">ID-kort</text>
+    <text id="IDENTITET_FORETAG_ELLER_TJANSTEKORT.RBK">Företagskort eller tjänstekort</text>
+    <text id="IDENTITET_KORKORT.RBK">Svenskt körkort</text>
+    <text id="IDENTITET_PERS_KANNEDOM.RBK">Personlig kännedom</text>
+    <text id="IDENTITET_FORSAKRAN_KAP18.RBK">Försäkran enligt 18 kap 4 §</text>
+    <text id="IDENTITET_PASS.RBK">Pass</text>
 
-        Ange förväntat resultat för de utredningar eller behandlingar som ska genomföras i vården och när personen kan genomföra/delta i Arbetsförmedlingens planerade aktiviteter.</text>
+    <text id="FRG_2.HLP">&#185; Avser SIS-märkt ID-kort, svenskt nationellt ID-kort eller ID-kort utfärdat av Skatteverket.
+        &#178; Avser SIS-märkt företagskort eller tjänstekort.
+        &#179; Försäkran enligt 18 kap 4 § Se Transportstyrelsens föreskrifter och allmänna råd (TSFS 2010:125) om medicinska krav för innehav av körkort m.m.
+        &#8308; Avser svenskt EU-pass, annat EU-pass utfärdade från och med den 1 september 2006, pass utfärdat av Island, Liechtenstein, Norge eller Schweiz från och med den 1 september 2006.</text>
 
-    <!-- KAT 4 -->
-    <text id="KAT_4.RBK">Arbetets påverkan på sjukdom/skada</text>
-    <text id="FRG_4.RBK">Kan sjukdomen/skadan förvärras av vissa arbetsuppgifter/arbetsmoment?</text>
-    <text id="FRG_4.HLP">Utgå från den beskrivning Arbetsförmedlingen har gjort av personen och Arbetsförmedlingens planerade aktiviteter.</text>
-    <text id="DFR_4.2.RBK">Vilken typ av arbetsuppgifter/arbetsmoment?</text>
-    <text id="DFR_4.2.HLP">Utgå från den beskrivning Arbetsförmedlingen har gjort av personen och Arbetsförmedlingens planerade aktiviteter.
+    <!--
+    ===============================================
+    KATEGORI 3: Allmänt
+    ===============================================
+    -->
+    <text id="KAT_1.RBK">1. Allmänt</text>
 
-        Till exempel:
+    <text id="FRG_35.RBK">Vilket år ställdes diagnosen diabetes?</text>
+    <text id="FRG_18.RBK">Patienten har diabetes</text>
 
-        * armarbete ovan axelhöjd
-        * arbete på höga höjder
-        * skärmarbete vid dator under längre tid
-        * statiskt arbete</text>
+    <text id="SVAR_TYP1.RBK">Typ 1</text>
+    <text id="SVAR_TYP2.RBK">Typ 2</text>
+    <text id="SVAR_ANNAN.RBK">Annan</text>
 
-    <!-- KAT 5 -->
-    <text id="KAT_5.RBK">Övrigt</text>
-    <text id="FRG_5.RBK">Övrigt som Arbetsförmedlingen bör känna till?</text>
-    <text id="DFR_5.1.HLP">Som t ex risker för försämring vid andra aktiviteter än de som Arbetsförmedlingen har beskrivit i förfrågan.</text>
+    <text id="FRG_109.RBK">Behandling</text>
+    <text id="DFR_109.1.RBK">Endast kost</text>
+    <text id="DFR_109.2.RBK">Tabletter</text>
+    <text id="DFR_109.3.RBK">Har patienten behandling som kan medföra risk för hypoglykemi?</text>
+    <text id="DFR_109.4.RBK">Insulin</text>
+    <text id="DFR_109.5.RBK">Insulin sedan år</text>
+    <text id="DFR_109.6.RBK">Annan behandling</text>
+    <text id="DFR_109.7.RBK">Annan behandling, vilken?</text>
 
-    <text id="SVAR_JA.RBK">Ja</text>
-    <text id="SVAR_NEJ.RBK">Nej</text>
+    <!--
+    ==============================================
+    KATEGORI 4: Hypoglykemier
+    ==============================================
+    -->
+    <text id="KAT_4.RBK">Hypoglykemier</text>
+
+    <text id="FRG_100.RBK">Är patientens diabetessjukdom under godtagbar kontroll med avseende på risken för hypoglykemi?</text>
+    <text id="FRG_37.RBK">Förekommer hypoglykemier med tecken på nedsatt hjärnfunktion (neuroglukopena symptom) som bedöms kunna innebära en trafiksäkerhetsrisk?</text>
+    <text id="FRG_101.RBK">Förstår patienten de risker som är förknippade med hypoglykemi?</text>
+    <text id="FRG_102.RBK">Är patienten väl förtrogen med symptomen på hypoglykemi?</text>
+    <text id="FRG_38.RBK">Saknar patienten förmåga att känna varningstecken på hypoglykemi ("unawareness")?</text>
+    <text id="FRG_36.RBK">Har patienten kunskap om lämpliga åtgärder vid hypoglykemi?</text>
+    <text id="FRG_105.RBK">Görs egenkontroller av blodsocker för att upptäcka hypoglykemi och förhindra att trafiksäkerhetsrisker uppstår?</text>
+    <text id="FRG_106.RBK">Har patienten haft återkommande allvarlig hypoglykemi under det senaste året?</text>
+    <text id="FRG_106.HLP">Med allvarlig och återkommande avses hypoglykemi som krävt hjälp av annan för att hävas och som upprepats inom ett år.</text>
+    <text id="DFR_106.2.RBK">När inträffade det senast?</text>
+    <text id="FRG_107.RBK">Har patienten haft återkommande allvarlig hypoglykemi i vaket tillstånd under de senaste tre månaderna?</text>
+    <text id="FRG_107.HLP">Med allvarlig och återkommande avses hypoglykemi som krävt hjälp av annan för att hävas och som upprepats inom ett år.</text>
+    <text id="DFR_107.2.RBK">När inträffade det senast?</text>
+    <text id="FRG_108.RBK">Har patienten haft allvarlig hypoglykemi i trafiken under det senaste året?</text>
+    <text id="DFR_108.2.RBK">När inträffade det senast?</text>
+
+    <!--
+    ===============================================
+    KATEGORI 5: Synfunktion
+    ===============================================
+    -->
+    <text id="KAT_5.RBK">Synfunktion</text>
+
+    <text id="FRG_103.RBK">Har patienten proliferativ retinopati, genomgången laserbehandling av retinopati, signifikant makulaödem, annan ögonsjukdom eller inger ögonbottenfoto misstanke om sådan ögonsjukdom?</text>
+    <text id="FRG_104.RBK">Saknas ögonbottenfoto?</text>
+    <text id="FRG_8.RBK">Värden för synskärpa</text>
+    <text id="FRG_8.HLP">Alla bokstäver ska kunna läsas på den rad som anger synskärpa. Är synskärpan sämre än 0,1 ska den anges som 0,0</text>
+    <text id="DFR_8.1.RBK">Utan korrektion</text>
+    <text id="DFR_8.1.RBK">Med korrektion</text>
+
+    <!--
+    ===============================================
+    KATEGORI 6: Övrigt
+    ===============================================
+     -->
+    <text id="KAT_6.RBK	">Övrigt</text>
+
+    <text id="FRG_32.RBK">Övriga kommentarer och upplysningar</text>
+
+    <!--
+    ===============================================
+    KATEGORI 7: Bedömning
+    ===============================================
+    -->
+    <text id="KAT_7.RBK">Bedömning</text>
+
+    <text id="FRG_33.RBK">Ange för vilka behörigheter som patienten uppfyller kraven enligt Transportstyrelsens föreskrifter och allmänna råd om medicinska krav för innehav av körkort m.m.(TSFS 2010:125)</text>
+    <text id="FRG_33.HLP"><![CDATA[<span style="text-align:left">AM = moped klass I<br/>A1 = lätt motorcykel<br/>A2 = mellanstor motorcykel<br/>A = motorcykel<br/>B = personbil, lätt lastbil och enbart ett lätt släpfordon<br/>BE = personbil, lätt lastbil och ett eller flera släpfordon. Släpens totalvikt får inte överstiga 3,5 ton.<br/>C1 = medeltung lastbil och enbart ett lätt släpfordon<br/>C1E = medeltung lastbil och ett eller flera släpfordon oavsett vikt<br/>C = tung lastbil och enbart ett lätt släpfordon<br/>CE = tung lastbil och ett eller flera släpfordon oavsett vikt<br/>D1 = mellanstor buss och enbart ett lätt släpfordon<br/>D1E = mellanstor buss och ett eller flera släpfordon oavsett vikt<br/>D = buss och enbart ett lätt släpfordon<br/>DE = buss och ett eller flera släpfordon oavsett vikt<br/>Taxi = taxiförarlegitimation</span>]]></text>
+
+    <text id="KV_KÖRKORTSBEHÖRIGHET.AM.RBK">AM</text>
+    <text id="KV_KÖRKORTSBEHÖRIGHET.A1.RBK">A1</text>
+    <text id="KV_KÖRKORTSBEHÖRIGHET.A2.RBK">A2</text>
+    <text id="KV_KÖRKORTSBEHÖRIGHET.A.RBK">A</text>
+    <text id="KV_KÖRKORTSBEHÖRIGHET.B.RBK">B</text>
+    <text id="KV_KÖRKORTSBEHÖRIGHET.BE.RBK">BE</text>
+    <text id="KV_KÖRKORTSBEHÖRIGHET.TRAKTOR.RBK">Traktor</text>
+    <text id="KV_KÖRKORTSBEHÖRIGHET.C1.RBK">C1</text>
+    <text id="KV_KÖRKORTSBEHÖRIGHET.C1E.RBK">C1E</text>
+    <text id="KV_KÖRKORTSBEHÖRIGHET.C.RBK">C</text>
+    <text id="KV_KÖRKORTSBEHÖRIGHET.CE.RBK">CE</text>
+    <text id="KV_KÖRKORTSBEHÖRIGHET.D1.RBK">D1</text>
+    <text id="KV_KÖRKORTSBEHÖRIGHET.D1E.RBK">D1E</text>
+    <text id="KV_KÖRKORTSBEHÖRIGHET.D.RBK">D</text>
+    <text id="KV_KÖRKORTSBEHÖRIGHET.DE.RBK">DE</text>
+    <text id="KV_KÖRKORTSBEHÖRIGHET.TAXI.RBK">Taxi</text>
+    <text id="KV_KÖRKORTSBEHÖRIGHET.KAN_INTE_TA_STÄLLNING.RBK">Kan inte ta ställning</text>
+
+    <text id="FRG_34.RBK">Patienten bör före ärendets avgörande undersökas av läkare med specialistkompetens i</text>
+
 </texter>
