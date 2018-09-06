@@ -59,8 +59,8 @@
                                     <thead>
                                     <tr>
                                         <th wc-table-head label-key="th.label.intyg-type" help-key="th.help.intyg-type"
-                                            ng-click="orderByProperty('intygType')"
-                                            data-sorting="true" data-sorting-current="orderProperty == 'intygType'"
+                                            ng-click="orderByProperty('intygTypeName')"
+                                            data-sorting="true" data-sorting-current="orderProperty == 'intygTypeName'"
                                             data-sorting-ascending="orderAscending"></th>
                                         <th wc-table-head label-key="th.label.status" help-key="th.help.status"
                                             ng-click="orderByProperty('status')"
@@ -95,7 +95,7 @@
                                     </tbody>
 
                                     <tbody>
-                                    <tr ng-repeat="intyg in viewState.currentList | orderBy: orderProperty: orderAscending: (orderProperty === 'intygType' ? nameComparator : undefined) "
+                                    <tr ng-repeat="intyg in viewState.currentList | orderBy: (orderProperty === 'lastUpdatedSigned' ? orderProperty : [orderProperty, '-lastUpdatedSigned']): !orderAscending"
                                         class="intygList">
                                         <td>{{intyg.intygTypeName}}</td>
                                         <td class="unbreakable"><span dynamic-label

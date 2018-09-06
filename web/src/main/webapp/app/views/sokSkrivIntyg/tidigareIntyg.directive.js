@@ -64,7 +64,7 @@ angular.module('webcert').directive('wcTidigareIntyg',
                 });
 
                 scope.orderProperty = 'lastUpdatedSigned';
-                scope.orderAscending = true;
+                scope.orderAscending = false;
                 scope.orderByProperty = function(property) {
                     if (scope.orderProperty === property) {
                         scope.orderAscending = !scope.orderAscending;
@@ -72,10 +72,6 @@ angular.module('webcert').directive('wcTidigareIntyg',
                         scope.orderAscending = true;
                     }
                     scope.orderProperty = property;
-                };
-
-                scope.nameComparator = function(a, b) {
-                    return (scope.getTypeName(a.value) < scope.getTypeName(b.value)) ? -1 : 1;
                 };
             },
             templateUrl: '/app/views/sokSkrivIntyg/tidigareIntyg.directive.html'
