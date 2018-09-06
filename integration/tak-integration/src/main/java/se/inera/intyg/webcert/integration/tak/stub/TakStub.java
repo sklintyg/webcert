@@ -41,8 +41,6 @@ import java.net.URL;
 public class TakStub {
     private static final Logger LOG = LoggerFactory.getLogger(TakStub.class);
 
-    private static final String CERT_STATUS_FOR_CARE_V1_NS =
-            "urn:riv:clinicalprocess:healthcond:certificate:CertificateStatusUpdateForCareResponder:1";
     private static final String CERT_STATUS_FOR_CARE_V3_NS =
             "urn:riv:clinicalprocess:healthcond:certificate:CertificateStatusUpdateForCareResponder:3";
     private static final String RECEIVE_MEDICAL_CERT_QUESTION_NS =
@@ -79,9 +77,6 @@ public class TakStub {
         ServiceContract[] sC = mapper.readValue(jsonUrl, ServiceContract[].class);
         int dummyId = 10;
         switch (ns) {
-            case CERT_STATUS_FOR_CARE_V1_NS:
-                dummyId = 10;
-                break;
             case CERT_STATUS_FOR_CARE_V3_NS:
                 dummyId = 11;
                 break;

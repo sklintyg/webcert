@@ -45,13 +45,13 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import static se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion.VERSION_3;
+
 @Service
 @EnableScheduling
 public class TakServiceImpl implements TakService {
     private static final Logger LOG = LoggerFactory.getLogger(TakServiceImpl.class);
 
-    private static final String CERT_STATUS_FOR_CARE_V1_NS =
-            "urn:riv:clinicalprocess:healthcond:certificate:CertificateStatusUpdateForCareResponder:1";
     private static final String CERT_STATUS_FOR_CARE_V3_NS =
             "urn:riv:clinicalprocess:healthcond:certificate:CertificateStatusUpdateForCareResponder:3";
     private static final String RECEIVE_MEDICAL_CERT_QUESTION_NS =
@@ -67,7 +67,6 @@ public class TakServiceImpl implements TakService {
             + ERROR_STRING_BASE;
 
     private String ntjpId;
-    private String certificateStatusUpdateForCareV1Id;
     private String certificateStatusUpdateForCareV3Id;
     private String receiveMedicalCertificateQuestionId;
     private String receiveMedicalCertificateAnswerId;
@@ -95,16 +94,15 @@ public class TakServiceImpl implements TakService {
 
     public void update() throws TakServiceException {
         ntjpId = consumer.getConnectionPointId();
-        certificateStatusUpdateForCareV1Id = consumer.getServiceContractId(CERT_STATUS_FOR_CARE_V1_NS);
         certificateStatusUpdateForCareV3Id = consumer.getServiceContractId(CERT_STATUS_FOR_CARE_V3_NS);
         receiveMedicalCertificateQuestionId = consumer.getServiceContractId(RECEIVE_MEDICAL_CERT_QUESTION_NS);
         receiveMedicalCertificateAnswerId = consumer.getServiceContractId(RECEIVE_MEDICAL_CERT_ANSWER_NS);
         sendMessageToCareId = consumer.getServiceContractId(SEND_MESSAGE_TO_CARE_NS);
 
-        LOG.info("Updated IDs via TAK-rest-api. Ntjp-id: {}, statusUpdateForCareV1: {}, statusUpdateForCareV3: {} "
+        LOG.info("Updated IDs via TAK-rest-api. Ntjp-id: {}, statusUpdateForCareV3: {} "
                         + "receiveQuestion: {}, receiveAnswer: {}, sendMsgToCare: {}",
-                ntjpId, certificateStatusUpdateForCareV1Id, certificateStatusUpdateForCareV3Id,
-                receiveMedicalCertificateQuestionId, receiveMedicalCertificateAnswerId, sendMessageToCareId);
+                ntjpId, certificateStatusUpdateForCareV3Id, receiveMedicalCertificateQuestionId,
+                receiveMedicalCertificateAnswerId, sendMessageToCareId);
 
     }
 
@@ -175,14 +173,7 @@ public class TakServiceImpl implements TakService {
     private boolean checkConfiguration(String intygsTyp, IntygUser user, List<String> errors, List<String> hsaIds, SchemaVersion version) {
         LOG.debug("Checking configuration for {}", intygsTyp);
         if (hsaIds.stream().noneMatch(hsaId -> isValid(consumer.doLookup(ntjpId, hsaId, resolveContract(version))))) {
-            switch (version) {
-            case VERSION_1:
-                errors.add(String.format(ERROR_STRING_BASE, CERT_STATUS_FOR_CARE_V1_NS, hsaIds.get(0)));
-                break;
-            case VERSION_3:
-                errors.add(String.format(ERROR_STRING_BASE, CERT_STATUS_FOR_CARE_V3_NS, hsaIds.get(0)));
-                break;
-            }
+            errors.add(String.format(ERROR_STRING_BASE, CERT_STATUS_FOR_CARE_V3_NS, hsaIds.get(0)));
             return false;
         }
 
@@ -214,10 +205,7 @@ public class TakServiceImpl implements TakService {
     }
 
     private String resolveContract(SchemaVersion version) {
-        switch (version) {
-        case VERSION_1:
-            return certificateStatusUpdateForCareV1Id;
-        case VERSION_3:
+        if(version.equals(VERSION_3)) {
             return certificateStatusUpdateForCareV3Id;
         }
         return "NO_SCHEMA_VERSION_AVAILABLE";
