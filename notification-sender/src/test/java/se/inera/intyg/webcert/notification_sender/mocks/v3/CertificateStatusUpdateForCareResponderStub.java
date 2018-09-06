@@ -22,20 +22,21 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import se.inera.intyg.common.support.integration.converter.util.ResultTypeUtil;
+import se.inera.intyg.webcert.notification_sender.mocks.NotificationStubEntry;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareResponderInterface;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareResponseType;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareType;
 import se.riv.clinicalprocess.healthcond.certificate.v3.ErrorIdType;
 import se.riv.clinicalprocess.healthcond.certificate.v3.ResultCodeType;
 import se.riv.clinicalprocess.healthcond.certificate.v3.ResultType;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
-import se.inera.intyg.common.support.integration.converter.util.ResultTypeUtil;
-import se.inera.intyg.webcert.notification_sender.mocks.NotificationStubEntry;
 
 public class CertificateStatusUpdateForCareResponderStub implements CertificateStatusUpdateForCareResponderInterface {
 
@@ -105,12 +106,13 @@ public class CertificateStatusUpdateForCareResponderStub implements CertificateS
                     LOG.debug("Stub messing upp response. TechError Unspecified Service.");
                     response.setResult(ResultTypeUtil.errorResult(ErrorIdType.TECHNICAL_ERROR, "Unspecified service error"));
                     break;
+                case "4":
+                    throw new RuntimeException("This is an emulated error from the stub, should result in a 500 Server Error");
                 default:
                     LOG.debug("Stub OK. No error emulated.");
                     break;
             }
         }
-
         return response;
     }
 

@@ -20,12 +20,14 @@ package se.inera.intyg.webcert.notificationstub;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.intyg.webcert.notificationstub.v3.NotificationStoreV3;
+import se.inera.intyg.webcert.notificationstub.v3.NotificationStubStateBean;
 import se.inera.intyg.webcert.notificationstub.v3.stat.NotificationStubEntry;
 import se.inera.intyg.webcert.notificationstub.v3.stat.StatTransformerUtil;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -40,6 +42,9 @@ public class NotificationStubRestApi {
 
     @Autowired
     private NotificationStoreV3 notificationStoreV3;
+
+    @Autowired
+    private NotificationStubStateBean stubStateBean;
 
     @GET
     @Path("/notifieringar/v3")
@@ -71,5 +76,13 @@ public class NotificationStubRestApi {
     @Path("/clear")
     public void clear() {
         notificationStoreV3.clear();
+    }
+
+    @GET
+    @Path("/notifieringar/v3/emulateError/{errorCode}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response setErrorCode(@PathParam("errorCode") String errorCode) {
+        stubStateBean.setErrorCode(errorCode);
+        return Response.ok("Stub set to emulateError with code " + errorCode).build();
     }
 }

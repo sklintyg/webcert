@@ -34,12 +34,15 @@
     </cxf:features>
   </cxf:bus>
 
+  <bean id="notificationInInterceptor" class="se.inera.intyg.webcert.notification_sender.notifications.services.v3.NotificationInInterceptor"/>
+
   <jaxws:client id="certificateStatusUpdateForCareClientV3"
     serviceClass="se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareResponderInterface"
     address="${certificatestatusupdateforcare.ws.endpoint.v3.url}">
     <jaxws:properties>
       <entry key="schema-validation-enabled" value="true" />
     </jaxws:properties>
+    <jaxws:inInterceptors><ref bean="notificationInInterceptor"/></jaxws:inInterceptors>
   </jaxws:client>
 
 </beans>

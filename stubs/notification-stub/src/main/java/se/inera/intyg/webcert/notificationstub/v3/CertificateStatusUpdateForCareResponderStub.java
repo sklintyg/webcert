@@ -25,7 +25,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
 import se.inera.intyg.common.support.integration.converter.util.ResultTypeUtil;
-import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.*;
+import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareResponderInterface;
+import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareResponseType;
+import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareType;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Arenden;
 import se.riv.clinicalprocess.healthcond.certificate.v3.ErrorIdType;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
@@ -37,6 +39,9 @@ public class CertificateStatusUpdateForCareResponderStub implements CertificateS
 
     @Autowired
     private NotificationStoreV3 notificationStoreV3;
+
+    @Autowired
+    private NotificationStubStateBean notificationStubStateBean;
 
     @Value("${certificatestatusupdateforcare.emulateError}")
     private String emulateError;
@@ -89,28 +94,38 @@ public class CertificateStatusUpdateForCareResponderStub implements CertificateS
 
         LOG.debug("emulateError: " + emulateError);
         if (handelseKod.matches("^ANDRAT$")) {
-            switch (emulateError) {
-                case "1":
-                    LOG.debug("Stub messing upp response. Fel B.");
-                    response.setResult(ResultTypeUtil.errorResult(ErrorIdType.TECHNICAL_ERROR, "Certificate not found "
-                            + "in COSMIC and ref field is missing, cannot store certificate. "
-                            + "Possible race condition. Retry later when the certificate may have been stored in COSMIC. "
-                            + "| Log Id: 01182b7d-9d19-4d5a-b892-18342670668c"));
-                    break;
-                case "2":
-                    LOG.debug("Stub messing upp response. TechError null.");
-                    response.setResult(ResultTypeUtil.errorResult(ErrorIdType.TECHNICAL_ERROR, null));
-                    break;
-                case "3":
-                    LOG.debug("Stub messing upp response. TechError Unspecified Service.");
-                    response.setResult(ResultTypeUtil.errorResult(ErrorIdType.TECHNICAL_ERROR, "Unspecified service error"));
-                    break;
-                default:
-                    LOG.debug("Stub OK. No error emulated.");
-                    break;
-            }
+            performErrorEmulation(emulateError, response);
+            performErrorEmulation(notificationStubStateBean.getErrorCode(), response);
         }
         return response;
     }
 
+    private void performErrorEmulation(String errorCode, CertificateStatusUpdateForCareResponseType response) {
+        if (errorCode == null) {
+            return;
+        }
+
+        switch (errorCode) {
+        case "1":
+            LOG.debug("Stub messing upp response. Fel B.");
+            response.setResult(ResultTypeUtil.errorResult(ErrorIdType.TECHNICAL_ERROR, "Certificate not found "
+                    + "in COSMIC and ref field is missing, cannot store certificate. "
+                    + "Possible race condition. Retry later when the certificate may have been stored in COSMIC. "
+                    + "| Log Id: 01182b7d-9d19-4d5a-b892-18342670668c"));
+            break;
+        case "2":
+            LOG.debug("Stub messing upp response. TechError null.");
+            response.setResult(ResultTypeUtil.errorResult(ErrorIdType.TECHNICAL_ERROR, null));
+            break;
+        case "3":
+            LOG.debug("Stub messing upp response. TechError Unspecified Service.");
+            response.setResult(ResultTypeUtil.errorResult(ErrorIdType.TECHNICAL_ERROR, "Unspecified service error"));
+            break;
+        case "4":
+            throw new RuntimeException("This is an emulated error from the stub, should result in a 500 Server Error");
+        default:
+            LOG.debug("Stub OK. No error emulated.");
+            break;
+        }
+    }
 }

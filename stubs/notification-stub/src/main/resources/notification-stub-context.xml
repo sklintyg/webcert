@@ -41,6 +41,8 @@
       <constructor-arg type="int" value="100" />
     </bean>
 
+    <bean id="notificationStubStateBean" class="se.inera.intyg.webcert.notificationstub.v3.NotificationStubStateBean" />
+
     <context:property-placeholder location="file:${webcert.config.file}"
                                   order="1"
                                   ignore-unresolvable="true"
