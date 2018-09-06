@@ -1,8 +1,8 @@
 angular.module('webcert').directive('wcTidigareIntyg',
     ['$filter','common.PatientModel', 'common.messageService', 'common.authorityService', 'common.UserModel',
-    'webcert.IntygTypeSelectorModel', '$location', 'common.IntygCopyActions',
+    '$location', 'common.IntygCopyActions',
     'common.IntygFornyaRequestModel', 'webcert.SokSkrivValjUtkastService',
-    function($filter, PatientModel, messageService, authorityService, UserModel, IntygTypeSelectorModel,
+    function($filter, PatientModel, messageService, authorityService, UserModel,
         $location, CommonIntygCopyActions, IntygFornyaRequestModel, SokSkrivValjUtkastService) {
         'use strict';
 
