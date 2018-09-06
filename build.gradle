@@ -14,7 +14,7 @@ ext {
     schemasContractVersion = "2.1.7"
 
     funktionstjansterGrpSchemasVersion = "1.0.3"
-    intygClinicalprocessSchemasVersion = "0-SNAPSHOT"
+    intygClinicalprocessSchemasVersion = "1.0.14"
     ppSchemasVersion = "1.0.4"
     ppTermsSchemasVersion = "1.0.4"
     rivtaClinicalprocessSchemasVersion = "3.2.0-RC3"
