@@ -18,7 +18,15 @@
  */
 package se.inera.intyg.webcert.web.web.controller.api;
 
-import com.google.common.base.Strings;
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import javax.ws.rs.core.Response;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -26,8 +34,11 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+
+import com.google.common.base.Strings;
 import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.common.luse.support.LuseEntryPoint;
+import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.Patient;
 import se.inera.intyg.common.support.modules.registry.IntygModule;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
@@ -42,7 +53,6 @@ import se.inera.intyg.infra.security.common.model.Privilege;
 import se.inera.intyg.infra.security.common.model.RequestOrigin;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.SekretessStatus;
-import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
@@ -55,15 +65,6 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.CreateUtkastRequest;
 import se.inera.intyg.webcert.web.web.controller.api.dto.QueryIntygParameter;
 import se.inera.intyg.webcert.web.web.controller.api.dto.QueryIntygResponse;
 
-import javax.ws.rs.core.Response;
-import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
 import static javax.ws.rs.core.Response.Status.OK;
 import static org.junit.Assert.assertEquals;
@@ -73,7 +74,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -115,7 +115,7 @@ public class UtkastApiControllerTest {
 
         Map<String, Map<String, PreviousIntyg>> hasPrevious = new HashMap<>();
         Map<String, PreviousIntyg> hasPreviousIntyg = new HashMap<>();
-        hasPreviousIntyg.put("luse", new PreviousIntyg(true, "intygsId"));
+        hasPreviousIntyg.put("luse", new PreviousIntyg(true, false, "Enhet", "intygsId"));
         hasPrevious.put("intyg", hasPreviousIntyg);
         when(utkastService.checkIfPersonHasExistingIntyg(eq(PATIENT_PERSONNUMMER), any())).thenReturn(hasPrevious);
 

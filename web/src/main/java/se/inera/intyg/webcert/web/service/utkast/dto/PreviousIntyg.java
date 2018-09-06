@@ -22,20 +22,32 @@ package se.inera.intyg.webcert.web.service.utkast.dto;
 public class PreviousIntyg {
 
     private boolean sameVardgivare;
+    private boolean sameEnhet;
+    private String enhetName;
     private String latestIntygsId;
 
     public PreviousIntyg() {
     }
 
-    public PreviousIntyg(boolean sameVardgivare, String latestIntygsId) {
+    public PreviousIntyg(boolean sameVardgivare, boolean sameEnhet, String enhetName, String latestIntygsId) {
         this.sameVardgivare = sameVardgivare;
         if (sameVardgivare) {
             this.latestIntygsId = latestIntygsId;
+            this.sameEnhet = sameEnhet;
+            this.enhetName = enhetName;
         }
     }
 
     public boolean isSameVardgivare() {
         return sameVardgivare;
+    }
+
+    public boolean isSameEnhet() {
+        return sameEnhet;
+    }
+
+    public String getEnhetName() {
+        return enhetName;
     }
 
     public String getLatestIntygsId() {

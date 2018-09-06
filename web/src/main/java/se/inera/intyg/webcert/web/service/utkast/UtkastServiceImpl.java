@@ -18,7 +18,6 @@
  */
 package se.inera.intyg.webcert.web.service.utkast;
 
-import javax.persistence.OptimisticLockException;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -33,6 +32,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+import javax.persistence.OptimisticLockException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -226,16 +226,25 @@ public class UtkastServiceImpl implements UtkastService {
 
         ret.put(INTYG_INDICATOR, signedList.stream()
                 .collect(Collectors.groupingBy(Utkast::getIntygsTyp,
-                        Collectors.mapping(utkast -> new PreviousIntyg(Objects.equals(user.getValdVardgivare().getId(),
-                                utkast.getVardgivarId()), utkast.getIntygsId()),
+                        Collectors.mapping(utkast ->
+                                        new PreviousIntyg(
+                                                Objects.equals(user.getValdVardgivare().getId(), utkast.getVardgivarId()),
+                                                Objects.equals(user.getValdVardenhet().getId(), utkast.getEnhetsId()),
+                                                utkast.getEnhetsNamn(),
+                                                utkast.getIntygsId()
+                                        ),
                                 Collectors.reducing(new PreviousIntyg(), (a, b) -> b.isSameVardgivare() ? b : a)))));
 
         ret.put(UTKAST_INDICATOR, toFilter.stream()
                 .filter(utkast -> utkast.getStatus() != UtkastStatus.SIGNED && utkast.getStatus() != UtkastStatus.DRAFT_LOCKED)
                 .sorted(Comparator.comparing(Utkast::getSkapad, Comparator.nullsFirst(Comparator.naturalOrder())))
                 .collect(Collectors.groupingBy(Utkast::getIntygsTyp,
-                        Collectors.mapping(utkast -> new PreviousIntyg(Objects.equals(user.getValdVardgivare().getId(),
-                                utkast.getVardgivarId()), utkast.getIntygsId()),
+                        Collectors.mapping(utkast -> new PreviousIntyg(
+                                        Objects.equals(user.getValdVardgivare().getId(), utkast.getVardgivarId()),
+                                        Objects.equals(user.getValdVardenhet().getId(), utkast.getEnhetsId()),
+                                        utkast.getEnhetsNamn(),
+                                        utkast.getIntygsId()
+                                ),
                                 Collectors.reducing(new PreviousIntyg(), (a, b) -> b.isSameVardgivare() ? b : a)))));
 
         return ret;
