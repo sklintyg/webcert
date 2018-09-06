@@ -205,7 +205,7 @@ public class TakServiceImpl implements TakService {
     }
 
     private String resolveContract(SchemaVersion version) {
-        if(version.equals(VERSION_3)) {
+        if (version.equals(VERSION_3)) {
             return certificateStatusUpdateForCareV3Id;
         }
         return "NO_SCHEMA_VERSION_AVAILABLE";
