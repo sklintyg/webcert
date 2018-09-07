@@ -21,9 +21,9 @@ Om dödsdatumet inte kan faställas, ange då "Ej säkert".
     <text id="DFR_3.2.RBK">Boende där kroppen påträffades</text>
     <text id="DFR_3.2.HLP">Sjukhus: för somatisk eller psykiatrisk korttidsvård
 
-Särskilt boende: t.ex. äldrebostäder och institutioner
-
 Ordinärt boende: utesluter sådant boende som ingår i föregående kategori
+
+Särskilt boende: t.ex. äldrebostäder och institutioner
 
 Annan/okänd: övrigt</text>
     <text id="DODSPLATS_BOENDE.SJUKHUS.RBK">Sjukhus</text>
