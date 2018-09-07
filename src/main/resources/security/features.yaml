@@ -250,6 +250,7 @@ features:
       - *ki050 # LISJP
       - *ki060 # LUAE_NA
       - *ki070 # LUAE_FS
+      - *ki100 # AF00213
   - &f200
     name: *kf200
     desc: Rensning av meddelanden av fel B

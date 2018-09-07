@@ -277,6 +277,7 @@ privileges:
       - *ki050 # luse
       - *ki060 # luae_na
       - *ki070 # luae_fs
+      - *ki100 # af00213
     requestOrigins: # Implicit alla
   - &p150
     name: *kp150
