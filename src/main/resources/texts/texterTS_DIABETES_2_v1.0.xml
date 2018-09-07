@@ -121,6 +121,7 @@
     <text id="FRG_8.HLP">Alla bokstäver ska kunna läsas på den rad som anger synskärpa. Är synskärpan sämre än 0,1 ska den anges som 0,0</text>
     <text id="DFR_8.1.RBK">Utan korrektion</text>
     <text id="DFR_8.1.RBK">Med korrektion</text>
+    <text id="TSDIA-001.ALERT">Baserat på tidigare besvarade frågor krävs, utöver det här intyget, ett Läkarintyg synfunktioner (TSTRK1032) utfärdat av läkare med specialistkompetens i ögonsjukdomar. Blankett finns på Transportstyrelsens hemsida.</text>
     <text id="TSDIA-002.ALERT">Uppgifterna om synskärpa med och utan korrektion kan grundas på aktuellt intyg av bl.a. legitimerad optiker eller den som är anställd hos optiker. Alternativt kan kopia av sådant intyg bifogas. Uppgifter från ögonbottenfoto kan också användas.</text>
 
     <!--
