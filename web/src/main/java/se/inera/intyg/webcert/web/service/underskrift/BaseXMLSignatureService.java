@@ -140,6 +140,7 @@ public abstract class BaseXMLSignatureService extends BaseSignatureService {
         } else if (user.getAuthenticationMethod() == AuthenticationMethod.FAKE) {
             svt.setValue(rawSignature);
         } else {
+            // From NetiD Access Server, we must decode from Base64 to binary.
             svt.setValue(Base64.getDecoder().decode(rawSignature)); // Remember to decode signature from Base64 to binary.
         }
         intygXmldSignature.getSignatureType().setSignatureValue(svt);

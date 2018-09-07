@@ -67,8 +67,7 @@ public class XmlUnderskriftServiceImpl extends BaseXMLSignatureService implement
 
     @Override
     public SignaturBiljett finalizeSignature(final SignaturBiljett biljett, final byte[] signatur, final String certifikat,
-            final Utkast utkast,
-            WebCertUser user) {
+            final Utkast utkast, WebCertUser user) {
         SignaturBiljett sb = finalizeXMLDSigSignature(certifikat, user, biljett, signatur, utkast);
         monitoringLogService.logIntygSigned(utkast.getIntygsId(), utkast.getIntygsTyp(), user.getHsaId(), user.getAuthenticationScheme(),
                 utkast.getRelationKod());

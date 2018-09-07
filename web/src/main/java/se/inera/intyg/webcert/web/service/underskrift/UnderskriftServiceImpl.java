@@ -159,11 +159,11 @@ public class UnderskriftServiceImpl implements UnderskriftService {
      */
     @Override
     public SignaturBiljett netidSignature(String biljettId, byte[] signatur, String certifikat) {
-        SignaturBiljett sb = redisTicketTracker.findBiljett(biljettId);
+        SignaturBiljett signaturBiljett = redisTicketTracker.findBiljett(biljettId);
 
         // Highly unlikely, but if the redis cache have crashed in between or similar, we need to handle that the there's
         // no SignaturBiljett to be had.
-        if (sb == null) {
+        if (signaturBiljett == null) {
             String errMsg = "No SignaturBiljett found for ticketId '{}' when finalizing signature. "
                 + "Has Redis evicted the ticket early or has Redis crashed during the signature process?";
             LOG.error(errMsg);
@@ -171,11 +171,11 @@ public class UnderskriftServiceImpl implements UnderskriftService {
         }
 
         WebCertUser user = webCertUserService.getUser();
-        Utkast utkast = getUtkastForSignering(sb.getIntygsId(), sb.getVersion(), user);
+        Utkast utkast = getUtkastForSignering(signaturBiljett.getIntygsId(), signaturBiljett.getVersion(), user);
 
-        sb = xmlUnderskriftService.finalizeSignature(sb, signatur, certifikat, utkast, user);
+        SignaturBiljett finishedSignaturBiljett = xmlUnderskriftService.finalizeSignature(signaturBiljett, signatur, certifikat, utkast, user);
         finalizeSignature(utkast, user);
-        return sb;
+        return finishedSignaturBiljett;
     }
 
     @Override
