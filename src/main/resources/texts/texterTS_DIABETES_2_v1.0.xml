@@ -66,10 +66,11 @@
     KATEGORI 3: Allmänt
     ===============================================
     -->
-    <text id="KAT_1.RBK">1. Allmänt</text>
+    <text id="KAT_3.RBK">Allmänt</text>
 
     <text id="FRG_35.RBK">Vilket år ställdes diagnosen diabetes?</text>
     <text id="FRG_18.RBK">Patienten har diabetes</text>
+    <text id="DFR_18.2.RBK">Beskriv annan</text>
 
     <text id="SVAR_TYP1.RBK">Typ 1</text>
     <text id="SVAR_TYP2.RBK">Typ 2</text>
@@ -120,13 +121,14 @@
     <text id="FRG_8.HLP">Alla bokstäver ska kunna läsas på den rad som anger synskärpa. Är synskärpan sämre än 0,1 ska den anges som 0,0</text>
     <text id="DFR_8.1.RBK">Utan korrektion</text>
     <text id="DFR_8.1.RBK">Med korrektion</text>
+    <text id="TSDIA-002.ALERT">Uppgifterna om synskärpa med och utan korrektion kan grundas på aktuellt intyg av bl.a. legitimerad optiker eller den som är anställd hos optiker. Alternativt kan kopia av sådant intyg bifogas. Uppgifter från ögonbottenfoto kan också användas.</text>
 
     <!--
     ===============================================
     KATEGORI 6: Övrigt
     ===============================================
      -->
-    <text id="KAT_6.RBK	">Övrigt</text>
+    <text id="KAT_6.RBK">Övrigt</text>
 
     <text id="FRG_32.RBK">Övriga kommentarer och upplysningar</text>
 
@@ -140,24 +142,25 @@
     <text id="FRG_33.RBK">Ange för vilka behörigheter som patienten uppfyller kraven enligt Transportstyrelsens föreskrifter och allmänna råd om medicinska krav för innehav av körkort m.m.(TSFS 2010:125)</text>
     <text id="FRG_33.HLP"><![CDATA[<span style="text-align:left">AM = moped klass I<br/>A1 = lätt motorcykel<br/>A2 = mellanstor motorcykel<br/>A = motorcykel<br/>B = personbil, lätt lastbil och enbart ett lätt släpfordon<br/>BE = personbil, lätt lastbil och ett eller flera släpfordon. Släpens totalvikt får inte överstiga 3,5 ton.<br/>C1 = medeltung lastbil och enbart ett lätt släpfordon<br/>C1E = medeltung lastbil och ett eller flera släpfordon oavsett vikt<br/>C = tung lastbil och enbart ett lätt släpfordon<br/>CE = tung lastbil och ett eller flera släpfordon oavsett vikt<br/>D1 = mellanstor buss och enbart ett lätt släpfordon<br/>D1E = mellanstor buss och ett eller flera släpfordon oavsett vikt<br/>D = buss och enbart ett lätt släpfordon<br/>DE = buss och ett eller flera släpfordon oavsett vikt<br/>Taxi = taxiförarlegitimation</span>]]></text>
 
-    <text id="KV_KÖRKORTSBEHÖRIGHET.AM.RBK">AM</text>
-    <text id="KV_KÖRKORTSBEHÖRIGHET.A1.RBK">A1</text>
-    <text id="KV_KÖRKORTSBEHÖRIGHET.A2.RBK">A2</text>
-    <text id="KV_KÖRKORTSBEHÖRIGHET.A.RBK">A</text>
-    <text id="KV_KÖRKORTSBEHÖRIGHET.B.RBK">B</text>
-    <text id="KV_KÖRKORTSBEHÖRIGHET.BE.RBK">BE</text>
-    <text id="KV_KÖRKORTSBEHÖRIGHET.TRAKTOR.RBK">Traktor</text>
-    <text id="KV_KÖRKORTSBEHÖRIGHET.C1.RBK">C1</text>
-    <text id="KV_KÖRKORTSBEHÖRIGHET.C1E.RBK">C1E</text>
-    <text id="KV_KÖRKORTSBEHÖRIGHET.C.RBK">C</text>
-    <text id="KV_KÖRKORTSBEHÖRIGHET.CE.RBK">CE</text>
-    <text id="KV_KÖRKORTSBEHÖRIGHET.D1.RBK">D1</text>
-    <text id="KV_KÖRKORTSBEHÖRIGHET.D1E.RBK">D1E</text>
-    <text id="KV_KÖRKORTSBEHÖRIGHET.D.RBK">D</text>
-    <text id="KV_KÖRKORTSBEHÖRIGHET.DE.RBK">DE</text>
-    <text id="KV_KÖRKORTSBEHÖRIGHET.TAXI.RBK">Taxi</text>
-    <text id="KV_KÖRKORTSBEHÖRIGHET.KAN_INTE_TA_STÄLLNING.RBK">Kan inte ta ställning</text>
+    <text id="KV_KORKORTSBEHORIGHET_AM.RBK">AM</text>
+    <text id="KV_KORKORTSBEHORIGHET_A1.RBK">A1</text>
+    <text id="KV_KORKORTSBEHORIGHET_A2.RBK">A2</text>
+    <text id="KV_KORKORTSBEHORIGHET_A.RBK">A</text>
+    <text id="KV_KORKORTSBEHORIGHET_B.RBK">B</text>
+    <text id="KV_KORKORTSBEHORIGHET_BE.RBK">BE</text>
+    <text id="KV_KORKORTSBEHORIGHET_TRAKTOR.RBK">Traktor</text>
+    <text id="KV_KORKORTSBEHORIGHET_C1.RBK">C1</text>
+    <text id="KV_KORKORTSBEHORIGHET_C1E.RBK">C1E</text>
+    <text id="KV_KORKORTSBEHORIGHET_C.RBK">C</text>
+    <text id="KV_KORKORTSBEHORIGHET_CE.RBK">CE</text>
+    <text id="KV_KORKORTSBEHORIGHET_D1.RBK">D1</text>
+    <text id="KV_KORKORTSBEHORIGHET_D1E.RBK">D1E</text>
+    <text id="KV_KORKORTSBEHORIGHET_D.RBK">D</text>
+    <text id="KV_KORKORTSBEHORIGHET_DE.RBK">DE</text>
+    <text id="KV_KORKORTSBEHORIGHET_TAXI.RBK">Taxi</text>
+    <text id="KV_KORKORTSBEHORIGHET_KANINTETASTALLNING.RBK">Kan inte ta ställning</text>
 
+    <text id="FRG_45.RBK">Är patienten lämplig att inneha behörighet för C1, C1E, C, CE, D1, D1E, D, DE eller taxi med hänsyn till de körningar och arbetsformer som är aktuella vid sådant innehav? (Se 6 kap. 16 §)</text>
     <text id="FRG_34.RBK">Patienten bör före ärendets avgörande undersökas av läkare med specialistkompetens i</text>
 
 </texter>
