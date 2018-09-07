@@ -165,7 +165,7 @@ public class UnderskriftServiceImpl implements UnderskriftService {
         // no SignaturBiljett to be had.
         if (signaturBiljett == null) {
             String errMsg = "No SignaturBiljett found for ticketId '{}' when finalizing signature. "
-                + "Has Redis evicted the ticket early or has Redis crashed during the signature process?";
+                    + "Has Redis evicted the ticket early or has Redis crashed during the signature process?";
             LOG.error(errMsg);
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, errMsg);
         }
@@ -173,7 +173,8 @@ public class UnderskriftServiceImpl implements UnderskriftService {
         WebCertUser user = webCertUserService.getUser();
         Utkast utkast = getUtkastForSignering(signaturBiljett.getIntygsId(), signaturBiljett.getVersion(), user);
 
-        SignaturBiljett finishedSignaturBiljett = xmlUnderskriftService.finalizeSignature(signaturBiljett, signatur, certifikat, utkast, user);
+        SignaturBiljett finishedSignaturBiljett = xmlUnderskriftService.finalizeSignature(signaturBiljett, signatur,
+                certifikat, utkast, user);
         finalizeSignature(utkast, user);
         return finishedSignaturBiljett;
     }
@@ -219,9 +220,12 @@ public class UnderskriftServiceImpl implements UnderskriftService {
      * Makes sure the specified Utkast is ready for signing, and then returns it. If Utkast is not ready for signing,
      * a WebCertServiceException is thrown.
      *
-     * @param intygId id of utkast to be signed
-     * @param version used to detect concurrent modification
-     * @param user    the user that is signing the utkast
+     * @param intygId
+     *            id of utkast to be signed
+     * @param version
+     *            used to detect concurrent modification
+     * @param user
+     *            the user that is signing the utkast
      * @return the specified Utkast iff it's ready to be signed
      */
     private Utkast getUtkastForSignering(String intygId, long version, WebCertUser user) {
@@ -249,10 +253,10 @@ public class UnderskriftServiceImpl implements UnderskriftService {
         } else {
             // Additional constraints for specific types of intyg.
             Personnummer patientPersonnummer = utkast.getPatientPersonnummer();
-            Map<String, Map<String, PreviousIntyg>> intygstypToPreviousIntyg =
-                    utkastService.checkIfPersonHasExistingIntyg(patientPersonnummer, user);
-            Optional<WebCertServiceErrorCodeEnum> uniqueErrorCode =
-                    AuthoritiesHelperUtil.validateIntygMustBeUnique(user, utkast.getIntygsTyp(), intygstypToPreviousIntyg);
+            Map<String, Map<String, PreviousIntyg>> intygstypToPreviousIntyg = utkastService
+                    .checkIfPersonHasExistingIntyg(patientPersonnummer, user);
+            Optional<WebCertServiceErrorCodeEnum> uniqueErrorCode = AuthoritiesHelperUtil.validateIntygMustBeUnique(user,
+                    utkast.getIntygsTyp(), intygstypToPreviousIntyg);
             if (uniqueErrorCode.isPresent()) {
                 LOG.warn("Utkast '{}' av typ {} kan inte signeras då det redan existerar ett signerat intyg för samma personnummer",
                         intygId, utkast.getIntygsTyp());
