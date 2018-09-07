@@ -19,7 +19,6 @@
 package se.inera.intyg.webcert.notification_sender.notifications.services.v3;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.cxf.binding.soap.SoapFault;
 import org.apache.cxf.binding.soap.SoapMessage;
 import org.apache.cxf.message.Message;
 import org.apache.cxf.phase.AbstractPhaseInterceptor;
@@ -28,15 +27,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 
-import java.io.IOException;
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.nio.charset.Charset;
 
 /**
- * Custom CXF InInterceptor that checks the HTTP status code. If > 399, we throw a SoapFault with an appropriate error
- * message.
- *
- * This is to mitigate problems on the receiver side where errors are not handled correctly and HTTP 500 is returned
- * rather than a controlled SOAPFault or ResultCode.ERROR response.
+ * Custom CXF InInterceptor that checks the HTTP status code. If > 399, we log the raw message body and then
+ * pass the message on. This is to capture hard-to-track problems caused by consumer systems.
  *
  * @author erikl
  */
@@ -74,18 +71,16 @@ public class NotificationInInterceptor extends AbstractPhaseInterceptor<Message>
                         String soapBody = IOUtils.toString(message.getContent(InputStream.class), "UTF-8");
                         LOG.error("Handling HTTP " + status + " error in CertificateStatusUpdateForCareResponse. Raw body is:\n\n"
                                 + soapBody);
-                    } catch (IOException e) {
+                        // Re-write response body back into message.
+                        ByteArrayInputStream bais = new ByteArrayInputStream(soapBody.getBytes(Charset.forName("UTF-8")));
+                        message.setContent(InputStream.class, bais);
+                        bais.close();
+                    } catch (Exception e) {
                         LOG.error(
                                 "Failed to capture body of CertificateStatusUpdateForCareResponse response with non "
-                                + "200 status code, reason: {}", e.getMessage());
+                                        + "200 status code, reason: {}",
+                                e.getMessage());
                     }
-
-                    SoapMessage soapMessage = (SoapMessage) message;
-                    String statusMessage = buildErrorMessage(status);
-
-                    // Re-throw as SOAPFault
-                    throw new SoapFault(statusMessage + ". Rethrowing as SoapFault",
-                            soapMessage.getVersion().getSender());
                 }
             } else {
                 LOG.warn(
@@ -97,15 +92,6 @@ public class NotificationInInterceptor extends AbstractPhaseInterceptor<Message>
             LOG.warn("Inbound SOAP response contained no '{}' property, unable to determine HTTP status code, but "
                     + "treating as OK",
                     RESPONSE_CODE);
-        }
-    }
-
-    private String buildErrorMessage(Integer status) {
-        try {
-            HttpStatus httpStatus = HttpStatus.valueOf(status);
-            return "HTTP status was " + status + " " + httpStatus.getReasonPhrase();
-        } catch (Exception e) {
-            return "HTTP status was " + status + " which could not be mapped to any known HTTP status codes";
         }
     }
 }
