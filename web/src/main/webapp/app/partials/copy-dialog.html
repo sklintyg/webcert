@@ -7,7 +7,14 @@
   </div>
   <wc-bottom-fadeout>
     <div class="modal-body">
-      <span dynamic-label key="{{bodyTextId}}"></span>
+      <wc-alert-message ng-if="model.infoMessage"
+                        alert-id="copyInfoMessage"
+                        alert-severity="info"
+                        alert-message-id="{{::model.infoMessage}}"></wc-alert-message>
+
+      <p>
+        <span dynamic-label key="{{bodyTextId}}"></span>
+      </p>
     </div>
   </wc-bottom-fadeout>
   <div class="modal-footer">
