@@ -335,6 +335,7 @@ roles:
               - *ki070 # luae_fs
               - *ki080 # db
               - *ki090 # doi
+              - *ki100 # af00213
           - <<: *ro020 # DJUPINTEGRATION
             intygstyper: # EJ fk7263
               - *ki020 # ts-bas
@@ -345,6 +346,7 @@ roles:
               - *ki070 # luae_fs
               - *ki080 # db
               - *ki090 # doi
+              - *ki100 # af00213
       - <<: *p040 # VIDAREBEFORDRA_UTKAST
         requestOrigins:
           - <<: *ro010 # NORMAL
