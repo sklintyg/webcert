@@ -20,7 +20,7 @@ ext {
     rivtaClinicalprocessSchemasVersion = "3.2.0-RC3"
     rivtaItintegrationMonitoringSchemasVersion = "1.0.0.3"
 
-    activeMqVersion = "5.13.4"
+    activeMqVersion = "5.13.5"
     assertjVersion = "3.6.2"
     aspectJWeaverVersion = "1.7.1"
     autovalueVersion = "1.5"
@@ -52,7 +52,8 @@ ext {
 
     mockitoVersion = "2.16.0"
     springockitoVersion = "1.0.8"
-    mysqlVersion = "5.1.40"
+    mysqlVersion = "5.1.46"
+    hikariCPVersion = "2.3.5"
     h2Version = "1.3.176"
 }
 

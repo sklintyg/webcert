@@ -16,19 +16,19 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.persistence.privatlakaravtal.repository;
 
-/**
- * Created by eriklupander on 2015-08-05.
- */
-public interface GodkantAvtalRepositoryCustom {
+package se.inera.intyg.webcert.persistence;
 
-    void approveAvtal(String hsaId, Integer avtalVersion);
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.DependsOn;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.orm.jpa.JpaTransactionManager;
+import org.springframework.transaction.PlatformTransactionManager;
 
-    boolean userHasApprovedAvtal(String hsaId, Integer avtalVersion);
-
-    void removeUserApprovement(String hsaId, Integer avtalVersion);
-
-    void removeAllUserApprovments(String hsaId);
-
+@Configuration
+@DependsOn("dbUpdate")
+@PropertySource("classpath:test.properties")
+public class TestConfig {
 }

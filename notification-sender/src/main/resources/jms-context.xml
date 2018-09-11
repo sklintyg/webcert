@@ -19,46 +19,37 @@
   -->
 
 <beans xmlns="http://www.springframework.org/schema/beans"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
-  <bean id="activeMQComponent" class="org.apache.activemq.camel.component.ActiveMQComponent">
-    <property name="configuration" ref="jmsConfig" />
-    <property name="transacted" value="true"/>
-    <property name="cacheLevelName" value="CACHE_CONSUMER"/>
-  </bean>
+    <bean id="activeMQComponent" class="org.apache.activemq.camel.component.ActiveMQComponent">
+        <property name="configuration" ref="jmsConfig"/>
+        <property name="transacted" value="true"/>
+        <property name="cacheLevelName" value="CACHE_CONNECTION"/>
+    </bean>
 
-  <!-- The aggregation route needs to supply the destination option consumer.exclusive=true directly when connecting to the broker. -->
-  <bean id="activemq"
-      class="org.apache.activemq.camel.component.ActiveMQComponent">
-    <property name="brokerURL" value="${activemq.broker.url}"/>
-    <property name="userName" value="${activemq.broker.username}"/>
-    <property name="password" value="${activemq.broker.password}" />
-  </bean>
+    <bean id="activemq"
+          class="org.apache.activemq.camel.component.ActiveMQComponent">
+        <property name="brokerURL" value="${activemq.broker.url}"/>
+        <property name="userName" value="${activemq.broker.username}"/>
+        <property name="password" value="${activemq.broker.password}"/>
+    </bean>
 
-  <bean id="jmsConfig" class="org.apache.camel.component.jms.JmsConfiguration">
-    <property name="errorHandlerLoggingLevel" value="OFF"/>
-    <property name="errorHandlerLogStackTrace" value="false"/>
-    <property name="connectionFactory" ref="cachingConnectionFactory" />
-    <property name="destinationResolver" ref="jmsDestinationResolver" />
-  </bean>
+    <!-- See JmsConfig.java (in web) for jmsConnectionFactory -->
+    <bean id="jmsConfig" class="org.apache.camel.component.jms.JmsConfiguration">
+        <property name="errorHandlerLoggingLevel" value="OFF"/>
+        <property name="errorHandlerLogStackTrace" value="false"/>
+        <property name="connectionFactory" ref="jmsConnectionFactory"/>
+        <property name="destinationResolver" ref="jmsDestinationResolver"/>
+    </bean>
 
-  <bean id="cachingConnectionFactory" class="org.springframework.jms.connection.CachingConnectionFactory">
-    <constructor-arg>
-      <bean class="org.springframework.jndi.JndiObjectFactoryBean">
-        <property name="jndiName" value="java:comp/env/jms/AsyncConnectionFactory"/>
-      </bean>
-    </constructor-arg>
-  </bean>
+    <bean id="txTemplate" class="org.apache.camel.spring.spi.SpringTransactionPolicy">
+        <property name="transactionManager" ref="jmsTransactionManager" />
+    </bean>
 
-  <bean id="jmsDestinationResolver" class="org.springframework.jms.support.destination.JndiDestinationResolver">
-    <property name="resourceRef" value="true"/>
-    <property name="jndiTemplate">
-      <bean class="org.springframework.jndi.JndiTemplate"/>
-    </property>
-  </bean>
-
-  <bean id="commonFeaturesResolver" class="se.inera.intyg.infra.security.authorities.CommonFeaturesResolver" />
-  <bean id="featuresHelper" class="se.inera.intyg.infra.security.authorities.FeaturesHelper" />
+    <bean id="commonFeaturesResolver" class="se.inera.intyg.infra.security.authorities.CommonFeaturesResolver"/>
+    <bean id="featuresHelper" class="se.inera.intyg.infra.security.authorities.FeaturesHelper"/>
 
 </beans>

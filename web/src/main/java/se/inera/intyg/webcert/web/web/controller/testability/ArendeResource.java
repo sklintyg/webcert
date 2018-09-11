@@ -56,8 +56,8 @@ public class ArendeResource {
     private TransactionTemplate transactionTemplate;
 
     @Autowired
-    public void setTxManager(PlatformTransactionManager txManager) {
-        this.transactionTemplate = new TransactionTemplate(txManager);
+    public void setTxManager(PlatformTransactionManager transactionManager) {
+        this.transactionTemplate = new TransactionTemplate(transactionManager);
     }
 
     @Autowired

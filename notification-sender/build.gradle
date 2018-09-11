@@ -30,9 +30,5 @@ dependencies {
     testCompile "org.kubek2k:springockito:${springockitoVersion}"
     testCompile "org.apache.camel:camel-test-spring:${camelVersion}"
     testCompile "org.springframework:spring-test:${springVersion}"
-    testCompile "org.apache.activemq:activemq-broker:${activeMqVersion}"
     testCompile "org.apache.activemq:activemq-spring:${activeMqVersion}"
-    testCompile "org.dbunit:dbunit:${dbUnitVersion}"
-
-    testRuntime "com.h2database:h2:${h2Version}"
 }

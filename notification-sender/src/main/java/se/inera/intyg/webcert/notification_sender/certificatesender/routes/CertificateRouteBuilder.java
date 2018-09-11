@@ -59,7 +59,7 @@ public class CertificateRouteBuilder extends SpringRouteBuilder {
         from("receiveCertificateTransferEndpoint").routeId("transferCertificate")
                 .onException(TemporaryException.class).to("direct:certTemporaryErrorHandlerEndpoint").end()
                 .onException(Exception.class).handled(true).to("direct:certPermanentErrorHandlerEndpoint").end()
-                .transacted()
+                .transacted("txTemplate")
                 .choice()
                 .when(header(Constants.DELAY_MESSAGE)).delay(messageDelay).asyncDelayed().endChoice()
                 .end()

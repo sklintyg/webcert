@@ -56,7 +56,7 @@ public class IntegreradeEnheterRegistryImpl implements IntegreradeEnheterRegistr
      * .service.integration.dto.IntegreradEnhetEntry)
      */
     @Override
-    @Transactional("jpaTransactionManager")
+    @Transactional
     public void putIntegreradEnhet(IntegreradEnhetEntry entry, boolean schemaVersion1, boolean schemaVersion3) {
 
         String enhetsId = entry.getEnhetsId();
@@ -88,14 +88,14 @@ public class IntegreradeEnheterRegistryImpl implements IntegreradeEnheterRegistr
      * @see se.inera.intyg.webcert.web.service.integration.IntegreradeEnheterService#isEnhetIntegrerad(java.lang.String)
      */
     @Override
-    @Transactional(value = "jpaTransactionManager", readOnly = true)
+    @Transactional(readOnly = true)
     public boolean isEnhetIntegrerad(String enhetsHsaId, String intygType) {
         Optional<SchemaVersion> schemaVersion = getSchemaVersion(enhetsHsaId, intygType);
         return schemaVersion.isPresent();
     }
 
     @Override
-    @Transactional("jpaTransactionManager")
+    @Transactional()
     public void addIfSameVardgivareButDifferentUnits(String orgEnhetsHsaId, IntegreradEnhetEntry newEntry, String intygType) {
         if (getSchemaVersion(orgEnhetsHsaId, intygType).isPresent()) {
             IntegreradEnhet enhet = getIntegreradEnhet(orgEnhetsHsaId);
@@ -108,7 +108,7 @@ public class IntegreradeEnheterRegistryImpl implements IntegreradeEnheterRegistr
     }
 
     @Override
-    @Transactional("jpaTransactionManager")
+    @Transactional
     public void deleteIntegreradEnhet(String enhetsHsaId) {
         IntegreradEnhet unit = integreradEnhetRepository.findOne(enhetsHsaId);
         if (unit != null) {
@@ -118,7 +118,7 @@ public class IntegreradeEnheterRegistryImpl implements IntegreradeEnheterRegistr
     }
 
     @Override
-    @Transactional(value = "jpaTransactionManager", readOnly = true)
+    @Transactional(readOnly = true)
     public Optional<SchemaVersion> getSchemaVersion(String enhetsHsaId, String intygType) {
         IntegreradEnhet enhet = getIntegreradEnhet(enhetsHsaId);
 
@@ -150,7 +150,7 @@ public class IntegreradeEnheterRegistryImpl implements IntegreradeEnheterRegistr
     }
 
     @Override
-    @Transactional(value = "jpaTransactionManager", readOnly = true)
+    @Transactional(readOnly = true)
     public List<IntegreradEnhetEntryWithSchemaVersion> getIntegreradeVardenheter() {
         List<IntegreradEnhetEntryWithSchemaVersion> hsaIds = new ArrayList<>();
         integreradEnhetRepository.findAll().forEach(ive -> hsaIds.add(new IntegreradEnhetEntryWithSchemaVersion(ive)));

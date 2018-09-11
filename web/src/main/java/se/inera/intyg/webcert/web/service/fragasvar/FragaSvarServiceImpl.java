@@ -101,7 +101,7 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.FragaSvarView;
  * @author andreaskaltenbach
  */
 @Service
-@Transactional("jpaTransactionManager")
+@Transactional
 public class FragaSvarServiceImpl implements FragaSvarService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FragaSvarServiceImpl.class);
@@ -195,7 +195,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
     }
 
     @Override
-    @Transactional(value = "jpaTransactionManager", readOnly = true)
+    @Transactional(readOnly = true)
     public List<FragaSvarView> getFragaSvar(String intygId) {
 
         List<FragaSvar> fragaSvarList = fragaSvarRepository.findByIntygsReferensIntygsId(intygId);
@@ -515,7 +515,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
     }
 
     @Override
-    @Transactional(value = "jpaTransactionManager", readOnly = true)
+    @Transactional(readOnly = true)
     public QueryFragaSvarResponse filterFragaSvar(Filter filter) {
         List<ArendeListItem> results = fragaSvarRepository.filterFragaSvar(filter).stream()
                 .map(ArendeListItemConverter::convert)
@@ -532,7 +532,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
     }
 
     @Override
-    @Transactional(value = "jpaTransactionManager", readOnly = true)
+    @Transactional(readOnly = true)
     public List<Lakare> getFragaSvarHsaIdByEnhet(String enhetsId) {
 
         List<String> enhetsIdParams = new ArrayList<>();

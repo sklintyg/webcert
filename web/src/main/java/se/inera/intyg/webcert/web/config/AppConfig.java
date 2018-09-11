@@ -16,30 +16,29 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package se.inera.intyg.webcert.web.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.jms.annotation.EnableJms;
-import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
-import org.springframework.jms.connection.CachingConnectionFactory;
+import org.springframework.context.annotation.DependsOn;
+import org.springframework.context.annotation.Import;
+import org.springframework.orm.jpa.JpaTransactionManager;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.transaction.annotation.TransactionManagementConfigurer;
 
-/**
- * Configures the JmsMessageListener subsystem.
- */
 @Configuration
-@EnableJms
-public class JmsListenerConfig {
+@EnableTransactionManagement
+@DependsOn("dbUpdate")
+@Import(JmsConfig.class)
+public class AppConfig implements TransactionManagementConfigurer {
 
     @Autowired
-    private CachingConnectionFactory cachingConnectionFactory;
+    JpaTransactionManager transactionManager;
 
-    @Bean
-    public DefaultJmsListenerContainerFactory jmsListenerContainerFactory() {
-        DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
-        factory.setConnectionFactory(cachingConnectionFactory);
-        return factory;
+    @Override
+    public PlatformTransactionManager annotationDrivenTransactionManager() {
+        return transactionManager;
     }
-
 }

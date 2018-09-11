@@ -172,6 +172,8 @@ dependencies {
     compile "net.javacrumbs.shedlock:shedlock-spring:${shedlockSpringVersion}"
     compile "net.javacrumbs.shedlock:shedlock-provider-redis-spring:${shedlockSpringVersion}"
 
+    compile "org.apache.activemq:activemq-spring:${activeMqVersion}"
+
     compileOnly "javax.servlet:servlet-api:${servletApiVersion}"
     compileOnly "org.apache.geronimo.specs:geronimo-jms_1.1_spec:${geronimoJmsVersion}"
 
@@ -186,12 +188,5 @@ dependencies {
     testCompile "com.jayway.restassured:json-schema-validator:${jsonSchemaValidatorVersion}"
     testCompile "org.antlr:ST4:${stAntlr4Version}"
 
-    testRuntime "com.h2database:h2:${h2Version}"
-
     apt "com.google.auto.value:auto-value:${autovalueVersion}"
-
-    gretty "org.apache.activemq:activemq-client:${activeMqVersion}"
-    gretty "org.apache.activemq:activemq-broker:${activeMqVersion}"
-    gretty "com.h2database:h2:${h2Version}"
-    gretty "mysql:mysql-connector-java:${mysqlVersion}"
 }

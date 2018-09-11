@@ -90,7 +90,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @Service
-@Transactional("jpaTransactionManager")
+@Transactional
 public class ArendeServiceImpl implements ArendeService {
 
     private static final String MAKULERING = "MAKULERING";
@@ -424,7 +424,7 @@ public class ArendeServiceImpl implements ArendeService {
     }
 
     @Override
-    @Transactional(value = "jpaTransactionManager", readOnly = true)
+    @Transactional(readOnly = true)
     public QueryFragaSvarResponse filterArende(QueryFragaSvarParameter filterParameters) {
 
         WebCertUser user = webcertUserService.getUser();

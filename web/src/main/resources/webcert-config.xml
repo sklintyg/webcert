@@ -28,27 +28,26 @@
         http://cxf.apache.org/transports/http/configuration http://cxf.apache.org/schemas/configuration/http-conf.xsd
         http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
 
-  <import resource="classpath:/webcert-common-config.xml" />
-  <import resource="classpath:/repository-context.xml" />
+
+  <import resource="classpath:webcert-common-config.xml" />
+  <import resource="classpath:repository-context.xml" />
   <import resource="security/securityContext.xml" />
-  <import resource="classpath:/hsa-services-config.xml" />
-  <import resource="classpath:/fmb-services-config.xml" />
-  <import resource="classpath:/tak-services-config.xml" />
-  <import resource="classpath:/basic-cache-config.xml" />
-  <import resource="classpath:/pu-services-config.xml" />
-  <import resource="classpath:/srs-services-config.xml" />
-  <import resource="classpath:/pu-ignite-config.xml" />
-  <import resource="classpath:/pp-services-config.xml" />
-  <import resource="classpath:/xmldsig-config.xml" />
-  <import resource="jms-config.xml" />
+  <import resource="classpath:hsa-services-config.xml" />
+  <import resource="classpath:fmb-services-config.xml" />
+  <import resource="classpath:tak-services-config.xml" />
+  <import resource="classpath:basic-cache-config.xml" />
+  <import resource="classpath:pu-services-config.xml" />
+  <import resource="classpath:srs-services-config.xml" />
+  <import resource="classpath:pu-ignite-config.xml" />
+  <import resource="classpath:pp-services-config.xml" />
+  <import resource="classpath:xmldsig-config.xml" />
   <import resource="ws-config.xml" />
   <import resource="mail-config.xml" />
-  <import resource="classpath:/mail-stub-context.xml" />
+  <import resource="classpath:mail-stub-context.xml" />
   <import resource="classpath*:module-config.xml" />
   <import resource="classpath*:wc-module-cxf-servlet.xml" />
-  <import resource="classpath:/notification-sender-config.xml" />
-  <import resource="classpath:/certificate-sender-config.xml" />
-  <!-- <import resource="classpath:/web-servlet.xml" /> -->
+  <import resource="classpath:notification-sender-config.xml" />
+  <import resource="classpath:certificate-sender-config.xml" />
 
   <context:annotation-config />
 
@@ -59,7 +58,7 @@
   <!-- Load dynamic link classes -->
   <context:component-scan base-package="se.inera.intyg.infra.dynamiclink" />
 
-  <!-- Load postnummerservice classes -->
+  <!-- Load postnummerservice classe-->
   <context:component-scan base-package="se.inera.intyg.infra.integration.postnummer" />
 
   <beans>

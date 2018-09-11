@@ -18,15 +18,13 @@
  */
 package se.inera.intyg.webcert.persistence.anvandarmetadata.repository;
 
-import org.springframework.transaction.annotation.Transactional;
-import se.inera.intyg.webcert.persistence.anvandarmetadata.model.AnvandarPreference;
-
 import java.util.Map;
+
+import se.inera.intyg.webcert.persistence.anvandarmetadata.model.AnvandarPreference;
 
 /**
  * Created by eriklupander on 2015-08-05.
  */
-@Transactional(value = "jpaTransactionManager", readOnly = false)
 public interface AnvandarPreferenceRepositoryCustom {
 
     /**

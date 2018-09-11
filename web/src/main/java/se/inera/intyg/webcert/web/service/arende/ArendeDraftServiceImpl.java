@@ -29,7 +29,7 @@ import se.inera.intyg.webcert.persistence.arende.model.ArendeDraft;
 import se.inera.intyg.webcert.persistence.arende.repository.ArendeDraftRepository;
 
 @Service
-@Transactional("jpaTransactionManager")
+@Transactional
 public class ArendeDraftServiceImpl implements ArendeDraftService {
 
     @Autowired

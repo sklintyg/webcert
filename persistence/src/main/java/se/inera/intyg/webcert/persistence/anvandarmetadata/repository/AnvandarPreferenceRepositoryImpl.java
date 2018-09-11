@@ -18,6 +18,7 @@
  */
 package se.inera.intyg.webcert.persistence.anvandarmetadata.repository;
 
+import org.springframework.transaction.annotation.Transactional;
 import se.inera.intyg.webcert.persistence.anvandarmetadata.model.AnvandarPreference;
 
 import javax.persistence.EntityManager;
@@ -31,6 +32,7 @@ import java.util.Map;
 /**
  * Created by eriklupander on 2015-08-05.
  */
+@Transactional(readOnly = true)
 public class AnvandarPreferenceRepositoryImpl implements AnvandarPreferenceRepositoryCustom {
 
     @PersistenceContext

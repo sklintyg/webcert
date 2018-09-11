@@ -34,6 +34,10 @@
     <constructor-arg value="org.springframework.transaction.PlatformTransactionManager" />
   </bean>
 
+  <bean id="txTemplate" class="org.apache.camel.spring.spi.SpringTransactionPolicy">
+    <property name="transactionManager" ref="transactionManager" />
+  </bean>
+
   <context:annotation-config/>
 
   <context:component-scan base-package="se.inera.intyg.webcert.notification_sender.certificatesender"/>

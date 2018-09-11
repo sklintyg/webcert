@@ -32,6 +32,7 @@
     <Arg>org.eclipse.jetty.server.webapp.WebInfIncludeJarPattern</Arg>
     <Arg>.*/.*jsp-api-[^/]\.jar$|./.*jsp-[^/]\.jar$|./.*taglibs[^/]*\.jar$</Arg>
   </Call>
+  <!--
   <New id="DataSource" class="org.eclipse.jetty.plus.jndi.Resource">
     <Arg>
       <Ref refid="webAppContext"/>
@@ -53,7 +54,6 @@
     <Arg>
       <New class="org.apache.activemq.ActiveMQConnectionFactory">
          <Arg>vm://localhost?broker.persistent=false</Arg>
-         <!--  <Arg>tcp://localhost:61616</Arg>  -->
       </New>
     </Arg>
   </New>
@@ -65,7 +65,6 @@
     <Arg>
       <New class="org.apache.activemq.ActiveMQConnectionFactory">
         <Arg>vm://localhost?broker.persistent=false&amp;jms.nonBlockingRedelivery=true&amp;jms.redeliveryPolicy.maximumRedeliveries=4&amp;jms.redeliveryPolicy.maximumRedeliveryDelay=10000&amp;jms.redeliveryPolicy.initialRedeliveryDelay=1000&amp;jms.redeliveryPolicy.useExponentialBackOff=true&amp;jms.redeliveryPolicy.backOffMultiplier=2</Arg>
-        <!-- <Arg>tcp://localhost:61616?jms.nonBlockingRedelivery=true&amp;jms.redeliveryPolicy.maximumRedeliveries=4&amp;jms.redeliveryPolicy.maximumRedeliveryDelay=6000&amp;jms.redeliveryPolicy.initialRedeliveryDelay=4000&amp;jms.redeliveryPolicy.useExponentialBackOff=true&amp;jms.redeliveryPolicy.backOffMultiplier=2</Arg> -->
       </New>
     </Arg>
   </New>
@@ -124,5 +123,6 @@
       </New>
     </Arg>
   </New>
+  -->
 
 </Configure>

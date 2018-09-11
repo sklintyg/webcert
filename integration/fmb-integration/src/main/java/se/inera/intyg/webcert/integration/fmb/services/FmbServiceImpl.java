@@ -74,7 +74,7 @@ import se.inera.intyg.webcert.persistence.fmb.model.fmb.TypFall;
 import se.inera.intyg.webcert.persistence.fmb.repository.DiagnosInformationRepository;
 
 @Service
-@Transactional("jpaTransactionManager")
+@Transactional
 @Configuration
 @EnableScheduling
 @Profile({"dev", "test", "webcertMainNode"})

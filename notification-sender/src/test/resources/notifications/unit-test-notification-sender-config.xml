@@ -40,6 +40,11 @@
     <constructor-arg value="org.springframework.transaction.PlatformTransactionManager" />
   </bean>
 
+  <bean id="txTemplate" class="org.apache.camel.spring.spi.SpringTransactionPolicy">
+    <property name="transactionManager" ref="transactionManager" />
+  </bean>
+
+
   <bean id="mockedPuService" class="org.mockito.Mockito" factory-method="mock">
     <constructor-arg value="se.inera.intyg.infra.integration.pu.services.PUService" />
   </bean>

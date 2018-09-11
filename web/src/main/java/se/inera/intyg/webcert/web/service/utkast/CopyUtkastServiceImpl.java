@@ -215,7 +215,7 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
     }
 
     @Override
-    @Transactional("jpaTransactionManager")
+    @Transactional
     public CreateReplacementCopyResponse createReplacementCopy(CreateReplacementCopyRequest replacementRequest) {
 
         String originalIntygId = replacementRequest.getOriginalIntygId();

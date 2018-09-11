@@ -76,7 +76,6 @@ public class HealthCheckServiceImpl implements HealthCheckService {
     private JmsTemplate jmsCertificateSenderTemplate;
 
     @Autowired
-    @Qualifier("jmsFactory")
     private ConnectionFactory connectionFactory;
 
     @Autowired

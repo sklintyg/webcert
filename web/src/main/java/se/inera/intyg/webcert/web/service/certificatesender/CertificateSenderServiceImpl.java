@@ -46,7 +46,7 @@ public class CertificateSenderServiceImpl implements CertificateSenderService {
     @Value("${intygstjanst.logicaladdress}")
     private String logicalAddress;
 
-    @Autowired(required = false)
+    @Autowired
     @Qualifier("jmsCertificateSenderTemplate")
     private JmsTemplate jmsTemplate;
 
