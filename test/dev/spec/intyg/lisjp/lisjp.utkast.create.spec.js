@@ -75,6 +75,8 @@ describe('Create and Sign lisjp utkast', function() {
 
             expect(IntygPage.isAt()).toBeTruthy();
             expect(IntygPage.getReceiverApprovalDialog().isDisplayed()).toBeTruthy();
+            IntygPage.clickReceiverApprovalOption('FBA', 'yes');
+            IntygPage.closeReceiverApproval(true);
 
         });
 
@@ -86,9 +88,6 @@ describe('Create and Sign lisjp utkast', function() {
             browser.refresh();
 
             IntygPage.whenCertificateLoaded().then(function() {
-                IntygPage.clickReceiverApprovalOption('FBA', 'yes');
-                IntygPage.closeReceiverApproval(true);
-
 		        IntygPage.verify(data);
 		    });
         });
@@ -175,6 +174,8 @@ describe('Create and Sign lisjp utkast', function() {
 
             expect(IntygPage.isAt()).toBeTruthy();
             expect(IntygPage.getReceiverApprovalDialog().isDisplayed()).toBeTruthy();
+            IntygPage.clickReceiverApprovalOption('FBA', 'yes');
+            IntygPage.closeReceiverApproval(true);
         });
 
         it('Wait until intyg in IT', function() {
@@ -187,8 +188,6 @@ describe('Create and Sign lisjp utkast', function() {
 
         it('Verifiera intyg', function() {
             IntygPage.whenCertificateLoaded().then(function() {
-                IntygPage.clickReceiverApprovalOption('FBA', 'yes');
-                IntygPage.closeReceiverApproval(true);
 		        IntygPage.verify(data);
 		    });
         });
