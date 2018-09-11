@@ -69,7 +69,7 @@
     <!-- KAT 5 -->
     <text id="KAT_5.RBK">Övrigt</text>
     <text id="FRG_5.RBK">Övrigt som Arbetsförmedlingen bör känna till?</text>
-    <text id="DFR_5.1.HLP">Som t ex risker för försämring vid andra aktiviteter än de som Arbetsförmedlingen har beskrivit i förfrågan.</text>
+    <text id="FRG_5.HLP">Som t ex risker för försämring vid andra aktiviteter än de som Arbetsförmedlingen har beskrivit i förfrågan.</text>
 
     <text id="SVAR_JA.RBK">Ja</text>
     <text id="SVAR_NEJ.RBK">Nej</text>
