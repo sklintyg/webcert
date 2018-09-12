@@ -79,7 +79,7 @@ public class NotificationRouteBuilder extends SpringRouteBuilder {
 
         from(notificationForAggregationQueue).routeId("aggregateNotification")
                 .onException(Exception.class).to("direct:temporaryErrorHandlerEndpoint").end()
-                .transacted()
+                .transacted("txTemplate")
                 .choice()
                 .when(header(NotificationRouteHeaders.INTYGS_TYP).isEqualTo(Fk7263EntryPoint.MODULE_ID))
                 .to(notificationQueue)
@@ -110,7 +110,7 @@ public class NotificationRouteBuilder extends SpringRouteBuilder {
         from("receiveNotificationRequestEndpoint").routeId("transformNotification")
                 .onException(TemporaryException.class).to("direct:temporaryErrorHandlerEndpoint").end()
                 .onException(Exception.class).handled(true).to("direct:permanentErrorHandlerEndpoint").end()
-                .transacted()
+                .transacted("txTemplate")
                 .unmarshal("notificationMessageDataFormat")
                 .to("bean:notificationTransformer")
                 .marshal(jaxbMessageDataFormatV3)
@@ -122,7 +122,7 @@ public class NotificationRouteBuilder extends SpringRouteBuilder {
                 .onException(DiscardCandidateException.class)
                 .handled(isTimeToDiscard()).to("direct:discardCandidateErrorHandlerEndpoint").end()
                 .onException(Exception.class).handled(true).to("direct:permanentErrorHandlerEndpoint").end()
-                .transacted()
+                .transacted("txTemplate")
                 .unmarshal(jaxbMessageDataFormatV3)
                 .to("bean:notificationWSClientV3");
 

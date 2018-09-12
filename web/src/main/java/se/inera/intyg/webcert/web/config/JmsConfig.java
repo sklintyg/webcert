@@ -69,7 +69,7 @@ public class JmsConfig {
         factory.setDestinationResolver(jmsDestinationResolver());
         factory.setSessionTransacted(true);
         factory.setTransactionManager(jmsTransactionManager);
-        factory.setCacheLevelName("CACHE_CONNECTION");
+        factory.setCacheLevelName("CACHE_CONSUMER");
         factory.setConcurrency("1-10");
         return factory;
     }
