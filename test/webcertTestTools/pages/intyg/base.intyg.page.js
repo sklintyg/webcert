@@ -223,7 +223,7 @@ var BaseIntyg = JClass._extend({
         this.arendeValjAmne(arendeAmne);
         this.arendeSend.click();
 
-        return this.arendePanel.all(by.css('.card')).first().getAttribute('id').then(function(id) {
+        return this.arendePanel.all(by.css('arende-panel > div')).first().getAttribute('id').then(function(id) {
             return Promise.resolve(id.substring('arende-administrativaFragor-'.length));
         });
     },
