@@ -28,6 +28,7 @@
         http://cxf.apache.org/transports/http/configuration http://cxf.apache.org/schemas/configuration/http-conf.xsd
         http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
 
+  <context:annotation-config />
 
   <import resource="classpath:webcert-common-config.xml" />
   <import resource="classpath:repository-context.xml" />
@@ -47,9 +48,6 @@
   <import resource="classpath*:module-config.xml" />
   <import resource="classpath*:wc-module-cxf-servlet.xml" />
   <import resource="classpath:notification-sender-config.xml" />
-  <import resource="classpath:certificate-sender-config.xml" />
-
-  <context:annotation-config />
 
   <context:component-scan base-package="se.inera.intyg.webcert.web">
     <context:exclude-filter type="regex" expression="se\.inera\.intyg\.webcert\.web\.auth.*"/>
@@ -62,15 +60,13 @@
   <context:component-scan base-package="se.inera.intyg.infra.integration.postnummer" />
 
   <beans>
-    <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-      <property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE" />
+    <bean class="org.springframework.context.support.PropertySourcesPlaceholderConfigurer">
       <property name="locations">
         <list>
           <!-- Order matters - last value wins -->
           <value>classpath:default.properties</value>
           <value>classpath:version.properties</value>
           <value>classpath:webcert-notification-route-params.properties</value>
-          <value>classpath:webcert-certificate-route-params.properties</value>
           <value>file:${webcert.config.file}</value>
           <value>file:${credentials.file}</value>
         </list>

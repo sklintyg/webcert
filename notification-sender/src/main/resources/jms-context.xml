@@ -35,13 +35,6 @@
         <property name="cacheLevelName" value="CACHE_CONSUMER"/>
     </bean>
 
-    <bean id="jmse"
-          class="org.apache.activemq.camel.component.ActiveMQComponent">
-        <property name="configuration" ref="jmsConfig"/>
-        <property name="transacted" value="true"/>
-        <property name="cacheLevelName" value="CACHE_CONSUMER"/>
-    </bean>
-
     <!-- See JmsConfig.java (in web) for jmsConnectionFactory -->
     <bean id="jmsConfig" class="org.apache.camel.component.jms.JmsConfiguration">
         <property name="errorHandlerLoggingLevel" value="OFF"/>
