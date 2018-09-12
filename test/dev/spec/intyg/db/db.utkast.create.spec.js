@@ -27,7 +27,7 @@ var testdataHelper = wcTestTools.helpers.restTestdata;
 var UtkastPage = wcTestTools.pages.intyg.skv.db.utkast;
 var IntygPage = wcTestTools.pages.intyg.skv.db.intyg;
 
-xdescribe('Create and Sign db utkast', function() {
+describe('Create and Sign db utkast', function() {
 
     var utkastId = null,
         data = null;

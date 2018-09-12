@@ -81,7 +81,13 @@ var DbIntyg = BaseSkvIntygPage._extend({
     },
 
     verifyPolisanmalan: function(polisanmalan) {
-        expect(this.polisanmalan.getText()).toBe(polisanmalan ? 'Ja' : 'Nej');
+        var text = 'Nej';
+
+        if (typeof polisanmalan === 'undefined' || polisanmalan) {
+            text = 'Ja, om dödsfallet har eller kan ha orsakats av yttre påverkan (skada/förgiftning) eller fel/försummelse i vården eller den dödes identitet är okänd, ska polisanmälan göras och dödsbeviset lämnas till Polismyndigheten';
+        }
+
+        expect(this.polisanmalan.getText()).toBe(text);
     },
 
     verify: function(data) {

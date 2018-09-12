@@ -120,6 +120,9 @@ var BaseUtkast = JClass._extend({
             window.autoSave = false;
         });
     },
+    getAlert: function(intygstyp, intyg) {
+        return element(by.id('intyg-' + intyg + '-warning-' + intygstyp));
+    },
     angeEnhetAdress: function(adressObj) {
 
         var postAddrEL = this.enhetensAdress.postAdress;

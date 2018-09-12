@@ -1,0 +1,53 @@
+{
+  "typ": "db",
+  "identitetStyrkt": "körkort",
+  "dodsdatumSakert": false,
+  "dodsdatum": "2017-01-01",
+  "antraffatDodDatum": "2017-01-02",
+  "dodsplatsKommun": "kommun",
+  "dodsplatsBoende": "SJUKHUS",
+  "barn": true,
+  "explosivImplantat": true,
+  "explosivAvlagsnat": true,
+  "undersokningYttre": "UNDERSOKNING_GJORT_KORT_FORE_DODEN",
+  "undersokningDatum": "2016-12-31",
+  "polisanmalan": true,
+  "textVersion": "1.0",
+  "grundData": {
+    "patient": {
+      "personId": "19121212-1212",
+      "fullstandigtNamn": "Tolvan Tolvansson",
+      "fornamn": "Tolvan",
+      "efternamn": "Tolvansson",
+      "postadress": "Svensson, Storgatan 1, PL 1234",
+      "postnummer": "12345",
+      "postort": "Småmåla",
+      "samordningsNummer": false
+    },
+    "skapadAv": {
+      "personId": "TSTNMT2321000156-103F",
+      "fullstandigtNamn": "Leonie Koehl",
+      "forskrivarKod": "0000000",
+      "befattningar": [
+        "203090"
+      ],
+      "specialiteter": [],
+      "vardenhet": {
+        "enhetsid": "TSTNMT2321000156-1039",
+        "enhetsnamn": "NMT vg1 ve2",
+        "postadress": "NMT gata 2",
+        "postnummer": "12345",
+        "postort": "Testhult",
+        "telefonnummer": "0101112131415",
+        "epost": "enhet2@webcert.invalid.se",
+        "vardgivare": {
+          "vardgivarid": "TSTNMT2321000156-1002",
+          "vardgivarnamn": "NMT vg1"
+        },
+        "arbetsplatsKod": "1234567890"
+      }
+    },
+    "signeringsdatum": "2015-12-07T15:48:05.000"
+  },
+  "id": "1234567"
+}
