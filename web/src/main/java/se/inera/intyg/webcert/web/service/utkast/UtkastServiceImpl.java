@@ -92,7 +92,7 @@ import se.inera.intyg.webcert.web.service.utkast.util.CreateIntygsIdStrategy;
 @Service
 public class UtkastServiceImpl implements UtkastService {
 
-    private static final List<UtkastStatus> ALL_DRAFT_STATUSES = Arrays.asList(UtkastStatus.DRAFT_COMPLETE,
+    private static final List<UtkastStatus> ALL_EDITABLE_DRAFT_STATUSES = Arrays.asList(UtkastStatus.DRAFT_COMPLETE,
             UtkastStatus.DRAFT_INCOMPLETE);
     private static final List<UtkastStatus> ALL_DRAFT_STATUSES_INCLUDE_LOCKED = Arrays.asList(UtkastStatus.DRAFT_COMPLETE,
             UtkastStatus.DRAFT_INCOMPLETE, UtkastStatus.DRAFT_LOCKED);
@@ -133,6 +133,14 @@ public class UtkastServiceImpl implements UtkastService {
 
     @Autowired
     private ReferensService referensService;
+
+    public static boolean isUtkast(Utkast utkast) {
+        return utkast != null && ALL_DRAFT_STATUSES_INCLUDE_LOCKED.contains(utkast.getStatus());
+    }
+
+    public static boolean isEditableUtkast(Utkast utkast) {
+        return utkast != null && ALL_EDITABLE_DRAFT_STATUSES.contains(utkast.getStatus());
+    }
 
     @Override
     @Transactional("jpaTransactionManager") // , readOnly=true
@@ -762,7 +770,7 @@ public class UtkastServiceImpl implements UtkastService {
     }
 
     private boolean isTheDraftStillADraft(UtkastStatus utkastStatus) {
-        return ALL_DRAFT_STATUSES.contains(utkastStatus);
+        return ALL_EDITABLE_DRAFT_STATUSES.contains(utkastStatus);
     }
 
     private void logCreateDraftPDL(Utkast utkast, LogUser logUser) {

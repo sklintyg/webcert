@@ -18,16 +18,12 @@
  */
 package se.inera.intyg.webcert.web.web.controller.integration;
 
-import java.util.Arrays;
-import java.util.List;
-
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.infra.security.authorities.validation.AuthoritiesValidator;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.webcert.common.model.SekretessStatus;
@@ -39,6 +35,7 @@ import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.intyg.IntygServiceImpl;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
+import se.inera.intyg.webcert.web.service.utkast.UtkastServiceImpl;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.PrepareRedirectToIntyg;
 
 /**
@@ -80,7 +77,7 @@ public abstract class IntegrationServiceImpl implements IntegrationService {
 
         ensurePreparation(typ, intygId, utkast, user);
 
-        return createPrepareRedirectToIntyg(typ, intygId, isUtkast(utkast));
+        return createPrepareRedirectToIntyg(typ, intygId, UtkastServiceImpl.isUtkast(utkast));
     }
 
     // protected scope
@@ -88,16 +85,6 @@ public abstract class IntegrationServiceImpl implements IntegrationService {
     abstract void ensurePreparation(String intygTyp, String intygId, Utkast utkast, WebCertUser user);
 
     // default scope
-
-    boolean isUtkast(Utkast utkast) {
-        return utkast != null && !utkast.getStatus().equals(UtkastStatus.SIGNED);
-    }
-
-    boolean isEditableUtkast(Utkast utkast) {
-        List<UtkastStatus> editableDraftStatues = Arrays.asList(UtkastStatus.DRAFT_COMPLETE, UtkastStatus.DRAFT_INCOMPLETE);
-
-        return utkast != null && editableDraftStatues.contains(utkast.getStatus());
-    }
 
     void verifySekretessmarkering(Utkast utkast, WebCertUser user) {
         SekretessStatus sekretessStatus = patientDetailsResolver.getSekretessStatus(utkast.getPatientPersonnummer());

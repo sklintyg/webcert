@@ -20,12 +20,14 @@ package se.inera.intyg.webcert.web.web.controller.integration;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
+import se.inera.intyg.webcert.web.service.utkast.UtkastServiceImpl;
 import se.inera.intyg.webcert.web.service.utkast.dto.UpdatePatientOnDraftRequest;
 
 /**
@@ -51,7 +53,7 @@ public class IntygIntegrationServiceImpl extends IntegrationServiceImpl {
 
             // INTYG-3212: ArendeDraft patient info should always be up-to-date with the patient info supplied by the
             // integrating journaling system
-            if (isEditableUtkast(utkast)) {
+            if (UtkastServiceImpl.isEditableUtkast(utkast)) {
                 ensureDraftPatientInfoUpdated(intygTyp, intygId, utkast.getVersion(), user);
             }
 
