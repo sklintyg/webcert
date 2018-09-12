@@ -18,17 +18,18 @@
  */
 package se.inera.intyg.webcert.web.service.monitoring;
 
-import com.google.common.base.Joiner;
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+
+import com.google.common.base.Joiner;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
-import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.common.util.logging.LogMarkers;
+import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.persistence.fragasvar.model.Amne;
-
-import java.util.List;
 
 import static se.inera.intyg.webcert.persistence.fragasvar.model.Amne.KOMPLETTERING_AV_LAKARINTYG;
 
@@ -176,6 +177,11 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
     @Override
     public void logUtkastDeleted(String intygsId, String intygsTyp) {
         logEvent(MonitoringEvent.UTKAST_DELETED, intygsId, intygsTyp);
+    }
+
+    @Override
+    public void logUtkastRevoked(String intygsId, String hsaId, String reason, String revokeMessage) {
+        logEvent(MonitoringEvent.UTKAST_REVOKED, intygsId, hsaId, reason, revokeMessage);
     }
 
     @Override
@@ -342,6 +348,7 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
         UTKAST_PATIENT_UPDATED("Patient details for utkast '{}' of type '{}' updated"),
         UTKAST_CONCURRENTLY_EDITED("Utkast '{}' of type '{}' was concurrently edited by multiple users"),
         UTKAST_DELETED("Utkast '{}' of type '{}' was deleted"),
+        UTKAST_REVOKED("Utkast '{}' revoked by '{}' reason '{}' message '{}'"),
         UTKAST_PRINT("Intyg '{}' of type '{}' was printed"),
         UTKAST_READY_NOTIFICATION_SENT("Utkast '{}' of type '{}' was marked as ready and notification was sent"),
         PU_LOOKUP("Lookup performed on '{}' with result '{}'"),

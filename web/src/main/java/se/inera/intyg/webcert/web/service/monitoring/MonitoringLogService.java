@@ -18,13 +18,13 @@
  */
 package se.inera.intyg.webcert.web.service.monitoring;
 
+import java.util.List;
+
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
-import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.infra.security.common.service.AuthenticationLogger;
+import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.persistence.fragasvar.model.Amne;
-
-import java.util.List;
 
 /**
  * Service that writes messages to the monitoring log.
@@ -76,6 +76,8 @@ public interface MonitoringLogService extends AuthenticationLogger {
     void logUtkastConcurrentlyEdited(String intygsId, String intygsTyp);
 
     void logUtkastDeleted(String intygsId, String intygsTyp);
+
+    void logUtkastRevoked(String intygsId, String hsaId, String reason, String revokeMessage);
 
     void logUtkastRead(String intygsId, String intygsTyp);
 

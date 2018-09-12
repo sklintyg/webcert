@@ -18,11 +18,8 @@
  */
 package se.inera.intyg.webcert.web.service.monitoring;
 
-import ch.qos.logback.classic.Level;
-import ch.qos.logback.classic.Logger;
-import ch.qos.logback.classic.spi.ILoggingEvent;
-import ch.qos.logback.classic.spi.LoggingEvent;
-import ch.qos.logback.core.Appender;
+import java.util.Arrays;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -32,13 +29,17 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.slf4j.LoggerFactory;
+
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.classic.spi.LoggingEvent;
+import ch.qos.logback.core.Appender;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.persistence.fragasvar.model.Amne;
-
-import java.util.Arrays;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
@@ -57,6 +58,7 @@ public class MonitoringLogServiceImplTest {
     private static final String RECIPIENT = "RECIPIENT";
     private static final String AUTH_SCHEME = "AUTH_SCHEME";
     private static final String REASON = "REASON";
+    private static final String REVOKE_MESSAGE = "REVOKE_MESSAGE";
     private static final Integer AVTAL_VERSION = 98;
     private static final String HAN_TYPE = "HAN_TYPE";
     private static final String RESULT = "RESULT";
@@ -379,6 +381,12 @@ public class MonitoringLogServiceImplTest {
     public void shouldLogUtkastDeleted() {
         logService.logUtkastDeleted(INTYGS_ID, INTYGS_TYP);
         verifyLog(Level.INFO, "UTKAST_DELETED Utkast 'INTYGS_ID' of type 'INTYGS_TYP' was deleted");
+    }
+
+    @Test
+    public void shouldLogUtkastRevoked() {
+        logService.logUtkastRevoked(INTYGS_ID, HSA_ID, REASON, REVOKE_MESSAGE);
+        verifyLog(Level.INFO, "UTKAST_REVOKED Utkast 'INTYGS_ID' revoked by 'HSA_ID' reason 'REASON' message 'REVOKE_MESSAGE'");
     }
 
     @Test

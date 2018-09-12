@@ -618,18 +618,18 @@ public class UtkastServiceImpl implements UtkastService {
 
         abortIfUserNotAuthorizedForUnit(utkast.getVardgivarId(), utkast.getEnhetsId());
 
-        revokeUtkast(utkast, reason);
+        revokeUtkast(utkast, reason, revokeMessage);
     }
 
     /**
      * Send a notification message to stakeholders informing that
      * a question related to a revoked certificate has been closed.
      */
-    private void revokeUtkast(Utkast utkast, String reason) {
+    private void revokeUtkast(Utkast utkast, String reason, String revokeMessage) {
         String intygsId = utkast.getIntygsId();
 
         String hsaId = webCertUserService.getUser().getHsaId();
-        monitoringService.logIntygRevoked(intygsId, hsaId, reason);
+        monitoringService.logUtkastRevoked(intygsId, hsaId, reason, revokeMessage);
 
         // First: mark the originating Utkast as REVOKED
         utkast.setAterkalladDatum(LocalDateTime.now());

@@ -18,7 +18,6 @@
  */
 package se.inera.intyg.webcert.web.service.utkast;
 
-import javax.persistence.OptimisticLockException;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -30,6 +29,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import javax.persistence.OptimisticLockException;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -1015,12 +1015,13 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(lockedUtkast);
         when(userService.isAuthorizedForUnit(any(), any(), eq(false))).thenReturn(true);
 
-        String reason = "";
+        String reason = "reason";
+        String revokeMessage = "revokeMessage";
 
-        draftService.revokeLockedDraft(INTYG_ID, INTYG_TYPE, "", reason);
+        draftService.revokeLockedDraft(INTYG_ID, INTYG_TYPE, revokeMessage, reason);
 
         verify(mockUtkastRepository, times(1)).save(lockedUtkast);
-        verify(mockMonitoringService).logIntygRevoked(INTYG_ID, user.getHsaId(), reason);
+        verify(mockMonitoringService).logUtkastRevoked(INTYG_ID, user.getHsaId(), reason, revokeMessage);
         verify(logService).logRevokeIntyg(any());
     }
 
@@ -1032,6 +1033,8 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         String reason = "";
 
         draftService.revokeLockedDraft(INTYG_ID, INTYG_TYPE, "", reason);
+        verifyZeroInteractions(mockMonitoringService);
+        verifyZeroInteractions(logService);
     }
 
     @Test(expected = WebCertServiceException.class)
@@ -1039,6 +1042,8 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(null);
 
         draftService.revokeLockedDraft(INTYG_ID, INTYG_TYPE, "", "");
+        verifyZeroInteractions(mockMonitoringService);
+        verifyZeroInteractions(logService);
     }
 
     @Test(expected = WebCertServiceException.class)
@@ -1046,6 +1051,8 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(utkast);
 
         draftService.revokeLockedDraft(INTYG_ID, INTYG_TYPE, "", "");
+        verifyZeroInteractions(mockMonitoringService);
+        verifyZeroInteractions(logService);
     }
 
     @Test(expected = WebCertServiceException.class)
@@ -1053,6 +1060,8 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(signedUtkast);
 
         draftService.revokeLockedDraft(INTYG_ID, INTYG_TYPE, "", "");
+        verifyZeroInteractions(mockMonitoringService);
+        verifyZeroInteractions(logService);
     }
 
     @Test(expected = WebCertServiceException.class)
@@ -1060,6 +1069,8 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(lockedUtkast);
 
         draftService.revokeLockedDraft(INTYG_ID, INTYG_TYPE2, "", "");
+        verifyZeroInteractions(mockMonitoringService);
+        verifyZeroInteractions(logService);
     }
 
     @Test(expected = WebCertServiceException.class)
@@ -1067,6 +1078,8 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(lockedUtkast);
 
         draftService.revokeLockedDraft(INTYG_ID, INTYG_TYPE2, "", "");
+        verifyZeroInteractions(mockMonitoringService);
+        verifyZeroInteractions(logService);
     }
 
     private Patient getUpdatedPatient() {
