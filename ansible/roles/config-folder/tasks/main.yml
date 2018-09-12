@@ -5,3 +5,4 @@
     repo: "{{ config_repository }}"
     dest: "{{ config_folder }}"
     version: master
+    force: yes
