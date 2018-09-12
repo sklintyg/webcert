@@ -18,10 +18,15 @@
  */
 package se.inera.intyg.webcert.web.integration.interactions.createdraftcertificate;
 
-import com.google.common.base.Strings;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import com.google.common.base.Strings;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.infra.integration.pu.model.PersonSvar;
@@ -35,10 +40,6 @@ import se.inera.intyg.webcert.web.integration.converters.IntygsTypToInternal;
 import se.inera.intyg.webcert.web.integration.validators.PersonnummerChecksumValidator;
 import se.inera.intyg.webcert.web.integration.validators.ResultValidator;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
-
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
 
 /**
  * Created by eriklupander on 2017-09-19.
@@ -184,8 +185,7 @@ public abstract class BaseCreateDraftCertificateValidator {
         if (!authoritiesHelper.getIntygstyperAllowedForSekretessmarkering().contains(intygsTyp)) {
             switch (sekretessStatus) {
             case TRUE:
-                errors.addError("Cannot issue intyg type {0} for patient having "
-                        + "sekretessmarkering.", intygsTyp);
+                errors.addError("Intygstypen {0} kan inte utfärdas för patienter med sekretessmarkering.", intygsTyp);
                 break;
             case UNDEFINED:
                 errors.addError("Cannot issue intyg type {0} for unknown patient. Might be due "
