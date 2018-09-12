@@ -100,7 +100,6 @@ gretty {
                "-Dwebcert.resources.folder=${projectDir}/../src/main/resources",
                "-Dcredentials.file=${projectDir}/webcert-credentials.properties",
                "-Dwebcert.config.file=${projectDir}/webcert-dev.properties",
-               "-Dwebcert.logback.file=${projectDir}/webcert-logback.xml",
                "-Dwebcert.useMinifiedJavaScript=${minified}",
                "-Dh2.tcp.port=9094",
                "-Dh2.web.port=9090",
@@ -136,6 +135,8 @@ dependencies {
     compile "se.inera.intyg.infra:nias-stub:${infraVersion}"
     compile "se.inera.intyg.infra:postnummerservice-integration:${infraVersion}"
     compile "se.inera.intyg.infra:xmldsig:${infraVersion}"
+    compile "se.inera.intyg.infra:monitoring:${infraVersion}"
+    compile "se.inera.intyg.infra:common-redis-cache-core:${infraVersion}"
 
     compile "se.inera.intyg.common:ts-bas:${commonVersion}"
     compile "se.inera.intyg.common:ts-diabetes:${commonVersion}"
@@ -159,6 +160,7 @@ dependencies {
     compile "commons-io:commons-io:${commonsIoVersion}"
     compile "org.springframework:spring-web:${springVersion}"
     compile "org.springframework:spring-webmvc:${springVersion}"
+    compile "org.springframework.session:spring-session:${springSessionVersion}"
     compile "org.springframework.security:spring-security-web:${springSecurityVersion}"
     compile "org.springframework.security:spring-security-taglibs:${springSecurityVersion}"
     compile "org.apache.lucene:lucene-analyzers-common:${luceneAnalyzersCommonVersion}"
