@@ -239,7 +239,7 @@ var BaseSmiIntygPage = FkBaseIntyg._extend({
         if (data.kontaktMedFk) {
             expect(this.kontaktFK.value.getText()).toBe('Ja');
         } else {
-            expect(this.kontaktFK.value.getText()).toBe('Nej');
+            expect(this.kontaktFK.value.getText()).toBe('Ej angivet');
         }
 
         if (data.kontaktAnledning) {
