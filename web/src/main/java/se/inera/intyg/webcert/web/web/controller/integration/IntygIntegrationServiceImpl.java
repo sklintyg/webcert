@@ -51,7 +51,7 @@ public class IntygIntegrationServiceImpl extends IntegrationServiceImpl {
 
             // INTYG-3212: ArendeDraft patient info should always be up-to-date with the patient info supplied by the
             // integrating journaling system
-            if (isUtkast(utkast)) {
+            if (isEditableUtkast(utkast)) {
                 ensureDraftPatientInfoUpdated(intygTyp, intygId, utkast.getVersion(), user);
             }
 

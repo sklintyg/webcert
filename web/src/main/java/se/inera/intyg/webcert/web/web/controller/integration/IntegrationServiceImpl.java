@@ -18,6 +18,9 @@
  */
 package se.inera.intyg.webcert.web.web.controller.integration;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -88,6 +91,12 @@ public abstract class IntegrationServiceImpl implements IntegrationService {
 
     boolean isUtkast(Utkast utkast) {
         return utkast != null && !utkast.getStatus().equals(UtkastStatus.SIGNED);
+    }
+
+    boolean isEditableUtkast(Utkast utkast) {
+        List<UtkastStatus> editableDraftStatues = Arrays.asList(UtkastStatus.DRAFT_COMPLETE, UtkastStatus.DRAFT_INCOMPLETE);
+
+        return utkast != null && editableDraftStatues.contains(utkast.getStatus());
     }
 
     void verifySekretessmarkering(Utkast utkast, WebCertUser user) {

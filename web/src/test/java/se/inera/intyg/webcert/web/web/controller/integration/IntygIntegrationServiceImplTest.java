@@ -18,12 +18,23 @@
  */
 package se.inera.intyg.webcert.web.web.controller.integration;
 
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+
+import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.infra.integration.hsa.model.SelectableVardenhet;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.Feature;
@@ -44,22 +55,13 @@ import se.inera.intyg.webcert.web.test.TestIntygFactory;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.PrepareRedirectToIntyg;
 
-import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -121,6 +123,36 @@ public class IntygIntegrationServiceImplTest {
         // then
         verify(utkastRepository).findOne(anyString());
         verify(patientDetailsResolver).getSekretessStatus(any(Personnummer.class));
+        verify(utkastService, times(1)).updatePatientOnDraft(any());
+
+        assertEquals(INTYGSTYP, prepareRedirectToIntyg.getIntygTyp());
+        assertEquals(INTYGSID, prepareRedirectToIntyg.getIntygId());
+        assertTrue(prepareRedirectToIntyg.isUtkast());
+    }
+
+    @Test
+    public void ensurePreparationLockedDraft() {
+        // given
+        Utkast utkast = createUtkast();
+        utkast.setStatus(UtkastStatus.DRAFT_LOCKED);
+
+        when(utkastRepository.findOne(anyString())).thenReturn(utkast);
+        when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.FALSE);
+
+        IntegrationParameters parameters = new IntegrationParameters(null, null, ALTERNATE_SSN,
+                "Nollan", null, "Nollansson", "Nollgatan", "000000", "Nollby",
+                false, false, false, false);
+
+        WebCertUser user = createDefaultUser();
+        user.setParameters(parameters);
+
+        // when
+        PrepareRedirectToIntyg prepareRedirectToIntyg = testee.prepareRedirectToIntyg(INTYGSTYP, INTYGSID, user);
+
+        // then
+        verify(utkastRepository).findOne(anyString());
+        verify(patientDetailsResolver).getSekretessStatus(any(Personnummer.class));
+        verify(utkastService, times(0)).updatePatientOnDraft(any());
 
         assertEquals(INTYGSTYP, prepareRedirectToIntyg.getIntygTyp());
         assertEquals(INTYGSID, prepareRedirectToIntyg.getIntygId());
