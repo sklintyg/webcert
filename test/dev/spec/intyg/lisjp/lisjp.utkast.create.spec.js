@@ -90,6 +90,8 @@ describe('Create and Sign lisjp utkast', function() {
             IntygPage.whenCertificateLoaded().then(function() {
 		        IntygPage.verify(data);
 		    });
+
+            expect(IntygPage.skrivUtBtn.isDisplayed()).toBeTruthy();
         });
 
         afterAll(function() {
@@ -197,6 +199,8 @@ describe('Create and Sign lisjp utkast', function() {
                 IntygPage.closeReceiverApproval(false);
                 expect(IntygPage.getReceiverApprovalDialog().isPresent()).toBeFalsy();
             });
+
+            expect(IntygPage.skrivUtBtn.isPresent()).toBeFalsy();
         });
         afterAll(function() {
             testdataHelper.deleteIntyg(utkastId);
