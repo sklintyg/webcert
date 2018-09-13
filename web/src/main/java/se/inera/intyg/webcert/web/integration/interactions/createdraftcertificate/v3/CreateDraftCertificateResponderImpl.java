@@ -180,6 +180,7 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
             TakResult takResult = takService.verifyTakningForCareUnit(invokingUnitHsaId, intygsTyp, SchemaVersion.VERSION_3, user);
             if (!takResult.isValid()) {
                 String error = Joiner.on("; ").join(takResult.getErrorMessages());
+                LOG.warn("Invalid TAK result for unit '{}'. Returning APPLICATION_ERROR: {}", invokingUnitHsaId, error);
                 return createErrorResponse(error, ErrorIdType.APPLICATION_ERROR);
             }
         }

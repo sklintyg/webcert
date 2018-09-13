@@ -158,12 +158,14 @@ public class TakServiceImpl implements TakService {
             }
             if (!Objects.equals(hsaId, careUnitId)) {
                 hsaIds.add(careUnitId);
+                LOG.debug("Adding parentUnit {} to list of hsaIds for unit {}.", careUnitId, hsaId);
             }
 
             // Caregiver
             String careGiverId = hsaOrganizationsService.getVardgivareOfVardenhet(hsaId);
             if (careGiverId != null) {
                 hsaIds.add(careGiverId);
+                LOG.debug("Adding careGiverId {} to list of hsaIds for unit {}.", careGiverId, hsaId);
             }
 
         }
