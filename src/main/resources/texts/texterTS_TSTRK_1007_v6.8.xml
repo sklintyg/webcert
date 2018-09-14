@@ -238,4 +238,19 @@ Avser svenskt EU-pass, annat EU-pass utfärdade från och med den 1 september 20
   <text id="DFR_33.2.RBK">Kan inte ta ställning</text>
 	<text id="FRG_34.RBK">Patienten bör före ärendets avgörande undersökas av läkare med specialistkompetens i</text>
 
+	<!--
+	===============================================
+	KATEGORI: Övriga texter som krävs för korrekt PDF rendering
+	=============================================
+	-->
+	<text id="ts-bas.label.diabetes.diabetestyp.DIABETES_TYP_1">Typ 1</text>
+	<text id="ts-bas.label.diabetes.diabetestyp.DIABETES_TYP_2">Typ 2</text>
+	<text id="ts-bas.label.syn.binokulart">Binokulärt</text>
+	<text id="ts-bas.label.syn.hogeroga">Höger öga</text>
+	<text id="ts-bas.label.syn.vansteroga">Vänster öga</text>
+	<text id="ts-bas.label.syn.utankorrektion">Utan korrektion</text>
+	<text id="ts-bas.label.syn.medkorrektion">Med korrektion</text>
+	<text id="ts-bas.label.syn.kontaktlins">Kontaktlinser</text>
+	<text id="ts-bas.label.syn.korrektionsglasens-styrka">Korrektionsglasens styrka</text>
+
 </texter>
