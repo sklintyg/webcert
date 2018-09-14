@@ -18,7 +18,28 @@
  */
 package se.inera.intyg.webcert.web.service.intyg;
 
+import static java.util.Objects.isNull;
+import static org.apache.commons.collections.CollectionUtils.isEmpty;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
+import org.apache.commons.lang3.tuple.Pair;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v3.ListCertificatesForCareResponderInterface;
+import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v3.ListCertificatesForCareResponseType;
+import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v3.ListCertificatesForCareType;
+import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
+import javax.annotation.PostConstruct;
+import javax.xml.ws.WebServiceException;
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.time.LocalDateTime;
 import java.time.chrono.ChronoLocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -28,22 +49,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-
-import javax.annotation.PostConstruct;
-import javax.xml.ws.WebServiceException;
-
-import org.apache.commons.lang3.tuple.Pair;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Strings;
-
 import se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificatetype.v1.GetCertificateTypeResponderInterface;
 import se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificatetype.v1.GetCertificateTypeResponseType;
 import se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificatetype.v1.GetCertificateTypeType;
@@ -106,10 +111,6 @@ import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
-import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v3.ListCertificatesForCareResponderInterface;
-import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v3.ListCertificatesForCareResponseType;
-import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v3.ListCertificatesForCareType;
-import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
 
 /**
  * @author andreaskaltenbach
@@ -474,15 +475,13 @@ public class IntygServiceImpl implements IntygService {
     @Override
     public IntygServiceResult sendIntyg(String intygsId, String typ, String recipient, boolean delay) {
 
-        Utlatande intyg = getUtlatandeForIntyg(intygsId, typ);
+        IntygContentHolder intygData = getIntygData(intygsId, typ, true);
+        Utlatande intyg = intygData.getUtlatande();
+
         verifyEnhetsAuth(intyg, true);
-
-        if (isRevoked(intygsId, typ, false)) {
-            LOG.debug("Cannot send certificate with id '{}', the certificate is revoked", intygsId);
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, "Certificate is revoked");
-        }
-
-        verifyNotReplacedBySignedIntyg(intygsId, "send");
+        verifyIsNotRevoked(intygData, IntygOperation.SEND);
+        verifyIsSigned(intygData, IntygOperation.SEND);
+        verifyNotReplacedBySignedIntyg(intygsId, IntygOperation.SEND);
 
         // WC-US-SM-001 - vi får ej skicka FK-intyg för sekretessmarkerad patient som innehåller personuppgifter.
         verifyNoExposureOfSekretessmarkeradPatient(intyg);
@@ -525,12 +524,12 @@ public class IntygServiceImpl implements IntygService {
         }
     }
 
-    private void verifyNotReplacedBySignedIntyg(String intygsId, String operation) {
+    private void verifyNotReplacedBySignedIntyg(final String intygsId, final IntygOperation operation) {
         final Optional<WebcertCertificateRelation> replacedByRelation = certificateRelationService.getNewestRelationOfType(intygsId,
                 RelationKod.ERSATT, Arrays.asList(UtkastStatus.SIGNED));
         if (replacedByRelation.isPresent()) {
             String errorString = String.format("Cannot %s certificate '%s', the certificate is replaced by certificate '%s'",
-                    operation, intygsId, replacedByRelation.get().getIntygsId());
+                    operation.getValue(), intygsId, replacedByRelation.get().getIntygsId());
             LOG.debug(errorString);
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE,
                     errorString);
@@ -546,8 +545,9 @@ public class IntygServiceImpl implements IntygService {
     public IntygServiceResult revokeIntyg(String intygsId, String intygsTyp, String revokeMessage, String reason) {
         LOG.debug("Attempting to revoke intyg {}", intygsId);
         IntygContentHolder intyg = getIntygData(intygsId, intygsTyp, false);
+
         verifyEnhetsAuth(intyg.getUtlatande(), true);
-        verifyIsSigned(intyg.getStatuses());
+        verifyIsSigned(intyg, IntygOperation.REVOKE);
 
         if (intyg.isRevoked()) {
             LOG.debug("Certificate with id '{}' is already revoked", intygsId);
@@ -739,12 +739,31 @@ public class IntygServiceImpl implements IntygService {
         }
     }
 
-    private void verifyIsSigned(List<Status> statuses) {
-        statuses.stream()
-                .filter(status -> CertificateState.RECEIVED.equals(status.getType()) && status.getTimestamp() != null)
-                .findAny()
-                .orElseThrow(() -> new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE,
-                        "Certificate is not signed, cannot revoke an unsigned certificate"));
+    private void verifyIsSigned(final IntygContentHolder intyg, final IntygOperation operation) {
+
+        final List<Status> statuses = isNull(intyg) || isEmpty(intyg.getStatuses())
+                ? Lists.newArrayList()
+                : intyg.getStatuses();
+
+        if (statuses.stream().noneMatch(status -> CertificateState.RECEIVED.equals(status.getType()) && status.getTimestamp() != null)) {
+
+            final String message = MessageFormat.format("Certificate {0} is not signed, cannot {1} an unsigned certificate",
+                    intyg.getUtlatande().getId(), operation.getValue());
+
+            LOG.debug(message);
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, message);
+        }
+    }
+
+    private void verifyIsNotRevoked(final IntygContentHolder intyg, final IntygOperation operation) {
+        if (intyg.isRevoked()) {
+
+            final String message = MessageFormat.format("certificate with id '{0}' is revoked, cannot {1} a revoked certificate",
+                    intyg.getUtlatande().getId(), operation.getValue());
+
+            LOG.debug(message);
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, message);
+        }
     }
 
     /**
@@ -922,13 +941,6 @@ public class IntygServiceImpl implements IntygService {
 
     }
 
-    private Utlatande getUtlatandeForIntyg(String intygId, String typ) {
-        Utkast utkast = utkastRepository.findOne(intygId);
-        return utkast != null
-                ? modelFacade.getUtlatandeFromInternalModel(utkast.getIntygsTyp(), utkast.getModel())
-                : getIntygData(intygId, typ, false).getUtlatande();
-    }
-
     /**
      * Send a notification message to stakeholders informing that
      * a question related to a revoked certificate has been closed.
@@ -991,4 +1003,18 @@ public class IntygServiceImpl implements IntygService {
         return user.getParameters() != null ? user.getParameters().getReference() : null;
     }
 
+    public enum IntygOperation {
+        SEND("send"),
+        REVOKE("revoke");
+
+        private final String value;
+
+        IntygOperation(String value) {
+            this.value = value;
+        }
+
+        public String getValue() {
+            return value;
+        }
+    }
 }

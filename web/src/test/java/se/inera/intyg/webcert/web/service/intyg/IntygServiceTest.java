@@ -18,6 +18,45 @@
  */
 package se.inera.intyg.webcert.web.service.intyg;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anySet;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.when;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.Sets;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.cxf.helpers.FileUtils;
+import org.assertj.core.util.Lists;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Spy;
+import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.core.io.ClassPathResource;
+import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v3.ListCertificatesForCareResponderInterface;
+import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v3.ListCertificatesForCareResponseType;
+import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v3.ListCertificatesForCareType;
+import se.riv.clinicalprocess.healthcond.certificate.v3.IntygsStatus;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.transform.stream.StreamSource;
@@ -33,27 +72,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.tuple.Pair;
-import org.apache.cxf.helpers.FileUtils;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Spy;
-import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.core.io.ClassPathResource;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.Sets;
 import se.inera.intyg.common.fk7263.model.internal.Fk7263Utlatande;
 import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.model.CertificateState;
+import se.inera.intyg.common.support.model.Status;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.Patient;
 import se.inera.intyg.common.support.modules.registry.IntygModule;
@@ -100,30 +124,6 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
-import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v3.ListCertificatesForCareResponderInterface;
-import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v3.ListCertificatesForCareResponseType;
-import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v3.ListCertificatesForCareType;
-import se.riv.clinicalprocess.healthcond.certificate.v3.IntygsStatus;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
-import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.ArgumentMatchers.anySet;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.verifyZeroInteractions;
-import static org.mockito.Mockito.when;
 
 /**
  * @author andreaskaltenbach
@@ -915,11 +915,25 @@ public class IntygServiceTest {
         utkast.setModel(json);
 
         when(utkastRepository.findOne(intygId)).thenReturn(utkast);
-        when(moduleFacade.getUtlatandeFromInternalModel(eq(intygTyp), anyString())).thenReturn(utlatande);
         when(certificateRelationService.getNewestRelationOfType(eq(intygId), eq(RelationKod.ERSATT),
                 eq(Arrays.asList(UtkastStatus.SIGNED))))
                         .thenReturn(Optional.empty());
         when(moduleRegistry.getModuleEntryPoint(intygTyp)).thenReturn(new Fk7263EntryPoint());
+
+        utkast.setStatus(UtkastStatus.SIGNED);
+
+        CertificateMetaData metaData = buildCertificateMetaData();
+
+        final Status status = new Status();
+        status.setType(CertificateState.RECEIVED);
+        status.setTimestamp(LocalDateTime.of(2016, 1, 1, 1, 1, 1, 1));
+        metaData.setStatus(Lists.newArrayList(status));
+
+        CertificateResponse certificateResponse = new CertificateResponse(json, utlatande, metaData, false);
+
+        when(moduleFacade.getCertificate(any(String.class), any(String.class))).thenReturn(certificateResponse);
+
+        when(utkastRepository.findByIntygsIdAndIntygsTyp(anyString(), anyString())).thenReturn(utkast);
 
         intygService.handleAfterSigned(utkast);
 
@@ -952,9 +966,21 @@ public class IntygServiceTest {
         utkast.setIntygsId(intygId);
         utkast.setIntygsTyp(intygTyp);
         utkast.setModel(json);
+        utkast.setStatus(UtkastStatus.SIGNED);
 
+        CertificateMetaData metaData = buildCertificateMetaData();
+
+        final Status status = new Status();
+        status.setType(CertificateState.RECEIVED);
+        status.setTimestamp(LocalDateTime.of(2016, 1, 1, 1, 1, 1, 1));
+        metaData.setStatus(Lists.newArrayList(status));
+
+        CertificateResponse certificateResponse = new CertificateResponse(json, utlatande, metaData, false);
+
+        when(moduleFacade.getCertificate(any(String.class), any(String.class))).thenReturn(certificateResponse);
+
+        when(utkastRepository.findByIntygsIdAndIntygsTyp(anyString(), anyString())).thenReturn(utkast);
         when(utkastRepository.findOne(intygId)).thenReturn(utkast);
-        when(moduleFacade.getUtlatandeFromInternalModel(eq(intygTyp), anyString())).thenReturn(utlatande);
         when(certificateRelationService.getNewestRelationOfType(eq(intygId), eq(RelationKod.ERSATT),
                 eq(Arrays.asList(UtkastStatus.SIGNED))))
                         .thenReturn(Optional.empty());
@@ -1327,6 +1353,15 @@ public class IntygServiceTest {
 
         return patient;
 
+    }
+
+    protected CertificateMetaData buildCertificateMetaData() {
+        CertificateMetaData metaData = new CertificateMetaData();
+        metaData.setStatus(new ArrayList<>());
+        Status statusSigned = new Status(CertificateState.RECEIVED, "FKASSA", LocalDateTime.now());
+        metaData.getStatus().add(statusSigned);
+        metaData.setSignDate(LocalDateTime.now());
+        return metaData;
     }
 
     private PersonSvar getPersonSvar(boolean deceased, PersonSvar.Status status) {
