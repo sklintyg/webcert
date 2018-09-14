@@ -741,7 +741,7 @@ public class IntygServiceImpl implements IntygService {
 
     private void verifyIsSigned(final IntygContentHolder intyg, final IntygOperation operation) {
 
-        final List<Status> statuses = isNull(intyg) || isEmpty(intyg.getStatuses())
+        final List<Status> statuses = (isNull(intyg) || isEmpty(intyg.getStatuses()))
                 ? Lists.newArrayList()
                 : intyg.getStatuses();
 
