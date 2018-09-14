@@ -164,4 +164,15 @@
     <text id="FRG_45.RBK">Är patienten lämplig att inneha behörighet för C1, C1E, C, CE, D1, D1E, D, DE eller taxi med hänsyn till de körningar och arbetsformer som är aktuella vid sådant innehav? (Se 6 kap. 16 §)</text>
     <text id="FRG_34.RBK">Patienten bör före ärendets avgörande undersökas av läkare med specialistkompetens i</text>
 
+    <!--
+    ===============================================
+    KATEGORI: Övriga texter som krävs för korrekt rendering
+    =============================================
+    -->
+    <text id="ts-diabetes.label.syn.binokulart">Binokulärt</text>
+    <text id="ts-diabetes.label.syn.hogeroga">Höger öga</text>
+    <text id="ts-diabetes.label.syn.vansteroga">Vänster öga</text>
+    <text id="ts-diabetes.label.syn.utankorrektion">Utan korrektion</text>
+    <text id="ts-diabetes.label.syn.medkorrektion">Med korrektion</text>
+
 </texter>
