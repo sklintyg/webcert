@@ -21,18 +21,26 @@ package se.inera.intyg.webcert.web.service.utkast.dto;
 public class CreateReplacementCopyResponse {
     private String newDraftIntygType;
 
+    private String newDraftIntygTypeVersion;
+
     private String newDraftIntygId;
 
     private String originalIntygId;
 
-    public CreateReplacementCopyResponse(String newDraftIntygType, String newDraftIntygId, String originalIntygId) {
+    public CreateReplacementCopyResponse(String newDraftIntygType, String newDraftIntygTypeVersion, String newDraftIntygId,
+            String originalIntygId) {
         this.newDraftIntygId = newDraftIntygId;
         this.newDraftIntygType = newDraftIntygType;
+        this.newDraftIntygTypeVersion = newDraftIntygTypeVersion;
         this.originalIntygId = originalIntygId;
     }
 
     public String getNewDraftIntygType() {
         return newDraftIntygType;
+    }
+
+    public String getNewDraftIntygTypeVersion() {
+        return newDraftIntygTypeVersion;
     }
 
     public String getNewDraftIntygId() {
@@ -42,4 +50,5 @@ public class CreateReplacementCopyResponse {
     public String getOriginalIntygId() {
         return originalIntygId;
     }
+
 }

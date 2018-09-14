@@ -32,6 +32,8 @@ public class ListIntygEntry {
 
     private String intygType;
 
+    private String intygTypeVersion;
+
     private String status;
 
     private LocalDateTime lastUpdatedSigned;
@@ -141,6 +143,14 @@ public class ListIntygEntry {
 
     public void setAvliden(boolean avliden) {
         this.avliden = avliden;
+    }
+
+    public String getIntygTypeVersion() {
+        return intygTypeVersion;
+    }
+
+    public void setIntygTypeVersion(String intygTypeVersion) {
+        this.intygTypeVersion = intygTypeVersion;
     }
 
     @Override

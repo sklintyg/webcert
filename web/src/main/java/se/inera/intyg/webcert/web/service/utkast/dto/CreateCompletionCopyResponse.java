@@ -22,18 +22,26 @@ public class CreateCompletionCopyResponse {
 
     private String newDraftIntygType;
 
+    private String newDraftIntygTypeVersion;
+
     private String newDraftIntygId;
 
     private String originalIntygId;
 
-    public CreateCompletionCopyResponse(String newDraftIntygType, String newDraftIntygId, String originalIntygId) {
+    public CreateCompletionCopyResponse(String newDraftIntygType, String newDraftIntygTypeVersion, String newDraftIntygId,
+            String originalIntygId) {
         this.newDraftIntygId = newDraftIntygId;
         this.newDraftIntygType = newDraftIntygType;
+        this.newDraftIntygTypeVersion = newDraftIntygTypeVersion;
         this.originalIntygId = originalIntygId;
     }
 
     public String getNewDraftIntygType() {
         return newDraftIntygType;
+    }
+
+    public String getNewDraftIntygTypeVersion() {
+        return newDraftIntygTypeVersion;
     }
 
     public String getNewDraftIntygId() {
@@ -43,4 +51,5 @@ public class CreateCompletionCopyResponse {
     public String getOriginalIntygId() {
         return originalIntygId;
     }
+
 }

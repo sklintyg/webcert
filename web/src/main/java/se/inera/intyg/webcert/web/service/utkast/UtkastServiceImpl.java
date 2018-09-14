@@ -792,6 +792,7 @@ public class UtkastServiceImpl implements UtkastService {
 
         utkast.setIntygsId(request.getIntygId());
         utkast.setIntygsTyp(request.getIntygType());
+        utkast.setIntygTypeVersion(request.getIntygTypeVersion());
 
         utkast.setStatus(request.getStatus());
 

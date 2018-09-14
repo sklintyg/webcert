@@ -36,6 +36,7 @@ import se.inera.intyg.common.fk7263.model.internal.Fk7263Utlatande;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.model.CertificateState;
 import se.inera.intyg.common.support.model.Status;
+import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.common.support.modules.support.api.dto.CreateDraftCopyHolder;
 import se.inera.intyg.common.support.modules.support.api.dto.ValidateDraftResponse;
@@ -67,6 +68,7 @@ public class CopyCompletionUtkastBuilderTest extends AbstractBuilderTest {
 
     private static final String MEDDELANDE_ID = "13";
     private static final String KOMMENTAR = "Kommentar";
+    private static final String INTYG_TYPE_VERSION = "1.0";
 
     @Mock
     private ArendeService arendeService;
@@ -95,6 +97,8 @@ public class CopyCompletionUtkastBuilderTest extends AbstractBuilderTest {
 
         ValidateDraftResponse vdr = new ValidateDraftResponse(ValidationStatus.VALID, new ArrayList<>());
         when(mockModuleApi.validateDraft(isNull())).thenReturn(vdr);
+        Utlatande utlatande = new Fk7263Utlatande();
+        when(mockModuleApi.getUtlatandeFromJson(any(String.class))).thenReturn(utlatande);
 
         CopyUtkastBuilderResponse builderResponse = copyCompletionBuilder.populateCopyUtkastFromSignedIntyg(copyRequest, patientDetails,
                 true, false, false);
@@ -157,6 +161,8 @@ public class CopyCompletionUtkastBuilderTest extends AbstractBuilderTest {
         when(mockIntygService.fetchIntygData(INTYG_ID, intygsTyp, false)).thenReturn(createIntygContentHolder());
         when(mockModuleApi.validateDraft(isNull()))
                 .thenReturn(new ValidateDraftResponse(ValidationStatus.VALID, new ArrayList<>()));
+        Utlatande utlatande = new Fk7263Utlatande();
+        when(mockModuleApi.getUtlatandeFromJson(any(String.class))).thenReturn(utlatande);
         when(arendeService.getArende(meddelandeId)).thenReturn(arende);
 
         CreateCompletionCopyRequest copyRequest = buildCompletionRequest();
@@ -190,6 +196,8 @@ public class CopyCompletionUtkastBuilderTest extends AbstractBuilderTest {
         when(mockModuleApi.validateDraft(isNull()))
                 .thenReturn(new ValidateDraftResponse(ValidationStatus.VALID, new ArrayList<>()));
         when(arendeService.getArende(meddelandeId)).thenReturn(arende);
+        Utlatande utlatande = new Fk7263Utlatande();
+        when(mockModuleApi.getUtlatandeFromJson(any(String.class))).thenReturn(utlatande);
 
         CreateCompletionCopyRequest copyRequest = buildCompletionRequest();
         copyRequest.setMeddelandeId(meddelandeId);
@@ -240,6 +248,7 @@ public class CopyCompletionUtkastBuilderTest extends AbstractBuilderTest {
         Utkast orgUtkast = new Utkast();
         orgUtkast.setIntygsId(INTYG_COPY_ID);
         orgUtkast.setIntygsTyp(INTYG_TYPE);
+        orgUtkast.setIntygTypeVersion(INTYG_TYPE_VERSION);
         orgUtkast.setPatientPersonnummer(PATIENT_SSN);
         orgUtkast.setPatientFornamn(PATIENT_FNAME);
         orgUtkast.setPatientMellannamn(PATIENT_MNAME);

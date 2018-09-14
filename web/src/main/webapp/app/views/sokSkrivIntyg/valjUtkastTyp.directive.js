@@ -84,7 +84,7 @@ angular.module('webcert').directive('wcValjUtkastTyp',
                     ViewState.createErrorMessageKey = undefined;
 
                     UtkastProxy.createUtkast(createDraftRequestPayload, function(data) {
-                        $location.url('/' + createDraftRequestPayload.intygType + '/edit/' + data.intygsId + '/', true);
+                        $location.url('/' + intygType + '/' + data.intygTypeVersion + '/edit/' + data.intygsId + '/', true);
                     }, function(error) {
                         $log.debug('Create draft failed: ' + error);
                         if (error && error.errorCode === 'PU_PROBLEM') {

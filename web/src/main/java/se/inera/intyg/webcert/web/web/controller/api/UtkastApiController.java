@@ -22,6 +22,7 @@ import io.swagger.annotations.Api;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import se.inera.intyg.common.services.texts.IntygTextsService;
 import se.inera.intyg.common.support.model.common.internal.Patient;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
@@ -78,6 +79,9 @@ public class UtkastApiController extends AbstractApiController {
 
     @Autowired
     private UtkastService utkastService;
+
+    @Autowired
+    private IntygTextsService intygTextsService;
 
     @Autowired
     private PatientDetailsResolver patientDetailsResolver;
@@ -243,8 +247,8 @@ public class UtkastApiController extends AbstractApiController {
             pat.setPostnummer(req.getPatientPostnummer());
             pat.setPostort(req.getPatientPostort());
         }
-
-        return new CreateNewDraftRequest(null, req.getIntygType(), null, createHoSPersonFromUser(), pat);
+        String latestIntygTypeVersion = intygTextsService.getLatestVersion(req.getIntygType());
+        return new CreateNewDraftRequest(null, req.getIntygType(), latestIntygTypeVersion, null, createHoSPersonFromUser(), pat);
     }
 
     private UtkastFilter createUtkastFilter(QueryIntygParameter filterParameters) {

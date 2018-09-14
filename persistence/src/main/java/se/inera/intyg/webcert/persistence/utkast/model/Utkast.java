@@ -68,6 +68,9 @@ public class Utkast {
     @Column(name = "INTYGS_TYP")
     private String intygsTyp;
 
+    @Column(name = "INTYG_TYPE_VERSION")
+    private String intygTypeVersion;
+
     @Column(name = "ENHETS_ID")
     private String enhetsId;
 
@@ -193,6 +196,14 @@ public class Utkast {
 
     public void setIntygsTyp(String intygsTyp) {
         this.intygsTyp = intygsTyp;
+    }
+
+    public String getIntygTypeVersion() {
+        return intygTypeVersion;
+    }
+
+    public void setIntygTypeVersion(String intygTypeVersion) {
+        this.intygTypeVersion = intygTypeVersion;
     }
 
     public String getEnhetsId() {

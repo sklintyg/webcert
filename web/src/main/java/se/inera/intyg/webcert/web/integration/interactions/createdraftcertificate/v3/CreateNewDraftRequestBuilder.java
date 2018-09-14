@@ -24,6 +24,6 @@ import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificaterespo
 
 public interface CreateNewDraftRequestBuilder {
 
-    CreateNewDraftRequest buildCreateNewDraftRequest(Intyg intygRequest, IntygUser user);
+    CreateNewDraftRequest buildCreateNewDraftRequest(Intyg intygRequest, String intygTypeVersion, IntygUser user);
 
 }

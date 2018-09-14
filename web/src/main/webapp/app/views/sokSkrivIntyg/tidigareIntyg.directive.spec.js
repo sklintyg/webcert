@@ -141,6 +141,7 @@ describe('SokSkrivValjUtkastTypeCtrl', function() {
             $controller('webcert.SokSkrivValjUtkastTypeCtrl', {$scope: $scope});
             intyg = {
                 intygType: 'fk7263',
+                intygTypeVersion: '1.0',
                 intygId: 'abc123',
                 status: 'SIGNED',
                 relations: {
@@ -207,6 +208,7 @@ describe('SokSkrivValjUtkastTypeCtrl', function() {
             intyg = {
                 source: 'WC',
                 intygType: 'fk7263',
+                intygTypeVersion: '2.0',
                 intygId: 'abc123'
             };
         });
@@ -214,25 +216,25 @@ describe('SokSkrivValjUtkastTypeCtrl', function() {
         it('should set utkast path', function() {
             intyg.status = 'DRAFT_COMPLETE';
             element.isolateScope().openIntyg(intyg);
-            expect($location.path()).toBe('/' + intyg.intygType + '/edit/' + intyg.intygId + '/');
+            expect($location.path()).toBe('/' + intyg.intygType + '/' + intyg.intygTypeVersion + '/edit/' + intyg.intygId + '/');
         });
 
         it('should set utkast path', function() {
             intyg.status = 'DRAFT_INCOMPLETE';
             element.isolateScope().openIntyg(intyg);
-            expect($location.path()).toBe('/' + intyg.intygType + '/edit/' + intyg.intygId + '/');
+            expect($location.path()).toBe('/' + intyg.intygType + '/' + intyg.intygTypeVersion + '/edit/' + intyg.intygId + '/');
         });
 
         it('should set utkast path', function() {
             intyg.status = 'DRAFT_LOCKED';
             element.isolateScope().openIntyg(intyg);
-            expect($location.path()).toBe('/' + intyg.intygType + '/edit/' + intyg.intygId + '/');
+            expect($location.path()).toBe('/' + intyg.intygType + '/' + intyg.intygTypeVersion + '/edit/' + intyg.intygId + '/');
         });
 
         it('should set signed path', function() {
             intyg.status = 'RECEIVED';
             element.isolateScope().openIntyg(intyg);
-            expect($location.path()).toBe('/intyg/' + intyg.intygType + '/' + intyg.intygId + '/');
+            expect($location.path()).toBe('/intyg/' + intyg.intygType + '/' + intyg.intygTypeVersion + '/' + intyg.intygId + '/');
         });
     });
 

@@ -18,10 +18,20 @@
  */
 package se.inera.intyg.webcert.web.service.utkast;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -31,9 +41,16 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.core.io.ClassPathResource;
 
 import se.inera.intyg.common.db.model.internal.DbUtlatande;
+import se.inera.intyg.common.doi.model.internal.DoiUtlatande;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.model.CertificateState;
 import se.inera.intyg.common.support.model.Status;
+import se.inera.intyg.common.support.model.common.internal.GrundData;
+import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
+import se.inera.intyg.common.support.model.common.internal.Patient;
+import se.inera.intyg.common.support.model.common.internal.Utlatande;
+import se.inera.intyg.common.support.model.common.internal.Vardenhet;
+import se.inera.intyg.common.support.model.common.internal.Vardgivare;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.common.support.modules.support.api.dto.CreateDraftCopyHolder;
 import se.inera.intyg.common.support.modules.support.api.dto.ValidateDraftResponse;
@@ -47,33 +64,25 @@ import se.inera.intyg.webcert.web.service.utkast.dto.CopyUtkastBuilderResponse;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateUtkastFromTemplateRequest;
 import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 @RunWith(MockitoJUnitRunner.class)
 public class CreateUtkastCopyBuilderTest extends AbstractBuilderTest {
 
     private static final String INTYG_TYPE_1 = "db";
     private static final String INTYG_TYPE_2 = "doi";
+    private static final String INTYG_TEXT_VERSION = "1.0";
 
-    private ModuleApi mockModuleApi1;
-    private ModuleApi mockModuleApi2;
+    private ModuleApi mockModuleApiDB;
+    private ModuleApi mockModuleApiDOI;
 
     @InjectMocks
     private CreateUtkastCopyBuilder createUtkastCopyBuilder = new CreateUtkastCopyBuilder();
 
     @Before
     public void expectCallToModuleRegistry() throws Exception {
-        this.mockModuleApi1 = mock(ModuleApi.class);
-        this.mockModuleApi2 = mock(ModuleApi.class);
-        when(moduleRegistry.getModuleApi(INTYG_TYPE_1)).thenReturn(mockModuleApi1);
-        when(moduleRegistry.getModuleApi(INTYG_TYPE_2)).thenReturn(mockModuleApi2);
+        this.mockModuleApiDB = mock(ModuleApi.class);
+        this.mockModuleApiDOI = mock(ModuleApi.class);
+        when(moduleRegistry.getModuleApi(INTYG_TYPE_1)).thenReturn(mockModuleApiDB);
+        when(moduleRegistry.getModuleApi(INTYG_TYPE_2)).thenReturn(mockModuleApiDOI);
     }
 
     @Test
@@ -86,10 +95,10 @@ public class CreateUtkastCopyBuilderTest extends AbstractBuilderTest {
         Person patientDetails = new Person(PATIENT_SSN, false, false, PATIENT_FNAME, PATIENT_MNAME, PATIENT_LNAME, "Postadr", "12345",
                 "postort");
 
-        when(mockModuleApi2.createNewInternalFromTemplate(any(CreateDraftCopyHolder.class), any())).thenReturn(INTYG_JSON);
+        when(mockModuleApiDOI.createNewInternalFromTemplate(any(CreateDraftCopyHolder.class), any())).thenReturn(INTYG_JSON);
 
         ValidateDraftResponse vdr = new ValidateDraftResponse(ValidationStatus.VALID, new ArrayList<>());
-        when(mockModuleApi2.validateDraft(anyString())).thenReturn(vdr);
+        when(mockModuleApiDOI.validateDraft(anyString())).thenReturn(vdr);
 
         CopyUtkastBuilderResponse builderResponse = createUtkastCopyBuilder
                 .populateCopyUtkastFromSignedIntyg(createUtkastFromTemplateRequest, patientDetails, false,
@@ -104,7 +113,7 @@ public class CreateUtkastCopyBuilderTest extends AbstractBuilderTest {
         assertEquals(PATIENT_LNAME, builderResponse.getUtkastCopy().getPatientEfternamn());
 
         ArgumentCaptor<CreateDraftCopyHolder> requestCaptor = ArgumentCaptor.forClass(CreateDraftCopyHolder.class);
-        verify(mockModuleApi2).createNewInternalFromTemplate(requestCaptor.capture(), any());
+        verify(mockModuleApiDOI).createNewInternalFromTemplate(requestCaptor.capture(), any());
 
         // verify full name is set
         assertNotNull(requestCaptor.getValue().getPatient().getFullstandigtNamn());
@@ -125,10 +134,10 @@ public class CreateUtkastCopyBuilderTest extends AbstractBuilderTest {
         Person patientDetails = new Person(PATIENT_SSN, false, false, PATIENT_FNAME, PATIENT_MNAME, PATIENT_LNAME, "Postadr", "12345",
                 "postort");
 
-        when(mockModuleApi2.createNewInternalFromTemplate(any(CreateDraftCopyHolder.class), any())).thenReturn(INTYG_JSON);
+        when(mockModuleApiDOI.createNewInternalFromTemplate(any(CreateDraftCopyHolder.class), any())).thenReturn(INTYG_JSON);
 
         ValidateDraftResponse vdr = new ValidateDraftResponse(ValidationStatus.VALID, new ArrayList<>());
-        when(mockModuleApi2.validateDraft(anyString())).thenReturn(vdr);
+        when(mockModuleApiDOI.validateDraft(anyString())).thenReturn(vdr);
 
         CopyUtkastBuilderResponse builderResponse = createUtkastCopyBuilder
                 .populateCopyUtkastFromOrignalUtkast(createUtkastFromTemplateRequest, patientDetails, true,
@@ -174,6 +183,7 @@ public class CreateUtkastCopyBuilderTest extends AbstractBuilderTest {
         Utkast orgUtkast = new Utkast();
         orgUtkast.setIntygsId(INTYG_COPY_ID);
         orgUtkast.setIntygsTyp(INTYG_TYPE_1);
+        orgUtkast.setIntygTypeVersion(INTYG_TEXT_VERSION);
         orgUtkast.setPatientPersonnummer(PATIENT_SSN);
         orgUtkast.setPatientFornamn(PATIENT_FNAME);
         orgUtkast.setPatientMellannamn(PATIENT_MNAME);

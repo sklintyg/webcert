@@ -42,7 +42,8 @@ angular.module('webcert').directive('wcUtkastList',
 
                     $scope.openIntyg = function(intyg) {
                         $state.go(intyg.intygType + '-edit', {
-                            certificateId: intyg.intygId
+                            certificateId: intyg.intygId,
+                            intygTypeVersion: intyg.intygTypeVersion
                         });
                     };
 

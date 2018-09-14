@@ -132,8 +132,10 @@ public abstract class AbstractUtkastBuilder<T extends AbstractCreateCopyRequest>
 
         UtkastStatus utkastStatus = validateDraft(moduleApi, draftCopyJson);
 
-        Utkast utkast = buildUtkastCopy(copyRequest, newDraftCopyId, intygsTyp, addRelation, relation, draftCopyJson,
-                utkastStatus);
+        //TODO: can we really just take textVersion of orgUtlatande like when db->doi?
+        Utkast utkast = buildUtkastCopy(copyRequest, newDraftCopyId, intygsTyp, signedIntygHolder.getUtlatande().getTextVersion(),
+                addRelation, relation,
+                draftCopyJson, utkastStatus);
 
         if (patientDetails != null) {
             populatePatientDetailsFromPerson(utkast, patientDetails);
@@ -204,8 +206,9 @@ public abstract class AbstractUtkastBuilder<T extends AbstractCreateCopyRequest>
                 newDraftCopyId);
 
         UtkastStatus utkastStatus = validateDraft(moduleApi, draftCopyJson);
-
-        Utkast utkast = buildUtkastCopy(copyRequest, newDraftCopyId, copyRequest.getTyp(), addRelation, relation,
+        //TODO: can we really just take textVersion of orgUtlatande like when db->doi?
+        Utkast utkast = buildUtkastCopy(copyRequest, newDraftCopyId, copyRequest.getTyp(), orgUtkast.getIntygTypeVersion(), addRelation,
+                relation,
                 draftCopyJson, utkastStatus);
 
         if (patientDetails != null) {
@@ -235,12 +238,15 @@ public abstract class AbstractUtkastBuilder<T extends AbstractCreateCopyRequest>
         return moduleApi.createNewInternalFromTemplate(draftCopyHolder, template);
     }
 
-    protected Utkast buildUtkastCopy(T copyRequest, String utkastId, String utkastTyp, boolean addRelation, Relation relation,
+    // CHECKSTYLE:OFF ParameterNumber
+    protected Utkast buildUtkastCopy(T copyRequest, String utkastId, String utkastTyp, String intygTypeVersion, boolean addRelation,
+            Relation relation,
             String draftCopyJson, UtkastStatus utkastStatus) {
         Utkast utkast = new Utkast();
 
         utkast.setIntygsId(utkastId);
         utkast.setIntygsTyp(utkastTyp);
+        utkast.setIntygTypeVersion(intygTypeVersion);
         utkast.setStatus(utkastStatus);
         utkast.setModel(draftCopyJson);
 
@@ -252,6 +258,7 @@ public abstract class AbstractUtkastBuilder<T extends AbstractCreateCopyRequest>
 
         return utkast;
     }
+    // CHECKSTYLE:ON ParameterNumber
 
     private void enrichWithRelation(Utkast utkast, Relation relation) {
         utkast.setRelationIntygsId(relation.getRelationIntygsId());

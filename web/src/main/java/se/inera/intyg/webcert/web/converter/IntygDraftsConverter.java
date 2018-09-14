@@ -79,6 +79,7 @@ public class IntygDraftsConverter {
         ListIntygEntry entry = new ListIntygEntry();
         entry.setIntygId(utkast.getIntygsId());
         entry.setIntygType(utkast.getIntygsTyp());
+        entry.setIntygTypeVersion(utkast.getIntygTypeVersion());
         entry.setSource(IntygSource.WC);
         entry.setUpdatedSignedBy(resolvedSignedBy(utkast));
         entry.setLastUpdatedSigned(utkast.getSenastSparadDatum());
@@ -144,6 +145,8 @@ public class IntygDraftsConverter {
         ListIntygEntry entry = new ListIntygEntry();
         entry.setIntygId(source.getIntygsId().getExtension());
         entry.setIntygType(moduleRegistry.getModuleIdFromExternalId(source.getTyp().getCode()));
+        //TODO: sanitycheck of version format for intyg origination from IT?
+        entry.setIntygTypeVersion(source.getVersion());
         entry.setSource(IntygSource.IT);
 
         if (altSource == null) {

@@ -22,13 +22,14 @@ angular.module('webcertTest').value('mockResponse', {
         'totalCount':1,
         'results':[
             {'intygId':'2885f159-51e7-41bc-aba0-88fb02b2d667','patientId':'19121212-1212','source':'WC',
-                'intygType':'fk7263','status':'DRAFT_COMPLETE','lastUpdatedSigned':'2015-01-28T13:47:22.071',
+                'intygType':'fk7263', 'intygTypeVersion':'1.0', 'status':'DRAFT_COMPLETE','lastUpdatedSigned':'2015-01-28T13:47:22.071',
                 'updatedSignedBy':'Jan Nilsson','vidarebefordrad':false}
         ]
     },
     utkast: {
         'intygId': '6c10506a-1ef1-4ce2-a4c8-a82fa43a1e26',
         'intygType': 'fk7263',
+        'intygTypeVersion': '1.0',
         'patientNamn': 'Tolvan Tolvansson',
         'signeringsDatum': '2015-01-27T16:01:10.000',
         'patientId': {

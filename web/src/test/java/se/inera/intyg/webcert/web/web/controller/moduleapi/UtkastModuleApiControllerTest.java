@@ -359,6 +359,7 @@ public class UtkastModuleApiControllerTest {
         String intygId = "intygId";
         String newIntygId = "newIntygId";
         String intygTyp = "fk7263";
+        String intygTypeVersion = "1.0";
 
         setupUser(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG, intygTyp, false, AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);
 
@@ -368,7 +369,7 @@ public class UtkastModuleApiControllerTest {
 
         ArgumentCaptor<CreateUtkastFromTemplateRequest> captor = ArgumentCaptor.forClass(CreateUtkastFromTemplateRequest.class);
         when(copyUtkastService.createUtkastCopy(captor.capture()))
-                .thenReturn(new CreateUtkastFromTemplateResponse(intygTyp, newIntygId, intygId));
+                .thenReturn(new CreateUtkastFromTemplateResponse(intygTyp, intygTypeVersion, newIntygId, intygId));
 
         Response response = moduleApiController.copyUtkast(intygTyp, intygId);
 

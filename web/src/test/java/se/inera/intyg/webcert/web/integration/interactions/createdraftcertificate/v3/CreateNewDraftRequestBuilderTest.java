@@ -53,6 +53,7 @@ public class CreateNewDraftRequestBuilderTest extends BaseCreateDraftCertificate
     public static final String PATIENT_POSTADRESS = "postadress";
     public static final String PATIENT_POSTNUMMER = "postnummer";
     public static final String PATIENT_POSTORT = "postort";
+    private static final String INTYG_TYPE_VERSION = "1.0";
 
     private WebCertUser user;
 
@@ -74,7 +75,7 @@ public class CreateNewDraftRequestBuilderTest extends BaseCreateDraftCertificate
     @Test
     public void testBuildCreateNewDraftRequest() {
 
-        CreateNewDraftRequest res = builder.buildCreateNewDraftRequest(createIntyg(), user);
+        CreateNewDraftRequest res = builder.buildCreateNewDraftRequest(createIntyg(), INTYG_TYPE_VERSION, user);
 
         assertNotNull(res);
         assertEquals(CERT_TYPE.toLowerCase(), res.getIntygType());
@@ -101,7 +102,7 @@ public class CreateNewDraftRequestBuilderTest extends BaseCreateDraftCertificate
     @Test
     public void testBuildCreateNewDraftRequestWithHsaBefattningAndSpecialityNames() {
 
-        CreateNewDraftRequest res = builder.buildCreateNewDraftRequest(createIntyg(), user);
+        CreateNewDraftRequest res = builder.buildCreateNewDraftRequest(createIntyg(), INTYG_TYPE_VERSION, user);
 
         assertNotNull(res);
         assertNotNull(res.getHosPerson());

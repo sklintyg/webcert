@@ -28,6 +28,8 @@ public class CreateNewDraftRequest {
 
     private String intygType;
 
+    private String intygTypeVersion;
+
     private String referens;
 
     private UtkastStatus status;
@@ -40,15 +42,16 @@ public class CreateNewDraftRequest {
         // Needed for deserialization
     }
 
-    public CreateNewDraftRequest(String intygId, String intygType, UtkastStatus status, HoSPersonal hosPerson,
+    public CreateNewDraftRequest(String intygId, String intygType, String intygTypeVersion, UtkastStatus status, HoSPersonal hosPerson,
             Patient patient) {
-        this(intygId, intygType, status, hosPerson, patient, null);
+        this(intygId, intygType, intygTypeVersion, status, hosPerson, patient, null);
     }
 
-    public CreateNewDraftRequest(String intygId, String intygType, UtkastStatus status, HoSPersonal hosPerson,
+    public CreateNewDraftRequest(String intygId, String intygType, String intygTypeVersion, UtkastStatus status, HoSPersonal hosPerson,
                                  Patient patient, String referens) {
         this.intygId = intygId;
         this.intygType = intygType;
+        this.intygTypeVersion = intygTypeVersion;
         this.referens = referens;
         this.status = status;
         this.hosPerson = hosPerson;
@@ -100,5 +103,13 @@ public class CreateNewDraftRequest {
 
     public void setReferens(String referens) {
         this.referens = referens;
+    }
+
+    public String getIntygTypeVersion() {
+        return intygTypeVersion;
+    }
+
+    public void setIntygTypeVersion(String intygTypeVersion) {
+        this.intygTypeVersion = intygTypeVersion;
     }
 }

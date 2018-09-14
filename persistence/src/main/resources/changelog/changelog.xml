@@ -1059,4 +1059,21 @@
     <sql>UPDATE SIGNATUR SET SIGNATUR_TYP='LEGACY' WHERE (SIGNATUR_TYP IS NULL OR SIGNATUR_TYP = '')</sql>
   </changeSet>
 
+  <!-- Add column for intygTypeVersion needed for versioned inityg -->
+  <changeSet id="56" author="marced">
+    <addColumn tableName="INTYG">
+      <column name="INTYG_TYPE_VERSION" type="varchar(32)">
+        <constraints nullable="false"/>
+      </column>
+    </addColumn>
+    <!-- NOTE: This is not ready for production!!!!
+    ts-bas/ts-diabetes will exist with versions 2.6/2.8 and 6.7/6.8. We need another way to update version for those..
+    Update version on existing utkast to latest known version of all types.-->
+    <sql>
+      UPDATE INTYG SET INTYG_TYPE_VERSION = '1.0' WHERE INTYGS_TYP  NOT IN ('ts-bas', 'ts-diabetes');
+      UPDATE INTYG SET INTYG_TYPE_VERSION = '6.8' WHERE INTYGS_TYP = 'ts-bas';
+      UPDATE INTYG SET INTYG_TYPE_VERSION = '2.8' WHERE INTYGS_TYP = 'ts-diabetes';
+    </sql>
+  </changeSet>
+
 </databaseChangeLog>

@@ -26,6 +26,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import se.inera.intyg.common.services.texts.IntygTextsService;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.model.common.internal.Vardenhet;
@@ -82,6 +83,7 @@ public class CreateDraftCertificateResponderImplTest extends BaseCreateDraftCert
     private static final String UTKAST_VERSION = "1";
     private static final String UTKAST_TYPE = "fk7263";
     private static final String UTKAST_JSON = "A bit of text representing json";
+    private static final String INTYG_TYPE_VERSION = "1.0";
     @Mock
     private PatientDetailsResolver patientDetailsResolver;
     @Mock
@@ -98,6 +100,8 @@ public class CreateDraftCertificateResponderImplTest extends BaseCreateDraftCert
     private TakService takService;
     @Mock
     private IntygModuleRegistry moduleRegistry;
+    @Mock
+    private IntygTextsService intygTextsService;
 
     @InjectMocks
     private CreateDraftCertificateResponderImpl responder;
@@ -111,6 +115,7 @@ public class CreateDraftCertificateResponderImplTest extends BaseCreateDraftCert
                 "utkast", ImmutableMap.of(),
                 "intyg", ImmutableMap.of()
         ));
+        when(intygTextsService.getLatestVersion(any(String.class))).thenReturn(INTYG_TYPE_VERSION);
     }
 
     @Test
@@ -123,11 +128,11 @@ public class CreateDraftCertificateResponderImplTest extends BaseCreateDraftCert
                 certificateType.getIntyg().getSkapadAv().getPersonalId().getRoot(),
                 certificateType.getIntyg().getSkapadAv().getFullstandigtNamn());
 
-        Utkast utkast = createUtkast(UTKAST_ID, Long.parseLong(UTKAST_VERSION), UTKAST_TYPE, UtkastStatus.DRAFT_INCOMPLETE, UTKAST_JSON,
+        Utkast utkast = createUtkast(UTKAST_ID, Long.parseLong(UTKAST_VERSION), UTKAST_TYPE, INTYG_TYPE_VERSION, UtkastStatus.DRAFT_INCOMPLETE, UTKAST_JSON,
                 vardperson);
 
         when(mockValidator.validate(any(Intyg.class))).thenReturn(new ResultValidator());
-        when(mockRequestBuilder.buildCreateNewDraftRequest(any(Intyg.class), any(IntygUser.class))).thenReturn(draftRequest);
+        when(mockRequestBuilder.buildCreateNewDraftRequest(any(Intyg.class), any(String.class), any(IntygUser.class))).thenReturn(draftRequest);
         when(mockUtkastService.createNewDraft(any(CreateNewDraftRequest.class))).thenReturn(utkast);
         when(takService.verifyTakningForCareUnit(any(String.class), any(String.class), any(SchemaVersion.class), any(IntygUser.class)))
                 .thenReturn(new TakResult(true, Lists.emptyList()));
@@ -207,11 +212,11 @@ public class CreateDraftCertificateResponderImplTest extends BaseCreateDraftCert
                 certificateType.getIntyg().getSkapadAv().getPersonalId().getRoot(),
                 certificateType.getIntyg().getSkapadAv().getFullstandigtNamn());
 
-        Utkast utkast = createUtkast(UTKAST_ID, Long.parseLong(UTKAST_VERSION), UTKAST_TYPE, UtkastStatus.DRAFT_INCOMPLETE, UTKAST_JSON,
+        Utkast utkast = createUtkast(UTKAST_ID, Long.parseLong(UTKAST_VERSION), UTKAST_TYPE, INTYG_TYPE_VERSION, UtkastStatus.DRAFT_INCOMPLETE, UTKAST_JSON,
                 vardperson);
 
         when(mockValidator.validate(any(Intyg.class))).thenReturn(new ResultValidator());
-        when(mockRequestBuilder.buildCreateNewDraftRequest(any(Intyg.class), any(IntygUser.class))).thenReturn(draftRequest);
+        when(mockRequestBuilder.buildCreateNewDraftRequest(any(Intyg.class), any(String.class), any(IntygUser.class))).thenReturn(draftRequest);
         when(mockUtkastService.createNewDraft(any(CreateNewDraftRequest.class))).thenReturn(utkast);
         when(takService.verifyTakningForCareUnit(any(String.class), any(String.class), any(SchemaVersion.class), any(IntygUser.class)))
                 .thenReturn(new TakResult(true, Lists.emptyList()));
@@ -235,11 +240,11 @@ public class CreateDraftCertificateResponderImplTest extends BaseCreateDraftCert
                 certificateType.getIntyg().getSkapadAv().getPersonalId().getRoot(),
                 certificateType.getIntyg().getSkapadAv().getFullstandigtNamn());
 
-        Utkast utkast = createUtkast(UTKAST_ID, Long.parseLong(UTKAST_VERSION), UTKAST_TYPE, UtkastStatus.DRAFT_INCOMPLETE, UTKAST_JSON,
+        Utkast utkast = createUtkast(UTKAST_ID, Long.parseLong(UTKAST_VERSION), UTKAST_TYPE, INTYG_TYPE_VERSION, UtkastStatus.DRAFT_INCOMPLETE, UTKAST_JSON,
                 vardperson);
 
         when(mockValidator.validate(any(Intyg.class))).thenReturn(new ResultValidator());
-        when(mockRequestBuilder.buildCreateNewDraftRequest(any(Intyg.class), any(IntygUser.class))).thenReturn(draftRequest);
+        when(mockRequestBuilder.buildCreateNewDraftRequest(any(Intyg.class), any(String.class), any(IntygUser.class))).thenReturn(draftRequest);
         when(mockUtkastService.createNewDraft(any(CreateNewDraftRequest.class))).thenReturn(utkast);
         when(takService.verifyTakningForCareUnit(any(String.class), any(String.class), any(SchemaVersion.class), any(IntygUser.class)))
                 .thenReturn(new TakResult(true, Lists.emptyList()));
@@ -262,7 +267,7 @@ public class CreateDraftCertificateResponderImplTest extends BaseCreateDraftCert
     }
 
     private CreateNewDraftRequest createCreateNewDraftRequest(Vardenhet vardenhet) {
-        CreateNewDraftRequest draftRequest = new CreateNewDraftRequest(UTKAST_ID, null, null, new HoSPersonal(), null);
+        CreateNewDraftRequest draftRequest = new CreateNewDraftRequest(UTKAST_ID, null, INTYG_TYPE_VERSION, null, new HoSPersonal(), null);
         draftRequest.getHosPerson().setVardenhet(vardenhet);
         return draftRequest;
     }
@@ -328,13 +333,14 @@ public class CreateDraftCertificateResponderImplTest extends BaseCreateDraftCert
         return certificateType;
     }
 
-    private Utkast createUtkast(String intygId, long version, String type, UtkastStatus status, String model,
+    private Utkast createUtkast(String intygId, long version, String type, String intygTypeVersion,  UtkastStatus status, String model,
                                 VardpersonReferens vardperson) {
 
         Utkast utkast = new Utkast();
         utkast.setIntygsId(intygId);
         utkast.setVersion(version);
         utkast.setIntygsTyp(type);
+        utkast.setIntygTypeVersion(intygTypeVersion);
         utkast.setStatus(status);
         utkast.setModel(model);
         utkast.setSkapadAv(vardperson);

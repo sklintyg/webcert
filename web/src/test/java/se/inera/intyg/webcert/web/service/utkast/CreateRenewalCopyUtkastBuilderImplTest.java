@@ -33,6 +33,7 @@ import org.springframework.core.io.ClassPathResource;
 import se.inera.intyg.common.fk7263.model.internal.Fk7263Utlatande;
 import se.inera.intyg.common.support.model.CertificateState;
 import se.inera.intyg.common.support.model.Status;
+import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.common.support.modules.support.api.dto.CreateDraftCopyHolder;
 import se.inera.intyg.common.support.modules.support.api.dto.ValidateDraftResponse;
@@ -63,6 +64,7 @@ public class CreateRenewalCopyUtkastBuilderImplTest extends AbstractBuilderTest 
     private static final String INTYG_TYPE = "fk7263";
 
     private static final Personnummer PATIENT_NEW_SSN = createPnr("19121212-1414");
+    private static final String INTYG_TYPE_VERSION = "2.2";
 
     private ModuleApi mockModuleApi;
 
@@ -86,6 +88,8 @@ public class CreateRenewalCopyUtkastBuilderImplTest extends AbstractBuilderTest 
                 "postort");
 
         when(mockModuleApi.createRenewalFromTemplate(any(CreateDraftCopyHolder.class), any())).thenReturn(INTYG_JSON);
+        Utlatande utlatande = new Fk7263Utlatande();
+        when(mockModuleApi.getUtlatandeFromJson(any(String.class))).thenReturn(utlatande);
 
         ValidateDraftResponse vdr = new ValidateDraftResponse(ValidationStatus.VALID, new ArrayList<>());
         when(mockModuleApi.validateDraft(anyString())).thenReturn(vdr);
@@ -273,6 +277,7 @@ public class CreateRenewalCopyUtkastBuilderImplTest extends AbstractBuilderTest 
         Utkast orgUtkast = new Utkast();
         orgUtkast.setIntygsId(INTYG_COPY_ID);
         orgUtkast.setIntygsTyp(INTYG_TYPE);
+        orgUtkast.setIntygTypeVersion(INTYG_TYPE_VERSION);
         orgUtkast.setPatientPersonnummer(PATIENT_SSN);
         orgUtkast.setPatientFornamn(PATIENT_FNAME);
         orgUtkast.setPatientMellannamn(PATIENT_MNAME);

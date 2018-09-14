@@ -234,7 +234,8 @@ public class IntygModuleApiController extends AbstractApiController {
                 serviceResponse.getNewDraftIntygId(),
                 serviceResponse.getNewDraftIntygType(), orgIntygsId);
 
-        CopyIntygResponse response = new CopyIntygResponse(serviceResponse.getNewDraftIntygId(), serviceResponse.getNewDraftIntygType());
+        CopyIntygResponse response = new CopyIntygResponse(serviceResponse.getNewDraftIntygId(), serviceResponse.getNewDraftIntygType(),
+                serviceResponse.getNewDraftIntygTypeVersion());
 
         return Response.ok().entity(response).build();
     }
@@ -276,7 +277,8 @@ public class IntygModuleApiController extends AbstractApiController {
         LOG.debug("Created a new draft with id: '{}' and type: {}, renewing certificate with id '{}'.",
                 serviceResponse.getNewDraftIntygId(), serviceResponse.getNewDraftIntygType(), orgIntygsId);
 
-        CopyIntygResponse response = new CopyIntygResponse(serviceResponse.getNewDraftIntygId(), serviceResponse.getNewDraftIntygType());
+        CopyIntygResponse response = new CopyIntygResponse(serviceResponse.getNewDraftIntygId(), serviceResponse.getNewDraftIntygType(),
+                serviceResponse.getNewDraftIntygTypeVersion());
 
         return Response.ok().entity(response).build();
     }
@@ -318,7 +320,8 @@ public class IntygModuleApiController extends AbstractApiController {
         LOG.debug("Created a new draft with id: '{}' and type: {} from certificate with type: {} and id '{}'.",
                 serviceResponse.getNewDraftIntygId(), serviceResponse.getNewDraftIntygType(), orgIntygsTyp, orgIntygsId);
 
-        CopyIntygResponse response = new CopyIntygResponse(serviceResponse.getNewDraftIntygId(), serviceResponse.getNewDraftIntygType());
+        CopyIntygResponse response = new CopyIntygResponse(serviceResponse.getNewDraftIntygId(), serviceResponse.getNewDraftIntygType(),
+                serviceResponse.getNewDraftIntygTypeVersion());
 
         return Response.ok().entity(response).build();
     }
@@ -347,7 +350,8 @@ public class IntygModuleApiController extends AbstractApiController {
         LOG.debug("Created a new replacement draft with id: '{}' and type: {}, replacing certificate with id '{}'.",
                 serviceResponse.getNewDraftIntygId(), serviceResponse.getNewDraftIntygType(), orgIntygsId);
 
-        CopyIntygResponse response = new CopyIntygResponse(serviceResponse.getNewDraftIntygId(), serviceResponse.getNewDraftIntygType());
+        CopyIntygResponse response = new CopyIntygResponse(serviceResponse.getNewDraftIntygId(), serviceResponse.getNewDraftIntygType(),
+                serviceResponse.getNewDraftIntygTypeVersion());
 
         return Response.ok().entity(response).build();
     }

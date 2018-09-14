@@ -161,7 +161,8 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
 
             monitoringService.logIntygCopiedCompletion(savedUtkast.getIntygsId(), originalIntygId);
 
-            return new CreateCompletionCopyResponse(savedUtkast.getIntygsTyp(), savedUtkast.getIntygsId(), originalIntygId);
+            return new CreateCompletionCopyResponse(savedUtkast.getIntygsTyp(), savedUtkast.getIntygTypeVersion(),
+                    savedUtkast.getIntygsId(), originalIntygId);
 
         } catch (ModuleException | ModuleNotFoundException me) {
             LOG.error("Module exception occured when trying to make a copy of " + originalIntygId);
@@ -204,7 +205,8 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
 
             monitoringService.logIntygCopiedRenewal(savedUtkast.getIntygsId(), originalIntygId);
 
-            return new CreateRenewalCopyResponse(savedUtkast.getIntygsTyp(), savedUtkast.getIntygsId(), originalIntygId);
+            return new CreateRenewalCopyResponse(savedUtkast.getIntygsTyp(), savedUtkast.getIntygTypeVersion(), savedUtkast.getIntygsId(),
+                    originalIntygId);
 
         } catch (ModuleException | ModuleNotFoundException me) {
             LOG.error("Module exception occured when trying to make a copy of " + originalIntygId);
@@ -241,7 +243,8 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
 
             monitoringService.logIntygCopiedReplacement(savedUtkast.getIntygsId(), originalIntygId);
 
-            return new CreateReplacementCopyResponse(savedUtkast.getIntygsTyp(), savedUtkast.getIntygsId(), originalIntygId);
+            return new CreateReplacementCopyResponse(savedUtkast.getIntygsTyp(), savedUtkast.getIntygTypeVersion(),
+                    savedUtkast.getIntygsId(), originalIntygId);
 
         } catch (ModuleException | ModuleNotFoundException me) {
             LOG.error("Module exception occured when trying to make a copy of " + originalIntygId);
@@ -277,7 +280,8 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
                 checkIntegreradEnhet(builderResponse);
             }
 
-            return new CreateUtkastFromTemplateResponse(savedUtkast.getIntygsTyp(), savedUtkast.getIntygsId(), originalIntygId);
+            return new CreateUtkastFromTemplateResponse(savedUtkast.getIntygsTyp(), savedUtkast.getIntygTypeVersion(),
+                    savedUtkast.getIntygsId(), originalIntygId);
 
         } catch (ModuleException | ModuleNotFoundException me) {
             LOG.error("Module exception occured when trying to make a copy of " + originalIntygId);
@@ -326,7 +330,8 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
                 checkIntegreradEnhet(builderResponse);
             }
 
-            return new CreateUtkastFromTemplateResponse(savedUtkast.getIntygsTyp(), savedUtkast.getIntygsId(), originalIntygId);
+            return new CreateUtkastFromTemplateResponse(savedUtkast.getIntygsTyp(), savedUtkast.getIntygTypeVersion(),
+                    savedUtkast.getIntygsId(), originalIntygId);
 
         } catch (ModuleException | ModuleNotFoundException me) {
             LOG.error("Module exception occured when trying to make a copy of " + originalIntygId);

@@ -270,6 +270,7 @@ public class UtkastBootstrapBean {
         utkast.setEnhetsNamn(json.getGrundData().getSkapadAv().getVardenhet().getEnhetsnamn());
         utkast.setIntygsId(json.getId());
         utkast.setIntygsTyp(json.getTyp());
+        utkast.setIntygTypeVersion(json.getTextVersion() == null ? "1.0" : json.getTextVersion());
         if (status != UtkastStatus.SIGNED) {
             json.getGrundData().setSigneringsdatum(null);
         }

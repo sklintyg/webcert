@@ -36,11 +36,12 @@ public class CreateNewDraftRequestBuilderImpl implements CreateNewDraftRequestBu
     private IntygModuleRegistry moduleRegistry;
 
     @Override
-    public CreateNewDraftRequest buildCreateNewDraftRequest(Intyg intyg, IntygUser user) {
+    public CreateNewDraftRequest buildCreateNewDraftRequest(Intyg intyg, String intygTypeVersion, IntygUser user) {
         HoSPersonal hosPerson = createHoSPerson(intyg.getSkapadAv(),
                 HoSPersonHelper.createVardenhetFromIntygUser(intyg.getSkapadAv().getEnhet().getEnhetsId().getExtension(), user));
         HoSPersonHelper.enrichHoSPerson(hosPerson, user);
-        return new CreateNewDraftRequest(null, moduleRegistry.getModuleIdFromExternalId(intyg.getTypAvIntyg().getCode()), null, hosPerson,
+        return new CreateNewDraftRequest(null, moduleRegistry.getModuleIdFromExternalId(intyg.getTypAvIntyg().getCode()), intygTypeVersion,
+                null, hosPerson,
                 TransportConverterUtil.getPatient(intyg.getPatient(), true), intyg.getRef());
     }
 

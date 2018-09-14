@@ -103,6 +103,7 @@ public class IntygModuleApiControllerTest {
 
     private static final String CONTENT_DISPOSITION = "Content-Disposition";
     private static final String PERSON_ID = "19121212-1212";
+    private static final String CERTIFICATE_VERSION = "1.0";
 
     private static Fk7263Utlatande utlatande = null;
     private static Patient patient;
@@ -368,7 +369,7 @@ public class IntygModuleApiControllerTest {
 
         ArgumentCaptor<CreateRenewalCopyRequest> captor = ArgumentCaptor.forClass(CreateRenewalCopyRequest.class);
         when(copyUtkastService.createRenewalCopy(captor.capture()))
-                .thenReturn(new CreateRenewalCopyResponse(CERTIFICATE_TYPE, newIntygId, CERTIFICATE_ID));
+                .thenReturn(new CreateRenewalCopyResponse(CERTIFICATE_TYPE, CERTIFICATE_VERSION, newIntygId, CERTIFICATE_ID));
         when(webcertUserService.getUser()).thenReturn(user);
 
         Response response = moduleApiController.createRenewal(copyIntygRequest, CERTIFICATE_TYPE, CERTIFICATE_ID);
@@ -414,7 +415,7 @@ public class IntygModuleApiControllerTest {
 
         ArgumentCaptor<CreateRenewalCopyRequest> captor = ArgumentCaptor.forClass(CreateRenewalCopyRequest.class);
         when(copyUtkastService.createRenewalCopy(captor.capture()))
-                .thenReturn(new CreateRenewalCopyResponse(CERTIFICATE_TYPE, newIntygId, CERTIFICATE_ID));
+                .thenReturn(new CreateRenewalCopyResponse(CERTIFICATE_TYPE, CERTIFICATE_VERSION ,newIntygId, CERTIFICATE_ID));
         when(webcertUserService.getUser()).thenReturn(user);
 
         Response response = moduleApiController.createRenewal(copyIntygRequest, CERTIFICATE_TYPE, CERTIFICATE_ID);
@@ -497,7 +498,7 @@ public class IntygModuleApiControllerTest {
 
         ArgumentCaptor<CreateReplacementCopyRequest> captor = ArgumentCaptor.forClass(CreateReplacementCopyRequest.class);
         when(copyUtkastService.createReplacementCopy(captor.capture()))
-                .thenReturn(new CreateReplacementCopyResponse(CERTIFICATE_TYPE, newIntygId, CERTIFICATE_ID));
+                .thenReturn(new CreateReplacementCopyResponse(CERTIFICATE_TYPE, CERTIFICATE_VERSION, newIntygId, CERTIFICATE_ID));
         when(webcertUserService.getUser()).thenReturn(user);
 
         Response response = moduleApiController.createReplacement(copyIntygRequest, CERTIFICATE_TYPE, CERTIFICATE_ID);
@@ -573,7 +574,7 @@ public class IntygModuleApiControllerTest {
 
         ArgumentCaptor<CreateCompletionCopyRequest> captor = ArgumentCaptor.forClass(CreateCompletionCopyRequest.class);
         when(copyUtkastService.createCompletion(captor.capture()))
-                .thenReturn(new CreateCompletionCopyResponse(CERTIFICATE_TYPE, newIntygId, CERTIFICATE_ID));
+                .thenReturn(new CreateCompletionCopyResponse(CERTIFICATE_TYPE, CERTIFICATE_VERSION, newIntygId, CERTIFICATE_ID));
         when(webcertUserService.getUser()).thenReturn(user);
 
         Response response = moduleApiController.createCompletion(request, CERTIFICATE_TYPE, CERTIFICATE_ID);
@@ -661,7 +662,7 @@ public class IntygModuleApiControllerTest {
 
         ArgumentCaptor<CreateRenewalCopyRequest> captor = ArgumentCaptor.forClass(CreateRenewalCopyRequest.class);
         when(copyUtkastService.createRenewalCopy(captor.capture()))
-                .thenReturn(new CreateRenewalCopyResponse(CERTIFICATE_TYPE, newDraftIntygId, CERTIFICATE_ID));
+                .thenReturn(new CreateRenewalCopyResponse(CERTIFICATE_TYPE, CERTIFICATE_VERSION, newDraftIntygId, CERTIFICATE_ID));
         when(webcertUserService.getUser()).thenReturn(user);
 
         Response response = moduleApiController.createRenewal(request, CERTIFICATE_TYPE, CERTIFICATE_ID);
@@ -741,7 +742,7 @@ public class IntygModuleApiControllerTest {
 
         ArgumentCaptor<CreateUtkastFromTemplateRequest> captor = ArgumentCaptor.forClass(CreateUtkastFromTemplateRequest.class);
         when(copyUtkastService.createUtkastFromTemplate(captor.capture()))
-                .thenReturn(new CreateUtkastFromTemplateResponse(newCertificateType, newIntygId, CERTIFICATE_ID));
+                .thenReturn(new CreateUtkastFromTemplateResponse(newCertificateType, CERTIFICATE_VERSION, newIntygId, CERTIFICATE_ID));
         when(webcertUserService.getUser()).thenReturn(user);
 
         Response response = moduleApiController

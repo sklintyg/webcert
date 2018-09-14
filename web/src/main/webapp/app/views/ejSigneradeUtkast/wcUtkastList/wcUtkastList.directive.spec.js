@@ -72,7 +72,7 @@ describe('wcUtkastListSpec', function() {
             spyOn($state, 'go');
             element.isolateScope().openIntyg(mockResponse.utkast);
             expect($state.go).toHaveBeenCalledWith(mockResponse.utkast.intygType.toLowerCase() +
-                '-edit', {certificateId: mockResponse.utkast.intygId});
+                '-edit', {certificateId: mockResponse.utkast.intygId, intygTypeVersion: mockResponse.utkast.intygTypeVersion});
         });
     });
 

@@ -24,10 +24,13 @@ public class CopyIntygResponse {
 
     private String intygsTyp;
 
-    public CopyIntygResponse(String intygsUtkastId, String intygsTyp) {
+    private String intygTypeVersion;
+
+    public CopyIntygResponse(String intygsUtkastId, String intygsTyp, String intygTypeVersion) {
         super();
         this.intygsUtkastId = intygsUtkastId;
         this.intygsTyp = intygsTyp;
+        this.intygTypeVersion = intygTypeVersion;
     }
 
     public String getIntygsUtkastId() {
@@ -44,5 +47,9 @@ public class CopyIntygResponse {
 
     public void setIntygsTyp(String intygsTyp) {
         this.intygsTyp = intygsTyp;
+    }
+
+    public String getIntygTypeVersion() {
+        return intygTypeVersion;
     }
 }

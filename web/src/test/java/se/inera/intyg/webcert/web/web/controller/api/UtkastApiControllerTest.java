@@ -38,6 +38,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import com.google.common.base.Strings;
 import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.common.luse.support.LuseEntryPoint;
+import se.inera.intyg.common.services.texts.IntygTextsService;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.Patient;
 import se.inera.intyg.common.support.modules.registry.IntygModule;
@@ -90,6 +91,7 @@ public class UtkastApiControllerTest {
 
     private static final Personnummer PATIENT_PERSONNUMMER = createPnr("19121212-1212");
     private static final Personnummer PATIENT_PERSONNUMMER_PU_SEKRETESS = createPnr("20121212-1212");
+    private static final java.lang.String INTYG_TYPE_VERSION = "1.2";
 
     @Mock
     private UtkastService utkastService;
@@ -102,6 +104,9 @@ public class UtkastApiControllerTest {
 
     @Mock
     private IntygModuleRegistry moduleRegistry;
+
+    @Mock
+    private IntygTextsService intygTextsService;
 
     @InjectMocks
     private UtkastApiController utkastController;
@@ -118,6 +123,7 @@ public class UtkastApiControllerTest {
         hasPreviousIntyg.put("luse", new PreviousIntyg(true, false, "Enhet", "intygsId"));
         hasPrevious.put("intyg", hasPreviousIntyg);
         when(utkastService.checkIfPersonHasExistingIntyg(eq(PATIENT_PERSONNUMMER), any())).thenReturn(hasPrevious);
+        when(intygTextsService.getLatestVersion(any(String.class))).thenReturn(INTYG_TYPE_VERSION);
 
     }
     @Test

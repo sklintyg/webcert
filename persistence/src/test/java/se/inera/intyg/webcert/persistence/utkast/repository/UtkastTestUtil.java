@@ -32,6 +32,8 @@ import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
 
 public final class UtkastTestUtil {
 
+    private static final String DEFAULT_INTYGTYPE_VERSION = "1.0";
+
     private UtkastTestUtil() {
     }
 
@@ -119,6 +121,7 @@ public final class UtkastTestUtil {
         intyg.setVardgivarId(vardgivarId);
         intyg.setIntygsId(intygsId);
         intyg.setIntygsTyp(type);
+        intyg.setIntygTypeVersion(DEFAULT_INTYGTYPE_VERSION);
         intyg.setEnhetsId(enhetsId);
         intyg.setPatientPersonnummer(personNummer);
         intyg.setPatientFornamn(personFornamn);

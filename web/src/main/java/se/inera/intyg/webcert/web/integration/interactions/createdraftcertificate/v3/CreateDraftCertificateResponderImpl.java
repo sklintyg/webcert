@@ -24,6 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import se.inera.intyg.common.services.texts.IntygTextsService;
 import se.inera.intyg.common.support.integration.converter.util.ResultTypeUtil;
 import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.common.support.model.common.internal.Vardgivare;
@@ -90,6 +91,9 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
     @Autowired
     private IntygModuleRegistry moduleRegistry;
 
+    @Autowired
+    private IntygTextsService intygTextsService;
+
     @Lazy
     @Autowired
     private TakService takService;
@@ -137,6 +141,8 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
 
         String intygsTyp =
                 moduleRegistry.getModuleIdFromExternalId(utkastsParams.getTypAvIntyg().getCode());
+        //Default to use latest version, since there is no info in request specifying version
+        String latestIntygTypeVersion = intygTextsService.getLatestVersion(intygsTyp);
 
         Personnummer personnummer = Personnummer.createPersonnummer(
                 utkastsParams.getPatient().getPersonId().getExtension()).orElseThrow(() ->
@@ -186,18 +192,18 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
         }
 
         // Create the draft
-        Utkast utkast = createNewDraft(utkastsParams, user);
+        Utkast utkast = createNewDraft(utkastsParams, latestIntygTypeVersion, user);
 
         return createSuccessResponse(utkast.getIntygsId(), invokingUnitHsaId);
     }
 
-    private Utkast createNewDraft(Intyg utkastRequest, IntygUser user) {
+    private Utkast createNewDraft(Intyg utkastRequest, String latestIntygTypeVersion, IntygUser user) {
 
         LOG.debug("Creating draft for invoker '{}' on unit '{}'", utkastRequest.getSkapadAv().getPersonalId().getExtension(),
                 utkastRequest.getSkapadAv().getEnhet().getEnhetsId().getExtension());
 
         // Create draft request
-        CreateNewDraftRequest draftRequest = draftRequestBuilder.buildCreateNewDraftRequest(utkastRequest, user);
+        CreateNewDraftRequest draftRequest = draftRequestBuilder.buildCreateNewDraftRequest(utkastRequest, latestIntygTypeVersion, user);
 
         // Add the creating vardenhet to registry
         addVardenhetToRegistry(draftRequest);
