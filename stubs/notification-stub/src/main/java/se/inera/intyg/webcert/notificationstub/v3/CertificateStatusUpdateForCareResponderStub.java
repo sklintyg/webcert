@@ -88,27 +88,35 @@ public class CertificateStatusUpdateForCareResponderStub implements CertificateS
         LOG.debug("Request set to 'OK'");
 
         LOG.debug("emulateError: " + emulateError);
-        if (handelseKod.matches("^ANDRAT$")) {
-            switch (emulateError) {
-                case "1":
-                    LOG.debug("Stub messing upp response. Fel B.");
+        switch (emulateError) {
+            case "1":
+                if (handelseKod.matches("^ANDRAT$")) {
+                    LOG.debug("Stub messing upp response. Fel B. Only for ANDRAT notifications.");
                     response.setResult(ResultTypeUtil.errorResult(ErrorIdType.TECHNICAL_ERROR, "Certificate not found "
                             + "in COSMIC and ref field is missing, cannot store certificate. "
                             + "Possible race condition. Retry later when the certificate may have been stored in COSMIC. "
                             + "| Log Id: 01182b7d-9d19-4d5a-b892-18342670668c"));
-                    break;
-                case "2":
-                    LOG.debug("Stub messing upp response. TechError null.");
-                    response.setResult(ResultTypeUtil.errorResult(ErrorIdType.TECHNICAL_ERROR, null));
-                    break;
-                case "3":
-                    LOG.debug("Stub messing upp response. TechError Unspecified Service.");
-                    response.setResult(ResultTypeUtil.errorResult(ErrorIdType.TECHNICAL_ERROR, "Unspecified service error"));
-                    break;
-                default:
-                    LOG.debug("Stub OK. No error emulated.");
-                    break;
-            }
+                }
+                break;
+            case "2":
+                LOG.debug("Stub messing upp response. Fel B. For all notifications.");
+                response.setResult(ResultTypeUtil.errorResult(ErrorIdType.TECHNICAL_ERROR, "Certificate not found "
+                        + "in COSMIC and ref field is missing, cannot store certificate. "
+                        + "Possible race condition. Retry later when the certificate may have been stored in COSMIC. "
+                        + "| Log Id: 01182b7d-9d19-4d5a-b892-18342670668c"));
+
+                break;
+            case "3":
+                LOG.debug("Stub messing upp response. TechError null.");
+                response.setResult(ResultTypeUtil.errorResult(ErrorIdType.TECHNICAL_ERROR, null));
+                break;
+            case "4":
+                LOG.debug("Stub messing upp response. TechError Unspecified Service.");
+                response.setResult(ResultTypeUtil.errorResult(ErrorIdType.TECHNICAL_ERROR, "Unspecified service error"));
+                break;
+            default:
+                LOG.debug("Stub OK. No error emulated.");
+                break;
         }
         return response;
     }
