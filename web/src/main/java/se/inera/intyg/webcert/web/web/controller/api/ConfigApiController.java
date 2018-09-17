@@ -76,7 +76,7 @@ public class ConfigApiController extends AbstractApiController {
     @ApiOperation(value = "Get module configuration for Webcert", httpMethod = "GET", produces = MediaType.APPLICATION_JSON)
     public Response getConfig() {
         return Response.ok(new ConfigResponse(version, build, ppHost, dashboardUrl, Boolean.parseBoolean(environment.getProperty(
-                "webcert.useMinifiedJavaScript", "true")), sakerhetstjanstIdpUrl, cgiFunktionstjansterIdpUrl)).build();
+                "useMinifiedJavaScript", "true")), sakerhetstjanstIdpUrl, cgiFunktionstjansterIdpUrl)).build();
     }
 
     @GET

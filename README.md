@@ -91,9 +91,7 @@ Ungefär så här:
                    "-Dcredentials.file=${projectDir}/webcert-credentials.properties",
                    "-Dwebcert.config.file=${projectDir}/webcert-dev.properties",
                    "-Dwebcert.logback.file=${projectDir}/webcert-logback.xml",
-                   "-Dwebcert.useMinifiedJavaScript=${minified}",
-                   "-Dh2.tcp.port=9094",
-                   "-Dh2.web.port=9090",
+                   "-DuseMinifiedJavaScript=${minified}",
                    "-Djetty.port=9088"]
                    
 Ersätt ovanstående med nedanstående, byt ut _/Users/myuser/intyg_ mot egen absolut sökväg:
@@ -105,9 +103,7 @@ Ersätt ovanstående med nedanstående, byt ut _/Users/myuser/intyg_ mot egen ab
                    "-Dcredentials.file=/Users/myuser/intyg/webcert-konfiguration/test/credentials.properties",
                    "-Dwebcert.config.file=/Users/myuser/intyg/webcert-konfiguration/test/webcert.properties",
                    "-Dwebcert.logback.file=/Users/myuser/intyg/webcert-konfiguration/test/webcert-logback.xml",
-                   "-Dwebcert.useMinifiedJavaScript=${minified}",
-                   "-Dh2.tcp.port=9094",
-                   "-Dh2.web.port=9090",
+                   "-DuseMinifiedJavaScript=${minified}",
                    "-Djetty.port=9088",
                    "-Dwebcert.stubs.port=9088"]
                    
