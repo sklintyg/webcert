@@ -9,6 +9,7 @@ task camelTest(type: Test) {
 
 dependencies {
     compile project(':webcert-common')
+    compile project(':notification-stub')
 
     compile "se.riv.clinicalprocess.healthcond.certificate:clinicalprocess-healthcond-certificate-schemas:${rivtaClinicalprocessSchemasVersion}"
     compile "se.inera.intyg.infra:pu-integration:${infraVersion}"

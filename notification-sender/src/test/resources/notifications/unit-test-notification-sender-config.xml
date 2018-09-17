@@ -49,6 +49,7 @@
   </bean>
 
   <bean id="certificateStatusUpdateForCareResponderV3" class="se.inera.intyg.webcert.notification_sender.mocks.v3.CertificateStatusUpdateForCareResponderStub"/>
+  <bean id="notificationStubStateBean" class="se.inera.intyg.webcert.notificationstub.v3.NotificationStubStateBean"/>
 
   <bean id="configurationLoader" class="se.inera.intyg.infra.security.authorities.bootstrap.SecurityConfigurationLoader">
     <constructor-arg name="authoritiesConfigurationFile" value="${authorities.configuration.file}" />

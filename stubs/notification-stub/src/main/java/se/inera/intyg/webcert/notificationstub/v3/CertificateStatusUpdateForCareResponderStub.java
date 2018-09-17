@@ -22,7 +22,6 @@ import org.apache.cxf.annotations.SchemaValidation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 
 import se.inera.intyg.common.support.integration.converter.util.ResultTypeUtil;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareResponderInterface;
@@ -42,9 +41,6 @@ public class CertificateStatusUpdateForCareResponderStub implements CertificateS
 
     @Autowired
     private NotificationStubStateBean notificationStubStateBean;
-
-    @Value("${certificatestatusupdateforcare.emulateError}")
-    private String emulateError;
 
     @Override
     public CertificateStatusUpdateForCareResponseType certificateStatusUpdateForCare(String logicalAddress,
@@ -92,26 +88,28 @@ public class CertificateStatusUpdateForCareResponderStub implements CertificateS
         response.setResult(ResultTypeUtil.okResult());
         LOG.debug("Request set to 'OK'");
 
-        LOG.debug("emulateError: " + emulateError);
-        if (handelseKod.matches("^ANDRAT$")) {
-            performErrorEmulation(emulateError, response);
-            performErrorEmulation(notificationStubStateBean.getErrorCode(), response);
-        }
+        performErrorEmulation(notificationStubStateBean.getErrorCode(), request, response);
         return response;
     }
 
-    private void performErrorEmulation(String errorCode, CertificateStatusUpdateForCareResponseType response) {
+    // There are still some duplicate code in the mock used for for testing in notification-sender:
+    // se.inera.intyg.webcert.notification_sender.mocks.v3.CertificateStatusUpdateForCareResponderStub.performErrorEmulation
+    private void performErrorEmulation(String errorCode, CertificateStatusUpdateForCareType request,
+                                       CertificateStatusUpdateForCareResponseType response) {
         if (errorCode == null) {
             return;
         }
 
+        LOG.debug("emulateError: " + errorCode);
         switch (errorCode) {
         case "1":
-            LOG.debug("Stub messing upp response. Fel B.");
-            response.setResult(ResultTypeUtil.errorResult(ErrorIdType.TECHNICAL_ERROR, "Certificate not found "
-                    + "in COSMIC and ref field is missing, cannot store certificate. "
-                    + "Possible race condition. Retry later when the certificate may have been stored in COSMIC. "
-                    + "| Log Id: 01182b7d-9d19-4d5a-b892-18342670668c"));
+            if (request.getHandelse().getHandelsekod().getCode().matches("^ANDRAT$")) {
+                LOG.debug("Stub messing upp response. Fel B. Only for ANDRAT notifications.");
+                response.setResult(ResultTypeUtil.errorResult(ErrorIdType.TECHNICAL_ERROR, "Certificate not found "
+                        + "in COSMIC and ref field is missing, cannot store certificate. "
+                        + "Possible race condition. Retry later when the certificate may have been stored in COSMIC. "
+                        + "| Log Id: 01182b7d-9d19-4d5a-b892-18342670668c"));
+            }
             break;
         case "2":
             LOG.debug("Stub messing upp response. TechError null.");
@@ -123,6 +121,13 @@ public class CertificateStatusUpdateForCareResponderStub implements CertificateS
             break;
         case "4":
             throw new RuntimeException("This is an emulated error from the stub, should result in a 500 Server Error");
+        case "5":
+            LOG.debug("Stub messing upp response. Fel B. For all notifications.");
+            response.setResult(ResultTypeUtil.errorResult(ErrorIdType.TECHNICAL_ERROR, "Certificate not found "
+                    + "in COSMIC and ref field is missing, cannot store certificate. "
+                    + "Possible race condition. Retry later when the certificate may have been stored in COSMIC. "
+                    + "| Log Id: 01182b7d-9d19-4d5a-b892-18342670668c"));
+            break;
         default:
             LOG.debug("Stub OK. No error emulated.");
             break;

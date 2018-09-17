@@ -79,6 +79,14 @@ public class NotificationStubRestApi {
     }
 
     @GET
+    @Path("/notifieringar/v3/emulateError")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getErrorCode() {
+        String errorCode = stubStateBean.getErrorCode();
+        return Response.ok("Stub is set to emulateError with code " + errorCode).build();
+    }
+
+    @GET
     @Path("/notifieringar/v3/emulateError/{errorCode}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response setErrorCode(@PathParam("errorCode") String errorCode) {

@@ -21,9 +21,9 @@ package se.inera.intyg.webcert.notification_sender.mocks.v3;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import se.inera.intyg.common.support.integration.converter.util.ResultTypeUtil;
 import se.inera.intyg.webcert.notification_sender.mocks.NotificationStubEntry;
+import se.inera.intyg.webcert.notificationstub.v3.NotificationStubStateBean;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareResponderInterface;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareResponseType;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareType;
@@ -33,7 +33,6 @@ import se.riv.clinicalprocess.healthcond.certificate.v3.ResultType;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -41,7 +40,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class CertificateStatusUpdateForCareResponderStub implements CertificateStatusUpdateForCareResponderInterface {
 
     @Autowired
-    private ApplicationContext applicationContext;
+    private NotificationStubStateBean notificationStubStateBean;
 
     public static final String FALLERAT_MEDDELANDE = "fallerat-meddelande-";
     private static final Logger LOG = LoggerFactory.getLogger(CertificateStatusUpdateForCareResponderStub.class);
@@ -81,39 +80,48 @@ public class CertificateStatusUpdateForCareResponderStub implements CertificateS
         response.setResult(result);
         LOG.debug("Request set to 'OK'");
 
-        String handelseKod = request.getHandelse().getHandelsekod().getCode();
+        performErrorEmulation(notificationStubStateBean.getErrorCode(),request,response);
+        return response;
+    }
 
+    private void performErrorEmulation(String errorCode, CertificateStatusUpdateForCareType request,
+                                       CertificateStatusUpdateForCareResponseType response) {
+        if (errorCode == null) {
+            return;
+        }
 
-        final String emulateError =
-                Optional.ofNullable(applicationContext.getEnvironment().getProperty("certificatestatusupdateforcare.emulateError"))
-                        .orElse("0");
-
-        LOG.debug("emulateError: " + emulateError);
-        if (handelseKod.matches("^ANDRAT$")) {
-            switch (emulateError) {
-                case "1":
-                    LOG.debug("Stub messing upp response. Fel B.");
+        LOG.debug("emulateError: " + errorCode);
+        switch (errorCode) {
+            case "1":
+                if (request.getHandelse().getHandelsekod().getCode().matches("^ANDRAT$")) {
+                    LOG.debug("Stub messing upp response. Fel B. Only for ANDRAT notifications.");
                     response.setResult(ResultTypeUtil.errorResult(ErrorIdType.TECHNICAL_ERROR, "Certificate not found "
                             + "in COSMIC and ref field is missing, cannot store certificate. "
                             + "Possible race condition. Retry later when the certificate may have been stored in COSMIC. "
                             + "| Log Id: 01182b7d-9d19-4d5a-b892-18342670668c"));
-                    break;
-                case "2":
-                    LOG.debug("Stub messing upp response. TechError null.");
-                    response.setResult(ResultTypeUtil.errorResult(ErrorIdType.TECHNICAL_ERROR, null));
-                    break;
-                case "3":
-                    LOG.debug("Stub messing upp response. TechError Unspecified Service.");
-                    response.setResult(ResultTypeUtil.errorResult(ErrorIdType.TECHNICAL_ERROR, "Unspecified service error"));
-                    break;
-                case "4":
-                    throw new RuntimeException("This is an emulated error from the stub, should result in a 500 Server Error");
-                default:
-                    LOG.debug("Stub OK. No error emulated.");
-                    break;
-            }
+                }
+                break;
+            case "2":
+                LOG.debug("Stub messing upp response. TechError null.");
+                response.setResult(ResultTypeUtil.errorResult(ErrorIdType.TECHNICAL_ERROR, null));
+                break;
+            case "3":
+                LOG.debug("Stub messing upp response. TechError Unspecified Service.");
+                response.setResult(ResultTypeUtil.errorResult(ErrorIdType.TECHNICAL_ERROR, "Unspecified service error"));
+                break;
+            case "4":
+                throw new RuntimeException("This is an emulated error from the stub, should result in a 500 Server Error");
+            case "5":
+                LOG.debug("Stub messing upp response. Fel B. For all notifications.");
+                response.setResult(ResultTypeUtil.errorResult(ErrorIdType.TECHNICAL_ERROR, "Certificate not found "
+                        + "in COSMIC and ref field is missing, cannot store certificate. "
+                        + "Possible race condition. Retry later when the certificate may have been stored in COSMIC. "
+                        + "| Log Id: 01182b7d-9d19-4d5a-b892-18342670668c"));
+                break;
+            default:
+                LOG.debug("Stub OK. No error emulated.");
+                break;
         }
-        return response;
     }
 
     private int increaseAttempts(String key) {
