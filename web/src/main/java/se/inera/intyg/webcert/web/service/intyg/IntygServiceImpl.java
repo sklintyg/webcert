@@ -685,6 +685,12 @@ public class IntygServiceImpl implements IntygService {
         }
     }
 
+    @Override
+    public IntygTypeInfo getIntygTypeInfo(String intygsId) {
+
+        return getIntygTypeInfo(intygsId, utkastRepository.findOne(intygsId));
+    }
+
     private IntygTypeInfo getIntygTypeInfoFromIT(String intygsId) {
         GetCertificateTypeInfoType requestType = new GetCertificateTypeInfoType();
         requestType.setIntygsId(intygsId);

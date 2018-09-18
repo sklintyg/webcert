@@ -55,9 +55,6 @@ public class PageController {
     @Autowired
     private IntygService intygService;
 
-    @Autowired
-    private UtkastRepository utkastRepository;
-
     @RequestMapping(value = "/maillink/intyg/{typ}/{intygId}", method = RequestMethod.GET)
     public ResponseEntity<Object> redirectToIntyg(@PathVariable("intygId") String intygId, @PathVariable("typ") String typ) {
         // WC 5.0 new: change vårdenhet
@@ -79,7 +76,7 @@ public class PageController {
             return new ResponseEntity<>(httpHeaders, HttpStatus.FOUND);
         }
 
-        String intygTypeVersion = intygService.getIntygTypeInfo(intygId, utkastRepository.findOne(intygId)).getIntygTypeVersion();
+        String intygTypeVersion = intygService.getIntygTypeInfo(intygId).getIntygTypeVersion();
         URI uri = mailLinkService.intygRedirect(typ, intygTypeVersion, intygId);
 
         if (uri == null) {

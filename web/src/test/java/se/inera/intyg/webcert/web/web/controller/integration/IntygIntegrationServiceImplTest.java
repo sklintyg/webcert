@@ -31,6 +31,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
+import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
@@ -47,11 +48,13 @@ import se.inera.intyg.webcert.common.model.SekretessStatus;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
+import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 import se.inera.intyg.webcert.web.test.TestIntygFactory;
+import se.inera.intyg.webcert.web.web.controller.api.dto.IntygTypeInfo;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.PrepareRedirectToIntyg;
 
@@ -74,6 +77,7 @@ public class IntygIntegrationServiceImplTest {
     private final String ALTERNATE_SSN = "19010101-0101";
 
     private final String INTYGSTYP = "lisjp";
+    private final String INTYGSTYP_VERSION = "1.9";
     private final String INTYGSID = "A1234-B5678-C90123-D4567";
     private final String ENHETSID = "11111";
 
@@ -96,13 +100,19 @@ public class IntygIntegrationServiceImplTest {
     @Mock
     private UtkastService utkastService;
 
+    @Mock
+    private IntygService intygService;
+
     @InjectMocks
     private IntygIntegrationServiceImpl testee;
 
     @Before
     public void setupMock() {
         doNothing().when(monitoringLog).logIntegratedOtherCaregiver(anyString(), anyString(), anyString(), anyString());
+        IntygTypeInfo intygTypeInfo = new IntygTypeInfo(INTYGSID, INTYGSTYP, INTYGSTYP_VERSION);
+        when(intygService.getIntygTypeInfo(Matchers.any(String.class), Matchers.any(Utkast.class))).thenReturn(intygTypeInfo);
     }
+
 
     @Test
     public void prepareRedirectToIntygSuccess() {
@@ -126,6 +136,7 @@ public class IntygIntegrationServiceImplTest {
         verify(utkastService, times(1)).updatePatientOnDraft(any());
 
         assertEquals(INTYGSTYP, prepareRedirectToIntyg.getIntygTyp());
+        assertEquals(INTYGSTYP_VERSION, prepareRedirectToIntyg.getIntygTypeVersion());
         assertEquals(INTYGSID, prepareRedirectToIntyg.getIntygId());
         assertTrue(prepareRedirectToIntyg.isUtkast());
     }
@@ -155,6 +166,7 @@ public class IntygIntegrationServiceImplTest {
         verify(utkastService, times(0)).updatePatientOnDraft(any());
 
         assertEquals(INTYGSTYP, prepareRedirectToIntyg.getIntygTyp());
+        assertEquals(INTYGSTYP_VERSION, prepareRedirectToIntyg.getIntygTypeVersion());
         assertEquals(INTYGSID, prepareRedirectToIntyg.getIntygId());
         assertTrue(prepareRedirectToIntyg.isUtkast());
     }
@@ -187,6 +199,7 @@ public class IntygIntegrationServiceImplTest {
         verify(patientDetailsResolver).getSekretessStatus(any(Personnummer.class));
 
         assertEquals(INTYGSTYP, prepareRedirectToIntyg.getIntygTyp());
+        assertEquals(INTYGSTYP_VERSION, prepareRedirectToIntyg.getIntygTypeVersion());
         assertEquals(INTYGSID, prepareRedirectToIntyg.getIntygId());
         assertTrue(prepareRedirectToIntyg.isUtkast());
     }
@@ -310,6 +323,7 @@ public class IntygIntegrationServiceImplTest {
     private Utkast createUtkast() {
         Utkast utkast = TestIntygFactory.createUtkast(INTYGSID, LocalDateTime.now());
         utkast.setIntygsTyp(INTYGSTYP);
+        utkast.setIntygTypeVersion(INTYGSTYP_VERSION);
         utkast.setVardgivarId(VARDGIVAREID_UTKAST);
         utkast.setVardgivarNamn(VARDGIVARENAMN_UTKAST);
         utkast.setEnhetsId(ENHETSID);

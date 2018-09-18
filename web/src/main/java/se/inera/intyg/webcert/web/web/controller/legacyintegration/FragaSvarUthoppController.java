@@ -18,31 +18,37 @@
  */
 package se.inera.intyg.webcert.web.web.controller.legacyintegration;
 
-import com.google.common.base.Strings;
-import io.swagger.annotations.Api;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
-import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
-import se.inera.intyg.infra.security.common.model.UserOriginType;
-import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
-import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
-import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
-import se.inera.intyg.webcert.web.service.intyg.IntygService;
-import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
-import se.inera.intyg.webcert.web.web.controller.api.dto.IntygTypeInfo;
-import se.inera.intyg.webcert.web.web.controller.integration.BaseIntegrationController;
+import java.net.URI;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.*;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-import java.net.URI;
-import java.util.HashMap;
-import java.util.Map;
+import javax.ws.rs.core.UriBuilder;
+import javax.ws.rs.core.UriInfo;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.google.common.base.Strings;
+
+import io.swagger.annotations.Api;
+import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
+import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.infra.security.common.model.UserOriginType;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
+import se.inera.intyg.webcert.web.service.intyg.IntygService;
+import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
+import se.inera.intyg.webcert.web.web.controller.api.dto.IntygTypeInfo;
+import se.inera.intyg.webcert.web.web.controller.integration.BaseIntegrationController;
 
 /**
  * Controller to enable an external user to access certificates directly from a
@@ -73,10 +79,6 @@ public class FragaSvarUthoppController extends BaseIntegrationController {
     @Autowired
     private IntygService intygService;
 
-    @Autowired
-    private UtkastRepository utkastRepository;
-
-
     // api
 
     /**
@@ -99,7 +101,7 @@ public class FragaSvarUthoppController extends BaseIntegrationController {
         this.validateAndChangeEnhet(intygId, type, enhetHsaId);
 
         LOG.debug("Redirecting to view intyg {} of type {}", intygId, type);
-        final IntygTypeInfo intygTypeInfo = intygService.getIntygTypeInfo(intygId, utkastRepository.findOne(intygId));
+        final IntygTypeInfo intygTypeInfo = intygService.getIntygTypeInfo(intygId);
         return buildRedirectResponse(uriInfo, type, intygTypeInfo.getIntygTypeVersion(), intygId);
     }
 

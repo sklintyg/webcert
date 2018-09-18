@@ -232,7 +232,7 @@ public class IntygApiController extends AbstractApiController {
     @Consumes(MediaType.APPLICATION_JSON)
     public Response getIntygTypeVersion(@PathParam("intygsId") String intygsId) {
 
-        return Response.ok(intygService.getIntygTypeInfo(intygsId, utkastRepository.findOne(intygsId))).build();
+        return Response.ok(intygService.getIntygTypeInfo(intygsId)).build();
 
     }
 

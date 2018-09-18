@@ -31,6 +31,7 @@ describe('wcEnhetArendenList', function() {
     var enhetArendenListService;
     var ArendeVidarebefordraHelper;
     var ArendeProxy;
+    var IntygProxy;
     var statService;
 
     var testQAResponse = {
@@ -121,12 +122,17 @@ describe('wcEnhetArendenList', function() {
             $provide.value('common.featureService', featureService);
 
             var UserModel = jasmine.createSpyObj('common.UserModel', ['isLakare', 'isTandlakare', 'isPrivatLakare', 'isDjupintegration']);
-            UserModel.isVardAdministrator = function() { return true; };
+            UserModel.isVardAdministrator = function () { return true; };
 
             $provide.value('common.UserModel', UserModel);
             $provide.value('common.messageService', jasmine.createSpyObj('common.messageService', ['getProperty']));
 
             $provide.value('common.statService', {getLatestData:function(){}});
+            $provide.value('common.IntygProxy', {
+                getIntygTypeInfo: function(id, onSuccess/*, onError*/) {
+                    onSuccess({intygId: id, intygType: testIntygsReferens.intygsTyp, intygTypeVersion: '1.0'});
+                }
+            });
 
             // To prevent $window.location from reloading the page
             var $window = {};
@@ -183,8 +189,8 @@ describe('wcEnhetArendenList', function() {
             spyOn($location, 'url').and.stub();
             $scope.openIntyg(testIntygsReferens.intygsId, testIntygsReferens.intygsTyp);
             expect($location.url).toHaveBeenCalledWith('/fragasvar/' + testIntygsReferens.intygsTyp.toLowerCase() +
-                '/' +
-                testIntygsReferens.intygsId, true);
+                '/1.0/' +
+                testIntygsReferens.intygsId);
         });
 
         it('should fetch PAGE_SIZE more results if user clicks fetch more button', function() {

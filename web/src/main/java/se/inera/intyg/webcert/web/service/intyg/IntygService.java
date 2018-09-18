@@ -141,4 +141,16 @@ public interface IntygService {
      * @return the certificate type
      */
     IntygTypeInfo getIntygTypeInfo(String intygsId, Utkast ukast);
+
+    /**
+     * Gets the certificate's type from utkast entity or Intygstjanst.
+     * This is a variant method to be used when no Utkast is available when calling.
+     * The implementation still tries to look for an Utkast first.
+     *
+     *
+     * @param intygsId
+     *            the certificate identifier
+     * @return the certificate type
+     */
+    IntygTypeInfo getIntygTypeInfo(String intygsId);
 }

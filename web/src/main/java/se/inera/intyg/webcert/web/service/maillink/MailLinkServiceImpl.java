@@ -59,6 +59,10 @@ public class MailLinkServiceImpl implements MailLinkService {
             LOG.error("Path parameter 'typ' was either whitespace, empty (\"\") or null");
             return null;
         }
+        if (Strings.nullToEmpty(intygTypeVersion).trim().isEmpty()) {
+            LOG.error("Parameter 'intygTypeVersion' was either whitespace, empty (\"\") or null");
+            return null;
+        }
 
         LOG.debug("Redirecting to view intyg {} of type {}", intygId, typ);
 
