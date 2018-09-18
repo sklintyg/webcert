@@ -35,7 +35,7 @@ import net.javacrumbs.shedlock.spring.ScheduledLockConfigurationBuilder;
 @Configuration
 @EnableAsync
 @EnableScheduling
-public class JobConfiguration {
+public class JobConfig {
 
     private static final int POOL_SIZE = 10;
     private static final int LOCK_AT_MOST_MINUTES = 10;

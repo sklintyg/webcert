@@ -32,6 +32,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v3.ListCertificatesForCareResponderInterface;
 import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v3.ListCertificatesForCareResponseType;
 import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v3.ListCertificatesForCareType;
@@ -116,6 +117,7 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
  * @author andreaskaltenbach
  */
 @Service
+@Transactional
 public class IntygServiceImpl implements IntygService {
 
     private static final Logger LOG = LoggerFactory.getLogger(IntygServiceImpl.class);

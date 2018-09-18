@@ -28,17 +28,21 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.annotation.TransactionManagementConfigurer;
 
+import se.inera.intyg.infra.monitoring.MonitoringConfiguration;
+
 @Configuration
 @EnableTransactionManagement
+@Import({ MonitoringConfiguration.class, JmsConfig.class, CacheConfig.class, JobConfig.class })
 @DependsOn("dbUpdate")
-@Import(JmsConfig.class)
 public class AppConfig implements TransactionManagementConfigurer {
 
     @Autowired
     JpaTransactionManager transactionManager;
 
+
     @Override
     public PlatformTransactionManager annotationDrivenTransactionManager() {
         return transactionManager;
     }
+
 }

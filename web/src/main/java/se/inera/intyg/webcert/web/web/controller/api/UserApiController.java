@@ -24,6 +24,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.infra.security.authorities.CommonAuthoritiesResolver;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.Feature;
@@ -77,6 +78,7 @@ public class UserApiController extends AbstractApiController {
      */
     @GET
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    @PrometheusTimeMethod
     public Response getUser() {
         WebCertUser user = getWebCertUserService().getUser();
         return Response.ok(user.getAsJson()).build();
@@ -86,6 +88,7 @@ public class UserApiController extends AbstractApiController {
     @Path("/features")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    @PrometheusTimeMethod
     public Response userFeatures(WebUserFeaturesRequest webUserFeaturesRequest) {
         WebCertUser user = getWebCertUserService().getUser();
         Map<String, Feature> mutFeatures = new HashMap<>(user.getFeatures());
@@ -104,6 +107,7 @@ public class UserApiController extends AbstractApiController {
     @Path("/andraenhet")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    @PrometheusTimeMethod
     public Response changeSelectedUnitOnUser(ChangeSelectedUnitRequest request) {
 
         WebCertUser user = getWebCertUserService().getUser();
@@ -134,6 +138,7 @@ public class UserApiController extends AbstractApiController {
     @PUT
     @Path("/godkannavtal")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    @PrometheusTimeMethod
     public Response godkannAvtal() {
         WebCertUser user = getWebCertUserService().getUser();
         if (user != null) {
@@ -151,6 +156,7 @@ public class UserApiController extends AbstractApiController {
     @DELETE
     @Path("/privatlakaravtal")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    @PrometheusTimeMethod
     public Response taBortAvtalsGodkannande() {
         WebCertUser user = getWebCertUserService().getUser();
         if (user != null) {
@@ -163,6 +169,7 @@ public class UserApiController extends AbstractApiController {
     @GET
     @Path("/latestavtal")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    @PrometheusTimeMethod
     public Response getAvtal() {
         Optional<Avtal> avtal = avtalService.getLatestAvtal();
         return Response.ok(avtal.orElse(null)).build();
@@ -170,6 +177,7 @@ public class UserApiController extends AbstractApiController {
 
     @GET
     @Path("/ping")
+    @PrometheusTimeMethod
     public Response clientPing() {
         // Any active user session will be extended just by accessing an endpoint.
         LOG.debug("wc-client pinged server");
@@ -180,6 +188,7 @@ public class UserApiController extends AbstractApiController {
     @Path("/preferences")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    @PrometheusTimeMethod
     public Response storeUserMetdataEntry(WebUserPreferenceStorageRequest request) {
         LOG.debug("User stored user preference entry for key: " + request.getKey());
         getWebCertUserService().storeUserPreference(request.getKey(), request.getValue());
@@ -188,6 +197,7 @@ public class UserApiController extends AbstractApiController {
 
     @DELETE
     @Path("/preferences/{key}")
+    @PrometheusTimeMethod
     public Response deleteUserPreferenceEntry(@PathParam("key") String prefKey) {
         LOG.debug("User deleted user preference entry for key: " + prefKey);
         getWebCertUserService().deleteUserPreference(prefKey);
@@ -196,6 +206,7 @@ public class UserApiController extends AbstractApiController {
 
     @GET
     @Path("/logout")
+    @PrometheusTimeMethod
     public Response logoutUserAfterTimeout() {
         getWebCertUserService().scheduleSessionRemoval(getSessionId(), getHttpSession());
         return Response.ok().build();
@@ -203,6 +214,7 @@ public class UserApiController extends AbstractApiController {
 
     @GET
     @Path("/logout/cancel")
+    @PrometheusTimeMethod
     public Response cancelLogout() {
         getWebCertUserService().cancelScheduledLogout(getSessionId());
         return Response.ok().build();

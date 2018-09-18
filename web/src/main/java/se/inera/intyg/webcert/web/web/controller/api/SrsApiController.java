@@ -33,6 +33,7 @@ import se.inera.intyg.infra.integration.srs.model.SrsQuestion;
 import se.inera.intyg.infra.integration.srs.model.SrsQuestionResponse;
 import se.inera.intyg.infra.integration.srs.model.SrsResponse;
 import se.inera.intyg.infra.integration.srs.services.SrsService;
+import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.schemas.contract.InvalidPersonNummerException;
 import se.inera.intyg.schemas.contract.Personnummer;
@@ -91,6 +92,7 @@ public class SrsApiController extends AbstractApiController {
             @ApiResponse(code = BAD_REQUEST, message = "Bad request"),
             @ApiResponse(code = NO_CONTENT, message = "No prediction model found")
     })
+    @PrometheusTimeMethod
     public Response getSrs(@ApiParam(value = "Intyg id", required = true) @PathParam("intygId") String intygId,
             @ApiParam(value = "Personnummer", required = true) @PathParam("personnummer") String personnummer,
             @ApiParam(value = "Diagnosis Code", required = true) @PathParam("diagnosisCode") String diagnosisCode,
@@ -122,6 +124,7 @@ public class SrsApiController extends AbstractApiController {
     @Path("/questions/{diagnosisCode}")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @ApiOperation(value = "Get questions for diagnosis code", httpMethod = "GET", produces = MediaType.APPLICATION_JSON)
+    @PrometheusTimeMethod
     public Response getQuestions(@ApiParam(value = "Diagnosis code") @PathParam("diagnosisCode") String diagnosisCode) {
         authoritiesValidator.given(getWebCertUserService().getUser()).features(AuthoritiesConstants.FEATURE_SRS).orThrow();
 
@@ -137,6 +140,7 @@ public class SrsApiController extends AbstractApiController {
     @Path("/consent/{personnummer}/{hsaId}")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @ApiOperation(value = "Get consent for patient and careunit", httpMethod = "GET", produces = MediaType.APPLICATION_JSON)
+    @PrometheusTimeMethod
     public Response getConsent(
             @ApiParam(value = "Personnummer") @PathParam("personnummer") String personnummer,
             @ApiParam(value = "HsaId för vårdenhet") @PathParam("hsaId") String hsaId) {
@@ -156,6 +160,7 @@ public class SrsApiController extends AbstractApiController {
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "Set consent for patient and careunit", httpMethod = "PUT", produces = MediaType.APPLICATION_JSON)
+    @PrometheusTimeMethod
     public Response setConsent(
             @ApiParam(value = "Personnummer") @PathParam("personnummer") String personnummer,
             @ApiParam(value = "HsaId för vårdenhet") @PathParam("hsaId") String hsaId,
@@ -175,6 +180,7 @@ public class SrsApiController extends AbstractApiController {
     @GET
     @Path("/codes")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    @PrometheusTimeMethod
     public Response getDiagnosisCodes() {
         authoritiesValidator.given(getWebCertUserService().getUser()).features(AuthoritiesConstants.FEATURE_SRS).orThrow();
         return Response.ok(srsService.getAllDiagnosisCodes()).build();
@@ -184,6 +190,7 @@ public class SrsApiController extends AbstractApiController {
     @Path("/atgarder/{diagnosisCode}")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @ApiOperation(value = "Get SRS info for diagnosecode", httpMethod = "GET", produces = MediaType.APPLICATION_JSON)
+    @PrometheusTimeMethod
     public Response getSrsForDiagnosisCodes(@PathParam("diagnosisCode") String diagnosisCode) {
         authoritiesValidator.given(getWebCertUserService().getUser()).features(AuthoritiesConstants.FEATURE_SRS).orThrow();
 

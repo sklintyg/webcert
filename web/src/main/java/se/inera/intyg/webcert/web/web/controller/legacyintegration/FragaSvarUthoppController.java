@@ -24,6 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
+import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
@@ -81,6 +82,7 @@ public class FragaSvarUthoppController extends BaseIntegrationController {
      */
     @GET
     @Path("/{type}/{intygId}/questions")
+    @PrometheusTimeMethod
     public Response redirectToIntyg(@Context UriInfo uriInfo,
                                     @PathParam("type") String type,
                                     @PathParam("intygId") String intygId,
@@ -105,6 +107,7 @@ public class FragaSvarUthoppController extends BaseIntegrationController {
      */
     @GET
     @Path("/{intygId}/questions")
+    @PrometheusTimeMethod
     public Response redirectToIntyg(@Context UriInfo uriInfo,
                                     @PathParam("intygId") String intygId,
                                     @QueryParam("enhet") String enhetHsaId) {

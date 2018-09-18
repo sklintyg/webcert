@@ -33,6 +33,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import se.inera.intyg.webcert.web.service.fmb.FmbDiagnosInformationService;
+import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
 import se.inera.intyg.webcert.web.web.controller.api.dto.FmbResponse;
 
@@ -59,6 +60,7 @@ public class FmbApiController extends AbstractApiController {
             @ApiResponse(code = OK, message = "Given FMB data for icd10 code found", response = FmbResponse.class),
             @ApiResponse(code = BAD_REQUEST, message = "Bad request due to missing icd10 code")
     })
+    @PrometheusTimeMethod
     public Response getFmbForIcd10(@ApiParam(value = "ICD10 code", required = true) @PathParam("icd10") String icd10) {
         if (icd10 == null || icd10.isEmpty()) {
             return Response.status(Response.Status.BAD_REQUEST).entity("Missing icd10 code").build();

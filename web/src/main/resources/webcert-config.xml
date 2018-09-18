@@ -92,7 +92,10 @@
 
     <bean id="commonAuthoritiesResolver" class="se.inera.intyg.infra.security.authorities.CommonAuthoritiesResolver" />
     <bean id="authoritiesHelper" class="se.inera.intyg.infra.security.authorities.AuthoritiesHelper" />
+
   </beans>
+
+  
 
   <beans profile="dev,wc-init-data">
     <!-- In dev mode we bootstrap data -->
@@ -190,9 +193,6 @@
       <property name="maxPoolSize" value="10" />
       <property name="queueCapacity" value="25" />
     </bean>
-
-    <bean class="org.springframework.session.data.redis.config.annotation.web.http.RedisHttpSessionConfiguration"/>
-    <bean class="se.inera.intyg.infra.monitoring.logging.LogMDCHelper"/>
 
   </beans>
 

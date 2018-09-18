@@ -31,6 +31,7 @@ import javax.ws.rs.core.Response;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeDraft;
 import se.inera.intyg.webcert.web.service.arende.ArendeDraftService;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeDraftEntry;
@@ -43,6 +44,7 @@ public class ArendeDraftApiController {
 
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
+    @PrometheusTimeMethod
     public Response save(ArendeDraftEntry entry) {
         if (!entry.isValid()) {
             return Response.status(Response.Status.BAD_REQUEST).build();
@@ -56,6 +58,7 @@ public class ArendeDraftApiController {
 
     @DELETE
     @Path("/{intygId}{questionId:(/[^/]+?)?}")
+    @PrometheusTimeMethod
     public Response delete(@PathParam("intygId") String intygId, @PathParam("questionId") String questionId) {
         String resolvedQuestionId = StringUtils.trimToNull(questionId);
         if (arendeDraftService.delete(intygId, resolvedQuestionId)) {
@@ -68,6 +71,7 @@ public class ArendeDraftApiController {
     @GET
     @Path("/{intygId}")
     @Produces(MediaType.APPLICATION_JSON)
+    @PrometheusTimeMethod
     public Response getQuestionDraft(@PathParam("intygId") String intygId) {
         ArendeDraft questionDraft = arendeDraftService.getQuestionDraft(intygId);
         if (questionDraft != null) {

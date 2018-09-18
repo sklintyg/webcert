@@ -23,6 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.infra.security.authorities.CommonAuthoritiesResolver;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
@@ -84,6 +85,7 @@ public class ViewIntegrationController extends BaseIntegrationController {
      */
     @GET
     @Path("/{intygId}/readonly")
+    @PrometheusTimeMethod
     public Response getRedirectToIntyg(@Context UriInfo uriInfo,
             @PathParam("intygId") String intygId,
             @DefaultValue("") @QueryParam(PARAM_ENHET_ID) String enhetId) {
@@ -94,6 +96,7 @@ public class ViewIntegrationController extends BaseIntegrationController {
 
     @Autowired
     @Qualifier("viewIntegrationServiceImpl")
+    @PrometheusTimeMethod
     public void setIntegrationService(IntegrationService integrationService) {
         this.integrationService = integrationService;
     }

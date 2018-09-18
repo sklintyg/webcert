@@ -25,6 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.intyg.common.support.model.common.internal.Patient;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
+import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.SekretessStatus;
@@ -92,6 +93,7 @@ public class UtkastApiController extends AbstractApiController {
     @Path("/{intygsTyp}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    @PrometheusTimeMethod
     public Response createUtkast(@PathParam("intygsTyp") String intygsTyp, CreateUtkastRequest request) {
         try {
             if (moduleRegistry.getIntygModule(intygsTyp).isDeprecated()) {
@@ -170,6 +172,7 @@ public class UtkastApiController extends AbstractApiController {
     @Path("/questions/{intygsTyp}/{version}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    @PrometheusTimeMethod
     public Response getQuestions(@PathParam("intygsTyp") String intygsTyp, @PathParam("version") String version) {
 
         LOG.debug("Requesting questions for '{}' with version '{}'.", intygsTyp, version);
@@ -186,6 +189,7 @@ public class UtkastApiController extends AbstractApiController {
     @Path("/")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    @PrometheusTimeMethod
     public Response filterDraftsForUnit(@QueryParam("") QueryIntygParameter filterParameters) {
 
         authoritiesValidator.given(getWebCertUserService().getUser()).features(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST).orThrow();
@@ -204,6 +208,7 @@ public class UtkastApiController extends AbstractApiController {
     @GET
     @Path("/lakare")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    @PrometheusTimeMethod
     public Response getLakareWithDraftsByEnheter() {
 
         authoritiesValidator.given(getWebCertUserService().getUser()).features(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST).orThrow();
@@ -219,6 +224,7 @@ public class UtkastApiController extends AbstractApiController {
     @GET
     @Path("/previousIntyg/{personnummer}")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    @PrometheusTimeMethod
     public Response getPreviousCertificateWarnings(@PathParam("personnummer") String personnummer) {
         Map<String, Map<String, PreviousIntyg>> res = utkastService
                 .checkIfPersonHasExistingIntyg(Personnummer.createPersonnummer(personnummer).get(),

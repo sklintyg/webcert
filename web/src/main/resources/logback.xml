@@ -99,6 +99,8 @@
 
   <logger name="org.apache.cxf.services" level="error" />
 
+  <logger name="se.inera.intyg.webcert.web" level="debug" />
+
   <logger name="se.inera.intyg.webcert.web.auth" level="info" />
 
   <logger name="se.inera.intyg.webcert" level="info" />
@@ -115,7 +117,7 @@
 
   <logger name="se.inera.webcert.notifications" level="info" />
 
-  <logger name="se.inera.intyg.infra.integration" level="info" />
+  <logger name="se.inera.intyg.infra" level="info" />
 
   <!-- Log service for monitoring and audit information -->
   <logger name="se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService" level="info" />

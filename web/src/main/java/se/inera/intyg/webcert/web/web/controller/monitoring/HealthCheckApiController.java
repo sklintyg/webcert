@@ -22,6 +22,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
+import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.webcert.web.service.monitoring.HealthCheckService;
 import se.inera.intyg.webcert.web.service.monitoring.dto.HealthStatus;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
@@ -49,6 +50,7 @@ public class HealthCheckApiController extends AbstractApiController {
     @GET
     @Path("/ping")
     @Produces(MediaType.APPLICATION_XML)
+    @PrometheusTimeMethod
     public Response checkPing() {
         String xmlResponse = buildXMLResponse(true, 0);
         return Response.ok(xmlResponse).build();
@@ -57,6 +59,7 @@ public class HealthCheckApiController extends AbstractApiController {
     @GET
     @Path("/db")
     @Produces(MediaType.APPLICATION_XML)
+    @PrometheusTimeMethod
     public Response checkDB() {
         HealthStatus status = healthCheck.checkDB();
         String xmlResponse = buildXMLResponse(status);
@@ -66,6 +69,7 @@ public class HealthCheckApiController extends AbstractApiController {
     @GET
     @Path("/jms")
     @Produces(MediaType.APPLICATION_XML)
+    @PrometheusTimeMethod
     public Response checkJMS() {
         HealthStatus status = healthCheck.checkJMS();
         String xmlResponse = buildXMLResponse(status);
@@ -74,6 +78,7 @@ public class HealthCheckApiController extends AbstractApiController {
 
     @GET
     @Path("/signature-queue")
+    @PrometheusTimeMethod
     @Produces(MediaType.APPLICATION_XML)
     public Response checkSignatureQueue() {
         HealthStatus status = healthCheck.checkSignatureQueue();
@@ -83,6 +88,7 @@ public class HealthCheckApiController extends AbstractApiController {
 
     @GET
     @Path("/intygstjanst")
+    @PrometheusTimeMethod
     @Produces(MediaType.APPLICATION_XML)
     public Response checkIntygstjanst() {
         HealthStatus status = healthCheck.checkIntygstjanst();
@@ -93,6 +99,7 @@ public class HealthCheckApiController extends AbstractApiController {
     @GET
     @Path("/privatlakarportal")
     @Produces(MediaType.APPLICATION_XML)
+    @PrometheusTimeMethod
     public Response checkPrivatlakarportal() {
         HealthStatus status = healthCheck.checkPrivatlakarportal();
         String xmlResponse = buildXMLResponse(status);
@@ -102,6 +109,7 @@ public class HealthCheckApiController extends AbstractApiController {
     @GET
     @Path("/uptime")
     @Produces(MediaType.APPLICATION_XML)
+    @PrometheusTimeMethod
     public Response checkUptime() {
         HealthStatus status = healthCheck.checkUptime();
         String xmlResponse = buildXMLResponse(status);
@@ -111,6 +119,7 @@ public class HealthCheckApiController extends AbstractApiController {
     @GET
     @Path("/cachemetrics")
     @Produces(MediaType.APPLICATION_JSON)
+    @PrometheusTimeMethod
     public Response cacheMetricsJson() {
             return Response.serverError().entity("{\"msg\":\"Caching does not support statistics\"}").build();
     }

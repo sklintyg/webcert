@@ -23,6 +23,7 @@ import io.swagger.annotations.Api;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.infra.security.common.model.Feature;
 import se.inera.intyg.infra.security.common.model.Role;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
@@ -57,6 +58,7 @@ public class UserResource {
     @Path("/role")
     @Produces(MediaType.APPLICATION_JSON)
     @JsonPropertyDescription("Get the roles for user in session")
+    @PrometheusTimeMethod
     public Response getUserRoles() {
         final WebCertUser user = webCertUserService.getUser();
         final Map<String, Role> roles = user.getRoles();
@@ -74,6 +76,7 @@ public class UserResource {
     @Path("/role/{role}")
     @Produces(MediaType.APPLICATION_JSON)
     @JsonPropertyDescription("Set the roles for user in session")
+    @PrometheusTimeMethod
     public Response setUserRole(@PathParam("role") String role) {
         webCertUserService.updateUserRole(role);
         return Response.ok().build();
@@ -82,6 +85,7 @@ public class UserResource {
     @GET
     @Path("/origin")
     @Produces(MediaType.APPLICATION_JSON)
+    @PrometheusTimeMethod
     public Response getOrigin() {
         final WebCertUser user = webCertUserService.getUser();
         final String currentOrigin = user.getOrigin();
@@ -97,6 +101,7 @@ public class UserResource {
     @GET
     @Path("/origin/{origin}")
     @Produces(MediaType.APPLICATION_JSON)
+    @PrometheusTimeMethod
     public Response setOrigin(@PathParam("origin") String origin) {
         webCertUserService.updateOrigin(origin);
         return Response.ok().build();
@@ -104,6 +109,7 @@ public class UserResource {
 
     @GET
     @Path("/preferences/delete")
+    @PrometheusTimeMethod
     public Response deleteUserPreferences() {
         webCertUserService.deleteUserPreferences();
         return Response.ok().build();
@@ -112,12 +118,14 @@ public class UserResource {
     @GET
     @Path("/parameters")
     @Produces(MediaType.APPLICATION_JSON)
+    @PrometheusTimeMethod
     public Response getParameters() {
         return Response.ok(webCertUserService.getUser().getParameters()).build();
     }
 
     @POST
     @Path("/parameters/sjf")
+    @PrometheusTimeMethod
     public Response setSjf() {
         webCertUserService.getUser()
             .setParameters(
@@ -135,6 +143,7 @@ public class UserResource {
      */
     @GET
     @Path("/parameters/ref/{refValue}")
+    @PrometheusTimeMethod
     public Response setRef(@PathParam("refValue") String refValue) {
         webCertUserService.getUser()
                 .setParameters(
@@ -145,6 +154,7 @@ public class UserResource {
     @GET
     @Path("/features")
     @Produces(MediaType.APPLICATION_JSON)
+    @PrometheusTimeMethod
     public Response getFeaturesForUser() {
         Map<String, Feature> features = webCertUserService.getUser().getFeatures();
         return Response.ok(features).build();
@@ -153,6 +163,7 @@ public class UserResource {
     @PUT
     @Path("/personid")
     @Produces(MediaType.APPLICATION_JSON)
+    @PrometheusTimeMethod
     public Response getFeaturesForUser(String personId) {
         String oldPersonId = webCertUserService.getUser().getPersonId();
         webCertUserService.getUser().setPersonId(personId);

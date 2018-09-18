@@ -23,6 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
+import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
 import se.inera.intyg.webcert.web.web.controller.api.dto.MonitoringRequest;
@@ -56,6 +57,7 @@ public class JsLogApiController extends AbstractApiController {
 
     @POST
     @Path("/debug")
+    @PrometheusTimeMethod
     public Response debug(String message) {
         LOG.debug(message);
         return ok().build();
@@ -64,6 +66,7 @@ public class JsLogApiController extends AbstractApiController {
     @POST
     @Path("/monitoring")
     @Consumes(APPLICATION_JSON)
+    @PrometheusTimeMethod
     public Response monitoring(MonitoringRequest request) {
         if (request == null || !request.isValid()) {
             return status(BAD_REQUEST).build();
@@ -83,6 +86,7 @@ public class JsLogApiController extends AbstractApiController {
     @POST
     @Path("/srs")
     @Consumes(APPLICATION_JSON)
+    @PrometheusTimeMethod
     public Response srsShown(@RequestBody SrsFrontendEvent event) {
         if (event == null) {
             return status(BAD_REQUEST).build();

@@ -26,6 +26,7 @@ import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.common.support.modules.registry.IntygModule;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.infra.dynamiclink.service.DynamicLinkService;
+import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.schemas.contract.InvalidPersonNummerException;
@@ -77,6 +78,7 @@ public class ModuleApiController extends AbstractApiController {
     @GET
     @Path("/map")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    @PrometheusTimeMethod
     public Response getModulesMap() {
         List<IntygModule> intygModules = moduleRegistry.listAllModules();
         intygModules.forEach(module -> {
@@ -95,6 +97,7 @@ public class ModuleApiController extends AbstractApiController {
     @GET
     @Path("/map/{patientId}")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    @PrometheusTimeMethod
     public Response getModulesMap(@PathParam("patientId") String patientId) {
 
         try {
@@ -132,6 +135,7 @@ public class ModuleApiController extends AbstractApiController {
     @GET
     @Path("/active")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    @PrometheusTimeMethod
     public Response getActiveModules() {
         // Cannot use user as this is used before login
         return Response.ok(moduleRegistry.listAllModules().stream()

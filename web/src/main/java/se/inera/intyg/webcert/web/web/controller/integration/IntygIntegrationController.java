@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
+import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.infra.security.authorities.CommonAuthoritiesResolver;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
@@ -120,6 +121,7 @@ public class IntygIntegrationController extends BaseIntegrationController {
      */
     @GET
     @Path("/{certType}/{certId}")
+    @PrometheusTimeMethod
     public Response getRedirectToIntyg(@Context UriInfo uriInfo,
             @PathParam(PARAM_CERT_TYPE) String intygTyp,
             @PathParam(PARAM_CERT_ID) String intygId,
@@ -163,6 +165,7 @@ public class IntygIntegrationController extends BaseIntegrationController {
      */
     @GET
     @Path("/{certId}")
+    @PrometheusTimeMethod
     public Response getRedirectToIntyg(@Context UriInfo uriInfo,
             @PathParam(PARAM_CERT_ID) String intygId,
             @DefaultValue("") @QueryParam(PARAM_ENHET_ID) String enhetId,
@@ -198,6 +201,7 @@ public class IntygIntegrationController extends BaseIntegrationController {
     @POST
     @Path("/{certId}")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @PrometheusTimeMethod
     public Response postRedirectToIntyg(@Context UriInfo uriInfo,
             @PathParam(PARAM_CERT_ID) String intygId,
             @DefaultValue("") @FormParam(PARAM_ENHET_ID) String enhetId,
@@ -231,6 +235,7 @@ public class IntygIntegrationController extends BaseIntegrationController {
 
     @GET
     @Path("/{certType}/{certId}/resume")
+    @PrometheusTimeMethod
     public Response resumeRedirectToIntyg(
             @Context UriInfo uriInfo,
             @PathParam(PARAM_CERT_TYPE) String intygTyp,

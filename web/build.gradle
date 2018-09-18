@@ -101,9 +101,7 @@ gretty {
                "-Dcredentials.file=${projectDir}/webcert-credentials.properties",
                "-Dwebcert.config.file=${projectDir}/webcert-dev.properties",
                "-DuseMinifiedJavaScript=${minified}",
-               "-Dh2.tcp.port=9094",
-               "-Dh2.web.port=9090",
-               "-Djetty.port=9088"]
+               "-Djetty.port=${httpPort}"]
 
     extraResourceBase webappOutputDir
 }
@@ -174,15 +172,13 @@ dependencies {
     compile "net.javacrumbs.shedlock:shedlock-spring:${shedlockSpringVersion}"
     compile "net.javacrumbs.shedlock:shedlock-provider-redis-spring:${shedlockSpringVersion}"
 
-    compile "org.apache.activemq:activemq-spring:${activeMqVersion}"
+    compile "javax.servlet:javax.servlet-api:${servletApiVersion}"
 
-    compileOnly "javax.servlet:servlet-api:${servletApiVersion}"
     compileOnly "org.apache.geronimo.specs:geronimo-jms_1.1_spec:${geronimoJmsVersion}"
 
     testCompile "org.hamcrest:hamcrest-all:${hamcrestVersion}"
     testCompile "org.assertj:assertj-core:${assertjVersion}"
     testCompile "org.springframework:spring-test:${springVersion}"
-    testCompile "javax.servlet:javax.servlet-api:${servletApiVersion}"
     testCompile "org.kubek2k:springockito:${springockitoVersion}"
     testCompile "xmlunit:xmlunit:${xmlUnitVersion}"
     testCompile "org.awaitility:awaitility:${awaitilityVersion}"

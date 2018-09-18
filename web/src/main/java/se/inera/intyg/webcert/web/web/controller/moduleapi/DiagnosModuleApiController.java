@@ -30,6 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.webcert.web.service.diagnos.DiagnosService;
 import se.inera.intyg.webcert.web.service.diagnos.dto.DiagnosResponse;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
@@ -60,6 +61,7 @@ public class DiagnosModuleApiController extends AbstractApiController {
     @Path("/kod")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    @PrometheusTimeMethod
     public Response getDiagnosisByCode(DiagnosParameter parameter) {
 
         LOG.debug("Getting diagnosises using code: {}", parameter.getCodeFragment());
@@ -81,6 +83,7 @@ public class DiagnosModuleApiController extends AbstractApiController {
     @Path("/kod/sok")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    @PrometheusTimeMethod
     public Response searchDiagnosisByCode(DiagnosParameter parameter) {
 
         LOG.debug("Searching for diagnosises using code fragment: {}", parameter.getCodeFragment());
@@ -99,6 +102,7 @@ public class DiagnosModuleApiController extends AbstractApiController {
     @Path("/beskrivning/sok")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    @PrometheusTimeMethod
     public Response searchDiagnosisByDescription(DiagnosParameter parameter) {
 
         LOG.debug("Searching for diagnosises using description fragment: {}", parameter.getDescriptionSearchString());

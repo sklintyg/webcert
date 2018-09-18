@@ -253,6 +253,7 @@ public class IntygModuleApiController extends AbstractApiController {
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public Response createRenewal(CopyIntygRequest request, @PathParam("intygsTyp") String intygsTyp,
             @PathParam("intygsId") String orgIntygsId) {
+
         validateCopyAuthority(intygsTyp);
 
         LOG.debug("Attempting to create a renewal of {} with id '{}'", intygsTyp, orgIntygsId);

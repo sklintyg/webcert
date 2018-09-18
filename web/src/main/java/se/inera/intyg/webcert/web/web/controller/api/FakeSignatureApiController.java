@@ -21,6 +21,7 @@ package se.inera.intyg.webcert.web.web.controller.api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.transaction.annotation.Transactional;
+import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.infra.security.common.model.AuthenticationMethod;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
@@ -65,6 +66,7 @@ public class FakeSignatureApiController extends AbstractApiController {
     @POST
     @Path("/{intygsTyp}/{intygsId}/{version}/fejksignera/{ticketId}")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    @PrometheusTimeMethod
     public SignaturStateDTO fejkSigneraUtkast(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId,
             @PathParam("version") long version, @PathParam("ticketId") String ticketId, @Context HttpServletRequest request) {
 

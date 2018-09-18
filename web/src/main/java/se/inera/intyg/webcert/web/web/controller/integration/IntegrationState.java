@@ -18,6 +18,8 @@
  */
 package se.inera.intyg.webcert.web.web.controller.integration;
 
+import java.io.Serializable;
+
 /**
  * The class is used to hold information (state) regarding a user
  * has been redirected to Webcert's 'enhetsväljare'.
@@ -37,10 +39,10 @@ package se.inera.intyg.webcert.web.web.controller.integration;
  *
  * @author Magnus Ekstrand on 2017-10-12.
  */
-public class IntegrationState {
+public class IntegrationState implements Serializable {
 
+    private static final long serialVersionUID = 4076423364115275001L;
     private boolean redirectToEnhetsval;
-
 
     /**
      *  If true, user has been redirected to 'enhetsväljaren' to select
