@@ -57,8 +57,8 @@ public class WebcertCertificateRelation {
      */
     private LocalDateTime aterkalladDatum;
 
-    public WebcertCertificateRelation(String intygsId, RelationKod relationKod, LocalDateTime skapad, UtkastStatus status,
-                                      LocalDateTime aterkalladDatum) {
+    public WebcertCertificateRelation(String intygsId, RelationKod relationKod, LocalDateTime skapad,
+                                      UtkastStatus status, LocalDateTime aterkalladDatum) {
         this.intygsId = intygsId;
         this.relationKod = relationKod;
         this.skapad = skapad;
