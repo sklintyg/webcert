@@ -40,6 +40,7 @@ public class MailLinkServiceImpl implements MailLinkService {
     private static final Logger LOG = LoggerFactory.getLogger(MailLinkServiceImpl.class);
 
     private static final String PARAM_CERT_TYPE = "certType";
+    private static final String PARAM_CERT_TYPE_VERSION = "certTypeVersion";
     private static final String PARAM_CERT_ID = "certId";
 
     @Value("${certificate.view.url.base}")
@@ -49,7 +50,7 @@ public class MailLinkServiceImpl implements MailLinkService {
     private String urlUtkastFragmentTemplate;
 
     @Override
-    public URI intygRedirect(String typ, String intygId) {
+    public URI intygRedirect(String typ, String intygTypeVersion, String intygId) {
         if (Strings.nullToEmpty(intygId).trim().isEmpty()) {
             LOG.error("Path parameter 'intygId' was either whitespace, empty (\"\") or null");
             return null;
@@ -63,6 +64,7 @@ public class MailLinkServiceImpl implements MailLinkService {
 
         Map<String, Object> urlParams = new HashMap<>();
         urlParams.put(PARAM_CERT_TYPE, typ);
+        urlParams.put(PARAM_CERT_TYPE_VERSION, intygTypeVersion);
         urlParams.put(PARAM_CERT_ID, intygId);
 
         return UriBuilder.fromPath(urlBaseTemplate).fragment(urlUtkastFragmentTemplate).buildFromMap(urlParams);

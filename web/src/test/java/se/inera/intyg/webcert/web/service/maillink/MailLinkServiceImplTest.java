@@ -31,7 +31,8 @@ import org.springframework.test.util.ReflectionTestUtils;
 public class MailLinkServiceImplTest {
 
     private static final Object URL_BASE_TEMPLATE = "url/base/template";
-    private static final Object URL_UTKAST_FRAGMENT_TEMPLATE = "/{certType}/edit/{certId}";
+    private static final Object URL_UTKAST_FRAGMENT_TEMPLATE = "/{certType}/{certTypeVersion}/edit/{certId}";
+    private static final String INTYG_TYPE_VERSION = "1.1";
 
     private MailLinkServiceImpl service = new MailLinkServiceImpl();
 
@@ -43,14 +44,14 @@ public class MailLinkServiceImplTest {
 
     @Test
     public void testIntygRedirectIntygIdMissing() {
-        URI res = service.intygRedirect("typ", null);
+        URI res = service.intygRedirect("typ", INTYG_TYPE_VERSION, null);
 
         assertNull(res);
     }
 
     @Test
     public void testIntygRedirectTypMissing() {
-        URI res = service.intygRedirect(null, "intygId");
+        URI res = service.intygRedirect(null, INTYG_TYPE_VERSION, "intygId");
 
         assertNull(res);
     }
@@ -59,10 +60,10 @@ public class MailLinkServiceImplTest {
     public void testIntygRedirect() {
         final String typ = "typ";
         final String intygId = "intyg-id";
-        URI res = service.intygRedirect(typ, intygId);
+        URI res = service.intygRedirect(typ, INTYG_TYPE_VERSION, intygId);
 
         assertNotNull(res);
         assertEquals(URL_BASE_TEMPLATE, res.getPath());
-        assertEquals("/typ/edit/intyg-id", res.getFragment());
+        assertEquals("/typ/" + INTYG_TYPE_VERSION + "/edit/intyg-id", res.getFragment());
     }
 }

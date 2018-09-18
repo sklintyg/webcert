@@ -28,6 +28,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.maillink.MailLinkService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
@@ -54,6 +55,9 @@ public class PageController {
     @Autowired
     private IntygService intygService;
 
+    @Autowired
+    private UtkastRepository utkastRepository;
+
     @RequestMapping(value = "/maillink/intyg/{typ}/{intygId}", method = RequestMethod.GET)
     public ResponseEntity<Object> redirectToIntyg(@PathVariable("intygId") String intygId, @PathVariable("typ") String typ) {
         // WC 5.0 new: change vårdenhet
@@ -75,7 +79,8 @@ public class PageController {
             return new ResponseEntity<>(httpHeaders, HttpStatus.FOUND);
         }
 
-        URI uri = mailLinkService.intygRedirect(typ, intygId);
+        String intygTypeVersion = intygService.getIntygTypeInfo(intygId, utkastRepository.findOne(intygId)).getIntygTypeVersion();
+        URI uri = mailLinkService.intygRedirect(typ, intygTypeVersion, intygId);
 
         if (uri == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
