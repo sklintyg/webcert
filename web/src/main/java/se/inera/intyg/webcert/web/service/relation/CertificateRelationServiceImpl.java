@@ -72,7 +72,9 @@ public class CertificateRelationServiceImpl implements CertificateRelationServic
                 if ((signed && wcr.getStatus() == UtkastStatus.SIGNED)
                         || (!signed
                                 && (wcr.getStatus() == UtkastStatus.DRAFT_INCOMPLETE || wcr.getStatus() == UtkastStatus.DRAFT_COMPLETE))) {
-                    return wcr;
+                    if (wcr.getRelationKod() != RelationKod.ERSATT || wcr.getAterkalladDatum() == null) {
+                        return wcr;
+                    }
                 }
             }
         }

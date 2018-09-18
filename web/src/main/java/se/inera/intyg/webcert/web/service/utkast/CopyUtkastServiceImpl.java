@@ -399,7 +399,7 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
     private void verifyNotReplaced(String originalIntygId, String operation) {
         final Optional<WebcertCertificateRelation> replacedByRelation = certificateRelationService.getNewestRelationOfType(originalIntygId,
                 RelationKod.ERSATT, Arrays.asList(UtkastStatus.values()));
-        if (replacedByRelation.isPresent()) {
+        if (replacedByRelation.isPresent() && replacedByRelation.get().getAterkalladDatum() == null) {
             String errorString = String.format("Cannot %s for certificate id '%s', the certificate is replaced by certificate '%s'",
                     operation, originalIntygId, replacedByRelation.get().getIntygsId());
             LOG.debug(errorString);
