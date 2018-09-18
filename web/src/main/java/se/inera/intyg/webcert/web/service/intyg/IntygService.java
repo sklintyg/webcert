@@ -22,6 +22,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.web.service.intyg.dto.*;
+import se.inera.intyg.webcert.web.web.controller.api.dto.IntygTypeInfo;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 
 import java.util.List;
@@ -132,12 +133,12 @@ public interface IntygService {
     List<IntygWithNotificationsResponse> listCertificatesForCareWithQA(IntygWithNotificationsRequest request);
 
     /**
-     * Gets the certificate's type from Intygstjanst. Method might return null
+     * Gets the certificate's type from utkast entity or Intygstjanst.
      *
      *
      * @param intygsId
      *            the certificate identifier
      * @return the certificate type
      */
-    String getIntygsTyp(String intygsId);
+    IntygTypeInfo getIntygTypeInfo(String intygsId, Utkast ukast);
 }

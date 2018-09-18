@@ -28,8 +28,10 @@ import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
+import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
+import se.inera.intyg.webcert.web.web.controller.api.dto.IntygTypeInfo;
 import se.inera.intyg.webcert.web.web.controller.integration.BaseIntegrationController;
 
 import javax.ws.rs.GET;
@@ -57,17 +59,22 @@ public class FragaSvarUthoppController extends BaseIntegrationController {
     private static final Logger LOG = LoggerFactory.getLogger(FragaSvarUthoppController.class);
 
     private static final String PARAM_CERT_TYPE = "certType";
+    private static final String PARAM_CERT_TYPE_VERSION = "certTypeVersion";
     private static final String PARAM_CERT_ID = "certId";
 
     private static final String[] GRANTED_ROLES = new String[] { AuthoritiesConstants.ROLE_ADMIN, AuthoritiesConstants.ROLE_LAKARE,
             AuthoritiesConstants.ROLE_TANDLAKARE };
     private static final UserOriginType GRANTED_ORIGIN = UserOriginType.UTHOPP;
     private static final String DEFAULT_TYPE = Fk7263EntryPoint.MODULE_ID;
+    private static final String DEFAULT_TYPE_VERSION = Fk7263EntryPoint.DEFAULT_LOCKED_TYPE_VERSION;
 
     private String urlFragmentTemplate;
 
     @Autowired
     private IntygService intygService;
+
+    @Autowired
+    private UtkastRepository utkastRepository;
 
 
     // api
@@ -92,8 +99,8 @@ public class FragaSvarUthoppController extends BaseIntegrationController {
         this.validateAndChangeEnhet(intygId, type, enhetHsaId);
 
         LOG.debug("Redirecting to view intyg {} of type {}", intygId, type);
-
-        return buildRedirectResponse(uriInfo, type, intygId);
+        final IntygTypeInfo intygTypeInfo = intygService.getIntygTypeInfo(intygId, utkastRepository.findOne(intygId));
+        return buildRedirectResponse(uriInfo, type, intygTypeInfo.getIntygTypeVersion(), intygId);
     }
 
     /**
@@ -111,12 +118,13 @@ public class FragaSvarUthoppController extends BaseIntegrationController {
 
         super.validateParameter("intygId", intygId);
         super.validateAuthorities();
-
+        //This is hardwired to fk7263 only
         String intygType = DEFAULT_TYPE;
+        String intygTypeVersion = DEFAULT_TYPE_VERSION;
         this.validateAndChangeEnhet(intygId, intygType, enhetHsaId);
 
         LOG.debug("Redirecting to view intyg {} of type {}", intygId, intygType);
-        return buildRedirectResponse(uriInfo, intygType, intygId);
+        return buildRedirectResponse(uriInfo, intygType, intygTypeVersion, intygId);
     }
 
     public void setUrlFragmentTemplate(String urlFragmentTemplate) {
@@ -167,11 +175,12 @@ public class FragaSvarUthoppController extends BaseIntegrationController {
         }
     }
 
-    private Response buildRedirectResponse(UriInfo uriInfo, String certificateType, String certificateId) {
+    private Response buildRedirectResponse(UriInfo uriInfo, String certificateType, String intygTypeVersion, String certificateId) {
         UriBuilder uriBuilder = uriInfo.getBaseUriBuilder();
 
         Map<String, Object> urlParams = new HashMap<>();
         urlParams.put(PARAM_CERT_TYPE, certificateType);
+        urlParams.put(PARAM_CERT_TYPE_VERSION, intygTypeVersion);
         urlParams.put(PARAM_CERT_ID, certificateId);
 
         URI location = uriBuilder.replacePath(getUrlBaseTemplate()).fragment(urlFragmentTemplate).buildFromMap(urlParams);

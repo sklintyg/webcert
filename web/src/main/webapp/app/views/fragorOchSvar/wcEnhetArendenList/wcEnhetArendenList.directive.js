@@ -22,11 +22,11 @@ angular.module('webcert').directive('wcEnhetArendenList', [
     'common.ArendeVidarebefordraHelper', 'common.ArendeProxy', 'common.dialogService',
     'webcert.enhetArendenListService', 'webcert.enhetArendenModel', 'webcert.enhetArendenListModel',
     'common.messageService', 'webcert.vardenhetFilterModel', 'webcert.enhetArendenFilterModel',
-    'common.UserModel',
+    'common.UserModel', 'common.IntygProxy',
     function($location, $log, $timeout, $window,
         ArendeVidarebefordraHelper, ArendeProxy, dialogService,
         enhetArendenListService, enhetArendenModel, enhetArendenListModel, messageService, 
-        vardenhetFilterModel, enhetArendenFilterModel, UserModel) {
+        vardenhetFilterModel, enhetArendenFilterModel, UserModel, IntygProxy) {
         'use strict';
 
         return {
@@ -125,7 +125,12 @@ angular.module('webcert').directive('wcEnhetArendenList', [
 
                 $scope.openIntyg = function(intygId, intygTyp) {
                     $log.debug('open intyg ' + intygId + ' of type ' + intygTyp);
-                    $location.url('/fragasvar/' + intygTyp.toLowerCase() + '/' + intygId, true);
+                    IntygProxy.getIntygTypeInfo(intygId, function success(typeInfo) {
+                        $location.url('/fragasvar/' + intygTyp.toLowerCase() + '/' + typeInfo.intygTypeVersion + '/' + intygId);
+                    }, function fail() {
+                        enhetArendenListModel.viewState.activeErrorMessageKey = 'info.query.error';
+                    });
+
                 };
 
                 // Handle vidarebefordra dialog

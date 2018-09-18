@@ -1066,13 +1066,14 @@
         <constraints nullable="false"/>
       </column>
     </addColumn>
-    <!-- NOTE: This is not ready for production!!!!
-    ts-bas/ts-diabetes will exist with versions 2.6/2.8 and 6.7/6.8. We need another way to update version for those..
-    Update version on existing utkast to latest known version of all types.-->
+    <!-- NOTE: This need to be verified to work before beiing put into production!!!!
+    Since we dont have a simple way of finding out exact version of existing ts
+    certificates (they will exist with versions 2.6/2.8 and 6.7/6.8.) we only specify major version (=modelversion) for ts certificates.
+    The minor version only matters when resolving texts, while major is important when choosing moduleapi version etc.-->
     <sql>
       UPDATE INTYG SET INTYG_TYPE_VERSION = '1.0' WHERE INTYGS_TYP  NOT IN ('ts-bas', 'ts-diabetes');
-      UPDATE INTYG SET INTYG_TYPE_VERSION = '6.8' WHERE INTYGS_TYP = 'ts-bas';
-      UPDATE INTYG SET INTYG_TYPE_VERSION = '2.8' WHERE INTYGS_TYP = 'ts-diabetes';
+      UPDATE INTYG SET INTYG_TYPE_VERSION = '6' WHERE INTYGS_TYP = 'ts-bas';
+      UPDATE INTYG SET INTYG_TYPE_VERSION = '2' WHERE INTYGS_TYP = 'ts-diabetes';
     </sql>
   </changeSet>
 

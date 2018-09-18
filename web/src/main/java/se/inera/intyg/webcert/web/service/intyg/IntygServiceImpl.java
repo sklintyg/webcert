@@ -44,9 +44,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Strings;
 
-import se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificatetype.v1.GetCertificateTypeResponderInterface;
-import se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificatetype.v1.GetCertificateTypeResponseType;
-import se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificatetype.v1.GetCertificateTypeType;
+import se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificatetypeinfo.v1.GetCertificateTypeInfoResponderInterface;
+import se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificatetypeinfo.v1.GetCertificateTypeInfoResponseType;
+import se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificatetypeinfo.v1.GetCertificateTypeInfoType;
 import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.model.CertificateState;
@@ -104,12 +104,15 @@ import se.inera.intyg.webcert.web.service.referens.ReferensService;
 import se.inera.intyg.webcert.web.service.relation.CertificateRelationService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
+import se.inera.intyg.webcert.web.web.controller.api.dto.IntygTypeInfo;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
 import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v3.ListCertificatesForCareResponderInterface;
 import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v3.ListCertificatesForCareResponseType;
 import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v3.ListCertificatesForCareType;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
+
+import static se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum.DATA_NOT_FOUND;
 
 /**
  * @author andreaskaltenbach
@@ -126,7 +129,7 @@ public class IntygServiceImpl implements IntygService {
     private String sekretessmarkeringProdDate;
 
     @Autowired
-    private GetCertificateTypeResponderInterface getCertificateTypeService;
+    private GetCertificateTypeInfoResponderInterface getCertificateTypeInfoService;
 
     @Autowired
     private ListCertificatesForCareResponderInterface listCertificateService;
@@ -603,7 +606,7 @@ public class IntygServiceImpl implements IntygService {
             IntygContentHolder intygData = getIntygData(intygId, intygsTyp, false);
             return intygData.getUtlatande().getGrundData().getSkapadAv().getVardenhet().getEnhetsid();
         } catch (WebCertServiceException e) {
-            if (e.getErrorCode() == WebCertServiceErrorCodeEnum.DATA_NOT_FOUND) {
+            if (e.getErrorCode() == DATA_NOT_FOUND) {
                 return null;
             }
             throw e;
@@ -669,21 +672,26 @@ public class IntygServiceImpl implements IntygService {
     }
 
     @Override
-    public String getIntygsTyp(String intygsId) {
+    public IntygTypeInfo getIntygTypeInfo(String intygsId, Utkast utkast) {
 
-        GetCertificateTypeType requestType = new GetCertificateTypeType();
+        //1. If WC has and utkast for this id, we don't need to query IT for type and version.
+        if (utkast != null) {
+            return new IntygTypeInfo(intygsId, utkast.getIntygsTyp(), utkast.getIntygTypeVersion());
+        } else {
+            return getIntygTypeInfoFromIT(intygsId);
+        }
+    }
+
+    private IntygTypeInfo getIntygTypeInfoFromIT(String intygsId) {
+        GetCertificateTypeInfoType requestType = new GetCertificateTypeInfoType();
         requestType.setIntygsId(intygsId);
 
         try {
-            GetCertificateTypeResponseType responseType = getCertificateTypeService.getCertificateType(logicalAddress, requestType);
-            return responseType.getTyp().getCode();
-
+            final GetCertificateTypeInfoResponseType certificateTypeInfo = getCertificateTypeInfoService.getCertificateTypeInfo(logicalAddress,
+                    requestType);
+            return new IntygTypeInfo(intygsId, certificateTypeInfo.getTyp().getCode(), certificateTypeInfo.getTypVersion());
         } catch (WebCertServiceException e) {
-            LOG.error("Failed to decide on the type of certificate");
-            if (e.getErrorCode() == WebCertServiceErrorCodeEnum.DATA_NOT_FOUND) {
-                return null;
-            }
-            throw e;
+            throw new WebCertServiceException(DATA_NOT_FOUND, "Failed to decide on the type of certificate", e);
         }
     }
 
@@ -839,7 +847,7 @@ public class IntygServiceImpl implements IntygService {
             // Something went wrong communication-wise, try to find a matching Utkast instead.
             Utkast utkast = utkastRepository.findByIntygsIdAndIntygsTyp(intygId, typ);
             if (utkast == null) {
-                throw new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND,
+                throw new WebCertServiceException(DATA_NOT_FOUND,
                         "Cannot get intyg. Intygstjansten was not reachable and the Utkast could "
                                 + "not be found, perhaps it was issued by a non-webcert system?");
             }

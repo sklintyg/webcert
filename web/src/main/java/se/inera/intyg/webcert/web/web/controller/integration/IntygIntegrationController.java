@@ -69,6 +69,7 @@ public class IntygIntegrationController extends BaseIntegrationController {
 
     public static final String PARAM_CERT_ID = "certId";
     public static final String PARAM_CERT_TYPE = "certType";
+    public static final String PARAM_CERT_TYPE_VERSION = "certTypeVersion";
     public static final String PARAM_ENHET_ID = "enhet";
     public static final String PARAM_COHERENT_JOURNALING = "sjf";
     public static final String PARAM_INACTIVE_UNIT = "inaktivEnhet";
@@ -230,10 +231,11 @@ public class IntygIntegrationController extends BaseIntegrationController {
     }
 
     @GET
-    @Path("/{certType}/{certId}/resume")
+    @Path("/{certType}/{certTypeVersion}/{certId}/resume")
     public Response resumeRedirectToIntyg(
             @Context UriInfo uriInfo,
             @PathParam(PARAM_CERT_TYPE) String intygTyp,
+            @PathParam(PARAM_CERT_TYPE_VERSION) String certTypeVersion,
             @PathParam(PARAM_CERT_ID) String intygId,
             @DefaultValue("") @QueryParam(PARAM_ENHET_ID) String enhetId) {
 
@@ -362,11 +364,13 @@ public class IntygIntegrationController extends BaseIntegrationController {
 
         String intygId = prepareRedirectToIntyg.getIntygId();
         String intygTyp = prepareRedirectToIntyg.getIntygTyp();
+        String intygTypeVersion = prepareRedirectToIntyg.getIntygTypeVersion();
         boolean isUtkast = prepareRedirectToIntyg.isUtkast();
         String urlFragmentTemplate = isUtkast ? urlUtkastFragmentTemplate : urlIntygFragmentTemplate;
 
         Map<String, Object> urlParams = new HashMap<>();
         urlParams.put(PARAM_CERT_TYPE, intygTyp);
+        urlParams.put(PARAM_CERT_TYPE_VERSION, intygTypeVersion);
         urlParams.put(PARAM_CERT_ID, intygId);
 
         URI location = uriBuilder.fragment(urlFragmentTemplate).buildFromMap(urlParams);
@@ -376,8 +380,9 @@ public class IntygIntegrationController extends BaseIntegrationController {
     private String getDestinationUrl(UriInfo uriInfo, PrepareRedirectToIntyg prepareRedirectToIntyg) {
         String intygId = prepareRedirectToIntyg.getIntygId();
         String intygTyp = prepareRedirectToIntyg.getIntygTyp();
+        String intygTypeVersion = prepareRedirectToIntyg.getIntygTypeVersion();
 
-        String urlPath = String.format("/visa/intyg/%s/%s/resume", intygTyp, intygId);
+        String urlPath = String.format("/visa/intyg/%s/%s/%s/resume", intygTyp, intygTypeVersion, intygId);
 
         try {
             // get the builder without any existing query params

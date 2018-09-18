@@ -18,7 +18,6 @@
  */
 package se.inera.intyg.webcert.web.web.controller.integration;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +35,7 @@ import se.inera.intyg.webcert.web.service.intyg.IntygServiceImpl;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.utkast.UtkastServiceImpl;
+import se.inera.intyg.webcert.web.web.controller.api.dto.IntygTypeInfo;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.PrepareRedirectToIntyg;
 
 /**
@@ -63,21 +63,13 @@ public abstract class IntegrationServiceImpl implements IntegrationService {
     public PrepareRedirectToIntyg prepareRedirectToIntyg(String intygTyp, String intygId, WebCertUser user) {
         Utkast utkast = utkastRepository.findOne(intygId);
 
-        if (utkast == null) {
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND, "Could not find intyg '" + intygId + "'");
-        }
+        // INTYG-7088: since we now always need intygTypeVersion we always fetch intygTypeInfo for the intyg,
+        // either from WC or IT.
+        final IntygTypeInfo intygTypeInfo = intygService.getIntygTypeInfo(intygId, utkast);
 
-        // INTYG-4336: If intygTyp can't be established,
-        // fetch certificate from IT and then get the type
-        String typ = resolveIntygsTyp(intygTyp, intygId, utkast);
-        if (StringUtils.isEmpty(typ)) {
-            String msg = "Failed resolving type of certificate";
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND, msg);
-        }
+        ensurePreparation(intygTypeInfo.getIntygType(), intygId, utkast, user);
 
-        ensurePreparation(typ, intygId, utkast, user);
-
-        return createPrepareRedirectToIntyg(typ, intygId, UtkastServiceImpl.isUtkast(utkast));
+        return createPrepareRedirectToIntyg(intygTypeInfo, UtkastServiceImpl.isUtkast(utkast));
     }
 
     // protected scope
@@ -102,35 +94,13 @@ public abstract class IntegrationServiceImpl implements IntegrationService {
 
     // private scope
 
-    private PrepareRedirectToIntyg createPrepareRedirectToIntyg(String intygTyp, String intygId, boolean isUtkast) {
+    private PrepareRedirectToIntyg createPrepareRedirectToIntyg(IntygTypeInfo intygTypeInfo, boolean isUtkast) {
         PrepareRedirectToIntyg prepareRedirectToIntyg = new PrepareRedirectToIntyg();
-        prepareRedirectToIntyg.setIntygTyp(intygTyp);
-        prepareRedirectToIntyg.setIntygId(intygId);
+        prepareRedirectToIntyg.setIntygTyp(intygTypeInfo.getIntygType());
+        prepareRedirectToIntyg.setIntygTypeVersion(intygTypeInfo.getIntygTypeVersion());
+        prepareRedirectToIntyg.setIntygId(intygTypeInfo.getIntygId());
         prepareRedirectToIntyg.setUtkast(isUtkast);
         return prepareRedirectToIntyg;
-    }
-
-    /*
-     * Resolve type of certificate. Method will return null if both
-     * intygTyp and intygId is null or empty. Method might return null
-     * if call to intygService.getIntygsTyp(intygId) is made.
-     */
-    private String resolveIntygsTyp(final String intygTyp, final String intygId, final Utkast utkast) {
-        if (StringUtils.isEmpty(intygTyp) && StringUtils.isEmpty(intygId)) {
-            return null;
-        } else if (StringUtils.isEmpty(intygTyp)) {
-            return getIntygsTyp(intygId, utkast);
-        }
-        return intygTyp;
-    }
-
-    private String getIntygsTyp(String intygId, Utkast utkast) {
-        try {
-            return utkast != null ? utkast.getIntygsTyp() : intygService.getIntygsTyp(intygId);
-        } catch (Exception e) {
-            LOG.error(e.getMessage());
-        }
-        return null;
     }
 
 }

@@ -86,9 +86,9 @@
 
   <!-- Clients NOT using NTJP -->
   <beans>
-    <jaxws:client id="getCertificateTypeClient"
-        serviceClass="se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificatetype.v1.GetCertificateTypeResponderInterface"
-        address="${intygstjanst.getcertificatetype.endpoint.url}">
+    <jaxws:client id="getCertificateTypeInfoClient"
+        serviceClass="se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificatetypeinfo.v1.GetCertificateTypeInfoResponderInterface"
+        address="${intygstjanst.getcertificatetypeinfo.endpoint.url}">
     </jaxws:client>
 
     <jaxws:client id="listRelationsForCertificateClient" serviceClass="se.inera.intyg.clinicalprocess.healthcond.certificate.listrelationsforcertificate.v1.ListRelationsForCertificateResponderInterface"

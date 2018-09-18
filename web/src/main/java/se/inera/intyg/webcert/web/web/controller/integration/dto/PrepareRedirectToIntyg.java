@@ -26,6 +26,7 @@ import java.io.Serializable;
 public class PrepareRedirectToIntyg implements Serializable {
 
     private String intygTyp;
+    private String intygTypeVersion;
     private String intygId;
 
     private boolean utkast;
@@ -61,8 +62,17 @@ public class PrepareRedirectToIntyg implements Serializable {
     public String toString() {
         return "PrepareRedirectToIntyg {"
                 + "intygTyp='" + intygTyp + '\''
+                + "intygTypeVersion='" + intygTypeVersion + '\''
                 + ", intygId='" + intygId + '\''
                 + ", utkast=" + utkast
                 + "}";
+    }
+
+    public String getIntygTypeVersion() {
+        return intygTypeVersion;
+    }
+
+    public void setIntygTypeVersion(String intygTypeVersion) {
+        this.intygTypeVersion = intygTypeVersion;
     }
 }
