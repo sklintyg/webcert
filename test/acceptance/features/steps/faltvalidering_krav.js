@@ -259,7 +259,7 @@ module.exports = {
         'Du måste ange år och månad.',
         'Du måste ange månad.',
         'Datumet får inte vara senare än "Dödsdatum".',
-        'Datumet får inte vara senare än datumet för "Anträffad död".',
+        'Ange ett datum, samma som eller tidigare än "Anträffad död".',
         'Datumet får inte vara senare än dagens datum.',
         'Observera att de kontaktuppgifter du ändrat inte ändras i HSA. Om vårdenhetens kontaktuppgifter inte stämmer kontakta HSA för att ändra dem.',
         'Det datum du angett innebär en period på mer än 6 månader. Du bör kontrollera att tidsperioderna är korrekta.',

@@ -17,7 +17,7 @@ Scenario: Operationsdatum får inte vara senare än anträffad död
     Och jag väljer alternativet "Ja" i frågan "Opererad inom 4 veckor före döden?"
     Och jag fyller i "2018-04-01" i fältet "Operationsdatum"
     Och jag klickar på signera-knappen
-    Så ska "1" valideringsfel visas med texten "Datumet får inte vara senare än datumet för "Anträffad död"."
+    Så ska "1" valideringsfel visas med texten "Ange ett datum, samma som eller tidigare än "Anträffad död"."
 
 @F.VAL-048 @WAITINGFORFIX @UTR-2014 @INTYG-5683
 Scenario: Operationsdatum får inte anges tidigare än 4 veckor före dödsdatum
