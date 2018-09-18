@@ -37,6 +37,7 @@ knownIntygstyper:
   - &ki010 fk7263
   - &ki020 ts-bas
   - &ki030 ts-diabetes
+  - &ki032 ts-diabetes-2
   - &ki040 luse
   - &ki050 lisjp
   - &ki060 luae_na
@@ -86,6 +87,7 @@ features:
       - *ki010 # FK7263
       - *ki020 # TS-BAS
       - *ki030 # TS-DIABETES
+      - *ki032 # TS-DIABETES-2
       - *ki040 # LUSE
       - *ki050 # LISJP
       - *ki060 # LUAE_NA
@@ -100,6 +102,7 @@ features:
     intygstyper:
       - *ki020 # TS-BAS
       - *ki030 # TS-DIABETES
+      - *ki032 # TS-DIABETES-2
       - *ki040 # LUSE
       - *ki050 # LISJP
       - *ki060 # LUAE_NA
@@ -114,6 +117,7 @@ features:
       - *ki010 # FK7263
       - *ki020 # TS-BAS
       - *ki030 # TS-DIABETES
+      - *ki032 # TS-DIABETES-2
       - *ki040 # LUSE
       - *ki050 # LISJP
       - *ki060 # LUAE_NA
@@ -129,6 +133,7 @@ features:
       - *ki010 # FK7263
       - *ki020 # TS-BAS
       - *ki030 # TS-DIABETES
+      - *ki032 # TS-DIABETES-2
       - *ki040 # LUSE
       - *ki050 # LISJP
       - *ki060 # LUAE_NA
@@ -155,6 +160,7 @@ features:
       - *ki010 # FK7263
       - *ki020 # TS-BAS
       - *ki030 # TS-DIABETES
+      - *ki032 # TS-DIABETES-2
       - *ki040 # LUSE
       - *ki050 # LISJP
       - *ki060 # LUAE_NA
@@ -178,6 +184,7 @@ features:
       - *ki010 # FK7263
       - *ki020 # TS-BAS
       - *ki030 # TS-DIABETES
+      - *ki032 # TS-DIABETES-2
       - *ki040 # LUSE
       - *ki050 # LISJP
       - *ki060 # LUAE_NA
@@ -230,6 +237,7 @@ features:
       - *ki010 # FK7263
       - *ki020 # TS-BAS
       - *ki030 # TS-DIABETES
+      - *ki032 # TS-DIABETES-2
       - *ki040 # LUSE
       - *ki050 # LISJP
       - *ki060 # LUAE_NA

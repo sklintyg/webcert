@@ -58,6 +58,7 @@ module.exports = function(grunt) {
         'fk7263':      { base: 'common/fk7263' },
         'ts-bas':      { base: 'common/ts/ts-bas' },
         'ts-diabetes': { base: 'common/ts/ts-diabetes' },
+        'ts-diabetes-2': { base: 'common/ts/ts-diabetes-2' },
         'luse':        { base: 'common/fk/luse', angularModule:'luse' },
         'lisjp':       { base: 'common/fk/lisjp', angularModule:'lisjp' },
         'luae_na':     { base: 'common/fk/luae_na', angularModule:'luae_na' },

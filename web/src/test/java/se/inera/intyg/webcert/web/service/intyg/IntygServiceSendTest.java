@@ -18,16 +18,34 @@
  */
 package se.inera.intyg.webcert.web.service.intyg;
 
+import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.cxf.helpers.FileUtils;
+import org.assertj.core.api.Assertions;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.test.util.ReflectionTestUtils;
+import se.riv.clinicalprocess.healthcond.certificate.sendCertificateToRecipient.v2.SendCertificateToRecipientResponseType;
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.Optional;
 import se.inera.intyg.common.fk7263.model.internal.Fk7263Utlatande;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.integration.converter.util.ResultTypeUtil;
+import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.Relation;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.support.modules.support.api.dto.CertificateMetaData;
@@ -39,33 +57,14 @@ import se.inera.intyg.infra.security.common.model.Role;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.SekretessStatus;
-import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.webcert.common.model.WebcertCertificateRelation;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygServiceResult;
 import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
-import se.riv.clinicalprocess.healthcond.certificate.sendCertificateToRecipient.v2.SendCertificateToRecipientResponseType;
-
-import java.io.IOException;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Optional;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.isNull;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
-import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class IntygServiceSendTest extends AbstractIntygServiceTest {
@@ -74,6 +73,8 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
     public void setupIntyg() throws Exception {
         json = FileUtils.getStringFromFile(new ClassPathResource("IntygServiceTest/utlatande.json").getFile());
         utlatande = objectMapper.readValue(json, Fk7263Utlatande.class);
+
+        ReflectionTestUtils.setField(intygService, "sekretessmarkeringStartDatum", LocalDateTime.of(2016, 11, 30, 23, 0, 0, 0));
     }
 
     @Test
@@ -86,7 +87,6 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
         completionUtlatande.getGrundData().setRelation(new Relation());
         completionUtlatande.getGrundData().getRelation().setRelationKod(RelationKod.KOMPLT);
         completionUtlatande.getGrundData().getRelation().setMeddelandeId(completionMeddelandeId);
-        when(moduleFacade.getUtlatandeFromInternalModel(isNull(), anyString())).thenReturn(completionUtlatande);
 
         when(webCertUserService.isAuthorizedForUnit(anyString(), anyString(), anyBoolean())).thenReturn(true);
 
@@ -100,52 +100,62 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
         verify(logService).logSendIntygToRecipient(any(LogRequest.class));
         verify(certificateSenderService).sendCertificate(anyString(), any(Personnummer.class), anyString(), anyString(), eq(false));
 
-        verify(intygRepository, times(2)).findOne(INTYG_ID);
+        verify(intygRepository, times(1)).findOne(INTYG_ID);
         verify(intygRepository).save(any(Utkast.class));
     }
 
-    @Test(expected = WebCertServiceException.class)
+    @Test
     public void testSendIntygFailsForRevokedCertificate() throws Exception {
-        when(intygRepository.findOne(INTYG_ID)).thenReturn(getUtkast(INTYG_ID));
 
-        CertificateMetaData metaData = new CertificateMetaData();
-        metaData.setStatus(new ArrayList<>());
+        final Utkast utkast = getUtkast(INTYG_ID);
+        utkast.setAterkalladDatum(LocalDateTime.of(2018, 5, 5, 5, 5, 5, 5));
+        when(intygRepository.findByIntygsIdAndIntygsTyp(eq(INTYG_ID), anyString())).thenReturn(utkast);
 
-        when(moduleFacade.getUtlatandeFromInternalModel(isNull(), anyString())).thenReturn(utlatande);
+        json = FileUtils.getStringFromFile(new ClassPathResource("IntygServiceTest/utlatande.json").getFile());
+        utlatande = objectMapper.readValue(json, Fk7263Utlatande.class);
+        CertificateMetaData metaData = buildCertificateMetaData();
+        certificateResponse = new CertificateResponse(json, utlatande, metaData, true);
+        when(moduleFacade.getCertificate(any(String.class), any(String.class))).thenReturn(certificateResponse);
 
-        intygService.sendIntyg(INTYG_ID, INTYG_TYP_FK, "FKASSA", false);
-        verifyZeroInteractions(logService);
+        WebCertUser webCertUser = createUser();
+        when(webCertUserService.getUser()).thenReturn(webCertUser);
+        when(webCertUserService.isAuthorizedForUnit(anyString(), anyString(), anyBoolean())).thenReturn(true);
+        when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.FALSE);
+
+        Assertions.assertThatThrownBy(() -> intygService.sendIntyg(INTYG_ID, INTYG_TYP_FK, "FKASSA", false))
+                .isExactlyInstanceOf(WebCertServiceException.class)
+                .hasMessageEndingWith("cannot send a revoked certificate");
     }
 
-    @Test(expected = WebCertServiceException.class)
+    @Test
     public void testSendIntygFailsForReplacedCertificate() throws Exception {
         final String completionMeddelandeId = "meddelandeId";
 
         WebCertUser webCertUser = createUser();
 
-        Utlatande completionUtlatande = utlatande;
-        completionUtlatande.getGrundData().setRelation(new Relation());
-        completionUtlatande.getGrundData().getRelation().setRelationKod(RelationKod.KOMPLT);
-        completionUtlatande.getGrundData().getRelation().setMeddelandeId(completionMeddelandeId);
+        json = FileUtils.getStringFromFile(new ClassPathResource("IntygServiceTest/utlatande.json").getFile());
+        utlatande = objectMapper.readValue(json, Fk7263Utlatande.class);
+        utlatande.getGrundData().setRelation(new Relation());
+        utlatande.getGrundData().getRelation().setRelationKod(RelationKod.ERSATT);
+        CertificateMetaData metaData = buildCertificateMetaData();
+        certificateResponse = new CertificateResponse(json, utlatande, metaData, false);
 
-        when(webCertUserService.isAuthorizedForUnit(anyString(), anyString(), anyBoolean())).thenReturn(true);
-
-        when(webCertUserService.getUser()).thenReturn(webCertUser);
-        when(intygRepository.findOne(INTYG_ID)).thenReturn(getUtkast(INTYG_ID));
         WebcertCertificateRelation ersattRelation = new WebcertCertificateRelation(INTYG_ID, RelationKod.ERSATT, LocalDateTime.now(),
                 UtkastStatus.SIGNED);
-        when(certificateRelationService.getNewestRelationOfType(eq(INTYG_ID), eq(RelationKod.ERSATT),
-                eq(Arrays.asList(UtkastStatus.SIGNED)))).thenReturn(Optional.of(ersattRelation));
 
-        CertificateMetaData metaData = new CertificateMetaData();
-        metaData.setStatus(new ArrayList<>());
+        when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.FALSE);
+        when(webCertUserService.isAuthorizedForUnit(anyString(), anyString(), anyBoolean())).thenReturn(true);
+        when(webCertUserService.getUser()).thenReturn(webCertUser);
+        when(certificateRelationService.getNewestRelationOfType(anyString(), any(RelationKod.class), anyList()))
+                .thenReturn(Optional.of(ersattRelation));
 
         CertificateResponse revokedCertificateResponse = new CertificateResponse(json, utlatande, metaData, false);
         when(moduleFacade.getCertificate(any(String.class), any(String.class))).thenReturn(revokedCertificateResponse);
-        when(moduleFacade.getUtlatandeFromInternalModel(any(), any())).thenReturn(utlatande);
 
-        intygService.sendIntyg(INTYG_ID, INTYG_TYP_FK, "FKASSA", false);
-        verifyZeroInteractions(logService);
+        Assertions.assertThatThrownBy(() -> intygService.sendIntyg(INTYG_ID, INTYG_TYP_FK, "FKASSA", false))
+                .isExactlyInstanceOf(WebCertServiceException.class)
+                .hasFieldOrPropertyWithValue("errorCode", WebCertServiceErrorCodeEnum.INVALID_STATE)
+                .hasMessageContaining("the certificate is replaced by certificate");
     }
 
     @Test
@@ -161,7 +171,6 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
         completionUtlatande.getGrundData().setRelation(new Relation());
         completionUtlatande.getGrundData().getRelation().setRelationKod(RelationKod.KOMPLT);
         completionUtlatande.getGrundData().getRelation().setMeddelandeId(completionMeddelandeId);
-        when(moduleFacade.getUtlatandeFromInternalModel(isNull(), anyString())).thenReturn(completionUtlatande);
 
         when(certificateRelationService.getNewestRelationOfType(eq(INTYG_ID), eq(RelationKod.ERSATT),
                 eq(Arrays.asList(UtkastStatus.SIGNED)))).thenReturn(Optional.empty());
@@ -172,7 +181,7 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
         verify(logService).logSendIntygToRecipient(any(LogRequest.class));
         verify(certificateSenderService).sendCertificate(anyString(), any(Personnummer.class), anyString(), anyString(), eq(false));
 
-        verify(intygRepository, times(2)).findOne(INTYG_ID);
+        verify(intygRepository, times(1)).findOne(INTYG_ID);
         verify(intygRepository).save(any(Utkast.class));
     }
 
@@ -189,7 +198,6 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
         completionUtlatande.getGrundData().setRelation(new Relation());
         completionUtlatande.getGrundData().getRelation().setRelationKod(RelationKod.KOMPLT);
         completionUtlatande.getGrundData().getRelation().setMeddelandeId(completionMeddelandeId);
-        when(moduleFacade.getUtlatandeFromInternalModel(isNull(), anyString())).thenReturn(completionUtlatande);
 
         when(webCertUserService.isAuthorizedForUnit(anyString(), anyString(), anyBoolean())).thenReturn(true);
         when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.FALSE);
@@ -201,23 +209,11 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
 
         verify(logService).logSendIntygToRecipient(any(LogRequest.class));
         verify(certificateSenderService).sendCertificate(anyString(), any(Personnummer.class), anyString(), anyString(), eq(false));
-        verify(intygRepository, times(2)).findOne(INTYG_ID);
+        verify(intygRepository, times(1)).findOne(INTYG_ID);
         verify(intygRepository).save(any(Utkast.class));
     }
 
     @Test
-    public void testSendIntygPDLLogServiceFailingWithRuntimeException() throws Exception {
-
-        try {
-            intygService.sendIntyg(INTYG_ID, INTYG_TYP_FK, "FKASSA", false);
-            fail("RuntimeException expected");
-        } catch (RuntimeException e) {
-            // Expected
-        }
-        verify(intygRepository, times(0)).save(any(Utkast.class));
-    }
-
-    @Test(expected = WebCertServiceException.class)
     public void testSendIntygThrowsExceptionWhenPUServiceIsUnavailable() throws IOException {
         final String completionMeddelandeId = "meddelandeId";
 
@@ -225,22 +221,15 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
         completionUtlatande.getGrundData().setRelation(new Relation());
         completionUtlatande.getGrundData().getRelation().setRelationKod(RelationKod.KOMPLT);
         completionUtlatande.getGrundData().getRelation().setMeddelandeId(completionMeddelandeId);
-        when(moduleFacade.getUtlatandeFromInternalModel(isNull(), anyString())).thenReturn(completionUtlatande);
-
-        when(webCertUserService.isAuthorizedForUnit(anyString(), anyString(), anyBoolean())).thenReturn(true);
 
         when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.UNDEFINED);
-        when(intygRepository.findOne(INTYG_ID)).thenReturn(getUtkast(INTYG_ID));
 
-        try {
-            intygService.sendIntyg(INTYG_ID, INTYG_TYP_FK, "FKASSA", false);
-        } catch (Exception e) {
-            verifyZeroInteractions(logService);
-            throw e;
-        }
+        Assertions.assertThatThrownBy(() -> intygService.sendIntyg(INTYG_ID, INTYG_TYP_FK, "FKASSA", false))
+                .isExactlyInstanceOf(WebCertServiceException.class);
+
     }
 
-    @Test(expected = WebCertServiceException.class)
+    @Test
     public void testSendIntygThrowsExceptionForOldFk7263WithSekretessmarkeradPatient() throws Exception {
         final String completionMeddelandeId = "meddelandeId";
         intygService.setSekretessmarkeringStartDatum(LocalDateTime.now().plusMonths(1L));
@@ -251,19 +240,13 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
         completionUtlatande.getGrundData().setRelation(new Relation());
         completionUtlatande.getGrundData().getRelation().setRelationKod(RelationKod.KOMPLT);
         completionUtlatande.getGrundData().getRelation().setMeddelandeId(completionMeddelandeId);
-        when(moduleFacade.getUtlatandeFromInternalModel(isNull(), anyString())).thenReturn(completionUtlatande);
 
         when(webCertUserService.isAuthorizedForUnit(anyString(), anyString(), anyBoolean())).thenReturn(true);
         when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.TRUE);
         when(webCertUserService.getUser()).thenReturn(webCertUser);
-        when(intygRepository.findOne(INTYG_ID)).thenReturn(getUtkast(INTYG_ID));
 
-        try {
-            intygService.sendIntyg(INTYG_ID, INTYG_TYP_FK, "FKASSA", false);
-        } catch (Exception e) {
-            verifyZeroInteractions(logService);
-            throw e;
-        }
+        Assertions.assertThatThrownBy(() -> intygService.sendIntyg(INTYG_ID, INTYG_TYP_FK, "FKASSA", false))
+                .isExactlyInstanceOf(WebCertServiceException.class);
 
     }
 
@@ -287,7 +270,4 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
         utkast.setIntygsId(intygId);
         return utkast;
     }
-
-
-
 }
