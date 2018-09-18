@@ -138,7 +138,8 @@ public class IntygRelationHelperImpl implements IntygRelationHelper {
 
     private WebcertCertificateRelation createWebcertCertificateRelation(Relation r, boolean childRelation) {
         String intygsId = childRelation ? r.getFranIntygsId().getExtension() : r.getTillIntygsId().getExtension();
-        return new WebcertCertificateRelation(intygsId, RelationKod.fromValue(r.getTyp().getCode()), r.getSkapad(), UtkastStatus.SIGNED, null);
+        return new WebcertCertificateRelation(intygsId, RelationKod.fromValue(r.getTyp().getCode()), r.getSkapad(),
+                UtkastStatus.SIGNED, null);
     }
 
     private ListRelationsForCertificateResponseType getRelationsFromIntygstjanst(String intygId) {
