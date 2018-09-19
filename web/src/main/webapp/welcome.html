@@ -136,6 +136,12 @@
         };
         // End PU stub operations ============================================
 
+        $scope.populateFMBdata = function() {
+            $http({
+                url: '/testability/fmb/updatefmbdata',
+                method: 'GET'
+            })
+        };
 
 
       $scope.jsonModel = '';
@@ -633,6 +639,17 @@
         </div>
         <div class="content row">
           <hr style="padding-top:16px;" />
+        </div>
+
+        <div class="content row">
+          <div class="panel panel-body panel-default">
+            <h4>Miscellaneous management</h4>
+            <div class="btn-group btn-group-sm" role="group">
+              <button type="button" class="btn btn-small btn-primary" ng-click="populateFMBdata($event)">
+                Populera FMB
+              </button>
+            </div>
+          </div>
         </div>
 
         <div class="content row">
