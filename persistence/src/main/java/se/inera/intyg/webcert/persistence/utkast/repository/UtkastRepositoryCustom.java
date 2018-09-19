@@ -65,7 +65,7 @@ public interface UtkastRepositoryCustom extends UtkastFilteredRepositoryCustom {
      */
     @Query("SELECT new se.inera.intyg.webcert.common.model.GroupableItem(u.intygsId, u.enhetsId, u.patientPersonnummer, u.intygsTyp) FROM Utkast u WHERE u.aterkalladDatum IS NULL AND u.enhetsId IN (:enhetsIds) AND u.status IN (:statuses) AND u.intygsTyp IN (:intygsTyper)")
     List<GroupableItem> getIntygWithStatusesByEnhetsId(@Param("enhetsIds") List<String> enhetsIds,
-                                                       @Param("statuses") List<UtkastStatus> statuses, @Param("intygsTyper") Set<String> intygsTyper);
+                                                       @Param("statuses") Set<UtkastStatus> statuses, @Param("intygsTyper") Set<String> intygsTyper);
 
     /**
      * Returns all {@link Utkast} entities belonging to a certain patient and belonging to one of several careUnit and
@@ -123,7 +123,7 @@ public interface UtkastRepositoryCustom extends UtkastFilteredRepositoryCustom {
             + "WHERE u.aterkalladDatum IS NULL AND u.enhetsId = :enhetsid AND u.status IN (:statuses) "
             + "ORDER BY u.senastSparadAv.namn ASC")
     List<Object[]> findDistinctLakareFromIntygEnhetAndStatuses(@Param("enhetsid") String enhetsid,
-            @Param("statuses") List<UtkastStatus> statuses);
+            @Param("statuses") Set<UtkastStatus> statuses);
 
     /**
      * Return the status of a draft.
