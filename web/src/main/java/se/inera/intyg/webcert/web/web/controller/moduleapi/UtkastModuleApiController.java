@@ -18,6 +18,8 @@
  */
 package se.inera.intyg.webcert.web.web.controller.moduleapi;
 
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import javax.persistence.OptimisticLockException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -34,8 +36,6 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -335,7 +335,20 @@ public class UtkastModuleApiController extends AbstractApiController {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM, message);
         }
 
+        if (user.getParameters() != null && user.getParameters().isInactiveUnit()) {
+            LOG.info("User is not allowed to request a copy for id '{}' due to true inaktivEnhet-parameter", orgIntygsId);
+            final String message = "Authorization failed due to true inaktivEnhet-parameter";
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM, message);
+        }
+
         Utkast utkast = utkastService.getDraft(orgIntygsId, intygsTyp);
+
+        // Check avliden
+        if (patientDetailsResolver.isAvliden(utkast.getPatientPersonnummer())) {
+            authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
+                    .features(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST_AVLIDEN)
+                    .orThrow();
+        }
 
         CopyIntygRequest request = new CopyIntygRequest();
         request.setPatientPersonnummer(utkast.getPatientPersonnummer());
