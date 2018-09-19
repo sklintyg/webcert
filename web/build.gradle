@@ -10,7 +10,7 @@ grunt {
 }
 
 node {
-    version = '6.11.3'
+    version = '10.10.0'
     download = true
     distBaseUrl = 'https://build-inera.nordicmedtest.se/node/'
     workDir = projectDir
