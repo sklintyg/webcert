@@ -64,6 +64,7 @@ public class IntygServiceRevokeTest extends AbstractIntygServiceTest {
     private static final String REVOKE_REASON = "FELAKTIGT_INTYG";
     private static final String INTYG_JSON = "A bit of text representing json";
     private static final String INTYG_TYPE = "fk7263";
+    private static final String INTYG_TYPE_VERSION = "1.0";
     private static final String HSA_ID = "AAA";
 
     private static final String INTYG_ID = "123";
@@ -79,8 +80,8 @@ public class IntygServiceRevokeTest extends AbstractIntygServiceTest {
         VardpersonReferens vardperson = buildVardpersonReferens(person);
         WebCertUser user = buildWebCertUser(person);
 
-        signedUtkast = buildUtkast(INTYG_ID, INTYG_TYPE, UtkastStatus.SIGNED, INTYG_JSON, vardperson);
-        revokedUtkast = buildUtkast(INTYG_ID, INTYG_TYPE, UtkastStatus.SIGNED, json, vardperson);
+        signedUtkast = buildUtkast(INTYG_ID, INTYG_TYPE, INTYG_TYPE_VERSION, UtkastStatus.SIGNED, INTYG_JSON, vardperson);
+        revokedUtkast = buildUtkast(INTYG_ID, INTYG_TYPE, INTYG_TYPE_VERSION, UtkastStatus.SIGNED, json, vardperson);
         revokedUtkast.setAterkalladDatum(LocalDateTime.now());
 
         when(webCertUserService.getUser()).thenReturn(user);
@@ -93,7 +94,7 @@ public class IntygServiceRevokeTest extends AbstractIntygServiceTest {
         utlatande = objectMapper.readValue(json, Fk7263Utlatande.class);
         CertificateMetaData metaData = buildCertificateMetaData();
         certificateResponse = new CertificateResponse(json, utlatande, metaData, false);
-        when(moduleFacade.getCertificate(any(String.class), any(String.class))).thenReturn(certificateResponse);
+        when(moduleFacade.getCertificate(any(String.class), any(String.class), anyString())).thenReturn(certificateResponse);
         when(intygRelationHelper.getRelationsForIntyg(anyString())).thenReturn(new Relations());
 
         when(patientDetailsResolver.resolvePatient(any(Personnummer.class), anyString())).thenReturn(buildPatient(false, false));
@@ -129,7 +130,8 @@ public class IntygServiceRevokeTest extends AbstractIntygServiceTest {
 
     @Test(expected = WebCertServiceException.class)
     public void testRevokeIntygThatHasAlreadyBeenRevokedFails() throws IntygModuleFacadeException {
-        when(moduleFacade.getCertificate(anyString(), anyString())).thenThrow(new IntygModuleFacadeException(""));
+        when(intygRepository.findOne(INTYG_ID)).thenReturn(signedUtkast);
+        when(moduleFacade.getCertificate(anyString(), anyString(), anyString())).thenThrow(new IntygModuleFacadeException(""));
         // Do the call
         try {
             intygService.revokeIntyg(INTYG_ID, INTYG_TYP_FK, REVOKE_MSG, REVOKE_REASON);
@@ -148,11 +150,12 @@ public class IntygServiceRevokeTest extends AbstractIntygServiceTest {
         return person;
     }
 
-    private Utkast buildUtkast(String intygId, String type, UtkastStatus status, String model, VardpersonReferens vardperson) {
+    private Utkast buildUtkast(String intygId, String type, String intygTypeVersion, UtkastStatus status, String model, VardpersonReferens vardperson) {
 
         Utkast intyg = new Utkast();
         intyg.setIntygsId(intygId);
         intyg.setIntygsTyp(type);
+        intyg.setIntygTypeVersion(intygTypeVersion);
         intyg.setStatus(status);
         intyg.setModel(model);
         intyg.setSkapadAv(vardperson);

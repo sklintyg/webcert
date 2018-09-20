@@ -123,7 +123,7 @@ public abstract class AbstractIntygServiceTest extends AuthoritiesConfigurationT
         utlatande = objectMapper.readValue(json, Fk7263Utlatande.class);
         CertificateMetaData metaData = buildCertificateMetaData();
         certificateResponse = new CertificateResponse(json, utlatande, metaData, false);
-        when(moduleFacade.getCertificate(any(String.class), any(String.class))).thenReturn(certificateResponse);
+        when(moduleFacade.getCertificate(any(String.class), any(String.class), anyString())).thenReturn(certificateResponse);
         when(certificateRelationService.getNewestRelationOfType(anyString(), any(RelationKod.class), any(List.class))).thenReturn(Optional.empty());
         when(intygRelationHelper.getRelationsForIntyg(anyString())).thenReturn(new Relations());
 

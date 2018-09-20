@@ -34,7 +34,7 @@ public interface IntygModuleFacade {
                                               UtkastStatus utkastStatus, boolean isEmployer)
             throws IntygModuleFacadeException;
 
-    CertificateResponse getCertificate(String certificateId, String intygType) throws IntygModuleFacadeException;
+    CertificateResponse getCertificate(String certificateId, String intygType, String intygTypeVersion) throws IntygModuleFacadeException;
 
     void registerCertificate(String intygType, String internalIntygJsonModel) throws ModuleException, IntygModuleFacadeException;
 

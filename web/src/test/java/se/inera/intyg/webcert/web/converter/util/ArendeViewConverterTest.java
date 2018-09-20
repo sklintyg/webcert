@@ -39,6 +39,7 @@ import se.inera.intyg.common.support.model.common.internal.*;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistryImpl;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
+import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
 import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
@@ -122,7 +123,7 @@ public class ArendeViewConverterTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testConvertToArendeForLuse() throws ModuleNotFoundException {
+    public void testConvertToArendeForLuse() throws ModuleNotFoundException, ModuleException {
         ArendeView result = converter.convertToDto(buildArende("luse"));
 
         assertNotNull(result.getKompletteringar().get(0).getJsonPropertyHandle());
@@ -149,7 +150,7 @@ public class ArendeViewConverterTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testConvertToArendeForLisjp() throws ModuleNotFoundException {
+    public void testConvertToArendeForLisjp() throws ModuleNotFoundException, ModuleException {
         ArendeView result = converter.convertToDto(buildArende("lisjp"));
 
         assertEquals(RespConstants.GRUNDFORMEDICINSKTUNDERLAG_TELEFONKONTAKT_PATIENT_SVAR_JSON_ID_1,
@@ -169,7 +170,7 @@ public class ArendeViewConverterTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testConvertKompletteringWithoutInstans() throws ModuleNotFoundException {
+    public void testConvertKompletteringWithoutInstans() throws ModuleNotFoundException, ModuleException {
         Arende arende = buildArende("lisjp");
         arende.setKomplettering(Arrays.asList(buildMedicinsktArende("1", null, "arende1")));
         ArendeView result = converter.convertToDto(arende);
@@ -185,7 +186,7 @@ public class ArendeViewConverterTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testConvertKompletteringInstansTooHigh() throws ModuleNotFoundException {
+    public void testConvertKompletteringInstansTooHigh() throws ModuleNotFoundException, ModuleException {
         Arende arende = buildArende("lisjp");
         arende.setKomplettering(Arrays.asList(buildMedicinsktArende("1", 3, "arende1")));
         ArendeView result = converter.convertToDto(arende);
@@ -201,7 +202,7 @@ public class ArendeViewConverterTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testConvertKompletteringUnknownQuestionId() throws ModuleNotFoundException {
+    public void testConvertKompletteringUnknownQuestionId() throws ModuleNotFoundException, ModuleException {
         Arende arende = buildArende("lisjp");
         arende.setKomplettering(Arrays.asList(buildMedicinsktArende("10", 1, "arende1")));
         ArendeView result = converter.convertToDto(arende);
@@ -217,7 +218,7 @@ public class ArendeViewConverterTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testConvertToArendeWithoutKomplettering() throws ModuleNotFoundException {
+    public void testConvertToArendeWithoutKomplettering() throws ModuleNotFoundException, ModuleException {
         ArendeView result = converter.convertToDto(buildArende("meddelandeId", LocalDateTime.now(), LocalDateTime.now()));
 
         assertTrue(result.getKompletteringar().isEmpty());

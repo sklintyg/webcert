@@ -59,6 +59,9 @@
   <!-- Load dynamic link classes -->
   <context:component-scan base-package="se.inera.intyg.infra.dynamiclink" />
 
+  <!-- Load version helper -->
+  <context:component-scan base-package="se.inera.intyg.common.support.modules.support.api.versions" />
+
   <!-- Load postnummerservice classes -->
   <context:component-scan base-package="se.inera.intyg.infra.integration.postnummer" />
 

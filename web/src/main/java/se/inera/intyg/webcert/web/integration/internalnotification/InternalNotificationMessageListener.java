@@ -49,6 +49,7 @@ public class InternalNotificationMessageListener implements MessageListener {
 
     static final String CERTIFICATE_ID = "certificate-id";
     static final String CERTIFICATE_TYPE = "certificate-type";
+    static final String CERTIFICATE_TYPE_VERSION = "certificate-type-version";
     static final String CARE_UNIT_ID = "care-unit-id";
 
     private static final String INTERNAL_NOTIFICATION_QUEUE = "internal.notification.queue";
@@ -74,12 +75,15 @@ public class InternalNotificationMessageListener implements MessageListener {
             try {
                 String intygsId = textMessage.getStringProperty(CERTIFICATE_ID);
                 String intygsTyp = textMessage.getStringProperty(CERTIFICATE_TYPE);
+                String intygsTypVersion = textMessage.getStringProperty(CERTIFICATE_TYPE_VERSION);
                 String enhetsId = textMessage.getStringProperty(CARE_UNIT_ID);
 
                 checkArgument(StringUtils.isNotEmpty(intygsId), "Message on queue %s does not have a %s header.",
                         INTERNAL_NOTIFICATION_QUEUE, CERTIFICATE_ID);
                 checkArgument(StringUtils.isNotEmpty(intygsTyp), "Message on queue %s does not have a %s header.",
                         INTERNAL_NOTIFICATION_QUEUE, CERTIFICATE_TYPE);
+                checkArgument(StringUtils.isNotEmpty(intygsTypVersion), "Message on queue %s does not have a %s header.",
+                        INTERNAL_NOTIFICATION_QUEUE, CERTIFICATE_TYPE_VERSION);
                 checkArgument(StringUtils.isNotEmpty(enhetsId), "Message on queue %s does not have a %s header.",
                         INTERNAL_NOTIFICATION_QUEUE, CARE_UNIT_ID);
 
@@ -88,7 +92,7 @@ public class InternalNotificationMessageListener implements MessageListener {
                     return;
                 }
                 ModuleApi moduleApi = intygModuleRegistry.getModuleApi(intygsTyp);
-                CertificateResponse certificateResponse = moduleApi.getCertificate(intygsId, logicalAddress, "HSVARD");
+                CertificateResponse certificateResponse = moduleApi.getCertificate(intygsId, logicalAddress, "HSVARD", intygsTypVersion);
 
                 Utlatande utlatande = certificateResponse.getUtlatande();
                 notificationService.forwardInternalNotification(utlatande.getId(), utlatande.getTyp(), utlatande, HandelsekodEnum.SKICKA);

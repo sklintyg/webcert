@@ -40,6 +40,7 @@ import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistryImpl;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
+import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.persistence.arende.model.MedicinsktArende;
@@ -222,7 +223,12 @@ public class ArendeViewConverter {
             Throwables.propagate(e);
         }
         Utlatande utlatande = intygService.fetchIntygData(intygsId, intygsTyp, false).getUtlatande();
-        Map<String, List<String>> arendeParameters = moduleApi.getModuleSpecificArendeParameters(utlatande, frageIds);
+        Map<String, List<String>> arendeParameters = null;
+        try {
+            arendeParameters = moduleApi.getModuleSpecificArendeParameters(utlatande, frageIds);
+        } catch (ModuleException e) {
+           throw new IllegalArgumentException(e);
+        }
         for (MedicinsktArende arende : medicinskaArenden) {
             Integer position = getListPositionForInstanceId(arende);
             String jsonPropertyHandle = getJsonPropertyHandle(arende, position, arendeParameters);

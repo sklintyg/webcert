@@ -28,6 +28,7 @@ import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
+import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
 import se.inera.intyg.infra.integration.pu.model.PersonSvar;
 import se.inera.intyg.infra.integration.pu.services.PUService;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
@@ -323,7 +324,7 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
                                 || (user.getParameters() != null && user.getParameters().isPatientDeceased())
                                 || (personSvar.getStatus() != PersonSvar.Status.FOUND && user.getParameters() == null));
                 return patient;
-            } catch (ModuleNotFoundException | IOException e) {
+            } catch (ModuleException | ModuleNotFoundException | IOException e) {
                 // No usable DB exist
                 return handleDoiNoExistingDb(personnummer, personSvar, user);
             }

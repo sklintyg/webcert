@@ -675,6 +675,12 @@ public class IntygServiceImpl implements IntygService {
     }
 
     @Override
+    public IntygTypeInfo getIntygTypeInfo(String intygsId) {
+
+        return getIntygTypeInfo(intygsId, utkastRepository.findOne(intygsId));
+    }
+
+    @Override
     public IntygTypeInfo getIntygTypeInfo(String intygsId, Utkast utkast) {
 
         //1. If WC has and utkast for this id, we don't need to query IT for type and version.
@@ -683,12 +689,6 @@ public class IntygServiceImpl implements IntygService {
         } else {
             return getIntygTypeInfoFromIT(intygsId);
         }
-    }
-
-    @Override
-    public IntygTypeInfo getIntygTypeInfo(String intygsId) {
-
-        return getIntygTypeInfo(intygsId, utkastRepository.findOne(intygsId));
     }
 
     private IntygTypeInfo getIntygTypeInfoFromIT(String intygsId) {
@@ -796,7 +796,8 @@ public class IntygServiceImpl implements IntygService {
      */
     private IntygContentHolder getIntygData(String intygId, String typ, boolean relations) {
         try {
-            CertificateResponse certificate = modelFacade.getCertificate(intygId, typ);
+            String intygTypeVersion = getIntygTypeInfo(intygId).getIntygTypeVersion();
+            CertificateResponse certificate = modelFacade.getCertificate(intygId, typ, intygTypeVersion);
             String internalIntygJsonModel = certificate.getInternalModel();
 
             final Personnummer personId = certificate.getUtlatande().getGrundData().getPatient().getPersonId();

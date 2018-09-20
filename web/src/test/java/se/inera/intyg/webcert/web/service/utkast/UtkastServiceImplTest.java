@@ -117,15 +117,16 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
     private static final String INTYG_COPY_ID = "def456";
     private static final String INTYG_JSON = "A bit of text representing json";
     private static final String INTYG_TYPE = "fk7263";
-    private static final String INTYG_TYPE2 = "lisjp";
+    private static final String INTYG_TYPE_VERSION = "1.0";
 
+    private static final String INTYG_TYPE2 = "lisjp";
     private static final String UTKAST_ENHETS_ID = "hsa123";
+
     private static final String USER_REFERENCE = "some-ref";
 
     private static final String REFERENS = "referens";
 
     private static final String PERSON_ID = "19121212-1212";
-
     private static final Personnummer PERSONNUMMER = createPnr(PERSON_ID);
 
     @Mock
@@ -278,6 +279,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         request.setHosPerson(hoSPerson);
         request.setIntygId(INTYG_ID);
         request.setIntygType(INTYG_TYPE);
+        request.setIntygTypeVersion(INTYG_TYPE_VERSION);
         request.setPatient(defaultPatient);
         request.setStatus(UtkastStatus.DRAFT_INCOMPLETE);
         return request;
@@ -1116,6 +1118,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         utkast.setIntygsId(intygId);
         utkast.setVersion(version);
         utkast.setIntygsTyp(type);
+        utkast.setIntygTypeVersion(INTYG_TYPE_VERSION);
         utkast.setStatus(status);
         utkast.setModel(model);
         utkast.setSkapadAv(vardperson);

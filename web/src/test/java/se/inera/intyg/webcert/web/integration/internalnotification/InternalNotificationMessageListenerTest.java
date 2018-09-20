@@ -50,6 +50,7 @@ import static org.mockito.Mockito.when;
 import static se.inera.intyg.webcert.web.integration.internalnotification.InternalNotificationMessageListener.CARE_UNIT_ID;
 import static se.inera.intyg.webcert.web.integration.internalnotification.InternalNotificationMessageListener.CERTIFICATE_ID;
 import static se.inera.intyg.webcert.web.integration.internalnotification.InternalNotificationMessageListener.CERTIFICATE_TYPE;
+import static se.inera.intyg.webcert.web.integration.internalnotification.InternalNotificationMessageListener.CERTIFICATE_TYPE_VERSION;
 
 @RunWith(MockitoJUnitRunner.class)
 public class InternalNotificationMessageListenerTest {
@@ -78,7 +79,7 @@ public class InternalNotificationMessageListenerTest {
         when(certificateResponse.getUtlatande()).thenReturn(utlatande);
 
         ModuleApi moduleApi = mock(ModuleApi.class);
-        when(moduleApi.getCertificate(anyString(), anyString(), anyString())).thenReturn(certificateResponse);
+        when(moduleApi.getCertificate(anyString(), anyString(), anyString(), anyString())).thenReturn(certificateResponse);
 
         when(intygModuleRegistry.getModuleApi(anyString())).thenReturn(moduleApi);
     }
@@ -114,6 +115,7 @@ public class InternalNotificationMessageListenerTest {
             TextMessage tm = mock(TextMessage.class);
             when(tm.getStringProperty(CERTIFICATE_ID)).thenReturn("intyg-1");
             when(tm.getStringProperty(CERTIFICATE_TYPE)).thenReturn("lisjp");
+            when(tm.getStringProperty(CERTIFICATE_TYPE_VERSION)).thenReturn("1.0");
             when(tm.getStringProperty(CARE_UNIT_ID)).thenReturn("enhet-1");
             return tm;
         } catch (JMSException e) {

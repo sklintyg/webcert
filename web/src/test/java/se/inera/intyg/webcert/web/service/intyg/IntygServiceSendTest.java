@@ -69,12 +69,15 @@ import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationPara
 @RunWith(MockitoJUnitRunner.class)
 public class IntygServiceSendTest extends AbstractIntygServiceTest {
 
+    private static final String INTYG_TYPE_VERSION_1_0 = "1.0";
+
     @Before
     public void setupIntyg() throws Exception {
         json = FileUtils.getStringFromFile(new ClassPathResource("IntygServiceTest/utlatande.json").getFile());
         utlatande = objectMapper.readValue(json, Fk7263Utlatande.class);
 
         ReflectionTestUtils.setField(intygService, "sekretessmarkeringStartDatum", LocalDateTime.of(2016, 11, 30, 23, 0, 0, 0));
+        when(intygRepository.findOne(eq(INTYG_ID))).thenReturn(getUtkast(INTYG_ID));
     }
 
     @Test
@@ -100,7 +103,7 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
         verify(logService).logSendIntygToRecipient(any(LogRequest.class));
         verify(certificateSenderService).sendCertificate(anyString(), any(Personnummer.class), anyString(), anyString(), eq(false));
 
-        verify(intygRepository, times(1)).findOne(INTYG_ID);
+        verify(intygRepository, times(2)).findOne(INTYG_ID);
         verify(intygRepository).save(any(Utkast.class));
     }
 
@@ -109,13 +112,14 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
 
         final Utkast utkast = getUtkast(INTYG_ID);
         utkast.setAterkalladDatum(LocalDateTime.of(2018, 5, 5, 5, 5, 5, 5));
+
         when(intygRepository.findByIntygsIdAndIntygsTyp(eq(INTYG_ID), anyString())).thenReturn(utkast);
 
         json = FileUtils.getStringFromFile(new ClassPathResource("IntygServiceTest/utlatande.json").getFile());
         utlatande = objectMapper.readValue(json, Fk7263Utlatande.class);
         CertificateMetaData metaData = buildCertificateMetaData();
         certificateResponse = new CertificateResponse(json, utlatande, metaData, true);
-        when(moduleFacade.getCertificate(any(String.class), any(String.class))).thenReturn(certificateResponse);
+        when(moduleFacade.getCertificate(any(String.class), any(String.class), anyString())).thenReturn(certificateResponse);
 
         WebCertUser webCertUser = createUser();
         when(webCertUserService.getUser()).thenReturn(webCertUser);
@@ -150,7 +154,7 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
                 .thenReturn(Optional.of(ersattRelation));
 
         CertificateResponse revokedCertificateResponse = new CertificateResponse(json, utlatande, metaData, false);
-        when(moduleFacade.getCertificate(any(String.class), any(String.class))).thenReturn(revokedCertificateResponse);
+        when(moduleFacade.getCertificate(any(String.class), any(String.class), anyString())).thenReturn(revokedCertificateResponse);
 
         Assertions.assertThatThrownBy(() -> intygService.sendIntyg(INTYG_ID, INTYG_TYP_FK, "FKASSA", false))
                 .isExactlyInstanceOf(WebCertServiceException.class)
@@ -181,7 +185,7 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
         verify(logService).logSendIntygToRecipient(any(LogRequest.class));
         verify(certificateSenderService).sendCertificate(anyString(), any(Personnummer.class), anyString(), anyString(), eq(false));
 
-        verify(intygRepository, times(1)).findOne(INTYG_ID);
+        verify(intygRepository, times(2)).findOne(INTYG_ID);
         verify(intygRepository).save(any(Utkast.class));
     }
 
@@ -209,7 +213,7 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
 
         verify(logService).logSendIntygToRecipient(any(LogRequest.class));
         verify(certificateSenderService).sendCertificate(anyString(), any(Personnummer.class), anyString(), anyString(), eq(false));
-        verify(intygRepository, times(1)).findOne(INTYG_ID);
+        verify(intygRepository, times(2)).findOne(INTYG_ID);
         verify(intygRepository).save(any(Utkast.class));
     }
 
@@ -268,6 +272,7 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
                 "FragaSvarServiceImplTest/utlatande.json").getInputStream(), "UTF-8");
         utkast.setModel(json);
         utkast.setIntygsId(intygId);
+        utkast.setIntygTypeVersion(INTYG_TYPE_VERSION_1_0);
         return utkast;
     }
 }

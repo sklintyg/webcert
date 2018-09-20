@@ -61,6 +61,7 @@ import static org.mockito.Mockito.when;
 public class IntygModuleFacadeTest {
 
     private static final String CERTIFICATE_TYPE = "fk7263";
+    private static final String CERTIFICATE_TYPE_VERSION_1_0 = "1.0";
 
     private static final String INT_JSON = "<ext-json>";
     private static final String HSVARD_RECIPIENT_ID = "HSVARD";
@@ -133,25 +134,25 @@ public class IntygModuleFacadeTest {
         final String certificateId = "certificateId";
         final String logicalAddress = "logicalAddress";
         ReflectionTestUtils.setField(moduleFacade, "logicalAddress", logicalAddress);
-        when(moduleApi.getCertificate(certificateId, logicalAddress, HSVARD_RECIPIENT_ID))
+        when(moduleApi.getCertificate(certificateId, logicalAddress, HSVARD_RECIPIENT_ID, CERTIFICATE_TYPE_VERSION_1_0))
                 .thenReturn(new CertificateResponse(INT_JSON, null, new CertificateMetaData(), false));
-        CertificateResponse res = moduleFacade.getCertificate(certificateId, CERTIFICATE_TYPE);
+        CertificateResponse res = moduleFacade.getCertificate(certificateId, CERTIFICATE_TYPE, CERTIFICATE_TYPE_VERSION_1_0);
 
         assertNotNull(res);
 
-        verify(moduleApi).getCertificate(certificateId, logicalAddress, HSVARD_RECIPIENT_ID);
+        verify(moduleApi).getCertificate(certificateId, logicalAddress, HSVARD_RECIPIENT_ID, CERTIFICATE_TYPE_VERSION_1_0);
     }
 
     @Test(expected = IntygModuleFacadeException.class)
     public void testGetCertificateModuleException() throws Exception {
-        when(moduleApi.getCertificate(anyString(), isNull(), eq(HSVARD_RECIPIENT_ID))).thenThrow(new ModuleException());
-        moduleFacade.getCertificate("certificateId", CERTIFICATE_TYPE);
+        when(moduleApi.getCertificate(anyString(), isNull(), eq(HSVARD_RECIPIENT_ID), eq(CERTIFICATE_TYPE_VERSION_1_0))).thenThrow(new ModuleException());
+        moduleFacade.getCertificate("certificateId", CERTIFICATE_TYPE, CERTIFICATE_TYPE_VERSION_1_0);
     }
 
     @Test(expected = IntygModuleFacadeException.class)
     public void testGetCertificateModuleNotFoundException() throws Exception {
         when(moduleRegistry.getModuleApi(CERTIFICATE_TYPE)).thenThrow(new ModuleNotFoundException());
-        moduleFacade.getCertificate("certificateId", CERTIFICATE_TYPE);
+        moduleFacade.getCertificate("certificateId", CERTIFICATE_TYPE, CERTIFICATE_TYPE_VERSION_1_0);
     }
 
     @Test
@@ -205,7 +206,7 @@ public class IntygModuleFacadeTest {
     }
 
     @Test(expected = WebCertServiceException.class)
-    public void testUtlatandBuiltFromInvalidJson() throws IOException {
+    public void testUtlatandBuiltFromInvalidJson() throws ModuleException, IOException {
         when(moduleApi.getUtlatandeFromJson(anyString())).thenThrow(new IOException());
         moduleFacade.getUtlatandeFromInternalModel(CERTIFICATE_TYPE, "X");
     }

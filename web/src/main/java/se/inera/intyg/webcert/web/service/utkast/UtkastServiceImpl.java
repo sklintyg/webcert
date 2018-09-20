@@ -681,7 +681,7 @@ public class UtkastServiceImpl implements UtkastService {
         try {
             return moduleApi.getUtlatandeFromJson(draftModel).getGrundData().getPatient();
 
-        } catch (IOException e) {
+        } catch (ModuleException | IOException e) {
             if (e.getCause() != null && e.getCause().getCause() != null) {
                 // This error message is helpful when debugging save problems.
                 LOG.debug(e.getCause().getCause().getMessage());
@@ -722,7 +722,7 @@ public class UtkastServiceImpl implements UtkastService {
     }
 
     private CreateNewDraftHolder createModuleRequest(CreateNewDraftRequest request) {
-        return new CreateNewDraftHolder(request.getIntygId(), request.getHosPerson(), request.getPatient());
+        return new CreateNewDraftHolder(request.getIntygId(), request.getIntygTypeVersion(), request.getHosPerson(), request.getPatient());
     }
 
     private Utkast getIntygAsDraft(String intygsId, String intygType) {

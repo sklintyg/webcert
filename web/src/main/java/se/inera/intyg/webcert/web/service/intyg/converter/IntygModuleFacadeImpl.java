@@ -85,10 +85,10 @@ public class IntygModuleFacadeImpl implements IntygModuleFacade {
     }
 
     @Override
-    public CertificateResponse getCertificate(String certificateId, String intygType) throws IntygModuleFacadeException {
+    public CertificateResponse getCertificate(String certificateId, String intygType, String intygTypeVersion) throws IntygModuleFacadeException {
         try {
             ModuleApi moduleApi = moduleRegistry.getModuleApi(intygType);
-            return moduleApi.getCertificate(certificateId, logicalAddress, HSVARD_RECIPIENT_ID);
+            return moduleApi.getCertificate(certificateId, logicalAddress, HSVARD_RECIPIENT_ID, intygTypeVersion);
         } catch (ModuleException me) {
             throw new IntygModuleFacadeException(me.getMessage(), me);
         } catch (ModuleNotFoundException e) {
@@ -125,7 +125,7 @@ public class IntygModuleFacadeImpl implements IntygModuleFacade {
         try {
             ModuleApi moduleApi = moduleRegistry.getModuleApi(intygType);
             return moduleApi.getUtlatandeFromJson(internalModel);
-        } catch (IOException | ModuleNotFoundException e) {
+        } catch (IOException | ModuleNotFoundException | ModuleException e) {
             LOG.error("Module problems occured when trying to unmarshall Utlatande.", e);
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, e);
         }

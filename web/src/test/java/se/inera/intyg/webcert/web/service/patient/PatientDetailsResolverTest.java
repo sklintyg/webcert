@@ -37,6 +37,7 @@ import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
+import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
 import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
 import se.inera.intyg.infra.integration.hsa.model.Vardgivare;
 import se.inera.intyg.infra.integration.pu.model.Person;
@@ -428,7 +429,7 @@ public class PatientDetailsResolverTest {
      * DOI - Integration. DB finns, PU finns. Namn och adress från DB-intyget, avliden/sekr från PU.
      */
     @Test
-    public void testSosDoiIntygIntegrationWithExistingDBIntygAndPuOk() throws ModuleNotFoundException, IOException {
+    public void testSosDoiIntygIntegrationWithExistingDBIntygAndPuOk() throws ModuleNotFoundException, IOException, ModuleException {
         when(puService.getPerson(any(Personnummer.class))).thenReturn(buildPersonSvar());
         when(webCertUserService.getUser()).thenReturn(integratedWebCertUser);
         when(integratedWebCertUser.getValdVardgivare()).thenReturn(new Vardgivare("vg-1", "vardgivare-1"));
@@ -459,7 +460,7 @@ public class PatientDetailsResolverTest {
      * DOI - Integration. DB finns, PU saknas. Namn och adress från DB-intyget, avliden från integrationsparam.
      */
     @Test
-    public void testSosDoiIntygIntegrationWithExistingDBIntygAndPuUnavailable() throws ModuleNotFoundException, IOException {
+    public void testSosDoiIntygIntegrationWithExistingDBIntygAndPuUnavailable() throws ModuleNotFoundException, IOException, ModuleException {
         when(puService.getPerson(any(Personnummer.class))).thenReturn(buildErrorPersonSvar());
         when(webCertUserService.getUser()).thenReturn(integratedWebCertUser);
         when(integratedWebCertUser.getValdVardgivare()).thenReturn(new Vardgivare("vg-1", "vardgivare-1"));
@@ -536,7 +537,7 @@ public class PatientDetailsResolverTest {
      * DOI - Fristående. DB finns, PU saknas. Namn och adress från DB-intyget. Avliden vet vi egentligen inte...
      */
     @Test
-    public void testSosDoiIntygFristaendeWithExistingDBIntygAndPuUnavailable() throws ModuleNotFoundException, IOException {
+    public void testSosDoiIntygFristaendeWithExistingDBIntygAndPuUnavailable() throws ModuleNotFoundException, IOException, ModuleException {
         when(puService.getPerson(any(Personnummer.class))).thenReturn(buildErrorPersonSvar());
         when(webCertUserService.getUser()).thenReturn(freeWebCertUser);
         when(freeWebCertUser.getValdVardenhet()).thenReturn(buildVardenhet());
