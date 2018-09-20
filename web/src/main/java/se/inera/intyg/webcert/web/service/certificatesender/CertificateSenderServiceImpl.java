@@ -73,8 +73,8 @@ public class CertificateSenderServiceImpl implements CertificateSenderService {
     }
 
     @Override
-    public void revokeCertificate(String intygsId, String xmlBody, String intygsTyp) {
-        send(new RevokeCertificateMessageCreator(intygsId, xmlBody, logicalAddress, intygsTyp));
+    public void revokeCertificate(String intygsId, String xmlBody, String intygsTyp, String intygsTypVersion) {
+        send(new RevokeCertificateMessageCreator(intygsId, xmlBody, logicalAddress, intygsTyp, intygsTypVersion));
     }
 
     @Override
@@ -158,12 +158,14 @@ public class CertificateSenderServiceImpl implements CertificateSenderService {
     static final class RevokeCertificateMessageCreator implements MessageCreator {
         private final String intygsId;
         private final String intygsTyp;
+        private final String intygsTypVersion;
         private final String xmlBody;
         private final String logicalAddress;
 
-        private RevokeCertificateMessageCreator(String intygsId, String xmlBody, String logicalAddress, String intygsTyp) {
+        private RevokeCertificateMessageCreator(String intygsId, String xmlBody, String logicalAddress, String intygsTyp, String intygsTypVersion) {
             this.intygsId = intygsId;
             this.intygsTyp = intygsTyp;
+            this.intygsTypVersion = intygsTypVersion;
             this.xmlBody = xmlBody;
             this.logicalAddress = logicalAddress;
         }
@@ -175,6 +177,7 @@ public class CertificateSenderServiceImpl implements CertificateSenderService {
 
             message.setStringProperty(Constants.INTYGS_ID, intygsId);
             message.setStringProperty(Constants.INTYGS_TYP, intygsTyp);
+            message.setStringProperty(Constants.INTYGS_TYP_VERSION, intygsTypVersion);
             message.setStringProperty(Constants.LOGICAL_ADDRESS, logicalAddress);
             return message;
         }

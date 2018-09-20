@@ -51,6 +51,7 @@ public class CertificateRevokeProcessorTest {
     private static final String INTYGS_ID1 = "intygs-id-1";
     private static final String LOGICAL_ADDRESS1 = "logicalAddress1";
     private static final String INTYGS_TYP = "fk7263";
+    private static final String INTYGS_TYP_VERSION = "1.0";
 
     @Mock
     private IntygModuleRegistry registry;
@@ -63,9 +64,9 @@ public class CertificateRevokeProcessorTest {
         ModuleApi moduleApi = mock(ModuleApi.class);
         when(registry.getModuleApi(eq(INTYGS_TYP))).thenReturn(moduleApi);
 
-        certificateRevokeProcessor.process(BODY, INTYGS_ID1, LOGICAL_ADDRESS1, INTYGS_TYP);
+        certificateRevokeProcessor.process(BODY, INTYGS_ID1, LOGICAL_ADDRESS1, INTYGS_TYP, INTYGS_TYP_VERSION);
 
-        verify(moduleApi).revokeCertificate(eq(BODY), eq(LOGICAL_ADDRESS1));
+        verify(moduleApi).revokeCertificate(eq(BODY), eq(LOGICAL_ADDRESS1), eq(INTYGS_TYP_VERSION));
     }
 
     @Test(expected = TemporaryException.class)
@@ -74,9 +75,9 @@ public class CertificateRevokeProcessorTest {
         when(registry.getModuleApi(eq(INTYGS_TYP))).thenReturn(moduleApi);
         doThrow(new WebServiceException())
                 .when(moduleApi)
-                .revokeCertificate(eq(BODY), eq(LOGICAL_ADDRESS1));
+                .revokeCertificate(eq(BODY), eq(LOGICAL_ADDRESS1), eq(INTYGS_TYP_VERSION));
 
-        certificateRevokeProcessor.process(BODY, INTYGS_ID1, LOGICAL_ADDRESS1, INTYGS_TYP);
+        certificateRevokeProcessor.process(BODY, INTYGS_ID1, LOGICAL_ADDRESS1, INTYGS_TYP, INTYGS_TYP_VERSION);
     }
 
     @Test(expected = TemporaryException.class)
@@ -85,9 +86,9 @@ public class CertificateRevokeProcessorTest {
         when(registry.getModuleApi(eq(INTYGS_TYP))).thenReturn(moduleApi);
         doThrow(new ExternalServiceCallException("message", ExternalServiceCallException.ErrorIdEnum.APPLICATION_ERROR))
                 .when(moduleApi)
-                .revokeCertificate(eq(BODY), eq(LOGICAL_ADDRESS1));
+                .revokeCertificate(eq(BODY), eq(LOGICAL_ADDRESS1), eq(INTYGS_TYP_VERSION));
 
-        certificateRevokeProcessor.process(BODY, INTYGS_ID1, LOGICAL_ADDRESS1, INTYGS_TYP);
+        certificateRevokeProcessor.process(BODY, INTYGS_ID1, LOGICAL_ADDRESS1, INTYGS_TYP, INTYGS_TYP_VERSION);
     }
 
     @Test(expected = TemporaryException.class)
@@ -96,9 +97,9 @@ public class CertificateRevokeProcessorTest {
         when(registry.getModuleApi(eq(INTYGS_TYP))).thenReturn(moduleApi);
         doThrow(new ExternalServiceCallException("message", ExternalServiceCallException.ErrorIdEnum.TECHNICAL_ERROR))
                 .when(moduleApi)
-                .revokeCertificate(eq(BODY), eq(LOGICAL_ADDRESS1));
+                .revokeCertificate(eq(BODY), eq(LOGICAL_ADDRESS1), eq(INTYGS_TYP_VERSION));
 
-        certificateRevokeProcessor.process(BODY, INTYGS_ID1, LOGICAL_ADDRESS1, INTYGS_TYP);
+        certificateRevokeProcessor.process(BODY, INTYGS_ID1, LOGICAL_ADDRESS1, INTYGS_TYP, INTYGS_TYP_VERSION);
     }
 
     @Test(expected = PermanentException.class)
@@ -107,9 +108,9 @@ public class CertificateRevokeProcessorTest {
         when(registry.getModuleApi(eq(INTYGS_TYP))).thenReturn(moduleApi);
         doThrow(new ExternalServiceCallException("message", ExternalServiceCallException.ErrorIdEnum.VALIDATION_ERROR))
                 .when(moduleApi)
-                .revokeCertificate(eq(BODY), eq(LOGICAL_ADDRESS1));
+                .revokeCertificate(eq(BODY), eq(LOGICAL_ADDRESS1), eq(INTYGS_TYP_VERSION));
 
-        certificateRevokeProcessor.process(BODY, INTYGS_ID1, LOGICAL_ADDRESS1, INTYGS_TYP);
+        certificateRevokeProcessor.process(BODY, INTYGS_ID1, LOGICAL_ADDRESS1, INTYGS_TYP, INTYGS_TYP_VERSION);
 
     }
 
@@ -119,25 +120,35 @@ public class CertificateRevokeProcessorTest {
         when(registry.getModuleApi(eq(INTYGS_TYP))).thenReturn(moduleApi);
         doThrow(new ExternalServiceCallException("message", ExternalServiceCallException.ErrorIdEnum.TRANSFORMATION_ERROR))
                 .when(moduleApi)
-                .revokeCertificate(eq(BODY), eq(LOGICAL_ADDRESS1));
+                .revokeCertificate(eq(BODY), eq(LOGICAL_ADDRESS1), eq(INTYGS_TYP_VERSION));
 
-        certificateRevokeProcessor.process(BODY, INTYGS_ID1, LOGICAL_ADDRESS1, INTYGS_TYP);
+        certificateRevokeProcessor.process(BODY, INTYGS_ID1, LOGICAL_ADDRESS1, INTYGS_TYP, INTYGS_TYP_VERSION);
 
     }
 
     @Test
     public void testIntygsIdIsMissing() throws Exception {
         try {
-            certificateRevokeProcessor.process(BODY, null, LOGICAL_ADDRESS1, INTYGS_TYP);
+            certificateRevokeProcessor.process(BODY, null, LOGICAL_ADDRESS1, INTYGS_TYP, INTYGS_TYP_VERSION);
             fail();
         } catch (IllegalArgumentException e) {
             assertTrue(e.getMessage().contains(Constants.INTYGS_ID));
         }
     }
 
+    @Test
+    public void testIntygsTypVersionIsMissing() throws Exception {
+        try {
+            certificateRevokeProcessor.process(BODY, INTYGS_ID1, LOGICAL_ADDRESS1, INTYGS_TYP, null);
+            fail();
+        } catch (IllegalArgumentException e) {
+            assertTrue(e.getMessage().contains(Constants.INTYGS_TYP_VERSION));
+        }
+    }
+
     @Test(expected = IllegalArgumentException.class)
     public void testLogicalAddressIsMissing() throws Exception {
-        certificateRevokeProcessor.process(BODY, INTYGS_ID1, null, INTYGS_TYP);
+        certificateRevokeProcessor.process(BODY, INTYGS_ID1, null, INTYGS_TYP, INTYGS_TYP_VERSION);
     }
 
 }

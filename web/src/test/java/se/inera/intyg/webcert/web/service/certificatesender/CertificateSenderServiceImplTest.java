@@ -155,8 +155,9 @@ public class CertificateSenderServiceImplTest {
         final String intygsId = "intygsId";
         final String xmlBody = "xmlBody";
         final String intygsTyp = "intygsTyp";
+        final String intygsTypVersion = "intygsTypVersion";
 
-        service.revokeCertificate(intygsId, xmlBody, intygsTyp);
+        service.revokeCertificate(intygsId, xmlBody, intygsTyp, intygsTypVersion);
         ArgumentCaptor<MessageCreator> messageCaptor = ArgumentCaptor.forClass(MessageCreator.class);
         verify(template).send(messageCaptor.capture());
 
@@ -164,6 +165,7 @@ public class CertificateSenderServiceImplTest {
         assertEquals(Constants.REVOKE_MESSAGE, res.getStringProperty(Constants.MESSAGE_TYPE));
         assertEquals(intygsId, res.getStringProperty(Constants.INTYGS_ID));
         assertEquals(intygsTyp, res.getStringProperty(Constants.INTYGS_TYP));
+        assertEquals(intygsTypVersion, res.getStringProperty(Constants.INTYGS_TYP_VERSION));
         assertEquals(LOGICAL_ADDRESS, res.getStringProperty(Constants.LOGICAL_ADDRESS));
         assertEquals(xmlBody, ((TextMessage) res).getText());
     }
@@ -173,7 +175,7 @@ public class CertificateSenderServiceImplTest {
         doThrow(new DestinationResolutionException("")).when(template).send(any(MessageCreator.class));
 
         try {
-            service.revokeCertificate("intygsId", "xmlBody", "intygsTyp");
+            service.revokeCertificate("intygsId", "xmlBody", "intygsTyp", "1.0");
         } finally {
             verify(template, times(1)).send(any(MessageCreator.class));
         }

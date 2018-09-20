@@ -562,7 +562,8 @@ public class IntygServiceImpl implements IntygService {
 
         try {
             certificateSenderService.revokeCertificate(intygsId, modelFacade.getRevokeCertificateRequest(intygsTyp, intyg.getUtlatande(),
-                    IntygConverterUtil.buildHosPersonalFromWebCertUser(webCertUserService.getUser(), null), revokeMessage), intygsTyp);
+                    IntygConverterUtil.buildHosPersonalFromWebCertUser(webCertUserService.getUser(), null), revokeMessage), intygsTyp,
+                    intyg.getUtlatande().getTextVersion());
             whenSuccessfulRevoke(intyg.getUtlatande(), reason);
             return IntygServiceResult.OK;
         } catch (CertificateSenderException | ModuleException | IntygModuleFacadeException e) {

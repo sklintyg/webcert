@@ -39,7 +39,7 @@ public interface CertificateSenderService {
     void sendCertificate(String intygsId, Personnummer personId, String jsonBody, String recipientId, boolean delay)
             throws CertificateSenderException;
 
-    void revokeCertificate(String intygsId, String xmlBody, String intygsTyp) throws CertificateSenderException;
+    void revokeCertificate(String intygsId, String xmlBody, String intygsTyp, String intygsTypVersion) throws CertificateSenderException;
 
     void sendMessageToRecipient(String intygsId, String xmlBody) throws CertificateSenderException;
 

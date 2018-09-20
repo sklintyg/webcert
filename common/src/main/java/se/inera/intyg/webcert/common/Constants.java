@@ -35,6 +35,7 @@ public final class Constants {
 
     public static final String INTYGS_ID = "INTYGS_ID";
     public static final String INTYGS_TYP = "INTYGS_TYP";
+    public static final String INTYGS_TYP_VERSION = "INTYGS_TYP_VERSION";
     public static final String LOGICAL_ADDRESS = "LOGICAL_ADDRESS";
     public static final String PERSON_ID = "PERSON_ID";
     public static final String RECIPIENT = "RECIPIENT";

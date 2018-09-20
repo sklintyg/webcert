@@ -100,9 +100,10 @@ public class UtkastBootstrapBean {
                 if (filename != null) {
 
                     String moduleName = Iterables.get(Splitter.on("__").split(Objects.requireNonNull(filename)), 0);
-                    LOG.info("Bootstrapping certificate '{}' from module ", filename, moduleName);
+                    String intygMajorTypeVersion = Iterables.get(Splitter.on(".").split(Objects.requireNonNull(filename)), 1);
+                    LOG.info("Bootstrapping certificate '{}' from module {} version {}", filename, moduleName, intygMajorTypeVersion);
 
-                    Utlatande utlatande = buildUtlatande(resource, moduleName);
+                    Utlatande utlatande = buildUtlatande(resource, moduleName, intygMajorTypeVersion);
 
                     if (utkastRepo.findOne(utlatande.getId()) == null) {
                         UtkastStatus status = UtkastStatus.SIGNED;
@@ -137,11 +138,11 @@ public class UtkastBootstrapBean {
 
     // INTYG-4086: An incredibly ugly hack to mitigate the fact that we're populating test-data using the XML format
     // and also directly to WC instead of storing in IT where these actually belong...
-    private Utlatande buildUtlatande(Resource resource, String moduleName) throws ModuleException, ModuleNotFoundException, IOException {
+    private Utlatande buildUtlatande(Resource resource, String moduleName, String intygTypeVersion) throws ModuleException, ModuleNotFoundException, IOException {
 
         String xml = Resources.toString(resource.getURL(), Charsets.UTF_8);
         Utlatande utlatande = registry.getModuleApi(moduleName)
-                .getUtlatandeFromXml(xml);
+                .getUtlatandeFromXml(xml, intygTypeVersion);
 
         switch (moduleName) {
         case "luse":

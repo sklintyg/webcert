@@ -43,7 +43,7 @@ public class CertificateRevokeProcessor {
 
     public void process(@Body String xmlBody, @Header(Constants.INTYGS_ID) String intygsId,
             @Header(Constants.LOGICAL_ADDRESS) String logicalAddress,
-            @Header(Constants.INTYGS_TYP) String intygsTyp) throws TemporaryException, PermanentException {
+            @Header(Constants.INTYGS_TYP) String intygsTyp, @Header(Constants.INTYGS_TYP_VERSION) String intygsTypVersion) throws TemporaryException, PermanentException {
 
         checkArgument(!Strings.isNullOrEmpty(intygsId), "Message of type %s does not have a %s header.", Constants.REVOKE_MESSAGE,
                 Constants.INTYGS_ID);
@@ -51,10 +51,12 @@ public class CertificateRevokeProcessor {
                 Constants.LOGICAL_ADDRESS);
         checkArgument(!Strings.isNullOrEmpty(intygsTyp), "Message of type %s does not have a %s header.", Constants.REVOKE_MESSAGE,
                 Constants.INTYGS_TYP);
+        checkArgument(!Strings.isNullOrEmpty(intygsTypVersion), "Message of type %s does not have a %s header.", Constants.REVOKE_MESSAGE,
+                Constants.INTYGS_TYP_VERSION);
 
         try {
             ModuleApi moduleApi = registry.getModuleApi(intygsTyp);
-            moduleApi.revokeCertificate(xmlBody, logicalAddress);
+            moduleApi.revokeCertificate(xmlBody, logicalAddress, intygsTypVersion);
         } catch (ExternalServiceCallException e) {
             switch (e.getErroIdEnum()) {
             case TECHNICAL_ERROR:
