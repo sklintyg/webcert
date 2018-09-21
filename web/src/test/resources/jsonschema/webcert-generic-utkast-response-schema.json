@@ -10,6 +10,9 @@
     "intygsTyp": {
       "type": "string"
     },
+    "intygTypeVersion": {
+      "type": "string"
+    },
     "enhetsId": {
       "type": "string"
     },

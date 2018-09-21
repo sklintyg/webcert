@@ -37,6 +37,7 @@ public class CertificateIntegrationControllerIT extends BaseRestIntegrationTest 
     private static final String DEFAULT_INTYGSID = "abcd123-abcd123-abcd123";
     private static final String INTYGSTYP = "luse";
 
+
     @Test
     public void testRedirectSuccess() {
 
@@ -47,7 +48,7 @@ public class CertificateIntegrationControllerIT extends BaseRestIntegrationTest 
                 expect().statusCode(HttpServletResponse.SC_TEMPORARY_REDIRECT).
                 when().get("webcert/web/user/basic-certificate/{intygsId}/questions?enhet=IFV1239877878-1042").
                 then().
-                header(HttpHeaders.LOCATION, endsWith("/fragasvar/fk7263/" + DEFAULT_INTYGSID));
+                header(HttpHeaders.LOCATION, endsWith("/fragasvar/fk7263/" + FK7263_BASE_INTYG_TYPE_VERSION + "/" + DEFAULT_INTYGSID));
     }
 
     @Test
@@ -70,13 +71,15 @@ public class CertificateIntegrationControllerIT extends BaseRestIntegrationTest 
     public void testRedirectWithTypeSuccess() {
 
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
+        //Redirect handling now always needs to look up the version of the intyg, so we must have one waiting when testing
+        String intygId = createSignedIntyg(INTYGSTYP, DEFAULT_PATIENT_PERSONNUMMER);
 
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
-                .redirects().follow(false).and().pathParams("intygsId", DEFAULT_INTYGSID, "intygsTyp", INTYGSTYP).
+                .redirects().follow(false).and().pathParams("intygsId", intygId, "intygsTyp", INTYGSTYP).
                 expect().statusCode(HttpServletResponse.SC_TEMPORARY_REDIRECT).
                 when().get("webcert/web/user/basic-certificate/{intygsTyp}/{intygsId}/questions?enhet=IFV1239877878-1042").
                 then().
-                header(HttpHeaders.LOCATION, endsWith("/fragasvar/" + INTYGSTYP + "/" + DEFAULT_INTYGSID));
+                header(HttpHeaders.LOCATION, endsWith("/fragasvar/" + INTYGSTYP + "/" + LUSE_BASE_INTYG_TYPE_VERSION + "/" + intygId));
     }
 
     @Test

@@ -25,6 +25,9 @@
           "intygType": {
             "type": "string"
           },
+          "intygTypeVersion": {
+            "type": "string"
+          },
           "status": {
             "type": "string"
           },

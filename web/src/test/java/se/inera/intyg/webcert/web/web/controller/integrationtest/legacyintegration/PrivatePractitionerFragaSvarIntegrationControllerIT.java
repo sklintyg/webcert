@@ -46,7 +46,7 @@ public class PrivatePractitionerFragaSvarIntegrationControllerIT extends BaseRes
                 expect().statusCode(HttpServletResponse.SC_TEMPORARY_REDIRECT).
                 when().get("webcert/web/user/pp-certificate/{intygsId}/questions?enhet=IFV1239877878-1042").
                 then().
-                header(HttpHeaders.LOCATION, endsWith("/fragasvar/fk7263/" + DEFAULT_INTYGSID));
+                header(HttpHeaders.LOCATION, endsWith("/fragasvar/fk7263/" + FK7263_BASE_INTYG_TYPE_VERSION + "/" + DEFAULT_INTYGSID));
     }
 
     @Test

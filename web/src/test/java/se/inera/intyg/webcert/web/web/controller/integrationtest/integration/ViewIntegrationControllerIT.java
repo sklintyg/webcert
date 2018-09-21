@@ -41,6 +41,7 @@ import se.inera.intyg.webcert.web.web.controller.integrationtest.BaseRestIntegra
 public class ViewIntegrationControllerIT extends BaseRestIntegrationTest {
 
     private static final String ORIGIN = "READONLY";
+    private static final String LISJP_BASE_VERSION = "1.0";
 
     /**
      * Verify that a doctor can use a draft redirect link
@@ -67,7 +68,7 @@ public class ViewIntegrationControllerIT extends BaseRestIntegrationTest {
                 .expect().statusCode(HttpServletResponse.SC_TEMPORARY_REDIRECT)
                 .when().get("/visa/intyg/{intygsId}/readonly")
                 .then()
-                .header(HttpHeaders.LOCATION, endsWith("/intyg-read-only/lisjp/" + utkastId))
+                .header(HttpHeaders.LOCATION, endsWith("/intyg-read-only/lisjp/" + LISJP_BASE_VERSION + "/" + utkastId))
                 .header(XFRAME_OPTIONS_HEADER, isEmptyOrNullString());
     }
 

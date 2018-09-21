@@ -46,6 +46,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import static se.inera.intyg.webcert.web.web.controller.integration.IntygIntegrationController.PARAM_CERT_TYPE_VERSION;
+
 /**
  * Controller to enable an external user to access certificates directly from a
  * link in an external patient care system.
@@ -131,7 +133,8 @@ public class ViewIntegrationController extends BaseIntegrationController {
         // Update user with current active features
         updateUserWithActiveFeatures(user);
 
-        LOG.debug("Redirecting to view intyg {} of type {}", prepareRedirectToIntyg.getIntygId(), prepareRedirectToIntyg.getIntygTyp());
+        LOG.debug("Redirecting to view intyg {} of type {} (version {})", prepareRedirectToIntyg.getIntygId(),
+                prepareRedirectToIntyg.getIntygTyp(), prepareRedirectToIntyg.getIntygTypeVersion());
         return buildRedirectResponse(uriInfo, prepareRedirectToIntyg);
     }
 
@@ -148,11 +151,13 @@ public class ViewIntegrationController extends BaseIntegrationController {
     private Response buildRedirectResponse(UriInfo uriInfo, PrepareRedirectToIntyg prepareRedirectToIntyg) {
         String intygId = prepareRedirectToIntyg.getIntygId();
         String intygTyp = prepareRedirectToIntyg.getIntygTyp();
+        String intygTypVersion = prepareRedirectToIntyg.getIntygTypeVersion();
 
         UriBuilder uriBuilder = uriInfo.getBaseUriBuilder();
 
         Map<String, Object> urlParams = new HashMap<>();
         urlParams.put(PARAM_CERT_TYPE, intygTyp);
+        urlParams.put(PARAM_CERT_TYPE_VERSION, intygTypVersion);
         urlParams.put(PARAM_CERT_ID, intygId);
 
         URI location = uriBuilder.replacePath(getUrlBaseTemplate()).fragment(urlIntygFragmentTemplate).buildFromMap(urlParams);
