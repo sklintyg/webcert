@@ -7,6 +7,7 @@
     },
     "test-pipeline": {
         "WEBCERT_URL": "http://webcert-test:8080/",
+        "MINAINTYG_URL": "https://minaintyg.inera.nordicmedtest.se",
         "INTYGTJANST_URL": "http://intygstjanst-test-webcert-test:8080/inera-certificate",
         "SELENIUM_ADDRESS": ""
     },
