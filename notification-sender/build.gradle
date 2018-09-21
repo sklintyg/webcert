@@ -7,6 +7,15 @@ task camelTest(type: Test) {
     include '**/*IT*'
 }
 
+
+task copyResources(type: Copy) {
+    from "${projectDir}/../src/main/resources/security"
+    include "*.yaml"
+    into "${buildDir}/resources/test/security"
+}
+
+compileJava.dependsOn copyResources
+
 dependencies {
     compile project(':webcert-common')
 
