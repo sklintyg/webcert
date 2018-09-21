@@ -113,6 +113,7 @@ public abstract class BaseCreateDraftCertificateValidatorTest {
         Feature feature = new Feature();
         feature.setName(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);
         feature.setIntygstyper(Arrays.asList(Fk7263EntryPoint.MODULE_ID, TsBasEntryPoint.MODULE_ID));
+        feature.setGlobal(true);
         user.setFeatures(Collections.singletonMap(feature.getName(), feature));
         user.setOrigin(UserOriginType.DJUPINTEGRATION.name());
         return user;
@@ -131,6 +132,7 @@ public abstract class BaseCreateDraftCertificateValidatorTest {
         feature.setIntygstyper(Arrays.asList(Fk7263EntryPoint.MODULE_ID, TsBasEntryPoint.MODULE_ID, TsDiabetesEntryPoint.MODULE_ID,
                 LisjpEntryPoint.MODULE_ID, LuaenaEntryPoint.MODULE_ID, LuaefsEntryPoint.MODULE_ID, LuseEntryPoint.MODULE_ID,
                 DbModuleEntryPoint.MODULE_ID, DoiModuleEntryPoint.MODULE_ID));
+        feature.setGlobal(true);
         user.setFeatures(Collections.singletonMap(feature.getName(), feature));
         user.setOrigin(UserOriginType.DJUPINTEGRATION.name());
         return user;

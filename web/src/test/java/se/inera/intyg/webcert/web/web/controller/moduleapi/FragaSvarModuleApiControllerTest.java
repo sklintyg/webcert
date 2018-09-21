@@ -104,6 +104,7 @@ public class FragaSvarModuleApiControllerTest {
         Feature feature = new Feature();
         feature.setName(AuthoritiesConstants.FEATURE_HANTERA_FRAGOR);
         feature.setIntygstyper(Arrays.asList(FK7263));
+        feature.setGlobal(true);
         user.setFeatures(ImmutableMap.of(feature.getName(), feature));
         user.setOrigin(UserOriginType.UTHOPP.name());
         return user;

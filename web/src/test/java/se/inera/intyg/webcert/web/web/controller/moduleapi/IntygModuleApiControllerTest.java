@@ -808,6 +808,7 @@ public class IntygModuleApiControllerTest {
             Feature feature = new Feature();
             feature.setName(s);
             feature.setIntygstyper(Arrays.asList(intygType));
+            feature.setGlobal(true);
             return feature;
         })));
     }
