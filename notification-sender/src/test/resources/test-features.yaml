@@ -37,12 +37,14 @@ knownIntygstyper:
   - &ki010 fk7263
   - &ki020 ts-bas
   - &ki030 ts-diabetes
+  - &ki032 ts-diabetes-2
   - &ki040 luse
   - &ki050 lisjp
   - &ki060 luae_na
   - &ki070 luae_fs
   - &ki080 db
   - &ki090 doi
+  - &ki100 af00213
 
 knownFeatures:
   - &kf010 HANTERA_FRAGOR
@@ -85,12 +87,14 @@ features:
       - *ki010 # FK7263
       - *ki020 # TS-BAS
       - *ki030 # TS-DIABETES
+      - *ki032 # TS-DIABETES-2
       - *ki040 # LUSE
       - *ki050 # LISJP
       - *ki060 # LUAE_NA
       - *ki070 # LUAE_FS
       - *ki080 # DB
       - *ki090 # DOI
+      - *ki100 # AF00213
   - &f030
     name: *kf030
     desc: Förnya intyg
@@ -98,6 +102,7 @@ features:
     intygstyper:
       - *ki020 # TS-BAS
       - *ki030 # TS-DIABETES
+      - *ki032 # TS-DIABETES-2
       - *ki040 # LUSE
       - *ki050 # LISJP
       - *ki060 # LUAE_NA
@@ -112,12 +117,14 @@ features:
       - *ki010 # FK7263
       - *ki020 # TS-BAS
       - *ki030 # TS-DIABETES
+      - *ki032 # TS-DIABETES-2
       - *ki040 # LUSE
       - *ki050 # LISJP
       - *ki060 # LUAE_NA
       - *ki070 # LUAE_FS
       - *ki080 # DB
       - *ki090 # DOI
+      - *ki100 # AF00213
   - &f050
     name: *kf050
     desc: Makulera intyg kräver anledning
@@ -126,6 +133,7 @@ features:
       - *ki010 # FK7263
       - *ki020 # TS-BAS
       - *ki030 # TS-DIABETES
+      - *ki032 # TS-DIABETES-2
       - *ki040 # LUSE
       - *ki050 # LISJP
       - *ki060 # LUAE_NA
@@ -152,12 +160,14 @@ features:
       - *ki010 # FK7263
       - *ki020 # TS-BAS
       - *ki030 # TS-DIABETES
+      - *ki032 # TS-DIABETES-2
       - *ki040 # LUSE
       - *ki050 # LISJP
       - *ki060 # LUAE_NA
       - *ki070 # LUAE_FS
       - *ki080 # DB
       - *ki090 # DOI
+      - *ki100 # AF00213
   - &f080
     name: *kf080
     desc: Signera skicka direkt
@@ -165,6 +175,7 @@ features:
     intygstyper:
       - *ki080 # DB
       - *ki090 # DOI
+      - *ki100 # AF00213
   - &f090
     name: *kf090
     desc: Utskrift
@@ -173,12 +184,14 @@ features:
       - *ki010 # FK7263
       - *ki020 # TS-BAS
       - *ki030 # TS-DIABETES
+      - *ki032 # TS-DIABETES-2
       - *ki040 # LUSE
       - *ki050 # LISJP
       - *ki060 # LUAE_NA
       - *ki070 # LUAE_FS
       - *ki080 # DB
       - *ki090 # DOI
+      - *ki100 # AF00213
   - &f100
     name: *kf100
     desc: Arbetsgivarutskrift
@@ -224,12 +237,14 @@ features:
       - *ki010 # FK7263
       - *ki020 # TS-BAS
       - *ki030 # TS-DIABETES
+      - *ki032 # TS-DIABETES-2
       - *ki040 # LUSE
       - *ki050 # LISJP
       - *ki060 # LUAE_NA
       - *ki070 # LUAE_FS
       - *ki080 # DB
       - *ki090 # DOI
+      - *ki100 # AF00213
   - &f180
     name: *kf180
     desc: Använd trädklättring i HSA
@@ -244,6 +259,7 @@ features:
       - *ki050 # LISJP
       - *ki060 # LUAE_NA
       - *ki070 # LUAE_FS
+      - *ki100 # AF00213
   - &f200
     name: *kf200
     desc: Rensning av meddelanden av fel B
