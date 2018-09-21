@@ -58,6 +58,7 @@ import se.inera.intyg.webcert.web.service.underskrift.testutil.UnderskriftTestUt
 import se.inera.intyg.webcert.web.service.underskrift.tracker.RedisTicketTracker;
 import se.inera.intyg.webcert.web.service.underskrift.xmldsig.XmlUnderskriftServiceImpl;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
+import se.inera.intyg.webcert.web.service.underskrift.model.SignMethod;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 
@@ -167,10 +168,10 @@ public class UnderskriftServiceImplTest extends AuthoritiesConfigurationTestSetu
                 .thenReturn(createUtkast(INTYG_ID, 1L, INTYG_TYP, UtkastStatus.DRAFT_COMPLETE, "model", vardperson,
                         ENHET_ID, PERSON_ID));
 
-        when(xmlUnderskriftService.skapaSigneringsBiljettMedDigest(anyString(), anyString(), anyLong(), anyString()))
+        when(xmlUnderskriftService.skapaSigneringsBiljettMedDigest(anyString(), anyString(), anyLong(), anyString(), any(SignMethod.class)))
                 .thenReturn(createSignaturBiljett(SignaturStatus.BEARBETAR));
 
-        SignaturBiljett sb = testee.startSigningProcess(INTYG_ID, INTYG_TYP, 1L);
+        SignaturBiljett sb = testee.startSigningProcess(INTYG_ID, INTYG_TYP, 1L, SignMethod.NETID_ACCESS);
         assertNotNull(sb.getIntygSignature());
         assertNotNull(sb.getHash());
 
@@ -180,7 +181,7 @@ public class UnderskriftServiceImplTest extends AuthoritiesConfigurationTestSetu
     @Test(expected = WebCertServiceException.class)
     public void testStartSignNoUtkastFound() {
         when(utkastRepository.findOne(INTYG_ID)).thenReturn(null);
-        testee.startSigningProcess(INTYG_ID, INTYG_TYP, 1L);
+        testee.startSigningProcess(INTYG_ID, INTYG_TYP, 1L, SignMethod.FAKE);
     }
 
     @Test(expected = WebCertServiceException.class)
@@ -188,7 +189,7 @@ public class UnderskriftServiceImplTest extends AuthoritiesConfigurationTestSetu
         when(utkastRepository.findOne(INTYG_ID))
                 .thenReturn(createUtkast(INTYG_ID, 1L, INTYG_TYP, UtkastStatus.DRAFT_COMPLETE, "model", vardperson,
                         "some-other-enhet", PERSON_ID));
-        testee.startSigningProcess(INTYG_ID, INTYG_TYP, 1L);
+        testee.startSigningProcess(INTYG_ID, INTYG_TYP, 1L, SignMethod.FAKE);
     }
 
     @Test(expected = OptimisticLockException.class)
@@ -196,7 +197,7 @@ public class UnderskriftServiceImplTest extends AuthoritiesConfigurationTestSetu
         when(utkastRepository.findOne(INTYG_ID))
                 .thenReturn(createUtkast(INTYG_ID, 2L, INTYG_TYP, UtkastStatus.DRAFT_COMPLETE, "model", vardperson,
                         ENHET_ID, PERSON_ID));
-        testee.startSigningProcess(INTYG_ID, INTYG_TYP, 1L);
+        testee.startSigningProcess(INTYG_ID, INTYG_TYP, 1L, SignMethod.FAKE);
     }
 
     @Test(expected = WebCertServiceException.class)
@@ -204,14 +205,14 @@ public class UnderskriftServiceImplTest extends AuthoritiesConfigurationTestSetu
         when(utkastRepository.findOne(INTYG_ID))
                 .thenReturn(createUtkast(INTYG_ID, 1L, INTYG_TYP, UtkastStatus.DRAFT_INCOMPLETE, "model", vardperson,
                         ENHET_ID, PERSON_ID));
-        testee.startSigningProcess(INTYG_ID, INTYG_TYP, 1L);
+        testee.startSigningProcess(INTYG_ID, INTYG_TYP, 1L, SignMethod.FAKE);
     }
 
     @Test(expected = WebCertServiceException.class)
     public void testStartSignUtkastAlreadySigned() {
         when(utkastRepository.findOne(INTYG_ID)).thenReturn(createUtkast(INTYG_ID, 1L, INTYG_TYP, UtkastStatus.SIGNED, "model", vardperson,
                 ENHET_ID, PERSON_ID));
-        testee.startSigningProcess(INTYG_ID, INTYG_TYP, 1L);
+        testee.startSigningProcess(INTYG_ID, INTYG_TYP, 1L, SignMethod.FAKE);
     }
 
     @Test

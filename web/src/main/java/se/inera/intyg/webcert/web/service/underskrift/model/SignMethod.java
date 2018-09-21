@@ -16,17 +16,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.web.service.underskrift;
+package se.inera.intyg.webcert.web.service.underskrift.model;
 
-import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
-import se.inera.intyg.webcert.web.service.underskrift.model.SignMethod;
-import se.inera.intyg.webcert.web.service.underskrift.model.SignaturBiljett;
-import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
-
-public interface CommonUnderskriftService {
-    SignaturBiljett skapaSigneringsBiljettMedDigest(String intygsId, String intygsTyp, long version, String intygJson,
-            SignMethod signMethod);
-
-    SignaturBiljett finalizeSignature(SignaturBiljett biljett, byte[] signatur, String certifikat, Utkast utkast,
-            WebCertUser user);
+public enum SignMethod {
+    FAKE, NETID_PLUGIN, NETID_ACCESS, GRP
 }

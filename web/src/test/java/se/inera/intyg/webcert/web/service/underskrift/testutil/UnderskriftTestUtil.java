@@ -29,6 +29,7 @@ import se.inera.intyg.infra.xmldsig.model.IntygXMLDSignature;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
+import se.inera.intyg.webcert.web.service.underskrift.model.SignMethod;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturBiljett;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturStatus;
 
@@ -62,7 +63,7 @@ public class UnderskriftTestUtil {
     }
 
     public static SignaturBiljett createSignaturBiljett(SignaturStatus status) {
-        return SignaturBiljett.SignaturBiljettBuilder.aSignaturBiljett(TICKET_ID, SignaturTyp.XMLDSIG)
+        return SignaturBiljett.SignaturBiljettBuilder.aSignaturBiljett(TICKET_ID, SignaturTyp.XMLDSIG, SignMethod.NETID_ACCESS)
                 .withIntygsId(INTYG_ID)
                 .withVersion(VERSION)
                 .withStatus(status)
@@ -72,7 +73,7 @@ public class UnderskriftTestUtil {
                 .build();
     }
 
-    public static  IntygXMLDSignature buildIntygXMLSignature() {
+    public static IntygXMLDSignature buildIntygXMLSignature() {
         return IntygXMLDSignature.IntygXMLDSignatureBuilder.anIntygXMLDSignature()
                 .withSignatureType(buildSignature())
                 .withSignedInfoForSigning("<SignedInfo/>")

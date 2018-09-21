@@ -41,6 +41,7 @@ import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
+import se.inera.intyg.webcert.web.service.underskrift.model.SignMethod;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturBiljett;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturStatus;
 import se.inera.intyg.webcert.web.service.underskrift.testutil.UnderskriftTestUtil;
@@ -120,7 +121,7 @@ public class XmlUnderskriftServiceImplTest {
         when(utkastModelToXMLConverter.utkastToXml(anyString(), anyString())).thenReturn("<xml/>");
         when(prepareSignatureService.prepareSignature(anyString(), anyString())).thenReturn(buildIntygXMLSignature());
 
-        SignaturBiljett signaturBiljett = testee.skapaSigneringsBiljettMedDigest(INTYG_ID, INTYG_TYP, VERSION, "json");
+        SignaturBiljett signaturBiljett = testee.skapaSigneringsBiljettMedDigest(INTYG_ID, INTYG_TYP, VERSION, "json", SignMethod.FAKE);
         assertNotNull(signaturBiljett);
         verify(redisTicketTracker, times(1)).trackBiljett(any(SignaturBiljett.class));
     }
@@ -168,7 +169,7 @@ public class XmlUnderskriftServiceImplTest {
                     "signatur".getBytes(Charset.forName("UTF-8")),
                     "certifikat", createUtkast(INTYG_ID, 1L, INTYG_TYP, UtkastStatus.DRAFT_COMPLETE, "model", createVardperson(),
                             ENHET_ID, PERSON_ID),
-                    new WebCertUser());
+                    buildUser());
         } finally {
             verifyZeroInteractions(monitoringLogService);
             verify(redisTicketTracker, times(1)).updateStatus(anyString(), eq(SignaturStatus.OKAND));
@@ -190,12 +191,16 @@ public class XmlUnderskriftServiceImplTest {
                     "signatur".getBytes(Charset.forName("UTF-8")),
                     "certifikat", createUtkast(INTYG_ID, 1111L, INTYG_TYP, UtkastStatus.DRAFT_COMPLETE, "model", createVardperson(),
                             ENHET_ID, PERSON_ID),
-                    new WebCertUser());
+                    buildUser());
         } finally {
             verifyZeroInteractions(monitoringLogService);
             verify(redisTicketTracker, times(1)).updateStatus(anyString(), eq(SignaturStatus.OKAND));
             verify(intygService, times(0)).storeIntyg(any(Utkast.class));
         }
+    }
+
+    private WebCertUser buildUser() {
+        return new WebCertUser();
     }
 
     @Test(expected = WebCertServiceException.class)
@@ -212,7 +217,7 @@ public class XmlUnderskriftServiceImplTest {
                     "certifikat",
                     createUtkast(INTYG_ID + "-difference", 1L, INTYG_TYP, UtkastStatus.DRAFT_COMPLETE, "model", createVardperson(),
                             ENHET_ID, PERSON_ID),
-                    new WebCertUser());
+                    buildUser());
         } finally {
             verifyZeroInteractions(monitoringLogService);
             verify(redisTicketTracker, times(1)).updateStatus(anyString(), eq(SignaturStatus.OKAND));

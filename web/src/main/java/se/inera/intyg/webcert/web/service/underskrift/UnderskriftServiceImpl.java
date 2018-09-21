@@ -18,10 +18,18 @@
  */
 package se.inera.intyg.webcert.web.service.underskrift;
 
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.Map;
+import java.util.Optional;
+
+import javax.persistence.OptimisticLockException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
@@ -42,6 +50,7 @@ import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
 import se.inera.intyg.webcert.web.service.notification.NotificationService;
 import se.inera.intyg.webcert.web.service.underskrift.fake.FakeUnderskriftService;
 import se.inera.intyg.webcert.web.service.underskrift.grp.GrpUnderskriftServiceImpl;
+import se.inera.intyg.webcert.web.service.underskrift.model.SignMethod;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturBiljett;
 import se.inera.intyg.webcert.web.service.underskrift.nias.NiasUnderskriftService;
 import se.inera.intyg.webcert.web.service.underskrift.tracker.RedisTicketTracker;
@@ -50,16 +59,6 @@ import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 import se.inera.intyg.webcert.web.service.utkast.dto.PreviousIntyg;
-
-import javax.persistence.OptimisticLockException;
-import java.io.IOException;
-import java.time.LocalDateTime;
-import java.util.Map;
-import java.util.Optional;
-
-import static se.inera.intyg.infra.security.common.model.AuthenticationMethod.BANK_ID;
-import static se.inera.intyg.infra.security.common.model.AuthenticationMethod.EFOS;
-import static se.inera.intyg.infra.security.common.model.AuthenticationMethod.MOBILT_BANK_ID;
 
 @Service
 public class UnderskriftServiceImpl implements UnderskriftService {
@@ -103,7 +102,7 @@ public class UnderskriftServiceImpl implements UnderskriftService {
     private NiasUnderskriftService niasUnderskriftService;
 
     @Override
-    public SignaturBiljett startSigningProcess(String intygsId, String intygsTyp, long version) {
+    public SignaturBiljett startSigningProcess(String intygsId, String intygsTyp, long version, SignMethod signMethod) {
         WebCertUser user = webCertUserService.getUser();
 
         // Check if Utkast is eligible for signing right now, if so get it.
@@ -119,19 +118,21 @@ public class UnderskriftServiceImpl implements UnderskriftService {
         case NET_ID:
         case EFOS:
         case FAKE:
-            signaturBiljett = xmlUnderskriftService.skapaSigneringsBiljettMedDigest(intygsId, intygsTyp, version, updatedJson);
+            signaturBiljett = xmlUnderskriftService.skapaSigneringsBiljettMedDigest(intygsId, intygsTyp, version, updatedJson, signMethod);
             break;
         case BANK_ID:
         case MOBILT_BANK_ID:
-            signaturBiljett = grpUnderskriftService.skapaSigneringsBiljettMedDigest(intygsId, intygsTyp, version, updatedJson);
+            signaturBiljett = grpUnderskriftService.skapaSigneringsBiljettMedDigest(intygsId, intygsTyp, version, updatedJson, signMethod);
             break;
+        default:
+            throw new IllegalStateException("Unhandled authentication method, could not create SignaturBiljett");
         }
 
         // Finally, for GRP and NIAS, we need to kick off the Collect pollers.
-        if (user.getAuthenticationMethod() == EFOS) {
+        if (signaturBiljett.getSignMethod() == SignMethod.NETID_ACCESS) {
             niasUnderskriftService.startNiasCollectPoller(user.getHsaId(), signaturBiljett);
         }
-        if (user.getAuthenticationMethod() == BANK_ID || user.getAuthenticationMethod() == MOBILT_BANK_ID) {
+        if (signaturBiljett.getSignMethod() == SignMethod.GRP) {
             grpUnderskriftService.startGrpCollectPoller(user.getPersonId(), signaturBiljett);
         }
 

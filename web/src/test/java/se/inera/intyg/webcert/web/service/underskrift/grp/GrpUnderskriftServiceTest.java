@@ -37,6 +37,7 @@ import se.inera.intyg.infra.security.common.model.Role;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.web.auth.bootstrap.AuthoritiesConfigurationTestSetup;
 import se.inera.intyg.webcert.web.service.underskrift.grp.factory.GrpCollectPollerFactory;
+import se.inera.intyg.webcert.web.service.underskrift.model.SignMethod;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturBiljett;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturStatus;
 import se.inera.intyg.webcert.web.service.underskrift.tracker.RedisTicketTracker;
@@ -150,7 +151,7 @@ public class GrpUnderskriftServiceTest extends AuthoritiesConfigurationTestSetup
 
     private SignaturBiljett buildSignaturBiljett() {
         SignaturBiljett ticket = SignaturBiljett.SignaturBiljettBuilder
-                .aSignaturBiljett(TX_ID, SignaturTyp.PKCS7)
+                .aSignaturBiljett(TX_ID, SignaturTyp.PKCS7, SignMethod.GRP)
                 .withHash("hash")
                 .withSkapad(LocalDateTime.now())
                 .withStatus(SignaturStatus.OKAND)

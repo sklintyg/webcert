@@ -29,6 +29,7 @@ import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEn
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.underskrift.UnderskriftService;
+import se.inera.intyg.webcert.web.service.underskrift.model.SignMethod;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturBiljett;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
 import se.inera.intyg.webcert.web.web.controller.api.dto.KlientSignaturRequest;
@@ -44,6 +45,8 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 @Path("/signature")
 public class SignatureApiController extends AbstractApiController {
@@ -62,16 +65,26 @@ public class SignatureApiController extends AbstractApiController {
     private FakeSignatureServiceImpl fakeSignatureService;
 
     @POST
-    @Path("/{intygsTyp}/{intygsId}/{version}/signeringshash")
+    @Path("/{intygsTyp}/{intygsId}/{version}/signeringshash/{signMethod}")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public SignaturStateDTO signeraUtkast(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId,
-            @PathParam("version") long version) {
+            @PathParam("version") long version, @PathParam("signMethod") String signMethodStr) {
 
         authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp).features(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
                 .orThrow();
+        SignMethod signMethod = null;
+        try {
+             signMethod = SignMethod.valueOf(signMethodStr);
+        } catch (IllegalArgumentException e) {
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MISSING_PARAMETER,
+                    "Parameter signMethod is missing or has illegal value. Allowed values are: "
+                            + Arrays.asList(SignMethod.values()).stream()
+                            .map(SignMethod::name)
+                            .collect(Collectors.joining(", ")));
+        }
 
         try {
-            SignaturBiljett sb = underskriftService.startSigningProcess(intygsId, intygsTyp, version);
+            SignaturBiljett sb = underskriftService.startSigningProcess(intygsId, intygsTyp, version, signMethod);
             return convertToSignatureStateDTO(sb);
         } catch (OptimisticLockException | OptimisticLockingFailureException e) {
             monitoringLogService.logUtkastConcurrentlyEdited(intygsId, intygsTyp);

@@ -93,8 +93,9 @@ public class UtkastBootstrapBean {
     @PostConstruct
     public void init() throws IOException {
 
-        for (Resource resource : getResourceListing("classpath*:module-bootstrap-certificate/*.xml")) {
+        //for (Resource resource : getResourceListing("classpath*:module-bootstrap-certificate/*.xml")) {
 
+        getResourceListing("classpath*:module-bootstrap-certificate/*.xml").parallelStream().forEach(resource -> {
             String filename = resource.getFilename();
             try {
                 if (filename != null) {
@@ -132,7 +133,7 @@ public class UtkastBootstrapBean {
             } catch (ModuleException | ModuleNotFoundException | IOException e) {
                 LOG.error("Could not bootstrap {}", filename, e);
             }
-        }
+        });
     }
 
     // INTYG-4086: An incredibly ugly hack to mitigate the fact that we're populating test-data using the XML format
