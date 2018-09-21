@@ -6,7 +6,7 @@
         "SELENIUM_ADDRESS": ""
     },
     "test-pipeline": {
-        "ST_URL": "http://webcert-test:9088/",
+        "WEBCERT_URL": "http://webcert-test:9088/",
         "INTYGTJANST_URL": "http://intygstjanst-webcert-test:8080/inera-certificate",
         "SELENIUM_ADDRESS": ""
     },
