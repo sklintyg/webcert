@@ -2,7 +2,7 @@
     "dev": {
         "WEBCERT_URL": "http://localhost:9089/",
         "MINAINTYG_URL": "https://minaintyg.inera.nordicmedtest.se",
-        "INTYGTJANST_URL": "http://intygstjanst-test-webcert-test:8080/inera-certificate",
+        "INTYGTJANST_URL": "http://localhost:8080/inera-certificate",
         "SELENIUM_ADDRESS": ""
     },
     "test-pipeline": {
