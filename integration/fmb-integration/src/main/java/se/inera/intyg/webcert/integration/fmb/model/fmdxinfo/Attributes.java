@@ -21,12 +21,14 @@ package se.inera.intyg.webcert.integration.fmb.model.fmdxinfo;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.google.common.collect.Lists;
 import se.inera.intyg.webcert.integration.fmb.model.Giltighetsperiod;
 import se.inera.intyg.webcert.integration.fmb.model.Kod;
 import se.inera.intyg.webcert.integration.fmb.model.Sjukdomsgrupp;
@@ -217,8 +219,8 @@ public class Attributes {
     }
 
     @JsonProperty("forsakringsmedicinskinformation")
-    public Markup getForsakringsmedicinskinformation() {
-        return forsakringsmedicinskinformation;
+    public Optional<Markup> getForsakringsmedicinskinformation() {
+        return Optional.ofNullable(forsakringsmedicinskinformation);
     }
 
     @JsonProperty("forsakringsmedicinskinformation")
@@ -227,8 +229,8 @@ public class Attributes {
     }
 
     @JsonProperty("symtomprognosbehandling")
-    public Markup getSymtomprognosbehandling() {
-        return symtomprognosbehandling;
+    public Optional<Markup> getSymtomprognosbehandling() {
+        return Optional.ofNullable(symtomprognosbehandling);
     }
 
     @JsonProperty("symtomprognosbehandling")
@@ -248,7 +250,7 @@ public class Attributes {
 
     @JsonProperty("diagnoskod")
     public List<Kod> getDiagnoskod() {
-        return diagnoskod;
+        return diagnoskod != null ? diagnoskod : Lists.newArrayList();
     }
 
     @JsonProperty("diagnoskod")
@@ -257,8 +259,8 @@ public class Attributes {
     }
 
     @JsonProperty("aktivitetsbegransning")
-    public Aktivitetsbegransning getAktivitetsbegransning() {
-        return aktivitetsbegransning;
+    public Optional<Aktivitetsbegransning> getAktivitetsbegransning() {
+        return Optional.ofNullable(aktivitetsbegransning);
     }
 
     @JsonProperty("aktivitetsbegransning")
@@ -267,8 +269,8 @@ public class Attributes {
     }
 
     @JsonProperty("funktionsnedsattning")
-    public Funktionsnedsattning getFunktionsnedsattning() {
-        return funktionsnedsattning;
+    public Optional<Funktionsnedsattning> getFunktionsnedsattning() {
+        return Optional.ofNullable(funktionsnedsattning);
     }
 
     @JsonProperty("funktionsnedsattning")
@@ -278,7 +280,7 @@ public class Attributes {
 
     @JsonProperty("referens")
     public List<Referen> getReferens() {
-        return referens;
+        return referens != null ? referens : Lists.newArrayList();
     }
 
     @JsonProperty("referens")

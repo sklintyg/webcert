@@ -27,6 +27,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
@@ -111,4 +114,52 @@ public class Kod {
         this.additionalProperties.put(name, value);
     }
 
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o){
+            return true;
+        }
+
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        final Kod kod1 = (Kod) o;
+
+        return new EqualsBuilder()
+                .append(beskrivning, kod1.beskrivning)
+                .append(kod, kod1.kod)
+                .append(kodsystem, kod1.kodsystem)
+                .append(kodsystemnamn, kod1.kodsystemnamn)
+                .append(kodsystemversion, kod1.kodsystemversion)
+                .append(additionalProperties, kod1.additionalProperties)
+                .isEquals();
+    }
+
+    // CHECKSTYLE:OFF MagicNumber
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(17, 37)
+                .append(beskrivning)
+                .append(kod)
+                .append(kodsystem)
+                .append(kodsystemnamn)
+                .append(kodsystemversion)
+                .append(additionalProperties)
+                .toHashCode();
+    }
+    // CHECKSTYLE:ON MagicNumber
+
+
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this)
+                .append("beskrivning", beskrivning)
+                .append("kod", kod)
+                .append("kodsystem", kodsystem)
+                .append("kodsystemnamn", kodsystemnamn)
+                .append("kodsystemversion", kodsystemversion)
+                .append("additionalProperties", additionalProperties)
+                .toString();
+    }
 }

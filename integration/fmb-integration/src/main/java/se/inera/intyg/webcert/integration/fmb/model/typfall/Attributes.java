@@ -20,6 +20,7 @@ package se.inera.intyg.webcert.integration.fmb.model.typfall;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -51,8 +52,8 @@ public class Attributes {
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
     @JsonProperty("fmbtillstand")
-    public Fmbtillstand getFmbtillstand() {
-        return fmbtillstand;
+    public Optional<Fmbtillstand> getFmbtillstand() {
+        return Optional.ofNullable(fmbtillstand);
     }
 
     @JsonProperty("fmbtillstand")
@@ -81,8 +82,8 @@ public class Attributes {
     }
 
     @JsonProperty("rekommenderadsjukskrivning")
-    public Rekommenderadsjukskrivning getRekommenderadsjukskrivning() {
-        return rekommenderadsjukskrivning;
+    public Optional<Rekommenderadsjukskrivning> getRekommenderadsjukskrivning() {
+        return Optional.ofNullable(rekommenderadsjukskrivning);
     }
 
     @JsonProperty("rekommenderadsjukskrivning")

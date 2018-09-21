@@ -1,3 +1,5 @@
+package se.inera.intyg.webcert.persistence.fmb.repository;
+
 /*
  * Copyright (C) 2018 Inera AB (http://www.inera.se)
  *
@@ -16,12 +18,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.integration.fmb.model;
 
-import java.util.Optional;
+import org.springframework.data.jpa.repository.JpaRepository;
+import se.inera.intyg.webcert.persistence.fmb.model.icf.DiagnosInformation;
 
-public interface FmInfo {
-
-    Optional<Meta> getMeta();
+public interface DiagnosInformationRepository extends JpaRepository<DiagnosInformation, Long> {
 
 }
+

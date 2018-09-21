@@ -207,7 +207,7 @@ public class FmbServiceImplTest {
             return kod;
         }).collect(Collectors.toList()));
         final Funktionsnedsattning funktionsnedsattning = new Funktionsnedsattning();
-        funktionsnedsattning.setFunktionsnedsattningsbeskrivning(funktionsnedsattningBeskrivning);
+        funktionsnedsattning.setBeskrivning(funktionsnedsattningBeskrivning);
         attributes.setFunktionsnedsattning(funktionsnedsattning);
         return fmdxInformation;
     }
