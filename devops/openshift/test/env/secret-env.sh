@@ -18,6 +18,7 @@ export REDIS_HOST=$REDIS_SERVICE_HOST
 SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE:-dev,caching-enabled}
 
 export CATALINA_OPTS_APPEND="\
+-Dspring.session.redis.namespace=${APP_NAME} \
 -Dspring.profiles.active=$SPRING_PROFILES_ACTIVE \
 -Dwebcert.config.file=/opt/$APP_NAME/config/webcert.properties \
 -Dwebcert.logback.file=classpath:logback-ocp.xml \
