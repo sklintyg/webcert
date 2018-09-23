@@ -83,7 +83,7 @@ describe('fragasvar.intygstyp.filtrering', function() {
 
         it('Byt läkarens roll till TANDLAKARE mha testbarhets-API, klicka på tabben igen', function() {
             browser.getCurrentUrl().then(function(url) {
-                browser.driver.get(browser.baseUrl + '/authtestability/user/role/TANDLAKARE').then(function() {
+                browser.driver.get(browser.baseUrl + 'authtestability/user/role/TANDLAKARE').then(function() {
                     browser.get(url);
                 });
             });
