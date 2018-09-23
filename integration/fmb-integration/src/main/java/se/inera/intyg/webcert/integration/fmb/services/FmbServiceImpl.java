@@ -43,6 +43,7 @@ import java.text.MessageFormat;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -56,6 +57,7 @@ import se.inera.intyg.webcert.integration.fmb.model.fmdxinfo.FmdxData;
 import se.inera.intyg.webcert.integration.fmb.model.fmdxinfo.FmdxInformation;
 import se.inera.intyg.webcert.integration.fmb.model.fmdxinfo.FmxBeskrivning;
 import se.inera.intyg.webcert.integration.fmb.model.fmdxinfo.Markup;
+import se.inera.intyg.webcert.integration.fmb.model.typfall.Fmbtillstand;
 import se.inera.intyg.webcert.integration.fmb.model.typfall.Rekommenderadsjukskrivning;
 import se.inera.intyg.webcert.integration.fmb.model.typfall.Typfall;
 import se.inera.intyg.webcert.integration.fmb.model.typfall.TypfallData;
@@ -130,13 +132,12 @@ public class FmbServiceImpl implements FmbService {
                     attributes.getAktivitetsbegransning().ifPresent(begransning -> beskrivningList.add(convertToBeskrivning(begransning, BeskrivningTyp.AKTIVITETSBEGRANSNING)));
                     attributes.getFunktionsnedsattning().ifPresent(begransning -> beskrivningList.add(convertToBeskrivning(begransning, BeskrivningTyp.FUNKTIONSNEDSATTNING)));
 
-                    final List<Icd10Kod> icd10KodList = convertToIcd10KodList(attributes);
+                    final List<Icd10Kod> icd10KodList = convertToIcd10KodList(attributes, typfall);
 
                     return aDiagnosInformation()
                             .forsakringsmedicinskInformation(attributes.getForsakringsmedicinskinformation().map(Markup::getMarkup).orElse(null))
                             .symptomPrognosBehandling(attributes.getSymtomprognosbehandling().map(Markup::getMarkup).orElse(null))
                             .beskrivningList(beskrivningList)
-                            .typFallList(convertToTypFallList(typfall, icd10KodList))
                             .icd10KodList(icd10KodList)
                             .referensList(convertToReferensList(attributes))
                             .senastUppdaterad(senasteAndring.orElse(null))
@@ -171,10 +172,10 @@ public class FmbServiceImpl implements FmbService {
                 .collect(Collectors.toList());
     }
 
-    private List<TypFall> convertToTypFallList(final Typfall typfall, final List<Icd10Kod> icd10KodList) {
+    private List<TypFall> convertToTypFallList(final Typfall typfall, final Kod kod) {
         return typfall.getData().stream()
                 .map(TypfallData::getAttributes)
-                .filter(filterTypfall(icd10KodList))
+                .filter(filterTypfall(kod))
                 .map(attributes -> aTypFall()
                         .typfallsMening(attributes.getTypfallsmening())
                         .maximalSjukrivningstid(attributes.getRekommenderadsjukskrivning()
@@ -185,19 +186,17 @@ public class FmbServiceImpl implements FmbService {
                 .collect(Collectors.toList());
     }
 
-    private Predicate<se.inera.intyg.webcert.integration.fmb.model.typfall.Attributes> filterTypfall(final List<Icd10Kod> icd10KodList) {
-        return attributes -> attributes.getFmbtillstand()
-                .map(tillstand -> CollectionUtils.containsAny(
-                        tillstand.getDiagnoskod().stream().map(Kod::getKod).collect(Collectors.toList()),
-                        icd10KodList.stream().map(Icd10Kod::getKod).collect(Collectors.toList())))
-                .orElse(false);
+    private Predicate<se.inera.intyg.webcert.integration.fmb.model.typfall.Attributes> filterTypfall(final Kod kod) {
+        return typFall -> typFall.getFmbtillstand().map(Fmbtillstand::getDiagnoskod).orElse(Collections.emptyList()).contains(kod);
     }
 
-    private List<Icd10Kod> convertToIcd10KodList(final Attributes attributes) {
+    private List<Icd10Kod> convertToIcd10KodList(final Attributes attributes, final Typfall typfallList) {
+
         return attributes.getDiagnoskod().stream()
                 .map(kod -> anIcd10Kod()
                         .kod(kod.getKod())
                         .beskrivning(kod.getBeskrivning())
+                        .typFallList(convertToTypFallList(typfallList, kod))
                         .build())
                 .collect(Collectors.toList());
     }

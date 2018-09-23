@@ -18,44 +18,22 @@
  */
 package se.inera.intyg.webcert.web.web.controller.api;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.stream.Stream;
-
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import com.google.common.base.Function;
-import com.google.common.base.Predicates;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
-
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
-import se.inera.intyg.common.support.common.enumerations.Diagnoskodverk;
-import se.inera.intyg.webcert.persistence.fmb.model.Fmb;
-import se.inera.intyg.webcert.persistence.fmb.model.FmbType;
-import se.inera.intyg.webcert.persistence.fmb.repository.FmbRepository;
-import se.inera.intyg.webcert.web.service.diagnos.DiagnosService;
-import se.inera.intyg.webcert.web.service.diagnos.dto.DiagnosResponse;
-import se.inera.intyg.webcert.web.service.diagnos.dto.DiagnosResponseType;
+import se.inera.intyg.webcert.web.service.fmb.FmbDiagnosInformationService;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
-import se.inera.intyg.webcert.web.web.controller.api.dto.FmbContent;
-import se.inera.intyg.webcert.web.web.controller.api.dto.FmbForm;
-import se.inera.intyg.webcert.web.web.controller.api.dto.FmbFormName;
 import se.inera.intyg.webcert.web.web.controller.api.dto.FmbResponse;
 
 @Path("/fmb")
@@ -70,13 +48,9 @@ public class FmbApiController extends AbstractApiController {
     private static final int BAD_REQUEST = 400;
 
     @Autowired
-    private FmbRepository fmbRepository;
-
-    @Autowired
-    private DiagnosService diagnosService;
+    private FmbDiagnosInformationService fmbDiagnosInformationService;
 
     // CHECKSTYLE:OFF LineLength
-
     @GET
     @Path("/{icd10}")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
@@ -89,96 +63,11 @@ public class FmbApiController extends AbstractApiController {
         if (icd10 == null || icd10.isEmpty()) {
             return Response.status(Response.Status.BAD_REQUEST).entity("Missing icd10 code").build();
         }
-        final FmbResponse result = getFmbResponse(icd10.toUpperCase(Locale.ENGLISH));
-        return Response.ok(result).build();
+
+        return fmbDiagnosInformationService.findFmbDiagnosInformationByIcd10Kod(icd10)
+                .map(Response::ok)
+                .map(Response.ResponseBuilder::build)
+        .orElseGet(() -> Response.noContent().build());
     }
     // CHECKSTYLE:ON LineLength
-
-    /**
-     * Create response structure, mapping fmb specific names to external generic naming to be used for many intygstypes.
-     *
-     * @param icd10
-     * @return
-     */
-    private FmbResponse getFmbResponse(String icd10) {
-        final List<FmbForm> forms = new ArrayList<>(FmbFormName.values().length);
-
-        String icd10WithFmb = checkIcd10ForFmbInfo(icd10);
-
-        String icd10Description = getDiagnoseDescriptionForIcd10Code(icd10WithFmb);
-
-        forms.add(getFmbForm(icd10WithFmb, FmbFormName.DIAGNOS, FmbType.SYMPTOM_PROGNOS_BEHANDLING, FmbType.GENERELL_INFO));
-        forms.add(getFmbForm(icd10WithFmb, FmbFormName.FUNKTIONSNEDSATTNING, FmbType.FUNKTIONSNEDSATTNING));
-        forms.add(getFmbForm(icd10WithFmb, FmbFormName.AKTIVITETSBEGRANSNING, FmbType.AKTIVITETSBEGRANSNING));
-        forms.add(getFmbForm(icd10WithFmb, FmbFormName.ARBETSFORMAGA, FmbType.BESLUTSUNDERLAG_TEXTUELLT));
-        return new FmbResponse(icd10WithFmb, icd10Description, Lists.newArrayList(Iterables.filter(forms, Predicates.notNull())));
-    }
-
-    private String getDiagnoseDescriptionForIcd10Code(String icd10WithFmb) {
-        DiagnosResponse response = diagnosService.getDiagnosisByCode(icd10WithFmb, Diagnoskodverk.ICD_10_SE);
-        if (!response.getResultat().equals(DiagnosResponseType.OK)) {
-            LOG.info("Failed to get diagnose description for {} with result {}", icd10WithFmb, response.getResultat().name());
-            return null;
-        } else {
-            return response.getDiagnoser().get(0).getBeskrivning();
-        }
-    }
-
-    private String checkIcd10ForFmbInfo(String icd10) {
-        String icd10WithFmbInfo = icd10;
-        while (icd10WithFmbInfo.length() >= MIN_ICD10_POSITION) {
-            if (fmbContentExists(icd10WithFmbInfo, FmbType.values())) {
-                return icd10WithFmbInfo;
-            }
-            // Make the icd10-code one position shorter, and thus more general.
-            icd10WithFmbInfo = icd10WithFmbInfo.substring(0, icd10WithFmbInfo.length() - 1);
-        }
-        return icd10;
-    }
-
-    private boolean fmbContentExists(String icd10Code, FmbType... types) {
-        return Stream.of(types)
-                .anyMatch(t -> getFmbContent(icd10Code, t) != null);
-    }
-
-    private FmbForm getFmbForm(String icd10, FmbFormName name, FmbType... fmbTypes) {
-        final List<FmbContent> contents = new ArrayList<>(fmbTypes.length);
-        for (FmbType fmbType : fmbTypes) {
-            FmbContent fmbContent = getFmbContent(icd10, fmbType);
-            if (fmbContent != null) {
-                contents.add(fmbContent);
-            }
-        }
-        if (contents.isEmpty()) {
-            return null;
-        }
-        return new FmbForm(name, contents);
-    }
-
-    private FmbContent getFmbContent(String icd10, FmbType fmbType) {
-        final List<Fmb> fmbs = fmbRepository.findByIcd10AndTyp(icd10, fmbType);
-
-        if (fmbs == null || fmbs.isEmpty()) {
-            LOG.info("No FMB information for ICD10 '{}' and type '{}'", icd10, fmbType);
-            return null;
-        }
-
-        final List<String> texts = Lists.transform(fmbs, new Function<Fmb, String>() {
-            @Override
-            public String apply(Fmb fmb) {
-                if (fmb == null) {
-                    return "";
-                }
-                return fmb.getText();
-            }
-        });
-        final List<String> textsWithoutDuplicates = Lists.newArrayList(Sets.newHashSet(texts));
-
-        if (textsWithoutDuplicates.size() == 1) {
-            return new FmbContent(fmbType, textsWithoutDuplicates.get(0));
-        }
-
-        return new FmbContent(fmbType, textsWithoutDuplicates);
-    }
-
 }

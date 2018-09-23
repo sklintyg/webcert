@@ -1126,29 +1126,6 @@
                              baseTableName="FMB_ICF_KOD" constraintName="FMB_ICF_KOD_FMB_BESKRIVNING"
                              referencedColumnNames="ID" referencedTableName="FMB_BESKRIVNING"/>
 
-    <createTable tableName="FMB_TYPFALL">
-      <column name="ID" type="bigint">
-        <constraints primaryKey="true" unique="true" nullable="false"/>
-      </column>
-      <column name="TYPFALLSMENING" type="varchar(1024)">
-        <constraints nullable="false"/>
-      </column>
-      <column name="MAXIMALSJUKRIVNINGSTID" type="bigint">
-        <constraints nullable="false"/>
-      </column>
-      <column name="DIAGNOS_INFORMATION_ID" type="bigint">
-        <constraints nullable="false"/>
-      </column>
-    </createTable>
-
-    <addAutoIncrement columnDataType="bigint"
-                      columnName="ID" incrementBy="1" startWith="1"
-                      tableName="FMB_TYPFALL"/>
-
-    <addForeignKeyConstraint baseColumnNames="DIAGNOS_INFORMATION_ID"
-                             baseTableName="FMB_TYPFALL" constraintName="FMB_TYPFALL_FMB_DIAGNOS_INFORMATION"
-                             referencedColumnNames="ID" referencedTableName="FMB_DIAGNOS_INFORMATION"/>
-
     <createTable tableName="FMB_ICD10_KOD">
       <column name="ID" type="bigint">
         <constraints primaryKey="true" unique="true" nullable="false"/>
@@ -1171,6 +1148,30 @@
     <addForeignKeyConstraint baseColumnNames="DIAGNOS_INFORMATION_ID"
                              baseTableName="FMB_ICD10_KOD" constraintName="FMB_ICD10_KOD_FMB_DIAGNOS_INFORMATION"
                              referencedColumnNames="ID" referencedTableName="FMB_DIAGNOS_INFORMATION"/>
+
+
+    <createTable tableName="FMB_TYPFALL">
+      <column name="ID" type="bigint">
+        <constraints primaryKey="true" unique="true" nullable="false"/>
+      </column>
+      <column name="TYPFALLSMENING" type="varchar(1024)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="MAXIMALSJUKRIVNINGSTID" type="bigint">
+        <constraints nullable="false"/>
+      </column>
+      <column name="ICD10_ID" type="bigint">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+
+    <addAutoIncrement columnDataType="bigint"
+                      columnName="ID" incrementBy="1" startWith="1"
+                      tableName="FMB_TYPFALL"/>
+
+    <addForeignKeyConstraint baseColumnNames="ICD10_ID"
+                             baseTableName="FMB_TYPFALL" constraintName="FMB_TYPFALL_FMB_ICD10_ID"
+                             referencedColumnNames="ID" referencedTableName="FMB_ICD10_KOD"/>
 
     <createTable tableName="FMB_REFERENS">
       <column name="ID" type="bigint">

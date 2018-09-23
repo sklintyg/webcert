@@ -5,6 +5,7 @@ import org.hibernate.annotations.Type;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -29,19 +30,19 @@ public final class DiagnosInformation {
     @Column(name = "SYMPTOM_PROGNOS_BEHANDLING", nullable = false)
     private String symptomPrognosBehandling;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @JoinColumn(name = "DIAGNOS_INFORMATION_ID", nullable = false)
     private List<Beskrivning> beskrivningList = Lists.newArrayList();
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "DIAGNOS_INFORMATION_ID", nullable = false)
-    private List<TypFall> typFallList = Lists.newArrayList();
+//    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+//    @JoinColumn(name = "DIAGNOS_INFORMATION_ID", nullable = false)
+//    private List<TypFall> typFallList = Lists.newArrayList();
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @JoinColumn(name = "DIAGNOS_INFORMATION_ID", nullable = false)
     private List<Icd10Kod> icd10KodList = Lists.newArrayList();
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @JoinColumn(name = "DIAGNOS_INFORMATION_ID", nullable = false)
     private List<Referens> referensList = Lists.newArrayList();
 
@@ -56,14 +57,14 @@ public final class DiagnosInformation {
             final String forsakringsmedicinskInformation,
             final String symptomPrognosBehandling,
             final List<Beskrivning> beskrivningList,
-            final List<TypFall> typFallList,
+//            final List<TypFall> typFallList,
             final List<Icd10Kod> icd10KodList,
             final List<Referens> referensList,
             final LocalDateTime senastUppdaterad) {
         this.forsakringsmedicinskInformation = forsakringsmedicinskInformation;
         this.symptomPrognosBehandling = symptomPrognosBehandling;
         this.beskrivningList = beskrivningList;
-        this.typFallList = typFallList;
+//        this.typFallList = typFallList;
         this.icd10KodList = icd10KodList;
         this.referensList = referensList;
         this.senastUppdaterad = senastUppdaterad;
@@ -85,9 +86,9 @@ public final class DiagnosInformation {
         return beskrivningList;
     }
 
-    public List<TypFall> getTypFallList() {
-        return typFallList;
-    }
+//    public List<TypFall> getTypFallList() {
+//        return typFallList;
+//    }
 
     public List<Icd10Kod> getIcd10KodList() {
         return icd10KodList;
@@ -105,7 +106,7 @@ public final class DiagnosInformation {
         private String forsakringsmedicinskInformation;
         private String symptomPrognosBehandling;
         private List<Beskrivning> beskrivningList = Lists.newArrayList();
-        private List<TypFall> typFallList = Lists.newArrayList();
+//        private List<TypFall> typFallList = Lists.newArrayList();
         private List<Icd10Kod> icd10KodList = Lists.newArrayList();
         private List<Referens> referensList = Lists.newArrayList();
         private LocalDateTime senastUppdaterad;
@@ -131,11 +132,11 @@ public final class DiagnosInformation {
             this.beskrivningList = beskrivningList;
             return this;
         }
-
-        public DiagnosInformationBuilder typFallList(List<TypFall> typFallList) {
-            this.typFallList = typFallList;
-            return this;
-        }
+//
+//        public DiagnosInformationBuilder typFallList(List<TypFall> typFallList) {
+//            this.typFallList = typFallList;
+//            return this;
+//        }
 
         public DiagnosInformationBuilder icd10KodList(List<Icd10Kod> icd10KodList) {
             this.icd10KodList = icd10KodList;
@@ -157,7 +158,7 @@ public final class DiagnosInformation {
                     forsakringsmedicinskInformation,
                     symptomPrognosBehandling,
                     beskrivningList,
-                    typFallList,
+//                    typFallList,
                     icd10KodList,
                     referensList,
                     senastUppdaterad);

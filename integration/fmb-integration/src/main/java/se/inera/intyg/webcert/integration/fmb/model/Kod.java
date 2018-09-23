@@ -18,9 +18,6 @@
  */
 package se.inera.intyg.webcert.integration.fmb.model;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -30,6 +27,8 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
+import java.util.HashMap;
+import java.util.Map;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
@@ -116,7 +115,7 @@ public class Kod {
 
     @Override
     public boolean equals(final Object o) {
-        if (this == o){
+        if (this == o) {
             return true;
         }
 
@@ -149,7 +148,6 @@ public class Kod {
                 .toHashCode();
     }
     // CHECKSTYLE:ON MagicNumber
-
 
     @Override
     public String toString() {

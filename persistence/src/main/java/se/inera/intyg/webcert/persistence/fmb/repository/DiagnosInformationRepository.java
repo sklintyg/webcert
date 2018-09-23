@@ -20,9 +20,12 @@ package se.inera.intyg.webcert.persistence.fmb.repository;
  */
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import java.util.Optional;
 import se.inera.intyg.webcert.persistence.fmb.model.icf.DiagnosInformation;
 
 public interface DiagnosInformationRepository extends JpaRepository<DiagnosInformation, Long> {
+
+    Optional<DiagnosInformation> findByIcd10KodList_kod(final String icd10Kod);
 
 }
 
