@@ -54,10 +54,10 @@
 
     <!-- KAT 4 -->
     <text id="KAT_4.RBK">Beteende i trafiken</text>
-    <text id="FRG_42.RBK">Brukar patienten skippa bilbälte?</text>
-    <text id="FRG_42.HLP">Utgå från den beskrivning Arbetsförmedlingen har gjort av personen och Arbetsförmedlingens planerade aktiviteter.</text>
-    <text id="DFR_42.2.RBK">Motivera varför patienten gör detta</text>
-    <text id="DFR_42.2.HLP">Utgå från den beskrivning Arbetsförmedlingen har gjort av personen och Arbetsförmedlingens planerade aktiviteter.</text>
+    <text id="FRG_4.RBK">Brukar patienten skippa bilbälte?</text>
+    <text id="FRG_4.HLP">Utgå från den beskrivning Arbetsförmedlingen har gjort av personen och Arbetsförmedlingens planerade aktiviteter.</text>
+    <text id="DFR_4.2.RBK">Motivera varför patienten gör detta</text>
+    <text id="DFR_4.2.HLP">Utgå från den beskrivning Arbetsförmedlingen har gjort av personen och Arbetsförmedlingens planerade aktiviteter.</text>
 
     <!-- KAT 5 -->
     <text id="KAT_5.RBK">Övrigt</text>
