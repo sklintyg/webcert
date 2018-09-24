@@ -18,10 +18,14 @@
  */
 package se.inera.intyg.webcert.web.service.fmb;
 
+import static java.util.Objects.isNull;
+
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.MoreCollectors;
+import com.google.common.collect.Sets;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Objects;
@@ -66,11 +70,14 @@ public class FmbDiagnosInformationServiceImpl implements FmbDiagnosInformationSe
     }
 
     private FmbResponse convertToResponse(
-            final String icd10Kodfinal,
+            final String icd10,
             final String icd10CodeDeskription,
             final DiagnosInformation diagnosInformation) {
 
-        final Icd10Kod kod = diagnosInformation.getIcd10KodList().stream().filter(icd10Kod -> Objects.equals(icd10Kod.getKod(), icd10Kodfinal))
+        final String upperCaseIcd10 = icd10.toUpperCase();
+
+        final Icd10Kod kod = diagnosInformation.getIcd10KodList().stream()
+                .filter(icd10Kod -> StringUtils.equalsIgnoreCase(icd10Kod.getKod(), upperCaseIcd10))
                 .collect(MoreCollectors.onlyElement());
 
         final Optional<Beskrivning> aktivitetsBegransing = diagnosInformation.getBeskrivningList().stream()
@@ -83,16 +90,16 @@ public class FmbDiagnosInformationServiceImpl implements FmbDiagnosInformationSe
 
         final List<String> typfallList = kod.getTypFallList().stream().map(TypFall::getTypfallsMening).collect(Collectors.toList());
 
-        final String generell = diagnosInformation.getForsakringsmedicinskInformation();
-
         final String symptom = diagnosInformation.getSymptomPrognosBehandling();
 
         final List<FmbForm> fmbFormList = Lists.newArrayList();
 
+
+        //mapping these codes for now to be backwardscompatible with current apis
         fmbFormList.add(
                 new FmbForm(
                         FmbFormName.DIAGNOS,
-                        ImmutableList.of(new FmbContent(FmbType.GENERELL_INFO, diagnosInformation.getForsakringsmedicinskInformation()))));
+                        ImmutableList.of(new FmbContent(FmbType.SYMPTOM_PROGNOS_BEHANDLING, symptom))));
 
         aktivitetsBegransing.ifPresent(beskrivning -> fmbFormList.add(
                 new FmbForm(
@@ -106,18 +113,20 @@ public class FmbDiagnosInformationServiceImpl implements FmbDiagnosInformationSe
         fmbFormList.add(
                 new FmbForm(
                         FmbFormName.ARBETSFORMAGA,
-                        typfallList.stream().map(typfall -> new FmbContent(FmbType.BESLUTSUNDERLAG_TEXTUELLT, typfall)).collect(Collectors.toList())));
+                        Sets.newHashSet(typfallList)
+                                .stream()
+                                .map(typFall -> new FmbContent(FmbType.BESLUTSUNDERLAG_TEXTUELLT, typFall))
+                                .collect(Collectors.toList())));
 
         return new FmbResponse(
-                icd10Kodfinal,
+                upperCaseIcd10,
                 icd10CodeDeskription,
                 fmbFormList);
     }
 
     private String getDiagnoseDescriptionForIcd10Code(String icd10WithFmb) {
         DiagnosResponse response = diagnosService.getDiagnosisByCode(icd10WithFmb, Diagnoskodverk.ICD_10_SE);
-        if (!response.getResultat().equals(DiagnosResponseType.OK)) {
-//            LOG.info("Failed to get diagnose description for {} with result {}", icd10WithFmb, response.getResultat().name());
+        if (isNull(response) || !response.getResultat().equals(DiagnosResponseType.OK)) {
             return null;
         } else {
             return response.getDiagnoser().get(0).getBeskrivning();

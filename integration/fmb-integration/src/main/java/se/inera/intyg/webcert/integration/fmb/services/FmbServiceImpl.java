@@ -45,6 +45,7 @@ import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Predicate;
@@ -113,7 +114,7 @@ public class FmbServiceImpl implements FmbService {
         });
 
         if (result.isFailure()) {
-            throw new RuntimeException(MessageFormat.format("Failed to fetch FMB information: {0}", result.getCause()));
+            throw new RuntimeException(MessageFormat.format("Failed to fetch FMB information: {0}", result.getCause().getStackTrace()));
         }
     }
 
@@ -167,7 +168,7 @@ public class FmbServiceImpl implements FmbService {
         return kodList.stream()
                 .map(kod -> anIcfKod()
                         .icfKodTyp(kodTyp)
-                        .kod(kod.getKod())
+                        .kod(kod.getKod().isPresent() ? kod.getKod().get().replaceAll("\\.", "").toUpperCase(Locale.ENGLISH) : null)
                         .build())
                 .collect(Collectors.toList());
     }
@@ -194,7 +195,7 @@ public class FmbServiceImpl implements FmbService {
 
         return attributes.getDiagnoskod().stream()
                 .map(kod -> anIcd10Kod()
-                        .kod(kod.getKod())
+                        .kod(kod.getKod().isPresent() ? kod.getKod().get().replaceAll("\\.", "").toUpperCase(Locale.ENGLISH) : null)
                         .beskrivning(kod.getBeskrivning())
                         .typFallList(convertToTypFallList(typfallList, kod))
                         .build())

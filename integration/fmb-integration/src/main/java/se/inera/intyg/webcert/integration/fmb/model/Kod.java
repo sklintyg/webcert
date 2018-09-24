@@ -29,6 +29,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
@@ -64,8 +65,8 @@ public class Kod {
     }
 
     @JsonProperty("kod")
-    public String getKod() {
-        return kod;
+    public Optional<String> getKod() {
+        return Optional.of(kod);
     }
 
     @JsonProperty("kod")

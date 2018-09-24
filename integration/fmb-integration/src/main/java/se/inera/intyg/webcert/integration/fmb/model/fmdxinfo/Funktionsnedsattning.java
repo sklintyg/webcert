@@ -24,6 +24,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.google.common.collect.Lists;
 import jdk.nashorn.internal.ir.annotations.Ignore;
 import java.util.HashMap;
 import java.util.List;
@@ -50,7 +51,7 @@ public class Funktionsnedsattning implements FmxBeskrivning {
     @JsonProperty("kompletterandekod")
     @Override
     public List<Kod> getKompletterandekod() {
-        return kompletterandekod;
+        return kompletterandekod != null ? kompletterandekod : Lists.newArrayList();
     }
 
     @JsonProperty("kompletterandekod")
@@ -61,7 +62,7 @@ public class Funktionsnedsattning implements FmxBeskrivning {
     @JsonProperty("centralkod")
     @Override
     public List<Kod> getCentralkod() {
-        return centralkod;
+        return centralkod != null ? centralkod : Lists.newArrayList();
     }
 
     @JsonProperty("centralkod")
