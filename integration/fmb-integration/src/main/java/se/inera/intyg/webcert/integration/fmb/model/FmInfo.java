@@ -22,6 +22,6 @@ import java.util.Optional;
 
 public interface FmInfo {
 
-    Optional<Meta> getMeta();
+    Optional<Meta> getOptionalMeta();
 
 }

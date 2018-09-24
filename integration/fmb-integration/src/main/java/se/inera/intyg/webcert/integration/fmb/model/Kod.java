@@ -65,7 +65,11 @@ public class Kod {
     }
 
     @JsonProperty("kod")
-    public Optional<String> getKod() {
+    public String getKod() {
+        return kod;
+    }
+
+    public Optional<String> getOptionalKod() {
         return Optional.of(kod);
     }
 

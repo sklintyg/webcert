@@ -18,10 +18,6 @@
  */
 package se.inera.intyg.webcert.integration.fmb.model.fmdxinfo;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -29,6 +25,10 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.google.common.collect.Lists;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import se.inera.intyg.webcert.integration.fmb.model.Giltighetsperiod;
 import se.inera.intyg.webcert.integration.fmb.model.Kod;
 import se.inera.intyg.webcert.integration.fmb.model.Sjukdomsgrupp;
@@ -219,7 +219,11 @@ public class Attributes {
     }
 
     @JsonProperty("forsakringsmedicinskinformation")
-    public Optional<Markup> getForsakringsmedicinskinformation() {
+    public Markup getForsakringsmedicinskinformation() {
+        return forsakringsmedicinskinformation;
+    }
+
+    public Optional<Markup> getOptionalForsakringsmedicinskinformation() {
         return Optional.ofNullable(forsakringsmedicinskinformation);
     }
 
@@ -229,7 +233,11 @@ public class Attributes {
     }
 
     @JsonProperty("symtomprognosbehandling")
-    public Optional<Markup> getSymtomprognosbehandling() {
+    public Markup getSymtomprognosbehandling() {
+        return symtomprognosbehandling;
+    }
+
+    public Optional<Markup> getOptionalSymtomprognosbehandling() {
         return Optional.ofNullable(symtomprognosbehandling);
     }
 
@@ -259,7 +267,11 @@ public class Attributes {
     }
 
     @JsonProperty("aktivitetsbegransning")
-    public Optional<Aktivitetsbegransning> getAktivitetsbegransning() {
+    public Aktivitetsbegransning getAktivitetsbegransning() {
+        return aktivitetsbegransning;
+    }
+
+    public Optional<Aktivitetsbegransning> getOptionalAktivitetsbegransning() {
         return Optional.ofNullable(aktivitetsbegransning);
     }
 
@@ -269,7 +281,11 @@ public class Attributes {
     }
 
     @JsonProperty("funktionsnedsattning")
-    public Optional<Funktionsnedsattning> getFunktionsnedsattning() {
+    public Funktionsnedsattning getFunktionsnedsattning() {
+        return funktionsnedsattning;
+    }
+
+    public Optional<Funktionsnedsattning> getOptionalFunktionsnedsattning() {
         return Optional.ofNullable(funktionsnedsattning);
     }
 

@@ -121,7 +121,7 @@ public class FmbServiceImpl implements FmbService {
     private List<DiagnosInformation> convertResponseToDiagnosInformation(final FmdxInformation diagnosinformation, final Typfall typfall) {
         validateResponse(diagnosinformation, typfall);
 
-        final Optional<LocalDateTime> senasteAndring = diagnosinformation.getMeta()
+        final Optional<LocalDateTime> senasteAndring = diagnosinformation.getOptionalMeta()
                 .map(Meta::getBuildtimestamp)
                 .map(timeStampString -> OffsetDateTime.parse(timeStampString, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssZ")))
                 .map(OffsetDateTime::toLocalDateTime);
@@ -130,14 +130,20 @@ public class FmbServiceImpl implements FmbService {
                 .map(FmdxData::getAttributes)
                 .map(attributes -> {
                     List<Beskrivning> beskrivningList = Lists.newArrayList();
-                    attributes.getAktivitetsbegransning().ifPresent(begransning -> beskrivningList.add(convertToBeskrivning(begransning, BeskrivningTyp.AKTIVITETSBEGRANSNING)));
-                    attributes.getFunktionsnedsattning().ifPresent(begransning -> beskrivningList.add(convertToBeskrivning(begransning, BeskrivningTyp.FUNKTIONSNEDSATTNING)));
+                    attributes.getOptionalAktivitetsbegransning().ifPresent(begransning ->
+                            beskrivningList.add(convertToBeskrivning(begransning, BeskrivningTyp.AKTIVITETSBEGRANSNING)));
+                    attributes.getOptionalFunktionsnedsattning().ifPresent(begransning ->
+                            beskrivningList.add(convertToBeskrivning(begransning, BeskrivningTyp.FUNKTIONSNEDSATTNING)));
 
                     final List<Icd10Kod> icd10KodList = convertToIcd10KodList(attributes, typfall);
 
                     return aDiagnosInformation()
-                            .forsakringsmedicinskInformation(attributes.getForsakringsmedicinskinformation().map(Markup::getMarkup).orElse(null))
-                            .symptomPrognosBehandling(attributes.getSymtomprognosbehandling().map(Markup::getMarkup).orElse(null))
+                            .forsakringsmedicinskInformation(attributes.getOptionalForsakringsmedicinskinformation()
+                                    .map(Markup::getMarkup)
+                                    .orElse(null))
+                            .symptomPrognosBehandling(attributes.getOptionalSymtomprognosbehandling()
+                                    .map(Markup::getMarkup)
+                                    .orElse(null))
                             .beskrivningList(beskrivningList)
                             .icd10KodList(icd10KodList)
                             .referensList(convertToReferensList(attributes))
@@ -168,7 +174,9 @@ public class FmbServiceImpl implements FmbService {
         return kodList.stream()
                 .map(kod -> anIcfKod()
                         .icfKodTyp(kodTyp)
-                        .kod(kod.getKod().isPresent() ? kod.getKod().get().replaceAll("\\.", "").toUpperCase(Locale.ENGLISH) : null)
+                        .kod(kod.getOptionalKod().isPresent()
+                                ? kod.getOptionalKod().get().replaceAll("\\.", "").toUpperCase(Locale.ENGLISH)
+                                : null)
                         .build())
                 .collect(Collectors.toList());
     }
@@ -179,7 +187,7 @@ public class FmbServiceImpl implements FmbService {
                 .filter(filterTypfall(kod))
                 .map(attributes -> aTypFall()
                         .typfallsMening(attributes.getTypfallsmening())
-                        .maximalSjukrivningstid(attributes.getRekommenderadsjukskrivning()
+                        .maximalSjukrivningstid(attributes.getOptionalRekommenderadsjukskrivning()
                                 .map(Rekommenderadsjukskrivning::getMaximalsjukskrivningstid)
                                 .map(Ints::tryParse)
                                 .orElse(0))
@@ -188,14 +196,16 @@ public class FmbServiceImpl implements FmbService {
     }
 
     private Predicate<se.inera.intyg.webcert.integration.fmb.model.typfall.Attributes> filterTypfall(final Kod kod) {
-        return typFall -> typFall.getFmbtillstand().map(Fmbtillstand::getDiagnoskod).orElse(Collections.emptyList()).contains(kod);
+        return typFall -> typFall.getOptionalFmbtillstand().map(Fmbtillstand::getDiagnoskod).orElse(Collections.emptyList()).contains(kod);
     }
 
     private List<Icd10Kod> convertToIcd10KodList(final Attributes attributes, final Typfall typfallList) {
 
         return attributes.getDiagnoskod().stream()
                 .map(kod -> anIcd10Kod()
-                        .kod(kod.getKod().isPresent() ? kod.getKod().get().replaceAll("\\.", "").toUpperCase(Locale.ENGLISH) : null)
+                        .kod(kod.getOptionalKod().isPresent()
+                                ? kod.getOptionalKod().get().replaceAll("\\.", "").toUpperCase(Locale.ENGLISH)
+                                : null)
                         .beskrivning(kod.getBeskrivning())
                         .typFallList(convertToTypFallList(typfallList, kod))
                         .build())

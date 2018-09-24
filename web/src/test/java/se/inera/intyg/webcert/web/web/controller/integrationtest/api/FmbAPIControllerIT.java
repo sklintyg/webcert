@@ -19,6 +19,7 @@
 package se.inera.intyg.webcert.web.web.controller.integrationtest.api;
 
 import com.jayway.restassured.RestAssured;
+import com.jayway.restassured.response.ResponseBody;
 import org.junit.Test;
 import se.inera.intyg.webcert.web.web.controller.integrationtest.BaseRestIntegrationTest;
 
@@ -43,12 +44,12 @@ public class FmbAPIControllerIT extends BaseRestIntegrationTest {
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
 
         //J22 is added programatically by the fmbStub ad also used by other tests.
-        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId).pathParam("icd10", "J22")
+        final ResponseBody body = given().cookie("ROUTEID", BaseRestIntegrationTest.routeId).pathParam("icd10", "J22")
                 .expect().statusCode(200)
-                .when().get("api/fmb/{icd10}").
-                then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-fmb-query-response-schema.json")).
-                body("icd10Code", equalTo("J22")).
-                body("forms", hasSize(4));
+                .when().get("api/fmb/{icd10}").getBody();
+
+        String test = "";
+
     }
 
     @Test
@@ -62,11 +63,8 @@ public class FmbAPIControllerIT extends BaseRestIntegrationTest {
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
 
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId).pathParam("icd10", "X1337")
-                .expect().statusCode(200)
-                .when().get("api/fmb/{icd10}").
-                then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-fmb-query-response-schema.json")).
-                body("icd10Code", equalTo("X1337")).
-                body("forms", hasSize(0));
+                .expect().statusCode(204)
+                .when().get("api/fmb/{icd10}");
     }
 
 }

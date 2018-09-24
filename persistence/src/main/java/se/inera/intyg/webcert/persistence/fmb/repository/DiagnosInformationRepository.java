@@ -25,7 +25,9 @@ import se.inera.intyg.webcert.persistence.fmb.model.icf.DiagnosInformation;
 
 public interface DiagnosInformationRepository extends JpaRepository<DiagnosInformation, Long> {
 
+    // CHECKSTYLE:OFF MethodName
     Optional<DiagnosInformation> findByIcd10KodList_kod(final String icd10Kod);
+    // CHECKSTYLE:ON MethodName
 
 }
 

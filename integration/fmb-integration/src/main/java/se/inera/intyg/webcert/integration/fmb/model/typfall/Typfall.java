@@ -85,7 +85,7 @@ public class Typfall implements FmInfo {
 
     @Override
     @JsonProperty("meta")
-    public Optional<Meta> getMeta() {
+    public Optional<Meta> getOptionalMeta() {
         return Optional.ofNullable(meta);
     }
 
