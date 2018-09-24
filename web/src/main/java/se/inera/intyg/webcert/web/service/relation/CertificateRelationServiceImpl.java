@@ -64,7 +64,6 @@ public class CertificateRelationServiceImpl implements CertificateRelationServic
         latestChildRelations.setUtkastCopy(findRelationOfType(childRelations, RelationKod.KOPIA, false));
         return latestChildRelations;
     }
-
     private WebcertCertificateRelation findRelationOfType(List<WebcertCertificateRelation> relations, RelationKod relationKod,
             boolean signed) {
         for (WebcertCertificateRelation wcr : relations) {
@@ -72,7 +71,7 @@ public class CertificateRelationServiceImpl implements CertificateRelationServic
                 if ((signed && wcr.getStatus() == UtkastStatus.SIGNED)
                         || (!signed
                                 && (wcr.getStatus() == UtkastStatus.DRAFT_INCOMPLETE || wcr.getStatus() == UtkastStatus.DRAFT_COMPLETE))) {
-                    if (wcr.getRelationKod() != RelationKod.ERSATT || wcr.getAterkalladDatum() == null) {
+                    if (wcr.getRelationKod() != RelationKod.ERSATT || !wcr.isMakulerat()) {
                         return wcr;
                     }
                 }

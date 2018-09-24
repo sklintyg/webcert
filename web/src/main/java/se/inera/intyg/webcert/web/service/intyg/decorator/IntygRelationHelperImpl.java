@@ -113,10 +113,12 @@ public class IntygRelationHelperImpl implements IntygRelationHelper {
 
             switch (wcr.getRelationKod()) {
                 case ERSATT:
-                    if (firstSkapadLaterDateThanSecond(wcr, latest.getReplacedByIntyg())) {
-                        latest.setReplacedByIntyg(wcr);
-                    } else if (firstSkapadLaterDateThanSecond(wcr, latest.getReplacedByUtkast())) {
-                        latest.setReplacedByUtkast(wcr);
+                    if (!wcr.isMakulerat()) {
+                        if (firstSkapadLaterDateThanSecond(wcr, latest.getReplacedByIntyg())) {
+                            latest.setReplacedByIntyg(wcr);
+                        } else if (firstSkapadLaterDateThanSecond(wcr, latest.getReplacedByUtkast())) {
+                            latest.setReplacedByUtkast(wcr);
+                        }
                     }
                     break;
                 case KOMPLT:
@@ -139,7 +141,7 @@ public class IntygRelationHelperImpl implements IntygRelationHelper {
     private WebcertCertificateRelation createWebcertCertificateRelation(Relation r, boolean childRelation) {
         String intygsId = childRelation ? r.getFranIntygsId().getExtension() : r.getTillIntygsId().getExtension();
         return new WebcertCertificateRelation(intygsId, RelationKod.fromValue(r.getTyp().getCode()), r.getSkapad(),
-                UtkastStatus.SIGNED, null);
+                UtkastStatus.SIGNED, r.isFranIntygMakulerat());
     }
 
     private ListRelationsForCertificateResponseType getRelationsFromIntygstjanst(String intygId) {

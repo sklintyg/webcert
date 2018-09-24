@@ -109,15 +109,15 @@ public class CertificateRelationServiceImplTest {
     }
 
     private List<WebcertCertificateRelation> buildParentRelations() {
-        return Stream.of(new WebcertCertificateRelation(OTHER_INTYG_ID, RelationKod.ERSATT, LocalDateTime.now(), UtkastStatus.SIGNED, null))
+        return Stream.of(new WebcertCertificateRelation(OTHER_INTYG_ID, RelationKod.ERSATT, LocalDateTime.now(), UtkastStatus.SIGNED, false))
                 .collect(Collectors.toList());
     }
 
     private List<WebcertCertificateRelation> buildChildRelations() {
         return Stream.of(
                 new WebcertCertificateRelation(CHILD_INTYG_ID_1, RelationKod.ERSATT, LocalDateTime.now().minusDays(5),
-                        UtkastStatus.DRAFT_INCOMPLETE, null),
-                new WebcertCertificateRelation(CHILD_INTYG_ID_2, RelationKod.KOMPLT, LocalDateTime.now(), UtkastStatus.SIGNED, null))
+                        UtkastStatus.DRAFT_INCOMPLETE, false),
+                new WebcertCertificateRelation(CHILD_INTYG_ID_2, RelationKod.KOMPLT, LocalDateTime.now(), UtkastStatus.SIGNED, false))
                 .collect(Collectors.toList());
     }
 

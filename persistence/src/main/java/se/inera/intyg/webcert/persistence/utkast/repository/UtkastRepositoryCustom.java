@@ -149,12 +149,12 @@ public interface UtkastRepositoryCustom extends UtkastFilteredRepositoryCustom {
      * @param intygsId
      * @return
      */
-    @Query("SELECT new se.inera.intyg.webcert.common.model.WebcertCertificateRelation(u.relationIntygsId, u.relationKod, u.senastSparadDatum, u2.status, u2.aterkalladDatum) FROM Utkast u, Utkast u2 WHERE u2.intygsId = u.relationIntygsId AND u.intygsId = :intygsId")
+    @Query("SELECT new se.inera.intyg.webcert.common.model.WebcertCertificateRelation(u.relationIntygsId, u.relationKod, u.senastSparadDatum, u2.status, u2.aterkalladDatum IS NOT NULL) FROM Utkast u, Utkast u2 WHERE u2.intygsId = u.relationIntygsId AND u.intygsId = :intygsId")
     List<WebcertCertificateRelation> findParentRelation(@Param("intygsId") String intygsId);
 
     /**
      * Returns 0..n child relations of the specified intygsId.
      */
-    @Query("SELECT new se.inera.intyg.webcert.common.model.WebcertCertificateRelation(u.intygsId, u.relationKod, u.senastSparadDatum, u.status, u.aterkalladDatum) FROM Utkast u WHERE u.relationIntygsId = :intygsId ORDER BY u.senastSparadDatum DESC")
+    @Query("SELECT new se.inera.intyg.webcert.common.model.WebcertCertificateRelation(u.intygsId, u.relationKod, u.senastSparadDatum, u.status, u.aterkalladDatum IS NOT NULL) FROM Utkast u WHERE u.relationIntygsId = :intygsId ORDER BY u.senastSparadDatum DESC")
     List<WebcertCertificateRelation> findChildRelations(@Param("intygsId") String intygsId);
 }
