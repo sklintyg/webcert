@@ -54,7 +54,7 @@ module.exports = {
         },
         smi: {
             utkast: baseSMIUtkast(),
-            intyg: new baseSMIIntyg(),
+            intyg: new baseSMIIntyg()
         },
         luse: {
             utkast: require(intygPath + 'fk/smi/luse/luse.utkast.page.js'),
@@ -76,6 +76,10 @@ module.exports = {
             diabetes: {
                 utkast: require(intygPath + 'ts/ts_diabetes/tsDiabetes.utkast.page.js'),
                 intyg: require(intygPath + 'ts/ts_diabetes/tsDiabetes.intyg.page.js')
+            },
+            diabetes2: {
+                utkast: require(intygPath + 'ts/ts_diabetes2/tsDiabetes.2.utkast.page.js'),
+                intyg: require(intygPath + 'ts/ts_diabetes2/tsDiabetes.2.intyg.page.js')
             },
             bas: {
                 utkast: require(intygPath + 'ts/ts_bas/tsBas.utkast.page.js'),
