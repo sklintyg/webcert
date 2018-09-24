@@ -145,7 +145,6 @@ public class IntygDraftsConverter {
         ListIntygEntry entry = new ListIntygEntry();
         entry.setIntygId(source.getIntygsId().getExtension());
         entry.setIntygType(moduleRegistry.getModuleIdFromExternalId(source.getTyp().getCode()));
-        //TODO: sanitycheck of version format for intyg origination from IT?
         entry.setIntygTypeVersion(source.getVersion());
         entry.setSource(IntygSource.IT);
 

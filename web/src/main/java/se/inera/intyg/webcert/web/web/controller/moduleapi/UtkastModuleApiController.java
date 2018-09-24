@@ -147,8 +147,9 @@ public class UtkastModuleApiController extends AbstractApiController {
         draftHolder.setStatus(utkast.getStatus());
         draftHolder.setEnhetsNamn(utkast.getEnhetsNamn());
         draftHolder.setVardgivareNamn(utkast.getVardgivarNamn());
-        //TODO: vi bör byta detta till att endast automatiskt uppdatera till senaste minor?
-        draftHolder.setLatestTextVersion(intygTextsService.getLatestVersion(utkast.getIntygsTyp()));
+        // Upgrade to latest minor version available for major version of the intygtype
+        draftHolder.setLatestTextVersion(
+                intygTextsService.getLatestVersionForSameMajorVersion(utkast.getIntygsTyp(), utkast.getIntygTypeVersion()));
 
         Relations relations1 = certificateRelationService.getRelations(utkast.getIntygsId());
         draftHolder.setRelations(relations1);
