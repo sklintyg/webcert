@@ -1065,10 +1065,10 @@
       <column name="ID" type="bigint">
         <constraints primaryKey="true" unique="true" nullable="false"/>
       </column>
-      <column name="FORSAKRINGSMEDICINSK_INFORMATION" type="varchar(max)">
+      <column name="FORSAKRINGSMEDICINSK_INFORMATION" type="varchar(4085)">
         <constraints nullable="false"/>
       </column>
-      <column name="SYMPTOM_PROGNOS_BEHANDLING" type="varchar(max)">
+      <column name="SYMPTOM_PROGNOS_BEHANDLING" type="varchar(4085)">
         <constraints nullable="false"/>
       </column>
       <column name="SENAST_UPPDATERAD" type="datetime">
@@ -1087,7 +1087,7 @@
       <column name="TYP" type="varchar(255)">
         <constraints nullable="false"/>
       </column>
-      <column name="BESKRIVNING" type="varchar(max)">
+      <column name="BESKRIVNING" type="varchar(4095)">
         <constraints nullable="false"/>
       </column>
       <column name="DIAGNOS_INFORMATION_ID" type="bigint">
