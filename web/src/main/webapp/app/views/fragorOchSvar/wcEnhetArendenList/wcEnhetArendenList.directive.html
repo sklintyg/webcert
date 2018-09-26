@@ -43,9 +43,9 @@
               <th wc-table-head label-key="th.label.arende-sent-recv-date" help-key="th.help.arende-sent-recv-date"
                   sorting="true" sorting-current="orderBy == 'receivedDate'" sorting-ascending="orderAscending" ng-click="orderByProperty('receivedDate')"></th>
               <th wc-table-head label-key="th.label.arende-forwarded" help-key="th.help.arende-forwarded"
-                  sorting="true" sorting-current="orderBy == 'vidarebefodrad'" sorting-ascending="orderAscending" wc-authority="VIDAREBEFORDRA_FRAGASVAR" class="center"
+                  sorting="true" sorting-current="orderBy == 'vidarebefodrad'" sorting-ascending="orderAscending" wc-authority="VIDAREBEFORDRA_FRAGASVAR" intygstyp="" class="center"
                   ng-click="orderByProperty('vidarebefodrad')"></th>
-              <th wc-authority="VIDAREBEFORDRA_FRAGASVAR"></th>
+              <th wc-authority="VIDAREBEFORDRA_FRAGASVAR" intygstyp=""></th>
               <th></th>
             </tr>
             </thead>
@@ -58,12 +58,12 @@
                 popover-placement="auto top" ng-if="arende.sekretessmarkering">security</i></td>
               <td>{{arende.signeratAvNamn}}</td>
               <td class="unbreakable">{{arende.receivedDate | date:'short'}}</td>
-              <td wc-authority="VIDAREBEFORDRA_FRAGASVAR" class="center">
-                <div wc-authority="VIDAREBEFORDRA_FRAGASVAR" intygstyp="{{::arende.intygTyp}}">
+              <td wc-authority="VIDAREBEFORDRA_FRAGASVAR" intygstyp="{{::arende.intygTyp}}" class="center">
+                <div>
                   <div ng-if="arende.vidarebefordrad"><i class="material-icons">check</i></div>
                 </div>
               </td>
-              <td wc-authority="VIDAREBEFORDRA_FRAGASVAR">
+              <td wc-authority="VIDAREBEFORDRA_FRAGASVAR" intygstyp="{{::arende.intygTyp}}">
                 <button type="button"
                         class="btn btn-primary"
                         uib-popover-html="forwardTooltip" popover-trigger="mouseenter" popover-placement="top" popover-popup-delay="300" popover-append-to-body="true"

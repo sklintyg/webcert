@@ -14,7 +14,7 @@
           sorting="true" sorting-current="sortingProperty == 'senastSparadAv'" sorting-ascending="sortingAscending" ng-click="orderByProperty('senastSparadAv')"></th>
       <th wc-table-head label-key="th.label.draft-forwarded" help-key="th.help.draft-forwarded" class="center"
           sorting="true" sorting-current="sortingProperty == 'vidarebefordrad'" sorting-ascending="sortingAscending"
-          wc-authority="VIDAREBEFORDRA_UTKAST" ng-click="orderByProperty('vidarebefordrad')"></th>
+          wc-authority="VIDAREBEFORDRA_UTKAST" intygstyp="" ng-click="orderByProperty('vidarebefordrad')"></th>
       <th></th>
       <th></th>
     </tr>
@@ -30,7 +30,7 @@
                                    avliden="intyg.avliden"></wc-sekretess-avliden-ikon>
       </td>
       <td>{{::intyg.updatedSignedBy}}</td>
-      <td class="center" wc-authority="VIDAREBEFORDRA_UTKAST">
+      <td class="center" wc-authority="VIDAREBEFORDRA_UTKAST" intygstyp="{{::intyg.intygType}}">
         <i ng-attr-id="vidarebefordrad_{{intyg.intygId}}" ng-if="intyg.vidarebefordrad" class="material-icons checkmark">check</i>
       </td>
 
@@ -92,7 +92,7 @@
       <div class="col-xs-8 col-sm-9">{{::intyg.updatedSignedBy}}</div>
     </div>
 
-    <div class="row" wc-authority="VIDAREBEFORDRA_UTKAST">
+    <div class="row" wc-authority="VIDAREBEFORDRA_UTKAST" intygstyp="{{::intyg.intygType}}">
       <div class="col-xs-4 col-sm-3"><span dynamic-label key="th.label.draft-forwarded"></span></div>
       <div class="col-xs-8 col-sm-9"><i ng-attr-id="vidarebefordrad_{{intyg.intygId}}" ng-if="intyg.vidarebefordrad" class="material-icons checkmark">check</i></div>
     </div>
