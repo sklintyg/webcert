@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.persistence.fmb.model.icf;
+package se.inera.intyg.webcert.persistence.fmb.model.fmb;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -37,15 +37,15 @@ public class TypFall {
     @Column(name = "TYPFALLSMENING", nullable = false)
     private String typfallsMening;
 
-    @Column(name = "MAXIMALSJUKRIVNINGSTID", nullable = false)
-    private int maximalSjukrivningstid;
+    @Column(name = "MAXIMALSJUKRIVNINGSTID_DAGAR")
+    private Integer maximalSjukrivningstidDagar;
 
     protected TypFall() {
     }
 
-    private TypFall(final String typfallsMening, final int maximalSjukrivningstid) {
+    private TypFall(final String typfallsMening, final Integer maximalSjukrivningstidDagar) {
         this.typfallsMening = typfallsMening;
-        this.maximalSjukrivningstid = maximalSjukrivningstid;
+        this.maximalSjukrivningstidDagar = maximalSjukrivningstidDagar;
     }
 
     public Long getId() {
@@ -56,13 +56,13 @@ public class TypFall {
         return typfallsMening;
     }
 
-    public int getMaximalSjukrivningstid() {
-        return maximalSjukrivningstid;
+    public Integer getMaximalSjukrivningstid() {
+        return maximalSjukrivningstidDagar;
     }
 
     public static final class TypFallBuilder {
         private String typfallsMening;
-        private int maximalSjukrivningstid;
+        private Integer maximalSjukrivningstidDagar;
 
         private TypFallBuilder() {
         }
@@ -76,13 +76,13 @@ public class TypFall {
             return this;
         }
 
-        public TypFallBuilder maximalSjukrivningstid(int maximalSjukrivningstid) {
-            this.maximalSjukrivningstid = maximalSjukrivningstid;
+        public TypFallBuilder maximalSjukrivningstidDagar(Integer maximalSjukrivningstidDagar) {
+            this.maximalSjukrivningstidDagar = maximalSjukrivningstidDagar;
             return this;
         }
 
         public TypFall build() {
-            return new TypFall(typfallsMening, maximalSjukrivningstid);
+            return new TypFall(typfallsMening, maximalSjukrivningstidDagar);
         }
     }
 }

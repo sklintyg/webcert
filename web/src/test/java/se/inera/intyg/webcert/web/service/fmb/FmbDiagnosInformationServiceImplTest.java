@@ -19,14 +19,16 @@
 package se.inera.intyg.webcert.web.service.fmb;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
-import static se.inera.intyg.webcert.persistence.fmb.model.icf.Beskrivning.BeskrivningBuilder.aBeskrivning;
-import static se.inera.intyg.webcert.persistence.fmb.model.icf.DiagnosInformation.DiagnosInformationBuilder.aDiagnosInformation;
-import static se.inera.intyg.webcert.persistence.fmb.model.icf.Icd10Kod.Icd10KodBuilder.anIcd10Kod;
-import static se.inera.intyg.webcert.persistence.fmb.model.icf.TypFall.TypFallBuilder.aTypFall;
+import static se.inera.intyg.webcert.persistence.fmb.model.fmb.Beskrivning.BeskrivningBuilder.aBeskrivning;
+import static se.inera.intyg.webcert.persistence.fmb.model.fmb.DiagnosInformation.DiagnosInformationBuilder.aDiagnosInformation;
+import static se.inera.intyg.webcert.persistence.fmb.model.fmb.Icd10Kod.Icd10KodBuilder.anIcd10Kod;
+import static se.inera.intyg.webcert.persistence.fmb.model.fmb.TypFall.TypFallBuilder.aTypFall;
 
 import com.google.common.collect.ImmutableList;
+import org.assertj.core.util.Lists;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -40,8 +42,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import se.inera.intyg.webcert.persistence.fmb.model.icf.BeskrivningTyp;
-import se.inera.intyg.webcert.persistence.fmb.model.icf.DiagnosInformation;
+import se.inera.intyg.webcert.persistence.fmb.model.fmb.BeskrivningTyp;
+import se.inera.intyg.webcert.persistence.fmb.model.fmb.DiagnosInformation;
 import se.inera.intyg.webcert.persistence.fmb.repository.DiagnosInformationRepository;
 import se.inera.intyg.webcert.web.service.diagnos.DiagnosService;
 import se.inera.intyg.webcert.web.web.controller.api.dto.FmbContent;
@@ -82,10 +84,11 @@ public class FmbDiagnosInformationServiceImplTest {
                 .filter(fmbForm -> Objects.equals(fmbForm.getName(), FmbFormName.ARBETSFORMAGA))
                 .map(FmbForm::getContent)
                 .findAny()
-                .orElse(null);
+                .orElse(Lists.emptyList());
 
         assertEquals(1, count);
-        assertEquals(1, contentList.get(0).getList().size());
+        assertEquals("test", contentList.get(0).getText());
+        assertNull(contentList.get(0).getList());
     }
 
     @Test
@@ -159,11 +162,11 @@ public class FmbDiagnosInformationServiceImplTest {
                                 .typFallList(ImmutableList.of(
                                         aTypFall()
                                                 .typfallsMening(firstTypFallText)
-                                                .maximalSjukrivningstid(1)
+                                                .maximalSjukrivningstidDagar(1)
                                                 .build(),
                                         aTypFall()
                                                 .typfallsMening(secondTypfalltext)
-                                                .maximalSjukrivningstid(1)
+                                                .maximalSjukrivningstidDagar(1)
                                                 .build()))
                                 .build())
                         .collect(Collectors.toList()))

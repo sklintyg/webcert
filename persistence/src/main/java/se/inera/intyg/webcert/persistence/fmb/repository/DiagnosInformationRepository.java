@@ -21,7 +21,7 @@ package se.inera.intyg.webcert.persistence.fmb.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
-import se.inera.intyg.webcert.persistence.fmb.model.icf.DiagnosInformation;
+import se.inera.intyg.webcert.persistence.fmb.model.fmb.DiagnosInformation;
 
 public interface DiagnosInformationRepository extends JpaRepository<DiagnosInformation, Long> {
 

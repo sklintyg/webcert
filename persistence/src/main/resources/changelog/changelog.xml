@@ -1198,4 +1198,18 @@
 
   </changeSet>
 
+  <changeSet id="57" author="ja">
+    <renameColumn oldColumnName="MAXIMALSJUKRIVNINGSTID"
+                  newColumnName="MAXIMALSJUKRIVNINGSTID_DAGAR"
+                  tableName="FMB_TYPFALL"/>
+
+    <modifyDataType tableName="FMB_TYPFALL"
+                    columnName="MAXIMALSJUKRIVNINGSTID_DAGAR"
+                    newDataType="bigint"/>
+
+    <dropNotNullConstraint tableName="FMB_TYPFALL"
+                           columnName="MAXIMALSJUKRIVNINGSTID_DAGAR"
+                           columnDataType="bigint"/>
+  </changeSet>
+
 </databaseChangeLog>

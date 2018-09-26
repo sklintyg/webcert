@@ -26,20 +26,20 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import se.inera.intyg.common.support.common.enumerations.Diagnoskodverk;
 import se.inera.intyg.webcert.persistence.fmb.model.FmbType;
-import se.inera.intyg.webcert.persistence.fmb.model.icf.Beskrivning;
-import se.inera.intyg.webcert.persistence.fmb.model.icf.BeskrivningTyp;
-import se.inera.intyg.webcert.persistence.fmb.model.icf.DiagnosInformation;
-import se.inera.intyg.webcert.persistence.fmb.model.icf.Icd10Kod;
-import se.inera.intyg.webcert.persistence.fmb.model.icf.TypFall;
+import se.inera.intyg.webcert.persistence.fmb.model.fmb.Beskrivning;
+import se.inera.intyg.webcert.persistence.fmb.model.fmb.BeskrivningTyp;
+import se.inera.intyg.webcert.persistence.fmb.model.fmb.DiagnosInformation;
+import se.inera.intyg.webcert.persistence.fmb.model.fmb.Icd10Kod;
+import se.inera.intyg.webcert.persistence.fmb.model.fmb.TypFall;
 import se.inera.intyg.webcert.persistence.fmb.repository.DiagnosInformationRepository;
 import se.inera.intyg.webcert.web.service.diagnos.DiagnosService;
 import se.inera.intyg.webcert.web.service.diagnos.dto.DiagnosResponse;
@@ -91,7 +91,11 @@ public class FmbDiagnosInformationServiceImpl implements FmbDiagnosInformationSe
                 .filter(beskrivning -> Objects.equals(beskrivning.getBeskrivningTyp(), BeskrivningTyp.FUNKTIONSNEDSATTNING))
                 .collect(toOptional());
 
-        final List<String> typfallList = kod.getTypFallList().stream().map(TypFall::getTypfallsMening).collect(Collectors.toList());
+        final List<String> typfallList = kod.getTypFallList().stream()
+                .sorted(Comparator.comparing(TypFall::getMaximalSjukrivningstid, Comparator.nullsLast(Comparator.naturalOrder())))
+                .map(TypFall::getTypfallsMening)
+                .distinct()
+                .collect(Collectors.toList());
 
         final String generell = diagnosInformation.getForsakringsmedicinskInformation();
 
@@ -99,8 +103,7 @@ public class FmbDiagnosInformationServiceImpl implements FmbDiagnosInformationSe
 
         final List<FmbForm> fmbFormList = Lists.newArrayList();
 
-
-        //mapping these codes for now to be backwardscompatible with current apis
+        //mapping these codes for now to be backwards compatible with current apis
         fmbFormList.add(
                 new FmbForm(
                         FmbFormName.DIAGNOS,
@@ -129,7 +132,7 @@ public class FmbDiagnosInformationServiceImpl implements FmbDiagnosInformationSe
                     new FmbForm(
                             FmbFormName.ARBETSFORMAGA,
                             Lists.newArrayList(new FmbContent(
-                                    FmbType.BESLUTSUNDERLAG_TEXTUELLT, Lists.newArrayList(Sets.newHashSet(typfallList))))));
+                                    FmbType.BESLUTSUNDERLAG_TEXTUELLT, typfallList))));
         }
 
         return new FmbResponse(
