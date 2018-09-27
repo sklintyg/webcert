@@ -43,6 +43,9 @@ public class UnderskriftTestUtil {
     public static final String ENHET_ID = "enhet-1";
     public static final String PERSON_ID = "19121212-1212";
     public static final String TICKET_ID = "ticket-1";
+
+    public static final String ORDER_REF = "order-ref";
+
     public static final Long VERSION = 1L;
 
     public static Utkast createUtkast(String intygId, long version, String type, UtkastStatus status, String model,
