@@ -22,6 +22,7 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.logging.Logger;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -42,6 +43,7 @@ import se.inera.intyg.infra.integration.pu.services.PUService;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.WebcertCertificateRelation;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
+import se.inera.intyg.webcert.persistence.utkast.model.Signatur;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
@@ -209,6 +211,11 @@ public class CopyUtkastServiceImplTest {
                 .thenReturn(Optional.empty());
     }
 
+    @Before
+    public void expectFindByIntygsIdAndIntygsTypToReturnSignedUtkast() {
+        when(mockUtkastRepository.findByIntygsIdAndIntygsTyp(INTYG_ID, INTYG_TYPE)).thenReturn(createSignedUtkast());
+    }
+
     @Test(expected = WebCertServiceException.class)
     public void testRenewalCopyFailIfSignedReplacementExists() throws Exception {
 
@@ -235,6 +242,43 @@ public class CopyUtkastServiceImplTest {
             throw e;
         }
     }
+
+    @Test(expected = WebCertServiceException.class)
+    public void testRenewalCopyFailIfOriginalNotSigned() throws Exception {
+
+        final String reference = "ref";
+
+        WebCertUser user = new WebCertUser();
+        user.setParameters(new IntegrationParameters(reference, "", "", "", "", "", "", "", "", false, false, false, true));
+
+        when(mockUtkastRepository.findByIntygsIdAndIntygsTyp(INTYG_ID, INTYG_TYPE)).thenReturn(createCopyUtkast());
+
+        try {
+            copyService.createRenewalCopy(buildRenewalRequest());
+            fail("An exception should have been thrown.");
+        } catch (Exception e) {
+            throw e;
+        }
+    }
+
+    @Test(expected = WebCertServiceException.class)
+    public void testReplacementCopyFailIfOriginalNotSigned() throws Exception {
+
+        final String reference = "ref";
+
+        WebCertUser user = new WebCertUser();
+        user.setParameters(new IntegrationParameters(reference, "", "", "", "", "", "", "", "", false, false, false, true));
+
+        when(mockUtkastRepository.findByIntygsIdAndIntygsTyp(INTYG_ID, INTYG_TYPE)).thenReturn(createCopyUtkast());
+
+        try {
+            copyService.createReplacementCopy(buildReplacementCopyRequest());
+            fail("An exception should have been thrown.");
+        } catch (Exception e) {
+            throw e;
+        }
+    }
+
 
     @Test
     public void testCreateReplacementCopy() throws Exception {
@@ -710,6 +754,14 @@ public class CopyUtkastServiceImplTest {
         utkast.setSenastSparadAv(vpRef);
         utkast.setSkapadAv(vpRef);
 
+        return utkast;
+    }
+
+    private Utkast createSignedUtkast() {
+        Signatur signatur = new Signatur(LocalDateTime.now(), "Ay karamba", INTYG_ID, "", "", "Heyo");
+        Utkast utkast = createCopyUtkast();
+        utkast.setIntygsId(INTYG_ID);
+        utkast.setSignatur(signatur);
         return utkast;
     }
 
