@@ -31,7 +31,6 @@ import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
-import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.web.web.controller.api.dto.CopyIntygRequest;
 import se.inera.intyg.webcert.web.web.controller.integrationtest.BaseRestIntegrationTest;
 import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.RevokeSignedIntygParameter;
@@ -44,12 +43,10 @@ import java.util.Map;
 
 import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
-import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.isEmptyString;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.hamcrest.core.IsNot.not;
-import static org.junit.Assert.assertTrue;
 import static se.inera.intyg.webcert.web.web.controller.integrationtest.moduleapi.UtkastModuleApiControllerIT.MODULEAPI_UTKAST_BASE;
 
 /**
@@ -246,6 +243,7 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
         changeOriginTo("DJUPINTEGRATION");
 
         String utkastId = createUtkast("lisjp", personnummer);
+        signUtkast(utkastId);
 
         CopyIntygRequest copyIntygRequest = new CopyIntygRequest();
         copyIntygRequest.setPatientPersonnummer(createPnr(personnummer));
@@ -324,6 +322,7 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
         // First use DEFAULT_LAKARE to create a signed certificate on care unit A.
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
         String intygsId = createUtkast("lisjp", DEFAULT_PATIENT_PERSONNUMMER);
+        signUtkast(intygsId);
 
         // Then logout
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId).redirects().follow(false)
@@ -370,6 +369,7 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
         // First use DEFAULT_LAKARE to create a signed certificate on care unit A.
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
         String intygsId = createUtkast("lisjp", DEFAULT_PATIENT_PERSONNUMMER);
+        signUtkast(intygsId);
 
         // Then logout
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId).redirects().follow(false)
