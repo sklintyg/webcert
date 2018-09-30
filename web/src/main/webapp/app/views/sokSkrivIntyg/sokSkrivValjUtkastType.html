@@ -1,5 +1,5 @@
 <wc-patient-header data-has-privilege="hasPrivilege()"></wc-patient-header>
-<div id="sokSkrivValjUtkastType" class="webcert-workarea-page centered-constrained-content container-fluid" wc-authority feature="HANTERA_INTYGSUTKAST" >
+<div id="sokSkrivValjUtkastType" class="webcert-workarea-page centered-constrained-content container-fluid" wc-authority feature="HANTERA_INTYGSUTKAST" intygstyp="">
   <wc-spinner label="info.loadingdata" show-spinner="viewState.patientLoading" ng-if="hasPrivilege()">
 
     <wc-alert-message id="load-error" ng-show="viewState.loadErrorMessageKey != null"

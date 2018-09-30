@@ -136,6 +136,12 @@
         };
         // End PU stub operations ============================================
 
+        $scope.populateFMBdata = function() {
+            $http({
+                url: '/testability/fmb/updatefmbdata',
+                method: 'GET'
+            })
+        };
 
 
       $scope.jsonModel = '';
@@ -346,7 +352,7 @@
               postnummer: '555 66',
               postort: 'Nyberga',
               sjf: true,
-              kopieringOk: true,
+              kopieringOK: true,
               ref: '',
               enhet: undefined
           },
@@ -611,8 +617,9 @@
             <label for="enhet" class="control-label">enhetsid:</label> <input type="text" class="form-control" size="20" id="enhet" ng-model="deeplink.formData.enhet" placeholder="enhetsid"><br>
             <label for="responsibleHospName" class="control-label">responsibleHospName:</label> <input type="text" class="form-control" size="20" id="responsibleHospName" ng-model="deeplink.formData.responsibleHospName" placeholder="responsibleHospName"><br>
             <label for="sjf-checkbox" class="control-label">Sammanhållen Journalföring</label> <input type="checkbox" id="sjf-checkbox" ng-model="deeplink.formData.sjf"> <br>
-            <label for="kopiering-ok-checkbox" class="control-label">kopieringOK</label> <input type="checkbox" id="kopiering-ok-checkbox" ng-model="deeplink.formData.kopieringOk"> <br>
+            <label for="kopiering-ok-checkbox" class="control-label">kopieringOK</label> <input type="checkbox" id="kopiering-ok-checkbox" ng-model="deeplink.formData.kopieringOK"> <br>
             <label for="patient-avliden-checkbox" class="control-label">patient avliden</label> <input type="checkbox" id="patient-avliden-checkbox" ng-model="deeplink.formData.avliden"> <br>
+            <label for="inaktiv-enhet-checkbox" class="control-label">inaktiv enhet</label> <input type="checkbox" id="inaktiv-enhet-checkbox" ng-model="deeplink.formData.inaktivEnhet"> <br>
             <div style="text-align: center; padding-top: 0.5em">
               <button type="button" ng-click="loginLink($event, 'GET')" class="btn btn-sm btn-warning" style="width:40%" title="Du loggas in som djupintegrerad och går in med en djupintegrationslänk med angivna parametrar">GET</button>
               <button type="button" ng-click="loginLink($event, 'POST')" class="btn btn-sm btn-warning" style="width:40%" title="Du loggas in som djupintegrerad och går in med en djupintegrationslänk med angivna parametrar">POST</button>
@@ -632,6 +639,17 @@
         </div>
         <div class="content row">
           <hr style="padding-top:16px;" />
+        </div>
+
+        <div class="content row">
+          <div class="panel panel-body panel-default">
+            <h4>Miscellaneous management</h4>
+            <div class="btn-group btn-group-sm" role="group">
+              <button type="button" class="btn btn-small btn-primary" ng-click="populateFMBdata($event)">
+                Populera FMB
+              </button>
+            </div>
+          </div>
         </div>
 
         <div class="content row">

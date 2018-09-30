@@ -18,7 +18,12 @@
  */
 package se.inera.intyg.webcert.integration.fmb.services;
 
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.times;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.MoreCollectors;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -27,6 +32,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 import se.inera.intyg.webcert.integration.fmb.consumer.FmbConsumer;
 import se.inera.intyg.webcert.integration.fmb.model.Kod;
 import se.inera.intyg.webcert.integration.fmb.model.fmdxinfo.FmdxData;
@@ -39,16 +49,10 @@ import se.inera.intyg.webcert.integration.fmb.model.typfall.TypfallData;
 import se.inera.intyg.webcert.persistence.fmb.model.Fmb;
 import se.inera.intyg.webcert.persistence.fmb.model.FmbCallType;
 import se.inera.intyg.webcert.persistence.fmb.model.FmbType;
+import se.inera.intyg.webcert.persistence.fmb.model.icf.BeskrivningTyp;
+import se.inera.intyg.webcert.persistence.fmb.model.icf.DiagnosInformation;
+import se.inera.intyg.webcert.persistence.fmb.repository.DiagnosInformationRepository;
 import se.inera.intyg.webcert.persistence.fmb.repository.FmbRepository;
-
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.times;
 
 public class FmbServiceImplTest {
 
@@ -59,10 +63,13 @@ public class FmbServiceImplTest {
     private FmbRepository fmbRepository;
 
     @Mock
+    private DiagnosInformationRepository diagnosInformationRepository;
+
+    @Mock
     private FmbConsumer fmbConsumer;
 
     @Captor
-    private ArgumentCaptor<List<Fmb>> fmbCaptor;
+    private ArgumentCaptor<List<DiagnosInformation>> fmbCaptor;
 
     @Before
     public void setUp() throws Exception {
@@ -85,15 +92,9 @@ public class FmbServiceImplTest {
         fmbServiceImpl.updateData();
 
         //Then
-        Mockito.verify(fmbRepository, times(1)).save(fmbCaptor.capture());
-        List<Fmb> fmbCaptorAllValues = fmbCaptor.getValue();
-        assertEquals(1865, fmbCaptorAllValues.size());
-        assertEquals(100, getCount(fmbCaptorAllValues, FmbType.AKTIVITETSBEGRANSNING));
-        assertEquals(863, getCount(fmbCaptorAllValues, FmbType.BESLUTSUNDERLAG_TEXTUELLT));
-        assertEquals(292, getCount(fmbCaptorAllValues, FmbType.FUNKTIONSNEDSATTNING));
-        assertEquals(305, getCount(fmbCaptorAllValues, FmbType.GENERELL_INFO));
-        assertEquals(305, getCount(fmbCaptorAllValues, FmbType.SYMPTOM_PROGNOS_BEHANDLING));
-
+        Mockito.verify(diagnosInformationRepository, times(1)).save(fmbCaptor.capture());
+        List<DiagnosInformation> fmbCaptorAllValues = fmbCaptor.getValue();
+        assertEquals(111, fmbCaptorAllValues.size());
     }
 
     private long getCount(List<Fmb> fmbCaptorAllValues, FmbType aktivitetsbegransning) {
@@ -103,17 +104,19 @@ public class FmbServiceImplTest {
     @Test
     public void testThatDotsInIcd10CodesAreRemoved() throws Exception {
         //Given
-        Mockito.when(fmbConsumer.getForsakringsmedicinskDiagnosinformation()).thenReturn(createFmdxInformation("", "J22.2", "J22.4"));
+//        Mockito.when(fmbConsumer.getForsakringsmedicinskDiagnosinformation()).thenReturn(createFmdxInformation("", "J22.2", "J22.4"));
+
+        doReturn(createFmdxInformation("", "J22.2", "J22.4")).when(fmbConsumer).getForsakringsmedicinskDiagnosinformation();
         Mockito.when(fmbConsumer.getTypfall()).thenReturn(createTypfall("", "J22.2", "J22.4"));
 
         //When
         fmbServiceImpl.updateData();
 
         //Then
-        Mockito.verify(fmbRepository, times(1)).save(fmbCaptor.capture());
-        List<List<Fmb>> fmbCaptorAllValues = fmbCaptor.getAllValues();
-        assertEquals("J222", fmbCaptorAllValues.get(0).get(0).getIcd10());
-        assertEquals("J224", fmbCaptorAllValues.get(0).get(1).getIcd10());
+        Mockito.verify(diagnosInformationRepository, times(1)).save(fmbCaptor.capture());
+        List<List<DiagnosInformation>> fmbCaptorAllValues = fmbCaptor.getAllValues();
+        assertEquals("J222", fmbCaptorAllValues.get(0).get(0).getIcd10KodList().get(0).getKod());
+        assertEquals("J224", fmbCaptorAllValues.get(0).get(0).getIcd10KodList().get(1).getKod());
     }
 
     @Test
@@ -127,10 +130,12 @@ public class FmbServiceImplTest {
         fmbServiceImpl.updateData();
 
         //Then
-        Mockito.verify(fmbRepository, times(1)).deleteAllInBatch();
-        Mockito.verify(fmbRepository, times(1)).save(fmbCaptor.capture());
+        Mockito.verify(diagnosInformationRepository, times(1)).deleteAll();
+        Mockito.verify(diagnosInformationRepository, times(1)).save(fmbCaptor.capture());
         assertEquals(1, fmbCaptor.getValue().size());
-        assertEquals(beskrivning, findFmbType(FmbType.FUNKTIONSNEDSATTNING, fmbCaptor.getValue()).getText());
+        assertEquals(beskrivning, fmbCaptor.getValue().get(0).getBeskrivningList().stream()
+                .filter(besk -> besk.getBeskrivningTyp() == BeskrivningTyp.FUNKTIONSNEDSATTNING)
+                .collect(MoreCollectors.onlyElement()).getBeskrivningText());
     }
 
     @Test
@@ -144,11 +149,12 @@ public class FmbServiceImplTest {
         fmbServiceImpl.updateData();
 
         //Then
-        Mockito.verify(fmbRepository, times(1)).deleteAllInBatch();
-        Mockito.verify(fmbRepository, times(1)).save(fmbCaptor.capture());
+        Mockito.verify(diagnosInformationRepository, times(1)).deleteAll();
+        Mockito.verify(diagnosInformationRepository, times(1)).save(fmbCaptor.capture());
         assertEquals(1, fmbCaptor.getValue().size());
-        assertEquals(beskrivning, findFmbType(FmbType.FUNKTIONSNEDSATTNING, fmbCaptor.getValue()).getText());
-    }
+        assertEquals(beskrivning, fmbCaptor.getValue().get(0).getBeskrivningList().stream()
+                .filter(besk -> besk.getBeskrivningTyp() == BeskrivningTyp.FUNKTIONSNEDSATTNING)
+                .collect(MoreCollectors.onlyElement()).getBeskrivningText());    }
 
     @Test
     public void testUpdateDiagnosInfoWillNotBeDoneIfTypfallCouldNotBeFetched() throws Exception {
@@ -161,8 +167,9 @@ public class FmbServiceImplTest {
         fmbServiceImpl.updateData();
 
         //Then
-        Mockito.verify(fmbRepository, times(0)).deleteAllInBatch();
-        Mockito.verify(fmbRepository, times(0)).save(fmbCaptor.capture());
+        Mockito.verify(diagnosInformationRepository, times(0)).deleteAll();
+        Mockito.verify(diagnosInformationRepository, times(0)).save(fmbCaptor.capture());
+
     }
 
     @Test
@@ -176,8 +183,8 @@ public class FmbServiceImplTest {
         fmbServiceImpl.updateData();
 
         //Then
-        Mockito.verify(fmbRepository, times(0)).deleteAllInBatch();
-        Mockito.verify(fmbRepository, times(0)).save(fmbCaptor.capture());
+        Mockito.verify(diagnosInformationRepository, times(0)).deleteAllInBatch();
+        Mockito.verify(diagnosInformationRepository, times(0)).save(fmbCaptor.capture());
     }
 
     private Fmb createFmbDi(String icd10, String text) {
@@ -207,7 +214,7 @@ public class FmbServiceImplTest {
             return kod;
         }).collect(Collectors.toList()));
         final Funktionsnedsattning funktionsnedsattning = new Funktionsnedsattning();
-        funktionsnedsattning.setFunktionsnedsattningsbeskrivning(funktionsnedsattningBeskrivning);
+        funktionsnedsattning.setBeskrivning(funktionsnedsattningBeskrivning);
         attributes.setFunktionsnedsattning(funktionsnedsattning);
         return fmdxInformation;
     }

@@ -22,7 +22,6 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -92,10 +91,8 @@ import se.inera.intyg.webcert.web.service.utkast.util.CreateIntygsIdStrategy;
 @Service
 public class UtkastServiceImpl implements UtkastService {
 
-    private static final List<UtkastStatus> ALL_EDITABLE_DRAFT_STATUSES = Arrays.asList(UtkastStatus.DRAFT_COMPLETE,
-            UtkastStatus.DRAFT_INCOMPLETE);
-    private static final List<UtkastStatus> ALL_DRAFT_STATUSES_INCLUDE_LOCKED = Arrays.asList(UtkastStatus.DRAFT_COMPLETE,
-            UtkastStatus.DRAFT_INCOMPLETE, UtkastStatus.DRAFT_LOCKED);
+    private static final Set<UtkastStatus> ALL_EDITABLE_DRAFT_STATUSES = UtkastStatus.getEditableDraftStatuses();
+    private static final Set<UtkastStatus> ALL_DRAFT_STATUSES_INCLUDE_LOCKED = UtkastStatus.getDraftStatuses();
 
     private static final Logger LOG = LoggerFactory.getLogger(UtkastServiceImpl.class);
     private static final String INTYG_INDICATOR = "intyg";

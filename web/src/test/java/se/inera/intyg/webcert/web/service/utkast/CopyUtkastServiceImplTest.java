@@ -22,6 +22,7 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.logging.Logger;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -42,6 +43,7 @@ import se.inera.intyg.infra.integration.pu.services.PUService;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.WebcertCertificateRelation;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
+import se.inera.intyg.webcert.persistence.utkast.model.Signatur;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
@@ -209,6 +211,11 @@ public class CopyUtkastServiceImplTest {
                 .thenReturn(Optional.empty());
     }
 
+    @Before
+    public void expectFindByIntygsIdAndIntygsTypToReturnSignedUtkast() {
+        when(mockUtkastRepository.findByIntygsIdAndIntygsTyp(INTYG_ID, INTYG_TYPE)).thenReturn(createSignedUtkast());
+    }
+
     @Test(expected = WebCertServiceException.class)
     public void testRenewalCopyFailIfSignedReplacementExists() throws Exception {
 
@@ -217,7 +224,7 @@ public class CopyUtkastServiceImplTest {
         user.setParameters(new IntegrationParameters(reference, "", "", "", "", "", "", "", "", false, false, false, true));
 
         WebcertCertificateRelation ersattRelation = new WebcertCertificateRelation(INTYG_ID, RelationKod.ERSATT, LocalDateTime.now(),
-                UtkastStatus.SIGNED);
+                UtkastStatus.SIGNED, false);
         when(certificateRelationService.getNewestRelationOfType(INTYG_ID, RelationKod.ERSATT, Arrays.asList(UtkastStatus.SIGNED)))
                 .thenReturn(Optional.of(ersattRelation));
 
@@ -235,6 +242,43 @@ public class CopyUtkastServiceImplTest {
             throw e;
         }
     }
+
+    @Test(expected = WebCertServiceException.class)
+    public void testRenewalCopyFailIfOriginalNotSigned() throws Exception {
+
+        final String reference = "ref";
+
+        WebCertUser user = new WebCertUser();
+        user.setParameters(new IntegrationParameters(reference, "", "", "", "", "", "", "", "", false, false, false, true));
+
+        when(mockUtkastRepository.findByIntygsIdAndIntygsTyp(INTYG_ID, INTYG_TYPE)).thenReturn(createCopyUtkast());
+
+        try {
+            copyService.createRenewalCopy(buildRenewalRequest());
+            fail("An exception should have been thrown.");
+        } catch (Exception e) {
+            throw e;
+        }
+    }
+
+    @Test(expected = WebCertServiceException.class)
+    public void testReplacementCopyFailIfOriginalNotSigned() throws Exception {
+
+        final String reference = "ref";
+
+        WebCertUser user = new WebCertUser();
+        user.setParameters(new IntegrationParameters(reference, "", "", "", "", "", "", "", "", false, false, false, true));
+
+        when(mockUtkastRepository.findByIntygsIdAndIntygsTyp(INTYG_ID, INTYG_TYPE)).thenReturn(createCopyUtkast());
+
+        try {
+            copyService.createReplacementCopy(buildReplacementCopyRequest());
+            fail("An exception should have been thrown.");
+        } catch (Exception e) {
+            throw e;
+        }
+    }
+
 
     @Test
     public void testCreateReplacementCopy() throws Exception {
@@ -279,7 +323,7 @@ public class CopyUtkastServiceImplTest {
         CopyUtkastBuilderResponse resp = createCopyUtkastBuilderResponse();
 
         WebcertCertificateRelation ersattRelation = new WebcertCertificateRelation(INTYG_ID, RelationKod.ERSATT, LocalDateTime.now(),
-                UtkastStatus.SIGNED);
+                UtkastStatus.SIGNED, false);
         when(certificateRelationService.getNewestRelationOfType(INTYG_ID, RelationKod.ERSATT, Arrays.asList(UtkastStatus.values())))
                 .thenReturn(Optional.of(ersattRelation));
 
@@ -377,7 +421,7 @@ public class CopyUtkastServiceImplTest {
         when(userService.getUser()).thenReturn(user);
 
         WebcertCertificateRelation ersattRelation = new WebcertCertificateRelation(INTYG_ID, RelationKod.ERSATT, LocalDateTime.now(),
-                UtkastStatus.SIGNED);
+                UtkastStatus.SIGNED, false);
         when(certificateRelationService.getNewestRelationOfType(INTYG_ID, RelationKod.ERSATT, Arrays.asList(UtkastStatus.SIGNED)))
                 .thenReturn(Optional.of(ersattRelation));
 
@@ -633,7 +677,7 @@ public class CopyUtkastServiceImplTest {
 
         when(utkastService.getDraft(INTYG_ID, INTYG_TYPE)).thenReturn(utkast);
 
-        WebcertCertificateRelation webcertRelation = new WebcertCertificateRelation(INTYG_COPY_ID, RelationKod.KOPIA, LocalDateTime.now(), UtkastStatus.DRAFT_INCOMPLETE);
+        WebcertCertificateRelation webcertRelation = new WebcertCertificateRelation(INTYG_COPY_ID, RelationKod.KOPIA, LocalDateTime.now(), UtkastStatus.DRAFT_INCOMPLETE, false);
         when(certificateRelationService.getNewestRelationOfType(eq(INTYG_ID), eq(RelationKod.KOPIA), any())).thenReturn(Optional.of(webcertRelation));
 
         CreateUtkastFromTemplateRequest copyReq = buildUtkastCopyRequest();
@@ -710,6 +754,14 @@ public class CopyUtkastServiceImplTest {
         utkast.setSenastSparadAv(vpRef);
         utkast.setSkapadAv(vpRef);
 
+        return utkast;
+    }
+
+    private Utkast createSignedUtkast() {
+        Signatur signatur = new Signatur(LocalDateTime.now(), "Ay karamba", INTYG_ID, "", "", "Heyo");
+        Utkast utkast = createCopyUtkast();
+        utkast.setIntygsId(INTYG_ID);
+        utkast.setSignatur(signatur);
         return utkast;
     }
 

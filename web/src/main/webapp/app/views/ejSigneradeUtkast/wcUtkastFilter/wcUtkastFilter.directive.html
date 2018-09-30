@@ -1,7 +1,7 @@
 <div id="advanced-filter-form" class="hflex-container" ng-form="filterForm">
 
 
-  <div class="filter-field" wc-authority="VIDAREBEFORDRA_UTKAST" id="filterFormVidarebefordrad">
+  <div class="filter-field" wc-authority="VIDAREBEFORDRA_UTKAST" intygstyp="" id="filterFormVidarebefordrad">
     <label>Vidarebefordrat</label><br>
     <wc-dropdown id="filter-notified" ng-model="filter.selection.notified" items="filter.notifiedOptions"
                  use-dynamic-label="false"></wc-dropdown>
@@ -13,7 +13,7 @@
                  use-dynamic-label="false"></wc-dropdown>
   </div>
 
-  <div class="filter-field" wc-authority="FILTRERA_PA_LAKARE" id="filterFormSparatAv">
+  <div class="filter-field" wc-authority="FILTRERA_PA_LAKARE" intygstyp="" id="filterFormSparatAv">
     <label>Sparat av</label><br>
     <wc-dropdown id="filter-notified" ng-model="filter.selection.savedBy" items="filter.savedByOptions"
                  use-dynamic-label="false"></wc-dropdown>

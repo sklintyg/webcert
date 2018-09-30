@@ -376,6 +376,7 @@ public class IntygIntegrationServiceImplTest {
                             Feature feature = new Feature();
                             feature.setName(s);
                             feature.setIntygstyper(Arrays.asList("lisjp"));
+                            feature.setGlobal(true);
                             return feature;
                         })),
                 UserOriginType.DJUPINTEGRATION.name());

@@ -1059,8 +1059,147 @@
     <sql>UPDATE SIGNATUR SET SIGNATUR_TYP='LEGACY' WHERE (SIGNATUR_TYP IS NULL OR SIGNATUR_TYP = '')</sql>
   </changeSet>
 
-  <!-- Add column for intygTypeVersion needed for versioned inityg -->
-  <changeSet id="56" author="marced">
+  <changeSet id="56" author="ja">
+
+    <createTable tableName="FMB_DIAGNOS_INFORMATION">
+      <column name="ID" type="bigint">
+        <constraints primaryKey="true" unique="true" nullable="false"/>
+      </column>
+      <column name="FORSAKRINGSMEDICINSK_INFORMATION" type="varchar(4085)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="SYMPTOM_PROGNOS_BEHANDLING" type="varchar(4085)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="SENAST_UPPDATERAD" type="datetime">
+        <constraints nullable="true"/>
+      </column>
+    </createTable>
+
+    <addAutoIncrement columnDataType="bigint"
+                      columnName="ID" incrementBy="1" startWith="1"
+                      tableName="FMB_DIAGNOS_INFORMATION"/>
+
+    <createTable tableName="FMB_BESKRIVNING">
+      <column name="ID" type="bigint">
+        <constraints primaryKey="true" unique="true" nullable="false"/>
+      </column>
+      <column name="TYP" type="varchar(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="BESKRIVNING" type="varchar(4095)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="DIAGNOS_INFORMATION_ID" type="bigint">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+
+    <addAutoIncrement columnDataType="bigint"
+                      columnName="ID" incrementBy="1" startWith="1"
+                      tableName="FMB_BESKRIVNING"/>
+
+    <addForeignKeyConstraint baseColumnNames="DIAGNOS_INFORMATION_ID"
+                             baseTableName="FMB_BESKRIVNING" constraintName="FMB_BESKRIVNING_FMB_DIAGNOS_INFORMATION"
+                             referencedColumnNames="ID" referencedTableName="FMB_DIAGNOS_INFORMATION"/>
+
+    <createTable tableName="FMB_ICF_KOD">
+      <column name="ID" type="bigint">
+        <constraints primaryKey="true" unique="true" nullable="false"/>
+      </column>
+      <column name="KOD" type="varchar(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="TYP" type="varchar(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="BESKRIVNING_ID" type="bigint">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+
+    <addAutoIncrement columnDataType="bigint"
+                      columnName="ID" incrementBy="1" startWith="1"
+                      tableName="FMB_ICF_KOD"/>
+
+    <addForeignKeyConstraint baseColumnNames="BESKRIVNING_ID"
+                             baseTableName="FMB_ICF_KOD" constraintName="FMB_ICF_KOD_FMB_BESKRIVNING"
+                             referencedColumnNames="ID" referencedTableName="FMB_BESKRIVNING"/>
+
+    <createTable tableName="FMB_ICD10_KOD">
+      <column name="ID" type="bigint">
+        <constraints primaryKey="true" unique="true" nullable="false"/>
+      </column>
+      <column name="KOD" type="varchar(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="BESKRIVNING" type="varchar(1024)">
+        <constraints nullable="true"/>
+      </column>
+      <column name="DIAGNOS_INFORMATION_ID" type="bigint">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+
+    <addAutoIncrement columnDataType="bigint"
+                      columnName="ID" incrementBy="1" startWith="1"
+                      tableName="FMB_ICD10_KOD"/>
+
+    <addForeignKeyConstraint baseColumnNames="DIAGNOS_INFORMATION_ID"
+                             baseTableName="FMB_ICD10_KOD" constraintName="FMB_ICD10_KOD_FMB_DIAGNOS_INFORMATION"
+                             referencedColumnNames="ID" referencedTableName="FMB_DIAGNOS_INFORMATION"/>
+
+
+    <createTable tableName="FMB_TYPFALL">
+      <column name="ID" type="bigint">
+        <constraints primaryKey="true" unique="true" nullable="false"/>
+      </column>
+      <column name="TYPFALLSMENING" type="varchar(1024)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="MAXIMALSJUKRIVNINGSTID" type="bigint">
+        <constraints nullable="false"/>
+      </column>
+      <column name="ICD10_ID" type="bigint">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+
+    <addAutoIncrement columnDataType="bigint"
+                      columnName="ID" incrementBy="1" startWith="1"
+                      tableName="FMB_TYPFALL"/>
+
+    <addForeignKeyConstraint baseColumnNames="ICD10_ID"
+                             baseTableName="FMB_TYPFALL" constraintName="FMB_TYPFALL_FMB_ICD10_ID"
+                             referencedColumnNames="ID" referencedTableName="FMB_ICD10_KOD"/>
+
+    <createTable tableName="FMB_REFERENS">
+      <column name="ID" type="bigint">
+        <constraints primaryKey="true" unique="true" nullable="false"/>
+      </column>
+      <column name="TEXT" type="varchar(1024)">
+        <constraints nullable="true"/>
+      </column>
+      <column name="URI" type="varchar(1024)">
+        <constraints nullable="true"/>
+      </column>
+      <column name="DIAGNOS_INFORMATION_ID" type="bigint">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+
+    <addAutoIncrement columnDataType="bigint"
+                      columnName="ID" incrementBy="1" startWith="1"
+                      tableName="FMB_REFERENS"/>
+
+    <addForeignKeyConstraint baseColumnNames="DIAGNOS_INFORMATION_ID"
+                             baseTableName="FMB_REFERENS" constraintName="FMB_REFERENS_FMB_DIAGNOS_INFORMATION"
+                             referencedColumnNames="ID" referencedTableName="FMB_DIAGNOS_INFORMATION"/>
+
+  </changeSet>
+
+  <!-- Add column for intygTypeVersion needed for versioned intyg -->
+  <changeSet id="57" author="marced">
     <addColumn tableName="INTYG">
       <column name="INTYG_TYPE_VERSION" type="varchar(32)">
         <constraints nullable="false"/>

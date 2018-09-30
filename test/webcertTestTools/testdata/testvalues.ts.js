@@ -59,7 +59,7 @@ var tsValues = {
     korkortstyper: ['AM', 'A1', 'A2', 'A', 'B', 'BE', 'Traktor', 'C1', 'C', 'CE', 'D1', 'D1E', 'D', 'DE', 'Taxi'],
     identitetStyrktGenom: ['ID-kort', 'Företagskort eller tjänstekort', 'Svenskt körkort', 'Personlig kännedom', 'Försäkran enligt 18 kap. 4§', 'Pass'],
     diabetestyp: ['Typ 1', 'Typ 2'],
-    diabetesbehandlingtyper: ['Endast kost', 'Tabletter', 'Insulin'],
+    diabetesbehandlingtyper: ['Endast kost', 'Tabletter', 'Insulin', 'Annan behandling'],
     comment: 'Inget att rapportera',
     korkortstyperHogreBehorighet: ['C1', 'C1E', 'C', 'CE', 'D1', 'D1E', 'D', 'DE', 'Taxi'],
     synDonder: ['Ja', 'Nej'],

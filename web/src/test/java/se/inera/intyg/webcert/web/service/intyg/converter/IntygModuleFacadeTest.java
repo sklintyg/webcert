@@ -182,19 +182,21 @@ public class IntygModuleFacadeTest {
     @Test
     public void testGetRevokeCertificateRequest() throws Exception {
         final String message = "revokeMessage";
-        moduleFacade.getRevokeCertificateRequest(CERTIFICATE_TYPE, mock(Utlatande.class), null, message);
-        verify(moduleApi, times(1)).createRevokeRequest(eq(null), eq(null), eq(message));
+        Utlatande utlatande = mock(Utlatande.class);
+        moduleFacade.getRevokeCertificateRequest(CERTIFICATE_TYPE, utlatande, null, message);
+        verify(moduleApi, times(1)).createRevokeRequest(eq(utlatande), eq(null), eq(message));
     }
 
     @Test(expected = ModuleException.class)
     public void testGetRevokeCertificateRequestModuleException() throws Exception {
-        when(moduleApi.createRevokeRequest(isNull(), isNull(), anyString())).thenThrow(new ModuleException());
-        moduleFacade.getRevokeCertificateRequest(CERTIFICATE_TYPE, mock(Utlatande.class), null, "message");
+        Utlatande utlatande = mock(Utlatande.class);
+        when(moduleApi.createRevokeRequest(eq(utlatande), isNull(), anyString())).thenThrow(new ModuleException());
+        moduleFacade.getRevokeCertificateRequest(CERTIFICATE_TYPE, utlatande, null, "message");
     }
 
     @Test(expected = IntygModuleFacadeException.class)
     public void testGetRevokeCertificateRequestModuleNotFoundException() throws Exception {
-        when(moduleRegistry.getModuleApi(CERTIFICATE_TYPE, CERTIFICATE_TYPE_VERSION_1_0)).thenThrow(new ModuleNotFoundException());
+        when(moduleRegistry.getModuleApi(eq(CERTIFICATE_TYPE), or(isNull(), anyString()))).thenThrow(new ModuleNotFoundException());
         moduleFacade.getRevokeCertificateRequest(CERTIFICATE_TYPE, mock(Utlatande.class), null, "message");
     }
 

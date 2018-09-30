@@ -440,6 +440,7 @@ roles:
               - *ki070 # luae_fs
               - *ki080 # db
               - *ki090 # doi
+              - *ki100 # af00213
       - <<: *p060 # BESVARA_KOMPLETTERINGSFRAGA
         requestOrigins:
           - <<: *ro010 # NORMAL

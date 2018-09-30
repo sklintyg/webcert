@@ -18,18 +18,6 @@
  */
 package se.inera.intyg.webcert.web.web.controller.moduleapi;
 
-import javax.persistence.OptimisticLockException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-import javax.ws.rs.core.Response;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -39,7 +27,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
-
 import se.inera.intyg.common.fk7263.model.internal.Fk7263Utlatande;
 import se.inera.intyg.common.services.texts.IntygTextsService;
 import se.inera.intyg.common.support.model.UtkastStatus;
@@ -51,6 +38,7 @@ import se.inera.intyg.common.support.modules.support.api.dto.ValidationMessageTy
 import se.inera.intyg.common.support.modules.support.api.dto.ValidationStatus;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
 import se.inera.intyg.infra.security.authorities.AuthoritiesException;
+import se.inera.intyg.infra.security.common.model.AuthenticationMethod;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.Feature;
 import se.inera.intyg.infra.security.common.model.Privilege;
@@ -75,6 +63,18 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.CopyIntygResponse;
 import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
 import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.RevokeSignedIntygParameter;
+
+import javax.persistence.OptimisticLockException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+import javax.ws.rs.core.Response;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static javax.ws.rs.core.Response.Status.OK;
 import static org.junit.Assert.assertEquals;
@@ -104,6 +104,7 @@ public class UtkastModuleApiControllerTest {
     private static final String UTKAST_MODEL = "<Model>";
 
     private static final String UTKAST_PERSONNUMMER = "19121212-1212";
+    private static final String INTYG_TYPE_VERSION = "1.0";
 
     private HttpServletRequest request;
     private HttpSession session;
@@ -390,6 +391,49 @@ public class UtkastModuleApiControllerTest {
         verifyZeroInteractions(utkastService);
     }
 
+    @Test(expected = WebCertServiceException.class)
+    public void testCopyUtkastKopieraOKFalse() {
+        String intygTyp = "fk7263";
+        String intygId = "intyg1";
+        IntegrationParameters integrationParameters = IntegrationParameters.of("", "", "", "", "", "", "", "", "", false, false, false, false);
+        setupUser(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG, intygTyp, integrationParameters, AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);
+
+        moduleApiController.copyUtkast(intygTyp, intygId);
+
+        verifyZeroInteractions(utkastService);
+    }
+
+    @Test(expected = WebCertServiceException.class)
+    public void testCopyUtkastInaktivEnhetTrue() {
+        String intygTyp = "fk7263";
+        String intygId = "intyg1";
+        IntegrationParameters integrationParameters = IntegrationParameters.of("", "", "", "", "", "", "", "", "", false, false, true, true);
+        setupUser(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG, intygTyp, integrationParameters, AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);
+
+        moduleApiController.copyUtkast(intygTyp, intygId);
+
+        verifyZeroInteractions(utkastService);
+    }
+
+    @Test(expected = AuthoritiesException.class)
+    public void testCopyUtkastAvlidenTrue() {
+        String intygTyp = "fk7263";
+        String intygId = "intyg1";
+        IntegrationParameters integrationParameters = IntegrationParameters.of("", "", "", "", "", "", "", "", "", false, true, false, true);
+        setupUser(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG, intygTyp, integrationParameters, AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);
+
+        Utkast utkast = new Utkast();
+        Personnummer personnummer = Personnummer.createPersonnummer("19121212-1212").get();
+        utkast.setPatientPersonnummer(personnummer);
+        when(utkastService.getDraft(eq(intygId), eq(intygTyp))).thenReturn(utkast);
+
+        when(patientDetailsResolver.isAvliden(personnummer)).thenReturn(true);
+
+        moduleApiController.copyUtkast(intygTyp, intygId);
+
+        verifyZeroInteractions(utkastService);
+    }
+
     @Test
     public void testRevokeLockedDraft() {
         String intygTyp = "fk7263";
@@ -431,6 +475,7 @@ public class UtkastModuleApiControllerTest {
         utkast.setVardgivarNamn(UTKAST_VARDGIVARNAMN);
         utkast.setModel(UTKAST_MODEL);
         utkast.setIntygsTyp(intygType);
+        utkast.setIntygTypeVersion(INTYG_TYPE_VERSION);
         utkast.setIntygsId(intygId);
         utkast.setPatientPersonnummer(Personnummer.createPersonnummer(UTKAST_PERSONNUMMER).get());
         return utkast;
@@ -444,15 +489,22 @@ public class UtkastModuleApiControllerTest {
     }
 
     private void setupUser(String privilegeString, String intygType, boolean coherentJournaling, String... features) {
+        IntegrationParameters integrationParameters = new IntegrationParameters("", "", "", "", "", "", "", "", "", coherentJournaling, false, false, true);
+
+        setupUser(privilegeString, intygType, integrationParameters, features);
+    }
+
+    private void setupUser(String privilegeString, String intygType, IntegrationParameters integrationParameters, String... features) {
         WebCertUser user = new WebCertUser();
         user.setAuthorities(new HashMap<>());
         user.setFeatures(Stream.of(features).collect(Collectors.toMap(Function.identity(), s -> {
             Feature feature = new Feature();
             feature.setName(s);
             feature.setIntygstyper(Arrays.asList(intygType));
+            feature.setGlobal(true);
             return feature;
         })));
-        user.setParameters(new IntegrationParameters("", "", "", "", "", "", "", "", "", coherentJournaling, false, false, true));
+        user.setParameters(integrationParameters);
         Privilege privilege = new Privilege();
         privilege.setIntygstyper(Arrays.asList(intygType));
         RequestOrigin requestOrigin = new RequestOrigin();
@@ -461,6 +513,7 @@ public class UtkastModuleApiControllerTest {
         privilege.setRequestOrigins(Arrays.asList(requestOrigin));
         user.getAuthorities().put(privilegeString, privilege);
         user.setOrigin("NORMAL");
+        user.setAuthenticationMethod(AuthenticationMethod.FAKE);
         when(webcertUserService.getUser()).thenReturn(user);
     }
 }

@@ -18,55 +18,76 @@
  */
 package se.inera.intyg.webcert.integration.fmb.services;
 
+import static se.inera.intyg.webcert.persistence.fmb.model.icf.Beskrivning.BeskrivningBuilder.aBeskrivning;
+import static se.inera.intyg.webcert.persistence.fmb.model.icf.DiagnosInformation.DiagnosInformationBuilder.aDiagnosInformation;
+import static se.inera.intyg.webcert.persistence.fmb.model.icf.Icd10Kod.Icd10KodBuilder.anIcd10Kod;
+import static se.inera.intyg.webcert.persistence.fmb.model.icf.IcfKod.IcfKodBuilder.anIcfKod;
+import static se.inera.intyg.webcert.persistence.fmb.model.icf.Referens.ReferensBuilder.aReferens;
+import static se.inera.intyg.webcert.persistence.fmb.model.icf.TypFall.TypFallBuilder.aTypFall;
+
+import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
+import com.google.common.primitives.Ints;
+import io.vavr.control.Try;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import se.inera.intyg.webcert.integration.fmb.consumer.FailedToFetchFmbDataException;
-import se.inera.intyg.webcert.integration.fmb.consumer.FmbConsumer;
-import se.inera.intyg.webcert.integration.fmb.model.Kod;
-import se.inera.intyg.webcert.integration.fmb.model.fmdxinfo.Aktivitetsbegransning;
-import se.inera.intyg.webcert.integration.fmb.model.fmdxinfo.Attributes;
-import se.inera.intyg.webcert.integration.fmb.model.fmdxinfo.FmdxData;
-import se.inera.intyg.webcert.integration.fmb.model.fmdxinfo.FmdxInformation;
-import se.inera.intyg.webcert.integration.fmb.model.fmdxinfo.Funktionsnedsattning;
-import se.inera.intyg.webcert.integration.fmb.model.fmdxinfo.Markup;
-import se.inera.intyg.webcert.integration.fmb.model.typfall.Fmbtillstand;
-import se.inera.intyg.webcert.integration.fmb.model.typfall.Typfall;
-import se.inera.intyg.webcert.integration.fmb.model.typfall.TypfallData;
-import se.inera.intyg.webcert.persistence.fmb.model.Fmb;
-import se.inera.intyg.webcert.persistence.fmb.model.FmbCallType;
-import se.inera.intyg.webcert.persistence.fmb.model.FmbType;
-import se.inera.intyg.webcert.persistence.fmb.repository.FmbRepository;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.ArrayList;
+import org.springframework.util.CollectionUtils;
+import java.lang.invoke.MethodHandles;
+import java.text.MessageFormat;
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import se.inera.intyg.webcert.integration.fmb.consumer.FmbConsumer;
+import se.inera.intyg.webcert.integration.fmb.model.Kod;
+import se.inera.intyg.webcert.integration.fmb.model.Meta;
+import se.inera.intyg.webcert.integration.fmb.model.fmdxinfo.Attributes;
+import se.inera.intyg.webcert.integration.fmb.model.fmdxinfo.FmdxData;
+import se.inera.intyg.webcert.integration.fmb.model.fmdxinfo.FmdxInformation;
+import se.inera.intyg.webcert.integration.fmb.model.fmdxinfo.FmxBeskrivning;
+import se.inera.intyg.webcert.integration.fmb.model.fmdxinfo.Markup;
+import se.inera.intyg.webcert.integration.fmb.model.typfall.Fmbtillstand;
+import se.inera.intyg.webcert.integration.fmb.model.typfall.Rekommenderadsjukskrivning;
+import se.inera.intyg.webcert.integration.fmb.model.typfall.Typfall;
+import se.inera.intyg.webcert.integration.fmb.model.typfall.TypfallData;
+import se.inera.intyg.webcert.persistence.fmb.model.icf.Beskrivning;
+import se.inera.intyg.webcert.persistence.fmb.model.icf.BeskrivningTyp;
+import se.inera.intyg.webcert.persistence.fmb.model.icf.DiagnosInformation;
+import se.inera.intyg.webcert.persistence.fmb.model.icf.Icd10Kod;
+import se.inera.intyg.webcert.persistence.fmb.model.icf.IcfKod;
+import se.inera.intyg.webcert.persistence.fmb.model.icf.IcfKodTyp;
+import se.inera.intyg.webcert.persistence.fmb.model.icf.Referens;
+import se.inera.intyg.webcert.persistence.fmb.model.icf.TypFall;
+import se.inera.intyg.webcert.persistence.fmb.repository.DiagnosInformationRepository;
 
 @Service
 @Transactional("jpaTransactionManager")
 @Configuration
 @EnableScheduling
-@Profile({ "dev", "test", "webcertMainNode" })
+@Profile({"dev", "test", "webcertMainNode"})
 public class FmbServiceImpl implements FmbService {
 
-    private static final Logger LOG = LoggerFactory.getLogger(FmbServiceImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-    public static final String UNKNOWN_TIMESTAMP = "UnknownTimestamp";
+    private final FmbConsumer fmbConsumer;
+    private final DiagnosInformationRepository repository;
 
-    @Autowired
-    private FmbConsumer fmbConsumer;
-
-    @Autowired
-    private FmbRepository fmbRepository;
+    public FmbServiceImpl(final FmbConsumer fmbConsumer, final DiagnosInformationRepository repository) {
+        this.fmbConsumer = fmbConsumer;
+        this.repository = repository;
+    }
 
     @Override
     @Scheduled(cron = "${fmb.dataupdate.cron}")
@@ -81,145 +102,122 @@ public class FmbServiceImpl implements FmbService {
     }
 
     private void performUpdate() {
-        LOG.info("Updating FMB information");
-        try {
-            final FmdxInformation fmdxInfo = fmbConsumer.getForsakringsmedicinskDiagnosinformation();
+        final Try<Void> result = Try.run(() -> {
+            final FmdxInformation diagnosinformation = fmbConsumer.getForsakringsmedicinskDiagnosinformation();
             final Typfall typfall = fmbConsumer.getTypfall();
-            final List<Fmb> updatedDiagnosinfos = getUpdatedDiagnosinfos(fmdxInfo, typfall);
-            if (updatedDiagnosinfos.isEmpty()) {
-                LOG.warn("Updated diagnos infos is empty. No FMB update will be performed.");
-            } else {
-                updateFmbDb(updatedDiagnosinfos);
+            final List<DiagnosInformation> diagnosInformationList = convertResponseToDiagnosInformation(diagnosinformation, typfall);
+
+            if (!CollectionUtils.isEmpty(diagnosInformationList)) {
+                repository.deleteAll();
+                repository.save(diagnosInformationList);
             }
-        } catch (FailedToFetchFmbDataException failedToFetchFmbDataException) {
-            LOG.error("Failed to update FMB information", failedToFetchFmbDataException);
+        });
+
+        if (result.isFailure()) {
+            throw new RuntimeException(MessageFormat.format("Failed to fetch FMB information: {0}", result.getCause().getStackTrace()));
         }
     }
 
-    private void updateFmbDb(List<Fmb> updatedFmbs) {
-        if (!updatedFmbs.isEmpty()) {
-            fmbRepository.deleteAllInBatch();
-            fmbRepository.save(updatedFmbs);
-            LOG.info("Inserted {} rows for FMB", updatedFmbs.size());
-        }
+    private List<DiagnosInformation> convertResponseToDiagnosInformation(final FmdxInformation diagnosinformation, final Typfall typfall) {
+        validateResponse(diagnosinformation, typfall);
+
+        final Optional<LocalDateTime> senasteAndring = diagnosinformation.getOptionalMeta()
+                .map(Meta::getBuildtimestamp)
+                .map(timeStampString -> OffsetDateTime.parse(timeStampString, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssZ")))
+                .map(OffsetDateTime::toLocalDateTime);
+
+        return diagnosinformation.getData().stream()
+                .map(FmdxData::getAttributes)
+                .map(attributes -> {
+                    List<Beskrivning> beskrivningList = Lists.newArrayList();
+                    attributes.getOptionalAktivitetsbegransning().ifPresent(begransning ->
+                            beskrivningList.add(convertToBeskrivning(begransning, BeskrivningTyp.AKTIVITETSBEGRANSNING)));
+                    attributes.getOptionalFunktionsnedsattning().ifPresent(begransning ->
+                            beskrivningList.add(convertToBeskrivning(begransning, BeskrivningTyp.FUNKTIONSNEDSATTNING)));
+
+                    final List<Icd10Kod> icd10KodList = convertToIcd10KodList(attributes, typfall);
+
+                    return aDiagnosInformation()
+                            .forsakringsmedicinskInformation(attributes.getOptionalForsakringsmedicinskinformation()
+                                    .map(Markup::getMarkup)
+                                    .orElse(null))
+                            .symptomPrognosBehandling(attributes.getOptionalSymtomprognosbehandling()
+                                    .map(Markup::getMarkup)
+                                    .orElse(null))
+                            .beskrivningList(beskrivningList)
+                            .icd10KodList(icd10KodList)
+                            .referensList(convertToReferensList(attributes))
+                            .senastUppdaterad(senasteAndring.orElse(null))
+                            .build();
+                }).collect(Collectors.toList());
     }
 
-    @Nonnull
-    private List<Fmb> getUpdatedDiagnosinfos(FmdxInformation fmdxInfo, Typfall typfall) {
-        final List<Fmb> fmbs = new ArrayList<>();
-
-        if (fmdxInfo == null) {
-            LOG.warn("Diagnosinformation is null");
-            return fmbs;
-        }
-        if (typfall == null) {
-            LOG.warn("Typfall info is null");
-            return fmbs;
-        }
-
-        final String senateAndring = fmdxInfo.getMeta() != null ? fmdxInfo.getMeta().getBuildtimestamp() : UNKNOWN_TIMESTAMP;
-        final List<FmdxData> datas = fmdxInfo.getData();
-        if (datas == null) {
-            LOG.warn("Fmdx datas is null");
-            return fmbs;
-        }
-
-        for (FmdxData data : datas) {
-            final Attributes attributes = data.getAttributes();
-            if (attributes != null) {
-                final Aktivitetsbegransning ab = attributes.getAktivitetsbegransning();
-                final String aktivitetsbegransning = ab != null ? ab.getAktivitetsbegransningsbeskrivning() : null;
-                final Funktionsnedsattning fn = attributes.getFunktionsnedsattning();
-                final String funktionsnedsattning = fn != null ? fn.getFunktionsnedsattningsbeskrivning() : null;
-                final Markup spb = attributes.getSymtomprognosbehandling();
-                final String symtomprognosbehandling = spb != null ? spb.getMarkup() : null;
-                final Markup fmi = attributes.getForsakringsmedicinskinformation();
-                final String beskrivning = fmi != null ? fmi.getMarkup() : null;
-                final List<Kod> diagnoskod = attributes.getDiagnoskod();
-                final List<String> formatedIcd10Codes = getFormatedIcd10Codes(diagnoskod);
-                fmbs.addAll(getFmbs(senateAndring, aktivitetsbegransning, funktionsnedsattning,
-                        symtomprognosbehandling, beskrivning, formatedIcd10Codes));
-                fmbs.addAll(getTypfallForDx(typfall, formatedIcd10Codes, senateAndring));
-            }
-        }
-        return fmbs;
+    private void validateResponse(final FmdxInformation diagnosinformation, final Typfall typfall) {
+        Preconditions.checkArgument(Objects.nonNull(diagnosinformation));
+        Preconditions.checkArgument(Objects.nonNull(diagnosinformation.getData()));
+        Preconditions.checkArgument(Objects.nonNull(typfall));
     }
 
-    private List<Fmb> getTypfallForDx(Typfall typfall, List<String> diagnoskods, String senateAndring) {
-        final List<Fmb> fmbs = new ArrayList<>();
-        final List<TypfallData> datas = typfall.getData();
-        if (datas == null || datas.isEmpty()) {
-            LOG.info("Typfall datas is null");
-            return fmbs;
-        }
-        for (TypfallData data : datas) {
-            final se.inera.intyg.webcert.integration.fmb.model.typfall.Attributes attributes = data.getAttributes();
-            if (attributes != null) {
-                final String typfallsmening = attributes.getTypfallsmening();
-                final Fmbtillstand fmbtillstand = attributes.getFmbtillstand();
-                final List<Kod> dxs = fmbtillstand != null ? fmbtillstand.getDiagnoskod() : Collections.emptyList();
-                for (Kod dx : dxs) {
-                    final String kod = dx.getKod();
-                    if (diagnoskods.contains(kod)) {
-                        fmbs.add(new Fmb(kod, FmbType.BESLUTSUNDERLAG_TEXTUELLT, FmbCallType.FMB, typfallsmening, senateAndring));
-                    }
-                }
-            }
-        }
-        return fmbs;
+    private Beskrivning convertToBeskrivning(final FmxBeskrivning beskrivning, final BeskrivningTyp beskrivningTyp) {
+        final List<IcfKod> icfKodList = Lists.newArrayList();
+        icfKodList.addAll(convertToIcfKodList(beskrivning.getCentralkod(), IcfKodTyp.CENTRAL));
+        icfKodList.addAll(convertToIcfKodList(beskrivning.getKompletterandekod(), IcfKodTyp.KOMPLETTERANDE));
+
+        return aBeskrivning()
+                .beskrivningTyp(beskrivningTyp)
+                .beskrivningText(beskrivning.getBeskrivning() != null ? beskrivning.getBeskrivning() : "")
+                .icfKodList(icfKodList)
+                .build();
     }
 
-    private List<Fmb> getFmbs(@Nonnull String senateAndring, String aktivitetsbegransningBeskrivning,
-                              String funktionsnedsattningBeskrivning, String symptomPrognosBehandling,
-                              String generellInformation, List<String> formatedIcd10Codes) {
-        final List<Fmb> fmbs = new ArrayList<>();
-        for (String code : formatedIcd10Codes) {
-            if (symptomPrognosBehandling != null) {
-                fmbs.add(new Fmb(code, FmbType.SYMPTOM_PROGNOS_BEHANDLING, FmbCallType.DIAGNOSINFORMATION, symptomPrognosBehandling,
-                        senateAndring));
-            }
-            if (generellInformation != null) {
-                fmbs.add(new Fmb(code, FmbType.GENERELL_INFO, FmbCallType.DIAGNOSINFORMATION, generellInformation, senateAndring));
-            }
-            if (funktionsnedsattningBeskrivning != null) {
-                fmbs.add(new Fmb(code, FmbType.FUNKTIONSNEDSATTNING, FmbCallType.DIAGNOSINFORMATION, funktionsnedsattningBeskrivning,
-                        senateAndring));
-            }
-            if (aktivitetsbegransningBeskrivning != null) {
-                fmbs.add(new Fmb(code, FmbType.AKTIVITETSBEGRANSNING, FmbCallType.DIAGNOSINFORMATION, aktivitetsbegransningBeskrivning,
-                        senateAndring));
-            }
-        }
-        return fmbs;
+    private List<IcfKod> convertToIcfKodList(final List<Kod> kodList, IcfKodTyp kodTyp) {
+        return kodList.stream()
+                .map(kod -> anIcfKod()
+                        .icfKodTyp(kodTyp)
+                        .kod(kod.getOptionalKod().isPresent()
+                                ? kod.getOptionalKod().get().replaceAll("\\.", "").toUpperCase(Locale.ENGLISH)
+                                : null)
+                        .build())
+                .collect(Collectors.toList());
     }
 
-    @Nonnull
-    private List<String> getFormatedIcd10Codes(@Nullable List<Kod> huvuddxs) {
-        final List<String> codes = new ArrayList<>();
-        if (huvuddxs == null) {
-            LOG.info("Missing huvuddiagnos");
-            return codes;
-        }
-        for (Kod huvuddx : huvuddxs) {
-            final String code = getFormatedIcd10Code(huvuddx);
-            if (code != null) {
-                codes.add(code);
-            }
-        }
-        return codes;
+    private List<TypFall> convertToTypFallList(final Typfall typfall, final Kod kod) {
+        return typfall.getData().stream()
+                .map(TypfallData::getAttributes)
+                .filter(filterTypfall(kod))
+                .map(attributes -> aTypFall()
+                        .typfallsMening(attributes.getTypfallsmening())
+                        .maximalSjukrivningstid(attributes.getOptionalRekommenderadsjukskrivning()
+                                .map(Rekommenderadsjukskrivning::getMaximalsjukskrivningstid)
+                                .map(Ints::tryParse)
+                                .orElse(0))
+                        .build())
+                .collect(Collectors.toList());
     }
 
-    @Nullable
-    private String getFormatedIcd10Code(@Nullable Kod huvuddx) {
-        if (huvuddx == null) {
-            return null;
-        }
-        final String kod = huvuddx.getKod();
-
-        if (kod == null) {
-            return null;
-        }
-        return kod.replaceAll("\\.", "").toUpperCase(Locale.ENGLISH);
+    private Predicate<se.inera.intyg.webcert.integration.fmb.model.typfall.Attributes> filterTypfall(final Kod kod) {
+        return typFall -> typFall.getOptionalFmbtillstand().map(Fmbtillstand::getDiagnoskod).orElse(Collections.emptyList()).contains(kod);
     }
 
+    private List<Icd10Kod> convertToIcd10KodList(final Attributes attributes, final Typfall typfallList) {
+
+        return attributes.getDiagnoskod().stream()
+                .map(kod -> anIcd10Kod()
+                        .kod(kod.getOptionalKod().isPresent()
+                                ? kod.getOptionalKod().get().replaceAll("\\.", "").toUpperCase(Locale.ENGLISH)
+                                : null)
+                        .beskrivning(kod.getBeskrivning())
+                        .typFallList(convertToTypFallList(typfallList, kod))
+                        .build())
+                .collect(Collectors.toList());
+    }
+
+    private List<Referens> convertToReferensList(final Attributes attributes) {
+        return attributes.getReferens().stream()
+                .map(referens -> aReferens()
+                        .text(referens.getText())
+                        .uri(referens.getUri())
+                        .build())
+                .collect(Collectors.toList());
+    }
 }

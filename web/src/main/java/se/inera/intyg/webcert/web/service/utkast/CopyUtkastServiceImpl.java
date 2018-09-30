@@ -18,6 +18,7 @@
  */
 package se.inera.intyg.webcert.web.service.utkast;
 
+import java.text.MessageFormat;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Map;
@@ -194,6 +195,7 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
             }
             verifyNotReplacedWithSigned(copyRequest.getOriginalIntygId(), "create renewal");
             verifyNotComplementedWithSigned(copyRequest.getOriginalIntygId(), "create renewal");
+            verifySigned(originalIntygId, copyRequest.getOriginalIntygTyp(), "create renewal");
 
             CopyUtkastBuilderResponse builderResponse = buildRenewalUtkastBuilderResponse(copyRequest, originalIntygId, coherentJournaling);
 
@@ -230,8 +232,9 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
                 throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE,
                         "Can not create replacement copy - Original certificate is revoked");
             }
-            verifyNotReplaced(replacementRequest.getOriginalIntygId(), "create replacement");
-            verifyNotComplementedWithSigned(replacementRequest.getOriginalIntygId(), "create replacement");
+            verifyNotReplaced(originalIntygId, "create replacement");
+            verifyNotComplementedWithSigned(originalIntygId, "create replacement");
+            verifySigned(originalIntygId, replacementRequest.getOriginalIntygTyp(), "create replacement");
 
             CopyUtkastBuilderResponse builderResponse = buildReplacementUtkastBuilderResponse(replacementRequest, originalIntygId);
 
@@ -339,6 +342,17 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
         }
     }
 
+    private void verifySigned(final String originalIntygId, final String originalIntygTyp, final String operation) {
+        final Utkast utkast = utkastRepository.findByIntygsIdAndIntygsTyp(originalIntygId, originalIntygTyp);
+        if (utkast == null || UtkastServiceImpl.isUtkast(utkast) || utkast.getSignatur() == null) {
+            final String message = MessageFormat.format("Certificate {0} is not signed, cannot {1} an unsigned certificate",
+                    originalIntygId, operation);
+
+            LOG.debug(message);
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, message);
+        }
+    }
+
     private void verifyUniktIntyg(WebCertUser user, CreateUtkastFromTemplateRequest copyRequest) {
         String intygsTyp = copyRequest.getTyp();
 
@@ -404,7 +418,7 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
     private void verifyNotReplaced(String originalIntygId, String operation) {
         final Optional<WebcertCertificateRelation> replacedByRelation = certificateRelationService.getNewestRelationOfType(originalIntygId,
                 RelationKod.ERSATT, Arrays.asList(UtkastStatus.values()));
-        if (replacedByRelation.isPresent()) {
+        if (replacedByRelation.isPresent() && !replacedByRelation.get().isMakulerat()) {
             String errorString = String.format("Cannot %s for certificate id '%s', the certificate is replaced by certificate '%s'",
                     operation, originalIntygId, replacedByRelation.get().getIntygsId());
             LOG.debug(errorString);

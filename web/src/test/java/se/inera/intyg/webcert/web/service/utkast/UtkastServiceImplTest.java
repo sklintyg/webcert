@@ -272,7 +272,6 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         ValidateDraftResponse validationResponse = new ValidateDraftResponse(ValidationStatus.INVALID, Collections.singletonList(valMsg));
         Utlatande utlatande = mock(Utlatande.class);
         when(moduleRegistry.getModuleApi(anyString(), anyString())).thenReturn(mockModuleApi);
-        when(moduleRegistry.resolveVersionFromUtlatandeJson(anyString())).thenReturn(INTYG_TYPE_VERSION);
         when(mockUtkastRepository.save(any(Utkast.class))).then(invocation -> invocation.getArguments()[0]);
     }
 
@@ -964,7 +963,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         List<GroupableItem> queryResult = new ArrayList<>();
 
         when(userService.getUser()).thenReturn(createUser());
-        when(mockUtkastRepository.getIntygWithStatusesByEnhetsId(anyList(), anyList(), anySet())).thenReturn(queryResult);
+        when(mockUtkastRepository.getIntygWithStatusesByEnhetsId(anyList(), anySet(), anySet())).thenReturn(queryResult);
 
         Map<String, Long> resultMap = new HashMap<>();
         resultMap.put("HSA1", 2L);
@@ -973,7 +972,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
         Map<String, Long> result = draftService.getNbrOfUnsignedDraftsByCareUnits(Arrays.asList("HSA1", "HSA2"));
 
-        verify(mockUtkastRepository, times(1)).getIntygWithStatusesByEnhetsId(anyList(), anyList(), anySet());
+        verify(mockUtkastRepository, times(1)).getIntygWithStatusesByEnhetsId(anyList(), anySet(), anySet());
         verify(statisticsGroupByUtil, times(1)).toSekretessFilteredMap(queryResult);
 
         assertEquals(1, result.size());

@@ -22,14 +22,12 @@ import static com.google.common.collect.MoreCollectors.onlyElement;
 import static org.awaitility.Awaitility.await;
 import static org.junit.Assert.assertEquals;
 
-import com.google.common.collect.ImmutableList;
 import org.apache.activemq.ActiveMQConnection;
 import org.apache.activemq.command.ActiveMQQueue;
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.support.TestPropertySourceUtils;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
@@ -38,18 +36,20 @@ import java.util.concurrent.atomic.AtomicInteger;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
 import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
+import se.inera.intyg.webcert.notificationstub.v3.NotificationStubStateBean;
 
 
 @ContextConfiguration("/notifications/integration-test-notification-sender-config.xml")
 public class RouteFelBUnHandledIT extends AbstractBaseIT {
 
+    @Autowired
+    private NotificationStubStateBean notificationStubStateBean;
+
     @Test
     public void testFelBUnhandled() throws Exception {
+        String orgErrorCode = notificationStubStateBean.getErrorCode();
+        notificationStubStateBean.setErrorCode("1");
 
-        //this enables a stub to create FelB responses and
-        final List<String> properties = ImmutableList.of("certificatestatusupdateforcare.emulateError=1");
-
-        TestPropertySourceUtils.addInlinedPropertiesToEnvironment(applicationContext, properties.toArray(ArrayUtils.toArray()));
         NotificationMessage message = createNotificationMessage("intyg1", LocalDateTime.now(), HandelsekodEnum.ANDRAT, "luae_fs", SchemaVersion.VERSION_3);
 
         sendMessage(message);
@@ -70,5 +70,6 @@ public class RouteFelBUnHandledIT extends AbstractBaseIT {
         final int nbrMessages = status.stream().filter(pair -> pair.getLeft().equals("DLQ.sendNotificationToWS")).map(Pair::getRight).collect(onlyElement());
 
         assertEquals(1, nbrMessages);
+        notificationStubStateBean.setErrorCode(orgErrorCode);
     }
 }

@@ -32,6 +32,7 @@ import se.funktionstjanster.grp.v1.ProgressStatusType;
 import se.inera.intyg.infra.security.common.model.AuthenticationMethod;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.web.auth.eleg.FakeElegCredentials;
+import se.inera.intyg.webcert.web.service.underskrift.model.SignMethod;
 import se.inera.intyg.webcert.web.web.controller.integrationtest.BaseRestIntegrationTest;
 
 import java.io.IOException;
@@ -63,7 +64,7 @@ public class SignatureApiControllerIT extends BaseRestIntegrationTest {
                 .contentType(ContentType.JSON)
                 .expect().statusCode(200)
                 .when().post(SIGNATURE_API_BASE + "/" + intyg.getIntygsTyp() + "/" + intyg.getId() + "/" + intyg.getVersion()
-                        + "/signeringshash")
+                        + "/signeringshash/" + SignMethod.FAKE.name())
                 .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-signatur-response-schema.json"))
                 .body("hash", Matchers.notNullValue())
                 .extract().response();
@@ -79,7 +80,7 @@ public class SignatureApiControllerIT extends BaseRestIntegrationTest {
                 .contentType(ContentType.JSON)
                 .expect().statusCode(200)
                 .when().post(SIGNATURE_API_BASE + "/" + intyg.getIntygsTyp() + "/" + intyg.getId() + "/" + intyg.getVersion()
-                        + "/signeringshash")
+                        + "/signeringshash/" + SignMethod.FAKE.name())
                 .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-signatur-response-schema.json"))
                 .body("hash", Matchers.notNullValue())
                 .body("status", equalTo("BEARBETAR"))
@@ -117,7 +118,7 @@ public class SignatureApiControllerIT extends BaseRestIntegrationTest {
                 .expect().statusCode(200)
                 .when()
                 .post(SIGNATURE_API_BASE + "/" + intyg.getIntygsTyp() + "/" + intyg.getId() + "/" + intyg.getVersion()
-                        + "/signeringshash")
+                        + "/signeringshash/" + SignMethod.GRP.name())
                 .then()
                 .body(matchesJsonSchemaInClasspath("jsonschema/webcert-signatur-response-schema.json"))
                 .body("status", equalTo("BEARBETAR"))
@@ -190,7 +191,7 @@ public class SignatureApiControllerIT extends BaseRestIntegrationTest {
         Response responseTicket = given().cookie("ROUTEID", BaseRestIntegrationTest.routeId).contentType(ContentType.JSON)
                 .expect().statusCode(200)
                 .when().post(SIGNATURE_API_BASE + "/" + intyg.getIntygsTyp() + "/" + intyg.getId() + "/" + intyg.getVersion()
-                        + "/signeringshash")
+                        + "/signeringshash/" + SignMethod.FAKE.name())
                 .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-signatur-response-schema.json")).extract().response();
 
         JsonPath model = new JsonPath(responseTicket.body().asString());
@@ -222,7 +223,8 @@ public class SignatureApiControllerIT extends BaseRestIntegrationTest {
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
                 .contentType(ContentType.JSON)
                 .expect().statusCode(500)
-                .when().post(SIGNATURE_API_BASE + "/" + intygsTyp + "/" + intygsId + "/" + version + "/signeringshash")
+                .when()
+                .post(SIGNATURE_API_BASE + "/" + intygsTyp + "/" + intygsId + "/" + version + "/signeringshash/" + SignMethod.FAKE.name())
                 .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-error-response-schema.json"))
                 .body("errorCode", equalTo(WebCertServiceErrorCodeEnum.INVALID_STATE.name()))
                 .body("message", not(isEmptyString()));

@@ -18,15 +18,17 @@
  */
 package se.inera.intyg.webcert.integration.fmb.model.fmdxinfo;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.google.common.collect.Lists;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import se.inera.intyg.webcert.integration.fmb.model.Giltighetsperiod;
 import se.inera.intyg.webcert.integration.fmb.model.Kod;
 import se.inera.intyg.webcert.integration.fmb.model.Sjukdomsgrupp;
@@ -221,6 +223,10 @@ public class Attributes {
         return forsakringsmedicinskinformation;
     }
 
+    public Optional<Markup> getOptionalForsakringsmedicinskinformation() {
+        return Optional.ofNullable(forsakringsmedicinskinformation);
+    }
+
     @JsonProperty("forsakringsmedicinskinformation")
     public void setForsakringsmedicinskinformation(Markup forsakringsmedicinskinformation) {
         this.forsakringsmedicinskinformation = forsakringsmedicinskinformation;
@@ -229,6 +235,10 @@ public class Attributes {
     @JsonProperty("symtomprognosbehandling")
     public Markup getSymtomprognosbehandling() {
         return symtomprognosbehandling;
+    }
+
+    public Optional<Markup> getOptionalSymtomprognosbehandling() {
+        return Optional.ofNullable(symtomprognosbehandling);
     }
 
     @JsonProperty("symtomprognosbehandling")
@@ -248,7 +258,7 @@ public class Attributes {
 
     @JsonProperty("diagnoskod")
     public List<Kod> getDiagnoskod() {
-        return diagnoskod;
+        return diagnoskod != null ? diagnoskod : Lists.newArrayList();
     }
 
     @JsonProperty("diagnoskod")
@@ -261,6 +271,10 @@ public class Attributes {
         return aktivitetsbegransning;
     }
 
+    public Optional<Aktivitetsbegransning> getOptionalAktivitetsbegransning() {
+        return Optional.ofNullable(aktivitetsbegransning);
+    }
+
     @JsonProperty("aktivitetsbegransning")
     public void setAktivitetsbegransning(Aktivitetsbegransning aktivitetsbegransning) {
         this.aktivitetsbegransning = aktivitetsbegransning;
@@ -271,6 +285,10 @@ public class Attributes {
         return funktionsnedsattning;
     }
 
+    public Optional<Funktionsnedsattning> getOptionalFunktionsnedsattning() {
+        return Optional.ofNullable(funktionsnedsattning);
+    }
+
     @JsonProperty("funktionsnedsattning")
     public void setFunktionsnedsattning(Funktionsnedsattning funktionsnedsattning) {
         this.funktionsnedsattning = funktionsnedsattning;
@@ -278,7 +296,7 @@ public class Attributes {
 
     @JsonProperty("referens")
     public List<Referen> getReferens() {
-        return referens;
+        return referens != null ? referens : Lists.newArrayList();
     }
 
     @JsonProperty("referens")

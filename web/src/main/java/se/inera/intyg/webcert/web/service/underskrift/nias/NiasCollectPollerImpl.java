@@ -128,43 +128,47 @@ public class NiasCollectPollerImpl implements NiasCollectPoller {
                                 resp.getProgressStatus());
                         break;
                     case "USER_CANCEL":
+                        case "CANCELLED":
+                            redisTicketTracker.updateStatus(ticketId, SignaturStatus.AVBRUTEN);
+                            LOG.info("NIAS signing {} cancelled due to progress state {}", ticketId, resp.getProgressStatus());
+                            return;
                     case "EXPIRED_TRANSACTION":
-                    case "CANCELLED":
                     case "ALREADY_COLLECTED":
-                        redisTicketTracker.updateStatus(ticketId, SignaturStatus.OKAND);
+                        redisTicketTracker.updateStatus(ticketId, SignaturStatus.ERROR);
                         LOG.error("NIAS signing {} aborted due to progress state {}", ticketId, resp.getProgressStatus());
                         return;
                     case "SIGN_VALIDATION_FAILED":
-                        redisTicketTracker.updateStatus(ticketId, SignaturStatus.OKAND);
+                        redisTicketTracker.updateStatus(ticketId, SignaturStatus.ERROR);
                         LOG.error("NIAS signing {} failed, NetiD Access did not accept the sign validation. "
                                 + "Progress state {}", ticketId, resp.getProgressStatus());
                         return;
                     case "UNKNOWN_USER":
-                        redisTicketTracker.updateStatus(ticketId, SignaturStatus.OKAND);
+                        redisTicketTracker.updateStatus(ticketId, SignaturStatus.ERROR);
                         LOG.error("NIAS signing {} failed, NetiD Access did not accept the specified user. "
                                 + "Progress state {}", ticketId, resp.getProgressStatus());
                         return;
                     case "INVALID_DEVICESW":
                     case "ACCESS_DENIED_RP":
                     case "INVALID_PARAMETERS":
-                        redisTicketTracker.updateStatus(ticketId, SignaturStatus.OKAND);
+                        redisTicketTracker.updateStatus(ticketId, SignaturStatus.ERROR);
                         LOG.error("NIAS signing {} failed, NetiD Access reported a technical problem or bad signing request. "
                                 + "Progress state {}", ticketId, resp.getProgressStatus());
                         return;
                     case "INTERNAL_ERROR":
-                        redisTicketTracker.updateStatus(ticketId, SignaturStatus.OKAND);
+                        redisTicketTracker.updateStatus(ticketId, SignaturStatus.ERROR);
                         LOG.error("NIAS signing {} failed, NetiD Access reported an unspecified internal error. Progress "
                                 + "state {}", ticketId, resp.getProgressStatus());
                         return;
 
                     case "RETRY":
-                        redisTicketTracker.updateStatus(ticketId, SignaturStatus.OKAND);
+                        redisTicketTracker.updateStatus(ticketId, SignaturStatus.ERROR);
                         LOG.error("NIAS signing {} failed, NetiD Access reported retry, which may indicate an internal "
                                 + "intermittent issue on their side. Progress state {}", ticketId, resp.getProgressStatus());
                         return;
                     }
 
                 } catch (Exception ex) {
+                    redisTicketTracker.updateStatus(ticketId, SignaturStatus.ERROR);
                     LOG.error("Error occurred handling collect response: " + ex.getMessage());
                     // Always terminate loop after an Exception has been encountered
                     return;

@@ -18,8 +18,10 @@
  */
 package se.inera.intyg.webcert.integration.fmb.model;
 
+import java.util.Optional;
+
 public interface FmInfo {
 
-    Meta getMeta();
+    Optional<Meta> getOptionalMeta();
 
 }

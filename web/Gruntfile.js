@@ -37,6 +37,8 @@ module.exports = function(grunt) {
         ngtemplates: 'grunt-angular-templates'
     });
 
+    var sass = require('node-sass');
+
     var SRC_DIR = 'src/main/webapp/app/';
     var TEST_DIR = 'src/test/js/';
     var DEST_DIR = (grunt.option('outputDir') || 'build/apps') +  '/app/';
@@ -239,6 +241,7 @@ module.exports = function(grunt) {
         // Compiles Sass to CSS
         sass: {
             options: {
+                implementation: sass,
                 update: true
             },
             dev: {

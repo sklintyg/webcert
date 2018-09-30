@@ -37,6 +37,7 @@ public class SignaturBiljett implements Serializable {
     private LocalDateTime skapad;
     private SignaturTyp signaturTyp;
     private String hash;
+    private SignMethod signMethod;
 
     public String getTicketId() {
         return ticketId;
@@ -102,6 +103,14 @@ public class SignaturBiljett implements Serializable {
         this.hash = hash;
     }
 
+    public SignMethod getSignMethod() {
+        return signMethod;
+    }
+
+    public void setSignMethod(SignMethod signMethod) {
+        this.signMethod = signMethod;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -131,14 +140,16 @@ public class SignaturBiljett implements Serializable {
         private LocalDateTime skapad;
         private SignaturTyp signaturTyp;
         private String hash;
+        private SignMethod signMethod;
 
-        private SignaturBiljettBuilder(String ticketId, SignaturTyp signaturTyp) {
+        private SignaturBiljettBuilder(String ticketId, SignaturTyp signaturTyp, SignMethod signMethod) {
             this.ticketId = ticketId;
             this.signaturTyp = signaturTyp;
+            this.signMethod = signMethod;
         }
 
-        public static SignaturBiljettBuilder aSignaturBiljett(String ticketId, SignaturTyp signaturTyp) {
-            return new SignaturBiljettBuilder(ticketId, signaturTyp);
+        public static SignaturBiljettBuilder aSignaturBiljett(String ticketId, SignaturTyp signaturTyp, SignMethod signMethod) {
+            return new SignaturBiljettBuilder(ticketId, signaturTyp, signMethod);
         }
 
         public SignaturBiljettBuilder withIntygsId(String intygsId) {
@@ -171,9 +182,15 @@ public class SignaturBiljett implements Serializable {
             return this;
         }
 
+        public SignaturBiljettBuilder withSignMethod(SignMethod signMethod) {
+            this.signMethod = signMethod;
+            return this;
+        }
+
         public SignaturBiljett build() {
             checkArgument(nonNull(ticketId));
             checkArgument(nonNull(signaturTyp));
+            checkArgument(nonNull(signMethod));
 
             SignaturBiljett signaturBiljett = new SignaturBiljett();
             signaturBiljett.setTicketId(ticketId);
@@ -184,6 +201,7 @@ public class SignaturBiljett implements Serializable {
             signaturBiljett.setSkapad(skapad);
             signaturBiljett.setSignaturTyp(signaturTyp);
             signaturBiljett.setHash(hash);
+            signaturBiljett.setSignMethod(signMethod);
             return signaturBiljett;
         }
     }

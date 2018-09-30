@@ -145,7 +145,7 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
         certificateResponse = new CertificateResponse(json, utlatande, metaData, false);
 
         WebcertCertificateRelation ersattRelation = new WebcertCertificateRelation(INTYG_ID, RelationKod.ERSATT, LocalDateTime.now(),
-                UtkastStatus.SIGNED);
+                UtkastStatus.SIGNED, false);
 
         when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.FALSE);
         when(webCertUserService.isAuthorizedForUnit(anyString(), anyString(), anyBoolean())).thenReturn(true);

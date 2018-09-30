@@ -27,6 +27,7 @@ import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.underskrift.BaseXMLSignatureService;
 import se.inera.intyg.webcert.web.service.underskrift.CommonUnderskriftService;
+import se.inera.intyg.webcert.web.service.underskrift.model.SignMethod;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturBiljett;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturStatus;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
@@ -47,12 +48,14 @@ public class XmlUnderskriftServiceImpl extends BaseXMLSignatureService implement
     private MonitoringLogService monitoringLogService;
 
     @Override
-    public SignaturBiljett skapaSigneringsBiljettMedDigest(String intygsId, String intygsTyp, long version, String utkastJson) {
+    public SignaturBiljett skapaSigneringsBiljettMedDigest(String intygsId, String intygsTyp, long version, String utkastJson,
+            SignMethod signMethod) {
         String registerCertificateXml = utkastModelToXMLConverter.utkastToXml(utkastJson, intygsTyp);
         IntygXMLDSignature intygSignature = prepareSignatureService.prepareSignature(registerCertificateXml, intygsId);
         intygSignature.setIntygJson(utkastJson);
 
-        SignaturBiljett biljett = SignaturBiljett.SignaturBiljettBuilder.aSignaturBiljett(UUID.randomUUID().toString(), SignaturTyp.XMLDSIG)
+        SignaturBiljett biljett = SignaturBiljett.SignaturBiljettBuilder
+                .aSignaturBiljett(UUID.randomUUID().toString(), SignaturTyp.XMLDSIG, signMethod)
                 .withIntygsId(intygsId)
                 .withVersion(version)
                 .withIntygSignature(intygSignature)

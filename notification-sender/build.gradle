@@ -22,6 +22,8 @@ dependencies {
     compile "org.apache.camel:camel-jaxb:${camelVersion}"
     compile "org.apache.activemq:activemq-camel:${activeMqVersion}"
 
+    testCompile project(':notification-stub')
+
     testCompile("se.inera.intyg.common:lisjp:${commonVersion}")
 
     testCompile "org.awaitility:awaitility:${awaitilityVersion}"

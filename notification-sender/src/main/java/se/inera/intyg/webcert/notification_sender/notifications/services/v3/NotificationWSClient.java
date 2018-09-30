@@ -24,6 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.infra.security.authorities.FeaturesHelper;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.webcert.common.sender.exception.PermanentException;
@@ -72,7 +73,9 @@ public class NotificationWSClient {
                 if (featuresHelper != null && featuresHelper.isFeatureActive(AuthoritiesConstants.FEATURE_NOTIFICATION_DISCARD_FELB)) {
                     if (result.getResultText()
                             .startsWith("Certificate not found in COSMIC and ref field is missing, cannot store certificate. "
-                            + "Possible race condition. Retry later when the certificate may have been stored in COSMIC.")) {
+                            + "Possible race condition. Retry later when the certificate may have been stored in COSMIC.")
+                            && (request.getHandelse().getHandelsekod().getCode().equals(HandelsekodEnum.ANDRAT.value())
+                            || request.getHandelse().getHandelsekod().getCode().equals(HandelsekodEnum.SKAPAT.value()))) {
                         throw new DiscardCandidateException(
                                 String.format("NotificationWSClient caught COSMIC-typB with error code: %s and message %s",
                                 result.getErrorId(),

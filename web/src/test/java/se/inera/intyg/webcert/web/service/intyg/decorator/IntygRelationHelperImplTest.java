@@ -93,15 +93,15 @@ public class IntygRelationHelperImplTest {
         Relations webcertRelations = new Relations();
         Relations.FrontendRelations fr = webcertRelations.getLatestChildRelations();
         fr.setReplacedByIntyg(new WebcertCertificateRelation(OTHER_INTYG_ID_2, RelationKod.ERSATT, LocalDateTime.now().minusDays(1),
-                UtkastStatus.SIGNED));
+                UtkastStatus.SIGNED, false));
         fr.setReplacedByUtkast(new WebcertCertificateRelation(OTHER_INTYG_ID_2, RelationKod.ERSATT, LocalDateTime.now().minusDays(1),
-                UtkastStatus.DRAFT_COMPLETE));
+                UtkastStatus.DRAFT_COMPLETE, false));
         fr.setComplementedByIntyg(new WebcertCertificateRelation(OTHER_INTYG_ID_2, RelationKod.KOMPLT, LocalDateTime.now().minusDays(2),
-                UtkastStatus.SIGNED));
+                UtkastStatus.SIGNED, false));
         fr.setComplementedByUtkast(new WebcertCertificateRelation(OTHER_INTYG_ID_2, RelationKod.KOMPLT, LocalDateTime.now().minusDays(2),
-                UtkastStatus.DRAFT_INCOMPLETE));
+                UtkastStatus.DRAFT_INCOMPLETE, false));
         webcertRelations.setParent(
-                new WebcertCertificateRelation(PARENT_INTYG_1, RelationKod.KOMPLT, LocalDateTime.now().minusDays(3), UtkastStatus.SIGNED));
+                new WebcertCertificateRelation(PARENT_INTYG_1, RelationKod.KOMPLT, LocalDateTime.now().minusDays(3), UtkastStatus.SIGNED, false));
 
         when(certificateRelationService.getRelations(INTYG_ID)).thenReturn(webcertRelations);
 
@@ -179,6 +179,18 @@ public class IntygRelationHelperImplTest {
         verifyZeroInteractions(listRelationsForCertificateResponderInterface);
     }
 
+    @Test
+    public void testErsattandeRevoked() {
+        ListRelationsForCertificateResponseType response = buildResponse();
+        response.getIntygRelation().get(0).getRelation().get(0).setFranIntygMakulerat(true);
+        when(listRelationsForCertificateResponderInterface.listRelationsForCertificate(isNull(),
+                any(ListRelationsForCertificateType.class))).thenReturn(response);
+
+        Relations relationsForIntyg = testee.getRelationsForIntyg(INTYG_ID);
+        assertNotNull(relationsForIntyg);
+        assertFrontendRelationsIntygsIds(relationsForIntyg.getLatestChildRelations(), null, null, null, null);
+    }
+
     private List<ListIntygEntry> buildList() {
         ListIntygEntry listIntygEntry = new ListIntygEntry();
         listIntygEntry.setIntygId(INTYG_ID);
@@ -189,9 +201,9 @@ public class IntygRelationHelperImplTest {
         Relations relations = new Relations();
         Relations.FrontendRelations fr = relations.getLatestChildRelations();
         fr.setReplacedByUtkast(new WebcertCertificateRelation(OTHER_INTYG_ID_2, RelationKod.ERSATT, LocalDateTime.now().minusDays(1),
-                UtkastStatus.DRAFT_COMPLETE));
+                UtkastStatus.DRAFT_COMPLETE, false));
         fr.setComplementedByIntyg(new WebcertCertificateRelation(OTHER_INTYG_ID_3, RelationKod.KOMPLT, LocalDateTime.now().minusDays(2),
-                UtkastStatus.SIGNED));
+                UtkastStatus.SIGNED, false));
         return relations;
     }
 
@@ -199,11 +211,11 @@ public class IntygRelationHelperImplTest {
         Relations relations = new Relations();
         Relations.FrontendRelations fr = relations.getLatestChildRelations();
         fr.setReplacedByUtkast(new WebcertCertificateRelation(OTHER_INTYG_ID_2, RelationKod.ERSATT, LocalDateTime.now().minusDays(1),
-                UtkastStatus.DRAFT_COMPLETE));
+                UtkastStatus.DRAFT_COMPLETE, false));
         fr.setComplementedByIntyg(new WebcertCertificateRelation(OTHER_INTYG_ID_3, RelationKod.KOMPLT, LocalDateTime.now().minusDays(2),
-                UtkastStatus.SIGNED));
+                UtkastStatus.SIGNED, false));
         relations.setParent(
-                new WebcertCertificateRelation(PARENT_INTYG_1, RelationKod.KOMPLT, LocalDateTime.now().minusDays(3), UtkastStatus.SIGNED));
+                new WebcertCertificateRelation(PARENT_INTYG_1, RelationKod.KOMPLT, LocalDateTime.now().minusDays(3), UtkastStatus.SIGNED, false));
         return relations;
     }
 

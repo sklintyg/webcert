@@ -18,22 +18,19 @@
  */
 package se.inera.intyg.webcert.web.service.diagnos;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import javax.annotation.PostConstruct;
-
+import com.google.common.base.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
-
-import com.google.common.base.Strings;
-
+import javax.annotation.PostConstruct;
+import java.util.Arrays;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import se.inera.intyg.common.support.common.enumerations.Diagnoskodverk;
 import se.inera.intyg.webcert.web.service.diagnos.dto.DiagnosResponse;
 import se.inera.intyg.webcert.web.service.diagnos.model.Diagnos;
@@ -218,9 +215,11 @@ public class DiagnosServiceImpl implements DiagnosService {
         switch (codeSystem) {
         case ICD_10_SE:
             matches = icd10seDiagnosRepo.searchDiagnosisByDescription(searchString.trim(), nbrOfResults + 1);
+            matches = filterResultList(matches, Diagnoskodverk.ICD_10_SE);
             break;
         case KSH_97_P:
             matches = ksh97pDiagnosRepo.searchDiagnosisByDescription(searchString.trim(), nbrOfResults + 1);
+            matches = filterResultList(matches, Diagnoskodverk.KSH_97_P);
             break;
         default:
             LOG.warn("Unknown code system '{}'", codeSystem);
@@ -298,5 +297,11 @@ public class DiagnosServiceImpl implements DiagnosService {
             LOG.warn("Can not validate diagnosis code, unknown code system '{}'", codeSystemStr);
             return null;
         }
+    }
+
+    private List<Diagnos> filterResultList(final List<Diagnos> diagnosList, final Diagnoskodverk diagnoskodverk) {
+        return diagnosList.stream()
+                .filter(diagnos -> validateDiagnosisCode(diagnos.getKod(), diagnoskodverk))
+                .collect(Collectors.toList());
     }
 }

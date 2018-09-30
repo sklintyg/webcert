@@ -86,7 +86,7 @@ public class FmbStub {
             attributes.setTypfallsmening("Akut bronkit nedsätter normalt inte arbetsförmågan. Om patienten har långvarig svår hosta "
                     + "kan det möjligen påverka allmäntillståndet genom att patienten blir trött. Sjukskrivning enbart i undantagsfall "
                     + "vid tydligt nedsatt allmäntillstånd i upp till 2 veckor. Röstkrävande yrken kan behöva längre sjukskrivning.");
-            attributes.getFmbtillstand().setDiagnoskod(Arrays.asList(getDiagnoskod("J22"), getDiagnoskod("J20")));
+            attributes.getOptionalFmbtillstand().orElse(null).setDiagnoskod(Arrays.asList(getDiagnoskod("J22"), getDiagnoskod("J20")));
             data.add(copy);
         } catch (IOException e) {
             LOG.error("Failed to insert hard coded FMB typfall info", e);
@@ -100,20 +100,20 @@ public class FmbStub {
             final FmdxData copy = copy(fmdxData, FmdxData.class);
             final Attributes attributes = copy.getAttributes();
             attributes.setDiagnoskod(Arrays.asList(getDiagnoskod("J22"), getDiagnoskod("J20")));
-            attributes.getAktivitetsbegransning().setAktivitetsbegransningsbeskrivning("Akut bronkit påverkar inte "
+            attributes.getOptionalAktivitetsbegransning().orElse(null).setBeskrivning("Akut bronkit påverkar inte "
                     + "funktionstillståndet, bortsett från irriterande hosta i normalfallet. "
                     + "Bakteriell sekundärinfektion kan påverka allmäntillståndet genom att patienten blir trött.");
-            attributes.getFunktionsnedsattning().setFunktionsnedsattningsbeskrivning("Tillståndet är vanligtvis "
+            attributes.getOptionalFunktionsnedsattning().orElse(null).setBeskrivning("Tillståndet är vanligtvis "
                     + "kortvarigt och varar några dagar till några veckor. "
                     + "Ibland får patienten hosta under flera månader vilket är ett uttryck för en sekundärinfektion.");
-            attributes.getForsakringsmedicinskinformation().setMarkup("Återkommande akuta bronkiter hos rökare bör "
+            attributes.getOptionalForsakringsmedicinskinformation().orElse(null).setMarkup("Återkommande akuta bronkiter hos rökare bör "
                     + "medföra rökstopp. Bihåleinflammationer efter viroser kan ligga bakom "
                     + "återkommande akuta bronkiter. Långvarig bronkit kan bero på twar eller infektion med "
                     + "mykoplasma pneumoni. "
                     + "\n\nHos patienter med samtidig annan luftvägs- eller lungsjukdom som exempelvis astma eller "
                     + "kol kan symtomen "
                     + "vid akut bronkit bli mer uttalade och funktionsnedsättningen bli mer långdragen.");
-            attributes.getSymtomprognosbehandling().setMarkup("Akut bronkit orsakas vanligen av luftvägsinflammation "
+            attributes.getOptionalSymtomprognosbehandling().orElse(null).setMarkup("Akut bronkit orsakas vanligen av luftvägsinflammation "
                     + "och epitelskada (skador på hud och slemhinnor i kroppen) "
                     + "efter vanlig virusförkylning. Akut bronkit kan ge hosta under flera månader och är ofta "
                     + "tecken på inflammation "

@@ -52,11 +52,18 @@ public class WebcertCertificateRelation {
      */
     private UtkastStatus status;
 
-    public WebcertCertificateRelation(String intygsId, RelationKod relationKod, LocalDateTime skapad, UtkastStatus status) {
+    /**
+     * Given the context of a certificate, this status always denotes the status of the target (other) certificate.
+     */
+    private boolean makulerat;
+
+    public WebcertCertificateRelation(String intygsId, RelationKod relationKod, LocalDateTime skapad,
+                                      UtkastStatus status, boolean makulerat) {
         this.intygsId = intygsId;
         this.relationKod = relationKod;
         this.skapad = skapad;
         this.status = status;
+        this.makulerat = makulerat;
     }
 
     public String getIntygsId() {
@@ -89,6 +96,14 @@ public class WebcertCertificateRelation {
 
     public void setStatus(UtkastStatus status) {
         this.status = status;
+    }
+
+    public boolean isMakulerat() {
+        return makulerat;
+    }
+
+    public void setMakulerat(boolean makulerat) {
+        this.makulerat = makulerat;
     }
 
     @Override

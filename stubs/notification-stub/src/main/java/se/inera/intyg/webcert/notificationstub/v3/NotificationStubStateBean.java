@@ -23,7 +23,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class NotificationStubStateBean {
 
-    private String errorCode = null;
+    private String errorCode = "0";
 
     public String getErrorCode() {
         return errorCode;
@@ -36,10 +36,11 @@ public class NotificationStubStateBean {
             case "2":
             case "3":
             case "4":
+            case "5":
                 this.errorCode = errorCode;
                 break;
             default:
-                this.errorCode = null;
+                this.errorCode = "0";
         }
     }
 }

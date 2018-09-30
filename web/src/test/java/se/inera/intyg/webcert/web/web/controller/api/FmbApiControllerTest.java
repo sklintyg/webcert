@@ -19,15 +19,9 @@
 package se.inera.intyg.webcert.web.web.controller.api;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import javax.ws.rs.core.Response;
+import static org.mockito.Mockito.doReturn;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -35,20 +29,17 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-
+import javax.ws.rs.core.Response;
+import java.util.Arrays;
+import java.util.List;
 import se.inera.intyg.common.support.common.enumerations.Diagnoskodverk;
 import se.inera.intyg.webcert.integration.fmb.services.FmbService;
-import se.inera.intyg.webcert.persistence.fmb.model.Fmb;
-import se.inera.intyg.webcert.persistence.fmb.model.FmbCallType;
 import se.inera.intyg.webcert.persistence.fmb.model.FmbType;
 import se.inera.intyg.webcert.persistence.fmb.repository.FmbRepository;
 import se.inera.intyg.webcert.web.service.diagnos.DiagnosService;
 import se.inera.intyg.webcert.web.service.diagnos.dto.DiagnosResponse;
 import se.inera.intyg.webcert.web.service.diagnos.model.Diagnos;
-import se.inera.intyg.webcert.web.web.controller.api.dto.FmbContent;
-import se.inera.intyg.webcert.web.web.controller.api.dto.FmbForm;
-import se.inera.intyg.webcert.web.web.controller.api.dto.FmbFormName;
-import se.inera.intyg.webcert.web.web.controller.api.dto.FmbResponse;
+import se.inera.intyg.webcert.web.service.fmb.FmbDiagnosInformationService;
 
 public class FmbApiControllerTest {
 
@@ -57,6 +48,9 @@ public class FmbApiControllerTest {
 
     @Mock
     private FmbRepository fmbRepository;
+
+    @Mock
+    private FmbDiagnosInformationService fmbDiagnosInformationService;
 
     @Mock
     private FmbService fmbService;
@@ -91,159 +85,14 @@ public class FmbApiControllerTest {
     }
 
     @Test
-    public void testGetFmbForIcd10IsReturningCorrectIcdCode() throws Exception {
-        // Given
-        String icd10 = "asdf";
-
-        // When
-        FmbResponse response = (FmbResponse) controller.getFmbForIcd10(icd10).getEntity();
-
-        // Then
-        assertEquals(icd10.toUpperCase(), response.getIcd10Code());
-    }
-
-    @Test
     public void testGetFmbForIcd10HandlesNullResponseFromRepositoryCorrectAndTriesToUpdateFmbData() throws Exception {
         // Given
-        Mockito.doReturn(null).when(fmbRepository).findByIcd10AndTyp(anyString(), any(FmbType.class));
+        doReturn(null).when(fmbRepository).findByIcd10AndTyp(anyString(), any(FmbType.class));
 
         // When
-        FmbResponse response = (FmbResponse) controller.getFmbForIcd10("A10").getEntity();
+        Response response = controller.getFmbForIcd10("A10");
 
         // Then
-        assertEquals(0, response.getForms().size());
-    }
-
-    @Test
-    public void testGetFmbForIcd10HandlesAddsTextForOneRow() throws Exception {
-        // Given
-        ArrayList<Fmb> fmbs = new ArrayList<>();
-        String text = "testtext";
-        fmbs.add(new Fmb("A10", FmbType.FUNKTIONSNEDSATTNING, FmbCallType.FMB, text, "1"));
-        Mockito.doReturn(fmbs).when(fmbRepository).findByIcd10AndTyp(anyString(), any(FmbType.class));
-
-        // When
-        FmbResponse response = (FmbResponse) controller.getFmbForIcd10("A10").getEntity();
-
-        // Then
-        assertEquals(FmbFormName.values().length, response.getForms().size());
-
-        List<FmbForm> forms = response.getForms();
-        for (FmbForm form : forms) {
-            List<FmbContent> content = form.getContent();
-            for (FmbContent fmbContent : content) {
-                assertEquals(text, fmbContent.getText());
-                assertNull(fmbContent.getList());
-            }
-        }
-    }
-
-   @Test
-    public void testGetFmbForIcd10HandlesAddsListOfTextsForSeveralRows() throws Exception {
-        // Given
-        ArrayList<Fmb> fmbs = new ArrayList<>();
-        String testtext = "testtext";
-        fmbs.add(new Fmb("A10", FmbType.BESLUTSUNDERLAG_TEXTUELLT, FmbCallType.FMB, testtext + "1", "1"));
-        fmbs.add(new Fmb("A10", FmbType.BESLUTSUNDERLAG_TEXTUELLT, FmbCallType.FMB, testtext + "2", "1"));
-        Mockito.doReturn(fmbs).when(fmbRepository).findByIcd10AndTyp(anyString(), any(FmbType.class));
-
-        // When
-        FmbResponse response = (FmbResponse) controller.getFmbForIcd10("A10").getEntity();
-
-        // Then
-        assertEquals(FmbFormName.values().length, response.getForms().size());
-
-        List<FmbForm> forms = response.getForms();
-        for (FmbForm form : forms) {
-            List<FmbContent> content = form.getContent();
-            for (FmbContent fmbContent : content) {
-                assertNull(fmbContent.getText());
-                List<String> texts = fmbContent.getList();
-                assertEquals(2, texts.size());
-                for (String text : texts) {
-                    assertEquals(testtext, text.substring(0, text.length() - 1));
-                }
-            }
-        }
-    }
-
-    @Test
-    public void testGetFmbForIcd10RemovesDuplicateRowsInList() throws Exception {
-        // Given
-        ArrayList<Fmb> fmbs = new ArrayList<>();
-        String testtext = "testtext";
-        fmbs.add(new Fmb("A10", FmbType.BESLUTSUNDERLAG_TEXTUELLT, FmbCallType.FMB, testtext + "a", "1"));
-        fmbs.add(new Fmb("A10", FmbType.BESLUTSUNDERLAG_TEXTUELLT, FmbCallType.FMB, testtext + "b", "1"));
-        fmbs.add(new Fmb("A10", FmbType.BESLUTSUNDERLAG_TEXTUELLT, FmbCallType.FMB, testtext + "a", "1"));
-        Mockito.doReturn(fmbs).when(fmbRepository).findByIcd10AndTyp(anyString(), any(FmbType.class));
-
-        // When
-        FmbResponse response = (FmbResponse) controller.getFmbForIcd10("A10").getEntity();
-
-        // Then
-        assertEquals(FmbFormName.values().length, response.getForms().size());
-
-        List<FmbForm> forms = response.getForms();
-        for (FmbForm form : forms) {
-            List<FmbContent> content = form.getContent();
-            for (FmbContent fmbContent : content) {
-                assertNull(fmbContent.getText());
-                List<String> texts = fmbContent.getList();
-                assertEquals(2, texts.size());
-                for (String text : texts) {
-                    assertEquals(testtext, text.substring(0, text.length() - 1));
-                }
-            }
-        }
-    }
-
-    @Test
-    public void testGetFmbForIcd10RemovesDuplicateRowsInText() throws Exception {
-        // Given
-        ArrayList<Fmb> fmbs = new ArrayList<>();
-        String testtext = "testtext";
-        fmbs.add(new Fmb("A10", FmbType.BESLUTSUNDERLAG_TEXTUELLT, FmbCallType.FMB, testtext, "1"));
-        fmbs.add(new Fmb("A10", FmbType.BESLUTSUNDERLAG_TEXTUELLT, FmbCallType.FMB, testtext, "1"));
-        Mockito.doReturn(fmbs).when(fmbRepository).findByIcd10AndTyp(anyString(), any(FmbType.class));
-
-        // When
-        FmbResponse response = (FmbResponse) controller.getFmbForIcd10("A10").getEntity();
-
-        // Then
-        assertEquals(FmbFormName.values().length, response.getForms().size());
-
-        List<FmbForm> forms = response.getForms();
-        for (FmbForm form : forms) {
-            List<FmbContent> content = form.getContent();
-            for (FmbContent fmbContent : content) {
-                assertEquals(testtext, fmbContent.getText());
-                assertNull(fmbContent.getList());
-            }
-        }
-    }
-
-    @Test
-    public void testGetFmbForIcd10TryFewerPositionsWhenNotFound() throws Exception {
-        // Given
-        ArrayList<Fmb> fmbs = new ArrayList<>();
-        String text = "testtext";
-        fmbs.add(new Fmb("M118", FmbType.FUNKTIONSNEDSATTNING, FmbCallType.FMB, text, "1"));
-        Mockito.when(fmbRepository.findByIcd10AndTyp(Mockito.eq("M118G"), any(FmbType.class))).thenReturn(null);
-        Mockito.when(fmbRepository.findByIcd10AndTyp(Mockito.eq("M118"), any(FmbType.class))).thenReturn(fmbs);
-
-        // When
-        FmbResponse response = (FmbResponse) controller.getFmbForIcd10("M118G").getEntity();
-
-        // Then
-        assertEquals(FmbFormName.values().length, response.getForms().size());
-
-        List<FmbForm> forms = response.getForms();
-        for (FmbForm form : forms) {
-            List<FmbContent> content = form.getContent();
-            for (FmbContent fmbContent : content) {
-                assertEquals(text, fmbContent.getText());
-                assertNull(fmbContent.getList());
-            }
-        }
+        assertEquals(204, response.getStatus());
     }
 }

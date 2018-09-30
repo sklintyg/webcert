@@ -18,18 +18,8 @@
  */
 package se.inera.intyg.webcert.web.auth.authorities.validation;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import se.inera.intyg.infra.security.authorities.AuthoritiesException;
-import se.inera.intyg.infra.security.authorities.validation.AuthoritiesValidator;
-import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
-import se.inera.intyg.infra.security.common.model.Feature;
-import se.inera.intyg.infra.security.common.model.Privilege;
-import se.inera.intyg.infra.security.common.model.RequestOrigin;
-import se.inera.intyg.infra.security.common.model.Role;
-import se.inera.intyg.infra.security.common.model.UserOriginType;
-import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -40,8 +30,19 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.ExpectedException;
+
+import se.inera.intyg.infra.security.authorities.AuthoritiesException;
+import se.inera.intyg.infra.security.authorities.validation.AuthoritiesValidator;
+import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.infra.security.common.model.Feature;
+import se.inera.intyg.infra.security.common.model.Privilege;
+import se.inera.intyg.infra.security.common.model.RequestOrigin;
+import se.inera.intyg.infra.security.common.model.Role;
+import se.inera.intyg.infra.security.common.model.UserOriginType;
+import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 ;
 
@@ -63,6 +64,7 @@ public class AuthoritiesValidatorTest {
                     Feature feature = new Feature();
                     feature.setName(s);
                     feature.setIntygstyper(Collections.singletonList("fk7263"));
+                    feature.setGlobal(true);
                     return feature;
                 })));
         assertTrue(validator.given(user, "fk7263").
@@ -81,6 +83,7 @@ public class AuthoritiesValidatorTest {
                     Feature feature = new Feature();
                     feature.setName(s);
                     feature.setIntygstyper(Collections.singletonList("fk7263"));
+                    feature.setGlobal(true);
                     return feature;
                 })));
 
@@ -98,6 +101,7 @@ public class AuthoritiesValidatorTest {
                     Feature feature = new Feature();
                     feature.setName(s);
                     feature.setIntygstyper(Collections.singletonList("fk7263"));
+                    feature.setGlobal(true);
                     return feature;
                 })));
 
@@ -115,6 +119,7 @@ public class AuthoritiesValidatorTest {
                     Feature feature = new Feature();
                     feature.setName(s);
                     feature.setIntygstyper(Collections.singletonList("fk7263"));
+                    feature.setGlobal(true);
                     return feature;
                 })));
         assertFalse(validator.given(user, "fk7263").
@@ -134,6 +139,21 @@ public class AuthoritiesValidatorTest {
                 features(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST).
                 notFeatures(AuthoritiesConstants.FEATURE_ARBETSGIVARUTSKRIFT).
                 isVerified());
+    }
+
+    @Test
+    public void testGlobalFalseShouldFailEvenIfAllowedIntygstyp() {
+        WebCertUser user = createDefaultUser();
+        for (Map.Entry<String, Feature> e : user.getFeatures().entrySet()) {
+            e.getValue().setGlobal(false);
+        }
+
+        assertFalse(validator.given(user, "fk7263").features(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
+                .notFeatures(AuthoritiesConstants.FEATURE_ARBETSGIVARUTSKRIFT).isVerified());
+
+        thrown.expect(AuthoritiesException.class);
+
+        validator.given(user, "fk7263").features(AuthoritiesConstants.FEATURE_ARBETSGIVARUTSKRIFT).orThrow();
     }
 
     @Test
@@ -392,11 +412,13 @@ public class AuthoritiesValidatorTest {
         Feature feature1 = new Feature();
         feature1.setName(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);
         feature1.setIntygstyper(Collections.singletonList("fk7263"));
+        feature1.setGlobal(true);
         featureMap.put(feature1.getName(), feature1);
 
         Feature feature2 = new Feature();
         feature2.setName("base_feature");
         feature2.setIntygstyper(Collections.emptyList());
+        feature2.setGlobal(true);
         featureMap.put(feature2.getName(), feature2);
 
         return createUser(AuthoritiesConstants.ROLE_LAKARE,

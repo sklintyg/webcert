@@ -2,7 +2,9 @@ dependencies {
   compile project(':webcert-persistence')
 
   compile "org.springframework:spring-web:${springVersion}"
+  compile "io.vavr:vavr:${vavrVersion}"
 
   testCompile "org.springframework:spring-test:${springVersion}"
   testCompile "org.hamcrest:hamcrest-all:${hamcrestVersion}"
+  testCompile "org.assertj:assertj-core:${assertjVersion}"
 }

@@ -21,12 +21,14 @@ package se.inera.intyg.webcert.integration.fmb.model.typfall;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.google.common.collect.Lists;
 import se.inera.intyg.webcert.integration.fmb.model.FmInfo;
 import se.inera.intyg.webcert.integration.fmb.model.Links;
 import se.inera.intyg.webcert.integration.fmb.model.Meta;
@@ -53,7 +55,7 @@ public class Typfall implements FmInfo {
 
     @JsonProperty("data")
     public List<TypfallData> getData() {
-        return data;
+        return data != null ? data : Lists.newArrayList();
     }
 
     @JsonProperty("data")
@@ -83,8 +85,8 @@ public class Typfall implements FmInfo {
 
     @Override
     @JsonProperty("meta")
-    public Meta getMeta() {
-        return meta;
+    public Optional<Meta> getOptionalMeta() {
+        return Optional.ofNullable(meta);
     }
 
     @JsonProperty("meta")

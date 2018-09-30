@@ -18,47 +18,40 @@
  */
 package se.inera.intyg.webcert.integration.fmb.model.fmdxinfo;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.google.common.collect.Lists;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import se.inera.intyg.webcert.integration.fmb.model.Kod;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
-    "aktivitetsbegransningsbeskrivning",
-    "kompletterandekod",
-    "centralkod"
+        "aktivitetsbegransningsbeskrivning",
+        "kompletterandekod",
+        "centralkod"
 })
-public class Aktivitetsbegransning {
+public class Aktivitetsbegransning implements FmxBeskrivning {
 
-    @JsonProperty("aktivitetsbegransningsbeskrivning")
-    private String aktivitetsbegransningsbeskrivning;
     @JsonProperty("kompletterandekod")
     private List<Kod> kompletterandekod = null;
     @JsonProperty("centralkod")
     private List<Kod> centralkod = null;
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
-
     @JsonProperty("aktivitetsbegransningsbeskrivning")
-    public String getAktivitetsbegransningsbeskrivning() {
-        return aktivitetsbegransningsbeskrivning;
-    }
+    private String beskrivning;
 
-    @JsonProperty("aktivitetsbegransningsbeskrivning")
-    public void setAktivitetsbegransningsbeskrivning(String aktivitetsbegransningsbeskrivning) {
-        this.aktivitetsbegransningsbeskrivning = aktivitetsbegransningsbeskrivning;
-    }
 
     @JsonProperty("kompletterandekod")
+    @Override
     public List<Kod> getKompletterandekod() {
-        return kompletterandekod;
+        return kompletterandekod != null ? kompletterandekod : Lists.newArrayList();
     }
 
     @JsonProperty("kompletterandekod")
@@ -67,8 +60,9 @@ public class Aktivitetsbegransning {
     }
 
     @JsonProperty("centralkod")
+    @Override
     public List<Kod> getCentralkod() {
-        return centralkod;
+        return centralkod != null ? centralkod : Lists.newArrayList();
     }
 
     @JsonProperty("centralkod")
@@ -84,6 +78,17 @@ public class Aktivitetsbegransning {
     @JsonAnySetter
     public void setAdditionalProperty(String name, Object value) {
         this.additionalProperties.put(name, value);
+    }
+
+    @JsonProperty("aktivitetsbegransningsbeskrivning")
+    @Override
+    public String getBeskrivning() {
+        return beskrivning;
+    }
+
+    @JsonProperty("aktivitetsbegransningsbeskrivning")
+    public void setBeskrivning(String beskrivning) {
+        this.beskrivning = beskrivning;
     }
 
 }

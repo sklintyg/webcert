@@ -29,7 +29,6 @@ import org.w3._2002._06.xmldsig_filter2.XPathType;
 import se.inera.intyg.common.support.common.enumerations.SignaturTyp;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
-import se.inera.intyg.infra.security.common.model.AuthenticationMethod;
 import se.inera.intyg.infra.xmldsig.model.IntygXMLDSignature;
 import se.inera.intyg.infra.xmldsig.service.PrepareSignatureService;
 import se.inera.intyg.infra.xmldsig.service.XMLDSigService;
@@ -37,6 +36,7 @@ import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEn
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Signatur;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
+import se.inera.intyg.webcert.web.service.underskrift.model.SignMethod;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturBiljett;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturStatus;
 import se.inera.intyg.webcert.web.service.underskrift.xmldsig.UtkastModelToXMLConverter;
@@ -71,7 +71,7 @@ public abstract class BaseXMLSignatureService extends BaseSignatureService {
         try {
             IntygXMLDSignature intygXmldSignature = (IntygXMLDSignature) biljett.getIntygSignature();
 
-            applySignature(user, rawSignature, intygXmldSignature);
+            applySignature(user, rawSignature, intygXmldSignature, biljett.getSignMethod());
 
             // Store X509 in SignatureType
             if (x509certificate != null && !x509certificate.isEmpty()) {
@@ -132,16 +132,23 @@ public abstract class BaseXMLSignatureService extends BaseSignatureService {
         }
     }
 
-    private void applySignature(WebCertUser user, byte[] rawSignature, IntygXMLDSignature intygXmldSignature) {
+    private void applySignature(WebCertUser user, byte[] rawSignature, IntygXMLDSignature intygXmldSignature, SignMethod signMethod) {
         SignatureValueType svt = new SignatureValueType();
-        if (user.getAuthenticationMethod() == AuthenticationMethod.SITHS) {
+        switch (signMethod) {
+        case NETID_PLUGIN:
+        case FAKE:
             // Don't decode RAW signatures from the NetiD plugin.
-            svt.setValue(rawSignature); //rawSignature.getBytes(Charset.forName("UTF-8")));
-        } else if (user.getAuthenticationMethod() == AuthenticationMethod.FAKE) {
             svt.setValue(rawSignature);
-        } else {
+            break;
+
+        case NETID_ACCESS:
             // From NetiD Access Server, we must decode from Base64 to binary.
-            svt.setValue(Base64.getDecoder().decode(rawSignature)); // Remember to decode signature from Base64 to binary.
+            svt.setValue(Base64.getDecoder().decode(rawSignature));
+            break;
+
+        case GRP:
+            throw new IllegalStateException("We do not handle signatures as XMLDSig for GRP, "
+                    + "if you're here something has gone wrong.");
         }
         intygXmldSignature.getSignatureType().setSignatureValue(svt);
     }
