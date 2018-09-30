@@ -69,8 +69,10 @@ import java.util.Collections;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.mockito.AdditionalMatchers.or;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -144,7 +146,7 @@ public class UnderskriftServiceImplTest extends AuthoritiesConfigurationTestSetu
         user = createWebCertUser(true);
         when(webCertUserService.getUser()).thenReturn(user);
 
-        when(moduleRegistry.getModuleApi(anyString())).thenReturn(moduleApi);
+        when(moduleRegistry.getModuleApi(or(isNull(), anyString()), or(isNull(), anyString()))).thenReturn(moduleApi);
 
         Utlatande utlatande = mock(Utlatande.class);
         GrundData grunddata = new GrundData();

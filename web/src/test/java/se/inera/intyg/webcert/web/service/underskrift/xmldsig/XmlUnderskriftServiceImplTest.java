@@ -50,10 +50,12 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import java.nio.charset.Charset;
 
 import static org.junit.Assert.assertNotNull;
+import static org.mockito.AdditionalMatchers.or;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -112,7 +114,7 @@ public class XmlUnderskriftServiceImplTest {
         ModuleApi moduleApi = mock(ModuleApi.class);
         when(moduleApi.updateAfterSigning(anyString(), anyString())).thenReturn("json");
 
-        when(moduleRegistry.getModuleApi(anyString())).thenReturn(moduleApi);
+        when(moduleRegistry.getModuleApi(anyString(), anyString())).thenReturn(moduleApi);
     }
 
     @Test
@@ -143,7 +145,6 @@ public class XmlUnderskriftServiceImplTest {
         WebCertUser user = mock(WebCertUser.class);
         when(user.getAuthenticationScheme()).thenReturn("scheme");
         when(user.getHsaId()).thenReturn("user-1");
-
         SignaturBiljett signaturBiljett = testee.finalizeSignature(createSignaturBiljett(SignaturStatus.BEARBETAR),
                 "signatur".getBytes(Charset.forName("UTF-8")),
                 "certifikat", createUtkast(INTYG_ID, 1L, INTYG_TYP, UtkastStatus.DRAFT_COMPLETE, "model", createVardperson(),

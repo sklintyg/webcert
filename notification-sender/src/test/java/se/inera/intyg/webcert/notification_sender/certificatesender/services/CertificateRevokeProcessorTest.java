@@ -62,20 +62,20 @@ public class CertificateRevokeProcessorTest {
     @Test
     public void testRevokeCertificate() throws Exception {
         ModuleApi moduleApi = mock(ModuleApi.class);
-        when(registry.getModuleApi(eq(INTYGS_TYP))).thenReturn(moduleApi);
+        when(registry.getModuleApi(eq(INTYGS_TYP), eq(INTYGS_TYP_VERSION))).thenReturn(moduleApi);
 
         certificateRevokeProcessor.process(BODY, INTYGS_ID1, LOGICAL_ADDRESS1, INTYGS_TYP, INTYGS_TYP_VERSION);
 
-        verify(moduleApi).revokeCertificate(eq(BODY), eq(LOGICAL_ADDRESS1), eq(INTYGS_TYP_VERSION));
+        verify(moduleApi).revokeCertificate(eq(BODY), eq(LOGICAL_ADDRESS1));
     }
 
     @Test(expected = TemporaryException.class)
     public void testRevokeCertificateWhenWebServiceExceptionIsThrown() throws Exception {
         ModuleApi moduleApi = mock(ModuleApi.class);
-        when(registry.getModuleApi(eq(INTYGS_TYP))).thenReturn(moduleApi);
+        when(registry.getModuleApi(eq(INTYGS_TYP), eq(INTYGS_TYP_VERSION))).thenReturn(moduleApi);
         doThrow(new WebServiceException())
                 .when(moduleApi)
-                .revokeCertificate(eq(BODY), eq(LOGICAL_ADDRESS1), eq(INTYGS_TYP_VERSION));
+                .revokeCertificate(eq(BODY), eq(LOGICAL_ADDRESS1));
 
         certificateRevokeProcessor.process(BODY, INTYGS_ID1, LOGICAL_ADDRESS1, INTYGS_TYP, INTYGS_TYP_VERSION);
     }
@@ -83,10 +83,10 @@ public class CertificateRevokeProcessorTest {
     @Test(expected = TemporaryException.class)
     public void testRevokeCertificateOnApplicationErrorResponse() throws Exception {
         ModuleApi moduleApi = mock(ModuleApi.class);
-        when(registry.getModuleApi(eq(INTYGS_TYP))).thenReturn(moduleApi);
+        when(registry.getModuleApi(eq(INTYGS_TYP), eq(INTYGS_TYP_VERSION))).thenReturn(moduleApi);
         doThrow(new ExternalServiceCallException("message", ExternalServiceCallException.ErrorIdEnum.APPLICATION_ERROR))
                 .when(moduleApi)
-                .revokeCertificate(eq(BODY), eq(LOGICAL_ADDRESS1), eq(INTYGS_TYP_VERSION));
+                .revokeCertificate(eq(BODY), eq(LOGICAL_ADDRESS1));
 
         certificateRevokeProcessor.process(BODY, INTYGS_ID1, LOGICAL_ADDRESS1, INTYGS_TYP, INTYGS_TYP_VERSION);
     }
@@ -94,10 +94,10 @@ public class CertificateRevokeProcessorTest {
     @Test(expected = TemporaryException.class)
     public void testRevokeCertificateOnTechnicalErrorResponse() throws Exception {
         ModuleApi moduleApi = mock(ModuleApi.class);
-        when(registry.getModuleApi(eq(INTYGS_TYP))).thenReturn(moduleApi);
+        when(registry.getModuleApi(eq(INTYGS_TYP), eq(INTYGS_TYP_VERSION))).thenReturn(moduleApi);
         doThrow(new ExternalServiceCallException("message", ExternalServiceCallException.ErrorIdEnum.TECHNICAL_ERROR))
                 .when(moduleApi)
-                .revokeCertificate(eq(BODY), eq(LOGICAL_ADDRESS1), eq(INTYGS_TYP_VERSION));
+                .revokeCertificate(eq(BODY), eq(LOGICAL_ADDRESS1));
 
         certificateRevokeProcessor.process(BODY, INTYGS_ID1, LOGICAL_ADDRESS1, INTYGS_TYP, INTYGS_TYP_VERSION);
     }
@@ -105,10 +105,10 @@ public class CertificateRevokeProcessorTest {
     @Test(expected = PermanentException.class)
     public void testRevokeCertificateOnValidationErrorResponse() throws Exception {
         ModuleApi moduleApi = mock(ModuleApi.class);
-        when(registry.getModuleApi(eq(INTYGS_TYP))).thenReturn(moduleApi);
+        when(registry.getModuleApi(eq(INTYGS_TYP), eq(INTYGS_TYP_VERSION))).thenReturn(moduleApi);
         doThrow(new ExternalServiceCallException("message", ExternalServiceCallException.ErrorIdEnum.VALIDATION_ERROR))
                 .when(moduleApi)
-                .revokeCertificate(eq(BODY), eq(LOGICAL_ADDRESS1), eq(INTYGS_TYP_VERSION));
+                .revokeCertificate(eq(BODY), eq(LOGICAL_ADDRESS1));
 
         certificateRevokeProcessor.process(BODY, INTYGS_ID1, LOGICAL_ADDRESS1, INTYGS_TYP, INTYGS_TYP_VERSION);
 
@@ -117,10 +117,10 @@ public class CertificateRevokeProcessorTest {
     @Test(expected = PermanentException.class)
     public void testRevokeCertificateOnTransformationErrorResponse() throws Exception {
         ModuleApi moduleApi = mock(ModuleApi.class);
-        when(registry.getModuleApi(eq(INTYGS_TYP))).thenReturn(moduleApi);
+        when(registry.getModuleApi(eq(INTYGS_TYP), eq(INTYGS_TYP_VERSION))).thenReturn(moduleApi);
         doThrow(new ExternalServiceCallException("message", ExternalServiceCallException.ErrorIdEnum.TRANSFORMATION_ERROR))
                 .when(moduleApi)
-                .revokeCertificate(eq(BODY), eq(LOGICAL_ADDRESS1), eq(INTYGS_TYP_VERSION));
+                .revokeCertificate(eq(BODY), eq(LOGICAL_ADDRESS1));
 
         certificateRevokeProcessor.process(BODY, INTYGS_ID1, LOGICAL_ADDRESS1, INTYGS_TYP, INTYGS_TYP_VERSION);
 

@@ -25,6 +25,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.test.util.ReflectionTestUtils;
+import se.inera.intyg.common.fk7263.model.internal.Fk7263Utlatande;
 import se.inera.intyg.common.support.model.CertificateState;
 import se.inera.intyg.common.support.model.Status;
 import se.inera.intyg.common.support.model.UtkastStatus;
@@ -46,6 +47,7 @@ import java.util.Arrays;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.mockito.AdditionalMatchers.or;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -78,7 +80,8 @@ public class IntygModuleFacadeTest {
     @Before
     public void setupCommonExpectations() throws Exception {
         // setup to return a mocked module API
-        when(moduleRegistry.getModuleApi(CERTIFICATE_TYPE)).thenReturn(moduleApi);
+        when(moduleRegistry.getModuleApi(or(isNull(), anyString()), or(isNull(), anyString()))).thenReturn(moduleApi);
+        when(moduleRegistry.resolveVersionFromUtlatandeJson(or(isNull(), anyString()))).thenReturn(CERTIFICATE_TYPE_VERSION_1_0);
     }
 
     @SuppressWarnings("unchecked")
@@ -108,7 +111,7 @@ public class IntygModuleFacadeTest {
     @Test(expected = IntygModuleFacadeException.class)
     public void testConvertFromInternalToPdfDocumentModuleNotFoundException()
             throws IntygModuleFacadeException, ModuleException, ModuleNotFoundException {
-        when(moduleRegistry.getModuleApi(CERTIFICATE_TYPE)).thenThrow(new ModuleNotFoundException());
+        when(moduleRegistry.getModuleApi(CERTIFICATE_TYPE, CERTIFICATE_TYPE_VERSION_1_0)).thenThrow(new ModuleNotFoundException());
 
         moduleFacade.convertFromInternalToPdfDocument(CERTIFICATE_TYPE, INT_JSON,
                 Arrays.asList(new Status(CertificateState.RECEIVED, "", LocalDateTime.now())), UtkastStatus.SIGNED, false);
@@ -134,24 +137,24 @@ public class IntygModuleFacadeTest {
         final String certificateId = "certificateId";
         final String logicalAddress = "logicalAddress";
         ReflectionTestUtils.setField(moduleFacade, "logicalAddress", logicalAddress);
-        when(moduleApi.getCertificate(certificateId, logicalAddress, HSVARD_RECIPIENT_ID, CERTIFICATE_TYPE_VERSION_1_0))
+        when(moduleApi.getCertificate(certificateId, logicalAddress, HSVARD_RECIPIENT_ID))
                 .thenReturn(new CertificateResponse(INT_JSON, null, new CertificateMetaData(), false));
         CertificateResponse res = moduleFacade.getCertificate(certificateId, CERTIFICATE_TYPE, CERTIFICATE_TYPE_VERSION_1_0);
 
         assertNotNull(res);
 
-        verify(moduleApi).getCertificate(certificateId, logicalAddress, HSVARD_RECIPIENT_ID, CERTIFICATE_TYPE_VERSION_1_0);
+        verify(moduleApi).getCertificate(certificateId, logicalAddress, HSVARD_RECIPIENT_ID);
     }
 
     @Test(expected = IntygModuleFacadeException.class)
     public void testGetCertificateModuleException() throws Exception {
-        when(moduleApi.getCertificate(anyString(), isNull(), eq(HSVARD_RECIPIENT_ID), eq(CERTIFICATE_TYPE_VERSION_1_0))).thenThrow(new ModuleException());
+        when(moduleApi.getCertificate(anyString(), isNull(), eq(HSVARD_RECIPIENT_ID))).thenThrow(new ModuleException());
         moduleFacade.getCertificate("certificateId", CERTIFICATE_TYPE, CERTIFICATE_TYPE_VERSION_1_0);
     }
 
     @Test(expected = IntygModuleFacadeException.class)
     public void testGetCertificateModuleNotFoundException() throws Exception {
-        when(moduleRegistry.getModuleApi(CERTIFICATE_TYPE)).thenThrow(new ModuleNotFoundException());
+        when(moduleRegistry.getModuleApi(CERTIFICATE_TYPE, CERTIFICATE_TYPE_VERSION_1_0)).thenThrow(new ModuleNotFoundException());
         moduleFacade.getCertificate("certificateId", CERTIFICATE_TYPE, CERTIFICATE_TYPE_VERSION_1_0);
     }
 
@@ -172,27 +175,27 @@ public class IntygModuleFacadeTest {
 
     @Test(expected = IntygModuleFacadeException.class)
     public void testRegisterCertificateModuleNotFoundException() throws Exception {
-        when(moduleRegistry.getModuleApi(CERTIFICATE_TYPE)).thenThrow(new ModuleNotFoundException());
+        when(moduleRegistry.getModuleApi(CERTIFICATE_TYPE, CERTIFICATE_TYPE_VERSION_1_0)).thenThrow(new ModuleNotFoundException());
         moduleFacade.registerCertificate(CERTIFICATE_TYPE, INT_JSON);
     }
 
     @Test
     public void testGetRevokeCertificateRequest() throws Exception {
         final String message = "revokeMessage";
-        moduleFacade.getRevokeCertificateRequest(CERTIFICATE_TYPE, null, null, message);
+        moduleFacade.getRevokeCertificateRequest(CERTIFICATE_TYPE, mock(Utlatande.class), null, message);
         verify(moduleApi, times(1)).createRevokeRequest(eq(null), eq(null), eq(message));
     }
 
     @Test(expected = ModuleException.class)
     public void testGetRevokeCertificateRequestModuleException() throws Exception {
         when(moduleApi.createRevokeRequest(isNull(), isNull(), anyString())).thenThrow(new ModuleException());
-        moduleFacade.getRevokeCertificateRequest(CERTIFICATE_TYPE, null, null, "message");
+        moduleFacade.getRevokeCertificateRequest(CERTIFICATE_TYPE, mock(Utlatande.class), null, "message");
     }
 
     @Test(expected = IntygModuleFacadeException.class)
     public void testGetRevokeCertificateRequestModuleNotFoundException() throws Exception {
-        when(moduleRegistry.getModuleApi(CERTIFICATE_TYPE)).thenThrow(new ModuleNotFoundException());
-        moduleFacade.getRevokeCertificateRequest(CERTIFICATE_TYPE, null, null, "message");
+        when(moduleRegistry.getModuleApi(CERTIFICATE_TYPE, CERTIFICATE_TYPE_VERSION_1_0)).thenThrow(new ModuleNotFoundException());
+        moduleFacade.getRevokeCertificateRequest(CERTIFICATE_TYPE, mock(Utlatande.class), null, "message");
     }
 
     @Test

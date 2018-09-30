@@ -663,7 +663,7 @@ public class IntygServiceImpl implements IntygService {
             }
 
             try {
-                ModuleApi api = moduleRegistry.getModuleApi(utkast.getIntygsTyp());
+                ModuleApi api = moduleRegistry.getModuleApi(utkast.getIntygsTyp(), utkast.getIntygTypeVersion());
                 Intyg intyg = api.getIntygFromUtlatande(api.getUtlatandeFromJson(utkast.getModel()));
                 Pair<ArendeCount, ArendeCount> arenden = fragorOchSvarCreator.createArenden(utkast.getIntygsId(),
                         utkast.getIntygsTyp());
@@ -817,7 +817,7 @@ public class IntygServiceImpl implements IntygService {
             boolean patientNameChanged = false;
             boolean patientAddressChanged = false;
             try {
-                utlatande = moduleRegistry.getModuleApi(typ).getUtlatandeFromJson(internalIntygJsonModel);
+                utlatande = moduleRegistry.getModuleApi(typ, intygTypeVersion).getUtlatandeFromJson(internalIntygJsonModel);
                 patientNameChanged = patientDetailsResolver.isPatientNamedChanged(utlatande.getGrundData().getPatient(),
                         newPatientData);
                 patientAddressChanged = patientDetailsResolver.isPatientAddressChanged(utlatande.getGrundData().getPatient(),
@@ -831,7 +831,7 @@ public class IntygServiceImpl implements IntygService {
 
             // Get the module api and use the "updateBeforeSave" to update the outbound "model" with the
             // Patient object.
-            ModuleApi moduleApi = moduleRegistry.getModuleApi(typ);
+            ModuleApi moduleApi = moduleRegistry.getModuleApi(typ, intygTypeVersion);
             // INTYG-5354, INTYG-5380: Don't use incomplete address from external data sources (PU/js).
             if (!completeAddressProvided(newPatientData)) {
                 // Use the old address data.
@@ -923,8 +923,8 @@ public class IntygServiceImpl implements IntygService {
                 Patient oldPatientData = utlatande.getGrundData().getPatient();
                 copyOldAddressToNewPatientData(oldPatientData, newPatientData);
             }
-            String updatedModel = moduleRegistry.getModuleApi(utkast.getIntygsTyp()).updateBeforeSave(utkast.getModel(),
-                    newPatientData);
+            String updatedModel = moduleRegistry.getModuleApi(utkast.getIntygsTyp(), utkast.getIntygTypeVersion())
+                    .updateBeforeSave(utkast.getModel(), newPatientData);
             utlatande = modelFacade.getUtlatandeFromInternalModel(utkast.getIntygsTyp(), updatedModel);
 
             List<Status> statuses = IntygConverterUtil.buildStatusesFromUtkast(utkast);

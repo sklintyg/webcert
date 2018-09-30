@@ -74,7 +74,7 @@ public class CreateRenewalCopyUtkastBuilderImplTest extends AbstractBuilderTest 
     @Before
     public void expectCallToModuleRegistry() throws Exception {
         this.mockModuleApi = mock(ModuleApi.class);
-        when(moduleRegistry.getModuleApi(INTYG_TYPE)).thenReturn(mockModuleApi);
+        when(moduleRegistry.getModuleApi(anyString(), anyString())).thenReturn(mockModuleApi);
     }
 
     @Test

@@ -91,8 +91,8 @@ public class InternalNotificationMessageListener implements MessageListener {
                     LOG.debug("Not forwarding internal notification to care system, care unit '{}' is not integrated.", enhetsId);
                     return;
                 }
-                ModuleApi moduleApi = intygModuleRegistry.getModuleApi(intygsTyp);
-                CertificateResponse certificateResponse = moduleApi.getCertificate(intygsId, logicalAddress, "HSVARD", intygsTypVersion);
+                ModuleApi moduleApi = intygModuleRegistry.getModuleApi(intygsTyp, intygsTypVersion);
+                CertificateResponse certificateResponse = moduleApi.getCertificate(intygsId, logicalAddress, "HSVARD");
 
                 Utlatande utlatande = certificateResponse.getUtlatande();
                 notificationService.forwardInternalNotification(utlatande.getId(), utlatande.getTyp(), utlatande, HandelsekodEnum.SKICKA);

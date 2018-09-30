@@ -432,7 +432,7 @@ public class UtkastServiceImpl implements UtkastService {
 
         // Notify stakeholders when a draft has been changed/updated
         try {
-            ModuleApi moduleApi = moduleRegistry.getModuleApi(intygType);
+            ModuleApi moduleApi = moduleRegistry.getModuleApi(intygType, utkast.getIntygTypeVersion());
             if (moduleApi.shouldNotify(persistedJson, draftAsJson)) {
                 LOG.debug("*** Detected changes in model, sending notification! ***");
                 sendNotification(utkast, Event.CHANGED);
@@ -482,7 +482,7 @@ public class UtkastServiceImpl implements UtkastService {
                     "This utkast can not be updated since it is no longer in draft mode");
         }
 
-        final ModuleApi moduleApi = getModuleApi(utkast.getIntygsTyp());
+        final ModuleApi moduleApi = getModuleApi(utkast.getIntygsTyp(), utkast.getIntygTypeVersion());
 
         // INTYG-4086
         Patient draftPatient = getPatientFromCurrentDraft(moduleApi, utkast.getModel());
@@ -555,7 +555,7 @@ public class UtkastServiceImpl implements UtkastService {
         LOG.debug("Validating Intyg '{}' with type '{}'", intygId, intygType);
 
         try {
-            ModuleApi moduleApi = moduleRegistry.getModuleApi(intygType);
+            ModuleApi moduleApi = moduleRegistry.getModuleApi(intygType, moduleRegistry.resolveVersionFromUtlatandeJson(draftAsJson));
             ValidateDraftResponse validateDraftResponse = moduleApi.validateDraft(draftAsJson);
 
             return convertToDraftValidation(validateDraftResponse);
@@ -664,9 +664,9 @@ public class UtkastServiceImpl implements UtkastService {
                 .build();
     }
 
-    private ModuleApi getModuleApi(String intygsTyp) {
+    private ModuleApi getModuleApi(String intygsTyp, String intygsTypeVersion) {
         try {
-            return moduleRegistry.getModuleApi(intygsTyp);
+            return moduleRegistry.getModuleApi(intygsTyp, intygsTypeVersion);
 
         } catch (ModuleNotFoundException e) {
             if (e.getCause() != null && e.getCause().getCause() != null) {
@@ -746,7 +746,7 @@ public class UtkastServiceImpl implements UtkastService {
         String modelAsJson;
 
         try {
-            ModuleApi moduleApi = moduleRegistry.getModuleApi(intygType);
+            ModuleApi moduleApi = moduleRegistry.getModuleApi(intygType, draftRequest.getIntygTypeVersion());
             modelAsJson = moduleApi.createNewInternal(draftRequest);
         } catch (ModuleException | ModuleNotFoundException me) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, me);
@@ -855,7 +855,7 @@ public class UtkastServiceImpl implements UtkastService {
         WebCertUser user = webCertUserService.getUser();
 
         try {
-            ModuleApi moduleApi = moduleRegistry.getModuleApi(utkast.getIntygsTyp());
+            ModuleApi moduleApi = moduleRegistry.getModuleApi(utkast.getIntygsTyp(), utkast.getIntygTypeVersion());
 
             GrundData grundData = moduleApi.getUtlatandeFromJson(modelJson).getGrundData();
 

@@ -97,7 +97,8 @@ public class RouteTest {
     public void setup() throws Exception {
         MockitoAnnotations.initMocks(this);
         MockEndpoint.resetMocks(camelContext);
-        when(moduleRegistry.getModuleApi(anyString())).thenReturn(moduleApi);
+        when(moduleRegistry.getModuleApi(anyString(), anyString())).thenReturn(moduleApi);
+        when(moduleRegistry.resolveVersionFromUtlatandeJson(anyString())).thenReturn("1.0");
         when(moduleApi.getUtlatandeFromJson(anyString())).thenReturn(new Fk7263Utlatande());
         when(moduleApi.getIntygFromUtlatande(any())).thenReturn(NotificationTestHelper.createIntyg("fk7263"));
         when(mockedPuService.getPerson(any())).thenReturn(new PersonSvar(NotificationTestHelper.buildPerson(false), PersonSvar.Status.FOUND));
@@ -299,7 +300,7 @@ public class RouteTest {
     @Test
     public void testTransformationException() throws Exception {
         // Given
-        when(moduleRegistry.getModuleApi(anyString())).thenThrow(new ModuleNotFoundException("Testing runtime exception"));
+        when(moduleRegistry.getModuleApi(anyString(), anyString())).thenThrow(new ModuleNotFoundException("Testing runtime exception"));
 
         notificationWSClientV3.expectedMessageCount(0);
         permanentErrorHandlerEndpoint.expectedMessageCount(1);
@@ -317,7 +318,7 @@ public class RouteTest {
     @Test
     public void testTransformationExceptionNotificationVersion3() throws Exception {
         // Given
-        when(moduleRegistry.getModuleApi(anyString())).thenThrow(new ModuleNotFoundException("Testing checked exception"));
+        when(moduleRegistry.getModuleApi(anyString(), anyString())).thenThrow(new ModuleNotFoundException("Testing checked exception"));
 
         notificationWSClientV3.expectedMessageCount(0);
         permanentErrorHandlerEndpoint.expectedMessageCount(1);
@@ -335,7 +336,7 @@ public class RouteTest {
     @Test
     public void testRuntimeExceptionNotificationVersion3() throws Exception {
         // Given
-        when(moduleRegistry.getModuleApi(anyString())).thenThrow(new RuntimeException("Testing runtime exception"));
+        when(moduleRegistry.getModuleApi(anyString(), anyString())).thenThrow(new RuntimeException("Testing runtime exception"));
 
         notificationWSClientV3.expectedMessageCount(0);
         permanentErrorHandlerEndpoint.expectedMessageCount(1);

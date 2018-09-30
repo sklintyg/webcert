@@ -179,7 +179,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
     }
 
     @Before
-    public void setup() {
+    public void setup() throws ModuleNotFoundException {
         hoSPerson = new HoSPersonal();
         hoSPerson.setPersonId("AAA");
         hoSPerson.setFullstandigtNamn("Dr Dengroth");
@@ -225,6 +225,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         revokedLockedUtkast = createUtkast(INTYG_ID, INTYG_VERSION, INTYG_TYPE, UtkastStatus.DRAFT_LOCKED, null,
                 INTYG_JSON, vardperson, PERSONNUMMER);
         revokedLockedUtkast.setAterkalladDatum(LocalDateTime.now());
+        when(moduleRegistry.resolveVersionFromUtlatandeJson(anyString())).thenReturn(INTYG_TYPE_VERSION);
 
     }
 
@@ -270,7 +271,8 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
                 "This is soooo wrong!");
         ValidateDraftResponse validationResponse = new ValidateDraftResponse(ValidationStatus.INVALID, Collections.singletonList(valMsg));
         Utlatande utlatande = mock(Utlatande.class);
-        when(moduleRegistry.getModuleApi(INTYG_TYPE)).thenReturn(mockModuleApi);
+        when(moduleRegistry.getModuleApi(anyString(), anyString())).thenReturn(mockModuleApi);
+        when(moduleRegistry.resolveVersionFromUtlatandeJson(anyString())).thenReturn(INTYG_TYPE_VERSION);
         when(mockUtkastRepository.save(any(Utkast.class))).then(invocation -> invocation.getArguments()[0]);
     }
 
@@ -375,7 +377,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         when(utlatande.getGrundData()).thenReturn(grunddata);
 
         when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(utkast);
-        when(moduleRegistry.getModuleApi(INTYG_TYPE)).thenReturn(mockModuleApi);
+        when(moduleRegistry.getModuleApi(INTYG_TYPE, INTYG_TYPE_VERSION)).thenReturn(mockModuleApi);
         when(mockModuleApi.validateDraft(anyString())).thenReturn(validationResponse);
         when(mockModuleApi.getUtlatandeFromJson(anyString())).thenReturn(utlatande);
         when(mockUtkastRepository.save(utkast)).thenReturn(utkast);
@@ -412,7 +414,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         when(utlatande.getGrundData()).thenReturn(grunddata);
 
         when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(utkast);
-        when(moduleRegistry.getModuleApi(INTYG_TYPE)).thenReturn(mockModuleApi);
+        when(moduleRegistry.getModuleApi(INTYG_TYPE, INTYG_TYPE_VERSION)).thenReturn(mockModuleApi);
         when(mockModuleApi.validateDraft(anyString())).thenReturn(validationResponse);
         when(mockModuleApi.getUtlatandeFromJson(anyString())).thenReturn(utlatande);
         when(mockUtkastRepository.save(utkast)).thenReturn(utkast);
@@ -467,7 +469,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
         when(userService.getUser()).thenReturn(user);
         when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(utkast);
-        when(moduleRegistry.getModuleApi(INTYG_TYPE)).thenReturn(mockModuleApi);
+        when(moduleRegistry.getModuleApi(INTYG_TYPE, INTYG_TYPE_VERSION)).thenReturn(mockModuleApi);
         when(mockModuleApi.updateBeforeSave(anyString(), any(HoSPersonal.class))).thenReturn("{}");
         when(mockModuleApi.getUtlatandeFromJson(anyString())).thenReturn(utlatande);
         when(mockModuleApi.validateDraft(anyString())).thenThrow(ModuleException.class);
@@ -480,7 +482,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         ValidationMessage valMsg = new ValidationMessage("a", "field.somewhere", ValidationMessageType.OTHER, "This is soooo wrong!");
         ValidateDraftResponse validationResponse = new ValidateDraftResponse(ValidationStatus.INVALID, Collections.singletonList(valMsg));
 
-        when(moduleRegistry.getModuleApi(INTYG_TYPE)).thenReturn(mockModuleApi);
+        when(moduleRegistry.getModuleApi(INTYG_TYPE, INTYG_TYPE_VERSION)).thenReturn(mockModuleApi);
         when(mockModuleApi.validateDraft(INTYG_JSON)).thenReturn(validationResponse);
 
         DraftValidation res = draftService.validateDraft(INTYG_ID, INTYG_TYPE, INTYG_JSON);
@@ -553,7 +555,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         utkast = spy(utkast);
 
         when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(utkast);
-        when(moduleRegistry.getModuleApi(INTYG_TYPE)).thenReturn(mockModuleApi);
+        when(moduleRegistry.getModuleApi(INTYG_TYPE, INTYG_TYPE_VERSION)).thenReturn(mockModuleApi);
         when(mockModuleApi.validateDraft(anyString())).thenReturn(validationResponse);
         when(mockModuleApi.getUtlatandeFromJson(anyString())).thenReturn(utlatande);
         when(mockUtkastRepository.save(utkast)).thenReturn(utkast);
@@ -591,7 +593,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         utkast = spy(utkast);
 
         when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(utkast);
-        when(moduleRegistry.getModuleApi(INTYG_TYPE)).thenReturn(mockModuleApi);
+        when(moduleRegistry.getModuleApi(INTYG_TYPE, INTYG_TYPE_VERSION)).thenReturn(mockModuleApi);
         when(mockModuleApi.updateBeforeSave(anyString(), any(Patient.class))).thenReturn("{}");
         when(mockModuleApi.getUtlatandeFromJson(anyString())).thenReturn(utlatande);
         when(mockUtkastRepository.save(utkast)).thenReturn(utkast);
@@ -625,7 +627,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         utkast = spy(utkast);
 
         when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(utkast);
-        when(moduleRegistry.getModuleApi(INTYG_TYPE)).thenReturn(mockModuleApi);
+        when(moduleRegistry.getModuleApi(INTYG_TYPE, INTYG_TYPE_VERSION)).thenReturn(mockModuleApi);
         when(mockModuleApi.getUtlatandeFromJson(anyString())).thenReturn(utlatande);
         when(userService.getUser()).thenReturn(user);
 
@@ -657,7 +659,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         utkast = spy(utkast);
 
         when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(utkast);
-        when(moduleRegistry.getModuleApi(INTYG_TYPE)).thenReturn(mockModuleApi);
+        when(moduleRegistry.getModuleApi(INTYG_TYPE, INTYG_TYPE_VERSION)).thenReturn(mockModuleApi);
         when(mockModuleApi.getUtlatandeFromJson(anyString())).thenReturn(utlatande);
         when(userService.getUser()).thenReturn(user);
 
@@ -739,7 +741,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         utkast = spy(utkast);
 
         when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(utkast);
-        when(moduleRegistry.getModuleApi(INTYG_TYPE)).thenReturn(mockModuleApi);
+        when(moduleRegistry.getModuleApi(INTYG_TYPE, INTYG_TYPE_VERSION)).thenReturn(mockModuleApi);
         when(mockModuleApi.validateDraft(anyString())).thenReturn(validationResponse);
         when(mockModuleApi.getUtlatandeFromJson(anyString())).thenReturn(utlatande);
         when(mockUtkastRepository.save(utkast)).thenReturn(utkast);
@@ -756,7 +758,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
     @Test
     public void testValidateValidDraftWithWarningsIncludesWarningsInResponse() throws ModuleException, ModuleNotFoundException {
-        when(moduleRegistry.getModuleApi(anyString())).thenReturn(mockModuleApi);
+        when(moduleRegistry.getModuleApi(anyString(), anyString())).thenReturn(mockModuleApi);
         when(mockModuleApi.validateDraft(anyString())).thenReturn(buildValidationResponse());
         DraftValidation validationResult = draftService.validateDraft(INTYG_ID, INTYG_TYPE, utkast.getModel());
         assertEquals(1, validationResult.getWarnings().size());

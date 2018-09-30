@@ -45,6 +45,7 @@ import java.time.LocalDateTime;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
@@ -94,7 +95,8 @@ public class NotificationTransformerTest {
         message.setBody(notificationMessage);
 
         ModuleApi moduleApi = mock(ModuleApi.class);
-        when(moduleRegistry.getModuleApi(eq(LUSE))).thenReturn(moduleApi);
+        when(moduleRegistry.getModuleApi(eq(LUSE), eq("1.0"))).thenReturn(moduleApi);
+        when(moduleRegistry.resolveVersionFromUtlatandeJson(anyString())).thenReturn("1.0");
         Intyg intyg = new Intyg();
         IntygId intygsId = new IntygId();
         intygsId.setExtension(INTYGS_ID);
@@ -122,7 +124,7 @@ public class NotificationTransformerTest {
         verify(message, times(1)).setHeader(eq(NotificationRouteHeaders.INTYGS_ID), eq(INTYGS_ID));
         verify(message, times(1)).setHeader(eq(NotificationRouteHeaders.HANDELSE), eq(HandelsekodEnum.SKAPAT.value()));
         verify(message, times(1)).setHeader(eq(NotificationRouteHeaders.VERSION), eq(SchemaVersion.VERSION_3.name()));
-        verify(moduleRegistry, times(1)).getModuleApi(eq(LUSE));
+        verify(moduleRegistry, times(1)).getModuleApi(eq(LUSE), eq("1.0") );
         verify(moduleApi, times(1)).getUtlatandeFromJson(any());
         verify(moduleApi, times(1)).getIntygFromUtlatande(any());
         verify(notificationPatientEnricher, times(1)).enrichWithPatient(any());

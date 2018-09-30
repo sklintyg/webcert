@@ -72,7 +72,7 @@ public class UtkastModelToXMLConverter {
 
     private Intyg utkastToJAXBObject(String intygsTyp, String json) {
         try {
-            ModuleApi moduleApi = intygModuleRegistry.getModuleApi(intygsTyp);
+            ModuleApi moduleApi = intygModuleRegistry.getModuleApi(intygsTyp, intygModuleRegistry.resolveVersionFromUtlatandeJson(json));
             Utlatande utlatandeFromJson = moduleApi.getUtlatandeFromJson(json);
             return moduleApi.getIntygFromUtlatande(utlatandeFromJson);
         } catch (ModuleNotFoundException | IOException | ModuleException e) {

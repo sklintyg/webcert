@@ -43,8 +43,8 @@ import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
-import se.inera.intyg.webcert.persistence.arende.model.MedicinsktArende;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeDraft;
+import se.inera.intyg.webcert.persistence.arende.model.MedicinsktArende;
 import se.inera.intyg.webcert.web.converter.util.AnsweredWithIntygUtil;
 import se.inera.intyg.webcert.web.service.fragasvar.dto.FrageStallare;
 import se.inera.intyg.webcert.web.service.intyg.IntygServiceImpl;
@@ -215,14 +215,17 @@ public class ArendeViewConverter {
             return medicinskaArendenViews;
         }
         List<String> frageIds = medicinskaArenden.stream().map(MedicinsktArende::getFrageId).distinct().collect(Collectors.toList());
+
+        Utlatande utlatande = intygService.fetchIntygData(intygsId, intygsTyp, false).getUtlatande();
         ModuleApi moduleApi = null;
+
         try {
-            moduleApi = moduleRegistry.getModuleApi(intygsTyp);
+            moduleApi = moduleRegistry.getModuleApi(intygsTyp, utlatande.getTextVersion());
         } catch (ModuleNotFoundException e) {
             LOG.error("Module not found for certificate of type {}", intygsTyp);
             Throwables.propagate(e);
         }
-        Utlatande utlatande = intygService.fetchIntygData(intygsId, intygsTyp, false).getUtlatande();
+
         Map<String, List<String>> arendeParameters = null;
         try {
             arendeParameters = moduleApi.getModuleSpecificArendeParameters(utlatande, frageIds);

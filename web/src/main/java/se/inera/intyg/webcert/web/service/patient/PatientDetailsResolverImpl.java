@@ -22,6 +22,7 @@ import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
 import org.springframework.beans.factory.annotation.Autowired;
+import se.inera.intyg.common.db.support.DbModuleEntryPoint;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.Patient;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
@@ -313,7 +314,7 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
                     .orElseThrow(() -> new IllegalStateException("List was > 0 but findFirst() returned no result."));
 
             try {
-                ModuleApi moduleApi = moduleRegistry.getModuleApi("db");
+                ModuleApi moduleApi = moduleRegistry.getModuleApi(DbModuleEntryPoint.MODULE_ID, newest.getIntygTypeVersion());
                 Utlatande utlatande = moduleApi.getUtlatandeFromJson(newest.getModel());
                 Patient patient = utlatande.getGrundData().getPatient();
                 if (personSvar.getStatus() == PersonSvar.Status.FOUND) {

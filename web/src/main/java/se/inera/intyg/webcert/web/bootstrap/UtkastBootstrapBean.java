@@ -138,11 +138,12 @@ public class UtkastBootstrapBean {
 
     // INTYG-4086: An incredibly ugly hack to mitigate the fact that we're populating test-data using the XML format
     // and also directly to WC instead of storing in IT where these actually belong...
-    private Utlatande buildUtlatande(Resource resource, String moduleName, String intygTypeVersion) throws ModuleException, ModuleNotFoundException, IOException {
+    private Utlatande buildUtlatande(Resource resource, String moduleName, String intygTypeVersion)
+            throws ModuleException, ModuleNotFoundException, IOException {
 
         String xml = Resources.toString(resource.getURL(), Charsets.UTF_8);
-        Utlatande utlatande = registry.getModuleApi(moduleName)
-                .getUtlatandeFromXml(xml, intygTypeVersion);
+        Utlatande utlatande = registry.getModuleApi(moduleName, intygTypeVersion)
+                .getUtlatandeFromXml(xml);
 
         switch (moduleName) {
         case "luse":

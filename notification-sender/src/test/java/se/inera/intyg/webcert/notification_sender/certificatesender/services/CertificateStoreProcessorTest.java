@@ -66,7 +66,8 @@ public class CertificateStoreProcessorTest {
 
     @Before
     public void setup() throws ModuleNotFoundException {
-        when(moduleRegistry.getModuleApi(anyString())).thenReturn(moduleApi);
+        when(moduleRegistry.resolveVersionFromUtlatandeJson(anyString())).thenReturn("1.0");
+        when(moduleRegistry.getModuleApi(anyString(), anyString())).thenReturn(moduleApi);
     }
 
     @Test

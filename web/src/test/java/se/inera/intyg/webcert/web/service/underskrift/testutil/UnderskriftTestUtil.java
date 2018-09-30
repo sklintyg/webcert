@@ -51,6 +51,7 @@ public class UnderskriftTestUtil {
         utkast.setIntygsId(intygId);
         utkast.setVersion(version);
         utkast.setIntygsTyp(type);
+        utkast.setIntygTypeVersion("1.0");
         utkast.setStatus(status);
         utkast.setModel(model);
         utkast.setSkapadAv(vardperson);

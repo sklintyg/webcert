@@ -181,7 +181,8 @@ public abstract class BaseXMLSignatureService extends BaseSignatureService {
         // Encode the DSIG signature into the JSON model.
         String finalJson;
         try {
-            finalJson = moduleRegistry.getModuleApi(utkast.getIntygsTyp()).updateAfterSigning(payloadJson, signaturXml);
+            finalJson = moduleRegistry.getModuleApi(utkast.getIntygsTyp(), utkast.getIntygTypeVersion())
+                    .updateAfterSigning(payloadJson, signaturXml);
         } catch (ModuleNotFoundException | ModuleException e) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, e);
         }

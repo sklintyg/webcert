@@ -99,7 +99,7 @@ public abstract class AbstractUtkastBuilder<T extends AbstractCreateCopyRequest>
 
         IntygContentHolder signedIntygHolder = intygService.fetchIntygData(orignalIntygsId, originalIntygsTyp, coherentJournaling);
 
-        ModuleApi orgModuleApi = moduleRegistry.getModuleApi(originalIntygsTyp);
+        ModuleApi orgModuleApi = moduleRegistry.getModuleApi(originalIntygsTyp, signedIntygHolder.getUtlatande().getTextVersion());
         Utlatande orgUtlatande;
         try {
             orgUtlatande = orgModuleApi.getUtlatandeFromJson(signedIntygHolder.getContents());
@@ -121,7 +121,8 @@ public abstract class AbstractUtkastBuilder<T extends AbstractCreateCopyRequest>
         builderResponse.setOrginalVardgivarId(vardenhet.getVardgivare().getVardgivarid());
         builderResponse.setOrginalVardgivarNamn(vardenhet.getVardgivare().getVardgivarnamn());
 
-        ModuleApi moduleApi = moduleRegistry.getModuleApi(intygsTyp);
+        //TODOO: INTYG-7212 can we really just take textVersion of orgUtlatande like when db->doi?
+        ModuleApi moduleApi = moduleRegistry.getModuleApi(intygsTyp, signedIntygHolder.getUtlatande().getTextVersion());
 
         // Set relation to null if not applicable
         Relation relation = createRelation(copyRequest);
@@ -132,7 +133,7 @@ public abstract class AbstractUtkastBuilder<T extends AbstractCreateCopyRequest>
 
         UtkastStatus utkastStatus = validateDraft(moduleApi, draftCopyJson);
 
-        //TODO: can we really just take textVersion of orgUtlatande like when db->doi?
+        //TODOO: INTYG-7212 can we really just take textVersion of orgUtlatande like when db->doi?
         Utkast utkast = buildUtkastCopy(copyRequest, newDraftCopyId, intygsTyp, signedIntygHolder.getUtlatande().getTextVersion(),
                 addRelation, relation,
                 draftCopyJson, utkastStatus);
@@ -169,11 +170,12 @@ public abstract class AbstractUtkastBuilder<T extends AbstractCreateCopyRequest>
         String orignalIntygsId = copyRequest.getOriginalIntygId();
 
         Utkast orgUtkast = utkastRepository.findOne(orignalIntygsId);
-        ModuleApi orgModuleApi = moduleRegistry.getModuleApi(copyRequest.getOriginalIntygTyp());
-        Utlatande orgUtlatande;
+
         if (orgUtkast == null) {
             throw new ModuleException("Could not convert original certificate to Utlatande. Original certificate not found");
         }
+        ModuleApi orgModuleApi = moduleRegistry.getModuleApi(copyRequest.getOriginalIntygTyp(), orgUtkast.getIntygTypeVersion());
+        Utlatande orgUtlatande;
         try {
             orgUtlatande = orgModuleApi.getUtlatandeFromJson(orgUtkast.getModel());
         } catch (IOException e) {
@@ -195,8 +197,9 @@ public abstract class AbstractUtkastBuilder<T extends AbstractCreateCopyRequest>
         builderResponse.setOrginalVardgivarNamn(orgUtkast.getVardgivarNamn());
 
         LOG.debug("Populating copy with details from Utkast '{}'", orignalIntygsId);
-
-        ModuleApi moduleApi = moduleRegistry.getModuleApi(copyRequest.getTyp());
+        //TODOO: INTYG-7212 can we really just take textVersion of orgUtlatande like when db->doi?
+        //The new Utkast's version is assumed to be of the same version as original.
+        ModuleApi moduleApi = moduleRegistry.getModuleApi(copyRequest.getTyp(), orgUtkast.getIntygTypeVersion());
 
         // Set relation to null if not applicable
         Relation relation = createRelation(copyRequest);
@@ -206,7 +209,8 @@ public abstract class AbstractUtkastBuilder<T extends AbstractCreateCopyRequest>
                 newDraftCopyId);
 
         UtkastStatus utkastStatus = validateDraft(moduleApi, draftCopyJson);
-        //TODO: can we really just take textVersion of orgUtlatande like when db->doi?
+        //TODOO: INTYG-7212 can we really just take textVersion of orgUtlatande like when db->doi?
+        //I.e when copying within the same intygType A -> A this should be OK, but maybe not for DB -> DOI
         Utkast utkast = buildUtkastCopy(copyRequest, newDraftCopyId, copyRequest.getTyp(), orgUtkast.getIntygTypeVersion(), addRelation,
                 relation,
                 draftCopyJson, utkastStatus);

@@ -91,7 +91,7 @@ public class ArendeViewConverterTest {
     @SuppressWarnings("unchecked")
     @Before
     public void setup() throws Exception {
-        when(moduleRegistry.getModuleApi(any(String.class))).thenReturn(moduleApi);
+        when(moduleRegistry.getModuleApi(anyString(), anyString())).thenReturn(moduleApi);
         Map<String, List<String>> map = new HashMap<>();
         map.put("1", Arrays.asList(RespConstants.GRUNDFORMEDICINSKTUNDERLAG_SVAR_JSON_ID_1,
                 RespConstants.GRUNDFORMEDICINSKTUNDERLAG_TELEFONKONTAKT_PATIENT_SVAR_JSON_ID_1));

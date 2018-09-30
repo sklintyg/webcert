@@ -49,6 +49,7 @@ import se.inera.intyg.common.support.model.common.internal.Patient;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
+import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
@@ -163,7 +164,8 @@ public class UtkastModuleApiController extends AbstractApiController {
 
         // Businesss logic below should not be here inside a controller.. Should preferably be moved in the future.
         try {
-            Utlatande utlatande = moduleRegistry.getModuleApi(intygsTyp).getUtlatandeFromJson(utkast.getModel());
+            final ModuleApi moduleApi = moduleRegistry.getModuleApi(intygsTyp, utkast.getIntygTypeVersion());
+            Utlatande utlatande = moduleApi.getUtlatandeFromJson(utkast.getModel());
 
             draftHolder.setPatientNameChangedInPU(patientDetailsResolver.isPatientNamedChanged(
                     utlatande.getGrundData().getPatient(), resolvedPatient));
@@ -181,7 +183,7 @@ public class UtkastModuleApiController extends AbstractApiController {
             }
             // Update the internal model with the resolved patient. This means the draft may be updated
             // with new patient info on the next auto-save!
-            String updatedModel = moduleRegistry.getModuleApi(intygsTyp).updateBeforeSave(utkast.getModel(), resolvedPatient);
+            String updatedModel = moduleApi.updateBeforeSave(utkast.getModel(), resolvedPatient);
             utkast.setModel(updatedModel);
             draftHolder.setContent(utkast.getModel());
 

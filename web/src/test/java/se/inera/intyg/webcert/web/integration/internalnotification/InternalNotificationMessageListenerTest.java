@@ -79,9 +79,9 @@ public class InternalNotificationMessageListenerTest {
         when(certificateResponse.getUtlatande()).thenReturn(utlatande);
 
         ModuleApi moduleApi = mock(ModuleApi.class);
-        when(moduleApi.getCertificate(anyString(), anyString(), anyString(), anyString())).thenReturn(certificateResponse);
+        when(moduleApi.getCertificate(anyString(), anyString(), anyString())).thenReturn(certificateResponse);
 
-        when(intygModuleRegistry.getModuleApi(anyString())).thenReturn(moduleApi);
+        when(intygModuleRegistry.getModuleApi(anyString(), anyString())).thenReturn(moduleApi);
     }
 
     @Test

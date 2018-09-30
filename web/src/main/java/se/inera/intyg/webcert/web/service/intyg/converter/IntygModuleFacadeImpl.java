@@ -61,7 +61,7 @@ public class IntygModuleFacadeImpl implements IntygModuleFacade {
             throws IntygModuleFacadeException {
 
         try {
-            ModuleApi moduleApi = moduleRegistry.getModuleApi(intygType);
+            ModuleApi moduleApi = moduleRegistry.getModuleApi(intygType, moduleRegistry.resolveVersionFromUtlatandeJson(internalIntygJsonModel));
             PdfResponse pdfResponse;
             if (!isEmployer) {
                 pdfResponse = moduleApi.pdf(internalIntygJsonModel, statuses, ApplicationOrigin.WEBCERT, utkastStatus);
@@ -87,8 +87,8 @@ public class IntygModuleFacadeImpl implements IntygModuleFacade {
     @Override
     public CertificateResponse getCertificate(String certificateId, String intygType, String intygTypeVersion) throws IntygModuleFacadeException {
         try {
-            ModuleApi moduleApi = moduleRegistry.getModuleApi(intygType);
-            return moduleApi.getCertificate(certificateId, logicalAddress, HSVARD_RECIPIENT_ID, intygTypeVersion);
+            ModuleApi moduleApi = moduleRegistry.getModuleApi(intygType, intygTypeVersion);
+            return moduleApi.getCertificate(certificateId, logicalAddress, HSVARD_RECIPIENT_ID);
         } catch (ModuleException me) {
             throw new IntygModuleFacadeException(me.getMessage(), me);
         } catch (ModuleNotFoundException e) {
@@ -100,7 +100,7 @@ public class IntygModuleFacadeImpl implements IntygModuleFacade {
     @Override
     public void registerCertificate(String intygType, String internalIntygJsonModel) throws ModuleException, IntygModuleFacadeException {
         try {
-            ModuleApi moduleApi = moduleRegistry.getModuleApi(intygType);
+            ModuleApi moduleApi = moduleRegistry.getModuleApi(intygType, moduleRegistry.resolveVersionFromUtlatandeJson(internalIntygJsonModel));
             moduleApi.registerCertificate(internalIntygJsonModel, logicalAddress);
         } catch (ModuleNotFoundException e) {
             LOG.error("ModuleNotFoundException occured for intygstyp '{}' when registering certificate", intygType);
@@ -112,7 +112,7 @@ public class IntygModuleFacadeImpl implements IntygModuleFacade {
     public String getRevokeCertificateRequest(String intygType, Utlatande utlatande, HoSPersonal skapatAv, String message)
             throws ModuleException, IntygModuleFacadeException {
         try {
-            ModuleApi moduleApi = moduleRegistry.getModuleApi(intygType);
+            ModuleApi moduleApi = moduleRegistry.getModuleApi(intygType, utlatande.getTextVersion());
             return moduleApi.createRevokeRequest(utlatande, skapatAv, message);
         } catch (ModuleNotFoundException e) {
             LOG.error("ModuleNotFoundException occured for intygstyp '{}' when revoking certificate", intygType);
@@ -123,7 +123,7 @@ public class IntygModuleFacadeImpl implements IntygModuleFacade {
     @Override
     public Utlatande getUtlatandeFromInternalModel(String intygType, String internalModel) {
         try {
-            ModuleApi moduleApi = moduleRegistry.getModuleApi(intygType);
+            ModuleApi moduleApi = moduleRegistry.getModuleApi(intygType, moduleRegistry.resolveVersionFromUtlatandeJson(internalModel));
             return moduleApi.getUtlatandeFromJson(internalModel);
         } catch (IOException | ModuleNotFoundException | ModuleException e) {
             LOG.error("Module problems occured when trying to unmarshall Utlatande.", e);

@@ -71,7 +71,8 @@ public class NotificationTransformer {
         }
 
         if (SchemaVersion.VERSION_3.equals(notificationMessage.getVersion())) {
-            ModuleApi moduleApi = moduleRegistry.getModuleApi(notificationMessage.getIntygsTyp());
+            ModuleApi moduleApi = moduleRegistry.getModuleApi(notificationMessage.getIntygsTyp(),
+                    moduleRegistry.resolveVersionFromUtlatandeJson(notificationMessage.getUtkast()));
 
             Utlatande utlatande = moduleApi.getUtlatandeFromJson(notificationMessage.getUtkast());
             Intyg intyg = moduleApi.getIntygFromUtlatande(utlatande);

@@ -81,7 +81,7 @@ public class CopyCompletionUtkastBuilderTest extends AbstractBuilderTest {
     @Before
     public void expectCallToModuleRegistry() throws Exception {
         this.mockModuleApi = mock(ModuleApi.class);
-        when(moduleRegistry.getModuleApi(INTYG_TYPE)).thenReturn(mockModuleApi);
+        when(moduleRegistry.getModuleApi(INTYG_TYPE, INTYG_TYPE_VERSION)).thenReturn(mockModuleApi);
     }
 
     @Test
@@ -153,11 +153,12 @@ public class CopyCompletionUtkastBuilderTest extends AbstractBuilderTest {
     @Test
     public void testPopulateCompletionFromSignedIntygDecoratesWithReferensId() throws Exception {
         final String intygsTyp = "luse";
+        final String intygsTypVersion = "1.0";
         final String meddelandeId = "meddelandeId";
         final String referensId = UUID.randomUUID().toString();
         Arende arende = new Arende();
         arende.setReferensId(referensId);
-        when(moduleRegistry.getModuleApi(intygsTyp)).thenReturn(mockModuleApi);
+        when(moduleRegistry.getModuleApi(intygsTyp, intygsTypVersion)).thenReturn(mockModuleApi);
         when(mockIntygService.fetchIntygData(INTYG_ID, intygsTyp, false)).thenReturn(createIntygContentHolder());
         when(mockModuleApi.validateDraft(isNull()))
                 .thenReturn(new ValidateDraftResponse(ValidationStatus.VALID, new ArrayList<>()));
@@ -187,11 +188,12 @@ public class CopyCompletionUtkastBuilderTest extends AbstractBuilderTest {
     @Test
     public void testPopulateCompletionFromOriginalDecoratesWithReferensId() throws Exception {
         final String intygsTyp = "lisjp";
+        final String intygsTypVersion = "1.0";
         final String meddelandeId = "meddelandeId";
         final String referensId = UUID.randomUUID().toString();
         Arende arende = new Arende();
         arende.setReferensId(referensId);
-        when(moduleRegistry.getModuleApi(intygsTyp)).thenReturn(mockModuleApi);
+        when(moduleRegistry.getModuleApi(intygsTyp, intygsTypVersion)).thenReturn(mockModuleApi);
         when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(createOriginalUtkast());
         when(mockModuleApi.validateDraft(isNull()))
                 .thenReturn(new ValidateDraftResponse(ValidationStatus.VALID, new ArrayList<>()));

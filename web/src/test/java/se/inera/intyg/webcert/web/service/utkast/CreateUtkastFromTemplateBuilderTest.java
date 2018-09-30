@@ -48,8 +48,11 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.mockito.AdditionalMatchers.or;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -70,8 +73,8 @@ public class CreateUtkastFromTemplateBuilderTest extends AbstractBuilderTest {
     public void expectCallToModuleRegistry() throws Exception {
         this.mockModuleApi1 = mock(ModuleApi.class);
         this.mockModuleApi2 = mock(ModuleApi.class);
-        when(moduleRegistry.getModuleApi(INTYG_TYPE_1)).thenReturn(mockModuleApi1);
-        when(moduleRegistry.getModuleApi(INTYG_TYPE_2)).thenReturn(mockModuleApi2);
+        when(moduleRegistry.getModuleApi(eq(INTYG_TYPE_1), or(isNull(), anyString()))).thenReturn(mockModuleApi1);
+        when(moduleRegistry.getModuleApi(eq(INTYG_TYPE_2), or(isNull(), anyString()))).thenReturn(mockModuleApi2);
     }
 
     @Test

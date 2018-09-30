@@ -273,7 +273,7 @@ public class UnderskriftServiceImpl implements UnderskriftService {
 
         try {
             // VardpersonReferens vardpersonReferens = UpdateUserUtil.createVardpersonFromWebCertUser(user);
-            ModuleApi moduleApi = moduleRegistry.getModuleApi(utkast.getIntygsTyp());
+            ModuleApi moduleApi = moduleRegistry.getModuleApi(utkast.getIntygsTyp(), utkast.getIntygTypeVersion());
             Vardenhet vardenhetFromJson = moduleApi.getUtlatandeFromJson(utkast.getModel()).getGrundData().getSkapadAv().getVardenhet();
             return moduleApi
                     .updateBeforeSigning(utkast.getModel(), IntygConverterUtil.buildHosPersonalFromWebCertUser(user, vardenhetFromJson),

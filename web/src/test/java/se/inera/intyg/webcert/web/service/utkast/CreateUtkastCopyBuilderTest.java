@@ -31,7 +31,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -41,16 +40,9 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.core.io.ClassPathResource;
 
 import se.inera.intyg.common.db.model.internal.DbUtlatande;
-import se.inera.intyg.common.doi.model.internal.DoiUtlatande;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.model.CertificateState;
 import se.inera.intyg.common.support.model.Status;
-import se.inera.intyg.common.support.model.common.internal.GrundData;
-import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
-import se.inera.intyg.common.support.model.common.internal.Patient;
-import se.inera.intyg.common.support.model.common.internal.Utlatande;
-import se.inera.intyg.common.support.model.common.internal.Vardenhet;
-import se.inera.intyg.common.support.model.common.internal.Vardgivare;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.common.support.modules.support.api.dto.CreateDraftCopyHolder;
 import se.inera.intyg.common.support.modules.support.api.dto.ValidateDraftResponse;
@@ -81,8 +73,8 @@ public class CreateUtkastCopyBuilderTest extends AbstractBuilderTest {
     public void expectCallToModuleRegistry() throws Exception {
         this.mockModuleApiDB = mock(ModuleApi.class);
         this.mockModuleApiDOI = mock(ModuleApi.class);
-        when(moduleRegistry.getModuleApi(INTYG_TYPE_1)).thenReturn(mockModuleApiDB);
-        when(moduleRegistry.getModuleApi(INTYG_TYPE_2)).thenReturn(mockModuleApiDOI);
+        when(moduleRegistry.getModuleApi(INTYG_TYPE_1, INTYG_TEXT_VERSION)).thenReturn(mockModuleApiDB);
+        when(moduleRegistry.getModuleApi(INTYG_TYPE_2, INTYG_TEXT_VERSION)).thenReturn(mockModuleApiDOI);
     }
 
     @Test

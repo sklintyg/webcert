@@ -31,6 +31,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import se.inera.intyg.common.db.model.internal.DbUtlatande;
+import se.inera.intyg.common.db.support.DbModuleEntryPoint;
 import se.inera.intyg.common.support.model.common.internal.GrundData;
 import se.inera.intyg.common.support.model.common.internal.Patient;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
@@ -91,6 +92,7 @@ public class PatientDetailsResolverTest {
     private static final String DB_POST_ADDR = "Mortisv. -1";
     private static final String DB_POST_NR = "666 66";
     private static final String DB_POST_ORT = "Döderhult";
+    private static final String DB_INTYG_VERSION = "1.0";
 
     @Mock
     private PUService puService;
@@ -441,7 +443,7 @@ public class PatientDetailsResolverTest {
 
         ModuleApi moduleApi = mock(ModuleApi.class);
         when(moduleApi.getUtlatandeFromJson(anyString())).thenReturn(buildSosDoiUtlatande());
-        when(moduleRegistry.getModuleApi("db")).thenReturn(moduleApi);
+        when(moduleRegistry.getModuleApi(DbModuleEntryPoint.MODULE_ID, DB_INTYG_VERSION)).thenReturn(moduleApi);
 
 
         Patient patient = testee.resolvePatient(PNR, "doi");
@@ -472,7 +474,7 @@ public class PatientDetailsResolverTest {
 
         ModuleApi moduleApi = mock(ModuleApi.class);
         when(moduleApi.getUtlatandeFromJson(anyString())).thenReturn(buildSosDoiUtlatande());
-        when(moduleRegistry.getModuleApi("db")).thenReturn(moduleApi);
+        when(moduleRegistry.getModuleApi(DbModuleEntryPoint.MODULE_ID, DB_INTYG_VERSION)).thenReturn(moduleApi);
 
 
         Patient patient = testee.resolvePatient(PNR, "doi");
@@ -549,7 +551,7 @@ public class PatientDetailsResolverTest {
 
         ModuleApi moduleApi = mock(ModuleApi.class);
         when(moduleApi.getUtlatandeFromJson(anyString())).thenReturn(buildSosDoiUtlatande());
-        when(moduleRegistry.getModuleApi("db")).thenReturn(moduleApi);
+        when(moduleRegistry.getModuleApi(DbModuleEntryPoint.MODULE_ID, DB_INTYG_VERSION)).thenReturn(moduleApi);
 
 
         Patient patient = testee.resolvePatient(PNR, "doi");
@@ -637,6 +639,7 @@ public class PatientDetailsResolverTest {
     private List<Utkast> buildSosDBDrafts() {
         Utkast u1 = mock(Utkast.class);
         when(u1.getModel()).thenReturn("the model");
+        when(u1.getIntygTypeVersion()).thenReturn(DB_INTYG_VERSION);
         ArrayList<Utkast> utkastList = new ArrayList<>();
         utkastList.add(u1);
         return utkastList;
