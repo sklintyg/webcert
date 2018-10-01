@@ -60,6 +60,7 @@ module.exports = function(config) {
             'src/main/webapp/bower_components/angular-ui-router/release/angular-ui-router.js',
             'src/main/webapp/bower_components/bootstrap-sass/assets/javascripts/bootstrap.js',
             'src/main/webapp/bower_components/momentjs/moment.js',
+            'src/main/webapp/bower_components/oclazyload/dist/ocLazyLoad.js',
             // endbower
             'src/main/webapp/bower_components/angular-mocks/angular-mocks.js',
 

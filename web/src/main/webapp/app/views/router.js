@@ -89,6 +89,9 @@ angular.module('webcert').config(function($stateProvider, $urlRouterProvider, $h
         }).
         state('webcert.create-choose-certtype-index', {
             url:'/create/choose-intyg-type/:patientId/index',
+            params: {
+                patientId:''
+            },
             views: {
                 'content@': {
                     templateUrl: '/app/views/sokSkrivIntyg/sokSkrivValjUtkastType.html',

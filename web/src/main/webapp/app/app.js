@@ -55,7 +55,7 @@
     var _links;
 
     var app = angular.module('webcert',
-        ['ui.bootstrap', 'ui.router', 'ui.router.history', 'ngCookies', 'ngSanitize', 'common', 'ngAnimate', 'smoothScroll', 'ng.shims.placeholder']);
+        ['ui.bootstrap', 'ui.router', 'ui.router.history', 'ui.router.state.events', 'ngCookies', 'ngSanitize', 'common', 'ngAnimate', 'smoothScroll', 'ng.shims.placeholder', 'oc.lazyLoad']);
 
     app.value('networkConfig', {
         defaultTimeout: 30000 // test: 1000
@@ -81,6 +81,67 @@
         });
     }
 
+    function setupIntygModuleFutureStates($stateProvider) {
+
+        function loadModule($transition$, module) {
+            console.log('Lazy loading module ', module.id);
+
+            var filesToLoad = [];
+            if(module.cssPath && module.cssPath !== ''){
+                filesToLoad.push(module.cssPath + '?' + moduleConfig.BUILD_NUMBER);
+            }
+
+            if (moduleConfig.JS_MINIFIED) {
+                if (window.console) {
+                    console.log('use mini is true! loading compressed modules');
+                }
+                filesToLoad.push(module.scriptPath + '.min.js?' + moduleConfig.BUILD_NUMBER);
+                return $transition$.injector().get('$ocLazyLoad').load(filesToLoad);
+            }
+            else {
+                filesToLoad.push(module.scriptPath + '.js');
+                return $.get(module.dependencyDefinitionPath).then(function(deps) {
+                    return $transition$.injector().get('$ocLazyLoad').load({
+                        serie: true,
+                        files: filesToLoad.concat(deps)
+                    });
+                });
+            }
+        }
+
+        angular.forEach(moduleArray, function(module) {
+            // Add future state for lazy loading, substates needs to be added by the lazyloaded module
+            $stateProvider.state({
+                name: module.id + '.**',
+                url: '/' + module.id,
+                lazyLoad: function($transition$) {
+                    return loadModule($transition$, module);
+                }
+            });
+            $stateProvider.state({
+                name: 'webcert.intyg.' + module.id + '.**',
+                url: '/intyg/' + module.id,
+                lazyLoad: function($transition$) {
+                    return loadModule($transition$, module);
+                }
+            });
+            $stateProvider.state({
+                name: 'webcert.fragasvar.' + module.id + '.**',
+                url: '/fragasvar/' + module.id,
+                lazyLoad: function($transition$) {
+                    return loadModule($transition$, module);
+                }
+            });
+            $stateProvider.state({
+                name: module.id + '-readonly.**',
+                url: '/intyg-read-only/' + module.id,
+                lazyLoad: function($transition$) {
+                    return loadModule($transition$, module);
+                }
+            });
+        });
+    }
+
     function getUser() {
         var restPath = '/api/anvandare';
         return $.get(restPath).then(function(data) {
@@ -91,8 +152,8 @@
         });
     }
 
-    app.config(['$httpProvider', 'common.http403ResponseInterceptorProvider', '$logProvider', '$compileProvider', '$locationProvider', '$animateProvider', '$uibTooltipProvider',
-        function($httpProvider, http403ResponseInterceptorProvider, $logProvider, $compileProvider, $locationProvider, $animateProvider, $uibTooltipProvider) {
+    app.config(['$httpProvider', 'common.http403ResponseInterceptorProvider', '$logProvider', '$compileProvider', '$locationProvider', '$animateProvider', '$uibTooltipProvider', '$stateProvider',
+        function($httpProvider, http403ResponseInterceptorProvider, $logProvider, $compileProvider, $locationProvider, $animateProvider, $uibTooltipProvider, $stateProvider) {
 
             // Set in boot-app.jsp
             var debugMode = angular.isDefined(WEBCERT_DEBUG_MODE) ? WEBCERT_DEBUG_MODE : true; //jshint ignore:line
@@ -121,11 +182,12 @@
 
             $animateProvider.classNameFilter(/^(?:(?!ng-animate-disabled).)*$/);
 
-
             //set default popover trigger config.
             $uibTooltipProvider.options({
                 trigger: 'mouseenter'
             });
+
+            setupIntygModuleFutureStates($stateProvider);
         }]);
 
 /*
@@ -311,6 +373,8 @@
                 // Ugly hack loading these in sequence but before we have rewritten dynamiclink/message service content loading this is how it needs to be
                 // There is a task to improve this whole loading flow
                 getModules().then(function(modules) {
+                    moduleArray = modules;
+
                     var modulePromises = [];
 
                     if (moduleConfig.JS_MINIFIED) {
@@ -329,28 +393,6 @@
                             cache: true
                         });
                     }
-
-                    angular.forEach(modules, function(module) {
-                        // Add module to array as is
-                        moduleArray.push(module);
-
-                        if(module.cssPath && module.cssPath !== ''){
-                            loadCssFromUrl(module.cssPath + '?' + moduleConfig.BUILD_NUMBER);
-                        }
-
-                        if (moduleConfig.JS_MINIFIED) {
-
-                            if (window.console) {
-                                console.log('use mini is true! loading compressed modules');
-                            }
-
-                            modulePromises.push(loadScriptFromUrl(module.scriptPath + '.min.js?' + moduleConfig.BUILD_NUMBER));
-                            // All dependencies for the modules are included in module.min.js
-                        } else {
-                            modulePromises.push(loadScriptFromUrl(module.scriptPath + '.js'));
-                            modulePromises.push($.get(module.dependencyDefinitionPath));
-                        }
-                    });
 
                     // Wait for all modules and module dependency definitions to load.
                     $.when.apply(this, modulePromises).then(function() {
@@ -374,10 +416,7 @@
                         $.when.apply(this, dependencyPromises).then(function() {
                             angular.element(document).ready(function() {
 
-                                var allModules = ['webcert', 'common'].concat(Array.prototype.slice.call(
-                                    Array.prototype.map.call(moduleArray, function(module) {
-                                        return module.id;
-                                    }), 0));
+                                var allModules = ['webcert', 'common'];
 
                                 // Cant use common.featureService to check for this since it needs to be done before angular bootstrap.
                                 if (user && user.jsLoggning) {
@@ -403,14 +442,6 @@
             });
         });
     });
-
-    function loadCssFromUrl(url) {
-        var link = document.createElement('link');
-        link.type = 'text/css';
-        link.rel = 'stylesheet';
-        link.href = url;
-        document.getElementsByTagName('head')[0].appendChild(link);
-    }
 
     function loadScriptFromUrl(url) {
         var result = $.Deferred();
