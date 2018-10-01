@@ -31,7 +31,7 @@
 
     <context-param>
         <param-name>logbackConfigParameter</param-name>
-        <param-value>webcert.logback.file</param-value>
+        <param-value>logback.file</param-value>
     </context-param>
 
     <!-- Listener for external logback configuration file -->

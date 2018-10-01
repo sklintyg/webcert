@@ -87,10 +87,10 @@ Ungefär så här:
 
     jvmArgs = ["-Dcatalina.base=${buildDir}/catalina.base",
                    "-Dspring.profiles.active=dev,caching-enabled",
-                   "-Dwebcert.resources.folder=${projectDir}/../src/main/resources",
+                   "-Dresources.folder=${projectDir}/../src/main/resources",
                    "-Dcredentials.file=${projectDir}/webcert-credentials.properties",
-                   "-Dwebcert.config.file=${projectDir}/webcert-dev.properties",
-                   "-Dwebcert.logback.file=${projectDir}/webcert-logback.xml",
+                   "-Dconfig.file=${projectDir}/webcert-dev.properties",
+                   "-Dlogback.file=${projectDir}/webcert-logback.xml",
                    "-DuseMinifiedJavaScript=${minified}",
                    "-Djetty.port=9088"]
                    
