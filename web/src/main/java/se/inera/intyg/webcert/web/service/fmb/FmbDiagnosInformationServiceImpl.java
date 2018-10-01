@@ -39,6 +39,7 @@ import se.inera.intyg.webcert.persistence.fmb.model.fmb.Beskrivning;
 import se.inera.intyg.webcert.persistence.fmb.model.fmb.BeskrivningTyp;
 import se.inera.intyg.webcert.persistence.fmb.model.fmb.DiagnosInformation;
 import se.inera.intyg.webcert.persistence.fmb.model.fmb.Icd10Kod;
+import se.inera.intyg.webcert.persistence.fmb.model.fmb.Referens;
 import se.inera.intyg.webcert.persistence.fmb.model.fmb.TypFall;
 import se.inera.intyg.webcert.persistence.fmb.repository.DiagnosInformationRepository;
 import se.inera.intyg.webcert.web.service.diagnos.DiagnosService;
@@ -135,9 +136,15 @@ public class FmbDiagnosInformationServiceImpl implements FmbDiagnosInformationSe
                                     FmbType.BESLUTSUNDERLAG_TEXTUELLT, typfallList))));
         }
 
-        return new FmbResponse(
+        final Optional<Referens> referens = diagnosInformation.getReferensList().stream().findFirst();
+        final String referensDescription = referens.map(Referens::getText).orElse(null);
+        final String referensLink = referens.map(Referens::getUri).orElse(null);
+
+        return FmbResponse.of(
                 upperCaseIcd10,
                 icd10CodeDeskription,
+                referensDescription,
+                referensLink,
                 fmbFormList);
     }
 

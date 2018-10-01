@@ -20,7 +20,6 @@ package se.inera.intyg.webcert.web.web.controller.api.dto;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-
 import java.util.Collections;
 import java.util.List;
 
@@ -33,13 +32,30 @@ public final class FmbResponse {
     @ApiModelProperty(name = "ICD10 description", dataType = "String")
     private String icd10Description;
 
+    @ApiModelProperty(name = "Reference description", dataType = "String")
+    private String referenceDescription;
+
+    @ApiModelProperty(name = "Reference Link", dataType = "String")
+    private String referenceLink;
+
     @ApiModelProperty(name = "forms")
     private List<FmbForm> forms;
 
-    public FmbResponse(String icd10Code, String icd10Description, List<FmbForm> forms) {
+    public FmbResponse() {
+    }
+
+    private FmbResponse(
+            final String icd10Code,
+            final String icd10Description,
+            final String referenceDescription,
+            final String referenceLink,
+            final List<FmbForm> forms) {
         this.icd10Code = icd10Code;
         this.icd10Description = icd10Description;
+        this.referenceDescription = referenceDescription;
+        this.referenceLink = referenceLink;
         this.forms = Collections.unmodifiableList(forms);
+
     }
 
     public String getIcd10Code() {
@@ -53,4 +69,22 @@ public final class FmbResponse {
     public String getIcd10Description() {
         return icd10Description;
     }
+
+    public String getReferenceDescription() {
+        return referenceDescription;
+    }
+
+    public String getReferenceLink() {
+        return referenceLink;
+    }
+
+    public static FmbResponse of(
+            final String icd10Code,
+            final String icd10Description,
+            final String referenceDescription,
+            final String referenceLink,
+            final List<FmbForm> forms) {
+        return new FmbResponse(icd10Code, icd10Description, referenceDescription, referenceLink, forms);
+    }
+
 }
