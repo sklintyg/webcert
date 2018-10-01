@@ -1201,7 +1201,8 @@
   <changeSet id="57" author="ja">
     <renameColumn oldColumnName="MAXIMALSJUKRIVNINGSTID"
                   newColumnName="MAXIMALSJUKRIVNINGSTID_DAGAR"
-                  tableName="FMB_TYPFALL"/>
+                  tableName="FMB_TYPFALL"
+                  columnDataType="bigint"/>
 
     <modifyDataType tableName="FMB_TYPFALL"
                     columnName="MAXIMALSJUKRIVNINGSTID_DAGAR"
