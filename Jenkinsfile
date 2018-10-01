@@ -77,3 +77,9 @@ stage('notify') {
         util.notifySuccess()
     }
 }
+
+stage('propagate') {
+    node {
+        build job: "webcert-dintyg-build", wait: false, parameters: [[$class: 'StringParameterValue', name: 'WEBCERT_BUILD_VERSION', value: buildVersion]]
+    }
+}

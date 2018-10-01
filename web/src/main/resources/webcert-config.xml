@@ -67,7 +67,7 @@
           <value>classpath:default.properties</value>
           <value>classpath:version.properties</value>
           <value>classpath:webcert-notification-route-params.properties</value>
-          <value>file:${webcert.config.file}</value>
+          <value>file:${config.file}</value>
           <value>file:${credentials.file}</value>
         </list>
       </property>

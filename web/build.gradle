@@ -97,9 +97,9 @@ gretty {
 
     jvmArgs = ["-Dcatalina.base=${buildDir}/catalina.base",
                "-Dspring.profiles.active=dev,caching-enabled",
-               "-Dwebcert.resources.folder=${projectDir}/../src/main/resources",
+               "-Dresources.folder=${projectDir}/../src/main/resources",
                "-Dcredentials.file=${projectDir}/webcert-credentials.properties",
-               "-Dwebcert.config.file=${projectDir}/webcert-dev.properties",
+               "-Dconfig.file=${projectDir}/webcert-dev.properties",
                "-DuseMinifiedJavaScript=${minified}",
                "-Djetty.port=${httpPort}"]
 

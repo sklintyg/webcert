@@ -43,7 +43,7 @@
 
     <bean id="notificationStubStateBean" class="se.inera.intyg.webcert.notificationstub.v3.NotificationStubStateBean" />
 
-    <context:property-placeholder location="file:${webcert.config.file}"
+    <context:property-placeholder location="file:${config.file}"
                                   order="1"
                                   ignore-unresolvable="true"
                                   ignore-resource-not-found="true" />
