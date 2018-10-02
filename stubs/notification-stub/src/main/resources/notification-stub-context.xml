@@ -36,10 +36,7 @@
                                 ignore-resource-not-found="true" />
 
   <beans profile="dev,wc-all-stubs,wc-notificationsender-stub,testability-api">
-    <bean id="notificationStoreV3" class="se.inera.intyg.webcert.notificationstub.v3.NotificationStoreV3Impl">
-      <constructor-arg type="java.lang.String" value="notificationsv3" />
-      <constructor-arg type="int" value="100" />
-    </bean>
+    <bean id="notificationStoreV3" class="se.inera.intyg.webcert.notificationstub.v3.NotificationStoreV3Impl"/>
 
     <bean id="notificationStubStateBean" class="se.inera.intyg.webcert.notificationstub.v3.NotificationStubStateBean" />
 

@@ -19,7 +19,6 @@
 package se.inera.intyg.webcert.notificationstub.store;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import net.openhft.chronicle.map.ChronicleMap;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,6 +29,7 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -41,23 +41,12 @@ public abstract class BaseStore<T> {
 
     private static final Logger LOG = LoggerFactory.getLogger(BaseStore.class);
 
+    protected Map<String, String> notificationsMap;
 
-    private static final double LOAD = 0.8;
-
-    protected static final int AVERAGE_VALUE_SIZE = 1024;
-    protected static final String AVERAGE_KEY = "963d957f-6662-4cd3-bb99-d3d9fb419b51";
-
-
-    protected ChronicleMap<String, String> notificationsMap;
     protected CustomObjectMapper objectMapper = new CustomObjectMapper();
 
-    private final int maxSize;
-    protected final int minSize;
-
-    protected BaseStore(int maxSize) {
-        this.maxSize = maxSize;
-        this.minSize = Double.valueOf(maxSize * LOAD).intValue();
-    }
+    protected final int maxSize = 100;
+    protected final int minSize = 80;
 
     public void put(T request) {
         try {
@@ -70,7 +59,6 @@ public abstract class BaseStore<T> {
             LOG.error(e.getMessage());
         }
     }
-
 
     protected void purge() {
 
@@ -95,7 +83,7 @@ public abstract class BaseStore<T> {
     protected abstract LocalDateTime getTidpunkt(Pair<String, T> left);
 
     public Collection<T> getNotifications() {
-        return notificationsMap.values().stream().map(this::<T>transform)
+        return notificationsMap.values().stream().map(this::<T> transform)
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
     }
@@ -111,9 +99,11 @@ public abstract class BaseStore<T> {
     public int getMinSize() {
         return minSize;
     }
+
     public void clear() {
         notificationsMap.clear();
     }
+
     protected abstract T transform(String s);
 
 }

@@ -16,23 +16,22 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.notificationstub;
+package se.inera.intyg.webcert.notificationstub.v3;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import se.inera.intyg.webcert.notificationstub.v3.NotificationStoreV3;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareType;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.IntygId;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Handelse;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
 
-import java.io.File;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -50,15 +49,17 @@ public class IntegrationTest {
     private NotificationStoreV3 notificationStore;
     @Autowired
     private NotificationStoreV3 notificationStore2;
+    @Autowired
+    private RedisConnectionFactory redisConnectionFactory;
 
     @Before
-    @After
     public void init() {
-        File dataFile = new File(System.getProperty("java.io.tmpdir") + File.separator + "notificationsv1.data");
-        if (dataFile.exists()) {
-            dataFile.delete();
-        }
         notificationStore.clear();
+    }
+    @After
+    public void cleanup() {
+        notificationStore.clear();
+        redisConnectionFactory.getConnection().close();
     }
 
     @Test

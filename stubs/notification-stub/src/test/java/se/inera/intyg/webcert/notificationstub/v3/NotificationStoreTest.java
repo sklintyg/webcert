@@ -16,26 +16,21 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.notificationstub;
+package se.inera.intyg.webcert.notificationstub.v3;
 
 import com.google.common.collect.Iterables;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import se.inera.intyg.webcert.notificationstub.v3.NotificationStoreV3Impl;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareType;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.IntygId;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Handelse;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
 
-import java.io.File;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
@@ -48,19 +43,12 @@ public class NotificationStoreTest {
             "intyg9",
             "intyg10");
 
-    @Before
-    @After
-    public void init() {
-        File dataFile = new File(System.getProperty("java.io.tmpdir") + File.separator + "notificationsv1.data");
-        if (dataFile.exists()) {
-            dataFile.delete();
-        }
-    }
 
     @Test
     public void testPurge() {
 
-        NotificationStoreV3Impl notificationStore = new NotificationStoreV3Impl(UUID.randomUUID().toString(), 100);
+        NotificationStoreV3Impl notificationStore = new NotificationStoreV3Impl();
+        notificationStore.initForTesting();
         LocalDateTime now = LocalDateTime.now();
         populateNotificationsMap(100, notificationStore, now);
 

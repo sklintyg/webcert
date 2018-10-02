@@ -19,27 +19,45 @@
 package se.inera.intyg.webcert.notificationstub.v3;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.support.collections.DefaultRedisMap;
 import se.inera.intyg.webcert.notificationstub.store.BaseStore;
-import se.inera.intyg.webcert.notificationstub.store.StoreFactory;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareType;
 
-import javax.annotation.PreDestroy;
+import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 
 public class NotificationStoreV3Impl extends BaseStore<CertificateStatusUpdateForCareType> implements NotificationStoreV3 {
 
-    public NotificationStoreV3Impl(String cacheName, int maxSize) {
-        super(maxSize);
-        this.notificationsMap = StoreFactory.getChronicleMap(cacheName, minSize, AVERAGE_VALUE_SIZE, AVERAGE_KEY);
+    private static final String NOTIFICATION_STORE_V3 = "NOTIFICATION_STORE_V3";
+
+    @Autowired
+    private RedisConnectionFactory redisConnectionFactory;
+
+    private StringRedisTemplate stringRedisTemplate;
+
+    @PostConstruct
+    public void init() {
+        stringRedisTemplate = new StringRedisTemplate();
+        stringRedisTemplate.setConnectionFactory(redisConnectionFactory);
+        stringRedisTemplate.afterPropertiesSet();
+        notificationsMap = new DefaultRedisMap<String, String>(NOTIFICATION_STORE_V3, stringRedisTemplate);
     }
 
-    @PreDestroy
-    public void close() {
-        if (this.notificationsMap != null) {
-            this.notificationsMap.close();
-        }
+    void initForTesting() {
+        notificationsMap = new HashMap<>();
     }
+
+//    @PreDestroy
+//    public void close() {
+//        if (this.notificationsMap != null) {
+//            this.notificationsMap.close();
+//        }
+//    }
 
     @Override
     protected LocalDateTime getTidpunkt(Pair<String, CertificateStatusUpdateForCareType> left) {
