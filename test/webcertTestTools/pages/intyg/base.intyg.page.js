@@ -36,6 +36,7 @@ var hogerfaltet = require('./hogerfaltet');
 var BaseIntyg = JClass._extend({
     init: function() {
         this.intygType = null;
+        this.intygTypeVersion = null; // overridden by subclasses
         this.at = element(by.id('viewCertAndQA'));
         this.makulera = {
             btn: element(by.id('makuleraBtn')),
@@ -124,7 +125,7 @@ var BaseIntyg = JClass._extend({
         this.newPersonIdMessageText = element(by.id('wc-new-person-id-message-text'));
     },
     get: function(intygId) {
-        browser.get('/#/intyg/' + this.intygType + '/' + intygId + '/');
+        browser.get('/#/intyg/' + this.intygType + '/' + this.intygTypeVersion + '/' + intygId + '/');
     },
     scrollIntoView: function(domId) {
         browser.executeScript('if ($("#' + domId + '").length) { $("#' + domId + '")[0].scrollIntoView()}');

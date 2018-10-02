@@ -26,7 +26,8 @@ var pageHelpers = require('../../../../pageHelper.util.js');
 var LuaeNaUtkast = BaseSmiUtkast._extend({
     init: function init() {
         init._super.call(this);
-
+        this.intygType = 'luae_na';
+        this.intygTypeVersion = '1.0';
         this.underlagFinnsYes = element(by.id('underlagFinnsYes'));
         this.underlagFinnsNo = element(by.id('underlagFinnsNo'));
         this.sjukdomsforlopp = element(by.id('sjukdomsforlopp'));

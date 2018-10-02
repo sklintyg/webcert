@@ -26,6 +26,8 @@ var pageHelpers = require('../../../../pageHelper.util.js');
 var LuseUtkast = BaseSmiUtkast._extend({
     init: function init() {
         init._super.call(this);
+        this.intygType = 'luse';
+        this.intygTypeVersion = '1.0';
 
         this.underlagFinnsNo = element(by.id('underlagFinnsNo'));
         this.sjukdomsforlopp = element(by.id('sjukdomsforlopp'));

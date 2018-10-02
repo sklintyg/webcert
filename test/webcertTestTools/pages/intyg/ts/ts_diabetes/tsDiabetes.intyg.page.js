@@ -30,6 +30,7 @@ var TsDiabetesIntyg = TsBaseIntyg._extend({
     init: function init() {
         init._super.call(this);
         this.intygType = 'ts-diabetes';
+        this.intygTypeVersion = '2.8';
 
         this.period = element(by.id('diabetes-observationsperiod'));
         this.insulPeriod = element(by.id('diabetes-insulinBehandlingsperiod'));

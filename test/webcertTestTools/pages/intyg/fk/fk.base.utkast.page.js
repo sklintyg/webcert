@@ -32,6 +32,8 @@ var FkBaseUtkast = BaseUtkast._extend({
         init._super.call(this);
 
         this.at = element(by.css('.edit-form'));
+        this.intygType = null;
+        this.intygTypeVersion = null;
 
         // The "markera klart för att signera" functionality is common to all SIT / SMI intygstyper.
         this.markeraKlartForSigneringButton = element(by.id('markeraKlartForSigneringButton'));

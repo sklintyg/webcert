@@ -31,6 +31,7 @@ var TsDiabetesUtkast = BaseTsUtkast._extend({
     init: function init() {
         init._super.call(this);
         this.intygType = 'ts-diabetes';
+        this.intygTypeVersion = '2.8';
         this.at = element(by.id('edit-ts-diabetes'));
 
         this.allmant = {

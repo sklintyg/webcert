@@ -25,6 +25,7 @@ var LuseIntyg = BaseSmiIntygPage._extend({
     init: function init() {
         init._super.call(this);
         this.intygType = 'luse';
+        this.intygTypeVersion = '1.0';
     },
 
     get: function get(intygId) {

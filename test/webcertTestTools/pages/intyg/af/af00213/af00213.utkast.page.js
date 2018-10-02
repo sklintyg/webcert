@@ -26,7 +26,8 @@ var pageHelpers = require('../../../pageHelper.util.js');
 var Af00213Utkast = AfBaseUtkast._extend({
     init: function init() {
         init._super.call(this);
-
+        this.intygType = 'af00213';
+        this.intygTypeVersion = '2.0';
         this.funktionsnedsattning = {
             yes: element(by.id('harFunktionsnedsattningYes')),
             no: element(by.id('harFunktionsnedsattningNo')),
@@ -50,7 +51,11 @@ var Af00213Utkast = AfBaseUtkast._extend({
             no: element(by.id('harArbetetsPaverkanNo')),
             text: element(by.id('arbetetsPaverkan'))
         };
-
+        this.skipparBalte = {
+            yes: element(by.id('harSkipparBalteYes')),
+            no: element(by.id('harSkipparBalteNo')),
+            text: element(by.id('skipparBalteMotivering'))
+        };
         this.ovrigt = element(by.id('ovrigt'));
     },
     angeFunktionsnedsattning: function(funktionsnedsattning) {
@@ -109,6 +114,21 @@ var Af00213Utkast = AfBaseUtkast._extend({
                 return pageHelpers.moveAndSendKeys(el.yes, protractor.Key.SPACE)
                     .then(function() {
                         return pageHelpers.moveAndSendKeys(el.text, arbetetsPaverkan.text);
+                    });
+            } else {
+                return pageHelpers.moveAndSendKeys(el.no, protractor.Key.SPACE);
+            }
+        }
+    },
+    angeSkipparBalte: function(skipparbalte) {
+        var el = this.skipparBalte;
+        if (!skipparbalte) {
+            return Promise.resolve();
+        } else {
+            if (skipparbalte.val === 'Ja') {
+                return pageHelpers.moveAndSendKeys(el.yes, protractor.Key.SPACE)
+                    .then(function() {
+                        return pageHelpers.moveAndSendKeys(el.text, skipparbalte.text);
                     });
             } else {
                 return pageHelpers.moveAndSendKeys(el.no, protractor.Key.SPACE);

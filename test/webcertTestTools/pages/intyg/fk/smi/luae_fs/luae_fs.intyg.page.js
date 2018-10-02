@@ -26,6 +26,7 @@ var LuaefsIntyg = BaseSmiIntygPage._extend({
         init._super.call(this);
 
         this.intygType = 'luae_fs';
+        this.intygTypeVersion = '1.0';
 
         this.funktionsnedsattning = {
             debut: element(by.id('funktionsnedsattningDebut')),

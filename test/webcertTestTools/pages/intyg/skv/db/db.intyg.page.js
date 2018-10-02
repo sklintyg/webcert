@@ -25,6 +25,7 @@ var BaseSkvIntygPage = require('../skv.base.intyg.page.js');
 var DbIntyg = BaseSkvIntygPage._extend({
     init: function init() {
         init._super.call(this);
+        this.intygTypeVersion = '1.0';
 
         this.identitetStyrkt = element(by.id('identitetStyrkt'));
         this.dodsdatum = {

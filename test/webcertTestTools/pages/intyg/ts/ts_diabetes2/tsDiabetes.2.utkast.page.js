@@ -28,6 +28,7 @@ var TsDiabetes2Utkast = BaseTsUtkast._extend({
     init: function init() {
         init._super.call(this);
         this.intygType = 'ts-diabetes-2';
+        this.intygTypeVersion = '1.0';
         this.at = element(by.id('edit-ts-diabetes-2'));
 
         // override some form selecting cause id's differ

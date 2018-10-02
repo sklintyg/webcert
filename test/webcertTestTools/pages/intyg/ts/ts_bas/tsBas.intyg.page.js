@@ -30,6 +30,7 @@ var TsBasIntyg = TsBaseIntyg._extend({
     init: function init() {
         init._super.call(this);
         this.intygType = 'ts-bas';
+        this.intygTypeVersion = '6.8';
 
         this.hogerOgautanKorrektion = element(by.id('syn-row0-col1'));
         this.hogerOgamedKorrektion = element(by.id('syn-row0-col2'));

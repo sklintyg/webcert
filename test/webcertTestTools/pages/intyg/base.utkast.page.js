@@ -32,6 +32,7 @@ var BaseUtkast = JClass._extend({
     init: function() {
 
         this.at = null;
+        this.intygTypeVersion = null; // overridden by subclasses
         this.signeraButton = element(by.id('signera-utkast-button'));
         this.radera = {
             knapp: element(by.id('ta-bort-utkast')),
@@ -88,7 +89,7 @@ var BaseUtkast = JClass._extend({
         this.newPersonIdMessageText = element(by.id('wc-new-person-id-message-text'));
     },
     get: function(intygType, intygId) {
-        browser.get('/#/' + intygType + '/edit/' + intygId + '/');
+        browser.get('/#/' + intygType + '/' + this.intygTypeVersion + '/edit/' + intygId + '/');
     },
     isAt: function() {
         var at = this.at;

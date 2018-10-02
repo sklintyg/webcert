@@ -31,6 +31,7 @@ var TsBasUtkast = BaseTsUtkast._extend({
 
         init._super.call(this);
         this.intygType = 'ts-bas';
+        this.intygTypeVersion = '6.8';
         this.at = element(by.id('edit-ts-bas'));
         this.syn = {
             aYes: element(by.id('syn-synfaltsdefekterYes')),

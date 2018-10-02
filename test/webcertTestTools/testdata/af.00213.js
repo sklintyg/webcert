@@ -46,6 +46,10 @@ module.exports = {
                 val: 'Ja',
                 text: 'Vilken påverkan har arbetet?'
             },
+            skipparBalte: {
+                val: 'Ja',
+                text: 'Vilken påverkan har arbetet?'
+            },
             ovrigt: 'Övriga upplysningar'
         };
     },
@@ -69,6 +73,7 @@ module.exports = {
             funktionsnedsattning: slumpaValOchText(),
             arbetetsPaverkan: slumpaValOchText(),
             utredningBehandling: slumpaValOchText(),
+            skipparBalte: slumpaValOchText(),
             ovrigt: testdataHelper.randomTextString(5, 1000)
         };
 

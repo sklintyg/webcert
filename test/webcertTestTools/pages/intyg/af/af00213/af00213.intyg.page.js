@@ -25,6 +25,7 @@ var Af00213Intyg = AfBaseIntyg._extend({
     init: function init() {
         init._super.call(this);
         this.intygType = 'af00213';
+        this.intygTypeVersion = '2.0';
 
         this.funktionsnedsattning = {
             value: element(by.id('harFunktionsnedsattning')),
@@ -39,6 +40,10 @@ var Af00213Intyg = AfBaseIntyg._extend({
         this.utredningBehandling = {
             value: element(by.id('harUtredningBehandling')),
             text: element(by.id('utredningBehandling'))
+        };
+        this.skipparBalte = {
+            value: element(by.id('harSkipparBalte')),
+            text: element(by.id('skipparBalteMotivering'))
         };
 
         this.arbetetsPaverkan = {
@@ -56,7 +61,8 @@ var Af00213Intyg = AfBaseIntyg._extend({
         this.verifieraFunktionsnedsattning(data);
         this.verifieraAktivitetsbegransning(data);
         this.verifieraUtredningBehandling(data);
-        this.verifieraArbetetsPaverkan(data);
+        //this.verifieraArbetetsPaverkan(data);
+        this.verifieraSkipparBalte(data);
         this.verifieraOvrigt(data);
     },
     verifieraFunktionsnedsattning: function(data) {
@@ -83,6 +89,12 @@ var Af00213Intyg = AfBaseIntyg._extend({
         expect(this.arbetetsPaverkan.value.getText()).toBe(data.arbetetsPaverkan.val);
         if (data.arbetetsPaverkan.text !== undefined) {
             expect(this.arbetetsPaverkan.text.getText()).toBe(data.arbetetsPaverkan.text);
+        }
+    },
+    verifieraSkipparBalte: function(data) {
+        expect(this.skipparBalte.value.getText()).toBe(data.skipparBalte.val);
+        if (data.skipparBalte.text !== undefined) {
+            expect(this.skipparBalte.text.getText()).toBe(data.skipparBalte.text);
         }
     },
     verifieraOvrigt: function(data) {

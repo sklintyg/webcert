@@ -24,6 +24,7 @@ var BaseSocIntygPage = require('../soc.base.intyg.page.js');
 var DoiIntyg = BaseSocIntygPage._extend({
     init: function init() {
         init._super.call(this);
+        this.intygTypeVersion = '1.0';
         this.barn = {
             value: element(by.id('barn'))
         };

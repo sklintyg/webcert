@@ -30,6 +30,7 @@ var BaseIntyg = require('../base.intyg.page.js');
 var FkBaseIntyg = BaseIntyg._extend({
     init: function init() {
         init._super.call(this);
+        this.intygTypeVersion = null; //Overidden by subclasses
 
         this.at = element(by.id('viewCertAndQA'));
         this.enhetsAdress = {

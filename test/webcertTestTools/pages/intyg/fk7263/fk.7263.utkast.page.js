@@ -48,7 +48,8 @@ protractor.ElementFinder.prototype.uncheck = function() {
 var FkBaseUtkast = BaseUtkast._extend({
     init: function init() {
         init._super.call(this);
-
+        this.intygType = 'fk7263';
+        this.intygTypeVersion = '1.0';
 
         this.enhetensAdress = {
             postAdress: element(by.id('clinicInfoPostalAddress')),

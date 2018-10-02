@@ -24,6 +24,8 @@ var BaseSmiIntygPage = require('../smi.base.intyg.page.js');
 var LuaeNaIntyg = BaseSmiIntygPage._extend({
     init: function init() {
         init._super.call(this);
+        this.intygType = 'luae_na';
+        this.intygTypeVersion = '1.0';
     },
 
     get: function get(intygId) {

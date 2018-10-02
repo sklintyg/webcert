@@ -281,6 +281,7 @@ public class IntygResource {
         utkast.setEnhetsNamn(utlatande.getGrundData().getSkapadAv().getVardenhet().getEnhetsnamn());
         utkast.setVardgivarId(utlatande.getGrundData().getSkapadAv().getVardenhet().getVardgivare().getVardgivarid());
         utkast.setIntygsTyp(utlatande.getTyp());
+        utkast.setIntygTypeVersion(utlatande.getTextVersion());
         utkast.setIntygsId(utlatande.getId());
         utkast.setPatientEfternamn(utlatande.getGrundData().getPatient().getEfternamn());
         utkast.setPatientFornamn(utlatande.getGrundData().getPatient().getFornamn());
@@ -327,6 +328,7 @@ public class IntygResource {
 
         utkast.setIntygsId(request.getIntygId());
         utkast.setIntygsTyp(request.getIntygType());
+        utkast.setIntygTypeVersion(request.getIntygTypeVersion());
 
         utkast.setStatus(UtkastStatus.DRAFT_INCOMPLETE);
 

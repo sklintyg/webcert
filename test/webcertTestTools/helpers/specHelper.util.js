@@ -152,5 +152,16 @@ module.exports = {
                 return url.split('/').pop();
             }
         });
+    },
+    getUtkastTypeVersionFromUrl: function(intygType) {
+        return browser.getCurrentUrl().then(function(url) {
+            var versionRegExp = new RegExp('\/' + intygType + '\/(.+?)\/');
+            var result = versionRegExp.exec(url);
+            if (result === null) {
+                throw 'Failed to extract intygTypeVersion for intygtype ' + intygType + ' from url string ' + url;
+            }
+            return result[1];
+        });
     }
+
 };

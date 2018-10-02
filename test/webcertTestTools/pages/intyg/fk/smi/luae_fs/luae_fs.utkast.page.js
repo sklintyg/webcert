@@ -26,7 +26,8 @@ var pageHelpers = require('../../../../pageHelper.util.js');
 var LuaefsUtkast = BaseSmiUtkast._extend({
     init: function init() {
         init._super.call(this);
-
+        this.intygType = 'luae_fs';
+        this.intygTypeVersion = '1.0';
         this.andraMedicinskaUtredningar = {
             finns: {
                 JA: element(by.id('underlagFinnsYes')),

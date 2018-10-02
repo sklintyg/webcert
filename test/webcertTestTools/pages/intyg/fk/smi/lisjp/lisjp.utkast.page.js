@@ -26,7 +26,8 @@ var pageHelpers = require('../../../../pageHelper.util.js');
 var LisjpUtkast = BaseSmiUtkast._extend({
     init: function init() {
         init._super.call(this);
-
+        this.intygType = 'lisjp';
+        this.intygTypeVersion = '1.0';
         this.smittskydd = element(by.id('form_avstangningSmittskydd')).element(by.css('input[type=checkbox]'));
 
         this.baseratPa = {

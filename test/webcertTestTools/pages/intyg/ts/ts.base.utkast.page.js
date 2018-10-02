@@ -37,7 +37,7 @@ var BaseTsUtkast = BaseUtkast._extend({
         init._super.call(this);
 
         this.intygType = null; // overridden by children
-
+        this.intygTypeVersion = null; // overridden by subclasses
         this.korkortsTyperChecks = element(by.id('form_intygAvser-korkortstyp')).all(by.css('label'));
 
         this.identitetForm = element(by.id('form_vardkontakt-idkontroll'));

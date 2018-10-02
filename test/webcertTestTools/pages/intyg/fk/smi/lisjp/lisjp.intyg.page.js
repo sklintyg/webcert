@@ -27,6 +27,7 @@ var LisjpIntyg = BaseSmiIntygPage._extend({
     init: function init() {
         init._super.call(this);
         this.intygType = 'lisjp';
+        this.intygTypeVersion = '1.0';
         this.funktionsnedsattning = element(by.id('funktionsnedsattning'));
         this.aktivitetsbegransning = element(by.id('aktivitetsbegransning'));
         this.smittskydd = element(by.id('avstangningSmittskydd'));

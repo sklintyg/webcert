@@ -28,6 +28,7 @@ var TsDiabetes2Intyg = TsBaseIntyg._extend({
     init: function init() {
         init._super.call(this);
         this.intygType = 'ts-diabetes-2';
+        this.intygTypeVersion = '1.0';
 
         this.period = element(by.id('allmant-diabetesDiagnosAr'));
         this.insulPeriod = element(by.id('allmant-behandling-insulinSedanAr'));

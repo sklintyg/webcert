@@ -31,6 +31,7 @@ var Fk7263Intyg = BaseIntyg._extend({
     init: function init() {
         init._super.call(this);
         this.intygType = 'fk7263';
+        this.intygTypeVersion = '1.0';
         this.certficate = element(by.id('certificate'));
 
         this.field1 = {

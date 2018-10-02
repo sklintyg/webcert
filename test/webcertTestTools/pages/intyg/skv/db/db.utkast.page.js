@@ -29,6 +29,8 @@ var moveAndSendKeys = testTools.protractorHelpers.moveAndSendKeys;
 var DbUtkast = BaseSkvUtkast._extend({
     init: function init() {
         init._super.call(this);
+        this.intygType = 'db';
+        this.intygTypeVersion = '1.0';
         this.identitetStyrktGenom = { //identitetStyrktGenom är inte samma element som i TS intyg
             container: element(by.id('form_identitetStyrkt')),
             inputText: element(by.id('identitetStyrkt'))
