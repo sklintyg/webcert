@@ -21,7 +21,6 @@ package se.inera.intyg.webcert.web.service.arende;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
-import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -296,7 +295,6 @@ public class ArendeServiceImpl implements ArendeService {
         return getArendeConversationViewList(intygsId, allArende);
     }
 
-    @NotNull
     private Arende getLatestKomplArende(String intygsId, List<Arende> arendeList) {
         return arendeList
                 .stream()
