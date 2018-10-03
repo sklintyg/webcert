@@ -61,7 +61,8 @@ public class IntygModuleFacadeImpl implements IntygModuleFacade {
             throws IntygModuleFacadeException {
 
         try {
-            ModuleApi moduleApi = moduleRegistry.getModuleApi(intygType, moduleRegistry.resolveVersionFromUtlatandeJson(internalIntygJsonModel));
+            ModuleApi moduleApi = moduleRegistry.getModuleApi(intygType,
+                    moduleRegistry.resolveVersionFromUtlatandeJson(internalIntygJsonModel));
             PdfResponse pdfResponse;
             if (!isEmployer) {
                 pdfResponse = moduleApi.pdf(internalIntygJsonModel, statuses, ApplicationOrigin.WEBCERT, utkastStatus);
@@ -85,7 +86,8 @@ public class IntygModuleFacadeImpl implements IntygModuleFacade {
     }
 
     @Override
-    public CertificateResponse getCertificate(String certificateId, String intygType, String intygTypeVersion) throws IntygModuleFacadeException {
+    public CertificateResponse getCertificate(String certificateId, String intygType, String intygTypeVersion)
+            throws IntygModuleFacadeException {
         try {
             ModuleApi moduleApi = moduleRegistry.getModuleApi(intygType, intygTypeVersion);
             return moduleApi.getCertificate(certificateId, logicalAddress, HSVARD_RECIPIENT_ID);
@@ -100,7 +102,8 @@ public class IntygModuleFacadeImpl implements IntygModuleFacade {
     @Override
     public void registerCertificate(String intygType, String internalIntygJsonModel) throws ModuleException, IntygModuleFacadeException {
         try {
-            ModuleApi moduleApi = moduleRegistry.getModuleApi(intygType, moduleRegistry.resolveVersionFromUtlatandeJson(internalIntygJsonModel));
+            ModuleApi moduleApi = moduleRegistry.getModuleApi(intygType,
+                    moduleRegistry.resolveVersionFromUtlatandeJson(internalIntygJsonModel));
             moduleApi.registerCertificate(internalIntygJsonModel, logicalAddress);
         } catch (ModuleNotFoundException e) {
             LOG.error("ModuleNotFoundException occured for intygstyp '{}' when registering certificate", intygType);

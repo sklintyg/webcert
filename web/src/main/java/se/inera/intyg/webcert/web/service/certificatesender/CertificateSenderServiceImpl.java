@@ -162,7 +162,8 @@ public class CertificateSenderServiceImpl implements CertificateSenderService {
         private final String xmlBody;
         private final String logicalAddress;
 
-        private RevokeCertificateMessageCreator(String intygsId, String xmlBody, String logicalAddress, String intygsTyp, String intygsTypVersion) {
+        private RevokeCertificateMessageCreator(String intygsId, String xmlBody, String logicalAddress, String intygsTyp,
+                String intygsTypVersion) {
             this.intygsId = intygsId;
             this.intygsTyp = intygsTyp;
             this.intygsTypVersion = intygsTypVersion;

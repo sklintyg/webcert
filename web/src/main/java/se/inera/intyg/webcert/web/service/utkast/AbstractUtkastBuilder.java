@@ -121,7 +121,7 @@ public abstract class AbstractUtkastBuilder<T extends AbstractCreateCopyRequest>
         builderResponse.setOrginalVardgivarId(vardenhet.getVardgivare().getVardgivarid());
         builderResponse.setOrginalVardgivarNamn(vardenhet.getVardgivare().getVardgivarnamn());
 
-        //TODOO: INTYG-7212 can we really just take textVersion of orgUtlatande like when db->doi?
+        //NOTE: see INTYG-7212 can we really just take textVersion of orgUtlatande like when db->doi?
         ModuleApi moduleApi = moduleRegistry.getModuleApi(intygsTyp, signedIntygHolder.getUtlatande().getTextVersion());
 
         // Set relation to null if not applicable
@@ -133,7 +133,7 @@ public abstract class AbstractUtkastBuilder<T extends AbstractCreateCopyRequest>
 
         UtkastStatus utkastStatus = validateDraft(moduleApi, draftCopyJson);
 
-        //TODOO: INTYG-7212 can we really just take textVersion of orgUtlatande like when db->doi?
+        //NOTE: See INTYG-7212 can we really just take textVersion of orgUtlatande like when db->doi?
         Utkast utkast = buildUtkastCopy(copyRequest, newDraftCopyId, intygsTyp, signedIntygHolder.getUtlatande().getTextVersion(),
                 addRelation, relation,
                 draftCopyJson, utkastStatus);
@@ -197,7 +197,7 @@ public abstract class AbstractUtkastBuilder<T extends AbstractCreateCopyRequest>
         builderResponse.setOrginalVardgivarNamn(orgUtkast.getVardgivarNamn());
 
         LOG.debug("Populating copy with details from Utkast '{}'", orignalIntygsId);
-        //TODOO: INTYG-7212 can we really just take textVersion of orgUtlatande like when db->doi?
+        //NOTE: see INTYG-7212 can we really just take textVersion of orgUtlatande like when db->doi?
         //The new Utkast's version is assumed to be of the same version as original.
         ModuleApi moduleApi = moduleRegistry.getModuleApi(copyRequest.getTyp(), orgUtkast.getIntygTypeVersion());
 
@@ -209,7 +209,7 @@ public abstract class AbstractUtkastBuilder<T extends AbstractCreateCopyRequest>
                 newDraftCopyId);
 
         UtkastStatus utkastStatus = validateDraft(moduleApi, draftCopyJson);
-        //TODOO: INTYG-7212 can we really just take textVersion of orgUtlatande like when db->doi?
+        //NOTE: See INTYG-7212 can we really just take textVersion of orgUtlatande like when db->doi?
         //I.e when copying within the same intygType A -> A this should be OK, but maybe not for DB -> DOI
         Utkast utkast = buildUtkastCopy(copyRequest, newDraftCopyId, copyRequest.getTyp(), orgUtkast.getIntygTypeVersion(), addRelation,
                 relation,

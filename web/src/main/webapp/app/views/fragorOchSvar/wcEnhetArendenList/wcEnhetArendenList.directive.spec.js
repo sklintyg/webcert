@@ -31,7 +31,6 @@ describe('wcEnhetArendenList', function() {
     var enhetArendenListService;
     var ArendeVidarebefordraHelper;
     var ArendeProxy;
-    var IntygProxy;
     var statService;
 
     var testQAResponse = {
