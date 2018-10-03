@@ -52,7 +52,7 @@ public class ListCertificatesForCareWithQAIT extends BaseWSIntegrationTest {
         requestTemplate = templateGroup.getInstanceOf("request");
 
         xsdInputstream = ClasspathSchemaResourceResolver
-                .load("interactions/ListCertificatesForCareWithQAInteraction/ListCertificatesForCareWithQAResponder_3.1.xsd");
+                .load("interactions/ListCertificatesForCareWithQAInteraction/ListCertificatesForCareWithQAResponder_3.2.xsd");
 
         // We want to validate against the body of the response, and not the entire soap response. This filter will
         // extract that for us.

@@ -52,7 +52,7 @@
         <jaxws:schemaLocations>
             <jaxws:schemaLocation>classpath:/core_components/clinicalprocess_healthcond_certificate_3.2.xsd</jaxws:schemaLocation>
             <jaxws:schemaLocation>classpath:/core_components/clinicalprocess_healthcond_certificate_types_3.2.xsd</jaxws:schemaLocation>
-            <jaxws:schemaLocation>classpath:/interactions/CertificateStatusUpdateForCareInteraction/CertificateStatusUpdateForCareResponder_3.0.xsd</jaxws:schemaLocation>
+            <jaxws:schemaLocation>classpath:/interactions/CertificateStatusUpdateForCareInteraction/CertificateStatusUpdateForCareResponder_3.1.xsd</jaxws:schemaLocation>
         </jaxws:schemaLocations>
     </jaxws:endpoint>
   </beans>
