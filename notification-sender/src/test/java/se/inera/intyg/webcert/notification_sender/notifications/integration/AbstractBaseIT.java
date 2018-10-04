@@ -19,8 +19,10 @@
 package se.inera.intyg.webcert.notification_sender.notifications.integration;
 
 import static java.util.stream.Collectors.toList;
+import static org.mockito.AdditionalMatchers.or;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.when;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -91,7 +93,7 @@ public abstract class AbstractBaseIT {
     public void init() throws Exception {
         when(fk7263ModuleApi.getIntygFromUtlatande(any())).thenReturn(NotificationTestHelper.createIntyg("fk7263"));
         when(fk7263ModuleApi.getUtlatandeFromJson(anyString())).thenReturn(new Fk7263Utlatande());
-        when(mockIntygModuleRegistry.getModuleApi(anyString(), anyString())).thenReturn(fk7263ModuleApi);
+        when(mockIntygModuleRegistry.getModuleApi(anyString(), or(isNull(), anyString()))).thenReturn(fk7263ModuleApi);
 
         certificateStatusUpdateForCareResponderV3.reset();
     }

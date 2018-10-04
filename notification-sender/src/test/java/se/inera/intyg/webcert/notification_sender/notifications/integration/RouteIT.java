@@ -21,8 +21,10 @@ package se.inera.intyg.webcert.notification_sender.notifications.integration;
 import static org.awaitility.Awaitility.await;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
+import static org.mockito.AdditionalMatchers.or;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.when;
 import static se.inera.intyg.webcert.notification_sender.mocks.v3.CertificateStatusUpdateForCareResponderStub.FALLERAT_MEDDELANDE;
 
@@ -49,7 +51,7 @@ public class RouteIT extends AbstractBaseIT {
     public void init() throws Exception {
         when(fk7263ModuleApi.getIntygFromUtlatande(any())).thenReturn(NotificationTestHelper.createIntyg("fk7263"));
         when(fk7263ModuleApi.getUtlatandeFromJson(anyString())).thenReturn(new Fk7263Utlatande());
-        when(mockIntygModuleRegistry.getModuleApi(anyString(), anyString())).thenReturn(fk7263ModuleApi);
+        when(mockIntygModuleRegistry.getModuleApi(anyString(), or(isNull(), anyString()))).thenReturn(fk7263ModuleApi);
 
         certificateStatusUpdateForCareResponderV3.reset();
     }
@@ -204,8 +206,8 @@ public class RouteIT extends AbstractBaseIT {
         final String intygsId2 = "korrekt-meddelande-1";
 
         when(fk7263ModuleApi.getIntygFromUtlatande(any()))
-                .thenReturn(NotificationTestHelper.createIntyg("fk7263", FALLERAT_MEDDELANDE + "2"))
-                .thenReturn(NotificationTestHelper.createIntyg("fk7263", "korrekt-meddelande-1"));
+                .thenReturn(NotificationTestHelper.createIntyg("fk7263", "1.0", FALLERAT_MEDDELANDE + "2"))
+                .thenReturn(NotificationTestHelper.createIntyg("fk7263", "1.0", "korrekt-meddelande-1"));
 
         NotificationMessage notificationMessage1 = createNotificationMessage(intygsId1, "fk7263", HandelsekodEnum.SKAPAT);
         NotificationMessage notificationMessage2 = createNotificationMessage(intygsId2, "fk7263", HandelsekodEnum.ANDRAT);
