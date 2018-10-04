@@ -18,9 +18,9 @@
   -->
 
 <web-app xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
-    version="3.0"
-    metadata-complete="true">
+         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+         version="3.0"
+         metadata-complete="true">
 
     <display-name>Inera WebCert Web Application</display-name>
 
@@ -257,6 +257,16 @@
         <url-pattern>/*</url-pattern>
     </filter-mapping>
 
+    <!-- Principal updated filter detects changes to the User Principal and touches the session so Redis stores the changes. -->
+    <filter>
+        <filter-name>principalUpdatedFilter</filter-name>
+        <filter-class>se.inera.intyg.infra.security.filter.PrincipalUpdatedFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>principalUpdatedFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
     <filter>
         <filter-name>termsFilter</filter-name>
         <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
@@ -269,16 +279,6 @@
         <filter-name>termsFilter</filter-name>
         <url-pattern>/web/*</url-pattern>
     </filter-mapping>
-
-    <filter>
-        <filter-name>principalUpdatedFilter</filter-name>
-        <filter-class>se.inera.intyg.infra.security.filter.PrincipalUpdatedFilter</filter-class>
-    </filter>
-    <filter-mapping>
-        <filter-name>principalUpdatedFilter</filter-name>
-        <url-pattern>/*</url-pattern>
-    </filter-mapping>
-
 
     <!-- Filter to add http headers for security -->
     <filter>
