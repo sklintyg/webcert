@@ -7,6 +7,15 @@ task camelTest(type: Test) {
     include '**/*IT*'
 }
 
+
+task copyResources(type: Copy) {
+    from "${projectDir}/../src/main/resources/security"
+    include "*.yaml"
+    into "${buildDir}/resources/test/security"
+}
+
+compileJava.dependsOn copyResources
+
 dependencies {
     compile project(':webcert-common')
 
@@ -30,9 +39,5 @@ dependencies {
     testCompile "org.kubek2k:springockito:${springockitoVersion}"
     testCompile "org.apache.camel:camel-test-spring:${camelVersion}"
     testCompile "org.springframework:spring-test:${springVersion}"
-    testCompile "org.apache.activemq:activemq-broker:${activeMqVersion}"
     testCompile "org.apache.activemq:activemq-spring:${activeMqVersion}"
-    testCompile "org.dbunit:dbunit:${dbUnitVersion}"
-
-    testRuntime "com.h2database:h2:${h2Version}"
 }

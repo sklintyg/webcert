@@ -245,7 +245,7 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
                 .put("enhet", "IFV1239877878-1042")
                 .build();
 
-        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
+        spec()
                 .redirects()
                 .follow(false)
                 .pathParam("intygsId", utkastId)
@@ -257,7 +257,7 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
                 .then()
                 .header(HttpHeaders.LOCATION, endsWith("/luse/" + LUSE_BASE_INTYG_TYPE_VERSION + "/edit/" + utkastId + "/"));
 
-        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
+        spec()
                 .expect().statusCode(200)
                 .when().get("api/anvandare")
                 .prettyPeek()
@@ -298,7 +298,7 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
                 .put("enhet", "IFV1239877878-1042")
                 .build();
 
-        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
+        spec()
                 .redirects()
                 .follow(false)
                 .pathParam("intygsId", utkastId)
@@ -310,13 +310,13 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
                 .then()
                 .header(HttpHeaders.LOCATION, endsWith("/luse/" + LUSE_BASE_INTYG_TYPE_VERSION + "/edit/" + utkastId + "/"));
 
-        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
+        spec()
                 .expect().statusCode(200)
                 .when().get("moduleapi/utkast/luse/" + utkastId)
                 .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-get-utkast-response-schema.json"))
                 .body("content.grundData.patient.personId", equalTo(formatPersonnummer(queryParams.get("alternatePatientSSn"))));
 
-        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
+        spec()
                 .expect().statusCode(200)
                 .when().get("api/anvandare")
                 .prettyPeek()
@@ -358,7 +358,7 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
                 .build();
 
         // Go to deep integration link with other patient info than on current utkast...
-        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
+        spec()
                 .redirects()
                 .follow(false)
                 .pathParam("intygsId", utkastId)
@@ -371,7 +371,7 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
                 .header(HttpHeaders.LOCATION, endsWith("/ts-bas/" + TS_BAS_BASE_INTYG_TYPE_VERSION + "/edit/" + utkastId + "/"));
 
         // ..after following the link - the draft should have updated patient id and fullstandigtNamn
-        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
+        spec()
                 .expect().statusCode(200)
                 .when().get("moduleapi/utkast/ts-bas/" + utkastId)
                 .then()
@@ -382,7 +382,7 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
                 // .body("content.grundData.patient.fullstandigtNamn", isEmptyOrNullString());
 
 
-        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
+        spec()
                 .expect().statusCode(200)
                 .when().get("api/anvandare")
                 .prettyPeek()
@@ -423,13 +423,14 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
                 .put("enhet", "IFV1239877878-1042")
                 .build();
 
-        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId).redirects().follow(false)
+        spec()
+                .redirects().follow(false)
                 .and().pathParam("intygsId", intygsId)
                 .and().queryParams(queryParams)
                 .expect().statusCode(HttpServletResponse.SC_TEMPORARY_REDIRECT).when().get("/visa/intyg/{intygsId}")
                 .then().header(HttpHeaders.LOCATION, endsWith("/intyg/luse/" + LUSE_BASE_INTYG_TYPE_VERSION + "/" + intygsId + "/"));
 
-        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
+        spec()
                 .expect().statusCode(200)
                 .when().get("api/anvandare")
                 .prettyPeek()
@@ -454,7 +455,7 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
 
         changeOriginTo("DJUPINTEGRATION");
 
-        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
+        spec()
                 .redirects()
                 .follow(false)
                 .and().pathParam("intygsId", utkastId)
@@ -462,7 +463,7 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
                 .when().get("visa/intyg/{intygsId}?alternatePatientSSn=x&responsibleHospName=x&enhet=IFV1239877878-1042")
                 .then().header(HttpHeaders.LOCATION, endsWith("/luse/" + LUSE_BASE_INTYG_TYPE_VERSION + "/edit/" + utkastId + "/"));
 
-        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
+        spec()
                 .expect().statusCode(200)
                 .when().get("api/anvandare")
                 .prettyPeek()
@@ -516,7 +517,7 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
 
         Map<String, String> queryParams = ImmutableMap.of("inaktivEnhet", "true");
 
-        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
+        spec()
                 .redirects()
                 .follow(false)
                 .pathParam("intygsId", utkastId)
@@ -526,7 +527,7 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
                 .when()
                 .get("/visa/intyg/{intygsId}");
 
-        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
+        spec()
                 .expect().statusCode(200)
                 .when().get("api/anvandare")
                 .then()
@@ -545,7 +546,7 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
 
         Map<String, Object> queryParams = ImmutableMap.of(IntygIntegrationController.PARAM_COPY_OK, true);
 
-        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
+        spec()
                 .redirects()
                 .follow(false)
                 .pathParam("intygsId", utkastId)
@@ -555,7 +556,7 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
                 .when()
                 .get("/visa/intyg/{intygsId}");
 
-        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
+        spec()
                 .expect().statusCode(200)
                 .when().get("api/anvandare")
                 .then()

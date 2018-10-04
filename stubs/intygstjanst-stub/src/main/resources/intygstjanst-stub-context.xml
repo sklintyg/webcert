@@ -35,7 +35,7 @@
         <jaxws:schemaLocations>
             <jaxws:schemaLocation>classpath:/core_components/clinicalprocess_healthcond_certificate_3.2.xsd</jaxws:schemaLocation>
             <jaxws:schemaLocation>classpath:/core_components/clinicalprocess_healthcond_certificate_types_3.2.xsd</jaxws:schemaLocation>
-            <jaxws:schemaLocation>classpath:/interactions/SendCertificateToRecipientInteraction/SendCertificateToRecipientResponder_2.0.xsd</jaxws:schemaLocation>
+            <jaxws:schemaLocation>classpath:/interactions/SendCertificateToRecipientInteraction/SendCertificateToRecipientResponder_2.1.xsd</jaxws:schemaLocation>
         </jaxws:schemaLocations>
     </jaxws:endpoint>
     <jaxws:endpoint address="/register-medical-certificate-stub" implementor="se.inera.intyg.webcert.intygstjanststub.RegisterMedicalCertificateResponderStub"/>

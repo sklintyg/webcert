@@ -22,7 +22,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.jetbrains.annotations.NotNull;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -591,7 +590,6 @@ public class PatientDetailsResolverTest {
         assertEquals(false, patient.isSekretessmarkering());
     }
 
-    @NotNull
     private Vardenhet buildVardenhet() {
         return new Vardenhet("ve-1", "vardenhet-1");
     }

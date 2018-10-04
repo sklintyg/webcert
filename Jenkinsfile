@@ -1,9 +1,9 @@
 #!groovy
 
-def buildVersion = "6.1.0.${BUILD_NUMBER}"
-def commonVersion = "3.7.0.+"
-def infraVersion = "3.7.0.+"
-def logsenderBaseVersion = "6.1.0.*" // Star is needed as this is a regexp
+def buildVersion = "6.2.0.${BUILD_NUMBER}"
+def commonVersion = "3.8.0.+"
+def infraVersion = "3.8.0.+"
+def logsenderBaseVersion = "6.2.0.*" // Star is needed as this is a regexp
 
 stage('checkout') {
     node {
@@ -75,5 +75,17 @@ stage('tag and upload') {
 stage('notify') {
     node {
         util.notifySuccess()
+    }
+}
+
+stage('propagate') {
+    node {
+        gitRef = "v${buildVersion}"
+        build job: "webcert-dintyg-build", wait: false, parameters: [
+                [$class: 'StringParameterValue', name: 'WEBCERT_BUILD_VERSION', value: buildVersion],
+                [$class: 'StringParameterValue', name: 'COMMON_VERSION', value: commonVersion],
+                [$class: 'StringParameterValue', name: 'INFRA_VERSION', value: infraVersion],
+                [$class: 'StringParameterValue', name: 'GIT_REF', value: gitRef]
+        ]
     }
 }

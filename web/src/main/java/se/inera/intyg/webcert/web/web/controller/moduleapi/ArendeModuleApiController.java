@@ -22,6 +22,7 @@ import io.swagger.annotations.Api;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.webcert.web.service.arende.ArendeService;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
@@ -52,6 +53,7 @@ public class ArendeModuleApiController extends AbstractApiController {
     @GET
     @Path("/{intygsId}")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    @PrometheusTimeMethod
     public List<ArendeConversationView> arendeForIntyg(@PathParam("intygsId") String intygsId) {
         LOGGER.debug("Get arende for intyg {}", intygsId);
         return arendeService.getArenden(intygsId);
@@ -61,6 +63,7 @@ public class ArendeModuleApiController extends AbstractApiController {
     @Path("/{intygsTyp}/{intygsId}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    @PrometheusTimeMethod
     public Response createMessage(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") final String intygsId,
             CreateMessageParameter parameter) {
         LOGGER.debug("Create arende for {} ({})", intygsId, intygsTyp);
@@ -74,6 +77,7 @@ public class ArendeModuleApiController extends AbstractApiController {
     @Path("/{intygsTyp}/{meddelandeId}/besvara")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    @PrometheusTimeMethod
     public Response answer(@PathParam("intygsTyp") String intygsTyp, @PathParam("meddelandeId") final String meddelandeId,
             String svarsText) {
         LOGGER.debug("Answer arende {}", meddelandeId);
@@ -86,6 +90,7 @@ public class ArendeModuleApiController extends AbstractApiController {
     @Path("/{intygsId}/besvara")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    @PrometheusTimeMethod
     public Response answer(@PathParam("intygsId") final String intygsId, final String svarsText) {
         LOGGER.debug("Answer arenden for intyg {}", intygsId);
         final List<ArendeConversationView> response = arendeService.answerKomplettering(intygsId, svarsText);
@@ -95,6 +100,7 @@ public class ArendeModuleApiController extends AbstractApiController {
     @POST
     @Path("/{intygsId}/vidarebefordrad")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    @PrometheusTimeMethod
     public Response setForwarded(@PathParam("intygsId") final String intygsId) {
         LOGGER.debug("Set arende {} as forwarded true", intygsId);
 
@@ -106,6 +112,7 @@ public class ArendeModuleApiController extends AbstractApiController {
     @Path("/{intygsTyp}/{meddelandeId}/stang")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    @PrometheusTimeMethod
     public Response closeAsHandled(@PathParam("intygsTyp") String intygsTyp, @PathParam("meddelandeId") String meddelandeId) {
         LOGGER.debug("Close arende {} as handled", meddelandeId);
         abortIfHanteraFragorNotActive(intygsTyp);
@@ -117,6 +124,7 @@ public class ArendeModuleApiController extends AbstractApiController {
     @Path("/{intygsTyp}/{meddelandeId}/oppna")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    @PrometheusTimeMethod
     public Response openAsUnhandled(@PathParam("intygsTyp") String intygsTyp, @PathParam("meddelandeId") String meddelandeId) {
         LOGGER.debug("Open arende {} as unhandled", meddelandeId);
         abortIfHanteraFragorNotActive(intygsTyp);
@@ -127,6 +135,7 @@ public class ArendeModuleApiController extends AbstractApiController {
     @GET
     @Path("/ping")
     @Produces(MediaType.APPLICATION_XML)
+    @PrometheusTimeMethod
     public Response getPing() {
         String xmlResponse = buildXMLResponse(true, 0, null);
         LOGGER.debug("Pinged Intygstjänsten, got: " + xmlResponse);

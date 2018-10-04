@@ -18,6 +18,31 @@
  */
 package se.inera.intyg.webcert.web.web.controller.integrationtest;
 
+import static com.jayway.restassured.RestAssured.given;
+import static com.jayway.restassured.RestAssured.sessionId;
+import static com.jayway.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
+import static java.util.Arrays.asList;
+import static org.hamcrest.core.IsEqual.equalTo;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
+
+import com.jayway.restassured.config.SessionConfig;
+import com.jayway.restassured.specification.RequestSpecification;
+import java.io.FileNotFoundException;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.UUID;
+
+import javax.servlet.http.HttpServletResponse;
+
+import org.junit.After;
+import org.junit.Before;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.jayway.restassured.RestAssured;
 import com.jayway.restassured.config.LogConfig;
@@ -25,29 +50,21 @@ import com.jayway.restassured.filter.session.SessionFilter;
 import com.jayway.restassured.http.ContentType;
 import com.jayway.restassured.path.json.JsonPath;
 import com.jayway.restassured.response.Response;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.runner.RunWith;
+
 import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
-import se.inera.intyg.webcert.persistence.fragasvar.model.*;
+import se.inera.intyg.webcert.persistence.fragasvar.model.Amne;
+import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
+import se.inera.intyg.webcert.persistence.fragasvar.model.IntygsReferens;
+import se.inera.intyg.webcert.persistence.fragasvar.model.Komplettering;
+import se.inera.intyg.webcert.persistence.fragasvar.model.Vardperson;
 import se.inera.intyg.webcert.persistence.model.Status;
+import se.inera.intyg.webcert.web.auth.common.FakeCredential;
 import se.inera.intyg.webcert.web.auth.eleg.FakeElegCredentials;
 import se.inera.intyg.webcert.web.auth.fake.FakeCredentials;
 import se.inera.intyg.webcert.web.web.controller.api.dto.CreateUtkastRequest;
-
-import javax.servlet.http.HttpServletResponse;
-import java.io.FileNotFoundException;
-import java.time.LocalDateTime;
-import java.util.*;
-
-import static com.jayway.restassured.RestAssured.given;
-import static com.jayway.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
-import static java.util.Arrays.asList;
-import static org.hamcrest.core.IsEqual.equalTo;
-import static org.junit.Assert.*;
 
 /**
  * Base class for "REST-ish" integrationTests using RestAssured.
@@ -75,6 +92,7 @@ public abstract class BaseRestIntegrationTest {
 
     /** Use to create a ROUTEID cookie to ensure the correct tomcat-node is used */
     public static String routeId;
+    public static String jsessionId;
     public static SessionFilter sessionFilter;
 
     protected static FakeCredentials DEFAULT_LAKARE = new FakeCredentials.FakeCredentialsBuilder("IFV1239877878-1049",
@@ -98,9 +116,11 @@ public abstract class BaseRestIntegrationTest {
      */
     @Before
     public void setupBase() throws FileNotFoundException {
+        RestAssured.baseURI = System.getProperty("integration.tests.baseUrl", "http://localhost:9088");
         LogConfig logconfig = new LogConfig().enableLoggingOfRequestAndResponseIfValidationFails().enablePrettyPrinting(true);
-        RestAssured.config().logConfig(logconfig);
-        RestAssured.baseURI = System.getProperty("integration.tests.baseUrl");
+        RestAssured.config = RestAssured.config()
+                .logConfig(logconfig)
+                .sessionConfig(new SessionConfig("SESSION", null));
     }
 
     /**
@@ -116,32 +136,13 @@ public abstract class BaseRestIntegrationTest {
     /**
      * Log in to webcert using the supplied FakeCredentials.
      *
-     * @param fakeCredentials
+     * @param fakeCredential
      *            who to log in as
      * @return sessionId for the now authorized user session
      */
-    protected String getAuthSession(FakeCredentials fakeCredentials) {
-        String credentialsJson;
+    protected String getAuthSession(FakeCredential fakeCredential) {
         try {
-            credentialsJson = objectMapper.writeValueAsString(fakeCredentials);
-            return getAuthSession(credentialsJson);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    /**
-     * Log in to webcert as a private practitioner using the supplied FakeElegCredentials.
-     *
-     * @param fakeElegCredentials
-     *            who to log in as
-     * @return sessionId for the now authorized user session
-     */
-    protected String getAuthSession(FakeElegCredentials fakeElegCredentials) {
-        String credentialsJson;
-        try {
-            credentialsJson = objectMapper.writeValueAsString(fakeElegCredentials);
-            return getAuthSession(credentialsJson);
+            return getAuthSession(objectMapper.writeValueAsString(fakeCredential));
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
@@ -156,9 +157,11 @@ public abstract class BaseRestIntegrationTest {
 
         assertNotNull(response.sessionId());
         routeId = response.getCookie("ROUTEID") != null ? response.getCookie("ROUTEID") : "nah";
+        sessionId = response.getCookie("JSESSIONID");
 
         return response.sessionId();
     }
+
 
     /**
      * Change user's role for the current session.
@@ -179,7 +182,8 @@ public abstract class BaseRestIntegrationTest {
      * @param newOrigin
      */
     protected void changeOriginTo(String newOrigin) {
-        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId).pathParam("origin", newOrigin)
+        spec()
+                .pathParam("origin", newOrigin)
                 .expect().statusCode(200)
                 .when().get("authtestability/user/origin/{origin}");
     }
@@ -188,7 +192,7 @@ public abstract class BaseRestIntegrationTest {
      * Sets the coherentJournaling flag in the integration parameters to true for the current session.
      */
     protected void setSjf() {
-        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
+        spec()
                 .expect()
                 .statusCode(200)
                 .when()
@@ -208,7 +212,7 @@ public abstract class BaseRestIntegrationTest {
     protected String createUtkast(String intygsTyp, String patientPersonNummer) {
         CreateUtkastRequest utkastRequest = createUtkastRequest(intygsTyp, patientPersonNummer);
 
-        Response response = given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
+        Response response = spec()
                 .pathParam("intygstyp", intygsTyp).contentType(ContentType.JSON).body(utkastRequest)
                 .expect().statusCode(200)
                 .when().post("api/utkast/{intygstyp}")
@@ -314,7 +318,7 @@ public abstract class BaseRestIntegrationTest {
     protected int createQuestion(final String typ, final String intygId, final String personnummer, final Amne amne) {
         FragaSvar fs = createTestQuestion(typ, intygId, personnummer, amne);
 
-        Response response = given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
+        Response response = spec()
                 .contentType(ContentType.JSON).body(fs)
                 .expect().statusCode(200)
                 .when().post("testability/fragasvar")
@@ -348,8 +352,8 @@ public abstract class BaseRestIntegrationTest {
             throw new IllegalArgumentException();
         }
 
-        Response response = given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
-                .contentType(ContentType.JSON).body(arende)
+        Response response = spec()
+                .body(arende)
                 .expect().statusCode(200)
                 .when().post("testability/arendetest")
                 .then().extract().response();
@@ -365,13 +369,13 @@ public abstract class BaseRestIntegrationTest {
      *            internal id of the question to remove
      */
     protected void deleteQuestion(int internId) {
-        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId).pathParam("id", internId)
+        spec().pathParam("id", internId)
                 .expect().statusCode(200)
                 .when().delete("testability/fragasvar/{id}");
     }
 
     protected void deleteQuestionsByEnhet(String enhetsId) {
-        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId).pathParam("enhetsId", enhetsId)
+        spec().pathParam("enhetsId", enhetsId)
                 .expect().statusCode(200)
                 .when().delete("testability/fragasvar/enhet/{enhetsId}");
     }
@@ -520,7 +524,8 @@ public abstract class BaseRestIntegrationTest {
      *            the internal reference to the intyg to be marked
      */
     protected void sendIntyg(String intygId) {
-        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId).pathParams("id", intygId)
+        spec()
+                .pathParams("id", intygId)
                 .expect().statusCode(200)
                 .when().put("/testability/intyg/{id}/skickat");
     }
@@ -532,10 +537,21 @@ public abstract class BaseRestIntegrationTest {
      */
     protected void signUtkast(String utkastId) {
         // Maybe we should set more signature related metadata?
-        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
+        spec()
                 .pathParam("intygsId", utkastId).body(DEFAULT_LAKARE.getHsaId())
                 .expect().statusCode(200)
                 .when().put("testability/intyg/{intygsId}/signerat");
+    }
+
+    /**
+     * Returns a request spec prefix with route and session cookies as well as content-type.
+     *
+     * @return the spec.
+     */
+    protected RequestSpecification spec() {
+        return given().cookie("ROUTEID", routeId)
+                .cookie("JSESSIONID", jsessionId)
+                .contentType(ContentType.JSON);
     }
 
 }

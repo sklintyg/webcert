@@ -1,6 +1,6 @@
 dependencies {
     compile project(":webcert-common")
-    compile "net.openhft:chronicle-map:3.13.0"
+    // compile "net.openhft:chronicle-map:3.13.0"
     compile "org.apache.commons:commons-lang3:3.1"
     
     testCompile "javax.servlet:javax.servlet-api:3.1.0"

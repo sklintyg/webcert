@@ -18,300 +18,293 @@
   -->
 
 <web-app xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
-  version="3.0">
+    xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+    version="3.0"
+    metadata-complete="true">
+
+    <display-name>Inera WebCert Web Application</display-name>
+
+    <context-param>
+        <param-name>contextConfigLocation</param-name>
+        <param-value>classpath:webcert-config.xml</param-value>
+    </context-param>
+
+    <context-param>
+        <param-name>logbackConfigParameter</param-name>
+        <param-value>logback.file</param-value>
+    </context-param>
+
+    <!-- Listener for external logback configuration file -->
+    <listener>
+        <listener-class>se.inera.intyg.common.util.logging.LogbackConfiguratorContextListener</listener-class>
+    </listener>
+
+    <!-- Start spring context -->
+    <listener>
+        <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+    </listener>
+
+    <listener>
+        <listener-class>org.springframework.web.context.request.RequestContextListener</listener-class>
+    </listener>
+
+    <!-- Handelse publisher for keeping track of when session ends and removing them from the sessionRegistry -->
+    <listener>
+        <listener-class>org.springframework.security.web.session.HttpSessionEventPublisher</listener-class>
+    </listener>
+
+    <!-- Spring Web -->
+    <servlet>
+        <servlet-name>web</servlet-name>
+        <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <!-- Webcert GUI REST services -->
+    <servlet>
+        <servlet-name>api</servlet-name>
+        <servlet-class>org.apache.cxf.transport.servlet.CXFServlet</servlet-class>
+        <init-param>
+            <param-name>config-location</param-name>
+            <param-value>/WEB-INF/api-cxf-servlet.xml</param-value>
+        </init-param>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <!-- Webcert Module REST services -->
+    <servlet>
+        <servlet-name>moduleapi</servlet-name>
+        <servlet-class>org.apache.cxf.transport.servlet.CXFServlet</servlet-class>
+        <init-param>
+            <param-name>config-location</param-name>
+            <param-value>/WEB-INF/moduleapi-cxf-servlet.xml</param-value>
+        </init-param>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <!-- Webcert integration services -->
+    <servlet>
+        <servlet-name>services</servlet-name>
+        <servlet-class>org.apache.cxf.transport.servlet.CXFServlet</servlet-class>
+        <init-param>
+            <param-name>config-location</param-name>
+            <param-value>/WEB-INF/services-cxf-servlet.xml</param-value>
+        </init-param>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <!-- Webcert testability services -->
+    <servlet>
+        <servlet-name>testability</servlet-name>
+        <servlet-class>org.apache.cxf.transport.servlet.CXFServlet</servlet-class>
+        <init-param>
+            <param-name>config-location</param-name>
+            <param-value>/WEB-INF/testability-cxf-servlet.xml</param-value>
+        </init-param>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <!-- Webcert auth testability services -->
+    <servlet>
+        <servlet-name>authtestability</servlet-name>
+        <servlet-class>org.apache.cxf.transport.servlet.CXFServlet</servlet-class>
+        <init-param>
+            <param-name>config-location</param-name>
+            <param-value>/WEB-INF/authtestability-cxf-servlet.xml</param-value>
+        </init-param>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <!-- Webcert monitoring services -->
+    <servlet>
+        <servlet-name>monitoring</servlet-name>
+        <servlet-class>org.apache.cxf.transport.servlet.CXFServlet</servlet-class>
+        <init-param>
+            <param-name>config-location</param-name>
+            <param-value>/WEB-INF/monitoring-cxf-servlet.xml</param-value>
+        </init-param>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <!-- External system integration services, legacy webcert 0.5/medcert -->
+    <servlet>
+        <servlet-name>uthoppintegrationapi</servlet-name>
+        <servlet-class>org.apache.cxf.transport.servlet.CXFServlet</servlet-class>
+        <init-param>
+            <param-name>config-location</param-name>
+            <param-value>/WEB-INF/uthopp-integration-cxf-servlet.xml</param-value>
+        </init-param>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <!-- External system integration services webcert 2.0+ -->
+    <servlet>
+        <servlet-name>integrationapi</servlet-name>
+        <servlet-class>org.apache.cxf.transport.servlet.CXFServlet</servlet-class>
+        <init-param>
+            <param-name>config-location</param-name>
+            <param-value>/WEB-INF/integration-cxf-servlet.xml</param-value>
+        </init-param>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <!-- Prometheus, metrics -->
+    <servlet>
+        <servlet-name>metrics</servlet-name>
+        <servlet-class>io.prometheus.client.exporter.MetricsServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>web</servlet-name>
+        <url-pattern>/web/*</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>api</servlet-name>
+        <url-pattern>/api/*</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>moduleapi</servlet-name>
+        <url-pattern>/moduleapi/*</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>services</servlet-name>
+        <url-pattern>/services/*</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>monitoring</servlet-name>
+        <url-pattern>/monitoring/*</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>testability</servlet-name>
+        <url-pattern>/testability/*</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>authtestability</servlet-name>
+        <url-pattern>/authtestability/*</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>uthoppintegrationapi</servlet-name>
+        <url-pattern>/webcert/web/user/*</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>integrationapi</servlet-name>
+        <url-pattern>/visa/*</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>metrics</servlet-name>
+        <url-pattern>/metrics</url-pattern>
+    </servlet-mapping>
+
+    <filter>
+        <filter-name>LogMDCFilter</filter-name>
+        <filter-class>se.inera.intyg.infra.monitoring.logging.LogMDCServletFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>LogMDCFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <filter>
+        <filter-name>springSessionRepositoryFilter</filter-name>
+        <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>springSessionRepositoryFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+        <dispatcher>REQUEST</dispatcher>
+        <dispatcher>ERROR</dispatcher>
+    </filter-mapping>
+
+    <filter>
+        <filter-name>idpSelectionFilter</filter-name>
+        <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>idpSelectionFilter</filter-name>
+        <url-pattern>/webcert/web/user/*</url-pattern>
+    </filter-mapping>
+
+    <filter>
+        <filter-name>elegRedirectFilter</filter-name>
+        <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>elegRedirectFilter</filter-name>
+        <url-pattern>/web/eleglogin</url-pattern>
+    </filter-mapping>
+
+    <filter>
+        <filter-name>sessionTimeoutFilter</filter-name>
+        <filter-class>se.inera.intyg.webcert.web.auth.SessionTimeoutFilter</filter-class>
+        <init-param>
+            <param-name>ignoredUrl</param-name>
+            <param-value>/moduleapi/stat</param-value>
+        </init-param>
+    </filter>
+    <filter-mapping>
+        <filter-name>sessionTimeoutFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
 
 
-  <display-name>Inera WebCert Web Application</display-name>
+    <!-- Filter for Spring Security -->
+    <filter>
+        <filter-name>springSecurityFilterChain</filter-name>
+        <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>springSecurityFilterChain</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
 
-  <context-param>
-    <param-name>contextConfigLocation</param-name>
-    <param-value>classpath:/webcert-config.xml</param-value>
-  </context-param>
-  <context-param>
-    <param-name>logbackConfigParameter</param-name>
-    <param-value>webcert.logback.file</param-value>
-  </context-param>
+    <filter>
+        <filter-name>termsFilter</filter-name>
+        <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+        <init-param>
+            <param-name>ignoredUrl</param-name>
+            <param-value>#/terms</param-value>
+        </init-param>
+    </filter>
+    <filter-mapping>
+        <filter-name>termsFilter</filter-name>
+        <url-pattern>/web/*</url-pattern>
+    </filter-mapping>
 
-  <!-- Listener for external logback configuration file -->
-  <listener>
-    <listener-class>se.inera.intyg.common.util.logging.LogbackConfiguratorContextListener</listener-class>
-  </listener>
-
-  <!-- Start spring context -->
-  <listener>
-    <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
-  </listener>
-  <listener>
-    <listener-class>org.springframework.web.context.request.RequestContextListener</listener-class>
-  </listener>
-
-  <!-- Handelse publisher for keeping track of when session ends and removing them from the sessionRegistry -->
-  <listener>
-     <listener-class>org.springframework.security.web.session.HttpSessionEventPublisher</listener-class>
- </listener>
-
-  <!-- Spring Web -->
-  <servlet>
-    <servlet-name>web</servlet-name>
-    <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
-    <load-on-startup>1</load-on-startup>
-  </servlet>
-
-  <!-- Webcert GUI REST services -->
-  <servlet>
-    <servlet-name>api</servlet-name>
-    <servlet-class>org.apache.cxf.transport.servlet.CXFServlet</servlet-class>
-    <init-param>
-      <param-name>config-location</param-name>
-      <param-value>/WEB-INF/api-cxf-servlet.xml</param-value>
-    </init-param>
-    <load-on-startup>1</load-on-startup>
-  </servlet>
-
-  <!-- Webcert Module REST services -->
-  <servlet>
-    <servlet-name>moduleapi</servlet-name>
-    <servlet-class>org.apache.cxf.transport.servlet.CXFServlet</servlet-class>
-    <init-param>
-      <param-name>config-location</param-name>
-      <param-value>/WEB-INF/moduleapi-cxf-servlet.xml</param-value>
-    </init-param>
-    <load-on-startup>1</load-on-startup>
-  </servlet>
-
-  <!-- Webcert integration services -->
-  <servlet>
-    <servlet-name>services</servlet-name>
-    <servlet-class>org.apache.cxf.transport.servlet.CXFServlet</servlet-class>
-    <init-param>
-      <param-name>config-location</param-name>
-      <param-value>/WEB-INF/services-cxf-servlet.xml</param-value>
-    </init-param>
-    <load-on-startup>1</load-on-startup>
-  </servlet>
-
-  <!-- Webcert testability services -->
-  <servlet>
-    <servlet-name>testability</servlet-name>
-    <servlet-class>org.apache.cxf.transport.servlet.CXFServlet</servlet-class>
-    <init-param>
-      <param-name>config-location</param-name>
-      <param-value>/WEB-INF/testability-cxf-servlet.xml</param-value>
-    </init-param>
-    <load-on-startup>1</load-on-startup>
-  </servlet>
-
-  <!-- Webcert auth testability services -->
-  <servlet>
-    <servlet-name>authtestability</servlet-name>
-    <servlet-class>org.apache.cxf.transport.servlet.CXFServlet</servlet-class>
-    <init-param>
-      <param-name>config-location</param-name>
-      <param-value>/WEB-INF/authtestability-cxf-servlet.xml</param-value>
-    </init-param>
-    <load-on-startup>1</load-on-startup>
-  </servlet>
-
-  <!-- Webcert monitoring services -->
-  <servlet>
-    <servlet-name>monitoring</servlet-name>
-    <servlet-class>org.apache.cxf.transport.servlet.CXFServlet</servlet-class>
-    <init-param>
-      <param-name>config-location</param-name>
-      <param-value>/WEB-INF/monitoring-cxf-servlet.xml</param-value>
-    </init-param>
-    <load-on-startup>1</load-on-startup>
-  </servlet>
-
-  <!-- External system integration services, legacy webcert 0.5/medcert -->
-  <servlet>
-    <servlet-name>uthoppintegrationapi</servlet-name>
-    <servlet-class>org.apache.cxf.transport.servlet.CXFServlet</servlet-class>
-    <init-param>
-      <param-name>config-location</param-name>
-      <param-value>/WEB-INF/uthopp-integration-cxf-servlet.xml</param-value>
-    </init-param>
-    <load-on-startup>1</load-on-startup>
-  </servlet>
-
-  <!-- External system integration services webcert 2.0+ -->
-  <servlet>
-    <servlet-name>integrationapi</servlet-name>
-    <servlet-class>org.apache.cxf.transport.servlet.CXFServlet</servlet-class>
-    <init-param>
-      <param-name>config-location</param-name>
-      <param-value>/WEB-INF/integration-cxf-servlet.xml</param-value>
-    </init-param>
-    <load-on-startup>1</load-on-startup>
-  </servlet>
-
-  <servlet-mapping>
-    <servlet-name>web</servlet-name>
-    <url-pattern>/web/*</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>api</servlet-name>
-    <url-pattern>/api/*</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>moduleapi</servlet-name>
-    <url-pattern>/moduleapi/*</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>services</servlet-name>
-    <url-pattern>/services/*</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>monitoring</servlet-name>
-    <url-pattern>/monitoring/*</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>testability</servlet-name>
-    <url-pattern>/testability/*</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>authtestability</servlet-name>
-    <url-pattern>/authtestability/*</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>uthoppintegrationapi</servlet-name>
-    <url-pattern>/webcert/web/user/*</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>integrationapi</servlet-name>
-    <url-pattern>/visa/*</url-pattern>
-  </servlet-mapping>
-
-  <filter>
-    <filter-name>idpSelectionFilter</filter-name>
-    <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
-  </filter>
-  <filter-mapping>
-    <filter-name>idpSelectionFilter</filter-name>
-    <url-pattern>/webcert/web/user/*</url-pattern>
-  </filter-mapping>
-
-  <filter>
-    <filter-name>elegRedirectFilter</filter-name>
-    <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
-  </filter>
-  <filter-mapping>
-    <filter-name>elegRedirectFilter</filter-name>
-    <url-pattern>/web/eleglogin</url-pattern>
-  </filter-mapping>
-
-  <filter>
-    <filter-name>sessionTimeoutFilter</filter-name>
-    <filter-class>se.inera.intyg.webcert.web.auth.SessionTimeoutFilter</filter-class>
-    <init-param>
-      <param-name>ignoredUrl</param-name>
-      <param-value>/moduleapi/stat</param-value>
-    </init-param>
-  </filter>
-  <filter-mapping>
-    <filter-name>sessionTimeoutFilter</filter-name>
-    <url-pattern>/*</url-pattern>
-  </filter-mapping>
-
-  <!-- Filter for Spring Security -->
-  <filter>
-    <filter-name>springSecurityFilterChain</filter-name>
-    <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
-  </filter>
-  <filter-mapping>
-    <filter-name>springSecurityFilterChain</filter-name>
-    <url-pattern>/*</url-pattern>
-  </filter-mapping>
-
-  <filter>
-    <filter-name>termsFilter</filter-name>
-    <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
-    <init-param>
-      <param-name>ignoredUrl</param-name>
-      <param-value>#/terms</param-value>
-    </init-param>
-  </filter>
-  <filter-mapping>
-    <filter-name>termsFilter</filter-name>
-    <url-pattern>/web/*</url-pattern>
-  </filter-mapping>
-
-  <!-- Filter to add http headers for security -->
-  <filter>
-    <filter-name>securityHeadersFilter</filter-name>
-    <filter-class>se.inera.intyg.infra.security.filter.SecurityHeadersFilter</filter-class>
-  </filter>
-  <filter-mapping>
-    <filter-name>securityHeadersFilter</filter-name>
-    <url-pattern>/*</url-pattern>
-  </filter-mapping>
+    <filter>
+        <filter-name>principalUpdatedFilter</filter-name>
+        <filter-class>se.inera.intyg.infra.security.filter.PrincipalUpdatedFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>principalUpdatedFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
 
 
-  <welcome-file-list>
-    <welcome-file>boot-app.jsp</welcome-file>
-  </welcome-file-list>
+    <!-- Filter to add http headers for security -->
+    <filter>
+        <filter-name>securityHeadersFilter</filter-name>
+        <filter-class>se.inera.intyg.infra.security.filter.SecurityHeadersFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>securityHeadersFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
 
-  <error-page>
-    <error-code>403</error-code>
-    <location>/error.jsp?reason=denied</location>
-  </error-page>
-  <error-page>
-    <error-code>404</error-code>
-    <location>/error.jsp?reason=notfound</location>
-  </error-page>
-  <error-page>
-    <error-code>500</error-code>
-    <location>/error.jsp?reason=error</location>
-  </error-page>
+    <welcome-file-list>
+        <welcome-file>boot-app.jsp</welcome-file>
 
-  <resource-ref>
-    <res-ref-name>jdbc/webcert</res-ref-name>
-    <res-type>javax.sql.DataSource</res-type>
-    <res-auth>Container</res-auth>
-  </resource-ref>
-
-  <!-- JMS resources for PDL logging -->
-  <resource-ref>
-    <res-ref-name>jms/ConnectionFactory</res-ref-name>
-    <res-type>javax.jms.ConnectionFactory</res-type>
-    <res-auth>Container</res-auth>
-  </resource-ref>
-
-  <resource-ref>
-    <res-ref-name>jms/AsyncConnectionFactory</res-ref-name>
-    <res-type>javax.jms.ConnectionFactory</res-type>
-    <res-auth>Container</res-auth>
-  </resource-ref>
-
-  <resource-ref>
-    <res-ref-name>jms/Queue</res-ref-name>
-    <res-type>javax.jms.Queue</res-type>
-    <res-auth>Container</res-auth>
-  </resource-ref>
-
-  <resource-ref>
-    <res-ref-name>jms/NotificationQueueForAggregation</res-ref-name>
-    <res-type>javax.jms.Queue</res-type>
-    <res-auth>Container</res-auth>
-  </resource-ref>
-
-  <resource-ref>
-    <res-ref-name>jms/NotificationQueue</res-ref-name>
-    <res-type>javax.jms.Queue</res-type>
-    <res-auth>Container</res-auth>
-  </resource-ref>
-
-  <resource-ref>
-    <res-ref-name>jms/NotificationWSQueue</res-ref-name>
-    <res-type>javax.jms.Queue</res-type>
-    <res-auth>Container</res-auth>
-  </resource-ref>
-
-  <resource-ref>
-    <res-ref-name>jms/CertificateSenderQueue</res-ref-name>
-    <res-type>javax.jms.Queue</res-type>
-    <res-auth>Container</res-auth>
-  </resource-ref>
+    </welcome-file-list>
+    <error-page>
+        <error-code>403</error-code>
+        <location>/error.jsp?reason=denied</location>
+    </error-page>
+    <error-page>
+        <error-code>404</error-code>
+        <location>/error.jsp?reason=notfound</location>
+    </error-page>
+    <error-page>
+        <error-code>500</error-code>
+        <location>/error.jsp?reason=error</location>
+    </error-page>
 
 </web-app>

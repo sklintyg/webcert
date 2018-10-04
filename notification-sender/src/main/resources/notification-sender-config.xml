@@ -23,12 +23,14 @@
   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
     http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd  ">
 
+  <context:annotation-config />
+
+  <import resource="jms-context.xml" />
   <import resource="notifications/ws-context.xml"/>
   <import resource="notifications/beans-context.xml"/>
   <import resource="notifications/camel-context.xml"/>
-  <import resource="jms-context.xml"/>
-
-  <context:annotation-config />
+  <import resource="certificates/beans-context.xml" />
+  <import resource="certificates/camel-context.xml" />
 
   <!-- Declaring this bean outside the beans-context.xml so unit/integration-tests doesn't have to configure the full PU-
   service including Ignite -->

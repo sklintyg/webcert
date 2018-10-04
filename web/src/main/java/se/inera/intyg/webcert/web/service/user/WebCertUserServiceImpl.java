@@ -18,7 +18,15 @@
  */
 package se.inera.intyg.webcert.web.service.user;
 
-import com.google.common.annotations.VisibleForTesting;
+import java.time.Instant;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ScheduledFuture;
+
+import javax.servlet.http.HttpSession;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +34,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.google.common.annotations.VisibleForTesting;
+
 import se.inera.intyg.infra.security.authorities.AuthoritiesResolverUtil;
 import se.inera.intyg.infra.security.authorities.CommonAuthoritiesResolver;
 import se.inera.intyg.infra.security.common.model.IntygUser;
@@ -36,14 +48,6 @@ import se.inera.intyg.infra.security.common.service.CareUnitAccessHelper;
 import se.inera.intyg.webcert.persistence.anvandarmetadata.model.AnvandarPreference;
 import se.inera.intyg.webcert.persistence.anvandarmetadata.repository.AnvandarPreferenceRepository;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
-
-import javax.servlet.http.HttpSession;
-import java.time.Instant;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ScheduledFuture;
 
 @Service
 public class WebCertUserServiceImpl implements WebCertUserService {
@@ -77,6 +81,7 @@ public class WebCertUserServiceImpl implements WebCertUserService {
     }
 
     @Override
+    @Transactional
     public void storeUserPreference(String key, String value) {
         WebCertUser user = getUser();
         String hsaId = user.getHsaId();
@@ -91,6 +96,7 @@ public class WebCertUserServiceImpl implements WebCertUserService {
     }
 
     @Override
+    @Transactional
     public void deleteUserPreference(String key) {
         WebCertUser user = getUser();
         String hsaId = user.getHsaId();
@@ -102,6 +108,7 @@ public class WebCertUserServiceImpl implements WebCertUserService {
     }
 
     @Override
+    @Transactional
     public void deleteUserPreferences() {
         WebCertUser user = getUser();
         String hsaId = user.getHsaId();

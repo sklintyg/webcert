@@ -23,6 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.schemas.contract.InvalidPersonNummerException;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.infra.integration.pu.model.PersonSvar;
@@ -53,6 +54,7 @@ public class PersonApiController extends AbstractApiController {
     @GET
     @Path("/{personnummer}")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    @PrometheusTimeMethod
     public Response getPersonuppgifter(@PathParam("personnummer") String personnummerIn) {
 
         try {

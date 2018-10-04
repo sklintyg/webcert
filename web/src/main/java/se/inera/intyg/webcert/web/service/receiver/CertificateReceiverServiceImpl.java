@@ -25,7 +25,6 @@ import java.util.stream.Collectors;
 
 import javax.xml.ws.WebServiceException;
 
-import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -145,7 +144,6 @@ public class CertificateReceiverServiceImpl implements CertificateReceiverServic
         }
     }
 
-    @NotNull
     private List<IntygReceiver> getIntygReceiverFromEntryPoint(String intygsTyp) {
         try {
             ModuleEntryPoint moduleEntryPoint = intygModuleRegistry.getModuleEntryPoint(intygsTyp);

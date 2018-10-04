@@ -49,8 +49,8 @@ import se.inera.intyg.webcert.integration.fmb.model.typfall.TypfallData;
 import se.inera.intyg.webcert.persistence.fmb.model.Fmb;
 import se.inera.intyg.webcert.persistence.fmb.model.FmbCallType;
 import se.inera.intyg.webcert.persistence.fmb.model.FmbType;
-import se.inera.intyg.webcert.persistence.fmb.model.icf.BeskrivningTyp;
-import se.inera.intyg.webcert.persistence.fmb.model.icf.DiagnosInformation;
+import se.inera.intyg.webcert.persistence.fmb.model.fmb.BeskrivningTyp;
+import se.inera.intyg.webcert.persistence.fmb.model.fmb.DiagnosInformation;
 import se.inera.intyg.webcert.persistence.fmb.repository.DiagnosInformationRepository;
 import se.inera.intyg.webcert.persistence.fmb.repository.FmbRepository;
 

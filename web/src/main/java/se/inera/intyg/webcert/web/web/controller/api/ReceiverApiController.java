@@ -32,6 +32,7 @@ import javax.ws.rs.core.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import io.swagger.annotations.Api;
+import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.webcert.web.service.receiver.CertificateReceiverService;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
@@ -53,6 +54,7 @@ public class ReceiverApiController extends AbstractApiController {
     @GET
     @Path("/approvedreceivers/{intygsTyp}/{intygsId}")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    @PrometheusTimeMethod
     public Response listApprovedReceivers(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId) {
         List<IntygReceiver> intygReceivers = certificateReceiverService.listPossibleReceiversWithApprovedInfo(intygsTyp, intygsId);
         return Response.ok(intygReceivers).build();
@@ -67,6 +69,7 @@ public class ReceiverApiController extends AbstractApiController {
     @GET
     @Path("/possiblereceivers/{intygsTyp}")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    @PrometheusTimeMethod
     public Response listApprovedReceivers(@PathParam("intygsTyp") String intygsTyp) {
         List<IntygReceiver> intygReceivers = certificateReceiverService.listPossibleReceivers(intygsTyp);
         return Response.ok(intygReceivers).build();
@@ -76,6 +79,7 @@ public class ReceiverApiController extends AbstractApiController {
     @Path("/registerapproved/{intygsTyp}/{intygsId}")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @Consumes(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    @PrometheusTimeMethod
     public Response registerApprovedReceivers(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId,
             List<String> receiverIds) {
         authoritiesValidator

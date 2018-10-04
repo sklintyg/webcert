@@ -30,6 +30,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
@@ -54,6 +55,7 @@ public class AvtalRepositoryFactory {
     private AvtalRepository avtalRepository;
 
     @PostConstruct
+    @Transactional
     public void populateStandardAvtal() {
 
         Integer latestAvtalVersion = avtalRepository.getLatestAvtalVersion();

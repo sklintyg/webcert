@@ -43,7 +43,7 @@
     <bean id="receiver" class="se.inera.queue.Receiver"/>
 
     <bean id="jmsContainer" class="org.springframework.jms.listener.DefaultMessageListenerContainer">
-        <property name="connectionFactory" ref="jmsFactory"/>
+        <property name="jmsConnectionFactory" ref="jmsFactory"/>
         <property name="destination" ref="queue"/>
         <property name="messageListener" ref="receiver"/>
     </bean>

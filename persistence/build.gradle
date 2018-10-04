@@ -10,9 +10,11 @@ dependencies {
   compile "org.springframework.data:spring-data-jpa:${springDataVersion}"
   compile "org.liquibase:liquibase-core:${liquibaseVersion}"
     compile "org.jadira.usertype:usertype.extended:${jadiraUserTypeVersion}"
+  compile "com.h2database:h2:${h2Version}"
+  compile "mysql:mysql-connector-java:${mysqlVersion}"
+  compile "com.zaxxer:HikariCP-java6:${hikariCPVersion}"
+
 
   testCompile "org.springframework:spring-test:${springVersion}"
   testCompile "org.hamcrest:hamcrest-all:${hamcrestVersion}"
-
-  testRuntime "com.h2database:h2:${h2Version}"
 }

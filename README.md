@@ -87,27 +87,23 @@ Ungefär så här:
 
     jvmArgs = ["-Dcatalina.base=${buildDir}/catalina.base",
                    "-Dspring.profiles.active=dev,caching-enabled",
-                   "-Dwebcert.resources.folder=${projectDir}/../src/main/resources",
+                   "-Dresources.folder=${projectDir}/../src/main/resources",
                    "-Dcredentials.file=${projectDir}/webcert-credentials.properties",
-                   "-Dwebcert.config.file=${projectDir}/webcert-dev.properties",
-                   "-Dwebcert.logback.file=${projectDir}/webcert-logback.xml",
-                   "-Dwebcert.useMinifiedJavaScript=${minified}",
-                   "-Dh2.tcp.port=9094",
-                   "-Dh2.web.port=9090",
+                   "-Dconfig.file=${projectDir}/webcert-dev.properties",
+                   "-Dlogback.file=${projectDir}/webcert-logback.xml",
+                   "-DuseMinifiedJavaScript=${minified}",
                    "-Djetty.port=9088"]
                    
 Ersätt ovanstående med nedanstående, byt ut _/Users/myuser/intyg_ mot egen absolut sökväg:
 
     jvmArgs = ["-Dcatalina.base=${buildDir}/catalina.base",
                    "-Dspring.profiles.active=dev,caching-enabled,wc-security-test",
-                   "-Dwebcert.config.folder=/Users/myuser/intyg/webcert-konfiguration/test/",
-                   "-Dwebcert.resources.folder=${projectDir}/../src/main/resources",
+                   "-Dconfig.folder=/Users/myuser/intyg/webcert-konfiguration/test/",
+                   "-Dresources.folder=${projectDir}/../src/main/resources",
                    "-Dcredentials.file=/Users/myuser/intyg/webcert-konfiguration/test/credentials.properties",
-                   "-Dwebcert.config.file=/Users/myuser/intyg/webcert-konfiguration/test/webcert.properties",
-                   "-Dwebcert.logback.file=/Users/myuser/intyg/webcert-konfiguration/test/webcert-logback.xml",
-                   "-Dwebcert.useMinifiedJavaScript=${minified}",
-                   "-Dh2.tcp.port=9094",
-                   "-Dh2.web.port=9090",
+                   "-Dconfig.file=/Users/myuser/intyg/webcert-konfiguration/test/webcert.properties",
+                   "-Dlogback.file=/Users/myuser/intyg/webcert-konfiguration/test/webcert-logback.xml",
+                   "-DuseMinifiedJavaScript=${minified}",
                    "-Djetty.port=9088",
                    "-Dwebcert.stubs.port=9088"]
                    

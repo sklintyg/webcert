@@ -27,6 +27,7 @@ import org.springframework.mail.MailSendException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.infra.integration.hsa.exception.HsaServiceCallException;
 import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
@@ -271,6 +272,7 @@ public class MailNotificationServiceImpl implements MailNotificationService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public String intygsUrl(MailNotification mailNotification) {
         String url = String.valueOf(webCertHostUrl) + "/webcert/web/user/"
                 + resolvePathSegment(mailNotification.getCareUnitId(), mailNotification.getCertificateId()) + "/";

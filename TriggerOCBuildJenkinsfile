@@ -1,0 +1,27 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('POST to trigger build in OC') {
+            steps {
+                writeFile file: "hook.yml", text: """git:
+  uri: $GIT_URL
+  ref: $GIT_REF
+env:
+  - name: infraVersion
+    value: $INFRA_VERSION
+  - name: buildVersion
+    value: $WEBCERT_BUILD_VERSION
+  - name: commonVersion
+    value: $COMMON_VERSION
+  - name: gitRef
+    value: $GIT_REF
+  - name: gitUrl
+    value: $GIT_URL
+    """
+                sh 'curl -k -X POST -H "Content-Type: application/yaml" --data-binary @hook.yml $BF_URL'
+            }
+        }
+    }
+
+}

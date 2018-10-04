@@ -5,6 +5,12 @@
         "INTYGTJANST_URL": "http://localhost:8080/inera-certificate",
         "SELENIUM_ADDRESS": ""
     },
+    "test-pipeline": {
+        "WEBCERT_URL": "http://webcert-test:8080/",
+        "MINAINTYG_URL": "https://minaintyg.inera.nordicmedtest.se",
+        "INTYGTJANST_URL": "http://intygstjanst-test-webcert-test:8080/inera-certificate",
+        "SELENIUM_ADDRESS": ""
+    },
 	"demo": {
         "WEBCERT_URL": "https://demo.webcert.intygstjanster.se/",
 		"INTYGTJANST_URL": "https://demo.intygstjanst.intygstjanster.se/inera-certificate",

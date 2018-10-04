@@ -21,16 +21,21 @@ package se.inera.intyg.webcert.persistence.privatlakaravtal.repository;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import javax.persistence.*;
+import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
+import javax.persistence.NonUniqueResultException;
+import javax.persistence.PersistenceContext;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.transaction.annotation.Transactional;
 
 import se.inera.intyg.webcert.persistence.privatlakaravtal.model.GodkantAvtal;
 
 /**
  * Created by eriklupander on 2015-08-05.
  */
+@Transactional(readOnly = true)
 public class GodkantAvtalRepositoryImpl implements GodkantAvtalRepositoryCustom {
 
     private static final Logger LOG = LoggerFactory.getLogger(GodkantAvtalRepositoryImpl.class);
@@ -39,6 +44,7 @@ public class GodkantAvtalRepositoryImpl implements GodkantAvtalRepositoryCustom 
     private EntityManager entityManager;
 
     @Override
+    @Transactional
     public void approveAvtal(String hsaId, Integer avtalVersion) {
 
         if (userHasApprovedAvtal(hsaId, avtalVersion)) {

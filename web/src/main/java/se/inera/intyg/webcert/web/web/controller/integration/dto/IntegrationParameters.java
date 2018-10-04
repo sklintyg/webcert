@@ -19,6 +19,7 @@
 package se.inera.intyg.webcert.web.web.controller.integration.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.util.Objects;
 import org.apache.commons.lang3.StringUtils;
 import se.inera.intyg.webcert.web.web.controller.integration.IntegrationState;
 
@@ -174,4 +175,48 @@ public final class IntegrationParameters implements Serializable {
         this.state = state;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        IntegrationParameters that = (IntegrationParameters) o;
+        return sjf == that.sjf
+                && patientDeceased == that.patientDeceased
+                && inactiveUnit == that.inactiveUnit
+                && copyOk == that.copyOk
+                && Objects.equals(reference, that.reference)
+                && Objects.equals(responsibleHospName, that.responsibleHospName)
+                && Objects.equals(alternateSsn, that.alternateSsn)
+                && Objects.equals(fornamn, that.fornamn)
+                && Objects.equals(mellannamn, that.mellannamn)
+                && Objects.equals(efternamn, that.efternamn)
+                && Objects.equals(postadress, that.postadress)
+                && Objects.equals(postnummer, that.postnummer)
+                && Objects.equals(postort, that.postort)
+                && Objects.equals(beforeAlternateSsn, that.beforeAlternateSsn)
+                && Objects.equals(state, that.state);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(reference,
+                responsibleHospName,
+                alternateSsn,
+                fornamn,
+                mellannamn,
+                efternamn,
+                postadress,
+                postnummer,
+                postort,
+                sjf,
+                patientDeceased,
+                inactiveUnit,
+                copyOk,
+                beforeAlternateSsn,
+                state);
+    }
 }

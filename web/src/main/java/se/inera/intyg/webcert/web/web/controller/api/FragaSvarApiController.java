@@ -22,6 +22,7 @@ import io.swagger.annotations.Api;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.webcert.web.service.arende.ArendeService;
 import se.inera.intyg.webcert.web.service.fragasvar.dto.QueryFragaSvarParameter;
@@ -47,6 +48,7 @@ public class FragaSvarApiController extends AbstractApiController {
     @GET
     @Path("/sok")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    @PrometheusTimeMethod
     public Response query(@QueryParam("") QueryFragaSvarParameter queryParam) {
         authoritiesValidator.given(getWebCertUserService().getUser()).features(AuthoritiesConstants.FEATURE_HANTERA_FRAGOR).orThrow();
         QueryFragaSvarResponse result = arendeService.filterArende(queryParam);
@@ -57,6 +59,7 @@ public class FragaSvarApiController extends AbstractApiController {
     @GET
     @Path("/lakare")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    @PrometheusTimeMethod
     public Response getFragaSvarLakareByEnhet(@QueryParam("enhetsId") String enhetsId) {
         authoritiesValidator.given(getWebCertUserService().getUser()).features(AuthoritiesConstants.FEATURE_HANTERA_FRAGOR).orThrow();
         return Response.ok(arendeService.listSignedByForUnits(enhetsId)).build();

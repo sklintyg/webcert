@@ -140,7 +140,7 @@ public class UtkastServiceImpl implements UtkastService {
     }
 
     @Override
-    @Transactional("jpaTransactionManager") // , readOnly=true
+    @Transactional() // , readOnly=true
     public int countFilterIntyg(UtkastFilter filter) {
 
         // Get intygstyper from write privilege
@@ -377,7 +377,7 @@ public class UtkastServiceImpl implements UtkastService {
     }
 
     @Override
-    @Transactional("jpaTransactionManager")
+    @Transactional
     public SaveDraftResponse saveDraft(String intygId, long version, String draftAsJson, boolean createPdlLogEvent) {
         LOG.debug("Saving and validating utkast '{}'", intygId);
 

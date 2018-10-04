@@ -163,7 +163,7 @@ public abstract class AbstractUtkastBuilder<T extends AbstractCreateCopyRequest>
      * webcert.web.service.utkast.dto.CreateNewDraftCopyRequest, se.inera.intyg.webcert.integration.pu.model.Person)
      */
     @Override
-    @Transactional(value = "jpaTransactionManager", readOnly = true)
+    @Transactional(readOnly = true)
     public CopyUtkastBuilderResponse populateCopyUtkastFromOrignalUtkast(T copyRequest, Person patientDetails, boolean addRelation,
             boolean coherentJournaling, boolean enforceEnhet) throws ModuleNotFoundException, ModuleException {
 

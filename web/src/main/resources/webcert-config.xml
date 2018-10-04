@@ -28,29 +28,26 @@
         http://cxf.apache.org/transports/http/configuration http://cxf.apache.org/schemas/configuration/http-conf.xsd
         http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
 
-  <import resource="classpath:/webcert-common-config.xml" />
-  <import resource="classpath:/repository-context.xml" />
+  <context:annotation-config />
+
+  <import resource="classpath:webcert-common-config.xml" />
+  <import resource="classpath:repository-context.xml" />
   <import resource="security/securityContext.xml" />
-  <import resource="classpath:/hsa-services-config.xml" />
-  <import resource="classpath:/fmb-services-config.xml" />
-  <import resource="classpath:/tak-services-config.xml" />
-  <import resource="classpath:/basic-cache-config.xml" />
-  <import resource="classpath:/pu-services-config.xml" />
-  <import resource="classpath:/srs-services-config.xml" />
-  <import resource="classpath:/pu-ignite-config.xml" />
-  <import resource="classpath:/pp-services-config.xml" />
-  <import resource="classpath:/xmldsig-config.xml" />
-  <import resource="jms-config.xml" />
+  <import resource="classpath:hsa-services-config.xml" />
+  <import resource="classpath:fmb-services-config.xml" />
+  <import resource="classpath:tak-services-config.xml" />
+  <import resource="classpath:basic-cache-config.xml" />
+  <import resource="classpath:pu-services-config.xml" />
+  <import resource="classpath:srs-services-config.xml" />
+  <import resource="classpath:pu-ignite-config.xml" />
+  <import resource="classpath:pp-services-config.xml" />
+  <import resource="classpath:xmldsig-config.xml" />
   <import resource="ws-config.xml" />
   <import resource="mail-config.xml" />
-  <import resource="classpath:/mail-stub-context.xml" />
+  <import resource="classpath:mail-stub-context.xml" />
   <import resource="classpath*:module-config.xml" />
   <import resource="classpath*:wc-module-cxf-servlet.xml" />
-  <import resource="classpath:/notification-sender-config.xml" />
-  <import resource="classpath:/certificate-sender-config.xml" />
-  <!-- <import resource="classpath:/web-servlet.xml" /> -->
-
-  <context:annotation-config />
+  <import resource="classpath:notification-sender-config.xml" />
 
   <context:component-scan base-package="se.inera.intyg.webcert.web">
     <context:exclude-filter type="regex" expression="se\.inera\.intyg\.webcert\.web\.auth.*"/>
@@ -59,23 +56,18 @@
   <!-- Load dynamic link classes -->
   <context:component-scan base-package="se.inera.intyg.infra.dynamiclink" />
 
-  <!-- Load version helper -->
-  <context:component-scan base-package="se.inera.intyg.common.support.modules.support.api.versions" />
-
-  <!-- Load postnummerservice classes -->
+  <!-- Load postnummerservice classe-->
   <context:component-scan base-package="se.inera.intyg.infra.integration.postnummer" />
 
   <beans>
-    <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-      <property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE" />
+    <bean class="org.springframework.context.support.PropertySourcesPlaceholderConfigurer">
       <property name="locations">
         <list>
           <!-- Order matters - last value wins -->
           <value>classpath:default.properties</value>
           <value>classpath:version.properties</value>
           <value>classpath:webcert-notification-route-params.properties</value>
-          <value>classpath:webcert-certificate-route-params.properties</value>
-          <value>file:${webcert.config.file}</value>
+          <value>file:${config.file}</value>
           <value>file:${credentials.file}</value>
         </list>
       </property>
@@ -100,7 +92,10 @@
 
     <bean id="commonAuthoritiesResolver" class="se.inera.intyg.infra.security.authorities.CommonAuthoritiesResolver" />
     <bean id="authoritiesHelper" class="se.inera.intyg.infra.security.authorities.AuthoritiesHelper" />
+
   </beans>
+
+
 
   <beans profile="dev,wc-init-data">
     <!-- In dev mode we bootstrap data -->
@@ -198,6 +193,7 @@
       <property name="maxPoolSize" value="10" />
       <property name="queueCapacity" value="25" />
     </bean>
+
   </beans>
 
 </beans>

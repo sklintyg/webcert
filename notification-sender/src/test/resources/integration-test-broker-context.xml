@@ -45,6 +45,10 @@
     <property name="connectionFactory" ref="cachingConnectionFactory"/>
   </bean>
 
+  <bean id="txTemplate" class="org.apache.camel.spring.spi.SpringTransactionPolicy">
+    <property name="transactionManager" ref="jmsTransactionManager" />
+  </bean>
+
   <bean id="jmsTransactionManager" class="org.springframework.jms.connection.JmsTransactionManager">
     <property name="connectionFactory" ref="cachingConnectionFactory"/>
   </bean>

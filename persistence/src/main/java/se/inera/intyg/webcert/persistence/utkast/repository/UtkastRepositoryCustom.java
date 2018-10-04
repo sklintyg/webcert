@@ -25,7 +25,6 @@ import java.util.Set;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import org.springframework.transaction.annotation.Transactional;
 
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.webcert.common.model.GroupableItem;
@@ -33,7 +32,6 @@ import se.inera.intyg.webcert.common.model.WebcertCertificateRelation;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 
 // CHECKSTYLE:OFF LineLength
-@Transactional(value = "jpaTransactionManager", readOnly = true)
 public interface UtkastRepositoryCustom extends UtkastFilteredRepositoryCustom {
 
     /**

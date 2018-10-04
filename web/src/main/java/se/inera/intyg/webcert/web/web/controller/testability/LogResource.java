@@ -21,8 +21,15 @@ package se.inera.intyg.webcert.web.web.controller.testability;
 import java.io.IOException;
 import java.util.Enumeration;
 
-import javax.jms.*;
-import javax.ws.rs.*;
+import javax.jms.JMSException;
+import javax.jms.Message;
+import javax.jms.QueueBrowser;
+import javax.jms.Session;
+import javax.jms.TextMessage;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -34,9 +41,8 @@ import org.springframework.jms.core.JmsTemplate;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.swagger.annotations.Api;
-
-import se.inera.intyg.infra.logmessages.PdlLogMessage;
 import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
+import se.inera.intyg.infra.logmessages.PdlLogMessage;
 
 @Api(value = "testability logMessages", description = "REST API för testbarhet - PDL-loggning")
 @Path("/logMessages")
@@ -52,9 +58,6 @@ public class LogResource {
     @Qualifier("jmsPDLLogTemplateNoTx")
     private JmsTemplate jmsTemplate;
 
-    @Autowired
-    private Queue queue;
-
     @DELETE
     @Path("/")
     @Produces(MediaType.APPLICATION_JSON)
@@ -64,7 +67,7 @@ public class LogResource {
         try {
             jmsTemplate.setReceiveTimeout(timeOut);
             for (int i = 0; i < count; i++) {
-                jmsTemplate.receive(queue);
+                jmsTemplate.receive();
             }
         } finally {
             jmsTemplate.setReceiveTimeout(originalTimeout);
@@ -76,7 +79,7 @@ public class LogResource {
     @Path("/count")
     @Produces(MediaType.APPLICATION_JSON)
     public int countMessages() {
-        return jmsTemplate.browse(queue, new BrowserCallback<Integer>() {
+        return jmsTemplate.browse(new BrowserCallback<Integer>() {
             @Override
             public Integer doInJms(Session session, QueueBrowser browser) throws JMSException {
                 Enumeration<?> messages = browser.getEnumeration();
@@ -97,7 +100,7 @@ public class LogResource {
         long originalTimeout = jmsTemplate.getReceiveTimeout();
         try {
             jmsTemplate.setReceiveTimeout(timeOut);
-            Message message = jmsTemplate.receive(queue);
+            Message message = jmsTemplate.receive();
             String body = ((TextMessage) message).getText();
 
             return objectMapper.readValue(body, PdlLogMessage.class);

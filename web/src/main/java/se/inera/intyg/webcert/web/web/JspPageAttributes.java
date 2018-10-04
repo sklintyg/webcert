@@ -23,7 +23,7 @@ import org.springframework.core.env.Environment;
 
 public class JspPageAttributes {
 
-    private static final String USE_MINIFIED_JAVA_SCRIPT = "webcert.useMinifiedJavaScript";
+    private static final String USE_MINIFIED_JAVA_SCRIPT = "useMinifiedJavaScript";
 
     @Autowired
     private Environment environment;

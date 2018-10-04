@@ -30,6 +30,7 @@ import org.springframework.stereotype.Component;
 
 import com.google.common.base.Strings;
 
+import org.springframework.transaction.annotation.Transactional;
 import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.common.support.modules.support.api.notification.ArendeCount;
 import se.inera.intyg.common.support.modules.support.api.notification.FragorOchSvar;
@@ -42,6 +43,7 @@ import se.inera.intyg.webcert.persistence.model.Status;
 import se.inera.intyg.webcert.web.service.fragasvar.dto.FrageStallare;
 
 @Component
+@Transactional(readOnly = true)
 public class FragorOchSvarCreatorImpl implements FragorOchSvarCreator {
 
     private static final String FRAGESTALLARE_FK = FrageStallare.FORSAKRINGSKASSAN.getKod();

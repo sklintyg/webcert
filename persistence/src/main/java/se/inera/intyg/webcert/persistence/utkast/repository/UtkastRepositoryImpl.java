@@ -18,6 +18,11 @@
  */
 package se.inera.intyg.webcert.persistence.utkast.repository;
 
+import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
@@ -26,24 +31,21 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.base.Strings;
+
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 
+@Transactional(readOnly = true)
 public class UtkastRepositoryImpl implements UtkastFilteredRepositoryCustom {
 
     @PersistenceContext
     private EntityManager entityManager;
 
     @Override
-    @Transactional(value = "jpaTransactionManager", readOnly = true)
     public List<Utkast> filterIntyg(UtkastFilter filter, Set<String> authorizedIntygstyper) {
 
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
@@ -64,7 +66,6 @@ public class UtkastRepositoryImpl implements UtkastFilteredRepositoryCustom {
     }
 
     @Override
-    @Transactional(value = "jpaTransactionManager", readOnly = true)
     public int countFilterIntyg(UtkastFilter filter, Set<String> authorizedIntygstyper) {
 
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();

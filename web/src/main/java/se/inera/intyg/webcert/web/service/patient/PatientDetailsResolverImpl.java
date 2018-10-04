@@ -23,6 +23,7 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
 import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.intyg.common.db.support.DbModuleEntryPoint;
+import org.springframework.transaction.annotation.Transactional;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.Patient;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
@@ -88,6 +89,7 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Patient resolvePatient(Personnummer personnummer, String intygsTyp) {
 
         WebCertUser user;

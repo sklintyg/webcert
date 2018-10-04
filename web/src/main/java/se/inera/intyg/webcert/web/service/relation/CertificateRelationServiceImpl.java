@@ -25,6 +25,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.model.UtkastStatus;
@@ -91,6 +92,7 @@ public class CertificateRelationServiceImpl implements CertificateRelationServic
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<WebcertCertificateRelation> findChildRelations(String intygsId) {
         return utkastRepoCustom.findChildRelations(intygsId)
                 .stream()

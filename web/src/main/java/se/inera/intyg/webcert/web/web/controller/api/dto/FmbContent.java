@@ -18,10 +18,9 @@
  */
 package se.inera.intyg.webcert.web.web.controller.api.dto;
 
-import se.inera.intyg.webcert.persistence.fmb.model.FmbType;
-
 import java.util.Collections;
 import java.util.List;
+import se.inera.intyg.webcert.persistence.fmb.model.FmbType;
 
 public class FmbContent {
 

@@ -27,6 +27,7 @@ import org.apache.activemq.command.ActiveMQQueue;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 
 import java.time.LocalDateTime;
@@ -40,7 +41,7 @@ import se.inera.intyg.common.support.modules.support.api.notification.Notificati
 import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
 import se.inera.intyg.webcert.notificationstub.v3.NotificationStubStateBean;
 
-
+@DirtiesContext
 @ContextConfiguration("/notifications/integration-test-notification-sender-config-felb.xml")
 public class RouteFelBHandledIT extends AbstractBaseIT {
 

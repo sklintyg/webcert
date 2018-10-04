@@ -18,12 +18,14 @@
  */
 package se.inera.intyg.webcert.integration.fmb.services;
 
-import static se.inera.intyg.webcert.persistence.fmb.model.icf.Beskrivning.BeskrivningBuilder.aBeskrivning;
-import static se.inera.intyg.webcert.persistence.fmb.model.icf.DiagnosInformation.DiagnosInformationBuilder.aDiagnosInformation;
-import static se.inera.intyg.webcert.persistence.fmb.model.icf.Icd10Kod.Icd10KodBuilder.anIcd10Kod;
-import static se.inera.intyg.webcert.persistence.fmb.model.icf.IcfKod.IcfKodBuilder.anIcfKod;
-import static se.inera.intyg.webcert.persistence.fmb.model.icf.Referens.ReferensBuilder.aReferens;
-import static se.inera.intyg.webcert.persistence.fmb.model.icf.TypFall.TypFallBuilder.aTypFall;
+import static java.util.Objects.nonNull;
+import static org.springframework.util.CollectionUtils.isEmpty;
+import static se.inera.intyg.webcert.persistence.fmb.model.fmb.Beskrivning.BeskrivningBuilder.aBeskrivning;
+import static se.inera.intyg.webcert.persistence.fmb.model.fmb.DiagnosInformation.DiagnosInformationBuilder.aDiagnosInformation;
+import static se.inera.intyg.webcert.persistence.fmb.model.fmb.Icd10Kod.Icd10KodBuilder.anIcd10Kod;
+import static se.inera.intyg.webcert.persistence.fmb.model.fmb.IcfKod.IcfKodBuilder.anIcfKod;
+import static se.inera.intyg.webcert.persistence.fmb.model.fmb.Referens.ReferensBuilder.aReferens;
+import static se.inera.intyg.webcert.persistence.fmb.model.fmb.TypFall.TypFallBuilder.aTypFall;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
@@ -37,7 +39,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
 import java.lang.invoke.MethodHandles;
 import java.text.MessageFormat;
 import java.time.LocalDateTime;
@@ -46,13 +47,13 @@ import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import se.inera.intyg.webcert.integration.fmb.consumer.FmbConsumer;
 import se.inera.intyg.webcert.integration.fmb.model.Kod;
 import se.inera.intyg.webcert.integration.fmb.model.Meta;
+import se.inera.intyg.webcert.integration.fmb.model.TidEnhet;
 import se.inera.intyg.webcert.integration.fmb.model.fmdxinfo.Attributes;
 import se.inera.intyg.webcert.integration.fmb.model.fmdxinfo.FmdxData;
 import se.inera.intyg.webcert.integration.fmb.model.fmdxinfo.FmdxInformation;
@@ -62,18 +63,18 @@ import se.inera.intyg.webcert.integration.fmb.model.typfall.Fmbtillstand;
 import se.inera.intyg.webcert.integration.fmb.model.typfall.Rekommenderadsjukskrivning;
 import se.inera.intyg.webcert.integration.fmb.model.typfall.Typfall;
 import se.inera.intyg.webcert.integration.fmb.model.typfall.TypfallData;
-import se.inera.intyg.webcert.persistence.fmb.model.icf.Beskrivning;
-import se.inera.intyg.webcert.persistence.fmb.model.icf.BeskrivningTyp;
-import se.inera.intyg.webcert.persistence.fmb.model.icf.DiagnosInformation;
-import se.inera.intyg.webcert.persistence.fmb.model.icf.Icd10Kod;
-import se.inera.intyg.webcert.persistence.fmb.model.icf.IcfKod;
-import se.inera.intyg.webcert.persistence.fmb.model.icf.IcfKodTyp;
-import se.inera.intyg.webcert.persistence.fmb.model.icf.Referens;
-import se.inera.intyg.webcert.persistence.fmb.model.icf.TypFall;
+import se.inera.intyg.webcert.persistence.fmb.model.fmb.Beskrivning;
+import se.inera.intyg.webcert.persistence.fmb.model.fmb.BeskrivningTyp;
+import se.inera.intyg.webcert.persistence.fmb.model.fmb.DiagnosInformation;
+import se.inera.intyg.webcert.persistence.fmb.model.fmb.Icd10Kod;
+import se.inera.intyg.webcert.persistence.fmb.model.fmb.IcfKod;
+import se.inera.intyg.webcert.persistence.fmb.model.fmb.IcfKodTyp;
+import se.inera.intyg.webcert.persistence.fmb.model.fmb.Referens;
+import se.inera.intyg.webcert.persistence.fmb.model.fmb.TypFall;
 import se.inera.intyg.webcert.persistence.fmb.repository.DiagnosInformationRepository;
 
 @Service
-@Transactional("jpaTransactionManager")
+@Transactional
 @Configuration
 @EnableScheduling
 @Profile({"dev", "test", "webcertMainNode"})
@@ -107,7 +108,7 @@ public class FmbServiceImpl implements FmbService {
             final Typfall typfall = fmbConsumer.getTypfall();
             final List<DiagnosInformation> diagnosInformationList = convertResponseToDiagnosInformation(diagnosinformation, typfall);
 
-            if (!CollectionUtils.isEmpty(diagnosInformationList)) {
+            if (!isEmpty(diagnosInformationList)) {
                 repository.deleteAll();
                 repository.save(diagnosInformationList);
             }
@@ -153,9 +154,9 @@ public class FmbServiceImpl implements FmbService {
     }
 
     private void validateResponse(final FmdxInformation diagnosinformation, final Typfall typfall) {
-        Preconditions.checkArgument(Objects.nonNull(diagnosinformation));
-        Preconditions.checkArgument(Objects.nonNull(diagnosinformation.getData()));
-        Preconditions.checkArgument(Objects.nonNull(typfall));
+        Preconditions.checkArgument(nonNull(diagnosinformation));
+        Preconditions.checkArgument(nonNull(diagnosinformation.getData()));
+        Preconditions.checkArgument(nonNull(typfall));
     }
 
     private Beskrivning convertToBeskrivning(final FmxBeskrivning beskrivning, final BeskrivningTyp beskrivningTyp) {
@@ -187,12 +188,27 @@ public class FmbServiceImpl implements FmbService {
                 .filter(filterTypfall(kod))
                 .map(attributes -> aTypFall()
                         .typfallsMening(attributes.getTypfallsmening())
-                        .maximalSjukrivningstid(attributes.getOptionalRekommenderadsjukskrivning()
-                                .map(Rekommenderadsjukskrivning::getMaximalsjukskrivningstid)
-                                .map(Ints::tryParse)
-                                .orElse(0))
+                        .maximalSjukrivningstidDagar(convertToAntalDagar(attributes.getRekommenderadsjukskrivning()))
                         .build())
                 .collect(Collectors.toList());
+    }
+
+    private Integer convertToAntalDagar(final Rekommenderadsjukskrivning rekommenderadsjukskrivning) {
+        if (!isValidRekommenderadSjukskrivning(rekommenderadsjukskrivning)) {
+            return null;
+        }
+
+        final int antal = Integer.valueOf(rekommenderadsjukskrivning.getMaximalsjukskrivningstid());
+        final TidEnhet enhet = TidEnhet.of(rekommenderadsjukskrivning.getMaximalsjukskrivningsenhet()).get();
+        return antal * enhet.getInDays();
+    }
+
+    private boolean isValidRekommenderadSjukskrivning(final Rekommenderadsjukskrivning rekommenderadsjukskrivning) {
+        return nonNull(rekommenderadsjukskrivning)
+                && nonNull(rekommenderadsjukskrivning.getMaximalsjukskrivningstid())
+                && nonNull(Ints.tryParse(rekommenderadsjukskrivning.getMaximalsjukskrivningstid()))
+                && nonNull(rekommenderadsjukskrivning.getMaximalsjukskrivningsenhet())
+                && TidEnhet.of(rekommenderadsjukskrivning.getMaximalsjukskrivningsenhet()).isPresent();
     }
 
     private Predicate<se.inera.intyg.webcert.integration.fmb.model.typfall.Attributes> filterTypfall(final Kod kod) {

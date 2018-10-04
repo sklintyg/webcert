@@ -18,11 +18,12 @@
  */
 package se.inera.intyg.webcert.web.service.user.dto;
 
-import se.inera.intyg.infra.security.common.model.IntygUser;
-import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
-
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
+
+import se.inera.intyg.infra.security.common.model.IntygUser;
+import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
 
 /**
  * @author andreaskaltenbach
@@ -31,7 +32,7 @@ public class WebCertUser extends IntygUser {
 
     private static final long serialVersionUID = -2624303818412468774L;
 
-    private Map<String, String> anvandarPreference;
+    private Map<String, String> anvandarPreference = new HashMap<>();
     private IntegrationParameters parameters;
 
     public WebCertUser() {
@@ -64,10 +65,23 @@ public class WebCertUser extends IntygUser {
     }
 
     public Map<String, String> getAnvandarPreference() {
-        if (anvandarPreference == null) {
-            anvandarPreference = new HashMap<>();
+        return this.anvandarPreference;
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (super.equals(o)) {
+            WebCertUser that = (WebCertUser) o;
+            return Objects.equals(this.anvandarPreference, that.anvandarPreference)
+                    && Objects.equals(this.parameters, that.parameters);
         }
-        return anvandarPreference;
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode() + Objects.hash(this.anvandarPreference, this.parameters);
+
     }
 
     public void setAnvandarPreference(Map<String, String> anvandarMetadata) {

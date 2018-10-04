@@ -44,6 +44,7 @@ import org.springframework.dao.OptimisticLockingFailureException;
 import io.swagger.annotations.Api;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.peristence.dao.util.DaoUtil;
+import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.schemas.contract.Personnummer;
@@ -107,6 +108,7 @@ public class IntygApiController extends AbstractApiController {
     @GET
     @Path("/person/{personNummer}")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    @PrometheusTimeMethod
     public Response listDraftsAndIntygForPerson(@PathParam("personNummer") String personNummerIn) {
         Personnummer personNummer = createPnr(personNummerIn);
         LOG.debug("Retrieving intyg for person {}", personNummer.getPersonnummerHash());
@@ -182,6 +184,7 @@ public class IntygApiController extends AbstractApiController {
     @Path("/{intygsTyp}/{intygsId}/{version}/vidarebefordra")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @Consumes(MediaType.APPLICATION_JSON)
+    @PrometheusTimeMethod
     public Response setNotifiedOnIntyg(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId,
             @PathParam("version") long version, NotifiedState notifiedState) {
         authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
@@ -209,6 +212,7 @@ public class IntygApiController extends AbstractApiController {
     @Path("/{intygsTyp}/{intygsId}/{version}/redoattsignera")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @Consumes(MediaType.APPLICATION_JSON)
+    @PrometheusTimeMethod
     public Response setKlarForSigneraAndSendStatusMessage(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId,
             @PathParam("version") long version) {
 

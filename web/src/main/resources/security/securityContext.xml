@@ -56,6 +56,11 @@
 
   <security:http security="none" pattern="/favicon.ico"/>
 
+  <bean class="org.springframework.session.data.redis.config.annotation.web.http.RedisHttpSessionConfiguration">
+    <property name="redisNamespace" value="${app.name}"/>
+    <property name="redisFlushMode" value="IMMEDIATE" />
+  </bean>
+
   <!-- Logger for SAML messages and events -->
   <bean id="samlLogger" class="org.springframework.security.saml.log.SAMLDefaultLogger">
     <property name="logMessages" value="true"/>

@@ -93,18 +93,16 @@ gretty {
     inplaceMode = 'hard'
     debugSuspend = false
 
-    def minified = System.properties['webcert.useMinifiedJavaScript'] ?: false
+    def minified = System.properties['useMinifiedJavaScript'] ?: false
 
     jvmArgs = ["-Dcatalina.base=${buildDir}/catalina.base",
                "-Dspring.profiles.active=dev,caching-enabled",
-               "-Dwebcert.resources.folder=${projectDir}/../src/main/resources",
+               "-Dresources.folder=${projectDir}/../src/main/resources",
                "-Dcredentials.file=${projectDir}/webcert-credentials.properties",
-               "-Dwebcert.config.file=${projectDir}/webcert-dev.properties",
-               "-Dwebcert.logback.file=${projectDir}/webcert-logback.xml",
-               "-Dwebcert.useMinifiedJavaScript=${minified}",
-               "-Dh2.tcp.port=9094",
-               "-Dh2.web.port=9090",
-               "-Djetty.port=9088"]
+               "-Dconfig.file=${projectDir}/webcert-dev.properties",
+               "-Dlogback.file=classpath:logback-dev.xml",
+               "-DuseMinifiedJavaScript=${minified}",
+               "-Djetty.port=${httpPort}"]
 
     extraResourceBase webappOutputDir
 }
@@ -136,6 +134,8 @@ dependencies {
     compile "se.inera.intyg.infra:nias-stub:${infraVersion}"
     compile "se.inera.intyg.infra:postnummerservice-integration:${infraVersion}"
     compile "se.inera.intyg.infra:xmldsig:${infraVersion}"
+    compile "se.inera.intyg.infra:monitoring:${infraVersion}"
+    compile "se.inera.intyg.infra:common-redis-cache-core:${infraVersion}"
 
     compile "se.inera.intyg.common:ts-bas:${commonVersion}"
     compile "se.inera.intyg.common:ts-diabetes:${commonVersion}"
@@ -159,6 +159,7 @@ dependencies {
     compile "commons-io:commons-io:${commonsIoVersion}"
     compile "org.springframework:spring-web:${springVersion}"
     compile "org.springframework:spring-webmvc:${springVersion}"
+    compile "org.springframework.session:spring-session:${springSessionVersion}"
     compile "org.springframework.security:spring-security-web:${springSecurityVersion}"
     compile "org.springframework.security:spring-security-taglibs:${springSecurityVersion}"
     compile "org.apache.lucene:lucene-analyzers-common:${luceneAnalyzersCommonVersion}"
@@ -172,13 +173,13 @@ dependencies {
     compile "net.javacrumbs.shedlock:shedlock-spring:${shedlockSpringVersion}"
     compile "net.javacrumbs.shedlock:shedlock-provider-redis-spring:${shedlockSpringVersion}"
 
-    compileOnly "javax.servlet:servlet-api:${servletApiVersion}"
+    compile "javax.servlet:javax.servlet-api:${servletApiVersion}"
+
     compileOnly "org.apache.geronimo.specs:geronimo-jms_1.1_spec:${geronimoJmsVersion}"
 
     testCompile "org.hamcrest:hamcrest-all:${hamcrestVersion}"
     testCompile "org.assertj:assertj-core:${assertjVersion}"
     testCompile "org.springframework:spring-test:${springVersion}"
-    testCompile "javax.servlet:javax.servlet-api:${servletApiVersion}"
     testCompile "org.kubek2k:springockito:${springockitoVersion}"
     testCompile "xmlunit:xmlunit:${xmlUnitVersion}"
     testCompile "org.awaitility:awaitility:${awaitilityVersion}"
@@ -186,12 +187,5 @@ dependencies {
     testCompile "com.jayway.restassured:json-schema-validator:${jsonSchemaValidatorVersion}"
     testCompile "org.antlr:ST4:${stAntlr4Version}"
 
-    testRuntime "com.h2database:h2:${h2Version}"
-
     apt "com.google.auto.value:auto-value:${autovalueVersion}"
-
-    gretty "org.apache.activemq:activemq-client:${activeMqVersion}"
-    gretty "org.apache.activemq:activemq-broker:${activeMqVersion}"
-    gretty "com.h2database:h2:${h2Version}"
-    gretty "mysql:mysql-connector-java:${mysqlVersion}"
 }

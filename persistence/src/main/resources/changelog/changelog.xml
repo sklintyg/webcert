@@ -1198,8 +1198,23 @@
 
   </changeSet>
 
+  <changeSet id="57" author="ja">
+    <renameColumn oldColumnName="MAXIMALSJUKRIVNINGSTID"
+                  newColumnName="MAXIMALSJUKRIVNINGSTID_DAGAR"
+                  tableName="FMB_TYPFALL"
+                  columnDataType="bigint"/>
+
+    <modifyDataType tableName="FMB_TYPFALL"
+                    columnName="MAXIMALSJUKRIVNINGSTID_DAGAR"
+                    newDataType="bigint"/>
+
+    <dropNotNullConstraint tableName="FMB_TYPFALL"
+                           columnName="MAXIMALSJUKRIVNINGSTID_DAGAR"
+                           columnDataType="bigint"/>
+  </changeSet>
+
   <!-- Add column for intygTypeVersion needed for versioned intyg -->
-  <changeSet id="57" author="marced">
+  <changeSet id="58" author="marced">
     <addColumn tableName="INTYG">
       <column name="INTYG_TYPE_VERSION" type="varchar(32)">
         <constraints nullable="false"/>
