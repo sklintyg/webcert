@@ -32,6 +32,7 @@ Scenariomall: <intyg> - Dödsdatum kan inte vara i framtiden
     Och jag klickar på signera-knappen
     Så ska "1" valideringsfel visas med texten "Datumet får inte vara senare än dagens datum."
 
+
 Exempel:
     | intyg           |
     | Dödsbevis       |

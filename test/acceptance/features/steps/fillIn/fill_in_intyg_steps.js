@@ -46,6 +46,7 @@ const tsBasUtkastPage = wcTestTools.pages.intyg.ts.bas.utkast;
 const tsDiabetesUtkastPage = wcTestTools.pages.intyg.ts.diabetes.utkast;
 const dbUtkastPage = wcTestTools.pages.intyg.skv.db.utkast;
 const doiUtkastPage = wcTestTools.pages.intyg.soc.doi.utkast;
+const afUtkastPage = wcTestTools.pages.intyg.af.af00213.utkast;
 const moveAndSendKeys = helpers.moveAndSendKeys;
 
 const td = wcTestTools.testdata;
@@ -225,6 +226,17 @@ let changeActions = {
                 return moveAndSendKeys(tsDiabetesUtkastPage.specialist, helpers.randomTextString());
             });
         }
+    },
+    'AF00213': {
+        'funktionsnedsattning': function(intyg) {
+            return afUtkastPage.funktionsnedsattning.yes.click();
+        },
+        'utredningBehandling': function(intyg) {
+            return afUtkastPage.utredningBehandling.yes.click();
+        },
+        'arbetetsPaverkan': function(intyg) {
+            return afUtkastPage.arbetetsPaverkan.yes.click();
+        },
     }
 };
 

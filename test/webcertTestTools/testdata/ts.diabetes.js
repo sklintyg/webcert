@@ -62,7 +62,7 @@ module.exports = {
             "kommentar": "wrlTWNKA08ÖePpBB",
             "specialist": "4YråJOäqkö2YxRRd",
             "bedomning": {
-                "stallningstagande": "Någon av följande behörighet",
+                "stallningstagande": "Någon av följande behörighetstyper",
                 "lamplighet": "Nej",
                 "behorigheter": ["A1", "B", "D", "DE", "D1", "Taxi", "BE", "A2", "Traktor", "D1E", "C1", "A"]
             }

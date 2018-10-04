@@ -20,7 +20,8 @@
 /* globals logger, pages, browser, Promise */
 
 
-var af00213UtkastPage = pages.intyg.af['00213'].utkast;
+var af00213UtkastPage = pages.intyg.af.af00213.utkast;
+//var af00213UtkastPage = pages.intyg.af['00213'].utkast;
 module.exports = {
     fillIn: function(intyg) {
         'use strict';

@@ -182,7 +182,7 @@ var tsValues = {
         return foundHogreBehorigheter.length > 0;
     },
     getRandomBedomning: function(korkortstyper) {
-        var stalltagande = shuffle(['Någon av följande behörighet', 'Kan inte ta ställning'])[0];
+        var stalltagande = shuffle(['Någon av följande behörighetstyper', 'Kan inte ta ställning'])[0];
 
         // if (!this.hasHogreKorkortsbehorigheter(korkortstyper)) {
         //     lamplighet = null;
@@ -196,7 +196,7 @@ var tsValues = {
         };
 
 
-        if (stalltagande === 'Någon av följande behörighet') {
+        if (stalltagande === 'Någon av följande behörighetstyper') {
             bedomningsObj.behorigheter = korkortstyper;
         }
 

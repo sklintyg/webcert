@@ -38,13 +38,20 @@ const {
 
 
 var fkIntygPage = pages.intyg.fk['7263'].intyg;
+var afUtkastPage = pages.intyg.af.af00213.utkast;
 var helpers = require('./helpers');
 
 
 /*
- *	Test steg
+ *	Teststeg
  *
  */
+
+Then(/^har intyget skickats till Arbetsförmedlingen$/, function(mottagare) {
+    var utkastStatus = afUtkastPage.utkastStatus;
+    return expect(utkastStatus.getText()).to.eventually.contain('Intyget är skickat till Arbetsförmedlingen');
+});
+
 When(/^jag skickar intyget till (.*)$/, function(mottagare) {
     if (!this.intyg.id) {
         browser.getCurrentUrl().then(function(text) {
@@ -55,8 +62,6 @@ When(/^jag skickar intyget till (.*)$/, function(mottagare) {
     } else {
         logger.info('Följande intygs id skickas till ' + mottagare + ': ' + this.intyg.id);
     }
-
-
 
     return helpers.moveAndSendKeys(fkIntygPage.skicka.knapp, protractor.Key.SPACE).then(function() {
         return helpers.moveAndSendKeys(fkIntygPage.skicka.dialogKnapp, protractor.Key.SPACE);

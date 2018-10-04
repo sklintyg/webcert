@@ -90,15 +90,18 @@ var hogerfalt = WebcertBasePage._extend({
             },
             getMessageIdFrom: {
                 arendePanel: function(index) {
-                    return fragaSvar.container.all(by.css('.card')).then(function(elments) {
-                        return elments[index].getAttribute('id');
-                    }).then(function(domId) {
-                        var string = domId.split('-');
-                        var splitIndex = string[0].length + string[1].length + 2;
-                        var fragaId = domId.substr(splitIndex, domId.length);
+                    console.log('Index: ' + index);
+                    //Filtrerar ut arendeId genom att använda aktuell index
+                    let arendeId = element.all(by.className("arende-item"))
+                        .all(by.tagName("div"))
+                        .filter(e => e.getAttribute("id")
+                            .then(id => /(.{8}-.{4}-.{4}-.{4}-.{12})/g.test(id)))
+                        .map(e => e.getAttribute("id")
+                            .then(a => /(.{8}-.{4}-.{4}-.{4}-.{12})/g.exec(a)[1]))
+                        .then(e => e.filter((v, i, a) => a.indexOf(v) === i)[index]);
 
-                        return fragaId;
-                    });
+                    return arendeId;
+
                 }
             }
         };

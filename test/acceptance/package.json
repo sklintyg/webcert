@@ -4,6 +4,7 @@
     "description": "Acceptance-tests for Webcert",
     "scripts": {
         "install": "scripts/link_git_hooks.sh",
+		"webdriver-update": "webdriver-manager update",
         "postinstall": "node ./node_modules/grunt-protractor-runner/scripts/webdriver-manager-update",
         "result": "xdg-open './node_modules/common-testtools/cucumber-html-report/index.html'"
     },

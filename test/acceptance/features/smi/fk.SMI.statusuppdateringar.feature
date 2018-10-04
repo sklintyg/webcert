@@ -56,7 +56,7 @@ Scenario: Statusuppdateringar vid fråga från FK
     Och ska statusuppdateringen visa skickade frågor totalt 0,ej besvarade 0,besvarade 0, hanterade 0
 
 
-@FRÅGA-TILL-FK
+@FRÅGA-TILL-FK @WIP
 Scenario: Statusuppdateringar vid fråga från vården
     När jag fyller i alla nödvändiga fält för intyget
     Och jag signerar intyget

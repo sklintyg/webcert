@@ -151,8 +151,8 @@ Given(/^(?:att )vårdsystemet skapat ett intygsutkast( för samma patient)? för
 });
 
 //Vid givet samEllerPersonNummer så shufflas det mellan person med vanligt personnummer och person med samordningsnummer
-Given(/^(?:att )vårdsystemet skapat ett intygsutkast( för samma patient)? för slumpat (SMI\-)?(TS\-)?intyg( med samordningsnummer eller personnummer)?$/,
-    function(sammaPatient, smi, ts, samEllerPersonNummer) {
+Given(/^(?:att )vårdsystemet skapat ett intygsutkast( för samma patient)? för slumpat (SMI\-)?(TS\-)?(AF\-)?intyg( med samordningsnummer eller personnummer)?$/,
+    function(sammaPatient, smi, ts, af, samEllerPersonNummer) {
 
         if (!sammaPatient) {
             this.patient = testdataHelpers.shuffle(testvalues.patienter)[0];
@@ -162,10 +162,9 @@ Given(/^(?:att )vårdsystemet skapat ett intygsutkast( för samma patient)? för
             }
         }
 
-
-
         logger.debug('SMI: ' + (smi));
         logger.debug('TS: ' + (ts));
+        logger.debug('AF: ' + (af));
 
         var intygtyper = [];
 
@@ -178,6 +177,8 @@ Given(/^(?:att )vårdsystemet skapat ett intygsutkast( för samma patient)? för
         } else if (ts) {
             intygtyper.push('Transportstyrelsens läkarintyg högre körkortsbehörighet',
                 'Transportstyrelsens läkarintyg diabetes');
+        } else if (af) {
+            intygtyper.push('Arbetsförmedlingens medicinska utlåtande');
         } else {
             intygtyper.push(
                 'Läkarintyg för sjukpenning',

@@ -273,6 +273,24 @@ When(/^jag går in på att skapa ett slumpat TS\-intyg$/, function() {
     });
 });
 
+When(/^jag går in på att skapa ett AF\-intyg$/, function() {
+    let intyg = this.intyg;
+
+    intyg.typ = 'Arbetsförmedlingens medicinska utlåtande';
+
+    logger.silly('intyg.typ: ' + intyg.typ);
+    browser.ignoreSynchronization = true;
+    return sokSkrivIntygUtkastTypePage.createUtkast(helpers.getInternShortcode(intyg.typ)).then(function() {
+        return helpers.hugeDelay();
+    }).then(function() {
+        // Spara intygsid för kommande steg
+        return browser.getCurrentUrl().then(function(text) {
+            intyg.id = text.split('/').slice(-2)[0];
+            return logger.info('intyg.id: ' + intyg.id);
+        });
+    });
+});
+
 
 Given(/^sedan öppnar intyget i två webbläsarinstanser$/, function(callback) {
     // var isSMIIntyg = helpers.isSMIIntyg(intyg.typ);

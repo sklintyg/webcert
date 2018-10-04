@@ -75,6 +75,7 @@ function checkFMB(fmbDiagnos, intyg) {
         }
 
         logger.info('Kontrollerar FMB texter');
+        console.log("fmb-diagnos: " + promiseArray);
         return Promise.all(promiseArray);
     });
 }

@@ -15,7 +15,7 @@ Scenario: Undersökningsdatum kan inte vara efter säkert dödsdatum
     Och jag väljer alternativet "Nej, den avlidne undersökt kort före döden" i frågan "Har yttre undersökning av kroppen genomförts?"
     När jag fyller i "2018-04-19" i fältet "Undersökningsdatum"
     Och jag klickar på signera-knappen
-    Så ska "1" valideringsfel visas med texten "Datumet får inte vara senare än "Dödsdatum"."
+    Så ska "1" valideringsfel visas med texten "Ange ett datum, samma som eller tidigare än "Dödsdatum"."
 
 @F.VAL-039
 Scenario: Undersökningsdatum kan inte vara efter ej säkert dödsdatum

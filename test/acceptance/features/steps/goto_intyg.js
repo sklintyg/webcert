@@ -122,7 +122,8 @@ When(/^jag går in på ett slumpat intyg med status "([^"]*)"$/, {
         'Läkarutlåtande för aktivitetsersättning vid förlängd skolgång',
         //'Läkarintyg FK 7263', //Disabled i fristående läge och ersätts av Lisjp.
         'Transportstyrelsens läkarintyg högre körkortsbehörighet',
-        'Transportstyrelsens läkarintyg diabetes'
+        'Transportstyrelsens läkarintyg diabetes',
+        'Arbetsförmedlingens medicinska utlåtande'
     ])[0];
     logger.info('Intyg type: ' + randomIntyg);
     this.intyg.typ = randomIntyg;
@@ -135,6 +136,17 @@ When(/^jag går in på ett slumpat TS\-intyg med status "([^"]*)"$/, {
     var randomIntyg = shuffle([
         'Transportstyrelsens läkarintyg högre körkortsbehörighet',
         'Transportstyrelsens läkarintyg diabetes'
+    ])[0];
+    logger.info('Intyg type: ' + randomIntyg);
+    this.intyg.typ = randomIntyg;
+    getIER(this, status, callback);
+});
+
+When(/^jag går in på ett slumpat AF\-intyg med status "([^"]*)"$/, {
+    timeout: 700 * 1000
+}, function(status, callback) {
+    var randomIntyg = shuffle([
+        'Arbetsförmedlingens medicinska utlåtande'
     ])[0];
     logger.info('Intyg type: ' + randomIntyg);
     this.intyg.typ = randomIntyg;

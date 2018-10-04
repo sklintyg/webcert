@@ -66,19 +66,22 @@ function sendQuestionToFK(amne, intyg) {
     }).then(function() {
         return fragaSvar.administrativFraga.nyfraga.sendButton.typeKeys(protractor.Key.SPACE);
     }).then(function() {
-        //return lisjpUtkastPage.arendePanel.getAttribute('id');
-        return fragaSvar.getMessageIdFrom.arendePanel(1);
-    }).then(function(fragaId) {
-        /*var element = result.split('-');
-        var splitIndex = element[0].length + element[1].length + 2;
-        var fragaId = result.substr(splitIndex, result.length);
+        return fragaSvar.getMessageIdFrom.arendePanel(0);
 
-        logger.debug('Frågans ID: ' + fragaId);*/
+    }).then(function(fragaId) {
+        /*  var element = result.split('-');
+            var splitIndex = element[0].length + element[1].length + 2;
+            var fragaId = result.substr(splitIndex, result.length);
+		*/
+        logger.debug('Frågans ID: ' + fragaId);
 
         if (!intyg.messages) {
             intyg.messages = [];
         }
         messageID = fragaId;
+        console.log('fragaId/messageID: ' + messageID);
+        //console.log('getMessageId: ' + fragaId);
+
         intyg.messages.unshift({
             typ: 'Fråga',
             amne: helpers.subjectCodes[amne],
@@ -118,6 +121,7 @@ function hamtaAllaTraffar() {
 When(/^jag skickar en fråga med ämnet "([^"]*)" till Försäkringskassan$/, function(amne) {
     return sendQuestionToFK(amne, this.intyg);
 });
+
 When(/^jag väljer att svara med ett nytt intyg$/, function() {
     helpers.updateEnhetAdressForNewIntyg(this.user);
     const page = fkLusePage;

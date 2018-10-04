@@ -424,7 +424,8 @@ module.exports = {
         'TSTRK1007': ['funktionsnedsattning', 'hjartKarlsjukdom', 'utanKorrektion'],
         'TSTRK1031': ['hypoglykemier', 'diabetesBehandling', 'specialist'],
         'DB': ['dodsdatum', 'dodsplats', 'identitetstyrkt'],
-        'DOI': ['dodsdatum', 'dodsplats', 'identitetstyrkt']
+        'DOI': ['dodsdatum', 'dodsplats', 'identitetstyrkt'],
+        'AF00213': ['funktionsnedsattning', 'utredningBehandling', 'arbetetsPaverkan']
     },
     getUserObj: function(userKey) {
         return this.userObj[userKey];

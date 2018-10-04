@@ -36,7 +36,7 @@ const {
 } = require('cucumber');
 
 const baseIntyg = pages.intyg.base.intyg;
-const fkIntygPage = pages.intyg.fk['7263'].intyg;
+//const fkIntygPage = pages.intyg.fk['7263'].intyg;
 const lisjpIntygPage = pages.intyg.lisjp.intyg;
 const fkUtkastPage = pages.intyg.fk['7263'].utkast;
 const utkastPage = pages.intyg.base.utkast;
@@ -94,7 +94,7 @@ function makuleraIntyget(intyg) {
             intyg.id = intyg.id.split('?')[0];
         })
         .then(function() {
-            return moveAndSendKeys(fkIntygPage.makulera.btn, protractor.Key.SPACE);
+            return moveAndSendKeys(baseIntyg.makulera.btn, protractor.Key.SPACE);
         })
         .then(function() {
             return helpers.largeDelay(); // fix för animering
@@ -102,10 +102,13 @@ function makuleraIntyget(intyg) {
         .then(function() {
             if (helpers.isDBDOIIntyg(intyg.typ)) {
                 return moveAndSendKeys(pages.intyg.skv.db.utkast.makulera.bekrafta, protractor.Key.SPACE);
+            } else if (helpers.isSMIIntyg(intyg.typ)) {
+                return baseIntyg.pickMakuleraOrsak().then(function() {
+                    return moveAndSendKeys(baseIntyg.makulera.dialogMakulera, protractor.Key.SPACE);
+                });
+            } else {
+                return moveAndSendKeys(baseIntyg.makulera.dialogMakulera, protractor.Key.SPACE);
             }
-            return fkIntygPage.pickMakuleraOrsak().then(function() {
-                return moveAndSendKeys(fkIntygPage.makulera.dialogMakulera, protractor.Key.SPACE);
-            });
         }).then(function() {
             return helpers.largeDelay(); // Sleep p.g.a. page reload.
         });

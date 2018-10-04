@@ -42,6 +42,8 @@ const intygURL = helpers.intygURL;
 const baseIntygPage = wcTestTools.pages.intyg.base.intyg;
 const fragaSvar = wcTestTools.pages.intyg.hogerfaltet.fragaSvar;
 
+//var afUtkastPage = pages.intyg.af.af00213.utkast;
+
 /*
  *	Stödfunktioner
  *

@@ -99,7 +99,7 @@ module.exports = {
             }
         },
         af: {
-            '00213': {
+            af00213: {
                 utkast: require(intygPath + 'af/af00213/af00213.utkast.page.js'),
                 intyg: require(intygPath + 'af/af00213/af00213.intyg.page.js')
             }
@@ -129,7 +129,7 @@ module.exports = {
             case 'Dödsorsaksintyg':
                 return this.intyg.soc.doi.intyg;
             case 'Arbetsförmedlingens medicinska utlåtande':
-                return this.intyg.af['00213'].intyg;
+                return this.intyg.af.af00213.intyg;
             default:
                 console.trace(typ);
                 throw 'Intyg-typ ' + typ + 'hittades inte i pages i getIntygPageByType.';
@@ -156,7 +156,7 @@ module.exports = {
             case 'Dödsorsaksintyg':
                 return this.intyg.soc.doi.utkast;
             case 'Arbetsförmedlingens medicinska utlåtande':
-                return this.intyg.af['00213'].utkast;
+                return this.intyg.af.af00213.utkast;
             default:
                 console.trace(typ);
                 throw 'Intyg-typ ' + typ + 'hittades inte i pages i getUtkastPageByType.';
