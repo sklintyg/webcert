@@ -119,3 +119,15 @@ Man vill eventuellt lägga till en trigger. Det kan ske direkt i "Edit YAML"
               namespace: dintyg
           type: ImageChange
         - type: ConfigChange
+
+
+
+
+# Trigga pipeline med parametrar från CLI
+
+    oc start-build bc/webcert-test-pipeline \
+        --env=infraVersion=3.8.0.+ \
+        --env=commonVersion=3.8.0.+ \
+        --env=buildVersion=eriktest \
+        --env=gitUrl=https://github.com/sklintyg/webcert.git \
+        --env=gitRef=develop
