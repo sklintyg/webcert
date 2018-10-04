@@ -1,0 +1,81 @@
+/*
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
+ *
+ * This file is part of sklintyg (https://github.com/sklintyg).
+ *
+ * sklintyg is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * sklintyg is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+package se.inera.intyg.webcert.web.web.controller.api.dto;
+
+public class IcfDiagnoskodResponse {
+
+    private String icf10Kod;
+    private FunktionsNedsattningsKoder funktionsNedsattningsKoder;
+    private AktivitetsBegransningsKoder aktivitetsBegransningsKoder;
+
+    public IcfDiagnoskodResponse() {
+    }
+
+    private IcfDiagnoskodResponse(
+            final String icf10Kod,
+            final FunktionsNedsattningsKoder funktionsNedsattningsKoder,
+            final AktivitetsBegransningsKoder aktivitetsBegransningsKoder) {
+        this.icf10Kod = icf10Kod;
+        this.funktionsNedsattningsKoder = funktionsNedsattningsKoder;
+        this.aktivitetsBegransningsKoder = aktivitetsBegransningsKoder;
+    }
+
+    public String getIcf10Kod() {
+        return icf10Kod;
+    }
+
+    public void setIcf10Kod(final String icf10Kod) {
+        this.icf10Kod = icf10Kod;
+    }
+
+    public FunktionsNedsattningsKoder getFunktionsNedsattningsKoder() {
+        return funktionsNedsattningsKoder;
+    }
+
+    public void setFunktionsNedsattningsKoder(final FunktionsNedsattningsKoder funktionsNedsattningsKoder) {
+        this.funktionsNedsattningsKoder = funktionsNedsattningsKoder;
+    }
+
+    public AktivitetsBegransningsKoder getAktivitetsBegransningsKoder() {
+        return aktivitetsBegransningsKoder;
+    }
+
+    public void setAktivitetsBegransningsKoder(final AktivitetsBegransningsKoder aktivitetsBegransningsKoder) {
+        this.aktivitetsBegransningsKoder = aktivitetsBegransningsKoder;
+    }
+
+    public static IcfDiagnoskodResponse of(
+            final String icf10Kod,
+            final IcfKoder funktionsNedsattningsKoder,
+            final IcfKoder aktivitetsBegransningsKoder) {
+
+        if (!(funktionsNedsattningsKoder instanceof FunktionsNedsattningsKoder)) {
+            throw new IllegalArgumentException("funktionsNedsattningsKoder must be of type FunktionsNedsattningsKoder");
+        }
+
+        if (!(aktivitetsBegransningsKoder instanceof AktivitetsBegransningsKoder)) {
+            throw new IllegalArgumentException("aktivitetsBegransningsKoder must be of type AktivitetsBegransningsKoder");
+        }
+
+        return new IcfDiagnoskodResponse(
+                icf10Kod,
+                (FunktionsNedsattningsKoder) funktionsNedsattningsKoder,
+                (AktivitetsBegransningsKoder) aktivitetsBegransningsKoder);
+    }
+}

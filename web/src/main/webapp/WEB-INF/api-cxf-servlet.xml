@@ -50,6 +50,7 @@
         <bean class="se.inera.intyg.webcert.web.web.controller.api.ModuleApiController" />
         <bean class="se.inera.intyg.webcert.web.web.controller.api.UtkastApiController" />
         <bean class="se.inera.intyg.webcert.web.web.controller.api.FmbApiController" />
+        <bean class="se.inera.intyg.webcert.web.web.controller.api.IcfApiController" />
         <bean class="se.inera.intyg.webcert.web.web.controller.api.SrsApiController" />
         <bean class="se.inera.intyg.webcert.web.web.controller.api.ConfigApiController" />
         <bean class="se.inera.intyg.webcert.web.web.controller.api.ArendeDraftApiController" />

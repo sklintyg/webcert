@@ -16,16 +16,17 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.web.service.fmb;
+package se.inera.intyg.webcert.web.web.controller.api.dto;
 
-import java.util.Optional;
-import se.inera.intyg.webcert.web.web.controller.api.IcfRequest;
-import se.inera.intyg.webcert.web.web.controller.api.dto.FmbResponse;
-import se.inera.intyg.webcert.web.web.controller.api.dto.IcfResponse;
+import java.util.List;
 
-public interface FmbDiagnosInformationService {
+public final class FunktionsNedsattningsKoder extends IcfKoder {
 
-    Optional<FmbResponse> findFmbDiagnosInformationByIcd10Kod(String icd10Kod);
+    private FunktionsNedsattningsKoder(final List<String> centralaKoder, final List<String> kompletterandeKoder) {
+        super(centralaKoder, kompletterandeKoder);
+    }
 
-    Optional<IcfResponse> findIcfInformationByIcd10Koder(IcfRequest icfRequest);
+    public static FunktionsNedsattningsKoder of(final List<String> centralaKoder, final List<String> kompletterandeKoder) {
+        return new FunktionsNedsattningsKoder(centralaKoder, kompletterandeKoder);
+    }
 }

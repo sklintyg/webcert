@@ -26,12 +26,15 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
+import io.vavr.Tuple;
+import io.vavr.collection.List;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 import java.util.Comparator;
-import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import se.inera.intyg.common.support.common.enumerations.Diagnoskodverk;
 import se.inera.intyg.webcert.persistence.fmb.model.FmbType;
@@ -39,6 +42,8 @@ import se.inera.intyg.webcert.persistence.fmb.model.fmb.Beskrivning;
 import se.inera.intyg.webcert.persistence.fmb.model.fmb.BeskrivningTyp;
 import se.inera.intyg.webcert.persistence.fmb.model.fmb.DiagnosInformation;
 import se.inera.intyg.webcert.persistence.fmb.model.fmb.Icd10Kod;
+import se.inera.intyg.webcert.persistence.fmb.model.fmb.IcfKod;
+import se.inera.intyg.webcert.persistence.fmb.model.fmb.IcfKodTyp;
 import se.inera.intyg.webcert.persistence.fmb.model.fmb.Referens;
 import se.inera.intyg.webcert.persistence.fmb.model.fmb.TypFall;
 import se.inera.intyg.webcert.persistence.fmb.repository.DiagnosInformationRepository;
@@ -46,10 +51,16 @@ import se.inera.intyg.webcert.web.service.diagnos.DiagnosService;
 import se.inera.intyg.webcert.web.service.diagnos.dto.DiagnosResponse;
 import se.inera.intyg.webcert.web.service.diagnos.dto.DiagnosResponseType;
 import se.inera.intyg.webcert.web.service.diagnos.model.Diagnos;
+import se.inera.intyg.webcert.web.web.controller.api.IcfRequest;
+import se.inera.intyg.webcert.web.web.controller.api.dto.AktivitetsBegransningsKoder;
 import se.inera.intyg.webcert.web.web.controller.api.dto.FmbContent;
 import se.inera.intyg.webcert.web.web.controller.api.dto.FmbForm;
 import se.inera.intyg.webcert.web.web.controller.api.dto.FmbFormName;
 import se.inera.intyg.webcert.web.web.controller.api.dto.FmbResponse;
+import se.inera.intyg.webcert.web.web.controller.api.dto.FunktionsNedsattningsKoder;
+import se.inera.intyg.webcert.web.web.controller.api.dto.IcfDiagnoskodResponse;
+import se.inera.intyg.webcert.web.web.controller.api.dto.IcfKoder;
+import se.inera.intyg.webcert.web.web.controller.api.dto.IcfResponse;
 
 @Service
 public class FmbDiagnosInformationServiceImpl implements FmbDiagnosInformationService {
@@ -73,6 +84,68 @@ public class FmbDiagnosInformationServiceImpl implements FmbDiagnosInformationSe
                 .map(diagnosInformation -> convertToResponse(icd10Kod, icd10CodeDeskription, diagnosInformation));
     }
 
+    @Override
+    public Optional<IcfResponse> findIcfInformationByIcd10Koder(final IcfRequest icfRequest) {
+
+        Preconditions.checkArgument(Objects.nonNull(icfRequest));
+        Preconditions.checkArgument(Objects.nonNull(icfRequest.getIcd10Code1()));
+
+        final List<String> koder = List.of(icfRequest.getIcd10Code1(), icfRequest.getIcd10Code2(), icfRequest.getIcd10Code3())
+                .filter(Objects::nonNull);
+
+        final List<IcfDiagnoskodResponse> icfDiagnoskodResponseList = koder
+                .map(kod -> Tuple.of(kod, repository.findByIcd10KodList_kod(kod)))
+                .filter(tuple -> tuple._2.isPresent())
+                .map(pair -> IcfDiagnoskodResponse.of(
+                        pair._1,
+                        pair._2.map(getBeskrivning(BeskrivningTyp.FUNKTIONSNEDSATTNING)).orElse(null),
+                        pair._2.map(getBeskrivning(BeskrivningTyp.AKTIVITETSBEGRANSNING)).orElse(null)
+                ));
+
+        if (icfDiagnoskodResponseList.isEmpty()) {
+            return Optional.empty();
+        }
+
+        return Optional.of(IcfResponse.of(icfDiagnoskodResponseList.toJavaList()));
+    }
+
+    private Function<DiagnosInformation, IcfKoder> getBeskrivning(final BeskrivningTyp typ) {
+        return info -> info.getBeskrivningList().stream()
+                .filter(filterBeskrivning(typ))
+                .collect(toOptional())
+                .map(toIcfKoder())
+                .orElse(null);
+    }
+
+    private Predicate<Beskrivning> filterBeskrivning(final BeskrivningTyp beskrivningTyp) {
+        return beskrivning -> Objects.equals(beskrivning.getBeskrivningTyp(), beskrivningTyp);
+    }
+
+    private Function<Beskrivning, IcfKoder> toIcfKoder() {
+        return beskrivning -> {
+            final java.util.List<String> centralKoder = beskrivning.getIcfKodList().stream()
+                    .filter(kod -> kod.getIcfKodTyp() == IcfKodTyp.CENTRAL)
+                    .map(IcfKod::getKod)
+                    .collect(Collectors.toList());
+
+            final java.util.List<String> kompletterandeKoder = beskrivning.getIcfKodList().stream()
+                    .filter(kod -> kod.getIcfKodTyp() == IcfKodTyp.KOMPLETTERANDE)
+                    .map(IcfKod::getKod)
+                    .collect(Collectors.toList());
+
+            IcfKoder icfKoder = null;
+            switch (beskrivning.getBeskrivningTyp()) {
+                case FUNKTIONSNEDSATTNING:
+                    icfKoder = FunktionsNedsattningsKoder.of(centralKoder, kompletterandeKoder);
+                    break;
+                case AKTIVITETSBEGRANSNING:
+                    icfKoder = AktivitetsBegransningsKoder.of(centralKoder, kompletterandeKoder);
+                    break;
+            }
+            return icfKoder;
+        };
+    }
+
     private FmbResponse convertToResponse(
             final String icd10,
             final String icd10CodeDeskription,
@@ -92,7 +165,7 @@ public class FmbDiagnosInformationServiceImpl implements FmbDiagnosInformationSe
                 .filter(beskrivning -> Objects.equals(beskrivning.getBeskrivningTyp(), BeskrivningTyp.FUNKTIONSNEDSATTNING))
                 .collect(toOptional());
 
-        final List<String> typfallList = kod.getTypFallList().stream()
+        final java.util.List<String> typfallList = kod.getTypFallList().stream()
                 .sorted(Comparator.comparing(TypFall::getMaximalSjukrivningstid, Comparator.nullsLast(Comparator.naturalOrder())))
                 .map(TypFall::getTypfallsMening)
                 .distinct()
@@ -102,7 +175,7 @@ public class FmbDiagnosInformationServiceImpl implements FmbDiagnosInformationSe
 
         final String symptom = diagnosInformation.getSymptomPrognosBehandling();
 
-        final List<FmbForm> fmbFormList = Lists.newArrayList();
+        final java.util.List<FmbForm> fmbFormList = Lists.newArrayList();
 
         //mapping these codes for now to be backwards compatible with current apis
         fmbFormList.add(

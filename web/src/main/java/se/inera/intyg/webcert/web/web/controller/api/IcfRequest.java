@@ -16,16 +16,35 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.web.service.fmb;
+package se.inera.intyg.webcert.web.web.controller.api;
 
-import java.util.Optional;
-import se.inera.intyg.webcert.web.web.controller.api.IcfRequest;
-import se.inera.intyg.webcert.web.web.controller.api.dto.FmbResponse;
-import se.inera.intyg.webcert.web.web.controller.api.dto.IcfResponse;
+public class IcfRequest {
 
-public interface FmbDiagnosInformationService {
+    private String icd10Code1;
+    private String icd10Code2;
+    private String icd10Code3;
 
-    Optional<FmbResponse> findFmbDiagnosInformationByIcd10Kod(String icd10Kod);
+    public String getIcd10Code1() {
+        return icd10Code1;
+    }
 
-    Optional<IcfResponse> findIcfInformationByIcd10Koder(IcfRequest icfRequest);
+    public void setIcd10Code1(final String icd10Code1) {
+        this.icd10Code1 = icd10Code1;
+    }
+
+    public String getIcd10Code2() {
+        return icd10Code2;
+    }
+
+    public void setIcd10Code2(final String icd10Code2) {
+        this.icd10Code2 = icd10Code2;
+    }
+
+    public String getIcd10Code3() {
+        return icd10Code3;
+    }
+
+    public void setIcd10Code3(final String icd10Code3) {
+        this.icd10Code3 = icd10Code3;
+    }
 }
