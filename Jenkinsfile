@@ -1,9 +1,9 @@
 #!groovy
 
-def buildVersion = "6.1.0.${BUILD_NUMBER}"
-def commonVersion = "3.7.0.+"
-def infraVersion = "3.7.0.+"
-def logsenderBaseVersion = "6.1.0.*" // Star is needed as this is a regexp
+def buildVersion = "6.2.0.${BUILD_NUMBER}"
+def commonVersion = "3.8.0.+"
+def infraVersion = "3.8.0.+"
+def logsenderBaseVersion = "6.2.0.*" // Star is needed as this is a regexp
 
 stage('checkout') {
     node {
