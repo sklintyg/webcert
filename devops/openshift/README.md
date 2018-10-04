@@ -76,3 +76,46 @@ Note that the deploytemplate may be pre-installed in the OCP cluster.
     -p STAGE=devtest -p DATABASE_NAME=webcertdevtest \
     -p HEALTH_URI=/inera-certificate/services \
     -o yaml | oc apply -f -
+
+
+
+
+
+# DEMO setup
+Nedanstående kräver att mysql, activemq och redis finns uppsatt i demointyg, samt att man är inloggad och har oc redo.
+
+### 1. Config och Secrets
+Gå till /devops/openshift i filsystemet.
+       
+##### 1.1 Create secrets and config maps
+Hemliga resurser (keystores, lösenord till keystores etc.) kan behöva kopieras in för hand i respektive mapp och sedan plockas bort.
+
+    oc create -f demo/configmap-vars.yaml
+    oc create -f demo/secret-vars.yaml
+    oc create configmap "webcert-demo-config" --from-file=demo/config/
+    oc create secret generic "webcert-demo-env" --from-file=demo/env/ --type=Opaque
+    oc create secret generic "webcert-demo-certifikat" --from-file=demo/certifikat/ --type=Opaque
+
+### 2. Sätt upp deployment
+Deployment skall triggas på varje dintyg.webcert-test-verified.
+    
+    oc process deploytemplate-webapp \
+        -p APP_NAME=webcert-demo \
+        -p IMAGE=docker-registry.default.svc:5000/dintyg/webcert-test-verified:latest \
+        -p STAGE=demo -p DATABASE_NAME=webcert \
+        -p HEALTH_URI=/ \
+        -o yaml | oc apply -f -
+
+Man vill eventuellt lägga till en trigger. Det kan ske direkt i "Edit YAML"
+
+     triggers:
+        - imageChangeParams:
+            automatic: true
+            containerNames:
+              - webcert-demo
+            from:
+              kind: ImageStreamTag
+              name: 'webcert-test-verified:latest'
+              namespace: dintyg
+          type: ImageChange
+        - type: ConfigChange

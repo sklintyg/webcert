@@ -1,0 +1,10 @@
+apiVersion: v1
+data:
+  NTJP_WS_CERTIFICATE_TYPE: PKCS12
+  NTJP_WS_TRUSTSTORE_TYPE: JKS
+  NETID_ACCESS_SERVER_URL: https://showroom.lab.secmaker.com/nias/ServiceServer.asmx?WSDL
+  ACTIVEMQ_BROKER_URL: tcp://activemq-amq-tcp:61616
+kind: ConfigMap
+metadata:
+  name: webcert-demo-configmap-envvar
+type: Opaque
