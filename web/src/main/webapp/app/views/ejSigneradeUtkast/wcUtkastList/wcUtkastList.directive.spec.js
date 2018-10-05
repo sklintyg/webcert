@@ -24,6 +24,7 @@ describe('wcUtkastListSpec', function() {
     var $state;
     var mockResponse;
     var utkastNotifyService;
+    var intygListService;
     var element;
 
     beforeEach(angular.mock.module('htmlTemplates'));
@@ -43,6 +44,10 @@ describe('wcUtkastListSpec', function() {
             utkastNotifyService =
                 jasmine.createSpyObj('common.UtkastNotifyService', ['onNotifyChange', 'notifyUtkast']);
             $provide.value('common.UtkastNotifyService', utkastNotifyService);
+
+            intygListService =
+                jasmine.createSpyObj('webcert.intygListService', ['checkVidareBefordraAuth']);
+            $provide.value('webcert.intygListService', intygListService);
 
             _$stateProvider_.state('fk7263-edit', {
                 url: '/fk7263/edit/:certificateId'
