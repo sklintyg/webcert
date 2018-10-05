@@ -42,14 +42,33 @@ import org.springframework.session.web.http.CookieHttpSessionStrategy;
 import org.springframework.session.web.http.MultiHttpSessionStrategy;
 import org.springframework.stereotype.Component;
 
+/**
+ * Intyg custom RequestCache for storing and retrieving saved requests from Redis, used for redirects
+ * and {@link se.inera.intyg.webcert.web.security.WebCertUserOrigin} resolution.
+ *
+ * This class is necessary when running Spring Session @ Redis,
+ * the {@link org.springframework.security.web.savedrequest.HttpSessionRequestCache} does not work nicely with
+ * {@link org.springframework.session.data.redis.RedisOperationsSessionRepository}.
+ *
+ * @author eriklupander
+ */
 @Component
 public class RedisSavedRequestCache implements RequestCache {
 
+    private final Log logger = LogFactory.getLog(this.getClass());
+
+    // Prefix all keys in redis with this.
     private static final String SAVED_REQ_REDIS_PREFIX = "webcert:savedrequests:";
 
+    // Expire unused saved requests after 15 minutes.
     private static final long TIMEOUT = 15L;
 
-    private final Log logger = LogFactory.getLog(this.getClass());
+    private PortResolver portResolver = new PortResolverImpl();
+    private RequestMatcher requestMatcher = AnyRequestMatcher.INSTANCE;
+
+    // Used to extract the sessionId from the SESSION cookie.
+    private MultiHttpSessionStrategy httpSessionStrategy = new CookieHttpSessionStrategy();
+
 
     @Autowired
     @Qualifier("rediscache")
@@ -59,14 +78,14 @@ public class RedisSavedRequestCache implements RequestCache {
     @Resource(name = "rediscache")
     private ValueOperations<String, DefaultSavedRequest> valueOps;
 
-    private PortResolver portResolver = new PortResolverImpl();
-    private RequestMatcher requestMatcher = AnyRequestMatcher.INSTANCE;
-
-    // Used to extract the sessionId from the SESSION cookie.
-    private MultiHttpSessionStrategy httpSessionStrategy = new CookieHttpSessionStrategy();
 
     /**
      * Stores the current request, provided the configuration properties allow it.
+     *
+     * Tries to use the session-id from Cookie: Session=session-id if possible. If thie is the very first request being
+     * served, then the browser won't have the Cookie yet and in that case we use the ID from the HttpSession instead.
+     * This works since {@link org.springframework.session.data.redis.RedisOperationsSessionRepository} uses the very same
+     * id when creating the SESSION and responding with the Set-Cookie.
      */
     @Override
     public void saveRequest(HttpServletRequest request, HttpServletResponse response) {
@@ -88,21 +107,20 @@ public class RedisSavedRequestCache implements RequestCache {
                 // for redirection after successful authentication (SEC-29)
                 valueOps.set(buildKey(requestedSessionId), savedRequest, TIMEOUT,
                         TimeUnit.MINUTES);
-                logger.info("DefaultSavedRequest added to Redis: " + savedRequest);
+                logger.debug("DefaultSavedRequest added to Redis: " + savedRequest);
             }
         } else {
-            logger.info("Request not saved as configured RequestMatcher did not match");
+            logger.debug("Request not saved as configured RequestMatcher did not match");
         }
     }
 
+    /**
+     * Retrieves any saved request from Redis for the current session.
+     */
     @Override
     public SavedRequest getRequest(HttpServletRequest currentRequest,
             HttpServletResponse response) {
 
-        // Ignore requests if they don't match what our requestMatcher has configured.
-        if (!requestMatcher.matches(currentRequest)) {
-            return null;
-        }
         String requestedSessionId = httpSessionStrategy.getRequestedSessionId(currentRequest);
 
         if (requestedSessionId != null) {
@@ -111,13 +129,18 @@ public class RedisSavedRequestCache implements RequestCache {
         return null;
     }
 
+    /**
+     * Removes any saved request from Redis for the current session. Typically invoked
+     * by {@link org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler} or
+     * similar after "consuming" the SavedRequest when redirecting.
+     */
     @Override
     public void removeRequest(HttpServletRequest currentRequest,
             HttpServletResponse response) {
         String requestedSessionId = httpSessionStrategy.getRequestedSessionId(currentRequest);
 
         if (requestedSessionId != null) {
-            logger.info("Removing DefaultSavedRequest from session if present");
+            logger.debug("Removing DefaultSavedRequest from session if present");
             redisTemplate.delete(buildKey(requestedSessionId));
         }
     }
@@ -158,5 +181,4 @@ public class RedisSavedRequestCache implements RequestCache {
     private String buildKey(String requestedSessionId) {
         return SAVED_REQ_REDIS_PREFIX + requestedSessionId;
     }
-
 }
