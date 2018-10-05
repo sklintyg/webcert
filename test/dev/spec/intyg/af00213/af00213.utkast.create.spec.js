@@ -22,8 +22,8 @@
 var wcTestTools = require('webcert-testtools');
 var specHelper = wcTestTools.helpers.spec;
 var testdataHelper = wcTestTools.helpers.restTestdata;
-var UtkastPage = wcTestTools.pages.intyg.af['00213'].utkast;
-var IntygPage = wcTestTools.pages.intyg.af['00213'].intyg;
+var UtkastPage = wcTestTools.pages.intyg.af['af00213'].utkast;
+var IntygPage = wcTestTools.pages.intyg.af['af00213'].intyg;
 
 describe('Create and Sign af00213 utkast', function() {
 
