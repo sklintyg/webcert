@@ -15,135 +15,129 @@
             <i class="icon-wc-ikon-24 gutter-icon icon-wc-32"></i>
             <h2 class="patient-intyg-heading">Tidigare intyg</h2>
 
-            <div class="inline-block">
-                <div class="form-group">
-                    <wc-radio-wrapper>
-                        <input id="intygFilterAktuella" name="intygFilter" type="radio" value="current"
-                               ng-model="viewState.intygFilter" checked="checked">
-                        <label for="intygFilterAktuella">Aktuella intyg</label>
-                    </wc-radio-wrapper>
-                    <wc-radio-wrapper>
-                        <input id="intygFilterRattade" name="intygFilter" type="radio" value="revoked"
-                               ng-model="viewState.intygFilter" checked="checked">
-                        <label for="intygFilterRattade">Ersatta, makulerade, låsta och kompletterade intyg
-                        </label>
-                    </wc-radio-wrapper>
-                    <wc-radio-wrapper>
-                        <input id="intygFilterSamtliga" name="intygFilter" type="radio" value="all"
-                               ng-model="viewState.intygFilter"
-                               checked="checked">
-                        <label for="intygFilterSamtliga">Alla intyg
-                        </label>
-                    </wc-radio-wrapper>
-                </div>
+            <div class="form-group">
+                <wc-radio-wrapper>
+                    <input id="intygFilterAktuella" name="intygFilter" type="radio" value="current"
+                           ng-model="viewState.intygFilter" checked="checked">
+                    <label for="intygFilterAktuella">Aktuella intyg</label>
+                </wc-radio-wrapper>
+                <wc-radio-wrapper>
+                    <input id="intygFilterRattade" name="intygFilter" type="radio" value="revoked"
+                           ng-model="viewState.intygFilter" checked="checked">
+                    <label for="intygFilterRattade">Ersatta, makulerade, låsta och kompletterade intyg
+                    </label>
+                </wc-radio-wrapper>
+                <wc-radio-wrapper>
+                    <input id="intygFilterSamtliga" name="intygFilter" type="radio" value="all"
+                           ng-model="viewState.intygFilter"
+                           checked="checked">
+                    <label for="intygFilterSamtliga">Alla intyg
+                    </label>
+                </wc-radio-wrapper>
+            </div>
 
 
-                <!-- Previous intyg table -->
-                <div id="intygLista">
-                    <div class="row" id="prevIntygTable">
-                        <div class="col-md-12">
-                            <div class="rounded-table-wrapper">
-
-                                <!-- error message -->
-                                <wc-alert-message ng-show="viewState.intygListErrorMessageKey"
-                                                  alert-message-id="{{viewState.intygListErrorMessageKey}}"
-                                                  alert-severity="danger"
-                                                  id="current-list-noResults-error"></wc-alert-message>
-                                <wc-alert-message ng-show="viewState.inlineErrorMessageKey"
-                                                  alert-message-id="{{viewState.inlineErrorMessageKey}}"
-                                                  alert-severity="danger"></wc-alert-message>
-
-
-                                <table class="table table-striped wc-table-striped"
-                                       ng-class="{'filter-no-result' : viewState.currentList.length===0}">
-                                    <thead>
-                                    <tr>
-                                        <th wc-table-head label-key="th.label.intyg-type" help-key="th.help.intyg-type"
-                                            ng-click="orderByProperty('intygTypeName')"
-                                            data-sorting="true" data-sorting-current="orderProperty == 'intygTypeName'"
-                                            data-sorting-ascending="orderAscending"></th>
-                                        <th wc-table-head label-key="th.label.status" help-key="th.help.status"
-                                            ng-click="orderByProperty('status')"
-                                            data-sorting="true" data-sorting-current="orderProperty == 'status'"
-                                            data-sorting-ascending="orderAscending"></th>
-                                        <th wc-table-head label-key="th.label.saved-date" help-key="th.help.saved-date"
-                                            ng-click="orderByProperty('lastUpdatedSigned')"
-                                            data-sorting="true"
-                                            data-sorting-current="orderProperty == 'lastUpdatedSigned'"
-                                            data-sorting-ascending="orderAscending"></th>
-                                        <th wc-table-head label-key="th.label.saved-signed-by"
-                                            help-key="th.help.saved-signed-by"
-                                            ng-click="orderByProperty('updatedSignedBy')"
-                                            data-sorting="true"
-                                            data-sorting-current="orderProperty == 'updatedSignedBy'"
-                                            data-sorting-ascending="orderAscending"></th>
-                                        <th ng-if="!patientModel.avliden"></th>
-                                        <th></th>
-                                    </tr>
-                                    </thead>
-
-                                    <!-- If filtering gives no results -->
-                                    <tbody ng-if="viewState.currentList.length===0">
-                                    <tr>
-                                        <td class="td-padding" dynamic-label key="th.no-result"></td>
-                                        <td class="td-padding"></td>
-                                        <td class="td-padding"></td>
-                                        <td class="td-padding"></td>
-                                        <td class="td-padding"></td>
-                                        <td class="td-padding"></td>
-                                    </tr>
-                                    </tbody>
-
-                                    <tbody>
-                                    <tr ng-repeat="intyg in viewState.currentList | orderBy: (orderProperty === 'lastUpdatedSigned' ? orderProperty : [orderProperty, '-lastUpdatedSigned']): !orderAscending"
-                                        class="intygList">
-                                        <td>{{intyg.intygTypeName}}</td>
-                                        <td class="unbreakable"><span dynamic-label
-                                                                      key="intyg.status.{{intyg.status}}"></span></td>
-                                        <td class="unbreakable">{{intyg.lastUpdatedSigned | date:'short'}}</td>
-                                        <td class="unbreakable">{{intyg.updatedSignedBy}}</td>
-                                        <td ng-if="!patientModel.avliden">
-                                            <button type="button"
-                                                    wc-authority="FORNYA_INTYG"
-                                                    feature="FORNYA_INTYG"
-                                                    intygstyp="{{intyg.intygType}}"
-                                                    id="fornyaBtn-{{intyg.intygId}}"
-                                                    class="btn btn-primary"
-                                                    ng-if="isRenewalAllowed(intyg)"
-                                                    ng-click="fornyaIntygBtnPopOver=false;fornyaIntyg(intyg)"
-                                                    uib-popover="{{ resolveTooltipText(intyg) }}"
-                                                    popover-trigger="mouseenter"
-                                                    popover-popup-delay="300"
-                                                    popover-append-to-body="true"
-                                                    popover-placement="auto top"
-                                                    popover-is-open="fornyaIntygBtnPopOver">
-                                                <i class="material-icons md-18">autorenew</i>
-                                                {{messageService.getProperty('common.fornya')}}
-                                            </button>
-                                        </td>
-                                        <td>
-                                            <button type="button"
-                                                    id="showBtn-{{intyg.intygId}}"
-                                                    class="btn btn-primary"
-                                                    ng-click="openIntyg(intyg)"
-                                                    uib-popover="{{messageService.getProperty('common.show.tooltip')}}"
-                                                    popover-trigger="mouseenter"
-                                                    popover-popup-delay="300"
-                                                    popover-append-to-body="true"
-                                                    popover-placement="auto top">
-                                                <i class="icon-wc-ikon-19"></i>
-                                                {{messageService.getProperty('common.open')}}
-                                            </button>
-                                        </td>
-                                    </tr>
-                                    </tbody>
-                                </table>
-                            </div>
+            <!-- Previous intyg table -->
+            <div id="intygLista">
+                <div class="row" id="prevIntygTable">
+                    <div class="col-md-12">
+                        <!-- error message -->
+                        <wc-alert-message ng-show="viewState.intygListErrorMessageKey"
+                                          alert-message-id="{{viewState.intygListErrorMessageKey}}"
+                                          alert-severity="danger"
+                                          id="current-list-noResults-error"></wc-alert-message>
+                        <wc-alert-message ng-show="viewState.inlineErrorMessageKey"
+                                          alert-message-id="{{viewState.inlineErrorMessageKey}}"
+                                          alert-severity="danger"></wc-alert-message>
+                        <div class="rounded-table-wrapper full-width">
+                            <table class="table table-striped wc-table-striped"
+                                   ng-class="{'filter-no-result' : viewState.currentList.length===0}">
+                                <thead>
+                                <tr>
+                                    <th wc-table-head label-key="th.label.intyg-type" help-key="th.help.intyg-type"
+                                        ng-click="orderByProperty('intygTypeName')"
+                                        data-sorting="true" data-sorting-current="orderProperty == 'intygTypeName'"
+                                        data-sorting-ascending="orderAscending"></th>
+                                    <th wc-table-head label-key="th.label.status" help-key="th.help.status"
+                                        ng-click="orderByProperty('status')"
+                                        data-sorting="true" data-sorting-current="orderProperty == 'status'"
+                                        data-sorting-ascending="orderAscending"></th>
+                                    <th wc-table-head label-key="th.label.saved-date" help-key="th.help.saved-date"
+                                        ng-click="orderByProperty('lastUpdatedSigned')"
+                                        data-sorting="true"
+                                        data-sorting-current="orderProperty == 'lastUpdatedSigned'"
+                                        data-sorting-ascending="orderAscending"></th>
+                                    <th wc-table-head label-key="th.label.saved-signed-by"
+                                        help-key="th.help.saved-signed-by"
+                                        ng-click="orderByProperty('updatedSignedBy')"
+                                        data-sorting="true"
+                                        data-sorting-current="orderProperty == 'updatedSignedBy'"
+                                        data-sorting-ascending="orderAscending"></th>
+                                    <th ng-if="!patientModel.avliden"></th>
+                                    <th></th>
+                                </tr>
+                                </thead>
+                                <!-- If filtering gives no results -->
+                                <tbody ng-if="viewState.currentList.length===0">
+                                <tr>
+                                    <td class="td-padding" dynamic-label key="th.no-result"></td>
+                                    <td class="td-padding"></td>
+                                    <td class="td-padding"></td>
+                                    <td class="td-padding"></td>
+                                    <td class="td-padding"></td>
+                                    <td class="td-padding"></td>
+                                </tr>
+                                </tbody>
+                                <tbody>
+                                <tr ng-repeat="intyg in viewState.currentList | orderBy: (orderProperty === 'lastUpdatedSigned' ? orderProperty : [orderProperty, '-lastUpdatedSigned']): !orderAscending"
+                                    class="intygList">
+                                    <td>{{intyg.intygTypeName}}</td>
+                                    <td class="unbreakable"><span dynamic-label
+                                                                  key="intyg.status.{{intyg.status}}"></span></td>
+                                    <td class="unbreakable">{{intyg.lastUpdatedSigned | date:'short'}}</td>
+                                    <td class="unbreakable">{{intyg.updatedSignedBy}}</td>
+                                    <td ng-if="!patientModel.avliden">
+                                        <button type="button"
+                                                wc-authority="FORNYA_INTYG"
+                                                feature="FORNYA_INTYG"
+                                                intygstyp="{{intyg.intygType}}"
+                                                id="fornyaBtn-{{intyg.intygId}}"
+                                                class="btn btn-primary"
+                                                ng-if="isRenewalAllowed(intyg)"
+                                                ng-click="fornyaIntygBtnPopOver=false;fornyaIntyg(intyg)"
+                                                uib-popover="{{ resolveTooltipText(intyg) }}"
+                                                popover-trigger="mouseenter"
+                                                popover-popup-delay="300"
+                                                popover-append-to-body="true"
+                                                popover-placement="auto top"
+                                                popover-is-open="fornyaIntygBtnPopOver">
+                                            <i class="material-icons md-18">autorenew</i>
+                                            {{messageService.getProperty('common.fornya')}}
+                                        </button>
+                                    </td>
+                                    <td>
+                                        <button type="button"
+                                                id="showBtn-{{intyg.intygId}}"
+                                                class="btn btn-primary"
+                                                ng-click="openIntyg(intyg)"
+                                                uib-popover="{{messageService.getProperty('common.show.tooltip')}}"
+                                                popover-trigger="mouseenter"
+                                                popover-popup-delay="300"
+                                                popover-append-to-body="true"
+                                                popover-placement="auto top">
+                                            <i class="icon-wc-ikon-19"></i>
+                                            {{messageService.getProperty('common.open')}}
+                                        </button>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
                         </div>
-                        <span class="{{viewState.unsigned}}"></span>
                     </div>
+                    <span class="{{viewState.unsigned}}"></span>
                 </div>
             </div>
         </div>
+    </div>
 </wc-spinner>
 <!-- spinner tidigare intyg end -->
