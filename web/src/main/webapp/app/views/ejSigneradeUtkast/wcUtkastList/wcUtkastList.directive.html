@@ -1,4 +1,4 @@
-<div class="rounded-table-wrapper">
+<div class="rounded-table-wrapper full-width">
 <table class="table table-striped wc-table-striped hidden-xs hidden-sm">
   <thead>
     <tr>
@@ -14,7 +14,7 @@
           sorting="true" sorting-current="sortingProperty == 'senastSparadAv'" sorting-ascending="sortingAscending" ng-click="orderByProperty('senastSparadAv')"></th>
       <th wc-table-head label-key="th.label.draft-forwarded" help-key="th.help.draft-forwarded" class="center"
           sorting="true" sorting-current="sortingProperty == 'vidarebefordrad'" sorting-ascending="sortingAscending"
-          wc-authority="VIDAREBEFORDRA_UTKAST" intygstyp="" ng-click="orderByProperty('vidarebefordrad')"></th>
+          ng-show="displayVidarebefordra" ng-click="orderByProperty('vidarebefordrad')"></th>
       <th></th>
       <th></th>
     </tr>
@@ -30,10 +30,11 @@
                                    avliden="intyg.avliden"></wc-sekretess-avliden-ikon>
       </td>
       <td>{{::intyg.updatedSignedBy}}</td>
-      <td class="center" wc-authority="VIDAREBEFORDRA_UTKAST" intygstyp="{{::intyg.intygType}}">
-        <i ng-attr-id="vidarebefordrad_{{intyg.intygId}}" ng-if="intyg.vidarebefordrad" class="material-icons checkmark">check</i>
+      <td ng-show="displayVidarebefordra" class="center">
+        <div wc-authority="VIDAREBEFORDRA_UTKAST" intygstyp="{{::intyg.intygType}}">
+          <i ng-attr-id="vidarebefordrad_{{intyg.intygId}}" ng-if="intyg.vidarebefordrad" class="material-icons checkmark">check</i>
+        </div>
       </td>
-
 
       <td class="unbreakable">
         <button ng-attr-id="vidarebefordraBtn-{{intyg.intygId}}" type="button" class="btn btn-primary"

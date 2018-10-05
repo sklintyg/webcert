@@ -52,13 +52,16 @@ h2 {
   overflow: hidden;
   display: inline-block;
   margin-bottom: 15px;
+
+  &.full-width {
+    display: block;
+  }
 }
 
 /* table striped style for all webcert */
 .wc-table-striped {
   border-collapse: separate;
   border-spacing: 0 0;
-  display: block;
   margin-bottom: 0;
 
   .btn-primary {

@@ -28,7 +28,7 @@
       <!-- arende table - Frågor och svar-tabell -->
       <div class="row" id="arendeTable" ng-show="totalCount > 0">
         <div class="col-md-12">
-          <div class="rounded-table-wrapper">
+          <div class="rounded-table-wrapper full-width">
           <table class="table table-striped wc-table-striped">
             <thead>
             <tr>
@@ -43,9 +43,9 @@
               <th wc-table-head label-key="th.label.arende-sent-recv-date" help-key="th.help.arende-sent-recv-date"
                   sorting="true" sorting-current="orderBy == 'receivedDate'" sorting-ascending="orderAscending" ng-click="orderByProperty('receivedDate')"></th>
               <th wc-table-head label-key="th.label.arende-forwarded" help-key="th.help.arende-forwarded"
-                  sorting="true" sorting-current="orderBy == 'vidarebefodrad'" sorting-ascending="orderAscending" wc-authority="VIDAREBEFORDRA_FRAGASVAR" intygstyp="" class="center"
+                  sorting="true" sorting-current="orderBy == 'vidarebefodrad'" sorting-ascending="orderAscending" ng-show="displayVidarebefordra" class="center"
                   ng-click="orderByProperty('vidarebefodrad')"></th>
-              <th wc-authority="VIDAREBEFORDRA_FRAGASVAR" intygstyp=""></th>
+              <th ng-show="displayVidarebefordra"></th>
               <th></th>
             </tr>
             </thead>
@@ -58,12 +58,12 @@
                 popover-placement="auto top" ng-if="arende.sekretessmarkering">security</i></td>
               <td>{{arende.signeratAvNamn}}</td>
               <td class="unbreakable">{{arende.receivedDate | date:'short'}}</td>
-              <td wc-authority="VIDAREBEFORDRA_FRAGASVAR" intygstyp="{{::arende.intygTyp}}" class="center">
-                <div>
+              <td ng-show="displayVidarebefordra" class="center">
+                <div wc-authority="VIDAREBEFORDRA_FRAGASVAR" intygstyp="{{::arende.intygTyp}}" class="center">
                   <div ng-if="arende.vidarebefordrad"><i class="material-icons">check</i></div>
                 </div>
               </td>
-              <td wc-authority="VIDAREBEFORDRA_FRAGASVAR" intygstyp="{{::arende.intygTyp}}">
+              <td ng-show="displayVidarebefordra">
                 <button type="button"
                         class="btn btn-primary"
                         uib-popover-html="forwardTooltip" popover-trigger="mouseenter" popover-placement="top" popover-popup-delay="300" popover-append-to-body="true"

@@ -18,8 +18,8 @@
  */
 
 angular.module('webcert').directive('wcUtkastList',
-    [ '$state', 'common.UtkastNotifyService', 'common.moduleService',
-        function($state, utkastNotifyService, moduleService) {
+    [ '$state', 'common.UtkastNotifyService', 'common.moduleService', 'webcert.intygListService',
+        function($state, utkastNotifyService, moduleService, intygListService) {
             'use strict';
 
             return {
@@ -35,6 +35,7 @@ angular.module('webcert').directive('wcUtkastList',
 
                     $scope.sortingProperty = $scope.filter.selection.orderBy;
                     $scope.sortingAscending = $scope.filter.selection.orderAscending;
+                    $scope.displayVidarebefordra = intygListService.checkVidareBefordraAuth($scope.utkastList);
 
                     $scope.getTypeName = function(intygsType) {
                         return moduleService.getModuleName(intygsType);
