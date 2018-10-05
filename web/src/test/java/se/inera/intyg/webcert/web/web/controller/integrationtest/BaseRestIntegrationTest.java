@@ -81,9 +81,7 @@ public abstract class BaseRestIntegrationTest {
 
     protected static final String FK7263_BASE_INTYG_TYPE_VERSION = "1.0";
     protected static final String TS_BAS_BASE_INTYG_TYPE_VERSION = "6.8";
-    protected static final String LUSE_BASE_INTYG_TYPE_VERSION = "1.0";
-
-
+    protected static final String LUSE_BASE_INTYG_TYPE_VERSION = "1.1";
 
     private static final String USER_JSON_FORM_PARAMETER = "userJsonDisplay";
     private static final String FAKE_LOGIN_URI = "/fake";

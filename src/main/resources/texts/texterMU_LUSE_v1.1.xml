@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<texter xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" giltigFrom="2016-12-19" typ="LUSE" version="1.1" xsi:schemaLocation="http://schema.forsakringskassan.se/vardgivare_sjukvard/texterMU_v1.0.xsd" xmlns="http://schema.forsakringskassan.se/vardgivare_sjukvard">
+<text id="DFR_1.3.RBK">Ange vad annat är:</text>
+<text id="DFR_10.1.RBK">Beskriv eventuella undersökningsfynd och grad av funktionsnedsättning (lätt, måttlig, stor, total)</text>
+<text id="DFR_11.1.RBK">Beskriv eventuella undersökningsfynd och grad av funktionsnedsättning (lätt, måttlig, stor, total)</text>
+<text id="DFR_12.1.RBK">Beskriv eventuella undersökningsfynd och grad av funktionsnedsättning (lätt, måttlig, stor, total)</text>
+<text id="DFR_13.1.RBK">Beskriv eventuella undersökningsfynd och grad av funktionsnedsättning (lätt, måttlig, stor, total)</text>
+<text id="DFR_14.1.RBK">Beskriv eventuella undersökningsfynd och grad av funktionsnedsättning (lätt, måttlig, stor, total)</text>
+<text id="DFR_17.1.RBK">Ge konkreta exempel</text>
+<text id="DFR_18.1.RBK">Ange under vilka perioder de pågick och vilka resultat de gav. Ange även erbjudna men inte genomförda/avböjda behandlingar/åtgärder.</text>
+<text id="DFR_19.1.RBK">Ange vad syftet är och om möjligt tidplan samt ansvarig vårdenhet</text>
+<text id="DFR_20.1.RBK">Ange vad syftet är och om möjligt tidplan samt ansvarig vårdenhet</text>
+<text id="DFR_21.1.RBK">Ordinerade läkemedel, alkohol, tobak och övriga substansintag</text>
+<text id="DFR_26.1.RBK">Jag önskar att Försäkringskassan kontaktar mig</text>
+<text id="DFR_26.2.RBK">Ange gärna varför du vill ha kontakt</text>
+<text id="DFR_4.3.HLP">Skriv exempelvis Neuropsykiatriska kliniken på X-stads sjukhus eller om patienten själv kommer att bifoga utredningen till sin ansökan.</text>
+<text id="DFR_4.3.RBK">Från vilken vårdgivare kan Försäkringskassan hämta information om utredningen/underlaget?</text>
+<text id="DFR_45.2.RBK">Beskriv vilken eller vilka diagnoser som avses</text>
+<text id="DFR_6.2.RBK">Diagnoskod enligt ICD-10 SE</text>
+<text id="DFR_8.1.RBK">Beskriv eventuella iakttagelser alternativt testresultat från psykologutredning</text>
+<text id="DFR_9.1.RBK">Beskriv eventuella undersökningsfynd och grad av funktionsnedsättning (lätt, måttlig, stor, total)</text>
+<text id="FRG_1.RBK">Utlåtandet är baserat på</text>
+<text id="FRG_10.HLP">Uppmärksamhet, koncentration och exekutiv funktion
+
+Förmågan till uppmärksamhet handlar om att rikta sitt fokus på rätt sak vid rätt tillfälle samt att skifta, fördela och vidmakthålla uppmärksamhet. I förmågan ingår även en tidsaspekt. En person behöver viljemässigt kunna rikta sin uppmärksamhet under lång tid, alltså vara uthållig.
+
+Med exekutiv funktion avses förmågan att planera, initiera, genomföra, korrigera och avsluta en handling.
+
+Exempel: Att rikta, reglera och uthålligt bevara uppmärksamheten är en stor svårighet för en person med ADHD/ADD. Tillfälliga svårigheter kan bero på sjukdom (till exempel sömnstörning, depression eller utmattning) eller skada (till exempel hjärnskakning) och uppkomma när som helst under livet.
+Även svårigheter med exekutiva funktioner är vanliga vid ADHD/ADD men förekommer även vid andra tillstånd.</text>
+<text id="FRG_10.RBK">Uppmärksamhet, koncentration och exekutiv funktion</text>
+<text id="FRG_11.HLP">Annan psykisk funktion
+
+Med annan psykisk funktion avses övriga psykiska funktioner, som berör energinivå, förmågan till impulskontroll, motivation, omdöme, medvetenhet om det egna beteendet samt att vara orienterad till tid, plats, situation och person.
+
+Exempel: I denna ruta kan till exempel affektiva svårigheter, svårigheter att reglera sitt temperament, beteendestörningar och missbruk ingå. Även påverkan på medvetande och orienteringsförmåga samt förvirring sekundärt till kroppslig sjukdom kan ingå.</text>
+<text id="FRG_11.RBK">Annan psykisk funktion</text>
+<text id="FRG_12.HLP">Sinnesfunktioner och smärta
+
+Med sinnesfunktion avses förmågan att tolka de fem sinnena, syn, hörsel, känsel, lukt och smak. Begreppet sinnesfunktion används oftast synonymt med perception. Man kan vara särskilt känslig och uppleva obehag vid ljud, ljus, temperatur, beröring, smak eller lukt eller vara mindre känslig.
+
+Med smärta avses här förnimmelse av obehaglig känsla som tyder på tänkbar eller faktisk skada i någon del av kroppen. Det innefattar förnimmelser av generell eller lokal smärta i en eller flera kroppsdelar, smärta i ett dermatom (hudavsnitt), huggande, brännande, molande smärta och värk samt funktionsnedsättningar såsom myalgi (muskelsmärta), analgesi (okänslighet för smärta) och hyperalgesi (överkänslighet för smärta).
+
+Exempel: Avvikelser vad gäller sinnesfunktion (perception) är vanligt till exempel inom det neuropsykiatriska området men saknar ofta specifik medicinsk diagnos. Smärtproblematik är dock mycket vanligt och kan utgöra både en primär svårighet och sekundär till annan sjukdom.</text>
+<text id="FRG_12.RBK">Sinnesfunktioner och smärta</text>
+<text id="FRG_13.HLP">Balans, koordination och motorik
+
+Med balans avses kroppens balansfunktion och förnimmelse av kroppsställning (positionsuppfattning). Med koordination avses till exempel öga-handkoordination, gångkoordination och att samordna rörelser av armar och ben. Med motorik avses svårigheter med finmotorik, grovmotorik eller till exempel munmotorik.
+
+Exempel: Svårigheter med dessa områden kan ha uppstått tidigt som till exempel vid en CP-skada eller uppkommit senare i livet till följd av till exempel en stroke eller neurologisk sjukdom.</text>
+<text id="FRG_13.RBK">Balans, koordination och motorik</text>
+<text id="FRG_14.HLP">Annan kroppslig funktion
+
+Med annan kroppslig funktion avses här avvikelser eller förlust i kroppsfunktion och fysiologiska funktioner utifrån ICF:s intentioner. Här beskrivs observerade funktionsnedsättningar (direkt/indirekt) med avvikelser i status men även sådana som framkommit i annan medicinsk utredning.
+
+Exempel: Med annan kroppslig funktion avses konsekvenser av somatisk sjukdom som till exempel avvikelser i kroppsligt status, röntgen- och laboratoriefynd samt kliniskt fysiologiska undersökningar.</text>
+<text id="FRG_14.RBK">Annan kroppslig funktion</text>
+<text id="FRG_17.HLP">Ge konkreta exempel på situationer och aktiviteter i patientens sysselsättning där svårigheter uppstår. Beskriv hur ofta dessa situationer uppstår och graden av svårigheterna. 
+
+Beskriv hur du själv har observerat begränsningarna. Om uppgiften baseras på anamnes/intervju eller någon annans observationer anger du det. 
+
+Ange även om det finns någon typ av aktivitet som patienten bör undvika på grund av betydande medicinsk risk eller allvarlig olycksrisk.</text>
+<text id="FRG_17.RBK">Aktivitetsbegränsningar - beskriv vad har patienten svårt att göra på grund av den eller de funktionsnedsättningar som beskrivs ovan</text>
+<text id="FRG_18.RBK">Avslutade medicinska behandlingar/åtgärder</text>
+<text id="FRG_19.RBK">Pågående medicinska behandlingar/åtgärder</text>
+<text id="FRG_2.RBK">Jag har känt patienten sedan den</text>
+<text id="FRG_20.RBK">Planerade medicinska behandlingar/åtgärder</text>
+<text id="FRG_21.RBK">Substansintag</text>
+<text id="FRG_22.HLP">Särskilda arbetstider kan vara annan än ordinarie förläggning av arbetstiden, till skillnad från att minska arbetstiden lika mycket varje dag.</text>
+<text id="FRG_22.RBK">Hur bedömer du att patientens medicinska förutsättningar för arbete, helt eller delvis, kan utvecklas över tid? Beskriv även om det finns medicinska skäl till särskilda arbetstider.</text>
+<text id="FRG_23.HLP">Beskriv här om patienten har några speciella förmågor som kan tas till vara även om det inte är i en arbetssituation. Informationen är till för att hjälpa Försäkringskassan som, utöver att bedöma rätten till ersättning, även ansvarar för att samordna rehabilitering och andra aktiva insatser.</text>
+<text id="FRG_23.RBK">Beskriv vad patienten kan göra trots sin sjukdom eller sina begränsningar</text>
+<text id="FRG_25.RBK">Övriga upplysningar</text>
+<text id="FRG_26.HLP">Försäkringskassans handläggare tar kontakt med dig när underlaget har kommit in och handläggningen kan påbörjas.</text>
+<text id="FRG_26.RBK">Kontakt med Försäkringskassan</text>
+<text id="FRG_3.RBK">Är utlåtandet även baserat på andra medicinska utredningar eller underlag?</text>
+<text id="FRG_4.RBK">Ange utredning eller underlag</text>
+<text id="FRG_45.HLP">Möjliga anledningar kan vara:
+- att det var länge sedan utredningen gjordes
+- att ny bedömning har rekommenderats i tidigare utlåtande eller
+- att den kliniska bilden avviker från vad som kan förväntas utifrån ställd diagnos.</text>
+<text id="FRG_45.RBK">Finns skäl till att revidera/uppdatera tidigare satt diagnos?</text>
+<text id="FRG_5.RBK">Bakgrund - beskriv kortfattat förloppet för aktuella sjukdomar</text>
+<text id="FRG_6.HLP">Ange vilken eller vilka sjukdomar som orsakar nedsatt arbetsförmåga. Den 
+sjukdom som påverkar arbetsförmågan mest anges först. Diagnoskoden anges alltid med så många positioner som möjligt. Använd inga andra tecken än bokstäver och siffror. 
+
+Om patienten har fler än tre sjukdomar som påverkar arbetsförmågan 
+anges dessa under "Övriga upplysningar".</text>
+<text id="FRG_6.RBK">Diagnos/diagnoser för sjukdom som orsakar nedsatt arbetsförmåga</text>
+<text id="FRG_7.RBK">När och var ställdes diagnosen/diagnoserna?</text>
+<text id="FRG_8.HLP">Intellektuell funktion
+
+Med intellektuell funktion, teoretisk begåvning eller intelligens avses förmågan att tänka logiskt. För att lösa ett problem på ett logiskt vis gör vi det genom att föreställa oss det i tankarna snarare än att pröva oss fram konkret.
+
+Exempel: En vuxen som klarat skolgång med normalbetyg och klarar vardagliga krav i arbete och privatliv är i regel normalbegåvad. För en noggrannare nivåbedömning krävs testning utförd av psykolog.</text>
+<text id="FRG_8.RBK">Intellektuell funktion</text>
+<text id="FRG_9.HLP">Kommunikation och social interaktion
+
+Med kommunikation avses att kunna uttrycka och ta emot verbala, skrivna eller andra former av Information/meddelanden.
+
+Med social interaktion avses förmågan att på ett teoretiskt plan sätta sig in i hur andra människor tänker och känner, även om man inte varit med om samma situation själv. Bristande förmåga till social interaktion leder lätt till missförstånd, konflikter och svårigheter med relationer i privatliv och arbetsliv.
+
+Exempel: Svårigheter som till exempel uppmärksamhetsbrister, impulskontrollbrist, personlighetsstörningar och affektiva sjukdomar kan leda till svårigheter med social interaktion. Om svårigheterna med social interaktion är omfattande ställs diagnos inom det så kallade autismspektrat.</text>
+<text id="FRG_9.RBK">Kommunikation och social interaktion</text>
+<text id="FRM_1.RBK">Vad är sjukersättning?
+Sjukersättning är en ersättning för personer som har en stadigvarande nedsatt arbetsförmåga på grund av sjukdom, skada eller funktionsnedsättning. Man kan få sjukersättning om Försäkringskassan bedömer att arbetsförmågan är nedsatt med minst en fjärdedel för all överskådlig framtid och att alla rehabiliteringsmöjligheter bedöms uttömda.</text>
+<text id="FRM_2.RBK">Vem kan få sjukersättning?
+Sjukersättning är till för den som har en nedsatt arbetsförmåga för all överskådlig framtid på grund av sjukdom, skada eller funktionsnedsättning, och där alla rehabiliteringsmöjligheter bedöms uttömda. Från och med juli det år man fyller 19 år kan man få hel sjukersättning om arbetsförmågan är helt nedsatt. Den som har fyllt 30 år kan få hel, tre fjärdedels, halv eller en fjärdedels sjukersättning beroende på hur mycket arbetsförmågan är nedsatt.
+
+Försäkringskassan bedömer arbetsförmågan i förhållande till alla arbeten på hela arbetsmarknaden, alltså även till särskilt anpassade arbeten och anställningar med anställningsstöd.
+
+Den som ansöker om sjukersättning ska skicka med ett läkarutlåtande. I ett pågående sjukpenningärende kan också Försäkringskassan på eget initiativ begära ett läkarutlåtande från behandlande läkare.
+
+Om du inte känner patienten ska hen styrka sin identitet genom legitimation med foto (SOSFS 2005:29).</text>
+<text id="KAT_1.RBK">Grund för medicinskt underlag</text>
+<text id="KAT_10.RBK">Kontakt</text>
+<text id="KAT_3.RBK">Bakgrund</text>
+<text id="KAT_4.RBK">Diagnos</text>
+<text id="KAT_5.HLP">Ange observerade nedsättningar (direkt och indirekt), exempelvis
+- avvikelser i somatiskt och psykiskt status
+- röntgen- och laboratoriefynd
+- resultat av kliniskt fysiologiska undersökningar
+- andra testresultat, exempelvis neuropsykologiska.
+
+Vid psykisk sjukdom, ange förutom basalt psykiskt status även den del av anamnesen som läkaren bedömer tala för ett psykiatriskt tillstånd.
+
+Källhänvisning funktionsområden 
+Funktionsområdenas hjälptexter följer väsentligen ICF men då kategorierna i läkarutlåtandena är färre har vissa förenklingar gjorts.</text>
+<text id="KAT_5.RBK">Funktionsnedsättningar</text>
+<text id="KAT_6.RBK">Aktivitetsbegränsningar</text>
+<text id="KAT_7.RBK">Medicinsk behandling</text>
+<text id="KAT_8.RBK">Medicinska förutsättningar för arbete</text>
+<text id="KAT_9.RBK">Övrigt</text>
+<text id="KV_FKMU_0001.ANHORIG.RBK">Anhörigs beskrivning av patienten</text>
+<text id="KV_FKMU_0001.ANNAT.RBK">Annat</text>
+<text id="KV_FKMU_0001.JOURNALUPPGIFTER.RBK">Journaluppgifter från den</text>
+<text id="KV_FKMU_0001.UNDERSOKNING.RBK">Min undersökning av patienten</text>
+<text id="KV_FKMU_0005.ARBETSTERAPEUT.RBK">Underlag från arbetsterapeut</text>
+<text id="KV_FKMU_0005.FORETAGSHALSOVARD.RBK">Underlag från företagshälsovård</text>
+<text id="KV_FKMU_0005.FYSIOTERAPEUT.RBK">Underlag från fysioterapeut</text>
+<text id="KV_FKMU_0005.HABILITERING.RBK">Underlag från habiliteringen</text>
+<text id="KV_FKMU_0005.LOGOPED.RBK">Underlag från logoped</text>
+<text id="KV_FKMU_0005.NEUROPSYKIATRISKT.RBK">Neuropsykiatriskt utlåtande</text>
+<text id="KV_FKMU_0005.OVRIGT_UTLATANDE.RBK">Övrigt</text>
+<text id="KV_FKMU_0005.PSYKOLOG.RBK">Underlag från psykolog</text>
+<text id="KV_FKMU_0005.SPECIALISTKLINIK.RBK">Utredning av annan specialistklinik</text>
+<text id="KV_FKMU_0005.VARD_UTOMLANDS.RBK">Utredning från vårdinrättning utomlands</text>
+</texter>
+
