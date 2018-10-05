@@ -24,6 +24,15 @@ public class IcfRequest {
     private String icd10Code2;
     private String icd10Code3;
 
+    public IcfRequest() {
+    }
+
+    private IcfRequest(final String icd10Code1, final String icd10Code2, final String icd10Code3) {
+        this.icd10Code1 = icd10Code1;
+        this.icd10Code2 = icd10Code2;
+        this.icd10Code3 = icd10Code3;
+    }
+
     public String getIcd10Code1() {
         return icd10Code1;
     }
@@ -46,5 +55,9 @@ public class IcfRequest {
 
     public void setIcd10Code3(final String icd10Code3) {
         this.icd10Code3 = icd10Code3;
+    }
+
+    public static IcfRequest of(final String icd10Code1, final String icd10Code2, final String icd10Code3) {
+        return new IcfRequest(icd10Code1, icd10Code2, icd10Code3);
     }
 }

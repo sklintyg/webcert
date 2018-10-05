@@ -27,6 +27,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import io.vavr.Tuple;
+import io.vavr.Tuple2;
 import io.vavr.collection.List;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
@@ -93,9 +94,13 @@ public class FmbDiagnosInformationServiceImpl implements FmbDiagnosInformationSe
         final List<String> koder = List.of(icfRequest.getIcd10Code1(), icfRequest.getIcd10Code2(), icfRequest.getIcd10Code3())
                 .filter(Objects::nonNull);
 
-        final List<IcfDiagnoskodResponse> icfDiagnoskodResponseList = koder
-                .map(kod -> Tuple.of(kod, repository.findByIcd10KodList_kod(kod)))
-                .filter(tuple -> tuple._2.isPresent())
+        return convertToResponse(koder.map(kod -> Tuple.of(kod, repository.findByIcd10KodList_kod(kod))));
+    }
+
+    private Optional<IcfResponse> convertToResponse(final List<Tuple2<String, Optional<DiagnosInformation>>> responses) {
+
+        final List<IcfDiagnoskodResponse> icfDiagnoskodResponseList = responses.filter(tuple -> tuple._2.isPresent())
+                .filter(hasIcfCodes())
                 .map(pair -> IcfDiagnoskodResponse.of(
                         pair._1,
                         pair._2.map(getBeskrivning(BeskrivningTyp.FUNKTIONSNEDSATTNING)).orElse(null),
@@ -107,6 +112,20 @@ public class FmbDiagnosInformationServiceImpl implements FmbDiagnosInformationSe
         }
 
         return Optional.of(IcfResponse.of(icfDiagnoskodResponseList.toJavaList()));
+    }
+
+    private Predicate<Tuple2<String, Optional<DiagnosInformation>>> hasIcfCodes() {
+        return pair -> {
+            if (!pair._2.isPresent()) {
+                return false;
+            }
+
+            final List<IcfKod> icfKods = List.ofAll(pair._2.get().getBeskrivningList())
+                    .flatMap(Beskrivning::getIcfKodList)
+                    .orElse(List.empty());
+
+            return !icfKods.isEmpty();
+        };
     }
 
     private Function<DiagnosInformation, IcfKoder> getBeskrivning(final BeskrivningTyp typ) {

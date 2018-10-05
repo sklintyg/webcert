@@ -20,7 +20,7 @@ package se.inera.intyg.webcert.web.web.controller.api.dto;
 
 public class IcfDiagnoskodResponse {
 
-    private String icf10Kod;
+    private String icd10Kod;
     private FunktionsNedsattningsKoder funktionsNedsattningsKoder;
     private AktivitetsBegransningsKoder aktivitetsBegransningsKoder;
 
@@ -28,20 +28,20 @@ public class IcfDiagnoskodResponse {
     }
 
     private IcfDiagnoskodResponse(
-            final String icf10Kod,
+            final String icd10Kod,
             final FunktionsNedsattningsKoder funktionsNedsattningsKoder,
             final AktivitetsBegransningsKoder aktivitetsBegransningsKoder) {
-        this.icf10Kod = icf10Kod;
+        this.icd10Kod = icd10Kod;
         this.funktionsNedsattningsKoder = funktionsNedsattningsKoder;
         this.aktivitetsBegransningsKoder = aktivitetsBegransningsKoder;
     }
 
-    public String getIcf10Kod() {
-        return icf10Kod;
+    public String getIcd10Kod() {
+        return icd10Kod;
     }
 
-    public void setIcf10Kod(final String icf10Kod) {
-        this.icf10Kod = icf10Kod;
+    public void setIcd10Kod(final String icd10Kod) {
+        this.icd10Kod = icd10Kod;
     }
 
     public FunktionsNedsattningsKoder getFunktionsNedsattningsKoder() {

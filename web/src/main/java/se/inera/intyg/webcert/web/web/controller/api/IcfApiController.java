@@ -27,10 +27,10 @@ import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.apache.commons.httpclient.HttpStatus;
-import org.springframework.web.bind.annotation.RequestBody;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
@@ -51,22 +51,24 @@ public class IcfApiController extends AbstractApiController {
     @GET
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @ApiOperation(
-            value = "Get FMB data for ICD10 codes", httpMethod = "GET",
-            notes = "Fetch the admin user details", produces = MediaType.APPLICATION_JSON)
+            value = "Get ICF data for ICD10 codes", httpMethod = "GET",
+            produces = MediaType.APPLICATION_JSON)
     @ApiResponses(value = {
-            @ApiResponse(code = HttpStatus.SC_OK, message = "Given ICF data for icd10 code found", response = FmbResponse.class),
+            @ApiResponse(code = HttpStatus.SC_OK, message = "Given ICF data for ICD10 codes found", response = FmbResponse.class),
             @ApiResponse(code = HttpStatus.SC_BAD_REQUEST, message = "Bad request due to missing icd10 codes")})
     @PrometheusTimeMethod
     public Response getIcfForIcd10(
             @ApiParam(value = "ICD10 codes", required = true)
-            @RequestBody final IcfRequest request) {
+            @QueryParam("icfCode1") final String icfCode1,
+            @QueryParam("icfCode2") final String icfCode2,
+            @QueryParam("icfCode3") final String icfCode3) {
 
-        if (isNull(request) || isNull(request.getIcd10Code1())) {
+        if (isNull(icfCode1)) {
             return Response.status(Response.Status.BAD_REQUEST).entity("Missing icd10 codes").build();
         }
 
-        service.findIcfInformationByIcd10Koder(request);
-
-        return Response.ok().build();
+        return service.findIcfInformationByIcd10Koder(IcfRequest.of(icfCode1, icfCode2, icfCode3))
+                .map(resp -> Response.ok(resp).build())
+                .orElse(Response.noContent().build());
     }
 }
