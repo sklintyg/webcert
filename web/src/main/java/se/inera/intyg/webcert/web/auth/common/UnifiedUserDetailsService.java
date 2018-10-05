@@ -19,11 +19,15 @@
 package se.inera.intyg.webcert.web.auth.common;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.security.saml.SAMLCredential;
 import org.springframework.security.saml.userdetails.SAMLUserDetailsService;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.webcert.web.auth.WebcertUserDetailsService;
 import se.inera.intyg.webcert.web.auth.eleg.ElegWebCertUserDetailsService;
+
+import javax.annotation.Resource;
+import java.util.Arrays;
 
 import static se.inera.intyg.webcert.web.auth.common.AuthConstants.URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_MOBILE_TWO_FACTOR_CONTRACT;
 import static se.inera.intyg.webcert.web.auth.common.AuthConstants.URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_SMARTCARD_PKI;
@@ -41,9 +45,15 @@ import static se.inera.intyg.webcert.web.auth.common.AuthConstants.URN_OASIS_NAM
  * <li>urn:oasis:names:tc:SAML:2.0:ac:classes:SoftwarePKI - E-leg</li>
  * <li>urn:oasis:names:tc:SAML:2.0:ac:classes:SmartcardPKI - E-leg</li>
  * <li>urn:oasis:names:tc:SAML:2.0:ac:classes:MobileTwofactorContract - E-leg</li>
+ *
+ * For testing purposes, this class is also aware of urn:oasis:names:tc:SAML:2.0:ac:classes:unspecified, but will only
+ * initiate authorization if the application has the "dev" spring profile active.
  */
 @Service
 public class UnifiedUserDetailsService implements SAMLUserDetailsService {
+
+    @Resource
+    private Environment environment;
 
     /** User details service for e-leg authenticated private practitioners. */
     @Autowired
@@ -78,6 +88,11 @@ public class UnifiedUserDetailsService implements SAMLUserDetailsService {
             return elegWebCertUserDetailsService.loadUserBySAML(samlCredential);
         case URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_TLSCLIENT:
             return webcertUserDetailsService.loadUserBySAML(samlCredential);
+            if (Arrays.stream(environment.getActiveProfiles()).anyMatch("dev"::equalsIgnoreCase)) {
+                return webcertUserDetailsService.loadUserBySAML(samlCredential);
+            }
+            throw new IllegalArgumentException(
+                    "AuthorizationContextClassRef " + URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_UNSPECIFIED + " is not allowed");
         default:
             throw new IllegalArgumentException("AuthorizationContextClassRef was " + authnContextClassRef + ", expected one of: "
                     + URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_TLSCLIENT + "\n"

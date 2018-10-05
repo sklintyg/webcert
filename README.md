@@ -135,6 +135,83 @@ Ersätt ovanstående med nedanstående, byt ut _/Users/myuser/intyg_ mot egen ab
 
 Klicka på "E-legitimation" och logga in mha BankID eller Mobilt BankID
 
+### Testa SAML-inloggning via extern test-IDP
+Det går att konfigurera Webcert så man kan logga in via formuläret på https://stubidp.sustainsys.com/
+
+![bild sustainsys](docs/images/sustainsys.png)
+
+Man behöver i så fall konfigurera Webcert att nyttja sustainsys stub-idp:
+
+##### web/build.gradle
+Ändra gretty-configen
+
+    jvmArgs = ["-Dcatalina.base=${buildDir}/catalina.base",
+           "-Dspring.profiles.active=dev,caching-enabled,wc-security-test",
+           "-Dresources.folder=${projectDir}/../src/main/resources",
+           "-Dcredentials.file=${projectDir}/../../webcert-konfiguration/authtest/credentials.properties",
+           "-Dconfig.file=${projectDir}/../../webcert-konfiguration/authtest/webcert.properties",
+           "-Dconfig.folder=${projectDir}/../../webcert-konfiguration/authtest/",
+           "-Dlogback.file=classpath:logback-dev.xml",
+           "-DuseMinifiedJavaScript=${minified}",
+           "-Dwebcert.stubs.port=9088",
+           "-Ddb.httpPort=9090",
+           "-Djetty.port=${httpPort}"]
+           
+##### Checka ut speciellt konfig-repo
+I webcert-konfiguration
+
+    git checkout feature/INTYG-7292
+    
+Det skall ligga en /authtest mapp där. Eventuellt behöver du köra git-crypt unlock för att certifikaten skall bli OK.
+
+##### Aktivera sustainsys i securityContext.xml
+Kopiera in följande nedanför SITHS-blocket av samma sort:
+
+     <bean class="org.springframework.security.saml.metadata.ExtendedMetadataDelegate">
+        <constructor-arg>
+          <bean class="org.opensaml.saml2.metadata.provider.FilesystemMetadataProvider">
+            <constructor-arg>
+              <value type="java.io.File">${config.dir}/sp-sustainsys.xml</value>
+            </constructor-arg>
+            <property name="parserPool" ref="parserPool"/>
+          </bean>
+        </constructor-arg>
+        <property name="metadataTrustCheck" value="false"/>
+
+        <constructor-arg>
+          <bean class="org.springframework.security.saml.metadata.ExtendedMetadata">
+            <property name="alias" value="sustainsys"/>
+            <property name="local" value="true"/>
+            <property name="securityProfile" value="metaiop"/>
+            <property name="sslSecurityProfile" value="metaiop"/>
+            <property name="signMetadata" value="true"/>
+            <property name="signingKey" value="${sakerhetstjanst.saml.keystore.alias}"/>
+            <property name="encryptionKey" value="${sakerhetstjanst.saml.keystore.alias}"/>
+            <property name="requireArtifactResolveSigned" value="false"/>
+            <property name="requireLogoutRequestSigned" value="false"/>
+            <property name="requireLogoutResponseSigned" value="false"/>
+          </bean>
+        </constructor-arg>
+      </bean>
+
+      <bean class="org.springframework.security.saml.metadata.ExtendedMetadataDelegate">
+        <constructor-arg>
+          <bean class="org.opensaml.saml2.metadata.provider.FilesystemMetadataProvider">
+            <constructor-arg>
+              <value type="java.io.File">${config.dir}/idp-sustainsys.xml</value>
+            </constructor-arg>
+            <property name="parserPool" ref="parserPool"/>
+          </bean>
+        </constructor-arg>
+        <constructor-arg>
+          <bean class="org.springframework.security.saml.metadata.ExtendedMetadata">
+            <property name="alias" value="sustainsys"/>
+          </bean>
+        </constructor-arg>
+
+        <property name="metadataTrustCheck" value="false"/>
+      </bean>
+
 ### Restassured
 
 Restassured-tester kan köras från roten av /webcert

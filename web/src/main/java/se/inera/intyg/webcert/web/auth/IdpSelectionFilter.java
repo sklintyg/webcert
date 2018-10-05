@@ -18,26 +18,25 @@
  */
 package se.inera.intyg.webcert.web.auth;
 
-import static se.inera.intyg.webcert.web.auth.common.AuthConstants.SPRING_SECURITY_CONTEXT;
-import static se.inera.intyg.webcert.web.auth.common.AuthConstants.SPRING_SECURITY_SAVED_REQUEST_KEY;
-
-import java.io.IOException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.web.savedrequest.SavedRequest;
+import org.springframework.stereotype.Component;
+import org.springframework.web.filter.OncePerRequestFilter;
+import se.inera.intyg.webcert.web.auth.common.AuthConstants;
+import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.io.IOException;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.stereotype.Component;
-import org.springframework.web.filter.OncePerRequestFilter;
-
-import se.inera.intyg.webcert.web.auth.common.AuthConstants;
-import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
+import static se.inera.intyg.webcert.web.auth.common.AuthConstants.SPRING_SECURITY_CONTEXT;
+import static se.inera.intyg.webcert.web.auth.common.AuthConstants.SPRING_SECURITY_SAVED_REQUEST_KEY;
 
 /**
  * This class is used to make IDP selection automatic for uthoppslänkar and djupintegratinslänkar for non-authenticated
@@ -59,6 +58,9 @@ public class IdpSelectionFilter extends OncePerRequestFilter {
     @Autowired
     private SavedRequestFactory savedRequestFactory;
 
+    @Autowired
+    private RedisSavedRequestCache redisSavedRequestCache;
+
     @Override
     protected void doFilterInternal(HttpServletRequest req, HttpServletResponse resp, FilterChain filterChain)
             throws ServletException, IOException {
@@ -78,7 +80,12 @@ public class IdpSelectionFilter extends OncePerRequestFilter {
 
         // If not logged in, we need to put the request URI into the savedrequests
         if (session != null) {
-            session.setAttribute(SPRING_SECURITY_SAVED_REQUEST_KEY, savedRequestFactory.buildSavedRequest(req));
+            SavedRequest savedRequest = savedRequestFactory.buildSavedRequest(req);
+            // First, save to the session... which should be unnecessary.
+            session.setAttribute(SPRING_SECURITY_SAVED_REQUEST_KEY, savedRequest);
+
+            // Next, save to Redis.
+            redisSavedRequestCache.saveRequest(req, resp);
         }
 
         // Finally, send redirect to explicit login path for the appropriate IDP depending on the requestURI

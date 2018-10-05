@@ -197,7 +197,6 @@
       </security:http>
 
       <security:authentication-manager alias="authenticationManager">
-        <!--    <security:authentication-provider ref="fakeAuthenticationProvider"/>    -->
         <security:authentication-provider ref="fakeElegAuthenticationProvider"/>
         <security:authentication-provider ref="commonFakeAuthenticationProvider"/>
       </security:authentication-manager>
@@ -215,7 +214,7 @@
       <security:intercept-url pattern="/**" access="IS_AUTHENTICATED_FULLY"/>
       <security:custom-filter position="PRE_AUTH_FILTER" ref="fakeAuthFilter"/>
       <security:custom-filter after="BASIC_AUTH_FILTER" ref="samlFilter"/>
-      <security:request-cache ref="httpSessionRequestCache"/>
+      <security:request-cache ref="redisSavedRequestCache"/>
       <security:session-management session-authentication-strategy-ref="registerSessionAuthenticationStrategy"/>
       <security:headers>
         <security:frame-options disabled="true"/>
@@ -229,7 +228,7 @@
       <security:intercept-url pattern="/**" access="IS_AUTHENTICATED_FULLY"/>
       <security:custom-filter position="PRE_AUTH_FILTER" ref="fakeAuthFilter"/>
       <security:custom-filter after="BASIC_AUTH_FILTER" ref="samlFilter"/>
-      <security:request-cache ref="httpSessionRequestCache"/>
+      <security:request-cache ref="redisSavedRequestCache"/>
       <security:session-management session-authentication-strategy-ref="registerSessionAuthenticationStrategy"/>
       <security:headers>
         <security:frame-options disabled="true"/>
@@ -239,7 +238,6 @@
 
     <security:authentication-manager alias="authenticationManager">
       <security:authentication-provider ref="samlAuthenticationProvider"/>
-      <!-- <security:authentication-provider ref="fakeAuthenticationProvider"/>    -->
       <security:authentication-provider ref="fakeElegAuthenticationProvider"/>
       <security:authentication-provider ref="commonFakeAuthenticationProvider"/>
     </security:authentication-manager>
@@ -260,7 +258,7 @@
       <security:csrf disabled="true"/>
       <security:intercept-url pattern="/**" access="IS_AUTHENTICATED_FULLY"/>
       <security:custom-filter after="BASIC_AUTH_FILTER" ref="samlFilter"/>
-      <security:request-cache ref="httpSessionRequestCache"/>
+      <security:request-cache ref="redisSavedRequestCache"/>
       <security:session-management session-authentication-strategy-ref="registerSessionAuthenticationStrategy"/>
       <security:headers>
         <security:frame-options disabled="true"/>
@@ -272,7 +270,7 @@
       <security:csrf disabled="true"/>
       <security:intercept-url pattern="/**" access="IS_AUTHENTICATED_FULLY"/>
       <security:custom-filter after="BASIC_AUTH_FILTER" ref="samlFilter"/>
-      <security:request-cache ref="httpSessionRequestCache"/>
+      <security:request-cache ref="redisSavedRequestCache"/>
       <security:session-management session-authentication-strategy-ref="registerSessionAuthenticationStrategy"/>
       <security:headers>
         <security:frame-options disabled="true"/>
@@ -296,12 +294,6 @@
         class="org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler">
       <property name="defaultTargetUrl" value="/"/>
     </bean>
-    <!--
-    <bean id="fakeAuthenticationProvider"
-        class="se.inera.intyg.webcert.web.auth.fake.FakeAuthenticationProvider">
-      <property name="userDetails" ref="userDetailsService"/>
-    </bean>
-    -->
     <bean id="commonFakeAuthenticationProvider"
         class="se.inera.intyg.webcert.web.auth.fake.common.CommonFakeAuthenticationProvider">
       <property name="userDetails" ref="webcertUserDetailsService"/>
@@ -332,15 +324,17 @@
       <constructor-arg index="0" value="\/web\/.*|\/visa\/.*|\/webcert\/.*"/>
       <constructor-arg index="1"><null/></constructor-arg>
     </bean>
-    <bean id="httpSessionRequestCache" class="org.springframework.security.web.savedrequest.HttpSessionRequestCache">
-      <property name="requestMatcher" ref="saveRequestMatcher"/>
+
+    <!-- Home-brewn SavedRequestCache storing saved requests in Redis -->
+    <bean id="redisSavedRequestCache" class="se.inera.intyg.webcert.web.auth.RedisSavedRequestCache">
+       <property name="requestMatcher" ref="saveRequestMatcher"/>
     </bean>
 
     <!-- Handler deciding where to redirect user after successful login -->
     <bean id="successRedirectHandler"
         class="org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler">
       <property name="defaultTargetUrl" value="/"/>
-      <property name="requestCache" ref="httpSessionRequestCache"/>
+      <property name="requestCache" ref="redisSavedRequestCache"/>
     </bean>
 
     <!-- Central storage of cryptographic keys -->
@@ -478,7 +472,6 @@
             <property name="metadataTrustCheck" value="true"/>
           </bean>
           <!-- END IDENTITY PROVIDER BEAN FOR SITHS -->
-
         </list>
       </constructor-arg>
       <property name="refreshCheckInterval" value="86400000"/>
