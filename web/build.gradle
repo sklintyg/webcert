@@ -95,13 +95,26 @@ gretty {
 
     def minified = System.properties['useMinifiedJavaScript'] ?: false
 
+//    jvmArgs = ["-Dcatalina.base=${buildDir}/catalina.base",
+//               "-Dspring.profiles.active=dev,caching-enabled",
+//               "-Dresources.folder=${projectDir}/../src/main/resources",
+//               "-Dcredentials.file=${projectDir}/webcert-credentials.properties",
+//               "-Dconfig.file=${projectDir}/webcert-dev.properties",
+//               "-Dlogback.file=classpath:logback-dev.xml",
+//               "-DuseMinifiedJavaScript=${minified}",
+//               "-Djetty.port=${httpPort}"]
+
     jvmArgs = ["-Dcatalina.base=${buildDir}/catalina.base",
-               "-Dspring.profiles.active=dev,caching-enabled",
+               "-Dspring.profiles.active=dev,caching-enabled,wc-security-test",
                "-Dresources.folder=${projectDir}/../src/main/resources",
-               "-Dcredentials.file=${projectDir}/webcert-credentials.properties",
-               "-Dconfig.file=${projectDir}/webcert-dev.properties",
+               "-Dcredentials.file=${projectDir}/../../webcert-konfiguration/authtest/credentials.properties",
+               "-Dconfig.file=${projectDir}/../../webcert-konfiguration/authtest/webcert.properties",
+               "-Dconfig.folder=${projectDir}/../../webcert-konfiguration/authtest/",
                "-Dlogback.file=classpath:logback-dev.xml",
+              // "-Dlogback.file={projectDir}/../../webcert-konfiguration/authtest/webcert-logback.xml",
                "-DuseMinifiedJavaScript=${minified}",
+               "-Dwebcert.stubs.port=9088",
+               "-Ddb.httpPort=9090",
                "-Djetty.port=${httpPort}"]
 
     extraResourceBase webappOutputDir

@@ -29,6 +29,7 @@ import static se.inera.intyg.webcert.web.auth.common.AuthConstants.URN_OASIS_NAM
 import static se.inera.intyg.webcert.web.auth.common.AuthConstants.URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_SMARTCARD_PKI;
 import static se.inera.intyg.webcert.web.auth.common.AuthConstants.URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_SOFTWARE_PKI;
 import static se.inera.intyg.webcert.web.auth.common.AuthConstants.URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_TLSCLIENT;
+import static se.inera.intyg.webcert.web.auth.common.AuthConstants.URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_UNSPECIFIED;
 
 /**
  * Created by eriklupander on 2015-08-12.
@@ -68,22 +69,25 @@ public class UnifiedUserDetailsService implements SAMLUserDetailsService {
                     + URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_TLSCLIENT + "\n"
                     + URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_SOFTWARE_PKI + " or "
                     + URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_MOBILE_TWO_FACTOR_CONTRACT + " or "
-                    + URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_SMARTCARD_PKI);
+                    + URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_SMARTCARD_PKI + " or "
+                    + URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_UNSPECIFIED);
         }
 
         switch (authnContextClassRef) {
-            case URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_MOBILE_TWO_FACTOR_CONTRACT:
-            case URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_SMARTCARD_PKI:
+        case URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_MOBILE_TWO_FACTOR_CONTRACT:
+        case URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_SMARTCARD_PKI:
         case URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_SOFTWARE_PKI:
             return elegWebCertUserDetailsService.loadUserBySAML(samlCredential);
         case URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_TLSCLIENT:
+        case URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_UNSPECIFIED:
             return webcertUserDetailsService.loadUserBySAML(samlCredential);
         default:
             throw new IllegalArgumentException("AuthorizationContextClassRef was " + authnContextClassRef + ", expected one of: "
                     + URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_TLSCLIENT + "\n"
-                        + URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_SOFTWARE_PKI + " or "
-                        + URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_MOBILE_TWO_FACTOR_CONTRACT + " or "
-                        + URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_SMARTCARD_PKI);
+                    + URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_SOFTWARE_PKI + " or "
+                    + URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_MOBILE_TWO_FACTOR_CONTRACT + " or "
+                    + URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_SMARTCARD_PKI + " or "
+                    + URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_UNSPECIFIED);
         }
 
     }

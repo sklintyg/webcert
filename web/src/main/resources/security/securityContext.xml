@@ -332,7 +332,12 @@
       <constructor-arg index="0" value="\/web\/.*|\/visa\/.*|\/webcert\/.*"/>
       <constructor-arg index="1"><null/></constructor-arg>
     </bean>
+    <!--
     <bean id="httpSessionRequestCache" class="org.springframework.security.web.savedrequest.HttpSessionRequestCache">
+      <property name="requestMatcher" ref="saveRequestMatcher"/>
+    </bean>
+    -->
+    <bean id="httpSessionRequestCache" class="se.inera.intyg.webcert.web.auth.RedisSavedRequestCache">
       <property name="requestMatcher" ref="saveRequestMatcher"/>
     </bean>
 
@@ -478,6 +483,58 @@
             <property name="metadataTrustCheck" value="true"/>
           </bean>
           <!-- END IDENTITY PROVIDER BEAN FOR SITHS -->
+
+
+
+          <!-- START SERVICE PROVIDER BEAN FOR SUSTAINSYS -->
+          <bean class="org.springframework.security.saml.metadata.ExtendedMetadataDelegate">
+            <constructor-arg>
+              <bean class="org.opensaml.saml2.metadata.provider.FilesystemMetadataProvider">
+                <constructor-arg>
+                  <value type="java.io.File">${config.dir}/sp-sustainsys.xml</value>
+                </constructor-arg>
+                <property name="parserPool" ref="parserPool"/>
+              </bean>
+            </constructor-arg>
+            <property name="metadataTrustCheck" value="false"/>
+
+            <constructor-arg>
+              <bean class="org.springframework.security.saml.metadata.ExtendedMetadata">
+                <property name="alias" value="sustainsys"/>
+                <property name="local" value="true"/>
+                <property name="securityProfile" value="metaiop"/>
+                <property name="sslSecurityProfile" value="metaiop"/>
+                <property name="signMetadata" value="true"/>
+                <!-- The signingKey and encryptionKey refers to the _aliases_ of the key in the keystore defined in the keyManager bean -->
+                <property name="signingKey" value="${sakerhetstjanst.saml.keystore.alias}"/>
+                <property name="encryptionKey" value="${sakerhetstjanst.saml.keystore.alias}"/>
+                <property name="requireArtifactResolveSigned" value="false"/>
+                <property name="requireLogoutRequestSigned" value="false"/>
+                <property name="requireLogoutResponseSigned" value="false"/>
+              </bean>
+            </constructor-arg>
+          </bean>
+          <!--  END SERVICE PROVIDER BEAN FOR SUSTAINSYS -->
+
+          <!-- START IDENTITY PROVIDER BEAN FOR SUSTAINSYS -->
+          <bean class="org.springframework.security.saml.metadata.ExtendedMetadataDelegate">
+            <constructor-arg>
+              <bean class="org.opensaml.saml2.metadata.provider.FilesystemMetadataProvider">
+                <constructor-arg>
+                  <value type="java.io.File">${config.dir}/idp-sustainsys.xml</value>
+                </constructor-arg>
+                <property name="parserPool" ref="parserPool"/>
+              </bean>
+            </constructor-arg>
+            <constructor-arg>
+              <bean class="org.springframework.security.saml.metadata.ExtendedMetadata">
+                <property name="alias" value="sustainsys"/>
+              </bean>
+            </constructor-arg>
+
+            <property name="metadataTrustCheck" value="false"/>
+          </bean>
+          <!-- END IDENTITY PROVIDER BEAN FOR SUSTAINSYS  -->
 
         </list>
       </constructor-arg>

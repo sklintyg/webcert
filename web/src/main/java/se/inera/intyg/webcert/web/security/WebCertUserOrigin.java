@@ -18,11 +18,13 @@
  */
 package se.inera.intyg.webcert.web.security;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.web.savedrequest.DefaultSavedRequest;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 import se.inera.intyg.infra.security.common.model.UserOrigin;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
+import se.inera.intyg.webcert.web.auth.RedisSavedRequestCache;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -33,6 +35,19 @@ import static se.inera.intyg.webcert.web.auth.common.AuthConstants.SPRING_SECURI
  */
 @Component
 public class WebCertUserOrigin implements UserOrigin {
+
+    @Autowired
+    private RedisSavedRequestCache redisSavedRequestCache;
+
+    // @Autowired
+    // @Qualifier("rediscache")
+    // private RedisTemplate<Object, Object> redisTemplate;
+    //
+    // // inject the template as ValueOperations
+    // @Resource(name = "rediscache")
+    // private ValueOperations<String, DefaultSavedRequest> valueOps;
+
+    // private MultiHttpSessionStrategy httpSessionStrategy = new CookieHttpSessionStrategy();
 
     // ~ Static fields/initializers
     // =====================================================================================
@@ -49,7 +64,12 @@ public class WebCertUserOrigin implements UserOrigin {
 
         DefaultSavedRequest savedRequest = getSavedRequest(request);
         if (savedRequest == null) {
-            return UserOriginType.NORMAL.name();
+            // Try to get saved request directly from Redis
+            // String requestedSessionId = httpSessionStrategy.getRequestedSessionId(request);
+            savedRequest = (DefaultSavedRequest) redisSavedRequestCache.getRequest(request, null); // valueOps.get(requestedSessionId);
+            if (savedRequest == null) {
+                return UserOriginType.NORMAL.name();
+            }
         }
 
         String uri = savedRequest.getRequestURI();
@@ -64,7 +84,6 @@ public class WebCertUserOrigin implements UserOrigin {
 
         return UserOriginType.NORMAL.name();
     }
-
 
     // ~ Private
     // =====================================================================================
