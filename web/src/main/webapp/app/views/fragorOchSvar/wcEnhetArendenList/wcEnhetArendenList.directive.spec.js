@@ -127,6 +127,11 @@ describe('wcEnhetArendenList', function() {
             $provide.value('common.messageService', jasmine.createSpyObj('common.messageService', ['getProperty']));
 
             $provide.value('common.statService', {getLatestData:function(){}});
+            $provide.value('common.IntygProxy', {
+                getIntygTypeInfo: function(id, onSuccess/*, onError*/) {
+                    onSuccess({intygId: id, intygType: testIntygsReferens.intygsTyp, intygTypeVersion: '1.0'});
+                }
+            });
 
             // To prevent $window.location from reloading the page
             var $window = {};
