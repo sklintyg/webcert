@@ -106,6 +106,7 @@ angular.module('webcert').controller('webcert.SokSkrivValjUtkastTypeCtrl',
                     Viewstate.intygListUnhandled = data;
                     Viewstate.intygListUnhandled.forEach(function(intyg) {
                         intyg.intygTypeName = getTypeName(intyg.intygType);
+                        setExtendedStatus(intyg);
                     });
                     Service.updateIntygList(Viewstate);
                     Viewstate.unsigned = Service.hasUnsigned(Viewstate.currentList);
@@ -118,6 +119,23 @@ angular.module('webcert').controller('webcert.SokSkrivValjUtkastTypeCtrl',
 
             }
 
+            function setExtendedStatus(intyg) {
+                intyg.extendedStatus = null;
+                // These 2 scenarios overrides actual status of the intyg. Maybe we shoould utilize this to remove similar
+                // ersatt/kompletterat checks in tidigareIntyg.filter.js
+                if (typeof intyg.relations !== 'undefined' && typeof intyg.relations.latestChildRelations !== 'undefined') {
+                    if (typeof intyg.relations.latestChildRelations.complementedByIntyg !== 'undefined') {
+                        intyg.extendedStatus = 'KOMPLETTERAT_AV_INTYG';
+                    } else if (typeof intyg.relations.latestChildRelations.replacedByIntyg !== 'undefined') {
+                        intyg.extendedStatus = 'ERSATT_AV_INTYG';
+                    }
+
+                }
+
+               if (intyg.extendedStatus == null) {
+                    intyg.extendedStatus = intyg.status;
+                }
+            }
             //Use loaded module metadata to look up name for a intygsType
             function getTypeName (intygsType) {
                 var intygTypes = intygTypeModel.intygTypes.filter(function (intygType) {
