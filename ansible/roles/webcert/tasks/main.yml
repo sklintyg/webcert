@@ -77,6 +77,31 @@
     dest: "{{ webapps_folder }}/log-sender.war"
     remote_src: True
 
+- name: Fulhacka log-sender - Ensure log-sender directory exists before unpacking
+  file:
+    path: "{{ webapps_folder }}/log-sender/"
+    state: directory
+
+- name: Fulhacka log-sender - Unpack war to enable fulhacking before tomcat has started
+  unarchive:
+    src: "{{ webapps_folder }}/log-sender.war"
+    dest: "{{ webapps_folder }}/log-sender/"
+    remote_src: yes
+
+- name: Fulhacka log-sender - Change config param logback.file in web.xml
+  lineinfile:
+    dest: "{{ webapps_folder }}/log-sender/WEB-INF/web.xml"
+    regexp: '^(    <param-value>)(logback.file</param-value>)$'
+    line: '\1logsender.\2'
+    backrefs: yes
+
+- name: Fulhacka log-sender - Change config param config.file in log-sender-placeholder-config.xml
+  lineinfile:
+    dest: "{{ webapps_folder }}/log-sender/WEB-INF/classes/log-sender-placeholder-config.xml"
+    regexp: '^(    location="classpath:default.properties, file:\$\{)(config.file\}, file:\$\{credentials.file\}")$'
+    line: '\1logsender.\2'
+    backrefs: yes
+
 - name: Remove webcert-liquibase-runner-{{ version }}.zip from releases
   file:
     state: absent
