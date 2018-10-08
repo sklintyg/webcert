@@ -28,3 +28,7 @@ reports/
 jsconfig.json
 typings.json
 out
+secret-*
+secret-*
+*.jks
+*.p12
