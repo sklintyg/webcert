@@ -132,7 +132,7 @@ angular.module('webcert').controller('webcert.SokSkrivValjUtkastTypeCtrl',
 
                 }
 
-               if (intyg.extendedStatus == null) {
+               if (intyg.extendedStatus === null) {
                     intyg.extendedStatus = intyg.status;
                 }
             }
