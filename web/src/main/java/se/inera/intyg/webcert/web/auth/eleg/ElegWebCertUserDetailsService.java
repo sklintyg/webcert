@@ -35,6 +35,7 @@ import se.inera.intyg.infra.security.common.model.AuthenticationMethod;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.Privilege;
 import se.inera.intyg.infra.security.common.model.Role;
+import se.inera.intyg.infra.security.common.model.UserOrigin;
 import se.inera.intyg.infra.security.exception.HsaServiceException;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
@@ -43,7 +44,6 @@ import se.inera.intyg.webcert.integration.pp.services.PPService;
 import se.inera.intyg.webcert.persistence.anvandarmetadata.repository.AnvandarPreferenceRepository;
 import se.inera.intyg.webcert.web.auth.common.BaseWebCertUserDetailsService;
 import se.inera.intyg.webcert.web.auth.exceptions.PrivatePractitionerAuthorizationException;
-import se.inera.intyg.webcert.web.security.WebCertUserOrigin;
 import se.inera.intyg.webcert.web.service.privatlakaravtal.AvtalService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.riv.infrastructure.directory.privatepractitioner.v1.BefattningType;
@@ -54,6 +54,7 @@ import se.riv.infrastructure.directory.privatepractitioner.v1.SpecialitetType;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Created by eriklupander on 2015-06-16.
@@ -86,6 +87,10 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
 
     @Autowired
     private AnvandarPreferenceRepository anvandarPreferenceRepository;
+
+    @Autowired(required = false)
+    private Optional<UserOrigin> userOrigin;
+
 
     @Override
     public Object loadUserBySAML(SAMLCredential samlCredential) {
@@ -142,8 +147,10 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
 
     private WebCertUser createWebCertUser(HoSPersonType hosPerson, Role role, SAMLCredential samlCredential) {
 
-        WebCertUserOrigin webCertUserOrigin = new WebCertUserOrigin();
-        String requestOrigin = webCertUserOrigin.resolveOrigin(getCurrentRequest());
+        if (!userOrigin.isPresent()) {
+            throw new IllegalStateException("No WebCertUserOrigin present, cannot login user.");
+        }
+        String requestOrigin = userOrigin.get().resolveOrigin(getCurrentRequest());
 
         // Create the WebCert user object injection user's privileges
         WebCertUser user = new WebCertUser();
