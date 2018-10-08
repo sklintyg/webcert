@@ -33,6 +33,7 @@ import org.springframework.security.saml.SAMLCredential;
 import org.springframework.security.web.PortResolverImpl;
 import org.springframework.security.web.savedrequest.DefaultSavedRequest;
 import org.springframework.security.web.savedrequest.SavedRequest;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import se.inera.intyg.infra.integration.hsa.services.HsaPersonService;
@@ -45,6 +46,7 @@ import se.inera.intyg.webcert.integration.pp.services.PPService;
 import se.inera.intyg.webcert.persistence.anvandarmetadata.repository.AnvandarPreferenceRepository;
 import se.inera.intyg.webcert.web.auth.common.BaseSAMLCredentialTest;
 import se.inera.intyg.webcert.web.auth.exceptions.PrivatePractitionerAuthorizationException;
+import se.inera.intyg.webcert.web.security.WebCertUserOrigin;
 import se.inera.intyg.webcert.web.service.privatlakaravtal.AvtalService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.riv.infrastructure.directory.privatepractitioner.types.v1.HsaId;
@@ -53,14 +55,22 @@ import se.riv.infrastructure.directory.privatepractitioner.v1.EnhetType;
 import se.riv.infrastructure.directory.privatepractitioner.v1.HoSPersonType;
 import se.riv.infrastructure.directory.privatepractitioner.v1.VardgivareType;
 
-import java.util.Collections;
+import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static se.inera.intyg.webcert.web.auth.common.AuthConstants.SPRING_SECURITY_SAVED_REQUEST_KEY;
 
 /**
@@ -89,6 +99,7 @@ public class ElegWebCertUserDetailsServiceTest extends BaseSAMLCredentialTest {
     private ElegAuthenticationAttributeHelper elegAuthenticationAttributeHelper;
     @Mock
     private ElegAuthenticationMethodResolver elegAuthenticationMethodResolver;
+
     @InjectMocks
     private ElegWebCertUserDetailsService testee;
     private Map<String, String> expectedPreferences = new HashMap<>();
@@ -104,10 +115,8 @@ public class ElegWebCertUserDetailsServiceTest extends BaseSAMLCredentialTest {
         MockHttpServletRequest request = mockHttpServletRequest("/any/path");
         RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
 
-        // AUTHORITIES_RESOLVER.setHsaPersonService(hsaPersonService);
         testee.setAuthoritiesResolver(AUTHORITIES_RESOLVER);
 
-        // when(authoritiesResolver.getRole(anyString())).thenReturn(role);
         when(ppService.getPrivatePractitioner(any(), any(), any())).thenReturn(buildHosPerson());
         when(ppService.validatePrivatePractitioner(any(), any(), any())).thenReturn(true);
         when(avtalService.userHasApprovedLatestAvtal(anyString())).thenReturn(true);
@@ -116,6 +125,9 @@ public class ElegWebCertUserDetailsServiceTest extends BaseSAMLCredentialTest {
 
         when(puService.getPerson(any(Personnummer.class))).thenReturn(buildPersonSvar(false, PersonSvar.Status.FOUND));
 
+        WebCertUserOrigin userOrigin = mock(WebCertUserOrigin.class);
+        when(userOrigin.resolveOrigin(any(HttpServletRequest.class))).thenReturn("NORMAL");
+        ReflectionTestUtils.setField(testee, "userOrigin", Optional.of(userOrigin));
     }
 
     @Test

@@ -39,16 +39,6 @@ public class WebCertUserOrigin implements UserOrigin {
     @Autowired
     private RedisSavedRequestCache redisSavedRequestCache;
 
-    // @Autowired
-    // @Qualifier("rediscache")
-    // private RedisTemplate<Object, Object> redisTemplate;
-    //
-    // // inject the template as ValueOperations
-    // @Resource(name = "rediscache")
-    // private ValueOperations<String, DefaultSavedRequest> valueOps;
-
-    // private MultiHttpSessionStrategy httpSessionStrategy = new CookieHttpSessionStrategy();
-
     // ~ Static fields/initializers
     // =====================================================================================
 
@@ -65,7 +55,6 @@ public class WebCertUserOrigin implements UserOrigin {
         DefaultSavedRequest savedRequest = getSavedRequest(request);
         if (savedRequest == null) {
             // Try to get saved request directly from Redis
-            // String requestedSessionId = httpSessionStrategy.getRequestedSessionId(request);
             savedRequest = (DefaultSavedRequest) redisSavedRequestCache.getRequest(request, null); // valueOps.get(requestedSessionId);
             if (savedRequest == null) {
                 return UserOriginType.NORMAL.name();

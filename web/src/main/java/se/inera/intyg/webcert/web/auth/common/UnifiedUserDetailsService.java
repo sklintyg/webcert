@@ -79,8 +79,7 @@ public class UnifiedUserDetailsService implements SAMLUserDetailsService {
                     + URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_TLSCLIENT + "\n"
                     + URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_SOFTWARE_PKI + " or "
                     + URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_MOBILE_TWO_FACTOR_CONTRACT + " or "
-                    + URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_SMARTCARD_PKI + " or "
-                    + URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_UNSPECIFIED);
+                    + URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_SMARTCARD_PKI);
         }
 
         switch (authnContextClassRef) {
@@ -89,8 +88,8 @@ public class UnifiedUserDetailsService implements SAMLUserDetailsService {
         case URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_SOFTWARE_PKI:
             return elegWebCertUserDetailsService.loadUserBySAML(samlCredential);
         case URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_TLSCLIENT:
-        case URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_UNSPECIFIED:
             return webcertUserDetailsService.loadUserBySAML(samlCredential);
+        case URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_UNSPECIFIED:
             if (Arrays.stream(environment.getActiveProfiles()).anyMatch("dev"::equalsIgnoreCase)) {
                 return webcertUserDetailsService.loadUserBySAML(samlCredential);
             }
@@ -101,8 +100,7 @@ public class UnifiedUserDetailsService implements SAMLUserDetailsService {
                     + URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_TLSCLIENT + "\n"
                     + URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_SOFTWARE_PKI + " or "
                     + URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_MOBILE_TWO_FACTOR_CONTRACT + " or "
-                    + URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_SMARTCARD_PKI + " or "
-                    + URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_UNSPECIFIED);
+                    + URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_SMARTCARD_PKI);
         }
 
     }
