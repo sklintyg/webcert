@@ -29,6 +29,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.security.web.PortResolver;
@@ -53,6 +54,7 @@ import org.springframework.stereotype.Component;
  * @author eriklupander
  */
 @Component
+@DependsOn("rediscache")
 public class RedisSavedRequestCache implements RequestCache {
 
     private final Log logger = LogFactory.getLog(this.getClass());
