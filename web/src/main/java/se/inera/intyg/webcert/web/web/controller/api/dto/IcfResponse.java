@@ -22,24 +22,34 @@ import java.util.List;
 
 public class IcfResponse {
 
-    private List<IcfDiagnoskodResponse> icfDiagnoskodResponse;
+    private IcfDiagnoskodResponse gemensamma;
+    private List<IcfDiagnoskodResponse> unika;
 
     public IcfResponse() {
     }
 
-    private IcfResponse(final List<IcfDiagnoskodResponse> icfDiagnoskodResponse) {
-        this.icfDiagnoskodResponse = icfDiagnoskodResponse;
+    private IcfResponse(final IcfDiagnoskodResponse gemensamma, final List<IcfDiagnoskodResponse> unika) {
+        this.gemensamma = gemensamma;
+        this.unika = unika;
     }
 
-    public List<IcfDiagnoskodResponse> getIcfDiagnoskodResponse() {
-        return icfDiagnoskodResponse;
+    public IcfDiagnoskodResponse getGemensamma() {
+        return gemensamma;
     }
 
-    public void setIcfDiagnoskodResponse(final List<IcfDiagnoskodResponse> icfDiagnoskodResponse) {
-        this.icfDiagnoskodResponse = icfDiagnoskodResponse;
+    public void setGemensamma(final IcfDiagnoskodResponse gemensamma) {
+        this.gemensamma = gemensamma;
     }
 
-    public static IcfResponse of(final List<IcfDiagnoskodResponse> icfDiagnoskodResponse) {
-        return new IcfResponse(icfDiagnoskodResponse);
+    public List<IcfDiagnoskodResponse> getUnika() {
+        return unika;
+    }
+
+    public void setUnika(final List<IcfDiagnoskodResponse> unika) {
+        this.unika = unika;
+    }
+
+    public static IcfResponse of(final IcfDiagnoskodResponse gemensamma, final List<IcfDiagnoskodResponse> unika) {
+        return new IcfResponse(gemensamma, unika);
     }
 }

@@ -22,11 +22,11 @@ import java.util.List;
 
 public final class AktivitetsBegransningsKoder extends IcfKoder {
 
-    private AktivitetsBegransningsKoder(final List<String> centralaKoder, final List<String> kompletterandeKoder) {
+    private AktivitetsBegransningsKoder(final List<IcfKod> centralaKoder, final List<IcfKod> kompletterandeKoder) {
         super(centralaKoder, kompletterandeKoder);
     }
 
-    public static AktivitetsBegransningsKoder of(final List<String> centralaKoder, final List<String> kompletterandeKoder) {
+    public static AktivitetsBegransningsKoder of(final List<IcfKod> centralaKoder, final List<IcfKod> kompletterandeKoder) {
         return new AktivitetsBegransningsKoder(centralaKoder, kompletterandeKoder);
     }
 }

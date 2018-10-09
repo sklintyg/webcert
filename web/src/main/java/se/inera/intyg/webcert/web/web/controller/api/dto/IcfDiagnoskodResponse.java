@@ -65,16 +65,34 @@ public class IcfDiagnoskodResponse {
             final IcfKoder funktionsNedsattningsKoder,
             final IcfKoder aktivitetsBegransningsKoder) {
 
-        if (!(funktionsNedsattningsKoder instanceof FunktionsNedsattningsKoder)) {
+        if (funktionsNedsattningsKoder != null && !(funktionsNedsattningsKoder instanceof FunktionsNedsattningsKoder)) {
             throw new IllegalArgumentException("funktionsNedsattningsKoder must be of type FunktionsNedsattningsKoder");
         }
 
-        if (!(aktivitetsBegransningsKoder instanceof AktivitetsBegransningsKoder)) {
+        if (aktivitetsBegransningsKoder != null && !(aktivitetsBegransningsKoder instanceof AktivitetsBegransningsKoder)) {
             throw new IllegalArgumentException("aktivitetsBegransningsKoder must be of type AktivitetsBegransningsKoder");
         }
 
         return new IcfDiagnoskodResponse(
                 icf10Kod,
+                (FunktionsNedsattningsKoder) funktionsNedsattningsKoder,
+                (AktivitetsBegransningsKoder) aktivitetsBegransningsKoder);
+    }
+
+    public static IcfDiagnoskodResponse of(
+            final IcfKoder funktionsNedsattningsKoder,
+            final IcfKoder aktivitetsBegransningsKoder) {
+
+        if (funktionsNedsattningsKoder != null && !(funktionsNedsattningsKoder instanceof FunktionsNedsattningsKoder)) {
+            throw new IllegalArgumentException("funktionsNedsattningsKoder must be of type FunktionsNedsattningsKoder");
+        }
+
+        if (aktivitetsBegransningsKoder != null && !(aktivitetsBegransningsKoder instanceof AktivitetsBegransningsKoder)) {
+            throw new IllegalArgumentException("aktivitetsBegransningsKoder must be of type AktivitetsBegransningsKoder");
+        }
+
+        return new IcfDiagnoskodResponse(
+                null,
                 (FunktionsNedsattningsKoder) funktionsNedsattningsKoder,
                 (AktivitetsBegransningsKoder) aktivitetsBegransningsKoder);
     }

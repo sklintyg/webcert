@@ -22,32 +22,32 @@ import java.util.List;
 
 public abstract class IcfKoder {
 
-    private List<String> centralaKoder;
-    private List<String> kompletterandeKoder;
+    private List<IcfKod> centralaKoder;
+    private List<IcfKod> kompletterandeKoder;
 
     public IcfKoder() {
     }
 
     IcfKoder(
-            final List<String> centralaKoder,
-            final List<String> kompletterandeKoder) {
+            final List<IcfKod> centralaKoder,
+            final List<IcfKod> kompletterandeKoder) {
         this.centralaKoder = centralaKoder;
         this.kompletterandeKoder = kompletterandeKoder;
     }
 
-    public List<String> getCentralaKoder() {
+    public List<IcfKod> getCentralaKoder() {
         return centralaKoder;
     }
 
-    public void setCentralaKoder(final List<String> centralaKoder) {
+    public void setCentralaKoder(final List<IcfKod> centralaKoder) {
         this.centralaKoder = centralaKoder;
     }
 
-    public List<String> getKompletterandeKoder() {
+    public List<IcfKod> getKompletterandeKoder() {
         return kompletterandeKoder;
     }
 
-    public void setKompletterandeKoder(final List<String> kompletterandeKoder) {
+    public void setKompletterandeKoder(final List<IcfKod> kompletterandeKoder) {
         this.kompletterandeKoder = kompletterandeKoder;
     }
 }
