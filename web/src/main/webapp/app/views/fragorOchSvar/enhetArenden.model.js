@@ -22,10 +22,14 @@ angular.module('webcert').service('webcert.enhetArendenModel',
     function() {
         'use strict';
 
-        this.doneLoading = true;
+        this.reset = function() {
+            this.doneLoading = true;
 
-        this.PAGE_SIZE = 10;
-        this.ALL_UNITS = 'wc-all';
-        this.enhetId = this.ALL_UNITS;
+            this.PAGE_SIZE = 10;
+            this.ALL_UNITS = 'wc-all';
+            this.enhetId = this.ALL_UNITS;
+        };
+
+        this.reset();
 
     }]);

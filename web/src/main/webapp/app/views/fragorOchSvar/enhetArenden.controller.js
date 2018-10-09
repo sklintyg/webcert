@@ -32,6 +32,11 @@ angular.module('webcert').controller('webcert.enhetArendenCtrl',
             $scope.enhetArendenModel = enhetArendenModel;
             $scope.vardenhetFilterModel = vardenhetFilterModel;
 
+            $scope.$on('wcChangeActiveUnitDialog.vardenhetSelected', function(){
+                // When changing active unit, reset selected enhet on 'Ej hanterade ärenden' for units with multiple under units
+                enhetArendenModel.reset();
+            });
+
             var unbindLocationChange = $rootScope.$on('$locationChangeStart', function($event, newUrl, currentUrl) {
                 enhetArendenCommonService.checkQAonlyDialog($scope, $event, newUrl, currentUrl, unbindLocationChange);
             });
