@@ -34,7 +34,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
-import se.inera.intyg.webcert.web.service.fmb.FmbDiagnosInformationServiceImpl;
+import se.inera.intyg.webcert.web.service.icf.IcfService;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
 import se.inera.intyg.webcert.web.web.controller.api.dto.FmbResponse;
 
@@ -42,9 +42,9 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.FmbResponse;
 @Api(value = "fmb", description = "REST API för Försäkringsmedicinskt beslutsstöd", produces = MediaType.APPLICATION_JSON)
 public class IcfApiController extends AbstractApiController {
 
-    private FmbDiagnosInformationServiceImpl service;
+    private IcfService service;
 
-    public IcfApiController(final FmbDiagnosInformationServiceImpl service) {
+    public IcfApiController(final IcfService service) {
         this.service = service;
     }
 
