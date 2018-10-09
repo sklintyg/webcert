@@ -22,11 +22,17 @@ import java.util.List;
 
 public final class FunktionsNedsattningsKoder extends IcfKoder {
 
-    private FunktionsNedsattningsKoder(final List<IcfKod> centralaKoder, final List<IcfKod> kompletterandeKoder) {
-        super(centralaKoder, kompletterandeKoder);
+    private FunktionsNedsattningsKoder(
+            final List<String> icd10Koder, final List<IcfKod> centralaKoder, final List<IcfKod> kompletterandeKoder) {
+        super(icd10Koder, centralaKoder, kompletterandeKoder);
     }
 
     public static FunktionsNedsattningsKoder of(final List<IcfKod> centralaKoder, final List<IcfKod> kompletterandeKoder) {
-        return new FunktionsNedsattningsKoder(centralaKoder, kompletterandeKoder);
+        return new FunktionsNedsattningsKoder(null, centralaKoder, kompletterandeKoder);
+    }
+
+    public static FunktionsNedsattningsKoder of(
+            final List<String> icd10Koder, final List<IcfKod> centralaKoder, final List<IcfKod> kompletterandeKoder) {
+        return new FunktionsNedsattningsKoder(icd10Koder, centralaKoder, kompletterandeKoder);
     }
 }

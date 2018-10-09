@@ -22,6 +22,7 @@ import java.util.List;
 
 public abstract class IcfKoder {
 
+    private List<String> icd10Koder;
     private List<IcfKod> centralaKoder;
     private List<IcfKod> kompletterandeKoder;
 
@@ -29,10 +30,20 @@ public abstract class IcfKoder {
     }
 
     IcfKoder(
+            final List<String> icd10Koder,
             final List<IcfKod> centralaKoder,
             final List<IcfKod> kompletterandeKoder) {
+        this.icd10Koder = icd10Koder;
         this.centralaKoder = centralaKoder;
         this.kompletterandeKoder = kompletterandeKoder;
+    }
+
+    public List<String> getIcd10Koder() {
+        return icd10Koder;
+    }
+
+    public void setIcd10Koder(final List<String> icd10Koder) {
+        this.icd10Koder = icd10Koder;
     }
 
     public List<IcfKod> getCentralaKoder() {

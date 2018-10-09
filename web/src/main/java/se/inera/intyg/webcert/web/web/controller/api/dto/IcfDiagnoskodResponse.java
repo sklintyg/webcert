@@ -96,4 +96,8 @@ public class IcfDiagnoskodResponse {
                 (FunktionsNedsattningsKoder) funktionsNedsattningsKoder,
                 (AktivitetsBegransningsKoder) aktivitetsBegransningsKoder);
     }
+
+    public static IcfDiagnoskodResponse empty() {
+        return new IcfDiagnoskodResponse(null, null, null);
+    }
 }

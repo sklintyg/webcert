@@ -24,6 +24,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Sets;
 import io.vavr.Tuple;
 import io.vavr.Tuple2;
+import io.vavr.collection.HashSet;
 import io.vavr.collection.List;
 import org.springframework.stereotype.Service;
 import java.util.Objects;
@@ -70,7 +71,8 @@ public class IcfServiceImpl implements IcfService {
             final Tuple2<String, Optional<DiagnosInformation>> kod2Respons,
             final Tuple2<String, Optional<DiagnosInformation>> kod3Respons) {
 
-        final List<Tuple2<String, Optional<DiagnosInformation>>> responsList = List.of(kod1Respons, kod2Respons, kod3Respons);
+        final List<Tuple2<String, Optional<DiagnosInformation>>> responsList = List.of(kod1Respons, kod2Respons, kod3Respons)
+                .filter(resp -> resp._1 != null);
 
         final IcfDiagnoskodResponse gemensammaKoder = getGemensammaKoder(responsList);
         final List<IcfDiagnoskodResponse> unikaKoder = getUnikaKoder(responsList, gemensammaKoder);
@@ -83,7 +85,8 @@ public class IcfServiceImpl implements IcfService {
     private List<IcfDiagnoskodResponse> getUnikaKoder(
             final List<Tuple2<String, Optional<DiagnosInformation>>> responsList, final IcfDiagnoskodResponse gemensammaKoder) {
 
-        return responsList.filter(tuple -> tuple._2.isPresent())
+        return responsList
+                .filter(tuple -> tuple._2.isPresent())
                 .filter(hasIcfCodes())
                 .map(pair -> IcfDiagnoskodResponse.of(
                         pair._1,
@@ -96,49 +99,68 @@ public class IcfServiceImpl implements IcfService {
 
     private IcfDiagnoskodResponse getGemensammaKoder(final List<Tuple2<String, Optional<DiagnosInformation>>> responsList) {
 
-        List<IcfKoder> funktionsKoder = responsList
-                .map(pair -> pair._2.orElse(null))
-                .filter(Objects::nonNull)
+        List<Tuple2<String, IcfKoder>> funktionsKoder = responsList
                 .map(getDiagnosKoder(BeskrivningTyp.FUNKTIONSNEDSATTNING));
 
-        List<IcfKoder> aktivitetsKoder = responsList
-                .map(pair -> pair._2.orElse(null))
-                .filter(Objects::nonNull)
+        List<Tuple2<String, IcfKoder>> aktivitetsKoder = responsList
                 .map(getDiagnosKoder(BeskrivningTyp.AKTIVITETSBEGRANSNING));
 
-        return IcfDiagnoskodResponse.of(
-                findGemensammaKoder(funktionsKoder, BeskrivningTyp.FUNKTIONSNEDSATTNING),
-                findGemensammaKoder(aktivitetsKoder, BeskrivningTyp.AKTIVITETSBEGRANSNING));
+
+        final Optional<IcfKoder> gemensammaNedsattning = findGemensammaKoder(funktionsKoder, BeskrivningTyp.FUNKTIONSNEDSATTNING);
+        final Optional<IcfKoder> gemensammaAktivitet = findGemensammaKoder(aktivitetsKoder, BeskrivningTyp.AKTIVITETSBEGRANSNING);
+
+        if (!(gemensammaNedsattning.isPresent() && gemensammaAktivitet.isPresent())) {
+            return IcfDiagnoskodResponse.empty();
+        } else {
+            return IcfDiagnoskodResponse.of(gemensammaNedsattning.get(), gemensammaAktivitet.get());
+        }
     }
 
-    private IcfKoder findGemensammaKoder(final List<IcfKoder> icfKoderList, final BeskrivningTyp typ) {
+    private Optional<IcfKoder> findGemensammaKoder(final List<Tuple2<String, IcfKoder>> icfKoderList, final BeskrivningTyp typ) {
 
-        final List<IcfKoder> allaKoder = List.ofAll(icfKoderList);
+        HashSet<String> icd10KoderMedGemensammaIcf = HashSet.empty();
 
+        final List<Tuple2<String, IcfKoder>> allaKoder = List.ofAll(icfKoderList);
         List<IcfKod> gemensammaCentralKoder = List.empty();
         List<IcfKod> gemensammaKompletterandeKoder = List.empty();
 
         if (allaKoder.length() > 1) {
             for (int i = 0; i < allaKoder.length() - 1; i++) {
 
-                gemensammaCentralKoder = gemensammaCentralKoder.appendAll(Sets.intersection(
-                        Sets.newHashSet(allaKoder.get(i).getCentralaKoder()),
-                        Sets.newHashSet(allaKoder.get(i + 1).getCentralaKoder())).immutableCopy());
+                List<IcfKod> tempCentral = List.empty();
+                List<IcfKod> tempKompletterande = List.empty();
+                tempCentral = tempCentral.appendAll(Sets.intersection(
+                        Sets.newHashSet(allaKoder.get(i)._2.getCentralaKoder()),
+                        Sets.newHashSet(allaKoder.get(i + 1)._2.getCentralaKoder())).immutableCopy());
 
-                gemensammaKompletterandeKoder = gemensammaKompletterandeKoder.appendAll(Sets.intersection(
-                        Sets.newHashSet(allaKoder.get(i).getKompletterandeKoder()),
-                        Sets.newHashSet(allaKoder.get(i + 1).getKompletterandeKoder())).immutableCopy());
+                tempKompletterande = tempKompletterande.appendAll(Sets.intersection(
+                        Sets.newHashSet(allaKoder.get(i)._2.getKompletterandeKoder()),
+                        Sets.newHashSet(allaKoder.get(i + 1)._2.getKompletterandeKoder())).immutableCopy());
+
+                if (!tempCentral.isEmpty() || !tempKompletterande.isEmpty()) {
+                    icd10KoderMedGemensammaIcf = icd10KoderMedGemensammaIcf.add(allaKoder.get(i)._1);
+                    icd10KoderMedGemensammaIcf = icd10KoderMedGemensammaIcf.add(allaKoder.get(i + 1)._1);
+                }
+
+                gemensammaCentralKoder = gemensammaCentralKoder.appendAll(tempCentral);
+                gemensammaKompletterandeKoder = gemensammaKompletterandeKoder.appendAll(tempKompletterande);
             }
         }
 
+        if (gemensammaCentralKoder.isEmpty() && gemensammaKompletterandeKoder.isEmpty()) {
+            return Optional.empty();
+        }
+
         if (typ == BeskrivningTyp.FUNKTIONSNEDSATTNING) {
-            return FunktionsNedsattningsKoder.of(
+            return Optional.of(FunktionsNedsattningsKoder.of(
+                    icd10KoderMedGemensammaIcf.toJavaList(),
                     gemensammaCentralKoder.toJavaList(),
-                    gemensammaKompletterandeKoder.toJavaList());
+                    gemensammaKompletterandeKoder.toJavaList()));
         } else if (typ == BeskrivningTyp.AKTIVITETSBEGRANSNING) {
-            return AktivitetsBegransningsKoder.of(
+            return Optional.of(AktivitetsBegransningsKoder.of(
+                    icd10KoderMedGemensammaIcf.toJavaList(),
                     gemensammaCentralKoder.toJavaList(),
-                    gemensammaKompletterandeKoder.toJavaList());
+                    gemensammaKompletterandeKoder.toJavaList()));
         } else {
             throw new IllegalArgumentException("Incorrect Type for variable typ");
         }
@@ -158,11 +180,14 @@ public class IcfServiceImpl implements IcfService {
         };
     }
 
-    private Function<DiagnosInformation, IcfKoder> getDiagnosKoder(final BeskrivningTyp typ) {
-        return info -> info.getBeskrivningList().stream()
-                .filter(filterBeskrivning(typ))
-                .collect(toOptional())
-                .map(toIcfKoder(null))
+    private Function<Tuple2<String, Optional<DiagnosInformation>>, Tuple2<String, IcfKoder>> getDiagnosKoder(final BeskrivningTyp typ) {
+        return pair -> pair._2
+                .map(info -> info.getBeskrivningList().stream()
+                        .filter(filterBeskrivning(typ))
+                        .collect(toOptional())
+                        .map(toIcfKoder(null))
+                        .map(koder -> Tuple.of(pair._1, koder))
+                        .orElse(null))
                 .orElse(null);
     }
 
