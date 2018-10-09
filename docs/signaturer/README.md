@@ -23,7 +23,7 @@ Från Webcert 6.1 så har signeringarna i Webcert gjorts om från grunden. Vi f�
 ##### XML Digital Signature
 Från Webcert 6.1 är detta vår huvudsakliga signeringsmetod, där varje intyg som skickas till Intygstjänsten medelst RegisterCertificate v3.2 eller senare och som signeras mha NetiD-plugin eller NetiD Access Server.
 
-Kortfattat så förses XML-kroppen för ett RegisterCertificate med ett nytt <Signature>-element som är barn till <Intyg>-elementet:
+Kortfattat så förses XML-kroppen för ett RegisterCertificate med ett nytt <Signature>-element som är barn till <Intyg><underskrift>-elementet:
 
     <?xml version="1.0" encoding="UTF-8"?>
     <ns2:RegisterCertificate xmlns:ns2="urn:riv:cl....">
@@ -36,11 +36,13 @@ Kortfattat så förses XML-kroppen för ett RegisterCertificate med ett nytt <Si
             <svar id="1">
                 ...
             </svar>
-            <Signature>
-                <ns2:SignedInfo>
-                    ...
-                </ns2:SignedInfo>
-            </Signature>
+            <m1:underskrift>
+                <Signature>
+                    <ns2:SignedInfo>
+                        ...
+                    </ns2:SignedInfo>
+                </Signature>
+            </m1:underskrift>
         </ns2:intyg>
     </ns2:RegisterCertificate>
 

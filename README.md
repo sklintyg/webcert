@@ -146,7 +146,7 @@ Man behöver i så fall konfigurera Webcert att nyttja sustainsys stub-idp:
 Ändra gretty-configen
 
     jvmArgs = ["-Dcatalina.base=${buildDir}/catalina.base",
-           "-Dspring.profiles.active=dev,caching-enabled,wc-security-test",
+           "-Dspring.profiles.active=test,wc-all-stubs,caching-enabled,wc-security-test,testability-api",
            "-Dresources.folder=${projectDir}/../src/main/resources",
            "-Dcredentials.file=${projectDir}/../../webcert-konfiguration/authtest/credentials.properties",
            "-Dconfig.file=${projectDir}/../../webcert-konfiguration/authtest/webcert.properties",
