@@ -56,6 +56,7 @@ angular.module('webcert').directive('wcEnhetArendenFilter', [
 
                     $scope.resetFilterForm = function() {
                         enhetArendenFilterModel.reset();
+                        resetInvalidData();
                         updateArendenList();
                     };
 
@@ -69,6 +70,7 @@ angular.module('webcert').directive('wcEnhetArendenFilter', [
                         // If we change enhet then we probably don't want the same filter criterias
                         if (unit.id !== enhetArendenModel.enhetId) {
                             enhetArendenFilterModel.reset();
+                            resetInvalidData();
                         }
                         enhetArendenModel.enhetId = unit.id;
 
@@ -76,6 +78,13 @@ angular.module('webcert').directive('wcEnhetArendenFilter', [
                         updateArendenList();
                     });
                 };
+
+                function resetInvalidData() {
+                    // fiddle with the DOM to get rid of invalid data which isn't bind through the model
+                    angular.element('#filter-changedate-from').val('').removeClass('ng-invalid-date');
+                    angular.element('#filter-changedate-to').val('').removeClass('ng-invalid-date');
+                    angular.element('#filter-person-id').val('');
+                }
 
             }
         };
