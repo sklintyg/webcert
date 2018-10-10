@@ -30,8 +30,8 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import se.inera.intyg.common.fkparent.model.converter.RespConstants;
-import se.inera.intyg.common.lisjp.model.internal.LisjpUtlatande;
-import se.inera.intyg.common.luse.model.internal.LuseUtlatande;
+import se.inera.intyg.common.lisjp.v1.model.internal.LisjpUtlatandeV1;
+import se.inera.intyg.common.luse.v1.model.internal.LuseUtlatandeV1;
 import se.inera.intyg.common.support.model.CertificateState;
 import se.inera.intyg.common.support.model.InternalDate;
 import se.inera.intyg.common.support.model.Status;
@@ -481,10 +481,10 @@ public class ArendeViewConverterTest {
         return arende;
     }
 
-    private LisjpUtlatande buildLisjpUtlatande(String intygsid2, String enhetsId, String enhetsNamn, String patientPersonId,
-            String skapadAvNamn, String skapadavPersonId, LocalDateTime timeStamp) {
+    private LisjpUtlatandeV1 buildLisjpUtlatande(String intygsid2, String enhetsId, String enhetsNamn, String patientPersonId,
+                                                 String skapadAvNamn, String skapadavPersonId, LocalDateTime timeStamp) {
 
-        LisjpUtlatande.Builder template = LisjpUtlatande.builder();
+        LisjpUtlatandeV1.Builder template = LisjpUtlatandeV1.builder();
 
         template.setId(intygsId);
         GrundData grundData = buildGrundData(enhetsId, enhetsNamn, patientPersonId, skapadavPersonId, timeStamp);
@@ -495,9 +495,9 @@ public class ArendeViewConverterTest {
         return template.build();
     }
 
-    private LuseUtlatande buildLuseUtlatande(String intygsId, String enhetsId, String enhetsnamn, String patientPersonId,
-            String string, String skapadAvId, LocalDateTime timeStamp) {
-        LuseUtlatande.Builder template = LuseUtlatande.builder();
+    private LuseUtlatandeV1 buildLuseUtlatande(String intygsId, String enhetsId, String enhetsnamn, String patientPersonId,
+                                               String string, String skapadAvId, LocalDateTime timeStamp) {
+        LuseUtlatandeV1.Builder template = LuseUtlatandeV1.builder();
         template.setId(intygsId);
         GrundData grundData = buildGrundData(enhetsId, enhetsnamn, patientPersonId, skapadAvId, timeStamp);
         template.setGrundData(grundData);
