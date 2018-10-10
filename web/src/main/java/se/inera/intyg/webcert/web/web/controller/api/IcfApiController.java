@@ -67,8 +67,6 @@ public class IcfApiController extends AbstractApiController {
             return Response.status(Response.Status.BAD_REQUEST).entity("Missing icd10 codes").build();
         }
 
-        return service.findIcfInformationByIcd10Koder(IcfRequest.of(icfCode1, icfCode2, icfCode3))
-                .map(resp -> Response.ok(resp).build())
-                .orElse(Response.noContent().build());
+        return Response.ok(service.findIcfInformationByIcd10Koder(IcfRequest.of(icfCode1, icfCode2, icfCode3))).build();
     }
 }

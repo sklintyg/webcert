@@ -55,10 +55,10 @@ public class IcfServiceImpl implements IcfService {
     }
 
     @Override
-    public Optional<IcfResponse> findIcfInformationByIcd10Koder(final IcfRequest icfRequest) {
+    public IcfResponse findIcfInformationByIcd10Koder(final IcfRequest icfRequest) {
 
-        Preconditions.checkArgument(Objects.nonNull(icfRequest));
-        Preconditions.checkArgument(Objects.nonNull(icfRequest.getIcd10Code1()));
+        Preconditions.checkArgument(Objects.nonNull(icfRequest), "IcfRequest can not be null");
+        Preconditions.checkArgument(Objects.nonNull(icfRequest.getIcd10Code1()), "IcfRequest must have an icfCode1");
 
         return convertToResponse(
                 Tuple.of(icfRequest.getIcd10Code1(), repository.findByIcd10KodList_kod(icfRequest.getIcd10Code1())),
@@ -66,7 +66,7 @@ public class IcfServiceImpl implements IcfService {
                 Tuple.of(icfRequest.getIcd10Code3(), repository.findByIcd10KodList_kod(icfRequest.getIcd10Code3())));
     }
 
-    private Optional<IcfResponse> convertToResponse(
+    private IcfResponse convertToResponse(
             final Tuple2<String, Optional<DiagnosInformation>> kod1Respons,
             final Tuple2<String, Optional<DiagnosInformation>> kod2Respons,
             final Tuple2<String, Optional<DiagnosInformation>> kod3Respons) {
@@ -77,9 +77,9 @@ public class IcfServiceImpl implements IcfService {
         final IcfDiagnoskodResponse gemensammaKoder = getGemensammaKoder(responsList);
         final List<IcfDiagnoskodResponse> unikaKoder = getUnikaKoder(responsList, gemensammaKoder);
 
-        return Optional.of(IcfResponse.of(
+        return IcfResponse.of(
                 gemensammaKoder,
-                unikaKoder.toJavaList()));
+                unikaKoder.toJavaList());
     }
 
     private List<IcfDiagnoskodResponse> getUnikaKoder(
@@ -100,11 +100,12 @@ public class IcfServiceImpl implements IcfService {
     private IcfDiagnoskodResponse getGemensammaKoder(final List<Tuple2<String, Optional<DiagnosInformation>>> responsList) {
 
         List<Tuple2<String, IcfKoder>> funktionsKoder = responsList
-                .map(getDiagnosKoder(BeskrivningTyp.FUNKTIONSNEDSATTNING));
+                .map(getDiagnosKoder(BeskrivningTyp.FUNKTIONSNEDSATTNING))
+                .filter(Objects::nonNull);
 
         List<Tuple2<String, IcfKoder>> aktivitetsKoder = responsList
-                .map(getDiagnosKoder(BeskrivningTyp.AKTIVITETSBEGRANSNING));
-
+                .map(getDiagnosKoder(BeskrivningTyp.AKTIVITETSBEGRANSNING))
+                .filter(Objects::nonNull);
 
         final Optional<IcfKoder> gemensammaNedsattning = findGemensammaKoder(funktionsKoder, BeskrivningTyp.FUNKTIONSNEDSATTNING);
         final Optional<IcfKoder> gemensammaAktivitet = findGemensammaKoder(aktivitetsKoder, BeskrivningTyp.AKTIVITETSBEGRANSNING);
