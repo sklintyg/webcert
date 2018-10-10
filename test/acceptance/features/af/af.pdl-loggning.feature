@@ -1,6 +1,6 @@
 # language: sv
 
-@PDL @GE-005 @AF @NOTREADY
+@PDL @GE-005 @AF
 Egenskap: GE-005 - PDL-loggning för AF-intyg
 
 Bakgrund: Jag är inloggad
@@ -9,7 +9,7 @@ Bakgrund: Jag är inloggad
 
 #1 #4
 # Första ändring per ändringssession ska loggas
-@SKRIVA @LÄSA @WIP
+@SKRIVA @LÄSA
 Scenario: GE-005 - Skapa AF-intyg
 	När jag går in på att skapa ett AF-intyg
 	Så ska det nu finnas 1 loggaktivitet "Skriva" för intyget
@@ -71,7 +71,7 @@ Scenario: GE-005 - Skriv ut AF-intyg
 	Så ska loggaktivitet "Utskrift" skickas till loggtjänsten med argument "Intyg utskrivet"
 
 #6
-@SKICKA @UTSKRIFT  @WIP
+@SKICKA @UTSKRIFT
 Scenario: GE-005 - PDL - Skicka AF-intyg till Arbetsförmedlingen
     När jag går in på ett slumpat AF-intyg med status "Skickat"
 	Och jag går in på utkastet

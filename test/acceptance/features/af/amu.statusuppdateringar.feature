@@ -1,5 +1,5 @@
 # language: sv
-@STATUSUPPDATERINGAR @AF @NOTREADY
+@STATUSUPPDATERINGAR @AF
 Egenskap: Statusuppdateringar för AF intyg
 
 Bakgrund: Jag har skickat en CreateDraft till Webcert.
