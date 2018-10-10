@@ -1,8 +1,9 @@
 @startuml
 title Signering med NetiD-plugin
 actor User
-participant Browser
 participant NetiD
+participant Browser
+
 participant BrowserCollectLoop
 
 participant Webcert
@@ -13,12 +14,15 @@ participant Intygstjänsten
 User -> Browser: Påbörja signering
 activate Browser
 Browser -> Webcert: Signeringshash
-
+activate Webcert
 Webcert -> xmldsig: Prepare
+activate xmldsig
 xmldsig --> Webcert: Partiell signatur
+deactivate xmldsig
 Webcert -> Webcert: Beräkna hash och skapa SignaturBiljett
 Webcert -> TicketTracker: Lagra SignaturBiljett
 Webcert --> Browser: SignaturBiljett med id och base64-hash
+deactivate Webcert
 Browser -/ BrowserCollectLoop: Starta poller
 
 activate BrowserCollectLoop
@@ -31,25 +35,31 @@ deactivate NetiD
 
 activate Browser
 Browser -> Webcert: Signatur och X509
+deactivate Browser
+
 activate Webcert
 Webcert -> xmldsig: Validera signatur
+activate xmldsig
 xmldsig --> Webcert: Valideringsresultat
+deactivate xmldsig
 Webcert -> Webcert: Lagra signatur
 Webcert -/ Intygstjänsten: RegisterCertificate
 Webcert -> TicketTracker: BiljettStatus SIGNERAD
-Webcert --> Browser: SignaturBiljett
+
 deactivate Webcert
-deactivate Browser
 
 
-loop tills signeringsstatus SIGNERAD
-
+loop tills signeringsstatus SIGNERAD eller ERROR
 
 BrowserCollectLoop -> Webcert: Hämta status
+activate Webcert
 Webcert -> TicketTracker: Hämta status
+activate TicketTracker
 TicketTracker --> Webcert: SignaturBiljett
+deactivate TicketTracker
 Webcert --> BrowserCollectLoop: SignaturBiljett
-deactivate BrowserCollectLoop
+deactivate Webcert
+
 
 alt Om SIGNERAD
 
@@ -58,10 +68,12 @@ activate Browser
 end alt
 alt Om ERROR
 BrowserCollectLoop -/ Browser: Visa felmeddelande
+deactivate BrowserCollectLoop
 end alt
 
 
 end loop
+
 Browser -> User: Visar det signerade intyget
 deactivate Browser
 @enduml
