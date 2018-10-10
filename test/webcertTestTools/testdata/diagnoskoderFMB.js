@@ -141,8 +141,7 @@ module.exports = {
                         beslutsunderlag: 'Vid skador på nedre extremiteten (frakturer, luxationer, distorsioner, sårskador)',
                         overliggandeTxt: 'Det FMB-stöd som visas är för koden S30',
                         overliggandeDiagnos: 'S30'
-                    },*/
-            {
+                    }, {
                 kod: 'F420',
                 symptomPrognosBehandling: 'Tvångssyndrom kännetecknas',
                 generellInfo: 'Det finns en spännvidd för hur en given sjukdom påverkar olika individers arbetsförmåga och förmåga att utföra olika aktiviteter',
@@ -160,6 +159,15 @@ module.exports = {
                 beslutsunderlag: 'Vid primär progressiv multipel skleros eller sekundär progressiv multipel skleros krävs ofta en längre tids sjukskrivning',
                 overliggandeTxt: 'Det FMB-stöd som visas är för koden G35',
                 overliggandeDiagnos: 'G35'
+            }, */
+            {
+                kod: 'K41',
+                symptomPrognosBehandling: 'Femoralbråck',
+                generellInfo: 'Det finns en spännvidd för hur en given sjukdom påverkar olika individers arbetsförmåga och förmåga att utföra olika aktiviteter',
+                funktionsnedsattning: 'Funktionsnedsättningen beror på vilken typ av kirurgi som utförts',
+                aktivitetsbegransning: null,
+                overliggandeTxt: 'Det FMB-stöd som visas är för koden K41',
+                overliggandeDiagnos: 'K41'
             }
         ]
 
