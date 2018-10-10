@@ -34,6 +34,10 @@ wc-utkast-filter {
 
   .filter-errors {
     padding-top: 10px;
+
+    > p {
+      color: $wc-color-11;
+    }
   }
 
   wc-dropdown {

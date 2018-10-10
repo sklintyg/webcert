@@ -23,7 +23,9 @@
   <div class="filter-field date-group">
     <label class="offset-label">Sparat datum</label><br>
     <label class="inline-label">Från</label>
-    <span dom-id="filter-changedate-from" target-model="filter.selection.savedFrom" wc-date-picker-field
+    <span dom-id="filter-changedate-from"
+          target-model="filter.selection.savedFrom"
+          wc-date-picker-field
           add-date-parser="strict"></span>
     <label class="inline-label">till</label>
     <span dom-id="filter-changedate-to" target-model="filter.selection.savedTo" wc-date-picker-field add-date-parser="strict"
@@ -39,7 +41,7 @@
   </div>
 </div>
 
-<wc-alert-message alert-severity="danger" ng-if="filterForm.$invalid && !filterForm.$pristine && widgetState.searched" ng-cloak class="filter-errors">
+<div ng-if="filterForm.$invalid && !filterForm.$pristine && widgetState.searched" ng-cloak class="filter-errors">
   <p ng-show="filterForm['filter-changedate-from'].$error.date">
     <span dynamic-label key="validation.invalidfromdate"></span>
   </p>
@@ -49,4 +51,4 @@
   <p ng-show="filterForm['filter-changedate-to'].$error.isBefore">
     <span dynamic-label key="validation.invalidtobeforefromdate"></span>
   </p>
-</wc-alert-message>
+</div>
