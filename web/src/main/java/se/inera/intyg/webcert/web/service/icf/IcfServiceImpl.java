@@ -72,7 +72,7 @@ public class IcfServiceImpl implements IcfService {
             final Tuple2<String, Optional<DiagnosInformation>> kod3Respons) {
 
         final List<Tuple2<String, Optional<DiagnosInformation>>> responsList = List.of(kod1Respons, kod2Respons, kod3Respons)
-                .filter(resp -> resp._1 != null);
+                .filter(resp -> resp._1 != null && resp._2.isPresent());
 
         final IcfDiagnoskodResponse gemensammaKoder = getGemensammaKoder(responsList);
         final List<IcfDiagnoskodResponse> unikaKoder = getUnikaKoder(responsList, gemensammaKoder);
