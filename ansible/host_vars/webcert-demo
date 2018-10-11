@@ -2,13 +2,13 @@
 
 environment_name: "demo"
 
-proxy_host: http://bf-proxy.sth
+proxy_host: bf-proxy.sth
 proxy_port: 8888
 proxy_ignore: "qa.esb.ntjp.se"
 
 proxy_env:
-  http_proxy: "{{ proxy_host }}:{{ proxy_port }}"
-  https_proxy: "{{ proxy_host }}:{{ proxy_port }}"
+  http_proxy: "http://{{ proxy_host }}:{{ proxy_port }}"
+  https_proxy: "http://{{ proxy_host }}:{{ proxy_port }}"
 
 tomcat7_user: ine-app
 tomcat7_group: ine-app
