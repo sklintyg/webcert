@@ -20,7 +20,7 @@ Scenario: GE-005 - Skapa AF-intyg
 	Så ska det nu finnas 2 loggaktivitet "Skriva" för intyget
 
 #2
-@LÄSA @WIP
+@LÄSA
 Scenario: GE-005 - Öppna AF-intyg
 	När jag går in på ett slumpat AF-intyg med status "Signerat"
 	Så ska loggaktivitet "Läsa" skickas till loggtjänsten
@@ -73,10 +73,12 @@ Scenario: GE-005 - Skriv ut AF-intyg
 #6
 @SKICKA @UTSKRIFT
 Scenario: GE-005 - PDL - Skicka AF-intyg till Arbetsförmedlingen
-    När jag går in på ett slumpat AF-intyg med status "Skickat"
+	När att vårdsystemet skapat ett intygsutkast för slumpat AF-intyg
 	Och jag går in på utkastet
-    Så har intyget skickats till Arbetsförmedlingen
-    Så ska loggaktivitet "Utskrift" skickas till loggtjänsten med argument "Intyget är skickat till Arbetsförmedlingen"
+	Och jag fyller i alla nödvändiga fält för intyget
+	Och jag skriver ut utkastet
+	Och jag signerar intyget
+	Så ska loggaktivitet "Utskrift" skickas till loggtjänsten med argument "Intyg skickat till mottagare AF"
 
 #9
 @RADERA
@@ -87,9 +89,11 @@ Scenario: GE-005 - PDL - Radera AF-utkast
 	Så ska loggaktivitet "Radera" skickas till loggtjänsten
 
 #10
-@MAKULERA @WIP
+@MAKULERA
 Scenario: GE-005 - Makulera AF-intyg
-	När jag går in på ett slumpat AF-intyg med status "Skickat"
+	När jag går in på att skapa ett AF-intyg
+	Och jag fyller i alla nödvändiga fält för intyget
+	Och jag signerar intyget
 	Och jag går in på utkastet
 	Och jag makulerar intyget
 	Så ska loggaktivitet "Radera" skickas till loggtjänsten
@@ -97,7 +101,7 @@ Scenario: GE-005 - Makulera AF-intyg
 #11
 #Förnya finns inte på AF intyg.
 
-#11
+#12
 @ERSÄTT @LÄSA @SKRIVA
 Scenario: GE-005 - Ersätta AF-intyg
 	När jag går in på ett slumpat AF-intyg med status "Signerat"
