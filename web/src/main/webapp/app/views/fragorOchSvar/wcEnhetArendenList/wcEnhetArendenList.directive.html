@@ -54,7 +54,7 @@
               <td><span ng-show="arende.paminnelse">Påminnelse:</span> <span dynamic-label key="arende.measure.{{arende.measureResKey}}"></span></td>
               <td><span dynamic-label key="common.arende.fragestallare.{{arende.fragestallare}}"></span></td>
               <td id="patientId-{{arende.meddelandeId}}" class="unbreakable">{{arende.patientId | PersonIdFormatter}} <i class="material-icons md-18" 
-                uib-popover="Patienten har en sekretessmarkering." popover-trigger="mouseenter" popover-popup-delay="300" popover-append-to-body="true"
+                uib-popover="Patienten har en sekretessmarkering."  popover-popup-delay="300" popover-append-to-body="true"
                 popover-placement="auto top" ng-if="arende.sekretessmarkering">security</i></td>
               <td>{{arende.signeratAvNamn}}</td>
               <td class="unbreakable">{{arende.receivedDate | date:'short'}}</td>
@@ -66,7 +66,7 @@
               <td ng-show="displayVidarebefordra">
                 <button type="button"
                         class="btn btn-primary"
-                        uib-popover-html="forwardTooltip" popover-trigger="mouseenter" popover-placement="top" popover-popup-delay="300" popover-append-to-body="true"
+                        uib-popover-html="forwardTooltip"  popover-placement="top" popover-popup-delay="300" popover-append-to-body="true"
                         ng-click="openMailDialog(arende)"
                         wc-authority="VIDAREBEFORDRA_FRAGASVAR" intygstyp="{{::arende.intygTyp}}">
                   <i class="icon-wc-ikon-reply"></i> Vidarebefordra
@@ -75,7 +75,7 @@
               <td>
                 <button type="button"
                         class="btn btn-primary"
-                        uib-popover-html="openTooltip" popover-trigger="mouseenter" popover-placement="top" popover-popup-delay="300" popover-append-to-body="true"
+                        uib-popover-html="openTooltip"  popover-placement="top" popover-popup-delay="300" popover-append-to-body="true"
                         ng-click="openIntyg(arende.intygId, arende.intygTyp)"
                         id="showarendeBtn-{{arende.meddelandeId}}"
                   ><i class="icon-wc-ikon-19"></i> <span>Öppna</span></button>

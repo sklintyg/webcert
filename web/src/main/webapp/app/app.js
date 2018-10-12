@@ -91,8 +91,8 @@
         });
     }
 
-    app.config(['$httpProvider', 'common.http403ResponseInterceptorProvider', '$logProvider', '$compileProvider', '$locationProvider', '$animateProvider',
-        function($httpProvider, http403ResponseInterceptorProvider, $logProvider, $compileProvider, $locationProvider, $animateProvider) {
+    app.config(['$httpProvider', 'common.http403ResponseInterceptorProvider', '$logProvider', '$compileProvider', '$locationProvider', '$animateProvider', '$uibTooltipProvider',
+        function($httpProvider, http403ResponseInterceptorProvider, $logProvider, $compileProvider, $locationProvider, $animateProvider, $uibTooltipProvider) {
 
             // Set in boot-app.jsp
             var debugMode = angular.isDefined(WEBCERT_DEBUG_MODE) ? WEBCERT_DEBUG_MODE : true; //jshint ignore:line
@@ -120,6 +120,11 @@
             $compileProvider.cssClassDirectivesEnabled(false);
 
             $animateProvider.classNameFilter(/^(?:(?!ng-animate-disabled).)*$/);
+
+            //set default popover trigger config. The extra click hide trigger is added because of IE11 bug. (see INTYG-7330)
+            $uibTooltipProvider.options({
+                trigger: 'mouseenter : mouseleave click'
+            });
         }]);
 
 /*
