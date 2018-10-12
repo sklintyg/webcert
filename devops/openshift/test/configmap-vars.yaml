@@ -1,6 +1,6 @@
 apiVersion: v1
 data:
-  NTJP_WS_CERTIFICATE_TYPE_VALUE: JKS
+  NTJP_WS_CERTIFICATE_TYPE: JKS
   NTJP_WS_TRUSTSTORE_TYPE: JKS
 kind: ConfigMap
 metadata:
