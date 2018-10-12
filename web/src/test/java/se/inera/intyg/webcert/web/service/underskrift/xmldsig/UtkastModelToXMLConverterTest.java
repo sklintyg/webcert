@@ -26,7 +26,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.test.util.ReflectionTestUtils;
-import se.inera.intyg.common.db.rest.DbModuleApi;
+import se.inera.intyg.common.db.v1.rest.DbModuleApiV1;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.ts_bas.rest.TsBasModuleApi;
@@ -55,10 +55,10 @@ public class UtkastModelToXMLConverterTest {
     public void testConvertDb() throws ModuleNotFoundException, IOException {
         loadJsonModel("UtkastModelToXMLConverter/db.json");
 
-        DbModuleApi dbModuleApi = new DbModuleApi();
-        ReflectionTestUtils.setField(dbModuleApi, "objectMapper", new CustomObjectMapper());
+        DbModuleApiV1 dbModuleApiV1 = new DbModuleApiV1();
+        ReflectionTestUtils.setField(dbModuleApiV1, "objectMapper", new CustomObjectMapper());
 
-        when(intygModuleRegistry.getModuleApi(anyString(), anyString())).thenReturn(dbModuleApi);
+        when(intygModuleRegistry.getModuleApi(anyString(), anyString())).thenReturn(dbModuleApiV1);
         when(intygModuleRegistry.resolveVersionFromUtlatandeJson(anyString())).thenReturn("1.0");
         String xml = testee.utkastToXml(jsonModel, "DB");
         assertNotNull(xml);

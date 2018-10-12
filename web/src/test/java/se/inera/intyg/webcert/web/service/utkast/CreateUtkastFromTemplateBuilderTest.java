@@ -30,7 +30,7 @@ import org.mockito.InjectMocks;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.core.io.ClassPathResource;
 
-import se.inera.intyg.common.db.model.internal.DbUtlatande;
+import se.inera.intyg.common.db.v1.model.internal.DbUtlatandeV1;
 import se.inera.intyg.common.support.model.CertificateState;
 import se.inera.intyg.common.support.model.Status;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
@@ -149,8 +149,8 @@ public class CreateUtkastFromTemplateBuilderTest extends AbstractBuilderTest {
         List<Status> status = new ArrayList<>();
         status.add(new Status(CertificateState.RECEIVED, "HSVARD", LocalDateTime.now()));
         status.add(new Status(CertificateState.SENT, "SKV", LocalDateTime.now()));
-        DbUtlatande utlatande = new CustomObjectMapper().readValue(new ClassPathResource(
-                "IntygDraftServiceImplTest/db-utlatande.json").getFile(), DbUtlatande.class);
+        DbUtlatandeV1 utlatande = new CustomObjectMapper().readValue(new ClassPathResource(
+                "IntygDraftServiceImplTest/db-utlatande.json").getFile(), DbUtlatandeV1.class);
         return IntygContentHolder.builder()
                 .setContents("<external-json/>")
                 .setUtlatande(utlatande)

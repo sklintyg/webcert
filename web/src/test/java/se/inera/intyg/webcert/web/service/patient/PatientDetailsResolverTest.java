@@ -29,7 +29,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import se.inera.intyg.common.db.model.internal.DbUtlatande;
+import se.inera.intyg.common.db.v1.model.internal.DbUtlatandeV1;
 import se.inera.intyg.common.db.support.DbModuleEntryPoint;
 import se.inera.intyg.common.support.model.common.internal.GrundData;
 import se.inera.intyg.common.support.model.common.internal.Patient;
@@ -615,7 +615,7 @@ public class PatientDetailsResolverTest {
     private Utlatande buildSosDoiUtlatande() {
         GrundData grundData = new GrundData();
         grundData.setPatient(buildPatient());
-        return DbUtlatande.builder()
+        return DbUtlatandeV1.builder()
                 .setGrundData(grundData)
                 .setId("abc-123")
                 .setTextVersion("1.0")
