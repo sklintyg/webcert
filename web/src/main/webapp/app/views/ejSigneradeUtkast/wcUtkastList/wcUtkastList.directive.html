@@ -41,7 +41,7 @@
                 ng-click="openMailDialog(intyg)" wc-authority="VIDAREBEFORDRA_UTKAST" intygstyp="{{::intyg.intygType}}"
                 ng-if="intyg.status != 'DRAFT_LOCKED'"
                 uib-popover-html="'Skapar ett e-postmeddelande i din e-postklient med en direktlänk till utkastet.'"
-                popover-trigger="mouseenter" popover-placement="top" popover-popup-delay="300"
+                 popover-placement="top" popover-popup-delay="300"
                 popover-append-to-body="true">
           <i class="icon-wc-ikon-reply"></i> Vidarebefordra
 
@@ -49,7 +49,7 @@
       </td>
       <td class="unbreakable">
         <button ng-attr-id="showBtn-{{intyg.intygId}}" type="button" class="btn btn-primary" ng-click="openIntyg(intyg)"
-                uib-popover-html="'Öppnar utkastet.'" popover-trigger="mouseenter" popover-placement="top"
+                uib-popover-html="'Öppnar utkastet.'"  popover-placement="top"
                 popover-popup-delay="300" popover-append-to-body="true">
           <i class="icon-wc-ikon-19"></i> Öppna
         </button>
@@ -104,14 +104,14 @@
                 ng-click="openMailDialog(intyg)" wc-authority="VIDAREBEFORDRA_UTKAST" intygstyp="{{::intyg.intygType}}"
                 ng-if="intyg.status != 'DRAFT_LOCKED'"
                 uib-popover-html="'Skapar ett e-postmeddelande i din e-postklient med en direktlänk till utkastet.'"
-                popover-trigger="mouseenter" popover-placement="top" popover-popup-delay="300"
+                 popover-placement="top" popover-popup-delay="300"
                 popover-append-to-body="true">
           <i class="icon-wc-ikon-reply"></i> Vidarebefordra
 
         </button>
 
         <button ng-attr-id="showBtn-{{intyg.intygId}}" type="button" class="btn btn-primary" ng-click="openIntyg(intyg)"
-                uib-popover-html="'Öppnar utkastet.'" popover-trigger="mouseenter" popover-placement="top"
+                uib-popover-html="'Öppnar utkastet.'"  popover-placement="top"
                 popover-popup-delay="300" popover-append-to-body="true">
           <i class="icon-wc-ikon-19"></i> Öppna
         </button>
