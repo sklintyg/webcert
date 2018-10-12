@@ -8,22 +8,22 @@ Bakgrund: Jag har skickat en CreateDraft till Webcert.
    Och jag går in på intygsutkastet via djupintegrationslänk
 
 @SKICKA-TILL-AF @SKAPAT @SIGNAT @SKICKA
-Scenario: Statusuppdateringar då AMU intyg skickas till Arbetsförmedlingen
+Scenario: Statusuppdateringar då AFMU intyg skickas till Arbetsförmedlingen
     Så ska statusuppdatering "SKAPAT" skickas till vårdsystemet. Totalt: "1"
 
     När jag fyller i alla nödvändiga fält för intyget
     Och jag signerar intyget
     Så ska statusuppdatering "SIGNAT" skickas till vårdsystemet. Totalt: "1"
 
-    När jag skickar intyget till Arbetsförmedlingen
+   # När jag skickar intyget till Arbetsförmedlingen
     Så ska statusuppdatering "SKICKA" skickas till vårdsystemet. Totalt: "1"
 
 
-@MAKULE
+@MAKULERA @PATRIK
 Scenario: Statusuppdateringar då AMU intyg makuleras
     När jag fyller i alla nödvändiga fält för intyget
     Och jag signerar intyget
-    Och jag skickar intyget till Arbetsförmedlingen
+    #Och jag skickar intyget till Arbetsförmedlingen
 
     När jag makulerar intyget
     Så ska statusuppdatering "MAKULE" skickas till vårdsystemet. Totalt: "1"

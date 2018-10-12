@@ -49,12 +49,13 @@ let statusuppdateringarRows;
 function getNotificationEntries(intygsId, value, numEvents, intyg) {
     var isSMIIntyg = helpers.isSMIIntyg(intyg.typ);
     var isTSIntyg = helpers.isTSIntyg(intyg.typ);
+    var isAFIntyg = helpers.isAFIntyg(intyg.typ);
     var table = 'webcert_requests.requests';
     var handelseTidName = 'handelsetidpunkt';
     var extensionType = 'utlatandeExtension';
     var selectStatement = 'SELECT utlatandeExtension, handelseKod,antalFragor,antalHanteradeFragor,antalSvar,antalHanteradeSvar, ' + handelseTidName;
 
-    if (isSMIIntyg || isTSIntyg) {
+    if (isSMIIntyg || isTSIntyg || isAFIntyg) {
         table = 'webcert_requests.statusupdates_3';
         handelseTidName = 'handelseTid';
         extensionType = 'intygsExtension';

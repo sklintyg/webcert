@@ -360,6 +360,9 @@ module.exports = {
     },
     isTSIntyg: function(intygsType) {
         return intygsType.indexOf('Transportstyrelsen') > -1;
+    }, //PATRIK
+    isAFIntyg: function(intygsType) {
+        return intygsType.indexOf('Arbetsförmedlingen') > -1;
     },
     isFK7263Intyg: function(intygsType) {
         return intygsType.indexOf('7263') > -1;
@@ -462,6 +465,9 @@ module.exports = {
             url = process.env.WEBCERT_URL + '#/intyg/ts-diabetes/' + intyg.id + '/';
         } else if (intyg.typ === 'Transportstyrelsens läkarintyg högre körkortsbehörighet') {
             url = process.env.WEBCERT_URL + '#/intyg/ts-bas/' + intyg.id + '/';
+            //PATRIK
+        } else if (intyg.typ === 'Arbetsförmedlingens medicinska utlåtande') {
+            url = process.env.WEBCERT_URL + '#/intyg/af00213/' + intyg.id + '/';
         }
         return url;
     },
