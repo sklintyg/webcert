@@ -28,15 +28,14 @@ Scenario: Operationsdatum får inte anges tidigare än 4 veckor före dödsdatum
     Och jag klickar på signera-knappen
     Så ska "1" valideringsfel visas med texten "Datumet får inte vara tidigare än fyra veckor före döden."
 
-@F.VAL-050
-@F.VAL-051
+@E-09 @F.VAL-051
 Scenario: Datum för en föregående dödsorsak kan inte vara senare än datumet för en efterkommande
     När jag väljer alternativet "Säkert" i frågan "Dödsdatum"
     Och jag fyller i "2018-04-16" i fältet "Datum"
     Och jag anger dödsorsaker med datum i stigande ordning
     Och jag klickar på signera-knappen
-    Så ska "1" valideringsfel visas med texten "Datumet får inte vara senare än datumet för den terminala dödsorsaken."
-    Så ska "2" valideringsfel visas med texten "Datumet får inte vara senare än datumet för sjukdomen eller skadan som angavs under den föregående "Som var en följd av"."
+    Så ska "1" valideringsfel visas med texten "Ange ett datum, samma som eller tidigare än den terminala dödsorsaken."
+    Så ska "2" valideringsfel visas med texten "Ange ett datum, samma som eller tidigare än datumet för sjukdomen eller skadan som angavs i föregående "Som var en följd av"."
 
 @F.VAL-054 @WAITINGFORFIX @UTR-2014 @INTYG-5683
 Scenario: Dödsdatum får inte vara före 1 januari föregående år

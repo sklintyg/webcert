@@ -24,13 +24,13 @@ Exempel:
     | Dödsbevis       |
     | Dödsorsaksintyg |
 
-@F.VAL-040
+@E-05
 Scenariomall: <intyg> - Dödsdatum kan inte vara i framtiden
     Givet jag går in på att skapa ett "<intyg>" intyg
     När jag väljer alternativet "Säkert" i frågan "Dödsdatum"
     Och jag anger ett säkert dödsdatum i framtiden
     Och jag klickar på signera-knappen
-    Så ska "1" valideringsfel visas med texten "Datumet får inte vara senare än dagens datum."
+    Så ska "1" valideringsfel visas med texten "Ange dagens eller ett tidigare datum."
 
 
 Exempel:
@@ -39,30 +39,30 @@ Exempel:
     | Dödsorsaksintyg |
 
 
-@F.VAL-049
+@E-08
 Scenariomall: <intyg> - Anträffad död kan inte vara tidigare än dödsdatum
     Givet jag går in på att skapa ett "<intyg>" intyg
     När jag väljer alternativet "Ej säkert" i frågan "Dödsdatum"
     Och jag anger dagens datum som ej säkert dödsdatum
     Och jag anger ett tidigare datum för anträffad död
     Och jag klickar på signera-knappen
-    Så ska "1" valideringsfel visas med texten "Datumet får inte vara tidigare än "Dödsdatum""
+    Så ska "1" valideringsfel visas med texten "Ange ett datum, samma som eller senare än "Dödsdatum"."
 
 Exempel:
     | intyg           |
     | Dödsbevis       |
     | Dödsorsaksintyg |
 
-@F.VAL-054 @WAITINGFORFIX @UTR-2014 @INTYG-5683
+@E-07 @WAITINGFORFIX @UTR-2014 @INTYG-5683
 Scenariomall: <intyg> - Dödsdatum får inte vara före 1 januari föregående år
     Givet jag går in på att skapa ett "<intyg>" intyg
     När jag väljer alternativet "Säkert" i frågan "Dödsdatum"
     Och jag anger 31 december förrförra året som säkert dödsdatum
     Och jag klickar på signera-knappen
-    Så ska "1" valideringsfel visas med texten "Datumet får inte vara tidigare än 1 januari föregående året."
+    Så ska "1" valideringsfel visas med texten "Ange ett datum, samma som eller senare än 1 januari föregående året."
     När jag väljer alternativet "Ej säkert" i frågan "Dödsdatum"
     När jag anger 31 december förrförra året som anträffad död
-    Så ska "1" valideringsfel visas med texten "Datumet får inte vara tidigare än 1 januari föregående året."
+    Så ska "1" valideringsfel visas med texten "Ange ett datum, samma som eller senare än 1 januari föregående året."
 
 Exempel:
     | intyg           |
