@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-describe('EjSigneradeUtkastCtrlSpec', function() {
+xdescribe('EjSigneradeUtkastCtrlSpec', function() {
     'use strict';
 
     var $controller;
