@@ -28,10 +28,24 @@ angular.module('webcert').factory('webcert.enhetArendenFilterService',
             enhetArendenProxy.getArendenLakareList(lakareUnitId, function(list) {
                 enhetArendenFilterModel.viewState.loadingLakare = false;
                 enhetArendenFilterModel.lakareList = list;
-                enhetArendenFilterModel.lakareList.unshift(enhetArendenFilterModel.lakareListEmptyChoice);
+                    enhetArendenFilterModel.lakareList.unshift(enhetArendenFilterModel.lakareListEmptyChoice);
                 if (!UserModel.isDjupintegration() && !UserModel.isVardAdministrator()) {
-                    enhetArendenFilterModel.lakareList.push({id: UserModel.user.hsaId, label: UserModel.user.namn});
-                    enhetArendenFilterModel.filterForm.lakareSelector = UserModel.user.hsaId;
+
+                    var userLakare = {
+                        id: UserModel.user.hsaId, label: UserModel.user.namn
+                    };
+
+                    var inList = false;
+                    enhetArendenFilterModel.lakareList.forEach(function(lakare){
+                        if (lakare.id === userLakare.id) {
+                            inList = true;
+                        }
+                    });
+
+                    if (!inList) {
+                        enhetArendenFilterModel.lakareList.push(userLakare);
+                    }
+                    enhetArendenFilterModel.filterForm.lakareSelector = userLakare.id;
                 } else {
                     enhetArendenFilterModel.filterForm.lakareSelector = enhetArendenFilterModel.lakareList[0].id;
                 }
