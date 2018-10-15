@@ -23,12 +23,10 @@
   <div class="filter-field date-group">
     <label class="offset-label">Sparat datum</label><br>
     <label class="inline-label">Från</label>
-    <span dom-id="filter-changedate-from"
-          target-model="filter.selection.savedFrom"
-          wc-date-picker-field
-          add-date-parser="strict"></span>
+    <span dom-id="filter-changedate-from" target-model="filter.selection.savedFrom" wc-date-picker-field
+          add-date-parser="strict" max-date={{maxdate}}></span>
     <label class="inline-label">till</label>
-    <span dom-id="filter-changedate-to" target-model="filter.selection.savedTo" wc-date-picker-field add-date-parser="strict"
+    <span dom-id="filter-changedate-to" target-model="filter.selection.savedTo" wc-date-picker-field add-date-parser="strict" max-date={{maxdate}}
           wc-date-is-after-validator="filter-changedate-from"></span>
   </div>
 

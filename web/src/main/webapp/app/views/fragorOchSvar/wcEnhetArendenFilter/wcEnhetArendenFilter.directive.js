@@ -34,6 +34,9 @@ angular.module('webcert').directive('wcEnhetArendenFilter', [
             templateUrl: '/app/views/fragorOchSvar/wcEnhetArendenFilter/wcEnhetArendenFilter.directive.html',
             controller: function($scope) {
 
+                $scope.maxdate = new Date().toISOString().split('T')[0];
+                $scope.pnrValidated = false;
+
                 this.$onInit = function(){
 
                     // Load filter form (first page load)
