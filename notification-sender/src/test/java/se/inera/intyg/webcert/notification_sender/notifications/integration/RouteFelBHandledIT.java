@@ -42,7 +42,7 @@ import se.inera.intyg.common.support.modules.support.api.notification.SchemaVers
 import se.inera.intyg.webcert.notificationstub.v3.NotificationStubStateBean;
 
 @DirtiesContext
-@ContextConfiguration("/notifications/integration-test-notification-sender-config-felb.xml")
+@ContextConfiguration("/notifications/integration-test-notification-sender-config.xml")
 public class RouteFelBHandledIT extends AbstractBaseIT {
 
     @Autowired
