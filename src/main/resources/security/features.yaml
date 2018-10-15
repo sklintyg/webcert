@@ -247,6 +247,6 @@ features:
   - &f200
     name: *kf200
     desc: Rensning av meddelanden av fel B
-    global: false
+    global: true
 
 pilots:
