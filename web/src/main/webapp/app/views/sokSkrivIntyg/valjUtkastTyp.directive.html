@@ -16,9 +16,9 @@
                   <button ng-attr-id="intygTypeAbout-{{type.id}}" class="btn btn-link btn-link__purelink" ng-click="openIntygTypeDetailsDialog(type)">Om intyget</button>
                 </div>
                 <div>
-                    <button ng-attr-id="intygTypeFortsatt-{{type.id}}" class="btn btn-primary continue-btn" ng-click="checkType(type.id)"
+                    <button ng-attr-id="intygTypeFortsatt-{{type.id}}" class="btn btn-primary continue-btn" ng-click="checkType(type.id); intygTypeFortsattPopOverOpen=false;"
                             ng-disabled="!isCreateUtkastEnabled(type.id)" uib-popover="Skapa ett intygsutkast."
-                             popover-popup-delay="300" popover-append-to-body="true"
+                             popover-popup-delay="300" popover-append-to-body="true" popover-is-open="intygTypeFortsattPopOverOpen"
                             popover-placement="auto top"><i class="material-icons">description</i> Skapa intyg</button>
                 </div>
               </div>

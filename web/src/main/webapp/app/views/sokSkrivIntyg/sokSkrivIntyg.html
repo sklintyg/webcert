@@ -1,6 +1,6 @@
 <div id="skapa-valj-patient" wc-authority feature="HANTERA_INTYGSUTKAST" intygstyp="" class="webcert-workarea-page centered-constrained-content container-fluid">
 
-  <form name="pnrForm" ng-submit="loadPatient()" novalidate autocomplete="off">
+  <form name="pnrForm" ng-submit="gaVidareBtnTooltipShow=false;loadPatient()" novalidate autocomplete="off">
     <div class="form-group sokSkrivIntygWrapper">
       <label for="pnr" class="control-label">Patientens personnummer eller samordningsnummer</label>
 
@@ -14,6 +14,7 @@
         <button id="skapapersonnummerfortsatt" name="skapapersonnummerfortsatt"
                 class="btn btn-primary" type="submit" ng-disabled="viewState.loading || !pnrForm.pnr.$valid"
                 uib-popover="Gå vidare för att skapa eller söka efter intyg för patienten."
+                popover-is-open="gaVidareBtnTooltipShow"
                 popover-popup-delay="300" popover-append-to-body="true" popover-placement="auto top">
           <i ng-show="viewState.loading" class="icon-wc-ikon-02 animate-spin"></i>
           <span ng-hide="viewState.loading">Fortsätt</span>

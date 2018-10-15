@@ -121,9 +121,10 @@
 
             $animateProvider.classNameFilter(/^(?:(?!ng-animate-disabled).)*$/);
 
-            //set default popover trigger config. The extra click hide trigger is added because of IE11 bug. (see INTYG-7330)
+
+            //set default popover trigger config.
             $uibTooltipProvider.options({
-                trigger: 'mouseenter : mouseleave click'
+                trigger: 'mouseenter'
             });
         }]);
 
