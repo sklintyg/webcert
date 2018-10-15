@@ -30,6 +30,7 @@ angular.module('webcert').factory('webcert.enhetArendenFilterService',
                 enhetArendenFilterModel.lakareList = list;
                 enhetArendenFilterModel.lakareList.unshift(enhetArendenFilterModel.lakareListEmptyChoice);
                 if (!UserModel.isDjupintegration() && !UserModel.isVardAdministrator()) {
+                    enhetArendenFilterModel.lakareList.push({id: UserModel.user.hsaId, label: UserModel.user.namn});
                     enhetArendenFilterModel.filterForm.lakareSelector = UserModel.user.hsaId;
                 } else {
                     enhetArendenFilterModel.filterForm.lakareSelector = enhetArendenFilterModel.lakareList[0].id;
