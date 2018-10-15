@@ -21,10 +21,10 @@
  * Controller for logic related to viewing signed certs
  */
 angular.module('webcert').controller('webcert.VisaIntygFragasvarCtrl',
-    ['$rootScope', '$state', '$stateParams', '$scope', '$location', '$q', 'common.dialogService',
+    ['$rootScope', '$state', '$stateParams', '$scope', '$location', '$q', '$uibModalStack', 'common.dialogService',
         'webcert.UtkastProxy', 'common.UserPreferencesService', 'common.enhetArendenCommonService',
         'common.featureService',
-        function($rootScope, $state, $stateParams, $scope, $location, $q, dialogService, UtkastProxy,
+        function($rootScope, $state, $stateParams, $scope, $location, $q, $uibModalStack, dialogService, UtkastProxy,
             UserPreferencesService, enhetArendenCommonService, featureService) {
             'use strict';
 
@@ -42,6 +42,13 @@ angular.module('webcert').controller('webcert.VisaIntygFragasvarCtrl',
             
             var unbindCheckHandledEvent = $rootScope.$on('$locationChangeStart',
                 function($event, newUrl, currentUrl) {
+
+                    // When disable flag is set, just bail.
+                    // Needed to get wcCloseModals directive to work properly
+                    if (typeof $uibModalStack.disableModals !== 'undefined' && $uibModalStack.disableModals) {
+                        delete $uibModalStack.disableModals;
+                        return;
+                    }
 
                     // Show dialogs to mark all unhandled messages as handled and
                     // to inform uthopp/cosmic users that intyg should not be created in webcert by them
