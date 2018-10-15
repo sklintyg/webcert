@@ -125,10 +125,10 @@ angular.module('webcert').factory('webcert.UtkastProxy',
             /*
              * Load unsigned certificate list for valdVardenhet
              */
-            function _getUtkastList(onSuccess, onError) {
+            function _getUtkastList(query, onSuccess, onError) {
                 $log.debug('_getUtkastList:');
                 var restPath = '/api/utkast/'; // release version
-                $http.get(restPath).then(function(response) {
+                $http.get(restPath, { params: query }).then(function(response) {
                     $log.debug('got data:' + response.data);
                     onSuccess(response.data);
                 }, function(response) {

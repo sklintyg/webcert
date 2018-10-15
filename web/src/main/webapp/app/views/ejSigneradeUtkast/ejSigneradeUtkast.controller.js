@@ -62,7 +62,7 @@ angular.module('webcert').controller('webcert.EjSigneradeUtkastCtrl',
              */
             $scope.widgetState.doneLoading = false;
 
-            UtkastProxy.getUtkastList(function(data) {
+            UtkastProxy.getUtkastList($scope.filter.convertToPayload(), function(data) {
 
                 $scope.widgetState.doneLoading = true;
                 $scope.widgetState.activeErrorMessageKey = null;
