@@ -38,9 +38,10 @@
 
       <td class="unbreakable">
         <button ng-attr-id="vidarebefordraBtn-{{intyg.intygId}}" type="button" class="btn btn-primary"
-                ng-click="openMailDialog(intyg)" wc-authority="VIDAREBEFORDRA_UTKAST" intygstyp="{{::intyg.intygType}}"
+                ng-click="openMailDialog(intyg);openMaildialogTooltip=false;" wc-authority="VIDAREBEFORDRA_UTKAST" intygstyp="{{::intyg.intygType}}"
                 ng-if="intyg.status != 'DRAFT_LOCKED'"
                 uib-popover-html="'Skapar ett e-postmeddelande i din e-postklient med en direktlänk till utkastet.'"
+                popover-is-open="openMaildialogTooltip"
                  popover-placement="top" popover-popup-delay="300"
                 popover-append-to-body="true">
           <i class="icon-wc-ikon-reply"></i> Vidarebefordra
@@ -48,8 +49,9 @@
         </button>
       </td>
       <td class="unbreakable">
-        <button ng-attr-id="showBtn-{{intyg.intygId}}" type="button" class="btn btn-primary" ng-click="openIntyg(intyg)"
+        <button ng-attr-id="showBtn-{{intyg.intygId}}" type="button" class="btn btn-primary" ng-click="openIntyg(intyg);openUtkastTooltip=false;"
                 uib-popover-html="'Öppnar utkastet.'"  popover-placement="top"
+                popover-is-open="openUtkastTooltip"
                 popover-popup-delay="300" popover-append-to-body="true">
           <i class="icon-wc-ikon-19"></i> Öppna
         </button>

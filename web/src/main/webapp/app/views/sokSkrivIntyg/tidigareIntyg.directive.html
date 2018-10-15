@@ -119,9 +119,9 @@
                                         <button type="button"
                                                 id="showBtn-{{intyg.intygId}}"
                                                 class="btn btn-primary"
-                                                ng-click="openIntyg(intyg)"
+                                                ng-click="openIntygBtnPopOver=false;openIntyg(intyg)"
                                                 uib-popover="{{messageService.getProperty('common.show.tooltip')}}"
-
+                                                popover-is-open="openIntygBtnPopOver"
                                                 popover-popup-delay="300"
                                                 popover-append-to-body="true"
                                                 popover-placement="auto top">
