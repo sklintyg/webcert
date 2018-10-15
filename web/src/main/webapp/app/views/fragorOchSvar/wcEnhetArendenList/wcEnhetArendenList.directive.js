@@ -25,7 +25,7 @@ angular.module('webcert').directive('wcEnhetArendenList', [
     'common.UserModel', 'common.IntygProxy', 'webcert.intygListService',
     function($location, $log, $timeout, $window,
         ArendeVidarebefordraHelper, ArendeProxy, dialogService,
-        enhetArendenListService, enhetArendenModel, enhetArendenListModel, messageService, 
+        enhetArendenListService, enhetArendenModel, enhetArendenListModel, messageService,
         vardenhetFilterModel, enhetArendenFilterModel, UserModel, IntygProxy, intygListService) {
         'use strict';
 
@@ -69,9 +69,10 @@ angular.module('webcert').directive('wcEnhetArendenList', [
 
                 // When other directives want to request list update
                 function updateArenden(event, data, firstRun) {
-                    var spinnerWaiting = $timeout(function() {       
+                    var spinnerWaiting = $timeout(function() {
                         enhetArendenListModel.viewState.runningQuery = true;
                     }, 700);
+
 
                     enhetArendenListModel.viewState.activeErrorMessageKey = null;
 
@@ -93,8 +94,27 @@ angular.module('webcert').directive('wcEnhetArendenList', [
                         $scope.displayVidarebefordra = intygListService.checkVidareBefordraAuth(enhetArendenListModel.arendenList);
                         enhetArendenListModel.viewState.runningQuery = false;
                     });
+
+                    if ($scope.totalCount === undefined || $scope.totalCount === 0) {
+                        enhetArendenFilterModel.filterForm.lakareSelector = undefined;
+                        enhetArendenListService.getArenden(data.startFrom).then(function(arendenListResult) {
+                            if (firstRun) {
+                                $scope.totalCount = arendenListResult.totalCount;
+                            }
+                        }, function(errorData) {
+                            $log.debug('Query Error: ' + errorData);
+                            enhetArendenListModel.viewState.activeErrorMessageKey = 'info.query.error';
+                        }).finally(function() {  // jshint ignore:line
+                            if (spinnerWaiting) {
+                                $timeout.cancel(spinnerWaiting);
+                            }
+
+                            $scope.displayVidarebefordra = intygListService.checkVidareBefordraAuth(enhetArendenListModel.arendenList);
+                            enhetArendenListModel.viewState.runningQuery = false;
+                        });
+                    }
                 }
-                
+
                 function setVidarebefordradStateInView(intygId) {
                     for (var i in $scope.listModel.arendenList) {
                         if ($scope.listModel.arendenList[i].intygId === intygId) {
@@ -173,6 +193,8 @@ angular.module('webcert').directive('wcEnhetArendenList', [
 
                     updateArenden(null, {startFrom: 0});
                 };
+
+
             }
         };
     }]);
