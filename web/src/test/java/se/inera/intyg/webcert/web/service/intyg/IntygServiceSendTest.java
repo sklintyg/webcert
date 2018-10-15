@@ -130,7 +130,6 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
 
     @Test
     public void testSendIntygFailsForReplacedCertificate() throws Exception {
-        final String completionMeddelandeId = "meddelandeId";
 
         WebCertUser webCertUser = createUser();
 
@@ -161,8 +160,8 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
 
     @Test
     public void testSendIntygOkForReplacedCertificateWithRevokedReplacingCertificate() throws Exception {
-        final String completionMeddelandeId = "meddelandeId";
 
+        when(intygRepository.findOne(INTYG_ID)).thenReturn(getUtkast(INTYG_ID));
         WebCertUser webCertUser = createUser();
 
         json = FileUtils.getStringFromFile(new ClassPathResource("IntygServiceTest/utlatande.json").getFile());
@@ -182,14 +181,14 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
                 .thenReturn(Optional.of(ersattRelation));
 
         CertificateResponse revokedCertificateResponse = new CertificateResponse(json, utlatande, metaData, false);
-        when(moduleFacade.getCertificate(any(String.class), any(String.class), anyString())).thenReturn(revokedCertificateResponse);
+        when(moduleFacade.getCertificate(any(String.class), any(String.class))).thenReturn(revokedCertificateResponse);
 
         intygService.sendIntyg(INTYG_ID, INTYG_TYP_FK, "FKASSA", false);
 
         verify(logService).logSendIntygToRecipient(any(LogRequest.class));
         verify(certificateSenderService).sendCertificate(anyString(), any(Personnummer.class), anyString(), anyString(), eq(false));
 
-        verify(intygRepository, times(2)).findOne(INTYG_ID);
+        verify(intygRepository, times(1)).findOne(INTYG_ID);
         verify(intygRepository).save(any(Utkast.class));
     }
 
