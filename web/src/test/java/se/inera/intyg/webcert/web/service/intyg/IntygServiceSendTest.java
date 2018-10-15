@@ -18,16 +18,6 @@
  */
 package se.inera.intyg.webcert.web.service.intyg;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
-import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.cxf.helpers.FileUtils;
 import org.assertj.core.api.Assertions;
@@ -37,11 +27,6 @@ import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.test.util.ReflectionTestUtils;
-import se.riv.clinicalprocess.healthcond.certificate.sendCertificateToRecipient.v2.SendCertificateToRecipientResponseType;
-import java.io.IOException;
-import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.Optional;
 import se.inera.intyg.common.fk7263.model.internal.Fk7263Utlatande;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.integration.converter.util.ResultTypeUtil;
@@ -65,6 +50,22 @@ import se.inera.intyg.webcert.web.service.intyg.dto.IntygServiceResult;
 import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
+import se.riv.clinicalprocess.healthcond.certificate.sendCertificateToRecipient.v2.SendCertificateToRecipientResponseType;
+
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.Optional;
+
+import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class IntygServiceSendTest extends AbstractIntygServiceTest {
@@ -156,6 +157,40 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
                 .isExactlyInstanceOf(WebCertServiceException.class)
                 .hasFieldOrPropertyWithValue("errorCode", WebCertServiceErrorCodeEnum.INVALID_STATE)
                 .hasMessageContaining("the certificate is replaced by certificate");
+    }
+
+    @Test
+    public void testSendIntygOkForReplacedCertificateWithRevokedReplacingCertificate() throws Exception {
+        final String completionMeddelandeId = "meddelandeId";
+
+        WebCertUser webCertUser = createUser();
+
+        json = FileUtils.getStringFromFile(new ClassPathResource("IntygServiceTest/utlatande.json").getFile());
+        utlatande = objectMapper.readValue(json, Fk7263Utlatande.class);
+        utlatande.getGrundData().setRelation(new Relation());
+        utlatande.getGrundData().getRelation().setRelationKod(RelationKod.ERSATT);
+        CertificateMetaData metaData = buildCertificateMetaData();
+        certificateResponse = new CertificateResponse(json, utlatande, metaData, false);
+
+        WebcertCertificateRelation ersattRelation = new WebcertCertificateRelation(INTYG_ID, RelationKod.ERSATT, LocalDateTime.now(),
+                UtkastStatus.SIGNED, true);
+
+        when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.FALSE);
+        when(webCertUserService.isAuthorizedForUnit(anyString(), anyString(), anyBoolean())).thenReturn(true);
+        when(webCertUserService.getUser()).thenReturn(webCertUser);
+        when(certificateRelationService.getNewestRelationOfType(anyString(), any(RelationKod.class), anyList()))
+                .thenReturn(Optional.of(ersattRelation));
+
+        CertificateResponse revokedCertificateResponse = new CertificateResponse(json, utlatande, metaData, false);
+        when(moduleFacade.getCertificate(any(String.class), any(String.class), anyString())).thenReturn(revokedCertificateResponse);
+
+        intygService.sendIntyg(INTYG_ID, INTYG_TYP_FK, "FKASSA", false);
+
+        verify(logService).logSendIntygToRecipient(any(LogRequest.class));
+        verify(certificateSenderService).sendCertificate(anyString(), any(Personnummer.class), anyString(), anyString(), eq(false));
+
+        verify(intygRepository, times(2)).findOne(INTYG_ID);
+        verify(intygRepository).save(any(Utkast.class));
     }
 
     @Test
