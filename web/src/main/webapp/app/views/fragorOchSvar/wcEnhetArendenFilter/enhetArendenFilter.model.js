@@ -91,10 +91,11 @@ angular.module('webcert').service('webcert.enhetArendenFilterModel', [
         this.filterForm = {};
 
         this.reset = function() {
+            var defaultLakare = this.filterForm.defaultLakareSelector || defaultLakareList[0].id;
             var statusList = this.statusList;
             this.filterForm = {
                 vantarPaSelector: statusList[1].id,
-                lakareSelector: defaultLakareList[0].id,
+                lakareSelector: defaultLakare,
                 questionFrom: 'default',
                 vidarebefordrad: 'default',
                 changedFrom: undefined,
