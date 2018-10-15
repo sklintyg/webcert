@@ -73,7 +73,6 @@ angular.module('webcert').directive('wcEnhetArendenList', [
                         enhetArendenListModel.viewState.runningQuery = true;
                     }, 700);
 
-
                     enhetArendenListModel.viewState.activeErrorMessageKey = null;
 
                     enhetArendenListService.getArenden(data.startFrom).then(function(arendenListResult) {
