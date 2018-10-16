@@ -216,7 +216,7 @@ public class UtkastServiceImpl implements UtkastService {
     }
 
     @Override
-    public Map<String, Map<String, PreviousIntyg>> checkIfPersonHasExistingIntyg(Personnummer personnummer, IntygUser user) {
+    public Map<String, Map<String, PreviousIntyg>> checkIfPersonHasExistingIntyg(final Personnummer personnummer, final IntygUser user) {
         List<Utkast> toFilter = utkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(personnummer.getPersonnummerWithDash(),
                 authoritiesHelper.getIntygstyperForFeature(user, AuthoritiesConstants.FEATURE_UNIKT_INTYG,
                         AuthoritiesConstants.FEATURE_UNIKT_INTYG_INOM_VG));
@@ -232,11 +232,12 @@ public class UtkastServiceImpl implements UtkastService {
         ret.put(INTYG_INDICATOR, signedList.stream()
                 .collect(Collectors.groupingBy(Utkast::getIntygsTyp,
                         Collectors.mapping(utkast ->
-                                        new PreviousIntyg(
+                                        PreviousIntyg.of(
                                                 Objects.equals(user.getValdVardgivare().getId(), utkast.getVardgivarId()),
                                                 Objects.equals(user.getValdVardenhet().getId(), utkast.getEnhetsId()),
                                                 utkast.getEnhetsNamn(),
-                                                utkast.getIntygsId()
+                                                utkast.getIntygsId(),
+                                                utkast.getSkapad()
                                         ),
                                 Collectors.reducing(new PreviousIntyg(), (a, b) -> b.isSameVardgivare() ? b : a)))));
 
@@ -244,11 +245,12 @@ public class UtkastServiceImpl implements UtkastService {
                 .filter(utkast -> utkast.getStatus() != UtkastStatus.SIGNED && utkast.getStatus() != UtkastStatus.DRAFT_LOCKED)
                 .sorted(Comparator.comparing(Utkast::getSkapad, Comparator.nullsFirst(Comparator.naturalOrder())))
                 .collect(Collectors.groupingBy(Utkast::getIntygsTyp,
-                        Collectors.mapping(utkast -> new PreviousIntyg(
+                        Collectors.mapping(utkast -> PreviousIntyg.of(
                                         Objects.equals(user.getValdVardgivare().getId(), utkast.getVardgivarId()),
                                         Objects.equals(user.getValdVardenhet().getId(), utkast.getEnhetsId()),
                                         utkast.getEnhetsNamn(),
-                                        utkast.getIntygsId()
+                                        utkast.getIntygsId(),
+                                        utkast.getSkapad()
                                 ),
                                 Collectors.reducing(new PreviousIntyg(), (a, b) -> b.isSameVardgivare() ? b : a)))));
 

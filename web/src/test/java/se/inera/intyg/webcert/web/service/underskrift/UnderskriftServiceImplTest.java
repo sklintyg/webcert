@@ -18,56 +18,7 @@
  */
 package se.inera.intyg.webcert.web.service.underskrift;
 
-import com.google.common.collect.ImmutableMap;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.ArgumentMatchers;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
-import se.inera.intyg.common.support.model.UtkastStatus;
-import se.inera.intyg.common.support.model.common.internal.GrundData;
-import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
-import se.inera.intyg.common.support.model.common.internal.Utlatande;
-import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
-import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
-import se.inera.intyg.common.support.modules.support.api.ModuleApi;
-import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
-import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
-import se.inera.intyg.infra.integration.hsa.model.Vardgivare;
-import se.inera.intyg.infra.security.authorities.AuthoritiesResolverUtil;
-import se.inera.intyg.infra.security.common.model.AuthenticationMethod;
-import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
-import se.inera.intyg.infra.security.common.model.Privilege;
-import se.inera.intyg.infra.security.common.model.Role;
-import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
-import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
-import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
-import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
-import se.inera.intyg.webcert.web.auth.bootstrap.AuthoritiesConfigurationTestSetup;
-import se.inera.intyg.webcert.web.service.intyg.IntygService;
-import se.inera.intyg.webcert.web.service.log.LogService;
-import se.inera.intyg.webcert.web.service.notification.NotificationService;
-import se.inera.intyg.webcert.web.service.underskrift.fake.FakeUnderskriftService;
-import se.inera.intyg.webcert.web.service.underskrift.grp.GrpUnderskriftServiceImpl;
-import se.inera.intyg.webcert.web.service.underskrift.model.SignaturBiljett;
-import se.inera.intyg.webcert.web.service.underskrift.model.SignaturStatus;
-import se.inera.intyg.webcert.web.service.underskrift.nias.NiasUnderskriftService;
-import se.inera.intyg.webcert.web.service.underskrift.testutil.UnderskriftTestUtil;
-import se.inera.intyg.webcert.web.service.underskrift.tracker.RedisTicketTracker;
-import se.inera.intyg.webcert.web.service.underskrift.xmldsig.XmlUnderskriftServiceImpl;
-import se.inera.intyg.webcert.web.service.user.WebCertUserService;
-import se.inera.intyg.webcert.web.service.underskrift.model.SignMethod;
-import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
-import se.inera.intyg.webcert.web.service.utkast.UtkastService;
-
-import javax.persistence.OptimisticLockException;
-import java.io.IOException;
-import java.nio.charset.Charset;
-import java.time.LocalDateTime;
-import java.util.Collections;
-
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.AdditionalMatchers.or;
@@ -87,6 +38,59 @@ import static se.inera.intyg.webcert.web.service.underskrift.testutil.Underskrif
 import static se.inera.intyg.webcert.web.service.underskrift.testutil.UnderskriftTestUtil.TICKET_ID;
 import static se.inera.intyg.webcert.web.service.underskrift.testutil.UnderskriftTestUtil.createSignaturBiljett;
 import static se.inera.intyg.webcert.web.service.underskrift.testutil.UnderskriftTestUtil.createUtkast;
+
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.ArgumentMatchers;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
+import javax.persistence.OptimisticLockException;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.time.LocalDateTime;
+import java.util.Collections;
+import se.inera.intyg.common.doi.support.DoiModuleEntryPoint;
+import se.inera.intyg.common.support.model.UtkastStatus;
+import se.inera.intyg.common.support.model.common.internal.GrundData;
+import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
+import se.inera.intyg.common.support.model.common.internal.Utlatande;
+import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
+import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
+import se.inera.intyg.common.support.modules.support.api.ModuleApi;
+import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
+import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
+import se.inera.intyg.infra.integration.hsa.model.Vardgivare;
+import se.inera.intyg.infra.security.authorities.AuthoritiesResolverUtil;
+import se.inera.intyg.infra.security.common.model.AuthenticationMethod;
+import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.infra.security.common.model.Feature;
+import se.inera.intyg.infra.security.common.model.Privilege;
+import se.inera.intyg.infra.security.common.model.Role;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
+import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
+import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
+import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
+import se.inera.intyg.webcert.web.auth.bootstrap.AuthoritiesConfigurationTestSetup;
+import se.inera.intyg.webcert.web.service.intyg.IntygService;
+import se.inera.intyg.webcert.web.service.log.LogService;
+import se.inera.intyg.webcert.web.service.notification.NotificationService;
+import se.inera.intyg.webcert.web.service.underskrift.fake.FakeUnderskriftService;
+import se.inera.intyg.webcert.web.service.underskrift.grp.GrpUnderskriftServiceImpl;
+import se.inera.intyg.webcert.web.service.underskrift.model.SignMethod;
+import se.inera.intyg.webcert.web.service.underskrift.model.SignaturBiljett;
+import se.inera.intyg.webcert.web.service.underskrift.model.SignaturStatus;
+import se.inera.intyg.webcert.web.service.underskrift.nias.NiasUnderskriftService;
+import se.inera.intyg.webcert.web.service.underskrift.testutil.UnderskriftTestUtil;
+import se.inera.intyg.webcert.web.service.underskrift.tracker.RedisTicketTracker;
+import se.inera.intyg.webcert.web.service.underskrift.xmldsig.XmlUnderskriftServiceImpl;
+import se.inera.intyg.webcert.web.service.user.WebCertUserService;
+import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
+import se.inera.intyg.webcert.web.service.utkast.UtkastService;
+import se.inera.intyg.webcert.web.service.utkast.dto.PreviousIntyg;
 
 @RunWith(MockitoJUnitRunner.class)
 public class UnderskriftServiceImplTest extends AuthoritiesConfigurationTestSetup {
@@ -208,6 +212,59 @@ public class UnderskriftServiceImplTest extends AuthoritiesConfigurationTestSetu
                 .thenReturn(createUtkast(INTYG_ID, 1L, INTYG_TYP, UtkastStatus.DRAFT_INCOMPLETE, "model", vardperson,
                         ENHET_ID, PERSON_ID));
         testee.startSigningProcess(INTYG_ID, INTYG_TYP, 1L, SignMethod.FAKE);
+    }
+
+    @Test
+    public void testStartSignUtkastWithUndantagUnikOmSenaste() {
+        final LocalDateTime ogIntygSkapad = LocalDateTime.of(2018, 5, 5, 5, 5);
+        final LocalDateTime ersattandeIntygSkapad = ogIntygSkapad.plusDays(1);
+        final String doiTyp = "doi";
+
+        when(utkastRepository.findOne(INTYG_ID))
+                .thenReturn(createUtkast(INTYG_ID, 1L, doiTyp, UtkastStatus.DRAFT_COMPLETE, "model", vardperson,
+                        ENHET_ID, PERSON_ID, ersattandeIntygSkapad));
+
+        when(xmlUnderskriftService.skapaSigneringsBiljettMedDigest(anyString(), anyString(), anyLong(), anyString(), any(SignMethod.class)))
+                .thenReturn(createSignaturBiljett(SignaturStatus.BEARBETAR));
+
+        when(utkastService.checkIfPersonHasExistingIntyg(any(), any())).thenReturn(ImmutableMap.of(
+                "utkast", ImmutableMap.of(),
+                "intyg", ImmutableMap.of(doiTyp, PreviousIntyg.of(true, true, "name", "id", ogIntygSkapad))));
+
+        Feature feature = new Feature();
+        feature.setName(AuthoritiesConstants.FEATURE_UNIKT_UNDANTAG_OM_SENASTE_INTYG);
+        feature.setIntygstyper(ImmutableList.of(DoiModuleEntryPoint.MODULE_ID));
+        feature.setGlobal(true);
+
+        user.setFeatures(ImmutableMap.of(feature.getName(), feature));
+
+        testee.startSigningProcess(INTYG_ID, INTYG_TYP, 1L, SignMethod.FAKE);
+        verify(niasUnderskriftService, times(1)).startNiasCollectPoller(anyString(), any(SignaturBiljett.class));
+    }
+
+    @Test
+    public void testStartSignUtkastWithUndantagUnikOmEjSenasteShouldFail() {
+        final LocalDateTime ogIntygSkapad = LocalDateTime.of(2018, 5, 5, 5, 5);
+        final LocalDateTime ersattandeIntygSkapad = ogIntygSkapad.minusDays(1);
+        final String doiTyp = "doi";
+
+        when(utkastRepository.findOne(INTYG_ID))
+                .thenReturn(createUtkast(INTYG_ID, 1L, doiTyp, UtkastStatus.DRAFT_COMPLETE, "model", vardperson,
+                        ENHET_ID, PERSON_ID, ersattandeIntygSkapad));
+
+        when(utkastService.checkIfPersonHasExistingIntyg(any(), any())).thenReturn(ImmutableMap.of(
+                "utkast", ImmutableMap.of(),
+                "intyg", ImmutableMap.of(doiTyp, PreviousIntyg.of(true, true, "name", "id", ogIntygSkapad))));
+
+        Feature feature = new Feature();
+        feature.setName(AuthoritiesConstants.FEATURE_UNIKT_UNDANTAG_OM_SENASTE_INTYG);
+        feature.setIntygstyper(ImmutableList.of(DoiModuleEntryPoint.MODULE_ID));
+        feature.setGlobal(true);
+
+        user.setFeatures(ImmutableMap.of(feature.getName(), feature));
+
+        assertThatThrownBy(() -> testee.startSigningProcess(INTYG_ID, INTYG_TYP, 1L, SignMethod.FAKE))
+                .isExactlyInstanceOf(WebCertServiceException.class);
     }
 
     @Test(expected = WebCertServiceException.class)
