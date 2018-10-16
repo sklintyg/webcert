@@ -578,7 +578,6 @@ public class IntygServiceImpl implements IntygService {
     @Override
     public void handleAfterSigned(Utkast utkast) {
         boolean isKomplettering = RelationKod.KOMPLT == utkast.getRelationKod();
-        boolean isRenewal = RelationKod.FRLANG == utkast.getRelationKod();
         boolean isSigneraSkickaDirekt = authoritiesHelper
                 .isFeatureActive(AuthoritiesConstants.FEATURE_SIGNERA_SKICKA_DIREKT, utkast.getIntygsTyp());
 
@@ -597,11 +596,6 @@ public class IntygServiceImpl implements IntygService {
                 throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM,
                         "Could not send intyg directly to recipient", e);
             }
-        }
-
-        if (isRenewal) {
-            LOG.info("Close all QA / arende on original certificate");
-            arendeService.closeAllNonClosed(utkast.getRelationIntygsId());
         }
     }
 
