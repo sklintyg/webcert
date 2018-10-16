@@ -19,8 +19,11 @@
 package se.inera.intyg.webcert.web.service.underskrift.fake;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.infra.xmldsig.service.FakeSignatureServiceImpl;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.underskrift.BaseXMLSignatureService;
@@ -28,21 +31,13 @@ import se.inera.intyg.webcert.web.service.underskrift.model.SignaturBiljett;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 import java.nio.charset.Charset;
+import java.security.cert.CertificateEncodingException;
+import java.security.cert.X509Certificate;
 import java.util.Base64;
 
 @Service
+@Profile({ "!prod" })
 public class FakeUnderskriftServiceImpl extends BaseXMLSignatureService implements FakeUnderskriftService {
-
-    // X509Certificate. Only use for fake!!!
-    private static final String FAKE_CERT = "MIIB+zCCAWQCCQCUxqAHHrhg+jANBgkqhkiG9w0BAQsFADBCMQswCQYDVQQGEwJTRTELMAkGA1UE"
-            + "CAwCVkcxEzARBgNVBAcMCkdvdGhlbmJ1cmcxETAPBgNVBAoMCENhbGxpc3RhMB4XDTE4MDMxMDIw"
-            + "MDY0MFoXDTIxMTIwNDIwMDY0MFowQjELMAkGA1UEBhMCU0UxCzAJBgNVBAgMAlZHMRMwEQYDVQQH"
-            + "DApHb3RoZW5idXJnMREwDwYDVQQKDAhDYWxsaXN0YTCBnzANBgkqhkiG9w0BAQEFAAOBjQAwgYkC"
-            + "gYEA4cB6VC0f9ne0UKC/XzsoP5ocv7WyGt5378f/DGnVAF3aWzderzLnXMqSdGbLOuEzUUdbjYgQ"
-            + "kqQSs6wy872KLf0RzQzllxwpBQJ/2r+CrW6tROJa0FYEIhgWDdRGlS+9+hd3E9Ilz2PTZDF4c1C+"
-            + "4l/xq149OCgiAGfadeBZA5MCAwEAATANBgkqhkiG9w0BAQsFAAOBgQDU+Mrw98Qm8K0U8A208Ee0"
-            + "1PZeIpqC9CIRIXJd0PFwXJjTlGIWckwrdsgbGtwOAlA2rzAx/FUhQD4/1F4G5mo/DrtOzzx9fKE0"
-            + "+MQreTC/HOm61ja3cWm4yI5G0W7bLTBBhsEoOzclycNK/QjeP+wYO+k11mtPM4SP4kCj3gh97g==";
 
     @Autowired
     private FakeSignatureServiceImpl fakeSignatureService;
@@ -68,7 +63,15 @@ public class FakeUnderskriftServiceImpl extends BaseXMLSignatureService implemen
         monitoringLogService.logIntygSigned(utkast.getIntygsId(), utkast.getIntygsTyp(), user.getHsaId(), user.getAuthenticationScheme(),
                 utkast.getRelationKod());
 
-        biljett = finalizeXMLDSigSignature(FAKE_CERT, user, biljett, Base64.getDecoder().decode(fakeSignatureData), utkast);
-        return redisTicketTracker.updateStatus(biljett.getTicketId(), biljett.getStatus());
+        // Pull the X509 from the keystore used for fake signing.
+        X509Certificate x509Certificate = fakeSignatureService.getX509Certificate();
+
+        try {
+            biljett = finalizeXMLDSigSignature(Base64.getEncoder().encodeToString(x509Certificate.getEncoded()), user, biljett,
+                    Base64.getDecoder().decode(fakeSignatureData), utkast);
+            return redisTicketTracker.updateStatus(biljett.getTicketId(), biljett.getStatus());
+        } catch (CertificateEncodingException e) {
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, e.getMessage());
+        }
     }
 }
