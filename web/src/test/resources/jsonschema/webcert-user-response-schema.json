@@ -1129,6 +1129,27 @@
             }
           },
           "type": "object"
+        },
+        "FEATURE_UNIKT_UNDANTAG_OM_SENASTE_INTYG": {
+          "additionalProperties": false,
+          "properties": {
+            "desc": {
+              "type": "string"
+            },
+            "intygstyper": {
+              "additionalItems": false,
+              "items": {},
+              "minItems": 0,
+              "type": "array"
+            },
+            "global": {
+              "type": "boolean"
+            },
+            "name": {
+              "type": "string"
+            }
+          },
+          "type": "object"
         }
       },
       "type": "object"

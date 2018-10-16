@@ -19,22 +19,48 @@
 
 package se.inera.intyg.webcert.web.service.utkast.dto;
 
+import java.time.LocalDateTime;
+
 public class PreviousIntyg {
 
     private boolean sameVardgivare;
     private boolean sameEnhet;
     private String enhetName;
     private String latestIntygsId;
+    private LocalDateTime skapat;
 
     public PreviousIntyg() {
     }
 
-    public PreviousIntyg(boolean sameVardgivare, boolean sameEnhet, String enhetName, String latestIntygsId) {
+    private PreviousIntyg(final boolean sameVardgivare, final LocalDateTime skapat) {
         this.sameVardgivare = sameVardgivare;
+        this.skapat = skapat;
+    }
+
+    private PreviousIntyg(
+            final boolean sameVardgivare,
+            final LocalDateTime skapat,
+            final boolean sameEnhet,
+            final String enhetName,
+            final String latestIntygsId) {
+        this.sameVardgivare = sameVardgivare;
+        this.latestIntygsId = latestIntygsId;
+        this.sameEnhet = sameEnhet;
+        this.enhetName = enhetName;
+        this.skapat = skapat;
+    }
+
+    public static PreviousIntyg of(
+            final boolean sameVardgivare,
+            final boolean sameEnhet,
+            final String enhetName,
+            final String latestIntygsId,
+            final LocalDateTime skapat) {
+
         if (sameVardgivare) {
-            this.latestIntygsId = latestIntygsId;
-            this.sameEnhet = sameEnhet;
-            this.enhetName = enhetName;
+            return new PreviousIntyg(sameVardgivare, skapat, sameEnhet, enhetName, latestIntygsId);
+        } else {
+            return new PreviousIntyg(sameVardgivare, skapat);
         }
     }
 
@@ -52,5 +78,9 @@ public class PreviousIntyg {
 
     public String getLatestIntygsId() {
         return latestIntygsId;
+    }
+
+    public LocalDateTime getSkapat() {
+        return skapat;
     }
 }

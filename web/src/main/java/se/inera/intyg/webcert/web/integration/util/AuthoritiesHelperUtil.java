@@ -18,6 +18,9 @@
  */
 package se.inera.intyg.webcert.web.integration.util;
 
+import java.time.LocalDateTime;
+import java.util.Map;
+import java.util.Optional;
 import se.inera.intyg.infra.security.authorities.validation.AuthoritiesValidator;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.IntygUser;
@@ -25,9 +28,6 @@ import se.inera.intyg.webcert.common.model.SekretessStatus;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.web.service.utkast.dto.PreviousIntyg;
-
-import java.util.Map;
-import java.util.Optional;
 
 public final class AuthoritiesHelperUtil {
     private static AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
@@ -71,19 +71,27 @@ public final class AuthoritiesHelperUtil {
      * @return Nothing if intyg conforms, otherwise an error message why it doesn't
      */
     public static Optional<WebCertServiceErrorCodeEnum> validateIntygMustBeUnique(IntygUser user, String intygsTyp, Map<String, Map<String,
-            PreviousIntyg>> intygstypToStringToPreviousIntyg) {
-        if (authoritiesValidator.given(user, intygsTyp).features(AuthoritiesConstants.FEATURE_UNIKT_INTYG,
-                AuthoritiesConstants.FEATURE_UNIKT_INTYG_INOM_VG).isVerified()) {
+            PreviousIntyg>> intygstypToStringToPreviousIntyg, LocalDateTime currentSkapad) {
 
-            PreviousIntyg intygExists = intygstypToStringToPreviousIntyg.get("intyg").get(intygsTyp);
+        PreviousIntyg intygExists = intygstypToStringToPreviousIntyg.get("intyg").get(intygsTyp);
 
-            if (intygExists != null) {
-                if (!intygExists.isSameVardgivare() && authoritiesValidator.given(user, intygsTyp).features(
-                        AuthoritiesConstants.FEATURE_UNIKT_INTYG).isVerified()) {
+        if (intygExists != null) {
+
+            if (authoritiesValidator.given(user, intygsTyp)
+                    .features(AuthoritiesConstants.FEATURE_UNIKT_UNDANTAG_OM_SENASTE_INTYG).isVerified()) {
+                // Certificates of this type must not be globally unique, but it is only the certficate with the latest
+                // SKAPAT_DATUM that is valid.
+                if (currentSkapad == null || !intygExists.getSkapat().isBefore(currentSkapad)) {
+                    return Optional.of(WebCertServiceErrorCodeEnum.INTYG_CREATED_AFTER_EXISTS);
+                }
+            } else {
+
+                if (!intygExists.isSameVardgivare()
+                        && authoritiesValidator.given(user, intygsTyp).features(AuthoritiesConstants.FEATURE_UNIKT_INTYG).isVerified()) {
                     // Certificates of this type must be globally unique.
                     return Optional.of(WebCertServiceErrorCodeEnum.INTYG_FROM_OTHER_VARDGIVARE_EXISTS);
-                } else if (intygExists.isSameVardgivare() && authoritiesValidator.given(user, intygsTyp).features(
-                        AuthoritiesConstants.FEATURE_UNIKT_INTYG_INOM_VG).isVerified()) {
+                } else if (intygExists.isSameVardgivare() && authoritiesValidator.given(user, intygsTyp)
+                        .features(AuthoritiesConstants.FEATURE_UNIKT_INTYG_INOM_VG).isVerified()) {
                     // Certificates of this type must be unique within this caregiver.
                     return Optional.of(WebCertServiceErrorCodeEnum.INTYG_FROM_SAME_VARDGIVARE_EXISTS);
                 }

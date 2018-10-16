@@ -30,7 +30,7 @@ public class PreviousIntygTest {
 
     @Test
     public void testNotSameVardgivare() {
-        PreviousIntyg dto = new PreviousIntyg(false, true, "Enhet", "intygsId");
+        PreviousIntyg dto = PreviousIntyg.of(false, true, "Enhet", "intygsId", null);
 
         assertFalse(dto.isSameVardgivare());
         assertNull(dto.getEnhetName());
@@ -40,7 +40,7 @@ public class PreviousIntygTest {
 
     @Test
     public void testSameVardgivareSameEnhet() {
-        PreviousIntyg dto = new PreviousIntyg(true, true, "Enhet", "intygsId");
+        PreviousIntyg dto = PreviousIntyg.of(true, true, "Enhet", "intygsId", null);
 
         assertTrue(dto.isSameVardgivare());
         assertEquals("Enhet", dto.getEnhetName());
@@ -50,7 +50,7 @@ public class PreviousIntygTest {
 
     @Test
     public void testSameVardgivareNotSameEnhet() {
-        PreviousIntyg dto = new PreviousIntyg(true, false, "Enhet", "intygsId");
+        PreviousIntyg dto = PreviousIntyg.of(true, false, "Enhet", "intygsId", null);
 
         assertTrue(dto.isSameVardgivare());
         assertEquals("Enhet", dto.getEnhetName());

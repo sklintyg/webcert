@@ -66,6 +66,7 @@ knownFeatures:
   - &kf180 TAK_KONTROLL_TRADKLATTRING
   - &kf190 SEKRETESSMARKERING
   - &kf200 NOTIFICATION_DISCARD_FELB
+  - &kf210 FEATURE_UNIKT_UNDANTAG_OM_SENASTE_INTYG
 
 # Aktiverade features i Webcert
 features:
@@ -264,5 +265,11 @@ features:
     name: *kf200
     desc: Rensning av meddelanden av fel B
     global: true
+  - &f210
+    name: *kf210
+    desc: Om intyget är det senaste skapade gäller ej UNIKT Regler
+    global: true
+    intygstyper:
+      - *ki090 # DOI
 
 pilots:

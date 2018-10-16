@@ -115,7 +115,7 @@ public class UtkastApiControllerTest {
 
         Map<String, Map<String, PreviousIntyg>> hasPrevious = new HashMap<>();
         Map<String, PreviousIntyg> hasPreviousIntyg = new HashMap<>();
-        hasPreviousIntyg.put("luse", new PreviousIntyg(true, false, "Enhet", "intygsId"));
+        hasPreviousIntyg.put("luse", PreviousIntyg.of(true, false, "Enhet", "intygsId", null));
         hasPrevious.put("intyg", hasPreviousIntyg);
         when(utkastService.checkIfPersonHasExistingIntyg(eq(PATIENT_PERSONNUMMER), any())).thenReturn(hasPrevious);
 

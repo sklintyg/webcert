@@ -32,6 +32,7 @@ knownFeatures:
   - &kf180 TAK_KONTROLL
   - &kf190 TAK_KONTROLL_TRADKLATTRING
   - &kf200 SEKRETESSMARKERING
+  - &kf210 FEATURE_UNIKT_UNDANTAG_OM_SENASTE_INTYG
 
 # Aktiverade features i Webcert
 features:
@@ -234,6 +235,12 @@ features:
       - *ki070 # LUAE_FS
       - *ki080 # DB
       - *ki090 # DOI
+  - &f210
+    name: *kf210
+    desc: Om intyget är det senaste skapade gäller ej UNIKT Regler
+    global: true
+    intygstyper:
+    - *ki090 # DOI
 
 pilots:
   - name: TEST_PILOT

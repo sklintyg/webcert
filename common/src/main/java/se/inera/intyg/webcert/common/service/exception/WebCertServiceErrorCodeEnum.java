@@ -34,6 +34,8 @@ public enum WebCertServiceErrorCodeEnum {
     INTYG_FROM_OTHER_VARDGIVARE_EXISTS, // Due to existence of signed intyg, operation is not allowed.
     INTYG_FROM_SAME_VARDGIVARE_EXISTS,  // Due to existence of signed intyg, operation is not allowed.
 
+    INTYG_CREATED_AFTER_EXISTS,
+
     AUTHORIZATION_PROBLEM,           // User is not authorized for the operation
     AUTHORIZATION_PROBLEM_SEKRETESSMARKERING,
     AUTHORIZATION_PROBLEM_SEKRETESSMARKERING_ENHET,
