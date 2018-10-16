@@ -63,15 +63,11 @@ public abstract class IntegrationServiceImpl implements IntegrationService {
     public PrepareRedirectToIntyg prepareRedirectToIntyg(String intygTyp, String intygId, WebCertUser user) {
         Utkast utkast = utkastRepository.findOne(intygId);
 
-        if (utkast == null) {
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND, "Could not find intyg '" + intygId + "'");
-        }
-
         // INTYG-4336: If intygTyp can't be established,
         // fetch certificate from IT and then get the type
         String typ = resolveIntygsTyp(intygTyp, intygId, utkast);
         if (StringUtils.isEmpty(typ)) {
-            String msg = "Failed resolving type of certificate";
+            String msg = "Failed resolving type of certificate with id '" + intygId + "'";
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND, msg);
         }
 
