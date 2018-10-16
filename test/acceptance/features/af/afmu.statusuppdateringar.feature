@@ -19,7 +19,7 @@ Scenario: Statusuppdateringar då AFMU intyg skickas till Arbetsförmedlingen
     Så ska statusuppdatering "SKICKA" skickas till vårdsystemet. Totalt: "1"
 
 
-@MAKULERA @PATRIK
+@MAKULERA
 Scenario: Statusuppdateringar då AMU intyg makuleras
     När jag fyller i alla nödvändiga fält för intyget
     Och jag signerar intyget
