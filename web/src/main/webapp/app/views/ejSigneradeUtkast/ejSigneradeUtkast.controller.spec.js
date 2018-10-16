@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-xdescribe('EjSigneradeUtkastCtrlSpec', function() {
+describe('EjSigneradeUtkastCtrlSpec', function() {
     'use strict';
 
     var $controller;
@@ -80,7 +80,7 @@ xdescribe('EjSigneradeUtkastCtrlSpec', function() {
                 utkastFilterModel = _utkastFilterModel_;
                 emptyFilter = _utkastFilterModel_.build();
 
-                $httpBackend.expectGET('/api/utkast/').respond(200, mockResponse.utkastList);
+                $httpBackend.expectGET('/api/utkast/?orderAscending=true&orderBy=senastSparadDatum&pageSize=10&startFrom=0').respond(200, mockResponse.utkastList);
                 $controller('webcert.EjSigneradeUtkastCtrl', { $scope: $scope });
                 $httpBackend.flush();
                 $timeout.flush();
@@ -90,14 +90,14 @@ xdescribe('EjSigneradeUtkastCtrlSpec', function() {
     describe('ejSigneradeUtkast controller startup', function() {
 
         it('should load utkast list on valid response', function() {
-            $httpBackend.expectGET('/api/utkast/').respond(200, mockResponse.utkastList);
+            $httpBackend.expectGET('/api/utkast/?orderAscending=true&orderBy=senastSparadDatum&pageSize=10&startFrom=0').respond(200, mockResponse.utkastList);
             $controller('webcert.EjSigneradeUtkastCtrl', { $scope: $scope });
             $httpBackend.flush();
             $timeout.flush();
         });
 
         it('should update error message if loading fails', function() {
-            $httpBackend.expectGET('/api/utkast/').respond(500);
+            $httpBackend.expectGET('/api/utkast/?orderAscending=true&orderBy=senastSparadDatum&pageSize=10&startFrom=0').respond(500);
             $controller('webcert.EjSigneradeUtkastCtrl', { $scope: $scope });
             $httpBackend.flush();
             expect($scope.widgetState.activeErrorMessageKey).not.toBeNull();
@@ -107,13 +107,12 @@ xdescribe('EjSigneradeUtkastCtrlSpec', function() {
     describe('ejSigneradeUtkast controller filter', function() {
 
         it('should update error message if loading fails', function() {
-            $httpBackend.expectGET('/api/utkast/').respond(500);
+            $httpBackend.expectGET('/api/utkast/?orderAscending=true&orderBy=senastSparadDatum&pageSize=10&startFrom=0').respond(500);
             $controller('webcert.EjSigneradeUtkastCtrl', { $scope: $scope });
             $httpBackend.flush();
             expect($scope.widgetState.activeErrorMessageKey).not.toBeNull();
         });
-
-
+        
         it('should get utkast list based on date filter', function() {
             $httpBackend.expectGET('/api/utkast?orderAscending=true&orderBy=senastSparadDatum&pageSize=10&savedFrom=2015-10-10&savedTo=2015-01-11&startFrom=0')
               .respond(200, {results: [], totalCount: 0});
