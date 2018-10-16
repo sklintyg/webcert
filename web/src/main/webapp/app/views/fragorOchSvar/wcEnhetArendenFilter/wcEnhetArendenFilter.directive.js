@@ -35,7 +35,16 @@ angular.module('webcert').directive('wcEnhetArendenFilter', [
             controller: function($scope) {
 
                 $scope.maxdate = new Date().toISOString().split('T')[0];
-                $scope.pnrValidated = false;
+                $scope.pnrIsNotValid = false;
+                $scope.pnrIsCorrect = false;
+
+                $scope.pnrValidationCheck = function () {
+                    if ($scope.pnrIsCorrect) {
+                        $scope.pnrIsNotValid = false;
+                    } else {
+                        $scope.pnrIsNotValid = true;
+                    }
+                };
 
                 this.$onInit = function(){
 
@@ -81,6 +90,14 @@ angular.module('webcert').directive('wcEnhetArendenFilter', [
                         updateArendenList();
                     });
                 };
+
+                $scope.$watch('enhetArendenFilterModel.filterForm.patientPersonId', function(value) {
+                    if (value !== undefined) {
+                        $scope.pnrIsCorrect = true;
+                    } else {
+                        $scope.pnrIsCorrect = false;
+                    }
+                });
 
                 function resetInvalidData() {
                     // fiddle with the DOM to get rid of invalid data which isn't bind through the model

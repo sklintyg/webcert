@@ -65,8 +65,8 @@
                wc-person-number
                required maxlength="13"
                ng-blur="pnrValidationCheck()"
-                ng-class="{ 'redMarker' : pnrValidated}"/>
-      <span>FELMEDDELANDE HÄR PNR</span>
+               ng-class="{'redMarker' : pnrIsNotValid}"/>
+      <span class="warningText" ng-if="pnrIsNotValid">Ange ett giltigt person- eller samordningsnummer.</span>
       </div>
 
 
