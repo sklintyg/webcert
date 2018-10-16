@@ -1,6 +1,6 @@
 # language: sv
 
-@AF @AMU
+@AF @AFMU
 Egenskap: Hantera Arbetsförmedlingens medicinska utlåtande intyg
 
 Bakgrund: Jag är inloggad
@@ -14,8 +14,7 @@ Scenario: Arbetsförmedlingens medicinska utlåtande intyg ska ha rätt status e
 	Så ska intygets första status vara "Klart att signera"
 	Och ska intygets andra status vara "Utkastet är sparat"
 	Och jag signerar intyget
-	Så ska intygets första status vara "Intyget är signerat"
+	Så ska intygets första status vara "Intyget är skickat till Arbetsförmedlingen"
 	Och ska intygets andra status vara "Intyget är tillgängligt för patienten"
-	När jag skickar intyget till Arbetsförmedlingen
 	Så ska intygets första status vara "Intyget är skickat till Arbetsförmedlingen"
 	Och ska intygets andra status vara "Intyget är tillgängligt för patienten"
