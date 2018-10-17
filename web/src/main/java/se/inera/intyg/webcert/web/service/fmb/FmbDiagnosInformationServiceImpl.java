@@ -26,6 +26,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 import java.util.Comparator;
@@ -112,10 +113,12 @@ public class FmbDiagnosInformationServiceImpl implements FmbDiagnosInformationSe
 
         final Optional<Beskrivning> aktivitetsBegransing = diagnosInformation.getBeskrivningList().stream()
                 .filter(beskrivning -> Objects.equals(beskrivning.getBeskrivningTyp(), BeskrivningTyp.AKTIVITETSBEGRANSNING))
+                .filter(beskrivning -> StringUtils.isNotEmpty(beskrivning.getBeskrivningText()))
                 .collect(toOptional());
 
         final Optional<Beskrivning> funktionsNedsattning = diagnosInformation.getBeskrivningList().stream()
                 .filter(beskrivning -> Objects.equals(beskrivning.getBeskrivningTyp(), BeskrivningTyp.FUNKTIONSNEDSATTNING))
+                .filter(beskrivning -> StringUtils.isNotEmpty(beskrivning.getBeskrivningText()))
                 .collect(toOptional());
 
         final List<String> typfallList = kod.getTypFallList().stream()
@@ -154,7 +157,7 @@ public class FmbDiagnosInformationServiceImpl implements FmbDiagnosInformationSe
                     new FmbForm(
                             FmbFormName.ARBETSFORMAGA,
                             Lists.newArrayList(new FmbContent(FmbType.BESLUTSUNDERLAG_TEXTUELLT, typfallList.get(0)))));
-        } else {
+        } else if (CollectionUtils.isNotEmpty(typfallList)) {
             fmbFormList.add(
                     new FmbForm(
                             FmbFormName.ARBETSFORMAGA,
