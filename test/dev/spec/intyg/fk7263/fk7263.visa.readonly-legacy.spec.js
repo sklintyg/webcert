@@ -60,11 +60,6 @@ describe('Verifiera att legacy fk7263-utkast kan visas med uv-ramverket', functi
 
         });
 
-        it('Skall visa "deprecated" meddelande i utkast-headern', function() {
-            expect(element(by.id('wc-deprectated-intygstype-message-utkastheader')).isDisplayed());
-        });
-
-
     });
 
     describe('Verifiera intyg med uv-ramverket', function() {
@@ -95,11 +90,6 @@ describe('Verifiera att legacy fk7263-utkast kan visas med uv-ramverket', functi
             IntygPage.get(intygsId);
             expect(IntygPage.isAt()).toBeTruthy();
 
-        });
-
-        it('Skall visa "deprecated" meddelande i intygs-headern och ärendehanteringen', function() {
-           expect(element(by.id('wc-deprectated-intygstype-message-intygheader')).isDisplayed());
-           expect(element(by.id('wc-deprectated-intygstype-message-arendeheader')).isDisplayed());
         });
 
     });

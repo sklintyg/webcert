@@ -19,6 +19,12 @@ angular.module('webcert').directive('wcValjUtkastTyp',
                     'fk7263':'lisjp'
                 };
 
+                scope.getIntygTypeList = function() {
+                    return IntygTypeSelectorModel.intygTypes.filter(function(intygType) {
+                        return !intygType.deprecated || intygType.displayDeprecated;
+                    });
+                };
+
                 scope.openIntygTypeDetailsDialog = function(intygTypeData) {
 
                     DialogService.showMessageDialogText(

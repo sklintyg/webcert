@@ -66,7 +66,15 @@ angular.module('webcert').factory('webcert.UtkastProxy',
 
                     // Only add type if feature is active and user has global intygTyp access through their role.
                     if (authorityService.isAuthorityActive(options)) {
-                        types.push({sortValue: sortValue++, id: m.id, label: m.label, detailedDescription: m.detailedDescription, fragaSvarAvailable: m.fragaSvarAvailable});
+                        types.push({
+                            sortValue: sortValue++,
+                            id: m.id,
+                            label: m.label,
+                            deprecated: m.deprecated,
+                            displayDeprecated: m.displayDeprecated,
+                            detailedDescription: m.detailedDescription,
+                            fragaSvarAvailable: m.fragaSvarAvailable
+                        });
                     }
                 }
                 return types;

@@ -9,7 +9,7 @@
 
         <div class="card">
           <div class="flex-list" id="{{domId}}">
-            <div class="flex-list-col" ng-repeat="type in intygTypeModel.intygTypes | filter: {id:'!default'} track by $index ">
+            <div class="flex-list-col" ng-repeat="type in getIntygTypeList() | filter: {id:'!default'} track by $index ">
               <div class="flex-list-row" ng-attr-id="intygType-row-{{type.id}}">
                 <span style="flex: 1"><span class="intyg-label">{{type.label}}</span> <span class="issuer-type-id">{{type.issuerTypeId}}</span></span>
                 <div class="about-intyg">

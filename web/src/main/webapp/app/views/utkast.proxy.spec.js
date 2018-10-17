@@ -80,6 +80,8 @@ describe('UtkastProxy', function() {
                         id: 'fk7263',
                         label: 'Läkarintyg FK 7263',
                         detailedDescription: 'beskrivning',
+                        deprecated: true,
+                        displayDeprecated: false,
                         url: 'fk7263',
                         fragaSvarAvailable: true
                     },
@@ -88,6 +90,8 @@ describe('UtkastProxy', function() {
                         id: 'ts-bas',
                         label: 'Transportstyrelsens läkarintyg, bas',
                         detailedDescription: 'beskrivning2',
+                        deprecated: false,
+                        displayDeprecated: false,
                         url: 'ts-bas',
                         fragaSvarAvailable: false
                     }
@@ -175,6 +179,8 @@ describe('UtkastProxy', function() {
                     sortValue: 1,
                     id: 'fk7263',
                     label: 'Läkarintyg FK 7263',
+                    deprecated: true,
+                    displayDeprecated: false,
                     detailedDescription: 'beskrivning',
                     fragaSvarAvailable: true
                 },
@@ -182,6 +188,8 @@ describe('UtkastProxy', function() {
                     sortValue: 2,
                     id: 'ts-bas',
                     label: 'Transportstyrelsens läkarintyg, bas',
+                    deprecated: false,
+                    displayDeprecated: false,
                     detailedDescription: 'beskrivning2',
                     fragaSvarAvailable: false
                 }
