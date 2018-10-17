@@ -65,19 +65,45 @@ public class FmbDiagnosInformationServiceImpl implements FmbDiagnosInformationSe
     @Override
     public Optional<FmbResponse> findFmbDiagnosInformationByIcd10Kod(final String icd10Kod) {
         Preconditions.checkArgument(Objects.nonNull(icd10Kod));
+        return getFmbContent(icd10Kod);
+    }
 
-        final String icd10CodeDeskription = getDiagnoseDescriptionForIcd10Code(icd10Kod);
+    private Optional<FmbResponse> getFmbContent(final String icd10Kod) {
 
-        return repository.findByIcd10KodList_kod(icd10Kod)
-                .map(diagnosInformation -> convertToResponse(icd10Kod, icd10CodeDeskription, diagnosInformation));
+        final int minCharCount = 3;
+
+        String icd10TrimmedCode = icd10Kod;
+        Optional<DiagnosInformation> diagnosInformation = Optional.empty();
+        while (icd10TrimmedCode.length() >= minCharCount) {
+            diagnosInformation = repository.findByIcd10KodList_kod(icd10TrimmedCode);
+
+            if (diagnosInformation.isPresent()) {
+                break;
+            } else {
+                // Make the icd10-code one position shorter, and thus more general.
+                icd10TrimmedCode = StringUtils.chop(icd10TrimmedCode);
+            }
+        }
+
+        if (diagnosInformation.isPresent()) {
+            final DiagnosResponse response = diagnosService.getDiagnosisByCode(icd10TrimmedCode, Diagnoskodverk.ICD_10_SE);
+            String beskrivning = null;
+            if (nonNull(response) && nonNull(response.getResultat()) && response.getResultat().equals(DiagnosResponseType.OK)) {
+                final Diagnos first = Iterables.getFirst(response.getDiagnoser(), null);
+                beskrivning = first != null ? first.getBeskrivning() : null;
+            }
+            return Optional.of(convertToResponse(icd10TrimmedCode, beskrivning, diagnosInformation.get()));
+        }
+
+        return Optional.empty();
     }
 
     private FmbResponse convertToResponse(
-            final String icd10,
+            final String icdTrimmed,
             final String icd10CodeDeskription,
             final DiagnosInformation diagnosInformation) {
 
-        final String upperCaseIcd10 = icd10.toUpperCase();
+        final String upperCaseIcd10 = icdTrimmed.toUpperCase();
 
         final Icd10Kod kod = diagnosInformation.getIcd10KodList().stream()
                 .filter(icd10Kod -> StringUtils.equalsIgnoreCase(icd10Kod.getKod(), upperCaseIcd10))
@@ -145,22 +171,5 @@ public class FmbDiagnosInformationServiceImpl implements FmbDiagnosInformationSe
                 referensDescription,
                 referensLink,
                 fmbFormList);
-    }
-
-    private String getDiagnoseDescriptionForIcd10Code(String icd10Kod) {
-
-        final int minCharCount = 3;
-
-        String icd10TrimmedCode = icd10Kod;
-        while (icd10TrimmedCode.length() >= minCharCount) {
-            final DiagnosResponse response = diagnosService.getDiagnosisByCode(icd10TrimmedCode, Diagnoskodverk.ICD_10_SE);
-            if (nonNull(response) && nonNull(response.getResultat()) && response.getResultat().equals(DiagnosResponseType.OK)) {
-                final Diagnos first = Iterables.getFirst(response.getDiagnoser(), null);
-                return first != null ? first.getBeskrivning() : null;
-            }
-            // Make the icd10-code one position shorter, and thus more general.
-            icd10TrimmedCode = StringUtils.chop(icd10TrimmedCode);
-        }
-        return icd10Kod;
     }
 }
