@@ -329,7 +329,6 @@ public class ArendeServiceImpl implements ArendeService {
                 allArende
                         .stream()
                         .filter(isCorrectEnhet(user))
-                        .filter(isQuestion())
                         .peek(arende -> authoritiesValidator
                                 .given(user, arende.getIntygTyp())
                                 .features(AuthoritiesConstants.FEATURE_HANTERA_FRAGOR)
