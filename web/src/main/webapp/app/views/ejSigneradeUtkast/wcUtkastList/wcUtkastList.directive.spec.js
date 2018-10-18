@@ -25,6 +25,7 @@ describe('wcUtkastListSpec', function() {
     var mockResponse;
     var utkastNotifyService;
     var intygListService;
+    var IntygHelper;
     var element;
 
     beforeEach(angular.mock.module('htmlTemplates'));
@@ -48,6 +49,10 @@ describe('wcUtkastListSpec', function() {
             intygListService =
                 jasmine.createSpyObj('webcert.intygListService', ['checkVidareBefordraAuth']);
             $provide.value('webcert.intygListService', intygListService);
+
+            IntygHelper =
+                jasmine.createSpyObj('common.IntygHelper', ['goToDraft']);
+            $provide.value('common.IntygHelper', IntygHelper);
 
             _$stateProvider_.state('fk7263-edit', {
                 url: '/fk7263/edit/:certificateId'
@@ -74,10 +79,9 @@ describe('wcUtkastListSpec', function() {
 
     describe('visa intyg button', function() {
         it('should try to view an intyg', function() {
-            spyOn($state, 'go');
             element.isolateScope().openIntyg(mockResponse.utkast);
-            expect($state.go).toHaveBeenCalledWith(mockResponse.utkast.intygType.toLowerCase() +
-                '-edit', {certificateId: mockResponse.utkast.intygId, intygTypeVersion: mockResponse.utkast.intygTypeVersion});
+            expect(IntygHelper.goToDraft).toHaveBeenCalledWith(mockResponse.utkast.intygType.toLowerCase(), mockResponse.utkast.intygTypeVersion,
+                    mockResponse.utkast.intygId);
         });
     });
 

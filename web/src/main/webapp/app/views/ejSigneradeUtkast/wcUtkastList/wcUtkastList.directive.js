@@ -18,8 +18,8 @@
  */
 
 angular.module('webcert').directive('wcUtkastList',
-    [ '$state', 'common.UtkastNotifyService', 'common.moduleService', 'webcert.intygListService',
-        function($state, utkastNotifyService, moduleService, intygListService) {
+    [ 'common.UtkastNotifyService', 'common.moduleService', 'webcert.intygListService', 'common.IntygHelper',
+        function(utkastNotifyService, moduleService, intygListService, IntygHelper) {
             'use strict';
 
             return {
@@ -42,10 +42,7 @@ angular.module('webcert').directive('wcUtkastList',
                     };
 
                     $scope.openIntyg = function(intyg) {
-                        $state.go(intyg.intygType + '-edit', {
-                            certificateId: intyg.intygId,
-                            intygTypeVersion: intyg.intygTypeVersion
-                        });
+                        IntygHelper.goToDraft(intyg.intygType, intyg.intygTypeVersion, intyg.intygId);
                     };
 
                     // Handle forwarding
