@@ -47,15 +47,6 @@ angular.module('webcert').constant('webcert.messages', {
         'label.qaonlywarning': 'Du har valt att lämna frågor och svar',
         'label.qaonlywarning.body': '<p>Observera att intyg ska utfärdas via journalsystemet och inte via Webcert.</p><p>Information i Webcert som inte är frågor och svar kan inte visas i journalsystemet.</p>',
 
-        'label.qacheckhanterad.title': 'Markera besvarade frågor som hanterade',
-        'label.qacheckhanterad.body': '<p>Det finns besvarade frågor som inte är markerade som hanterade.<br>En besvarad fråga som markeras som hanterad anses avslutad och flyttas till \"Hanterade frågor och svar\"</p>',
-        'label.qacheckhanterad.igen': 'Visa inte det här meddelandet igen',
-        'label.qacheckhanterad.checkbox': 'Visa inte det här meddelandet igen',
-        'label.qacheckhanterad.help.checkbox': 'Visa inte det här meddelandet igen',
-        'label.qacheckhanterad.hanterad': 'Hanterade',
-        'label.qacheckhanterad.ejhanterad': 'Ej Hanterade',
-        'label.qacheckhanterad.tillbaka': 'Tillbaka',
-
         // validation messages
         'validation.invalidfromdate': 'Från-datum är felaktigt. Använd formatet åååå-mm-dd.',
         'validation.invalidtodate': 'Till-datum är felaktigt. Använd formatet åååå-mm-dd.',
