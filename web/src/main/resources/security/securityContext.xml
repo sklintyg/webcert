@@ -53,6 +53,7 @@
   <security:http security="none" pattern="/saml2/web/**"/>
   <security:http security="none" pattern="/services/**"/>
   <security:http security="none" pattern="/monitoring/**"/>
+  <security:http security="none" pattern="/metrics"/>
 
   <security:http security="none" pattern="/favicon.ico"/>
 
