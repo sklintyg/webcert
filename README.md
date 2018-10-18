@@ -225,6 +225,20 @@ Restassured-tester kan köras från roten av /webcert
     # Enskild metod i testklass
     ./gradlew restAssured --tests *ApiControllerIT.testArchive
 
+### Ny fråga
+
+- Lägga till i AutoValue-utlåtande klassen
+- Lägga till JSON-properties i RespConstants.java som matchar ID.
+- Lägga till entry under rätt kategori för UE-ramverk, dvs _ag114UtkastConfigFactory.v1.js_
+- Lägga till fält i utkast.v1.model.js
+- Lägga till rätt texter i texterMU_AG114_v1.0.xml i webcert
+- TransportToInternal.java#setSvar skall i case-sats hantera XML -> Utlåtande
+- UtlatandeToIntyg.java#getSvar skall ha kod för att konvertera från Utlåtande till XML.
+- Lägga till fältet i src/test/resources/ JSON och XML exempelfiler (för att tester skall fungera)
+- Lägga till fältet och dess valideringsregler i InternalDraftValidatorImpl.java
+- (Lägga till entry under rätt kategori för UV-ramverk, dvs _ag114ViewConfig.v1.factory.js_)
+- (Lägga till schematron-validering för frågan)
+
 ## Licens
 Copyright (C) 2014 Inera AB (http://www.inera.se)
 
