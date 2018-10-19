@@ -40,10 +40,10 @@
 </div>
 
 <div ng-if="filterForm.$invalid && !filterForm.$pristine && widgetState.searched" ng-cloak class="filter-errors">
-  <p ng-show="filterForm['filter-changedate-from'].$error.date">
+  <p ng-show="filterForm['filter-changedate-from'].$error.date || filterForm['filter-changedate-from'].$error.maxDate">
     <span dynamic-label key="validation.invalidfromdate"></span>
   </p>
-  <p ng-show="filterForm['filter-changedate-to'].$error.date">
+  <p ng-show="filterForm['filter-changedate-to'].$error.date || filterForm['filter-changedate-to'].$error.maxDate">
     <span dynamic-label key="validation.invalidtodate"></span>
   </p>
   <p ng-show="filterForm['filter-changedate-to'].$error.isBefore">
