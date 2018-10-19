@@ -28,6 +28,7 @@
     <label class="inline-label">till</label>
     <span dom-id="filter-changedate-to" target-model="filter.selection.savedTo" wc-date-picker-field add-date-parser="strict" max-date={{maxdate}}
           wc-date-is-after-validator="filter-changedate-from"></span>
+
   </div>
 
   <!-- buttons -->
@@ -39,14 +40,14 @@
   </div>
 </div>
 
-<div ng-if="filterForm.$invalid && !filterForm.$pristine && widgetState.searched" ng-cloak class="filter-errors">
+<div ng-if="filterForm.$invalid && !filterForm.$pristine" ng-cloak class="filter-errors">
   <p ng-show="filterForm['filter-changedate-from'].$error.date || filterForm['filter-changedate-from'].$error.maxDate">
-    <span dynamic-label key="validation.invalidfromdate"></span>
+    <span dynamic-label>Ange ett giltigt datum. Framtida datum ger inga resultat.</span>
   </p>
   <p ng-show="filterForm['filter-changedate-to'].$error.date || filterForm['filter-changedate-to'].$error.maxDate">
-    <span dynamic-label key="validation.invalidtodate"></span>
+    <span dynamic-label>Ange ett giltigt datum. Framtida datum ger inga resultat.</span>
   </p>
   <p ng-show="filterForm['filter-changedate-to'].$error.isBefore">
-    <span dynamic-label key="validation.invalidtobeforefromdate"></span>
+    <span dynamic-label>Startdatum får inte vara efter slutdatum. </span>
   </p>
 </div>
