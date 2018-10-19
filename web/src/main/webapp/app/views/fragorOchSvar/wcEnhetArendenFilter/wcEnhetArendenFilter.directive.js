@@ -35,8 +35,12 @@ angular.module('webcert').directive('wcEnhetArendenFilter', [
             controller: function($scope) {
 
                 $scope.maxdate = new Date().toISOString().split('T')[0];
+
                 $scope.pnrIsNotValid = false;
                 $scope.pnrIsCorrect = false;
+
+                $scope.dateFromIsCorrect = true;
+                $scope.dateToIsCorrect = true;
 
                 $scope.pnrValidationCheck = function () {
                     if ($scope.pnrIsCorrect) {
@@ -96,6 +100,30 @@ angular.module('webcert').directive('wcEnhetArendenFilter', [
                         $scope.pnrIsCorrect = true;
                     } else {
                         $scope.pnrIsCorrect = false;
+                    }
+                });
+
+                $scope.$watch('enhetArendenFilterModel.filterForm.changedFrom', function(value) {
+                    if (value !== undefined) {
+                        if(value <= $scope.maxdate) {
+                            $scope.dateFromIsCorrect = true;
+                        } else {
+                            $scope.dateFromIsCorrect = false;
+                        }
+                    } else {
+                        $scope.dateFromIsCorrect = false;
+                    }
+                });
+
+                $scope.$watch('enhetArendenFilterModel.filterForm.changedTo', function(value) {
+                    if (value !== undefined) {
+                        if(value <= $scope.maxdate) {
+                            $scope.dateToIsCorrect = true;
+                        } else {
+                            $scope.dateToIsCorrect = false;
+                        }
+                    } else {
+                        $scope.dateToIsCorrect = false;
                     }
                 });
 
