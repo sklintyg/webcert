@@ -60,7 +60,7 @@ stage('protractor') {
                      -DbuildVersion=${buildVersion} -DcommonVersion=${commonVersion} -DinfraVersion=${infraVersion}"
 //           }
        } finally {
-           publishHTML allowMissing: true, alwaysLinkToLastBuild: true, keepAll: true, reportDir: 'test/dev/report', \
+           publishHTML allowMissing: true, alwaysLinkToLastBuild: true, keepAll: true, reportDir: 'test/reports', \
                reportFiles: 'index.html', reportName: 'Protractor results'
        }
    }
