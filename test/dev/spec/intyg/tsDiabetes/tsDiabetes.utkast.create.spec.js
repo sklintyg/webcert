@@ -29,7 +29,9 @@ var testdataHelper = wcTestTools.helpers.restTestdata;
 var UtkastPage = wcTestTools.pages.intyg.ts.diabetes.utkast;
 var IntygPage = wcTestTools.pages.intyg.ts.diabetes.intyg;
 
-describe('Create and Sign ts-diabetes utkast', function() {
+//deaktiverat tills vi löser att createdraft alltid skapar upp ett intyg av senast kända version, i detta fall 3.0
+// se INTYG-7264
+xdescribe('Create and Sign ts-diabetes utkast', function() {
 
     var utkastId = null,
         data = null;

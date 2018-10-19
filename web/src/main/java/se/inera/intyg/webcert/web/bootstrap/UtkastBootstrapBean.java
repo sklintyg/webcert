@@ -100,7 +100,7 @@ public class UtkastBootstrapBean {
 
                     String moduleName = Iterables.get(Splitter.on("__").split(Objects.requireNonNull(filename)), 0);
                     String intygMajorTypeVersion = Iterables.get(Splitter.on(".").split(Objects.requireNonNull(filename)), 1);
-                    LOG.info("Bootstrapping certificate '{}' from module {} version {}", filename, moduleName, intygMajorTypeVersion);
+                    LOG.info("Bootstrapping certificate '{}' from module {} (version {})", filename, moduleName, intygMajorTypeVersion);
 
                     Utlatande utlatande = buildUtlatande(resource, moduleName, intygMajorTypeVersion);
 

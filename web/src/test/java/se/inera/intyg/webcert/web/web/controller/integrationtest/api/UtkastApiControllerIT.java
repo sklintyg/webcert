@@ -57,8 +57,10 @@ public class UtkastApiControllerIT extends BaseRestIntegrationTest {
     public void testGetTsDiabetesUtkast() {
         JsonPath model = testCreateUtkast("ts-diabetes");
         // INTYG-4086 - do NOT store name or address for FK intyg in DB
-        assertEquals(DEFAULT_UTKAST_PATIENT_FORNAMN, model.getString("grundData.patient.fornamn"));
-        assertEquals(DEFAULT_UTKAST_PATIENT_EFTERNAMN, model.getString("grundData.patient.efternamn"));
+        // ts-diabetes v3 does not have patient in grundData
+        //assertEquals(DEFAULT_UTKAST_PATIENT_FORNAMN, model.getString("grundData.patient.fornamn"));
+        //assertEquals(DEFAULT_UTKAST_PATIENT_EFTERNAMN, model.getString("grundData.patient.efternamn"));
+        assertEquals("3.0", model.getString("textVersion"));
     }
 
     @Test

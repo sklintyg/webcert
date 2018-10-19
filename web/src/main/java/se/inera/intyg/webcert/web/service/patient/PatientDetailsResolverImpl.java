@@ -114,7 +114,6 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
 
         case "ts-bas":
         case "ts-diabetes":
-        case "ts-diabetes-2":
             return resolveTsPatient(personnummer, user);
 
         case "db":

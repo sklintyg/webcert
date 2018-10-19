@@ -24,8 +24,8 @@ var specHelper = wcTestTools.helpers.spec;
 var testdataHelper = wcTestTools.helpers.restTestdata;
 var UtkastPage = wcTestTools.pages.intyg.ts.diabetes2.utkast;
 var IntygPage = wcTestTools.pages.intyg.ts.diabetes2.intyg;
-
-describe('Create and Sign ts-diabetes-2 utkast', function() {
+//Disabled since ts-diabetes-2 no longer exists, but this could be useful when creating suport for ts-diabetes v3 tests
+xdescribe('Create and Sign ts-diabetes-2 utkast', function() {
 
     var utkastId = null,
         data = null;

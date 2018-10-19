@@ -149,7 +149,6 @@ dependencies {
 
     compile "se.inera.intyg.common:ts-bas:${commonVersion}"
     compile "se.inera.intyg.common:ts-diabetes:${commonVersion}"
-    compile "se.inera.intyg.common:ts-diabetes-2:${commonVersion}"
     compile "se.inera.intyg.common:luse:${commonVersion}"
     compile "se.inera.intyg.common:lisjp:${commonVersion}"
     compile "se.inera.intyg.common:luae_na:${commonVersion}"
