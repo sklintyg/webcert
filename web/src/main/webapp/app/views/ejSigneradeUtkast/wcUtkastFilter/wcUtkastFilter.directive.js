@@ -31,6 +31,8 @@ angular.module('webcert').directive('wcUtkastFilter', ['$timeout', 'webcert.Utka
                 },
                 controller: function($scope) {
 
+                    $scope.maxdate = new Date().toISOString().split('T')[0];
+
                     $scope.widgetState = {
                         loadingSavedByList: undefined,
                         savedByList: [],

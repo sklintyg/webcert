@@ -56,22 +56,27 @@
       </wc-dropdown>
     </div>
 
-    <div class="col-md-2 form-group">
+    <div class="col-md-2 form-group" id="enhetArendePnr">
         <label class="control-label">Personnummer</label>
         <input class="form-control" name="pnr" type="text"
                id="filter-person-id"
                placeholder="ååååmmdd-nnnn"
                ng-model="enhetArendenFilterModel.filterForm.patientPersonId"
                wc-person-number
-               required maxlength="13"/>
+               required maxlength="13"
+               ng-blur="pnrValidationCheck()"
+                ng-class="{ 'redMarker' : pnrValidated}"/>
+      <span>FELMEDDELANDE HÄR PNR</span>
       </div>
+
 
     <!-- Skickat/mottaget -->
     <div class="col-md-4 form-group">
       <label class="control-label">Skickat datum</label><br>
       <div class="form-inline">
         Från
-        <span dom-id="filter-changedate-from" target-model="enhetArendenFilterModel.filterForm.changedFrom" wc-date-picker-field add-date-parser="strict"></span>
+        <span dom-id="filter-changedate-from" target-model="enhetArendenFilterModel.filterForm.changedFrom" wc-date-picker-field add-date-parser="strict" max-date={{maxdate}}></span>
+
         till
         <span dom-id="filter-changedate-to" target-model="enhetArendenFilterModel.filterForm.changedTo"
               wc-date-picker-field add-date-parser="strict"
