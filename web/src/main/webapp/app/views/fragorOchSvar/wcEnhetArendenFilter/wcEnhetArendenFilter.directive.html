@@ -3,7 +3,8 @@
 
   <!-- Filter form -->
   <div id="advanced-filter-form"
-       class="wc-filter-panel row">
+       class="wc-filter-panel row"
+        ng-form="filterForm">
 
     <div wc-authority="VIDAREBEFORDRA_FRAGASVAR" intygstyp="" class="col-md-2 form-group" id="filterFormVidarebefordrad">
       <label class="control-label">Vidarebefordrat</label><br>
@@ -66,7 +67,7 @@
                required maxlength="13"
                ng-blur="pnrValidationCheck()"
                ng-class="{'redMarker' : pnrIsNotValid}"/>
-      <span class="warningText" ng-if="pnrIsNotValid">Ange ett giltigt person- eller samordningsnummer.</span>
+      <span class="errorText" ng-if="pnrIsNotValid"><p>Ange ett giltigt person- eller samordningsnummer.</p></span>
       </div>
 
 
@@ -75,13 +76,24 @@
       <label class="control-label">Skickat datum</label><br>
       <div class="form-inline">
         Från
-        <span dom-id="filter-changedate-from" target-model="enhetArendenFilterModel.filterForm.changedFrom" wc-date-picker-field add-date-parser="strict" max-date={{maxdate}}></span>
+        <span dom-id="filter-changedate-from" target-model="enhetArendenFilterModel.filterForm.changedFrom"
+              wc-date-picker-field add-date-parser="strict"
+              max-date={{maxdate}}></span>
 
         till
-        <span dom-id="filter-changedate-to" target-model="enhetArendenFilterModel.filterForm.changedTo" wc-date-picker-field add-date-parser="strict" max-date={{maxdate}}></span>
+        <span dom-id="filter-changedate-to" target-model="enhetArendenFilterModel.filterForm.changedTo"
+              wc-date-picker-field add-date-parser="strict"
+              max-date={{maxdate}}></span>
 
       </div>
-      <span>FELMEDDELANDE HÄR</span>     <span>FELMEDDELANDE HÄR 2</span>
+      <div ng-if="filterForm.$invalid && !filterForm.$pristine" ng-cloak class="errorText">
+        <p ng-show="filterForm['filter-changedate-from'].$error.date">
+          <span>Ange ett giltigt datum. Framtida datum ger inga resultat.</span>
+        </p>
+        <p ng-show="filterForm['filter-changedate-to'].$error.date">
+          <span>Ange ett giltigt datum. Framtida datum ger inga resultat.</span>
+        </p>
+      </div>
     </div>
   </div>
 

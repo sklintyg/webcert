@@ -4,7 +4,10 @@ wc-enhet-arenden-filter {
     border-color: $wc-color-11;
   }
 
-  .warningText {
-    color: $wc-color-11;
+  .errorText {
+    p {
+       padding: 4px 0 0 0;
+       color: $wc-color-11;
+    }
   }
 }
