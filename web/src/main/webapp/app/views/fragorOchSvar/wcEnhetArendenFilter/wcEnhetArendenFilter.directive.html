@@ -83,7 +83,7 @@
         till
         <span dom-id="filter-changedate-to" target-model="enhetArendenFilterModel.filterForm.changedTo"
               wc-date-picker-field add-date-parser="strict"
-              max-date={{maxdate}}></span>
+              max-date={{maxdate}} wc-date-is-after-validator="filter-changedate-from"></span>
 
       </div>
       <div ng-if="filterForm.$invalid && !filterForm.$pristine" ng-cloak class="errorText">
@@ -92,6 +92,9 @@
         </p>
         <p ng-show="filterForm['filter-changedate-to'].$error.date || filterForm['filter-changedate-to'].$error.maxDate">
           <span>Ange ett giltigt datum. Framtida datum ger inga resultat.</span>
+        </p>
+        <p ng-show="filterForm['filter-changedate-to'].$error.isBefore">
+          <span>Startdatum får inte vara efter slutdatum. </span>
         </p>
       </div>
     </div>
