@@ -22,6 +22,19 @@ import static java.util.Objects.isNull;
 import static org.apache.commons.collections.CollectionUtils.isEmpty;
 import static se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum.DATA_NOT_FOUND;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.annotations.VisibleForTesting;
+import com.google.common.collect.Lists;
+import org.apache.commons.lang3.tuple.Pair;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import javax.annotation.PostConstruct;
+import javax.xml.ws.WebServiceException;
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.time.LocalDateTime;
@@ -33,23 +46,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-
-import javax.annotation.PostConstruct;
-import javax.xml.ws.WebServiceException;
-
-import org.apache.commons.lang3.tuple.Pair;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
 
 import se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificatetypeinfo.v1.GetCertificateTypeInfoResponderInterface;
 import se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificatetypeinfo.v1.GetCertificateTypeInfoResponseType;
@@ -197,12 +193,6 @@ public class IntygServiceImpl implements IntygService {
     private ChronoLocalDateTime sekretessmarkeringStartDatum;
 
     private AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
-
-    private static boolean completeAddressProvided(Patient patient) {
-        return !Strings.isNullOrEmpty(patient.getPostadress())
-                && !Strings.isNullOrEmpty(patient.getPostort())
-                && !Strings.isNullOrEmpty(patient.getPostnummer());
-    }
 
     private static void copyOldAddressToNewPatientData(Patient oldPatientData, Patient newPatientData) {
         if (oldPatientData == null) {
@@ -834,7 +824,7 @@ public class IntygServiceImpl implements IntygService {
             // Patient object.
             ModuleApi moduleApi = moduleRegistry.getModuleApi(typ, intygTypeVersion);
             // INTYG-5354, INTYG-5380: Don't use incomplete address from external data sources (PU/js).
-            if (!completeAddressProvided(newPatientData)) {
+            if (!newPatientData.isCompleteAddressProvided()) {
                 // Use the old address data.
                 Patient oldPatientData = utlatande.getGrundData().getPatient();
                 copyOldAddressToNewPatientData(oldPatientData, newPatientData);
@@ -919,7 +909,7 @@ public class IntygServiceImpl implements IntygService {
 
             // INTYG-5354, INTYG-5380: Don't use incomplete address from external data sources (PU/js).
             Utlatande utlatande = modelFacade.getUtlatandeFromInternalModel(utkast.getIntygsTyp(), utkast.getModel());
-            if (!completeAddressProvided(newPatientData)) {
+            if (!newPatientData.isCompleteAddressProvided()) {
                 // Use the old address data.
                 Patient oldPatientData = utlatande.getGrundData().getPatient();
                 copyOldAddressToNewPatientData(oldPatientData, newPatientData);
