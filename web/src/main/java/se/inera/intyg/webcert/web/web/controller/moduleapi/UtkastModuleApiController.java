@@ -42,7 +42,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.OptimisticLockingFailureException;
 
-import com.google.common.base.Strings;
 import io.swagger.annotations.Api;
 import se.inera.intyg.common.services.texts.IntygTextsService;
 import se.inera.intyg.common.support.model.common.internal.Patient;
@@ -168,7 +167,7 @@ public class UtkastModuleApiController extends AbstractApiController {
             draftHolder.setPatientNameChangedInPU(patientDetailsResolver.isPatientNamedChanged(
                     utlatande.getGrundData().getPatient(), resolvedPatient));
 
-            if (completeAddressProvided(resolvedPatient)) {
+            if (resolvedPatient.isCompleteAddressProvided()) {
                 draftHolder.setValidPatientAddressAquiredFromPU(true);
                 draftHolder.setPatientAddressChangedInPU(patientDetailsResolver.isPatientAddressChanged(
                         utlatande.getGrundData().getPatient(), resolvedPatient));
@@ -192,13 +191,6 @@ public class UtkastModuleApiController extends AbstractApiController {
             LOG.error("Error while using the module api to convert json to Utlatande for intygsId {}", intygsId);
             throw new RuntimeException("Error while using the module api to convert json to Utlatande", e);
         }
-    }
-
-    // Copied from IntygServiceImpl, INTYG-5380
-    private static boolean completeAddressProvided(Patient patient) {
-        return !Strings.isNullOrEmpty(patient.getPostadress())
-                && !Strings.isNullOrEmpty(patient.getPostort())
-                && !Strings.isNullOrEmpty(patient.getPostnummer());
     }
 
     // Copied from IntygServiceImpl, INTYG-5380

@@ -24,7 +24,6 @@ import static org.apache.commons.collections.CollectionUtils.isEmpty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
@@ -191,12 +190,6 @@ public class IntygServiceImpl implements IntygService {
     private ChronoLocalDateTime sekretessmarkeringStartDatum;
 
     private AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
-
-    private static boolean completeAddressProvided(Patient patient) {
-        return !Strings.isNullOrEmpty(patient.getPostadress())
-                && !Strings.isNullOrEmpty(patient.getPostort())
-                && !Strings.isNullOrEmpty(patient.getPostnummer());
-    }
 
     private static void copyOldAddressToNewPatientData(Patient oldPatientData, Patient newPatientData) {
         if (oldPatientData == null) {
@@ -821,7 +814,7 @@ public class IntygServiceImpl implements IntygService {
             // Patient object.
             ModuleApi moduleApi = moduleRegistry.getModuleApi(typ);
             // INTYG-5354, INTYG-5380: Don't use incomplete address from external data sources (PU/js).
-            if (!completeAddressProvided(newPatientData)) {
+            if (!newPatientData.isCompleteAddressProvided()) {
                 // Use the old address data.
                 Patient oldPatientData = utlatande.getGrundData().getPatient();
                 copyOldAddressToNewPatientData(oldPatientData, newPatientData);
@@ -906,7 +899,7 @@ public class IntygServiceImpl implements IntygService {
 
             // INTYG-5354, INTYG-5380: Don't use incomplete address from external data sources (PU/js).
             Utlatande utlatande = modelFacade.getUtlatandeFromInternalModel(utkast.getIntygsTyp(), utkast.getModel());
-            if (!completeAddressProvided(newPatientData)) {
+            if (!newPatientData.isCompleteAddressProvided()) {
                 // Use the old address data.
                 Patient oldPatientData = utlatande.getGrundData().getPatient();
                 copyOldAddressToNewPatientData(oldPatientData, newPatientData);
