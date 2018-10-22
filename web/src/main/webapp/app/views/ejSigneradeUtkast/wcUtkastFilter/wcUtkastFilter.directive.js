@@ -30,8 +30,7 @@ angular.module('webcert').directive('wcUtkastFilter', ['$timeout', 'webcert.Utka
                     filter: '='
                 },
                 controller: function($scope) {
-
-                    $scope.maxdate = new Date().toISOString().split('T')[0];
+                    $scope.maxdate = moment().format('YYYY-MM-DD');
 
                     $scope.widgetState = {
                         loadingSavedByList: undefined,
@@ -58,8 +57,10 @@ angular.module('webcert').directive('wcUtkastFilter', ['$timeout', 'webcert.Utka
                     function resetFilterState() {
                         $scope.filter.reset();
                         // fiddle with the DOM to get rid of invalid data which isn't bind through the model
-                        angular.element('#filter-changedate-from').val('').removeClass('ng-invalid-date');
-                        angular.element('#filter-changedate-to').val('').removeClass('ng-invalid-date');
+                        angular.element('#filter-changedate-from').val('');
+                        angular.element('#filter-changedate-to').val('');
+                        $scope.filterForm['filter-changedate-from'].$setViewValue('');
+                        $scope.filterForm['filter-changedate-to'].$setViewValue('');
                     }
 
                     function loadSavedByList() {
