@@ -61,15 +61,9 @@ describe('Create and Sign af00213 utkast', function() {
             it('angeUtredningBehandling', function() {
                 UtkastPage.angeUtredningBehandling(data.utredningBehandling);
             });
-            /*
-            version 1.0
+
             it('angeArbetetsPaverkan', function() {
                 UtkastPage.angeArbetetsPaverkan(data.arbetetsPaverkan);
-            });
-            */
-            //version 2.0
-            it('angeSkipparBalte', function() {
-                UtkastPage.angeSkipparBalte(data.skipparBalte);
             });
 
             it('angeOvrigaUpplysningar', function() {
