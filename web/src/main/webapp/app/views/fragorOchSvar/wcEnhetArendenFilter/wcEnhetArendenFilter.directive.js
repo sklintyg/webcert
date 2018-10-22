@@ -107,8 +107,10 @@ angular.module('webcert').directive('wcEnhetArendenFilter', [
                     angular.element('#filter-person-id').val('');
                     $scope.pnrIsCorrect = false;
                     $scope.pnrIsNotValid = false;
-                    $scope.filterForm['filter-changedate-from'].$setViewValue('');
-                    $scope.filterForm['filter-changedate-to'].$setViewValue('');
+                    if ($scope.filterForm['filter-changedate-from'] && $scope.filterForm['filter-changedate-to']) {
+                        $scope.filterForm['filter-changedate-from'].$setViewValue('');
+                        $scope.filterForm['filter-changedate-to'].$setViewValue('');
+                    }
                 }
 
             }
