@@ -59,8 +59,10 @@ angular.module('webcert').directive('wcUtkastFilter', ['$timeout', 'webcert.Utka
                         // fiddle with the DOM to get rid of invalid data which isn't bind through the model
                         angular.element('#filter-changedate-from').val('');
                         angular.element('#filter-changedate-to').val('');
-                        $scope.filterForm['filter-changedate-from'].$setViewValue('');
-                        $scope.filterForm['filter-changedate-to'].$setViewValue('');
+                        if ($scope.filterForm['filter-changedate-from'] && $scope.filterForm['filter-changedate-to']) {
+                            $scope.filterForm['filter-changedate-from'].$setViewValue('');
+                            $scope.filterForm['filter-changedate-to'].$setViewValue('');
+                        }
                     }
 
                     function loadSavedByList() {
