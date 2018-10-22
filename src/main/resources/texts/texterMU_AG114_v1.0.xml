@@ -28,13 +28,17 @@
 	<text id="KAT_2.RBK">Diagnos</text>
 	<text id="FRG_3.RBK">Önskar patienten uppge information om diagnoser till sin arbetsgivare?</text>
 	<text id="FRG_3.HLP">Enligt sjuklönelagen behöver intyget inte innehålla närmare uppgift om vilken sjukdom patienten lider av. Om patienten väljer att utelämna uppgift om diagnos väljs \"Patienten önskar inte uppge diagnoser för sin arbetsgivare\" nedan. Om patienten väljer att delge sin arbetsgivare information om diagnoser anges vilken eller vilka sjukdomar som orsakar nedsatt arbetsförmåga. Den sjukdom som påverkar arbetsförmågan mest anges först. Diagnoskoden anges alltid med så många positioner som möjligt. Om patienten har fler än tre sjukdomar som påverkar arbetsförmågan anges dessa under "övriga upplysningar".</text>
+	<text id="FRG_4.RBK">Diagnos/diagnoser för sjukdom som orsakar nedsatt arbetsförmåga</text>
+	<text id="FRG_4.HLP">???</text>
 
+	<text id="KAT_3.RBK">Arbetsförmåga</text>
+	<text id="KAT_3.HLP">TBD</text>
+	<text id="FRG_5.RBK">På vilket sätt medför sjukdomen nedsatt arbetsförmåga?</text>
+	<text id="FRG_5.HLP">Uppgift om på vilket sätt arbetsförmågan är nedsatt ska anges oavsett om diagnos har angetts eller inte, detta för att arbetstagaren ska kunna styrka sin rätt till sjuklön och rätt att vara frånvarande från arbetet. Informationen har även betydelse för arbetsgivaren i det proaktiva rehabiliteringsarbetet.</text>
+	<text id="FRG_6.RBK">Finns arbetsförmåga trots sjukdom?</text>
+	<text id="FRG_6.HLP"><![CDATA[1. Vilka arbetsuppgifter kan arbetstagaren utföra trots sin nedsatta arbetsförmåga?<br>2. Vilka arbetsuppgifter och moment bör arbetstagaren inte alls utföra av medicinska skäl?<br>3. Kan t ex arbetsresor till arbetet hjälpa?<br>4. Är det möjligt för arbetstagaren att vistas på arbetsplatsen vid till exempel arbetsplatsträffar?]]></text>
+	<text id="DFR_6.2.RBK">Beskriv arbetsförmågan</text>
 
-	<text id="FRG_4.RBK">Ange utredning eller underlag</text>
-	<text id="DFR_4.1.RBK">Utredning/underlag</text>
-	<text id="DFR_4.2.RBK">Datum</text>
-	<text id="DFR_4.3.RBK">Från vilken vårdgivare kan Försäkringskassan hämta information om utredningen/underlaget?</text>
-	<text id="DFR_4.3.HLP">Skriv exempelvis Neuropsykiatriska kliniken på X-stads sjukhus eller om patienten själv kommer att bifoga utredningen till sin ansökan.</text>
 
 	<text id="KV_FKMU_0002.NUVARANDE_ARBETE.RBK">Nuvarande arbete</text>
 
@@ -55,38 +59,38 @@
 	KATEGORI 3: Diagnos
 	===============================================
 	-->
-	<text id="KAT_3.RBK">Diagnos</text>
+	<!-- <text id="KAT_3.RBK">Diagnos</text>
 	<text id="FRG_6.RBK">Diagnos/diagnoser för sjukdom som orsakar eller har orsakat funktionsnedsättning </text>
 	<text id="DFR_6.2.RBK">Diagnoskod enligt ICD-10 SE</text>
-
+ -->
 	<!--
 	===============================================
 	KATEGORI 4: Funktionsnedsättning
 	===============================================
 	-->
-	<text id="KAT_4.RBK">Funktionsnedsättning</text>
+	<!-- <text id="KAT_4.RBK">Funktionsnedsättning</text>
 	<text id="FRG_15.RBK">Beskriv när och hur patientens funktionsnedsättning debuterat, utvecklats och visar sig för närvarande</text>
 	<text id="FRG_16.RBK">Beskriv på vilket sätt funktionsnedsättningen påverkar eller har påverkat patientens förmåga att klara sin skolgång</text>
-	<text id="FRG_16.HLP">Beskriv om det finns ett direkt samband mellan funktionsnedsättningen och behovet av förlängd skolgång och att det inte finns några andra skäl än rent medicinska som är orsaken till de förlängda studierna. Funktionsnedsättning behöver inte finnas kvar när studierna påbörjas, det är tillräckligt att den orsakat behovet av förlängd skolgång.</text>
+	<text id="FRG_16.HLP">Beskriv om det finns ett direkt samband mellan funktionsnedsättningen och behovet av förlängd skolgång och att det inte finns några andra skäl än rent medicinska som är orsaken till de förlängda studierna. Funktionsnedsättning behöver inte finnas kvar när studierna påbörjas, det är tillräckligt att den orsakat behovet av förlängd skolgång.</text> -->
 
 	<!--
 	===============================================
 	KATEGORI 5: Övrigt
 	===============================================
 	-->
-	<text id="KAT_5.RBK">Övrigt</text>
-	<text id="FRG_25.RBK">Övriga upplysningar</text>
+	<!-- <text id="KAT_5.RBK">Övrigt</text>
+	<text id="FRG_25.RBK">Övriga upplysningar</text> -->
 
 	<!--
 	===============================================
 	KATEGORI 6: Kontakt
 	===============================================
 	-->
-	<text id="KAT_6.RBK">Kontakt</text>
+	<!-- <text id="KAT_6.RBK">Kontakt</text>
 	<text id="FRG_26.RBK">Kontakt med Försäkringskassan</text>
 	<text id="FRG_26.HLP">Försäkringskassans handläggare tar kontakt med dig när underlaget har kommit in och handläggningen kan påbörjas.</text>
 	<text id="DFR_26.1.RBK">Jag önskar att Försäkringskassan kontaktar mig</text>
-	<text id="DFR_26.2.RBK">Ange gärna varför du vill ha kontakt</text>
+	<text id="DFR_26.2.RBK">Ange gärna varför du vill ha kontakt</text> -->
 
 	<!--
 	===============================================
