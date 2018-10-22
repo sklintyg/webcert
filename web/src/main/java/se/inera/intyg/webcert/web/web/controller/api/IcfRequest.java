@@ -18,6 +18,9 @@
  */
 package se.inera.intyg.webcert.web.web.controller.api;
 
+import io.vavr.collection.HashSet;
+import java.util.Objects;
+
 public class IcfRequest {
 
     private String icd10Code1;
@@ -55,6 +58,11 @@ public class IcfRequest {
 
     public void setIcd10Code3(final String icd10Code3) {
         this.icd10Code3 = icd10Code3;
+    }
+
+    public HashSet<String> getIcd10Codes() {
+        return HashSet.of(icd10Code1, icd10Code2, icd10Code3)
+                .filter(Objects::nonNull);
     }
 
     public static IcfRequest of(final String icd10Code1, final String icd10Code2, final String icd10Code3) {

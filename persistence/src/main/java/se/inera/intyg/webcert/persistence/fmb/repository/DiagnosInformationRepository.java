@@ -20,7 +20,10 @@ package se.inera.intyg.webcert.persistence.fmb.repository;
  */
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import java.util.Optional;
+import java.util.Set;
 import se.inera.intyg.webcert.persistence.fmb.model.fmb.DiagnosInformation;
 
 public interface DiagnosInformationRepository extends JpaRepository<DiagnosInformation, Long> {
@@ -29,5 +32,14 @@ public interface DiagnosInformationRepository extends JpaRepository<DiagnosInfor
     Optional<DiagnosInformation> findByIcd10KodList_kod(final String icd10Kod);
     // CHECKSTYLE:ON MethodName
 
+    // CHECKSTYLE:OFF OperatorWrap
+    @Query("SELECT max(typfall.maximalSjukrivningstidDagar) FROM DiagnosInformation diagnosInfo " +
+           "JOIN diagnosInfo.icd10KodList icd10Kod " +
+           "JOIN icd10Kod.typFallList typfall " +
+           "WHERE typfall.maximalSjukrivningstidDagar IS NOT NULL " +
+           "AND icd10Kod.kod IN :koder"
+    )
+    Optional<Integer> findMaximalSjukrivningstidDagarByIcd10Koder(@Param("koder") final Set<String> koder);
+    // CHECKSTYLE:ON OperatorWrap
 }
 

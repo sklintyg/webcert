@@ -27,7 +27,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import java.util.Comparator;
 import java.util.Objects;
@@ -46,6 +46,7 @@ import se.inera.intyg.webcert.web.service.diagnos.DiagnosService;
 import se.inera.intyg.webcert.web.service.diagnos.dto.DiagnosResponse;
 import se.inera.intyg.webcert.web.service.diagnos.dto.DiagnosResponseType;
 import se.inera.intyg.webcert.web.service.diagnos.model.Diagnos;
+import se.inera.intyg.webcert.web.web.controller.api.IcfRequest;
 import se.inera.intyg.webcert.web.web.controller.api.dto.FmbContent;
 import se.inera.intyg.webcert.web.web.controller.api.dto.FmbForm;
 import se.inera.intyg.webcert.web.web.controller.api.dto.FmbFormName;
@@ -62,6 +63,12 @@ public class FmbDiagnosInformationServiceImpl implements FmbDiagnosInformationSe
         this.repository = repository;
         this.diagnosService = diagnosService;
     }
+
+    @Override
+    public Optional<Integer> findMaximalSjukrivningstidDagarByIcd10Koder(final IcfRequest icfRequest) {
+        return repository.findMaximalSjukrivningstidDagarByIcd10Koder(icfRequest.getIcd10Codes().toJavaSet());
+    }
+
 
     @Override
     public Optional<FmbResponse> findFmbDiagnosInformationByIcd10Kod(final String icd10Kod) {
