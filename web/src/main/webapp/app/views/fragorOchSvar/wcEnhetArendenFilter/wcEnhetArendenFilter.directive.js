@@ -39,9 +39,6 @@ angular.module('webcert').directive('wcEnhetArendenFilter', [
                 $scope.pnrIsNotValid = false;
                 $scope.pnrIsCorrect = false;
 
-                $scope.dateFromIsCorrect = true;
-                $scope.dateToIsCorrect = true;
-
                 $scope.pnrValidationCheck = function () {
                     if ($scope.pnrIsCorrect) {
                         $scope.pnrIsNotValid = false;
@@ -103,35 +100,15 @@ angular.module('webcert').directive('wcEnhetArendenFilter', [
                     }
                 });
 
-                $scope.$watch('enhetArendenFilterModel.filterForm.changedFrom', function(value) {
-                    if (value !== undefined) {
-                        if(value <= $scope.maxdate) {
-                            $scope.dateFromIsCorrect = true;
-                        } else {
-                            $scope.dateFromIsCorrect = false;
-                        }
-                    } else {
-                        $scope.dateFromIsCorrect = false;
-                    }
-                });
-
-                $scope.$watch('enhetArendenFilterModel.filterForm.changedTo', function(value) {
-                    if (value !== undefined) {
-                        if(value <= $scope.maxdate) {
-                            $scope.dateToIsCorrect = true;
-                        } else {
-                            $scope.dateToIsCorrect = false;
-                        }
-                    } else {
-                        $scope.dateToIsCorrect = false;
-                    }
-                });
-
                 function resetInvalidData() {
                     // fiddle with the DOM to get rid of invalid data which isn't bind through the model
-                    angular.element('#filter-changedate-from').val('').removeClass('ng-invalid-date');
-                    angular.element('#filter-changedate-to').val('').removeClass('ng-invalid-date');
+                    angular.element('#filter-changedate-from').val('');
+                    angular.element('#filter-changedate-to').val('');
                     angular.element('#filter-person-id').val('');
+                    $scope.pnrIsCorrect = false;
+                    $scope.pnrIsNotValid = false;
+                    $scope.filterForm['filter-changedate-from'].$setViewValue('');
+                    $scope.filterForm['filter-changedate-to'].$setViewValue('');
                 }
 
             }
