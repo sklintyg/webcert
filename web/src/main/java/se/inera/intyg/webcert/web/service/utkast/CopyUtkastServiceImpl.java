@@ -21,6 +21,7 @@ package se.inera.intyg.webcert.web.service.utkast;
 import java.text.MessageFormat;
 import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 
@@ -405,8 +406,8 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
     // Duplicate in IntygServiceImpl, refactor.
     private void verifyNotReplacedWithSigned(String originalIntygId, String operation) {
         final Optional<WebcertCertificateRelation> replacedByRelation = certificateRelationService.getNewestRelationOfType(originalIntygId,
-                RelationKod.ERSATT, Arrays.asList(UtkastStatus.SIGNED));
-        if (replacedByRelation.isPresent()) {
+                RelationKod.ERSATT, Collections.singletonList(UtkastStatus.SIGNED));
+        if (replacedByRelation.isPresent() && !replacedByRelation.get().isMakulerat()) {
             String errorString = String.format("Cannot %s for certificate id '%s', the certificate is replaced by certificate '%s'",
                     operation, originalIntygId, replacedByRelation.get().getIntygsId());
             LOG.debug(errorString);
