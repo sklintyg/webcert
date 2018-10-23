@@ -178,6 +178,7 @@ Open _&lt;env>/configmap-vars.yaml_ and replace `<value>` with expected values. 
 	REDIS_PORT: "<value>"
 	REDIS_SENTINEL_MASTER_NAME: "<value>"
 	DATABASE_PORT: "<value>"
+	DATABASE_SERVER: "<value>"
 	ACTIVEMQ_BROKER_URL: "<value>"
 	NOTIFICATION_QUEUENAME: "<value>"
 	NOTIFICATION_WS_QUEUENAME: "<value>"
