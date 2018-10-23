@@ -222,7 +222,7 @@ Note 1: The `DATABASE_NAME` variable is assumed to be defined within the applica
 
 Note 2: Other properties might be used to define a `<value>`. As an example is the path to certificates indicated by the `certificate.folder` Java System Property, thus the truststore file can be defined as:
  
-	NTJP_WS_TRUSTSTORE_FILE: ${certificate.folder}/truststore.jks
+	NTJP_WS_TRUSTSTORE_FILE: "${certificate.folder}/truststore.jks"
     
         
 The _&lt;env>/config/recipients.json_ file might require an update.
