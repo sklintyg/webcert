@@ -26,7 +26,7 @@ data:
   SAKERHETSTJANST_SAML_KEYSTORE_FILE: ""
   WEBCERT_HOST_URL: "http://${app.name}:8080"
   INTYGSTJANST_BASE_URL: "http://intygstjanst-test-webcert-test:8080/inera-certificate"
-  FMB_ENDPOINT_URL: "https://api.socialstyrelsen.se/fmb"
+  FMB_ENDPOINT_URL: "${webcert.host.url}/services/stubs/fmbstubs"
   NETID_ACCESS_SERVER_URL: "https://showroom.lab.secmaker.com/nias/ServiceServer.asmx"
   NTJP_BASE_URL: "${webcert.host.url}/services/stubs"
   SRS_BASE_URL: "${webcert.host.url}/services/stubs"
