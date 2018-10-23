@@ -49,6 +49,15 @@
 	<text id="KAT_5.RBK">Övrigt</text>
 	<text id="FRG_8.RBK">Övriga upplysningar till arbetsgivaren</text>
 
+	<text id="KAT_4.RBK">Bedömning</text>
+	<text id="FRG_7.RBK">Min bedömning av patientens nedsättning av arbetsförmågan</text>
+	<text id="FRG_7.HLP">Utgångspunkten är att patientens arbetsförmåga ska bedömas i förhållande till hens normala sysselsättningsgrad.</text>
+	<text id="DFR_7.1.RBK">Sjukskrivningsgrad</text>
+	<text id="DFR_7.2.RBK">Sjukskrivningsperiod</text>
+
+	<text id="FROM">Fr.o.m.</text>
+	<text id="TOM">T.o.m.</text>
+
 	<text id="KAT_6.RBK">Kontakt</text>
 	<text id="FRG_9.RBK"></text>
 	<text id="DFR_9.1.RBK">Jag önskar att arbetsgivaren kontaktar vårdcentralen och bekräftar härmed att patienten har gett sitt samtycke till detta</text>

@@ -131,3 +131,5 @@ Man vill eventuellt lägga till en trigger. Det kan ske direkt i "Edit YAML"
         --env=buildVersion=eriktest \
         --env=gitUrl=https://github.com/sklintyg/webcert.git \
         --env=gitRef=develop
+
+    oc start-build bc/minaintyg-test-pipeline --env=backingServices=intygstjanst-test:3.6.0.435 --env=infraVersion=3.7.0.+ --env=commonVersion=3.7.0.+ --env=buildVersion=3.7.0.427 --env=gitUrl=https://github.com/sklintyg/minaintyg.git --env=gitRef=release/2018-4
