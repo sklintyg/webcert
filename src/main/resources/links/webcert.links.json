@@ -127,5 +127,17 @@
     "url": "https://www.inera.se/intygsskolan/webcert",
     "text": "Hitta svar på dina frågor i Ineras intygsskola",
     "target": "_blank"
+  },
+  {
+    "key": "ineraInloggningEfos",
+    "url": "https://www.inera.se/webcert/inloggning",
+    "text": "Felsökning SITHS/Efos-kort",
+    "target": "_blank"
+  },
+  {
+    "key": "ineraInloggningEleg",
+    "url": "https://www.inera.se/webcert/inloggning",
+    "text": "Felsökning E-legitimation",
+    "target": "_blank"
   }
 ]

@@ -1,4 +1,4 @@
-/*
+/*!
  * Copyright (C) 2018 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
@@ -17,32 +17,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.index-vy {
-  max-width: 1280px;
-  width: 100%;
-  flex: 1 0 auto;
+wc-school-link {
+  display: inline;
 
-  @extend %wc-typo-07;
-  color: $wc-color-07;
-
-  h1 {
-    @extend %wc-typo-02;
-    color: $wc-color-07;
+  .school-icon { /* the school icon has incorrect width in the font and must be restricted manually */
+    width: 24px;
+    color: $wc-color-31;
   }
 
-  h2 {
-    @extend %wc-typo-05;
-    color: $wc-color-08;
-  }
-
-  .webcert-logo {
-    @media (min-width: 1200px) {
-      display: flex;
-      justify-content: flex-end;
-    }
-
-    img {
-      margin-top: 20px;
-    }
+  a.external-link {
+    color: $wc-color-31;
   }
 }

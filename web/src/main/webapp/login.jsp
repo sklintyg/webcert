@@ -32,7 +32,6 @@
     </wc-alert-message>
   </div>
   <div class="row">
-
     <div class="buttonbar">
         <a href="/saml/login/alias/defaultAlias?idp=<spring:eval expression="@webcertProperties.getProperty('sakerhetstjanst.saml.idp.metadata.url')" />"
          class="btn btn-success" id="loginBtn">SITHS-kort</a>

@@ -17,28 +17,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-angular.module('webcert').directive('wcFooter', ['common.dialogService',
-    function(dialogService) {
+angular.module('webcert').directive('wcSchoolLink', [
+    function() {
     'use strict';
         return {
             restrict: 'E',
-            templateUrl: '/app/views/index/wcFooter/wcFooter.directive.html',
+            templateUrl: '/app/views/index/wcSchoolLink/wcSchoolLink.directive.html',
             scope: {
             },
             link: function(scope) {
-                var dialogInstance;
 
-                scope.openAboutCookies = function () {
-                    dialogInstance = dialogService.showDialog({
-                        dialogId: 'about-cookies-modal',
-                        templateUrl: 'app/views/index/wcFooter/aboutCookies.html',
-                        button1click: function() {
-                            dialogInstance.close();
-                        },
-                        autoClose: false,
-                        size: 'lg'
-                    });
-                };
             }
         };
 } ]);
