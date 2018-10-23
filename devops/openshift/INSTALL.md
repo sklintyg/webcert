@@ -168,7 +168,7 @@ Open _&lt;env>/secret-vars.yaml_ and replace `<value>` with expected values:
 	SAKERHETSTJANST_WS_KEY_MANAGER_PASSWORD: <value>
 	SAKERHETSTJANST_WS_TRUSTSTORE_PASSWORD: <value>
   
-Open _&lt;env>/configmap-vars.yaml_ and replace `<value>` with expected values. You may also update the names of keystore/truststore files as well as their type (JKS or PKCS12).
+Open _&lt;env>/configmap-vars.yaml_ and replace `<value>` with expected values. You may also update the names of keystore/truststore files as well as their type (JKS or PKCS12). Also see working example from [webcert-test-configmap-envvar](https://raw.githubusercontent.com/sklintyg/webcert/develop/devops/openshift/test/configmap-vars.yaml). 
 
 
 	SPRING_PROFILES_ACTIVE: <value>
@@ -218,12 +218,12 @@ Open _&lt;env>/configmap-vars.yaml_ and replace `<value>` with expected values. 
 	SENDMESSAGETOFK_LOGICALADDRESS: <value> 
 	MAIL_HOST: <value>
    
-Note: Other properties might be used to define a `<value>`. As an example is the path to certificates indicated by the `CERTIFICATE_FOLDER` property and the truststore file might be defined like:
+Note: Other properties might be used to define a `<value>`. As an example is the path to certificates indicated by the `certificate.folder` Java System Property, thus the truststore file can be defined as:
  
-	NTJP_WS_TRUSTSTORE_FILE: ${CERTIFICATE_FOLDER}/truststore.jks
+	NTJP_WS_TRUSTSTORE_FILE: ${certificate.folder}/truststore.jks
     
         
-The _&lt;env>/config/recipients.json_ file may need to be updated with any new intyg recipients.
+The _&lt;env>/config/recipients.json_ file might require an update.
     
 ##### 2.4.1 Redis Sentinel Configuration
 

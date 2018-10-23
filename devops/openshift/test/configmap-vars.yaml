@@ -1,50 +1,50 @@
 apiVersion: v1
 data:
-  SPRING_PROFILES_ACTIVE: dev,caching-enabled
-  CONFIG_DIR: ${config.folder}
-  LOGBACK_FILE: classpath:logback-ocp.xml
-  REDIS_HOST: ${redis.service.host}
-  REDIS_PORT: ${redis.service.port}
-  REDIS_SENTINEL_MASTER_NAME: master
-  DATABASE_NAME: webcert-test
-  DATABASE_PORT: 3306
-  ACTIVEMQ_BROKER_URL: ${broker.amq.tcp.port}?jms.nonBlockingRedelivery=true
-  NOTIFICATION_QUEUENAME: test.webcert.notification.queue
-  NOTIFICATION_WS_QUEUENAME: test.webcert.notification.ws.queue
-  NOTIFICATION_AGGREGATION_QUEUENAME: test.webcert.aggregated.notification.queue
-  LOG_QUEUENAME: test.webcert.log.queue
-  CERTIFICATE_SENDER_QUEUEMAME: test.webcert.certificate.queue
-  NTJP_WS_CERTIFICATE_FILE: ${certificate.folder}/test.intygstjanster.sjunet.org.jks
-  NTJP_WS_TRUSTSTORE_FILE: ${certificate.folder}/truststore.jks
-  NTJP_WS_CERTIFICATE_TYPE: JKS
-  NTJP_WS_TRUSTSTORE_TYPE: JKS
-  CGI_GRP_WS_CERTIFICATE_FILE:
-  CGI_GRP_WS_CERTIFICATE_TYPE:
-  CGI_GRP_WS_TRUSTSTORE_FILE: ${certificate.folder}/grp.test.truststore.jks
-  CGI_GRP_WS_TRUSTSTORE_TYPE: JKS
-  SAKERHETSTJANST_SAML_IDP_METADATA_URL: file:///opt/${app.name}/config/sp-sakerhetstjanst.xml
-  SAKERHETSTJANST_SAML_KEYSTORE_FILE:
-  WEBCERT_HOST_URL: http://${app.name}:8080
-  INTYGSTJANST_BASE_URL: http://intygstjanst-test-webcert-test:8080/inera-certificate
-  FMB_ENDPOINT_URL: https://api.socialstyrelsen.se/fmb
-  NETID_ACCESS_SERVER_URL: https://showroom.lab.secmaker.com/nias/ServiceServer.asmx
-  NTJP_BASE_URL: ${webcert.host.url}/services/stubs
-  SRS_BASE_URL: ${webcert.host.url}/services/stubs
-  PRIVATEPRACTITIONER_BASE_URL: ${webcert.host.url}/services/stubs
-  PRIVATEPRACTITIONER_PORTAL_REGISTRATION_URL: ${webcert.host.url}
-  CGI_FUNKTIONSTJANSTER_SAML_IDP_METADATA_URL: https://m00-mg-local.testidp.funktionstjanster.se/samlv2/idp/metadata/0/10
-  CGI_FUNKTIONSTJANSTER_GRP_URL: ${webcert.host.url}/services/grp
-  CGI_GRP_SERVICEID: logtest007
-  CGI_GRP_DISPLAYNAME: Test
-  TAK_BASE_URL: ${webcert.host.url}/services/stubs/takstub
-  TAK_ENVIRONMENT: DEV
-  INFRASTRUCTURE_DIRECTORY_LOGICALADDRESS: TEST
-  INTYGSTJANST_LOGICALADDRESS: 5565594230
-  PRIVATEPRACTITIONER_LOGICALADDRESS: 1337
-  PUTJANST_LOGICALADDRESS: SE165565594230-1000
-  SENDANSWERTOFK_LOGICALADDRESS: SendAnswerStub
-  SENDQUESTIONTOFK_LOGICALADDRESS: SendQuestionStub
-  SENDMESSAGETOFK_LOGICALADDRESS: SendMessageStub
+  SPRING_PROFILES_ACTIVE: "dev,caching-enabled"
+  CONFIG_DIR: "${config.folder}"
+  LOGBACK_FILE: "classpath:logback-ocp.xml"
+  REDIS_HOST: "${redis.service.host}"
+  REDIS_PORT: "${redis.service.port}"
+  REDIS_SENTINEL_MASTER_NAME: "master"
+  DATABASE_NAME: "webcert-test"
+  DATABASE_PORT: "3306"
+  ACTIVEMQ_BROKER_URL: "${broker.amq.tcp.port}?jms.nonBlockingRedelivery=true"
+  NOTIFICATION_QUEUENAME: "test.webcert.notification.queue"
+  NOTIFICATION_WS_QUEUENAME: "test.webcert.notification.ws.queue"
+  NOTIFICATION_AGGREGATION_QUEUENAME: "test.webcert.aggregated.notification.queue"
+  LOG_QUEUENAME: "test.webcert.log.queue"
+  CERTIFICATE_SENDER_QUEUEMAME: "test.webcert.certificate.queue"
+  NTJP_WS_CERTIFICATE_FILE: "${certificate.folder}/test.intygstjanster.sjunet.org.jks"
+  NTJP_WS_TRUSTSTORE_FILE: "${certificate.folder}/truststore.jks"
+  NTJP_WS_CERTIFICATE_TYPE: "JKS"
+  NTJP_WS_TRUSTSTORE_TYPE: "JKS"
+  CGI_GRP_WS_CERTIFICATE_FILE: ""
+  CGI_GRP_WS_CERTIFICATE_TYPE: ""
+  CGI_GRP_WS_TRUSTSTORE_FILE: "${certificate.folder}/grp.test.truststore.jks"
+  CGI_GRP_WS_TRUSTSTORE_TYPE: "JKS"
+  SAKERHETSTJANST_SAML_IDP_METADATA_URL: "file:///opt/${app.name}/config/sp-sakerhetstjanst.xml"
+  SAKERHETSTJANST_SAML_KEYSTORE_FILE: ""
+  WEBCERT_HOST_URL: "http://${app.name}:8080"
+  INTYGSTJANST_BASE_URL: "http://intygstjanst-test-webcert-test:8080/inera-certificate"
+  FMB_ENDPOINT_URL: "https://api.socialstyrelsen.se/fmb"
+  NETID_ACCESS_SERVER_URL: "https://showroom.lab.secmaker.com/nias/ServiceServer.asmx"
+  NTJP_BASE_URL: "${webcert.host.url}/services/stubs"
+  SRS_BASE_URL: "${webcert.host.url}/services/stubs"
+  PRIVATEPRACTITIONER_BASE_URL: "${webcert.host.url}/services/stubs"
+  PRIVATEPRACTITIONER_PORTAL_REGISTRATION_URL: "${webcert.host.url}"
+  CGI_FUNKTIONSTJANSTER_SAML_IDP_METADATA_URL: "https://m00-mg-local.testidp.funktionstjanster.se/samlv2/idp/metadata/0/10"
+  CGI_FUNKTIONSTJANSTER_GRP_URL: "${webcert.host.url}/services/grp"
+  CGI_GRP_SERVICEID: "logtest007"
+  CGI_GRP_DISPLAYNAME: "Test"
+  TAK_BASE_URL: "${webcert.host.url}/services/stubs/takstub"
+  TAK_ENVIRONMENT: "DEV"
+  INFRASTRUCTURE_DIRECTORY_LOGICALADDRESS: "TEST"
+  INTYGSTJANST_LOGICALADDRESS: "5565594230"
+  PRIVATEPRACTITIONER_LOGICALADDRESS: "1337"
+  PUTJANST_LOGICALADDRESS: "SE165565594230-1000"
+  SENDANSWERTOFK_LOGICALADDRESS: "SendAnswerStub"
+  SENDQUESTIONTOFK_LOGICALADDRESS: "SendQuestionStub"
+  SENDMESSAGETOFK_LOGICALADDRESS: "SendMessageStub"
   MAIL_HOST:
 kind: ConfigMap
 metadata:
