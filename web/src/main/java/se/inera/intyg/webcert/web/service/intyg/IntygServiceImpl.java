@@ -584,17 +584,19 @@ public class IntygServiceImpl implements IntygService {
      */
     @Override
     public void handleAfterSigned(Utkast utkast) {
-        boolean isKomplettering = RelationKod.KOMPLT == utkast.getRelationKod();
+        List<RelationKod> shouldCloseCompletionCodes = Lists.newArrayList(RelationKod.KOMPLT, RelationKod.ERSATT,
+                RelationKod.FRLANG);
+        boolean shouldCloseCompletions = shouldCloseCompletionCodes.stream().anyMatch(it -> it == utkast.getRelationKod());
         boolean isSigneraSkickaDirekt = authoritiesHelper
                 .isFeatureActive(AuthoritiesConstants.FEATURE_SIGNERA_SKICKA_DIREKT, utkast.getIntygsTyp());
 
-        if (isKomplettering || isSigneraSkickaDirekt) {
+        if (shouldCloseCompletions || isSigneraSkickaDirekt) {
             try {
                 LOG.info("Send intyg '{}' directly to recipient", utkast.getIntygsId());
                 sendIntyg(utkast.getIntygsId(), utkast.getIntygsTyp(), moduleRegistry.getModuleEntryPoint(
                         utkast.getIntygsTyp()).getDefaultRecipient(), true);
 
-                if (isKomplettering) {
+                if (shouldCloseCompletions) {
                     LOG.info("Set komplettering QAs as handled for {}", utkast.getRelationIntygsId());
                     arendeService.closeCompletionsAsHandled(utkast.getRelationIntygsId(), utkast.getIntygsTyp());
                 }
