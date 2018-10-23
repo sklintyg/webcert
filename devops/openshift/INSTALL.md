@@ -149,76 +149,77 @@ For security reasons, no secret properties or configuration may be checked into 
 
 Open _&lt;env>/secret-vars.yaml_ and replace `<value>` with expected values:
 
-	ACTIVEMQ_BROKER_USERNAME: <value>
-	ACTIVEMQ_BROKER_PASSWORD: <value>
-	REDIS_PASSWORD: <value>
-	DATABASE_USERNAME: <value>
-	DATABASE_PASSWORD: <value>
-	MAIL_USERNAME: <value>
-	MAIL_PASSWORD: <value>
-	CGI_GRP_WS_CERTIFICATE_PASSWORD: <value>
-	CGI_GRP_WS_KEY_MANAGER_PASSWORD: <value>
-	CGI_GRP_WS_TRUSTSTORE_PASSWORD: <value>
-	NTJP_WS_CERTIFICATE_PASSWORD: <value>
-	NTJP_WS_KEY_MANAGER_PASSWORD: <value>
-	NTJP_WS_TRUSTSTORE_PASSWORD: <value>
-	SAKERHETSTJANST_SAML_KEYSTORE_PASSWORD: <value>
-	SAKERHETSTJANST_SAML_TRUSTSTORE_PASSWORD: <value>
-	SAKERHETSTJANST_WS_CERTIFICATE_PASSWORD: <value>
-	SAKERHETSTJANST_WS_KEY_MANAGER_PASSWORD: <value>
-	SAKERHETSTJANST_WS_TRUSTSTORE_PASSWORD: <value>
+	ACTIVEMQ_BROKER_USERNAME: "<value>"
+	ACTIVEMQ_BROKER_PASSWORD: "<value>"
+	REDIS_PASSWORD: "<value>"
+	DATABASE_USERNAME: "<value>"
+	DATABASE_PASSWORD: "<value>"
+	MAIL_USERNAME: "<value>"
+	MAIL_PASSWORD: "<value>"
+	CGI_GRP_WS_CERTIFICATE_PASSWORD: "<value>"
+	CGI_GRP_WS_KEY_MANAGER_PASSWORD: "<value>"
+	CGI_GRP_WS_TRUSTSTORE_PASSWORD: "<value>"
+	NTJP_WS_CERTIFICATE_PASSWORD: "<value>"
+	NTJP_WS_KEY_MANAGER_PASSWORD: "<value>"
+	NTJP_WS_TRUSTSTORE_PASSWORD: "<value>"
+	SAKERHETSTJANST_SAML_KEYSTORE_PASSWORD: "<value>"
+	SAKERHETSTJANST_SAML_TRUSTSTORE_PASSWORD: "<value>"
+	SAKERHETSTJANST_WS_CERTIFICATE_PASSWORD: "<value>"
+	SAKERHETSTJANST_WS_KEY_MANAGER_PASSWORD: "<value>"
+	SAKERHETSTJANST_WS_TRUSTSTORE_PASSWORD: "<value>"
   
 Open _&lt;env>/configmap-vars.yaml_ and replace `<value>` with expected values. You may also update the names of keystore/truststore files as well as their type (JKS or PKCS12). Also see working example from [webcert-test-configmap-envvar](https://raw.githubusercontent.com/sklintyg/webcert/develop/devops/openshift/test/configmap-vars.yaml). 
 
 
-	SPRING_PROFILES_ACTIVE: <value>
-	CONFIG_DIR: ${config.folder}
-	LOGBACK_FILE: <value>
-	REDIS_HOST: <value>
-	REDIS_PORT: <value>
-	REDIS_SENTINEL_MASTER_NAME: <value>
-	DATABASE_NAME: <value>
-	DATABASE_PORT: <value>
-	ACTIVEMQ_BROKER_URL: <value>
-	NOTIFICATION_QUEUENAME: <value>
-	NOTIFICATION_WS_QUEUENAME: <value>
-	NOTIFICATION_AGGREGATION_QUEUENAME: <value>
-	LOG_QUEUENAME: <value>
-	CERTIFICATE_SENDER_QUEUEMAME: <value>
-	NTJP_WS_CERTIFICATE_FILE: <value>
-	NTJP_WS_TRUSTSTORE_FILE: <value>
-	NTJP_WS_CERTIFICATE_TYPE: <value>
-	NTJP_WS_TRUSTSTORE_TYPE: <value>
-	CGI_GRP_WS_CERTIFICATE_FILE: <value>
-	CGI_GRP_WS_CERTIFICATE_TYPE: <value>
-	CGI_GRP_WS_TRUSTSTORE_FILE: <value>
-	CGI_GRP_WS_TRUSTSTORE_TYPE: <value>
-	SAKERHETSTJANST_SAML_IDP_METADATA_URL: <value>
-	SAKERHETSTJANST_SAML_KEYSTORE_FILE: <value>
-	WEBCERT_HOST_URL: <value>
-	INTYGSTJANST_BASE_URL: <value>
-	FMB_ENDPOINT_URL: <value>
-	NETID_ACCESS_SERVER_URL: <value>
-	NTJP_BASE_URL: <value>
-	SRS_BASE_URL: <value>
-	PRIVATEPRACTITIONER_BASE_URL: <value>
-	PRIVATEPRACTITIONER_PORTAL_REGISTRATION_URL: <value>
-	CGI_FUNKTIONSTJANSTER_SAML_IDP_METADATA_URL: <value>
-	CGI_FUNKTIONSTJANSTER_GRP_URL: <value>
-	CGI_GRP_SERVICEID: <value>
-	CGI_GRP_DISPLAYNAME: <value>
-	TAK_BASE_URL: <value>
-	TAK_ENVIRONMENT: <value>
-	INFRASTRUCTURE_DIRECTORY_LOGICALADDRESS: <value>
-	INTYGSTJANST_LOGICALADDRESS: <value>
-	PRIVATEPRACTITIONER_LOGICALADDRESS: <value>
-	PUTJANST_LOGICALADDRESS: <value>
-	SENDANSWERTOFK_LOGICALADDRESS: <value>
-	SENDQUESTIONTOFK_LOGICALADDRESS: <value>
-	SENDMESSAGETOFK_LOGICALADDRESS: <value> 
-	MAIL_HOST: <value>
+	SPRING_PROFILES_ACTIVE: "<value>"
+	CONFIG_DIR: "${config.folder}"
+	LOGBACK_FILE: "<value>"
+	REDIS_HOST: "<value>"
+	REDIS_PORT: "<value>"
+	REDIS_SENTINEL_MASTER_NAME: "<value>"
+	DATABASE_PORT: "<value>"
+	ACTIVEMQ_BROKER_URL: "<value>"
+	NOTIFICATION_QUEUENAME: "<value>"
+	NOTIFICATION_WS_QUEUENAME: "<value>"
+	NOTIFICATION_AGGREGATION_QUEUENAME: "<value>"
+	LOG_QUEUENAME: "<value>"
+	CERTIFICATE_SENDER_QUEUEMAME: "<value>"
+	NTJP_WS_CERTIFICATE_FILE: "<value>"
+	NTJP_WS_TRUSTSTORE_FILE: "<value>"
+	NTJP_WS_CERTIFICATE_TYPE: "<value>"
+	NTJP_WS_TRUSTSTORE_TYPE: "<value>"
+	CGI_GRP_WS_CERTIFICATE_FILE: "<value>"
+	CGI_GRP_WS_CERTIFICATE_TYPE: "<value>"
+	CGI_GRP_WS_TRUSTSTORE_FILE: "<value>"
+	CGI_GRP_WS_TRUSTSTORE_TYPE: "<value>"
+	SAKERHETSTJANST_SAML_IDP_METADATA_URL: "<value>"
+	SAKERHETSTJANST_SAML_KEYSTORE_FILE: "<value>"
+	WEBCERT_HOST_URL: "<value>"
+	INTYGSTJANST_BASE_URL: "<value>"
+	FMB_ENDPOINT_URL: "<value>"
+	NETID_ACCESS_SERVER_URL: "<value>"
+	NTJP_BASE_URL: "<value>"
+	SRS_BASE_URL: "<value>"
+	PRIVATEPRACTITIONER_BASE_URL: "<value>"
+	PRIVATEPRACTITIONER_PORTAL_REGISTRATION_URL: "<value>"
+	CGI_FUNKTIONSTJANSTER_SAML_IDP_METADATA_URL: "<value>"
+	CGI_FUNKTIONSTJANSTER_GRP_URL: "<value>"
+	CGI_GRP_SERVICEID: "<value>"
+	CGI_GRP_DISPLAYNAME: "<value>"
+	TAK_BASE_URL: "<value>"
+	TAK_ENVIRONMENT: "<value>"
+	INFRASTRUCTURE_DIRECTORY_LOGICALADDRESS: "<value>"
+	INTYGSTJANST_LOGICALADDRESS: "<value>"
+	PRIVATEPRACTITIONER_LOGICALADDRESS: "<value>"
+	PUTJANST_LOGICALADDRESS: "<value>"
+	SENDANSWERTOFK_LOGICALADDRESS: "<value>"
+	SENDQUESTIONTOFK_LOGICALADDRESS: "<value>"
+	SENDMESSAGETOFK_LOGICALADDRESS: "<value>" 
+	MAIL_HOST: "<value>"
    
-Note: Other properties might be used to define a `<value>`. As an example is the path to certificates indicated by the `certificate.folder` Java System Property, thus the truststore file can be defined as:
+Note 1: The `DATABASE_NAME` variable is assumed to be defined within the application deployment config.
+
+Note 2: Other properties might be used to define a `<value>`. As an example is the path to certificates indicated by the `certificate.folder` Java System Property, thus the truststore file can be defined as:
  
 	NTJP_WS_TRUSTSTORE_FILE: ${certificate.folder}/truststore.jks
     
