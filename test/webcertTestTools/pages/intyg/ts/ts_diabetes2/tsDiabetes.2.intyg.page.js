@@ -48,7 +48,7 @@ var TsDiabetes2Intyg = TsBaseIntyg._extend({
             hDate: element(by.id('hypoglykemier-aterkommandeSenasteTidpunkt')),
             iDate: element(by.id('hypoglykemier-senasteTidpunktVaken')),
             jDate: element(by.id('hypoglykemier-forekomstTrafikTidpunkt'))
-        }
+        };
 
         this.synIntygA = element(by.id('synfunktion-misstankeOgonsjukdom'));
         this.synIntygB = element(by.id('synfunktion-ogonbottenFotoSaknas'));
@@ -102,12 +102,12 @@ var TsDiabetes2Intyg = TsBaseIntyg._extend({
     },
     verifieraHypoglykemier: function(hypoglykemier, behandling) {
         var hypoglykemierMandatory = (behandling.typer.indexOf('Insulin') > -1 ||
-                (behandling.typer.indexOf('Tabletter') > -1 && behandling.riskForHypoglykemi === 'Ja'));
+            (behandling.typer.indexOf('Tabletter') > -1 && behandling.riskForHypoglykemi === 'Ja'));
 
         'abcdefghij'.split('').forEach(function(char) {
             var expectedYesNo = hypoglykemierMandatory ? hypoglykemier[char] : ejAngivet;
             expect(this.hypoglykemier[char].getText()).toBe(expectedYesNo);
-            if(['h', 'i', 'j'].indexOf(char) > -1) {
+            if (['h', 'i', 'j'].indexOf(char) > -1) {
                 var expectedDateValue = hypoglykemier[char] === 'Ja' ? hypoglykemier[char + 'Datum'] : ejAngivet;
                 expect(this.hypoglykemier[char + 'Date'].getText()).toBe(expectedDateValue);
             }

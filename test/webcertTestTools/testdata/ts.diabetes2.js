@@ -20,7 +20,7 @@
 'use strict';
 
 var testdataHelper = require('common-testtools').testdataHelper;
-var shuffle = testdataHelper.shuffle;
+//var shuffle = testdataHelper.shuffle;
 
 var testValues = require('./testvalues.js').ts;
 
