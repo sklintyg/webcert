@@ -24,9 +24,12 @@ angular.module('webcert').directive('wcSchoolLink', [
             restrict: 'E',
             templateUrl: '/app/views/index/wcSchoolLink/wcSchoolLink.directive.html',
             scope: {
+                useBgPlate: '='
             },
             link: function(scope) {
-
+                if(!angular.isDefined(scope.useBgPlate)){
+                    scope.useBgPlate = false;
+                }
             }
         };
 } ]);

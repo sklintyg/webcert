@@ -131,13 +131,37 @@
   {
     "key": "ineraInloggningEfos",
     "url": "https://www.inera.se/webcert/inloggning",
-    "text": "Felsökning SITHS/Efos-kort",
+    "text": "SITHS/Efos-kort",
     "target": "_blank"
   },
   {
     "key": "ineraInloggningEleg",
     "url": "https://www.inera.se/webcert/inloggning",
-    "text": "Felsökning E-legitimation",
+    "text": "E-legitimation",
+    "target": "_blank"
+  },
+  {
+    "key": "iText7",
+    "url": "https://itextpdf.com",
+    "text": "iText7",
+    "target": "_blank"
+  },
+  {
+    "key": "agpl3",
+    "url": "https://www.gnu.org/licenses/agpl-3.0.en.html",
+    "text": "gnu.org",
+    "target": "_blank"
+  },
+  {
+    "key": "github",
+    "url": "https://github.com/sklintyg/webcert",
+    "text": "GitHub",
+    "target": "_blank"
+  },
+  {
+    "key": "githubLicense",
+    "url": "https://github.com/sklintyg/webcert/blob/develop/LICENSE.md",
+    "text": "GitHub",
     "target": "_blank"
   }
 ]
