@@ -589,22 +589,19 @@ public class IntygServiceImpl implements IntygService {
         boolean shouldCloseCompletions = shouldCloseCompletionCodes.stream().anyMatch(it -> it == utkast.getRelationKod());
         boolean isSigneraSkickaDirekt = authoritiesHelper
                 .isFeatureActive(AuthoritiesConstants.FEATURE_SIGNERA_SKICKA_DIREKT, utkast.getIntygsTyp());
-
-        if (shouldCloseCompletions || isSigneraSkickaDirekt) {
+        if (isSigneraSkickaDirekt || utkast.getRelationKod() == RelationKod.KOMPLT) {
             try {
                 LOG.info("Send intyg '{}' directly to recipient", utkast.getIntygsId());
                 sendIntyg(utkast.getIntygsId(), utkast.getIntygsTyp(), moduleRegistry.getModuleEntryPoint(
                         utkast.getIntygsTyp()).getDefaultRecipient(), true);
-
-                if (shouldCloseCompletions) {
-                    LOG.info("Set komplettering QAs as handled for {}", utkast.getRelationIntygsId());
-                    arendeService.closeCompletionsAsHandled(utkast.getRelationIntygsId(), utkast.getIntygsTyp());
-                }
-
             } catch (ModuleNotFoundException e) {
                 throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM,
                         "Could not send intyg directly to recipient", e);
             }
+        }
+        if (shouldCloseCompletions) {
+            LOG.info("Set komplettering QAs as handled for {}", utkast.getRelationIntygsId());
+            arendeService.closeCompletionsAsHandled(utkast.getRelationIntygsId(), utkast.getIntygsTyp());
         }
     }
 
