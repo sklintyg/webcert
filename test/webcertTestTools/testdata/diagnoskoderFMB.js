@@ -162,12 +162,13 @@ module.exports = {
             }, */
             {
                 kod: 'K41',
-                symptomPrognosBehandling: 'Femoralbråck',
-                generellInfo: 'Det finns en spännvidd för hur en given sjukdom påverkar olika individers arbetsförmåga och förmåga att utföra olika aktiviteter',
-                funktionsnedsattning: 'Funktionsnedsättningen beror på vilken typ av kirurgi som utförts',
+                symptomPrognosBehandling: 'Ett bukväggsbråck (exempelvis ljumskbråck) är en defekt i bukväggen där bukhinnan buktar fram. ',
+                generellInfo: 'Det finns en spännvidd för hur en given sjukdom påverkar olika individers arbetsförmåga och förmåga att utföra olika aktiviteter. Därför måste bedömningen av arbetsförmågan ske individuellt utifrån individens unika förutsättningar och sysselsättning.',
+                funktionsnedsattning: 'Funktionsnedsättningen beror på vilken typ av kirurgi som utförts. Patienten får i normalfallet viss avtagande smärta i såret under 14 dagar, med smärttopp dag 3–4.',
                 aktivitetsbegransning: null,
-                overliggandeTxt: 'Det FMB-stöd som visas är för koden K41',
-                overliggandeDiagnos: 'K41'
+                overliggandeTxt: 'Vid ljumskbråck, femoralbråck och navelbråck (opererats med öppen kirurgi eller laparoskopiskt) där arbetsbelastningen innefattar lätt belastning rekommenderas ingen sjukskrivning.',
+                overliggandeDiagnos: 'Femoralbråck',
+                vagledningForSjukskrivning: 'Vid ljumskbråck, femoralbråck och navelbråck (opererats med öppen kirurgi eller laparoskopiskt) där arbetsbelastningen innefattar lätt belastning rekommenderas ingen sjukskrivning.',
             }
         ]
 

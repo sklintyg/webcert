@@ -51,31 +51,79 @@ function checkFMB(fmbDiagnos, intyg) {
 
     var promiseArray = [];
 
-    return fmb.visaMer.klickaAlla().then(function() {
+    //Kontroll av rubriker
+    if (fmbDiagnos.overliggandeTxt) {
+        promiseArray.push(expect(element(by.id('fmb_heading_BESLUTSUNDERLAG_TEXTUELLT')).getText()).to.eventually.contain('Vägledning för sjukskrivning'));
+        //console.log("overliggandeTxt: " + element(by.id('fmb_heading_BESLUTSUNDERLAG_TEXTUELLT')).getText());
+    }
 
-        if (fmbDiagnos.overliggandeDiagnos) {
-            promiseArray.push(expect(fmb.container.getText()).to.eventually.contain(fmbDiagnos.overliggandeTxt));
-            //TODO Saknar Id på alert-rutan, använder container istället.
-            //promiseArray.push(expect(fmb.alert.overOrdnadDiagnos(fmbDiagnos.overliggandeDiagnos).getText()).to.eventually.contain(fmbDiagnos.overliggandeTxt));
+    if (fmbDiagnos.funktionsnedsattning) {
+        promiseArray.push(expect(element(by.id('fmb_heading_FUNKTIONSNEDSATTNING')).getText()).to.eventually.contain('Funktionsnedsättning'));
+        //console.log("funktionsnedsattning: " + element(by.id('fmb_heading_FUNKTIONSNEDSATTNING')).getText());
+    }
+
+    if (fmbDiagnos.aktivitetsbegransning) {
+        promiseArray.push(expect(element(by.id('fmb_heading_AKTIVITETSBEGRANSNING')).getText()).to.eventually.contain('Aktivitetsbegränsning'));
+        //console.log("aktivitetsbegransning: " + element(by.id('fmb_heading_AKTIVITETSBEGRANSNING')).getText());
+    }
+
+    if (fmbDiagnos.generellInfo) {
+        promiseArray.push(expect(element(by.id('fmb_heading_GENERELL_INFO')).getText()).to.eventually.contain('Försäkringsmedicinsk information'));
+        //console.log("generellInfo: " + element(by.id('fmb_heading_GENERELL_INFO')).getText());
+    }
+
+    if (fmbDiagnos.symptomPrognosBehandling) {
+        promiseArray.push(expect(element(by.id('fmb_heading_SYMPTOM_PROGNOS_BEHANDLING')).getText()).to.eventually.contain('Symtom, prognos, behandling'));
+        //console.log("symptomPrognosBehandling: " + element(by.id('fmb_heading_SYMPTOM_PROGNOS_BEHANDLING')).getText());
+    }
+
+
+    return fmb.visaMer.klickaAlla().then(function() {
+        /* 
+		Kontroll av diagnosspecifik information
+		Testdata i:
+		..\webcert\test\webcertTestTools\testdata\diagnoskoderFMB.js
+		..\acceptance\node_modules\webcert-testtools\testdata\diagnoskoderFMB.js
+		*/
+
+        /*
+		if (fmbDiagnos.overliggandeDiagnos) {
+  			console.log("GETTEXT:  fmb_diagnos_radio_" + fmbDiagnos.kod);
+            var radioButton = "fmb_diagnos_radio_" + fmbDiagnos.kod;
+
+            promiseArray.push(expect(element(by.id(radioButton)).getText().to.eventually.contain(fmbDiagnos.overliggandeDiagnos)));
+            //promiseArray.push(expect(element(by.id('fmb_diagnos_radio_' + fmbDiagnos.kod)).getText().to.eventually.contain(fmbDiagnos.overliggandeDiagnos)));
+            console.log("Vägledning för sjukskrivning: " + element(by.id('fmb_diagnos_radio_' + fmbDiagnos.kod).getText()));
         }
-        if (fmbDiagnos.symptomPrognosBehandling) {
-            promiseArray.push(expect(fmb.dialogs.symptomPrognosBehandling.getText()).to.eventually.contain(fmbDiagnos.symptomPrognosBehandling));
+		*/
+        if (fmbDiagnos.vagledningForSjukskrivning) {
+            promiseArray.push(expect(element(by.id('fmb_bullet_BESLUTSUNDERLAG_TEXTUELLT_0')).getText()).to.eventually.contain(fmbDiagnos.vagledningForSjukskrivning));
+            //console.log("vagledningForSjukskrivning: " + element(by.id('fmb_bullet_BESLUTSUNDERLAG_TEXTUELLT_0')).getText());
         }
-        if (fmbDiagnos.generellInfo) {
-            promiseArray.push(expect(fmb.dialogs.generellInfo.getText()).to.eventually.contain(fmbDiagnos.generellInfo));
-        }
+
         if (fmbDiagnos.funktionsnedsattning) {
-            promiseArray.push(expect(fmb.dialogs.funktionsnedsattning.getText()).to.eventually.contain(fmbDiagnos.funktionsnedsattning));
+            promiseArray.push(expect(element(by.id('fmb_text_FUNKTIONSNEDSATTNING')).getText()).to.eventually.contain(fmbDiagnos.funktionsnedsattning));
+            //console.log("funktionsnedsattning: " + element(by.id('fmb_text_FUNKTIONSNEDSATTNING')).getText());
         }
+
+        if (fmbDiagnos.generellInfo) {
+            promiseArray.push(expect(element(by.id('fmb_text_GENERELL_INFO')).getText()).to.eventually.contain(fmbDiagnos.generellInfo));
+            //console.log("generellInfo: " + element(by.id('fmb_text_GENERELL_INFO')).getText());
+        }
+
         if (fmbDiagnos.aktivitetsbegransning) {
-            promiseArray.push(expect(fmb.dialogs.aktivitetsbegransning.getText()).to.eventually.contain(fmbDiagnos.aktivitetsbegransning));
+            promiseArray.push(expect(element(by.id('fmb_text_AKTIVITETSBEGRANSNING')).getText()).to.eventually.contain(fmbDiagnos.aktivitetsbegransning));
+            //console.log("aktivitetsbegransning: " + element(by.id('fmb_text_AKTIVITETSBEGRANSNING')).getAttribute());
         }
-        if (fmbDiagnos.beslutsunderlag) {
-            promiseArray.push(expect(fmb.dialogs.beslutsunderlag.getText()).to.eventually.contain(fmbDiagnos.beslutsunderlag));
+
+        if (fmbDiagnos.symptomPrognosBehandling) {
+            promiseArray.push(expect(element(by.id('fmb_text_SYMPTOM_PROGNOS_BEHANDLING')).getText()).to.eventually.contain(fmbDiagnos.symptomPrognosBehandling));
+            //console.log("symptomPrognosBehandling: " + element(by.id('fmb_text_SYMPTOM_PROGNOS_BEHANDLING')).getText());
         }
+
 
         logger.info('Kontrollerar FMB texter');
-        console.log("fmb-diagnos: " + promiseArray);
+        //console.log("fmb-diagnos: " + promiseArray);
         return Promise.all(promiseArray);
     });
 }
