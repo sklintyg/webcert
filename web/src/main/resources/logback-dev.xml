@@ -125,8 +125,8 @@
   <!-- Log service for logging JavaScript exceptions from GUI, set to info or off -->
   <logger name="se.inera.intyg.webcert.web.web.controller.api.JsLogApiController" level="off" />
 
-  <logger name="org.opensaml" level="debug" />
-  <logger name="org.springframework.security" level="debug"/>
+  <logger name="org.opensaml" level="error" />
+  <logger name="org.springframework.security" level="error"/>
 
   <root>
     <level value="error" />
