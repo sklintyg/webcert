@@ -29,8 +29,10 @@ module.exports = {
     },
     ts: {
         bas: require('./ts.bas.js'),
-        diabetes: require('./ts.diabetes.js'),
-        diabetes2: require('./ts.diabetes2.js')
+        diabetes: {
+            v2: require('./ts.diabetes.v2.js'),
+            v3: require('./ts.diabetes.v3.js')
+        }
     },
     skv: {
         db: require('./skv.db.js')

@@ -23,8 +23,8 @@
 /*globals element,by, protractor, Promise*/
 'use strict';
 
-var BaseTsUtkast = require('../ts.base.utkast.page.js');
-const testTools = require('common-testtools');
+var BaseTsUtkast = require('../../ts.base.utkast.page.js');
+var testTools = require('common-testtools');
 testTools.protractorHelpers.init();
 
 var TsDiabetesUtkast = BaseTsUtkast._extend({

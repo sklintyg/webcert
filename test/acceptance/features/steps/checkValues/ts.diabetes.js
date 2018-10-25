@@ -20,7 +20,7 @@
 /* globals logger, pages, Promise */
 
 'use strict';
-var tsDiabIntyg = pages.intyg.ts.diabetes.intyg;
+var tsDiabIntyg = pages.intyg.ts.diabetes.v2.intyg;
 
 function ejAngivetIfUndef(obj) {
     if (obj === null || obj === undefined) {

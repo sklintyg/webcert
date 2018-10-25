@@ -36,7 +36,7 @@ let testTools = require('common-testtools');
 testTools.protractorHelpers.init();
 
 
-let tsdUtkastPage = wcTestTools.pages.intyg.ts.diabetes.utkast;
+let tsdUtkastPage = wcTestTools.pages.intyg.ts.diabetes.v2.utkast;
 let tsBasUtkastPage = wcTestTools.pages.intyg.ts.bas.utkast;
 let doiUtkastPage = wcTestTools.pages.intyg.soc.doi.utkast;
 let utkastPage = pages.intyg.base.utkast;

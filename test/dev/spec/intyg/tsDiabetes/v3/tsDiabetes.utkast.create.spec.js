@@ -16,16 +16,16 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/*globals describe,fdescribe,it,browser */
+/*globals describe,it,browser */
 'use strict';
 
 var wcTestTools = require('webcert-testtools');
 var specHelper = wcTestTools.helpers.spec;
 var testdataHelper = wcTestTools.helpers.restTestdata;
-var UtkastPage = wcTestTools.pages.intyg.ts.diabetes2.utkast;
-var IntygPage = wcTestTools.pages.intyg.ts.diabetes2.intyg;
-//Disabled since ts-diabetes-2 no longer exists, but this could be useful when creating suport for ts-diabetes v3 tests
-xdescribe('Create and Sign ts-diabetes-2 utkast', function() {
+var UtkastPage = wcTestTools.pages.intyg.ts.diabetes.v3.utkast;
+var IntygPage = wcTestTools.pages.intyg.ts.diabetes.v3.intyg;
+
+describe('Create and Sign ts-diabetes v3 utkast', function() {
 
     var utkastId = null,
         data = null;
@@ -33,7 +33,7 @@ xdescribe('Create and Sign ts-diabetes-2 utkast', function() {
     beforeAll(function() {
         browser.ignoreSynchronization = false;
         specHelper.login();
-        specHelper.createUtkastForPatient('191212121212', 'ts-diabetes-2');
+        specHelper.createUtkastForPatient('191212121212', 'ts-diabetes');
     });
 
     it('Spara undan intygsId från URL', function() {
@@ -42,7 +42,7 @@ xdescribe('Create and Sign ts-diabetes-2 utkast', function() {
         specHelper.getUtkastIdFromUrl().then(function(id) {
             utkastId = id;
         });
-        data = wcTestTools.testdata.ts.diabetes2.get(utkastId);
+        data = wcTestTools.testdata.ts.diabetes.v3.get(utkastId);
     });
 
     describe('Fyll i intyget', function() {

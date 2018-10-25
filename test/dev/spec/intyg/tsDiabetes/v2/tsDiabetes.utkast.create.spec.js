@@ -26,8 +26,8 @@
 var wcTestTools = require('webcert-testtools');
 var specHelper = wcTestTools.helpers.spec;
 var testdataHelper = wcTestTools.helpers.restTestdata;
-var UtkastPage = wcTestTools.pages.intyg.ts.diabetes.utkast;
-var IntygPage = wcTestTools.pages.intyg.ts.diabetes.intyg;
+var UtkastPage = wcTestTools.pages.intyg.ts.diabetes.v2.utkast;
+var IntygPage = wcTestTools.pages.intyg.ts.diabetes.v2.intyg;
 
 //deaktiverat tills vi löser att createdraft alltid skapar upp ett intyg av senast kända version, i detta fall 3.0
 // se INTYG-7264
@@ -48,7 +48,7 @@ xdescribe('Create and Sign ts-diabetes utkast', function() {
         specHelper.getUtkastIdFromUrl().then(function(id) {
             utkastId = id;
         });
-        data = wcTestTools.testdata.ts.diabetes.get(utkastId);
+        data = wcTestTools.testdata.ts.diabetes.v2.get(utkastId);
     });
 
     describe('Fyll i intyget', function() {

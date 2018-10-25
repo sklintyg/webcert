@@ -18,17 +18,17 @@
  */
 'use strict';
 
-var TsBaseIntyg = require('../ts.base.intyg.page');
-var testValues = require('../../../../testdata/testvalues.ts');
+var TsBaseIntyg = require('../../ts.base.intyg.page');
+var testValues = require('../../../../../testdata/testvalues.ts.js');
 var _ = require('lodash');
 
 var ejAngivet = 'Ej angivet';
 
-var TsDiabetes2Intyg = TsBaseIntyg._extend({
+var TsDiabetesIntyg = TsBaseIntyg._extend({
     init: function init() {
         init._super.call(this);
-        this.intygType = 'ts-diabetes-2';
-        this.intygTypeVersion = '1.0';
+        this.intygType = 'ts-diabetes';
+        this.intygTypeVersion = '3.0';
 
         this.period = element(by.id('allmant-diabetesDiagnosAr'));
         this.insulPeriod = element(by.id('allmant-behandling-insulinSedanAr'));
@@ -149,4 +149,4 @@ var TsDiabetes2Intyg = TsBaseIntyg._extend({
     }
 });
 
-module.exports = new TsDiabetes2Intyg();
+module.exports = new TsDiabetesIntyg();

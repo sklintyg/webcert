@@ -20,7 +20,7 @@
 /* globals logger, pages, JSON, browser, Promise */
 
 
-var tsdUtkastPage = pages.intyg.ts.diabetes.utkast;
+var tsdUtkastPage = pages.intyg.ts.diabetes.v2.utkast;
 
 
 module.exports = {

@@ -74,12 +74,14 @@ module.exports = {
         },
         ts: {
             diabetes: {
-                utkast: require(intygPath + 'ts/ts_diabetes/tsDiabetes.utkast.page.js'),
-                intyg: require(intygPath + 'ts/ts_diabetes/tsDiabetes.intyg.page.js')
-            },
-            diabetes2: {
-                utkast: require(intygPath + 'ts/ts_diabetes2/tsDiabetes.2.utkast.page.js'),
-                intyg: require(intygPath + 'ts/ts_diabetes2/tsDiabetes.2.intyg.page.js')
+                v2: {
+                    utkast: require(intygPath + 'ts/ts_diabetes/v2/tsDiabetes.utkast.page.js'),
+                    intyg: require(intygPath + 'ts/ts_diabetes/v2/tsDiabetes.intyg.page.js')
+                },
+                v3: {
+                    utkast: require(intygPath + 'ts/ts_diabetes/v3/tsDiabetes.utkast.page.js'),
+                    intyg: require(intygPath + 'ts/ts_diabetes/v3/tsDiabetes.intyg.page.js')
+                }
             },
             bas: {
                 utkast: require(intygPath + 'ts/ts_bas/tsBas.utkast.page.js'),

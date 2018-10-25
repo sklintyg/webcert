@@ -19,17 +19,17 @@
 /*globals element,by, protractor, Promise*/
 'use strict';
 
-var BaseTsUtkast = require('../ts.base.utkast.page.js');
-const pageHelpers = require('../../../pageHelper.util.js');
-const testTools = require('common-testtools');
+var BaseTsUtkast = require('../../ts.base.utkast.page.js');
+var pageHelpers = require('../../../../pageHelper.util.js');
+var testTools = require('common-testtools');
 testTools.protractorHelpers.init();
 
-var TsDiabetes2Utkast = BaseTsUtkast._extend({
+var TsDiabetesUtkast = BaseTsUtkast._extend({
     init: function init() {
         init._super.call(this);
-        this.intygType = 'ts-diabetes-2';
-        this.intygTypeVersion = '1.0';
-        this.at = element(by.id('edit-ts-diabetes-2'));
+        this.intygType = 'ts-diabetes';
+        this.intygTypeVersion = '3.0';
+        this.at = element(by.id('edit-ts-diabetes'));
 
         // override some form selecting cause id's differ
         this.korkortsTyperChecks = element(by.id('form_intygAvser-kategorier')).all(by.css('label'));
@@ -215,4 +215,4 @@ var TsDiabetes2Utkast = BaseTsUtkast._extend({
     }
 });
 
-module.exports = new TsDiabetes2Utkast();
+module.exports = new TsDiabetesUtkast();

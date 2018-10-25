@@ -22,8 +22,8 @@
  */
 'use strict';
 
-var TsBaseIntyg = require('../ts.base.intyg.page');
-var testValues = require('../../../../testdata/testvalues.ts');
+var TsBaseIntyg = require('../../ts.base.intyg.page');
+var testValues = require('../../../../../testdata/testvalues.ts.js');
 var _ = require('lodash');
 
 var TsDiabetesIntyg = TsBaseIntyg._extend({
