@@ -82,7 +82,7 @@ public class PingForConfigurationResponderImpl implements PingForConfigurationRe
 
         addConfiguration(response, "buildNumber", buildNumberString);
         addConfiguration(response, "buildTime", buildTimeString);
-        addConfiguration(response, "systemUptime", DurationFormatUtils.formatDurationWords(uptime.getMeasurement(), true, true));
+        addConfiguration(response, "systemUptime", DurationFormatUtils.formatDurationWords(Math.max(0, uptime.getMeasurement()), true, true));
         addConfiguration(response, "dbStatus", db.isOk() ? "ok" : "error");
 
         addConfiguration(response, "jmsStatus", jms.isOk() ? "ok" : "error");
