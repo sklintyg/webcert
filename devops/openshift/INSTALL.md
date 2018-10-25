@@ -195,6 +195,7 @@ Open _&lt;env>/configmap-vars.yaml_ and replace `<value>` with expected values. 
 	CGI_GRP_WS_TRUSTSTORE_TYPE: "<value>"
 	SAKERHETSTJANST_SAML_IDP_METADATA_URL: "<value>"
 	SAKERHETSTJANST_SAML_KEYSTORE_FILE: "<value>"
+	SAKERHETSTJANST_SAML_KEYSTORE_ALIAS: "<value>"
 	WEBCERT_HOST_URL: "<value>"
 	INTYGSTJANST_BASE_URL: "<value>"
 	FMB_ENDPOINT_URL: "<value>"
@@ -222,7 +223,7 @@ Note 1: The `DATABASE_NAME` variable is assumed to be defined within the applica
 
 Note 2: Other properties might be used to define a `<value>`. As an example is the path to certificates indicated by the `certificate.folder` Java System Property, thus the truststore file can be defined as:
  
-	NTJP_WS_TRUSTSTORE_FILE: ${certificate.folder}/truststore.jks
+	NTJP_WS_TRUSTSTORE_FILE: "${certificate.folder}/truststore.jks"
     
         
 The _&lt;env>/config/recipients.json_ file might require an update.
