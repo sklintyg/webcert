@@ -80,11 +80,17 @@ describe('uthopp - arende on luse intyg', function() {
         });
 
         it('click svara pa komplettering', function() {
-            expect(LuseIntygPage.kompletteraIntygButton.isPresent()).toBeFalsy();
-            expect(LuseIntygPage.kanInteKompletteraButton.isDisplayed()).toBeTruthy();
-            expect(LuseIntygPage.uthoppKompletteraLink.isDisplayed()).toBeTruthy();
-            LuseIntygPage.kanInteKompletteraButton.click();
-            expect(LuseIntygPage.kompletteringsAtgardDialog.isDisplayed()).toBeTruthy();
+            browser.ignoreSynchronization = true;
+            specHelper.setUserOrigin('UTHOPP').then(function() {
+                    browser.ignoreSynchronization = false;
+
+                    LuseIntygPage.get(intygId);
+                    expect(LuseIntygPage.kompletteraIntygButton.isPresent()).toBeFalsy();
+                    expect(LuseIntygPage.kanInteKompletteraButton.isDisplayed()).toBeTruthy();
+                    expect(LuseIntygPage.uthoppKompletteraLink.isDisplayed()).toBeTruthy();
+                    LuseIntygPage.kanInteKompletteraButton.click();
+                    expect(LuseIntygPage.kompletteringsAtgardDialog.isDisplayed()).toBeTruthy();
+                });
         });
 
         it('svara med nytt intyg should not be displayed', function() {

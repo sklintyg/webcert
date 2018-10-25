@@ -54,17 +54,21 @@ describe('Djupintegration on luse intyg', function() {
         });
 
         it('should load intyg', function() {
-            LuseIntygPage.getIntegration(intygId, {
-                fornamn:'Nytt förnamn',
-                mellannamn:'Nytt mellannamn',
-                efternamn:'Nytt efternamn',
-                postadress:'Ny postadress',
-                postnummer:'Nytt postnummer',
-                postort:'Ny postort',
-                enhet:'TSTNMT2321000156-1039',
-                alternatePatientSSn: '20121212-1212'
+            browser.ignoreSynchronization = true;
+            specHelper.setUserOrigin('DJUPINTEGRATION').then(function() {
+                browser.ignoreSynchronization = false;
+                LuseIntygPage.getIntegration(intygId, {
+                    fornamn: 'Nytt förnamn',
+                    mellannamn: 'Nytt mellannamn',
+                    efternamn: 'Nytt efternamn',
+                    postadress: 'Ny postadress',
+                    postnummer: 'Nytt postnummer',
+                    postort: 'Ny postort',
+                    enhet: 'TSTNMT2321000156-1039',
+                    alternatePatientSSn: '20121212-1212'
+                });
+                expect(LuseIntygPage.isAt()).toBeTruthy();
             });
-            expect(LuseIntygPage.isAt()).toBeTruthy();
         });
 
         it('should fornya intyg and view resulting utkast', function() {

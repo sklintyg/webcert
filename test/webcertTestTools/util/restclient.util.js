@@ -73,7 +73,27 @@ function _run(options, json, baseUrl) {
     }
 
     return browser.controlFlow().execute(function() {
-        return post(options, baseUrl);
+
+        return browser.manage().getCookies()
+            .then(function (cookies) {
+
+                if(cookies.length > 0) {
+                    if (!options.headers) {
+                        options.headers = {};
+                    }
+
+                    var cookieHeader = cookies.map(function(cookie) {
+                        if(cookie.name === 'XSRF-TOKEN') {
+                            options.headers['X-XSRF-TOKEN'] = cookie.value;
+                        }
+                        return cookie.name + '=' + cookie.value;
+                    }).join('; ');
+
+                    options.headers.Cookie = cookieHeader;
+                }
+
+                return post(options, baseUrl);
+            });
     });
 }
 

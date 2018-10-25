@@ -98,7 +98,7 @@
         "SELENIUM_ADDRESS": ""
     }, "local": {
         "WEBCERT_URL": "http://localhost:9088/",
-        "INTYGTJANST_URL": "http://localhost:8080",
+        "INTYGTJANST_URL": "http://localhost:8080/inera-certificate",
         "DATABASE_HOST": "localhost:9094",
         "DATABASE_USER": "sa",
         "SELENIUM_ADDRESS": ""

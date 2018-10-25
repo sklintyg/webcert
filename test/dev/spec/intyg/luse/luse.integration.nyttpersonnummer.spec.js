@@ -59,38 +59,55 @@ describe('Djupintegration on luse with updated personnummer', function() {
         });
 
         it('should not display new person id message', function() {
-            LuseIntygPage.getIntegration(intygId, {
-                alternatePatientSSn: personnummer1
+            browser.ignoreSynchronization = true;
+            specHelper.setUserOrigin('DJUPINTEGRATION').then(function() {
+                browser.ignoreSynchronization = false;
+                LuseIntygPage.getIntegration(intygId, {
+                    alternatePatientSSn: personnummer1
+                });
+                expect(LuseIntygPage.isAt()).toBeTruthy();
+                expect(LuseIntygPage.newPersonIdMessage.isDisplayed()).toBeFalsy();
             });
-            expect(LuseIntygPage.isAt()).toBeTruthy();
-            expect(LuseIntygPage.newPersonIdMessage.isDisplayed()).toBeFalsy();
         });
 
         it('should display new person id message', function() {
-            LuseIntygPage.getIntegration(intygId, {
-                alternatePatientSSn: personnummer2
+            browser.ignoreSynchronization = true;
+            specHelper.setUserOrigin('DJUPINTEGRATION').then(function() {
+                browser.ignoreSynchronization = false;
+                LuseIntygPage.getIntegration(intygId, {
+                    alternatePatientSSn: personnummer2
+                });
+                expect(LuseIntygPage.isAt()).toBeTruthy();
+                expect(LuseIntygPage.newPersonIdMessage.isDisplayed()).toBeTruthy();
+                expect(LuseIntygPage.newPersonIdMessageText.getText()).toBe('Patientens personummer har ändrats');
             });
-            expect(LuseIntygPage.isAt()).toBeTruthy();
-            expect(LuseIntygPage.newPersonIdMessage.isDisplayed()).toBeTruthy();
-            expect(LuseIntygPage.newPersonIdMessageText.getText()).toBe('Patientens personummer har ändrats');
         });
 
         it('should display new person id message with samordningsnummer', function() {
-            LuseIntygPage.getIntegration(intygId, {
-                alternatePatientSSn: samordningsnummer
+            browser.ignoreSynchronization = true;
+            specHelper.setUserOrigin('DJUPINTEGRATION').then(function() {
+                browser.ignoreSynchronization = false;
+                LuseIntygPage.getIntegration(intygId, {
+                    alternatePatientSSn: samordningsnummer
+                });
+                expect(LuseIntygPage.isAt()).toBeTruthy();
+                expect(LuseIntygPage.newPersonIdMessage.isDisplayed()).toBeTruthy();
+                expect(LuseIntygPage.newPersonIdMessageText.getText()).toBe('Patientens personummer har ändrats');
             });
-            expect(LuseIntygPage.isAt()).toBeTruthy();
-            expect(LuseIntygPage.newPersonIdMessage.isDisplayed()).toBeTruthy();
-            expect(LuseIntygPage.newPersonIdMessageText.getText()).toBe('Patientens personummer har ändrats');
         });
 
         it('should display new person id message with reservenumber', function() {
-            LuseIntygPage.getIntegration(intygId, {
-                alternatePatientSSn: reservnummer
+            browser.ignoreSynchronization = true;
+            specHelper.setUserOrigin('DJUPINTEGRATION').then(function() {
+                browser.ignoreSynchronization = false;
+                LuseIntygPage.getIntegration(intygId, {
+                    alternatePatientSSn: reservnummer
+                });
+                expect(LuseIntygPage.isAt()).toBeTruthy();
+                expect(LuseIntygPage.newPersonIdMessage.isDisplayed()).toBeTruthy();
+                expect(LuseUtkastPage.newPersonIdMessageText.getText()).toBe(
+                    'Patienten har samordningsnummer kopplat till reservnummer: ' + reservnummer + '.');
             });
-            expect(LuseIntygPage.isAt()).toBeTruthy();
-            expect(LuseIntygPage.newPersonIdMessage.isDisplayed()).toBeTruthy();
-            expect(LuseUtkastPage.newPersonIdMessageText.getText()).toBe('Patienten har samordningsnummer kopplat till reservnummer: ' + reservnummer + '.');
         });
     });
 
@@ -120,11 +137,15 @@ describe('Djupintegration on luse with updated personnummer', function() {
         });
 
         it('should not display new person id message', function() {
-            LuseIntygPage.getIntegration(utkastId, {
-                alternatePatientSSn: personnummer1
+            browser.ignoreSynchronization = true;
+            specHelper.setUserOrigin('DJUPINTEGRATION').then(function() {
+                browser.ignoreSynchronization = false;
+                LuseIntygPage.getIntegration(utkastId, {
+                    alternatePatientSSn: personnummer1
+                });
+                expect(LuseUtkastPage.isAt()).toBeTruthy();
+                expect(LuseUtkastPage.newPersonIdMessage.isDisplayed()).toBeFalsy();
             });
-            expect(LuseUtkastPage.isAt()).toBeTruthy();
-            expect(LuseUtkastPage.newPersonIdMessage.isDisplayed()).toBeFalsy();
         });
 
         it('should display new person id message', function() {
