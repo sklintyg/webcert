@@ -18,6 +18,8 @@ env:
     value: $GIT_REF
   - name: gitUrl
     value: $GIT_URL
+  - name: backingServices
+    value: intygstjanst-test:3.6.0.435
     """
                 sh 'curl -k -X POST -H "Content-Type: application/yaml" --data-binary @hook.yml $BF_URL'
             }
