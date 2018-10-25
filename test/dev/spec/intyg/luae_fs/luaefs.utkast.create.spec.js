@@ -25,7 +25,7 @@ var testdataHelper = wcTestTools.helpers.restTestdata;
 var UtkastPage = wcTestTools.pages.intyg.luaeFS.utkast;
 var IntygPage = wcTestTools.pages.intyg.luaeFS.intyg;
 
-xdescribe('Create and Sign luae_fs utkast', function() {
+describe('Create and Sign luae_fs utkast', function() {
 
     var utkastId = null;
     var data = null;
@@ -67,11 +67,11 @@ xdescribe('Create and Sign luae_fs utkast', function() {
         });
 
         it('angeFunktionsnedsattning', function() {
+            UtkastPage.enableAutosave();
             UtkastPage.angeFunktionsnedsattning(data.funktionsnedsattning);
         });
 
         it('angeOvrigaUpplysningar', function() {
-            UtkastPage.enableAutosave();
             UtkastPage.angeOvrigaUpplysningar(data.ovrigt);
         });
 
@@ -88,8 +88,6 @@ xdescribe('Create and Sign luae_fs utkast', function() {
 */
         it('Signera intyget', function() {
             UtkastPage.whenSigneraButtonIsEnabled();
-
-            browser.sleep(1000);
 
             UtkastPage.signeraButtonClick();
 

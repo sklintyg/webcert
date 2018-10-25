@@ -58,6 +58,16 @@ function _getIntygJson(intygOptions) {
     return intyg;
 }
 
+function _getEmptyUtkastJson(intygType, intygVersion, intygId) {
+    var intyg = require('./../testdata/utkast.empty.json');
+
+    intyg.id = intygId;
+    intyg.typ = intygType;
+    intyg.textVersion = intygVersion;
+
+    return intyg;
+}
+
 function _buildIntyg(intygOptions) {
 
     //    logger.info("======================================================INTYG");
@@ -242,5 +252,6 @@ function overridetsBasDefaults(intyg, intygOptions) {
 
 module.exports = {
     getIntygJson: _getIntygJson,
+    getEmptyUtkastJson: _getEmptyUtkastJson,
     buildIntyg: _buildIntyg
 };

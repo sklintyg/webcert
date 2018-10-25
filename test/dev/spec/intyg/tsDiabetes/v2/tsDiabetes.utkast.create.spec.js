@@ -17,37 +17,32 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * Created by bennysce on 09/06/15.
- */
 /*globals describe,it,browser */
 'use strict';
 
 var wcTestTools = require('webcert-testtools');
+var testdataHelper = require('common-testtools').testdataHelper;
 var specHelper = wcTestTools.helpers.spec;
-var testdataHelper = wcTestTools.helpers.restTestdata;
 var UtkastPage = wcTestTools.pages.intyg.ts.diabetes.v2.utkast;
 var IntygPage = wcTestTools.pages.intyg.ts.diabetes.v2.intyg;
+var restTestdataHelper = wcTestTools.helpers.restTestdata;
 
-//deaktiverat tills vi löser att createdraft alltid skapar upp ett intyg av senast kända version, i detta fall 3.0
-// se INTYG-7264
-xdescribe('Create and Sign ts-diabetes utkast', function() {
+describe('Create and Sign ts-diabetes v2 utkast', function() {
 
-    var utkastId = null,
+    var utkastId = testdataHelper.generateTestGuid(),
         data = null;
 
     beforeAll(function() {
         browser.ignoreSynchronization = false;
         specHelper.login();
-        specHelper.createUtkastForPatient('191212121212', 'ts-diabetes');
+        restTestdataHelper.createEmptyUtkast(UtkastPage.intygType, UtkastPage.intygTypeVersion, utkastId);
     });
 
-    it('Spara undan intygsId från URL', function() {
+    it('Öppna intyget', function() {
+        UtkastPage.get(utkastId);
+
         UtkastPage.disableAutosave();
 
-        specHelper.getUtkastIdFromUrl().then(function(id) {
-            utkastId = id;
-        });
         data = wcTestTools.testdata.ts.diabetes.v2.get(utkastId);
     });
 
@@ -92,7 +87,7 @@ xdescribe('Create and Sign ts-diabetes utkast', function() {
     });
 
     afterAll(function() {
-        testdataHelper.deleteIntyg(utkastId);
-        testdataHelper.deleteUtkast(utkastId);
+        restTestdataHelper.deleteIntyg(utkastId);
+        restTestdataHelper.deleteUtkast(utkastId);
     });
 });

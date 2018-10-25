@@ -26,6 +26,7 @@
 var restUtil = require('./../util/rest.util.js');
 var arendeFromJsonFactory = require('./../util/arendeFromJsonFactory.js');
 var fragasvarFromJsonFactory = require('./../util/fragasvarFromJsonFactory.js');
+var intygGenerator = require('./../util/intygGenerator.util.js');
 
 function createArende(createJson) {
     restUtil.login();
@@ -55,6 +56,17 @@ module.exports = {
     createWebcertIntyg: function(createJson) {
         restUtil.login();
         return restUtil.createWebcertIntyg(createJson);
+    },
+    createEmptyUtkast: function(intygType, intygTypeVersion, utkastId) {
+        restUtil.login();
+
+        var testData = {
+            'contents': intygGenerator.getEmptyUtkastJson(intygType, intygTypeVersion, utkastId),
+            'utkastStatus': 'DRAFT_INCOMPLETE',
+            'revoked': false
+        };
+
+        return restUtil.createWebcertIntyg(testData);
     },
     createUtkast: function(intygType, template) {
         restUtil.login();
