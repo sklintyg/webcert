@@ -49,7 +49,7 @@ angular.module('webcert').factory('webcert.enhetArendenFilterService',
                 } else {
                     enhetArendenFilterModel.filterForm.lakareSelector = enhetArendenFilterModel.lakareList[0].id;
                 }
-                enhetArendenFilterModel.filterForm.defaultLakareSelector = enhetArendenFilterModel.filterForm.lakareSelector;
+                enhetArendenFilterModel.defaultLakareSelector = enhetArendenFilterModel.filterForm.lakareSelector;
 
             }, function() {
                 enhetArendenFilterModel.viewState.loadingLakare = false;
