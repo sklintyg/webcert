@@ -40,7 +40,8 @@ public class ArendeModuleApiControllerIT extends BaseRestIntegrationTest {
         String intygId = createSignedIntyg(INTYGSTYP, DEFAULT_PATIENT_PERSONNUMMER);
         createArendeQuestion(INTYGSTYP, intygId, DEFAULT_PATIENT_PERSONNUMMER, ArendeAmne.AVSTMN);
 
-        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId).pathParameter("intygsId", intygId)
+        spec()
+                .pathParameter("intygsId", intygId)
                 .expect().statusCode(200)
                 .when().get("moduleapi/arende/{intygsId}").then()
                 .body(matchesJsonSchemaInClasspath("jsonschema/webcert-arende-list-schema.json"))
@@ -54,8 +55,8 @@ public class ArendeModuleApiControllerIT extends BaseRestIntegrationTest {
         String intygId = createSignedIntyg(INTYGSTYP, DEFAULT_PATIENT_PERSONNUMMER);
         String internId = createArendeQuestion(INTYGSTYP, intygId, DEFAULT_PATIENT_PERSONNUMMER, ArendeAmne.AVSTMN);
 
-        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
-                .contentType(ContentType.JSON).pathParams("intygsTyp", INTYGSTYP, "meddelandeId", internId).body("svarsText")
+        spec()
+                .pathParams("intygsTyp", INTYGSTYP, "meddelandeId", internId).body("svarsText")
                 .expect().statusCode(200).when().put("moduleapi/arende/{intygsTyp}/{meddelandeId}/besvara")
                 .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-arende-schema.json"));
     }
@@ -66,8 +67,8 @@ public class ArendeModuleApiControllerIT extends BaseRestIntegrationTest {
         String intygId = createSignedIntyg(INTYGSTYP, DEFAULT_PATIENT_PERSONNUMMER);
         String internId = createArendeQuestion(INTYGSTYP, intygId, DEFAULT_PATIENT_PERSONNUMMER, ArendeAmne.AVSTMN);
 
-        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
-                .contentType(ContentType.JSON).pathParams("intygsId", intygId).body(Boolean.TRUE)
+        spec()
+                .pathParams("intygsId", intygId).body(Boolean.TRUE)
                 .expect().statusCode(200)
                 .when().post("moduleapi/arende/{intygsId}/vidarebefordrad")
                 .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-arende-list-schema.json"));
@@ -86,8 +87,8 @@ public class ArendeModuleApiControllerIT extends BaseRestIntegrationTest {
         param.setRubrik("rubrik");
         param.setMeddelande("Test");
 
-        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
-                .contentType(ContentType.JSON).pathParams("intygsTyp", INTYGSTYP, "intygsId", intygId).body(param)
+        spec()
+                .pathParams("intygsTyp", INTYGSTYP, "intygsId", intygId).body(param)
                 .expect().statusCode(200)
                 .when().post("moduleapi/arende/{intygsTyp}/{intygsId}")
                 .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-arende-schema.json"));
@@ -99,7 +100,7 @@ public class ArendeModuleApiControllerIT extends BaseRestIntegrationTest {
         String intygId = createSignedIntyg(INTYGSTYP, DEFAULT_PATIENT_PERSONNUMMER);
         String internId = createArendeQuestion(INTYGSTYP, intygId, DEFAULT_PATIENT_PERSONNUMMER, ArendeAmne.AVSTMN);
 
-        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
+        spec()
                 .pathParams("intygsTyp", INTYGSTYP, "meddelandeId", internId)
                 .expect().statusCode(200)
                 .when().put("moduleapi/arende/{intygsTyp}/{meddelandeId}/stang")
@@ -113,13 +114,13 @@ public class ArendeModuleApiControllerIT extends BaseRestIntegrationTest {
         String internId = createArendeQuestion(INTYGSTYP, intygId, DEFAULT_PATIENT_PERSONNUMMER, ArendeAmne.AVSTMN);
 
         // Close the question
-        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
+        spec()
                 .pathParams("intygsTyp", INTYGSTYP, "meddelandeId", internId)
                 .expect().statusCode(200)
                 .when().put("moduleapi/arende/{intygsTyp}/{meddelandeId}/stang");
 
         // Open the question again
-        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
+        spec()
                 .pathParams("intygsTyp", INTYGSTYP, "meddelandeId", internId)
                 .expect().statusCode(200)
                 .when().put("moduleapi/arende/{intygsTyp}/{meddelandeId}/oppna")
@@ -141,7 +142,8 @@ public class ArendeModuleApiControllerIT extends BaseRestIntegrationTest {
         String answerIntygId = createSentIntygAsKompletteringToIntyg(originalIntygId, INTYGSTYP, DEFAULT_PATIENT_PERSONNUMMER);
 
         // Check that the listing of arenden contains info about kompletterande intyg
-        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId).pathParameter("intygsId", originalIntygId)
+        spec()
+                .pathParameter("intygsId", originalIntygId)
                 .expect().statusCode(200)
                 .when().get("moduleapi/arende/{intygsId}").then()
                 .body(matchesJsonSchemaInClasspath("jsonschema/webcert-arende-list-schema.json"))

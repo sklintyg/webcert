@@ -71,8 +71,8 @@ public class UtkastApiControllerIT extends BaseRestIntegrationTest {
 
         CreateUtkastRequest utkastRequest = createUtkastRequest(utkastType, DEFAULT_PATIENT_PERSONNUMMER);
 
-        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
-                .contentType(ContentType.JSON).body(utkastRequest)
+        spec()
+                .body(utkastRequest)
                 .expect().statusCode(400)
                 .when().post("api/utkast/" + utkastType);
     }
@@ -90,8 +90,8 @@ public class UtkastApiControllerIT extends BaseRestIntegrationTest {
 
         CreateUtkastRequest utkastRequest = createUtkastRequest(utkastType, DEFAULT_PATIENT_PERSONNUMMER);
 
-        Response response = given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
-                .contentType(ContentType.JSON).body(utkastRequest)
+        Response response = spec()
+                .body(utkastRequest)
                 .expect().statusCode(200)
                 .when().post("api/utkast/" + utkastType)
                 .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-generic-utkast-response-schema.json"))
@@ -125,7 +125,7 @@ public class UtkastApiControllerIT extends BaseRestIntegrationTest {
 
         createUtkast("ts-bas", DEFAULT_PATIENT_PERSONNUMMER);
 
-        Lakare[] lakareWithUtkast = given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
+        Lakare[] lakareWithUtkast = spec()
                 .expect().statusCode(200)
                 .when().get("api/utkast/lakare")
                 .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-get-lakare-med-utkast-response-schema.json")).extract().response()
@@ -145,7 +145,7 @@ public class UtkastApiControllerIT extends BaseRestIntegrationTest {
 
         String utkastId = createUtkast("ts-bas", DEFAULT_PATIENT_PERSONNUMMER);
 
-        QueryIntygResponse queryResponse = given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
+        QueryIntygResponse queryResponse = spec()
                 .param("savedBy", DEFAULT_LAKARE.getHsaId()).param("enhetsId", DEFAULT_LAKARE.getEnhetId())
                 .expect().statusCode(200).when().get("api/utkast")
                 .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-query-utkast-response-schema.json"))
@@ -175,7 +175,7 @@ public class UtkastApiControllerIT extends BaseRestIntegrationTest {
         Collections.reverse(utkastIds);
         Collections.reverse(utkastPersonIds);
 
-        QueryIntygResponse queryResponse = given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
+        QueryIntygResponse queryResponse = spec()
                 .param("savedBy", DEFAULT_LAKARE.getHsaId()).param("enhetsId", DEFAULT_LAKARE.getEnhetId())
                 .param("pageSize", 4)
                 .expect().statusCode(200).when().get("api/utkast")
@@ -195,7 +195,7 @@ public class UtkastApiControllerIT extends BaseRestIntegrationTest {
             Assert.assertEquals(utkastPersonIds.get(i), entry.getPatientId().getPersonnummer());
         }*/
 
-        QueryIntygResponse queryResponse2 = given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
+        QueryIntygResponse queryResponse2 = spec()
                 .param("savedBy", DEFAULT_LAKARE.getHsaId()).param("enhetsId", DEFAULT_LAKARE.getEnhetId())
                 .param("pageSize", 4).param("startFrom", 16)
                 .expect().statusCode(200).when().get("api/utkast")
@@ -232,7 +232,7 @@ public class UtkastApiControllerIT extends BaseRestIntegrationTest {
         changeRoleTo("VARDADMINISTRATOR");
 
         // Should only get totalCount=16 since we added 2 patients with sekretessmarkering
-        QueryIntygResponse queryResponse = given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
+        QueryIntygResponse queryResponse = spec()
                 .param("savedBy", DEFAULT_LAKARE.getHsaId()).param("enhetsId", DEFAULT_LAKARE.getEnhetId())
                 .param("pageSize", 4)
                 .expect().statusCode(200).when().get("api/utkast")
@@ -249,7 +249,7 @@ public class UtkastApiControllerIT extends BaseRestIntegrationTest {
             Assert.assertEquals(utkastPersonIds.get(i), entry.getPatientId().getPersonnummer());
         }*/
 
-        QueryIntygResponse queryResponse2 = given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
+        QueryIntygResponse queryResponse2 = spec()
                 .param("savedBy", DEFAULT_LAKARE.getHsaId()).param("enhetsId", DEFAULT_LAKARE.getEnhetId())
                 .param("pageSize", 4).param("startFrom", 14)
                 .expect().statusCode(200).when().get("api/utkast")
@@ -276,7 +276,8 @@ public class UtkastApiControllerIT extends BaseRestIntegrationTest {
     @Test
     public void testGetQuestion() {
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
-        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId).pathParams("intygsTyp", "luse", "version", "0.9")
+        spec()
+                .pathParams("intygsTyp", "luse", "version", "0.9")
                 .expect().statusCode(200)
                 .when().get("api/utkast/questions/{intygsTyp}/{version}")
                 .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-texter.json"));
@@ -285,7 +286,8 @@ public class UtkastApiControllerIT extends BaseRestIntegrationTest {
     @Test
     public void testGetPrevious() {
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
-        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId).pathParams("personnummer", "191212121212")
+        spec()
+                .pathParams("personnummer", "191212121212")
                 .expect().statusCode(200)
                 .when().get("api/utkast/previousIntyg/{personnummer}")
                 .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-previousIntyg.json"));
