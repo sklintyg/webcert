@@ -19,12 +19,15 @@
 package se.inera.intyg.webcert.web.web.controller.integrationtest;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.google.common.base.Strings;
+import com.google.common.collect.MoreCollectors;
 import com.jayway.restassured.RestAssured;
 import com.jayway.restassured.config.LogConfig;
 import com.jayway.restassured.config.SessionConfig;
 import com.jayway.restassured.filter.session.SessionFilter;
 import com.jayway.restassured.http.ContentType;
 import com.jayway.restassured.path.json.JsonPath;
+import com.jayway.restassured.response.Header;
 import com.jayway.restassured.response.Response;
 import com.jayway.restassured.specification.RequestSpecification;
 import org.junit.After;
@@ -87,6 +90,8 @@ public abstract class BaseRestIntegrationTest {
     public static String routeId;
     public static String jsessionId;
     public static SessionFilter sessionFilter;
+
+    protected static String csrfToken;
 
     protected static FakeCredentials DEFAULT_LAKARE = new FakeCredentials.FakeCredentialsBuilder("IFV1239877878-1049",
             "IFV1239877878-1042").legitimeradeYrkesgrupper(LAKARE).build();
@@ -152,6 +157,7 @@ public abstract class BaseRestIntegrationTest {
         routeId = response.getCookie("ROUTEID") != null ? response.getCookie("ROUTEID") : "nah";
         //sessionId = response.getCookie("JSESSIONID");
         sessionId = response.getCookie("SESSION");
+        csrfToken = response.getCookie("XSRF-TOKEN");
 
         return response.sessionId();
     }
@@ -543,9 +549,15 @@ public abstract class BaseRestIntegrationTest {
      * @return the spec.
      */
     protected RequestSpecification spec() {
-        return given().cookie("ROUTEID", routeId)
+        RequestSpecification spec = given().cookie("ROUTEID", routeId)
                 .cookie("JSESSIONID", jsessionId)
                 .contentType(ContentType.JSON);
+        if (!Strings.isNullOrEmpty(csrfToken)) {
+            spec
+                    .cookie("XSRF-TOKEN", csrfToken)
+                    .header("X-XSRF-TOKEN", csrfToken); // Usually set by angularjs, using value from cookie.
+        }
+        return spec;
     }
 
 }

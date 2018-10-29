@@ -95,7 +95,8 @@ public class IntygAPIControllerIT extends BaseRestIntegrationTest {
         notifiedState.setNotified(true);
 
         ListIntygEntry updatedIntyg =
-                given().cookie("ROUTEID", BaseRestIntegrationTest.routeId).contentType(ContentType.JSON).and().body(notifiedState).and().pathParams(pathParams)
+                spec()
+                        .body(notifiedState).and().pathParams(pathParams)
                         .expect().statusCode(200)
                         .when().put("api/intyg/{intygsTyp}/{intygsId}/{version}/vidarebefordra")
                         .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-put-notified-utkast-response-schema.json")).extract().response()
