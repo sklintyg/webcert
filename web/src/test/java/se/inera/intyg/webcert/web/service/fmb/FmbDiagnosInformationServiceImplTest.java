@@ -70,7 +70,7 @@ public class FmbDiagnosInformationServiceImplTest {
 
         doReturn(Optional.of(diagnosInformation))
                 .when(diagnosInformationRepository)
-                .findByIcd10KodList_kod(anyString());
+                .findFirstByIcd10KodList_kod(anyString());
 
         final Optional<FmbResponse> response = diagnosInformationService.findFmbDiagnosInformationByIcd10Kod("A10");
 
@@ -98,7 +98,7 @@ public class FmbDiagnosInformationServiceImplTest {
 
         doReturn(Optional.of(diagnosInformation))
                 .when(diagnosInformationRepository)
-                .findByIcd10KodList_kod(anyString());
+                .findFirstByIcd10KodList_kod(anyString());
 
         final Optional<FmbResponse> response = diagnosInformationService.findFmbDiagnosInformationByIcd10Kod("A10");
 
@@ -123,7 +123,7 @@ public class FmbDiagnosInformationServiceImplTest {
 
         doReturn(Optional.empty())
                 .when(diagnosInformationRepository)
-                .findByIcd10KodList_kod(anyString());
+                .findFirstByIcd10KodList_kod(anyString());
 
         final Optional<FmbResponse> response = diagnosInformationService.findFmbDiagnosInformationByIcd10Kod("A10M");
 
@@ -137,7 +137,7 @@ public class FmbDiagnosInformationServiceImplTest {
 
         doReturn(Optional.of(diagnosInformation))
                 .when(diagnosInformationRepository)
-                .findByIcd10KodList_kod(anyString());
+                .findFirstByIcd10KodList_kod(anyString());
 
         final Optional<FmbResponse> response = diagnosInformationService.findFmbDiagnosInformationByIcd10Kod(icd10);
 

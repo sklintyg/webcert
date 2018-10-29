@@ -18,6 +18,7 @@
  */
 package se.inera.intyg.webcert.web.web.controller.api.dto;
 
+import org.apache.commons.collections.CollectionUtils;
 import java.util.List;
 
 public abstract class IcfKoder {
@@ -33,9 +34,9 @@ public abstract class IcfKoder {
             final List<String> icd10Koder,
             final List<IcfKod> centralaKoder,
             final List<IcfKod> kompletterandeKoder) {
-        this.icd10Koder = icd10Koder;
-        this.centralaKoder = centralaKoder;
-        this.kompletterandeKoder = kompletterandeKoder;
+        this.icd10Koder = CollectionUtils.isEmpty(icd10Koder) ? null : icd10Koder;
+        this.centralaKoder = CollectionUtils.isEmpty(centralaKoder) ? null : centralaKoder;
+        this.kompletterandeKoder = CollectionUtils.isEmpty(kompletterandeKoder) ? null : kompletterandeKoder;
     }
 
     public List<String> getIcd10Koder() {

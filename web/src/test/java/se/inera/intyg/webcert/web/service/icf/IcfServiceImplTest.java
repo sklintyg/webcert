@@ -72,7 +72,7 @@ public class IcfServiceImplTest {
 
         doReturn(Optional.empty())
                 .when(repository)
-                .findByIcd10KodList_kod(anyString());
+                .findFirstByIcd10KodList_kod(anyString());
 
         final IcfResponse response = icfService.findIcfInformationByIcd10Koder(IcfRequest.of("code", null, null));
 
@@ -93,15 +93,15 @@ public class IcfServiceImplTest {
 
         doReturn(Optional.empty())
                 .when(repository)
-                .findByIcd10KodList_kod(eq(noMatch1));
+                .findFirstByIcd10KodList_kod(eq(noMatch1));
 
         doReturn(Optional.empty())
                 .when(repository)
-                .findByIcd10KodList_kod(eq(noMatch2));
+                .findFirstByIcd10KodList_kod(eq(noMatch2));
 
         doReturn(Optional.of(buildDiagnosInformation(icd10Kod, match1)))
                 .when(repository)
-                .findByIcd10KodList_kod(eq(match1));
+                .findFirstByIcd10KodList_kod(eq(match1));
 
         final IcfResponse icfInformationByIcd10Koder = icfService.findIcfInformationByIcd10Koder(
                 IcfRequest.of(noMatch1, noMatch2, match1));
@@ -133,15 +133,15 @@ public class IcfServiceImplTest {
 
         doReturn(Optional.empty())
                 .when(repository)
-                .findByIcd10KodList_kod(eq(noMatch1));
+                .findFirstByIcd10KodList_kod(eq(noMatch1));
 
         doReturn(Optional.of(buildDiagnosInformation(icd10Kod1, match1)))
                 .when(repository)
-                .findByIcd10KodList_kod(eq(match1));
+                .findFirstByIcd10KodList_kod(eq(match1));
 
         doReturn(Optional.of(buildDiagnosInformation(icd10Kod2, match2)))
                 .when(repository)
-                .findByIcd10KodList_kod(eq(match2));
+                .findFirstByIcd10KodList_kod(eq(match2));
 
         final IcfResponse icfInformationByIcd10Koder = icfService.findIcfInformationByIcd10Koder(
                 IcfRequest.of(noMatch1, match1, match2));

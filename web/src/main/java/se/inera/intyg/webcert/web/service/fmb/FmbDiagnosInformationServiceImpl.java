@@ -83,7 +83,7 @@ public class FmbDiagnosInformationServiceImpl implements FmbDiagnosInformationSe
         String icd10TrimmedCode = icd10Kod;
         Optional<DiagnosInformation> diagnosInformation = Optional.empty();
         while (icd10TrimmedCode.length() >= minCharCount) {
-            diagnosInformation = repository.findByIcd10KodList_kod(icd10TrimmedCode);
+            diagnosInformation = repository.findFirstByIcd10KodList_kod(icd10TrimmedCode);
 
             if (diagnosInformation.isPresent()) {
                 break;

@@ -26,6 +26,7 @@ import io.vavr.Tuple;
 import io.vavr.Tuple2;
 import io.vavr.collection.HashSet;
 import io.vavr.collection.List;
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.stereotype.Service;
 import java.util.Objects;
 import java.util.Optional;
@@ -61,9 +62,9 @@ public class IcfServiceImpl implements IcfService {
         Preconditions.checkArgument(Objects.nonNull(icfRequest.getIcd10Code1()), "IcfRequest must have an icfCode1");
 
         return convertToResponse(
-                Tuple.of(icfRequest.getIcd10Code1(), repository.findByIcd10KodList_kod(icfRequest.getIcd10Code1())),
-                Tuple.of(icfRequest.getIcd10Code2(), repository.findByIcd10KodList_kod(icfRequest.getIcd10Code2())),
-                Tuple.of(icfRequest.getIcd10Code3(), repository.findByIcd10KodList_kod(icfRequest.getIcd10Code3())));
+                Tuple.of(icfRequest.getIcd10Code1(), repository.findFirstByIcd10KodList_kod(icfRequest.getIcd10Code1())),
+                Tuple.of(icfRequest.getIcd10Code2(), repository.findFirstByIcd10KodList_kod(icfRequest.getIcd10Code2())),
+                Tuple.of(icfRequest.getIcd10Code3(), repository.findFirstByIcd10KodList_kod(icfRequest.getIcd10Code3())));
     }
 
     private IcfResponse convertToResponse(
@@ -130,14 +131,20 @@ public class IcfServiceImpl implements IcfService {
 
                 List<IcfKod> tempCentral = List.empty();
                 List<IcfKod> tempKompletterande = List.empty();
-                tempCentral = tempCentral.appendAll(Sets.intersection(
-                        Sets.newHashSet(allaKoder.get(i)._2.getCentralaKoder()),
-                        Sets.newHashSet(allaKoder.get(i + 1)._2.getCentralaKoder())).immutableCopy());
 
-                tempKompletterande = tempKompletterande.appendAll(Sets.intersection(
-                        Sets.newHashSet(allaKoder.get(i)._2.getKompletterandeKoder()),
-                        Sets.newHashSet(allaKoder.get(i + 1)._2.getKompletterandeKoder())).immutableCopy());
+                if (allaKoder.get(i)._2.getCentralaKoder() != null) {
 
+                    tempCentral = tempCentral.appendAll(Sets.intersection(
+                            Sets.newHashSet(allaKoder.get(i)._2.getCentralaKoder()),
+                            Sets.newHashSet(allaKoder.get(i + 1)._2.getCentralaKoder())).immutableCopy());
+                }
+
+                if (allaKoder.get(i)._2.getKompletterandeKoder() != null) {
+                    tempKompletterande = tempKompletterande.appendAll(Sets.intersection(
+                            Sets.newHashSet(allaKoder.get(i)._2.getKompletterandeKoder()),
+                            Sets.newHashSet(allaKoder.get(i + 1)._2.getKompletterandeKoder())).immutableCopy());
+
+                }
                 if (!tempCentral.isEmpty() || !tempKompletterande.isEmpty()) {
                     icd10KoderMedGemensammaIcf = icd10KoderMedGemensammaIcf.add(allaKoder.get(i)._1);
                     icd10KoderMedGemensammaIcf = icd10KoderMedGemensammaIcf.add(allaKoder.get(i + 1)._1);
@@ -209,14 +216,20 @@ public class IcfServiceImpl implements IcfService {
             final java.util.List<IcfKod> centralKoder = beskrivning.getIcfKodList().stream()
                     .filter(kod -> kod.getIcfKodTyp() == IcfKodTyp.CENTRAL)
                     .map(kod -> IcfKod.of(kod.getKod(), "temp-beskrivning"))
-                    .filter(kod -> exkludera == null || !exkludera.getCentralaKoder().contains(kod))
+                    .filter(kod -> exkludera == null
+                            || (exkludera.getCentralaKoder() != null && !exkludera.getCentralaKoder().contains(kod)))
                     .collect(Collectors.toList());
 
             final java.util.List<IcfKod> kompletterandeKoder = beskrivning.getIcfKodList().stream()
                     .filter(kod -> kod.getIcfKodTyp() == IcfKodTyp.KOMPLETTERANDE)
                     .map(kod -> IcfKod.of(kod.getKod(), "temp-beskrivning"))
-                    .filter(kod -> exkludera == null || !exkludera.getKompletterandeKoder().contains(kod))
+                    .filter(kod -> exkludera == null
+                            || (exkludera.getKompletterandeKoder() != null && !exkludera.getKompletterandeKoder().contains(kod)))
                     .collect(Collectors.toList());
+
+            if (CollectionUtils.isEmpty(centralKoder) && CollectionUtils.isEmpty(kompletterandeKoder)) {
+                return null;
+            }
 
             IcfKoder icfKoder = null;
             switch (beskrivning.getBeskrivningTyp()) {
