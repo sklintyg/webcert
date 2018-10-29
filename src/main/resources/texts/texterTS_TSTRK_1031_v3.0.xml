@@ -8,7 +8,7 @@
   -->
 
 	<text id="FRM_1.RBK">
-		Läkarintyg diabetes TSTRK1031 (3.0)
+		Läkarintyg diabetes TSTRK1031
 		Transportstyrelsens läkarintyg diabetes ska användas vid diabetessjukdom. Föreskrivna krav på läkarens specialistkompetens vid diabetessjukdom framgår av 17 kap. i Transportstyrelsens föreskrifter (TSFS 2010:125) och allmänna råd om medicinska krav för innehav av körkort m.m.
 
 		Har du frågor?
@@ -23,7 +23,21 @@
   -->
 	<text id="KAT_1.RBK">Intyget avser</text>
 	<text id="FRG_1.RBK">Intyget avser följande behörigheter</text>
-	<text id="FRG_1.HLP"><![CDATA[<span style="text-align:left">AM = moped klass I<br>A1 - lätt motorcykel<br>A2 - mellanstor motorcykel<br>A - motorcykel<br>B - personbil, lätt lastbil och enbart ett lätt släpfordon<br>BE - personbil, lätt lastbil och ett eller flera släpfordon *<br>C1 = medeltung lastbil och enbart ett lätt släpfordon<br/>C1E = medeltung lastbil och ett eller flera släpfordon oavsett vikt<br/>C = tung lastbil och enbart ett lätt släpfordon<br/>CE = tung lastbil och ett eller flera släpfordon oavsett vikt<br/>D1 = mellanstor buss och enbart ett lätt släpfordon<br/>D1E = mellanstor buss och ett eller flera släpfordon oavsett vikt<br/>D = buss och enbart ett lätt släpfordon<br/>DE = buss och ett eller flera släpfordon oavsett vikt<br/>Taxi = taxiförarlegitimation<br>* Släpens totalvikt får inte överstiga 3,5 ton.</span>]]></text>
+	<text id="FRG_1.HLP"><![CDATA[AM - moped klass I
+				A1 - lätt motorcykel
+				A2 - mellanstor motorcykel
+				A - motorcykel
+				B - personbil, lätt lastbil och enbart ett lätt släpfordon
+				BE - personbil, lätt lastbil och ett eller flera släpfordon (Släpens totalvikt får inte överstiga 3,5 ton.)
+				C1 - medeltung lastbil och enbart ett lätt släpfordon
+				C1E - medeltung lastbil och ett eller flera släpfordon oavsett vikt
+				C - tung lastbil och enbart ett lätt släpfordon
+				CE - tung lastbil och ett eller flera släpfordon oavsett vikt
+				D1 - mellanstor buss och enbart ett lätt släpfordon
+				D1E - mellanstor buss och ett eller flera släpfordon oavsett vikt
+				D - buss och enbart ett lätt släpfordon
+				DE - buss och ett eller flera släpfordon oavsett vikt
+				Taxi - taxiförarlegitimation]]></text>
 	<text id="KORKORT_AM.RBK">AM</text>
 	<text id="KORKORT_A1.RBK">A1</text>
 	<text id="KORKORT_A2.RBK">A2</text>
@@ -56,10 +70,18 @@
 	<text id="IDENTITET_FORSAKRAN_KAP18.RBK">Försäkran enligt 18 kap 4 §</text>
 	<text id="IDENTITET_PASS.RBK">Pass</text>
 
-	<text id="FRG_2.HLP">&#185; Avser SIS-märkt ID-kort, svenskt nationellt ID-kort eller ID-kort utfärdat av Skatteverket.
-		&#178; Avser SIS-märkt företagskort eller tjänstekort.
-		&#179; Försäkran enligt 18 kap 4 § Se Transportstyrelsens föreskrifter och allmänna råd (TSFS 2010:125) om medicinska krav för innehav av körkort m.m.
-		&#8308; Avser svenskt EU-pass, annat EU-pass utfärdade från och med den 1 september 2006, pass utfärdat av Island, Liechtenstein, Norge eller Schweiz från och med den 1 september 2006.</text>
+	<text id="FRG_2.HLP"><![CDATA[<b>ID-kort</b>
+		Avser SIS-märkt ID-kort, svenskt nationellt ID-kort eller ID-kort utfärdat av Skatteverket.
+
+		<b>Företagskort eller tjänstekort</b>
+		Avser SIS-märkt företagskort eller tjänstekort.
+
+		 <b>Försäkran enligt 18 kap 4 §</b>
+ 		Se Transportstyrelsens föreskrifter och allmänna råd (TSFS 2010:125) om medicinska krav för innehav av körkort m.m.
+
+ 		<b>Pass</b>
+		Avser svenskt EU-pass, annat EU-pass utfärdade från och med den 1 september 2006, pass utfärdat av Island, Liechtenstein, Norge eller Schweiz från och med den 1 september 2006.
+	]]></text>
 
 	<!--
   ===============================================
