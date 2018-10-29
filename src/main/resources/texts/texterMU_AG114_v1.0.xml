@@ -38,7 +38,7 @@
 	<text id="FRG_4.HLP">Ange vilken eller vilka sjukdomar som orsakar nedsatt arbetsförmåga. Den sjukdom som påverkar arbetsförmågan mest anges först. Diagnoskoden anges alltid med så många positioner som möjligt.
 
 		Om patienten har fler än tre sjukdomar som påverkar arbetsförmågan anges dessa under "övriga upplysningar".</text>
-	<text id="DFR_4.2.RBK">Diagnoskod enligt ICD-10 SE</text>
+	<text id="DFR_4.1.RBK">Diagnoskod enligt ICD-10 SE</text>
 
 	<text id="FRG_5.RBK">På vilket sätt medför sjukdomen nedsatt arbetsförmåga?</text>
 	<text id="FRG_5.HLP">Uppgift om på vilket sätt arbetsförmågan är nedsatt ska anges oavsett om diagnos har angetts eller inte, detta för att arbetstagaren ska kunna styrka sin rätt till sjuklön och rätt att vara frånvarande från arbetet. Informationen har även betydelse för arbetsgivaren i det proaktiva rehabiliteringsarbetet.</text>
