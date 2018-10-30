@@ -42,8 +42,7 @@ public class DiagnosModuleApiControllerIT extends BaseRestIntegrationTest {
         body.setCodeFragment("A01");
         body.setCodeSystem(Diagnoskodverk.ICD_10_SE.name());
 
-        spec()
-                .body(body)
+        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId).contentType(ContentType.JSON).and().body(body)
                 .expect().statusCode(200)
                 .when().post("moduleapi/diagnos/kod")
                 .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-diagnos-sok-schema.json"))
@@ -61,8 +60,7 @@ public class DiagnosModuleApiControllerIT extends BaseRestIntegrationTest {
         body.setCodeSystem(Diagnoskodverk.ICD_10_SE.name());
         body.setNbrOfResults(4);
 
-        spec()
-                .body(body)
+        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId).contentType(ContentType.JSON).and().body(body)
                 .expect().statusCode(200)
                 .when().post("moduleapi/diagnos/kod/sok")
                 .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-diagnos-sok-schema.json"))
@@ -80,8 +78,7 @@ public class DiagnosModuleApiControllerIT extends BaseRestIntegrationTest {
         body.setCodeSystem(Diagnoskodverk.ICD_10_SE.name());
         body.setNbrOfResults(4);
 
-        spec()
-                .body(body)
+        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId).contentType(ContentType.JSON).and().body(body)
                 .expect().statusCode(200)
                 .when().post("moduleapi/diagnos/beskrivning/sok")
                 .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-diagnos-sok-schema.json"))

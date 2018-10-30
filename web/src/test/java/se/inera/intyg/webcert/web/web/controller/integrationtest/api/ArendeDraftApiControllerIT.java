@@ -41,8 +41,7 @@ public class ArendeDraftApiControllerIT extends BaseRestIntegrationTest {
         String amne = "amne";
         createArendeDraft(intygId, text, amne);
 
-        spec()
-                .pathParameter("intygId", intygId)
+        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId).pathParameter("intygId", intygId)
                 .expect()
                     .statusCode(200)
                 .when()
@@ -58,8 +57,7 @@ public class ArendeDraftApiControllerIT extends BaseRestIntegrationTest {
 
     private void deleteDraft(String intygId) {
 
-        spec()
-                .pathParameters("intygId", intygId)
+        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId).pathParameters("intygId", intygId)
                 .expect()
                     .statusCode(200)
                 .when()
@@ -72,8 +70,7 @@ public class ArendeDraftApiControllerIT extends BaseRestIntegrationTest {
         entry.setText(text);
         entry.setAmne(amne);
 
-        spec()
-                .contentType(ContentType.JSON).and().body(entry)
+        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId).contentType(ContentType.JSON).and().body(entry)
                 .expect()
                     .statusCode(200)
                 .when()
