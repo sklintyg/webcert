@@ -8,13 +8,12 @@
   -->
 
 	<text id="FRM_1.RBK">
-		Läkarintyg diabetes TSTRK1031
 		Transportstyrelsens läkarintyg diabetes ska användas vid diabetessjukdom. Föreskrivna krav på läkarens specialistkompetens vid diabetessjukdom framgår av 17 kap. i Transportstyrelsens föreskrifter (TSFS 2010:125) och allmänna råd om medicinska krav för innehav av körkort m.m.
-
-		Har du frågor?
-		Kontakta körkortsenheten på Transportstyrelsen, telefon 0771-81 81 81. Transportstyrelsens föreskrifter kan
-		hämtas på www.transportstyrelsen.se.
 	</text>
+	<text id="FRM_2.RBK"><![CDATA[Transportstyrelsens läkarintyg diabetes ska användas vid diabetessjukdom. Föreskrivna krav på läkarens specialistkompetens vid diabetessjukdom framgår av 17 kap. i Transportstyrelsens föreskrifter (TSFS 2010:125) och allmänna råd om medicinska krav för innehav av körkort m.m.
+
+<b>Har du frågor?</b>
+Kontakta körkortsenheten på Transportstyrelsen, telefon 0771-81 81 81. Transportstyrelsens föreskrifter kan hämtas på <LINK:transportstyrelsen>.]]></text>
 
 	<!--
   =====================================================

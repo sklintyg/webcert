@@ -30,7 +30,12 @@
 	===============================================
 	-->
 	<text id="KAT_100.RBK">Identitet styrkt genom</text>
-
+	<text id="KAT_100.OBS"><![CDATA[
+	¹ SIS-märkt ID-kort, svenskt nationellt ID-kort eller ID-kort utfärdat av Skatteverket.
+	² SIS-märkt företagskort eller tjänstekort.
+	³ Försäkran enligt 18 kap 4 § i Transportstyrelsens föreskrifter och allmänna råd (TSFS 2010:125) om medicinska krav för innehav av körkort m.m.
+	⁴ Svenskt EU-pass, annat EU-pass utfärdade från och med den 1 september 2006, pass utfärdat av Island, Liechtenstein, Norge eller Schweiz från och med den 1 september 2006.]]>
+	</text>
   <text id="IDENTITET_ID_KORT.RBK">ID-kort</text>
   <text id="IDENTITET_FORETAG_ELLER_TJANSTEKORT.RBK">Företagskort eller tjänstekort.</text>
   <text id="IDENTITET_KORKORT.RBK">Svenskt körkort</text>
@@ -38,13 +43,12 @@
   <text id="IDENTITET_FORSAKRAN_KAP18.RBK">Försäkran enligt 18 kap 4 §</text>
   <text id="IDENTITET_PASS.RBK">Pass</text>
 
-	<text id="FRM_1.RBK">&#185; SIS-märkt ID-kort, svenskt nationellt ID-kort eller ID-kort utfärdat av Skatteverket.
-&#178; SIS-märkt företagskort eller tjänstekort.
-&#179; Försäkran enligt 18 kap 4 § i Transportstyrelsens föreskrifter (TSFS 2010:125, senast ändrade genom TSFS 2013:2): Identiteten får fastställas genom att en förälder, annan vårdnadshavare, make, maka eller sambo, registrerad partner eller myndigt barn skriftligen försäkrar att lämnade uppgifter om sökandens identitet är riktiga. Den som lämnar en sådan försäkran ska vara närvarande vid identitetskontrollen och kunna styrka sin egen identitet.
-&#8308; Svenskt EU-pass, annat EU-pass utfärdade från och med den 1 september 2006, pass utfärdat av Island, Liechtenstein, Norge eller Schweiz från och med den 1 september 2006.</text>
+	<text id="FRM_1.RBK"><![CDATA[Transportstyrelsens läkarintyg diabetes ska användas vid diabetessjukdom. Föreskrivna krav på läkarens specialistkompetens vid diabetessjukdom framgår av 17 kap. i Transportstyrelsens föreskrifter (TSFS 2010:125) och allmänna råd om medicinska krav för innehav av körkort m.m.
+
+	Information om Transportstyrelsens föreskrifter finns på <LINK:transportstyrelsen>.]]></text>
 
 	<text id="FRM_2.RBK"><![CDATA[Läkaren ska uppmärksamma Transportstyrelsens föreskrifter och allmänna råd om medicinska krav för innehav av körkort m.m. (TSFS 2010:125, senast ändrade genom TSFS 2013:2). Intyget ska vara utfärdat tidigast 2 månader före att ansökan kom in till Transportstyrelsen och i enlighet med vad som sägs i 17 kapitlet.
-	Se: <a href="http://www.transportstyrelsen.se" target="_blank">http://www.transportstyrelsen.se</a>.]]></text>
+	Se: <LINK:transportstyrelsen>.]]></text>
 
 	<!--
 	===============================================
