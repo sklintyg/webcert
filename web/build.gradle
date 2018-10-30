@@ -166,6 +166,7 @@ dependencies {
     compile "se.inera.intyg.schemas:schemas-contract:${schemasContractVersion}"
 
     compile "commons-io:commons-io:${commonsIoVersion}"
+    compile 'org.jxls:jxls-jexcel:1.0.7'
     compile "org.springframework:spring-web:${springVersion}"
     compile "org.springframework:spring-webmvc:${springVersion}"
     compile "org.springframework.session:spring-session:${springSessionVersion}"

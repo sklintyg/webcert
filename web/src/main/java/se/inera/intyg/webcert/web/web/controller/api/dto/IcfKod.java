@@ -25,13 +25,15 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 public class IcfKod {
 
     private String kod;
+    private String benamning;
     private String beskrivning;
 
     public IcfKod() {
     }
 
-    private IcfKod(final String kod, final String beskrivning) {
+    private IcfKod(final String kod, final String benamning, final String beskrivning) {
         this.kod = kod;
+        this.benamning = benamning;
         this.beskrivning = beskrivning;
     }
 
@@ -51,29 +53,38 @@ public class IcfKod {
         this.beskrivning = beskrivning;
     }
 
-    public static IcfKod of(final String kod, final String beskrivning) {
-        return new IcfKod(kod, beskrivning);
+    public String getBenamning() {
+        return benamning;
     }
 
+    public void setBenamning(final String benamning) {
+        this.benamning = benamning;
+    }
+
+    public static IcfKod of(final String kod, final String beskrivning) {
+        return new IcfKod(kod, null, beskrivning);
+    }
+
+    public static IcfKod of(final String kod, final String benamning, final String beskrivning) {
+        return new IcfKod(kod, benamning, beskrivning);
+    }
+
+    // CHECKSTYLE:OFF
     @Override
     public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
-        }
+        if (this == o) return true;
 
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
+        if (o == null || getClass() != o.getClass()) return false;
 
         final IcfKod icfKod = (IcfKod) o;
 
         return new EqualsBuilder()
                 .append(kod, icfKod.kod)
+                .append(benamning, icfKod.benamning)
                 .append(beskrivning, icfKod.beskrivning)
                 .isEquals();
     }
 
-    // CHECKSTYLE:OFF MagicNumber
     @Override
     public int hashCode() {
         return new HashCodeBuilder(17, 37)
@@ -81,13 +92,15 @@ public class IcfKod {
                 .append(beskrivning)
                 .toHashCode();
     }
-    // CHECKSTYLE:ON MagicNumber
 
     @Override
     public String toString() {
         return new ToStringBuilder(this)
                 .append("kod", kod)
+                .append("benamning", benamning)
                 .append("beskrivning", beskrivning)
                 .toString();
     }
+
+    // CHECKSTYLE:ON
 }
