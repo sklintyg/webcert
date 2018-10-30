@@ -41,6 +41,7 @@ import se.inera.intyg.webcert.persistence.fmb.model.fmb.BeskrivningTyp;
 import se.inera.intyg.webcert.persistence.fmb.model.fmb.DiagnosInformation;
 import se.inera.intyg.webcert.persistence.fmb.model.fmb.IcfKodTyp;
 import se.inera.intyg.webcert.persistence.fmb.repository.DiagnosInformationRepository;
+import se.inera.intyg.webcert.web.service.icf.resource.IcfTextResource;
 import se.inera.intyg.webcert.web.web.controller.api.IcfRequest;
 import se.inera.intyg.webcert.web.web.controller.api.dto.IcfResponse;
 
@@ -49,6 +50,9 @@ public class IcfServiceImplTest {
 
     @Mock
     private DiagnosInformationRepository repository;
+
+    @Mock
+    private IcfTextResource icfTextResource;
 
     @InjectMocks
     private IcfServiceImpl icfService;

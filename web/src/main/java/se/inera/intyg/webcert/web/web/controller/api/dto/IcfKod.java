@@ -22,19 +22,21 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
-public class IcfKod {
+public final class IcfKod {
 
     private String kod;
     private String benamning;
     private String beskrivning;
+    private String innefattar;
 
     public IcfKod() {
     }
 
-    private IcfKod(final String kod, final String benamning, final String beskrivning) {
+    private IcfKod(final String kod, final String benamning, final String beskrivning, final String innefattar) {
         this.kod = kod;
         this.benamning = benamning;
         this.beskrivning = beskrivning;
+        this.innefattar = innefattar;
     }
 
     public String getKod() {
@@ -61,15 +63,20 @@ public class IcfKod {
         this.benamning = benamning;
     }
 
-    public static IcfKod of(final String kod, final String beskrivning) {
-        return new IcfKod(kod, null, beskrivning);
+    public static IcfKod of(final String kod, final String benamning, final String beskrivning, final String innefattar) {
+        return new IcfKod(kod, benamning, beskrivning, innefattar);
     }
 
-    public static IcfKod of(final String kod, final String benamning, final String beskrivning) {
-        return new IcfKod(kod, benamning, beskrivning);
+    public String getInnefattar() {
+        return innefattar;
     }
 
-    // CHECKSTYLE:OFF
+    public void setInnefattar(final String innefattar) {
+        this.innefattar = innefattar;
+    }
+
+    // CHECKSTYLE:OFF NeedBraces
+    // CHECKSTYLE:OFF MagicNumber
     @Override
     public boolean equals(final Object o) {
         if (this == o) return true;
@@ -82,6 +89,7 @@ public class IcfKod {
                 .append(kod, icfKod.kod)
                 .append(benamning, icfKod.benamning)
                 .append(beskrivning, icfKod.beskrivning)
+                .append(innefattar, icfKod.innefattar)
                 .isEquals();
     }
 
@@ -89,7 +97,9 @@ public class IcfKod {
     public int hashCode() {
         return new HashCodeBuilder(17, 37)
                 .append(kod)
+                .append(benamning)
                 .append(beskrivning)
+                .append(innefattar)
                 .toHashCode();
     }
 
@@ -99,8 +109,9 @@ public class IcfKod {
                 .append("kod", kod)
                 .append("benamning", benamning)
                 .append("beskrivning", beskrivning)
+                .append("innefattar", innefattar)
                 .toString();
     }
-
-    // CHECKSTYLE:ON
+    // CHECKSTYLE:ON NeedBraces
+    // CHECKSTYLE:ON MagicNumber
 }

@@ -38,6 +38,7 @@ import se.inera.intyg.webcert.persistence.fmb.model.fmb.BeskrivningTyp;
 import se.inera.intyg.webcert.persistence.fmb.model.fmb.DiagnosInformation;
 import se.inera.intyg.webcert.persistence.fmb.model.fmb.IcfKodTyp;
 import se.inera.intyg.webcert.persistence.fmb.repository.DiagnosInformationRepository;
+import se.inera.intyg.webcert.web.service.icf.resource.IcfTextResource;
 import se.inera.intyg.webcert.web.web.controller.api.IcfRequest;
 import se.inera.intyg.webcert.web.web.controller.api.dto.AktivitetsBegransningsKoder;
 import se.inera.intyg.webcert.web.web.controller.api.dto.FunktionsNedsattningsKoder;
@@ -50,9 +51,11 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.IcfResponse;
 public class IcfServiceImpl implements IcfService {
 
     private final DiagnosInformationRepository repository;
+    private final IcfTextResource textResource;
 
-    public IcfServiceImpl(final DiagnosInformationRepository repository) {
+    public IcfServiceImpl(final DiagnosInformationRepository repository, final IcfTextResource textResource) {
         this.repository = repository;
+        this.textResource = textResource;
     }
 
     @Override
@@ -215,14 +218,14 @@ public class IcfServiceImpl implements IcfService {
         return beskrivning -> {
             final java.util.List<IcfKod> centralKoder = beskrivning.getIcfKodList().stream()
                     .filter(kod -> kod.getIcfKodTyp() == IcfKodTyp.CENTRAL)
-                    .map(kod -> IcfKod.of(kod.getKod(), "temp-beskrivning"))
+                    .map(getIcfKodFromResource())
                     .filter(kod -> exkludera == null
                             || (exkludera.getCentralaKoder() != null && !exkludera.getCentralaKoder().contains(kod)))
                     .collect(Collectors.toList());
 
             final java.util.List<IcfKod> kompletterandeKoder = beskrivning.getIcfKodList().stream()
                     .filter(kod -> kod.getIcfKodTyp() == IcfKodTyp.KOMPLETTERANDE)
-                    .map(kod -> IcfKod.of(kod.getKod(), "temp-beskrivning"))
+                    .map(getIcfKodFromResource())
                     .filter(kod -> exkludera == null
                             || (exkludera.getKompletterandeKoder() != null && !exkludera.getKompletterandeKoder().contains(kod)))
                     .collect(Collectors.toList());
@@ -242,6 +245,11 @@ public class IcfServiceImpl implements IcfService {
             }
             return icfKoder;
         };
+    }
+
+    private Function<se.inera.intyg.webcert.persistence.fmb.model.fmb.IcfKod, IcfKod> getIcfKodFromResource() {
+        return kod -> textResource.lookupTextByIcfKod(kod.getKod())
+                .orElse(IcfKod.of(kod.getKod(), "", "", ""));
     }
 
 }

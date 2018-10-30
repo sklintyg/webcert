@@ -1,12 +1,31 @@
+/*
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
+ *
+ * This file is part of sklintyg (https://github.com/sklintyg).
+ *
+ * sklintyg is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * sklintyg is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package se.inera.intyg.webcert.web.service.icf.resource;
 
 import static java.lang.invoke.MethodHandles.lookup;
 
 import io.vavr.collection.HashMap;
-import io.vavr.collection.List;
+import io.vavr.control.Option;
 import io.vavr.control.Try;
 import jxl.Sheet;
 import jxl.Workbook;
+import jxl.WorkbookSettings;
 import jxl.read.biff.BiffException;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -17,6 +36,7 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.text.MessageFormat;
+import java.util.Optional;
 import se.inera.intyg.webcert.web.web.controller.api.dto.IcfKod;
 
 @Component
@@ -29,6 +49,7 @@ public class IcfTextResourceImpl implements IcfTextResource {
     private static final int BENAMNING_COLUMN = 10;
     private static final int ALTERNATIV_TERM_COLUMN = 11;
     private static final int BESKRIVNING_COLUMN = 12;
+    private static final int INNEFATTAR_COLUMN = 13;
 
     private HashMap<String, IcfKod> icfKoder = HashMap.empty();
 
@@ -51,9 +72,14 @@ public class IcfTextResourceImpl implements IcfTextResource {
     }
 
     @Override
-    public IcfKod lookupTextByIcfKod(final String icfKod) {
-        return icfKoder.get(StringUtils.lowerCase(icfKod))
-                .getOrNull();
+    public Optional<IcfKod> lookupTextByIcfKod(final String icfKod) {
+        final Option<IcfKod> lookupKod = icfKoder.get(StringUtils.lowerCase(icfKod));
+
+        if (lookupKod.isEmpty()) {
+            return Optional.empty();
+        } else {
+            return Optional.of(lookupKod.get());
+        }
     }
 
     private void initIcfTextResources() throws IOException, BiffException {
@@ -63,7 +89,10 @@ public class IcfTextResourceImpl implements IcfTextResource {
 
     private HashMap<Integer, HashMap<Integer, String>> getRowContent() throws IOException, BiffException {
 
-        final Workbook workbook = Workbook.getWorkbook(resource.getFile());
+        WorkbookSettings settings = new WorkbookSettings();
+        settings.setEncoding("Cp1252");
+
+        final Workbook workbook = Workbook.getWorkbook(resource.getFile(), settings);
 
         //Sheet 1 är det sheet som innehåller diagnoskoder + texter
         final Sheet sheet = workbook.getSheet(1);
@@ -74,7 +103,7 @@ public class IcfTextResourceImpl implements IcfTextResource {
         //Starta inläsning från row 1, row 0 innehåller endast headers
         final int startRow = 1;
 
-        //Starta inläsning från column 1, column 0 innehåller endast radIndex
+        //Starta inläsning från column 1, column 0 innehåller endast radindex
         final int startColumn = 1;
 
         HashMap<Integer, HashMap<Integer, String>> data = HashMap.empty();
@@ -97,13 +126,14 @@ public class IcfTextResourceImpl implements IcfTextResource {
             final String benamning = StringUtils.trim(rowColumns.get(BENAMNING_COLUMN).get());
             final String alternativTerm = StringUtils.trim(rowColumns.get(ALTERNATIV_TERM_COLUMN).get());
             final String beskrivning = StringUtils.trim(rowColumns.get(BESKRIVNING_COLUMN).get());
+            final String innefattar = StringUtils.trim(rowColumns.get(INNEFATTAR_COLUMN).get());
 
             //om alternativTerm finns ska den alltid trumfa vanlig benämning
             final String benamningToReturn = StringUtils.isNotEmpty(alternativTerm)
                     ? alternativTerm
                     : benamning;
 
-            icfKoder = icfKoder.put(icfKod, IcfKod.of(icfKod, benamningToReturn, beskrivning));
+            icfKoder = icfKoder.put(icfKod, IcfKod.of(icfKod, benamningToReturn, beskrivning, innefattar));
         });
     }
 }

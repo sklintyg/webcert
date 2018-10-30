@@ -35,7 +35,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.webcert.web.service.icf.IcfService;
-import se.inera.intyg.webcert.web.service.icf.resource.IcfTextResource;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
 import se.inera.intyg.webcert.web.web.controller.api.dto.FmbResponse;
 
@@ -44,11 +43,9 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.FmbResponse;
 public class IcfApiController extends AbstractApiController {
 
     private IcfService service;
-    private IcfTextResource icfTextResource;
 
-    public IcfApiController(final IcfService service, final IcfTextResource icfTextResource) {
+    public IcfApiController(final IcfService service) {
         this.service = service;
-        this.icfTextResource = icfTextResource;
     }
 
     @GET
@@ -71,14 +68,5 @@ public class IcfApiController extends AbstractApiController {
         }
 
         return Response.ok(service.findIcfInformationByIcd10Koder(IcfRequest.of(icfCode1, icfCode2, icfCode3))).build();
-    }
-
-    @GET
-    @Path("/texter")
-    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    @PrometheusTimeMethod
-    public Response initIcfResources() {
-        icfTextResource.init();
-        return Response.ok().build();
     }
 }
