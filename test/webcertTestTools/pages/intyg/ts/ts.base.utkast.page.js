@@ -27,7 +27,8 @@ var pageHelpers = require('../../pageHelper.util.js');
 var BaseUtkast = require('../base.utkast.page.js');
 
 var bedomning = {
-    form: element(by.id('form_bedomning')),
+    //form: element(by.id('form_bedomning')),
+    form: [element(by.id('form_bedomning-korkortstyp')), element(by.id('form_bedomning'))],
     yes: element(by.id('bedomning-lamplighetInnehaBehorighetYes')),
     no: element(by.id('bedomning-lamplighetInnehaBehorighetNo'))
 };
@@ -45,7 +46,8 @@ var BaseTsUtkast = BaseUtkast._extend({
 
         this.bedomning = bedomning;
 
-        this.bedomningKorkortsTyperChecks = this.bedomning.form.all(by.css('label'));
+        this.bedomningKorkortsTyperChecks = this.bedomning.form[0].all(by.css('label'));
+        this.bedomningKorkortsTyperChecksDiabetes = this.bedomning.form[1].all(by.css('label'));
 
         this.kommentar = element(by.id('kommentar'));
         this.adress = this.patientAdress;
@@ -77,14 +79,22 @@ var BaseTsUtkast = BaseUtkast._extend({
     fillInBedomning: function(bedomningObj) {
         var fillInLamplighet = this.fillInBedomningLamplighet;
         var bedomningKorkortsTyperChecks = this.bedomningKorkortsTyperChecks;
+        var bedomningKorkortsTyperChecksDiabetes = this.bedomningKorkortsTyperChecksDiabetes;
 
-        return element(by.cssContainingText('label', bedomningObj.stallningstagande)).click()
-            .then(function() {
-                return pageHelpers.selectAllCheckBoxes(bedomningKorkortsTyperChecks, bedomningObj.behorigheter)
-                    .then(function() {
-                        return fillInLamplighet(bedomningObj.lamplighet);
-                    });
-            });
+        if ('ts-bas' === this.intygType) {
+            return pageHelpers.selectAllCheckBoxes(bedomningKorkortsTyperChecks, bedomningObj.behorigheter)
+                .then(function() {
+                    return fillInLamplighet(bedomningObj.lamplighet);
+                });
+        } else if ('ts-diabetes' === this.intygType) {
+            return element(by.cssContainingText('label', bedomningObj.stallningstagande)).click()
+                .then(function() {
+                    return pageHelpers.selectAllCheckBoxes(bedomningKorkortsTyperChecksDiabetes, bedomningObj.behorigheter)
+                        .then(function() {
+                            return fillInLamplighet(bedomningObj.lamplighet);
+                        });
+                });
+        }
     },
     fillInOvrigKommentar: function(utkast) {
         return this.kommentar.sendKeys(utkast.kommentar);
