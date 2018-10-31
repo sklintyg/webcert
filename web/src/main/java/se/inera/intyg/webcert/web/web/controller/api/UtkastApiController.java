@@ -346,7 +346,7 @@ public class UtkastApiController extends AbstractApiController {
         case "senastSparadAv":
             comparator = Comparator.comparing(ListIntygEntry::getUpdatedSignedBy);
             break;
-        case "vidareBefodrad":
+        case "vidarebefordrad":
             comparator = (ie1, ie2) -> Boolean.compare(ie2.isVidarebefordrad(), ie1.isVidarebefordrad());
             break;
         case "senasteSparadDatum":
