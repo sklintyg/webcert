@@ -24,7 +24,6 @@ describe('wcUtkastListSpec', function() {
     var $state;
     var mockResponse;
     var utkastNotifyService;
-    var intygListService;
     var IntygHelper;
     var element;
 
@@ -45,10 +44,6 @@ describe('wcUtkastListSpec', function() {
             utkastNotifyService =
                 jasmine.createSpyObj('common.UtkastNotifyService', ['onNotifyChange', 'notifyUtkast']);
             $provide.value('common.UtkastNotifyService', utkastNotifyService);
-
-            intygListService =
-                jasmine.createSpyObj('webcert.intygListService', ['checkVidareBefordraAuth']);
-            $provide.value('webcert.intygListService', intygListService);
 
             IntygHelper =
                 jasmine.createSpyObj('common.IntygHelper', ['goToDraft']);
