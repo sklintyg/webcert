@@ -22,7 +22,7 @@ angular.module('webcert').directive('wcEnhetArendenList', [
     'common.ArendeVidarebefordraHelper', 'common.ArendeProxy', 'common.dialogService',
     'webcert.enhetArendenListService', 'webcert.enhetArendenModel', 'webcert.enhetArendenListModel',
     'common.messageService', 'webcert.vardenhetFilterModel', 'webcert.enhetArendenFilterModel',
-    'common.UserModel', 'common.IntygProxy',
+    'common.UserModel', 'common.IntygProxy', 'webcert.intygListService',
     function($location, $log, $timeout, $window,
         ArendeVidarebefordraHelper, ArendeProxy, dialogService,
         enhetArendenListService, enhetArendenModel, enhetArendenListModel, messageService,
@@ -45,7 +45,7 @@ angular.module('webcert').directive('wcEnhetArendenList', [
 
                 $scope.orderBy = enhetArendenFilterModel.filterForm.orderBy;
                 $scope.orderAscending = enhetArendenFilterModel.filterForm.orderAscending;
-                $scope.displayVidarebefordra = true;
+                $scope.displayVidarebefordra = false;
 
                 $scope.$watch('vardenhetFilterModel.selectedUnit', function() {
                     if (vardenhetFilterModel.selectedUnit) {
@@ -90,6 +90,7 @@ angular.module('webcert').directive('wcEnhetArendenList', [
                             $timeout.cancel(spinnerWaiting);
                         }
 
+                        $scope.displayVidarebefordra = intygListService.checkVidareBefordraAuth(enhetArendenListModel.arendenList);
                         enhetArendenListModel.viewState.runningQuery = false;
                     });
 
@@ -106,6 +107,8 @@ angular.module('webcert').directive('wcEnhetArendenList', [
                             if (spinnerWaiting) {
                                 $timeout.cancel(spinnerWaiting);
                             }
+
+                            $scope.displayVidarebefordra = intygListService.checkVidareBefordraAuth(enhetArendenListModel.arendenList);
                             enhetArendenListModel.viewState.runningQuery = false;
                         });
                     }
