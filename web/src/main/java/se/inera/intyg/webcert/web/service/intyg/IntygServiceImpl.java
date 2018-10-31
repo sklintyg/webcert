@@ -807,6 +807,20 @@ public class IntygServiceImpl implements IntygService {
                 LOG.error("Failed to getUtlatandeFromJson intygsId {} while checking for updated patient information", intygId);
             }
 
+            // Patient is not expected to be null, since that means PU-service is probably down and no integration
+            // parameters were available.
+
+            // Get the module api and use the "updateBeforeSave" to update the outbound "model" with the
+            // Patient object.
+            ModuleApi moduleApi = moduleRegistry.getModuleApi(typ);
+            // INTYG-5354, INTYG-5380: Don't use incomplete address from external data sources (PU/js).
+            if (!newPatientData.isCompleteAddressProvided()) {
+                // Use the old address data.
+                Patient oldPatientData = utlatande.getGrundData().getPatient();
+                copyOldAddressToNewPatientData(oldPatientData, newPatientData);
+            }
+            internalIntygJsonModel = moduleApi.updateBeforeSave(internalIntygJsonModel, newPatientData);
+
             utkastIntygDecorator.decorateWithUtkastStatus(certificate);
             Relations certificateRelations = intygRelationHelper.getRelationsForIntyg(intygId);
 
@@ -850,7 +864,7 @@ public class IntygServiceImpl implements IntygService {
                                 + "not be found, perhaps it was issued by a non-webcert system?");
             }
             return buildIntygContentHolderForUtkast(utkast, relations);
-        } catch (ModuleNotFoundException e) {
+        } catch (ModuleNotFoundException | ModuleException e) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, e);
         }
     }
@@ -866,51 +880,66 @@ public class IntygServiceImpl implements IntygService {
                 : getIntygData(intygId, intygTyp, false);
     }
 
-    // INTYG-4086. This method is used when fetching Intyg/Utkast from WC locally.
+    // NOTE! INTYG-4086. This method is used when fetching Intyg/Utkast from WC locally. The question is, should we
+    // replace the patient on the existing model with a freshly fetched one here or not? In case we're storing patient
+    // info entered manually for non FK-types here, we may end up overwriting a manually stored name etc...
     private IntygContentHolder buildIntygContentHolderForUtkast(Utkast utkast, boolean relations) {
 
-        // INTYG-4086: Patient object populated according to ruleset for the intygstyp at hand.
-        Patient newPatientData = patientDetailsResolver.resolvePatient(utkast.getPatientPersonnummer(), utkast.getIntygsTyp());
+        try {
+            // INTYG-4086: Patient object populated according to ruleset for the intygstyp at hand.
+            Patient newPatientData = patientDetailsResolver.resolvePatient(utkast.getPatientPersonnummer(), utkast.getIntygsTyp());
 
-        // Copied from getDraft in UtkastModuleApiController
-        // INTYG-4086: Temporary, don't know if this is correct yet. If no patient was resolved,
-        // create an "empty" Patient with personnummer only.
-        if (newPatientData == null) {
-            newPatientData = new Patient();
-            newPatientData.setPersonId(utkast.getPatientPersonnummer());
+            // Copied from getDraft in UtkastModuleApiController
+            // INTYG-4086: Temporary, don't know if this is correct yet. If no patient was resolved,
+            // create an "empty" Patient with personnummer only.
+            if (newPatientData == null) {
+                newPatientData = new Patient();
+                newPatientData.setPersonId(utkast.getPatientPersonnummer());
+            }
+
+            // INTYG-5354, INTYG-5380: Don't use incomplete address from external data sources (PU/js).
+            Utlatande utlatande = modelFacade.getUtlatandeFromInternalModel(utkast.getIntygsTyp(), utkast.getModel());
+            if (!newPatientData.isCompleteAddressProvided()) {
+                // Use the old address data.
+                Patient oldPatientData = utlatande.getGrundData().getPatient();
+                copyOldAddressToNewPatientData(oldPatientData, newPatientData);
+            }
+            String updatedModel = moduleRegistry.getModuleApi(utkast.getIntygsTyp()).updateBeforeSave(utkast.getModel(),
+                    newPatientData);
+            utlatande = modelFacade.getUtlatandeFromInternalModel(utkast.getIntygsTyp(), updatedModel);
+
+            List<Status> statuses = IntygConverterUtil.buildStatusesFromUtkast(utkast);
+            Relations certificateRelations = certificateRelationService.getRelations(utkast.getIntygsId());
+
+            final SekretessStatus sekretessStatus = patientDetailsResolver.getSekretessStatus(newPatientData.getPersonId());
+            if (SekretessStatus.UNDEFINED.equals(sekretessStatus)) {
+                throw new WebCertServiceException(WebCertServiceErrorCodeEnum.PU_PROBLEM,
+                        "Sekretesstatus could not be fetched from the PU service");
+            }
+            final boolean sekretessmarkerad = SekretessStatus.TRUE.equals(sekretessStatus);
+
+            boolean patientNameChanged = patientDetailsResolver.isPatientNamedChanged(utlatande.getGrundData().getPatient(),
+                    newPatientData);
+            boolean patientAddressChanged = patientDetailsResolver.isPatientAddressChanged(utlatande.getGrundData().getPatient(),
+                    newPatientData);
+
+            return IntygContentHolder.builder()
+                    .setContents(updatedModel)
+                    .setUtlatande(utlatande)
+                    .setStatuses(statuses)
+                    .setRevoked(utkast.getAterkalladDatum() != null)
+                    .setRelations(certificateRelations)
+                    .setCreated(utkast.getSkapad())
+                    .setDeceased(isDeceased(utkast.getPatientPersonnummer()))
+                    .setSekretessmarkering(sekretessmarkerad)
+                    .setPatientNameChangedInPU(patientNameChanged)
+                    .setPatientAddressChangedInPU(patientAddressChanged)
+                    .build();
+
+        } catch (ModuleException | ModuleNotFoundException e) {
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, e);
         }
 
-        Utlatande utlatande = modelFacade.getUtlatandeFromInternalModel(utkast.getIntygsTyp(), utkast.getModel());
-        // INTYG-7449: The patients address on a signed Intyg should not be replaced when fetched for viewing.
-        String internalIntygJsonModel = utkast.getModel();
-
-        List<Status> statuses = IntygConverterUtil.buildStatusesFromUtkast(utkast);
-        Relations certificateRelations = certificateRelationService.getRelations(utkast.getIntygsId());
-
-        final SekretessStatus sekretessStatus = patientDetailsResolver.getSekretessStatus(newPatientData.getPersonId());
-        if (SekretessStatus.UNDEFINED.equals(sekretessStatus)) {
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.PU_PROBLEM,
-                    "Sekretesstatus could not be fetched from the PU service");
-        }
-        final boolean sekretessmarkerad = SekretessStatus.TRUE.equals(sekretessStatus);
-
-        boolean patientNameChanged = patientDetailsResolver.isPatientNamedChanged(utlatande.getGrundData().getPatient(),
-                newPatientData);
-        boolean patientAddressChanged = patientDetailsResolver.isPatientAddressChanged(utlatande.getGrundData().getPatient(),
-                newPatientData);
-
-        return IntygContentHolder.builder()
-                .setContents(internalIntygJsonModel)
-                .setUtlatande(utlatande)
-                .setStatuses(statuses)
-                .setRevoked(utkast.getAterkalladDatum() != null)
-                .setRelations(certificateRelations)
-                .setCreated(utkast.getSkapad())
-                .setDeceased(isDeceased(utkast.getPatientPersonnummer()))
-                .setSekretessmarkering(sekretessmarkerad)
-                .setPatientNameChangedInPU(patientNameChanged)
-                .setPatientAddressChangedInPU(patientAddressChanged)
-                .build();
     }
 
     /**
