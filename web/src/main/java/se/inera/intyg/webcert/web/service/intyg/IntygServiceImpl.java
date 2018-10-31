@@ -810,7 +810,7 @@ public class IntygServiceImpl implements IntygService {
             // Patient is not expected to be null, since that means PU-service is probably down and no integration
             // parameters were available.
             // INTYG-7449: Visa patientdata från signerat intyg för ts, db och doi
-            if(!isIntygsTypeWithSavedPatientData(utlatande.getTyp())) {
+            if (!isIntygsTypeWithSavedPatientData(typ)) {
                 // Get the module api and use the "updateBeforeSave" to update the outbound "model" with the
                 // Patient object.
                 ModuleApi moduleApi = moduleRegistry.getModuleApi(typ);
@@ -1010,7 +1010,10 @@ public class IntygServiceImpl implements IntygService {
      * saved intyg that should not be overwritten.
      */
     private boolean isIntygsTypeWithSavedPatientData(String typ) {
-        return (typ.equals("ts-bas") || typ.equals("ts-diabetes") || typ.equals("doi") || typ.equals("db"));
+        if (typ == null) {
+            return false;
+        }
+        return ("ts-bas".equals(typ) || "ts-diabetes".equals(typ) || "doi".equals(typ) || "db".equals(typ));
     }
 
     private String getUserReference() {
