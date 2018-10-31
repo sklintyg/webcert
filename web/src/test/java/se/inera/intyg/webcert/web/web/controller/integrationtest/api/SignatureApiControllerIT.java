@@ -60,7 +60,8 @@ public class SignatureApiControllerIT extends BaseRestIntegrationTest {
 
         Intyg intyg = createIntyg();
 
-        spec()
+        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
+                .contentType(ContentType.JSON)
                 .expect().statusCode(200)
                 .when().post(SIGNATURE_API_BASE + "/" + intyg.getIntygsTyp() + "/" + intyg.getId() + "/" + intyg.getVersion()
                         + "/signeringshash/" + SignMethod.FAKE.name())
@@ -75,7 +76,8 @@ public class SignatureApiControllerIT extends BaseRestIntegrationTest {
 
         Intyg intyg = createIntyg();
 
-        Response response = spec()
+        Response response = given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
+                .contentType(ContentType.JSON)
                 .expect().statusCode(200)
                 .when().post(SIGNATURE_API_BASE + "/" + intyg.getIntygsTyp() + "/" + intyg.getId() + "/" + intyg.getVersion()
                         + "/signeringshash/" + SignMethod.FAKE.name())
@@ -86,7 +88,7 @@ public class SignatureApiControllerIT extends BaseRestIntegrationTest {
 
         String ticketId = response.body().jsonPath().getString("id");
 
-        spec()
+        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId).contentType(ContentType.JSON)
                 .expect().statusCode(200)
                 .when().post(SIGNATURE_FAKE_API_BASE + "/" + intyg.getIntygsTyp() + "/" + intyg.getId() + "/" + intyg.getVersion()
                         + "/fejksignera/" + ticketId)
@@ -110,7 +112,9 @@ public class SignatureApiControllerIT extends BaseRestIntegrationTest {
         // var knownSignStatuses = {'BEARBETAR':'', 'VANTA_SIGN':'', 'NO_CLIENT':'', 'SIGNERAD':'', 'OKAND': ''};
 
         // Påbörja signering
-        Response responseTicket = spec()
+        Response responseTicket = given()
+                .cookie("ROUTEID", BaseRestIntegrationTest.routeId)
+                .contentType(ContentType.JSON)
                 .expect().statusCode(200)
                 .when()
                 .post(SIGNATURE_API_BASE + "/" + intyg.getIntygsTyp() + "/" + intyg.getId() + "/" + intyg.getVersion()
@@ -126,7 +130,9 @@ public class SignatureApiControllerIT extends BaseRestIntegrationTest {
 
         // biljettId är inte samma sak som orderRef.
         // Hämta ut orderRef först
-        Response responseOrderRef = spec()
+        Response responseOrderRef = given()
+                .cookie("ROUTEID", BaseRestIntegrationTest.routeId)
+                .contentType(ContentType.TEXT)
                 .expect().statusCode(200)
                 .when()
                 .get(GRPAPI_STUBBE_BASE + "/orderref/" + biljettId)
@@ -136,14 +142,18 @@ public class SignatureApiControllerIT extends BaseRestIntegrationTest {
         String orderRef = responseOrderRef.body().asString();
 
         // Ändra GRP-status till USER_SIGN och kontrollera
-        spec()
+        given()
+                .cookie("ROUTEID", BaseRestIntegrationTest.routeId)
+                .contentType(ContentType.JSON)
                 .body(createGrpSignatureStatus(orderRef, ProgressStatusType.USER_SIGN))
                 .expect().statusCode(200)
                 .when()
                 .put(GRPAPI_STUBBE_BASE + "/status");
 
         // Verifiera att vi får status VANTA_SIGN inom 6 sekunder.
-        await().atMost(6, TimeUnit.SECONDS).untilAsserted(() -> spec()
+        await().atMost(6, TimeUnit.SECONDS).untilAsserted(() -> given()
+                .cookie("ROUTEID", BaseRestIntegrationTest.routeId)
+                .contentType(ContentType.JSON)
                 .expect().statusCode(200)
                 .when()
                 .get(SIGNATURE_API_BASE + "/" + intyg.getIntygsTyp() + "/" + biljettId + "/signeringsstatus")
@@ -152,13 +162,17 @@ public class SignatureApiControllerIT extends BaseRestIntegrationTest {
                 .body("status", equalTo("VANTA_SIGN")));
 
         // Ändra GRP-status till COMPLETE och kontrollera
-        spec()
+        given()
+                .cookie("ROUTEID", BaseRestIntegrationTest.routeId)
+                .contentType(ContentType.JSON)
                 .body(createGrpSignatureStatus(orderRef, ProgressStatusType.COMPLETE))
                 .expect().statusCode(200)
                 .when()
                 .put(GRPAPI_STUBBE_BASE + "/status");
 
-        await().atMost(6, TimeUnit.SECONDS).untilAsserted(() -> spec()
+        await().atMost(6, TimeUnit.SECONDS).untilAsserted(() -> given()
+                .cookie("ROUTEID", BaseRestIntegrationTest.routeId)
+                .contentType(ContentType.JSON)
                 .expect().statusCode(200)
                 .when()
                 .get(SIGNATURE_API_BASE + "/" + intyg.getIntygsTyp() + "/" + biljettId + "/signeringsstatus")
@@ -174,7 +188,7 @@ public class SignatureApiControllerIT extends BaseRestIntegrationTest {
 
         Intyg intyg = createIntyg();
 
-        Response responseTicket = spec()
+        Response responseTicket = given().cookie("ROUTEID", BaseRestIntegrationTest.routeId).contentType(ContentType.JSON)
                 .expect().statusCode(200)
                 .when().post(SIGNATURE_API_BASE + "/" + intyg.getIntygsTyp() + "/" + intyg.getId() + "/" + intyg.getVersion()
                         + "/signeringshash/" + SignMethod.FAKE.name())
@@ -183,7 +197,7 @@ public class SignatureApiControllerIT extends BaseRestIntegrationTest {
         JsonPath model = new JsonPath(responseTicket.body().asString());
         String biljettId = model.getString("id");
 
-        spec()
+        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId).contentType(ContentType.JSON)
                 .expect().statusCode(200)
                 .when().get(SIGNATURE_API_BASE + "/" + intyg.getIntygsTyp() + "/" + biljettId + "/signeringsstatus")
                 .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-signatur-response-schema.json"));
@@ -196,7 +210,7 @@ public class SignatureApiControllerIT extends BaseRestIntegrationTest {
         String intygsTyp = "luse";
         String intygsId = createUtkast(intygsTyp, DEFAULT_PATIENT_PERSONNUMMER);
 
-        Response responseIntyg = spec()
+        Response responseIntyg = given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
                 .expect().statusCode(200)
                 .when().get(MODULEAPI_UTKAST_BASE + "/" + intygsTyp + "/" + intygsId)
                 .then()
@@ -206,7 +220,8 @@ public class SignatureApiControllerIT extends BaseRestIntegrationTest {
         JsonPath model = new JsonPath(responseIntyg.body().asString());
         String version = model.getString("version");
 
-        spec()
+        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
+                .contentType(ContentType.JSON)
                 .expect().statusCode(500)
                 .when()
                 .post(SIGNATURE_API_BASE + "/" + intygsTyp + "/" + intygsId + "/" + version + "/signeringshash/" + SignMethod.FAKE.name())
@@ -220,7 +235,7 @@ public class SignatureApiControllerIT extends BaseRestIntegrationTest {
 
         String intygsId = createUtkast(intygsTyp, DEFAULT_PATIENT_PERSONNUMMER);
 
-        Response responseIntyg = spec()
+        Response responseIntyg = given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
                 .expect().statusCode(200)
                 .when().get(MODULEAPI_UTKAST_BASE + "/" + intygsTyp + "/" + intygsId)
                 .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-get-utkast-response-schema.json")).extract().response();
@@ -255,8 +270,8 @@ public class SignatureApiControllerIT extends BaseRestIntegrationTest {
         sjukskrivning.put("sjukskrivningsgrad", "TRE_FJARDEDEL");
         sjukskrivningar.add(sjukskrivning);
 
-        responseIntyg = spec()
-                .body(content)
+        responseIntyg = given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
+                .contentType(ContentType.JSON).body(content)
                 .log().all()
                 .expect().statusCode(200)
                 .when()
