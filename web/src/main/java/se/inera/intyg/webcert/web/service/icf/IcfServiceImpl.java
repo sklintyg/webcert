@@ -62,12 +62,12 @@ public class IcfServiceImpl implements IcfService {
     public IcfResponse findIcfInformationByIcd10Koder(final IcfRequest icfRequest) {
 
         Preconditions.checkArgument(Objects.nonNull(icfRequest), "IcfRequest can not be null");
-        Preconditions.checkArgument(Objects.nonNull(icfRequest.getIcd10Code1()), "IcfRequest must have an icfCode1");
+        Preconditions.checkArgument(Objects.nonNull(icfRequest.getIcd10Kod1()), "IcfRequest must have an icfCode1");
 
         return convertToResponse(
-                Tuple.of(icfRequest.getIcd10Code1(), repository.findFirstByIcd10KodList_kod(icfRequest.getIcd10Code1())),
-                Tuple.of(icfRequest.getIcd10Code2(), repository.findFirstByIcd10KodList_kod(icfRequest.getIcd10Code2())),
-                Tuple.of(icfRequest.getIcd10Code3(), repository.findFirstByIcd10KodList_kod(icfRequest.getIcd10Code3())));
+                Tuple.of(icfRequest.getIcd10Kod1(), repository.findFirstByIcd10KodList_kod(icfRequest.getIcd10Kod1())),
+                Tuple.of(icfRequest.getIcd10Kod2(), repository.findFirstByIcd10KodList_kod(icfRequest.getIcd10Kod2())),
+                Tuple.of(icfRequest.getIcd10Kod3(), repository.findFirstByIcd10KodList_kod(icfRequest.getIcd10Kod3())));
     }
 
     private IcfResponse convertToResponse(

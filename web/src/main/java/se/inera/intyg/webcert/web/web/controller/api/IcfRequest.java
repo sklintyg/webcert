@@ -23,45 +23,45 @@ import java.util.Objects;
 
 public class IcfRequest {
 
-    private String icd10Code1;
-    private String icd10Code2;
-    private String icd10Code3;
+    private String icd10Kod1;
+    private String icd10Kod2;
+    private String icd10Kod3;
 
     public IcfRequest() {
     }
 
-    private IcfRequest(final String icd10Code1, final String icd10Code2, final String icd10Code3) {
-        this.icd10Code1 = icd10Code1;
-        this.icd10Code2 = icd10Code2;
-        this.icd10Code3 = icd10Code3;
+    private IcfRequest(final String icd10Kod1, final String icd10Kod2, final String icd10Kod3) {
+        this.icd10Kod1 = icd10Kod1;
+        this.icd10Kod2 = icd10Kod2;
+        this.icd10Kod3 = icd10Kod3;
     }
 
-    public String getIcd10Code1() {
-        return icd10Code1;
+    public String getIcd10Kod1() {
+        return icd10Kod1;
     }
 
-    public void setIcd10Code1(final String icd10Code1) {
-        this.icd10Code1 = icd10Code1;
+    public void setIcd10Kod1(final String icd10Kod1) {
+        this.icd10Kod1 = icd10Kod1;
     }
 
-    public String getIcd10Code2() {
-        return icd10Code2;
+    public String getIcd10Kod2() {
+        return icd10Kod2;
     }
 
-    public void setIcd10Code2(final String icd10Code2) {
-        this.icd10Code2 = icd10Code2;
+    public void setIcd10Kod2(final String icd10Kod2) {
+        this.icd10Kod2 = icd10Kod2;
     }
 
-    public String getIcd10Code3() {
-        return icd10Code3;
+    public String getIcd10Kod3() {
+        return icd10Kod3;
     }
 
-    public void setIcd10Code3(final String icd10Code3) {
-        this.icd10Code3 = icd10Code3;
+    public void setIcd10Kod3(final String icd10Kod3) {
+        this.icd10Kod3 = icd10Kod3;
     }
 
     public HashSet<String> getIcd10Codes() {
-        return HashSet.of(icd10Code1, icd10Code2, icd10Code3)
+        return HashSet.of(icd10Kod1, icd10Kod2, icd10Kod3)
                 .filter(Objects::nonNull);
     }
 

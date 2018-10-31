@@ -59,14 +59,14 @@ public class IcfApiController extends AbstractApiController {
     @PrometheusTimeMethod
     public Response getIcfForIcd10(
             @ApiParam(value = "ICD10 codes", required = true)
-            @QueryParam("icfCode1") final String icfCode1,
-            @QueryParam("icfCode2") final String icfCode2,
-            @QueryParam("icfCode3") final String icfCode3) {
+            @QueryParam("icd10Kod1") final String icd10Kod1,
+            @QueryParam("icd10Kod2") final String icd10Kod2,
+            @QueryParam("icd10Kod3") final String icd10Kod3) {
 
-        if (isNull(icfCode1)) {
+        if (isNull(icd10Kod1)) {
             return Response.status(Response.Status.BAD_REQUEST).entity("Missing icd10 codes").build();
         }
 
-        return Response.ok(service.findIcfInformationByIcd10Koder(IcfRequest.of(icfCode1, icfCode2, icfCode3))).build();
+        return Response.ok(service.findIcfInformationByIcd10Koder(IcfRequest.of(icd10Kod1, icd10Kod2, icd10Kod3))).build();
     }
 }
