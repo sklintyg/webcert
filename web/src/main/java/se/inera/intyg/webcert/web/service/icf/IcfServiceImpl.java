@@ -135,19 +135,20 @@ public class IcfServiceImpl implements IcfService {
                 List<IcfKod> tempCentral = List.empty();
                 List<IcfKod> tempKompletterande = List.empty();
 
-                if (allaKoder.get(i)._2.getCentralaKoder() != null) {
+                if (allaKoder.get(i)._2.getCentralaKoder() != null && allaKoder.get(i + 1)._2.getCentralaKoder() != null) {
 
                     tempCentral = tempCentral.appendAll(Sets.intersection(
                             Sets.newHashSet(allaKoder.get(i)._2.getCentralaKoder()),
                             Sets.newHashSet(allaKoder.get(i + 1)._2.getCentralaKoder())).immutableCopy());
                 }
 
-                if (allaKoder.get(i)._2.getKompletterandeKoder() != null) {
+                if (allaKoder.get(i)._2.getKompletterandeKoder() != null && allaKoder.get(i + 1)._2.getKompletterandeKoder() != null) {
                     tempKompletterande = tempKompletterande.appendAll(Sets.intersection(
                             Sets.newHashSet(allaKoder.get(i)._2.getKompletterandeKoder()),
                             Sets.newHashSet(allaKoder.get(i + 1)._2.getKompletterandeKoder())).immutableCopy());
 
                 }
+
                 if (!tempCentral.isEmpty() || !tempKompletterande.isEmpty()) {
                     icd10KoderMedGemensammaIcf = icd10KoderMedGemensammaIcf.add(allaKoder.get(i)._1);
                     icd10KoderMedGemensammaIcf = icd10KoderMedGemensammaIcf.add(allaKoder.get(i + 1)._1);
