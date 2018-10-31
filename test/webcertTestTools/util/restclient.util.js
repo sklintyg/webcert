@@ -26,10 +26,7 @@ var request = require('request');
 var jar = request.jar();
 var request = request.defaults({
     jar: jar,
-    strictSSL: false,
-    headers: {'X-XSRF-TOKEN': 'valuethatisthesameinbothcookieandheader'},
-    cookies: {'XSRF-TOKEN': 'valuethatisthesameinbothcookieandheader'}
-
+    strictSSL: false
 });
 
 function post(options, baseUrl) {
