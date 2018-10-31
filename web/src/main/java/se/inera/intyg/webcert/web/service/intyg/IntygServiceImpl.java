@@ -809,18 +809,19 @@ public class IntygServiceImpl implements IntygService {
 
             // Patient is not expected to be null, since that means PU-service is probably down and no integration
             // parameters were available.
-
-            // Get the module api and use the "updateBeforeSave" to update the outbound "model" with the
-            // Patient object.
-            ModuleApi moduleApi = moduleRegistry.getModuleApi(typ);
-            // INTYG-5354, INTYG-5380: Don't use incomplete address from external data sources (PU/js).
-            if (!newPatientData.isCompleteAddressProvided()) {
-                // Use the old address data.
-                Patient oldPatientData = utlatande.getGrundData().getPatient();
-                copyOldAddressToNewPatientData(oldPatientData, newPatientData);
+            // INTYG-7449: Visa patientdata från signerat intyg för ts, db och doi
+            if(!isIntygsTypeWithSavedPatientData(utlatande.getTyp())) {
+                // Get the module api and use the "updateBeforeSave" to update the outbound "model" with the
+                // Patient object.
+                ModuleApi moduleApi = moduleRegistry.getModuleApi(typ);
+                // INTYG-5354, INTYG-5380: Don't use incomplete address from external data sources (PU/js).
+                if (!newPatientData.isCompleteAddressProvided()) {
+                    // Use the old address data.
+                    Patient oldPatientData = utlatande.getGrundData().getPatient();
+                    copyOldAddressToNewPatientData(oldPatientData, newPatientData);
+                }
+                internalIntygJsonModel = moduleApi.updateBeforeSave(internalIntygJsonModel, newPatientData);
             }
-            internalIntygJsonModel = moduleApi.updateBeforeSave(internalIntygJsonModel, newPatientData);
-
             utkastIntygDecorator.decorateWithUtkastStatus(certificate);
             Relations certificateRelations = intygRelationHelper.getRelationsForIntyg(intygId);
 
@@ -897,16 +898,21 @@ public class IntygServiceImpl implements IntygService {
                 newPatientData.setPersonId(utkast.getPatientPersonnummer());
             }
 
-            // INTYG-5354, INTYG-5380: Don't use incomplete address from external data sources (PU/js).
             Utlatande utlatande = modelFacade.getUtlatandeFromInternalModel(utkast.getIntygsTyp(), utkast.getModel());
-            if (!newPatientData.isCompleteAddressProvided()) {
-                // Use the old address data.
-                Patient oldPatientData = utlatande.getGrundData().getPatient();
-                copyOldAddressToNewPatientData(oldPatientData, newPatientData);
+            String internalIntygJsonModel = utkast.getModel();
+
+            // INTYG-7449: The patients address on a signed db/doi/ts-intyg should not be replaced when fetched for viewing.
+            if (!isIntygsTypeWithSavedPatientData(utlatande.getTyp())) {
+                // INTYG-5354, INTYG-5380: Don't use incomplete address from external data sources (PU/js).
+                if (!newPatientData.isCompleteAddressProvided()) {
+                    // Use the old address data.
+                    Patient oldPatientData = utlatande.getGrundData().getPatient();
+                    copyOldAddressToNewPatientData(oldPatientData, newPatientData);
+                }
+                internalIntygJsonModel = moduleRegistry.getModuleApi(utkast.getIntygsTyp()).updateBeforeSave(utkast.getModel(),
+                        newPatientData);
+                utlatande = modelFacade.getUtlatandeFromInternalModel(utkast.getIntygsTyp(), internalIntygJsonModel);
             }
-            String updatedModel = moduleRegistry.getModuleApi(utkast.getIntygsTyp()).updateBeforeSave(utkast.getModel(),
-                    newPatientData);
-            utlatande = modelFacade.getUtlatandeFromInternalModel(utkast.getIntygsTyp(), updatedModel);
 
             List<Status> statuses = IntygConverterUtil.buildStatusesFromUtkast(utkast);
             Relations certificateRelations = certificateRelationService.getRelations(utkast.getIntygsId());
@@ -924,7 +930,7 @@ public class IntygServiceImpl implements IntygService {
                     newPatientData);
 
             return IntygContentHolder.builder()
-                    .setContents(updatedModel)
+                    .setContents(internalIntygJsonModel)
                     .setUtlatande(utlatande)
                     .setStatuses(statuses)
                     .setRevoked(utkast.getAterkalladDatum() != null)
@@ -997,6 +1003,14 @@ public class IntygServiceImpl implements IntygService {
         } else {
             return deceasedAccordingToPu;
         }
+    }
+
+    /**
+     * As the name of the method implies, this method returns true if the intygstyp has patient data in the
+     * saved intyg that should not be overwritten.
+     */
+    private boolean isIntygsTypeWithSavedPatientData(String typ) {
+        return (typ.equals("ts-bas") || typ.equals("ts-diabetes") || typ.equals("doi") || typ.equals("db"));
     }
 
     private String getUserReference() {
