@@ -57,7 +57,7 @@ public class IcfTextResourceImpl implements IcfTextResource {
     private Resource resource;
 
     @PostConstruct
-    public void init() {
+    void init() {
         LOG.info(MessageFormat.format("Starting: {0}", ACTION));
 
         final Try<Void> initJob = Try.run(this::initIcfTextResources);
