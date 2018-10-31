@@ -6,7 +6,7 @@ Bakgrund: Jag befinner mig på webcerts förstasida
 	Givet att jag är inloggad som läkare
 	När jag går in på en patient
 
-Scenario: Vidarebefodrad till intygs-Vy
+Scenario: Vidarebefordrad till intygs-Vy
    Givet att vårdsystemet skapat ett intygsutkast för "Läkarintyg för sjukpenning"
    Och jag går in på utkastet 
    Och jag fyller i alla nödvändiga fält för intyget

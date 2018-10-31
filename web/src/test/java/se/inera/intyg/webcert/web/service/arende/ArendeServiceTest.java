@@ -752,12 +752,12 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
     @Test
     public void setForwardedTrueTest() {
         final Arende arende = buildArende(MEDDELANDE_ID, ENHET_ID);
-        final Arende vidareBefordrat = arende;
+        final Arende vidarebefordrat = arende;
         arende.setArendeToVidareBerordrat();
 
         when(arendeRepository.findByIntygsId(INTYG_ID)).thenReturn(ImmutableList.of(arende));
         when(webcertUserService.getUser()).thenReturn(createUser());
-        when(arendeRepository.save(anyList())).thenReturn(ImmutableList.of(vidareBefordrat));
+        when(arendeRepository.save(anyList())).thenReturn(ImmutableList.of(vidarebefordrat));
 
         final List<ArendeConversationView> arendeConversationViews = service.setForwarded(INTYG_ID);
 
@@ -771,7 +771,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
     public void setForwardedWithAnswerTest() {
 
         final Arende arende = buildArende(MEDDELANDE_ID, ENHET_ID);
-        final Arende vidareBefordrat = arende;
+        final Arende vidarebefordrat = arende;
         final String svarid = "svarid";
 
         Arende svararende = buildArende(svarid, ENHET_ID);
@@ -781,7 +781,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
 
         when(arendeRepository.findByIntygsId(INTYG_ID)).thenReturn(ImmutableList.of(arende, svararende));
         when(webcertUserService.getUser()).thenReturn(createUser());
-        when(arendeRepository.save(anyList())).thenReturn(ImmutableList.of(vidareBefordrat));
+        when(arendeRepository.save(anyList())).thenReturn(ImmutableList.of(vidarebefordrat));
 
         final List<ArendeConversationView> arendeConversationViews = service.setForwarded(INTYG_ID);
 

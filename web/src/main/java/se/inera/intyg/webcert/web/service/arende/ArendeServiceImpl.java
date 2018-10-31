@@ -525,7 +525,7 @@ public class ArendeServiceImpl implements ArendeService {
                 case "signeratAvNamn":
                     comparator = Comparator.comparing(ArendeListItem::getSigneratAvNamn);
                     break;
-                case "vidarebefodrad":
+                case "vidarebefordrad":
                     comparator = Comparator.comparing(ArendeListItem::isVidarebefordrad);
                     break;
                 case "receivedDate":

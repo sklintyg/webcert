@@ -155,7 +155,7 @@ angular.module('webcert').directive('wcEnhetArendenList', [
                 // Handle vidarebefordra dialog
                 $scope.openMailDialog = function(arende) {
                     $timeout(function() {
-                        ArendeVidarebefordraHelper.handleVidareBefodradToggle($scope.onVidareBefordradChange);
+                        ArendeVidarebefordraHelper.handleVidareBefordradToggle($scope.onVidareBefordradChange);
                     }, 1000);
 
                     // Launch mail client

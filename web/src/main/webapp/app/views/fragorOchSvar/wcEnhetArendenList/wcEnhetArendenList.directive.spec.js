@@ -96,7 +96,7 @@ describe('wcEnhetArendenList', function() {
         module('webcert', ['$provide', function($provide) {
 
             $provide.value('common.enhetArendenCommonService', jasmine.createSpyObj('common.enhetArendenCommonService',
-                [ 'handleVidareBefodradToggle', 'decorateSingleItemMeasure', 'setVidareBefordradState',
+                [ 'handleVidareBefordradToggle', 'decorateSingleItemMeasure', 'setVidareBefordradState',
                     'buildMailToLink', 'checkQAonlyDialog' ]));
 
             var dialogService = jasmine.createSpyObj('common.dialogService', [ 'showDialog' ]);
@@ -106,7 +106,7 @@ describe('wcEnhetArendenList', function() {
                 return modalMock;
             });
             $provide.value('common.dialogService', dialogService);
-            ArendeVidarebefordraHelper = jasmine.createSpyObj('common.ArendeVidarebefordraHelper', [ 'handleVidareBefodradToggle', 'buildMailToLink' ]);
+            ArendeVidarebefordraHelper = jasmine.createSpyObj('common.ArendeVidarebefordraHelper', [ 'handleVidareBefordradToggle', 'buildMailToLink' ]);
             $provide.value('common.ArendeVidarebefordraHelper', ArendeVidarebefordraHelper);
 
             $provide.value('common.ArendeProxy', {});
@@ -213,7 +213,7 @@ describe('wcEnhetArendenList', function() {
 
             $scope.openMailDialog(testQAResponse.results[0]);
             $timeout.flush();
-            expect(ArendeVidarebefordraHelper.handleVidareBefodradToggle).toHaveBeenCalled();
+            expect(ArendeVidarebefordraHelper.handleVidareBefordradToggle).toHaveBeenCalled();
             expect(ArendeVidarebefordraHelper.buildMailToLink).toHaveBeenCalled();
         });
     });

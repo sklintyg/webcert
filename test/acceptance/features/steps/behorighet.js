@@ -105,7 +105,7 @@ Then(/^ska det finnas en knapp för att skriva ut intyget$/, function() {
     });
 });*/
 
-Given(/^visas Vidarebefodra knappen$/, function() {
+Given(/^visas Vidarebefordra knappen$/, function() {
     return expect(fkIntygPage.forwardBtn.isPresent()).to.become(true).then(function() {
         logger.info('OK - Vidarebeforda knappen hittad');
     }, function(reason) {
