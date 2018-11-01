@@ -474,84 +474,49 @@ roles:
     privileges:
       - <<: *p000 # VISA_INTYG
         intygstyper:
-          - *ki010
-          - *ki040
+          - *ki010 # fk7263
+          - *ki040 # lisjp
+          - *ki110 # ag114
         requestOrigins:
-          - <<: *ro010 # NORMAL
-            intygstyper:
-              - *ki010
-              - *ki040
-          - <<: *ro020 # DJUPINTEGRATION
-            intygstyper:
-              - *ki010
-              - *ki040
+          - *ro010 # NORMAL
+          - *ro020 # DJUPINTEGRATION
           - <<: *ro030 # UTHOPP
             intygstyper:
               - *ki010
       - <<: *p005 # SKRIVA_INTYG
         intygstyper:
-          - *ki010
-          - *ki040
+          - *ki040 # lisjp
+          - *ki110 # ag114
         requestOrigins:
-          - <<: *ro010 # NORMAL
-            intygstyper:
-              - *ki010
-              - *ki040
-          - <<: *ro020 # DJUPINTEGRATION
-            intygstyper:
-              - *ki010
-              - *ki040
-          - <<: *ro030 # UTHOPP
-            intygstyper:
-              - *ki010
+          - *ro010 # NORMAL
+          - *ro020 # DJUPINTEGRATION
       - <<: *p010 # SIGNERA_INTYG
         intygstyper:
-          - *ki010
-          - *ki040
+          - *ki040 # lisjp
+          - *ki110 # ag114
         requestOrigins:
-          - <<: *ro010 # NORMAL
-            intygstyper:
-              - *ki010
-              - *ki040
-          - <<: *ro020 # DJUPINTEGRATION
-            intygstyper:
-              - *ki010
-              - *ki040
-          - <<: *ro030 # UTHOPP
-            intygstyper:
-              - *ki010
+          - *ro010 # NORMAL
+          - *ro020 # DJUPINTEGRATION
       - <<: *p020 # MAKULERA_INTYG
         intygstyper:
           - *ki010
           - *ki040
+          - *ki110
         requestOrigins:
           - <<: *ro010 # NORMAL
-            intygstyper:
-              - *ki010
-              - *ki040
           - <<: *ro020 # DJUPINTEGRATION
-            intygstyper:
-              - *ki010
-              - *ki040
       - <<: *p030 # FORNYA_INTYG
         intygstyper:
-          - *ki010
           - *ki040
         requestOrigins:
           - <<: *ro010 # NORMAL
-            intygstyper:
-              - *ki040
           - <<: *ro020 # DJUPINTEGRATION
-            intygstyper:
-              - *ki010
-              - *ki040
       - <<: *p031 # ERSATTA_INTYG
         intygstyper:
-          - *ki040
+          - *ki040 # lisjp
+          - *ki110 # ag114
         requestOrigins:
           - <<: *ro010 # NORMAL
-            intygstyper: # EJ fk7263
-              - *ki040 # lisjp
           - <<: *ro020 # DJUPINTEGRATION
       - <<: *p040 # VIDAREBEFORDRA_UTKAST
         intygstyper:
@@ -655,17 +620,12 @@ roles:
               - *ki040
       - <<: *p140 # HANTERA_SEKRETESSMARKERAD_PATIENT
         intygstyper:
-          - *ki010
-          - *ki040
+          - *ki010 # fk7263
+          - *ki040 # lisjp
+          - *ki110 # ag114
         requestOrigins:
           - <<: *ro010 # NORMAL
-            intygstyper:
-              - *ki010
-              - *ki040
           - <<: *ro020 # DJUPINTEGRATION
-            intygstyper:
-              - *ki010
-              - *ki040
           - <<: *ro030 # UTHOPP
             intygstyper:
               - *ki010
