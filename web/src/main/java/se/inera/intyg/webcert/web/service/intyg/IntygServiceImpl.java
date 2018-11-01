@@ -18,9 +18,9 @@
  */
 package se.inera.intyg.webcert.web.service.intyg;
 
-import static java.util.Objects.isNull;
-import static org.apache.commons.collections.CollectionUtils.isEmpty;
 import static se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum.DATA_NOT_FOUND;
+import static se.inera.intyg.webcert.web.service.intyg.util.IntygVerificationHelper.verifyIsNotRevoked;
+import static se.inera.intyg.webcert.web.service.intyg.util.IntygVerificationHelper.verifyIsSigned;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -33,10 +33,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v3.ListCertificatesForCareResponderInterface;
+import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v3.ListCertificatesForCareResponseType;
+import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v3.ListCertificatesForCareType;
+import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
 import javax.annotation.PostConstruct;
 import javax.xml.ws.WebServiceException;
 import java.io.IOException;
-import java.text.MessageFormat;
 import java.time.LocalDateTime;
 import java.time.chrono.ChronoLocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -46,7 +49,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-
 import se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificatetypeinfo.v1.GetCertificateTypeInfoResponderInterface;
 import se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificatetypeinfo.v1.GetCertificateTypeInfoResponseType;
 import se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificatetypeinfo.v1.GetCertificateTypeInfoType;
@@ -110,10 +112,6 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.api.dto.IntygTypeInfo;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
-import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v3.ListCertificatesForCareResponderInterface;
-import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v3.ListCertificatesForCareResponseType;
-import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v3.ListCertificatesForCareType;
-import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
 
 /**
  * @author andreaskaltenbach
@@ -225,13 +223,10 @@ public class IntygServiceImpl implements IntygService {
     /**
      * Returns the IntygContentHolder. Used both externally to frontend and internally in the modules.
      *
-     * @param intygsId
-     *            the identifier of the intyg.
-     * @param intygsTyp
-     *            the typ of the intyg. Used to call the correct module.
-     * @param relations
-     *            If the relations between intyg should be populated. This can be expensive (several database
-     *            operations). Use sparsely.
+     * @param intygsId  the identifier of the intyg.
+     * @param intygsTyp the typ of the intyg. Used to call the correct module.
+     * @param relations If the relations between intyg should be populated. This can be expensive (several database
+     *                  operations). Use sparsely.
      */
     private IntygContentHolder fetchIntygData(String intygsId, String intygsTyp, boolean relations, boolean coherentJournaling) {
         IntygContentHolder intygsData = getIntygData(intygsId, intygsTyp, relations);
@@ -315,7 +310,7 @@ public class IntygServiceImpl implements IntygService {
     }
 
     private List<ListIntygEntry> filterByIntygTypeForUser(List<ListIntygEntry> fullIntygItemList,
-            SekretessStatus sekretessmarkering) {
+                                                          SekretessStatus sekretessmarkering) {
         // Get intygstyper from the view privilege
         Set<String> base = authoritiesHelper.getIntygstyperForPrivilege(webCertUserService.getUser(),
                 AuthoritiesConstants.PRIVILEGE_VISA_INTYG);
@@ -333,7 +328,7 @@ public class IntygServiceImpl implements IntygService {
      * Adds any IntygItems found in Webcert for this patient not present in the list from intygstjansten.
      */
     private void addDraftsToListForIntygNotSavedInIntygstjansten(List<ListIntygEntry> fullIntygItemList,
-            List<ListIntygEntry> webcertIntygItems) {
+                                                                 List<ListIntygEntry> webcertIntygItems) {
         webcertIntygItems.removeAll(fullIntygItemList);
         fullIntygItemList.addAll(webcertIntygItems);
     }
@@ -473,29 +468,47 @@ public class IntygServiceImpl implements IntygService {
     @Override
     public IntygServiceResult sendIntyg(String intygsId, String typ, String recipient, boolean delay) {
 
-        IntygContentHolder intygData = getIntygData(intygsId, typ, true);
-        Utlatande intyg = intygData.getUtlatande();
+        final Optional<Utkast> optionalUtkast = Optional.ofNullable(utkastRepository.findOne(intygsId));
 
-        verifyEnhetsAuth(intyg, true);
-        verifyIsNotRevoked(intygData, IntygOperation.SEND);
-        verifyIsSigned(intygData, IntygOperation.SEND);
+        final Utlatande utlatande = optionalUtkast
+                .map(utkast -> modelFacade.getUtlatandeFromInternalModel(utkast.getIntygsTyp(), utkast.getModel()))
+                .orElseGet(() -> getIntygData(intygsId, typ, false).getUtlatande());
+
+        verifyEnhetsAuth(utlatande, true);
+
+        if (optionalUtkast.isPresent()) {
+            verifyIsNotRevoked(optionalUtkast.get(), IntygOperation.SEND);
+            verifyIsSigned(optionalUtkast.get(), IntygOperation.SEND);
+        } else {
+            final CertificateResponse certificate;
+            try {
+                final IntygTypeInfo intygTypeInfo = getIntygTypeInfoFromIT(intygsId);
+                certificate = modelFacade.getCertificate(intygsId, typ, intygTypeInfo.getIntygTypeVersion());
+            } catch (IntygModuleFacadeException e) {
+                throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, e);
+            }
+            verifyIsNotRevoked(certificate, IntygOperation.SEND);
+            verifyIsSigned(certificate, IntygOperation.SEND);
+
+        }
+
         verifyNotReplacedBySignedIntyg(intygsId, IntygOperation.SEND);
 
         // WC-US-SM-001 - vi får ej skicka FK-intyg för sekretessmarkerad patient som innehåller personuppgifter.
-        verifyNoExposureOfSekretessmarkeradPatient(intyg);
+        verifyNoExposureOfSekretessmarkeradPatient(utlatande);
 
         SendIntygConfiguration sendConfig = new SendIntygConfiguration(recipient, webCertUserService.getUser());
 
         monitoringService.logIntygSent(intygsId, recipient);
 
         // send PDL log event
-        LogRequest logRequest = LogRequestFactory.createLogRequestFromUtlatande(intyg);
+        LogRequest logRequest = LogRequestFactory.createLogRequestFromUtlatande(utlatande);
         logRequest.setAdditionalInfo(sendConfig.getPatientConsentMessage());
         logService.logSendIntygToRecipient(logRequest);
 
-        markUtkastWithSendDateAndRecipient(intygsId, recipient);
+        markUtkastWithSendDateAndRecipient(optionalUtkast.orElse(null), intygsId, recipient);
 
-        return sendIntygToCertificateSender(sendConfig, intyg, delay);
+        return sendIntygToCertificateSender(sendConfig, utlatande, delay);
     }
 
     // Kontrollera om det signerade intyget i intygstjänsten har namn- eller adressuppgifter. Om så är fallet,
@@ -749,32 +762,6 @@ public class IntygServiceImpl implements IntygService {
         }
     }
 
-    private void verifyIsSigned(final IntygContentHolder intyg, final IntygOperation operation) {
-
-        final List<Status> statuses = (isNull(intyg) || isEmpty(intyg.getStatuses()))
-                ? Lists.newArrayList()
-                : intyg.getStatuses();
-
-        if (statuses.stream().noneMatch(status -> CertificateState.RECEIVED.equals(status.getType()) && status.getTimestamp() != null)) {
-
-            final String message = MessageFormat.format("Certificate {0} is not signed, cannot {1} an unsigned certificate",
-                    intyg.getUtlatande().getId(), operation.getValue());
-
-            LOG.debug(message);
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, message);
-        }
-    }
-
-    private void verifyIsNotRevoked(final IntygContentHolder intyg, final IntygOperation operation) {
-        if (intyg.isRevoked()) {
-
-            final String message = MessageFormat.format("certificate with id '{0}' is revoked, cannot {1} a revoked certificate",
-                    intyg.getUtlatande().getId(), operation.getValue());
-
-            LOG.debug(message);
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, message);
-        }
-    }
 
     /**
      * Builds a IntygContentHolder by first trying to get the Intyg from intygstjansten. If
@@ -979,10 +966,13 @@ public class IntygServiceImpl implements IntygService {
         return IntygServiceResult.OK;
     }
 
-    private void markUtkastWithSendDateAndRecipient(String intygsId, String recipient) {
-        Utkast utkast = utkastRepository.findOne(intygsId);
-        if (utkast != null) {
+    private void markUtkastWithSendDateAndRecipient(final Utkast foundUtkast, String intygsId, String recipient) {
 
+        final Utkast utkast = (foundUtkast != null)
+                ? foundUtkast
+                : utkastRepository.findOne(intygsId);
+
+        if (utkast != null) {
             utkast.setSkickadTillMottagareDatum(LocalDateTime.now());
             utkast.setSkickadTillMottagare(recipient);
             utkastRepository.save(utkast);

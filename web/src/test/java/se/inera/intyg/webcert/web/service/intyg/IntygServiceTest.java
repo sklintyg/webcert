@@ -55,9 +55,6 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.core.io.ClassPathResource;
-import se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificatetypeinfo.v1.GetCertificateTypeInfoResponderInterface;
-import se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificatetypeinfo.v1.GetCertificateTypeInfoResponseType;
-import se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificatetypeinfo.v1.GetCertificateTypeInfoType;
 import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v3.ListCertificatesForCareResponderInterface;
 import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v3.ListCertificatesForCareResponseType;
 import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v3.ListCertificatesForCareType;
@@ -78,6 +75,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificatetypeinfo.v1.GetCertificateTypeInfoResponderInterface;
+import se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificatetypeinfo.v1.GetCertificateTypeInfoResponseType;
+import se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificatetypeinfo.v1.GetCertificateTypeInfoType;
 import se.inera.intyg.common.fk7263.model.internal.Fk7263Utlatande;
 import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
@@ -925,7 +925,7 @@ public class IntygServiceTest {
 
     @Test
     public void testHandleSignedCompletion() throws Exception {
-        final String intygId = "intygId";
+        final String intygId = "123";
         final String intygTyp = "intygTyp";
         final String intygTypVersion = "intygTypVersion";
         final String relationIntygId = "relationIntygId";
@@ -953,6 +953,7 @@ public class IntygServiceTest {
         when(moduleRegistry.getModuleEntryPoint(intygTyp)).thenReturn(new Fk7263EntryPoint());
 
         utkast.setStatus(UtkastStatus.SIGNED);
+        utkast.setSignatur(new Signatur(LocalDateTime.of(2011, 11, 11, 11, 11, 11, 11), "Signe Signatur", intygId, "data", "hash", "signatur"));
 
         CertificateMetaData metaData = buildCertificateMetaData();
 
@@ -963,13 +964,9 @@ public class IntygServiceTest {
 
         CertificateResponse certificateResponse = new CertificateResponse(json, utlatande, metaData, false);
 
-        when(moduleFacade.getCertificate(any(String.class), any(String.class), anyString())).thenReturn(certificateResponse);
-
-        when(utkastRepository.findByIntygsIdAndIntygsTyp(anyString(), anyString())).thenReturn(utkast);
-
         intygService.handleAfterSigned(utkast);
 
-        verify(certificateSenderService).sendCertificate(eq(intygId), eq(personnummer), anyString(), eq(recipient), eq(true));
+        verify(certificateSenderService).sendCertificate(eq(intygId), any(), anyString(), eq(recipient), eq(true));
         verify(mockMonitoringService).logIntygSent(intygId, recipient);
         verify(logservice).logSendIntygToRecipient(any(LogRequest.class));
         verify(arendeService).closeCompletionsAsHandled(relationIntygId, intygTyp);
@@ -982,7 +979,7 @@ public class IntygServiceTest {
 
     @Test
     public void testHandleSignedWithSigneraSkickaDirekt() throws Exception {
-        final String intygId = "intygId";
+        final String intygId = "123";
         final String intygTyp = "intygTyp";
         final String intygTypVersion = "intygTypVersion";
         final String relationIntygId = "relationIntygId";
@@ -1001,6 +998,7 @@ public class IntygServiceTest {
         utkast.setIntygTypeVersion(intygTypVersion);
         utkast.setModel(json);
         utkast.setStatus(UtkastStatus.SIGNED);
+        utkast.setSignatur(new Signatur(LocalDateTime.of(2011, 11, 11, 11, 11, 11, 11), "Signe Signatur", intygId, "data", "hash", "signatur"));
 
         CertificateMetaData metaData = buildCertificateMetaData();
 
@@ -1011,9 +1009,6 @@ public class IntygServiceTest {
 
         CertificateResponse certificateResponse = new CertificateResponse(json, utlatande, metaData, false);
 
-        when(moduleFacade.getCertificate(any(String.class), any(String.class), anyString())).thenReturn(certificateResponse);
-
-        when(utkastRepository.findByIntygsIdAndIntygsTyp(anyString(), anyString())).thenReturn(utkast);
         when(utkastRepository.findOne(intygId)).thenReturn(utkast);
         when(certificateRelationService.getNewestRelationOfType(eq(intygId), eq(RelationKod.ERSATT),
                 eq(Arrays.asList(UtkastStatus.SIGNED))))
@@ -1023,7 +1018,7 @@ public class IntygServiceTest {
 
         intygService.handleAfterSigned(utkast);
 
-        verify(certificateSenderService).sendCertificate(eq(intygId), eq(personnummer), anyString(), eq(recipient), eq(true));
+        verify(certificateSenderService).sendCertificate(eq(intygId), any(), anyString(), eq(recipient), eq(true));
         verify(mockMonitoringService).logIntygSent(intygId, recipient);
         verify(logservice).logSendIntygToRecipient(any(LogRequest.class));
         verify(arendeService, never()).closeCompletionsAsHandled(relationIntygId, intygTyp);

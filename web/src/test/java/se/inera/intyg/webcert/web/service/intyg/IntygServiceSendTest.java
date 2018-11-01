@@ -18,6 +18,16 @@
  */
 package se.inera.intyg.webcert.web.service.intyg;
 
+import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.cxf.helpers.FileUtils;
 import org.assertj.core.api.Assertions;
@@ -27,6 +37,11 @@ import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.test.util.ReflectionTestUtils;
+import se.riv.clinicalprocess.healthcond.certificate.sendCertificateToRecipient.v2.SendCertificateToRecipientResponseType;
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.Optional;
 import se.inera.intyg.common.fk7263.model.internal.Fk7263Utlatande;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.integration.converter.util.ResultTypeUtil;
@@ -45,27 +60,12 @@ import se.inera.intyg.webcert.common.model.SekretessStatus;
 import se.inera.intyg.webcert.common.model.WebcertCertificateRelation;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
+import se.inera.intyg.webcert.persistence.utkast.model.Signatur;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygServiceResult;
 import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
-import se.riv.clinicalprocess.healthcond.certificate.sendCertificateToRecipient.v2.SendCertificateToRecipientResponseType;
-
-import java.io.IOException;
-import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.Optional;
-
-import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
-import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class IntygServiceSendTest extends AbstractIntygServiceTest {
@@ -114,7 +114,7 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
         final Utkast utkast = getUtkast(INTYG_ID);
         utkast.setAterkalladDatum(LocalDateTime.of(2018, 5, 5, 5, 5, 5, 5));
 
-        when(intygRepository.findByIntygsIdAndIntygsTyp(eq(INTYG_ID), anyString())).thenReturn(utkast);
+        when(intygRepository.findOne(eq(INTYG_ID))).thenReturn(utkast);
 
         json = FileUtils.getStringFromFile(new ClassPathResource("IntygServiceTest/utlatande.json").getFile());
         utlatande = objectMapper.readValue(json, Fk7263Utlatande.class);
@@ -148,6 +148,7 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
         WebcertCertificateRelation ersattRelation = new WebcertCertificateRelation(INTYG_ID, RelationKod.ERSATT, LocalDateTime.now(),
                 UtkastStatus.SIGNED, false);
 
+        when(intygRepository.findOne(INTYG_ID)).thenReturn(getUtkast(INTYG_ID));
         when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.FALSE);
         when(webCertUserService.isAuthorizedForUnit(anyString(), anyString(), anyBoolean())).thenReturn(true);
         when(webCertUserService.getUser()).thenReturn(webCertUser);
@@ -308,6 +309,8 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
         utkast.setModel(json);
         utkast.setIntygsId(intygId);
         utkast.setIntygTypeVersion(INTYG_TYPE_VERSION_1_0);
+        utkast.setStatus(UtkastStatus.SIGNED);
+        utkast.setSignatur(new Signatur(LocalDateTime.of(2011, 11, 11, 11, 11, 11, 11), "Signe Signatur", INTYG_ID, "data", "hash", "signatur"));
         return utkast;
     }
 }
