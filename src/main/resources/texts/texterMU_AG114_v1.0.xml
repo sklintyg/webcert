@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<texter typ="AG114" giltigFrom="2016-05-01" version="1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://schema.forsakringskassan.se/vardgivare_sjukvard texterMU_v1.0.xsd" xmlns="http://schema.forsakringskassan.se/vardgivare_sjukvard">
+	
+	<!-- Text före val av elektroniskt formulär -->
+	<text id="FRM_1.RBK"></text>
+	
+	<!-- Text efter val av elektroniskt formulär, visas tillsammans med formulärat -->
+	<text id="FRM_2.RBK"></text>
+	
+	<!--
+	===============================================
+	KATEGORI 1: Grund för medicinskt underlag
+	===============================================
+	-->
+	<text id="KAT_1.RBK">Sysselsättning</text>
+	<text id="FRG_1.RBK">I relation till vilken sysselsättning bedömer du arbetsförmågan?</text>
+	<text id="DFR_1.3.RBK">Ange vad annat är: </text>
+	<text id="FRG_2.RBK">Ange yrke och arbetsuppgifter</text>
+	<text id="FRG_2.HLP">Ange ordinarie arbete och huvudsakliga arbetsuppgifter.</text>
+
+
+	<!-- Text och hjälptext för typ av underlag ur kodverk -->
+	<text id="KV_FKMU_0001.UNDERSOKNING.RBK">Min undersökning av patienten</text>
+	<text id="KV_FKMU_0001.JOURNALUPPGIFTER.RBK">Journaluppgifter från den</text>
+	<text id="KV_FKMU_0001.ANHORIG.RBK">Anhörigs beskrivning av patienten</text>
+	<text id="KV_FKMU_0001.ANNAT.RBK">Annat</text>
+
+	<text id="KAT_2.RBK">Diagnos</text>
+	<text id="FRG_3.RBK">Önskar patienten uppge information om diagnoser till sin arbetsgivare?</text>
+	<text id="FRG_3.HLP">Enligt sjuklönelagen behöver intyget inte innehålla närmare uppgift om vilken sjukdom patienten lider av. Om patienten väljer att utelämna uppgift om diagnos väljs \"Patienten önskar inte uppge diagnoser för sin arbetsgivare\" nedan. Om patienten väljer att delge sin arbetsgivare information om diagnoser anges vilken eller vilka sjukdomar som orsakar nedsatt arbetsförmåga. Den sjukdom som påverkar arbetsförmågan mest anges först. Diagnoskoden anges alltid med så många positioner som möjligt. Om patienten har fler än tre sjukdomar som påverkar arbetsförmågan anges dessa under "övriga upplysningar".</text>
+	<text id="FRG_4.RBK">Diagnos/diagnoser för sjukdom som orsakar nedsatt arbetsförmåga</text>
+	<text id="FRG_4.HLP">???</text>
+
+	<text id="KAT_3.RBK">Arbetsförmåga</text>
+	<text id="KAT_3.HLP">TBD</text>
+
+	<text id="FRG_4.RBK">Diagnos/diagnoser för sjukdom som orsakar eller har orsakat funktionsnedsättning </text>
+	<text id="FRG_4.HLP">Ange vilken eller vilka sjukdomar som orsakar nedsatt arbetsförmåga. Den sjukdom som påverkar arbetsförmågan mest anges först. Diagnoskoden anges alltid med så många positioner som möjligt.
+
+		Om patienten har fler än tre sjukdomar som påverkar arbetsförmågan anges dessa under "övriga upplysningar".</text>
+	<text id="DFR_4.1.RBK">Diagnoskod enligt ICD-10 SE</text>
+
+	<text id="FRG_5.RBK">På vilket sätt medför sjukdomen nedsatt arbetsförmåga?</text>
+	<text id="FRG_5.HLP">Uppgift om på vilket sätt arbetsförmågan är nedsatt ska anges oavsett om diagnos har angetts eller inte, detta för att arbetstagaren ska kunna styrka sin rätt till sjuklön och rätt att vara frånvarande från arbetet. Informationen har även betydelse för arbetsgivaren i det proaktiva rehabiliteringsarbetet.</text>
+	<text id="FRG_6.RBK">Finns arbetsförmåga trots sjukdom?</text>
+	<text id="FRG_6.HLP"><![CDATA[1. Vilka arbetsuppgifter kan arbetstagaren utföra trots sin nedsatta arbetsförmåga?<br>2. Vilka arbetsuppgifter och moment bör arbetstagaren inte alls utföra av medicinska skäl?<br>3. Kan t ex arbetsresor till arbetet hjälpa?<br>4. Är det möjligt för arbetstagaren att vistas på arbetsplatsen vid till exempel arbetsplatsträffar?]]></text>
+	<text id="DFR_6.2.RBK">Beskriv arbetsförmågan</text>
+
+	<text id="KAT_5.RBK">Övrigt</text>
+	<text id="FRG_8.RBK">Övriga upplysningar till arbetsgivaren</text>
+
+	<text id="KAT_4.RBK">Bedömning</text>
+	<text id="FRG_7.RBK">Min bedömning av patientens nedsättning av arbetsförmågan</text>
+	<text id="FRG_7.HLP">Utgångspunkten är att patientens arbetsförmåga ska bedömas i förhållande till hens normala sysselsättningsgrad.</text>
+	<text id="DFR_7.1.RBK">Sjukskrivningsgrad</text>
+	<text id="DFR_7.2.RBK">Sjukskrivningsperiod</text>
+
+	<text id="FROM">Fr.o.m.</text>
+	<text id="TOM">T.o.m.</text>
+
+	<text id="KAT_6.RBK">Kontakt</text>
+	<text id="FRG_9.RBK"></text>
+	<text id="DFR_9.1.RBK">Jag önskar att arbetsgivaren kontaktar vårdcentralen och bekräftar härmed att patienten har gett sitt samtycke till detta</text>
+	<text id="DFR_9.2.RBK">Ange varför du vill ha kontakt och vem som i första hand ska kontaktas</text>
+
+
+	<text id="KV_FKMU_0002.NUVARANDE_ARBETE.RBK">Nuvarande arbete</text>
+
+	<!-- Text och hjälptext för typ av underlag ur kodverk -->
+	<text id="KV_FKMU_0005.NEUROPSYKIATRISKT.RBK">Neuropsykiatriskt utlåtande</text>
+	<text id="KV_FKMU_0005.HABILITERING.RBK">Underlag från habiliteringen</text>
+	<text id="KV_FKMU_0005.ARBETSTERAPEUT.RBK">Underlag från arbetsterapeut</text>
+	<text id="KV_FKMU_0005.FYSIOTERAPEUT.RBK">Underlag från fysioterapeut</text>
+	<text id="KV_FKMU_0005.LOGOPED.RBK">Underlag från logoped</text>
+	<text id="KV_FKMU_0005.PSYKOLOG.RBK">Underlag från psykolog</text>
+	<text id="KV_FKMU_0005.SKOLHALSOVARD.RBK">Underlag från skolhälsovård</text>
+	<text id="KV_FKMU_0005.SPECIALISTKLINIK.RBK">Utredning av annan specialistklinik</text>
+	<text id="KV_FKMU_0005.VARD_UTOMLANDS.RBK">Utredning från vårdinrättning utomlands</text>
+	<text id="KV_FKMU_0005.OVRIGT_UTLATANDE.RBK">Övrigt</text>
+	
+	<!--
+	===============================================
+	KATEGORI 3: Diagnos
+	===============================================
+	-->
+	<!-- <text id="KAT_3.RBK">Diagnos</text>
+	<text id="FRG_6.RBK">Diagnos/diagnoser för sjukdom som orsakar eller har orsakat funktionsnedsättning </text>
+	<text id="DFR_6.2.RBK">Diagnoskod enligt ICD-10 SE</text>
+ -->
+	<!--
+	===============================================
+	KATEGORI 4: Funktionsnedsättning
+	===============================================
+	-->
+	<!-- <text id="KAT_4.RBK">Funktionsnedsättning</text>
+	<text id="FRG_15.RBK">Beskriv när och hur patientens funktionsnedsättning debuterat, utvecklats och visar sig för närvarande</text>
+	<text id="FRG_16.RBK">Beskriv på vilket sätt funktionsnedsättningen påverkar eller har påverkat patientens förmåga att klara sin skolgång</text>
+	<text id="FRG_16.HLP">Beskriv om det finns ett direkt samband mellan funktionsnedsättningen och behovet av förlängd skolgång och att det inte finns några andra skäl än rent medicinska som är orsaken till de förlängda studierna. Funktionsnedsättning behöver inte finnas kvar när studierna påbörjas, det är tillräckligt att den orsakat behovet av förlängd skolgång.</text> -->
+
+	<!--
+	===============================================
+	KATEGORI 5: Övrigt
+	===============================================
+	-->
+	<!-- <text id="KAT_5.RBK">Övrigt</text>
+	<text id="FRG_25.RBK">Övriga upplysningar</text> -->
+
+	<!--
+	===============================================
+	KATEGORI 6: Kontakt
+	===============================================
+	-->
+	<!-- <text id="KAT_6.RBK">Kontakt</text>
+	<text id="FRG_26.RBK">Kontakt med Försäkringskassan</text>
+	<text id="FRG_26.HLP">Försäkringskassans handläggare tar kontakt med dig när underlaget har kommit in och handläggningen kan påbörjas.</text>
+	<text id="DFR_26.1.RBK">Jag önskar att Försäkringskassan kontaktar mig</text>
+	<text id="DFR_26.2.RBK">Ange gärna varför du vill ha kontakt</text> -->
+
+	<!--
+	===============================================
+	KATEGORI 9999: Tilläggsfrågor
+	===============================================
+	-->
+
+  <text id="KAT_9999.RBK">Tilläggsfrågor</text>
+  <text id="KAT_9999.HLP">TBD</text>
+
+  <tillagg>
+    <tillaggsfraga id="9001">
+      <text id="DFR_9001.1.RBK">Är patienten väldigt skoltrött?</text>
+      <text id="DFR_9001.1.HLP">Ange varför.</text>
+    </tillaggsfraga>
+    <tillaggsfraga id="9002">
+      <text id="DFR_9002.1.RBK">Hur långt är ett snöre?</text>
+      <text id="DFR_9002.1.HLP">Ange längd i centimeter (cm).</text>
+    </tillaggsfraga>
+  </tillagg>
+</texter>

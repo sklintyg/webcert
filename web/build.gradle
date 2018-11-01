@@ -110,7 +110,7 @@ gretty {
                "-Dresources.folder=${projectDir}/../src/main/resources",
                "-Dcredentials.file=${projectDir}/webcert-credentials.properties",
                "-Dconfig.file=${projectDir}/webcert-dev.properties",
-               "-Dlogback.file=classpath:logback-dev.xml",
+               "-Dlogback.file=classpath:logback-ocp.xml",
                "-DuseMinifiedJavaScript=${minified}",
                "-Djetty.port=${httpPort}"]
 
@@ -156,6 +156,7 @@ dependencies {
     compile "se.inera.intyg.common:db:${commonVersion}"
     compile "se.inera.intyg.common:doi:${commonVersion}"
     compile "se.inera.intyg.common:af00213:${commonVersion}"
+    compile "se.inera.intyg.common:ag114:${commonVersion}"
 
     compile "se.inera.intyg.infrastructure.directory.privatepractitioner.terms:intyg-infrastructure-directory-privatepractitioner-terms-schemas:${ppTermsSchemasVersion}"
     compile "se.inera.intyg.clinicalprocess.healthcond.certificate:intyg-clinicalprocess-healthcond-certificate-schemas:${intygClinicalprocessSchemasVersion}"

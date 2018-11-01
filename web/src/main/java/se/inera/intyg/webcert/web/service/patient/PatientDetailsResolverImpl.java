@@ -110,6 +110,7 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
         case "luae_na":
         case "luae_fs":
         case "af00213":
+        case "ag114":
             return resolveFkPatient(personnummer, user);
 
         case "ts-bas":
