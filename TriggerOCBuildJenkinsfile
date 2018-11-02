@@ -19,7 +19,7 @@ env:
   - name: gitUrl
     value: $GIT_URL
   - name: release
-    value: true
+    value: 'true'
   - name: backingServices
     value: intygstjanst-test:3.6.0.435
     """
