@@ -82,7 +82,7 @@ var BaseTsUtkast = BaseUtkast._extend({
         var bedomningKorkortsTyperChecksDiabetes = this.bedomningKorkortsTyperChecksDiabetes;
 
         if ('ts-bas' === this.intygType) {
-            return pageHelpers.selectAllCheckBoxes(bedomningKorkortsTyperChecks, bedomningObj.behorigheter)
+            return pageHelpers.selectAllCheckBoxes(bedomningKorkortsTyperChecks, [bedomningObj.stallningstagande])
                 .then(function() {
                     return fillInLamplighet(bedomningObj.lamplighet);
                 });
