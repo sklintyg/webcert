@@ -166,7 +166,6 @@ features:
       - *ki080 # DB
       - *ki090 # DOI
       - *ki100 # AF00213
-      - *ki110 # AG114
   - &f080
     name: *kf080
     desc: Signera skicka direkt
@@ -175,7 +174,6 @@ features:
       - *ki080 # DB
       - *ki090 # DOI
       - *ki100 # AF00213
-      - *ki110 # AG114
   - &f090
     name: *kf090
     desc: Utskrift
