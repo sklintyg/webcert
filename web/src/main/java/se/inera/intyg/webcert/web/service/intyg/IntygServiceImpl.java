@@ -369,7 +369,7 @@ public class IntygServiceImpl implements IntygService {
             LOG.debug("Fetching intyg '{}' as PDF", intygsId);
 
             Utkast utkast = utkastRepository.findOne(intygsId);
-            IntygContentHolder intyg = (utkast != null) ? buildIntygContentHolderForUtkast(utkast, false)
+            IntygContentHolder intyg = (utkast != null) ? buildIntygContentHolderFromUtkast(utkast, false)
                     : getIntygData(intygsId, intygsTyp, false);
             UtkastStatus utkastStatus = (utkast != null) ? utkast.getStatus() : UtkastStatus.SIGNED;
 
@@ -771,6 +771,8 @@ public class IntygServiceImpl implements IntygService {
      * Note that even when found, we check if we need to decorate the response with data from the utkast in order
      * to mitigate async send states. (E.g. a send may be in resend due to 3rd party issues, in that case decorate with
      * data about sent state from the Utkast)
+     * <p>
+     * The data will be updated with current patient data from PU unless otherwise stated in the module api.
      *
      * @param relations
      */
@@ -804,11 +806,9 @@ public class IntygServiceImpl implements IntygService {
                 LOG.error("Failed to getUtlatandeFromJson intygsId {} while checking for updated patient information", intygId);
             }
 
-            // Patient is not expected to be null, since that means PU-service is probably down and no integration
-            // parameters were available.
+            // Get the module api and use the "updateBeforeViewing" to update the outbound "model" with the
+            // Patient object (not done for models with patient data saved in the model).
 
-            // Get the module api and use the "updateBeforeSave" to update the outbound "model" with the
-            // Patient object.
             ModuleApi moduleApi = moduleRegistry.getModuleApi(typ, intygTypeVersion);
             // INTYG-5354, INTYG-5380: Don't use incomplete address from external data sources (PU/js).
             if (!newPatientData.isCompleteAddressProvided()) {
@@ -816,7 +816,7 @@ public class IntygServiceImpl implements IntygService {
                 Patient oldPatientData = utlatande.getGrundData().getPatient();
                 copyOldAddressToNewPatientData(oldPatientData, newPatientData);
             }
-            internalIntygJsonModel = moduleApi.updateBeforeSave(internalIntygJsonModel, newPatientData);
+            internalIntygJsonModel = moduleApi.updateBeforeViewing(internalIntygJsonModel, newPatientData);
 
             utkastIntygDecorator.decorateWithUtkastStatus(certificate);
             Relations certificateRelations = intygRelationHelper.getRelationsForIntyg(intygId);
@@ -851,7 +851,7 @@ public class IntygServiceImpl implements IntygService {
             if (utkast == null) {
                 throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, me);
             }
-            return buildIntygContentHolderForUtkast(utkast, relations);
+            return buildIntygContentHolderFromUtkast(utkast, relations);
         } catch (WebServiceException wse) {
             // Something went wrong communication-wise, try to find a matching Utkast instead.
             Utkast utkast = utkastRepository.findByIntygsIdAndIntygsTyp(intygId, typ);
@@ -860,7 +860,7 @@ public class IntygServiceImpl implements IntygService {
                         "Cannot get intyg. Intygstjansten was not reachable and the Utkast could "
                                 + "not be found, perhaps it was issued by a non-webcert system?");
             }
-            return buildIntygContentHolderForUtkast(utkast, relations);
+            return buildIntygContentHolderFromUtkast(utkast, relations);
         } catch (ModuleNotFoundException | ModuleException e) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, e);
         }
@@ -873,14 +873,12 @@ public class IntygServiceImpl implements IntygService {
      */
     private IntygContentHolder getIntygDataPreferWebcert(String intygId, String intygTyp) {
         Utkast utkast = utkastRepository.findOne(intygId);
-        return utkast != null ? buildIntygContentHolderForUtkast(utkast, false)
+        return utkast != null ? buildIntygContentHolderFromUtkast(utkast, false)
                 : getIntygData(intygId, intygTyp, false);
     }
 
-    // NOTE! INTYG-4086. This method is used when fetching Intyg/Utkast from WC locally. The question is, should we
-    // replace the patient on the existing model with a freshly fetched one here or not? In case we're storing patient
-    // info entered manually for non FK-types here, we may end up overwriting a manually stored name etc...
-    private IntygContentHolder buildIntygContentHolderForUtkast(Utkast utkast, boolean relations) {
+    // NOTE! INTYG-4086. This method is used when fetching Intyg/Utkast from WC locally.
+    private IntygContentHolder buildIntygContentHolderFromUtkast(Utkast utkast, boolean relations) {
 
         try {
             // INTYG-4086: Patient object populated according to ruleset for the intygstyp at hand.
@@ -894,17 +892,19 @@ public class IntygServiceImpl implements IntygService {
                 newPatientData.setPersonId(utkast.getPatientPersonnummer());
             }
 
-            // INTYG-5354, INTYG-5380: Don't use incomplete address from external data sources (PU/js).
             Utlatande utlatande = modelFacade.getUtlatandeFromInternalModel(utkast.getIntygsTyp(), utkast.getModel());
+
+            // INTYG-5354, INTYG-5380: Don't use incomplete address from external data sources (PU/js).
             if (!newPatientData.isCompleteAddressProvided()) {
                 // Use the old address data.
                 Patient oldPatientData = utlatande.getGrundData().getPatient();
                 copyOldAddressToNewPatientData(oldPatientData, newPatientData);
             }
-            String updatedModel = moduleRegistry.getModuleApi(utkast.getIntygsTyp(), utkast.getIntygTypeVersion())
-                    .updateBeforeSave(utkast.getModel(), newPatientData);
-            utlatande = modelFacade.getUtlatandeFromInternalModel(utkast.getIntygsTyp(), updatedModel);
+            // INTYG-7449, INTYG-7529: Update patient data before (will not be done on intyg that store address data)
+            String internalIntygJsonModel = moduleRegistry.getModuleApi(utkast.getIntygsTyp(), utkast.getIntygTypeVersion())
+                    .updateBeforeViewing(utkast.getModel(), newPatientData);
 
+            utlatande = modelFacade.getUtlatandeFromInternalModel(utkast.getIntygsTyp(), internalIntygJsonModel);
             List<Status> statuses = IntygConverterUtil.buildStatusesFromUtkast(utkast);
             Relations certificateRelations = certificateRelationService.getRelations(utkast.getIntygsId());
 
@@ -921,7 +921,7 @@ public class IntygServiceImpl implements IntygService {
                     newPatientData);
 
             return IntygContentHolder.builder()
-                    .setContents(updatedModel)
+                    .setContents(internalIntygJsonModel)
                     .setUtlatande(utlatande)
                     .setStatuses(statuses)
                     .setRevoked(utkast.getAterkalladDatum() != null)

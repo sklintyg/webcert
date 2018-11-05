@@ -279,7 +279,7 @@ public class IntygServiceTest {
         json = FileUtils.getStringFromFile(new ClassPathResource("IntygServiceTest/utlatande.json").getFile());
         Fk7263Utlatande utlatande = objectMapper.readValue(json, Fk7263Utlatande.class);
         when(moduleApi.getUtlatandeFromJson(anyString())).thenReturn(utlatande);
-        when(moduleApi.updateBeforeSave(anyString(), any(Patient.class))).thenAnswer((invocation) -> invocation.getArgument(0));
+        when(moduleApi.updateBeforeViewing(anyString(), any(Patient.class))).thenAnswer((invocation) -> invocation.getArgument(0));
 
         // use reflection to set IntygDraftsConverter in IntygService
         Field field = IntygServiceImpl.class.getDeclaredField("intygConverter");
@@ -1239,7 +1239,7 @@ public class IntygServiceTest {
 
         // Then
         ArgumentCaptor<Patient> argumentCaptor = ArgumentCaptor.forClass(Patient.class);
-        verify(moduleApi).updateBeforeSave(anyString(), argumentCaptor.capture());
+        verify(moduleApi).updateBeforeViewing(anyString(), argumentCaptor.capture());
         assertEquals(postadress, argumentCaptor.getValue().getPostadress());
         assertEquals(postort, argumentCaptor.getValue().getPostort());
         assertEquals(postnummer, argumentCaptor.getValue().getPostnummer());
@@ -1262,7 +1262,7 @@ public class IntygServiceTest {
 
         // Then
         ArgumentCaptor<Patient> argumentCaptor = ArgumentCaptor.forClass(Patient.class);
-        verify(moduleApi).updateBeforeSave(anyString(), argumentCaptor.capture());
+        verify(moduleApi).updateBeforeViewing(anyString(), argumentCaptor.capture());
         assertNotEquals(postadress, argumentCaptor.getValue().getPostadress());
     }
 
@@ -1287,7 +1287,7 @@ public class IntygServiceTest {
 
         // Then
         ArgumentCaptor<Patient> argumentCaptor = ArgumentCaptor.forClass(Patient.class);
-        verify(moduleApi).updateBeforeSave(anyString(), argumentCaptor.capture());
+        verify(moduleApi).updateBeforeViewing(anyString(), argumentCaptor.capture());
         assertEquals(postadress, argumentCaptor.getValue().getPostadress());
         assertEquals(postort, argumentCaptor.getValue().getPostort());
         assertEquals(postnummer, argumentCaptor.getValue().getPostnummer());
@@ -1314,7 +1314,7 @@ public class IntygServiceTest {
 
         // Then
         ArgumentCaptor<Patient> argumentCaptor = ArgumentCaptor.forClass(Patient.class);
-        verify(moduleApi).updateBeforeSave(anyString(), argumentCaptor.capture());
+        verify(moduleApi).updateBeforeViewing(anyString(), argumentCaptor.capture());
         assertNotEquals(postadress, argumentCaptor.getValue().getPostadress());
     }
 
