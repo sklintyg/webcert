@@ -195,6 +195,7 @@ Open _&lt;env>/configmap-vars.yaml_ and replace `<value>` with expected values. 
 	CGI_GRP_WS_TRUSTSTORE_TYPE: "<value>"
 	SAKERHETSTJANST_SAML_IDP_METADATA_URL: "<value>"
 	SAKERHETSTJANST_SAML_KEYSTORE_FILE: "<value>"
+	SAKERHETSTJANST_SAML_KEYSTORE_ALIAS: "<value>"
 	WEBCERT_HOST_URL: "<value>"
 	INTYGSTJANST_BASE_URL: "<value>"
 	FMB_ENDPOINT_URL: "<value>"
