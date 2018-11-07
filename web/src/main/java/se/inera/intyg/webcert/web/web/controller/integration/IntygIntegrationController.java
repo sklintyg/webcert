@@ -152,8 +152,12 @@ public class IntygIntegrationController extends BaseIntegrationController {
                 reference, responsibleHospName, alternatePatientSSn, fornamn, mellannamn, efternamn,
                 postadress, postnummer, postort, coherentJournaling, deceased, inactiveUnit, copyOk);
 
+
+        // Temp. logging in an attempt to track down hashCode failures (hashCode has to be changed for redis updates)
         WebCertUser user = getWebCertUser();
+        LOG.info("WebCertUser.hashCode BEFORE parameters update: {}", user.hashCode());
         user.setParameters(integrationParameters);
+        LOG.info("WebCertUser.hashCode AFTER parameters update: {}", user.hashCode());
 
         return handleRedirectToIntyg(uriInfo, internIntygTyp, intygId, enhetId, user);
     }
