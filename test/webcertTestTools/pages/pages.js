@@ -105,6 +105,12 @@ module.exports = {
                 utkast: require(intygPath + 'af/af00213/af00213.utkast.page.js'),
                 intyg: require(intygPath + 'af/af00213/af00213.intyg.page.js')
             }
+        },
+        ag: {
+            ag114: {
+                utkast: require(intygPath + 'ag/ag114/ag114.utkast.page.js'),
+                intyg: require(intygPath + 'ag/ag114/ag114.intyg.page.js')
+            }
         }
     },
     'unsignedPage': require('./unsignedPage.js'),

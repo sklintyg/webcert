@@ -43,6 +43,9 @@ module.exports = {
     af: {
         af00213: require('./af.00213.js')
     },
+    ag: {
+        ag114: require('./ag.114.js')
+    },
     values: require('./testvalues.js'),
     fmb: require('./diagnoskoderFMB.js'),
     diagnosKategorier: require('./diagnosKategorier_A-F.js')
