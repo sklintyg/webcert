@@ -68,4 +68,7 @@ wc-enhet-arenden-filter {
   .material-icons {
     vertical-align: top;
   }
+  .material-icons.check-color {
+    color: $wc-color-10;
+  }
 }
