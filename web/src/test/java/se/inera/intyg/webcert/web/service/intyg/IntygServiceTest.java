@@ -771,8 +771,8 @@ public class IntygServiceTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testFetchIntygAsPdfFromWebCert() throws IOException, IntygModuleFacadeException {
-        when(utkastRepository.findOne(CERTIFICATE_ID)).thenReturn(getIntyg(CERTIFICATE_ID, LocalDateTime.now(), null));
+    public void testFetchUtkastAsPdfFromWebCert() throws IOException, IntygModuleFacadeException {
+        when(utkastRepository.findOne(CERTIFICATE_ID)).thenReturn(getDraft(CERTIFICATE_ID, UtkastStatus.DRAFT_INCOMPLETE));
         when(moduleFacade.convertFromInternalToPdfDocument(anyString(), anyString(), anyList(), any(UtkastStatus.class), anyBoolean()))
                 .thenReturn(buildPdfDocument());
         IntygPdf intygPdf = intygService.fetchIntygAsPdf(CERTIFICATE_ID, CERTIFICATE_TYPE, false);
@@ -789,15 +789,30 @@ public class IntygServiceTest {
 
     @SuppressWarnings("unchecked")
     @Test(expected = WebCertServiceException.class)
-    public void testFetchRevokedIntygAsPdfFromWebCert() throws IOException, IntygModuleFacadeException {
+    public void testFetchRevokedIntygAsPdfFromIntygstjansten() throws IOException, IntygModuleFacadeException {
         when(utkastRepository.findOne(CERTIFICATE_ID)).thenReturn(getIntyg(CERTIFICATE_ID, LocalDateTime.now(), LocalDateTime.now()));
 
+        CertificateMetaData metaData = buildCertificateMetaData();
+        final Personnummer personnummer = PERSNR;
+
+        Fk7263Utlatande utlatande = objectMapper.readValue(json, Fk7263Utlatande.class);
+        utlatande.setId(CERTIFICATE_ID);
+        utlatande.setTyp(CERTIFICATE_TYPE);
+        utlatande.getGrundData().getPatient().setPersonId(personnummer);
+
+        final Status status = new Status();
+        status.setType(CertificateState.CANCELLED);
+        status.setTimestamp(LocalDateTime.of(2016, 1, 1, 1, 1, 1, 1));
+        metaData.setStatus(Lists.newArrayList(status));
+
+        CertificateResponse certificateResponse = new CertificateResponse(json, utlatande, metaData, true);
+        when(moduleFacade.getCertificate(CERTIFICATE_ID, CERTIFICATE_TYPE)).thenReturn(certificateResponse);
         try {
             intygService.fetchIntygAsPdf(CERTIFICATE_ID, CERTIFICATE_TYPE, false);
         } catch (Exception e) {
             verify(utkastRepository, times(1)).findOne(CERTIFICATE_ID);
             verifyZeroInteractions(logservice);
-            verify(moduleFacade, times(0)).getCertificate(CERTIFICATE_ID, CERTIFICATE_TYPE);
+            verify(moduleFacade, times(1)).getCertificate(CERTIFICATE_ID, CERTIFICATE_TYPE);
             throw e;
         }
     }
