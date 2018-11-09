@@ -372,7 +372,7 @@ public class IntygServiceImpl implements IntygService {
 
             IntygContentHolder intyg;
             if (utkast == null || UtkastStatus.SIGNED.equals(utkast.getStatus())) {
-                // hämta från IT om ej finns i WC eller ej signerat (INTYG-7580)
+                // hämta från IT om ej finns i WC eller är signerat (INTYG-7580)
                 intyg = getIntygData(intygsId, intygsTyp, false);
             } else {
                 intyg = buildIntygContentHolderFromUtkast(utkast, false);
