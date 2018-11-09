@@ -369,8 +369,15 @@ public class IntygServiceImpl implements IntygService {
             LOG.debug("Fetching intyg '{}' as PDF", intygsId);
 
             Utkast utkast = utkastRepository.findOne(intygsId);
-            IntygContentHolder intyg = (utkast != null) ? buildIntygContentHolderFromUtkast(utkast, false)
-                    : getIntygData(intygsId, intygsTyp, false);
+
+            IntygContentHolder intyg;
+            if (utkast == null || UtkastStatus.SIGNED.equals(utkast.getStatus())) {
+                // hämta från IT om ej finns i WC eller ej signerat (INTYG-7580)
+                intyg = getIntygData(intygsId, intygsTyp, false);
+            } else {
+                intyg = buildIntygContentHolderFromUtkast(utkast, false);
+            }
+
             UtkastStatus utkastStatus = (utkast != null) ? utkast.getStatus() : UtkastStatus.SIGNED;
 
             boolean revoked = intyg.getStatuses() != null && intyg.getStatuses()
