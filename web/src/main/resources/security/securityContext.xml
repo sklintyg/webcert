@@ -335,7 +335,7 @@
     
     <!-- Handler deciding where to redirect user after successful login -->
     <bean id="successRedirectHandler"
-        class="org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler">
+          class="se.inera.intyg.webcert.web.auth.WebcertAuthenticationSuccessHandler">
       <property name="defaultTargetUrl" value="/"/>
       <property name="requestCache" ref="redisSavedRequestCache"/>
     </bean>
@@ -476,6 +476,50 @@
           </bean>
           <!-- END IDENTITY PROVIDER BEAN FOR SITHS -->
 
+          <bean class="org.springframework.security.saml.metadata.ExtendedMetadataDelegate">
+            <constructor-arg>
+              <bean class="org.opensaml.saml2.metadata.provider.FilesystemMetadataProvider">
+                <constructor-arg>
+                  <value type="java.io.File">${config.dir}/sp-sustainsys.xml</value>
+                </constructor-arg>
+                <property name="parserPool" ref="parserPool"/>
+              </bean>
+            </constructor-arg>
+            <property name="metadataTrustCheck" value="false"/>
+
+            <constructor-arg>
+              <bean class="org.springframework.security.saml.metadata.ExtendedMetadata">
+                <property name="alias" value="sustainsys"/>
+                <property name="local" value="true"/>
+                <property name="securityProfile" value="metaiop"/>
+                <property name="sslSecurityProfile" value="metaiop"/>
+                <property name="signMetadata" value="true"/>
+                <property name="signingKey" value="${sakerhetstjanst.saml.keystore.alias}"/>
+                <property name="encryptionKey" value="${sakerhetstjanst.saml.keystore.alias}"/>
+                <property name="requireArtifactResolveSigned" value="false"/>
+                <property name="requireLogoutRequestSigned" value="false"/>
+                <property name="requireLogoutResponseSigned" value="false"/>
+              </bean>
+            </constructor-arg>
+          </bean>
+
+          <bean class="org.springframework.security.saml.metadata.ExtendedMetadataDelegate">
+            <constructor-arg>
+              <bean class="org.opensaml.saml2.metadata.provider.FilesystemMetadataProvider">
+                <constructor-arg>
+                  <value type="java.io.File">${config.dir}/idp-sustainsys.xml</value>
+                </constructor-arg>
+                <property name="parserPool" ref="parserPool"/>
+              </bean>
+            </constructor-arg>
+            <constructor-arg>
+              <bean class="org.springframework.security.saml.metadata.ExtendedMetadata">
+                <property name="alias" value="sustainsys"/>
+              </bean>
+            </constructor-arg>
+
+            <property name="metadataTrustCheck" value="false"/>
+          </bean>
         </list>
       </constructor-arg>
       <property name="refreshCheckInterval" value="86400000"/>

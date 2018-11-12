@@ -35,6 +35,7 @@ import se.inera.intyg.infra.security.common.model.RequestOrigin;
 import se.inera.intyg.infra.security.common.model.Role;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.webcert.web.service.referens.ReferensService;
+import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.PrepareRedirectToIntyg;
@@ -73,6 +74,9 @@ public class IntygIntegrationControllerTest {
     private final String INTYGSID = "A1234-B5678-C90123-D4567";
     private final String ENHETSID = "11111";
     private UriInfo uriInfo;
+
+    @Mock
+    private WebCertUserService webCertUserService;
 
     @Mock
     private IntegrationService integrationService;
@@ -160,6 +164,15 @@ public class IntygIntegrationControllerTest {
         when(moduleRegistry.getModuleIdFromExternalId(intygTyp.toUpperCase())).thenReturn("");
         testee.getRedirectToIntyg(null, intygTyp, "intygId", null, null, null, null, null, null, null, null, null, null, false, false,
                 false, true);
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void testSavedRequestGETHandlerRequiresIntegrationParameters() {
+        WebCertUser user = mock(WebCertUser.class);
+        when(user.getParameters()).thenReturn(null);
+        when(webCertUserService.getUser()).thenReturn(user);
+
+        testee.getRedirectToIntyg(null, INTYGSID, null);
     }
 
     private PrepareRedirectToIntyg createPrepareRedirectToIntyg() {
