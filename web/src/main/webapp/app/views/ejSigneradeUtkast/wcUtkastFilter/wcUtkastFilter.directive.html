@@ -1,26 +1,26 @@
-<div id="advanced-filter-form" class="hflex-container" ng-form="filterForm">
+<div id="advanced-filter-form" class="row" ng-form="filterForm">
 
 
-  <div class="filter-field" wc-authority="VIDAREBEFORDRA_UTKAST" intygstyp="" id="filterFormVidarebefordrad">
+  <div class="filter-field col-md-2" wc-authority="VIDAREBEFORDRA_UTKAST" intygstyp="" id="filterFormVidarebefordrad">
     <label>Vidarebefordrat</label><br>
     <wc-dropdown id="filter-notified" ng-model="filter.selection.notified" items="filter.notifiedOptions"
                  use-dynamic-label="false"></wc-dropdown>
   </div>
 
-  <div class="filter-field">
+  <div class="filter-field col-md-2">
     <label>Utkast</label><br>
     <wc-dropdown id="filter-status" ng-model="filter.selection.status" items="filter.statusOptions"
                  use-dynamic-label="false"></wc-dropdown>
   </div>
 
-  <div class="filter-field" wc-authority="FILTRERA_PA_LAKARE" intygstyp="" id="filterFormSparatAv">
+  <div class="filter-field col-md-2" wc-authority="FILTRERA_PA_LAKARE" intygstyp="" id="filterFormSparatAv">
     <label>Sparat av</label><br>
     <wc-dropdown id="filter-notified" ng-model="filter.selection.savedBy" items="filter.savedByOptions"
                  use-dynamic-label="false"></wc-dropdown>
   </div>
 
 
-  <div class="filter-field date-group">
+  <div class="filter-field date-group col-md-3">
     <label class="offset-label">Sparat datum</label><br>
     <label class="inline-label">Från</label>
     <span dom-id="filter-changedate-from" target-model="filter.selection.savedFrom" wc-date-picker-field
@@ -32,7 +32,7 @@
   </div>
 
   <!-- buttons -->
-  <div class="filter-field">
+  <div class="filter-field col-md-2">
     <label>&nbsp;</label><br>
     <button type="button" id="uc-filter-btn" class="btn btn-success" ng-click="search()">Sök</button>
     <button type="button" class="btn btn-default" ng-click="resetFilter()" id="reset-search-form">Återställ sökfilter

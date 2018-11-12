@@ -7,7 +7,7 @@
         ng-form="filterForm">
 
     <div wc-authority="VIDAREBEFORDRA_FRAGASVAR" intygstyp="" class="col-md-2 form-group" id="filterFormVidarebefordrad">
-      <label class="control-label">Vidarebefordrat</label><br>
+      <label>Vidarebefordrat</label><br>
       <wc-dropdown data-items="enhetArendenFilterModel.vidarebefordradOptions"
                    ng-model="enhetArendenFilterModel.filterForm.vidarebefordrad"
                    data-on-select="validate()"
@@ -20,7 +20,7 @@
 
     <!-- åtgärd -->
     <div class="col-md-2 form-group">
-      <label class="control-label">Åtgärd</label><br>
+      <label>Åtgärd</label><br>
       <wc-dropdown data-items="enhetArendenFilterModel.statusList"
                    ng-model="enhetArendenFilterModel.filterForm.vantarPaSelector"
                    data-on-select="validate()"
@@ -33,7 +33,7 @@
 
     <!-- Avsändare -->
     <div class="col-md-2 form-group">
-      <label class="control-label">Avsändare</label>
+      <label>Avsändare</label>
       <wc-dropdown data-items="enhetArendenFilterModel.avsandareList"
                    ng-model="enhetArendenFilterModel.filterForm.questionFrom"
                    data-on-select="validate()"
@@ -45,7 +45,7 @@
     </div>
 
     <div class="col-md-2 form-group" id="filterFormSigneratAv">
-      <label class="control-label">Signerat av</label>
+      <label>Signerat av</label>
       <wc-dropdown data-items="enhetArendenFilterModel.lakareList"
                    ng-model="enhetArendenFilterModel.filterForm.lakareSelector"
                    data-on-select="validate()"
@@ -58,7 +58,7 @@
     </div>
 
     <div class="col-md-2 form-group" id="enhetArendePnr">
-        <label class="control-label">Personnummer</label>
+        <label>Personnummer</label>
         <input class="form-control" name="pnr" type="text"
                id="filter-person-id"
                placeholder="ååååmmdd-nnnn"
@@ -73,7 +73,7 @@
 
     <!-- Skickat/mottaget -->
     <div class="col-md-4 form-group">
-      <label class="control-label">Skickat datum</label><br>
+      <label>Skickat datum</label><br>
       <div class="form-inline">
         Från
         <span dom-id="filter-changedate-from" target-model="enhetArendenFilterModel.filterForm.changedFrom"
