@@ -1,0 +1,105 @@
+@startuml
+title Signering med NetiD-access
+actor User
+participant Browser
+
+participant BrowserCollectLoop
+
+participant Webcert
+participant TicketTracker
+participant xmldsig
+
+participant "Webcert Collect Poller"
+participant "NetiD Access Client"
+participant "NetiD Access Server"
+
+participant Intygstjänsten
+
+User -/ Browser: Påbörja signering
+activate Browser
+Browser -> Webcert: Anropa /signeringshash (REST)
+activate Webcert
+Webcert -> xmldsig: Prepare
+activate xmldsig
+xmldsig --> Webcert: Partiell signatur
+deactivate xmldsig
+Webcert -> Webcert: Beräkna hash och skapa SignaturBiljett
+Webcert -> TicketTracker: Lagra SignaturBiljett
+
+Webcert --> "NetiD Access Server": Sign request (SOAP) med digest
+
+activate "NetiD Access Server"
+"NetiD Access Server" -> "NetiD Access Server": Påbörjar\ntransaktion.
+"NetiD Access Server" --> Webcert: Sign response (SOAP) med Transaction ID
+Webcert --> Browser: Signaturbiljett
+Webcert -/ "Webcert Collect Poller": Starta collect-poller
+deactivate Webcert
+activate "Webcert Collect Poller"
+loop Anropa Collect (SOAP) tills COMPLETE eller ERROR var 3:e sekund
+"Webcert Collect Poller" -> "NetiD Access Server": Collect request (SOAP)
+"NetiD Access Server" --> "Webcert Collect Poller": Collect response (SOAP)
+
+end
+
+Browser -/ BrowserCollectLoop: Starta poller
+deactivate Browser
+
+activate BrowserCollectLoop
+loop tills kontakt med NetiD\nAccess Client finns
+"NetiD Access Server" -/ "NetiD Access Client": Initiera signering
+activate "NetiD Access Client"
+end
+
+User -/ "NetiD Access Client": Matar in PIN-kod
+"NetiD Access Client" -/ "NetiD Access Server": PIN etc.
+deactivate "NetiD Access Client"
+"NetiD Access Server" -> "NetiD Access Server": Slutför signering\n(Avslutar Webcerts\ncollect-loop)
+
+
+"Webcert Collect Poller" --/ Webcert: Collect response med status COMPLETE,\ninnehåller RAW-signatur och X509-certifikat
+
+deactivate "NetiD Access Server"
+deactivate "Webcert Collect Poller"
+
+activate Webcert
+
+
+Webcert -> xmldsig: Validera signatur
+activate xmldsig
+xmldsig --> Webcert: Valideringsresultat
+deactivate xmldsig
+Webcert -> Webcert: Lagra signatur
+Webcert -/ Intygstjänsten: RegisterCertificate
+Webcert -> TicketTracker: BiljettStatus SIGNERAD
+
+deactivate Webcert
+
+
+loop tills BiljettStatus SIGNERAD eller ERROR
+
+BrowserCollectLoop -> Webcert: Hämta status
+activate Webcert
+Webcert -> TicketTracker: Hämta status
+activate TicketTracker
+TicketTracker --> Webcert: SignaturBiljett
+deactivate TicketTracker
+Webcert --> BrowserCollectLoop: SignaturBiljett
+deactivate Webcert
+
+
+alt Om SIGNERAD
+
+BrowserCollectLoop -/ Browser: Ladda signerat intyg
+activate Browser
+end alt
+alt Om ERROR
+BrowserCollectLoop -/ Browser: Visa felmeddelande
+deactivate BrowserCollectLoop
+end alt
+
+
+end loop
+
+Browser -> User: Visar det signerade intyget
+deactivate Browser
+@enduml
