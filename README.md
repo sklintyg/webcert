@@ -142,6 +142,17 @@ Det går att konfigurera Webcert så man kan logga in via formuläret på https:
 
 Man behöver i så fall konfigurera Webcert att nyttja sustainsys stub-idp:
 
+##### Kör lokal redis
+
+På mac i valfritt terminalfönster:
+
+    > redis-server
+    
+##### Kör lokal ActiveMQ (valfritt)
+För att bli av med onödig loggning kan man starta en ActiveMQ lokalt:
+
+    > apache-activemq-5.13.0/bin> ./activemq start
+
 ##### web/build.gradle
 Ändra gretty-configen
 

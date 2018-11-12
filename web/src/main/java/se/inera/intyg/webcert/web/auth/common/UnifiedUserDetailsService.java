@@ -90,7 +90,7 @@ public class UnifiedUserDetailsService implements SAMLUserDetailsService {
         case URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_TLSCLIENT:
             return webcertUserDetailsService.loadUserBySAML(samlCredential);
         case URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_UNSPECIFIED:
-            if (Arrays.stream(environment.getActiveProfiles()).anyMatch("dev"::equalsIgnoreCase)) {
+            if (Arrays.stream(environment.getActiveProfiles()).anyMatch("wc-security-test"::equalsIgnoreCase)) {
                 return webcertUserDetailsService.loadUserBySAML(samlCredential);
             }
             throw new IllegalArgumentException(

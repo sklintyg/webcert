@@ -169,7 +169,7 @@ public class IntygIntegrationController extends BaseIntegrationController {
      * @param intygId The id of the certificate to view.
      */
     @GET
-    @Path("/{certId}")
+    @Path("{certId}")
     @PrometheusTimeMethod
     public Response getRedirectToIntyg(@Context UriInfo uriInfo,
             @PathParam(PARAM_CERT_ID) String intygId,
@@ -199,6 +199,44 @@ public class IntygIntegrationController extends BaseIntegrationController {
 
         WebCertUser user = getWebCertUser();
         user.setParameters(integrationParameters);
+
+        return handleRedirectToIntyg(uriInfo, intygId, enhetId, user);
+    }
+
+    /**
+     * Fetches an certificate from IT or Webcert and then performs a redirect to the view that displays
+     * the certificate.
+     *
+     * This entry point is only used when redirecting a POST after authentication from the
+     * {@link se.inera.intyg.webcert.web.auth.WebcertAuthenticationSuccessHandler}
+     * where the custom handler has applied the deep-integration parameters on the session.
+     *
+     * This is a work-around for the issue where Springs default SavedRequestAuthenticationSuccessHandler only performs
+     * URL-based redirect, e.g. our POST becomes a GET and all form-params are discarded.
+     *
+     * Note that this method requires the IntegrationParameters to be present or an exception will be thrown.
+     *
+     * @param intygId The id of the certificate to view.
+     */
+    @GET
+    @Path("{certId}/saved")
+    @PrometheusTimeMethod
+    public Response getRedirectToIntyg(@Context UriInfo uriInfo,
+                                       @PathParam(PARAM_CERT_ID) String intygId,
+                                       @DefaultValue("") @QueryParam(PARAM_ENHET_ID) String enhetId) {
+
+        Map<String, Object> params = ImmutableMap.of(PARAM_CERT_ID, intygId);
+
+        // Get the user directly, do not run the "has already got parameters check" since that's exactly what we've got here.
+        WebCertUser user = getWebCertUserService().getUser();
+
+        // Integration params MUST be set
+        if (user.getParameters() == null) {
+            throw new IllegalStateException("Cannot process saved request, no deep-integration parameters has been set.");
+        }
+
+        // validate the request
+        validateRequest(params);
 
         return handleRedirectToIntyg(uriInfo, intygId, enhetId, user);
     }
