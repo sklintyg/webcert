@@ -40,7 +40,6 @@ import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEn
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
-import se.inera.intyg.webcert.web.integration.converters.IntygsTypToInternal;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
@@ -101,7 +100,10 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
         }
 
         // Make sure any external intygstyp representations (such as TSTRK1007) are mapped to our internal types.
-        String internalIntygsTyp = IntygsTypToInternal.convertToInternalIntygsTyp(intygsTyp);
+        String internalIntygsTyp = intygsTyp;
+        if (!moduleRegistry.moduleExists(intygsTyp)) {
+            internalIntygsTyp = moduleRegistry.getModuleIdFromExternalId(intygsTyp);
+        }
 
         switch (internalIntygsTyp.toLowerCase()) {
         case "fk7263":

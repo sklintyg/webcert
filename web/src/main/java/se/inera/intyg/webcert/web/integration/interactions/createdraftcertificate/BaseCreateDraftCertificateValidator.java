@@ -36,7 +36,6 @@ import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.SekretessStatus;
-import se.inera.intyg.webcert.web.integration.converters.IntygsTypToInternal;
 import se.inera.intyg.webcert.web.integration.validators.PersonnummerChecksumValidator;
 import se.inera.intyg.webcert.web.integration.validators.ResultValidator;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
@@ -102,7 +101,7 @@ public abstract class BaseCreateDraftCertificateValidator {
             Personnummer personnummer,
             String typAvIntyg) {
 
-        String intygsTyp = IntygsTypToInternal.convertToInternalIntygsTyp(typAvIntyg);
+        String intygsTyp = moduleRegistry.getModuleIdFromExternalId(typAvIntyg);
 
         if (personnummer == null) {
             errors.addError("Cannot issue intyg type {0} for personnummer that is null", intygsTyp);

@@ -23,7 +23,6 @@ import se.inera.intyg.infra.security.authorities.validation.AuthoritiesValidator
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.schemas.contract.Personnummer;
-import se.inera.intyg.webcert.web.integration.converters.IntygsTypToInternal;
 import se.inera.intyg.webcert.web.integration.interactions.createdraftcertificate.BaseCreateDraftCertificateValidator;
 import se.inera.intyg.webcert.web.integration.validators.ResultValidator;
 import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v3.Enhet;
@@ -102,7 +101,7 @@ public class CreateDraftCertificateValidatorImpl extends BaseCreateDraftCertific
                                                         IntygUser user) {
 
         AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
-        String intygsTyp = IntygsTypToInternal.convertToInternalIntygsTyp(typAvIntyg.getCode());
+        String intygsTyp =  moduleRegistry.getModuleIdFromExternalId(typAvIntyg.getCode());
 
         if (!authoritiesValidator.given(user, intygsTyp)
                 .features(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)

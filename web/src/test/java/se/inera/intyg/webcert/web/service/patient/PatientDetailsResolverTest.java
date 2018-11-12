@@ -122,6 +122,7 @@ public class PatientDetailsResolverTest {
 
         when(freeWebCertUser.getParameters()).thenReturn(null);
         when(freeWebCertUser.getOrigin()).thenReturn(UserOriginType.NORMAL.name());
+        when(moduleRegistry.moduleExists(anyString())).thenReturn(true);
     }
 
     private IntegrationParameters buildIntegrationParameters() {
