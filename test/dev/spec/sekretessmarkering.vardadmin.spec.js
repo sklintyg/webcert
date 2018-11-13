@@ -26,9 +26,10 @@ var restUtil = wcTestTools.restUtil;
 var WelcomePage = wcTestTools.pages.welcome;
 var SokSkrivIntygPage = wcTestTools.pages.sokSkrivIntyg.pickPatient;
 
-xdescribe('Testa sekretessmarkering för vårdadmin', function() {
+describe('Testa sekretessmarkering för vårdadmin', function() {
 
-    var utkastId;
+    var utkastId,
+        intygTypeVersion = '1.1';
 
     beforeAll(function() {
         browser.ignoreSynchronization = false;
@@ -80,31 +81,27 @@ xdescribe('Testa sekretessmarkering för vårdadmin', function() {
     });
 
     describe('Sekretessmarkera Tolvan', function() {
-
         it('set sekr and view patient', function() {
             restHelper.setSekretessmarkering('191212121212', true).then(function() {
                 SokSkrivIntygPage.get();
                 SokSkrivIntygPage.selectPersonnummer('19121212-1212');
-                expect(element(by.id('wc-sekretessmarkering-icon-19121212-1212')).isPresent()).toBe(true);
-                expect(element(by.id('wc-sekretessmarkering-text-19121212-1212')).isPresent()).toBe(true);
-                element.all(by.css('#intygType option')).then(function(items) {
-                    expect(items.length).toBe(1);
-                });
-                expect(element(by.css('#current-list-noResults-unit strong')).getText()).toBe('Inga intyg hittades.');
+                expect(element(by.id('wc-sekretessmarkering-text-191212121212')).isPresent()).toBe(true);
             });
         });
 
         it('Räkna antal obesvarade frågor i headern innan vi sekretessmarkerat', function() {
             element(by.css('a[ng-href="/#/enhet-arenden"]')).click();
             expect(element(by.id('stat-unitstat-unhandled-question-count')).isPresent()).toBe(false);
+            expect(element(by.css('wc-no-arenden-message div:last-of-type'))
+                .getText()).toBe('Det finns inga ohanterade ärenden för den enhet eller de enheter du är inloggad på.');
         });
 
         it('Räkna antal ej signerade utkast i headern innan vi sekretessmarkerat', function() {
-            expect(element(by.id('stat-unitstat-unsigned-certs-count')).isPresent()).toBe(false);
+            expect(element(by.id('stat-unitstat-unsigned-certs-count')).getText()).toBe('1');
         });
 
         it('Försök öppna utkastet via direktlänk', function() {
-            browser.get('/#/luse/edit/' + utkastId + '/').then(function() {
+            browser.get('/#/luse/'+ intygTypeVersion + '/edit/' + utkastId + '/').then(function() {
                 expect(element(by.id('error-panel')).isPresent()).toBe(true);
             });
         });

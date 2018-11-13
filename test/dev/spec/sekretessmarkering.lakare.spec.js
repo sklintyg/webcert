@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*globals describe,it,browser */
+/*globals describe,it,browser,protractor,logger,debugger */
 'use strict';
 var wcTestTools = require('webcert-testtools');
 var specHelper = wcTestTools.helpers.spec;
@@ -28,13 +28,14 @@ var LuseIntygPage = wcTestTools.pages.intyg.luse.intyg;
 var SokSkrivIntygPage = wcTestTools.pages.sokSkrivIntyg.pickPatient;
 var UnsignedIntygPage = wcTestTools.pages.unsignedPage;
 
-xdescribe('Testa sekretessmarkering för läkare', function() {
+describe('Testa sekretessmarkering för läkare', function() {
 
     var intygsId;
     var utkastId;
     var arendeId = 'luse-arende-avstmn-hantera';
 
     beforeAll(function() {
+
         browser.ignoreSynchronization = false;
 
         var intyg = intygFromJsonFactory.defaultLuse();
@@ -52,7 +53,7 @@ xdescribe('Testa sekretessmarkering för läkare', function() {
     afterAll(function() {
         restUtil.deleteUtkast(utkastId);
         restUtil.deleteIntyg(intygsId);
-
+        restUtil.deleteArende(arendeId);
         // Explicitly make sure the PU-service is enabled and s-markering removed from
         // Tolvansson.
         restUtil.setPuServiceState(true).then(function() {
@@ -66,7 +67,6 @@ xdescribe('Testa sekretessmarkering för läkare', function() {
         specHelper.login();
     });
 
-
     describe('Sekretessmarkera Tolvan och testa ett flöde', function() {
 
         it('set sekr and view patient', function() {
@@ -76,11 +76,9 @@ xdescribe('Testa sekretessmarkering för läkare', function() {
         });
 
         it('set sekr and view patient', function() {
+            expect(element(by.id('wc-sekretessmarkering-text-191212121212')).isPresent()).toBe(true);
+            expect(element(by.id('wc-avliden-text-191212121212')).isPresent()).toBe(false);
 
-            expect(element(by.id('wc-sekretessmarkering-icon-19121212-1212')).isPresent()).toBe(true);
-            expect(element(by.id('wc-sekretessmarkering-text-19121212-1212')).isPresent()).toBe(true);
-            expect(element(by.id('wc-avliden-icon-19121212-1212')).isPresent()).toBe(false);
-            expect(element(by.id('wc-avliden-text-19121212-1212')).isPresent()).toBe(false);
         });
 
         it('LUSE-intyget skall ej gå att förnya', function() {
@@ -90,8 +88,7 @@ xdescribe('Testa sekretessmarkering för läkare', function() {
         it('Gå in på LUSE-intyget och verifiera att ikon och text syns', function() {
             element(by.id('showBtn-' + intygsId)).sendKeys(protractor.Key.SPACE);
             expect(LuseIntygPage.isAt()).toBeTruthy();
-            expect(element(by.id('wc-sekretessmarkering-icon-19121212-1212')).isPresent()).toBe(true);
-            expect(element(by.id('wc-sekretessmarkering-text-19121212-1212')).isPresent()).toBe(true);
+            expect(element(by.id('wc-sekretessmarkering-text-191212121212')).isPresent()).toBe(true);
         });
 
         it('Verifiera varningstext för utskrift av s-märkt', function() {
@@ -102,7 +99,7 @@ xdescribe('Testa sekretessmarkering för läkare', function() {
 
         it('Stäng diaglogen', function() {
             element(by.id('button2print-patient-sekretessmarkerad')).sendKeys(protractor.Key.SPACE);
-        })
+        });
     });
 
 
@@ -157,8 +154,7 @@ xdescribe('Testa sekretessmarkering för läkare', function() {
         });
 
         it('Verifiera att ikon och text för s-märkning syns', function() {
-            expect(element(by.id('wc-sekretessmarkering-icon-19121212-1212')).isPresent()).toBe(true);
-            expect(element(by.id('wc-sekretessmarkering-text-19121212-1212')).isPresent()).toBe(true);
+            expect(element(by.id('wc-sekretessmarkering-text-191212121212')).isPresent()).toBe(true);
         });
 
         it('Verifiera att varningsmeddelande för utskrift syns', function() {
@@ -172,26 +168,26 @@ xdescribe('Testa sekretessmarkering för läkare', function() {
         });
 
         it('Verifiera att utkastet finns i tabellen med sekretessmarkeringsikon', function() {
-            expect(element(by.id('wc-sekretessmarkering-icon-' + utkastId)).isPresent()).toBe(true);
+            expect(element.all(by.css('wc-utkast-list wc-sekretess-avliden-ikon i'))
+                .first().getText()).toBe('security'); // material icon is "security"
         });
     });
 
     describe('Skapa en fråga på det signerade intyget', function() {
 
         it('Gå till intygssidan', function() {
-            LuseIntygPage.get(intygsId);
-            expect(LuseIntygPage.isAt()).toBeTruthy();
+           LuseIntygPage.get(intygsId);
+           expect(LuseIntygPage.isAt()).toBeTruthy();
         });
 
         it('Skicka intyget', function() {
-            LuseIntygPage.skicka.knapp.sendKeys(protractor.Key.SPACE);
-            browser.wait(LuseIntygPage.skicka.dialogKnapp.isDisplayed())
-                .then(LuseIntygPage.skicka.dialogKnapp.sendKeys(protractor.Key.SPACE));
+           LuseIntygPage.skicka.knapp.sendKeys(protractor.Key.SPACE);
+           browser.wait(LuseIntygPage.skicka.dialogKnapp.isDisplayed())
+               .then(LuseIntygPage.skicka.dialogKnapp.sendKeys(protractor.Key.SPACE));
 
-
-            element.all(by.id('#sendBtn')).then(function(items) {
-                expect(items.length).toBe(0);
-            });
+           element.all(by.id('#sendBtn')).then(function(items) {
+               expect(items.length).toBe(0);
+           });
         });
 
         it('Skapa ärende på intyget', function() {
@@ -202,11 +198,7 @@ xdescribe('Testa sekretessmarkering för läkare', function() {
         it('Klicka på tabben för Fråga/svar', function() {
             element(by.css('a[ng-href="/#/enhet-arenden"]')).click();
             expect(element(by.id('stat-unitstat-unhandled-question-count')).getText()).toBe('1');
-            expect(element.all(by.css('.wc-table-striped tr td button')).first().getText()).toBe('Visa');
-        });
-
-        it('Verifiera s-markeringsikon bredvid frågan i listan', function() {
-            expect(element(by.css('.patient-alert')).isPresent()).toBe(true);
+            expect(element.all(by.css('.wc-table-striped tr td button')).last().getText()).toBe('Öppna');
         });
     });
 });
