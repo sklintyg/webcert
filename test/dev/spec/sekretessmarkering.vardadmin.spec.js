@@ -29,6 +29,7 @@ var SokSkrivIntygPage = wcTestTools.pages.sokSkrivIntyg.pickPatient;
 describe('Testa sekretessmarkering för vårdadmin', function() {
 
     var utkastId,
+        unhandledCertsCount = 0,
         intygTypeVersion = '1.1';
 
     beforeAll(function() {
@@ -61,6 +62,13 @@ describe('Testa sekretessmarkering för vårdadmin', function() {
     describe('Skapa ett utkast', function() {
         it('Skapa utkast för Tolvansson', function() {
             SokSkrivIntygPage.get();
+
+            if(element(by.id('stat-unitstat-unsigned-certs-count')).isPresent()) {
+                element(by.id('stat-unitstat-unsigned-certs-count')).getText().then(function(value) {
+                    unhandledCertsCount = parseInt(value, 10);
+                });
+            }
+
             specHelper.createUtkastForPatient('191212121212', 'luse');
             specHelper.getUtkastIdFromUrl().then(function(id) {
                 utkastId = id;
@@ -76,7 +84,7 @@ describe('Testa sekretessmarkering för vårdadmin', function() {
         });
 
         it('Räkna antal ej signerade utkast i headern innan vi sekretessmarkerat', function() {
-            expect(element(by.id('stat-unitstat-unsigned-certs-count')).getText()).toBe('1');
+            expect(element(by.id('stat-unitstat-unsigned-certs-count')).getText()).toBe((unhandledCertsCount + 1) + '');
         });
     });
 
@@ -89,15 +97,15 @@ describe('Testa sekretessmarkering för vårdadmin', function() {
             });
         });
 
-        it('Räkna antal obesvarade frågor i headern innan vi sekretessmarkerat', function() {
+        it('Räkna antal obesvarade frågor i headern efter vi sekretessmarkerat', function() {
             element(by.css('a[ng-href="/#/enhet-arenden"]')).click();
             expect(element(by.id('stat-unitstat-unhandled-question-count')).isPresent()).toBe(false);
             expect(element(by.css('wc-no-arenden-message div:last-of-type'))
                 .getText()).toBe('Det finns inga ohanterade ärenden för den enhet eller de enheter du är inloggad på.');
         });
 
-        it('Räkna antal ej signerade utkast i headern innan vi sekretessmarkerat', function() {
-            expect(element(by.id('stat-unitstat-unsigned-certs-count')).getText()).toBe('1');
+        it('Räkna antal ej signerade utkast i headern efter vi sekretessmarkerat', function() {
+            expect(element(by.id('stat-unitstat-unsigned-certs-count')).isPresent()).toBe(false);
         });
 
         it('Försök öppna utkastet via direktlänk', function() {
