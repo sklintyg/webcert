@@ -32,12 +32,11 @@
   </div>
 
   <!-- buttons -->
-  <div class="filter-field col-md-2">
-    <label>&nbsp;</label><br>
-    <button type="button" id="uc-filter-btn" class="btn btn-success" ng-click="search()">Sök</button>
-    <button type="button" class="btn btn-default" ng-click="resetFilter()" id="reset-search-form">Återställ sökfilter
-    </button>
-  </div>
+</div>
+
+<div class="buttons">
+  <button type="button" id="uc-filter-btn" class="btn btn-success" ng-click="search()">Sök</button>
+  <button type="button" class="btn btn-default" ng-click="resetFilter()" id="reset-search-form">Återställ sökfilter</button>
 </div>
 
 <div ng-if="filterForm.$invalid && !filterForm.$pristine" ng-cloak class="filter-errors">

@@ -27,4 +27,11 @@ wc-enhet-arenden-filter {
       padding-left: 13px;
       padding-right: 12px;
   }
+
+  .buttons {
+    padding-top: 12px;
+    .btn {
+      min-height: 40px;
+    }
+  }
 }
