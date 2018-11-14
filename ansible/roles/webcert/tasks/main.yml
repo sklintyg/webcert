@@ -107,6 +107,11 @@
     state: absent
     path: "{{ releases_folder }}/webcert-liquibase-runner-{{ version }}.zip"
 
+- name: Remove unzipped webcert-liquibase-runner-{{ version }} from releases
+  file:
+    state: absent
+    path: "{{ releases_folder }}/webcert-liquibase-runner-{{ version }}"
+
 - name: Remove webcert-web-{{ version }}.war from releases (as it is now deployed to tomcat)
   file:
     state: absent
