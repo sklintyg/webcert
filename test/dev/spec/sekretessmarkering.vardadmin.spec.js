@@ -63,11 +63,13 @@ describe('Testa sekretessmarkering för vårdadmin', function() {
         it('Skapa utkast för Tolvansson', function() {
             SokSkrivIntygPage.get();
 
-            if(element(by.id('stat-unitstat-unsigned-certs-count')).isPresent()) {
-                element(by.id('stat-unitstat-unsigned-certs-count')).getText().then(function(value) {
-                    unhandledCertsCount = parseInt(value, 10);
-                });
-            }
+            element(by.id('stat-unitstat-unsigned-certs-count')).isPresent().then(function(present) {
+                if(present) {
+                    element(by.id('stat-unitstat-unsigned-certs-count')).getText().then(function(value) {
+                        unhandledCertsCount = parseInt(value, 10);
+                    });
+                }
+            });
 
             specHelper.createUtkastForPatient('191212121212', 'luse');
             specHelper.getUtkastIdFromUrl().then(function(id) {
@@ -102,10 +104,6 @@ describe('Testa sekretessmarkering för vårdadmin', function() {
             expect(element(by.id('stat-unitstat-unhandled-question-count')).isPresent()).toBe(false);
             expect(element(by.css('wc-no-arenden-message div:last-of-type'))
                 .getText()).toBe('Det finns inga ohanterade ärenden för den enhet eller de enheter du är inloggad på.');
-        });
-
-        it('Räkna antal ej signerade utkast i headern efter vi sekretessmarkerat', function() {
-            expect(element(by.id('stat-unitstat-unsigned-certs-count')).isPresent()).toBe(false);
         });
 
         it('Försök öppna utkastet via direktlänk', function() {
