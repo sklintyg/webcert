@@ -18,31 +18,31 @@
  */
 package se.inera.intyg.webcert.web.security;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
-import org.springframework.web.filter.OncePerRequestFilter;
+import java.io.IOException;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.csrf.CsrfToken;
+import org.springframework.web.filter.OncePerRequestFilter;
 
 public class CreateCsrfTokenFilter extends OncePerRequestFilter {
-
-    private static final String ANGULARJS_CSRF_COOKIE_NAME = "XSRF-TOKEN";
 
     @Autowired
     private CookieCsrfTokenRepository csrfTokenRepository;
 
-
-
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-        Cookie csrfCookie = new Cookie(ANGULARJS_CSRF_COOKIE_NAME, csrfTokenRepository.generateToken(request).getToken());
-        response.addCookie(csrfCookie);
+        boolean missingToken = csrfTokenRepository.loadToken(request) == null;
+        if (missingToken) {
+            CsrfToken csrfToken = csrfTokenRepository.generateToken(request);
+            csrfTokenRepository.saveToken(csrfToken, request, response);
+        }
 
         // Proceed with other filters
         filterChain.doFilter(request, response);
