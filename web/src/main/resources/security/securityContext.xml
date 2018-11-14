@@ -218,9 +218,10 @@
   <!-- ======================================================================== -->
   <beans profile="wc-security-test">
     <!-- /visa/intyg/ and /webcert/web are deep-integration links used by VAS and Cosmic and should use SAML SSO -->
-    <security:http request-matcher="regex" pattern="(\/fake)|(\/welcome.html)|(\/logout)|(\/saml\/.*)|(\/visa\/intyg\/.*)|(\/webcert\/web\/.*)|(\/web\/maillink\/.*)" entry-point-ref="samlEntryPoint">
+    <security:http use-expressions="false" request-matcher="regex" pattern="(\/fake)|(\/welcome.html)|(\/logout)|(\/saml\/.*)|(\/visa\/intyg\/.*)|(\/webcert\/web\/.*)|(\/web\/maillink\/.*)" entry-point-ref="samlEntryPoint">
       <security:csrf disabled="true"/>
       <security:logout logout-url="/logout" logout-success-url="/welcome.html" invalidate-session="true"/>
+      <security:intercept-url pattern="/**" access="IS_AUTHENTICATED_FULLY"/>
       <security:custom-filter before="PRE_AUTH_FILTER" ref="createCsrfTokenFilter"/>
       <security:custom-filter position="PRE_AUTH_FILTER" ref="fakeAuthFilter"/>
       <security:custom-filter after="BASIC_AUTH_FILTER" ref="samlFilter"/>
