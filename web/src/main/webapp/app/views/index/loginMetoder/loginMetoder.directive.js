@@ -35,7 +35,7 @@ angular.module('webcert').directive('wcLoginMetoder', ['$window', '$http', 'modu
 
                 scope.loginMethods = [{
                     url:'/saml/login/alias/defaultAlias?idp=' + moduleConfig.SAKERHETSTJANST_IDP_URL,
-                    name:'SITHS-kort/Efos-kort'
+                    name:'SITHS/Efos-kort'
                 },{
                     url:'/saml/login/alias/eleg?idp=' + moduleConfig.CGI_FUNKTIONSTJANSTER_IDP_URL,
                     name:'E-legitimation'
