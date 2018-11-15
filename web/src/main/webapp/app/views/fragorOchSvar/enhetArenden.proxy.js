@@ -28,7 +28,7 @@ angular.module('webcert').factory('webcert.enhetArendenProxy',
             $log.debug('_getQA');
             var restPath = '/api/fragasvar/sok';
             $http.get(restPath, { params: query}).then(function(response) {
-                $log.debug('got data:' + response.data);
+                $log.debug(restPath + ' response:' + response.data);
                 onSuccess(response.data);
             }, function(response) {
                 $log.error('error ' + response.status);

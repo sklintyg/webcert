@@ -111,10 +111,10 @@ angular.module('webcert').controller('webcert.SokSkrivValjUtkastTypeCtrl',
                     Service.updateIntygList(Viewstate);
                     Viewstate.unsigned = Service.hasUnsigned(Viewstate.currentList);
                     Viewstate.tidigareIntygLoading = false;
-                }, function(errorData, errorCode) {
+                }, function(errorCode, errorData) {
                     Viewstate.tidigareIntygLoading = false;
-                    $log.debug('Query Error' + errorData);
-                    Viewstate.intygListErrorMessageKey = errorCode;
+                    $log.debug('Query Error. Code: ' + errorCode + '. Data:[' + errorData + ']');
+                    Viewstate.intygListErrorMessageKey = errorData;
                 });
 
             }
