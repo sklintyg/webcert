@@ -83,7 +83,8 @@ describe('UtkastProxy', function() {
                         deprecated: true,
                         displayDeprecated: false,
                         url: 'fk7263',
-                        fragaSvarAvailable: true
+                        fragaSvarAvailable: true,
+                        issuerTypeId: 'FK 7263'
                     },
                     {
                         sortValue: 2,
@@ -93,7 +94,8 @@ describe('UtkastProxy', function() {
                         deprecated: false,
                         displayDeprecated: false,
                         url: 'ts-bas',
-                        fragaSvarAvailable: false
+                        fragaSvarAvailable: false,
+                        issuerTypeId: 'TSTRK1007'
                     }
                 ];
             }
@@ -182,7 +184,8 @@ describe('UtkastProxy', function() {
                     deprecated: true,
                     displayDeprecated: false,
                     detailedDescription: 'beskrivning',
-                    fragaSvarAvailable: true
+                    fragaSvarAvailable: true,
+                    issuerTypeId: 'FK 7263'
                 },
                 {
                     sortValue: 2,
@@ -191,7 +194,8 @@ describe('UtkastProxy', function() {
                     deprecated: false,
                     displayDeprecated: false,
                     detailedDescription: 'beskrivning2',
-                    fragaSvarAvailable: false
+                    fragaSvarAvailable: false,
+                    issuerTypeId: 'TSTRK1007'
                 }
             ]);
         });

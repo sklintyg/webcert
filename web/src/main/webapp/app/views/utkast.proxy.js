@@ -73,7 +73,8 @@ angular.module('webcert').factory('webcert.UtkastProxy',
                             deprecated: m.deprecated,
                             displayDeprecated: m.displayDeprecated,
                             detailedDescription: m.detailedDescription,
-                            fragaSvarAvailable: m.fragaSvarAvailable
+                            fragaSvarAvailable: m.fragaSvarAvailable,
+                            issuerTypeId: m.issuerTypeId
                         });
                     }
                 }
