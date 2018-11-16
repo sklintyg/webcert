@@ -7,7 +7,14 @@
         <h3 class="page-heading2" id="patientNamn">
           <span ng-if="::hasPrivilege">{{patientModel.fornamn}} {{patientModel.mellannamn}} {{patientModel.efternamn}} - </span>{{patientModel.personnummer | PersonIdFormatter}}
 
-          <button class="btn btn-primary patient-button" type="button" ng-click="changePatient()"><i class="material-icons">swap_horiz</i> Byt patient</button>
+          <button class="btn btn-primary patient-button"
+                  type="button"
+                  ng-click="swapPatientPopOverOpen=false;changePatient()"
+                  uib-popover="Byt patient att skriva och söka intyg för."
+                  popover-is-open="swapPatientPopOverOpen"
+                  popover-popup-delay="300"
+                  popover-append-to-body="true"
+                  popover-placement="auto top"><i class="material-icons">swap_horiz</i> Byt patient</button>
         </h3>
       </div>
 
