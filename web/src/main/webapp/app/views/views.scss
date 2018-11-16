@@ -111,6 +111,8 @@ h2 {
       padding: 5px;
       border-top: 1px solid transparent;
       border-bottom: 1px solid $wc-color-15;
+      //IE11 needs this explicitly to avoid column height behaviour -_--- (INTYG-7611)
+      height: 100%;
 
       &:first-child {
         padding-left: 21px;
