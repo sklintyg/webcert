@@ -293,7 +293,7 @@ public class IntygServiceTest {
     @Before
     public void setupPUService() {
         when(patientDetailsResolver.getPersonFromPUService(any(Personnummer.class)))
-                .thenReturn(getPersonSvar(false, PersonSvar.Status.FOUND));
+                .thenReturn(getPersonSvar(false));
         when(patientDetailsResolver.resolvePatient(any(Personnummer.class), anyString())).thenReturn(buildPatient(false, false));
     }
 
@@ -1409,11 +1409,10 @@ public class IntygServiceTest {
         return metaData;
     }
 
-    private PersonSvar getPersonSvar(boolean deceased, PersonSvar.Status status) {
-        return new PersonSvar(
+    private PersonSvar getPersonSvar(boolean deceased) {
+        return PersonSvar.found(
                 new Person(PERSNR, false, deceased, "fornamn", "mellannamn", "efternamn", "postadress",
-                        "postnummer", "postort"),
-                status);
+                        "postnummer", "postort"));
     }
 
 }

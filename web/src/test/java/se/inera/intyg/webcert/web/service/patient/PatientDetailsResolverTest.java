@@ -646,11 +646,11 @@ public class PatientDetailsResolverTest {
 
     private PersonSvar buildPersonSvar() {
         Person person = buildPerson();
-        return new PersonSvar(person, PersonSvar.Status.FOUND);
+        return PersonSvar.found(person);
     }
 
     private PersonSvar buildErrorPersonSvar() {
-        return new PersonSvar(null, PersonSvar.Status.ERROR);
+        return PersonSvar.error();
     }
 
     private Person buildPerson() {

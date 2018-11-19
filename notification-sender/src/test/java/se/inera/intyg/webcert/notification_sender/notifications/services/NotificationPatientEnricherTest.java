@@ -60,7 +60,7 @@ public class NotificationPatientEnricherTest {
     @Test(expected = TemporaryException.class)
     public void testExceptionIsThrownWhenPuInvocationFails() throws TemporaryException {
         when(puService.getPerson(any(Personnummer.class)))
-                .thenReturn(new PersonSvar(NotificationTestHelper.buildPerson(false), PersonSvar.Status.ERROR));
+                .thenReturn(PersonSvar.error());
         try {
             testee.enrichWithPatient(buildIntyg("lisjp"));
         } catch (Exception e) {
@@ -114,7 +114,7 @@ public class NotificationPatientEnricherTest {
 
 
     private PersonSvar buildPersonSvar(boolean sekretessmarkering) {
-        return new PersonSvar(NotificationTestHelper.buildPerson(sekretessmarkering), PersonSvar.Status.FOUND);
+        return PersonSvar.found(NotificationTestHelper.buildPerson(sekretessmarkering));
     }
 
 }

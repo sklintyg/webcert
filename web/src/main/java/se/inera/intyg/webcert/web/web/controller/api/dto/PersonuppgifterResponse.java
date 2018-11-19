@@ -22,6 +22,6 @@ import se.inera.intyg.infra.integration.pu.model.PersonSvar;
 
 public class PersonuppgifterResponse extends PersonSvar {
     public PersonuppgifterResponse(PersonSvar personSvar) {
-        super(personSvar);
+        super(personSvar.getPerson(), personSvar.getStatus());
     }
 }

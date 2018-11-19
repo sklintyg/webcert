@@ -101,7 +101,7 @@ public class RouteTest {
         when(moduleRegistry.resolveVersionFromUtlatandeJson(anyString())).thenReturn("1.0");
         when(moduleApi.getUtlatandeFromJson(anyString())).thenReturn(new Fk7263Utlatande());
         when(moduleApi.getIntygFromUtlatande(any())).thenReturn(NotificationTestHelper.createIntyg("fk7263"));
-        when(mockedPuService.getPerson(any())).thenReturn(new PersonSvar(NotificationTestHelper.buildPerson(false), PersonSvar.Status.FOUND));
+        when(mockedPuService.getPerson(any())).thenReturn(PersonSvar.found(NotificationTestHelper.buildPerson(false)));
     }
 
     @After
