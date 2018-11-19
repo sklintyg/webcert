@@ -18,6 +18,17 @@
  */
 package se.inera.intyg.webcert.web.service.patient;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anySet;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,17 +38,22 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import se.inera.intyg.common.db.v1.model.internal.DbUtlatandeV1;
 import se.inera.intyg.common.db.support.DbModuleEntryPoint;
+import se.inera.intyg.common.db.v1.model.internal.DbUtlatandeV1;
+import se.inera.intyg.common.doi.support.DoiModuleEntryPoint;
+import se.inera.intyg.common.luae_fs.support.LuaefsEntryPoint;
 import se.inera.intyg.common.support.model.common.internal.GrundData;
 import se.inera.intyg.common.support.model.common.internal.Patient;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
+import se.inera.intyg.common.support.modules.support.ModuleEntryPoint;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
+import se.inera.intyg.common.ts_bas.support.TsBasEntryPoint;
 import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
 import se.inera.intyg.infra.integration.hsa.model.Vardgivare;
 import se.inera.intyg.infra.integration.pu.model.Person;
@@ -50,17 +66,6 @@ import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.ArgumentMatchers.anySet;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 /**
  * Created by eriklupander on 2017-08-14.
@@ -104,6 +109,9 @@ public class PatientDetailsResolverTest {
 
     @Mock
     private IntygModuleRegistry moduleRegistry;
+
+    @Mock
+    private ModuleEntryPoint moduleEntryPoint;
 
     @InjectMocks
     private PatientDetailsResolverImpl testee = new PatientDetailsResolverImpl();
@@ -195,9 +203,11 @@ public class PatientDetailsResolverTest {
      * Standardfallet för FK-intyg är namn + sekr + avliden från PU, alltid nullad address.
      */
     @Test
-    public void testFKIntygIntegrationWithPuOk() {
+    public void testFKIntygIntegrationWithPuOk() throws ModuleNotFoundException {
         when(puService.getPerson(any(Personnummer.class))).thenReturn(buildPersonSvar());
         when(webCertUserService.getUser()).thenReturn(integratedWebCertUser);
+
+        when(moduleRegistry.getModuleEntryPoint(Mockito.eq("luae_fs"))).thenReturn(new LuaefsEntryPoint());
 
         Patient patient = testee.resolvePatient(PNR, "luae_fs");
         assertEquals(PNR, patient.getPersonId());
@@ -207,7 +217,7 @@ public class PatientDetailsResolverTest {
         assertNull(patient.getPostadress());
         assertNull(patient.getPostnummer());
         assertNull(patient.getPostort());
-        assertEquals(PU_AVLIDEN || INTEGR_AVLIDEN, patient.isAvliden());
+        assertEquals(PU_AVLIDEN, patient.isAvliden());
         assertEquals(false, patient.isSekretessmarkering());
     }
 
@@ -215,9 +225,11 @@ public class PatientDetailsResolverTest {
      * För FK + integration + UTAN PU vill vi ha namn etc från Integrations-parametrar.
      */
     @Test
-    public void testFKIntygIntegrationWithPuUnavailable() {
+    public void testFKIntygIntegrationWithPuUnavailable() throws ModuleNotFoundException {
         when(puService.getPerson(any(Personnummer.class))).thenReturn(buildErrorPersonSvar());
         when(webCertUserService.getUser()).thenReturn(integratedWebCertUser);
+
+        when(moduleRegistry.getModuleEntryPoint(Mockito.eq("luae_fs"))).thenReturn(new LuaefsEntryPoint());
 
         Patient patient = testee.resolvePatient(PNR, "luae_fs");
         assertEquals(PNR, patient.getPersonId());
@@ -235,9 +247,11 @@ public class PatientDetailsResolverTest {
      * FK - fristående, fungerande PU.
      */
     @Test
-    public void testFKIntygFristaendeWithPuOk() {
+    public void testFKIntygFristaendeWithPuOk() throws ModuleNotFoundException {
         when(puService.getPerson(any(Personnummer.class))).thenReturn(buildPersonSvar());
         when(webCertUserService.getUser()).thenReturn(freeWebCertUser);
+
+        when(moduleRegistry.getModuleEntryPoint(Mockito.eq("luae_fs"))).thenReturn(new LuaefsEntryPoint());
 
         Patient patient = testee.resolvePatient(PNR, "luae_fs");
         assertEquals(PNR, patient.getPersonId());
@@ -255,9 +269,11 @@ public class PatientDetailsResolverTest {
      * FK - fristående, EJ PU.
      */
     @Test
-    public void testFKIntygFristaendeWithPuUnavailable() {
+    public void testFKIntygFristaendeWithPuUnavailable() throws ModuleNotFoundException {
         when(puService.getPerson(any(Personnummer.class))).thenReturn(buildErrorPersonSvar());
         when(webCertUserService.getUser()).thenReturn(freeWebCertUser);
+
+        when(moduleRegistry.getModuleEntryPoint(Mockito.eq("luae_fs"))).thenReturn(new LuaefsEntryPoint());
 
         Patient patient = testee.resolvePatient(PNR, "luae_fs");
         assertNull(patient);
@@ -269,9 +285,11 @@ public class PatientDetailsResolverTest {
      * TS - integration - PU: Namn + meta från PU, adress från INTEGR
      */
     @Test
-    public void testTSIntygIntegrationWithPuOk() {
+    public void testTSIntygIntegrationWithPuOk() throws ModuleNotFoundException {
         when(puService.getPerson(any(Personnummer.class))).thenReturn(buildPersonSvar());
         when(webCertUserService.getUser()).thenReturn(integratedWebCertUser);
+
+        when(moduleRegistry.getModuleEntryPoint(Mockito.eq("ts-bas"))).thenReturn(new TsBasEntryPoint());
 
         Patient patient = testee.resolvePatient(PNR, "ts-bas");
         assertEquals(PNR, patient.getPersonId());
@@ -289,10 +307,12 @@ public class PatientDetailsResolverTest {
      * TS - integration - PU: Namn + meta från PU, adress från PU
      */
     @Test
-    public void testTSIntygIntegrationWithPuOkButAddressMissingFromIntegration() {
+    public void testTSIntygIntegrationWithPuOkButAddressMissingFromIntegration() throws ModuleNotFoundException {
         when(puService.getPerson(any(Personnummer.class))).thenReturn(buildPersonSvar());
         when(webCertUserService.getUser()).thenReturn(integratedWebCertUser);
         when(integratedWebCertUser.getParameters()).thenReturn(buildIntegrationParametersWithNullAddress());
+
+        when(moduleRegistry.getModuleEntryPoint(Mockito.eq("ts-bas"))).thenReturn(new TsBasEntryPoint());
 
         Patient patient = testee.resolvePatient(PNR, "ts-bas");
         assertEquals(PNR, patient.getPersonId());
@@ -310,9 +330,11 @@ public class PatientDetailsResolverTest {
      * TS + integration + EJ PU, allt som går skall hämtas från parametrar.
      */
     @Test
-    public void testTSIntygIntegrationWithPuUnavailable() {
+    public void testTSIntygIntegrationWithPuUnavailable() throws ModuleNotFoundException {
         when(puService.getPerson(any(Personnummer.class))).thenReturn(buildErrorPersonSvar());
         when(webCertUserService.getUser()).thenReturn(integratedWebCertUser);
+
+        when(moduleRegistry.getModuleEntryPoint(Mockito.eq("ts-bas"))).thenReturn(new TsBasEntryPoint());
 
         Patient patient = testee.resolvePatient(PNR, "ts-bas");
         assertEquals(PNR, patient.getPersonId());
@@ -330,9 +352,11 @@ public class PatientDetailsResolverTest {
      * TS + fristående + PU == Allt från PU
      */
     @Test
-    public void testTSIntygFristaendeWithPuOk() {
+    public void testTSIntygFristaendeWithPuOk() throws ModuleNotFoundException {
         when(puService.getPerson(any(Personnummer.class))).thenReturn(buildPersonSvar());
         when(webCertUserService.getUser()).thenReturn(freeWebCertUser);
+
+        when(moduleRegistry.getModuleEntryPoint(Mockito.eq("ts-bas"))).thenReturn(new TsBasEntryPoint());
 
         Patient patient = testee.resolvePatient(PNR, "ts-bas");
         assertEquals(PNR, patient.getPersonId());
@@ -350,9 +374,11 @@ public class PatientDetailsResolverTest {
      * TS + fristående + EJ PU == null
      */
     @Test
-    public void testTSIntygFristaendeWithPuUnavailable() {
+    public void testTSIntygFristaendeWithPuUnavailable() throws ModuleNotFoundException {
         when(puService.getPerson(any(Personnummer.class))).thenReturn(buildErrorPersonSvar());
         when(webCertUserService.getUser()).thenReturn(freeWebCertUser);
+
+        when(moduleRegistry.getModuleEntryPoint(Mockito.eq("ts-bas"))).thenReturn(new TsBasEntryPoint());
 
         Patient patient = testee.resolvePatient(PNR, "ts-bas");
         assertNull(patient);
@@ -365,9 +391,11 @@ public class PatientDetailsResolverTest {
      * Dödsbevis - integration - PU: Namn + meta från PU == allt hämtas från PU
      */
     @Test
-    public void testSOSDBIntygIntegrationWithPuOkShouldIgnoreIntegrationParameters() {
+    public void testSOSDBIntygIntegrationWithPuOkShouldIgnoreIntegrationParameters() throws ModuleNotFoundException {
         when(puService.getPerson(any(Personnummer.class))).thenReturn(buildPersonSvar());
         when(webCertUserService.getUser()).thenReturn(integratedWebCertUser);
+
+        when(moduleRegistry.getModuleEntryPoint(Mockito.eq("db"))).thenReturn(new DbModuleEntryPoint());
 
         Patient patient = testee.resolvePatient(PNR, "db");
         assertEquals(PNR, patient.getPersonId());
@@ -385,9 +413,11 @@ public class PatientDetailsResolverTest {
      * Dödsbevis + integration + EJ PU, inget kan hämtas
      */
     @Test
-    public void testSOSDBIntygIntegrationWithPuUnavailable() {
+    public void testSOSDBIntygIntegrationWithPuUnavailable() throws ModuleNotFoundException {
         when(puService.getPerson(any(Personnummer.class))).thenReturn(buildErrorPersonSvar());
         when(webCertUserService.getUser()).thenReturn(integratedWebCertUser);
+
+        when(moduleRegistry.getModuleEntryPoint(Mockito.eq("db"))).thenReturn(new DbModuleEntryPoint());
 
         Patient patient = testee.resolvePatient(PNR, "db");
         assertNull(patient);
@@ -397,9 +427,11 @@ public class PatientDetailsResolverTest {
      * Dödsbevis + fristående + PU == Allt från PU
      */
     @Test
-    public void testSOSDBIntygFristaendeWithPuOk() {
+    public void testSOSDBIntygFristaendeWithPuOk() throws ModuleNotFoundException {
         when(puService.getPerson(any(Personnummer.class))).thenReturn(buildPersonSvar());
         when(webCertUserService.getUser()).thenReturn(freeWebCertUser);
+
+        when(moduleRegistry.getModuleEntryPoint(Mockito.eq("db"))).thenReturn(new DbModuleEntryPoint());
 
         Patient patient = testee.resolvePatient(PNR, "db");
         assertEquals(PNR, patient.getPersonId());
@@ -417,9 +449,11 @@ public class PatientDetailsResolverTest {
      * Dödsbevis + fristående + EJ PU == null
      */
     @Test
-    public void testSOSDBIntygFristaendeWithPuUnavailable() {
+    public void testSOSDBIntygFristaendeWithPuUnavailable() throws ModuleNotFoundException {
         when(puService.getPerson(any(Personnummer.class))).thenReturn(buildErrorPersonSvar());
         when(webCertUserService.getUser()).thenReturn(freeWebCertUser);
+
+        when(moduleRegistry.getModuleEntryPoint(Mockito.eq("db"))).thenReturn(new DbModuleEntryPoint());
 
         Patient patient = testee.resolvePatient(PNR, "db");
         assertNull(patient);
@@ -442,9 +476,10 @@ public class PatientDetailsResolverTest {
                 anySet())).thenReturn(drafts);
 
         ModuleApi moduleApi = mock(ModuleApi.class);
-        when(moduleApi.getUtlatandeFromJson(anyString())).thenReturn(buildSosDoiUtlatande());
+        when(moduleApi.getUtlatandeFromJson(anyString())).thenReturn(buildSosDbUtlatande());
         when(moduleRegistry.getModuleApi(DbModuleEntryPoint.MODULE_ID, DB_INTYG_VERSION)).thenReturn(moduleApi);
 
+        when(moduleRegistry.getModuleEntryPoint(Mockito.eq("doi"))).thenReturn(new DoiModuleEntryPoint());
 
         Patient patient = testee.resolvePatient(PNR, "doi");
         assertEquals(PNR.getPersonnummer(), patient.getPersonId().getPersonnummer());
@@ -454,12 +489,12 @@ public class PatientDetailsResolverTest {
         assertEquals(DB_POST_ADDR, patient.getPostadress());
         assertEquals(DB_POST_NR, patient.getPostnummer());
         assertEquals(DB_POST_ORT, patient.getPostort());
-        assertEquals(PU_AVLIDEN || INTEGR_AVLIDEN, patient.isAvliden());
+        assertEquals(PU_AVLIDEN, patient.isAvliden());
         assertEquals(false, patient.isSekretessmarkering());
     }
 
     /**
-     * DOI - Integration. DB finns, PU saknas. Namn och adress från DB-intyget, avliden från integrationsparam.
+     * DOI - Integration. DB finns, PU saknas. Namn och adress från DB-intyget
      */
     @Test
     public void testSosDoiIntygIntegrationWithExistingDBIntygAndPuUnavailable() throws ModuleNotFoundException, IOException, ModuleException {
@@ -473,9 +508,10 @@ public class PatientDetailsResolverTest {
                 anySet())).thenReturn(drafts);
 
         ModuleApi moduleApi = mock(ModuleApi.class);
-        when(moduleApi.getUtlatandeFromJson(anyString())).thenReturn(buildSosDoiUtlatande());
+        when(moduleApi.getUtlatandeFromJson(anyString())).thenReturn(buildSosDbUtlatande());
         when(moduleRegistry.getModuleApi(DbModuleEntryPoint.MODULE_ID, DB_INTYG_VERSION)).thenReturn(moduleApi);
 
+        when(moduleRegistry.getModuleEntryPoint(Mockito.eq("doi"))).thenReturn(new DoiModuleEntryPoint());
 
         Patient patient = testee.resolvePatient(PNR, "doi");
         assertEquals(PNR.getPersonnummer(), patient.getPersonId().getPersonnummer());
@@ -485,7 +521,9 @@ public class PatientDetailsResolverTest {
         assertEquals(DB_POST_ADDR, patient.getPostadress());
         assertEquals(DB_POST_NR, patient.getPostnummer());
         assertEquals(DB_POST_ORT, patient.getPostort());
-        assertEquals(INTEGR_AVLIDEN, patient.isAvliden());
+        // Vi har ingen möjlighet att känna till avliden i det här fallet, men eftersom det är ett DB/DOI så kan vi utgå
+        // från att patienten är avliden.
+        assertEquals(true, patient.isAvliden());
         assertEquals(false, patient.isSekretessmarkering());
     }
 
@@ -494,7 +532,7 @@ public class PatientDetailsResolverTest {
      * DOI - Integration. DB saknas, PU finns == allt från PU
      */
     @Test
-    public void testSosDoiIntygIntegrationWithNoDBIntygAndPuOk() throws ModuleNotFoundException, IOException {
+    public void testSosDoiIntygIntegrationWithNoDBIntygAndPuOk() throws ModuleNotFoundException {
         when(puService.getPerson(any(Personnummer.class))).thenReturn(buildPersonSvar());
         when(webCertUserService.getUser()).thenReturn(integratedWebCertUser);
         when(integratedWebCertUser.getValdVardgivare()).thenReturn(new Vardgivare("vg-1", "vardgivare-1"));
@@ -504,6 +542,7 @@ public class PatientDetailsResolverTest {
         when(utkastRepository.findDraftsByPatientAndVardgivareAndStatus(anyString(), anyString(), anyList(),
                 anySet())).thenReturn(drafts);
 
+        when(moduleRegistry.getModuleEntryPoint(Mockito.eq("doi"))).thenReturn(new DoiModuleEntryPoint());
 
         Patient patient = testee.resolvePatient(PNR, "doi");
         assertEquals(PNR.getPersonnummer(), patient.getPersonId().getPersonnummer());
@@ -521,7 +560,7 @@ public class PatientDetailsResolverTest {
      * DOI - Integration. DB saknas, PU saknas == Ingen info
      */
     @Test
-    public void testSosDoiIntygIntegrationWithNoDBIntygAndPuUnavailable() throws ModuleNotFoundException, IOException {
+    public void testSosDoiIntygIntegrationWithNoDBIntygAndPuUnavailable() throws ModuleNotFoundException {
         when(puService.getPerson(any(Personnummer.class))).thenReturn(buildErrorPersonSvar());
         when(webCertUserService.getUser()).thenReturn(integratedWebCertUser);
         when(integratedWebCertUser.getValdVardgivare()).thenReturn(new Vardgivare("vg-1", "vardgivare-1"));
@@ -529,6 +568,8 @@ public class PatientDetailsResolverTest {
         List<Utkast> drafts = new ArrayList<>();
         when(utkastRepository.findDraftsByPatientAndVardgivareAndStatus(anyString(), anyString(), anyList(),
                 anySet())).thenReturn(drafts);
+
+        when(moduleRegistry.getModuleEntryPoint(Mockito.eq("doi"))).thenReturn(new DoiModuleEntryPoint());
 
         Patient patient = testee.resolvePatient(PNR, "doi");
         assertNull(patient);
@@ -550,9 +591,10 @@ public class PatientDetailsResolverTest {
                 anySet())).thenReturn(drafts);
 
         ModuleApi moduleApi = mock(ModuleApi.class);
-        when(moduleApi.getUtlatandeFromJson(anyString())).thenReturn(buildSosDoiUtlatande());
+        when(moduleApi.getUtlatandeFromJson(anyString())).thenReturn(buildSosDbUtlatande());
         when(moduleRegistry.getModuleApi(DbModuleEntryPoint.MODULE_ID, DB_INTYG_VERSION)).thenReturn(moduleApi);
 
+        when(moduleRegistry.getModuleEntryPoint(Mockito.eq("doi"))).thenReturn(new DoiModuleEntryPoint());
 
         Patient patient = testee.resolvePatient(PNR, "doi");
         assertEquals(PNR.getPersonnummer(), patient.getPersonId().getPersonnummer());
@@ -578,6 +620,8 @@ public class PatientDetailsResolverTest {
         when(puService.getPerson(any(Personnummer.class))).thenReturn(buildPersonSvar());
         when(webCertUserService.getUser()).thenReturn(freeWebCertUser);
         when(freeWebCertUser.getValdVardenhet()).thenReturn(buildVardenhet());
+
+        when(moduleRegistry.getModuleEntryPoint(Mockito.eq("doi"))).thenReturn(new DoiModuleEntryPoint());
 
         Patient patient = testee.resolvePatient(PNR, "doi");
         assertEquals(PNR.getPersonnummer(), patient.getPersonId().getPersonnummer());
@@ -608,12 +652,14 @@ public class PatientDetailsResolverTest {
         when(utkastRepository.findDraftsByPatientAndEnhetAndStatus(anyString(), anyList(), anyList(),
                 anySet())).thenReturn(drafts);
 
+        when(moduleRegistry.getModuleEntryPoint(Mockito.eq("doi"))).thenReturn(new DoiModuleEntryPoint());
+
         Patient patient = testee.resolvePatient(PNR, "doi");
         assertNull(patient);
     }
 
 
-    private Utlatande buildSosDoiUtlatande() {
+    private Utlatande buildSosDbUtlatande() {
         GrundData grundData = new GrundData();
         grundData.setPatient(buildPatient());
         return DbUtlatandeV1.builder()
@@ -632,6 +678,7 @@ public class PatientDetailsResolverTest {
         patient.setPostadress(DB_POST_ADDR);
         patient.setPostnummer(DB_POST_NR);
         patient.setPostort(DB_POST_ORT);
+        patient.setAvliden(true);
         return patient;
     }
 

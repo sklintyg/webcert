@@ -18,18 +18,32 @@
  */
 package se.inera.intyg.webcert.web.service.patient;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import se.inera.intyg.common.db.support.DbModuleEntryPoint;
-import org.springframework.transaction.annotation.Transactional;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.Patient;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
+import se.inera.intyg.common.support.modules.support.ModuleEntryPoint;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
+import se.inera.intyg.common.support.modules.support.api.dto.PatientDetailResolveOrder;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
 import se.inera.intyg.infra.integration.pu.model.PersonSvar;
 import se.inera.intyg.infra.integration.pu.services.PUService;
@@ -44,15 +58,6 @@ import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
 /**
  * This class is responsible for implementing GE-002, e.g. requirements on how to fetch patient details for a given
  * intygstyp.
@@ -66,6 +71,7 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
     private static final List<UtkastStatus> UTKAST_STATUSES = Arrays.asList(UtkastStatus.DRAFT_INCOMPLETE, UtkastStatus.DRAFT_COMPLETE,
             UtkastStatus.SIGNED);
 
+    private static final Logger LOG = LoggerFactory.getLogger(PatientDetailsResolverImpl.class);
     @Autowired
     private PUService puService;
 
@@ -105,29 +111,252 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
             internalIntygsTyp = moduleRegistry.getModuleIdFromExternalId(intygsTyp);
         }
 
-        switch (internalIntygsTyp.toLowerCase()) {
-        case "fk7263":
-        case "luse":
-        case "lisjp":
-        case "luae_na":
-        case "luae_fs":
-        case "af00213":
-        case "ag114":
-            return resolveFkPatient(personnummer, user);
-
-        case "ts-bas":
-        case "ts-diabetes":
-            return resolveTsPatient(personnummer, user);
-
-        case "db":
-            return resolveDbPatient(personnummer, user);
-
-        case "doi":
-            return resolveDoiPatient(personnummer, user);
-        default:
+        try {
+            ModuleEntryPoint moduleEntryPoint = moduleRegistry.getModuleEntryPoint(internalIntygsTyp);
+            PatientDetailResolveOrder resolveOrder = moduleEntryPoint.getPatientDetailResolveOrder();
+            return resolvePatientWithOrder(personnummer, user, resolveOrder);
+        } catch (ModuleNotFoundException e) {
             throw new IllegalArgumentException("Unknown intygsTyp: " + intygsTyp);
         }
+    }
 
+    private Patient resolvePatientWithOrder(Personnummer personnummer, WebCertUser user, PatientDetailResolveOrder resolveOrder) {
+        PersonSvar personSvar = getPersonSvar(personnummer);
+
+        // Fristående and PU unavailable
+        if (user.getOrigin().equals(UserOriginType.NORMAL.name()) && personSvar.getStatus().equals(PersonSvar.Status.ERROR)
+                && !isPredecessorStrategy(resolveOrder)) {
+            return null;
+        }
+
+        Utlatande predecessor = null;
+
+        // If any strategy contains PREDECESSOR, do the lookup ONCE
+        if (isPredecessorStrategy(resolveOrder)) {
+            List<Utkast> utkastList = getPredecessor(personnummer, user, personSvar,resolveOrder.getPredecessorType());
+            if (utkastList != null && utkastList.size() > 0) {
+                Utkast newest = utkastList.stream()
+                        .sorted((u1, u2) -> u2.getSenastSparadDatum().compareTo(u1.getSenastSparadDatum()))
+                        .findFirst()
+                        .orElseThrow(() -> new IllegalStateException("List was > 0 but findFirst() returned no result."));
+                try {
+                    ModuleApi moduleApi = moduleRegistry.getModuleApi(resolveOrder.getPredecessorType(), newest.getIntygTypeVersion());
+                    predecessor = moduleApi.getUtlatandeFromJson(newest.getModel());
+                } catch (ModuleException | ModuleNotFoundException | IOException e) {
+                    LOG.info("No predecessor found!");
+                }
+            }
+        }
+
+        // Only PU strategy and PU unavailable
+        if (isPuOnlyStrategy(resolveOrder) && personSvar.getStatus().equals(PersonSvar.Status.ERROR)) {
+            return null;
+        }
+
+        // Integrated with predecessor strategy, no predecessor and PU unavailable
+        if (isPredecessorStrategy(resolveOrder) &&
+                predecessor == null && personSvar.getStatus().equals(PersonSvar.Status.ERROR)) {
+            return null;
+        }
+
+        Patient patient = new Patient();
+        patient.setPersonId(personnummer);
+
+        if (resolveOrder.getAdressStrategy() != null) {
+            resolvePatientAdressDetails(patient, resolveOrder, personSvar, user, predecessor);
+        }
+
+        if (resolveOrder.getAvlidenStrategy() != null) {
+            resolvePatientAvlidenDetails(patient, resolveOrder, personSvar, user, predecessor);
+        }
+
+        if (resolveOrder.getOtherStrategy() != null) {
+            resolvePatientOtherDetails(patient, resolveOrder, personSvar, user, predecessor);
+        }
+        return patient;
+    }
+
+    private boolean isPuOnlyStrategy(PatientDetailResolveOrder resolveOrder) {
+        return resolveOrder.getOtherStrategy().stream().allMatch(it -> it.equals(PatientDetailResolveOrder.ResolveOrder.PU)) &&
+                resolveOrder.getAvlidenStrategy().stream().allMatch(it -> it.equals(PatientDetailResolveOrder.ResolveOrder.PU)) &&
+                resolveOrder.getAdressStrategy().stream().allMatch(it -> it.equals(PatientDetailResolveOrder.ResolveOrder.PU));
+    }
+
+    private boolean isPredecessorStrategy(PatientDetailResolveOrder resolveOrder) {
+        return (resolveOrder.getAdressStrategy() != null &&
+                resolveOrder.getAdressStrategy().stream().anyMatch(it -> it.equals(PatientDetailResolveOrder.ResolveOrder.PREDECESSOR))) ||
+                (resolveOrder.getAvlidenStrategy() != null  &&
+                        resolveOrder.getAvlidenStrategy().stream().anyMatch(it -> it.equals(PatientDetailResolveOrder.ResolveOrder.PREDECESSOR))) ||
+                (resolveOrder.getOtherStrategy() != null &&
+                        resolveOrder.getOtherStrategy().stream().anyMatch(it -> it.equals(PatientDetailResolveOrder.ResolveOrder.PREDECESSOR)));
+    }
+
+    private void resolvePatientOtherDetails(Patient patient, PatientDetailResolveOrder resolveOrder, PersonSvar personSvar, WebCertUser user, Utlatande predecessor) {
+        List<PatientDetailResolveOrder.ResolveOrder> otherStrategy = resolveOrder.getOtherStrategy();
+        int index = 0;
+        boolean done = false;
+        while (index < otherStrategy.size() && !done) {
+            switch (otherStrategy.get(index)) {
+                case PARAMS:
+                    done = setOtherFromParams(patient, user);
+                    break;
+                case PU:
+                    done = setOtherFromPu(patient, personSvar);
+                    break;
+                case PREDECESSOR:
+                    done = setOtherFromPredecessor(patient, predecessor);
+                    break;
+            }
+            index++;
+        }
+    }
+
+    private boolean setOtherFromPredecessor(Patient patient, Utlatande predecessor) {
+        if (predecessor == null) {
+            return false;
+        }
+        Patient from = predecessor.getGrundData().getPatient();
+        patient.setFornamn(from.getFornamn());
+        patient.setEfternamn(from.getEfternamn());
+        patient.setMellannamn(from.getMellannamn());
+        patient.setFullstandigtNamn(from.getFullstandigtNamn());
+        patient.setSekretessmarkering(from.isSekretessmarkering());
+        return true;
+    }
+
+    private boolean setOtherFromPu(Patient patient, PersonSvar personSvar) {
+        if (personSvar.getStatus().equals(PersonSvar.Status.FOUND)) {
+            patient.setFornamn(personSvar.getPerson().getFornamn());
+            patient.setEfternamn(personSvar.getPerson().getEfternamn());
+            patient.setMellannamn(personSvar.getPerson().getMellannamn());
+            patient.setFullstandigtNamn(Joiner.on(' ').skipNulls().join(personSvar.getPerson().getFornamn(),
+                    personSvar.getPerson().getMellannamn(), personSvar.getPerson().getEfternamn()));
+            patient.setSekretessmarkering(personSvar.getPerson().isSekretessmarkering());
+            return true;
+        }
+        return false;
+    }
+
+    private boolean setOtherFromParams(Patient patient, WebCertUser user) {
+        if (user.getOrigin().equals(UserOriginType.DJUPINTEGRATION.name())) {
+            IntegrationParameters parameters = user.getParameters();
+            patient.setFornamn(parameters.getFornamn());
+            patient.setEfternamn(parameters.getEfternamn());
+            patient.setMellannamn(parameters.getMellannamn());
+            patient.setFullstandigtNamn(Joiner.on(' ').skipNulls().join(parameters.getFornamn(), parameters.getMellannamn(),
+                    parameters.getEfternamn()));
+            return true;
+        }
+        return false;
+    }
+
+    private void resolvePatientAvlidenDetails(Patient patient, PatientDetailResolveOrder resolveOrder,
+                                              PersonSvar personSvar, WebCertUser user, Utlatande predecessor) {
+        List<PatientDetailResolveOrder.ResolveOrder> avlidenStrategy = resolveOrder.getAvlidenStrategy();
+        int index = 0;
+        boolean done = false;
+        while (index < avlidenStrategy.size() && !done) {
+            switch (avlidenStrategy.get(index)) {
+                case PARAMS:
+                    done = setAvlidenFromParams(patient, user);
+                    break;
+                case PU:
+                    done = setAvlidenFromPu(patient, personSvar);
+                    break;
+                case PARAMS_OR_PU:
+                    done = setAvlidenFromParamsOrPU(patient, personSvar, user);
+                    break;
+                case PREDECESSOR:
+                    done = setAvlidenFromPredecessor(patient, predecessor);
+                    break;
+            }
+            index++;
+        }
+    }
+
+    private boolean setAvlidenFromParamsOrPU(Patient patient, PersonSvar personSvar, WebCertUser user) {
+        patient.setAvliden(
+                (personSvar.getStatus() == PersonSvar.Status.FOUND && personSvar.getPerson().isAvliden())
+                || (user.getParameters() != null && user.getParameters().isPatientDeceased())
+                || (personSvar.getStatus() != PersonSvar.Status.FOUND && user.getParameters() == null));
+        return true;
+    }
+
+    private boolean setAvlidenFromPredecessor(Patient patient, Utlatande predecessor) {
+        if (predecessor != null) {
+            patient.setAvliden(predecessor.getGrundData().getPatient().isAvliden());
+            return true;
+        }
+        return false;
+    }
+
+    private boolean setAvlidenFromPu(Patient patient, PersonSvar personSvar) {
+        if (personSvar.getStatus().equals(PersonSvar.Status.FOUND)) {
+            patient.setAvliden(personSvar.getPerson().isAvliden());
+            return true;
+        }
+        return false;
+    }
+
+    private boolean setAvlidenFromParams(Patient patient, WebCertUser user) {
+        if (user.getOrigin().equals(UserOriginType.DJUPINTEGRATION.name())) {
+            patient.setAvliden(user.getParameters().isPatientDeceased());
+            return true;
+        }
+        return false;
+    }
+
+    private void resolvePatientAdressDetails(Patient patient, PatientDetailResolveOrder resolveOrder,
+                                             PersonSvar personSvar, WebCertUser user, Utlatande predecessor) {
+        List<PatientDetailResolveOrder.ResolveOrder> adressStrategy = resolveOrder.getAdressStrategy();
+        int index = 0;
+        boolean done = false;
+        while (index < adressStrategy.size() && !done) {
+            switch (adressStrategy.get(index)) {
+                case PARAMS:
+                    done = setAdressFromParams(patient, user);
+                    break;
+                case PU:
+                    done = setAdressFromPu(patient, personSvar);
+                    break;
+                case PREDECESSOR:
+                    done = setAdressFromPredecessor(patient, predecessor);
+                    break;
+            }
+            index++;
+        }
+    }
+
+    private boolean setAdressFromPredecessor(Patient patient, Utlatande predessor) {
+        if (predessor == null) {
+            return false;
+        }
+        patient.setPostort(predessor.getGrundData().getPatient().getPostort());
+        patient.setPostnummer(predessor.getGrundData().getPatient().getPostnummer());
+        patient.setPostadress(predessor.getGrundData().getPatient().getPostadress());
+        return true;
+    }
+
+    private boolean setAdressFromPu(Patient patient, PersonSvar personSvar) {
+        if (personSvar.getStatus().equals(PersonSvar.Status.FOUND)) {
+            patient.setPostadress(personSvar.getPerson().getPostadress());
+            patient.setPostnummer(personSvar.getPerson().getPostnummer());
+            patient.setPostort(personSvar.getPerson().getPostort());
+            return true;
+        }
+        return false;
+    }
+
+    private boolean setAdressFromParams(Patient patient, WebCertUser user) {
+        if ( user.getOrigin().equals(UserOriginType.DJUPINTEGRATION.name()) &&
+        isNotNullOrEmpty(user.getParameters().getPostadress()) && isNotNullOrEmpty(user.getParameters().getPostnummer())
+                && isNotNullOrEmpty(user.getParameters().getPostort())) {
+            patient.setPostadress(user.getParameters().getPostadress());
+            patient.setPostnummer(user.getParameters().getPostnummer());
+            patient.setPostort(user.getParameters().getPostort());
+            return true;
+        }
+        return false;
     }
 
     @Override
@@ -203,209 +432,19 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
         return puService.getPerson(personnummer);
     }
 
-    /*
-     * I: Info om avliden från både PU-tjänst och journalsystem.
-     */
-    private Patient resolveFkPatient(Personnummer personnummer, WebCertUser user) {
-        PersonSvar personSvar = getPersonSvar(personnummer);
-        Patient patient = personSvar.getStatus() == PersonSvar.Status.FOUND
-                ? toPatientFromPersonSvarNameOnly(personnummer, personSvar)
-                : resolveFkPatientPuUnavailable(personnummer, user);
-        if (patient != null) {
-            patient.setAvliden(patient.isAvliden()
-                    || Optional.ofNullable(user.getParameters()).map(IntegrationParameters::isPatientDeceased).orElse(false));
-        }
-        return patient;
-    }
-
-    private Patient resolveFkPatientPuUnavailable(Personnummer personnummer, WebCertUser user) {
-        if (user.getOrigin().equals(UserOriginType.DJUPINTEGRATION.name()) && user.getParameters() != null) {
-            return toPatientFromParametersNameOnly(personnummer, user.getParameters());
-        } else {
-            return null;
-        }
-    }
-
-    /*
-     * I: Namn, s-markering från PU-tjänst.
-     * I: Info om avliden från både PU-tjänst och journalsystem.
-     * I: Adress från journalsystem.
-     * F: PU-tjänsten (alla uppgifter).
-     */
-    private Patient resolveTsPatient(Personnummer personnummer, WebCertUser user) {
-        PersonSvar personSvar = getPersonSvar(personnummer);
-        if (personSvar.getStatus() == PersonSvar.Status.FOUND) {
-            Patient patient = toPatientFromPersonSvar(personnummer, personSvar);
-
-            // Get address if djupintegration from params, fallback to PU for address if unavailable.
-            if (user.getOrigin().equals(UserOriginType.DJUPINTEGRATION.name())) {
-                IntegrationParameters parameters = user.getParameters();
-                // Loading utkast without uthoppslänk would fail during end-to-end tests, thus the line below
-                if (parameters == null) {
-                    parameters = new IntegrationParameters(null, null, null, null, null, null, null, null, null, false, false, false,
-                            false);
-                }
-
-                // Update avliden with integrationparameters
-                patient.setAvliden(patient.isAvliden() || parameters.isPatientDeceased());
-
-                // All address fields needs to be present from integration parameters, otherwise use PU instead.
-                if (isNotNullOrEmpty(parameters.getPostadress()) && isNotNullOrEmpty(parameters.getPostnummer())
-                        && isNotNullOrEmpty(parameters.getPostort())) {
-                    patient.setPostadress(parameters.getPostadress());
-                    patient.setPostnummer(parameters.getPostnummer());
-                    patient.setPostort(parameters.getPostort());
-                } else {
-                    patient.setPostadress(personSvar.getPerson().getPostadress());
-                    patient.setPostnummer(personSvar.getPerson().getPostnummer());
-                    patient.setPostort(personSvar.getPerson().getPostort());
-                }
-            }
-            return patient;
-        } else {
-            // No PU means only use integration parameters
-            if (user.getOrigin().equals(UserOriginType.DJUPINTEGRATION.name())) {
-                return toPatientFromParameters(personnummer, user.getParameters());
-            } else {
-                return null;
-            }
-        }
-
-    }
-
-    /**
-     * Integration: Namn, s-markering från PU-tjänst & info om avliden. Journalsystem för adress.
-     * Free: PU-tjänsten (alla uppgifter)
-     */
-    private Patient resolveDbPatient(Personnummer personnummer, WebCertUser user) {
-        PersonSvar personSvar = getPersonSvar(personnummer);
-
-        Patient patient = null;
-        // NORMAL and DJUPINTEGRATION uses only PU for db
-        if (personSvar.getStatus() == PersonSvar.Status.FOUND) {
-            patient = toPatientFromPersonSvar(personnummer, personSvar);
-        }
-        return patient;
-    }
-
-    /**
-     * DOI har en specialregel som säger att namn och adress skall hämtas från ett DB-intyg i det fall sådant finns
-     * utfärdat inom samma Vårdgivare (Integration) eller Vårdenhet (Fristående).
-     */
-    private Patient resolveDoiPatient(Personnummer personnummer, WebCertUser user) {
-
-        PersonSvar personSvar = getPersonSvar(personnummer);
-
+    List<Utkast> getPredecessor(Personnummer personnummer, WebCertUser user, PersonSvar personSvar, String intygsTyp) {
         // Find ALL existing intyg for this patient, filter out so we only have DB left.
         List<Utkast> utkastList = new ArrayList<>();
         if (user.getOrigin().equals(UserOriginType.DJUPINTEGRATION.name())) {
             utkastList.addAll(utkastRepository.findDraftsByPatientAndVardgivareAndStatus(personnummer.getPersonnummerWithDash(),
                     user.getValdVardgivare().getId(),
-                    UTKAST_STATUSES, Sets.newHashSet("db")));
+                    UTKAST_STATUSES, Sets.newHashSet(intygsTyp)));
         } else {
             utkastList.addAll(utkastRepository.findDraftsByPatientAndEnhetAndStatus(personnummer.getPersonnummerWithDash(),
                     Arrays.asList(user.getValdVardenhet().getId()), UTKAST_STATUSES,
-                    Sets.newHashSet("db")));
+                    Sets.newHashSet(intygsTyp)));
         }
-
-        // If any utkast were found, take the newest one and transfer name & address från DB intyg.
-        // Use PU for s-markering
-        // Use PU and integration parameters for deceased
-        if (utkastList.size() > 0) {
-            Utkast newest = utkastList.stream()
-                    .sorted((u1, u2) -> u2.getSenastSparadDatum().compareTo(u1.getSenastSparadDatum()))
-                    .findFirst()
-                    .orElseThrow(() -> new IllegalStateException("List was > 0 but findFirst() returned no result."));
-
-            try {
-                ModuleApi moduleApi = moduleRegistry.getModuleApi(DbModuleEntryPoint.MODULE_ID, newest.getIntygTypeVersion());
-                Utlatande utlatande = moduleApi.getUtlatandeFromJson(newest.getModel());
-                Patient patient = utlatande.getGrundData().getPatient();
-                if (personSvar.getStatus() == PersonSvar.Status.FOUND) {
-                    patient.setSekretessmarkering(personSvar.getPerson().isSekretessmarkering());
-                }
-                patient.setAvliden(
-                        (personSvar.getStatus() == PersonSvar.Status.FOUND && personSvar.getPerson().isAvliden())
-                                || (user.getParameters() != null && user.getParameters().isPatientDeceased())
-                                || (personSvar.getStatus() != PersonSvar.Status.FOUND && user.getParameters() == null));
-                return patient;
-            } catch (ModuleException | ModuleNotFoundException | IOException e) {
-                // No usable DB exist
-                return handleDoiNoExistingDb(personnummer, personSvar, user);
-            }
-        } else {
-            // No usable DB exist
-            return handleDoiNoExistingDb(personnummer, personSvar, user);
-        }
-    }
-
-    private Patient handleDoiNoExistingDb(Personnummer personnummer, PersonSvar personSvar, WebCertUser user) {
-        Patient patient = null;
-        // NORMAL and DJUPINTEGRATION uses only PU for doi
-        if (personSvar.getStatus() == PersonSvar.Status.FOUND) {
-            patient = toPatientFromPersonSvar(personnummer, personSvar);
-        }
-        return patient;
-    }
-
-    private Patient toPatientFromParameters(Personnummer personnummer, IntegrationParameters parameters) {
-        Patient patient = buildBasePatientFromParameters(personnummer, parameters);
-
-        patient.setPostadress(parameters.getPostadress());
-        patient.setPostnummer(parameters.getPostnummer());
-        patient.setPostort(parameters.getPostort());
-        patient.setAvliden(parameters.isPatientDeceased());
-
-        return patient;
-    }
-
-    private Patient toPatientFromParametersNameOnly(Personnummer personnummer, IntegrationParameters parameters) {
-        return buildBasePatientFromParameters(personnummer, parameters);
-    }
-
-    private Patient buildBasePatientFromParameters(Personnummer personnummer, IntegrationParameters parameters) {
-        Patient patient = new Patient();
-        patient.setPersonId(personnummer);
-
-        patient.setFornamn(parameters.getFornamn());
-        patient.setEfternamn(parameters.getEfternamn());
-        patient.setMellannamn(parameters.getMellannamn());
-        patient.setFullstandigtNamn(Joiner.on(' ').skipNulls().join(parameters.getFornamn(), parameters.getMellannamn(),
-                parameters.getEfternamn()));
-        patient.setAvliden(parameters.isPatientDeceased());
-        return patient;
-    }
-
-    private Patient toPatientFromPersonSvarNameOnly(Personnummer personnummer, PersonSvar personSvar) {
-        return buildBasePatient(personnummer, personSvar);
-    }
-
-    private Patient toPatientFromPersonSvar(Personnummer personnummer, PersonSvar personSvar) {
-        Patient patient = buildBasePatient(personnummer, personSvar);
-
-        // Address
-        patient.setPostadress(personSvar.getPerson().getPostadress());
-        patient.setPostnummer(personSvar.getPerson().getPostnummer());
-        patient.setPostort(personSvar.getPerson().getPostort());
-        return patient;
-    }
-
-    private Patient buildBasePatient(Personnummer personnummer, PersonSvar personSvar) {
-        Patient patient = new Patient();
-        patient.setPersonId(personnummer);
-
-        // Name
-        patient.setFornamn(personSvar.getPerson().getFornamn());
-        patient.setMellannamn(personSvar.getPerson().getMellannamn());
-        patient.setEfternamn(personSvar.getPerson().getEfternamn());
-        patient.setFullstandigtNamn(
-                Joiner.on(' ').skipNulls().join(personSvar.getPerson().getFornamn(), personSvar.getPerson().getMellannamn(),
-                        personSvar.getPerson().getEfternamn()));
-
-        // Other
-        patient.setAvliden(personSvar.getPerson().isAvliden());
-        patient.setSekretessmarkering(personSvar.getPerson().isSekretessmarkering());
-        return patient;
+        return utkastList;
     }
 
     private boolean isNotNullOrEmpty(String value) {
