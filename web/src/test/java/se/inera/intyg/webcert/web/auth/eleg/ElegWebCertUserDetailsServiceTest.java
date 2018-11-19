@@ -123,7 +123,7 @@ public class ElegWebCertUserDetailsServiceTest extends BaseSAMLCredentialTest {
         expectedPreferences.put("some", "setting");
         when(anvandarPreferenceRepository.getAnvandarPreference(anyString())).thenReturn(expectedPreferences);
 
-        when(puService.getPerson(any(Personnummer.class))).thenReturn(buildPersonSvar(false, PersonSvar.Status.FOUND));
+        when(puService.getPerson(any(Personnummer.class))).thenReturn(buildPersonSvar(false));
 
         WebCertUserOrigin userOrigin = mock(WebCertUserOrigin.class);
         when(userOrigin.resolveOrigin(any(HttpServletRequest.class))).thenReturn("NORMAL");
@@ -145,7 +145,7 @@ public class ElegWebCertUserDetailsServiceTest extends BaseSAMLCredentialTest {
     @Test
     public void testSuccessfulLoginSekretessMarkerad() {
         reset(puService);
-        when(puService.getPerson(any(Personnummer.class))).thenReturn(buildPersonSvar(true, PersonSvar.Status.FOUND));
+        when(puService.getPerson(any(Personnummer.class))).thenReturn(buildPersonSvar(true));
 
         WebCertUser user =  (WebCertUser) testee.loadUserBySAML(new SAMLCredential(mock(NameID.class), assertionPrivatlakare, REMOTE_ENTITY_ID, LOCAL_ENTITY_ID));
 
@@ -159,7 +159,7 @@ public class ElegWebCertUserDetailsServiceTest extends BaseSAMLCredentialTest {
     @Test
     public void testLoginPUErrorThrowsException() {
         reset(puService);
-        when(puService.getPerson(any(Personnummer.class))).thenReturn(buildPersonSvar(true, PersonSvar.Status.ERROR));
+        when(puService.getPerson(any(Personnummer.class))).thenReturn(PersonSvar.error());
 
         thrown.expect(HsaServiceException.class);
 
@@ -169,7 +169,7 @@ public class ElegWebCertUserDetailsServiceTest extends BaseSAMLCredentialTest {
     @Test
     public void testLoginPUNotFoundThrowsException() {
         reset(puService);
-        when(puService.getPerson(any(Personnummer.class))).thenReturn(buildPersonSvar(true, PersonSvar.Status.NOT_FOUND));
+        when(puService.getPerson(any(Personnummer.class))).thenReturn(PersonSvar.notFound());
 
         thrown.expect(HsaServiceException.class);
 
@@ -222,11 +222,11 @@ public class ElegWebCertUserDetailsServiceTest extends BaseSAMLCredentialTest {
 
         return hoSPersonType;
     }
-    private PersonSvar buildPersonSvar(boolean sekretessMarkerad, PersonSvar.Status status) {
+    private PersonSvar buildPersonSvar(boolean sekretessMarkerad) {
         Personnummer personnummer = Personnummer.createPersonnummer(PERSON_ID).get();
         Person person = new Person(personnummer, sekretessMarkerad, false, "fornamn","",
                 "Efternamn", "gatan", "12345", "postort");
-        return new PersonSvar(person, status);
+        return PersonSvar.found(person);
     }
 
     private MockHttpServletRequest mockHttpServletRequest(String requestURI) {
