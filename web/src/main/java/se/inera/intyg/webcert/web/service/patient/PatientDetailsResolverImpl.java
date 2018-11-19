@@ -21,6 +21,7 @@ package se.inera.intyg.webcert.web.service.patient;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,7 +36,6 @@ import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
 
-import se.inera.intyg.common.db.support.DbModuleEntryPoint;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.Patient;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
@@ -68,8 +68,8 @@ import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationPara
  */
 public class PatientDetailsResolverImpl implements PatientDetailsResolver {
 
-    private static final List<UtkastStatus> UTKAST_STATUSES = Arrays.asList(UtkastStatus.DRAFT_INCOMPLETE, UtkastStatus.DRAFT_COMPLETE,
-            UtkastStatus.SIGNED);
+    private static final List<UtkastStatus> UTKAST_STATUSES = Arrays.asList(UtkastStatus.DRAFT_INCOMPLETE,
+            UtkastStatus.DRAFT_COMPLETE, UtkastStatus.SIGNED);
 
     private static final Logger LOG = LoggerFactory.getLogger(PatientDetailsResolverImpl.class);
     @Autowired
@@ -94,6 +94,70 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
     }
 
     @Override
+    public SekretessStatus getSekretessStatus(Personnummer personNummer) {
+        PersonSvar person = getPersonSvar(personNummer);
+        if (person.getStatus() == PersonSvar.Status.FOUND) {
+            if (person.getPerson().isSekretessmarkering()) {
+                return SekretessStatus.TRUE;
+            } else {
+                return SekretessStatus.FALSE;
+            }
+        } else {
+            return SekretessStatus.UNDEFINED;
+        }
+    }
+
+    @Override
+    public Map<Personnummer, SekretessStatus> getSekretessStatusForList(List<Personnummer> personnummerList) {
+        Map<Personnummer, SekretessStatus> sekretessStatusMap = new HashMap<>();
+        if (personnummerList == null || personnummerList.size() == 0) {
+            return sekretessStatusMap;
+        }
+
+        // Make sure we don't ask twice for a given personnummer.
+        List<Personnummer> distinctPersonnummerList = personnummerList.stream().distinct().collect(Collectors.toList());
+
+        Map<Personnummer, PersonSvar> persons = puService.getPersons(distinctPersonnummerList);
+        persons.forEach((key, value) -> {
+            if (value != null && value.getStatus() == PersonSvar.Status.FOUND) {
+                sekretessStatusMap.put(key,
+                        value.getPerson().isSekretessmarkering() ? SekretessStatus.TRUE : SekretessStatus.FALSE);
+            } else {
+                // contains no person instance.
+                sekretessStatusMap.put(key, SekretessStatus.UNDEFINED);
+            }
+        });
+
+        return sekretessStatusMap;
+    }
+
+    @Override
+    public boolean isAvliden(Personnummer personnummer) {
+        PersonSvar personSvar = getPersonSvar(personnummer);
+        boolean avlidenPU = personSvar.getStatus() == PersonSvar.Status.FOUND && personSvar.getPerson().isAvliden();
+
+        WebCertUser user = webCertUserService.hasAuthenticationContext() ? webCertUserService.getUser() : null;
+        boolean avlidenIntegration = user != null && user.getParameters() != null && user.getParameters().isPatientDeceased();
+
+        return avlidenPU || avlidenIntegration;
+    }
+
+    @Override
+    public boolean isPatientAddressChanged(Patient oldPatient, Patient newPatient) {
+        return oldPatient != null && (newPatient == null
+                || (oldPatient.getPostadress() != null && !oldPatient.getPostadress().equals(newPatient.getPostadress()))
+                || (oldPatient.getPostnummer() != null && !oldPatient.getPostnummer().equals(newPatient.getPostnummer()))
+                || (oldPatient.getPostort() != null && !oldPatient.getPostort().equals(newPatient.getPostort())));
+    }
+
+    @Override
+    public boolean isPatientNamedChanged(Patient oldPatient, Patient newPatient) {
+        return oldPatient != null && (newPatient == null
+                || (oldPatient.getFornamn() != null && !oldPatient.getFornamn().equals(newPatient.getFornamn()))
+                || (oldPatient.getEfternamn() != null && !oldPatient.getEfternamn().equals(newPatient.getEfternamn())));
+    }
+
+    @Override
     @Transactional(readOnly = true)
     public Patient resolvePatient(Personnummer personnummer, String intygsTyp) {
 
@@ -114,13 +178,13 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
         try {
             ModuleEntryPoint moduleEntryPoint = moduleRegistry.getModuleEntryPoint(internalIntygsTyp);
             PatientDetailResolveOrder resolveOrder = moduleEntryPoint.getPatientDetailResolveOrder();
-            return resolvePatientWithOrder(personnummer, user, resolveOrder);
+            return resolvePatient(personnummer, user, resolveOrder);
         } catch (ModuleNotFoundException e) {
             throw new IllegalArgumentException("Unknown intygsTyp: " + intygsTyp);
         }
     }
 
-    private Patient resolvePatientWithOrder(Personnummer personnummer, WebCertUser user, PatientDetailResolveOrder resolveOrder) {
+    private Patient resolvePatient(Personnummer personnummer, WebCertUser user, PatientDetailResolveOrder resolveOrder) {
         PersonSvar personSvar = getPersonSvar(personnummer);
 
         // Fristående and PU unavailable
@@ -133,8 +197,8 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
 
         // If any strategy contains PREDECESSOR, do the lookup ONCE
         if (isPredecessorStrategy(resolveOrder)) {
-            List<Utkast> utkastList = getPredecessor(personnummer, user, personSvar,resolveOrder.getPredecessorType());
-            if (utkastList != null && utkastList.size() > 0) {
+            List<Utkast> utkastList = getPredecessor(personnummer, user, resolveOrder.getPredecessorType());
+            if (utkastList.size() > 0) {
                 Utkast newest = utkastList.stream()
                         .sorted((u1, u2) -> u2.getSenastSparadDatum().compareTo(u1.getSenastSparadDatum()))
                         .findFirst()
@@ -154,8 +218,8 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
         }
 
         // Integrated with predecessor strategy, no predecessor and PU unavailable
-        if (isPredecessorStrategy(resolveOrder) &&
-                predecessor == null && personSvar.getStatus().equals(PersonSvar.Status.ERROR)) {
+        if (isPredecessorStrategy(resolveOrder)
+                && predecessor == null && personSvar.getStatus().equals(PersonSvar.Status.ERROR)) {
             return null;
         }
 
@@ -176,22 +240,56 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
         return patient;
     }
 
-    private boolean isPuOnlyStrategy(PatientDetailResolveOrder resolveOrder) {
-        return resolveOrder.getOtherStrategy().stream().allMatch(it -> it.equals(PatientDetailResolveOrder.ResolveOrder.PU)) &&
-                resolveOrder.getAvlidenStrategy().stream().allMatch(it -> it.equals(PatientDetailResolveOrder.ResolveOrder.PU)) &&
-                resolveOrder.getAdressStrategy().stream().allMatch(it -> it.equals(PatientDetailResolveOrder.ResolveOrder.PU));
+    private void resolvePatientAdressDetails(Patient patient, PatientDetailResolveOrder resolveOrder,
+                                             PersonSvar personSvar, WebCertUser user, Utlatande predecessor) {
+        List<PatientDetailResolveOrder.ResolveOrder> adressStrategy = resolveOrder.getAdressStrategy();
+        int index = 0;
+        boolean done = false;
+        while (index < adressStrategy.size() && !done) {
+            switch (adressStrategy.get(index)) {
+                case PARAMS:
+                    done = setAdressFromParams(patient, user);
+                    break;
+                case PU:
+                    done = setAdressFromPu(patient, personSvar);
+                    break;
+                case PREDECESSOR:
+                    done = setAdressFromPredecessor(patient, predecessor);
+                    break;
+                default:
+                    LOG.info("Unexpected adress lookup strategy encountered, bailing out.");
+                    break;
+            }
+            index++;
+        }
     }
 
-    private boolean isPredecessorStrategy(PatientDetailResolveOrder resolveOrder) {
-        return (resolveOrder.getAdressStrategy() != null &&
-                resolveOrder.getAdressStrategy().stream().anyMatch(it -> it.equals(PatientDetailResolveOrder.ResolveOrder.PREDECESSOR))) ||
-                (resolveOrder.getAvlidenStrategy() != null  &&
-                        resolveOrder.getAvlidenStrategy().stream().anyMatch(it -> it.equals(PatientDetailResolveOrder.ResolveOrder.PREDECESSOR))) ||
-                (resolveOrder.getOtherStrategy() != null &&
-                        resolveOrder.getOtherStrategy().stream().anyMatch(it -> it.equals(PatientDetailResolveOrder.ResolveOrder.PREDECESSOR)));
+    private void resolvePatientAvlidenDetails(Patient patient, PatientDetailResolveOrder resolveOrder,
+                                              PersonSvar personSvar, WebCertUser user, Utlatande predecessor) {
+        List<PatientDetailResolveOrder.ResolveOrder> avlidenStrategy = resolveOrder.getAvlidenStrategy();
+        int index = 0;
+        boolean done = false;
+        while (index < avlidenStrategy.size() && !done) {
+            switch (avlidenStrategy.get(index)) {
+                case PARAMS:
+                    done = setAvlidenFromParams(patient, user);
+                    break;
+                case PU:
+                    done = setAvlidenFromPu(patient, personSvar);
+                    break;
+                case PARAMS_OR_PU:
+                    done = setAvlidenFromParamsOrPU(patient, personSvar, user);
+                    break;
+                case PREDECESSOR:
+                    done = setAvlidenFromPredecessor(patient, predecessor);
+                    break;
+            }
+            index++;
+        }
     }
 
-    private void resolvePatientOtherDetails(Patient patient, PatientDetailResolveOrder resolveOrder, PersonSvar personSvar, WebCertUser user, Utlatande predecessor) {
+    private void resolvePatientOtherDetails(Patient patient, PatientDetailResolveOrder resolveOrder,
+                                            PersonSvar personSvar, WebCertUser user, Utlatande predecessor) {
         List<PatientDetailResolveOrder.ResolveOrder> otherStrategy = resolveOrder.getOtherStrategy();
         int index = 0;
         boolean done = false;
@@ -205,6 +303,9 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
                     break;
                 case PREDECESSOR:
                     done = setOtherFromPredecessor(patient, predecessor);
+                    break;
+                default:
+                    LOG.info("Unexpected other lookup strategy encountered, bailing out.");
                     break;
             }
             index++;
@@ -250,30 +351,6 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
         return false;
     }
 
-    private void resolvePatientAvlidenDetails(Patient patient, PatientDetailResolveOrder resolveOrder,
-                                              PersonSvar personSvar, WebCertUser user, Utlatande predecessor) {
-        List<PatientDetailResolveOrder.ResolveOrder> avlidenStrategy = resolveOrder.getAvlidenStrategy();
-        int index = 0;
-        boolean done = false;
-        while (index < avlidenStrategy.size() && !done) {
-            switch (avlidenStrategy.get(index)) {
-                case PARAMS:
-                    done = setAvlidenFromParams(patient, user);
-                    break;
-                case PU:
-                    done = setAvlidenFromPu(patient, personSvar);
-                    break;
-                case PARAMS_OR_PU:
-                    done = setAvlidenFromParamsOrPU(patient, personSvar, user);
-                    break;
-                case PREDECESSOR:
-                    done = setAvlidenFromPredecessor(patient, predecessor);
-                    break;
-            }
-            index++;
-        }
-    }
-
     private boolean setAvlidenFromParamsOrPU(Patient patient, PersonSvar personSvar, WebCertUser user) {
         patient.setAvliden(
                 (personSvar.getStatus() == PersonSvar.Status.FOUND && personSvar.getPerson().isAvliden())
@@ -306,27 +383,6 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
         return false;
     }
 
-    private void resolvePatientAdressDetails(Patient patient, PatientDetailResolveOrder resolveOrder,
-                                             PersonSvar personSvar, WebCertUser user, Utlatande predecessor) {
-        List<PatientDetailResolveOrder.ResolveOrder> adressStrategy = resolveOrder.getAdressStrategy();
-        int index = 0;
-        boolean done = false;
-        while (index < adressStrategy.size() && !done) {
-            switch (adressStrategy.get(index)) {
-                case PARAMS:
-                    done = setAdressFromParams(patient, user);
-                    break;
-                case PU:
-                    done = setAdressFromPu(patient, personSvar);
-                    break;
-                case PREDECESSOR:
-                    done = setAdressFromPredecessor(patient, predecessor);
-                    break;
-            }
-            index++;
-        }
-    }
-
     private boolean setAdressFromPredecessor(Patient patient, Utlatande predessor) {
         if (predessor == null) {
             return false;
@@ -348,8 +404,9 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
     }
 
     private boolean setAdressFromParams(Patient patient, WebCertUser user) {
-        if ( user.getOrigin().equals(UserOriginType.DJUPINTEGRATION.name()) &&
-        isNotNullOrEmpty(user.getParameters().getPostadress()) && isNotNullOrEmpty(user.getParameters().getPostnummer())
+        if (user.getOrigin().equals(UserOriginType.DJUPINTEGRATION.name())
+                && isNotNullOrEmpty(user.getParameters().getPostadress())
+                && isNotNullOrEmpty(user.getParameters().getPostnummer())
                 && isNotNullOrEmpty(user.getParameters().getPostort())) {
             patient.setPostadress(user.getParameters().getPostadress());
             patient.setPostnummer(user.getParameters().getPostnummer());
@@ -357,70 +414,6 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
             return true;
         }
         return false;
-    }
-
-    @Override
-    public SekretessStatus getSekretessStatus(Personnummer personNummer) {
-        PersonSvar person = getPersonSvar(personNummer);
-        if (person.getStatus() == PersonSvar.Status.FOUND) {
-            if (person.getPerson().isSekretessmarkering()) {
-                return SekretessStatus.TRUE;
-            } else {
-                return SekretessStatus.FALSE;
-            }
-        } else {
-            return SekretessStatus.UNDEFINED;
-        }
-    }
-
-    @Override
-    public Map<Personnummer, SekretessStatus> getSekretessStatusForList(List<Personnummer> personnummerList) {
-        Map<Personnummer, SekretessStatus> sekretessStatusMap = new HashMap<>();
-        if (personnummerList == null || personnummerList.size() == 0) {
-            return sekretessStatusMap;
-        }
-
-        // Make sure we don't ask twice for a given personnummer.
-        List<Personnummer> distinctPersonnummerList = personnummerList.stream().distinct().collect(Collectors.toList());
-
-        Map<Personnummer, PersonSvar> persons = puService.getPersons(distinctPersonnummerList);
-        persons.entrySet().stream().forEach(entry -> {
-            if (entry.getValue() != null && entry.getValue().getStatus() == PersonSvar.Status.FOUND) {
-                sekretessStatusMap.put(entry.getKey(),
-                        entry.getValue().getPerson().isSekretessmarkering() ? SekretessStatus.TRUE : SekretessStatus.FALSE);
-            } else {
-                // contains no person instance.
-                sekretessStatusMap.put(entry.getKey(), SekretessStatus.UNDEFINED);
-            }
-        });
-
-        return sekretessStatusMap;
-    }
-
-    @Override
-    public boolean isAvliden(Personnummer personnummer) {
-        PersonSvar personSvar = getPersonSvar(personnummer);
-        boolean avlidenPU = personSvar.getStatus() == PersonSvar.Status.FOUND && personSvar.getPerson().isAvliden();
-
-        WebCertUser user = webCertUserService.hasAuthenticationContext() ? webCertUserService.getUser() : null;
-        boolean avlidenIntegration = user != null && user.getParameters() != null && user.getParameters().isPatientDeceased();
-
-        return avlidenPU || avlidenIntegration;
-    }
-
-    @Override
-    public boolean isPatientAddressChanged(Patient oldPatient, Patient newPatient) {
-        return oldPatient != null && (newPatient == null
-                || (oldPatient.getPostadress() != null && !oldPatient.getPostadress().equals(newPatient.getPostadress()))
-                || (oldPatient.getPostnummer() != null && !oldPatient.getPostnummer().equals(newPatient.getPostnummer()))
-                || (oldPatient.getPostort() != null && !oldPatient.getPostort().equals(newPatient.getPostort())));
-    }
-
-    @Override
-    public boolean isPatientNamedChanged(Patient oldPatient, Patient newPatient) {
-        return oldPatient != null && (newPatient == null
-                || (oldPatient.getFornamn() != null && !oldPatient.getFornamn().equals(newPatient.getFornamn()))
-                || (oldPatient.getEfternamn() != null && !oldPatient.getEfternamn().equals(newPatient.getEfternamn())));
     }
 
     private PersonSvar getPersonSvar(Personnummer personnummer) {
@@ -432,7 +425,7 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
         return puService.getPerson(personnummer);
     }
 
-    List<Utkast> getPredecessor(Personnummer personnummer, WebCertUser user, PersonSvar personSvar, String intygsTyp) {
+    private List<Utkast> getPredecessor(Personnummer personnummer, WebCertUser user, String intygsTyp) {
         // Find ALL existing intyg for this patient, filter out so we only have DB left.
         List<Utkast> utkastList = new ArrayList<>();
         if (user.getOrigin().equals(UserOriginType.DJUPINTEGRATION.name())) {
@@ -441,11 +434,27 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
                     UTKAST_STATUSES, Sets.newHashSet(intygsTyp)));
         } else {
             utkastList.addAll(utkastRepository.findDraftsByPatientAndEnhetAndStatus(personnummer.getPersonnummerWithDash(),
-                    Arrays.asList(user.getValdVardenhet().getId()), UTKAST_STATUSES,
+                    Collections.singletonList(user.getValdVardenhet().getId()), UTKAST_STATUSES,
                     Sets.newHashSet(intygsTyp)));
         }
         return utkastList;
     }
+
+    private boolean isPuOnlyStrategy(PatientDetailResolveOrder resolveOrder) {
+        return resolveOrder.getOtherStrategy().stream().allMatch(it -> it.equals(PatientDetailResolveOrder.ResolveOrder.PU))
+                && resolveOrder.getAvlidenStrategy().stream().allMatch(it -> it.equals(PatientDetailResolveOrder.ResolveOrder.PU))
+                && resolveOrder.getAdressStrategy().stream().allMatch(it -> it.equals(PatientDetailResolveOrder.ResolveOrder.PU));
+    }
+
+    private boolean isPredecessorStrategy(PatientDetailResolveOrder resolveOrder) {
+        return (resolveOrder.getAdressStrategy() != null
+                && resolveOrder.getAdressStrategy().stream().anyMatch(it -> it.equals(PatientDetailResolveOrder.ResolveOrder.PREDECESSOR)))
+                || (resolveOrder.getAvlidenStrategy() != null && resolveOrder.getAvlidenStrategy().stream().anyMatch(it ->
+                                it.equals(PatientDetailResolveOrder.ResolveOrder.PREDECESSOR)))
+                || (resolveOrder.getOtherStrategy() != null && resolveOrder.getOtherStrategy().stream().anyMatch(it ->
+                                it.equals(PatientDetailResolveOrder.ResolveOrder.PREDECESSOR)));
+    }
+
 
     private boolean isNotNullOrEmpty(String value) {
         return !Strings.isNullOrEmpty(value);
