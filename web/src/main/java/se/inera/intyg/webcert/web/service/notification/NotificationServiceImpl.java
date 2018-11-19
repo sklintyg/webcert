@@ -441,7 +441,7 @@ public class NotificationServiceImpl implements NotificationService {
         }
 
         LOGGER.debug("Notification sent: {}", notificationMessage);
-        monitoringLog.logNotificationSent(notificationMessage.getHandelse().name(), enhetsId);
+        monitoringLog.logNotificationSent(notificationMessage.getHandelse().name(), enhetsId, notificationMessage.getIntygsId());
     }
 
     private Utkast getUtkast(String intygsId) {

@@ -87,7 +87,7 @@ public interface MonitoringLogService extends AuthenticationLogger {
 
     void logPrivatePractitionerTermsApproved(String userId, Personnummer personId, Integer avtalVersion);
 
-    void logNotificationSent(String hanType, String unitId);
+    void logNotificationSent(String hanType, String unitId, String intygsId);
 
     void logArendeReceived(String intygsId, String intygsTyp, String unitHsaId, ArendeAmne amne, List<String> frageIds, boolean isAnswer);
 

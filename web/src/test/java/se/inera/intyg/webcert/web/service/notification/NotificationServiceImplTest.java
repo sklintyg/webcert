@@ -766,7 +766,7 @@ public class NotificationServiceImplTest {
         NotificationMessage nm = objectMapper.readValue(((TextMessage) res).getText(), NotificationMessage.class);
         assertEquals(INTYG_JSON, nm.getUtkast());
 
-        verify(mockMonitoringLogService).logNotificationSent(kod.value(), ENHET_ID);
+        verify(mockMonitoringLogService).logNotificationSent(kod.value(), ENHET_ID, INTYG_ID);
         verify(handelseRepository).save(any(Handelse.class));
     }
 

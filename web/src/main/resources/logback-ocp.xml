@@ -68,6 +68,7 @@
 
     <root level="INFO">
         <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="MONITORING"/>
     </root>
 
     <root level="WARN">

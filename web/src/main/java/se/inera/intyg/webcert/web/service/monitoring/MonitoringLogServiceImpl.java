@@ -205,8 +205,8 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
     }
 
     @Override
-    public void logNotificationSent(String hanType, String unitId) {
-        logEvent(MonitoringEvent.NOTIFICATION_SENT, hanType, unitId);
+    public void logNotificationSent(String hanType, String unitId, String intygsId) {
+        logEvent(MonitoringEvent.NOTIFICATION_SENT, hanType, unitId, intygsId);
     }
 
     @Override
@@ -353,7 +353,7 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
         UTKAST_READY_NOTIFICATION_SENT("Utkast '{}' of type '{}' was marked as ready and notification was sent"),
         PU_LOOKUP("Lookup performed on '{}' with result '{}'"),
         PP_TERMS_ACCEPTED("User '{}', personId '{}' accepted private practitioner terms of version '{}'"),
-        NOTIFICATION_SENT("Sent notification of type '{}' to unit '{}'"),
+        NOTIFICATION_SENT("Sent notification of type '{}' to unit '{}' for '{}'"),
         ARENDE_RECEIVED_ANSWER("Received arende with amne '{}' for '{}' of type '{}' for unit '{}'"),
         ARENDE_RECEIVED_QUESTION("Received arende with amne '{}' for '{}' of type '{}' for unit '{}'"),
         MEDICINSKT_ARENDE_RECEIVED("Received medicinskt arende for '{}' of type '{}' for unit '{}' on questions '{}'"),
