@@ -180,6 +180,19 @@ public class NotificationServiceImpl implements NotificationService {
      * (non-Javadoc)
      *
      * @see
+     * se.inera.intyg.webcert.web.service.notification.NewNotificationService#sendNotificationForDraftRevoked(se.inera.
+     * intyg.webcert.web
+     * .persistence.utkast.model.Utkast)
+     */
+    @Override
+    public void sendNotificationForDraftRevoked(Utkast utkast) {
+        createAndSendNotification(utkast, MAKULE);
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see
      * se.inera.intyg.webcert.web.service.notification.NotificationService#sendNotificationForDraftReadyToSign(se.inera.
      * intyg.webcert.web.persistence.utkast.model.Utkast)
      */

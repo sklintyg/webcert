@@ -18,19 +18,6 @@
  */
 package se.inera.intyg.webcert.web.service.utkast;
 
-import java.io.IOException;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import javax.persistence.OptimisticLockException;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -39,7 +26,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
-
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.GrundData;
@@ -87,6 +73,19 @@ import se.inera.intyg.webcert.web.service.utkast.dto.SaveDraftResponse;
 import se.inera.intyg.webcert.web.service.utkast.dto.UpdatePatientOnDraftRequest;
 import se.inera.intyg.webcert.web.service.utkast.util.CreateIntygsIdStrategy;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
+
+import javax.persistence.OptimisticLockException;
+import java.io.IOException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -1020,6 +1019,8 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
         draftService.revokeLockedDraft(INTYG_ID, INTYG_TYPE, revokeMessage, reason);
 
+        // Assert notification message
+        verify(notificationService).sendNotificationForDraftRevoked(any(Utkast.class));
         verify(mockUtkastRepository, times(1)).save(lockedUtkast);
         verify(mockMonitoringService).logUtkastRevoked(INTYG_ID, user.getHsaId(), reason, revokeMessage);
         verify(logService).logRevokeIntyg(any());
