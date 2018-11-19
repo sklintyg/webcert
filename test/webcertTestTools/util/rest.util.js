@@ -215,14 +215,14 @@ module.exports = {
     },
     setSekretessmarkering: function(patientId, isSekretessmarkerad) {
         var options = {
-            url: '/services/api/pu-api/person/' + patientId + '/sekretessmarkerad?value=' + (isSekretessmarkerad ? 'true' : 'false'),
+            url: 'services/api/pu-api/person/' + patientId + '/sekretessmarkerad?value=' + (isSekretessmarkerad ? 'true' : 'false'),
             method: 'GET'
         };
         return restClient.run(options);
     },
     setPuServiceState: function(enabled) {
         var options = {
-            url: '/services/api/pu-api/' + (enabled ? 'active' : 'inactive'),
+            url: 'services/api/pu-api/' + (enabled ? 'active' : 'inactive'),
             method: 'GET'
         };
         return restClient.run(options);
