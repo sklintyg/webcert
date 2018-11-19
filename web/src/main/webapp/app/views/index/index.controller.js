@@ -17,17 +17,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-angular.module('webcert').controller('webcert.IndexCtrl', [ '$scope', '$http', 'moduleConfig', function($scope, $http, moduleConfig) {
-    'use strict';
+angular.module('webcert').controller('webcert.IndexCtrl',
+        [ '$scope', '$http', '$timeout', 'moduleConfig', function($scope, $http, $timeout, moduleConfig) {
+            'use strict';
 
-    $scope.config = moduleConfig;
+            $scope.config = moduleConfig;
 
-    function loadIntygTypes() {
-        $scope.intygTypes = [];
-        $http.get('/api/modules/active').then(function(response) {
-            $scope.intygTypes = response.data;
-        });
-    }
-    loadIntygTypes();
+            function loadIntygTypes() {
+                $scope.intygTypes = [];
+                $http.get('/api/modules/active').then(function(response) {
+                    $scope.intygTypes = response.data;
+                });
+            }
+            loadIntygTypes();
+            var _show = false;
 
-} ]);
+            $scope.showme = function() {
+                return _show;
+            };
+            $timeout(function() {
+                _show = true;
+            }, 100);
+
+        } ]);
