@@ -108,7 +108,7 @@ public class WebcertAuthenticationSuccessHandler extends
                     fromSavedReqBoolean(savedRequest, IntygIntegrationController.PARAM_COHERENT_JOURNALING),
                     fromSavedReqBoolean(savedRequest, IntygIntegrationController.PARAM_PATIENT_DECEASED),
                     fromSavedReqBoolean(savedRequest, IntygIntegrationController.PARAM_INACTIVE_UNIT),
-                    fromSavedReqBoolean(savedRequest, IntygIntegrationController.PARAM_COPY_OK));
+                    fromSavedReqBoolean(savedRequest, IntygIntegrationController.PARAM_COPY_OK, true));
 
             webCertUser.setParameters(integrationParameters);
 
@@ -135,11 +135,15 @@ public class WebcertAuthenticationSuccessHandler extends
     }
 
     private boolean fromSavedReqBoolean(SavedRequest savedRequest, String paramName) {
+        return fromSavedReqBoolean(savedRequest, paramName, false);
+    }
+
+    private boolean fromSavedReqBoolean(SavedRequest savedRequest, String paramName, boolean defaultValue) {
         String[] val = savedRequest.getParameterMap().get(paramName);
         if (val != null && val.length > 0) {
             return Boolean.parseBoolean(val[0]);
         }
-        return false;
+        return defaultValue;
     }
 
     public void setRequestCache(RequestCache requestCache) {
