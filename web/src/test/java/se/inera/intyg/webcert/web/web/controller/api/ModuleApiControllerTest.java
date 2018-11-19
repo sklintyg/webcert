@@ -49,7 +49,6 @@ public class ModuleApiControllerTest {
     private static final String MODULE_ID_3 = "intygType3";
 
     private static final String MODULE_1_DETAILED_DESC = "This is a detailed description";
-    private static final String SOME_REPLACED_DESCRIPTION = "Some replaced description";
     private static final String ISSUER_TYPE_ID = "TheAuthorities";
 
     @Mock
@@ -129,13 +128,4 @@ public class ModuleApiControllerTest {
         assertTrue(res.isEmpty());
     }
 
-    @SuppressWarnings("unchecked")
-    @Test
-    public void testModuleDetailedDescriptionReplaced() {
-        Response response = moduleApiController.getModulesMap();
-        assertNotNull(response);
-        List<IntygModule> res = (List<IntygModule>) response.getEntity();
-        assertEquals(3, res.size());
-        assertEquals(SOME_REPLACED_DESCRIPTION, res.get(0).getDetailedDescription());
-    }
 }
