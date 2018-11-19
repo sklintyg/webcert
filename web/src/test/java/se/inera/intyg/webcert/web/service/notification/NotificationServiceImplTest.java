@@ -383,6 +383,23 @@ public class NotificationServiceImplTest {
     }
 
     @Test
+    public void testUtkastRevoked() throws Exception {
+        notificationService.sendNotificationForDraftRevoked(createUtkast());
+        verifySuccessfulInvocations(HandelsekodEnum.MAKULE);
+    }
+
+    @Test(expected = JmsException.class)
+    public void testUtkastRevokedJmsException() throws Exception {
+        doThrow(new DestinationResolutionException("")).when(template).send(any(MessageCreator.class));
+        try {
+            notificationService.sendNotificationForDraftRevoked(createUtkast());
+        } finally {
+            verify(template).send(any(MessageCreator.class));
+            verifyZeroInteractions(mockMonitoringLogService);
+        }
+    }
+
+    @Test
     public void testIntygRevoked() throws Exception {
         when(utkastRepo.findOne(INTYG_ID)).thenReturn(createUtkast());
         notificationService.sendNotificationForIntygRevoked(INTYG_ID);
