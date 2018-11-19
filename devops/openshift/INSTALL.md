@@ -184,7 +184,7 @@ Open _&lt;env>/configmap-vars.yaml_ and replace `<value>` with expected values. 
 	NOTIFICATION_WS_QUEUENAME: "<value>"
 	NOTIFICATION_AGGREGATION_QUEUENAME: "<value>"
 	LOG_QUEUENAME: "<value>"
-	CERTIFICATE_SENDER_QUEUEMAME: "<value>"
+	CERTIFICATE_SENDER_QUEUENAME: "<value>"
 	NTJP_WS_CERTIFICATE_FILE: "<value>"
 	NTJP_WS_TRUSTSTORE_FILE: "<value>"
 	NTJP_WS_CERTIFICATE_TYPE: "<value>"

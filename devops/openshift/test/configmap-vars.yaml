@@ -13,7 +13,7 @@ data:
   NOTIFICATION_WS_QUEUENAME: "test.webcert.notification.ws.queue"
   NOTIFICATION_AGGREGATION_QUEUENAME: "test.webcert.aggregated.notification.queue"
   LOG_QUEUENAME: "test.webcert.log.queue"
-  CERTIFICATE_SENDER_QUEUEMAME: "test.webcert.certificate.queue"
+  CERTIFICATE_SENDER_QUEUENAME: "test.webcert.certificate.queue"
   NTJP_WS_CERTIFICATE_FILE: "${certificate.folder}/test.intygstjanster.sjunet.org.jks"
   NTJP_WS_TRUSTSTORE_FILE: "${certificate.folder}/truststore.jks"
   NTJP_WS_CERTIFICATE_TYPE: "JKS"

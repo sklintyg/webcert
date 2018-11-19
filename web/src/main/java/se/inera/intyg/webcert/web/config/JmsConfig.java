@@ -53,7 +53,7 @@ public class JmsConfig {
     @Value("${log.queueName}")
     private String logQueueName;
 
-    @Value("${certificate.sender.queueMame}")
+    @Value("${certificate.sender.queueName}")
     private String certificateSenderQueueName;
 
     @Value("${notification.ws.queueName}")
