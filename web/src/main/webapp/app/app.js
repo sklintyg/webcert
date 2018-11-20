@@ -330,7 +330,9 @@
                         // Add module to array as is
                         moduleArray.push(module);
 
-                        loadCssFromUrl(module.cssPath + '?' + moduleConfig.BUILD_NUMBER);
+                        if(module.cssPath && module.cssPath !== ''){
+                            loadCssFromUrl(module.cssPath + '?' + moduleConfig.BUILD_NUMBER);
+                        }
 
                         if (moduleConfig.JS_MINIFIED) {
 
