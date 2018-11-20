@@ -8,8 +8,7 @@ data:
   REDIS_SENTINEL_MASTER_NAME: "ind-sint-redis"
   DATABASE_PORT: "3306"
   DATABASE_SERVER: "ind-sint-mysqlvip.ind1.sth.basefarm.net"
-  ACTIVEMQ_BROKER_URL: "failover:(tcp://ind-sint-activemq1.ind1.sth.basefarm.net:61616,tcp://ind-sint-activemq2.ind1.sth.basefarm.net:61616)
-"
+  ACTIVEMQ_BROKER_URL: "failover:(tcp://ind-sint-activemq1.ind1.sth.basefarm.net:61616,tcp://ind-sint-activemq2.ind1.sth.basefarm.net:61616)?jms.nonBlockingRedelivery=true&jms.redeliveryPolicy.useExponentialBackOff=true&jms.redeliveryPolicy.backOffMultiplier=2&jms.redeliveryPolicy.maximumRedeliveries=30&jms.redeliveryPolicy.maximumRedeliveryDelay=3600000&jms.redeliveryPolicy.initialRedeliveryDelay=60000"
   NOTIFICATION_QUEUENAME: "webcert.notification.queue"
   NOTIFICATION_WS_QUEUENAME: "webcert.notification.ws.queue"
   NOTIFICATION_AGGREGATION_QUEUENAME: "webcert.aggregated.notification.queue"
