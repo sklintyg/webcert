@@ -1,21 +1,23 @@
 <wc-patient-header data-has-privilege="hasPrivilege()"></wc-patient-header>
-<div id="sokSkrivValjUtkastType" class="webcert-workarea-page centered-constrained-content container-fluid" wc-authority feature="HANTERA_INTYGSUTKAST" intygstyp="">
-  <wc-spinner label="info.loadingdata" show-spinner="viewState.patientLoading" ng-if="hasPrivilege()">
+<div id="sokSkrivValjUtkastType" class="webcert-workarea-page container-fluid" wc-authority feature="HANTERA_INTYGSUTKAST" intygstyp="">
+  <div class="centered-constrained-content">
+    <wc-spinner label="info.loadingdata" show-spinner="viewState.patientLoading" ng-if="hasPrivilege()">
 
-    <wc-alert-message id="load-error" ng-show="viewState.loadErrorMessageKey != null"
-                      alert-severity="danger"
-                      alert-message-id="{{viewState.loadErrorMessageKey}}">
-    </wc-alert-message>
+      <wc-alert-message id="load-error" ng-show="viewState.loadErrorMessageKey != null"
+                        alert-severity="danger"
+                        alert-message-id="{{viewState.loadErrorMessageKey}}">
+      </wc-alert-message>
 
-    <div ng-if="!viewState.loadErrorMessageKey">
-      <wc-valj-utkast-typ view-state="viewState" dom-id="select-intyg-type-table"></wc-valj-utkast-typ>
-    </div>
+      <div ng-if="!viewState.loadErrorMessageKey">
+        <wc-valj-utkast-typ view-state="viewState" dom-id="select-intyg-type-table"></wc-valj-utkast-typ>
+      </div>
 
-    <div ng-if="viewState && !viewState.loadErrorMessageKey">
-      <wc-tidigare-intyg view-state="viewState"></wc-tidigare-intyg>
-    </div>
-  </wc-spinner>
-  <!-- load spinner end -->
-  <wc-alert-message ng-if="!hasPrivilege()"
-      alert-message-id="common.error.authorization_problem_sekretessmarkering" alert-severity="danger"></wc-alert-message>
+      <div ng-if="viewState && !viewState.loadErrorMessageKey">
+        <wc-tidigare-intyg view-state="viewState"></wc-tidigare-intyg>
+      </div>
+    </wc-spinner>
+    <!-- load spinner end -->
+    <wc-alert-message ng-if="!hasPrivilege()"
+                      alert-message-id="common.error.authorization_problem_sekretessmarkering" alert-severity="danger"></wc-alert-message>
+  </div>
 </div>
