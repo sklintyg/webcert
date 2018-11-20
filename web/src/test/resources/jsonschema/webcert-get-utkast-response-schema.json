@@ -27,6 +27,9 @@
     "klartForSigneringDatum": {
       "type": "string"
     },
+    "aterkalladDatum": {
+      "type": "string"
+    },
     "relations": {
       "type": "object",
       "properties": {

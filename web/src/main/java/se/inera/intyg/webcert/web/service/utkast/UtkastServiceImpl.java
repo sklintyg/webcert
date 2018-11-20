@@ -604,7 +604,7 @@ public class UtkastServiceImpl implements UtkastService {
 
         // Validate draft locked
         if (!UtkastStatus.DRAFT_LOCKED.equals(utkast.getStatus())) {
-            LOG.info("User is not allowed to revoke intyg with status: {}", utkast.getStatus());
+            LOG.info("User cannot revoke a draft with status: {}", utkast.getStatus());
             final String message = "Revoke failed due to wrong utkast status";
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, message);
         }
