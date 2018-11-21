@@ -139,21 +139,6 @@
 
     <bean id="patientDetailsResolver" class="se.inera.intyg.webcert.web.service.patient.PatientDetailsResolverImpl"/>
 
-    <!-- Exposes healthCheckService for use in health-check.jsp -->
-    <bean
-      class="org.springframework.web.context.support.ServletContextAttributeExporter">
-      <property name="attributes">
-        <map>
-          <entry key="healthcheck" value-ref="healthCheckService" />
-          <!-- AvtalService not required anymore? -->
-          <entry key="avtalservice" value-ref="avtalService" />
-          <entry key="pageAttributes">
-            <bean class="se.inera.intyg.webcert.web.web.JspPageAttributes"/>
-          </entry>
-        </map>
-      </property>
-    </bean>
-
     <bean id="savedRequestFactory" class="se.inera.intyg.webcert.web.auth.SavedRequestFactoryImpl"/>
 
     <bean id="idpSelectionFilter" class="se.inera.intyg.webcert.web.auth.IdpSelectionFilter">

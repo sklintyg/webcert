@@ -55,7 +55,7 @@
     var _links;
 
     var app = angular.module('webcert',
-        ['ui.bootstrap', 'ui.router', 'ngCookies', 'ngSanitize', 'common', 'ngAnimate', 'smoothScroll', 'ng.shims.placeholder', 'common.dynamiclink']);
+        ['ui.bootstrap', 'ui.router', 'ngCookies', 'ngSanitize', 'common', 'ngAnimate', 'smoothScroll', 'ng.shims.placeholder']);
 
     app.value('networkConfig', {
         defaultTimeout: 30000 // test: 1000
@@ -188,7 +188,7 @@
 
     // Inject language resources
     app.run(['$log', '$rootScope', '$window', '$location', '$state', '$q', '$uibModalStack', 'common.messageService', 'common.moduleService',
-             'common.UserModel', 'webcert.messages', 'common.MonitoringLogService', 'dynamicLinkService',
+             'common.UserModel', 'webcert.messages', 'common.MonitoringLogService', 'common.dynamicLinkService',
         function($log, $rootScope, $window, $location, $state, $q, $uibModalStack, messageService, moduleService, UserModel, wcMessages, MonitoringLogService, dynamicLinkService) {
 
             $rootScope.lang = 'sv';
@@ -199,10 +199,8 @@
             UserModel.termsAccepted = user && user.privatLakareAvtalGodkand;
 
             messageService.addResources(wcMessages);
-            messageService.addLinks(_links);
-            moduleService.setModules(moduleArray);
-
             dynamicLinkService.addLinks(_links);
+            moduleService.setModules(moduleArray);
 
             $rootScope.$on('$stateChangeStart',
                 function(event, toState, toParams, fromState, fromParams) {
@@ -330,7 +328,9 @@
                         // Add module to array as is
                         moduleArray.push(module);
 
-                        loadCssFromUrl(module.cssPath + '?' + moduleConfig.BUILD_NUMBER);
+                        if(module.cssPath && module.cssPath !== ''){
+                            loadCssFromUrl(module.cssPath + '?' + moduleConfig.BUILD_NUMBER);
+                        }
 
                         if (moduleConfig.JS_MINIFIED) {
 

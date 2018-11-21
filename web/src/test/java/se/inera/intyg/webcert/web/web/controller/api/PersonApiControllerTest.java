@@ -53,8 +53,8 @@ public class PersonApiControllerTest {
     public void testGetPersonuppgifter() {
         Personnummer personnummer = createPnr("19121212-1212");
 
-        when(puService.getPerson(any(Personnummer.class))).thenReturn(new PersonSvar(
-                new Person(personnummer, false, false, "fnamn", "mnamn", "enamn", "paddr", "pnr", "port"), PersonSvar.Status.FOUND));
+        when(puService.getPerson(any(Personnummer.class))).thenReturn(PersonSvar.found(
+                new Person(personnummer, false, false, "fnamn", "mnamn", "enamn", "paddr", "pnr", "port")));
 
         Response response = personCtrl.getPersonuppgifter(personnummer.getPersonnummer());
 
@@ -78,8 +78,8 @@ public class PersonApiControllerTest {
     public void testGetPersonuppgifterSekretess() {
         Personnummer personnummer = createPnr("19121212-1212");
 
-        when(puService.getPerson(any(Personnummer.class))).thenReturn(new PersonSvar(
-                new Person(personnummer, true, false, "fnamn", "mnamn", "enamn", "paddr", "pnr", "port"), PersonSvar.Status.FOUND));
+        when(puService.getPerson(any(Personnummer.class))).thenReturn(PersonSvar.found(
+                new Person(personnummer, true, false, "fnamn", "mnamn", "enamn", "paddr", "pnr", "port")));
 
         Response response = personCtrl.getPersonuppgifter(personnummer.getPersonnummer());
 
@@ -103,7 +103,7 @@ public class PersonApiControllerTest {
     public void testGetPersonuppgifterMissingPerson() {
         Personnummer personnummer = createPnr("19010101-0101");
 
-        when(puService.getPerson(any(Personnummer.class))).thenReturn(new PersonSvar(null, PersonSvar.Status.NOT_FOUND));
+        when(puService.getPerson(any(Personnummer.class))).thenReturn(PersonSvar.notFound());
 
         Response response = personCtrl.getPersonuppgifter(personnummer.getPersonnummer());
 

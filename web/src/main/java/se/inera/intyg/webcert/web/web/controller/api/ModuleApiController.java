@@ -80,12 +80,6 @@ public class ModuleApiController extends AbstractApiController {
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
     public Response getModulesMap() {
-        List<IntygModule> intygModules = moduleRegistry.listAllModules();
-        intygModules.forEach(module -> {
-            if (module.getDetailedDescription() != null) {
-                module.setDetailedDescription(dynamicLinkService.apply(DYNAMIC_LINK_PLACEHOLDER, module.getDetailedDescription()));
-            }
-        });
         return Response.ok(moduleRegistry.listAllModules()).build();
     }
 

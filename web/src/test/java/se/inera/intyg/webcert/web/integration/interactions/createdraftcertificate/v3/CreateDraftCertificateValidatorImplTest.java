@@ -181,7 +181,7 @@ public class CreateDraftCertificateValidatorImplTest extends BaseCreateDraftCert
     @Test
     public void testValidationOfPersonnummerDoesNotExistInPU() {
         when(patientDetailsResolver.getPersonFromPUService(any(Personnummer.class)))
-                .thenReturn(buildPersonSvar(PersonSvar.Status.NOT_FOUND));
+                .thenReturn(PersonSvar.notFound());
 
         ResultValidator result = validator.validateApplicationErrors(buildIntyg(TSBAS, "efternamn", "förnamn",
                 "fullständigt namn", "enhetsId", "enhetsnamn", true), user);
@@ -192,7 +192,7 @@ public class CreateDraftCertificateValidatorImplTest extends BaseCreateDraftCert
 
     @Test
     public void testPuServiceLooksUpPatientForTsBas() {
-        when(patientDetailsResolver.getPersonFromPUService(any(Personnummer.class))).thenReturn(buildPersonSvar(PersonSvar.Status.FOUND));
+        when(patientDetailsResolver.getPersonFromPUService(any(Personnummer.class))).thenReturn(buildPersonSvar());
         when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.FALSE);
         ResultValidator result = validator
                 .validateApplicationErrors(buildIntyg(TSBAS, "efternamn", "förnamn",
@@ -204,7 +204,7 @@ public class CreateDraftCertificateValidatorImplTest extends BaseCreateDraftCert
     @Test
     public void testTsBasIsNotAllowedWhenPatientCouldNotBeLookedUpInPu() {
         when(patientDetailsResolver.getPersonFromPUService(any(Personnummer.class)))
-                .thenReturn(buildPersonSvar(PersonSvar.Status.NOT_FOUND));
+                .thenReturn(PersonSvar.notFound());
         ResultValidator result = validator
                 .validateApplicationErrors(buildIntyg(TSBAS, "efternamn", "förnamn",
                         "fullständigt namn", "enhetsId", "enhetsnamn", true), user);
@@ -216,7 +216,7 @@ public class CreateDraftCertificateValidatorImplTest extends BaseCreateDraftCert
     public void testTsBasIsNotAllowedWhenPatientIsSekretessmarkerad() {
         when(authoritiesHelper.getIntygstyperAllowedForSekretessmarkering())
                 .thenReturn(new HashSet<>(Arrays.asList(Fk7263EntryPoint.MODULE_ID)));
-        when(patientDetailsResolver.getPersonFromPUService(any(Personnummer.class))).thenReturn(buildPersonSvar(PersonSvar.Status.FOUND));
+        when(patientDetailsResolver.getPersonFromPUService(any(Personnummer.class))).thenReturn(buildPersonSvar());
         when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.TRUE);
         ResultValidator result = validator
                 .validateApplicationErrors(buildIntyg(TSBAS, "efternamn", "förnamn",
@@ -227,7 +227,7 @@ public class CreateDraftCertificateValidatorImplTest extends BaseCreateDraftCert
 
     @Test
     public void testValidateIntygstypPrivilege() {
-        when(patientDetailsResolver.getPersonFromPUService(any(Personnummer.class))).thenReturn(buildPersonSvar(PersonSvar.Status.FOUND));
+        when(patientDetailsResolver.getPersonFromPUService(any(Personnummer.class))).thenReturn(buildPersonSvar());
 
         // We do the same validation as to view the utkast when CreateDraftCertificate.
         ResultValidator result = validator
@@ -239,10 +239,9 @@ public class CreateDraftCertificateValidatorImplTest extends BaseCreateDraftCert
         verify(patientDetailsResolver, times(0)).getSekretessStatus(any(Personnummer.class));
     }
 
-    private PersonSvar buildPersonSvar(PersonSvar.Status status) {
+    private PersonSvar buildPersonSvar() {
         Personnummer personnummer = Personnummer.createPersonnummer("191212121212").get();
-        return new PersonSvar(new PersonSvar(
-                new Person(personnummer, false, false, "fnamn", "mnamn", "enamn", "paddr", "pnr", "port"), status));
+        return PersonSvar.found(new Person(personnummer, false, false, "fnamn", "mnamn", "enamn", "paddr", "pnr", "port"));
     }
 
     private Intyg buildIntyg(String intygsKod, String patientEfternamn, String patientFornamn, String hosPersonalFullstandigtNamn,

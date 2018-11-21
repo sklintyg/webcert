@@ -18,11 +18,11 @@
  */
 package se.inera.intyg.webcert.web.web.controller.moduleapi.dto;
 
-import java.time.LocalDateTime;
-
 import com.fasterxml.jackson.annotation.JsonRawValue;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
+
+import java.time.LocalDateTime;
 
 /**
  * Container for a draft and its current status.
@@ -48,6 +48,7 @@ public class DraftHolder {
 
     private Relations relations = new Relations();
     private LocalDateTime klartForSigneringDatum;
+    private LocalDateTime aterkalladDatum;
     private LocalDateTime created;
     private LocalDateTime revokedAt;
 
@@ -128,6 +129,14 @@ public class DraftHolder {
 
     public void setKlartForSigneringDatum(LocalDateTime klartForSigneringDatum) {
         this.klartForSigneringDatum = klartForSigneringDatum;
+    }
+
+    public LocalDateTime getAterkalladDatum() {
+        return aterkalladDatum;
+    }
+
+    public void setAterkalladDatum(LocalDateTime aterkalladDatum) {
+        this.aterkalladDatum = aterkalladDatum;
     }
 
     public boolean isPatientResolved() {

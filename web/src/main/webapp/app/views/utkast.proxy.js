@@ -36,7 +36,7 @@ angular.module('webcert').factory('webcert.UtkastProxy',
                 $log.debug('_createDraft');
                 var restPath = '/api/utkast/' + createDraftRequestPayload.intygType;
                 $http.post(restPath, createDraftRequestPayload).then(function(response) {
-                    $log.debug('got callback data: ' + response.data);
+                    $log.debug(restPath + ' response: ' + response.data);
                     onSuccess(response.data);
                     statService.refreshStat();
                 }, function(response) {
@@ -51,7 +51,6 @@ angular.module('webcert').factory('webcert.UtkastProxy',
              */
             function _getUtkastTypes() {
                 var data = moduleService.getModules();
-                $log.debug('got data:', data);
                 var sortValue = 0;
                 var types = [
                     { sortValue: sortValue++, id: 'default', label: messageService.getProperty('label.default-intyg-type') }
@@ -78,6 +77,7 @@ angular.module('webcert').factory('webcert.UtkastProxy',
                         });
                     }
                 }
+                $log.debug('Utkasttypes: ', data);
                 return types;
             }
 
@@ -87,7 +87,7 @@ angular.module('webcert').factory('webcert.UtkastProxy',
             function _getUtkastTypesForPatient(patientId, onSuccess) {
                 var restPath = '/api/modules/map/' + patientId;
                 $http.get(restPath).then(function(response) {
-                    $log.debug('got data:', response.data);
+                    $log.debug(restPath + ' response:', response.data);
                     var sortValue = 0;
                     var types = [];
                     for (var i = 0; i < response.data.length; i++) {
@@ -138,7 +138,7 @@ angular.module('webcert').factory('webcert.UtkastProxy',
                 $log.debug('_getUtkastList:');
                 var restPath = '/api/utkast/'; // release version
                 $http.get(restPath, { params: query }).then(function(response) {
-                    $log.debug('got data:' + response.data);
+                    $log.debug(restPath + ' response:' + response.data);
                     onSuccess(response.data);
                 }, function(response) {
                     $log.error('error ' + response.status);

@@ -28,13 +28,13 @@ import static com.jayway.restassured.RestAssured.given;
 /**
  * Created by marced on 02/06/16.
  */
-public class HealthCheckApiControllerIT extends BaseRestIntegrationTest {
+public class PrometheusMetricsIT extends BaseRestIntegrationTest {
     @Test
-    public void testHealthCheckPing() {
+    public void testGetMetrics() {
 
         given().contentType(ContentType.JSON).
                 expect().statusCode(200)
                 .body(Matchers.containsString("OK"))
-                .when().get("monitoring/health-check/ping");
+                .when().get("metrics");
     }
 }

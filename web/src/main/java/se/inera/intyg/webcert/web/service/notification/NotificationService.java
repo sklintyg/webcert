@@ -54,6 +54,11 @@ public interface NotificationService {
      */
     void sendNotificationForDraftDeleted(Utkast utkast);
 
+    /*
+     * Utkast revoked
+     */
+    void sendNotificationForDraftRevoked(Utkast utkast);
+
     /**
      * Utkast marked as ready to sign.
      */

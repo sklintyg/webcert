@@ -25,8 +25,8 @@
 
 angular.module('common', []);
 
-angular.module('webcert.pub.login', ['ui.bootstrap', 'common.dynamiclink', 'common'])
-    .controller('LoginController', ['$scope', '$sce', '$uibModal', '$window', '$http', 'dynamicLinkService', function($scope, $sce, $uibModal, $window, $http, dynamicLinkService) {
+angular.module('webcert.pub.login', ['ui.bootstrap', 'common'])
+    .controller('LoginController', ['$scope', '$sce', '$uibModal', '$window', '$http', 'common.dynamicLinkService', function($scope, $sce, $uibModal, $window, $http, dynamicLinkService) {
         'use strict';
         var expand = $sce.trustAsHtml('Visa mer om inloggning <span class="glyphicon glyphicon-chevron-down"></span>');
         var collapse = $sce.trustAsHtml('Visa mindre om inloggning <span class="glyphicon glyphicon-chevron-up"></span>');

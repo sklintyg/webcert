@@ -18,33 +18,8 @@
  */
 package se.inera.intyg.webcert.web.web.controller.testability;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
-import java.io.IOException;
-import java.io.StringWriter;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-
+import com.fasterxml.jackson.databind.JsonNode;
+import io.swagger.annotations.Api;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,9 +30,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
-
-import com.fasterxml.jackson.databind.JsonNode;
-import io.swagger.annotations.Api;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.common.enumerations.SignaturTyp;
 import se.inera.intyg.common.support.model.UtkastStatus;
@@ -85,15 +57,41 @@ import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftRequest;
 import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
 import se.inera.intyg.webcert.web.web.controller.testability.dto.SigningUnit;
 
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 @Transactional
-@Api(value = "services intyg", description = "REST API för testbarhet - Utkast")
+@Api(value = "services intyg/utkast", description = "REST API för testbarhet - Intyg och Utkast")
 @Path("/intyg")
 public class IntygResource {
 
     public static final Logger LOG = LoggerFactory.getLogger(IntygResource.class);
 
     protected static final String UTF_8_CHARSET = ";charset=utf-8";
-    protected static final String UTF_8 = "UTF-8";
 
     @Autowired
     private UtkastRepository utkastRepository;
@@ -115,8 +113,6 @@ public class IntygResource {
 
     @Autowired
     private RedisTicketTracker redisTicketTracker;
-    // @Autowired
-    // private NiasSignaturService niasSignaturService;
 
     @Autowired
     private IntygModuleRegistry moduleRegistry;
@@ -205,7 +201,7 @@ public class IntygResource {
     @GET
     @Path("/{enhetsId}/drafts")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getAllCompleteDradtsOnUnit(@PathParam("enhetsId") String enhetsId) {
+    public Response getAllCompleteDraftsOnUnit(@PathParam("enhetsId") String enhetsId) {
         List<Utkast> all = utkastRepository.findByEnhetsIdsAndStatuses(Arrays.asList(enhetsId), Arrays.asList(UtkastStatus.DRAFT_COMPLETE));
         return Response.ok(all.stream()
                 .collect(Collectors.toList())).build();
@@ -367,6 +363,14 @@ public class IntygResource {
     }
 
     @PUT
+    @Path("/{id}/status")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response updateDraftStatus(@PathParam("id") String id, String status) {
+        updateStatus(id, UtkastStatus.valueOf(status));
+        return Response.ok().build();
+    }
+
+    @PUT
     @Path("/{id}/komplett")
     @Produces(MediaType.APPLICATION_JSON)
     public Response updateDraft(@PathParam("id") String id) {
@@ -416,22 +420,6 @@ public class IntygResource {
 
         return Response.ok(numberOfLockedDrafts).build();
     }
-
-    // @GET
-    // @Path("/nias/sign/{personId}")
-    // @Produces(MediaType.APPLICATION_JSON)
-    // public Response netiDSign(@PathParam("personId") String personId) {
-    // SignResponse signResponse = niasSignaturService.sign(personId, "", "", "");
-    // return Response.ok(signResponse.getSignResult()).build();
-    // }
-    //
-    // @GET
-    // @Path("/nias/collect/{orderRef}")
-    // @Produces(MediaType.APPLICATION_JSON)
-    // public Response netiDCollect(@PathParam("orderRef") String orderRef) {
-    // ResultCollect resultCollect = niasSignaturService.collect(orderRef);
-    // return Response.ok(resultCollect).build();
-    // }
 
     private void setRelationToKompletterandeIntyg(String id, String oldIntygId) {
         Utkast utkast = utkastRepository.findOne(id);
