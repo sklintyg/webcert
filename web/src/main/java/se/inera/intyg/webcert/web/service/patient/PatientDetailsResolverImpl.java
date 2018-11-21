@@ -159,7 +159,7 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
 
     @Override
     @Transactional(readOnly = true)
-    public Patient resolvePatient(Personnummer personnummer, String intygsTyp) {
+    public Patient resolvePatient(Personnummer personnummer, String intygsTyp, String intygsTypVersion) {
 
         WebCertUser user;
         if (webCertUserService.hasAuthenticationContext()) {
@@ -176,8 +176,8 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
         }
 
         try {
-            ModuleEntryPoint moduleEntryPoint = moduleRegistry.getModuleEntryPoint(internalIntygsTyp);
-            PatientDetailResolveOrder resolveOrder = moduleEntryPoint.getPatientDetailResolveOrder();
+            ModuleApi moduleApi = moduleRegistry.getModuleApi(internalIntygsTyp, intygsTypVersion);
+            PatientDetailResolveOrder resolveOrder = moduleApi.getPatientDetailResolveOrder();
             return resolvePatient(personnummer, user, resolveOrder);
         } catch (ModuleNotFoundException e) {
             throw new IllegalArgumentException("Unknown intygsTyp: " + intygsTyp);

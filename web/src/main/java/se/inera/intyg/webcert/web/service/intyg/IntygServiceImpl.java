@@ -793,7 +793,7 @@ public class IntygServiceImpl implements IntygService {
 
             // INTYG-4086: Patient object populated according to ruleset for the intygstyp at hand.
             // Since an FK-intyg never will have anything other than personId, try to fetch all using ruleset
-            Patient newPatientData = patientDetailsResolver.resolvePatient(personId, typ);
+            Patient newPatientData = patientDetailsResolver.resolvePatient(personId, typ, intygTypeVersion);
 
             if (newPatientData == null) {
                 throw new WebCertServiceException(WebCertServiceErrorCodeEnum.PU_PROBLEM,
@@ -889,7 +889,8 @@ public class IntygServiceImpl implements IntygService {
 
         try {
             // INTYG-4086: Patient object populated according to ruleset for the intygstyp at hand.
-            Patient newPatientData = patientDetailsResolver.resolvePatient(utkast.getPatientPersonnummer(), utkast.getIntygsTyp());
+            Patient newPatientData = patientDetailsResolver.resolvePatient(utkast.getPatientPersonnummer(), utkast.getIntygsTyp(),
+                    utkast.getIntygTypeVersion());
 
             // Copied from getDraft in UtkastModuleApiController
             // INTYG-4086: Temporary, don't know if this is correct yet. If no patient was resolved,

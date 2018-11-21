@@ -45,6 +45,7 @@ import se.inera.intyg.common.db.support.DbModuleEntryPoint;
 import se.inera.intyg.common.db.v1.model.internal.DbUtlatandeV1;
 import se.inera.intyg.common.doi.support.DoiModuleEntryPoint;
 import se.inera.intyg.common.luae_fs.support.LuaefsEntryPoint;
+import se.inera.intyg.common.luae_fs.v1.rest.LuaefsModuleApiV1;
 import se.inera.intyg.common.support.model.common.internal.GrundData;
 import se.inera.intyg.common.support.model.common.internal.Patient;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
@@ -54,6 +55,7 @@ import se.inera.intyg.common.support.modules.support.ModuleEntryPoint;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
 import se.inera.intyg.common.ts_bas.support.TsBasEntryPoint;
+import se.inera.intyg.common.ts_bas.v6.rest.TsBasModuleApiV6;
 import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
 import se.inera.intyg.infra.integration.hsa.model.Vardgivare;
 import se.inera.intyg.infra.integration.pu.model.Person;
@@ -72,6 +74,8 @@ import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationPara
  */
 @RunWith(MockitoJUnitRunner.class)
 public class PatientDetailsResolverTest {
+
+    private static final String TS_BAS_VERSION = "6.0";
 
     private static final Personnummer PNR = Personnummer.createPersonnummer("191212121212").get();
 
@@ -123,7 +127,7 @@ public class PatientDetailsResolverTest {
     private WebCertUser freeWebCertUser;
 
     @Before
-    public void init() {
+    public void init() throws Exception {
         when(webCertUserService.hasAuthenticationContext()).thenReturn(true);
         when(integratedWebCertUser.getParameters()).thenReturn(buildIntegrationParameters());
         when(integratedWebCertUser.getOrigin()).thenReturn(UserOriginType.DJUPINTEGRATION.name());
@@ -131,6 +135,9 @@ public class PatientDetailsResolverTest {
         when(freeWebCertUser.getParameters()).thenReturn(null);
         when(freeWebCertUser.getOrigin()).thenReturn(UserOriginType.NORMAL.name());
         when(moduleRegistry.moduleExists(anyString())).thenReturn(true);
+
+        when(moduleRegistry.getModuleApi("luae_fs", "1.0")).thenReturn(new LuaefsModuleApiV1());
+        when(moduleRegistry.getModuleApi("ts-bas", TS_BAS_VERSION)).thenReturn(new TsBasModuleApiV6());
     }
 
     private IntegrationParameters buildIntegrationParameters() {
@@ -207,9 +214,7 @@ public class PatientDetailsResolverTest {
         when(puService.getPerson(any(Personnummer.class))).thenReturn(buildPersonSvar());
         when(webCertUserService.getUser()).thenReturn(integratedWebCertUser);
 
-        when(moduleRegistry.getModuleEntryPoint(Mockito.eq("luae_fs"))).thenReturn(new LuaefsEntryPoint());
-
-        Patient patient = testee.resolvePatient(PNR, "luae_fs");
+        Patient patient = testee.resolvePatient(PNR, "luae_fs", "1.0");
         assertEquals(PNR, patient.getPersonId());
         assertEquals(FNAMN, patient.getFornamn());
         assertEquals(MNAMN, patient.getMellannamn());
@@ -229,9 +234,7 @@ public class PatientDetailsResolverTest {
         when(puService.getPerson(any(Personnummer.class))).thenReturn(buildErrorPersonSvar());
         when(webCertUserService.getUser()).thenReturn(integratedWebCertUser);
 
-        when(moduleRegistry.getModuleEntryPoint(Mockito.eq("luae_fs"))).thenReturn(new LuaefsEntryPoint());
-
-        Patient patient = testee.resolvePatient(PNR, "luae_fs");
+        Patient patient = testee.resolvePatient(PNR, "luae_fs", "1.0");
         assertEquals(PNR, patient.getPersonId());
         assertEquals(INTEGR_FNAMN, patient.getFornamn());
         assertEquals(INTEGR_MNAMN, patient.getMellannamn());
@@ -251,9 +254,7 @@ public class PatientDetailsResolverTest {
         when(puService.getPerson(any(Personnummer.class))).thenReturn(buildPersonSvar());
         when(webCertUserService.getUser()).thenReturn(freeWebCertUser);
 
-        when(moduleRegistry.getModuleEntryPoint(Mockito.eq("luae_fs"))).thenReturn(new LuaefsEntryPoint());
-
-        Patient patient = testee.resolvePatient(PNR, "luae_fs");
+        Patient patient = testee.resolvePatient(PNR, "luae_fs", "1.0");
         assertEquals(PNR, patient.getPersonId());
         assertEquals(FNAMN, patient.getFornamn());
         assertEquals(MNAMN, patient.getMellannamn());
@@ -273,9 +274,7 @@ public class PatientDetailsResolverTest {
         when(puService.getPerson(any(Personnummer.class))).thenReturn(buildErrorPersonSvar());
         when(webCertUserService.getUser()).thenReturn(freeWebCertUser);
 
-        when(moduleRegistry.getModuleEntryPoint(Mockito.eq("luae_fs"))).thenReturn(new LuaefsEntryPoint());
-
-        Patient patient = testee.resolvePatient(PNR, "luae_fs");
+        Patient patient = testee.resolvePatient(PNR, "luae_fs", "1.0");
         assertNull(patient);
     }
 
@@ -289,9 +288,7 @@ public class PatientDetailsResolverTest {
         when(puService.getPerson(any(Personnummer.class))).thenReturn(buildPersonSvar());
         when(webCertUserService.getUser()).thenReturn(integratedWebCertUser);
 
-        when(moduleRegistry.getModuleEntryPoint(Mockito.eq("ts-bas"))).thenReturn(new TsBasEntryPoint());
-
-        Patient patient = testee.resolvePatient(PNR, "ts-bas");
+        Patient patient = testee.resolvePatient(PNR, "ts-bas", TS_BAS_VERSION);
         assertEquals(PNR, patient.getPersonId());
         assertEquals(FNAMN, patient.getFornamn());
         assertEquals(MNAMN, patient.getMellannamn());
@@ -312,8 +309,6 @@ public class PatientDetailsResolverTest {
         when(webCertUserService.getUser()).thenReturn(integratedWebCertUser);
         when(integratedWebCertUser.getParameters()).thenReturn(buildIntegrationParametersWithNullAddress());
 
-        when(moduleRegistry.getModuleEntryPoint(Mockito.eq("ts-bas"))).thenReturn(new TsBasEntryPoint());
-
         Patient patient = testee.resolvePatient(PNR, "ts-bas");
         assertEquals(PNR, patient.getPersonId());
         assertEquals(FNAMN, patient.getFornamn());
@@ -333,8 +328,6 @@ public class PatientDetailsResolverTest {
     public void testTSIntygIntegrationWithPuUnavailable() throws ModuleNotFoundException {
         when(puService.getPerson(any(Personnummer.class))).thenReturn(buildErrorPersonSvar());
         when(webCertUserService.getUser()).thenReturn(integratedWebCertUser);
-
-        when(moduleRegistry.getModuleEntryPoint(Mockito.eq("ts-bas"))).thenReturn(new TsBasEntryPoint());
 
         Patient patient = testee.resolvePatient(PNR, "ts-bas");
         assertEquals(PNR, patient.getPersonId());

@@ -128,7 +128,7 @@ public class UtkastModuleApiController extends AbstractApiController {
 
         Utkast utkast = utkastService.getDraft(intygsId, intygsTyp);
 
-        Patient resolvedPatient = patientDetailsResolver.resolvePatient(utkast.getPatientPersonnummer(), intygsTyp);
+        Patient resolvedPatient = patientDetailsResolver.resolvePatient(utkast.getPatientPersonnummer(), intygsTyp, utkast.getIntygTypeVersion());
         if (resolvedPatient == null) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.PU_PROBLEM,
                     "Could not resolve Patient in PU-service when opening draft.");

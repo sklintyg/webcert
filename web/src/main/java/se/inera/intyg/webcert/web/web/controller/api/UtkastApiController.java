@@ -237,7 +237,8 @@ public class UtkastApiController extends AbstractApiController {
     }
 
     private CreateNewDraftRequest createServiceRequest(CreateUtkastRequest req) {
-        Patient pat = patientDetailsResolver.resolvePatient(req.getPatientPersonnummer(), req.getIntygType());
+        String latestIntygTypeVersion = intygTextsService.getLatestVersion(req.getIntygType());
+        Patient pat = patientDetailsResolver.resolvePatient(req.getPatientPersonnummer(), req.getIntygType(), latestIntygTypeVersion);
 
         // Ugly, but null (for now) means that the PU service was not available or that the standardized logic in the
         // resolver asks the calling code to fall-back to "manual entry". In this case, the stuff from the
@@ -253,7 +254,6 @@ public class UtkastApiController extends AbstractApiController {
             pat.setPostnummer(req.getPatientPostnummer());
             pat.setPostort(req.getPatientPostort());
         }
-        String latestIntygTypeVersion = intygTextsService.getLatestVersion(req.getIntygType());
         return new CreateNewDraftRequest(null, req.getIntygType(), latestIntygTypeVersion, null, createHoSPersonFromUser(), pat);
     }
 

@@ -32,7 +32,7 @@ import java.util.Map;
 public interface PatientDetailsResolver {
     PersonSvar getPersonFromPUService(Personnummer personnummer);
 
-    Patient resolvePatient(Personnummer personnummer, String intygsTyp);
+    Patient resolvePatient(Personnummer personnummer, String intygsTyp, String intygsTypVersion);
 
     SekretessStatus getSekretessStatus(Personnummer personNummer);
 
