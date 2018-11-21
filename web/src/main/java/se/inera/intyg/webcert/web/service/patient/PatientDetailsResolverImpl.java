@@ -18,30 +18,18 @@
  */
 package se.inera.intyg.webcert.web.service.patient;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
+import com.google.common.base.Joiner;
+import com.google.common.base.Strings;
+import com.google.common.collect.Sets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.google.common.base.Joiner;
-import com.google.common.base.Strings;
-import com.google.common.collect.Sets;
-
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.Patient;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
-import se.inera.intyg.common.support.modules.support.ModuleEntryPoint;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.common.support.modules.support.api.dto.PatientDetailResolveOrder;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
@@ -57,6 +45,15 @@ import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * This class is responsible for implementing GE-002, e.g. requirements on how to fetch patient details for a given
@@ -241,72 +238,72 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
     }
 
     private void resolvePatientAdressDetails(Patient patient, PatientDetailResolveOrder resolveOrder,
-                                             PersonSvar personSvar, WebCertUser user, Utlatande predecessor) {
+            PersonSvar personSvar, WebCertUser user, Utlatande predecessor) {
         List<PatientDetailResolveOrder.ResolveOrder> adressStrategy = resolveOrder.getAdressStrategy();
         int index = 0;
         boolean done = false;
         while (index < adressStrategy.size() && !done) {
             switch (adressStrategy.get(index)) {
-                case PARAMS:
-                    done = setAdressFromParams(patient, user);
-                    break;
-                case PU:
-                    done = setAdressFromPu(patient, personSvar);
-                    break;
-                case PREDECESSOR:
-                    done = setAdressFromPredecessor(patient, predecessor);
-                    break;
-                default:
-                    LOG.info("Unexpected adress lookup strategy encountered, bailing out.");
-                    break;
+            case PARAMS:
+                done = setAdressFromParams(patient, user);
+                break;
+            case PU:
+                done = setAdressFromPu(patient, personSvar);
+                break;
+            case PREDECESSOR:
+                done = setAdressFromPredecessor(patient, predecessor);
+                break;
+            default:
+                LOG.info("Unexpected adress lookup strategy encountered, bailing out.");
+                break;
             }
             index++;
         }
     }
 
     private void resolvePatientAvlidenDetails(Patient patient, PatientDetailResolveOrder resolveOrder,
-                                              PersonSvar personSvar, WebCertUser user, Utlatande predecessor) {
+            PersonSvar personSvar, WebCertUser user, Utlatande predecessor) {
         List<PatientDetailResolveOrder.ResolveOrder> avlidenStrategy = resolveOrder.getAvlidenStrategy();
         int index = 0;
         boolean done = false;
         while (index < avlidenStrategy.size() && !done) {
             switch (avlidenStrategy.get(index)) {
-                case PARAMS:
-                    done = setAvlidenFromParams(patient, user);
-                    break;
-                case PU:
-                    done = setAvlidenFromPu(patient, personSvar);
-                    break;
-                case PARAMS_OR_PU:
-                    done = setAvlidenFromParamsOrPU(patient, personSvar, user);
-                    break;
-                case PREDECESSOR:
-                    done = setAvlidenFromPredecessor(patient, predecessor);
-                    break;
+            case PARAMS:
+                done = setAvlidenFromParams(patient, user);
+                break;
+            case PU:
+                done = setAvlidenFromPu(patient, personSvar);
+                break;
+            case PARAMS_OR_PU:
+                done = setAvlidenFromParamsOrPU(patient, personSvar, user);
+                break;
+            case PREDECESSOR:
+                done = setAvlidenFromPredecessor(patient, predecessor);
+                break;
             }
             index++;
         }
     }
 
     private void resolvePatientOtherDetails(Patient patient, PatientDetailResolveOrder resolveOrder,
-                                            PersonSvar personSvar, WebCertUser user, Utlatande predecessor) {
+            PersonSvar personSvar, WebCertUser user, Utlatande predecessor) {
         List<PatientDetailResolveOrder.ResolveOrder> otherStrategy = resolveOrder.getOtherStrategy();
         int index = 0;
         boolean done = false;
         while (index < otherStrategy.size() && !done) {
             switch (otherStrategy.get(index)) {
-                case PARAMS:
-                    done = setOtherFromParams(patient, user);
-                    break;
-                case PU:
-                    done = setOtherFromPu(patient, personSvar);
-                    break;
-                case PREDECESSOR:
-                    done = setOtherFromPredecessor(patient, predecessor);
-                    break;
-                default:
-                    LOG.info("Unexpected other lookup strategy encountered, bailing out.");
-                    break;
+            case PARAMS:
+                done = setOtherFromParams(patient, user);
+                break;
+            case PU:
+                done = setOtherFromPu(patient, personSvar);
+                break;
+            case PREDECESSOR:
+                done = setOtherFromPredecessor(patient, predecessor);
+                break;
+            default:
+                LOG.info("Unexpected other lookup strategy encountered, bailing out.");
+                break;
             }
             index++;
         }
@@ -354,8 +351,8 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
     private boolean setAvlidenFromParamsOrPU(Patient patient, PersonSvar personSvar, WebCertUser user) {
         patient.setAvliden(
                 (personSvar.getStatus() == PersonSvar.Status.FOUND && personSvar.getPerson().isAvliden())
-                || (user.getParameters() != null && user.getParameters().isPatientDeceased())
-                || (personSvar.getStatus() != PersonSvar.Status.FOUND && user.getParameters() == null));
+                        || (user.getParameters() != null && user.getParameters().isPatientDeceased())
+                        || (personSvar.getStatus() != PersonSvar.Status.FOUND && user.getParameters() == null));
         return true;
     }
 
@@ -449,12 +446,11 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
     private boolean isPredecessorStrategy(PatientDetailResolveOrder resolveOrder) {
         return (resolveOrder.getAdressStrategy() != null
                 && resolveOrder.getAdressStrategy().stream().anyMatch(it -> it.equals(PatientDetailResolveOrder.ResolveOrder.PREDECESSOR)))
-                || (resolveOrder.getAvlidenStrategy() != null && resolveOrder.getAvlidenStrategy().stream().anyMatch(it ->
-                                it.equals(PatientDetailResolveOrder.ResolveOrder.PREDECESSOR)))
-                || (resolveOrder.getOtherStrategy() != null && resolveOrder.getOtherStrategy().stream().anyMatch(it ->
-                                it.equals(PatientDetailResolveOrder.ResolveOrder.PREDECESSOR)));
+                || (resolveOrder.getAvlidenStrategy() != null && resolveOrder.getAvlidenStrategy().stream()
+                        .anyMatch(it -> it.equals(PatientDetailResolveOrder.ResolveOrder.PREDECESSOR)))
+                || (resolveOrder.getOtherStrategy() != null && resolveOrder.getOtherStrategy().stream()
+                        .anyMatch(it -> it.equals(PatientDetailResolveOrder.ResolveOrder.PREDECESSOR)));
     }
-
 
     private boolean isNotNullOrEmpty(String value) {
         return !Strings.isNullOrEmpty(value);

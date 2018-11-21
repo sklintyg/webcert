@@ -127,7 +127,8 @@ public class UtkastModuleApiController extends AbstractApiController {
 
         Utkast utkast = utkastService.getDraft(intygsId, intygsTyp);
 
-        Patient resolvedPatient = patientDetailsResolver.resolvePatient(utkast.getPatientPersonnummer(), intygsTyp, utkast.getIntygTypeVersion());
+        Patient resolvedPatient = patientDetailsResolver.resolvePatient(utkast.getPatientPersonnummer(), intygsTyp,
+                utkast.getIntygTypeVersion());
         if (resolvedPatient == null) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.PU_PROBLEM,
                     "Could not resolve Patient in PU-service when opening draft.");
@@ -410,8 +411,10 @@ public class UtkastModuleApiController extends AbstractApiController {
     /**
      * Revoke a locked draft.
      *
-     * @param intygsId The id of the intyg to revoke
-     * @param param    A JSON struct containing an optional message
+     * @param intygsId
+     *            The id of the intyg to revoke
+     * @param param
+     *            A JSON struct containing an optional message
      */
     @POST
     @Path("/{intygsTyp}/{intygsId}/aterkalla")
@@ -419,7 +422,7 @@ public class UtkastModuleApiController extends AbstractApiController {
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
     public Response revokeLockedDraft(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId,
-                                      RevokeSignedIntygParameter param) {
+            RevokeSignedIntygParameter param) {
         validateRevokeAuthority(intygsTyp);
 
         if (authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
