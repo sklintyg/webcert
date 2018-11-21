@@ -30,8 +30,8 @@ angular.module('webcert').factory('webcert.IntygProxy',
                 var restPath = '/api/intyg/person/' + personId;
                 $http.get(restPath).then(function(response) {
                     $log.debug(restPath + ' response:' + angular.toJson(response.data));
-                    var offline_mode = response.headers('offline_mode');
-                    if (typeof offline_mode !== 'undefined' && offline_mode === 'true') {
+                    var offlineMode = response.headers('offline_mode');
+                    if (typeof offlineMode !== 'undefined' && offlineMode === 'true') {
                         if(!response.status){
                             onError('offline_mode', 'info.intygload.offline');
                         } else {
