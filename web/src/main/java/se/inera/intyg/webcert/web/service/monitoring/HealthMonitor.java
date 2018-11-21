@@ -22,6 +22,7 @@ import java.sql.Time;
 import java.util.Collections;
 import java.util.Enumeration;
 
+import javax.annotation.PostConstruct;
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
 import javax.jms.JMSException;
@@ -29,6 +30,8 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -61,9 +64,18 @@ import se.riv.itintegration.monitoring.v1.PingForConfigurationType;
 @Component
 public class HealthMonitor {
 
+    private static final Logger LOG = LoggerFactory.getLogger(HealthMonitor.class);
+
     private static final String PREFIX = "health_";
     private static final String NORMAL = "_normal";
     private static final String VALUE = "_value";
+
+    private static final long START_TIME = System.currentTimeMillis();
+
+    private static final Gauge UPTIME = Gauge.build()
+            .name(PREFIX + "uptime" + VALUE)
+            .help("Current uptime in seconds")
+            .register();
 
     private static final Gauge LOGGED_IN_USERS = Gauge.build()
             .name(PREFIX + "logged_in_users" + VALUE)
@@ -95,12 +107,13 @@ public class HealthMonitor {
             .help("Number of waiting messages")
             .register();
 
-    // Runs a lua script to count number of keys matching our session keys.
-    private final RedisScript<Long> redisScript = new DefaultRedisScript<>(
-            "return #redis.call('keys','spring:session:webcert:index:*')", Long.class);
+    private static final long MILLIS_PER_SECOND = 1000L;
 
     private static final long DELAY = 30000L;
     private static final String CURR_TIME_SQL = "SELECT CURRENT_TIME()";
+
+    @Value("${app.name}")
+    private String appName;
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -130,8 +143,20 @@ public class HealthMonitor {
     @Qualifier("pingPrivatlakarportalForConfigurationClient")
     private PingForConfigurationResponderInterface privatlakarportalPingForConfiguration;
 
+    // Runs a lua script to count number of keys matching our session keys.
+    private RedisScript<Long> redisScript;
+
+    @PostConstruct
+    public void init() {
+        redisScript = new DefaultRedisScript<>(
+                "return #redis.call('keys','spring:session:"  + appName + ":index:*')", Long.class);
+    }
+
     @Scheduled(fixedDelay = DELAY)
     public void healthCheck() {
+        long secondsSinceStart = (System.currentTimeMillis() - START_TIME) / MILLIS_PER_SECOND;
+
+        UPTIME.set(secondsSinceStart);
         LOGGED_IN_USERS.set(countSessions());
         DB_ACCESSIBLE.set(checkTimeFromDb() ? 0 : 1);
         JMS_ACCESSIBLE.set(checkJmsConnection() ? 0 : 1);
