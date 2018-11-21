@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Inera AB (http://www.inera.se)
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -30,14 +30,40 @@ module.exports = {
             intygsID = testdataHelper.generateTestGuid();
         }
         return {
-            "id":intygsID,"typ":"Transportstyrelsens läkarintyg, diabetes",
-            "korkortstyper":["A1","B","D","DE","D1","Taxi","BE","A2","Traktor","D1E","C1","A"],
-            "identitetStyrktGenom":"Försäkran enligt 18 kap. 4§",
-            "allmant":{"year":1981,"typ":"Typ 1","behandling":{"typer":["Insulin"],"insulinYear":1986},"annanbehandling":"Hypnos behandling"},
-            "hypoglykemier":{"a":"Nej","b":"Ja","f":"Ja","g":"Ja","gDatum":"2017-07-04","c":"Ja","d":"Nej","e":"Nej"},
-            "synintyg":{"a":"Ja"},"kommentar":"wrlTWNKA08ÖePpBB","specialist":"4YråJOäqkö2YxRRd",
-            "bedomning":{"stallningstagande":"Någon av följande behörighet","lamplighet":"Nej",
-                "behorigheter":["A1","B","D","DE","D1","Taxi","BE","A2","Traktor","D1E","C1","A"]}};
+            "id": intygsID,
+            "typ": "Transportstyrelsens läkarintyg, diabetes",
+            "korkortstyper": ["A1", "B", "D", "DE", "D1", "Taxi", "BE", "A2", "Traktor", "D1E", "C1", "A"],
+            "identitetStyrktGenom": "Försäkran enligt 18 kap. 4§",
+            "allmant": {
+                "year": 1981,
+                "typ": "Typ 1",
+                "behandling": {
+                    "typer": ["Insulin"],
+                    "insulinYear": 1986
+                },
+                "annanbehandling": "Hypnos behandling"
+            },
+            "hypoglykemier": {
+                "a": "Nej",
+                "b": "Ja",
+                "f": "Ja",
+                "g": "Ja",
+                "gDatum": "2017-07-04",
+                "c": "Ja",
+                "d": "Nej",
+                "e": "Nej"
+            },
+            "synintyg": {
+                "a": "Ja"
+            },
+            "kommentar": "wrlTWNKA08ÖePpBB",
+            "specialist": "4YråJOäqkö2YxRRd",
+            "bedomning": {
+                "stallningstagande": "Någon av följande behörighet",
+                "lamplighet": "Nej",
+                "behorigheter": ["A1", "B", "D", "DE", "D1", "Taxi", "BE", "A2", "Traktor", "D1E", "C1", "A"]
+            }
+        };
     },
     getRandom: function(intygsID, patient) {
         var randomKorkortstyper = testValues.getRandomKorkortstyper();
@@ -45,12 +71,14 @@ module.exports = {
         if (!intygsID) {
             intygsID = testdataHelper.generateTestGuid();
         }
-		
-		//Använd patientens födelseår för att ta fram allmant.year (vilket år ställdes diagnosen diabetes får inte vare tidigare än födelseår)
-		if (!patient || patient === true) {
-			patient = {id: '1980'};
-		}
-		
+
+        //Använd patientens födelseår för att ta fram allmant.year (vilket år ställdes diagnosen diabetes får inte vare tidigare än födelseår)
+        if (!patient || patient === true) {
+            patient = {
+                id: '1980'
+            };
+        }
+
         return {
             id: intygsID,
             typ: 'Transportstyrelsens läkarintyg, diabetes',

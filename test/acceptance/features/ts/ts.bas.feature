@@ -19,23 +19,14 @@ Scenario: Skapa och signera ett TS bas intyg
 Scenario: Skicka ett signerat intyg till Transportstyrelsen
     När jag går in på ett "Transportstyrelsens läkarintyg" med status "Signerat"
     Och jag skickar intyget till Transportstyrelsen
-    Så ska intygets status vara "Intyget är signerat och har skickats till Transportstyrelsens system"
+    Så ska intygets status vara "Intyget är skickat till Transportstyrelsen"
 
 @makulera @smoke
 Scenario: Makulera ett skickat TS Bas intyg
 	När jag går in på ett "Transportstyrelsens läkarintyg" med status "Skickat"
-    Så ska intygets status vara "Intyget är signerat och har skickats till Transportstyrelsens system"
+    Så ska intygets status vara "Intyget är skickat till Transportstyrelsen"
 	Och jag makulerar intyget
 	Så ska intyget visa varningen "Intyget är makulerat"
     
     När jag går till Mina intyg för patienten
     Så ska intyget inte finnas i Mina intyg
-
-@saknatFalt
-Scenario: Validera uteblivna fält i intyget
-    När jag går in på att skapa ett "Transportstyrelsens läkarintyg" intyg
-    Och jag fyller i alla nödvändiga fält för intyget
-    Och jag raderar ett  slumpat obligatoriskt fält
-    Och jag klickar på signera-knappen
-    Så ska jag se en rubrik med texten "Utkastet saknar uppgifter i följande avsnitt"
-    Och ska jag se en lista med vad som saknas

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Inera AB (http://www.inera.se)
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -17,167 +17,129 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* globals protractor, intyg, browser, logger, Promise, pages */
+/* globals protractor, intyg, browser, logger, Promise, wcTestTools */
 
 'use strict';
+/*jshint newcap:false */
+//TODO Uppgradera Jshint p.g.a. newcap kommer bli depricated. (klarade inte att ignorera i grunt-task)
 
-var helpers = require('./helpers');
-var intygURL = helpers.intygURL;
+
+/*
+ *	Stödlib och ramverk
+ *
+ */
+
+const {
+    Given, // jshint ignore:line
+    When, // jshint ignore:line
+    Then // jshint ignore:line
+} = require('cucumber');
 
 
-module.exports = function() {
 
-    this.When(/^jag fyller i nödvändig information \( om intygstyp är "([^"]*)"\)$/, function(intygstyp) {
+const helpers = require('./helpers');
+const intygURL = helpers.intygURL;
+const baseIntygPage = wcTestTools.pages.intyg.base.intyg;
+const fragaSvar = wcTestTools.pages.intyg.hogerfaltet.fragaSvar;
 
-        if (intygstyp !== intyg.typ) {
-            console.log('Intygstyp är inte ' + intygstyp);
-            return Promise.resolve();
+/*
+ *	Stödfunktioner
+ *
+ */
+
+
+/*
+ *	Test steg
+ *
+ */
+
+Given(/^ska jag se en knapp med texten "([^"]*)"$/, function(btnTxt) {
+    return expect(element(by.id('ersattBtn')).getText()).to.eventually.equal(btnTxt);
+});
+
+Given(/^jag klickar på ersätta knappen$/, function() {
+    return element(by.id('ersattBtn')).sendKeys(protractor.Key.SPACE);
+});
+
+Given(/^om jag klickar på ersätta knappen så ska det finnas en avbryt\-knapp med texten "([^"]*)"$/, function(btnText) {
+    return element(by.id('ersattBtn')).sendKeys(protractor.Key.SPACE).then(function() {
+        return element(by.css('.modal-dialog')).getText().then(function(modalText) {
+            return expect(modalText).to.contain(btnText);
+        });
+    });
+});
+
+When(/^jag klickar på ersätt\-knappen i dialogen$/, function() {
+    global.ersattintyg = JSON.parse(JSON.stringify(intyg));
+
+
+    return element(by.id('button1ersatt-dialog')).sendKeys(protractor.Key.SPACE).then(function() {
+        logger.info('Clicked ersätt button');
+        return helpers.pageReloadDelay().then(function() {
+            return browser.getCurrentUrl().then(function(text) {
+                intyg.id = text.split('/').slice(-2)[0];
+                intyg.id = intyg.id.split('?')[0];
+                logger.info('intyg.id:' + intyg.id);
+            });
+        });
+    });
+});
+
+Given(/^jag går tillbaka till det ersatta intyget$/, function() {
+    return helpers.pageReloadDelay().then(function() {
+        var url = intygURL(global.ersattintyg.typ, global.ersattintyg.id);
+        return helpers.getUrl(url);
+    });
+});
+
+Given(/^ska jag se texten "([^"]*)" som innehåller en länk till det ersatta intyget$/, function(replacedMessage) {
+    var replaceMsg = element(by.id('wc-intyg-replaced-message'));
+    return replaceMsg.isPresent().then(function(isPresent) {
+        if (isPresent) {
+            return expect(replaceMsg.getText()).to.eventually.contain(replacedMessage);
         } else {
-            browser.ignoreSynchronization = true;
-            console.log('Intygstyp är: ' + intyg.typ);
-            console.log(intyg);
-            if (typeof(intyg.baseratPa) === 'undefined') {
-                global.intyg = helpers.generateIntygByType(intyg.typ, intyg.id);
-            }
-
-            return pages.intyg.lisjp.utkast.angeBaseratPa(intyg.baseratPa)
-                .then(function() {
-                    return logger.info('OK - angeBaseratPa');
-                }, function(reason) {
-                    throw ('FEL, angeBaseratPa,' + reason);
-                })
-                .then(function() {
-                    return pages.intyg.lisjp.utkast.angeArbetsformaga(intyg.arbetsformaga).then(function() {
-                        browser.ignoreSynchronization = false;
-                        return logger.info('OK - angeArbetsformaga');
-                    }, function(reason) {
-                        throw ('FEL, angeArbetsformaga,' + reason);
-                    });
-                })
-                .then(function() {
-                    return pages.intyg.lisjp.utkast.angeArbetstidsforlaggning(intyg.arbetstidsforlaggning).then(function() {
-                        logger.info('OK - angeArbetstidsforlaggning');
-                    }, function(reason) {
-                        console.trace(reason);
-                        throw ('FEL, angeArbetstidsforlaggning,' + reason);
-                    });
-                })
-                .then(function() {
-                    return pages.intyg.lisjp.utkast.angePrognosForArbetsformaga(intyg.prognosForArbetsformaga).then(function() {
-                        logger.info('OK - prognosForArbetsformaga');
-                    }, function(reason) {
-                        console.trace(reason);
-                        throw ('FEL, prognosForArbetsformaga,' + reason);
-                    });
-                });
-        }
-    });
-
-    this.Given(/^ska jag se en knapp med texten "([^"]*)"$/, function(btnTxt) {
-        return expect(element(by.id('ersattBtn')).getText()).to.eventually.equal(btnTxt);
-    });
-
-    this.Given(/^jag klickar på ersätta knappen$/, function() {
-        return element(by.id('ersattBtn')).sendKeys(protractor.Key.SPACE);
-    });
-
-    this.Given(/^om jag klickar på ersätta knappen så ska det finnas en avbryt\-knapp med texten "([^"]*)"$/, function(btnText) {
-        return element(by.id('ersattBtn')).sendKeys(protractor.Key.SPACE).then(function() {
-            return element(by.css('.modal-dialog')).getText().then(function(modalText) {
-                return expect(modalText).to.contain(btnText);
-            });
-        });
-    });
-
-    this.When(/^jag klickar på ersätt\-knappen i dialogen$/, function() {
-        global.ersattintyg = JSON.parse(JSON.stringify(intyg));
-
-
-        return element(by.id('button1ersatt-dialog')).sendKeys(protractor.Key.SPACE).then(function() {
-            logger.info('Clicked ersätt button');
-        });
-    });
-
-    this.Given(/^jag går tillbaka till det ersatta intyget$/, function() {
-        return browser.sleep(4000).then(function() {
-            var url = intygURL(global.ersattintyg.typ, global.ersattintyg.id);
-            return browser.get(url).then(function() {
-                logger.info('Går till url: ' + url);
-            });
-        });
-    });
-
-    this.Given(/^ska jag se texten "([^"]*)" som innehåller en länk till det ersatta intyget$/, function(replacedMessage) {
-        var replaceMsg = element(by.id('wc-intyg-replaced-message'));
-        return replaceMsg.isPresent().then(function(isPresent) {
-            if (isPresent) {
-                return expect(replaceMsg.getText()).to.eventually.contain(replacedMessage);
-            } else {
-                return expect(element(by.id('intyg-already-replaced-warning')).getText()).to.eventually.contain(replacedMessage);
-            }
-
-        });
-    });
-
-    this.Given(/^ska meddelandet som visas innehålla texten "([^"]*)"$/, function(modalMsg) {
-        return expect(element(by.css('.modal-body')).getText()).to.eventually.contain(modalMsg);
-    });
-
-    this.Given(/^ska det( inte)? finnas knappar för "([^"]*)"( om intygstyp är "([^"]*)")?$/, function(inte, buttons, typText, typ) {
-
-        if (typ && intyg.typ !== typ) {
-            console.log('Intygstyp är inte ' + typ);
-            return Promise.resolve();
+            return expect(element(by.id('intyg-already-replaced-warning')).getText()).to.eventually.contain(replacedMessage);
         }
 
-        buttons = buttons.split(',');
-        var shouldBePresent = typeof(inte) === 'undefined';
-        var promiseArr = [];
-        buttons.forEach(function(button) {
-
-            switch (button) {
-                case 'skicka':
-                    promiseArr.push(checkIfButtonIsUsable('sendBtn', shouldBePresent));
-                    break;
-                    /*case 'kopiera':
-                        promiseArr.push(checkIfButtonIsUsable('copyBtn', shouldBePresent));
-                        break;*/
-                case 'ersätta':
-                    promiseArr.push(checkIfButtonIsUsable('ersattBtn', shouldBePresent));
-                    break;
-                case 'förnya':
-                    promiseArr.push(checkIfButtonIsUsable('fornyaBtn', shouldBePresent));
-                    break;
-                case 'makulera':
-                    promiseArr.push(checkIfButtonIsUsable('makuleraBtn', shouldBePresent));
-                    break;
-                case 'fråga/svar':
-                    promiseArr.push(checkIfButtonIsUsable('askArendeBtn', shouldBePresent));
-                    break;
-                default:
-                    throw ('Felaktig check. Hantering av knapp: ' + button + ' finns inte');
-            }
-
-        });
-        return Promise.all(promiseArr);
     });
+});
 
-};
+Given(/^ska meddelandet som visas innehålla texten "([^"]*)"$/, function(modalMsg) {
+    return expect(element(by.css('.modal-body')).getText()).to.eventually.contain(modalMsg);
+});
 
+Given(/^ska det( inte)? finnas knappar för "([^"]*)"( om intygstyp är "([^"]*)")?$/, function(inte, buttons, typ) {
 
-function checkIfButtonIsUsable(btnId, shouldBePresent) {
-    return expect(element(by.id(btnId)).isPresent()).to.become(shouldBePresent)
-        .then(function(val) {
-            logger.info('OK - ' + btnId + ' - present: ' + shouldBePresent);
-        }, function(val) {
-            console.log('NOK - ' + btnId + ' - expected isPresent to be:' + shouldBePresent);
-            console.log('Maybe its just not displayed? Checking..');
+    if (typ && intyg.typ !== typ) {
+        logger.silly('Intygstyp är inte ' + typ);
+        return Promise.resolve();
+    }
 
-            return expect(element(by.id(btnId)).isDisplayed()).to.become(shouldBePresent)
-                .then(function(val) {
-                    logger.info('OK - ' + btnId + ' - isDisplayed: ' + shouldBePresent);
-                }, function(val) {
-                    throw ('NOK - ' + btnId + ' - expected isDisplayed to be:' + shouldBePresent);
-                });
-        });
-}
+    buttons = buttons.split(',');
+    var shouldBeDisplayed = typeof(inte) === 'undefined';
+    var promiseArr = [];
+    buttons.forEach(function(button) {
+        switch (button) {
+            case 'skicka':
+                promiseArr.push(expect(helpers.elementIsUsable(baseIntygPage.skicka.knapp)).to.become(shouldBeDisplayed));
+                break;
+            case 'ersätta':
+                promiseArr.push(expect(helpers.elementIsUsable(baseIntygPage.replace.button)).to.become(shouldBeDisplayed));
+                break;
+            case 'förnya':
+                promiseArr.push(expect(helpers.elementIsUsable(baseIntygPage.fornya.button)).to.become(shouldBeDisplayed));
+                break;
+            case 'makulera':
+                promiseArr.push(expect(helpers.elementIsUsable(baseIntygPage.makulera.btn)).to.become(shouldBeDisplayed));
+                break;
+            case 'fråga/svar':
+                promiseArr.push(fragaSvar.administrativFraga.menyVal.click().then(function() {
+                    return expect(helpers.elementIsUsable(fragaSvar.administrativFraga.nyfraga.text)).to.become(shouldBeDisplayed);
+                }));
+                break;
+            default:
+                throw ('Felaktig check. Hantering av knapp: ' + button + ' finns inte');
+        }
+    });
+    return Promise.all(promiseArr);
+});

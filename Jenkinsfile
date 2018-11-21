@@ -1,9 +1,9 @@
 #!groovy
 
-def buildVersion = "5.4.1.${BUILD_NUMBER}"
-def commonVersion = "3.5.1.+"
-def infraVersion = "3.5.1.+"
-def logsenderBaseVersion = "5.4.1.*" // Star is needed as this is a regexp
+def buildVersion = "6.0.0.${BUILD_NUMBER}"
+def commonVersion = "3.6.0.+"
+def infraVersion = "3.6.0.+"
+def logsenderBaseVersion = "6.0.0.*" // Star is needed as this is a regexp
 
 stage('checkout') {
     node {
@@ -55,10 +55,10 @@ stage('protractor') {
 //           sh(script: 'mkdir -p test/node_modules')
 //           sh(script: 'rm -rf test/node_modules/webcert-testtools') // Without this, node does not always recognize that a new version is available.
 //           sh(script: 'ln -s ../webcertTestTools test/node_modules/webcert-testtools')
-           wrap([$class: 'Xvfb']) {
+//           wrap([$class: 'Xvfb']) {
                shgradle "protractorTests -Dprotractor.env=build-server \
                      -DbuildVersion=${buildVersion} -DcommonVersion=${commonVersion} -DinfraVersion=${infraVersion}"
-           }
+//           }
        } finally {
            publishHTML allowMissing: true, alwaysLinkToLastBuild: true, keepAll: true, reportDir: 'test/dev/report', \
                reportFiles: 'index.html', reportName: 'Protractor results'

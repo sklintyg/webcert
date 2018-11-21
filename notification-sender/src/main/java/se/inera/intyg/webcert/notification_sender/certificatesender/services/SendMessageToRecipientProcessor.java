@@ -18,23 +18,22 @@
  */
 package se.inera.intyg.webcert.notification_sender.certificatesender.services;
 
-import javax.xml.bind.JAXBException;
-import javax.xml.ws.WebServiceException;
-
 import org.apache.camel.Body;
 import org.apache.camel.Header;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import se.inera.intyg.webcert.common.client.converter.SendMessageToRecipientTypeConverter;
 import se.inera.intyg.webcert.common.Constants;
+import se.inera.intyg.webcert.common.client.converter.SendMessageToRecipientTypeConverter;
 import se.inera.intyg.webcert.common.sender.exception.PermanentException;
 import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
 import se.riv.clinicalprocess.healthcond.certificate.sendMessageToRecipient.v2.SendMessageToRecipientResponderInterface;
 import se.riv.clinicalprocess.healthcond.certificate.sendMessageToRecipient.v2.SendMessageToRecipientResponseType;
 import se.riv.clinicalprocess.healthcond.certificate.sendMessageToRecipient.v2.SendMessageToRecipientType;
 import se.riv.clinicalprocess.healthcond.certificate.v3.ResultType;
+
+import javax.xml.bind.JAXBException;
+import javax.xml.ws.WebServiceException;
 
 public class SendMessageToRecipientProcessor {
 
@@ -61,22 +60,24 @@ public class SendMessageToRecipientProcessor {
                 switch (result.getErrorId()) {
                 case REVOKED:
                 case VALIDATION_ERROR:
-                    LOG.error("Call to sendMessageToCare for intyg {} caused an error: {}, ErrorId: {}. Rethrowing as PermanentException",
-                            intygsId, result.getResultText(), result.getErrorId());
+                    LOG.error(
+                            "Call to sendMessageToRecipient for intyg {} caused an error: {}, ErrorId: {}."
+                                    + " Rethrowing as PermanentException", intygsId, result.getResultText(), result.getErrorId());
                     throw new PermanentException(result.getResultText());
                 case APPLICATION_ERROR:
                 case TECHNICAL_ERROR:
-                    LOG.error("Call to sendMessageToCare for intyg {} caused an error: {}, ErrorId: {}. Rethrowing as TemporaryException",
-                            intygsId, result.getResultText(), result.getErrorId());
+                    LOG.error(
+                            "Call to sendMessageToRecipient for intyg {} caused an error: {}, ErrorId: {}."
+                                    + " Rethrowing as TemporaryException", intygsId, result.getResultText(), result.getErrorId());
                     throw new TemporaryException(result.getResultText());
                 }
             }
         } catch (JAXBException e) {
-            LOG.error("Call to sendMessageToCare for intyg {} caused an error: {}. Rethrowing as PermanentException",
+            LOG.error("Call to sendMessageToRecipient for intyg {} caused an error: {}. Rethrowing as PermanentException",
                     intygsId, e.getMessage());
             throw new PermanentException(e.getMessage());
         } catch (WebServiceException e) {
-            LOG.error("Call to sendMessageToCare for intyg {} caused an error: {}. Will retry",
+            LOG.error("Call to sendMessageToRecipient for intyg {} caused an error: {}. Will retry",
                     intygsId, e.getMessage());
             throw new TemporaryException(e.getMessage());
         }

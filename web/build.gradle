@@ -89,6 +89,8 @@ gretty {
     scanInterval = 0
     httpPort = 9088
     debugPort = 5007
+    fastReload = true
+    inplaceMode = 'hard'
     debugSuspend = false
 
     def minified = System.properties['webcert.useMinifiedJavaScript'] ?: false
@@ -124,11 +126,6 @@ dependencies {
     compile project(':intygstjanst-stub')
     compile project(':mail-stub')
 
-    compile "se.inera.intyg.infrastructure.directory.privatepractitioner.terms:intyg-infrastructure-directory-privatepractitioner-terms-schemas:${ppTermsSchemasVersion}"
-    compile "se.inera.intyg.clinicalprocess.healthcond.certificate:intyg-clinicalprocess-healthcond-certificate-schemas:${intygClinicalprocessSchemasVersion}"
-    compile "se.funktionstjanster.grp:funktionstjanster-grp-schemas:${funktionstjansterGrpSchemasVersion}"
-    compile "se.riv.itintegration.monitoring:itintegration-monitoring-schemas:${rivtaItintegrationMonitoringSchemasVersion}"
-
     compile "se.inera.intyg.infra:pu-integration:${infraVersion}"
     compile "se.inera.intyg.infra:srs-integration:${infraVersion}"
     compile "se.inera.intyg.infra:loggtjanst-stub:${infraVersion}"
@@ -136,7 +133,9 @@ dependencies {
     compile "se.inera.intyg.infra:common-cache-metrics:${infraVersion}"
     compile "se.inera.intyg.infra:dynamiclink:${infraVersion}"
     compile "se.inera.intyg.infra:grp-stub:${infraVersion}"
+    compile "se.inera.intyg.infra:nias-stub:${infraVersion}"
     compile "se.inera.intyg.infra:postnummerservice-integration:${infraVersion}"
+    compile "se.inera.intyg.infra:xmldsig:${infraVersion}"
 
     compile "se.inera.intyg.common:ts-bas:${commonVersion}"
     compile "se.inera.intyg.common:ts-diabetes:${commonVersion}"
@@ -146,6 +145,14 @@ dependencies {
     compile "se.inera.intyg.common:luae_fs:${commonVersion}"
     compile "se.inera.intyg.common:db:${commonVersion}"
     compile "se.inera.intyg.common:doi:${commonVersion}"
+
+    compile "se.inera.intyg.infrastructure.directory.privatepractitioner.terms:intyg-infrastructure-directory-privatepractitioner-terms-schemas:${ppTermsSchemasVersion}"
+    compile "se.inera.intyg.clinicalprocess.healthcond.certificate:intyg-clinicalprocess-healthcond-certificate-schemas:${intygClinicalprocessSchemasVersion}"
+    compile "se.funktionstjanster.grp:funktionstjanster-grp-schemas:${funktionstjansterGrpSchemasVersion}"
+    compile "com.secmaker.netid.nias:netid-access-server-schemas:1.0.0"
+    compile "se.riv.itintegration.monitoring:itintegration-monitoring-schemas:${rivtaItintegrationMonitoringSchemasVersion}"
+
+    compile "se.inera.intyg.schemas:schemas-contract:${schemasContractVersion}"
 
     compile "commons-io:commons-io:${commonsIoVersion}"
     compile "org.springframework:spring-web:${springVersion}"

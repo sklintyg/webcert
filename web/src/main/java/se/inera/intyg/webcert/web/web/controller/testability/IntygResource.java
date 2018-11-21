@@ -24,6 +24,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.ws.rs.Consumes;
@@ -56,6 +57,8 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.secmaker.netid.nias.v1.ResultCollect;
+import com.secmaker.netid.nias.v1.SignResponse;
 
 import io.swagger.annotations.Api;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
@@ -63,6 +66,8 @@ import se.inera.intyg.common.support.model.common.internal.Patient;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.common.support.model.common.internal.Vardgivare;
+import se.inera.intyg.common.support.modules.registry.IntygModule;
+import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
 import se.inera.intyg.webcert.common.model.UtkastStatus;
@@ -75,6 +80,9 @@ import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.service.intyg.converter.IntygModuleFacade;
+import se.inera.intyg.webcert.web.service.signatur.SignaturTicketTracker;
+import se.inera.intyg.webcert.web.service.signatur.dto.SignaturTicket;
+import se.inera.intyg.webcert.web.service.signatur.nias.NiasSignaturService;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftRequest;
 import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
 import se.inera.intyg.webcert.web.web.controller.testability.dto.SigningUnit;
@@ -103,6 +111,15 @@ public class IntygResource {
 
     @Autowired
     private ResourceLoader resourceLoader;
+
+    @Autowired
+    private SignaturTicketTracker signaturTicketTracker;
+
+    @Autowired
+    private NiasSignaturService niasSignaturService;
+
+    @Autowired
+    private IntygModuleRegistry moduleRegistry;
 
     /**
      * This method is not very safe nor accurate - it parses the [intygsTyp].sch file using XPath and tries
@@ -179,6 +196,21 @@ public class IntygResource {
                 .collect(Collectors.toList())).build();
     }
 
+    /**
+     * Returns all complete drafts for the specified enhetsId.
+     *
+     * @param enhetsId
+     * @return
+     */
+    @GET
+    @Path("/{enhetsId}/drafts")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getAllCompleteDradtsOnUnit(@PathParam("enhetsId") String enhetsId) {
+        List<Utkast> all = utkastRepository.findByEnhetsIdsAndStatuses(Arrays.asList(enhetsId), Arrays.asList(UtkastStatus.DRAFT_COMPLETE));
+        return Response.ok(all.stream()
+                .collect(Collectors.toList())).build();
+    }
+
     @DELETE
     @Path("/")
     @Produces(MediaType.APPLICATION_JSON)
@@ -209,6 +241,21 @@ public class IntygResource {
         statuses.add(UtkastStatus.DRAFT_INCOMPLETE);
         statuses.add(UtkastStatus.DRAFT_COMPLETE);
         List<Utkast> utkast = utkastRepository.findByEnhetsIdsAndStatuses(enhetsIds, statuses);
+        if (utkast != null) {
+            for (Utkast u : utkast) {
+                deleteDraftAndRelatedQAs(u);
+            }
+        }
+        return Response.ok().build();
+    }
+
+    @DELETE
+    @Path("/patient/{patientId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response deleteDraftsByPatient(@PathParam("patientId") String patientId) {
+        Set<String> intygTyper = moduleRegistry.listAllModules().stream()
+                .map(IntygModule::getId).collect(Collectors.toSet());
+        List<Utkast> utkast = utkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(patientId, intygTyper);
         if (utkast != null) {
             for (Utkast u : utkast) {
                 deleteDraftAndRelatedQAs(u);
@@ -347,6 +394,30 @@ public class IntygResource {
     public Response sendDraft(@PathParam("id") String id) {
         updateUtkastForSend(id);
         return Response.ok().build();
+    }
+
+    @GET
+    @Path("/ticket/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getSigningTicket(@PathParam("id") String id) {
+        SignaturTicket ticket = signaturTicketTracker.getTicket(id);
+        return Response.ok(ticket).build();
+    }
+
+    @GET
+    @Path("/nias/sign/{personId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response netiDSign(@PathParam("personId") String personId) {
+        SignResponse signResponse = niasSignaturService.sign(personId, "", "", "");
+        return Response.ok(signResponse.getSignResult()).build();
+    }
+
+    @GET
+    @Path("/nias/collect/{orderRef}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response netiDCollect(@PathParam("orderRef") String orderRef) {
+        ResultCollect resultCollect = niasSignaturService.collect(orderRef);
+        return Response.ok(resultCollect).build();
     }
 
     private void setRelationToKompletterandeIntyg(String id, String oldIntygId) {

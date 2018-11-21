@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Inera AB (http://www.inera.se)
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -20,7 +20,7 @@
 /**
  * Created by stephenwhite on 09/06/15.
  */
-/* globals browser, protractor */
+/* globals browser */
 
 'use strict';
 
@@ -36,20 +36,21 @@ var SokSkrivIntyg = WebcertBasePage._extend({
         this.sekretessmarkering = element(by.id('sekretessmarkering'));
         this.puerror = element(by.id('puerror'));
         this.namnFortsatt = element(by.id('namnFortsatt'));
+        this.patientNamn = element(by.id('patientNamn'));
         this.intygLista = element(by.id('intygLista'));
         this.sokSkrivIntygForm = element(by.css('form[name=certForm]'));
     },
     get: function() {
-        browser.get('web/dashboard#/create/choose-intyg-type/default/index');
+        browser.get('#/create/choose-intyg-type/default/index');
     },
     setPersonnummer: function(pn) {
         return this.personnummer.sendKeys(pn);
     },
     selectPersonnummer: function(pn) {
-        return protractor.promise.all([
-            this.setPersonnummer(pn).then(),
-            this.pnButton.click().then()
-        ]);
+        var pnButton = this.pnButton;
+        return this.setPersonnummer(pn).then(function() {
+            return pnButton.click();
+        });
     }
 });
 

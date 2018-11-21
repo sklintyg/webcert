@@ -25,46 +25,32 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.model.common.internal.Patient;
-import se.inera.intyg.common.support.modules.support.feature.ModuleFeature;
 import se.inera.intyg.common.support.validate.SamordningsnummerValidator;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
-import se.inera.intyg.webcert.common.model.WebcertFeature;
-import se.inera.intyg.webcert.web.service.feature.WebcertFeatureService;
+import se.inera.intyg.webcert.web.service.arende.ArendeService;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygPdf;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygServiceResult;
-import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
-import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.utkast.CopyUtkastService;
-import se.inera.intyg.webcert.web.service.utkast.dto.CreateCompletionCopyRequest;
-import se.inera.intyg.webcert.web.service.utkast.dto.CreateCompletionCopyResponse;
-import se.inera.intyg.webcert.web.service.utkast.dto.CreateRenewalCopyRequest;
-import se.inera.intyg.webcert.web.service.utkast.dto.CreateRenewalCopyResponse;
-import se.inera.intyg.webcert.web.service.utkast.dto.CreateReplacementCopyRequest;
-import se.inera.intyg.webcert.web.service.utkast.dto.CreateReplacementCopyResponse;
-import se.inera.intyg.webcert.web.service.utkast.dto.CreateUtkastFromTemplateRequest;
-import se.inera.intyg.webcert.web.service.utkast.dto.CreateUtkastFromTemplateResponse;
+import se.inera.intyg.webcert.web.service.utkast.dto.*;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
 import se.inera.intyg.webcert.web.web.controller.api.dto.CopyIntygRequest;
 import se.inera.intyg.webcert.web.web.controller.api.dto.CopyIntygResponse;
+import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
 import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.RevokeSignedIntygParameter;
 import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.SendSignedIntygParameter;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.Optional;
 
 /**
  * Controller exposing services to be used by modules.
@@ -80,6 +66,9 @@ public class IntygModuleApiController extends AbstractApiController {
     private static final String CONTENT_DISPOSITION = "Content-Disposition";
 
     @Autowired
+    private ArendeService arendeService;
+
+    @Autowired
     private IntygService intygService;
 
     @Autowired
@@ -87,12 +76,6 @@ public class IntygModuleApiController extends AbstractApiController {
 
     @Autowired
     private WebCertUserService userService;
-
-    @Autowired
-    private PatientDetailsResolver patientDetailsResolver;
-
-    @Autowired
-    private WebcertFeatureService webcertFeatureService;
 
     /**
      * Retrieves a signed intyg from intygstjänst.
@@ -131,7 +114,7 @@ public class IntygModuleApiController extends AbstractApiController {
     public final Response getIntygAsPdf(@PathParam("intygsTyp") String intygsTyp, @PathParam(value = "intygsId") final String intygsId) {
         authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
                 .privilege(AuthoritiesConstants.PRIVILEGE_VISA_INTYG)
-                .features(WebcertFeature.UTSKRIFT)
+                .features(AuthoritiesConstants.FEATURE_UTSKRIFT)
                 .orThrow();
 
         return getPdf(intygsTyp, intygsId, false);
@@ -151,7 +134,7 @@ public class IntygModuleApiController extends AbstractApiController {
             @PathParam(value = "intygsId") final String intygsId) {
         authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
                 .privilege(AuthoritiesConstants.PRIVILEGE_VISA_INTYG)
-                .features(WebcertFeature.ARBETSGIVARUTSKRIFT)
+                .features(AuthoritiesConstants.FEATURE_ARBETSGIVARUTSKRIFT)
                 .orThrow();
 
         return getPdf(intygsTyp, intygsId, true);
@@ -183,9 +166,10 @@ public class IntygModuleApiController extends AbstractApiController {
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public Response sendSignedIntyg(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId,
             SendSignedIntygParameter param) {
-        authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp).features(WebcertFeature.SKICKA_INTYG).orThrow();
+        authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp).features(AuthoritiesConstants.FEATURE_SKICKA_INTYG)
+                .orThrow();
 
-        IntygServiceResult sendResult = intygService.sendIntyg(intygsId, intygsTyp, param.getRecipient());
+        IntygServiceResult sendResult = intygService.sendIntyg(intygsId, intygsTyp, param.getRecipient(), false);
         return Response.ok(sendResult).build();
     }
 
@@ -203,8 +187,8 @@ public class IntygModuleApiController extends AbstractApiController {
             RevokeSignedIntygParameter param) {
         validateRevokeAuthority(intygsTyp);
 
-        if (webcertFeatureService.isModuleFeatureActive(ModuleFeature.MAKULERA_INTYG_KRAVER_ANLEDNING.getName(), intygsTyp)
-                && !param.isValid()) {
+        if (authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
+                .features(AuthoritiesConstants.FEATURE_MAKULERA_INTYG_KRAVER_ANLEDNING).isVerified() && !param.isValid()) {
             LOG.warn("Request to revoke '{}' is not valid", intygsId);
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, "Missing vital arguments in payload");
         }
@@ -217,15 +201,14 @@ public class IntygModuleApiController extends AbstractApiController {
      * Create a copy that completes an existing certificate.
      */
     @POST
-    @Path("/{intygsTyp}/{intygsId}/{meddelandeId}/komplettera")
+    @Path("/{intygsTyp}/{intygsId}/komplettera")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public Response createCompletion(CopyIntygRequest request, @PathParam("intygsTyp") String intygsTyp,
-            @PathParam("intygsId") String orgIntygsId,
-            @PathParam("meddelandeId") String meddelandeId) {
+            @PathParam("intygsId") String orgIntygsId) {
 
         authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
-                .features(WebcertFeature.FORNYA_INTYG)
+                .features(AuthoritiesConstants.FEATURE_FORNYA_INTYG)
                 .privilege(AuthoritiesConstants.PRIVILEGE_SVARA_MED_NYTT_INTYG)
                 .orThrow();
 
@@ -235,6 +218,8 @@ public class IntygModuleApiController extends AbstractApiController {
             LOG.error("Request to create completion of '{}' is not valid", orgIntygsId);
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, "Missing vital arguments in payload");
         }
+
+        String meddelandeId = arendeService.getLatestMeddelandeIdForCurrentCareUnit(orgIntygsId);
 
         CreateCompletionCopyRequest serviceRequest = createCompletionCopyRequest(orgIntygsId, intygsTyp, meddelandeId, request);
         CreateCompletionCopyResponse serviceResponse = copyUtkastService.createCompletion(serviceRequest);
@@ -371,15 +356,12 @@ public class IntygModuleApiController extends AbstractApiController {
 
         CreateReplacementCopyRequest req = new CreateReplacementCopyRequest(orgIntygsId, intygsTyp, patient, hosPerson, coherentJournaling);
 
-        if (parameters != null && isNewValidPatientPersonId(new Personnummer(parameters.getAlternateSsn()))) {
-            LOG.debug("Adding new personnummer to request");
-            req.setNyttPatientPersonnummer(new Personnummer(parameters.getAlternateSsn()));
-        }
+        // Add new personnummer to request
+        addPersonnummerToRequest(req, parameters);
 
-        if (authoritiesValidator.given(getWebCertUserService().getUser()).origins(UserOriginType.DJUPINTEGRATION).isVerified()) {
-            LOG.debug("Setting djupintegrerad flag on request to true");
-            req.setDjupintegrerad(true);
-        }
+        // Set djupintegrerad flag on request to true if origin is DJUPINTEGRATION
+        setDeepIntegrationFlagOnRequest(req);
+
         return req;
     }
 
@@ -389,17 +371,30 @@ public class IntygModuleApiController extends AbstractApiController {
 
         CreateRenewalCopyRequest req = new CreateRenewalCopyRequest(orgIntygsId, intygsTyp, patient, hosPerson);
 
-        IntegrationParameters parameters = userService.getUser().getParameters();
-        if (parameters != null && isNewValidPatientPersonId(new Personnummer(parameters.getAlternateSsn()))) {
-            LOG.debug("Adding new personnummer to request");
-            req.setNyttPatientPersonnummer(new Personnummer(parameters.getAlternateSsn()));
-        }
+        // Add new personnummer to request
+        addPersonnummerToRequest(req, userService.getUser().getParameters());
 
+        // Set djupintegrerad flag on request to true if origin is DJUPINTEGRATION
+        setDeepIntegrationFlagOnRequest(req);
+
+        return req;
+    }
+
+    private void setDeepIntegrationFlagOnRequest(AbstractCreateCopyRequest req) {
         if (authoritiesValidator.given(getWebCertUserService().getUser()).origins(UserOriginType.DJUPINTEGRATION).isVerified()) {
             LOG.debug("Setting djupintegrerad flag on request to true");
             req.setDjupintegrerad(true);
         }
-        return req;
+    }
+
+    private void addPersonnummerToRequest(AbstractCreateCopyRequest req, IntegrationParameters parameters) {
+        if (parameters != null) {
+            Optional<Personnummer> optionalPnr = createOptPnr(parameters.getAlternateSsn());
+            if (isNewValidPatientPersonId(optionalPnr)) {
+                LOG.debug("Adding new personnummer to request");
+                req.setNyttPatientPersonnummer(optionalPnr.get());
+            }
+        }
     }
 
     private CreateUtkastFromTemplateRequest createUtkastFromDifferentIntygTypeRequest(String orgIntygsId, String newIntygsTyp,
@@ -411,16 +406,12 @@ public class IntygModuleApiController extends AbstractApiController {
         CreateUtkastFromTemplateRequest req = new CreateUtkastFromTemplateRequest(orgIntygsId, newIntygsTyp, patient,
                 hosPerson, orgIntygsTyp);
 
-        IntegrationParameters parameters = userService.getUser().getParameters();
-        if (parameters != null && isNewValidPatientPersonId(new Personnummer(parameters.getAlternateSsn()))) {
-            LOG.debug("Adding new personnummer to request");
-            req.setNyttPatientPersonnummer(new Personnummer(parameters.getAlternateSsn()));
-        }
+        // Add new personnummer to request
+        addPersonnummerToRequest(req, userService.getUser().getParameters());
 
-        if (authoritiesValidator.given(getWebCertUserService().getUser()).origins(UserOriginType.DJUPINTEGRATION).isVerified()) {
-            LOG.debug("Setting djupintegrerad flag on request to true");
-            req.setDjupintegrerad(true);
-        }
+        // Set djupintegrerad flag on request to true if origin is DJUPINTEGRATION
+        setDeepIntegrationFlagOnRequest(req);
+
         return req;
     }
 
@@ -429,18 +420,14 @@ public class IntygModuleApiController extends AbstractApiController {
         HoSPersonal hosPerson = createHoSPersonFromUser();
         Patient patient = createPatientFromCopyIntygRequest(copyRequest);
 
-        CreateCompletionCopyRequest req = new CreateCompletionCopyRequest(orgIntygsId, intygsTyp, meddelandeId, patient, hosPerson);
+        CreateCompletionCopyRequest req = new CreateCompletionCopyRequest(orgIntygsId, intygsTyp, meddelandeId,
+                patient, hosPerson, copyRequest.getKommentar());
 
-        IntegrationParameters parameters = userService.getUser().getParameters();
-        if (parameters != null && isNewValidPatientPersonId(new Personnummer(parameters.getAlternateSsn()))) {
-            LOG.debug("Adding new personnummer to request");
-            req.setNyttPatientPersonnummer(new Personnummer(parameters.getAlternateSsn()));
-        }
+        // Add new personnummer to request
+        addPersonnummerToRequest(req, userService.getUser().getParameters());
 
-        if (authoritiesValidator.given(getWebCertUserService().getUser()).origins(UserOriginType.DJUPINTEGRATION).isVerified()) {
-            LOG.debug("Setting djupintegrerad flag on request to true");
-            req.setDjupintegrerad(true);
-        }
+        // Set djupintegrerad flag on request to true if origin is DJUPINTEGRATION
+        setDeepIntegrationFlagOnRequest(req);
 
         return req;
     }
@@ -481,7 +468,7 @@ public class IntygModuleApiController extends AbstractApiController {
 
     private void validateRevokeAuthority(String intygsTyp) {
         authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
-                .features(WebcertFeature.MAKULERA_INTYG)
+                .features(AuthoritiesConstants.FEATURE_MAKULERA_INTYG)
                 .privilege(AuthoritiesConstants.PRIVILEGE_MAKULERA_INTYG)
                 .orThrow();
     }
@@ -494,20 +481,25 @@ public class IntygModuleApiController extends AbstractApiController {
 
     private void validateCopyAuthority(String intygsTyp) {
         authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
-                .features(WebcertFeature.FORNYA_INTYG)
+                .features(AuthoritiesConstants.FEATURE_FORNYA_INTYG)
                 .privilege(AuthoritiesConstants.PRIVILEGE_FORNYA_INTYG)
                 .orThrow();
     }
 
     private void validateCreateUtkastFromTemplateAuthority(String newIntygTyp) {
         authoritiesValidator.given(getWebCertUserService().getUser(), newIntygTyp)
-                .features(WebcertFeature.HANTERA_INTYGSUTKAST)
+                .features(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
                 .privilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG)
                 .orThrow();
     }
 
-    private boolean isNewValidPatientPersonId(Personnummer newPersonnummer) {
-        return (newPersonnummer != null && (Personnummer.createValidatedPersonnummerWithDash(newPersonnummer).isPresent()
-                || SamordningsnummerValidator.isSamordningsNummer(newPersonnummer)));
+    private boolean isNewValidPatientPersonId(Optional<Personnummer> newPersonnummer) {
+        return (newPersonnummer != null
+                && (newPersonnummer.isPresent() || SamordningsnummerValidator.isSamordningsNummer(newPersonnummer)));
     }
+
+    private Optional<Personnummer> createOptPnr(String personId) {
+        return Personnummer.createPersonnummer(personId);
+    }
+
 }

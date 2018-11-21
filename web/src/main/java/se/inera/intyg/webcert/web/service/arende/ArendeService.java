@@ -40,7 +40,9 @@ public interface ArendeService {
 
     ArendeConversationView answer(String svarPaMeddelandeId, String meddelande);
 
-    ArendeConversationView setForwarded(String meddelandeId, boolean vidarebefordrad);
+    List<ArendeConversationView> answerKomplettering(String intygsId, String meddelande);
+
+    List<ArendeConversationView> setForwarded(String intygsId);
 
     ArendeConversationView openArendeAsUnhandled(String meddelandeId);
 
@@ -73,4 +75,11 @@ public interface ArendeService {
     Arende getArende(String meddelandeId);
 
     Map<String, Long> getNbrOfUnhandledArendenForCareUnits(List<String> allUnitIds, Set<String> intygsTyper);
+
+    /**
+     * Return the ID of the most recent message for the care unit currently logged in to.
+     * @param intygsId
+     * @return
+     */
+    String getLatestMeddelandeIdForCurrentCareUnit(String intygsId);
 }

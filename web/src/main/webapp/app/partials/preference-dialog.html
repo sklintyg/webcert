@@ -1,20 +1,29 @@
+<div class="preference-dialog">
 <div class="modal-header">
-  <button type="button" class="close" ng-click="$dismiss()">×</button>
+  <button type="button" class="close" ng-click="$dismiss()"><i class="material-icons">close</i></button>
   <h3>
-    <span message key="modal.title.{{title}}"></span>
+    <span dynamic-label key="modal.title.{{title}}"></span>
   </h3>
 </div>
 <div class="modal-body">
   {{bodyText}}
 </div>
 <div class="modal-footer">
-  <button type="button" id="buttonYes" class="btn btn-success" ng-click="yes()">
-    <span message key="common.yes"></span>
+  <div class="form-inline padding-bottom">
+    <wc-checkbox-wrapper>
+      <input id="dontAskAgain-checkbox" type="checkbox" ng-model="model.dontShowAgain">
+      <label for="dontAskAgain-checkbox" id="dontAskAgain" class="checkbox">
+        Fråga inte igen.
+      </label>
+    </wc-checkbox-wrapper>
+  </div>
+  <div class="webcert-top-padding-section form-inline">
+  <button type="button" id="buttonYes" class="btn btn-primary" ng-click="yes(model.dontShowAgain)">
+    <span dynamic-label key="common.yes"></span>
   </button>
-  <button type="button" id="buttonNo" class="btn btn-info" ng-click="no()">
-    <span message key="common.no"></span>
+  <button type="button" id="buttonNo" class="btn btn-default" ng-click="no(model.dontShowAgain)">
+    <span dynamic-label key="common.no"></span>
   </button>
-  <button type="button" id="buttonNoDontAsk" class="btn btn-info" ng-click="noDontAsk()">
-    <span message key="common.nodontask"></span>
-  </button>
+</div>
+</div>
 </div>

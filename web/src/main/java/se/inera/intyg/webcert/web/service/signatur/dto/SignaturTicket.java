@@ -41,6 +41,7 @@ public class SignaturTicket {
     }
 
     private final String id;
+    private final long pagaendeSigneringId;
     private final Status status;
     private final String intygsId;
     private final long version;
@@ -48,9 +49,13 @@ public class SignaturTicket {
     private final LocalDateTime timestamp;
     private final LocalDateTime signeringstid;
 
-    public SignaturTicket(String id, Status status, String intygsId, long version, LocalDateTime signeringstid, String hash,
+    // CHECKSTYLE:OFF ParameterNumberCheck
+    @java.lang.SuppressWarnings("squid:S00107") // Parameter number check ignored in Sonar
+    public SignaturTicket(String id, long pagaendeSigneringId, Status status, String intygsId, long version, LocalDateTime signeringstid,
+            String hash,
             LocalDateTime timestamp) {
         this.id = id;
+        this.pagaendeSigneringId = pagaendeSigneringId;
         this.status = status;
         this.intygsId = intygsId;
         this.version = version;
@@ -58,6 +63,7 @@ public class SignaturTicket {
         this.timestamp = timestamp;
         this.signeringstid = signeringstid;
     }
+    // CHECKSTYLE:ON ParameterNumberCheck
 
     public String getId() {
         return id;
@@ -87,8 +93,12 @@ public class SignaturTicket {
         return timestamp;
     }
 
+    public long getPagaendeSigneringId() {
+        return pagaendeSigneringId;
+    }
+
     public SignaturTicket withStatus(Status status) {
-        return new SignaturTicket(id, status, intygsId, version, signeringstid, hash, LocalDateTime.now());
+        return new SignaturTicket(id, pagaendeSigneringId, status, intygsId, version, signeringstid, hash, LocalDateTime.now());
     }
 
     @Override

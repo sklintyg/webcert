@@ -26,6 +26,8 @@ public class CopyIntygRequest {
 
     private Personnummer patientPersonnummer;
 
+    private String kommentar;
+
     public Personnummer getPatientPersonnummer() {
         return patientPersonnummer;
     }
@@ -36,5 +38,13 @@ public class CopyIntygRequest {
 
     public boolean isValid() {
         return patientPersonnummer != null && !Strings.nullToEmpty(patientPersonnummer.getPersonnummer()).trim().isEmpty();
+    }
+
+    public String getKommentar() {
+        return kommentar;
+    }
+
+    public void setKommentar(String kommentar) {
+        this.kommentar = kommentar;
     }
 }

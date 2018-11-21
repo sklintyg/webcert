@@ -133,7 +133,6 @@ B55    Leishmanios
 B56    Afrikansk trypanosomiasis (sömnsjuka)
 B57    Chagas sjukdom
 B58    Toxoplasmos
-B59    Pneumocystos
 B60    Andra protozosjukdomar som ej klassificeras annorstädes
 B64    Icke specificerad protozosjukdom
 B65    Schistosomiasis
@@ -1828,7 +1827,7 @@ X43    Oavsiktlig förgiftning med och exponering för andra läkemedel som påverka
 X44    Oavsiktlig förgiftning med och exponering för andra och icke specificerade droger, läkemedel och biologiska substanser
 X45    Oavsiktlig förgiftning med och exponering för alkoholer
 X46    Oavsiktlig förgiftning med och exponering för organiska lösningsmedel och halogenerade kolväten och deras ångor
-X47    Oavsiktlig förgiftning med och exponering för andra gaser och ångor
+X47    Oavsiktlig förgiftning med och exponering för kolmonoxid och andra gaser och ångor
 X48    Oavsiktlig förgiftning med och exponering för pesticider
 X49    Oavsiktlig förgiftning med och exponering för andra och icke specificerade kemiska ämnen och skadliga substanser
 X50    Överansträngning och påfrestande eller upprepade rörelser
@@ -1846,7 +1845,7 @@ X63    Avsiktligt självdestruktiv handling genom förgiftning med och exponering 
 X64    Avsiktligt självdestruktiv handling genom förgiftning med och exponeringen för andra och icke specificerade droger, läkemedel och biologiska substanser
 X65    Avsiktligt självdestruktiv handling genom förgiftning med och exponering för alkoholer
 X66    Avsiktligt självdestruktiv handling genom förgiftning med och exponering för organiska lösningsmedel och halogenerade kolväten och deras ångor
-X67    Avsiktligt självdestruktiv handling genom förgiftning med och exponering för andra gaser och ångor
+X67    Avsiktligt självdestruktiv handling genom förgiftning med och exponering för kolmonoxid och andra gaser och ångor
 X68    Avsiktligt självdestruktiv handling genom förgiftning med och exponering för pesticider
 X69    Avsiktligt självdestruktiv handling genom förgiftning med och exponering för andra och icke specificerade kemiska ämnen och skadliga substanser
 X70    Avsiktligt sjävdestruktiv handling genom hängning, strypning och kvävning
@@ -1867,7 +1866,7 @@ X84    Avsiktligt självdestruktiv handling med icke specificerade metoder
 X85    Övergrepp genom förgiftning med läkemedel och biologiska substanser
 X86    Övergrepp med frätande ämnen
 X87    Övergrepp med pesticider
-X88    Övergrepp med gaser eller ångor
+X88    Övergrepp med kolmonoxid och andra gaser och ångor
 X89    Övergrepp med andra specificerade kemiska ämnen och skadliga substanser
 X90    övergrepp med icke specificerade kemiska ämnen
 X91    Övergrepp genom hängning, strypning och kvävning
@@ -1896,7 +1895,7 @@ Y13    Förgiftning med och exponering för andra läkemedel som påverkar det auton
 Y14    Förgiftning med och exponering för andra och icke specificerade droger, läkemedel och biologiska substanser, med oklar avsikt
 Y15    Förgiftning med och exponering för alkoholer, med oklar avsikt
 Y16    Förgiftning med och exponering för organiska lösningsmedel och halogenerade kolväten och deras ångor, med oklar avsikt
-Y17    Förgiftning med och exponering för andra gaser och ångor, med oklar avsikt
+Y17    Förgiftning med och exponering för kolmonoxid och andra gaser och ångor, med oklar avsikt
 Y18    Förgiftning med och exponering för pesticider, med oklar avsikt
 Y19    Förgiftning med och exponering för andra och icke specificerade kemiska ämnen och skadliga substanser, med oklar avsikt
 Y20    Hängning, strypning och kvävning, med oklar avsikt
@@ -1973,7 +1972,7 @@ Y98    Livsstil som orsak till sjukdom
 Z00    Allmän undersökning och utredning av personer utan besvär eller utan att diagnos registrerats
 Z01    Andra speciella undersökningar och utredningar av personer utan besvär eller utan att diagnos registrerats
 Z02    Kontakt med hälso- och sjukvården av administrativa skäl
-Z03    Medicinsk observation och bedömning för misstänkta sjukdomar och tillstånd
+Z03    Medicinsk observation och bedömning för misstänkta sjukdomar och tillstånd, som uteslutits och avskrivits
 Z04    Undersökning och observation av andra skäl
 Z08    Kontrollundersökning efter behandling för malign tumör
 Z09    Kontrollundersökning efter behandling för andra tillstånd än maligna tumörer

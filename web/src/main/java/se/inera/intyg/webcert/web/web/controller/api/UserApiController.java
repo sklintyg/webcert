@@ -24,9 +24,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
-import se.inera.intyg.webcert.common.model.WebcertFeature;
+import se.inera.intyg.infra.security.authorities.CommonAuthoritiesResolver;
+import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.infra.security.common.model.Feature;
 import se.inera.intyg.webcert.persistence.privatlakaravtal.model.Avtal;
-import se.inera.intyg.webcert.web.service.feature.WebcertFeatureService;
 import se.inera.intyg.webcert.web.service.privatlakaravtal.AvtalService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
@@ -47,8 +48,9 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Controller for accessing the users security context.
@@ -65,7 +67,7 @@ public class UserApiController extends AbstractApiController {
     private AvtalService avtalService;
 
     @Autowired
-    private WebcertFeatureService webcertFeatureService;
+    private CommonAuthoritiesResolver commonAuthoritiesResolver;
 
     /**
      * Retrieves the security context of the logged in user as JSON.
@@ -85,19 +87,10 @@ public class UserApiController extends AbstractApiController {
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public Response userFeatures(WebUserFeaturesRequest webUserFeaturesRequest) {
         WebCertUser user = getWebCertUserService().getUser();
-        Set<String> mutFeatures = new HashSet<>(user.getFeatures());
-        updateFeatures(webUserFeaturesRequest.isJsLoggning(), WebcertFeature.JS_LOGGNING.getName(), mutFeatures);
-        updateFeatures(webUserFeaturesRequest.isJsMinified(), WebcertFeature.JS_MINIFIED.getName(), mutFeatures);
+        Map<String, Feature> mutFeatures = new HashMap<>(user.getFeatures());
+        updateFeatures(webUserFeaturesRequest.isJsLoggning(), AuthoritiesConstants.FEATURE_JS_LOGGNING, mutFeatures);
         user.setFeatures(mutFeatures);
         return Response.ok(mutFeatures).build();
-    }
-
-    private void updateFeatures(boolean feature, String name, Set<String> features) {
-        if (feature) {
-            features.add(name);
-        } else {
-            features.remove(name);
-        }
     }
 
     /**
@@ -124,7 +117,8 @@ public class UserApiController extends AbstractApiController {
             return Response.status(Status.BAD_REQUEST).entity("Unit change failed").build();
         }
 
-        user.setFeatures(webcertFeatureService.getActiveFeatures(user.getValdVardenhet().getId(), user.getValdVardgivare().getId()));
+        user.setFeatures(commonAuthoritiesResolver.getFeatures(
+                Arrays.asList(user.getValdVardenhet().getId(), user.getValdVardgivare().getId())));
 
         LOG.debug("Seleced vardenhet is now '{}'", user.getValdVardenhet().getId());
 
@@ -211,6 +205,17 @@ public class UserApiController extends AbstractApiController {
     public Response cancelLogout() {
         getWebCertUserService().cancelScheduledLogout(getSessionId());
         return Response.ok().build();
+    }
+
+    private void updateFeatures(boolean active, String name, Map<String, Feature> features) {
+        if (active) {
+            Feature feature = new Feature();
+            feature.setName(name);
+            feature.setGlobal(true);
+            features.put(name, feature);
+        } else {
+            features.remove(name);
+        }
     }
 
     private HttpSession getHttpSession() {

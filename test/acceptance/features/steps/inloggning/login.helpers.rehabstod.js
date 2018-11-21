@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Inera AB (http://www.inera.se)
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -32,14 +32,16 @@ var logInAsUserRehabstod = function(userObj, roleName, skipCookieConsent) {
 
     var login;
     browser.ignoreSynchronization = true;
-    browser.get('welcome.html');
-    browser.sleep(2000);
+
     login = pages.welcome.loginByJSON(JSON.stringify(userObj), !skipCookieConsent);
-    browser.ignoreSynchronization = false;
-    browser.sleep(3000);
     global.user.roleName = roleName;
 
-    return login.then(function() {
+    return helpers.getUrl('welcome.html').then(function() {
+        return login();
+    }).then(function() {
+        return helpers.pageReloadDelay();
+    }).then(function() {
+        browser.ignoreSynchronization = false;
         return helpers.injectConsoleTracing();
     });
 };
@@ -48,7 +50,7 @@ module.exports = {
     logInAsUserRehabstod: logInAsUserRehabstod,
     logInAsUserRoleRehabstod: function(userObj, roleName, skipCookieConsent) {
         logger.info('Loggar in som ' + roleName);
-        console.log(userObj);
+        logger.silly(userObj);
         global.user.roleName = roleName;
 
         return logInAsUserRehabstod(userObj, roleName, skipCookieConsent).then(function() {

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Inera AB (http://www.inera.se)
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -21,7 +21,7 @@
  * Helper for asserting dynamic text values.
  * Created by marced on 2016-04-29.
  */
-/*globals protractor process */
+/*globals protractor, process, logger */
 'use strict';
 
 var fs = require('fs');

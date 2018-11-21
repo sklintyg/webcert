@@ -1,0 +1,78 @@
+---
+
+- name: Configure shared jdbc datasource for Webcert
+  lineinfile:
+    dest: "{{ tomcat_conf }}/server.xml"
+    regexp: "    <Resource name='sharedWebcert'"
+    insertbefore: "  </GlobalNamingResources>"
+    line: "    <Resource name='sharedWebcert' global='sharedWebcert'  auth='Container' type='javax.sql.DataSource' username='{{ database_username }}' password='{{ database_password }}' driverClassName='{{ database_driver }}' url='{{ database_url }}' maxActive='{{ database_pool_maxActive }}' maxIdle='{{ database_pool_maxIdle }}' minIdle='{{ database_pool_minIdle }}' initialSize='{{ database_pool_initialSize }}' validationQuery='SELECT 1' validationQueryTimeout='3' testWhileIdle='true' timeBetweenEvictionRunsMillis='300000' minEvictableIdleTimeMillis='60000' defaultAutocommit='false' />"
+
+- name: Configure jdbc resource
+  lineinfile:
+    dest: "{{ tomcat_conf }}/context.xml"
+    regexp: "    <ResourceLink name='jdbc/webcert'|    <Resource name='jdbc/webcert'"
+    insertbefore: "</Context>"
+    line: "    <ResourceLink name='jdbc/webcert' global='sharedWebcert' type='javax.sql.DataSource'/>"
+
+- name: Configure connection factory
+  lineinfile:
+    dest: "{{ tomcat_conf }}/context.xml"
+    regexp: "    <Resource name='jms/ConnectionFactory'"
+    insertbefore: "</Context>"
+    line: "    <Resource name='jms/ConnectionFactory' auth='Container' type='org.apache.activemq.ActiveMQConnectionFactory' description='JMS Connection Factory' factory='org.apache.activemq.jndi.JNDIReferenceFactory' brokerURL='{{ activemq_broker_url }}' userName='{{ activemq_username }}' password='{{ activemq_password }}' brokerName='ActiveMQBroker' useEmbeddedBroker='false' />"
+
+- name: Configure async connection factory
+  lineinfile:
+    dest: "{{ tomcat_conf }}/context.xml"
+    regexp: "    <Resource name='jms/AsyncConnectionFactory'"
+    insertbefore: "</Context>"
+    line: "    <Resource name='jms/AsyncConnectionFactory' auth='Container' type='org.apache.activemq.ActiveMQConnectionFactory' description='JMS Connection Factory' factory='org.apache.activemq.jndi.JNDIReferenceFactory' brokerURL='{{ async_activemq_broker_url }}' userName='{{ activemq_username }}' password='{{ activemq_password }}' brokerName='ActiveMQBroker' useEmbeddedBroker='false' />"
+
+- name: Configure PDL logging queue
+  lineinfile:
+    dest: "{{ tomcat_conf }}/context.xml"
+    regexp: "    <Resource name='jms/Queue'"
+    insertbefore: "</Context>"
+    line: "    <Resource name='jms/Queue' auth='Container' type='org.apache.activemq.command.ActiveMQQueue' description='WebCert PDL Logging Queue' factory='org.apache.activemq.jndi.JNDIReferenceFactory' physicalName='{{ environment_name }}.webcert.log.queue' />"
+
+- name: Configure PDL aggregated logging queue
+  lineinfile:
+    dest: "{{ tomcat_conf }}/context.xml"
+    regexp: "    <Resource name='jms/AggregatedLogSenderQueue'"
+    insertbefore: "</Context>"
+    line: "    <Resource name='jms/AggregatedLogSenderQueue' auth='Container' type='org.apache.activemq.command.ActiveMQQueue' description='WebCert PDL Aggregated Logging Queue' factory='org.apache.activemq.jndi.JNDIReferenceFactory' physicalName='{{ environment_name }}.webcert.aggregated.log.queue' />"
+
+- name: Configure PDL aggregated logging dead letter queue (DLQ)
+  lineinfile:
+    dest: "{{ tomcat_conf }}/context.xml"
+    regexp: "    <Resource name='jms/AggregatedLogSenderDLQ'"
+    insertbefore: "</Context>"
+    line: "    <Resource name='jms/AggregatedLogSenderDLQ' auth='Container' type='org.apache.activemq.command.ActiveMQQueue' description='WebCert PDL Aggregated Logging Dead Letter Queue' factory='org.apache.activemq.jndi.JNDIReferenceFactory' physicalName='DLQ.{{ environment_name }}.webcert.aggregated.log.queue' />"
+
+- name: Configure notification aggregation queue
+  lineinfile:
+    dest: "{{ tomcat_conf }}/context.xml"
+    regexp: "    <Resource name='jms/NotificationQueueForAggregation'"
+    insertbefore: "</Context>"
+    line: "    <Resource name='jms/NotificationQueueForAggregation' auth='Container' type='org.apache.activemq.command.ActiveMQQueue' description='WebCert Aggregated Notification Queue' factory='org.apache.activemq.jndi.JNDIReferenceFactory' physicalName='{{ environment_name }}.webcert.aggregated.notification.queue' />"
+
+- name: Configure notification queue
+  lineinfile:
+    dest: "{{ tomcat_conf }}/context.xml"
+    regexp: "    <Resource name='jms/NotificationQueue'"
+    insertbefore: "</Context>"
+    line: "    <Resource name='jms/NotificationQueue' auth='Container' type='org.apache.activemq.command.ActiveMQQueue' description='WebCert Notification Queue' factory='org.apache.activemq.jndi.JNDIReferenceFactory' physicalName='{{ environment_name }}.webcert.notification.queue' />"
+
+- name: Configure notification web service queue
+  lineinfile:
+    dest: "{{ tomcat_conf }}/context.xml"
+    regexp: "    <Resource name='jms/NotificationWSQueue'"
+    insertbefore: "</Context>"
+    line: "    <Resource name='jms/NotificationWSQueue' auth='Container' type='org.apache.activemq.command.ActiveMQQueue' description='WebCert Notification Web Service Queue' factory='org.apache.activemq.jndi.JNDIReferenceFactory' physicalName='{{ environment_name }}.webcert.notification.ws.queue' />"
+
+- name: Configure certificate sender queue
+  lineinfile:
+    dest: "{{ tomcat_conf }}/context.xml"
+    regexp: ".*<Resource name='jms/CertificateSenderQueue'"
+    insertbefore: "</Context>"
+    line: "    <Resource name='jms/CertificateSenderQueue' auth='Container' type='org.apache.activemq.command.ActiveMQQueue' description='WebCert Certificate Sender Queue' factory='org.apache.activemq.jndi.JNDIReferenceFactory' physicalName='{{ environment_name }}.webcert.certificate.queue' />"

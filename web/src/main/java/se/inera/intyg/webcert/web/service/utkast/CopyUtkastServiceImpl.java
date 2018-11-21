@@ -32,23 +32,24 @@ import se.inera.intyg.common.support.modules.support.api.exception.ModuleExcepti
 import se.inera.intyg.infra.integration.pu.model.Person;
 import se.inera.intyg.infra.integration.pu.model.PersonSvar;
 import se.inera.intyg.infra.integration.pu.services.PUService;
+import se.inera.intyg.infra.security.authorities.validation.AuthoritiesValidator;
+import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.UtkastStatus;
 import se.inera.intyg.webcert.common.model.WebcertCertificateRelation;
-import se.inera.intyg.webcert.common.model.WebcertFeature;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistry;
 import se.inera.intyg.webcert.web.integration.registry.dto.IntegreradEnhetEntry;
-import se.inera.intyg.webcert.web.service.feature.WebcertFeatureService;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.log.LogRequestFactory;
 import se.inera.intyg.webcert.web.service.log.LogService;
 import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.notification.NotificationService;
+import se.inera.intyg.webcert.web.service.referens.ReferensService;
 import se.inera.intyg.webcert.web.service.relation.CertificateRelationService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
@@ -63,6 +64,7 @@ import se.inera.intyg.webcert.web.service.utkast.dto.CreateReplacementCopyRespon
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateUtkastFromTemplateRequest;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateUtkastFromTemplateResponse;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Optional;
@@ -82,7 +84,7 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
     private UtkastRepository utkastRepository;
 
     @Autowired
-    private PUService personUppgiftsService;
+    private PUService puService;
 
     @Autowired
     @Qualifier("copyCompletionUtkastBuilder")
@@ -116,10 +118,12 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
     private WebCertUserService userService;
 
     @Autowired
-    private WebcertFeatureService webcertFeatureService;
+    private UtkastService utkastService;
 
     @Autowired
-    private UtkastService utkastService;
+    private ReferensService referensService;
+
+    private AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
 
     /*
      * (non-Javadoc)
@@ -134,6 +138,7 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
         String originalIntygId = copyRequest.getOriginalIntygId();
 
         LOG.debug("Creating completion to intyg '{}'", originalIntygId);
+        WebCertUser user = userService.getUser();
 
         try {
             if (intygService.isRevoked(copyRequest.getOriginalIntygId(), copyRequest.getTyp(), false)) {
@@ -146,7 +151,7 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
                 checkIntegreradEnhet(builderResponse);
             }
 
-            Utkast savedUtkast = saveAndNotify(originalIntygId, builderResponse);
+            Utkast savedUtkast = saveAndNotify(builderResponse, user);
 
             monitoringService.logIntygCopiedCompletion(savedUtkast.getIntygsId(), originalIntygId);
 
@@ -189,7 +194,7 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
                 checkIntegreradEnhet(builderResponse);
             }
 
-            Utkast savedUtkast = saveAndNotify(originalIntygId, builderResponse, user);
+            Utkast savedUtkast = saveAndNotify(builderResponse, user);
 
             monitoringService.logIntygCopiedRenewal(savedUtkast.getIntygsId(), originalIntygId);
 
@@ -206,6 +211,7 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
     public CreateReplacementCopyResponse createReplacementCopy(CreateReplacementCopyRequest replacementRequest) {
 
         String originalIntygId = replacementRequest.getOriginalIntygId();
+        WebCertUser user = userService.getUser();
 
         LOG.debug("Creating replacement copy of intyg '{}'", originalIntygId);
 
@@ -225,7 +231,7 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
                 checkIntegreradEnhet(builderResponse);
             }
 
-            Utkast savedUtkast = saveAndNotify(originalIntygId, builderResponse);
+            Utkast savedUtkast = saveAndNotify(builderResponse, user);
 
             monitoringService.logIntygCopiedReplacement(savedUtkast.getIntygsId(), originalIntygId);
 
@@ -253,23 +259,33 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
             }
 
             String intygsTyp = copyRequest.getTyp();
-            if (webcertFeatureService.isModuleFeatureActive(WebcertFeature.UNIKT_INTYG.getName(), intygsTyp)
-                    || (webcertFeatureService.isModuleFeatureActive(WebcertFeature.UNIKT_INTYG_INOM_VG.getName(),
-                    intygsTyp))) {
+            if (authoritiesValidator.given(user, intygsTyp)
+                    .features(AuthoritiesConstants.FEATURE_UNIKT_INTYG, AuthoritiesConstants.FEATURE_UNIKT_INTYG_INOM_VG,
+                            AuthoritiesConstants.FEATURE_UNIKT_UTKAST_INOM_VG).isVerified()) {
 
                 Personnummer personnummer = copyRequest.containsNyttPatientPersonnummer() ? copyRequest.getNyttPatientPersonnummer()
                         : copyRequest.getPatient().getPersonId();
 
-                Map<String, Boolean> intygstypToBoolean = utkastService.checkIfPersonHasExistingIntyg(personnummer, user);
+                Map<String, Map<String, Boolean>> intygstypToStringToBoolean = utkastService.checkIfPersonHasExistingIntyg(
+                        personnummer, user);
 
-                Boolean exists = intygstypToBoolean.get(intygsTyp);
+                Boolean utkastExists = intygstypToStringToBoolean.get("utkast").get(intygsTyp);
+                Boolean intygExists = intygstypToStringToBoolean.get("intyg").get(intygsTyp);
 
-                if (exists != null) {
-                    if (webcertFeatureService.isModuleFeatureActive(WebcertFeature.UNIKT_INTYG.getName(), intygsTyp)) {
+                if (utkastExists != null && utkastExists) {
+                    if (authoritiesValidator.given(user, intygsTyp).features(AuthoritiesConstants.FEATURE_UNIKT_UTKAST_INOM_VG)
+                            .isVerified()) {
+                        throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE,
+                                "Drafts of this type must be unique within this caregiver.");
+                    }
+                }
+
+                if (intygExists != null) {
+                    if (authoritiesValidator.given(user, intygsTyp).features(AuthoritiesConstants.FEATURE_UNIKT_INTYG).isVerified()) {
                         throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE,
                                 "Certificates of this type must be globally unique.");
-                    } else if (exists && webcertFeatureService.isModuleFeatureActive(WebcertFeature.UNIKT_INTYG_INOM_VG
-                            .getName(), intygsTyp)) {
+                    } else if (intygExists && authoritiesValidator.given(user, intygsTyp)
+                            .features(AuthoritiesConstants.FEATURE_UNIKT_INTYG_INOM_VG).isVerified()) {
                         throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE,
                                 "Certificates of this type must be unique within this caregiver.");
                     }
@@ -281,7 +297,7 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
             CopyUtkastBuilderResponse builderResponse = buildUtkastFromTemplateBuilderResponse(copyRequest, originalIntygId, true,
                     coherentJournaling);
 
-            Utkast savedUtkast = saveAndNotify(originalIntygId, builderResponse, user);
+            Utkast savedUtkast = saveAndNotify(builderResponse, user);
 
             if (copyRequest.isDjupintegrerad()) {
                 checkIntegreradEnhet(builderResponse);
@@ -296,7 +312,7 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
     }
 
     // Duplicate in IntygServiceImpl, refactor.
-    private void verifyNotReplacedWithSigned(String originalIntygId, String operation, UtkastStatus... unallowedStates) {
+    private void verifyNotReplacedWithSigned(String originalIntygId, String operation) {
         final Optional<WebcertCertificateRelation> replacedByRelation = certificateRelationService.getNewestRelationOfType(originalIntygId,
                 RelationKod.ERSATT, Arrays.asList(UtkastStatus.SIGNED));
         if (replacedByRelation.isPresent()) {
@@ -320,7 +336,6 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
         }
     }
 
-    // INTYG-3620
     private void verifyNotComplementedWithSigned(String originalIntygId, String operation) {
         Optional<WebcertCertificateRelation> complementedByRelation = certificateRelationService.getNewestRelationOfType(originalIntygId,
                 RelationKod.KOMPLT, Arrays.asList(UtkastStatus.SIGNED));
@@ -334,23 +349,21 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
         }
     }
 
-    private Utkast saveAndNotify(String originalIntygId, CopyUtkastBuilderResponse builderResponse, WebCertUser user) {
+    private Utkast saveAndNotify(CopyUtkastBuilderResponse builderResponse, WebCertUser user) {
+        builderResponse.getUtkastCopy().setSkapad(LocalDateTime.now());
+
         Utkast savedUtkast = utkastRepository.save(builderResponse.getUtkastCopy());
 
-        // notify
-        String reference = user.getParameters() != null ? user.getParameters().getReference() : null;
-        notificationService.sendNotificationForDraftCreated(savedUtkast, reference);
+        if (user.getParameters() != null && !Strings.isNullOrEmpty(user.getParameters().getReference())) {
+            referensService.saveReferens(savedUtkast.getIntygsId(), user.getParameters().getReference());
+        }
+        notificationService.sendNotificationForDraftCreated(savedUtkast);
 
         LOG.debug("Notification sent: utkast with id '{}' was created as a copy.", savedUtkast.getIntygsId());
 
         LogRequest logRequest = LogRequestFactory.createLogRequestFromUtkast(savedUtkast);
         logService.logCreateIntyg(logRequest);
         return savedUtkast;
-    }
-
-    private Utkast saveAndNotify(String originalIntygId, CopyUtkastBuilderResponse builderResponse) {
-        WebCertUser user = userService.getUser();
-        return saveAndNotify(originalIntygId, builderResponse, user);
     }
 
     private CopyUtkastBuilderResponse buildCompletionUtkastBuilderResponse(CreateCompletionCopyRequest copyRequest, String originalIntygId,
@@ -459,27 +472,38 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
 
     private Person refreshPatientDetailsFromPUService(AbstractCreateCopyRequest copyRequest) {
 
-        Personnummer patientPersonnummer = copyRequest.getPatient().getPersonId();
+        Personnummer personnummer;
 
         if (copyRequest.containsNyttPatientPersonnummer()) {
-            patientPersonnummer = copyRequest.getNyttPatientPersonnummer();
             LOG.debug("Request contained a new personnummer to use for the copy");
+            personnummer = copyRequest.getNyttPatientPersonnummer();
+        } else {
+            personnummer = copyRequest.getPatient().getPersonId();
         }
 
         LOG.debug("Refreshing person data to use for the copy");
-
-        PersonSvar personSvar = personUppgiftsService.getPerson(patientPersonnummer);
+        PersonSvar personSvar = getPersonSvar(personnummer);
 
         if (PersonSvar.Status.ERROR.equals(personSvar.getStatus())) {
-            LOG.error("An error occured when using '{}' to lookup person data");
+            LOG.error("An error occured when using '{}' to lookup person data", personnummer.getPersonnummerHash());
             return null;
         } else if (PersonSvar.Status.NOT_FOUND.equals(personSvar.getStatus())) {
-            LOG.error("No person data was found using '{}' to lookup person data", patientPersonnummer);
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND, "No person data found using '"
-                    + patientPersonnummer + "'");
+            LOG.error("No person data was found using '{}' to lookup person data", personnummer.getPersonnummerHash());
+            throw new WebCertServiceException(
+                    WebCertServiceErrorCodeEnum.DATA_NOT_FOUND,
+                    "No person data found using '" + personnummer.getPersonnummerHash() + "'");
         }
 
         return personSvar.getPerson();
+    }
+
+    private PersonSvar getPersonSvar(Personnummer personnummer) {
+        if (personnummer == null) {
+            String errMsg = "No personnummer present. Unable to make a call to PUService";
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MISSING_PARAMETER, errMsg);
+        }
+
+        return puService.getPerson(personnummer);
     }
 
     private void checkIntegreradEnhet(CopyUtkastBuilderResponse builderResponse) {
@@ -492,6 +516,5 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
                 utkastCopy.getVardgivarNamn());
 
         integreradeEnheterRegistry.addIfSameVardgivareButDifferentUnits(orginalEnhetsId, newEntry, utkastCopy.getIntygsTyp());
-
     }
 }

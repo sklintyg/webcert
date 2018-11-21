@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Inera AB (http://www.inera.se)
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -19,8 +19,8 @@
 
 /*global browser,Promise,protractor,logger*/
 'use strict';
-var logInAsUserRole = require('./login.helpers.js').logInAsUserRole;
-var helpers = require('../helpers.js');
+const logInAsUserRole = require('./login.helpers.js').logInAsUserRole;
+const helpers = require('../helpers.js');
 
 module.exports = {
     login: function(userObj, url, secondBrowser) {
@@ -43,8 +43,9 @@ module.exports = {
             var customBrowser1 = secondBrowser.findElement(by.id(elementId));
             var randomTxt1 = helpers.randomTextString();
             return customBrowser1.sendKeys(randomTxt1).then(function() {
-                var saveErrorMessage = secondBrowser.findElement(by.binding('viewState.common.error.saveErrorMessage'));
-                return expect(saveErrorMessage.getText()).to.eventually.contain('Kan inte spara utkastet.');
+                //var saveErrorMessage = secondBrowser.findElement(by.binding('viewState.common.error.saveErrorMessage'));
+                var saveErrorMessage = secondBrowser.findElement(by.binding('utkastViewState.common.error.saveErrorMessage'));
+                return expect(saveErrorMessage.getText()).to.eventually.contain('Utkastet har samtidigt ändrats av en annan användare och kunde därför inte sparas. Ladda om sidan och försök igen. Utkastet ändrades av:');
             });
         });
     },
@@ -114,12 +115,16 @@ module.exports = {
     },
 
     askNewQuestion: function(forkedBrowser) {
-        return forkedBrowser.findElement(by.id('askArendeBtn')).sendKeys(protractor.Key.SPACE).then(function() {
-            return forkedBrowser.findElement(by.id('arendeNewModelText')).sendKeys(helpers.randomTextString()).then(function() {
-                return forkedBrowser.findElement(by.cssContainingText('option', 'Kontakt')).click().then(function() {
-                    return forkedBrowser.findElement(by.id('sendArendeBtn')).sendKeys(protractor.Key.SPACE);
-                });
-            });
+        return forkedBrowser.findElement(by.id('arende-filter-administrativafragor')).click().then(function() {
+            return forkedBrowser.sleep(1000);
+        }).then(function() {
+            return forkedBrowser.findElement(by.id('askArendeBtn')).sendKeys(protractor.Key.SPACE);
+        }).then(function() {
+            return forkedBrowser.findElement(by.id('arendeNewModelText')).sendKeys(helpers.randomTextString());
+        }).then(function() {
+            return forkedBrowser.findElement(by.cssContainingText('option', 'Kontakt')).click();
+        }).then(function() {
+            return forkedBrowser.findElement(by.id('sendArendeBtn')).sendKeys(protractor.Key.SPACE);
         });
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Inera AB (http://www.inera.se)
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*globals element,by,Promise */
+/*globals element,by, protractor */
 'use strict';
 
 /**
@@ -47,6 +47,11 @@ var FkBaseUtkast = BaseUtkast._extend({
     getDynamicLabelText: function(textKey) {
         return element(by.xpath('//span[@key="' + textKey + '"]')).getText();
     },
+    //in ue-form-label the dynamic text is rendered differently
+    getDynamicLabelTextById: function(id) {
+        return element(by.id(id)).getText();
+    },
+
     isMarkeraSomKlartAttSigneraButtonDisplayed: function() {
         return this.markeraKlartForSigneringButton.isDisplayed();
     },

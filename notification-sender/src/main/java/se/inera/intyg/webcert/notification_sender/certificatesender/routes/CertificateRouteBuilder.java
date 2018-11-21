@@ -22,12 +22,16 @@ import org.apache.camel.LoggingLevel;
 import org.apache.camel.spring.SpringRouteBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 
 import se.inera.intyg.webcert.common.Constants;
 import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
 
 public class CertificateRouteBuilder extends SpringRouteBuilder {
     private static final Logger LOG = LoggerFactory.getLogger(CertificateRouteBuilder.class);
+
+    @Value("${camel.message.delay.millis}")
+    private String messageDelayMillis;
 
     /*
      * This route depends on the MQ provider (currently ActiveMQ) for redelivery. Any temporary exception thrown
@@ -36,16 +40,28 @@ public class CertificateRouteBuilder extends SpringRouteBuilder {
      * the proper redelivery wait time has passed.
      *
      * Any permanent exception is handled by the route, however, and will NOT trigger a redelivery.
+     *
+     * A message may supply a DELAY_MESSAGE header, which will delay processing of that message for ${camel.message.delay.millis}
+     * milliseconds.
      */
-
     @Override
     public void configure() {
+        long messageDelay = 0;
+        try {
+            messageDelay = Long.parseLong(messageDelayMillis);
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException(
+                    "Cannot build certificate route, supplied message delay could not be parsed: " + e.getMessage());
+        }
         errorHandler(transactionErrorHandler().logExhausted(false));
 
         from("receiveCertificateTransferEndpoint").routeId("transferCertificate")
                 .onException(TemporaryException.class).to("direct:certTemporaryErrorHandlerEndpoint").end()
                 .onException(Exception.class).handled(true).to("direct:certPermanentErrorHandlerEndpoint").end()
                 .transacted()
+                .choice()
+                .when(header(Constants.DELAY_MESSAGE)).delay(messageDelay).asyncDelayed().endChoice()
+                .end()
                 .choice()
                 .when(header(Constants.MESSAGE_TYPE).isEqualTo(Constants.STORE_MESSAGE)).to("bean:certificateStoreProcessor").stop()
                 .when(header(Constants.MESSAGE_TYPE).isEqualTo(Constants.SEND_MESSAGE)).to("bean:certificateSendProcessor").stop()
@@ -59,7 +75,7 @@ public class CertificateRouteBuilder extends SpringRouteBuilder {
                 .log(LoggingLevel.ERROR, LOG,
                         simple("Permanent exception for intygs-id: ${header[JMSXGroupID]}, "
                                 + "with message: ${exception.message}\n ${exception.stacktrace}")
-                                .getText())
+                                        .getText())
                 .stop();
 
         from("direct:certTemporaryErrorHandlerEndpoint").routeId("temporaryErrorLogging")
@@ -68,7 +84,7 @@ public class CertificateRouteBuilder extends SpringRouteBuilder {
                 .log(LoggingLevel.ERROR, LOG,
                         simple("Temporary exception for intygs-id: ${header[JMSXGroupID]}, with message: "
                                 + "${exception.message}\n ${exception.stacktrace}")
-                                .getText())
+                                        .getText())
                 .otherwise()
                 .log(LoggingLevel.WARN, LOG,
                         simple("Temporary exception for intygs-id: ${header[JMSXGroupID]}, with message: "

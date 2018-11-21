@@ -1,37 +1,30 @@
-<div class="container-fluid" wc-authority feature="hanteraIntygsutkast">
-    <div class="row">
-      <div id="skapa-valj-patient" class="col-xs-7 webcert-col webcert-col-single">
+<div id="skapa-valj-patient" wc-authority feature="HANTERA_INTYGSUTKAST" class="webcert-workarea-page centered-constrained-content container-fluid">
 
-        <form name="pnrForm" ng-submit="loadPatient()" novalidate autocomplete="off">
-          <div wc-authority request-origin="DJUPINTEGRATION" class="warning alert-warning">
-            <h1 class="error">DJUPINTEGRERAD testläge</h1>
-            <span class="error">OBS! Dashboard i djupintegrerat läge är EJ tillgängligt i prod-miljö, den finns endast för att vid behov underlätta utveckling/testning.</span>
-          </div>
-          <h1 class="page-title">Sök/skriv intyg</h1>
-          <div class="form-group">
-            <label for="pnr" class="control-label">Patientens personnummer</label>
-            <input id="pnr" class="form-control" name="pnr" type="text"
-                   placeholder="Exempel: ååååmmdd-nnnn"
-                   ng-model="personnummer"
-                   wc-person-number
-                   required maxlength="13"
-                   wc-focus-me="focusPnr" />
-            <div ng-show="pnrForm.pnr.$invalid && pnrForm.pnr.$touched && pnrForm.pnr.$viewValue != ''">
-              <span class="error">Du måste ange ett giltigt personnummer</span>
-            </div>
-          </div>
-          <div class="form-group">
-            <div class="form-group">
-              <button id="skapapersonnummerfortsatt" name="skapapersonnummerfortsatt"
-                      class="btn btn-success" type="submit" ng-disabled="viewState.loading">
-                <img ng-show="viewState.loading" ng-src="/img/ajax-loader-small-green.gif"/> Fortsätt
-              </button>
-            </div>
-            <div class="alert alert-danger" id="puerror" ng-if="viewState.errorid">
-              <span message key="{{viewState.errorid}}"></span>
-            </div>
-          </div>
-        </form>
+  <form name="pnrForm" ng-submit="loadPatient()" novalidate autocomplete="off">
+    <div class="form-group sokSkrivIntygWrapper">
+      <label for="pnr" class="control-label">Patientens personnummer</label>
+
+      <div class="form-inline sokSkrivIntygInput">
+        <input id="pnr" class="form-control" name="pnr" type="text"
+               placeholder="ååååmmdd-nnnn"
+               ng-model="personnummer"
+               wc-person-number
+               required maxlength="13"
+               wc-focus-me="focusPnr"/>
+        <button id="skapapersonnummerfortsatt" name="skapapersonnummerfortsatt"
+                class="btn btn-primary" ng-class="{'correct' : pnrForm.pnr.$valid }" type="submit" ng-disabled="viewState.loading">
+          <i ng-show="viewState.loading" class="icon-wc-ikon-02 animate-spin"></i>
+          <span ng-hide="viewState.loading">Fortsätt</span>
+        </button>
+      </div>
+      <div class="error">
+        <div ng-show="pnrForm.pnr.$invalid && pnrForm.pnr.$touched && pnrForm.pnr.$viewValue != ''">
+          Du måste ange ett giltigt personnummer
+        </div>
+        <wc-alert-message id="puerror" ng-if="viewState.errorid" alert-message-id="{{viewState.errorid}}" alert-severity="danger"></wc-alert-message>
       </div>
     </div>
+
+  </form>
+
 </div>

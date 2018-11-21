@@ -28,9 +28,8 @@
 <link rel="icon" href="/favicon.ico" type="image/vnd.microsoft.icon" />
 
 <!-- bower:css -->
-<link rel="stylesheet" href="/bower_components/angular-ui-select/dist/select.css" />
-<link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.css" />
 <!-- endbower -->
+<link rel="stylesheet" href="/app/webcert.css">
 
 <style type="text/css">
   textarea {
@@ -60,7 +59,6 @@
   angular.module('WcWelcomeApp.controllers', []).controller('welcomeController',
     ['$scope', '$http', '$log', function($scope, $http, $log) {
 
-
       // PU stub operations ============================================
         $scope.PU = {
             latestResult: 'Inget',
@@ -70,7 +68,7 @@
         $scope.performPUOperation = function(evt, type, enable) {
             evt.preventDefault();
             $http({
-                url: '/services/pu-api/person/' + $scope.PU.patientId + '/' + type + '?value=' + enable,
+                url: '/services/api/pu-api/person/' + $scope.PU.patientId + '/' + type + '?value=' + enable,
                 method: 'GET',
                 transformResponse: undefined
             }).then(
@@ -84,7 +82,7 @@
         $scope.togglePU = function(evt, enable) {
             evt.preventDefault();
             $http({
-                url: '/services/pu-api/' + (enable ? 'active':'inactive'),
+                url: '/services/api/pu-api/' + (enable ? 'active':'inactive'),
                 method: 'GET',
                 transformResponse: undefined
             }).then(
@@ -99,7 +97,7 @@
         $scope.clearPUCache = function(evt) {
             evt.preventDefault();
             $http({
-                url: '/services/pu-api/cache',
+                url: '/services/api/pu-api/cache',
                 method: 'DELETE',
                 transformResponse: undefined
             }).then(
@@ -112,7 +110,7 @@
         };
         $scope.editPU = function() {
           $http({
-            url: '/services/pu-api/person/'+$scope.PU.patientId,
+            url: '/services/api/pu-api/person/'+$scope.PU.patientId,
               method: 'GET'
           }).then(
           function success(response) {
@@ -125,7 +123,7 @@
         };
         $scope.editPUSave = function() {
           $http({
-            url: '/services/pu-api/person',
+            url: '/services/api/pu-api/person',
             method: 'PUT',
             data: $scope.PU.editData
           }).then(
@@ -156,17 +154,48 @@
         })[0];
       }
 
+        function _findPrivatlakare(personId) {
+            return $scope.loginModel.filter(function(item) {
+                return item.personId === personId;
+            })[0];
+        }
+
       function _fetchHsaPersons() {
-        $http.get('/services/hsa-api/person').
-        success(function(response) {
-          $scope.loginModel = _loginModel(response);
+        $http.get('/services/api/hsa-api/person').
+        then(function(response) {
+          $scope.loginModel = _loginModel(response.data);
           $scope.loginOptions = _loginOptions();
           $scope.selectedIndex = '0';
-        }).
-        error(function(data, status) {
+
+          _fetchPrivatlakare();
+        }, function(data, status) {
           $log.error('error ' + status);
         });
       }
+
+        function _fetchPrivatlakare() {
+            $http.get('/services/api/pp-api/medarbetaruppdrag').
+            then(function(response) {
+              var data = response.data;
+              for (var a = 0; a < data.length; a++) {
+                  console.log(JSON.stringify(data[a]));
+                  var item = {
+                      'index': $scope.loginOptions.length,
+                      'hsaId': data[a].hsaId.extension,
+                      'forNamn': data[a].fullstandigtNamn,
+                      'efterNamn': '',
+                      'personId': data[a].personId.extension,
+                      'privatLakare': true,
+                      'beskrivning': data[a].fullstandigtNamn + ' (Privatläkare, ' + (data[a].godkandAnvandare ? 'Godkänd' : 'Ej godkänd') + ')'
+                  };
+                  $scope.loginOptions.push(item);
+                  $scope.loginModel.push(item);
+              }
+
+            }, function(data, status) {
+                $log.error('error ' + status);
+            });
+        }
 
       function _isArray(obj) {
         return Object.prototype.toString.call(obj) == "[object Array]";
@@ -288,7 +317,9 @@
             'legitimeradeYrkesgrupper',
             'befattningsKod',
             'forskrivarKod',
-            'origin'];
+            'origin',
+            'authenticationMethod',
+        'privatLakare','personId'];
 
         var string = JSON.stringify(hsaPerson, validProperties, 1);
         var object = JSON.parse(string);
@@ -338,7 +369,8 @@
 
       $scope.environment = {
         name: 'all',
-        origin: 'NORMAL'
+        origin: 'NORMAL',
+          authenticationMethod: 'FAKE'
       };
 
       $scope.$watch('selectedIndex', function(newSelected, oldVal) {
@@ -346,6 +378,10 @@
       });
 
       $scope.$watch('environment.origin', function() {
+          $scope.updateUserContext($scope.selectedIndex);
+      });
+
+      $scope.$watch('environment.authenticationMethod', function() {
           $scope.updateUserContext($scope.selectedIndex);
       });
 
@@ -452,15 +488,28 @@
         // Catch user login option
         var login = $scope.loginOptions[newSelected];
 
-        // Get the HSA person from model
-        var hsaPerson = _findHsaPerson(login.hsaId);
+        if (typeof login !== 'undefined') {
 
-        // Add properties to HSA person
-        _updateObject(hsaPerson, 'enhetId', login.forvaldEnhet);
-        _updateObject(hsaPerson, 'origin', $scope.environment.origin);
+            // Hantera som privatlakare.
+            if (typeof login.privatLakare !== 'undefined' && login.privatLakare) {
+                var ppPerson = _findPrivatlakare(login.personId);
+                var loginJson = _stringify(ppPerson);
+                $scope.jsonModel = loginJson;
+            } else {
+                // Get the HSA person from model
+                var hsaPerson = _findHsaPerson(login.hsaId);
 
-        var loginJson = _stringify(hsaPerson);
-        $scope.jsonModel = loginJson;
+                // Add properties to HSA person
+                _updateObject(hsaPerson, 'enhetId', login.forvaldEnhet);
+                _updateObject(hsaPerson, 'origin', $scope.environment.origin);
+                _updateObject(hsaPerson, 'authenticationMethod', $scope.environment.authenticationMethod);
+
+                var loginJson = _stringify(hsaPerson);
+                $scope.jsonModel = loginJson;
+            }
+        }
+
+
       };
 
       $scope.whichEnv = function(env) {
@@ -519,7 +568,7 @@
                           </textarea>
               </div>
 
-              <h5>Logga in med origin: </h5>
+              <h5>Logga in med origin:</h5>
               <span class="originButtons"><label for="NORMAL"><input id="NORMAL" name="origin" type="radio"
                                                                      ng-model="environment.origin" value="NORMAL"
                                                                      checked /> NORMAL</label></span>
@@ -530,6 +579,17 @@
                                                                        ng-model="environment.origin" value="UTHOPP" /> UTHOPP</label></span>
               <span class="originButtons"><label for="READONLY"><input id="READONLY" name="origin" type="radio"
                                                                      ng-model="environment.origin" value="READONLY" /> READONLY</label></span>
+
+              <h5>Logga in med metod:  <i>(påverkar endast signering)</i></h5>
+              <span class="authenticationMethodButtons"><label for="FAKE"><input id="FAKE" name="authenticationMethod" type="radio"
+                                                                     ng-model="environment.authenticationMethod" value="FAKE"
+                                                                     checked /> FAKE</label></span>
+              <span class="authenticationMethodButtons"><label for="EFOS"><input id="EFOS" name="authenticationMethod"
+                                                                              type="radio" ng-model="environment.authenticationMethod"
+                                                                              value="EFOS" /> EFOS</label></span>
+              <span class="authenticationMethodButtons"><label for="MOBILT_BANK_ID"><input id="MOBILT_BANK_ID" name="authenticationMethod"
+                                                                                 type="radio" ng-model="environment.authenticationMethod"
+                                                                                 value="MOBILT_BANK_ID" /> MOBILT_BANK_ID</label></span>
             </div>
           </form>
 
@@ -611,7 +671,7 @@
                   Töm cache
                 </button>
 
-              <button type="button" class="btn btn-small btn-success" ng-click="togglePU($event, true)">
+              <button type="button" class="btn btn-small btn-primary" ng-click="togglePU($event, true)">
                 Aktivera PU
               </button>
                 <button type="button" class="btn btn-small btn-danger" ng-click="togglePU($event, false)">
@@ -620,13 +680,13 @@
               </div>
 
             <div class="panel panel-body panel-info" ng-show="PU.showPUEdit">
-              <label for="pu-fornamn">Förnamn</label><input id="pu-fornamn" type="text" ng-model="PU.editData.Personpost.Namn.Fornamn"><br>
-              <label for="pu-efternamn">Efternamn</label><input id="pu-efternamn" type="text" ng-model="PU.editData.Personpost.Namn.Efternamn"><br>
-              <label for="pu-careof">CareOf</label><input id="pu-careof" type="text" ng-model="PU.editData.Personpost.Folkbokforingsadress.CareOf"><br>
-              <label for="pu-utdelningsadress1">Utdelningsadress1</label><input id="pu-utdelningsadress1" type="text" ng-model="PU.editData.Personpost.Folkbokforingsadress.Utdelningsadress1"><br>
-              <label for="pu-utdelningsadress2">Utdelningsadress2</label><input id="pu-utdelningsadress2" type="text" ng-model="PU.editData.Personpost.Folkbokforingsadress.Utdelningsadress2"><br>
-              <label for="pu-postnr">PostNr</label><input id="pu-postnr" type="text" ng-model="PU.editData.Personpost.Folkbokforingsadress.PostNr"><br>
-              <label for="pu-postort">Postort</label><input id="pu-postort" type="text" ng-model="PU.editData.Personpost.Folkbokforingsadress.Postort"><br>
+              <label for="pu-fornamn">Förnamn</label><input id="pu-fornamn" type="text" ng-model="PU.editData.name.givenName.name"><br>
+              <label for="pu-efternamn">Efternamn</label><input id="pu-efternamn" type="text" ng-model="PU.editData.name.surname.name"><br>
+              <label for="pu-careof">CareOf</label><input id="pu-careof" type="text" ng-model="PU.editData.addressInformation.residentialAddress.careOf"><br>
+              <label for="pu-utdelningsadress1">Utdelningsadress1</label><input id="pu-utdelningsadress1" type="text" ng-model="PU.editData.addressInformation.residentialAddress.postalAddress1"><br>
+              <label for="pu-utdelningsadress2">Utdelningsadress2</label><input id="pu-utdelningsadress2" type="text" ng-model="PU.editData.addressInformation.residentialAddress.postalAddress2"><br>
+              <label for="pu-postnr">PostNr</label><input id="pu-postnr" type="text" ng-model="PU.editData.addressInformation.residentialAddress.postalCode"><br>
+              <label for="pu-postort">Postort</label><input id="pu-postort" type="text" ng-model="PU.editData.addressInformation.residentialAddress.city"><br>
               <button type="button" class="btn btn-primary" ng-click="editPUSave()">
                 Spara
               </button>

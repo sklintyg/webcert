@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Inera AB (http://www.inera.se)
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -51,10 +51,10 @@ var LisjpUtkast = BaseSmiUtkast._extend({
         this.sysselsattning = {
             form: element(by.id('form_sysselsattning')),
             typ: {
-                nuvarandeArbete: element(by.id('sysselsattning.typ-1')),
-                arbetssokande: element(by.id('sysselsattning.typ-2')),
-                foraldraledighet: element(by.id('sysselsattning.typ-3')),
-                studier: element(by.id('sysselsattning.typ-4'))
+                nuvarandeArbete: element(by.id('sysselsattning-NUVARANDE_ARBETE')),
+                arbetssokande: element(by.id('sysselsattning-ARBETSSOKANDE')),
+                foraldraledighet: element(by.id('sysselsattning-FORALDRALEDIG')),
+                studier: element(by.id('sysselsattning-STUDIER'))
             },
             nuvarandeArbeteBeskrivning: element(by.id('nuvarandeArbete'))
         };
@@ -91,57 +91,40 @@ var LisjpUtkast = BaseSmiUtkast._extend({
             },
             arbetsresor: element(by.id('form_arbetsresor')).element(by.css('input[type=checkbox]')),
             formagaTrotsBegransningBeskrivning: element(by.id('formagaTrotsBegransning')),
-            // prognos: {
-            //     typ: {
-            //         1: element(by.id('prognos.typ-1')),
-            //         3: element(by.id('prognos.typ-3')),
-            //         4: element(by.id('prognos.typ-4')),
-            //         5: element(by.id('prognos.typ-5'))
-            //     },
-            //     dagarTillArbete: {
-            //         30: element(by.id('prognos.dagarTillArbete-1')),
-            //         60: element(by.id('prognos.dagarTillArbete-2')),
-            //         90: element(by.id('prognos.dagarTillArbete-3')),
-            //         180: element(by.id('prognos.dagarTillArbete-4'))
-            //     }
-            // }
             prognos: {
                 form: element(by.id('form_prognos')),
-                inom: element(by.id('prognosDagarTillArbete-1-typ')),
-                select: element(by.css('#prognosDagarTillArbete-1-typ > div.ui-select-match > span'))
+                inom: element(by.css('#prognosDagarTillArbete-1-typ > div.plate')),
+                select: element(by.css('#prognosDagarTillArbete-1-typ > div.dropdown-label'))
             }
         };
         this.atgarder = {
-            typ: { //TODO det finns uppdaterade IDn för dessa
-                1: element(by.id('arbetslivsinriktadeAtgarder-1')),
-                2: element(by.id('arbetslivsinriktadeAtgarder-2')),
-                3: element(by.id('arbetslivsinriktadeAtgarder-3')),
-                4: element(by.id('arbetslivsinriktadeAtgarder-4')),
-                5: element(by.id('arbetslivsinriktadeAtgarder-5')),
-                6: element(by.id('arbetslivsinriktadeAtgarder-6')),
-                7: element(by.id('arbetslivsinriktadeAtgarder-7')),
-                8: element(by.id('arbetslivsinriktadeAtgarder-8')),
-                9: element(by.id('arbetslivsinriktadeAtgarder-9')),
-                10: element(by.id('arbetslivsinriktadeAtgarder-10')),
-                11: element(by.id('arbetslivsinriktadeAtgarder-11'))
-            },
+
             ejAktuelltBeskrivning: element(by.id('arbetslivsinriktadeAtgarderEjAktuelltBeskrivning')),
-            aktuelltBeskrivning: element(by.id('arbetslivsinriktadeAtgarderAktuelltBeskrivning')),
-            labels: element(by.id('form_arbetslivsinriktadeAtgarder')).all(by.css('label.checkbox-inline'))
-        };
-        this.arendeQuestion = {
-            newArendeButton: element(by.id('askArendeBtn')),
-            text: element(by.id('arendeNewModelText')),
-            topic: element(by.id('new-question-topic')),
-            kontakt: element(by.cssContainingText('option', 'Kontakt')),
-            sendButton: element(by.id('sendArendeBtn'))
+            aktuelltBeskrivning: element(by.id('arbetslivsinriktadeAtgarderAktuelltBeskrivning'))
+
         };
         this.arbetslivsinriktadeAtgarderBeskrivning = element(by.id('arbetslivsinriktadeAtgarderBeskrivning'));
         var panel = element(by.css('.arende-panel'));
         this.arendePanel = panel;
-    },
-    selectQuestionTopic: function(amne) {
-        this.arendeQuestion.topic.element(by.cssContainingText('option', amne)).click();
+        this.srs = {
+            knapp: () => element(by.buttonText('SRS')),
+            panel: () => element(by.tagName('wc-srs-content')),
+            samtycke: {
+                ja: () => element.all(by.css('input[type=radio]')).filter(el => el.getAttribute('value').then(v => v === 'JA')).first(),
+                nej: () => element.all(by.css('input[type=radio]')).filter(el => el.getAttribute('value').then(v => v === 'NEJ')).first()
+            },
+            visamer: () => element.all(by.id('questionsCollapser')),
+            visaKnapp: () => element(by.buttonText('Visa')),
+            fragor: () => element(by.tagName('wc-srs-questionaire')),
+            prediktion: () => element(by.id('predictionBox')),
+            flik: linkText => element(by.linkText(linkText)),
+            atgarder: () => element(by.id('atgarder2')), //SRS rutan vid diagnos antas
+            statistik: () => element(by.id('statstics2')), //SRS rutan vid diagnos antas
+            atgarderRek: () => element(by.id('atgarderRek')),
+            atgarderObs: () => element(by.id('atgarderObs')),
+            questionsCollapser: () => element(by.id('questionsCollapser')),
+
+        };
     },
     get: function get(intygId) {
         get._super.call(this, 'lisjp', intygId);
@@ -154,9 +137,9 @@ var LisjpUtkast = BaseSmiUtkast._extend({
     },
     angeMedicinskBehandling: function(behandling) {
         var fn = this.medicinskbehandling;
-        return pageHelpers.moveAndSendKeys(fn.pagaende, behandling.pagaende, behandling.pagaende).then(function(){
-			return pageHelpers.moveAndSendKeys(fn.planerad, behandling.planerad, behandling.planerad);
-		});
+        return pageHelpers.moveAndSendKeys(fn.pagaende, behandling.pagaende, behandling.pagaende).then(function() {
+            return pageHelpers.moveAndSendKeys(fn.planerad, behandling.planerad, behandling.planerad);
+        });
     },
     angeArbetsformaga: function(arbetsformaga) {
         var el25 = this.sjukskrivning['25'];
@@ -172,7 +155,7 @@ var LisjpUtkast = BaseSmiUtkast._extend({
             promisesArr.push(pageHelpers.moveAndSendKeys(el25.fran, arbetsformaga.nedsattMed25.from, arbetsformaga.nedsattMed25.from)
                 .then(function() {
                     return pageHelpers.moveAndSendKeys(el25.till, arbetsformaga.nedsattMed25.tom, arbetsformaga.nedsattMed25.tom);
-                
+
                 })
             );
         }
@@ -222,7 +205,7 @@ var LisjpUtkast = BaseSmiUtkast._extend({
         }
     },
     angeDiagnos: function(diagnos) {
-        var el = this.diagnoseCode; //TODO diagnoseCode är felstavat? undef?
+        var el = this.diagnoseCode;
         return pageHelpers.moveAndSendKeys(el, diagnos.kod, diagnos.kod).then(function() {
             return pageHelpers.moveAndSendKeys(el, protractor.Key.TAB, 'TAB');
         });
@@ -230,24 +213,26 @@ var LisjpUtkast = BaseSmiUtkast._extend({
     },
     angeArbetstidsforlaggning: function(arbetstidsforlaggning) {
         var el = this.sjukskrivning.arbetstidsforlaggning;
-        if (arbetstidsforlaggning.val === 'Ja') {
+        if (!arbetstidsforlaggning) {
+            return Promise.resolve();
+        } else if (arbetstidsforlaggning.val === 'Ja') {
             return pageHelpers.moveAndSendKeys(el.ja, protractor.Key.SPACE)
                 .then(function() {
-					return pageHelpers.moveAndSendKeys(el.beskrivning, arbetstidsforlaggning.beskrivning, arbetstidsforlaggning.beskrivning);
+                    return pageHelpers.moveAndSendKeys(el.beskrivning, arbetstidsforlaggning.beskrivning, arbetstidsforlaggning.beskrivning);
                 });
         } else {
             return pageHelpers.moveAndSendKeys(el.nej, protractor.Key.SPACE);
         }
     },
     angeAtgarder: function(atgarder) {
-        var atgarderEL = this.atgarder;
         var beskrivningEL = this.arbetslivsinriktadeAtgarderBeskrivning;
 
-        var atgarderNamn = atgarder.map(function(obj) {
-            return obj.namn;
+        var elementsToCheck = [];
+        atgarder.forEach(function(atgard) {
+            elementsToCheck.push('arbetslivsinriktadeAtgarder-' + atgard.key);
         });
 
-        return pageHelpers.clickAll(atgarderEL.labels, atgarderNamn).then(function() {
+        return pageHelpers.selectCheckBoxesById(elementsToCheck).then(function() {
             var beskrivning = '';
             atgarder.forEach(function(atgard) {
 
@@ -268,9 +253,8 @@ var LisjpUtkast = BaseSmiUtkast._extend({
     },
     angeSysselsattning: function(sysselsattning) {
         var sysselsattningEL = this.sysselsattning;
-
-        return pageHelpers.moveAndSendKeys(sysselsattningEL.form.element(by.cssContainingText('label', sysselsattning.typ)), protractor.Key.SPACE)
-			.then(function() {
+        return element(by.id('sysselsattning-' + sysselsattning.typ)).click()
+            .then(function() {
                 if (sysselsattning.yrkesAktiviteter) {
                     return pageHelpers.moveAndSendKeys(sysselsattningEL.nuvarandeArbeteBeskrivning, sysselsattning.yrkesAktiviteter, sysselsattning.yrkesAktiviteter);
                 } else {
@@ -280,7 +264,7 @@ var LisjpUtkast = BaseSmiUtkast._extend({
     },
     angePrognosForArbetsformaga: function(prognos) {
         var prognosEL = this.sjukskrivning.prognos;
-        return pageHelpers.moveAndSendKeys(prognosEL.form.element(by.cssContainingText('label', prognos.name)), protractor.Key.SPACE, 'angePrognosForArbetsformaga').then(function() {
+        return pageHelpers.moveAndSendKeys(prognosEL.form.element(by.id('prognos-' + prognos.name)), protractor.Key.SPACE, 'angePrognosForArbetsformaga').then(function() {
             if (prognos.within) {
 
                 var frontEndJS = 'Element.prototype.documentOffsetTop = function () {';
@@ -291,7 +275,7 @@ var LisjpUtkast = BaseSmiUtkast._extend({
 
                 return browser.executeScript(frontEndJS).then(function() {
                     return prognosEL.select.click().then(function() {
-                        return prognosEL.inom.element(by.cssContainingText('.ui-select-choices-row', prognos.within)).click();
+                        return prognosEL.inom.element(by.cssContainingText('div', prognos.within)).click();
                     });
                 });
             } else {

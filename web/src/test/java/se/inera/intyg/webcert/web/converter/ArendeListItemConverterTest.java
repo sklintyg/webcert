@@ -18,14 +18,7 @@
  */
 package se.inera.intyg.webcert.web.converter;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-
-import java.time.LocalDateTime;
-
 import org.junit.Test;
-
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
@@ -36,14 +29,19 @@ import se.inera.intyg.webcert.persistence.fragasvar.model.Vardperson;
 import se.inera.intyg.webcert.persistence.model.Status;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeListItem;
 
+import java.time.LocalDateTime;
+
+import static org.junit.Assert.*;
+
 public class ArendeListItemConverterTest {
+
+    private final String patientId = "191212121212";
 
     @Test
     public void testConvert() {
         final String fragestallare = "fragestallare";
         final String intygId = "intygId";
         final String intygTyp = "intygTyp";
-        final String patientId = "patientId";
         final long internReferens = 13;
         final LocalDateTime senasteHandelse = LocalDateTime.now();
         final String signeratAv = "signeratAv";
@@ -75,7 +73,7 @@ public class ArendeListItemConverterTest {
     @Test
     public void testConvertFragaSvarWithoutCorrespondingArendeAmne() {
         final Amne amne = Amne.ARBETSTIDSFORLAGGNING;
-        FragaSvar fs = createFragaSvar("fragestallare", "intygId", "intygTyp", "patientId", (long) 13, LocalDateTime.now(), "signeratAv",
+        FragaSvar fs = createFragaSvar("fragestallare", "intygId", "intygTyp", patientId, (long) 13, LocalDateTime.now(), "signeratAv",
                 "enhetsnamn", "vardgivarnamn", amne, false, Status.PENDING_INTERNAL_ACTION);
         ArendeListItem arende = ArendeListItemConverter.convert(fs);
 
@@ -149,7 +147,8 @@ public class ArendeListItemConverterTest {
             Status status) {
         FragaSvar res = new FragaSvar();
         res.setFrageStallare(fragestallare);
-        res.setIntygsReferens(new IntygsReferens(intygsId, intygsTyp, new Personnummer(patientId), null, null));
+        res.setIntygsReferens(new IntygsReferens(intygsId, intygsTyp,
+                Personnummer.createPersonnummer(patientId).get(), null, null));
         res.setInternReferens(internReferens);
         res.setFrageSkickadDatum(senasteHandelse);
         Vardperson vp = new Vardperson();
@@ -166,6 +165,7 @@ public class ArendeListItemConverterTest {
     private Arende createArende(ArendeAmne amne, String intygsId, String intygTyp, String meddelandeId, String patientPersonId,
             String signeratAvName, String skickatAv, LocalDateTime senasteHandelse, Status status, Boolean vidarebefordrad,
             String enhetName, String vardgivareName) {
+
         Arende arende = new Arende();
         arende.setAmne(amne);
         arende.setIntygsId(intygsId);
@@ -179,6 +179,7 @@ public class ArendeListItemConverterTest {
         arende.setVidarebefordrad(vidarebefordrad);
         arende.setEnhetName(enhetName);
         arende.setVardgivareName(vardgivareName);
+
         return arende;
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Inera AB (http://www.inera.se)
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -91,16 +91,20 @@ describe('Create and Sign luae_na utkast', function() {
             expect(IntygPage.isAt()).toBeTruthy();
         });
 
-        it('Verifiera intyg', function() {
+        it('Wait until intyg in IT', function() {
             // Om intyget inte hunnit processas av IT så hämtas det från WC. Då är inte uppgifter flyttade till övriga
             // upplysningar ännu.
             // Vänta tills intyget tagits emot av IT. Ladda därefter om sidan så datan säkert kommer från IT.
             IntygPage.waitUntilIntygInIT(utkastId);
             browser.refresh();
+        });
 
+        it('Verifiera intyg', function() {
             IntygPage.whenCertificateLoaded().then(function() {
                 IntygPage.verify(data);
             });
+
+            
         });
     });
 

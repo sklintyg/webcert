@@ -25,14 +25,14 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.test.util.ReflectionTestUtils;
-import se.inera.intyg.infra.integration.hsa.client.OrganizationUnitService;
 import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.common.luse.support.LuseEntryPoint;
+import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
+import se.inera.intyg.infra.integration.hsa.services.HsaOrganizationsService;
 import se.inera.intyg.webcert.integration.pp.services.PPService;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
@@ -44,10 +44,14 @@ import javax.mail.Address;
 import javax.mail.internet.MimeMessage;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class MailNotificationServiceImplTest {
@@ -59,7 +63,7 @@ public class MailNotificationServiceImplTest {
     private JavaMailSender mailSender;
 
     @Mock
-    private OrganizationUnitService organizationUnitService;
+    private HsaOrganizationsService hsaOrganizationUnitService;
 
     @Mock
     private MonitoringLogService monitoringService;
@@ -77,8 +81,11 @@ public class MailNotificationServiceImplTest {
         ReflectionTestUtils.setField(mailNotificationService, "fromAddress", "FromAddress");
         ReflectionTestUtils.setField(mailNotificationService, "webCertHostUrl", "WebCertHostUrl");
         ReflectionTestUtils.setField(mailNotificationService, "ppLogicalAddress", "PpLogicalAddress");
-        MimeMessage mimeMessage = new MimeMessage(Mockito.mock(MimeMessage.class));
-        Mockito.doReturn(mimeMessage).when(mailSender).createMimeMessage();
+        MimeMessage mimeMessage = new MimeMessage(mock(MimeMessage.class));
+        doReturn(mimeMessage).when(mailSender).createMimeMessage();
+        Vardenhet vardenhet = new Vardenhet("aflkjdsalkjjlk", "dsaflkj", null, null, "adsflkjasdflkjadfsjlk");
+        vardenhet.setEpost("epost@mockadress.net");
+        doReturn(vardenhet).when(hsaOrganizationUnitService).getVardenhet(anyString());
     }
 
     @Captor
@@ -97,7 +104,7 @@ public class MailNotificationServiceImplTest {
         }
 
         //Then
-        Mockito.verify(organizationUnitService, times(1)).getUnit(anyString());
+        verify(hsaOrganizationUnitService, times(1)).getVardenhet(anyString());
     }
 
     @Test
@@ -108,7 +115,7 @@ public class MailNotificationServiceImplTest {
         enhet.setEpost("test@test.se");
         enhet.setEnhetsnamn("TestEnhet");
         hoSPersonType.setEnhet(enhet);
-        Mockito.doReturn(hoSPersonType).when(ppService).getPrivatePractitioner(anyString(), anyString(), anyString());
+        doReturn(hoSPersonType).when(ppService).getPrivatePractitioner(anyString(), isNull(), isNull());
 
         MailNotification mailNotification = mailNotification("intygsId", MailNotificationServiceImpl.PRIVATE_PRACTITIONER_HSAID_PREFIX + "1234");
 
@@ -116,7 +123,7 @@ public class MailNotificationServiceImplTest {
         mailNotificationService.sendMailForIncomingQuestion(mailNotification);
 
         //Then
-        Mockito.verify(organizationUnitService, times(0)).getUnit(anyString());
+        verify(hsaOrganizationUnitService, times(0)).getVardenhet(anyString());
     }
 
     @Test
@@ -128,7 +135,7 @@ public class MailNotificationServiceImplTest {
         enhet.setEpost(epost);
         enhet.setEnhetsnamn("TestEnhet");
         hoSPersonType.setEnhet(enhet);
-        Mockito.doReturn(hoSPersonType).when(ppService).getPrivatePractitioner(anyString(), anyString(), anyString());
+        doReturn(hoSPersonType).when(ppService).getPrivatePractitioner(anyString(), isNull(), isNull());
 
         MailNotification mailNotification = mailNotification("intygsId", MailNotificationServiceImpl.PRIVATE_PRACTITIONER_HSAID_PREFIX + "1234");
 
@@ -136,7 +143,7 @@ public class MailNotificationServiceImplTest {
         mailNotificationService.sendMailForIncomingQuestion(mailNotification);
 
         //Then
-        Mockito.verify(mailSender, times(1)).send(mimeCaptor.capture());
+        verify(mailSender, times(1)).send(mimeCaptor.capture());
         MimeMessage mimeMessage = mimeCaptor.getValue();
         Address[] allRecipients = mimeMessage.getAllRecipients();
         assertEquals(1, allRecipients.length);
@@ -156,7 +163,7 @@ public class MailNotificationServiceImplTest {
         }
 
         //Then
-        Mockito.verify(organizationUnitService, times(1)).getUnit(anyString());
+        verify(hsaOrganizationUnitService, times(1)).getVardenhet(anyString());
     }
 
     @Test
@@ -167,7 +174,7 @@ public class MailNotificationServiceImplTest {
         enhet.setEpost("test@test.se");
         enhet.setEnhetsnamn("TestEnhet");
         hoSPersonType.setEnhet(enhet);
-        Mockito.doReturn(hoSPersonType).when(ppService).getPrivatePractitioner(anyString(), anyString(), anyString());
+        doReturn(hoSPersonType).when(ppService).getPrivatePractitioner(anyString(), isNull(), isNull());
 
         MailNotification mailNotification = mailNotification("intygsId", MailNotificationServiceImpl.PRIVATE_PRACTITIONER_HSAID_PREFIX + "1234");
 
@@ -175,7 +182,7 @@ public class MailNotificationServiceImplTest {
         mailNotificationService.sendMailForIncomingAnswer(mailNotification);
 
         //Then
-        Mockito.verify(organizationUnitService, times(0)).getUnit(anyString());
+        verify(hsaOrganizationUnitService, times(0)).getVardenhet(anyString());
     }
 
     @Test
@@ -187,7 +194,7 @@ public class MailNotificationServiceImplTest {
         enhet.setEpost(epost);
         enhet.setEnhetsnamn("TestEnhet");
         hoSPersonType.setEnhet(enhet);
-        Mockito.doReturn(hoSPersonType).when(ppService).getPrivatePractitioner(anyString(), anyString(), anyString());
+        doReturn(hoSPersonType).when(ppService).getPrivatePractitioner(anyString(), isNull(), isNull());
 
         MailNotification mailNotification = mailNotification("intygsId", MailNotificationServiceImpl.PRIVATE_PRACTITIONER_HSAID_PREFIX + "1234");
 
@@ -195,7 +202,7 @@ public class MailNotificationServiceImplTest {
         mailNotificationService.sendMailForIncomingAnswer(mailNotification);
 
         //Then
-        Mockito.verify(mailSender, times(1)).send(mimeCaptor.capture());
+        verify(mailSender, times(1)).send(mimeCaptor.capture());
         MimeMessage mimeMessage = mimeCaptor.getValue();
         Address[] allRecipients = mimeMessage.getAllRecipients();
         assertEquals(1, allRecipients.length);
@@ -208,7 +215,7 @@ public class MailNotificationServiceImplTest {
         //Given
         MailNotification mailNotification = mailNotification(intygsId, null);
 
-        Mockito.when(utkastRepository.findOne(intygsId)).thenReturn(null);
+        when(utkastRepository.findOne(intygsId)).thenReturn(null);
 
         //When
         final String url = mailNotificationService.intygsUrl(mailNotification);
@@ -225,7 +232,7 @@ public class MailNotificationServiceImplTest {
         MailNotification mailNotification = mailNotification(intygsId, null);
 
         Utkast utkast = new Utkast();
-        Mockito.when(utkastRepository.findOne(intygsId)).thenReturn(utkast);
+        when(utkastRepository.findOne(intygsId)).thenReturn(utkast);
 
         //When
         final String url = mailNotificationService.intygsUrl(mailNotification);
@@ -255,7 +262,7 @@ public class MailNotificationServiceImplTest {
         //Given
         MailNotification mailNotification = mailNotification(intygsId, null, LuseEntryPoint.MODULE_ID);
 
-        Mockito.when(utkastRepository.findOne(intygsId)).thenReturn(null);
+        when(utkastRepository.findOne(intygsId)).thenReturn(null);
 
         //When
         final String url = mailNotificationService.intygsUrl(mailNotification);
@@ -272,7 +279,7 @@ public class MailNotificationServiceImplTest {
         MailNotification mailNotification = mailNotification(intygsId, null, LuseEntryPoint.MODULE_ID);
 
         Utkast utkast = new Utkast();
-        Mockito.when(utkastRepository.findOne(intygsId)).thenReturn(utkast);
+        when(utkastRepository.findOne(intygsId)).thenReturn(utkast);
 
         //When
         final String url = mailNotificationService.intygsUrl(mailNotification);

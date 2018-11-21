@@ -54,7 +54,7 @@ public class StatisticsGroupByUtil {
     private AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
 
     /**
-     * Takes a list of object[] where each object[] is one utkast, fraga/svar or arende represented as:
+     * Takes a list of object[] where each object[] is one of utkast, fraga/svar or arende represented as:
      *
      * [0] id (unique, this is what we want to count per enhetsId)
      * [1] enhetsId
@@ -63,20 +63,26 @@ public class StatisticsGroupByUtil {
      * This method will filter out any items belonging to a patient having sekretessmarkering and return the result as a
      * map: EnhetsId -> number of id for that unit.
      *
-     * @param results
+     * @param groupableItems
      *            Each item is an array of: id, enhetsId, personnummer, intygsTyp.
      * @return
      *         Map with enhetsId -> count, with personummer being sekretessmarkerade has been removed.
      */
-    public Map<String, Long> toSekretessFilteredMap(List<GroupableItem> results) {
-        if (results == null || results.size() == 0) {
+    public Map<String, Long> toSekretessFilteredMap(List<GroupableItem> groupableItems) {
+        if (groupableItems == null || groupableItems.size() == 0) {
             return new HashMap<>();
         }
+
+        List<GroupableItem> filteredGroupableItems = getFilteredGroupableItemList(groupableItems);
+
         WebCertUser user = webCertUserService.getUser();
+        Map<Personnummer, SekretessStatus> sekretessStatusMap
+                = patientDetailsResolver.getSekretessStatusForList(getPersonummerList(filteredGroupableItems));
 
-        results.stream().forEach(item -> item.setSekretessStatus(getSekretessStatus(item.getPersonnummer())));
+        // update sekretess status
+        filteredGroupableItems.forEach(item -> item.setSekretessStatus(sekretessStatusMap.get(createPnr(item.getPersonnummer()))));
 
-        return results.stream()
+        return filteredGroupableItems.stream()
                 .filter(item -> item.getSekretessStatus() != SekretessStatus.UNDEFINED)
                 .filter(item -> authoritiesValidator.given(user, item.getIntygsTyp())
                         .privilegeIf(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT,
@@ -85,24 +91,33 @@ public class StatisticsGroupByUtil {
                 .collect(Collectors.groupingBy(GroupableItem::getEnhetsId, Collectors.counting()));
     }
 
-    private SekretessStatus getSekretessStatus(String personnummer) {
-        Personnummer pnr = Personnummer.createValidatedPersonnummerWithDash(personnummer)
-                .orElseThrow(() -> new IllegalArgumentException("Could not parse personnummer"));
-        return patientDetailsResolver.getSekretessStatus(pnr);
+    /*
+     * Get a list of Personnummer where all objects with an
+     * invalid personnummer are filtered out.
+     *
+     * Se INTYG-5094: Gör Webcert mindre känslig för felformaterade personnummer.
+     */
+    List<Personnummer> getPersonummerList(List<GroupableItem> results) {
+        return results.stream()
+                .map(item -> createPnr(item.getPersonnummer()))
+                .filter(pnr -> pnr != null)     // filter out invalid personnummer
+                .collect(Collectors.toList());
     }
 
-    private static final class QAItem {
-        private String enhetsId;
-        private String personnummer;
-        private String intygsTyp;
-        private SekretessStatus sekretessStatus;
+    /*
+     * Get a list of GroupableItems where all objects with an
+     * invalid personnummer has been filtered out.
+     *
+     * Se INTYG-5094: Gör Webcert mindre känslig för felformaterade personnummer.
+     */
+    List<GroupableItem> getFilteredGroupableItemList(List<GroupableItem> results) {
+        return results.stream()
+                .filter(item -> createPnr(item.getPersonnummer()) != null)
+                .collect(Collectors.toList());
+    }
 
-        private QAItem(String enhetsId, String personnummer, String intygsTyp) {
-            this.enhetsId = enhetsId;
-            this.personnummer = personnummer;
-            this.intygsTyp = intygsTyp;
-        }
-
+    private Personnummer createPnr(String pnr) {
+        return Personnummer.createPersonnummer(pnr).orElse(null);
     }
 
 }

@@ -56,8 +56,8 @@ angular.module('webcert').constant('webcert.messages', {
         'label.qacheckhanterad.tillbaka': 'Tillbaka',
 
         // validation messages
-        'validation.invalidfromdate': 'Från-datum är felaktigt. Använd formatet ÅÅÅÅ-MM-DD',
-        'validation.invalidtodate': 'Till-datum är felaktigt. Använd formatet ÅÅÅÅ-MM-DD',
+        'validation.invalidfromdate': 'Från-datum är felaktigt. Använd formatet ÅÅÅÅ-MM-DD.',
+        'validation.invalidtodate': 'Till-datum är felaktigt. Använd formatet ÅÅÅÅ-MM-DD.',
         'validation.invalidtobeforefromdate': 'Till-datum är före från-datum.',
 
         //info messages
@@ -67,7 +67,7 @@ angular.module('webcert').constant('webcert.messages', {
         'info.noreadytosignintygfound': '<strong>Inga klarmarkerade intyg hittades.</strong>',
         'info.loadingintyg': '<strong>Laddar intyg...</strong>',
         'info.loadingdata': '<strong>Uppdaterar lista...</strong>',
-        'info.nounanswered.qa.for.unit': '<strong>Samtliga frågor och svar är hanterade. Det finns inget att åtgärda.</strong>',
+        'info.nounanswered.arende.for.unit': '<strong>Samtliga frågor och svar är hanterade. Det finns inget att åtgärda.</strong>',
         'info.nointygfound': '<strong>Inga intyg hittades.</strong>',
         'info.query.noresults': '<strong>Sökningen gav inga resultat.</strong>',
         'info.query.error': '<strong>Sökningen kunde inte utföras.</strong>',
@@ -95,7 +95,7 @@ angular.module('webcert').constant('webcert.messages', {
         'error.pu.noname': 'Förnamn eller efternamn för det personnummer du har angett kunde tyvärr inte hämtas från folkbokföringsregistret.',
 
         'error.pu.server-error': 'På grund av tekniskt fel gick det inte att hämta personuppgifter, försök igen om en liten stund. Om problemet kvarstår, kontakta i första hand din lokala IT-avdelning och i andra hand <LINK:ineraKundserviceAnmalFel>.',
-        'error.pu_problem': 'Den nationella personuppgiftstjänsten svarar inte. Åtgärden kan inte genomföras eftersom den kräver att personuppgifter kan hämtas från personuppgiftsregistret.<br>Om problemet kvarstår, kontakta i första hand din lokala IT-avdelning och i andra hand <LINK:ineraKundserviceAnmalFel>.',
+        'error.pu_problem': 'Personuppgiftstjänsten svarar inte. Åtgärden kan inte genomföras eftersom den kräver att personuppgifter kan hämtas från personuppgiftsregistret. Prova igen om en stund.<br><br>Om problemet kvarstår, kontakta i första hand din lokala IT-avdelning och i andra hand <LINK:ineraKundserviceAnmalFel>.',
 
         //Table headings
         //Tidigare intyg tabell
@@ -123,18 +123,27 @@ angular.module('webcert').constant('webcert.messages', {
         'th.help.draft-saved-by': 'Person som senast sparade utkastet.',
 
         //Fraga/Svar
-        'th.label.qa-forwarded': 'Vidarebefordrad',
-        'th.help.qa-forwarded': 'Markera om fråga-svar är vidarebefordrat till den som ska hantera det.',
-        'th.label.qa-action': 'Att åtgärda',
-        'th.help.qa-action': 'Åtgärd som krävs för att fråga-svar ska anses som hanterad och avslutad.',
-        'th.label.qa-sender': 'Avsändare',
-        'th.help.qa-sender': 'Vem som initierade frågan.',
-        'th.label.qa-patient': 'Patient',
-        'th.help.qa-patient': 'Berörd patients personnummer.',
-        'th.label.qa-signed-by': 'Signerat av',
-        'th.help.qa-signed-by': 'Läkare som har signerat intyget.',
-        'th.label.qa-sent-recv-date': 'Skickat/mottaget',
-        'th.help.qa-sent-recv-date': 'Datum och klockslag för senaste händelse. Exempelvis när fråga skickades eller när ett svar inkom.'
+        'arende.measure.svarfranvarden': 'Svara',
+        'arende.measure.svarfranfk': 'Invänta svar från Försäkringskassan',
+        'arende.measure.komplettering': 'Komplettera',
+        'arende.measure.markhandled': 'Markera som hanterad',
+        'arende.measure.handled': 'Inget',
+
+        'arende.fragestallare.fk': 'Försäkringskassan',
+        'arende.fragestallare.wc': 'Vårdenheten',
+
+        'th.label.arende-forwarded': 'Vidarebefordrad',
+        'th.help.arende-forwarded': 'Markera om fråga-svar är vidarebefordrat till den som ska hantera det.',
+        'th.label.arende-action': 'Att åtgärda',
+        'th.help.arende-action': 'Åtgärd som krävs för att fråga-svar ska anses som hanterad och avslutad.',
+        'th.label.arende-sender': 'Avsändare',
+        'th.help.arende-sender': 'Vem som initierade frågan.',
+        'th.label.arende-patient': 'Patient',
+        'th.help.arende-patient': 'Berörd patients personnummer.',
+        'th.label.arende-signed-by': 'Signerat av',
+        'th.help.arende-signed-by': 'Läkare som har signerat intyget.',
+        'th.label.arende-sent-recv-date': 'Skickat/mottaget',
+        'th.help.arende-sent-recv-date': 'Datum och klockslag för senaste händelse. Exempelvis när fråga skickades eller när ett svar inkom.'
 
     },
     'en': {

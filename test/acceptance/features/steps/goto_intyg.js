@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Inera AB (http://www.inera.se)
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -18,10 +18,33 @@
  */
 /*global browser, intyg, logger,protractor, JSON,wcTestTools */
 'use strict';
+/*jshint newcap:false */
+//TODO Uppgradera Jshint p.g.a. newcap kommer bli depricated. (klarade inte att ignorera i grunt-task)
+
+
+/*
+ *	Stödlib och ramverk
+ *
+ */
+
+const {
+    Given, // jshint ignore:line
+    When, // jshint ignore:line
+    Then // jshint ignore:line
+} = require('cucumber');
+
+
+
 var createIntygWithStatus = require('./helpers_create_intyg.js').createIntygWithStatus;
 var helpers = require('./helpers.js');
 var getIntygElementRow = helpers.getIntygElementRow;
 var shuffle = wcTestTools.helpers.testdata.shuffle;
+
+
+/*
+ *	Stödfunktioner
+ *
+ */
 
 function gotoIntyg(intygstyp, status, intygRadElement, cb) {
 
@@ -31,8 +54,7 @@ function gotoIntyg(intygstyp, status, intygRadElement, cb) {
         createIntygWithStatus(intygstyp, status).then(function() {
 
             //Gå till det nyskapade intyget
-            console.log(helpers.intygURL(intygstyp, global.intyg.id));
-            browser.get(helpers.intygURL(intygstyp, global.intyg.id)).then(function() {
+            helpers.getUrl(helpers.intygURL(intygstyp, global.intyg.id)).then(function() {
                 cb();
             });
         });
@@ -63,30 +85,58 @@ function getIER(intygstyp, status, callback) {
     });
 }
 
-module.exports = function() {
+/*
+ *	Test steg
+ *
+ */
 
-    this.Given(/^jag går in på ett "([^"]*)" med status "([^"]*)"$/, {
-        timeout: 700 * 1000
-    }, function(intygstyp, status, callback) {
-        intyg.typ = intygstyp;
-        getIER(intygstyp, status, callback);
-    });
-
-
-
-    this.Given(/^jag går in på ett slumpat SMI\-intyg med status "([^"]*)"$/, {
-        timeout: 700 * 1000
-    }, function(status, callback) {
-        var randomIntyg = shuffle([
-            'Läkarintyg för sjukpenning',
-            'Läkarutlåtande för sjukersättning',
-            'Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga',
-            'Läkarutlåtande för aktivitetsersättning vid förlängd skolgång'
-        ])[0];
-        logger.info('Intyg type: ' + randomIntyg);
-        intyg.typ = randomIntyg;
-        getIER(randomIntyg, status, callback);
-    });
+Given(/^jag går in på ett "([^"]*)" med status "([^"]*)"$/, {
+    timeout: 700 * 1000
+}, function(intygstyp, status, callback) {
+    intyg.typ = intygstyp;
+    getIER(intygstyp, status, callback);
+});
 
 
-};
+
+Given(/^jag går in på ett slumpat SMI\-intyg med status "([^"]*)"$/, {
+    timeout: 700 * 1000
+}, function(status, callback) {
+    var randomIntyg = shuffle([
+        'Läkarintyg för sjukpenning',
+        'Läkarutlåtande för sjukersättning',
+        'Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga',
+        'Läkarutlåtande för aktivitetsersättning vid förlängd skolgång'
+    ])[0];
+    logger.info('Intyg type: ' + randomIntyg);
+    intyg.typ = randomIntyg;
+    getIER(randomIntyg, status, callback);
+});
+
+Given(/^jag går in på ett slumpat intyg med status "([^"]*)"$/, {
+    timeout: 700 * 1000
+}, function(status, callback) {
+    var randomIntyg = shuffle([
+        'Läkarutlåtande för sjukersättning',
+        'Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga',
+        'Läkarutlåtande för aktivitetsersättning vid förlängd skolgång',
+        //'Läkarintyg FK 7263', //Disabled i fristående läge och ersätts av Lisjp.
+        'Transportstyrelsens läkarintyg',
+        'Transportstyrelsens läkarintyg, diabetes'
+    ])[0];
+    logger.info('Intyg type: ' + randomIntyg);
+    intyg.typ = randomIntyg;
+    getIER(randomIntyg, status, callback);
+});
+
+Given(/^jag går in på ett slumpat TS\-intyg med status "([^"]*)"$/, {
+    timeout: 700 * 1000
+}, function(status, callback) {
+    var randomIntyg = shuffle([
+        'Transportstyrelsens läkarintyg',
+        'Transportstyrelsens läkarintyg, diabetes'
+    ])[0];
+    logger.info('Intyg type: ' + randomIntyg);
+    intyg.typ = randomIntyg;
+    getIER(randomIntyg, status, callback);
+});

@@ -26,7 +26,7 @@
 
   <beans profile="dev,wc-all-stubs,wc-fmb-stub">
 
-    <jaxrs:server id="fmbStubService" address="/fmbstubs">
+    <jaxrs:server id="fmbStubService" address="/stubs/fmbstubs">
       <jaxrs:serviceBeans>
         <ref bean="fmbStub" />
       </jaxrs:serviceBeans>

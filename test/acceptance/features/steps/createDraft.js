@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Inera AB (http://www.inera.se)
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -20,11 +20,34 @@
 /* global intyg, logger,wcTestTools */
 
 'use strict';
+/*jshint newcap:false */
+//TODO Uppgradera Jshint p.g.a. newcap kommer bli depricated. (klarade inte att ignorera i grunt-task)
+
+
+/*
+ *	Stödlib och ramverk
+ *
+ */
+
+const {
+    Given, // jshint ignore:line
+    When, // jshint ignore:line
+    Then // jshint ignore:line
+} = require('cucumber');
+
+
 var soap = require('soap');
 var soapMessageBodies = require('./soap');
 var helpers = require('./helpers');
 var testvalues = wcTestTools.testdata.values;
 var testdataHelpers = wcTestTools.helpers.testdata;
+const path = '/services/create-draft-certificate/v3.0?wsdl';
+
+/*
+ *	Stödfunktioner
+ *
+ */
+
 
 function sendCreateDraft(url, body, callback) {
     soap.createClient(url, function(err, client) {
@@ -34,13 +57,13 @@ function sendCreateDraft(url, body, callback) {
             callback(err);
         } else {
             client.CreateDraftCertificate(body, function(err, result, resBody) {
-                console.log(resBody);
+                logger.silly(resBody);
                 if (err) {
                     callback(err);
                 } else {
                     var resultcode = result.result.resultCode;
                     logger.info('ResultCode: ' + resultcode);
-                    console.log(result);
+                    logger.silly(result);
                     if (resultcode !== 'OK') {
                         logger.info(result);
                         callback('ResultCode: ' + resultcode + '\n' + resBody);
@@ -64,91 +87,105 @@ function sendCreateDraft(url, body, callback) {
 function createBody(intygstyp, callback) {
     global.intyg.typ = intygstyp;
 
-    var body, path;
-    var isSMIIntyg = helpers.isSMIIntyg(intygstyp);
-    var isTSIntyg = helpers.isTSIntyg(intygstyp);
+    var body;
+    body = soapMessageBodies.CreateDraftCertificateV3(
+        global.user,
+        intygstyp
+    );
 
-    if (isSMIIntyg || isTSIntyg) {
-        path = '/services/create-draft-certificate/v3.0?wsdl';
-        body = soapMessageBodies.CreateDraftCertificateV3(
-            global.user,
-            intygstyp
-        );
-
-    } else {
-        path = '/services/create-draft-certificate/v1.0?wsdl';
-        body = soapMessageBodies.CreateDraftCertificate(
-            global.user.hsaId,
-            global.user.forNamn + ' ' + global.user.efterNamn,
-            global.user.enhetId,
-            'Enhetsnamn',
-            global.person.id
-        );
-    }
-    console.log(body);
+    logger.silly(body);
     var url = helpers.stripTrailingSlash(process.env.WEBCERT_URL) + path;
     url = url.replace('https', 'http');
 
     sendCreateDraft(url, body, callback);
 }
+/*
+ *	Test steg
+ *
+ */
 
-module.exports = function() {
-    this.Given(/^(?:att )vårdsystemet skapat ett intygsutkast( för samma patient)? för "([^"]*)"( med samordningsnummer)?$/, function(sammaPatient, intygstyp, samordningsnummer, callback) {
+Given(/^ska vårdsystemet inte ha möjlighet att skapa "([^"]*)" utkast$/, function(intygstyp) {
+    let body = soapMessageBodies.CreateDraftCertificateV3(
+        global.user,
+        intygstyp
+    );
+    let url = helpers.stripTrailingSlash(process.env.WEBCERT_URL) + path;
+    url = url.replace('https', 'http');
+
+    soap.createClient(url, function(err, client) {
+        logger.info(url);
+        if (err) {
+            logger.error('sendCreateDraft misslyckades' + err);
+            throw (err);
+        } else {
+            client.CreateDraftCertificate(body, function(err, result, resBody) {
+                logger.silly(resBody);
+                if (err) {
+                    throw (err);
+                } else {
+                    return expect(resBody).to.contain('Cannot issue intyg type');
+                }
+            });
+        }
+    });
+
+});
+
+Given(/^(?:att )vårdsystemet skapat ett intygsutkast( för samma patient)? för "([^"]*)"( med samordningsnummer)?$/, function(sammaPatient, intygstyp, samordningsnummer, callback) {
+
+    if (!sammaPatient) {
+        global.person = testdataHelpers.shuffle(testvalues.patienter)[0];
+        if (samordningsnummer) {
+            global.person = testdataHelpers.shuffle(testvalues.patienterMedSamordningsnummer)[0];
+        }
+    }
+    createBody(intygstyp, callback);
+});
+
+//Vid givet samEllerPersonNummer så shufflas det mellan person med vanligt personnummer och person med samordningsnummer
+Given(/^(?:att )vårdsystemet skapat ett intygsutkast( för samma patient)? för slumpat (SMI\-)?(TS\-)?intyg( med samordningsnummer eller personnummer)?$/,
+    function(sammaPatient, smi, ts, samEllerPersonNummer, callback) {
 
         if (!sammaPatient) {
             global.person = testdataHelpers.shuffle(testvalues.patienter)[0];
-            if (samordningsnummer) {
-                global.person = testdataHelpers.shuffle(testvalues.patienterMedSamordningsnummer)[0];
+            if (samEllerPersonNummer) {
+                var shuffladPID = testdataHelpers.shuffle([testvalues.patienter, testvalues.patienterMedSamordningsnummer])[0];
+                global.person = testdataHelpers.shuffle(shuffladPID)[0];
             }
         }
-        createBody(intygstyp, callback);
+
+
+
+        logger.debug('SMI: ' + (smi));
+        logger.debug('TS: ' + (ts));
+
+        var intygtyper = [];
+
+        if (smi) {
+            intygtyper.push('Läkarintyg för sjukpenning',
+                'Läkarutlåtande för sjukersättning',
+                'Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga',
+                'Läkarutlåtande för aktivitetsersättning vid förlängd skolgång'
+            );
+        } else if (ts) {
+            intygtyper.push('Transportstyrelsens läkarintyg',
+                'Transportstyrelsens läkarintyg, diabetes');
+        } else {
+            intygtyper.push(
+                'Läkarintyg för sjukpenning',
+                'Läkarutlåtande för sjukersättning',
+                'Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga',
+                'Läkarutlåtande för aktivitetsersättning vid förlängd skolgång',
+                'Läkarintyg FK 7263',
+                'Transportstyrelsens läkarintyg',
+                'Transportstyrelsens läkarintyg, diabetes'
+                //TODO aktivera DB-DOI
+                //'Dödsbevis',
+                //'Dödsorsaksintyg'
+            );
+        }
+
+        var randomIntygType = testdataHelpers.shuffle(intygtyper)[0];
+        logger.info('Intyg typ: ' + randomIntygType + '\n');
+        createBody(randomIntygType, callback);
     });
-
-    //Vid givet samEllerPersonNummer så shufflas det mellan person med vanligt personnummer och person med samordningsnummer
-    this.Given(/^(?:att )vårdsystemet skapat ett intygsutkast( för samma patient)? för slumpat (SMI\-)?(TS\-)?intyg( med samordningsnummer eller personnummer)?$/,
-        function(sammaPatient, smi, ts, samEllerPersonNummer, callback) {
-
-            if (!sammaPatient) {
-                global.person = testdataHelpers.shuffle(testvalues.patienter)[0];
-                if (samEllerPersonNummer) {
-                    var shuffladPID = testdataHelpers.shuffle([testvalues.patienter, testvalues.patienterMedSamordningsnummer])[0];
-                    global.person = testdataHelpers.shuffle(shuffladPID)[0];
-                }
-            }
-
-
-
-            logger.debug('SMI: ' + (smi));
-            logger.debug('TS: ' + (ts));
-
-            var intygtyper = [];
-
-            if (smi) {
-                intygtyper.push('Läkarintyg för sjukpenning',
-                    'Läkarutlåtande för sjukersättning',
-                    'Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga',
-                    'Läkarutlåtande för aktivitetsersättning vid förlängd skolgång'
-                );
-            } else if (ts) {
-                intygtyper.push('Transportstyrelsens läkarintyg',
-                    'Transportstyrelsens läkarintyg, diabetes');
-            } else {
-                intygtyper.push(
-                    'Läkarintyg för sjukpenning',
-                    'Läkarutlåtande för sjukersättning',
-                    'Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga',
-                    'Läkarutlåtande för aktivitetsersättning vid förlängd skolgång',
-                    'Läkarintyg FK 7263',
-                    'Transportstyrelsens läkarintyg',
-                    'Transportstyrelsens läkarintyg, diabetes'
-                    //TODO aktivera DB-DOI
-                    //'Dödsbevis',
-                    //'Dödsorsaksintyg'
-                );
-            }
-
-            var randomIntygType = testdataHelpers.shuffle(intygtyper)[0];
-            logger.info('Intyg typ: ' + randomIntygType + '\n');
-            createBody(randomIntygType, callback);
-        });
-};

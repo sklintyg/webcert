@@ -1,64 +1,113 @@
 # language: sv
 
-@pdl @smi
-Egenskap: PDL-loggning för SMI-intyg
+@pdl @GE-005 @SMI
+Egenskap: GE-005 - PDL-loggning för SMI-intyg
 
 Bakgrund: Jag är inloggad
 	Givet att jag är inloggad som läkare
 	Och jag går in på en patient
 
+#1 #4
 # Första ändring per ändringssession ska loggas
-@skapa @skriva
-Scenario: Skapa SMI intyg
+@skapa @skriva @läsa
+Scenario: GE-005 - Skapa SMI-intyg
 	När jag går in på att skapa ett slumpat SMI-intyg
 	Så ska det nu finnas 1 loggaktivitet "Skriva" för intyget
-	Och jag går tillbaka
+	Och jag går till Sök/skriv intyg
 	Och jag går in på utkastet
 	Så ska det nu finnas 1 loggaktivitet "Läsa" för intyget
 	Och jag ändrar diagnoskod
 	Så ska det nu finnas 2 loggaktivitet "Skriva" för intyget
 
-@öppna
-Scenario: Öppna SMI-intyg
+#2
+@öppna @läsa
+Scenario: GE-005 - Öppna SMI-intyg
 	När jag går in på ett slumpat SMI-intyg med status "Signerat"
 	Så ska loggaktivitet "Läsa" skickas till loggtjänsten
 
-@signera
-Scenario: Signera SMI intyg
-	När jag går in på att skapa ett slumpat SMI-intyg
+#3 #8
+@olika-vårdgivare @skriv-ut @utskrift @läsa
+Scenario: GE-005 - Händelser på SMI-intyg utfärdat på annan vårdgivare ska PDL-loggas
+	Givet att jag är inloggad som djupintegrerad läkare på vårdenhet "TSTNMT2321000156-INT2"
+	Och att vårdsystemet skapat ett intygsutkast för slumpat SMI-intyg
+    Och jag går in på intygsutkastet via djupintegrationslänk
+    Och jag fyller i alla nödvändiga fält för intyget
+	Och jag signerar intyget
+	
+	Givet att jag är inloggad som djupintegrerad läkare på vårdenhet "TSTNMT2321000156-1077" och inte har uppdrag på "TSTNMT2321000156-INT2"
+    När jag går in på intyget via djupintegrationslänk och har parametern "sjf" satt till "true"
+	Så ska loggaktivitet "Läsa" skickas till loggtjänsten med argument "Läsning i enlighet med sammanhållen journalföring"
+	
+	Och jag skriver ut intyget
+	Så ska loggaktivitet "Utskrift" skickas till loggtjänsten med argument "Intyg utskrivet. Läsning i enlighet med sammanhållen journalföring"
+	
+	Givet att jag är inloggad som djupintegrerad läkare på vårdenhet "TSTNMT2321000156-INT2"
+	Och jag går in på intyget via djupintegrationslänk
+	Och jag makulerar intyget
+	Och att jag är inloggad som djupintegrerad läkare på vårdenhet "TSTNMT2321000156-1077" och inte har uppdrag på "TSTNMT2321000156-INT2"
+	Och jag går in på intyget via djupintegrationslänk och har parametern "sjf" satt till "true"
+	Och jag skriver ut intyget
+	Så ska loggaktivitet "Utskrift" skickas till loggtjänsten med argument "Makulerat intyg utskrivet. Läsning i enlighet med sammanhållen journalföring"
+
+#5 #7
+@skriv-ut @utskrift
+Scenario: GE-005 - Skriv ut SMI-intyg
+	När att vårdsystemet skapat ett intygsutkast för slumpat SMI-intyg
+	Och jag går in på utkastet
+	Och jag skriver ut utkastet
+	Så ska loggaktivitet "Utskrift" skickas till loggtjänsten med argument "Utkastet utskrivet"
+	
 	Och jag fyller i alla nödvändiga fält för intyget
 	Och jag signerar intyget
-	Så ska loggaktivitet "Signera" skickas till loggtjänsten
-
-@skicka @utskrift
-Scenario: Skicka SMI intyg till mottagare
-  När jag går in på ett slumpat SMI-intyg med status "Signerat"
-  Och jag skickar intyget till Försäkringskassan
-  Så ska loggaktivitet "Utskrift" skickas till loggtjänsten
-
-@skriv-ut @utskrift @notReady
-Scenario: Skriv ut SMI intyg
-	När jag går in på ett slumpat SMI-intyg med status "Signerat"
+   	Så ska loggaktivitet "Signera" skickas till loggtjänsten
+   
 	Och jag skriver ut intyget
-	Så ska loggaktivitet "Utskrift" skickas till loggtjänsten
+	Så ska loggaktivitet "Utskrift" skickas till loggtjänsten med argument "Intyg utskrivet"
+	
+	Och jag makulerar intyget
+	Och jag skriver ut intyget
+	Så ska loggaktivitet "Utskrift" skickas till loggtjänsten med argument "Makulerat intyg utskrivet"
 
+
+#6
+@skicka @utskrift
+Scenario: GE-005 - PDL - Skicka SMI-intyg till Försäkringskassan
+    När jag går in på ett slumpat SMI-intyg med status "Signerat"
+    Och jag skickar intyget till Försäkringskassan
+    Så ska loggaktivitet "Utskrift" skickas till loggtjänsten med argument "Intyg skickat till mottagare FKASSA"
+
+#9
 @radera
-Scenario: Radera SMI utkast
+Scenario: GE-005 - PDL - Radera SMI utkast
   När jag går in på att skapa ett slumpat SMI-intyg
 	Och jag raderar utkastet
 	Så ska loggaktivitet "Radera" skickas till loggtjänsten
 
+#10
 @makulera
-Scenario: Makulera SMI intyg
-	När  jag går in på ett slumpat SMI-intyg med status "Skickat"
+Scenario: GE-005 - Makulera SMI-intyg
+	När jag går in på ett slumpat SMI-intyg med status "Skickat"
 	Och jag makulerar intyget
 	Så ska loggaktivitet "Radera" skickas till loggtjänsten
 
-@fornya
-Scenario: Förnya SMI intyg
+#11
+@fornya @läsa @skriva
+Scenario: GE-005 - Förnya SMI-intyg
 	När jag går in på ett slumpat SMI-intyg med status "Signerat"
 	Och jag förnyar intyget
 	Och jag fyller i nödvändig information ( om intygstyp är "Läkarintyg för sjukpenning")
     Och jag signerar intyget
 	Så ska loggaktivitet "Läsa" skickas till loggtjänsten
 	Och ska loggaktivitet "Skriva" skickas till loggtjänsten
+
+#11
+@ersatt @läsa @skriva
+Scenario: GE-005 - Ersätta SMI-intyg
+	När jag går in på ett slumpat SMI-intyg med status "Signerat"
+	Och jag klickar på ersätta knappen
+	Och jag klickar på ersätt-knappen i dialogen
+	Och jag fyller i nödvändig information ( om intygstyp är "Läkarintyg för sjukpenning")
+    Och jag signerar intyget
+	Så ska loggaktivitet "Läsa" skickas till loggtjänsten
+	Och ska loggaktivitet "Skriva" skickas till loggtjänsten
+	

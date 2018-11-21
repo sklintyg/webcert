@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Inera AB (http://www.inera.se)
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -50,8 +50,10 @@ describe('answer arende on luse intyg', function() {
 
         restTestdataHelper.deleteUtkast(intygId);
         restTestdataHelper.createWebcertIntyg(testData).then(function() {
-            restTestdataHelper.createArendeFromTemplate('luse', intygId, meddelandeId, 'Hur är det med arbetstiden?',
-                'AVSTMN', 'PENDING_INTERNAL_ACTION');
+            restTestdataHelper.markeraSkickatTillFK(intygId).then(function() {
+                restTestdataHelper.createArendeFromTemplate('luse', intygId, meddelandeId, 'Hur är det med arbetstiden?',
+                    'AVSTMN', 'PENDING_INTERNAL_ACTION');
+            });
         });
 
     });
@@ -75,14 +77,15 @@ describe('answer arende on luse intyg', function() {
         });
 
         it('fill text', function() {
-            var arende = LuseIntygPage.getAnswerBox(meddelandeId).sendKeys('Låt oss slänga in ett svar och se vad som händer.');
-            expect(arende.isDisplayed()).toBeTruthy();
+            LuseIntygPage.getAnswerButton(meddelandeId).click();
+            LuseIntygPage.getAnswerBox(meddelandeId).sendKeys('Låt oss slänga in ett svar och se vad som händer.');
         });
 
         it('push answer button and make sure answered arende is now in the handled list', function() {
-            LuseIntygPage.getAnswerButton(meddelandeId).click().then(function() {
-                var arende = LuseIntygPage.getArendeById(true, meddelandeId); // true = handled list
+            LuseIntygPage.getSendAnswerButton(meddelandeId).click().then(function() {
+                var arende = LuseIntygPage.getArendeById(false, meddelandeId);
                 expect(arende.isDisplayed()).toBeTruthy();
+                expect(LuseIntygPage.getArendeAdministrativaSvarTextById(meddelandeId).getText()).toBe('Låt oss slänga in ett svar och se vad som händer.');
             });
         });
     });

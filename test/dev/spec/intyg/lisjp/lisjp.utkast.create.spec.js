@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Inera AB (http://www.inera.se)
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -38,6 +38,7 @@ describe('Create and Sign lisjp utkast', function() {
 
     describe('smittskydd', function() {
         beforeAll(function() {
+            ValjIntygPage.get();
             specHelper.createUtkastForPatient('191212121212', 'Läkarintyg för sjukpenning');
         });
 
@@ -82,9 +83,9 @@ describe('Create and Sign lisjp utkast', function() {
             IntygPage.waitUntilIntygInIT(utkastId);
             browser.refresh();
 
-            IntygPage.whenCertificateLoaded();
-
-            IntygPage.verify(data);
+            IntygPage.whenCertificateLoaded().then(function() {
+		        IntygPage.verify(data);
+		    });
         });
 
         afterAll(function() {
@@ -152,7 +153,7 @@ describe('Create and Sign lisjp utkast', function() {
                 UtkastPage.angeKontaktMedFK(data.kontaktMedFk);
             });
             it('angeTillaggsfragor', function() {
-                UtkastPage.angeTillaggsfragor(data.tillaggsfragor)
+                UtkastPage.angeTillaggsfragorUE(data.tillaggsfragor)
             });
             it('angeSmittskydd', function() {
                 UtkastPage.angeSmittskydd(true);
@@ -170,16 +171,18 @@ describe('Create and Sign lisjp utkast', function() {
             expect(IntygPage.isAt()).toBeTruthy();
         });
 
-        it('Verifiera intyg', function() {
+        it('Wait until intyg in IT', function() {
             // Om intyget inte hunnit processas av IT så hämtas det från WC. Då är inte uppgifter flyttade till övriga
             // upplysningar ännu.
             // Vänta tills intyget tagits emot av IT. Ladda därefter om sidan så datan säkert kommer från IT.
             IntygPage.waitUntilIntygInIT(utkastId);
             browser.refresh();
+        });
 
-            IntygPage.whenCertificateLoaded();
-
-            IntygPage.verify(data);
+        it('Verifiera intyg', function() {
+            IntygPage.whenCertificateLoaded().then(function() {
+		        IntygPage.verify(data);
+		    });
         });
 
         afterAll(function() {

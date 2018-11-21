@@ -30,7 +30,7 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.slf4j.LoggerFactory;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
@@ -59,13 +59,14 @@ public class MonitoringLogServiceImplTest {
     private static final String REASON = "REASON";
     private static final Integer AVTAL_VERSION = 98;
     private static final String HAN_TYPE = "HAN_TYPE";
-    private static final Personnummer PERSON_NUMMER = new Personnummer("PERSON_NUMMER");
     private static final String RESULT = "RESULT";
     private static final String FRAGESTALLARE = "FRAGESTALLARE";
     private static final String EXTERN_REFERENS = "EXTERN_REFERENS";
     private static final long INTERN_REFERENS = 97;
     private static final Amne AMNE = Amne.ARBETSTIDSFORLAGGNING;
-    private static final String PERSON_ID = "PERSON_ID";
+    private static final String PERSON_ID = "19121212-1212";
+
+    private static final Personnummer PERSON_NUMMER = Personnummer.createPersonnummer(PERSON_ID).get();
 
     @Mock
     private Appender<ILoggingEvent> mockAppender;
@@ -287,16 +288,16 @@ public class MonitoringLogServiceImplTest {
 
     @Test
     public void shouldLogPrivatePractitionerTermsApproved() {
-        logService.logPrivatePractitionerTermsApproved(HSA_ID, new Personnummer(PERSON_ID), AVTAL_VERSION);
+        logService.logPrivatePractitionerTermsApproved(HSA_ID, PERSON_NUMMER, AVTAL_VERSION);
         verifyLog(Level.INFO,
-                "PP_TERMS_ACCEPTED User 'HSA_ID', personId 'ad060a2437cb0e66f41f3305bc8ba6e69b9db04805d6c7fddd720079ef673921' accepted private practitioner terms of version '98'");
+                "PP_TERMS_ACCEPTED User 'HSA_ID', personId '9a8b138a666f84da32e9383b49a15f46f6e08d2c492352aa0dfcc3f993773b0d' accepted private practitioner terms of version '98'");
     }
 
     @Test
     public void shouldLogPULookup() {
         logService.logPULookup(PERSON_NUMMER, RESULT);
         verifyLog(Level.INFO,
-                "PU_LOOKUP Lookup performed on '83e43d8552bbc5ef0fd9fa200688dc2a4ea6c443df46e641d30b07ebc0967b0d' with result 'RESULT'");
+                "PU_LOOKUP Lookup performed on '9a8b138a666f84da32e9383b49a15f46f6e08d2c492352aa0dfcc3f993773b0d' with result 'RESULT'");
     }
 
     @Test
@@ -437,9 +438,9 @@ public class MonitoringLogServiceImplTest {
 
     @Test
     public void shouldLogConsentSet() {
-        logService.logSetSrsConsent(new Personnummer(PERSON_ID), true);
+        logService.logSetSrsConsent(PERSON_NUMMER, true);
         verifyLog(Level.INFO,
-                "SRS_CONSENT_SET Consent set for 'ad060a2437cb0e66f41f3305bc8ba6e69b9db04805d6c7fddd720079ef673921' to 'true'");
+                "SRS_CONSENT_SET Consent set for '9a8b138a666f84da32e9383b49a15f46f6e08d2c492352aa0dfcc3f993773b0d' to 'true'");
     }
 
     @Test

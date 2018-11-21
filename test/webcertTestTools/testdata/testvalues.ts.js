@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Inera AB (http://www.inera.se)
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -163,10 +163,10 @@ var tsValues = {
         return hypoObj;
     },
     getRandomBehandling: function() {
-		var start = Math.floor(Math.random() * tsValues.diabetesbehandlingtyper.length);
-		var end = Math.floor(Math.random() * (tsValues.diabetesbehandlingtyper.length + 1)) + start; // +1 kompenserar för att end inte är inkluderat i splice.
-        
-		var behandlingObj = {
+        var start = Math.floor(Math.random() * tsValues.diabetesbehandlingtyper.length);
+        var end = Math.floor(Math.random() * (tsValues.diabetesbehandlingtyper.length + 1)) + start; // +1 kompenserar för att end inte är inkluderat i splice.
+
+        var behandlingObj = {
             typer: tsValues.diabetesbehandlingtyper.slice(start, end)
         };
 
@@ -201,7 +201,7 @@ var tsValues = {
         }
 
         //För vissa körkortstyper krävs det svar lämplighet
-		if (isHogreKorkortstyper(korkortstyper)) {
+        if (isHogreKorkortstyper(korkortstyper)) {
             bedomningsObj.lamplighet = shuffle(['Ja', 'Nej'])[0];
         }
         return bedomningsObj;

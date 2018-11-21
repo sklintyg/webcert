@@ -1,5 +1,5 @@
 # language: sv
-@sekretess @sakerhet
+@sekretessmarkering @sakerhet
 Egenskap: Säkerhet - Sekretessmarkerad patient
 
 Bakgrund: 
@@ -25,7 +25,7 @@ Scenario: Kontrollera att vårdadmin inte kan se eller öppna något signerat in
 	När jag går in på att skapa ett slumpat SMI-intyg
 	Och jag fyller i alla nödvändiga fält för intyget
 	Och jag signerar intyget
-	Så ska jag varnas om att "Patienten har en sekretessmarkering."
+	Så ska jag varnas om att "Patienten har en sekretessmarkering"
 	
 	När jag skickar intyget till Försäkringskassan
 	Och Försäkringskassan ställer en "OVRIGT" fråga om intyget
@@ -46,32 +46,26 @@ Scenario: Läkare ska kunna makulera intyg med s-markering
 	Så ska det finnas en knapp med texten "Makulera"
 
 	
-@ts @bas @notReady
+@TS @BAS @notReady
 Scenario: TS-intyg utkast ska inte kunna skapas på s-markerad patient på ts bas
-	När jag går in på att skapa ett "Transportstyrelsens läkarintyg" intyg
-	#felar på att elementet inte hittas i drop-down listan. TODO testfall ska uppdateras
-	Så ska jag varnas om att "Behörighet saknas"
-	
-	När att vårdsystemet skapat ett intygsutkast för slumpat TS-intyg
-	#detta förväntar vi oss ska fela.
-	Och jag går in på intyget
-	Så ska jag varnas om att "Behörighet saknas"
+	Så ska jag inte ha alternativet att skapa "Transportstyrelsens läkarintyg" intyg
+	Så ska vårdsystemet inte ha möjlighet att skapa "Transportstyrelsens läkarintyg" utkast
 
-@ts @diabetes @notReady
+@TS @DIABETES @notReady
 Scenario: TS-intyg utkast ska inte kunna skapas på s-markerad patient på ts diabetes
-	När jag går in på att skapa ett "Transportstyrelsens, diabetes" intyg
-	#felar på att elementet inte hittas i drop-down listan. TODO testfall ska uppdateras
-	Så ska jag varnas om att "Behörighet saknas"
+	Så ska jag inte ha alternativet att skapa "Transportstyrelsens, diabetes" intyg
+	Så ska vårdsystemet inte ha möjlighet att skapa "Transportstyrelsens, diabetes" utkast
 	
 @rehabstod @rehabKoordinator
 Scenario: Rehabkoordinator ska inte kunna se sekrettessmarkerade intyg.
-	Givet vårdenhet ska vara "VG_TestAutomation - TestEnhet2"
+	Givet vårdenhet ska vara "TestEnhet2"
 	#TSTNMT2321000156-107Q
 	
 	#Säkerställer att det finns ett lisjp intyg på patienten.
 	När jag går in på ett "Läkarintyg för sjukpenning" med status "Skickat"
 		
 	#Säkerställer att det finns ett fk7263 intyg på patienten.
+	#@LegacyFK7263
 	Och att vårdsystemet skapat ett intygsutkast för samma patient för "Läkarintyg FK 7263"
 	Och jag går in på utkastet
 	Och jag fyller i alla nödvändiga fält för intyget
@@ -92,12 +86,12 @@ Scenario: Rehabkoordinator ska inte kunna se sekrettessmarkerade intyg.
 
 #@PU
 #Scenario: PU
-#Låg prio: Inte rimligt att vi auto-testar scenarion beroende på om PU är nere när vi testar parallelt ställer det till mycket problem för andra testfall.
+#Låg prio: Inte rimligt att vi auto-testar scenarion beroende på om PU är nere när vi testar parallelt ställer det till mycket problem för andra testfall om vi stänger ned PU-tjänsten.
 
 #@Uthopp
 #Scenario: Uthopp
-#Inga tester krävs - inga krav påvärkar (efter att FK7263 är bortplockat)
+#Inga tester krävs - inga krav påverkar (efter att FK7263 är bortplockat)
 
 #@Statistik
 #Scenario: Statistik
-#Inga tester krävs - inga krav påvärkar
+#Inga tester krävs - inga krav påverkar

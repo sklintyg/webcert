@@ -1,5 +1,5 @@
  /*
-  * Copyright (C) 2016 Inera AB (http://www.inera.se)
+  * Copyright (C) 2018 Inera AB (http://www.inera.se)
   *
   * This file is part of sklintyg (https://github.com/sklintyg).
   *
@@ -20,12 +20,35 @@
  /* globals intyg, wcTestTools, logger*/
 
  'use strict';
+ /*jshint newcap:false */
+ //TODO Uppgradera Jshint p.g.a. newcap kommer bli depricated. (klarade inte att ignorera i grunt-task)
+
+
+ /*
+  *	Stödlib och ramverk
+  *
+  */
+
+ const {
+     Given, // jshint ignore:line
+     When, // jshint ignore:line
+     Then // jshint ignore:line
+ } = require('cucumber');
+
 
  var helpers = require('./helpers');
  var soap = require('soap');
  var soapMessageBodies = require('./soap');
  var testdataHelper = wcTestTools.helpers.testdata;
  var testvalues = wcTestTools.testdata.values;
+
+
+ /*
+  *	Stödfunktioner
+  *
+  */
+
+
 
  function intygTillIntygtjanst(intygtyp, callback) {
      var url;
@@ -38,10 +61,10 @@
      }
 
      if (isSMIIntyg) {
-         console.log('is isSMIIntyg');
+         logger.silly('is isSMIIntyg');
          url = helpers.stripTrailingSlash(process.env.INTYGTJANST_URL) + '/register-certificate-se/v3.0?wsdl';
          url = url.replace('https', 'http');
-         console.log(global.user);
+         logger.silly(global.user);
          body = soapMessageBodies.RegisterCertificate(
              global.person.id,
              global.person.forNamn,
@@ -51,17 +74,17 @@
              global.user.enhetId,
              global.user.enhetName,
              global.intyg.id);
-         console.log('HÄR SKRIVER JAG UT URLEN');
-         console.log(url);
-         console.log(body);
+         logger.silly('HÄR SKRIVER JAG UT URLEN');
+         logger.silly(url);
+         logger.silly(body);
          soap.createClient(url, function(err, client) {
              if (err) {
                  callback(err);
              }
-             console.log(client);
+             logger.silly(client);
              client.RegisterCertificate(body, function(err, result, body) {
-                 console.log(err);
-                 console.log(result);
+                 logger.silly(err);
+                 logger.silly(result);
                  var resultcodeSMI = result.result.resultCode;
                  logger.info('ResultCode: ' + resultcodeSMI);
                  if (resultcodeSMI !== 'OK') {
@@ -92,15 +115,15 @@
              global.user.enhetId,
              global.intyg.id);
 
-         console.log(body);
+         logger.silly(body);
 
          soap.createClient(url, function(err, client) {
              if (err) {
                  callback(err);
              }
              client.RegisterMedicalCertificate(body, function(err, result, body) {
-                 console.log(err);
-                 console.log(result);
+                 logger.silly(err);
+                 logger.silly(result);
                  var resultcode = result.result.resultCode;
                  logger.info('ResultCode: ' + resultcode);
                  if (resultcode !== 'OK') {
@@ -119,40 +142,41 @@
      }
 
  }
- module.exports = function() {
+ /*
+  *	Test steg
+  *
+  */
 
-     this.Given(/^jag skickar ett "([^"]*)" intyg till Intygstjänsten$/, function(intygCode, callback) {
-         global.intyg.id = testdataHelper.generateTestGuid();
 
-         if (!global.person || !global.person.id) {
-             global.person = testdataHelper.shuffle(testvalues.patienter)[0];
-         }
+ Given(/^jag skickar ett "([^"]*)" intyg till Intygstjänsten$/, function(intygCode, callback) {
+     global.intyg.id = testdataHelper.generateTestGuid();
 
-         //console.log(personId);
-         //                'patientforNamn': 'Tolvan',
-         //      'patientefterNamn': 'Tolvansson',
-
-         intygTillIntygtjanst(intygCode, callback);
-
-     });
-     this.Given(/^jag skickar ett intyg med ändrade personuppgifter till Intygstjänsten$/, function(callback) {
-         global.intyg.id = testdataHelper.generateTestGuid();
+     if (!global.person || !global.person.id) {
          global.person = testdataHelper.shuffle(testvalues.patienter)[0];
-         global.person.forNamn = 'forNamn';
-         global.person.efterNamn = 'efterNamn';
-         console.log(global.intyg);
-         intygTillIntygtjanst('Läkarintyg FK 7263', callback);
-     });
-     this.When(/^jag skickar ett SMI\-intyg till intygstjänsten på en avliden person$/, function(callback) {
-         global.intyg.id = testdataHelper.generateTestGuid();
-         global.person = testdataHelper.shuffle(testvalues.patienterAvlidna)[0];
-         global.person.forNamn = 'forNamn';
-         global.person.efterNamn = 'efterNamn';
-         console.log(global.intyg);
-         intygTillIntygtjanst('Läkarutlåtande för sjukersättning', callback);
+     }
+
+     //logger.silly(personId);
+     //                'patientforNamn': 'Tolvan',
+     //      'patientefterNamn': 'Tolvansson',
+
+     intygTillIntygtjanst(intygCode, callback);
+
+ });
+ Given(/^jag skickar ett intyg med ändrade personuppgifter till Intygstjänsten$/, function(callback) {
+     global.intyg.id = testdataHelper.generateTestGuid();
+     global.person = testdataHelper.shuffle(testvalues.patienter)[0];
+     global.person.forNamn = 'forNamn';
+     global.person.efterNamn = 'efterNamn';
+     logger.silly(global.intyg);
+     intygTillIntygtjanst('Läkarintyg FK 7263', callback);
+ });
+ When(/^jag skickar ett SMI\-intyg till intygstjänsten på en avliden person$/, function(callback) {
+     global.intyg.id = testdataHelper.generateTestGuid();
+     global.person = testdataHelper.shuffle(testvalues.patienterAvlidna)[0];
+     global.person.forNamn = 'forNamn';
+     global.person.efterNamn = 'efterNamn';
+     logger.silly(global.intyg);
+     intygTillIntygtjanst('Läkarutlåtande för sjukersättning', callback);
 
 
-     });
-
-
- };
+ });

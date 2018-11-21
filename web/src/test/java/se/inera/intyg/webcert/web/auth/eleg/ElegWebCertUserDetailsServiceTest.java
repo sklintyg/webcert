@@ -18,24 +18,6 @@
  */
 package se.inera.intyg.webcert.web.auth.eleg;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static se.inera.intyg.webcert.web.auth.common.AuthConstants.SPRING_SECURITY_SAVED_REQUEST_KEY;
-
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
@@ -44,7 +26,7 @@ import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.opensaml.saml2.core.NameID;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.security.saml.SAMLCredential;
@@ -53,7 +35,6 @@ import org.springframework.security.web.savedrequest.DefaultSavedRequest;
 import org.springframework.security.web.savedrequest.SavedRequest;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
-
 import se.inera.intyg.infra.integration.hsa.services.HsaPersonService;
 import se.inera.intyg.infra.integration.pu.model.Person;
 import se.inera.intyg.infra.integration.pu.model.PersonSvar;
@@ -64,7 +45,6 @@ import se.inera.intyg.webcert.integration.pp.services.PPService;
 import se.inera.intyg.webcert.persistence.anvandarmetadata.repository.AnvandarPreferenceRepository;
 import se.inera.intyg.webcert.web.auth.common.BaseSAMLCredentialTest;
 import se.inera.intyg.webcert.web.auth.exceptions.PrivatePractitionerAuthorizationException;
-import se.inera.intyg.webcert.web.service.feature.WebcertFeatureService;
 import se.inera.intyg.webcert.web.service.privatlakaravtal.AvtalService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.riv.infrastructure.directory.privatepractitioner.types.v1.HsaId;
@@ -72,6 +52,16 @@ import se.riv.infrastructure.directory.privatepractitioner.types.v1.PersonId;
 import se.riv.infrastructure.directory.privatepractitioner.v1.EnhetType;
 import se.riv.infrastructure.directory.privatepractitioner.v1.HoSPersonType;
 import se.riv.infrastructure.directory.privatepractitioner.v1.VardgivareType;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.*;
+import static se.inera.intyg.webcert.web.auth.common.AuthConstants.SPRING_SECURITY_SAVED_REQUEST_KEY;
 
 /**
  * Created by eriklupander on 2015-06-25.
@@ -89,8 +79,6 @@ public class ElegWebCertUserDetailsServiceTest extends BaseSAMLCredentialTest {
     private HsaPersonService hsaPersonService;
     @Mock
     private PPService ppService;
-    @Mock
-    private WebcertFeatureService webcertFeatureService;
     @Mock
     private AvtalService avtalService;
     @Mock
@@ -116,14 +104,12 @@ public class ElegWebCertUserDetailsServiceTest extends BaseSAMLCredentialTest {
         MockHttpServletRequest request = mockHttpServletRequest("/any/path");
         RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
 
-        when(hsaPersonService.getHsaPersonInfo(anyString())).thenReturn(Collections.emptyList());
         // AUTHORITIES_RESOLVER.setHsaPersonService(hsaPersonService);
         testee.setAuthoritiesResolver(AUTHORITIES_RESOLVER);
 
         // when(authoritiesResolver.getRole(anyString())).thenReturn(role);
-        when(ppService.getPrivatePractitioner(anyString(), anyString(), anyString())).thenReturn(buildHosPerson());
-        when(ppService.validatePrivatePractitioner(anyString(), anyString(), anyString())).thenReturn(true);
-        when(webcertFeatureService.getActiveFeatures()).thenReturn(new HashSet<String>());
+        when(ppService.getPrivatePractitioner(any(), any(), any())).thenReturn(buildHosPerson());
+        when(ppService.validatePrivatePractitioner(any(), any(), any())).thenReturn(true);
         when(avtalService.userHasApprovedLatestAvtal(anyString())).thenReturn(true);
         expectedPreferences.put("some", "setting");
         when(anvandarPreferenceRepository.getAnvandarPreference(anyString())).thenReturn(expectedPreferences);
@@ -182,7 +168,7 @@ public class ElegWebCertUserDetailsServiceTest extends BaseSAMLCredentialTest {
     @Test
     public void testNotValidPrivatePractitionerThrowsException() {
         reset(ppService);
-        when(ppService.validatePrivatePractitioner(anyString(), anyString(), anyString())).thenReturn(false);
+        when(ppService.validatePrivatePractitioner(any(), any(), any())).thenReturn(false);
 
         thrown.expect(PrivatePractitionerAuthorizationException.class);
 
@@ -192,8 +178,8 @@ public class ElegWebCertUserDetailsServiceTest extends BaseSAMLCredentialTest {
     @Test
     public void testNotFoundInHSAThrowsException() {
         reset(ppService);
-        when(ppService.validatePrivatePractitioner(anyString(), anyString(), anyString())).thenReturn(true);
-        when(ppService.getPrivatePractitioner(anyString(), anyString(), anyString())).thenReturn(null);
+        when(ppService.validatePrivatePractitioner(any(), any(), any())).thenReturn(true);
+        when(ppService.getPrivatePractitioner(any(), any(), any())).thenReturn(null);
 
         thrown.expect(HsaServiceException.class);
 
@@ -225,7 +211,8 @@ public class ElegWebCertUserDetailsServiceTest extends BaseSAMLCredentialTest {
         return hoSPersonType;
     }
     private PersonSvar buildPersonSvar(boolean sekretessMarkerad, PersonSvar.Status status) {
-        Person person = new Person(new Personnummer(PERSON_ID), sekretessMarkerad, false, "fornamn","",
+        Personnummer personnummer = Personnummer.createPersonnummer(PERSON_ID).get();
+        Person person = new Person(personnummer, sekretessMarkerad, false, "fornamn","",
                 "Efternamn", "gatan", "12345", "postort");
         return new PersonSvar(person, status);
     }

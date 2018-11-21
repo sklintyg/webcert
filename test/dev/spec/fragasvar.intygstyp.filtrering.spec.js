@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Inera AB (http://www.inera.se)
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -76,9 +76,9 @@ describe('fragasvar.intygstyp.filtrering', function() {
         });
 
         it('Klicka på tabben för Fråga/svar', function() {
-            element(by.css('a[ng-href="/web/dashboard#/unhandled-qa"]')).click();
+            element(by.css('a[ng-href="/#/enhet-arenden"]')).click();
             expect(element(by.id('stat-unitstat-unhandled-question-count')).getText()).toBe('1');
-            expect(element.all(by.css('.table-qa tr td button')).first().getText()).toBe('Visa');
+            expect(element.all(by.css('.wc-table-striped tr td button')).first().getText()).toBe('Visa');
         });
 
         it('Byt läkarens roll till TANDLAKARE mha testbarhets-API, klicka på tabben igen', function() {
@@ -91,7 +91,7 @@ describe('fragasvar.intygstyp.filtrering', function() {
 
         it('Verifiera att tandläkaren INTE ser något ärende/fråga längre och att ingen siffra visas på tabben', function() {
             browser.wait(EC.invisibilityOf(element(by.id('stat-unitstat-unhandled-question-count'))), 5000);
-            browser.wait(EC.invisibilityOf(element(by.id('.table-qa tr td'))), 5000);
+            browser.wait(EC.invisibilityOf(element(by.id('.wc-table-striped tr td'))), 5000);
         });
     });
 

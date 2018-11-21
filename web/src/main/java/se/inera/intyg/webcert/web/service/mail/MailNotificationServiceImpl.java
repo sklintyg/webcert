@@ -18,14 +18,7 @@
  */
 package se.inera.intyg.webcert.web.service.mail;
 
-import java.util.Locale;
-
-import javax.mail.Message;
-import javax.mail.MessagingException;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
-import javax.xml.ws.WebServiceException;
-
+import com.google.common.base.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,19 +27,22 @@ import org.springframework.mail.MailSendException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-
-import com.google.common.base.Strings;
-
 import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
-import se.inera.intyg.infra.integration.hsa.client.OrganizationUnitService;
 import se.inera.intyg.infra.integration.hsa.exception.HsaServiceCallException;
+import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
+import se.inera.intyg.infra.integration.hsa.services.HsaOrganizationsService;
 import se.inera.intyg.webcert.integration.pp.services.PPService;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
-import se.riv.infrastructure.directory.organization.gethealthcareunitresponder.v1.HealthCareUnitType;
-import se.riv.infrastructure.directory.organization.getunitresponder.v1.UnitType;
 import se.riv.infrastructure.directory.privatepractitioner.v1.EnhetType;
 import se.riv.infrastructure.directory.privatepractitioner.v1.HoSPersonType;
+
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
+import javax.xml.ws.WebServiceException;
+import java.util.Locale;
 
 /**
  * @author andreaskaltenbach
@@ -78,9 +74,6 @@ public class MailNotificationServiceImpl implements MailNotificationService {
     private JavaMailSender mailSender;
 
     @Autowired
-    private OrganizationUnitService organizationUnitService;
-
-    @Autowired
     private MonitoringLogService monitoringService;
 
     @Autowired
@@ -91,6 +84,9 @@ public class MailNotificationServiceImpl implements MailNotificationService {
 
     @Autowired
     private UtkastRepository utkastRepository;
+
+    @Autowired
+    private HsaOrganizationsService hsaOrganizationsService;
 
     private void logError(String type, MailNotification mailNotification, Exception e) {
         String message = "";
@@ -150,8 +146,8 @@ public class MailNotificationServiceImpl implements MailNotificationService {
     }
 
     private void sendNotificationMailToEnhet(String type, MailNotification mailNotification, String subject, String body,
-            MailNotificationEnhet receivingEnhet,
-            String reason) throws MessagingException {
+                                             MailNotificationEnhet receivingEnhet,
+                                             String reason) throws MessagingException {
 
         String recipientAddress = receivingEnhet.getEmail();
 
@@ -176,16 +172,14 @@ public class MailNotificationServiceImpl implements MailNotificationService {
     }
 
     private String getParentMailAddress(String mottagningsId) {
-        // Ändring: Vi nyttjar här getHealthCareUnit för att explicit få mottagningen i ett objekt som inkluderar hsaId
-        // till föräldern.
-        HealthCareUnitType response;
+        String parent;
         try {
-            response = organizationUnitService.getHealthCareUnit(mottagningsId);
+            parent = hsaOrganizationsService.getParentUnit(mottagningsId);
         } catch (HsaServiceCallException e) {
             LOG.warn("Could not call HSA for {}, cause: {}", mottagningsId, e.getMessage());
             return null;
         }
-        MailNotificationEnhet parentEnhet = getHsaUnit(response.getHealthCareUnitHsaId());
+        MailNotificationEnhet parentEnhet = retrieveDataFromHsa(parent);
         return (parentEnhet != null) ? parentEnhet.getEmail() : null;
     }
 
@@ -243,23 +237,18 @@ public class MailNotificationServiceImpl implements MailNotificationService {
         if (isPrivatePractitionerEnhet(careUnitId)) {
             return getPrivatePractitionerEnhet(mailNotification.getSignedByHsaId());
         }
-        return getHsaUnit(careUnitId);
+        return retrieveDataFromHsa(careUnitId);
     }
 
     private boolean isPrivatePractitionerEnhet(String careUnitId) {
         return careUnitId != null && careUnitId.toUpperCase(Locale.ENGLISH).startsWith(PRIVATE_PRACTITIONER_HSAID_PREFIX);
     }
 
-    private MailNotificationEnhet getHsaUnit(String careUnitId) {
+    private MailNotificationEnhet retrieveDataFromHsa(String careUnitId) {
         try {
-            UnitType response = organizationUnitService.getUnit(careUnitId);
-            if (response == null) {
-                throw new IllegalArgumentException(
-                        "HSA Id " + careUnitId
-                                + " does not exist in HSA catalogue, fetched over infrastructure:directory:organization:getunit.");
-            }
-            return new MailNotificationEnhet(response.getUnitHsaId(), response.getUnitName(), response.getMail());
-        } catch (WebServiceException | HsaServiceCallException e) {
+            Vardenhet enhetData = hsaOrganizationsService.getVardenhet(careUnitId);
+            return new MailNotificationEnhet(enhetData.getId(), enhetData.getNamn(), enhetData.getEpost());
+        } catch (WebServiceException e) {
             LOG.error("Failed to contact HSA to get HSA Id '" + careUnitId + "' : " + e.getMessage());
             return null;
         }

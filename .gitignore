@@ -17,6 +17,7 @@ target
 activemq-data
 web/node_modules/
 web/src/main/webapp/js/coverage/
+web/src/main/webapp/app/webcert.css
 web/src/test/js/coverage/
 web/src/test/coverage/
 build

@@ -20,6 +20,9 @@
       "detailedDescription": {
         "type": "string"
       },
+      "issuerTypeId": {
+        "type": "string"
+      },
       "cssPath": {
         "type": "string"
       },
@@ -31,6 +34,9 @@
       },
       "defaultRecipient": {
         "type": "string"
+      },
+      "deprecated" : {
+        "type": "boolean"
       }
     },
     "additionalProperties": false,
@@ -39,10 +45,12 @@
       "label",
       "description",
       "detailedDescription",
+      "issuerTypeId",
       "cssPath",
       "scriptPath",
       "dependencyDefinitionPath",
-      "defaultRecipient"
+      "defaultRecipient",
+      "deprecated"
     ]
   }
 }

@@ -1,0 +1,247 @@
+# ====================================================================================================
+#   Konfiguration för Webcerts feature-hantering
+#
+#   YAML specifikation: http://www.yaml.org/spec/1.2/spec.html
+#
+#   Kort förklaring till vissa konstruktioner i filen:
+#
+#   '-'   används för att skapa listor av värden
+#   '&'   används för att skapa ett ankare (unik nyckel)
+#   '*'   används för att peka på ett ankare, kallas också alias
+#   '<<:' används för att slå ihop och skriva över värden
+#
+#   '&' och '*' används för att undvika duplikat i en YAML-fil
+#
+#   Överskådligt exempel:
+#
+#  defaults: &defaults
+#     adapter:  postgres
+#     host:     localhost
+#
+#   development:
+#     database: myapp_development
+#     <<: *defaults
+#
+#   test:
+#     database: myapp_test
+#     <<: *defaults
+#
+#   & sets up the name of the anchor (“defaults”),
+#   << means “merge the given hash into the current one”, and
+#   * includes the named anchor (“defaults” again).
+#
+# ====================================================================================================
+---
+# De intygstyper som systemet har
+knownIntygstyper:
+  - &ki010 fk7263
+  - &ki020 ts-bas
+  - &ki030 ts-diabetes
+  - &ki040 luse
+  - &ki050 lisjp
+  - &ki060 luae_na
+  - &ki070 luae_fs
+#  - &ki080 db
+#  - &ki090 doi
+
+knownFeatures:
+  - &kf010 HANTERA_FRAGOR
+  - &kf020 HANTERA_INTYGSUTKAST
+  - &kf030 FORNYA_INTYG
+  - &kf040 MAKULERA_INTYG
+  - &kf050 MAKULERA_INTYG_KRAVER_ANLEDNING
+  - &kf060 SKAPA_NY_FRAGA
+  - &kf070 SKICKA_INTYG
+  - &kf080 SIGNERA_SKICKA_DIREKT
+  - &kf090 UTSKRIFT
+  - &kf100 ARBETSGIVARUTSKRIFT
+  - &kf110 JS_LOGGNING
+  - &kf130 HANTERA_INTYGSUTKAST_AVLIDEN
+  - &kf140 UNIKT_INTYG
+  - &kf150 UNIKT_INTYG_INOM_VG
+  - &kf160 UNIKT_UTKAST_INOM_VG
+  - &kf170 TAK_KONTROLL
+  - &kf180 TAK_KONTROLL_TRADKLATTRING
+  - &kf190 SEKRETESSMARKERING
+
+# Aktiverade features i Webcert
+features:
+  - &f010
+    name: *kf010
+    desc: Hantera frågor
+    global: true
+    intygstyper:
+      - *ki010 # FK7263
+      - *ki040 # LUSE
+      - *ki050 # LISJP
+      - *ki060 # LUAE_NA
+      - *ki070 # LUAE_FS
+  - &f020
+    name: *kf020
+    desc: Hantera intygsutkast
+    global: true
+    intygstyper:
+      - *ki010 # FK7263
+      - *ki020 # TS-BAS
+      - *ki030 # TS-DIABETES
+      - *ki040 # LUSE
+      - *ki050 # LISJP
+      - *ki060 # LUAE_NA
+      - *ki070 # LUAE_FS
+#      - *ki080 # DB
+#      - *ki090 # DOI
+  - &f030
+    name: *kf030
+    desc: Förnya intyg
+    global: true
+    intygstyper:
+      - *ki020 # TS-BAS
+      - *ki030 # TS-DIABETES
+      - *ki040 # LUSE
+      - *ki050 # LISJP
+      - *ki060 # LUAE_NA
+      - *ki070 # LUAE_FS
+#      - *ki080 # DB
+#      - *ki090 # DOI
+  - &f040
+    name: *kf040
+    desc: Makulera intyg
+    global: true
+    intygstyper:
+      - *ki010 # FK7263
+      - *ki020 # TS-BAS
+      - *ki030 # TS-DIABETES
+      - *ki040 # LUSE
+      - *ki050 # LISJP
+      - *ki060 # LUAE_NA
+      - *ki070 # LUAE_FS
+#      - *ki080 # DB
+#      - *ki090 # DOI
+  - &f050
+    name: *kf050
+    desc: Makulera intyg kräver anledning
+    global: true
+    intygstyper:
+      - *ki010 # FK7263
+      - *ki020 # TS-BAS
+      - *ki030 # TS-DIABETES
+      - *ki040 # LUSE
+      - *ki050 # LISJP
+      - *ki060 # LUAE_NA
+      - *ki070 # LUAE_FS
+  - &f060
+    name: *kf060
+    desc: Skapa ny fråga
+    global: true
+    intygstyper:
+      - *ki010 # FK7263
+      - *ki020 # TS-BAS
+      - *ki030 # TS-DIABETES
+      - *ki040 # LUSE
+      - *ki050 # LISJP
+      - *ki060 # LUAE_NA
+      - *ki070 # LUAE_FS
+#      - *ki080 # DB
+#      - *ki090 # DOI
+  - &f070
+    name: *kf070
+    desc: Skicka intyg
+    global: true
+    intygstyper:
+      - *ki010 # FK7263
+      - *ki020 # TS-BAS
+      - *ki030 # TS-DIABETES
+      - *ki040 # LUSE
+      - *ki050 # LISJP
+      - *ki060 # LUAE_NA
+      - *ki070 # LUAE_FS
+#      - *ki080 # DB
+#      - *ki090 # DOI
+  - &f080
+    name: *kf080
+    desc: Signera skicka direkt
+    global: true
+    intygstyper:
+#      - *ki080 # DB
+#      - *ki090 # DOI
+  - &f090
+    name: *kf090
+    desc: Utskrift
+    global: true
+    intygstyper:
+      - *ki010 # FK7263
+      - *ki020 # TS-BAS
+      - *ki030 # TS-DIABETES
+      - *ki040 # LUSE
+      - *ki050 # LISJP
+      - *ki060 # LUAE_NA
+      - *ki070 # LUAE_FS
+#      - *ki080 # DB
+#      - *ki090 # DOI
+  - &f100
+    name: *kf100
+    desc: Arbetsgivarutskrift
+    global: true
+    intygstyper:
+      - *ki010 # FK7263
+      - *ki050 # LISJP
+  - &f110
+    name: *kf110
+    desc: JS loggning
+    global: true
+  - &f130
+    name: *kf130
+    desc: Hantera utkast för avlidna patienter
+    global: true
+    intygstyper:
+#      - *ki080 # DB
+#      - *ki090 # DOI
+  - &f140
+    name: *kf140
+    desc: Unikt intyg
+    global: true
+    intygstyper:
+#      - *ki080 # DB
+  - &f150
+    name: *kf150
+    desc: Unikt intyg inom VG
+    global: true
+    intygstyper:
+#      - *ki090 # DOI
+  - &f160
+    name: *kf160
+    desc: Unikt utkast inom VG
+    global: true
+    intygstyper:
+#      - *ki080 # DB
+#      - *ki090 # DOI
+  - &f170
+    name: *kf170
+    desc: Kontrollera TAK uppsättning
+    global: false
+    intygstyper:
+#      - *ki010 # FK7263
+#      - *ki020 # TS-BAS
+#      - *ki030 # TS-DIABETES
+#      - *ki040 # LUSE
+#      - *ki050 # LISJP
+#      - *ki060 # LUAE_NA
+#      - *ki070 # LUAE_FS
+#      - *ki080 # DB
+#      - *ki090 # DOI
+  - &f180
+    name: *kf180
+    desc: Använd trädklättring i HSA
+    global: false
+  - &f190
+    name: *kf190
+    desc: Sekretessmarkering tillåten
+    global: true
+    intygstyper:
+      - *ki010 # FK7263
+      - *ki040 # LUSE
+      - *ki050 # LISJP
+      - *ki060 # LUAE_NA
+      - *ki070 # LUAE_FS
+
+pilots:

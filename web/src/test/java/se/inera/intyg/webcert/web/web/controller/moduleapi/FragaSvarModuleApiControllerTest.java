@@ -18,21 +18,20 @@
  */
 package se.inera.intyg.webcert.web.web.controller.moduleapi;
 
-import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.ImmutableMap;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.infra.security.common.model.Feature;
 import se.inera.intyg.infra.security.common.model.Privilege;
 import se.inera.intyg.infra.security.common.model.RequestOrigin;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
-import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.intyg.webcert.persistence.fragasvar.model.IntygsReferens;
-import se.inera.intyg.webcert.common.model.WebcertFeature;
 import se.inera.intyg.webcert.web.service.fragasvar.FragaSvarService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
@@ -84,19 +83,14 @@ public class FragaSvarModuleApiControllerTest {
         assertEquals(1, fragaSvarViewList.size());
     }
 
-
     private List<FragaSvarView> buildFragaSvarViewList() {
         List<FragaSvarView> fragaSvarViewList = new ArrayList<>();
 
-
         IntygsReferens intygsReferens = mock(IntygsReferens.class);
-        when(intygsReferens.getPatientId()).thenReturn(new Personnummer("191212121212"));
 
         FragaSvar fs = mock(FragaSvar.class);
-        when(fs.getIntygsReferens()).thenReturn(intygsReferens);
 
         FragaSvarView fsw = mock(FragaSvarView.class);
-        when(fsw.getFragaSvar()).thenReturn(fs);
         fragaSvarViewList.add(fsw);
         return fragaSvarViewList;
     }
@@ -107,8 +101,10 @@ public class FragaSvarModuleApiControllerTest {
 
         user.getAuthorities().put(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG,
                 createPrivilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG));
-        user.setFeatures(ImmutableSet
-                .of(WebcertFeature.HANTERA_FRAGOR.getName(),WebcertFeature.HANTERA_FRAGOR.getName() + "." + FK7263));
+        Feature feature = new Feature();
+        feature.setName(AuthoritiesConstants.FEATURE_HANTERA_FRAGOR);
+        feature.setIntygstyper(Arrays.asList(FK7263));
+        user.setFeatures(ImmutableMap.of(feature.getName(), feature));
         user.setOrigin(UserOriginType.UTHOPP.name());
         return user;
     }

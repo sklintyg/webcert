@@ -23,11 +23,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.intyg.common.support.model.common.internal.Patient;
+import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
+import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.SekretessStatus;
 import se.inera.intyg.webcert.common.model.UtkastStatus;
-import se.inera.intyg.webcert.common.model.WebcertFeature;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
@@ -35,7 +36,6 @@ import se.inera.intyg.webcert.persistence.utkast.repository.UtkastFilter;
 import se.inera.intyg.webcert.web.converter.IntygDraftsConverter;
 import se.inera.intyg.webcert.web.converter.util.IntygConverterUtil;
 import se.inera.intyg.webcert.web.service.dto.Lakare;
-import se.inera.intyg.webcert.web.service.feature.WebcertFeatureService;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
@@ -86,7 +86,7 @@ public class UtkastApiController extends AbstractApiController {
     private PatientDetailsResolver patientDetailsResolver;
 
     @Autowired
-    private WebcertFeatureService webcertFeatureService;
+    private IntygModuleRegistry moduleRegistry;
 
     /**
      * Create a new draft.
@@ -96,13 +96,23 @@ public class UtkastApiController extends AbstractApiController {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public Response createUtkast(@PathParam("intygsTyp") String intygsTyp, CreateUtkastRequest request) {
+        try {
+            if (moduleRegistry.getIntygModule(intygsTyp).isDeprecated()) {
+                LOG.error("Request for deprecated module {}", intygsTyp);
+                return Response.status(Status.BAD_REQUEST).build();
+            }
+        } catch (ModuleNotFoundException e) {
+            LOG.error("Request for unknown module {}", intygsTyp);
+            return Response.status(Status.BAD_REQUEST).build();
+        }
 
         authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
-                .features(WebcertFeature.HANTERA_INTYGSUTKAST)
+                .features(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
                 .privilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG)
                 .orThrow();
 
         final SekretessStatus sekretessStatus = patientDetailsResolver.getSekretessStatus(request.getPatientPersonnummer());
+
         if (SekretessStatus.UNDEFINED.equals(sekretessStatus)) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.PU_PROBLEM,
                     "Could not fetch sekretesstatus for patient from PU service");
@@ -122,20 +132,29 @@ public class UtkastApiController extends AbstractApiController {
         }
         LOG.debug("Attempting to create draft of type '{}'", intygsTyp);
 
-        if (webcertFeatureService.isModuleFeatureActive(WebcertFeature.UNIKT_INTYG.getName(), intygsTyp)
-                || (webcertFeatureService.isModuleFeatureActive(WebcertFeature.UNIKT_INTYG_INOM_VG.getName(),
-                intygsTyp))) {
+        if (authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
+                .features(AuthoritiesConstants.FEATURE_UNIKT_INTYG, AuthoritiesConstants.FEATURE_UNIKT_INTYG_INOM_VG,
+                        AuthoritiesConstants.FEATURE_UNIKT_UTKAST_INOM_VG).isVerified()) {
 
-            Map<String, Boolean> intygstypToBoolean = utkastService.checkIfPersonHasExistingIntyg(request.getPatientPersonnummer(),
-                    getWebCertUserService().getUser());
+            Map<String, Map<String, Boolean>> intygstypToStringToBoolean = utkastService.checkIfPersonHasExistingIntyg(
+                    request.getPatientPersonnummer(), getWebCertUserService().getUser());
 
-            Boolean exists = intygstypToBoolean.get(intygsTyp);
+            Boolean utkastExists = intygstypToStringToBoolean.get("utkast").get(intygsTyp);
+            Boolean intygExists = intygstypToStringToBoolean.get("intyg").get(intygsTyp);
 
-            if (exists != null) {
-                if (webcertFeatureService.isModuleFeatureActive(WebcertFeature.UNIKT_INTYG.getName(), intygsTyp)) {
+            if (utkastExists != null && utkastExists) {
+                if (authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
+                        .features(AuthoritiesConstants.FEATURE_UNIKT_UTKAST_INOM_VG).isVerified()) {
                     return Response.status(Status.BAD_REQUEST).build();
-                } else if (exists && webcertFeatureService.isModuleFeatureActive(WebcertFeature.UNIKT_INTYG_INOM_VG
-                        .getName(), intygsTyp)) {
+                }
+            }
+
+            if (intygExists != null) {
+                if (authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
+                        .features(AuthoritiesConstants.FEATURE_UNIKT_INTYG).isVerified()) {
+                    return Response.status(Status.BAD_REQUEST).build();
+                } else if (intygExists && authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
+                        .features(AuthoritiesConstants.FEATURE_UNIKT_INTYG_INOM_VG).isVerified()) {
                     return Response.status(Status.BAD_REQUEST).build();
                 }
             }
@@ -172,7 +191,7 @@ public class UtkastApiController extends AbstractApiController {
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public Response filterDraftsForUnit(@QueryParam("") QueryIntygParameter filterParameters) {
 
-        authoritiesValidator.given(getWebCertUserService().getUser()).features(WebcertFeature.HANTERA_INTYGSUTKAST).orThrow();
+        authoritiesValidator.given(getWebCertUserService().getUser()).features(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST).orThrow();
 
         UtkastFilter utkastFilter = createUtkastFilter(filterParameters);
         QueryIntygResponse queryResponse = performUtkastFilterQuery(utkastFilter);
@@ -190,7 +209,7 @@ public class UtkastApiController extends AbstractApiController {
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public Response getLakareWithDraftsByEnheter() {
 
-        authoritiesValidator.given(getWebCertUserService().getUser()).features(WebcertFeature.HANTERA_INTYGSUTKAST).orThrow();
+        authoritiesValidator.given(getWebCertUserService().getUser()).features(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST).orThrow();
 
         WebCertUser user = getWebCertUserService().getUser();
         String selectedUnitHsaId = user.getValdVardenhet().getId();
@@ -204,8 +223,9 @@ public class UtkastApiController extends AbstractApiController {
     @Path("/previousIntyg/{personnummer}")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public Response getPreviousCertificateWarnings(@PathParam("personnummer") String personnummer) {
-        Map<String, Boolean> res = utkastService
-                .checkIfPersonHasExistingIntyg(new Personnummer(personnummer), getWebCertUserService().getUser());
+        Map<String, Map<String, Boolean>> res = utkastService
+                .checkIfPersonHasExistingIntyg(Personnummer.createPersonnummer(personnummer).get(),
+                        getWebCertUserService().getUser());
         return Response.ok(res).build();
     }
 
@@ -270,13 +290,17 @@ public class UtkastApiController extends AbstractApiController {
 
         // INTYG-4486, INTYG-4086: Always filter out any items with UNDEFINED sekretessmarkering status and not
         // authorized
+        Map<Personnummer, SekretessStatus> sekretessStatusMap = patientDetailsResolver.getSekretessStatusForList(listIntygEntries.stream()
+                .map(lie -> lie.getPatientId())
+                .collect(Collectors.toList()));
+
         final WebCertUser user = getWebCertUserService().getUser();
         listIntygEntries = listIntygEntries.stream()
-                .filter(lie -> this.passesSekretessCheck(lie.getPatientId(), lie.getIntygType(), user))
+                .filter(lie -> this.passesSekretessCheck(lie.getPatientId(), lie.getIntygType(), user, sekretessStatusMap))
                 .collect(Collectors.toList());
 
         // INTYG-4086: Mark all remaining ListIntygEntry having a patient with sekretessmarkering
-        listIntygEntries.stream().forEach(this::markSekretessMarkering);
+        listIntygEntries.stream().forEach(lie -> markSekretessMarkering(lie, sekretessStatusMap));
 
         int totalCountOfFilteredIntyg = listIntygEntries.size();
 
@@ -298,11 +322,12 @@ public class UtkastApiController extends AbstractApiController {
         return response;
     }
 
-    private boolean passesSekretessCheck(Personnummer patientId, String intygsTyp, WebCertUser user) {
-        final SekretessStatus sekretessStatus = patientDetailsResolver.getSekretessStatus(patientId);
+    private boolean passesSekretessCheck(Personnummer patientId, String intygsTyp, WebCertUser user,
+            Map<Personnummer, SekretessStatus> sekretessStatusMap) {
+        final SekretessStatus sekretessStatus = sekretessStatusMap.get(patientId);
 
         if (sekretessStatus == SekretessStatus.UNDEFINED) {
-            //No matter if user has
+            // No matter if user has
             return false;
         } else {
             return sekretessStatus == SekretessStatus.FALSE || authoritiesValidator.given(user, intygsTyp)
@@ -312,8 +337,8 @@ public class UtkastApiController extends AbstractApiController {
 
     }
 
-    private void markSekretessMarkering(ListIntygEntry lie) {
-        if (patientDetailsResolver.getSekretessStatus(lie.getPatientId()) == SekretessStatus.TRUE) {
+    private void markSekretessMarkering(ListIntygEntry lie, Map<Personnummer, SekretessStatus> sekretessStatusMap) {
+        if (sekretessStatusMap.get(lie.getPatientId()) == SekretessStatus.TRUE) {
             lie.setSekretessmarkering(true);
         }
     }

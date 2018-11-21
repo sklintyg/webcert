@@ -23,27 +23,28 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.servlet.ModelAndView;
 import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
 import se.inera.intyg.infra.integration.hsa.model.Vardgivare;
 import se.inera.intyg.infra.security.authorities.AuthoritiesResolverUtil;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.infra.security.common.model.Feature;
+import se.inera.intyg.infra.security.common.model.Privilege;
 import se.inera.intyg.infra.security.common.model.Role;
 import se.inera.intyg.webcert.web.auth.bootstrap.AuthoritiesConfigurationTestSetup;
-import se.inera.intyg.webcert.common.model.WebcertFeature;
-import se.inera.intyg.webcert.web.service.feature.WebcertFeatureService;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.maillink.MailLinkService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 import java.net.URI;
-import java.util.Arrays;
+import java.util.Collections;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -55,49 +56,16 @@ public class PageControllerTest extends AuthoritiesConfigurationTestSetup {
     @Mock
     private WebCertUserService webCertUserService;
     @Mock
-    private WebcertFeatureService webcertFeatureService;
-    @Mock
     private IntygService intygService;
     @Mock
     private MailLinkService mailLinkService;
 
     @InjectMocks
-    private PageController controller = new PageController();
-
+    private PageController controller;
 
     @Before
     public void setup() throws Exception {
         CONFIGURATION_LOADER.afterPropertiesSet();
-    }
-
-    @Test
-    public void testStartViewForDoctor() {
-        when(webCertUserService.getUser()).thenReturn(createMockUser(true));
-        when(webcertFeatureService.isFeatureActive(any(WebcertFeature.class))).thenReturn(true);
-        ModelAndView result = controller.displayStart();
-        assertEquals(PageController.DASHBOARD_VIEW_REDIRECT, result.getViewName());
-    }
-
-    @Test
-    public void testStartViewForNonDoctor() {
-        when(webCertUserService.getUser()).thenReturn(createMockUser(false));
-        when(webcertFeatureService.isFeatureActive(any(WebcertFeature.class))).thenReturn(true);
-        ModelAndView result = controller.displayStart();
-        assertEquals(PageController.ADMIN_VIEW_REDIRECT, result.getViewName());
-    }
-
-    @Test
-    public void testResolveStartViewDoctor() {
-        when(webcertFeatureService.isFeatureActive(any(WebcertFeature.class))).thenReturn(true);
-        String result = controller.resolveStartView(createMockUser(true));
-        assertEquals(PageController.DASHBOARD_VIEW_REDIRECT, result);
-    }
-
-    @Test
-    public void testResolveStartViewNonDoctor() {
-        when(webcertFeatureService.isFeatureActive(any(WebcertFeature.class))).thenReturn(true);
-        String result = controller.resolveStartView(createMockUser(false));
-        assertEquals(PageController.ADMIN_VIEW_REDIRECT, result);
     }
 
     @Test
@@ -111,20 +79,10 @@ public class PageControllerTest extends AuthoritiesConfigurationTestSetup {
 
     @Test
     public void testRedirectToIntygNoUnitFoundForIntyg() {
-        when(webCertUserService.getUser()).thenReturn(createMockUser(false));
         when(intygService.getIssuingVardenhetHsaId(INTYG_ID, INTYG_TYP_FK7263)).thenReturn(null);
         ResponseEntity<Object> result = controller.redirectToIntyg(INTYG_ID, INTYG_TYP_FK7263);
         assertEquals(404, result.getStatusCode().value());
     }
-
-
-//    @Test(expected = MissingMedarbetaruppdragException.class)
-//    public void testRedirectToIntygUserDoesNotHaveAccess() {
-//        when(webCertUserService.getUser()).thenReturn(createMockUser(false));
-//        when(intygService.getIssuingVardenhetHsaId(INTYG_ID, INTYG_TYP_FK7263)).thenReturn("some-other-ve");
-//        ResponseEntity<Object> result = controller.redirectToIntyg(INTYG_ID, INTYG_TYP_FK7263);
-//        //assertEquals(401, result.getStatusCode().value());
-//    }
 
     @Test
     public void testRedirectToIntygMaillinkReturnsNull() {
@@ -140,7 +98,7 @@ public class PageControllerTest extends AuthoritiesConfigurationTestSetup {
         return URI.create("https://some.url/path/questions");
     }
 
-    private WebCertUser createMockUser(boolean doctor) {
+    private WebCertUser createMockUser(boolean doctor, String... features) {
         Role role = AUTHORITIES_RESOLVER.getRole(AuthoritiesConstants.ROLE_LAKARE);
 
         if (!doctor) {
@@ -149,15 +107,22 @@ public class PageControllerTest extends AuthoritiesConfigurationTestSetup {
 
         WebCertUser user = new WebCertUser();
         user.setRoles(AuthoritiesResolverUtil.toMap(role));
-        user.setAuthorities(AuthoritiesResolverUtil.toMap(role.getPrivileges()));
-        user.setVardgivare(Arrays.asList(createMockVardgivare()));
+        user.setAuthorities(AuthoritiesResolverUtil.toMap(role.getPrivileges(), Privilege::getName));
+        user.setVardgivare(Collections.singletonList(createMockVardgivare()));
+        user.setFeatures(Stream.of(features).collect(Collectors.toMap(Function.identity(), s -> {
+            Feature feature = new Feature();
+            feature.setName(s);
+            feature.setGlobal(true);
+            feature.setIntygstyper(Collections.singletonList(INTYG_TYP_FK7263));
+            return feature;
+        })));
         return user;
     }
 
     private Vardgivare createMockVardgivare() {
         Vardgivare vg = new Vardgivare("vg-1", "Vårdgivare 1");
         Vardenhet ve = new Vardenhet("ve-1", "Vårdenhet 1");
-        vg.setVardenheter(Arrays.asList(ve));
+        vg.setVardenheter(Collections.singletonList(ve));
         return vg;
     }
 

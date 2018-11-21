@@ -22,7 +22,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
@@ -37,6 +37,7 @@ import se.funktionstjanster.grp.v1.ProgressStatusType;
 import se.funktionstjanster.grp.v1.Property;
 import se.inera.intyg.infra.security.authorities.AuthoritiesResolverUtil;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.infra.security.common.model.Privilege;
 import se.inera.intyg.infra.security.common.model.Role;
 import se.inera.intyg.webcert.web.auth.bootstrap.AuthoritiesConfigurationTestSetup;
 import se.inera.intyg.webcert.web.service.signatur.SignaturService;
@@ -44,8 +45,9 @@ import se.inera.intyg.webcert.web.service.signatur.SignaturTicketTracker;
 import se.inera.intyg.webcert.web.service.signatur.dto.SignaturTicket;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -53,9 +55,6 @@ import static se.funktionstjanster.grp.v1.ProgressStatusType.COMPLETE;
 import static se.funktionstjanster.grp.v1.ProgressStatusType.OUTSTANDING_TRANSACTION;
 import static se.funktionstjanster.grp.v1.ProgressStatusType.STARTED;
 
-/**
- * Created by eriklupander on 2015-08-25.
- */
 @RunWith(MockitoJUnitRunner.class)
 public class GrpCollectPollerTest extends AuthoritiesConfigurationTestSetup {
 
@@ -86,7 +85,7 @@ public class GrpCollectPollerTest extends AuthoritiesConfigurationTestSetup {
         grpCollectPoller.setMs(50L);
         grpCollectPoller.run();
 
-        verify(signaturService, times(1)).clientGrpSignature(anyString(), anyString(), any(WebCertUser.class));
+        verify(signaturService, times(1)).clientGrpSignature(isNull(), isNull(), any(WebCertUser.class));
         verify(signaturTicketTracker, times(0)).updateStatus(TX_ID, SignaturTicket.Status.OKAND);
     }
 
@@ -103,7 +102,7 @@ public class GrpCollectPollerTest extends AuthoritiesConfigurationTestSetup {
         grpCollectPoller.setMs(50L);
         grpCollectPoller.run();
 
-        verify(signaturService, times(1)).clientGrpSignature(anyString(), anyString(), any(WebCertUser.class));
+        verify(signaturService, times(1)).clientGrpSignature(isNull(), isNull(), any(WebCertUser.class));
         verify(signaturTicketTracker, times(0)).updateStatus(TX_ID, SignaturTicket.Status.OKAND);
     }
 
@@ -158,7 +157,7 @@ public class GrpCollectPollerTest extends AuthoritiesConfigurationTestSetup {
 
         WebCertUser user = new WebCertUser();
         user.setRoles(AuthoritiesResolverUtil.toMap(role));
-        user.setAuthorities(AuthoritiesResolverUtil.toMap(role.getPrivileges()));
+        user.setAuthorities(AuthoritiesResolverUtil.toMap(role.getPrivileges(), Privilege::getName));
         user.setPersonId(PERSON_ID);
 
         Authentication authentication = new TestingAuthenticationToken(user, null);

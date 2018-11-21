@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Inera AB (http://www.inera.se)
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -20,55 +20,81 @@
 /* globals person, ursprungligPerson, Promise,pages,intyg*/
 
 'use strict';
+/*jshint newcap:false */
+//TODO Uppgradera Jshint p.g.a. newcap kommer bli depricated. (klarade inte att ignorera i grunt-task)
+
+
+/*
+ *	Stödlib och ramverk
+ *
+ */
+
+const {
+    Given, // jshint ignore:line
+    When, // jshint ignore:line
+    Then // jshint ignore:line
+} = require('cucumber');
+
+
 var lusePage = pages.intyg.luse.intyg;
 var fkUtkastPage = pages.intyg.fk['7263'].utkast;
 var luseUtkastPage = pages.intyg.luse.utkast;
 var helpers = require('../helpers');
-module.exports = function() {
 
-    this.Given(/^ska intyget visa den nya addressen$/, function() {
-        return Promise.all([
-            expect(lusePage.patientAdress.postadress.getText()).to.eventually.contain(person.adress.postadress),
-            expect(lusePage.patientAdress.postort.getText()).to.eventually.contain(person.adress.postort),
-            expect(lusePage.patientAdress.postnummer.getText()).to.eventually.contain(person.adress.postnummer)
-        ]);
-    });
 
-    // this.Given(/^ska intyget visa det nya namnet$/, function() {
-    //     return expect(lusePage.patientNamnOchPersonnummer.getText()).to.eventually.contain(person.forNamn + ' ' + person.efterNamn);
-    // });
+/*
+ *	Test steg
+ *
+ */
 
-    this.Given(/^ska intyget visa det (gamla|nya) person-id:numret$/, function(arg1) {
-        var id = ursprungligPerson.id;
-        if (arg1 === 'nya') {
-            id = person.id;
-        }
-        return expect(lusePage.patientNamnOchPersonnummer.getText()).to.eventually.contain(helpers.insertDashInPnr(id));
+Given(/^ska intyget visa den nya addressen$/, function() {
+    return Promise.all([
+        expect(lusePage.patientAdress.postadress.getText()).to.eventually.contain(person.adress.postadress),
+        expect(lusePage.patientAdress.postort.getText()).to.eventually.contain(person.adress.postort),
+        expect(lusePage.patientAdress.postnummer.getText()).to.eventually.contain(person.adress.postnummer)
+    ]);
+});
 
-    });
+// Given(/^ska intyget visa det nya namnet$/, function() {
+//     return expect(lusePage.patientNamnOchPersonnummer.getText()).to.eventually.contain(person.forNamn + ' ' + person.efterNamn);
+// });
 
-    this.Given(/^ska adressen vara ifylld på det förnyade intyget$/, function() {
-        var promiseArray = [];
-        var isSMIIntyg = helpers.isSMIIntyg(intyg.typ);
-        if (isSMIIntyg) {
-            promiseArray.push(expect(luseUtkastPage.enhetensAdress.enhetsTelefon.getAttribute('value')).to.eventually.equal(global.user.enhetsAdress.telefon));
-            promiseArray.push(expect(luseUtkastPage.enhetensAdress.postAdress.getAttribute('value')).to.eventually.equal(global.user.enhetsAdress.postadress));
-            promiseArray.push(expect(luseUtkastPage.enhetensAdress.postNummer.getAttribute('value')).to.eventually.equal(global.user.enhetsAdress.postnummer));
-            promiseArray.push(expect(luseUtkastPage.enhetensAdress.postOrt.getAttribute('value')).to.eventually.equal(global.user.enhetsAdress.postort));
+Given(/^ska intyget visa det (gamla|nya) person-id:numret$/, function(arg1) {
+    let id;
+    let elm;
 
-        } else {
+    if (arg1 === 'nya') {
+        id = person.id;
+        elm = lusePage.patientNamnOchPersonnummer;
+    } else {
+        id = ursprungligPerson.id;
+        elm = lusePage.FdPersonnummer;
+    }
 
-            promiseArray.push(expect(fkUtkastPage.enhetensAdress.postAdress.getAttribute('value')).to.eventually.equal(global.user.enhetsAdress.postadress));
-            promiseArray.push(expect(fkUtkastPage.enhetensAdress.postNummer.getAttribute('value')).to.eventually.equal(global.user.enhetsAdress.postnummer));
-            promiseArray.push(expect(fkUtkastPage.enhetensAdress.postOrt.getAttribute('value')).to.eventually.equal(global.user.enhetsAdress.postort));
-            promiseArray.push(expect(fkUtkastPage.enhetensAdress.enhetsTelefon.getAttribute('value')).to.eventually.equal(global.user.enhetsAdress.telefon));
-        }
-        return Promise.all(promiseArray);
+    return expect(elm.getText()).to.eventually.contain(helpers.insertDashInPnr(id));
 
-    });
+});
 
-    this.Then(/^ska jag se signerande läkare "([^"]*)"$/, function(name) {
-        return expect(fkUtkastPage.signingDoctorName.getText()).to.eventually.equal(name);
-    });
+Given(/^ska adressen vara ifylld på det förnyade intyget$/, function() {
+    var promiseArray = [];
+    var isSMIIntyg = helpers.isSMIIntyg(intyg.typ);
+    if (isSMIIntyg) {
+        promiseArray.push(expect(luseUtkastPage.enhetensAdress.enhetsTelefon.getAttribute('value')).to.eventually.equal(global.user.enhetsAdress.telefon));
+        promiseArray.push(expect(luseUtkastPage.enhetensAdress.postAdress.getAttribute('value')).to.eventually.equal(global.user.enhetsAdress.postadress));
+        promiseArray.push(expect(luseUtkastPage.enhetensAdress.postNummer.getAttribute('value')).to.eventually.equal(global.user.enhetsAdress.postnummer));
+        promiseArray.push(expect(luseUtkastPage.enhetensAdress.postOrt.getAttribute('value')).to.eventually.equal(global.user.enhetsAdress.postort));
 
-};
+    } else {
+
+        promiseArray.push(expect(fkUtkastPage.enhetensAdress.postAdress.getAttribute('value')).to.eventually.equal(global.user.enhetsAdress.postadress));
+        promiseArray.push(expect(fkUtkastPage.enhetensAdress.postNummer.getAttribute('value')).to.eventually.equal(global.user.enhetsAdress.postnummer));
+        promiseArray.push(expect(fkUtkastPage.enhetensAdress.postOrt.getAttribute('value')).to.eventually.equal(global.user.enhetsAdress.postort));
+        promiseArray.push(expect(fkUtkastPage.enhetensAdress.enhetsTelefon.getAttribute('value')).to.eventually.equal(global.user.enhetsAdress.telefon));
+    }
+    return Promise.all(promiseArray);
+
+});
+
+Then(/^ska jag se signerande läkare "([^"]*)"$/, function(name) {
+    return expect(fkUtkastPage.signingDoctorName.getText()).to.eventually.equal(name);
+});

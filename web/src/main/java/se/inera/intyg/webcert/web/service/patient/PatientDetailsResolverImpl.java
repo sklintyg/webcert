@@ -33,9 +33,11 @@ import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.SekretessStatus;
 import se.inera.intyg.webcert.common.model.UtkastStatus;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
-import se.inera.intyg.webcert.web.integration.validator.IntygsTypToInternal;
+import se.inera.intyg.webcert.web.integration.converters.IntygsTypToInternal;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
@@ -43,8 +45,11 @@ import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationPara
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * This class is responsible for implementing GE-002, e.g. requirements on how to fetch patient details for a given
@@ -77,7 +82,7 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
      */
     @Override
     public PersonSvar getPersonFromPUService(Personnummer personnummer) {
-        return puService.getPerson(personnummer);
+        return getPersonSvar(personnummer);
     }
 
     @Override
@@ -119,7 +124,7 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
 
     @Override
     public SekretessStatus getSekretessStatus(Personnummer personNummer) {
-        PersonSvar person = puService.getPerson(personNummer);
+        PersonSvar person = getPersonSvar(personNummer);
         if (person.getStatus() == PersonSvar.Status.FOUND) {
             if (person.getPerson().isSekretessmarkering()) {
                 return SekretessStatus.TRUE;
@@ -132,8 +137,32 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
     }
 
     @Override
+    public Map<Personnummer, SekretessStatus> getSekretessStatusForList(List<Personnummer> personnummerList) {
+        Map<Personnummer, SekretessStatus> sekretessStatusMap = new HashMap<>();
+        if (personnummerList == null || personnummerList.size() == 0) {
+            return sekretessStatusMap;
+        }
+
+        // Make sure we don't ask twice for a given personnummer.
+        List<Personnummer> distinctPersonnummerList = personnummerList.stream().distinct().collect(Collectors.toList());
+
+        Map<Personnummer, PersonSvar> persons = puService.getPersons(distinctPersonnummerList);
+        persons.entrySet().stream().forEach(entry -> {
+            if (entry.getValue() != null && entry.getValue().getStatus() == PersonSvar.Status.FOUND) {
+                sekretessStatusMap.put(entry.getKey(),
+                        entry.getValue().getPerson().isSekretessmarkering() ? SekretessStatus.TRUE : SekretessStatus.FALSE);
+            } else {
+                // contains no person instance.
+                sekretessStatusMap.put(entry.getKey(), SekretessStatus.UNDEFINED);
+            }
+        });
+
+        return sekretessStatusMap;
+    }
+
+    @Override
     public boolean isAvliden(Personnummer personnummer) {
-        PersonSvar personSvar = puService.getPerson(personnummer);
+        PersonSvar personSvar = getPersonSvar(personnummer);
         boolean avlidenPU = personSvar.getStatus() == PersonSvar.Status.FOUND && personSvar.getPerson().isAvliden();
 
         WebCertUser user = webCertUserService.hasAuthenticationContext() ? webCertUserService.getUser() : null;
@@ -155,11 +184,20 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
                 || (oldPatient.getEfternamn() != null && !oldPatient.getEfternamn().equals(newPatient.getEfternamn()));
     }
 
+    private PersonSvar getPersonSvar(Personnummer personnummer) {
+        if (personnummer == null) {
+            String errMsg = "No personnummer present. Unable to make a call to PUService";
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.PU_PROBLEM, errMsg);
+        }
+
+        return puService.getPerson(personnummer);
+    }
+
     /*
      * I: Info om avliden från både PU-tjänst och journalsystem.
      */
     private Patient resolveFkPatient(Personnummer personnummer, WebCertUser user) {
-        PersonSvar personSvar = puService.getPerson(personnummer);
+        PersonSvar personSvar = getPersonSvar(personnummer);
         Patient patient = personSvar.getStatus() == PersonSvar.Status.FOUND
                 ? toPatientFromPersonSvarNameOnly(personnummer, personSvar)
                 : resolveFkPatientPuUnavailable(personnummer, user);
@@ -185,14 +223,18 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
      * F: PU-tjänsten (alla uppgifter).
      */
     private Patient resolveTsPatient(Personnummer personnummer, WebCertUser user) {
-
-        PersonSvar personSvar = puService.getPerson(personnummer);
+        PersonSvar personSvar = getPersonSvar(personnummer);
         if (personSvar.getStatus() == PersonSvar.Status.FOUND) {
             Patient patient = toPatientFromPersonSvar(personnummer, personSvar);
 
             // Get address if djupintegration from params, fallback to PU for address if unavailable.
             if (user.getOrigin().equals(UserOriginType.DJUPINTEGRATION.name())) {
                 IntegrationParameters parameters = user.getParameters();
+                // Loading utkast without uthoppslänk would fail during end-to-end tests, thus the line below
+                if (parameters == null) {
+                    parameters = new IntegrationParameters(null, null, null, null, null, null, null, null, null, false, false, false,
+                            false);
+                }
 
                 // Update avliden with integrationparameters
                 patient.setAvliden(patient.isAvliden() || parameters.isPatientDeceased());
@@ -226,7 +268,7 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
      * Free: PU-tjänsten (alla uppgifter)
      */
     private Patient resolveDbPatient(Personnummer personnummer, WebCertUser user) {
-        PersonSvar personSvar = puService.getPerson(personnummer);
+        PersonSvar personSvar = getPersonSvar(personnummer);
 
         Patient patient = null;
         // NORMAL and DJUPINTEGRATION uses only PU for db
@@ -242,7 +284,7 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
      */
     private Patient resolveDoiPatient(Personnummer personnummer, WebCertUser user) {
 
-        PersonSvar personSvar = puService.getPerson(personnummer);
+        PersonSvar personSvar = getPersonSvar(personnummer);
 
         // Find ALL existing intyg for this patient, filter out so we only have DB left.
         List<Utkast> utkastList = new ArrayList<>();
@@ -275,8 +317,7 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
                 patient.setAvliden(
                         (personSvar.getStatus() == PersonSvar.Status.FOUND && personSvar.getPerson().isAvliden())
                                 || (user.getParameters() != null && user.getParameters().isPatientDeceased())
-                                || (personSvar.getStatus() != PersonSvar.Status.FOUND && user.getParameters() == null)
-                );
+                                || (personSvar.getStatus() != PersonSvar.Status.FOUND && user.getParameters() == null));
                 return patient;
             } catch (ModuleNotFoundException | IOException e) {
                 // No usabe DB exist

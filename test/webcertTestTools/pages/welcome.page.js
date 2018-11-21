@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Inera AB (http://www.inera.se)
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* globals browser */
+/* globals browser, logger */
 
 /**
  * Created by stephenwhite on 09/06/15.
@@ -29,6 +29,7 @@ var jsonDisplay = element(by.id('userJsonDisplay'));
 module.exports = {
     loginButton: element(by.id('loginBtn')),
     get: function() {
+        logger.silly('Går till ' + process.env.WEBCERT_URL + 'welcome.html');
         return browser.get(process.env.WEBCERT_URL + 'welcome.html');
     },
     isAt: function() {

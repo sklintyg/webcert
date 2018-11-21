@@ -18,12 +18,6 @@
  */
 package se.inera.intyg.webcert.persistence.legacy.repository;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
-import java.time.LocalDateTime;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,9 +25,12 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
-
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.persistence.legacy.model.MigreratMedcertIntyg;
+
+import java.time.LocalDateTime;
+
+import static org.junit.Assert.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "classpath:repository-context.xml" })
@@ -54,7 +51,7 @@ public class MigratedMedcertIntygRepositoryTest {
         intyg1.setIntygsTyp("fk7263");
         intyg1.setMigreradFran("landtinget");
         intyg1.setPatientNamn("Test Testsson");
-        intyg1.setPatientPersonnummer(new Personnummer("19121212-1212"));
+        intyg1.setPatientPersonnummer(Personnummer.createPersonnummer("19121212-1212").get());
         intyg1.setSkapad(LocalDateTime.parse("2013-03-01T11:11:11"));
         intyg1.setSkickad(LocalDateTime.parse("2013-03-01T12:34:56"));
         intyg1.setUrsprung("APPLICATION");

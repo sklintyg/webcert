@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Inera AB (http://www.inera.se)
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -17,20 +17,59 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*global testdata,intyg,logger,pages,Promise,browser,commonTools, person*/
+/*global testdata, logger, pages, Promise, browser, commonTools, person, protractor*/
 'use strict';
 // var fkIntygPage = pages.intyg.fk['7263'].intyg;
 var fkLusePage = pages.intyg.luse.intyg;
 var pool = require('./dbActions').dbPool;
+var EC = protractor.ExpectedConditions;
 
 function sh(value) {
     return (value.search(/\s-\s/g) !== -1) ? value.split(/\s-\s/g)[0].replace('Ämne: ', '') : value.split(/\n/g)[0].replace('Ämne: ', '');
 }
 
-var moveAndSendKeys = require('common-testtools').uiHelpers.moveAndSendKeys;
+var moveAndSendKeys = require('common-testtools').protractorHelpers.moveAndSendKeys;
 
 module.exports = {
+    elementIsUsable: function(elm) {
+        return elm.isDisplayed().then(function(val) {
+            //OK
+            return val;
+        }, function(val) {
+            // Fånga fel om elementet inte finns. Kontrollera om det finns.
+            return elm.isPresent();
+        });
+    },
+    getUrl: function(url) {
+        var largeDelay = this.largeDelay;
+        var hugeDelay = this.hugeDelay;
+        var removeAlerts = this.removeAlerts;
+        logger.info('Går till url:' + url);
+
+
+        return browser.get(url).then(function() {
+            return removeAlerts();
+        }).then(function() {
+            return largeDelay();
+        }).then(function() {
+            return browser.getCurrentUrl();
+        }).then(function(currentUrl) {
+            logger.silly('currentUrl: ' + currentUrl);
+            return hugeDelay(); // Vänta på att intyg/utkast laddas in.
+        });
+    },
+    removeAlerts: function() {
+        return browser.wait(EC.alertIsPresent(), 1000).then(function() {
+            return browser.switchTo().alert().accept();
+        }, function() {
+            // Ingen dialogruta hittad, allt är frid och fröjd.*/
+            return;
+        });
+    },
     moveAndSendKeys: moveAndSendKeys,
+    tinyDelay: function() {
+        return browser.sleep(10);
+    },
     smallDelay: function() {
         return browser.sleep(100);
     },
@@ -41,8 +80,12 @@ module.exports = {
         return browser.sleep(1000);
     },
     hugeDelay: function() {
+        return browser.sleep(3000);
+    },
+    pageReloadDelay: function() {
         return browser.sleep(5000);
     },
+    enter: browser.actions().sendKeys(protractor.Key.ENTER),
     insertDashInPnr: function(pnrString) {
         if (pnrString.indexOf('-') >= 0) {
             return pnrString;
@@ -91,8 +134,33 @@ module.exports = {
             return testdata.soc.doi.getRandom(id);
         }
     },
-    fetchMessageIds: function(intygtyp) {
-        console.log('Hämtar meddelande-id:n');
+    fetch: {
+        kompletteringar: function() {
+            logger.silly('Hämtar meddelande-id:n för kompletteringar');
+            var panels = fkLusePage.qaPanels;
+            var attributes = panels.kompletteringar.map(function(elm) {
+                return Promise.all([
+                    elm.getAttribute('id'),
+                    elm.element(by.css('.fraga-status-header')).getText()
+                ]);
+            });
+            return attributes;
+        },
+        administrativafragor: function() {
+            logger.silly('Hämtar meddelande-id:n för administrativafragor');
+            var panels = fkLusePage.qaPanels;
+            var attributes = panels.kompletteringar.map(function(elm) {
+                return Promise.all([
+                    elm.getAttribute('id'),
+                    elm.element(by.css('.fraga-status-header')).getText()
+                ]);
+            });
+            return attributes;
+        }
+    },
+    /* Deptricated*/
+    /*fetchMessageIds: function(intygtyp) {
+        logger.silly('Hämtar meddelande-id:n');
 
         // var isSMIIntyg = this.isSMIIntyg(intygtyp);
 
@@ -101,51 +169,144 @@ module.exports = {
         }
         var panels = fkLusePage.qaPanels;
 
-        if (!panels) {
-            return Promise.resolve('Inga frågor hittades');
-        } else {
-            var messageIdAttributes = panels.map(function(elm) {
-                return Promise.all([
-                    elm.getAttribute('id'),
-                    elm.element(by.css('.fraga-status-header')).getText()
-                ]);
-            });
 
-            return messageIdAttributes.then(function(result) {
-                for (var i = 0; i < result.length; i++) {
-                    var messageId, messageAmne;
-                    var idAttr = result[i][0];
-                    var headerText = result[i][1];
-                    var isHandled = false;
+        var messageIdAttributes = panels.map(function(elm) {
+            return Promise.all([
+                elm.getAttribute('id'),
+                elm.element(by.css('.fraga-status-header')).getText()
+            ]);
+        });
 
-                    messageId = idAttr.replace('arende-unhandled-', '');
+        return messageIdAttributes.then(function(result) {
+            for (var i = 0; i < result.length; i++) {
+                var messageId, messageAmne;
+                var idAttr = result[i][0];
+                var headerText = result[i][1];
+                var isHandled = false;
 
-                    //Är ärende hanterat?
-                    isHandled = (messageId.indexOf('arende-handled') === 0);
-                    messageId = messageId.replace('arende-handled-', '');
+                messageId = idAttr.replace('arende-unhandled-', '');
 
-                    //Fånga ämne
-                    messageAmne = sh(headerText);
+                //Är ärende hanterat?
+                isHandled = (messageId.indexOf('arende-handled') === 0);
+                messageId = messageId.replace('arende-handled-', '');
 
-                    logger.info('Meddelanden som finns på intyget: ' + messageId + ', ' + messageAmne + ' Hanterad:' + isHandled);
-                    intyg.messages.push({
-                        id: messageId,
-                        amne: messageAmne,
-                        isHandled: isHandled
-                    });
-                }
-            });
-        }
+                //Fånga ämne
+                messageAmne = sh(headerText);
 
-    },
+                logger.info('Meddelanden som finns på intyget: ' + messageId + ', ' + messageAmne + ' Hanterad:' + isHandled);
+                intyg.messages.push({
+                    id: messageId,
+                    amne: messageAmne,
+                    isHandled: isHandled
+                });
+            }
+        });
+    },*/
     stripTrailingSlash: function(str) {
         if (str.substr(-1) === '/') {
             return str.substr(0, str.length - 1);
         }
         return str;
     },
+    getIntFromTxt: function(txt) {
+        var n;
+        switch (txt) {
+            case 'första':
+                n = 0;
+                break;
+            case 'andra':
+                n = 1;
+                break;
+            case 'tredje':
+                n = 2;
+                break;
+            case 'fjärde':
+                n = 3;
+                break;
+            case 'femte':
+                n = 4;
+                break;
+            case 'sjätte':
+                n = 5;
+                break;
+            case 'sjunde':
+                n = 6;
+                break;
+
+            default:
+                throw ('Lägg till fler getIntFromTxt alternativ');
+        }
+        return n;
+    },
+    getIntyg: function(intygsTyp, patient, makulerad) {
+        var intygShortCode = this.getPathShortcode(intygsTyp);
+        var insertDashInPnr = this.insertDashInPnr;
+        return new Promise(function(resolve, reject) {
+            return pool.getConnection().then(function(connection) {
+
+
+                patient.id = insertDashInPnr(patient.id);
+
+                var query = 'SELECT INTYGS_ID, ENHETS_ID, SKAPAD_AV_HSAID, STATUS, STATE';
+                query += ' FROM ' + process.env.DATABASE_NAME + '.INTYG ';
+                query += ' INNER JOIN ' + process.env.INTYGTJANST_DATABASE_NAME + '.CERTIFICATE_STATE ON ';
+                query += process.env.DATABASE_NAME + '.INTYG.INTYGS_ID = ' + process.env.INTYGTJANST_DATABASE_NAME + '.CERTIFICATE_STATE.CERTIFICATE_ID';
+                query += ' WHERE INTYGS_TYP = "' + intygShortCode + '"';
+                query += ' AND PATIENT_PERSONNUMMER = "' + patient.id + '"';
+                query += ' AND STATUS NOT LIKE "DRAFT%" '; //Utkast är inte intressant för denna funktionen.
+                if (makulerad !== true) { //Behöver efter makulerat intyg i IT p.g.a. Makulering kan ske i mina intyg.
+                    query += ' AND STATE != "CANCELLED"';
+                }
+                query += ' LIMIT 100';
+
+                logger.info('Hämtar intyg från webcert på patient ' + patient.id);
+                logger.silly('query: ');
+                logger.silly(query);
+
+                return connection.query(query,
+                    function(err, rows, fields) {
+                        connection.release();
+                        if (err) {
+                            throw (err);
+                        }
+                        resolve(rows);
+                    });
+            });
+        });
+    },
+    getUtkast: function(intygsTyp, patient) {
+        var intygShortCode = this.getPathShortcode(intygsTyp);
+        var insertDashInPnr = this.insertDashInPnr;
+        return new Promise(function(resolve, reject) {
+            return pool.getConnection().then(function(connection) {
+
+
+                patient.id = insertDashInPnr(patient.id);
+
+                var query = 'SELECT INTYGS_ID, ENHETS_ID, SKAPAD_AV_HSAID, STATUS';
+                query += ' FROM ' + process.env.DATABASE_NAME + '.INTYG WHERE INTYGS_TYP = "' + intygShortCode + '"';
+                query += ' AND PATIENT_PERSONNUMMER = "' + patient.id + '"';
+                query += ' AND STATUS LIKE "DRAFT%" ';
+                query += ' LIMIT 100';
+
+                logger.info('Hämtar utkast från webcert på patient ' + patient.id);
+
+                logger.silly('query: ');
+                logger.silly(query);
+
+                return connection.query(query,
+                    function(err, rows, fields) {
+                        connection.release();
+                        if (err) {
+                            throw (err);
+                        }
+                        resolve(rows);
+                    });
+            });
+        });
+    },
     getIntygElementRow: function(intygstyp, status, cb) {
-        var qaTable = element(by.css('table.table-qa'));
+        var qaTable = element(by.css('.wc-table-striped'));
 
         pool.getConnection().then(function(connection) {
             qaTable.all(by.cssContainingText('tr', status)).filter(function(elem, index) {
@@ -199,12 +360,19 @@ module.exports = {
         }
         return null;
     },
+    isDBDOIIntyg: function(intygsType) {
+        var regex = /(Dödsbevis|Dödsorsaksintyg)/g;
+        return (intygsType) ? (intygsType.match(regex) ? true : false) : false;
+    },
     isSMIIntyg: function(intygsType) {
         var regex = /(Läkarintyg för|Läkarutlåtande för)/g;
         return (intygsType) ? (intygsType.match(regex) ? true : false) : false;
     },
     isTSIntyg: function(intygsType) {
         return intygsType.indexOf('Transportstyrelsen') > -1;
+    },
+    isFK7263Intyg: function(intygsType) {
+        return intygsType.indexOf('7263') > -1;
     },
     subjectCodes: {
         'Komplettering': 'KOMPLT',
@@ -249,20 +417,12 @@ module.exports = {
     },
     randomPageField: function(isSMIIntyg, intygAbbrev) {
         var index = Math.floor(Math.random() * 3);
-        if (isSMIIntyg) {
-            if (intygAbbrev === 'LISJP') {
-                return this.pageField[intygAbbrev][index];
-            } else if (intygAbbrev === 'LUSE') {
-                return this.pageField[intygAbbrev][index];
-            } else if (intygAbbrev === 'LUAE_NA') {
-                return this.pageField[intygAbbrev][index];
-            } else if (intygAbbrev === 'LUAE_FS') {
-                return this.pageField[intygAbbrev][index];
-            }
-        } else if (intygAbbrev === 'TSTRK1007') {
+        if (intygAbbrev === 'TSTRK1007') {
             return this.pageField.TSTRK1007[index];
+        } else if (intygAbbrev === 'TSTRK1031') {
+            return this.pageField.TSTRK1031[index];
         } else {
-            return this.pageField.FK7263[index];
+            return this.pageField[intygAbbrev][index];
         }
 
     },
@@ -271,9 +431,10 @@ module.exports = {
         'LUSE': ['aktivitetsbegransning', 'sjukdomsforlopp', 'funktionsnedsattning'],
         'LUAE_NA': ['aktivitetsbegransning', 'sjukdomsforlopp', 'ovrigt'],
         'LUAE_FS': ['funktionsnedsattningDebut', 'funktionsnedsattningPaverkan', 'ovrigt'],
-        'FK7263': ['aktivitetsbegransning', 'funktionsnedsattning', 'diagnoskod'],
-        'TSTRK1007': ['funktionsnedsattning', 'hjartKarlsjukdom', 'utanKorrektion']
-
+        'TSTRK1007': ['funktionsnedsattning', 'hjartKarlsjukdom', 'utanKorrektion'],
+        'TSTRK1031': ['hypoglykemier', 'diabetesBehandling', 'specialist'],
+        'DB': ['dodsdatum', 'dodsplats', 'identitetstyrkt'],
+        'DOI': ['dodsdatum', 'dodsplats', 'identitetstyrkt']
     },
     getUserObj: function(userKey) {
         return this.userObj[userKey];
@@ -297,21 +458,23 @@ module.exports = {
     intygURL: function(typAvIntyg, intygsId) {
         var url = '';
         if (typAvIntyg === 'Läkarutlåtande för sjukersättning') {
-            url = process.env.WEBCERT_URL + 'web/dashboard#/intyg/luse/' + intygsId + '/';
+            url = process.env.WEBCERT_URL + '#/intyg/luse/' + intygsId + '/';
         } else if (typAvIntyg === 'Läkarintyg för sjukpenning') {
-            url = process.env.WEBCERT_URL + 'web/dashboard#/intyg/lisjp/' + intygsId + '/';
+            url = process.env.WEBCERT_URL + '#/intyg/lisjp/' + intygsId + '/';
         } else if (typAvIntyg === 'Läkarutlåtande för aktivitetsersättning vid förlängd skolgång') {
-            url = process.env.WEBCERT_URL + 'web/dashboard#/intyg/luae_fs/' + intygsId + '/';
+            url = process.env.WEBCERT_URL + '#/intyg/luae_fs/' + intygsId + '/';
         } else if (typAvIntyg === 'Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga') {
-            url = process.env.WEBCERT_URL + 'web/dashboard#/intyg/luae_na/' + intygsId + '/';
+            url = process.env.WEBCERT_URL + '#/intyg/luae_na/' + intygsId + '/';
         } else if (typAvIntyg === 'Läkarintyg FK 7263') {
-            url = process.env.WEBCERT_URL + 'web/dashboard#/intyg/fk7263/' + intygsId + '/';
+            url = process.env.WEBCERT_URL + '#/intyg/fk7263/' + intygsId + '/';
         } else if (typAvIntyg === 'Transportstyrelsens läkarintyg, diabetes') {
-            url = process.env.WEBCERT_URL + 'web/dashboard#/intyg/ts-diabetes/' + intygsId + '/';
+            url = process.env.WEBCERT_URL + '#/intyg/ts-diabetes/' + intygsId + '/';
         } else if (typAvIntyg === 'Transportstyrelsens läkarintyg') {
-            url = process.env.WEBCERT_URL + 'web/dashboard#/intyg/ts-bas/' + intygsId + '/';
+            url = process.env.WEBCERT_URL + '#/intyg/ts-bas/' + intygsId + '/';
         }
-        logger.info('intygURL: ' + url);
         return url;
+    },
+    uniqueItemsInArray: function(value, index, self) {
+        return self.indexOf(value) === index;
     }
 };

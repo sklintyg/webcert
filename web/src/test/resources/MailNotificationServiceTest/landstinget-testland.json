@@ -23,7 +23,8 @@
                 {
                 	"@class" : "se.inera.intyg.infra.integration.hsa.model.Mottagning",
                     "id" : "hogerakuten",
-                    "epost" : "Högerakuten"
+                    "namn": "Högerakuten",
+                    "epost" : "hogerakuten@testland.se"
                 }
             ]
         },

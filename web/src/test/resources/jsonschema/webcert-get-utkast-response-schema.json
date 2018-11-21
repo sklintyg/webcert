@@ -75,6 +75,12 @@
     },
     "patientAddressChangedInPU": {
       "type": "boolean"
+    },
+    "created": {
+      "type": "string"
+    },
+    "validPatientAddressAquiredFromPU": {
+      "type": "boolean"
     }
   },
   "additionalProperties": false,
@@ -87,6 +93,7 @@
     "relations",
     "content",
     "avliden",
-     "sekretessmarkering"
+    "sekretessmarkering",
+    "validPatientAddressAquiredFromPU"
   ]
 }

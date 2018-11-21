@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Inera AB (http://www.inera.se)
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* globals pages, logger, JSON, Promise,intyg */
+/* globals pages, logger, JSON, Promise,intyg, browser, protractor */
 
 'use strict';
 var utkastPage;
@@ -32,25 +32,25 @@ module.exports = {
             });
     },
     setPatientAdressIfNotGiven: function() {
+        var isSMI = helpers.isSMIIntyg(global.intyg.typ);
 
-        var isFk = false;
-        //IF FK (Fk7263 or SMI)
-        if (global.intyg.typ.indexOf('7263') !== -1) {
-            isFk = true;
-        } else if (helpers.isSMIIntyg(global.intyg.typ)) {
-            isFk = true;
-        }
+        // Regler som bör stämmas av med krav:
+        // SMI har inte patientadress i och med sekretessmarkering
+        // TS har patientadress
+        // DO/DOI har patientadress, men bara om patientadress saknas i PU (våra test-patienter har inte adress i PU för DB/DOI)
+        // Djupintegration har inte adress
 
         utkastPage = pages.getUtkastPageByType(intyg.typ);
-        if (global.person.adress && global.person.adress.postadress && !isFk && global.user.origin !== 'DJUPINTEGRATION') {
+
+        if (global.person.adress && global.person.adress.postadress && !isSMI && global.user.origin !== 'DJUPINTEGRATION') {
             return utkastPage.angePatientAdress(global.person.adress).then(function() {
-                logger.info('OK - setPatientAdress :' + JSON.stringify(global.person.adress));
+                logger.info('OK - setPatientAdress: ' + JSON.stringify(global.person.adress));
             }, function(reason) {
-                throw ('FEL, setPatientAdress,' + reason);
-            });
+                throw ('FEL - setPatientAdress: ' + reason);
+            }).catch(msg => logger.warn(msg));
         } else {
             logger.info('Ingen patientadress ändras');
-            if (!isFk && global.user.origin !== 'DJUPINTEGRATION') {
+            if (!isSMI && global.user.origin !== 'DJUPINTEGRATION') {
                 global.person.adress = {};
                 return Promise.all([
                     utkastPage.patientAdress.postAdress.getText().then(function(text) {
@@ -71,8 +71,9 @@ module.exports = {
     },
     fillIn: function(intyg) {
         utkastPage = pages.getUtkastPageByType(intyg.typ);
-        //TODO Syncronous
-        return Promise.all([this.setPatientAdressIfNotGiven(), this.fillInEnhetAdress()]);
+        return this.fillInEnhetAdress()
+            .then(() => this.setPatientAdressIfNotGiven())
+            .then(() => browser.driver.switchTo().activeElement().sendKeys(protractor.Key.TAB));
     }
 
 };

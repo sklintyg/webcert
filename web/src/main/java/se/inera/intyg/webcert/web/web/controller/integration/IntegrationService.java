@@ -19,6 +19,7 @@
 package se.inera.intyg.webcert.web.web.controller.integration;
 
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
+import se.inera.intyg.webcert.web.web.controller.integration.dto.PrepareRedirectToIntyg;
 
 /**
  * @author Magnus Ekstrand on 2017-10-09.

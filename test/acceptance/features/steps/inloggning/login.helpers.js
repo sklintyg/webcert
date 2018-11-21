@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Inera AB (http://www.inera.se)
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*global logger, JSON, browser, pages */
+/*global logger, JSON, browser, pages, Promise*/
 'use strict';
 var helpers = require('../helpers');
 
@@ -30,47 +30,77 @@ var logInAsUser = function(userObj, skipCookieConsent, secondBrowser) {
     // Fattigmans-kloning av användar-hashen.
     global.user = JSON.parse(JSON.stringify(userObj));
 
+    logger.silly(global.user);
 
     //Lägg till en adress för vårdenheten
     global.user.enhetsAdress = {
         postnummer: '66130',
         postort: 'Karlstad',
         postadress: 'Testsvängen 3',
-        telefon: '072-9192811'
+        telefon: '0729192811'
     };
-
-
-    var login;
-    if (!secondBrowser) {
-
-        browser.ignoreSynchronization = true;
-        pages.welcome.get();
-        browser.sleep(2000);
-        login = pages.welcome.loginByJSON(JSON.stringify(userObj), !skipCookieConsent);
-        browser.ignoreSynchronization = false;
-        browser.sleep(3000);
-        //TODO Async problem, ovan är lika med sleep(5000);
-    } else {
-        logger.info('Loggar in i andra webbläsaren >>');
-        secondBrowser.ignoreSynchronization = true;
-        secondBrowser.get('welcome.html');
-        secondBrowser.sleep(2000);
-        login = pages.welcome.loginByJSON(JSON.stringify(userObj), !skipCookieConsent, secondBrowser);
-        secondBrowser.ignoreSynchronization = false;
-        secondBrowser.sleep(3000);
-    }
 
     global.sessionUsed = false;
 
-    return login.then(function() {
-        return helpers.injectConsoleTracing();
-    });
+    if (!secondBrowser) {
+        browser.ignoreSynchronization = true;
+        return pages.welcome.get().then(function() {
+            return helpers.removeAlerts();
+        }).then(function() {
+            return helpers.mediumDelay();
+        }).then(function() {
+            return pages.welcome.loginByJSON(JSON.stringify(userObj), !skipCookieConsent);
+        }).then(function() {
+            return helpers.pageReloadDelay();
+        }).then(function() {
+            logger.silly('browser.wait(wcHeader.isPresent()');
+            return browser.wait(element(by.id('wcHeader')).isPresent(), 10000).then(function(present) {
+                return logger.silly('wcHeader is present ' + present);
+            });
+        }).then(function() {
+            return browser.wait(element(by.id('wcHeader')).isDisplayed(), 10000).then(function(displayed) {
+                logger.silly('wcHeader is displayed ' + displayed);
+                return helpers.smallDelay();
+            }, function(err) {
+                // Log error but continue. With more delay.
+                logger.warn(err);
+                return helpers.pageReloadDelay();
+            });
+        }).then(function() {
+            browser.ignoreSynchronization = false;
+            logger.silly('helpers.injectConsoleTracing();');
+            return helpers.injectConsoleTracing();
+        });
+    } else {
+        secondBrowser.ignoreSynchronization = true;
+        logger.info('Loggar in i andra webbläsaren >>');
+        return secondBrowser.get('welcome.html').then(function(result) {
+            return secondBrowser.sleep(100).then(function() {
+                return pages.welcome.loginByJSON(JSON.stringify(userObj), !skipCookieConsent, secondBrowser);
+            }).then(function() {
+                return secondBrowser.sleep(100);
+            }).then(function() {
+                return browser.wait(element(by.id('wcHeader')).isPresent(), 10000).then(function(present) {
+                    return logger.silly('wcHeader is present ' + present);
+                });
+            }).then(function() {
+                return browser.wait(element(by.id('wcHeader')).isDisplayed(), 10000).then(function(displayed) {
+                    logger.silly('wcHeader is displayed ' + (displayed));
+                    return secondBrowser.sleep(100);
+                });
+            }).then(function() {
+                secondBrowser.ignoreSynchronization = false;
+                logger.silly('helpers.injectConsoleTracing();');
+                return helpers.injectConsoleTracing();
+            });
+        });
+    }
 };
 
 module.exports = {
     logInAsUser: logInAsUser,
     logInAsUserRole: function(userObj, roleName, skipCookieConsent, secondBrowser) {
-        console.log(userObj);
+        logger.silly(userObj);
         global.user.roleName = roleName;
 
         return logInAsUser(userObj, skipCookieConsent, secondBrowser)
@@ -78,12 +108,14 @@ module.exports = {
                 logger.info((secondBrowser) ? 'Login second browser successful' : 'Login default browser successful');
                 var wcHeader = secondBrowser ? secondBrowser.findElement(by.id('wcHeader')) : element(by.id('wcHeader'));
 
-                element(by.id('wcHeader')).getText().then(function(txt) {
+                return element(by.id('wcHeader')).getText().then(function(txt) {
                     logger.info('Webcert Header: ' + txt);
                 }).then(function() {
-                    return expect(wcHeader.getText()).to.eventually.contain(roleName + ' - ' + userObj.forNamn + ' ' + userObj.efterNamn);
+                    return Promise.all([
+                        expect(wcHeader.getText()).to.eventually.contain(userObj.forNamn + ' ' + userObj.efterNamn),
+                        expect(wcHeader.getText()).to.eventually.contain(roleName)
+                    ]);
                 });
             });
-
     }
 };

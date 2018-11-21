@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Inera AB (http://www.inera.se)
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -31,15 +31,15 @@ module.exports = {
 
         // login with doctor Leonie Koehl if noone else is specified
         var user = userJson || {
-                'hsaId': 'TSTNMT2321000156-103F',
-                'forNamn': 'Leonie',
-                'efterNamn': 'Koehl',
-                'enhetId': 'TSTNMT2321000156-1039',
-                'legitimeradeYrkesgrupper': [ 'Läkare' ],
-                'forskrivarKod': '9300005',
-                'befattningsKod': '203090',
-                'origin': 'NORMAL'
-            };
+            'hsaId': 'TSTNMT2321000156-103F',
+            'forNamn': 'Leonie',
+            'efterNamn': 'Koehl',
+            'enhetId': 'TSTNMT2321000156-1039',
+            'legitimeradeYrkesgrupper': ['Läkare'],
+            'forskrivarKod': '9300005',
+            'befattningsKod': '203090',
+            'origin': 'NORMAL'
+        };
 
         var options = {
             url: 'fake',
@@ -74,6 +74,13 @@ module.exports = {
         };
         return restClient.run(options, 'json');
     },
+    deleteAllUtkastForPatient: function(personnummer) {
+        var options = {
+            url: 'testability/intyg/patient/' + personnummer,
+            method: 'DELETE'
+        };
+        return restClient.run(options, 'json');
+    },
     deleteUtkast: function(id) {
         var options = {
             url: 'testability/intyg/' + id,
@@ -86,6 +93,13 @@ module.exports = {
             url: 'testability/intyg/utkast',
             method: 'POST',
             body: createJson
+        };
+        return restClient.run(options, 'json');
+    },
+    markeraSkickatTillFK: function(id) {
+        var options = {
+            url: 'testability/intyg/' + id + '/skickat',
+            method: 'PUT'
         };
         return restClient.run(options, 'json');
     },
@@ -150,6 +164,13 @@ module.exports = {
         };
         return restClient.run(options, 'json', env.INTYGTJANST_URL + '/resources/');
     },
+    deleteAllIntygForPatient: function(personnummer) {
+        var options = {
+            url: 'certificate/citizen/' + personnummer,
+            method: 'DELETE'
+        };
+        return restClient.run(options, 'json', env.INTYGTJANST_URL + '/resources/');
+    },
     deleteIntyg: function(id) {
         var options = {
             url: 'certificate/' + id,
@@ -166,7 +187,7 @@ module.exports = {
     },
     queryNotificationStub: function() {
         var options = {
-            url: 'services/notification-stub/notifieringar/v3',
+            url: 'services/api/notification-api/notifieringar/v3',
             method: 'GET'
         };
         return restClient.run(options, 'json');
@@ -194,14 +215,14 @@ module.exports = {
     },
     setSekretessmarkering: function(patientId, isSekretessmarkerad) {
         var options = {
-            url: '/services/pu-api/person/' + patientId + '/sekretessmarkerad?value=' + (isSekretessmarkerad ? 'true' : 'false'),
+            url: '/services/api/pu-api/person/' + patientId + '/sekretessmarkerad?value=' + (isSekretessmarkerad ? 'true' : 'false'),
             method: 'GET'
         };
         return restClient.run(options);
     },
     setPuServiceState: function(enabled) {
         var options = {
-            url: '/services/pu-api/' + (enabled ? 'active' : 'inactive'),
+            url: '/services/api/pu-api/' + (enabled ? 'active' : 'inactive'),
             method: 'GET'
         };
         return restClient.run(options);

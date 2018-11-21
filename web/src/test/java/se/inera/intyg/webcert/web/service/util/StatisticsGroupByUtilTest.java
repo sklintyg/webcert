@@ -23,11 +23,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
 import se.inera.intyg.infra.integration.hsa.model.Vardgivare;
 import se.inera.intyg.infra.security.authorities.AuthoritiesResolverUtil;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.infra.security.common.model.Privilege;
 import se.inera.intyg.infra.security.common.model.Role;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.schemas.contract.Personnummer;
@@ -40,14 +41,21 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.when;
 
 /**
  * Created by eriklupander on 2017-08-30.
+ *
+ * NOT:
+ * Intygen TS-BAS och TS-DIABETES får ej skrivas på patienter som
+ * har SekretessStatus.TRUE. De intygen ska med andra ord inte
+ * räknas med.
  */
 @RunWith(MockitoJUnitRunner.class)
 public class StatisticsGroupByUtilTest extends AuthoritiesConfigurationTestSetup {
@@ -61,6 +69,8 @@ public class StatisticsGroupByUtilTest extends AuthoritiesConfigurationTestSetup
     private static final String FK7263 = "fk7263";
     private static final String TSBAS = "ts-bas";
 
+    private static final String PNR_INVALID = "thiswillnotwork";
+
     @Mock
     private PatientDetailsResolver patientDetailsResolver;
 
@@ -72,23 +82,22 @@ public class StatisticsGroupByUtilTest extends AuthoritiesConfigurationTestSetup
 
     @Before
     public void setup() {
-        Personnummer pnr1 = Personnummer.createValidatedPersonnummerWithDash(PNR1).get();
-        when(patientDetailsResolver.getSekretessStatus(pnr1)).thenReturn(SekretessStatus.FALSE);
+        Personnummer pnr1 = Personnummer.createPersonnummer(PNR1).get();
+        Personnummer pnr2 = Personnummer.createPersonnummer(PNR2).get();
+        Personnummer pnr3 = Personnummer.createPersonnummer(PNR3).get();
 
-        Personnummer pnr2 = Personnummer.createValidatedPersonnummerWithDash(PNR2).get();
-        when(patientDetailsResolver.getSekretessStatus(pnr2)).thenReturn(SekretessStatus.TRUE);
+        Map<Personnummer, SekretessStatus> sekrMap = new HashMap<>();
+        sekrMap.put(pnr1, SekretessStatus.FALSE);
+        sekrMap.put(pnr2, SekretessStatus.TRUE);
+        sekrMap.put(pnr3, SekretessStatus.FALSE);
 
-        Personnummer pnr3 = Personnummer.createValidatedPersonnummerWithDash(PNR3).get();
-        when(patientDetailsResolver.getSekretessStatus(pnr3)).thenReturn(SekretessStatus.FALSE);
-
+        when(patientDetailsResolver.getSekretessStatusForList(anyList())).thenReturn(sekrMap);
     }
 
     @Test
     public void testFilterAndGroupForTwoResultsOfSameUnitOneIsSekrForLakare() {
 
         when(webCertUserService.getUser()).thenReturn(createUser());
-
-
 
         List<GroupableItem> queryResult = new ArrayList<>();
         queryResult.add(new GroupableItem("id-1", HSA1, PNR1, FK7263));
@@ -105,11 +114,13 @@ public class StatisticsGroupByUtilTest extends AuthoritiesConfigurationTestSetup
 
         when(webCertUserService.getUser()).thenReturn(buildUserOfRole(AUTHORITIES_RESOLVER.getRole("VARDADMINISTRATOR")));
 
-        Personnummer pnr1 = Personnummer.createValidatedPersonnummerWithDash(PNR1).get();
-        when(patientDetailsResolver.getSekretessStatus(pnr1)).thenReturn(SekretessStatus.FALSE);
+        Personnummer pnr1 = Personnummer.createPersonnummer(PNR1).get();
+        Personnummer pnr2 = Personnummer.createPersonnummer(PNR2).get();
 
-        Personnummer pnr2 = Personnummer.createValidatedPersonnummerWithDash(PNR2).get();
-        when(patientDetailsResolver.getSekretessStatus(pnr2)).thenReturn(SekretessStatus.TRUE);
+        Map<Personnummer, SekretessStatus> sekrMap = new HashMap<>();
+        sekrMap.put(pnr1, SekretessStatus.FALSE);
+        sekrMap.put(pnr2, SekretessStatus.TRUE);
+        when(patientDetailsResolver.getSekretessStatusForList(anyList())).thenReturn(sekrMap);
 
         List<GroupableItem> queryResult = new ArrayList<>();
         queryResult.add(new GroupableItem("id-1", HSA1, PNR1, FK7263));
@@ -145,7 +156,6 @@ public class StatisticsGroupByUtilTest extends AuthoritiesConfigurationTestSetup
     public void testFilterAndGroupForMultipleUnitsForLakare() {
 
         when(webCertUserService.getUser()).thenReturn(createUser());
-
 
         List<GroupableItem> queryResult = new ArrayList<>();
         queryResult.add(new GroupableItem("id-1", HSA1, PNR1, FK7263));
@@ -204,11 +214,38 @@ public class StatisticsGroupByUtilTest extends AuthoritiesConfigurationTestSetup
         assertEquals(0, result.size());
     }
 
-    private WebCertUser buildUserOfRole(Role role) {
+    @Test
+    public void testFilterInvalidPersonnummer() {
+        List<GroupableItem> queryResult = new ArrayList<>();
+        queryResult.add(new GroupableItem("id-1", HSA1, PNR1, FK7263));
+        queryResult.add(new GroupableItem("id-2", HSA2, PNR2, TSBAS));
+        queryResult.add(new GroupableItem("id-3", HSA1, null, FK7263));
+        queryResult.add(new GroupableItem("id-4", HSA1, "", TSBAS));
+        queryResult.add(new GroupableItem("id-5", HSA2, "thisisainvalidparameter", FK7263));
 
+        List<Personnummer> result = testee.getPersonummerList(queryResult);
+
+        assertEquals(2, result.size());
+    }
+
+    @Test
+    public void testFilterInvalidGroupableItems() {
+        List<GroupableItem> queryResult = new ArrayList<>();
+        queryResult.add(new GroupableItem("id-1", HSA1, PNR1, FK7263));
+        queryResult.add(new GroupableItem("id-2", HSA2, PNR2, TSBAS));
+        queryResult.add(new GroupableItem("id-3", HSA1, null, FK7263));
+        queryResult.add(new GroupableItem("id-4", HSA1, "", TSBAS));
+        queryResult.add(new GroupableItem("id-5", HSA2, "thisisainvalidparameter", FK7263));
+
+        List<GroupableItem> result = testee.getFilteredGroupableItemList(queryResult);
+
+        assertEquals(2, result.size());
+    }
+
+    private WebCertUser buildUserOfRole(Role role) {
         WebCertUser user = new WebCertUser();
         user.setRoles(AuthoritiesResolverUtil.toMap(role));
-        user.setAuthorities(AuthoritiesResolverUtil.toMap(role.getPrivileges()));
+        user.setAuthorities(AuthoritiesResolverUtil.toMap(role.getPrivileges(), Privilege::getName));
         user.setOrigin(UserOriginType.DJUPINTEGRATION.name());
         user.setHsaId("testuser");
         user.setNamn("test userman");
@@ -225,9 +262,7 @@ public class StatisticsGroupByUtilTest extends AuthoritiesConfigurationTestSetup
     }
 
     private WebCertUser createUser() {
-
         Role role = AUTHORITIES_RESOLVER.getRole(AuthoritiesConstants.ROLE_LAKARE);
-
         return buildUserOfRole(role);
     }
 }

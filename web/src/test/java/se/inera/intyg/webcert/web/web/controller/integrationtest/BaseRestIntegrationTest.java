@@ -20,41 +20,34 @@ package se.inera.intyg.webcert.web.web.controller.integrationtest;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.jayway.restassured.RestAssured;
+import com.jayway.restassured.config.LogConfig;
 import com.jayway.restassured.filter.session.SessionFilter;
 import com.jayway.restassured.http.ContentType;
 import com.jayway.restassured.path.json.JsonPath;
 import com.jayway.restassured.response.Response;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.runner.RunWith;
 import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
-import se.inera.intyg.webcert.persistence.fragasvar.model.Amne;
-import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
-import se.inera.intyg.webcert.persistence.fragasvar.model.IntygsReferens;
-import se.inera.intyg.webcert.persistence.fragasvar.model.Komplettering;
-import se.inera.intyg.webcert.persistence.fragasvar.model.Vardperson;
+import se.inera.intyg.webcert.persistence.fragasvar.model.*;
 import se.inera.intyg.webcert.persistence.model.Status;
 import se.inera.intyg.webcert.web.auth.eleg.FakeElegCredentials;
 import se.inera.intyg.webcert.web.auth.fake.FakeCredentials;
 import se.inera.intyg.webcert.web.web.controller.api.dto.CreateUtkastRequest;
 
 import javax.servlet.http.HttpServletResponse;
+import java.io.FileNotFoundException;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
 import static java.util.Arrays.asList;
 import static org.hamcrest.core.IsEqual.equalTo;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * Base class for "REST-ish" integrationTests using RestAssured.
@@ -67,7 +60,7 @@ public abstract class BaseRestIntegrationTest {
     protected static final String DEFAULT_UTKAST_PATIENT_FORNAMN = "Nollett";
     protected static final String DEFAULT_UTKAST_PATIENT_EFTERNAMN = "Nollettsson";
     protected static final String DEFAULT_FRAGE_TEXT = "TEST_FRAGA";
-    protected static final String DEFAULT_INTYGSTYP = "fk7263";
+    protected static final String DEFAULT_INTYGSTYP = "lisjp";
 
     private static final String USER_JSON_FORM_PARAMETER = "userJsonDisplay";
     private static final String FAKE_LOGIN_URI = "/fake";
@@ -98,8 +91,9 @@ public abstract class BaseRestIntegrationTest {
      * Common setup for all tests
      */
     @Before
-    public void setupBase() {
-        RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
+    public void setupBase() throws FileNotFoundException {
+        LogConfig logconfig = new LogConfig().enableLoggingOfRequestAndResponseIfValidationFails().enablePrettyPrinting(true);
+        RestAssured.config().logConfig(logconfig);
         RestAssured.baseURI = System.getProperty("integration.tests.baseUrl");
     }
 
@@ -219,7 +213,7 @@ public abstract class BaseRestIntegrationTest {
         JsonPath draft = new JsonPath(response.body().asString());
         JsonPath model = new JsonPath(draft.getString("model"));
 
-        assertEquals(patientPersonNummer, model.getString("grundData.patient.personId"));
+        assertEquals(formatPersonnummer(patientPersonNummer), model.getString("grundData.patient.personId"));
 
         final String utkastId = model.getString("id");
         assertTrue(utkastId.length() > 0);
@@ -289,7 +283,7 @@ public abstract class BaseRestIntegrationTest {
         utkastRequest.setIntygType(intygsType);
         utkastRequest.setPatientFornamn(DEFAULT_UTKAST_PATIENT_FORNAMN);
         utkastRequest.setPatientEfternamn(DEFAULT_UTKAST_PATIENT_EFTERNAMN);
-        utkastRequest.setPatientPersonnummer(new Personnummer(patientPersonNummer));
+        utkastRequest.setPatientPersonnummer(Personnummer.createPersonnummer(patientPersonNummer).get());
         utkastRequest.setPatientPostadress("Blåbärsvägen 14");
         utkastRequest.setPatientPostort("Molnet");
         utkastRequest.setPatientPostnummer("44837");
@@ -308,7 +302,11 @@ public abstract class BaseRestIntegrationTest {
      * @return
      */
     protected int createQuestion(String typ, String intygId, String personnummer) {
-        FragaSvar fs = createTestQuestion(typ, intygId, personnummer);
+        return createQuestion(typ, intygId, personnummer, Amne.ARBETSTIDSFORLAGGNING);
+    }
+
+    protected int createQuestion(final String typ, final String intygId, final String personnummer, final Amne amne) {
+        FragaSvar fs = createTestQuestion(typ, intygId, personnummer, amne);
 
         Response response = given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
                 .contentType(ContentType.JSON).body(fs)
@@ -383,12 +381,13 @@ public abstract class BaseRestIntegrationTest {
      *            Social security number of the patient the certificate is made out to
      * @return
      */
-    private FragaSvar createTestQuestion(String typ, String intygId, String personnummer) {
+    private FragaSvar createTestQuestion(String typ, String intygId, String personnummer, Amne amne) {
         LocalDateTime now = LocalDateTime.now();
         FragaSvar fs = new FragaSvar();
-        fs.setAmne(Amne.ARBETSTIDSFORLAGGNING);
+        fs.setAmne(amne);
         fs.setFrageText(DEFAULT_FRAGE_TEXT);
-        fs.setIntygsReferens(new IntygsReferens(intygId, typ, new Personnummer(personnummer), "Api Restman", now));
+        fs.setIntygsReferens(new IntygsReferens(intygId, typ,
+                Personnummer.createPersonnummer(personnummer).get(), "Api Restman", now));
         fs.setStatus(Status.PENDING_INTERNAL_ACTION);
         fs.setFrageSkickadDatum(now);
         fs.setMeddelandeRubrik("Meddelanderubrik");
@@ -492,6 +491,20 @@ public abstract class BaseRestIntegrationTest {
         // arende.setSistaDatumForSvar(now.toLocalDate().plusDays(7));
         return arende;
 
+    }
+
+    /**
+     * Return a personnummer on the form yyyyMMddNNNN
+     *
+     * @param patientPersonnummer the patient id
+     * @return a formatted personnummer
+     */
+    protected String formatPersonnummer(String patientPersonnummer) {
+        Personnummer personnummer = Personnummer
+                .createPersonnummer(patientPersonnummer)
+                .orElseThrow(() -> new IllegalArgumentException("Could not create personnummer with id: " + patientPersonnummer));
+
+        return personnummer.getPersonnummer();
     }
 
     /**

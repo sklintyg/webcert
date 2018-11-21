@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Inera AB (http://www.inera.se)
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -28,7 +28,7 @@ var intygTypeSelector = element(by.id('intygType'));
 module.exports = {
 
     get: function() {
-        browser.get('web/dashboard#/create/choose-intyg-type/default/index');
+        browser.get('#/create/choose-intyg-type/default/index');
     },
     isAt: function() {
         return intygTypeSelector.isDisplayed();

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Inera AB (http://www.inera.se)
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/*globals wcTestTools, JSON*/
+/*globals wcTestTools, JSON, logger*/
 
 'use strict';
 var testdataHelper = wcTestTools.helpers.testdata;
@@ -26,42 +26,48 @@ function addDays(date, days) {
     return date;
 }
 
-module.exports.SendMessageToCare = function(user, person, intyg, message, amneCode) {
+module.exports.SendMessageToCare = function(user, person, intyg, message, testString, amneCode) {
     var messageID = testdataHelper.generateTestGuid();
     var skickatTidpunkt = new Date();
 
+
+    if (!global.intyg.messages) {
+        global.intyg.messages = [];
+    }
 
 
     var svarPa = '';
     var sistaDatumForSvar = '<urn1:sistaDatumForSvar>' + testdataHelper.dateFormat(addDays(skickatTidpunkt, 5)) + '</urn1:sistaDatumForSvar>';
 
     if (amneCode) {
-        global.meddelanden.push({
+        global.intyg.messages.unshift({
             id: messageID,
             typ: 'Fråga',
-            amne: amneCode
+            amne: amneCode,
+            testString: testString
         });
     } else {
         // Om ämne inte skickas med till funktionen så behandlar vi det som
         // ett svarsmeddelande och kopierar ämne från tidigare
-        amneCode = global.meddelanden[0].amne;
-        svarPa = '<urn1:svarPa>' + '<urn3:meddelande-id>' + global.meddelanden[0].id + '</urn3:meddelande-id>' + '</urn1:svarPa>';
+        amneCode = global.intyg.messages[0].amne;
+        svarPa = '<urn1:svarPa>' + '<urn3:meddelande-id>' + global.intyg.messages[0].id + '</urn3:meddelande-id>' + '</urn1:svarPa>';
         sistaDatumForSvar = '';
 
-        global.meddelanden.push({
+        global.intyg.messages.unshift({
             id: messageID,
             typ: 'Svar',
-            amne: amneCode
+            amne: amneCode,
+            testString: testString
         });
 
     }
 
-    console.log('global.meddelanden: ' + JSON.stringify(global.meddelanden));
+    logger.silly('global.intyg.messages: ' + JSON.stringify(global.intyg.messages));
 
     var kompletteringar = '';
     var paminnelseMeddelandeId = '';
-    if (global.meddelanden[0].id && amneCode === 'PAMINN') {
-        paminnelseMeddelandeId = '<urn1:paminnelseMeddelande-id>' + global.meddelanden[0].id + '</urn1:paminnelseMeddelande-id>';
+    if (global.intyg.messages[0].id && amneCode === 'PAMINN') {
+        paminnelseMeddelandeId = '<urn1:paminnelseMeddelande-id>' + global.intyg.messages[1].id + '</urn1:paminnelseMeddelande-id>';
     } else if (amneCode === 'KOMPLT') {
 
         kompletteringar = [];
@@ -101,7 +107,7 @@ module.exports.SendMessageToCare = function(user, person, intyg, message, amneCo
         '      <urn2:code>' + amneCode + '</urn2:code>' +
         '      <urn2:codeSystem>ffa59d8f-8d7e-46ae-ac9e-31804e8e8499</urn2:codeSystem>' +
         '   </urn1:amne>' +
-        '   <urn1:meddelande>' + message + '</urn1:meddelande>' +
+        '   <urn1:meddelande>' + message + ' ' + testString + '</urn1:meddelande>' +
         paminnelseMeddelandeId +
         svarPa +
         '   <urn1:skickatAv>' +

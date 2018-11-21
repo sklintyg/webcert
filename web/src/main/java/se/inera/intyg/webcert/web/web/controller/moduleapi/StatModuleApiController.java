@@ -45,6 +45,7 @@ import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
 import se.inera.intyg.infra.integration.hsa.model.Vardgivare;
 import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.webcert.web.service.arende.ArendeService;
 import se.inera.intyg.webcert.web.service.fragasvar.FragaSvarService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
@@ -87,6 +88,9 @@ public class StatModuleApiController extends AbstractApiController {
         WebCertUser user = getWebCertUserService().getUser();
         if (user == null) {
             LOG.warn("getStatistics was called, but webcertUser was null!");
+            return Response.ok(statsResponse).build();
+        } else if (UserOriginType.DJUPINTEGRATION.name().equals(user.getOrigin())) {
+            LOG.debug("getStatistics was called, but webcertUser origin is DJUPINTEGRATION - returning empty answer");
             return Response.ok(statsResponse).build();
         }
 

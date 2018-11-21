@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Inera AB (http://www.inera.se)
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -17,9 +17,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*global logger, JSON, browser, Promise */
+/*global logger, JSON, browser */
 'use strict';
-// var helpers = require('../helpers');
+var helpers = require('../helpers');
 
 function loginByJSON(userJson, giveCookieConsent, self) {
     if (giveCookieConsent) {
@@ -44,25 +44,21 @@ var logInAsUserStatistik = function(userObj, roleName, skipCookieConsent, self) 
 
     // Fattigmans-kloning av användar-hashen.
     global.user = JSON.parse(JSON.stringify(userObj));
-
-    var login;
-    browser.ignoreSynchronization = true;
-    browser.get('/#!/fakelogin');
-    browser.sleep(2000);
-    login = loginByJSON(JSON.stringify(userObj), !skipCookieConsent, self);
-    browser.ignoreSynchronization = false;
-    browser.sleep(3000);
     global.user.roleName = roleName;
 
-    return login.then(function() {
-        return Promise.resolve();
+    browser.ignoreSynchronization = true;
+    return helpers.getUrl('/#/fakelogin').then(function() {
+        return loginByJSON(JSON.stringify(userObj), !skipCookieConsent, self);
+    }).then(function() {
+        browser.ignoreSynchronization = false;
+        return helpers.pageReloadDelay();
     });
 };
 
 module.exports = {
     logInAsUserStatistik: logInAsUserStatistik,
     logInAsUserRoleStatistik: function(userObj, roleName, skipCookieConsent) {
-        console.log(userObj);
+        logger.silly(userObj);
         global.user.roleName = roleName;
         var self = this;
         return logInAsUserStatistik(userObj, roleName, skipCookieConsent, self).then(function() {
@@ -76,9 +72,6 @@ module.exports = {
                 function(err) {
                     return expect(headerboxUserProfile.getText()).to.eventually.contain(userObj.fornamn + ' ' + userObj.efternamn);
                 });
-            // browser.sleep(3000).then(function() {
-            //     return expect(headerboxUserProfile.getText()).to.eventually.contain(userObj.forNamn + ' ' + userObj.efterNamn);
-            // });
         });
 
     }

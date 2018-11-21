@@ -23,7 +23,6 @@ package se.inera.intyg.webcert.web.web.controller.api.dto;
  */
 public class WebUserFeaturesRequest {
 
-    private boolean jsMinified;
     private boolean jsLoggning;
 
     public boolean isJsLoggning() {
@@ -32,13 +31,5 @@ public class WebUserFeaturesRequest {
 
     public void setJsLoggning(boolean jsLoggning) {
         this.jsLoggning = jsLoggning;
-    }
-
-    public boolean isJsMinified() {
-        return jsMinified;
-    }
-
-    public void setJsMinified(boolean jsMinified) {
-        this.jsMinified = jsMinified;
     }
 }

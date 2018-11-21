@@ -33,8 +33,7 @@ angular.module('webcert').config(function($stateProvider, $urlRouterProvider, $h
             },
             views: {
                 'header': {
-                    templateUrl: commonPath + 'gui/headers/wcHeader.partial.html',
-                    controller: 'integration.EnhetsvalHeaderCtrl'
+                    templateUrl: commonPath + 'components/headers/wcHeader.partial.html'
                 },
                 'content@': {
                     templateUrl: '/app/views/appStartEnhetsval/normal-enhetsval.page.html',
@@ -46,8 +45,7 @@ angular.module('webcert').config(function($stateProvider, $urlRouterProvider, $h
             url: '/integration-enhetsval',
             views: {
                 'header': {
-                    templateUrl: commonPath + 'gui/headers/wcHeader.partial.html',
-                    controller: 'integration.EnhetsvalHeaderCtrl'
+                    templateUrl: commonPath + 'components/headers/wcHeader.partial.html'
                 },
                 'content@': {
                     templateUrl: '/app/views/appStartEnhetsval/integration-enhetsval.page.html',
@@ -58,12 +56,19 @@ angular.module('webcert').config(function($stateProvider, $urlRouterProvider, $h
         state('webcert', {
             views: {
                 'header': {
-                    templateUrl: commonPath + 'gui/headers/wcHeader.partial.html',
-                    controller: 'common.wcHeaderController'
+                    templateUrl: commonPath + 'components/headers/wcHeader.partial.html'
                 }
             }
         }).
-
+        state('webcert.index', {
+            url: '/',
+            views: {
+                'landing@': {
+                    templateUrl: '/app/views/index/index.html',
+                    controller: 'webcert.IndexCtrl'
+                }
+            }
+        }).
         state('webcert.create-index', {
             url: '/create/index',
             views: {
@@ -91,12 +96,12 @@ angular.module('webcert').config(function($stateProvider, $urlRouterProvider, $h
                 }
             }
         }).
-        state('webcert.unhandled-qa', {
-            url:'/unhandled-qa',
+        state('webcert.enhet-arenden', {
+            url:'/enhet-arenden',
             views: {
                 'content@': {
-                    templateUrl: '/app/views/fragorOchSvar/fragorOchSvar.html',
-                    controller: 'webcert.FragorOchSvarCtrl'
+                    templateUrl: '/app/views/fragorOchSvar/enhetArenden.html',
+                    controller: 'webcert.enhetArendenCtrl'
                 }
             }
         }).
@@ -110,80 +115,20 @@ angular.module('webcert').config(function($stateProvider, $urlRouterProvider, $h
             }
         }).
         state('webcert.intyg', {
-            abstract : true, // jshint ignore:line
-            data: { defaultActive : 'index' },
+            data: { defaultActive : 'index', backState: 'webcert.create-choose-certtype-index' },
             views: {
-                'content@' : {
-                    templateUrl: '/app/views/visaIntygFragasvar/intyg.main.html'
-                }
-            }
-        }).
-        state('webcert.intyg.fk', {
-            views: {
-                'main@webcert.intyg': {
-                    templateUrl: '/app/views/visaIntygFragasvar/intyg.fk.html',
-                    controller: 'webcert.VisaIntygFragasvarCtrl'
-                }
-            }
-        }).
-        state('webcert.intyg.ts', {
-            views: {
-                'main@webcert.intyg' : {
-                    templateUrl: '/app/views/visaIntygFragasvar/intyg.ts.html',
+                'content@': {
+                    templateUrl: '/app/views/visaIntygFragasvar/intyg.html',
                     controller: 'webcert.VisaIntygFragasvarCtrl'
                 }
             }
         }).
         state('webcert.fragasvar', {
+            data: { backState: 'webcert.enhet-arenden' },
             views: {
                 'content@' : {
                     templateUrl: '/app/views/visaIntygFragasvar/fragasvar.html',
                     controller: 'webcert.VisaIntygFragasvarCtrl'
-                }
-            }
-        }).
-        state('webcert.webcert-about', {
-            url: '/webcert/about',
-            views: {
-                'content@': {
-                    templateUrl: '/app/views/omWebcert/omWebcert.webcert.html',
-                    controller: 'webcert.OmWebcertCtrl'
-                }
-            }
-        }).
-        state('webcert.terms-about', {
-            url: '/terms/about',
-            views: {
-                'content@': {
-                    templateUrl: '/app/views/omWebcert/omWebcert.terms.html',
-                    controller: 'webcert.OmWebcertTermsCtrl'
-                }
-            }
-        }).
-        state('webcert.support-about', {
-            url: '/support/about',
-            views: {
-                'content@': {
-                    templateUrl: '/app/views/omWebcert/omWebcert.support.html',
-                    controller: 'webcert.OmWebcertCtrl'
-                }
-            }
-        }).
-        state('webcert.faq-about', {
-            url: '/faq/about',
-            views: {
-                'content@': {
-                    templateUrl: '/app/views/omWebcert/omWebcert.faq.html',
-                    controller: 'webcert.OmWebcertCtrl'
-                }
-            }
-        }).
-        state('webcert.cookies-about', {
-            url: '/cookies/about',
-            views: {
-                'content@': {
-                    templateUrl: '/app/views/omWebcert/omWebcert.cookies.html',
-                    controller: 'webcert.OmWebcertCtrl'
                 }
             }
         }).
@@ -195,8 +140,31 @@ angular.module('webcert').config(function($stateProvider, $urlRouterProvider, $h
                     controller: 'webcert.TermsCtrl'
                 }
             }
-        });
+        }).
+       state('webcert.fontdemo', {
+        url: '/font-demo',
+        views: {
+            'content@': {
+                templateUrl: '/app/views/font-demo.html'
+            }
+        }
+    });
 
-        $urlRouterProvider.when('', '/create/index');
+    $urlRouterProvider.when('', ['$window', 'common.UserModel', 'common.authorityService', 'common.featureService',
+        function($window, UserModel, authorityService, featureService) {
+            if ((UserModel.isLakare() || UserModel.isTandlakare() || UserModel.isPrivatLakare()) &&
+                authorityService.isAuthorityActive({feature: featureService.features.HANTERA_INTYGSUTKAST})) {
+                return '/create/index';
+            } else if (authorityService.isAuthorityActive({feature: featureService.features.HANTERA_FRAGOR})) {
+                return '/enhet-arenden';
+            } else {
+                if (!UserModel.user) {
+                    return '/';
+                }
+                else {
+                    $window.location.href = '/error.jsp?reason=denied';
+                }
+            }
+        }]);
 
 });

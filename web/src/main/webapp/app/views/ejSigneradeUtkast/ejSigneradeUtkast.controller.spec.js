@@ -32,6 +32,7 @@ describe('EjSigneradeUtkastCtrlSpec', function() {
 
     beforeEach(function() {
 
+        module('htmlTemplates');
         module('webcertTest');
         module('webcert', ['$provide', function($provide) {
 
@@ -44,18 +45,23 @@ describe('EjSigneradeUtkastCtrlSpec', function() {
             var User = mockFactory.buildUserMinimal();
             $provide.value('common.User', User);
             $provide.value('common.UserModel', { userContext: { authenticationScheme: null }, getActiveFeatures: function() {},
-                hasIntygsTyp: function() {return true;} });
+                hasIntygsTyp: function() {return true;}, isLakare: function() {return true;} });
             $provide.value('common.dialogService', mockFactory.buildDialogService());
             utkastNotifyService = jasmine.createSpyObj('common.UtkastNotifyService', [ 'onNotifyChange', 'notifyUtkast' ]);
             $provide.value('common.UtkastNotifyService', utkastNotifyService);
-            $provide.value('common.featureService', jasmine.createSpyObj('common.featureService', [ 'isFeatureActive' ]));
-            $provide.value('common.authorityService', {});
+            var featureService = jasmine.createSpyObj('common.featureService', [ 'isFeatureActive' ]);
+            featureService.features = {};
+            $provide.value('common.featureService', featureService);
+            $provide.value('common.authorityService', jasmine.createSpyObj('common.authorityService', [ 'isAuthorityActive' ]));
             $provide.value('common.messageService', {});
             $provide.value('common.DateUtilsService', { addStrictDateParser: function(){} });
         }]);
 
-        inject(['$rootScope', '$httpBackend', '$controller', '$timeout', 'mockResponse', 'webcert.UtkastFilterModel',
-            function($rootScope, _$httpBackend_, _$controller_, _$timeout_, _mockResponse_, _utkastFilterModel_) {
+        inject(['$rootScope', '$httpBackend', '$controller', '$timeout', 'mockResponse', 'webcert.UtkastFilterModel', '$templateCache',
+            function($rootScope, _$httpBackend_, _$controller_, _$timeout_, _mockResponse_, _utkastFilterModel_, $templateCache) {
+
+                $templateCache.put('/web/webjars/common/webcert/components/headers/wcHeader.partial.html', '');
+
                 $scope = $rootScope.$new();
                 $scope.filterFormElement = {
                     'filter-changedate-from': { $error: {}},

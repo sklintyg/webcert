@@ -18,7 +18,7 @@
  */
 package se.inera.intyg.webcert.web.auth;
 
-import static org.mockito.Matchers.anyString;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.contains;
 import static org.mockito.Mockito.times;
@@ -37,7 +37,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.web.savedrequest.DefaultSavedRequest;
@@ -99,7 +99,6 @@ public class IdpSelectionFilterTest {
     public void testAlreadyAuthenticatedDoesNotRedirect() throws ServletException, IOException {
         initMocksForAuthenticated();
 
-        when(httpServletRequest.getRequestURI()).thenReturn(DEFAULT_QA_PATH);
         when(httpServletRequest.getSession(true)).thenReturn(httpSession);
         testee.doFilterInternal(httpServletRequest, httpServletResponse, filterChain);
         verify(httpServletResponse, times(0)).sendRedirect(anyString());

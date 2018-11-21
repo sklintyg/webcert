@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Inera AB (http://www.inera.se)
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -51,8 +51,11 @@ var FkBaseIntyg = BaseIntyg._extend({
             sendButton: panel.element(by.css('.btn-success'))
         };
     },
-    clickKompletteraIntyg: function(id) {
-        return element(by.id('komplettera-intyg-' + id)).sendKeys(protractor.Key.SPACE);
+    clickKompletteraIntyg: function() {
+        return element(by.id('komplettera-intyg')).sendKeys(protractor.Key.SPACE);
+    },
+    switchToArendeTab: function() {
+        return element(by.id('tab-link-wc-arende-panel-tab')).click();
     }
 });
 

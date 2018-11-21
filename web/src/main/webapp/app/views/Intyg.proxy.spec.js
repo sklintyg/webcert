@@ -25,11 +25,12 @@ describe('IntygProxy', function() {
     var featureService;
     var dialogService;
 
+    beforeEach(angular.mock.module('htmlTemplates'));
     // Load the webcert module and mock away everything that is not necessary.
     beforeEach(angular.mock.module('webcert', function($provide) {
         featureService = {
             features: {
-                HANTERA_INTYGSUTKAST: 'hanteraIntygsutkast'
+                HANTERA_INTYGSUTKAST: 'HANTERA_INTYGSUTKAST'
             },
             isFeatureActive: jasmine.createSpy('isFeatureActive')
         };
@@ -49,19 +50,23 @@ describe('IntygProxy', function() {
             }
         };
 
+        $provide.value('common.authorityService', jasmine.createSpyObj('common.authorityService', ['isAuthorityActive']));
         $provide.value('common.featureService', featureService);
         $provide.value('common.dialogService', dialogService);
         $provide.value('common.statService', jasmine.createSpyObj('common.statService', ['refreshStat']));
         $provide.value('common.User', User);
+        $provide.value('common.UserModel', jasmine.createSpyObj('common.UserModel', ['isLakare', 'isTandlakare', 'isPrivatLakare']));
         $provide.value('common.messageService', {});
 
     }));
 
     // Get references to the object we want to test from the context.
-    beforeEach(angular.mock.inject(['webcert.IntygProxy', '$httpBackend',
-        function(_IntygProxy_, _$httpBackend_) {
+    beforeEach(angular.mock.inject(['webcert.IntygProxy', '$httpBackend', '$templateCache',
+        function(_IntygProxy_, _$httpBackend_, $templateCache) {
             $httpBackend = _$httpBackend_;
             IntygProxy = _IntygProxy_;
+
+            $templateCache.put('/web/webjars/common/webcert/components/headers/wcHeader.partial.html', '');
         }]));
 
     describe('#getUtkastForPatient', function() {
@@ -95,7 +100,7 @@ describe('IntygProxy', function() {
         it('should call onError if the list cannot be fetched from the server', function() {
             var onSuccess = jasmine.createSpy('onSuccess');
             var onError = jasmine.createSpy('onError');
-            $httpBackend.expectGET('/api/intyg/person/' + personId).respond(500);
+            $httpBackend.expectGET('/api/intyg/person/' + personId).respond(500, {'errorCode':'ERROR_CODE'});
 
             IntygProxy.getIntygForPatient(personId, onSuccess, onError);
             $httpBackend.flush();

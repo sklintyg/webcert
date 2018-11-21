@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Inera AB (http://www.inera.se)
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -21,15 +21,16 @@
  * Created by BESA on 2015-11-25.
  * Holds helper functions for actions that are needed often in pages.
  */
-/*globals protractor, Promise, logger */
+/*globals protractor, Promise, logger, browser */
 'use strict';
 
-var testtools = require('common-testtools');
+var testTools = require('common-testtools');
+testTools.protractorHelpers.init('certificate-content-container');
 
 var moveAndSendKeys;
 
-if (testtools.uiHelpers) {
-    moveAndSendKeys = testtools.uiHelpers.moveAndSendKeys;
+if (testTools.protractorHelpers) {
+    moveAndSendKeys = testTools.protractorHelpers.moveAndSendKeys;
 } else {
     moveAndSendKeys = function(elm, keys, description) {
         return elm.sendKeys(keys).then(function() {
@@ -49,6 +50,7 @@ module.exports = {
 
         }
         return elementArray.filter(function(elem) {
+
             return elem.getText().then(function(text) {
                 return (elementTextsArray.indexOf(text) >= 0);
             });
@@ -56,11 +58,45 @@ module.exports = {
 
             return filteredElements.forEach(function(element, i) {
                 filteredElements[i].getText().then(function(description) {
+
                     moveAndSendKeys(filteredElements[i], protractor.Key.SPACE, description);
                 });
             });
         });
     },
+    selectAllCheckBoxes: function(elementArray, elementTextsArray) {
+        if (!elementTextsArray) {
+            return Promise.resolve();
+
+        }
+        return elementArray.filter(function(elem) {
+
+            return elem.getText().then(function(text) {
+                return (elementTextsArray.indexOf(text) >= 0);
+            });
+        }).then(function(filteredElements) {
+
+            return filteredElements.forEach(function(element, i) {
+                filteredElements[i].getText().then(function(description) {
+
+                    filteredElements[i].click();
+                });
+            });
+        });
+    },
+    selectCheckBoxesById: function(elementIds) {
+        if (!elementIds) {
+            return Promise.resolve();
+
+        }
+        var promiseArr = [];
+        elementIds.forEach(function(elementId, i) {
+            promiseArr.push(moveAndSendKeys(element(by.id(elementId)), protractor.Key.SPACE, 'Checking checkbox (' + i + '/' + elementIds.length + ') with id "' + elementId + '"'));
+        });
+
+        return Promise.all(promiseArr);
+    },
+
     hasHogreKorkortsbehorigheter: function(korkortstyper) {
         function findArrayElementsInArray(targetArray, compareArray) {
             // find all elements in targetArray matching any elements in compareArray
@@ -74,7 +110,13 @@ module.exports = {
         var foundHogreBehorigheter = findArrayElementsInArray(korkortstyper, td.korkortstyperHogreBehorighet);
         return foundHogreBehorigheter.length > 0;
     },
-	smallDelay : function() { return browser.sleep(100); },
-	mediumDelay : function() { return browser.sleep(500); },
-	largeDelay : function() { return browser.sleep(1000); }
+    smallDelay: function() {
+        return browser.sleep(100);
+    },
+    mediumDelay: function() {
+        return browser.sleep(500);
+    },
+    largeDelay: function() {
+        return browser.sleep(1000);
+    }
 };

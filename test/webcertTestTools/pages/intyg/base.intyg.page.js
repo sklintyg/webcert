@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Inera AB (http://www.inera.se)
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -24,10 +24,13 @@
 'use strict';
 
 var JClass = require('jclass');
-var testdataHelper = require('common-testtools').testdataHelper;
+var testTools = require('common-testtools');
+var testdataHelper = testTools.testdataHelper;
+testTools.protractorHelpers.init();
 var shuffle = testdataHelper.shuffle;
 var restUtil = require('../../util/rest.util.js');
 var pageHelpers = require('../pageHelper.util.js');
+var hogerfaltet = require('./hogerfaltet');
 
 
 var BaseIntyg = JClass._extend({
@@ -43,15 +46,15 @@ var BaseIntyg = JClass._extend({
             dialogRadioAnnatAllvarligtFel: element(by.id('reason-ANNAT_ALLVARLIGT_FEL')),
             dialogRadioAnnatAllvarligtFelClarification: element(by.id('clarification-ANNAT_ALLVARLIGT_FEL')),
 
-            statusRevokeInprogress: element(by.id('certificate-is-revoked-message-text')),
-            statusRevoked: element(by.id('certificate-revoked-it-message-text'))
+            statusRevoked: element(by.css('#intygstatus1 [data-intyg-status-code="is-004"]'))
         };
+        this.intygStatus = element(by.id('intygstatus1'));
         this.patientNamnOchPersonnummer = element(by.id('patientNamnPersonnummer'));
+        this.FdPersonnummer = element(by.css('.old-person-id'));
         this.skicka = {
             knapp: element(by.id('sendBtn')),
             dialogKnapp: element(by.id('button1send-dialog')),
-            statusSendInprogress: element(by.id('certificate-is-on-sendqueue-to-it-message-text')),
-            statusSent: element(by.id('certificate-is-sent-to-recipient-message-text'))
+            statusSent: element(by.css('#intygstatus1 [data-intyg-status-code="is-002"]'))
         };
         this.fornya = {
             button: element(by.id('fornyaBtn')),
@@ -69,12 +72,28 @@ var BaseIntyg = JClass._extend({
 
         this.arendeIntygNotSentYetMessage = element(by.id('intyg-is-not-sent-to-fk-message-text'));
         this.arendeSentMessage = element(by.id('arende-is-sent-to-fk-message-text'));
-
-        this.newArendeBtn = element(by.id('askArendeBtn'));
-
+        this.arendeFilterKompletteringsbegaran = element(by.id('arende-filter-kompletteringsbegaran'));
+        this.arendeFilterAdministrativafragor = element(by.id('arende-filter-administrativafragor'));
+        this.arendePanel = element(by.css('arende-panel'));
         this.arendeText = element(by.id('arendeNewModelText'));
         this.arendeAmne = element(by.id('new-question-topic'));
+        this.arendeAmneSelected = element(by.id('new-question-topic-selected-item-label'));
         this.arendeSend = element(by.id('sendArendeBtn'));
+
+        /* Komplettera modaler */
+        this.kompletteraIntygButton = element(by.id('komplettera-intyg'));
+        this.kanInteKompletteraButton = element(by.id('kan-inte-komplettera'));
+        this.kanInteKompletteraModalAnledning1 = element(by.id('komplettering-modal-dialog-anledning-1'));
+        this.kanInteKompletteraModalOvrigaUpplysningar = element(by.id('komplettering-modal-dialog-ovriga-upplysningar'));
+        this.kanInteKompletteraModalAnledning2 = element(by.id('komplettering-modal-dialog-anledning-2'));
+        this.kanInteKompletteraModalMeddelandeText = element(by.id('komplettering-modal-dialog-meddelandetext'));
+        this.kanInteKompletteraModalSkickaSvarButton = element(by.id('komplettering-modal-dialog-send-answer-button'));
+        this.kompletteringBesvaradesMedMeddelandeAlert = element(by.id('arende-komplettering-besvarades-med-meddelande-alert'));
+        this.kompletteringUtkastLink = element(by.id('komplettera-open-utkast'));
+        this.uthoppKompletteraLink = element(by.id('arende-komplettering-uthopp-link'));
+
+        /* Fråga/svar element i högerfältet */
+        this.fragaSvar = hogerfaltet.fragaSvar;
 
         // Statusmeddelanden vid namn/adressändring vid djupintegration
         this.statusNameChanged = element(by.id('intyg-djupintegration-name-changed'));
@@ -96,10 +115,15 @@ var BaseIntyg = JClass._extend({
 
         this.selectUtskriftButton = element(by.id('intyg-header-dropdown-select-pdf-type'));
 
-
+        this.newPersonIdMessage = element(by.id('wc-new-person-id-message'));
+        this.newPersonIdMessageText = element(by.id('wc-new-person-id-message-text'));
     },
     get: function(intygId) {
-        browser.get('/web/dashboard#/intyg/' + this.intygType + '/' + intygId + '/');
+        browser.get('/#/intyg/' + this.intygType + '/' + intygId + '/');
+    },
+    scrollIntoView: function(domId) {
+        browser.executeScript('if ($("#' + domId + '").length) { $("#' + domId + '")[0].scrollIntoView()}');
+        return domId;
     },
     getReason: function(reasonBth) {
         for (var key in this.makulera) {
@@ -176,17 +200,20 @@ var BaseIntyg = JClass._extend({
         });
     },
     sendNewArende: function(arendeText, arendeAmne) {
-        var self = this;
-        return this.newArendeBtn.click().then(function() {
-            return pageHelpers.moveAndSendKeys(self.arendeText, arendeText).then(function() {
-                return self.arendeValjAmne(arendeAmne).then(function() {
-                    return self.arendeSend.click();
-                });
-            });
+        this.arendeFilterAdministrativafragor.click();
+        pageHelpers.moveAndSendKeys(this.arendeText, arendeText);
+        this.arendeValjAmne(arendeAmne);
+        this.arendeSend.click();
+
+        return this.arendePanel.all(by.css('.card')).first().getAttribute('id').then(function(id) {
+            return Promise.resolve(id.substring('arende-administrativaFragor-'.length));
         });
     },
     arendeValjAmne: function(val) {
-        return this.arendeAmne.all(by.css('option[label="' + val + '"]')).click();
+        this.arendeAmne.click();
+        this.arendeAmne.all(by.css('.plate div')).getByText(val).then(function(elm) {
+            elm.click();
+        });
     },
     hasState: function(states, state) {
         for (var a = 0; a < states.length; a++) {
@@ -196,51 +223,48 @@ var BaseIntyg = JClass._extend({
         }
         return false;
     },
-    getArendeById: function(handled, id) {
-        var subgroup = 'unhandled';
-        if (handled) {
-            subgroup = 'handled';
+    getArendeById: function(komplettering, id) {
+        var subgroup = 'administrativaFragor';
+        if (komplettering) {
+            subgroup = 'kompletteringar';
         }
         return element(by.id('arende-' + subgroup + '-' + id));
     },
+    getArendeAdministrativaFragorAmneById: function(id) {
+        return element(by.css('#arende-panel-header-amne-' + id)).getText();
+    },
+    getArendeAdministrativaFragorTextById: function(id) {
+        return element(by.css('#administrativaFragor-arende-fragetext-' + id)).getText();
+    },
+    getArendeAdministrativaSvarTextById: function(id) {
+        return element(by.css('#administrativaFragor-arende-svartext-' + id)).getText();
+    },
+    getArendeHandledCheckbox: function(id) {
+        return element(by.css('#handleCheck-' + id));
+    },
     getIntygHasKompletteringMessage: function() {
-        return element(by.id('intyg-has-komplettering-message'));
+        return element(by.css('#intygstatus1 [data-intyg-status-code="is-006"]'));
+    },
+    getKompletteringSvarTextById: function(id) {
+        return element(by.css('#kompletteringar-arende-svartext-' + id)).getText();
     },
     getIntygKompletteringFrageText: function(frageId, index) {
         return element(by.id('inline-komplettering-' + frageId + '-' + index));
     },
+    getAnswerButton: function(id) {
+        return element(by.id(this.scrollIntoView('arende-answer-button-' + id)));
+    },
     getAnswerBox: function(id) {
         return element(by.id('answerText-' + id));
     },
-    getAnswerButton: function(id) {
-        return element(by.id('sendAnswerBtn-' + id));
+    getSendAnswerButton: function(id) {
+        return element(by.id(this.scrollIntoView('sendAnswerBtn-' + id)));
     },
     getKompletteringDisabledSign: function(id) {
         return element(by.id('komplettering-disabled-' + id));
     },
     markArendeAsHandled: function(id) {
         return element(by.id('handleCheck-' + id));
-    },
-    getOnlyLakareCanKompletteraSign: function(id) {
-        return element(by.id('answerDisabledReasonPanel-' + id));
-    },
-    getKompletteraIntygButton: function(id) {
-        return element(by.id('komplettera-intyg-' + id));
-    },
-    getUthoppKompletteraSvaraButton: function(id) {
-        return element(by.id('uthopp-svara-med-meddelande-' + id));
-    },
-    getKompletteraIntygFortsattPaIntygsutkastButton: function(id) {
-        return element(by.id('komplettera-open-utkast-' + id));
-    },
-    getKanInteKompletteraButton: function(id) {
-        return element(by.id('kan-inte-komplettera-' + id));
-    },
-    getKompletteringsDialogLamnaOvrigaUpplysningar: function() {
-        return element(by.id('komplettering-modal-dialog-answerWithNyttIntyg-button'));
-    },
-    getKompletteringsDialogSvaraMedMeddelandeButton: function() {
-        return element(by.id('komplettering-modal-dialog-answerWithMessage-button'));
     },
     waitUntilIntygInIT: function(intygsId) {
         return browser.wait(function() {

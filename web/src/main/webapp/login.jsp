@@ -25,19 +25,19 @@
 <div class="container-fluid" style="margin-bottom: 8px">
   <div class="row">
     <h4>Välj inloggning</h4>
-    <div class="alert alert-danger" ng-show="showELegWarning">
-      <h5>Har du Telia e-legitimation?</h5>
+    <wc-alert-message alert-severity="warning" ng-show="showELegWarning">
+      <p>Har du Telia e-legitimation?</p>
       <p>Webbläsarna Chrome och Edge stödjer inte den metod som Telia e-legitimation använder för att skapa signaturer. För att kunna signera intyg i Webcert måste du därför välja en annan webbläsare.</p>
-      <p>Rekommenderad webbläsare är Internet Explorer 9 eller efterföljande versioner.</p>
-    </div>
+      <p>Rekommenderad webbläsare är Internet Explorer 11 eller efterföljande versioner.</p>
+    </wc-alert-message>
   </div>
   <div class="row">
 
     <div class="buttonbar">
-      <a href="/saml/login/alias/defaultAlias?idp=<spring:eval expression="@webcertProps.getProperty('sakerhetstjanst.saml.idp.metadata.url')" />"
+        <a href="/saml/login/alias/defaultAlias?idp=<spring:eval expression="@webcertProperties.getProperty('sakerhetstjanst.saml.idp.metadata.url')" />"
          class="btn btn-success" id="loginBtn">SITHS-kort</a>
 
-      <a href="/saml/login/alias/eleg?idp=<spring:eval expression="@webcertProps.getProperty('cgi.funktionstjanster.saml.idp.metadata.url')" />"
+      <a href="/saml/login/alias/eleg?idp=<spring:eval expression="@webcertProperties.getProperty('cgi.funktionstjanster.saml.idp.metadata.url')" />"
          class="btn btn-success" id="loginBtn2" style="margin-left: 20px;">E-legitimation</a>
     </div>
   </div>
@@ -51,7 +51,7 @@
   <p>Du som arbetar i en organisation som är ansluten till HSA-katalogen samt har medarbetaruppdrag ”Vård och behandling” loggar in med SITHS-kort.</p>
 
   <p>Problem med inloggning med SITHS-kort?</p>
-  <p><a href="#" ng-click="open('public/siths.help.html')">Läs mer om hur du kan felsöka</a></p>
+  <p><a href="#" ng-click="open('/app/views/index/loginMetoder/loginMetoderSithsHelp.html')">Läs mer om hur du kan felsöka</a></p>
 
   <h4>E-legitimation</h4>
 
@@ -59,6 +59,6 @@
     men inte arbetar inom en organisation som är ansluten till HSA-katalogen loggar in med e-legitimation.</p>
 
   <p>Problem med inloggning med e-legitimation?</p>
-  <p><a href="#" ng-click="open('public/e-leg.help.html')">Läs mer om hur du kan felsöka</a></p>
+  <p><a href="#" ng-click="open('/app/views/index/loginMetoder/loginMetoderElegHelp.html')">Läs mer om hur du kan felsöka</a></p>
 
 </div>

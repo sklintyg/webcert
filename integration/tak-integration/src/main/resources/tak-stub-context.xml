@@ -26,7 +26,7 @@
 
   <beans profile="dev,wc-tak-stub,wc-all-stubs">
 
-    <jaxrs:server id="takStubService" address="/takstubs">
+    <jaxrs:server id="takStubService" address="/stubs/takstub">
       <jaxrs:serviceBeans>
         <ref bean="takStub" />
       </jaxrs:serviceBeans>

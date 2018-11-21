@@ -34,14 +34,13 @@ import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
-import se.inera.intyg.webcert.common.model.WebcertFeature;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 import se.inera.intyg.webcert.web.service.relation.CertificateRelationService;
 import se.inera.intyg.webcert.web.service.signatur.SignaturService;
 import se.inera.intyg.webcert.web.service.signatur.dto.SignaturTicket;
 import se.inera.intyg.webcert.web.service.signatur.grp.GrpSignaturService;
-import se.inera.intyg.webcert.web.service.user.WebCertUserService;
+import se.inera.intyg.webcert.web.service.signatur.nias.NiasSignaturService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 import se.inera.intyg.webcert.web.service.utkast.dto.DraftValidation;
@@ -74,7 +73,6 @@ import java.io.UnsupportedEncodingException;
  * Controller for module interaction with drafts.
  *
  * @author npet
- *
  */
 @Path("/utkast")
 @Api(value = "utkast", description = "REST API - moduleapi - utkast", produces = MediaType.APPLICATION_JSON)
@@ -94,6 +92,9 @@ public class UtkastModuleApiController extends AbstractApiController {
     private GrpSignaturService grpSignaturService;
 
     @Autowired
+    private NiasSignaturService niasSignaturService;
+
+    @Autowired
     private MonitoringLogService monitoringLogService;
 
     @Autowired
@@ -101,9 +102,6 @@ public class UtkastModuleApiController extends AbstractApiController {
 
     @Autowired
     private CertificateRelationService certificateRelationService;
-
-    @Autowired
-    private WebCertUserService userService;
 
     @Autowired
     private PatientDetailsResolver patientDetailsResolver;
@@ -114,8 +112,7 @@ public class UtkastModuleApiController extends AbstractApiController {
     /**
      * Returns the draft certificate as JSON identified by the intygId.
      *
-     * @param intygsId
-     *            The id of the certificate
+     * @param intygsId The id of the certificate
      * @return a JSON object
      */
     @GET
@@ -135,7 +132,7 @@ public class UtkastModuleApiController extends AbstractApiController {
         }
 
         authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
-                .features(WebcertFeature.HANTERA_INTYGSUTKAST)
+                .features(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
                 .privilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG)
                 .orThrow();
 
@@ -154,6 +151,7 @@ public class UtkastModuleApiController extends AbstractApiController {
         Relations relations1 = certificateRelationService.getRelations(utkast.getIntygsId());
         draftHolder.setRelations(relations1);
         draftHolder.setKlartForSigneringDatum(utkast.getKlartForSigneringDatum());
+        draftHolder.setCreated(utkast.getSkapad());
         // The patientResolved is unnecessary?
         draftHolder.setPatientResolved(true);
         draftHolder.setSekretessmarkering(resolvedPatient.isSekretessmarkering());
@@ -161,26 +159,20 @@ public class UtkastModuleApiController extends AbstractApiController {
 
         // Businesss logic below should not be here inside a controller.. Should preferably be moved in the future.
         try {
-            try {
-                Utlatande utlatande = moduleRegistry.getModuleApi(intygsTyp).getUtlatandeFromJson(utkast.getModel());
-                draftHolder.setPatientNameChangedInPU(patientDetailsResolver.isPatientNamedChanged(
-                        utlatande.getGrundData().getPatient(), resolvedPatient));
-                draftHolder.setPatientAddressChangedInPU(patientDetailsResolver.isPatientAddressChanged(
-                        utlatande.getGrundData().getPatient(), resolvedPatient));
-            } catch (IOException e) {
-                LOG.error("Failed to getUtlatandeFromJson intygsId {} while checking for updated patient information", intygsId);
-            }
+            Utlatande utlatande = moduleRegistry.getModuleApi(intygsTyp).getUtlatandeFromJson(utkast.getModel());
 
-            if (!completeAddressProvided(resolvedPatient)) {
+            draftHolder.setPatientNameChangedInPU(patientDetailsResolver.isPatientNamedChanged(
+                    utlatande.getGrundData().getPatient(), resolvedPatient));
+
+            if (completeAddressProvided(resolvedPatient)) {
+                draftHolder.setValidPatientAddressAquiredFromPU(true);
+                    draftHolder.setPatientAddressChangedInPU(patientDetailsResolver.isPatientAddressChanged(
+                            utlatande.getGrundData().getPatient(), resolvedPatient));
+            } else {
                 // Overwrite retrieved address data with saved one.
-                Patient oldPatientData = null;
-                try {
-                    oldPatientData = moduleRegistry.getModuleApi(intygsTyp).getUtlatandeFromJson(utkast.getModel())
-                            .getGrundData()
-                            .getPatient();
-                } catch (IOException e) {
-                    LOG.error("Error while using the module api to convert json to Utlatande for intygsId {}", intygsId);
-                }
+                draftHolder.setValidPatientAddressAquiredFromPU(false);
+                draftHolder.setPatientAddressChangedInPU(false);
+                Patient oldPatientData = utlatande.getGrundData().getPatient();
                 copyOldAddressToNewPatientData(oldPatientData, resolvedPatient);
             }
             // Update the internal model with the resolved patient. This means the draft may be updated
@@ -192,6 +184,30 @@ public class UtkastModuleApiController extends AbstractApiController {
             return Response.ok(draftHolder).build();
         } catch (ModuleException | ModuleNotFoundException e) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, e.getMessage());
+        } catch (IOException e) {
+            LOG.error("Error while using the module api to convert json to Utlatande for intygsId {}", intygsId);
+            throw new RuntimeException("Error while using the module api to convert json to Utlatande", e);
+        }
+    }
+
+    // Copied from IntygServiceImpl, INTYG-5380
+    private static boolean completeAddressProvided(Patient patient) {
+        return !Strings.isNullOrEmpty(patient.getPostadress())
+                && !Strings.isNullOrEmpty(patient.getPostort())
+                && !Strings.isNullOrEmpty(patient.getPostnummer());
+    }
+
+    // Copied from IntygServiceImpl, INTYG-5380
+    private static void copyOldAddressToNewPatientData(Patient oldPatientData, Patient newPatientData) {
+        if (oldPatientData == null) {
+            newPatientData.setPostadress(null);
+            newPatientData.setPostnummer(null);
+            newPatientData.setPostort(null);
+        } else {
+            newPatientData.setPostadress(oldPatientData.getPostadress());
+            newPatientData.setPostnummer(oldPatientData.getPostnummer());
+            newPatientData.setPostort(oldPatientData.getPostort());
+
         }
     }
 
@@ -238,10 +254,8 @@ public class UtkastModuleApiController extends AbstractApiController {
     /**
      * Persists the supplied draft certificate using the intygId as key.
      *
-     * @param intygsId
-     *            The id of the certificate.
-     * @param payload
-     *            Object holding the certificate and its current status.
+     * @param intygsId The id of the certificate.
+     * @param payload  Object holding the certificate and its current status.
      */
     @PUT
     @Path("/{intygsTyp}/{intygsId}/{version}")
@@ -252,7 +266,7 @@ public class UtkastModuleApiController extends AbstractApiController {
             @DefaultValue("false") @QueryParam("autoSave") boolean autoSave, byte[] payload, @Context HttpServletRequest request) {
 
         authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
-                .features(WebcertFeature.HANTERA_INTYGSUTKAST)
+                .features(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
                 .privilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG)
                 .orThrow();
 
@@ -283,10 +297,8 @@ public class UtkastModuleApiController extends AbstractApiController {
     /**
      * Validate the supplied draft certificate.
      *
-     * @param intygsId
-     *            The id of the certificate.
-     * @param payload
-     *            Object holding the certificate and its current status.
+     * @param intygsId The id of the certificate.
+     * @param payload  Object holding the certificate and its current status.
      */
     @POST
     @Path("/{intygsTyp}/{intygsId}/validate")
@@ -296,7 +308,7 @@ public class UtkastModuleApiController extends AbstractApiController {
             byte[] payload) {
 
         authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
-                .features(WebcertFeature.HANTERA_INTYGSUTKAST)
+                .features(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
                 .privilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG)
                 .orThrow();
 
@@ -323,8 +335,7 @@ public class UtkastModuleApiController extends AbstractApiController {
     /**
      * Deletes a draft certificate identified by the certificateId.
      *
-     * @param intygsId
-     *            The id of the certificate
+     * @param intygsId The id of the certificate
      */
     @DELETE
     @Path("/{intygsTyp}/{intygsId}/{version}")
@@ -334,7 +345,7 @@ public class UtkastModuleApiController extends AbstractApiController {
             @Context HttpServletRequest request) {
 
         authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
-                .features(WebcertFeature.HANTERA_INTYGSUTKAST)
+                .features(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
                 .privilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG)
                 .orThrow();
 
@@ -353,10 +364,9 @@ public class UtkastModuleApiController extends AbstractApiController {
     }
 
     /**
-     * Signera utkast.
+     * Signera utkast. Endast fejkinloggning.
      *
-     * @param intygsId
-     *            intyg id
+     * @param intygsId intyg id
      * @return SignaturTicketResponse
      */
     @POST
@@ -380,7 +390,7 @@ public class UtkastModuleApiController extends AbstractApiController {
 
     private void verifyIsAuthorizedToSignIntyg(String intygsTyp) {
         authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
-                .features(WebcertFeature.HANTERA_INTYGSUTKAST)
+                .features(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
                 .privilege(AuthoritiesConstants.PRIVILEGE_SIGNERA_INTYG)
                 .orThrow();
     }
@@ -388,8 +398,7 @@ public class UtkastModuleApiController extends AbstractApiController {
     /**
      * Signera utkast mha Bank ID GRP API.
      *
-     * @param intygsId
-     *            intyg id
+     * @param intygsId intyg id
      * @return SignaturTicketResponse
      */
     @POST
@@ -414,11 +423,39 @@ public class UtkastModuleApiController extends AbstractApiController {
         return new SignaturTicketResponse(ticket);
     }
 
+
+    /**
+     * Signera utkast mha NetiD Access Server (nias).
+     *
+     * @param intygsId intyg id
+     * @return SignaturTicketResponse
+     */
+    @POST
+    @Path("/{intygsTyp}/{intygsId}/{version}/nias/signeraserver")
+    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    public SignaturTicketResponse serverSigneraUtkastMedNias(@PathParam("intygsTyp") String intygsTyp,
+                                                            @PathParam("intygsId") String intygsId,
+                                                            @PathParam("version") long version, @Context HttpServletRequest request) {
+
+        verifyIsAuthorizedToSignIntyg(intygsTyp);
+
+        SignaturTicket ticket;
+        try {
+            ticket = niasSignaturService.startNiasAuthentication(intygsId, version);
+        } catch (OptimisticLockException | OptimisticLockingFailureException e) {
+            monitoringLogService.logUtkastConcurrentlyEdited(intygsId, intygsTyp);
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.CONCURRENT_MODIFICATION, e.getMessage());
+        }
+
+        request.getSession(true).removeAttribute(LAST_SAVED_DRAFT);
+
+        return new SignaturTicketResponse(ticket);
+    }
+
     /**
      * Signera utkast.
      *
-     * @param biljettId
-     *            biljett id
+     * @param biljettId biljett id
      * @return BiljettResponse
      */
     @POST
@@ -455,8 +492,7 @@ public class UtkastModuleApiController extends AbstractApiController {
     /**
      * Skapa signeringshash.
      *
-     * @param intygsId
-     *            intyg id
+     * @param intygsId intyg id
      * @return SignaturTicketResponse
      */
     @POST
@@ -464,7 +500,8 @@ public class UtkastModuleApiController extends AbstractApiController {
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public SignaturTicketResponse signeraUtkast(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId,
             @PathParam("version") long version) {
-        authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp).features(WebcertFeature.HANTERA_INTYGSUTKAST).orThrow();
+        authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp).features(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
+                .orThrow();
 
         SignaturTicket ticket;
         try {
@@ -479,15 +516,15 @@ public class UtkastModuleApiController extends AbstractApiController {
     /**
      * Hamta signeringsstatus.
      *
-     * @param biljettId
-     *            biljett id
+     * @param biljettId biljett id
      * @return SignaturTicketResponse
      */
     @GET
     @Path("/{intygsTyp}/{biljettId}/signeringsstatus")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public SignaturTicketResponse biljettStatus(@PathParam("intygsTyp") String intygsTyp, @PathParam("biljettId") String biljettId) {
-        authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp).features(WebcertFeature.HANTERA_INTYGSUTKAST).orThrow();
+        authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp).features(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
+                .orThrow();
 
         SignaturTicket ticket = signaturService.ticketStatus(biljettId);
         return new SignaturTicketResponse(ticket);

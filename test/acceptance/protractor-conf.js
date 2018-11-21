@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Inera AB (http://www.inera.se)
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -48,11 +48,12 @@ exports.config = {
         platform: 'ANY'
     },
     cucumberOpts: {
-        format: ['json:./node_modules/common-testtools/cucumber-html-report/acc_results.json', 'pretty'],
-        require: ['features/steps/**/*.js', 'features/support/**/*.js']
+        format: ['json:./node_modules/common-testtools/cucumber-html-report/acc_results.json', 'node_modules/cucumber-pretty'], 
+        require: ['./features/steps/*']
     },
     onPrepare: function() {
-        browser.manage().window().setSize(1600, 1000);
+		// Stor skärm på höjden för att slippa scrolla
+        browser.manage().window().setSize(1600, 20000); 
         //http://chaijs.com/
         global.chai = require('chai');
 
@@ -139,7 +140,7 @@ exports.config = {
 		
 
         //Set window size
-        browser.manage().window().setSize(1600, 1000);
+        //browser.manage().window().setSize(1600, 1000); Size är redan satt
 
         //Strunta i om servern inte kan bekräfta dess identitet
         process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
@@ -152,7 +153,7 @@ exports.config = {
                 }
             ]);
         };
-        browser.addMockModule('disableNgAnimate', disableNgAnimate);
+       // browser.addMockModule('disableNgAnimate', disableNgAnimate);
 
         var overrideLogging = function() {
             angular.module('overrideLogging', [])
@@ -173,7 +174,7 @@ exports.config = {
     onComplete: function() {
 
         // Kontrollera externa länkar på sidan som samlats ihop under scenario.
-        if (global.externalPageLinks.length > 0) {
+        if (global.externalPageLinks && global.externalPageLinks.length > 0) {
             var linksArr = [];
 
             fs.readFile(browser.params.externalLinksFile, 'utf-8', function(err, data) {

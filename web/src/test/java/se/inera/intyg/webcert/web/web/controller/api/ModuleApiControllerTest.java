@@ -23,12 +23,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import se.inera.intyg.common.support.modules.registry.IntygModule;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
-import se.inera.intyg.common.support.modules.support.feature.ModuleFeature;
 import se.inera.intyg.infra.dynamiclink.service.DynamicLinkService;
-import se.inera.intyg.webcert.web.service.feature.WebcertFeatureService;
+import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
+import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 
 import javax.ws.rs.core.Response;
 import java.util.Arrays;
@@ -50,25 +50,26 @@ public class ModuleApiControllerTest {
 
     private static final String MODULE_1_DETAILED_DESC = "This is a detailed description";
     private static final String SOME_REPLACED_DESCRIPTION = "Some replaced description";
-
+    private static final String ISSUER_TYPE_ID = "TheAuthorities";
 
     @Mock
     private IntygModuleRegistry moduleRegistry;
 
     @Mock
-    private WebcertFeatureService featureService;
+    private DynamicLinkService dynamicLinkService;
 
     @Mock
-    private DynamicLinkService dynamicLinkService;
+    private AuthoritiesHelper authoritiesHelper;
 
     @InjectMocks
     private ModuleApiController moduleApiController;
 
     @Before
     public void setup() {
-        when(moduleRegistry.listAllModules()).thenReturn(Arrays.asList(new IntygModule(MODULE_ID_1, null, null, MODULE_1_DETAILED_DESC, null, null, null, null),
-                new IntygModule(MODULE_ID_2, null, null, null, null, null, null, null),
-                new IntygModule(MODULE_ID_3, null, null, null, null, null, null, null)));
+        when(moduleRegistry.listAllModules())
+                .thenReturn(Arrays.asList(new IntygModule(MODULE_ID_1, null, null, MODULE_1_DETAILED_DESC, ISSUER_TYPE_ID, null, null, null, null, false),
+                        new IntygModule(MODULE_ID_2, null, null, null, ISSUER_TYPE_ID, null, null, null, null, false),
+                        new IntygModule(MODULE_ID_3, null, null, null, ISSUER_TYPE_ID, null, null, null, null, false)));
 
         when(dynamicLinkService.apply(DYNAMIC_LINK_PLACEHOLDER, MODULE_1_DETAILED_DESC)).thenReturn(SOME_REPLACED_DESCRIPTION);
     }
@@ -81,6 +82,7 @@ public class ModuleApiControllerTest {
         List<IntygModule> res = (List<IntygModule>) response.getEntity();
         assertEquals(3, res.size());
         assertEquals(MODULE_ID_1, res.get(0).getId());
+        assertEquals(ISSUER_TYPE_ID, res.get(0).getIssuerTypeId());
         assertEquals(MODULE_ID_2, res.get(1).getId());
         assertEquals(MODULE_ID_3, res.get(2).getId());
     }
@@ -88,9 +90,9 @@ public class ModuleApiControllerTest {
     @SuppressWarnings("unchecked")
     @Test
     public void testGetActiveModules() {
-        when(featureService.isModuleFeatureActive(ModuleFeature.HANTERA_INTYGSUTKAST.getName(), MODULE_ID_1)).thenReturn(true);
-        when(featureService.isModuleFeatureActive(ModuleFeature.HANTERA_INTYGSUTKAST.getName(), MODULE_ID_2)).thenReturn(true);
-        when(featureService.isModuleFeatureActive(ModuleFeature.HANTERA_INTYGSUTKAST.getName(), MODULE_ID_3)).thenReturn(true);
+        when(authoritiesHelper.isFeatureActive(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST, MODULE_ID_1)).thenReturn(true);
+        when(authoritiesHelper.isFeatureActive(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST, MODULE_ID_2)).thenReturn(true);
+        when(authoritiesHelper.isFeatureActive(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST, MODULE_ID_3)).thenReturn(true);
 
         Response response = moduleApiController.getActiveModules();
         assertNotNull(response);
@@ -104,9 +106,9 @@ public class ModuleApiControllerTest {
     @SuppressWarnings("unchecked")
     @Test
     public void testGetActiveModulesOnlyReturnsActiveModules() {
-        when(featureService.isModuleFeatureActive(ModuleFeature.HANTERA_INTYGSUTKAST.getName(), MODULE_ID_1)).thenReturn(true);
-        when(featureService.isModuleFeatureActive(ModuleFeature.HANTERA_INTYGSUTKAST.getName(), MODULE_ID_2)).thenReturn(false);
-        when(featureService.isModuleFeatureActive(ModuleFeature.HANTERA_INTYGSUTKAST.getName(), MODULE_ID_3)).thenReturn(true);
+        when(authoritiesHelper.isFeatureActive(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST, MODULE_ID_1)).thenReturn(true);
+        when(authoritiesHelper.isFeatureActive(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST, MODULE_ID_2)).thenReturn(false);
+        when(authoritiesHelper.isFeatureActive(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST, MODULE_ID_3)).thenReturn(true);
 
         Response response = moduleApiController.getActiveModules();
         assertNotNull(response);
@@ -119,9 +121,9 @@ public class ModuleApiControllerTest {
     @SuppressWarnings("unchecked")
     @Test
     public void testGetActiveModulesNoActive() {
-        when(featureService.isModuleFeatureActive(ModuleFeature.HANTERA_INTYGSUTKAST.getName(), MODULE_ID_1)).thenReturn(false);
-        when(featureService.isModuleFeatureActive(ModuleFeature.HANTERA_INTYGSUTKAST.getName(), MODULE_ID_2)).thenReturn(false);
-        when(featureService.isModuleFeatureActive(ModuleFeature.HANTERA_INTYGSUTKAST.getName(), MODULE_ID_3)).thenReturn(false);
+        when(authoritiesHelper.isFeatureActive(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST, MODULE_ID_1)).thenReturn(false);
+        when(authoritiesHelper.isFeatureActive(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST, MODULE_ID_2)).thenReturn(false);
+        when(authoritiesHelper.isFeatureActive(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST, MODULE_ID_3)).thenReturn(false);
 
         Response response = moduleApiController.getActiveModules();
         assertNotNull(response);

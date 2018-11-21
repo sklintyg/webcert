@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Inera AB (http://www.inera.se)
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -38,20 +38,18 @@ var LuseUtkast = BaseSmiUtkast._extend({
             utecklasOverTid: element(by.id('medicinskaForutsattningarForArbete')),
             trotsBegransningar: element(by.id('formagaTrotsBegransning'))
         };
-        this.kontaktMedFkNo = element(by.id('formly_1_checkbox-inline_kontaktMedFk_0'));
-        // this.kontaktMedFkNo = element(by.id('kontaktMedFkNo'));
         this.tillaggsfragor0svar = element(by.id('tillaggsfragor[0].svar'));
         this.tillaggsfragor1svar = element(by.id('tillaggsfragor[1].svar'));
 
         this.underlag = {
             ett: {
-                datum: element(by.id('underlag-0-datum'))
+                datum: element(by.id('datepicker_underlag[0].datum'))
             },
             tva: {
-                datum: element(by.id('underlag-1-datum'))
+                datum: element(by.id('datepicker_underlag[1].datum'))
             },
             tre: {
-                datum: element(by.id('underlag-2-datum'))
+                datum: element(by.id('datepicker_underlag[2].datum'))
             }
 
         };
@@ -80,7 +78,7 @@ var LuseUtkast = BaseSmiUtkast._extend({
             }
         };
     },
-	angeAktivitetsbegransning: function(aktivitetsbegransning) {
+    angeAktivitetsbegransning: function(aktivitetsbegransning) {
         return pageHelpers.moveAndSendKeys(this.aktivitetsbegransning, aktivitetsbegransning);
     },
     angeMedicinskaForutsattningar: function(forutsattningar) {
@@ -93,15 +91,15 @@ var LuseUtkast = BaseSmiUtkast._extend({
         var mb = this.medicinskBehandling;
 
         return pageHelpers.moveAndSendKeys(mb.avslutad.text, behandling.avslutad)
-		.then(function(){
-			return pageHelpers.moveAndSendKeys(mb.pagaende.text, behandling.pagaende);
-		})
-		.then(function(){
-			return pageHelpers.moveAndSendKeys(mb.planerad.text, behandling.planerad)
-		})
-		.then(function(){
-			return pageHelpers.moveAndSendKeys(mb.substansintag.text, behandling.substansintag);
-		});
+            .then(function() {
+                return pageHelpers.moveAndSendKeys(mb.pagaende.text, behandling.pagaende);
+            })
+            .then(function() {
+                return pageHelpers.moveAndSendKeys(mb.planerad.text, behandling.planerad);
+            })
+            .then(function() {
+                return pageHelpers.moveAndSendKeys(mb.substansintag.text, behandling.substansintag);
+            });
     },
 
     get: function get(intygId) {

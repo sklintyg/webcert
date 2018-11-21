@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Inera AB (http://www.inera.se)
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -119,7 +119,7 @@ function getRandomUtredning() {
             'Övrigt'
         ])[0],
         datum: '2016-04-09',
-        infoOmUtredningen: testdataHelper.randomTextString()
+        infoOmUtredningen: testdataHelper.randomTextString(5, 53)
     };
 }
 

@@ -25,12 +25,11 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import se.inera.intyg.common.support.model.common.internal.GrundData;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.model.common.internal.Patient;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
-import se.inera.intyg.common.support.modules.registry.IntygModule;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
@@ -44,24 +43,28 @@ import se.inera.intyg.infra.integration.hsa.model.Vardgivare;
 import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
 import se.inera.intyg.infra.security.authorities.AuthoritiesResolverUtil;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.infra.security.common.model.Privilege;
 import se.inera.intyg.infra.security.common.model.Role;
 import se.inera.intyg.infra.security.common.model.UserDetails;
 import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.common.model.GroupableItem;
 import se.inera.intyg.webcert.common.model.UtkastStatus;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.auth.bootstrap.AuthoritiesConfigurationTestSetup;
-import se.inera.intyg.webcert.web.service.feature.WebcertFeatureService;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.log.LogService;
 import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.notification.NotificationService;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
+import se.inera.intyg.webcert.web.service.referens.ReferensService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
+import se.inera.intyg.webcert.web.service.util.StatisticsGroupByUtil;
+import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftRequest;
 import se.inera.intyg.webcert.web.service.utkast.dto.DraftValidation;
 import se.inera.intyg.webcert.web.service.utkast.dto.SaveDraftResponse;
 import se.inera.intyg.webcert.web.service.utkast.dto.UpdatePatientOnDraftRequest;
@@ -69,44 +72,36 @@ import se.inera.intyg.webcert.web.service.utkast.util.CreateIntygsIdStrategy;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
 
 import javax.persistence.OptimisticLockException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
+import java.io.IOException;
+import java.util.*;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.verifyZeroInteractions;
-import static org.mockito.Mockito.when;
+import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.anyList;
+import static org.mockito.Mockito.anySet;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
+
+    private static final long UTKAST_VERSION = 1;
+    private static final long INTYG_VERSION = 2;
 
     private static final String INTYG_ID = "abc123";
     private static final String INTYG_COPY_ID = "def456";
     private static final String INTYG_JSON = "A bit of text representing json";
     private static final String INTYG_TYPE = "fk7263";
 
-    private static final long UTKAST_VERSION = 1;
-    private static final long INTYG_VERSION = 2;
     private static final String UTKAST_ENHETS_ID = "hsa123";
-
     private static final String USER_REFERENCE = "some-ref";
+
+    private static final String REFERENS = "referens";
+
+    private static final String PERSON_ID = "19121212-1212";
+
+    private static final Personnummer PERSONNUMMER = createPnr(PERSON_ID);
 
     @Mock
     private UtkastRepository mockUtkastRepository;
@@ -127,7 +122,9 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
     @Mock
     private PatientDetailsResolver patientDetailsResolver;
     @Mock
-    private WebcertFeatureService featureService;
+    private ReferensService referensService;
+    @Mock
+    private StatisticsGroupByUtil statisticsGroupByUtil;
 
     @Spy
     private CreateIntygsIdStrategy mockIdStrategy = new CreateIntygsIdStrategy() {
@@ -148,6 +145,11 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
     private HoSPersonal hoSPerson;
     private Patient defaultPatient;
 
+    private static Personnummer createPnr(String personId) {
+        return Personnummer.createPersonnummer(personId)
+                .orElseThrow(() -> new IllegalArgumentException("Could not parse personnummer: " + personId));
+    }
+
     @Before
     public void setup() {
         hoSPerson = new HoSPersonal();
@@ -157,7 +159,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         hoSPerson.getSpecialiteter().add("Ortoped");
 
         defaultPatient = new Patient();
-        defaultPatient.setPersonId(new Personnummer("19121212-1212"));
+        defaultPatient.setPersonId(PERSONNUMMER);
         defaultPatient.setFornamn("fornamn");
         defaultPatient.setMellannamn("mellannamn");
         defaultPatient.setPostadress("pa1");
@@ -183,9 +185,67 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         vardperson.setHsaId(hoSPerson.getPersonId());
         vardperson.setNamn(hoSPerson.getFullstandigtNamn());
 
-        utkast = createUtkast(INTYG_ID, UTKAST_VERSION, INTYG_TYPE, UtkastStatus.DRAFT_INCOMPLETE, INTYG_JSON, vardperson);
-        signedUtkast = createUtkast(INTYG_ID, INTYG_VERSION, INTYG_TYPE, UtkastStatus.SIGNED, INTYG_JSON, vardperson);
+        hoSPerson.setVardenhet(vardenhet);
 
+        utkast = createUtkast(INTYG_ID, UTKAST_VERSION, INTYG_TYPE, UtkastStatus.DRAFT_INCOMPLETE, INTYG_JSON, vardperson, PERSONNUMMER);
+        signedUtkast = createUtkast(INTYG_ID, INTYG_VERSION, INTYG_TYPE, UtkastStatus.SIGNED, INTYG_JSON, vardperson, PERSONNUMMER);
+
+    }
+
+    @Test
+    public void testReferensGetsPersistedWhenSupplied() throws ModuleNotFoundException, IOException, ModuleException {
+        CreateNewDraftRequest request = buildCreateNewDraftRequest();
+        request.setReferens(REFERENS);
+
+        setupReferensMocks();
+
+        Utkast res = draftService.createNewDraft(request);
+        assertNotNull(res.getSkapad());
+        verify(referensService).saveReferens(INTYG_ID, REFERENS);
+
+    }
+
+    @Test
+    public void testEmptyReferensNotPersisted() throws ModuleNotFoundException, IOException, ModuleException {
+        CreateNewDraftRequest request = buildCreateNewDraftRequest();
+        request.setReferens("");
+
+        setupReferensMocks();
+
+        Utkast res = draftService.createNewDraft(request);
+        assertNotNull(res.getSkapad());
+        verify(referensService, times(0)).saveReferens(INTYG_ID, REFERENS);
+    }
+
+    @Test
+    public void testNullReferensNotPersisted() throws ModuleNotFoundException, IOException, ModuleException {
+        CreateNewDraftRequest request = buildCreateNewDraftRequest();
+        request.setReferens(null);
+
+        setupReferensMocks();
+
+        Utkast res = draftService.createNewDraft(request);
+        assertNotNull(res.getSkapad());
+        verify(referensService, times(0)).saveReferens(INTYG_ID, REFERENS);
+    }
+
+    private void setupReferensMocks() throws ModuleNotFoundException, ModuleException, IOException {
+        ValidationMessage valMsg = new ValidationMessage("a.category", "a.field.somewhere", ValidationMessageType.OTHER,
+                "This is soooo wrong!");
+        ValidateDraftResponse validationResponse = new ValidateDraftResponse(ValidationStatus.INVALID, Collections.singletonList(valMsg));
+        Utlatande utlatande = mock(Utlatande.class);
+        when(moduleRegistry.getModuleApi(INTYG_TYPE)).thenReturn(mockModuleApi);
+        when(mockUtkastRepository.save(any(Utkast.class))).then(invocation -> invocation.getArguments()[0]);
+    }
+
+    private CreateNewDraftRequest buildCreateNewDraftRequest() {
+        CreateNewDraftRequest request = new CreateNewDraftRequest();
+        request.setHosPerson(hoSPerson);
+        request.setIntygId(INTYG_ID);
+        request.setIntygType(INTYG_TYPE);
+        request.setPatient(defaultPatient);
+        request.setStatus(UtkastStatus.DRAFT_INCOMPLETE);
+        return request;
     }
 
     @Test
@@ -193,7 +253,6 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         WebCertUser user = createUser();
 
         when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(utkast);
-        when(userService.getUser()).thenReturn(user);
 
         draftService.deleteUnsignedDraft(INTYG_ID, utkast.getVersion());
 
@@ -201,7 +260,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         verify(mockUtkastRepository).delete(utkast);
 
         // Assert notification message
-        verify(notificationService).sendNotificationForDraftDeleted(any(Utkast.class), anyString());
+        verify(notificationService).sendNotificationForDraftDeleted(any(Utkast.class));
 
         // Assert pdl log
         verify(logService).logDeleteIntyg(any(LogRequest.class));
@@ -214,7 +273,6 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         WebCertUser user = createUser();
 
         when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(utkast);
-        when(userService.getUser()).thenReturn(user);
 
         try {
             draftService.deleteUnsignedDraft(INTYG_ID, utkast.getVersion() - 1);
@@ -255,7 +313,8 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
     @Test
     public void testSaveDraftDraftFirstSave() throws Exception {
-        ValidationMessage valMsg = new ValidationMessage("a.field.somewhere", ValidationMessageType.OTHER, "This is soooo wrong!");
+        ValidationMessage valMsg = new ValidationMessage("a.category", "a.field.somewhere", ValidationMessageType.OTHER,
+                "This is soooo wrong!");
         ValidateDraftResponse validationResponse = new ValidateDraftResponse(ValidationStatus.INVALID, Collections.singletonList(valMsg));
         WebCertUser user = createUser();
         Utlatande utlatande = mock(Utlatande.class);
@@ -278,7 +337,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         verify(mockUtkastRepository).save(any(Utkast.class));
 
         // Assert notification message
-        verify(notificationService).sendNotificationForDraftChanged(any(Utkast.class), anyString());
+        verify(notificationService).sendNotificationForDraftChanged(any(Utkast.class));
 
         // Assert pdl log
         verify(logService).logUpdateIntyg(any(LogRequest.class));
@@ -291,7 +350,8 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
     @Test
     public void testSaveDraftSecondSave() throws Exception {
-        ValidationMessage valMsg = new ValidationMessage("a.field.somewhere", ValidationMessageType.OTHER, "This is soooo wrong!");
+        ValidationMessage valMsg = new ValidationMessage("a.category", "a.field.somewhere", ValidationMessageType.OTHER,
+                "This is soooo wrong!");
         ValidateDraftResponse validationResponse = new ValidateDraftResponse(ValidationStatus.INVALID, Collections.singletonList(valMsg));
         WebCertUser user = createUser();
         Utlatande utlatande = mock(Utlatande.class);
@@ -314,7 +374,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         verify(mockUtkastRepository).save(any(Utkast.class));
 
         // Assert notification message
-        verify(notificationService).sendNotificationForDraftChanged(any(Utkast.class), anyString());
+        verify(notificationService).sendNotificationForDraftChanged(any(Utkast.class));
 
         // Assert that no logs are called
         verifyZeroInteractions(logService);
@@ -356,10 +416,9 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
     @Test
     public void testValidateDraft() throws Exception {
-        ValidationMessage valMsg = new ValidationMessage("a.field.somewhere", ValidationMessageType.OTHER, "This is soooo wrong!");
+        ValidationMessage valMsg = new ValidationMessage("a", "field.somewhere", ValidationMessageType.OTHER, "This is soooo wrong!");
         ValidateDraftResponse validationResponse = new ValidateDraftResponse(ValidationStatus.INVALID, Collections.singletonList(valMsg));
 
-        when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(utkast);
         when(moduleRegistry.getModuleApi(INTYG_TYPE)).thenReturn(mockModuleApi);
         when(mockModuleApi.validateDraft(INTYG_JSON)).thenReturn(validationResponse);
 
@@ -407,7 +466,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         Utlatande utlatande = mock(Utlatande.class);
         GrundData grunddata = new GrundData();
         grunddata.setSkapadAv(new HoSPersonal());
-        grunddata.setPatient(buildPatient("19121212-1212", "Tolvan", "Tolvansson"));
+        grunddata.setPatient(buildPatient(PERSON_ID, "Tolvan", "Tolvansson"));
         when(utlatande.getGrundData()).thenReturn(grunddata);
 
         utkast.setPatientFornamn("Inte Tolvan");
@@ -465,7 +524,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         draftService.updatePatientOnDraft(request);
 
         verify(mockUtkastRepository).save(any(Utkast.class));
-        verify(notificationService).sendNotificationForDraftChanged(any(Utkast.class), anyString());
+        verify(notificationService).sendNotificationForDraftChanged(any(Utkast.class));
         verify(utkast).setPatientPersonnummer(any(Personnummer.class));
         assertEquals(expectedPatientId, user.getParameters().getBeforeAlternateSsn());
     }
@@ -490,18 +549,15 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
         when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(utkast);
         when(moduleRegistry.getModuleApi(INTYG_TYPE)).thenReturn(mockModuleApi);
-        when(mockModuleApi.updateBeforeSave(anyString(), any(Patient.class))).thenReturn("{}");
         when(mockModuleApi.getUtlatandeFromJson(anyString())).thenReturn(utlatande);
-        when(mockUtkastRepository.save(utkast)).thenReturn(utkast);
         when(userService.getUser()).thenReturn(user);
-        when(mockModuleApi.updateBeforeSave(anyString(), any(HoSPersonal.class))).thenReturn("{}");
 
         draftService.updatePatientOnDraft(request);
 
         verify(mockUtkastRepository, never()).save(any(Utkast.class));
-        verify(notificationService, never()).sendNotificationForDraftChanged(any(Utkast.class), anyString());
+        verify(notificationService, never()).sendNotificationForDraftChanged(any(Utkast.class));
         verify(utkast, never()).setPatientPersonnummer(any(Personnummer.class));
-        assertEquals("", user.getParameters().getBeforeAlternateSsn());
+        assertEquals(defaultPatient.getPersonId().getPersonnummer(), user.getParameters().getBeforeAlternateSsn());
     }
 
     @Test
@@ -525,18 +581,15 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
         when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(utkast);
         when(moduleRegistry.getModuleApi(INTYG_TYPE)).thenReturn(mockModuleApi);
-        when(mockModuleApi.updateBeforeSave(anyString(), any(Patient.class))).thenReturn("{}");
         when(mockModuleApi.getUtlatandeFromJson(anyString())).thenReturn(utlatande);
-        when(mockUtkastRepository.save(utkast)).thenReturn(utkast);
         when(userService.getUser()).thenReturn(user);
-        when(mockModuleApi.updateBeforeSave(anyString(), any(HoSPersonal.class))).thenReturn("{}");
 
         draftService.updatePatientOnDraft(request);
 
         verify(mockUtkastRepository, never()).save(any(Utkast.class));
-        verify(notificationService, never()).sendNotificationForDraftChanged(any(Utkast.class), anyString());
+        verify(notificationService, never()).sendNotificationForDraftChanged(any(Utkast.class));
         verify(utkast, never()).setPatientPersonnummer(any(Personnummer.class));
-        assertEquals("", user.getParameters().getBeforeAlternateSsn());
+        assertEquals(defaultPatient.getPersonId().getPersonnummer(), user.getParameters().getBeforeAlternateSsn());
     }
 
     @Test(expected = WebCertServiceException.class)
@@ -553,8 +606,6 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
         grunddata.setPatient(defaultPatient);
         grunddata.setSkapadAv(new HoSPersonal());
-
-        when(utlatande.getGrundData()).thenReturn(grunddata);
 
         // Make a spy out of the utkast so we can verify invocations on the setters with proper names further down.
         utkast = spy(utkast);
@@ -578,7 +629,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         Utlatande utlatande = mock(Utlatande.class);
         GrundData grunddata = new GrundData();
         grunddata.setSkapadAv(new HoSPersonal());
-        grunddata.setPatient(buildPatient("19121212-1212", null, "Tolvansson"));
+        grunddata.setPatient(buildPatient(PERSON_ID, null, "Tolvansson"));
         when(utlatande.getGrundData()).thenReturn(grunddata);
 
         utkast.setPatientFornamn(utkastFornamn);
@@ -605,7 +656,6 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
     @Test
     public void testValidateValidDraftWithWarningsIncludesWarningsInResponse() throws ModuleException, ModuleNotFoundException {
-        when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(utkast);
         when(moduleRegistry.getModuleApi(anyString())).thenReturn(mockModuleApi);
         when(mockModuleApi.validateDraft(anyString())).thenReturn(buildValidationResponse());
         DraftValidation validationResult = draftService.validateDraft(INTYG_ID, INTYG_TYPE, utkast.getModel());
@@ -616,7 +666,6 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
     @Test
     public void testSetKlarForSigneraStatusMessageSent() {
         WebCertUser user = createUser();
-        when(userService.hasAuthenticationContext()).thenReturn(true);
         when(userService.getUser()).thenReturn(user);
         when(mockUtkastRepository.findOneByIntygsIdAndIntygsTyp(INTYG_ID, "luae_fs")).thenReturn(utkast);
         when(mockUtkastRepository.save(utkast)).thenReturn(utkast);
@@ -625,51 +674,69 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
         draftService.setKlarForSigneraAndSendStatusMessage(INTYG_ID, "luae_fs");
 
-        verify(notificationService).sendNotificationForDraftReadyToSign(utkast, USER_REFERENCE);
+        verify(notificationService).sendNotificationForDraftReadyToSign(utkast);
         verify(mockMonitoringService).logUtkastMarkedAsReadyToSignNotificationSent(INTYG_ID, "luae_fs");
         verify(mockUtkastRepository).save(utkast);
     }
 
     @Test(expected = WebCertServiceException.class)
     public void testSetKlarForSigneraStatusMessageSentThrowsExceptionForLakare() {
-        when(authoritiesHelper.getIntygstyperForPrivilege(any(UserDetails.class), anyString())).thenReturn(new HashSet<>());
         draftService.setKlarForSigneraAndSendStatusMessage(INTYG_ID, INTYG_TYPE);
     }
 
     @Test(expected = WebCertServiceException.class)
     public void testSetKlarForSigneraStatusMessageSentThrowsExceptionForInvalidIntygsTyp() {
-        when(authoritiesHelper.getIntygstyperForPrivilege(any(UserDetails.class), anyString()))
+        when(authoritiesHelper.getIntygstyperForPrivilege(any(), any()))
                 .thenReturn(new HashSet<>(Arrays.asList("lisjp", "luse", "luae_fs", "luae_na")));
         draftService.setKlarForSigneraAndSendStatusMessage(INTYG_ID, INTYG_TYPE);
     }
 
     @Test
     public void testCheckIfPersonHasExistingIntyg() {
-        final String personnummer = "191212121212";
+        final String personId = PERSON_ID;
         final Set activeModules = new HashSet<>(Arrays.asList("db", "doi"));
         final String vardgivareId = "vardgivarid";
 
-        Utkast db1 = createUtkast("db1", 1L, "db", UtkastStatus.SIGNED, "", null);
+        Utkast db1 = createUtkast("db1", 1L, "db", UtkastStatus.SIGNED, "", null, PERSONNUMMER);
         db1.setVardgivarId("other");
-        Utkast db2 = createUtkast("db2", 1L, "db", UtkastStatus.SIGNED, "", null);
+        Utkast db2 = createUtkast("db2", 1L, "db", UtkastStatus.SIGNED, "", null, PERSONNUMMER);
         db2.setVardgivarId(vardgivareId);
-        Utkast doi = createUtkast("doi1", 1L, "doi", UtkastStatus.SIGNED, "", null);
+        Utkast doi = createUtkast("doi1", 1L, "doi", UtkastStatus.SIGNED, "", null, PERSONNUMMER);
         doi.setVardgivarId("other");
-        when(moduleRegistry.listAllModules()).thenReturn(
-                Arrays.asList("lisjp", "db", "doi").stream()
-                        .map(a -> new IntygModule(a, null, null, null, null, null, null, null)).collect(
-                        Collectors.toList()));
-        when(authoritiesHelper.getIntygstyperForModuleFeature(any(), any(), any())).thenReturn(activeModules);
-        when(mockUtkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(personnummer, activeModules))
+
+        when(authoritiesHelper.getIntygstyperForFeature(any(), any(), any())).thenReturn(activeModules);
+        when(mockUtkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(PERSONNUMMER.getPersonnummerWithDash(), activeModules))
                 .thenReturn(Arrays.asList(db1, db2, doi));
 
-        Map<String, Boolean> res = draftService.checkIfPersonHasExistingIntyg(new Personnummer(personnummer), createUser());
+        Map<String, Map<String, Boolean>> res = draftService.checkIfPersonHasExistingIntyg(PERSONNUMMER, createUser());
 
-        assertNotNull(res);
-        assertTrue(res.get("db"));
-        assertFalse(res.get("doi"));
+        assertNotNull(res.get("intyg"));
+        assertTrue(res.get("intyg").get("db"));
+        assertFalse(res.get("intyg").get("doi"));
 
-        verify(mockUtkastRepository).findAllByPatientPersonnummerAndIntygsTypIn(eq(personnummer), eq(activeModules));
+        verify(mockUtkastRepository).findAllByPatientPersonnummerAndIntygsTypIn(eq(PERSONNUMMER.getPersonnummerWithDash()), eq(activeModules));
+    }
+
+    @Test
+    public void testNumberOfUnsignedDraftsByCareUnits() {
+        List<GroupableItem> queryResult = new ArrayList<>();
+
+        when(userService.getUser()).thenReturn(createUser());
+        when(mockUtkastRepository.getIntygWithStatusesByEnhetsId(anyList(), anyList(), anySet())).thenReturn(queryResult);
+
+        Map<String, Long> resultMap = new HashMap<>();
+        resultMap.put("HSA1", 2L);
+
+        when(statisticsGroupByUtil.toSekretessFilteredMap(queryResult)).thenReturn(resultMap);
+
+        Map<String, Long> result = draftService.getNbrOfUnsignedDraftsByCareUnits(Arrays.asList("HSA1", "HSA2"));
+
+        verify(mockUtkastRepository, times(1)).getIntygWithStatusesByEnhetsId(anyList(), anyList(), anySet());
+        verify(statisticsGroupByUtil, times(1)).toSekretessFilteredMap(queryResult);
+
+        assertEquals(1, result.size());
+        assertEquals(2L, result.get("HSA1").longValue());
+
     }
 
     private Patient getUpdatedPatient() {
@@ -678,7 +745,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         newPatient.setMellannamn("updated middle-name");
         newPatient.setFornamn("updated firstName");
         newPatient.setFullstandigtNamn("updated full name");
-        newPatient.setPersonId(new Personnummer("19121272-1212"));
+        newPatient.setPersonId(createPnr("19121272-1212"));
         newPatient.setPostadress("updated postal address");
         newPatient.setPostnummer("1111111");
         newPatient.setPostort("updated post city");
@@ -687,19 +754,20 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
     private ValidateDraftResponse buildValidationResponse() {
         return new ValidateDraftResponse(ValidationStatus.VALID, Collections.emptyList(),
-                Collections.singletonList(new ValidationMessage("testfield", ValidationMessageType.WARN)));
+                Collections.singletonList(new ValidationMessage("testcategory", "testfield", ValidationMessageType.WARN)));
     }
 
     private Patient buildPatient(String pnr, String fornamn, String efternamn) {
         Patient p = new Patient();
-        p.setPersonId(new Personnummer(pnr));
+        p.setPersonId(createPnr(pnr));
         p.setFornamn(fornamn);
         p.setEfternamn(efternamn);
         return p;
     }
 
     private Utkast createUtkast(String intygId, long version, String type, UtkastStatus status, String model,
-            VardpersonReferens vardperson) {
+            VardpersonReferens vardperson, Personnummer personnummer) {
+
         Utkast utkast = new Utkast();
         utkast.setIntygsId(intygId);
         utkast.setVersion(version);
@@ -708,6 +776,8 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         utkast.setModel(model);
         utkast.setSkapadAv(vardperson);
         utkast.setSenastSparadAv(vardperson);
+        utkast.setPatientPersonnummer(personnummer);
+
         return utkast;
     }
 
@@ -716,7 +786,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
         WebCertUser user = new WebCertUser();
         user.setRoles(AuthoritiesResolverUtil.toMap(role));
-        user.setAuthorities(AuthoritiesResolverUtil.toMap(role.getPrivileges()));
+        user.setAuthorities(AuthoritiesResolverUtil.toMap(role.getPrivileges(), Privilege::getName));
 
         user.setHsaId("hsaId");
         user.setNamn("namn");
@@ -740,4 +810,5 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
         return user;
     }
+
 }

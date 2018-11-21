@@ -18,19 +18,22 @@
  */
 package se.inera.intyg.webcert.web.service.certificatesender;
 
-import javax.annotation.PostConstruct;
-import javax.jms.*;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jms.JmsException;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
 import org.springframework.stereotype.Component;
-
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.Constants;
+
+import javax.annotation.PostConstruct;
+import javax.jms.JMSException;
+import javax.jms.Message;
+import javax.jms.Session;
 
 /**
  * Created by eriklupander on 2015-05-20.
@@ -61,7 +64,12 @@ public class CertificateSenderServiceImpl implements CertificateSenderService {
 
     @Override
     public void sendCertificate(String intygsId, Personnummer personId, String jsonBody, String recipientId) {
-        send(new SendCertificateMessageCreator(intygsId, personId, jsonBody, recipientId, logicalAddress));
+        sendCertificate(intygsId, personId, jsonBody, recipientId, false);
+    }
+
+    @Override
+    public void sendCertificate(String intygsId, Personnummer personId, String jsonBody, String recipientId, boolean delay) {
+        send(new SendCertificateMessageCreator(intygsId, personId, jsonBody, recipientId, logicalAddress, delay));
     }
 
     @Override
@@ -114,14 +122,16 @@ public class CertificateSenderServiceImpl implements CertificateSenderService {
         private final String body;
         private final String recipientId;
         private final String logicalAddress;
+        private boolean delay;
 
         private SendCertificateMessageCreator(String intygsId, Personnummer personId, String body, String recipientId,
-                String logicalAddress) {
+                                              String logicalAddress, boolean delay) {
             this.intygsId = intygsId;
             this.personId = personId;
             this.body = body;
             this.recipientId = recipientId;
             this.logicalAddress = logicalAddress;
+            this.delay = delay;
         }
 
         @Override
@@ -130,9 +140,12 @@ public class CertificateSenderServiceImpl implements CertificateSenderService {
             message.setStringProperty(Constants.MESSAGE_TYPE, Constants.SEND_MESSAGE);
 
             message.setStringProperty(Constants.INTYGS_ID, intygsId);
-            message.setStringProperty(Constants.PERSON_ID, personId.getPersonnummerWithoutDash());
+            message.setStringProperty(Constants.PERSON_ID, personId.getPersonnummer());
             message.setStringProperty(Constants.RECIPIENT, recipientId);
             message.setStringProperty(Constants.LOGICAL_ADDRESS, logicalAddress);
+            if (delay) {
+                message.setStringProperty(Constants.DELAY_MESSAGE, "true");
+            }
             return message;
         }
     }

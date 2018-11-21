@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Inera AB (http://www.inera.se)
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -24,6 +24,7 @@ var specHelper = wcTestTools.helpers.spec;
 var testdataHelper = wcTestTools.helpers.restTestdata;
 var UtkastPage = wcTestTools.pages.intyg.luse.utkast;
 var IntygPage = wcTestTools.pages.intyg.luse.intyg;
+var ValjIntygPage = wcTestTools.pages.sokSkrivIntyg.pickPatient;
 
 describe('Create and Sign luse utkast', function() {
 
@@ -33,10 +34,15 @@ describe('Create and Sign luse utkast', function() {
     beforeAll(function() {
         browser.ignoreSynchronization = false;
         specHelper.login();
-        specHelper.createUtkastForPatient('191212121212', 'Läkarutlåtande för sjukersättning');
+
+
     });
 
     describe('Fyll i intyget', function() {
+        beforeAll(function() {
+            ValjIntygPage.get();
+            specHelper.createUtkastForPatient('191212121212', 'Läkarutlåtande för sjukersättning');
+        });
 
         it('Spara undan intygsId från URL', function() {
             UtkastPage.disableAutosave();
@@ -89,16 +95,18 @@ describe('Create and Sign luse utkast', function() {
         expect(IntygPage.isAt()).toBeTruthy();
     });
 
-    it('Verifiera intyg', function() {
+    it('Wait until intyg in IT', function() {
         // Om intyget inte hunnit processas av IT så hämtas det från WC. Då är inte uppgifter flyttade till övriga
         // upplysningar ännu.
         // Vänta tills intyget tagits emot av IT. Ladda därefter om sidan så datan säkert kommer från IT.
         IntygPage.waitUntilIntygInIT(utkastId);
         browser.refresh();
+    });
 
-        IntygPage.whenCertificateLoaded();
-
-        IntygPage.verify(data);
+    it('Verifiera intyg', function() {
+        IntygPage.whenCertificateLoaded().then(function() {
+            IntygPage.verify(data);
+        });
     });
 
     afterAll(function() {

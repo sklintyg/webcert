@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Inera AB (http://www.inera.se)
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -48,14 +48,16 @@ describe('uthopp - arende on luse intyg', function() {
             browser.ignoreSynchronization = false;
             restTestdataHelper.deleteUtkast(intygId);
             restTestdataHelper.createWebcertIntyg(testData).then(function() {
-                restTestdataHelper.createArendeFromTemplate('luse', intygId, meddelandeId, 'Hur är det med arbetstiden?',
-                    'KOMPLT', 'PENDING_INTERNAL_ACTION', [
-                        {
-                            'frageId':'1',
-                            'instans':1,
-                            'text':'Fixa.'
-                        }
-                    ]);
+                restTestdataHelper.markeraSkickatTillFK(intygId).then(function() {
+                    restTestdataHelper.createArendeFromTemplate('luse', intygId, meddelandeId, 'Hur är det med arbetstiden?',
+                        'KOMPLT', 'PENDING_INTERNAL_ACTION', [
+                            {
+                                'frageId':'1',
+                                'instans':1,
+                                'text':'Fixa.'
+                            }
+                        ]);
+                });
             });
         });
     });
@@ -73,24 +75,28 @@ describe('uthopp - arende on luse intyg', function() {
 
     describe('make sure', function() {
         it('pushed arende is visible', function() {
-            var arende = LuseIntygPage.getArendeById(false, meddelandeId);
+            var arende = LuseIntygPage.getArendeById(true, meddelandeId);
             expect(arende.isDisplayed()).toBeTruthy();
         });
 
         it('click svara pa komplettering', function() {
-            expect(LuseIntygPage.getKompletteraIntygButton(meddelandeId).isPresent()).toBeFalsy();
-            expect(LuseIntygPage.getUthoppKompletteraSvaraButton(meddelandeId).isPresent()).toBeTruthy();
-            LuseIntygPage.getUthoppKompletteraSvaraButton(meddelandeId).click();
+            expect(LuseIntygPage.kompletteraIntygButton.isPresent()).toBeFalsy();
+            expect(LuseIntygPage.kanInteKompletteraButton.isDisplayed()).toBeTruthy();
+            expect(LuseIntygPage.uthoppKompletteraLink.isDisplayed()).toBeTruthy();
+            LuseIntygPage.kanInteKompletteraButton.click();
             expect(LuseIntygPage.kompletteringsAtgardDialog.isDisplayed()).toBeTruthy();
         });
 
         it('svara med nytt intyg should not be displayed', function() {
-            expect(LuseIntygPage.getKompletteringsDialogLamnaOvrigaUpplysningar().isPresent()).toBeFalsy();
+            expect(LuseIntygPage.kanInteKompletteraModalAnledning1.isPresent()).toBeFalsy();
+            expect(LuseIntygPage.kanInteKompletteraModalOvrigaUpplysningar.isPresent()).toBeFalsy();
+            expect(LuseIntygPage.kanInteKompletteraModalAnledning2.isPresent()).toBeFalsy();
         });
 
         it('svara med meddelande should be displayed', function() {
-            LuseIntygPage.getKompletteringsDialogSvaraMedMeddelandeButton().click();
-            expect(LuseIntygPage.getAnswerButton(meddelandeId).isDisplayed()).toBeTruthy();
+            LuseIntygPage.kanInteKompletteraModalMeddelandeText.sendKeys('Anledning kommer här');
+            LuseIntygPage.kanInteKompletteraModalSkickaSvarButton.click();
+            expect(LuseIntygPage.kompletteringBesvaradesMedMeddelandeAlert.isDisplayed()).toBeTruthy();
         });
     });
 

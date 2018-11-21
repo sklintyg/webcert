@@ -1,20 +1,28 @@
-<div id="advanced-filter-form" class="qa-filter-panel form-horizontal" ng-form="filterForm">
-
+<div id="advanced-filter-form" class="wc-filter-panel form-horizontal" ng-form="filterForm">
   <div wc-authority="VIDAREBEFORDRA_UTKAST" class="form-group" id="filterFormVidarebefordrad">
     <label class="col-sm-2 control-label">Utkast som är</label>
     <div class="col-sm-10">
-      <label class="radio-inline">
+
+      <wc-radio-wrapper>
         <input id="notifiedAll" name="notified" type="radio" ng-model="filter.notified" ng-value="undefined">
-        Alla utkast
-      </label>
-      <label class="radio-inline">
+        <label for="notifiedAll">
+          Alla utkast
+        </label>
+      </wc-radio-wrapper>
+
+      <wc-radio-wrapper>
         <input id="notified" name="notified" type="radio" ng-value="true" ng-model="filter.notified">
-        Vidarebefordrade
-      </label>
-      <label class="radio-inline">
+        <label for="notified">
+          Vidarebefordrade
+        </label>
+      </wc-radio-wrapper>
+
+      <wc-radio-wrapper>
         <input id="notifiedNot" name="notified" type="radio" ng-value="false" ng-model="filter.notified">
-        Ej vidarebefordrade
-      </label>
+        <label for="notifiedNot">
+          Ej vidarebefordrade
+        </label>
+      </wc-radio-wrapper>
     </div>
   </div>
 
@@ -22,16 +30,22 @@
   <div class="form-group">
     <label class="col-sm-2 control-label">Visa endast</label>
     <div class="col-sm-10">
-      <label class="radio-inline">
-        <input id="completeAll" name="complete" type="radio" ng-value="undefined"  ng-model="filter.complete">
-        Båda
-      </label>
-      <label class="radio-inline">
+
+      <wc-radio-wrapper>
+        <input id="completeAll" name="complete" type="radio" ng-value="undefined" ng-model="filter.complete">
+        <label for="completeAll">Båda</label>
+      </wc-radio-wrapper>
+
+      <wc-radio-wrapper>
         <input id="completeNo" name="complete" type="radio" ng-value="false" ng-model="filter.complete">
-        Utkast, uppgifter saknas</label>
-      <label class="radio-inline">
+        <label for="completeNo">Utkast, uppgifter saknas</label>
+      </wc-radio-wrapper>
+
+      <wc-radio-wrapper>
         <input id="completeYes" name="complete" type="radio" ng-value="true" ng-model="filter.complete">
-        Utkast, kan signeras</label>
+        <label for="completeYes"> Utkast, kan signeras</label>
+      </wc-radio-wrapper>
+
     </div>
   </div>
 
@@ -51,13 +65,13 @@
   <div class="form-group" ng-show="filterForm.$invalid && widgetState.searched">
     <div class="col-sm-2"></div>
     <div class="col-sm-10">
-      <div class=" alert alert-danger">
+      <wc-alert-message alert-severity="danger">
         <ul>
-          <li ng-show="filterForm['filter-changedate-from'].$error.date"><span message key="validation.invalidfromdate"></span></li>
-          <li ng-show="filterForm['filter-changedate-to'].$error.date"><span message key="validation.invalidtodate"></span></li>
-          <li ng-show="filterForm['filter-changedate-to'].$error.isBefore"><span message key="validation.invalidtobeforefromdate"></span></li>
+          <li ng-show="filterForm['filter-changedate-from'].$error.date"><span dynamic-label key="validation.invalidfromdate"></span></li>
+          <li ng-show="filterForm['filter-changedate-to'].$error.date"><span dynamic-label key="validation.invalidtodate"></span></li>
+          <li ng-show="filterForm['filter-changedate-to'].$error.isBefore"><span dynamic-label key="validation.invalidtobeforefromdate"></span></li>
         </ul>
-      </div>
+      </wc-alert-message>
     </div>
   </div>
 
@@ -72,7 +86,7 @@
   <!-- buttons -->
   <div class="form-group" style="margin-top:10px;">
     <div class="col-sm-offset-2 col-sm-10">
-      <button type="button" id="uc-filter-btn" class="btn btn-success" ng-click="search()">Sök</button>
+      <button type="button" id="uc-filter-btn" class="btn btn-primary" ng-click="search()">Sök</button>
       <button type="button" class="btn btn-default" ng-click="resetFilter()" id="reset-search-form">Återställ sökfilter</button>
     </div>
   </div>

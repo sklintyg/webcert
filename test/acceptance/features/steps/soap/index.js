@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Inera AB (http://www.inera.se)
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -47,7 +47,47 @@ module.exports = {
             '</urn1:utlatande>' +
             '</urn1:CreateDraftCertificate>';
     },
+    GetCertificate: function() {
+        //TODO
+    },
+    ListCertificatesForCitizen: function(personId, intygsTyper) {
+        var string = '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" ' +
+            'xmlns:urn="urn:riv:itintegration:registry:1" ' +
+            'xmlns:urn1="urn:riv:clinicalprocess:healthcond:certificate:ListCertificatesForCitizenResponder:3" ' +
+            'xmlns:urn2="urn:riv:clinicalprocess:healthcond:certificate:types:3"> ' +
+            '<soapenv:Header> ' +
+            '<urn:LogicalAddress>?</urn:LogicalAddress> ' +
+            '</soapenv:Header> ' +
+            '<soapenv:Body> ' +
+            '<urn1:ListCertificatesForCitizen> ' +
+            '<urn1:person-id> ' +
+            '<urn2:root>1.2.752.129.2.1.3.1</urn2:root> ' +
+            '<urn2:extension>' + personId + '</urn2:extension> ' +
+            '</urn1:person-id> ' +
+            '<!--Zero or more repetitions:--> ';
 
+        for (var i = 0; i < intygsTyper.length; i++) {
+            string += '<urn1:intygTyp> ' +
+                '<urn2:code>' + intygsTyper[i] + '</urn2:code> ' +
+                '<urn2:codeSystem>c2362fcd-eda0-4f9a-bd13-b3bbaf7f214</urn2:codeSystem> ' +
+                '<!--Optional:--> ' +
+                '<urn2:displayName></urn2:displayName> ' +
+                '</urn1:intygTyp> ';
+        }
+
+        string += '<urn1:arkiverade>true</urn1:arkiverade> ' +
+            '<!--FKASSA, HSVARD, INVANA, och TRANSP --> ' +
+            '<urn1:part> ' +
+            '<urn2:code>FKASSA</urn2:code> ' +
+            '<urn2:codeSystem>769bb12b-bd9f-4203-a5cd-fd14f2eb3b80</urn2:codeSystem> ' +
+            '<!--Optional:--> ' +
+            '<urn2:displayName>FÖRSÄKRINGSKASSAN</urn2:displayName> ' +
+            '</urn1:part> ' +
+            '<!--You may enter ANY elements at this point--> ' +
+            '</urn1:ListCertificatesForCitizen> ' +
+            '</soapenv:Body> ' +
+            '</soapenv:Envelope> ';
+    },
     ReceiveMedicalCertificateQuestion: function(personId, user, unitName, intygsId, amne, meddelande) {
 
         if (typeof meddelande === 'undefined') {

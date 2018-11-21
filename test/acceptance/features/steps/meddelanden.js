@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Inera AB (http://www.inera.se)
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,75 +16,76 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/*globals logger, wcTestTools, intyg, pages*/
+/*globals logger, wcTestTools*/
 
 'use strict';
+/*jshint newcap:false */
+//TODO Uppgradera Jshint p.g.a. newcap kommer bli depricated. (klarade inte att ignorera i grunt-task)
+
+/*
+ *	Stödlib och ramverk
+ *
+ */
+
+const {
+    Given, // jshint ignore:line
+    When, // jshint ignore:line
+    Then // jshint ignore:line
+} = require('cucumber');
+
+
 var soap = require('soap');
 var soapMessageBodies = require('./soap');
 var testdataHelper = wcTestTools.helpers.testdata;
 var helpers = require('./helpers');
 
-module.exports = function() {
-    // });
+/*
+ *	Stödfunktioner
+ *
+ */
 
-    this.Given(/^ska (intyget|frågan) ha en indikator som indikerar sekretessmarkering$/, function(typ) {
 
-        var elm;
+/*
+ *	Test steg
+ *
+ */
 
-        if (typ === 'frågan') {
-            elm = 'wc-sekretessmarkering-icon-' + global.meddelanden[0].id;
-            console.log(elm);
-        } else if (typ === 'intyget') {
-            //Annars kollar vi efter 'icon+intyg' elemenetet
-            elm = 'wc-sekretessmarkering-icon-' + intyg.id;
-        }
 
-        return expect(element(by.id(elm)).isPresent()).to.eventually.become(true);
+Given(/^ska (intyget|frågan) ha en indikator som indikerar sekretessmarkering$/, function(typ) {
+    return expect(element(by.css('wc-sekretess-avliden-ikon')).isPresent()).to.eventually.become(true);
+});
 
-    });
+Given(/^Försäkringskassan skickar ett "([^"]*)" meddelande på intyget$/, function(amne, callback) {
+    var body = soapMessageBodies.SendMessageToCare(global.user, global.person, global.intyg, 'Begär ' + helpers.getSubjectFromCode(amne), testdataHelper.generateTestGuid(), amne);
+    logger.silly(body);
+    var path = '/send-message-to-care/v2.0?wsdl';
+    var url = process.env.INTYGTJANST_URL + path;
+    url = url.replace('https', 'http');
 
-    this.Given(/^Försäkringskassan skickar ett "([^"]*)" meddelande på intyget$/, function(amne, callback) {
-        global.intyg.guidcheck = testdataHelper.generateTestGuid();
-
-        var body = soapMessageBodies.SendMessageToCare(global.user, global.person, global.intyg, 'Begär ' + helpers.getSubjectFromCode(amne) + ' ' + global.intyg.guidcheck, amne);
-        var path = '/send-message-to-care/v2.0?wsdl';
-        var url = process.env.INTYGTJANST_URL + path;
-        url = url.replace('https', 'http');
-
-        pages.intyg.luse.intyg.waitUntilIntygInIT(intyg.id).then(function() {
-            logger.info('FK skickar ' + amne + ' till Enpoint: ' + url);
-            console.log(body);
-            soap.createClient(url, function(err, client) {
-                logger.info(url);
+    soap.createClient(url, function(err, client) {
+        logger.info(url);
+        if (err) {
+            callback(err);
+        } else {
+            client.SendMessageToCare(body, function(err, result, resBody) {
+                logger.silly(resBody);
                 if (err) {
                     callback(err);
                 } else {
-                    client.SendMessageToCare(body, function(err, result, resBody) {
-                        console.log(resBody);
-                        if (err) {
-                            logger.warn(err);
-                        } else {
-                            var resultcode = result.result.resultCode;
-                            logger.info('ResultCode: ' + resultcode);
-                            // console.log(result);
-                            if (resultcode !== 'OK') {
-                                logger.info(result);
-                                callback('ResultCode: ' + resultcode + '\n' + resBody);
-                            } else {
-                                logger.info('ResultCode: ' + resultcode);
-                                // console.log(JSON.stringify(result));
-                                callback();
-                            }
+                    var resultcode = result.result.resultCode;
+                    logger.info('ResultCode: ' + resultcode);
+                    // logger.silly(result);
+                    if (resultcode !== 'OK') {
+                        logger.info(result);
+                        callback('ResultCode: ' + resultcode + '\n' + resBody);
+                    } else {
+                        logger.info('ResultCode: ' + resultcode);
+                        // logger.silly(JSON.stringify(result));
+                        callback();
+                    }
 
-                        }
-                    });
                 }
             });
-        });
-
-
+        }
     });
-
-
-
-};
+});

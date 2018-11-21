@@ -28,9 +28,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.servlet.ModelAndView;
-import se.inera.intyg.webcert.common.model.WebcertFeature;
-import se.inera.intyg.webcert.web.service.feature.WebcertFeatureService;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.maillink.MailLinkService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
@@ -46,73 +43,16 @@ import java.net.URI;
 @RequestMapping(value = "")
 public class PageController {
 
-    public static final String ADMIN_VIEW = "dashboard#/unhandled-qa";
-    public static final String ADMIN_VIEW_REDIRECT = "redirect:/web/" + ADMIN_VIEW;
-
-    public static final String DASHBOARD_VIEW = "dashboard";
-    public static final String DASHBOARD_VIEW_REDIRECT = "redirect:/web/" + DASHBOARD_VIEW;
-
-    public static final String ABOUT_VIEW = "dashboard#/webcert/about";
-    public static final String ABOUT_VIEW_REDIRECT = "redirect:/web/" + ABOUT_VIEW;
-
     private static final Logger LOG = LoggerFactory.getLogger(PageController.class);
 
     @Autowired
     private WebCertUserService webCertUserService;
 
     @Autowired
-    private WebcertFeatureService webcertFeatureService;
-
-    @Autowired
     private MailLinkService mailLinkService;
 
     @Autowired
     private IntygService intygService;
-
-    @RequestMapping(value = "/start", method = RequestMethod.GET)
-    public ModelAndView displayStart() {
-        WebCertUser user = webCertUserService.getUser();
-        LOG.debug("displayStart for user " + user.getNamn());
-        return new ModelAndView(resolveStartView(user));
-    }
-
-    /**
-     * Select Starting point view depending on user properties.
-     *
-     * @param user
-     *            user
-     * @return String
-     */
-    protected String resolveStartView(WebCertUser user) {
-        if (user.isLakare() && webcertFeatureService.isFeatureActive(WebcertFeature.HANTERA_INTYGSUTKAST)) {
-            return DASHBOARD_VIEW_REDIRECT;
-        } else if (webcertFeatureService.isFeatureActive(WebcertFeature.HANTERA_FRAGOR)) {
-            return ADMIN_VIEW_REDIRECT;
-        } else {
-            return ABOUT_VIEW_REDIRECT;
-        }
-    }
-
-    @RequestMapping(value = "/dashboard", method = { RequestMethod.GET, RequestMethod.POST })
-    public ModelAndView displayDashBoard() {
-        ModelAndView modelAndView = new ModelAndView(DASHBOARD_VIEW);
-        populateUseMinifiedJavaScript(modelAndView);
-        return modelAndView;
-    }
-
-    @RequestMapping(value = "/adminview", method = RequestMethod.GET)
-    public ModelAndView displayAdminView() {
-        return new ModelAndView(ADMIN_VIEW);
-    }
-
-    private void populateUseMinifiedJavaScript(ModelAndView model) {
-        final WebCertUser user = webCertUserService.getUser();
-        if (user != null) {
-            model.addObject("useMinifiedJavaScript", user.isFeatureActive(WebcertFeature.JS_MINIFIED.getName()));
-        } else {
-            model.addObject("useMinifiedJavaScript", webcertFeatureService.isFeatureActive(WebcertFeature.JS_MINIFIED));
-        }
-    }
 
     @RequestMapping(value = "/maillink/intyg/{typ}/{intygId}", method = RequestMethod.GET)
     public ResponseEntity<Object> redirectToIntyg(@PathVariable("intygId") String intygId, @PathVariable("typ") String typ) {

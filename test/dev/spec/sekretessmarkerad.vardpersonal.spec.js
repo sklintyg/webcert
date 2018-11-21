@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Inera AB (http://www.inera.se)
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -71,7 +71,7 @@ describe('Testa enkelt flöde för sekretessmarkerad vårdpersonal', function() 
     });
 
     it('Klicka på sekretessinfo länken, så skall sekretessinfo modalen visas', function() {
-        sekretessInfoDialogLink.sendKeys(protractor.Key.SPACE);
+        sekretessInfoDialogLink.sendKeys(protractor.Key.ENTER);
         expect(sekretessInfoDialogOkBtn.isPresent()).toBe(true);
     });
 

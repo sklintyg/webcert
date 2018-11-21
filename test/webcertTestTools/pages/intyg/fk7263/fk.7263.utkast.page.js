@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Inera AB (http://www.inera.se)
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -49,7 +49,14 @@ var FkBaseUtkast = BaseUtkast._extend({
     init: function init() {
         init._super.call(this);
 
-        this.at = element(by.css('.edit-form'));
+
+        this.enhetensAdress = {
+            postAdress: element(by.id('clinicInfoPostalAddress')),
+            postNummer: element(by.id('clinicInfoPostalCode')),
+            postOrt: element(by.id('clinicInfoPostalCity')),
+            enhetsTelefon: element(by.id('clinicInfoPhone'))
+        };
+        this.at = element(by.css('#view-fk7263'));
         this.smittskyddLabel = element(by.css('[key="fk7263.label.smittskydd"]'));
         this.smittskyddCheckbox = element(by.id('smittskydd'));
 
@@ -176,8 +183,8 @@ var FkBaseUtkast = BaseUtkast._extend({
             fragor: () => element(by.tagName('wc-srs-questionaire')),
             prediktion: () => element(by.id('predictionBox')),
             flik: linkText => element(by.linkText(linkText)),
-            atgarder: () => element(by.id('atgarder')),
-            statistik: () => element(by.id('statstics')),
+            atgarder: () => element(by.id('atgarder2')), //SRS rutan vid diagnos antas
+            statistik: () => element(by.id('statstics2')), //SRS rutan vid diagnos antas
             atgarderRek: () => element(by.id('atgarderRek')),
             atgarderObs: () => element(by.id('atgarderObs')),
             questionsCollapser: () => element(by.id('questionsCollapser')),
@@ -187,9 +194,9 @@ var FkBaseUtkast = BaseUtkast._extend({
 
     setSRSConsent: function(isConsent) {
         if (isConsent) {
-            this.srs.samtycke.ja().click();
+            return pageHelpers.moveAndSendKeys(this.srs.samtycke.ja(), protractor.Key.SPACE);
         } else {
-            this.srs.samtycke.nej().click();
+            return pageHelpers.moveAndSendKeys(this.srs.samtycke.nej(), protractor.Key.SPACE);
         }
     },
     getSRSQuestionnaireStatus: function() {
@@ -461,12 +468,12 @@ var FkBaseUtkast = BaseUtkast._extend({
             return this.prognos.GAR_EJ_ATT_BEDOMA.check().then(function() {
                 if (prognos.fortydligande) {
                     return prognosFortydligande.clear()
-					.then(function() {
-						return pageHelpers.smallDelay();
-					})
-					.then(function() {
-                        return pageHelpers.moveAndSendKeys(prognosFortydligande, prognos.fortydligande);
-                    });
+                        .then(function() {
+                            return pageHelpers.smallDelay();
+                        })
+                        .then(function() {
+                            return pageHelpers.moveAndSendKeys(prognosFortydligande, prognos.fortydligande);
+                        });
                 } else {
                     return Promise.resolve('Inget förtydligande');
                 }
@@ -571,6 +578,7 @@ var FkBaseUtkast = BaseUtkast._extend({
             }
         });
     },
+    /*TODO getQAElementByText depricated ?*/
     getQAElementByText: function(containingText) {
         var panel = element(by.cssContainingText('.qa-panel', containingText));
         return {

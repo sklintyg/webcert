@@ -1,5 +1,5 @@
 # language: sv
-@arendehantering @fk7263
+@arendehantering @fk7263 @NOTREADY @DEPRICATED @MOVE TO SMI
 Egenskap: FK7263 Ärendehantering
 
 Bakgrund: Jag är inloggad och inne på ett skickat intyg
@@ -28,7 +28,7 @@ Scenario: Hantera fråga dialog
 
 @filter 
 Scenario: Filtrera frågor på läkare
-   När Försäkringskassan ställer en "Kontakt" fråga om intyget
+   När Försäkringskassan ställer en "KONTKT" fråga om intyget
    Och jag går till sidan Frågor och svar
 
    Givet att jag är inloggad som läkare "Johan Johansson"
@@ -39,7 +39,7 @@ Scenario: Filtrera frågor på läkare
    Och jag fyller i alla nödvändiga fält för intyget
    Och jag signerar intyget
    Och jag skickar intyget till Försäkringskassan 
-   Och Försäkringskassan ställer en "Kontakt" fråga om intyget
+   Och Försäkringskassan ställer en "KONTKT" fråga om intyget
    
    Och jag går till sidan Frågor och svar
    Så ska jag se flera frågor
@@ -47,9 +47,9 @@ Scenario: Filtrera frågor på läkare
    När jag väljer att filtrera på läkare "Karin Persson"
    Så ska jag bara se frågor på intyg signerade av "Karin Persson"
 
-@befintlig-fråga @waitingForFix
+@befintlig-fråga
 Scenario: Skicka fråga till Försäkringskassan genom att gå in på en befintlig fråga
-      När Försäkringskassan ställer en "Kontakt" fråga om intyget
+      När Försäkringskassan ställer en "KONTKT" fråga om intyget
       Och jag går till sidan Frågor och svar
       Och jag väljer att visa intyget med frågan
 

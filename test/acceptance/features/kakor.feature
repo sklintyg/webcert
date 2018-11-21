@@ -10,7 +10,5 @@ Scenario: Jag ser en varning om kakor när jag loggar in
 	När jag accepterar kakor
 	Och laddar om sidan
 	Så ska jag inte se en varning om kakor
-
-# Scenario: Jag ser en varning om kakor när jag går in på en uthoppslänk
 	
 # Scenario: Jag ser en varning om kakor när jag går in på en djupintegrationslänk

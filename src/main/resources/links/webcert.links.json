@@ -19,7 +19,7 @@
   },
   {
     "key": "ptsCookiesMerOm",
-    "url": "https://www.pts.se/sv/Privat/Internet/Skydd-av-uppgifter/Fragor-och-svar-om-kakor-for-anvandare1/",
+    "url": "http://pts.se/sv/privat/internet/integritet/kakor-cookies/",
     "text": "Mer om kakor (cookies) på Post- och telestyrelsens webbplats",
     "target": "_blank"
   },
@@ -55,8 +55,8 @@
   },
   {
     "key": "ineraStartsida",
-    "url": "http://www.inera.se",
-    "text": "Inera AB",
+    "url": "https://www.inera.se",
+    "text": "www.inera.se",
     "target": "_blank"
   },
   {
@@ -72,6 +72,12 @@
     "target": "_blank"
   },
   {
+    "key": "ineraHjalpOchSupport",
+    "url": "https://www.inera.se/kundservice/kontakta-oss/",
+    "text": "Hjälp och support",
+    "target": "_blank"
+  },
+  {
     "key": "transportstyrelsen",
     "url": "http://www.transportstyrelsen.se",
     "text": "www.transportstyrelsen.se",
@@ -80,7 +86,7 @@
   {
     "key": "fmbSoc",
     "url": "http://www.socialstyrelsen.se/riktlinjer/forsakringsmedicinsktbeslutsstod",
-    "text": "Socialstyrelsens försäkringsmedicinska beslutsstöd",
+    "text": "Information om Socialstyrelsens försäkringsmedicinska beslutsstöd",
     "target": "_blank",
     "tooltip": "Öppnar Socialstyrelsens beslutstöd för angiven huvuddiagnos"
   },
@@ -90,5 +96,12 @@
     "text": "Socialstyrelsens försäkringsmedicinska beslutsstöd <img src='/img/link_icon.png'/>",
     "target": "_blank",
     "tooltip": "Öppnar Socialstyrelsens beslutstöd för angiven huvuddiagnos"
+  },
+  {
+    "key": "ineraNationellaKundservice",
+    "url": "https://www.inera.se/kundservice/formular/felanmalan-och-support/formular-for-felanmalan-och-support/",
+    "text": "Ineras nationella kundservice",
+    "target": "_blank",
+    "tooltip": "Öppnar Ineras nationella kundservice"
   }
 ]

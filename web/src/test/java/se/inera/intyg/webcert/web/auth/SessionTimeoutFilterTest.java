@@ -22,7 +22,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -30,8 +30,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -59,7 +60,6 @@ public class SessionTimeoutFilterTest {
 
     @Test
     public void testDoFilterInvalidSession() throws ServletException, IOException {
-        when(request.getRequestURI()).thenReturn("/index.html");
         when(request.getSession(false)).thenReturn(session);
         when(session.getAttribute("SessionLastAccessTime")).thenReturn(System.currentTimeMillis() - EXPIRED_SESSION);
         when(session.getMaxInactiveInterval()).thenReturn(1);
@@ -72,7 +72,6 @@ public class SessionTimeoutFilterTest {
 
     @Test
     public void testDoFilterInvalidSessionIgnoredUrl() throws ServletException, IOException {
-        when(request.getRequestURI()).thenReturn("/moduleapi/stat");
         when(request.getSession(false)).thenReturn(session);
         when(session.getAttribute("SessionLastAccessTime")).thenReturn(System.currentTimeMillis() - EXPIRED_SESSION);
         when(session.getMaxInactiveInterval()).thenReturn(1);
@@ -93,7 +92,7 @@ public class SessionTimeoutFilterTest {
         filter.doFilterInternal(request, null, filterChain);
 
         verify(session, never()).invalidate();
-        verify(session).setAttribute(eq("SessionLastAccessTime"), anyString());
+        verify(session).setAttribute(eq("SessionLastAccessTime"), anyLong());
     }
 
     @Test

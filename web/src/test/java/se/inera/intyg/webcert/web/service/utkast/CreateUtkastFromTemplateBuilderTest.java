@@ -25,10 +25,9 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.core.io.ClassPathResource;
 import se.inera.intyg.common.db.model.internal.DbUtlatande;
-import se.inera.intyg.common.fk7263.model.internal.Fk7263Utlatande;
 import se.inera.intyg.common.support.model.CertificateState;
 import se.inera.intyg.common.support.model.Status;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
@@ -63,8 +62,8 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -80,7 +79,8 @@ public class CreateUtkastFromTemplateBuilderTest {
     private static final String INTYG_TYPE_1 = "db";
     private static final String INTYG_TYPE_2 = "doi";
 
-    private static final Personnummer PATIENT_SSN = new Personnummer("19121212-1212");
+    private static final Personnummer PATIENT_SSN = Personnummer.createPersonnummer("19121212-1212").get();
+
     private static final String PATIENT_FNAME = "Adam";
     private static final String PATIENT_MNAME = "Bertil";
     private static final String PATIENT_LNAME = "Caesarsson";
@@ -154,7 +154,6 @@ public class CreateUtkastFromTemplateBuilderTest {
 
     @Before
     public void expectCallToWebcertUserService() {
-        when(webcertUserService.getUser()).thenReturn(createWebcertUser());
         when(webcertUserService.isAuthorizedForUnit(VARDGIVARE_ID, VARDENHET_ID, true)).thenReturn(true);
     }
 

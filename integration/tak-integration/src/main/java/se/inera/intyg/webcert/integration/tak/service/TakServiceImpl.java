@@ -31,8 +31,8 @@ import se.inera.intyg.common.support.modules.support.api.notification.SchemaVers
 import se.inera.intyg.infra.integration.hsa.exception.HsaServiceCallException;
 import se.inera.intyg.infra.integration.hsa.services.HsaOrganizationsService;
 import se.inera.intyg.infra.security.authorities.validation.AuthoritiesValidator;
+import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.IntygUser;
-import se.inera.intyg.webcert.common.model.WebcertFeature;
 import se.inera.intyg.webcert.integration.tak.consumer.TakConsumer;
 import se.inera.intyg.webcert.integration.tak.consumer.TakServiceException;
 import se.inera.intyg.webcert.integration.tak.model.TakLogicalAddress;
@@ -139,7 +139,7 @@ public class TakServiceImpl implements TakService {
             LOG.warn("Connection to TAK-api timed out, draft creation allowed anyway.");
             ret = true;
         } catch (Exception e) {
-            LOG.warn("Unknown exception occurred when communicating with TAK. Draft creation allowed anyway.", e);
+            LOG.warn("Unknown exception occured when communicating with TAK. Draft creation allowed anyway.", e);
             ret = true;
         }
         return new TakResult(ret, errors);
@@ -149,7 +149,7 @@ public class TakServiceImpl implements TakService {
         List<String> hsaIds = new ArrayList<>();
         hsaIds.add(hsaId);
 
-        if (authoritiesValidator.given(user).features(WebcertFeature.TAK_KONTROLL_TRADKLATTRING).isVerified()) {
+        if (authoritiesValidator.given(user).features(AuthoritiesConstants.FEATURE_TAK_KONTROLL_TRADKLATTRING).isVerified()) {
             // Vardenhet (the unit over mottagning - if existing)
             String careUnitId;
             try {
@@ -187,7 +187,7 @@ public class TakServiceImpl implements TakService {
         }
 
         // Utilize authoritiesValidator to check arendehantering
-        if (authoritiesValidator.given(user, intygsTyp).features(WebcertFeature.HANTERA_FRAGOR).isVerified()) {
+        if (authoritiesValidator.given(user, intygsTyp).features(AuthoritiesConstants.FEATURE_HANTERA_FRAGOR).isVerified()) {
             if (Fk7263EntryPoint.MODULE_ID.equalsIgnoreCase(intygsTyp)) {
                 // yes? -> fk7263
                 if (hsaIds.stream().noneMatch(hsaId -> isValid(consumer.doLookup(ntjpId, hsaId, receiveMedicalCertificateAnswerId)))) {

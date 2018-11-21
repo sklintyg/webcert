@@ -126,13 +126,13 @@ public abstract class AbstractUtkastBuilder<T extends AbstractCreateCopyRequest>
         // Set relation to null if not applicable
         Relation relation = createRelation(copyRequest);
 
-        CreateDraftCopyHolder draftCopyHolder = createModuleRequestForCopying(copyRequest, patientDetails, relation);
-
-        String draftCopyJson = getInternalModel(orgUtlatande, moduleApi, draftCopyHolder);
+        String newDraftCopyId = intygsIdStrategy.createId();
+        String draftCopyJson = getInternalModel(orgUtlatande, moduleApi, copyRequest, patientDetails, relation,
+                newDraftCopyId);
 
         UtkastStatus utkastStatus = validateDraft(moduleApi, draftCopyJson);
 
-        Utkast utkast = buildUtkastCopy(copyRequest, draftCopyHolder.getCertificateId(), intygsTyp, addRelation, relation, draftCopyJson,
+        Utkast utkast = buildUtkastCopy(copyRequest, newDraftCopyId, intygsTyp, addRelation, relation, draftCopyJson,
                 utkastStatus);
 
         if (patientDetails != null) {
@@ -196,13 +196,13 @@ public abstract class AbstractUtkastBuilder<T extends AbstractCreateCopyRequest>
         // Set relation to null if not applicable
         Relation relation = createRelation(copyRequest);
 
-        CreateDraftCopyHolder draftCopyHolder = createModuleRequestForCopying(copyRequest, patientDetails, relation);
-
-        String draftCopyJson = getInternalModel(orgUtlatande, moduleApi, draftCopyHolder);
+        String newDraftCopyId = intygsIdStrategy.createId();
+        String draftCopyJson = getInternalModel(orgUtlatande, moduleApi, copyRequest, patientDetails, relation,
+                newDraftCopyId);
 
         UtkastStatus utkastStatus = validateDraft(moduleApi, draftCopyJson);
 
-        Utkast utkast = buildUtkastCopy(copyRequest, draftCopyHolder.getCertificateId(), copyRequest.getTyp(), addRelation, relation,
+        Utkast utkast = buildUtkastCopy(copyRequest, newDraftCopyId, copyRequest.getTyp(), addRelation, relation,
                 draftCopyJson, utkastStatus);
 
         if (patientDetails != null) {
@@ -226,8 +226,9 @@ public abstract class AbstractUtkastBuilder<T extends AbstractCreateCopyRequest>
         }
     }
 
-    protected String getInternalModel(Utlatande template, ModuleApi moduleApi, CreateDraftCopyHolder draftCopyHolder)
-            throws ModuleException {
+    protected String getInternalModel(Utlatande template, ModuleApi moduleApi, AbstractCreateCopyRequest copyRequest,
+                                      Person person, Relation relation, String newDraftCopyId) throws ModuleException {
+        CreateDraftCopyHolder draftCopyHolder = createModuleRequestForCopying(copyRequest, person, relation, newDraftCopyId);
         return moduleApi.createNewInternalFromTemplate(draftCopyHolder, template);
     }
 
@@ -254,10 +255,8 @@ public abstract class AbstractUtkastBuilder<T extends AbstractCreateCopyRequest>
         utkast.setRelationKod(relation.getRelationKod());
     }
 
-    private CreateDraftCopyHolder createModuleRequestForCopying(AbstractCreateCopyRequest copyRequest, Person person, Relation relation) {
-
-        String newDraftCopyId = intygsIdStrategy.createId();
-
+    protected CreateDraftCopyHolder createModuleRequestForCopying(AbstractCreateCopyRequest copyRequest, Person person, Relation relation,
+            String newDraftCopyId) {
         LOG.debug("Created id '{}' for the new copy", newDraftCopyId);
 
         CreateDraftCopyHolder newDraftCopyHolder = new CreateDraftCopyHolder(newDraftCopyId, copyRequest.getHosPerson(), relation);

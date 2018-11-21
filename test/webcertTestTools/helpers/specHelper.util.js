@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Inera AB (http://www.inera.se)
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -49,11 +49,6 @@ module.exports = {
     },
     setUserOrigin: function(origin) {
         return browser.get('authtestability/user/origin/' + origin);
-    },
-
-    // For DJUPINTEGRERAD, allows us to specify a reference through testability  API.
-    setUserRef: function(ref) {
-        return browser.get('authtestability/user/parameters/ref/' + ref);
     },
 
     waitForAngularTestability: function() {

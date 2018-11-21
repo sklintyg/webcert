@@ -25,11 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import se.inera.intyg.common.services.texts.IntygTextsService;
-import se.inera.intyg.common.support.model.common.internal.GrundData;
-import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
-import se.inera.intyg.common.support.model.common.internal.Patient;
-import se.inera.intyg.common.support.model.common.internal.Vardenhet;
-import se.inera.intyg.common.support.model.common.internal.Vardgivare;
+import se.inera.intyg.common.support.model.common.internal.*;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
@@ -45,7 +41,6 @@ import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.GroupableItem;
 import se.inera.intyg.webcert.common.model.UtkastStatus;
-import se.inera.intyg.webcert.common.model.WebcertFeature;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
@@ -54,35 +49,24 @@ import se.inera.intyg.webcert.persistence.utkast.repository.UtkastFilter;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.converter.util.IntygConverterUtil;
 import se.inera.intyg.webcert.web.service.dto.Lakare;
-import se.inera.intyg.webcert.web.service.feature.WebcertFeatureService;
 import se.inera.intyg.webcert.web.service.log.LogRequestFactory;
 import se.inera.intyg.webcert.web.service.log.LogService;
 import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
 import se.inera.intyg.webcert.web.service.log.dto.LogUser;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.notification.NotificationService;
+import se.inera.intyg.webcert.web.service.referens.ReferensService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.util.StatisticsGroupByUtil;
 import se.inera.intyg.webcert.web.service.util.UpdateUserUtil;
-import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftRequest;
-import se.inera.intyg.webcert.web.service.utkast.dto.DraftValidation;
-import se.inera.intyg.webcert.web.service.utkast.dto.DraftValidationMessage;
-import se.inera.intyg.webcert.web.service.utkast.dto.SaveDraftResponse;
-import se.inera.intyg.webcert.web.service.utkast.dto.UpdatePatientOnDraftRequest;
+import se.inera.intyg.webcert.web.service.utkast.dto.*;
 import se.inera.intyg.webcert.web.service.utkast.util.CreateIntygsIdStrategy;
 
 import javax.persistence.OptimisticLockException;
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -92,6 +76,8 @@ public class UtkastServiceImpl implements UtkastService {
             UtkastStatus.DRAFT_INCOMPLETE);
 
     private static final Logger LOG = LoggerFactory.getLogger(UtkastServiceImpl.class);
+    private static final String INTYG_INDICATOR = "intyg";
+    private static final String UTKAST_INDICATOR = "utkast";
 
     @Autowired
     private CreateIntygsIdStrategy intygsIdStrategy;
@@ -124,7 +110,7 @@ public class UtkastServiceImpl implements UtkastService {
     private StatisticsGroupByUtil statisticsGroupByUtil;
 
     @Autowired
-    private WebcertFeatureService featureService;
+    private ReferensService referensService;
 
     @Override
     @Transactional("jpaTransactionManager") // , readOnly=true
@@ -151,33 +137,22 @@ public class UtkastServiceImpl implements UtkastService {
 
         Utkast savedUtkast = persistNewDraft(request, intygJsonModel);
 
+        // Persist the referens if supplied
+        if (!Strings.isNullOrEmpty(request.getReferens())) {
+            referensService.saveReferens(request.getIntygId(), request.getReferens());
+        }
+
         monitoringService.logUtkastCreated(savedUtkast.getIntygsId(),
                 savedUtkast.getIntygsTyp(), savedUtkast.getEnhetsId(), savedUtkast.getSkapadAv().getHsaId());
 
         // Notify stakeholders when a draft has been created
-        sendNotification(savedUtkast, Event.CREATED, getUserReference());
+        sendNotification(savedUtkast, Event.CREATED);
 
         // Create a PDL log for this action
         LogUser logUser = createLogUser(request);
         logCreateDraftPDL(savedUtkast, logUser);
 
         return savedUtkast;
-    }
-
-    private LogUser createLogUser(CreateNewDraftRequest request) {
-        HoSPersonal hosPerson = request.getHosPerson();
-
-        String personId = hosPerson.getPersonId();
-        String vardenhetId = hosPerson.getVardenhet().getEnhetsid();
-        String vardgivareId = hosPerson.getVardenhet().getVardgivare().getVardgivarid();
-
-        return new LogUser.Builder(personId, vardenhetId, vardgivareId)
-                .userName(hosPerson.getFullstandigtNamn())
-                .userTitle(hosPerson.getTitel())
-                .userAssignment(hosPerson.getMedarbetarUppdrag())
-                .enhetsNamn(hosPerson.getVardenhet().getEnhetsnamn())
-                .vardgivareNamn(hosPerson.getVardenhet().getVardgivare().getVardgivarnamn())
-                .build();
     }
 
     @Override
@@ -197,7 +172,7 @@ public class UtkastServiceImpl implements UtkastService {
 
         Utkast utkast = getIntygAsDraft(intygsId, intygType);
         if (utkast.getKlartForSigneringDatum() == null) {
-            notificationService.sendNotificationForDraftReadyToSign(utkast, getUserReference());
+            notificationService.sendNotificationForDraftReadyToSign(utkast);
             utkast.setKlartForSigneringDatum(LocalDateTime.now());
             monitoringService.logUtkastMarkedAsReadyToSignNotificationSent(intygsId, intygType);
             saveDraft(utkast);
@@ -206,15 +181,30 @@ public class UtkastServiceImpl implements UtkastService {
     }
 
     @Override
-    public Map<String, Boolean> checkIfPersonHasExistingIntyg(Personnummer personnummer, IntygUser user) {
-        return utkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(personnummer.getPersonnummer(),
-                authoritiesHelper.getIntygstyperForModuleFeature(user, WebcertFeature.UNIKT_INTYG, WebcertFeature.UNIKT_INTYG_INOM_VG))
-                .stream()
+    public Map<String, Map<String, Boolean>> checkIfPersonHasExistingIntyg(Personnummer personnummer, IntygUser user) {
+        List<Utkast> toFilter = utkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(personnummer.getPersonnummerWithDash(),
+                authoritiesHelper.getIntygstyperForFeature(user, AuthoritiesConstants.FEATURE_UNIKT_INTYG,
+                        AuthoritiesConstants.FEATURE_UNIKT_INTYG_INOM_VG));
+
+        List<Utkast> signedList = toFilter.stream()
                 .filter(utkast -> utkast.getStatus() == UtkastStatus.SIGNED)
                 .filter(utkast -> utkast.getAterkalladDatum() == null)
+                .collect(Collectors.toList());
+
+        Map<String, Map<String, Boolean>> ret = new HashMap<>();
+
+        ret.put(INTYG_INDICATOR, signedList.stream()
                 .collect(Collectors.groupingBy(Utkast::getIntygsTyp,
                         Collectors.mapping(utkast -> Objects.equals(user.getValdVardgivare().getId(), utkast.getVardgivarId()),
-                                Collectors.reducing(false, (a, b) -> a || b))));
+                                Collectors.reducing(false, (a, b) -> a || b)))));
+
+        ret.put(UTKAST_INDICATOR, toFilter.stream()
+                .filter(utkast -> utkast.getStatus() != UtkastStatus.SIGNED)
+                .collect(Collectors.groupingBy(Utkast::getIntygsTyp,
+                        Collectors.mapping(utkast -> Objects.equals(user.getValdVardgivare().getId(), utkast.getVardgivarId()),
+                                Collectors.reducing(false, (a, b) -> a || b)))));
+
+        return ret;
     }
 
     private void validateUserAllowedToSendKFSignNotification(String intygsId, String intygType) {
@@ -264,7 +254,7 @@ public class UtkastServiceImpl implements UtkastService {
         monitoringService.logUtkastDeleted(utkast.getIntygsId(), utkast.getIntygsTyp());
 
         // Notify stakeholders when a draft is deleted
-        sendNotification(utkast, Event.DELETED, getUserReference());
+        sendNotification(utkast, Event.DELETED);
 
         LogRequest logRequest = LogRequestFactory.createLogRequestFromUtkast(utkast);
         logService.logDeleteIntyg(logRequest);
@@ -392,7 +382,7 @@ public class UtkastServiceImpl implements UtkastService {
             ModuleApi moduleApi = moduleRegistry.getModuleApi(intygType);
             if (moduleApi.shouldNotify(persistedJson, draftAsJson)) {
                 LOG.debug("*** Detected changes in model, sending notification! ***");
-                sendNotification(utkast, Event.CHANGED, getUserReference());
+                sendNotification(utkast, Event.CHANGED);
             }
         } catch (ModuleException | ModuleNotFoundException e) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, e);
@@ -441,28 +431,33 @@ public class UtkastServiceImpl implements UtkastService {
         final ModuleApi moduleApi = getModuleApi(utkast.getIntygsTyp());
 
         // INTYG-4086
-        Personnummer personId = request.getPersonnummer();
         Patient draftPatient = getPatientFromCurrentDraft(moduleApi, utkast.getModel());
-        if (personId != null
-                && (Personnummer.createValidatedPersonnummerWithDash(personId).isPresent()
-                || SamordningsnummerValidator.isSamordningsNummer(personId))
-                && !personId.getPnrHash().equals(draftPatient.getPersonId().getPnrHash())) {
 
-            String oldPersonId = draftPatient.getPersonId().getPersonnummer();
+        Optional<Personnummer> optionalPnr = Optional.ofNullable(request.getPersonnummer());
+        Optional<Personnummer> optionalDraftPnr = Optional.ofNullable(draftPatient.getPersonId());
+
+        if (optionalDraftPnr.isPresent()) {
+            // Spara undan det gamla personnummret temporärt
+            String oldPersonId = optionalDraftPnr.get().getPersonnummer();
+            webCertUserService.getUser().getParameters().setBeforeAlternateSsn(oldPersonId);
+        }
+
+        if ((optionalPnr.isPresent() || SamordningsnummerValidator.isSamordningsNummer(optionalPnr))
+            && !isHashEqual(optionalPnr, optionalDraftPnr)) {
+
 
             // INTYG-4086: Ta reda på om man skall kunna uppdatera annat än personnumret? Och om man uppdaterar
             // personnumret -
             // vilka regler gäller då för namn och adress? Samma regler som i PatientDetailsResolverImpl?
-            draftPatient.setPersonId(personId);
+            draftPatient.setPersonId(optionalPnr.get());
+
             try {
                 String updatedModel = moduleApi.updateBeforeSave(utkast.getModel(), draftPatient);
                 updateUtkastModel(utkast, updatedModel);
                 saveDraft(utkast);
                 monitoringService.logUtkastPatientDetailsUpdated(utkast.getIntygsId(), utkast.getIntygsTyp());
-                sendNotification(utkast, Event.CHANGED, getUserReference());
+                sendNotification(utkast, Event.CHANGED);
 
-                // Spara undan det gamla personnummret temporärt
-                webCertUserService.getUser().getParameters().setBeforeAlternateSsn(oldPersonId);
             } catch (ModuleException e) {
                 throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM,
                         "Patient details on Utkast " + draftId + " could not be updated", e);
@@ -516,6 +511,22 @@ public class UtkastServiceImpl implements UtkastService {
         }
     }
 
+    private LogUser createLogUser(CreateNewDraftRequest request) {
+        HoSPersonal hosPerson = request.getHosPerson();
+
+        String personId = hosPerson.getPersonId();
+        String vardenhetId = hosPerson.getVardenhet().getEnhetsid();
+        String vardgivareId = hosPerson.getVardenhet().getVardgivare().getVardgivarid();
+
+        return new LogUser.Builder(personId, vardenhetId, vardgivareId)
+                .userName(hosPerson.getFullstandigtNamn())
+                .userTitle(hosPerson.getTitel())
+                .userAssignment(hosPerson.getMedarbetarUppdrag())
+                .enhetsNamn(hosPerson.getVardenhet().getEnhetsnamn())
+                .vardgivareNamn(hosPerson.getVardenhet().getVardgivare().getVardgivarnamn())
+                .build();
+    }
+
     private ModuleApi getModuleApi(String intygsTyp) {
         try {
             return moduleRegistry.getModuleApi(intygsTyp);
@@ -550,8 +561,8 @@ public class UtkastServiceImpl implements UtkastService {
         // Always return the warning messages
         for (ValidationMessage validationWarning : dr.getValidationWarnings()) {
             draftValidation.addWarning(new DraftValidationMessage(
-                    validationWarning.getField(), validationWarning.getType(), validationWarning.getMessage(),
-                    validationWarning.getDynamicKey()));
+                    validationWarning.getCategory(), validationWarning.getField(), validationWarning.getType(),
+                    validationWarning.getMessage(), validationWarning.getDynamicKey()));
         }
 
         if (ValidationStatus.VALID.equals(validationStatus)) {
@@ -564,7 +575,8 @@ public class UtkastServiceImpl implements UtkastService {
         // Only bother with returning validation (e.g. error) messages if the ArendeDraft is INVALID.
         for (ValidationMessage validationMsg : dr.getValidationErrors()) {
             draftValidation.addMessage(new DraftValidationMessage(
-                    validationMsg.getField(), validationMsg.getType(), validationMsg.getMessage(), validationMsg.getDynamicKey()));
+                    validationMsg.getCategory(), validationMsg.getField(), validationMsg.getType(),
+                    validationMsg.getMessage(), validationMsg.getDynamicKey()));
         }
 
         LOG.debug("Validation failed with {} validation messages", draftValidation.getMessages().size());
@@ -612,6 +624,14 @@ public class UtkastServiceImpl implements UtkastService {
         return Strings.nullToEmpty(str).trim().length();
     }
 
+    private boolean isHashEqual(Optional<Personnummer> thiz, Optional<Personnummer> that) {
+        if (thiz.isPresent() && that.isPresent()) {
+            return thiz.get().getPersonnummerHash().equals(that.get().getPersonnummerHash());
+        }
+
+        return false;
+    }
+
     private boolean isTheDraftStillADraft(UtkastStatus utkastStatus) {
         return ALL_DRAFT_STATUSES.contains(utkastStatus);
     }
@@ -654,6 +674,7 @@ public class UtkastServiceImpl implements UtkastService {
 
         utkast.setSenastSparadAv(creator);
         utkast.setSkapadAv(creator);
+        utkast.setSkapad(LocalDateTime.now());
 
         return saveDraft(utkast);
     }
@@ -677,17 +698,17 @@ public class UtkastServiceImpl implements UtkastService {
         return savedUtkast;
     }
 
-    private void sendNotification(Utkast utkast, Event event, String reference) {
+    private void sendNotification(Utkast utkast, Event event) {
 
         switch (event) {
         case CHANGED:
-            notificationService.sendNotificationForDraftChanged(utkast, reference);
+            notificationService.sendNotificationForDraftChanged(utkast);
             break;
         case CREATED:
-            notificationService.sendNotificationForDraftCreated(utkast, reference);
+            notificationService.sendNotificationForDraftCreated(utkast);
             break;
         case DELETED:
-            notificationService.sendNotificationForDraftDeleted(utkast, reference);
+            notificationService.sendNotificationForDraftDeleted(utkast);
             break;
         }
     }

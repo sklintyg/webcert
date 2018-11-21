@@ -55,7 +55,7 @@
     var _links;
 
     var app = angular.module('webcert',
-        ['ui.bootstrap', 'ui.router', 'ngCookies', 'ngSanitize', 'common', 'ngAnimate', 'smoothScroll', 'formly', 'ng.shims.placeholder', 'ui.select', 'common.dynamiclink']);
+        ['ui.bootstrap', 'ui.router', 'ngCookies', 'ngSanitize', 'common', 'ngAnimate', 'smoothScroll', 'ng.shims.placeholder', 'common.dynamiclink']);
 
     app.value('networkConfig', {
         defaultTimeout: 30000 // test: 1000
@@ -85,23 +85,23 @@
         var restPath = '/api/anvandare';
         return $.get(restPath).then(function(data) {
             user = data;
-            // set jsMinified
-            if (user !== undefined && user.features !== undefined && user.features.length > 0) {
-                if (user.features.indexOf('jsMinified') >= 0) {
-                    user.jsMinified = true;
-                } else {
-                    user.jsMinified = false;
-                }
-            }
-            if (window.console) {
-                console.log('---- user.jsMinified : ' + user.jsMinified);
-            }
             return data;
+        }, function() {
+            return null;
         });
     }
 
-    app.config(['$httpProvider', 'common.http403ResponseInterceptorProvider', '$logProvider',
-        function($httpProvider, http403ResponseInterceptorProvider, $logProvider) {
+    app.config(['$httpProvider', 'common.http403ResponseInterceptorProvider', '$logProvider', '$compileProvider', '$locationProvider', '$animateProvider',
+        function($httpProvider, http403ResponseInterceptorProvider, $logProvider, $compileProvider, $locationProvider, $animateProvider) {
+
+            // Set in boot-app.jsp
+            var debugMode = angular.isDefined(WEBCERT_DEBUG_MODE) ? WEBCERT_DEBUG_MODE : true; //jshint ignore:line
+
+            // START TEMP 1.6 migration compatibility flags
+            $compileProvider.preAssignBindingsEnabled(true);
+            $locationProvider.hashPrefix('');
+            // END
+
             // Add cache buster interceptor
             $httpProvider.interceptors.push('common.httpRequestInterceptorCacheBuster');
 
@@ -110,8 +110,22 @@
             $httpProvider.interceptors.push('common.http403ResponseInterceptor');
 
             // Enable debug logging
-            $logProvider.debugEnabled(false);
+            $logProvider.debugEnabled(debugMode);
+
+            // Disable angular debug info.
+            $compileProvider.debugInfoEnabled(debugMode);
+
+            // Disable comment and css directives
+            $compileProvider.commentDirectivesEnabled(false);
+            $compileProvider.cssClassDirectivesEnabled(false);
+
+            $animateProvider.classNameFilter(/^(?:(?!ng-animate-disabled).)*$/);
         }]);
+
+/*
+ // Workaround for bug #1404
+  // https://github.com/angular/angular.js/issues/1404
+  // Source: http://plnkr.co/edit/hSMzWC?p=preview
 
     // Decorators that update form input names and interpolates them. Needed for datepicker directives templates dynamic name attributes
     app.config(function($provide) {
@@ -143,7 +157,7 @@
             return $delegate;
         });
     });
-
+*/
     // Global config of default date picker config (individual attributes can be
     // overridden per directive usage)
     app.constant('uibDatepickerPopupConfig', {
@@ -168,20 +182,15 @@
 
     // Inject language resources
     app.run(['$log', '$rootScope', '$window', '$location', '$state', '$q', '$uibModalStack', 'common.messageService', 'common.moduleService',
-             'common.UserModel', 'formlyConfig', 'webcert.messages', 'common.MonitoringLogService', 'dynamicLinkService',
-        function($log, $rootScope, $window, $location, $state, $q, $uibModalStack, messageService, moduleService, UserModel, formlyConfig, wcMessages, MonitoringLogService, dynamicLinkService) {
-
-            // Configure formly to use default hide directive.
-            // must be ng-if or attic won't work because that works by watching when elements are destroyed and created, which only happens with ng-if.
-            // With ng-show they are always in DOM and those phases won't happen.
-            formlyConfig.extras.defaultHideDirective = 'ng-if';
+             'common.UserModel', 'webcert.messages', 'common.MonitoringLogService', 'dynamicLinkService',
+        function($log, $rootScope, $window, $location, $state, $q, $uibModalStack, messageService, moduleService, UserModel, wcMessages, MonitoringLogService, dynamicLinkService) {
 
             $rootScope.lang = 'sv';
             $rootScope.DEFAULT_LANG = 'sv';
             $rootScope.testModeActive = false;
 
             UserModel.setUser(user);
-            UserModel.termsAccepted = user.privatLakareAvtalGodkand;
+            UserModel.termsAccepted = user && user.privatLakareAvtalGodkand;
 
             messageService.addResources(wcMessages);
             messageService.addLinks(_links);
@@ -212,23 +221,27 @@
                         }
                     };
 
-                    // if we dont have a user then we need to defer until we do ..
+                    // if we dont have a user
                     if (!UserModel.user) {
-                        event.preventDefault();
-                        // gets resolved when a user is loaded
-                        $state.transitionTo(toState.name, toParams);
+                        // Make sure we send user to login state
+                        if (toState.name !== 'webcert.index') {
+                            event.preventDefault();
+                            $state.go('webcert.index');
+                        }
                     } else {
                         if (!redirectToUnitSelection()) {
                             termsCheck();
 
-                            // INTYG-4465: prevent state change when user press 'backwards' if modal is open, but close modal.
-                            if($uibModalStack.getTop()) {
-                                $uibModalStack.dismissAll();
-                                // Check if any dialog could not be dismissed
-                                if(!$uibModalStack.getTop()) {
-                                    event.preventDefault();
-                                    // Restore original state in order to make it work for DJUPINTEGRATION and avoid messing up the history.
-                                    $state.go(fromState, fromParams);
+                            if (fromState.name !== 'webcert.terms' || !UserModel.transitioning) {
+                                // INTYG-4465: prevent state change when user press 'backwards' if modal is open, but close modal.
+                                if ($uibModalStack.getTop()) {
+                                    $uibModalStack.dismissAll();
+                                    // Check if any dialog could not be dismissed
+                                    if (!$uibModalStack.getTop()) {
+                                        event.preventDefault();
+                                        // Restore original state in order to make it work for DJUPINTEGRATION and avoid messing up the history.
+                                        $state.go(fromState, fromParams);
+                                    }
                                 }
                             }
                         }
@@ -263,7 +276,9 @@
             // INTYG-3069
             // Once per session we want to log relevant information about the users environment.
             // As of now this is limited to screen resolution.
-            MonitoringLogService.screenResolution($window.innerWidth, $window.innerHeight);
+            if (user) {
+                MonitoringLogService.screenResolution($window.innerWidth, $window.innerHeight);
+            }
 
             $window.onbeforeunload = function() {
                 if (user && user.origin === 'DJUPINTEGRATION') {
@@ -288,7 +303,7 @@
                 getModules().then(function(modules) {
                     var modulePromises = [];
 
-                    if (user.jsMinified) {
+                    if (moduleConfig.JS_MINIFIED) {
                         modulePromises.push(loadScriptFromUrl('/web/webjars/common/webcert/module.min.js?' +
                             moduleConfig.BUILD_NUMBER));
                         // All dependencies in module-deps.json are included in module.min.js
@@ -311,7 +326,7 @@
 
                         loadCssFromUrl(module.cssPath + '?' + moduleConfig.BUILD_NUMBER);
 
-                        if (user.jsMinified) {
+                        if (moduleConfig.JS_MINIFIED) {
 
                             if (window.console) {
                                 console.log('use mini is true! loading compressed modules');
@@ -330,7 +345,7 @@
                         var dependencyPromises = [];
 
                         // Only needed for development since all dependencies are included in other files.
-                        if (!user.jsMinified) {
+                        if (!moduleConfig.JS_MINIFIED) {
                             if (window.console) {
                                 console.log('use mini is false! loading modules');
                             }
@@ -353,7 +368,7 @@
                                     }), 0));
 
                                 // Cant use common.featureService to check for this since it needs to be done before angular bootstrap.
-                                if (user.jsLoggning) {
+                                if (user && user.jsLoggning) {
                                     addExceptionHandler();
                                 }
 

@@ -75,9 +75,11 @@ public interface IntygService {
     IntygServiceResult storeIntyg(Utkast utkast);
 
     /**
-     * Instructs Intygstjanst to deliver the given certifiate to an external recipient.
+     * Instructs Intygstjanst to deliver the given certifiate to an external recipient. A delay flag may be set
+     * which will cause the processing of "send" event to be slightly delayed. This is due to timing issues when
+     * signing and sending a certificate in the same operation.
      */
-    IntygServiceResult sendIntyg(String intygId, String typ, String mottagare);
+    IntygServiceResult sendIntyg(String intygId, String typ, String mottagare, boolean delay);
 
     /**
      * Instructs Intygstjanst to revoke the given certificate.

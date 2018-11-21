@@ -650,10 +650,430 @@
       "type": "array"
     },
     "features": {
-      "additionalItems": false,
-      "items": {},
-      "minItems": 0,
-      "type": "array"
+      "additionalProperties": false,
+      "properties": {
+        "HANTERA_FRAGOR": {
+          "additionalProperties": false,
+          "properties": {
+            "desc": {
+              "type": "string"
+            },
+            "intygstyper": {
+              "additionalItems": false,
+              "items": {},
+              "minItems": 0,
+              "type": "array"
+            },
+            "global": {
+              "type": "boolean"
+            },
+            "name": {
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
+        "HANTERA_INTYGSUTKAST": {
+          "additionalProperties": false,
+          "properties": {
+            "desc": {
+              "type": "string"
+            },
+            "intygstyper": {
+              "additionalItems": false,
+              "items": {},
+              "minItems": 0,
+              "type": "array"
+            },
+            "global": {
+              "type": "boolean"
+            },
+            "name": {
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
+        "FORNYA_INTYG": {
+          "additionalProperties": false,
+          "properties": {
+            "desc": {
+              "type": "string"
+            },
+            "intygstyper": {
+              "additionalItems": false,
+              "items": {},
+              "minItems": 0,
+              "type": "array"
+            },
+            "global": {
+              "type": "boolean"
+            },
+            "name": {
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
+        "MAKULERA_INTYG": {
+          "additionalProperties": false,
+          "properties": {
+            "desc": {
+              "type": "string"
+            },
+            "intygstyper": {
+              "additionalItems": false,
+              "items": {},
+              "minItems": 0,
+              "type": "array"
+            },
+            "global": {
+              "type": "boolean"
+            },
+            "name": {
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
+        "MAKULERA_INTYG_KRAVER_ANLEDNING": {
+          "additionalProperties": false,
+          "properties": {
+            "desc": {
+              "type": "string"
+            },
+            "intygstyper": {
+              "additionalItems": false,
+              "items": {},
+              "minItems": 0,
+              "type": "array"
+            },
+            "global": {
+              "type": "boolean"
+            },
+            "name": {
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
+        "SKAPA_NY_FRAGA": {
+          "additionalProperties": false,
+          "properties": {
+            "desc": {
+              "type": "string"
+            },
+            "intygstyper": {
+              "additionalItems": false,
+              "items": {},
+              "minItems": 0,
+              "type": "array"
+            },
+            "global": {
+              "type": "boolean"
+            },
+            "name": {
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
+        "SKICKA_INTYG": {
+          "additionalProperties": false,
+          "properties": {
+            "desc": {
+              "type": "string"
+            },
+            "intygstyper": {
+              "additionalItems": false,
+              "items": {},
+              "minItems": 0,
+              "type": "array"
+            },
+            "global": {
+              "type": "boolean"
+            },
+            "name": {
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
+        "SIGNERA_SKICKA_DIREKT": {
+          "additionalProperties": false,
+          "properties": {
+            "desc": {
+              "type": "string"
+            },
+            "intygstyper": {
+              "additionalItems": false,
+              "items": {},
+              "minItems": 0,
+              "type": "array"
+            },
+            "global": {
+              "type": "boolean"
+            },
+            "name": {
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
+        "UTSKRIFT": {
+          "additionalProperties": false,
+          "properties": {
+            "desc": {
+              "type": "string"
+            },
+            "intygstyper": {
+              "additionalItems": false,
+              "items": {},
+              "minItems": 0,
+              "type": "array"
+            },
+            "global": {
+              "type": "boolean"
+            },
+            "name": {
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
+        "ARBETSGIVARUTSKRIFT": {
+          "additionalProperties": false,
+          "properties": {
+            "desc": {
+              "type": "string"
+            },
+            "intygstyper": {
+              "additionalItems": false,
+              "items": {},
+              "minItems": 0,
+              "type": "array"
+            },
+            "global": {
+              "type": "boolean"
+            },
+            "name": {
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
+        "JS_LOGGNING": {
+          "additionalProperties": false,
+          "properties": {
+            "desc": {
+              "type": "string"
+            },
+            "intygstyper": {
+              "additionalItems": false,
+              "items": {},
+              "minItems": 0,
+              "type": "array"
+            },
+            "global": {
+              "type": "boolean"
+            },
+            "name": {
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
+        "JS_MINIFIED": {
+          "additionalProperties": false,
+          "properties": {
+            "desc": {
+              "type": "string"
+            },
+            "intygstyper": {
+              "additionalItems": false,
+              "items": {},
+              "minItems": 0,
+              "type": "array"
+            },
+            "global": {
+              "type": "boolean"
+            },
+            "name": {
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
+        "SRS": {
+          "additionalProperties": false,
+          "properties": {
+            "desc": {
+              "type": "string"
+            },
+            "intygstyper": {
+              "additionalItems": false,
+              "items": {},
+              "minItems": 0,
+              "type": "array"
+            },
+            "global": {
+              "type": "boolean"
+            },
+            "name": {
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
+        "HANTERA_INTYGSUTKAST_AVLIDEN": {
+          "additionalProperties": false,
+          "properties": {
+            "desc": {
+              "type": "string"
+            },
+            "intygstyper": {
+              "additionalItems": false,
+              "items": {},
+              "minItems": 0,
+              "type": "array"
+            },
+            "global": {
+              "type": "boolean"
+            },
+            "name": {
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
+        "UNIKT_INTYG": {
+          "additionalProperties": false,
+          "properties": {
+            "desc": {
+              "type": "string"
+            },
+            "intygstyper": {
+              "additionalItems": false,
+              "items": {},
+              "minItems": 0,
+              "type": "array"
+            },
+            "global": {
+              "type": "boolean"
+            },
+            "name": {
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
+        "UNIKT_INTYG_INOM_VG": {
+          "additionalProperties": false,
+          "properties": {
+            "desc": {
+              "type": "string"
+            },
+            "intygstyper": {
+              "additionalItems": false,
+              "items": {},
+              "minItems": 0,
+              "type": "array"
+            },
+            "global": {
+              "type": "boolean"
+            },
+            "name": {
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
+        "UNIKT_UTKAST_INOM_VG": {
+          "additionalProperties": false,
+          "properties": {
+            "desc": {
+              "type": "string"
+            },
+            "intygstyper": {
+              "additionalItems": false,
+              "items": {},
+              "minItems": 0,
+              "type": "array"
+            },
+            "global": {
+              "type": "boolean"
+            },
+            "name": {
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
+        "TAK_KONTROLL": {
+          "additionalProperties": false,
+          "properties": {
+            "desc": {
+              "type": "string"
+            },
+            "intygstyper": {
+              "additionalItems": false,
+              "items": {},
+              "minItems": 0,
+              "type": "array"
+            },
+            "global": {
+              "type": "boolean"
+            },
+            "name": {
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
+        "TAK_KONTROLL_TRADKLATTRING": {
+          "additionalProperties": false,
+          "properties": {
+            "desc": {
+              "type": "string"
+            },
+            "intygstyper": {
+              "additionalItems": false,
+              "items": {},
+              "minItems": 0,
+              "type": "array"
+            },
+            "global": {
+              "type": "boolean"
+            },
+            "name": {
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
+        "SEKRETESSMARKERING": {
+          "additionalProperties": false,
+          "properties": {
+            "desc": {
+              "type": "string"
+            },
+            "intygstyper": {
+              "additionalItems": false,
+              "items": {},
+              "minItems": 0,
+              "type": "array"
+            },
+            "global": {
+              "type": "boolean"
+            },
+            "name": {
+              "type": "string"
+            }
+          },
+          "type": "object"
+        }
+      },
+      "type": "object"
     },
     "forskrivarkod": {
       "type": "string"

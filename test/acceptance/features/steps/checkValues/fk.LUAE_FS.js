@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Inera AB (http://www.inera.se)
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -83,7 +83,7 @@ function checkOvrigaUpplysningar(ovriga) {
 }
 
 function checkKontaktMedFk(kontakt) {
-    return expect(luaefsPage.kontaktFK.value.getText()).to.eventually.contain(testdataHelper.boolTillJaNej(kontakt));
+    return expect(luaefsPage.kontaktFK.value.getText()).to.eventually.contain(testdataHelper.boolTillJaEllerEjAngivet(kontakt));
 }
 
 module.exports = {

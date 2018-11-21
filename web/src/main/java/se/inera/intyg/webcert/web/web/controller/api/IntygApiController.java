@@ -28,29 +28,23 @@ import se.inera.intyg.common.support.peristence.dao.util.DaoUtil;
 import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.common.model.SekretessStatus;
 import se.inera.intyg.webcert.common.model.UtkastStatus;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.converter.IntygDraftsConverter;
-import se.inera.intyg.webcert.common.model.WebcertFeature;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
-import se.inera.intyg.webcert.common.model.SekretessStatus;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 import se.inera.intyg.webcert.web.web.controller.api.dto.NotifiedState;
 
 import javax.persistence.OptimisticLockException;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
@@ -64,7 +58,6 @@ import java.util.stream.Collectors;
  * Controller for the API that serves WebCert.
  *
  * @author nikpet
- *
  */
 @Path("/intyg")
 @Api(value = "intyg", description = "REST API för intygshantering", produces = MediaType.APPLICATION_JSON)
@@ -95,21 +88,21 @@ public class IntygApiController extends AbstractApiController {
     @Autowired
     private PatientDetailsResolver patientDetailsResolver;
 
+
     /**
      * Compiles a list of Intyg from two data sources. Signed Intyg are
      * retrieved from Intygstjänst, drafts are retrieved from Webcerts db. Both
      * types of Intyg are converted and merged into one sorted list.
      *
-     * @param personNummerIn
-     *            personnummer
+     * @param personNummerIn personnummer
      * @return a Response carrying a list containing all Intyg for a person.
      */
     @GET
     @Path("/person/{personNummer}")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public Response listDraftsAndIntygForPerson(@PathParam("personNummer") String personNummerIn) {
-        Personnummer personNummer = new Personnummer(personNummerIn);
-        LOG.debug("Retrieving intyg for person {}", personNummer.getPnrHash());
+        Personnummer personNummer = createPnr(personNummerIn);
+        LOG.debug("Retrieving intyg for person {}", personNummer.getPersonnummerHash());
 
         // INTYG-4086 (epic) - make sure only users with HANTERA_SEKRETESSMARKERAD_PATIENT can list intyg for patient
         // with sekretessmarkering.
@@ -122,7 +115,8 @@ public class IntygApiController extends AbstractApiController {
         authoritiesValidator.given(getWebCertUserService().getUser())
                 .privilegeIf(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT,
                         patientSekretess == SekretessStatus.TRUE)
-                .orThrow();
+                .orThrow(new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM_SEKRETESSMARKERING,
+                        "User missing required privilege or cannot handle sekretessmarkerad patient"));
 
         List<String> enhetsIds = getEnhetIdsForCurrentUser();
 
@@ -136,7 +130,8 @@ public class IntygApiController extends AbstractApiController {
 
         List<Utkast> utkastList;
 
-        if (authoritiesValidator.given(getWebCertUserService().getUser()).features(WebcertFeature.HANTERA_INTYGSUTKAST).isVerified()) {
+        if (authoritiesValidator.given(getWebCertUserService().getUser()).features(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
+                .isVerified()) {
             Set<String> intygstyper = authoritiesHelper.getIntygstyperForPrivilege(getWebCertUserService().getUser(),
                     AuthoritiesConstants.PRIVILEGE_VISA_INTYG);
 
@@ -170,10 +165,8 @@ public class IntygApiController extends AbstractApiController {
     /**
      * Sets the notified flag on an Intyg.
      *
-     * @param intygsId
-     *            Id of the Intyg
-     * @param notifiedState
-     *            True or False
+     * @param intygsId      Id of the Intyg
+     * @param notifiedState True or False
      * @return Response
      */
     @PUT
@@ -183,7 +176,7 @@ public class IntygApiController extends AbstractApiController {
     public Response setNotifiedOnIntyg(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId,
             @PathParam("version") long version, NotifiedState notifiedState) {
         authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
-                .features(WebcertFeature.HANTERA_INTYGSUTKAST)
+                .features(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
                 .privilege(AuthoritiesConstants.PRIVILEGE_VIDAREBEFORDRA_UTKAST)
                 .orThrow();
 
@@ -217,4 +210,11 @@ public class IntygApiController extends AbstractApiController {
         utkastService.setKlarForSigneraAndSendStatusMessage(intygsId, intygsTyp);
         return Response.ok().build();
     }
+
+    private Personnummer createPnr(String pnr) {
+        return Personnummer.createPersonnummer(pnr)
+                .orElseThrow(() -> new WebCertServiceException(WebCertServiceErrorCodeEnum.MISSING_PARAMETER,
+                        String.format("Cannot create Personnummer object with invalid personId %s", pnr)));
+    }
+
 }

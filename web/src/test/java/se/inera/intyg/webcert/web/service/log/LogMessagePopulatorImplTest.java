@@ -45,7 +45,7 @@ public class LogMessagePopulatorImplTest {
     public void testActivityArgsAppendedFromAdditionalInfoWhenActivityArgsExists() {
         PdlLogMessage logMessage = testee.populateLogMessage(buildLogRequest(ADDITIONAL_INFO), buildPdlLogMessage(ACTIVITY_ARGS),
                 buildLogUser());
-        assertEquals(ACTIVITY_ARGS + "\n" + ADDITIONAL_INFO, logMessage.getActivityArgs());
+        assertEquals(ACTIVITY_ARGS + ". " + ADDITIONAL_INFO, logMessage.getActivityArgs());
     }
 
     @Test
@@ -69,7 +69,7 @@ public class LogMessagePopulatorImplTest {
 
     private LogRequest buildLogRequest(String additionalInfo) {
         LogRequest logRequest = new LogRequest();
-        logRequest.setPatientId(new Personnummer("19121212-1212"));
+        logRequest.setPatientId(Personnummer.createPersonnummer("19121212-1212").get());
         logRequest.setAdditionalInfo(additionalInfo);
         return logRequest;
     }

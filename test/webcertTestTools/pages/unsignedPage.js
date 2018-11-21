@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Inera AB (http://www.inera.se)
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -50,7 +50,7 @@ var UnsignedIntygPage = WebcertBasePage._extend({
         };
     },
     get: function() {
-        return browser.get('/web/dashboard#/unsigned');
+        return browser.get('/#/unsigned');
     },
     showSearchFilters: function() {
         return this.visasokfilter.sendKeys(protractor.Key.SPACE);

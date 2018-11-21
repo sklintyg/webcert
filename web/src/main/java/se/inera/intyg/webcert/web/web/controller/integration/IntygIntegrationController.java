@@ -25,13 +25,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import se.inera.intyg.infra.security.authorities.CommonAuthoritiesResolver;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
-import se.inera.intyg.infra.security.common.service.CommonFeatureService;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
+import se.inera.intyg.webcert.web.service.referens.ReferensService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
+import se.inera.intyg.webcert.web.web.controller.integration.dto.PrepareRedirectToIntyg;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
@@ -49,9 +51,9 @@ import javax.ws.rs.core.UriInfo;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLEncoder;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 /**
  * Controller to enable an external user to access certificates directly from a
@@ -88,13 +90,16 @@ public class IntygIntegrationController extends BaseIntegrationController {
     private static final String[] GRANTED_ROLES = new String[] {
             AuthoritiesConstants.ROLE_LAKARE, AuthoritiesConstants.ROLE_TANDLAKARE, AuthoritiesConstants.ROLE_ADMIN
     };
-
-    private Optional<CommonFeatureService> commonFeatureService;
-
     private IntegrationService integrationService;
 
     private String urlIntygFragmentTemplate;
     private String urlUtkastFragmentTemplate;
+
+    @Autowired
+    private CommonAuthoritiesResolver commonAuthoritiesResolver;
+
+    @Autowired
+    private ReferensService referensService;
 
     /**
      * Fetches a certificate from IT or webcert and then performs a redirect to the view that displays
@@ -242,11 +247,6 @@ public class IntygIntegrationController extends BaseIntegrationController {
         return handleRedirectToIntyg(uriInfo, intygTyp, intygId, enhetId, user);
     }
 
-    @Autowired(required = false)
-    public void setCommonFeatureService(Optional<CommonFeatureService> commonFeatureService) {
-        this.commonFeatureService = commonFeatureService;
-    }
-
     @Autowired
     @Qualifier("intygIntegrationServiceImpl")
     public void setIntegrationService(IntegrationService integrationService) {
@@ -261,8 +261,6 @@ public class IntygIntegrationController extends BaseIntegrationController {
         this.urlUtkastFragmentTemplate = urlFragmentTemplate;
     }
 
-    // protected scope
-
     @Override
     protected String[] getGrantedRoles() {
         return GRANTED_ROLES;
@@ -273,46 +271,79 @@ public class IntygIntegrationController extends BaseIntegrationController {
         return GRANTED_ORIGIN;
     }
 
-    // default scope
-
     Response handleRedirectToIntyg(UriInfo uriInfo, String intygTyp, String intygId, String enhetId, WebCertUser user) {
-        // Call service
-        PrepareRedirectToIntyg prepareRedirectInfo = integrationService.prepareRedirectToIntyg(intygTyp, intygId, user);
+        try {
+            // Call service
+            PrepareRedirectToIntyg prepareRedirectInfo = integrationService.prepareRedirectToIntyg(intygTyp, intygId, user);
 
-        if (Strings.nullToEmpty(enhetId).trim().isEmpty()) {
+            // Persist reference
+            handleReference(intygId, user.getParameters().getReference());
 
-            // If ENHET isn't set but the user only has one possible enhet that can be selected, we auto-select that one
-            // explicitly and proceed down the filter chain. Typically, that unit should already have been selected by
-            // the UserDetailsService that built the Principal, but better safe than sorry...
-            if (userHasExactlyOneSelectableVardenhet(user)) {
-                user.changeValdVardenhet(user.getVardgivare().get(0).getVardenheter().get(0).getId());
-                updateUserWithActiveFeatures(user);
+            if (Strings.nullToEmpty(enhetId).trim().isEmpty()) {
 
-                LOG.debug("Redirecting to view intyg {} of type {}", intygId, intygTyp);
-                return buildRedirectResponse(uriInfo, prepareRedirectInfo);
+                // If ENHET isn't set but the user only has one possible enhet that can be selected, we auto-select that one
+                // explicitly and proceed down the filter chain. Typically, that unit should already have been selected by
+                // the UserDetailsService that built the Principal, but better safe than sorry...
+
+                if (userHasExactlyOneSelectableVardenhet(user)) {
+                    user.changeValdVardenhet(user.getVardgivare().get(0).getVardenheter().get(0).getId());
+                    updateUserWithActiveFeatures(user);
+
+                    LOG.debug("Redirecting to view intyg {} of type {}", intygId, intygTyp);
+                    return buildRedirectResponse(uriInfo, prepareRedirectInfo);
+                }
+
+                // Set state parameter telling us that we have been redirected to 'enhetsvaljaren'
+                user.getParameters().getState().setRedirectToEnhetsval(true);
+
+                LOG.warn("Deep integration request does not contain an 'enhet', redirecting to enhet selection page!");
+                return buildChooseUnitResponse(uriInfo, prepareRedirectInfo);
+
+            } else {
+                if (user.changeValdVardenhet(enhetId)) {
+                    updateUserWithActiveFeatures(user);
+                    LOG.debug("Redirecting to view intyg {} of type {}", intygId, intygTyp);
+                    return buildRedirectResponse(uriInfo, prepareRedirectInfo);
+                }
+
+                LOG.warn("Validation failed for deep-integration request because user {} is not authorized for enhet {}",
+                        user.getHsaId(), enhetId);
+                return buildAuthorizedErrorResponse(uriInfo);
             }
-
-            // Set state parameter telling us that we have been redirected to 'enhetsvaljaren'
-            user.getParameters().getState().setRedirectToEnhetsval(true);
-
-            LOG.warn("Deep integration request does not contain an 'enhet', redirecting to enhet selection page!");
-            return buildChooseUnitResponse(uriInfo, prepareRedirectInfo);
-
-        } else {
-            if (user.changeValdVardenhet(enhetId)) {
-                updateUserWithActiveFeatures(user);
-
-                LOG.debug("Redirecting to view intyg {} of type {}", intygId, intygTyp);
-                return buildRedirectResponse(uriInfo, prepareRedirectInfo);
+        } catch (WebCertServiceException e) {
+            if (e.getErrorCode().equals(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND)) {
+                LOG.error(e.getMessage());
+                return buildNoContentErrorResponse(uriInfo);
+            } else {
+                throw e;
             }
-
-            LOG.warn("Validation failed for deep-integration request because user {} is not authorized for enhet {}",
-                    user.getHsaId(), enhetId);
-            return buildErroResponse(uriInfo);
         }
     }
 
-    // private stuff
+    private void handleReference(String intygId, String referens) {
+        if (referens != null) {
+            if (!referensService.referensExists(intygId)) {
+                referensService.saveReferens(intygId, referens);
+            }
+        }
+    }
+
+    private Response buildNoContentErrorResponse(UriInfo uriInfo) {
+        return buildErrorResponse(uriInfo, "integration.nocontent");
+    }
+
+    private Response buildAuthorizedErrorResponse(UriInfo uriInfo) {
+        return buildErrorResponse(uriInfo, "login.medarbetaruppdrag");
+    }
+
+    private Response buildErrorResponse(UriInfo uriInfo, String errorReason) {
+        URI location = uriInfo.getBaseUriBuilder()
+                .replacePath("/error.jsp")
+                .queryParam("reason", errorReason)
+                .build();
+
+        return Response.temporaryRedirect(location).build();
+    }
 
     private Response buildChooseUnitResponse(UriInfo uriInfo, PrepareRedirectToIntyg prepareRedirectToIntyg) {
         UriBuilder uriBuilder = uriInfo.getBaseUriBuilder().replacePath(getUrlBaseTemplate());
@@ -321,17 +352,7 @@ public class IntygIntegrationController extends BaseIntegrationController {
         String urlFragment = "/integration-enhetsval";
 
         URI location = uriBuilder.queryParam("destination", destinationUrl).fragment(urlFragment).build();
-        return Response.status(Response.Status.TEMPORARY_REDIRECT).location(location).build();
-    }
-
-    private Response buildErroResponse(UriInfo uriInfo) {
-        UriBuilder uriBuilder = uriInfo.getBaseUriBuilder().replacePath(getUrlBaseTemplate());
-
-        Map<String, Object> urlParams = new HashMap<>();
-        urlParams.put("reason", "login.medarbetaruppdrag");
-
-        URI location = uriBuilder.path("error.jsp").buildFromMap(urlParams);
-        return Response.status(Response.Status.UNAUTHORIZED).location(location).build();
+        return Response.temporaryRedirect(location).build();
     }
 
     private Response buildRedirectResponse(UriInfo uriInfo, PrepareRedirectToIntyg prepareRedirectToIntyg) {
@@ -347,7 +368,7 @@ public class IntygIntegrationController extends BaseIntegrationController {
         urlParams.put(PARAM_CERT_ID, intygId);
 
         URI location = uriBuilder.fragment(urlFragmentTemplate).buildFromMap(urlParams);
-        return Response.status(Response.Status.TEMPORARY_REDIRECT).location(location).build();
+        return Response.temporaryRedirect(location).build();
     }
 
     private String getDestinationUrl(UriInfo uriInfo, PrepareRedirectToIntyg prepareRedirectToIntyg) {
@@ -389,9 +410,8 @@ public class IntygIntegrationController extends BaseIntegrationController {
     }
 
     private void updateUserWithActiveFeatures(WebCertUser webCertUser) {
-        commonFeatureService.ifPresent(commonFeatureService1 -> webCertUser
-                .setFeatures(commonFeatureService1.getActiveFeatures(webCertUser.getValdVardenhet().getId(),
-                        webCertUser.getValdVardgivare().getId())));
+        webCertUser.setFeatures(commonAuthoritiesResolver
+                .getFeatures(Arrays.asList(webCertUser.getValdVardenhet().getId(), webCertUser.getValdVardgivare().getId())));
     }
 
     private boolean userHasExactlyOneSelectableVardenhet(WebCertUser webCertUser) {

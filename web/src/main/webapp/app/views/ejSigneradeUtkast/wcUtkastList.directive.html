@@ -1,4 +1,4 @@
-<table class="col-md-12 table table-striped table-qa">
+<table class="col-md-12 table table-striped wc-table-striped">
   <tr>
     <th></th>
     <th wc-authority="VIDAREBEFORDRA_UTKAST"></th>
@@ -11,29 +11,35 @@
   </tr>
   <tr ng-repeat="intyg in utkastList">
     <td>
-      <button type="button" class="btn btn-info" title="Visar intyget." ng-click="openIntyg(intyg)"
+      <button type="button" class="btn btn-secondary" title="Visar intyget." ng-click="openIntyg(intyg)"
               id="showBtn-{{intyg.intygId}}"> Visa
       </button>
     </td>
     <td wc-authority="VIDAREBEFORDRA_UTKAST">
       <button type="button"
               class="btn vidarebefordra-btn"
-              ng-class="{'btn-info': !intyg.vidarebefordrad, 'btn-secondary' : intyg.vidarebefordrad}"
+              ng-class="{'btn-primary': !intyg.vidarebefordrad, 'btn-secondary' : intyg.vidarebefordrad}"
               title="Skicka mejl med en länk till utkastet för att informera den läkare som ska signera det."
-              ng-click="openMailDialog(intyg)">
+              ng-click="openMailDialog(intyg)"
+              wc-authority="VIDAREBEFORDRA_UTKAST" intygstyp="{{::intyg.intygType}}">
           <span class="glyphicon glyphicon-share-alt"
                 ng-class="{'forward-active': !intyg.vidarebefordrad, 'forward-inactive': intyg.vidarebefordrad}"></span>
       </button>
     </td>
     <td wc-authority="VIDAREBEFORDRA_UTKAST" class="center">
-      <input class="vidarebefordrad-checkbox" id="selected" type="checkbox" ng-disabled="intyg.updateState.vidarebefordraInProgress" ng-model="intyg.vidarebefordrad"
-             ng-change="onNotifyChange(intyg)" />
-      <span ng-if="intyg.updateState.vidarebefordraInProgress"> <img src="/img/ajax-loader-kit-16x16.gif"></span>
+      <div wc-authority="VIDAREBEFORDRA_UTKAST" intygstyp="{{::intyg.intygType}}">
+        <wc-checkbox-wrapper>
+        <input class="vidarebefordrad-checkbox" ng-attr-id="vidarebefordra_{{intyg.intygId}}" type="checkbox" ng-disabled="intyg.updateState.vidarebefordraInProgress" ng-model="intyg.vidarebefordrad"
+               ng-change="onNotifyChange(intyg)" />
+          <label ng-attr-for="vidarebefordra_{{intyg.intygId}}">&nbsp;</label>
+        <span ng-if="intyg.updateState.vidarebefordraInProgress"> <img src="/img/ajax-loader-kit-16x16.gif"></span>
+        </wc-checkbox-wrapper>
+      </div>
     </td>
     <td class="unbreakable">{{getTypeName(intyg.intygType)}}</td>
-    <td><span message key="intyg.status.{{intyg.status}}"></span></td>
+    <td><span dynamic-label key="intyg.status.{{intyg.status}}"></span></td>
     <td class="unbreakable">{{intyg.lastUpdatedSigned | date:'short'}}</td>
-    <td class="unbreakable">{{intyg.patientId | PersonIdFormatter}} <span wc-sekretess-avliden uuid="intyg.intygId" sekretessmarkering="intyg.sekretessmarkering" uuid="intyg.patientId"></span></td>
-    <td class="table-qa-last">{{intyg.updatedSignedBy}}</td>
+    <td class="unbreakable">{{intyg.patientId | PersonIdFormatter}} <wc-sekretess-avliden-ikon  uuid="intyg.intygId" sekretessmarkering="intyg.sekretessmarkering" uuid="intyg.patientId"></wc-sekretess-avliden-ikon></td>
+    <td class="wc-table-striped-last">{{intyg.updatedSignedBy}}</td>
   </tr>
 </table>

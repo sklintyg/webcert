@@ -21,7 +21,9 @@ package se.inera.intyg.webcert.integration.pp.stub;
 import se.riv.infrastructure.directory.privatepractitioner.v1.HoSPersonType;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Created by Magnus Ekstrand on 18/06/15.
@@ -47,6 +49,10 @@ public class HoSPersonStub {
             }
         }
         return null;
+    }
+
+    public List<HoSPersonType> getAll() {
+        return personer.values().stream().collect(Collectors.toList());
     }
 
 }

@@ -78,6 +78,10 @@
         serviceClass="se.riv.clinicalprocess.healthcond.certificate.getCertificate.v2.GetCertificateResponderInterface"
         address="${intygstjanst.getcertificate.endpoint.url}">
     </jaxws:client>
+
+    <jaxws:client id="netiDAccessServerSoap"
+        serviceClass="com.secmaker.netid.nias.v1.NetiDAccessServerSoap"
+        address="${netid.access.server.url}"/>
   </beans>
 
   <!-- Clients NOT using NTJP -->

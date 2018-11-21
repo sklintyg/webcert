@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Inera AB (http://www.inera.se)
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -30,13 +30,35 @@ module.exports = {
         if (!intygsID) {
             intygsID = testdataHelper.generateTestGuid();
         }
-        return {"id":intygsID,"typ":"Läkarutlåtande för aktivitetsersättning vid förlängd skolgång",
-            "baseratPa":{"minUndersokningAvPatienten":"2017-09-27","journaluppgifter":"2017-09-27","anhorigsBeskrivning":"2017-09-27","annat":"2017-09-27","annatBeskrivning":"ÄMk9NcgukFxTMaAn","personligKannedom":"2017-09-27"},
-            "andraMedicinskaUtredningar":[{"underlag":"Neuropsykiatriskt utlåtande","datum":"2016-04-09","infoOmUtredningen":"mÄwwO67piLrbeåID"}],
-            "diagnos":{"diagnoser":[{"kod":"Z720B","bakgrund":"gwskchi5p1LmåzHÖ"}]},
-            "funktionsnedsattning":{"debut":"TTIÅhTZFFÄHjLbOk","paverkan":"Ö502ZH0bVTLSåijx"},
-            "ovrigt":"åbw0KhHaTjcQgzbÅ",
-            "kontaktMedFk":false};
+        return {
+            "id": intygsID,
+            "typ": "Läkarutlåtande för aktivitetsersättning vid förlängd skolgång",
+            "baseratPa": {
+                "minUndersokningAvPatienten": "2017-09-27",
+                "journaluppgifter": "2017-09-27",
+                "anhorigsBeskrivning": "2017-09-27",
+                "annat": "2017-09-27",
+                "annatBeskrivning": "ÄMk9NcgukFxTMaAn",
+                "personligKannedom": "2017-09-27"
+            },
+            "andraMedicinskaUtredningar": [{
+                "underlag": "Neuropsykiatriskt utlåtande",
+                "datum": "2016-04-09",
+                "infoOmUtredningen": "mÄwwO67piLrbeåID"
+            }],
+            "diagnos": {
+                "diagnoser": [{
+                    "kod": "Z720B",
+                    "bakgrund": "gwskchi5p1LmåzHÖ"
+                }]
+            },
+            "funktionsnedsattning": {
+                "debut": "TTIÅhTZFFÄHjLbOk",
+                "paverkan": "Ö502ZH0bVTLSåijx"
+            },
+            "ovrigt": "åbw0KhHaTjcQgzbÅ",
+            "kontaktMedFk": false
+        };
     },
     getRandom: function(intygsID) {
         if (!intygsID) {
@@ -51,7 +73,7 @@ module.exports = {
                 journaluppgifter: today,
                 anhorigsBeskrivning: today,
                 annat: today,
-                annatBeskrivning: testdataHelper.randomTextString(),
+                annatBeskrivning: testdataHelper.randomTextString(2, 5) /*3500*/ ,
                 personligKannedom: today
             },
             andraMedicinskaUtredningar: fkValues.getRandomMedicinskaUtredningar(),
@@ -64,11 +86,13 @@ module.exports = {
             },
             funktionsnedsattning: {
                 //funktionsnedsattningar
-                debut: testdataHelper.randomTextString(),
-                paverkan: testdataHelper.randomTextString()
+                debut: testdataHelper.randomTextString(2, 5) /*3500*/ ,
+                paverkan: testdataHelper.randomTextString(2, 5) /*3500*/
             },
-            ovrigt: testdataHelper.randomTextString(),
-            kontaktMedFk: testdataHelper.randomTrueFalse()
+            ovrigt: testdataHelper.randomTextString(2, 5) /*3500*/ ,
+            kontaktMedFk: shuffle([false, {
+                motivering: testdataHelper.randomTextString(2, 5) /*3500*/
+            }])
         };
     }
 };

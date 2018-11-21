@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Inera AB (http://www.inera.se)
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -25,16 +25,38 @@ module.exports = {
     ts: require('./testvalues.ts.js'),
     fk: require('./testvalues.fk.js'),
     patienter: [{
-        id: '190007179815', // Har adress i PU
-		kon: 'man'
+        id: '200001152388', // Boende utomlands
+        kon: 'kvinna',
+        namn: 'Anna Karin',
+        efternamn: 'Levin'
     }, {
-        id: '190001289818',
-        adress: {
-            postadress: 'Norra storgatan 30',
-            postort: 'Katthult',
-            postnummer: '10000'
-        },
-		kon: 'man'
+        //Testfamilj
+        //Är vårdnadshavare för barn 1 och barn 2.
+        id: '198311209285',
+        kon: 'kvinna',
+        namn: 'Pernilla',
+        efternamn: 'Backman'
+    }, {
+        //Är vårdnadshavare för barn 1.
+        id: '199003122398',
+        kon: 'man',
+        namn: 'Sune',
+        efternamn: 'Backman'
+    }, {
+        //Barn 1, Har mor och far där båda är vårdnadshavare.		
+        id: '201602092387',
+        kon: 'kvinna',
+        namn: 'Malin',
+        efternamn: 'Backman'
+    }, {
+        //Barn 2 Har mor och far men endast mor är vårdnadshavare.
+        id: '201510262395',
+        kon: 'man',
+        namn: 'Erik',
+        efternamn: 'Backman'
+    }, {
+        id: '190007179815', // Har adress i PU
+        kon: 'man'
     }, {
         id: '199004242385',
         adress: {
@@ -50,7 +72,7 @@ module.exports = {
             postort: 'Katthult',
             postnummer: '10000'
         },
-		kon: 'man'
+        kon: 'man'
     }, {
         id: '199004252384',
         adress: {
@@ -58,7 +80,7 @@ module.exports = {
             postort: 'Katthult',
             postnummer: '10000'
         },
-		kon: 'kvinna'
+        kon: 'kvinna'
     }, {
         id: '199004252392',
         adress: {
@@ -66,7 +88,7 @@ module.exports = {
             postort: 'Katthult',
             postnummer: '10000'
         },
-		kon: 'man'
+        kon: 'man'
     }, {
         id: '199004262383',
         adress: {
@@ -74,7 +96,7 @@ module.exports = {
             postort: 'Katthult',
             postnummer: '10000'
         },
-		kon: 'kvinna'
+        kon: 'kvinna'
     }, {
         id: '199004262391',
         adress: {
@@ -82,7 +104,7 @@ module.exports = {
             postort: 'Katthult',
             postnummer: '10000'
         },
-		kon: 'man'
+        kon: 'man'
     }, {
         id: '199004272382',
         adress: {
@@ -90,7 +112,7 @@ module.exports = {
             postort: 'Katthult',
             postnummer: '10000'
         },
-		kon: 'kvinna'
+        kon: 'kvinna'
     }, {
         id: '199004272390',
         adress: {
@@ -98,7 +120,7 @@ module.exports = {
             postort: 'Katthult',
             postnummer: '10000'
         },
-		kon: 'man'
+        kon: 'man'
     }, {
         id: '199004282381',
         adress: {
@@ -106,7 +128,7 @@ module.exports = {
             postort: 'Katthult',
             postnummer: '10000'
         },
-		kon: 'kvinna'
+        kon: 'kvinna'
     }, {
         id: '199004282399',
         adress: {
@@ -114,7 +136,7 @@ module.exports = {
             postort: 'Katthult',
             postnummer: '10000'
         },
-		kon: 'man'
+        kon: 'man'
     }, {
         id: '199908102388',
         adress: {
@@ -122,7 +144,7 @@ module.exports = {
             postort: 'Katthult',
             postnummer: '10000'
         },
-		kon: 'kvinna'
+        kon: 'kvinna'
     }, {
         id: '199908112395',
         adress: {
@@ -130,7 +152,7 @@ module.exports = {
             postort: 'Katthult',
             postnummer: '10000'
         },
-		kon: 'man'
+        kon: 'man'
     }, {
         id: '199912252393',
         adress: {
@@ -138,7 +160,7 @@ module.exports = {
             postort: 'Katthult',
             postnummer: '10000'
         },
-		kon: 'man'
+        kon: 'man'
     }, {
         id: '199912142388',
         adress: {
@@ -146,7 +168,7 @@ module.exports = {
             postort: 'Katthult',
             postnummer: '10000'
         },
-		kon: 'kvinna'
+        kon: 'kvinna'
     }, {
         id: '199912152395',
         adress: {
@@ -154,7 +176,7 @@ module.exports = {
             postort: 'Katthult',
             postnummer: '10000'
         },
-		kon: 'man'
+        kon: 'man'
     }, {
         id: '199912162386',
         adress: {
@@ -162,77 +184,97 @@ module.exports = {
             postort: 'Katthult',
             postnummer: '10000'
         },
-		kon: 'kvinna'
-    }, {
-        id: '199912172393',
-        adress: {
-            postadress: 'Norra storgatan 30',
-            postort: 'Katthult',
-            postnummer: '10000'
-        },
-		kon: 'man'
-    }, {
-        id: '199912182384',
-        adress: {
-            postadress: 'Norra storgatan 30',
-            postort: 'Katthult',
-            postnummer: '10000'
-        },
-		kon: 'kvinna'
-    }, {
-        id: '199912192391',
-        adress: {
-            postadress: 'Norra storgatan 30',
-            postort: 'Katthult',
-            postnummer: '10000'
-        },
-		kon: 'man'
-    }, {
-        id: '199912202380',
-        adress: {
-            postadress: 'Norra storgatan 30',
-            postort: 'Katthult',
-            postnummer: '10000'
-        },
-		kon: 'kvinna'
-    }, {
-        id: '199912212397',
-        adress: {
-            postadress: 'Norra storgatan 30',
-            postort: 'Katthult',
-            postnummer: '10000'
-        },
-		kon: 'man'
-    }, {
-        id: '199912222388',
-        adress: {
-            postadress: 'Norra storgatan 30',
-            postort: 'Katthult',
-            postnummer: '10000'
-        },
-		kon: 'kvinna'
-    }, {
-        id: '199912232395',
-        adress: {
-            postadress: 'Norra storgatan 30',
-            postort: 'Katthult',
-            postnummer: '10000'
-        },
-		kon: 'man'
+        kon: 'kvinna'
     }],
+    dedikeradeTestPatienter: {
+        medSyfte: {
+            'Dödsorsaksintyg': [{
+                id: '199912212397',
+                adress: {
+                    postadress: 'Norra storgatan 30',
+                    postort: 'Katthult',
+                    postnummer: '10000'
+                },
+                kon: 'man'
+            }, {
+                id: '199912222388',
+                adress: {
+                    postadress: 'Norra storgatan 30',
+                    postort: 'Katthult',
+                    postnummer: '10000'
+                },
+                kon: 'kvinna'
+            }, {
+                id: '199912202380',
+                adress: {
+                    postadress: 'Norra storgatan 30',
+                    postort: 'Katthult',
+                    postnummer: '10000'
+                },
+                kon: 'kvinna'
+            }],
+            'Dödsbevis': [{
+                id: '199912182384',
+                adress: {
+                    postadress: 'Norra storgatan 30',
+                    postort: 'Katthult',
+                    postnummer: '10000'
+                },
+                kon: 'kvinna'
+            }, {
+                id: '199912172393',
+                adress: {
+                    postadress: 'Norra storgatan 30',
+                    postort: 'Katthult',
+                    postnummer: '10000'
+                },
+                kon: 'man'
+            }, {
+                id: '199912232395',
+                adress: {
+                    postadress: 'Norra storgatan 30',
+                    postort: 'Katthult',
+                    postnummer: '10000'
+                },
+                kon: 'man'
+            }],
+            'Intygsstatistik': [],
+            'Rehabstöd': [],
+            'sekretessmarkering': [{
+                id: '199912192391',
+                namn: '',
+                efternamn: '',
+                adress: {
+                    postadress: 'Norra storgatan 30',
+                    postort: 'Katthult',
+                    postnummer: '10000'
+                },
+                kon: 'man'
+            }],
+            'Fältvalidering': [{
+                id: '190001289818',
+                adress: {
+                    postadress: 'Norra storgatan 30',
+                    postort: 'Katthult',
+                    postnummer: '10000'
+                },
+                kon: 'man'
+            }]
+        }
+    },
     patienterMedSamordningsnummer: [{
         id: '194401786530',
         namn: '',
         efternamn: ''
     }],
     patienterMedSamordningsnummerEjPU: [{
-        id: '194401831674',
+        id: '200402712384',
         namn: '',
         efternamn: ''
     }],
 
     patienterMedSekretessmarkering: [{
-        id: '194201199124',
+        id: '199912192391',
         namn: '',
         efternamn: ''
     }],

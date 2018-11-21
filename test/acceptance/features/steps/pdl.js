@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Inera AB (http://www.inera.se)
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -17,17 +17,36 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* globals intyg */
+/* globals intyg, logger*/
 'use strict';
+/*jshint newcap:false */
+//TODO Uppgradera Jshint p.g.a. newcap kommer bli depricated. (klarade inte att ignorera i grunt-task)
+
+
+/*
+ *	Stödlib och ramverk
+ *
+ */
+
+const {
+    Given, // jshint ignore:line
+    When, // jshint ignore:line
+    Then // jshint ignore:line
+} = require('cucumber');
+
 var db = require('./dbActions');
 
-module.exports = function() {
+/*
+ *	Test steg
+ *
+ */
 
-    this.Given(/^ska loggaktivitet "([^"]*)" skickas till loggtjänsten$/, function(activity, callback) {
-        db.storeLog.waitForCount(activity, 1, intyg.id, global.user.hsaId, callback);
-    });
+Given(/^ska loggaktivitet "([^"]*)" skickas till loggtjänsten(?: med argument "([^"]*)")?$/, function(activity, activityarg) {
+    logger.silly(activity);
+    logger.silly(activityarg);
+    return db.storeLog.waitForCount(activity, 1, intyg.id, global.user.hsaId, activityarg);
+});
 
-    this.Given(/^ska det nu finnas (\d+) loggaktivitet "([^"]*)" för intyget$/, function(count, activity, callback) {
-        db.storeLog.waitForCount(activity, count, intyg.id, global.user.hsaId, callback);
-    });
-};
+Given(/^ska det nu finnas (\d+) loggaktivitet "([^"]*)" för intyget$/, function(count, activity) {
+    return db.storeLog.waitForCount(activity, count, intyg.id, global.user.hsaId);
+});

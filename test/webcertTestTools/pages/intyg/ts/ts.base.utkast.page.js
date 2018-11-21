@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Inera AB (http://www.inera.se)
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -27,9 +27,9 @@ var pageHelpers = require('../../pageHelper.util.js');
 var BaseUtkast = require('../base.utkast.page.js');
 
 var bedomning = {
-    form: element(by.id('bedomningForm')),
-    yes: element(by.id('bedomningy')),
-    no: element(by.id('bedomningn'))
+    form: element(by.id('form_bedomning')),
+    yes: element(by.id('bedomning-lamplighetInnehaBehorighetYes')),
+    no: element(by.id('bedomning-lamplighetInnehaBehorighetNo'))
 };
 
 var BaseTsUtkast = BaseUtkast._extend({
@@ -38,22 +38,17 @@ var BaseTsUtkast = BaseUtkast._extend({
 
         this.intygType = null; // overridden by children
 
-        this.korkortsTyperChecks = element(by.id('intygetAvserForm')).all(by.css('label.checkbox'));
+        this.korkortsTyperChecks = element(by.id('form_intygAvser-korkortstyp')).all(by.css('label'));
 
-        this.identitetForm = element(by.id('identitetForm'));
-        this.specialist = element(by.id('specialist'));
+        this.identitetForm = element(by.id('form_vardkontakt-idkontroll'));
+        this.specialist = element(by.id('bedomning-lakareSpecialKompetens'));
 
         this.bedomning = bedomning;
 
-        this.bedomningKorkortsTyperChecks = this.bedomning.form.all(by.css('label.checkbox'));
+        this.bedomningKorkortsTyperChecks = this.bedomning.form.all(by.css('label'));
 
         this.kommentar = element(by.id('kommentar'));
-        this.adress = {
-            postadress: element(by.id('patientPostadress')),
-            postort: element(by.id('patientPostort')),
-            postnummer: element(by.id('patientPostnummer'))
-
-        };
+        this.adress = this.patientAdress;
 
         this.markeraKlartForSigneringButton = element(by.id('markeraKlartForSigneringButton'));
         this.markeraKlartForSigneringModalYesButton = element(by.id('buttonYes'));
@@ -64,10 +59,10 @@ var BaseTsUtkast = BaseUtkast._extend({
         get._super.call(this, this.intygType, intygId);
     },
     fillInKorkortstyper: function(typer) {
-        return pageHelpers.clickAll(this.korkortsTyperChecks, typer);
+        return pageHelpers.selectAllCheckBoxes(this.korkortsTyperChecks, typer);
     },
     fillInIdentitetStyrktGenom: function(idtyp) {
-        return this.identitetForm.element(by.cssContainingText('label.radio', idtyp)).sendKeys(protractor.Key.SPACE);
+        return this.identitetForm.element(by.cssContainingText('label', idtyp)).click();
     },
     fillInBedomningLamplighet: function(lamplighet) {
         if (lamplighet) {
@@ -83,9 +78,9 @@ var BaseTsUtkast = BaseUtkast._extend({
         var fillInLamplighet = this.fillInBedomningLamplighet;
         var bedomningKorkortsTyperChecks = this.bedomningKorkortsTyperChecks;
 
-        return element(by.cssContainingText('label', bedomningObj.stallningstagande)).sendKeys(protractor.Key.SPACE)
+        return element(by.cssContainingText('label', bedomningObj.stallningstagande)).click()
             .then(function() {
-                return pageHelpers.clickAll(bedomningKorkortsTyperChecks, bedomningObj.behorigheter)
+                return pageHelpers.selectAllCheckBoxes(bedomningKorkortsTyperChecks, bedomningObj.behorigheter)
                     .then(function() {
                         return fillInLamplighet(bedomningObj.lamplighet);
                     });

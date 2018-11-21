@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Inera AB (http://www.inera.se)
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -47,7 +47,6 @@ describe('Validera sändning av luae_na Intyg', function() {
             SokSkrivValjIntyg.selectIntygById(intygsId);
 
             expect(IntygPage.isAt()).toBeTruthy();
-            expect(IntygPage.skicka.statusSendInprogress.isPresent()).toBeFalsy();
             expect(IntygPage.skicka.statusSent.isPresent()).toBeFalsy();
         });
 
@@ -61,11 +60,6 @@ describe('Validera sändning av luae_na Intyg', function() {
                 expect(items.length).toBe(0);
             });
 
-            expect(IntygPage.skicka.statusSendInprogress.isDisplayed()).toBeTruthy();
-        });
-
-        it('After page reload the intyg should be sent in IT', function() {
-            browser.refresh();
             expect(IntygPage.skicka.statusSent.isDisplayed()).toBeTruthy();
         });
     });

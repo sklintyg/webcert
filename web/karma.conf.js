@@ -22,7 +22,6 @@ module.exports = function(config) {
     'use strict';
 
     var SRC_DIR = 'src/main/webapp/app/';
-    var TEST_DIR = SRC_DIR;
 
     config.set({
 
@@ -51,30 +50,27 @@ module.exports = function(config) {
 
             // Dependencies
             // bower:js
-            'src/main/webapp/bower_components/jquery/jquery.js',
+            'src/main/webapp/bower_components/jquery/dist/jquery.js',
             'src/main/webapp/bower_components/angular/angular.js',
             'src/main/webapp/bower_components/angular-animate/angular-animate.js',
             'src/main/webapp/bower_components/angular-cookies/angular-cookies.js',
             'src/main/webapp/bower_components/angular-i18n/angular-locale_sv-se.js',
             'src/main/webapp/bower_components/angular-sanitize/angular-sanitize.js',
             'src/main/webapp/bower_components/angular-bootstrap/ui-bootstrap-tpls.js',
-            'src/main/webapp/bower_components/api-check/dist/api-check.js',
-            'src/main/webapp/bower_components/angular-formly/dist/formly.js',
             'src/main/webapp/bower_components/angular-ui-router/release/angular-ui-router.js',
-            'src/main/webapp/bower_components/angular-ui-select/dist/select.js',
-            'src/main/webapp/bower_components/bootstrap/dist/js/bootstrap.js',
+            'src/main/webapp/bower_components/bootstrap-sass/assets/javascripts/bootstrap.js',
             'src/main/webapp/bower_components/momentjs/moment.js',
             // endbower
             'src/main/webapp/bower_components/angular-mocks/angular-mocks.js',
 
             // Load these first
-            TEST_DIR + 'app-test.js',
-            TEST_DIR + 'utils/*.js',
+            SRC_DIR + 'app-test.js',
+            SRC_DIR + 'utils/*.js',
 
             { pattern: SRC_DIR + '**/app.test.js' },
             { pattern: SRC_DIR + '**/views/**/*.js' },
             { pattern: SRC_DIR + '**/views/**/*.html' },
-            { pattern: TEST_DIR + '**/views/**/*.spec.js' }
+            { pattern: SRC_DIR + '**/views/**/*.spec.js' }
         ],
 
         exclude: [ SRC_DIR + '**/*.page.js', SRC_DIR + 'app.js', SRC_DIR + 'app.min.js' ],
@@ -100,7 +96,7 @@ module.exports = function(config) {
         // - Safari (only Mac; has to be installed with `npm install karma-safari-launcher`)
         // - PhantomJS
         // - IE (only Windows; has to be installed with `npm install karma-ie-launcher`)
-        browsers: [ 'Chrome' ],
+        browsers: [ 'PhantomJS' ],
 
         // If browser does not capture in given timeout [ms], kill it
         captureTimeout: 60000,
@@ -110,8 +106,6 @@ module.exports = function(config) {
 
         plugins: [
             'karma-jasmine',
-            'karma-chrome-launcher',
-            'karma-firefox-launcher',
             'karma-phantomjs-launcher',
             'karma-mocha-reporter',
             'karma-ng-html2js-preprocessor'

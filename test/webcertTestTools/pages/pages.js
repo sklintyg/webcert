@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Inera AB (http://www.inera.se)
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -36,8 +36,9 @@ module.exports = {
         'valjUtkastType': require('./sokSkrivIntyg/sokSkrivValjUtkastType.page.js'),
         'visaIntyg': require('./sokSkrivIntyg/sokSkrivValjIntyg.page.js')
     },
-    fragorOchSvar: require('./fragorOchSvar.js'),
+    fragorOchSvar: require('./fragorOchSvar.js'), //Ärendehanteringsidan
     intyg: {
+        hogerfaltet: require(intygPath + 'hogerfaltet.js'),
         fk: {
             '7263': {
                 utkast: require(intygPath + 'fk7263/fk.7263.utkast.page.js'),
@@ -74,18 +75,18 @@ module.exports = {
                 intyg: require(intygPath + 'ts/ts_bas/tsBas.intyg.page.js')
             }
         },
-		skv : {
-			db : {
-				utkast: require(intygPath + 'skv/db/db.utkast.page.js'),
-				intyg: require(intygPath + 'skv/db/db.intyg.page.js')
-			}
-		},
-		soc : {
-			doi : {
-				utkast: require(intygPath + 'soc/doi/doi.utkast.page.js'),
-				intyg: require(intygPath + 'soc/doi/doi.intyg.page.js')
-			}
-		}
+        skv: {
+            db: {
+                utkast: require(intygPath + 'skv/db/db.utkast.page.js'),
+                intyg: require(intygPath + 'skv/db/db.intyg.page.js')
+            }
+        },
+        soc: {
+            doi: {
+                utkast: require(intygPath + 'soc/doi/doi.utkast.page.js'),
+                intyg: require(intygPath + 'soc/doi/doi.intyg.page.js')
+            }
+        }
     },
     'unsignedPage': require('./unsignedPage.js'),
 
@@ -106,7 +107,7 @@ module.exports = {
                 return this.intyg.luaeNA.intyg;
             case 'Läkarutlåtande för aktivitetsersättning vid förlängd skolgång':
                 return this.intyg.luaeFS.intyg;
-			case 'Dödsbevis':
+            case 'Dödsbevis':
                 return this.intyg.skv.db.intyg;
             case 'Dödsorsaksintyg':
                 return this.intyg.soc.doi.intyg;
@@ -130,7 +131,7 @@ module.exports = {
                 return this.intyg.luaeNA.utkast;
             case 'Läkarutlåtande för aktivitetsersättning vid förlängd skolgång':
                 return this.intyg.luaeFS.utkast;
-			case 'Dödsbevis':
+            case 'Dödsbevis':
                 return this.intyg.skv.db.utkast;
             case 'Dödsorsaksintyg':
                 return this.intyg.soc.doi.utkast;

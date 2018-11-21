@@ -33,8 +33,9 @@ Scenario: Statusuppdateringar då SMI-intyg raderas
     Och jag raderar intyget
     Så ska statusuppdatering "RADERA" skickas till vårdsystemet. Totalt: "1"
 
-    Och jag går in på intygsutkastet via djupintegrationslänk
-    Så ska ett fel-meddelande visa "Intyget gick inte att läsa in"
+    Och jag försöker gå in på intygsutkastet via djupintegrationslänk
+	Så ska jag varnas om att "Intyget gick inte att läsa in"
+	Så ska jag varnas om att "Intygsutkastet är raderat och kan därför inte längre visas."
 
 @fråga-från-fk @NYFRFM
 Scenario: Statusuppdateringar vid fråga från FK
@@ -48,7 +49,7 @@ Scenario: Statusuppdateringar vid fråga från FK
     Och ska statusuppdateringen visa mottagna frågor totalt 1,ej besvarade 1,besvarade 0, hanterade 0
     Och ska statusuppdateringen visa skickade frågor totalt 0,ej besvarade 0,besvarade 0, hanterade 0
 
-    När jag går in på intygsutkastet via djupintegrationslänk
+    När jag går in på intyget via djupintegrationslänk
     Och jag svarar på frågan
     Så ska statusuppdatering "HANFRFM" skickas till vårdsystemet. Totalt: "1"
     Och ska statusuppdateringen visa mottagna frågor totalt 1,ej besvarade 0,besvarade 0, hanterade 1
@@ -59,12 +60,11 @@ Scenario: Statusuppdateringar vid fråga från FK
 Scenario: Statusuppdateringar vid fråga från vården
     När jag fyller i alla nödvändiga fält för intyget
     Och jag signerar intyget
-    Så ska ett info-meddelande visa "Det går därför inte att ställa frågor om intyget."
     Och jag skickar intyget till Försäkringskassan
 
     Så ska statusuppdatering "SKICKA" skickas till vårdsystemet. Totalt: "1"
 
-    Och jag går in på intygsutkastet via djupintegrationslänk
+    Och jag går in på intyget via djupintegrationslänk
     Och jag skickar en fråga med ämnet "Kontakt" till Försäkringskassan
     Så ska statusuppdatering "NYFRFV" skickas till vårdsystemet. Totalt: "1"
     Och ska statusuppdateringen visa skickade frågor totalt 1,ej besvarade 1,besvarade 0, hanterade 0
@@ -75,14 +75,14 @@ Scenario: Statusuppdateringar vid fråga från vården
     Och ska statusuppdateringen visa skickade frågor totalt 1,ej besvarade 0,besvarade 1, hanterade 0
     # Och ska statusuppdateringen visa frågor 0, hanterade frågor 0,antal svar 1, hanterade svar 0
 
-    Och jag markerar svaret från Försäkringskassan som hanterat
+    Och jag markerar svaret från Försäkringskassan som hanterad
 
     Så ska statusuppdatering "HANFRFV" skickas till vårdsystemet. Totalt: "1"
     Och ska statusuppdateringen visa mottagna frågor totalt 0,ej besvarade 0,besvarade 0, hanterade 0
     Och ska statusuppdateringen visa skickade frågor totalt 1,ej besvarade 0,besvarade 0, hanterade 1
     # Och ska statusuppdateringen visa frågor 0, hanterade frågor 0,antal svar 1, hanterade svar 1
 
-    Och jag markerar svaret från Försäkringskassan som INTE hanterat
+    Och jag markerar svaret från Försäkringskassan som INTE hanterad
     Så ska statusuppdatering "HANFRFV" skickas till vårdsystemet. Totalt: "2"
     Och ska statusuppdateringen visa mottagna frågor totalt 0,ej besvarade 0,besvarade 0, hanterade 0
     Och ska statusuppdateringen visa skickade frågor totalt 1,ej besvarade 0,besvarade 1, hanterade 0
@@ -130,3 +130,79 @@ Scenario: Referens skickas med statusuppdateringar
     Så ska svaret innehålla intyget jag var inne på
     Och ska svaret innehålla ref med värdet "testref-X"
 
+	
+@fornya @ANDRAT @SKICKA @NYFRFV @NYSVFM @HANFRFV
+Scenario: Testa att statusuppdateringar fungerar efter intyget är förnyat
+	
+	När jag fyller i alla nödvändiga fält för intyget
+    Och jag signerar intyget
+	Och jag förnyar intyget
+	
+	När jag fyller i nödvändig information ( om intygstyp är "Läkarintyg för sjukpenning")
+	Och jag ändrar i slumpat fält
+	Så ska statusuppdatering "ANDRAT" skickas till vårdsystemet. Totalt: "1"
+	
+	Och jag signerar intyget
+	
+    Och jag skickar intyget till Försäkringskassan
+    Så ska statusuppdatering "SKICKA" skickas till vårdsystemet. Totalt: "1"
+	
+	Och jag skickar en fråga med ämnet "Kontakt" till Försäkringskassan
+    Så ska statusuppdatering "NYFRFV" skickas till vårdsystemet. Totalt: "1"
+    Och ska statusuppdateringen visa skickade frågor totalt 1,ej besvarade 1,besvarade 0, hanterade 0
+
+    Och Försäkringskassan skickar ett svar
+    Så ska statusuppdatering "NYSVFM" skickas till vårdsystemet. Totalt: "1"
+    Och ska statusuppdateringen visa mottagna frågor totalt 0,ej besvarade 0,besvarade 0, hanterade 0
+    Och ska statusuppdateringen visa skickade frågor totalt 1,ej besvarade 0,besvarade 1, hanterade 0
+    # Och ska statusuppdateringen visa frågor 0, hanterade frågor 0,antal svar 1, hanterade svar 0
+
+    Och jag markerar svaret från Försäkringskassan som hanterad
+
+    Så ska statusuppdatering "HANFRFV" skickas till vårdsystemet. Totalt: "1"
+    Och ska statusuppdateringen visa mottagna frågor totalt 0,ej besvarade 0,besvarade 0, hanterade 0
+    Och ska statusuppdateringen visa skickade frågor totalt 1,ej besvarade 0,besvarade 0, hanterade 1
+
+    Och jag markerar svaret från Försäkringskassan som INTE hanterad
+    Så ska statusuppdatering "HANFRFV" skickas till vårdsystemet. Totalt: "2"
+    Och ska statusuppdateringen visa mottagna frågor totalt 0,ej besvarade 0,besvarade 0, hanterade 0
+    Och ska statusuppdateringen visa skickade frågor totalt 1,ej besvarade 0,besvarade 1, hanterade 0
+	
+	
+@ersätt @ANDRAT @SKICKA @NYFRFV @NYSVFM @HANFRFV
+Scenario: Testa att statusuppdateringar fungerar efter intyget är ersatt
+	
+	När jag fyller i alla nödvändiga fält för intyget
+    Och jag signerar intyget
+	Och jag klickar på ersätta knappen
+	Och jag klickar på ersätt-knappen i dialogen
+	
+	När jag fyller i nödvändig information ( om intygstyp är "Läkarintyg för sjukpenning")
+	Och jag ändrar i slumpat fält
+	Så ska statusuppdatering "ANDRAT" skickas till vårdsystemet. Totalt: "1"
+	
+	Och jag signerar intyget
+	
+    Och jag skickar intyget till Försäkringskassan
+    Så ska statusuppdatering "SKICKA" skickas till vårdsystemet. Totalt: "1"
+	
+	Och jag skickar en fråga med ämnet "Kontakt" till Försäkringskassan
+    Så ska statusuppdatering "NYFRFV" skickas till vårdsystemet. Totalt: "1"
+    Och ska statusuppdateringen visa skickade frågor totalt 1,ej besvarade 1,besvarade 0, hanterade 0
+
+    Och Försäkringskassan skickar ett svar
+    Så ska statusuppdatering "NYSVFM" skickas till vårdsystemet. Totalt: "1"
+    Och ska statusuppdateringen visa mottagna frågor totalt 0,ej besvarade 0,besvarade 0, hanterade 0
+    Och ska statusuppdateringen visa skickade frågor totalt 1,ej besvarade 0,besvarade 1, hanterade 0
+
+    Och jag markerar svaret från Försäkringskassan som hanterad
+
+    Så ska statusuppdatering "HANFRFV" skickas till vårdsystemet. Totalt: "1"
+    Och ska statusuppdateringen visa mottagna frågor totalt 0,ej besvarade 0,besvarade 0, hanterade 0
+    Och ska statusuppdateringen visa skickade frågor totalt 1,ej besvarade 0,besvarade 0, hanterade 1
+
+    Och jag markerar svaret från Försäkringskassan som INTE hanterad
+    Så ska statusuppdatering "HANFRFV" skickas till vårdsystemet. Totalt: "2"
+    Och ska statusuppdateringen visa mottagna frågor totalt 0,ej besvarade 0,besvarade 0, hanterade 0
+    Och ska statusuppdateringen visa skickade frågor totalt 1,ej besvarade 0,besvarade 1, hanterade 0
+	

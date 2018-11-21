@@ -38,11 +38,24 @@ public class ConfigResponse {
     @ApiModelProperty(name = "DASHBOARD_URL", dataType = "String")
     private String dashboardUrl;
 
-    public ConfigResponse(String version, String buildNumber, String ppHost, String dashboardUrl) {
+    @ApiModelProperty(name = "JS_MINIFIED", dataType = "Boolean")
+    private Boolean jsMinified;
+
+    @ApiModelProperty(name = "SAKERHETSTJANST_IDP_URL", dataType = "String")
+    private String sakerhetstjanstIdpUrl;
+
+    @ApiModelProperty(name = "CGI_FUNKTIONSTJANSTER_IDP_URL", dataType = "String")
+    private String cgiFunktionstjansterIdpUrl;
+
+    public ConfigResponse(String version, String buildNumber, String ppHost, String dashboardUrl, Boolean jsMinified,
+                          String sakerhetstjanstIdpUrl, String cgiFunktionstjansterIdpUrl) {
         this.version = version;
         this.buildNumber = buildNumber;
         this.ppHost = ppHost;
         this.dashboardUrl = dashboardUrl;
+        this.jsMinified = jsMinified;
+        this.sakerhetstjanstIdpUrl = sakerhetstjanstIdpUrl;
+        this.cgiFunktionstjansterIdpUrl = cgiFunktionstjansterIdpUrl;
     }
 
     @JsonProperty("VERSION")
@@ -63,5 +76,20 @@ public class ConfigResponse {
     @JsonProperty("DASHBOARD_URL")
     public String getDashboardUrl() {
         return dashboardUrl;
+    }
+
+    @JsonProperty("JS_MINIFIED")
+    public Boolean getJsMinified() {
+        return jsMinified;
+    }
+
+    @JsonProperty("SAKERHETSTJANST_IDP_URL")
+    public String getSakerhetstjanstIdpUrl() {
+        return sakerhetstjanstIdpUrl;
+    }
+
+    @JsonProperty("CGI_FUNKTIONSTJANSTER_IDP_URL")
+    public String getCgiFunktionstjansterIdpUrl() {
+        return cgiFunktionstjansterIdpUrl;
     }
 }

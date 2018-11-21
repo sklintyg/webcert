@@ -1,0 +1,42 @@
+/*!
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
+ *
+ * This file is part of sklintyg (https://github.com/sklintyg).
+ *
+ * sklintyg is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * sklintyg is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+.wc-body-background {
+  background-color: $wc-color-24;
+  padding-bottom: 30px;
+}
+
+.wc-patient-icon-gutter {
+  padding-left: 113px;
+  position: relative;
+}
+
+.gutter-icon {
+  color: $wc-color-17;
+  position: absolute;
+  top: -5px;
+  left: 46px;
+}
+
+.patient-intyg-heading {
+  @extend %wc-typo-02;
+  color: $wc-color-07;
+  padding: 0 0 20px 0;
+  margin:0;
+}

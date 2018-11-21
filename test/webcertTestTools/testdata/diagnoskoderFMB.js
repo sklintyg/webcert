@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Inera AB (http://www.inera.se)
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -70,13 +70,6 @@ module.exports = {
             beslutsunderlag: 'luxation och distorsion i höftled och höftligament, knäets leder och ligament'
 
         }, {
-            kod: 'R09',
-            symptomPrognosBehandling: null,
-            generellInfo: 'Sjukskrivning enbart',
-            funktionsnedsattning: null,
-            aktivitetsbegransning: null,
-            beslutsunderlag: 'Sjukskrivning enbart utifrån symtom ska undvikas'
-        }, {
             kod: 'O267',
             symptomPrognosBehandling: 'Smärtor i bäckenet och',
             generellInfo: 'Observandum',
@@ -104,13 +97,6 @@ module.exports = {
             funktionsnedsattning: 'axelbesvär ger ofta',
             aktivitetsbegransning: null,
             beslutsunderlag: 'cuff-syndrom i skulderled och utförd åtgärd rekonstruktion av rotatorkuff med sutur'
-        }, {
-            kod: 'R40',
-            symptomPrognosBehandling: null,
-            generellInfo: 'Sjukskrivning enbart utifrån symtom ska undvikas',
-            funktionsnedsattning: null,
-            aktivitetsbegransning: null,
-            beslutsunderlag: 'Sjukskrivning enbart utifrån symtom ska undvikas'
         }]
     },
     utanEgenFMBInfo: {
@@ -170,7 +156,7 @@ module.exports = {
             kod: 'F420',
             symptomPrognosBehandling: 'Tvångssyndrom kännetecknas',
             generellInfo: 'Det finns en spännvidd för hur en given sjukdom påverkar olika individers arbetsförmåga och förmåga att utföra olika aktiviteter',
-            funktionsnedsattning: 'Tvångssyndrom kan medföra',
+            funktionsnedsattning: 'Tvångssyndrom karakteriseras av problem med tvångstankar',
             aktivitetsbegransning: null,
             beslutsunderlag: 'Vid lindrigt till medelsvårt tvångssyndrom kan sjukskrivning i många fall undvikas',
             overliggande: 'Det FMB-stöd som visas är för koden F42'

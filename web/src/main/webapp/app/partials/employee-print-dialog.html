@@ -1,25 +1,26 @@
 
 <div id="{{dialogId}}" class="modal-header">
-    <button type="button" class="close" ng-click="button2click()">×</button>
+    <button type="button" class="close" ng-click="button2click()"><i class="material-icons">close</i></button>
     <h3 ng-focus="dialog.focus" tabindex="-1">
-        <span message key="{{titleId}}"></span>
+        <span dynamic-label key="{{titleId}}"></span>
     </h3>
 </div>
 <div class="modal-body">
-    <div class="alert alert-warning alert-column" id="ersattUtkastPaborjat" ng-if="model.patient.sekretessmarkering">
-        <span message key="common.alert.sekretessmarkering.print"></span>
-    </div>
+    <wc-alert-message id="ersattUtkastPaborjat" ng-if="model.patient.sekretessmarkering"
+                      alert-severity="sekretess"
+                      alert-message-id="common.alert.sekretessmarkering.print">
+    </wc-alert-message>
     <p>
-    <span message key="{{bodyText}}"></span>
+    <span dynamic-label key="{{bodyText}}"></span>
     </p>
 </div>
 <div class="modal-footer">
     <div class="webcert-top-padding-section form-inline">
-        <button type="button" id="{{button1id}}" class="btn btn-success" ng-click="button1click()">
-            <span message key="{{button1text}}"></span>
+        <button type="button" id="{{button1id}}" class="btn btn-primary" ng-click="button1click()">
+            <span dynamic-label key="{{button1text}}"></span>
         </button>
-        <button type="button" id="{{button2id}}" class="btn btn-info" ng-click="button2click()">
-            <span message key="{{button2text}}"></span>
+        <button type="button" id="{{button2id}}" class="btn btn-default" ng-click="button2click()">
+            <span dynamic-label key="{{button2text}}"></span>
         </button>
     </div>
 </div>

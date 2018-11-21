@@ -40,16 +40,21 @@ describe('wcUtkastFilterSpec', function() {
             var User = mockFactory.buildUserMinimal();
             $provide.value('common.User', User);
             $provide.value('common.UserModel', { userContext: { authenticationScheme: null }, getActiveFeatures: function() {},
-                hasIntygsTyp: function() {return true;} });
+                hasIntygsTyp: function() {return true;}, isLakare: function() {return true;} });
             $provide.value('common.dialogService', mockFactory.buildDialogService());
-            $provide.value('common.featureService', jasmine.createSpyObj('common.featureService', [ 'isFeatureActive' ]));
-            $provide.value('common.authorityService', {});
+            var featureService = jasmine.createSpyObj('common.featureService', [ 'isFeatureActive' ]);
+            featureService.features = {};
+            $provide.value('common.featureService', featureService);
+            $provide.value('common.authorityService', jasmine.createSpyObj('common.authorityService', [ 'isAuthorityActive' ]));
             $provide.value('common.messageService', {});
             $provide.value('common.statService', jasmine.createSpyObj('common.statService', [ 'refreshStat' ]));
         }]);
 
-        inject(['$rootScope', '$compile', '$cookies', '$httpBackend', 'webcert.UtkastFilterModel',
-            function($rootScope, $compile, _$cookies_, _$httpBackend_, _utkastFilterModel_) {
+        inject(['$rootScope', '$compile', '$cookies', '$httpBackend', 'webcert.UtkastFilterModel', '$templateCache',
+            function($rootScope, $compile, _$cookies_, _$httpBackend_, _utkastFilterModel_, $templateCache) {
+
+                $templateCache.put('/web/webjars/common/webcert/components/headers/wcHeader.partial.html', '');
+
                 $cookies = _$cookies_;
                 $httpBackend = _$httpBackend_;
                 utkastFilterModel = _utkastFilterModel_;

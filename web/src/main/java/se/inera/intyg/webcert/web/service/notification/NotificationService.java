@@ -35,37 +35,37 @@ public interface NotificationService {
     /**
      * Utkast created (HAN1).
      */
-    void sendNotificationForDraftCreated(Utkast utkast, String reference);
+    void sendNotificationForDraftCreated(Utkast utkast);
 
     /**
      * Utkast signed (HAN2).
      */
-    void sendNotificationForDraftSigned(Utkast utkast, String reference);
+    void sendNotificationForDraftSigned(Utkast utkast);
 
     /**
      * Utkast changed (HAN11).
      */
-    void sendNotificationForDraftChanged(Utkast utkast, String reference);
+    void sendNotificationForDraftChanged(Utkast utkast);
 
     /**
      * Utkast deleted (HAN4).
      */
-    void sendNotificationForDraftDeleted(Utkast utkast, String reference);
+    void sendNotificationForDraftDeleted(Utkast utkast);
 
     /**
      * Utkast marked as ready to sign.
      */
-    void sendNotificationForDraftReadyToSign(Utkast utkast, String reference);
+    void sendNotificationForDraftReadyToSign(Utkast utkast);
 
     /**
      * Signed intyg sent to recipient (HAN3).
      */
-    void sendNotificationForIntygSent(String intygsId, String reference);
+    void sendNotificationForIntygSent(String intygsId);
 
     /**
      * Signed intyg revoked (HAN5).
      */
-    void sendNotificationForIntygRevoked(String intygsId, String reference);
+    void sendNotificationForIntygRevoked(String intygsId);
 
     /**
      * New question received from FK (HAN6).

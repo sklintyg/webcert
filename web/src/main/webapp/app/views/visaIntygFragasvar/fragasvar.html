@@ -1,27 +1,4 @@
-<div class="webcert-multicol-container1 webcert-multicol-background-grey" id="viewQAAndCert">
-  <!--  both webcert-multicol-container1 and webcert-multicol-container2 are required, see comment on the webcert-multicol-container1 class -->
-  <div class="webcert-multicol-container2 webcert-multicol-background-white">
-    <!-- Left column -->
-    <div class="webcert-col webcert-col-primary">
-      <div>
-        <h1 class="page-title backlink-heading">
-          <a id="tillbakaButton" wc-authority="NAVIGERING" class="backlink-icon glyphicon glyphicon-arrow-left"
-             href="/web/dashboard#/unhandled-qa" title="Tillbaka till Sök/skriv intyg"></a>
-          <span>{{widgetState.certificateName}}</span>
-        </h1>
-      </div>
-      <div ui-view="intyg" />
-    </div>
-    <!-- Certificate Left side end -->
+<div ui-view="intyg" class="webcert-workarea-vflex-container"></div>
 
-    <!-- Right side -->
-    <div class="webcert-col webcert-col-secondary webcert-multicol-background-grey" wc-authority feature="hanteraFragor"
-         intygstyp="{{widgetState.certificateType}}">
-      <div class="webcert-col-shadow"></div>
-      <h2 class="col-head">Frågor och svar</h2>
-      <div ui-view="fragasvar" />
-    </div>
 
-    <!-- Certificate Right side end-->
-  </div>
-</div>
+

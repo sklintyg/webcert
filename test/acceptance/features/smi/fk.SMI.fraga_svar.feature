@@ -1,5 +1,5 @@
 #language: sv
-@luse @fråga-från-fk 
+@luse @fråga-från-fk @vårdadmin
 Egenskap: Försäkringskassan kan skicka frågor på sjukintyg LUSE
 
 Bakgrund: Jag befinner mig på webcerts förstasida
@@ -16,14 +16,14 @@ Scenariomall: FK skickar fråga på "LUSE"
 	Så ska det synas vem som svarat
 
 @AVSTMN
-  Exempel:
+    Exempel:
     |    ämne           |
     |  "AVSTMN"         | 
 
 	Exempel:
     |    ämne           |
-    |  "KONTKT"	    		|	
-  	| "OVRIGT"		     	|
+    |  "KONTKT"	    	|	
+  	| "OVRIGT"		    |
 
   @vidarebefordra-mail
 	Scenario: Det är möjligt att vidarebefordra frågan

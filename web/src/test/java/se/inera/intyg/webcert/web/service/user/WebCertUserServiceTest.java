@@ -22,17 +22,17 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import se.inera.intyg.common.support.modules.support.feature.ModuleFeature;
 import se.inera.intyg.infra.integration.hsa.model.Mottagning;
 import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
 import se.inera.intyg.infra.integration.hsa.model.Vardgivare;
 import se.inera.intyg.infra.security.authorities.AuthoritiesResolverUtil;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.infra.security.common.model.Privilege;
 import se.inera.intyg.infra.security.common.model.Role;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.webcert.common.model.WebcertFeature;
@@ -53,7 +53,7 @@ import java.util.concurrent.ScheduledFuture;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -76,6 +76,7 @@ public class WebCertUserServiceTest extends AuthoritiesConfigurationTestSetup {
     public WebCertUserServiceImpl webcertUserService = new WebCertUserServiceImpl();
     @Mock
     private AnvandarPreferenceRepository anvandarPreferenceRepository;
+
     @Mock
     private ThreadPoolTaskScheduler scheduler;
 
@@ -107,35 +108,6 @@ public class WebCertUserServiceTest extends AuthoritiesConfigurationTestSetup {
                 webcertUserService.checkIfAuthorizedForUnit(user, VARDGIVARE_1, VARDENHET_1, false));
         assertFalse("ska INTE kunna redigera ett intyg inom VE2",
                 webcertUserService.checkIfAuthorizedForUnit(user, VARDGIVARE_1, VARDENHET_2, false));
-    }
-
-    @Test
-    public void testEnableFeatures() {
-
-        WebCertUser user = createWebCertUser(false);
-
-        assertEquals(0, user.getFeatures().size());
-
-        webcertUserService.enableFeatures(user, WebcertFeature.HANTERA_FRAGOR, WebcertFeature.HANTERA_INTYGSUTKAST);
-
-        assertEquals(2, user.getFeatures().size());
-    }
-
-    @Test
-    public void testEnableModuleFeatures() {
-
-        WebCertUser user = createWebCertUser(false);
-
-        assertEquals(0, user.getFeatures().size());
-
-        // base features must be enabled first
-        webcertUserService.enableFeatures(user, WebcertFeature.HANTERA_FRAGOR, WebcertFeature.HANTERA_INTYGSUTKAST);
-
-        assertEquals(2, user.getFeatures().size());
-
-        webcertUserService.enableModuleFeatures(user, "fk7263", ModuleFeature.HANTERA_FRAGOR, ModuleFeature.HANTERA_INTYGSUTKAST);
-
-        assertEquals(4, user.getFeatures().size());
     }
 
     @Test
@@ -384,7 +356,7 @@ public class WebCertUserServiceTest extends AuthoritiesConfigurationTestSetup {
 
         WebCertUser user = new WebCertUser();
         user.setRoles(AuthoritiesResolverUtil.toMap(role));
-        user.setAuthorities(AuthoritiesResolverUtil.toMap(role.getPrivileges()));
+        user.setAuthorities(AuthoritiesResolverUtil.toMap(role.getPrivileges(), Privilege::getName));
 
         return user;
     }

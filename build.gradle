@@ -1,7 +1,7 @@
 plugins {
-    id "se.inera.intyg.plugin.common" version "1.0.59" apply false
+    id "se.inera.intyg.plugin.common" version "1.0.62" apply false
     id "org.akhikhl.gretty" version "1.4.2" apply false
-    id "net.ltgt.apt" version "0.11" apply false
+    id "net.ltgt.apt" version "0.13" apply false
     id "com.moowork.node" version "1.1.1" apply false
 }
 
@@ -10,17 +10,20 @@ ext {
     infraVersion = System.properties['infraVersion'] ?: '0-SNAPSHOT'
 
     commonsIoVersion = "2.4"
+
+    schemasContractVersion = "2.1.6"
+
     funktionstjansterGrpSchemasVersion = "1.0.3"
     intygClinicalprocessSchemasVersion = "1.0.9"
     ppSchemasVersion = "1.0.4"
     ppTermsSchemasVersion = "1.0.4"
-    rivtaClinicalprocessSchemasVersion = "3.1.0-RC1.1"
+    rivtaClinicalprocessSchemasVersion = "3.2.0-RC1"
     rivtaItintegrationMonitoringSchemasVersion = "1.0.0.3"
 
     activeMqVersion = "5.13.4"
     assertjVersion = "3.6.2"
     aspectJWeaverVersion = "1.7.1"
-    autovalueVersion = "1.1"
+    autovalueVersion = "1.5"
     awaitilityVersion = "1.4.0"
     camelVersion = "2.16.0"
     dbUnitVersion = "2.4.9"
@@ -32,7 +35,8 @@ ext {
     jaxrsVersion = "1.5.4"
     jsonSchemaValidatorVersion = "2.8.0"
     liquibaseVersion = "3.3.5"
-    luceneAnalyzersCommonVersion = "4.10.2"
+    // Note that Apache Ignite will pull in its own version of lucene, we're using exclude in /infra to prevent that.
+    luceneAnalyzersCommonVersion = "5.5.2"
     openWsVersion = "1.4.2-1"
     opensamlVersion = "2.5.3"
     restassuredVersion = "2.8.0"
@@ -44,7 +48,7 @@ ext {
     xmlToolingVersion = "1.3.2"
     xmlUnitVersion = "1.4"
 
-    mockitoVersion = "1.9.0"
+    mockitoVersion = "2.16.0"
     springockitoVersion = "1.0.8"
     mysqlVersion = "5.1.40"
     h2Version = "1.3.176"
@@ -63,8 +67,6 @@ allprojects {
     }
 
     dependencies {
-        compile "com.google.code.findbugs:jsr305:3.0.0"
-
         testCompile 'junit:junit:4.+'
         testCompile "org.mockito:mockito-core:${mockitoVersion}"
     }

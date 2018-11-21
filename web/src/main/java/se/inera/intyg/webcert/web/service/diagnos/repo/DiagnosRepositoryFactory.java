@@ -18,11 +18,8 @@
  */
 package se.inera.intyg.webcert.web.service.diagnos.repo;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.List;
-
+import com.google.common.base.CharMatcher;
+import com.google.common.base.Strings;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
@@ -30,7 +27,6 @@ import org.apache.lucene.document.StringField;
 import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
-import org.apache.lucene.util.Version;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -40,11 +36,12 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
-
-import com.google.common.base.CharMatcher;
-import com.google.common.base.Strings;
-
 import se.inera.intyg.webcert.web.service.diagnos.model.Diagnos;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.List;
 
 /**
  * Factory responsible for creating the DiagnosRepository out of supplied code files.
@@ -107,7 +104,7 @@ public class DiagnosRepositoryFactory implements InitializingBean {
                 return;
             }
 
-            IndexWriterConfig idxWriterConfig = new IndexWriterConfig(Version.LUCENE_4_10_2, new StandardAnalyzer());
+            IndexWriterConfig idxWriterConfig = new IndexWriterConfig(new StandardAnalyzer());
             try (IndexWriter idxWriter = new IndexWriter(diagnosRepository.getLuceneIndex(), idxWriterConfig);
                     BufferedReader reader = new BufferedReader(new InputStreamReader(resource.getInputStream(), fileEncoding));) {
                 while (reader.ready()) {

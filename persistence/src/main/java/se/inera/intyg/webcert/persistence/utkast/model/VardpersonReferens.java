@@ -29,6 +29,15 @@ public class VardpersonReferens {
     @Column(name = "NAMN")
     private String namn;
 
+    public VardpersonReferens() {
+        // no-args
+    }
+
+    public VardpersonReferens(String hsaId, String namn) {
+        this.hsaId = hsaId;
+        this.namn = namn;
+    }
+
     public String getHsaId() {
         return hsaId;
     }

@@ -93,6 +93,7 @@ public class FmbServiceImplTest {
         assertEquals(292, getCount(fmbCaptorAllValues, FmbType.FUNKTIONSNEDSATTNING));
         assertEquals(305, getCount(fmbCaptorAllValues, FmbType.GENERELL_INFO));
         assertEquals(305, getCount(fmbCaptorAllValues, FmbType.SYMPTOM_PROGNOS_BEHANDLING));
+
     }
 
     private long getCount(List<Fmb> fmbCaptorAllValues, FmbType aktivitetsbegransning) {

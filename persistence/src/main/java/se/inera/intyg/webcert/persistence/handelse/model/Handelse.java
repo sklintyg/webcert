@@ -64,9 +64,6 @@ public class Handelse {
     @Column(name = "PATIENT_PERSON_ID")
     private String personnummer;
 
-    @Column(name = "REFERENCE")
-    private String ref;
-
     @Column(name = "SISTA_DATUM_FOR_SVAR")
     @Type(type = "org.jadira.usertype.dateandtime.threeten.PersistentLocalDate")
     private LocalDate sistaDatumForSvar;
@@ -132,14 +129,6 @@ public class Handelse {
 
     public void setPersonnummer(String patientPersonId) {
         this.personnummer = patientPersonId;
-    }
-
-    public String getRef() {
-        return ref;
-    }
-
-    public void setRef(String ref) {
-        this.ref = ref;
     }
 
     public LocalDate getSistaDatumForSvar() {

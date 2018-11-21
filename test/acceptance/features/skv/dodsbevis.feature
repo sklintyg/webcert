@@ -1,15 +1,30 @@
 # language: sv
 
-@db @dodsbevis @skatteverket @skv @notReady
+@DB @DODSBEVIS @SKATTEVERKET @SKV
 Egenskap: Dödsbevis
 
 Bakgrund: Jag befinner mig på webcerts förstasida
-		  Givet att jag är inloggad som läkare
+		  Givet jag har raderat alla intyg och utkast för "första" "Dödsbevis" testpatienten
+		  Givet jag har raderat alla intyg och utkast för "första" "Dödsorsaksintyg" testpatienten
+		  Och att jag är inloggad som läkare
+		  När jag går in på "första" testpatienten för "Dödsbevis"
 
 @signera
 Scenario: Kan signera dödsbevisintyg 
-          När jag går in på en patient
+		  Och jag går in på att skapa ett "Dödsbevis" intyg
+		  Och jag fyller i alla nödvändiga fält för intyget
+		  Och jag signerar intyget
+		  Så ska jag se den data jag angett för intyget
+	
+	
+@doi
+Scenario: Ska kunna skapa Dödsorsaksintyg utifrån ett Dödsbevis
 		  Och jag går in på att skapa ett "Dödsbevis" intyg
 		  Och jag fyller i alla nödvändiga fält för intyget
 		  Och jag signerar intyget
 		  Och jag ska se den data jag angett för intyget
+		  Så klickar jag på knappen "Skriv dödsorsaksintyg"
+		  Och jag fyller i nödvändig information ( om intygstyp är "Dödsorsaksintyg")
+		  Och jag uppdaterar enhetsaddress
+		  Och jag signerar intyget
+		  Så ska jag se den data jag angett för intyget

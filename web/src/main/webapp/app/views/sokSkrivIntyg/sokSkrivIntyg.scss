@@ -1,0 +1,56 @@
+/*!
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
+ *
+ * This file is part of sklintyg (https://github.com/sklintyg).
+ *
+ * sklintyg is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * sklintyg is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+.sokSkrivIntygWrapper {
+  padding-left: 0.9em;
+
+  .sokSkrivIntygInput {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    input.form-control {
+      width: 9.5em;
+      padding: 0 0.9em;
+      margin-right: 0.5em;
+      margin-top: 0.5em;
+      border: 1px solid $wc-color-15;
+      border-radius: 4px;
+      transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+      &.ng-invalid-valid-pnr {
+        border-color: $wc-color-11;
+      }
+    }
+    input.form-control:focus {
+      outline: none !important;
+      border: 1px solid $wc-color-21;
+      box-shadow: 2px 2px 4px 0 $black_12;
+    }
+    button {
+      margin-top: 0.5em;
+      min-width: 80px;
+    }
+    .correct {
+      background-color: $wc-color-21;
+    }
+  }
+  .error {
+    margin-top: 14px;
+    color: $wc-color-11;
+  }
+}
+

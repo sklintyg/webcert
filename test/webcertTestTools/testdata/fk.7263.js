@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Inera AB (http://www.inera.se)
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -26,13 +26,15 @@ var testdata = {
     smittskydd: [true, false]
 };
 
+/* funktionen används inte just nu.
+
 function randomKontaktMedAF(smittskydd) {
     if (smittskydd) {
         return false;
     } else {
         return shuffle([true, false])[0];
     }
-}
+}*/
 
 function randomRekommendationOvrigt(smittskydd) {
     if (smittskydd) {
@@ -147,29 +149,117 @@ module.exports = {
             intygsID = testdataHelper.generateTestGuid();
         }
         if (smittskydd) {
-            return {"id":intygsID,"typ":"Läkarintyg FK 7263","smittskydd":true,
-                "arbetsformaga":{
-                    "nedsattMed25":{"from":"2017-09-27","tom":"2017-10-02"},
-                    "nedsattMed50":{"from":"2017-10-03","tom":"2017-10-07"},
-                    "nedsattMed75":{"from":"2017-10-08","tom":"2017-10-17"},
-                    "nedsattMed100":{"from":"2017-10-18","tom":"2017-10-27"}},
-                "arbetsformagaFMB":"Arbetsförmåga bedöms nedsatt längre tid än FMB anger text",
-                "prognos":{"val":"Går inte att bedöma","fortydligande":"Prognos förtydligande text"},
-                "rekommendationer":{"resor":false,"kontaktMedArbetsformedlingen":false,"kontaktMedForetagshalsovard":false,"ovrigt":false,"arbetslivsinriktadRehab":false},
-                "kontaktOnskasMedFK":false,"ovrigaUpplysningar":"Övriga upplysningar och förtydliganden text"};
+            return {
+                "id": intygsID,
+                "typ": "Läkarintyg FK 7263",
+                "smittskydd": true,
+                "arbetsformaga": {
+                    "nedsattMed25": {
+                        "from": "2017-09-27",
+                        "tom": "2017-10-02"
+                    },
+                    "nedsattMed50": {
+                        "from": "2017-10-03",
+                        "tom": "2017-10-07"
+                    },
+                    "nedsattMed75": {
+                        "from": "2017-10-08",
+                        "tom": "2017-10-17"
+                    },
+                    "nedsattMed100": {
+                        "from": "2017-10-18",
+                        "tom": "2017-10-27"
+                    }
+                },
+                "arbetsformagaFMB": "Arbetsförmåga bedöms nedsatt längre tid än FMB anger text",
+                "prognos": {
+                    "val": "Går inte att bedöma",
+                    "fortydligande": "Prognos förtydligande text"
+                },
+                "rekommendationer": {
+                    "resor": false,
+                    "kontaktMedArbetsformedlingen": false,
+                    "kontaktMedForetagshalsovard": false,
+                    "ovrigt": false,
+                    "arbetslivsinriktadRehab": false
+                },
+                "kontaktOnskasMedFK": false,
+                "ovrigaUpplysningar": "Övriga upplysningar och förtydliganden text"
+            };
         }
-        return {"id":intygsID,"typ":"Läkarintyg FK 7263","smittskydd":false,
-            "baserasPa":{"minUndersokning":{"datum":"2015-12-10"},"minTelefonkontakt":{"datum":"2015-12-10"},"journaluppgifter":{"datum":"2015-12-10"},"annat":{"datum":"2015-12-10","text":"Annat text"}},
-            "diagnos":{"diagnoser":[{"ICD10":"A00","diagnosText":"Kolera"}],"fortydligande":"Förtydligande text","samsjuklighetForeligger":true},
-            "aktuelltSjukdomsforlopp":"Aktuellt sjukdomsförlopp text","funktionsnedsattning":"Funktionsnedsattning text","aktivitetsBegransning":"Aktivitetsbegränsning text",
-            "arbete":{"nuvarandeArbete":{"aktuellaArbetsuppgifter":"Aktuella arbetsuppgifter text"},"arbetsloshet":true,"foraldraledighet":true},
-            "arbetsformaga":{"nedsattMed25":{"from":"2017-09-27","tom":"2017-10-02"},"nedsattMed50":{"from":"2017-10-03","tom":"2017-10-07"},"nedsattMed75":{"from":"2017-10-08","tom":"2017-10-17"},"nedsattMed100":{"from":"2017-10-18","tom":"2017-10-27"}},
-            "arbetsformagaFMB":"Arbetsförmåga bedöms nedsatt längre tid än FMB anger text",
-            "prognos":{"val":"Ja"},
-            "atgarder":{"planerad":"Planerad eller pågående behandling text","annan":"Annan åtgärd text"},
-            "rekommendationer":{"resor":true,"kontaktMedArbetsformedlingen":false,"kontaktMedForetagshalsovard":false,
-            "ovrigt":"Övrig rekommendation beskrivning med lite extra","arbetslivsinriktadRehab":"Ja"},
-            "kontaktOnskasMedFK":true,"ovrigaUpplysningar":"Övriga upplysningar och förtydliganden text"};
+        return {
+            "id": intygsID,
+            "typ": "Läkarintyg FK 7263",
+            "smittskydd": false,
+            "baserasPa": {
+                "minUndersokning": {
+                    "datum": "2015-12-10"
+                },
+                "minTelefonkontakt": {
+                    "datum": "2015-12-10"
+                },
+                "journaluppgifter": {
+                    "datum": "2015-12-10"
+                },
+                "annat": {
+                    "datum": "2015-12-10",
+                    "text": "Annat text"
+                }
+            },
+            "diagnos": {
+                "diagnoser": [{
+                    "ICD10": "A00",
+                    "diagnosText": "Kolera"
+                }],
+                "fortydligande": "Förtydligande text",
+                "samsjuklighetForeligger": true
+            },
+            "aktuelltSjukdomsforlopp": "Aktuellt sjukdomsförlopp text",
+            "funktionsnedsattning": "Funktionsnedsattning text",
+            "aktivitetsBegransning": "Aktivitetsbegränsning text",
+            "arbete": {
+                "nuvarandeArbete": {
+                    "aktuellaArbetsuppgifter": "Aktuella arbetsuppgifter text"
+                },
+                "arbetsloshet": true,
+                "foraldraledighet": true
+            },
+            "arbetsformaga": {
+                "nedsattMed25": {
+                    "from": "2017-09-27",
+                    "tom": "2017-10-02"
+                },
+                "nedsattMed50": {
+                    "from": "2017-10-03",
+                    "tom": "2017-10-07"
+                },
+                "nedsattMed75": {
+                    "from": "2017-10-08",
+                    "tom": "2017-10-17"
+                },
+                "nedsattMed100": {
+                    "from": "2017-10-18",
+                    "tom": "2017-10-27"
+                }
+            },
+            "arbetsformagaFMB": "Arbetsförmåga bedöms nedsatt längre tid än FMB anger text",
+            "prognos": {
+                "val": "Ja"
+            },
+            "atgarder": {
+                "planerad": "Planerad eller pågående behandling text",
+                "annan": "Annan åtgärd text"
+            },
+            "rekommendationer": {
+                "resor": true,
+                "kontaktMedArbetsformedlingen": false,
+                "kontaktMedForetagshalsovard": false,
+                "ovrigt": "Övrig rekommendation beskrivning med lite extra",
+                "arbetslivsinriktadRehab": "Ja"
+            },
+            "kontaktOnskasMedFK": true,
+            "ovrigaUpplysningar": "Övriga upplysningar och förtydliganden text"
+        };
     },
     getRandom: function(intygsID, isSmitta) {
         var isSmittskydd = isSmitta;

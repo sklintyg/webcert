@@ -20,16 +20,18 @@ package se.inera.intyg.webcert.web.auth.bootstrap;
 
 import org.junit.BeforeClass;
 import se.inera.intyg.infra.security.authorities.CommonAuthoritiesResolver;
-import se.inera.intyg.infra.security.authorities.bootstrap.AuthoritiesConfigurationLoader;
+import se.inera.intyg.infra.security.authorities.bootstrap.SecurityConfigurationLoader;
 
 /**
  * Created by Magnus Ekstrand on 26/11/15.
  */
 public class AuthoritiesConfigurationTestSetup {
 
-    protected static final String CONFIGURATION_LOCATION = "AuthoritiesConfigurationLoaderTest/authorities-test.yaml";
+    protected static final String AUTHORITIES_CONFIGURATION_LOCATION = "AuthoritiesConfigurationLoaderTest/authorities-test.yaml";
+    protected static final String FEATURES_CONFIGURATION_LOCATION = "AuthoritiesConfigurationLoaderTest/features-test.yaml";
 
-    protected static final AuthoritiesConfigurationLoader CONFIGURATION_LOADER = new AuthoritiesConfigurationLoader(CONFIGURATION_LOCATION);
+    protected static final SecurityConfigurationLoader CONFIGURATION_LOADER = new SecurityConfigurationLoader(
+            AUTHORITIES_CONFIGURATION_LOCATION, FEATURES_CONFIGURATION_LOCATION);
     protected static final CommonAuthoritiesResolver AUTHORITIES_RESOLVER = new CommonAuthoritiesResolver();
 
     @BeforeClass

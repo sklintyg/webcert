@@ -33,9 +33,9 @@ import se.inera.intyg.infra.integration.srs.model.SrsQuestion;
 import se.inera.intyg.infra.integration.srs.model.SrsQuestionResponse;
 import se.inera.intyg.infra.integration.srs.model.SrsResponse;
 import se.inera.intyg.infra.integration.srs.services.SrsService;
+import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.schemas.contract.InvalidPersonNummerException;
 import se.inera.intyg.schemas.contract.Personnummer;
-import se.inera.intyg.webcert.common.model.WebcertFeature;
 import se.inera.intyg.webcert.web.service.diagnos.DiagnosService;
 import se.inera.intyg.webcert.web.service.diagnos.dto.DiagnosResponse;
 import se.inera.intyg.webcert.web.service.diagnos.dto.DiagnosResponseType;
@@ -98,9 +98,7 @@ public class SrsApiController extends AbstractApiController {
             @ApiParam(value = "Utdatafilter: AtgardRekommendation") @QueryParam("atgard") @DefaultValue("false") boolean atgard,
             @ApiParam(value = "Utdatafilter: Statistik") @QueryParam("statistik") @DefaultValue("false") boolean statistik,
             @ApiParam(value = "Svar på frågor") List<SrsQuestionResponse> questions) {
-        authoritiesValidator.given(getWebCertUserService().getUser())
-                .features(WebcertFeature.SRS)
-                .orThrow();
+        authoritiesValidator.given(getWebCertUserService().getUser()).features(AuthoritiesConstants.FEATURE_SRS).orThrow();
 
         if (Strings.isNullOrEmpty(personnummer) || Strings.isNullOrEmpty(diagnosisCode)) {
             return Response.status(Response.Status.BAD_REQUEST).build();
@@ -108,7 +106,7 @@ public class SrsApiController extends AbstractApiController {
         try {
             Utdatafilter filter = buildUtdatafilter(prediktion, atgard, statistik);
             SrsResponse response = srsService
-                    .getSrs(userService.getUser(), intygId, new Personnummer(personnummer), diagnosisCode, filter, questions);
+                    .getSrs(userService.getUser(), intygId, createPnr(personnummer), diagnosisCode, filter, questions);
             if (prediktion) {
                 logService.logShowPrediction(personnummer);
                 monitoringLog.logSrsInformationRetreived(diagnosisCode, intygId);
@@ -125,9 +123,7 @@ public class SrsApiController extends AbstractApiController {
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @ApiOperation(value = "Get questions for diagnosis code", httpMethod = "GET", produces = MediaType.APPLICATION_JSON)
     public Response getQuestions(@ApiParam(value = "Diagnosis code") @PathParam("diagnosisCode") String diagnosisCode) {
-        authoritiesValidator.given(getWebCertUserService().getUser())
-                .features(WebcertFeature.SRS)
-                .orThrow();
+        authoritiesValidator.given(getWebCertUserService().getUser()).features(AuthoritiesConstants.FEATURE_SRS).orThrow();
 
         if (Strings.isNullOrEmpty(diagnosisCode)) {
             return Response.status(Response.Status.BAD_REQUEST).build();
@@ -144,12 +140,10 @@ public class SrsApiController extends AbstractApiController {
     public Response getConsent(
             @ApiParam(value = "Personnummer") @PathParam("personnummer") String personnummer,
             @ApiParam(value = "HsaId för vårdenhet") @PathParam("hsaId") String hsaId) {
-        authoritiesValidator.given(getWebCertUserService().getUser())
-                .features(WebcertFeature.SRS)
-                .orThrow();
+        authoritiesValidator.given(getWebCertUserService().getUser()).features(AuthoritiesConstants.FEATURE_SRS).orThrow();
 
         try {
-            Personnummer p = new Personnummer(personnummer);
+            Personnummer p = createPnr(personnummer);
             Samtyckesstatus response = srsService.getConsent(hsaId, p);
             return Response.ok(response).build();
         } catch (InvalidPersonNummerException e) {
@@ -166,12 +160,10 @@ public class SrsApiController extends AbstractApiController {
             @ApiParam(value = "Personnummer") @PathParam("personnummer") String personnummer,
             @ApiParam(value = "HsaId för vårdenhet") @PathParam("hsaId") String hsaId,
             boolean consent) {
-        authoritiesValidator.given(getWebCertUserService().getUser())
-                .features(WebcertFeature.SRS)
-                .orThrow();
+        authoritiesValidator.given(getWebCertUserService().getUser()).features(AuthoritiesConstants.FEATURE_SRS).orThrow();
 
         try {
-            Personnummer p = new Personnummer(personnummer);
+            Personnummer p = createPnr(personnummer);
             ResultCodeEnum result = srsService.setConsent(hsaId, p, consent);
             monitoringLog.logSetSrsConsent(p, consent);
             return Response.ok(result).build();
@@ -184,9 +176,7 @@ public class SrsApiController extends AbstractApiController {
     @Path("/codes")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public Response getDiagnosisCodes() {
-        authoritiesValidator.given(getWebCertUserService().getUser())
-                .features(WebcertFeature.SRS)
-                .orThrow();
+        authoritiesValidator.given(getWebCertUserService().getUser()).features(AuthoritiesConstants.FEATURE_SRS).orThrow();
         return Response.ok(srsService.getAllDiagnosisCodes()).build();
     }
 
@@ -195,9 +185,7 @@ public class SrsApiController extends AbstractApiController {
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @ApiOperation(value = "Get SRS info for diagnosecode", httpMethod = "GET", produces = MediaType.APPLICATION_JSON)
     public Response getSrsForDiagnosisCodes(@PathParam("diagnosisCode") String diagnosisCode) {
-        authoritiesValidator.given(getWebCertUserService().getUser())
-                .features(WebcertFeature.SRS)
-                .orThrow();
+        authoritiesValidator.given(getWebCertUserService().getUser()).features(AuthoritiesConstants.FEATURE_SRS).orThrow();
 
         final SrsForDiagnosisResponse srsForDiagnose = srsService.getSrsForDiagnose(diagnosisCode);
         monitoringLog.logGetSrsForDiagnose(diagnosisCode);
@@ -239,5 +227,11 @@ public class SrsApiController extends AbstractApiController {
             }
         }
     }
+
+    private Personnummer createPnr(String personId) throws InvalidPersonNummerException {
+        return Personnummer.createPersonnummer(personId)
+                .orElseThrow(() -> new InvalidPersonNummerException("Could not parse personnummer: " + personId));
+    }
+
 }
 //CHECKSTYLE:ON ParameterNumber

@@ -33,18 +33,21 @@ describe('UtkastProxy', function() {
         'patientPostnummer':'12345','patientPostort':'Staden'
     };
 
+    beforeEach(angular.mock.module('htmlTemplates'));
     // Load the webcert module and mock away everything that is not necessary.
     beforeEach(angular.mock.module('webcert', function($provide) {
         featureService = {
             features: {
-                HANTERA_INTYGSUTKAST: 'hanteraIntygsutkast'
+                HANTERA_INTYGSUTKAST: 'HANTERA_INTYGSUTKAST'
             },
             isFeatureActive: jasmine.createSpy('isFeatureActive')
         };
+        featureService.isFeatureActive.and.returnValue(true);
 
         authorityService = {
             isAuthorityActive: jasmine.createSpy('isAuthorityActive')
         };
+        authorityService.isAuthorityActive.and.returnValue(true);
 
         var User = {
             getValdVardenhet: function() {
@@ -75,18 +78,21 @@ describe('UtkastProxy', function() {
             privileges: {SKRIVA_INTYG: {}},
             getActiveFeatures: function() {
             },
-            hasIntygsTyp: function() {return true;} });
+            hasIntygsTyp: function() {return true;},
+            isLakare: function() {return true;}});
 
     }));
 
     // Get references to the object we want to test from the context.
-    beforeEach(angular.mock.inject(['webcert.UtkastProxy', '$httpBackend', 'common.messageService',
-        function(_UtkastProxy_, _$httpBackend_, _messageService_) {
+    beforeEach(angular.mock.inject(['webcert.UtkastProxy', '$httpBackend', 'common.messageService', '$templateCache',
+        function(_UtkastProxy_, _$httpBackend_, _messageService_, $templateCache) {
             UtkastProxy = _UtkastProxy_;
             $httpBackend = _$httpBackend_;
             _messageService_.getProperty = function() {
                 return 'Välj typ av intyg';
             };
+
+            $templateCache.put('/web/webjars/common/webcert/components/headers/wcHeader.partial.html', '');
         }]));
 
     describe('#createUtkast', function() {
@@ -136,9 +142,6 @@ describe('UtkastProxy', function() {
         it('should call onSuccess callback with list of intyg types from the server', function() {
             var onSuccess = jasmine.createSpy('onSuccess');
             var onError = jasmine.createSpy('onError');
-
-            featureService.isFeatureActive.and.returnValue(true);
-            authorityService.isAuthorityActive.and.returnValue(true);
 
             $httpBackend.expectGET('/api/modules/map').respond([
                 {

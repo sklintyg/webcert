@@ -40,6 +40,8 @@ import java.time.Year;
  */
 public class NotificationTestHelper {
 
+    private static final String PERSNR = "191212121212";
+
     private NotificationTestHelper() {
     }
 
@@ -70,14 +72,15 @@ public class NotificationTestHelper {
     }
 
     public static Person buildPerson(boolean sekretessmarkering) {
-        return new Person(Personnummer.createValidatedPersonnummerWithDash("191212121212").get(),
+        return new Person(Personnummer.createPersonnummer(PERSNR).get(),
                 sekretessmarkering, false, "Tolvan", "Mellis", "Tolvansson", "Tolvgatan 12", "12121", "Tolvhult");
     }
 
     public static Patient buildPatient() {
-        Patient patient = new Patient();
         PersonId personId = new PersonId();
-        personId.setExtension("191212121212");
+        personId.setExtension(PERSNR);
+
+        Patient patient = new Patient();
         patient.setPersonId(personId);
         patient.setFornamn("");
         patient.setMellannamn("");
@@ -85,6 +88,7 @@ public class NotificationTestHelper {
         patient.setPostadress("");
         patient.setPostnummer("");
         patient.setPostort("");
+
         return patient;
     }
 

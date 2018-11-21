@@ -50,6 +50,8 @@ public interface FragaSvarService {
      */
     FragaSvar saveSvar(Long frageSvarId, String svarsText);
 
+    List<FragaSvarView> answerKomplettering(String intygsId, String svarsText);
+
     /**
      * Create a new FragaSvar instance for a certificate and send it to external receiver (FK).
      */
@@ -58,7 +60,7 @@ public interface FragaSvarService {
     /**
      * Set the dispatch state for the specified {@link FragaSvar} entity.
      */
-    FragaSvar setDispatchState(Long frageSvarId, Boolean isDispatched);
+    List<FragaSvar> setVidareBefordrad(String intygsId);
 
     /**
      * A FragaSvar is set as handled.

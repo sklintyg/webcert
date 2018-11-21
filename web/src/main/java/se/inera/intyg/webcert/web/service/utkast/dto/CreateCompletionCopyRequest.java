@@ -27,11 +27,13 @@ import se.inera.intyg.common.support.model.common.internal.Patient;
 public class CreateCompletionCopyRequest extends AbstractCreateCopyRequest {
 
     private String meddelandeId;
+    private String kommentar;
 
     public CreateCompletionCopyRequest(String orginalIntygsId, String intygsTyp, String meddelandeId, Patient patient,
-            HoSPersonal hosPerson) {
+            HoSPersonal hosPerson, String kommentar) {
         super(orginalIntygsId, intygsTyp, patient, hosPerson);
         this.setMeddelandeId(meddelandeId);
+        this.kommentar = kommentar;
     }
 
     public CreateCompletionCopyRequest() {
@@ -44,5 +46,13 @@ public class CreateCompletionCopyRequest extends AbstractCreateCopyRequest {
 
     public void setMeddelandeId(String meddelandeId) {
         this.meddelandeId = meddelandeId;
+    }
+
+    public String getKommentar() {
+        return kommentar;
+    }
+
+    public void setKommentar(String kommentar) {
+        this.kommentar = kommentar;
     }
 }

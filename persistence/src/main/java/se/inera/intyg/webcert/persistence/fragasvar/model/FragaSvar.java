@@ -153,6 +153,10 @@ public class FragaSvar {
         this.vidarebefordrad = vidarebefordrad;
     }
 
+    public void setToVidareBefordrad() {
+        this.vidarebefordrad = true;
+    }
+
     public String getFrageStallare() {
         return frageStallare;
     }

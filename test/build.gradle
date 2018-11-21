@@ -23,7 +23,7 @@ task protractorTests(type: NodeTask, dependsOn: yarn) {
     def environment = System.properties['protractor.env'] ?: "dev"
 
     script = file('node_modules/grunt-cli/bin/grunt')
-    args = ["default:${environment}"]
+    args = ["default:${environment}", "--headless"]
 }
 
 dependencies {

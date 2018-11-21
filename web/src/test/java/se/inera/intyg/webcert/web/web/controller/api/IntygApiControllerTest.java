@@ -24,7 +24,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import se.inera.intyg.infra.integration.hsa.model.SelectableVardenhet;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.UtkastStatus;
@@ -47,7 +47,7 @@ import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
@@ -55,7 +55,7 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class IntygApiControllerTest {
 
-    private static final Personnummer PNR = new Personnummer("19121212-1212");
+    private static final Personnummer PNR = Personnummer.createPersonnummer("19121212-1212").get();
 
     private static final String ENHET_ID = "ABC123";
 
@@ -101,10 +101,7 @@ public class IntygApiControllerTest {
         user = mock(WebCertUser.class);
         SelectableVardenhet vardenhet = mock(SelectableVardenhet.class);
 
-        //when(vardenhet.getId()).thenReturn(ENHET_ID);
-        when(user.getValdVardenhet()).thenReturn(vardenhet);
         when(user.getIdsOfSelectedVardenhet()).thenReturn(ENHET_IDS);
-        when(user.getValdVardenhet().getId()).thenReturn(ENHET_ID);
         when(webCertUserService.getUser()).thenReturn(user);
     }
 
@@ -113,9 +110,6 @@ public class IntygApiControllerTest {
 
         // Mock call to Intygstjanst
         when(intygService.listIntyg(ENHET_IDS, PNR)).thenReturn(intygItemListResponse);
-
-        // Mock call to database
-        when(mockUtkastRepository.findDraftsByPatientAndEnhetAndStatus(PNR.getPersonnummer(), ENHET_IDS, DRAFT_STATUSES, USER_INTYGSTYPER)).thenReturn(utkast);
 
         Response response = intygCtrl.listDraftsAndIntygForPerson(PNR.getPersonnummer());
 
@@ -143,9 +137,6 @@ public class IntygApiControllerTest {
 
         // Mock call to Intygstjanst
         when(intygService.listIntyg(ENHET_IDS, PNR)).thenReturn(offlineIntygItemListResponse);
-
-        // Mock call to database
-        when(mockUtkastRepository.findDraftsByPatientAndEnhetAndStatus(PNR.getPersonnummer(), ENHET_IDS, DRAFT_STATUSES, USER_INTYGSTYPER)).thenReturn(utkast);
 
         Response response = intygCtrl.listDraftsAndIntygForPerson(PNR.getPersonnummer());
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Inera AB (http://www.inera.se)
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -21,48 +21,69 @@
 /* globals browser, intyg, logger, protractor */
 
 'use strict';
+/*jshint newcap:false */
+//TODO Uppgradera Jshint p.g.a. newcap kommer bli depricated. (klarade inte att ignorera i grunt-task)
+
+
+/*
+ *	Stödlib och ramverk
+ *
+ */
+
+const {
+    Given, // jshint ignore:line
+    When, // jshint ignore:line
+    Then // jshint ignore:line
+} = require('cucumber');
+
+
 var fkIntygPage = pages.intyg.fk['7263'].intyg;
 var helpers = require('./helpers');
 
-module.exports = function() {
 
-    this.Given(/^jag skickar intyget till Transportstyrelsen/, function() {
+/*
+ *	Test steg
+ *
+ */
 
-        if (!intyg.id) {
-            //Fånga intygets id
-            browser.getCurrentUrl().then(function(text) {
-                intyg.id = text.split('/').slice(-2)[0];
-                logger.info('Intygsid: ' + intyg.id);
-                intyg.id = intyg.id.split('?')[0];
-            });
-        } else {
-            logger.info('Följande intygs id skickas till Transportstyrelsen: ' + intyg.id);
-        }
-        return helpers.moveAndSendKeys(fkIntygPage.skicka.knapp, protractor.Key.SPACE).then(function() {
-            helpers.moveAndSendKeys(fkIntygPage.skicka.dialogKnapp, protractor.Key.SPACE);
+Given(/^jag skickar intyget till Transportstyrelsen/, function() {
+
+    if (!intyg.id) {
+        //Fånga intygets id
+        browser.getCurrentUrl().then(function(text) {
+            intyg.id = text.split('/').slice(-2)[0];
+            logger.info('Intygsid: ' + intyg.id);
+            intyg.id = intyg.id.split('?')[0];
         });
+    } else {
+        logger.info('Följande intygs id skickas till Transportstyrelsen: ' + intyg.id);
+    }
+    return helpers.moveAndSendKeys(fkIntygPage.skicka.knapp, protractor.Key.SPACE).then(function() {
+        helpers.moveAndSendKeys(fkIntygPage.skicka.dialogKnapp, protractor.Key.SPACE);
     });
+});
 
-    this.Given(/^jag skickar intyget till Försäkringskassan$/, function() {
+Given(/^jag skickar intyget till Försäkringskassan$/, function() {
 
 
-        if (!intyg.id) {
-            browser.getCurrentUrl().then(function(text) {
-                intyg.id = text.split('/').slice(-2)[0];
-                intyg.id = intyg.id.split('?')[0];
-                logger.info('Följande intygs id skickas till Försäkringskassan: ' + intyg.id);
-            });
-        } else {
+    if (!intyg.id) {
+        browser.getCurrentUrl().then(function(text) {
+            intyg.id = text.split('/').slice(-2)[0];
+            intyg.id = intyg.id.split('?')[0];
             logger.info('Följande intygs id skickas till Försäkringskassan: ' + intyg.id);
-        }
-
-
-
-        return helpers.moveAndSendKeys(fkIntygPage.skicka.knapp, protractor.Key.SPACE).then(function() {
-            return helpers.moveAndSendKeys(fkIntygPage.skicka.dialogKnapp, protractor.Key.SPACE);
         });
+    } else {
+        logger.info('Följande intygs id skickas till Försäkringskassan: ' + intyg.id);
+    }
 
-        // callback();
+
+
+    return helpers.moveAndSendKeys(fkIntygPage.skicka.knapp, protractor.Key.SPACE).then(function() {
+        return helpers.moveAndSendKeys(fkIntygPage.skicka.dialogKnapp, protractor.Key.SPACE);
+    }).then(function() {
+        //Vänta på att requesten processas av back-end.
+        return helpers.pageReloadDelay();
     });
 
-};
+    // callback();
+});

@@ -24,7 +24,7 @@ describe('VisaIntygFragasvarCtrl', function() {
     var $state;
     var $stateParams;
     var dialogService;
-    var fragaSvarCommonService;
+    var enhetArendenCommonService;
     var $scope;
     var $q;
     var $rootScope;
@@ -80,8 +80,8 @@ describe('VisaIntygFragasvarCtrl', function() {
         });
         $provide.value('common.dialogService', dialogService);
 
-        fragaSvarCommonService  = jasmine.createSpyObj('common.fragaSvarCommonService', [ 'checkQAonlyDialog' ]);
-        $provide.value('common.fragaSvarCommonService', fragaSvarCommonService);
+        enhetArendenCommonService  = jasmine.createSpyObj('common.enhetArendenCommonService', [ 'checkQAonlyDialog' ]);
+        $provide.value('common.enhetArendenCommonService', enhetArendenCommonService);
 
         $provide.value('$window', {location:{href:currentUrl}});
 
@@ -102,7 +102,7 @@ describe('VisaIntygFragasvarCtrl', function() {
 
         $provide.value('common.featureService', {
             features: {
-                'HANTERA_FRAGOR': 'hanteraFragor'
+                'HANTERA_FRAGOR': 'HANTERA_FRAGOR'
             },
             isFeatureActive: function() { return true; }
         });
@@ -146,9 +146,6 @@ describe('VisaIntygFragasvarCtrl', function() {
             $controller('webcert.VisaIntygFragasvarCtrl',
                 { $rootScope: $rootScope, $scope: $scope });
 
-            // ----- arrange
-            expect(UtkastProxy.getUtkastType).toHaveBeenCalled();
-
             // kick off the window change event
             $rootScope.$broadcast('$locationChangeStart', newUrl, currentUrl);
 
@@ -158,9 +155,6 @@ describe('VisaIntygFragasvarCtrl', function() {
 
             $controller('webcert.VisaIntygFragasvarCtrl',
                 { $rootScope: $rootScope, $scope: $scope });
-
-            // ----- arrange
-            expect(UtkastProxy.getUtkastType).toHaveBeenCalled();
 
             // spy on the deferred
             var def = mockDeferreds.getDeferred();
@@ -177,7 +171,7 @@ describe('VisaIntygFragasvarCtrl', function() {
 
             // ------ assert
             // dialog should be opened
-            expect(fragaSvarCommonService.checkQAonlyDialog).toHaveBeenCalled();
+            expect(enhetArendenCommonService.checkQAonlyDialog).toHaveBeenCalled();
 
         });
 
@@ -185,9 +179,6 @@ describe('VisaIntygFragasvarCtrl', function() {
 
     describe('#checkHasNoUnhandledMessages', function() {
         it('should check that a dialog is not opened, if there are no unhandled messages, and go to then newUrl', function(){
-
-            // ----- arrange
-            expect(UtkastProxy.getUtkastType).toHaveBeenCalled();
 
             // spy on the defferd
             var def = mockDeferreds.getDeferred();
@@ -228,10 +219,6 @@ describe('VisaIntygFragasvarCtrl', function() {
 
             mockDeferreds.getLast().resolve(false);
 
-
-            // ------ assert
-            expect(UtkastProxy.getUtkastType).toHaveBeenCalled();
-
             expect($scope.$broadcast).not.toHaveBeenCalledWith('hasUnhandledQasEvent', mockDeferreds.popDeferred());
 
         });
@@ -267,7 +254,6 @@ describe('VisaIntygFragasvarCtrl', function() {
 
 
             // ------ assert
-            expect(UtkastProxy.getUtkastType).toHaveBeenCalled();
             expect(UserPreferencesService.isSkipShowUnhandledDialogSet).toHaveBeenCalled();
             expect($scope.$broadcast).toHaveBeenCalledWith('hasUnhandledQasEvent', mockDeferreds.getLastPopped());
 
@@ -285,7 +271,7 @@ describe('VisaIntygFragasvarCtrl', function() {
             it('handle button click', function(){
 
                 // This test is not QA only.
-                fragaSvarCommonService.checkQAonlyDialog.and.callFake(function($scope, $event, newUrl, currentUrl, unbindLocationChange){
+                enhetArendenCommonService.checkQAonlyDialog.and.callFake(function($scope, $event, newUrl, currentUrl, unbindLocationChange){
                     $window.location.href = newUrl;
                 });
 
@@ -314,7 +300,7 @@ describe('VisaIntygFragasvarCtrl', function() {
             it('un handled button click', function(){
 
                 // This test is not QA only.
-                fragaSvarCommonService.checkQAonlyDialog.and.callFake(function($scope, $event, newUrl, currentUrl, unbindLocationChange){
+                enhetArendenCommonService.checkQAonlyDialog.and.callFake(function($scope, $event, newUrl, currentUrl, unbindLocationChange){
                     $window.location.href = newUrl;
                 });
 
@@ -401,7 +387,13 @@ describe('VisaIntygFragasvarCtrl', function() {
                 ]
             },
             'roles': role,
-            'features': ['hanteraFragor', 'hanteraFragor.fk7263'],
+            'features': {
+                'HANTERA_FRAGOR': {
+                    'name': 'HANTERA_FRAGOR',
+                    'global': true,
+                    'intygstyper': ['fk7263']
+                }
+            },
             'totaltAntalVardenheter': 6,
             'origin': origin
         };

@@ -1,6 +1,6 @@
 # language: sv
 
-@ts @diabetes @statusuppdateringar
+@ts @diabetes
 Egenskap: Hantera Transportstyrelsens diabetesintyg
 
 Bakgrund: Jag befinner mig på webcerts förstasida
@@ -15,11 +15,11 @@ Scenario: Skapa och signera ett TS diabetes intyg
     Så ska intygets status vara "Intyget är signerat"
     Och jag ska se den data jag angett för intyget
 
-@keepIntyg @skicka @smoke
+@keepIntyg @skicka @smoke MI-F010
 Scenario: Skicka ett befintligt intyg till Transportstyrelsen
 	När jag går in på ett "Transportstyrelsens läkarintyg, diabetes" med status "Signerat"
     Och jag skickar intyget till Transportstyrelsen
-    Så ska intygets status vara "Intyget är signerat och har skickats till Transportstyrelsens system"
+    Så ska intygets status vara "Intyget är skickat till Transportstyrelsen"
 
     När jag går till Mina intyg för patienten
     Så ska intygets status i Mina intyg visa "Skickat till Transportstyrelsen"

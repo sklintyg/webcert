@@ -18,8 +18,15 @@
  */
 package se.inera.intyg.webcert.web.web.controller.moduleapi;
 
-import java.util.List;
-import java.util.Map;
+import io.swagger.annotations.Api;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.webcert.web.service.arende.ArendeService;
+import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
+import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeConversationView;
+import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.CreateMessageParameter;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -30,18 +37,8 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import io.swagger.annotations.Api;
-import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
-import se.inera.intyg.webcert.web.service.arende.ArendeService;
-import se.inera.intyg.webcert.common.model.WebcertFeature;
-import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
-import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeConversationView;
-import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.CreateMessageParameter;
+import java.util.List;
+import java.util.Map;
 
 @Path("/arende")
 @Api(value = "arende", description = "REST API - moduleapi - arende", produces = MediaType.APPLICATION_JSON)
@@ -86,19 +83,22 @@ public class ArendeModuleApiController extends AbstractApiController {
     }
 
     @PUT
-    @Path("/{intygsTyp}/{meddelandeId}/vidarebefordrad")
+    @Path("/{intygsId}/besvara")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    public Response setForwarded(@PathParam("intygsTyp") String intygsTyp, @PathParam("meddelandeId") final String meddelandeId,
-            Boolean vidarebefordrad) {
-        LOGGER.debug("Set arende {} as forwared {}", meddelandeId, vidarebefordrad != null ? vidarebefordrad : "");
+    public Response answer(@PathParam("intygsId") final String intygsId, final String svarsText) {
+        LOGGER.debug("Answer arenden for intyg {}", intygsId);
+        final List<ArendeConversationView> response = arendeService.answerKomplettering(intygsId, svarsText);
+        return Response.ok(response).build();
+    }
 
-        authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
-                .features(WebcertFeature.HANTERA_FRAGOR)
-                .privilege(AuthoritiesConstants.PRIVILEGE_VIDAREBEFORDRA_FRAGASVAR)
-                .orThrow();
+    @POST
+    @Path("/{intygsId}/vidarebefordrad")
+    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    public Response setForwarded(@PathParam("intygsId") final String intygsId) {
+        LOGGER.debug("Set arende {} as forwarded true", intygsId);
 
-        ArendeConversationView response = arendeService.setForwarded(meddelandeId, vidarebefordrad != null ? vidarebefordrad : true);
+        List<ArendeConversationView> response = arendeService.setForwarded(intygsId);
         return Response.ok(response).build();
     }
 
@@ -148,7 +148,8 @@ public class ArendeModuleApiController extends AbstractApiController {
     }
 
     private void abortIfHanteraFragorNotActive(String intygsTyp) {
-        authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp).features(WebcertFeature.HANTERA_FRAGOR).orThrow();
+        authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp).features(AuthoritiesConstants.FEATURE_HANTERA_FRAGOR)
+                .orThrow();
     }
 
 }

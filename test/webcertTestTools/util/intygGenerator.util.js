@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Inera AB (http://www.inera.se)
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -21,7 +21,7 @@
  * Created by BESA on 2015-11-23.
  */
 
-/* globals JSON */
+/* globals JSON, logger*/
 'use strict';
 
 /*

@@ -22,10 +22,10 @@
  */
 angular.module('webcert').controller('webcert.VisaIntygFragasvarCtrl',
     ['$rootScope', '$state', '$stateParams', '$scope', '$location', '$q', 'common.dialogService',
-        'webcert.UtkastProxy', 'common.UserPreferencesService', 'common.fragaSvarCommonService',
-        'common.featureService', 'common.moduleService',
+        'webcert.UtkastProxy', 'common.UserPreferencesService', 'common.enhetArendenCommonService',
+        'common.featureService',
         function($rootScope, $state, $stateParams, $scope, $location, $q, dialogService, UtkastProxy,
-            UserPreferencesService, fragaSvarCommonService, featureService, moduleService) {
+            UserPreferencesService, enhetArendenCommonService, featureService) {
             'use strict';
 
             var certificateType = $state.current.data.intygType;
@@ -33,17 +33,13 @@ angular.module('webcert').controller('webcert.VisaIntygFragasvarCtrl',
                 certificateType = $stateParams.certificateType;
             }
 
-            $scope.widgetState = {
-                certificateName: moduleService.getModuleName(certificateType),
-                certificateType: certificateType,
-                fragaSvarAvailable: false,
+            var unhandledDialogConfig = {
                 skipShowUnhandledDialog: false,
-                setSkipShowUnhandledDialog: function(widgetState) {
-                    UserPreferencesService.setSkipShowUnhandledDialog(widgetState.skipShowUnhandledDialog);
+                setSkipShowUnhandledDialog: function(unhandledDialogConfig) {
+                    UserPreferencesService.setSkipShowUnhandledDialog(unhandledDialogConfig.skipShowUnhandledDialog);
                 }
             };
-
-
+            
             var unbindCheckHandledEvent = $rootScope.$on('$locationChangeStart',
                 function($event, newUrl, currentUrl) {
 
@@ -52,11 +48,11 @@ angular.module('webcert').controller('webcert.VisaIntygFragasvarCtrl',
 
                     // Check if QA is an active feature for the current intyg.
                     if (featureService.isFeatureActive(featureService.features.HANTERA_FRAGOR,
-                            $scope.widgetState.certificateType)) {
+                            certificateType)) {
 
                         // if we're changing url
                         if (newUrl !== currentUrl && !UserPreferencesService.isSkipShowUnhandledDialogSet()) {
-                            $scope.widgetState.skipShowUnhandledDialog =
+                            unhandledDialogConfig.skipShowUnhandledDialog =
                                 UserPreferencesService.isSkipShowUnhandledDialogSet();
                             $event.preventDefault();
                             var deferred = $q.defer();
@@ -78,13 +74,13 @@ angular.module('webcert').controller('webcert.VisaIntygFragasvarCtrl',
                                             deferred.promise.then(function() {
 
                                                 modal.close('hantera');
-                                                fragaSvarCommonService.checkQAonlyDialog($scope, $event, newUrl,
+                                                enhetArendenCommonService.checkQAonlyDialog($scope, $event, newUrl,
                                                     currentUrl, unbindCheckHandledEvent);
                                             });
                                         },
                                         button2click: function() {
                                             modal.close('ejhantera');
-                                            fragaSvarCommonService.checkQAonlyDialog($scope, $event, newUrl,
+                                            enhetArendenCommonService.checkQAonlyDialog($scope, $event, newUrl,
                                                 currentUrl, unbindCheckHandledEvent);
                                         },
                                         button3click: function() {
@@ -99,25 +95,19 @@ angular.module('webcert').controller('webcert.VisaIntygFragasvarCtrl',
                                         button3id: 'button1checkhanterad-dialog-tillbaka',
                                         autoClose: true,
                                         model: {
-                                            widgetState: $scope.widgetState
+                                            widgetState: unhandledDialogConfig
                                         }
                                     });
                                 } else {
-                                    fragaSvarCommonService.checkQAonlyDialog($scope, $event, newUrl, currentUrl,
+                                    enhetArendenCommonService.checkQAonlyDialog($scope, $event, newUrl, currentUrl,
                                         unbindCheckHandledEvent);
                                 }
                             });
                         } else {
-                            fragaSvarCommonService.checkQAonlyDialog($scope, $event, newUrl, currentUrl,
+                            enhetArendenCommonService.checkQAonlyDialog($scope, $event, newUrl, currentUrl,
                                 unbindCheckHandledEvent);
                         }
                     }
                 });
             $scope.$on('$destroy', unbindCheckHandledEvent);
-
-
-            UtkastProxy.getUtkastType(certificateType, function(intygType) {
-                $scope.widgetState.fragaSvarAvailable = intygType.fragaSvarAvailable;
-            });
-
         }]);

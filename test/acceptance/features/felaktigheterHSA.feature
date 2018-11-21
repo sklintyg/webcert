@@ -14,7 +14,7 @@ Exempel:
   |adress			    |
   
 
-@adminstratör @skapa-utkast
+@adminstratör @skapa-utkast @vårdadmin
 Scenario:En vårdadministratör ska kunna skapa intygsutkast med CreateDraft
 Givet att jag är inloggad som djupintegrerad vårdadministratör
 Och att vårdsystemet skapat ett intygsutkast för slumpat SMI-intyg

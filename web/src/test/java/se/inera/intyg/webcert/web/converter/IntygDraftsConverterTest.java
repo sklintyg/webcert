@@ -18,39 +18,33 @@
  */
 package se.inera.intyg.webcert.web.converter;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import org.junit.Test;
-
 import se.inera.intyg.common.support.model.CertificateState;
 import se.inera.intyg.common.support.model.StatusKod;
 import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.common.model.UtkastStatus;
 import se.inera.intyg.webcert.persistence.utkast.model.Signatur;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
-import se.inera.intyg.webcert.common.model.UtkastStatus;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.intyg.webcert.web.test.TestIntygFactory;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.Statuskod;
 import se.riv.clinicalprocess.healthcond.certificate.v3.IntygsStatus;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 public class IntygDraftsConverterTest {
 
     @Test
     public void testMergeWithEmptyLists() {
-
         List<ListIntygEntry> intygList = new ArrayList<>();
-
         List<Utkast> utkastList = new ArrayList<>();
 
         List<ListIntygEntry> res = IntygDraftsConverter.merge(intygList, utkastList);
@@ -61,9 +55,7 @@ public class IntygDraftsConverterTest {
 
     @Test
     public void testMergeWithBothListsFilled() {
-
         List<ListIntygEntry> intygList = TestIntygFactory.createListWithIntygItems();
-
         List<Utkast> utkastList = TestIntygFactory.createListWithUtkast();
 
         List<ListIntygEntry> res = IntygDraftsConverter.merge(intygList, utkastList);
@@ -78,11 +70,13 @@ public class IntygDraftsConverterTest {
     public void testConvertIntygToListEntries() {
 
         LocalDateTime modfied = LocalDateTime.parse("2014-01-01T10:00:00");
+
         String id = "123";
         String type = "type";
         String updatedSignedBy = "Dr Dengroth";
         String updatedSignedByHsaId = "HSA1234";
-        Personnummer patientId = new Personnummer("19121212-1212");
+
+        Personnummer patientId = Personnummer.createPersonnummer("19121212-1212").get();
 
         List<Utkast> utkastList = Collections.singletonList(TestIntygFactory.createUtkast(id, modfied, type, updatedSignedBy,
                 updatedSignedByHsaId, UtkastStatus.DRAFT_COMPLETE, patientId));
@@ -102,12 +96,9 @@ public class IntygDraftsConverterTest {
 
     @Test
     public void testConvertUtkastToListIntygEntrySetsStatusSentIfApplicable() {
-        final LocalDateTime skickadTillMottagareDatum = LocalDateTime.now();
-
-        Utkast utkast = new Utkast();
-        utkast.setSenastSparadAv(new VardpersonReferens());
+        Utkast utkast = createUtkast();
         utkast.setStatus(UtkastStatus.SIGNED);
-        utkast.setSkickadTillMottagareDatum(skickadTillMottagareDatum);
+        utkast.setSkickadTillMottagareDatum(LocalDateTime.now());
 
         ListIntygEntry res = IntygDraftsConverter.convertUtkastToListIntygEntry(utkast);
 
@@ -117,12 +108,9 @@ public class IntygDraftsConverterTest {
 
     @Test
     public void testConvertUtkastToListIntygEntrySetsStatusCancelledIfApplicable() {
-        final LocalDateTime aterkalladDatum = LocalDateTime.now();
-
-        Utkast utkast = new Utkast();
-        utkast.setSenastSparadAv(new VardpersonReferens());
+        Utkast utkast = createUtkast();
         utkast.setStatus(UtkastStatus.SIGNED);
-        utkast.setAterkalladDatum(aterkalladDatum);
+        utkast.setAterkalladDatum(LocalDateTime.now());
 
         ListIntygEntry res = IntygDraftsConverter.convertUtkastToListIntygEntry(utkast);
 
@@ -132,15 +120,13 @@ public class IntygDraftsConverterTest {
 
     @Test
     public void testConvertUtkastToListIntygEntrySetsStatusReceivedIfApplicable() {
-        final LocalDateTime signeringsdatum = LocalDateTime.now();
-
-        Utkast utkast = new Utkast();
-        utkast.setSenastSparadAv(new VardpersonReferens());
-        utkast.getSenastSparadAv().setHsaId("");
-        utkast.setStatus(UtkastStatus.SIGNED);
         Signatur signatur = mock(Signatur.class);
-        when(signatur.getSigneringsDatum()).thenReturn(signeringsdatum);
+
+        Utkast utkast = createUtkast();
+        utkast.setStatus(UtkastStatus.SIGNED);
         utkast.setSignatur(signatur);
+
+        when(signatur.getSigneringsDatum()).thenReturn(LocalDateTime.now());
 
         ListIntygEntry res = IntygDraftsConverter.convertUtkastToListIntygEntry(utkast);
 
@@ -150,11 +136,7 @@ public class IntygDraftsConverterTest {
 
     @Test
     public void testConvertUtkastToListIntygEntrySetsUtkastStatusIfNoOtherAvailable() {
-        Utkast utkast = new Utkast();
-        utkast.setSenastSparadAv(new VardpersonReferens());
-        utkast.setStatus(UtkastStatus.DRAFT_INCOMPLETE);
-
-        ListIntygEntry res = IntygDraftsConverter.convertUtkastToListIntygEntry(utkast);
+        ListIntygEntry res = IntygDraftsConverter.convertUtkastToListIntygEntry(createUtkast());
 
         assertNotNull(res);
         assertEquals(UtkastStatus.DRAFT_INCOMPLETE.name(), res.getStatus());
@@ -162,15 +144,15 @@ public class IntygDraftsConverterTest {
 
     @Test
     public void testConvertUtkastToListIntygEntrySetsCancelledFirst() {
-        Utkast utkast = new Utkast();
-        utkast.setSenastSparadAv(new VardpersonReferens());
-        utkast.getSenastSparadAv().setHsaId("");
-        utkast.setStatus(UtkastStatus.SIGNED);
         Signatur signatur = mock(Signatur.class);
-        when(signatur.getSigneringsDatum()).thenReturn(LocalDateTime.now());
+
+        Utkast utkast = createUtkast();
+        utkast.setStatus(UtkastStatus.SIGNED);
         utkast.setSignatur(signatur);
         utkast.setAterkalladDatum(LocalDateTime.now());
         utkast.setSkickadTillMottagareDatum(LocalDateTime.now());
+
+        when(signatur.getSigneringsDatum()).thenReturn(LocalDateTime.now());
 
         ListIntygEntry res = IntygDraftsConverter.convertUtkastToListIntygEntry(utkast);
 
@@ -180,14 +162,14 @@ public class IntygDraftsConverterTest {
 
     @Test
     public void testConvertUtkastToListIntygEntrySetsSentBeforeReceived() {
-        Utkast utkast = new Utkast();
-        utkast.setSenastSparadAv(new VardpersonReferens());
-        utkast.getSenastSparadAv().setHsaId("");
-        utkast.setStatus(UtkastStatus.SIGNED);
         Signatur signatur = mock(Signatur.class);
-        when(signatur.getSigneringsDatum()).thenReturn(LocalDateTime.now());
+
+        Utkast utkast = createUtkast();
+        utkast.setStatus(UtkastStatus.SIGNED);
         utkast.setSignatur(signatur);
         utkast.setSkickadTillMottagareDatum(LocalDateTime.now());
+
+        when(signatur.getSigneringsDatum()).thenReturn(LocalDateTime.now());
 
         ListIntygEntry res = IntygDraftsConverter.convertUtkastToListIntygEntry(utkast);
 
@@ -197,11 +179,10 @@ public class IntygDraftsConverterTest {
 
     @Test
     public void testConvertUtkastToListIntygEntryResolvesSignedByNameNoSignatur() {
-        final String senastSparadAvName = "namn efternamn";
-        Utkast utkast = new Utkast();
-        utkast.setSenastSparadAv(new VardpersonReferens());
+        final String senastSparadAvName = "Anders Andersson";
+
+        Utkast utkast = createUtkast();
         utkast.getSenastSparadAv().setNamn(senastSparadAvName);
-        utkast.setStatus(UtkastStatus.DRAFT_INCOMPLETE);
 
         ListIntygEntry res = IntygDraftsConverter.convertUtkastToListIntygEntry(utkast);
 
@@ -211,63 +192,49 @@ public class IntygDraftsConverterTest {
 
     @Test
     public void testConvertUtkastToListIntygEntryResolvesSignedByNameFromSkapadAv() {
-        final String skapadAvName = "namn efternamn";
-        final String skapadAvHsaId = "hsaid";
-        Utkast utkast = new Utkast();
-        utkast.setSenastSparadAv(new VardpersonReferens());
-        utkast.getSenastSparadAv().setHsaId("");
-        utkast.setStatus(UtkastStatus.SIGNED);
-        utkast.setSkapadAv(new VardpersonReferens());
-        utkast.getSkapadAv().setNamn(skapadAvName);
-        utkast.getSkapadAv().setHsaId(skapadAvHsaId);
         Signatur signatur = mock(Signatur.class);
-        when(signatur.getSigneradAv()).thenReturn(skapadAvHsaId);
+
+        final String skapadAvName = "Bengt Bengtsson";
+        final String skapadAvHsaId = "BengtsHsaId";
+
+        Utkast utkast = createUtkast();
+        utkast.setStatus(UtkastStatus.SIGNED);
+        utkast.getSkapadAv().setNamn(skapadAvName);
         utkast.setSignatur(signatur);
+
+        when(signatur.getSigneradAv()).thenReturn(skapadAvHsaId);
 
         ListIntygEntry res = IntygDraftsConverter.convertUtkastToListIntygEntry(utkast);
 
         assertNotNull(res);
-        assertEquals(skapadAvName, res.getUpdatedSignedBy());
+        assertEquals(skapadAvHsaId, res.getUpdatedSignedBy());
     }
 
     @Test
     public void testConvertUtkastToListIntygEntryResolvesSignedByNameFromSenastSparadAv() {
-        final String name = "namn efternamn";
-        final String hsaId = "hsaid";
-        Utkast utkast = new Utkast();
-        utkast.setSenastSparadAv(new VardpersonReferens());
-        utkast.getSenastSparadAv().setNamn(name);
-        utkast.getSenastSparadAv().setHsaId(hsaId);
+        Utkast utkast = createUtkast();
         utkast.setStatus(UtkastStatus.SIGNED);
-        utkast.setSkapadAv(new VardpersonReferens());
-        utkast.getSkapadAv().setHsaId("");
-        Signatur signatur = mock(Signatur.class);
-        when(signatur.getSigneradAv()).thenReturn(hsaId);
-        utkast.setSignatur(signatur);
 
         ListIntygEntry res = IntygDraftsConverter.convertUtkastToListIntygEntry(utkast);
 
         assertNotNull(res);
-        assertEquals(name, res.getUpdatedSignedBy());
+        assertEquals(utkast.getSenastSparadAv().getNamn(), res.getUpdatedSignedBy());
     }
 
     @Test
     public void testConvertUtkastToListIntygEntryResolvesSignedByNameReturnsSignaturHsaId() {
-        final String hsaId = "hsaid";
-        Utkast utkast = new Utkast();
-        utkast.setSenastSparadAv(new VardpersonReferens());
-        utkast.getSenastSparadAv().setHsaId("");
-        utkast.setStatus(UtkastStatus.SIGNED);
-        utkast.setSkapadAv(new VardpersonReferens());
-        utkast.getSkapadAv().setHsaId("");
         Signatur signatur = mock(Signatur.class);
-        when(signatur.getSigneradAv()).thenReturn(hsaId);
+
+        Utkast utkast = createUtkast();
+        utkast.setStatus(UtkastStatus.SIGNED);
         utkast.setSignatur(signatur);
+
+        when(signatur.getSigneradAv()).thenReturn(utkast.getSenastSparadAv().getNamn());
 
         ListIntygEntry res = IntygDraftsConverter.convertUtkastToListIntygEntry(utkast);
 
         assertNotNull(res);
-        assertEquals(hsaId, res.getUpdatedSignedBy());
+        assertEquals(utkast.getSenastSparadAv().getNamn(), res.getUpdatedSignedBy());
     }
 
     @Test
@@ -332,5 +299,30 @@ public class IntygDraftsConverterTest {
         status.getStatus().setCode(statuskod);
         status.setTidpunkt(timestamp);
         return status;
+    }
+
+    private Utkast createUtkast() {
+
+        final String sparadAvNamn = "namn efternamn";
+        final String sparadAvHsaId = "hsaid";
+        final String skapadAvHsaId = "hsaid";
+
+        VardpersonReferens vardpersonReferens = new VardpersonReferens();
+
+        Utkast utkast = new Utkast();
+        utkast.setStatus(UtkastStatus.DRAFT_INCOMPLETE);
+        utkast.setSenastSparadAv(vardpersonReferens);
+        utkast.getSenastSparadAv().setNamn(sparadAvNamn);
+        utkast.getSenastSparadAv().setHsaId(sparadAvHsaId);
+        utkast.setSkapadAv(vardpersonReferens);
+        utkast.getSkapadAv().setHsaId(skapadAvHsaId);
+        utkast.setPatientPersonnummer(Personnummer.createPersonnummer("20121212-1211").get());
+
+        Signatur signatur = mock(Signatur.class);
+        utkast.setSignatur(signatur);
+
+        when(signatur.getSigneradAv()).thenReturn(sparadAvHsaId);
+
+        return utkast;
     }
 }

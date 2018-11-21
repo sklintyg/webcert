@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Inera AB (http://www.inera.se)
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -44,8 +44,10 @@ describe('answer arende on luse intyg', function() {
         restTestdataHelper.deleteUtkast(intygId);
         restTestdataHelper.deleteAllArenden();
         restTestdataHelper.createWebcertIntyg(testData).then(function() {
+            restTestdataHelper.markeraSkickatTillFK(intygId).then(function() {
             restTestdataHelper.createArendeFromTemplate('luse', intygId, arendeId, 'Hur är det med arbetstiden?',
                 'AVSTMN', 'PENDING_EXTERNAL_ACTION');
+            });
         });
     });
 
@@ -62,20 +64,20 @@ describe('answer arende on luse intyg', function() {
 
     describe('answer arende', function() {
         it('make sure pushed arende is visible', function() {
-            var arende = LuseIntygPage.getArendeById(false, arendeId);
+            var arende = LuseIntygPage.getArendeById(false, arendeId); // false = adminfråga
             expect(arende.isDisplayed()).toBeTruthy();
         });
 
         it('mark arende as handled', function() {
             LuseIntygPage.markArendeAsHandled(arendeId).click().then(function() {
-                var arende = LuseIntygPage.getArendeById(true, arendeId); // true = handled list
+                var arende = LuseIntygPage.getArendeById(false, arendeId); // false = adminfråga
                 expect(arende.isDisplayed()).toBeTruthy();
             });
         });
 
         it('mark arende as unhandled', function() {
             LuseIntygPage.markArendeAsHandled(arendeId).click().then(function() {
-                var arende = LuseIntygPage.getArendeById(false, arendeId); // false = unhandled list
+                var arende = LuseIntygPage.getArendeById(false, arendeId); // false = adminfråga
                 expect(arende.isDisplayed()).toBeTruthy();
             });
         });

@@ -34,14 +34,12 @@
 <title><spring:message code="application.name" /></title>
 
 <!-- bower:css -->
-<link rel="stylesheet" href="/bower_components/angular-ui-select/dist/select.css" />
-<link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.css" />
 <!-- endbower -->
-<link rel="stylesheet" href="/web/webjars/common/webcert/wc-common.css">
-<link rel="stylesheet" href="/web/webjars/common/css/inera-certificate.css">
+<link rel="stylesheet" href="/app/webcert.css?<spring:message code="buildNumber" />">
+<link rel="stylesheet" href="/web/webjars/common/webcert/wc-common.css?<spring:message code="buildNumber" />">
 
 <c:choose>
-  <c:when test="${useMinifiedJavaScript == 'true'}">
+  <c:when test="${pageAttributes.useMinifiedJavaScript == 'true'}">
     <script type="text/javascript" src="/bower_components/angular/angular.min.js?<spring:message code="buildNumber" />"></script>
     <script type="text/javascript" src="/bower_components/angular-i18n/angular-locale_sv-se.js?<spring:message code="buildNumber" />"></script>
     <script type="text/javascript" src="/bower_components/angular-bootstrap/ui-bootstrap-tpls.min.js?<spring:message code="buildNumber" />"></script>
@@ -50,25 +48,24 @@
   </c:when>
   <c:otherwise>
     <!-- bower:js -->
-    <script type="text/javascript" src="/bower_components/jquery/jquery.js"></script>
+    <script type="text/javascript" src="/bower_components/jquery/dist/jquery.js"></script>
     <script type="text/javascript" src="/bower_components/angular/angular.js"></script>
     <script type="text/javascript" src="/bower_components/angular-animate/angular-animate.js"></script>
     <script type="text/javascript" src="/bower_components/angular-cookies/angular-cookies.js"></script>
     <script type="text/javascript" src="/bower_components/angular-i18n/angular-locale_sv-se.js"></script>
     <script type="text/javascript" src="/bower_components/angular-sanitize/angular-sanitize.js"></script>
     <script type="text/javascript" src="/bower_components/angular-bootstrap/ui-bootstrap-tpls.js"></script>
-    <script type="text/javascript" src="/bower_components/api-check/dist/api-check.js"></script>
-    <script type="text/javascript" src="/bower_components/angular-formly/dist/formly.js"></script>
     <script type="text/javascript" src="/bower_components/angular-ui-router/release/angular-ui-router.js"></script>
-    <script type="text/javascript" src="/bower_components/angular-ui-select/dist/select.js"></script>
-    <script type="text/javascript" src="/bower_components/bootstrap/dist/js/bootstrap.js"></script>
+    <script type="text/javascript" src="/bower_components/bootstrap-sass/assets/javascripts/bootstrap.js"></script>
     <script type="text/javascript" src="/bower_components/momentjs/moment.js"></script>
     <!-- endbower -->
     <script type="text/javascript" src="/public/login.controller.js"></script>
   </c:otherwise>
 </c:choose>
 
-<script type="text/javascript" src="/web/webjars/common/webcert/gui/dynamiclink/dynamicLink.module.js"></script>
+<script type="text/javascript" src="/web/webjars/common/webcert/components/dynamiclink/dynamicLink.module.js"></script>
+<script type="text/javascript" src="/web/webjars/common/app-shared/unified-view/uvDomId.filter.js"></script>
+<script type="text/javascript" src="/web/webjars/common/webcert/components/wcAlertMessage/wcAlertMessage.directive.js"></script>
 
 </head>
 <body class="start jsp" id="errorPage" ng-controller="LoginController">
@@ -82,99 +79,104 @@
           <c:choose>
             <c:when test="${param.reason eq 'logout'}">
               <h1><spring:message code="info.loggedout.title" /></h1>
-              <div id="loggedOut" class="alert alert-info">
+              <wc-alert-message alert-id="loggedOut" alert-severity="info">
                 <spring:message code="info.loggedout.text" />
-              </div>
+              </wc-alert-message>
               <jsp:include page="login.jsp" />
             </c:when>
 
             <c:when test="${param.reason eq 'timeout'}">
               <h1><spring:message code="info.loggedout.title" /></h1>
-              <div id="loggedOut" class="alert alert-info">
+              <wc-alert-message alert-id="loggedOut" alert-severity="info">
                 <spring:message code="error.sessiontimeout.text" />
-              </div>
+              </wc-alert-message>
               <jsp:include page="login.jsp" />
             </c:when>
 
             <c:when test="${param.reason eq 'timeout_integration'}">
               <h1><spring:message code="info.loggedout.title" /></h1>
-              <div id="loggedOut" class="alert alert-info">
+              <wc-alert-message alert-id="loggedOut" alert-severity="info">
                 <spring:message code="error.sessiontimeout.integration.text" />
-              </div>
+              </wc-alert-message>
             </c:when>
 
             <c:when test="${param.reason eq 'denied'}">
               <h1><spring:message code="error.noauth.title" /></h1>
-              <div id="noAuth" class="alert alert-warning">
+              <wc-alert-message alert-id="noAuth" alert-severity="warning">
                 <spring:message code="error.noauth.text" />
-              </div>
+              </wc-alert-message>
               <jsp:include page="login.jsp" />
             </c:when>
 
-
             <c:when test="${param.reason eq 'login.medarbetaruppdrag'}">
               <h1><spring:message code="error.login.medarbetaruppdrag.title" /></h1>
-              <div id="noAuth" class="alert alert-danger">
+              <wc-alert-message alert-id="noAuth" alert-severity="danger">
                 <spring:message code="error.login.medarbetaruppdrag.text" />
-              </div>
+              </wc-alert-message>
             </c:when>
 
             <c:when test="${param.reason eq 'login.failed'}">
               <h1><spring:message code="error.login.failed.title" /></h1>
-              <div id="noAuth" class="alert alert-danger">
+              <wc-alert-message alert-id="noAuth" alert-severity="danger">
                 <spring:message code="error.login.failed.text" />
-              </div>
+              </wc-alert-message>
             </c:when>
 
             <c:when test="${param.reason eq 'login.hsaerror'}">
               <h1><spring:message code="error.login.hsaerror.title" /></h1>
-              <div id="noAuth" class="alert alert-danger">
+              <wc-alert-message alert-id="noAuth" alert-severity="danger">
                 <spring:message code="error.login.hsaerror.text" />
-              </div>
+              </wc-alert-message>
             </c:when>
 
             <c:when test="${param.reason eq 'missing-parameter'}">
               <h1><spring:message code="error.missing-parameter.title" /></h1>
-              <div id="missingParameter" class="alert alert-danger">
+              <wc-alert-message alert-id="missingParameter" alert-severity="danger">
                 <spring:message code="error.missing-parameter.text" />
                 <div>${param.message}</div>
-              </div>
+              </wc-alert-message>
+            </c:when>
+            <c:when test="${param.reason eq 'integration.nocontent'}">
+              <h1><spring:message code="error.integration.nocontent.title" /></h1>
+              <wc-alert-message alert-id="noContent" alert-severity="danger">
+                <spring:message code="error.integration.nocontent.text" />
+              </wc-alert-message>
             </c:when>
             <c:when test="${param.reason eq 'notfound'}">
               <h1><spring:message code="error.notfound.title" /></h1>
-              <div id="notFound" class="alert alert-danger">
+              <wc-alert-message alert-id="notFound" alert-severity="danger">
                 <spring:message code="error.notfound.text" />
-              </div>
+              </wc-alert-message>
             </c:when>
             <c:when test="${param.reason eq 'auth-exception'}">
               <h1><spring:message code="error.auth-exception.title" /></h1>
-              <div id="notFound" class="alert alert-danger">
+              <wc-alert-message alert-id="notFound" alert-severity="danger">
                 <spring:message code="error.auth-exception.text" />
-              </div>
+              </wc-alert-message>
             </c:when>
             <c:when test="${param.reason eq 'auth-exception-sekretessmarkering'}">
               <h1><spring:message code="error.auth-exception-sekretessmarkering.title" /></h1>
-              <div id="notFound" class="alert alert-danger">
+              <wc-alert-message alert-id="notFound" alert-severity="danger">
                 <spring:message code="error.auth-exception-sekretessmarkering.text" />
-              </div>
+              </wc-alert-message>
             </c:when>
             <c:when test="${param.reason eq 'enhet.auth.exception'}">
               <h1><spring:message code="error.enhet.auth.exception.title" /></h1>
-              <div id="notFound" class="alert alert-danger">
+              <wc-alert-message alert-id="notFound" alert-severity="danger">
                 <spring:message code="error.enhet.auth.exception.text" arguments="${param.enhetHsaId}" />
-              </div>
+              </wc-alert-message>
             </c:when>
             <c:when test="${param.reason eq 'pu-problem'}">
               <h1><spring:message code="error.pu-problem.title" /></h1>
-              <div id="notFound" class="alert alert-danger">
+              <wc-alert-message alert-id="notFound" alert-severity="danger">
                 <spring:message code="error.pu-problem.text" />
-              </div>
+              </wc-alert-message>
             </c:when>
             <c:when test="${param.reason eq 'sekretessapproval.needed'}">
               <h1><spring:message code="error.sekretessapproval.needed.title" /></h1>
-              <div id="notFound" class="alert alert-danger">
+              <wc-alert-message alert-id="notFound" alert-severity="danger">
                 <spring:message code="error.sekretessapproval.needed.text" />
-              </div>
+              </wc-alert-message>
               <c:if test="${param.showlogin eq 'true'}">
                 <spring:message code="error.sekretessapproval.needed.showlogin" />
               </c:if>
@@ -182,22 +184,12 @@
             </c:when>
             <c:otherwise>
               <h1><spring:message code="error.generictechproblem.title" /></h1>
-              <div id="genericTechProblem" class="alert alert-danger">
+              <wc-alert-message alert-id="genericTechProblem" alert-severity="danger">
                 <spring:message code="error.generictechproblem.text" />
-              </div>
+              </wc-alert-message>
             </c:otherwise>
           </c:choose>
 
-          <!--
-            <c:catch>
-              Error:
-              <c:out value="${pageContext.errorData.throwable.message}" />,
-              Stacktrace:
-              <c:forEach items="${pageContext.errorData.throwable.stackTrace}" var="element">
-                <c:out value="${element}" />,
-              </c:forEach>
-            </c:catch>
-          -->
         </div>
       </div>
     </div>

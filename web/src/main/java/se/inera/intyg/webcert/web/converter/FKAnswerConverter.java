@@ -20,9 +20,9 @@ package se.inera.intyg.webcert.web.converter;
 
 import se.inera.ifv.insuranceprocess.healthreporting.medcertqa.v1.KompletteringType;
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateanswerresponder.v1.AnswerToFkType;
-import se.inera.intyg.webcert.web.converter.util.ConvertToFKTypes;
 import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.intyg.webcert.persistence.fragasvar.model.Komplettering;
+import se.inera.intyg.webcert.web.converter.util.ConvertToFKTypes;
 
 
 /**
@@ -50,6 +50,7 @@ public final class FKAnswerConverter {
         if (fs.getSistaDatumForSvar() != null) {
             fkAnswer.setFkSistaDatumForSvar(fs.getSistaDatumForSvar());
         }
+
         fkAnswer.setFraga(ConvertToFKTypes.toInnehallType(fs.getFrageText(), fs.getFrageSigneringsDatum()));
         fkAnswer.setSvar(ConvertToFKTypes.toInnehallType(fs.getSvarsText(), fs.getSvarSigneringsDatum()));
 
@@ -63,8 +64,8 @@ public final class FKAnswerConverter {
                 fkAnswer.getFkKomplettering().add(kt);
             }
         }
+
         return fkAnswer;
     }
-
 
 }

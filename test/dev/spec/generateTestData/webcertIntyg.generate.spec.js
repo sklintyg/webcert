@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Inera AB (http://www.inera.se)
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -37,10 +37,7 @@ describe('generate', function() {
             var intygData = {
                 'contents': intygGenerator.getIntygJson({'intygType': intygType, 'intygId': intygId}),
                 'utkastStatus': 'SIGNED',
-                'revoked': false,
-                'relations': [
-                    {'intygsId': intygId, 'status': 'INTYG'}
-                ]
+                'revoked': false
             };
             restTestdataHelper.createWebcertIntyg(intygData).then(function(response) {
                 logger.debug('Tried to create intyg ' + intygId);

@@ -18,22 +18,21 @@
  */
 package se.inera.intyg.webcert.web.web.controller.integrationtest.api;
 
-import static com.jayway.restassured.RestAssured.given;
-import static com.jayway.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
-import java.util.*;
-
-import org.junit.Test;
-
 import com.jayway.restassured.RestAssured;
 import com.jayway.restassured.http.ContentType;
-
-import se.inera.intyg.webcert.web.web.controller.api.dto.*;
+import org.junit.Test;
+import se.inera.intyg.webcert.web.web.controller.api.dto.IntygSource;
+import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
+import se.inera.intyg.webcert.web.web.controller.api.dto.NotifiedState;
 import se.inera.intyg.webcert.web.web.controller.integrationtest.BaseRestIntegrationTest;
+
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+
+import static com.jayway.restassured.RestAssured.given;
+import static com.jayway.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
+import static org.junit.Assert.*;
 
 /**
  * Basic test suite that verifies that the endpoint (/api/intyg) for generic intygs operations (list
@@ -64,7 +63,7 @@ public class IntygAPIControllerIT extends BaseRestIntegrationTest {
 
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
 
-        String utkastId = createUtkast("fk7263", DEFAULT_PATIENT_PERSONNUMMER);
+        String utkastId = createUtkast("lisjp", DEFAULT_PATIENT_PERSONNUMMER);
 
         ListIntygEntry[] intygArray =
                 given().cookie("ROUTEID", BaseRestIntegrationTest.routeId).pathParam("personNummer", DEFAULT_PATIENT_PERSONNUMMER)
@@ -76,8 +75,8 @@ public class IntygAPIControllerIT extends BaseRestIntegrationTest {
         assertTrue(intygArray.length > 0);
 
         assertEquals(utkastId, intygArray[0].getIntygId());
-        assertEquals(DEFAULT_PATIENT_PERSONNUMMER, intygArray[0].getPatientId().getPersonnummer());
-        assertEquals("fk7263", intygArray[0].getIntygType());
+        assertEquals(formatPersonnummer(DEFAULT_PATIENT_PERSONNUMMER), intygArray[0].getPatientId().getPersonnummer());
+        assertEquals("lisjp", intygArray[0].getIntygType());
     }
 
     @Test
@@ -85,10 +84,10 @@ public class IntygAPIControllerIT extends BaseRestIntegrationTest {
 
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
 
-        String utkastId = createUtkast("fk7263", DEFAULT_PATIENT_PERSONNUMMER);
+        String utkastId = createUtkast("lisjp", DEFAULT_PATIENT_PERSONNUMMER);
 
         Map<String, String> pathParams = new HashMap<>();
-        pathParams.put("intygsTyp", "fk7263");
+        pathParams.put("intygsTyp", "lisjp");
         pathParams.put("intygsId", utkastId);
         pathParams.put("version", "0");
 
@@ -105,8 +104,7 @@ public class IntygAPIControllerIT extends BaseRestIntegrationTest {
         assertNotNull(updatedIntyg);
 
         assertEquals(utkastId, updatedIntyg.getIntygId());
-        assertEquals(DEFAULT_PATIENT_PERSONNUMMER, updatedIntyg.getPatientId().getPersonnummer());
-        assertEquals("fk7263", updatedIntyg.getIntygType());
+        assertEquals("lisjp", updatedIntyg.getIntygType());
 
         // it's been updated, so version should have been incremented
         assertEquals(1, updatedIntyg.getVersion());

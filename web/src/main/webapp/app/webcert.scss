@@ -1,0 +1,46 @@
+@CHARSET "UTF-8";
+/*
+ * Copyright (C) 2017 Inera AB (http://www.inera.se)
+ *
+ * This file is part of sklintyg (https://github.com/sklintyg).
+ *
+ * sklintyg is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * sklintyg is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+@import "mixins/wc-variables";
+@import "mixins/bootstrap-variables-override"; // Bootstrap override variables must be loaded before bootstrap due to its !default flags
+@import '../bower_components/bootstrap-sass/assets/stylesheets/bootstrap.scss'; // Load bootstrap defaults
+@import "mixins/bootstrap-css-override"; // CSS Override only, no bootstrap variables
+@import "mixins/fonts";
+
+[ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
+  display: none !important;
+}
+
+// Component styles are injected through grunt
+// injector
+@import 'partials/fornya-dialog.scss';
+@import 'partials/preference-dialog.scss';
+@import 'views/fragorOchSvar/wcVardenhetFilter/wcVardenhetFilter.directive.scss';
+@import 'views/index/index.scss';
+@import 'views/index/loginMetoder/loginMetoder.directive.scss';
+@import 'views/index/wcFooter/wcFooter.directive.scss';
+@import 'views/sokSkrivIntyg/patientHeader.scss';
+@import 'views/sokSkrivIntyg/sokSkrivIntyg.scss';
+@import 'views/sokSkrivIntyg/sokSkrivValjUtkastType.scss';
+@import 'views/sokSkrivIntyg/tidigareIntyg.scss';
+@import 'views/sokSkrivIntyg/valjUtkastTyp.scss';
+@import 'views/sokSkrivIntyg/wcContent.scss';
+@import 'views/views.scss';
+// endinjector

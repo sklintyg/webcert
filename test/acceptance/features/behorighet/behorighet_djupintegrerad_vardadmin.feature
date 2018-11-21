@@ -25,7 +25,7 @@ Scenario: Kan markera som klart för signering men inte signera
     När laddar om sidan
 	Så ska jag se texten "Utkastet är sparat och markerat som klart för signering."
 
-@signera @klar-för-signering-sparat
+@signera @klar-för-signering-sparat @LegacyFK7263
 Scenario: Kan inte signera FK7263-utkast
 	När att vårdsystemet skapat ett intygsutkast för "Läkarintyg FK 7263"
     Och jag går in på intygsutkastet via djupintegrationslänk

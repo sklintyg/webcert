@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Inera AB (http://www.inera.se)
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -20,6 +20,7 @@
 /**
  * Created by BESA on 2015-11-25.
  */
+/*globals logger */
 'use strict';
 
 var restUtil = require('./../util/rest.util.js');
@@ -42,6 +43,10 @@ module.exports = {
     deleteAllIntyg: function() {
         restUtil.login();
         return restUtil.deleteAllIntyg();
+    },
+    deleteAllIntygForPatient: function(personnummer) {
+        restUtil.login();
+        return restUtil.deleteAllIntygForPatient(personnummer);
     },
     deleteIntyg: function(id) {
         restUtil.login();
@@ -71,9 +76,17 @@ module.exports = {
     saveUtkast: function(intygType, intygId, version, utkastJson) {
         return restUtil.saveUtkast(intygType, intygId, version, utkastJson);
     },
+    markeraSkickatTillFK: function(id) {
+        return restUtil.markeraSkickatTillFK(id);
+    },
+
     deleteAllUtkast: function() {
         restUtil.login();
         return restUtil.deleteAllUtkast();
+    },
+    deleteAllUtkastForPatient: function(personnummer) {
+        restUtil.login();
+        return restUtil.deleteAllUtkastForPatient(personnummer);
     },
     deleteUtkast: function(id) {
         restUtil.login();

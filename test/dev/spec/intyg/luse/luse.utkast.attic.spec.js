@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Inera AB (http://www.inera.se)
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -78,7 +78,6 @@ describe('Luse attic tests', function() {
             expect(LuseUtkastPage.baseratPa.annat.beskrivning.getAttribute('value')).toBe('Annat underlag.');
         });
     });
-
     describe('underlag', function() {
         it('should still be valid if underlagFinns is set to no', function() {
             LuseUtkastPage.andraMedicinskaUtredningar.finns.NEJ.sendKeys(protractor.Key.SPACE);
@@ -89,7 +88,7 @@ describe('Luse attic tests', function() {
         it('should restore underlag if underlagFinns is set to yes again', function() {
             LuseUtkastPage.andraMedicinskaUtredningar.finns.JA.sendKeys(protractor.Key.SPACE);
 
-            expect(LuseUtkastPage.andraMedicinskaUtredningar.underlagRow(0).underlag.element(by.css('.ui-select-match-text')).getText()).toBe('Underlag från habiliteringen');
+            expect(LuseUtkastPage.andraMedicinskaUtredningar.underlagRow(0).underlag.element(by.css('.dropdown-label span')).getText()).toBe('Underlag från habiliteringen');
             expect(LuseUtkastPage.andraMedicinskaUtredningar.underlagRow(0).datum.getAttribute('value')).toBe('2016-04-07');
             expect(LuseUtkastPage.andraMedicinskaUtredningar.underlagRow(0).information.getAttribute('value')).toBe('Information om utredning.');
         });

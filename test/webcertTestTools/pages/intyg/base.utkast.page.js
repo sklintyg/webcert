@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Inera AB (http://www.inera.se)
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -20,12 +20,14 @@
 /**
  * Created by bennysce on 02-12-15.
  */
-/*globals browser,protractor, Promise*/
+/*globals browser,protractor, Promise, logger*/
 'use strict';
 
 var pageHelpers = require('../pageHelper.util.js');
 var JClass = require('jclass');
 var EC = protractor.ExpectedConditions;
+var hogerfaltet = require('./hogerfaltet');
+
 var BaseUtkast = JClass._extend({
     init: function() {
         this.fmbDialogs = {
@@ -33,14 +35,15 @@ var BaseUtkast = JClass._extend({
             generellInfo: element(by.id('fmb_text_GENERELL_INFO')),
             funktionsnedsattning: element(by.id('fmb_text_FUNKTIONSNEDSATTNING')),
             aktivitetsbegransning: element(by.id('fmb_text_AKTIVITETSBEGRANSNING')),
-            beslutsunderlag: element(by.id('fmb_text_BESLUTSUNDERLAG_TEXTUELLT'))
+            beslutsunderlag: element(by.id('fmb_text_BESLUTSUNDERLAG_TEXTUELLT_list'))
         };
-        this.fmbButtons = {
+        this.fmbTab = element(by.id('tab-link-wc-fmb-panel-tab'));
+        /*this.fmbButtons = {
             falt2: element(by.id('FALT2-fmb-button')),
             falt4: element(by.id('FALT4-fmb-button')),
             falt5: element(by.id('FALT5-fmb-button')),
             falt8: element(by.id('FALT8B-fmb-button'))
-        };
+        };*/
         this.fmbAlertText = element(by.id('fmb_diagnos_not_in_fmb_alert'));
         this.at = null;
         this.signeraButton = element(by.id('signera-utkast-button'));
@@ -50,27 +53,41 @@ var BaseUtkast = JClass._extend({
         };
         this.skrivUtBtn = element(by.id('skriv-ut-utkast'));
         this.signingDoctorName = element(by.id('signingDoctor'));
-
+        this.arendeQuestion = {
+            newArendeButton: element(by.id('askArendeBtn')),
+            text: element(by.id('arendeNewModelText')),
+            topic: element(by.id('new-question-topic')),
+            kontakt: element(by.cssContainingText('option', 'Kontakt')),
+            sendButton: element(by.id('sendArendeBtn'))
+        };
+        this.fragaSvar = hogerfaltet.fragaSvar;
         this.newTextVersionAlert = element(by.id('newTextVersion'));
         this.backBtn = element(by.id('tillbakaButton'));
         this.showMissingInfoList = element(by.id('visa-vad-som-saknas-lista'));
         this.patientNamnPersonnummer = element(by.id('patientNamnPersonnummer'));
         this.patientNamnPersonnummerFd = element(by.css('.old-person-id'));
-        this.sparatOchKomplettMeddelande = element(by.id('intyget-sparat-och-komplett-meddelande'));
+        /*this.sparatOchKomplettMeddelande = element(by.id('intyget-sparat-och-komplett-meddelande')); Finns inte i 6.0? */
+        this.klartAttSigneraStatus = element(by.id('intygstatus1'));
+        this.utkastStatus = element(by.id('intygstatus1'));
+        this.sparatStatus = element(by.id('intygstatus2'));
+
         this.enhetensAdress = {
-            postAdress: element(by.id('clinicInfoPostalAddress')),
-            postNummer: element(by.id('clinicInfoPostalCode')),
-            postOrt: element(by.id('clinicInfoPostalCity')),
-            enhetsTelefon: element(by.id('clinicInfoPhone'))
+            postAdress: element(by.id('grundData-skapadAv-vardenhet-postadress')),
+            postNummer: element(by.id('grundData-skapadAv-vardenhet-postnummer')),
+            postOrt: element(by.id('grundData-skapadAv-vardenhet-postort')),
+            enhetsTelefon: element(by.id('grundData-skapadAv-vardenhet-telefonnummer'))
         };
         this.patientAdress = {
-            postAdress: element(by.id('grundData.patient.postadress')),
-            postNummer: element(by.id('grundData.patient.postnummer')),
-            postOrt: element(by.id('grundData.patient.postort'))
+            postAdress: element(by.id('grundData-patient-postadress')),
+            postNummer: element(by.id('grundData-patient-postnummer')),
+            postOrt: element(by.id('grundData-patient-postort'))
         };
+
+        this.newPersonIdMessage = element(by.id('wc-new-person-id-message'));
+        this.newPersonIdMessageText = element(by.id('wc-new-person-id-message-text'));
     },
     get: function(intygType, intygId) {
-        browser.get('/web/dashboard#/' + intygType + '/edit/' + intygId + '/');
+        browser.get('/#/' + intygType + '/edit/' + intygId + '/');
     },
     isAt: function() {
         var at = this.at;
@@ -82,7 +99,7 @@ var BaseUtkast = JClass._extend({
         return this.signeraButton.isEnabled();
     },
     whenSigneraButtonIsEnabled: function() {
-        return browser.wait(EC.elementToBeClickable(this.signeraButton), 5000);
+        browser.wait(EC.elementToBeClickable(this.signeraButton), 10000);
     },
     signeraButtonClick: function() {
         return pageHelpers.moveAndSendKeys(this.signeraButton, protractor.Key.SPACE);
@@ -124,25 +141,53 @@ var BaseUtkast = JClass._extend({
             })
         ]);
     },
-    angePatientAdress: function(adressObj) {
 
+    angePatientAdress: function(adressObj) {
         var postAddrEL = this.patientAdress.postAdress;
         var postNummerEL = this.patientAdress.postNummer;
         var postOrtEL = this.patientAdress.postOrt;
+        return Promise.all([postAddrEL.isEnabled(), postNummerEL.isEnabled(), postOrtEL.isEnabled()]).then(values => {
+                if (values[0] && values[1] && values[2]) {
+                    return Promise.resolve();
+                } else {
+                    return Promise.reject('Kan inte fylla i adress - adressfält inaktiverade');
+                }
+            }).then(() => postAddrEL.clear())
+            .then(() => pageHelpers.moveAndSendKeys(postAddrEL, adressObj.postadress))
+            .then(() => postNummerEL.clear())
+            .then(() => pageHelpers.moveAndSendKeys(postNummerEL, adressObj.postnummer))
+            .then(() => postOrtEL.clear())
+            .then(() => pageHelpers.moveAndSendKeys(postOrtEL, adressObj.postort));
+    },
 
-        return Promise.all([
-            postAddrEL.clear().then(function() {
-                return pageHelpers.moveAndSendKeys(postAddrEL, adressObj.postadress);
-            }),
-            postNummerEL.clear().then(function() {
-                return pageHelpers.moveAndSendKeys(postNummerEL, adressObj.postnummer);
-            }),
-            postOrtEL.clear().then(function() {
-                return pageHelpers.moveAndSendKeys(postOrtEL, adressObj.postort);
-            }),
-        ]);
+    radioknappVal: function(val, text) {
+        browser.ignoreSynchronization = true;
+        logger.info(`Svarar ${val} i frågan ${text}`);
+        return element.all(by.cssContainingText('.ue-fraga', text))
+            .all(by.cssContainingText('.wc-radio', val))
+            .all(by.tagName('input')).first().click()
+            .then(() => browser.ignoreSynchronization = false);
+    },
 
+    checkboxVal: function(checkboxText) {
+        logger.info(`Bockar i ${checkboxText}`);
+        browser.ignoreSynchronization = true;
+        return element.all(by.css('.ue-fraga'))
+            .all(by.cssContainingText('wc-checkbox-wrapper', checkboxText))
+            .all(by.tagName('input')).first().click()
+            .then(() => browser.ignoreSynchronization = false);
+    },
 
+    dropdownVal: function(val, text) {
+        browser.ignoreSynchronization = true;
+        logger.info(`Väljer ${val} i dropdowner med text ${text}`);
+        return element.all(by.cssContainingText('.ue-fraga', text))
+            .all(by.tagName('wc-dropdown'))
+            .each(el => el.click() // Klicka på dropdown
+                .then(() => element.all(by.repeater('item in items')) // Ta fram alternativen
+                    .filter(el => el.getText().then(t => t === val)) // Välj den som har samma text som argumentet
+                    .click()))
+            .then(() => browser.ignoreSynchronization = false);
     }
 });
 

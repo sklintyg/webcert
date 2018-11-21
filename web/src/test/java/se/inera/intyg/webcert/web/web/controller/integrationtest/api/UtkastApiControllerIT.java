@@ -26,7 +26,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import se.inera.intyg.webcert.web.service.dto.Lakare;
 import se.inera.intyg.webcert.web.web.controller.api.dto.CreateUtkastRequest;
-import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 import se.inera.intyg.webcert.web.web.controller.api.dto.QueryIntygResponse;
 import se.inera.intyg.webcert.web.web.controller.integrationtest.BaseRestIntegrationTest;
 
@@ -47,14 +46,6 @@ public class UtkastApiControllerIT extends BaseRestIntegrationTest {
     private static final String DEFAULT_LAKARE_NAME = "Jan Nilsson";
 
     @Test
-    public void testGetFk7263Utkast() {
-        JsonPath model = testCreateUtkast("fk7263");
-        // INTYG-4086 - do NOT store name or address for FK intyg in DB
-        assertEquals(null, model.getString("grundData.patient.fornamn"));
-        assertEquals(null, model.getString("grundData.patient.efternamn"));
-    }
-
-    @Test
     public void testGetTsBasUtkast() {
         JsonPath model = testCreateUtkast("ts-bas");
         // INTYG-4086 - do NOT store name or address for FK intyg in DB
@@ -68,6 +59,20 @@ public class UtkastApiControllerIT extends BaseRestIntegrationTest {
         // INTYG-4086 - do NOT store name or address for FK intyg in DB
         assertEquals(DEFAULT_UTKAST_PATIENT_FORNAMN, model.getString("grundData.patient.fornamn"));
         assertEquals(DEFAULT_UTKAST_PATIENT_EFTERNAMN, model.getString("grundData.patient.efternamn"));
+    }
+
+    @Test
+    public void testCannotCreateUtkastOfDeprecatedType() {
+        String utkastType = "fk7263";
+
+        RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
+
+        CreateUtkastRequest utkastRequest = createUtkastRequest(utkastType, DEFAULT_PATIENT_PERSONNUMMER);
+
+        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
+                .contentType(ContentType.JSON).body(utkastRequest)
+                .expect().statusCode(400)
+                .when().post("api/utkast/" + utkastType);
     }
 
     /**
@@ -86,7 +91,7 @@ public class UtkastApiControllerIT extends BaseRestIntegrationTest {
         Response response = given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
                 .contentType(ContentType.JSON).body(utkastRequest)
                 .expect().statusCode(200)
-                .when().post("api/utkast/fk7263")
+                .when().post("api/utkast/" + utkastType)
                 .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-generic-utkast-response-schema.json"))
                 .body("intygsTyp", equalTo(utkastRequest.getIntygType()))
                 .body("skapadAv.hsaId", equalTo(DEFAULT_LAKARE.getHsaId()))
@@ -107,9 +112,6 @@ public class UtkastApiControllerIT extends BaseRestIntegrationTest {
         assertEquals(utkastRequest.getPatientPersonnummer().getPersonnummer(), model.getString("grundData.patient.personId"));
 
         return model;
-        
-
-        
     }
 
     /**
@@ -119,7 +121,7 @@ public class UtkastApiControllerIT extends BaseRestIntegrationTest {
     public void testGetLakareWithDraftsByEnheter() {
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
 
-        createUtkast("fk7263", DEFAULT_PATIENT_PERSONNUMMER);
+        createUtkast("ts-bas", DEFAULT_PATIENT_PERSONNUMMER);
 
         Lakare[] lakareWithUtkast = given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
                 .expect().statusCode(200)
@@ -139,7 +141,7 @@ public class UtkastApiControllerIT extends BaseRestIntegrationTest {
     public void testFilterDraftsForUnit() {
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
 
-        String utkastId = createUtkast("fk7263", DEFAULT_PATIENT_PERSONNUMMER);
+        String utkastId = createUtkast("ts-bas", DEFAULT_PATIENT_PERSONNUMMER);
 
         QueryIntygResponse queryResponse = given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
                 .param("savedBy", DEFAULT_LAKARE.getHsaId()).param("enhetsId", DEFAULT_LAKARE.getEnhetId())
@@ -149,8 +151,8 @@ public class UtkastApiControllerIT extends BaseRestIntegrationTest {
 
         // The only result should match the utkast we created in the setup
         Assert.assertEquals(utkastId, queryResponse.getResults().get(0).getIntygId());
-        Assert.assertEquals("fk7263", queryResponse.getResults().get(0).getIntygType());
-        Assert.assertEquals(DEFAULT_PATIENT_PERSONNUMMER, queryResponse.getResults().get(0).getPatientId().getPersonnummer());
+        Assert.assertEquals("ts-bas", queryResponse.getResults().get(0).getIntygType());
+        Assert.assertEquals(formatPersonnummer(DEFAULT_PATIENT_PERSONNUMMER), queryResponse.getResults().get(0).getPatientId().getPersonnummer());
     }
 
     @Test
@@ -160,10 +162,10 @@ public class UtkastApiControllerIT extends BaseRestIntegrationTest {
         ArrayList<String> utkastIds = new ArrayList(), utkastPersonIds = new ArrayList();
         for(int i = 0; i < 2; i++) {
             for (int j = 0; j < 8; j++) {
-                utkastIds.add(createUtkast("fk7263", DEFAULT_PATIENT_PERSONNUMMER));
+                utkastIds.add(createUtkast("luse", DEFAULT_PATIENT_PERSONNUMMER));
                 utkastPersonIds.add(DEFAULT_PATIENT_PERSONNUMMER);
             }
-            utkastIds.add(createUtkast("fk7263", "195401232540")); // Sekretessmarkering på patient
+            utkastIds.add(createUtkast("luse", "195401232540")); // Sekretessmarkering på patient
             utkastPersonIds.add("19540123-2540");
         }
 
@@ -213,10 +215,10 @@ public class UtkastApiControllerIT extends BaseRestIntegrationTest {
 
         ArrayList<String> utkastIds = new ArrayList(), utkastPersonIds = new ArrayList();
         for(int i = 0; i < 2; i++) {
-            utkastIds.add(createUtkast("fk7263", "195401232540")); // Sekretessmarkering på patient
+            utkastIds.add(createUtkast("lisjp", "195401232540")); // Sekretessmarkering på patient
             utkastPersonIds.add("19540123-2540");
             for (int j = 0; j < 8; j++) {
-                utkastIds.add(createUtkast("fk7263", DEFAULT_PATIENT_PERSONNUMMER));
+                utkastIds.add(createUtkast("lisjp", DEFAULT_PATIENT_PERSONNUMMER));
                 utkastPersonIds.add(DEFAULT_PATIENT_PERSONNUMMER);
             }
         }

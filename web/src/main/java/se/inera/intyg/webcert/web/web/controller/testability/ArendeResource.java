@@ -42,6 +42,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -105,6 +106,7 @@ public class ArendeResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response insertQuestion(Arende arende) {
+        arende.setTimestamp(LocalDateTime.now());
         arendeRepository.save(arende);
         return Response.ok(arende).build();
     }

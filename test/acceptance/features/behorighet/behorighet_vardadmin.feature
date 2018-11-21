@@ -1,5 +1,5 @@
 # language: sv
-@behorighet @vardadmin 
+@behorighet @vårdadmin 
 Egenskap: Behörigheter för en vårdadministratör
 
 Bakgrund: Logga in och gå in på en patient
@@ -23,9 +23,9 @@ Scenario: Kan förnya Transportstyrelsens läkarintyg, diabetes intyg
    När jag går in på ett "Transportstyrelsens läkarintyg, diabetes" med status "Signerat"
    Så ska det inte finnas en knapp för att förnya intyget
 
-@fk7263
-Scenario: Kan inte signera Läkarintyg FK 7263
-	Givet att vårdsystemet skapat ett intygsutkast för "Läkarintyg FK 7263"
+@lisjp
+Scenario: Kan inte signera Läkarintyg för sjukpenning
+	Givet att vårdsystemet skapat ett intygsutkast för "Läkarintyg för sjukpenning"
     Och jag går in på utkastet
 	Och jag fyller i alla nödvändiga fält för intyget
 	Så ska signera-knappen inte vara synlig

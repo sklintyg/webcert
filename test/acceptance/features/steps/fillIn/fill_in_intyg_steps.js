@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Inera AB (http://www.inera.se)
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -17,9 +17,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*global intyg,wcTestTools, protractor, browser,testdata,pages*/
+/*global intyg,wcTestTools, protractor, browser, testdata, logger, Promise*/
 
 'use strict';
+/*jshint newcap:false */
+//TODO Uppgradera Jshint p.g.a. newcap kommer bli depricated. (klarade inte att ignorera i grunt-task)
+
+
+/*
+ *	Stödlib och ramverk
+ *
+ */
+
+const {
+    Given, // jshint ignore:line
+    When, // jshint ignore:line
+    Then // jshint ignore:line
+} = require('cucumber');
+
 
 /*jshint maxcomplexity:false */
 var fillIn = require('./').fillIn;
@@ -30,126 +45,229 @@ var luseUtkastPage = wcTestTools.pages.intyg.luse.utkast;
 var lisjpUtkastPage = wcTestTools.pages.intyg.lisjp.utkast;
 var luaeFSUtkastPage = wcTestTools.pages.intyg.luaeFS.utkast;
 var tsBasUtkastPage = wcTestTools.pages.intyg.ts.bas.utkast;
-var shuffle = wcTestTools.helpers.testdata.shuffle;
+var tsDiabetesUtkastPage = wcTestTools.pages.intyg.ts.diabetes.utkast;
+var dbUtkastPage = wcTestTools.pages.intyg.skv.db.utkast;
+var doiUtkastPage = wcTestTools.pages.intyg.soc.doi.utkast;
+var moveAndSendKeys = helpers.moveAndSendKeys;
 
 var td = wcTestTools.testdata;
 var fkValues = wcTestTools.testdata.values.fk;
 
-function chooseRandomFieldBasedOnIntyg(isSMIIntyg, intygShortcode, callback, clearFlag) {
-    var field = helpers.randomPageField(isSMIIntyg, intygShortcode);
-    console.log('Fältet som ändras är: ' + field + ' i intyg ' + intygShortcode);
-    changeField(intygShortcode, field, callback, clearFlag);
-}
+/*
+ *	Stödfunktioner
+ *
+ */
 
-function changeField(intygShortcode, field, callback, clearFlag) {
+function clearField(intygShortcode, field) {
+    logger.info('Fältet som tas bort ' + field + ' i intyg ' + intygShortcode);
     if (intygShortcode === 'LUSE') {
         if (field === 'aktivitetsbegransning') {
+            return luseUtkastPage.aktivitetsbegransning.clear();
+        } else if (field === 'sjukdomsforlopp') {
+            return luseUtkastPage.sjukdomsforlopp.clear();
+        } else if (field === 'funktionsnedsattning') {
+            var fnElm = luseUtkastPage.funktionsnedsattning;
+            var promiseArr = [];
+
+            if (intyg.funktionsnedsattning.intellektuell) {
+                promiseArr.push(fnElm.intellektuell.checkbox.click());
+            }
+            if (intyg.funktionsnedsattning.kommunikation) {
+                promiseArr.push(fnElm.kommunikation.checkbox.click());
+            }
+            if (intyg.funktionsnedsattning.koncentration) {
+                promiseArr.push(fnElm.koncentration.checkbox.click());
+            }
+            if (intyg.funktionsnedsattning.annanPsykisk) {
+                promiseArr.push(fnElm.annanPsykisk.checkbox.click());
+            }
+            if (intyg.funktionsnedsattning.synHorselTal) {
+                promiseArr.push(fnElm.synHorselTal.checkbox.click());
+            }
+            if (intyg.funktionsnedsattning.balansKoordination) {
+                promiseArr.push(fnElm.balansKoordination.checkbox.click());
+            }
+            if (intyg.funktionsnedsattning.annanKroppslig) {
+                promiseArr.push(fnElm.annanKroppslig.checkbox.click());
+            }
+
+            return Promise.all(promiseArr);
+
+        }
+
+    } else if (intygShortcode === 'LISJP') {
+        if (field === 'aktivitetsbegransning') {
+            return lisjpUtkastPage.konsekvenser.aktivitetsbegransning.clear();
+        } else if (field === 'funktionsnedsattning') {
+            return lisjpUtkastPage.konsekvenser.funktionsnedsattning.clear();
+        } else if (field === 'sysselsattning') {
+            if (intyg.sysselsattning.typ === 'NUVARANDE_ARBETE') {
+                return lisjpUtkastPage.sysselsattning.typ.nuvarandeArbete.click();
+            } else if (intyg.sysselsattning.typ === 'ARBETSSOKANDE') {
+                return lisjpUtkastPage.sysselsattning.typ.arbetssokande.click();
+            } else if (intyg.sysselsattning.typ === 'FORALDRALEDIG') {
+                return lisjpUtkastPage.sysselsattning.typ.foraldraledighet.click();
+            } else if (intyg.sysselsattning.typ === 'STUDIER') {
+                return lisjpUtkastPage.sysselsattning.typ.studier.click();
+            }
+        }
+    } else if (intygShortcode === 'LUAE_NA') {
+        if (field === 'aktivitetsbegransning') {
+            return lisjpUtkastPage.konsekvenser.aktivitetsbegransning.clear();
+        } else if (field === 'ovrigt') {
+            return element(by.id('ovrigt')).clear();
+        } else if (field === 'sjukdomsforlopp') {
+            return;
+            //TODO
+        }
+    } else if (intygShortcode === 'LUAE_FS') {
+
+        if (field === 'funktionsnedsattningDebut') {
+            return luaeFSUtkastPage.funktionsnedsattning.debut.clear();
+        } else if (field === 'funktionsnedsattningPaverkan') {
+            return luaeFSUtkastPage.funktionsnedsattning.paverkan.clear();
+        }
+
+
+        //TODO} else if (intygShortcode === 'TSTRK1007') {
+
+        //TODO} else if (intygShortcode === 'TSTRK1031') {
+
+    }
+    throw ('intygShortcode' + intygShortcode + ' och eller field ' + field + ' matchar inte med något av alternativen i clearField funktionen');
+}
+
+
+function changeField(intygShortcode, field) {
+    logger.info('Fältet som ändras är: ' + field + ' i intyg ' + intygShortcode);
+
+    var dodsdatumObj = {
+        inteSakert: {
+            year: '2018',
+            month: '01',
+            antraffadDod: '2017-09-27'
+        }
+    };
+
+
+    if (intygShortcode === 'DB') {
+        if (field === 'dodsdatum') {
+            return dbUtkastPage.angeDodsdatum(dodsdatumObj);
+        } else if (field === 'dodsplats') {
+            return moveAndSendKeys(dbUtkastPage.dodsPlats.kommun.inputText, helpers.randomTextString());
+        } else if (field === 'identitetstyrkt') {
+            return moveAndSendKeys(dbUtkastPage.identitetStyrktGenom.inputText, helpers.randomTextString());
+        }
+    } else if (intygShortcode === 'DOI') {
+        if (field === 'dodsdatum') {
+            return doiUtkastPage.angeDodsdatum(dodsdatumObj);
+        } else if (field === 'dodsplats') {
+            return moveAndSendKeys(doiUtkastPage.dodsPlats.kommun.inputText, helpers.randomTextString());
+        } else if (field === 'identitetstyrkt') {
+            return moveAndSendKeys(doiUtkastPage.identitetStyrktGenom.inputText, helpers.randomTextString());
+        }
+    } else if (intygShortcode === 'LUSE') {
+        if (field === 'aktivitetsbegransning') {
             intyg.aktivitetsbegransning = helpers.randomTextString();
-            luseUtkastPage.aktivitetsbegransning.sendKeys(intyg.aktivitetsbegransning).then(callback);
+            return moveAndSendKeys(luseUtkastPage.aktivitetsbegransning, intyg.aktivitetsbegransning);
         } else if (field === 'sjukdomsforlopp') {
             intyg.sjukdomsforlopp = helpers.randomTextString();
-            luseUtkastPage.sjukdomsforlopp.sendKeys(intyg.sjukdomsforlopp).then(callback);
+            return moveAndSendKeys(luseUtkastPage.sjukdomsforlopp, intyg.sjukdomsforlopp);
         } else if (field === 'funktionsnedsattning') {
             intyg.funktionsnedsattning = {};
             intyg.funktionsnedsattning.intellektuell = helpers.randomTextString();
 
-            luseUtkastPage.funktionsnedsattning.intellektuell.checkbox.sendKeys(protractor.Key.SPACE).then(function() {
-                browser.sleep(1000).then(function() {
-                    luseUtkastPage.funktionsnedsattning.intellektuell.text.sendKeys(intyg.funktionsnedsattning.intellektuell)
+            return moveAndSendKeys(luseUtkastPage.funktionsnedsattning.intellektuell.checkbox, protractor.Key.SPACE).then(function() {
+                return helpers.largeDelay().then(function() {
+                    return moveAndSendKeys(luseUtkastPage.funktionsnedsattning.intellektuell.text, intyg.funktionsnedsattning.intellektuell)
                         .then(function() {
-                            console.log('OK - Angav: ' + intyg.funktionsnedsattning.intellektuell);
-                            callback();
+                            logger.info('OK - Angav: ' + intyg.funktionsnedsattning.intellektuell);
+                            return;
                         }, function(reason) {
                             console.trace(reason);
                             throw ('FEL - Angav: ' + intyg.funktionsnedsattning.intellektuell + ' ' + reason);
                         });
                 });
             });
-        } else {
-            callback(null, 'pending');
         }
 
     } else if (intygShortcode === 'LISJP') {
         if (field === 'aktivitetsbegransning') {
             intyg.aktivitetsbegransning = helpers.randomTextString();
-            lisjpUtkastPage.konsekvenser.aktivitetsbegransning.sendKeys(intyg.aktivitetsbegransning).then(callback);
+            return moveAndSendKeys(lisjpUtkastPage.konsekvenser.aktivitetsbegransning, intyg.aktivitetsbegransning);
         } else if (field === 'funktionsnedsattning') {
             intyg.funktionsnedsattning = helpers.randomTextString();
-            lisjpUtkastPage.konsekvenser.funktionsnedsattning.sendKeys(intyg.sjukdomsforlopp).then(callback);
+            return moveAndSendKeys(lisjpUtkastPage.konsekvenser.funktionsnedsattning, intyg.sjukdomsforlopp);
         } else if (field === 'sysselsattning') {
-            lisjpUtkastPage.angeSysselsattning({
-                typ: 'Arbetssökande'
-            }).then(callback());
-        } else {
-            callback(null, 'pending');
+            return lisjpUtkastPage.angeSysselsattning({
+                typ: 'ARBETSSOKANDE'
+            });
         }
 
     } else if (intygShortcode === 'LUAE_NA') {
         if (field === 'aktivitetsbegransning') {
             intyg.aktivitetsbegransning = helpers.randomTextString();
-            lisjpUtkastPage.konsekvenser.aktivitetsbegransning.sendKeys(intyg.aktivitetsbegransning).then(callback);
+            return moveAndSendKeys(lisjpUtkastPage.konsekvenser.aktivitetsbegransning, intyg.aktivitetsbegransning);
         } else if (field === 'ovrigt') {
-            element(by.id('ovrigt')).sendKeys(helpers.randomTextString()).then(callback);
+            return moveAndSendKeys(element(by.id('ovrigt')), helpers.randomTextString());
         } else if (field === 'sjukdomsforlopp') {
-            lisjpUtkastPage.angeSysselsattning({
-                typ: 'Arbetssökande'
-            }).then(callback());
-        } else {
-            callback(null, 'pending');
+            return lisjpUtkastPage.angeSysselsattning({
+                typ: 'ARBETSSOKANDE'
+            });
         }
     } else if (intygShortcode === 'LUAE_FS') {
         if (field === 'funktionsnedsattningDebut') {
             intyg.funktionsnedsattning = {};
             intyg.funktionsnedsattning.debut = helpers.randomTextString();
-            browser.findElement(by.id('funktionsnedsattningDebut')).sendKeys(intyg.funktionsnedsattning.debut).then(callback);
+
+            return moveAndSendKeys(luaeFSUtkastPage.funktionsnedsattning.debut, intyg.funktionsnedsattning.debut);
         } else if (field === 'funktionsnedsattningPaverkan') {
             intyg.funktionsnedsattning = {};
             intyg.funktionsnedsattning.paverkan = helpers.randomTextString();
-            luaeFSUtkastPage.funktionsnedsattning.paverkan.sendKeys(intyg.funktionsnedsattning.paverkan).then(callback);
+            return moveAndSendKeys(luaeFSUtkastPage.funktionsnedsattning.paverkan, intyg.funktionsnedsattning.paverkan);
         } else if (field === 'ovrigt') {
             intyg.ovrigt = helpers.randomTextString();
-            luaeFSUtkastPage.ovrigt.sendKeys(intyg.ovrigt).then(callback);
-        } else {
-            callback(null, 'pending');
+            return moveAndSendKeys(luaeFSUtkastPage.ovrigt, intyg.ovrigt);
         }
 
-    } else if (intygShortcode === 'FK7263') {
-        if (clearFlag) {
-            if (field === 'aktivitetsbegransning') {
-                fkUtkastPage.aktivitetsBegransning.clear().then(callback);
-            } else if (field === 'diagnoskod') {
-                fkUtkastPage.diagnosKod.clear().then(callback);
-
-            } else if (field === 'funktionsnedsattning') {
-                fkUtkastPage.funktionsNedsattning.clear().then(callback);
-            } else {
-                callback(null, 'pending');
-            }
-
-        } else {
-            callback(null, 'pending');
-        }
     } else if (intygShortcode === 'TSTRK1007') {
-        if (clearFlag) {
-            if (field === 'funktionsnedsattning') {
-                tsBasUtkastPage.funktionsnedsattning.aYes.sendKeys(protractor.Key.SPACE);
-                tsBasUtkastPage.funktionsnedsattning.aText.clear().then(callback);
-            } else if (field === 'hjartKarlsjukdom') {
-                tsBasUtkastPage.hjartKarl.cYes.sendKeys(protractor.Key.SPACE);
-                tsBasUtkastPage.hjartKarl.cText.clear().then(callback);
+        if (field === 'funktionsnedsattning') {
+            return moveAndSendKeys(tsBasUtkastPage.funktionsnedsattning.aYes, protractor.Key.SPACE).then(function() {
+                return tsBasUtkastPage.funktionsnedsattning.aText.clear().then(function() {
+                    return moveAndSendKeys(tsBasUtkastPage.funktionsnedsattning.aText, helpers.randomTextString());
+                });
+            });
+        } else if (field === 'hjartKarlsjukdom') {
+            return moveAndSendKeys(tsBasUtkastPage.hjartKarl.cYes, protractor.Key.SPACE).then(function() {
+                return tsBasUtkastPage.hjartKarl.cText.clear().then(function() {
+                    return moveAndSendKeys(tsBasUtkastPage.hjartKarl.cText, helpers.randomTextString());
+                });
+            });
+        } else if (field === 'utanKorrektion') {
+            return tsBasUtkastPage.syn.hoger.utan.clear().then(function() {
+                return moveAndSendKeys(tsBasUtkastPage.syn.hoger.utan, '1.0');
+            });
+        }
+    } else if (intygShortcode === 'TSTRK1031') {
+        if (field === 'hypoglykemier') {
+            return moveAndSendKeys(tsDiabetesUtkastPage.hypoglykemier.b.yes, protractor.Key.SPACE).then(function() {
+                return moveAndSendKeys(tsDiabetesUtkastPage.hypoglykemier.d.yes, protractor.Key.SPACE).then(function() {
+                    return moveAndSendKeys(tsDiabetesUtkastPage.hypoglykemier.d.antalEpisoder, helpers.randomTextString());
+                });
+            });
+        } else if (field === 'diabetesBehandling') {
+            return tsDiabetesUtkastPage.allmant.annanbehandling.clear().then(function() {
+                return moveAndSendKeys(tsDiabetesUtkastPage.allmant.annanbehandling, helpers.randomTextString());
+            });
+        } else if (field === 'specialist') {
+            return element(by.id('specialist')).clear().then(function() {
+                return moveAndSendKeys(element(by.id('specialist')), helpers.randomTextString());
+            });
 
 
-            } else if (field === 'utanKorrektion') {
-                tsBasUtkastPage.syn.hoger.utan.clear().then(callback);
-
-            } else {
-                callback(null, 'pending');
-            }
-
-        } else {
-            callback(null, 'pending');
         }
     }
+    throw ('intygShortcode ' + intygShortcode + ' och eller field ' + field + ' matchar inte med något av alternativen i changeField funktionen');
 }
 
 
@@ -158,118 +276,104 @@ function isValid(intygShortcode) {
     return (intygShortcode in helpers.intygShortcode);
 }
 
-module.exports = function() {
-    this.Given(/^jag fyller i alla nödvändiga fält för intyget$/, function() {
-        if (!intyg.typ) {
-            throw 'intyg.typ odefinierad.';
-        } else {
-            console.log(intyg);
-            global.intyg = generateIntygByType(intyg.typ, intyg.id);
-            console.log(intyg);
-            return fillIn(global.intyg);
-        }
-    });
-
-    this.Given(/^jag ändrar diagnoskod$/, function() {
-        var isSMIIntyg = helpers.isSMIIntyg(intyg.typ);
-        var kod = td.values.fk.getRandomDiagnoskod();
-        if (isSMIIntyg) {
-            return luseUtkastPage.diagnoseCode.sendKeys(kod);
-        } else {
-            return fkUtkastPage.angeDiagnosKod(kod);
-        }
-
-    });
+module.exports.changingFields = function(isSMIIntyg, intygShortcode, clearFlag) {
+    var field = helpers.randomPageField(isSMIIntyg, intygShortcode);
+    if (!clearFlag) {
+        return changeField(intygShortcode, field);
+    } else {
+        return clearField(intygShortcode, field);
+    }
+};
 
 
-    this.Given(/^jag ändrar i fältet (arbetsförmåga|sjukskrivningsperiod|diagnoskod)$/, function(field) {
-        console.log('Fältet som ändras är: ' + field);
+/*
+ *	Test steg
+ *
+ */
 
-        if (field === 'sjukskrivningsperiod') {
-            browser.ignoreSynchronization = true;
-            return fkUtkastPage.nedsatt.med25.tom.clear().then(function() {
-                return fkUtkastPage.nedsatt.med25.tom.sendKeys(fkValues.getRandomArbetsformaga().nedsattMed25.tom).then(function() {
-                    browser.ignoreSynchronization = false;
-                });
+Given(/^jag fyller i alla nödvändiga fält för intyget(?:\s"([^"]*)")?$/, function(intygsTyp) {
+    if (!intyg.typ && !intygsTyp) {
+        throw 'intyg.typ odefinierad.';
+    } else {
+        global.intyg = generateIntygByType(intygsTyp || intyg.typ, intyg.id);
+        logger.silly(intyg);
+        return fillIn(global.intyg);
+    }
+});
+
+Given(/^jag ändrar diagnoskod$/, function() {
+    var isSMIIntyg = helpers.isSMIIntyg(intyg.typ);
+    var diagnos = {
+        kod: td.values.fk.getRandomDiagnoskod()
+    };
+    if (isSMIIntyg) {
+        return lisjpUtkastPage.angeDiagnosKoder([diagnos]);
+    } else {
+        return fkUtkastPage.angeDiagnosKod(diagnos.kod);
+    }
+
+});
+
+
+Given(/^jag ändrar i fältet (arbetsförmåga|sjukskrivningsperiod|diagnoskod)$/, function(field) {
+    logger.info('Fältet som ändras är: ' + field);
+
+    if (field === 'sjukskrivningsperiod') {
+        browser.ignoreSynchronization = true;
+        return fkUtkastPage.nedsatt.med25.tom.clear().then(function() {
+            return moveAndSendKeys(fkUtkastPage.nedsatt.med25.tom, fkValues.getRandomArbetsformaga().nedsattMed25.tom).then(function() {
+                browser.ignoreSynchronization = false;
             });
-        } else if (field === 'arbetsförmåga') {
-            return fkUtkastPage.nedsatt.med25.checkbox.sendKeys(protractor.Key.SPACE);
-        } else if (field === 'diagnoskod') {
-            var diagnosKod = td.values.fk.getRandomDiagnoskod();
+        });
+    } else if (field === 'arbetsförmåga') {
+        return moveAndSendKeys(fkUtkastPage.nedsatt.med25.checkbox, protractor.Key.SPACE);
+    } else if (field === 'diagnoskod') {
+        var diagnosKod = td.values.fk.getRandomDiagnoskod();
 
-            var isSMIIntyg = helpers.isSMIIntyg(intyg.typ);
-            if (isSMIIntyg) {
-                return lisjpUtkastPage.angeDiagnosKoder([diagnosKod]);
-            } else {
-                return fkUtkastPage.angeDiagnosKod(diagnosKod);
-            }
-
-
-        } else {
-            throw ('Fält saknas i steg-funktion');
-        }
-
-
-    });
-
-    this.Given(/^jag ändrar i slumpat fält$/, function(callback) {
         var isSMIIntyg = helpers.isSMIIntyg(intyg.typ);
-        var intygShortcode = helpers.getAbbrev(intyg.typ);
-
-        if (isValid(intygShortcode)) {
-            chooseRandomFieldBasedOnIntyg(isSMIIntyg, intygShortcode, callback);
+        if (isSMIIntyg) {
+            return lisjpUtkastPage.angeDiagnosKoder([diagnosKod]);
         } else {
-            throw Error('Intyg code not valid \'' + intygShortcode + '\'');
+            return fkUtkastPage.angeDiagnosKod(diagnosKod);
         }
 
-    });
 
-    this.Given(/^jag fyller i resten av de nödvändiga fälten\.$/, function(callback) {
-        fkUtkastPage.baserasPa.minUndersokning.checkbox.sendKeys(protractor.Key.SPACE).then(function() {
-            fkUtkastPage.funktionsNedsattning.sendKeys('Halt och lytt').then(function() {
-                fkUtkastPage.aktivitetsBegransning.sendKeys('Orkar inget').then(function() {
-                    fkUtkastPage.arbete.nuvarandeArbete.checkbox.sendKeys(protractor.Key.SPACE).then(function() {
-                        fkUtkastPage.arbete.nuvarandeArbete.text.sendKeys('Stuveriarbetare').then(callback);
-                    });
-                });
+    } else {
+        throw ('Fält saknas i steg-funktion');
+    }
+
+
+});
+
+Given(/^jag ändrar i slumpat fält$/, function() {
+    var isSMIIntyg = helpers.isSMIIntyg(intyg.typ);
+    var intygShortcode = helpers.getAbbrev(intyg.typ);
+
+
+    if (isValid(intygShortcode)) {
+        var field = helpers.randomPageField(isSMIIntyg, intygShortcode);
+        return changeField(intygShortcode, field);
+    } else {
+        throw Error('Intyg code not valid \'' + intygShortcode + '\'');
+    }
+
+});
+
+Given(/^jag fyller i resten av de nödvändiga fälten\.$/, function() {
+    return moveAndSendKeys(fkUtkastPage.baserasPa.minUndersokning.checkbox, protractor.Key.SPACE).then(function() {
+        return moveAndSendKeys(fkUtkastPage.funktionsNedsattning, 'Halt och lytt').then(function() {
+            return moveAndSendKeys(fkUtkastPage.aktivitetsBegransning, 'Orkar inget').then(function() {
+                return moveAndSendKeys(fkUtkastPage.nuvarandeArbete, 'Stuveriarbetare');
             });
         });
     });
+});
 
 
-    this.Given(/^jag fyller i ett intyg som( inte)? är smitta$/, function(isSmitta) {
-        isSmitta = (typeof isSmitta === 'undefined');
-        console.log(isSmitta);
-        global.intyg = testdata.fk['7263'].getRandom(false, isSmitta);
-        console.log(intyg);
-        return fillIn(global.intyg);
-    });
-    this.Given(/^jag fyller i alla obligatoriska  fält för intyget$/, function() {
-        if (!global.intyg.typ) {
-            throw 'intyg.typ odefinierad.';
-        } else {
-            global.intyg = testdata.fk['7263'].getRandom(intyg.id, false);
-            console.log(intyg);
-            return fillIn(global.intyg);
-        }
-    });
-
-    this.When(/^anger ett slutdatum som är tidigare än startdatum$/, function() {
-        var utkastPage = pages.getUtkastPageByType(intyg.typ);
-        var nedsatthet = shuffle(['nedsattMed25', 'nedsattMed50', 'nedsattMed75', 'nedsattMed100'])[0];
-        console.log('nedsatthet:' + nedsatthet);
-        global.intyg.arbetsformaga = {};
-        global.intyg.arbetsformaga[nedsatthet] = {
-            from: '2017-03-27',
-            tom: '2016-04-01'
-        };
-        return utkastPage.angeArbetsformaga(intyg.arbetsformaga);
-    });
-
-
-};
-
-module.exports.changingFields = function(isSMIIntyg, intygShortcode, callback, clearFlag) {
-    chooseRandomFieldBasedOnIntyg(isSMIIntyg, intygShortcode, callback, clearFlag);
-
-};
+Given(/^jag fyller i ett intyg som( inte)? är smitta$/, function(isSmitta) {
+    isSmitta = (typeof isSmitta === 'undefined');
+    logger.silly('isSmitta : ' + isSmitta);
+    global.intyg = testdata.fk['7263'].getRandom(false, isSmitta);
+    logger.silly(intyg);
+    return fillIn(global.intyg);
+});

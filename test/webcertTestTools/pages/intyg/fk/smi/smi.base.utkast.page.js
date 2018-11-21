@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Inera AB (http://www.inera.se)
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -21,11 +21,11 @@
 'use strict';
 
 var FkBaseUtkast = require('../fk.base.utkast.page.js');
-
+var pageHelpers = require('../../../pageHelper.util');
 var testTools = require('common-testtools');
-var moveAndSendKeys = testTools.uiHelpers.moveAndSendKeys;
+var moveAndSendKeys = pageHelpers.moveAndSendKeys;
 
-testTools.protractorHelpers.init();
+testTools.protractorHelpers.init('certificate-content-container');
 
 
 function sendEnterToElement(el) {
@@ -34,13 +34,13 @@ function sendEnterToElement(el) {
     };
 }
 
-var intellektuellForm = element(by.id('form_funktionsnedsattningIntellektuell'));
-var kommunikationForm = element(by.id('form_funktionsnedsattningKommunikation'));
-var koncentrationForm = element(by.id('form_funktionsnedsattningKoncentration'));
-var psykiskForm = element(by.id('form_funktionsnedsattningPsykisk'));
-var horselTalForm = element(by.id('form_funktionsnedsattningSynHorselTal'));
-var balansForm = element(by.id('form_funktionsnedsattningBalansKoordination'));
-var annanForm = element(by.id('form_funktionsnedsattningAnnan'));
+var intellektuellForm = element(by.id('form_check-funktionsnedsattningIntellektuell'));
+var kommunikationForm = element(by.id('form_check-funktionsnedsattningKommunikation'));
+var koncentrationForm = element(by.id('form_check-funktionsnedsattningKoncentration'));
+var psykiskForm = element(by.id('form_check-funktionsnedsattningPsykisk'));
+var horselTalForm = element(by.id('form_check-funktionsnedsattningSynHorselTal'));
+var balansForm = element(by.id('form_check-funktionsnedsattningBalansKoordination'));
+var annanForm = element(by.id('form_check-funktionsnedsattningAnnan'));
 
 var avslutadForm = element(by.id('form_avslutadBehandling'));
 var planeradForm = element(by.id('form_planeradBehandling'));
@@ -57,9 +57,9 @@ function getTextarea(el) {
 
 function checkAndSendTextToForm(checkboxEL, textEL, text) {
     return moveAndSendKeys(checkboxEL, protractor.Key.SPACE)
-	.then(function() {
-        return moveAndSendKeys(textEL, text);
-    });
+        .then(function() {
+            return moveAndSendKeys(textEL, text);
+        });
 }
 
 function sendTextToForm(textEL, text) {
@@ -75,13 +75,13 @@ var BaseSmiUtkast = FkBaseUtkast._extend({
     init: function init() {
         init._super.call(this);
         // this.fmbButtons = ['diagnos-fmb-button', 'funktionsnedsattning-fmb-button', 'aktivitetsbegransning-fmb-button', 'bedomning-fmb-button'];
-
-        this.fmbButtons = {
+        this.fmbTab = element(by.id('tab-link-wc-fmb-panel-tab'));
+        /*this.fmbButtons = {
             falt2: element(by.id('diagnos-fmb-button')),
             falt4: element(by.id('funktionsnedsattning-fmb-button')),
             falt5: element(by.id('aktivitetsbegransning-fmb-button')),
             falt8: element(by.id('bedomning-fmb-button'))
-        };
+        };*/
 
         this.at = element(by.css('.edit-form'));
 
@@ -153,9 +153,9 @@ var BaseSmiUtkast = FkBaseUtkast._extend({
             },
             underlagRow: function(index) {
                 return {
-                    underlag: element(by.id('underlag-' + index + '-typ')),
-                    datum: element(by.id('underlag-' + index + '-datum')),
-                    information: element(by.id('underlag-' + index + '-hamtasFran'))
+                    underlag: element(by.id('underlag-' + index + '--typ')),
+                    datum: element(by.id('datepicker_underlag[' + index + '].datum')),
+                    information: element(by.id('underlag-' + index + '--hamtasFran'))
                 };
             }
         };
@@ -184,10 +184,10 @@ var BaseSmiUtkast = FkBaseUtkast._extend({
 
         //enhetsadress lika för alla SMI-intyg
         this.enhetensAdress = {
-            postAdress: element(by.id('grundData.skapadAv.vardenhet.postadress')),
-            postNummer: element(by.id('grundData.skapadAv.vardenhet.postnummer')),
-            postOrt: element(by.id('grundData.skapadAv.vardenhet.postort')),
-            enhetsTelefon: element(by.id('grundData.skapadAv.vardenhet.telefonnummer'))
+            postAdress: element(by.id('grundData-skapadAv-vardenhet-postadress')),
+            postNummer: element(by.id('grundData-skapadAv-vardenhet-postnummer')),
+            postOrt: element(by.id('grundData-skapadAv-vardenhet-postort')),
+            enhetsTelefon: element(by.id('grundData-skapadAv-vardenhet-telefonnummer'))
         };
     },
     angeBaseratPa: function(baseratPa) {
@@ -239,19 +239,19 @@ var BaseSmiUtkast = FkBaseUtkast._extend({
     angeFunktionsnedsattning: function(nedsattning) {
         var fn = this.funktionsnedsattning;
         return checkAndSendTextToForm(fn.intellektuell.checkbox, fn.intellektuell.text, nedsattning.intellektuell)
-		.then(function() {
-            return checkAndSendTextToForm(fn.kommunikation.checkbox, fn.kommunikation.text, nedsattning.kommunikation);
-        }).then(function() {
-            return checkAndSendTextToForm(fn.koncentration.checkbox, fn.koncentration.text, nedsattning.koncentration);
-        }).then(function() {
-            return checkAndSendTextToForm(fn.annanPsykisk.checkbox, fn.annanPsykisk.text, nedsattning.psykisk);
-        }).then(function() {
-            return checkAndSendTextToForm(fn.synHorselTal.checkbox, fn.synHorselTal.text, nedsattning.synHorselTal);
-        }).then(function() {
-            return checkAndSendTextToForm(fn.balansKoordination.checkbox, fn.balansKoordination.text, nedsattning.balansKoordination);
-        }).then(function() {
-            return checkAndSendTextToForm(fn.annanKroppslig.checkbox, fn.annanKroppslig.text, nedsattning.annan);
-        });
+            .then(function() {
+                return checkAndSendTextToForm(fn.kommunikation.checkbox, fn.kommunikation.text, nedsattning.kommunikation);
+            }).then(function() {
+                return checkAndSendTextToForm(fn.koncentration.checkbox, fn.koncentration.text, nedsattning.koncentration);
+            }).then(function() {
+                return checkAndSendTextToForm(fn.annanPsykisk.checkbox, fn.annanPsykisk.text, nedsattning.psykisk);
+            }).then(function() {
+                return checkAndSendTextToForm(fn.synHorselTal.checkbox, fn.synHorselTal.text, nedsattning.synHorselTal);
+            }).then(function() {
+                return checkAndSendTextToForm(fn.balansKoordination.checkbox, fn.balansKoordination.text, nedsattning.balansKoordination);
+            }).then(function() {
+                return checkAndSendTextToForm(fn.annanKroppslig.checkbox, fn.annanKroppslig.text, nedsattning.annan);
+            });
     },
 
     angeAndraMedicinskaUtredningar: function(utredningar) {
@@ -260,21 +260,29 @@ var BaseSmiUtkast = FkBaseUtkast._extend({
         var fillIn = function fillInUtr(val, index) {
             var row = utredningarElement.underlagRow(index);
 
-            return moveAndSendKeys(row.datum, val.datum)
-                .then(function() {
-                    return row.underlag.click()   //sendKeys fungerar inte för elementet på LuaeFS använder .click() istället.
-						.then(function() {
-							return browser.sleep(100); //TODO utforska om det finns något sätt att få det fungera för samtliga SMI intyg utan sleep.
-						})
+
+            browser.ignoreSynchronization = false;
+            logger.silly('Klickar på element med id: underlag-' + index + '-typ');
+
+            return browser.sleep(1500).then(function() {
+                    return row.underlag.element(by.css('.dropdown-label')).click() //sendKeys fungerar inte för elementet på LuaeFS använder .click() istället.
                         .then(function() {
-                            return row.underlag.all(by.css('.ui-select-choices-row')).getByText(val.underlag).then(function (elm) {
-								return elm.click(); //sendKeys fungerar inte för elementet på LuaeFS använder .click() istället.
-							});
+                            return browser.sleep(1500); //TODO utforska om det finns något sätt att få det fungera för samtliga SMI intyg utan sleep.
+                        })
+                        .then(function() {
+                            return row.underlag.all(by.css('.plate div')).getByText(val.underlag).then(function(elm) {
+                                return elm.click(); //sendKeys fungerar inte för elementet på LuaeFS använder .click() istället.
+                            });
                         });
                 })
                 .then(function() {
+                    return moveAndSendKeys(row.datum, val.datum);
+                })
+                .then(function() {
+                    browser.ignoreSynchronization = true;
                     return moveAndSendKeys(row.information, val.infoOmUtredningen);
                 });
+
         };
 
         if (utredningar) {
@@ -293,45 +301,44 @@ var BaseSmiUtkast = FkBaseUtkast._extend({
         var promiseArr = [];
         for (var i = 0; i < diagnoser.length; i++) {
             var row = this.diagnos.diagnosRow(i);
-            promiseArr.push(moveAndSendKeys(row.kod,diagnoser[i].kod).then(sendEnterToElement(row.kod)));
-
+            promiseArr.push(moveAndSendKeys(row.kod, diagnoser[i].kod).then(browser.sleep(1000)).then(sendEnterToElement(row.kod)));
         }
         return Promise.all(promiseArr);
 
     },
     angeDiagnos: function(diagnosObj) {
         var diagnoser = diagnosObj.diagnoser;
-		var diagnosElm = this.diagnos;
+        var diagnosElm = this.diagnos;
 
 
         //Ange diagnoser
         return this.angeDiagnosKoder(diagnoser)
-		
-		.then(function(){
-			//Ange när och var diagnoser ställts
-			return moveAndSendKeys(diagnosElm.narOchVarStalldesDiagnoser, diagnosObj.narOchVarStalldesDiagnoserna);
-			})
-		.then(function(){
-			//Ange Finns skäl till ny bedömning
-			var nyBedomning = diagnosElm.skalTillNyBedomning.NEJ;
-			if (diagnosObj.nyBedomning) {
-				nyBedomning = diagnosElm.skalTillNyBedomning.JA;
-			}
-			var diagnosForNyBedomning = diagnosElm.diagnosForNyBedomning;
-			
-			return moveAndSendKeys(nyBedomning, protractor.Key.SPACE)
-			.then(function() {
-				if (diagnosObj.nyBedomning) {
-						//Ange diagnosForNyBedomning
-						return moveAndSendKeys(diagnosForNyBedomning, diagnosObj.diagnosForNyBedomning);
-				} else {
-					return Promise.resolve();
-				}
-			});
-			
-		});
+
+            .then(function() {
+                //Ange när och var diagnoser ställts
+                return moveAndSendKeys(diagnosElm.narOchVarStalldesDiagnoser, diagnosObj.narOchVarStalldesDiagnoserna);
+            })
+            .then(function() {
+                //Ange Finns skäl till ny bedömning
+                var nyBedomning = diagnosElm.skalTillNyBedomning.NEJ;
+                if (diagnosObj.nyBedomning) {
+                    nyBedomning = diagnosElm.skalTillNyBedomning.JA;
+                }
+                var diagnosForNyBedomning = diagnosElm.diagnosForNyBedomning;
+
+                return moveAndSendKeys(nyBedomning, protractor.Key.SPACE)
+                    .then(function() {
+                        if (diagnosObj.nyBedomning) {
+                            //Ange diagnosForNyBedomning
+                            return moveAndSendKeys(diagnosForNyBedomning, diagnosObj.diagnosForNyBedomning);
+                        } else {
+                            return Promise.resolve();
+                        }
+                    });
+
+            });
     },
-	angeOvrigaUpplysningar: function(ovrigt) {
+    angeOvrigaUpplysningar: function(ovrigt) {
         var elm = this.ovrigt;
         return elm.clear().then(function() {
             return moveAndSendKeys(elm, ovrigt);
@@ -354,24 +361,37 @@ var BaseSmiUtkast = FkBaseUtkast._extend({
             }
             return Promise.all(promiseArr);
         }
-
+    },
+    angeTillaggsfragorUE: function(svarArr) {
+        if (!svarArr) {
+            return Promise.resolve();
+        } else {
+            var promiseArr = [];
+            for (var i = 0; i < svarArr.length; i++) {
+                promiseArr.push(this.getTillaggsfragaUE(i).sendKeys(svarArr[i].svar));
+            }
+            return Promise.all(promiseArr);
+        }
     },
     angeMedicinskBehandling: function(behandling) {
         var mb = this.medicinskBehandling;
-		
-		return sendTextToForm(mb.avslutad.text, behandling.avslutad)
-		.then(function(){
-			return sendTextToForm(mb.pagaende.text, behandling.pagaende);
-		})
-		.then(function(){
-			return sendTextToForm(mb.planerad.text, behandling.planerad);
-		})
-		.then(function(){
-			return sendTextToForm(mb.substansintag.text, behandling.substansintag);
-		});
+
+        return sendTextToForm(mb.avslutad.text, behandling.avslutad)
+            .then(function() {
+                return sendTextToForm(mb.pagaende.text, behandling.pagaende);
+            })
+            .then(function() {
+                return sendTextToForm(mb.planerad.text, behandling.planerad);
+            })
+            .then(function() {
+                return sendTextToForm(mb.substansintag.text, behandling.substansintag);
+            });
     },
     getTillaggsfraga: function(i) {
         return element(by.id('tillaggsfragor[' + i + '].svar'));
+    },
+    getTillaggsfragaUE: function(i) {
+        return element(by.id('tillaggsfragor-' + i + '--svar'));
     },
     getTillaggsfragaText: function(i) {
         return element(by.css('#form_tillaggsfragor_' + i + ' label')).getText();

@@ -19,6 +19,7 @@
 package se.inera.intyg.webcert.web.service.signatur;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.ImmutableSet;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
@@ -35,12 +36,15 @@ import se.inera.intyg.infra.security.authorities.validation.AuthoritiesValidator
 import se.inera.intyg.infra.security.common.model.AuthenticationMethod;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.IntygUser;
+import se.inera.intyg.infra.xmldsig.model.SignatureType;
 import se.inera.intyg.webcert.common.model.UtkastStatus;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
+import se.inera.intyg.webcert.persistence.utkast.model.PagaendeSignering;
 import se.inera.intyg.webcert.persistence.utkast.model.Signatur;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
+import se.inera.intyg.webcert.persistence.utkast.repository.PagaendeSigneringRepository;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.converter.util.IntygConverterUtil;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
@@ -57,12 +61,17 @@ import se.inera.intyg.webcert.web.service.util.UpdateUserUtil;
 import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.SignaturData;
 
 import javax.persistence.OptimisticLockException;
+import javax.xml.bind.JAXB;
 import java.io.IOException;
+import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class SignaturServiceImpl implements SignaturService {
@@ -73,6 +82,9 @@ public class SignaturServiceImpl implements SignaturService {
 
     @Autowired
     private UtkastRepository utkastRepository;
+
+    @Autowired
+    private PagaendeSigneringRepository pagaendeSigneringRepository;
 
     @Autowired
     private WebCertUserService webCertUserService;
@@ -97,6 +109,7 @@ public class SignaturServiceImpl implements SignaturService {
 
     @Autowired
     private ASN1Util asn1Util;
+    private AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
 
     @Override
     public SignaturTicket ticketStatus(String ticketId) {
@@ -104,10 +117,30 @@ public class SignaturServiceImpl implements SignaturService {
         if (ticket != null && ticket.getId().equals(ticketId)) {
             return ticket;
         } else {
-            return new SignaturTicket(ticketId, SignaturTicket.Status.OKAND, null, 0, null, null, LocalDateTime.now());
+            return new SignaturTicket(ticketId, -1L, SignaturTicket.Status.OKAND, null, 0, null, null,
+                    LocalDateTime.now());
         }
     }
 
+    /**
+     * Called from the Controller when initiating a client (e.g. NetID) signature. Rewritten in INTYG-5048 so
+     * <i>starting</i> a signature process does NOT mutate the Utkast in any way. Instead, a temporary intyg JSON model
+     * including the signatureDate and signing identity is stored in a {@link PagaendeSignering} entity.
+     * <p>
+     * Once the signing has been completed
+     * (see {@link SignaturServiceImpl#createAndPersistSignature(Utkast, SignaturTicket, String, WebCertUser)}) the
+     * hash, intygsId and version from the JSON model in the PagaendeSignatur is validated and if everything works out,
+     * the final state is written to the Utkast table.
+     * <p>
+     * If the user for some reason failed to finish the signing (cancelled in NetID etc.), the Utkast table won't be
+     * affected or contain a signingDate even though it wasn't signed. A stale entry may remain in PAGAENDE_SIGNERING
+     * but since those cannot be reused such entries can remain there indefinitely or until cleaned up by a janitor
+     * task.
+     *
+     * @param intygId The id of the draft to generate signing ticket for
+     * @param version version
+     * @return
+     */
     @Override
     @Transactional("jpaTransactionManager")
     public SignaturTicket createDraftHash(String intygId, long version) {
@@ -121,16 +154,30 @@ public class SignaturServiceImpl implements SignaturService {
 
         LocalDateTime signeringstid = LocalDateTime.now();
 
-        // Update certificate with user information
-        utkast = updateUtkastForSignering(utkast, user, signeringstid);
+        try {
+            VardpersonReferens vardpersonReferens = UpdateUserUtil.createVardpersonFromWebCertUser(user);
+            ModuleApi moduleApi = moduleRegistry.getModuleApi(utkast.getIntygsTyp());
+            Vardenhet vardenhetFromJson = moduleApi.getUtlatandeFromJson(utkast.getModel()).getGrundData().getSkapadAv().getVardenhet();
+            String updatedInternal = moduleApi
+                    .updateBeforeSigning(utkast.getModel(), IntygConverterUtil.buildHosPersonalFromWebCertUser(user, vardenhetFromJson),
+                            signeringstid);
 
-        // Save the certificate draft
-        utkast = utkastRepository.save(utkast);
+            // Skapa ny PagaendeSignering
+            PagaendeSignering pagaendeSignering = new PagaendeSignering();
+            pagaendeSignering.setIntygData(updatedInternal);
+            pagaendeSignering.setIntygsId(utkast.getIntygsId());
+            pagaendeSignering.setSigneradAvHsaId(vardpersonReferens.getHsaId());
+            pagaendeSignering.setSigneradAvNamn(vardpersonReferens.getNamn());
+            pagaendeSignering.setSigneringsDatum(signeringstid);
 
-        // Flush JPA changes, to make sure the version attribute is updated
-        utkastRepository.flush();
+            pagaendeSignering = pagaendeSigneringRepository.save(pagaendeSignering);
 
-        return createSignaturTicket(utkast.getIntygsId(), utkast.getVersion(), utkast.getModel(), signeringstid);
+            return createSignaturTicket(utkast.getIntygsId(), pagaendeSignering.getInternReferens(), utkast.getVersion(), updatedInternal,
+                    signeringstid);
+        } catch (ModuleNotFoundException | IOException | ModuleException e) {
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM,
+                    "Unable to sign certificate: " + e.getMessage());
+        }
     }
 
     private WebCertUser getWebcertUserForSignering() {
@@ -249,15 +296,14 @@ public class SignaturServiceImpl implements SignaturService {
         // Fetch the draft
         Utkast utkast = getUtkastForSignering(ticket.getIntygsId(), ticket.getVersion(), user);
 
-        monitoringService.logIntygSigned(utkast.getIntygsId(), utkast.getIntygsTyp(), user.getHsaId(), user.getAuthenticationScheme(),
-                utkast.getRelationKod());
-
         // Create and persist the new signature
         ticket = createAndPersistSignature(utkast, ticket, rawSignatur, user);
 
+        monitoringService.logIntygSigned(utkast.getIntygsId(), utkast.getIntygsTyp(), user.getHsaId(), user.getAuthenticationScheme(),
+                utkast.getRelationKod());
+
         // Notify stakeholders when certificate has been signed
-        notificationService.sendNotificationForDraftSigned(utkast,
-                user.getParameters() != null ? user.getParameters().getReference() : null);
+        notificationService.sendNotificationForDraftSigned(utkast);
 
         LogRequest logRequest = LogRequestFactory.createLogRequestFromUtkast(utkast);
         // Note that we explictly supplies the WebCertUser here. The BankID finalization is not executed in a HTTP
@@ -271,7 +317,25 @@ public class SignaturServiceImpl implements SignaturService {
 
     private SignaturTicket createAndPersistSignature(Utkast utkast, SignaturTicket ticket, String rawSignature, WebCertUser user) {
 
-        String payload = utkast.getModel();
+        validateUniqueIntyg(user, utkast);
+
+        PagaendeSignering pagaendeSignering = pagaendeSigneringRepository.findOne(ticket.getPagaendeSigneringId());
+        if (pagaendeSignering == null) {
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE,
+                    "Can't complete signing of certificate, no PagaendeSignering found for interreferens "
+                            + ticket.getPagaendeSigneringId());
+        }
+        String payload = pagaendeSignering.getIntygData();
+
+        if (!pagaendeSignering.getIntygsId().equals(utkast.getIntygsId())) {
+            LOG.error(
+                    "Signing of utkast '{}' failed since the intygsId ({}) on the Utkast is different from the one "
+                            + "on the signing operation ({})",
+                    utkast.getIntygsId(), pagaendeSignering.getIntygsId());
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE,
+                    "Internal error signing utkast, the payload of utkast "
+                            + utkast.getIntygsId() + " has been modified since signing was initialized");
+        }
 
         if (!ticket.getHash().equals(createHash(payload))) {
             LOG.error("Signing of utkast '{}' failed since the payload has been modified since signing was initialized",
@@ -281,11 +345,21 @@ public class SignaturServiceImpl implements SignaturService {
                             + utkast.getIntygsId() + " has been modified since signing was initialized");
         }
 
+        if (utkast.getVersion() != ticket.getVersion()) {
+            LOG.error(
+                    "Signing of utkast '{}' failed since the version on the utkast ({}) differs from when the signing was initialized ({})",
+                    utkast.getIntygsId(), utkast.getVersion(), ticket.getVersion());
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.CONCURRENT_MODIFICATION,
+                    "Cannot complete signing, Utkast version differs from signature ticket version.");
+        }
+
         Signatur signatur = new Signatur(ticket.getSigneringstid(), user.getHsaId(), ticket.getIntygsId(), payload, ticket.getHash(),
                 rawSignature);
 
         // Update user information ("senast sparat av")
         // Add signature to the utkast and set status as signed
+        utkast.setSenastSparadAv(new VardpersonReferens(pagaendeSignering.getSigneradAvHsaId(), pagaendeSignering.getSigneradAvNamn()));
+        utkast.setModel(payload);
         utkast.setSignatur(signatur);
         utkast.setStatus(UtkastStatus.SIGNED);
 
@@ -294,6 +368,9 @@ public class SignaturServiceImpl implements SignaturService {
 
         // Send to Intygstjanst
         intygService.storeIntyg(savedUtkast);
+
+        // Remove PagaendeSignering
+        pagaendeSigneringRepository.delete(ticket.getPagaendeSigneringId());
 
         return ticket;
     }
@@ -311,6 +388,7 @@ public class SignaturServiceImpl implements SignaturService {
 
         // Fetch the certificate
         Utkast utkast = getUtkastForSignering(intygsId, ticket.getVersion(), user);
+
         // Create and persist signature
         ticket = createAndPersistSignature(utkast, ticket, "Signatur", user);
 
@@ -319,11 +397,46 @@ public class SignaturServiceImpl implements SignaturService {
                 utkast.getRelationKod());
 
         // Notify stakeholders when a draft has been signed
-        notificationService.sendNotificationForDraftSigned(utkast,
-                user.getParameters() != null ? user.getParameters().getReference() : null);
+        notificationService.sendNotificationForDraftSigned(utkast);
 
         LogRequest logRequest = LogRequestFactory.createLogRequestFromUtkast(utkast);
         logService.logSignIntyg(logRequest);
+
+        intygService.handleAfterSigned(utkast);
+
+        return ticketTracker.updateStatus(ticket.getId(), SignaturTicket.Status.SIGNERAD);
+    }
+
+    @Override
+    public SignaturTicket clientNiasSignature(String ticketId, SignatureType signatureType, String niasCertificate, WebCertUser user) {
+        // Lookup signature ticket
+        SignaturTicket ticket = ticketTracker.getTicket(ticketId);
+
+        if (ticket == null) {
+            LOG.warn("Ticket '{}' hittades ej", ticketId);
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, "Biljett " + ticketId + " hittades ej");
+        }
+        LOG.debug("Klientsignering ticket '{}' intyg '{}'", ticket.getId(), ticket.getIntygsId());
+
+        // Fetch the draft
+        Utkast utkast = getUtkastForSignering(ticket.getIntygsId(), ticket.getVersion(), user);
+
+        // Create and persist the new signature
+        StringWriter sw = new StringWriter();
+        JAXB.marshal(signatureType, sw);
+        String rawSignaturXml = sw.toString();
+        ticket = createAndPersistSignature(utkast, ticket, rawSignaturXml, user);
+
+        monitoringService.logIntygSigned(utkast.getIntygsId(), utkast.getIntygsTyp(), user.getHsaId(), user.getAuthenticationScheme(),
+                utkast.getRelationKod());
+
+        // Notify stakeholders when certificate has been signed
+        notificationService.sendNotificationForDraftSigned(utkast);
+
+        LogRequest logRequest = LogRequestFactory.createLogRequestFromUtkast(utkast);
+        // Note that we explictly supplies the WebCertUser here. The NIAS finalization is not executed in a HTTP
+        // request context and thus we need to supply the user instance manually.
+        logService.logSignIntyg(logRequest, logService.getLogUser(user));
 
         intygService.handleAfterSigned(utkast);
 
@@ -355,33 +468,13 @@ public class SignaturServiceImpl implements SignaturService {
         return utkast;
     }
 
-    /**
-     * Update utkast with "senast sparad av" information.
-     */
-    private Utkast updateUtkastForSignering(Utkast utkast, WebCertUser user, LocalDateTime signeringstid) {
-        VardpersonReferens vardpersonReferens = UpdateUserUtil.createVardpersonFromWebCertUser(user);
-
-        utkast.setSenastSparadAv(vardpersonReferens);
-
-        try {
-            ModuleApi moduleApi = moduleRegistry.getModuleApi(utkast.getIntygsTyp());
-            Vardenhet vardenhetFromJson = moduleApi.getUtlatandeFromJson(utkast.getModel()).getGrundData().getSkapadAv().getVardenhet();
-            String updatedInternal = moduleApi
-                    .updateBeforeSigning(utkast.getModel(), IntygConverterUtil.buildHosPersonalFromWebCertUser(user, vardenhetFromJson),
-                            signeringstid);
-            utkast.setModel(updatedInternal);
-        } catch (ModuleException | ModuleNotFoundException | IOException e) {
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, "Could not update with HoS personal", e);
-        }
-
-        return utkast;
-    }
-
-    private SignaturTicket createSignaturTicket(String intygId, long version, String payload, LocalDateTime signeringstid) {
+    private SignaturTicket createSignaturTicket(String intygId, long pagaendeSigneringInternreferens, long version, String payload,
+            LocalDateTime signeringstid) {
         try {
             String hash = createHash(payload);
             String id = UUID.randomUUID().toString();
-            SignaturTicket statusTicket = new SignaturTicket(id, SignaturTicket.Status.BEARBETAR, intygId, version, signeringstid, hash,
+            SignaturTicket statusTicket = new SignaturTicket(id, pagaendeSigneringInternreferens, SignaturTicket.Status.BEARBETAR, intygId,
+                    version, signeringstid, hash,
                     LocalDateTime.now());
             ticketTracker.trackTicket(statusTicket);
             return statusTicket;
@@ -401,5 +494,61 @@ public class SignaturServiceImpl implements SignaturService {
         } catch (NoSuchAlgorithmException | UnsupportedEncodingException e) {
             throw new IllegalStateException(e);
         }
+    }
+
+    /**
+     * Validates the utkast to be signed for uniqueness in Webcert.
+     * <p>
+     * <p>
+     * If a blocking intyg is found a {@link WebCertServiceException} is thrown with status code
+     * {@link WebCertServiceErrorCodeEnum#INVALID_STATE_INTYG_EXISTS}.
+     *
+     * @param user   the user, used for accessing the features activated for the utkast.
+     * @param utkast the utkast to be signed.
+     */
+    private void validateUniqueIntyg(WebCertUser user, Utkast utkast) {
+        boolean verified = authoritiesValidator.given(user, utkast.getIntygsTyp())
+                .features(AuthoritiesConstants.FEATURE_UNIKT_INTYG)
+                .isVerified();
+
+        if (verified) {
+            List<Utkast> intygList = utkastRepository
+                    .findAllByPatientPersonnummerAndIntygsTypIn(
+                            utkast.getPatientPersonnummer().getPersonnummerWithDash(),
+                            ImmutableSet.of(utkast.getIntygsTyp()))
+                    .stream()
+                    .filter(oldUtkast -> isBlocking(utkast, oldUtkast))
+                    .collect(Collectors.toList());
+            if (!intygList.isEmpty()) {
+                throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE_INTYG_EXISTS,
+                        "Signed intyg of type " + utkast.getIntygsTyp() + " already exists.");
+            }
+        }
+    }
+
+    /**
+     * Determines if the oldUtkast is blocking for the current utkast to be signed.
+     *
+     * @param utkast    the uktast to be signed.
+     * @param oldUtkast the old potentially blocking utkast/intyg
+     * @return true if the oldUtkast is infact blocking, false otherwise
+     */
+    private boolean isBlocking(Utkast utkast, Utkast oldUtkast) {
+        // If the utkast is not signed we do not care.
+        if (oldUtkast.getSignatur() == null) {
+            return false;
+        }
+
+        // Revoked intyg is not relevant.
+        if (oldUtkast.getAterkalladDatum() != null) {
+            return false;
+        }
+
+        // Handles ersätta intyg. We do not care which relation is used - this should be handled at the creation of the utkast.
+        if (Objects.equals(utkast.getRelationIntygsId(), oldUtkast.getIntygsId())) {
+            return false;
+        }
+
+        return true;
     }
 }

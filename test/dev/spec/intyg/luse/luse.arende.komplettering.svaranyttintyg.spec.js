@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Inera AB (http://www.inera.se)
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -32,7 +32,7 @@ var intygGenerator = wcTestTools.intygGenerator;
 describe('svaranyttintyg - arende on luse intyg', function() {
 
     var utkastId;
-    var intygId = 'luse-arende-intyg-1';
+    var intygId = 'luse-arende-intyg-2';
     var meddelandeId = 'luse-arende-komplt';
 
     beforeAll(function() {
@@ -44,20 +44,30 @@ describe('svaranyttintyg - arende on luse intyg', function() {
             'revoked': false
         };
 
-        restTestdataHelper.deleteUtkast(intygId);
-        restTestdataHelper.createWebcertIntyg(testData).then(function() {
-            restTestdataHelper.createArendeFromTemplate('luse', intygId, meddelandeId, 'Hur är det med arbetstiden?',
-                'KOMPLT', 'PENDING_INTERNAL_ACTION', [
-                    {
-                        'frageId': '1',
-                        'instans': 1,
-                        'text': 'Fixa.'
-                    }
-                ]);
+        restTestdataHelper.deleteAllArenden().then(function() {
+            restTestdataHelper.createWebcertIntyg(testData).then(function() {
+                restTestdataHelper.markeraSkickatTillFK(intygId).then(function() {
+                    // Intygstatus is sorted by timestamps with second resolution (no milliseconds)
+                    // Sleep here to make sure arende timestamp is after signed timestamp
+                    browser.sleep(1500);
+                    restTestdataHelper.createArendeFromTemplate('luse', intygId, meddelandeId, 'Hur är det med arbetstiden?',
+                        'KOMPLT', 'PENDING_INTERNAL_ACTION', [
+                            {
+                                'frageId': '1',
+                                'instans': 1,
+                                'text': 'Fixa.'
+                            }
+                        ],
+                        'test'
+                    );
+
+                });
+            });
         });
     });
 
     afterAll(function() {
+        restTestdataHelper.deleteArende(meddelandeId);
         restTestdataHelper.deleteUtkast(intygId);
         restTestdataHelper.deleteUtkast(utkastId);
     });
@@ -71,8 +81,9 @@ describe('svaranyttintyg - arende on luse intyg', function() {
 
     describe('make sure', function() {
         it('pushed arende is visible', function() {
-            var arende = LuseIntygPage.getArendeById(false, meddelandeId);
+            var arende = LuseIntygPage.getArendeById(true, meddelandeId);
             expect(arende.isDisplayed()).toBeTruthy();
+
         });
 
         it('should display message that intyg has komplettering', function() {
@@ -85,7 +96,8 @@ describe('svaranyttintyg - arende on luse intyg', function() {
         });
 
         it('click svara pa komplettering', function() {
-            LuseIntygPage.getKompletteraIntygButton(meddelandeId).click();
+            expect(LuseIntygPage.kompletteringUtkastLink.isPresent()).toBeFalsy();
+            LuseIntygPage.kompletteraIntygButton.click();
         });
 
         it('should go to utkast page after komplettera med nytt intyg button is clicked', function() {
@@ -103,8 +115,8 @@ describe('svaranyttintyg - arende on luse intyg', function() {
         it('Is showing the Fortsatt button in arende view', function() {
             LuseIntygPage.get(intygId);
             expect(LuseIntygPage.isAt()).toBeTruthy();
-            expect(LuseIntygPage.getKompletteraIntygFortsattPaIntygsutkastButton(meddelandeId).isDisplayed()).toBeTruthy();
-            LuseIntygPage.getKompletteraIntygFortsattPaIntygsutkastButton(meddelandeId).click();
+            expect(LuseIntygPage.kompletteringUtkastLink.isPresent()).toBeTruthy();
+            LuseIntygPage.kompletteringUtkastLink.click();
             expect(LuseUtkastPage.isAt()).toBeTruthy();
         });
     });

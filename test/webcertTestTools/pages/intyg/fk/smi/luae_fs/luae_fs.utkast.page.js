@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Inera AB (http://www.inera.se)
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -34,9 +34,9 @@ var LuaefsUtkast = BaseSmiUtkast._extend({
             },
             underlagRow: function(index) {
                 return {
-                    underlag: element(by.id('underlag-' + index + '-typ')),
-                    datum: element(by.id('underlag-' + index + '-datum')),
-                    information: element(by.id('underlag-' + index + '-hamtasFran'))
+                    underlag: element(by.id('underlag-' + index + '--typ')),
+                    datum: element(by.id('datepicker_underlag[' + index + '].datum')),
+                    information: element(by.id('underlag-' + index + '--hamtasFran'))
                 };
             }
         };
@@ -48,25 +48,24 @@ var LuaefsUtkast = BaseSmiUtkast._extend({
 
         this.baseratPa = {
             minUndersokningAvPatienten: {
-                checkbox: element(by.id('formly_1_date_undersokningAvPatienten_3')),
+                checkbox: element(by.id('checkbox_undersokningAvPatienten')),
                 datum: element(by.id('form_undersokningAvPatienten')).element(by.css('input[type=text]'))
             },
             journaluppgifter: {
-                checkbox: element(by.id('formly_1_date_journaluppgifter_4')),
+                checkbox: element(by.id('checkbox_journaluppgifter')),
                 datum: element(by.id('form_journaluppgifter')).element(by.css('input[type=text]'))
             },
             anhorigBeskrivning: {
-                checkbox: element(by.id('form_anhorigsBeskrivningAvPatienten')),
+                checkbox: element(by.id('checkbox_anhorigsBeskrivningAvPatienten')),
                 datum: element(by.id('form_anhorigsBeskrivningAvPatienten')).element(by.css('input[type=text]'))
             },
             annat: {
                 beskrivning: element(by.id('annatGrundForMUBeskrivning')),
-                checkbox: element(by.id('formly_1_date_annatGrundForMU_6')),
+                checkbox: element(by.id('checkbox_annatGrundForMU')),
                 datum: element(by.id('form_annatGrundForMU')).all(by.css('input[type=text]')).first()
             },
             kannedomOmPatient: {
-                datum: element(by.id('form_kannedomOmPatient')).element(by.css('input[type=text]')),
-                checkbox: element(by.id('formly_1_date_kannedomOmPatient_8'))
+                datum: element(by.id('form_kannedomOmPatient')).element(by.css('input[type=text]'))
             }
         };
     },
@@ -84,10 +83,10 @@ var LuaefsUtkast = BaseSmiUtkast._extend({
     angeFunktionsnedsattning: function(funktionsnedsattning) {
         var fn = this.funktionsnedsattning;
 
-		return pageHelpers.moveAndSendKeys(fn.debut, funktionsnedsattning.debut)
-		.then(function(){
-			return pageHelpers.moveAndSendKeys(fn.paverkan, funktionsnedsattning.paverkan)
-		});
+        return pageHelpers.moveAndSendKeys(fn.debut, funktionsnedsattning.debut)
+            .then(function() {
+                return pageHelpers.moveAndSendKeys(fn.paverkan, funktionsnedsattning.paverkan);
+            });
     },
 
     get: function get(intygId) {

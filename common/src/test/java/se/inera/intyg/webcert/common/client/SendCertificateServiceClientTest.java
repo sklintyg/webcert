@@ -18,35 +18,30 @@
  */
 package se.inera.intyg.webcert.common.client;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
-import static org.mockito.Mockito.when;
-
-import javax.xml.ws.WebServiceException;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.invocation.InvocationOnMock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.riv.clinicalprocess.healthcond.certificate.sendCertificateToRecipient.v2.SendCertificateToRecipientResponderInterface;
 import se.riv.clinicalprocess.healthcond.certificate.sendCertificateToRecipient.v2.SendCertificateToRecipientResponseType;
 import se.riv.clinicalprocess.healthcond.certificate.sendCertificateToRecipient.v2.SendCertificateToRecipientType;
 import se.riv.clinicalprocess.healthcond.certificate.v3.ResultCodeType;
 import se.riv.clinicalprocess.healthcond.certificate.v3.ResultType;
+
+import javax.xml.ws.WebServiceException;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.*;
 
 /**
  * Created by eriklupander on 2015-06-04.
@@ -55,7 +50,7 @@ import se.riv.clinicalprocess.healthcond.certificate.v3.ResultType;
 public class SendCertificateServiceClientTest {
 
     private static final String INTYGS_ID = "intyg-1";
-    private static final String PERSON_ID = "person-1";
+    private static final String PERSON_ID = "20121212-1212";
     private static final String SKICKAT_AV_JSON = createSkickatAvJson();
     private static final String RECIPIENT = "FKASSA";
     private static final String LOGICAL_ADDRESS = "logical-address-1";

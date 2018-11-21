@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Inera AB (http://www.inera.se)
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*global Promise*/
+/*global Promise, logger*/
 'use strict';
 
 //var htmlToText = require('html-to-text');
@@ -43,7 +43,7 @@ function parseMail(buffer) {
     return new Promise(function(resolve, reject) {
         var mailparser = new MailParser();
         mailparser.on('end', function(mailObject) {
-            //console.log(mailObject);
+            //logger.silly(mailObject);
             resolve(mailObject.html);
         });
         mailparser.write(buffer);
@@ -62,22 +62,22 @@ module.exports = {
                     // var bufferCache = '';
                     var now = new Date();
                     var date5MinAgo = new Date(now.getTime() - 5 * 60000);
-                    console.log(date5MinAgo);
+                    logger.silly(date5MinAgo);
                     var mailArray = [];
                     imap.search(['UNSEEN', ['SINCE', date5MinAgo.toISOString()]],
                         function(err, results) {
                             if (err) {
                                 reject(err);
-                                console.log('you are already up to date');
+                                logger.silly('you are already up to date');
                             }
                             var f = imap.fetch(results, {
                                 bodies: ''
                             });
                             f.on('message', function(msg, seqno) {
-                                console.log('Message #%d', seqno);
+                                logger.silly('Message #%d', seqno);
                                 var buffer = '';
                                 msg.on('body', function(stream, info) {
-                                    //console.log(prefix + 'Body');
+                                    //logger.silly(prefix + 'Body');
                                     stream.on('data', function(chunk) {
                                         buffer += chunk.toString('utf8');
                                     });
@@ -87,20 +87,20 @@ module.exports = {
                                     });
                                 });
                                 msg.once('attributes', function(attrs) {
-                                    //console.log(prefix + 'Attributes: %s', inspect(attrs, false, 8));
+                                    //logger.silly(prefix + 'Attributes: %s', inspect(attrs, false, 8));
                                 });
                                 msg.once('end', function() {
-                                    //console.log(prefix + 'Finished');
+                                    //logger.silly(prefix + 'Finished');
 
                                 });
                             });
                             f.once('error', function(err) {
-                                console.log('Fetch error: ' + err);
+                                logger.silly('Fetch error: ' + err);
                                 reject(err);
 
                             });
                             f.once('end', function() {
-                                console.log('Done fetching all messages!');
+                                logger.silly('Done fetching all messages!');
                                 var promiseArr = [];
                                 for (var i = 0; i < mailArray.length; i++) {
                                     promiseArr.push(parseMail(mailArray[i]));
@@ -114,13 +114,13 @@ module.exports = {
                 });
             });
             imap.once('error', function(err) {
-                console.log('imap.once error');
+                logger.silly('imap.once error');
                 reject(err);
 
             });
 
             imap.once('end', function() {
-                console.log('imap-connection ended');
+                logger.silly('imap-connection ended');
                 reject('Inga poster hittade');
             });
 

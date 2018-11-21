@@ -1,5 +1,5 @@
  /*
-  * Copyright (C) 2016 Inera AB (http://www.inera.se)
+  * Copyright (C) 2018 Inera AB (http://www.inera.se)
   *
   * This file is part of sklintyg (https://github.com/sklintyg).
   *
@@ -72,6 +72,42 @@
                      }, function(reason) {
                          console.trace(reason);
                          throw ('FEL, angeBarn,' + reason);
+                     });
+             }).then(function() {
+                 //Läkarens utlåtande om dödsorsaken 
+                 return doiUtkastPage.angeUtlatandeOmDodsorsak(intyg.dodsorsak)
+                     .then(function() {
+                         logger.info('OK - angeUtlatandeOmDodsorsak');
+                     }, function(reason) {
+                         console.trace(reason);
+                         throw ('FEL, angeUtlatandeOmDodsorsak,' + reason);
+                     });
+             }).then(function() {
+                 //Opererad inom fyra veckor före döden
+                 return doiUtkastPage.angeOperation(intyg.operation)
+                     .then(function() {
+                         logger.info('OK - angeOperation');
+                     }, function(reason) {
+                         console.trace(reason);
+                         throw ('FEL, angeOperation,' + reason);
+                     });
+             }).then(function() {
+                 //SkadaForgiftning
+                 return doiUtkastPage.angeSkadaForgiftning(intyg.skadaForgiftning)
+                     .then(function() {
+                         logger.info('OK - angeSkadaForgiftning');
+                     }, function(reason) {
+                         console.trace(reason);
+                         throw ('FEL, angeSkadaForgiftning,' + reason);
+                     });
+             }).then(function() {
+                 //Dödsorsaksuppgifter
+                 return doiUtkastPage.angeDodsorsaksuppgifterna(intyg.dodsorsaksuppgifter)
+                     .then(function() {
+                         logger.info('OK - angeDodsorsaksuppgifterna');
+                     }, function(reason) {
+                         console.trace(reason);
+                         throw ('FEL, angeDodsorsaksuppgifterna,' + reason);
                      });
              });
 

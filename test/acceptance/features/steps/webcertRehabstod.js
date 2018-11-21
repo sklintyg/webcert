@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Inera AB (http://www.inera.se)
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -19,7 +19,21 @@
 
 /*global browser, logger, pages, person, wcTestTools, testdata, intyg, Promise, protractor */
 'use strict';
+/*jshint newcap:false */
+//TODO Uppgradera Jshint p.g.a. newcap kommer bli depricated. (klarade inte att ignorera i grunt-task)
 
+/*
+ *	Stödlib och ramverk
+ *
+ */
+
+const {
+    Given, // jshint ignore:line
+    When, // jshint ignore:line
+    Then // jshint ignore:line
+} = require('cucumber');
+
+var helpers = require('./helpers');
 var fillIn = require('./fillIn/').fillIn;
 var loginHelper = require('./inloggning/login.helpers.js');
 var loginHelperRehabstod = require('./inloggning/login.helpers.rehabstod.js');
@@ -27,6 +41,12 @@ var logInAsUserRole = loginHelper.logInAsUserRole;
 var sokSkrivIntygPage = pages.sokSkrivIntyg.pickPatient;
 var logInAsUserRoleRehabstod = loginHelperRehabstod.logInAsUserRoleRehabstod;
 var testdataHelpers = wcTestTools.helpers.testdata;
+
+
+/*
+ *	Stödfunktioner
+ *
+ */
 
 // match personNr, startDate, endDate, noOfIntyg
 var TABLEROW_REGEX = /.*(\d{8}\-\d{4}).*(\d{4}\-\d{2}\-\d{2})\s(\d{4}\-\d{2}\-\d{2}).*(dagar \d{1,3}).*/g;
@@ -139,164 +159,163 @@ function findSsn(obj) {
     return obj.ssn === global.rehabstod.user.ssn;
 }
 
-module.exports = function() {
+/*
+ *	Test steg
+ *
+ */
 
-    this.Given(/^jag går in på Rehabstöd$/, function() {
-        var url = process.env.REHABSTOD_URL + 'welcome.html';
-        return browser.get(url).then(function() {
-            logger.info('Går till url: ' + url);
-        });
+Given(/^jag går in på Rehabstöd$/, function() {
+    var url = process.env.REHABSTOD_URL + 'welcome.html';
+    return helpers.getUrl(url).then(function() {
+        logger.info('Går till url: ' + url);
     });
+});
 
-    this.Given(/^jag väljer enhet "([^"]*)"$/, function(enhet) {
-        var elementId = 'rhs-vardenhet-selector-select-active-unit-' + enhet + '-link';
-        var userObj = global.user;
+Given(/^jag väljer enhet "([^"]*)"$/, function(enhet) {
+    var elementId = 'rhs-vardenhet-selector-select-active-unit-' + enhet + '-link';
+    var userObj = global.user;
 
 
 
-        return element(by.id(elementId)).click().then(function() {
-            return browser.sleep(2000).then(function() {
+    return element(by.id(elementId)).click().then(function() {
+        return browser.sleep(2000).then(function() {
 
-                logger.info('Inloggad på: ');
-                element(by.id('location')).getText().then(function(txt) {
-                    logger.info(txt);
-                });
-
-                var headerboxUser = element(by.css('.headerbox-user-profile'));
-
-                var compareStr = '';
-
-                if (userObj.roleName !== 'rehabkoordinator') {
-                    compareStr = userObj.roleName + ' - ';
-                }
-                compareStr += userObj.forNamn + ' ' + userObj.efterNamn;
-
-                return expect(headerboxUser.getText()).to.eventually.contain(compareStr);
-            });
-        });
-    });
-
-    this.When(/^jag går till pågående sjukfall i Rehabstöd$/, function() {
-        return element(by.id('navbar-link-sjukfall')).click().then(function() {
-            return element(by.id('rhs-pdlconsent-modal-checkbox-label')).isPresent().then(function(isPresent) {
-                if (isPresent) {
-                    return element(by.id('rhs-pdlconsent-modal-give-consent-checkbox')).sendKeys(protractor.Key.SPACE).then(function() {
-                        return element(by.id('rhs-pdlconsent-modal-give-consent-btn')).sendKeys(protractor.Key.SPACE);
-                    });
-                }
-            });
-        });
-    });
-    this.When(/^ska jag inte se patientens personnummer bland pågående sjukfall$/, function() {
-        return element.all(by.css('.rhs-table-row')).getText().then(function(tableRows) {
-            return tableRows.forEach(function(row) {
-                row = row.replace('-', '');
-
-                logger.info('letar efter "' + global.person.id + '" i :');
-                logger.debug(row);
-
-                return expect(row).to.not.contain(global.person.id);
+            logger.info('Inloggad på: ');
+            element(by.id('location')).getText().then(function(txt) {
+                logger.info(txt);
             });
 
+            var headerboxUser = element(by.css('.headerbox-user-profile'));
 
+            var compareStr = '';
 
-        });
-    });
-
-
-    this.Given(/^jag söker efter slumpvald patient och sparar antal intyg$/, function(callback) {
-        createUserArr().then(function(personArr) {
-            getObjFromList = objList(personArr);
-            var usrObj = testdataHelpers.shuffle(personArr)[0];
-            global.rehabstod = {};
-            if (usrObj) {
-                global.rehabstod.user = usrObj;
-            } else {
-                global.rehabstod.user = createUser();
+            if (userObj.roleName !== 'rehabkoordinator') {
+                compareStr = userObj.roleName + ' - ';
             }
-            logger.info('Saved rehab user ( ssn: ' + global.rehabstod.user.ssn + ', noOfIntyg: ' + global.rehabstod.user.noOfIntyg + '). Saved for next steps.');
-        }).then(callback);
-    });
+            compareStr += userObj.forNamn + ' ' + userObj.efterNamn;
 
-    this.Given(/^jag går in på en patient som sparats från Rehabstöd$/, function() {
-        return gotoPatient({
-            id: global.rehabstod.user.ssn
+            return expect(headerboxUser.getText()).to.eventually.contain(compareStr);
         });
     });
+});
 
-    this.Given(/^jag är inloggad som läkare i Rehabstöd$/, function() {
-        // Setting rehabstod to new bas url
-        browser.baseUrl = process.env.REHABSTOD_URL;
-        var userObj = {
-            forNamn: 'Johan',
-            efterNamn: 'Johansson',
-            hsaId: 'TSTNMT2321000156-107V',
-            enhetId: 'TSTNMT2321000156-107P'
-        };
-
-        return logInAsUserRoleRehabstod(userObj, 'Läkare', true);
+When(/^jag går till pågående sjukfall i Rehabstöd$/, function() {
+    return element(by.id('navbar-link-sjukfall')).click().then(function() {
+        return element(by.id('rhs-pdlconsent-modal-checkbox-label')).isPresent().then(function(isPresent) {
+            if (isPresent) {
+                return element(by.id('rhs-pdlconsent-modal-give-consent-checkbox')).sendKeys(protractor.Key.SPACE).then(function() {
+                    return element(by.id('rhs-pdlconsent-modal-give-consent-btn')).sendKeys(protractor.Key.SPACE);
+                });
+            }
+        });
     });
+});
+When(/^ska jag inte se patientens personnummer bland pågående sjukfall$/, function() {
+    return element.all(by.css('.rhs-table-row')).getText().then(function(tableRows) {
+        return tableRows.forEach(function(row) {
+            row = row.replace('-', '');
 
-    this.Given(/^jag är inloggad som rehabkoordinator$/, function() {
-        // Setting rehabstod to new bas url
-        browser.baseUrl = process.env.REHABSTOD_URL;
-        var userObj = {
-            forNamn: 'Automatkoordinator',
-            efterNamn: 'Rehab',
-            hsaId: 'TSTNMT2321000156-REKO',
-            enhetId: 'TSTNMT2321000156-107Q'
-        };
-        return logInAsUserRoleRehabstod(userObj, 'rehabkoordinator', true);
+            logger.info('letar efter "' + global.person.id + '" i :');
+            logger.debug(row);
+
+            return expect(row).to.not.contain(global.person.id);
+        });
+
+
+
     });
+});
 
-    this.Given(/^jag är inloggad som läkare i Webcert med enhet "([^"]*)"$/, function(enhetsId) {
-        // Setting webcert to new bas url
-        browser.baseUrl = process.env.WEBCERT_URL;
-        var userObj = {
-            forNamn: 'Johan',
-            efterNamn: 'Johansson',
-            hsaId: 'TSTNMT2321000156-107V',
-            enhetId: enhetsId
-        };
 
-        return logInAsUserRole(userObj, 'Läkare', true);
-    });
-
-    this.Given(/^jag fyller i ett "([^"]*)" intyg som inte är smitta med ny sjukskrivningsperiod$/, function(intygsKod) {
-        if ('FK7263' === intygsKod) {
-            global.intyg = testdata.fk['7263'].getRandom(intyg.id, false);
+Given(/^jag söker efter slumpvald patient och sparar antal intyg$/, function(callback) {
+    createUserArr().then(function(personArr) {
+        getObjFromList = objList(personArr);
+        var usrObj = testdataHelpers.shuffle(personArr)[0];
+        global.rehabstod = {};
+        if (usrObj) {
+            global.rehabstod.user = usrObj;
+        } else {
+            global.rehabstod.user = createUser();
         }
+        logger.info('Saved rehab user ( ssn: ' + global.rehabstod.user.ssn + ', noOfIntyg: ' + global.rehabstod.user.noOfIntyg + '). Saved for next steps.');
+    }).then(callback);
+});
 
-        global.rehabstod.user.intygId = global.intyg.id;
-        sattNySjukskrivningsPeriod(global.intyg);
-        logger.info(global.intyg);
-        return fillIn(global.intyg);
+Given(/^jag går in på en patient som sparats från Rehabstöd$/, function() {
+    return gotoPatient({
+        id: global.rehabstod.user.ssn
     });
+});
 
-    this.Given(/^ska antalet intyg ökat med (\d+) på patient som sparats från Rehabstöd$/, function(antal) {
-        return createUserArr(getObjFromList).then(function(personArr) {
-            logger.info('Rehabpatient: ( ssn: ' + global.rehabstod.user.ssn + ', Antal intyg: ' + personArr[0].noOfIntyg + ').');
+Given(/^jag är inloggad som läkare i Rehabstöd$/, function() {
+    // Setting rehabstod to new bas url
+    browser.baseUrl = process.env.REHABSTOD_URL;
+    var userObj = {
+        forNamn: 'Johan',
+        efterNamn: 'Johansson',
+        hsaId: 'TSTNMT2321000156-107V',
+        enhetId: 'TSTNMT2321000156-107P'
+    };
 
-            logger.info('Förväntar oss att global.rehabstod.user.noOfIntyg + ' + antal + ' => ');
-            logger.info(global.rehabstod.user.noOfIntyg + parseInt(antal, 10));
-            logger.info('Ska vara lika mycket som personArr[0].noOfIntyg => ');
-            logger.info(personArr[0].noOfIntyg);
+    return logInAsUserRoleRehabstod(userObj, 'Läkare', true);
+});
 
-            return expect(global.rehabstod.user.noOfIntyg + parseInt(antal, 10)).to.equal(personArr[0].noOfIntyg);
-        });
+Given(/^jag är inloggad som rehabkoordinator$/, function() {
+    // Setting rehabstod to new bas url
+    browser.baseUrl = process.env.REHABSTOD_URL;
+    var userObj = {
+        forNamn: 'Automatkoordinator',
+        efterNamn: 'Rehab',
+        hsaId: 'TSTNMT2321000156-REKO',
+        enhetId: 'TSTNMT2321000156-107Q'
+    };
+    return logInAsUserRoleRehabstod(userObj, 'rehabkoordinator', true);
+});
+
+Given(/^jag är inloggad som läkare i Webcert med enhet "([^"]*)"$/, function(enhetsId) {
+    // Setting webcert to new bas url
+    browser.baseUrl = process.env.WEBCERT_URL;
+    var userObj = {
+        forNamn: 'Johan',
+        efterNamn: 'Johansson',
+        hsaId: 'TSTNMT2321000156-107V',
+        enhetId: enhetsId
+    };
+
+    return logInAsUserRole(userObj, 'Läkare', true);
+});
+
+Given(/^jag fyller i ett "([^"]*)" intyg som inte är smitta med ny sjukskrivningsperiod$/, function(intygsKod) {
+    if ('FK7263' === intygsKod) {
+        global.intyg = testdata.fk['7263'].getRandom(intyg.id, false);
+    }
+
+    global.rehabstod.user.intygId = global.intyg.id;
+    sattNySjukskrivningsPeriod(global.intyg);
+    logger.info(global.intyg);
+    return fillIn(global.intyg);
+});
+
+Given(/^ska antalet intyg ökat med (\d+) på patient som sparats från Rehabstöd$/, function(antal) {
+    return createUserArr(getObjFromList).then(function(personArr) {
+        logger.info('Rehabpatient: ( ssn: ' + global.rehabstod.user.ssn + ', Antal intyg: ' + personArr[0].noOfIntyg + ').');
+
+        logger.info('Förväntar oss att global.rehabstod.user.noOfIntyg + ' + antal + ' => ');
+        logger.info(global.rehabstod.user.noOfIntyg + parseInt(antal, 10));
+        logger.info('Ska vara lika mycket som personArr[0].noOfIntyg => ');
+        logger.info(personArr[0].noOfIntyg);
+
+        return expect(global.rehabstod.user.noOfIntyg + parseInt(antal, 10)).to.equal(personArr[0].noOfIntyg);
     });
+});
 
-    this.Given(/^jag går in på intyget som tidigare skapats$/, function() {
-        var url;
-        if (global.rehabstod) {
-            url = process.env.WEBCERT_URL + 'web/dashboard#/intyg/fk7263/' + global.rehabstod.user.intygId + '/';
-        } else if (global.statistik) {
-            url = process.env.WEBCERT_URL + 'web/dashboard#/intyg/fk7263/' + global.statistik.intygsId + '/';
-        }
+Given(/^jag går in på intyget som tidigare skapats$/, function() {
+    var url;
+    if (global.rehabstod) {
+        url = process.env.WEBCERT_URL + '#/intyg/lisjp/' + global.rehabstod.user.intygId + '/';
+    } else if (global.statistik) {
+        url = process.env.WEBCERT_URL + '#/intyg/lisjp/' + global.statistik.intygsId + '/';
+    }
 
-        return browser.get(url).then(function() {
-            logger.info('Går till url: ' + url);
-        });
-    });
-
-};
+    return helpers.getUrl(url);
+});
