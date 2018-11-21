@@ -398,9 +398,9 @@ public class PatientDetailsResolverTest {
 
         Patient patient = testee.resolvePatient(PNR, "ts-diabetes", TS_DIABETES_VERSION_3);
         assertEquals(PNR, patient.getPersonId());
-        assertNull(patient.getFornamn());
-        assertNull(patient.getMellannamn());
-        assertNull(patient.getEfternamn());
+        assertEquals(FNAMN, patient.getFornamn());
+        assertEquals(MNAMN, patient.getMellannamn());
+        assertEquals(LNAMN, patient.getEfternamn());
         assertNull(patient.getPostadress());
         assertNull(patient.getPostnummer());
         assertNull(patient.getPostort());
