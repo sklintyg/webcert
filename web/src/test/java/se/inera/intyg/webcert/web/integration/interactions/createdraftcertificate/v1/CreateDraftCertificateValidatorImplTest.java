@@ -35,7 +35,6 @@ import se.inera.intyg.common.ts_bas.support.TsBasEntryPoint;
 import se.inera.intyg.common.ts_diabetes.support.TsDiabetesEntryPoint;
 import se.inera.intyg.infra.integration.pu.model.Person;
 import se.inera.intyg.infra.integration.pu.model.PersonSvar;
-import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.SekretessStatus;
 import se.inera.intyg.webcert.web.integration.interactions.createdraftcertificate.BaseCreateDraftCertificateValidatorTest;
@@ -68,8 +67,6 @@ public class CreateDraftCertificateValidatorImplTest extends BaseCreateDraftCert
 
     @Before
     public void setup() throws ModuleNotFoundException {
-        when(authoritiesHelper.isFeatureActive(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST, LUSE.toLowerCase())).thenReturn(true);
-
         when(authoritiesHelper.getIntygstyperAllowedForAvliden())
                 .thenReturn(Arrays.asList(DbModuleEntryPoint.MODULE_ID, DoiModuleEntryPoint.MODULE_ID));
         when(moduleRegistry.moduleExists(Fk7263EntryPoint.MODULE_ID)).thenReturn(true);
@@ -179,12 +176,6 @@ public class CreateDraftCertificateValidatorImplTest extends BaseCreateDraftCert
     @Test
     public void testValidateHoSPersonalEnhetMissing() {
         ResultValidator result = validator.validate(buildIntyg(LUSE, "efternamn", "fornamn", "fullständigt namn", "enhetsnamn", false));
-        assertTrue(result.hasErrors());
-    }
-
-    @Test
-    public void testValidateHoSPersonalEnhetsnamnMissing() {
-        ResultValidator result = validator.validate(buildIntyg(LUSE, "efternamn", "fornamn", "fullständigt namn", null, true));
         assertTrue(result.hasErrors());
     }
 

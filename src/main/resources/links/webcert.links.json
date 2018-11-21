@@ -7,20 +7,26 @@
   },
   {
     "key": "ptsCookies",
-    "url": "https://www.pts.se/sv/Privat/Internet/Skydd-av-uppgifter/Fragor-och-svar-om-kakor-for-anvandare1/",
+    "url": "https://pts.se/sv/privat/internet/integritet/kakor-cookies/",
     "text": "Post- och telestyrelsens webbplats (extern länk).",
     "target": "_blank"
   },
   {
     "key": "ptsCookiesBanner",
-    "url": "https://www.pts.se/sv/Privat/Internet/Skydd-av-uppgifter/Fragor-och-svar-om-kakor-for-anvandare1/",
+    "url": "https://pts.se/sv/privat/internet/integritet/kakor-cookies/",
     "text": "Post- och telestyrelsens webbplats",
     "target": "_blank"
   },
   {
     "key": "ptsCookiesMerOm",
-    "url": "http://pts.se/sv/privat/internet/integritet/kakor-cookies/",
+    "url": "https://pts.se/sv/privat/internet/integritet/kakor-cookies/",
     "text": "Mer om kakor (cookies) på Post- och telestyrelsens webbplats",
+    "target": "_blank"
+  },
+  {
+    "key": "ptsCookiesAbout",
+    "url": "http://pts.se/sv/privat/internet/integritet/kakor-cookies/",
+    "text": "Kommunikationsmyndigheten PTS sida om kakor",
     "target": "_blank"
   },
   {
@@ -56,7 +62,7 @@
   {
     "key": "ineraStartsida",
     "url": "https://www.inera.se",
-    "text": "www.inera.se",
+    "text": "Inera AB",
     "target": "_blank"
   },
   {
@@ -103,5 +109,11 @@
     "text": "Ineras nationella kundservice",
     "target": "_blank",
     "tooltip": "Öppnar Ineras nationella kundservice"
+  },
+  {
+    "key": "ineraPersonuppgifter",
+    "url": "https://www.inera.se/om-inera/behandling-av-personuppgifter/",
+    "text": "Ineras hemsida",
+    "target": "_blank"
   }
 ]

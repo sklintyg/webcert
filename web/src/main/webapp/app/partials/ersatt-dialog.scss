@@ -1,0 +1,11 @@
+.ersatt-dialog {
+
+  .button-wrapper {
+    display: flex;
+    flex-direction: row;
+
+    wc-button {
+      padding: 0 10px 0 0;
+    }
+  }
+}

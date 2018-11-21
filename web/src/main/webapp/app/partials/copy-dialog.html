@@ -1,29 +1,45 @@
-<div id="{{dialogId}}" class="modal-header">
-	<button type="button" class="close" ng-click="button2click()">×</button>
-	<h3 ng-focus="dialog.focus" tabindex="-1">
-		<span dynamic-label key="{{titleId}}"></span>
-	</h3>
-</div>
-<div class="modal-body">
-  <p>
-    <span dynamic-label key="{{bodyText}}"></span>
-  </p>
-</div>
-<div class="modal-footer">
-  <div class="webcert-top-padding-section form-inline">
-    <label id="dontShowAgain" class="checkbox"><input type="checkbox" ng-model="model.dontShowInfo"> Visa inte denna information igen</label>
+<div class="copy-dialog">
+  <div id="{{dialogId}}" class="modal-header">
+      <button type="button" class="close" ng-click="button2click()"><i class="material-icons">close</i></button>
+      <h3 ng-focus="dialog.focus" tabindex="-1">
+          <span dynamic-label key="{{titleId}}"></span>
+      </h3>
   </div>
-  <div class="webcert-top-padding-section form-inline">
-    <button type="button" id="{{button1id}}" class="btn btn-primary" ng-disabled="!model.acceptprogressdone" ng-click="button1click()">
-      <i ng-hide="model.acceptprogressdone" class="icon-wc-ikon-02 animate-spin"></i>
-      <span dynamic-label key="{{button1text}}"></span>
-    </button>
-    <button type="button" id="{{button2id}}" class="btn btn-secondary" ng-click="button2click()">
-      <span dynamic-label key="{{button2text}}"></span>
-    </button>
-    <div class="webcert-top-padding-section" ng-show="model.showerror">
-      <wc-alert-message alert-severity="danger" class="alert-dialog-error"
-                        alert-message-id="{{model.errormessageid}}"></wc-alert-message>
+  <wc-bottom-fadeout>
+    <div class="modal-body">
+      <p>
+        <span dynamic-label key="{{bodyText}}"></span>
+      </p>
+    </div>
+  </wc-bottom-fadeout>
+  <div class="modal-footer">
+    <div class="webcert-top-padding-section form-inline">
+      <label id="dontShowAgain" class="checkbox"><input type="checkbox" ng-model="model.dontShowInfo"> Visa inte denna information igen</label>
+    </div>
+    <div class="webcert-top-padding-section form-inline">
+      <div class="button-wrapper">
+        <wc-button
+                btn-id="{{button1id}}"
+                btn-class="btn btn-primary"
+                btn-click="button1click()"
+                btn-disabled="!model.acceptprogressdone"
+                loading="!model.acceptprogressdone"
+        >
+          <span dynamic-label key="{{button1text}}"></span>
+        </wc-button>
+        <wc-button
+                btn-id="{{button2id}}"
+                btn-class="btn btn-secondary"
+                btn-click="button2click()"
+        >
+          <span dynamic-label key="{{button2text}}"></span>
+        </wc-button>
+
+      </div>
+      <div class="webcert-top-padding-section" ng-show="model.showerror">
+        <wc-alert-message alert-severity="danger" class="alert-dialog-error"
+                          alert-message-id="{{model.errormessageid}}"></wc-alert-message>
+      </div>
     </div>
   </div>
 </div>

@@ -234,6 +234,19 @@ public class IntygIntegrationServiceImplTest {
         testee.ensureDraftPatientInfoUpdated("lisjp", null, 0l, user);
     }
 
+    @Test
+    public void ensureDraftPatientInfoUpdatedWhenAlternateSsnIsBlank() {
+
+        IntegrationParameters parameters = new IntegrationParameters(null, null, null,
+                null, null, null, null, null, null,
+                false, false, false, false);
+
+        WebCertUser user = createDefaultUser();
+        user.setParameters(parameters);
+
+        testee.ensureDraftPatientInfoUpdated("lisjp", null, 0l, user);
+    }
+
     private SelectableVardenhet createVardenhet() {
         SelectableVardenhet selectableVardenhet = new SelectableVardenhet() {
             @Override

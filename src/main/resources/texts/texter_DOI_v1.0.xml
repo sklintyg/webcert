@@ -63,12 +63,14 @@ Annan/okänd: övrigt</text>
     <text id="DFR_12.2.HLP">Välj det alternativ som är mest sannolikt. "Oklart om avsikt förelegat" väljs endast om man inte kan avgöra om olycksfall eller avsiktligt vållad skada är det mest sannolika uppkomstsättet.</text>
     <text id="DFR_12.3.RBK">Datum för skada/förgiftning</text>
     <text id="DFR_12.4.RBK">Kort beskrivning av hur skadan/förgiftningen uppkom (utan att röja eventuellt andra inblandades identiteter)</text>
-    <text id="DFR_12.4.HLP">Beskriv förloppet och omständigheterna som ledde till skadan. Ange för:
+    <text id="DFR_12.4.HLP"><![CDATA[Beskriv förloppet och omständigheterna som ledde till skadan. Ange för:
 
-trafikolycka: om den döde var t.ex. förare, passagerare eller fotgängare samt vilken typ av fordon som var inblandade
-förgiftning: vilken eller vilka substanser
-fall: t.ex. i trappa, från stege, halkat på mattkant
-drunkning: naturlig eller konstgjord vattensamling (t.ex. vattendrag, sjö, brunn, badkar), fall ned i vatten (t.ex. genom brunnslock) eller på annat sätt (t.ex. kramp vid simning)</text>
+<ul>
+        <li>trafikolycka: om den döde var t.ex. förare, passagerare eller fotgängare samt vilken typ av fordon som var inblandade</li>
+        <li>förgiftning: vilken eller vilka substanser</li>
+        <li>fall: t.ex. i trappa, från stege, halkat på mattkant</li>
+        <li>drunkning: naturlig eller konstgjord vattensamling (t.ex. vattendrag, sjö, brunn, badkar), fall ned i vatten (t.ex. genom brunnslock) eller på annat sätt (t.ex. kramp vid simning)</li>
+</ul>]]></text>
 
     <text id="ORSAK.OLYCKSFALL.RBK">Olycksfall</text>
     <text id="ORSAK.SJALVMORD.RBK">Självmord</text>

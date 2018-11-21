@@ -18,6 +18,7 @@
  */
 package se.inera.intyg.webcert.web.web.controller.integration;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
@@ -73,7 +74,14 @@ public class IntygIntegrationServiceImpl extends IntegrationServiceImpl {
                 .orThrow();
 
         String alternatePatientSSn = user.getParameters().getAlternateSsn();
-        Personnummer personnummer = Personnummer.createPersonnummer(alternatePatientSSn).orElse(null);
+
+        // This if-statement is a fix ONLY for WC-6.0 and is only present in the 2018-2-SP1 release
+        // See JIRA number INTYG-6505
+        Personnummer personnummer = null;
+        if (StringUtils.isNoneBlank(alternatePatientSSn)) {
+            personnummer = Personnummer.createPersonnummer(alternatePatientSSn).orElse(null);
+        }
+
         UpdatePatientOnDraftRequest request = new UpdatePatientOnDraftRequest(personnummer, draftId, draftVersion);
         utkastService.updatePatientOnDraft(request);
     }

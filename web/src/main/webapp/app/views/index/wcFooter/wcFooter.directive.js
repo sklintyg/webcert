@@ -17,8 +17,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-angular.module('webcert').directive('wcFooter', ['moduleConfig', 'common.dialogService',
-    function(moduleConfig, dialogService) {
+angular.module('webcert').directive('wcFooter', ['common.dialogService',
+    function(dialogService) {
     'use strict';
         return {
             restrict: 'E',
@@ -53,7 +53,15 @@ angular.module('webcert').directive('wcFooter', ['moduleConfig', 'common.dialogS
                 };
 
                 scope.openAboutCookies = function () {
-                    //not implemented yet
+                    dialogInstance = dialogService.showDialog({
+                        dialogId: 'about-cookies-modal',
+                        templateUrl: 'app/views/index/wcFooter/aboutCookies.html',
+                        button1click: function() {
+                            dialogInstance.close();
+                        },
+                        autoClose: false,
+                        size: 'lg'
+                    });
                 };
             }
         };

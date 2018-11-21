@@ -29,7 +29,6 @@ import se.inera.intyg.common.luse.support.LuseEntryPoint;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.infra.integration.pu.model.Person;
 import se.inera.intyg.infra.integration.pu.model.PersonSvar;
-import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.SekretessStatus;
 import se.inera.intyg.webcert.web.integration.interactions.createdraftcertificate.BaseCreateDraftCertificateValidatorTest;
@@ -62,8 +61,6 @@ public class CreateDraftCertificateValidatorImplTest extends BaseCreateDraftCert
 
     @Before
     public void setup() throws ModuleNotFoundException {
-        when(authoritiesHelper.isFeatureActive(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST, LUSE.toLowerCase())).thenReturn(true);
-
         when(moduleRegistry.getModuleIdFromExternalId(anyString()))
                 .thenAnswer(invocation -> ((String) invocation.getArguments()[0]).toLowerCase());
         when(moduleRegistry.moduleExists(Fk7263EntryPoint.MODULE_ID)).thenReturn(true);
@@ -178,15 +175,6 @@ public class CreateDraftCertificateValidatorImplTest extends BaseCreateDraftCert
     public void testValidateHoSPersonalEnhetsnamnMissing() {
         ResultValidator result = validator.validate(buildIntyg(LUSE, "efternamn", "fornamn",
                 "fullständigt namn", "enhetsId", null, true));
-        assertTrue(result.hasErrors());
-    }
-
-    @Test
-    public void testValidateFeatureNotActive() {
-        when(authoritiesHelper.isFeatureActive(eq(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST), eq(LUSE.toLowerCase())))
-                .thenReturn(false);
-        ResultValidator result = validator.validate(buildIntyg(LUSE, "efternamn", "förnamn",
-                "fullständigt namn", "enhetsId", "enhetsnamn", true));
         assertTrue(result.hasErrors());
     }
 

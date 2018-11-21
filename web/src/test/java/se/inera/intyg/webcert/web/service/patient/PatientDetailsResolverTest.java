@@ -18,6 +18,10 @@
  */
 package se.inera.intyg.webcert.web.service.patient;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.jetbrains.annotations.NotNull;
 import org.junit.Before;
 import org.junit.Test;
@@ -25,6 +29,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+
 import se.inera.intyg.common.db.model.internal.DbUtlatande;
 import se.inera.intyg.common.support.model.common.internal.GrundData;
 import se.inera.intyg.common.support.model.common.internal.Patient;
@@ -45,12 +50,10 @@ import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anySet;
@@ -131,6 +134,56 @@ public class PatientDetailsResolverTest {
                 INTEGR_LNAMN,
                 null, null, null, false, INTEGR_AVLIDEN, false, true);
         return params;
+    }
+
+    @Test
+    public void testIsPatientAddressChangedNewPatientNull() {
+        Patient oldPatient = new Patient();
+        Patient newPatient = null;
+
+        boolean changed = testee.isPatientAddressChanged(oldPatient, newPatient);
+
+        assertTrue(changed);
+    }
+
+    @Test
+    public void testIsPatientAddressChangedNotChanged() {
+        Patient oldPatient = new Patient();
+        oldPatient.setPostadress("GBG");
+        oldPatient.setPostnummer("123");
+
+        Patient newPatient = new Patient();
+        newPatient.setPostadress("GBG");
+        newPatient.setPostnummer("123");
+
+        boolean changed = testee.isPatientAddressChanged(oldPatient, newPatient);
+
+        assertFalse(changed);
+    }
+
+    @Test
+    public void testIsPatientNamedChangedNewPatientNull() {
+        Patient oldPatient = new Patient();
+        Patient newPatient = null;
+
+        boolean changed = testee.isPatientNamedChanged(oldPatient, newPatient);
+
+        assertTrue(changed);
+    }
+
+    @Test
+    public void testIsPatientNamedChangedNotChanged() {
+        Patient oldPatient = new Patient();
+        oldPatient.setFornamn("Test");
+        oldPatient.setEfternamn("Son");
+
+        Patient newPatient = new Patient();
+        newPatient.setFornamn("Test");
+        newPatient.setEfternamn("Son");
+
+        boolean changed = testee.isPatientNamedChanged(oldPatient, newPatient);
+
+        assertFalse(changed);
     }
 
     // - START FK-intyg - //

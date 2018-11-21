@@ -18,10 +18,21 @@
  */
 package se.inera.intyg.webcert.web.service.patient;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import se.inera.intyg.common.support.model.common.internal.Patient;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
@@ -41,15 +52,6 @@ import se.inera.intyg.webcert.web.integration.converters.IntygsTypToInternal;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * This class is responsible for implementing GE-002, e.g. requirements on how to fetch patient details for a given
@@ -173,15 +175,17 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
 
     @Override
     public boolean isPatientAddressChanged(Patient oldPatient, Patient newPatient) {
-        return (oldPatient.getPostadress() != null && !oldPatient.getPostadress().equals(newPatient.getPostadress()))
+        return oldPatient != null && (newPatient == null
+                || (oldPatient.getPostadress() != null && !oldPatient.getPostadress().equals(newPatient.getPostadress()))
                 || (oldPatient.getPostnummer() != null && !oldPatient.getPostnummer().equals(newPatient.getPostnummer()))
-                || (oldPatient.getPostort() != null && !oldPatient.getPostort().equals(newPatient.getPostort()));
+                || (oldPatient.getPostort() != null && !oldPatient.getPostort().equals(newPatient.getPostort())));
     }
 
     @Override
     public boolean isPatientNamedChanged(Patient oldPatient, Patient newPatient) {
-        return (oldPatient.getFornamn() != null && !oldPatient.getFornamn().equals(newPatient.getFornamn()))
-                || (oldPatient.getEfternamn() != null && !oldPatient.getEfternamn().equals(newPatient.getEfternamn()));
+        return oldPatient != null && (newPatient == null
+                || (oldPatient.getFornamn() != null && !oldPatient.getFornamn().equals(newPatient.getFornamn()))
+                || (oldPatient.getEfternamn() != null && !oldPatient.getEfternamn().equals(newPatient.getEfternamn())));
     }
 
     private PersonSvar getPersonSvar(Personnummer personnummer) {
@@ -289,11 +293,11 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
         // Find ALL existing intyg for this patient, filter out so we only have DB left.
         List<Utkast> utkastList = new ArrayList<>();
         if (user.getOrigin().equals(UserOriginType.DJUPINTEGRATION.name())) {
-            utkastList.addAll(utkastRepository.findDraftsByPatientAndVardgivareAndStatus(personnummer.getPersonnummer(),
+            utkastList.addAll(utkastRepository.findDraftsByPatientAndVardgivareAndStatus(personnummer.getPersonnummerWithDash(),
                     user.getValdVardgivare().getId(),
                     UTKAST_STATUSES, Sets.newHashSet("db")));
         } else {
-            utkastList.addAll(utkastRepository.findDraftsByPatientAndEnhetAndStatus(personnummer.getPersonnummer(),
+            utkastList.addAll(utkastRepository.findDraftsByPatientAndEnhetAndStatus(personnummer.getPersonnummerWithDash(),
                     Arrays.asList(user.getValdVardenhet().getId()), UTKAST_STATUSES,
                     Sets.newHashSet("db")));
         }
@@ -320,11 +324,11 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
                                 || (personSvar.getStatus() != PersonSvar.Status.FOUND && user.getParameters() == null));
                 return patient;
             } catch (ModuleNotFoundException | IOException e) {
-                // No usabe DB exist
+                // No usable DB exist
                 return handleDoiNoExistingDb(personnummer, personSvar, user);
             }
         } else {
-            // No usabe DB exist
+            // No usable DB exist
             return handleDoiNoExistingDb(personnummer, personSvar, user);
         }
     }

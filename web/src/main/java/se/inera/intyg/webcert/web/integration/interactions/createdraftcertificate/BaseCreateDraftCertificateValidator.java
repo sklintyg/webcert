@@ -128,9 +128,6 @@ public abstract class BaseCreateDraftCertificateValidator {
             errors.addError("Intyg {0} is not supported", moduleId);
             return;
         }
-        if (!authoritiesHelper.isFeatureActive(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST, moduleId)) {
-            errors.addError("Intyg {0} is not supported", moduleId);
-        }
     }
 
     protected void validatePatient(ResultValidator errors, List<String> fornamn, String efternamn, String personId) {
