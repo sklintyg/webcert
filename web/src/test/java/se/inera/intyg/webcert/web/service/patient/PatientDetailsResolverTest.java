@@ -18,33 +18,16 @@
  */
 package se.inera.intyg.webcert.web.service.patient;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.ArgumentMatchers.anySet;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
-
 import se.inera.intyg.common.db.support.DbModuleEntryPoint;
 import se.inera.intyg.common.db.v1.model.internal.DbUtlatandeV1;
-import se.inera.intyg.common.doi.support.DoiModuleEntryPoint;
-import se.inera.intyg.common.luae_fs.support.LuaefsEntryPoint;
+import se.inera.intyg.common.db.v1.rest.DbModuleApiV1;
+import se.inera.intyg.common.doi.v1.rest.DoiModuleApiV1;
 import se.inera.intyg.common.luae_fs.v1.rest.LuaefsModuleApiV1;
 import se.inera.intyg.common.support.model.common.internal.GrundData;
 import se.inera.intyg.common.support.model.common.internal.Patient;
@@ -54,8 +37,9 @@ import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.ModuleEntryPoint;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
-import se.inera.intyg.common.ts_bas.support.TsBasEntryPoint;
 import se.inera.intyg.common.ts_bas.v6.rest.TsBasModuleApiV6;
+import se.inera.intyg.common.ts_diabetes.v2.rest.TsDiabetesModuleApiV2;
+import se.inera.intyg.common.ts_diabetes.v3.rest.TsDiabetesModuleApiV3;
 import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
 import se.inera.intyg.infra.integration.hsa.model.Vardgivare;
 import se.inera.intyg.infra.integration.pu.model.Person;
@@ -68,6 +52,21 @@ import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anySet;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * Created by eriklupander on 2017-08-14.
@@ -100,7 +99,11 @@ public class PatientDetailsResolverTest {
     private static final String DB_POST_ADDR = "Mortisv. -1";
     private static final String DB_POST_NR = "666 66";
     private static final String DB_POST_ORT = "Döderhult";
+
     private static final String DB_INTYG_VERSION = "1.0";
+    private static final String ANY_VERSION_1 = "1.0";
+    private static final String TS_DIABETES_VERSION_2 = "2.6";
+    private static final String TS_DIABETES_VERSION_3 = "3.0";
 
     @Mock
     private PUService puService;
@@ -136,8 +139,12 @@ public class PatientDetailsResolverTest {
         when(freeWebCertUser.getOrigin()).thenReturn(UserOriginType.NORMAL.name());
         when(moduleRegistry.moduleExists(anyString())).thenReturn(true);
 
-        when(moduleRegistry.getModuleApi("luae_fs", "1.0")).thenReturn(new LuaefsModuleApiV1());
+        when(moduleRegistry.getModuleApi("luae_fs", ANY_VERSION_1)).thenReturn(new LuaefsModuleApiV1());
         when(moduleRegistry.getModuleApi("ts-bas", TS_BAS_VERSION)).thenReturn(new TsBasModuleApiV6());
+        when(moduleRegistry.getModuleApi("ts-diabetes", TS_DIABETES_VERSION_2)).thenReturn(new TsDiabetesModuleApiV2());
+        when(moduleRegistry.getModuleApi("ts-diabetes", TS_DIABETES_VERSION_3)).thenReturn(new TsDiabetesModuleApiV3());
+        when(moduleRegistry.getModuleApi("db", ANY_VERSION_1)).thenReturn(new DbModuleApiV1());
+        when(moduleRegistry.getModuleApi("doi", ANY_VERSION_1)).thenReturn(new DoiModuleApiV1());
     }
 
     private IntegrationParameters buildIntegrationParameters() {
@@ -309,7 +316,7 @@ public class PatientDetailsResolverTest {
         when(webCertUserService.getUser()).thenReturn(integratedWebCertUser);
         when(integratedWebCertUser.getParameters()).thenReturn(buildIntegrationParametersWithNullAddress());
 
-        Patient patient = testee.resolvePatient(PNR, "ts-bas");
+        Patient patient = testee.resolvePatient(PNR, "ts-bas", TS_BAS_VERSION);
         assertEquals(PNR, patient.getPersonId());
         assertEquals(FNAMN, patient.getFornamn());
         assertEquals(MNAMN, patient.getMellannamn());
@@ -329,7 +336,7 @@ public class PatientDetailsResolverTest {
         when(puService.getPerson(any(Personnummer.class))).thenReturn(buildErrorPersonSvar());
         when(webCertUserService.getUser()).thenReturn(integratedWebCertUser);
 
-        Patient patient = testee.resolvePatient(PNR, "ts-bas");
+        Patient patient = testee.resolvePatient(PNR, "ts-bas", TS_BAS_VERSION);
         assertEquals(PNR, patient.getPersonId());
         assertEquals(INTEGR_FNAMN, patient.getFornamn());
         assertEquals(INTEGR_MNAMN, patient.getMellannamn());
@@ -349,9 +356,7 @@ public class PatientDetailsResolverTest {
         when(puService.getPerson(any(Personnummer.class))).thenReturn(buildPersonSvar());
         when(webCertUserService.getUser()).thenReturn(freeWebCertUser);
 
-        when(moduleRegistry.getModuleEntryPoint(Mockito.eq("ts-bas"))).thenReturn(new TsBasEntryPoint());
-
-        Patient patient = testee.resolvePatient(PNR, "ts-bas");
+        Patient patient = testee.resolvePatient(PNR, "ts-bas", TS_BAS_VERSION);
         assertEquals(PNR, patient.getPersonId());
         assertEquals(FNAMN, patient.getFornamn());
         assertEquals(MNAMN, patient.getMellannamn());
@@ -364,6 +369,46 @@ public class PatientDetailsResolverTest {
     }
 
     /**
+     * TS diabetes 2 + fristående + PU == Allt från PU
+     */
+    @Test
+    public void testTSDiabetes2IntygFristaendeWithPuOk() throws ModuleNotFoundException {
+        when(puService.getPerson(any(Personnummer.class))).thenReturn(buildPersonSvar());
+        when(webCertUserService.getUser()).thenReturn(freeWebCertUser);
+
+        Patient patient = testee.resolvePatient(PNR, "ts-diabetes", TS_DIABETES_VERSION_2);
+        assertEquals(PNR, patient.getPersonId());
+        assertEquals(FNAMN, patient.getFornamn());
+        assertEquals(MNAMN, patient.getMellannamn());
+        assertEquals(LNAMN, patient.getEfternamn());
+        assertEquals(POST_ADDR, patient.getPostadress());
+        assertEquals(POST_NR, patient.getPostnummer());
+        assertEquals(POST_ORT, patient.getPostort());
+        assertEquals(PU_AVLIDEN, patient.isAvliden());
+        assertEquals(false, patient.isSekretessmarkering());
+    }
+
+    /**
+     * TS diabetes 3 + fristående + PU == Allt från PU
+     */
+    @Test
+    public void testTSDiabetes3IntygFristaendeWithPuOk() throws ModuleNotFoundException {
+        when(puService.getPerson(any(Personnummer.class))).thenReturn(buildPersonSvar());
+        when(webCertUserService.getUser()).thenReturn(freeWebCertUser);
+
+        Patient patient = testee.resolvePatient(PNR, "ts-diabetes", TS_DIABETES_VERSION_3);
+        assertEquals(PNR, patient.getPersonId());
+        assertNull(patient.getFornamn());
+        assertNull(patient.getMellannamn());
+        assertNull(patient.getEfternamn());
+        assertNull(patient.getPostadress());
+        assertNull(patient.getPostnummer());
+        assertNull(patient.getPostort());
+        assertEquals(PU_AVLIDEN, patient.isAvliden());
+        assertEquals(false, patient.isSekretessmarkering());
+    }
+
+    /**
      * TS + fristående + EJ PU == null
      */
     @Test
@@ -371,9 +416,7 @@ public class PatientDetailsResolverTest {
         when(puService.getPerson(any(Personnummer.class))).thenReturn(buildErrorPersonSvar());
         when(webCertUserService.getUser()).thenReturn(freeWebCertUser);
 
-        when(moduleRegistry.getModuleEntryPoint(Mockito.eq("ts-bas"))).thenReturn(new TsBasEntryPoint());
-
-        Patient patient = testee.resolvePatient(PNR, "ts-bas");
+        Patient patient = testee.resolvePatient(PNR, "ts-bas", TS_BAS_VERSION);
         assertNull(patient);
     }
 
@@ -388,9 +431,7 @@ public class PatientDetailsResolverTest {
         when(puService.getPerson(any(Personnummer.class))).thenReturn(buildPersonSvar());
         when(webCertUserService.getUser()).thenReturn(integratedWebCertUser);
 
-        when(moduleRegistry.getModuleEntryPoint(Mockito.eq("db"))).thenReturn(new DbModuleEntryPoint());
-
-        Patient patient = testee.resolvePatient(PNR, "db");
+        Patient patient = testee.resolvePatient(PNR, "db", ANY_VERSION_1);
         assertEquals(PNR, patient.getPersonId());
         assertEquals(FNAMN, patient.getFornamn());
         assertEquals(MNAMN, patient.getMellannamn());
@@ -410,9 +451,7 @@ public class PatientDetailsResolverTest {
         when(puService.getPerson(any(Personnummer.class))).thenReturn(buildErrorPersonSvar());
         when(webCertUserService.getUser()).thenReturn(integratedWebCertUser);
 
-        when(moduleRegistry.getModuleEntryPoint(Mockito.eq("db"))).thenReturn(new DbModuleEntryPoint());
-
-        Patient patient = testee.resolvePatient(PNR, "db");
+        Patient patient = testee.resolvePatient(PNR, "db", ANY_VERSION_1);
         assertNull(patient);
     }
 
@@ -424,9 +463,7 @@ public class PatientDetailsResolverTest {
         when(puService.getPerson(any(Personnummer.class))).thenReturn(buildPersonSvar());
         when(webCertUserService.getUser()).thenReturn(freeWebCertUser);
 
-        when(moduleRegistry.getModuleEntryPoint(Mockito.eq("db"))).thenReturn(new DbModuleEntryPoint());
-
-        Patient patient = testee.resolvePatient(PNR, "db");
+        Patient patient = testee.resolvePatient(PNR, "db", ANY_VERSION_1);
         assertEquals(PNR, patient.getPersonId());
         assertEquals(FNAMN, patient.getFornamn());
         assertEquals(MNAMN, patient.getMellannamn());
@@ -446,9 +483,7 @@ public class PatientDetailsResolverTest {
         when(puService.getPerson(any(Personnummer.class))).thenReturn(buildErrorPersonSvar());
         when(webCertUserService.getUser()).thenReturn(freeWebCertUser);
 
-        when(moduleRegistry.getModuleEntryPoint(Mockito.eq("db"))).thenReturn(new DbModuleEntryPoint());
-
-        Patient patient = testee.resolvePatient(PNR, "db");
+        Patient patient = testee.resolvePatient(PNR, "db", ANY_VERSION_1);
         assertNull(patient);
     }
 
@@ -472,9 +507,7 @@ public class PatientDetailsResolverTest {
         when(moduleApi.getUtlatandeFromJson(anyString())).thenReturn(buildSosDbUtlatande());
         when(moduleRegistry.getModuleApi(DbModuleEntryPoint.MODULE_ID, DB_INTYG_VERSION)).thenReturn(moduleApi);
 
-        when(moduleRegistry.getModuleEntryPoint(Mockito.eq("doi"))).thenReturn(new DoiModuleEntryPoint());
-
-        Patient patient = testee.resolvePatient(PNR, "doi");
+        Patient patient = testee.resolvePatient(PNR, "doi", ANY_VERSION_1);
         assertEquals(PNR.getPersonnummer(), patient.getPersonId().getPersonnummer());
         assertEquals(DB_FNAMN, patient.getFornamn());
         assertEquals(DB_MNAMN, patient.getMellannamn());
@@ -504,9 +537,7 @@ public class PatientDetailsResolverTest {
         when(moduleApi.getUtlatandeFromJson(anyString())).thenReturn(buildSosDbUtlatande());
         when(moduleRegistry.getModuleApi(DbModuleEntryPoint.MODULE_ID, DB_INTYG_VERSION)).thenReturn(moduleApi);
 
-        when(moduleRegistry.getModuleEntryPoint(Mockito.eq("doi"))).thenReturn(new DoiModuleEntryPoint());
-
-        Patient patient = testee.resolvePatient(PNR, "doi");
+        Patient patient = testee.resolvePatient(PNR, "doi", ANY_VERSION_1);
         assertEquals(PNR.getPersonnummer(), patient.getPersonId().getPersonnummer());
         assertEquals(DB_FNAMN, patient.getFornamn());
         assertEquals(DB_MNAMN, patient.getMellannamn());
@@ -535,9 +566,7 @@ public class PatientDetailsResolverTest {
         when(utkastRepository.findDraftsByPatientAndVardgivareAndStatus(anyString(), anyString(), anyList(),
                 anySet())).thenReturn(drafts);
 
-        when(moduleRegistry.getModuleEntryPoint(Mockito.eq("doi"))).thenReturn(new DoiModuleEntryPoint());
-
-        Patient patient = testee.resolvePatient(PNR, "doi");
+        Patient patient = testee.resolvePatient(PNR, "doi", ANY_VERSION_1);
         assertEquals(PNR.getPersonnummer(), patient.getPersonId().getPersonnummer());
         assertEquals(FNAMN, patient.getFornamn());
         assertEquals(MNAMN, patient.getMellannamn());
@@ -562,9 +591,7 @@ public class PatientDetailsResolverTest {
         when(utkastRepository.findDraftsByPatientAndVardgivareAndStatus(anyString(), anyString(), anyList(),
                 anySet())).thenReturn(drafts);
 
-        when(moduleRegistry.getModuleEntryPoint(Mockito.eq("doi"))).thenReturn(new DoiModuleEntryPoint());
-
-        Patient patient = testee.resolvePatient(PNR, "doi");
+        Patient patient = testee.resolvePatient(PNR, "doi", ANY_VERSION_1);
         assertNull(patient);
     }
 
@@ -587,9 +614,7 @@ public class PatientDetailsResolverTest {
         when(moduleApi.getUtlatandeFromJson(anyString())).thenReturn(buildSosDbUtlatande());
         when(moduleRegistry.getModuleApi(DbModuleEntryPoint.MODULE_ID, DB_INTYG_VERSION)).thenReturn(moduleApi);
 
-        when(moduleRegistry.getModuleEntryPoint(Mockito.eq("doi"))).thenReturn(new DoiModuleEntryPoint());
-
-        Patient patient = testee.resolvePatient(PNR, "doi");
+        Patient patient = testee.resolvePatient(PNR, "doi", ANY_VERSION_1);
         assertEquals(PNR.getPersonnummer(), patient.getPersonId().getPersonnummer());
         assertEquals(DB_FNAMN, patient.getFornamn());
         assertEquals(DB_MNAMN, patient.getMellannamn());
@@ -614,9 +639,7 @@ public class PatientDetailsResolverTest {
         when(webCertUserService.getUser()).thenReturn(freeWebCertUser);
         when(freeWebCertUser.getValdVardenhet()).thenReturn(buildVardenhet());
 
-        when(moduleRegistry.getModuleEntryPoint(Mockito.eq("doi"))).thenReturn(new DoiModuleEntryPoint());
-
-        Patient patient = testee.resolvePatient(PNR, "doi");
+        Patient patient = testee.resolvePatient(PNR, "doi", ANY_VERSION_1);
         assertEquals(PNR.getPersonnummer(), patient.getPersonId().getPersonnummer());
         assertEquals(FNAMN, patient.getFornamn());
         assertEquals(MNAMN, patient.getMellannamn());
@@ -645,9 +668,7 @@ public class PatientDetailsResolverTest {
         when(utkastRepository.findDraftsByPatientAndEnhetAndStatus(anyString(), anyList(), anyList(),
                 anySet())).thenReturn(drafts);
 
-        when(moduleRegistry.getModuleEntryPoint(Mockito.eq("doi"))).thenReturn(new DoiModuleEntryPoint());
-
-        Patient patient = testee.resolvePatient(PNR, "doi");
+        Patient patient = testee.resolvePatient(PNR, "doi", ANY_VERSION_1);
         assertNull(patient);
     }
 

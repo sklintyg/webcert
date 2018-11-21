@@ -18,28 +18,6 @@
  */
 package se.inera.intyg.webcert.web.service.intyg;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.AdditionalMatchers.or;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
-import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.ArgumentMatchers.anySet;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.isNull;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.verifyZeroInteractions;
-import static org.mockito.Mockito.when;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Sets;
 import org.apache.commons.io.IOUtils;
@@ -55,26 +33,6 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.core.io.ClassPathResource;
-import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v3.ListCertificatesForCareResponderInterface;
-import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v3.ListCertificatesForCareResponseType;
-import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v3.ListCertificatesForCareType;
-import se.riv.clinicalprocess.healthcond.certificate.types.v3.TypAvIntyg;
-import se.riv.clinicalprocess.healthcond.certificate.v3.IntygsStatus;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.transform.stream.StreamSource;
-import javax.xml.ws.WebServiceException;
-import java.io.IOException;
-import java.lang.reflect.Field;
-import java.time.LocalDateTime;
-import java.time.Month;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
 import se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificatetypeinfo.v1.GetCertificateTypeInfoResponderInterface;
 import se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificatetypeinfo.v1.GetCertificateTypeInfoResponseType;
 import se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificatetypeinfo.v1.GetCertificateTypeInfoType;
@@ -130,6 +88,49 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
+import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v3.ListCertificatesForCareResponderInterface;
+import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v3.ListCertificatesForCareResponseType;
+import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v3.ListCertificatesForCareType;
+import se.riv.clinicalprocess.healthcond.certificate.types.v3.TypAvIntyg;
+import se.riv.clinicalprocess.healthcond.certificate.v3.IntygsStatus;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.ws.WebServiceException;
+import java.io.IOException;
+import java.lang.reflect.Field;
+import java.time.LocalDateTime;
+import java.time.Month;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.AdditionalMatchers.or;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anySet;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.when;
 
 /**
  * @author andreaskaltenbach
@@ -294,7 +295,7 @@ public class IntygServiceTest {
     public void setupPUService() {
         when(patientDetailsResolver.getPersonFromPUService(any(Personnummer.class)))
                 .thenReturn(getPersonSvar(false));
-        when(patientDetailsResolver.resolvePatient(any(Personnummer.class), anyString())).thenReturn(buildPatient(false, false));
+        when(patientDetailsResolver.resolvePatient(any(Personnummer.class), anyString(), anyString())).thenReturn(buildPatient(false, false));
     }
 
     @Before
@@ -1235,7 +1236,7 @@ public class IntygServiceTest {
         when(webcertUser.getOrigin()).thenReturn(UserOriginType.DJUPINTEGRATION.name());
         when(webcertUser.getParameters())
                 .thenReturn(new IntegrationParameters("", "", "", "", "", "", "", "", "", false, true, false, true));
-        when(patientDetailsResolver.resolvePatient(any(Personnummer.class), anyString())).thenReturn(buildPatient(false, true));
+        when(patientDetailsResolver.resolvePatient(any(Personnummer.class), anyString(), anyString())).thenReturn(buildPatient(false, true));
         IntygContentHolder intygData = intygService.fetchIntygData(CERTIFICATE_ID, CERTIFICATE_TYPE, false);
         assertTrue(intygData.isDeceased());
     }
@@ -1250,7 +1251,7 @@ public class IntygServiceTest {
         patientWithIncompleteAddress.setPostadress(postadress);
         patientWithIncompleteAddress.setPostort(postort);
         patientWithIncompleteAddress.setPostnummer(postnummer);
-        when(patientDetailsResolver.resolvePatient(any(Personnummer.class), anyString())).thenReturn(patientWithIncompleteAddress);
+        when(patientDetailsResolver.resolvePatient(any(Personnummer.class), anyString(), anyString())).thenReturn(patientWithIncompleteAddress);
 
         // When
         IntygContentHolder intygData = intygService.fetchIntygData(CERTIFICATE_ID, CERTIFICATE_TYPE, false);
@@ -1273,7 +1274,7 @@ public class IntygServiceTest {
         patientWithIncompleteAddress.setPostadress(postadress);
         patientWithIncompleteAddress.setPostort(postort);
         patientWithIncompleteAddress.setPostnummer(postnummer);
-        when(patientDetailsResolver.resolvePatient(any(Personnummer.class), anyString())).thenReturn(patientWithIncompleteAddress);
+        when(patientDetailsResolver.resolvePatient(any(Personnummer.class), anyString(), anyString())).thenReturn(patientWithIncompleteAddress);
 
         // When
         IntygContentHolder intygData = intygService.fetchIntygData(CERTIFICATE_ID, CERTIFICATE_TYPE, false);
@@ -1298,7 +1299,7 @@ public class IntygServiceTest {
         patientWithIncompleteAddress.setPostadress(postadress);
         patientWithIncompleteAddress.setPostort(postort);
         patientWithIncompleteAddress.setPostnummer(postnummer);
-        when(patientDetailsResolver.resolvePatient(any(Personnummer.class), anyString())).thenReturn(patientWithIncompleteAddress);
+        when(patientDetailsResolver.resolvePatient(any(Personnummer.class), anyString(), anyString())).thenReturn(patientWithIncompleteAddress);
 
         // When
         IntygContentHolder intygData = intygService.fetchIntygData(CERTIFICATE_ID, CERTIFICATE_TYPE, false);
@@ -1325,7 +1326,7 @@ public class IntygServiceTest {
         patientWithIncompleteAddress.setPostadress(postadress);
         patientWithIncompleteAddress.setPostort(postort);
         patientWithIncompleteAddress.setPostnummer(postnummer);
-        when(patientDetailsResolver.resolvePatient(any(Personnummer.class), anyString())).thenReturn(patientWithIncompleteAddress);
+        when(patientDetailsResolver.resolvePatient(any(Personnummer.class), anyString(), anyString())).thenReturn(patientWithIncompleteAddress);
 
         // When
         IntygContentHolder intygData = intygService.fetchIntygData(CERTIFICATE_ID, CERTIFICATE_TYPE, false);

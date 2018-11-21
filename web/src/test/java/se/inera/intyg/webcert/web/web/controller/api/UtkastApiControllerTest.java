@@ -18,15 +18,7 @@
  */
 package se.inera.intyg.webcert.web.web.controller.api;
 
-import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import javax.ws.rs.core.Response;
-
+import com.google.common.base.Strings;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -34,8 +26,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-
-import com.google.common.base.Strings;
 import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.common.luse.support.LuseEntryPoint;
 import se.inera.intyg.common.services.texts.IntygTextsService;
@@ -65,6 +55,15 @@ import se.inera.intyg.webcert.web.service.utkast.dto.PreviousIntyg;
 import se.inera.intyg.webcert.web.web.controller.api.dto.CreateUtkastRequest;
 import se.inera.intyg.webcert.web.web.controller.api.dto.QueryIntygParameter;
 import se.inera.intyg.webcert.web.web.controller.api.dto.QueryIntygResponse;
+
+import javax.ws.rs.core.Response;
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
 import static javax.ws.rs.core.Response.Status.OK;
@@ -114,7 +113,7 @@ public class UtkastApiControllerTest {
     @Before
     public void setup() throws ModuleNotFoundException {
         when(patientDetailsResolver.getSekretessStatus(eq(PATIENT_PERSONNUMMER))).thenReturn(SekretessStatus.FALSE);
-        when(patientDetailsResolver.resolvePatient(any(Personnummer.class), anyString())).thenReturn(buildPatient());
+        when(patientDetailsResolver.resolvePatient(any(Personnummer.class), anyString(), anyString())).thenReturn(buildPatient());
         when(moduleRegistry.getIntygModule(eq(LuseEntryPoint.MODULE_ID))).thenReturn(new IntygModule("luse", "", "", "", "", "", "", "","", false));
         when(moduleRegistry.getIntygModule(eq(Fk7263EntryPoint.MODULE_ID))).thenReturn(new IntygModule("fk7263", "", "", "", "", "", "", "","", true));
 
@@ -171,7 +170,7 @@ public class UtkastApiControllerTest {
         when(utkastService.createNewDraft(any(CreateNewDraftRequest.class))).thenReturn(new Utkast());
 
         // Fake PU service being down
-        when(patientDetailsResolver.resolvePatient(PATIENT_PERSONNUMMER, intygsTyp)).thenReturn(null);
+        when(patientDetailsResolver.resolvePatient(PATIENT_PERSONNUMMER, intygsTyp, INTYG_TYPE_VERSION)).thenReturn(null);
 
         CreateUtkastRequest utkastRequest = buildRequest("luse");
         utkastRequest.setPatientMellannamn(null); // no middlename

@@ -150,7 +150,7 @@ public class UtkastModuleApiControllerTest {
         request = mock(HttpServletRequest.class);
         Mockito.doNothing().when(session).removeAttribute("lastSavedDraft");
         when(request.getSession(true)).thenReturn(session);
-        when(patientDetailsResolver.resolvePatient(any(Personnummer.class), anyString())).thenReturn(buildPatient());
+        when(patientDetailsResolver.resolvePatient(any(Personnummer.class), anyString(), anyString())).thenReturn(buildPatient());
 
         when(moduleRegistry.getModuleApi(anyString(), anyString())).thenReturn(moduleApi);
         when(moduleApi.getUtlatandeFromJson(anyString())).thenReturn(new Fk7263Utlatande());
@@ -190,12 +190,13 @@ public class UtkastModuleApiControllerTest {
 
         String postadress = "gdspinae-postadress";
         String postort = "gdspinae-postort";
-        String postnummer= "gdspinae-postnummer";
+        String postnummer = "gdspinae-postnummer";
         Patient patientWithIncompleteAddress = buildPatient();
         patientWithIncompleteAddress.setPostadress(postadress);
         patientWithIncompleteAddress.setPostort(postort);
         patientWithIncompleteAddress.setPostnummer(postnummer);
-        when(patientDetailsResolver.resolvePatient(any(Personnummer.class), anyString())).thenReturn(patientWithIncompleteAddress);
+        when(patientDetailsResolver.resolvePatient(any(Personnummer.class), anyString(), anyString()))
+                .thenReturn(patientWithIncompleteAddress);
 
         // When
         Response response = moduleApiController.getDraft(intygsTyp, CERTIFICATE_ID, request);
@@ -219,12 +220,13 @@ public class UtkastModuleApiControllerTest {
 
         String postadress = "gdsnpinaii-postadress";
         String postort = "";
-        String postnummer= "gdsnpinaii-postnummer";
+        String postnummer = "gdsnpinaii-postnummer";
         Patient patientWithIncompleteAddress = buildPatient();
         patientWithIncompleteAddress.setPostadress(postadress);
         patientWithIncompleteAddress.setPostort(postort);
         patientWithIncompleteAddress.setPostnummer(postnummer);
-        when(patientDetailsResolver.resolvePatient(any(Personnummer.class), anyString())).thenReturn(patientWithIncompleteAddress);
+        when(patientDetailsResolver.resolvePatient(any(Personnummer.class), anyString(), anyString()))
+                .thenReturn(patientWithIncompleteAddress);
 
         // When
         Response response = moduleApiController.getDraft(intygsTyp, CERTIFICATE_ID, request);
@@ -340,7 +342,8 @@ public class UtkastModuleApiControllerTest {
         byte[] payload = draftAsJson.getBytes();
         setupUser(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG, intygTyp, false, AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);
         DraftValidation draftValidation = buildDraftValidation();
-        draftValidation.addWarning(new DraftValidationMessage("category","field", ValidationMessageType.WARN, "this.is.a.message", "dy.nam.ic.key"));
+        draftValidation.addWarning(
+                new DraftValidationMessage("category", "field", ValidationMessageType.WARN, "this.is.a.message", "dy.nam.ic.key"));
 
         when(utkastService.validateDraft(intygId, intygTyp, draftAsJson)).thenReturn(draftValidation);
 
@@ -395,8 +398,10 @@ public class UtkastModuleApiControllerTest {
     public void testCopyUtkastKopieraOKFalse() {
         String intygTyp = "fk7263";
         String intygId = "intyg1";
-        IntegrationParameters integrationParameters = IntegrationParameters.of("", "", "", "", "", "", "", "", "", false, false, false, false);
-        setupUser(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG, intygTyp, integrationParameters, AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);
+        IntegrationParameters integrationParameters = IntegrationParameters.of("", "", "", "", "", "", "", "", "", false, false, false,
+                false);
+        setupUser(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG, intygTyp, integrationParameters,
+                AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);
 
         moduleApiController.copyUtkast(intygTyp, intygId);
 
@@ -407,8 +412,10 @@ public class UtkastModuleApiControllerTest {
     public void testCopyUtkastInaktivEnhetTrue() {
         String intygTyp = "fk7263";
         String intygId = "intyg1";
-        IntegrationParameters integrationParameters = IntegrationParameters.of("", "", "", "", "", "", "", "", "", false, false, true, true);
-        setupUser(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG, intygTyp, integrationParameters, AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);
+        IntegrationParameters integrationParameters = IntegrationParameters.of("", "", "", "", "", "", "", "", "", false, false, true,
+                true);
+        setupUser(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG, intygTyp, integrationParameters,
+                AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);
 
         moduleApiController.copyUtkast(intygTyp, intygId);
 
@@ -419,8 +426,10 @@ public class UtkastModuleApiControllerTest {
     public void testCopyUtkastAvlidenTrue() {
         String intygTyp = "fk7263";
         String intygId = "intyg1";
-        IntegrationParameters integrationParameters = IntegrationParameters.of("", "", "", "", "", "", "", "", "", false, true, false, true);
-        setupUser(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG, intygTyp, integrationParameters, AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);
+        IntegrationParameters integrationParameters = IntegrationParameters.of("", "", "", "", "", "", "", "", "", false, true, false,
+                true);
+        setupUser(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG, intygTyp, integrationParameters,
+                AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);
 
         Utkast utkast = new Utkast();
         Personnummer personnummer = Personnummer.createPersonnummer("19121212-1212").get();
@@ -489,7 +498,8 @@ public class UtkastModuleApiControllerTest {
     }
 
     private void setupUser(String privilegeString, String intygType, boolean coherentJournaling, String... features) {
-        IntegrationParameters integrationParameters = new IntegrationParameters("", "", "", "", "", "", "", "", "", coherentJournaling, false, false, true);
+        IntegrationParameters integrationParameters = new IntegrationParameters("", "", "", "", "", "", "", "", "", coherentJournaling,
+                false, false, true);
 
         setupUser(privilegeString, intygType, integrationParameters, features);
     }

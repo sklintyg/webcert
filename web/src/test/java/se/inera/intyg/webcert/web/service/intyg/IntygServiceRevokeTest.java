@@ -97,7 +97,7 @@ public class IntygServiceRevokeTest extends AbstractIntygServiceTest {
         when(moduleFacade.getCertificate(any(String.class), any(String.class), anyString())).thenReturn(certificateResponse);
         when(intygRelationHelper.getRelationsForIntyg(anyString())).thenReturn(new Relations());
 
-        when(patientDetailsResolver.resolvePatient(any(Personnummer.class), anyString())).thenReturn(buildPatient(false, false));
+        when(patientDetailsResolver.resolvePatient(any(Personnummer.class), anyString(), anyString())).thenReturn(buildPatient(false, false));
         when(moduleRegistry.getModuleApi(anyString(), anyString())).thenReturn(moduleApi);
         when(moduleApi.getUtlatandeFromJson(anyString())).thenReturn(new Fk7263Utlatande());
         when(moduleApi.updateBeforeViewing(anyString(), any(Patient.class))).thenReturn("MODEL");
