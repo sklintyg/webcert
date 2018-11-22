@@ -18,15 +18,6 @@
  */
 package se.inera.intyg.webcert.web.web.controller.integration;
 
-import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -34,7 +25,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.infra.integration.hsa.model.SelectableVardenhet;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
@@ -53,10 +43,20 @@ import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
+import se.inera.intyg.webcert.web.service.utkast.dto.UpdatePatientOnDraftRequest;
 import se.inera.intyg.webcert.web.test.TestIntygFactory;
 import se.inera.intyg.webcert.web.web.controller.api.dto.IntygTypeInfo;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.PrepareRedirectToIntyg;
+
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -278,6 +278,23 @@ public class IntygIntegrationServiceImplTest {
         user.setParameters(parameters);
 
         testee.ensureDraftPatientInfoUpdated("lisjp", null, 0l, user);
+
+        verify(utkastService, times(1)).updatePatientOnDraft(any(UpdatePatientOnDraftRequest.class));
+    }
+
+    @Test
+    public void ensureDraftPatientInfoUpdated_whenAlternatePatientSsnIsNull() {
+
+        IntegrationParameters parameters = new IntegrationParameters(null, null, null,
+                null, null, null, null, null, null,
+                false, false, false, false);
+
+        WebCertUser user = createDefaultUser();
+        user.setParameters(parameters);
+
+        testee.ensureDraftPatientInfoUpdated("lisjp", null, 0l, user);
+
+        verify(utkastService, times(0)).updatePatientOnDraft(any(UpdatePatientOnDraftRequest.class));
     }
 
     private SelectableVardenhet createVardenhet() {
