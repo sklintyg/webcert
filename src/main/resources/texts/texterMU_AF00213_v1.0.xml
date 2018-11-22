@@ -2,11 +2,13 @@
 <texter xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" giltigFrom="2016-10-25" typ="AF00213" version="1.0"
         xmlns="http://schema.forsakringskassan.se/vardgivare_sjukvard">
 
-    <text id="FRM_1.RBK">Arbetsförmedlingen behöver ett medicinskt utlåtande för att klargöra förutsättningarna för arbetssökande som har ett behov av fördjupat stöd. Bland annat för att kunna:
+    <text id="FRM_1.RBK">Arbetsförmedlingen behöver ett medicinskt utlåtande för en arbetssökande som har ett behov av fördjupat stöd.
 
-        – utreda och bedöma om den arbetssökande har en funktionsnedsättning som medför nedsatt arbetsförmåga
-        – ligga till grund för eventuell anpassning för deltagare i program eller andra insatser
-        – erbjuda (lämpliga) utredande, vägledande, rehabiliterande eller arbetsförberedande insatser</text>
+        Vi behöver ett utlåtande för att kunna:
+
+        • utreda och bedöma om den arbetssökande har en funktionsnedsättning som medför nedsatt arbetsförmåga
+        • bedöma om vi behöver göra anpassningar i program eller insatser
+        • erbjuda lämpliga utredande, vägledande, rehabiliterande eller arbetsförberedande insatser.</text>
 
     <!-- KAT 1 -->
     <text id="KAT_1.RBK">Funktionsnedsättning</text>
