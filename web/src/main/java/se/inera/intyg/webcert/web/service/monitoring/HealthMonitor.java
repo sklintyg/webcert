@@ -21,6 +21,7 @@ package se.inera.intyg.webcert.web.service.monitoring;
 import java.sql.Time;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.List;
 
 import javax.annotation.PostConstruct;
 import javax.jms.Connection;
@@ -30,8 +31,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -39,10 +38,9 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.data.redis.core.script.RedisScript;
 import org.springframework.jms.core.JmsTemplate;
-import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import io.prometheus.client.Collector;
 import io.prometheus.client.Gauge;
 import se.riv.itintegration.monitoring.rivtabp21.v1.PingForConfigurationResponderInterface;
 import se.riv.itintegration.monitoring.v1.PingForConfigurationResponseType;
@@ -58,13 +56,15 @@ import se.riv.itintegration.monitoring.v1.PingForConfigurationType;
  *
  * Note that NORMAL values uses 0 to indicate OK state and 1 to indicate a problem.
  *
+ * The implementation is somewhat quirky, registering an instace of this class as a Collector, so the
+ * {@link Collector#collect()} method is invoked by the Prometheus registry on-demand. That makes it possible for us
+ * to update the Gauges defined and registered in this collector with new values as part of the normal collect()
+ * lifecycle.
+ *
  * @author eriklupander
  */
-@EnableScheduling
 @Component
-public class HealthMonitor {
-
-    private static final Logger LOG = LoggerFactory.getLogger(HealthMonitor.class);
+public class HealthMonitor extends Collector {
 
     private static final String PREFIX = "health_";
     private static final String NORMAL = "_normal";
@@ -109,7 +109,6 @@ public class HealthMonitor {
 
     private static final long MILLIS_PER_SECOND = 1000L;
 
-    private static final long DELAY = 30000L;
     private static final String CURR_TIME_SQL = "SELECT CURRENT_TIME()";
 
     @Value("${app.name}")
@@ -146,16 +145,29 @@ public class HealthMonitor {
     // Runs a lua script to count number of keys matching our session keys.
     private RedisScript<Long> redisScript;
 
+    /**
+     * Inits the Redis LUA script with the value-injected appName. Also registers this class as a prometheus
+     * collector.
+     */
     @PostConstruct
     public void init() {
         redisScript = new DefaultRedisScript<>(
-                "return #redis.call('keys','spring:session:"  + appName + ":index:*')", Long.class);
+                "return #redis.call('keys','spring:session:" + appName + ":index:*')", Long.class);
+        this.register();
     }
 
-    @Scheduled(fixedDelay = DELAY)
-    public void healthCheck() {
+    /**
+     * Somewhat hacky way of updating our gauges "on-demand" (each being registered itself as a collector),
+     * with this method always returning an empty list of MetricFamilySamples.
+     *
+     * @return
+     *      Always returns an empty list.
+     */
+    @Override
+    public List<MetricFamilySamples> collect() {
         long secondsSinceStart = (System.currentTimeMillis() - START_TIME) / MILLIS_PER_SECOND;
 
+        // Update the gauges.
         UPTIME.set(secondsSinceStart);
         LOGGED_IN_USERS.set(countSessions());
         DB_ACCESSIBLE.set(checkTimeFromDb() ? 0 : 1);
@@ -163,6 +175,8 @@ public class HealthMonitor {
         PLP_ACCESSIBLE.set(pingPrivatlakarportal() ? 0 : 1);
         IT_ACCESSIBLE.set(pingIntygstjanst() ? 0 : 1);
         SIGNATURE_QUEUE_DEPTH.set(checkSignatureQueue());
+
+        return Collections.emptyList();
     }
 
     private int countSessions() {
