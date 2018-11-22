@@ -36,14 +36,14 @@ function formatDate(date) {
 function getLogEntries(activity, intygsID, userHSA, connection, activityArg) {
     var dbTable = 'webcert_requests.storelog__mock_requests';
     var now = new Date();
-    var oneMinuteSinceNow = new Date(now.getTime() + (-2) * 60000);
-    oneMinuteSinceNow = formatDate(oneMinuteSinceNow);
+    var twoMinuteSinceNow = new Date(now.getTime() + (-2) * 120000);
+    twoMinuteSinceNow = formatDate(twoMinuteSinceNow);
 
     var query = `SELECT * FROM ${dbTable} WHERE
         activityLevel = "${intygsID}"
         AND activitytype = "${activity}"
         AND userid = "${userHSA}"
-        AND logtime>="${oneMinuteSinceNow}"`;
+        AND logtime>="${twoMinuteSinceNow}"`;
 
     if (activityArg) {
         query += ` AND activityarg = "${activityArg}"`;
