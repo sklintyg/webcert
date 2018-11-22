@@ -33,6 +33,7 @@ ext {
     jadiraUserTypeVersion = "5.0.0.GA"
     javaxMailVersion = "1.4"
     jaxrsVersion = "1.5.4"
+    jexcelVersion = "1.0.7"
     jsonAssertVersion = "1.5.0"
     jsonSchemaValidatorVersion = "2.8.0"
     liquibaseVersion = "3.3.5"
