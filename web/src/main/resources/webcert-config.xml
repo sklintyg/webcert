@@ -73,6 +73,20 @@
       </property>
     </bean>
 
+    <!-- Exposes ContextAttributes  -->
+    <bean
+        class="org.springframework.web.context.support.ServletContextAttributeExporter">
+      <property name="attributes">
+        <map>
+          <entry key="avtalservice" value-ref="avtalService" />
+          <entry key="pageAttributes">
+            <bean class="se.inera.intyg.webcert.web.web.JspPageAttributes"/>
+          </entry>
+        </map>
+      </property>
+    </bean>
+
+
     <!-- ONLY used for login.jsp -->
     <bean id="webcertProperties" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
       <property name="singleton" value="true" />
