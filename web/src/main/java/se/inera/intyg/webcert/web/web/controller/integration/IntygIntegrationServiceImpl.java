@@ -18,9 +18,11 @@
  */
 package se.inera.intyg.webcert.web.web.controller.integration;
 
+import com.google.common.base.Strings;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
@@ -30,11 +32,15 @@ import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 import se.inera.intyg.webcert.web.service.utkast.UtkastServiceImpl;
 import se.inera.intyg.webcert.web.service.utkast.dto.UpdatePatientOnDraftRequest;
 
+import java.util.Optional;
+
 /**
  * @author Magnus Ekstrand on 2017-10-09.
  */
 @Service
 public class IntygIntegrationServiceImpl extends IntegrationServiceImpl {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(IntygIntegrationServiceImpl.class);
 
     @Autowired
     private MonitoringLogService monitoringLog;
@@ -74,10 +80,16 @@ public class IntygIntegrationServiceImpl extends IntegrationServiceImpl {
                 .privilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG)
                 .orThrow();
 
-        String alternatePatientSSn = user.getParameters().getAlternateSsn();
-        Personnummer personnummer = Personnummer.createPersonnummer(alternatePatientSSn).orElse(null);
-        UpdatePatientOnDraftRequest request = new UpdatePatientOnDraftRequest(personnummer, draftId, draftVersion);
-        utkastService.updatePatientOnDraft(request);
+        String alternatePatientSsn = user.getParameters().getAlternateSsn();
+        if (!Strings.isNullOrEmpty(alternatePatientSsn)) {
+            Optional<Personnummer> optPnr = Personnummer.createPersonnummer(alternatePatientSsn);
+            if (optPnr.isPresent()) {
+                UpdatePatientOnDraftRequest request = new UpdatePatientOnDraftRequest(optPnr.get(), draftId, draftVersion);
+                utkastService.updatePatientOnDraft(request);
+            } else {
+                LOGGER.error("Could not update patient info. Invalid personnummer in alternatePatientSsn {}'", alternatePatientSsn);
+            }
+        }
     }
 
     private void logSammanhallenSjukforing(String intygsTyp, String intygsId, Utkast utkast, WebCertUser user) {
