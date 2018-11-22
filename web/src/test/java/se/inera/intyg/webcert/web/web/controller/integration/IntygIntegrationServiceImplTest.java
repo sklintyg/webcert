@@ -19,6 +19,7 @@
 package se.inera.intyg.webcert.web.web.controller.integration;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -256,7 +257,6 @@ public class IntygIntegrationServiceImplTest {
 
     @Test
     public void ensureDraftPatientInfoUpdated() {
-
         IntegrationParameters parameters = new IntegrationParameters(null, null, ALTERNATE_SSN,
                 null, null, null, null, null, null,
                 false, false, false, false);
@@ -270,9 +270,8 @@ public class IntygIntegrationServiceImplTest {
     }
 
     @Test
-    public void ensureDraftPatientInfoUpdated_whenAlternatePatientSsnIsNull() {
-
-        IntegrationParameters parameters = new IntegrationParameters(null, null, null,
+    public void ensureDraftPatientInfoUpdated_whenAlternatePatientSsnIsEmptyString() {
+        IntegrationParameters parameters = new IntegrationParameters(null, null, "",
                 null, null, null, null, null, null,
                 false, false, false, false);
 
@@ -283,6 +282,7 @@ public class IntygIntegrationServiceImplTest {
 
         verify(utkastService, times(0)).updatePatientOnDraft(any(UpdatePatientOnDraftRequest.class));
     }
+
 
     private SelectableVardenhet createVardenhet() {
         SelectableVardenhet selectableVardenhet = new SelectableVardenhet() {

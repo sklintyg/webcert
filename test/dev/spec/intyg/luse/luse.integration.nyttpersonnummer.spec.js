@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*globals browser,beforeAll,afterAll*/
+/*globals browser*/
 'use strict';
 var wcTestTools = require('webcert-testtools');
 var specHelper = wcTestTools.helpers.spec;
@@ -45,7 +45,8 @@ describe('Djupintegration on luse with updated personnummer', function() {
                 'revoked': false
             };
 
-            // If were nog ignoring sync while setting user, protractor complains that it cannot sync with angular on the testability page loaded during setUserOrigin
+            // If were not ignoring sync while setting user, protractor complains that it cannot sync
+            // with angular on the testability page loaded during setUserOrigin
             browser.ignoreSynchronization = true;
             specHelper.setUserOrigin('DJUPINTEGRATION').then(function() {
                 browser.ignoreSynchronization = false;
@@ -84,7 +85,7 @@ describe('Djupintegration on luse with updated personnummer', function() {
             expect(LuseIntygPage.newPersonIdMessageText.getText()).toBe('Patientens personummer har ändrats');
         });
 
-        it('should display new person id message with reservenumber', function() {
+        it('should display new person id message with reservnummer', function() {
             LuseIntygPage.getIntegration(intygId, {
                 alternatePatientSSn: reservnummer
             });

@@ -32,8 +32,6 @@ import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 import se.inera.intyg.webcert.web.service.utkast.UtkastServiceImpl;
 import se.inera.intyg.webcert.web.service.utkast.dto.UpdatePatientOnDraftRequest;
 
-import java.util.Optional;
-
 /**
  * @author Magnus Ekstrand on 2017-10-09.
  */
@@ -50,7 +48,6 @@ public class IntygIntegrationServiceImpl extends IntegrationServiceImpl {
 
     @Override
     void ensurePreparation(String intygTyp, String intygId, Utkast utkast, WebCertUser user) {
-
         if (utkast != null) {
             // INTYG-4086: If the intyg / utkast is authored in webcert, we can check for sekretessmarkering here.
             // If the intyg was authored elsewhere, the check has to be performed after the redirect when the actual intyg
@@ -66,14 +63,12 @@ public class IntygIntegrationServiceImpl extends IntegrationServiceImpl {
             // Monitoring log the usage of coherent journaling
             logSammanhallenSjukforing(intygTyp, intygId, utkast, user);
         }
-
     }
 
     /**
      * Updates Patient section of a draft with updated patient details for selected types.
      */
     void ensureDraftPatientInfoUpdated(String intygsType, String draftId, long draftVersion, WebCertUser user) {
-
         // To be allowed to update utkast, we need to have the same authority as when saving a draft..
         authoritiesValidator.given(user, intygsType)
                 .features(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
@@ -82,13 +77,9 @@ public class IntygIntegrationServiceImpl extends IntegrationServiceImpl {
 
         String alternatePatientSsn = user.getParameters().getAlternateSsn();
         if (!Strings.isNullOrEmpty(alternatePatientSsn)) {
-            Optional<Personnummer> optPnr = Personnummer.createPersonnummer(alternatePatientSsn);
-            if (optPnr.isPresent()) {
-                UpdatePatientOnDraftRequest request = new UpdatePatientOnDraftRequest(optPnr.get(), draftId, draftVersion);
-                utkastService.updatePatientOnDraft(request);
-            } else {
-                LOGGER.error("Could not update patient info. Invalid personnummer in alternatePatientSsn {}'", alternatePatientSsn);
-            }
+            Personnummer pnr = Personnummer.createPersonnummer(alternatePatientSsn).orElse(null);
+            UpdatePatientOnDraftRequest request = new UpdatePatientOnDraftRequest(pnr, draftId, draftVersion);
+            utkastService.updatePatientOnDraft(request);
         }
     }
 
