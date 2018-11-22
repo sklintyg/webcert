@@ -64,7 +64,8 @@
   </c:otherwise>
 </c:choose>
 
-<script type="text/javascript" src="/web/webjars/common/webcert/components/dynamiclink/dynamicLink.module.js"></script>
+<script type="text/javascript" src="/web/webjars/common/app-shared/dynamiclink/dynamicLink.service.js"></script>
+<script type="text/javascript" src="/web/webjars/common/webcert/components/text/dynamicLink.directive.js"></script>
 <script type="text/javascript" src="/web/webjars/common/app-shared/unified-view/uvDomId.filter.js"></script>
 <script type="text/javascript" src="/web/webjars/common/webcert/components/wcAlertMessage/wcAlertMessage.directive.js"></script>
 
