@@ -106,6 +106,10 @@ function makuleraIntyget(intyg) {
                 return baseIntyg.pickMakuleraOrsak().then(function() {
                     return moveAndSendKeys(baseIntyg.makulera.dialogMakulera, protractor.Key.SPACE);
                 });
+            } else if (helpers.isTSIntyg(intyg.typ)) {
+                return baseIntyg.pickMakuleraOrsak().then(function() {
+                    return moveAndSendKeys(baseIntyg.makulera.dialogMakulera, protractor.Key.SPACE);
+                });
             } else {
                 return moveAndSendKeys(baseIntyg.makulera.dialogMakulera, protractor.Key.SPACE);
             }
