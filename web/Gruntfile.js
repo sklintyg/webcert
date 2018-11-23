@@ -326,7 +326,7 @@ module.exports = function(grunt) {
             };
         }), { webcert: {
             cwd: __dirname + '/src/main/webapp',
-            src: ['welcome.html', 'app/**/*.html'],
+            src: ['app/**/*.html'],
             dest: DEST_DIR + 'templates.js',
             options: {
                 module: 'webcert',
