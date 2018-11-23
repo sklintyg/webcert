@@ -23,6 +23,24 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.OptimisticLockingFailureException;
+import javax.persistence.OptimisticLockException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.DefaultValue;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import se.inera.intyg.common.services.texts.IntygTextsService;
 import se.inera.intyg.common.support.model.common.internal.Patient;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
@@ -52,25 +70,6 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.CopyIntygResponse;
 import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
 import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.DraftHolder;
 import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.RevokeSignedIntygParameter;
-
-import javax.persistence.OptimisticLockException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 
 /**
  * Controller for module interaction with drafts.
@@ -127,8 +126,8 @@ public class UtkastModuleApiController extends AbstractApiController {
 
         Utkast utkast = utkastService.getDraft(intygsId, intygsTyp);
 
-        Patient resolvedPatient = patientDetailsResolver.resolvePatient(utkast.getPatientPersonnummer(), intygsTyp, utkast.getIntygTypeVersion());
-        if (resolvedPatient == null) {
+        Patient patient = patientDetailsResolver.resolvePatient(utkast.getPatientPersonnummer(), intygsTyp, utkast.getIntygTypeVersion());
+        if (patient == null) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.PU_PROBLEM,
                     "Could not resolve Patient in PU-service when opening draft.");
         }
@@ -138,7 +137,7 @@ public class UtkastModuleApiController extends AbstractApiController {
                 .privilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG)
                 .orThrow();
 
-        verifySekretessmarkering(intygsTyp, utkast.getEnhetsId(), resolvedPatient);
+        verifySekretessmarkering(intygsTyp, utkast.getEnhetsId(), patient);
 
         request.getSession(true).removeAttribute(LAST_SAVED_DRAFT);
 
@@ -160,8 +159,8 @@ public class UtkastModuleApiController extends AbstractApiController {
         draftHolder.setRevokedAt(utkast.getAterkalladDatum());
         // The patientResolved is unnecessary?
         draftHolder.setPatientResolved(true);
-        draftHolder.setSekretessmarkering(resolvedPatient.isSekretessmarkering());
-        draftHolder.setAvliden(resolvedPatient.isAvliden());
+        draftHolder.setSekretessmarkering(patient.isSekretessmarkering());
+        draftHolder.setAvliden(patient.isAvliden());
 
         // Businesss logic below should not be here inside a controller.. Should preferably be moved in the future.
         try {
@@ -169,22 +168,22 @@ public class UtkastModuleApiController extends AbstractApiController {
             Utlatande utlatande = moduleApi.getUtlatandeFromJson(utkast.getModel());
 
             draftHolder.setPatientNameChangedInPU(patientDetailsResolver.isPatientNamedChanged(
-                    utlatande.getGrundData().getPatient(), resolvedPatient));
+                    utlatande.getGrundData().getPatient(), patient));
 
-            if (resolvedPatient.isCompleteAddressProvided()) {
+            if (patient.isCompleteAddressProvided()) {
                 draftHolder.setValidPatientAddressAquiredFromPU(true);
                 draftHolder.setPatientAddressChangedInPU(patientDetailsResolver.isPatientAddressChanged(
-                        utlatande.getGrundData().getPatient(), resolvedPatient));
+                        utlatande.getGrundData().getPatient(), patient));
             } else {
                 // Overwrite retrieved address data with saved one.
                 draftHolder.setValidPatientAddressAquiredFromPU(false);
                 draftHolder.setPatientAddressChangedInPU(false);
                 Patient oldPatientData = utlatande.getGrundData().getPatient();
-                copyOldAddressToNewPatientData(oldPatientData, resolvedPatient);
+                copyOldAddressToNewPatientData(oldPatientData, patient);
             }
             // Update the internal model with the resolved patient. This means the draft may be updated
             // with new patient info on the next auto-save!
-            String updatedModel = moduleApi.updateBeforeSave(utkast.getModel(), resolvedPatient);
+            String updatedModel = moduleApi.updateBeforeSave(utkast.getModel(), patient);
             utkast.setModel(updatedModel);
             draftHolder.setContent(utkast.getModel());
 
