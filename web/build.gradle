@@ -1,3 +1,5 @@
+import org.apache.commons.codec.digest.DigestUtils
+
 apply plugin: 'war'
 apply plugin: 'org.akhikhl.gretty'
 apply plugin: 'com.moowork.grunt'
@@ -82,15 +84,50 @@ task restAssuredTest(type: Test) {
     include '**/*IT*'
 }
 
+def resourcesFilename = 'resources.zip'
+def resourcesDestinationDir = '../devops/openshift/test/env'
+
 task zipResources(type: Zip) {
-    from '../src/main/resources/'
+    from '../src/main/resources'
     include '*'
     include '*/*' //to include contents of a folder present inside target directory
-    archiveName 'resources.zip'
-    destinationDir(file('../devops/openshift/test/env'))
+    archiveName resourcesFilename
+    destinationDir(file(resourcesDestinationDir))
 }
 
-build.dependsOn zipResources
+task zipGenerateChecksum {
+    dependsOn zipResources
+
+    doLast {
+        boolean isUpToDate = false;
+        String checksum = "";
+
+        File destFile = file(resourcesDestinationDir + '/' + resourcesFilename)
+        if(destFile.exists()) {
+            destFile.withInputStream { ins ->
+                checksum = DigestUtils.md5Hex(ins)
+            }
+
+            File fileMd5 = new File(destFile.absolutePath + ".md5")
+            if(fileMd5.exists()) {
+                if(fileMd5.text == checksum) {
+                    isUpToDate = true;
+                }
+            }
+
+            if (isUpToDate) {
+                exec {
+                    // Reverse with Git commands
+                    commandLine 'git', 'checkout', '--', resourcesDestinationDir + '/' + resourcesFilename
+                }
+            } else {
+                fileMd5.text = checksum
+            }
+        }
+    }
+}
+
+build.dependsOn zipGenerateChecksum
 
 gretty {
     contextPath = '/'
@@ -166,6 +203,7 @@ dependencies {
 
     compile "se.inera.intyg.schemas:schemas-contract:${schemasContractVersion}"
 
+    compile "commons-codec:commons-codec:1.8"
     compile "commons-io:commons-io:${commonsIoVersion}"
     compile "org.jxls:jxls-jexcel:${jexcelVersion}"
     compile "org.springframework:spring-web:${springVersion}"
