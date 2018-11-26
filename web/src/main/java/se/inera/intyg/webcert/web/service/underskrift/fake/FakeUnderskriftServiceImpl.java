@@ -19,6 +19,7 @@
 package se.inera.intyg.webcert.web.service.underskrift.fake;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.infra.xmldsig.service.FakeSignatureServiceImpl;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
@@ -31,6 +32,7 @@ import java.nio.charset.Charset;
 import java.util.Base64;
 
 @Service
+@Profile({"!prod"})
 public class FakeUnderskriftServiceImpl extends BaseXMLSignatureService implements FakeUnderskriftService {
 
     // X509Certificate. Only use for fake!!!
