@@ -84,14 +84,14 @@ task restAssuredTest(type: Test) {
     include '**/*IT*'
 }
 
-def resourcesFilename = 'resources.zip'
+def resourcesName = 'resources.zip'
 def resourcesDestinationDir = '../devops/openshift/test/env'
 
 task zipResources(type: Zip) {
     from '../src/main/resources'
     include '*'
     include '*/*' //to include contents of a folder present inside target directory
-    archiveName resourcesFilename
+    archiveName resourcesName
     destinationDir(file(resourcesDestinationDir))
 }
 
@@ -100,28 +100,34 @@ task zipGenerateChecksum {
 
     doLast {
         boolean isUpToDate = false;
-        String checksum = "";
+        String resourcesPath = resourcesDestinationDir + '/' + resourcesName
 
-        File destFile = file(resourcesDestinationDir + '/' + resourcesFilename)
+        File destFile = file(resourcesPath)
+
         if(destFile.exists()) {
+            String checksum = "";
             destFile.withInputStream { ins ->
                 checksum = DigestUtils.md5Hex(ins)
             }
 
-            File fileMd5 = new File(destFile.absolutePath + ".md5")
-            if(fileMd5.exists()) {
-                if(fileMd5.text == checksum) {
+            File destFileMd5 = new File(destFile.absolutePath + ".md5")
+            if(destFileMd5.exists()) {
+                if(destFileMd5.text == checksum) {
                     isUpToDate = true;
                 }
             }
 
             if (isUpToDate) {
+                println 'the resources archieve is unchanged, no need to update the repository'
                 exec {
                     // Reverse with Git commands
-                    commandLine 'git', 'checkout', '--', resourcesDestinationDir + '/' + resourcesFilename
+                    commandLine 'git', 'checkout', '--', resourcesPath
                 }
             } else {
-                fileMd5.text = checksum
+                println 'the resources archieve has been changed, you need to update the repository with the latest version'
+                destFileMd5.newWriter().withWriter { w ->
+                    w << checksum
+                }
             }
         }
     }
