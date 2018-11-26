@@ -6,6 +6,8 @@ apply plugin: 'com.moowork.grunt'
 
 def webappOutputDir = 'build/apps/'
 def webappTestOutputDir = 'build/karma/'
+def resourcesName = 'resources.zip'
+def resourcesDestinationDir = '../devops/openshift/test/env'
 
 grunt {
     colors = System.properties['gruntColors'] ? System.properties['gruntColors'].toBoolean() : true
@@ -83,9 +85,6 @@ task restAssuredTest(type: Test) {
     systemProperty "integration.tests.baseUrl", System.properties['baseUrl'] ?: "http://localhost:9088/"
     include '**/*IT*'
 }
-
-def resourcesName = 'resources.zip'
-def resourcesDestinationDir = '../devops/openshift/test/env'
 
 task zipResources(type: Zip) {
     from '../src/main/resources'
