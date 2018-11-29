@@ -95,6 +95,7 @@ public class GetPrivatePractitionerTermsIT extends BaseWSIntegrationTest {
      * Check that even when sending invalid request, Soap faults should get transformed to a valid error response
      */
     @Test
+    @Ignore
     public void testMessageWithInvalidXMLFailsWithApplicationError() {
         ST brokenTemplate = templateGroup.getInstanceOf("brokenrequest");
         given().body(brokenTemplate.render())
@@ -108,6 +109,7 @@ public class GetPrivatePractitionerTermsIT extends BaseWSIntegrationTest {
     }
 
     @Test
+    @Ignore
     public void testErronousRequestResponseRespectsSchema() throws Exception {
         ST brokenTemplate = templateGroup.getInstanceOf("brokenrequest");
         given().filter(responseBodyExtractorFilter).body(brokenTemplate.render())
