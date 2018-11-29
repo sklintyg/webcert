@@ -184,9 +184,8 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
     private Patient resolvePatient(Personnummer personnummer, WebCertUser user, PatientDetailResolveOrder resolveOrder) {
         PersonSvar personSvar = getPersonSvar(personnummer);
 
-        // Fristående and PU unavailable
-        if (user.getOrigin().equals(UserOriginType.NORMAL.name()) && personSvar.getStatus().equals(PersonSvar.Status.ERROR)
-                && !isPredecessorStrategy(resolveOrder)) {
+        //PU unavailable
+        if (personSvar.getStatus().equals(PersonSvar.Status.ERROR)) {
             return null;
         }
 
@@ -207,17 +206,6 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
                     LOG.info("No predecessor found!");
                 }
             }
-        }
-
-        // Only PU strategy and PU unavailable
-        if (isPuOnlyStrategy(resolveOrder) && personSvar.getStatus().equals(PersonSvar.Status.ERROR)) {
-            return null;
-        }
-
-        // Integrated with predecessor strategy, no predecessor and PU unavailable
-        if (isPredecessorStrategy(resolveOrder)
-                && predecessor == null && personSvar.getStatus().equals(PersonSvar.Status.ERROR)) {
-            return null;
         }
 
         Patient patient = new Patient();
