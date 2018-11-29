@@ -31,14 +31,16 @@ import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import se.inera.ifv.insuranceprocess.healthreporting.registermedicalcertificateresponder.v3.RegisterMedicalCertificateType;
 import se.inera.ifv.insuranceprocess.healthreporting.v2.PatientType;
 import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
+import se.inera.intyg.common.lisjp.support.LisjpEntryPoint;
+import se.inera.intyg.common.luae_fs.support.LuaefsEntryPoint;
+import se.inera.intyg.common.luae_na.support.LuaenaEntryPoint;
+import se.inera.intyg.common.luse.support.LuseEntryPoint;
 import se.inera.intyg.common.support.common.enumerations.SignaturTyp;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
-import se.inera.intyg.common.ts_bas.support.TsBasEntryPoint;
-import se.inera.intyg.common.ts_diabetes.support.TsDiabetesEntryPoint;
 import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
@@ -110,6 +112,7 @@ public class UtkastBootstrapBean {
                             status = UtkastStatus.DRAFT_LOCKED;
                         }
                         utkastRepo.save(createUtkast(utlatande, status));
+
                         switch (utlatande.getTyp()) {
                         case Fk7263EntryPoint.MODULE_ID:
                             fragaRepo.save(createFragaSvar(utlatande, FrageStallare.FORSAKRINGSKASSAN, true, false));
@@ -117,14 +120,15 @@ public class UtkastBootstrapBean {
                             fragaRepo.save(createFragaSvar(utlatande, FrageStallare.FORSAKRINGSKASSAN, false, true));
                             fragaRepo.save(createFragaSvar(utlatande, FrageStallare.FORSAKRINGSKASSAN, false, false));
                             break;
-                        case TsBasEntryPoint.MODULE_ID:
-                        case TsDiabetesEntryPoint.MODULE_ID:
-                            // These certificates does not support arende or fragaSvar
-                            break;
-                        default: // SIT certificates
+                        case LuaefsEntryPoint.MODULE_ID:
+                        case LuaenaEntryPoint.MODULE_ID:
+                        case LisjpEntryPoint.MODULE_ID:
+                        case LuseEntryPoint.MODULE_ID:
                             setupArende(utlatande, true, true, FrageStallare.FORSAKRINGSKASSAN);
                             setupArende(utlatande, false, false, FrageStallare.WEBCERT);
                             setupArende(utlatande, false, false, FrageStallare.FORSAKRINGSKASSAN);
+                            break;
+                        default: // SIT certificates
                             break;
                         }
                     }
