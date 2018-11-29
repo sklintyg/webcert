@@ -180,7 +180,16 @@ When(/^jag trycker på visa intyget$/, function() {
 
 Given(/^(jag går in på utkastet|jag går in på intyget med edit länken)$/, function(arg1) {
     var intygUrlShortcode = helpers.getInternShortcode(this.intyg.typ).toLowerCase();
-    var link = '/#/' + intygUrlShortcode + '/edit/' + this.intyg.id + '/';
+    var url = '';
+
+    if (intygUrlShortcode === 'ts-diabetes') {
+        url = '/#/' + intygUrlShortcode + '/3.0/edit/' + this.intyg.id + '/';
+    } else {
+        url = '/#/' + intygUrlShortcode + '/1.0/edit/' + this.intyg.id + '/';
+    }
+
+    var link = url;
+
     return helpers.getUrl(link).then(function() {
         return helpers.pageReloadDelay();
     });
