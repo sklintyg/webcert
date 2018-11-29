@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.stringtemplate.v4.*;
 
@@ -65,6 +66,7 @@ public class GetPrivatePractitionerTermsIT extends BaseWSIntegrationTest {
     }
 
     @Test
+    @Ignore
     public void testGetTerms() throws Exception {
 
         given().body(requestTemplate.render())
