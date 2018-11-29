@@ -215,6 +215,10 @@ Color and background should be specified at the extension point, eg:
 .material-icons.md-light { color: rgba(255, 255, 255, 1); }
 .material-icons.md-light.md-inactive { color: rgba(255, 255, 255, 0.3); }
 
+.material-icons.md-icon-security {
+  color: $wc-color-18;
+  cursor: default;
+}
 
 /*
  Custom icon font (built with fontello)
