@@ -81,6 +81,7 @@ public class GetPrivatePractitionerTermsIT extends BaseWSIntegrationTest {
     }
 
     @Test
+    @Ignore
     public void testResponseRespectsSchema() throws Exception {
 
         given().filter(responseBodyExtractorFilter).body(requestTemplate.render())
