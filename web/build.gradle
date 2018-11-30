@@ -82,10 +82,13 @@ task restAssuredTest(type: Test) {
     include '**/*IT*'
 }
 
-task zipResources(type: HashArchiveTask) {
-    from '../src/main/resources'
+task zipResources(type: ArchiveDirectoryTask) {
+    sourcePath '../src/main/resources'
+    include '*'
+    include '*/*' //to include contents of a folder present inside from directory
     archiveName 'resources.zip'
-    archivePath '../devops/openshift/test/env'
+    destinationDir(file('../devops/openshift/test/env'))
+    archiveOnlyIfDiff true
 }
 
 build.dependsOn zipResources
