@@ -45,6 +45,7 @@ knownIntygstyper:
   - &ki090 doi
   - &ki100 af00213
   - &ki110 ag114
+  - &ki120 ag7804
 
 knownFeatures:
   - &kf010 HANTERA_FRAGOR
@@ -96,6 +97,7 @@ features:
       - *ki090 # DOI
       - *ki100 # AF00213
       - *ki110 # AG114
+      - *ki120 # AG7804
   - &f030
     name: *kf030
     desc: Förnya intyg
@@ -109,6 +111,7 @@ features:
       - *ki070 # LUAE_FS
       - *ki080 # DB
       - *ki090 # DOI
+      - *ki120 # AG7804
   - &f040
     name: *kf040
     desc: Makulera intyg
@@ -125,6 +128,7 @@ features:
       - *ki090 # DOI
       - *ki100 # AF00213
       - *ki110 # AG114
+      - *ki120 # AG7804
   - &f050
     name: *kf050
     desc: Makulera intyg kräver anledning
@@ -137,6 +141,7 @@ features:
       - *ki050 # LISJP
       - *ki060 # LUAE_NA
       - *ki070 # LUAE_FS
+      - *ki120 # AG7804
   - &f060
     name: *kf060
     desc: Skapa ny fråga
@@ -166,6 +171,7 @@ features:
       - *ki080 # DB
       - *ki090 # DOI
       - *ki100 # AF00213
+      - *ki120 # AG7804
   - &f080
     name: *kf080
     desc: Signera skicka direkt
@@ -190,6 +196,7 @@ features:
       - *ki090 # DOI
       - *ki100 # AF00213
       - *ki110 # AG114
+      - *ki120 # AG7804
   - &f100
     name: *kf100
     desc: Arbetsgivarutskrift
@@ -243,6 +250,7 @@ features:
       - *ki090 # DOI
       - *ki100 # AF00213
       - *ki110 # AG114
+      - *ki120 # AG7804
   - &f180
     name: *kf180
     desc: Använd trädklättring i HSA
@@ -259,6 +267,7 @@ features:
       - *ki070 # LUAE_FS
       - *ki100 # AF00213
       - *ki110 # AG114
+      - *ki120 # AG7804
   - &f200
     name: *kf200
     desc: Rensning av meddelanden av fel B
