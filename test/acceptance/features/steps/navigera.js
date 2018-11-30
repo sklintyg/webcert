@@ -179,8 +179,8 @@ When(/^jag trycker på visa intyget$/, function() {
 });
 
 Given(/^(jag går in på utkastet|jag går in på intyget med edit länken)$/, function(arg1) {
-    var intygUrlShortcode = helpers.getInternShortcode(this.intyg.typ).toLowerCase();
     var url = '';
+    var intygUrlShortcode = helpers.getInternShortcode(this.intyg.typ).toLowerCase();
 
     if (intygUrlShortcode === 'ts-diabetes') {
         url = '/#/' + intygUrlShortcode + '/3.0/edit/' + this.intyg.id + '/';
@@ -196,8 +196,19 @@ Given(/^(jag går in på utkastet|jag går in på intyget med edit länken)$/, f
 });
 
 Then(/^ska jag komma till intygssidan$/, function() {
+    var url = '';
     var intygUrlShortcode = helpers.getInternShortcode(this.intyg.typ).toLowerCase();
-    var link = '/#/intyg/' + intygUrlShortcode + '/' + this.intyg.id;
+
+    if (intygUrlShortcode === 'ts-diabetes') {
+        url = '/#/intyg/' + intygUrlShortcode + '/3.0/' + this.intyg.id + '/';
+    } else {
+        url = '/#/intyg/' + intygUrlShortcode + '/1.0/' + this.intyg.id + '/';
+    }
+    logger.info("url: ska jag komma till intygssidan");
+    logger.info(url);
+
+    var link = url;
+
     return browser.getCurrentUrl().then(function(currentUrl) {
         expect(currentUrl).to.contain(link);
         logger.info('Sida som verifieras: ' + currentUrl);
