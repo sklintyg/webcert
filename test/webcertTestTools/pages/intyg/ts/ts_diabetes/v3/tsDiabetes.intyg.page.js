@@ -63,7 +63,7 @@ var TsDiabetesIntyg = TsBaseIntyg._extend({
 
         this.falt1 = {
             bedomning: element(by.id('bedomning-uppfyllerBehorighetskrav')),
-            annanBehandling: element(by.id('allmant-behandling-annanBehandlingBeskrivning'))
+            annanBehandling: element(by.id('allmant-behandling-annanBehandling'))
         };
 
         this.borUndersokas = element(by.id('bedomning-borUndersokasBeskrivning'));
