@@ -79,9 +79,15 @@
         address="${intygstjanst.getcertificate.endpoint.url}">
     </jaxws:client>
 
+    <jaxws:client id="listSickLeavesForPersonClient"
+        serviceClass="se.inera.intyg.clinicalprocess.healthcond.rehabilitation.listsickleavesforperson.v1.ListSickLeavesForPersonResponderInterface"
+        address="${intygstjanst.listsickleavesforperson.v1.endpoint.url}">
+    </jaxws:client>
+
     <jaxws:client id="netiDAccessServerSoap"
         serviceClass="com.secmaker.netid.nias.v1.NetiDAccessServerSoap"
         address="${netid.access.server.url}"/>
+
   </beans>
 
   <!-- Clients NOT using NTJP -->

@@ -12,6 +12,7 @@ ext {
     commonsIoVersion = "2.4"
 
     schemasContractVersion = "2.1.7"
+    schemasRehabilitationVersion = "1.1.2"
 
     funktionstjansterGrpSchemasVersion = "1.0.3"
     intygClinicalprocessSchemasVersion = "1.0.16"

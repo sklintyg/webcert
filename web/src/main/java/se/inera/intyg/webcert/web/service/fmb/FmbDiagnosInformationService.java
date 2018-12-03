@@ -22,9 +22,10 @@ import java.util.Optional;
 import se.inera.intyg.webcert.web.web.controller.api.dto.Icd10KoderRequest;
 import se.inera.intyg.webcert.web.web.controller.api.dto.FmbResponse;
 import se.inera.intyg.webcert.web.web.controller.api.dto.MaximalSjukskrivningstidRequest;
+import se.inera.intyg.webcert.web.web.controller.api.dto.MaximalSjukskrivningstidResponse;
 
 public interface FmbDiagnosInformationService {
     Optional<FmbResponse> findFmbDiagnosInformationByIcd10Kod(String icd10Kod);
 
-    FmbResponse validateSjukskrivningtidForPatient(MaximalSjukskrivningstidRequest maximalSjukskrivningstidRequest);
+    MaximalSjukskrivningstidResponse validateSjukskrivningtidForPatient(MaximalSjukskrivningstidRequest maximalSjukskrivningstidRequest);
 }

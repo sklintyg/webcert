@@ -168,6 +168,7 @@ dependencies {
     compile "se.riv.itintegration.monitoring:itintegration-monitoring-schemas:${rivtaItintegrationMonitoringSchemasVersion}"
 
     compile "se.inera.intyg.schemas:schemas-contract:${schemasContractVersion}"
+    compile "se.inera.intyg.clinicalprocess.healthcond.rehabilitation:intyg-clinicalprocess-healthcond-rehabilitation-schemas:${schemasRehabilitationVersion}"
 
     compile "commons-codec:commons-codec:1.8"
     compile "commons-io:commons-io:${commonsIoVersion}"

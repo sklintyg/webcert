@@ -53,6 +53,7 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.FmbFormName;
 import se.inera.intyg.webcert.web.web.controller.api.dto.FmbResponse;
 import se.inera.intyg.webcert.web.web.controller.api.dto.Icd10KoderRequest;
 import se.inera.intyg.webcert.web.web.controller.api.dto.MaximalSjukskrivningstidRequest;
+import se.inera.intyg.webcert.web.web.controller.api.dto.MaximalSjukskrivningstidResponse;
 
 @Service
 public class FmbDiagnosInformationServiceImpl implements FmbDiagnosInformationService {
@@ -71,20 +72,28 @@ public class FmbDiagnosInformationServiceImpl implements FmbDiagnosInformationSe
     }
 
     @Override
-    public FmbResponse validateSjukskrivningtidForPatient(final MaximalSjukskrivningstidRequest maximalSjukskrivningstidRequest) {
-        final Optional<Integer> max = findMaximalSjukrivningstidDagarByIcd10Koder(maximalSjukskrivningstidRequest.getIcd10Koder());
-        sjukfallService.beraknaSjukfallForPatient(maximalSjukskrivningstidRequest.getPersonnummer());
-        return null;
+    public MaximalSjukskrivningstidResponse validateSjukskrivningtidForPatient(
+            final MaximalSjukskrivningstidRequest maximalSjukskrivningstidRequest) {
+
+        final Optional<Integer> maxRek = findMaximalSjukrivningstidDagarByIcd10Koder(maximalSjukskrivningstidRequest.getIcd10Koder());
+        final int totalt = sjukfallService.totalSjukskrivningstidForPatientAndCareUnit(maximalSjukskrivningstidRequest.getPersonnummer());
+
+        return maxRek
+                .map(rek -> MaximalSjukskrivningstidResponse.fromFmbRekommendation(
+                        totalt, maximalSjukskrivningstidRequest.getForeslagenSjukskrivningstid(), rek))
+                .orElseGet(() -> MaximalSjukskrivningstidResponse.ingenFmbRekommendation(
+                        totalt, maximalSjukskrivningstidRequest.getForeslagenSjukskrivningstid()));
     }
 
-    private Optional<Integer> findMaximalSjukrivningstidDagarByIcd10Koder(final Icd10KoderRequest icd10KoderRequest) {
-        return repository.findMaximalSjukrivningstidDagarByIcd10Koder(icd10KoderRequest.getIcd10Codes().toJavaSet());
-    }
 
     @Override
     public Optional<FmbResponse> findFmbDiagnosInformationByIcd10Kod(final String icd10Kod) {
         Preconditions.checkArgument(Objects.nonNull(icd10Kod));
         return getFmbContent(icd10Kod);
+    }
+
+    private Optional<Integer> findMaximalSjukrivningstidDagarByIcd10Koder(final Icd10KoderRequest icd10KoderRequest) {
+        return repository.findMaximalSjukrivningstidDagarByIcd10Koder(icd10KoderRequest.getIcd10Codes().toJavaSet());
     }
 
     private Optional<FmbResponse> getFmbContent(final String icd10Kod) {

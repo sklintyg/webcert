@@ -5,5 +5,7 @@ dependencies {
     compile "se.inera.intyg.common:ts-parent:${commonVersion}"
     compile "se.inera.intyg.common:fk-parent:${commonVersion}"
 
+    compile "se.inera.intyg.clinicalprocess.healthcond.rehabilitation:intyg-clinicalprocess-healthcond-rehabilitation-schemas:${schemasRehabilitationVersion}"
+
     compile "org.springframework.security:spring-security-config:${springSecurityVersion}"
 }
