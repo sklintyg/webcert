@@ -41,7 +41,7 @@ import se.inera.intyg.webcert.persistence.fmb.model.fmb.DiagnosInformation;
 import se.inera.intyg.webcert.persistence.fmb.model.fmb.IcfKodTyp;
 import se.inera.intyg.webcert.persistence.fmb.repository.DiagnosInformationRepository;
 import se.inera.intyg.webcert.web.service.icf.resource.IcfTextResource;
-import se.inera.intyg.webcert.web.web.controller.api.IcfRequest;
+import se.inera.intyg.webcert.web.web.controller.api.dto.Icd10KoderRequest;
 import se.inera.intyg.webcert.web.web.controller.api.dto.icf.AktivitetsBegransningsKoder;
 import se.inera.intyg.webcert.web.web.controller.api.dto.icf.FunktionsNedsattningsKoder;
 import se.inera.intyg.webcert.web.web.controller.api.dto.icf.IcfCentralKod;
@@ -50,6 +50,7 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.icf.IcfKod;
 import se.inera.intyg.webcert.web.web.controller.api.dto.icf.IcfKoder;
 import se.inera.intyg.webcert.web.web.controller.api.dto.icf.IcfKompletterandeKod;
 import se.inera.intyg.webcert.web.web.controller.api.dto.icf.IcfResponse;
+
 
 @Service
 public class IcfServiceImpl implements IcfService {
@@ -66,15 +67,15 @@ public class IcfServiceImpl implements IcfService {
     }
 
     @Override
-    public IcfResponse findIcfInformationByIcd10Koder(final IcfRequest icfRequest) {
+    public IcfResponse findIcfInformationByIcd10Koder(final Icd10KoderRequest icd10KoderRequest) {
 
-        Preconditions.checkArgument(Objects.nonNull(icfRequest), "IcfRequest can not be null");
-        Preconditions.checkArgument(Objects.nonNull(icfRequest.getIcd10Kod1()), "IcfRequest must have an icfCode1");
+        Preconditions.checkArgument(Objects.nonNull(icd10KoderRequest), "Icd10KoderRequest can not be null");
+        Preconditions.checkArgument(Objects.nonNull(icd10KoderRequest.getIcd10Kod1()), "Icd10KoderRequest must have an icfCode1");
 
         return convertToResponse(
-                Tuple.of(icfRequest.getIcd10Kod1(), repository.findFirstByIcd10KodList_kod(icfRequest.getIcd10Kod1())),
-                Tuple.of(icfRequest.getIcd10Kod2(), repository.findFirstByIcd10KodList_kod(icfRequest.getIcd10Kod2())),
-                Tuple.of(icfRequest.getIcd10Kod3(), repository.findFirstByIcd10KodList_kod(icfRequest.getIcd10Kod3())));
+                Tuple.of(icd10KoderRequest.getIcd10Kod1(), repository.findFirstByIcd10KodList_kod(icd10KoderRequest.getIcd10Kod1())),
+                Tuple.of(icd10KoderRequest.getIcd10Kod2(), repository.findFirstByIcd10KodList_kod(icd10KoderRequest.getIcd10Kod2())),
+                Tuple.of(icd10KoderRequest.getIcd10Kod3(), repository.findFirstByIcd10KodList_kod(icd10KoderRequest.getIcd10Kod3())));
     }
 
     private IcfResponse convertToResponse(

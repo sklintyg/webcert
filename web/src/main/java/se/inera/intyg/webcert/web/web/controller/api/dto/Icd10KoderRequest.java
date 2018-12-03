@@ -16,21 +16,21 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.web.web.controller.api;
+package se.inera.intyg.webcert.web.web.controller.api.dto;
 
 import io.vavr.collection.HashSet;
 import java.util.Objects;
 
-public class IcfRequest {
+public class Icd10KoderRequest {
 
     private String icd10Kod1;
     private String icd10Kod2;
     private String icd10Kod3;
 
-    public IcfRequest() {
+    public Icd10KoderRequest() {
     }
 
-    private IcfRequest(final String icd10Kod1, final String icd10Kod2, final String icd10Kod3) {
+    private Icd10KoderRequest(final String icd10Kod1, final String icd10Kod2, final String icd10Kod3) {
         this.icd10Kod1 = icd10Kod1;
         this.icd10Kod2 = icd10Kod2;
         this.icd10Kod3 = icd10Kod3;
@@ -65,7 +65,7 @@ public class IcfRequest {
                 .filter(Objects::nonNull);
     }
 
-    public static IcfRequest of(final String icd10Code1, final String icd10Code2, final String icd10Code3) {
-        return new IcfRequest(icd10Code1, icd10Code2, icd10Code3);
+    public static Icd10KoderRequest of(final String icd10Code1, final String icd10Code2, final String icd10Code3) {
+        return new Icd10KoderRequest(icd10Code1, icd10Code2, icd10Code3);
     }
 }

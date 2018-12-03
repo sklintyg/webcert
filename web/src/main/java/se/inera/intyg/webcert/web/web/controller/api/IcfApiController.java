@@ -37,6 +37,7 @@ import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.webcert.web.service.icf.IcfService;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
 import se.inera.intyg.webcert.web.web.controller.api.dto.FmbResponse;
+import se.inera.intyg.webcert.web.web.controller.api.dto.Icd10KoderRequest;
 
 @Path("/icf")
 @Api(value = "fmb", description = "REST API för Försäkringsmedicinskt beslutsstöd", produces = MediaType.APPLICATION_JSON)
@@ -67,6 +68,6 @@ public class IcfApiController extends AbstractApiController {
             return Response.status(Response.Status.BAD_REQUEST).entity("Missing icd10 codes").build();
         }
 
-        return Response.ok(service.findIcfInformationByIcd10Koder(IcfRequest.of(icd10Kod1, icd10Kod2, icd10Kod3))).build();
+        return Response.ok(service.findIcfInformationByIcd10Koder(Icd10KoderRequest.of(icd10Kod1, icd10Kod2, icd10Kod3))).build();
     }
 }

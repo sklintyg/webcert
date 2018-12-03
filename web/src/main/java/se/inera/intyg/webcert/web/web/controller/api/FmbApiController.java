@@ -18,11 +18,16 @@
  */
 package se.inera.intyg.webcert.web.web.controller.api;
 
+import static java.util.Objects.isNull;
+import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
+
+import com.google.common.collect.Lists;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import org.apache.commons.httpclient.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,12 +35,18 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import se.inera.intyg.webcert.web.service.fmb.FmbDiagnosInformationService;
+import java.util.List;
+import java.util.Optional;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
+import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.web.service.fmb.FmbDiagnosInformationService;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
 import se.inera.intyg.webcert.web.web.controller.api.dto.FmbResponse;
+import se.inera.intyg.webcert.web.web.controller.api.dto.Icd10KoderRequest;
+import se.inera.intyg.webcert.web.web.controller.api.dto.MaximalSjukskrivningstidRequest;
 
 @Path("/fmb")
 @Api(value = "fmb", description = "REST API för Försäkringsmedicinskt beslutsstöd", produces = MediaType.APPLICATION_JSON)
@@ -69,7 +80,55 @@ public class FmbApiController extends AbstractApiController {
         return fmbDiagnosInformationService.findFmbDiagnosInformationByIcd10Kod(icd10)
                 .map(Response::ok)
                 .map(Response.ResponseBuilder::build)
-        .orElseGet(() -> Response.noContent().build());
+                .orElseGet(() -> Response.noContent().build());
+    }
+
+    @GET
+    @Path("/valideraSjukskrivningstid")
+    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    @ApiOperation(
+            value = "validate sjukskrivningstid for patient and ICD10 codes", httpMethod = "GET",
+            produces = MediaType.APPLICATION_JSON)
+    @ApiResponses(value = {
+            @ApiResponse(code = HttpStatus.SC_OK, message = "Response Object containing info regardning sjukskrivning for patient", response = FmbResponse.class),
+            @ApiResponse(code = HttpStatus.SC_BAD_REQUEST, message = "Bad request due to missing icd10 codes, or missing foreslagenSjukskrivningstid")})
+    @PrometheusTimeMethod
+    public Response valideraSjukskrivningstid(
+            @ApiParam(value = "ICD10 code", required = true) @QueryParam("icd10Kod1") final String icd10Kod1,
+            @QueryParam("icd10Kod2") final String icd10Kod2,
+            @QueryParam("icd10Kod3") final String icd10Kod3,
+            @ApiParam(value = "Föreslagen Sjukskrivningstid", required = true) @QueryParam("foreslagenSjukskrivningstid") final Integer foreslagenSjukskrivningstid,
+            @ApiParam(value = "Personnummer för patient", required = true) @QueryParam("personnummer") final String personnummer) {
+
+        List<String> validationErrors = Lists.newArrayList();
+
+        if (isNull(icd10Kod1)) {
+            validationErrors.add("Missing icd10 codes");
+        }
+
+        if (isNull(foreslagenSjukskrivningstid)) {
+            validationErrors.add("Missing foreslagenSjukskrivningstid");
+        }
+
+        if (isNull(personnummer)) {
+            validationErrors.add("Missing personnummer");
+        }
+
+        final Optional<Personnummer> optionalPersonnummer = Personnummer.createPersonnummer(personnummer);
+        if (!optionalPersonnummer.isPresent()) {
+            validationErrors.add("Incorrect personnummer format");
+        }
+
+        if (isNotEmpty(validationErrors)) {
+            return Response.status(Response.Status.BAD_REQUEST).entity(String.join(",", validationErrors)).build();
+        }
+
+        return Response.ok(fmbDiagnosInformationService.validateSjukskrivningtidForPatient(
+                MaximalSjukskrivningstidRequest.of(
+                        Icd10KoderRequest.of(icd10Kod1, icd10Kod2, icd10Kod3),
+                        optionalPersonnummer.get(),
+                        foreslagenSjukskrivningstid)))
+                .build();
     }
     // CHECKSTYLE:ON LineLength
 }

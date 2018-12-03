@@ -59,6 +59,9 @@
   <!-- Load postnummerservice classe-->
   <context:component-scan base-package="se.inera.intyg.infra.integration.postnummer" />
 
+  <!-- Load sjukfallEngine-->
+  <context:component-scan base-package="se.inera.intyg.infra.sjukfall.services" />
+
   <beans>
     <bean class="org.springframework.context.support.PropertySourcesPlaceholderConfigurer">
       <property name="locations">

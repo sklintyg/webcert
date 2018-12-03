@@ -18,9 +18,9 @@
  */
 package se.inera.intyg.webcert.web.service.icf;
 
-import se.inera.intyg.webcert.web.web.controller.api.IcfRequest;
+import se.inera.intyg.webcert.web.web.controller.api.dto.Icd10KoderRequest;
 import se.inera.intyg.webcert.web.web.controller.api.dto.icf.IcfResponse;
 
 public interface IcfService {
-    IcfResponse findIcfInformationByIcd10Koder(IcfRequest icfRequest);
+    IcfResponse findIcfInformationByIcd10Koder(Icd10KoderRequest icd10KoderRequest);
 }

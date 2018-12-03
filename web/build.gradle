@@ -147,6 +147,7 @@ dependencies {
     compile "se.inera.intyg.infra:xmldsig:${infraVersion}"
     compile "se.inera.intyg.infra:monitoring:${infraVersion}"
     compile "se.inera.intyg.infra:common-redis-cache-core:${infraVersion}"
+    compile "se.inera.intyg.infra:sjukfall-engine:${infraVersion}"
 
     compile "se.inera.intyg.common:ts-bas:${commonVersion}"
     compile "se.inera.intyg.common:ts-diabetes:${commonVersion}"

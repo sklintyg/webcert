@@ -42,7 +42,7 @@ import se.inera.intyg.webcert.persistence.fmb.model.fmb.DiagnosInformation;
 import se.inera.intyg.webcert.persistence.fmb.model.fmb.IcfKodTyp;
 import se.inera.intyg.webcert.persistence.fmb.repository.DiagnosInformationRepository;
 import se.inera.intyg.webcert.web.service.icf.resource.IcfTextResource;
-import se.inera.intyg.webcert.web.web.controller.api.IcfRequest;
+import se.inera.intyg.webcert.web.web.controller.api.dto.Icd10KoderRequest;
 import se.inera.intyg.webcert.web.web.controller.api.dto.icf.IcfResponse;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -61,14 +61,14 @@ public class IcfServiceImplTest {
     public void testNoRequest() {
         assertThatThrownBy(() -> icfService.findIcfInformationByIcd10Koder(null))
                 .isExactlyInstanceOf(IllegalArgumentException.class)
-                .hasMessage("IcfRequest can not be null");
+                .hasMessage("Icd10KoderRequest can not be null");
     }
 
     @Test
     public void testNoIcd10Code1() {
-        assertThatThrownBy(() -> icfService.findIcfInformationByIcd10Koder(IcfRequest.of(null, null, null)))
+        assertThatThrownBy(() -> icfService.findIcfInformationByIcd10Koder(Icd10KoderRequest.of(null, null, null)))
                 .isExactlyInstanceOf(IllegalArgumentException.class)
-                .hasMessage("IcfRequest must have an icfCode1");
+                .hasMessage("Icd10KoderRequest must have an icfCode1");
     }
 
     @Test
@@ -78,7 +78,7 @@ public class IcfServiceImplTest {
                 .when(repository)
                 .findFirstByIcd10KodList_kod(anyString());
 
-        final IcfResponse response = icfService.findIcfInformationByIcd10Koder(IcfRequest.of("code", null, null));
+        final IcfResponse response = icfService.findIcfInformationByIcd10Koder(Icd10KoderRequest.of("code", null, null));
 
         assertThat(response.getGemensamma().getIcd10Kod()).isNull();
         assertThat(response.getGemensamma().getAktivitetsBegransningsKoder()).isNull();
@@ -108,7 +108,7 @@ public class IcfServiceImplTest {
                 .findFirstByIcd10KodList_kod(eq(match1));
 
         final IcfResponse icfInformationByIcd10Koder = icfService.findIcfInformationByIcd10Koder(
-                IcfRequest.of(noMatch1, noMatch2, match1));
+                Icd10KoderRequest.of(noMatch1, noMatch2, match1));
 
 
         assertThat(icfInformationByIcd10Koder).isNotNull();
@@ -148,7 +148,7 @@ public class IcfServiceImplTest {
                 .findFirstByIcd10KodList_kod(eq(match2));
 
         final IcfResponse icfInformationByIcd10Koder = icfService.findIcfInformationByIcd10Koder(
-                IcfRequest.of(noMatch1, match1, match2));
+                Icd10KoderRequest.of(noMatch1, match1, match2));
 
 
         assertThat(icfInformationByIcd10Koder).isNotNull();

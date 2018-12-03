@@ -19,11 +19,12 @@
 package se.inera.intyg.webcert.web.service.fmb;
 
 import java.util.Optional;
-import se.inera.intyg.webcert.web.web.controller.api.IcfRequest;
+import se.inera.intyg.webcert.web.web.controller.api.dto.Icd10KoderRequest;
 import se.inera.intyg.webcert.web.web.controller.api.dto.FmbResponse;
+import se.inera.intyg.webcert.web.web.controller.api.dto.MaximalSjukskrivningstidRequest;
 
 public interface FmbDiagnosInformationService {
     Optional<FmbResponse> findFmbDiagnosInformationByIcd10Kod(String icd10Kod);
 
-    Optional<Integer> findMaximalSjukrivningstidDagarByIcd10Koder(IcfRequest icfRequest);
+    FmbResponse validateSjukskrivningtidForPatient(MaximalSjukskrivningstidRequest maximalSjukskrivningstidRequest);
 }
