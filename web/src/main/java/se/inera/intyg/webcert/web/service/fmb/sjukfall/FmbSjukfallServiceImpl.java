@@ -1,3 +1,21 @@
+/*
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
+ *
+ * This file is part of sklintyg (https://github.com/sklintyg).
+ *
+ * sklintyg is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * sklintyg is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package se.inera.intyg.webcert.web.service.fmb.sjukfall;
 
 import org.slf4j.Logger;
@@ -21,10 +39,10 @@ import se.inera.intyg.webcert.web.service.fmb.sjukfall.converter.IntygstjanstCon
 @Service
 public class FmbSjukfallServiceImpl implements FmbSjukfallService {
 
-    private final static Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+    private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-    private final static int MAX_GLAPP = 5;
-    private final static int MAX_SEDAN_SJUKAVSLUT = 0;
+    private static final int MAX_GLAPP = 5;
+    private static final int MAX_SEDAN_SJUKAVSLUT = 0;
 
     private final ListSickLeavesForPersonResponderInterface listSickLeavesForPersonResponder;
     private final SjukfallEngineService sjukfallEngineService;
@@ -61,7 +79,6 @@ public class FmbSjukfallServiceImpl implements FmbSjukfallService {
     private ListSickLeavesForPersonType createRequest(final Personnummer personnummer) {
         PersonId personId = new PersonId();
         personId.setExtension(personnummer.getOriginalPnr());
-        personId.setRoot(""); //TODO: korrekt root
 
         ListSickLeavesForPersonType request = new ListSickLeavesForPersonType();
         request.setPersonId(personId);

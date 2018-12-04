@@ -16,10 +16,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.web.service.fmb.sjukfall;
+package se.inera.intyg.webcert.web.service.auth;
 
 import se.inera.intyg.schemas.contract.Personnummer;
 
-public interface FmbSjukfallService {
-    int totalSjukskrivningstidForPatientAndCareUnit(Personnummer personnummer);
+public interface AuthorityAsserter {
+    void assertIsAuthorized(Personnummer personnummer, String authority);
 }

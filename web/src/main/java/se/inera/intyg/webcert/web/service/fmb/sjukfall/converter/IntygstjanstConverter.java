@@ -28,7 +28,10 @@ import se.inera.intyg.infra.sjukfall.dto.DiagnosKod;
 import se.inera.intyg.infra.sjukfall.dto.Formaga;
 import se.inera.intyg.infra.sjukfall.dto.IntygData;
 
-public class IntygstjanstConverter {
+public final class IntygstjanstConverter {
+
+    private IntygstjanstConverter() {
+    }
 
     /**
      * Mapping from Intygstjänsten's format to SjukfallEngine format.

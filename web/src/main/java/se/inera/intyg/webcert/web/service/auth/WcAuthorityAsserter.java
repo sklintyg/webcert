@@ -1,3 +1,21 @@
+/*
+ * Copyright (C) 2018 Inera AB (http://www.inera.se)
+ *
+ * This file is part of sklintyg (https://github.com/sklintyg).
+ *
+ * sklintyg is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * sklintyg is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package se.inera.intyg.webcert.web.service.auth;
 
 import org.springframework.stereotype.Component;
@@ -12,7 +30,7 @@ import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 @Component
-public class WcAuthorityValidator implements AuthorityValidator {
+public class WcAuthorityAsserter implements AuthorityAsserter {
 
     private static final String AUTH_MSG = "User missing required privilege or cannot handle sekretessmarkerad patient";
     private static final String PU_MSG = "Could not fetch sekretesstatus for patient from PU service";
@@ -22,7 +40,7 @@ public class WcAuthorityValidator implements AuthorityValidator {
     private final WebCertUserService webCertUserService;
     private final PatientDetailsResolver patientDetailsResolver;
 
-    public WcAuthorityValidator(final WebCertUserService webCertUserService, final PatientDetailsResolver patientDetailsResolver) {
+    public WcAuthorityAsserter(final WebCertUserService webCertUserService, final PatientDetailsResolver patientDetailsResolver) {
         this.webCertUserService = webCertUserService;
         this.patientDetailsResolver = patientDetailsResolver;
     }
