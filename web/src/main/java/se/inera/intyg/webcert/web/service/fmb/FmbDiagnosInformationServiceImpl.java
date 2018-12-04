@@ -34,6 +34,8 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import se.inera.intyg.common.support.common.enumerations.Diagnoskodverk;
+import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.persistence.fmb.model.FmbType;
 import se.inera.intyg.webcert.persistence.fmb.model.fmb.Beskrivning;
 import se.inera.intyg.webcert.persistence.fmb.model.fmb.BeskrivningTyp;
@@ -42,6 +44,7 @@ import se.inera.intyg.webcert.persistence.fmb.model.fmb.Icd10Kod;
 import se.inera.intyg.webcert.persistence.fmb.model.fmb.Referens;
 import se.inera.intyg.webcert.persistence.fmb.model.fmb.TypFall;
 import se.inera.intyg.webcert.persistence.fmb.repository.DiagnosInformationRepository;
+import se.inera.intyg.webcert.web.service.auth.AuthorityValidator;
 import se.inera.intyg.webcert.web.service.diagnos.DiagnosService;
 import se.inera.intyg.webcert.web.service.diagnos.dto.DiagnosResponse;
 import se.inera.intyg.webcert.web.service.diagnos.dto.DiagnosResponseType;
@@ -61,28 +64,36 @@ public class FmbDiagnosInformationServiceImpl implements FmbDiagnosInformationSe
     private final DiagnosInformationRepository repository;
     private final DiagnosService diagnosService;
     private final FmbSjukfallService sjukfallService;
+    private final AuthorityValidator authorityValidator;
 
     public FmbDiagnosInformationServiceImpl(
             final DiagnosInformationRepository repository,
             final DiagnosService diagnosService,
-            final FmbSjukfallService sjukfallService) {
+            final FmbSjukfallService sjukfallService,
+            final AuthorityValidator authorityValidator) {
         this.repository = repository;
         this.diagnosService = diagnosService;
         this.sjukfallService = sjukfallService;
+        this.authorityValidator = authorityValidator;
     }
 
     @Override
     public MaximalSjukskrivningstidResponse validateSjukskrivningtidForPatient(
             final MaximalSjukskrivningstidRequest maximalSjukskrivningstidRequest) {
 
+        final Personnummer personnummer = maximalSjukskrivningstidRequest.getPersonnummer();
+        final Integer foreslagen = maximalSjukskrivningstidRequest.getForeslagenSjukskrivningstid();
+
+        authorityValidator.assertIsAuthorized(personnummer, AuthoritiesConstants.PRIVILEGE_SIGNERA_INTYG);
+
         final Optional<Integer> maxRek = findMaximalSjukrivningstidDagarByIcd10Koder(maximalSjukskrivningstidRequest.getIcd10Koder());
-        final int totalt = sjukfallService.totalSjukskrivningstidForPatientAndCareUnit(maximalSjukskrivningstidRequest.getPersonnummer());
+        final int totalt = sjukfallService.totalSjukskrivningstidForPatientAndCareUnit(personnummer);
 
         return maxRek
                 .map(rek -> MaximalSjukskrivningstidResponse.fromFmbRekommendation(
-                        totalt, maximalSjukskrivningstidRequest.getForeslagenSjukskrivningstid(), rek))
+                        totalt, foreslagen, rek))
                 .orElseGet(() -> MaximalSjukskrivningstidResponse.ingenFmbRekommendation(
-                        totalt, maximalSjukskrivningstidRequest.getForeslagenSjukskrivningstid()));
+                        totalt, foreslagen));
     }
 
 

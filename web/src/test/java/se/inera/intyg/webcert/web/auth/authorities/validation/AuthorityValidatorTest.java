@@ -49,7 +49,7 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 /**
  * Created by marced on 14/12/15.
  */
-public class AuthoritiesValidatorTest {
+public class AuthorityValidatorTest {
 
     @Rule
     public ExpectedException thrown = ExpectedException.none();
