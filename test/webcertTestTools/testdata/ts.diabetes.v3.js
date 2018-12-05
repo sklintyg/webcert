@@ -43,9 +43,9 @@ module.exports = {
                 'behandling': {
                     'typer': ['Insulin', 'Annan behandling', 'Tabletter'],
                     'riskForHypoglykemi': 'Ja',
-                    'insulinYear': 1986
-                },
-                'annanbehandling': 'Hypnos behandling'
+                    'insulinYear': 1986,
+                    'annanBehandlingBeskrivning': 'Hypnos behandling'
+                }
             },
             'hypoglykemier': {
                 'a': 'Nej',

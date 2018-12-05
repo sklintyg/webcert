@@ -1,7 +1,7 @@
 #!groovy
 
-def baseVersion = "6.2.0.*"
-def logsenderBaseVersion = "6.2.0.*"
+def baseVersion = "6.3.0.*"
+def logsenderBaseVersion = "6.3.0.*"
 
 stage('checkout tools') {
     node {

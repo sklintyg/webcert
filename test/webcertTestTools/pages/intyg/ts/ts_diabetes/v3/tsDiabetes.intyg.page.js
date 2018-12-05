@@ -63,7 +63,8 @@ var TsDiabetesIntyg = TsBaseIntyg._extend({
 
         this.falt1 = {
             bedomning: element(by.id('bedomning-uppfyllerBehorighetskrav')),
-            annanBehandling: element(by.id('allmant-behandling-annanBehandlingBeskrivning'))
+            annanBehandling: element(by.id('allmant-behandling-annanBehandling')),
+            annanBehandlingBeskrivning: element(by.id('allmant-behandling-annanBehandlingBeskrivning'))
         };
 
         this.borUndersokas = element(by.id('bedomning-borUndersokasBeskrivning'));
@@ -96,9 +97,11 @@ var TsDiabetesIntyg = TsBaseIntyg._extend({
         if (allmant.behandling.typer.indexOf('Insulin') > -1) {
             expect(this.insulPeriod.getText()).toBe(allmant.behandling.insulinYear + '');
         }
-
-        expect(this.falt1.annanBehandling.getText()).toBe(allmant.annanbehandling);
-
+        if (allmant.behandling.typer.indexOf('Annan behandling') > -1) {
+            expect(this.falt1.annanBehandlingBeskrivning.getText()).toBe(allmant.behandling.annanBehandlingBeskrivning + '');
+        } else {
+            expect(this.falt1.annanBehandlingBeskrivning.getText()).toBe('Ej angivet');
+        }
     },
     verifieraHypoglykemier: function(hypoglykemier, behandling) {
         var hypoglykemierMandatory = (behandling.typer.indexOf('Insulin') > -1 ||

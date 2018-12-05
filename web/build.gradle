@@ -1,13 +1,9 @@
-import org.apache.commons.codec.digest.DigestUtils
-
 apply plugin: 'war'
 apply plugin: 'org.akhikhl.gretty'
 apply plugin: 'com.moowork.grunt'
 
 def webappOutputDir = 'build/apps/'
 def webappTestOutputDir = 'build/karma/'
-def resourcesName = 'resources.zip'
-def resourcesDestinationDir = '../devops/openshift/test/env'
 
 grunt {
     colors = System.properties['gruntColors'] ? System.properties['gruntColors'].toBoolean() : true
@@ -86,53 +82,16 @@ task restAssuredTest(type: Test) {
     include '**/*IT*'
 }
 
-task zipResources(type: Zip) {
-    from '../src/main/resources'
+task zipResources(type: ArchiveDirectoryTask) {
+    sourcePath '../src/main/resources'
     include '*'
-    include '*/*' //to include contents of a folder present inside target directory
-    archiveName resourcesName
-    destinationDir(file(resourcesDestinationDir))
+    include '*/*' //to include contents of a folder present inside from directory
+    archiveName 'resources.zip'
+    destinationDir(file('../devops/openshift/test/env'))
+    archiveOnlyIfDiff true
 }
 
-task zipGenerateChecksum {
-    dependsOn zipResources
-
-    doLast {
-        boolean isUpToDate = false;
-        String resourcesPath = resourcesDestinationDir + '/' + resourcesName
-
-        File destFile = file(resourcesPath)
-
-        if(destFile.exists()) {
-            String checksum = "";
-            destFile.withInputStream { ins ->
-                checksum = DigestUtils.md5Hex(ins)
-            }
-
-            File destFileMd5 = new File(destFile.absolutePath + ".md5")
-            if(destFileMd5.exists()) {
-                if(destFileMd5.text == checksum) {
-                    isUpToDate = true;
-                }
-            }
-
-            if (isUpToDate) {
-                println 'the resources archieve is unchanged, no need to update the repository'
-                exec {
-                    // Reverse with Git commands
-                    commandLine 'git', 'checkout', '--', resourcesPath
-                }
-            } else {
-                println 'the resources archieve has been changed, you need to update the repository with the latest version'
-                destFileMd5.newWriter().withWriter { w ->
-                    w << checksum
-                }
-            }
-        }
-    }
-}
-
-build.dependsOn zipGenerateChecksum
+build.dependsOn zipResources
 
 gretty {
     contextPath = '/'

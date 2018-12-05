@@ -143,7 +143,9 @@ module.exports = {
         if (intyg.typ === 'Transportstyrelsens läkarintyg högre körkortsbehörighet') {
             return testdata.ts.bas.getRandom(intyg.id, patient);
         } else if (intyg.typ === 'Transportstyrelsens läkarintyg diabetes') {
-            return testdata.ts.diabetes.getRandom(intyg.id, patient);
+            //TODO: V2
+            //return testdata.ts.diabetes.v2.get(intyg.id, patient);
+            return testdata.ts.diabetes.v3.get(intyg.id, patient);
         } else if (intyg.typ === 'Läkarintyg FK 7263') {
             return testdata.fk['7263'].getRandom(intyg.id);
         } else if (intyg.typ === 'Läkarutlåtande för sjukersättning') {
@@ -360,7 +362,7 @@ module.exports = {
     },
     isTSIntyg: function(intygsType) {
         return intygsType.indexOf('Transportstyrelsen') > -1;
-    }, //PATRIK
+    },
     isAFIntyg: function(intygsType) {
         return intygsType.indexOf('Arbetsförmedlingen') > -1;
     },
@@ -454,7 +456,7 @@ module.exports = {
         if (intyg.typ === 'Läkarutlåtande för sjukersättning') {
             url = process.env.WEBCERT_URL + '#/intyg/luse/' + intyg.id + '/';
         } else if (intyg.typ === 'Läkarintyg för sjukpenning') {
-            url = process.env.WEBCERT_URL + '#/intyg/lisjp/' + intyg.id + '/';
+            url = process.env.WEBCERT_URL + '#/intyg/lisjp/1.0/' + intyg.id + '/';
         } else if (intyg.typ === 'Läkarutlåtande för aktivitetsersättning vid förlängd skolgång') {
             url = process.env.WEBCERT_URL + '#/intyg/luae_fs/' + intyg.id + '/';
         } else if (intyg.typ === 'Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga') {
@@ -462,12 +464,15 @@ module.exports = {
         } else if (intyg.typ === 'Läkarintyg FK 7263') {
             url = process.env.WEBCERT_URL + '#/intyg/fk7263/' + intyg.id + '/';
         } else if (intyg.typ === 'Transportstyrelsens läkarintyg diabetes') {
-            url = process.env.WEBCERT_URL + '#/intyg/ts-diabetes/' + intyg.id + '/';
+            //url = process.env.WEBCERT_URL + '#/intyg/ts-diabetes/' + intyg.id + '/';
+
+            //TODO: V2 och V3
+            //url = process.env.WEBCERT_URL + '#/intyg/ts-diabetes/V2/' + intyg.id + '/';
+            url = process.env.WEBCERT_URL + '#/intyg/ts-diabetes/V3/' + intyg.id + '/';
         } else if (intyg.typ === 'Transportstyrelsens läkarintyg högre körkortsbehörighet') {
             url = process.env.WEBCERT_URL + '#/intyg/ts-bas/' + intyg.id + '/';
-            //PATRIK
         } else if (intyg.typ === 'Arbetsförmedlingens medicinska utlåtande') {
-            url = process.env.WEBCERT_URL + '#/intyg/af00213/' + intyg.id + '/';
+            url = process.env.WEBCERT_URL + '#/intyg/af00213/1.0' + intyg.id + '/';
         }
         return url;
     },

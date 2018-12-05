@@ -158,8 +158,8 @@ var TsDiabetesUtkast = BaseTsUtkast._extend({
             } else if (typ === 'Annan behandling') {
                 promisesArr.push(behandlingForm.annan.typeKeys(protractor.Key.SPACE));
 
-                this.allmant.annanbehandling = element(by.id('allmant-behandling-annanBehandlingBeskrivning'));
-                promisesArr.push(this.allmant.annanbehandling.typeKeys(allmant.annanbehandling));
+                this.allmant.annanBehandlingBeskrivning = element(by.id('allmant-behandling-annanBehandlingBeskrivning'));
+                promisesArr.push(this.allmant.annanBehandlingBeskrivning.typeKeys(allmant.behandling.annanBehandlingBeskrivning));
             }
         }.bind(this));
 
