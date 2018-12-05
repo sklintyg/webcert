@@ -67,7 +67,8 @@ module.exports = function(grunt) {
         'doi':         { base: 'common/sos/doi', angularModule:'doi' },
         'db':          { base: 'common/sos/db', angularModule:'db' },
         'af00213':        { base: 'common/af/af00213', angularModule:'af00213' },
-        'ag114':        { base: 'common/skl/ag114', angularModule:'ag114' }
+        'ag114':        { base: 'common/skl/ag114', angularModule:'ag114' },
+        'ag7804':        { base: 'common/skl/ag7804', angularModule:'ag7804' }
     };
     Object.keys(modules).forEach(function(moduleName) {
         var module = modules[moduleName];
