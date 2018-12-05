@@ -204,8 +204,6 @@ Then(/^ska jag komma till intygssidan$/, function() {
     } else {
         url = '/#/intyg/' + intygUrlShortcode + '/1.0/' + this.intyg.id + '/';
     }
-    logger.info("url: ska jag komma till intygssidan");
-    logger.info(url);
 
     var link = url;
 

@@ -155,7 +155,7 @@ module.exports = {
             });
         }).then(function() {
             return tsBasUtkastPage.fillInBedomning(intyg.bedomning).then(function() {
-                logger.info('OK - fillInBedomning');
+                logger.info('OK - fillInBedomning: ' + JSON.stringify(intyg.bedomning));
             }, function(reason) {
                 console.trace(reason);
                 throw ('FEL, fillInBedomning,' + reason);

@@ -1,6 +1,6 @@
 # language: sv
 
-@pdl @GE-005 @TS
+@PDL @GE-005 @TS
 Egenskap: GE-005 - PDL-loggning för TS-intyg
 
 Bakgrund: Jag är inloggad

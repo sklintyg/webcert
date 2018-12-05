@@ -2,8 +2,7 @@
 @FALTVALIDERING @TS_DIABETES 
 Egenskap: Fältvalidering för TS Diabetes
 
-@F.VAL-028
-@F.VAL-029
+@F.VAL-028 @F.VAL-029
 Scenario:
     Givet att jag är inloggad som läkare
     Och jag går in på testpatienten för "fältvalidering"

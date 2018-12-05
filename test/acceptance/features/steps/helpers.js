@@ -454,25 +454,26 @@ module.exports = {
     intygURL: function(intyg) {
         var url = '';
         if (intyg.typ === 'Läkarutlåtande för sjukersättning') {
-            url = process.env.WEBCERT_URL + '#/intyg/luse/' + intyg.id + '/';
+            url = process.env.WEBCERT_URL + '#/intyg/luse/1.0/' + intyg.id + '/';
         } else if (intyg.typ === 'Läkarintyg för sjukpenning') {
             url = process.env.WEBCERT_URL + '#/intyg/lisjp/1.0/' + intyg.id + '/';
         } else if (intyg.typ === 'Läkarutlåtande för aktivitetsersättning vid förlängd skolgång') {
-            url = process.env.WEBCERT_URL + '#/intyg/luae_fs/' + intyg.id + '/';
+            url = process.env.WEBCERT_URL + '#/intyg/luae_fs/1.0/' + intyg.id + '/';
         } else if (intyg.typ === 'Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga') {
-            url = process.env.WEBCERT_URL + '#/intyg/luae_na/' + intyg.id + '/';
+            url = process.env.WEBCERT_URL + '#/intyg/luae_na/1.0/' + intyg.id + '/';
         } else if (intyg.typ === 'Läkarintyg FK 7263') {
-            url = process.env.WEBCERT_URL + '#/intyg/fk7263/' + intyg.id + '/';
+            url = process.env.WEBCERT_URL + '#/intyg/fk7263/1.0/' + intyg.id + '/';
         } else if (intyg.typ === 'Transportstyrelsens läkarintyg diabetes') {
+            //Old: utan versionshantering
             //url = process.env.WEBCERT_URL + '#/intyg/ts-diabetes/' + intyg.id + '/';
 
             //TODO: V2 och V3
-            //url = process.env.WEBCERT_URL + '#/intyg/ts-diabetes/V2/' + intyg.id + '/';
-            url = process.env.WEBCERT_URL + '#/intyg/ts-diabetes/V3/' + intyg.id + '/';
+            //url = process.env.WEBCERT_URL + '#/intyg/ts-diabetes/2.8/' + intyg.id + '/';
+            url = process.env.WEBCERT_URL + '#/intyg/ts-diabetes/3.0/' + intyg.id + '/';
         } else if (intyg.typ === 'Transportstyrelsens läkarintyg högre körkortsbehörighet') {
-            url = process.env.WEBCERT_URL + '#/intyg/ts-bas/' + intyg.id + '/';
+            url = process.env.WEBCERT_URL + '#/intyg/ts-bas/6.8/' + intyg.id + '/';
         } else if (intyg.typ === 'Arbetsförmedlingens medicinska utlåtande') {
-            url = process.env.WEBCERT_URL + '#/intyg/af00213/1.0' + intyg.id + '/';
+            url = process.env.WEBCERT_URL + '#/intyg/af00213/1.0/' + intyg.id + '/';
         }
         return url;
     },

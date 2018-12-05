@@ -27,7 +27,10 @@ module.exports = {
                 case 'Transportstyrelsens läkarintyg högre körkortsbehörighet':
                     return require('./ts.bas.js').fillIn(world.intyg);
                 case 'Transportstyrelsens läkarintyg diabetes':
-                    return require('./ts.diabetes.js').fillIn(world.intyg);
+                    //return require('./ts.diabetes.js').fillIn(world.intyg);
+
+                    //TODO: V2 och V3
+                    return require('./ts.diabetes.v3.js').fillIn(world.intyg);
                 case 'Läkarintyg FK 7263':
                     return require('./fk.7263.js').fillIn(world.intyg);
                 case 'Läkarutlåtande för sjukersättning':
