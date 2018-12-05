@@ -25,7 +25,7 @@ var testdataHelper = wcTestTools.helpers.restTestdata;
 var UtkastPage = wcTestTools.pages.intyg.af['af00213'].utkast;
 var IntygPage = wcTestTools.pages.intyg.af['af00213'].intyg;
 
-describe('Create and Sign af00213 utkast', function() {
+xdescribe('Create and Sign af00213 utkast', function() {
 
     var utkastId = null,
         data = null;

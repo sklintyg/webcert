@@ -94,8 +94,8 @@ features:
       - *ki070 # LUAE_FS
       - *ki080 # DB
       - *ki090 # DOI
-      - *ki100 # AF00213
-      - *ki110 # AG114
+#      - *ki100 # AF00213
+#      - *ki110 # AG114
   - &f030
     name: *kf030
     desc: Förnya intyg
