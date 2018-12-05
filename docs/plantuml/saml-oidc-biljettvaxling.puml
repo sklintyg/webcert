@@ -1,0 +1,74 @@
+@startuml
+participant b as "Browser"
+participant j as "Journalsystem"
+
+participant s as "Säkerhetstjänsten"
+
+box "Webcert" #F8F8F8
+	participant wj as "JwtAuthenticationProvider"
+	participant wb as "Webcert backend"
+end box
+
+participant HSA
+
+b -> j: Open webcert
+activate b
+activate j
+
+|||
+alt No valid session (Standard SAML authentication)
+j -> b: Redirect to IdP with AuthnReq
+
+b -> s: AuthnReq
+activate s
+s -> s: NetiD Access / PIN-code stuff..
+s -> b: Redirect with SAML assertion
+b -> j: SAML assertion
+
+deactivate s
+
+end
+
+|||
+alt Has valid SAML assertion
+j -> s: Request access token\n with SAML assertion (RFC7522)
+activate s
+s -> s: Validate assertion\n and client
+s -> j: Access Token + Refresh Token
+deactivate s
+end
+
+j --> b: Redirect to Webcert with token
+deactivate j
+|||
+b -> wj: /jwtauth with Authorization: Bearer <JWS>
+
+
+activate  wj
+wj -> wj: Validate token signature\nusing PKI and extract\nHSA-id
+
+|||
+wj -> s: Validate token using NNNN-service
+activate s
+s --> wj: Validation result
+deactivate s
+
+|||
+wj -> HSA: Get user authorizations using HSA-id
+activate HSA
+HSA --> wj: HSA details
+deactivate HSA
+
+wj -> wj: Build principal, start session
+wj -> b: Authenticated, Set-Cookie with JSESSIONID
+deactivate  wj
+b -> wb: Request resource /visa/intyg/{guid}
+activate wb
+|||
+wb --> b: Requested resource
+
+deactivate wb
+
+deactivate b
+
+@enduml
