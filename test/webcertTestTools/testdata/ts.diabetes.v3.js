@@ -31,6 +31,7 @@ module.exports = {
 
         if (!intygsID) {
             intygsID = testdataHelper.generateTestGuid();
+
         }
         return {
             'id': intygsID,
@@ -38,12 +39,12 @@ module.exports = {
             'korkortstyper': ['A1', 'B', 'D', 'DE', 'D1', 'Taxi', 'BE', 'A2', 'Traktor', 'D1E', 'C1', 'A'],
             'identitetStyrktGenom': 'Svenskt körkort',
             'allmant': {
-                'year': 1981,
+                'year': 2016,
                 'typ': 'Typ 1',
                 'behandling': {
                     'typer': ['Insulin', 'Annan behandling', 'Tabletter'],
                     'riskForHypoglykemi': 'Ja',
-                    'insulinYear': 1986,
+                    'insulinYear': 2017,
                     'annanBehandlingBeskrivning': 'Hypnos behandling'
                 }
             },
