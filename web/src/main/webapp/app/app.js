@@ -205,8 +205,8 @@
             $rootScope.$on('$stateChangeStart',
                 function(event, toState, toParams, fromState, fromParams) {
                     // Check if state transition is triggered by link
-                    var triggeredByLink = $location.search().force_link;
-                    $location.search('force_link', null);
+                    var triggeredByLink = $location.search().forcelink;
+                    $location.search('forcelink', null);
 
                     var redirectToUnitSelection = function() {
                         if (toState.name!=='normal-origin-enhetsval' && UserModel.isNormalOrigin() && !UserModel.user.valdVardenhet) {
