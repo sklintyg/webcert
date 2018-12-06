@@ -108,6 +108,9 @@ module.exports = {
             utkastPage = pages.intyg.ts.diabetes.v3.utkast;
         } else if (intygType === 'db') {
             utkastPage = pages.intyg.skv.db.utkast;
+        } else if (intygType === 'doi') {
+            utkastPage = pages.intyg.soc.doi.utkast;
+            utkastPage.skapaDoiKnapp.click();
         } else if (intygType === 'af00213') {
             utkastPage = pages.intyg.af.af00213.utkast;
         } else if (intygType === 'af00251') {
