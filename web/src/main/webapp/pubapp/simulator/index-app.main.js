@@ -133,7 +133,7 @@ angular.module('rhsIndexApp')
         };
 
         $scope.remove = function(index) {
-            if (index == 0) {
+            if (index === 0) {
                 return;
             }
             $scope.q.kompletteringar.splice(index, 1);
@@ -210,7 +210,7 @@ angular.module('rhsIndexApp')
                 $scope.formToDisplay = 'arende';
                 $http({
                     method: 'GET',
-                    url: '/testability/intyg/questions/' + intyg.intygsTyp + '?cachekiller=' + timeInMillis()
+                    url: '/testability/intyg/questions/' + intyg.intygsTyp + '/' + intyg.intygTypeVersion + '?cachekiller=' + timeInMillis()
                 }).then(function successCallback(response) {
                     $scope.questions = response.data;
                 });

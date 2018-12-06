@@ -52,6 +52,7 @@ import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.service.intyg.converter.IntygModuleFacade;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturBiljett;
 import se.inera.intyg.webcert.web.service.underskrift.tracker.RedisTicketTracker;
+import se.inera.intyg.webcert.web.service.util.SchVersionUtil;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftRequest;
 import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
@@ -127,13 +128,14 @@ public class IntygResource {
      * @return
      */
     @GET
-    @Path("/questions/{intygsTyp}")
+    @Path("/questions/{intygsTyp}/{version}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getAllFragorFromConstants(@PathParam("intygsTyp") String intygsTyp) {
+    public Response getAllFragorFromConstants(@PathParam("intygsTyp") String intygsTyp, @PathParam("version") String version) {
         try {
+            String schVersion = SchVersionUtil.formatToSchVersion(version);
             DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
             // Load schematron file from classpath.
-            Resource resource = resourceLoader.getResource("classpath:" + intygsTyp + ".sch");
+            Resource resource = resourceLoader.getResource("classpath:" + intygsTyp + "." + schVersion + ".sch");
             Document document = builder.parse(resource.getInputStream());
 
             XPath xpath = XPathFactory.newInstance().newXPath();
