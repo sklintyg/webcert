@@ -47,7 +47,7 @@ module.exports = {
                 'c) Föreligger viktiga riskfaktorer för stroke (tidigare stroke eller TIA, förhöjt blodtryck, förmaksflimmer eller kärlmissbildning)?': 'Ja',
                 'a) Finns journaluppgifter, anamnestiska uppgifter, resultat av laboratorieprover eller andra tecken på missbruk eller beroende av alkohol, narkotika eller läkemedel?': 'Ja',
                 'c) Pågår regelbundet läkarordinerat bruk av läkemedel som kan innebära en trafiksäkerhetsrisk?': 'Ja',
-                'Har patienten vårdats på sjukhus eller haft kontakt med läkare med anledning av fälten 1-13?': 'Ja',
+                'Har patienten vårdats på sjukhus eller haft kontakt med läkare med anledning av något som efterfrågats i tidigare frågor i intyget?': 'Ja',
                 'Har patienten någon stadigvarande medicinering?': 'Ja'
             },
             checkboxar: [
