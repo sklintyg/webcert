@@ -23,7 +23,7 @@ Kontakta körkortsenheten på Transportstyrelsen, telefon 0771-81 81 81. Transpo
 	-->
 	<text id="KAT_99.RBK">Intyget avser</text>
   <text id="KAT_99.HLP"><![CDATA[<span style="text-align:left">C1 - medeltung lastbil och enbart ett lätt släpfordon<br/>C1E - medeltung lastbil och ett eller flera släpfordon oavsett vikt<br/>C - tung lastbil och enbart ett lätt släpfordon<br/>CE - tung lastbil och ett eller flera släpfordon oavsett vikt<br/>D1 - mellanstor buss och enbart ett lätt släpfordon<br/>D1E - mellanstor buss och ett eller flera släpfordon oavsett vikt<br/>D - buss och enbart ett lätt släpfordon<br/>DE - buss och ett eller flera släpfordon oavsett vikt<br/>Taxi - taxiförarlegitimation
-  
+
   </span>]]></text>
   <text id="FRG_1.RBK">Detta intyg ska användas vid förlängd giltighet av högre behörighet, ansökan om körkortstillstånd för grupp II och III och vid ansökan om taxiförarlegitimation. Intyget kan också användas när Transportstyrelsen i andra fall begärt ett läkarintyg. Markera då endast i rutan Annat nedan.</text>
   <text id="FRG_1.HLP">Grupp II omfattar behörigheterna AM, A1, A2, A, B, BE, C1, C1E, C och CE.
@@ -225,7 +225,7 @@ Avser svenskt EU-pass, annat EU-pass utfärdade från och med den 1 september 20
 	-->
 	<text id="KAT_14.RBK">Sjukhusvård</text>
 
-	<text id="FRG_30.RBK">Har patienten vårdats på sjukhus eller haft kontakt med läkare med anledning av fälten 1-13?</text>
+	<text id="FRG_30.RBK">Har patienten vårdats på sjukhus eller haft kontakt med läkare med anledning av något som efterfrågats i tidigare frågor i intyget?</text>
 	<text id="DFR_30.2.RBK">Om frågan besvarats med ja, när?</text>
 	<text id="DFR_30.3.RBK">Vårdinrättningens namn och klinik/er</text>
 	<text id="DFR_30.4.RBK">För vad?</text>
