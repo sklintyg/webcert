@@ -204,6 +204,10 @@
 
             $rootScope.$on('$stateChangeStart',
                 function(event, toState, toParams, fromState, fromParams) {
+                    // Check if state transition is triggered by link
+                    var triggeredByLink = $location.search().force_link;
+                    $location.search('force_link', null);
+
                     var redirectToUnitSelection = function() {
                         if (toState.name!=='normal-origin-enhetsval' && UserModel.isNormalOrigin() && !UserModel.user.valdVardenhet) {
                             event.preventDefault();
@@ -237,13 +241,15 @@
                             termsCheck();
 
                             if (fromState.name !== 'webcert.terms' || !UserModel.transitioning) {
-                                // INTYG-4465: prevent state change when user press 'backwards' if modal is open, but close modal.
+                                // INTYG-4465, INTYG-7789: prevent state change when user press 'backwards' if modal is
+                                // open, but close modal.
                                 if ($uibModalStack.getTop()) {
                                     $uibModalStack.dismissAll();
-                                    // Check if any dialog could not be dismissed
-                                    if (!$uibModalStack.getTop()) {
+                                    //If modal closed, and we did not navigate because of click on a modal link..
+                                    if (!$uibModalStack.getTop() && !triggeredByLink) {
+                                        // Abort current transition that apparently happended without explicitly first
+                                        // closing the active modal. Most likely because of click on Back button in browser.
                                         event.preventDefault();
-                                        // Restore original state in order to make it work for DJUPINTEGRATION and avoid messing up the history.
                                         $state.go(fromState, fromParams);
                                     }
                                 }
