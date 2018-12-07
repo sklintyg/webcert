@@ -171,7 +171,6 @@ features:
       - *ki080 # DB
       - *ki090 # DOI
       - *ki100 # AF00213
-      - *ki120 # AG7804
   - &f080
     name: *kf080
     desc: Signera skicka direkt
