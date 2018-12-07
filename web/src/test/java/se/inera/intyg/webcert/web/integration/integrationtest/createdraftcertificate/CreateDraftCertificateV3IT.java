@@ -49,6 +49,8 @@ public class CreateDraftCertificateV3IT extends BaseWSIntegrationTest {
     private static final String LUAE_FS = "LUAE_FS";
     private static final String LUAE_NA = "LUAE_NA";
     private static final String LISJP = "LISJP";
+    private static final String AG7804 = "AG7804";
+    private static final String AG114 = "AG1-14";
     private static final String LUSE = "LUSE";
     private static final String TS_BAS = "TSTRK1007";
     private static final String TS_DIABETES = "TSTRK1031";
@@ -203,6 +205,38 @@ public class CreateDraftCertificateV3IT extends BaseWSIntegrationTest {
                 .body("intygs-id.extension.size()", is(1));
 
         testMatchesSchemaForType(LISJP);
+    }
+
+    @Test
+    public void testCreateAG7804Draft() throws IOException {
+
+        given().cookie("ROUTEID", ".1")
+                .body(createRequestBody(AG7804, DEFAULT_LAKARE_HSAID))
+                .when()
+                .post(CREATE_DRAFT_CERTIFICATE_V3_0)
+                .then()
+                .statusCode(200)
+                .rootPath(BASE)
+                .body("result.resultCode", is(ResultCodeType.OK.value()))
+                .body("intygs-id.extension.size()", is(1));
+
+        testMatchesSchemaForType(AG7804);
+    }
+
+    @Test
+    public void testCreateAG114Draft() throws IOException {
+
+        given().cookie("ROUTEID", ".1")
+                .body(createRequestBody(AG114, DEFAULT_LAKARE_HSAID))
+                .when()
+                .post(CREATE_DRAFT_CERTIFICATE_V3_0)
+                .then()
+                .statusCode(200)
+                .rootPath(BASE)
+                .body("result.resultCode", is(ResultCodeType.OK.value()))
+                .body("intygs-id.extension.size()", is(1));
+
+        testMatchesSchemaForType(AG114);
     }
 
     private void testMatchesSchemaForType(String type) throws IOException {
