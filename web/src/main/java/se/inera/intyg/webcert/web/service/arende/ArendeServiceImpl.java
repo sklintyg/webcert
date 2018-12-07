@@ -176,7 +176,7 @@ public class ArendeServiceImpl implements ArendeService {
 
         ArendeConverter.decorateArendeFromUtkast(arende, utkast, LocalDateTime.now(systemClock), hsaEmployeeService);
 
-        updateRelated(arende);
+        updateSenasteHandelseAndStatusForRelatedArende(arende);
 
         monitoringLog.logArendeReceived(arende.getIntygsId(), utkast.getIntygsTyp(), utkast.getEnhetsId(), arende.getAmne(),
                 arende.getKomplettering().stream().map(MedicinsktArende::getFrageId).collect(Collectors.toList()),
@@ -280,15 +280,21 @@ public class ArendeServiceImpl implements ArendeService {
                     + ") can only be answered by user that is Lakare");
         }
 
+
+        // Close all Arende for intyg, _except_ question from recipient (latestKomplArende) which we handle separately below.
+        arendeList.stream()
+                .filter(arende -> !Objects.equals(arende.getMeddelandeId(), latestKomplArende.getMeddelandeId()))
+                .forEach(this::closeArendeAsHandled);
+
         Arende answer = ArendeConverter.createAnswerFromArende(
                 meddelande,
                 latestKomplArende,
                 LocalDateTime.now(systemClock),
                 user.getNamn());
 
+        arendeDraftService.delete(latestKomplArende.getIntygsId(), latestKomplArende.getMeddelandeId());
+        // processOutgoingMessage modifies latestKomplArende in arendeList, which is invalidated from here on.
         Arende saved = processOutgoingMessage(answer, NotificationEvent.NEW_ANSWER_FROM_CARE);
-
-        arendeList.forEach(this::closeArendeAsHandled);
 
         allArende.add(saved);
 
@@ -594,7 +600,7 @@ public class ArendeServiceImpl implements ArendeService {
     }
 
     @Override
-    public void closeAllNonClosed(String intygsId) {
+    public void closeAllNonClosedQuestions(String intygsId) {
 
         List<Arende> list = arendeRepository.findByIntygsId(intygsId);
 
@@ -728,7 +734,7 @@ public class ArendeServiceImpl implements ArendeService {
         monitoringLog.logArendeCreated(arende.getIntygsId(), arende.getIntygTyp(), arende.getEnhetId(), arende.getAmne(),
                 arende.getSvarPaId() != null);
 
-        updateRelated(arende);
+        updateSenasteHandelseAndStatusForRelatedArende(arende);
 
         SendMessageToRecipientType request = SendMessageToRecipientTypeBuilder.build(arende, webcertUserService.getUser(),
                 sendMessageToFKLogicalAddress);
@@ -745,7 +751,7 @@ public class ArendeServiceImpl implements ArendeService {
         return saved;
     }
 
-    private void updateRelated(Arende arende) {
+    private void updateSenasteHandelseAndStatusForRelatedArende(Arende arende) {
         Arende orig;
         if (arende.getSvarPaId() != null) {
             orig = arendeRepository.findOneByMeddelandeId(arende.getSvarPaId());
@@ -764,13 +770,19 @@ public class ArendeServiceImpl implements ArendeService {
     }
 
     private Arende closeArendeAsHandled(Arende arendeToClose) {
+        if (arendeToClose.getStatus() == Status.CLOSED) {
+            return arendeToClose;
+        }
+
+        // determineNotficationEvent() has to be called before closing arende for correct behaviour.
         NotificationEvent notificationEvent = determineNotificationEvent(arendeToClose, false);
+
         arendeToClose.setStatus(Status.CLOSED);
         arendeToClose.setSenasteHandelse(LocalDateTime.now(systemClock));
         Arende closedArende = arendeRepository.save(arendeToClose);
 
-        sendNotification(closedArende, notificationEvent);
         arendeDraftService.delete(closedArende.getIntygsId(), closedArende.getMeddelandeId());
+        sendNotification(closedArende, notificationEvent);
 
         return closedArende;
     }

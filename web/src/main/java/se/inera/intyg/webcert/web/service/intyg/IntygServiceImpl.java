@@ -962,7 +962,7 @@ public class IntygServiceImpl implements IntygService {
 
         // Second: send a notification informing stakeholders that all questions related to the revoked
         // certificate has been closed.
-        arendeService.closeAllNonClosed(intygsId);
+        arendeService.closeAllNonClosedQuestions(intygsId);
 
         // Third: create a log event
         LogRequest logRequest = LogRequestFactory.createLogRequestFromUtlatande(intyg);

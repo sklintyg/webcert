@@ -70,7 +70,7 @@ public interface ArendeService {
      *
      * @param intygsId the certificates unique identifier
      */
-    void closeAllNonClosed(String intygsId);
+    void closeAllNonClosedQuestions(String intygsId);
 
     Arende getArende(String meddelandeId);
 

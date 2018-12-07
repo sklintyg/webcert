@@ -117,7 +117,7 @@ public class IntygServiceRevokeTest extends AbstractIntygServiceTest {
         IntygServiceResult res = intygService.revokeIntyg(INTYG_ID, INTYG_TYP_FK, REVOKE_MSG, REVOKE_REASON);
 
         // verify that services were called
-        verify(arendeService).closeAllNonClosed(INTYG_ID);
+        verify(arendeService).closeAllNonClosedQuestions(INTYG_ID);
         verify(notificationService, times(1)).sendNotificationForIntygRevoked(INTYG_ID);
         verify(logService).logRevokeIntyg(any(LogRequest.class));
         verify(intygRepository).save(any(Utkast.class));
