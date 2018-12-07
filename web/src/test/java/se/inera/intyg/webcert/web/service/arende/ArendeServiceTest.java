@@ -656,36 +656,41 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         assertNotNull(result.get(0).getFraga());
         assertNotNull(result.get(0).getSvar());
         verify(notificationService).sendNotificationForQAs(INTYG_ID, NotificationEvent.NEW_ANSWER_FROM_CARE);
-        verify(arendeRepository, times(3)).save(any(Arende.class));
+        verify(arendeRepository, times(2)).save(any(Arende.class));
         verify(arendeDraftService).delete(INTYG_ID, svarPaMeddelandeId);
     }
 
     @Test
     public void answerKompltQuestionClosesAllCompletionsAsHandled() throws CertificateSenderException {
+        final LocalDateTime originTime = LocalDateTime.parse("2018-12-06T17:47:23.128");
 
-        final String svarPaMeddelandeId = "svarPaMeddelandeId";
+        final String svarPaMeddelandeId = "komplt0MeddelandeId";
+        Arende komplt0 = buildArende(svarPaMeddelandeId, ENHET_ID, originTime);
+        komplt0.setStatus(Status.PENDING_INTERNAL_ACTION);
+        komplt0.setAmne(ArendeAmne.KOMPLT);
+        komplt0.setPatientPersonId(PERSON_ID);
 
-        Arende fraga = buildArende(svarPaMeddelandeId, ENHET_ID);
-        fraga.setStatus(Status.PENDING_INTERNAL_ACTION);
-        fraga.setAmne(ArendeAmne.KOMPLT);
-        fraga.setPatientPersonId(PERSON_ID);
-
-        Arende komplt1 = buildArende(UUID.randomUUID().toString(), ENHET_ID);
+        final String komplt1MeddelandId = "komplt1MeddelandeId";
+        Arende komplt1 = buildArende(komplt1MeddelandId, ENHET_ID, originTime.plusDays(1));
         komplt1.setStatus(Status.PENDING_INTERNAL_ACTION);
         komplt1.setAmne(ArendeAmne.KOMPLT);
         komplt1.setPatientPersonId(PERSON_ID);
 
-        Arende komplt2 = buildArende(UUID.randomUUID().toString(), ENHET_ID);
+        final String komplt2MeddelandId = "komplt2MeddelandeId";
+        Arende komplt2 = buildArende(komplt2MeddelandId, ENHET_ID, originTime.plusDays(2));
         komplt2.setStatus(Status.PENDING_INTERNAL_ACTION);
         komplt2.setAmne(ArendeAmne.KOMPLT);
         komplt2.setPatientPersonId(PERSON_ID);
 
-        Arende otherSubject = buildArende(UUID.randomUUID().toString(), ENHET_ID);
+        // Den kompletteringsfraga som blir besvarad, då den är senast/nyast.
+        final String avstamningMeddelandeId = "avstamningMeddelandeId";
+        Arende otherSubject = buildArende(avstamningMeddelandeId, ENHET_ID, originTime.plusDays(3));
         otherSubject.setStatus(Status.PENDING_INTERNAL_ACTION);
         otherSubject.setAmne(ArendeAmne.AVSTMN);
         otherSubject.setPatientPersonId(PERSON_ID);
 
-        when(arendeRepository.findByIntygsId(INTYG_ID)).thenReturn(Arrays.asList(fraga, komplt1, otherSubject, komplt2));
+        when(arendeRepository.findByIntygsId(INTYG_ID)).thenReturn(Arrays.asList(komplt0, komplt1, otherSubject, komplt2));
+        when(arendeRepository.findOneByMeddelandeId(komplt2MeddelandId)).thenReturn(komplt2);
         when(webcertUserService.isAuthorizedForUnit(anyString(), anyBoolean())).thenReturn(true);
 
         WebCertUser webcertUser = createUser();
@@ -1319,7 +1324,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         when(arendeRepository.findByIntygsId(INTYG_ID))
                 .thenReturn(Arrays.asList(arendeFromWc, arendeFromFk, arendeAlreadyClosed, arendeSvar, arendePaminnelse));
 
-        service.closeAllNonClosed(INTYG_ID);
+        service.closeAllNonClosedQuestions(INTYG_ID);
 
         verify(arendeRepository).findByIntygsId(INTYG_ID);
         verify(notificationService).sendNotificationForQAs(INTYG_ID, NotificationEvent.QUESTION_FROM_RECIPIENT_HANDLED);
@@ -1427,6 +1432,10 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
 
         service.getLatestMeddelandeIdForCurrentCareUnit(INTYG_ID);
         fail();
+    }
+
+    private Arende buildArende(String meddelandeId, String enhetId, LocalDateTime timestamp) {
+        return buildArende(meddelandeId, INTYG_ID, timestamp, timestamp, enhetId);
     }
 
     private Arende buildArende(String meddelandeId, String enhetId) {
