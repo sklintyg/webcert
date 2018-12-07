@@ -88,7 +88,7 @@ task zipResources(type: ArchiveDirectoryTask) {
     include '*/*' //to include contents of a folder present inside from directory
     archiveName 'resources.zip'
     destinationDir(file('../devops/openshift/test/env'))
-    archiveOnlyIfDiff true
+    archiveOnlyIfDiff file('${sourcePath}/${archiveName}').exists()
 }
 
 build.dependsOn zipResources
