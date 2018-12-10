@@ -172,4 +172,8 @@ Arbetstagaren har rätt att dölja diagnos i ett läkarintyg avsett för sjuklö
 	<text id="KV_FKMU_0007.TREHUNDRASEXTIOFEM_DAGAR.RBK">12 månader</text>
 	<text id="KV_FKMU_0007.TRETTIO_DGR.RBK">1 månad</text>
 
+	<text id="FRG_32.IFS1.RBK">Patienten arbetar i snitt</text>
+	<text id="FRG_32.IFS2.RBK">timmar i veckan</text>
+	<text id="FRG_32.IFS.HLP">Ange hur många timmar patienten arbetar i snitt per vecka. Observera att denna funktion endast är ett stöd för att tydliggöra hur många timmar per vecka patienten bedöms kunna arbeta när en viss nedsättning av arbetsförmåga har angivits. Uppgiften lagras inte som en del av intyget.</text>
+
 </texter>
