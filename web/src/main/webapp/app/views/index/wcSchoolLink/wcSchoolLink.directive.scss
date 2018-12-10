@@ -27,6 +27,9 @@ wc-school-link {
 
   a.external-link {
     color: $wc-color-31;
+    &:hover {
+      color: $wc-color-21;
+    }
   }
 
   .bg-plate {
