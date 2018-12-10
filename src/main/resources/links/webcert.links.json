@@ -25,20 +25,20 @@
   },
   {
     "key": "ptsCookiesAbout",
-    "url": "http://pts.se/sv/privat/internet/integritet/kakor-cookies/",
+    "url": "https://pts.se/sv/privat/internet/integritet/kakor-cookies/",
     "text": "Kommunikationsmyndigheten PTS sida om kakor",
     "target": "_blank"
   },
   {
     "key": "socialstyrelsenFmbAnvandas",
-    "url": "http://www.socialstyrelsen.se/riktlinjer/forsakringsmedicinsktbeslutsstod/omforsakringsmedicinsktbeslutsstod/saskabeslutsstodetanvandas",
+    "url": "https://roi.socialstyrelsen.se/fmb",
     "text": "Socialstyrelsens hemsida",
     "target": "_blank"
   },
   {
     "key": "elegInformation",
-    "url": "http://www.e-legitimation.se",
-    "text": "http://www.e-legitimation.se",
+    "url": "https://www.e-legitimation.se",
+    "text": "https://www.e-legitimation.se",
     "target": "_blank"
   },
   {
@@ -73,13 +73,13 @@
   },
   {
     "key": "ineraKundserviceFel",
-    "url": "http://www.inera.se/KONTAKT_KUNDSERVICE/Felanmalan-och-support/Anmal-fel",
+    "url": "https://www.inera.se/kundservice/formular/felanmalan-och-support/formular-for-felanmalan-och-support/",
     "text": "Ineras kundservice",
     "target": "_blank"
   },
   {
     "key": "ineraKundserviceAnmalFel",
-    "url": "http://www.inera.se/felanmalan",
+    "url": "https://www.inera.se/felanmalan",
     "text": "Ineras kundservice",
     "target": "_blank"
   },
@@ -91,7 +91,7 @@
   },
   {
     "key": "transportstyrelsen",
-    "url": "http://www.transportstyrelsen.se",
+    "url": "https://www.transportstyrelsen.se",
     "text": "www.transportstyrelsen.se",
     "target": "_blank"
   },
