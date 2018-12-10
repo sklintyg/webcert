@@ -53,8 +53,8 @@
             <tr ng-repeat="arende in listModel.arendenList">
               <td><span ng-show="arende.paminnelse">Påminnelse:</span> <span dynamic-label key="arende.measure.{{arende.measureResKey}}"></span></td>
               <td><span dynamic-label key="common.arende.fragestallare.{{arende.fragestallare}}"></span></td>
-              <td id="patientId-{{arende.meddelandeId}}" class="unbreakable">{{arende.patientId | PersonIdFormatter}} <i class="material-icons md-18" 
-                uib-popover="Patienten har en sekretessmarkering."  popover-popup-delay="300" popover-append-to-body="true"
+              <td id="patientId-{{arende.meddelandeId}}" class="unbreakable">{{arende.patientId | PersonIdFormatter}} <i class="material-icons md-18 security-icon"
+                uib-popover="Patienten har en sekretessmarkering." popover-popup-delay="300" popover-append-to-body="true"
                 popover-placement="auto top" ng-if="arende.sekretessmarkering">security</i></td>
               <td>{{arende.signeratAvNamn}}</td>
               <td class="unbreakable">{{arende.receivedDate | date:'short'}}</td>
