@@ -78,7 +78,7 @@
                                 </tr>
                                 </thead>
                                 <!-- If filtering gives no results -->
-                                <tbody ng-if="viewState.currentList.length===0">
+                                <tbody ng-show="viewState.currentList.length===0">
                                 <tr>
                                     <td class="td-padding" dynamic-label key="th.no-result"></td>
                                     <td class="td-padding"></td>
@@ -88,7 +88,7 @@
                                     <td class="td-padding"></td>
                                 </tr>
                                 </tbody>
-                                <tbody>
+                                <tbody ng-show="viewState.currentList.length>0">
                                 <tr ng-repeat="intyg in viewState.currentList | orderBy: (orderProperty === 'lastUpdatedSigned' ? orderProperty : [orderProperty, '-lastUpdatedSigned']): !orderAscending"
                                     class="intygList">
                                     <td>{{intyg.intygTypeName}}</td>
