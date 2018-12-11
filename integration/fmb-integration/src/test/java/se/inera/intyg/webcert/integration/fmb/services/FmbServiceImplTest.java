@@ -94,7 +94,7 @@ public class FmbServiceImplTest {
         //Then
         Mockito.verify(diagnosInformationRepository, times(1)).save(fmbCaptor.capture());
         List<DiagnosInformation> fmbCaptorAllValues = fmbCaptor.getValue();
-        assertEquals(111, fmbCaptorAllValues.size());
+        assertEquals(116, fmbCaptorAllValues.size());
     }
 
     private long getCount(List<Fmb> fmbCaptorAllValues, FmbType aktivitetsbegransning) {
