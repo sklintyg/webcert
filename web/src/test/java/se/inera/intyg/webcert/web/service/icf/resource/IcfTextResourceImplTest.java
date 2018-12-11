@@ -31,7 +31,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.test.util.ReflectionTestUtils;
 import java.util.Optional;
-import se.inera.intyg.webcert.web.web.controller.api.dto.IcfKod;
+import se.inera.intyg.webcert.web.web.controller.api.dto.icf.IcfKod;
 
 @RunWith(MockitoJUnitRunner.class)
 public class IcfTextResourceImplTest {

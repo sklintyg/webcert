@@ -16,11 +16,15 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.web.service.icf;
+package se.inera.intyg.webcert.web.web.controller.api.dto.icf;
 
-import se.inera.intyg.webcert.web.web.controller.api.IcfRequest;
-import se.inera.intyg.webcert.web.web.controller.api.dto.icf.IcfResponse;
+public class IcfCentralKod extends IcfKod {
 
-public interface IcfService {
-    IcfResponse findIcfInformationByIcd10Koder(IcfRequest icfRequest);
+    public IcfCentralKod(final String kod, final String benamning, final String beskrivning, final String innefattar) {
+        super(kod, benamning, beskrivning, innefattar);
+    }
+
+    public static IcfCentralKod of(final String kod, final String benamning, final String beskrivning, final String innefattar) {
+        return new IcfCentralKod(kod, benamning, beskrivning, innefattar);
+    }
 }

@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.web.web.controller.api.dto;
+package se.inera.intyg.webcert.web.web.controller.api.dto.icf;
 
 import org.apache.commons.collections.CollectionUtils;
 import java.util.List;
@@ -24,19 +24,16 @@ import java.util.List;
 public abstract class IcfKoder {
 
     private List<String> icd10Koder;
-    private List<IcfKod> centralaKoder;
-    private List<IcfKod> kompletterandeKoder;
+    private List<IcfKod> icfKoder;
 
     public IcfKoder() {
     }
 
     IcfKoder(
             final List<String> icd10Koder,
-            final List<IcfKod> centralaKoder,
-            final List<IcfKod> kompletterandeKoder) {
+            final List<IcfKod> icfKoder) {
         this.icd10Koder = CollectionUtils.isEmpty(icd10Koder) ? null : icd10Koder;
-        this.centralaKoder = CollectionUtils.isEmpty(centralaKoder) ? null : centralaKoder;
-        this.kompletterandeKoder = CollectionUtils.isEmpty(kompletterandeKoder) ? null : kompletterandeKoder;
+        this.icfKoder = CollectionUtils.isEmpty(icfKoder) ? null : icfKoder;
     }
 
     public List<String> getIcd10Koder() {
@@ -47,19 +44,11 @@ public abstract class IcfKoder {
         this.icd10Koder = icd10Koder;
     }
 
-    public List<IcfKod> getCentralaKoder() {
-        return centralaKoder;
+    public List<IcfKod> getIcfKoder() {
+        return icfKoder;
     }
 
-    public void setCentralaKoder(final List<IcfKod> centralaKoder) {
-        this.centralaKoder = centralaKoder;
-    }
-
-    public List<IcfKod> getKompletterandeKoder() {
-        return kompletterandeKoder;
-    }
-
-    public void setKompletterandeKoder(final List<IcfKod> kompletterandeKoder) {
-        this.kompletterandeKoder = kompletterandeKoder;
+    public void setIcfKoder(final List<IcfKod> icfKoder) {
+        this.icfKoder = icfKoder;
     }
 }

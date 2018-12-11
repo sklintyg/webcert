@@ -16,23 +16,23 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.web.web.controller.api.dto;
+package se.inera.intyg.webcert.web.web.controller.api.dto.icf;
 
 import java.util.List;
 
 public final class FunktionsNedsattningsKoder extends IcfKoder {
 
     private FunktionsNedsattningsKoder(
-            final List<String> icd10Koder, final List<IcfKod> centralaKoder, final List<IcfKod> kompletterandeKoder) {
-        super(icd10Koder, centralaKoder, kompletterandeKoder);
+            final List<String> icd10Koder, final List<IcfKod> icfKoder) {
+        super(icd10Koder, icfKoder);
     }
 
-    public static FunktionsNedsattningsKoder of(final List<IcfKod> centralaKoder, final List<IcfKod> kompletterandeKoder) {
-        return new FunktionsNedsattningsKoder(null, centralaKoder, kompletterandeKoder);
+    public static FunktionsNedsattningsKoder of(final List<IcfKod> kompletterandeKoder) {
+        return new FunktionsNedsattningsKoder(null, kompletterandeKoder);
     }
 
     public static FunktionsNedsattningsKoder of(
-            final List<String> icd10Koder, final List<IcfKod> centralaKoder, final List<IcfKod> kompletterandeKoder) {
-        return new FunktionsNedsattningsKoder(icd10Koder, centralaKoder, kompletterandeKoder);
+            final List<String> icd10Koder, final List<IcfKod> kompletterandeKoder) {
+        return new FunktionsNedsattningsKoder(icd10Koder, kompletterandeKoder);
     }
 }
