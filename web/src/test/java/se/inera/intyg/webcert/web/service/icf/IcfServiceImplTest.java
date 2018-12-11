@@ -43,7 +43,7 @@ import se.inera.intyg.webcert.persistence.fmb.model.fmb.IcfKodTyp;
 import se.inera.intyg.webcert.persistence.fmb.repository.DiagnosInformationRepository;
 import se.inera.intyg.webcert.web.service.icf.resource.IcfTextResource;
 import se.inera.intyg.webcert.web.web.controller.api.IcfRequest;
-import se.inera.intyg.webcert.web.web.controller.api.dto.IcfResponse;
+import se.inera.intyg.webcert.web.web.controller.api.dto.icf.IcfResponse;
 
 @RunWith(MockitoJUnitRunner.class)
 public class IcfServiceImplTest {
@@ -116,8 +116,8 @@ public class IcfServiceImplTest {
         assertThat(icfInformationByIcd10Koder.getUnika()).isNotNull();
         assertThat(icfInformationByIcd10Koder.getUnika()).hasSize(1);
         assertThat(icfInformationByIcd10Koder.getUnika().get(0).getIcd10Kod()).isEqualTo(match1);
-        assertThat(icfInformationByIcd10Koder.getUnika().get(0).getFunktionsNedsattningsKoder().getCentralaKoder().get(0).getKod()).isEqualTo(match1);
-        assertThat(icfInformationByIcd10Koder.getUnika().get(0).getFunktionsNedsattningsKoder().getKompletterandeKoder().get(0).getKod()).isEqualTo(match1);
+        assertThat(icfInformationByIcd10Koder.getUnika().get(0).getFunktionsNedsattningsKoder().getIcfKoder().get(0).getKod()).isEqualTo(match1);
+        assertThat(icfInformationByIcd10Koder.getUnika().get(0).getFunktionsNedsattningsKoder().getIcfKoder().get(0).getKod()).isEqualTo(match1);
 
         assertThat(icfInformationByIcd10Koder.getGemensamma()).isNotNull();
         assertThat(icfInformationByIcd10Koder.getGemensamma().getIcd10Kod()).isNull();

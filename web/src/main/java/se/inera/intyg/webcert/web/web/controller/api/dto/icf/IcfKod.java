@@ -16,13 +16,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.web.web.controller.api.dto;
+package se.inera.intyg.webcert.web.web.controller.api.dto.icf;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
-public final class IcfKod {
+public class IcfKod {
 
     private String kod;
     private String benamning;
@@ -32,7 +32,7 @@ public final class IcfKod {
     public IcfKod() {
     }
 
-    private IcfKod(final String kod, final String benamning, final String beskrivning, final String innefattar) {
+    IcfKod(final String kod, final String benamning, final String beskrivning, final String innefattar) {
         this.kod = kod;
         this.benamning = benamning;
         this.beskrivning = beskrivning;
@@ -81,7 +81,9 @@ public final class IcfKod {
     public boolean equals(final Object o) {
         if (this == o) return true;
 
-        if (o == null || getClass() != o.getClass()) return false;
+        if (o == null) return false;
+
+        if ((o.getClass() != this.getClass()) && !(o instanceof IcfCentralKod) && !(o instanceof IcfKompletterandeKod)) return false;
 
         final IcfKod icfKod = (IcfKod) o;
 

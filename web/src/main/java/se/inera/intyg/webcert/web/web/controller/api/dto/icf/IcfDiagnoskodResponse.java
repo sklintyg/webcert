@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.web.web.controller.api.dto;
+package se.inera.intyg.webcert.web.web.controller.api.dto.icf;
 
 public class IcfDiagnoskodResponse {
 
@@ -71,6 +71,10 @@ public class IcfDiagnoskodResponse {
 
         if (aktivitetsBegransningsKoder != null && !(aktivitetsBegransningsKoder instanceof AktivitetsBegransningsKoder)) {
             throw new IllegalArgumentException("aktivitetsBegransningsKoder must be of type AktivitetsBegransningsKoder");
+        }
+
+        if (funktionsNedsattningsKoder == null && aktivitetsBegransningsKoder == null) {
+            return null;
         }
 
         return new IcfDiagnoskodResponse(

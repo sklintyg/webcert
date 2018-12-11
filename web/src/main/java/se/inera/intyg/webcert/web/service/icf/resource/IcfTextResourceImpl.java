@@ -19,9 +19,9 @@
 package se.inera.intyg.webcert.web.service.icf.resource;
 
 import static java.lang.invoke.MethodHandles.lookup;
+import static org.apache.commons.lang3.StringUtils.lowerCase;
 
 import io.vavr.collection.HashMap;
-import io.vavr.control.Option;
 import io.vavr.control.Try;
 import jxl.Sheet;
 import jxl.Workbook;
@@ -37,7 +37,7 @@ import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.Optional;
-import se.inera.intyg.webcert.web.web.controller.api.dto.IcfKod;
+import se.inera.intyg.webcert.web.web.controller.api.dto.icf.IcfKod;
 
 @Component
 public class IcfTextResourceImpl implements IcfTextResource {
@@ -73,13 +73,7 @@ public class IcfTextResourceImpl implements IcfTextResource {
 
     @Override
     public Optional<IcfKod> lookupTextByIcfKod(final String icfKod) {
-        final Option<IcfKod> lookupKod = icfKoder.get(StringUtils.lowerCase(icfKod));
-
-        if (lookupKod.isEmpty()) {
-            return Optional.empty();
-        } else {
-            return Optional.of(lookupKod.get());
-        }
+        return icfKoder.get(lowerCase(icfKod)).toJavaOptional();
     }
 
     private void initIcfTextResources() throws IOException, BiffException {
@@ -122,7 +116,7 @@ public class IcfTextResourceImpl implements IcfTextResource {
         rowsContent.forEach(rowContent -> {
             final HashMap<Integer, String> rowColumns = rowContent._2;
 
-            final String icfKod = StringUtils.trim(StringUtils.lowerCase(rowColumns.get(ICF_KODER_COLUMN).get()));
+            final String icfKod = StringUtils.trim(lowerCase(rowColumns.get(ICF_KODER_COLUMN).get()));
             final String benamning = StringUtils.trim(rowColumns.get(BENAMNING_COLUMN).get());
             final String alternativTerm = StringUtils.trim(rowColumns.get(ALTERNATIV_TERM_COLUMN).get());
             final String beskrivning = StringUtils.trim(rowColumns.get(BESKRIVNING_COLUMN).get());
