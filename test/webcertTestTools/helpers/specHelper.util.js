@@ -112,6 +112,8 @@ module.exports = {
             utkastPage = pages.intyg.af.af00213.utkast;
         } else if (intygType === 'ag114') {
             utkastPage = pages.intyg.ag.ag114.utkast;
+        } else if (intygType === 'ag7804') {
+            utkastPage = pages.intyg.ag.ag7804.utkast;
         } else {
             utkastPage = pages.intyg[intygType].utkast;
         }

@@ -110,6 +110,10 @@ module.exports = {
             ag114: {
                 utkast: require(intygPath + 'ag/ag114/ag114.utkast.page.js'),
                 intyg: require(intygPath + 'ag/ag114/ag114.intyg.page.js')
+            },
+            ag7804: {
+                utkast: require(intygPath + 'ag/ag7804/ag7804.utkast.page.js'),
+                intyg: require(intygPath + 'ag/ag7804/ag7804.intyg.page.js')
             }
         }
     },
