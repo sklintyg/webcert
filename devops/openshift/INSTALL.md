@@ -154,11 +154,13 @@ Open _&lt;env>/secret-vars.yaml_ and replace `<value>` with expected values:
 	REDIS_PASSWORD: "<value>"
 	DATABASE_USERNAME: "<value>"
 	DATABASE_PASSWORD: "<value>"
-	MAIL_USERNAME: "<value>"
 	MAIL_PASSWORD: "<value>"
 	CGI_GRP_WS_CERTIFICATE_PASSWORD: "<value>"
 	CGI_GRP_WS_KEY_MANAGER_PASSWORD: "<value>"
 	CGI_GRP_WS_TRUSTSTORE_PASSWORD: "<value>"
+	HSA_WS_CERTIFICATE_PASSWORD: "<value>"
+	HSA_WS_KEY_MANAGER_PASSWORD: "<value>"
+	HSA_WS_TRUSTSTORE_PASSWORD: "<value>"
 	NTJP_WS_CERTIFICATE_PASSWORD: "<value>"
 	NTJP_WS_KEY_MANAGER_PASSWORD: "<value>"
 	NTJP_WS_TRUSTSTORE_PASSWORD: "<value>"
@@ -170,7 +172,7 @@ Open _&lt;env>/secret-vars.yaml_ and replace `<value>` with expected values:
   
 Open _&lt;env>/configmap-vars.yaml_ and replace `<value>` with expected values. You may also update the names of keystore/truststore files as well as their type (JKS or PKCS12). Also see working example from [webcert-test-configmap-envvar](https://raw.githubusercontent.com/sklintyg/webcert/develop/devops/openshift/test/configmap-vars.yaml). 
 
-	JOB_UTKASTLOCK_CRON: "10 3 * * * ?"
+	JOB_UTKASTLOCK_CRON: "0 0 2 * * ?"
 	JOB_UTKASTLOCK_LOCKED_AFTER_DAY: "14"
 	SPRING_PROFILES_ACTIVE: "<value>"
 	CONFIG_DIR: "${config.folder}"
