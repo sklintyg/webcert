@@ -1,7 +1,7 @@
 
 # OPENSHIFT INSTALLATION GUIDE
 
-Installation of web application webcert on openshift.
+Installation of Web application webcert on openshift.
 
 ## 1 Pre-Installation Requirements
 
@@ -32,15 +32,15 @@ Provided elsewhere:
 
 For all backing services their actual addresses and user accounts have to be known prior to start the installation procedure.  
 
-### 1.3 Integration / Firewall
+### 1.2 Integration / Firewall
 
 WebCert communicates in/out with the Inera Service Platform and thus needs firewall rules for that access.
 
-### 1.4 Certificates
+### 1.3 Certificates
 
 WebCert needs certificates, keystores and truststores for Inera Service Platform, SAML IdP and CGI IdP. The operations provider is responsible for installing these certificates in the appropriate OpenShift "secret", see detailed instructions in the OpenShift section.
 
-### 1.5 Message Queues
+### 1.4 Message Queues
 
 Two queues needs are required and depending on permissions those may be implicitly created by the application. The `<env>` placeholder shall be substituted with the actual name of the environment such as `stage` or `prod`.
 
@@ -86,7 +86,7 @@ To run database migration tool:
 
 1. All Pre-Installation Requirements are fulfilled, se above
 2. Check if a database migration is required
-3. Ensure that the env secret and secret-envvar are up to date
+3. Ensure that the secrets, env certifikat and secret-envvar are up to date
 4. Ensure that the configmap and configmap-envvar are up to date
 5. Check that deployment works as expected 
 6. Fine-tune memory settings for container and java process
@@ -154,11 +154,13 @@ Open _&lt;env>/secret-vars.yaml_ and replace `<value>` with expected values:
 	REDIS_PASSWORD: "<value>"
 	DATABASE_USERNAME: "<value>"
 	DATABASE_PASSWORD: "<value>"
-	MAIL_USERNAME: "<value>"
 	MAIL_PASSWORD: "<value>"
 	CGI_GRP_WS_CERTIFICATE_PASSWORD: "<value>"
 	CGI_GRP_WS_KEY_MANAGER_PASSWORD: "<value>"
 	CGI_GRP_WS_TRUSTSTORE_PASSWORD: "<value>"
+	HSA_WS_CERTIFICATE_PASSWORD: "<value>"
+	HSA_WS_KEY_MANAGER_PASSWORD: "<value>"
+	HSA_WS_TRUSTSTORE_PASSWORD: "<value>"
 	NTJP_WS_CERTIFICATE_PASSWORD: "<value>"
 	NTJP_WS_KEY_MANAGER_PASSWORD: "<value>"
 	NTJP_WS_TRUSTSTORE_PASSWORD: "<value>"
@@ -170,20 +172,27 @@ Open _&lt;env>/secret-vars.yaml_ and replace `<value>` with expected values:
   
 Open _&lt;env>/configmap-vars.yaml_ and replace `<value>` with expected values. You may also update the names of keystore/truststore files as well as their type (JKS or PKCS12). Also see working example from [webcert-test-configmap-envvar](https://raw.githubusercontent.com/sklintyg/webcert/develop/devops/openshift/test/configmap-vars.yaml). 
 
-
+	JOB_UTKASTLOCK_CRON: "0 0 2 * * ?"
+	JOB_UTKASTLOCK_LOCKED_AFTER_DAY: "14"
 	SPRING_PROFILES_ACTIVE: "<value>"
 	CONFIG_DIR: "${config.folder}"
-	LOGBACK_FILE: "<value>"
-	REDIS_HOST: "<value>"
+	LOGBACK_FILE: "/opt/$APP_NAME/config/logback-ocp.xml"	REDIS_HOST: "<value>"
 	REDIS_PORT: "<value>"
 	REDIS_SENTINEL_MASTER_NAME: "<value>"
-	DATABASE_PORT: "<value>"
+	MAIL_HOST: "<value>"
+	MAIL_FROM: "no-reply@verifiering.webcert.intygstjanster.se"
+	MAIL_PROTOCOL: [ "smtp" | "smtps" ]
+	MAIL_USERNAME: "<value>"
+	SPRING_PROFILES_ACTIVE: "<env>,...,caching-enabled,redis-sentinel"
+	DATABASE_PORT: "3306"
 	DATABASE_SERVER: "<value>"
 	ACTIVEMQ_BROKER_URL: "<value>"
 	NOTIFICATION_QUEUENAME: "<value>"
 	NOTIFICATION_WS_QUEUENAME: "<value>"
 	NOTIFICATION_AGGREGATION_QUEUENAME: "<value>"
 	LOG_QUEUENAME: "<value>"
+	CERTIFICATE_SENDER_QUEUENAME: "<value>"
+	# Note: typo (fixed in release/2019-1 and later)
 	CERTIFICATE_SENDER_QUEUEMAME: "<value>"
 	NTJP_WS_CERTIFICATE_FILE: "<value>"
 	NTJP_WS_TRUSTSTORE_FILE: "<value>"
@@ -199,7 +208,7 @@ Open _&lt;env>/configmap-vars.yaml_ and replace `<value>` with expected values. 
 	WEBCERT_HOST_URL: "<value>"
 	INTYGSTJANST_BASE_URL: "<value>"
 	FMB_ENDPOINT_URL: "<value>"
-	NETID_ACCESS_SERVER_URL: "<value>"
+	NETID_ACCESS_SERVER_URL: "https://showroom.lab.secmaker.com/nias/ServiceServer.asmx"
 	NTJP_BASE_URL: "<value>"
 	SRS_BASE_URL: "<value>"
 	PRIVATEPRACTITIONER_BASE_URL: "<value>"
@@ -217,7 +226,6 @@ Open _&lt;env>/configmap-vars.yaml_ and replace `<value>` with expected values. 
 	SENDANSWERTOFK_LOGICALADDRESS: "<value>"
 	SENDQUESTIONTOFK_LOGICALADDRESS: "<value>"
 	SENDMESSAGETOFK_LOGICALADDRESS: "<value>" 
-	MAIL_HOST: "<value>"
    
 Note 1: The `DATABASE_NAME` variable is assumed to be defined within the application deployment config.
 
@@ -230,11 +238,11 @@ The _&lt;env>/config/recipients.json_ file might require an update.
     
 ##### 2.4.1 Redis Sentinel Configuration
 
-Redis sentinel needs at least three addresses to work correctly. These are specified in the _redis.host_ and _redis.port_ properties respectively (in Java property file format):
+Redis sentinel needs at least three addresses to work correctly. These are specified in the `REDIS_HOST` and `REDIS_PORT` variables respectively (in environment style):
 
-    redis.host=host1;host2;host3
-    redis.port=26379;26379;26379
-    redis.sentinel.master.name=test
+    REDIS_HOST: "host1;host2;host3"
+    REDIS_PORT: "26379;26379;26379"
+    REDIS_SENTINEL_MASTER_NAME: "master"
     
 ### 2.5 Prepare Certificates
 
@@ -278,7 +286,7 @@ We're all set for deploying the application. As stated in the pre-reqs, the "dep
 Run the following command to create a deployment:
 
     > oc process deploytemplate-webapp \
-        -p APP_NAME=webcert-<env> \
+        -p APP_NAME=webcert[-<env>] \
         -p IMAGE=docker.drift.inera.se/intyg/webcert:<version> \
         -p STAGE=<env> 
         -p DATABASE_NAME=<value> \
@@ -292,7 +300,7 @@ Alternatively, it's possible to use the deploytemplate-webapp file locally:
 ### 2.8 Verify
 The pod(s) running webcert should become available within a few minutes use **oc** or Web Console to checkout the logs for progress:
 
-	> oc logs dc/webcert-<env>
+	> oc logs dc/webcert[-<env>]
 
 ### 2.9 Routes
-To publish WebCert a corresponding OCP route has to be created. The internal service address is _http://webcert-&lt;env>:8080_. The route should only accept `HTTPS` and is responsible of TLS termination.
+To publish WebCert a corresponding OCP route has to be created. The internal service address is _http://webcert[-&lt;env>]:8080_. The route should only accept `HTTPS` and is responsible of TLS termination.
