@@ -199,8 +199,8 @@ public class CertificateReceiverServiceImpl implements CertificateReceiverServic
             ListPossibleReceiversResponseType response = listPossibleReceiversClient.listPossibleReceivers(logicalAddress, request);
 
             if (response == null || response.getReceiverList() == null || response.getReceiverList().size() == 0) {
-                LOG.warn("Call to ListPossibleReceivers for intygstyp '{}' returned no possible receivers, check recipient "
-                        + "configuration in intygstjänsten.");
+                LOG.info("Call to ListPossibleReceivers for intygstyp '{}' returned no possible receivers, check recipient "
+                        + "configuration in intygstjänsten.", intygsTyp);
                 return new ArrayList<>();
             }
 
