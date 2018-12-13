@@ -36,9 +36,9 @@ Från och med dag 15 i sjukperioden beslutar Försäkringskassan om arbetstagare
 
 	<text id="KAT_2.RBK">Diagnos</text>
 	<text id="FRG_3.RBK">Önskar patienten uppge information om diagnoser till sin arbetsgivare?</text>
-	<text id="FRG_3.HLP">Enligt sjuklönelagen behöver intyget inte innehålla närmare uppgift om vilken sjukdom patienten lider av.
-		Om patienten väljer att delge sin arbetsgivare information om diagnoser anges vilken eller vilka sjukdomar som orsakar nedsatt arbetsförmåga. Den sjukdom som påverkar arbetsförmågan mest anges först.
-		Diagnoskoden anges alltid med så många positioner som möjligt. Om patienten har fler än tre sjukdomar som påverkar arbetsförmågan anges dessa under "övriga upplysningar".</text>
+	<text id="FRG_3.HLP"><![CDATA[Enligt sjuklönelagen behöver intyget inte innehålla närmare uppgift om vilken sjukdom patienten lider av.<br>
+		Om patienten väljer att delge sin arbetsgivare information om diagnoser anges vilken eller vilka sjukdomar som orsakar nedsatt arbetsförmåga. Den sjukdom som påverkar arbetsförmågan mest anges först.<br>
+		Diagnoskoden anges alltid med så många positioner som möjligt. Om patienten har fler än tre sjukdomar som påverkar arbetsförmågan anges dessa under "övriga upplysningar".]]></text>
 
 	<text id="FRG_4.RBK">Diagnos/diagnoser för sjukdom som orsakar nedsatt arbetsförmåga</text>
 	<text id="FRG_4.HLP"></text>
@@ -49,9 +49,10 @@ Från och med dag 15 i sjukperioden beslutar Försäkringskassan om arbetstagare
 
 
 	<text id="FRG_5.RBK">På vilket sätt medför sjukdomen nedsatt arbetsförmåga?</text>
-	<text id="FRG_5.HLP">Uppgift om på vilket sätt arbetsförmågan är nedsatt ska anges oavsett om diagnos har angetts eller inte, detta för att arbetstagaren ska kunna styrka sin rätt till sjuklön och rätt att vara frånvarande från arbetet. Informationen har även betydelse för arbetsgivaren i det proaktiva rehabiliteringsarbetet.</text>
+	<text id="FRG_5.HLP"><![CDATA[Uppgift om på vilket sätt arbetsförmågan är nedsatt ska anges oavsett om diagnos har angetts eller inte, detta för att arbetstagaren ska kunna styrka sin rätt till sjuklön och rätt att vara frånvarande från arbetet.<br>
+		Informationen har även betydelse för arbetsgivaren i det proaktiva rehabiliteringsarbetet.]]></text>
 	<text id="FRG_6.RBK">Finns arbetsförmåga trots sjukdom?</text>
-	<text id="FRG_6.HLP"><![CDATA[Svar på nedanstående frågor kan ge arbetsgivaren vägledning när det gäller eventuell anpassning av arbetsuppgifter, behov av arbetsresor eller möjlighet för arbetstagaren att hålla kontakten med arbetsplatsen.<br>1.Vilka arbetsuppgifter kan arbetstagaren utföra trots sin nedsatta arbetsförmåga?<br>2. Vilka arbetsuppgifter och moment bör arbetstagaren inte alls utföra av medicinska skäl?<br>3. Kan t ex arbetsresor till arbetet hjälpa?<br>4. Är det möjligt för arbetstagaren att vistas på arbetsplatsen vid till exempel arbetsplatsträffar?]]></text>
+	<text id="FRG_6.HLP"><![CDATA[Svar på nedanstående frågor kan ge arbetsgivaren vägledning när det gäller eventuell anpassning av arbetsuppgifter, behov av arbetsresor eller möjlighet för arbetstagaren att hålla kontakten med arbetsplatsen.<br><br>1.Vilka arbetsuppgifter kan arbetstagaren utföra trots sin nedsatta arbetsförmåga?<br><br>2. Vilka arbetsuppgifter och moment bör arbetstagaren inte alls utföra av medicinska skäl?<br><br>3. Kan t ex arbetsresor till arbetet hjälpa?<br><br>4. Är det möjligt för arbetstagaren att vistas på arbetsplatsen vid till exempel arbetsplatsträffar?]]></text>
 	<text id="DFR_6.2.RBK">Beskriv arbetsförmågan</text>
 
 	<text id="KAT_5.RBK">Övrigt</text>
@@ -59,9 +60,9 @@ Från och med dag 15 i sjukperioden beslutar Försäkringskassan om arbetstagare
 
 	<text id="KAT_4.RBK">Bedömning</text>
 	<text id="FRG_7.RBK">Min bedömning av patientens nedsättning av arbetsförmågan</text>
-	<text id="FRG_7.HLP">Utgångspunkten är att patientens arbetsförmåga ska bedömas i förhållande till hens normala sysselsättningsgrad.
-		Observera att sjukskrivningsgraden inte behöver följa FK:s fjärdeldels-nivåer, utan kan vara steglös.
-		Steglös sjukskrivningsgrad möjliggör anpassning till arbetstagarens sysselsättningsgrad och ska väljas i syfte att ta tillvara arbetsförmåga på ett optimalt sätt.</text>
+	<text id="FRG_7.HLP"><![CDATA[Utgångspunkten är att patientens arbetsförmåga ska bedömas i förhållande till hens normala sysselsättningsgrad.<br>
+		Observera att sjukskrivningsgraden inte behöver följa FK:s fjärdeldels-nivåer, utan kan vara steglös.<br>
+		Steglös sjukskrivningsgrad möjliggör anpassning till arbetstagarens sysselsättningsgrad och ska väljas i syfte att ta tillvara arbetsförmåga på ett optimalt sätt.]]></text>
 	<text id="DFR_7.1.RBK">Sjukskrivningsgrad</text>
 	<text id="DFR_7.2.RBK">Sjukskrivningsperiod</text>
 
