@@ -141,6 +141,8 @@ features:
       - *ki050 # LISJP
       - *ki060 # LUAE_NA
       - *ki070 # LUAE_FS
+      - *ki100 # AF00213
+      - *ki110 # AG114
       - *ki120 # AG7804
   - &f060
     name: *kf060
