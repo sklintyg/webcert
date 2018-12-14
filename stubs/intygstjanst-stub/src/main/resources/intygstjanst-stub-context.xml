@@ -40,7 +40,7 @@
     </jaxws:endpoint>
     <jaxws:endpoint address="/register-medical-certificate-stub" implementor="se.inera.intyg.webcert.intygstjanststub.RegisterMedicalCertificateResponderStub"/>
     <jaxws:endpoint address="/register-ts-diabetes-certificate-stub" implementor="se.inera.intyg.webcert.intygstjanststub.RegisterTSDiabetesResponderStub"/>
-    <jaxws:endpoint address="/list-sick-leaves-for-person-stub" implementor="se.inera.intyg.webcert.intygstjanststub.ListSickLeavesForPersonStub"/>
+    <jaxws:endpoint address="/list-active-sick-leaves-for-care-unit-stub" implementor="se.inera.intyg.webcert.intygstjanststub.ListActiveSickLeavesForCareUnitStub"/>
 
     <bean id="intygstjanstStubBootstrapBean" class="se.inera.intyg.webcert.intygstjanststub.BootstrapBean"/>
 

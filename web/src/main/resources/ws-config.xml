@@ -79,9 +79,9 @@
         address="${intygstjanst.getcertificate.endpoint.url}">
     </jaxws:client>
 
-    <jaxws:client id="listSickLeavesForPersonClient"
-        serviceClass="se.inera.intyg.clinicalprocess.healthcond.rehabilitation.listsickleavesforperson.v1.ListSickLeavesForPersonResponderInterface"
-        address="${intygstjanst.listsickleavesforperson.v1.endpoint.url}">
+    <jaxws:client id="ListActiveSickLeavesForCareUnitClient"
+        serviceClass="se.inera.intyg.clinicalprocess.healthcond.rehabilitation.listactivesickleavesforcareunit.v1.ListActiveSickLeavesForCareUnitResponderInterface"
+        address="${intygstjanst.listactivesickleavesforcareunit.v1.endpoint.url}">
     </jaxws:client>
 
     <jaxws:client id="netiDAccessServerSoap"

@@ -21,20 +21,22 @@ package se.inera.intyg.webcert.intygstjanststub;
 import com.google.common.base.Preconditions;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
+import se.riv.clinicalprocess.healthcond.certificate.types.v2.HsaId;
 import se.riv.clinicalprocess.healthcond.certificate.types.v2.IIType;
 import se.riv.clinicalprocess.healthcond.rehabilitation.v1.IntygsLista;
+import se.riv.clinicalprocess.healthcond.rehabilitation.v1.Vardgivare;
 import java.util.Optional;
-import se.inera.intyg.clinicalprocess.healthcond.rehabilitation.listsickleavesforperson.v1.ListSickLeavesForPersonResponderInterface;
-import se.inera.intyg.clinicalprocess.healthcond.rehabilitation.listsickleavesforperson.v1.ListSickLeavesForPersonResponseType;
-import se.inera.intyg.clinicalprocess.healthcond.rehabilitation.listsickleavesforperson.v1.ListSickLeavesForPersonType;
-import se.inera.intyg.clinicalprocess.healthcond.rehabilitation.listsickleavesforperson.v1.ResultCodeEnum;
-import se.inera.intyg.clinicalprocess.healthcond.rehabilitation.listsickleavesforperson.v1.ResultType;
+import se.inera.intyg.clinicalprocess.healthcond.rehabilitation.listactivesickleavesforcareunit.v1.ListActiveSickLeavesForCareUnitResponderInterface;
+import se.inera.intyg.clinicalprocess.healthcond.rehabilitation.listactivesickleavesforcareunit.v1.ListActiveSickLeavesForCareUnitResponseType;
+import se.inera.intyg.clinicalprocess.healthcond.rehabilitation.listactivesickleavesforcareunit.v1.ListActiveSickLeavesForCareUnitType;
+import se.inera.intyg.clinicalprocess.healthcond.rehabilitation.listactivesickleavesforcareunit.v1.ResultCodeEnum;
 
 @Service
-public class ListSickLeavesForPersonStub implements ListSickLeavesForPersonResponderInterface {
+public class ListActiveSickLeavesForCareUnitStub implements ListActiveSickLeavesForCareUnitResponderInterface {
 
     @Override
-    public ListSickLeavesForPersonResponseType listSickLeavesForPerson(String s, ListSickLeavesForPersonType parameters) {
+    public ListActiveSickLeavesForCareUnitResponseType listActiveSickLeavesForCareUnit(
+            final String s, final ListActiveSickLeavesForCareUnitType parameters) {
 
         Optional<String> personnummer = Optional.ofNullable(parameters.getPersonId())
                 .map(IIType::getExtension)
@@ -45,11 +47,18 @@ public class ListSickLeavesForPersonStub implements ListSickLeavesForPersonRespo
 
         final IntygsLista intygsLista = new IntygsLista();
 
-        ResultType resultType = new ResultType();
-        resultType.setResultCode(ResultCodeEnum.OK);
+        final HsaId hsaId = new HsaId();
+        hsaId.setExtension("hsaid");
+        hsaId.setRoot("root");
 
-        ListSickLeavesForPersonResponseType resp = new ListSickLeavesForPersonResponseType();
-        resp.setResult(resultType);
+        final Vardgivare vardgivare = new Vardgivare();
+        vardgivare.setVardgivarId(hsaId);
+        vardgivare.setVardgivarnamn("Vård Givare");
+
+        ListActiveSickLeavesForCareUnitResponseType resp = new ListActiveSickLeavesForCareUnitResponseType();
+        resp.setComment("");
+        resp.setResultCode(ResultCodeEnum.OK);
+        resp.setVardgivare(vardgivare);
         resp.setIntygsLista(intygsLista);
 
         return resp;

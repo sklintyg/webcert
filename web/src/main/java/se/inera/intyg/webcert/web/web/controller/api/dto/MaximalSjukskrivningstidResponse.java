@@ -22,8 +22,8 @@ public final class MaximalSjukskrivningstidResponse {
 
     private int foreslagenSjukskrivningstid;
     private boolean overskriderRekommenderadSjukskrivningstid;
-    private int totalTidigareSjukskrivningsTid;
-    private int totalSjukskrivningsTidInklusiveForeslagen;
+    private int totalTidigareSjukskrivningstid;
+    private int totalSjukskrivningstidInklusiveForeslagen;
     private Integer maximaltRekommenderadSjukskrivningstid;
 
     public MaximalSjukskrivningstidResponse() {
@@ -32,13 +32,13 @@ public final class MaximalSjukskrivningstidResponse {
     private MaximalSjukskrivningstidResponse(
             final int foreslagenSjukskrivningstid,
             final boolean overskriderRekommenderadSjukskrivningstid,
-            final int totalTidigareSjukskrivningsTid,
-            final int totalSjukskrivningsTidInklusiveForeslagen,
+            final int totalTidigareSjukskrivningstid,
+            final int totalSjukskrivningstidInklusiveForeslagen,
             final Integer maximalRekommenderadSjukskrivningstid) {
         this.foreslagenSjukskrivningstid = foreslagenSjukskrivningstid;
         this.overskriderRekommenderadSjukskrivningstid = overskriderRekommenderadSjukskrivningstid;
-        this.totalTidigareSjukskrivningsTid = totalTidigareSjukskrivningsTid;
-        this.totalSjukskrivningsTidInklusiveForeslagen = totalSjukskrivningsTidInklusiveForeslagen;
+        this.totalTidigareSjukskrivningstid = totalTidigareSjukskrivningstid;
+        this.totalSjukskrivningstidInklusiveForeslagen = totalSjukskrivningstidInklusiveForeslagen;
         this.maximaltRekommenderadSjukskrivningstid = maximalRekommenderadSjukskrivningstid;
     }
 
@@ -58,20 +58,20 @@ public final class MaximalSjukskrivningstidResponse {
         this.overskriderRekommenderadSjukskrivningstid = overskriderRekommenderadSjukskrivningstid;
     }
 
-    public int getTotalTidigareSjukskrivningsTid() {
-        return totalTidigareSjukskrivningsTid;
+    public int getTotalTidigareSjukskrivningstid() {
+        return totalTidigareSjukskrivningstid;
     }
 
-    public void setTotalTidigareSjukskrivningsTid(final int totalTidigareSjukskrivningsTid) {
-        this.totalTidigareSjukskrivningsTid = totalTidigareSjukskrivningsTid;
+    public void setTotalTidigareSjukskrivningstid(final int totalTidigareSjukskrivningstid) {
+        this.totalTidigareSjukskrivningstid = totalTidigareSjukskrivningstid;
     }
 
-    public int getTotalSjukskrivningsTidInklusiveForeslagen() {
-        return totalSjukskrivningsTidInklusiveForeslagen;
+    public int getTotalSjukskrivningstidInklusiveForeslagen() {
+        return totalSjukskrivningstidInklusiveForeslagen;
     }
 
-    public void setTotalSjukskrivningsTidInklusiveForeslagen(final int totalSjukskrivningsTidInklusiveForeslagen) {
-        this.totalSjukskrivningsTidInklusiveForeslagen = totalSjukskrivningsTidInklusiveForeslagen;
+    public void setTotalSjukskrivningstidInklusiveForeslagen(final int totalSjukskrivningstidInklusiveForeslagen) {
+        this.totalSjukskrivningstidInklusiveForeslagen = totalSjukskrivningstidInklusiveForeslagen;
     }
 
     public Integer getMaximaltRekommenderadSjukskrivningstid() {

@@ -21,20 +21,22 @@ package se.inera.intyg.webcert.web.service.fmb.sjukfall;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import se.riv.clinicalprocess.healthcond.certificate.types.v2.HsaId;
 import se.riv.clinicalprocess.healthcond.certificate.types.v2.PersonId;
 import se.riv.clinicalprocess.healthcond.rehabilitation.v1.IntygsData;
 import java.lang.invoke.MethodHandles;
 import java.time.LocalDate;
 import java.util.List;
-import se.inera.intyg.clinicalprocess.healthcond.rehabilitation.listsickleavesforperson.v1.ListSickLeavesForPersonResponderInterface;
-import se.inera.intyg.clinicalprocess.healthcond.rehabilitation.listsickleavesforperson.v1.ListSickLeavesForPersonResponseType;
-import se.inera.intyg.clinicalprocess.healthcond.rehabilitation.listsickleavesforperson.v1.ListSickLeavesForPersonType;
+import se.inera.intyg.clinicalprocess.healthcond.rehabilitation.listactivesickleavesforcareunit.v1.ListActiveSickLeavesForCareUnitResponderInterface;
+import se.inera.intyg.clinicalprocess.healthcond.rehabilitation.listactivesickleavesforcareunit.v1.ListActiveSickLeavesForCareUnitResponseType;
+import se.inera.intyg.clinicalprocess.healthcond.rehabilitation.listactivesickleavesforcareunit.v1.ListActiveSickLeavesForCareUnitType;
 import se.inera.intyg.infra.sjukfall.dto.IntygData;
 import se.inera.intyg.infra.sjukfall.dto.IntygParametrar;
 import se.inera.intyg.infra.sjukfall.dto.SjukfallEnhet;
 import se.inera.intyg.infra.sjukfall.services.SjukfallEngineService;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.service.fmb.sjukfall.converter.IntygstjanstConverter;
+import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 
 @Service
 public class FmbSjukfallServiceImpl implements FmbSjukfallService {
@@ -44,14 +46,17 @@ public class FmbSjukfallServiceImpl implements FmbSjukfallService {
     private static final int MAX_GLAPP = 5;
     private static final int MAX_SEDAN_SJUKAVSLUT = 0;
 
-    private final ListSickLeavesForPersonResponderInterface listSickLeavesForPersonResponder;
+    private final ListActiveSickLeavesForCareUnitResponderInterface sickLeavesForCareUnit;
     private final SjukfallEngineService sjukfallEngineService;
+    private final WebCertUserService webCertUserService;
 
     public FmbSjukfallServiceImpl(
-            final ListSickLeavesForPersonResponderInterface listSickLeavesForPersonResponder,
-            final SjukfallEngineService sjukfallEngineService) {
-        this.listSickLeavesForPersonResponder = listSickLeavesForPersonResponder;
+            final ListActiveSickLeavesForCareUnitResponderInterface sickLeavesForCareUnit,
+            final SjukfallEngineService sjukfallEngineService,
+            final WebCertUserService webCertUserService) {
+        this.sickLeavesForCareUnit = sickLeavesForCareUnit;
         this.sjukfallEngineService = sjukfallEngineService;
+        this.webCertUserService = webCertUserService;
     }
 
     @Override
@@ -59,8 +64,8 @@ public class FmbSjukfallServiceImpl implements FmbSjukfallService {
 
         LOG.debug("Starting: Fetch intyg data to Calculate total sjukskrivningstid for patient and care unit");
 
-        final ListSickLeavesForPersonType request = createRequest(personnummer);
-        final ListSickLeavesForPersonResponseType response = listSickLeavesForPersonResponder.listSickLeavesForPerson("", request);
+        final ListActiveSickLeavesForCareUnitType request = createRequest(personnummer);
+        final ListActiveSickLeavesForCareUnitResponseType response = sickLeavesForCareUnit.listActiveSickLeavesForCareUnit("", request);
 
         final List<IntygsData> intygsData = response.getIntygsLista().getIntygsData();
 
@@ -76,12 +81,21 @@ public class FmbSjukfallServiceImpl implements FmbSjukfallService {
     }
 
 
-    private ListSickLeavesForPersonType createRequest(final Personnummer personnummer) {
+    private ListActiveSickLeavesForCareUnitType createRequest(final Personnummer personnummer) {
+
         PersonId personId = new PersonId();
         personId.setExtension(personnummer.getOriginalPnr());
 
-        ListSickLeavesForPersonType request = new ListSickLeavesForPersonType();
+        final String hsa = webCertUserService.getUser().getValdVardenhet().getId();
+
+        HsaId hsaId = new HsaId();
+        hsaId.setExtension(hsa);
+        hsaId.setRoot("");
+
+        ListActiveSickLeavesForCareUnitType request = new ListActiveSickLeavesForCareUnitType();
         request.setPersonId(personId);
+        request.setMaxDagarSedanAvslut(MAX_SEDAN_SJUKAVSLUT);
+        request.setEnhetsId(hsaId);
 
         return request;
     }
