@@ -121,21 +121,39 @@ angular.module('webcert').controller('webcert.SokSkrivValjUtkastTypeCtrl',
 
             function setExtendedStatus(intyg) {
                 intyg.extendedStatus = null;
-                // These 2 scenarios overrides actual status of the intyg. Maybe we shoould utilize this to remove similar
+                // These 2 scenarios overrides actual status of the intyg.
+                // Maybe we shoould utilize this to remove similar
                 // ersatt/kompletterat checks in tidigareIntyg.filter.js
-                if (typeof intyg.relations !== 'undefined' && typeof intyg.relations.latestChildRelations !== 'undefined') {
-                    if (typeof intyg.relations.latestChildRelations.complementedByIntyg !== 'undefined') {
-                        intyg.extendedStatus = 'KOMPLETTERAT_AV_INTYG';
-                    } else if (typeof intyg.relations.latestChildRelations.replacedByIntyg !== 'undefined') {
-                        intyg.extendedStatus = 'ERSATT_AV_INTYG';
-                    }
-
+                if (isKompletterad(intyg)) {
+                    intyg.extendedStatus = 'KOMPLETTERAT_AV_INTYG';
+                } else if (isErsatt(intyg)) {
+                    intyg.extendedStatus = 'ERSATT_AV_INTYG';
                 }
 
                if (intyg.extendedStatus === null) {
                     intyg.extendedStatus = intyg.status;
                 }
             }
+
+            function isErsatt(intyg) {
+                if (typeof intyg.relations !== 'undefined' &&
+                    typeof intyg.relations.latestChildRelations !== 'undefined' &&
+                    typeof intyg.relations.latestChildRelations.replacedByIntyg !== 'undefined') {
+                    return true;
+                }
+                return false;
+            }
+
+            function isKompletterad(intyg) {
+                if (typeof intyg.relations !== 'undefined' &&
+                    typeof intyg.relations.latestChildRelations !== 'undefined' &&
+                    typeof intyg.relations.latestChildRelations.complementedByIntyg !== 'undefined' &&
+                    !intyg.relations.latestChildRelations.complementedByIntyg.makulerat) {
+                    return true;
+                }
+                return false;
+            }
+
             //Use loaded module metadata to look up name for a intygsType
             function getTypeName (intygsType) {
                 var intygTypes = intygTypeModel.intygTypes.filter(function (intygType) {
@@ -156,7 +174,7 @@ angular.module('webcert').controller('webcert.SokSkrivValjUtkastTypeCtrl',
                         authority: UserModel.privileges.HANTERA_SEKRETESSMARKERAD_PATIENT
                     });
                     return canHandleSecrecy;
-                } 
+                }
                 return true;
 
             };

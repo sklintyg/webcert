@@ -33,7 +33,8 @@ angular.module('webcert').filter('TidigareIntygFilter',
         function isKompletterad(intyg) {
             if (typeof intyg.relations !== 'undefined' &&
                 typeof intyg.relations.latestChildRelations !== 'undefined' &&
-                typeof intyg.relations.latestChildRelations.complementedByIntyg !== 'undefined') {
+                typeof intyg.relations.latestChildRelations.complementedByIntyg !== 'undefined' &&
+                !intyg.relations.latestChildRelations.complementedByIntyg.makulerat) {
                 return true;
             }
             return false;
@@ -63,7 +64,7 @@ angular.module('webcert').filter('TidigareIntygFilter',
                 result = intygList;
                 break;
             }
-            
+
             return result;
         };
     });
