@@ -41,12 +41,12 @@
 
 <div ng-if="filterForm.$invalid && !filterForm.$pristine" ng-cloak class="filter-errors">
   <p ng-show="filterForm['filter-changedate-from'].$error.date || filterForm['filter-changedate-from'].$error.maxDate">
-    <span dynamic-label>Ange ett giltigt datum. Framtida datum ger inga resultat.</span>
+    <span dynamic-label key="common.validation.c-06"></span>
   </p>
   <p ng-show="filterForm['filter-changedate-to'].$error.date || filterForm['filter-changedate-to'].$error.maxDate">
-    <span dynamic-label>Ange ett giltigt datum. Framtida datum ger inga resultat.</span>
+    <span dynamic-label key="common.validation.c-06"></span>
   </p>
   <p ng-show="filterForm['filter-changedate-to'].$error.isBefore">
-    <span dynamic-label>Startdatum får inte vara efter slutdatum. </span>
+    <span dynamic-label key="common.validation.date-period.invalid_order"></span>
   </p>
 </div>
