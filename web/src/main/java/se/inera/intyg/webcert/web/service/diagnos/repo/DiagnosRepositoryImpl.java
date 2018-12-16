@@ -102,7 +102,7 @@ public class DiagnosRepositoryImpl implements DiagnosRepository {
         if (Strings.isNullOrEmpty(searchString)) {
             return Collections.emptyList();
         }
-        BooleanQuery query = new BooleanQuery();
+        BooleanQuery.Builder query = new BooleanQuery.Builder();
         try (StandardAnalyzer analyzer = new StandardAnalyzer()) {
             TokenStream tokenStream = analyzer.tokenStream(DESC, searchString);
             CharTermAttribute charTermAttribute = tokenStream.addAttribute(CharTermAttribute.class);
@@ -114,7 +114,7 @@ public class DiagnosRepositoryImpl implements DiagnosRepository {
         } catch (IOException e) {
             throw new RuntimeException("IOException occurred in lucene index search", e);
         }
-        return searchDiagnosisByQuery(query, nbrOfResults);
+        return searchDiagnosisByQuery(query.build(), nbrOfResults);
     }
 
     private List<Diagnos> searchDiagnosisByQuery(Query query, int nbrOfResults) {
@@ -141,7 +141,7 @@ public class DiagnosRepositoryImpl implements DiagnosRepository {
 
     public String sanitizeCodeValue(String codeValueParam) {
         String codeValue = Strings.nullToEmpty(codeValueParam);
-        codeValue = CharMatcher.is('.').or(CharMatcher.WHITESPACE).removeFrom(codeValue);
+        codeValue = CharMatcher.is('.').or(CharMatcher.whitespace()).removeFrom(codeValue);
 
         return codeValue.trim().isEmpty() ? null : codeValue.toUpperCase();
     }

@@ -101,7 +101,7 @@ public class IntegreradEnhetEntry implements Comparable<IntegreradEnhetEntry> {
         if (obj == null) {
             return false;
         }
-        if (getClass() != obj.getClass()) {
+        if (!(obj instanceof IntegreradEnhetEntry)) {
             return false;
         }
         IntegreradEnhetEntry other = (IntegreradEnhetEntry) obj;

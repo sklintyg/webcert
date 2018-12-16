@@ -18,13 +18,13 @@
  */
 package se.inera.intyg.webcert.persistence.referens.model;
 
+import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import java.util.Objects;
 
 @Entity
 @Table(name = "REFERENS")
@@ -70,7 +70,7 @@ public class Referens {
             return true;
         }
 
-        if (o == null || getClass() != o.getClass()) {
+        if (!(o instanceof Referens)) {
             return false;
         }
 

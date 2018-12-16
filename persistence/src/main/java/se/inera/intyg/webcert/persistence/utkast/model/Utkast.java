@@ -18,12 +18,9 @@
  */
 package se.inera.intyg.webcert.persistence.utkast.model;
 
-import org.hibernate.annotations.Type;
-import se.inera.intyg.common.support.common.enumerations.RelationKod;
-import se.inera.intyg.common.support.peristence.dao.util.DaoUtil;
-import se.inera.intyg.schemas.contract.Personnummer;
-import se.inera.intyg.common.support.model.UtkastStatus;
-
+import java.io.UnsupportedEncodingException;
+import java.time.LocalDateTime;
+import java.util.Objects;
 import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
 import javax.persistence.Basic;
@@ -42,9 +39,13 @@ import javax.persistence.PreUpdate;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
 import javax.persistence.Version;
-import java.io.UnsupportedEncodingException;
-import java.time.LocalDateTime;
-import java.util.Objects;
+
+import org.hibernate.annotations.Type;
+
+import se.inera.intyg.common.support.common.enumerations.RelationKod;
+import se.inera.intyg.common.support.model.UtkastStatus;
+import se.inera.intyg.common.support.peristence.dao.util.DaoUtil;
+import se.inera.intyg.schemas.contract.Personnummer;
 
 /**
  * A draft of a certificate.
@@ -170,7 +171,7 @@ public class Utkast {
     public boolean equals(Object o) {
         if (this == o) {
             return true;
-        } else if (o == null || getClass() != o.getClass()) {
+        } else if (!(o instanceof Utkast)) {
             return false;
         }
 

@@ -18,12 +18,12 @@
  */
 package se.inera.intyg.webcert.web.service.underskrift.model;
 
-import se.inera.intyg.common.support.common.enumerations.SignaturTyp;
-import se.inera.intyg.infra.xmldsig.model.IntygSignature;
-
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Objects;
+
+import se.inera.intyg.common.support.common.enumerations.SignaturTyp;
+import se.inera.intyg.infra.xmldsig.model.IntygSignature;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static java.util.Objects.nonNull;
@@ -116,7 +116,7 @@ public class SignaturBiljett implements Serializable {
         if (this == o) {
             return true;
         }
-        if (o == null || getClass() != o.getClass()) {
+        if (!(o instanceof SignaturBiljett)) {
             return false;
         }
         SignaturBiljett that = (SignaturBiljett) o;

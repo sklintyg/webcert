@@ -18,11 +18,14 @@
  */
 package se.inera.intyg.webcert.web.auth.eleg;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+import javax.servlet.http.HttpServletRequest;
+
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -36,6 +39,7 @@ import org.springframework.security.web.savedrequest.SavedRequest;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+
 import se.inera.intyg.infra.integration.hsa.services.HsaPersonService;
 import se.inera.intyg.infra.integration.pu.model.Person;
 import se.inera.intyg.infra.integration.pu.model.PersonSvar;
@@ -54,11 +58,6 @@ import se.riv.infrastructure.directory.privatepractitioner.types.v1.PersonId;
 import se.riv.infrastructure.directory.privatepractitioner.v1.EnhetType;
 import se.riv.infrastructure.directory.privatepractitioner.v1.HoSPersonType;
 import se.riv.infrastructure.directory.privatepractitioner.v1.VardgivareType;
-
-import javax.servlet.http.HttpServletRequest;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -83,8 +82,6 @@ public class ElegWebCertUserDetailsServiceTest extends BaseSAMLCredentialTest {
     private static final String REMOTE_ENTITY_ID = "remoteEntityId";
     private static final String HSA_ID = "191212121212";
     private static final String PERSON_ID = "197705232382";
-    @Rule
-    public ExpectedException thrown = ExpectedException.none();
     @Mock
     private HsaPersonService hsaPersonService;
     @Mock
@@ -156,44 +153,36 @@ public class ElegWebCertUserDetailsServiceTest extends BaseSAMLCredentialTest {
         verify(avtalService, times(1)).userHasApprovedLatestAvtal(anyString());
     }
 
-    @Test
+    @Test(expected = HsaServiceException.class)
     public void testLoginPUErrorThrowsException() {
         reset(puService);
         when(puService.getPerson(any(Personnummer.class))).thenReturn(PersonSvar.error());
 
-        thrown.expect(HsaServiceException.class);
-
         testee.loadUserBySAML(new SAMLCredential(mock(NameID.class), assertionPrivatlakare, REMOTE_ENTITY_ID, LOCAL_ENTITY_ID));
     }
 
-    @Test
+    @Test(expected = HsaServiceException.class)
     public void testLoginPUNotFoundThrowsException() {
         reset(puService);
         when(puService.getPerson(any(Personnummer.class))).thenReturn(PersonSvar.notFound());
 
-        thrown.expect(HsaServiceException.class);
-
         testee.loadUserBySAML(new SAMLCredential(mock(NameID.class), assertionPrivatlakare, REMOTE_ENTITY_ID, LOCAL_ENTITY_ID));
     }
 
 
-    @Test
+    @Test(expected = PrivatePractitionerAuthorizationException.class)
     public void testNotValidPrivatePractitionerThrowsException() {
         reset(ppService);
         when(ppService.validatePrivatePractitioner(any(), any(), any())).thenReturn(false);
 
-        thrown.expect(PrivatePractitionerAuthorizationException.class);
-
         testee.loadUserBySAML(new SAMLCredential(mock(NameID.class), assertionPrivatlakare, REMOTE_ENTITY_ID, LOCAL_ENTITY_ID));
     }
 
-    @Test
+    @Test(expected = HsaServiceException.class)
     public void testNotFoundInHSAThrowsException() {
         reset(ppService);
         when(ppService.validatePrivatePractitioner(any(), any(), any())).thenReturn(true);
         when(ppService.getPrivatePractitioner(any(), any(), any())).thenReturn(null);
-
-        thrown.expect(HsaServiceException.class);
 
         testee.loadUserBySAML(new SAMLCredential(mock(NameID.class), assertionPrivatlakare, REMOTE_ENTITY_ID, LOCAL_ENTITY_ID));
     }

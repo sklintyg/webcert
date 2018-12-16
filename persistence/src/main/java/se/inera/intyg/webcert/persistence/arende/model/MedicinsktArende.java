@@ -75,7 +75,7 @@ public class MedicinsktArende {
         if (obj == null) {
             return false;
         }
-        if (getClass() != obj.getClass()) {
+        if (!(obj instanceof MedicinsktArende)) {
             return false;
         }
         MedicinsktArende other = (MedicinsktArende) obj;

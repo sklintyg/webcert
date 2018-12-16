@@ -18,9 +18,7 @@
  */
 package se.inera.intyg.webcert.persistence.utkast.model;
 
-import org.hibernate.annotations.Type;
-import se.inera.intyg.common.support.common.enumerations.SignaturTyp;
-
+import java.time.LocalDateTime;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -30,7 +28,10 @@ import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.Lob;
 import javax.persistence.Table;
-import java.time.LocalDateTime;
+
+import org.hibernate.annotations.Type;
+
+import se.inera.intyg.common.support.common.enumerations.SignaturTyp;
 
 @Entity
 @Table(name = "SIGNATUR")
@@ -113,7 +114,7 @@ public class Signatur {
     public boolean equals(Object o) {
         if (this == o) {
             return true;
-        } else if (o == null || getClass() != o.getClass()) {
+        } else if (!(o instanceof Signatur)) {
             return false;
         }
         return getIntygsId().equals(((Signatur) o).getIntygsId());

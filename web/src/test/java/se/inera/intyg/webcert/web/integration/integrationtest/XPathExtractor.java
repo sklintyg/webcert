@@ -22,7 +22,6 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.Iterator;
 import java.util.Map;
-
 import javax.xml.XMLConstants;
 import javax.xml.namespace.NamespaceContext;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -40,7 +39,6 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
-import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableMap;
 
 /*
@@ -63,7 +61,7 @@ public class XPathExtractor {
             xpath = XPathFactory.newInstance().newXPath();
             xpath.setNamespaceContext(new XPathNamespaceContext(namespaceMap));
         } catch (Exception e) {
-            throw Throwables.propagate(e);
+            throw new RuntimeException(e);
         }
     }
 
@@ -79,7 +77,7 @@ public class XPathExtractor {
                 return writer.toString();
             }
         } catch (Exception e) {
-            throw Throwables.propagate(e);
+            throw new RuntimeException(e);
         }
         return null;
     }

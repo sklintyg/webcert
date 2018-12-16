@@ -18,21 +18,20 @@
  */
 package se.inera.intyg.webcert.web.web.controller.integrationtest.api;
 
-import com.jayway.restassured.RestAssured;
-import com.jayway.restassured.http.ContentType;
-import com.jayway.restassured.path.json.JsonPath;
-import com.jayway.restassured.response.Response;
+import java.util.ArrayList;
+import java.util.Collections;
+
 import org.junit.Assert;
 import org.junit.Test;
+
+import com.jayway.restassured.RestAssured;
+import com.jayway.restassured.path.json.JsonPath;
+import com.jayway.restassured.response.Response;
 import se.inera.intyg.webcert.web.service.dto.Lakare;
 import se.inera.intyg.webcert.web.web.controller.api.dto.CreateUtkastRequest;
 import se.inera.intyg.webcert.web.web.controller.api.dto.QueryIntygResponse;
 import se.inera.intyg.webcert.web.web.controller.integrationtest.BaseRestIntegrationTest;
 
-import java.util.ArrayList;
-import java.util.Collections;
-
-import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertEquals;
@@ -161,7 +160,7 @@ public class UtkastApiControllerIT extends BaseRestIntegrationTest {
     public void testFilterDraftsForUnitPagination() {
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
 
-        ArrayList<String> utkastIds = new ArrayList(), utkastPersonIds = new ArrayList();
+        ArrayList<String> utkastIds = new ArrayList<>(), utkastPersonIds = new ArrayList<>();
         for(int i = 0; i < 2; i++) {
             for (int j = 0; j < 8; j++) {
                 utkastIds.add(createUtkast("luse", DEFAULT_PATIENT_PERSONNUMMER));
@@ -215,7 +214,7 @@ public class UtkastApiControllerIT extends BaseRestIntegrationTest {
     public void testFilterDraftsForUnitVardAdminPagination() {
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
 
-        ArrayList<String> utkastIds = new ArrayList(), utkastPersonIds = new ArrayList();
+        ArrayList<String> utkastIds = new ArrayList<>(), utkastPersonIds = new ArrayList<>();
         for(int i = 0; i < 2; i++) {
             utkastIds.add(createUtkast("lisjp", "195401232540")); // Sekretessmarkering på patient
             utkastPersonIds.add("19540123-2540");

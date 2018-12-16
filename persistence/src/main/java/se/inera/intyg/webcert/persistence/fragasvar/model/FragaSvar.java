@@ -303,7 +303,7 @@ public class FragaSvar {
     public boolean equals(Object o) {
         if (this == o) {
             return true;
-        } else if (o == null || getClass() != o.getClass()) {
+        } else if (!(o instanceof FragaSvar)) {
             return false;
         } else {
             FragaSvar fragaSvar = (FragaSvar) o;

@@ -18,11 +18,8 @@
  */
 package se.inera.intyg.webcert.web.auth;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.when;
-
+import java.util.Locale;
 import java.util.Vector;
-
 import javax.servlet.http.HttpServletRequest;
 
 import org.junit.Test;
@@ -30,6 +27,9 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.security.web.savedrequest.SavedRequest;
+
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.when;
 
 /**
  * Tests that the {@link SavedRequestFactoryImpl} produces correct SavedRequest instances.
@@ -58,8 +58,8 @@ public class SavedRequestFactoryTest {
         sb.append(MY_PATH_SEGMENTS);
 
         // Just mock the bare minimum to produce a valid SavedRequest without having exceptions thrown...
-        when(req.getHeaderNames()).thenReturn(new Vector().elements());
-        when(req.getLocales()).thenReturn(new Vector().elements());
+        when(req.getHeaderNames()).thenReturn(new Vector<String>().elements());
+        when(req.getLocales()).thenReturn(new Vector<Locale>().elements());
         when(req.getScheme()).thenReturn(SCHEME);
         when(req.getServerName()).thenReturn(SERVER);
         when(req.getServerPort()).thenReturn(PORT);

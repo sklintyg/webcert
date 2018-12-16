@@ -33,9 +33,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableList;
-
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistryImpl;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
@@ -223,7 +221,7 @@ public class ArendeViewConverter {
             moduleApi = moduleRegistry.getModuleApi(intygsTyp, utlatande.getTextVersion());
         } catch (ModuleNotFoundException e) {
             LOG.error("Module not found for certificate of type {}", intygsTyp);
-            Throwables.propagate(e);
+            throw new RuntimeException(e);
         }
 
         Map<String, List<String>> arendeParameters = null;

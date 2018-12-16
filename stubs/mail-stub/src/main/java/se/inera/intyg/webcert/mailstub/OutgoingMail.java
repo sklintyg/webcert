@@ -18,12 +18,12 @@
  */
 package se.inera.intyg.webcert.mailstub;
 
-import javax.mail.Address;
-import javax.mail.MessagingException;
-import javax.mail.internet.MimeMessage;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import javax.mail.Address;
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
 
 /**
  * @author andreaskaltenbach
@@ -82,7 +82,7 @@ public class OutgoingMail {
         if (obj == null) {
             return false;
         }
-        if (getClass() != obj.getClass()) {
+        if (!(obj instanceof OutgoingMail)) {
             return false;
         }
         OutgoingMail other = (OutgoingMail) obj;

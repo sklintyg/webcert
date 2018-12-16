@@ -18,9 +18,6 @@
  */
 package se.inera.intyg.webcert.web.auth.authorities.validation;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -30,9 +27,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import se.inera.intyg.infra.security.authorities.AuthoritiesException;
 import se.inera.intyg.infra.security.authorities.validation.AuthoritiesValidator;
@@ -44,6 +39,9 @@ import se.inera.intyg.infra.security.common.model.Role;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 ;
 
 /**
@@ -51,8 +49,6 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
  */
 public class AuthorityValidatorTest {
 
-    @Rule
-    public ExpectedException thrown = ExpectedException.none();
     protected AuthoritiesValidator validator = new AuthoritiesValidator();
 
     @Test
@@ -110,7 +106,7 @@ public class AuthorityValidatorTest {
                 isVerified());
     }
 
-    @Test
+    @Test(expected = AuthoritiesException.class)
     public void testMustNotHaveAnyFeatureFails() {
         WebCertUser user = createDefaultUser();
 
@@ -124,8 +120,6 @@ public class AuthorityValidatorTest {
                 })));
         assertFalse(validator.given(user, "fk7263").
                 notFeatures(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST, AuthoritiesConstants.FEATURE_FORNYA_INTYG).isVerified());
-
-        thrown.expect(AuthoritiesException.class);
 
         validator.given(user, "fk7263").
                 notFeatures(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST, AuthoritiesConstants.FEATURE_FORNYA_INTYG).orThrow();
@@ -141,7 +135,7 @@ public class AuthorityValidatorTest {
                 isVerified());
     }
 
-    @Test
+    @Test(expected = AuthoritiesException.class)
     public void testGlobalFalseShouldFailEvenIfAllowedIntygstyp() {
         WebCertUser user = createDefaultUser();
         for (Map.Entry<String, Feature> e : user.getFeatures().entrySet()) {
@@ -151,32 +145,26 @@ public class AuthorityValidatorTest {
         assertFalse(validator.given(user, "fk7263").features(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
                 .notFeatures(AuthoritiesConstants.FEATURE_ARBETSGIVARUTSKRIFT).isVerified());
 
-        thrown.expect(AuthoritiesException.class);
-
         validator.given(user, "fk7263").features(AuthoritiesConstants.FEATURE_ARBETSGIVARUTSKRIFT).orThrow();
     }
 
-    @Test
+    @Test(expected = AuthoritiesException.class)
     public void testMustHaveFeatureFail() {
         WebCertUser user = createDefaultUser();
 
         assertFalse(validator.given(user, "fk7263").
                 features(AuthoritiesConstants.FEATURE_ARBETSGIVARUTSKRIFT).isVerified());
 
-        thrown.expect(AuthoritiesException.class);
-
         validator.given(user, "fk7263").
                 features(AuthoritiesConstants.FEATURE_ARBETSGIVARUTSKRIFT).orThrow();
     }
 
-    @Test
+    @Test(expected = AuthoritiesException.class)
     public void testMustNotHaveFeatureFail() {
         WebCertUser user = createDefaultUser();
 
         assertFalse(validator.given(user, "fk7263").
                 notFeatures(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST).isVerified());
-
-        thrown.expect(AuthoritiesException.class);
 
         validator.given(user, "fk7263").
                 notFeatures(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST).orThrow();
@@ -190,11 +178,9 @@ public class AuthorityValidatorTest {
                 origins(UserOriginType.NORMAL).isVerified());
     }
 
-    @Test
+    @Test(expected = AuthoritiesException.class)
     public void testMustHaveOriginFail() {
         WebCertUser user = createDefaultUser();
-
-        thrown.expect(AuthoritiesException.class);
 
         validator.given(user).
                 origins(UserOriginType.DJUPINTEGRATION).orThrow();
@@ -208,11 +194,9 @@ public class AuthorityValidatorTest {
                 notOrigins(UserOriginType.DJUPINTEGRATION).isVerified());
     }
 
-    @Test
+    @Test(expected = AuthoritiesException.class)
     public void testMustNotHaveOriginFail() {
         WebCertUser user = createDefaultUser();
-
-        thrown.expect(AuthoritiesException.class);
 
         validator.given(user).
                 notOrigins(UserOriginType.NORMAL).orThrow();
@@ -228,21 +212,17 @@ public class AuthorityValidatorTest {
                 privilege("p1").orThrow();
     }
 
-    @Test
+    @Test(expected = AuthoritiesException.class)
     public void testMustHavePrevilegeFails() {
         WebCertUser user = createDefaultUser();
-
-        thrown.expect(AuthoritiesException.class);
 
         validator.given(user).
                 privilege("p2").orThrow();
     }
 
-    @Test
+    @Test(expected = AuthoritiesException.class)
     public void testMustNotHavePrevilegeFails() {
         WebCertUser user = createDefaultUser();
-
-        thrown.expect(AuthoritiesException.class);
 
         validator.given(user).
                 notPrivilege("p1").orThrow();
@@ -256,33 +236,27 @@ public class AuthorityValidatorTest {
                 privilege("p1").isVerified());
     }
 
-    @Test
+    @Test(expected = AuthoritiesException.class)
     public void testMustHavePrevilegeIntygsTypFails() {
         WebCertUser user = createDefaultUser();
-
-        thrown.expect(AuthoritiesException.class);
 
         validator.given(user, "ts-diabetes").
                 privilege("p1").orThrow();
     }
 
-    @Test
+    @Test(expected = AuthoritiesException.class)
     public void testMustHavePrevilegeIntygsTypFailsOnMissingRequestOrigin() {
         WebCertUser user = createDefaultUser();
         user.setOrigin(UserOriginType.UTHOPP.name());
-
-        thrown.expect(AuthoritiesException.class);
 
         validator.given(user, "fk7263").
                 privilege("p1").orThrow();
     }
 
-    @Test
+    @Test(expected = AuthoritiesException.class)
     public void testMustHavePrevilegeIntygsTypFailsOnMissingRequestOriginIntygsTyp() {
         WebCertUser user = createDefaultUser();
         user.setOrigin(UserOriginType.DJUPINTEGRATION.name());
-
-        thrown.expect(AuthoritiesException.class);
 
         validator.given(user, "fk7263").
                 privilege("p1").orThrow();
@@ -328,11 +302,9 @@ public class AuthorityValidatorTest {
                 notRoles(AuthoritiesConstants.ROLE_TANDLAKARE, AuthoritiesConstants.ROLE_ADMIN).isVerified());
     }
 
-    @Test
+    @Test(expected = AuthoritiesException.class)
     public void testMustHaveRoleFails() {
         WebCertUser user = createDefaultUser();
-
-        thrown.expect(AuthoritiesException.class);
 
         validator.given(user).
                 roles(AuthoritiesConstants.ROLE_ADMIN).orThrow();
@@ -346,11 +318,9 @@ public class AuthorityValidatorTest {
                 notRoles(AuthoritiesConstants.ROLE_ADMIN).isVerified());
     }
 
-    @Test
+    @Test(expected = AuthoritiesException.class)
     public void testMustNotHaveRoleFails() {
         WebCertUser user = createDefaultUser();
-
-        thrown.expect(AuthoritiesException.class);
 
         validator.given(user).
                 notRoles(AuthoritiesConstants.ROLE_LAKARE).orThrow();

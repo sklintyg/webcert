@@ -20,7 +20,6 @@ package se.inera.intyg.webcert.notification_sender.certificatesender.integration
 
 import java.util.Enumeration;
 import java.util.concurrent.TimeUnit;
-
 import javax.jms.Queue;
 import javax.jms.TextMessage;
 
@@ -40,8 +39,6 @@ import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
 import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
-
-import com.google.common.base.Throwables;
 
 import se.inera.intyg.webcert.common.Constants;
 import se.inera.intyg.webcert.notification_sender.certificatesender.services.mock.MockSendCertificateServiceClientImpl;
@@ -120,7 +117,7 @@ public class RouteIT {
                 textMessage.setStringProperty("DELAY_MESSAGE", "true");
                 return textMessage;
             } catch (Exception e) {
-                throw Throwables.propagate(e);
+                throw new RuntimeException(e);
             }
         });
     }

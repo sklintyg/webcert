@@ -18,8 +18,11 @@
  */
 package se.inera.intyg.webcert.web.service.diagnos.repo;
 
-import com.google.common.base.CharMatcher;
-import com.google.common.base.Strings;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.List;
+
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
@@ -36,12 +39,10 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
-import se.inera.intyg.webcert.web.service.diagnos.model.Diagnos;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.List;
+import com.google.common.base.CharMatcher;
+import com.google.common.base.Strings;
+import se.inera.intyg.webcert.web.service.diagnos.model.Diagnos;
 
 /**
  * Factory responsible for creating the DiagnosRepository out of supplied code files.
@@ -131,7 +132,7 @@ public class DiagnosRepositoryFactory implements InitializingBean {
         }
 
         // remove excess space in the string
-        String diagnosStr = CharMatcher.WHITESPACE.trimAndCollapseFrom(diagnosStrParam, ' ');
+        String diagnosStr = CharMatcher.whitespace().trimAndCollapseFrom(diagnosStrParam, ' ');
 
         int firstSpacePos = diagnosStr.indexOf(SPACE);
 

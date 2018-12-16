@@ -18,11 +18,6 @@
  */
 package se.inera.intyg.webcert.web.service.monitoring;
 
-import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.verify;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.containsString;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -31,16 +26,19 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.slf4j.LoggerFactory;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
-
-import org.slf4j.LoggerFactory;
-
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.classic.spi.LoggingEvent;
 import ch.qos.logback.core.Appender;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.equalTo;
+import static org.mockito.Mockito.verify;
 
 /**
  * Unit test to assure that the monitoring log produces relevant messages.
