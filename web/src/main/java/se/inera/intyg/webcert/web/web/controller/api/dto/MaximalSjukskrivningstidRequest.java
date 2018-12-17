@@ -18,6 +18,9 @@
  */
 package se.inera.intyg.webcert.web.web.controller.api.dto;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import se.inera.intyg.schemas.contract.Personnummer;
 
 public final class MaximalSjukskrivningstidRequest {
@@ -67,5 +70,44 @@ public final class MaximalSjukskrivningstidRequest {
             final Personnummer personnummer,
             final Integer foreslagenSjukskrivningstid) {
         return new MaximalSjukskrivningstidRequest(icd10Koder, personnummer, foreslagenSjukskrivningstid);
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        final MaximalSjukskrivningstidRequest request = (MaximalSjukskrivningstidRequest) o;
+
+        return new EqualsBuilder()
+                .append(icd10Koder, request.icd10Koder)
+                .append(personnummer, request.personnummer)
+                .append(foreslagenSjukskrivningstid, request.foreslagenSjukskrivningstid)
+                .isEquals();
+    }
+
+    @Override
+    public int hashCode() {
+        // CHECKSTYLE:OFF MagicNumber
+        return new HashCodeBuilder(17, 37)
+                .append(icd10Koder)
+                .append(personnummer)
+                .append(foreslagenSjukskrivningstid)
+                .toHashCode();
+        // CHECKSTYLE:ON MagicNumber
+    }
+
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this)
+                .append("icd10Koder", icd10Koder)
+                .append("personnummer", personnummer)
+                .append("foreslagenSjukskrivningstid", foreslagenSjukskrivningstid)
+                .toString();
     }
 }
