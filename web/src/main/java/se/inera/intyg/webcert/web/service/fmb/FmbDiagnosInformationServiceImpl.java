@@ -84,12 +84,11 @@ public class FmbDiagnosInformationServiceImpl implements FmbDiagnosInformationSe
 
         final Personnummer personnummer = maximalSjukskrivningstidRequest.getPersonnummer();
         final Integer foreslagen = maximalSjukskrivningstidRequest.getForeslagenSjukskrivningstid();
+        final Icd10KoderRequest icd10Koder = maximalSjukskrivningstidRequest.getIcd10Koder();
 
         authorityAsserter.assertIsAuthorized(personnummer, AuthoritiesConstants.PRIVILEGE_SIGNERA_INTYG);
 
-        final Optional<MaximalSjukskrivningstidDagar> maxRek =
-                findMaximalSjukrivningstidDagarByIcd10Koder(maximalSjukskrivningstidRequest.getIcd10Koder());
-
+        final Optional<MaximalSjukskrivningstidDagar> maxRek = findMaximalSjukrivningstidDagarByIcd10Koder(icd10Koder);
         final int totalt = sjukfallService.totalSjukskrivningstidForPatientAndCareUnit(personnummer);
 
         return maxRek
@@ -107,7 +106,7 @@ public class FmbDiagnosInformationServiceImpl implements FmbDiagnosInformationSe
     }
 
     private Optional<MaximalSjukskrivningstidDagar> findMaximalSjukrivningstidDagarByIcd10Koder(final Icd10KoderRequest icd10KoderRequest) {
-        return repository.findMaximalSjukrivningstidDagarByIcd10Koder(icd10KoderRequest.getIcd10Codes().toJavaSet()).stream().findFirst();
+        return repository.findMaximalSjukrivningstidDagarByIcd10Koder(icd10KoderRequest.getIcd10Codes()).stream().findFirst();
     }
 
     private Optional<FmbResponse> getFmbContent(final String icd10Kod) {
