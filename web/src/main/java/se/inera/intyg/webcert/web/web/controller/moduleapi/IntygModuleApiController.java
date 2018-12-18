@@ -32,6 +32,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import io.swagger.annotations.Api;
+import se.inera.intyg.common.services.texts.IntygTextsService;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
@@ -81,6 +82,10 @@ public class IntygModuleApiController extends AbstractApiController {
 
     @Autowired
     private CopyUtkastServiceHelper copyUtkastServiceHelper;
+
+    @Autowired
+    private IntygTextsService intygTextsService;
+
 
     /**
      * Retrieves a signed intyg from intygstjänst.
@@ -316,6 +321,9 @@ public class IntygModuleApiController extends AbstractApiController {
         }
         CreateUtkastFromTemplateRequest serviceRequest = copyUtkastServiceHelper.createUtkastFromDifferentIntygTypeRequest(orgIntygsId,
                 newIntygsTyp, orgIntygsTyp, request);
+
+        serviceRequest.setTypVersion(intygTextsService.getLatestVersion(newIntygsTyp));
+
         CreateUtkastFromTemplateResponse serviceResponse = copyUtkastService.createUtkastFromTemplate(serviceRequest);
 
         LOG.debug("Created a new draft with id: '{}' and type: {} from certificate with type: {} and id '{}'.",

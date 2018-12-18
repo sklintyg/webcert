@@ -18,7 +18,25 @@
  */
 package se.inera.intyg.webcert.web.integration.interactions.createdraftcertificate.v3;
 
-import com.google.common.collect.ImmutableMap;
+import static junit.framework.TestCase.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+
 import org.assertj.core.util.Lists;
 import org.junit.Before;
 import org.junit.Test;
@@ -26,20 +44,31 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+
+import com.google.common.collect.ImmutableMap;
+
 import se.inera.intyg.common.services.texts.IntygTextsService;
+import se.inera.intyg.common.support.common.enumerations.SignaturTyp;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.common.support.model.common.internal.Vardgivare;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
+import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
+import se.inera.intyg.common.support.modules.support.api.GetCopyFromCandidate;
+import se.inera.intyg.common.support.modules.support.api.GetCopyFromCriteria;
+import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
+import se.inera.intyg.infra.integration.hsa.model.SelectableVardenhet;
 import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.SekretessStatus;
 import se.inera.intyg.webcert.integration.tak.model.TakResult;
 import se.inera.intyg.webcert.integration.tak.service.TakService;
+import se.inera.intyg.webcert.persistence.utkast.model.Signatur;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
+import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.integration.interactions.createdraftcertificate.BaseCreateDraftCertificateTest;
 import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistry;
 import se.inera.intyg.webcert.web.integration.registry.dto.IntegreradEnhetEntry;
@@ -61,16 +90,6 @@ import se.riv.clinicalprocess.healthcond.certificate.v3.ErrorIdType;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Patient;
 import se.riv.clinicalprocess.healthcond.certificate.v3.ResultCodeType;
 
-import java.util.ArrayList;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 @RunWith(MockitoJUnitRunner.class)
 public class CreateDraftCertificateResponderImplTest extends BaseCreateDraftCertificateTest {
 
@@ -84,6 +103,7 @@ public class CreateDraftCertificateResponderImplTest extends BaseCreateDraftCert
     private static final String UTKAST_TYPE = "fk7263";
     private static final String UTKAST_JSON = "A bit of text representing json";
     private static final String INTYG_TYPE_VERSION = "1.0";
+
     @Mock
     private PatientDetailsResolver patientDetailsResolver;
     @Mock
@@ -102,21 +122,224 @@ public class CreateDraftCertificateResponderImplTest extends BaseCreateDraftCert
     private IntygModuleRegistry moduleRegistry;
     @Mock
     private IntygTextsService intygTextsService;
+    @Mock
+    private ModuleApi Ag7804ModuleApiV1Mock;
+    @Mock
+    private IntygUser intygUserMock;
+    @Mock
+    private UtkastRepository utkastRepository;
 
     @InjectMocks
     private CreateDraftCertificateResponderImpl responder;
 
+
     @Before
-    public void setup() {
+    public void setup() throws ModuleNotFoundException {
         super.setup();
         when(mockValidator.validateApplicationErrors(any(Intyg.class), any(IntygUser.class))).thenReturn(ResultValidator.newInstance());
         when(moduleRegistry.getModuleIdFromExternalId(any())).thenReturn(UTKAST_TYPE);
+        when(moduleRegistry.getModuleApi(anyString(), anyString())).thenReturn(Ag7804ModuleApiV1Mock);
+        when(Ag7804ModuleApiV1Mock.getCopyFromCriteria()).thenReturn(Optional.empty());
         when(mockUtkastService.checkIfPersonHasExistingIntyg(any(), any())).thenReturn(ImmutableMap.of(
                 "utkast", ImmutableMap.of(),
                 "intyg", ImmutableMap.of()
         ));
         when(intygTextsService.getLatestVersion(any(String.class))).thenReturn(INTYG_TYPE_VERSION);
     }
+
+    @Test
+    public void testCreateDraftCertificateGetCopyCandidateWhenNoCriteria() {
+        when(Ag7804ModuleApiV1Mock.getCopyFromCriteria()).thenReturn(Optional.empty());
+        Personnummer personnummer = Personnummer.createPersonnummer("19121212-1212").get();
+
+        final Optional<GetCopyFromCandidate> copyFromCandidate = responder.getCopyFromCandidate(Ag7804ModuleApiV1Mock, intygUserMock, personnummer);
+
+        assertFalse(copyFromCandidate.isPresent());
+    }
+
+    @Test
+    public void testCreateDraftCertificateGetCopyCandidateTestNonMatchingCriterias() {
+        Optional<GetCopyFromCriteria> copyFromCriteria = Optional.of(new GetCopyFromCriteria("lisjp", "1", 10));
+        when(Ag7804ModuleApiV1Mock.getCopyFromCriteria()).thenReturn(copyFromCriteria);
+        Personnummer personnummer = Personnummer.createPersonnummer("20121212-1212").get();
+        SelectableVardenhet selectableVardenhetMock = createSelectableVardenhet("correct-ve-hsa-id");
+        when(intygUserMock.getValdVardenhet()).thenReturn(selectableVardenhetMock);
+        when(intygUserMock.getHsaId()).thenReturn("correct-user-hsaid");
+        Set<String> validIntygType = new HashSet<>();
+        validIntygType.add(copyFromCriteria.get().getIntygType());
+
+        // Signed by other user
+        List<Utkast> candidates = Arrays.asList(
+                createUtkastCandidate(UtkastStatus.SIGNED,
+                        "correct-ve-hsa-id", null,
+                        "intygId", "1.0", LocalDateTime.now(), "INcorrect-user-hsaid"));
+
+        when(utkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(personnummer.getPersonnummerWithDash(), validIntygType))
+                .thenReturn(candidates);
+        assertFalse(responder.getCopyFromCandidate(Ag7804ModuleApiV1Mock, intygUserMock, personnummer).isPresent());
+
+        // Not Signed
+        candidates = Arrays.asList(
+                createUtkastCandidate(UtkastStatus.DRAFT_COMPLETE,
+                        "correct-ve-hsa-id", null,
+                        "intygId", "1.0", LocalDateTime.now(), "correct-user-hsaid"));
+
+        when(utkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(personnummer.getPersonnummerWithDash(), validIntygType))
+                .thenReturn(candidates);
+        assertFalse(responder.getCopyFromCandidate(Ag7804ModuleApiV1Mock, intygUserMock, personnummer).isPresent());
+
+        // Wrong enhetsId
+        candidates = Arrays.asList(
+                createUtkastCandidate(UtkastStatus.SIGNED,
+                        "INcorrect-ve-hsa-id", null,
+                        "intygId", "1.0", LocalDateTime.now(), "correct-user-hsaid"));
+
+        when(utkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(personnummer.getPersonnummerWithDash(), validIntygType))
+                .thenReturn(candidates);
+        assertFalse(responder.getCopyFromCandidate(Ag7804ModuleApiV1Mock, intygUserMock, personnummer).isPresent());
+
+        // Is revoked
+        candidates = Arrays.asList(
+                createUtkastCandidate(UtkastStatus.SIGNED,
+                        "correct-ve-hsa-id", LocalDateTime.now(),
+                        "intygId", "1.0", LocalDateTime.now(), "correct-user-hsaid"));
+
+        when(utkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(personnummer.getPersonnummerWithDash(), validIntygType))
+                .thenReturn(candidates);
+        assertFalse(responder.getCopyFromCandidate(Ag7804ModuleApiV1Mock, intygUserMock, personnummer).isPresent());
+
+        // To old
+        candidates = Arrays.asList(
+                createUtkastCandidate(UtkastStatus.SIGNED,
+                        "correct-ve-hsa-id", null,
+                        "intygId", "1.0", LocalDateTime.now().minusDays(20), "correct-user-hsaid"));
+
+        when(utkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(personnummer.getPersonnummerWithDash(), validIntygType))
+                .thenReturn(candidates);
+        assertFalse(responder.getCopyFromCandidate(Ag7804ModuleApiV1Mock, intygUserMock, personnummer).isPresent());
+
+        // Incompatible majorversion
+        candidates = Arrays.asList(
+                createUtkastCandidate(UtkastStatus.SIGNED,
+                        "correct-ve-hsa-id", null,
+                        "intygId", "2.0", LocalDateTime.now(), "correct-user-hsaid"));
+
+        when(utkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(personnummer.getPersonnummerWithDash(), validIntygType))
+                .thenReturn(candidates);
+        assertFalse(responder.getCopyFromCandidate(Ag7804ModuleApiV1Mock, intygUserMock, personnummer).isPresent());
+
+        // Match!
+        candidates = Arrays.asList(
+                createUtkastCandidate(UtkastStatus.SIGNED,
+                        "correct-ve-hsa-id", null,
+                        "intygId", "1.0", LocalDateTime.now(), "correct-user-hsaid"));
+
+        when(utkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(personnummer.getPersonnummerWithDash(), validIntygType))
+                .thenReturn(candidates);
+
+        final Optional<GetCopyFromCandidate> copyFromCandidate = responder.getCopyFromCandidate(Ag7804ModuleApiV1Mock, intygUserMock,
+                personnummer);
+
+        assertTrue(copyFromCandidate.isPresent());
+        assertEquals("intygId", copyFromCandidate.get().getIntygId());
+        assertEquals("1.0", copyFromCandidate.get().getIntygTypeVersion());
+    }
+
+    @Test
+    public void testCreateDraftCertificateGetCopyCandidateSelectsCorrectCandidateIntyg() {
+        Optional<GetCopyFromCriteria> copyFromCriteria = Optional.of(new GetCopyFromCriteria("lisjp", "1", 10));
+        when(Ag7804ModuleApiV1Mock.getCopyFromCriteria()).thenReturn(copyFromCriteria);
+        Personnummer personnummer = Personnummer.createPersonnummer("20121212-1212").get();
+        SelectableVardenhet selectableVardenhetMock = createSelectableVardenhet("correct-ve-hsa-id");
+        when(intygUserMock.getValdVardenhet()).thenReturn(selectableVardenhetMock);
+        when(intygUserMock.getHsaId()).thenReturn("correct-user-hsaid");
+        Set<String> validIntygType = new HashSet<>();
+        validIntygType.add(copyFromCriteria.get().getIntygType());
+
+        List<Utkast> candidates = Arrays.asList(
+                createUtkastCandidate(UtkastStatus.DRAFT_COMPLETE,  //Revoked status
+                        "correct-ve-hsa-id",
+                        null,
+                        "bad-id-1",
+                        "1.0",
+                        LocalDateTime.now().minusDays(1),
+                        "correct-user-hsaid"),
+                createUtkastCandidate(UtkastStatus.SIGNED,  //Wrong version
+                        "correct-ve-hsa-id",
+                        null,
+                        "bad-id-2",
+                        "2.0",
+                        LocalDateTime.now().minusDays(1),
+                        "correct-user-hsaid"),
+                createUtkastCandidate(UtkastStatus.SIGNED,  //Other enhetsid
+                        "bad-ve-hsa-id",
+                        null,
+                        "bad-id-2",
+                        "1.0",
+                        LocalDateTime.now().minusDays(4),
+                        "correct-user-hsaid"),
+                createUtkastCandidate(UtkastStatus.SIGNED, //Revoked yesterday
+                        "correct-ve-hsa-id",
+                        LocalDateTime.now().minusDays(1),
+                        "bad-id-5",
+                        "1.0",
+                        LocalDateTime.now().minusDays(2),
+                        "correct-user-hsaid"),
+                createUtkastCandidate(UtkastStatus.SIGNED, //The one that should be selected
+                        "correct-ve-hsa-id",
+                        null,
+                        "expected-intygsid",
+                        "1.0",
+                        LocalDateTime.now().minusDays(2),
+                        "correct-user-hsaid"),
+                createUtkastCandidate(UtkastStatus.SIGNED, //Signed by other user
+                        "correct-ve-hsa-id",
+                        null,
+                        "bad-id-6",
+                        "1.0",
+                        LocalDateTime.now(),
+                        "BAD-user-hsaid")
+                );
+
+        when(utkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(personnummer.getPersonnummerWithDash(),validIntygType)).thenReturn(candidates);
+
+        final Optional<GetCopyFromCandidate> copyFromCandidate = responder.getCopyFromCandidate(Ag7804ModuleApiV1Mock, intygUserMock, personnummer);
+
+        assertTrue(copyFromCandidate.isPresent());
+        assertEquals("expected-intygsid", copyFromCandidate.get().getIntygId());
+        assertEquals("1.0", copyFromCandidate.get().getIntygTypeVersion());
+    }
+
+    private Utkast createUtkastCandidate(UtkastStatus utkastStatus, String enhetsId, LocalDateTime revokedDate, String intygsId, String intygTypeVersion, LocalDateTime signDate, String signedBy) {
+        Utkast utkast = new Utkast();
+        utkast.setIntygsId(intygsId);
+        utkast.setStatus(utkastStatus);
+        utkast.setEnhetsId(enhetsId);
+        utkast.setAterkalladDatum(revokedDate);
+        utkast.setIntygTypeVersion(intygTypeVersion);
+        utkast.setSignatur(new Signatur(signDate, signedBy, intygsId, "", "", "", SignaturTyp.XMLDSIG));
+        return utkast;
+    }
+
+    private SelectableVardenhet createSelectableVardenhet(String veId) {
+        return new SelectableVardenhet() {
+            @Override
+            public String getId() {
+                return veId;
+            }
+
+            @Override
+            public String getNamn() {
+                return null;
+            }
+
+            @Override
+            public List<String> getHsaIds() {
+                return null;
+            }
+        };
+    }
+
 
     @Test
     public void testCreateDraftCertificateSuccess() {

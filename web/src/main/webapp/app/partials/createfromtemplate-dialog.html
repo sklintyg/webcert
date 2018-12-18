@@ -11,6 +11,10 @@
                           alert-id="createFromTemplateInfoMessage"
                           alert-severity="info"
                           alert-message-id="{{::model.infoMessage}}"></wc-alert-message>
+        <wc-alert-message ng-if="model.notSentInfoMessageKey"
+                          alert-id="createFromTemplateNotSentInfoMessage"
+                          alert-severity="info"
+                          alert-message-id="{{::model.notSentInfoMessageKey}}"></wc-alert-message>
 
         <p>
           <span dynamic-label key="{{bodyText}}"></span>

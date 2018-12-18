@@ -274,6 +274,7 @@ public abstract class AbstractUtkastBuilder<T extends AbstractCreateCopyRequest>
         LOG.debug("Created id '{}' for the new copy", newDraftCopyId);
 
         CreateDraftCopyHolder newDraftCopyHolder = new CreateDraftCopyHolder(newDraftCopyId, copyRequest.getHosPerson(), relation);
+        newDraftCopyHolder.setIntygTypeVersion(copyRequest.getTypVersion());
 
         if (person != null) {
             Patient patient = new Patient();

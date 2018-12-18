@@ -30,6 +30,8 @@ public abstract class AbstractCreateCopyRequest {
 
     private String typ;
 
+    private String typVersion;
+
     private Personnummer nyttPatientPersonnummer;
 
     private Patient patient;
@@ -113,5 +115,13 @@ public abstract class AbstractCreateCopyRequest {
 
     public void setDjupintegrerad(boolean djupintegrerad) {
         this.djupintegrerad = djupintegrerad;
+    }
+
+    public String getTypVersion() {
+        return typVersion;
+    }
+
+    public void setTypVersion(String typVersion) {
+        this.typVersion = typVersion;
     }
 }

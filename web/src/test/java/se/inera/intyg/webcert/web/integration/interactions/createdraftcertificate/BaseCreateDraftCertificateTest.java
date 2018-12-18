@@ -19,6 +19,7 @@
 package se.inera.intyg.webcert.web.integration.interactions.createdraftcertificate;
 
 import org.mockito.Mock;
+import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
 import se.inera.intyg.infra.integration.hsa.model.Vardgivare;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
@@ -62,7 +63,7 @@ public abstract class BaseCreateDraftCertificateTest {
     @Mock
     protected WebcertUserDetailsService webcertUserDetailsService;
 
-    public void setup() {
+    public void setup() throws ModuleNotFoundException {
         when(webcertUserDetailsService.loadUserByHsaId(USER_HSAID)).thenReturn(buildWebCertUser());
     }
 
