@@ -38,6 +38,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -46,6 +47,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.persistence.fmb.model.dto.MaximalSjukskrivningstidDagar;
 import se.inera.intyg.webcert.persistence.fmb.model.fmb.BeskrivningTyp;
 import se.inera.intyg.webcert.persistence.fmb.model.fmb.DiagnosInformation;
 import se.inera.intyg.webcert.persistence.fmb.repository.DiagnosInformationRepository;
@@ -85,7 +87,9 @@ public class FmbDiagnosInformationServiceImplTest {
         final int foreslagen = 1;
         final int tidigare = 12;
 
-        doReturn(Optional.of(rekommenderad))
+        final List<MaximalSjukskrivningstidDagar> max = Lists.newArrayList(MaximalSjukskrivningstidDagar.of("kod1", rekommenderad));
+
+        doReturn(max)
                 .when(diagnosInformationRepository)
                 .findMaximalSjukrivningstidDagarByIcd10Koder(anySet());
 
@@ -112,7 +116,9 @@ public class FmbDiagnosInformationServiceImplTest {
         final int foreslagen = 1;
         final int tidigare = 12;
 
-        doReturn(Optional.of(rekommenderad))
+        final List<MaximalSjukskrivningstidDagar> max = Lists.newArrayList(MaximalSjukskrivningstidDagar.of("kod1", rekommenderad));
+
+        doReturn(max)
                 .when(diagnosInformationRepository)
                 .findMaximalSjukrivningstidDagarByIcd10Koder(anySet());
 

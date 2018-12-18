@@ -25,6 +25,7 @@ public final class MaximalSjukskrivningstidResponse {
     private int totalTidigareSjukskrivningstid;
     private int totalSjukskrivningstidInklusiveForeslagen;
     private Integer maximaltRekommenderadSjukskrivningstid;
+    private String aktuellIcd10Kod;
 
     public MaximalSjukskrivningstidResponse() {
     }
@@ -34,12 +35,14 @@ public final class MaximalSjukskrivningstidResponse {
             final boolean overskriderRekommenderadSjukskrivningstid,
             final int totalTidigareSjukskrivningstid,
             final int totalSjukskrivningstidInklusiveForeslagen,
-            final Integer maximalRekommenderadSjukskrivningstid) {
+            final Integer maximalRekommenderadSjukskrivningstid,
+            final String aktuellIcd10Kod) {
         this.foreslagenSjukskrivningstid = foreslagenSjukskrivningstid;
         this.overskriderRekommenderadSjukskrivningstid = overskriderRekommenderadSjukskrivningstid;
         this.totalTidigareSjukskrivningstid = totalTidigareSjukskrivningstid;
         this.totalSjukskrivningstidInklusiveForeslagen = totalSjukskrivningstidInklusiveForeslagen;
         this.maximaltRekommenderadSjukskrivningstid = maximalRekommenderadSjukskrivningstid;
+        this.aktuellIcd10Kod = aktuellIcd10Kod;
     }
 
     public int getForeslagenSjukskrivningstid() {
@@ -82,10 +85,19 @@ public final class MaximalSjukskrivningstidResponse {
         this.maximaltRekommenderadSjukskrivningstid = maximaltRekommenderadSjukskrivningstid;
     }
 
+    public String getAktuellIcd10Kod() {
+        return aktuellIcd10Kod;
+    }
+
+    public void setAktuellIcd10Kod(final String aktuellIcd10Kod) {
+        this.aktuellIcd10Kod = aktuellIcd10Kod;
+    }
+
     public static MaximalSjukskrivningstidResponse fromFmbRekommendation(
             final int totalTidigareSjukskrivningsTid,
             final int foreslagenSjukskrivningstid,
-            final int maximaltRekommenderadSjukskrivningstid) {
+            final int maximaltRekommenderadSjukskrivningstid,
+            final String aktuellIcd10Kod) {
 
         final int totalSjukskrivningsTidInklusiveForeslagen = totalTidigareSjukskrivningsTid + foreslagenSjukskrivningstid;
         final boolean overskriden = totalSjukskrivningsTidInklusiveForeslagen > maximaltRekommenderadSjukskrivningstid;
@@ -95,7 +107,8 @@ public final class MaximalSjukskrivningstidResponse {
                 overskriden,
                 totalTidigareSjukskrivningsTid,
                 totalSjukskrivningsTidInklusiveForeslagen,
-                maximaltRekommenderadSjukskrivningstid);
+                maximaltRekommenderadSjukskrivningstid,
+                aktuellIcd10Kod);
     }
 
     public static MaximalSjukskrivningstidResponse ingenFmbRekommendation(
@@ -109,6 +122,7 @@ public final class MaximalSjukskrivningstidResponse {
                 false,
                 totalTidigareSjukskrivningsTid,
                 totalSjukskrivningsTidInklusiveForeslagen,
+                null,
                 null);
     }
 }
