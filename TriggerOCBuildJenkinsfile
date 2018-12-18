@@ -18,6 +18,8 @@ env:
     value: $GIT_REF
   - name: gitUrl
     value: $GIT_URL
+  - name: release
+    value: $RELEASE_FLAG
     """
                 sh 'curl -k -X POST -H "Content-Type: application/yaml" --data-binary @hook.yml $BF_URL'
             }

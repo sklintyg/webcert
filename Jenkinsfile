@@ -81,11 +81,13 @@ stage('notify') {
 stage('propagate') {
     node {
         gitRef = "v${buildVersion}"
+	releaseFlag = "${GIT_BRANCH.startsWith("release")}"
         build job: "webcert-dintyg-build", wait: false, parameters: [
                 [$class: 'StringParameterValue', name: 'WEBCERT_BUILD_VERSION', value: buildVersion],
                 [$class: 'StringParameterValue', name: 'COMMON_VERSION', value: commonVersion],
                 [$class: 'StringParameterValue', name: 'INFRA_VERSION', value: infraVersion],
-                [$class: 'StringParameterValue', name: 'GIT_REF', value: gitRef]
+                [$class: 'StringParameterValue', name: 'GIT_REF', value: gitRef],
+                [$class: 'StringParameterValue', name: 'RELEASE_FLAG', value: releaseFlag]
         ]
     }
 }
