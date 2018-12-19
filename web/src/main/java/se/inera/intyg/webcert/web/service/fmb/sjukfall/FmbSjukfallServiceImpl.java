@@ -18,6 +18,7 @@
  */
 package se.inera.intyg.webcert.web.service.fmb.sjukfall;
 
+import io.vavr.control.Try;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -35,6 +36,8 @@ import se.inera.intyg.infra.sjukfall.dto.IntygParametrar;
 import se.inera.intyg.infra.sjukfall.dto.SjukfallEnhet;
 import se.inera.intyg.infra.sjukfall.services.SjukfallEngineService;
 import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.web.service.fmb.sjukfall.converter.IntygstjanstConverter;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 
@@ -42,6 +45,9 @@ import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 public class FmbSjukfallServiceImpl implements FmbSjukfallService {
 
     private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
+    private static final String MESSAGE =
+            "Fetch intyg data from Intygstjänst to Calculate total sjukskrivningstid for patient and care unit";
 
     private static final int MAX_GLAPP = 5;
     private static final int MAX_SEDAN_SJUKAVSLUT = 0;
@@ -62,22 +68,32 @@ public class FmbSjukfallServiceImpl implements FmbSjukfallService {
     @Override
     public int totalSjukskrivningstidForPatientAndCareUnit(final Personnummer personnummer) {
 
-        LOG.debug("Starting: Fetch intyg data to Calculate total sjukskrivningstid for patient and care unit");
+        LOG.debug("Starting: " + MESSAGE);
 
+        final Try<List<SjukfallEnhet>> sjukfallUppslag = Try.of(() -> getAktivtSjukfallForPatientAndEnhet(personnummer));
+
+        if (sjukfallUppslag.isFailure()) {
+            LOG.error("Failed: " + MESSAGE);
+            sjukfallUppslag.getCause().printStackTrace();
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.EXTERNAL_SYSTEM_PROBLEM, "Failed: " + MESSAGE);
+        } else {
+            LOG.debug("Done: " + MESSAGE);
+        }
+
+        return getTotaltAntalDagar(sjukfallUppslag.get());
+    }
+
+    private List<SjukfallEnhet> getAktivtSjukfallForPatientAndEnhet(final Personnummer personnummer) {
         final ListActiveSickLeavesForCareUnitType request = createRequest(personnummer);
         final ListActiveSickLeavesForCareUnitResponseType response = sickLeavesForCareUnit.listActiveSickLeavesForCareUnit("", request);
 
         final List<IntygsData> intygsData = response.getIntygsLista().getIntygsData();
-
-        final LocalDate localDate = LocalDate.now();
         final List<IntygData> intygData = IntygstjanstConverter.toSjukfallFormat(intygsData);
 
-        final IntygParametrar intygParametrar = new IntygParametrar(MAX_GLAPP, MAX_SEDAN_SJUKAVSLUT, localDate);
-        final List<SjukfallEnhet> sjukfallForEnhet = sjukfallEngineService.beraknaSjukfallForEnhet(intygData, intygParametrar);
+        final LocalDate now = LocalDate.now();
+        final IntygParametrar intygParametrar = new IntygParametrar(MAX_GLAPP, MAX_SEDAN_SJUKAVSLUT, now);
 
-        LOG.debug("Done: Fetch intyg data to Calculate total sjukskrivningstid for patient and care unit");
-
-        return getTotaltAntalDagar(sjukfallForEnhet);
+        return sjukfallEngineService.beraknaSjukfallForEnhet(intygData, intygParametrar);
     }
 
 
