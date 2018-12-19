@@ -95,9 +95,9 @@
     line: '\1logsender.\2'
     backrefs: yes
 
-- name: Fulhacka log-sender - Change config param config.file in log-sender-placeholder-config.xml
+- name: Fulhacka log-sender - Change config param config.file in logsender-placeholder-config.xml
   lineinfile:
-    dest: "{{ webapps_folder }}/log-sender/WEB-INF/classes/log-sender-placeholder-config.xml"
+    dest: "{{ webapps_folder }}/log-sender/WEB-INF/classes/logsender-placeholder-config.xml"
     regexp: '^(    location="classpath:default.properties, file:\$\{)(config.file\}, file:\$\{credentials.file\}")$'
     line: '\1logsender.\2'
     backrefs: yes
