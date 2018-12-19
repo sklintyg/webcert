@@ -192,6 +192,22 @@
   <!-- =============================================================== -->
   <beans profile="!wc-security-test">
     <beans profile="dev,wc-security-dev">
+
+      <security:http use-expressions="false" entry-point-ref="http403ForbiddenEntryPoint" pattern="(\/jwtauth)" request-matcher="regex">
+        <security:csrf disabled="true"/>
+        <security:logout logout-url="/logout" logout-success-url="/welcome.html" invalidate-session="true"/>
+        <security:intercept-url pattern="/**" access="IS_AUTHENTICATED_FULLY"/>
+        <security:custom-filter position="BASIC_AUTH_FILTER" ref="jwtAuthFilter"/>
+        <security:custom-filter after="BASIC_AUTH_FILTER" ref="fakeAuthFilter"/>
+        <security:request-cache ref="redisSavedRequestCache"/>
+        <security:session-management session-authentication-strategy-ref="registerSessionAuthenticationStrategy"/>
+        <security:headers>
+          <security:frame-options disabled="true"/>
+          <security:header ref="xFrameOptionsHeaderWriter"/>
+        </security:headers>
+      </security:http>
+
+
       <security:http use-expressions="false" entry-point-ref="http403ForbiddenEntryPoint">
         <security:csrf disabled="true"/>
         <security:logout logout-url="/logout" logout-success-url="/welcome.html" invalidate-session="true"/>
@@ -207,6 +223,7 @@
 
       <security:authentication-manager alias="authenticationManager">
         <security:authentication-provider ref="fakeElegAuthenticationProvider"/>
+        <security:authentication-provider ref="jwtAuthenticationProvider" />
         <security:authentication-provider ref="commonFakeAuthenticationProvider"/>
       </security:authentication-manager>
     </beans>
@@ -301,6 +318,13 @@
       <property name="authenticationSuccessHandler" ref="fakeSuccessHandler"/>
       <property name="authenticationFailureHandler" ref="failureHandler"/>
     </bean>
+    <bean id="jwtAuthFilter" class="se.inera.intyg.webcert.web.auth.oidc.jwt.JwtAuthenticationFilter">
+      <constructor-arg index="0" ref="saveRequestMatcher" />
+      <property name="authenticationManager" ref="authenticationManager"/>
+      <property name="sessionAuthenticationStrategy" ref="registerSessionAuthenticationStrategy"/>
+      <property name="authenticationSuccessHandler" ref="fakeSuccessHandler"/>
+      <property name="authenticationFailureHandler" ref="failureHandler"/>
+    </bean>
     <bean id="fakeSuccessHandler"
         class="org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler">
       <property name="defaultTargetUrl" value="/"/>
@@ -313,6 +337,9 @@
         class="se.inera.intyg.webcert.web.auth.eleg.FakeElegAuthenticationProvider">
       <property name="elegWebCertUserDetailsService" ref="elegWebCertUserDetailsService"/>
     </bean>
+    <bean id="jwtAuthenticationProvider" class="se.inera.intyg.webcert.web.auth.oidc.jwt.JwtAuthenticationProvider">
+      <property name="webcertUserDetailsService" ref="webcertUserDetailsService" />
+    </bean>
   </beans>
 
   <beans>
@@ -322,7 +349,7 @@
          Second constructor argument is set to null to match all HTTP methods.
     -->
     <bean id="saveRequestMatcher" class="org.springframework.security.web.util.matcher.RegexRequestMatcher">
-      <constructor-arg index="0" value="\/web\/.*|\/visa\/.*|\/webcert\/.*"/>
+      <constructor-arg index="0" value="\/web\/.*|\/visa\/.*|\/webcert\/.*|\/jwtauth"/>
       <constructor-arg index="1"><null/></constructor-arg>
     </bean>
 

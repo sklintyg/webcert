@@ -192,6 +192,10 @@ dependencies {
 
     compile "javax.servlet:javax.servlet-api:${servletApiVersion}"
 
+    compile "io.jsonwebtoken:jjwt-impl:0.10.5"
+    compile "io.jsonwebtoken:jjwt-jackson:0.10.5"
+    compile "com.auth0:jwks-rsa:0.6.1"
+
     compileOnly "org.apache.geronimo.specs:geronimo-jms_1.1_spec:${geronimoJmsVersion}"
 
     testCompile "se.inera.intyg.clinicalprocess.healthcond.certificate:intyg-clinicalprocess-healthcond-certificate-schemas:${intygClinicalprocessSchemasVersion}"
