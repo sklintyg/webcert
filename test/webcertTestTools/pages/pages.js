@@ -104,6 +104,10 @@ module.exports = {
             af00213: {
                 utkast: require(intygPath + 'af/af00213/af00213.utkast.page.js'),
                 intyg: require(intygPath + 'af/af00213/af00213.intyg.page.js')
+            },
+            af00251: {
+                utkast: require(intygPath + 'af/af00251/af00251.utkast.page.js'),
+                intyg: require(intygPath + 'af/af00251/af00251.intyg.page.js')
             }
         },
         ag: {
@@ -142,6 +146,8 @@ module.exports = {
                 return this.intyg.soc.doi.intyg;
             case 'Arbetsförmedlingens medicinska utlåtande':
                 return this.intyg.af.af00213.intyg;
+            case 'Läkarintyg för deltagare i arbetsmarknadspolitiska program':
+                return this.intyg.af.af00251.intyg;
             default:
                 console.trace(typ);
                 throw 'Intyg-typ ' + typ + 'hittades inte i pages i getIntygPageByType.';
@@ -169,6 +175,8 @@ module.exports = {
                 return this.intyg.soc.doi.utkast;
             case 'Arbetsförmedlingens medicinska utlåtande':
                 return this.intyg.af.af00213.utkast;
+            case 'Läkarintyg för deltagare i arbetsmarknadspolitiska program':
+                return this.intyg.af.af00251.utkast;
             default:
                 console.trace(typ);
                 throw 'Intyg-typ ' + typ + 'hittades inte i pages i getUtkastPageByType.';

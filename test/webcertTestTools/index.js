@@ -31,6 +31,7 @@ var arendeFromJsonFactory = require('./util/arendeFromJsonFactory.js');
 var intygFromJsonFactory = require('./util/intygFromJsonFactory.js');
 var intygGenerator = require('./util/intygGenerator.util.js');
 var restUtil = require('./util/rest.util.js');
+var debugUtil = require('./util/debug.util.js');
 module.exports = {
     envConfig: environment.envConfig,
     testdata: testdata,
@@ -40,5 +41,6 @@ module.exports = {
     arendeFromJsonFactory: arendeFromJsonFactory,
     intygFromJsonFactory: intygFromJsonFactory,
     intygGenerator: intygGenerator,
-    restUtil: restUtil
+    restUtil: restUtil,
+    debugUtil: debugUtil
 };

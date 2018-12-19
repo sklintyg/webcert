@@ -62,6 +62,7 @@ knownIntygstyper:
   - &ki100 af00213
   - &ki110 ag114
   - &ki120 ag7804
+  - &ki111 af00251
 
 # De rättigheter som systemet har
 knownPrivileges:
@@ -185,6 +186,7 @@ privileges:
       - *ki100 # af00213
       - *ki110 # ag114
       - *ki120 # ag7804
+      - *ki111 # af00251
     requestOrigins:
       - *ro010 # NORMAL
       - *ro030 # UTHOPP
@@ -275,6 +277,7 @@ privileges:
       - *ki100 # af00213
       - *ki110 # ag114
       - *ki120 # ag7804
+      - *ki111 # af00251
     requestOrigins:
       - *ro020 # DJUPINTEGRATION
   - &p140
@@ -289,6 +292,7 @@ privileges:
       - *ki100 # af00213
       - *ki110 # ag114
       - *ki120 # ag7804
+      - *ki111 # af00215
     requestOrigins: # Implicit alla
   - &p150
     name: *kp150
@@ -350,6 +354,7 @@ roles:
               - *ki100 # af00213
               - *ki110 # ag114
               - *ki120 # ag7804
+              - *ki111 # af00251
           - <<: *ro020 # DJUPINTEGRATION
             intygstyper: # EJ fk7263
               - *ki020 # ts-bas
@@ -363,6 +368,7 @@ roles:
               - *ki100 # af00213
               - *ki110 # ag114
               - *ki120 # ag7804
+              - *ki111 # af00251
       - <<: *p040 # VIDAREBEFORDRA_UTKAST
         requestOrigins:
           - <<: *ro010 # NORMAL
@@ -452,6 +458,7 @@ roles:
               - *ki100 # af00213
               - *ki110 # ag114
               - *ki120 # ag7804
+              - *ki111 # af00251
       - <<: *p060 # BESVARA_KOMPLETTERINGSFRAGA
         requestOrigins:
           - <<: *ro010 # NORMAL

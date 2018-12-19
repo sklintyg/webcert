@@ -41,7 +41,8 @@ module.exports = {
         doi: require('./soc.doi.js')
     },
     af: {
-        af00213: require('./af.00213.js')
+        af00213: require('./af.00213.js'),
+        af00251: require('./af.00251.js')
     },
     ag: {
         ag114: require('./ag.114.js'),

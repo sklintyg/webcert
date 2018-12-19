@@ -27,13 +27,22 @@
 var fs = require('fs');
 
 function _writeScreenShot(data, filename) {
-    // abstract writing screen shot to a file
+
+    if (fs.existsSync(filename)) {
+        fs.unlinkSync(filename);
+    }
+
     var stream = fs.createWriteStream(filename);
-    stream.write(new Buffer(data, 'base64'));
+    stream.write(Buffer.from(data, 'base64'));
     stream.end();
 }
 
 module.exports = {
+    takeScreenshot: function(filename) {
+        return browser.takeScreenshot().then(function(png) {
+            _writeScreenShot(png, filename);
+        });
+    },
     takeScreenshots: function _takeScreenshots() {
 
         // Check our custom property if addExpectationResult has already been overridden

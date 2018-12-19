@@ -158,6 +158,7 @@ dependencies {
     compile "se.inera.intyg.common:db:${commonVersion}"
     compile "se.inera.intyg.common:doi:${commonVersion}"
     compile "se.inera.intyg.common:af00213:${commonVersion}"
+    compile "se.inera.intyg.common:af00251:${commonVersion}"
     compile "se.inera.intyg.common:ag114:${commonVersion}"
     compile "se.inera.intyg.common:ag7804:${commonVersion}"
 

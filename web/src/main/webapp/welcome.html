@@ -559,7 +559,7 @@
                 <select name="jsonSelect" id="jsonSelect" ng-model="selectedIndex" size="15" class="form-control"
                         style="width: 100%" autofocus>
                   <option ng-repeat="login in loginOptions" ng-if="whichEnv(login.env)" id="{{login.hsaId}}_{{login.forvaldEnhet}}"
-                          value="{{login.index}}">{{login.beskrivning}}
+                          value="{{login.index}}" ondblclick="form.submit() ">{{login.beskrivning}}
                   </option>
                 </select>
                 <input id="loginBtn" type="submit" value="Logga in" class="btn btn-primary btn-lg"
