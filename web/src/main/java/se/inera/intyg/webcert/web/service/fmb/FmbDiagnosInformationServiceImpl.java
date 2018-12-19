@@ -26,6 +26,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
+import io.vavr.Tuple2;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -60,22 +61,24 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.MaximalSjukskrivningsti
 import se.inera.intyg.webcert.web.web.controller.api.dto.MaximalSjukskrivningstidResponse;
 
 @Service
-public class FmbDiagnosInformationServiceImpl implements FmbDiagnosInformationService {
+public class FmbDiagnosInformationServiceImpl extends FmbBaseService implements FmbDiagnosInformationService {
 
-    private final DiagnosInformationRepository repository;
     private final DiagnosService diagnosService;
     private final FmbSjukfallService sjukfallService;
     private final AuthorityAsserter authorityAsserter;
+    private final DiagnosInformationRepository repository;
+
 
     public FmbDiagnosInformationServiceImpl(
-            final DiagnosInformationRepository repository,
             final DiagnosService diagnosService,
             final FmbSjukfallService sjukfallService,
-            final AuthorityAsserter authorityAsserter) {
-        this.repository = repository;
+            final AuthorityAsserter authorityAsserter,
+            final DiagnosInformationRepository repository) {
+        super(repository);
         this.diagnosService = diagnosService;
         this.sjukfallService = sjukfallService;
         this.authorityAsserter = authorityAsserter;
+        this.repository = repository;
     }
 
     @Override
@@ -111,29 +114,16 @@ public class FmbDiagnosInformationServiceImpl implements FmbDiagnosInformationSe
 
     private Optional<FmbResponse> getFmbContent(final String icd10Kod) {
 
-        final int minCharCount = 3;
+        final Tuple2<String, Optional<DiagnosInformation>> diagnosInformation = searchDiagnosInformationByIcd10Kod(icd10Kod);
 
-        String icd10TrimmedCode = icd10Kod;
-        Optional<DiagnosInformation> diagnosInformation = Optional.empty();
-        while (icd10TrimmedCode.length() >= minCharCount) {
-            diagnosInformation = repository.findFirstByIcd10KodList_kod(icd10TrimmedCode);
-
-            if (diagnosInformation.isPresent()) {
-                break;
-            } else {
-                // Make the icd10-code one position shorter, and thus more general.
-                icd10TrimmedCode = StringUtils.chop(icd10TrimmedCode);
-            }
-        }
-
-        if (diagnosInformation.isPresent()) {
-            final DiagnosResponse response = diagnosService.getDiagnosisByCode(icd10TrimmedCode, Diagnoskodverk.ICD_10_SE);
+        if (diagnosInformation._2.isPresent()) {
+            final DiagnosResponse response = diagnosService.getDiagnosisByCode(diagnosInformation._1, Diagnoskodverk.ICD_10_SE);
             String beskrivning = null;
             if (nonNull(response) && nonNull(response.getResultat()) && response.getResultat().equals(DiagnosResponseType.OK)) {
                 final Diagnos first = Iterables.getFirst(response.getDiagnoser(), null);
                 beskrivning = first != null ? first.getBeskrivning() : null;
             }
-            return Optional.of(convertToResponse(icd10TrimmedCode, beskrivning, diagnosInformation.get()));
+            return Optional.of(convertToResponse(diagnosInformation._1, beskrivning, diagnosInformation._2.get()));
         }
 
         return Optional.empty();

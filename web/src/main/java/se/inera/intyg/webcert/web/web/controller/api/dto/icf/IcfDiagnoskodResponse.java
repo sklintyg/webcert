@@ -18,6 +18,8 @@
  */
 package se.inera.intyg.webcert.web.web.controller.api.dto.icf;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+
 public class IcfDiagnoskodResponse {
 
     private String icd10Kod;
@@ -103,5 +105,14 @@ public class IcfDiagnoskodResponse {
 
     public static IcfDiagnoskodResponse empty() {
         return new IcfDiagnoskodResponse(null, null, null);
+    }
+
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this)
+                .append("icd10Kod", icd10Kod)
+                .append("funktionsNedsattningsKoder", funktionsNedsattningsKoder)
+                .append("aktivitetsBegransningsKoder", aktivitetsBegransningsKoder)
+                .toString();
     }
 }

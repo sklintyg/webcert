@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.web.service.icf;
+package se.inera.intyg.webcert.web.service.fmb.icf;
 
 import static com.google.common.collect.MoreCollectors.toOptional;
 import static org.apache.commons.collections4.ListUtils.emptyIfNull;
@@ -40,7 +40,8 @@ import se.inera.intyg.webcert.persistence.fmb.model.fmb.BeskrivningTyp;
 import se.inera.intyg.webcert.persistence.fmb.model.fmb.DiagnosInformation;
 import se.inera.intyg.webcert.persistence.fmb.model.fmb.IcfKodTyp;
 import se.inera.intyg.webcert.persistence.fmb.repository.DiagnosInformationRepository;
-import se.inera.intyg.webcert.web.service.icf.resource.IcfTextResource;
+import se.inera.intyg.webcert.web.service.fmb.FmbBaseService;
+import se.inera.intyg.webcert.web.service.fmb.icf.resource.IcfTextResource;
 import se.inera.intyg.webcert.web.web.controller.api.dto.Icd10KoderRequest;
 import se.inera.intyg.webcert.web.web.controller.api.dto.icf.AktivitetsBegransningsKoder;
 import se.inera.intyg.webcert.web.web.controller.api.dto.icf.FunktionsNedsattningsKoder;
@@ -53,17 +54,21 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.icf.IcfResponse;
 
 
 @Service
-public class IcfServiceImpl implements IcfService {
+public class IcfServiceImpl extends FmbBaseService implements IcfService {
 
     private static final int THREE_MATCHES = 3;
     private static final int TWO_MATCHES = 2;
 
-    private final DiagnosInformationRepository repository;
     private final IcfTextResource textResource;
+    private final DiagnosInformationRepository repository;
 
-    public IcfServiceImpl(final DiagnosInformationRepository repository, final IcfTextResource textResource) {
-        this.repository = repository;
+
+    public IcfServiceImpl(
+            final IcfTextResource textResource,
+            final DiagnosInformationRepository repository) {
+        super(repository);
         this.textResource = textResource;
+        this.repository = repository;
     }
 
     @Override
@@ -72,19 +77,14 @@ public class IcfServiceImpl implements IcfService {
         Preconditions.checkArgument(Objects.nonNull(icd10KoderRequest), "Icd10KoderRequest can not be null");
         Preconditions.checkArgument(Objects.nonNull(icd10KoderRequest.getIcd10Kod1()), "Icd10KoderRequest must have an icfCode1");
 
-        return convertToResponse(
-                Tuple.of(icd10KoderRequest.getIcd10Kod1(), repository.findFirstByIcd10KodList_kod(icd10KoderRequest.getIcd10Kod1())),
-                Tuple.of(icd10KoderRequest.getIcd10Kod2(), repository.findFirstByIcd10KodList_kod(icd10KoderRequest.getIcd10Kod2())),
-                Tuple.of(icd10KoderRequest.getIcd10Kod3(), repository.findFirstByIcd10KodList_kod(icd10KoderRequest.getIcd10Kod3())));
+        final List<Tuple2<String, Optional<DiagnosInformation>>> collect = List.ofAll(icd10KoderRequest.getIcd10Codes())
+                .map(this::searchDiagnosInformationByIcd10Kod)
+                .distinctBy(response -> response._1);
+
+        return convertToResponse(collect);
     }
 
-    private IcfResponse convertToResponse(
-            final Tuple2<String, Optional<DiagnosInformation>> kod1Respons,
-            final Tuple2<String, Optional<DiagnosInformation>> kod2Respons,
-            final Tuple2<String, Optional<DiagnosInformation>> kod3Respons) {
-
-        final List<Tuple2<String, Optional<DiagnosInformation>>> responsList = List.of(kod1Respons, kod2Respons, kod3Respons)
-                .filter(resp -> resp._1 != null && resp._2.isPresent());
+    private IcfResponse convertToResponse(List<Tuple2<String, Optional<DiagnosInformation>>> responsList) {
 
         final IcfDiagnoskodResponse gemensammaKoder = getGemensammaKoder(responsList);
         final List<IcfDiagnoskodResponse> unikaKoder = getUnikaKoder(responsList, gemensammaKoder);

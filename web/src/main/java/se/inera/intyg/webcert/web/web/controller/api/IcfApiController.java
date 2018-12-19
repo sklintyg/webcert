@@ -34,7 +34,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
-import se.inera.intyg.webcert.web.service.icf.IcfService;
+import se.inera.intyg.webcert.web.service.fmb.icf.IcfService;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
 import se.inera.intyg.webcert.web.web.controller.api.dto.FmbResponse;
 import se.inera.intyg.webcert.web.web.controller.api.dto.Icd10KoderRequest;

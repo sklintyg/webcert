@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.web.service.icf.resource;
+package se.inera.intyg.webcert.web.service.fmb.icf.resource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.core.io.ResourceLoader.CLASSPATH_URL_PREFIX;

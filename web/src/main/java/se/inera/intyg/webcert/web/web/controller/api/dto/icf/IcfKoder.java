@@ -19,6 +19,7 @@
 package se.inera.intyg.webcert.web.web.controller.api.dto.icf;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import java.util.List;
 
 public abstract class IcfKoder {
@@ -50,5 +51,13 @@ public abstract class IcfKoder {
 
     public void setIcfKoder(final List<IcfKod> icfKoder) {
         this.icfKoder = icfKoder;
+    }
+
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this)
+                .append("icd10Koder", icd10Koder)
+                .append("icfKoder", icfKoder)
+                .toString();
     }
 }

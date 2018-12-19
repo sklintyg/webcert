@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.web.service.icf;
+package se.inera.intyg.webcert.web.service.fmb.icf;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -41,7 +41,7 @@ import se.inera.intyg.webcert.persistence.fmb.model.fmb.BeskrivningTyp;
 import se.inera.intyg.webcert.persistence.fmb.model.fmb.DiagnosInformation;
 import se.inera.intyg.webcert.persistence.fmb.model.fmb.IcfKodTyp;
 import se.inera.intyg.webcert.persistence.fmb.repository.DiagnosInformationRepository;
-import se.inera.intyg.webcert.web.service.icf.resource.IcfTextResource;
+import se.inera.intyg.webcert.web.service.fmb.icf.resource.IcfTextResource;
 import se.inera.intyg.webcert.web.web.controller.api.dto.Icd10KoderRequest;
 import se.inera.intyg.webcert.web.web.controller.api.dto.icf.IcfResponse;
 
@@ -155,6 +155,54 @@ public class IcfServiceImplTest {
 
         assertThat(icfInformationByIcd10Koder.getUnika()).isNotNull();
         assertThat(icfInformationByIcd10Koder.getUnika()).hasSize(2);
+    }
+
+    @Test
+    public void testGeneralizeSearch() {
+        final String matchingCode = "matching-code";
+
+        final String icd10KodTooSpecific = "M160";
+        final String icd10KodGeneralized = "M16";
+
+        doReturn(Optional.of(buildDiagnosInformation(icd10KodGeneralized, matchingCode)))
+                .when(repository)
+                .findFirstByIcd10KodList_kod(eq(icd10KodGeneralized));
+
+        final IcfResponse icfInformationByIcd10Koder = icfService.findIcfInformationByIcd10Koder(
+                Icd10KoderRequest.of(icd10KodTooSpecific, null, null));
+
+        assertThat(icfInformationByIcd10Koder).isNotNull();
+
+        assertThat(icfInformationByIcd10Koder.getUnika()).isNotNull();
+        assertThat(icfInformationByIcd10Koder.getUnika()).hasSize(1);
+        assertThat(icfInformationByIcd10Koder.getUnika().get(0).getIcd10Kod()).isEqualTo(icd10KodGeneralized);
+        assertThat(icfInformationByIcd10Koder.getGemensamma().getIcd10Kod()).isNull();
+        assertThat(icfInformationByIcd10Koder.getGemensamma().getAktivitetsBegransningsKoder()).isNull();
+        assertThat(icfInformationByIcd10Koder.getGemensamma().getFunktionsNedsattningsKoder()).isNull();
+    }
+
+    @Test
+    public void testGeneralizeSearchWithTwoSpecificCodedResultingInSameParentIcd10Kod() {
+        final String matchingCode = "matching-code";
+
+        final String icd10KodTooSpecific1 = "M160";
+        final String icd10KodTooSpecific2 = "M161";
+        final String icd10KodGeneralized = "M16";
+
+        doReturn(Optional.of(buildDiagnosInformation(icd10KodGeneralized, matchingCode)))
+                .when(repository)
+                .findFirstByIcd10KodList_kod(eq(icd10KodGeneralized));
+
+        final IcfResponse icfInformationByIcd10Koder = icfService.findIcfInformationByIcd10Koder(
+                Icd10KoderRequest.of(icd10KodTooSpecific1, icd10KodTooSpecific2, null));
+
+        assertThat(icfInformationByIcd10Koder).isNotNull();
+        assertThat(icfInformationByIcd10Koder.getUnika()).isNotNull();
+        assertThat(icfInformationByIcd10Koder.getUnika()).hasSize(1);
+        assertThat(icfInformationByIcd10Koder.getUnika().get(0).getIcd10Kod()).isEqualTo(icd10KodGeneralized);
+        assertThat(icfInformationByIcd10Koder.getGemensamma().getIcd10Kod()).isNull();
+        assertThat(icfInformationByIcd10Koder.getGemensamma().getAktivitetsBegransningsKoder()).isNull();
+        assertThat(icfInformationByIcd10Koder.getGemensamma().getFunktionsNedsattningsKoder()).isNull();
     }
 
     private DiagnosInformation buildDiagnosInformation(final String icd10Kod, final String icfKod) {
