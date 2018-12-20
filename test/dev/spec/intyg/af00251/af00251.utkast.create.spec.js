@@ -47,8 +47,6 @@ describe('Create and Sign af00251 utkast', function() {
         });
 
         data = wcTestTools.testdata.af.af00251.get(utkastId);
-
-        console.log("Testdata: " + JSON.stringify(data));
     });
 
     describe('Skapa af00251', function() {
