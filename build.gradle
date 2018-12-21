@@ -36,7 +36,6 @@ ext {
     jaxrsVersion = "1.5.4"
     jexcelVersion = "1.0.7"
     jsonAssertVersion = "1.5.0"
-    jsonSchemaValidatorVersion = "2.8.0"
     liquibaseVersion = "3.3.5"
     luceneAnalyzersCommonVersion = "5.5.2"
     openWsVersion = "1.4.2-1"

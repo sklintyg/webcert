@@ -203,7 +203,7 @@ dependencies {
     testCompile "xmlunit:xmlunit:${xmlUnitVersion}"
     testCompile "org.awaitility:awaitility:${awaitilityVersion}"
     testCompile "com.jayway.restassured:rest-assured:${restassuredVersion}"
-    testCompile "com.jayway.restassured:json-schema-validator:${jsonSchemaValidatorVersion}"
+    testCompile "com.jayway.restassured:json-schema-validator:${restassuredVersion}"
     testCompile "org.antlr:ST4:${stAntlr4Version}"
 
     apt "com.google.auto.value:auto-value:${autovalueVersion}"
