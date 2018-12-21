@@ -51,6 +51,7 @@ angular.module('webcert').constant('webcert.messages', {
         'validation.invalidfromdate': 'Från-datum är felaktigt. Använd formatet åååå-mm-dd.',
         'validation.invalidtodate': 'Till-datum är felaktigt. Använd formatet åååå-mm-dd.',
         'validation.invalidtobeforefromdate': 'Till-datum är före från-datum.',
+        'validation.invalidpersonnummer': 'Ange ett giltigt person- eller samordningsnummer.',
 
         //info messages
         'info.nounsignedintygfound': '<strong>Inga ej signerade intyg hittades.</strong>',
