@@ -41,7 +41,7 @@ ext {
     luceneAnalyzersCommonVersion = "5.5.2"
     openWsVersion = "1.4.2-1"
     opensamlVersion = "2.5.3"
-    restassuredVersion = "2.8.0"
+    restassuredVersion = "2.9.0"
     servletApiVersion = "3.1.0"
     springDataVersion = "1.11.12.RELEASE"
     springSecurityVersion = "4.2.5.RELEASE"
