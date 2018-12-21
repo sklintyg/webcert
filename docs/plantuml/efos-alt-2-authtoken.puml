@@ -43,7 +43,7 @@ end
 Journalsystem --> Browser: Redirect to Webcert with token
 deactivate Journalsystem
 |||
-Browser -> "JwtAuthenticationProvider": /jwtauth with Authorization: Bearer <JWS>
+Browser -> "JwtAuthenticationProvider": /oauth/token with Authorization: Bearer <JWS>
 
 
 activate  "JwtAuthenticationProvider"

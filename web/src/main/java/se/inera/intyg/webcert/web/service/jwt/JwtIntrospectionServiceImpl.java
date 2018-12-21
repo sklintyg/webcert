@@ -34,15 +34,13 @@ public class JwtIntrospectionServiceImpl implements JwtIntrospectionService {
     @Override
     public void validateToken(String token) {
 
-        String[] parts = token.split("\\.");
-
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
         MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
         map.add("client_id", clientId);
         map.add("client_secret", clientSecret);
-        map.add("token", parts[1]);
+        map.add("token", token);
 
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(map, headers);
 

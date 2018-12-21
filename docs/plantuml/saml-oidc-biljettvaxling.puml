@@ -41,7 +41,7 @@ end
 j --> b: Redirect to Webcert with token
 deactivate j
 |||
-b -> wj: /jwtauth with Authorization: Bearer <JWS>
+b -> wj: /oauth/token with Authorization: Bearer <JWS>
 
 
 activate  wj

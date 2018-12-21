@@ -22,8 +22,10 @@
     xmlns:security="http://www.springframework.org/schema/security"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns:context="http://www.springframework.org/schema/context" xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:util="http://www.springframework.org/schema/util"
     xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
               http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd
+              http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd
               http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
   <!-- Enable auto-wiring -->
@@ -193,12 +195,48 @@
   <beans profile="!wc-security-test">
     <beans profile="dev,wc-security-dev">
 
-      <security:http use-expressions="false" entry-point-ref="http403ForbiddenEntryPoint" pattern="(\/jwtauth)" request-matcher="regex">
+      <bean id="corsSource" class="org.springframework.web.cors.UrlBasedCorsConfigurationSource">
+        <property name="corsConfigurations">
+          <util:map>
+            <entry key="/oauth/token">
+              <bean class="org.springframework.web.cors.CorsConfiguration">
+                <property name="allowCredentials" value="true" />
+                <property name="allowedHeaders">
+                  <list>
+                    <value>Authorization</value>
+                    <value>Content-Type</value>
+                  </list>
+                </property>
+                <property name="allowedMethods">
+                  <list>
+                    <value>POST</value>
+                    <value>GET</value>
+                    <value>PUT</value>
+                    <value>DELETE</value>
+                  </list>
+                </property>
+                <property name="allowedOrigins" value="192.168.1.10" />
+                <property name="exposedHeaders">
+                  <list>
+                    <value>Location</value>
+                    <value>Set-Cookie</value>
+                    <value>Content-Disposition</value>
+                  </list>
+                </property>
+                <property name="maxAge" value="86400" />
+              </bean>
+            </entry>
+          </util:map>
+        </property>
+      </bean>
+
+      <security:http use-expressions="false" entry-point-ref="http403ForbiddenEntryPoint" pattern="(\/oauth\/token)" request-matcher="regex">
         <security:csrf disabled="true"/>
+       <!--  <security:cors configuration-source-ref="corsSource"/> -->
         <security:logout logout-url="/logout" logout-success-url="/welcome.html" invalidate-session="true"/>
         <security:intercept-url pattern="/**" access="IS_AUTHENTICATED_FULLY"/>
-        <security:custom-filter position="BASIC_AUTH_FILTER" ref="jwtAuthFilter"/>
-        <security:custom-filter after="BASIC_AUTH_FILTER" ref="fakeAuthFilter"/>
+        <security:custom-filter position="PRE_AUTH_FILTER" ref="jwtAuthFilter"/>
+       <!-- <security:custom-filter after="BASIC_AUTH_FILTER" ref="fakeAuthFilter"/> -->
         <security:request-cache ref="redisSavedRequestCache"/>
         <security:session-management session-authentication-strategy-ref="registerSessionAuthenticationStrategy"/>
         <security:headers>
@@ -322,12 +360,15 @@
       <constructor-arg index="0" ref="saveRequestMatcher" />
       <property name="authenticationManager" ref="authenticationManager"/>
       <property name="sessionAuthenticationStrategy" ref="registerSessionAuthenticationStrategy"/>
-      <property name="authenticationSuccessHandler" ref="fakeSuccessHandler"/>
+      <property name="authenticationSuccessHandler" ref="jwtSuccessHandler"/>
       <property name="authenticationFailureHandler" ref="failureHandler"/>
     </bean>
     <bean id="fakeSuccessHandler"
         class="org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler">
       <property name="defaultTargetUrl" value="/"/>
+    </bean>
+    <bean id="jwtSuccessHandler"
+          class="se.inera.intyg.webcert.web.auth.oidc.jwt.JwtAuthenticationSuccessHandler">
     </bean>
     <bean id="commonFakeAuthenticationProvider"
         class="se.inera.intyg.webcert.web.auth.fake.common.CommonFakeAuthenticationProvider">
@@ -349,7 +390,7 @@
          Second constructor argument is set to null to match all HTTP methods.
     -->
     <bean id="saveRequestMatcher" class="org.springframework.security.web.util.matcher.RegexRequestMatcher">
-      <constructor-arg index="0" value="\/web\/.*|\/visa\/.*|\/webcert\/.*|\/jwtauth"/>
+      <constructor-arg index="0" value="\/web\/.*|\/visa\/.*|\/webcert\/.*|\/oauth/token"/>
       <constructor-arg index="1"><null/></constructor-arg>
     </bean>
 

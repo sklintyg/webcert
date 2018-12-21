@@ -59,12 +59,12 @@
         angular.module('WcJwtApp.controllers', []).controller('jwtWelcomeController',
             ['$scope', '$http', '$log', function ($scope, $http, $log) {
 
-                $scope.intygsId = '';
+                $scope.intygsId = '9020fbb9-e387-40b0-ba75-ac2746e4736b';
                 $scope.userJwt = '';
 
 
                 $scope.sendJwt = function() {
-                    $http.get('/jwtauth', {
+                    $http.get('/oauth/token', {
                         headers: {'Authorization': 'Bearer: ' + $scope.userJwt}
                     }).then(function() {
                         console.log('OK!');
@@ -91,12 +91,12 @@
                 <div class="form-group col-xs-4">
                     <div  style="padding-top: 0.4em;">
                         <h4>Intygs-id</h4>
-                        <input type="text" ng-model="intygsId" class="field form-control">
+                        <input type="text" ng-model="intygsId" class="field form-control" style="width:400px;">
                     </div>
                     <div style="padding-top: 0.4em;">
                         <h4>JWT token</h4>
                         <textarea id="userJwtDisplay" name="userJwtDisplay" class="field form-control"
-                                  style="height: 270px; width: 100%;" ng-model="userJwt">
+                                  style="height: 270px; width: 100%;" ng-model="userJwt" rows="20">
                           </textarea>
                     </div>
                 </div>

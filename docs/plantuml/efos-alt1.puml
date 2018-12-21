@@ -35,7 +35,7 @@ Journalsystem --> Browser: Sends redirect
 deactivate Journalsystem
 
 |||
-Browser -> "WC TokenUserDetailsService": /jwtauth with Authorization: Bearer <JWS>
+Browser -> "WC TokenUserDetailsService": /oauth/token with Authorization: Bearer <JWS>
 
 
 activate  "WC TokenUserDetailsService"
