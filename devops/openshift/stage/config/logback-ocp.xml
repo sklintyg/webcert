@@ -22,7 +22,81 @@
 
     <property name="APP_NAME" value="${APP_NAME:-webcert}"/>
 
-    <include resource="logback-ocp-base.xml"/>
+    <!-- INTYG-7892: Ugly fix to avoid rebuild of infra and all applications for 2018-4 -->
+    <!-- The tags below comes from logback-ocp-base.xml in infra with changes to LINE -->
+    <!-- The changes to LINE will be implemented in 2019-1 and the block below will be removed -->
+    <property name="TIMESTAMP" value="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level"/>
+    <property name="SESSION" value="%X{req.sessionInfo:--}"/>
+    <property name="TRACE" value="%X{req.traceId:--}"/>
+    <property name="LINE" value="--- %-40.40logger{39} : %replace(%m%rEx){'[\r\n]+', '&#x000D;'}%nopex%n"/>
+
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <filter class="se.inera.intyg.infra.monitoring.logging.MarkerFilter">
+            <markers>Monitoring,Validation</markers>
+            <onMatch>DENY</onMatch>
+            <onMismatch>ACCEPT</onMismatch>
+        </filter>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>${TIMESTAMP} [console,${SESSION},${TRACE}] ${LINE}</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="MONITORING" class="ch.qos.logback.core.ConsoleAppender">
+        <filter class="se.inera.intyg.infra.monitoring.logging.MarkerFilter">
+            <marker>Monitoring</marker>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        <encoder class="se.inera.intyg.infra.monitoring.logging.UserPatternLayout">
+            <pattern>${TIMESTAMP} [monitoring,${SESSION},${TRACE},%user] ${LINE}</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="VALIDATION" class="ch.qos.logback.core.ConsoleAppender">
+        <filter class="se.inera.intyg.infra.monitoring.logging.MarkerFilter">
+            <marker>Validation</marker>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>${TIMESTAMP} [validation,${SESSION},${TRACE}] ${LINE}</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="PROCESS" class="ch.qos.logback.core.ConsoleAppender">
+        <filter class="se.inera.intyg.infra.monitoring.logging.MarkerFilter">
+            <markers>Monitoring,Validation</markers>
+            <onMatch>DENY</onMatch>
+            <onMismatch>ACCEPT</onMismatch>
+        </filter>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>${TIMESTAMP} [process,${SESSION},${TRACE}] ${LINE}</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="ACCESS" class="ch.qos.logback.core.ConsoleAppender">
+        <filter class="se.inera.intyg.infra.monitoring.logging.MarkerFilter">
+            <markers>Monitoring,Validation</markers>
+            <onMatch>DENY</onMatch>
+            <onMismatch>ACCEPT</onMismatch>
+        </filter>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>${TIMESTAMP} [access,${SESSION},${TRACE}] ${LINE}</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="FRONTEND" class="ch.qos.logback.core.ConsoleAppender">
+        <filter class="se.inera.intyg.infra.monitoring.logging.MarkerFilter">
+            <markers>Monitoring,Validation</markers>
+            <onMatch>DENY</onMatch>
+            <onMismatch>ACCEPT</onMismatch>
+        </filter>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>${TIMESTAMP} [frontend,${SESSION},${TRACE}] ${LINE}</pattern>
+        </encoder>
+    </appender>
+
+    <!-- End of fix for INTYG-7893 -->
 
     <appender name="HSA" class="ch.qos.logback.core.ConsoleAppender">
         <filter class="se.inera.intyg.infra.monitoring.logging.MarkerFilter">
