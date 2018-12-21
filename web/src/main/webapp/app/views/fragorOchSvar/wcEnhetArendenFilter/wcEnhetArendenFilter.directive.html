@@ -64,11 +64,9 @@
                placeholder="ååååmmdd-nnnn"
                ng-model="enhetArendenFilterModel.filterForm.patientPersonId"
                wc-person-number
-               required maxlength="13"
-               ng-blur="pnrValidationCheck()"
-               ng-class="{'redMarker' : pnrIsNotValid}"/>
-      <span class="errorText" ng-if="pnrIsNotValid"><p>Ange ett giltigt person- eller samordningsnummer.</p></span>
-      </div>
+               required maxlength="13"/>
+      <span class="errorText" ng-if="filterForm.pnr.$invalid && filterForm.pnr.$touched && filterForm.pnr.$viewValue != ''"><p>Ange ett giltigt person- eller samordningsnummer.</p></span>
+    </div>
 
 
     <!-- Skickat/mottaget -->

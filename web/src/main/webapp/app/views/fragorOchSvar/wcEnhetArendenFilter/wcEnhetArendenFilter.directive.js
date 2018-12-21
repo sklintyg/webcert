@@ -36,17 +36,6 @@ angular.module('webcert').directive('wcEnhetArendenFilter', [
 
                 $scope.maxdate = moment().format('YYYY-MM-DD');
 
-                $scope.pnrIsNotValid = false;
-                $scope.pnrIsCorrect = false;
-
-                $scope.pnrValidationCheck = function () {
-                    if ($scope.pnrIsCorrect) {
-                        $scope.pnrIsNotValid = false;
-                    } else {
-                        $scope.pnrIsNotValid = true;
-                    }
-                };
-
                 this.$onInit = function(){
 
                     // Load filter form (first page load)
@@ -92,21 +81,11 @@ angular.module('webcert').directive('wcEnhetArendenFilter', [
                     });
                 };
 
-                $scope.$watch('enhetArendenFilterModel.filterForm.patientPersonId', function(value) {
-                    if (value !== undefined) {
-                        $scope.pnrIsCorrect = true;
-                    } else {
-                        $scope.pnrIsCorrect = false;
-                    }
-                });
-
                 function resetInvalidData() {
                     // fiddle with the DOM to get rid of invalid data which isn't bind through the model
                     angular.element('#filter-changedate-from').val('');
                     angular.element('#filter-changedate-to').val('');
                     angular.element('#filter-person-id').val('');
-                    $scope.pnrIsCorrect = false;
-                    $scope.pnrIsNotValid = false;
                     if ($scope.filterForm['filter-changedate-from'] && $scope.filterForm['filter-changedate-to']) {
                         $scope.filterForm['filter-changedate-from'].$setViewValue('');
                         $scope.filterForm['filter-changedate-to'].$setViewValue('');

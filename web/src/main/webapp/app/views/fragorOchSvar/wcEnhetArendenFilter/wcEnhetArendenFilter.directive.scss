@@ -1,9 +1,4 @@
 wc-enhet-arenden-filter {
-
-  #enhetArendePnr .redMarker {
-    border-color: $wc-color-11;
-  }
-
   label {
     @extend %wc-typo-06;
     color: $wc-color-09;
@@ -33,5 +28,9 @@ wc-enhet-arenden-filter {
     .btn {
       min-height: 40px;
     }
+  }
+
+  input.ng-invalid-valid-pnr.ng-touched:not(.ng-empty) {
+    border-color: $wc-color-11;
   }
 }
