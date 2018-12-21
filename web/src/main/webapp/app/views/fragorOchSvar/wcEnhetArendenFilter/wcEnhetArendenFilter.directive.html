@@ -88,10 +88,10 @@
       </div>
       <div ng-if="filterForm.$invalid && !filterForm.$pristine" ng-cloak class="errorText">
         <p ng-show="filterForm['filter-changedate-from'].$error.date || filterForm['filter-changedate-from'].$error.maxDate">
-          <span dynamic-label key="common.validation.c-06"></span>
+          <span dynamic-label key="common.validation.future.datum"></span>
         </p>
         <p ng-show="filterForm['filter-changedate-to'].$error.date || filterForm['filter-changedate-to'].$error.maxDate">
-          <span dynamic-label key="common.validation.c-06"></span>
+          <span dynamic-label key="common.validation.future.datum"></span>
         </p>
         <p ng-show="filterForm['filter-changedate-to'].$error.isBefore">
           <span dynamic-label key="common.validation.date-period.invalid_order"></span>
