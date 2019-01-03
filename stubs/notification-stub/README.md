@@ -44,7 +44,7 @@ Sätter vilket fel som ska emuleras av stubben. Försöker man sätta ett värde
     
 # Licens
 
-Copyright (C) 2018 Inera AB (http://www.inera.se)
+Copyright (C) 2019 Inera AB (http://www.inera.se)
 
 Webcert free software: you can redistribute it and/or modify it under the terms of the GNU LESSER GENERAL PUBLIC LICENSE as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 
