@@ -27,7 +27,7 @@ var testdataHelper = wcTestTools.helpers.restTestdata;
 var UtkastPage = wcTestTools.pages.intyg.soc.doi.utkast;
 var IntygPage = wcTestTools.pages.intyg.soc.doi.intyg;
 
-fdescribe('Create and Sign doi utkast', function() {
+describe('Create and Sign doi utkast', function() {
 
     var utkastId = null,
         data = null;
@@ -75,21 +75,21 @@ fdescribe('Create and Sign doi utkast', function() {
         });
         it('angeDodsorsaksuppgifterna', function () {
             UtkastPage.angeDodsorsaksuppgifterna(data.dodsorsaksuppgifter);
+            UtkastPage.enableAutosave();
         });
     });
 
     it('Signera intyget', function() {
         UtkastPage.whenSigneraButtonIsEnabled();
-
         UtkastPage.signeraButtonClick();
 
         expect(IntygPage.isAt()).toBeTruthy();
     });
 
-   /* it('Verifiera intyg', function() {
+    it('Verifiera intyg', function() {
         IntygPage.verify(data);
     });
-    */
+
 
     afterAll(function() {
         testdataHelper.deleteIntyg(utkastId);
