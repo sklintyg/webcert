@@ -64,7 +64,7 @@
                placeholder="ååååmmdd-nnnn"
                ng-model="enhetArendenFilterModel.filterForm.patientPersonId"
                wc-person-number
-               required maxlength="13"/>
+               maxlength="13"/>
       <span class="errorText" ng-if="filterForm.pnr.$invalid && filterForm.pnr.$touched && filterForm.pnr.$viewValue != ''"><p>Ange ett giltigt person- eller samordningsnummer.</p></span>
     </div>
 
@@ -85,12 +85,18 @@
 
       </div>
       <div ng-if="filterForm.$invalid && !filterForm.$pristine" ng-cloak class="errorText">
-        <p ng-show="filterForm['filter-changedate-from'].$error.date || filterForm['filter-changedate-from'].$error.maxDate">
+        <p ng-show="filterForm['filter-changedate-from'].$error.date">
+          <span dynamic-label key="common.validation.date_invalid"></span>
+        </p>
+        <p ng-show="filterForm['filter-changedate-from'].$error.maxDate">
           <span dynamic-label key="common.validation.future.datum"></span>
         </p>
-        <p ng-show="filterForm['filter-changedate-to'].$error.date || filterForm['filter-changedate-to'].$error.maxDate">
-          <span dynamic-label key="common.validation.future.datum"></span>
+        <p ng-show="filterForm['filter-changedate-to'].$error.date">
+          <span dynamic-label key="common.validation.date_invalid"></span>
         </p>
+        <p ng-show="filterForm['filter-changedate-to'].$error.maxDate">
+            <span dynamic-label key="common.validation.future.datum"></span>
+          </p>
         <p ng-show="filterForm['filter-changedate-to'].$error.isBefore">
           <span dynamic-label key="common.validation.date-period.invalid_order"></span>
         </p>
@@ -100,7 +106,7 @@
 
   <!-- buttons -->
   <div class="buttons">
-    <button type="button" id="filter-arende-btn" class="btn btn-success" ng-click="filterArendeBtnTooltipShow=false;filterList()" uib-popover="Sök efter frågor och svar."
+    <button type="button" id="filter-arende-btn" ng-disabled="filterForm.$invalid" class="btn btn-success" ng-click="filterArendeBtnTooltipShow=false;filterList()" uib-popover="Sök efter frågor och svar."
         popover-placement="top" popover-popup-delay="300" popover-append-to-body="true" popover-is-open="filterArendeBtnTooltipShow">
       Sök
     </button>
