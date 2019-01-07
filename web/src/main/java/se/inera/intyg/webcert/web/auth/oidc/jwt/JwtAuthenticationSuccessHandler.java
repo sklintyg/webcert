@@ -1,3 +1,21 @@
+/*
+ * Copyright (C) 2019 Inera AB (http://www.inera.se)
+ *
+ * This file is part of sklintyg (https://github.com/sklintyg).
+ *
+ * sklintyg is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * sklintyg is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package se.inera.intyg.webcert.web.auth.oidc.jwt;
 
 import com.google.common.base.Strings;
@@ -7,17 +25,26 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
+import se.inera.intyg.webcert.web.auth.WebcertAuthenticationSuccessHandler;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.integration.IntygIntegrationController;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 import static se.inera.intyg.webcert.web.web.controller.integration.IntygIntegrationController.PARAM_ENHET_ID;
 
+/**
+ * Custom Spring Security {@link AuthenticationSuccessHandler} that post-authorization can augment the created
+ * session with {@link IntegrationParameters} and redirect the user to the originally requested resource given a certId
+ * parameter.
+ *
+ * Uses the same /visa/intyg/{intygsId}/saved controller as the {@link WebcertAuthenticationSuccessHandler}.
+ *
+ * @author eriklupander
+ */
 public class JwtAuthenticationSuccessHandler extends
         SimpleUrlAuthenticationSuccessHandler implements
         AuthenticationSuccessHandler {
@@ -27,7 +54,7 @@ public class JwtAuthenticationSuccessHandler extends
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication)
-            throws IOException, ServletException {
+            throws IOException {
 
         if (response.isCommitted()) {
             logger.debug("Response has already been committed. Unable to redirect");
@@ -70,7 +97,7 @@ public class JwtAuthenticationSuccessHandler extends
 
         String redirectUrl = "/visa/intyg/" + intygsId + "/saved";
         if (!Strings.isNullOrEmpty(getStringParam(request, PARAM_ENHET_ID))) {
-            redirectUrl  = redirectUrl + "?" + PARAM_ENHET_ID + "=" + getStringParam(request, PARAM_ENHET_ID);
+            redirectUrl = redirectUrl + "?" + PARAM_ENHET_ID + "=" + getStringParam(request, PARAM_ENHET_ID);
         }
 
         getRedirectStrategy().sendRedirect(request, response, redirectUrl);

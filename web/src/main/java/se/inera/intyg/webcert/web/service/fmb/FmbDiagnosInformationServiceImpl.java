@@ -18,10 +18,6 @@
  */
 package se.inera.intyg.webcert.web.service.fmb;
 
-import static com.google.common.collect.MoreCollectors.onlyElement;
-import static com.google.common.collect.MoreCollectors.toOptional;
-import static java.util.Objects.nonNull;
-
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
@@ -29,10 +25,6 @@ import io.vavr.Tuple2;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
-import java.util.Comparator;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.stream.Collectors;
 import se.inera.intyg.common.support.common.enumerations.Diagnoskodverk;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.schemas.contract.Personnummer;
@@ -58,6 +50,15 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.FmbResponse;
 import se.inera.intyg.webcert.web.web.controller.api.dto.Icd10KoderRequest;
 import se.inera.intyg.webcert.web.web.controller.api.dto.MaximalSjukskrivningstidRequest;
 import se.inera.intyg.webcert.web.web.controller.api.dto.MaximalSjukskrivningstidResponse;
+
+import java.util.Comparator;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import static com.google.common.collect.MoreCollectors.onlyElement;
+import static com.google.common.collect.MoreCollectors.toOptional;
+import static java.util.Objects.nonNull;
 
 @Service
 public class FmbDiagnosInformationServiceImpl extends FmbBaseService implements FmbDiagnosInformationService {

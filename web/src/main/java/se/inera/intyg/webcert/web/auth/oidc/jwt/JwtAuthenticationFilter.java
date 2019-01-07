@@ -1,3 +1,21 @@
+/*
+ * Copyright (C) 2019 Inera AB (http://www.inera.se)
+ *
+ * This file is part of sklintyg (https://github.com/sklintyg).
+ *
+ * sklintyg is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * sklintyg is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package se.inera.intyg.webcert.web.auth.oidc.jwt;
 
 import com.google.common.base.Strings;
@@ -21,6 +39,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 
+/**
+ * Custom authentication filter that supports extraction of JWT tokens from either an Authorization: Bearer: token
+ * HTTP header or from x-www-form-urlencoded POST form data.
+ *
+ * @author eriklupander
+ */
 public class JwtAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
 
     private static final Logger LOG = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
@@ -52,6 +76,10 @@ public class JwtAuthenticationFilter extends AbstractAuthenticationProcessingFil
 
         // If both signature and introspection is OK, extract the employeeHsaId and initiate authorization.
         Object hsaIdObj = jwt.getBody().get("employeeHsaId");
+        if (hsaIdObj == null) {
+            throw new MissingClaimException(jwt.getHeader(), jwt.getBody(), "Could find claim for employeeHsaId");
+        }
+
         String employeeHsaId = null;
         if (hsaIdObj instanceof String) {
             employeeHsaId = (String) hsaIdObj;
@@ -59,6 +87,9 @@ public class JwtAuthenticationFilter extends AbstractAuthenticationProcessingFil
             ArrayList<String> parts = (ArrayList) hsaIdObj;
             if (parts != null && parts.size() > 0) {
                 employeeHsaId = parts.get(0);
+            } else {
+                throw new IncorrectClaimException(jwt.getHeader(), jwt.getBody(),
+                        "Could not extract claim for employeeHsaId, array type contained zero elements");
             }
         } else {
             throw new IncorrectClaimException(jwt.getHeader(), jwt.getBody(),
@@ -75,35 +106,25 @@ public class JwtAuthenticationFilter extends AbstractAuthenticationProcessingFil
 
     private String extractAccessToken(HttpServletRequest request) {
 
-        // If POST, check body. If it contains something, assume it's an access token.
-        if (request.getMethod().equalsIgnoreCase(HttpMethod.POST.name())) {
-
-            String accessToken = request.getParameter("access_token");
-            return accessToken;
-            // Try extract access_token from POST body
-            // try {
-            // String accessToken = IOUtils.toString(request.getInputStream());
-            // if (accessToken.startsWith("access_token=")) {
-            // accessToken = accessToken.substring("access_token=".length());
-            // } else {
-            // throw new IllegalArgumentException("Unknown token prefix");
-            // }
-            // // String accessToken = IOUtils.toString(request.getReader());
-            // if (!Strings.isNullOrEmpty(accessToken)) {
-            // return accessToken;
-            // }
-            // } catch (IOException e) {
-            // // Ignore silently for now...
-            // }
+        if (!request.getMethod().equalsIgnoreCase(HttpMethod.POST.name())) {
+            throw new AuthenticationServiceException("Only HTTP POST is supported.");
         }
 
-        // Otherwise, check for authorization bearer
+        // Check form parameter
+        String accessToken = request.getParameter("access_token");
+
+        if (!Strings.isNullOrEmpty(accessToken)) {
+            return accessToken;
+        }
+
+        // Otherwise, check for authorization bearer header
         String authHeaderValue = request.getHeader("Authorization");
 
-        // If there's a Authorization: Bearer: .... token, try JWT login.
         if (!Strings.isNullOrEmpty(authHeaderValue) && authHeaderValue.startsWith("Bearer: ")) {
             return authHeaderValue.substring("Bearer: ".length());
         }
+
+        // If neither worked, throw an exception.
         throw new AuthenticationServiceException("Request contained no 'Authorization: Bearer: <JWS token>' header or POST body");
     }
 }
