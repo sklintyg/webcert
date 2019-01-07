@@ -3,11 +3,15 @@
         xmlns="http://schema.forsakringskassan.se/vardgivare_sjukvard">
 
 
-    <text id="FRM_1.RBK">Arbetsförmedlingen behöver ett medicinskt utlåtande för att klargöra förutsättningarna för arbetssökande som har ett behov av fördjupat stöd. Bland annat för att kunna:
+    <text id="FRM_1.RBK">Läkarintyg för deltagare i arbetsmarknadspolitiska program med aktivitetsstöd, utvecklingsersättning eller
+        etableringsersättning
 
-        – utreda och bedöma om den arbetssökande har en funktionsnedsättning som medför nedsatt arbetsförmåga
-        – göra en lämplig anpassning för en arbetssökande som deltar i ett arbetsmarknadspolitiskt program och som har blivit sjuk
-        – erbjuda (lämpliga) utredande, vägledande, rehabiliterande eller arbetsförberedande insatser</text>
+        Om en programdeltagare är sjuk i mer än 7 dagar behöver hen lämna läkarintyg till Arbetsförmedlingen för att styrka att hen är
+        förhindrad att delta i programmet på grund av sjukdom.
+
+        Arbetsförmedlingen behöver få läkarintyget för att programdeltagaren ska kunna ha möjlighet att få ersättning under sjukfrånvaron.
+        Arbetsförmedlingen använder också informationen i läkarintyget för att utreda om det är möjligt att anpassa aktiviteter i
+        programmet så att programdeltagaren kan delta trots sin sjukdom.</text>
 
     <!-- Kategorier -->
     <text id="KAT_1.RBK">Grund för medicinskt underlag</text>
