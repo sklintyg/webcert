@@ -161,6 +161,7 @@ dependencies {
     compile "se.inera.intyg.common:af00251:${commonVersion}"
     compile "se.inera.intyg.common:ag114:${commonVersion}"
     compile "se.inera.intyg.common:ag7804:${commonVersion}"
+    compile "se.inera.intyg.common:tstrk1009:${commonVersion}"
 
     compile "se.inera.intyg.infrastructure.directory.privatepractitioner.terms:intyg-infrastructure-directory-privatepractitioner-terms-schemas:${ppTermsSchemasVersion}"
     compile "se.inera.intyg.clinicalprocess.healthcond.certificate:intyg-clinicalprocess-healthcond-certificate-schemas:${intygClinicalprocessSchemasVersion}"

@@ -69,7 +69,8 @@ module.exports = function(grunt) {
         'af00213':        { base: 'common/af/af00213', angularModule:'af00213' },
         'af00251':        { base: 'common/af/af00251', angularModule:'af00251' },
         'ag114':        { base: 'common/skl/ag114', angularModule:'ag114' },
-        'ag7804':        { base: 'common/skl/ag7804', angularModule:'ag7804' }
+        'ag7804':        { base: 'common/skl/ag7804', angularModule:'ag7804' },
+        'tstrk1009':    { base: 'common/ts/tstrk1009'}
     };
     Object.keys(modules).forEach(function(moduleName) {
         var module = modules[moduleName];

@@ -47,6 +47,7 @@ knownIntygstyper:
   - &ki110 ag114
   - &ki120 ag7804
   - &ki111 af00251
+  - &ki140 tstrk1009
 
 knownFeatures:
   - &kf010 HANTERA_FRAGOR
@@ -101,6 +102,7 @@ features:
       - *ki110 # AG114
       - *ki120 # AG7804
       - *ki111 # AF00213
+      - *ki140 # TSTRK1009
   - &f030
     name: *kf030
     desc: Förnya intyg
@@ -116,6 +118,7 @@ features:
       - *ki090 # DOI
       - *ki120 # AG7804
       - *ki111 # AF00251
+      - *ki140 # TSTRK1009
   - &f040
     name: *kf040
     desc: Makulera intyg
@@ -134,6 +137,7 @@ features:
       - *ki110 # AG114
       - *ki120 # AG7804
       - *ki111 # AF00251
+      - *ki140 # TSTRK1009
   - &f050
     name: *kf050
     desc: Makulera intyg kräver anledning
@@ -150,6 +154,7 @@ features:
       - *ki110 # AG114
       - *ki111 # AF00251
       - *ki120 # AG7804
+      - *ki140 # TSTRK1009
   - &f060
     name: *kf060
     desc: Skapa ny fråga
@@ -180,6 +185,7 @@ features:
       - *ki090 # DOI
       - *ki100 # AF00213
       - *ki111 # AF00251
+      - *ki140 # TSTRK1009
   - &f080
     name: *kf080
     desc: Signera skicka direkt
@@ -206,6 +212,7 @@ features:
       - *ki110 # AG114
       - *ki120 # AG7804
       - *ki111 # AF00251
+      - *ki140 # TSTRK1009
   - &f100
     name: *kf100
     desc: Arbetsgivarutskrift
@@ -261,6 +268,7 @@ features:
       - *ki110 # AG114
       - *ki120 # AG7804
       - *ki111 # AF00251
+      - *ki140 # TSTRK1009
   - &f180
     name: *kf180
     desc: Använd trädklättring i HSA
