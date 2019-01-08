@@ -35,15 +35,21 @@
 </div>
 
 <div class="buttons">
-  <button type="button" id="uc-filter-btn" class="btn btn-success" ng-click="search()">Sök</button>
+  <button type="button" ng-disabled="filterForm.$invalid" id="uc-filter-btn" class="btn btn-success" ng-click="search()">Sök</button>
   <button type="button" class="btn btn-default" ng-click="resetFilter()" id="reset-search-form">Återställ sökfilter</button>
 </div>
 
 <div ng-if="filterForm.$invalid && !filterForm.$pristine" ng-cloak class="filter-errors">
-  <p ng-show="filterForm['filter-changedate-from'].$error.date || filterForm['filter-changedate-from'].$error.maxDate">
+  <p ng-show="filterForm['filter-changedate-from'].$error.date">
+    <span dynamic-label key="common.validation.date_invalid"></span>
+  </p>
+  <p ng-show="filterForm['filter-changedate-to'].$error.date">
+    <span dynamic-label key="common.validation.date_invalid"></span>
+  </p>
+  <p ng-show="filterForm['filter-changedate-from'].$error.maxDate">
     <span dynamic-label key="common.validation.future.datum"></span>
   </p>
-  <p ng-show="filterForm['filter-changedate-to'].$error.date || filterForm['filter-changedate-to'].$error.maxDate">
+  <p ng-show="filterForm['filter-changedate-to'].$error.maxDate">
     <span dynamic-label key="common.validation.future.datum"></span>
   </p>
   <p ng-show="filterForm['filter-changedate-to'].$error.isBefore">
