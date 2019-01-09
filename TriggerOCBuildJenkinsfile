@@ -21,7 +21,7 @@ env:
   - name: release
     value: 'true'
   - name: backingServices
-    value: intygstjanst-test:3.7.0.178
+    value: intygstjanst-test:3.7.0.185
     """
                 sh 'curl -k -X POST -H "Content-Type: application/yaml" --data-binary @hook.yml $BF_URL'
             }
