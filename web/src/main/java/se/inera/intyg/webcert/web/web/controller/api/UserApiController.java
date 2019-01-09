@@ -18,12 +18,30 @@
  */
 package se.inera.intyg.webcert.web.web.controller.api;
 
-import io.swagger.annotations.Api;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
+
+import io.swagger.annotations.Api;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.infra.security.authorities.CommonAuthoritiesResolver;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
@@ -35,24 +53,6 @@ import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ChangeSelectedUnitRequest;
 import se.inera.intyg.webcert.web.web.controller.api.dto.WebUserFeaturesRequest;
 import se.inera.intyg.webcert.web.web.controller.api.dto.WebUserPreferenceStorageRequest;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
 
 /**
  * Controller for accessing the users security context.
@@ -207,16 +207,22 @@ public class UserApiController extends AbstractApiController {
     @GET
     @Path("/logout")
     @PrometheusTimeMethod
-    public Response logoutUserAfterTimeout() {
-        getWebCertUserService().scheduleSessionRemoval(getSessionId(), getHttpSession());
+    public Response logoutUserAfterTimeout(@Context HttpServletRequest request) {
+        HttpSession session = request.getSession();
+
+        getWebCertUserService().scheduleSessionRemoval(session);
+
         return Response.ok().build();
     }
 
     @GET
     @Path("/logout/cancel")
     @PrometheusTimeMethod
-    public Response cancelLogout() {
-        getWebCertUserService().cancelScheduledLogout(getSessionId());
+    public Response cancelLogout(@Context HttpServletRequest request) {
+        HttpSession session = request.getSession();
+
+        getWebCertUserService().cancelScheduledLogout(session.getId());
+
         return Response.ok().build();
     }
 
@@ -229,19 +235,5 @@ public class UserApiController extends AbstractApiController {
         } else {
             features.remove(name);
         }
-    }
-
-    private HttpSession getHttpSession() {
-        if (RequestContextHolder.getRequestAttributes() instanceof ServletRequestAttributes) {
-            HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
-            if (request != null) {
-                return request.getSession();
-            }
-        }
-        return null;
-    }
-
-    private String getSessionId() {
-        return RequestContextHolder.currentRequestAttributes().getSessionId();
     }
 }

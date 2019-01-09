@@ -18,10 +18,10 @@
  */
 package se.inera.intyg.webcert.web.service.user;
 
-import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
-
-import javax.servlet.http.HttpSession;
 import java.util.List;
+import javax.servlet.http.HttpSession;
+
+import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 public interface WebCertUserService {
 
@@ -87,10 +87,9 @@ public interface WebCertUserService {
      * <p>
      * This is done after a timeout and invalidation can be cancelled through calling {@link #cancelScheduledLogout}.
      *
-     * @param sessionId The session to invalidate. Used as id for cancelling removal.
      * @param session   The HttpSession to call invalidate on after timeout.
      */
-    void scheduleSessionRemoval(String sessionId, HttpSession session);
+    void scheduleSessionRemoval(HttpSession session);
 
     /**
      * Cancel scheduled removal of session.

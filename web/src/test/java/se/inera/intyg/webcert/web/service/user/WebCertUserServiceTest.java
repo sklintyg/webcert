@@ -18,6 +18,15 @@
  */
 package se.inera.intyg.webcert.web.service.user;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ScheduledFuture;
+import javax.servlet.http.HttpSession;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -27,6 +36,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+
 import se.inera.intyg.infra.integration.hsa.model.Mottagning;
 import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
 import se.inera.intyg.infra.integration.hsa.model.Vardgivare;
@@ -39,15 +49,6 @@ import se.inera.intyg.webcert.persistence.anvandarmetadata.model.AnvandarPrefere
 import se.inera.intyg.webcert.persistence.anvandarmetadata.repository.AnvandarPreferenceRepository;
 import se.inera.intyg.webcert.web.auth.bootstrap.AuthoritiesConfigurationTestSetup;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
-
-import javax.servlet.http.HttpSession;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ScheduledFuture;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -230,9 +231,13 @@ public class WebCertUserServiceTest extends AuthoritiesConfigurationTestSetup {
     @Test
     public void testLogout() {
         String sessionId = "sessionId";
+
+        HttpSession session = mock(HttpSession.class);
+        when(session.getId()).thenReturn(sessionId);
+
         when(scheduler.schedule(any(Runnable.class), any(Date.class))).thenReturn(mock(ScheduledFuture.class));
 
-        webcertUserService.scheduleSessionRemoval(sessionId, mock(HttpSession.class));
+        webcertUserService.scheduleSessionRemoval(session);
 
         assertTrue(webcertUserService.taskMap.containsKey(sessionId));
     }

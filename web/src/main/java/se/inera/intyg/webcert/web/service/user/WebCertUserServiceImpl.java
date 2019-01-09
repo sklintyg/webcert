@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
-
 import javax.servlet.http.HttpSession;
 
 import org.slf4j.Logger;
@@ -33,11 +32,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.session.FindByIndexNameSessionRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.annotations.VisibleForTesting;
-
 import se.inera.intyg.infra.security.authorities.AuthoritiesResolverUtil;
 import se.inera.intyg.infra.security.authorities.CommonAuthoritiesResolver;
 import se.inera.intyg.infra.security.common.model.IntygUser;
@@ -65,6 +64,9 @@ public class WebCertUserServiceImpl implements WebCertUserService {
 
     @Autowired
     private ThreadPoolTaskScheduler scheduler;
+
+    @Autowired
+    private FindByIndexNameSessionRepository sessionRepository;
 
     @Value("${logout.timeout.seconds}")
     private int logoutTimeout;
@@ -177,12 +179,15 @@ public class WebCertUserServiceImpl implements WebCertUserService {
     }
 
     @Override
-    public void scheduleSessionRemoval(String sessionId, HttpSession session) {
+    public void scheduleSessionRemoval(HttpSession session) {
+        String sessionId = session.getId();
+
         ScheduledFuture<?> task = scheduler.schedule(() -> {
             LOG.debug("Removing session {}", sessionId);
-            if (session != null) {
-                session.invalidate();
-            }
+
+            sessionRepository.delete(sessionId);
+            session.invalidate();
+            session.setMaxInactiveInterval(0);
             taskMap.remove(sessionId);
         }, Date.from(Instant.now().plusSeconds(logoutTimeout)));
         taskMap.putIfAbsent(sessionId, task);
