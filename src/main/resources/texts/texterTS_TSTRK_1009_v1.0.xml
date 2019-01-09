@@ -1,62 +1,75 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<texter typ="TSTRK1009" giltigFrom="2018-08-01" version="1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<texter typ="TSTRK1009" giltigFrom="2019-01-09" version="1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 
 	<!--
-  =====================================================
-  Informationstexter
-  =====================================================
-  -->
+	============================
+	KATEGORI: Informationstexter
+	============================
+	-->
+	<text id="FMR_1.RBK">Transportstyrelsens läkares anmälan TSTRK1009 ska användas för läkares anmälan om medicinsk olämplighet att inneha körkortstillstånd, körkort, traktorkort eller taxiförarlegitimation</text>
+	<text id="FMR_2.RBK"><![CDATA[<b>Läkares anmälan TSTRK1009 v.1.x</b>
 
-	<text id="FRM_1.RBK">Transportstyrelsens läkarintyg diabetes ska användas vid diabetessjukdom. Föreskrivna krav på läkarens specialistkompetens vid diabetessjukdom framgår av 17 kap. i Transportstyrelsens föreskrifter (TSFS 2010:125) och allmänna råd om medicinska krav för innehav av körkort m.m.
-	</text>
-	<text id="FRM_2.RBK"><![CDATA[Transportstyrelsens läkarintyg diabetes ska användas vid diabetessjukdom. Föreskrivna krav på läkarens specialistkompetens vid diabetessjukdom framgår av 17 kap. i Transportstyrelsens föreskrifter (TSFS 2010:125) och allmänna råd om medicinska krav för innehav av körkort m.m.
+		<b>Bestämmelser om läkares anmälningsskyldighet m.m.</b>
 
-<b>Har du frågor?</b>
-Kontakta körkortsenheten på Transportstyrelsen, telefon 0771-81 81 81. Transportstyrelsens föreskrifter kan hämtas på <LINK:transportstyrelsen>.]]></text>
+		<b>Körkortslagen (1998:488)</b>
+
+		10 kap. 5 §
+		Om en läkare vid undersökning av en körkortshavare finner att körkortshavaren av medicinska skäl är olämplig att ha körkort,
+		ska läkaren anmäla det till Transportstyrelsen. Innan anmälan görs ska läkaren underrätta körkortshavaren. Anmälan behöver
+		inte göras om det finns anledning att anta att körkortshavaren kommer att följa läkarens tillsägelse att avstå från att köra
+		körkortspliktigt fordon.
+		Om en läkare vid undersökning eller genomgång av journalhandlingar finner det sannolikt att körkortshavaren av medicinska
+		skäl är olämplig att ha körkort och körkortshavaren motsätter sig fortsatt undersökning eller utredning, ska läkaren anmäla
+		förhållandet till Transportstyrelsen.
+		Första och andra styckena gäller även den som har traktorkort.
+
+		1 kap. 1 §
+		Med körkortshavare avses den som har körkortstillstånd eller körkort.
+
+		<b>Taxitrafiklagen (2012:211)</b>
+
+		3 kap. 1 §
+		En personbil eller en lätt lastbil får föras i taxitrafik endast av den som har en giltig taxiförarlegitimation.
+
+		3 kap. 5 §
+		Om en läkare vid undersökning av en innehavare av taxiförarlegitimation finner att denne av medicinska skäl är olämplig att
+		inneha sådan legitimation, ska läkaren anmäla det till Transportstyrelsen. Innan någon anmälan görs ska läkaren underrätta
+		innehavaren. Anmälan behöver inte göras om det finns anledning att anta att innehavaren kommer att följa läkarens tillsägelse
+		att avstå från att föra ett fordon i sådan trafik som avses i 1§.
+		Om en läkare vid undersökning eller genomgång av journalhandlingar finner det sannolikt att körkortshavaren av medicinska
+		skäl är olämplig att ha taxiförarlegitimation och körkortshavaren motsätter sig fortsatt undersökning eller utredning, ska läkaren
+		anmäla förhållandet till Transportstyrelsen.
+
+		<b>Utdrag ur Transportstyrelsens föreskrifter och allmänna råd (TSFS 2010:125) om medicinska krav för innehav av körkort m.m.</b>
+
+		1 kap. 2 §
+		Grupp I, II och III omfattar följande behörigheter:
+		- Grupp I: AM, A1, A2, A, B och BE samt behörighet för traktor
+		- Grupp II: behörigheterna i grupp I samt C1, C1E, C och CE
+		- Grupp III: behörigheterna i grupp I och II samt behörigheterna D1, D1E, D och DE.
+
+		Samma krav som för behörigheterna i grupp III gäller även för innehav av taxiförarlegitimation om inte annat anges.
+
+		1 kap. 9 §
+		De grundläggande förutsättningarna för en anmälan enligt 10 kap. 2 § körkortslagen och 3 kap. 5 § taxitrafiklagen anses
+		föreligga om kraven i 1 - 15 kap. inte uppfylls av den som innehar körkort, körkortstillstånd, traktorkort eller
+		taxiförarlegitimation.
+
+		1 kap. 10 §
+		En anmälan från läkare ska vara skriftlig och innehålla de uppgifter om innehavarens hälsotillstånd som framkommit vid
+		undersökningen och som har betydelse för frågan om innehav.
+
+		Den senaste versionen av föreskrifterna finns på <a href="http://www.transportstyrelsen.se" target="_blank">www.transportstyrelsen.se</a>
+
+		<b>Har du frågor?</b>
+		Kontakta körkortsenheten på Transportstyrelsen, telefon 0771-81 81 81. Transportstyrelsens föreskrifter kan hämtas på <a href="http://www.transportstyrelsen.se" target="_blank">www.transportstyrelsen.se</a>.
+
+	]]></text>
 
 	<!--
-  =====================================================
-  KATEGORI 1: Intyget avser behörighet (svar och delsvar)
-  =====================================================
-  -->
-	<text id="KAT_1.RBK">Intyget avser</text>
-	<text id="FRG_1.RBK">Intyget avser följande behörigheter</text>
-	<text id="FRG_1.HLP"><![CDATA[AM - moped klass I
-				A1 - lätt motorcykel
-				A2 - mellanstor motorcykel
-				A - motorcykel
-				B - personbil, lätt lastbil och enbart ett lätt släpfordon
-				BE - personbil, lätt lastbil och ett eller flera släpfordon (Släpens totalvikt får inte överstiga 3,5 ton.)
-				C1 - medeltung lastbil och enbart ett lätt släpfordon
-				C1E - medeltung lastbil och ett eller flera släpfordon oavsett vikt
-				C - tung lastbil och enbart ett lätt släpfordon
-				CE - tung lastbil och ett eller flera släpfordon oavsett vikt
-				D1 - mellanstor buss och enbart ett lätt släpfordon
-				D1E - mellanstor buss och ett eller flera släpfordon oavsett vikt
-				D - buss och enbart ett lätt släpfordon
-				DE - buss och ett eller flera släpfordon oavsett vikt
-				Taxi - taxiförarlegitimation]]></text>
-	<text id="KORKORT_AM.RBK">AM</text>
-	<text id="KORKORT_A1.RBK">A1</text>
-	<text id="KORKORT_A2.RBK">A2</text>
-	<text id="KORKORT_A.RBK">A</text>
-	<text id="KORKORT_B.RBK">B</text>
-	<text id="KORKORT_BE.RBK">BE</text>
-	<text id="KORKORT_TRAKTOR.RBK">Traktor</text>
-	<text id="KORKORT_C1.RBK">C1</text>
-	<text id="KORKORT_C1E.RBK">C1E</text>
-	<text id="KORKORT_C.RBK">C</text>
-	<text id="KORKORT_CE.RBK">CE</text>
-	<text id="KORKORT_D1.RBK">D1</text>
-	<text id="KORKORT_D1E.RBK">D1E</text>
-	<text id="KORKORT_D.RBK">D</text>
-	<text id="KORKORT_DE.RBK">DE</text>
-	<text id="KORKORT_TAXI.RBK">Taxi</text>
-
-	<!--
-  ===============================================
-  KATEGORI 2: Identitet styrkt genom
-  ===============================================
+  ==================================
+  KATEGORI 1: Identitet styrkt genom
+  ==================================
   -->
 	<text id="KAT_2.RBK">Identitet</text>
 	<text id="FRG_2.RBK">Identitet styrkt genom</text>
@@ -74,7 +87,7 @@ Kontakta körkortsenheten på Transportstyrelsen, telefon 0771-81 81 81. Transpo
 		<b>Företagskort eller tjänstekort</b>
 		Avser SIS-märkt företagskort eller tjänstekort.
 
-		 <b>Försäkran enligt 18 kap 4 §</b>
+		<b>Försäkran enligt 18 kap 4 §</b>
  		Se Transportstyrelsens föreskrifter och allmänna råd (TSFS 2010:125) om medicinska krav för innehav av körkort m.m.
 
  		<b>Pass</b>
@@ -82,81 +95,117 @@ Kontakta körkortsenheten på Transportstyrelsen, telefon 0771-81 81 81. Transpo
 	]]></text>
 
 	<!--
-  ===============================================
-  KATEGORI 3: Allmänt
-  ===============================================
+  =========================
+  KATEGORI 2: Anmälan avser
+  =========================
   -->
-	<text id="KAT_3.RBK">Allmänt</text>
+	<text id="KAT_2.RBK">Anmälan</text>
+	<text id="FRG_46.RBK">Anmälan avser</text>
+	<text id="FRG_46.HLP"><![CDATA[<b>Anmälan om olämplighet</b>
+		Om en läkare vid undersökning av en person finner att personen av medicinska skäl är olämplig att ha körkort, körkortstillstånd, traktorkort eller taxiförarlegitimation, ska läkaren anmäla det till Transportstyrelsen. Innan anmälan görs ska läkaren underrätta personen.
 
-	<text id="FRG_35.RBK">Vilket år ställdes diagnosen diabetes?</text>
-	<text id="FRG_18.RBK">Patienten har diabetes</text>
-	<text id="DFR_18.2.RBK">Beskriv annan</text>
+		<b>Anmälan om sannolik olämplighet</b>
+		Om en läkare vid undersökning eller genomgång av journalhandlingar finner det sannolikt att personen av medicinska skäl är olämplig att ha körkort, körkortstillstånd, traktorkort eller taxiförarlegitimation och personen motsätter sig fortsatt undersökning eller utredning, ska läkaren anmäla förhållandet till Transportstyrelsen. Personen som anmälan avser behöver inte underrättas innan anmälan görs.
+	]]></text>
 
-	<text id="SVAR_TYP1.RBK">Typ 1</text>
-	<text id="SVAR_TYP2.RBK">Typ 2</text>
-	<text id="SVAR_ANNAN.RBK">Annan</text>
-
-	<text id="FRG_109.RBK">Behandling</text>
-	<text id="DFR_109.1.RBK">Endast kost</text>
-	<text id="DFR_109.2.RBK">Tabletter</text>
-	<text id="DFR_109.3.RBK">Har patienten behandling som kan medföra risk för hypoglykemi?</text>
-	<text id="DFR_109.4.RBK">Insulin</text>
-	<text id="DFR_109.5.RBK">Insulin sedan år</text>
-	<text id="DFR_109.6.RBK">Annan behandling</text>
-	<text id="DFR_109.7.RBK">Annan behandling, vilken?</text>
+	<text id="KV_SVAR_OLAMPLIGHET.OLAMPLIGHET.RBK">Anmälan om olämplighet</text>
+	<text id="KV_SVAR_OLAMPLIGHET.SANNOLIKOLAMPLIGHET.RBK">Anmälan om sannolik olämplighet</text>
 
 	<!--
-  ==============================================
-  KATEGORI 4: Hypoglykemier
-  ==============================================
+  ===================================
+  KATEGORI 3: Medicinska förhållanden
+  ===================================
   -->
-	<text id="KAT_4.RBK">Hypoglykemier</text>
+	<text id="KAT_3.RBK">Medicinska förhållanden</text>
+	<text id="FRG_47.RBK">Medicinska förhållanden som utgör grund för anmälan (ange t.ex. diagnos och funktionsnedsättning)</text>
+	<text id="FRG_47.HLP"><![CDATA[<b>Vid synnedsättning</b>
+		Se läkarintyg ”läkarintyg synfunktion” (TSTRK 1032) påwww.transportstyrelsen.seför ledning. Bedömningen ska göras utifrån 2 kap. Transportstyrelsens föreskrifter och allmänna råd (TSFS 2010:125) om medicinska krav för innehav av körkort m.m.
 
-	<text id="FRG_100.RBK">Är patientens diabetessjukdom under godtagbar kontroll med avseende på risken för hypoglykemi?</text>
-	<text id="FRG_37.RBK">Förekommer hypoglykemier med tecken på nedsatt hjärnfunktion (neuroglukopena symptom) som bedöms kunna innebära en trafiksäkerhetsrisk?</text>
-	<text id="FRG_101.RBK">Förstår patienten de risker som är förknippade med hypoglykemi?</text>
-	<text id="FRG_102.RBK">Är patienten väl förtrogen med symptomen på hypoglykemi?</text>
-	<text id="FRG_38.RBK">Saknar patienten förmåga att känna varningstecken på hypoglykemi ("unawareness")?</text>
-	<text id="FRG_36.RBK">Har patienten kunskap om lämpliga åtgärder vid hypoglykemi?</text>
-	<text id="FRG_105.RBK">Görs egenkontroller av blodsocker för att upptäcka hypoglykemi och förhindra att trafiksäkerhetsrisker uppstår?</text>
-	<text id="FRG_106.RBK">Har patienten haft återkommande allvarlig hypoglykemi under det senaste året?</text>
-	<text id="FRG_106.HLP">Med allvarlig och återkommande avses hypoglykemi som krävt hjälp av annan för att hävas och som upprepats inom ett år.</text>
-	<text id="DFR_106.2.RBK">När inträffade det senast?</text>
-	<text id="FRG_107.RBK">Har patienten haft återkommande allvarlig hypoglykemi i vaket tillstånd under de senaste tre månaderna?</text>
-	<text id="FRG_107.HLP">Med allvarlig och återkommande avses hypoglykemi som krävt hjälp av annan för att hävas och som upprepats inom ett år.</text>
-	<text id="DFR_107.2.RBK">När inträffade det senast?</text>
-	<text id="FRG_108.RBK">Har patienten haft allvarlig hypoglykemi i trafiken under det senaste året?</text>
-	<text id="DFR_108.2.RBK">När inträffade det senast?</text>
+		<b>Vid hjärt- och kärlsjukdom</b
+		Se läkarintyg ”läkarintyg avseende hjärt- och kärlsjukdomar” (TSTRK 1065) på <a href="http://www.transportstyrelsen.se" target="_blank">www.transportstyrelsen.se</a> för ledning. Bedömningen ska göras utifrån 5 kap. Transportstyrelsens föreskrifter och allmänna råd (TSFS 2010:125) om medicinska krav för innehav av körkort m.m.
+
+		<b>Vid epilepsi, epileptiskt anfall eller annan medvetandestörning</b>
+		Anmälan bör innehålla information om och en bedömning av
+		<li>eventuell medicinering eller annan behandling</li>
+		<li>hur patienten följer behandlingen och effekten av den</li>
+		<li>tidpunkten för det senaste anfallet eller någon annan medvetandestörning</li>
+		<li>resultatet av en eventuell EEG-undersökning</li>
+		Bedömningen ska göras utifrån 8 kap. Transportstyrelsens föreskrifter och allmänna råd (TSFS 2010:125) om medicinska krav för innehav av körkort m.m.
+
+		<b>Vid demens eller annan kognitiv störning</b>
+		Vid demens bör det framgå om demensen är lindrig och hur den i så fall yttrar sig.
+		Anmälan bör innehålla information om och en bedömning av
+		<li>uppmärksamheten</li>
+		<li>omdömet och förmågan att ta in och bearbeta synintryck</li>
+		<li>den mentala flexibiliteten</li>
+		<li>minnet</li>
+		<li>de exekutiva funktionerna och det psykomotoriska tempot</li>
+		<li>tecken på känslomässig labilitet och ökad uttröttbarhet</li>
+		<li>apraxi</li>
+		Bedömningen av de kognitiva funktionerna kan grundas på en neuropsykologisk utredning.
+		Bedömningen ska göras utifrån 10 kap. Transportstyrelsens föreskrifter och allmänna råd (TSFS 2010:125) om medicinska krav för innehav av körkort m.m.
+
+		<b>Vid sömn- eller vakenhetsstörning</b>
+		Se läkarintyg ”läkarintyg avseende sömn- och vakenhetsstörningar” (TSTRK 1063) på <a href="http://www.transportstyrelsen.se" target="_blank">www.transportstyrelsen.se</a> för ledning. Bedömningen ska göras utifrån 11 kap. Transportstyrelsens föreskrifter och allmänna råd (TSFS 2010:125) om medicinska krav för innehav av körkort m.m.
+
+
+		<b>Vid alkohol, narkotika och läkemedel</b>
+		Se läkarintyg ”läkarintyg avseende alkohol, narkotika och läkemedel” (TSTRK 1030) på <a href="http://www.transportstyrelsen.se" target="_blank">www.transportstyrelsen.se</a> för ledning. Bedömningen ska göras utifrån 12 kap. Transportstyrelsens föreskrifter och allmänna råd (TSFS 2010:125) om medicinska krav för innehav av körkort m.m.
+
+
+		<b>Vid psykisk sjukdom eller störning</b>
+		Anmälan bör innehålla information om och en bedömning av
+		<li>aktuell psykisk status</li>
+		<li>impulskontroll, beteende och omdöme</li>
+		<li>medicinering eller annan behandling</li>
+		<li>behandlingsföljsamhet och behandlingseffekt</li>
+		<li>tidpunkt för senaste aktiva sjukdomsfas.</li>
+		Bedömningen ska göras utifrån 14 kap. Transportstyrelsens föreskrifter och allmänna råd (TSFS 2010:125) om medicinska krav för innehav av körkort m.m.
+
+
+		<b>Vid ADHD, autismspektrumtillstånd och likartade tillstånd samt psykisk utvecklingsstörning</b>
+		Se läkarintyg ”läkarintyg avseende ADHD, autismspektrumtillstånd och likartade tillstånd samt psykisk utvecklingsstörning” (TSTRK 1062) på <a href="http://www.transportstyrelsen.se" target="_blank">www.transportstyrelsen.se</a> för ledning. Bedömningen ska göras utifrån 15 kap. Transportstyrelsens föreskrifter och allmänna råd (TSFS 2010:125) om medicinska krav för innehav av körkort m.m.
+	]]></text>
+
+	<text id="FRG_48.RBK">Senaste undersökningsdatum</text>
+
 
 	<!--
-  ===============================================
-  KATEGORI 5: Synfunktion
-  ===============================================
+  ====================
+  KATEGORI 4: Bedöming
+  ====================
   -->
-	<text id="KAT_5.RBK">Synfunktion</text>
-
-	<text id="FRG_103.RBK">Har patienten proliferativ retinopati, genomgången laserbehandling av retinopati, signifikant makulaödem, annan ögonsjukdom eller inger ögonbottenfoto misstanke om sådan ögonsjukdom?</text>
-	<text id="FRG_104.RBK">Saknas ögonbottenfoto?</text>
-	<text id="FRG_8.RBK">Värden för synskärpa</text>
-	<text id="FRG_8.HLP">Alla bokstäver ska kunna läsas på den rad som anger synskärpa. Är synskärpan sämre än 0,1 ska den anges som 0,0</text>
-	<text id="DFR_8.1.RBK">Utan korrektion</text>
-	<text id="DFR_8.1.RBK">Med korrektion</text>
-	<text id="TSDIA-001.ALERT">Baserat på tidigare besvarade frågor krävs, utöver det här intyget, ett Läkarintyg synfunktioner (TSTRK1032) utfärdat av läkare med specialistkompetens i ögonsjukdomar. Blankett finns på Transportstyrelsens hemsida.</text>
-	<text id="TSDIA-002.ALERT">Uppgifterna om synskärpa med och utan korrektion kan grundas på aktuellt intyg av bl.a. legitimerad optiker eller den som är anställd hos optiker. Alternativt kan kopia av sådant intyg bifogas. Uppgifter från ögonbottenfoto kan också användas.</text>
+	<text id="KAT_4.RBK">Bedömning</text>
+	<text id="FRG_1.RBK">På grunder som anges ovan bedömer jag att personen är olämplig/sannolikt olämplig att ha</text>
+	<text id="FRG_1.HLP"><![CDATA[AM - moped klass I
+				A1 - lätt motorcykel
+				A2 - mellanstor motorcykel
+				A - motorcykel
+				B - personbil, lätt lastbil och enbart ett lätt släpfordon
+				BE - personbil, lätt lastbil och ett eller flera släpfordon (Släpens totalvikt får inte överstiga 3,5 ton.)
+				C1 - medeltung lastbil och enbart ett lätt släpfordon
+				C1E - medeltung lastbil och ett eller flera släpfordon oavsett vikt
+				C - tung lastbil och enbart ett lätt släpfordon
+				CE - tung lastbil och ett eller flera släpfordon oavsett vikt
+				D1 - mellanstor buss och enbart ett lätt släpfordon
+				D1E - mellanstor buss och ett eller flera släpfordon oavsett vikt
+				D - buss och enbart ett lätt släpfordon
+				DE - buss och ett eller flera släpfordon oavsett vikt
+				Taxi - taxiförarlegitimation]]></text>
 
 	<!--
-  ===============================================
+  ==================
   KATEGORI 6: Övrigt
-  ===============================================
+  ==================
    -->
 	<text id="KAT_6.RBK">Övrigt</text>
 
 	<text id="FRG_32.RBK">Övriga kommentarer och upplysningar</text>
 
 	<!--
-  ===============================================
+  =====================
   KATEGORI 7: Bedömning
-  ===============================================
+  =====================
   -->
 	<text id="KAT_7.RBK">Bedömning</text>
 
@@ -181,18 +230,20 @@ Kontakta körkortsenheten på Transportstyrelsen, telefon 0771-81 81 81. Transpo
 	<text id="KV_KORKORTSBEHORIGHET_TAXI.RBK">Taxi</text>
 	<text id="KV_KORKORTSBEHORIGHET_KANINTETASTALLNING.RBK">Kan inte ta ställning</text>
 
-	<text id="FRG_45.RBK">Är patienten lämplig att inneha behörighet för C1, C1E, C, CE, D1, D1E, D, DE eller taxi med hänsyn till de körningar och arbetsformer som är aktuella vid sådant innehav? (Se 6 kap. 16 §)</text>
-	<text id="FRG_34.RBK">Patienten bör före ärendets avgörande undersökas av läkare med specialistkompetens i</text>
+	<text id="SVAR_ALLA.RBK">Alla behörigheter inkl. körkortstillstånd, traktorkort och taxiförarlegitimation</text>
+	<text id="SVAR_A.B.TRAKTOR.RBK">AM, A1, A2, A, B, BE, traktorkort</text>
+	<text id="SVAR_C.E.RBK">C1, C1E, C, CE</text>
+	<text id="SVAR_D.RBK">D1, D1E, D, DE</text>
+	<text id="SVAR_TAXI.RBK">Taxiförarlegitimation</text>
+	<text id="SVAR_KANINTETASTALLNING.RBK">Kan inte ta ställning</text>
 
 	<!--
-  ===============================================
-  KATEGORI: Övriga texter som krävs för korrekt rendering
-  =============================================
-  -->
-	<text id="ts-diabetes.label.syn.binokulart">Binokulärt</text>
-	<text id="ts-diabetes.label.syn.hogeroga">Höger öga</text>
-	<text id="ts-diabetes.label.syn.vansteroga">Vänster öga</text>
-	<text id="ts-diabetes.label.syn.utankorrektion">Utan korrektion</text>
-	<text id="ts-diabetes.label.syn.medkorrektion">Med korrektion</text>
+	=================================
+	KATEGORI 5: Information om beslut
+	=================================
+	-->
+
+	<text id="KAT_5.RBK">Information om beslut</text>
+	<text id="FRG_49.RBK">Information om Transportstyrelsens beslut önskas</text>
 
 </texter>
