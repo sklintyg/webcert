@@ -18,6 +18,11 @@
  */
 package se.inera.intyg.webcert.web.web.controller.api;
 
+import java.util.HashMap;
+import java.util.Map;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -25,24 +30,17 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
+
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.Feature;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.api.dto.WebUserFeaturesRequest;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.isNull;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -82,7 +80,7 @@ public class UserApiControllerTest {
         userApiController.userFeatures(webUserFeaturesRequest);
 
         //Then
-        Mockito.verify(webCertUser, times(1)).setFeatures(captor.capture());
+        verify(webCertUser, times(1)).setFeatures(captor.capture());
         assertTrue(captor.getValue().containsKey(AuthoritiesConstants.FEATURE_JS_LOGGNING));
     }
 
@@ -102,7 +100,7 @@ public class UserApiControllerTest {
         userApiController.userFeatures(webUserFeaturesRequest);
 
         //Then
-        Mockito.verify(webCertUser, times(1)).setFeatures(captor.capture());
+        verify(webCertUser, times(1)).setFeatures(captor.capture());
         assertFalse(captor.getValue().containsKey(AuthoritiesConstants.FEATURE_JS_LOGGNING));
     }
 
@@ -122,7 +120,7 @@ public class UserApiControllerTest {
         userApiController.userFeatures(webUserFeaturesRequest);
 
         //Then
-        Mockito.verify(webCertUser, times(1)).setFeatures(captor.capture());
+        verify(webCertUser, times(1)).setFeatures(captor.capture());
         assertTrue(captor.getValue().containsKey(AuthoritiesConstants.FEATURE_JS_LOGGNING));
     }
 
@@ -139,34 +137,33 @@ public class UserApiControllerTest {
         userApiController.userFeatures(webUserFeaturesRequest);
 
         //Then
-        Mockito.verify(webCertUser, times(1)).setFeatures(captor.capture());
+        verify(webCertUser, times(1)).setFeatures(captor.capture());
         assertFalse(captor.getValue().containsKey(AuthoritiesConstants.FEATURE_JS_LOGGNING));
     }
 
     @Test
     public void testLogout() {
-        String sessionId = "sessionId";
-        ServletRequestAttributes attributes = mock(ServletRequestAttributes.class);
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        HttpSession session = mock(HttpSession.class);
 
-        when(attributes.getSessionId()).thenReturn(sessionId);
+        when(request.getSession()).thenReturn(session);
 
-        RequestContextHolder.setRequestAttributes(attributes);
+        userApiController.logoutUserAfterTimeout(request);
 
-        userApiController.logoutUserAfterTimeout();
-
-        verify(webCertUserService).scheduleSessionRemoval(eq(sessionId), isNull());
+        verify(webCertUserService).scheduleSessionRemoval(session);
     }
 
     @Test
     public void testLogoutCancel() {
         String sessionId = "sessionId";
-        ServletRequestAttributes attributes = mock(ServletRequestAttributes.class);
 
-        when(attributes.getSessionId()).thenReturn(sessionId);
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        HttpSession session = mock(HttpSession.class);
 
-        RequestContextHolder.setRequestAttributes(attributes);
+        when(request.getSession()).thenReturn(session);
+        when(session.getId()).thenReturn(sessionId);
 
-        userApiController.cancelLogout();
+        userApiController.cancelLogout(request);
 
         verify(webCertUserService).cancelScheduledLogout(sessionId);
     }
