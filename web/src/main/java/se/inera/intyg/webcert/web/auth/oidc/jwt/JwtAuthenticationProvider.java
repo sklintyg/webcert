@@ -43,6 +43,12 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
+
+        if (!(authentication instanceof JwtAuthenticationToken)) {
+            throw new AuthenticationServiceException("Unsupported Authentication. Expected JwtAuthenticationToken, got "
+                    + authentication.getClass().getName());
+        }
+
         JwtAuthenticationToken jwtAuthenticationToken = (JwtAuthenticationToken) authentication;
         Object principal = webcertUserDetailsService.loadUserByHsaId(jwtAuthenticationToken.getUserHsaId());
         if (principal != null) {

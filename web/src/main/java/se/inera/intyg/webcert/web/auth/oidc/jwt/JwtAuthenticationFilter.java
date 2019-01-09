@@ -85,7 +85,7 @@ public class JwtAuthenticationFilter extends AbstractAuthenticationProcessingFil
             employeeHsaId = (String) hsaIdObj;
         } else if (hsaIdObj instanceof ArrayList) {
             ArrayList<String> parts = (ArrayList) hsaIdObj;
-            if (parts != null && parts.size() > 0) {
+            if (parts.size() > 0) {
                 employeeHsaId = parts.get(0);
             } else {
                 throw new IncorrectClaimException(jwt.getHeader(), jwt.getBody(),
@@ -96,7 +96,7 @@ public class JwtAuthenticationFilter extends AbstractAuthenticationProcessingFil
                     "Could not extract claim for employeeHsaId, claim was neither of class String nor ArrayList");
         }
         if (Strings.isNullOrEmpty(employeeHsaId)) {
-            throw new MissingClaimException(jwt.getHeader(), jwt.getBody(), "Could extract claim for employeeHsaId");
+            throw new MissingClaimException(jwt.getHeader(), jwt.getBody(), "Could not extract claim for employeeHsaId");
         }
 
         // Build authentication token and proceed with authorization.
@@ -125,6 +125,7 @@ public class JwtAuthenticationFilter extends AbstractAuthenticationProcessingFil
         }
 
         // If neither worked, throw an exception.
-        throw new AuthenticationServiceException("Request contained no 'Authorization: Bearer: <JWS token>' header or POST body");
+        throw new AuthenticationServiceException("Request contained no 'Authorization: Bearer: <JWS token>' header or "
+                + "POST body with access_token form parameter");
     }
 }
