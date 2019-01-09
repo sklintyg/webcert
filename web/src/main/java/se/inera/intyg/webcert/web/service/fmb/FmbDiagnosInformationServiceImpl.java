@@ -24,7 +24,6 @@ import static java.util.Objects.nonNull;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import io.vavr.Tuple2;
 import org.apache.commons.collections.CollectionUtils;
@@ -120,7 +119,7 @@ public class FmbDiagnosInformationServiceImpl extends FmbBaseService implements 
             final DiagnosResponse response = diagnosService.getDiagnosisByCode(diagnosInformation._1, Diagnoskodverk.ICD_10_SE);
             String beskrivning = null;
             if (nonNull(response) && nonNull(response.getResultat()) && response.getResultat().equals(DiagnosResponseType.OK)) {
-                final Diagnos first = Iterables.getFirst(response.getDiagnoser(), null);
+                final Diagnos first = response.getDiagnoser().stream().findFirst().orElse(null);
                 beskrivning = first != null ? first.getBeskrivning() : null;
             }
             return Optional.of(convertToResponse(diagnosInformation._1, beskrivning, diagnosInformation._2.get()));
