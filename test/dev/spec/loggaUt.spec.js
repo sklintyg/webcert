@@ -40,7 +40,10 @@ describe('Utloggning vid vidarenavigering', function() {
     it('Logga in', function() {
 
         specHelper.login();
-        restTestdataHelper.createEmptyUtkast(UtkastPage.intygType, UtkastPage.intygTypeVersion, utkastId);
+        restTestdataHelper.createUtkast(UtkastPage.intygType).then(function(response) {
+            var utkast = response.body;
+            utkastId = utkast.intygsId;
+        });
 
         browser.ignoreSynchronization = true;
         specHelper.setUserOrigin("DJUPINTEGRATION").then(function() {
