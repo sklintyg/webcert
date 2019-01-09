@@ -33,6 +33,7 @@ var baseSMIUtkast = require(intygPath + 'fk/smi/smi.base.utkast.page.js');
 
 module.exports = {
     'webcertBase': new WebcertBasePage(),
+    'landing': require('./landing.page.js'),
     'welcome': require('./welcome.page.js'),
     'sokSkrivIntyg': {
         'pickPatient': require('./sokSkrivIntyg/sokSkrivIntyg.page.js'),
