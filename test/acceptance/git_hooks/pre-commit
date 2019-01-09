@@ -1,0 +1,41 @@
+#!/bin/sh
+
+# Called by "git commit" with no arguments.  The hook should
+# exit with non-zero status after issuing an appropriate message if
+# it wants to stop the commit.
+
+# uncomment next line for debugging, will print all expanded bash commands
+#set -x
+
+# Yes, if you put "fdescribe" in a comment block, this will still abort the
+# commit and you're also an asshole.
+
+# move to top level of git repo
+cd `git rev-parse --show-toplevel`
+
+branch=`git rev-parse --abbrev-ref HEAD`
+changedFiles=`git diff $branch --name-only -G"fdescribe|fit|describe\.only|it\.only|debugger"`
+if [ -n "$changedFiles" ]
+then
+  matchesFound=`git diff $branch --name-only -G"fdescribe|fit|describe\.only|it\.only|debugger" | grep "\.js$" | xargs grep -Hn --color=always -C 3 "fdescribe\|fit\|describe\.only\|it\.only\|debugger"`
+  if [ -n "$matchesFound" ]
+  then
+    echo "Beep boop, I've been told to warn users when I find these things..."
+    echo ""
+    echo "$matchesFound"
+    echo ""
+    echo "\033[0;33mAborting commit\033[0;m because of...reasons"
+    echo "To ignore warning and continue, use"
+    echo ""
+    echo "    \033[0;34mgit commit --no-verify\033[0;m"
+    echo ""
+
+    # move back to original working directory
+    cd -
+    exit 1
+  fi
+fi
+
+# move back to original working directory
+cd -
+exit 0
