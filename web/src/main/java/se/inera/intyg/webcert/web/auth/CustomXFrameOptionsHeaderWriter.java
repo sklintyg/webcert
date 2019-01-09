@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 Inera AB (http://www.inera.se)
+ * Copyright (C) 2019 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -18,9 +18,6 @@
  */
 package se.inera.intyg.webcert.web.auth;
 
-import static org.springframework.security.web.header.writers.frameoptions.XFrameOptionsHeaderWriter.XFRAME_OPTIONS_HEADER;
-import static se.inera.intyg.infra.security.common.model.UserOriginType.READONLY;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -30,6 +27,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.web.header.HeaderWriter;
 
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
+
+import static org.springframework.security.web.header.writers.frameoptions.XFrameOptionsHeaderWriter.XFRAME_OPTIONS_HEADER;
+import static se.inera.intyg.infra.security.common.model.UserOriginType.READONLY;
 
 /**
  * Created by marced on 2017-10-25.
