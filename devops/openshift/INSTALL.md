@@ -161,6 +161,8 @@ Open _&lt;env>/secret-vars.yaml_ and replace `<value>` with expected values:
 	HSA_WS_CERTIFICATE_PASSWORD: "<value>"
 	HSA_WS_KEY_MANAGER_PASSWORD: "<value>"
 	HSA_WS_TRUSTSTORE_PASSWORD: "<value>"
+	IDP_OIDC_CLIENT_ID: "<value>"
+    IDP_OIDC_CLIENT_SECRET: "<value>"  
 	NTJP_WS_CERTIFICATE_PASSWORD: "<value>"
 	NTJP_WS_KEY_MANAGER_PASSWORD: "<value>"
 	NTJP_WS_TRUSTSTORE_PASSWORD: "<value>"
@@ -225,7 +227,10 @@ Open _&lt;env>/configmap-vars.yaml_ and replace `<value>` with expected values. 
 	PUTJANST_LOGICALADDRESS: "<value>"
 	SENDANSWERTOFK_LOGICALADDRESS: "<value>"
 	SENDQUESTIONTOFK_LOGICALADDRESS: "<value>"
-	SENDMESSAGETOFK_LOGICALADDRESS: "<value>" 
+	SENDMESSAGETOFK_LOGICALADDRESS: "<value>"
+	IDP_OIDC_JWKS_URL: "https://idp.ineratest.org/oidc/jwks.json"
+    IDP_OIDC_JWKS_SKEW: 30
+    IDP_OIDC_INTROSPECTION_ENDPOINT_URL: "https://idp.ineratest.org:443/oidc/token/introspect"
    
 Note 1: The `DATABASE_NAME` variable is assumed to be defined within the application deployment config.
 

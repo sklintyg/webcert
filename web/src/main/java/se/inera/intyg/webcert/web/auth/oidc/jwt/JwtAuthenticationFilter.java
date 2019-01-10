@@ -32,12 +32,14 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.security.web.util.matcher.RequestMatcher;
+import se.inera.intyg.infra.security.authorities.FeaturesHelper;
+import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.webcert.web.service.jwt.JwtIntrospectionService;
 import se.inera.intyg.webcert.web.service.jwt.JwtValidationService;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Custom authentication filter that supports extraction of JWT tokens from either an Authorization: Bearer: token
@@ -55,6 +57,9 @@ public class JwtAuthenticationFilter extends AbstractAuthenticationProcessingFil
     @Autowired
     private JwtIntrospectionService jwtIntrospectionService;
 
+    @Autowired
+    private FeaturesHelper featuresHelper;
+
     protected JwtAuthenticationFilter(RequestMatcher requestMatcher) {
         super(requestMatcher);
         LOG.error("JWT Authentication enabled. DO NOT USE IN PRODUCTION UNLESS YOU KNOW WHAT YOU ARE DOING!!!");
@@ -63,6 +68,11 @@ public class JwtAuthenticationFilter extends AbstractAuthenticationProcessingFil
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
             throws AuthenticationException {
+
+        if (!featuresHelper.isFeatureActive(AuthoritiesConstants.FEATURE_OAUTH_AUTHENTICATION)) {
+            throw new AuthenticationServiceException("OAuth authentication is not enabled");
+        }
+
         String jwsToken = extractAccessToken(request);
         return authenticate(jwsToken);
     }
@@ -83,8 +93,8 @@ public class JwtAuthenticationFilter extends AbstractAuthenticationProcessingFil
         String employeeHsaId = null;
         if (hsaIdObj instanceof String) {
             employeeHsaId = (String) hsaIdObj;
-        } else if (hsaIdObj instanceof ArrayList) {
-            ArrayList<String> parts = (ArrayList) hsaIdObj;
+        } else if (hsaIdObj instanceof List) {
+            List<String> parts = (List) hsaIdObj;
             if (parts.size() > 0) {
                 employeeHsaId = parts.get(0);
             } else {
@@ -100,8 +110,7 @@ public class JwtAuthenticationFilter extends AbstractAuthenticationProcessingFil
         }
 
         // Build authentication token and proceed with authorization.
-        JwtAuthenticationToken jwtAuthenticationToken = new JwtAuthenticationToken(employeeHsaId);
-        return getAuthenticationManager().authenticate(jwtAuthenticationToken);
+        return getAuthenticationManager().authenticate(new JwtAuthenticationToken(employeeHsaId));
     }
 
     private String extractAccessToken(HttpServletRequest request) {

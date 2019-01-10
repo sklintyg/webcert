@@ -69,6 +69,7 @@ knownFeatures:
   - &kf190 SEKRETESSMARKERING
   - &kf200 NOTIFICATION_DISCARD_FELB
   - &kf210 FEATURE_UNIKT_UNDANTAG_OM_SENASTE_INTYG
+  - &kf220 OAUTH_AUTHENTICATION
 
 # Aktiverade features i Webcert
 features:
@@ -286,5 +287,9 @@ features:
     global: true
     intygstyper:
       - *ki090 # DOI
+  - &f220
+    name: *kf220
+    desc: Inloggning med OAuth
+    global: true
 
 pilots:
