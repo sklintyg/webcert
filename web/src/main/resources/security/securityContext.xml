@@ -195,6 +195,7 @@
   <beans profile="!wc-security-test">
     <beans profile="dev,wc-security-dev">
 
+      <!--
       <bean id="corsSource" class="org.springframework.web.cors.UrlBasedCorsConfigurationSource">
         <property name="corsConfigurations">
           <util:map>
@@ -229,22 +230,7 @@
           </util:map>
         </property>
       </bean>
-
-      <security:http use-expressions="false" entry-point-ref="http403ForbiddenEntryPoint" pattern="(\/oauth\/token)" request-matcher="regex">
-        <security:csrf disabled="true"/>
-       <!--  <security:cors configuration-source-ref="corsSource"/> -->
-        <security:logout logout-url="/logout" logout-success-url="/welcome.html" invalidate-session="true"/>
-        <security:intercept-url pattern="/**" access="IS_AUTHENTICATED_FULLY"/>
-        <security:custom-filter position="PRE_AUTH_FILTER" ref="jwtAuthFilter"/>
-       <!-- <security:custom-filter after="BASIC_AUTH_FILTER" ref="fakeAuthFilter"/> -->
-        <security:request-cache ref="redisSavedRequestCache"/>
-        <security:session-management session-authentication-strategy-ref="registerSessionAuthenticationStrategy"/>
-        <security:headers>
-          <security:frame-options disabled="true"/>
-          <security:header ref="xFrameOptionsHeaderWriter"/>
-        </security:headers>
-      </security:http>
-
+      -->
 
       <security:http use-expressions="false" entry-point-ref="http403ForbiddenEntryPoint">
         <security:csrf disabled="true"/>
@@ -271,6 +257,21 @@
   <!-- The wc-security-test profile support both Säkerhetstjänst and Fake login -->
   <!-- ======================================================================== -->
   <beans profile="wc-security-test">
+
+    <!-- JWT based OAuth authentication -->
+    <security:http use-expressions="false" entry-point-ref="http403ForbiddenEntryPoint" pattern="(\/oauth\/token)" request-matcher="regex">
+      <security:csrf disabled="true"/>
+      <security:logout logout-url="/logout" logout-success-url="/welcome.html" invalidate-session="true"/>
+      <security:intercept-url pattern="/**" access="IS_AUTHENTICATED_FULLY"/>
+      <security:custom-filter position="PRE_AUTH_FILTER" ref="jwtAuthFilter"/>
+      <security:request-cache ref="redisSavedRequestCache"/>
+      <security:session-management session-authentication-strategy-ref="registerSessionAuthenticationStrategy"/>
+      <security:headers>
+        <security:frame-options disabled="true"/>
+        <security:header ref="xFrameOptionsHeaderWriter"/>
+      </security:headers>
+    </security:http>
+
     <!-- /visa/intyg/ and /webcert/web are deep-integration links used by VAS and Cosmic and should use SAML SSO -->
     <security:http use-expressions="false" request-matcher="regex" pattern="(\/fake)|(\/welcome.html)|(\/logout)|(\/saml\/.*)|(\/visa\/intyg\/.*)|(\/webcert\/web\/.*)|(\/web\/maillink\/.*)" entry-point-ref="samlEntryPoint">
       <security:csrf disabled="true"/>
@@ -318,6 +319,20 @@
       <security:intercept-url pattern="/**" access="denyAll"/>
     </security:http>
 
+    <!-- JWT based OAuth authentication -->
+    <security:http use-expressions="false" entry-point-ref="http403ForbiddenEntryPoint" pattern="(\/oauth\/token)" request-matcher="regex">
+      <security:csrf disabled="true"/>
+      <security:logout logout-url="/logout" logout-success-url="/welcome.html" invalidate-session="true"/>
+      <security:intercept-url pattern="/**" access="IS_AUTHENTICATED_FULLY"/>
+      <security:custom-filter position="PRE_AUTH_FILTER" ref="jwtAuthFilter"/>
+      <security:request-cache ref="redisSavedRequestCache"/>
+      <security:session-management session-authentication-strategy-ref="registerSessionAuthenticationStrategy"/>
+      <security:headers>
+        <security:frame-options disabled="true"/>
+        <security:header ref="xFrameOptionsHeaderWriter"/>
+      </security:headers>
+    </security:http>
+
     <!-- /visa/intyg/ and /webcert/web are deep-integration links used by VAS and Cosmic and should use SAML SSO -->
     <security:http use-expressions="false" entry-point-ref="samlEntryPoint" pattern="(\/saml\/.*)|(\/visa\/intyg\/.*)|(\/webcert\/web\/.*)|(\/web\/maillink\/.*)" request-matcher="regex">
       <security:csrf disabled="true"/>
@@ -356,20 +371,11 @@
       <property name="authenticationSuccessHandler" ref="fakeSuccessHandler"/>
       <property name="authenticationFailureHandler" ref="failureHandler"/>
     </bean>
-    <bean id="jwtAuthFilter" class="se.inera.intyg.webcert.web.auth.oidc.jwt.JwtAuthenticationFilter">
-      <constructor-arg index="0" ref="saveRequestMatcher" />
-      <property name="authenticationManager" ref="authenticationManager"/>
-      <property name="sessionAuthenticationStrategy" ref="registerSessionAuthenticationStrategy"/>
-      <property name="authenticationSuccessHandler" ref="jwtSuccessHandler"/>
-      <property name="authenticationFailureHandler" ref="failureHandler"/>
-    </bean>
     <bean id="fakeSuccessHandler"
         class="org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler">
       <property name="defaultTargetUrl" value="/"/>
     </bean>
-    <bean id="jwtSuccessHandler"
-          class="se.inera.intyg.webcert.web.auth.oidc.jwt.JwtAuthenticationSuccessHandler">
-    </bean>
+
     <bean id="commonFakeAuthenticationProvider"
         class="se.inera.intyg.webcert.web.auth.fake.common.CommonFakeAuthenticationProvider">
       <property name="userDetails" ref="webcertUserDetailsService"/>
@@ -378,12 +384,24 @@
         class="se.inera.intyg.webcert.web.auth.eleg.FakeElegAuthenticationProvider">
       <property name="elegWebCertUserDetailsService" ref="elegWebCertUserDetailsService"/>
     </bean>
-    <bean id="jwtAuthenticationProvider" class="se.inera.intyg.webcert.web.auth.oidc.jwt.JwtAuthenticationProvider">
-      <property name="webcertUserDetailsService" ref="webcertUserDetailsService" />
-    </bean>
+
   </beans>
 
   <beans>
+    <bean id="jwtAuthFilter" class="se.inera.intyg.webcert.web.auth.oidc.jwt.JwtAuthenticationFilter">
+      <constructor-arg index="0" ref="saveRequestMatcher" />
+      <property name="authenticationManager" ref="authenticationManager"/>
+      <property name="sessionAuthenticationStrategy" ref="registerSessionAuthenticationStrategy"/>
+      <property name="authenticationSuccessHandler" ref="jwtSuccessHandler"/>
+      <property name="authenticationFailureHandler" ref="failureHandler"/>
+    </bean>
+    <bean id="jwtSuccessHandler"
+          class="se.inera.intyg.webcert.web.auth.oidc.jwt.JwtAuthenticationSuccessHandler">
+    </bean>
+    <bean id="jwtAuthenticationProvider" class="se.inera.intyg.webcert.web.auth.oidc.jwt.JwtAuthenticationProvider">
+      <property name="webcertUserDetailsService" ref="webcertUserDetailsService" />
+    </bean>
+
     <!-- Decide which requests should be saved for redirection after successful login.
          Triggers on: /web/* and integration links /visa/* and /webcert/*
          We don't want to save /api and /moduleapi requests since this will make the browser display the data.

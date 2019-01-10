@@ -62,7 +62,6 @@ public class JwtAuthenticationFilter extends AbstractAuthenticationProcessingFil
 
     protected JwtAuthenticationFilter(RequestMatcher requestMatcher) {
         super(requestMatcher);
-        LOG.error("JWT Authentication enabled. DO NOT USE IN PRODUCTION UNLESS YOU KNOW WHAT YOU ARE DOING!!!");
     }
 
     @Override
