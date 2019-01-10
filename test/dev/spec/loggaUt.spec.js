@@ -57,8 +57,8 @@ describe('Utloggning vid vidarenavigering', function() {
         });
     });
 
-    it('Öppna intyg ' + browser.baseUrl + '/visa/intyg/' + utkastId + parameters, function() {
-        browser.driver.get(browser.baseUrl + '/visa/intyg/' + utkastId + parameters);
+    it('Öppna intyg ' + browser.baseUrl + 'visa/intyg/' + utkastId + parameters, function() {
+        browser.driver.get(browser.baseUrl + 'visa/intyg/' + utkastId + parameters);
 
         expect(UtkastPage.isAt()).toBeTruthy();
     });
