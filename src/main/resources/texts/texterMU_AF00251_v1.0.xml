@@ -3,9 +3,7 @@
         xmlns="http://schema.forsakringskassan.se/vardgivare_sjukvard">
 
 
-    <text id="FRM_1.RBK">Läkarintyg för deltagare i arbetsmarknadspolitiska program med aktivitetsstöd, utvecklingsersättning eller etableringsersättning
-
-        Om en programdeltagare är sjuk i mer än 7 dagar behöver hen lämna läkarintyg till Arbetsförmedlingen för att styrka att hen är förhindrad att delta i programmet på grund av sjukdom.
+    <text id="FRM_1.RBK">Om en programdeltagare är sjuk i mer än 7 dagar behöver hen lämna läkarintyg till Arbetsförmedlingen för att styrka att hen är förhindrad att delta i programmet på grund av sjukdom.
 
         Arbetsförmedlingen behöver få läkarintyget för att programdeltagaren ska kunna ha möjlighet att få ersättning under sjukfrånvaron.
         Arbetsförmedlingen använder också informationen i läkarintyget för att utreda om det är möjligt att anpassa aktiviteter i programmet så att programdeltagaren kan delta trots sin sjukdom.</text>
