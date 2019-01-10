@@ -32,6 +32,12 @@ var restTestdataHelper = wcTestTools.helpers.restTestdata;
 describe('Utloggning vid vidarenavigering', function() {
 
     var utkastId = 'new-utkast-123';
+    var parameters = '?';
+        parameters += 'fornamn=' + encodeURIComponent("firstname") + '&';
+        parameters += 'efternamn=' + encodeURIComponent("lastname") + '&';
+        parameters += 'postadress=' + encodeURIComponent("adress") + '&';
+        parameters += 'postnummer=' + encodeURIComponent("123") + '&';
+        parameters += 'postort=' + encodeURIComponent("test");
 
     beforeEach(function() {
         browser.ignoreSynchronization = false;
@@ -46,10 +52,13 @@ describe('Utloggning vid vidarenavigering', function() {
         });
 
         browser.ignoreSynchronization = true;
-        specHelper.setUserOrigin("DJUPINTEGRATION").then(function() {
+        specHelper.setUserOrigin('DJUPINTEGRATION').then(function() {
             browser.ignoreSynchronization = false;
-            browser.driver.get(browser.baseUrl + '/visa/intyg/' + utkastId);
         });
+    });
+
+    it('Öppna intyg ' + browser.baseUrl + '/visa/intyg/' + utkastId + parameters, function() {
+        browser.driver.get(browser.baseUrl + '/visa/intyg/' + utkastId + parameters);
 
         expect(UtkastPage.isAt()).toBeTruthy();
     });
