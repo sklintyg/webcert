@@ -1,0 +1,144 @@
+<!--
+  ~ Copyright (C) 2016 Inera AB (http://www.inera.se)
+  ~
+  ~ This file is part of sklintyg (https://github.com/sklintyg).
+  ~
+  ~ sklintyg is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ sklintyg is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+<!DOCTYPE html>
+<html lang="sv" id="ng-app" ng-app="WcApisApp">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="ROBOTS" content="nofollow, noindex"/>
+
+    <title>Webcert test inloggning</title>
+
+    <link rel="icon" href="/favicon.ico" type="image/vnd.microsoft.icon"/>
+
+    <!-- bower:css -->
+    <!-- endbower -->
+    <link rel="stylesheet" href="/app/webcert.css">
+
+    <style type="text/css">
+        textarea {
+            font-family: Consolas, Lucida Console, monospace;
+            font-size: 0.7em;
+        }
+
+        .envButtons {
+            margin-right: 0.6em;
+        }
+
+        .envButtons input {
+            margin-right: 0.2em;
+        }
+    </style>
+
+    <script type="text/javascript" src="/bower_components/angular/angular.js"></script>
+
+    <script type="text/javascript">
+        window.doneLoading = true;
+        window.rendered = true;
+
+        angular.module('WcApisApp', [
+            'WcApisApp.controllers'
+        ]);
+
+        angular.module('WcApisApp.controllers', []).controller('apisWelcomeController',
+            ['$scope', '$http', '$log', function ($scope, $http, $log) {
+
+
+                $scope.metaList = [
+                    {name: 'api'},
+                    {name: 'moduleapi'},
+                    {name: 'monitoring'},
+                    {name: 'integration'},
+                    {name: 'legacyintegration'},
+                    {name: 'testability'},
+                    {name: 'authtestability'}
+                ];
+
+                $scope.loadApi = function(metaObject) {
+                    $http.get('/services/swagger/' + metaObject.name).then(function(response) {
+                        $log.debug('got data:' + response.data);
+                        metaObject.apiList = [];
+                        angular.forEach(response.data.paths, function(value, key) {
+                            var item = {name: key};
+                            item = enrichWithMethod(item, value)
+                            metaObject.apiList.push(item);
+                        });
+                        metaObject.apiList.sort(function(a, b) {
+                            return a.name < b.name;
+                        })
+                    }, function(response) {
+                        $log.error('error ' + response.status);
+                    })
+                };
+
+                angular.forEach($scope.metaList, function(metaObject) {
+                    $scope.loadApi(metaObject);
+                });
+
+                function enrichWithMethod(item, val) {
+                    if (val.get != null) {
+                        item.method = 'GET';
+                        item.operation = val.get.operationId;
+                        item.summary = val.get.summary;
+                    } else if (val.post != null) {
+                        item.method = 'POST';
+                        item.operation = val.post.operationId;
+                        item.summary = val.post.summary;
+                    } else if (val.put != null) {
+                        item.method = 'PUT';
+                        item.operation = val.put.operationId;
+                        item.summary = val.put.summary;
+                    } else if (val.delete != null) {
+                        item.method = 'DELETE';
+                        item.operation = val.delete.operationId;
+                        item.summary = val.delete.summary;
+                    }
+                    return item;
+                }
+            }]
+        );
+    </script>
+</head>
+<body ng-controller="apisWelcomeController">
+<div class="container">
+
+    <div id="content-container">
+        <div class="content row">
+
+            <h1>API:er i Webcert</h1>
+
+            <div class="well" ng-repeat="metaObject in metaList">
+                <h4>{{ metaObject.name }}</h4>
+                <table class="table">
+                    <th>API</th>
+                    <th>Operation</th>
+                    <th>Method</th>
+                    <tr ng-repeat="entry in metaObject.apiList | orderBy:'name'">
+                        <td>/{{ metaObject.name + entry.name }}</td>
+                        <td>{{ entry.operation }} <span ng-if="entry.summary">(<i>{{ entry.summary}}</i>)</span></td>
+                        <td>{{ entry.method }}</td>
+                    </tr>
+                </table>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

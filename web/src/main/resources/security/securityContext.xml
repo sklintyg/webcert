@@ -314,7 +314,7 @@
   <!-- =============================================================== -->
   <beans profile="prod,wc-security-prod">
     <!-- /swagger-ui och /pubapp/simulator ska vara nedstängda i produktion -->
-    <security:http entry-point-ref="http403ForbiddenEntryPoint" pattern="(\/swagger-ui\/.*)|(\/pubapp\/simulator\/.*)" request-matcher="regex">
+    <security:http entry-point-ref="http403ForbiddenEntryPoint" pattern="(\/swagger-ui\/.*)|(\/pubapp\/simulator\/.*)|(\/pubapp\/apis\/.*)|(\/pubapp\/signapp\/.*)" request-matcher="regex">
       <security:access-denied-handler ref="accessDeniedHandler"/>
       <security:intercept-url pattern="/**" access="denyAll"/>
     </security:http>
