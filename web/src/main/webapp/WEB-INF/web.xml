@@ -203,7 +203,7 @@
     <!-- Update RequestContext for spring session -->
     <filter>
         <filter-name>requestContextHolderUpdateFilter</filter-name>
-        <filter-class>se.inera.intyg.webcert.web.auth.RequestContextHolderUpdateFilter</filter-class>
+        <filter-class>se.inera.intyg.infra.security.filter.RequestContextHolderUpdateFilter</filter-class>
     </filter>
     <filter-mapping>
         <filter-name>requestContextHolderUpdateFilter</filter-name>

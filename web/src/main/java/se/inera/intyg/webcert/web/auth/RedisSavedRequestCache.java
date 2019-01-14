@@ -19,7 +19,6 @@
 package se.inera.intyg.webcert.web.auth;
 
 import java.util.concurrent.TimeUnit;
-
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
@@ -38,8 +37,6 @@ import org.springframework.security.web.savedrequest.RequestCache;
 import org.springframework.security.web.savedrequest.SavedRequest;
 import org.springframework.security.web.util.matcher.AnyRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
-import org.springframework.session.web.http.CookieHttpSessionStrategy;
-import org.springframework.session.web.http.MultiHttpSessionStrategy;
 import org.springframework.stereotype.Component;
 
 /**
@@ -65,10 +62,6 @@ public class RedisSavedRequestCache implements RequestCache {
 
     private PortResolver portResolver = new PortResolverImpl();
     private RequestMatcher requestMatcher = AnyRequestMatcher.INSTANCE;
-
-    // Used to extract the sessionId from the SESSION cookie.
-    private MultiHttpSessionStrategy httpSessionStrategy = new CookieHttpSessionStrategy();
-
 
     @Autowired
     @Qualifier("rediscache")
