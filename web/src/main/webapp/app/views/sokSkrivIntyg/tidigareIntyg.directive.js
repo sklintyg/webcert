@@ -28,13 +28,14 @@ angular.module('webcert').directive('wcTidigareIntyg',
                             authority: UserModel.privileges.FORNYA_INTYG,
                             intygstyp: intyg.intygType
                         });
-                    var statusAllowed = intyg.status.indexOf('DRAFT') === -1 && intyg.status !== 'CANCELLED';
-    
-                    return renewable &&
-                        statusAllowed &&
-                        !(intyg.relations.latestChildRelations.replacedByIntyg ||
-                            intyg.relations.latestChildRelations.complementedByIntyg);
+                    var statusOk = intyg.status.indexOf('DRAFT') === -1 && intyg.status !== 'CANCELLED';
+                    var relationsOk = !(intyg.relations.latestChildRelations.replacedByIntyg ||
+                    intyg.relations.latestChildRelations.complementedByIntyg);
+                    var patientStatusOk = !scope.PatientModel.avliden;
+
+                    return renewable && statusOk && relationsOk && patientStatusOk;
                 };
+
                 scope.fornyaIntyg = function (intyg) {
                     
                     scope.viewState.createErrorMessageKey = null;
