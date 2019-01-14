@@ -52,7 +52,7 @@ import static org.mockito.Mockito.when;
 public class RedisSavedRequestCacheTest {
 
     private static final String HTTP_SESSION_ID = "session-1";
-    private static final String SPRING_SESSION_ID = "spring-session-1";
+    private static final String COOKIE_SESSION_ID = "cookie-session-1";
 
     private static final String PREFIX = "webcert:savedrequests:";
 
@@ -77,16 +77,16 @@ public class RedisSavedRequestCacheTest {
 
     @Test
     public void storeRequestWithIdFromSpringSession() {
-        testee.saveRequest(mockReq(HTTP_SESSION_ID, SPRING_SESSION_ID), mockResp());
+        testee.saveRequest(mockReq(HTTP_SESSION_ID, COOKIE_SESSION_ID), mockResp());
 
-        verify(valueOps, times(1)).set(eq(PREFIX + SPRING_SESSION_ID), any(DefaultSavedRequest.class), anyLong(),
+        verify(valueOps, times(1)).set(eq(PREFIX + HTTP_SESSION_ID), any(DefaultSavedRequest.class), anyLong(),
                 eq(TimeUnit.MINUTES));
     }
 
     @Test
     public void storeRequestDoesNothingIfRequestDoesNotMatch() {
         testee.setRequestMatcher(new RegexRequestMatcher("/other/.*", null));
-        testee.saveRequest(mockReq(HTTP_SESSION_ID, SPRING_SESSION_ID), mockResp());
+        testee.saveRequest(mockReq(HTTP_SESSION_ID, COOKIE_SESSION_ID), mockResp());
 
         verifyZeroInteractions(valueOps);
     }
@@ -94,16 +94,16 @@ public class RedisSavedRequestCacheTest {
     @Test
     public void getRequestReturnsSavedRequestWhenAvailable() {
         DefaultSavedRequest mockedSavedRequest = mock(DefaultSavedRequest.class);
-        when(valueOps.get(PREFIX + SPRING_SESSION_ID)).thenReturn(mockedSavedRequest);
-        SavedRequest request = testee.getRequest(mockReq(HTTP_SESSION_ID, SPRING_SESSION_ID), mockResp());
+        when(valueOps.get(PREFIX + HTTP_SESSION_ID)).thenReturn(mockedSavedRequest);
+        SavedRequest request = testee.getRequest(mockReq(HTTP_SESSION_ID, COOKIE_SESSION_ID), mockResp());
         assertNotNull(request);
     }
 
     @Test
     public void getRequestReturnsNullWhenNoRequestSaved() {
         DefaultSavedRequest mockedSavedRequest = mock(DefaultSavedRequest.class);
-        when(valueOps.get(PREFIX + SPRING_SESSION_ID)).thenReturn(null);
-        SavedRequest request = testee.getRequest(mockReq(HTTP_SESSION_ID, SPRING_SESSION_ID), mockResp());
+        when(valueOps.get(PREFIX + HTTP_SESSION_ID)).thenReturn(null);
+        SavedRequest request = testee.getRequest(mockReq(HTTP_SESSION_ID, COOKIE_SESSION_ID), mockResp());
         assertNull(request);
     }
 
