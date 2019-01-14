@@ -1,0 +1,40 @@
+@startuml
+actor Invånare
+participant "GUI"
+participant "Webcert"
+participant "DB"
+participant "ModuleApi"
+
+activate GUI
+Invånare -> GUI: Väljer att skapa / öppna ett utkast av typen A.
+activate Webcert
+GUI -> Webcert: Hämta utkastJson via UtkastModuleAPiController
+activate DB
+Webcert -> DB:  Hämta utkast A från DB
+    activate ModuleApi
+    Webcert --> ModuleApi: Hämta CandidateCriteriaForCopy
+    ModuleApi --> Webcert: CandidateCriteriaForCopy
+    deactivate ModuleApi
+
+Webcert -> DB:  Baserat på kriterier - sök efter kandidatintyg B att kopiera från
+DB -> Webcert:  Bruttolista över kandidatintyg
+Webcert -> Webcert:  Filtrera bruttolista utifrån kriterier
+deactivate DB
+Webcert -> GUI: UtkastJson (med ev matchande kandidatmetadata
+GUI -> Invånare: UtkastJson
+GUI -> Invånare: Om kandidat - visa bekräftelsedialog om kopiering
+Invånare -> GUI: Ja, Kopiera.
+GUI -> Webcert: Begäran om att kopiera info från intyg B
+Webcert -> DB:  Hämta utkast A & B
+DB -> Webcert:
+ activate ModuleApi
+    Webcert --> ModuleApi: Uppdatera Utlatande A från Utlatande B
+    ModuleApi --> Webcert: Ifyllt Utlatande A
+    deactivate ModuleApi
+    Webcert -> DB:  Spara uppdaterat utkast
+ Webcert -> GUI: Uppdaterad UtkastJson
+ GUI -> Invånare: Visa uppdaterat utkast
+deactivate Webcert
+deactivate GUI
+
+@enduml
