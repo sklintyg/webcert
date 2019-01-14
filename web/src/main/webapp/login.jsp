@@ -34,7 +34,7 @@
   <div class="row">
     <div class="buttonbar">
         <a href="/saml/login/alias/defaultAlias?idp=<spring:eval expression="@webcertProperties.getProperty('sakerhetstjanst.saml.idp.metadata.url')" />"
-         class="btn btn-success" id="loginBtn">SITHS-kort</a>
+         class="btn btn-success" id="loginBtn">SITHS/Efos-kort</a>
 
       <a href="/saml/login/alias/eleg?idp=<spring:eval expression="@webcertProperties.getProperty('cgi.funktionstjanster.saml.idp.metadata.url')" />"
          class="btn btn-success" id="loginBtn2" style="margin-left: 20px;">E-legitimation</a>
