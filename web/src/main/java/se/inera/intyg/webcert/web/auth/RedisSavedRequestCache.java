@@ -92,14 +92,7 @@ public class RedisSavedRequestCache implements RequestCache {
         if (requestMatcher.matches(request)) {
             DefaultSavedRequest savedRequest = new DefaultSavedRequest(request,
                     portResolver);
-            String requestedSessionId = httpSessionStrategy.getRequestedSessionId(request);
-
-            // SESSION (from Spring Session) not started yet, use httpSession.getId() instead (they should be identical)
-            // This will typically happen on the very first request,
-            // before the browser have gotten Set-Cookie: Session=<session-id> back.
-            if (requestedSessionId == null) {
-                requestedSessionId = request.getSession().getId();
-            }
+            String requestedSessionId = getSessionId(request);
 
             if (requestedSessionId != null) {
                 // Store the HTTP request itself. Used by
@@ -121,7 +114,7 @@ public class RedisSavedRequestCache implements RequestCache {
     public SavedRequest getRequest(HttpServletRequest currentRequest,
             HttpServletResponse response) {
 
-        String requestedSessionId = httpSessionStrategy.getRequestedSessionId(currentRequest);
+        String requestedSessionId = getSessionId(currentRequest);
 
         if (requestedSessionId != null) {
             return valueOps.get(buildKey(requestedSessionId));
@@ -137,7 +130,7 @@ public class RedisSavedRequestCache implements RequestCache {
     @Override
     public void removeRequest(HttpServletRequest currentRequest,
             HttpServletResponse response) {
-        String requestedSessionId = httpSessionStrategy.getRequestedSessionId(currentRequest);
+        String requestedSessionId = getSessionId(currentRequest);
 
         if (requestedSessionId != null) {
             logger.debug("Removing DefaultSavedRequest from session if present");
@@ -180,5 +173,9 @@ public class RedisSavedRequestCache implements RequestCache {
 
     private String buildKey(String requestedSessionId) {
         return SAVED_REQ_REDIS_PREFIX + requestedSessionId;
+    }
+
+    private String getSessionId(HttpServletRequest request) {
+        return request.getSession().getId();
     }
 }
