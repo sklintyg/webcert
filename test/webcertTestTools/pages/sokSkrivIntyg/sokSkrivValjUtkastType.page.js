@@ -39,4 +39,15 @@ module.exports = {
     clickFornyaBtnById: function(id) {
         return element(by.id('fornyaBtn-' + id)).click();
     },
+    clickToggleFavourite: function(typeId) {
+        return element(by.id('intygType-row-' + typeId))
+            .element(by.css('.favourite'))
+            .click();
+    },
+    verifyTypeIsAtIndex: function(typeId, index) {
+        return element(by.id('select-intyg-type-table'))
+            .all(by.css('.flex-list-col'))
+            .get(index)
+            .element(by.id('intygType-row-' + typeId)).isPresent();
+    }
 };

@@ -90,6 +90,9 @@ describe('SokSkrivValjUtkastTypeCtrl', function() {
             UserModel.user = {
                 origin: 'NORMAL'
             };
+            UserModel.getAnvandarPreference = function() {
+                return undefined;
+            };
             UserModel.privileges = {
                 FORNYA_INTYG: {}
             };
@@ -119,6 +122,8 @@ describe('SokSkrivValjUtkastTypeCtrl', function() {
 
             var moduleService  = jasmine.createSpyObj('common.moduleService', [ 'getModuleName' ]);
             $provide.value('common.moduleService', moduleService);
+
+            $provide.value('common.User', {});
         });
 
         inject(function($rootScope, _$location_, _$controller_, _$q_, _$compile_) {

@@ -20,22 +20,23 @@ angular.module('webcert').controller('webcert.SokSkrivValjUtkastTypeCtrl',
     ['$log', '$scope', '$stateParams', '$state', '$location', '$rootScope', '$q',
         'webcert.SokSkrivIntygViewstate', 'webcert.IntygTypeSelectorModel', 'common.PatientModel',
         'webcert.IntygProxy', 'webcert.UtkastProxy', 'webcert.SokSkrivValjUtkastService', 'common.ObjectHelper',
-        'common.UtkastProxy', 'common.authorityService', 'common.UserModel', 'common.moduleService',
-
+        'common.UtkastProxy', 'common.authorityService', 'common.UserModel', 'common.moduleService', 'common.User',
         function($log, $scope, $stateParams, $state, $location, $rootScope, $q,
             Viewstate, IntygTypeSelectorModel, PatientModel,
             IntygProxy, UtkastProxy, Service, ObjectHelper,
-            commonUtkastProxy, authorityService, UserModel, moduleService) {
+            commonUtkastProxy, authorityService, UserModel, moduleService, UserService) {
             'use strict';
+
+            var favouriteList,
+                intygTypeModel,
+                choosePatientStateName = 'webcert.create-choosepatient-index';
 
             /**
              * Page state
              */
 
-            var choosePatientStateName = 'webcert.create-choosepatient-index';
-
             $scope.viewState = Viewstate.build();
-            var intygTypeModel = IntygTypeSelectorModel.build();
+            intygTypeModel = IntygTypeSelectorModel.build();
             $scope.viewState.IntygTypeSelectorModel = intygTypeModel;
 
             // In case callers do not know the patientId they can use 'default' in which case the controller
@@ -77,7 +78,30 @@ angular.module('webcert').controller('webcert.SokSkrivValjUtkastTypeCtrl',
                     Viewstate.loadErrorMessageKey = errorId;
                     Viewstate.patientLoading = false;
                 });
+
+                loadFavouriteList();
             }
+
+            function loadFavouriteList() {
+                favouriteList = UserModel.getAnvandarPreference('wc.favoritIntyg');
+                if(favouriteList) {
+                    try {
+                        favouriteList = JSON.parse(favouriteList);
+                    } catch (e) {
+                        if (e instanceof SyntaxError) {
+                            favouriteList = [];
+                        }
+                    }
+                } else {
+                    favouriteList = [];
+                }
+            }
+
+
+            function isFavourite(type) {
+                return favouriteList.indexOf(type.id) > -1;
+            }
+
 
             function loadUtkastTypesAndIntyg() {
 
@@ -92,6 +116,11 @@ angular.module('webcert').controller('webcert.SokSkrivValjUtkastTypeCtrl',
                         var intygsModule = moduleService.getModule(intygTypeData.id);
                         intygTypeData.issuerTypeId = intygsModule.issuerTypeId;
                     });
+                });
+
+                // set favourite flag
+                intygTypeModel.intygTypes.forEach(function(type) {
+                    type.isFavourite = isFavourite(type);
                 });
 
                 // load warnings of previous certificates
@@ -163,6 +192,20 @@ angular.module('webcert').controller('webcert.SokSkrivValjUtkastTypeCtrl',
                     return intygTypes[0].label;
                 }
             }
+
+            $scope.toggleFavourite = function(type) {
+                type.isFavourite = !isFavourite(type);
+
+                if(type.isFavourite) {
+                    favouriteList.push(type.id);
+                } else {
+                    // remove favourite
+                    favouriteList.splice(favouriteList.indexOf(type.id), 1);
+                }
+
+                // store favourites
+                UserService.storeAnvandarPreference('wc.favoritIntyg', JSON.stringify(favouriteList));
+            };
 
             /**
              * Watches
