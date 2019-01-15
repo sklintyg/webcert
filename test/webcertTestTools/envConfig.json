@@ -12,7 +12,7 @@
         "SELENIUM_ADDRESS": ""
     },
 	"demo": {
-        "WEBCERT_URL": "https://demo.webcert.intygstjanster.se/",
+        "WEBCERT_URL": "https://webcert-devtest-tintyg.app-test1.ind-ocp.sth.basefarm.net/",
 		"INTYGTJANST_URL": "https://demo.intygstjanst.intygstjanster.se/inera-certificate",
         "SELENIUM_ADDRESS": ""
     },
