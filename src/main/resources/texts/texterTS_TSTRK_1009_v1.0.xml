@@ -71,7 +71,7 @@
   KATEGORI 1: Identitet styrkt genom
   ==================================
   -->
-	<text id="KAT_2.RBK">Identitet</text>
+	<text id="KAT_1.RBK">Identitet</text>
 	<text id="FRG_2.RBK">Identitet styrkt genom</text>
 
 	<text id="IDENTITET_ID_KORT.RBK">ID-kort</text>
@@ -231,8 +231,8 @@
 	<text id="KV_KORKORTSBEHORIGHET_KANINTETASTALLNING.RBK">Kan inte ta ställning</text>
 
 	<text id="SVAR_ALLA.RBK">Alla behörigheter inkl. körkortstillstånd, traktorkort och taxiförarlegitimation</text>
-	<text id="SVAR_A.B.TRAKTOR.RBK">AM, A1, A2, A, B, BE, traktorkort</text>
-	<text id="SVAR_C.E.RBK">C1, C1E, C, CE</text>
+	<text id="SVAR_A_B_TRAKTOR.RBK">AM, A1, A2, A, B, BE, traktorkort</text>
+	<text id="SVAR_C_E.RBK">C1, C1E, C, CE</text>
 	<text id="SVAR_D.RBK">D1, D1E, D, DE</text>
 	<text id="SVAR_TAXI.RBK">Taxiförarlegitimation</text>
 	<text id="SVAR_KANINTETASTALLNING.RBK">Kan inte ta ställning</text>
