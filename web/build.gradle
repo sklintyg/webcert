@@ -111,7 +111,7 @@ gretty {
 
     jvmArgs = ["-Dcatalina.base=${buildDir}/catalina.base",
                "-Dspring.profiles.active=dev,caching-enabled",
-               "-Dresources.folder=${projectDir}/../src/main/resources",
+               "-Dresources.folder=file://${projectDir}/../src/main/resources",
                "-Dcredentials.file=${projectDir}/webcert-credentials.properties",
                "-Dconfig.file=${projectDir}/webcert-dev.properties",
                "-Dlogback.file=classpath:logback-ocp.xml",
