@@ -9,7 +9,7 @@ task camelTest(type: Test) {
 
 
 task copyResources(type: Copy) {
-    from "${projectDir}/../src/main/resources/security"
+    from "${projectDir}/../web/src/main/resources/security"
     include "*.yaml"
     into "${buildDir}/resources/test/security"
 }

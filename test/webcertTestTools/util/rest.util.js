@@ -145,6 +145,15 @@ module.exports = {
         };
         return restClient.run(options, 'json');
     },
+    // get any kind of resource from the app environment
+    getResource: function(location) {
+        var options = {
+            url: 'testability/intyg/resource?location=' + location,
+            method: 'GET',
+            accept: 'application/octet-stream'
+        };
+        return restClient.run(options);
+    },
 
     // Intygstjänst - intyg
 
