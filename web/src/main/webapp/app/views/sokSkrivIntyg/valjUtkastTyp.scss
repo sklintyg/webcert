@@ -71,6 +71,7 @@ wc-valj-utkast-typ {
     cursor: pointer;
     line-height: 1;
     color: $wc-color-15;
+    user-select: none;
 
     &.is-favourite{
       color: $wc-color-12;
