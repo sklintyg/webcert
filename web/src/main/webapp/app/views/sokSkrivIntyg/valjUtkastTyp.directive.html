@@ -12,13 +12,13 @@
             <div class="flex-list-col" ng-repeat="type in getIntygTypeList() | filter: {id:'!default'} | orderBy:['-isFavourite', 'sortValue'] track by $index ">
               <div class="flex-list-row" ng-attr-id="intygType-row-{{type.id}}">
                 <span class="favourite-column">
-                  <span class="favourite"
+                  <button class="favourite"
                         ng-click="favouriteCallback({type: type})"
                         ng-class="{ 'is-favourite': type.isFavourite }"
                         uib-popover="{{getText(type.isFavourite ? 'common.favourite.remove.tooltip' : 'common.favourite.add.tooltip')}}"
                         popover-placement="center top">
                     <i class="material-icons md-18" class="star">star</i>
-                  </span>
+                  </button>
                 </span>
                 <span class="flex-item">
                   <span class="intyg-label">{{type.label}}</span> <span class="issuer-type-id">{{type.issuerTypeId}}</span>

@@ -72,6 +72,9 @@ wc-valj-utkast-typ {
     line-height: 1;
     color: $wc-color-15;
     user-select: none;
+    border: none;
+    appearance: none;
+    background-color: transparent;
 
     &.is-favourite{
       color: $wc-color-12;
