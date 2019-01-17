@@ -21,22 +21,26 @@ package se.inera.intyg.webcert.web.service.fmb.icf.resource;
 import static java.lang.invoke.MethodHandles.lookup;
 import static org.apache.commons.lang3.StringUtils.lowerCase;
 
-import io.vavr.collection.HashMap;
-import io.vavr.control.Try;
-import jxl.Sheet;
-import jxl.Workbook;
-import jxl.WorkbookSettings;
-import jxl.read.biff.BiffException;
+
+import java.io.IOException;
+import java.text.MessageFormat;
+import java.util.Optional;
+
+import javax.annotation.PostConstruct;
+
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
-import javax.annotation.PostConstruct;
-import java.io.IOException;
-import java.text.MessageFormat;
-import java.util.Optional;
+
+import io.vavr.collection.HashMap;
+import io.vavr.control.Try;
+import jxl.Sheet;
+import jxl.Workbook;
+import jxl.WorkbookSettings;
+import jxl.read.biff.BiffException;
 import se.inera.intyg.webcert.web.web.controller.api.dto.icf.IcfKod;
 
 @Component
@@ -86,7 +90,7 @@ public class IcfTextResourceImpl implements IcfTextResource {
         WorkbookSettings settings = new WorkbookSettings();
         settings.setEncoding("Cp1252");
 
-        final Workbook workbook = Workbook.getWorkbook(resource.getFile(), settings);
+        final Workbook workbook = Workbook.getWorkbook(resource.getInputStream(), settings);
 
         //Sheet 1 är det sheet som innehåller diagnoskoder + texter
         final Sheet sheet = workbook.getSheet(1);

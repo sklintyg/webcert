@@ -7,6 +7,7 @@ plugins {
 ext {
     commonVersion = System.properties['commonVersion'] ?: '0-SNAPSHOT'
     infraVersion = System.properties['infraVersion'] ?: '0-SNAPSHOT'
+    refDataVersion = System.properties['refDataVersion'] ?: '0-SNAPSHOT'
 
     commonsIoVersion = "2.4"
 

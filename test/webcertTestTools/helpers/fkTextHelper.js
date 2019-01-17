@@ -24,63 +24,47 @@
 /*globals protractor, process, logger */
 'use strict';
 
-var fs = require('fs');
-var path = require('path');
 var xml2js = require('xml2js');
 
 module.exports = {
 
     /**
      *  Loads and parses texts from the specified xml and promises to return a flat object hash consisting of key:value
-     * @param textXmlFile
+     * @param xxml data
      * @returns {IPromise<T>}
      */
-    readTextsFromFkTextFile: function(textXmlFile) {
+    parseTextXml: function (data) {
         var deferred = protractor.promise.defer();
-
         var parser = new xml2js.Parser();
-        //cwd is expected to be webcert/test
-        var fullPath = path.join(process.cwd(), '../src/main/resources/texts/' + textXmlFile);
-        logger.debug('About to load fk xml text file:' + fullPath);
-        fs.readFile(fullPath, function(err, data) {
-
+        parser.parseString(data, function(err, result) {
             if (err) {
-                logger.error('Error while reading file ' + err);
-                deferred.reject(err);
-                return;
+                logger.info('data: %o', data);
+                logger.error(err);
+                deferred.reject(null);
+                return deferred.promise;
             }
 
-            parser.parseString(data, function(err, result) {
-                if (err) {
-                    logger.error('Error while parsing data ' + err);
-                    deferred.reject(null);
-                    return;
-                }
-
-                //xml2js converts the xml into an array of nested objects.
-                //We return a simplified flattened structure to make it easy too look up a text
-                //value in specs based on the id, such as texts['text.kod.1']
-                var textArray = result.texter.text.reduce(function(acc, curr) {
-                    acc[curr.$.id] = curr._;
-                    return acc;
+            // xml2js converts the xml into an array of nested objects.
+            // We return a simplified flattened structure to make it easy too look up a text
+            // value in specs based on the id, such as texts['text.kod.1']
+            var textArray = result.texter.text.reduce(function (acc, curr) {
+                acc[curr.$.id] = curr._;
+                return acc;
                 }, {});
 
-                //Handle tillaggsfragor also, they are under a different structure..
-                if (result.texter.tillagg) {
-                    result.texter.tillagg.forEach(function(tillaggsfraga) {
-                        tillaggsfraga.tillaggsfraga.forEach(function(texter) {
-                            texter.text.forEach(function(text) {
-                                textArray[text.$.id] = text._;
-                            });
+            // Handle tillaggsfragor also, they are under a different structure..
+            if (result.texter.tillagg) {
+                result.texter.tillagg.forEach(function (tillaggsfraga) {
+                    tillaggsfraga.tillaggsfraga.forEach(function (texter) {
+                        texter.text.forEach(function (text) {
+                            textArray[text.$.id] = text._;
                         });
                     });
-                }
-
-                logger.debug('Successfully parsed ' + Object.keys(textArray).length + ' texts from file ' + textXmlFile);
-                deferred.fulfill(textArray);
-            });
+                });
+            }
+            logger.debug('Successfully parsed ' + Object.keys(textArray).length + ' texts');
+            deferred.fulfill(textArray);
         });
         return deferred.promise;
-
     }
 };
