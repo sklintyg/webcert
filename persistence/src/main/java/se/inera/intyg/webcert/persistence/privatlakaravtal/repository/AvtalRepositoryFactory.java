@@ -28,6 +28,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -45,7 +46,10 @@ public class AvtalRepositoryFactory {
     private static final Logger LOG = LoggerFactory.getLogger(AvtalRepositoryFactory.class);
 
     @Value("${privatepractitioner.defaultterms.file}")
-    private Resource location;
+    private String fileUrl;
+
+    @Autowired
+    private ResourceLoader resourceLoader;
 
     @Autowired
     private AvtalRepository avtalRepository;
@@ -57,7 +61,14 @@ public class AvtalRepositoryFactory {
         Integer latestAvtalVersion = avtalRepository.getLatestAvtalVersion();
         if (latestAvtalVersion == -1) {
             try {
-                String avtalText = Resources.toString(location.getURL(), Charsets.UTF_8);
+                Resource resource = resourceLoader.getResource(fileUrl);
+
+                if (!resource.exists()) {
+                    LOG.error("Could not read privatlakare avtal file since the resource '{}' does not exist", fileUrl);
+                    return;
+                }
+
+                String avtalText = Resources.toString(resource.getURL(), Charsets.UTF_8);
                 Avtal avtal = new Avtal();
                 avtal.setAvtalText(avtalText);
                 avtal.setAvtalVersion(1);

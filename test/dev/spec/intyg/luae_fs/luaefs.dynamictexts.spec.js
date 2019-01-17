@@ -45,18 +45,12 @@ describe('Create luae_fs utkast and check dynamic texts', function() {
         });
 
         //Load and cache expected dynamictext-values for this intygstype.
+        textHelper.readTextsFromFkTextFile('texterMU_LUAE_FS_v1.0.xml').then(function(textResources) {
+            texts = textResources;
+        }, function(err) {
+            fail('Error during text lookup ' + err);
+        });
 
-        restUtil.getResource('classpath:texts/texterMU_LUAE_FS_v1.0.xml').then(
-            function (response) {
-                textHelper.parseTextXml(response.body).then(
-                    function (response) {
-                        texts = response;
-                    }, function () {
-                        fail('Error during text parse');
-                    });
-            }, function () {
-                fail('Unable to get text (texterMU_LUAE_FS_v1.0.xml) from API');
-            });
     });
 
     describe('Check dynamic labels', function() {
