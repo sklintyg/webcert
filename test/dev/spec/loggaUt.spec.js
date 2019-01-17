@@ -63,7 +63,7 @@ describe('Utloggning vid vidarenavigering', function() {
     it('Besök extern sida', function() {
         browser.ignoreSynchronization = true;
         browser.driver.get('http://www.google.com');
-        expect(browser.getTitle()).toEqual('Google');
+        expect(browser.getTitle()).toContain('Google');
     });
 
     it('Gå tillbaka till utkastet', function() {
@@ -74,11 +74,11 @@ describe('Utloggning vid vidarenavigering', function() {
         expect(UtkastPage.isAt()).toBeTruthy();
     });
 
-    it('Besök extern sida och vänta 17 sekunder', function() {
+    it('Besök extern sida och vänta 9 sekunder', function() {
         browser.ignoreSynchronization = true;
         browser.driver.get('http://www.google.com');
-        expect(browser.getTitle()).toEqual('Google');
-        browser.driver.sleep(17000);
+        expect(browser.getTitle()).toContain('Google');
+        browser.driver.sleep(9000);
     });
 
     it('Access denied visas om invånaren försöker navigera till startsidan', function() {
