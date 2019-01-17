@@ -111,7 +111,11 @@ gretty {
 
     jvmArgs = ["-Dcatalina.base=${buildDir}/catalina.base",
                "-Dspring.profiles.active=dev,caching-enabled",
+<<<<<<< HEAD
                "-Dresources.folder=file://${projectDir}/../src/main/resources",
+=======
+               "-Dresources.folder=file://" + projectDir + "/../src/main/resources",
+>>>>>>> INTYG-7701: Använd legacy strukur i dev
                "-Dcredentials.file=${projectDir}/webcert-credentials.properties",
                "-Dconfig.file=${projectDir}/webcert-dev.properties",
                "-Dlogback.file=classpath:logback-ocp.xml",

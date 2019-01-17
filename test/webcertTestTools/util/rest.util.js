@@ -243,5 +243,5 @@ module.exports = {
             method: 'DELETE'
         };
         return restClient.run(options);
-    },
+    }
 };

@@ -29,7 +29,8 @@ var xml2js = require('xml2js');
 module.exports = {
 
     /**
-     *  Loads and parses texts from the specified xml and promises to return a flat object hash consisting of key:value
+     * Parses texts from the specified xml and promises to return a flat object hash consisting of key:value
+     *
      * @param xxml data
      * @returns {IPromise<T>}
      */
