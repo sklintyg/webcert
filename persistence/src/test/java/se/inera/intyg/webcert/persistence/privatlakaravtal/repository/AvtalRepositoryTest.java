@@ -18,8 +18,10 @@
  */
 package se.inera.intyg.webcert.persistence.privatlakaravtal.repository;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.NotExtensible;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
@@ -55,6 +57,11 @@ public class AvtalRepositoryTest {
 
     @PersistenceContext
     private EntityManager em;
+
+    @Before
+    public void before() {
+        avtalRepository.deleteAll();
+    }
 
     @Test
     public void testFindById() {

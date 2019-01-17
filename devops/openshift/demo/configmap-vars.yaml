@@ -46,7 +46,6 @@ data:
   DATABASE_PORT: "${mysql.service.port}"
   LOG_QUEUENAME: "demo.log.queue"
   CONFIG_DIR: "${config.folder}"
-  RESOURCES_DIR: "${resources.folder}"
   MAIL_HOST: ""
   REDIS_KEY_TTL: "3600"
 kind: ConfigMap
