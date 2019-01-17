@@ -67,39 +67,23 @@
     <!-- Fråga 7 -->
     <text id="FRG_7.RBK">Jag bedömer att frånvaroperioden kan förkortas eller
         minskas i omfattning med anpassning</text>
-    <text id="FRG_7.HLP">Här anger du din bedömning om frånvaroperioden kan förkortas eller minskas i omfattning med anpassning. Detta är en viktig impuls till Arbetsförmedlingen om att programmet kan behöva anpassas så att deltagaren kan delta trots sin sjukdom.
+    <text id="FRG_7.HLP"><![CDATA[Här anger du din bedömning om frånvaroperioden kan förkortas eller minskas i omfattning med anpassning. Detta är en viktig impuls till Arbetsförmedlingen om att programmet kan behöva anpassas så att deltagaren kan delta trots sin sjukdom.
 
         En anpassning innebär att förhållandena i programmet anpassas utifrån programdeltagarens begränsningar. Detta för att öka deltagarens möjligheter att tillgodogöra sig programmet.
 
-        En anpassning kan exempelvis vara:
-        * Innehållet i aktiviteten
-        * Platsen för aktiviteten
-        * Anpassa programtidens förläggning
-        * Arbetshjälpmedel
-        * Personligt biträde, ex handledning/personlig stöttning</text>
+        En anpassning kan exempelvis vara:<ul><li>Innehållet i aktiviteten</li><li>Platsen för aktiviteten</li><li>Anpassa programtidens förläggning</li><li>Arbetshjälpmedel</li><li>Personligt biträde, ex handledning/personlig stöttning</li><ul>]]></text>
 
     <text id="SVAR_JA.RBK">Ja</text>
     <text id="SVAR_NEJ.RBK">Nej</text>
 
     <text id="DFR_7.2.RBK">Jag bedömer att följande anpassningar skulle kunna förkorta eller minska omfattningen av frånvaroperioden</text>
-    <text id="DFR_7.2.HLP">En anpassning kan exempelvis vara:
-        * Innehållet i aktiviteten
-        * Platsen för aktiviteten
-        * Anpassa programtidens förläggning
-        * Arbetshjälpmedel
-        * Personligt biträde, ex handledning/personlig stöttning</text>
-
+    <text id="DFR_7.2.HLP"><![CDATA[En anpassning kan exempelvis vara:<ul><li>Innehållet i aktiviteten</li><li>Platsen för aktiviteten</li><li>Anpassa programtidens förläggning</li><li>Arbetshjälpmedel</li><li>Personligt biträde, ex handledning/personlig stöttning</li></ul>]]></text>
 
     <!-- Fråga 8 -->
     <text id="FRG_8.RBK">Efter frånvaroperioden är min bedömning</text>
-    <text id="FRG_8.HLP">Här beskriver du din bedömning av om patienten kan återgå till aktiviteter i programmet med eller utan anpassning efter frånvaroperioden. Detta är en viktig impuls till Arbetsförmedlingen om att programmet kan behöva anpassas så att deltagaren kan delta trots sin sjukdom.
+    <text id="FRG_8.HLP"><![CDATA[Här beskriver du din bedömning av om patienten kan återgå till aktiviteter i programmet med eller utan anpassning efter frånvaroperioden. Detta är en viktig impuls till Arbetsförmedlingen om att programmet kan behöva anpassas så att deltagaren kan delta trots sin sjukdom.
 
-        En anpassning kan exempelvis vara:
-        * Innehållet i aktiviteten
-        * Platsen för aktiviteten
-        * Anpassa programtidens förläggning
-        * Arbetshjälpmedel
-        * Personligt biträde, ex handledning/personlig stöttning</text>
+        En anpassning kan exempelvis vara:<ul><li>Innehållet i aktiviteten</li><li>Platsen för aktiviteten</li><li>Anpassa programtidens förläggning</li><li>Arbetshjälpmedel</li><li>Personligt biträde, ex handledning/personlig stöttning</li></ul>]]></text>
 
     <text id="PROGNOS_ATERGANG.ATERGA_UTAN_ANPASSNING.RBK">Patienten kan återgå utan anpassning</text>
     <text id="PROGNOS_ATERGANG.ATERGA_MED_ANPASSNING.RBK">Patienten kan återgå med anpassning</text>
@@ -108,10 +92,5 @@
 
 
     <text id="DFR_8.2.RBK">Jag bedömer att följande anpassningar skulle kunna underlätta för patienten att återgå till aktiviteter i programmet</text>
-    <text id="DFR_8.2.HLP">En anpassning kan exempelvis vara:
-        * Innehållet i aktiviteten
-        * Platsen för aktiviteten
-        * Anpassa programtidens förläggning
-        * Arbetshjälpmedel
-        * Personligt biträde, ex handledning/personlig stöttning</text>
+    <text id="DFR_8.2.HLP"><![CDATA[En anpassning kan exempelvis vara:<ul><li>Innehållet i aktiviteten</li><li>Platsen för aktiviteten</li><li>Anpassa programtidens förläggning</li><li>Arbetshjälpmedel</li><li>Personligt biträde, ex handledning/personlig stöttning</li></ul>]]></text>
 </texter>
