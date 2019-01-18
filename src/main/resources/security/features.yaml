@@ -115,6 +115,7 @@ features:
       - *ki080 # DB
       - *ki090 # DOI
       - *ki120 # AG7804
+      - *ki111 # AF00251
   - &f040
     name: *kf040
     desc: Makulera intyg

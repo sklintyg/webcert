@@ -145,6 +145,7 @@ privileges:
       - *ki060 # luae_na
       - *ki070 # luae_fs
       - *ki120 # ag7804
+      - *ki111 # af00251
     requestOrigins:
       - <<: *ro010 # NORMAL
         intygstyper: # EJ ts-intyg eller fk7263
@@ -153,6 +154,7 @@ privileges:
           - *ki060 # luae_na
           - *ki070 # luae_fs
           - *ki120 # ag7804
+          - *ki111 # af00251
       - *ro020 # DJUPINTEGRATION
   - &p031
     name: *kp031
@@ -338,6 +340,7 @@ roles:
               - *ki060 # luae_na
               - *ki070 # luae_fs
               - *ki120 # ag7804
+              - *ki111 # af00215
           - <<: *ro020 # DJUPINTEGRATION
       - <<: *p031 # ERSATTA_INTYG
         requestOrigins:
