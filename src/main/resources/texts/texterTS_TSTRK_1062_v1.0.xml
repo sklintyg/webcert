@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<texter typ="TS-TSTRK1062" giltigFrom="2019-01-01" version="1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+	<text id="FRM_1.RBK"><![CDATA[Läkarintyg avseende ADHD, autismspektrumtillstånd och likartade tillstånd samt psykisk utvecklingsstörning i huvudversion 1.
+
+	Intyget utfärdas av läkare och används som läkarintyg avseende lämplighet för körkortsinnehav vid ADHD, autismspektrumtillstånd och likartade tillstånd samt psykisk utvecklingsstörning.]]></text>
+
+	<text id="FRM_2.RBK"><![CDATA[Här kommer det mera text]]></text>
+
+	<!--
+	===============================================
+	KATEGORI: Intyg avser
+	===============================================
+	-->
+	<text id="KAT_99.RBK">Intyget avser</text>
+  <text id="KAT_99.HLP"><![CDATA[<span style="text-align:left">C1 - medeltung lastbil och enbart ett lätt släpfordon<br/>C1E - medeltung lastbil och ett eller flera släpfordon oavsett vikt<br/>C - tung lastbil och enbart ett lätt släpfordon<br/>CE - tung lastbil och ett eller flera släpfordon oavsett vikt<br/>D1 - mellanstor buss och enbart ett lätt släpfordon<br/>D1E - mellanstor buss och ett eller flera släpfordon oavsett vikt<br/>D - buss och enbart ett lätt släpfordon<br/>DE - buss och ett eller flera släpfordon oavsett vikt<br/>Taxi - taxiförarlegitimation
+
+  </span>]]></text>
+  <text id="FRG_1.RBK">Detta intyg ska användas vid förlängd giltighet av högre behörighet, ansökan om körkortstillstånd för grupp II och III och vid ansökan om taxiförarlegitimation. Intyget kan också användas när Transportstyrelsen i andra fall begärt ett läkarintyg. Markera då endast i rutan Annat nedan.</text>
+  <text id="FRG_1.HLP">Grupp II omfattar behörigheterna AM, A1, A2, A, B, BE, C1, C1E, C och CE.
+  Grupp III omfattar behörigheterna AM, A1, A2, A, B, BE, C1, C1E, C, CE, D1, D1E, D och DE.</text>
+  <text id="FRG_1.2.RBK">Intyget kan också användas när Transportstyrelsen i andra fall begärt ett läkarintyg. Markera då endast i rutan Annat nedan.</text>
+	<text id="KORKORT.C1.RBK">C1</text>
+	<text id="KORKORT.C1E.RBK">C1E</text>
+	<text id="KORKORT.C.RBK">C</text>
+	<text id="KORKORT.CE.RBK">CE</text>
+	<text id="KORKORT.D1.RBK">D1</text>
+	<text id="KORKORT.D1E.RBK">D1E</text>
+	<text id="KORKORT.D.RBK">D</text>
+	<text id="KORKORT.DE.RBK">DE</text>
+	<text id="KORKORT.TAXI.RBK">Taxi</text>
+	<text id="KORKORT.ANNAT.RBK">Annat</text>
+	<text id="KORKORT.KAN_INTE_TA_STALLNING.RBK">Kan inte ta ställning</text>
+</texter>

@@ -63,6 +63,7 @@ knownIntygstyper:
   - &ki110 ag114
   - &ki120 ag7804
   - &ki111 af00251
+  - &ki130 ts-tstrk1062
 
 # De rättigheter som systemet har
 knownPrivileges:
@@ -170,6 +171,7 @@ privileges:
           - *ki080 # db
           - *ki090 # doi
           - *ki120 # ag7804
+          - *ki130 # TSTRK1062
       - *ro020 # DJUPINTEGRATION
   - &p040
     name: *kp040
@@ -187,6 +189,7 @@ privileges:
       - *ki110 # ag114
       - *ki120 # ag7804
       - *ki111 # af00251
+      - *ki130 # TSTRK1062
     requestOrigins:
       - *ro010 # NORMAL
       - *ro030 # UTHOPP
@@ -205,6 +208,7 @@ privileges:
           - *ki070 # luae_fs
           - *ki080 # db
           - *ki090 # doi
+          - *ki130 # TSTRK1062
       - <<: *ro030 # UTHOPP
         intygstyper: # Alla intyg
   - &p060
@@ -278,6 +282,7 @@ privileges:
       - *ki110 # ag114
       - *ki120 # ag7804
       - *ki111 # af00251
+      - *ki130 # TSTRK1062
     requestOrigins:
       - *ro020 # DJUPINTEGRATION
   - &p140
@@ -355,6 +360,7 @@ roles:
               - *ki110 # ag114
               - *ki120 # ag7804
               - *ki111 # af00251
+              - *ki130 # TSTRK1062
           - <<: *ro020 # DJUPINTEGRATION
             intygstyper: # EJ fk7263
               - *ki020 # ts-bas
@@ -369,6 +375,7 @@ roles:
               - *ki110 # ag114
               - *ki120 # ag7804
               - *ki111 # af00251
+              - *ki130 # TSTRK1062
       - <<: *p040 # VIDAREBEFORDRA_UTKAST
         requestOrigins:
           - <<: *ro010 # NORMAL
@@ -459,6 +466,7 @@ roles:
               - *ki110 # ag114
               - *ki120 # ag7804
               - *ki111 # af00251
+              - *ki130 # TSTRK1062
       - <<: *p060 # BESVARA_KOMPLETTERINGSFRAGA
         requestOrigins:
           - <<: *ro010 # NORMAL
