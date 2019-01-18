@@ -147,6 +147,7 @@ features:
       - *ki070 # LUAE_FS
       - *ki100 # AF00213
       - *ki110 # AG114
+      - *ki111 # AF00251
       - *ki120 # AG7804
   - &f060
     name: *kf060
