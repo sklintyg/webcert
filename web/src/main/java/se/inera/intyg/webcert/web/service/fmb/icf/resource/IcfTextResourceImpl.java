@@ -31,8 +31,9 @@ import javax.annotation.PostConstruct;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Component;
 
 import io.vavr.collection.HashMap;
@@ -41,6 +42,7 @@ import jxl.Sheet;
 import jxl.Workbook;
 import jxl.WorkbookSettings;
 import jxl.read.biff.BiffException;
+import org.springframework.util.ResourceUtils;
 import se.inera.intyg.webcert.web.web.controller.api.dto.icf.IcfKod;
 
 @Component
@@ -58,11 +60,19 @@ public class IcfTextResourceImpl implements IcfTextResource {
     private HashMap<String, IcfKod> icfKoder = HashMap.empty();
 
     @Value("${icf.text.resource.path}")
-    private Resource resource;
+    private String location;
+
+    @Autowired
+    ResourceLoader resourceLoader;
 
     @PostConstruct
     void init() {
         LOG.info(MessageFormat.format("Starting: {0}", ACTION));
+
+        // FIXME: Legacy support, can be removed when local config has been substituted by refdata (INTYG-7701)
+        if (!ResourceUtils.isUrl(location)) {
+            location = "file://" + location;
+        }
 
         final Try<Void> initJob = Try.run(this::initIcfTextResources);
 
@@ -90,7 +100,7 @@ public class IcfTextResourceImpl implements IcfTextResource {
         WorkbookSettings settings = new WorkbookSettings();
         settings.setEncoding("Cp1252");
 
-        final Workbook workbook = Workbook.getWorkbook(resource.getInputStream(), settings);
+        final Workbook workbook = Workbook.getWorkbook(resourceLoader.getResource(location).getInputStream(), settings);
 
         //Sheet 1 är det sheet som innehåller diagnoskoder + texter
         final Sheet sheet = workbook.getSheet(1);

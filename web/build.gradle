@@ -111,11 +111,7 @@ gretty {
 
     jvmArgs = ["-Dcatalina.base=${buildDir}/catalina.base",
                "-Dspring.profiles.active=dev,caching-enabled",
-<<<<<<< HEAD
-               "-Dresources.folder=file://${projectDir}/../src/main/resources",
-=======
-               "-Dresources.folder=file://" + projectDir + "/../src/main/resources",
->>>>>>> INTYG-7701: Använd legacy strukur i dev
+               "-Dresources.folder=${projectDir}/../src/main/resources",
                "-Dcredentials.file=${projectDir}/webcert-credentials.properties",
                "-Dconfig.file=${projectDir}/webcert-dev.properties",
                "-Dlogback.file=classpath:logback-ocp.xml",
@@ -220,7 +216,5 @@ dependencies {
     testCompile "com.jayway.restassured:json-schema-validator:${restassuredVersion}"
     testCompile "org.antlr:ST4:${stAntlr4Version}"
 
-    annotationProcessor "com.google.auto.value:auto-value:${autovalueVersion}"
-
-    gretty "se.inera.intyg.refdata:refdata:${refDataVersion}"
+    annotationProcessor "com.google.auto.value:auto-value:${autovalueVersion}"  
 }

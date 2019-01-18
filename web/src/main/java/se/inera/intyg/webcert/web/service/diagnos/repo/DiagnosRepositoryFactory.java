@@ -36,6 +36,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
+import org.springframework.util.ResourceUtils;
 import se.inera.intyg.webcert.web.service.diagnos.model.Diagnos;
 
 import java.io.BufferedReader;
@@ -94,13 +95,16 @@ public class DiagnosRepositoryFactory implements InitializingBean {
             return;
         }
 
-        LOG.debug("Loading diagnosis file '{}'", fileUrl);
+        // FIXME: Legacy support, can be removed when local config has been substituted by refdata (INTYG-7701)
+        final String location = ResourceUtils.isUrl(fileUrl) ? fileUrl : "file://" + fileUrl;
+
+        LOG.debug("Loading diagnosis from: '{}'", location);
 
         try {
-            Resource resource = resourceLoader.getResource(fileUrl);
+            Resource resource = resourceLoader.getResource(location);
 
             if (!resource.exists()) {
-                LOG.error("Could not load diagnosis file since the resource '{}' does not exists", fileUrl);
+                LOG.error("Could not load diagnosis file since '{}' does not exists", location);
                 return;
             }
 

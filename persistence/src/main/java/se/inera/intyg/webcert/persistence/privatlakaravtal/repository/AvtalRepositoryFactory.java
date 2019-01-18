@@ -29,11 +29,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.base.Charsets;
 
+import org.springframework.util.ResourceUtils;
 import se.inera.intyg.webcert.persistence.privatlakaravtal.model.Avtal;
 
 /**
@@ -45,19 +47,28 @@ public class AvtalRepositoryFactory {
     private static final Logger LOG = LoggerFactory.getLogger(AvtalRepositoryFactory.class);
 
     @Value("${privatepractitioner.defaultterms.file}")
-    private Resource location;
+    private String location;
 
     @Autowired
     private AvtalRepository avtalRepository;
+
+    @Autowired
+    ResourceLoader resourceLoader;
 
     @PostConstruct
     @Transactional
     public void populateStandardAvtal() {
 
+        // FIXME: Legacy support, can be removed when local config has been substituted by refdata (INTYG-7701)
+        if (!ResourceUtils.isUrl(location)) {
+            location = "file://" + location;
+        }
+
         Integer latestAvtalVersion = avtalRepository.getLatestAvtalVersion();
         if (latestAvtalVersion == -1) {
             try {
-                final String avtalText = IOUtils.toString(location.getInputStream(), Charsets.UTF_8);
+                final String avtalText = IOUtils.toString(resourceLoader.getResource(location).getInputStream(),
+                        Charsets.UTF_8);
                 final Avtal avtal = new Avtal();
                 avtal.setAvtalText(avtalText);
                 avtal.setAvtalVersion(1);
