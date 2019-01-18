@@ -109,6 +109,8 @@
 
     <bean id="commonAuthoritiesResolver" class="se.inera.intyg.infra.security.authorities.CommonAuthoritiesResolver" />
     <bean id="authoritiesHelper" class="se.inera.intyg.infra.security.authorities.AuthoritiesHelper" />
+    <bean id="befattningService" class="se.inera.intyg.common.support.services.BefattningService" />
+
 
   </beans>
 
@@ -132,8 +134,6 @@
 
     <bean id="intygTextsService" class="se.inera.intyg.common.services.texts.IntygTextsServiceImpl" />
     <bean id="intygTextsRepository" class="se.inera.intyg.common.services.texts.repo.IntygTextsRepositoryImpl" />
-
-    <bean id="befattningService" class="se.inera.intyg.common.support.services.BefattningService" />
 
     <bean id="messageSource"
       class="org.springframework.context.support.ResourceBundleMessageSource">
