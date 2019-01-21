@@ -188,7 +188,6 @@ features:
       - *ki080 # DB
       - *ki090 # DOI
       - *ki100 # AF00213
-      - *ki111 # AF00251
   - &f090
     name: *kf090
     desc: Utskrift
