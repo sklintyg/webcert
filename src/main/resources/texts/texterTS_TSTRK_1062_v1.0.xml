@@ -36,4 +36,34 @@ hämtas på www.transportstyrelsen.se.]]></text>
 	<text id="KV_INTYGET_AVSER.IAV8.RBK">DE</text>
 	<text id="KV_INTYGET_AVSER.IAV9.RBK">Taxi</text>
 
+	<!--
+	===============================================
+	KATEGORI: Identitet
+	===============================================
+	-->
+	<text id="KAT_2.RBK">Identitet</text>
+	<text id="FRG_2.HLP"><![CDATA[<span style="text-align:left"><B>ID-kort</B>
+
+	Avser SIS-märkt ID-kort, svenskt nationellt ID-kort eller ID-kort utfärdat av Skatteverket.
+
+	<B>Företagskort eller tjänstekort</B>
+
+	Avser SIS-märkt företagskort eller tjänstekort.
+
+	Försäkran enligt 18 kap 4 §
+
+	Se Transportstyrelsens föreskrifter och allmänna råd (TSFS 2010:125) om medicinska krav för innehav av körkort m.m.
+
+	<B>Pass</B>
+
+	Avser svenskt EU-pass, annat EU-pass utfärdade från och med den 1 september 2006, pass utfärdat av Island, Liechtenstein, Norge eller Schweiz från och med den 1 september 2006.
+		</span>]]></text>
+	<text id="FRG_2.RBK">Identitet styrkt genom</text>
+	<text id="IDENTITET_ID_KORT.RBK">ID-kort</text>
+	<text id="IDENTITET_FORETAG_ELLER_TJANSTEKORT.RBK">Företagskort eller tjänstekort</text>
+	<text id="IDENTITET_KORKORT.RBK">Svenskt körkort</text>
+	<text id="IDENTITET_PERS_KANNEDOM.RBK">Personlig kännedom</text>
+	<text id="IDENTITET_FORSAKRAN_KAP18.RBK">Försäkran enligt 18 kap 4 §</text>
+	<text id="IDENTITET_PASS.RBK">Pass</text>
+
 </texter>
