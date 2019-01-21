@@ -80,10 +80,7 @@ exports.config = {
         browserName: 'chrome', // possible values: firefox, chrome
 
         chromeOptions: {
-            args: [
- 		"--no-sandbox", "--headless", "--disable-gpu",
-                "--window-size=1280x1024"
-            ]
+            args: ["--no-sandbox", "--disable-gpu", "--window-size=1280x1024"]
         },
 
         // Run parallell instances of same browser (combine with any browser above)

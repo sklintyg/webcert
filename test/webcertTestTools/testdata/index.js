@@ -32,6 +32,9 @@ module.exports = {
         diabetes: {
             v2: require('./ts.diabetes.v2.js'),
             v3: require('./ts.diabetes.v3.js')
+        },
+        trk1009: {
+            v1: require('./ts.trk1009.v1')
         }
     },
     skv: {

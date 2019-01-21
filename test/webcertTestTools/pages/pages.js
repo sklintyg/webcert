@@ -87,6 +87,10 @@ module.exports = {
             bas: {
                 utkast: require(intygPath + 'ts/ts_bas/tsBas.utkast.page.js'),
                 intyg: require(intygPath + 'ts/ts_bas/tsBas.intyg.page.js')
+            },
+            trk1009: {
+                utkast: require(intygPath + 'ts/tstrk1009/tstrk1009.utkast.page.js'),
+                intyg: require(intygPath + 'ts/tstrk1009/tstrk1009.intyg.page.js')
             }
         },
         skv: {
