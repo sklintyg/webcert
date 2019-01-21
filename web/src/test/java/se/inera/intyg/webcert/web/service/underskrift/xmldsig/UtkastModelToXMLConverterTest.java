@@ -23,12 +23,16 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.util.ReflectionTestUtils;
 import se.inera.intyg.common.db.v1.rest.DbModuleApiV1;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
+import se.inera.intyg.common.support.services.BefattningService;
 import se.inera.intyg.common.ts_bas.v6.rest.TsBasModuleApiV6;
 import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
 
@@ -39,7 +43,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(classes = {BefattningService.class})
 public class UtkastModelToXMLConverterTest {
 
     @Mock
@@ -50,6 +55,9 @@ public class UtkastModelToXMLConverterTest {
 
     private String jsonModel;
 
+    public UtkastModelToXMLConverterTest() {
+        MockitoAnnotations.initMocks(this);
+    }
 
     @Test
     public void testConvertDb() throws ModuleNotFoundException, IOException {
