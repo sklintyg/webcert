@@ -305,7 +305,7 @@ public class NotificationServiceImpl implements NotificationService {
             save(notificationMessage, careUnitId, careGiverId,
                     utlatande.getGrundData().getPatient().getPersonId().getPersonnummerWithDash(), null, null);
 
-            send(notificationMessage, careUnitId);
+            send(notificationMessage, careUnitId, utlatande.getTextVersion());
         } catch (JsonProcessingException e) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, e.getMessage());
         }
@@ -350,7 +350,7 @@ public class NotificationServiceImpl implements NotificationService {
         save(notificationMessage, utkast.getEnhetsId(), utkast.getVardgivarId(),
                 utkast.getPatientPersonnummer().getPersonnummer(), amne, sistaDatumForSvar);
 
-        send(notificationMessage, utkast.getEnhetsId());
+        send(notificationMessage, utkast.getEnhetsId(), utkast.getIntygTypeVersion());
     }
 
     private void createAndSendNotificationForQAs(Utkast utkast, NotificationEvent event, ArendeAmne amne, LocalDate sistaDatumForSvar) {
@@ -435,7 +435,7 @@ public class NotificationServiceImpl implements NotificationService {
         handelseRepo.save(handelse);
     }
 
-    private void send(NotificationMessage notificationMessage, String enhetsId) {
+    private void send(NotificationMessage notificationMessage, String enhetsId, String intygTypeVersion) {
         if (jmsTemplateForAggregation == null) {
             LOGGER.warn("Can not notify listeners! The JMS transport is not initialized.");
             return;
@@ -447,7 +447,7 @@ public class NotificationServiceImpl implements NotificationService {
             jmsTemplateForAggregation.send(
                     new NotificationMessageCreator(
                             notificationMessageAsJson, notificationMessage.getIntygsId(), notificationMessage.getIntygsTyp(),
-                            notificationMessage.getHandelse()));
+                            intygTypeVersion, notificationMessage.getHandelse()));
         } catch (JmsException e) {
             LOGGER.error("Could not send message", e);
             throw e;
@@ -499,12 +499,15 @@ public class NotificationServiceImpl implements NotificationService {
         private final String value;
         private final String intygsId;
         private final String intygsTyp;
+        private final String intygTypeVersion;
         private final HandelsekodEnum handelseTyp;
 
-        private NotificationMessageCreator(String notificationMessage, String intygsId, String intygsTyp, HandelsekodEnum handelseTyp) {
+        private NotificationMessageCreator(String notificationMessage, String intygsId, String intygsTyp, String intygTypeVersion,
+                                           HandelsekodEnum handelseTyp) {
             this.value = notificationMessage;
             this.intygsId = intygsId;
             this.intygsTyp = intygsTyp;
+            this.intygTypeVersion = intygTypeVersion;
             this.handelseTyp = handelseTyp;
         }
 
@@ -516,6 +519,7 @@ public class NotificationServiceImpl implements NotificationService {
             TextMessage textMessage = session.createTextMessage(this.value);
             textMessage.setStringProperty(NotificationRouteHeaders.INTYGS_ID, this.intygsId);
             textMessage.setStringProperty(NotificationRouteHeaders.INTYGS_TYP, this.intygsTyp);
+            textMessage.setStringProperty(NotificationRouteHeaders.INTYG_TYPE_VERSION, this.intygTypeVersion);
             textMessage.setStringProperty(NotificationRouteHeaders.HANDELSE, this.handelseTyp.value());
             return textMessage;
         }
