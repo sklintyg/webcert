@@ -18,15 +18,6 @@
  */
 package se.inera.intyg.webcert.notification_sender.notifications.route;
 
-import static org.apache.camel.component.mock.MockEndpoint.assertIsSatisfied;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
-
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.apache.camel.CamelContext;
 import org.apache.camel.EndpointInject;
 import org.apache.camel.Message;
@@ -47,7 +38,6 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.BootstrapWith;
 import org.springframework.test.context.ContextConfiguration;
-
 import se.inera.intyg.common.fk7263.model.internal.Fk7263Utlatande;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
@@ -61,6 +51,16 @@ import se.inera.intyg.webcert.common.sender.exception.PermanentException;
 import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
 import se.inera.intyg.webcert.notification_sender.notifications.helper.NotificationTestHelper;
 import se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.apache.camel.component.mock.MockEndpoint.assertIsSatisfied;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
+import static se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders.INTYG_TYPE_VERSION;
 
 @RunWith(CamelSpringJUnit4ClassRunner.class)
 @ContextConfiguration("/notifications/unit-test-notification-sender-config.xml")
@@ -128,6 +128,7 @@ public class RouteTest {
         // When
         Map<String, Object> headers = new HashMap<>();
         headers.put(NotificationRouteHeaders.INTYGS_TYP, "luae_fs");
+        headers.put(INTYG_TYPE_VERSION, "1.0");
         headers.put(NotificationRouteHeaders.HANDELSE, HandelsekodEnum.SIGNAT.value());
         producerTemplate.sendBodyAndHeaders(createNotificationMessage(SchemaVersion.VERSION_3, "luae_fs"), headers);
 
@@ -152,6 +153,7 @@ public class RouteTest {
         // When
         Map<String, Object> headers = new HashMap<>();
         headers.put(NotificationRouteHeaders.INTYGS_TYP, "fk7263");
+        headers.put(INTYG_TYPE_VERSION, "1.0");
         headers.put(NotificationRouteHeaders.HANDELSE, HandelsekodEnum.ANDRAT.value());
         producerTemplate.sendBodyAndHeaders(createNotificationMessage(SchemaVersion.VERSION_3), headers);
 
@@ -184,6 +186,7 @@ public class RouteTest {
         // When
         Map<String, Object> headers = new HashMap<>();
         headers.put(NotificationRouteHeaders.INTYGS_TYP, "luae_fs");
+        headers.put(INTYG_TYPE_VERSION, "1.0");
         headers.put(NotificationRouteHeaders.HANDELSE, HandelsekodEnum.ANDRAT.value());
         producerTemplate.sendBodyAndHeaders(createNotificationMessage(SchemaVersion.VERSION_3, "luae_fs"), headers);
 
@@ -208,6 +211,7 @@ public class RouteTest {
         // When
         Map<String, Object> headers = new HashMap<>();
         headers.put(NotificationRouteHeaders.INTYGS_TYP, "luae_fs");
+        headers.put(INTYG_TYPE_VERSION, "1.0");
         headers.put(NotificationRouteHeaders.HANDELSE, HandelsekodEnum.SKAPAT.value());
         producerTemplate.sendBodyAndHeaders(createNotificationMessage(SchemaVersion.VERSION_3, "luae_fs"), headers);
 
@@ -231,6 +235,7 @@ public class RouteTest {
         // When
         Map<String, Object> headers = new HashMap<>();
         headers.put(NotificationRouteHeaders.INTYGS_TYP, "luae_fs");
+        headers.put(INTYG_TYPE_VERSION, "1.0");
         headers.put(NotificationRouteHeaders.HANDELSE, HandelsekodEnum.SKICKA.value());
         producerTemplate.sendBodyAndHeaders(createNotificationMessage(SchemaVersion.VERSION_3), headers);
 
@@ -253,6 +258,7 @@ public class RouteTest {
         // When
         Map<String, Object> headers = new HashMap<>();
         headers.put(NotificationRouteHeaders.INTYGS_TYP, "fk7263");
+        headers.put(INTYG_TYPE_VERSION, "1.0");
         headers.put(NotificationRouteHeaders.HANDELSE, HandelsekodEnum.ANDRAT.value());
         producerTemplate.sendBodyAndHeaders(createNotificationMessage(SchemaVersion.VERSION_3), headers);
 
@@ -289,7 +295,8 @@ public class RouteTest {
         temporaryErrorHandlerEndpoint.expectedMessageCount(0);
 
         // When
-        producerTemplate.sendBody(createNotificationMessage(SchemaVersion.VERSION_3, "lisjp"));
+        producerTemplate.sendBodyAndHeader(createNotificationMessage(SchemaVersion.VERSION_3, "lisjp"),
+                INTYG_TYPE_VERSION, "1.0");
 
         // Then
         assertIsSatisfied(notificationWSClientV3);

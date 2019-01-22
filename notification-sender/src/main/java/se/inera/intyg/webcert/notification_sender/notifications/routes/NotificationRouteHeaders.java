@@ -23,6 +23,7 @@ public final class NotificationRouteHeaders {
     public static final String LOGISK_ADRESS = "logiskAdress";
     public static final String INTYGS_ID = "intygsId";
     public static final String INTYGS_TYP = "intygsTyp";
+    public static final String INTYG_TYPE_VERSION = "intygTypeVersion";
     public static final String HANDELSE = "handelse";
     public static final String VERSION = "version";
 
