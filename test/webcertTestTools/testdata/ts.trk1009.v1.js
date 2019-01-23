@@ -35,7 +35,13 @@ module.exports = {
             'id': intygsID,
             'typ': 'Transportstyrelsens läkares anmälan',
             'identitetStyrktGenom': 'Svenskt körkort',
-            'anmalanAvser': 'OLAMPLIGHET'
+            'anmalanAvser': 'OLAMPLIGHET',
+            'medicinskaForhallanden': 'Sjuk men hyfsat alert i benstommen.',
+            'senasteUndersokningsdatum': '2019-01-01',
+            'intygetAvserBehorigheter': [
+                'Alla behörigheter inkl. körkortstillstånd, traktorkort och taxiförarlegitimation'
+            ],
+            informationOmTsBeslutOnskas: true
         };
     }
 };
