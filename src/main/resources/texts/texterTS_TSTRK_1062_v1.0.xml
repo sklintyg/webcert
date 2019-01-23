@@ -1,13 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<texter typ="TS-TSTRK1062" giltigFrom="2019-01-01" version="1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<texter typ="TS-TSTRK1062" giltigFrom="2019-01-01" version="1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 
 	<text id="FRM_1.RBK"><![CDATA[Läkarintyg avseende ADHD, autismspektrumtillstånd och likartade tillstånd samt psykisk utvecklingsstörning TSTRK1062. ]]></text>
-
 	<text id="FRM_2.RBK"><![CDATA[Läkarintyg avseende ADHD, autismspektrumtillstånd och likartade tillstånd samt psykisk utvecklingsstörning TSTRK1062.
 
 Har du frågor?
-Kontakta körkortsenheten på Transportstyrelsen, telefon 0771-81 81 81. Transportstyrelsens föreskrifter kan
-hämtas på www.transportstyrelsen.se.]]></text>
+Kontakta körkortsenheten på Transportstyrelsen, telefon 0771-81 81 81. Transportstyrelsens föreskrifter kan hämtas på www.transportstyrelsen.se.]]></text>
 
 	<!--
 	===============================================
@@ -15,10 +13,9 @@ hämtas på www.transportstyrelsen.se.]]></text>
 	===============================================
 	-->
 	<text id="KAT_1.RBK">Intyget avser</text>
-  <text id="FRG_1.HLP"><![CDATA[<span style="text-align:left">AM - moped klass I<br/>A1 - lätt motorcykel<br/>A2 - mellanstor motorcykel<br/>A - motorcykel<br/>B - personbil, lätt lastbil och enbart ett lätt släpfordon<br/>BE - personbil, lätt lastbil och ett eller flera släpfordon (Släpens totalvikt får inte överstiga 3,5 ton.)<br/>C1 - medeltung lastbil och enbart ett lätt släpfordon<br/>C1E - medeltung lastbil och ett eller flera släpfordon oavsett vikt<br/>C - tung lastbil och enbart ett lätt släpfordon<br/>CE - tung lastbil och ett eller flera släpfordon oavsett vikt<br/>D1 - mellanstor buss och enbart ett lätt släpfordon<br/>D1E - mellanstor buss och ett eller flera släpfordon oavsett vikt<br/>D - buss och enbart ett lätt släpfordon<br/>DE - buss och ett eller flera släpfordon oavsett vikt<br/>Taxi - taxiförarlegitimation
 
-  </span>]]></text>
-  <text id="FRG_1.RBK">Intyget avser följande behörigheter</text>
+	<text id="FRG_1.RBK">Intyget avser följande behörigheter</text>
+	<text id="FRG_1.HLP"><![CDATA[<span style="text-align:left">AM - moped klass I<br/>A1 - lätt motorcykel<br/>A2 - mellanstor motorcykel<br/>A - motorcykel<br/>B - personbil, lätt lastbil och enbart ett lätt släpfordon<br/>BE - personbil, lätt lastbil och ett eller flera släpfordon (Släpens totalvikt får inte överstiga 3,5 ton.)<br/>C1 - medeltung lastbil och enbart ett lätt släpfordon<br/>C1E - medeltung lastbil och ett eller flera släpfordon oavsett vikt<br/>C - tung lastbil och enbart ett lätt släpfordon<br/>CE - tung lastbil och ett eller flera släpfordon oavsett vikt<br/>D1 - mellanstor buss och enbart ett lätt släpfordon<br/>D1E - mellanstor buss och ett eller flera släpfordon oavsett vikt<br/>D - buss och enbart ett lätt släpfordon<br/>DE - buss och ett eller flera släpfordon oavsett vikt<br/>Taxi - taxiförarlegitimation</span>]]></text>
 	<text id="KV_INTYGET_AVSER.IAV11.RBK">AM</text>
 	<text id="KV_INTYGET_AVSER.IAV12.RBK">A1</text>
 	<text id="KV_INTYGET_AVSER.IAV13.RBK">A2</text>
@@ -42,6 +39,8 @@ hämtas på www.transportstyrelsen.se.]]></text>
 	===============================================
 	-->
 	<text id="KAT_2.RBK">Identitet</text>
+
+	<text id="FRG_2.RBK">Identitet styrkt genom</text>
 	<text id="FRG_2.HLP"><![CDATA[<span style="text-align:left"><B>ID-kort</B>
 
 	Avser SIS-märkt ID-kort, svenskt nationellt ID-kort eller ID-kort utfärdat av Skatteverket.
@@ -58,7 +57,6 @@ hämtas på www.transportstyrelsen.se.]]></text>
 
 	Avser svenskt EU-pass, annat EU-pass utfärdade från och med den 1 september 2006, pass utfärdat av Island, Liechtenstein, Norge eller Schweiz från och med den 1 september 2006.
 		</span>]]></text>
-	<text id="FRG_2.RBK">Identitet styrkt genom</text>
 	<text id="IDENTITET_ID_KORT.RBK">ID-kort</text>
 	<text id="IDENTITET_FORETAG_ELLER_TJANSTEKORT.RBK">Företagskort eller tjänstekort</text>
 	<text id="IDENTITET_KORKORT.RBK">Svenskt körkort</text>
@@ -66,4 +64,22 @@ hämtas på www.transportstyrelsen.se.]]></text>
 	<text id="IDENTITET_FORSAKRAN_KAP18.RBK">Försäkran enligt 18 kap 4 §</text>
 	<text id="IDENTITET_PASS.RBK">Pass</text>
 
+	<!--
+	===============================================
+	KATEGORI: Allmänt
+	===============================================
+	-->
+	<text id="KAT_3.RBK">Allmänt</text>
+
+	<text id="FRG_50.RBK">Välj inmatning</text>
+	<text id="FRG_50.HLP"><![CDATA[<span style="text-align:left">Diagnoser kan anges kodade enligt ICD-10 alternativt som fritext (detta används t.ex. om diagnoser ska anges enligt DSM). </span>]]></text>
+	<text id="SVAR_KODAD.RBK">Ange diagnos enligt ICD-10</text>
+	<text id="SVAR_FRITEXT.RBK">Ange diagnos som fritext (används t.ex. om diagnoser ska anges enligt DSM)</text>
+
+	<text id="FRG_51.RBK">Vilken eller vilka diagnoser har patienten?</text>
+	<text id="DFR_51.1.RBK">Ange diagnoskod och beskrivning</text>
+	<text id="DFR_51.3.RBK">Vilket årtal ställdes diagnosen?</text>
+
+	<text id="FRG_52.RBK">Vilken eller vilka diagnoser har patienten?</text>
+	<text id="DFR_52.2.RBK">Vilket år ställdes diagnoserna?</text>
 </texter>
