@@ -114,6 +114,7 @@ public class CertificateSenderServiceImpl implements CertificateSenderService {
         public Message createMessage(Session session) throws JMSException {
             Message message = session.createTextMessage(this.body);
             message.setStringProperty(Constants.MESSAGE_TYPE, Constants.STORE_MESSAGE);
+            message.setStringProperty(Constants.INTYGS_ID, intygsId);
             message.setStringProperty(Constants.INTYGS_TYP, intygsTyp);
             message.setStringProperty(Constants.LOGICAL_ADDRESS, logicalAddress);
             return message;
