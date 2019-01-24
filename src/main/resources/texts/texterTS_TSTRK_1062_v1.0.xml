@@ -82,4 +82,23 @@ Kontakta körkortsenheten på Transportstyrelsen, telefon 0771-81 81 81. Transpo
 
 	<text id="FRG_52.RBK">Vilken eller vilka diagnoser har patienten?</text>
 	<text id="DFR_52.2.RBK">Vilket år ställdes diagnoserna?</text>
+
+	<!--
+	===============================================
+	KATEGORI: Läkemedelsbehandling
+	===============================================
+	-->
+	<text id="KAT_4.RBK">Läkemedelsbehandling</text>
+
+	<text id="FRG_53.RBK">Har patienten vid någon tidpunkt haft läkemedelsbehandling för ovanstående diagnoser?</text>
+	<text id="FRG_54.RBK">Pågår läkemedelsbehandling för ovanstående diagnoser?</text>
+	<text id="FRG_55.RBK">Ange aktuell läkemedelsbehandling</text>
+	<text id="FRG_56.RBK">Har läkemedelsbehandling pågått mer än tre år?</text>
+	<text id="FRG_57.RBK">Har behandlingseffekten varit god under de senaste två åren?</text>
+	<text id="FRG_58.RBK">Är behandlingsföljsamheten god?</text>
+	<text id="FRG_59.RBK">Ange tidpunkt då läkemedelsbehandling avslutades</text>
+	<text id="DFR_59.2.RBK">Ange orsak till att läkemedelsbehandling avslutades</text>
+
+	<text id="SVAR_JA.RBK">Ja</text>
+	<text id="SVAR_NEJ.RBK">Nej</text>
 </texter>
