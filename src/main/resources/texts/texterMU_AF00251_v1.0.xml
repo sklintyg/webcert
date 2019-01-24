@@ -93,4 +93,5 @@
 
     <text id="DFR_8.2.RBK">Jag bedömer att följande anpassningar skulle kunna underlätta för patienten att återgå till aktiviteter i programmet</text>
     <text id="DFR_8.2.HLP"><![CDATA[En anpassning kan exempelvis vara:<ul><li>Innehållet i aktiviteten</li><li>Platsen för aktiviteten</li><li>Anpassa programtidens förläggning</li><li>Arbetshjälpmedel</li><li>Personligt biträde, ex handledning/personlig stöttning</li></ul>]]></text>
+    <text id="AF-001.ALERT">Det datum du angett är mer än en vecka före dagens datum. Du bör kontrollera att tidsperioderna är korrekta</text>
 </texter>
