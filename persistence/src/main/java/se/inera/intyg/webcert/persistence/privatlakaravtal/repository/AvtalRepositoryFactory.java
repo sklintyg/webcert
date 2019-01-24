@@ -61,7 +61,7 @@ public class AvtalRepositoryFactory {
 
         // FIXME: Legacy support, can be removed when local config has been substituted by refdata (INTYG-7701)
         if (!ResourceUtils.isUrl(location)) {
-            location = "file://" + location;
+            location = "file:" + location;
         }
 
         Integer latestAvtalVersion = avtalRepository.getLatestAvtalVersion();

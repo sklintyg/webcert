@@ -96,7 +96,7 @@ public class DiagnosRepositoryFactory implements InitializingBean {
         }
 
         // FIXME: Legacy support, can be removed when local config has been substituted by refdata (INTYG-7701)
-        final String location = ResourceUtils.isUrl(fileUrl) ? fileUrl : "file://" + fileUrl;
+        final String location = ResourceUtils.isUrl(fileUrl) ? fileUrl : "file:" + fileUrl;
 
         LOG.debug("Loading diagnosis from: '{}'", location);
 
