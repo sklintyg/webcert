@@ -101,4 +101,76 @@ Kontakta körkortsenheten på Transportstyrelsen, telefon 0771-81 81 81. Transpo
 
 	<text id="SVAR_JA.RBK">Ja</text>
 	<text id="SVAR_NEJ.RBK">Nej</text>
+
+
+	<!--
+  ===============================================
+  KATEGORI: Symptom, funktionshinder och prognos
+  ===============================================
+  -->
+	<text id="KAT_5.RBK">Symptom, funktionshinder och prognos</text>
+	<text id="FRG_60.RBK">Ange bedömning av aktuella symptom, funktionshinder och prognos för fortsatt stabilitet i tillståndet</text>
+	<text id="FRG_60.HLP"><![CDATA[Vid bedömningen ska störningar av impulskontroll, koncentrationsförmåga, uppmärksamhet och omdöme samt
+		tvångsmässig fixering beaktas. Förekomst av kognitiva störningar samt psykiska sjukdomar och störningar ska även
+		bedömas med beaktande av vad som sägs i 10 kap. och i 14 kap. Transportstyrelsens föreskrifter och allmänna råd
+		(TSFS 2010:125) om medicinska krav för innehav av körkort m.m.
+
+		Bedömningen ska göras mot bakgrund av:
+		<ul><li>funktionsnedsättningens konsekvenser för det dagliga livet</li>
+		<li>förekomst av beroende, missbruk eller överkonsumtion av alkohol, narkotika eller annan substans som påverkar
+		förmågan att köra motordrivet fordon</li>
+		<li>förmågan att följa regler och förstå andras beteende i trafiken</li>
+		<li>kriminalitet</li></ul>
+		]]></text>
+	<text id="FRG_61.RBK">Kan prognosen för fortsatt stabilt tillstånd bedömas vara god?</text>
+	<text id="SVAR_KANEJBEDOMA.RBK">Kan ej bedöma</text>
+
+	<!--
+  ===============================================
+  KATEGORI: Övrigt
+  ===============================================
+  -->
+	<text id="KAT_6.RBK">Övrigt</text>
+	<text id="FRG_32.RBK">Ange övriga kommentarer som är relevanta ur trafiksäkerhetssynpunkt</text>
+
+	<!--
+      ===============================================
+      KATEGORI: Bedömning
+      ===============================================
+      -->
+	<text id="KAT_7.RBK">Bedömning</text>
+	<text id="FRG_33.RBK"> Ange för vilka behörigheter som patienten uppfyller kraven enligt Transportstyrelsens föreskrifter och allmänna råd om medicinska krav för innehav av körkort m.m.(TSFS 2010:125)</text>
+	<text id="FRG_33.HLP">AM - moped klass I
+		A1 - lätt motorcykel
+		A2 - mellanstor motorcykel
+		A - motorcykel
+		B - personbil, lätt lastbil och enbart ett lätt släpfordon
+		BE - personbil, lätt lastbil och ett eller flera släpfordon (Släpens totalvikt får inte överstiga 3,5 ton.)
+		C1 - medeltung lastbil och enbart ett lätt släpfordon
+		C1E - medeltung lastbil och ett eller flera släpfordon oavsett vikt
+		C - tung lastbil och enbart ett lätt släpfordon
+		CE - tung lastbil och ett eller flera släpfordon oavsett vikt
+		D1 - mellanstor buss och enbart ett lätt släpfordon
+		D1E - mellanstor buss och ett eller flera släpfordon oavsett vikt
+		D - buss och enbart ett lätt släpfordon
+		DE - buss och ett eller flera släpfordon oavsett vikt
+		Taxi - taxiförarlegitimation
+		Läkaren ska beakta den ökade trafiksäkerhetsrisk som följer med innehav av högre behörigheter.</text>
+	<text id="KV_KORKORTSBEHORIGHET.VAR12.RBK">AM</text>
+	<text id="KV_KORKORTSBEHORIGHET.VAR13.RBK">A1</text>
+	<text id="KV_KORKORTSBEHORIGHET.VAR14.RBK">A2</text>
+	<text id="KV_KORKORTSBEHORIGHET.VAR15.RBK">A</text>
+	<text id="KV_KORKORTSBEHORIGHET.VAR16.RBK">B</text>
+	<text id="KV_KORKORTSBEHORIGHET.VAR17.RBK">BE</text>
+	<text id="KV_KORKORTSBEHORIGHET.VAR18.RBK">Traktor</text>
+	<text id="KV_KORKORTSBEHORIGHET.VAR1.RBK">C1</text>
+	<text id="KV_KORKORTSBEHORIGHET.VAR2.RBK">C1E</text>
+	<text id="KV_KORKORTSBEHORIGHET.VAR3.RBK">C</text>
+	<text id="KV_KORKORTSBEHORIGHET.VAR4.RBK">CE</text>
+	<text id="KV_KORKORTSBEHORIGHET.VAR5.RBK">D1</text>
+	<text id="KV_KORKORTSBEHORIGHET.VAR6.RBK">D1E</text>
+	<text id="KV_KORKORTSBEHORIGHET.VAR7.RBK">D</text>
+	<text id="KV_KORKORTSBEHORIGHET.VAR8.RBK">DE</text>
+	<text id="KV_KORKORTSBEHORIGHET.VAR9.RBK">Taxi</text>
+	<text id="KV_KORKORTSBEHORIGHET.VAR11.RBK">Kan inte ta ställning</text>
 </texter>
