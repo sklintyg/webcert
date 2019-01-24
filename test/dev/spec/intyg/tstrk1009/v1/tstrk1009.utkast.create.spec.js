@@ -24,10 +24,10 @@ var wcTestTools = require('webcert-testtools');
 var testdataHelper = require('common-testtools').testdataHelper;
 var specHelper = wcTestTools.helpers.spec;
 var UtkastPage = wcTestTools.pages.intyg.ts.trk1009.utkast;
-//var IntygPage = wcTestTools.pages.intyg.ts.trk1009.intyg;
+var IntygPage = wcTestTools.pages.intyg.ts.trk1009.intyg;
 var restTestdataHelper = wcTestTools.helpers.restTestdata;
 
-xdescribe('Create and Sign tstrk1009 v1 utkast', function() {
+describe('Create and Sign tstrk1009 v1 utkast', function() {
 
     var utkastId = null,
         data = null;
@@ -78,15 +78,15 @@ xdescribe('Create and Sign tstrk1009 v1 utkast', function() {
 
         UtkastPage.signeraButtonClick();
 
-        //expect(IntygPage.isAt()).toBeTruthy();
+        expect(IntygPage.isAt()).toBeTruthy();
     });
-/*
+
     it('Verifiera intyg', function() {
         IntygPage.verify(data);
     });
-*/
+
     afterAll(function() {
-        //restTestdataHelper.deleteIntyg(utkastId);
+        restTestdataHelper.deleteIntyg(utkastId);
         restTestdataHelper.deleteUtkast(utkastId);
     });
 });
