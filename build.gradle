@@ -1,7 +1,6 @@
 plugins {
-    id "se.inera.intyg.plugin.common" version "1.0.70" apply false
-    id "org.akhikhl.gretty" version "1.4.2" apply false
-    id "net.ltgt.apt" version "0.13" apply false
+    id "se.inera.intyg.plugin.common" version "2.0.2" apply false
+    id "org.gretty" version "2.3.1" apply false
     id "com.moowork.node" version "1.1.1" apply false
 }
 
@@ -66,9 +65,9 @@ allprojects {
     apply plugin: 'se.inera.intyg.plugin.common'
     apply plugin: 'maven'
     apply plugin: 'idea'
-    apply plugin: 'net.ltgt.apt'
 
     repositories {
+        jcenter()
         mavenLocal()
         maven { url "https://build-inera.nordicmedtest.se/nexus/repository/releases/" }
         maven { url "http://repo.maven.apache.org/maven2" }

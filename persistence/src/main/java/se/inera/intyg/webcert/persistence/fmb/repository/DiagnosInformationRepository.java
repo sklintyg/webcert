@@ -49,7 +49,7 @@ import se.inera.intyg.webcert.persistence.fmb.model.fmb.DiagnosInformation;
 public interface DiagnosInformationRepository extends JpaRepository<DiagnosInformation, Long> {
 
     // CHECKSTYLE:OFF MethodName
-    Optional<DiagnosInformation> findFirstByIcd10KodList_kod(final String icd10Kod);
+    Optional<DiagnosInformation> findFirstByIcd10KodList_kod(String icd10Kod);
     // CHECKSTYLE:ON MethodName
 
     // CHECKSTYLE:OFF OperatorWrap
@@ -62,7 +62,7 @@ public interface DiagnosInformationRepository extends JpaRepository<DiagnosInfor
            "GROUP BY icd10Kod.kod, typfall.maximalSjukrivningstidDagar " +
            "ORDER BY typfall.maximalSjukrivningstidDagar DESC"
     )
-    List<MaximalSjukskrivningstidDagar> findMaximalSjukrivningstidDagarByIcd10Koder(@Param("koder") final Set<String> koder);
+    List<MaximalSjukskrivningstidDagar> findMaximalSjukrivningstidDagarByIcd10Koder(@Param("koder") Set<String> koder);
     // CHECKSTYLE:ON OperatorWrap
     // CHECKSTYLE:ON LineLength
 }

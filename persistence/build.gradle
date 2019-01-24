@@ -1,5 +1,5 @@
 // JPA expects classes and configuration files to be in the same directory.
-sourceSets.main.output.resourcesDir = sourceSets.main.output.classesDir
+sourceSets.main.output.resourcesDir = sourceSets.main.output.getClassesDirs().getSingleFile()
 // B/c of the above, we create duplicates within the JAR. This configuration excludes the duplicates.
 jar.duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 

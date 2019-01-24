@@ -1,5 +1,5 @@
 apply plugin: 'war'
-apply plugin: 'org.akhikhl.gretty'
+apply plugin: 'org.gretty'
 apply plugin: 'com.moowork.grunt'
 
 def webappOutputDir = 'build/apps/'
@@ -94,6 +94,9 @@ task zipResources(type: ArchiveDirectoryTask) {
 build.dependsOn zipResources
 
 gretty {
+
+    servletContainer = 'jetty9'
+
     contextPath = '/'
     contextConfigFile = file("src/main/webapp/WEB-INF/jetty-web.xml")
     integrationTestTask = null
@@ -196,6 +199,8 @@ dependencies {
     compile "io.jsonwebtoken:jjwt-impl:${jsonwebtokenVersion}"
     compile "io.jsonwebtoken:jjwt-jackson:${jsonwebtokenVersion}"
     compile "com.auth0:jwks-rsa:${jwksVersion}"
+    compile "com.google.auto.value:auto-value:${autovalueVersion}"
+
 
     compileOnly "org.apache.geronimo.specs:geronimo-jms_1.1_spec:${geronimoJmsVersion}"
 
@@ -211,5 +216,5 @@ dependencies {
     testCompile "com.jayway.restassured:json-schema-validator:${restassuredVersion}"
     testCompile "org.antlr:ST4:${stAntlr4Version}"
 
-    apt "com.google.auto.value:auto-value:${autovalueVersion}"
+    annotationProcessor "com.google.auto.value:auto-value:${autovalueVersion}"  
 }
