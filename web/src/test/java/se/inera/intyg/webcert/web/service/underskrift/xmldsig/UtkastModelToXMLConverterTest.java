@@ -67,7 +67,7 @@ public class UtkastModelToXMLConverterTest {
         ReflectionTestUtils.setField(dbModuleApiV1, "objectMapper", new CustomObjectMapper());
 
         when(intygModuleRegistry.getModuleApi(anyString(), anyString())).thenReturn(dbModuleApiV1);
-        when(intygModuleRegistry.resolveVersionFromUtlatandeJson(anyString())).thenReturn("1.0");
+        when(intygModuleRegistry.resolveVersionFromUtlatandeJson(anyString(), anyString())).thenReturn("1.0");
         String xml = testee.utkastToXml(jsonModel, "DB");
         assertNotNull(xml);
     }
@@ -80,7 +80,7 @@ public class UtkastModelToXMLConverterTest {
         ReflectionTestUtils.setField(tsBaModuleApi, "objectMapper", new CustomObjectMapper());
 
         when(intygModuleRegistry.getModuleApi(anyString(), anyString())).thenReturn(tsBaModuleApi);
-        when(intygModuleRegistry.resolveVersionFromUtlatandeJson(anyString())).thenReturn("1.0");
+        when(intygModuleRegistry.resolveVersionFromUtlatandeJson(anyString(), anyString())).thenReturn("1.0");
         String xml = testee.utkastToXml(jsonModel, "ts-bas");
         assertNotNull(xml);
     }
