@@ -224,7 +224,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         revokedLockedUtkast = createUtkast(INTYG_ID, INTYG_VERSION, INTYG_TYPE, UtkastStatus.DRAFT_LOCKED, null,
                 INTYG_JSON, vardperson, PERSONNUMMER);
         revokedLockedUtkast.setAterkalladDatum(LocalDateTime.now());
-        when(moduleRegistry.resolveVersionFromUtlatandeJson(anyString())).thenReturn(INTYG_TYPE_VERSION);
+        when(moduleRegistry.resolveVersionFromUtlatandeJson(anyString(), anyString())).thenReturn(INTYG_TYPE_VERSION);
 
     }
 

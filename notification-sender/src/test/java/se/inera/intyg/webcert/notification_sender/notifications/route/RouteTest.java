@@ -98,7 +98,7 @@ public class RouteTest {
         MockitoAnnotations.initMocks(this);
         MockEndpoint.resetMocks(camelContext);
         when(moduleRegistry.getModuleApi(anyString(), anyString())).thenReturn(moduleApi);
-        when(moduleRegistry.resolveVersionFromUtlatandeJson(anyString())).thenReturn("1.0");
+        when(moduleRegistry.resolveVersionFromUtlatandeJson(anyString(), anyString())).thenReturn("1.0");
         when(moduleApi.getUtlatandeFromJson(anyString())).thenReturn(new Fk7263Utlatande());
         when(moduleApi.getIntygFromUtlatande(any())).thenReturn(NotificationTestHelper.createIntyg("fk7263"));
         when(mockedPuService.getPerson(any())).thenReturn(PersonSvar.found(NotificationTestHelper.buildPerson(false)));
