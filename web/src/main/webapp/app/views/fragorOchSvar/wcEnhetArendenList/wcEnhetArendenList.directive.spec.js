@@ -203,12 +203,6 @@ describe('wcEnhetArendenList', function() {
     });
 
     describe('vidarebefordra', function() {
-
-        xit('should change forwarded state on a QA when clicking a forward checkbox', function() {
-            $scope.onVidareBefordradChange(testQAResponse.results[0]);
-            expect(ArendeProxy.setVidarebefordradState).toHaveBeenCalled();
-        });
-
         it('should open external mail client when user wants to forward a QA', function() {
 
             $scope.openMailDialog(testQAResponse.results[0]);
