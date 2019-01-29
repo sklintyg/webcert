@@ -1,5 +1,16 @@
 ---
 
+- name: Remove refdata
+  shell: rm -f {{ tomcat_lib }}/refdata*.jar
+
+- name: Get latest refdata version  IntygModuleApiControllerIT
+  shell: curl -s https://build-inera.nordicmedtest.se/nexus/repository/public/se/inera/intyg/refdata/refdata/maven-metadata.xml | grep '<latest>.*</latest>' | sed 's/.*<latest>\(.*\)<\/latest>.*/\1/g'
+  register: latest_refdata
+
+- name: Download refdata-{{ latest_refdata.stdout }}.jar
+  get_url: url=https://build-inera.nordicmedtest.se/nexus/repository/public/se/inera/intyg/refdata/refdata/{{ latest_refdata.stdout }}/refdata-{{ latest_refdata.stdout }}.jar
+    dest={{ tomcat_lib }}
+
 - name: Download activemq-client-{{ activemq_version }}.jar
   get_url:
     url: http://repo1.maven.org/maven2/org/apache/activemq/activemq-client/{{ activemq_version }}/activemq-client-{{ activemq_version }}.jar

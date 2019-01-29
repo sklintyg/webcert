@@ -7,7 +7,7 @@ plugins {
 ext {
     commonVersion = System.properties['commonVersion'] ?: '0-SNAPSHOT'
     infraVersion = System.properties['infraVersion'] ?: '0-SNAPSHOT'
-    refDataVersion = System.properties['refDataVersion'] ?: '0-SNAPSHOT'
+    refDataVersion = System.properties['refDataVersion'] ?: '1.0.0.+'
 
     commonsIoVersion = "2.4"
 
@@ -75,6 +75,7 @@ allprojects {
     }
 
     dependencies {
+        testCompile "se.inera.intyg.refdata:refdata:${refDataVersion}"
         testCompile 'junit:junit:4.+'
         testCompile "org.mockito:mockito-core:${mockitoVersion}"
     }
