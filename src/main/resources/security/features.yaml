@@ -194,6 +194,7 @@ features:
       - *ki080 # DB
       - *ki090 # DOI
       - *ki100 # AF00213
+      - *ki140 # TSTRK1009
   - &f090
     name: *kf090
     desc: Utskrift
