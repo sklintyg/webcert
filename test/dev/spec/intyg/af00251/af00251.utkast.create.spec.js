@@ -21,7 +21,6 @@
 'use strict';
 var wcTestTools = require('webcert-testtools');
 var specHelper = wcTestTools.helpers.spec;
-var debugUtil = wcTestTools.debugUtil;
 var testdataHelper = wcTestTools.helpers.restTestdata;
 var UtkastPage = wcTestTools.pages.intyg.af['af00251'].utkast;
 var IntygPage = wcTestTools.pages.intyg.af['af00251'].intyg;
@@ -60,9 +59,7 @@ describe('Create and Sign af00251 utkast', function() {
                 UtkastPage.angeAnnanUndersokning(data.annanUndersokning);
             });
             it('Ange arbetsmaknadspolitiskt program', function() {
-                debugUtil.takeScreenshot("./build/arbetsmarknadspolitiskt-program1.png")
-                    .then(UtkastPage.angeArbetmarksnadsPolitisktProgram(data.arbetsmarknadspolitisktProgram))
-                    .then(debugUtil.takeScreenshot("./build/arbetsmarknadspolitiskt-program2.png"));
+                UtkastPage.angeArbetmarksnadsPolitisktProgram(data.arbetsmarknadspolitisktProgram);
             });
             it('Ange funktionsnedsättning', function() {
                 UtkastPage.angeFunktionsNedsattning(data.funktionsNedsattning);
