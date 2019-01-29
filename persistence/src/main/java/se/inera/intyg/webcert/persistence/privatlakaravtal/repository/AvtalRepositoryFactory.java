@@ -20,7 +20,6 @@ package se.inera.intyg.webcert.persistence.privatlakaravtal.repository;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
-
 import javax.annotation.PostConstruct;
 
 import org.apache.commons.io.IOUtils;
@@ -28,14 +27,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ResourceUtils;
 
 import com.google.common.base.Charsets;
-
-import org.springframework.util.ResourceUtils;
 import se.inera.intyg.webcert.persistence.privatlakaravtal.model.Avtal;
 
 /**
