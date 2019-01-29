@@ -1,0 +1,5 @@
+# Dependency directory and media produced by Cypress
+node_modules
+cypress/videos
+cypress/screenshots
+
