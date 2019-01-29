@@ -89,7 +89,7 @@ public class IntegreradeEnheterRegistryImpl implements IntegreradeEnheterRegistr
      * @see se.inera.intyg.webcert.web.service.integration.IntegreradeEnheterService#isEnhetIntegrerad(java.lang.String)
      */
     @Override
-    @Transactional(readOnly = true)
+    @Transactional
     public boolean isEnhetIntegrerad(String enhetsHsaId, String intygType) {
         Optional<SchemaVersion> schemaVersion = getSchemaVersion(enhetsHsaId, intygType);
         return schemaVersion.isPresent();
