@@ -5,7 +5,7 @@ Egenskap: Generera Utb-data
 # Marcus Gran TSTNMT2321000156-2014
 # Linköpings Östra Rehabcentrum TSTNMT2321000156-2001
 Bakgrund: Inloggad som läkare
-   Givet att jag är inloggad som läkare "Marcus Gran Linköpings Östra Rehabcentrum"
+   Givet att jag är inloggad som läkare "Marcus Gran"
 
 
 @UTBDATA-REHABSTOD-RADERA
