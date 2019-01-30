@@ -11,9 +11,14 @@
         "INTYGTJANST_URL": "http://intygstjanst-test-webcert-test:8080/inera-certificate",
         "SELENIUM_ADDRESS": ""
     },
-	"demo": {
-		"WEBCERT_URL": "http://webcert-demo-demointyg.app-test1.ind-ocp.sth.basefarm.net/",
-		"INTYGTJANST_URL": "https://demo.intygstjanst.intygstjanster.se/inera-certificate",
+    "demo": {
+        "WEBCERT_URL": "https://webcert-demo-demointyg.app-test1.ind-ocp.sth.basefarm.net/",
+        "INTYGTJANST_URL": "https://demo.intygstjanst.intygstjanster.se/inera-certificate",
+        "SELENIUM_ADDRESS": ""
+    },
+    "utb": {
+        "WEBCERT_URL": "https://webcert-utb-utbintyg.app-test1.ind-ocp.sth.basefarm.net/",
+        "INTYGTJANST_URL": "https://intygstjanst-utb-utbintyg.app-test1.ind-ocp.sth.basefarm.net/inera-certificate",
         "SELENIUM_ADDRESS": ""
     },
     "sim2": {
@@ -52,7 +57,7 @@
         "MINAINTYG_URL": "https://mvk.ip20.nordicmedtest.sjunet.org",
         "REHABSTOD_URL": "https://rehabstod.ip20.nordicmedtest.sjunet.org/",
         "INTYGTJANST_URL": "https://intyg.ip20.nordicmedtest.sjunet.org/inera-certificate",
-		"STATISTIKTJANST_URL": "https://statistik.ip20.nordicmedtest.sjunet.org",
+        "STATISTIKTJANST_URL": "https://statistik.ip20.nordicmedtest.sjunet.org",
         "DATABASE_NAME": "webcert_ip20",
         "STAT_DATABASE_NAME": "statistik_ip20",
         "SM_DATABASE_HOST": "mysql.sm.nordicmedtest.se",
@@ -74,7 +79,7 @@
         "MINAINTYG_URL": "https://mvk.ip30.nordicmedtest.sjunet.org",
         "REHABSTOD_URL": "https://rehabstod.ip30.nordicmedtest.sjunet.org/",
         "INTYGTJANST_URL": "https://intyg.ip30.nordicmedtest.sjunet.org/inera-certificate",
-		"INTYGTJANST_DATABASE_NAME" : "intyg_ip30",
+        "INTYGTJANST_DATABASE_NAME" : "intyg_ip30",
         "STATISTIKTJANST_URL": "https://statistik.ip30.nordicmedtest.sjunet.org",
         "DATABASE_NAME": "webcert_ip30",
         "STAT_DATABASE_NAME": "statistik_ip30",
@@ -88,7 +93,7 @@
         "MINAINTYG_URL": "https://minaintyg.ip40.nordicmedtest.sjunet.org",
         "REHABSTOD_URL": "https://rehabstod.ip40.nordicmedtest.sjunet.org/",
         "INTYGTJANST_URL": "https://intygstjanst.ip40.nordicmedtest.sjunet.org/inera-certificate",
-		"INTYGTJANST_DATABASE_NAME" : "intyg_ip40",
+        "INTYGTJANST_DATABASE_NAME" : "intyg_ip40",
         "STATISTIKTJANST_URL": "https://statistik.ip40.nordicmedtest.sjunet.org",
         "DATABASE_NAME": "webcert_ip40",
         "STAT_DATABASE_NAME": "statistik_ip40",

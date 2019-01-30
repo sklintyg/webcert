@@ -40,6 +40,8 @@ const {
 var fillIn = require('../fillIn').fillIn;
 var demoDataLisjp = require('./demoDataLisjp.js');
 var statistikData = require('./statistikData.js');
+var utbDataJaneEwery = require('./utbDataLisjp_JE_LOR.js');
+var utbDataMarcusGran = require('./utbDataLisjp_MG_LOR.js');
 /*
  *	Stödfunktioner
  *
@@ -88,6 +90,29 @@ When(/^jag fyller i alla nödvändiga fält för intyget med statistikdata "([^"
         throw 'intyg.typ odefinierad';
     } else {
         this.intyg = statistikData.get(index, this.intyg.id);
+        logger.silly(this.intyg);
+        return fillIn(this);
+    }
+});
+
+
+// Data för utbildningsmiljön. Ett step def per läkare.
+When(/^jag fyller i alla nödvändiga fält för intyget med utbdata för Jane Ewery "([^"]*)"$/, function(index) {
+    if (!this.intyg.typ) {
+        throw 'intyg.typ odefinierad.';
+    } else {
+        this.intyg = utbDataJaneEwery.get(index, this.intyg.id);
+        logger.silly(this.intyg);
+        return fillIn(this);
+    }
+});
+
+
+When(/^jag fyller i alla nödvändiga fält för intyget med utbdata för Marcus Gran "([^"]*)"$/, function(index) {
+    if (!this.intyg.typ) {
+        throw 'intyg.typ odefinierad.';
+    } else {
+        this.intyg = utbDataMarcusGran.get(index, this.intyg.id);
         logger.silly(this.intyg);
         return fillIn(this);
     }
