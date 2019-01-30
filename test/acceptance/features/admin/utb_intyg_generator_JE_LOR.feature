@@ -5,7 +5,7 @@ Egenskap: Generera Utb-data
 # Jane Ewery TSTNMT2321000156-2011
 # Linköpings Östra Rehabcentrum TSTNMT2321000156-2001
 Bakgrund: Inloggad som läkare
-   Givet att jag är inloggad som läkare "Jane Ewery Linköpings Östra Rehabcentrum"
+   Givet att jag är inloggad som läkare "Jane Ewery"
 
 
 @UTBDATA-REHABSTOD-RADERA

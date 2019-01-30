@@ -1,6 +1,6 @@
 # language: sv
 @BACKOFFICE
-Egenskap: Generera Utb-data-data
+Egenskap: Generera Utb-data
 
 # Marcus Gran TSTNMT2321000156-2014
 # Linköpings Östra Rehabcentrum TSTNMT2321000156-2001
@@ -36,13 +36,13 @@ Scenariomall: [REHABSTOD] - Generera intyg för <Patient> med utbDataIndex <utbD
    Så ska jag se den data jag angett för intyget
 
 Exempel:
-  | Patient | utbDataIndex |
-  | 19620323-3066 | 0 | 
-  | 19540187-5769 | 1 |
-  | 19671031-3195 | 2 | 
-  | 19900614-2385 | 3 |
-  | 19550307-1770 | 4 |
-  | 19930905-2380 | 5 | 
-  | 19590714-2599 | 6 | 
-  | 19620323-3066 | 7 |
-  | 19830923-9294 | 8 |
+  | Patient       | utbDataIndex |
+  | 19620323-3066 | 0            |
+  | 19540187-5769 | 1            |
+  | 19671031-3195 | 2            |
+  | 19900614-2385 | 3            |
+  | 19550307-1770 | 4            |
+  | 19930905-2380 | 5            |
+  | 19590714-2599 | 6            |
+  | 19620323-3066 | 7            |
+  | 19830923-9294 | 8            |

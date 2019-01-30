@@ -172,7 +172,16 @@ Given(/^att jag är inloggad som läkare(?: "([^"]*)")?$/, function(lakarNamn) {
             this.user.enhetId = 'TSTNMT2321000156-1013';
             this.user.forNamn = lakarNamn.split(' ')[0];
             this.user.efterNamn = lakarNamn.split(' ')[1];
-
+        } else if (lakarNamn && lakarNamn === 'Marcus Gran') {
+            this.user.hsaId = 'TSTNMT2321000156-2014';
+            this.user.enhetId = 'TSTNMT2321000156-2001';
+            this.user.forNamn = lakarNamn.split(' ')[0];
+            this.user.efterNamn = lakarNamn.split(' ')[1];
+        } else if (lakarNamn && lakarNamn === 'Jane Ewry') {
+            this.user.hsaId = 'TSTNMT2321000156-2011';
+            this.user.enhetId = 'TSTNMT2321000156-2001';
+            this.user.forNamn = lakarNamn.split(' ')[0];
+            this.user.efterNamn = lakarNamn.split(' ')[1];
         }
     }
     return logInAsUserRole(this.user, 'Läkare');
