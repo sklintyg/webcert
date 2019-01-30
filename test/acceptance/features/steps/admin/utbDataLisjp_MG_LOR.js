@@ -50,7 +50,7 @@ function idag(modifyer) {
  *	Utb Data Lisjp
  *
  */
-var utbDataLisjp1 = [{
+var utbDataLisjp = [{
     // 0 
     "smittskydd": false,
     "baseratPa": {
@@ -161,9 +161,7 @@ var utbDataLisjp1 = [{
         "yrkesAktiviteter": "Sjuksköterska"
     },
     "diagnos": {
-        "kod": "S33",
-        "kod": "R10",
-        "kod": "S34"
+        "kod": "S33"
     },
     "funktionsnedsattning": "Efter fall från häst svårtigheter att sitta, stå och gå till följd av nervskador på bäckennivå. Inkontinensbesvär med läckage och ofrivillig urinavgång.",
     "aktivitetsbegransning": "Kan ej stödja på benen. Bedöms ej kunna fullfölja sina arbetsuppgifter under rehabiliteringsfasen.",
@@ -279,7 +277,6 @@ var utbDataLisjp1 = [{
 	},
     "diagnos": {
         "kod": "S984",
-		"kod": "E11"
     },
     "funktionsnedsattning": "Traumatisk klämskada på höger stortå 10 augusti, operation med amputation 11 augusti. Postoperativ sårinfektion med manifestation på omkringliggande vävnad. Diabetiker med svårläkt sår.",
     "aktivitetsbegransning": "Fortsatta postoperativa besvär med smärta och stödproblem på foten till följd av mjukdelsinfektion. Kan ej utföra sina arbetsuppgifter med att lasta ur eller på gods.",
@@ -344,7 +341,7 @@ var utbDataLisjp1 = [{
 	},
     "diagnos": {
         "kod": "S83"
-   },
+    },
     "funktionsnedsattning": "Luxation av höger knä efter cykelolycka. Svullen i knät, kan ej ta ut full rörlighet.",
     "aktivitetsbegransning": "Kan ej stödja på benet, svårigheter att gå. Behov av kryckor. Bedöms därför ej kunna utföra sitt arbete.",
 	"pagaendeBehandling": "Vila.",
@@ -352,6 +349,7 @@ var utbDataLisjp1 = [{
         "nedsattMed100": {
             "from": idag(6),
             "tom": idag(20)
+        }
 	},
     "atgarder": [{
         "namn": "Inte aktuellt",
@@ -372,6 +370,5 @@ module.exports = {
         logger.silly(JSON.stringify(obj));
         return obj;
     }
-
 
 };
