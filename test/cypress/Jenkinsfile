@@ -4,10 +4,11 @@ pipeline {
     // this image provides everything needed to run Cypress
     docker {
       image 'cypress/base:10'
+      dir 'test/cypress'
     }
   }
 
-  dir('test/cypress') {
+//  dir('test/cypress') {
     stages {
       // first stage installs node dependencies and Cypress binary
       stage('build') {
@@ -37,5 +38,5 @@ pipeline {
 //      sh 'pkill -f http-server'
 //    }
 //  }
-  }
+//  }
 }
