@@ -77,7 +77,7 @@ public class CertificateRouteBuilder extends SpringRouteBuilder {
 
         from("direct:certPermanentErrorHandlerEndpoint").routeId("permanentErrorLogging")
                 .log(LoggingLevel.ERROR, LOG,
-                        simple("Permanent exception for intygs-id: ${header[INTYGS_ID]}, "
+                        simple("Permanent exception for intygs-id: ${header[INTYGS_ID]}, of message type ${header[MESSAGE_TYPE]}, "
                                 + "with message: ${exception.message}\n ${exception.stacktrace}")
                                         .getText())
                 .stop();
@@ -86,13 +86,13 @@ public class CertificateRouteBuilder extends SpringRouteBuilder {
                 .choice()
                 .when(header(Constants.JMS_REDELIVERED).isEqualTo("false"))
                 .log(LoggingLevel.ERROR, LOG,
-                        simple("Temporary exception for intygs-id: ${header[INTYGS_ID]}, with message: "
-                                + "${exception.message}\n ${exception.stacktrace}")
+                        simple("Temporary exception for intygs-id: ${header[INTYGS_ID]}, of message type ${header[MESSAGE_TYPE]}, "
+                                + "with message: ${exception.message}\n ${exception.stacktrace}")
                                         .getText())
                 .otherwise()
                 .log(LoggingLevel.WARN, LOG,
-                        simple("Temporary exception for intygs-id: ${header[INTYGS_ID]}, with message: "
-                                + "${exception.message}").getText())
+                        simple("Temporary exception for intygs-id: ${header[INTYGS_ID]}, of message type ${header[MESSAGE_TYPE]}, "
+                                + "with message: ${exception.message}").getText())
                 .stop();
     }
 
