@@ -33,3 +33,4 @@ secret-*
 *.jks
 *.p12
 test/reports
+node_modules/

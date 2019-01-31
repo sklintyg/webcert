@@ -1,0 +1,35 @@
+pipeline {
+
+  agent {
+    // this image provides everything needed to run Cypress
+    docker {
+      image 'cypress/base:10'
+    }
+  }
+
+  stages {
+    // first stage installs node dependencies and Cypress binary
+    stage('build') {
+      steps {
+        echo "Running build ${env.BUILD_ID} on ${env.JENKINS_URL}"
+        sh 'npm ci'
+        sh 'npm run cy:verify'
+      }
+    }
+
+    stage('cypress tests') {
+      steps {
+        echo "Running build ${env.BUILD_ID}"
+        sh "npm run test:e2e"
+      }
+    }
+  }
+
+//  post {
+    // shutdown the server running in the background
+//    always {
+//      echo 'Stopping local server'
+//      sh 'pkill -f http-server'
+//    }
+//  }
+}

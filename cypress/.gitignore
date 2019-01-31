@@ -1,5 +1,6 @@
 # Dependency directory and media produced by Cypress
-node_modules
-cypress/videos
-cypress/screenshots
+videos/
+screenshots/
 
+# Ignore temporary files
+*~
