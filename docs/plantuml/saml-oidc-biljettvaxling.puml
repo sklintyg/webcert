@@ -21,7 +21,7 @@ j -> b: Redirect to IdP with AuthnReq
 
 b -> s: AuthnReq
 activate s
-s -> s: NetiD Access / PIN-code stuff..
+s -> s: NetiD / PIN-code stuff..
 s -> b: Redirect with SAML assertion
 b -> j: SAML assertion
 
@@ -31,7 +31,7 @@ end
 
 |||
 alt Has valid SAML assertion
-j -> s: Request access token\n with SAML assertion (RFC7522)
+j -> s: Request access token\nwith SAML assertion (RFC7522)\nand client_id/client_secret
 activate s
 s -> s: Validate assertion\n and client
 s -> j: Access Token + Refresh Token
@@ -41,14 +41,20 @@ end
 j --> b: Redirect to Webcert with token
 deactivate j
 |||
-b -> wj: /oauth/token with Authorization: Bearer <JWS>
+b -> wj: POST to /oauth/token with auth_token\nand integration parameters as\napplication/x-www-form-urlencoded\nform data.
 
 
 activate  wj
-wj -> wj: Validate token signature\nusing PKI and extract\nHSA-id
-
+alt JWKS is not cached
+wj -> s: Read JWKS keys
+activate s
+s --> wj: JWKS keys
+deactivate s
+end
 |||
-wj -> s: Validate token using NNNN-service
+wj -> wj: Validate token signature\nusing JWKS and extract\nHSA-id
+|||
+wj -> s: Validate token using introspection
 activate s
 s --> wj: Validation result
 deactivate s
@@ -60,9 +66,9 @@ HSA --> wj: HSA details
 deactivate HSA
 
 wj -> wj: Build principal, start session
-wj -> b: Authenticated, Set-Cookie with JSESSIONID
+wj -> b: HTTP 302 redirect\nto /visa/intyg/{guid}/saved\nSet-Cookie: SESSION=<session-id>
 deactivate  wj
-b -> wb: Request resource /visa/intyg/{guid}
+b -> wb: Request resource /visa/intyg/{guid}/saved
 activate wb
 |||
 wb --> b: Requested resource
