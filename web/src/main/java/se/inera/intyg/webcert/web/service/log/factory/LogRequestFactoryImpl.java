@@ -16,41 +16,53 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.web.service.log;
+package se.inera.intyg.webcert.web.service.log.factory;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.google.common.base.Joiner;
-import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
-import se.inera.intyg.common.lisjp.support.LisjpEntryPoint;
-import se.inera.intyg.common.luae_fs.support.LuaefsEntryPoint;
-import se.inera.intyg.common.luae_na.support.LuaenaEntryPoint;
-import se.inera.intyg.common.luse.support.LuseEntryPoint;
+
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
+import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
+import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
-public final class LogRequestFactory {
+/**
+ * Service / Factory that produces PDL log requests.
+ *
+ * Note the hard-coded business rule where intygstyper having FKASSA as default recipient will have patient
+ * first, middle and last names blanked out.
+ *
+ * @author eriklupander
+ */
+@Service
+public class LogRequestFactoryImpl  implements LogRequestFactory {
 
     private static final String COHERENT_JOURNALING_LOG_POST = "Läsning i enlighet med sammanhållen journalföring";
+    private static final String FKASSA = "FKASSA";
 
-    private LogRequestFactory() {
-    }
+    @Autowired
+    private IntygModuleRegistry moduleRegistry;
 
-    public static LogRequest createLogRequestFromUtkast(Utkast utkast) {
+    @Override
+    public LogRequest createLogRequestFromUtkast(Utkast utkast) {
         return createLogRequestFromUtkast(utkast, false);
     }
 
-    public static LogRequest createLogRequestFromUtkast(Utkast utkast, boolean coherentJournaling) {
+    @Override
+    public LogRequest createLogRequestFromUtkast(Utkast utkast, boolean coherentJournaling) {
         LogRequest logRequest = new LogRequest();
 
         logRequest.setIntygId(utkast.getIntygsId());
         logRequest.setPatientId(utkast.getPatientPersonnummer());
 
-        String intygsTyp = utkast.getIntygsTyp();
         addPatientNameIfNotFK(
                 Joiner.on(" ").skipNulls().join(utkast.getPatientFornamn(), utkast.getPatientMellannamn(), utkast.getPatientEfternamn()),
-                logRequest, intygsTyp);
+                logRequest, utkast.getIntygsTyp());
 
         logRequest.setIntygCareUnitId(utkast.getEnhetsId());
         logRequest.setIntygCareUnitName(utkast.getEnhetsNamn());
@@ -65,11 +77,13 @@ public final class LogRequestFactory {
         return logRequest;
     }
 
-    public static LogRequest createLogRequestFromUtlatande(Utlatande utlatande) {
+    @Override
+    public LogRequest createLogRequestFromUtlatande(Utlatande utlatande) {
         return createLogRequestFromUtlatande(utlatande, false);
     }
 
-    public static LogRequest createLogRequestFromUtlatande(Utlatande utlatande, boolean coherentJournaling) {
+    @Override
+    public LogRequest createLogRequestFromUtlatande(Utlatande utlatande, boolean coherentJournaling) {
         LogRequest logRequest = new LogRequest();
         logRequest.setIntygId(utlatande.getId());
 
@@ -89,7 +103,8 @@ public final class LogRequestFactory {
         return logRequest;
     }
 
-    public static LogRequest createLogRequestFromUser(WebCertUser user, String patientId) {
+    @Override
+    public LogRequest createLogRequestFromUser(WebCertUser user, String patientId) {
         LogRequest request = new LogRequest();
 
         request.setPatientId(Personnummer.createPersonnummer(patientId).get());
@@ -110,17 +125,15 @@ public final class LogRequestFactory {
     /**
      * INTYG-4234: PDL-log statements for FK-intyg must _not_ include the patientName.
      */
-    private static void addPatientNameIfNotFK(String patientName, LogRequest logRequest, String intygsTyp) {
-        if (isFkIntyg(intygsTyp)) {
-            logRequest.setPatientName("");
-        } else {
-            logRequest.setPatientName(patientName);
+    private void addPatientNameIfNotFK(String patientName, LogRequest logRequest, String intygsTyp) {
+        try {
+            if (FKASSA.equals(moduleRegistry.getModuleEntryPoint(intygsTyp).getDefaultRecipient())) {
+                logRequest.setPatientName("");
+            } else {
+                logRequest.setPatientName(patientName);
+            }
+        } catch (ModuleNotFoundException e) {
+            throw new IllegalArgumentException("Unknown intyg-typ '" + intygsTyp + "', cannot determine default recipient");
         }
-    }
-
-    private static boolean isFkIntyg(String intygsTyp) {
-        return intygsTyp.toLowerCase().equals(Fk7263EntryPoint.MODULE_ID) || intygsTyp.toLowerCase().equals(LisjpEntryPoint.MODULE_ID)
-                || intygsTyp.toLowerCase().equals(LuseEntryPoint.MODULE_ID) || intygsTyp.toLowerCase().equals(LuaenaEntryPoint.MODULE_ID)
-                || intygsTyp.toLowerCase().equals(LuaefsEntryPoint.MODULE_ID);
     }
 }

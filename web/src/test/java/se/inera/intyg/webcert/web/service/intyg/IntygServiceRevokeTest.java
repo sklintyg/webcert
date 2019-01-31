@@ -28,6 +28,7 @@ import se.inera.intyg.common.fk7263.model.internal.Fk7263Utlatande;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.model.common.internal.Patient;
+import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.support.modules.support.api.dto.CertificateMetaData;
 import se.inera.intyg.common.support.modules.support.api.dto.CertificateResponse;
 import se.inera.intyg.infra.security.authorities.AuthoritiesResolverUtil;
@@ -111,6 +112,7 @@ public class IntygServiceRevokeTest extends AbstractIntygServiceTest {
     @Test
     public void testRevokeIntyg() throws Exception {
 
+        when(logRequestFactory.createLogRequestFromUtlatande(any(Utlatande.class))).thenReturn(new LogRequest());
         when(intygRepository.findOne(INTYG_ID)).thenReturn(signedUtkast);
 
         // do the call

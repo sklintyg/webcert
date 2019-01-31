@@ -18,18 +18,10 @@
  */
 package se.inera.intyg.webcert.web.service.underskrift;
 
-import java.io.IOException;
-import java.time.LocalDateTime;
-import java.util.Map;
-import java.util.Optional;
-
-import javax.persistence.OptimisticLockException;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
@@ -44,9 +36,9 @@ import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.converter.util.IntygConverterUtil;
 import se.inera.intyg.webcert.web.integration.util.AuthoritiesHelperUtil;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
-import se.inera.intyg.webcert.web.service.log.LogRequestFactory;
 import se.inera.intyg.webcert.web.service.log.LogService;
 import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
+import se.inera.intyg.webcert.web.service.log.factory.LogRequestFactory;
 import se.inera.intyg.webcert.web.service.notification.NotificationService;
 import se.inera.intyg.webcert.web.service.underskrift.fake.FakeUnderskriftService;
 import se.inera.intyg.webcert.web.service.underskrift.grp.GrpUnderskriftServiceImpl;
@@ -59,6 +51,12 @@ import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 import se.inera.intyg.webcert.web.service.utkast.dto.PreviousIntyg;
+
+import javax.persistence.OptimisticLockException;
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.Map;
+import java.util.Optional;
 
 @Service
 public class UnderskriftServiceImpl implements UnderskriftService {
@@ -91,6 +89,9 @@ public class UnderskriftServiceImpl implements UnderskriftService {
 
     @Autowired
     private LogService logService;
+
+    @Autowired
+    private LogRequestFactory logRequestFactory;
 
     @Autowired
     private IntygService intygService;
@@ -207,7 +208,7 @@ public class UnderskriftServiceImpl implements UnderskriftService {
         // Notify stakeholders when certificate has been signed
         notificationService.sendNotificationForDraftSigned(utkast);
 
-        LogRequest logRequest = LogRequestFactory.createLogRequestFromUtkast(utkast);
+        LogRequest logRequest = logRequestFactory.createLogRequestFromUtkast(utkast);
 
         // Note that we explictly supplies the WebCertUser here. The NIAS finalization is not executed in a HTTP
         // request context and thus we need to supply the user instance manually.

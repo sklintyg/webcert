@@ -18,21 +18,13 @@
  */
 package se.inera.intyg.webcert.web.service.utkast;
 
-import java.text.MessageFormat;
-import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Map;
-import java.util.Optional;
-
+import com.google.common.base.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.google.common.base.Strings;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.Patient;
@@ -52,9 +44,9 @@ import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistry;
 import se.inera.intyg.webcert.web.integration.registry.dto.IntegreradEnhetEntry;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
-import se.inera.intyg.webcert.web.service.log.LogRequestFactory;
 import se.inera.intyg.webcert.web.service.log.LogService;
 import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
+import se.inera.intyg.webcert.web.service.log.factory.LogRequestFactory;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.notification.NotificationService;
 import se.inera.intyg.webcert.web.service.referens.ReferensService;
@@ -72,6 +64,13 @@ import se.inera.intyg.webcert.web.service.utkast.dto.CreateReplacementCopyRespon
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateUtkastFromTemplateRequest;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateUtkastFromTemplateResponse;
 import se.inera.intyg.webcert.web.service.utkast.dto.PreviousIntyg;
+
+import java.text.MessageFormat;
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Map;
+import java.util.Optional;
 
 @Service
 public class CopyUtkastServiceImpl implements CopyUtkastService {
@@ -118,6 +117,9 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
 
     @Autowired
     private LogService logService;
+
+    @Autowired
+    private LogRequestFactory logRequestFactory;
 
     @Autowired
     private MonitoringLogService monitoringService;
@@ -453,7 +455,7 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
 
         LOG.debug("Notification sent: utkast with id '{}' was created as a copy.", savedUtkast.getIntygsId());
 
-        LogRequest logRequest = LogRequestFactory.createLogRequestFromUtkast(savedUtkast);
+        LogRequest logRequest = logRequestFactory.createLogRequestFromUtkast(savedUtkast);
         logService.logCreateIntyg(logRequest);
         return savedUtkast;
     }

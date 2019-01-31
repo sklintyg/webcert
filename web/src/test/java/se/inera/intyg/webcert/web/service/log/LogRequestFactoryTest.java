@@ -18,19 +18,31 @@
  */
 package se.inera.intyg.webcert.web.service.log;
 
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 import se.inera.intyg.common.support.model.common.internal.*;
+import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
+import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
+import se.inera.intyg.common.support.modules.support.ModuleEntryPoint;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
+import se.inera.intyg.webcert.web.service.log.factory.LogRequestFactoryImpl;
 
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
 import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@RunWith(MockitoJUnitRunner.class
+)
 public class LogRequestFactoryTest {
 
     private static final String intygsId = "intygsId";
@@ -45,12 +57,27 @@ public class LogRequestFactoryTest {
 
     private static final Personnummer patientPersonnummer = Personnummer.createPersonnummer(patientId).get();
 
+    @Mock
+    private IntygModuleRegistry moduleRegistry;
+
+    @Mock
+    private ModuleEntryPoint moduleEntryPoint;
+
+    @InjectMocks
+    private LogRequestFactoryImpl testee = new LogRequestFactoryImpl();
+
+    @Before
+    public void init() throws ModuleNotFoundException {
+        when(moduleEntryPoint.getDefaultRecipient()).thenReturn("FKASSA");
+        when(moduleRegistry.getModuleEntryPoint(anyString())).thenReturn(moduleEntryPoint);
+    }
+
     @Test
     public void testCreateLogRequestFromUtkast() {
-
+        when(moduleEntryPoint.getDefaultRecipient()).thenReturn("TS");
         Utkast utkast = buildUtkast(intygsId, "ts-bas", patientPersonnummer, patientFornamn, patientMellannamn, patientEfternamn, enhetsid, enhetsnamn, vardgivarid, vardgivarnamn);
 
-        LogRequest res = LogRequestFactory.createLogRequestFromUtkast(utkast);
+        LogRequest res = testee.createLogRequestFromUtkast(utkast);
 
         assertNotNull(res);
         assertEquals(intygsId, res.getIntygId());
@@ -73,7 +100,7 @@ public class LogRequestFactoryTest {
         utkast.setIntygsTyp("ts-bas");
         utkast.setPatientPersonnummer(patientPersonnummer);
 
-        LogRequest res = LogRequestFactory.createLogRequestFromUtkast(utkast, true);
+        LogRequest res = testee.createLogRequestFromUtkast(utkast, true);
 
         assertNotNull(res);
         assertEquals(intygsId, res.getIntygId());
@@ -82,6 +109,7 @@ public class LogRequestFactoryTest {
 
     @Test
     public void testCreateLogRequestFromUtlatande() {
+        when(moduleEntryPoint.getDefaultRecipient()).thenReturn("TS");
         final String patientNamn = Arrays.asList(patientFornamn, patientMellannamn, patientEfternamn)
                 .stream()
                 .collect(Collectors.joining(" "));
@@ -104,7 +132,7 @@ public class LogRequestFactoryTest {
         when(utlatande.getTyp()).thenReturn("ts-bas");
         when(utlatande.getGrundData()).thenReturn(grundData);
 
-        LogRequest res = LogRequestFactory.createLogRequestFromUtlatande(utlatande);
+        LogRequest res = testee.createLogRequestFromUtlatande(utlatande);
 
         assertNotNull(res);
         assertEquals(intygsId, res.getIntygId());
@@ -131,7 +159,7 @@ public class LogRequestFactoryTest {
         when(utlatande.getTyp()).thenReturn("ts-bas");
         when(utlatande.getGrundData()).thenReturn(grundData);
 
-        LogRequest res = LogRequestFactory.createLogRequestFromUtlatande(utlatande, true);
+        LogRequest res = testee.createLogRequestFromUtlatande(utlatande, true);
 
         assertNotNull(res);
         assertEquals(intygsId, res.getIntygId());
@@ -143,7 +171,7 @@ public class LogRequestFactoryTest {
 
         Utkast utkast = buildUtkast(intygsId, "luse", patientPersonnummer, patientFornamn, patientMellannamn, patientEfternamn, enhetsid, enhetsnamn, vardgivarid, vardgivarnamn);
 
-        LogRequest res = LogRequestFactory.createLogRequestFromUtkast(utkast);
+        LogRequest res = testee.createLogRequestFromUtkast(utkast);
 
         assertNotNull(res);
         assertEquals(intygsId, res.getIntygId());

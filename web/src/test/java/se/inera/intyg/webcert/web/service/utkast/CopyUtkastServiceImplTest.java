@@ -18,19 +18,12 @@
  */
 package se.inera.intyg.webcert.web.service.utkast;
 
-import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.logging.Logger;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
@@ -52,6 +45,7 @@ import se.inera.intyg.webcert.web.integration.registry.dto.IntegreradEnhetEntry;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.log.LogService;
 import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
+import se.inera.intyg.webcert.web.service.log.factory.LogRequestFactory;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.notification.NotificationService;
 import se.inera.intyg.webcert.web.service.referens.ReferensService;
@@ -68,6 +62,11 @@ import se.inera.intyg.webcert.web.service.utkast.dto.CreateReplacementCopyRespon
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateUtkastFromTemplateRequest;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateUtkastFromTemplateResponse;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
+
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -146,6 +145,9 @@ public class CopyUtkastServiceImplTest {
     private LogService logService;
 
     @Mock
+    private LogRequestFactory logRequestFactory;
+
+    @Mock
     private WebCertUserService userService;
 
     @Mock
@@ -185,6 +187,8 @@ public class CopyUtkastServiceImplTest {
 
         patient = new Patient();
         patient.setPersonId(PATIENT_SSN);
+
+        when(logRequestFactory.createLogRequestFromUtkast(any(Utkast.class))).thenReturn(new LogRequest());
     }
 
     @Before

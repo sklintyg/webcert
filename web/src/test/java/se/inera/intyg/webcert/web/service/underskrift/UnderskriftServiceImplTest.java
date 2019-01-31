@@ -18,12 +18,8 @@
  */
 package se.inera.intyg.webcert.web.service.underskrift;
 
-import java.io.IOException;
-import java.nio.charset.Charset;
-import java.time.LocalDateTime;
-import java.util.Collections;
-import javax.persistence.OptimisticLockException;
-
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -31,9 +27,6 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import se.inera.intyg.common.doi.support.DoiModuleEntryPoint;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.GrundData;
@@ -58,6 +51,8 @@ import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.auth.bootstrap.AuthoritiesConfigurationTestSetup;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.log.LogService;
+import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
+import se.inera.intyg.webcert.web.service.log.factory.LogRequestFactory;
 import se.inera.intyg.webcert.web.service.notification.NotificationService;
 import se.inera.intyg.webcert.web.service.underskrift.fake.FakeUnderskriftService;
 import se.inera.intyg.webcert.web.service.underskrift.grp.GrpUnderskriftServiceImpl;
@@ -72,6 +67,12 @@ import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 import se.inera.intyg.webcert.web.service.utkast.dto.PreviousIntyg;
+
+import javax.persistence.OptimisticLockException;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.time.LocalDateTime;
+import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.assertEquals;
@@ -125,6 +126,9 @@ public class UnderskriftServiceImplTest extends AuthoritiesConfigurationTestSetu
     private LogService logService;
 
     @Mock
+    private LogRequestFactory logRequestFactory;
+
+    @Mock
     private IntygService intygService;
 
     @Mock
@@ -168,6 +172,9 @@ public class UnderskriftServiceImplTest extends AuthoritiesConfigurationTestSetu
                 "utkast", ImmutableMap.of(),
                 "intyg", ImmutableMap.of()
         ));
+
+
+        when(logRequestFactory.createLogRequestFromUtkast(any(Utkast.class))).thenReturn(new LogRequest());
     }
 
     @Test

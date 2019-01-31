@@ -43,6 +43,7 @@ import se.inera.intyg.webcert.common.service.log.template.IntygSignMessage;
 import se.inera.intyg.webcert.common.service.log.template.IntygUpdateMessage;
 import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
 import se.inera.intyg.webcert.web.service.log.dto.LogUser;
+import se.inera.intyg.webcert.web.service.log.factory.LogRequestFactory;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
@@ -75,6 +76,9 @@ public class LogServiceImpl implements LogService {
 
     @Autowired
     private LogMessagePopulator logMessagePopulator;
+
+    @Autowired
+    private LogRequestFactory logRequestFactory;
 
     @PostConstruct
     public void checkJmsTemplate() {
@@ -187,7 +191,7 @@ public class LogServiceImpl implements LogService {
 
     @Override
     public void logShowPrediction(String patientId) {
-        logShowPrediction(LogRequestFactory.createLogRequestFromUser(webCertUserService.getUser(), patientId),
+        logShowPrediction(logRequestFactory.createLogRequestFromUser(webCertUserService.getUser(), patientId),
                 getLogUser(webCertUserService.getUser()));
     }
 

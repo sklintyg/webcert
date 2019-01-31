@@ -18,30 +18,12 @@
  */
 package se.inera.intyg.webcert.web.service.utkast;
 
-import java.io.IOException;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import javax.persistence.OptimisticLockException;
-
+import com.google.common.base.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.google.common.base.Strings;
-
 import se.inera.intyg.common.services.texts.IntygTextsService;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.GrundData;
@@ -71,10 +53,10 @@ import se.inera.intyg.webcert.persistence.utkast.repository.UtkastFilter;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.converter.util.IntygConverterUtil;
 import se.inera.intyg.webcert.web.service.dto.Lakare;
-import se.inera.intyg.webcert.web.service.log.LogRequestFactory;
 import se.inera.intyg.webcert.web.service.log.LogService;
 import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
 import se.inera.intyg.webcert.web.service.log.dto.LogUser;
+import se.inera.intyg.webcert.web.service.log.factory.LogRequestFactory;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.notification.NotificationService;
 import se.inera.intyg.webcert.web.service.referens.ReferensService;
@@ -89,6 +71,21 @@ import se.inera.intyg.webcert.web.service.utkast.dto.PreviousIntyg;
 import se.inera.intyg.webcert.web.service.utkast.dto.SaveDraftResponse;
 import se.inera.intyg.webcert.web.service.utkast.dto.UpdatePatientOnDraftRequest;
 import se.inera.intyg.webcert.web.service.utkast.util.CreateIntygsIdStrategy;
+
+import javax.persistence.OptimisticLockException;
+import java.io.IOException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class UtkastServiceImpl implements UtkastService {
@@ -111,6 +108,9 @@ public class UtkastServiceImpl implements UtkastService {
 
     @Autowired
     private LogService logService;
+
+    @Autowired
+    private LogRequestFactory logRequestFactory;
 
     @Autowired
     private NotificationService notificationService;
@@ -308,7 +308,7 @@ public class UtkastServiceImpl implements UtkastService {
         // Notify stakeholders when a draft is deleted
         sendNotification(utkast, Event.DELETED);
 
-        LogRequest logRequest = LogRequestFactory.createLogRequestFromUtkast(utkast);
+        LogRequest logRequest = logRequestFactory.createLogRequestFromUtkast(utkast);
         logService.logDeleteIntyg(logRequest);
     }
 
@@ -333,7 +333,7 @@ public class UtkastServiceImpl implements UtkastService {
     @Transactional(readOnly = true)
     public Utkast getDraft(String intygId, String intygType) {
         Utkast utkast = getIntygAsDraft(intygId, intygType);
-        LogRequest logRequest = LogRequestFactory.createLogRequestFromUtkast(utkast);
+        LogRequest logRequest = logRequestFactory.createLogRequestFromUtkast(utkast);
         abortIfUserNotAuthorizedForUnit(utkast.getVardgivarId(), utkast.getEnhetsId());
 
         // Log read to PDL
@@ -425,7 +425,7 @@ public class UtkastServiceImpl implements UtkastService {
         LOG.debug("Utkast '{}' updated", utkast.getIntygsId());
 
         if (createPdlLogEvent) {
-            LogRequest logRequest = LogRequestFactory.createLogRequestFromUtkast(utkast);
+            LogRequest logRequest = logRequestFactory.createLogRequestFromUtkast(utkast);
             logService.logUpdateIntyg(logRequest);
 
             monitoringService.logUtkastEdited(utkast.getIntygsId(), utkast.getIntygsTyp());
@@ -640,7 +640,7 @@ public class UtkastServiceImpl implements UtkastService {
         sendNotification(utkast, Event.REVOKED);
 
         // Third: create a log event
-        LogRequest logRequest = LogRequestFactory.createLogRequestFromUtkast(utkast);
+        LogRequest logRequest = logRequestFactory.createLogRequestFromUtkast(utkast);
         logService.logRevokeIntyg(logRequest);
     }
 
@@ -779,7 +779,7 @@ public class UtkastServiceImpl implements UtkastService {
 
     private void logCreateDraftPDL(Utkast utkast, LogUser logUser) {
 
-        LogRequest logRequest = LogRequestFactory.createLogRequestFromUtkast(utkast);
+        LogRequest logRequest = logRequestFactory.createLogRequestFromUtkast(utkast);
         logService.logCreateIntyg(logRequest, logUser);
     }
 
