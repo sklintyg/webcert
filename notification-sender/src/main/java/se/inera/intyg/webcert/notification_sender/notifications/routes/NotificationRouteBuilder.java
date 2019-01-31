@@ -128,8 +128,8 @@ public class NotificationRouteBuilder extends SpringRouteBuilder {
 
         from("direct:permanentErrorHandlerEndpoint").routeId("errorLogging")
                 .log(LoggingLevel.ERROR, LOG,
-                        simple("Permanent exception for intygs-id: ${header[intygsId]}, with message: "
-                                + "${exception.message}\n ${exception.stacktrace}")
+                        simple("Permanent exception for intygs-id: ${header[intygsId]}, to: ${header[logiskAdress]}"
+                                + ", with message: ${exception.message}\n ${exception.stacktrace}")
                                         .getText())
                 .stop();
 
@@ -138,30 +138,31 @@ public class NotificationRouteBuilder extends SpringRouteBuilder {
                 .when(isTimeToDiscard())
                 .log(LoggingLevel.WARN, LOG,
                         simple("Throwing away notification (COSMIC typ B) after trying to deliver ${header[handelse]} "
-                                + "notification ${header[JMSXDeliveryCount]} times for intygs-id: ${header[intygsId]}")
-                                .getText())
+                                + "notification ${header[JMSXDeliveryCount]} times for intygs-id: ${header[intygsId]}"
+                                + ", to: ${header[logiskAdress]}").getText())
                 .when(header("JMSRedelivered").isEqualTo(false))
                 .log(LoggingLevel.INFO, LOG,
                         simple("Caught error for ${header[handelse]} notification (total delivery count 1) "
-                                + "of COSMIC typ B for intygs-id: ${header[intygsId]}") .getText())
+                                + "of COSMIC typ B for intygs-id: ${header[intygsId]}, to: ${header[logiskAdress]}")
+                                .getText())
                 .otherwise()
                 .log(LoggingLevel.INFO, LOG,
                         simple("Caught error for ${header[handelse]} notification (total delivery count "
-                                + "${header[JMSXDeliveryCount]}) of COSMIC typ B for intygs-id: ${header[intygsId]}")
-                                .getText())
+                                + "${header[JMSXDeliveryCount]}) of COSMIC typ B for intygs-id: ${header[intygsId]}"
+                                + ", to: ${header[logiskAdress]}") .getText())
                 .stop();
 
         from("direct:temporaryErrorHandlerEndpoint").routeId("temporaryErrorLogging")
                 .choice()
                 .when(header(Constants.JMS_REDELIVERED).isEqualTo("false"))
                 .log(LoggingLevel.ERROR, LOG,
-                        simple("Temporary exception for intygs-id: ${header[intygsId]}, with message: "
-                                + "${exception.message}\n ${exception.stacktrace}")
+                        simple("Temporary exception for intygs-id: ${header[intygsId]}, to: ${header[logiskAdress]}, "
+                                + "with message: ${exception.message}\n ${exception.stacktrace}")
                                         .getText())
                 .otherwise()
                 .log(LoggingLevel.WARN, LOG,
-                        simple("Temporary exception for intygs-id: ${header[intygsId]}, with message: "
-                                + "${exception.message}").getText())
+                        simple("Temporary exception for intygs-id: ${header[intygsId]}, to: ${header[logiskAdress]}, "
+                                + "with message: ${exception.message}").getText())
                 .stop();
     }
 
