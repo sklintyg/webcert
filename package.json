@@ -2,7 +2,8 @@
     "name": "webcert",
     "private": true,  
     "scripts": {
-        "test:e2e": "cypress run"
+        "test:e2e": "cypress run",
+	"cy:verify": "cypress verify"
     },
     "devDependencies": {
         "cypress": "3.1.4"
