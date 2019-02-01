@@ -12,11 +12,17 @@ pipeline {
   }
 
   stages {
-    // first stage installs node dependencies and Cypress binary
-    stage('build') {
+
+    stage('Handle prerequisites') {
       steps {
         echo "Running build ${env.BUILD_ID} on ${env.JENKINS_URL}"
-	sh 'npm --version'
+        sh 'npm --version'
+        sh 'node --version'
+      }
+    }
+
+    stage('Install Cypress') {
+      steps {
         sh 'npm ci'
         sh 'npm run cy:verify'
       }
@@ -24,7 +30,6 @@ pipeline {
 
     stage('cypress tests') {
       steps {
-        echo "Running build ${env.BUILD_ID}"
         sh "npm run test:e2e"
       }
     }
