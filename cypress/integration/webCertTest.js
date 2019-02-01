@@ -9,16 +9,21 @@ describe('Creating and signing a max filled LISJP and sending it to FK', functio
 			cy.visit(this.testData.webCertUrl);
 		});
 
+		cy.fixture('doktorInloggning').as('doktorInloggning')
+		cy.fixture('valjPatient').as('valjPatient');
+		cy.fixture('valjIntyg').as('valjIntyg');
+		cy.fixture('lisjpData').as('lisjpData');
+
 		const today = Cypress.moment().format('YYYY-MM-DD');
 
-		cy.wrap(Cypress.moment().add(1,  'days').format('YYYY-MM-DD')).as('todayPlus1');  // 25%  sickleave start
-		cy.wrap(Cypress.moment().add(11, 'days').format('YYYY-MM-DD')).as('todayPlus11'); // 25%  sickleave end
-		cy.wrap(Cypress.moment().add(12, 'days').format('YYYY-MM-DD')).as('todayPlus12'); // 50%  sickleave start
-		cy.wrap(Cypress.moment().add(19, 'days').format('YYYY-MM-DD')).as('todayPlus19'); // 50%  sickleave end
-		cy.wrap(Cypress.moment().add(20, 'days').format('YYYY-MM-DD')).as('todayPlus20'); // 75%  sickleave start
-		cy.wrap(Cypress.moment().add(28, 'days').format('YYYY-MM-DD')).as('todayPlus28'); // 75%  sickleave end
-		cy.wrap(Cypress.moment().add(29, 'days').format('YYYY-MM-DD')).as('todayPlus29'); // 100% sickleave start
-		cy.wrap(Cypress.moment().add(41, 'days').format('YYYY-MM-DD')).as('todayPlus41'); // 100% sickleave end
+		cy.wrap(Cypress.moment().add(1,  'days').format('YYYY-MM-DD')).as('todayPlus1');  // 25%  sjukskrivning start
+		cy.wrap(Cypress.moment().add(11, 'days').format('YYYY-MM-DD')).as('todayPlus11'); // 25%  sjukskrivning slut
+		cy.wrap(Cypress.moment().add(12, 'days').format('YYYY-MM-DD')).as('todayPlus12'); // 50%  sjukskrivning start
+		cy.wrap(Cypress.moment().add(19, 'days').format('YYYY-MM-DD')).as('todayPlus19'); // 50%  sjukskrivning slut
+		cy.wrap(Cypress.moment().add(20, 'days').format('YYYY-MM-DD')).as('todayPlus20'); // 75%  sjukskrivning start
+		cy.wrap(Cypress.moment().add(28, 'days').format('YYYY-MM-DD')).as('todayPlus28'); // 75%  sjukskrivning slut
+		cy.wrap(Cypress.moment().add(29, 'days').format('YYYY-MM-DD')).as('todayPlus29'); // 100% sjukskrivning start
+		cy.wrap(Cypress.moment().add(41, 'days').format('YYYY-MM-DD')).as('todayPlus41'); // 100% sjukskrivning slut
 
 		cy.wrap(Cypress.moment().subtract(5,  'days').format('YYYY-MM-DD')).as('todayMinus5');  // Patient examination date
 		cy.wrap(Cypress.moment().subtract(6,  'days').format('YYYY-MM-DD')).as('todayMinus6');  // Date of phone contact with patient
@@ -26,53 +31,52 @@ describe('Creating and signing a max filled LISJP and sending it to FK', functio
 		cy.wrap(Cypress.moment().subtract(14, 'days').format('YYYY-MM-DD')).as('todayMinus14'); // Midwife's assessment date
 	});
 
-	it('has the correct title', function () {
-		cy.title().should('contain', this.testData.applicationTitle);
+	it('har korrekt titel', function () {
+		cy.title().should('contain', this.testData.titel);
 	});
 
-	it('creates a "max" filled out LISJP certificate and sends it to FK', function () {
-		cy.contains(this.testData.doctor).click().then(() => {
-			cy.contains(this.testData.selectDoctorLoginButtonText).click();
+	it('skapar en maximalt ifylld LISJP och skickar den till FK', function () {
+		cy.contains(this.doktorInloggning.doktor).click().then(() => {
+			cy.contains(this.doktorInloggning.inloggningsKnappText).click();
 		});
 
-		// Verify that cookie banner is shown and also removed when clicking button.
-		// Wait longer than normal since the banner is animated
-		cy.contains(this.testData.cookieButtonText, {timeout: 10000}).click().then(() => {
+		// Verifiera att Cookie-bannern syns och även att den försvinner när man trycker
+		// på dess knapp. Vänta lite längre än normalt eftersom den animeras in.
+		cy.contains(this.testData.cookieKnappText, {timeout: 10000}).click().then(() => {
 			cy.contains('cookies').should('not.exist');
 		});
 
-		// Alias the Continue button
-		cy.contains(this.testData.enterSsnContinueButtonText).as('continueBtn');
+		// Skapa alias för "Fortsätt"-knappen
+		cy.contains(this.valjPatient.fortsattKnappText).as('continueBtn');
 
-		// Verify that the "Continue" button is disabled
 		cy.get('@continueBtn').should('be.disabled');
 
-		// Enter Social security number for the patient
+		// Mata in patientens personnummer
 		cy
-			.get('input:first').should('have.attr', 'placeholder', this.testData.patientSsnPlaceholderText)
-			.type(this.testData.patientSsn)
-			.should('have.value', this.testData.patientSsn);
+			.get('input:first').should('have.attr', 'placeholder', this.valjPatient.placeholderText)
+			.type(this.valjPatient.personnummer)
+			.should('have.value', this.valjPatient.personnummer);
 
-		// Verify that the "Continue" button is enabled and click on it
+		// Verfiera att knappen för att gå vidare är aktiverad och klicka på den
 		cy.get('@continueBtn').should('be.enabled').then(() => {
 			cy.get('@continueBtn').click();
 		});
 
-		// Verify that the cooke banner is not present now either (since it has been accepted in earlier step)
+		// Verifiera att inte Cookie-bannern dyker upp eftersom den är accepterad
 		cy.contains('cookies').should('not.exist');
 
 	    /* Temporärt bortkommenterad. Om databasen tömt (eller alla osignerade intyg tas bort av annan anledning)
 	       kommer elementet som letas efter inte finnas alls, och testfallet går fel
-		// Get initial number of unsigned certificates
+		// Spara antal osignerade intyg
 		cy.get('#stat-unitstat-unsigned-certs-count').then(($unsignedCertsCount) => {
 			const initialNumber = parseInt($unsignedCertsCount.text());
-			cy.wrap(initialNumber).as('initialNumberOfUnsignedCerts'); // Create alias
+			cy.wrap(initialNumber).as('initialNumberOfUnsignedCerts'); // Skapa alias för att kunna accessa i senare steg
 		});
 	    */
 
-		// Click on "Skapa intyg" for FK7804.
-		// This will create a draft certificate, and so the counter should be increased by one. OBS! Bortkommenterat tillsvidare!
-		cy.get("#intygTypeFortsatt-lisjp").click()/*.then(() => {
+		// Klicka på "Skapa intyg" for LISJP
+		// Detta skapar ett intyg så räknaren ska inkrementera med 1 direkt
+		cy.get(this.valjIntyg.lisjp).click()/*.then(() => {
 			cy.wait(1000); // Wait for one second to give application a chance to update the value for drafts
 			cy.get('#stat-unitstat-unsigned-certs-count').then(($unsignedCertsCount) => {
 				const incrementedNumber = parseInt($unsignedCertsCount.text())
@@ -81,58 +85,57 @@ describe('Creating and signing a max filled LISJP and sending it to FK', functio
 			});
 		}); */
 
-		// Fill out the certificate according to the template from Försäkringskassan, "max" variant
-
+		// Fyll i intyget i enlighet med mallen från Försäkringskassan, "max"-varianten
 		// -------------------- 'Intyget är baserat på' --------------------
-		cy.contains(this.testData.lisjpSectionMyExamination).parentsUntil('.ue-del-fraga').within(($form) => {
+		cy.contains(this.lisjpData.minUndersökning).parentsUntil('.ue-del-fraga').within(($form) => {
 			cy.get('[type="checkbox"]').check();
-			cy.get(this.testData.lisjpDatepickerExamination).clear().type(this.todayMinus5);
+			cy.get(this.lisjpData.datumUndersökning).clear().type(this.todayMinus5);
 		});
  
-		cy.contains(this.testData.lisjpSectionPhonecontact).parentsUntil('.ue-del-fraga').within(($form) => {
+		cy.contains(this.lisjpData.telefonKontakt).parentsUntil('.ue-del-fraga').within(($form) => {
 			cy.get('[type="checkbox"]').check();
-			cy.get(this.testData.lisjpDatepickerPhonecontact).clear().type(this.todayMinus6);
+			cy.get(this.lisjpData.datumTelefonkontakt).clear().type(this.todayMinus6);
 		});
 
-		cy.contains(this.testData.lisjpSectionJournalEntryFrom).parentsUntil('.ue-del-fraga').within(($form) => {
+		cy.contains(this.lisjpData.journalUppgifterFrån).parentsUntil('.ue-del-fraga').within(($form) => {
 			cy.wrap($form).get('[type="checkbox"]').check();
-			cy.wrap($form).get(this.testData.lisjpDatepickerJournalEntry).clear().type(this.todayMinus15);
+			cy.wrap($form).get(this.lisjpData.datumJournalUppgifterFrån).clear().type(this.todayMinus15);
 		});
 
-		cy.contains(this.testData.lisjpSectionOther).parentsUntil('.ue-del-fraga').within(($form) => {
+		cy.contains(this.lisjpData.annat).parentsUntil('.ue-del-fraga').within(($form) => {
 			cy.get('[type="checkbox"]').check();
-			cy.get(this.testData.lisjpDatepickerOther).clear().type(this.todayMinus14);
+			cy.get(this.lisjpData.datumAnnat).clear().type(this.todayMinus14);
 		});
 
 		// Fill out the text box that should appear when clicking the 'Annat' checkbox
-		cy.get(this.testData.lisjpOtherTextarea).type(this.testData.lisjpOtherTextareaText);
+		cy.get(this.lisjpData.annatTextarea).type(this.lisjpData.annatTextareaText);
 
 
 		// ----- 'I relation till vilken sysselsättning bedömer du arbetsförmågan?' -----
-		cy.contains(this.testData.lisjpCurrentJob).parent().within(($form) => {
+		cy.contains(this.lisjpData.nuvarandeArbete).parent().within(($form) => {
 			cy.get('[type="checkbox"]').check();
 		});
 
-		cy.contains(this.testData.lisjpEnterJobAndDuties).parent().parent().parent().within(($form) => {
-			cy.wrap($form).find('textarea').type(this.testData.lisjpJobAndDutiesText);
+		cy.contains(this.lisjpData.yrkeOchUppgifter).parent().parent().parent().within(($form) => {
+			cy.wrap($form).find('textarea').type(this.lisjpData.yrkeOchUppgifterText);
 		});
 
-		cy.contains(this.testData.lisjpCheckboxTextJobsNormallyOccurring).parent().within(($form) => {
+		cy.contains(this.lisjpData.checkboxTextNormaltFörekommandeJobb).parent().within(($form) => {
 			cy.get('[type="checkbox"]').check();
 		});
 
-		cy.contains(this.testData.lisjpCheckboxTextCareOfChild).parent().within(($form) => {
+		cy.contains(this.lisjpData.checkboxTextVAB).parent().within(($form) => {
 			cy.get('[type="checkbox"]').check();
 		});
 
-		cy.contains(this.testData.lisjpCheckboxStudies).parent().within(($form) => {
+		cy.contains(this.lisjpData.checkboxStudier).parent().within(($form) => {
 			cy.get('[type="checkbox"]').check();
 		});
 
 		// ----- 'Diagnos' ----- //
-		cy.contains(this.testData.lisjpSectionCauseOfReducedWorkAbility).parent().parent().parent().within(($form) => { // Ugly....
-			// Assume ICD-10-SE is selcted since that is default (will cause errors if it is NOT selected)
-			cy.get('[placeholder=' + this.testData.lisjpCodeTextareaPlaceholder + ']').then(($codeFields) => {
+		cy.contains(this.lisjpData.diagnoserNedsattArbetsförmåga).parent().parent().parent().within(($form) => { // Ugly....
+			// Assume ICD-10-SE is selected since that is default (will cause errors if it is NOT selected)
+			cy.get('[placeholder=' + this.lisjpData.kodTextareaPlaceholder + ']').then(($codeFields) => {
 				cy.wrap($codeFields.eq(0)).type('O267').wait(1000).type('{enter}');
 				cy.wrap($codeFields.eq(1)).type('O470A').wait(1000).type('{enter}');
 				cy.wrap($codeFields.eq(2)).type('O210').wait(1000).type('{enter}');
@@ -165,28 +168,28 @@ describe('Creating and signing a max filled LISJP and sending it to FK', functio
 			cy.get('[type="checkbox"]').within(($checkboxes) => {
 				cy.wrap($checkboxes).check(); // Will check all checkboxes in this section. The "from" date field will get today's date
 
-				cy.wrap($checkboxes.eq(0)).parent().parent().parent().parent().within(($row) => {  // Get row with first checkbox (i.e. 25% sickleave)
+				cy.wrap($checkboxes.eq(0)).parent().parent().parent().parent().within(($row) => {  // Get row with first checkbox (i.e. 25% sjukskrivning)
 					cy.get('[type="text"]').then(($textFields) => {
 						cy.wrap($textFields.eq(0)).clear().type(this.todayPlus1);
 						cy.wrap($textFields.eq(1)).clear().type(this.todayPlus11);
 					});
 				});
 
-				cy.wrap($checkboxes.eq(1)).parent().parent().parent().parent().within(($row) => {  // Get row with second checkbox (i.e. 50% sickleave)
+				cy.wrap($checkboxes.eq(1)).parent().parent().parent().parent().within(($row) => {  // Get row with second checkbox (i.e. 50% sjukskrivning)
 					cy.get('[type="text"]').then(($textFields) => {
 						cy.wrap($textFields.eq(0)).clear().type(this.todayPlus12);
 						cy.wrap($textFields.eq(1)).clear().type(this.todayPlus19);
 					});
 				});
 
-				cy.wrap($checkboxes.eq(2)).parent().parent().parent().parent().within(($row) => {  // Get row with third checkbox (i.e. 75% sickleave)
+				cy.wrap($checkboxes.eq(2)).parent().parent().parent().parent().within(($row) => {  // Get row with third checkbox (i.e. 75% sjukskrivning)
 					cy.get('[type="text"]').then(($textFields) => {
 						cy.wrap($textFields.eq(0)).clear().type(this.todayPlus20);
 						cy.wrap($textFields.eq(1)).clear().type(this.todayPlus28);
 					});
 				});
 
-				cy.wrap($checkboxes.eq(3)).parent().parent().parent().parent().within(($row) => {  // Get row with fourth checkbox (i.e. 100% sickleave)
+				cy.wrap($checkboxes.eq(3)).parent().parent().parent().parent().within(($row) => {  // Get row with fourth checkbox (i.e. 100% sjukskrivning)
 					cy.get('[type="text"]').then(($textFields) => {
 						cy.wrap($textFields.eq(0)).clear().type(this.todayPlus29);
 						cy.wrap($textFields.eq(1)).clear().type(this.todayPlus41);

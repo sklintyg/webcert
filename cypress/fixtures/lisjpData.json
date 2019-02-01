@@ -1,0 +1,20 @@
+{
+    "minUndersökning": "Min undersökning av patienten",
+    "datumUndersökning": "#datepicker_undersokningAvPatienten",
+    "telefonKontakt": "Min telefonkontakt med patienten",
+    "datumTelefonkontakt": "#datepicker_telefonkontaktMedPatienten",
+    "journalUppgifterFrån": "Journaluppgifter från den",
+    "datumJournalUppgifterFrån": "#datepicker_journaluppgifter",
+    "annat": "Annat",
+    "datumAnnat": "#datepicker_annatGrundForMU",
+    "annatTextarea": "#annatGrundForMUBeskrivning",
+    "annatTextareaText": "Utlåtande från barnmorska",
+    "nuvarandeArbete": "Nuvarande arbete",
+    "yrkeOchUppgifter": "Ange yrke och arbetsuppgifter",
+    "yrkeOchUppgifterText": "Snickare. Tunga lyft, arbete på stege, hantera maskinverktyg, mycket gående",
+    "checkboxTextNormaltFörekommandeJobb": "Arbetssökande - att utföra sådant arbete som är normalt förekommande på arbetsmarknaden",
+    "checkboxTextVAB": "Föräldraledighet för vård av barn",
+    "checkboxStudier": "Studier",
+    "diagnoserNedsattArbetsförmåga": "Diagnos/diagnoser för sjukdom som orsakar nedsatt arbetsförmåga",
+    "kodTextareaPlaceholder": "Kod"
+}

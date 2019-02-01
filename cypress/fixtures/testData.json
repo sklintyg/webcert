@@ -1,31 +1,5 @@
 {
     "webCertUrl": "https://webcert-devtest-tintyg.app-test1.ind-ocp.sth.basefarm.net/welcome.html",
-    "applicationTitle": "Webcert test inloggning",
-    "doctor": "Arnold Johansson (Läkare | Har intyg och ärenden)",
-    "selectDoctorLoginButtonText": "Logga in",
-    "patientSsn": "19121212-1212",
-    "patientSsnPlaceholderText": "ååååmmdd-nnnn",
-    "cookieButtonText": "Jag godkänner",
-    "enterSsnContinueButtonText": "Fortsätt",
-
-    "lisjpSectionMyExamination": "Min undersökning av patienten",
-    "lisjpDatepickerExamination": "#datepicker_undersokningAvPatienten",
-    "lisjpSectionPhonecontact": "Min telefonkontakt med patienten",
-    "lisjpDatepickerPhonecontact": "#datepicker_telefonkontaktMedPatienten",
-    "lisjpSectionJournalEntryFrom": "Journaluppgifter från den",
-    "lisjpDatepickerJournalEntry": "#datepicker_journaluppgifter",
-    "lisjpSectionOther": "Annat",
-    "lisjpDatepickerOther": "#datepicker_annatGrundForMU",
-    "lisjpOtherTextarea": "#annatGrundForMUBeskrivning",
-    "lisjpOtherTextareaText": "Utlåtande från barnmorska",
-
-    "lisjpCurrentJob": "Nuvarande arbete",
-    "lisjpEnterJobAndDuties": "Ange yrke och arbetsuppgifter",
-    "lisjpJobAndDutiesText": "Snickare. Tunga lyft, arbete på stege, hantera maskinverktyg, mycket gående",
-    "lisjpCheckboxTextJobsNormallyOccurring": "Arbetssökande - att utföra sådant arbete som är normalt förekommande på arbetsmarknaden",
-    "lisjpCheckboxTextCareOfChild": "Föräldraledighet för vård av barn",
-    "lisjpCheckboxStudies": "Studier",
-
-    "lisjpSectionCauseOfReducedWorkAbility": "Diagnos/diagnoser för sjukdom som orsakar nedsatt arbetsförmåga",
-    "lisjpCodeTextareaPlaceholder": "Kod"
-  }
+    "titel": "Webcert test inloggning",
+    "cookieKnappText": "Jag godkänner"
+}
