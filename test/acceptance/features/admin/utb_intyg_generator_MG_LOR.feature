@@ -13,16 +13,17 @@ Scenariomall: Ta bort intyg för <Patient>
    Givet att jag har raderat alla intyg för "<Patient>" via testAPI
    Och att jag har raderat alla utkast för "<Patient>" via testAPI   
 
+# Ändrad testpersoner (PU-stubbe)
 Exempel:
   | Patient |
-  | 19620323-3066 |
+  | 19770523-2382 |
   | 19540187-5769 |
-  | 19671031-3195 | 
-  | 19900614-2385 |
-  | 19550307-1770 | 
-  | 19930905-2380 |
-  | 19590714-2599 |
-  | 19830923-9294 |
+  | 19900825-2398 | 
+  | 19960811-2380 |
+  | 19520727-2252 | 
+  | 19460610-9108 |
+  | 19520614-2597 |
+  | 19840820-9990 |
   
 
 @UTBDATA-REHABSTOD
@@ -37,12 +38,12 @@ Scenariomall: [REHABSTOD] - Generera intyg för <Patient> med utbDataIndex <utbD
 
 Exempel:
   | Patient       | utbDataIndex |
-  | 19620323-3066 | 0            |
+  | 19770523-2382 | 0            |
   | 19540187-5769 | 1            |
-  | 19671031-3195 | 2            |
-  | 19900614-2385 | 3            |
-  | 19550307-1770 | 4            |
-  | 19930905-2380 | 5            |
-  | 19590714-2599 | 6            |
-  | 19620323-3066 | 7            |
-  | 19830923-9294 | 8            |
+  | 19900825-2398 | 2            |
+  | 19960811-2380 | 3            |
+  | 19520727-2252 | 4            |
+  | 19460610-9108 | 5            |
+  | 19520614-2597 | 6            |
+  | 19770523-2382 | 7            |
+  | 19840820-9990 | 8            |
