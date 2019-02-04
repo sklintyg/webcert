@@ -49,7 +49,7 @@ function getDodsdatum(datumSakert) {
         return {
             inteSakert: {
                 year: year,
-                month:  shuffle(monthArr.slice(0, today.getMonth() + 1))[0],
+                month: (year === '0000') ? '00' : shuffle(monthArr.slice(0, today.getMonth() + 1))[0],
                 antraffadDod: testdataHelper.dateFormat(today)
             }
         };
