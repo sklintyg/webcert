@@ -158,7 +158,7 @@ describe('Create and Sign lisjp utkast', function() {
                 UtkastPage.enableAutosave();
                 UtkastPage.angeKontaktMedFK(data.kontaktMedFk);
             });
-            it('angeTillaggsfragor', function() {
+            xit('angeTillaggsfragor', function() {
                 UtkastPage.angeTillaggsfragorUE(data.tillaggsfragor)
             });
             it('angeSmittskydd', function() {

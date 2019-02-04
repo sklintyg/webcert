@@ -81,7 +81,7 @@ var LisjpIntyg = BaseSmiIntygPage._extend({
 
             this.verifieraKontaktFK(data);
 
-            this.verifieraTillaggsfragor(data);
+            //this.verifieraTillaggsfragor(data);
         }
     },
 
