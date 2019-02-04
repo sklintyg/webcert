@@ -253,7 +253,8 @@ describe('Creating and signing a max filled LISJP and sending it to FK', functio
 			cy.wrap($button).click(); // prova att ändra till <button?
 		});
 
-		cy.contains('div', 'Välj vilka intygsmottagare invånaren kan skicka intyget till via Mina intyg.', {timeout: 20000}).should('be.visible').within(($elem) => {
+		// Oroväckande lång timeout som behövs. Om den är satt till 20s så failar testfallet 60% av gångerna. Provar att öka till 40s
+		cy.contains('div', 'Välj vilka intygsmottagare invånaren kan skicka intyget till via Mina intyg.', {timeout: 40000}).should('be.visible').within(($elem) => {
 			cy.get('[type="radio"]').each(($el, index, $list) => { // Just picking out all radio buttons... this can be improved
 				if (index >= 2) { // Index 0 and 1 is "Försäkringskassan" 'Ja' and 'Nej'. Skip those.
 					if (index % 2 != 0) { // Only check odd numbers since those are "Nej"
@@ -270,7 +271,8 @@ describe('Creating and signing a max filled LISJP and sending it to FK', functio
 			});
 		});
 
-		cy.contains('button','Skicka till Försäkringskassan').should('be.visible').and('be.enabled').click();
+		// Testfallet har failat enstaka gånger i CI p.g.a. timeout på denna knapp
+		cy.contains('button','Skicka till Försäkringskassan', {timeout: 20000}).should('be.visible').and('be.enabled').click();
 		cy.contains('Om du går vidare kommer intyget skickas direkt till Försäkringskassans system vilket ska göras i samråd med patienten.')
 			.should('be.visible');
 		cy.contains('button', "Skicka").should('be.visible').click();
