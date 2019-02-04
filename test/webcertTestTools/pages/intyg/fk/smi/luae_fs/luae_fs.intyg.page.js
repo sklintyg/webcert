@@ -53,7 +53,7 @@ var LuaefsIntyg = BaseSmiIntygPage._extend({
 
         this.verifieraKontaktFK(data);
 
-        this.verifieraTillaggsfragor(data);
+        //this.verifieraTillaggsfragor(data);
     }
 });
 module.exports = new LuaefsIntyg();
