@@ -68,14 +68,14 @@ describe('Validera visning av Intyg', function() {
         },
         ovrigt: 'Detta skulle kunna innebära sämre möjlighet att få ställa upp i danstävlingar',
         kontaktMedFk: true,
-        kontaktAnledning: 'Vill stämma av ersättningen',
+        kontaktAnledning: 'Vill stämma av ersättningen',/*
         tillaggsfragor: [{
             id: 9001,
             svar: 'Tämligen'
         }, {
             id: 9002,
             svar: 'Minst 3 fot'
-        }]
+        }]*/
     };
 
     beforeAll(function() {
