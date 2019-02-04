@@ -93,7 +93,7 @@ describe('Lisjp attic tests', function() {
         });
     });
 
-    describe('smittskydd', function() {
+    xdescribe('smittskydd', function() {
         it('Tillaggsfraga should be hidden if smittskydd is set to yes', function() {
             LisjpUtkastPage.smittskydd.sendKeys(protractor.Key.SPACE);
 
