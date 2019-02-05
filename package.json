@@ -2,7 +2,8 @@
     "name": "webcert",
     "private": true,
     "scripts": {
-        "test:e2e": "cypress run --browser chrome --reporter mocha-junit-reporter",
+        "test:e2e:chrome": "cypress run --browser chrome --reporter mocha-junit-reporter",
+        "test:e2e:electron": "cypress run --reporter mocha-junit-reporter",
         "cy:verify": "cypress verify"
     },
     "devDependencies": {
