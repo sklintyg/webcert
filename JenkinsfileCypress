@@ -4,8 +4,8 @@ pipeline {
     // label 'docker-slave'
     // this image provides everything needed to run Cypress
     docker {
-      // image 'cypress/base:10'
-      image 'cypress/browsers:chrome69'
+      image 'cypress/base:10'
+      // image 'cypress/browsers:chrome69'  // Cypress kan inte spela in videos om man använder Chrome
     }
   }
 
