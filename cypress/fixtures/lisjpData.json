@@ -16,5 +16,15 @@
     "checkboxTextVAB": "Föräldraledighet för vård av barn",
     "checkboxStudier": "Studier",
     "diagnoserNedsattArbetsförmåga": "Diagnos/diagnoser för sjukdom som orsakar nedsatt arbetsförmåga",
-    "kodTextareaPlaceholder": "Kod"
+    "kodTextareaPlaceholder": "Kod",
+    "diagnosKod1": "O267",
+    "diagnosKod2": "O470A",
+    "diagnosKod3": "O210",
+
+    "beskrivObservationer": "Beskriv undersökningsfynd, testresultat och observationer",
+    "besvärsBeskrivning": "Uttalade besvär från bäcken, svår smärta vid lägesförändring, hälta, instabilitet bäcken",
+    "beskrivPatientBegränsning": "Beskriv vad patienten inte kan göra på grund av sin sjukdom. Ange vad uppgiften grundas på.",
+    "begränsningsBeskrivning": "starka bäckensmärtor som ger uttalad aktivitetsbegränsning vid fysisk aktivitet och kontorsarbete samt koncentrationssvårigheter",
+    "medicinskaBehandlingar": "Pågående medicinska behandlingar/åtgärder",
+    "behandlingsBeskrivning": "Sjukgymnastik och rörelseprogram för att lindra bäckenuppluckring"
 }

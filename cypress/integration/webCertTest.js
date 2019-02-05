@@ -133,29 +133,29 @@ describe('Creating and signing a max filled LISJP and sending it to FK', functio
 		});
 
 		// ----- 'Diagnos' ----- //
-		cy.contains(this.lisjpData.diagnoserNedsattArbetsförmåga).parent().parent().parent().within(($form) => { // Ugly....
-			// Assume ICD-10-SE is selected since that is default (will cause errors if it is NOT selected)
+		cy.contains(this.lisjpData.diagnoserNedsattArbetsförmåga).parent().parent().parent().within(($form) => {
+			// Antag att ICD-10-SE är förvalt
 			cy.get('[placeholder=' + this.lisjpData.kodTextareaPlaceholder + ']').then(($codeFields) => {
-				cy.wrap($codeFields.eq(0)).type('O267').wait(1000).type('{enter}');
-				cy.wrap($codeFields.eq(1)).type('O470A').wait(1000).type('{enter}');
-				cy.wrap($codeFields.eq(2)).type('O210').wait(1000).type('{enter}');
+				cy.wrap($codeFields.eq(0)).type(this.lisjpData.diagnosKod1).wait(1000).type('{enter}');
+				cy.wrap($codeFields.eq(1)).type(this.lisjpData.diagnosKod2).wait(1000).type('{enter}');
+				cy.wrap($codeFields.eq(2)).type(this.lisjpData.diagnosKod3).wait(1000).type('{enter}');
 			});
 		});
 
 		// ----- 'Sjukdomens konsekvenser för patienten' ----- //
-		cy.contains('Beskriv undersökningsfynd, testresultat och observationer').parent().parent().parent().within(($form) => {
-			cy.wrap($form).find('textarea').type('Uttalade besvär från bäcken, svår smärta vid lägesförändring, hälta, instabilitet bäcken');
+		cy.contains(this.lisjpData.beskrivObservationer).parent().parent().parent().within(($form) => {
+			cy.wrap($form).find('textarea').type(this.lisjpData.besvärsBeskrivning);
 		});
 
-		cy.contains('Beskriv vad patienten inte kan göra på grund av sin sjukdom. Ange vad uppgiften grundas på.').parent().parent().parent().within(($form) => {
+		cy.contains(this.lisjpData.beskrivPatientBegränsning).parent().parent().parent().within(($form) => {
 			cy.wrap($form).find('textarea')
-			.type('starka bäckensmärtor som ger uttalad aktivitetsbegränsning vid fysisk aktivitet och kontorsarbete samt koncentrationssvårigheter');
+			.type(this.lisjpData.begränsningsBeskrivning);
 		});
 
 		// ----- 'Medicinsk behandling' ----- //
-		cy.contains('Pågående medicinska behandlingar/åtgärder').parent().parent().parent().within(($form) => {
+		cy.contains(this.lisjpData.medicinskaBehandlingar).parent().parent().parent().within(($form) => {
 			cy.wrap($form).find('textarea')
-			.type('Sjukgymnastik och rörelseprogram för att lindra bäckenuppluckring');
+			.type(this.lisjpData.behandlingsBeskrivning);
 		});
 
 		cy.contains('Planerade medicinska behandlingar/åtgärder.').parent().parent().parent().within(($form) => {
