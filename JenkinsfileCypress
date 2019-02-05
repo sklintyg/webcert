@@ -42,5 +42,9 @@ pipeline {
       archiveArtifacts artifacts: 'cypress/videos/*', fingerprint: true
       junit 'test-results.xml'
     }
+
+    failure {
+      archiveArtifacts artifacts: 'cypress/screenshots/**/*.*', fingerprint: true
+    }
   }
 }
