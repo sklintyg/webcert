@@ -9,12 +9,14 @@
     "datumAnnat": "#datepicker_annatGrundForMU",
     "annatTextarea": "#annatGrundForMUBeskrivning",
     "annatTextareaText": "Utlåtande från barnmorska",
+
     "nuvarandeArbete": "Nuvarande arbete",
     "yrkeOchUppgifter": "Ange yrke och arbetsuppgifter",
     "yrkeOchUppgifterText": "Snickare. Tunga lyft, arbete på stege, hantera maskinverktyg, mycket gående",
     "checkboxTextNormaltFörekommandeJobb": "Arbetssökande - att utföra sådant arbete som är normalt förekommande på arbetsmarknaden",
     "checkboxTextVAB": "Föräldraledighet för vård av barn",
     "checkboxStudier": "Studier",
+
     "diagnoserNedsattArbetsförmåga": "Diagnos/diagnoser för sjukdom som orsakar nedsatt arbetsförmåga",
     "kodTextareaPlaceholder": "Kod",
     "diagnosKod1": "O267",
@@ -26,5 +28,33 @@
     "beskrivPatientBegränsning": "Beskriv vad patienten inte kan göra på grund av sin sjukdom. Ange vad uppgiften grundas på.",
     "begränsningsBeskrivning": "starka bäckensmärtor som ger uttalad aktivitetsbegränsning vid fysisk aktivitet och kontorsarbete samt koncentrationssvårigheter",
     "medicinskaBehandlingar": "Pågående medicinska behandlingar/åtgärder",
-    "behandlingsBeskrivning": "Sjukgymnastik och rörelseprogram för att lindra bäckenuppluckring"
+    "medicinskaBehandlingarBeskrivning": "Sjukgymnastik och rörelseprogram för att lindra bäckenuppluckring",
+    "planeradeBehandlingar": "Planerade medicinska behandlingar/åtgärder.",
+    "planeradeBehandlingarBeskrivning": "Specialist, ultraljudskontroller",
+
+    "arbetsförmågaBedömning": "Min bedömning av patientens nedsättning av arbetsförmågan",
+    "längreNedsattArbetsförmåga": "Patientens arbetsförmåga bedöms nedsatt längre tid än den som Socialstyrelsens försäkringsmedicinska beslutsstöd anger, därför att",
+    "längreNedsattArbetsförmågaText": "Haft tidigare bäckeninsuffiens vid graviditet, haft tidigare missfall och kräver nu fler kontroller och avlastning",
+    "förläggaArbetstidAnnorlunda": "Finns det medicinska skäl att förlägga arbetstiden på något annat sätt än att minska arbetstiden lika mycket varje dag?",
+    "arbetstidAnnorlundaMedicinskaSkäl": "Beskriv medicinska skäl till annan förläggning av arbetstiden",
+    "arbetstidAnnorlundaMedicinskaSkälBeskrivning":"Har lättare kontorsarbete på måndagar som hon klarar av med nuvarande besvär om ingen försämring sker.",
+    "resaMöjliggörArbete": "Resor till och från arbetet med annat färdmedel än normalt kan göra det möjligt för patienten att återgå till arbetet under sjukskrivningsperioden.",
+    "arbetsförmågaPrognos": "Prognos för arbetsförmåga utifrån aktuellt undersökningstillfälle",
+
+    "föreslåÅtgärder": "Här kan du ange åtgärder som du tror skulle göra det lättare för patienten att återgå i arbete",
+    "flerÅtgärder": "Här kan du ange fler åtgärder. Du kan också beskriva hur åtgärderna kan underlätta återgång i arbete.",
+    "flerÅtgärderBeskrivning": "Om anpassningar till lättare uppgifter utan tunga lyft och mycket gående kan ordnas kvarstår arbetsförmåga under en tid framöver.",
+
+    "övrigaUpplysningarBeskrivning": "Planerad partus ",
+    "kontaktaMig": "Jag önskar att Försäkringskassan kontaktar mig.",
+    "anledningKontakt": "Ange gärna varför du vill ha kontakt.",
+    "anledningKontaktBeskrivning": "För att diskutera sjukskrivningsperiod och tydliggörande kring besvärsbilden samt framtida arbetsförmåga.",
+    "signeraKnappText": "Signera intyget",
+
+    "väljIntygsmottagare": "Välj vilka intygsmottagare invånaren kan skicka intyget till via Mina intyg.",
+    "intygsmottagareKnappText": "Spara",
+
+    "skickaTillFKKnappText": "Skicka till Försäkringskassan",
+    "varningSkickaTillFK": "Om du går vidare kommer intyget skickas direkt till Försäkringskassans system vilket ska göras i samråd med patienten.",
+    "skickaKnappTextEfterVarning": "Skicka"
 }
