@@ -1,7 +1,7 @@
 pipeline {
 
   agent {
-    // label 'docker-slave'
+    label 'compose-slave'
     // this image provides everything needed to run Cypress
     docker {
       image 'cypress/base:10'
