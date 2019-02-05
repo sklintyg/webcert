@@ -253,8 +253,12 @@ describe('Creating and signing a max filled LISJP and sending it to FK', functio
 			cy.wrap($button).click(); // prova att ändra till <button?
 		});
 
-		// Oroväckande lång timeout som behövs. Om den är satt till 20s så failar testfallet 60% av gångerna. Provar att öka till 40s
-		cy.contains('div', 'Välj vilka intygsmottagare invånaren kan skicka intyget till via Mina intyg.', {timeout: 40000}).should('be.visible').within(($elem) => {
+		// Lägger till en paus här för att se om det är så att Cypress klickar för snabbt på Signera-knappen. I Jenkins
+		// failar testfallet ofta p.g.a att det dyker upp en modal som säger att intyger har ändrats av annan person (men personen som
+		// vill signera intyget är samma som anges som den som har ändrat det)
+		cy.wait(3000);
+
+		cy.contains('div', 'Välj vilka intygsmottagare invånaren kan skicka intyget till via Mina intyg.', {timeout: 20000}).should('be.visible').within(($elem) => {
 			cy.get('[type="radio"]').each(($el, index, $list) => { // Just picking out all radio buttons... this can be improved
 				if (index >= 2) { // Index 0 and 1 is "Försäkringskassan" 'Ja' and 'Nej'. Skip those.
 					if (index % 2 != 0) { // Only check odd numbers since those are "Nej"
