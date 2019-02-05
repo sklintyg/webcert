@@ -247,16 +247,20 @@ describe('Creating and signing a max filled LISJP and sending it to FK', functio
 			.type('För att diskutera sjukskrivningsperiod och tydliggörande kring besvärsbilden samt framtida arbetsförmåga.');
 
 		// ----- 'Signera intyg' -----//
+
+		// Lägger till en paus här för att se om det är så att Cypress klickar för snabbt på Signera-knappen. I Jenkins
+		// failar testfallet ofta p.g.a att det dyker upp en modal som säger att intyger har ändrats av annan person (men personen som
+		// vill signera intyget är samma som anges som den som har ändrat det)
+		cy.wait(6000);
+
 		// On battery and Wifi, Cypress too often says that it presses the button but it doesn't
 		cy.contains('button', 'Signera intyget', {timeout: 15000}).should('be.enabled').then(($button) => {
 			cy.wait(1000); // This is a workaround when running on battery and wifi.... Cypress claims to click but nothing happen. Trying with a wait
 			cy.wrap($button).click(); // prova att ändra till <button?
 		});
 
-		// Lägger till en paus här för att se om det är så att Cypress klickar för snabbt på Signera-knappen. I Jenkins
-		// failar testfallet ofta p.g.a att det dyker upp en modal som säger att intyger har ändrats av annan person (men personen som
-		// vill signera intyget är samma som anges som den som har ändrat det)
-		cy.wait(3000);
+		// Paus här också, precis som ovanför "Signera intyg"-knappen. Åtgärda om möjligt
+		cy.wait(6000);
 
 		cy.contains('div', 'Välj vilka intygsmottagare invånaren kan skicka intyget till via Mina intyg.', {timeout: 20000}).should('be.visible').within(($elem) => {
 			cy.get('[type="radio"]').each(($el, index, $list) => { // Just picking out all radio buttons... this can be improved
