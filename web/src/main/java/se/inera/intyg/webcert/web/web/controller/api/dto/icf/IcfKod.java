@@ -83,7 +83,7 @@ public class IcfKod {
 
         if (o == null) return false;
 
-        if ((o.getClass() != this.getClass()) && !(o instanceof IcfCentralKod) && !(o instanceof IcfKompletterandeKod)) return false;
+        if (!(o instanceof IcfKod)) return false;
 
         final IcfKod icfKod = (IcfKod) o;
 

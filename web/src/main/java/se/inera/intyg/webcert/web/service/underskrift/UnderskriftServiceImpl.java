@@ -18,10 +18,18 @@
  */
 package se.inera.intyg.webcert.web.service.underskrift;
 
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.Map;
+import java.util.Optional;
+
+import javax.persistence.OptimisticLockException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
@@ -51,12 +59,6 @@ import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 import se.inera.intyg.webcert.web.service.utkast.dto.PreviousIntyg;
-
-import javax.persistence.OptimisticLockException;
-import java.io.IOException;
-import java.time.LocalDateTime;
-import java.util.Map;
-import java.util.Optional;
 
 @Service
 public class UnderskriftServiceImpl implements UnderskriftService {
@@ -125,7 +127,9 @@ public class UnderskriftServiceImpl implements UnderskriftService {
         case MOBILT_BANK_ID:
             signaturBiljett = grpUnderskriftService.skapaSigneringsBiljettMedDigest(intygsId, intygsTyp, version, updatedJson, signMethod);
             break;
-        default:
+        }
+
+        if (signaturBiljett == null) {
             throw new IllegalStateException("Unhandled authentication method, could not create SignaturBiljett");
         }
 
