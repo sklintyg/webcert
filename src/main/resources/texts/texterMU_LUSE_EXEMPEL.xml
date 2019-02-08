@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<texter typ="LUSE" giltigFrom="2015-12-15" version="0.9" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://schema.forsakringskassan.se/vardgivare_sjukvard texterMU_v1.0.xsd" xmlns="http://schema.forsakringskassan.se/vardgivare_sjukvard">
+<texter typ="LUSE" giltigFrom="2025-01-14" version="0.9" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://schema.forsakringskassan.se/vardgivare_sjukvard texterMU_v1.0.xsd" xmlns="http://schema.forsakringskassan.se/vardgivare_sjukvard">
 
   <!-- Text före val av elektroniskt formulär -->
   <text id="FRM_1">Vad är sjukersättning? Sjukersättning är en ersättning för personer mellan 30 och 64 år som har
