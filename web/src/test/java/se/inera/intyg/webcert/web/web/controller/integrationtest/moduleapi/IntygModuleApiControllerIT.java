@@ -537,23 +537,23 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
 
         content.put("identitetStyrkt", "körkort");
         content.put("dodsdatumSakert", "false");
-        content.put("dodsdatum", "2017-01-01");
-        content.put("antraffatDodDatum", "2017-01-02");
+        content.put("dodsdatum", "2027-01-01");
+        content.put("antraffatDodDatum", "2027-01-02");
         content.put("dodsplatsKommun", "kommun");
         content.put("dodsplatsBoende", "SJUKHUS");
         content.put("barn", "true");
         content.put("explosivImplantat", "true");
         content.put("explosivAvlagsnat", "true");
         content.put("undersokningYttre", "UNDERSOKNING_GJORT_KORT_FORE_DODEN");
-        content.put("undersokningDatum", "2016-12-31");
+        content.put("undersokningDatum", "2026-12-31");
         content.put("polisanmalan", "true");
         content.put("avstangningSmittskydd", true);
         content.put("tjanstgoringstid", "40");
         content.put("ressattTillArbeteEjAktuellt", true);
         content.putObject("nedsattMed100");
         ObjectNode node = (ObjectNode) content.get("nedsattMed100");
-        node.put("from", "2016-01-19");
-        node.put("tom", "2016-01-25");
+        node.put("from", "2026-01-19");
+        node.put("tom", "2026-01-25");
 
         spec()
                 .body(content)
