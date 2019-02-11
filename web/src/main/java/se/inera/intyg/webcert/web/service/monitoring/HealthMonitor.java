@@ -18,6 +18,9 @@
  */
 package se.inera.intyg.webcert.web.service.monitoring;
 
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.sql.Time;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -42,9 +45,6 @@ import org.springframework.stereotype.Component;
 
 import io.prometheus.client.Collector;
 import io.prometheus.client.Gauge;
-import se.riv.itintegration.monitoring.rivtabp21.v1.PingForConfigurationResponderInterface;
-import se.riv.itintegration.monitoring.v1.PingForConfigurationResponseType;
-import se.riv.itintegration.monitoring.v1.PingForConfigurationType;
 
 /**
  * Exposes health metrics as Prometheus values. To simplify any 3rd party scraping applications, all metrics produced
@@ -65,7 +65,6 @@ import se.riv.itintegration.monitoring.v1.PingForConfigurationType;
  */
 @Component
 public class HealthMonitor extends Collector {
-
     private static final String PREFIX = "health_";
     private static final String NORMAL = "_normal";
     private static final String VALUE = "_value";
@@ -97,11 +96,6 @@ public class HealthMonitor extends Collector {
             .help("0 == OK 1 == NOT OK")
             .register();
 
-    private static final Gauge PLP_ACCESSIBLE = Gauge.build()
-            .name(PREFIX + "privatlakarportal_accessible" + NORMAL)
-            .help("0 == OK 1 == NOT OK")
-            .register();
-
     private static final Gauge SIGNATURE_QUEUE_DEPTH = Gauge.build()
             .name(PREFIX + "signature_queue_depth" + VALUE)
             .help("Number of waiting messages")
@@ -128,19 +122,8 @@ public class HealthMonitor extends Collector {
     @Qualifier("rediscache")
     private RedisTemplate<Object, Object> redisTemplate;
 
-    @Value("${intygstjanst.logicaladdress}")
-    private String itLogicalAddress;
-
-    @Value("${privatepractitioner.logicaladdress}")
-    private String ppLogicalAddress;
-
-    @Autowired
-    @Qualifier("pingIntygstjanstForConfigurationClient")
-    private PingForConfigurationResponderInterface intygstjanstPingForConfiguration;
-
-    @Autowired
-    @Qualifier("pingPrivatlakarportalForConfigurationClient")
-    private PingForConfigurationResponderInterface privatlakarportalPingForConfiguration;
+    @Value("${intygstjanst.metrics.url}")
+    private String itMetricsUrl;
 
     // Runs a lua script to count number of keys matching our session keys.
     private RedisScript<Long> redisScript;
@@ -172,7 +155,6 @@ public class HealthMonitor extends Collector {
         LOGGED_IN_USERS.set(countSessions());
         DB_ACCESSIBLE.set(checkTimeFromDb() ? 0 : 1);
         JMS_ACCESSIBLE.set(checkJmsConnection() ? 0 : 1);
-        PLP_ACCESSIBLE.set(pingPrivatlakarportal() ? 0 : 1);
         IT_ACCESSIBLE.set(pingIntygstjanst() ? 0 : 1);
         SIGNATURE_QUEUE_DEPTH.set(checkSignatureQueue());
 
@@ -221,25 +203,18 @@ public class HealthMonitor extends Collector {
         }
     }
 
-    private boolean pingPrivatlakarportal() {
-        try {
-            PingForConfigurationType parameters = new PingForConfigurationType();
-            PingForConfigurationResponseType pingResponse = privatlakarportalPingForConfiguration.pingForConfiguration(ppLogicalAddress,
-                    parameters);
-            return pingResponse != null;
-        } catch (Exception e) {
-            return false;
-        }
+    private boolean pingIntygstjanst() {
+        return doHttpLookup(itMetricsUrl) == 200;
     }
 
-    private boolean pingIntygstjanst() {
+    private int doHttpLookup(String url) {
         try {
-            PingForConfigurationType parameters = new PingForConfigurationType();
-            PingForConfigurationResponseType pingResponse = intygstjanstPingForConfiguration.pingForConfiguration(itLogicalAddress,
-                    parameters);
-            return pingResponse != null;
-        } catch (Exception e) {
-            return false;
+            HttpURLConnection httpConnection = (HttpURLConnection) new URL(url).openConnection();
+            int respCode = httpConnection.getResponseCode();
+            httpConnection.disconnect();
+            return respCode;
+        } catch (IOException e) {
+            return 0;
         }
     }
 

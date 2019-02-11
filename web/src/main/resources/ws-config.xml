@@ -57,10 +57,6 @@
         serviceClass="se.riv.clinicalprocess.healthcond.certificate.sendMessageToRecipient.v2.SendMessageToRecipientResponderInterface"
         address="${intygstjanst.sendmessagetorecipient.endpoint.url}"/>
 
-    <jaxws:client id="pingIntygstjanstForConfigurationClient"
-        serviceClass="se.riv.itintegration.monitoring.rivtabp21.v1.PingForConfigurationResponderInterface"
-        address="${intygstjanst.pingforconfiguration.endpoint.url}"/>
-
     <jaxws:client id="pingPrivatlakarportalForConfigurationClient"
         serviceClass="se.riv.itintegration.monitoring.rivtabp21.v1.PingForConfigurationResponderInterface"
         address="${privatepractitioner.pingforconfiguration.endpoint.url}"/>
