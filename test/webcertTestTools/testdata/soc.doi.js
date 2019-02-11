@@ -31,7 +31,7 @@ deathDate.setDate(today.getDate() - Math.floor(Math.random() * 365));
 
 function getRelativeDeathDate(modifier) {
     // Modifier : days
-    let datum = new Date(deathDate);
+    var datum = new Date(deathDate);
     datum.setDate(deathDate.getDate() + modifier);
     return datum;
 }
@@ -45,12 +45,12 @@ function getDodsdatum(datumSakert) {
         };
     } else {
         var monthArr = ['00', '01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12'];
-        let year = deathDate.getYear() + 1900;
+        var year = deathDate.getYear() + 1900;
         year = shuffle([String(year), '0000'])[0];
         return {
             inteSakert: {
                 year: year,
-                month: (year === '0000') ? '00' : shuffle(monthArr.slice(0, today.getMonth() - 1))[0],
+                month: (year === '0000') ? '00' : shuffle(monthArr.slice(0, today.getMonth() + 1))[0],
                 antraffadDod: testdataHelper.dateFormat(today)
             }
         };
@@ -58,7 +58,7 @@ function getDodsdatum(datumSakert) {
 }
 
 function getDodsOrsak() {
-    let n = Math.floor(Math.random() * 4);
+    var n = Math.floor(Math.random() * 4);
 
     var obj = {
         a: getDodsOrsakObj(1)
@@ -112,7 +112,7 @@ function getOperation() {
 }
 
 function getDodsOrsakUppgifter() {
-    let obj = {
+    var obj = {
         foreDoden: shuffle(["Undersökning före döden", false, false, false, false, false, false, false, false, false])[0],
         efterDoden: shuffle(["Yttre undersökning efter döden", false, false, false, false, false, false, false, false, false])[0],
         kliniskObduktion: shuffle(["Klinisk obduktion", false, false, false, false, false, false, false, false, false])[0],
@@ -120,7 +120,7 @@ function getDodsOrsakUppgifter() {
         rattsmedicinskBesiktning: shuffle(["Rättsmedicinsk likbesiktning", false, false, false, false, false, false, false, false, false])[0]
     };
 
-    let objHasSomeValue = false;
+    var objHasSomeValue = false;
 
     for (var key in obj) {
         if (obj.hasOwnProperty(key) && obj[key] !== false) {
@@ -147,7 +147,7 @@ module.exports = {
             intygsID = testdataHelper.generateTestGuid();
         }
 
-        let datumSakert = (customFields && customFields.dodsdatum && customFields.dodsdatum.sakert) ? true : testdataHelper.randomTrueFalse();
+        var datumSakert = (customFields && customFields.dodsdatum && customFields.dodsdatum.sakert) ? true : testdataHelper.randomTrueFalse();
 
         var obj = {
             id: intygsID,
