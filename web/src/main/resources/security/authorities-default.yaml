@@ -452,6 +452,7 @@ roles:
               - *ki050 # luse
               - *ki060 # luae_na
               - *ki070 # luae_fs
+              - *ki111 # af00251
       - <<: *p031 # ERSATTA_INTYG
         requestOrigins:
           - <<: *ro010 # NORMAL
