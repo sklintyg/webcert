@@ -54,9 +54,9 @@ import static org.junit.Assert.fail;
 @RunWith(MockitoJUnitRunner.class)
 public class SecurityConfigurationLoaderTest {
 
-    private static final String authoritiesConfigurationFile = "AuthoritiesConfigurationLoaderTest/authorities-test.yaml";
-    private static final String featuresConfigurationFile = "AuthoritiesConfigurationLoaderTest/features-test.yaml";
-    private static final String authoritiesConfigurationOutputFile = "AuthoritiesConfigurationLoaderTest/authorities-output.txt";
+    private static final String authoritiesConfigurationFile = "classpath:AuthoritiesConfigurationLoaderTest/authorities-test.yaml";
+    private static final String featuresConfigurationFile = "classpath:AuthoritiesConfigurationLoaderTest/features-test.yaml";
+    private static final String authoritiesConfigurationOutputFile = "classpath:AuthoritiesConfigurationLoaderTest/authorities-output.txt";
 
     @InjectMocks
     private SecurityConfigurationLoader loader = new SecurityConfigurationLoader(authoritiesConfigurationFile, featuresConfigurationFile);
