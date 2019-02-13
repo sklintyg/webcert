@@ -4,18 +4,14 @@
 describe('Creating and signing a max filled LISJP and sending it to FK', function () {
 
 	beforeEach(function () {
-		cy.viewport(1024, 768);
-		cy.fixture('testData').as('testData').then(() => {
-			cy.visit(this.testData.webCertUrl);
-		});
-
-		cy.fixture('doktorInloggning').as('doktorInloggning')
+		cy.fixture('testData').as('testData');
 		cy.fixture('valjPatient').as('valjPatient');
 		cy.fixture('valjIntyg').as('valjIntyg');
 		cy.fixture('lisjpData').as('lisjpData');
 
+		// Keeping these constants in the "beforeEach" right now
+		// in case the clock flips to next day in the middle of a test
 		const today = Cypress.moment().format('YYYY-MM-DD');
-
 		cy.wrap(Cypress.moment().add(1,  'days').format('YYYY-MM-DD')).as('todayPlus1');  // 25%  sjukskrivning start
 		cy.wrap(Cypress.moment().add(11, 'days').format('YYYY-MM-DD')).as('todayPlus11'); // 25%  sjukskrivning slut
 		cy.wrap(Cypress.moment().add(12, 'days').format('YYYY-MM-DD')).as('todayPlus12'); // 50%  sjukskrivning start
@@ -31,41 +27,21 @@ describe('Creating and signing a max filled LISJP and sending it to FK', functio
 		cy.wrap(Cypress.moment().subtract(14, 'days').format('YYYY-MM-DD')).as('todayMinus14'); // Midwife's assessment date
 	});
 
-	it('har korrekt titel', function () {
-		cy.title().should('contain', this.testData.titel);
-	});
-
 	it('skapar en maximalt ifylld LISJP och skickar den till FK', function () {
-		cy.contains(this.doktorInloggning.doktor).click().then(() => {
-			cy.contains(this.doktorInloggning.inloggningsKnappText).click();
-		});
-
 		// Verifiera att Cookie-bannern syns och även att den försvinner när man trycker
 		// på dess knapp. Vänta lite längre än normalt eftersom den animeras in.
+		/* Får nog vara ett eget cookie-test i så fall
 		cy.contains(this.testData.cookieKnappText, {timeout: 10000}).click().then(() => {
 			cy.contains('cookies').should('not.exist');
 		});
 
-		// Alias för "Fortsätt"-knappen
-		cy.contains(this.valjPatient.fortsattKnappText).as('continueBtn');
-
-		cy.get('@continueBtn').should('be.disabled');
-
-		// Mata in patientens personnummer
-		cy
-			.get('input:first').should('have.attr', 'placeholder', this.valjPatient.placeholderText)
-			.type(this.valjPatient.personnummer)
-			.should('have.value', this.valjPatient.personnummer);
-
-		// Verfiera att knappen för att gå vidare är aktiverad och klicka på den
-		cy.get('@continueBtn').should('be.enabled').then(() => {
-			cy.get('@continueBtn').click();
-		});
-
 		// Verifiera att inte Cookie-bannern dyker upp eftersom den är accepterad
 		cy.contains('cookies').should('not.exist');
+		*/
 
-	    /* Temporärt bortkommenterad. Om databasen tömt (eller alla osignerade intyg tas bort av annan anledning)
+		cy.goToCreateCertForTolvanAsArnold();
+
+	    /* Temporärt bortkommenterad. Om databasen töms (eller alla osignerade intyg tas bort av annan anledning)
 	       kommer elementet som letas efter inte finnas alls, och testfallet går fel
 		// Spara antal osignerade intyg
 		cy.get('#stat-unitstat-unsigned-certs-count').then(($unsignedCertsCount) => {
@@ -76,14 +52,16 @@ describe('Creating and signing a max filled LISJP and sending it to FK', functio
 
 		// Klicka på "Skapa intyg" for LISJP
 		// Detta skapar ett intyg så räknaren ska inkrementera med 1 direkt
-		cy.get(this.valjIntyg.lisjp).click()/*.then(() => {
+		cy.get(this.valjIntyg.lisjp).click()
+		/*.then(() => {
 			cy.wait(1000); // Wait for one second to give application a chance to update the value for drafts
 			cy.get('#stat-unitstat-unsigned-certs-count').then(($unsignedCertsCount) => {
 				const incrementedNumber = parseInt($unsignedCertsCount.text())
 				cy.log('Num unsigned certs after creating new draft: ' + incrementedNumber);
 				expect(incrementedNumber).to.eq(this.initialNumberOfUnsignedCerts + 1);
 			});
-		}); */
+		});
+		*/
 
 		// Fyll i intyget i enlighet med mallen från Försäkringskassan, "max"-varianten
 		// -------------------- 'Intyget är baserat på' --------------------
@@ -107,7 +85,7 @@ describe('Creating and signing a max filled LISJP and sending it to FK', functio
 			cy.get(this.lisjpData.datumAnnat).clear().type(this.todayMinus14);
 		});
 
-		// Fill out the text box that should appear when clicking the 'Annat' checkbox
+		// Denna textruta dyker upp efter att "Annat" har klickats i
 		cy.get(this.lisjpData.annatTextarea).type(this.lisjpData.annatTextareaText);
 
 

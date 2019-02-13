@@ -1,5 +1,8 @@
 {
-    "webCertUrl": "https://webcert-devtest-tintyg.app-test1.ind-ocp.sth.basefarm.net/welcome.html",
     "titel": "Webcert test inloggning",
-    "cookieKnappText": "Jag godkänner"
+    "cookieKnappText": "Jag godkänner",
+
+    "doktor": "Arnold Johansson (Läkare | Har intyg och ärenden)",
+    "inloggningsKnappText": "Logga in",
+    "destUrlLyckadInloggning": "/#/create/choose-patient/index"
 }
