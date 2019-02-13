@@ -7,7 +7,7 @@ pipeline {
       // image 'cypress/browsers:chrome69'  // Cypress kan inte spela in videos om man använder Chrome
 
       // docker-slave does not exist so using compose-slave
-      label 'compose-slave'
+      label 'docker-slave'
     }
   }
 
