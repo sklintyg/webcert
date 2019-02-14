@@ -20,6 +20,8 @@ env:
     value: $GIT_URL
   - name: release
     value: '${RELEASE_FLAG}'
+  - name: backingServices
+    value: intygstjanst-test:3.8.0.230
     """
                 sh 'curl -k -X POST -H "Content-Type: application/yaml" --data-binary @hook.yml $BF_URL'
             }
