@@ -493,7 +493,12 @@ public class UtkastServiceImpl implements UtkastService {
 
         if (optionalDraftPnr.isPresent()) {
             // Spara undan det gamla personnummret temporärt
-            String oldPersonId = optionalDraftPnr.get().getPersonnummer();
+            String oldPersonId;
+            if (request.getOldPersonnummer() != null) {
+                oldPersonId = request.getOldPersonnummer().getPersonnummer();
+            } else {
+                oldPersonId = optionalDraftPnr.get().getPersonnummer();
+            }
             webCertUserService.getUser().getParameters().setBeforeAlternateSsn(oldPersonId);
         }
 

@@ -276,7 +276,7 @@ public class IntygIntegrationServiceImplTest {
         WebCertUser user = createDefaultUser();
         user.setParameters(parameters);
 
-        testee.ensureDraftPatientInfoUpdated("lisjp", null, 0l, user);
+        testee.ensureDraftPatientInfoUpdated("lisjp", null, 0l, user, null);
 
         verify(utkastService, times(1)).updatePatientOnDraft(any(UpdatePatientOnDraftRequest.class));
     }
@@ -290,7 +290,7 @@ public class IntygIntegrationServiceImplTest {
         WebCertUser user = createDefaultUser();
         user.setParameters(parameters);
 
-        testee.ensureDraftPatientInfoUpdated("lisjp", null, 0l, user);
+        testee.ensureDraftPatientInfoUpdated("lisjp", null, 0l, user, null);
 
         verify(utkastService, times(0)).updatePatientOnDraft(any(UpdatePatientOnDraftRequest.class));
     }

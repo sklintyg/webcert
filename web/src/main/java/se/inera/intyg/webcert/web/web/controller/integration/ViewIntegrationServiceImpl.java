@@ -19,6 +19,7 @@
 package se.inera.intyg.webcert.web.web.controller.integration;
 
 import org.springframework.stereotype.Service;
+import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
@@ -30,7 +31,7 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 public class ViewIntegrationServiceImpl extends IntegrationServiceImpl {
 
     @Override
-    protected void ensurePreparation(String intygTyp, String intygId, Utkast utkast, WebCertUser user) {
+    protected void ensurePreparation(String intygTyp, String intygId, Utkast utkast, WebCertUser user, Personnummer beforeAlternateSsn) {
 
         if (utkast != null) {
             // INTYG-4086: If the intyg / utkast is authored in webcert, we can check for sekretessmarkering here.
@@ -40,5 +41,4 @@ public class ViewIntegrationServiceImpl extends IntegrationServiceImpl {
         }
 
     }
-
 }

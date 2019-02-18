@@ -18,6 +18,7 @@
  */
 package se.inera.intyg.webcert.web.web.controller.integration;
 
+import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.PrepareRedirectToIntyg;
 
@@ -27,5 +28,9 @@ import se.inera.intyg.webcert.web.web.controller.integration.dto.PrepareRedirect
 public interface IntegrationService {
 
     PrepareRedirectToIntyg prepareRedirectToIntyg(String intygTyp, String intygId, WebCertUser user);
+
+    PrepareRedirectToIntyg prepareRedirectToIntyg(
+            String intygTyp, String intygId, WebCertUser user, Personnummer prepareBeforeAlternateSsn);
+
 
 }
