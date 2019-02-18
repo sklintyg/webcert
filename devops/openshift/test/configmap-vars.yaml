@@ -46,6 +46,8 @@ data:
   SENDQUESTIONTOFK_LOGICALADDRESS: "SendQuestionStub"
   SENDMESSAGETOFK_LOGICALADDRESS: "SendMessageStub"
   MAIL_HOST: ""
+  REFDATA_URL: "https://github.com/sklintyg/refdata/archive/devtest.zip"
+  RESOURCES_FOLDER: "classpath:refdata-devtest/src/main/resources"
 kind: ConfigMap
 metadata:
   name: webcert-test-configmap-envvar

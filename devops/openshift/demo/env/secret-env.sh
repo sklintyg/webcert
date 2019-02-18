@@ -8,6 +8,5 @@ export CATALINA_OPTS_APPEND="\
 -Dlogback.file=/opt/$APP_NAME/config/logback-ocp.xml \
 -Dcertificate.folder=/opt/$APP_NAME/certifikat \
 -Dcredentials.file=/opt/$APP_NAME/env/secret-env.properties \
--Dresources.folder=classpath: \
 -Dfile.encoding=UTF-8 \
 -DbaseUrl=http://${APP_NAME}:8080"
