@@ -5,6 +5,8 @@ def buildVersion = "6.4.0.${BUILD_NUMBER}"
 def commonVersion = "3.10.0.+"
 def infraVersion = "3.10.0.+"
 def logsenderBaseVersion = "6.4.0.*" // Star is needed as this is a regexp
+def refDataVersion = "1.0.0.+"
+def versionFlags = "-DbuildVersion=${buildVersion} -DcommonVersion=${commonVersion} -DinfraVersion=${infraVersion} -DrefDataVersion=${refDataVersion}"
 
 stage('checkout') {
     node {
@@ -17,7 +19,7 @@ stage('build') {
     node {
         try {
             shgradle "--refresh-dependencies clean build camelTest testReport sonarqube -PcodeQuality -PcodeCoverage -DgruntColors=false \
-                  -DbuildVersion=${buildVersion} -DcommonVersion=${commonVersion} -DinfraVersion=${infraVersion}"
+                  ${versionFlags}"
         } finally {
             publishHTML allowMissing: true, alwaysLinkToLastBuild: true, keepAll: true, reportDir: 'build/reports/allTests', \
                 reportFiles: 'index.html', reportName: 'JUnit results'
@@ -41,7 +43,7 @@ stage('restAssured') {
    node {
        try {
            shgradle "restAssuredTest -DbaseUrl=http://webcert.inera.nordicmedtest.se/ \
-                 -DbuildVersion=${buildVersion} -DcommonVersion=${commonVersion} -DinfraVersion=${infraVersion}"
+                 ${versionFlags}"
        } finally {
            publishHTML allowMissing: true, alwaysLinkToLastBuild: true, keepAll: true, reportDir: 'web/build/reports/tests/restAssuredTest', \
                reportFiles: 'index.html', reportName: 'RestAssured results'
@@ -58,7 +60,7 @@ stage('protractor') {
 //           sh(script: 'ln -s ../webcertTestTools test/node_modules/webcert-testtools')
 //           wrap([$class: 'Xvfb']) {
                shgradle "protractorTests -Dprotractor.env=build-server \
-                     -DbuildVersion=${buildVersion} -DcommonVersion=${commonVersion} -DinfraVersion=${infraVersion}"
+                     ${versionFlags}"
 //           }
        } finally {
            publishHTML allowMissing: true, alwaysLinkToLastBuild: true, keepAll: true, reportDir: 'test/reports', \
@@ -69,7 +71,7 @@ stage('protractor') {
 
 stage('tag and upload') {
     node {
-        shgradle "uploadArchives tagRelease -DbuildVersion=${buildVersion} -DcommonVersion=${commonVersion} -DinfraVersion=${infraVersion}"
+        shgradle "uploadArchives tagRelease ${versionFlags}"
     }
 }
 
@@ -87,6 +89,7 @@ stage('propagate') {
                 [$class: 'StringParameterValue', name: 'WEBCERT_BUILD_VERSION', value: buildVersion],
                 [$class: 'StringParameterValue', name: 'COMMON_VERSION', value: commonVersion],
                 [$class: 'StringParameterValue', name: 'INFRA_VERSION', value: infraVersion],
+                [$class: 'StringParameterValue', name: 'REF_DATA_VERSION', value: refDataVersion],
                 [$class: 'StringParameterValue', name: 'GIT_REF', value: gitRef],
                 [$class: 'StringParameterValue', name: 'RELEASE_FLAG', value: releaseFlag]
         ]
