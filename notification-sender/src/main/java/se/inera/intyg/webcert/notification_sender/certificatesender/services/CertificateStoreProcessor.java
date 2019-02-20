@@ -47,7 +47,8 @@ public class CertificateStoreProcessor {
             @Header(Constants.LOGICAL_ADDRESS) String logicalAddress)
             throws TemporaryException, PermanentException, ModuleNotFoundException {
         try {
-            ModuleApi moduleApi = moduleRegistry.getModuleApi(intygsTyp, moduleRegistry.resolveVersionFromUtlatandeJson(utkastAsJson));
+            ModuleApi moduleApi = moduleRegistry.getModuleApi(intygsTyp,
+                    moduleRegistry.resolveVersionFromUtlatandeJson(intygsTyp, utkastAsJson));
 
             moduleApi.registerCertificate(utkastAsJson, logicalAddress);
         } catch (ExternalServiceCallException e) {

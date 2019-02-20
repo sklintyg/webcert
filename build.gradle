@@ -1,13 +1,13 @@
 plugins {
-    id "se.inera.intyg.plugin.common" version "1.0.70" apply false
-    id "org.akhikhl.gretty" version "1.4.2" apply false
-    id "net.ltgt.apt" version "0.13" apply false
+    id "se.inera.intyg.plugin.common" version "2.0.3" apply false
+    id "org.gretty" version "2.3.1" apply false
     id "com.moowork.node" version "1.1.1" apply false
 }
 
 ext {
     commonVersion = System.properties['commonVersion'] ?: '0-SNAPSHOT'
     infraVersion = System.properties['infraVersion'] ?: '0-SNAPSHOT'
+    refDataVersion = System.properties['refDataVersion'] ?: '0-SNAPSHOT'
 
     commonsIoVersion = "2.4"
 
@@ -66,15 +66,16 @@ allprojects {
     apply plugin: 'se.inera.intyg.plugin.common'
     apply plugin: 'maven'
     apply plugin: 'idea'
-    apply plugin: 'net.ltgt.apt'
 
     repositories {
+        jcenter()
         mavenLocal()
         maven { url "https://build-inera.nordicmedtest.se/nexus/repository/releases/" }
         maven { url "http://repo.maven.apache.org/maven2" }
     }
 
     dependencies {
+        testCompile "se.inera.intyg.refdata:refdata:${refDataVersion}"
         testCompile 'junit:junit:4.+'
         testCompile "org.mockito:mockito-core:${mockitoVersion}"
     }
@@ -82,6 +83,8 @@ allprojects {
     group = 'se.inera.intyg.webcert'
     version = System.properties['buildVersion'] ?: '0-SNAPSHOT'
 
+    compileJava.options.encoding = 'UTF-8'
+    
     sourceCompatibility = 1.8
     targetCompatibility = 1.8
 

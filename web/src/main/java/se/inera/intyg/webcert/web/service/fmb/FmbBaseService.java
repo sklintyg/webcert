@@ -27,7 +27,7 @@ import se.inera.intyg.webcert.persistence.fmb.repository.DiagnosInformationRepos
 
 public abstract class FmbBaseService {
 
-    protected final DiagnosInformationRepository repository;
+    protected DiagnosInformationRepository repository;
 
     protected FmbBaseService(final DiagnosInformationRepository repository) {
         this.repository = repository;

@@ -60,8 +60,6 @@ public class IcfServiceImpl extends FmbBaseService implements IcfService {
     private static final int TWO_MATCHES = 2;
 
     private final IcfTextResource textResource;
-    private final DiagnosInformationRepository repository;
-
 
     public IcfServiceImpl(
             final IcfTextResource textResource,

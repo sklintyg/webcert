@@ -19,34 +19,27 @@
 package se.inera.intyg.webcert.web.service.fmb.icf.resource;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.core.io.ResourceLoader.CLASSPATH_URL_PREFIX;
 
-import org.junit.Before;
+
+import java.util.Optional;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.core.io.FileSystemResourceLoader;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.ResourceLoader;
-import org.springframework.test.util.ReflectionTestUtils;
-import java.util.Optional;
+import org.mockito.MockitoAnnotations;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
 import se.inera.intyg.webcert.web.web.controller.api.dto.icf.IcfKod;
 
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(SpringJUnit4ClassRunner.class)
+@TestPropertySource("classpath:IcfTextResourceImplTest/test.properties")
+@ContextConfiguration(classes = {IcfTextResourceImpl.class})
 public class IcfTextResourceImplTest {
 
-    private static final String FILE_PATH = "IcfTextResourceImplTest/klassifikationer-koder-for-funktionstillstand-icf-2018.2.xls";
-
-    @InjectMocks
-    private IcfTextResourceImpl icfTextResource;
-
-    @Before
-    public void setup() {
-        final ResourceLoader loader = new FileSystemResourceLoader();
-        final Resource testResource = loader.getResource(CLASSPATH_URL_PREFIX + FILE_PATH);
-        ReflectionTestUtils.setField(icfTextResource, "resource", testResource);
-    }
+    @Autowired
+    private IcfTextResource icfTextResource;
 
     @Test
     public void testReadFromFileAndLookupMatchingKod() {
@@ -57,7 +50,6 @@ public class IcfTextResourceImplTest {
         final String expectedBeskrivning = "Allmänna psykiska funktioner av att känna till och fastställa sin relation till tid, rum, sig själv och andra, till föremål och närmaste omgivning";
         final String expectedInnefattar = "funktioner av orientering till tid, rum och person; orientering till sig själv och andra; desorientering till tid, rum och person";
 
-        icfTextResource.init();
 
         final Optional<IcfKod> icfKod = icfTextResource.lookupTextByIcfKod(matchingCode);
 
@@ -68,27 +60,4 @@ public class IcfTextResourceImplTest {
         assertThat(icfKod.get().getInnefattar()).isEqualTo(expectedInnefattar);
     }
 
-    @Test
-    public void testReadFromFileAndLookupNonMatchingKod() {
-
-        final String nonMatchingCode = "helt-fel-kod"; //felaktig kod ska generera ett Optional.empty()
-
-        icfTextResource.init();
-        final Optional<IcfKod> icfKod = icfTextResource.lookupTextByIcfKod(nonMatchingCode);
-
-        assertThat(icfKod).isNotPresent();
-    }
-
-    @Test
-    public void testFailReadFromFileAndLookupKod() {
-
-        final String kod = "en-kod";
-
-        ReflectionTestUtils.setField(icfTextResource, "resource", null); //ser till att fil inte läses in
-
-        icfTextResource.init(); //ska inte slänga exception utan endast resultera i en tom lista av koder
-        final Optional<IcfKod> icfKod = icfTextResource.lookupTextByIcfKod(kod);
-
-        assertThat(icfKod).isNotPresent();
-    }
 }

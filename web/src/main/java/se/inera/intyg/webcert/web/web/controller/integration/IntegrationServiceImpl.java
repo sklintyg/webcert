@@ -22,9 +22,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import se.inera.intyg.infra.security.authorities.validation.AuthoritiesValidator;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.SekretessStatus;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
@@ -61,20 +61,29 @@ public abstract class IntegrationServiceImpl implements IntegrationService {
 
     @Override
     public PrepareRedirectToIntyg prepareRedirectToIntyg(String intygTyp, String intygId, WebCertUser user) {
+        return prepareRedirectToIntyg(intygTyp, intygId, user, null);
+    }
+
+    @Override
+    public PrepareRedirectToIntyg prepareRedirectToIntyg(
+            final String intygTyp, final String intygId,
+            final WebCertUser user, final Personnummer prepareBeforeAlternateSsn) {
+
         Utkast utkast = utkastRepository.findOne(intygId);
 
         // INTYG-7088: since we now always need intygTypeVersion we always fetch intygTypeInfo for the intyg,
         // either from WC or IT.
         final IntygTypeInfo intygTypeInfo = intygService.getIntygTypeInfo(intygId, utkast);
 
-        ensurePreparation(intygTypeInfo.getIntygType(), intygId, utkast, user);
+        ensurePreparation(intygTypeInfo.getIntygType(), intygId, utkast, user, prepareBeforeAlternateSsn);
 
         return createPrepareRedirectToIntyg(intygTypeInfo, UtkastServiceImpl.isUtkast(utkast));
     }
 
     // protected scope
 
-    abstract void ensurePreparation(String intygTyp, String intygId, Utkast utkast, WebCertUser user);
+    abstract void ensurePreparation(
+            String intygTyp, String intygId, Utkast utkast, WebCertUser user, Personnummer prepareBeforeAlternateSsn);
 
     // default scope
 

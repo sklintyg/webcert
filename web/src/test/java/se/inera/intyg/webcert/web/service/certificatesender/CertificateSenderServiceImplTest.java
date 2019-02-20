@@ -80,6 +80,7 @@ public class CertificateSenderServiceImplTest {
 
         Message res = messageCaptor.getValue().createMessage(session);
         assertEquals(Constants.STORE_MESSAGE, res.getStringProperty(Constants.MESSAGE_TYPE));
+        assertEquals(intygsId, res.getStringProperty(Constants.INTYGS_ID));
         assertEquals(intygsTyp, res.getStringProperty(Constants.INTYGS_TYP));
         assertEquals(LOGICAL_ADDRESS, res.getStringProperty(Constants.LOGICAL_ADDRESS));
         assertEquals(jsonBody, ((TextMessage) res).getText());

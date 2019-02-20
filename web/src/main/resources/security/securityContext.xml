@@ -141,10 +141,11 @@
        CookieCsrfTokenRepo saves CSRF-tokens in client-side cookies. The CSRF-token is read from the cookie by angularjs
        and put into the http header. Spring security then checks that the CSRF-tokens in the cookie and http header match.
        No CSRF-token is saved backend, this is fine since client's cookies are protected by same origin policy.
-  -->
+
   <bean id="tokenRepository"
     class="org.springframework.security.web.csrf.CookieCsrfTokenRepository"
     p:cookieHttpOnly="false" />
+     -->
 
   <!-- =============================================================== -->
   <!-- Unsecured pages when not in production                          -->
@@ -277,7 +278,7 @@
       <security:csrf disabled="true"/>
       <security:logout logout-url="/logout" logout-success-url="/welcome.html" invalidate-session="true"/>
       <security:intercept-url pattern="/**" access="IS_AUTHENTICATED_FULLY"/>
-      <security:custom-filter before="PRE_AUTH_FILTER" ref="createCsrfTokenFilter"/>
+      <!-- <security:custom-filter before="PRE_AUTH_FILTER" ref="createCsrfTokenFilter"/> -->
       <security:custom-filter position="PRE_AUTH_FILTER" ref="fakeAuthFilter"/>
       <security:custom-filter after="BASIC_AUTH_FILTER" ref="samlFilter"/>
       <security:request-cache ref="redisSavedRequestCache"/>
@@ -289,7 +290,8 @@
     </security:http>
 
     <security:http use-expressions="false" entry-point-ref="http403ForbiddenEntryPoint">
-      <security:csrf token-repository-ref="tokenRepository" disabled="false"/>
+      <security:csrf disabled="true"/>
+     <!-- <security:csrf token-repository-ref="tokenRepository" disabled="true"/> -->
       <security:logout logout-url="/logout" logout-success-url="/welcome.html" invalidate-session="true"/>
       <security:intercept-url pattern="/**" access="IS_AUTHENTICATED_FULLY"/>
       <security:custom-filter position="PRE_AUTH_FILTER" ref="fakeAuthFilter"/>
@@ -337,7 +339,7 @@
     <security:http use-expressions="false" entry-point-ref="samlEntryPoint" pattern="(\/saml\/.*)|(\/visa\/intyg\/.*)|(\/webcert\/web\/.*)|(\/web\/maillink\/.*)" request-matcher="regex">
       <security:csrf disabled="true"/>
       <security:intercept-url pattern="/**" access="IS_AUTHENTICATED_FULLY"/>
-      <security:custom-filter before="PRE_AUTH_FILTER" ref="createCsrfTokenFilter"/>
+     <!-- <security:custom-filter before="PRE_AUTH_FILTER" ref="createCsrfTokenFilter"/> -->
       <security:custom-filter after="BASIC_AUTH_FILTER" ref="samlFilter"/>
       <security:request-cache ref="redisSavedRequestCache"/>
       <security:session-management session-authentication-strategy-ref="registerSessionAuthenticationStrategy"/>
@@ -348,7 +350,8 @@
     </security:http>
 
     <security:http use-expressions="false" entry-point-ref="http403ForbiddenEntryPoint">
-      <security:csrf token-repository-ref="tokenRepository" disabled="false"/>
+      <security:csrf disabled="true"/>
+      <!-- <security:csrf token-repository-ref="tokenRepository" disabled="false"/> -->
       <security:intercept-url pattern="/**" access="IS_AUTHENTICATED_FULLY"/>
       <security:custom-filter after="BASIC_AUTH_FILTER" ref="samlFilter"/>
       <security:request-cache ref="redisSavedRequestCache"/>
@@ -420,7 +423,7 @@
 
   <beans profile="prod,wc-security-test,wc-security-prod">
 
-    <bean id="createCsrfTokenFilter" class="se.inera.intyg.webcert.web.security.CreateCsrfTokenFilter"/>
+   <!-- <bean id="createCsrfTokenFilter" class="se.inera.intyg.webcert.web.security.CreateCsrfTokenFilter"/> -->
 
     <bean id="samlFilter" class="org.springframework.security.web.FilterChainProxy">
       <security:filter-chain-map request-matcher="ant">

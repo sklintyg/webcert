@@ -59,6 +59,7 @@ import se.inera.intyg.webcert.web.auth.bootstrap.AuthoritiesConfigurationTestSet
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.log.LogService;
 import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
+import se.inera.intyg.webcert.web.service.log.factory.LogRequestFactory;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.notification.NotificationService;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
@@ -134,6 +135,8 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
     private IntygModuleRegistry moduleRegistry;
     @Mock
     private LogService logService;
+    @Mock
+    private LogRequestFactory logRequestFactory;
     @Mock
     private WebCertUserService userService;
     @Mock
@@ -224,8 +227,9 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         revokedLockedUtkast = createUtkast(INTYG_ID, INTYG_VERSION, INTYG_TYPE, UtkastStatus.DRAFT_LOCKED, null,
                 INTYG_JSON, vardperson, PERSONNUMMER);
         revokedLockedUtkast.setAterkalladDatum(LocalDateTime.now());
-        when(moduleRegistry.resolveVersionFromUtlatandeJson(anyString())).thenReturn(INTYG_TYPE_VERSION);
+        when(moduleRegistry.resolveVersionFromUtlatandeJson(anyString(), anyString())).thenReturn(INTYG_TYPE_VERSION);
 
+        when(logRequestFactory.createLogRequestFromUtkast(any(Utkast.class))).thenReturn(new LogRequest());
     }
 
     @Test

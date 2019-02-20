@@ -52,7 +52,7 @@ public class NotificationWSClient {
             @Header(NotificationRouteHeaders.LOGISK_ADRESS) String logicalAddress)
             throws TemporaryException, DiscardCandidateException, PermanentException {
 
-        LOG.debug("Sending status update with version 2 to '{}' for intyg '{}'", logicalAddress,
+        LOG.debug("RehabstodAuthoritiesResolverTes to '{}' for intyg '{}'", logicalAddress,
                 request.getIntyg().getIntygsId().getExtension());
 
         CertificateStatusUpdateForCareResponseType response = null;

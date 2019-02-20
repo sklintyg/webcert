@@ -18,6 +18,8 @@ env:
     value: $GIT_REF
   - name: gitUrl
     value: $GIT_URL
+  - name: refDataVersion
+    value: $REF_DATA_VERSION
   - name: release
     value: '${RELEASE_FLAG}'
     """

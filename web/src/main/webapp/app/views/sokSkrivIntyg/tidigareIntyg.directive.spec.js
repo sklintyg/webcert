@@ -54,6 +54,7 @@ describe('SokSkrivValjUtkastTypeCtrl', function() {
                 postadress: 'Skogsvägen 1',
                 postnummer: '111 22',
                 postort: 'Skogen',
+                avliden: false,
                 build: function() {
                 },
                 isValid: function() {
@@ -89,6 +90,9 @@ describe('SokSkrivValjUtkastTypeCtrl', function() {
             UserModel.user = {
                 origin: 'NORMAL'
             };
+            UserModel.getAnvandarPreference = function() {
+                return undefined;
+            };
             UserModel.privileges = {
                 FORNYA_INTYG: {}
             };
@@ -118,6 +122,8 @@ describe('SokSkrivValjUtkastTypeCtrl', function() {
 
             var moduleService  = jasmine.createSpyObj('common.moduleService', [ 'getModuleName' ]);
             $provide.value('common.moduleService', moduleService);
+
+            $provide.value('common.User', {});
         });
 
         inject(function($rootScope, _$location_, _$controller_, _$q_, _$compile_) {
@@ -149,9 +155,6 @@ describe('SokSkrivValjUtkastTypeCtrl', function() {
                 }
             };
 
-            $scope.patientModel = {
-                sekretessmarkering: false
-            };
         });
 
         it('is förnya allowed', function() {
@@ -162,25 +165,29 @@ describe('SokSkrivValjUtkastTypeCtrl', function() {
             intyg.intygType = 'fk7263';
             expect(element.isolateScope().isRenewalAllowed(intyg)).toBeTruthy();
 
-            expect(element.isolateScope().isRenewalAllowed(intyg)).toBeTruthy();
-
             intyg.status = 'DRAFT_INCOMPLETE';
             expect(element.isolateScope().isRenewalAllowed(intyg)).toBeFalsy();
 
             intyg.status = 'CANCELLED';
             expect(element.isolateScope().isRenewalAllowed(intyg)).toBeFalsy();
 
-
-            $scope.patientModel.sekretessmarkering = true;
-            expect(element.isolateScope().isRenewalAllowed(intyg)).toBeFalsy();
-
-            $scope.patientModel.sekretessmarkering = false;
+            intyg.status = 'SIGNED';
             intyg.relations.latestChildRelations.replacedByIntyg = true;
             expect(element.isolateScope().isRenewalAllowed(intyg)).toBeFalsy();
 
             intyg.relations.latestChildRelations.replacedByIntyg = false;
             intyg.relations.latestChildRelations.complementedByIntyg = true;
             expect(element.isolateScope().isRenewalAllowed(intyg)).toBeFalsy();
+
+            intyg.relations.latestChildRelations.complementedByIntyg = false;
+            expect(element.isolateScope().isRenewalAllowed(intyg)).toBeTruthy();
+
+            PatientModelMock.avliden = true;
+            expect(element.isolateScope().isRenewalAllowed(intyg)).toBeFalsy();
+
+            PatientModelMock.avliden = false;
+            expect(element.isolateScope().isRenewalAllowed(intyg)).toBeTruthy();
+
         });
 
         it('should förnya intyg', function() {

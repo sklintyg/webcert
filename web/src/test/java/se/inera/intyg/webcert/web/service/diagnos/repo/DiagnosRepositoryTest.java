@@ -51,7 +51,7 @@ import se.inera.intyg.webcert.web.service.diagnos.model.Diagnos;
 @ContextConfiguration("classpath:/DiagnosService/DiagnosRepositoryFactoryTest-context.xml")
 public class DiagnosRepositoryTest {
 
-    private static final String FILE_1 = "/DiagnosService/KSH97_TESTKODER_1.ANS";
+    private static final String FILE_1 = "classpath:DiagnosService/KSH97_TESTKODER_1.ANS";
 
     @Autowired
     private DiagnosRepositoryFactory factory;

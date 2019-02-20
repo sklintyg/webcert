@@ -160,7 +160,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         monitoringService.logQuestionReceived(fragaSvar.getFrageStallare(),
                 ((fragaSvar.getIntygsReferens() == null) ? null : fragaSvar.getIntygsReferens().getIntygsId()),
                 fragaSvar.getExternReferens(),
-                fragaSvar.getInternReferens(), fragaSvar.getVardAktorHsaId(), fragaSvar.getAmne(),
+                fragaSvar.getInternReferens(), getEnhetsId(fragaSvar), fragaSvar.getAmne(),
                 fragaSvar.getKompletteringar().stream().map(Komplettering::getFalt).collect(Collectors.toList()));
 
         // persist the question
@@ -187,7 +187,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
 
         monitoringService.logAnswerReceived(fragaSvar.getExternReferens(), fragaSvar.getInternReferens(),
                 ((fragaSvar.getIntygsReferens() == null) ? null : fragaSvar.getIntygsReferens().getIntygsId()),
-                fragaSvar.getVardAktorHsaId(),
+                getEnhetsId(fragaSvar),
                 fragaSvar.getAmne());
 
         // update the FragaSvar
@@ -421,7 +421,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         }
 
         monitoringService.logQuestionSent(saved.getExternReferens(), saved.getInternReferens(),
-                (saved.getIntygsReferens() == null) ? null : saved.getIntygsReferens().getIntygsId(), saved.getVardAktorHsaId(),
+                (saved.getIntygsReferens() == null) ? null : saved.getIntygsReferens().getIntygsId(), saved.getVardperson().getEnhetsId(),
                 saved.getAmne());
 
         // Notify stakeholders
@@ -707,11 +707,16 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         }
 
         monitoringService.logAnswerSent(fragaSvar.getExternReferens(), fragaSvar.getInternReferens(),
-                (fragaSvar.getIntygsReferens() == null) ? null : fragaSvar.getIntygsReferens().getIntygsId(), fragaSvar.getVardAktorHsaId(),
+                (fragaSvar.getIntygsReferens() == null) ? null : fragaSvar.getIntygsReferens().getIntygsId(), getEnhetsId(fragaSvar),
                 fragaSvar.getAmne());
 
         // Notify stakeholders
         sendNotification(fragaSvar, NotificationEvent.NEW_ANSWER_FROM_CARE);
 
+    }
+
+    private String getEnhetsId(FragaSvar fragaSvar) {
+        Vardperson vardperson = fragaSvar.getVardperson();
+        return vardperson == null ? "" : vardperson.getEnhetsId();
     }
 }

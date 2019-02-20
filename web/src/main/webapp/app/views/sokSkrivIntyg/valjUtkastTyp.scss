@@ -48,12 +48,40 @@ wc-valj-utkast-typ {
       flex-direction: row;
       flex: 1;
       min-height: 42px;
+
+      .flex-item{
+        flex: 1;
+      }
     }
 
     .flex-list-col {
       display: flex;
       flex-direction: column;
       padding: 8px 8px 8px 20px;
+    }
+  }
+
+  .favourite-column{
+    padding-right: 18px;
+  }
+
+  .favourite{
+    display: block;
+    padding: 3px;
+    cursor: pointer;
+    line-height: 1;
+    color: $wc-color-15;
+    user-select: none;
+    border: none;
+    appearance: none;
+    background-color: transparent;
+
+    &.is-favourite{
+      color: $wc-color-12;
+    }
+
+    &:hover{
+      color: rgba($wc-color-12, 0.5);
     }
   }
 }

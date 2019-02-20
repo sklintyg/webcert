@@ -96,7 +96,7 @@ public class NotificationTransformerTest {
 
         ModuleApi moduleApi = mock(ModuleApi.class);
         when(moduleRegistry.getModuleApi(eq(LUSE), eq("1.0"))).thenReturn(moduleApi);
-        when(moduleRegistry.resolveVersionFromUtlatandeJson(anyString())).thenReturn("1.0");
+        when(moduleRegistry.resolveVersionFromUtlatandeJson(anyString(), anyString())).thenReturn("1.0");
         Intyg intyg = new Intyg();
         IntygId intygsId = new IntygId();
         intygsId.setExtension(INTYGS_ID);

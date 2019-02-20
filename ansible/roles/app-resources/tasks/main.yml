@@ -1,16 +1,12 @@
 ---
 
-- name: Delete application resources folder
-  file:
-    state: absent
-    path: "{{ app_resources_folder }}"
+- name: Remove refdata
+  shell: rm -f {{ tomcat_lib }}/refdata*.jar
 
-- name: Create application resources folder
-  file:
-    state: directory
-    path: "{{ app_resources_folder }}"
+- name: Get latest refdata version  IntygModuleApiControllerIT
+  shell: curl -s https://build-inera.nordicmedtest.se/nexus/repository/public/se/inera/intyg/refdata/refdata/maven-metadata.xml | grep '<latest>.*</latest>' | sed 's/.*<latest>\(.*\)<\/latest>.*/\1/g'
+  register: latest_refdata
 
-- name: Copy application resources
-  copy:
-    src: "{{ app_resources_src }}"
-    dest: "{{ app_resources_folder }}"
+- name: Download refdata-{{ latest_refdata.stdout }}.jar
+  get_url: url=https://build-inera.nordicmedtest.se/nexus/repository/public/se/inera/intyg/refdata/refdata/{{ latest_refdata.stdout }}/refdata-{{ latest_refdata.stdout }}.jar
+    dest={{ tomcat_lib }}

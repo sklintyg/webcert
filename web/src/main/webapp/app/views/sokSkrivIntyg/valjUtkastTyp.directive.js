@@ -1,14 +1,15 @@
 angular.module('webcert').directive('wcValjUtkastTyp',
     [ '$log', '$location', 'webcert.SokSkrivIntygViewstate', 'common.messageService', 'common.featureService',
-        'common.PatientModel', 'webcert.UtkastProxy', 'common.dialogService',
-    function($log, $location, ViewState, messageService, featureService, PatientModel, UtkastProxy, DialogService) {
+        'common.PatientModel', 'webcert.UtkastProxy', 'common.dialogService', 'common.dynamicLabelService',
+    function($log, $location, ViewState, messageService, featureService, PatientModel, UtkastProxy, DialogService, dynamicLabelService) {
         'use strict';
 
         return {
             restrict: 'E',
             scope: {
                 viewState: '=',
-                domId: '@'
+                domId: '@',
+                favouriteCallback: '&'
             },
             templateUrl: '/app/views/sokSkrivIntyg/valjUtkastTyp.directive.html',
             link: function(scope, element, attrs) {
@@ -161,6 +162,10 @@ angular.module('webcert').directive('wcValjUtkastTyp',
                 scope.passedUniqueGlobalCheck = function (intygType) {
                     var featureActive = featureService.isFeatureActive(featureService.features.UNIKT_INTYG, intygType);
                     return !featureActive || !IntygTypeSelectorModel.previousIntygWarnings[intygType];
+                };
+
+                scope.getText = function(key) {
+                    return dynamicLabelService.getProperty(key);
                 };
             }
         };

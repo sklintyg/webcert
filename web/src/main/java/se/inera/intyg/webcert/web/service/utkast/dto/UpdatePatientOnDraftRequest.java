@@ -25,11 +25,19 @@ import se.inera.intyg.schemas.contract.Personnummer;
  */
 public class UpdatePatientOnDraftRequest {
     private Personnummer personnummer;
+    private Personnummer oldPersonnummer;
     private String draftId;
     private long version;
 
     public UpdatePatientOnDraftRequest(Personnummer personnummer, String draftId, long version) {
         this.personnummer = personnummer;
+        this.draftId = draftId;
+        this.version = version;
+    }
+
+    public UpdatePatientOnDraftRequest(Personnummer personnummer, Personnummer oldPersonnummer, String draftId, long version) {
+        this.personnummer = personnummer;
+        this.oldPersonnummer = oldPersonnummer;
         this.draftId = draftId;
         this.version = version;
     }
@@ -40,6 +48,14 @@ public class UpdatePatientOnDraftRequest {
 
     public void setPersonnummer(Personnummer personnummer) {
         this.personnummer = personnummer;
+    }
+
+    public Personnummer getOldPersonnummer() {
+        return oldPersonnummer;
+    }
+
+    public void setOldPersonnummer(final Personnummer oldPersonnummer) {
+        this.oldPersonnummer = oldPersonnummer;
     }
 
     public String getDraftId() {

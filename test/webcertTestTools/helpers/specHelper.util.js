@@ -106,8 +106,13 @@ module.exports = {
             utkastPage = pages.intyg.ts.bas.utkast;
         } else if (intygType === 'ts-diabetes') {
             utkastPage = pages.intyg.ts.diabetes.v3.utkast;
+        } else if (intygType === 'tstrk1009') {
+            utkastPage = pages.intyg.ts.trk1009.utkast;
         } else if (intygType === 'db') {
             utkastPage = pages.intyg.skv.db.utkast;
+        } else if (intygType === 'doi') {
+            utkastPage = pages.intyg.soc.doi.utkast;
+            utkastPage.skapaDoiKnapp.click();
         } else if (intygType === 'af00213') {
             utkastPage = pages.intyg.af.af00213.utkast;
         } else if (intygType === 'af00251') {

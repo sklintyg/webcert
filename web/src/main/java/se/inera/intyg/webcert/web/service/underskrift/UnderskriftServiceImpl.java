@@ -44,9 +44,9 @@ import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.converter.util.IntygConverterUtil;
 import se.inera.intyg.webcert.web.integration.util.AuthoritiesHelperUtil;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
-import se.inera.intyg.webcert.web.service.log.LogRequestFactory;
 import se.inera.intyg.webcert.web.service.log.LogService;
 import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
+import se.inera.intyg.webcert.web.service.log.factory.LogRequestFactory;
 import se.inera.intyg.webcert.web.service.notification.NotificationService;
 import se.inera.intyg.webcert.web.service.underskrift.fake.FakeUnderskriftService;
 import se.inera.intyg.webcert.web.service.underskrift.grp.GrpUnderskriftServiceImpl;
@@ -93,6 +93,9 @@ public class UnderskriftServiceImpl implements UnderskriftService {
     private LogService logService;
 
     @Autowired
+    private LogRequestFactory logRequestFactory;
+
+    @Autowired
     private IntygService intygService;
 
     @Autowired
@@ -124,7 +127,9 @@ public class UnderskriftServiceImpl implements UnderskriftService {
         case MOBILT_BANK_ID:
             signaturBiljett = grpUnderskriftService.skapaSigneringsBiljettMedDigest(intygsId, intygsTyp, version, updatedJson, signMethod);
             break;
-        default:
+        }
+
+        if (signaturBiljett == null) {
             throw new IllegalStateException("Unhandled authentication method, could not create SignaturBiljett");
         }
 
@@ -207,7 +212,7 @@ public class UnderskriftServiceImpl implements UnderskriftService {
         // Notify stakeholders when certificate has been signed
         notificationService.sendNotificationForDraftSigned(utkast);
 
-        LogRequest logRequest = LogRequestFactory.createLogRequestFromUtkast(utkast);
+        LogRequest logRequest = logRequestFactory.createLogRequestFromUtkast(utkast);
 
         // Note that we explictly supplies the WebCertUser here. The NIAS finalization is not executed in a HTTP
         // request context and thus we need to supply the user instance manually.

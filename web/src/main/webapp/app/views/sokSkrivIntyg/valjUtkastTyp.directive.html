@@ -5,20 +5,31 @@
     <h2 class="patient-intyg-heading">Skapa intyg</h2>
 
     <div class="row">
-      <div class="col-md-9">
+      <div class="col-md-10 col-lg-9">
 
         <div class="card">
           <div class="flex-list" id="{{domId}}">
-            <div class="flex-list-col" ng-repeat="type in getIntygTypeList() | filter: {id:'!default'} track by $index ">
+            <div class="flex-list-col" ng-repeat="type in getIntygTypeList() | filter: {id:'!default'} | orderBy:['-isFavourite', 'sortValue'] track by $index ">
               <div class="flex-list-row" ng-attr-id="intygType-row-{{type.id}}">
-                <span style="flex: 1"><span class="intyg-label">{{type.label}}</span> <span class="issuer-type-id">{{type.issuerTypeId}}</span></span>
+                <span class="favourite-column">
+                  <button class="favourite"
+                        ng-click="favouriteCallback({type: type})"
+                        ng-class="{ 'is-favourite': type.isFavourite }"
+                        uib-popover="{{getText(type.isFavourite ? 'common.favourite.remove.tooltip' : 'common.favourite.add.tooltip')}}"
+                        popover-placement="center top">
+                    <i class="material-icons md-18" class="star">star</i>
+                  </button>
+                </span>
+                <span class="flex-item">
+                  <span class="intyg-label">{{type.label}}</span> <span class="issuer-type-id">{{type.issuerTypeId}}</span>
+                </span>
                 <div class="about-intyg">
                   <button ng-attr-id="intygTypeAbout-{{type.id}}" class="btn btn-link btn-link__purelink" ng-click="openIntygTypeDetailsDialog(type)">Om intyget</button>
                 </div>
                 <div>
                     <button ng-attr-id="intygTypeFortsatt-{{type.id}}" class="btn btn-primary continue-btn" ng-click="checkType(type.id); intygTypeFortsattPopOverOpen=false;"
                             ng-disabled="!isCreateUtkastEnabled(type.id)" uib-popover="Skapa ett intygsutkast."
-                             popover-popup-delay="300" popover-append-to-body="true" popover-is-open="intygTypeFortsattPopOverOpen"
+                            popover-popup-delay="300" popover-append-to-body="true" popover-is-open="intygTypeFortsattPopOverOpen"
                             popover-placement="auto top"><i class="material-icons">description</i> Skapa intyg</button>
                 </div>
               </div>

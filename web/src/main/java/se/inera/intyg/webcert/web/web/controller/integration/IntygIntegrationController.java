@@ -25,18 +25,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
-import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
-import se.inera.intyg.infra.security.authorities.CommonAuthoritiesResolver;
-import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
-import se.inera.intyg.infra.security.common.model.UserOriginType;
-import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
-import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
-import se.inera.intyg.webcert.web.service.referens.ReferensService;
-import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
-import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
-import se.inera.intyg.webcert.web.web.controller.integration.dto.PrepareRedirectToIntyg;
-
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.FormParam;
@@ -56,6 +44,18 @@ import java.net.URLEncoder;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
+import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
+import se.inera.intyg.infra.security.authorities.CommonAuthoritiesResolver;
+import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.infra.security.common.model.UserOriginType;
+import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
+import se.inera.intyg.webcert.web.service.referens.ReferensService;
+import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
+import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
+import se.inera.intyg.webcert.web.web.controller.integration.dto.PrepareRedirectToIntyg;
 
 /**
  * Controller to enable an external user to access certificates directly from a
@@ -324,8 +324,6 @@ public class IntygIntegrationController extends BaseIntegrationController {
 
     protected Response handleRedirectToIntyg(UriInfo uriInfo, String intygTyp, String intygId, String enhetId, WebCertUser user) {
         try {
-            // Call service
-            PrepareRedirectToIntyg prepareRedirectInfo = integrationService.prepareRedirectToIntyg(intygTyp, intygId, user);
 
             // Persist reference
             handleReference(intygId, user.getParameters().getReference());
@@ -335,6 +333,9 @@ public class IntygIntegrationController extends BaseIntegrationController {
                 // If ENHET isn't set but the user only has one possible enhet that can be selected, we auto-select that one
                 // explicitly and proceed down the filter chain. Typically, that unit should already have been selected by
                 // the UserDetailsService that built the Principal, but better safe than sorry...
+
+                // Call service
+                PrepareRedirectToIntyg prepareRedirectInfo = integrationService.prepareRedirectToIntyg(intygTyp, intygId, user);
 
                 if (userHasExactlyOneSelectableVardenhet(user)) {
                     user.changeValdVardenhet(user.getVardgivare().get(0).getVardenheter().get(0).getId());
@@ -352,6 +353,21 @@ public class IntygIntegrationController extends BaseIntegrationController {
 
             } else {
                 if (user.changeValdVardenhet(enhetId)) {
+
+                    final String beforeAlternateSsnParam = user.getParameters().getBeforeAlternateSsn();
+                    PrepareRedirectToIntyg prepareRedirectInfo;
+
+                    // We want to send beforeAlternateSsnParam to prepareRedirectToIntyg, to be able to
+                    // see the difference between beforeAlternateSsn and alternateSsn in the gui when opening the utkast.
+                    // This will trigger an info-message that the personnummer for the utkast has changed.
+                    // This fix is not pretty but due to earlier implementations this is the easiest fix. See INTYG-8115 for more info.
+                    if (!Strings.isNullOrEmpty(beforeAlternateSsnParam)) {
+                        Personnummer beforeAlternateSsn = Personnummer.createPersonnummer(beforeAlternateSsnParam).orElse(null);
+                        prepareRedirectInfo = integrationService.prepareRedirectToIntyg(intygTyp, intygId, user, beforeAlternateSsn);
+                    } else {
+                        prepareRedirectInfo = integrationService.prepareRedirectToIntyg(intygTyp, intygId, user);
+                    }
+
                     updateUserWithActiveFeatures(user);
                     LOG.debug("Redirecting to view intyg {} of type {}", intygId, intygTyp);
                     return buildRedirectResponse(uriInfo, prepareRedirectInfo);

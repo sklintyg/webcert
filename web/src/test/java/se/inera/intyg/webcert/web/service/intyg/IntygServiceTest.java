@@ -44,6 +44,7 @@ import se.inera.intyg.common.support.model.CertificateState;
 import se.inera.intyg.common.support.model.Status;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.Patient;
+import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.support.modules.registry.IntygModule;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
@@ -77,6 +78,7 @@ import se.inera.intyg.webcert.web.service.intyg.dto.IntygWithNotificationsReques
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygWithNotificationsResponse;
 import se.inera.intyg.webcert.web.service.log.LogService;
 import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
+import se.inera.intyg.webcert.web.service.log.factory.LogRequestFactory;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.notification.FragorOchSvarCreator;
 import se.inera.intyg.webcert.web.service.notification.NotificationService;
@@ -179,6 +181,9 @@ public class IntygServiceTest {
 
     @Mock
     private LogService logservice;
+
+    @Mock
+    private LogRequestFactory logRequestFactory;
 
     @Mock
     private WebCertUser webcertUser;
@@ -321,6 +326,12 @@ public class IntygServiceTest {
         typeInfo.setTypVersion(CERTIFICATE_TYPE_VERSION_1_0);
         when(getCertificateTypeInfoService.getCertificateTypeInfo(anyString(),
                 any(GetCertificateTypeInfoType.class))).thenReturn(typeInfo);
+    }
+
+    @Before
+    public void setupPdlLogging() {
+        when(logRequestFactory.createLogRequestFromUtlatande(any(Utlatande.class))).thenReturn(new LogRequest());
+        when(logRequestFactory.createLogRequestFromUtlatande(any(Utlatande.class), anyBoolean())).thenReturn(new LogRequest());
     }
 
     @Test

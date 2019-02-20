@@ -47,9 +47,9 @@ import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.converter.util.IntygConverterUtil;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
-import se.inera.intyg.webcert.web.service.log.LogRequestFactory;
 import se.inera.intyg.webcert.web.service.log.LogService;
 import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
+import se.inera.intyg.webcert.web.service.log.factory.LogRequestFactory;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.util.UpdateUserUtil;
 import se.inera.intyg.webcert.web.service.utkast.dto.AbstractCreateCopyRequest;
@@ -81,6 +81,9 @@ public abstract class AbstractUtkastBuilder<T extends AbstractCreateCopyRequest>
 
     @Autowired
     private LogService logService;
+
+    @Autowired
+    private LogRequestFactory logRequestFactory;
 
     /*
      * (non-Javadoc)
@@ -186,7 +189,7 @@ public abstract class AbstractUtkastBuilder<T extends AbstractCreateCopyRequest>
         if (!coherentJournaling || enforceEnhet) {
             verifyEnhetsAuth(orgUtkast.getVardgivarId(), orgUtkast.getEnhetsId(), true);
         } else {
-            LogRequest logRequest = LogRequestFactory.createLogRequestFromUtkast(orgUtkast, coherentJournaling);
+            LogRequest logRequest = logRequestFactory.createLogRequestFromUtkast(orgUtkast, coherentJournaling);
             logService.logReadIntyg(logRequest);
         }
 

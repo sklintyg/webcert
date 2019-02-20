@@ -53,10 +53,10 @@ import se.inera.intyg.webcert.persistence.utkast.repository.UtkastFilter;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.converter.util.IntygConverterUtil;
 import se.inera.intyg.webcert.web.service.dto.Lakare;
-import se.inera.intyg.webcert.web.service.log.LogRequestFactory;
 import se.inera.intyg.webcert.web.service.log.LogService;
 import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
 import se.inera.intyg.webcert.web.service.log.dto.LogUser;
+import se.inera.intyg.webcert.web.service.log.factory.LogRequestFactory;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.notification.NotificationService;
 import se.inera.intyg.webcert.web.service.referens.ReferensService;
@@ -108,6 +108,9 @@ public class UtkastServiceImpl implements UtkastService {
 
     @Autowired
     private LogService logService;
+
+    @Autowired
+    private LogRequestFactory logRequestFactory;
 
     @Autowired
     private NotificationService notificationService;
@@ -305,7 +308,7 @@ public class UtkastServiceImpl implements UtkastService {
         // Notify stakeholders when a draft is deleted
         sendNotification(utkast, Event.DELETED);
 
-        LogRequest logRequest = LogRequestFactory.createLogRequestFromUtkast(utkast);
+        LogRequest logRequest = logRequestFactory.createLogRequestFromUtkast(utkast);
         logService.logDeleteIntyg(logRequest);
     }
 
@@ -330,7 +333,7 @@ public class UtkastServiceImpl implements UtkastService {
     @Transactional(readOnly = true)
     public Utkast getDraft(String intygId, String intygType) {
         Utkast utkast = getIntygAsDraft(intygId, intygType);
-        LogRequest logRequest = LogRequestFactory.createLogRequestFromUtkast(utkast);
+        LogRequest logRequest = logRequestFactory.createLogRequestFromUtkast(utkast);
         abortIfUserNotAuthorizedForUnit(utkast.getVardgivarId(), utkast.getEnhetsId());
 
         // Log read to PDL
@@ -422,7 +425,7 @@ public class UtkastServiceImpl implements UtkastService {
         LOG.debug("Utkast '{}' updated", utkast.getIntygsId());
 
         if (createPdlLogEvent) {
-            LogRequest logRequest = LogRequestFactory.createLogRequestFromUtkast(utkast);
+            LogRequest logRequest = logRequestFactory.createLogRequestFromUtkast(utkast);
             logService.logUpdateIntyg(logRequest);
 
             monitoringService.logUtkastEdited(utkast.getIntygsId(), utkast.getIntygsTyp());
@@ -490,7 +493,12 @@ public class UtkastServiceImpl implements UtkastService {
 
         if (optionalDraftPnr.isPresent()) {
             // Spara undan det gamla personnummret temporärt
-            String oldPersonId = optionalDraftPnr.get().getPersonnummer();
+            String oldPersonId;
+            if (request.getOldPersonnummer() != null) {
+                oldPersonId = request.getOldPersonnummer().getPersonnummer();
+            } else {
+                oldPersonId = optionalDraftPnr.get().getPersonnummer();
+            }
             webCertUserService.getUser().getParameters().setBeforeAlternateSsn(oldPersonId);
         }
 
@@ -553,7 +561,8 @@ public class UtkastServiceImpl implements UtkastService {
         LOG.debug("Validating Intyg '{}' with type '{}'", intygId, intygType);
 
         try {
-            ModuleApi moduleApi = moduleRegistry.getModuleApi(intygType, moduleRegistry.resolveVersionFromUtlatandeJson(draftAsJson));
+            ModuleApi moduleApi = moduleRegistry.getModuleApi(intygType,
+                    moduleRegistry.resolveVersionFromUtlatandeJson(intygType, draftAsJson));
             ValidateDraftResponse validateDraftResponse = moduleApi.validateDraft(draftAsJson);
 
             return convertToDraftValidation(validateDraftResponse);
@@ -636,7 +645,7 @@ public class UtkastServiceImpl implements UtkastService {
         sendNotification(utkast, Event.REVOKED);
 
         // Third: create a log event
-        LogRequest logRequest = LogRequestFactory.createLogRequestFromUtkast(utkast);
+        LogRequest logRequest = logRequestFactory.createLogRequestFromUtkast(utkast);
         logService.logRevokeIntyg(logRequest);
     }
 
@@ -775,7 +784,7 @@ public class UtkastServiceImpl implements UtkastService {
 
     private void logCreateDraftPDL(Utkast utkast, LogUser logUser) {
 
-        LogRequest logRequest = LogRequestFactory.createLogRequestFromUtkast(utkast);
+        LogRequest logRequest = logRequestFactory.createLogRequestFromUtkast(utkast);
         logService.logCreateIntyg(logRequest, logUser);
     }
 

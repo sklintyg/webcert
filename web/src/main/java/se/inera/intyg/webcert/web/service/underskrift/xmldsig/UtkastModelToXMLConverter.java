@@ -18,10 +18,20 @@
  */
 package se.inera.intyg.webcert.web.service.underskrift.xmldsig;
 
+import java.io.IOException;
+import java.io.StringWriter;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+import javax.xml.namespace.QName;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
@@ -31,14 +41,6 @@ import se.riv.clinicalprocess.healthcond.certificate.registerCertificate.v3.Regi
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.DatePeriodType;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.PartialDateType;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
-
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.namespace.QName;
-import java.io.IOException;
-import java.io.StringWriter;
 
 @Service
 public class UtkastModelToXMLConverter {
@@ -72,7 +74,8 @@ public class UtkastModelToXMLConverter {
 
     private Intyg utkastToJAXBObject(String intygsTyp, String json) {
         try {
-            ModuleApi moduleApi = intygModuleRegistry.getModuleApi(intygsTyp, intygModuleRegistry.resolveVersionFromUtlatandeJson(json));
+            ModuleApi moduleApi = intygModuleRegistry.getModuleApi(intygsTyp,
+                    intygModuleRegistry.resolveVersionFromUtlatandeJson(intygsTyp, json));
             Utlatande utlatandeFromJson = moduleApi.getUtlatandeFromJson(json);
             return moduleApi.getIntygFromUtlatande(utlatandeFromJson);
         } catch (ModuleNotFoundException | IOException | ModuleException e) {

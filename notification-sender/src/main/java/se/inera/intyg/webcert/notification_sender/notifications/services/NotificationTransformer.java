@@ -18,11 +18,17 @@
  */
 package se.inera.intyg.webcert.notification_sender.notifications.services;
 
-import com.google.common.annotations.VisibleForTesting;
+import static se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders.INTYG_TYPE_VERSION;
+
+import java.io.IOException;
+
 import org.apache.camel.Message;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import com.google.common.annotations.VisibleForTesting;
+
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
@@ -33,8 +39,6 @@ import se.inera.intyg.common.support.modules.support.api.notification.SchemaVers
 import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
 import se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
-
-import java.io.IOException;
 
 public class NotificationTransformer {
     private static final Logger LOG = LoggerFactory.getLogger(NotificationTransformer.class);
@@ -71,8 +75,8 @@ public class NotificationTransformer {
         }
 
         if (SchemaVersion.VERSION_3.equals(notificationMessage.getVersion())) {
-            ModuleApi moduleApi = moduleRegistry.getModuleApi(notificationMessage.getIntygsTyp(),
-                    moduleRegistry.resolveVersionFromUtlatandeJson(notificationMessage.getUtkast()));
+            String intygTypeVersion = resolveIntygTypeVersion(notificationMessage.getIntygsTyp(), message, notificationMessage.getUtkast());
+            ModuleApi moduleApi = moduleRegistry.getModuleApi(notificationMessage.getIntygsTyp(), intygTypeVersion);
 
             Utlatande utlatande = moduleApi.getUtlatandeFromJson(notificationMessage.getUtkast());
             Intyg intyg = moduleApi.getIntygFromUtlatande(utlatande);
@@ -84,5 +88,13 @@ public class NotificationTransformer {
                     + notificationMessage.getIntygsTyp() + "'");
 
         }
+    }
+
+    // Prefer using header for INTYG_TYPE_VERSION before trying to parse from body.
+    private String resolveIntygTypeVersion(String intygsTyp, Message message, String json) throws ModuleNotFoundException {
+        if (message.getHeader(INTYG_TYPE_VERSION) != null) {
+            return (String) message.getHeader(INTYG_TYPE_VERSION);
+        }
+        return moduleRegistry.resolveVersionFromUtlatandeJson(intygsTyp, json);
     }
 }

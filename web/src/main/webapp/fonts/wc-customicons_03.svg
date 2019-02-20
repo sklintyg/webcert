@@ -1,7 +1,7 @@
 <?xml version="1.0" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
 <svg xmlns="http://www.w3.org/2000/svg">
-<metadata>Copyright (C) 2018 by original authors @ fontello.com</metadata>
+<metadata>Copyright (C) 2019 by original authors @ fontello.com</metadata>
 <defs>
 <font id="fontello" horiz-adv-x="1000" >
 <font-face font-family="fontello" font-weight="400" font-stretch="normal" units-per-em="1000" ascent="850" descent="-150" />
@@ -37,6 +37,10 @@
 <glyph glyph-name="down" unicode="&#xe80e;" d="M0 227l194-189 195-188 194 188 195 189h-386-392z" horiz-adv-x="784" />
 
 <glyph glyph-name="up" unicode="&#xe80f;" d="M392 474h-392l194 188 198 188 194-188 195-188h-389z" horiz-adv-x="784" />
+
+<glyph glyph-name="wc-ikon-14a" unicode="&#xe810;" d="M372 752v-77l127-127h73v-73l265-265v640h-640l98-98z m265 0h135v-135h-135z m0-204h135v-135h-135z m-200 204h135v-135h-135z m-433 23l167-167v-758h233v298h202v-298h231v91l92-91 67 67-925 925z m433-433l127-127h-127z m-200 200l128-129h-128z m0-192h135v-135h-135z m759-433l0 0h0z" horiz-adv-x="1000" />
+
+<glyph glyph-name="angle-double-right" unicode="&#xf101;" d="M332 314q0-7-5-12l-261-261q-5-5-12-5t-13 5l-28 28q-6 6-6 13t6 13l219 219-219 220q-6 5-6 12t6 13l28 28q5 6 13 6t12-6l261-260q5-5 5-13z m214 0q0-7-5-12l-260-261q-6-5-13-5t-13 5l-28 28q-5 6-5 13t5 13l219 219-219 220q-5 5-5 12t5 13l28 28q6 6 13 6t13-6l260-260q5-5 5-13z" horiz-adv-x="571.4" />
 </font>
 </defs>
 </svg>

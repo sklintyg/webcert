@@ -31,6 +31,7 @@ var doiUtkast = BaseSocUtkast._extend({
         init._super.call(this);
         this.intygType = 'doi';
         this.intygTypeVersion = '1.0';
+        this.skapaDoiKnapp = element(by.id('button1doi-info-dialog'));
         this.identitetStyrktGenom = { //identitetStyrktGenom är inte samma element som i TS intyg
             container: element(by.id('form_identitetStyrkt')),
             inputText: element(by.id('identitetStyrkt'))

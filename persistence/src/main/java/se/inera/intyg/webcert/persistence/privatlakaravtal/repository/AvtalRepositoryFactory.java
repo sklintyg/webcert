@@ -20,21 +20,19 @@ package se.inera.intyg.webcert.persistence.privatlakaravtal.repository;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
-
 import javax.annotation.PostConstruct;
 
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ResourceUtils;
 
 import com.google.common.base.Charsets;
-import com.google.common.io.Resources;
-
 import se.inera.intyg.webcert.persistence.privatlakaravtal.model.Avtal;
 
 /**
@@ -46,30 +44,29 @@ public class AvtalRepositoryFactory {
     private static final Logger LOG = LoggerFactory.getLogger(AvtalRepositoryFactory.class);
 
     @Value("${privatepractitioner.defaultterms.file}")
-    private String fileUrl;
-
-    @Autowired
-    private ResourceLoader resourceLoader;
+    private String location;
 
     @Autowired
     private AvtalRepository avtalRepository;
+
+    @Autowired
+    ResourceLoader resourceLoader;
 
     @PostConstruct
     @Transactional
     public void populateStandardAvtal() {
 
+        // FIXME: Legacy support, can be removed when local config has been substituted by refdata (INTYG-7701)
+        if (!ResourceUtils.isUrl(location)) {
+            location = "file:" + location;
+        }
+
         Integer latestAvtalVersion = avtalRepository.getLatestAvtalVersion();
         if (latestAvtalVersion == -1) {
             try {
-                Resource resource = resourceLoader.getResource(fileUrl);
-
-                if (!resource.exists()) {
-                    LOG.error("Could not read privatlakare avtal file since the resource '{}' does not exist", fileUrl);
-                    return;
-                }
-
-                String avtalText = Resources.toString(resource.getURL(), Charsets.UTF_8);
-                Avtal avtal = new Avtal();
+                final String avtalText = IOUtils.toString(resourceLoader.getResource(location).getInputStream(),
+                        Charsets.UTF_8);
+                final Avtal avtal = new Avtal();
                 avtal.setAvtalText(avtalText);
                 avtal.setAvtalVersion(1);
                 avtal.setVersionDatum(LocalDateTime.now());

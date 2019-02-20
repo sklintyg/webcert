@@ -10,17 +10,17 @@ sourceSets.test.output.classesDir = new File(buildDir, "classes/scala")
 
 task gatling(dependsOn: 'build') {
     doLast {
-        logger.lifecycle(" ---- Executing all Gatling scenarios from: ${sourceSets.test.output.classesDir} ----")
-        sourceSets.test.output.classesDirs.singleFile.eachFileRecurse { file ->
+        logger.lifecycle(" ---- Executing all Gatling scenarios from: ${sourceSets.test.output.getClassesDirs().getSingleFile()} ----")
+        sourceSets.test.output.getClassesDirs().getSingleFile().eachFileRecurse { file ->
             if (file.isFile() && !isUtilFile(file)) {
-                def gatlingScenarioClass = (file.getPath() - (sourceSets.test.output.classesDir.getPath() + File.separator) - '.class')
+                def gatlingScenarioClass = (file.getPath() - (sourceSets.test.output.getClassesDirs().getSingleFile().getPath() + File.separator) - '.class')
                         .replace(File.separator, '.')
                 javaexec {
                     main = 'io.gatling.app.Gatling'
                     jvmArgs "-DbaseUrl=${gatlingBaseUrl}"
                     classpath = sourceSets.test.runtimeClasspath
                     args '-sf', sourceSets.test.output,
-                            '-bf', sourceSets.test.output.classesDir,
+                            '-bf', sourceSets.test.output.getClassesDirs().getSingleFile(),
                             '-s', gatlingScenarioClass,
                             '-rf', 'build/reports/gatling'
                 }
@@ -37,7 +37,7 @@ task gatlingSingleTest(dependsOn: 'build') {
             jvmArgs "-DbaseUrl=${gatlingBaseUrl}"
             classpath = sourceSets.test.runtimeClasspath
             args '-sf', sourceSets.test.output,
-                    '-bf', sourceSets.test.output.classesDir,
+                    '-bf', sourceSets.test.output.getClassesDirs().getSingleFile(),
                     '-s', "se.inera.webcert.$simulation",
                     '-rf', 'build/reports/gatling'
         }

@@ -226,12 +226,12 @@ Color and background should be specified at the extension point, eg:
 
  @font-face {
   font-family: 'wc-customicons_03';
-  src: url('/fonts/wc-customicons_03.eot?43248863');
-  src: url('/fonts/wc-customicons_03.eot?43248863#iefix') format('embedded-opentype'),
-       url('/fonts/wc-customicons_03.woff2?43248863') format('woff2'),
-       url('/fonts/wc-customicons_03.woff?43248863') format('woff'),
-       url('/fonts/wc-customicons_03.ttf?43248863') format('truetype'),
-       url('/fonts/wc-customicons_03.svg?43248863#wc-customicons_03') format('svg');
+  src: url('/fonts/wc-customicons_03.eot?43248868');
+  src: url('/fonts/wc-customicons_03.eot?43248868#iefix') format('embedded-opentype'),
+       url('/fonts/wc-customicons_03.woff2?43248868') format('woff2'),
+       url('/fonts/wc-customicons_03.woff?43248868') format('woff'),
+       url('/fonts/wc-customicons_03.ttf?43248868') format('truetype'),
+       url('/fonts/wc-customicons_03.svg?43248868#wc-customicons_03') format('svg');
   font-weight: normal;
   font-style: normal;
 }
@@ -297,6 +297,9 @@ Color and background should be specified at the extension point, eg:
 .icon-wc-ikon-42:before { content: '\e80d'; } /* '' */
 .icon-wc-ikon-43:before { content: '\e80e'; } /* '' */
 .icon-wc-ikon-44:before { content: '\e80f'; } /* '' */
+.icon-wc-ikon-14a:before { content: '\e810'; } /* '' */
+.icon-wc-ikon-49:before { content: '\f101'; } /* '' */
+
 
 /*
   Sizes

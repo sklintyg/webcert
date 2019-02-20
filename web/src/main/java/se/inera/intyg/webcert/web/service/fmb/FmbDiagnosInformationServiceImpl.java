@@ -66,8 +66,6 @@ public class FmbDiagnosInformationServiceImpl extends FmbBaseService implements 
     private final DiagnosService diagnosService;
     private final FmbSjukfallService sjukfallService;
     private final AuthorityAsserter authorityAsserter;
-    private final DiagnosInformationRepository repository;
-
 
     public FmbDiagnosInformationServiceImpl(
             final DiagnosService diagnosService,

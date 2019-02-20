@@ -87,13 +87,14 @@ describe('Lisjp attic tests', function() {
         });
 
         it('should restore anledningTillKontakt if kontaktMedFk is set to yes again', function() {
+            LisjpUtkastPage.enableAutosave();
             LisjpUtkastPage.kontaktMedFK.sendKeys(protractor.Key.SPACE);
 
             expect(LisjpUtkastPage.anledningTillKontakt.getAttribute('value')).toBe('Egentligen inte');
         });
     });
 
-    describe('smittskydd', function() {
+    xdescribe('smittskydd', function() {
         it('Tillaggsfraga should be hidden if smittskydd is set to yes', function() {
             LisjpUtkastPage.smittskydd.sendKeys(protractor.Key.SPACE);
 
@@ -105,7 +106,6 @@ describe('Lisjp attic tests', function() {
         });
 
         it('Tillaggsfraga should be back when smittskydd is set to no again', function() {
-            LisjpUtkastPage.enableAutosave();
             LisjpUtkastPage.smittskydd.sendKeys(protractor.Key.SPACE);
 
             expect(LisjpUtkastPage.konsekvenser.funktionsnedsattning.getAttribute('value')).toBe('funktionsnedsättning');
