@@ -1,24 +1,26 @@
 apply plugin: 'com.moowork.grunt'
+apply plugin: 'idea'
+
+idea {
+    module {
+        excludeDirs += file('node_modules')
+    }
+}
 
 grunt {
     colors = System.properties['gruntColors'] ? System.properties['gruntColors'].toBoolean() : true
 }
 
 node {
-    version = '10.10.0'
+    version = "${nodeJsVersion}"
+    npmVersion = "${npmVersion}"
     download = true
     distBaseUrl = 'https://build-inera.nordicmedtest.se/node/'
-    workDir = projectDir
-    nodeModulesDir = projectDir
+    workDir = file("${rootProject.projectDir}/.gradle/nodejs")
+    npmWorkDir = file("${rootProject.projectDir}/.gradle/npm")
 }
 
-tasks.npmInstall.inputs.files("$projectDir/webcertTestTools/package.json")
-
-tasks.yarn {
-    outputs.upToDateWhen { false }
-}
-
-task protractorTests(type: NodeTask, dependsOn: yarn) {
+task protractorTests(type: NodeTask, dependsOn: npmInstall) {
     outputs.upToDateWhen { false }
     def environment = System.properties['protractor.env'] ?: "dev"
 
