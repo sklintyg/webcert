@@ -50,6 +50,7 @@ import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.common.support.modules.support.api.dto.CreateDraftCopyHolder;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
 import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
+import se.inera.intyg.infra.integration.hsa.model.SelectableVardenhet;
 import se.inera.intyg.infra.security.authorities.validation.AuthoritiesValidator;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.IntygUser;
@@ -69,6 +70,9 @@ import se.inera.intyg.webcert.web.integration.util.HoSPersonHelper;
 import se.inera.intyg.webcert.web.integration.validators.ResultValidator;
 import se.inera.intyg.webcert.web.service.intyg.converter.IntygModuleFacade;
 import se.inera.intyg.webcert.web.service.intyg.converter.IntygModuleFacadeException;
+import se.inera.intyg.webcert.web.service.log.LogService;
+import se.inera.intyg.webcert.web.service.log.dto.LogUser;
+import se.inera.intyg.webcert.web.service.log.factory.LogRequestFactory;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
@@ -119,6 +123,12 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
 
     @Autowired
     private IntygModuleFacade moduleFacade;
+
+    @Autowired
+    private LogService logService;
+
+    @Autowired
+    private LogRequestFactory logRequestFactory;
 
     @Lazy
     @Autowired
@@ -223,7 +233,7 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
         ModuleApi moduleApi = getModuleApi(intygsTyp, latestIntygTypeVersion);
         Optional<GetCopyFromCandidate> copyFromCandidate = getCopyFromCandidate(moduleApi, user, personnummer);
         if (copyFromCandidate.isPresent()) {
-            decorateNewDraftFromCopyCandidate(utkast, moduleApi, copyFromCandidate.get(), intygsTyp);
+            decorateNewDraftFromCopyCandidate(utkast, moduleApi, copyFromCandidate.get(), intygsTyp, user);
         }
 
         return createSuccessResponse(utkast.getIntygsId(), invokingUnitHsaId);
@@ -244,7 +254,7 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
     }
 
     private void decorateNewDraftFromCopyCandidate(Utkast utkast, ModuleApi moduleApi, GetCopyFromCandidate getCopyFromCandidate,
-            String sourceIntygsTyp) {
+            String sourceIntygsTyp, IntygUser intygUser) {
 
         try {
             Utlatande utkastUtlatande = moduleApi.getUtlatandeFromJson(utkast.getModel());
@@ -260,12 +270,28 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
             utkast.setModel(updatedUtkastModel);
             utkastRepository.save(utkast);
 
+            // PDL Log read access to copyFromCandidate Utlatande
+            logService.logReadIntyg(logRequestFactory.createLogRequestFromUtlatande(copyFromUtlatande, false), createLogUser(intygUser));
+
         } catch (ModuleException | IOException | IntygModuleFacadeException e) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM,
                     "Failed to get decorateNewDraftFromCopyCandidate for intygsType " + sourceIntygsTyp, e);
 
         }
 
+    }
+
+    private LogUser createLogUser(IntygUser intygUser) {
+            SelectableVardenhet valdVardenhet = intygUser.getValdVardenhet();
+            SelectableVardenhet valdVardgivare = intygUser.getValdVardgivare();
+
+            return new LogUser.Builder(intygUser.getHsaId(), valdVardenhet.getId(), valdVardgivare.getId())
+                    .userName(intygUser.getNamn())
+                    .userAssignment(intygUser.getSelectedMedarbetarUppdragNamn())
+                    .userTitle(intygUser.getTitel())
+                    .enhetsNamn(valdVardenhet.getNamn())
+                    .vardgivareNamn(valdVardgivare.getNamn())
+                    .build();
     }
 
     protected Optional<GetCopyFromCandidate> getCopyFromCandidate(ModuleApi moduleApi, IntygUser user,
