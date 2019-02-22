@@ -30,23 +30,22 @@ Cypress.Commands.add("loginArnoldDeep", () => {
 	});
 });
 
+// Ganska specifik funktion. Överväg att flytta till spec där den används (om ej i flera specs)
 Cypress.Commands.add("loginArnoldOchGaTillValjPatient", () => {
 	cy.loginArnoldNormal().then(() => {
-		// Hur gör man automatisk redirect så som GUI:t gör?
 		cy.visit('/#/create/choose-patient/index');
 	})
 })
 
+// Ganska specifik funktion. Överväg att flytta till spec där den används (om ej i flera specs)
 Cypress.Commands.add("goToCreateCertForTolvanAsArnold", () => {
 	cy.loginArnoldNormal().then(() => {
 		cy.visit('/#/create/choose-intyg-type/19121212-1212/index');
 	});
 });
 
-// Denna skapar en LISJP för Tolvan Tolvansson som Arnold på Alfa-enheten
+// Denna skapar en LISJP för Tolvan Tolvansson som Arnold på Alfa-enheten.
 Cypress.Commands.add("createLisjpDraftNonGeneric", () => {
-	// Kräver inte att läkare är inloggad
-	const cheerio = require('cheerio'); // ta bort
 	cy.request({
 		method: 'POST',
 		url: '/services/create-draft-certificate/v3.0',
@@ -55,7 +54,6 @@ Cypress.Commands.add("createLisjpDraftNonGeneric", () => {
 		expect(resp.status).to.equal(200);
 
 		cy.wrap(resp).its('body').then((body) => {
-
 			// Lokalisera intygs-id:t i response body och returnera värdet.
 			// Det ligger mellan desa två strängar:
 			var substringStart = "ns3:extension";
@@ -65,7 +63,6 @@ Cypress.Commands.add("createLisjpDraftNonGeneric", () => {
 			var subStringEndIndex = body.indexOf(subStringEnd);
 
 			var certificateId = body.substring(subStringStartIndex + substringStart.length + 1, subStringEndIndex);
-			cy.log("cert-id i body: " + certificateId);
 
 			// Utan detta klagar Cypress på att man blandar synkron och asynkron kod
 			cy.wrap(certificateId).then((id) => {

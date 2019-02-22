@@ -1,24 +1,38 @@
-Cypress.Commands.add("fillOutMaxLisjpForTolvanTolvansson", aliasesFromCaller => {
-    ////////////////// KOPIERAT FRÅN "NormalInloggning" /////////////////////
+Cypress.Commands.add("fillOutMaxLisjp", aliasesFromCaller => {
+
+    // Beräkna datum både framåt och bakåt från idag
+    const idagPlus1 = Cypress.moment().add(1,  'days').format('YYYY-MM-DD'); // 25%  sjukskrivning start
+    const idagPlus11 = Cypress.moment().add(11, 'days').format('YYYY-MM-DD'); // 25%  sjukskrivning slut
+    const idagPlus12 = Cypress.moment().add(12, 'days').format('YYYY-MM-DD'); // 50%  sjukskrivning start
+    const idagPlus19 = Cypress.moment().add(19, 'days').format('YYYY-MM-DD'); // 50%  sjukskrivning slut
+    const idagPlus20 = Cypress.moment().add(20, 'days').format('YYYY-MM-DD'); // 75%  sjukskrivning start
+    const idagPlus28 = Cypress.moment().add(28, 'days').format('YYYY-MM-DD'); // 75%  sjukskrivning slut
+    const idagPlus29 = Cypress.moment().add(29, 'days').format('YYYY-MM-DD'); // 100% sjukskrivning start
+    const idagPlus41 = Cypress.moment().add(41, 'days').format('YYYY-MM-DD'); // 100% sjukskrivning slut
+    const idagMinus5 = Cypress.moment().subtract(5,  'days').format('YYYY-MM-DD');  // Patient examination date
+    const idagMinus6 = Cypress.moment().subtract(6,  'days').format('YYYY-MM-DD');  // Date of phone contact with patient
+    const idagMinus14 = Cypress.moment().subtract(14, 'days').format('YYYY-MM-DD'); // Midwife's assessment date
+    const idagMinus15 = Cypress.moment().subtract(15, 'days').format('YYYY-MM-DD'); // Journal entry date
+
     // -------------------- 'Intyget är baserat på' --------------------
     cy.contains(aliasesFromCaller.lisjpData.minUndersökning).parentsUntil('.ue-del-fraga').within(($form) => {
         cy.get('[type="checkbox"]').check();
-        cy.get(aliasesFromCaller.lisjpData.datumUndersökning).clear().type(aliasesFromCaller.todayMinus5);
+        cy.get(aliasesFromCaller.lisjpData.datumUndersökning).clear().type(idagMinus5);
     });
 
     cy.contains(aliasesFromCaller.lisjpData.telefonKontakt).parentsUntil('.ue-del-fraga').within(($form) => {
         cy.get('[type="checkbox"]').check();
-        cy.get(aliasesFromCaller.lisjpData.datumTelefonkontakt).clear().type(aliasesFromCaller.todayMinus6);
+        cy.get(aliasesFromCaller.lisjpData.datumTelefonkontakt).clear().type(idagMinus6);
     });
 
     cy.contains(aliasesFromCaller.lisjpData.journalUppgifterFrån).parentsUntil('.ue-del-fraga').within(($form) => {
         cy.wrap($form).get('[type="checkbox"]').check();
-        cy.wrap($form).get(aliasesFromCaller.lisjpData.datumJournalUppgifterFrån).clear().type(aliasesFromCaller.todayMinus15);
+        cy.wrap($form).get(aliasesFromCaller.lisjpData.datumJournalUppgifterFrån).clear().type(idagMinus15);
     });
 
     cy.contains(aliasesFromCaller.lisjpData.annat).parentsUntil('.ue-del-fraga').within(($form) => {
         cy.get('[type="checkbox"]').check();
-        cy.get(aliasesFromCaller.lisjpData.datumAnnat).clear().type(aliasesFromCaller.todayMinus14);
+        cy.get(aliasesFromCaller.lisjpData.datumAnnat).clear().type(idagMinus14);
     });
 
     // Denna textruta dyker upp efter att "Annat" har klickats i
@@ -84,32 +98,29 @@ Cypress.Commands.add("fillOutMaxLisjpForTolvanTolvansson", aliasesFromCaller => 
 
             cy.wrap($checkboxes.eq(0)).parent().parent().parent().parent().within(($row) => { // Hämta raden med 25% sjukskrivning
                 cy.get('[type="text"]').then(($textFields) => {
-                    //Cypress.moment().add(1,  'days').format('YYYY-MM-DD')).as('todayPlus1');  // 25%  sjukskrivning start
-                    const todayPlus1 = Cypress.moment().add(1,  'days').format('YYYY-MM-DD');
-                    cy.wrap($textFields.eq(0)).clear().type(todayPlus1);
-                    //cy.wrap($textFields.eq(0)).clear().type(aliasesFromCaller.todayPlus1);
-                    cy.wrap($textFields.eq(1)).clear().type(aliasesFromCaller.todayPlus11);
+                    cy.wrap($textFields.eq(0)).clear().type(idagPlus1);
+                    cy.wrap($textFields.eq(1)).clear().type(idagPlus11);
                 });
             });
 
             cy.wrap($checkboxes.eq(1)).parent().parent().parent().parent().within(($row) => { // Hämta raden med 50% sjukskrivning
                 cy.get('[type="text"]').then(($textFields) => {
-                    cy.wrap($textFields.eq(0)).clear().type(aliasesFromCaller.todayPlus12);
-                    cy.wrap($textFields.eq(1)).clear().type(aliasesFromCaller.todayPlus19);
+                    cy.wrap($textFields.eq(0)).clear().type(idagPlus12);
+                    cy.wrap($textFields.eq(1)).clear().type(idagPlus19);
                 });
             });
 
             cy.wrap($checkboxes.eq(2)).parent().parent().parent().parent().within(($row) => { // Hämta raden med 75% sjukskrivning
                 cy.get('[type="text"]').then(($textFields) => {
-                    cy.wrap($textFields.eq(0)).clear().type(aliasesFromCaller.todayPlus20);
-                    cy.wrap($textFields.eq(1)).clear().type(aliasesFromCaller.todayPlus28);
+                    cy.wrap($textFields.eq(0)).clear().type(idagPlus20);
+                    cy.wrap($textFields.eq(1)).clear().type(idagPlus28);
                 });
             });
 
             cy.wrap($checkboxes.eq(3)).parent().parent().parent().parent().within(($row) => { // Hämta raden med 100% sjukskrivning
                 cy.get('[type="text"]').then(($textFields) => {
-                    cy.wrap($textFields.eq(0)).clear().type(aliasesFromCaller.todayPlus29);
-                    cy.wrap($textFields.eq(1)).clear().type(aliasesFromCaller.todayPlus41);
+                    cy.wrap($textFields.eq(0)).clear().type(idagPlus29);
+                    cy.wrap($textFields.eq(1)).clear().type(idagPlus41);
                 });
             });
         });
@@ -152,8 +163,8 @@ Cypress.Commands.add("fillOutMaxLisjpForTolvanTolvansson", aliasesFromCaller => 
         .type(aliasesFromCaller.lisjpData.flerÅtgärderBeskrivning);
 
     // ----- 'Övriga upplysningar' -----//
-    //cy.contains('Övriga upplysningar').parent().parent().parent().find('textarea').type('Planerad partus ' + aliasesFromCaller.todayPlus41);
-    cy.get('[name="ovrigt"]').type(aliasesFromCaller.lisjpData.övrigaUpplysningarBeskrivning + aliasesFromCaller.todayPlus41); 	// Tillfällig lösning. Använder attribut 'name' eftersom textareans rubrik finns på fler än ett ställe
+    //cy.contains('Övriga upplysningar').parent().parent().parent().find('textarea').type('Planerad partus ' + idagPlus41);
+    cy.get('[name="ovrigt"]').type(aliasesFromCaller.lisjpData.övrigaUpplysningarBeskrivning + idagPlus41); 	// Tillfällig lösning. Använder attribut 'name' eftersom textareans rubrik finns på fler än ett ställe
 
     // ----- 'Kontakt' -----//
     cy.contains(aliasesFromCaller.lisjpData.kontaktaMig).parent().parent().parent().within(($elem) => {

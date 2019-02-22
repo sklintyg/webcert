@@ -1,0 +1,29 @@
+------------ Negativa testfall ------------
+Nu har vi nog enbart positiva testfall (som "ska gå bra").
+
+
+------------ Cookies ------------
+// Verifiera att Cookie-bannern syns och även att den försvinner när man trycker
+// på dess knapp. Vänta lite längre än normalt eftersom den animeras in.
+cy.contains(this.testData.cookieKnappText, {timeout: 10000}).click().then(() => {
+	cy.contains('cookies').should('not.exist');
+});
+// Verifiera att inte Cookie-bannern dyker upp eftersom den är accepterad genom att klicka på länk som navigerar till annan sida
+cy.contains('cookies').should('not.exist');
+
+
+
+------------ Siffran vid "osignerade intyg" ------------
+Obs! Om databasen töms (eller alla osignerade intyg tas bort av annan anledning)
+kommer elementet som letas efter inte finnas alls, och testfallet går fel
+// Spara antal osignerade intyg
+cy.get('#stat-unitstat-unsigned-certs-count').then(($unsignedCertsCount) => {
+	const initialNumber = parseInt($unsignedCertsCount.text());
+	cy.wrap(initialNumber).as('initialNumberOfUnsignedCerts');
+});
+// Efter att man har skapat ett nytt osignerat intyg, verifiera att siffran har ökat med 1
+cy.get('#stat-unitstat-unsigned-certs-count').then(($unsignedCertsCount) => {
+	const incrementedNumber = parseInt($unsignedCertsCount.text())
+	cy.log('Num unsigned certs after creating new draft: ' + incrementedNumber);
+	expect(incrementedNumber).to.eq(this.initialNumberOfUnsignedCerts + 1);
+});
