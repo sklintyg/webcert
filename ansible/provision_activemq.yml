@@ -1,8 +1,0 @@
----
-
-- hosts: activemq
-  become: yes
-  environment:
-    "{{ proxy_env }}"
-  roles:
-    - webcert-queues

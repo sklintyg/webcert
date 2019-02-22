@@ -1,8 +1,0 @@
----
-
-- hosts: mysql
-  become: yes 
-  environment:
-    "{{ proxy_env }}"
-  roles:
-    - webcert-mysql

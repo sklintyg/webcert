@@ -4,7 +4,6 @@ def buildVersion = "6.4.0.${BUILD_NUMBER}"
 
 def commonVersion = "3.10.0.+"
 def infraVersion = "3.10.0.+"
-def logsenderBaseVersion = "6.4.0.*" // Star is needed as this is a regexp
 def refDataVersion = "1.0.0.+"
 def versionFlags = "-DbuildVersion=${buildVersion} -DcommonVersion=${commonVersion} -DinfraVersion=${infraVersion} -DrefDataVersion=${refDataVersion}"
 
@@ -28,49 +27,9 @@ stage('build') {
     }
 }
 
-stage('deploy') {
+stage('tag') {
     node {
-        def logsenderVersion = util.latestVersion("se/inera/intyg/logsender/logsender", logsenderBaseVersion)
-        util.run {
-            ansiblePlaybook extraVars: [version: buildVersion, ansible_ssh_port: "22", deploy_from_repo: "false", logsender_version: "${logsenderVersion}"], \
-                installation: 'ansible-yum', inventory: 'ansible/inventory/webcert/test', playbook: 'ansible/deploy.yml'
-            util.waitForServer('https://webcert.inera.nordicmedtest.se/version.jsp')
-        }
-    }
-}
-
-stage('restAssured') {
-   node {
-       try {
-           shgradle "restAssuredTest -DbaseUrl=http://webcert.inera.nordicmedtest.se/ \
-                 ${versionFlags}"
-       } finally {
-           publishHTML allowMissing: true, alwaysLinkToLastBuild: true, keepAll: true, reportDir: 'web/build/reports/tests/restAssuredTest', \
-               reportFiles: 'index.html', reportName: 'RestAssured results'
-       }
-   }
-}
-
-stage('protractor') {
-   node {
-       try {
-           shgradle "protractorTests -Dprotractor.env=build-server ${versionFlags}"
-       } finally {
-           publishHTML allowMissing: true, alwaysLinkToLastBuild: true, keepAll: true, reportDir: 'test/reports', \
-               reportFiles: 'index.html', reportName: 'Protractor results'
-       }
-   }
-}
-
-stage('tag and upload') {
-    node {
-        shgradle "uploadArchives tagRelease ${versionFlags}"
-    }
-}
-
-stage('notify') {
-    node {
-        util.notifySuccess()
+        shgradle "tagRelease ${versionFlags}"
     }
 }
 
@@ -88,3 +47,10 @@ stage('propagate') {
         ]
     }
 }
+
+stage('notify') {
+    node {
+        util.notifySuccess()
+    }
+}
+
