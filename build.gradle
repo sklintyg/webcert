@@ -73,6 +73,7 @@ allprojects {
     repositories {
         jcenter()
         mavenLocal()
+        maven { url "https://build-inera.nordicmedtest.se/nexus/repository/snapshots/" }
         maven { url "https://build-inera.nordicmedtest.se/nexus/repository/releases/" }
         maven { url "http://repo.maven.apache.org/maven2" }
     }
@@ -87,7 +88,7 @@ allprojects {
     version = System.properties['buildVersion'] ?: '0-SNAPSHOT'
 
     compileJava.options.encoding = 'UTF-8'
-    
+
     sourceCompatibility = 1.8
     targetCompatibility = 1.8
 
