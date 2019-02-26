@@ -45,11 +45,8 @@ data:
   DATABASE_SERVER: "${mysql.service.host}"
   DATABASE_PORT: "${mysql.service.port}"
   LOG_QUEUENAME: "demo.log.queue"
-  CONFIG_DIR: "${config.folder}"
   MAIL_HOST: ""
   REDIS_KEY_TTL: "3600"
-  REFDATA_URL: "https://github.com/sklintyg/refdata/archive/master.zip"
-  RESOURCES_FOLDER: "classpath:refdata-master/src/main/resources"
 kind: ConfigMap
 metadata:
   name: webcert-demo-configmap-envvar
