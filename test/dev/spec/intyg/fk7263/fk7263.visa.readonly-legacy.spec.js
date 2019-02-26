@@ -30,7 +30,7 @@ var intygGenerator = wcTestTools.intygGenerator;
 
 describe('Verifiera att legacy fk7263-utkast kan visas med uv-ramverket', function() {
 
-
+    
     describe('Verifiera utkast', function() {
         var utkastId = 'fk7263-utkast-1';
 
