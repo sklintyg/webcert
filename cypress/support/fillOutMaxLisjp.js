@@ -1,5 +1,8 @@
 Cypress.Commands.add("fillOutMaxLisjp", aliasesFromCaller => {
 
+    const lisjpData = aliasesFromCaller.lisjpData;
+    expect(lisjpData).to.not.be.undefined;
+
     // Beräkna datum både framåt och bakåt från idag
     const idagPlus1 = Cypress.moment().add(1,  'days').format('YYYY-MM-DD'); // 25%  sjukskrivning start
     const idagPlus11 = Cypress.moment().add(11, 'days').format('YYYY-MM-DD'); // 25%  sjukskrivning slut
@@ -15,84 +18,84 @@ Cypress.Commands.add("fillOutMaxLisjp", aliasesFromCaller => {
     const idagMinus15 = Cypress.moment().subtract(15, 'days').format('YYYY-MM-DD'); // Journal entry date
 
     // -------------------- 'Intyget är baserat på' --------------------
-    cy.contains(aliasesFromCaller.lisjpData.minUndersökning).parentsUntil('.ue-del-fraga').within(($form) => {
+    cy.contains(lisjpData.minUndersökning).parentsUntil('.ue-del-fraga').within(($form) => {
         cy.get('[type="checkbox"]').check();
-        cy.get(aliasesFromCaller.lisjpData.datumUndersökning).clear().type(idagMinus5);
+        cy.get(lisjpData.datumUndersökning).clear().type(idagMinus5);
     });
 
-    cy.contains(aliasesFromCaller.lisjpData.telefonKontakt).parentsUntil('.ue-del-fraga').within(($form) => {
+    cy.contains(lisjpData.telefonKontakt).parentsUntil('.ue-del-fraga').within(($form) => {
         cy.get('[type="checkbox"]').check();
-        cy.get(aliasesFromCaller.lisjpData.datumTelefonkontakt).clear().type(idagMinus6);
+        cy.get(lisjpData.datumTelefonkontakt).clear().type(idagMinus6);
     });
 
-    cy.contains(aliasesFromCaller.lisjpData.journalUppgifterFrån).parentsUntil('.ue-del-fraga').within(($form) => {
+    cy.contains(lisjpData.journalUppgifterFrån).parentsUntil('.ue-del-fraga').within(($form) => {
         cy.wrap($form).get('[type="checkbox"]').check();
-        cy.wrap($form).get(aliasesFromCaller.lisjpData.datumJournalUppgifterFrån).clear().type(idagMinus15);
+        cy.wrap($form).get(lisjpData.datumJournalUppgifterFrån).clear().type(idagMinus15);
     });
 
-    cy.contains(aliasesFromCaller.lisjpData.annat).parentsUntil('.ue-del-fraga').within(($form) => {
+    cy.contains(lisjpData.annat).parentsUntil('.ue-del-fraga').within(($form) => {
         cy.get('[type="checkbox"]').check();
-        cy.get(aliasesFromCaller.lisjpData.datumAnnat).clear().type(idagMinus14);
+        cy.get(lisjpData.datumAnnat).clear().type(idagMinus14);
     });
 
     // Denna textruta dyker upp efter att "Annat" har klickats i
-    cy.get(aliasesFromCaller.lisjpData.annatTextarea).type(aliasesFromCaller.lisjpData.annatTextareaText);
+    cy.get(lisjpData.annatTextarea).type(lisjpData.annatTextareaText);
 
 
     // ----- 'I relation till vilken sysselsättning bedömer du arbetsförmågan?' -----
-    cy.contains(aliasesFromCaller.lisjpData.nuvarandeArbete).parent().within(($form) => {
+    cy.contains(lisjpData.nuvarandeArbete).parent().within(($form) => {
         cy.get('[type="checkbox"]').check();
     });
 
-    cy.contains(aliasesFromCaller.lisjpData.yrkeOchUppgifter).parent().parent().parent().within(($form) => {
-        cy.wrap($form).find('textarea').type(aliasesFromCaller.lisjpData.yrkeOchUppgifterText);
+    cy.contains(lisjpData.yrkeOchUppgifter).parent().parent().parent().within(($form) => {
+        cy.wrap($form).find('textarea').type(lisjpData.yrkeOchUppgifterText);
     });
 
-    cy.contains(aliasesFromCaller.lisjpData.checkboxTextNormaltFörekommandeJobb).parent().within(($form) => {
+    cy.contains(lisjpData.checkboxTextNormaltFörekommandeJobb).parent().within(($form) => {
         cy.get('[type="checkbox"]').check();
     });
 
-    cy.contains(aliasesFromCaller.lisjpData.checkboxTextVAB).parent().within(($form) => {
+    cy.contains(lisjpData.checkboxTextVAB).parent().within(($form) => {
         cy.get('[type="checkbox"]').check();
     });
 
-    cy.contains(aliasesFromCaller.lisjpData.checkboxStudier).parent().within(($form) => {
+    cy.contains(lisjpData.checkboxStudier).parent().within(($form) => {
         cy.get('[type="checkbox"]').check();
     });
 
     // ----- 'Diagnos' ----- //
-    cy.contains(aliasesFromCaller.lisjpData.diagnoserNedsattArbetsförmåga).parent().parent().parent().within(($form) => {
+    cy.contains(lisjpData.diagnoserNedsattArbetsförmåga).parent().parent().parent().within(($form) => {
         // Antag att ICD-10-SE är förvalt
-        cy.get('[placeholder=' + aliasesFromCaller.lisjpData.kodTextareaPlaceholder + ']').then(($codeFields) => {
-            cy.wrap($codeFields.eq(0)).type(aliasesFromCaller.lisjpData.diagnosKod1).wait(1000).type('{enter}');
-            cy.wrap($codeFields.eq(1)).type(aliasesFromCaller.lisjpData.diagnosKod2).wait(1000).type('{enter}');
-            cy.wrap($codeFields.eq(2)).type(aliasesFromCaller.lisjpData.diagnosKod3).wait(1000).type('{enter}');
+        cy.get('[placeholder=' + lisjpData.kodTextareaPlaceholder + ']').then(($codeFields) => {
+            cy.wrap($codeFields.eq(0)).type(lisjpData.diagnosKod1).wait(1000).type('{enter}');
+            cy.wrap($codeFields.eq(1)).type(lisjpData.diagnosKod2).wait(1000).type('{enter}');
+            cy.wrap($codeFields.eq(2)).type(lisjpData.diagnosKod3).wait(1000).type('{enter}');
         });
     });
 
     // ----- 'Sjukdomens konsekvenser för patienten' ----- //
-    cy.contains(aliasesFromCaller.lisjpData.beskrivObservationer).parent().parent().parent().within(($form) => {
-        cy.wrap($form).find('textarea').type(aliasesFromCaller.lisjpData.besvärsBeskrivning);
+    cy.contains(lisjpData.beskrivObservationer).parent().parent().parent().within(($form) => {
+        cy.wrap($form).find('textarea').type(lisjpData.besvärsBeskrivning);
     });
 
-    cy.contains(aliasesFromCaller.lisjpData.beskrivPatientBegränsning).parent().parent().parent().within(($form) => {
+    cy.contains(lisjpData.beskrivPatientBegränsning).parent().parent().parent().within(($form) => {
         cy.wrap($form).find('textarea')
-            .type(aliasesFromCaller.lisjpData.begränsningsBeskrivning);
+            .type(lisjpData.begränsningsBeskrivning);
     });
 
     // ----- 'Medicinsk behandling' ----- //
-    cy.contains(aliasesFromCaller.lisjpData.medicinskaBehandlingar).parent().parent().parent().within(($form) => {
+    cy.contains(lisjpData.medicinskaBehandlingar).parent().parent().parent().within(($form) => {
         cy.wrap($form).find('textarea')
-            .type(aliasesFromCaller.lisjpData.medicinskaBehandlingarBeskrivning);
+            .type(lisjpData.medicinskaBehandlingarBeskrivning);
     });
 
-    cy.contains(aliasesFromCaller.lisjpData.planeradeBehandlingar).parent().parent().parent().within(($form) => {
+    cy.contains(lisjpData.planeradeBehandlingar).parent().parent().parent().within(($form) => {
         cy.wrap($form).find('textarea')
-            .type(aliasesFromCaller.lisjpData.planeradeBehandlingarBeskrivning);
+            .type(lisjpData.planeradeBehandlingarBeskrivning);
     });
 
     // ----- 'Bedömning' -----//
-    cy.contains(aliasesFromCaller.lisjpData.arbetsförmågaBedömning).parent().parent().parent().within(($form) => {
+    cy.contains(lisjpData.arbetsförmågaBedömning).parent().parent().parent().within(($form) => {
         cy.get('[type="checkbox"]').within(($checkboxes) => {
             cy.wrap($checkboxes).check(); // Klickar i alla checkboxar i sektionen. "Från"-datum blir dagens datum
 
@@ -127,29 +130,29 @@ Cypress.Commands.add("fillOutMaxLisjp", aliasesFromCaller => {
     });
 
     cy
-        .contains(aliasesFromCaller.lisjpData.längreNedsattArbetsförmåga)
+        .contains(lisjpData.längreNedsattArbetsförmåga)
         .parent().parent().parent()
-        .find('textarea').type(aliasesFromCaller.lisjpData.längreNedsattArbetsförmågaText);
+        .find('textarea').type(lisjpData.längreNedsattArbetsförmågaText);
 
-    cy.contains(aliasesFromCaller.lisjpData.förläggaArbetstidAnnorlunda)
+    cy.contains(lisjpData.förläggaArbetstidAnnorlunda)
         .parent().parent().parent().within(($elem) => {
             cy.get('[type="radio"]').eq(0).check(); // Första radioknappen är "Ja"
         });
 
-    cy.contains(aliasesFromCaller.lisjpData.arbetstidAnnorlundaMedicinskaSkäl).parent().parent().parent().find('textarea')
-        .type(aliasesFromCaller.lisjpData.arbetstidAnnorlundaMedicinskaSkälBeskrivning);
+    cy.contains(lisjpData.arbetstidAnnorlundaMedicinskaSkäl).parent().parent().parent().find('textarea')
+        .type(lisjpData.arbetstidAnnorlundaMedicinskaSkälBeskrivning);
 
-    cy.contains(aliasesFromCaller.lisjpData.resaMöjliggörArbete)
+    cy.contains(lisjpData.resaMöjliggörArbete)
         .parent().parent().within(() => {
             cy.get('[type="checkbox"]').check();
         });
 
-    cy.contains(aliasesFromCaller.lisjpData.arbetsförmågaPrognos).parent().parent().parent().within(($ele) => {
+    cy.contains(lisjpData.arbetsförmågaPrognos).parent().parent().parent().within(($ele) => {
         cy.get('[type="radio"]').eq(0).check() // Översta radioknappen är den som ska anges
     });
 
     // ----- 'Åtgärder' -----//
-    cy.contains(aliasesFromCaller.lisjpData.föreslåÅtgärder).parent().parent().parent().within(($elem) => {
+    cy.contains(lisjpData.föreslåÅtgärder).parent().parent().parent().within(($elem) => {
         cy.get('[type="checkbox"]').each(($el, index, $list) => {
             if (index != 0) { // Index 0 är "Inte aktuellt", detta är den enda checkboxen som INTE ska anges
                 cy.wrap($el).check();
@@ -159,20 +162,20 @@ Cypress.Commands.add("fillOutMaxLisjp", aliasesFromCaller => {
 
     cy.wait(3000);
 
-    cy.contains(aliasesFromCaller.lisjpData.flerÅtgärder).should('be.visible').parent().parent().parent().find('textarea')
-        .type(aliasesFromCaller.lisjpData.flerÅtgärderBeskrivning);
+    cy.contains(lisjpData.flerÅtgärder).should('be.visible').parent().parent().parent().find('textarea')
+        .type(lisjpData.flerÅtgärderBeskrivning);
 
     // ----- 'Övriga upplysningar' -----//
     //cy.contains('Övriga upplysningar').parent().parent().parent().find('textarea').type('Planerad partus ' + idagPlus41);
-    cy.get('[name="ovrigt"]').type(aliasesFromCaller.lisjpData.övrigaUpplysningarBeskrivning + idagPlus41); 	// Tillfällig lösning. Använder attribut 'name' eftersom textareans rubrik finns på fler än ett ställe
+    cy.get('[name="ovrigt"]').type(lisjpData.övrigaUpplysningarBeskrivning + idagPlus41); 	// Tillfällig lösning. Använder attribut 'name' eftersom textareans rubrik finns på fler än ett ställe
 
     // ----- 'Kontakt' -----//
-    cy.contains(aliasesFromCaller.lisjpData.kontaktaMig).parent().parent().parent().within(($elem) => {
+    cy.contains(lisjpData.kontaktaMig).parent().parent().parent().within(($elem) => {
         cy.get('[type="checkbox"]').check();
     });
 
-    cy.contains(aliasesFromCaller.lisjpData.anledningKontakt).parent().parent().parent().find('textarea')
-        .type(aliasesFromCaller.lisjpData.anledningKontaktBeskrivning);
+    cy.contains(lisjpData.anledningKontakt).parent().parent().parent().find('textarea')
+        .type(lisjpData.anledningKontaktBeskrivning);
 
     // ----- 'Signera intyg' -----//
 
@@ -185,7 +188,7 @@ Cypress.Commands.add("fillOutMaxLisjp", aliasesFromCaller => {
 
     // Om laptop kör på batteri och Wifi så visar Cypress att knappen trycks in,
     // men ofta händer inget
-    cy.contains('button', aliasesFromCaller.lisjpData.signeraKnappText, { timeout: 15000 })
+    cy.contains('button', lisjpData.signeraKnappText, { timeout: 15000 })
         .should('be.enabled')
         .then(($button) => {
             cy.wait(1000);
@@ -195,7 +198,7 @@ Cypress.Commands.add("fillOutMaxLisjp", aliasesFromCaller => {
     // Paus här också, precis som ovanför "Signera intyg"-knappen. Behövs den nu när vi kör på snabbare slav?
     cy.wait(6000);
 
-    cy.contains('div', aliasesFromCaller.lisjpData.väljIntygsmottagare, { timeout: 20000 })
+    cy.contains('div', lisjpData.väljIntygsmottagare, { timeout: 20000 })
         .should('be.visible')
         .within(($elem) => {
             cy.get('[type="radio"]').each(($el, index, $list) => { // Hämtar ut samtliga radioknappar... kan förbättras
@@ -209,19 +212,19 @@ Cypress.Commands.add("fillOutMaxLisjp", aliasesFromCaller => {
 
     cy.get('[name="approveForm"]').within(($form) => {
         cy.get('[type="button"]').then(($button) => {
-            cy.wrap($button).contains(aliasesFromCaller.lisjpData.intygsmottagareKnappText).should('be.visible');
+            cy.wrap($button).contains(lisjpData.intygsmottagareKnappText).should('be.visible');
             cy.wrap($button).click({ force: true });
         });
     });
 
     // Testfallet har failat enstaka gånger i CI p.g.a. timeout på denna knapp, ökar därför timeout
-    cy.contains('button', aliasesFromCaller.lisjpData.skickaTillFKKnappText, { timeout: 20000 })
+    cy.contains('button', lisjpData.skickaTillFKKnappText, { timeout: 20000 })
         .should('be.visible').and('be.enabled')
         .click();
 
-    cy.contains(aliasesFromCaller.lisjpData.varningSkickaTillFK).should('be.visible');
+    cy.contains(lisjpData.varningSkickaTillFK).should('be.visible');
 
-    cy.contains('button', aliasesFromCaller.lisjpData.skickaKnappTextEfterVarning)
+    cy.contains('button', lisjpData.skickaKnappTextEfterVarning)
         .should('be.visible')
         .click();
 });

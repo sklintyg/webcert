@@ -1,19 +1,19 @@
 /* globals context cy */
 /// <reference types="Cypress" />
 
-describe('skapa och signera maximalt ifyllt LISJP och skicka till FK', function () {
+describe('(integrat) skicka maximalt ifyllt LISJP till FK', function () {
 
     before(function() {
         cy.fixture('lisjpData').as('lisjpData');
         cy.fixture('arnoldJohansson').as('vårdgivare');
         cy.fixture('alfaEnheten').as('vårdenhet');
+        cy.fixture('tolvanTolvansson').as('vårdtagare');
     });
 
     beforeEach(function() {
-        cy.createLisjpDraftNonGeneric().then((utkastId) => {
+        cy.createLisjpDraft(this).then((utkastId) => {
             cy.wrap(utkastId).as('utkastId');
             cy.log("Utkast med id " + utkastId + " skapat och används i testfallet");
-
         });
     });
 
