@@ -3,8 +3,15 @@
 
 describe('Välja patient', function () {
 
+    before(function() {
+        cy.fixture('arnoldJohansson').as('vårdgivare');
+        cy.fixture('alfaEnheten').as('vårdenhet');
+    });
+
     beforeEach(function() {
-        cy.loginArnoldOchGaTillValjPatient();
+        cy.loggaInVårdgivareNormal(this).then(() => {
+            cy.visit('/#/create/choose-patient/index');
+        })
     });
 
     it('är möjligt att ange korrekt personnummer och komma vidare', function() {

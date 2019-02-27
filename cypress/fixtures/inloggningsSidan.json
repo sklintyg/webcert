@@ -2,7 +2,5 @@
     "titel": "Webcert test inloggning",
     "cookieKnappText": "Jag godkänner",
 
-    "doktor": "Arnold Johansson (Läkare | Har intyg och ärenden)",
-    "inloggningsKnappText": "Logga in",
     "destUrlLyckadInloggning": "/#/create/choose-patient/index"
 }

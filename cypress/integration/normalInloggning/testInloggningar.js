@@ -4,7 +4,8 @@
 describe('Logga in som vårdgivare', function () {
 
     beforeEach(function() {
-        cy.fixture('testData').as('testData')
+        cy.fixture('inloggningsSidan').as('testData');
+        cy.fixture('arnoldJohansson').as('vårdgivare');
         cy.visit('/welcome.html');
     });
 
@@ -13,7 +14,7 @@ describe('Logga in som vårdgivare', function () {
     });
 
     it('är mojligt att logga in som specifik läkare genom att välja i listan och sen klicka på inloggningsknappen', function() {
-        cy.contains(this.testData.doktor).click().then(() => {
+        cy.contains(this.vårdgivare.namnSträngInloggning).click().then(() => {
 			cy.contains("Logga in").click();
         });
 
@@ -21,7 +22,7 @@ describe('Logga in som vårdgivare', function () {
     });
 
     it('är möjligt att logga in som specifik läkare genom att dubbelklicka på raden i listan', function() {
-        cy.contains(this.testData.doktor).dblclick().then(() => {
+        cy.contains(this.vårdgivare.namnSträngInloggning).dblclick().then(() => {
 			cy.url().should('include', this.testData.destUrlLyckadInloggning);
         });
     });
