@@ -57,7 +57,7 @@ module.exports = function(grunt) {
         SRC_DIR + '../bower_components/angular-ui-router/release/stateEvents.js',
         SRC_DIR + '../bower_components/bootstrap-sass/assets/javascripts/bootstrap.min.js',
         SRC_DIR + '../bower_components/momentjs/min/moment.min.js',
-        SRC_DIR + '../bower_components/oclazyload/dist/oclazyload.min.js',
+        SRC_DIR + '../bower_components/oclazyload/dist/ocLazyLoad.min.js',
         SRC_DIR + '../vendor/polyfill.min.js',
         SRC_DIR + '../vendor/angular-shims-placeholder/angular-shims-placeholder.min.js',
         SRC_DIR + '../vendor/angular-smooth-scroll.js',
