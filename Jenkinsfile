@@ -27,9 +27,9 @@ stage('build') {
     }
 }
 
-stage('tag') {
+stage('tag and upload') {
     node {
-        shgradle "tagRelease ${versionFlags}"
+        shgradle "uploadArchives tagRelease ${versionFlags}"
     }
 }
 
