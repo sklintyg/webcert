@@ -2,7 +2,7 @@ apiVersion: v1
 data:
   SPRING_PROFILES_ACTIVE: "test,wc-all-stubs,wc-security-test,testability-api,caching-enabled"
   WEBCERT_HOST_URL: "https://demo.webcert.intygstjanster.se"
-  INTYGSTJANST_BASE_URL: "http://intygstjanst-demo:8080/inera-certificate"
+  INTYGSTJANST_BASE_URL: "http://${intygstjanst.demo.service.host}:8080/inera-certificate"
   PRIVATEPRACTITIONER_PORTAL_REGISTRATION_URL: "https://demo.registrering.intygstjanster.se/#/"
   NTJP_BASE_URL: "http://127.0.0.1:8080/services/stubs"
   TAK_BASE_URL: "${ntjp.base.url}/takstub"

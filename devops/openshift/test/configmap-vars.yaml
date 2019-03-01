@@ -25,7 +25,7 @@ data:
   SAKERHETSTJANST_SAML_IDP_METADATA_URL: "file:///opt/${app.name}/config/sp-sakerhetstjanst.xml"
   SAKERHETSTJANST_SAML_KEYSTORE_FILE: ""
   WEBCERT_HOST_URL: "http://${app.name}:8080"
-  INTYGSTJANST_BASE_URL: "http://intygstjanst-test-webcert-test:8080/inera-certificate"
+  INTYGSTJANST_BASE_URL: "http://${intygstjanst.test.webcert.test.service.host}:8080/inera-certificate"
   FMB_ENDPOINT_URL: "${webcert.host.url}/services/stubs/fmbstubs"
   NETID_ACCESS_SERVER_URL: "https://showroom.lab.secmaker.com/nias/ServiceServer.asmx"
   NTJP_BASE_URL: "${webcert.host.url}/services/stubs"
