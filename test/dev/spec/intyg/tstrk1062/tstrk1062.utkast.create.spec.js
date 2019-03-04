@@ -34,7 +34,7 @@ describe('Create and Sign tstrk1062 utkast', function() {
     beforeAll(function() {
         browser.ignoreSynchronization = false;
         specHelper.login();
-        specHelper.createUtkastForPatient('191212121212', 'ts-tstrk1062');
+        specHelper.createUtkastForPatient('191212121212', 'tstrk1062');
     });
 
     it('Spara undan intygsId från URL', function() {

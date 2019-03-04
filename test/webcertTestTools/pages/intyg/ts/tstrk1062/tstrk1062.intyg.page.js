@@ -26,7 +26,7 @@ var _ = require('lodash');
 var Tstrk1062Intyg = TsBaseIntyg._extend({
     init: function init() {
         init._super.call(this);
-        this.intygType = 'ts-tstrk1062';
+        this.intygType = 'tstrk1062';
         this.intygTypeVersion = '1.0';
 
         // this.lakemedelsbehandling: {

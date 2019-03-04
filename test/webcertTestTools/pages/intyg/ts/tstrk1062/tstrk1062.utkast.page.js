@@ -27,9 +27,9 @@ var Tstrk1062Utkast = BaseTsUtkast._extend({
     init: function init() {
 
         init._super.call(this);
-        this.intygType = 'ts-tstrk1062';
+        this.intygType = 'tstrk1062';
         this.intygTypeVersion = '1.0';
-        this.at = element(by.id('edit-ts-tstrk1062'));
+        this.at = element(by.id('edit-tstrk1062'));
 
         // this.intygerAvser = {
         //   amId: 'intygetAvser.behorigheter-IAV11',
