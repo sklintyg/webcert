@@ -1,7 +1,7 @@
 /* globals context cy */
 /// <reference types="Cypress" />
 
-describe('(integrat) skicka maximalt ifyllt LISJP till FK', function () {
+describe('(integrerat) skicka maximalt ifyllt LISJP till FK', function () {
 
     before(function() {
         cy.fixture('lisjpData').as('lisjpData');
@@ -11,9 +11,9 @@ describe('(integrat) skicka maximalt ifyllt LISJP till FK', function () {
     });
 
     beforeEach(function() {
-        cy.createLisjpDraft(this).then((utkastId) => {
+        cy.skapaLisjpUtkast(this).then((utkastId) => {
             cy.wrap(utkastId).as('utkastId');
-            cy.log("Utkast med id " + utkastId + " skapat och används i testfallet");
+            cy.log("LISJP-utkast med id " + utkastId + " skapat och används i testfallet");
         });
     });
 
@@ -21,6 +21,6 @@ describe('(integrat) skicka maximalt ifyllt LISJP till FK', function () {
         cy.loggaInVårdgivareIntegrerat(this);
 
         // Gå till intyget, redigera det, signera och skicka till FK
-        cy.visit("/visa/intyg/" + this.utkastId + "?enhet=" + this.vårdenhet.id).fillOutMaxLisjp(this);
+        cy.visit("/visa/intyg/" + this.utkastId + "?enhet=" + this.vårdenhet.id).fyllIMaxLisjp(this);
     });
 });

@@ -1,3 +1,4 @@
 {
-    "baseUrl": "https://webcert-devtest-tintyg.app-test1.ind-ocp.sth.basefarm.net"
+    "baseUrl": "https://webcert-devtest-tintyg.app-test1.ind-ocp.sth.basefarm.net",
+    "defaultCommandTimeout": 6000
 }

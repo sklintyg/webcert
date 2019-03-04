@@ -13,6 +13,6 @@ describe('(normalinloggat) skicka maximalt ifyllt LISJP till FK', function () {
 	it('skapar en maximalt ifylld LISJP och skickar den till FK', function () {
 		cy.loggaInVårdgivareNormal(this);
 		cy.visit('/#/create/choose-intyg-type/' + this.vårdtagare.personnummer + '/index');
-		cy.get("#intygTypeFortsatt-lisjp").click().fillOutMaxLisjp(this);
+		cy.get("#intygTypeFortsatt-lisjp").click().fyllIMaxLisjp(this);
 	});
 });

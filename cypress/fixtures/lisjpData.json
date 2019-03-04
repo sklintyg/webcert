@@ -25,12 +25,12 @@
 
     "beskrivObservationer": "Beskriv undersökningsfynd, testresultat och observationer",
     "besvärsBeskrivning": "Uttalade besvär från bäcken, svår smärta vid lägesförändring, hälta, instabilitet bäcken",
-    "beskrivPatientBegränsning": "Beskriv vad patienten inte kan göra på grund av sin sjukdom. Ange vad uppgiften grundas på.",
-    "begränsningsBeskrivning": "starka bäckensmärtor som ger uttalad aktivitetsbegränsning vid fysisk aktivitet och kontorsarbete samt koncentrationssvårigheter",
-    "medicinskaBehandlingar": "Pågående medicinska behandlingar/åtgärder",
-    "medicinskaBehandlingarBeskrivning": "Sjukgymnastik och rörelseprogram för att lindra bäckenuppluckring",
-    "planeradeBehandlingar": "Planerade medicinska behandlingar/åtgärder.",
-    "planeradeBehandlingarBeskrivning": "Specialist, ultraljudskontroller",
+    "aktivitetsbegränsningTextfältId": "#aktivitetsbegransning",
+    "aktivitetsbegränsningSkriv": "starka bäckensmärtor som ger uttalad aktivitetsbegränsning vid fysisk aktivitet och kontorsarbete samt koncentrationssvårigheter",
+    "pågåendeBehandlingarTextfältId": "#pagaendeBehandling",
+    "pågåendeBehandlingarSkriv": "Sjukgymnastik och rörelseprogram för att lindra bäckenuppluckring",
+    "planeradeBehandlingarTextfältId": "#planeradBehandling",
+    "planeradeBehandlingarSkriv": "Specialist, ultraljudskontroller",
 
     "arbetsförmågaBedömning": "Min bedömning av patientens nedsättning av arbetsförmågan",
     "längreNedsattArbetsförmåga": "Patientens arbetsförmåga bedöms nedsatt längre tid än den som Socialstyrelsens försäkringsmedicinska beslutsstöd anger, därför att",
@@ -45,7 +45,8 @@
     "flerÅtgärder": "Här kan du ange fler åtgärder. Du kan också beskriva hur åtgärderna kan underlätta återgång i arbete.",
     "flerÅtgärderBeskrivning": "Om anpassningar till lättare uppgifter utan tunga lyft och mycket gående kan ordnas kvarstår arbetsförmåga under en tid framöver.",
 
-    "övrigaUpplysningarBeskrivning": "Planerad partus ",
+    "övrigaUpplysningarTextfältId": "#ovrigt",
+    "övrigaUpplysningarSkriv": "Planerad partus ",
     "kontaktaMig": "Jag önskar att Försäkringskassan kontaktar mig.",
     "anledningKontakt": "Ange gärna varför du vill ha kontakt.",
     "anledningKontaktBeskrivning": "För att diskutera sjukskrivningsperiod och tydliggörande kring besvärsbilden samt framtida arbetsförmåga.",

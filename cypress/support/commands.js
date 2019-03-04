@@ -2,6 +2,10 @@
 // commands please read more here:
 // https://on.cypress.io/custom-commands
 
+// implementeradeIntyg finns duplicerad i åtminstone "maxIntyg.js"
+// också. Gör om till en global på något sätt.
+var implementeradeIntyg = ["LISJP", "LUSE"];
+
 function loginCaregiver(fx, isDeep) {
 	const vårdgivare = fx.vårdgivare;
 	const vårdenhet = fx.vårdenhet;
@@ -38,14 +42,15 @@ Cypress.Commands.add("loggaInVårdgivareIntegrerat", fx => {
 	loginCaregiver(fx, true);
 });
 
-// Skapa ett LISJP-utkast via createdraft-anrop och returnera id:t
-Cypress.Commands.add("createLisjpDraft", fx => {
+// Skapa ett utkast enligt inparameter utkast
+function skapaUtkast(fx, intygstyp) {
 	const vårdgivare = fx.vårdgivare;
 	const vårdtagare = fx.vårdtagare;
 	const vårdenhet = fx.vårdenhet;
 	expect(vårdgivare).to.exist;
 	expect(vårdtagare).to.exist;
 	expect(vårdenhet).to.exist;
+	expect(implementeradeIntyg).to.include.members([intygstyp]);
 
 	cy.request({
 		method: 'POST',
@@ -54,14 +59,14 @@ Cypress.Commands.add("createLisjpDraft", fx => {
 			'<soapenv:Envelope\
 				xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"\
 				xmlns:urn="urn:riv:itintegration:registry:1" xmlns:urn1="urn:riv:clinicalprocess:healthcond:certificate:CreateDraftCertificateResponder:3" xmlns:urn2="urn:riv:clinicalprocess:healthcond:certificate:types:3" xmlns:urn3="urn:riv:clinicalprocess:healthcond:certificate:3">\
-			    <soapenv:Header>\
+				<soapenv:Header>\
 					<urn:LogicalAddress>?</urn:LogicalAddress>\
 				</soapenv:Header>\
 				<soapenv:Body>\
 					<urn1:CreateDraftCertificate>\
 						<urn1:intyg>\
 							<urn1:typAvIntyg>\
-								<urn2:code>LISJP</urn2:code>\
+								<urn2:code>' + intygstyp + '</urn2:code>\
 								<urn2:codeSystem>b64ea353-e8f6-4832-b563-fc7d46f29548</urn2:codeSystem>\
 								<urn2:displayName>?</urn2:displayName>\
 							</urn1:typAvIntyg>\
@@ -111,4 +116,14 @@ Cypress.Commands.add("createLisjpDraft", fx => {
 			})
 		});
 	});
+}
+
+// Skapa ett LISJP-utkast via createdraft-anrop och returnera id:t
+Cypress.Commands.add("skapaLisjpUtkast", fx => {
+	return skapaUtkast(fx, "LISJP");
+});
+
+// Skapa ett LISJP-utkast via createdraft-anrop och returnera id:t
+Cypress.Commands.add("skapaLuseUtkast", fx => {
+	return skapaUtkast(fx, "LUSE");
 });
