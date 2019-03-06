@@ -2,18 +2,18 @@
 // commands please read more here:
 // https://on.cypress.io/custom-commands
 
-// implementeradeIntyg finns duplicerad i åtminstone "maxIntyg.js"
-// också. Gör om till en global på något sätt.
+// TODO: implementeradeIntyg finns duplicerad i åtminstone
+// "maxIntyg.js" också. Gör om till en global på något sätt.
 var implementeradeIntyg = ["LISJP", "LUSE"];
 
-function loginCaregiver(fx, isDeep) {
+function loggaInVårdgivare(fx, ärDjup) {
 	const vårdgivare = fx.vårdgivare;
 	const vårdenhet = fx.vårdenhet;
 	expect(vårdgivare).to.exist;
 	expect(vårdenhet).to.exist;
-	assert.isBoolean(isDeep);
+	assert.isBoolean(ärDjup);
 
-	const originString = (isDeep ? "DJUPINTEGRATION" : "NORMAL");
+	const originSträng = (ärDjup ? "DJUPINTEGRATION" : "NORMAL");
 
 	cy.request({
 		method: 'POST',
@@ -26,7 +26,7 @@ function loginCaregiver(fx, isDeep) {
 				"efterNamn": "' + fx.vårdgivare.efternamn +'",\
 				"enhetId": "' + fx.vårdenhet.id + '",\
 				"legitimeradeYrkesgrupper": ' + fx.vårdgivare.legitimeradeYrkesgrupper + ',\
-				"origin": "' + originString + '",\
+				"origin": "' + originSträng + '",\
 				"authenticationMethod": "FAKE"}'
 		}
 	}).then((resp) => {
@@ -35,11 +35,11 @@ function loginCaregiver(fx, isDeep) {
 }
 
 Cypress.Commands.add("loggaInVårdgivareNormal", fx => {
-	loginCaregiver(fx, false);
+	loggaInVårdgivare(fx, false);
 });
 
 Cypress.Commands.add("loggaInVårdgivareIntegrerat", fx => {
-	loginCaregiver(fx, true);
+	loggaInVårdgivare(fx, true);
 });
 
 // Skapa ett utkast enligt inparameter utkast

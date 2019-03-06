@@ -1,15 +1,20 @@
+var implementeradeIntygEnum = {
+    LISJP: "LISJP",
+    LUSE: "LUSE",
+}
+
 function sektion_grund_för_medicinskt_underlag(intygsdata, intygstyp) {
     expect(intygsdata).to.exist;
 
-    // Få till detta som global istället, eventuellt via cypress.json
+    // TODO: Få till detta som global istället,
+    // eventuellt via cypress.json
     expect(["LISJP", "LUSE"]).to.include.members([intygstyp]);
 
-    /*
+    /* TODO: Ta reda på svaret till nedanstående fråga.
     Samtliga datum är i första hand baserade på datum från LISJP-mallen från FK.
     I de fall där ett visst fält inte förekommer i LISJP så är datumet bara höftat.
     ÄR DET VIKTIGT MED "RÄTT" DATUM?
     */
-
     const idagMinus5 =  Cypress.moment().subtract(5,  'days').format('YYYY-MM-DD');
     const idagMinus6 =  Cypress.moment().subtract(6,  'days').format('YYYY-MM-DD');
     const idagMinus14 = Cypress.moment().subtract(14, 'days').format('YYYY-MM-DD');
@@ -18,13 +23,15 @@ function sektion_grund_för_medicinskt_underlag(intygsdata, intygstyp) {
 
 
     // -------------------- 'Intyget/utlåtandet är baserat på' --------------------
+    // TODO: Ska vi använda oss av ID:n?
+    // Fördelar: Enkel kod att skriva, enkel att läsa.
+    // Nackdelar: Så fort ett ID ändras "under huven" så kommer TC att faila trots att ingen ändring som drabbar användaren har skett
     cy.contains(intygsdata.minUndersökning).parentsUntil('.ue-del-fraga').within(($form) => {
         cy.get('[type="checkbox"]').check();
         cy.get(intygsdata.datumUndersökning).clear().type(idagMinus5);
     });
 
-    // Denna sektion finns bara i LISJP av de intygstyper som är implementerade i Cypress
-    if (intygstyp === "LISJP") {
+    if (intygstyp === implementeradeIntygEnum.LISJP) {
         cy.contains(intygsdata.telefonKontakt).parentsUntil('.ue-del-fraga').within(($form) => {
             cy.get('[type="checkbox"]').check();
             cy.get(intygsdata.datumTelefonkontakt).clear().type(idagMinus6);
@@ -36,7 +43,7 @@ function sektion_grund_för_medicinskt_underlag(intygsdata, intygstyp) {
         cy.wrap($form).get(intygsdata.datumJournalUppgifterFrån).clear().type(idagMinus15);
     });
 
-    if (intygstyp === "LUSE") {
+    if (intygstyp === implementeradeIntygEnum.LUSE) {
         cy.contains(intygsdata.anhörigsBeskrivning).parentsUntil('.ue-del-fraga').within(($form) => {
             cy.get('[type="checkbox"]').check();
             cy.get(intygsdata.datumAnhörigsBeskrivning).clear().type(idagMinus6);
@@ -51,11 +58,11 @@ function sektion_grund_för_medicinskt_underlag(intygsdata, intygstyp) {
     // Denna textruta dyker upp efter att "Annat" har klickats i
     cy.get(intygsdata.annatTextarea).type(intygsdata.annatTextareaText);
 
-    if (intygstyp === "LUSE") {
+    if (intygstyp === implementeradeIntygEnum.LUSE) {
         cy.get(intygsdata.datumKännedomOmPatient).clear().type(idagMinus14);
     }
 
-    if (intygstyp === "LUSE") {
+    if (intygstyp === implementeradeIntygEnum.LUSE) {
         // Klicka i att utlåtandet även baseras på andra medicinska
         // utredningar eller underlag. Detta gör att nya fält visualiseras
         cy.get(intygsdata.andraUnderlagJaAlternativ).click();
@@ -66,9 +73,9 @@ function sektion_grund_för_medicinskt_underlag(intygsdata, intygstyp) {
         .contains(intygsdata.underlag1AlternativText)
         .then(option => {
             cy.wrap(option).contains(intygsdata.underlag1AlternativText); // Säkerställ att rätt alternativ valts
-            option[0].click(); // jquery click(), not cypress click()
+            option[0].click(); // jquery "click()", inte Cypress "click()"
         });
-        
+
         cy.get(intygsdata.datumUnderlag1).clear().type(idagMinus2Mån);
         cy.get(intygsdata.underlag1HämtasFrån).type(intygsdata.underlag1HämtasFrånText);
 
@@ -78,7 +85,7 @@ function sektion_grund_för_medicinskt_underlag(intygsdata, intygstyp) {
         .contains(intygsdata.underlag2AlternativText)
         .then(option => {
             cy.wrap(option).contains(intygsdata.underlag2AlternativText); // Säkerställ att rätt alternativ valts
-            option[0].click(); // jquery click(), not cypress click()
+            option[0].click(); // jquery "click()", inte Cypress "click()"
         });
         
         cy.get(intygsdata.datumUnderlag2).clear().type(idagMinus2Mån);
@@ -90,7 +97,7 @@ function sektion_grund_för_medicinskt_underlag(intygsdata, intygstyp) {
         .contains(intygsdata.underlag3AlternativText)
         .then(option => {
             cy.wrap(option).contains(intygsdata.underlag3AlternativText); // Säkerställ att rätt alternativ valts
-            option[0].click(); // jquery click(), not cypress click()
+            option[0].click(); // jquery "click()", inte Cypress "click()"
         });
         
         cy.get(intygsdata.datumUnderlag3).clear().type(idagMinus2Mån);
@@ -108,7 +115,7 @@ function sektion_diagnoser_för_sjukdom(intygsdata, intygstyp) {
         });
     });
 
-    if (intygstyp === "LUSE") {
+    if (intygstyp === implementeradeIntygEnum.LUSE) {
         cy.get(intygsdata.diagnosgrundTextareaId).type(intygsdata.diagnosgrundTextSkriv);
 
         // Finns skäl att revidera tidigare diagnos?
@@ -122,25 +129,63 @@ function sektion_aktivitetsbegränsningar(intygsdata, intygstyp) {
 }
 
 function sektion_medicinsk_behandling(intygsdata, intygstyp) {
-    if (intygstyp === "LUSE") {
+    if (intygstyp === implementeradeIntygEnum.LUSE) {
         cy.get(intygsdata.avslutadBehandlingTextfältId).type(intygsdata.avslutadBehandlingSkriv);
     }
 
     cy.get(intygsdata.pågåendeBehandlingarTextfältId).type(intygsdata.pågåendeBehandlingarSkriv);
     cy.get(intygsdata.planeradeBehandlingarTextfältId).type(intygsdata.planeradeBehandlingarSkriv);
 
-    if (intygstyp === "LUSE") {
+    if (intygstyp === implementeradeIntygEnum.LUSE) {
         cy.get(intygsdata.substansintagTextfältId).type(intygsdata.substansintagSkriv);
     }
 }
 
 function sektion_övriga_upplysningar(intygsdata, intygstyp) {
     var textAttSkriva = intygsdata.övrigaUpplysningarSkriv;
-    if (intygstyp === "LISJP") {
+    if (intygstyp === implementeradeIntygEnum.LISJP) {
         const idagPlus41 = Cypress.moment().add(41, 'days').format('YYYY-MM-DD');
         textAttSkriva += idagPlus41;
     }
     cy.get(intygsdata.övrigaUpplysningarTextfältId).type(textAttSkriva);
+}
+
+function sektion_kontakta_mig(intygsdata) {
+    cy.get(intygsdata.kontaktMedFKCheckboxId).check();
+    cy.get(intygsdata.kontaktMedFKTextfältId).type(intygsdata.kontaktMedFKSkriv);
+}
+
+function sektion_signera_intyg(intygsdata) {
+    // TODO: Behövs wait-statements nedan?
+
+    // Lägger till en paus här för att se om det är så att Cypress klickar för snabbt på Signera-knappen. I Jenkins
+    // failar testfallet ofta p.g.a att det dyker upp en modal som säger att intyger har ändrats av annan person (men personen som
+    // vill signera intyget är samma som anges som den som har ändrat det)
+    // Just nu verkar testfallet gå igenom men frågan är om detta har något med saken att göra eller om det fungerar bara för att jag bytte till
+    // ny slav på Jenkins (det förkortade exekveringstiden till hälften ungefär)
+    cy.wait(6000);
+
+    // Om laptop kör på batteri och Wifi så visar Cypress att knappen trycks in,
+    // men ofta händer inget. Därför provas ökad timeout här också.
+    cy.get(intygsdata.signeraUtkastKnappId).click();
+
+    /*
+    cy.contains('button', lisjpData.signeraKnappText, { timeout: 15000 })
+        .should('be.enabled')
+        .then(($button) => {
+            cy.wait(1000);
+            cy.wrap($button).click(); // prova att ändra till <button?
+        });
+    */
+    // Paus här också, precis som ovanför "Signera intyg"-knappen. Behövs den nu när vi kör på snabbare slav?
+    cy.wait(6000);
+}
+
+function skicka_till_FK(intygsdata) {
+    cy.get(intygsdata.skickaTillFKKnappId).click();
+    cy.get(intygsdata.varningSkickaTillFKKnappId).click();
+    // TODO: Kontrollera att texten "Intyget är skickat till Försäkringskassan"
+    // syns på sidan?
 }
 
 Cypress.Commands.add("fyllIMaxLuse", aliasesFromCaller => {
@@ -148,7 +193,7 @@ Cypress.Commands.add("fyllIMaxLuse", aliasesFromCaller => {
     const intygsdata = aliasesFromCaller.luseData;
     expect(intygsdata).to.exist;
 
-    const intygstyp = "LUSE";
+    const intygstyp = implementeradeIntygEnum.LUSE;
 
     // ----- Sektion 'Grund för medicinskt underlag' -----
     sektion_grund_för_medicinskt_underlag(intygsdata, intygstyp);
@@ -193,15 +238,24 @@ Cypress.Commands.add("fyllIMaxLuse", aliasesFromCaller => {
 
     // ----- Sektion 'Övriga upplysningar' -----//
     sektion_övriga_upplysningar(intygsdata, intygstyp);
+
+    // ----- Sektion 'Kontakt' -----//
+    sektion_kontakta_mig(intygsdata);
+
+    // ----- Sektion 'Signera intyg' -----//
+    sektion_signera_intyg(intygsdata);
+
+    // Skicka iväg intyget
+    skicka_till_FK(intygsdata);
 });
 
 
 Cypress.Commands.add("fyllIMaxLisjp", aliasesFromCaller => {
 
-    const lisjpData = aliasesFromCaller.lisjpData;
-    expect(lisjpData).to.exist;
+    const intygsdata = aliasesFromCaller.lisjpData;
+    expect(intygsdata).to.exist;
 
-    const intygstyp = "LISJP";
+    const intygstyp = implementeradeIntygEnum.LISJP;
 
     // Beräkna datum både framåt och bakåt från idag
     const idagPlus1 = Cypress.moment().add(1,  'days').format('YYYY-MM-DD'); // 25%  sjukskrivning start
@@ -214,46 +268,46 @@ Cypress.Commands.add("fyllIMaxLisjp", aliasesFromCaller => {
     const idagPlus41 = Cypress.moment().add(41, 'days').format('YYYY-MM-DD'); // 100% sjukskrivning slut
 
     // ----- Sektion 'Grund för medicinskt underlag' -----
-    sektion_grund_för_medicinskt_underlag(lisjpData, intygstyp);
+    sektion_grund_för_medicinskt_underlag(intygsdata, intygstyp);
 
     // ----- 'I relation till vilken sysselsättning bedömer du arbetsförmågan?' -----
-    cy.contains(lisjpData.nuvarandeArbete).parent().within(($form) => {
+    cy.contains(intygsdata.nuvarandeArbete).parent().within(($form) => {
         cy.get('[type="checkbox"]').check();
     });
 
-    cy.contains(lisjpData.yrkeOchUppgifter).parent().parent().parent().within(($form) => {
-        cy.wrap($form).find('textarea').type(lisjpData.yrkeOchUppgifterText);
+    cy.contains(intygsdata.yrkeOchUppgifter).parent().parent().parent().within(($form) => {
+        cy.wrap($form).find('textarea').type(intygsdata.yrkeOchUppgifterText);
     });
 
-    cy.contains(lisjpData.checkboxTextNormaltFörekommandeJobb).parent().within(($form) => {
+    cy.contains(intygsdata.checkboxTextNormaltFörekommandeJobb).parent().within(($form) => {
         cy.get('[type="checkbox"]').check();
     });
 
-    cy.contains(lisjpData.checkboxTextVAB).parent().within(($form) => {
+    cy.contains(intygsdata.checkboxTextVAB).parent().within(($form) => {
         cy.get('[type="checkbox"]').check();
     });
 
-    cy.contains(lisjpData.checkboxStudier).parent().within(($form) => {
+    cy.contains(intygsdata.checkboxStudier).parent().within(($form) => {
         cy.get('[type="checkbox"]').check();
     });
 
     // ----- Sektion 'Diagnos/Diagnoser för sjukdom som orsakar nedsatt arbetsförmåga' ----- //
-    sektion_diagnoser_för_sjukdom(lisjpData, intygstyp);
+    sektion_diagnoser_för_sjukdom(intygsdata, intygstyp);
 
 
     // ----- Sektion 'Funktionsnedsättning' ----- //
-    cy.contains(lisjpData.beskrivObservationer).parent().parent().parent().within(($form) => {
-        cy.wrap($form).find('textarea').type(lisjpData.besvärsBeskrivning);
+    cy.contains(intygsdata.beskrivObservationer).parent().parent().parent().within(($form) => {
+        cy.wrap($form).find('textarea').type(intygsdata.besvärsBeskrivning);
     });
 
     // ----- Sektion 'Aktivitetsbegränsning' ----- //
-    sektion_aktivitetsbegränsningar(lisjpData, intygstyp);
+    sektion_aktivitetsbegränsningar(intygsdata, intygstyp);
 
     // ----- Sektion 'Medicinsk behandling' ----- //
-    sektion_medicinsk_behandling(lisjpData, intygstyp);
+    sektion_medicinsk_behandling(intygsdata, intygstyp);
 
     // ----- Sektion 'Bedömning' -----//
-    cy.contains(lisjpData.arbetsförmågaBedömning).parent().parent().parent().within(($form) => {
+    cy.contains(intygsdata.arbetsförmågaBedömning).parent().parent().parent().within(($form) => {
         cy.get('[type="checkbox"]').within(($checkboxes) => {
             cy.wrap($checkboxes).check(); // Klickar i alla checkboxar i sektionen. "Från"-datum blir dagens datum
 
@@ -288,29 +342,29 @@ Cypress.Commands.add("fyllIMaxLisjp", aliasesFromCaller => {
     });
 
     cy
-        .contains(lisjpData.längreNedsattArbetsförmåga)
-        .parent().parent().parent()
-        .find('textarea').type(lisjpData.längreNedsattArbetsförmågaText);
+    .contains(intygsdata.längreNedsattArbetsförmåga)
+    .parent().parent().parent()
+    .find('textarea').type(intygsdata.längreNedsattArbetsförmågaText);
 
-    cy.contains(lisjpData.förläggaArbetstidAnnorlunda)
-        .parent().parent().parent().within(($elem) => {
-            cy.get('[type="radio"]').eq(0).check(); // Första radioknappen är "Ja"
-        });
+    cy.contains(intygsdata.förläggaArbetstidAnnorlunda)
+    .parent().parent().parent().within(($elem) => {
+        cy.get('[type="radio"]').eq(0).check(); // Första radioknappen är "Ja"
+    });
 
-    cy.contains(lisjpData.arbetstidAnnorlundaMedicinskaSkäl).parent().parent().parent().find('textarea')
-        .type(lisjpData.arbetstidAnnorlundaMedicinskaSkälBeskrivning);
+    cy.contains(intygsdata.arbetstidAnnorlundaMedicinskaSkäl).parent().parent().parent().find('textarea')
+    .type(intygsdata.arbetstidAnnorlundaMedicinskaSkälBeskrivning);
 
-    cy.contains(lisjpData.resaMöjliggörArbete)
-        .parent().parent().within(() => {
-            cy.get('[type="checkbox"]').check();
-        });
+    cy.contains(intygsdata.resaMöjliggörArbete)
+    .parent().parent().within(() => {
+        cy.get('[type="checkbox"]').check();
+    });
 
-    cy.contains(lisjpData.arbetsförmågaPrognos).parent().parent().parent().within(($ele) => {
+    cy.contains(intygsdata.arbetsförmågaPrognos).parent().parent().parent().within(($ele) => {
         cy.get('[type="radio"]').eq(0).check() // Översta radioknappen är den som ska anges
     });
 
     // ----- Sektion 'Åtgärder' -----//
-    cy.contains(lisjpData.föreslåÅtgärder).parent().parent().parent().within(($elem) => {
+    cy.contains(intygsdata.föreslåÅtgärder).parent().parent().parent().within(($elem) => {
         cy.get('[type="checkbox"]').each(($el, index, $list) => {
             if (index != 0) { // Index 0 är "Inte aktuellt", detta är den enda checkboxen som INTE ska anges
                 cy.wrap($el).check();
@@ -320,42 +374,20 @@ Cypress.Commands.add("fyllIMaxLisjp", aliasesFromCaller => {
 
     cy.wait(3000);
 
-    cy.contains(lisjpData.flerÅtgärder).should('be.visible').parent().parent().parent().find('textarea')
-        .type(lisjpData.flerÅtgärderBeskrivning);
+    cy.contains(intygsdata.flerÅtgärder).should('be.visible').parent().parent().parent().find('textarea')
+        .type(intygsdata.flerÅtgärderBeskrivning);
 
     // ----- Sektion 'Övriga upplysningar' -----//
-    sektion_övriga_upplysningar(lisjpData, intygstyp);
+    sektion_övriga_upplysningar(intygsdata, intygstyp);
 
     // ----- Sektion 'Kontakt' -----//
-    cy.contains(lisjpData.kontaktaMig).parent().parent().parent().within(($elem) => {
-        cy.get('[type="checkbox"]').check();
-    });
-
-    cy.contains(lisjpData.anledningKontakt).parent().parent().parent().find('textarea')
-        .type(lisjpData.anledningKontaktBeskrivning);
+    sektion_kontakta_mig(intygsdata);
 
     // ----- Sektion 'Signera intyg' -----//
+    sektion_signera_intyg(intygsdata);
 
-    // Lägger till en paus här för att se om det är så att Cypress klickar för snabbt på Signera-knappen. I Jenkins
-    // failar testfallet ofta p.g.a att det dyker upp en modal som säger att intyger har ändrats av annan person (men personen som
-    // vill signera intyget är samma som anges som den som har ändrat det)
-    // Just nu verkar testfallet gå igenom men frågan är om detta har något med saken att göra eller om det fungerar bara för att jag bytte till
-    // ny slav på Jenkins (det förkortade exekveringstiden till hälften ungefär)
-    cy.wait(6000);
-
-    // Om laptop kör på batteri och Wifi så visar Cypress att knappen trycks in,
-    // men ofta händer inget
-    cy.contains('button', lisjpData.signeraKnappText, { timeout: 15000 })
-        .should('be.enabled')
-        .then(($button) => {
-            cy.wait(1000);
-            cy.wrap($button).click(); // prova att ändra till <button?
-        });
-
-    // Paus här också, precis som ovanför "Signera intyg"-knappen. Behövs den nu när vi kör på snabbare slav?
-    cy.wait(6000);
-
-    cy.contains('div', lisjpData.väljIntygsmottagare, { timeout: 20000 })
+    // Välj intygsmottagare
+    cy.contains('div', intygsdata.väljIntygsmottagare, { timeout: 20000 })
         .should('be.visible')
         .within(($elem) => {
             cy.get('[type="radio"]').each(($el, index, $list) => { // Hämtar ut samtliga radioknappar... kan förbättras
@@ -369,19 +401,11 @@ Cypress.Commands.add("fyllIMaxLisjp", aliasesFromCaller => {
 
     cy.get('[name="approveForm"]').within(($form) => {
         cy.get('[type="button"]').then(($button) => {
-            cy.wrap($button).contains(lisjpData.intygsmottagareKnappText).should('be.visible');
+            cy.wrap($button).contains(intygsdata.intygsmottagareKnappText).should('be.visible');
             cy.wrap($button).click({ force: true });
         });
     });
 
-    // Testfallet har failat enstaka gånger i CI p.g.a. timeout på denna knapp, ökar därför timeout
-    cy.contains('button', lisjpData.skickaTillFKKnappText, { timeout: 20000 })
-        .should('be.visible').and('be.enabled')
-        .click();
-
-    cy.contains(lisjpData.varningSkickaTillFK).should('be.visible');
-
-    cy.contains('button', lisjpData.skickaKnappTextEfterVarning)
-        .should('be.visible')
-        .click();
+    // Skicka iväg intyget
+    skicka_till_FK(intygsdata);
 });

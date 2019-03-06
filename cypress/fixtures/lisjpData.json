@@ -47,15 +47,16 @@
 
     "övrigaUpplysningarTextfältId": "#ovrigt",
     "övrigaUpplysningarSkriv": "Planerad partus ",
-    "kontaktaMig": "Jag önskar att Försäkringskassan kontaktar mig.",
-    "anledningKontakt": "Ange gärna varför du vill ha kontakt.",
-    "anledningKontaktBeskrivning": "För att diskutera sjukskrivningsperiod och tydliggörande kring besvärsbilden samt framtida arbetsförmåga.",
-    "signeraKnappText": "Signera intyget",
+
+    "kontaktMedFKCheckboxId": "#kontaktMedFk",
+    "kontaktMedFKTextfältId": "#anledningTillKontakt",
+    "kontaktMedFKSkriv": "För att diskutera sjukskrivningsperiod och tydliggörande kring besvärsbilden samt framtida arbetsförmåga.",
+
+    "signeraUtkastKnappId": "#signera-utkast-button",
 
     "väljIntygsmottagare": "Välj vilka intygsmottagare invånaren kan skicka intyget till via Mina intyg.",
     "intygsmottagareKnappText": "Spara",
 
-    "skickaTillFKKnappText": "Skicka till Försäkringskassan",
-    "varningSkickaTillFK": "Om du går vidare kommer intyget skickas direkt till Försäkringskassans system vilket ska göras i samråd med patienten.",
-    "skickaKnappTextEfterVarning": "Skicka"
+    "skickaTillFKKnappId": "#sendBtn",
+    "varningSkickaTillFKKnappId": "#button1send-dialog"
 }
