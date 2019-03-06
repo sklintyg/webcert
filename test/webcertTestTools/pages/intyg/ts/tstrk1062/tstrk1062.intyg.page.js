@@ -20,7 +20,6 @@
 'use strict';
 
 var TsBaseIntyg = require('../ts.base.intyg.page');
-var testValues = require('../../../../testdata/testvalues.ts');
 var _ = require('lodash');
 
 var Tstrk1062Intyg = TsBaseIntyg._extend({
@@ -29,148 +28,57 @@ var Tstrk1062Intyg = TsBaseIntyg._extend({
         this.intygType = 'tstrk1062';
         this.intygTypeVersion = '1.0';
 
-        // this.lakemedelsbehandling: {
-        //     harHaft: undefined,
-        //         pagar: undefined,
-        //         aktuell: undefined,
-        //         pagatt: undefined,
-        //         effekt: undefined,
-        //         foljsamhet: undefined,
-        //         avslutadTidpunkt: undefined,
-        //         avslutadOrsak: undefined
-        // },
-
-        this.lakemedelsbehandling = element(by.id('lakemedelsbehandling-korrektionsglasensStyrka'));
-
+        this.intygetAvser = {
+            am: element(by.id('intygAvser-behorigheter-0')),
+            a1: element(by.id('intygAvser-behorigheter-1'))
+        };
+        this.identitet = {
+            svensktKortkort: element(by.id('idKontroll-typ'))
+        };
+        this.allmant = {
+            diagnosKod: element(by.id('diagnosKodad-row0-col0')),
+            diagnosBeskrivning: element(by.id('diagnosKodad-row0-col1')),
+            diagnosAr: element(by.id('diagnosKodad-row0-col2'))
+        };
+        this.lakemedelsbehandling = {
+            harHaft: element(by.id('lakemedelsbehandling-harHaft')),
+            pagar: element(by.id('lakemedelsbehandling-pagar')),
+            aktuell: element(by.id('lakemedelsbehandling-aktuell')),
+            pagatt: element(by.id('lakemedelsbehandling-pagatt')),
+            effekt: element(by.id('lakemedelsbehandling-effekt')),
+            foljsamhet: element(by.id('lakemedelsbehandling-foljsamhet'))
+        };
+        this.symptom = {
+            bedomningAvSymptom: element(by.id('bedomningAvSymptom')),
+            prognosTillstandGod: element(by.id('prognosTillstand-typ'))
+        };
+        this.ovrigt = element(by.id('ovrigaKommentarer'));
+        this.bedomning = {
+          am: element(by.id('bedomning-uppfyllerBehorighetskrav-0')),
+          a: element(by.id('bedomning-uppfyllerBehorighetskrav-1'))
+        };
     },
     get: function get(intygId) {
         get._super.call(this, intygId);
     },
-    verifieraHorsel: function(horsel) {
-        expect(this.horselBalansbalansrubbningar.getText()).toBe(horsel.yrsel);
-        expect(this.horselSamtal.getText()).toBe(horsel.samtal ? horsel.samtal : 'Ej angivet');
-    },
-    verifieraRorelseorganensFunktioner: function(rorelseorganensFunktioner) {
-        expect(this.funktionsnedsattning.getText()).toBe(rorelseorganensFunktioner.nedsattning);
-        if (rorelseorganensFunktioner.nedsattning === 'Ja') {
-            expect(this.funktionsnedsattningbeskrivning.getText()).toBe(rorelseorganensFunktioner.nedsattningBeskrivning);
-        }
-        expect(this.funktionsnedsRorelseformaga.getText()).toBe(rorelseorganensFunktioner.inUtUrFordon ? rorelseorganensFunktioner.inUtUrFordon : 'Ej angivet');
-    },
-    verifieraHjartOchKarlsjukdomar: function(data) {
-        expect(this.hjartKarlSjukdom.getText()).toBe(data.hjartHjarna);
-        expect(this.hjarnskadaEfterTrauma.getText()).toBe(data.hjartSkada);
-        expect(this.riskfaktorerStroke.getText()).toBe(data.hjartRisk);
-
-        if (data.hjartRisk === 'Ja') {
-            expect(this.beskrivningRiskfaktorer.getText()).toBe(data.hjartRiskBeskrivning);
-        }
-    },
-    verifieraDiabetes: function(diabetes) {
-        expect(this.harDiabetes.getText()).toBe(diabetes.hasDiabetes);
-
-        if (diabetes.hasDiabetes === 'Ja') {
-            expect(this.diabetesTyp.getText()).toBe(diabetes.typ);
-
-            if (diabetes.typ === 'Typ 2') {
-                for (var i = 0; diabetes.behandlingsTyper.length > i; i++) {
-                    var typ = diabetes.behandlingsTyper[i] === 'Endast kost' ? 'Kost' : diabetes.behandlingsTyper[i];
-                    expect(this.getBehandlingsTyp(i).getText()).toBe(typ);
-                }
-            }
-        }
-    },
-    verifieraEpilepsi: function(data) {
-        expect(this.medvetandestorning.getText()).toBe(data.epilepsi);
-        if (data.epilepsi === 'Ja') {
-            expect(this.medvetandestorningbeskrivning.getText()).toBe(data.epilepsiBeskrivning);
-        }
-    },
-    verifieraMissbruk: function(data) {
-        expect(this.teckenMissbruk.getText()).toBe(data.alkoholMissbruk);
-        expect(this.foremalForVardinsats.getText()).toBe(data.alkoholVard);
-        if (data.alkoholMissbruk === 'Ja' || data.alkoholVard === 'Ja') {
-            expect(this.provtagningBehovs.getText()).toBe(data.alkoholProvtagning);
-        }
-        expect(this.lakarordineratLakemedelsbruk.getText()).toBe(data.alkoholLakemedel);
-        if (data.alkoholLakemedel === 'Ja') {
-            expect(this.lakemedelOchDos.getText()).toBe(data.alkoholLakemedelBeskrivning);
-        }
-    },
-    verifieraSjukvard: function(data) {
-        expect(this.sjukhusEllerLakarkontakt.getText()).toBe(data.sjukhusvard);
-
-        if (data.sjukhusvard === 'Ja') {
-            expect(this.tidpunkt.getText()).toBe(data.sjukhusvardTidPunkt);
-            expect(this.vardinrattning.getText()).toBe(data.sjukhusvardInrattning);
-            expect(this.sjukhusvardanledning.getText()).toBe(data.sjukhusvardAnledning);
-        }
-    },
-    verifieraOvrigMedicin: function(data) {
-        expect(this.stadigvarandeMedicinering.getText()).toBe(data.ovrigMedicin);
-        if (data.ovrigMedicin === 'Ja') {
-            expect(this.medicineringbeskrivning.getText()).toBe(data.ovrigMedicinBeskrivning);
-        }
-    },
-
-    verifieraSynfunktioner: function(data) {
-
-        expect(this.synfaltsdefekter.getText()).toBe(data.synDonder);
-        expect(this.nattblindhet.getText()).toBe(data.synNedsattBelysning);
-        expect(this.progressivOgonsjukdom.getText()).toBe(data.synOgonsjukdom);
-        expect(this.diplopi.getText()).toBe(data.synDubbel);
-        expect(this.nystagmus.getText()).toBe(data.synNystagmus);
-
-        expect(this.hogerOgautanKorrektion.getText()).toBe(this.dotToComma(data.styrkor.houk));
-        expect(this.hogerOgamedKorrektion.getText()).toBe(this.dotToComma(data.styrkor.homk));
-        expect(this.hogerOgakontaktlins.getText()).toBe(data.linser.hoger);
-
-        expect(this.vansterOgautanKorrektion.getText()).toBe(this.dotToComma(data.styrkor.vouk));
-        expect(this.vansterOgamedKorrektion.getText()).toBe(this.dotToComma(data.styrkor.vomk));
-        expect(this.vansterOgakontaktlins.getText()).toBe(data.linser.vanster);
-
-        expect(this.binokulartutanKorrektion.getText()).toBe(this.dotToComma(data.styrkor.buk));
-        expect(this.binokulartmedKorrektion.getText()).toBe(this.dotToComma(data.styrkor.bmk));
-    },
-    verifieraBedomning: function(bedomning) {
-
-        if (bedomning.stallningstagande === 'Kan inte ta ställning') {
-            expect(this.falt1.bedomning.getText()).toBe(bedomning.stallningstagande);
-        } else {
-            var sorted = _.sortBy(bedomning.behorigheter, function(x) {
-                return _.indexOf(testValues.korkortstyperHogreBehorighet, x);
-            });
-
-            var text = _.join(sorted, ', ');
-
-            expect(this.falt1.bedomning.getText()).toBe(text);
-        }
-    },
-    dotToComma: function(value) {
-        return value.replace('.', ',');
-    },
     verify: function(data) {
-
-        this.verifieraIntygetAvser(data.korkortstyper, testValues.korkortstyperHogreBehorighet);
-        this.verifieraIdKontroll(data.identitetStyrktGenom);
-        this.verifieraSynfunktioner(data);
-        this.verifieraHorsel(data.horsel);
-        this.verifieraRorelseorganensFunktioner(data.rorelseorganensFunktioner);
-        this.verifieraHjartOchKarlsjukdomar(data);
-        this.verifieraDiabetes(data.diabetes);
-        expect(this.neurologiskSjukdom.getText()).toBe(data.neurologiska);
-        this.verifieraEpilepsi(data);
-        expect(this.nedsattNjurfunktion.getText()).toBe(data.njursjukdom);
-        expect(this.sviktandeKognitivFunktion.getText()).toBe(data.demens);
-        expect(this.teckenSomnstorningar.getText()).toBe(data.somnVakenhet);
-        this.verifieraMissbruk(data);
-        expect(this.psykiskSjukdom.getText()).toBe(data.psykiskSjukdom);
-        expect(this.psykiskUtvecklingsstorning.getText()).toBe(data.adhdPsykisk);
-        expect(this.harSyndrom.getText()).toBe(data.adhdSyndrom);
-        this.verifieraSjukvard(data);
-        this.verifieraOvrigMedicin(data);
-        expect(this.comment.getText()).toBe(data.kommentar);
-        this.verifieraBedomning(data.bedomning, testValues.korkortstyperHogreBehorighet);
+        expect(this.intygetAvser.am.getText()).toBe(data.intygetAvser.am);
+        expect(this.intygetAvser.a1.getText()).toBe(data.intygetAvser.a1);
+        expect(this.identitet.svensktKortkort.getText()).toBe(data.identitet.svensktKortkort);
+        expect(this.allmant.diagnosKod.getText()).toBe(data.allmant.diagnosKod);
+        expect(this.allmant.diagnosBeskrivning.getText()).toBe(data.allmant.diagnosBeskrivning);
+        expect(this.allmant.diagnosAr.getText()).toBe(data.allmant.diagnosAr);
+        expect(this.lakemedelsbehandling.harHaft.getText()).toBe(data.lakemedelsbehandling.harHaft);
+        expect(this.lakemedelsbehandling.pagar.getText()).toBe(data.lakemedelsbehandling.pagar);
+        expect(this.lakemedelsbehandling.aktuell.getText()).toBe(data.lakemedelsbehandling.aktuell);
+        expect(this.lakemedelsbehandling.pagatt.getText()).toBe(data.lakemedelsbehandling.pagatt);
+        expect(this.lakemedelsbehandling.effekt.getText()).toBe(data.lakemedelsbehandling.effekt);
+        expect(this.lakemedelsbehandling.foljsamhet.getText()).toBe(data.lakemedelsbehandling.foljsamhet);
+        expect(this.symptom.bedomningAvSymptom.getText()).toBe(data.symptom.bedomningAvSymptom);
+        expect(this.symptom.prognosTillstandGod.getText()).toBe(data.symptom.prognosTillstandGod);
+        expect(this.ovrigt.getText()).toBe(data.ovrigt);
+        expect(this.bedomning.am.getText()).toBe(data.bedomning.am);
+        expect(this.bedomning.a.getText()).toBe(data.bedomning.a);
     }
 });
 

@@ -24,7 +24,7 @@ var wcTestTools = require('webcert-testtools');
 var specHelper = wcTestTools.helpers.spec;
 var testdataHelper = wcTestTools.helpers.restTestdata;
 var UtkastPage = wcTestTools.pages.intyg.ts.trk1062.utkast;
-//var IntygPage = wcTestTools.pages.intyg.ts.trk1062.intyg;
+var IntygPage = wcTestTools.pages.intyg.ts.trk1062.intyg;
 
 describe('Create and Sign tstrk1062 utkast', function() {
 
@@ -48,25 +48,43 @@ describe('Create and Sign tstrk1062 utkast', function() {
     });
 
     describe('Fyll i intyget', function() {
-        // it('fillIntygerAvser', function() {
-        //     UtkastPage.fillIntygerAvser(data.intygerAvser);
-        // });
+        it('fillIntygetAvser', function() {
+            UtkastPage.fillIntygetAvser(data.intygetAvser);
+        });
+        it('fillIdentitet', function() {
+            UtkastPage.fillIdentitet(data.identitet);
+        });
+        it('fillAllmant', function() {
+            UtkastPage.fillAllmant(data.allmant);
+        });
         it('fillLakemedelsbehandling', function() {
             UtkastPage.fillLakemedelsbehandling(data.lakemedelsbehandling);
         });
+        it('fillSymptom', function() {
+            UtkastPage.fillSymptom(data.symptom);
+        });
+        it('fillOvrigt', function() {
+            UtkastPage.fillOvrigt(data.ovrigt);
+        });
+        it('fillBedomning', function() {
+            UtkastPage.fillBedomning(data.bedomning);
+        });
+        it('enableAutosave', function() {
+            UtkastPage.enableAutosave();
+        });
     });
 
-    // it('Signera intyget', function() {
-    //     UtkastPage.whenSigneraButtonIsEnabled();
-    //
-    //     UtkastPage.signeraButtonClick();
-    //
-    //     expect(IntygPage.isAt()).toBeTruthy();
-    // });
-    //
-    // it('Verifiera intyg', function() {
-    //     IntygPage.verify(data);
-    // });
+    it('Signera intyget', function() {
+        UtkastPage.whenSigneraButtonIsEnabled();
+
+        UtkastPage.signeraButtonClick();
+
+        expect(IntygPage.isAt()).toBeTruthy();
+    });
+
+    it('Verifiera intyg', function() {
+        IntygPage.verify(data);
+    });
 
     afterAll(function() {
         testdataHelper.deleteIntyg(utkastId);

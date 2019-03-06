@@ -29,6 +29,19 @@ module.exports = {
         return {
             'id': intygsID,
             'typ': 'ADHD',
+            'intygetAvser': {
+                'am': 'AM',
+                'a1': 'A1'
+            },
+            'identitet': {
+                'svensktKortkort': 'Svenskt körkort'
+            },
+            'allmant': {
+                'inmatningICD': true,
+                'diagnosKod': 'A83',
+                'diagnosBeskrivning': 'Virusencefalit överförd av myggor',
+                'diagnosAr': '2019'
+            },
             'lakemedelsbehandling': {
                 'harHaft': 'Ja',
                 'pagar': 'Ja',
@@ -36,6 +49,15 @@ module.exports = {
                 'pagatt': 'Ja',
                 'effekt': 'Ja',
                 'foljsamhet': 'Ja'
+            },
+            'symptom': {
+                'bedomningAvSymptom': 'Symptom',
+                'prognosTillstandGod': 'Ja'
+            },
+            'ovrigt': 'Övrigt',
+            'bedomning': {
+                'am': 'AM',
+                'a': 'A'
             }
         };
     }

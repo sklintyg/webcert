@@ -31,63 +31,117 @@ var Tstrk1062Utkast = BaseTsUtkast._extend({
         this.intygTypeVersion = '1.0';
         this.at = element(by.id('edit-tstrk1062'));
 
-        // this.intygerAvser = {
-        //   amId: 'intygetAvser.behorigheter-IAV11',
-        //   a1Id: 'intygetAvser.behorigheter-IAV12'
-        // };
-
+        this.intygetAvser = {
+            am: element(by.id('intygAvser.behorigheter-IAV11')),
+            a1: element(by.id('intygAvser.behorigheter-IAV12'))
+        };
+        this.identitet = {
+            svensktKortkort: element(by.id('idKontroll.typ-KORKORT'))
+        };
+        this.allmant = {
+            inmatningICD: element(by.id('diagnosRegistrering.typ-DIAGNOS_KODAD')),
+            diagnosBeskrivning: element(by.id('diagnoseDescription-0')),
+            diagnosAr: element(by.id('diagnoseYear-0'))
+        };
         this.lakemedelsbehandling = {
             harHaftYes: element(by.id('lakemedelsbehandling-harHaftYes')),
-            harHaftNo: element(by.id('lakemedelsbehandling-harHaftNo')),
             pagarYes: element(by.id('lakemedelsbehandling-pagarYes')),
-            pagarNo: element(by.id('lakemedelsbehandling-pagarNo')),
-            aktuellText: element(by.id('lakemedelsbehandling-aktuell')),
+            aktuell: element(by.id('lakemedelsbehandling-aktuell')),
             pagattYes: element(by.id('lakemedelsbehandling-pagattYes')),
-            pagattNo: element(by.id('lakemedelsbehandling-pagattNo')),
             effektYes: element(by.id('lakemedelsbehandling-effektYes')),
-            effektNo: element(by.id('lakemedelsbehandling-effektNo')),
-            foljsamhetYes: element(by.id('lakemedelsbehandling-foljsamhetYes')),
-            foljsamhetNo: element(by.id('lakemedelsbehandling-foljsamhetNo'))
-            //avslutadTidpunktDatePickerId: 'datepicker_lakemedelsbehandling.avslutadTidpunkt',
-            //avslutadOrsakText: element(by.id('lakemedelsbehandling-avslutadOrsak'))
+            foljsamhetYes: element(by.id('lakemedelsbehandling-foljsamhetYes'))
+        };
+        this.symptom = {
+            bedomningAvSymptom: element(by.id('bedomningAvSymptom')),
+            prognosTillstandGodJa: element(by.id('prognosTillstand.typ-JA'))
+        };
+        this.ovrigt = element(by.id('ovrigaKommentarer'));
+        this.bedomning = {
+            am: element(by.id('bedomning.uppfyllerBehorighetskrav-VAR12')),
+            a: element(by.id('bedomning.uppfyllerBehorighetskrav-VAR15'))
         };
     },
-    // fillIntygerAvser: function(utkast) {
-    //     var promiseArr = [];
-    //
-    //     promiseArr.push(pageHelpers.selectCheckBoxesById(this.intygerAvser.am));
-    //     promiseArr.push(pageHelpers.selectCheckBoxesById(this.intygerAvser.a1));
-    //
-    //     return Promise.all(promiseArr);
-    // },
+    fillIntygetAvser: function(utkastIntygetAvser) {
+        var promiseArr = [];
+
+        if (utkastIntygetAvser.am === 'AM') {
+            promiseArr.push(pageHelpers.moveAndSendKeys(this.intygetAvser.am, protractor.Key.SPACE));
+        }
+        if (utkastIntygetAvser.a1 === 'A1') {
+            promiseArr.push(pageHelpers.moveAndSendKeys(this.intygetAvser.a1, protractor.Key.SPACE));
+        }
+
+        return Promise.all(promiseArr);
+    },
+    fillIdentitet: function(utkastIdentitet) {
+        var promiseArr = [];
+
+        if (utkastIdentitet.svensktKortkort === 'Svenskt körkort') {
+            promiseArr.push(pageHelpers.moveAndSendKeys(this.identitet.svensktKortkort, protractor.Key.SPACE));
+        }
+
+        return Promise.all(promiseArr);
+    },
+    fillAllmant: function(utkastAllmant) {
+        var promiseArr = [];
+
+        if (utkastAllmant.inmatningICD === true) {
+            promiseArr.push(pageHelpers.moveAndSendKeys(this.allmant.inmatningICD, protractor.Key.SPACE));
+        }
+        promiseArr.push(pageHelpers.moveAndSendKeys(this.allmant.diagnosBeskrivning, utkastAllmant.diagnosBeskrivning)
+            .then(browser.sleep(1000))
+            .then(pageHelpers.moveAndSendKeys(this.allmant.diagnosBeskrivning, protractor.Key.ENTER)));
+        promiseArr.push(pageHelpers.moveAndSendKeys(this.allmant.diagnosAr, utkastAllmant.diagnosAr));
+
+        return Promise.all(promiseArr);
+    },
     fillLakemedelsbehandling: function(utkastLakemedelsbehandling) {
         var promiseArr = [];
 
         if (utkastLakemedelsbehandling.harHaft === 'Ja') {
             promiseArr.push(pageHelpers.moveAndSendKeys(this.lakemedelsbehandling.harHaftYes, protractor.Key.SPACE));
-        } else {
-            promiseArr.push(pageHelpers.moveAndSendKeys(this.lakemedelsbehandling.harHaftNo, protractor.Key.SPACE));
         }
         if (utkastLakemedelsbehandling.pagar === 'Ja') {
             promiseArr.push(pageHelpers.moveAndSendKeys(this.lakemedelsbehandling.pagarYes, protractor.Key.SPACE));
-        } else {
-            promiseArr.push(pageHelpers.moveAndSendKeys(this.lakemedelsbehandling.pagarNo, protractor.Key.SPACE));
         }
-        promiseArr.push(pageHelpers.moveAndSendKeys(this.lakemedelsbehandling.aktuellText, utkastLakemedelsbehandling.aktuell));
+        promiseArr.push(pageHelpers.moveAndSendKeys(this.lakemedelsbehandling.aktuell, utkastLakemedelsbehandling.aktuell));
         if (utkastLakemedelsbehandling.pagatt === 'Ja') {
             promiseArr.push(pageHelpers.moveAndSendKeys(this.lakemedelsbehandling.pagattYes, protractor.Key.SPACE));
-        } else {
-            promiseArr.push(pageHelpers.moveAndSendKeys(this.lakemedelsbehandling.pagattNo, protractor.Key.SPACE));
         }
         if (utkastLakemedelsbehandling.effekt === 'Ja') {
             promiseArr.push(pageHelpers.moveAndSendKeys(this.lakemedelsbehandling.effektYes, protractor.Key.SPACE));
-        } else {
-            promiseArr.push(pageHelpers.moveAndSendKeys(this.lakemedelsbehandling.effektNo, protractor.Key.SPACE));
         }
         if (utkastLakemedelsbehandling.foljsamhet === 'Ja') {
             promiseArr.push(pageHelpers.moveAndSendKeys(this.lakemedelsbehandling.foljsamhetYes, protractor.Key.SPACE));
-        } else {
-            promiseArr.push(pageHelpers.moveAndSendKeys(this.lakemedelsbehandling.foljsamhetNo, protractor.Key.SPACE));
+        }
+
+        return Promise.all(promiseArr);
+    },
+    fillSymptom: function(utkastSymptom) {
+        var promiseArr = [];
+
+        promiseArr.push(pageHelpers.moveAndSendKeys(this.symptom.bedomningAvSymptom, utkastSymptom.bedomningAvSymptom));
+        if (utkastSymptom.prognosTillstandGod === 'Ja') {
+            promiseArr.push(pageHelpers.moveAndSendKeys(this.symptom.prognosTillstandGodJa, protractor.Key.SPACE));
+        }
+
+        return Promise.all(promiseArr);
+    },
+    fillOvrigt: function(utkastOvrigt) {
+        var promiseArr = [];
+
+        promiseArr.push(pageHelpers.moveAndSendKeys(this.ovrigt, utkastOvrigt));
+
+        return Promise.all(promiseArr);
+    },
+    fillBedomning: function(utkastBedomning) {
+        var promiseArr = [];
+
+        if (utkastBedomning.am === 'AM') {
+            promiseArr.push(pageHelpers.moveAndSendKeys(this.bedomning.am, protractor.Key.SPACE));
+        }
+        if (utkastBedomning.a === 'A') {
+            promiseArr.push(pageHelpers.moveAndSendKeys(this.bedomning.a, protractor.Key.SPACE));
         }
 
         return Promise.all(promiseArr);
