@@ -12,7 +12,8 @@ const implementeradeIntygArray = Object.values(implementeradeIntygEnum);
 TODO: ID:n och text som identifierar element i intygen är duplicerade
 i samtliga fixtures. Ska vi separera ID:n osv så att vi får en eller två
 filer som innehåller dessa och sen har vi t.ex. texten som läkaren skriver
-i andra filer?
+i andra filer? Ett annat alternativ är att ID:n skrivs ut direkt i koden
+nedan så att endast texten som fylls i osv är specifik för intygen.
 */
 
 function sektion_grund_för_medicinskt_underlag(intygsdata, intygstyp) {
@@ -32,10 +33,12 @@ function sektion_grund_för_medicinskt_underlag(intygsdata, intygstyp) {
 
 
     // -------------------- 'Intyget/utlåtandet är baserat på' --------------------
-    // TODO: Ska vi använda oss av ID:n?
-    // Fördelar: Enkel kod att skriva, enkel att läsa.
-    // Nackdelar: Så fort ett ID ändras "under huven" så kommer TC att faila trots att ingen ändring som drabbar användaren har skett
-    // Just nu används en blandning
+    // TODO: Ska vi använda oss av ID:n eller leta efter specifik text och sen navigera
+    //       bland elementen med parentsUntil() osv?
+    // Fördelar med ID:n: Enkel kod att skriva, enkel att läsa.
+    // Nackdelar med ID:n: Så fort ett ID ändras "under huven" så kommer TC att faila
+    //                     trots att ingen ändring som drabbar användaren har skett
+    // Just nu används en blandning tills beslut är taget.
     cy.contains(intygsdata.minUndersökning).parentsUntil('.ue-del-fraga').within(($form) => {
         cy.get('[type="checkbox"]').check();
         cy.get(intygsdata.datumUndersökning).clear().type(idagMinus5);
@@ -178,21 +181,17 @@ function sektion_kontakta_mig(intygsdata) {
 }
 
 function sektion_signera_intyg(intygsdata) {
-    // TODO: Behövs wait-statements nedan?
+    // cy.click() fungerar inte alltid. Det finns issues rapporterade (stängd pga inaktivitet):
+    // https://github.com/cypress-io/cypress/issues/2551
+    // Nedanstående steg innan klicket på signera-knappen är en workaround för detta.
+    cy.contains("Klart att signera");
+    cy.contains("Obligatoriska uppgifter saknas").should('not.exist');
+    cy.contains("Utkastet sparas").should('not.exist');
+    cy.contains("Utkastet är sparat").should('not.exist');
 
-    // Lägger till en paus här för att se om det är så att Cypress klickar för snabbt på Signera-knappen. I Jenkins
-    // failar testfallet ofta p.g.a att det dyker upp en modal som säger att intyger har ändrats av annan person (men personen som
-    // vill signera intyget är samma som anges som den som har ändrat det)
-    // Just nu verkar testfallet gå igenom men frågan är om detta har något med saken att göra eller om det fungerar bara för att jag bytte till
-    // ny slav på Jenkins (det förkortade exekveringstiden till hälften ungefär)
-    cy.wait(6000);
-
-    // Om laptop kör på batteri och Wifi så visar Cypress att knappen trycks in,
-    // men ofta händer inget. Därför provas ökad timeout här också.
+    cy.get(intygsdata.signeraUtkastKnappId).invoke('width').should('be.greaterThan', 0);
+    cy.get(intygsdata.signeraUtkastKnappId).should('not.be.disabled');
     cy.get(intygsdata.signeraUtkastKnappId).click();
-
-    // Paus här också, precis som ovanför "Signera intyg"-knappen. Behövs den nu när vi kör på snabbare slav?
-    cy.wait(6000);
 }
 
 function skicka_till_FK(intygsdata) {
