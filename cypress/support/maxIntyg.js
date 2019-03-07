@@ -1,14 +1,23 @@
-var implementeradeIntygEnum = {
+
+// TODO: Få till detta som global istället,
+// eventuellt via cypress.json. Finns även i commands.js
+const implementeradeIntygEnum = {
     LISJP: "LISJP",
     LUSE: "LUSE",
+    LUAE_NA: "LUAE_NA",
 }
+const implementeradeIntygArray = Object.values(implementeradeIntygEnum);
+
+/*
+TODO: ID:n och text som identifierar element i intygen är duplicerade
+i samtliga fixtures. Ska vi separera ID:n osv så att vi får en eller två
+filer som innehåller dessa och sen har vi t.ex. texten som läkaren skriver
+i andra filer?
+*/
 
 function sektion_grund_för_medicinskt_underlag(intygsdata, intygstyp) {
     expect(intygsdata).to.exist;
-
-    // TODO: Få till detta som global istället,
-    // eventuellt via cypress.json
-    expect(["LISJP", "LUSE"]).to.include.members([intygstyp]);
+    expect(implementeradeIntygArray).to.include.members([intygstyp]);
 
     /* TODO: Ta reda på svaret till nedanstående fråga.
     Samtliga datum är i första hand baserade på datum från LISJP-mallen från FK.
@@ -26,6 +35,7 @@ function sektion_grund_för_medicinskt_underlag(intygsdata, intygstyp) {
     // TODO: Ska vi använda oss av ID:n?
     // Fördelar: Enkel kod att skriva, enkel att läsa.
     // Nackdelar: Så fort ett ID ändras "under huven" så kommer TC att faila trots att ingen ändring som drabbar användaren har skett
+    // Just nu används en blandning
     cy.contains(intygsdata.minUndersökning).parentsUntil('.ue-del-fraga').within(($form) => {
         cy.get('[type="checkbox"]').check();
         cy.get(intygsdata.datumUndersökning).clear().type(idagMinus5);
@@ -43,7 +53,8 @@ function sektion_grund_för_medicinskt_underlag(intygsdata, intygstyp) {
         cy.wrap($form).get(intygsdata.datumJournalUppgifterFrån).clear().type(idagMinus15);
     });
 
-    if (intygstyp === implementeradeIntygEnum.LUSE) {
+    if (intygstyp === implementeradeIntygEnum.LUSE ||
+        intygstyp === implementeradeIntygEnum.LUAE_NA) {
         cy.contains(intygsdata.anhörigsBeskrivning).parentsUntil('.ue-del-fraga').within(($form) => {
             cy.get('[type="checkbox"]').check();
             cy.get(intygsdata.datumAnhörigsBeskrivning).clear().type(idagMinus6);
@@ -58,11 +69,11 @@ function sektion_grund_för_medicinskt_underlag(intygsdata, intygstyp) {
     // Denna textruta dyker upp efter att "Annat" har klickats i
     cy.get(intygsdata.annatTextarea).type(intygsdata.annatTextareaText);
 
-    if (intygstyp === implementeradeIntygEnum.LUSE) {
-        cy.get(intygsdata.datumKännedomOmPatient).clear().type(idagMinus14);
-    }
+    if (intygstyp === implementeradeIntygEnum.LUSE ||
+        intygstyp === implementeradeIntygEnum.LUAE_NA) {
 
-    if (intygstyp === implementeradeIntygEnum.LUSE) {
+        cy.get(intygsdata.datumKännedomOmPatient).clear().type(idagMinus14);
+
         // Klicka i att utlåtandet även baseras på andra medicinska
         // utredningar eller underlag. Detta gör att nya fält visualiseras
         cy.get(intygsdata.andraUnderlagJaAlternativ).click();
@@ -105,7 +116,7 @@ function sektion_grund_för_medicinskt_underlag(intygsdata, intygstyp) {
     }
 }
 
-function sektion_diagnoser_för_sjukdom(intygsdata, intygstyp) {
+function sektion_diagnoser_för_sjukdom(intygsdata, intygstyp, apa) {
     cy.contains(intygsdata.diagnoserNedsattArbetsförmåga).parent().parent().parent().within(($form) => {
         // Antag att ICD-10-SE är förvalt
         cy.get('[placeholder=' + intygsdata.kodTextareaPlaceholder + ']').then(($codeFields) => {
@@ -115,7 +126,8 @@ function sektion_diagnoser_för_sjukdom(intygsdata, intygstyp) {
         });
     });
 
-    if (intygstyp === implementeradeIntygEnum.LUSE) {
+    if (intygstyp === implementeradeIntygEnum.LUSE ||
+        intygstyp === implementeradeIntygEnum.LUAE_NA) {
         cy.get(intygsdata.diagnosgrundTextareaId).type(intygsdata.diagnosgrundTextSkriv);
 
         // Finns skäl att revidera tidigare diagnos?
@@ -129,15 +141,25 @@ function sektion_aktivitetsbegränsningar(intygsdata, intygstyp) {
 }
 
 function sektion_medicinsk_behandling(intygsdata, intygstyp) {
-    if (intygstyp === implementeradeIntygEnum.LUSE) {
+    if (intygstyp === implementeradeIntygEnum.LUSE ||
+        intygstyp === implementeradeIntygEnum.LUAE_NA) {
         cy.get(intygsdata.avslutadBehandlingTextfältId).type(intygsdata.avslutadBehandlingSkriv);
     }
 
     cy.get(intygsdata.pågåendeBehandlingarTextfältId).type(intygsdata.pågåendeBehandlingarSkriv);
     cy.get(intygsdata.planeradeBehandlingarTextfältId).type(intygsdata.planeradeBehandlingarSkriv);
 
-    if (intygstyp === implementeradeIntygEnum.LUSE) {
+    if (intygstyp === implementeradeIntygEnum.LUSE ||
+        intygstyp === implementeradeIntygEnum.LUAE_NA) {
         cy.get(intygsdata.substansintagTextfältId).type(intygsdata.substansintagSkriv);
+    }
+}
+
+function sektion_medicinska_förutsättningar_för_arbete(intygsdata, intygstyp) {
+    cy.get(intygsdata.förutsättningarFörArbeteTextfältId).type(intygsdata.förutsättningarFörArbeteSkriv);
+    cy.get(intygsdata.förmågaTrotsBegränsningTextfältId).type(intygsdata.förmågaTrotsBegränsningSkriv);
+    if (intygstyp === implementeradeIntygEnum.LUAE_NA) {
+        cy.get(intygsdata.förslagTillÅtgärdTextfältId).type(intygsdata.förslagTillÅtgärdSkriv);
     }
 }
 
@@ -169,42 +191,18 @@ function sektion_signera_intyg(intygsdata) {
     // men ofta händer inget. Därför provas ökad timeout här också.
     cy.get(intygsdata.signeraUtkastKnappId).click();
 
-    /*
-    cy.contains('button', lisjpData.signeraKnappText, { timeout: 15000 })
-        .should('be.enabled')
-        .then(($button) => {
-            cy.wait(1000);
-            cy.wrap($button).click(); // prova att ändra till <button?
-        });
-    */
     // Paus här också, precis som ovanför "Signera intyg"-knappen. Behövs den nu när vi kör på snabbare slav?
     cy.wait(6000);
 }
 
 function skicka_till_FK(intygsdata) {
-    cy.get(intygsdata.skickaTillFKKnappId).click();
+    cy.get(intygsdata.skickaTillFKKnappId, { timeout: 60000 }).click();
     cy.get(intygsdata.varningSkickaTillFKKnappId).click();
     // TODO: Kontrollera att texten "Intyget är skickat till Försäkringskassan"
     // syns på sidan?
 }
 
-Cypress.Commands.add("fyllIMaxLuse", aliasesFromCaller => {
-
-    const intygsdata = aliasesFromCaller.luseData;
-    expect(intygsdata).to.exist;
-
-    const intygstyp = implementeradeIntygEnum.LUSE;
-
-    // ----- Sektion 'Grund för medicinskt underlag' -----
-    sektion_grund_för_medicinskt_underlag(intygsdata, intygstyp);
-
-    // ----- Sektion 'Diagnos/Diagnoser för sjukdom som orsakar nedsatt arbetsförmåga' ----- //
-    sektion_diagnoser_för_sjukdom(intygsdata, intygstyp);
-
-    // ----- Sektion 'Bakgrund - beskriv kortfattat förloppet för aktuella sjukdomar' ----- //
-    cy.get(intygsdata.bakgrundSjukdomsförloppTextfältId).type(intygsdata.bakgrundSjukdomsförloppTextSkriv);
-
-    // ----- Sektion 'Funktionsnedsättning - beskriv undersökningsfynd och ...' ----- //
+function sektion_funktionsnedsättning(intygsdata) {
     cy.get(intygsdata.funknedsättningIntellektuellExpanderaId).click();
     cy.get(intygsdata.funknedsättningIntellektuellTextfältId).type(intygsdata.funknedsättningIntellektuellSkriv);
 
@@ -225,6 +223,24 @@ Cypress.Commands.add("fyllIMaxLuse", aliasesFromCaller => {
 
     cy.get(intygsdata.funknedsättningAnnanExpanderaId).click();
     cy.get(intygsdata.funknedsättningAnnanTextfältId).type(intygsdata.funknedsättningAnnanSkriv);
+}
+
+Cypress.Commands.add("fyllIMaxLuaeNa", aliasesFromCaller => {
+    const intygsdata = aliasesFromCaller.luaeNaData;
+    expect(intygsdata).to.exist;
+    const intygstyp = implementeradeIntygEnum.LUAE_NA;
+
+    // ----- Sektion 'Grund för medicinskt underlag' -----
+    sektion_grund_för_medicinskt_underlag(intygsdata, intygstyp);
+
+    // ----- Sektion 'Diagnos/Diagnoser för sjukdom som orsakar nedsatt arbetsförmåga' ----- //
+    sektion_diagnoser_för_sjukdom(intygsdata, intygstyp);
+
+    // ----- Sektion 'Bakgrund - beskriv kortfattat förloppet för aktuella sjukdomar' ----- //
+    cy.get(intygsdata.bakgrundSjukdomsförloppTextfältId).type(intygsdata.bakgrundSjukdomsförloppTextSkriv);
+
+    // ----- Sektion 'Funktionsnedsättning - beskriv undersökningsfynd och ...' ----- //
+    sektion_funktionsnedsättning(intygsdata);
 
     // ----- Sektion 'Aktivitetsbegränsning' ----- //
     sektion_aktivitetsbegränsningar(intygsdata, intygstyp);
@@ -233,8 +249,46 @@ Cypress.Commands.add("fyllIMaxLuse", aliasesFromCaller => {
     sektion_medicinsk_behandling(intygsdata, intygstyp);
 
     // ----- Sektion 'Medicinska förutsättningar för arbete' ----- //
-    cy.get(intygsdata.förutsättningarFörArbeteTextfältId).type(intygsdata.förutsättningarFörArbeteSkriv);
-    cy.get(intygsdata.förmågaTrotsBegränsningTextfältId).type(intygsdata.förmågaTrotsBegränsningSkriv);
+    sektion_medicinska_förutsättningar_för_arbete(intygsdata, intygstyp);
+
+    // ----- Sektion 'Övriga upplysningar' -----//
+    sektion_övriga_upplysningar(intygsdata, intygstyp);
+
+    // ----- Sektion 'Kontakt' -----//
+    sektion_kontakta_mig(intygsdata);
+
+    // ----- Sektion 'Signera intyg' -----//
+    sektion_signera_intyg(intygsdata);
+
+    // Skicka iväg intyget
+    skicka_till_FK(intygsdata);
+});
+
+Cypress.Commands.add("fyllIMaxLuse", aliasesFromCaller => {
+    const intygsdata = aliasesFromCaller.luseData;
+    expect(intygsdata).to.exist;
+    const intygstyp = implementeradeIntygEnum.LUSE;
+
+    // ----- Sektion 'Grund för medicinskt underlag' -----
+    sektion_grund_för_medicinskt_underlag(intygsdata, intygstyp);
+
+    // ----- Sektion 'Diagnos/Diagnoser för sjukdom som orsakar nedsatt arbetsförmåga' ----- //
+    sektion_diagnoser_för_sjukdom(intygsdata, intygstyp);
+
+    // ----- Sektion 'Bakgrund - beskriv kortfattat förloppet för aktuella sjukdomar' ----- //
+    cy.get(intygsdata.bakgrundSjukdomsförloppTextfältId).type(intygsdata.bakgrundSjukdomsförloppTextSkriv);
+
+    // ----- Sektion 'Funktionsnedsättning - beskriv undersökningsfynd och ...' ----- //
+    sektion_funktionsnedsättning(intygsdata);
+
+    // ----- Sektion 'Aktivitetsbegränsning' ----- //
+    sektion_aktivitetsbegränsningar(intygsdata, intygstyp);
+
+    // ----- Sektion 'Medicinsk behandling' ----- //
+    sektion_medicinsk_behandling(intygsdata, intygstyp);
+
+    // ----- Sektion 'Medicinska förutsättningar för arbete' ----- //
+    sektion_medicinska_förutsättningar_för_arbete(intygsdata, intygstyp);
 
     // ----- Sektion 'Övriga upplysningar' -----//
     sektion_övriga_upplysningar(intygsdata, intygstyp);

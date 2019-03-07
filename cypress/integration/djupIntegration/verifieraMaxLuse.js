@@ -1,6 +1,8 @@
 /* globals context cy */
 /// <reference types="Cypress" />
 
+// LUSE = Läkarutlåtande för sjukersättning, FK 7800
+
 describe('(integrerat) skicka maximalt ifyllt LUSE till FK', function () {
 
     before(function() {

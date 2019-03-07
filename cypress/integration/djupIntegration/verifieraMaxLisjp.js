@@ -1,6 +1,8 @@
 /* globals context cy */
 /// <reference types="Cypress" />
 
+// LISJP = Läkarintyg för sjukpenning, FK 7804
+
 describe('(integrerat) skicka maximalt ifyllt LISJP till FK', function () {
 
     before(function() {

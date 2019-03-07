@@ -4,7 +4,15 @@
 
 // TODO: implementeradeIntyg finns duplicerad i åtminstone
 // "maxIntyg.js" också. Gör om till en global på något sätt.
-var implementeradeIntyg = ["LISJP", "LUSE"];
+// Dessa konstanter är exakt så som specificerat i
+// "Kodverk i nationella tjänsteplattformen", "KV intygstyp"
+// https://riv-ta.atlassian.net/wiki/pages/viewpageattachments.action?pageId=270532953
+var implementeradeIntygEnum = {
+	LISJP: "LISJP",
+	LUSE: "LUSE",
+	LUAE_NA: "LUAE_NA",
+}
+var implementeradeIntygArray = Object.values(implementeradeIntygEnum);
 
 function loggaInVårdgivare(fx, ärDjup) {
 	const vårdgivare = fx.vårdgivare;
@@ -42,7 +50,7 @@ Cypress.Commands.add("loggaInVårdgivareIntegrerat", fx => {
 	loggaInVårdgivare(fx, true);
 });
 
-// Skapa ett utkast enligt inparameter utkast
+// Skapa ett utkast enligt intygstyp
 function skapaUtkast(fx, intygstyp) {
 	const vårdgivare = fx.vårdgivare;
 	const vårdtagare = fx.vårdtagare;
@@ -50,7 +58,7 @@ function skapaUtkast(fx, intygstyp) {
 	expect(vårdgivare).to.exist;
 	expect(vårdtagare).to.exist;
 	expect(vårdenhet).to.exist;
-	expect(implementeradeIntyg).to.include.members([intygstyp]);
+	expect(implementeradeIntygArray).to.include.members([intygstyp]);
 
 	cy.request({
 		method: 'POST',
@@ -120,10 +128,15 @@ function skapaUtkast(fx, intygstyp) {
 
 // Skapa ett LISJP-utkast via createdraft-anrop och returnera id:t
 Cypress.Commands.add("skapaLisjpUtkast", fx => {
-	return skapaUtkast(fx, "LISJP");
+	return skapaUtkast(fx, implementeradeIntygEnum.LISJP);
 });
 
 // Skapa ett LISJP-utkast via createdraft-anrop och returnera id:t
 Cypress.Commands.add("skapaLuseUtkast", fx => {
-	return skapaUtkast(fx, "LUSE");
+	return skapaUtkast(fx, implementeradeIntygEnum.LUSE);
+});
+
+// Skapa ett LUAE-NA-utkast via createdraft-anrop och returnera id:t
+Cypress.Commands.add("skapaLuaeNaUtkast", fx => {
+	return skapaUtkast(fx, implementeradeIntygEnum.LUAE_NA);
 });
