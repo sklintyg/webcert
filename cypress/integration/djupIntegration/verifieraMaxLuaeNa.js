@@ -6,7 +6,7 @@
 describe('(integrerat) skicka maximalt ifyllt LUAE-NA till FK', function () {
 
     before(function() {
-        cy.fixture('luaeNaData').as('luaeNaData');
+        cy.fixture('FK_intyg/luaeNaData').as('luaeNaData');
         cy.fixture('arnoldJohansson').as('vårdgivare');
         cy.fixture('alfaEnheten').as('vårdenhet');
         cy.fixture('tolvanTolvansson').as('vårdtagare');

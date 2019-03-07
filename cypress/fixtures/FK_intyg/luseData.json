@@ -1,45 +1,19 @@
 {
-    "minUndersökning": "Min undersökning av patienten",
-    "datumUndersökning": "#datepicker_undersokningAvPatienten",
-    "journalUppgifterFrån": "Journaluppgifter från den",
-    "datumJournalUppgifterFrån": "#datepicker_journaluppgifter",
-    "anhörigsBeskrivning": "Anhörigs beskrivning av patienten",
-    "datumAnhörigsBeskrivning": "#datepicker_anhorigsBeskrivningAvPatienten",
-    "annat": "Annat",
-    "datumAnnat": "#datepicker_annatGrundForMU",
-    "annatTextarea": "#annatGrundForMUBeskrivning",
     "annatTextareaText": "Psykologutlåtande",
-    "datumKännedomOmPatient": "#datepicker_kannedomOmPatient",
 
-    "andraUnderlagJaAlternativ": "#underlagFinnsYes",
-    "underlag1Id": "#underlag-0--typ-selected-item-label",
-    "underlag1DropdownId": "#wcdropdown-underlag-0--typ",
-    "underlag1AlternativText": "Neuropsykiatriskt utlåtande",
-    "datumUnderlag1": "#datepicker_underlag\\[0\\]\\.datum",
-    "underlag1HämtasFrån": "#underlag-0--hamtasFran",
+    "underlag1Text": "Neuropsykiatriskt utlåtande",
     "underlag1HämtasFrånText": "Psykiatriska mottagningen X-stad",
-    "underlag2Id": "#underlag-1--typ-selected-item-label",
-    "underlag2DropdownId": "#wcdropdown-underlag-1--typ",
-    "underlag2AlternativText": "Underlag från habiliteringen",
-    "datumUnderlag2": "#datepicker_underlag\\[1\\]\\.datum",
-    "underlag2HämtasFrån": "#underlag-1--hamtasFran",
+    "underlag2Text": "Underlag från habiliteringen",
     "underlag2HämtasFrånText": "Barn- och ungdomspsykiatriska avdelningen Y-stad",
-    "underlag3Id": "#underlag-2--typ-selected-item-label",
-    "underlag3DropdownId": "#wcdropdown-underlag-2--typ",
-    "underlag3AlternativText": "Övrigt",
-    "datumUnderlag3": "#datepicker_underlag\\[2\\]\\.datum",
-    "underlag3HämtasFrån": "#underlag-2--hamtasFran",
+    "underlag3Text": "Övrigt",
     "underlag3HämtasFrånText": "Rättspsykiatriska kliniken X-stad",
 
     "diagnoserNedsattFörmåga": "Diagnos/diagnoser för sjukdom som orsakar nedsatt arbetsförmåga",
-    "kodTextareaPlaceholder": "Kod",
     "diagnosKod1": "f310",
     "diagnosKod2": "f843",
     "diagnosKod3": "f102x",
-    "diagnosgrundTextareaId": "#diagnosgrund",
     "diagnosgrundTextSkriv": "Autismen fastställd vid BUP, och bipolär sjukdom fastställd vid rättspsykiatriska kliniken.",
-    "revideraTidigareSattDiagnosJaAlternativ": "#nyBedomningDiagnosgrundYes",
-    "revideraTidigareDiagnosTextfältId": "#diagnosForNyBedomning",
+
     "revideraTidigareDiagnosSkriv": "Alkoholberoendet",
 
     "bakgrundSjukdomsförloppTextfältId": "#sjukdomsforlopp",
@@ -67,32 +41,17 @@
     "funknedsättningAnnanTextfältId": "#funktionsnedsattningAnnan",
     "funknedsättningAnnanSkriv": "Nedsatt syn vänster öga.",
 
-    "aktivitetsbegränsningTextfältId": "#aktivitetsbegransning",
     "aktivitetsbegränsningSkriv": "Stora svårigheter att på egen hand sköta sitt hem och planera aktiviteter på vardagarna. Klarar med lite stöd att laga mat och klippa gräset, men upplever att tvättning är alldeles för komplicerat. Svårt att sköta sin egen hygien. Svårt att genomföra aktiviteter, särskilt utanför hemmet. Svårt med sociala kontakter.",
 
-    "avslutadBehandlingTextfältId": "#avslutadBehandling",
     "avslutadBehandlingSkriv": "Har genomgått en bred utredning där psykolog, arbetsterapeut, och läkare deltagit. Provat flera antidepressiva behandlingar och centralstimulerande. Dock utan övertygande effekt.",
-    "pågåendeBehandlingarTextfältId": "#pagaendeBehandling",
     "pågåendeBehandlingarSkriv": "Pågående kontakt med öppenvården och regelbunden psykologkontakt. I syfte att ge stöd i vardagen. Förväntas inte förbättra hälsotillståndet.",
-    "planeradeBehandlingarTextfältId": "#planeradBehandling",
     "planeradeBehandlingarSkriv": "Planerar deltagande i Ångestgrupp, i syfte att hantera ångest, men inte lyckats påbörja insatsen. Planeras för neuropsykiatrisk utredning under 2020.",
-    "substansintagTextfältId": "#substansintag",
     "substansintagSkriv": "Medicinerat med Sertralin 150 mg, god men inte fullständig effekt. Har själv slutat med medicinering p.g.a. biverkningar.",
 
-    "förutsättningarFörArbeteTextfältId": "#medicinskaForutsattningarForArbete",
     "förutsättningarFörArbeteSkriv": "Patienten har under längre tid, med ett välplanerat schema med utökade aktiviteter och krav försökt etablera sig på arbetsmarknaden eller med studier. Men utan framgång, och bedöms inte heller ha förmågan att kunna tillgodogöra sig en sådan förmåga.",
-    "förmågaTrotsBegränsningTextfältId": "#formagaTrotsBegransning",
     "förmågaTrotsBegränsningSkriv": "Svårt att säga, behöver både psykoterapeutiska, farmakologiska och sociala insatser för att upprätthålla en normal vardag.",
 
-    "övrigaUpplysningarTextfältId": "#ovrigt",
     "övrigaUpplysningarSkriv": "Har haft borrelia som nu bedöms vara färdigbehandlad.",
 
-    "kontaktMedFKCheckboxId": "#kontaktMedFk",
-    "kontaktMedFKTextfältId": "#anledningTillKontakt",
-    "kontaktMedFKSkriv": "Jag kompletterar gärna underlaget.",
-
-    "signeraUtkastKnappId": "#signera-utkast-button",
-
-    "skickaTillFKKnappId": "#sendBtn",
-    "varningSkickaTillFKKnappId": "#button1send-dialog"
+    "kontaktMedFKSkriv": "Jag kompletterar gärna underlaget."
 }

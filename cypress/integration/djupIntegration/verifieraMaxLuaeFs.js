@@ -6,7 +6,7 @@
 describe('(integrerat) skicka maximalt ifyllt LUAE-FS till FK', function () {
 
     before(function() {
-        cy.fixture('luaeFsData').as('luaeFsData');
+        cy.fixture('FK_intyg/luaeFsData').as('luaeFsData');
         cy.fixture('arnoldJohansson').as('vårdgivare');
         cy.fixture('alfaEnheten').as('vårdenhet');
         cy.fixture('tolvanTolvansson').as('vårdtagare');

@@ -1,45 +1,19 @@
 {
-    "minUndersökning": "Min undersökning av patienten",
-    "datumUndersökning": "#datepicker_undersokningAvPatienten",
-    "journalUppgifterFrån": "Journaluppgifter från den",
-    "datumJournalUppgifterFrån": "#datepicker_journaluppgifter",
-    "anhörigsBeskrivning": "Anhörigs beskrivning av patienten",
-    "datumAnhörigsBeskrivning": "#datepicker_anhorigsBeskrivningAvPatienten",
-    "annat": "Annat",
-    "datumAnnat": "#datepicker_annatGrundForMU",
-    "annatTextarea": "#annatGrundForMUBeskrivning",
     "annatTextareaText": "Arbetsterapeutisk utredning",
-    "datumKännedomOmPatient": "#datepicker_kannedomOmPatient",
 
-    "andraUnderlagJaAlternativ": "#underlagFinnsYes",
-    "underlag1Id": "#underlag-0--typ-selected-item-label",
-    "underlag1DropdownId": "#wcdropdown-underlag-0--typ",
-    "underlag1AlternativText": "Underlag från arbetsterapeut",
-    "datumUnderlag1": "#datepicker_underlag\\[0\\]\\.datum",
-    "underlag1HämtasFrån": "#underlag-0--hamtasFran",
+    "underlag1Text": "Underlag från arbetsterapeut",
     "underlag1HämtasFrånText": "Privata psykiatriska kliniken X-stad",
-    "underlag2Id": "#underlag-1--typ-selected-item-label",
-    "underlag2DropdownId": "#wcdropdown-underlag-1--typ",
-    "underlag2AlternativText": "Neuropsykiatriskt utlåtande",
-    "datumUnderlag2": "#datepicker_underlag\\[1\\]\\.datum",
-    "underlag2HämtasFrån": "#underlag-1--hamtasFran",
+    "underlag2Text": "Neuropsykiatriskt utlåtande",
     "underlag2HämtasFrånText": "BUP X-stad",
-    "underlag3Id": "#underlag-2--typ-selected-item-label",
-    "underlag3DropdownId": "#wcdropdown-underlag-2--typ",
-    "underlag3AlternativText": "Underlag från psykolog",
-    "datumUnderlag3": "#datepicker_underlag\\[2\\]\\.datum",
-    "underlag3HämtasFrån": "#underlag-2--hamtasFran",
+    "underlag3Text": "Underlag från psykolog",
     "underlag3HämtasFrånText": "Psykiatriska kliniken X-stad",
 
     "diagnoserNedsattFörmåga": "Diagnos/diagnoser för sjukdom som orsakar nedsatt arbetsförmåga",
-    "kodTextareaPlaceholder": "Kod",
     "diagnosKod1": "F900x",
     "diagnosKod2": "F411",
     "diagnosKod3": "f401",
-    "diagnosgrundTextareaId": "#diagnosgrund",
     "diagnosgrundTextSkriv": "BUP 2012, Privata psykiatriska klinken 2013 och psykiatriska mottagningen 2016.",
-    "revideraTidigareSattDiagnosJaAlternativ": "#nyBedomningDiagnosgrundYes",
-    "revideraTidigareDiagnosTextfältId": "#diagnosForNyBedomning",
+
     "revideraTidigareDiagnosSkriv": "Möjligen autismsymptom",
 
     "bakgrundSjukdomsförloppTextfältId": "#sjukdomsforlopp",
@@ -67,34 +41,18 @@
     "funknedsättningAnnanTextfältId": "#funktionsnedsattningAnnan",
     "funknedsättningAnnanSkriv": "Nedsatt hörsel höger öra.",
 
-    "aktivitetsbegränsningTextfältId": "#aktivitetsbegransning",
     "aktivitetsbegränsningSkriv": "Stora svårigheter att på egen hand sköta sitt hem och planera aktiviteter på vardagarna. Klarar med lite stöd att laga mat och klippa gräset, men upplever att tvättning är alldeles för komplicerat. Svårt att sköta sin egen hygien. Svårt att genomföra aktiviteter, särskilt utanför hemmet. Svårt med sociala kontakter.",
 
-    "avslutadBehandlingTextfältId": "#avslutadBehandling",
     "avslutadBehandlingSkriv": "Har genomgått en bred utredning där psykolog, arbetsterapeut, och läkare deltagit. Provat flera antidepressiva behandlingar och centralstimulerande. Dock utan övertygande effekt.",
-    "pågåendeBehandlingarTextfältId": "#pagaendeBehandling",
     "pågåendeBehandlingarSkriv": "Pågående kontakt med öppenvården och regelbunden psykologkontakt.",
-    "planeradeBehandlingarTextfältId": "#planeradBehandling",
     "planeradeBehandlingarSkriv": "Planerar deltagande i Ångestgrupp, i syfte att hantera ångest, men inte lyckats påbörja insatsen. Planeras för neuropsykiatrisk utredning under 2020.",
-    "substansintagTextfältId": "#substansintag",
     "substansintagSkriv": "Medicinerat med Sertralin 150 mg, god men inte fullständig effekt. Har själv slutat med medicinering p.g.a. biverkningar.",
 
-    "förutsättningarFörArbeteTextfältId": "#medicinskaForutsattningarForArbete",
     "förutsättningarFörArbeteSkriv": "Patienten behöver längre tid, ett välplanerat schema med utökade aktiviteter med belastning och krav för att eventuellt kunna etablera sig på arbetsmarknaden eller med studier.",
-    "förmågaTrotsBegränsningTextfältId": "#formagaTrotsBegransning",
     "förmågaTrotsBegränsningSkriv": "Svårt att säga, behöver både psykoterapeutiska, farmakologiska och sociala insatser.",
-    "förslagTillÅtgärdTextfältId": "#forslagTillAtgard",
     "förslagTillÅtgärdSkriv": "Behöver stöd i att utveckla förmåga att kunna leva i sin lägenhet, och med stöd sköta lägenheten samt att komma igång i regelbunden aktivitet.",
 
-    "övrigaUpplysningarTextfältId": "#ovrigt",
     "övrigaUpplysningarSkriv": "Även diagnoserad med social fobi F40.1 och Sömnstörning F51.9.",
 
-    "kontaktMedFKCheckboxId": "#kontaktMedFk",
-    "kontaktMedFKTextfältId": "#anledningTillKontakt",
-    "kontaktMedFKSkriv": "Det kan vara aktuellt att gemensamt planera för stödinsatser.",
-
-    "signeraUtkastKnappId": "#signera-utkast-button",
-
-    "skickaTillFKKnappId": "#sendBtn",
-    "varningSkickaTillFKKnappId": "#button1send-dialog"
+    "kontaktMedFKSkriv": "Det kan vara aktuellt att gemensamt planera för stödinsatser."
 }

@@ -4,7 +4,7 @@
 describe('(normalinloggat) skicka maximalt ifyllt LISJP till FK', function () {
 
 	before(function () {
-		cy.fixture('lisjpData').as('lisjpData');
+		cy.fixture('FK_intyg/lisjpData').as('lisjpData');
 		cy.fixture('arnoldJohansson').as('vårdgivare');
 		cy.fixture('alfaEnheten').as('vårdenhet');
 		cy.fixture('tolvanTolvansson').as('vårdtagare');

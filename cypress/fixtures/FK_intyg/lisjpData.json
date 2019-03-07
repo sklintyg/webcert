@@ -1,13 +1,4 @@
 {
-    "minUndersökning": "Min undersökning av patienten",
-    "datumUndersökning": "#datepicker_undersokningAvPatienten",
-    "telefonKontakt": "Min telefonkontakt med patienten",
-    "datumTelefonkontakt": "#datepicker_telefonkontaktMedPatienten",
-    "journalUppgifterFrån": "Journaluppgifter från den",
-    "datumJournalUppgifterFrån": "#datepicker_journaluppgifter",
-    "annat": "Annat",
-    "datumAnnat": "#datepicker_annatGrundForMU",
-    "annatTextarea": "#annatGrundForMUBeskrivning",
     "annatTextareaText": "Utlåtande från barnmorska",
 
     "nuvarandeArbete": "Nuvarande arbete",
@@ -18,18 +9,15 @@
     "checkboxStudier": "Studier",
 
     "diagnoserNedsattFörmåga": "Diagnos/diagnoser för sjukdom som orsakar nedsatt arbetsförmåga",
-    "kodTextareaPlaceholder": "Kod",
     "diagnosKod1": "O267",
     "diagnosKod2": "O470A",
     "diagnosKod3": "O210",
 
     "beskrivObservationer": "Beskriv undersökningsfynd, testresultat och observationer",
     "besvärsBeskrivning": "Uttalade besvär från bäcken, svår smärta vid lägesförändring, hälta, instabilitet bäcken",
-    "aktivitetsbegränsningTextfältId": "#aktivitetsbegransning",
+
     "aktivitetsbegränsningSkriv": "starka bäckensmärtor som ger uttalad aktivitetsbegränsning vid fysisk aktivitet och kontorsarbete samt koncentrationssvårigheter",
-    "pågåendeBehandlingarTextfältId": "#pagaendeBehandling",
     "pågåendeBehandlingarSkriv": "Sjukgymnastik och rörelseprogram för att lindra bäckenuppluckring",
-    "planeradeBehandlingarTextfältId": "#planeradBehandling",
     "planeradeBehandlingarSkriv": "Specialist, ultraljudskontroller",
 
     "arbetsförmågaBedömning": "Min bedömning av patientens nedsättning av arbetsförmågan",
@@ -45,18 +33,10 @@
     "flerÅtgärder": "Här kan du ange fler åtgärder. Du kan också beskriva hur åtgärderna kan underlätta återgång i arbete.",
     "flerÅtgärderBeskrivning": "Om anpassningar till lättare uppgifter utan tunga lyft och mycket gående kan ordnas kvarstår arbetsförmåga under en tid framöver.",
 
-    "övrigaUpplysningarTextfältId": "#ovrigt",
     "övrigaUpplysningarSkriv": "Planerad partus ",
 
-    "kontaktMedFKCheckboxId": "#kontaktMedFk",
-    "kontaktMedFKTextfältId": "#anledningTillKontakt",
     "kontaktMedFKSkriv": "För att diskutera sjukskrivningsperiod och tydliggörande kring besvärsbilden samt framtida arbetsförmåga.",
 
-    "signeraUtkastKnappId": "#signera-utkast-button",
-
     "väljIntygsmottagare": "Välj vilka intygsmottagare invånaren kan skicka intyget till via Mina intyg.",
-    "intygsmottagareKnappText": "Spara",
-
-    "skickaTillFKKnappId": "#sendBtn",
-    "varningSkickaTillFKKnappId": "#button1send-dialog"
+    "intygsmottagareKnappText": "Spara"
 }

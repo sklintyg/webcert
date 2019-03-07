@@ -40,92 +40,99 @@ function sektion_grund_för_medicinskt_underlag(intygsdata, intygstyp) {
     // Nackdelar med ID:n: Så fort ett ID ändras "under huven" så kommer TC att faila
     //                     trots att ingen ändring som drabbar användaren har skett
     // Just nu används en blandning tills beslut är taget.
-    cy.contains(intygsdata.minUndersökning).parentsUntil('.ue-del-fraga').within(($form) => {
+    cy.contains("Min undersökning av patienten").parentsUntil('.ue-del-fraga').within(($form) => {
         cy.get('[type="checkbox"]').check();
-        cy.get(intygsdata.datumUndersökning).clear().type(idagMinus5);
+        cy.get("#datepicker_undersokningAvPatienten").clear().type(idagMinus5);
     });
 
     if (intygstyp === implementeradeIntygEnum.LISJP) {
-        cy.contains(intygsdata.telefonKontakt).parentsUntil('.ue-del-fraga').within(($form) => {
+        cy.contains("Min telefonkontakt med patienten").parentsUntil('.ue-del-fraga').within(($form) => {
             cy.get('[type="checkbox"]').check();
-            cy.get(intygsdata.datumTelefonkontakt).clear().type(idagMinus6);
+            cy.get("#datepicker_telefonkontaktMedPatienten").clear().type(idagMinus6);
         });
     }
 
-    cy.contains(intygsdata.journalUppgifterFrån).parentsUntil('.ue-del-fraga').within(($form) => {
+    cy.contains("Journaluppgifter från den").parentsUntil('.ue-del-fraga').within(($form) => {
         cy.wrap($form).get('[type="checkbox"]').check();
-        cy.wrap($form).get(intygsdata.datumJournalUppgifterFrån).clear().type(idagMinus15);
+        cy.wrap($form).get("#datepicker_journaluppgifter").clear().type(idagMinus15);
     });
 
-    if (intygstyp === implementeradeIntygEnum.LUSE ||
-        intygstyp === implementeradeIntygEnum.LUAE_NA ||
-        intygstyp === implementeradeIntygEnum.LUAE_FS) {
-        cy.contains(intygsdata.anhörigsBeskrivning).parentsUntil('.ue-del-fraga').within(($form) => {
+    // Gäller ej LISJP
+    if (intygstyp !== implementeradeIntygEnum.LISJP) {
+        cy.contains("Anhörigs beskrivning av patienten").parentsUntil('.ue-del-fraga').within(($form) => {
             cy.get('[type="checkbox"]').check();
-            cy.get(intygsdata.datumAnhörigsBeskrivning).clear().type(idagMinus6);
+            cy.get("#datepicker_anhorigsBeskrivningAvPatienten").clear().type(idagMinus6);
         });
     }
 
-    cy.contains(intygsdata.annat).parentsUntil('.ue-del-fraga').within(($form) => {
+    cy.contains("Annat").parentsUntil('.ue-del-fraga').within(($form) => {
         cy.get('[type="checkbox"]').check();
-        cy.get(intygsdata.datumAnnat).clear().type(idagMinus14);
+        cy.get("#datepicker_annatGrundForMU").clear().type(idagMinus14);
     });
 
     // Denna textruta dyker upp efter att "Annat" har klickats i
-    cy.get(intygsdata.annatTextarea).type(intygsdata.annatTextareaText);
+    cy.get("#annatGrundForMUBeskrivning").type(intygsdata.annatTextareaText);
 
     if (intygstyp === implementeradeIntygEnum.LUSE ||
         intygstyp === implementeradeIntygEnum.LUAE_NA ||
         intygstyp === implementeradeIntygEnum.LUAE_FS) {
 
-        cy.get(intygsdata.datumKännedomOmPatient).clear().type(idagMinus14);
+        cy.get("#datepicker_kannedomOmPatient").clear().type(idagMinus14);
 
         // Klicka i att utlåtandet även baseras på andra medicinska
         // utredningar eller underlag. Detta gör att nya fält visualiseras
-        cy.get(intygsdata.andraUnderlagJaAlternativ).click();
+        cy.get("#underlagFinnsYes").click();
 
-        // Fyll i alla fält för utredning/underlag 1
-        cy.get(intygsdata.underlag1Id).click();
-        cy.get(intygsdata.underlag1DropdownId)
-        .contains(intygsdata.underlag1AlternativText)
+        /* Fyll i fält för utredning/underlag:
+           - Klicka på raden för att fälla ut dropdown
+           - Baserat på  id:t för dropdownen, verifiera att specifik text finns och välj den raden
+           - Klicka på raden
+           - Lokalisera datumfältet och fyll i datum
+           - Lokalisera textfältet där vårdgivare ska anges, fyll i text
+        */
+
+        // Fyll i alla fält för utredning/underlag 1:
+        cy.get("#underlag-0--typ-selected-item-label").click();
+        cy.get("#wcdropdown-underlag-0--typ")
+        .contains(intygsdata.underlag1Text)
         .then(option => {
-            cy.wrap(option).contains(intygsdata.underlag1AlternativText); // Säkerställ att rätt alternativ valts
+            cy.wrap(option).contains(intygsdata.underlag1Text); // Säkerställ att rätt alternativ valts
             option[0].click(); // jquery "click()", inte Cypress "click()"
         });
 
-        cy.get(intygsdata.datumUnderlag1).clear().type(idagMinus2Mån);
-        cy.get(intygsdata.underlag1HämtasFrån).type(intygsdata.underlag1HämtasFrånText);
+        cy.get("#datepicker_underlag\\[0\\]\\.datum").clear().type(idagMinus2Mån);
+        cy.get("#underlag-0--hamtasFran").type(intygsdata.underlag1HämtasFrånText);
 
         // Fyll i alla fält för utredning/underlag 2
-        cy.get(intygsdata.underlag2Id).click();
-        cy.get(intygsdata.underlag2DropdownId)
-        .contains(intygsdata.underlag2AlternativText)
+        cy.get("#underlag-1--typ-selected-item-label").click();
+        cy.get("#wcdropdown-underlag-1--typ")
+        .contains(intygsdata.underlag2Text)
         .then(option => {
-            cy.wrap(option).contains(intygsdata.underlag2AlternativText); // Säkerställ att rätt alternativ valts
+            cy.wrap(option).contains(intygsdata.underlag2Text); // Säkerställ att rätt alternativ valts
             option[0].click(); // jquery "click()", inte Cypress "click()"
         });
-        
-        cy.get(intygsdata.datumUnderlag2).clear().type(idagMinus2Mån);
-        cy.get(intygsdata.underlag2HämtasFrån).type(intygsdata.underlag2HämtasFrånText);
+
+        cy.get("#datepicker_underlag\\[1\\]\\.datum").clear().type(idagMinus2Mån);
+        cy.get("#underlag-1--hamtasFran").type(intygsdata.underlag2HämtasFrånText);
 
         // Fyll i alla fält för utredning/underlag 3
-        cy.get(intygsdata.underlag3Id).click();
-        cy.get(intygsdata.underlag3DropdownId)
-        .contains(intygsdata.underlag3AlternativText)
+        cy.get("#underlag-2--typ-selected-item-label").click();
+        cy.get("#wcdropdown-underlag-2--typ")
+        .contains(intygsdata.underlag3Text)
         .then(option => {
-            cy.wrap(option).contains(intygsdata.underlag3AlternativText); // Säkerställ att rätt alternativ valts
+            cy.wrap(option).contains(intygsdata.underlag3Text); // Säkerställ att rätt alternativ valts
             option[0].click(); // jquery "click()", inte Cypress "click()"
         });
         
-        cy.get(intygsdata.datumUnderlag3).clear().type(idagMinus2Mån);
-        cy.get(intygsdata.underlag3HämtasFrån).type(intygsdata.underlag3HämtasFrånText);
+        cy.get("#datepicker_underlag\\[2\\]\\.datum").clear().type(idagMinus2Mån);
+        cy.get("#underlag-2--hamtasFran").type(intygsdata.underlag3HämtasFrånText);
     }
 }
 
 function sektion_diagnoser_för_sjukdom(intygsdata, intygstyp) {
     cy.contains(intygsdata.diagnoserNedsattFörmåga).parent().parent().parent().within(($form) => {
         // Antag att ICD-10-SE är förvalt
-        cy.get('[placeholder=' + intygsdata.kodTextareaPlaceholder + ']').then(($codeFields) => {
+        cy.get('[placeholder=Kod]').then(($codeFields) => {
             cy.wrap($codeFields.eq(0)).type(intygsdata.diagnosKod1).wait(1000).type('{enter}');
             cy.wrap($codeFields.eq(1)).type(intygsdata.diagnosKod2).wait(1000).type('{enter}');
             cy.wrap($codeFields.eq(2)).type(intygsdata.diagnosKod3).wait(1000).type('{enter}');
@@ -134,38 +141,38 @@ function sektion_diagnoser_för_sjukdom(intygsdata, intygstyp) {
 
     if (intygstyp === implementeradeIntygEnum.LUSE ||
         intygstyp === implementeradeIntygEnum.LUAE_NA) {
-        cy.get(intygsdata.diagnosgrundTextareaId).type(intygsdata.diagnosgrundTextSkriv);
+        cy.get("#diagnosgrund").type(intygsdata.diagnosgrundTextSkriv);
 
         // Finns skäl att revidera tidigare diagnos?
-        cy.get(intygsdata.revideraTidigareSattDiagnosJaAlternativ).click();
-        cy.get(intygsdata.revideraTidigareDiagnosTextfältId).type(intygsdata.revideraTidigareDiagnosSkriv);
+        cy.get("#nyBedomningDiagnosgrundYes").click();
+        cy.get("#diagnosForNyBedomning").type(intygsdata.revideraTidigareDiagnosSkriv);
     }
 }
 
-function sektion_aktivitetsbegränsningar(intygsdata, intygstyp) {
-    cy.get(intygsdata.aktivitetsbegränsningTextfältId).type(intygsdata.aktivitetsbegränsningSkriv);
+function sektion_aktivitetsbegränsningar(intygsdata) {
+    cy.get("#aktivitetsbegransning").type(intygsdata.aktivitetsbegränsningSkriv);
 }
 
 function sektion_medicinsk_behandling(intygsdata, intygstyp) {
     if (intygstyp === implementeradeIntygEnum.LUSE ||
         intygstyp === implementeradeIntygEnum.LUAE_NA) {
-        cy.get(intygsdata.avslutadBehandlingTextfältId).type(intygsdata.avslutadBehandlingSkriv);
+        cy.get("#avslutadBehandling").type(intygsdata.avslutadBehandlingSkriv);
     }
 
-    cy.get(intygsdata.pågåendeBehandlingarTextfältId).type(intygsdata.pågåendeBehandlingarSkriv);
-    cy.get(intygsdata.planeradeBehandlingarTextfältId).type(intygsdata.planeradeBehandlingarSkriv);
+    cy.get("#pagaendeBehandling").type(intygsdata.pågåendeBehandlingarSkriv);
+    cy.get("#planeradBehandling").type(intygsdata.planeradeBehandlingarSkriv);
 
     if (intygstyp === implementeradeIntygEnum.LUSE ||
         intygstyp === implementeradeIntygEnum.LUAE_NA) {
-        cy.get(intygsdata.substansintagTextfältId).type(intygsdata.substansintagSkriv);
+        cy.get("#substansintag").type(intygsdata.substansintagSkriv);
     }
 }
 
 function sektion_medicinska_förutsättningar_för_arbete(intygsdata, intygstyp) {
-    cy.get(intygsdata.förutsättningarFörArbeteTextfältId).type(intygsdata.förutsättningarFörArbeteSkriv);
-    cy.get(intygsdata.förmågaTrotsBegränsningTextfältId).type(intygsdata.förmågaTrotsBegränsningSkriv);
+    cy.get("#medicinskaForutsattningarForArbete").type(intygsdata.förutsättningarFörArbeteSkriv);
+    cy.get("#formagaTrotsBegransning").type(intygsdata.förmågaTrotsBegränsningSkriv);
     if (intygstyp === implementeradeIntygEnum.LUAE_NA) {
-        cy.get(intygsdata.förslagTillÅtgärdTextfältId).type(intygsdata.förslagTillÅtgärdSkriv);
+        cy.get("#forslagTillAtgard").type(intygsdata.förslagTillÅtgärdSkriv);
     }
 }
 
@@ -175,12 +182,12 @@ function sektion_övriga_upplysningar(intygsdata, intygstyp) {
         const idagPlus41 = Cypress.moment().add(41, 'days').format('YYYY-MM-DD');
         textAttSkriva += idagPlus41;
     }
-    cy.get(intygsdata.övrigaUpplysningarTextfältId).type(textAttSkriva);
+    cy.get("#ovrigt").type(textAttSkriva);
 }
 
 function sektion_kontakta_mig(intygsdata) {
-    cy.get(intygsdata.kontaktMedFKCheckboxId).check();
-    cy.get(intygsdata.kontaktMedFKTextfältId).type(intygsdata.kontaktMedFKSkriv);
+    cy.get("#kontaktMedFk").check();
+    cy.get("#anledningTillKontakt").type(intygsdata.kontaktMedFKSkriv);
 }
 
 function sektion_signera_intyg(intygsdata) {
@@ -191,15 +198,14 @@ function sektion_signera_intyg(intygsdata) {
     cy.contains("Obligatoriska uppgifter saknas").should('not.exist');
     cy.contains("Utkastet sparas").should('not.exist');
     cy.contains("Utkastet är sparat").should('not.exist');
-
-    cy.get(intygsdata.signeraUtkastKnappId).invoke('width').should('be.greaterThan', 0);
-    cy.get(intygsdata.signeraUtkastKnappId).should('not.be.disabled');
-    cy.get(intygsdata.signeraUtkastKnappId).click();
+    cy.get("#signera-utkast-button").invoke('width').should('be.greaterThan', 0);
+    cy.get("#signera-utkast-button").should('not.be.disabled');
+    cy.get("#signera-utkast-button").click();
 }
 
 function skicka_till_FK(intygsdata) {
-    cy.get(intygsdata.skickaTillFKKnappId, { timeout: 60000 }).click();
-    cy.get(intygsdata.varningSkickaTillFKKnappId).click();
+    cy.get("#sendBtn", { timeout: 60000 }).click();
+    cy.get("#button1send-dialog").click(); // Modal som dyker upp och frågar om man verkligen vill skicka
     // TODO: Kontrollera att texten "Intyget är skickat till Försäkringskassan"
     // syns på sidan?
 }
@@ -273,7 +279,7 @@ Cypress.Commands.add("fyllIMaxLuaeNa", aliasesFromCaller => {
     sektion_funktionsnedsättning(intygsdata);
 
     // ----- Sektion 'Aktivitetsbegränsning' ----- //
-    sektion_aktivitetsbegränsningar(intygsdata, intygstyp);
+    sektion_aktivitetsbegränsningar(intygsdata);
 
     // ----- Sektion 'Medicinsk behandling' ----- //
     sektion_medicinsk_behandling(intygsdata, intygstyp);
@@ -312,7 +318,7 @@ Cypress.Commands.add("fyllIMaxLuse", aliasesFromCaller => {
     sektion_funktionsnedsättning(intygsdata);
 
     // ----- Sektion 'Aktivitetsbegränsning' ----- //
-    sektion_aktivitetsbegränsningar(intygsdata, intygstyp);
+    sektion_aktivitetsbegränsningar(intygsdata);
 
     // ----- Sektion 'Medicinsk behandling' ----- //
     sektion_medicinsk_behandling(intygsdata, intygstyp);
@@ -384,7 +390,7 @@ Cypress.Commands.add("fyllIMaxLisjp", aliasesFromCaller => {
     });
 
     // ----- Sektion 'Aktivitetsbegränsning' ----- //
-    sektion_aktivitetsbegränsningar(intygsdata, intygstyp);
+    sektion_aktivitetsbegränsningar(intygsdata);
 
     // ----- Sektion 'Medicinsk behandling' ----- //
     sektion_medicinsk_behandling(intygsdata, intygstyp);

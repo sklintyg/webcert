@@ -1,0 +1,22 @@
+{
+    "annatTextareaText": "Underlag från skolpsykolog",
+
+    "underlag1Text": "Underlag från skolhälsovård",
+    "underlag1HämtasFrånText": "X-stad kommun",
+    "underlag2Text": "Underlag från habiliteringen",
+    "underlag2HämtasFrånText": "Patienten kommer själv skicka in underlaget.",
+    "underlag3Text": "Underlag från logoped",
+    "underlag3HämtasFrånText": "Öron näsa hals kliniken X-stad",
+
+    "diagnoserNedsattFörmåga": "Diagnos/diagnoser för sjukdom som orsakar",
+    "diagnosKod1": "F900B",
+    "diagnosKod2": "F480",
+    "diagnosKod3": "F412",
+
+    "funktionsnedsättningDebutSkriv": "Kontakt med BUP redan i lågstadiet. Under högstadiet utvecklat ångest och depressionstillstånd, som visat sig svår att behandla. Patientens tillstånd har försämrats under gymnasietiden.",
+    "funktionsnedsättningPåverkanSkriv": "Samsjuklighet sedan tidiga tonåren, som tillsammans med dyslexi försvårat skolgången. Ofta hamnat i konflikter med både elever och lärare. Hög frånvaro.",
+
+    "övrigaUpplysningarSkriv": "Fosterhemsplacerad till följd av konflikter med föräldrar och syskon.",
+
+    "kontaktMedFKSkriv": "Det finns behov av avstämningsmöte med vården och skolan för att diskutera anpassning av studier."
+}
