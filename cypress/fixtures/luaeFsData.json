@@ -1,0 +1,54 @@
+{
+    "minUndersökning": "Min undersökning av patienten",
+    "datumUndersökning": "#datepicker_undersokningAvPatienten",
+    "journalUppgifterFrån": "Journaluppgifter från den",
+    "datumJournalUppgifterFrån": "#datepicker_journaluppgifter",
+    "anhörigsBeskrivning": "Anhörigs beskrivning av patienten",
+    "datumAnhörigsBeskrivning": "#datepicker_anhorigsBeskrivningAvPatienten",
+    "annat": "Annat",
+    "datumAnnat": "#datepicker_annatGrundForMU",
+    "annatTextarea": "#annatGrundForMUBeskrivning",
+    "annatTextareaText": "Underlag från skolpsykolog",
+    "datumKännedomOmPatient": "#datepicker_kannedomOmPatient",
+
+    "andraUnderlagJaAlternativ": "#underlagFinnsYes",
+    "underlag1Id": "#underlag-0--typ-selected-item-label",
+    "underlag1DropdownId": "#wcdropdown-underlag-0--typ",
+    "underlag1AlternativText": "Underlag från skolhälsovård",
+    "datumUnderlag1": "#datepicker_underlag\\[0\\]\\.datum",
+    "underlag1HämtasFrån": "#underlag-0--hamtasFran",
+    "underlag1HämtasFrånText": "X-stad kommun",
+    "underlag2Id": "#underlag-1--typ-selected-item-label",
+    "underlag2DropdownId": "#wcdropdown-underlag-1--typ",
+    "underlag2AlternativText": "Underlag från habilitering",
+    "datumUnderlag2": "#datepicker_underlag\\[1\\]\\.datum",
+    "underlag2HämtasFrån": "#underlag-1--hamtasFran",
+    "underlag2HämtasFrånText": "Patienten kommer själv skicka in underlaget.",
+    "underlag3Id": "#underlag-2--typ-selected-item-label",
+    "underlag3DropdownId": "#wcdropdown-underlag-2--typ",
+    "underlag3AlternativText": "Underlag från logoped",
+    "datumUnderlag3": "#datepicker_underlag\\[2\\]\\.datum",
+    "underlag3HämtasFrån": "#underlag-2--hamtasFran",
+    "underlag3HämtasFrånText": "Öron näsa hals kliniken X-stad",
+
+    "diagnoserNedsattFörmåga": "Diagnos/diagnoser för sjukdom som orsakar",
+    "kodTextareaPlaceholder": "Kod",
+    "diagnosKod1": "F900B",
+    "diagnosKod2": "F480",
+    "diagnosKod3": "F412",
+
+    "funktionsnedsättningDebutSkriv": "Kontakt med BUP redan i lågstadiet. Under högstadiet utvecklat ångest och depressionstillstånd, som visat sig svår att behandla. Patientens tillstånd har försämrats under gymnasietiden.",
+    "funktionsnedsättningPåverkanSkriv": "Samsjuklighet sedan tidiga tonåren, som tillsammans med dyslexi försvårat skolgången. Ofta hamnat i konflikter med både elever och lärare. Hög frånvaro.",
+
+    "övrigaUpplysningarTextfältId": "#ovrigt",
+    "övrigaUpplysningarSkriv": "Fosterhemsplacerad till följd av konflikter med föräldrar och syskon.",
+
+    "kontaktMedFKCheckboxId": "#kontaktMedFk",
+    "kontaktMedFKTextfältId": "#anledningTillKontakt",
+    "kontaktMedFKSkriv": "Det finns behov av avstämningsmöte med vården och skolan för att diskutera anpassning av studier.",
+
+    "signeraUtkastKnappId": "#signera-utkast-button",
+
+    "skickaTillFKKnappId": "#sendBtn",
+    "varningSkickaTillFKKnappId": "#button1send-dialog"
+}

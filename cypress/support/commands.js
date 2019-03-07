@@ -11,6 +11,7 @@ var implementeradeIntygEnum = {
 	LISJP: "LISJP",
 	LUSE: "LUSE",
 	LUAE_NA: "LUAE_NA",
+	LUAE_FS: "LUAE_FS",
 }
 var implementeradeIntygArray = Object.values(implementeradeIntygEnum);
 
@@ -139,4 +140,9 @@ Cypress.Commands.add("skapaLuseUtkast", fx => {
 // Skapa ett LUAE-NA-utkast via createdraft-anrop och returnera id:t
 Cypress.Commands.add("skapaLuaeNaUtkast", fx => {
 	return skapaUtkast(fx, implementeradeIntygEnum.LUAE_NA);
+});
+
+// Skapa ett LUAE-FS-utkast via createdraft-anrop och returnera id:t
+Cypress.Commands.add("skapaLuaeFsUtkast", fx => {
+	return skapaUtkast(fx, implementeradeIntygEnum.LUAE_FS);
 });

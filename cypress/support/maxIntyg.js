@@ -5,6 +5,7 @@ const implementeradeIntygEnum = {
     LISJP: "LISJP",
     LUSE: "LUSE",
     LUAE_NA: "LUAE_NA",
+    LUAE_FS: "LUAE_FS",
 }
 const implementeradeIntygArray = Object.values(implementeradeIntygEnum);
 
@@ -57,7 +58,8 @@ function sektion_grund_för_medicinskt_underlag(intygsdata, intygstyp) {
     });
 
     if (intygstyp === implementeradeIntygEnum.LUSE ||
-        intygstyp === implementeradeIntygEnum.LUAE_NA) {
+        intygstyp === implementeradeIntygEnum.LUAE_NA ||
+        intygstyp === implementeradeIntygEnum.LUAE_FS) {
         cy.contains(intygsdata.anhörigsBeskrivning).parentsUntil('.ue-del-fraga').within(($form) => {
             cy.get('[type="checkbox"]').check();
             cy.get(intygsdata.datumAnhörigsBeskrivning).clear().type(idagMinus6);
@@ -73,7 +75,8 @@ function sektion_grund_för_medicinskt_underlag(intygsdata, intygstyp) {
     cy.get(intygsdata.annatTextarea).type(intygsdata.annatTextareaText);
 
     if (intygstyp === implementeradeIntygEnum.LUSE ||
-        intygstyp === implementeradeIntygEnum.LUAE_NA) {
+        intygstyp === implementeradeIntygEnum.LUAE_NA ||
+        intygstyp === implementeradeIntygEnum.LUAE_FS) {
 
         cy.get(intygsdata.datumKännedomOmPatient).clear().type(idagMinus14);
 
@@ -119,8 +122,8 @@ function sektion_grund_för_medicinskt_underlag(intygsdata, intygstyp) {
     }
 }
 
-function sektion_diagnoser_för_sjukdom(intygsdata, intygstyp, apa) {
-    cy.contains(intygsdata.diagnoserNedsattArbetsförmåga).parent().parent().parent().within(($form) => {
+function sektion_diagnoser_för_sjukdom(intygsdata, intygstyp) {
+    cy.contains(intygsdata.diagnoserNedsattFörmåga).parent().parent().parent().within(($form) => {
         // Antag att ICD-10-SE är förvalt
         cy.get('[placeholder=' + intygsdata.kodTextareaPlaceholder + ']').then(($codeFields) => {
             cy.wrap($codeFields.eq(0)).type(intygsdata.diagnosKod1).wait(1000).type('{enter}');
@@ -223,6 +226,34 @@ function sektion_funktionsnedsättning(intygsdata) {
     cy.get(intygsdata.funknedsättningAnnanExpanderaId).click();
     cy.get(intygsdata.funknedsättningAnnanTextfältId).type(intygsdata.funknedsättningAnnanSkriv);
 }
+
+Cypress.Commands.add("fyllIMaxLuaeFs", aliasesFromCaller => {
+    const intygsdata = aliasesFromCaller.luaeFsData;
+    expect(intygsdata).to.exist;
+    const intygstyp = implementeradeIntygEnum.LUAE_FS;
+
+    // ----- Sektion 'Grund för medicinskt underlag' -----
+    sektion_grund_för_medicinskt_underlag(intygsdata, intygstyp);
+
+    // ----- Sektion 'Diagnos/Diagnoser för sjukdom som orsakar eller har orsakat funktionsnedsättning' ----- //
+    sektion_diagnoser_för_sjukdom(intygsdata, intygstyp);
+
+    // ----- Sektion 'Funktionsnedsättning' ----- //
+    cy.get("#funktionsnedsattningDebut").type(intygsdata.funktionsnedsättningDebutSkriv);
+    cy.get("#funktionsnedsattningPaverkan").type(intygsdata.funktionsnedsättningPåverkanSkriv);
+
+    // ----- Sektion 'Övriga upplysningar' -----//
+    sektion_övriga_upplysningar(intygsdata, intygstyp);
+
+    // ----- Sektion 'Kontakt' -----//
+    sektion_kontakta_mig(intygsdata);
+
+    // ----- Sektion 'Signera intyg' -----//
+    sektion_signera_intyg(intygsdata);
+
+    // Skicka iväg intyget
+    skicka_till_FK(intygsdata);
+});
 
 Cypress.Commands.add("fyllIMaxLuaeNa", aliasesFromCaller => {
     const intygsdata = aliasesFromCaller.luaeNaData;
@@ -346,7 +377,6 @@ Cypress.Commands.add("fyllIMaxLisjp", aliasesFromCaller => {
 
     // ----- Sektion 'Diagnos/Diagnoser för sjukdom som orsakar nedsatt arbetsförmåga' ----- //
     sektion_diagnoser_för_sjukdom(intygsdata, intygstyp);
-
 
     // ----- Sektion 'Funktionsnedsättning' ----- //
     cy.contains(intygsdata.beskrivObservationer).parent().parent().parent().within(($form) => {

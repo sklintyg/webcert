@@ -1,7 +1,7 @@
 /* globals context cy */
 /// <reference types="Cypress" />
 
-// LUAE-NA = Läkarutlåtande för aktivitetsersättning vid nedssatt arbetsförmånga, FK 7801
+// LUAE-NA = Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmånga, FK 7801
 
 describe('(integrerat) skicka maximalt ifyllt LUAE-NA till FK', function () {
 
