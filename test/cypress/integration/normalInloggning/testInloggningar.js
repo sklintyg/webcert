@@ -6,7 +6,7 @@ describe('Logga in som vårdgivare', function () {
     const destUrlLyckadInloggning = "/#/create/choose-patient/index";
 
     beforeEach(function() {
-        cy.fixture('arnoldJohansson').as('vårdgivare');
+        cy.fixture('vårdgivare/arnoldJohansson').as('vårdgivare');
         cy.visit('/welcome.html');
     });
 

@@ -4,8 +4,8 @@
 describe('Logga ut vårdgivare', function () {
 
     before(function() {
-        cy.fixture('arnoldJohansson').as('vårdgivare');
-        cy.fixture('alfaEnheten').as('vårdenhet');
+        cy.fixture('vårdgivare/arnoldJohansson').as('vårdgivare');
+        cy.fixture('vårdenheter/alfaEnheten').as('vårdenhet');
     });
 
     it('är möjligt att logga ut vårdgivare', function() {

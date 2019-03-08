@@ -2,18 +2,17 @@
 // commands please read more here:
 // https://on.cypress.io/custom-commands
 
-// TODO: implementeradeIntyg finns duplicerad i åtminstone
-// "maxIntyg.js" också. Gör om till en global på något sätt.
+// TODO: Ska dessa konstanter vara deklarerade här eller ska vi ha en
+// egen fil med enbart konstanter?
 // Dessa konstanter är exakt så som specificerat i
 // "Kodverk i nationella tjänsteplattformen", "KV intygstyp"
 // https://riv-ta.atlassian.net/wiki/pages/viewpageattachments.action?pageId=270532953
-var implementeradeIntygEnum = {
+export const implementeradeIntyg = {
 	LISJP: "LISJP",
 	LUSE: "LUSE",
 	LUAE_NA: "LUAE_NA",
 	LUAE_FS: "LUAE_FS",
 }
-var implementeradeIntygArray = Object.values(implementeradeIntygEnum);
 
 function loggaInVårdgivare(fx, ärDjup) {
 	const vårdgivare = fx.vårdgivare;
@@ -59,7 +58,8 @@ function skapaUtkast(fx, intygstyp) {
 	expect(vårdgivare).to.exist;
 	expect(vårdtagare).to.exist;
 	expect(vårdenhet).to.exist;
-	expect(implementeradeIntygArray).to.include.members([intygstyp]);
+
+	expect(Object.values(implementeradeIntyg)).to.include.members([intygstyp]);
 
 	cy.request({
 		method: 'POST',
@@ -129,20 +129,20 @@ function skapaUtkast(fx, intygstyp) {
 
 // Skapa ett LISJP-utkast via createdraft-anrop och returnera id:t
 Cypress.Commands.add("skapaLisjpUtkast", fx => {
-	return skapaUtkast(fx, implementeradeIntygEnum.LISJP);
+	return skapaUtkast(fx, implementeradeIntyg.LISJP);
 });
 
 // Skapa ett LISJP-utkast via createdraft-anrop och returnera id:t
 Cypress.Commands.add("skapaLuseUtkast", fx => {
-	return skapaUtkast(fx, implementeradeIntygEnum.LUSE);
+	return skapaUtkast(fx, implementeradeIntyg.LUSE);
 });
 
 // Skapa ett LUAE-NA-utkast via createdraft-anrop och returnera id:t
 Cypress.Commands.add("skapaLuaeNaUtkast", fx => {
-	return skapaUtkast(fx, implementeradeIntygEnum.LUAE_NA);
+	return skapaUtkast(fx, implementeradeIntyg.LUAE_NA);
 });
 
 // Skapa ett LUAE-FS-utkast via createdraft-anrop och returnera id:t
 Cypress.Commands.add("skapaLuaeFsUtkast", fx => {
-	return skapaUtkast(fx, implementeradeIntygEnum.LUAE_FS);
+	return skapaUtkast(fx, implementeradeIntyg.LUAE_FS);
 });

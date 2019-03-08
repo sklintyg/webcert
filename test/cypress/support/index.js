@@ -5,7 +5,8 @@
 
 // Import commands.js using ES2015 syntax:
 import './commands'
-import './maxIntyg'
+import './FK_intyg/maxIntygFunktioner'
+import './FK_intyg/maxIntygKommandon'
 
 // Alternatively you can use CommonJS syntax:
 // require('./commands')
