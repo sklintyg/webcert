@@ -4,7 +4,7 @@ pipeline {
     // this image provides everything needed to run Cypress
     docker {
       image 'cypress/base:10'
-      // image 'cypress/browsers:chrome69'  // Cypress kan inte spela in videos om man använder Chrome
+      // image 'cypress/browsers:chrome69'  // Cypress kan inte spela in videos om man nyttjar Chrome
 
       label 'docker-slave'
     }
@@ -41,6 +41,7 @@ pipeline {
   post {
     always {
       archiveArtifacts artifacts: 'cypress/videos/**/*.*', fingerprint: true
+      archiveArtifacts artifacts: '.npm/_logs/*.log', fingerprint: true
       junit 'test-results.xml'
     }
 
