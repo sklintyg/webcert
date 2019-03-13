@@ -20,7 +20,6 @@ data:
   NOTIFICATION_AGGREGATION_QUEUENAME: "webcert.aggregated.notification.queue"
   LOG_QUEUENAME: "webcert.log.queue"
   CERTIFICATE_SENDER_QUEUENAME: "webcert.certificate.queue"
-  CERTIFICATE_SENDER_QUEUEMAME: "webcert.certificate.queue"
   NTJP_WS_CERTIFICATE_FILE: "${certificate.folder}/verifiering.webcert.intygstjanster.sjunet.org_autentisering.p12"
   NTJP_WS_TRUSTSTORE_FILE: "${certificate.folder}/truststore.jks"
   NTJP_WS_CERTIFICATE_TYPE: "PKCS12"
