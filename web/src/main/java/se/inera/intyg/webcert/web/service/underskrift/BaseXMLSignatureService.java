@@ -18,6 +18,12 @@
  */
 package se.inera.intyg.webcert.web.service.underskrift;
 
+import java.nio.charset.Charset;
+import java.time.LocalDateTime;
+import java.util.Base64;
+
+import javax.xml.bind.JAXBElement;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,10 +31,11 @@ import org.w3._2000._09.xmldsig_.KeyInfoType;
 import org.w3._2000._09.xmldsig_.ObjectFactory;
 import org.w3._2000._09.xmldsig_.SignatureType;
 import org.w3._2000._09.xmldsig_.SignatureValueType;
-import org.w3._2002._06.xmldsig_filter2.XPathType;
+
 import se.inera.intyg.common.support.common.enumerations.SignaturTyp;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
+import se.inera.intyg.common.support.xml.XmlMarshallerHelper;
 import se.inera.intyg.infra.xmldsig.model.IntygXMLDSignature;
 import se.inera.intyg.infra.xmldsig.service.PrepareSignatureService;
 import se.inera.intyg.infra.xmldsig.service.XMLDSigService;
@@ -41,14 +48,6 @@ import se.inera.intyg.webcert.web.service.underskrift.model.SignaturBiljett;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturStatus;
 import se.inera.intyg.webcert.web.service.underskrift.xmldsig.UtkastModelToXMLConverter;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
-
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.Marshaller;
-import java.io.StringWriter;
-import java.nio.charset.Charset;
-import java.time.LocalDateTime;
-import java.util.Base64;
 
 public abstract class BaseXMLSignatureService extends BaseSignatureService {
 
@@ -120,13 +119,8 @@ public abstract class BaseXMLSignatureService extends BaseSignatureService {
 
     private String marshallSignatureToString(SignatureType signatureType) {
         try {
-            StringWriter sw = new StringWriter();
             JAXBElement<SignatureType> signature = new ObjectFactory().createSignature(signatureType);
-            JAXBContext jaxbContext = JAXBContext.newInstance(SignatureType.class, XPathType.class);
-            Marshaller marshaller = jaxbContext.createMarshaller();
-            marshaller.marshal(signature, sw);
-            return sw.toString();
-
+            return XmlMarshallerHelper.marshal(signature);
         } catch (Exception e) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.UNKNOWN_INTERNAL_PROBLEM, e.getMessage());
         }
