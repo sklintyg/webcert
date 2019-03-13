@@ -1,36 +1,23 @@
 {
     "annatTextareaText": "Utlåtande från barnmorska",
 
-    "nuvarandeArbete": "Nuvarande arbete",
-    "yrkeOchUppgifter": "Ange yrke och arbetsuppgifter",
     "yrkeOchUppgifterText": "Snickare. Tunga lyft, arbete på stege, hantera maskinverktyg, mycket gående",
-    "checkboxTextNormaltFörekommandeJobb": "Arbetssökande - att utföra sådant arbete som är normalt förekommande på arbetsmarknaden",
-    "checkboxTextVAB": "Föräldraledighet för vård av barn",
-    "checkboxStudier": "Studier",
 
-    "diagnoserNedsattFörmåga": "Diagnos/diagnoser för sjukdom som orsakar nedsatt arbetsförmåga",
     "diagnosKod1": "O267",
     "diagnosKod2": "O470A",
     "diagnosKod3": "O210",
 
-    "beskrivObservationer": "Beskriv undersökningsfynd, testresultat och observationer",
     "besvärsBeskrivning": "Uttalade besvär från bäcken, svår smärta vid lägesförändring, hälta, instabilitet bäcken",
 
     "aktivitetsbegränsningSkriv": "starka bäckensmärtor som ger uttalad aktivitetsbegränsning vid fysisk aktivitet och kontorsarbete samt koncentrationssvårigheter",
     "pågåendeBehandlingarSkriv": "Sjukgymnastik och rörelseprogram för att lindra bäckenuppluckring",
     "planeradeBehandlingarSkriv": "Specialist, ultraljudskontroller",
 
-    "arbetsförmågaBedömning": "Min bedömning av patientens nedsättning av arbetsförmågan",
-    "längreNedsattArbetsförmåga": "Patientens arbetsförmåga bedöms nedsatt längre tid än den som Socialstyrelsens försäkringsmedicinska beslutsstöd anger, därför att",
     "längreNedsattArbetsförmågaText": "Haft tidigare bäckeninsuffiens vid graviditet, haft tidigare missfall och kräver nu fler kontroller och avlastning",
-    "förläggaArbetstidAnnorlunda": "Finns det medicinska skäl att förlägga arbetstiden på något annat sätt än att minska arbetstiden lika mycket varje dag?",
-    "arbetstidAnnorlundaMedicinskaSkäl": "Beskriv medicinska skäl till annan förläggning av arbetstiden",
+
     "arbetstidAnnorlundaMedicinskaSkälBeskrivning":"Har lättare kontorsarbete på måndagar som hon klarar av med nuvarande besvär om ingen försämring sker.",
-    "resaMöjliggörArbete": "Resor till och från arbetet med annat färdmedel än normalt kan göra det möjligt för patienten att återgå till arbetet under sjukskrivningsperioden.",
-    "arbetsförmågaPrognos": "Prognos för arbetsförmåga utifrån aktuellt undersökningstillfälle",
 
     "föreslåÅtgärder": "Här kan du ange åtgärder som du tror skulle göra det lättare för patienten att återgå i arbete",
-    "flerÅtgärder": "Här kan du ange fler åtgärder. Du kan också beskriva hur åtgärderna kan underlätta återgång i arbete.",
     "flerÅtgärderBeskrivning": "Om anpassningar till lättare uppgifter utan tunga lyft och mycket gående kan ordnas kvarstår arbetsförmåga under en tid framöver.",
 
     "övrigaUpplysningarSkriv": "Planerad partus ",

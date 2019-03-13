@@ -1,5 +1,9 @@
 pipeline {
 
+  options {
+    timestamps ()
+  }
+
   agent {
     // this image provides everything needed to run Cypress
     docker {
@@ -42,21 +46,19 @@ pipeline {
     always {
       archiveArtifacts artifacts: 'test/cypress/videos/**/*.*', fingerprint: true
       junit 'test-results.xml'
-
-      // send to email
-      emailext (
-        subject: "Ended: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
-        body: """<p>Ended: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]':</p>
-          <p>Check console output at &QUOT;<a href='${env.BUILD_URL}'>${env.JOB_NAME} [${env.BUILD_NUMBER}]</a>&QUOT;</p>""",
-        //recipientProviders: [johannes.larsson@nordicmedtest.se]
-        to: "johannes.larsson@nordicmedtest.se"
-      )
     }
 
     failure {
       archiveArtifacts artifacts: 'test/cypress/screenshots/**/*.*', fingerprint: true
       archiveArtifacts artifacts: '.npm/_logs/*.log', fingerprint: true
 
+      // Skicka epost om jobbet misslyckas
+      emailext (
+        subject: "Failure: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
+        body: "Failure: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]':\n
+          Check console output at '${env.BUILD_URL}'",
+        to: "johannes.larsson@nordicmedtest.se"
+      )
     }
   }
 }

@@ -130,33 +130,17 @@ Cypress.Commands.add("fyllIMaxLisjp", aliasesFromCaller => {
     maxIntygFunktioner.sektion_grund_för_medicinskt_underlag(intygsdata, intygstyp);
 
     // ----- 'I relation till vilken sysselsättning bedömer du arbetsförmågan?' -----
-    cy.contains(intygsdata.nuvarandeArbete).parent().within(($form) => {
-        cy.get('[type="checkbox"]').check();
-    });
-
-    cy.contains(intygsdata.yrkeOchUppgifter).parent().parent().parent().within(($form) => {
-        cy.wrap($form).find('textarea').type(intygsdata.yrkeOchUppgifterText);
-    });
-
-    cy.contains(intygsdata.checkboxTextNormaltFörekommandeJobb).parent().within(($form) => {
-        cy.get('[type="checkbox"]').check();
-    });
-
-    cy.contains(intygsdata.checkboxTextVAB).parent().within(($form) => {
-        cy.get('[type="checkbox"]').check();
-    });
-
-    cy.contains(intygsdata.checkboxStudier).parent().within(($form) => {
-        cy.get('[type="checkbox"]').check();
-    });
+    cy.get('#sysselsattning-NUVARANDE_ARBETE').check();
+    cy.get('#sysselsattning-ARBETSSOKANDE').check();
+    cy.get('#sysselsattning-FORALDRALEDIG').check();
+    cy.get('#sysselsattning-STUDIER').check();
+    cy.get('#nuvarandeArbete').type(intygsdata.yrkeOchUppgifterText);
 
     // ----- Sektion 'Diagnos/Diagnoser för sjukdom som orsakar nedsatt arbetsförmåga' ----- //
     maxIntygFunktioner.sektion_diagnoser_för_sjukdom(intygsdata, intygstyp);
 
     // ----- Sektion 'Funktionsnedsättning' ----- //
-    cy.contains(intygsdata.beskrivObservationer).parent().parent().parent().within(($form) => {
-        cy.wrap($form).find('textarea').type(intygsdata.besvärsBeskrivning);
-    });
+    cy.get('#funktionsnedsattning').type(intygsdata.besvärsBeskrivning);
 
     // ----- Sektion 'Aktivitetsbegränsning' ----- //
     maxIntygFunktioner.sektion_aktivitetsbegränsningar(intygsdata);
@@ -165,61 +149,27 @@ Cypress.Commands.add("fyllIMaxLisjp", aliasesFromCaller => {
     maxIntygFunktioner.sektion_medicinsk_behandling(intygsdata, intygstyp);
 
     // ----- Sektion 'Bedömning' -----//
-    cy.contains(intygsdata.arbetsförmågaBedömning).parent().parent().parent().within(($form) => {
-        cy.get('[type="checkbox"]').within(($checkboxes) => {
-            cy.wrap($checkboxes).check(); // Klickar i alla checkboxar i sektionen. "Från"-datum blir dagens datum
+    // Fyll i datum
+    cy.get('#sjukskrivningar-EN_FJARDEDEL-from').type(idagPlus1);
+    cy.get('#sjukskrivningar-EN_FJARDEDEL-tom').type(idagPlus11).type('{enter}');
+    // TODO: Ska det kontrolleras att checkboxen blir vald?
 
-            cy.wrap($checkboxes.eq(0)).parent().parent().parent().parent().within(($row) => { // Hämta raden med 25% sjukskrivning
-                cy.get('[type="text"]').then(($textFields) => {
-                    cy.wrap($textFields.eq(0)).clear().type(idagPlus1);
-                    cy.wrap($textFields.eq(1)).clear().type(idagPlus11);
-                });
-            });
+    cy.get('#sjukskrivningar-HALFTEN-from').type(idagPlus12);
+    cy.get('#sjukskrivningar-HALFTEN-tom').type(idagPlus19).type('{enter}');
 
-            cy.wrap($checkboxes.eq(1)).parent().parent().parent().parent().within(($row) => { // Hämta raden med 50% sjukskrivning
-                cy.get('[type="text"]').then(($textFields) => {
-                    cy.wrap($textFields.eq(0)).clear().type(idagPlus12);
-                    cy.wrap($textFields.eq(1)).clear().type(idagPlus19);
-                });
-            });
+    cy.get('#sjukskrivningar-TRE_FJARDEDEL-from').type(idagPlus20);
+    cy.get('#sjukskrivningar-TRE_FJARDEDEL-tom').type(idagPlus28).type('{enter}');
 
-            cy.wrap($checkboxes.eq(2)).parent().parent().parent().parent().within(($row) => { // Hämta raden med 75% sjukskrivning
-                cy.get('[type="text"]').then(($textFields) => {
-                    cy.wrap($textFields.eq(0)).clear().type(idagPlus20);
-                    cy.wrap($textFields.eq(1)).clear().type(idagPlus28);
-                });
-            });
+    cy.get('#sjukskrivningar-HELT_NEDSATT-from').type(idagPlus29);
+    cy.get('#sjukskrivningar-HELT_NEDSATT-tom').type(idagPlus41).type('{enter}');
 
-            cy.wrap($checkboxes.eq(3)).parent().parent().parent().parent().within(($row) => { // Hämta raden med 100% sjukskrivning
-                cy.get('[type="text"]').then(($textFields) => {
-                    cy.wrap($textFields.eq(0)).clear().type(idagPlus29);
-                    cy.wrap($textFields.eq(1)).clear().type(idagPlus41);
-                });
-            });
-        });
-    });
+    cy.get('#forsakringsmedicinsktBeslutsstod').type(intygsdata.längreNedsattArbetsförmågaText);
 
-    cy
-    .contains(intygsdata.längreNedsattArbetsförmåga)
-    .parent().parent().parent()
-    .find('textarea').type(intygsdata.längreNedsattArbetsförmågaText);
+    cy.get('#arbetstidsforlaggningYes').check();
+    cy.get('#arbetstidsforlaggningMotivering').type(intygsdata.arbetstidAnnorlundaMedicinskaSkälBeskrivning);
 
-    cy.contains(intygsdata.förläggaArbetstidAnnorlunda)
-    .parent().parent().parent().within(($elem) => {
-        cy.get('[type="radio"]').eq(0).check(); // Första radioknappen är "Ja"
-    });
-
-    cy.contains(intygsdata.arbetstidAnnorlundaMedicinskaSkäl).parent().parent().parent().find('textarea')
-    .type(intygsdata.arbetstidAnnorlundaMedicinskaSkälBeskrivning);
-
-    cy.contains(intygsdata.resaMöjliggörArbete)
-    .parent().parent().within(() => {
-        cy.get('[type="checkbox"]').check();
-    });
-
-    cy.contains(intygsdata.arbetsförmågaPrognos).parent().parent().parent().within(($ele) => {
-        cy.get('[type="radio"]').eq(0).check() // Översta radioknappen är den som ska anges
-    });
+    cy.get('#arbetsresor').check();
+    cy.get('#prognos-STOR_SANNOLIKHET').check();
 
     // ----- Sektion 'Åtgärder' -----//
     cy.contains(intygsdata.föreslåÅtgärder).parent().parent().parent().within(($elem) => {
@@ -232,8 +182,9 @@ Cypress.Commands.add("fyllIMaxLisjp", aliasesFromCaller => {
 
     cy.wait(3000);
 
-    cy.contains(intygsdata.flerÅtgärder).should('be.visible').parent().parent().parent().find('textarea')
-        .type(intygsdata.flerÅtgärderBeskrivning);
+    cy.get('#arbetslivsinriktadeAtgarderBeskrivning').should('be.visible').then((textfält) => {
+        cy.wrap(textfält).type(intygsdata.flerÅtgärderBeskrivning);
+    });
 
     // ----- Sektion 'Övriga upplysningar' -----//
     maxIntygFunktioner.sektion_övriga_upplysningar(intygsdata, intygstyp);

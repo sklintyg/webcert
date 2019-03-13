@@ -124,14 +124,10 @@ export function sektion_grund_för_medicinskt_underlag(intygsdata, intygstyp) {
 }
 
 export function sektion_diagnoser_för_sjukdom(intygsdata, intygstyp) {
-    cy.contains(intygsdata.diagnoserNedsattFörmåga).parent().parent().parent().within(($form) => {
-        // Antag att ICD-10-SE är förvalt
-        cy.get('[placeholder=Kod]').then(($codeFields) => {
-            cy.wrap($codeFields.eq(0)).type(intygsdata.diagnosKod1).wait(1000).type('{enter}');
-            cy.wrap($codeFields.eq(1)).type(intygsdata.diagnosKod2).wait(1000).type('{enter}');
-            cy.wrap($codeFields.eq(2)).type(intygsdata.diagnosKod3).wait(1000).type('{enter}');
-        });
-    });
+    // Antag att ICD-10-SE är förvalt
+    cy.get('#diagnoseCode-0').type(intygsdata.diagnosKod1).wait(1000).type('{enter}');
+    cy.get('#diagnoseCode-1').type(intygsdata.diagnosKod2).wait(1000).type('{enter}');
+    cy.get('#diagnoseCode-2').type(intygsdata.diagnosKod3).wait(1000).type('{enter}');
 
     if (intygstyp === implementeradeIntyg.LUSE ||
         intygstyp === implementeradeIntyg.LUAE_NA) {
