@@ -22,7 +22,7 @@ The following configuration properties have been added:
 
 The following configuration properties can be removed:
 
-* `CERTIFICATE_SENDER_QUEUENAME` -- typo has been corrected (since 2019-1)
+* `CERTIFICATE_SENDER_QUEUEMAME` -- typo has been corrected (since 2019-1)
 
 The following secret properties have been added:
 
