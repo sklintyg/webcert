@@ -10,6 +10,8 @@ webcert> node -v
 webcert> npm -v
 ```
 Rekommenderad lägsta version för node är 10 och för npm är 6.
+
+Installera Cypress:
 ```sh
 webcert> npm install --save-dev cypress
 ```
@@ -29,8 +31,8 @@ webcert> node_modules/.bin/cypress open
 ```
 Här kan man köra enskilda sviter eller alla på en gång. Testerna exekveras i en synlig webbläsare.
 
-###### 3.2) Köra Cypress Headlessly
-Det går att köra alla Cypress-tester headlessly (d.v.s. utan synlig webbläsare). Det är så testerna exekveras i Jenkins. Då används den i Cypress inbyggda webbläsaren Electron. Varje testsvit genererar en mp4-videofil där hela exekveringen kan ses, dessa sparas i `test/cypress/videos`
+##### 3.2) Köra Cypress Headlessly
+Det går att köra alla Cypress-tester headlessly (d.v.s. utan synlig webbläsare). Det är så testerna exekveras i Jenkins. Då används den i Cypress inbyggda webbläsaren Electron. Varje testsvit genererar en mp4-videofil där hela exekveringen kan ses, dessa sparas i `test/cypress/videos`.
 ```sh
 webcert> node_modules/.bin/cypress run
 ```
@@ -58,7 +60,7 @@ Dessa filer ligger under `test/cypress/fixtures/`. Här kan data sparas t.ex. pe
 Det finns stödfiler i `test/cypress/support/` där egengjorda Cypress-commands och funktioner kan läggas. Fördelen med detta är att t.ex. kod som exekveras av olika testfallsfiler ('specs') kan läggas på ett ställe istället för att dupliceras.
 Informationen om stödfiler är spridd på flera ställen, bland annat [Cypress Custom Commands](https://docs.cypress.io/api/cypress-api/custom-commands.html) och [Cypress Support file](https://docs.cypress.io/guides/core-concepts/writing-and-organizing-tests.html#Support-file).
 
-Här finns som standard filerna `index.js` och `commands.js`. Den förstnämnda innehåller vilka filer som ska importeras och den sistnämnda innehåller själva kommandona. Dessutom finns fler filer skapade här som innehåller funktioner och kommandon som är koncentererade till t.ex. en specifik typ av intyg.
+Här finns som standard filerna `index.js` och `commands.js`. Den förstnämnda innehåller vilka filer som ska importeras och den sistnämnda innehåller själva kommandona. Dessutom finns fler filer skapade här som innehåller funktioner och kommandon som är relaterade till t.ex. en specifik samling intyg.
 
 ### Plugins
 Från [Cypress Plugins](https://docs.cypress.io/guides/tooling/plugins-guide.html): "Plugins enable you to tap into, modify, or extend the internal behavior of Cypress.". I skrivande stund används inte plugins.
@@ -66,4 +68,5 @@ Från [Cypress Plugins](https://docs.cypress.io/guides/tooling/plugins-guide.htm
 ### Bilder och filmer
 Cypress sparar testfallsexekveringen i form av filmer om testfallen körs i headless-läget (se punkt 3 ovan, "Köra Cypress-testerna"). Dessa sparas under `test/cypress/videos/`.
 Videos sparas inte när man kör i normalt läge med synlig webbläsare.
+
 Om testfallet körs headlessly och det går fel så sparas en skärmdump vid det exakta tillfället när felet inträffar. Detta sparas under `test/cypress/screenshots/`.
