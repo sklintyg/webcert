@@ -362,5 +362,5 @@ The pod(s) running webcert should become available within a few minutes use **oc
 ### 3.9 Routes
 To publish WebCert a corresponding OCP route has to be created. The internal service listens on port 8080. The route should only accept `HTTPS` and is responsible of TLS termination.
 
-WC Web Services should _only_ be accessible from inside of the OpenShift project using its _service_ name (e.g. http://intygstjanst:8080) and from Nationella tjänsteplattformen, i.e. take care when setting up an OpenShift routes so the WC Web Services can't be accessed from the Internet.
+WC Web Services should _only_ be accessible from inside of the OpenShift project using its _service_ name (e.g. http://webcert:8080/services) and from Nationella tjänsteplattformen, i.e. take care when setting up an OpenShift routes so the WC Web Services can't be accessed from the Internet.
 The security measures based on mutual TLS and PKI should nevertheless stop any attempts from unsolicited callers.
