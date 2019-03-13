@@ -18,12 +18,9 @@
  */
 package se.inera.intyg.webcert.common.client.converter;
 
-import java.io.ByteArrayInputStream;
-import java.io.StringWriter;
-import java.nio.charset.StandardCharsets;
+import javax.xml.bind.JAXBElement;
 
-import javax.xml.bind.*;
-
+import se.inera.intyg.common.support.xml.XmlMarshallerHelper;
 import se.riv.clinicalprocess.healthcond.certificate.sendMessageToRecipient.v2.ObjectFactory;
 import se.riv.clinicalprocess.healthcond.certificate.sendMessageToRecipient.v2.SendMessageToRecipientType;
 
@@ -32,19 +29,14 @@ public final class SendMessageToRecipientTypeConverter {
     private SendMessageToRecipientTypeConverter() {
     }
 
-    public static String toXml(SendMessageToRecipientType request) throws JAXBException {
-        StringWriter stringWriter = new StringWriter();
+    public static String toXml(SendMessageToRecipientType request) {
         JAXBElement<SendMessageToRecipientType> requestElement = new ObjectFactory()
                 .createSendMessageToRecipient(request);
-        JAXBContext.newInstance(SendMessageToRecipientType.class).createMarshaller().marshal(requestElement, stringWriter);
-        return stringWriter.toString();
+        return XmlMarshallerHelper.marshal(requestElement);
     }
 
-    public static SendMessageToRecipientType fromXml(String xml) throws JAXBException {
-        @SuppressWarnings("unchecked")
-        JAXBElement<SendMessageToRecipientType> unmarshalledObject = (JAXBElement<SendMessageToRecipientType>) JAXBContext
-                .newInstance(SendMessageToRecipientType.class).createUnmarshaller()
-                .unmarshal(new ByteArrayInputStream(xml.getBytes(StandardCharsets.UTF_8)));
+    public static SendMessageToRecipientType fromXml(String xml) {
+        JAXBElement<SendMessageToRecipientType> unmarshalledObject = XmlMarshallerHelper.unmarshal(xml);
         return unmarshalledObject.getValue();
     }
 }
