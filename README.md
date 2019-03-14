@@ -35,6 +35,14 @@ Man kan även starta Webcert i ett läge där endast de funktioner som är tillg
 
     $ ./gradlew appRun -Pv3.0
 
+### Utvecka frontend
+Om du ändrar enbart frontend kan du se ändringarna direkt utan att starta om Webcert genom att starta grunt
+
+        $ cd web
+        $ grunt serve
+
+Ändringarna deployas nu direkt till http://localhost:9089.
+
 ### Visa databasen
 Man kan även komma åt H2-databasen som startas:
 

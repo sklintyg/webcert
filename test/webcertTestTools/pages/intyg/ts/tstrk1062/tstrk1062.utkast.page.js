@@ -41,7 +41,7 @@ var Tstrk1062Utkast = BaseTsUtkast._extend({
         this.allmant = {
             inmatningICD: element(by.id('diagnosRegistrering.typ-DIAGNOS_KODAD')),
             diagnosBeskrivning: element(by.id('diagnoseDescription-0')),
-            diagnosAr: element(by.id('diagnoseYear-0'))
+            diagnosAr: element(by.id('diagnosKodad-0--diagnosArtal'))
         };
         this.lakemedelsbehandling = {
             harHaftYes: element(by.id('lakemedelsbehandling-harHaftYes')),
