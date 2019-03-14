@@ -55,7 +55,7 @@ pipeline {
       // Skicka epost om jobbet misslyckas
       emailext (
         subject: "Failure: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
-        body: "Failure: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]':\n
+        body: "Failure: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]':
           Check console output at '${env.BUILD_URL}'",
         to: "johannes.larsson@nordicmedtest.se"
       )
