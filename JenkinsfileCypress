@@ -49,14 +49,26 @@ pipeline {
       junit 'test-results.xml'
     }
 
+    fixed {
+      // Skicka epost om jobbet går bra igen
+      emailext (
+        subject: "Fixat! Jobb '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
+        body: "Jobb '${env.JOB_NAME} [${env.BUILD_NUMBER}]' går nu BRA igen. Se konsollutmatning här: '${env.BUILD_URL}'",
+        to: "johannes.larsson@nordicmedtest.se"
+      )
+    }
+
     failure {
       archiveArtifacts artifacts: 'test/cypress/screenshots/**/*.*', fingerprint: true
       archiveArtifacts artifacts: '.npm/_logs/*.log', fingerprint: true
+    }
 
+    // Denna sektion exekveras enbart om föregående körning gick bra och denna misslyckades
+    regression {
       // Skicka epost om jobbet misslyckas
       emailext (
-        subject: "Failure: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
-        body: "Failure: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]': Check console output at '${env.BUILD_URL}'",
+        subject: "Misslyckat! Jobb '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
+        body: "Jobb '${env.JOB_NAME} [${env.BUILD_NUMBER}]' MISSLYCKADES! Se konsollutmatning här: '${env.BUILD_URL}'. Inga fler mail kommer skickas innan jobbet åter går bra.",
         to: "johannes.larsson@nordicmedtest.se"
       )
     }
