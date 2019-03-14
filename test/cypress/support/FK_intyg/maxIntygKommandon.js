@@ -5,7 +5,6 @@ Cypress.Commands.add("fyllIMaxLuaeFs", aliasesFromCaller => {
     const intygsdata = aliasesFromCaller.luaeFsData;
     expect(intygsdata).to.exist;
     const intygstyp = implementeradeIntyg.LUAE_FS;
-    //const intygstyp = "LUAE_FS";
 
     // ----- Sektion 'Grund för medicinskt underlag' -----
     maxIntygFunktioner.sektion_grund_för_medicinskt_underlag(intygsdata, intygstyp);
