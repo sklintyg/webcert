@@ -201,24 +201,24 @@ export function skicka_till_FK(intygsdata) {
 }
 
 export function sektion_funktionsnedsättning(intygsdata) {
-    cy.get(intygsdata.funknedsättningIntellektuellExpanderaId).click();
-    cy.get(intygsdata.funknedsättningIntellektuellTextfältId).type(intygsdata.funknedsättningIntellektuellSkriv);
+    cy.get('#toggle-funktionsnedsattningIntellektuell').click();
+    cy.get('#funktionsnedsattningIntellektuell').type(intygsdata.funknedsättningIntellektuellSkriv);
 
-    cy.get(intygsdata.funknedsättningKommunikationExpanderaId).click();
-    cy.get(intygsdata.funknedsättningKommunikationTextfältId).type(intygsdata.funknedsättningKommunikationSkriv);
+    cy.get('#toggle-funktionsnedsattningKommunikation').click();
+    cy.get('#funktionsnedsattningKommunikation').type(intygsdata.funknedsättningKommunikationSkriv);
 
-    cy.get(intygsdata.funknedsättningUppmärksamhetExpanderaId).click();
-    cy.get(intygsdata.funknedsättningUppmärksamhetTextfältId).type(intygsdata.funknedsättningUppmärksamhetSkriv);
+    cy.get('#toggle-funktionsnedsattningKoncentration').click();
+    cy.get('#funktionsnedsattningKoncentration').type(intygsdata.funknedsättningUppmärksamhetSkriv);
 
-    cy.get(intygsdata.funknedsättningPsykiskExpanderaId).click();
-    cy.get(intygsdata.funknedsättningPsykiskTextfältId).type(intygsdata.funknedsättningPsykiskSkriv);
+    cy.get('#toggle-funktionsnedsattningPsykisk').click();
+    cy.get('#funktionsnedsattningPsykisk').type(intygsdata.funknedsättningPsykiskSkriv);
 
-    cy.get(intygsdata.funknedsättningSinneExpanderaId).click();
-    cy.get(intygsdata.funknedsättningSinneTextfältId).type(intygsdata.funknedsättningSinneSkriv);
+    cy.get('#toggle-funktionsnedsattningSynHorselTal').click();
+    cy.get('#funktionsnedsattningSynHorselTal').type(intygsdata.funknedsättningSinneSkriv);
 
-    cy.get(intygsdata.funknedsättningBalansExpanderaId).click();
-    cy.get(intygsdata.funknedsättningBalansTextfältId).type(intygsdata.funknedsättningBalansSkriv);
+    cy.get('#toggle-funktionsnedsattningBalansKoordination').click();
+    cy.get('#funktionsnedsattningBalansKoordination').type(intygsdata.funknedsättningBalansSkriv);
 
-    cy.get(intygsdata.funknedsättningAnnanExpanderaId).click();
-    cy.get(intygsdata.funknedsättningAnnanTextfältId).type(intygsdata.funknedsättningAnnanSkriv);
+    cy.get('#toggle-funktionsnedsattningAnnan').click();
+    cy.get('#funktionsnedsattningAnnan').type(intygsdata.funknedsättningAnnanSkriv);
 }

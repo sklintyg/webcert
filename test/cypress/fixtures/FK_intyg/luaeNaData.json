@@ -8,7 +8,6 @@
     "underlag3Text": "Underlag från psykolog",
     "underlag3HämtasFrånText": "Psykiatriska kliniken X-stad",
 
-    "diagnoserNedsattFörmåga": "Diagnos/diagnoser för sjukdom som orsakar nedsatt arbetsförmåga",
     "diagnosKod1": "F900x",
     "diagnosKod2": "F411",
     "diagnosKod3": "f401",
@@ -16,29 +15,14 @@
 
     "revideraTidigareDiagnosSkriv": "Möjligen autismsymptom",
 
-    "bakgrundSjukdomsförloppTextfältId": "#sjukdomsforlopp",
     "bakgrundSjukdomsförloppTextSkriv": "BUP-kontakt i tonårstiden, varit inlagd efter konflikt med modern och slagit sönder saker. Samt haft depressiva episoder. Genomgått bred psykiatrisk utredning, medicinerat med antidepressiva med god men inte fullständig effekt. Patientens tillstånd försämrats under vår och sommar, isolerar sig och svårt att sköta ADL. Vårdats inneliggande med stöd av LPT.",
 
-    "funknedsättningIntellektuellExpanderaId": "#toggle-funktionsnedsattningIntellektuell",
-    "funknedsättningIntellektuellTextfältId": "#funktionsnedsattningIntellektuell",
     "funknedsättningIntellektuellSkriv": "WAIS-IV visade allmänna intellektuella nivåer, på genomsnittlig nivå är verbala förmågan starkast, snabbhet som svagast, klart under genomsnittet.",
-    "funknedsättningKommunikationExpanderaId": "#toggle-funktionsnedsattningKommunikation",
-    "funknedsättningKommunikationTextfältId": "#funktionsnedsattningKommunikation",
     "funknedsättningKommunikationSkriv": "Hyfsad formell och emotionell kontakt. Undviker ögonkontakt. Isoleringstendenser. Begränsad social förmåga.",
-    "funknedsättningUppmärksamhetExpanderaId": "#toggle-funktionsnedsattningKoncentration",
-    "funknedsättningUppmärksamhetTextfältId": "#funktionsnedsattningKoncentration",
     "funknedsättningUppmärksamhetSkriv": "QB-test visade normala prestation på aktivitet och uppmärksamhet. Impulsivitet kan tolkas som lätt avvisande. Låg initiativförmåga. Inga tecken på perceptionsstörningar.",
-    "funknedsättningPsykiskExpanderaId": "#toggle-funktionsnedsattningPsykisk",
-    "funknedsättningPsykiskTextfältId": "#funktionsnedsattningPsykisk",
     "funknedsättningPsykiskSkriv": "Nedstämt stämningsläge, orkeslöshet, trötthet.",
-    "funknedsättningSinneExpanderaId": "#toggle-funktionsnedsattningSynHorselTal",
-    "funknedsättningSinneTextfältId": "#funktionsnedsattningSynHorselTal",
     "funknedsättningSinneSkriv": "Avvikande perception av känsel och känslig för höga ljud.",
-    "funknedsättningBalansExpanderaId": "#toggle-funktionsnedsattningBalansKoordination",
-    "funknedsättningBalansTextfältId": "#funktionsnedsattningBalansKoordination",
     "funknedsättningBalansSkriv": "Rastlöst beteendemönster, ticsar med munnen.",
-    "funknedsättningAnnanExpanderaId": "#toggle-funktionsnedsattningAnnan",
-    "funknedsättningAnnanTextfältId": "#funktionsnedsattningAnnan",
     "funknedsättningAnnanSkriv": "Nedsatt hörsel höger öra.",
 
     "aktivitetsbegränsningSkriv": "Stora svårigheter att på egen hand sköta sitt hem och planera aktiviteter på vardagarna. Klarar med lite stöd att laga mat och klippa gräset, men upplever att tvättning är alldeles för komplicerat. Svårt att sköta sin egen hygien. Svårt att genomföra aktiviteter, särskilt utanför hemmet. Svårt med sociala kontakter.",

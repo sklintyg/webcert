@@ -42,7 +42,7 @@ Cypress.Commands.add("fyllIMaxLuaeNa", aliasesFromCaller => {
     maxIntygFunktioner.sektion_diagnoser_för_sjukdom(intygsdata, intygstyp);
 
     // ----- Sektion 'Bakgrund - beskriv kortfattat förloppet för aktuella sjukdomar' ----- //
-    cy.get(intygsdata.bakgrundSjukdomsförloppTextfältId).type(intygsdata.bakgrundSjukdomsförloppTextSkriv);
+    cy.get('#sjukdomsforlopp').type(intygsdata.bakgrundSjukdomsförloppTextSkriv);
 
     // ----- Sektion 'Funktionsnedsättning - beskriv undersökningsfynd och ...' ----- //
     maxIntygFunktioner.sektion_funktionsnedsättning(intygsdata);
@@ -81,7 +81,7 @@ Cypress.Commands.add("fyllIMaxLuse", aliasesFromCaller => {
     maxIntygFunktioner.sektion_diagnoser_för_sjukdom(intygsdata, intygstyp);
 
     // ----- Sektion 'Bakgrund - beskriv kortfattat förloppet för aktuella sjukdomar' ----- //
-    cy.get(intygsdata.bakgrundSjukdomsförloppTextfältId).type(intygsdata.bakgrundSjukdomsförloppTextSkriv);
+    cy.get('#sjukdomsforlopp').type(intygsdata.bakgrundSjukdomsförloppTextSkriv);
 
     // ----- Sektion 'Funktionsnedsättning - beskriv undersökningsfynd och ...' ----- //
     maxIntygFunktioner.sektion_funktionsnedsättning(intygsdata);
