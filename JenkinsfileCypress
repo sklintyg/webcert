@@ -1,8 +1,9 @@
 pipeline {
 
-  options {
-    timestamps ()
-  }
+  // Nedanstående ska ge timestamps i console output men känns inte igen av Jenkins
+  //options {
+  //  timestamps ()
+  //}
 
   agent {
     // this image provides everything needed to run Cypress
