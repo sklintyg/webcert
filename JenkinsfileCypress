@@ -8,7 +8,7 @@ pipeline {
   environment {
     HOME = "${env.WORKSPACE}" // Behövs denna?
     UNDERKATALOG_TESTRAPPORTER = "test/cypress/results/"
-    TESTRAPPORTFILPATTERN = "test-results.*.xml"
+    TESTRAPPORTFILPATTERN = "'test-results.*.xml'"
   }
 
   agent {
@@ -40,7 +40,7 @@ pipeline {
 
     stage('Clean up old test reports') {
       steps {
-        sh 'rm -fr ${env.WORKSPACE}/${UNDERKATALOG_TESTRAPPORTER}/*.xml'
+        sh 'rm -fr ${env.WORKSPACE}/${UNDERKATALOG_TESTRAPPORTER}/${TESTRAPPORTFILPATTERN}'
       }
     }
 
