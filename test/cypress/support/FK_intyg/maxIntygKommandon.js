@@ -171,15 +171,16 @@ Cypress.Commands.add("fyllIMaxLisjp", aliasesFromCaller => {
     cy.get('#prognos-STOR_SANNOLIKHET').check();
 
     // ----- Sektion 'Åtgärder' -----//
-    cy.contains(intygsdata.föreslåÅtgärder).parent().parent().parent().within(($elem) => {
-        cy.get('[type="checkbox"]').each(($el, index, $list) => {
-            if (index != 0) { // Index 0 är "Inte aktuellt", detta är den enda checkboxen som INTE ska anges
-                cy.wrap($el).check();
-            }
-        });
-    });
-
-    cy.wait(3000); // TODO: Behövs denna?
+    cy.get('#arbetslivsinriktadeAtgarder-ARBETSTRANING').check();
+    cy.get('#arbetslivsinriktadeAtgarder-ARBETSANPASSNING').check();
+    cy.get('#arbetslivsinriktadeAtgarder-SOKA_NYTT_ARBETE').check();
+    cy.get('#arbetslivsinriktadeAtgarder-BESOK_ARBETSPLATS').check();
+    cy.get('#arbetslivsinriktadeAtgarder-ERGONOMISK').check();
+    cy.get('#arbetslivsinriktadeAtgarder-HJALPMEDEL').check();
+    cy.get('#arbetslivsinriktadeAtgarder-KONFLIKTHANTERING').check();
+    cy.get('#arbetslivsinriktadeAtgarder-KONTAKT_FHV').check();
+    cy.get('#arbetslivsinriktadeAtgarder-OMFORDELNING').check();
+    cy.get('#arbetslivsinriktadeAtgarder-OVRIGA_ATGARDER').check();
 
     cy.get('#arbetslivsinriktadeAtgarderBeskrivning').should('be.visible').then((textfält) => {
         cy.wrap(textfält).type(intygsdata.flerÅtgärderBeskrivning);
@@ -195,24 +196,8 @@ Cypress.Commands.add("fyllIMaxLisjp", aliasesFromCaller => {
     maxIntygFunktioner.sektion_signera_intyg(intygsdata);
 
     // Välj intygsmottagare
-    cy.contains('div', intygsdata.väljIntygsmottagare, { timeout: 20000 })
-        .should('be.visible')
-        .within(($elem) => {
-            cy.get('[type="radio"]').each(($el, index, $list) => { // Hämtar ut samtliga radioknappar... kan förbättras
-                if (index >= 2) { // Index 0 och 1 är "Försäkringskassan" 'Ja' och 'Nej'. Hoppas över.
-                    if (index % 2 != 0) { // Klicka endast i udda nummer eftersom dessa är "Nej"
-                        cy.wrap($el).check();
-                    }
-                }
-            });
-        });
-
-    cy.get('[name="approveForm"]').within(($form) => {
-        cy.get('[type="button"]').then(($button) => {
-            cy.wrap($button).contains(intygsdata.intygsmottagareKnappText).should('be.visible');
-            cy.wrap($button).click({ force: true });
-        });
-    });
+    cy.get('#approve-receiver-SKANDIA-radio-no').check();
+    cy.get('#save-approval-settings-btn').click();
 
     // Skicka iväg intyget
     maxIntygFunktioner.skicka_till_FK(intygsdata);

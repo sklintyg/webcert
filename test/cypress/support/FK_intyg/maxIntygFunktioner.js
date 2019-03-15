@@ -2,17 +2,6 @@ import {implementeradeIntyg} from './../commands'
 
 const implementeradeIntygArray = Object.values(implementeradeIntyg);
 
-// TODO: Använd någon annan konstruktion än export framför varje funktion och
-// konstant.
-
-/*
-TODO: ID:n och text som identifierar element i intygen är duplicerade
-i samtliga fixtures. Ska vi separera ID:n osv så att vi får en eller två
-filer som innehåller dessa och sen har vi t.ex. texten som läkaren skriver
-i andra filer? Ett annat alternativ är att ID:n skrivs ut direkt i koden
-nedan så att endast texten som fylls i osv är specifik för intygen.
-*/
-
 export function sektion_grund_för_medicinskt_underlag(intygsdata, intygstyp) {
     expect(intygsdata).to.exist;
     expect(implementeradeIntygArray).to.include.members([intygstyp]);
@@ -28,49 +17,29 @@ export function sektion_grund_för_medicinskt_underlag(intygsdata, intygstyp) {
 
 
     // -------------------- 'Intyget/utlåtandet är baserat på' --------------------
-    // TODO: Ska vi använda oss av ID:n eller leta efter specifik text och sen navigera
-    //       bland elementen med parentsUntil() osv?
-    // Fördelar med ID:n: Enkel kod att skriva, enkel att läsa.
-    // Nackdelar med ID:n: Så fort ett ID ändras "under huven" så kommer TC att faila
-    //                     trots att ingen ändring som drabbar användaren har skett
-    // Just nu används en blandning tills beslut är taget.
-    cy.contains("Min undersökning av patienten").parentsUntil('.ue-del-fraga').within(($form) => {
-        cy.get('[type="checkbox"]').check();
-        cy.get("#datepicker_undersokningAvPatienten").clear().type(idagMinus5);
-    });
+    cy.get('#checkbox_undersokningAvPatienten').check();
+    cy.get("#datepicker_undersokningAvPatienten").clear().type(idagMinus5);
 
     if (intygstyp === implementeradeIntyg.LISJP) {
-        cy.contains("Min telefonkontakt med patienten").parentsUntil('.ue-del-fraga').within(($form) => {
-            cy.get('[type="checkbox"]').check();
-            cy.get("#datepicker_telefonkontaktMedPatienten").clear().type(idagMinus6);
-        });
+        cy.get('#checkbox_telefonkontaktMedPatienten').check();
+        cy.get("#datepicker_telefonkontaktMedPatienten").clear().type(idagMinus6);
     }
 
-    cy.contains("Journaluppgifter från den").parentsUntil('.ue-del-fraga').within(($form) => {
-        cy.wrap($form).get('[type="checkbox"]').check();
-        cy.wrap($form).get("#datepicker_journaluppgifter").clear().type(idagMinus15);
-    });
+    cy.get('#checkbox_journaluppgifter').check();
+    cy.get("#datepicker_journaluppgifter").clear().type(idagMinus15);
 
-    // Gäller ej LISJP
     if (intygstyp !== implementeradeIntyg.LISJP) {
-        cy.contains("Anhörigs beskrivning av patienten").parentsUntil('.ue-del-fraga').within(($form) => {
-            cy.get('[type="checkbox"]').check();
-            cy.get("#datepicker_anhorigsBeskrivningAvPatienten").clear().type(idagMinus6);
-        });
+        cy.get('#checkbox_anhorigsBeskrivningAvPatienten').check();
+        cy.get("#datepicker_anhorigsBeskrivningAvPatienten").clear().type(idagMinus6);
     }
 
-    cy.contains("Annat").parentsUntil('.ue-del-fraga').within(($form) => {
-        cy.get('[type="checkbox"]').check();
-        cy.get("#datepicker_annatGrundForMU").clear().type(idagMinus14);
-    });
+    cy.get('#checkbox_annatGrundForMU').check();
+    cy.get("#datepicker_annatGrundForMU").clear().type(idagMinus14);
 
     // Denna textruta dyker upp efter att "Annat" har klickats i
     cy.get("#annatGrundForMUBeskrivning").type(intygsdata.annatTextareaText);
 
-    if (intygstyp === implementeradeIntyg.LUSE ||
-        intygstyp === implementeradeIntyg.LUAE_NA ||
-        intygstyp === implementeradeIntyg.LUAE_FS) {
-
+    if (intygstyp !== implementeradeIntyg.LISJP) {
         cy.get("#datepicker_kannedomOmPatient").clear().type(idagMinus14);
 
         // Klicka i att utlåtandet även baseras på andra medicinska
@@ -190,16 +159,15 @@ export function sektion_signera_intyg(intygsdata) {
 
     // En utökad timeout p.g.a. att det tar en stund innan denna text försvinner.
     cy.contains("Utkastet är sparat", { timeout: 15000 }).should('not.exist');
-    cy.get("#signera-utkast-button").invoke('width').should('be.greaterThan', 0);
-    cy.get("#signera-utkast-button").should('not.be.disabled');
+    cy.get("#signera-utkast-button").invoke('width').should('be.greaterThan', 0); // TODO: Ta bort?
+    cy.get("#signera-utkast-button").should('not.be.disabled'); // TODO: Ta bort?
     cy.get("#signera-utkast-button").click();
 }
 
 export function skicka_till_FK(intygsdata) {
     cy.get("#sendBtn", { timeout: 60000 }).click();
     cy.get("#button1send-dialog").click(); // Modal som dyker upp och frågar om man verkligen vill skicka
-    // TODO: Kontrollera att texten "Intyget är skickat till Försäkringskassan"
-    // syns på sidan?
+    cy.contains("Intyget är skickat till Försäkringskassan");
 }
 
 export function sektion_funktionsnedsättning(intygsdata) {
