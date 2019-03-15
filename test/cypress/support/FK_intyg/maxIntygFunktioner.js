@@ -6,8 +6,9 @@ export function sektion_grund_för_medicinskt_underlag(intygsdata, intygstyp) {
     expect(intygsdata).to.exist;
     expect(implementeradeIntygArray).to.include.members([intygstyp]);
 
-    /* Antagande: Det är inte viktigt med exakt samma datum relativt "idag"
-    som används i mallarna. De flesta datum utgår från LISJP-mallen
+    /*
+        Antagande: Det är inte viktigt med exakt samma datum relativt "idag"
+        som används i mallarna.
     */
     const idagMinus5 =  Cypress.moment().subtract(5,  'days').format('YYYY-MM-DD');
     const idagMinus6 =  Cypress.moment().subtract(6,  'days').format('YYYY-MM-DD');
@@ -136,12 +137,7 @@ export function sektion_medicinska_förutsättningar_för_arbete(intygsdata, int
 }
 
 export function sektion_övriga_upplysningar(intygsdata, intygstyp) {
-    var textAttSkriva = intygsdata.övrigaUpplysningarSkriv;
-    if (intygstyp === implementeradeIntyg.LISJP) {
-        const idagPlus41 = Cypress.moment().add(41, 'days').format('YYYY-MM-DD');
-        textAttSkriva += idagPlus41;
-    }
-    cy.get("#ovrigt").type(textAttSkriva);
+    cy.get("#ovrigt").type(intygsdata.övrigaUpplysningarSkriv);
 }
 
 export function sektion_kontakta_mig(intygsdata) {
