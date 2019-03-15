@@ -179,7 +179,7 @@ Cypress.Commands.add("fyllIMaxLisjp", aliasesFromCaller => {
         });
     });
 
-    cy.wait(3000);
+    cy.wait(3000); // TODO: Behövs denna?
 
     cy.get('#arbetslivsinriktadeAtgarderBeskrivning').should('be.visible').then((textfält) => {
         cy.wrap(textfält).type(intygsdata.flerÅtgärderBeskrivning);

@@ -187,7 +187,9 @@ export function sektion_signera_intyg(intygsdata) {
     cy.contains("Klart att signera");
     cy.contains("Obligatoriska uppgifter saknas").should('not.exist');
     cy.contains("Utkastet sparas").should('not.exist');
-    cy.contains("Utkastet är sparat").should('not.exist');
+
+    // En utökad timeout p.g.a. att det tar en stund innan denna text försvinner.
+    cy.contains("Utkastet är sparat", { timeout: 15000 }).should('not.exist');
     cy.get("#signera-utkast-button").invoke('width').should('be.greaterThan', 0);
     cy.get("#signera-utkast-button").should('not.be.disabled');
     cy.get("#signera-utkast-button").click();
