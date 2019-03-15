@@ -54,7 +54,7 @@ pipeline {
   post {
     always {
       archiveArtifacts artifacts: 'test/cypress/videos/**/*.*', fingerprint: true
-      junit '${UNDERKATALOG_TESTRAPPORTER}/${TESTRAPPORTFILPATTERN}'
+      junit '${HOME}/${UNDERKATALOG_TESTRAPPORTER}/${TESTRAPPORTFILPATTERN}'
     }
 
     fixed {
