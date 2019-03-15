@@ -20,10 +20,6 @@ pipeline {
     }
   }
 
-  environment {
-    HOME = "${env.WORKSPACE}"
-  }
-
   stages {
 
     stage('Handle prerequisites') {
