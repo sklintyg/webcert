@@ -55,7 +55,9 @@ pipeline {
   post {
     always {
       archiveArtifacts artifacts: 'test/cypress/videos/**/*.*', fingerprint: true
-      junit '${UNDERKATALOG_TESTRAPPORTER}/*.xml'
+      //junit '${UNDERKATALOG_TESTRAPPORTER}/*.xml'
+      sh "echo 'testresultatkatalogen holds these files: ' && ls test/cypress/results/"
+      junit 'test/cypress/results/*.xml'
     }
 
     fixed {
