@@ -6,5 +6,9 @@
     "pluginsFile": "test/cypress/plugins/index.js",
     "screenshotsFolder": "test/cypress/screenshots",
     "supportFile": "test/cypress/support/index.js",
-    "videosFolder": "test/cypress/videos"
+    "videosFolder": "test/cypress/videos",
+    "reporterOptions": {
+        "mochaFile": "test-results.[hash].xml",
+        "toConsole": true
+      }
 }
