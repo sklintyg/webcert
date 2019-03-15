@@ -41,8 +41,6 @@ var LuaeNaUtkast = BaseSmiUtkast._extend({
             trotsBegransningar: element(by.id('formagaTrotsBegransning')),
             forslagTillAtgard: element(by.id('forslagTillAtgard'))
         };
-        this.tillaggsfragor0svar = element(by.id('tillaggsfragor[0].svar'));
-        this.tillaggsfragor1svar = element(by.id('tillaggsfragor[1].svar'));
 
         this.baseratPa = {
             minUndersokningAvPatienten: {

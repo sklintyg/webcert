@@ -49,7 +49,7 @@ describe('wcUtkastListSpec', function() {
                 jasmine.createSpyObj('common.IntygHelper', ['goToDraft']);
             $provide.value('common.IntygHelper', IntygHelper);
 
-            _$stateProvider_.state('fk7263-edit', {
+            _$stateProvider_.state('fk7263.utkast', {
                 url: '/fk7263/edit/:certificateId'
             });
         }]);

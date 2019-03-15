@@ -57,7 +57,14 @@ module.exports = {
                 "paverkan": "Ö502ZH0bVTLSåijx"
             },
             "ovrigt": "åbw0KhHaTjcQgzbÅ",
-            "kontaktMedFk": false
+            "kontaktMedFk": false,
+            "tillaggsfragor": [{
+                "id": 9001,
+                "svar": "iQ0zn6Yrh7zYSjGI"
+            }, {
+                "id": 9002,
+                "svar": "vZMnfG0Z6jäscuY2"
+            }]
         };
     },
     getRandom: function(intygsID) {

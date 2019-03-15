@@ -63,8 +63,6 @@ var BaseSmiUtkast = FkBaseUtkast._extend({
         this.diagnoseCode = element(by.id('diagnoseCode-0'));
         this.aktivitetsbegransning = element(by.id('aktivitetsbegransning'));
         this.ovrigt = element(by.id('ovrigt'));
-        this.tillaggsfragor0svar = this.getTillaggsfraga(0);
-        this.tillaggsfragor1svar = this.getTillaggsfraga(1);
         this.funktionsnedsattning = {
             intellektuell: {
                 container: element(by.id('form_check-funktionsnedsattningIntellektuell')),

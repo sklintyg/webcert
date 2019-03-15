@@ -45,6 +45,27 @@ module.exports = function(grunt) {
     var TEST_OUTPUT_DIR = (grunt.option('outputDir') || 'build/karma/');
     var RUN_COVERAGE = grunt.option('run-coverage') !== undefined ? grunt.option('run-coverage') : false;
 
+    var VENDOR_DEPS = [
+        SRC_DIR + '../bower_components/jquery/dist/jquery.min.js',
+        SRC_DIR + '../bower_components/angular/angular.min.js',
+        SRC_DIR + '../bower_components/angular-animate/angular-animate.min.js',
+        SRC_DIR + '../bower_components/angular-cookies/angular-cookies.min.js',
+        SRC_DIR + '../bower_components/angular-i18n/angular-locale_sv-se.js',
+        SRC_DIR + '../bower_components/angular-sanitize/angular-sanitize.min.js',
+        SRC_DIR + '../bower_components/angular-bootstrap/ui-bootstrap-tpls.min.js',
+        SRC_DIR + '../bower_components/angular-ui-router/release/angular-ui-router.min.js',
+        SRC_DIR + '../bower_components/angular-ui-router/release/stateEvents.js',
+        SRC_DIR + '../bower_components/bootstrap-sass/assets/javascripts/bootstrap.min.js',
+        SRC_DIR + '../bower_components/momentjs/min/moment.min.js',
+        SRC_DIR + '../bower_components/oclazyload/dist/ocLazyLoad.min.js',
+        SRC_DIR + '../vendor/polyfill.min.js',
+        SRC_DIR + '../vendor/angular-shims-placeholder/angular-shims-placeholder.min.js',
+        SRC_DIR + '../vendor/angular-smooth-scroll.js',
+        SRC_DIR + '../vendor/_convert.js',
+        SRC_DIR + '../vendor/_language.js',
+        SRC_DIR + '../vendor/_utility.js',
+        SRC_DIR + '../vendor/netid-1.0.5.js'];
+
     var webcert = grunt.file.expand({cwd: SRC_DIR}, ['**/*.js', '!**/*.spec.js', '!**/*.test.js', '!**/app.js']).sort();
     grunt.file.write(DEST_DIR + 'app-deps.json', JSON.stringify(webcert.
         map(function(file) {
@@ -145,6 +166,10 @@ module.exports = function(grunt) {
             webcert: {
                 src: webcert,
                 dest: DEST_DIR + 'app.min.js'
+            },
+            vendor: {
+                src: VENDOR_DEPS,
+                dest: DEST_DIR + 'vendor.min.js'
             }
         },
 
@@ -197,6 +222,10 @@ module.exports = function(grunt) {
             webcert: {
                 src: DEST_DIR + 'app.min.js',
                 dest: DEST_DIR + 'app.min.js'
+            },
+            vendor: {
+                src: DEST_DIR + 'vendor.min.js',
+                dest: DEST_DIR + 'vendor.min2.js'
             }
         },
 

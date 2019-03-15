@@ -123,7 +123,7 @@ gretty {
                "-Dresources.folder=classpath:",
                "-Dcredentials.file=${projectDir}/webcert-credentials.properties",
                "-Dconfig.file=${projectDir}/webcert-dev.properties",
-               "-Dlogback.file=classpath:logback-dev.xml",
+               "-Dlogback.file=classpath:logback-ocp.xml",
                "-DuseMinifiedJavaScript=${minified}",
                "-Djetty.port=${httpPort}"]
 

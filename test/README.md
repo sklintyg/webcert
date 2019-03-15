@@ -17,7 +17,7 @@ webcert>./gradlew appRun
 webcert/web>grunt serve
 ```
 
-##### 4) Starta upp testerna i ett nytt webbläsarfönster. Chrome används som default och behöver då vara installerat. Fungerar utan vidare i skrivande stund med senaste versionen av Chrome på macos (el capitan).
+##### 4) Starta upp testerna headless, Chrome används som default och behöver då vara installerat.
 ```sh
 webcert>./gradlew protractorTests
 ```

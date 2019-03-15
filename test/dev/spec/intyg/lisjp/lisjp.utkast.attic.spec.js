@@ -94,26 +94,4 @@ describe('Lisjp attic tests', function() {
         });
     });
 
-    xdescribe('smittskydd', function() {
-        it('Tillaggsfraga should be hidden if smittskydd is set to yes', function() {
-            LisjpUtkastPage.smittskydd.sendKeys(protractor.Key.SPACE);
-
-            expect(LisjpUtkastPage.konsekvenser.funktionsnedsattning.isPresent()).toBeFalsy();
-            expect(LisjpUtkastPage.konsekvenser.aktivitetsbegransning.isPresent()).toBeFalsy();
-
-            expect(LisjpUtkastPage.getTillaggsfraga(9001).isPresent()).toBeFalsy();
-            expect(LisjpUtkastPage.getTillaggsfraga(9002).isPresent()).toBeFalsy();
-        });
-
-        it('Tillaggsfraga should be back when smittskydd is set to no again', function() {
-            LisjpUtkastPage.smittskydd.sendKeys(protractor.Key.SPACE);
-
-            expect(LisjpUtkastPage.konsekvenser.funktionsnedsattning.getAttribute('value')).toBe('funktionsnedsättning');
-            expect(LisjpUtkastPage.konsekvenser.aktivitetsbegransning.getAttribute('value')).toBe('aktivitetsbegränsning');
-
-            expect(LisjpUtkastPage.getTillaggsfragaSvar(9001)).toBe('42');
-            expect(LisjpUtkastPage.getTillaggsfragaSvar(9002)).toBe('50');
-        });
-
-    });
 });

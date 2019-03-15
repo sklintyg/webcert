@@ -25,7 +25,7 @@ var testdataHelper = wcTestTools.helpers.restTestdata;
 var UtkastPage = wcTestTools.pages.intyg.luaeNA.utkast;
 var restUtil = wcTestTools.restUtil;
 
-xdescribe('Create partially complete luae_na utkast and mark as ready to sign', function() {
+describe('Create partially complete luae_na utkast and mark as ready to sign', function() {
 
     var utkastId = null,
         data = null;
@@ -78,39 +78,6 @@ xdescribe('Create partially complete luae_na utkast and mark as ready to sign', 
                 UtkastPage.markeraKlartForSigneringModalYesButton.sendKeys(protractor.Key.SPACE);
 
                 expect(UtkastPage.markeradKlartForSigneringText.isDisplayed()).toBeTruthy();
-            });
-
-            it('Gör REST-anrop till notification-stubben, tillse att vår post finns med KFSIGN', function() {
-                logger.debug("sleeping a while to allow changes to have taken effect in backend before checking notification statuses");
-                browser.sleep(2000).then(
-                        function() {
-                            restUtil.queryNotificationStub().then(
-                                    function(data) {
-
-                                        // Detta borde kunna göras snyggare med jsonPath...
-                                        for (var a = 0; a < data.body.length; a++) {
-                                            var statusUppdatering = data.body[a];
-                                            if (statusUppdatering.intyg.intygsId.extension === utkastId &&
-                                                    statusUppdatering.handelse.handelsekod.code === 'KFSIGN') {
-                                                return true;
-                                            }
-                                        }
-                                        fail('No matching status message was found, failing test!!');
-                                    });
-
-                            restUtil.queryNotificationStub().then(
-                                function(data) {
-
-                                    // Detta borde kunna göras snyggare med jsonPath...
-                                    for (var a = 0; a < data.body.length; a++) {
-                                        var statusUppdatering = data.body[a];
-                                        if (statusUppdatering.intyg.intygsId.extension === utkastId) {
-                                            return true;
-                                        }
-                                    }
-                                    fail('No matching status message was found, failing test!!');
-                                });
-                        });
             });
         });
     });

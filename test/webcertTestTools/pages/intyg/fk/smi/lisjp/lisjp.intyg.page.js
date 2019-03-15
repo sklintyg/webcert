@@ -80,8 +80,6 @@ var LisjpIntyg = BaseSmiIntygPage._extend({
             this.verifieraMedicinskbehandling(data);
 
             this.verifieraKontaktFK(data);
-
-            //this.verifieraTillaggsfragor(data);
         }
     },
 
