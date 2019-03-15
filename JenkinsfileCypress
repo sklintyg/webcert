@@ -40,7 +40,6 @@ pipeline {
 
     stage('Clean up old test reports') {
       steps {
-        sh "ls '${env.WORKSPACE}"
         sh "rm -fr '${env.WORKSPACE}/${UNDERKATALOG_TESTRAPPORTER}/${TESTRAPPORTFILPATTERN}'"
       }
     }
