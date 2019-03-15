@@ -1,72 +1,47 @@
-# Cypress
-[Cypress](https://www.cypress.io/ "cypress.io") är ett open source-verktyg för frontendtestning. Utveckligen och exekveringen av testfall görs normalt i Windows men schemalagda körningar sker i Docker-containers i Linux på [Jenkins](https://ci.inera.se/job/Intyg/ "Intyg i Nationell Jenkins").
+# Protractor
 
-## Köra end-to-end tester i Cypress
+## För att köra end-to-end tester i chrome (protractor) mha gradle:
 
-### 1) Installera Cypress
-Stå i roten på webcert. Se till att node och npm är installerade:
+##### 1) Kör igång IT
 ```sh
-webcert> node -v
-webcert> npm -v
-```
-Rekommenderad lägsta version för node är 10 och för npm är 6.
-
-Installera Cypress:
-```sh
-webcert> npm install --save-dev cypress
+intygstjanst>./gradlew appRun
 ```
 
-### 2) Konfigurera URL till WebCert-applikationen
-Redigera filen `cypress.json` med ett textredigeringsprogram. I exemplet nedan används notepad.
+##### 2) Kör igång Webcert
 ```sh
-webcert> notepad cypress.json
+webcert>./gradlew appRun
 ```
-Leta upp raden med `"baseUrl"` och uppdatera URL:en att peka mot testmiljön.
 
-### 3) Köra Cypress-testerna
-##### 3.1) Köra Cypress i normal webbläsare
-Starta Cypress-gui genom
+##### 3) Kör igång grunt server (förutsätter att du installerat grunt globalt med npm)
 ```sh
-webcert> node_modules/.bin/cypress open
+webcert/web>grunt server
 ```
-Här kan man köra enskilda sviter eller alla på en gång. Testerna exekveras i en synlig webbläsare.
 
-##### 3.2) Köra Cypress Headlessly
-Det går att köra alla Cypress-tester headlessly (d.v.s. utan synlig webbläsare). Det är så testerna exekveras i Jenkins. Då används den i Cypress inbyggda webbläsaren Electron. Varje testsvit genererar en mp4-videofil där hela exekveringen kan ses, dessa sparas i `test/cypress/videos`.
+##### 4) Starta upp testerna i ett nytt webbläsarfönster. Chrome används som default och behöver då vara installerat. Fungerar utan vidare i skrivande stund med senaste versionen av Chrome på macos (el capitan).
 ```sh
-webcert> node_modules/.bin/cypress run
+webcert>./gradlew protractorTests
 ```
-Exempel på vad som är ändrat från standardvärden är sökvägarna till kataloger eftersom cypress-filerna inte ligger direkt under `<projektrot>/cypress`.
 
-## Cypress filstruktur
-Generellt kan sägas att konfigurationsfilen för Cypress ligger i projektroten, och resten av filerna ligger under `test/cypress/`.
+## Kör specifika tester, exkludera tester
 
-### Konfiguration
-Cypress konfigureras via en JSON-fil i projektroten:
+Protractor använder internt ett testramverk som heter Jasmine vilket används även för våra unittester i angularjs. För att köra ett enskilt test standalone så kan man direkt i testet (.spec.js-filen) byta ut `describe` mot `fdescribe`. På samma sätt kan man exkludera enskilda tester genom att byta ut `describe` mot `xdescribe`.
+
+Undvik att någonsin pusha en commit med `fdescribe` då det leder till att automatiska byggen på Jenkins endast utför testet med `fdescribe` och skippar alla andra tester.
+
+# Development för webcert-testtools
+
+## För att slippa ändra version på webcert-testtools och köra npm install vid varje ändring så behöver följande kommandon köras:
+
+ ```sh
+ cd webcertTestTools/
+ npm link
+ cd ..
+ npm link webcert-testtools
+```
+
+Om npm link strular kan man även köra detta som en en-radare om man vill vara säker på att använda den test-tools du nyss ändrat i..
 ```sh
-webcert> cypress.json
+webcert/test>rm -rf node_modules/webcert-testtools && npm install && grunt
 ```
-I denna fil kan man åsidosätta alla standardvärden som cypress använder sig av. För mer detaljer, se [Cypress configuration](https://docs.cypress.io/guides/references/configuration.html#Options).
 
-### Testfall
-Cypress terminologi för testfallsfil är 'spec' och specs ligger i vad som kallas för 'integration folder'.
-Testfallen ligger därför i underkatalogen `test/cypress/integration/`.
-
-### Fixtures
-Konstant data sparas i något som kallas fixturer, se [Cypress Fixtures](https://docs.cypress.io/api/commands/fixture.html) för mer information.
-Dessa filer ligger under `test/cypress/fixtures/`. Här kan data sparas t.ex. per läkare, patient och vårdenhet och detta kan läsas in i testfallen.
-
-### Stödfiler
-Det finns stödfiler i `test/cypress/support/` där egengjorda Cypress-commands och funktioner kan läggas. Fördelen med detta är att t.ex. kod som exekveras av olika testfallsfiler ('specs') kan läggas på ett ställe istället för att dupliceras.
-Informationen om stödfiler är spridd på flera ställen, bland annat [Cypress Custom Commands](https://docs.cypress.io/api/cypress-api/custom-commands.html) och [Cypress Support file](https://docs.cypress.io/guides/core-concepts/writing-and-organizing-tests.html#Support-file).
-
-Här finns som standard filerna `index.js` och `commands.js`. Den förstnämnda innehåller vilka filer som ska importeras och den sistnämnda innehåller själva kommandona. Dessutom finns fler filer skapade här som innehåller funktioner och kommandon som är relaterade till t.ex. en specifik samling intyg.
-
-### Plugins
-Från [Cypress Plugins](https://docs.cypress.io/guides/tooling/plugins-guide.html): "Plugins enable you to tap into, modify, or extend the internal behavior of Cypress.". I skrivande stund används inte plugins.
-
-### Bilder och filmer
-Cypress sparar testfallsexekveringen i form av filmer om testfallen körs i headless-läget (se punkt 3 ovan, "Köra Cypress-testerna"). Dessa sparas under `test/cypress/videos/`.
-Videos sparas inte när man kör i normalt läge med synlig webbläsare.
-
-Om testfallet körs headlessly och det går fel så sparas en skärmdump vid det exakta tillfället när felet inträffar. Detta sparas under `test/cypress/screenshots/`.
+Då ändringar har gjorts i dessa moduler så bör man ändra versionsnummer för paketet innan incheckning
