@@ -6,6 +6,7 @@ pipeline {
   //}
 
   environment {
+    HOME = "${env.WORKSPACE}" // Behövs denna?
     UNDERKATALOG_TESTRAPPORTER = "test/cypress/results/"
     TESTRAPPORTFILPATTERN = "test-results.*.xml"
   }
