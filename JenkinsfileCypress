@@ -8,7 +8,8 @@ pipeline {
   environment {
     HOME = "${env.WORKSPACE}" // Behövs denna?
     UNDERKATALOG_TESTRAPPORTER = "test/cypress/results/"
-    TESTRAPPORTFILPATTERN = 'test-results.*.xml'
+    //TESTRAPPORTFILPATTERN = "test-results.*.xml"
+    TESTRAPPORTFILPATTERN = "*.xml"
   }
 
   agent {
@@ -54,7 +55,7 @@ pipeline {
   post {
     always {
       archiveArtifacts artifacts: 'test/cypress/videos/**/*.*', fingerprint: true
-      junit '${HOME}/${UNDERKATALOG_TESTRAPPORTER}/${TESTRAPPORTFILPATTERN}'
+      junit '${UNDERKATALOG_TESTRAPPORTER}/*.xml'
     }
 
     fixed {
