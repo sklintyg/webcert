@@ -8,7 +8,7 @@
     "supportFile": "test/cypress/support/index.js",
     "videosFolder": "test/cypress/videos",
     "reporterOptions": {
-        "mochaFile": "test-results.[hash].xml",
+        "mochaFile": "test/cypress/results/test-results.[hash].xml",
         "toConsole": true
       }
 }

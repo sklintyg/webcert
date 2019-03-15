@@ -5,6 +5,11 @@ pipeline {
   //  timestamps ()
   //}
 
+  environment {
+    UNDERKATALOG_TESTRAPPORTER = "test/cypress/results/"
+    TESTRAPPORTFILPATTERN = "test-results.*.xml"
+  }
+
   agent {
     // this image provides everything needed to run Cypress
     docker {
@@ -36,6 +41,12 @@ pipeline {
       }
     }
 
+    stage('Clean up old test reports') {
+      steps {
+        sh 'rm -fr ${env.WORKSPACE}/${UNDERKATALOG_TESTRAPPORTER}/*.xml'
+      }
+    }
+
     stage('cypress tests') {
       steps {
         sh "npm run test:e2e:electron"
@@ -46,7 +57,7 @@ pipeline {
   post {
     always {
       archiveArtifacts artifacts: 'test/cypress/videos/**/*.*', fingerprint: true
-      junit 'test-results.*.xml'
+      junit '${UNDERKATALOG_TESTRAPPORTER}/${TESTRAPPORTFILPATTERN}'
     }
 
     fixed {
