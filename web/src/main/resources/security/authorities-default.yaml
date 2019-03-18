@@ -63,6 +63,7 @@ knownIntygstyper:
   - &ki110 ag114
   - &ki120 ag7804
   - &ki111 af00251
+  - &ki130 tstrk1062
   - &ki140 tstrk1009
 
 # De rättigheter som systemet har
@@ -173,6 +174,7 @@ privileges:
           - *ki080 # db
           - *ki090 # doi
           - *ki120 # ag7804
+          - *ki130 # TSTRK1062
           - *ki140 # tstrk1009
       - *ro020 # DJUPINTEGRATION
   - &p040
@@ -191,6 +193,7 @@ privileges:
       - *ki110 # ag114
       - *ki120 # ag7804
       - *ki111 # af00251
+      - *ki130 # TSTRK1062
       - *ki140 # tstrk1009
     requestOrigins:
       - *ro010 # NORMAL
@@ -283,6 +286,7 @@ privileges:
       - *ki110 # ag114
       - *ki120 # ag7804
       - *ki111 # af00251
+      - *ki130 # TSTRK1062
       - *ki140 # tstrk1009
     requestOrigins:
       - *ro020 # DJUPINTEGRATION
@@ -362,6 +366,7 @@ roles:
               - *ki110 # ag114
               - *ki120 # ag7804
               - *ki111 # af00251
+              - *ki130 # TSTRK1062
               - *ki140 # tstrk1009
           - <<: *ro020 # DJUPINTEGRATION
             intygstyper: # EJ fk7263
@@ -377,6 +382,7 @@ roles:
               - *ki110 # ag114
               - *ki120 # ag7804
               - *ki111 # af00251
+              - *ki130 # TSTRK1062
               - *ki140 # tstrk1009
       - <<: *p040 # VIDAREBEFORDRA_UTKAST
         requestOrigins:
@@ -469,6 +475,7 @@ roles:
               - *ki110 # ag114
               - *ki120 # ag7804
               - *ki111 # af00251
+              - *ki130 # TSTRK1062
               - *ki140 # tstrk1009
       - <<: *p060 # BESVARA_KOMPLETTERINGSFRAGA
         requestOrigins:

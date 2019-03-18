@@ -35,7 +35,8 @@ module.exports = {
         },
         trk1009: {
             v1: require('./ts.trk1009.v1')
-        }
+        },
+        trk1062: require('./ts.trk1062.js')
     },
     skv: {
         db: require('./skv.db.js')

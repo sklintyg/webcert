@@ -14,7 +14,7 @@ webcert>./gradlew appRun
 
 ##### 3) Kör igång grunt server (förutsätter att du installerat grunt globalt med npm)
 ```sh
-webcert/web>grunt server
+webcert/web>grunt serve
 ```
 
 ##### 4) Starta upp testerna headless, Chrome används som default och behöver då vara installerat.

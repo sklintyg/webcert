@@ -91,6 +91,10 @@ module.exports = {
             trk1009: {
                 utkast: require(intygPath + 'ts/tstrk1009/tstrk1009.utkast.page.js'),
                 intyg: require(intygPath + 'ts/tstrk1009/tstrk1009.intyg.page.js')
+            },
+            trk1062: {
+                utkast: require(intygPath + 'ts/tstrk1062/tstrk1062.utkast.page.js'),
+                intyg: require(intygPath + 'ts/tstrk1062/tstrk1062.intyg.page.js')
             }
         },
         skv: {
