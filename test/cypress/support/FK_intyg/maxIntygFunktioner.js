@@ -153,11 +153,6 @@ export function sektion_signera_intyg(intygsdata) {
     cy.contains("Obligatoriska uppgifter saknas").should('not.exist');
     cy.contains("Utkastet sparas").should('not.exist');
 
-    // TODO: Sätter en väldigt hög timeout på denna check eftersom det är den primära
-    // orsaken till att testfallen i CI går fel. Om detta hjälper så får vi undersöka
-    // ett alternativt sätt att gå vidare. Kanske även prata med utvecklarna hur länge
-    // texten ska visas innan den försvinner i "worst case".
-    cy.contains("Utkastet är sparat", { timeout: 60000 }).should('not.exist');
     cy.get("#signera-utkast-button").invoke('width').should('be.greaterThan', 0); // TODO: Ta bort?
     cy.get("#signera-utkast-button").should('not.be.disabled'); // TODO: Ta bort?
     cy.get("#signera-utkast-button").click();
