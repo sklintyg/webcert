@@ -86,7 +86,7 @@ WebCert needs certificates, keystores and truststores for Inera Service Platform
 
 ### 2.4 Message Queues
 
-Two queues needs are required and depending on permissions those may be implicitly created by the application.
+The queues listed below are required and depending on permissions those might be implicitly created by the application.
 
 - `webcert.log.queue` -- sends PDL log records to Logsender
 - `webcert.certificate.queue` -- sends Certificates to IT
@@ -161,7 +161,7 @@ Download the tool to a computer with Java installed and access to the database i
 ### 3.3 Get Source for Configuration
 
 
-##### 2.3.1 Clone the repository
+##### 3.3.1 Clone the repository
 
 Clone repository and switch to the release branch specified in the release notes.
     
@@ -286,7 +286,7 @@ The _&lt;env>/config/recipients.json_ file might require an update.
     
 ##### 3.4.1 Redis Sentinel Configuration
 
-Redis sentinel requires at least three URL:s passed in order to work correctly. These are specified in the `REDIS_SERVICE_HOST` and `REDIS_SERVICE_PORT` parameters respectively:
+Redis sentinel requires at least three URL:s passed in order to work correctly. These are specified in the `REDIS_HOST` and `REDIS_PORT` parameters respectively:
 
     REDIS_HOST: "host1;host2;host3"
     REDIS_PORT: "26379;26379;26379"
@@ -327,7 +327,7 @@ If this hasn't been done previously, you may **temporarily** copy keystores into
 ### 3.7 Deploy
 We're all set for deploying the application. As stated in the pre-reqs, the "deploytemplate-webapp" must be installed in the OpenShift project.
 
-**Note 1** You need to reference the correct docker image from the Nexus!! You must replace \<replaceme\> with a correct path to the image to deploy!!
+**Note 1** You need to reference the correct docker image from the Nexus!
 
 **Note 2** Please specify the `DATABASE_NAME` actual MySQL database. Default is **webcert**.
 
