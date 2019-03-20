@@ -146,15 +146,26 @@ export function sektion_kontakta_mig(intygsdata) {
 }
 
 export function sektion_signera_intyg(intygsdata) {
-    // cy.click() fungerar inte alltid. Det finns issues rapporterade (stängd pga inaktivitet):
+    // cy.click() fungerar inte alltid. Det finns issues rapporterade
+    // (stängd pga inaktivitet):
     // https://github.com/cypress-io/cypress/issues/2551
-    // Nedanstående steg innan klicket på signera-knappen är en workaround för detta.
+    // Nedanstående steg (innan klicket på signera-knappen) är ett försök
+    // till workaround för detta.
     cy.contains("Klart att signera");
     cy.contains("Obligatoriska uppgifter saknas").should('not.exist');
     cy.contains("Utkastet sparas").should('not.exist');
 
-    cy.get("#signera-utkast-button").invoke('width').should('be.greaterThan', 0); // TODO: Ta bort?
-    cy.get("#signera-utkast-button").should('not.be.disabled'); // TODO: Ta bort?
+    /* Dessa två rader verkar inte påverka sannolikheten att testfallet går bra eller dåligt
+    cy.get("#signera-utkast-button").invoke('width').should('be.greaterThan', 0);
+    cy.get("#signera-utkast-button").should('not.be.disabled');
+    */
+
+    // Har provat att vänta tills "Intyget är sparat" har försvunnit, och även provat
+    // att inte kolla alls på den. I båda fallen misslyckas testfallet ofta ("Intyget
+    // är sparat" försvinner inte ens efter lång tid och om man inte väntar alls så
+    // klickas knappen "Signera intyget" men inget händer. Enda sättet att alltid
+    // komma förbi detta steg i nuläget är med en wait()
+    cy.wait(5000);
     cy.get("#signera-utkast-button").click();
 }
 
