@@ -27,6 +27,7 @@ import org.apache.camel.spring.SpringRouteBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.w3._2002._06.xmldsig_filter2.XPathType;
 import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.webcert.common.Constants;
@@ -199,7 +200,7 @@ public class NotificationRouteBuilder extends SpringRouteBuilder {
     private JaxbDataFormat initializeJaxbMessageDataFormatV3() throws JAXBException {
         // We need to register DatePeriodType with the JAXBContext explicitly for some reason.
         JaxbDataFormat jaxbMessageDataFormatV3 = new JaxbDataFormat(
-                JAXBContext.newInstance(CertificateStatusUpdateForCareType.class, DatePeriodType.class, PartialDateType.class));
+                JAXBContext.newInstance(CertificateStatusUpdateForCareType.class, DatePeriodType.class, PartialDateType.class, XPathType.class));
         jaxbMessageDataFormatV3.setPartClass(
                 "se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareType");
         jaxbMessageDataFormatV3
