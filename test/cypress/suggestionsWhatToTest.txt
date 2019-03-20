@@ -1,5 +1,5 @@
 ------------ Negativa testfall ------------
-Nu har vi nog enbart positiva testfall (som "ska gå bra").
+Nu har vi många positiva testfall (som "ska gå bra").
 
 
 ------------ Cookies ------------
