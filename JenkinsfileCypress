@@ -1,12 +1,12 @@
 pipeline {
 
-  // Nedanstående ska ge timestamps i console output men känns inte igen av Jenkins
+  // TODO: Nedanstående ska ge timestamps i console output men känns inte igen av Jenkins
   //options {
   //  timestamps ()
   //}
 
   environment {
-    HOME = "${env.WORKSPACE}" // Behövs denna?
+    HOME = "${env.WORKSPACE}" // TODO: Behövs denna?
     UNDERKATALOG_TESTRAPPORTER = "test/cypress/results/"
     //TESTRAPPORTFILPATTERN = "test-results.*.xml"
     TESTRAPPORTFILPATTERN = "*.xml"
@@ -24,7 +24,7 @@ pipeline {
 
   stages {
 
-    stage('Handle prerequisites') {
+    stage('Verifiera förkrav') {
       steps {
         echo "Running build ${env.BUILD_ID} on ${env.JENKINS_URL}"
         sh 'npm --version'
@@ -32,20 +32,24 @@ pipeline {
       }
     }
 
-    stage('Install Cypress') {
+    stage('Rensa gamla filer') {
+      steps {
+        // Testrapporter
+        sh "rm -fr '${env.WORKSPACE}/${UNDERKATALOG_TESTRAPPORTER}/${TESTRAPPORTFILPATTERN}'"
+
+        // Loggfiler från tidigare körningar
+        sh "rm -fr '${env.WORKSPACE}/.npm/_logs/*.log'"
+      }
+    }
+
+    stage('Installera Cypress') {
       steps {
         sh 'npm ci'
         sh 'npm run cy:verify'
       }
     }
 
-    stage('Clean up old test reports') {
-      steps {
-        sh "rm -fr '${env.WORKSPACE}/${UNDERKATALOG_TESTRAPPORTER}/${TESTRAPPORTFILPATTERN}'"
-      }
-    }
-
-    stage('cypress tests') {
+    stage('Exekvera Cypresstester') {
       steps {
         sh "npm run test:e2e:electron"
       }
@@ -55,6 +59,8 @@ pipeline {
   post {
     always {
       archiveArtifacts artifacts: 'test/cypress/videos/**/*.*', fingerprint: true
+
+      // TODO: Använd variabler för att hämta JUnit-filer istället för hårdkodade pather
       //junit '${UNDERKATALOG_TESTRAPPORTER}/*.xml'
       sh "echo 'testresultatkatalogen holds these files: ' && ls test/cypress/results/"
       junit 'test/cypress/results/*.xml'
