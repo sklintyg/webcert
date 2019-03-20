@@ -6,6 +6,7 @@ export function sektion_grund_för_medicinskt_underlag(intygsdata, intygstyp) {
     expect(intygsdata).to.exist;
     expect(implementeradeIntygArray).to.include.members([intygstyp]);
 
+    // -------------------- 'Intyget/utlåtandet är baserat på' --------------------
     /*
         Antagande: Det är inte viktigt med exakt samma datum relativt "idag"
         som används i mallarna.
@@ -16,8 +17,6 @@ export function sektion_grund_för_medicinskt_underlag(intygsdata, intygstyp) {
     const idagMinus15 = Cypress.moment().subtract(15, 'days').format('YYYY-MM-DD');
     const idagMinus2Mån = Cypress.moment().subtract(2, 'months').format('YYYY-MM-DD');
 
-
-    // -------------------- 'Intyget/utlåtandet är baserat på' --------------------
     cy.get('#checkbox_undersokningAvPatienten').check();
     cy.get("#datepicker_undersokningAvPatienten").clear().type(idagMinus5);
 
@@ -87,7 +86,7 @@ export function sektion_grund_för_medicinskt_underlag(intygsdata, intygstyp) {
             cy.wrap(option).contains(intygsdata.underlag3Text); // Säkerställ att rätt alternativ valts
             option[0].click(); // jquery "click()", inte Cypress "click()"
         });
-        
+
         cy.get("#datepicker_underlag\\[2\\]\\.datum").clear().type(idagMinus2Mån);
         cy.get("#underlag-2--hamtasFran").type(intygsdata.underlag3HämtasFrånText);
     }
@@ -95,9 +94,13 @@ export function sektion_grund_för_medicinskt_underlag(intygsdata, intygstyp) {
 
 export function sektion_diagnoser_för_sjukdom(intygsdata, intygstyp) {
     // Antag att ICD-10-SE är förvalt
+    // Fyll i diagnoskoderna och verifiera att motsvarande beskriving kan läsas i textfältet
     cy.get('#diagnoseCode-0').type(intygsdata.diagnosKod1).wait(1000).type('{enter}');
+    cy.get('#diagnoseDescription-0').invoke('val').should('contain', intygsdata.diagnosText1);
     cy.get('#diagnoseCode-1').type(intygsdata.diagnosKod2).wait(1000).type('{enter}');
+    cy.get('#diagnoseDescription-1').invoke('val').should('contain', intygsdata.diagnosText2);
     cy.get('#diagnoseCode-2').type(intygsdata.diagnosKod3).wait(1000).type('{enter}');
+    cy.get('#diagnoseDescription-2').invoke('val').should('contain', intygsdata.diagnosText3);
 
     if (intygstyp === implementeradeIntyg.LUSE ||
         intygstyp === implementeradeIntyg.LUAE_NA) {

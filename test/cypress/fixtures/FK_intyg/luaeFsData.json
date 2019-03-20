@@ -10,8 +10,11 @@
 
     "diagnoserNedsattFörmåga": "Diagnos/diagnoser för sjukdom som orsakar",
     "diagnosKod1": "F900B",
+    "diagnosText1": "Attention Deficit and Hyperactivity Disorder (ADHD)",
     "diagnosKod2": "F480",
+    "diagnosText2": "Neurasteni",
     "diagnosKod3": "F412",
+    "diagnosText3": "Blandade ångest- och depressionstillstånd",
 
     "funktionsnedsättningDebutSkriv": "Kontakt med BUP redan i lågstadiet. Under högstadiet utvecklat ångest och depressionstillstånd, som visat sig svår att behandla. Patientens tillstånd har försämrats under gymnasietiden.",
     "funktionsnedsättningPåverkanSkriv": "Samsjuklighet sedan tidiga tonåren, som tillsammans med dyslexi försvårat skolgången. Ofta hamnat i konflikter med både elever och lärare. Hög frånvaro.",

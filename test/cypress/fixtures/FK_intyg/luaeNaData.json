@@ -9,8 +9,11 @@
     "underlag3HämtasFrånText": "Psykiatriska kliniken X-stad",
 
     "diagnosKod1": "F900x",
+    "diagnosText1": "Aktivitets- och uppmärksamhetsstörning UNS",
     "diagnosKod2": "F411",
+    "diagnosText2": "Generaliserat ångestsyndrom",
     "diagnosKod3": "f401",
+    "diagnosText3": "Social fobi",
     "diagnosgrundTextSkriv": "BUP 2012, Privata psykiatriska klinken 2013 och psykiatriska mottagningen 2016.",
 
     "revideraTidigareDiagnosSkriv": "Möjligen autismsymptom",

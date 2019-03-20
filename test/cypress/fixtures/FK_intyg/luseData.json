@@ -10,8 +10,11 @@
 
     "diagnoserNedsattFörmåga": "Diagnos/diagnoser för sjukdom som orsakar nedsatt arbetsförmåga",
     "diagnosKod1": "f310",
+    "diagnosText1": "Bipolär sjukdom, hypoman episod",
     "diagnosKod2": "f843",
+    "diagnosText2": "Annan desintegrativ störning i barndomen",
     "diagnosKod3": "f102x",
+    "diagnosText3": "Alkoholberoendesyndrom, ospecificerad",
     "diagnosgrundTextSkriv": "Autismen fastställd vid BUP, och bipolär sjukdom fastställd vid rättspsykiatriska kliniken.",
 
     "revideraTidigareDiagnosSkriv": "Alkoholberoendet",
