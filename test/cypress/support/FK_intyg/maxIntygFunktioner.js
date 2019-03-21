@@ -172,6 +172,7 @@ export function sektion_signera_intyg(intygsdata) {
         return $el.click()
     }
 
+    // Parent() p.g.a. att ett element täcker knappen
     cy.get('#signera-utkast-button').parent().should('be.visible')
 
     cy.get('#signera-utkast-button')

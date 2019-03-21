@@ -1,14 +1,15 @@
 {
-    "baseUrl": "https://webcert-devtest-tintyg.app-test1.ind-ocp.sth.basefarm.net",
-    "defaultCommandTimeout": 6000,
-    "fixturesFolder": "test/cypress/fixtures",
-    "integrationFolder": "test/cypress/integration",
-    "pluginsFile": "test/cypress/plugins/index.js",
-    "screenshotsFolder": "test/cypress/screenshots",
-    "supportFile": "test/cypress/support/index.js",
-    "videosFolder": "test/cypress/videos",
-    "reporterOptions": {
-        "mochaFile": "test/cypress/results/test-results.[hash].xml",
-        "toConsole": true
-      }
+  "baseUrl": "https://webcert-devtest-tintyg.app-test1.ind-ocp.sth.basefarm.net",
+  "defaultCommandTimeout": 10000,
+  "fixturesFolder": "test/cypress/fixtures",
+  "integrationFolder": "test/cypress/integration",
+  "pluginsFile": "test/cypress/plugins/index.js",
+  "screenshotsFolder": "test/cypress/screenshots",
+  "supportFile": "test/cypress/support/index.js",
+  "videosFolder": "test/cypress/videos",
+  "reporterOptions": {
+    "mochaFile": "test/cypress/results/test-results.[hash].xml",
+    "toConsole": true
+  },
+  "projectId": "1diiry"
 }
