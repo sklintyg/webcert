@@ -7,6 +7,7 @@
 import './commands'
 import './FK_intyg/maxIntygFunktioner'
 import './FK_intyg/maxIntygKommandon'
+import 'cypress-pipe'
 
 // Alternatively you can use CommonJS syntax:
 // require('./commands')

@@ -161,8 +161,25 @@ export function sektion_signera_intyg(intygsdata) {
     // är sparat" försvinner inte ens efter lång tid och om man inte väntar alls så
     // klickas knappen "Signera intyget" men inget händer. Enda sättet att alltid
     // komma förbi detta steg i nuläget är med en wait()
-    cy.wait(5000);
-    cy.get("#signera-utkast-button").click();
+
+    // Kan detta vara något? https://www.cypress.io/blog/2019/01/22/when-can-the-test-click/ :
+    // "If a tree falls in the forest and no one has attached a “fall” event listener, did it really fall?"
+    // cy.wait(5000);
+
+    let count = 0
+    const click = $el => {
+	    count += 1
+	    return $el.click()
+    }
+
+    cy.get('#signera-utkast-button')
+    .pipe(click)
+    .should($el => {
+	    expect($el).to.not.be.visible;
+    })
+    .then(() => {
+	    cy.log('Klickade på Signera Intyg ' + count + ' gånger') // TODO: Ta bort när/om det visar sig att pipe är ett stabilt alternativ till problemet.
+    })
 }
 
 export function skicka_till_FK(intygsdata) {
