@@ -10,6 +10,14 @@ pipeline {
     UNDERKATALOG_TESTRAPPORTER = "test/cypress/results/"
     //TESTRAPPORTFILPATTERN = "test-results.*.xml"
     TESTRAPPORTFILPATTERN = "*.xml"
+
+    // Provar Cypress dashboard. Denna nyckel bör bytas ut när nyckeln ligger
+    // i Jenkins Credentials Store eftersom alla kan se denna nyckel, vilket i
+    // sin tur betyder att vem som helst kan köra tester som laddas upp bland
+    // de riktiga testerna.
+    // Se https://jenkins.io/doc/book/using/using-credentials/
+    // Nycklarna till dashboard hanteras här: https://dashboard.cypress.io/#/projects/1diiry/settings
+    CYPRESS_RECORD_KEY = bc2e1db3-af72-4fad-9159-b78bf1989af1
   }
 
   agent {
@@ -45,7 +53,7 @@ pipeline {
     stage('Installera Cypress') {
       steps {
         sh 'npm ci'
-        sh 'npm run cy:verify'
+        sh 'npm run cy:verify:record'
       }
     }
 

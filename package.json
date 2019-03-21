@@ -4,7 +4,8 @@
     "scripts": {
         "test:e2e:chrome": "cypress run --browser chrome --reporter mocha-junit-reporter",
         "test:e2e:electron": "cypress run --reporter mocha-junit-reporter",
-        "cy:verify": "cypress verify"
+        "cy:verify": "cypress verify",
+        "cy:verify:record": "cypress verify --record"
     },
     "devDependencies": {
         "cypress": "^3.2.0",
