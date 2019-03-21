@@ -181,7 +181,7 @@ export function sektion_signera_intyg(intygsdata) {
     })
     // TODO: Ta bort "then()" och "count" när/om det visar sig att pipe är ett stabilt alternativ till problemet.
     .then(() => {
-        cy.log('Klickade på Signera Intyg ' + count + ' gånger')
+        cy.log(count + ' ggr klickades Signera Intyg')
     })
 }
 
