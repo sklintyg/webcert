@@ -168,17 +168,20 @@ export function sektion_signera_intyg(intygsdata) {
 
     let count = 0
     const click = $el => {
-	    count += 1
-	    return $el.click()
+        count += 1
+        return $el.click()
     }
+
+    cy.get('#signera-utkast-button').parent().should('be.visible')
 
     cy.get('#signera-utkast-button')
     .pipe(click)
     .should($el => {
-	    expect($el).to.not.be.visible;
+        expect($el.parent()).to.not.be.visible;
     })
+    // TODO: Ta bort "then()" och "count" när/om det visar sig att pipe är ett stabilt alternativ till problemet.
     .then(() => {
-	    cy.log('Klickade på Signera Intyg ' + count + ' gånger') // TODO: Ta bort när/om det visar sig att pipe är ett stabilt alternativ till problemet.
+        cy.log('Klickade på Signera Intyg ' + count + ' gånger')
     })
 }
 
