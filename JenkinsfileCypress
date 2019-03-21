@@ -53,13 +53,13 @@ pipeline {
     stage('Installera Cypress') {
       steps {
         sh 'npm ci'
-        sh 'npm run cy:verify:record'
+        sh 'npm run cy:verify'
       }
     }
 
     stage('Exekvera Cypresstester') {
       steps {
-        sh "npm run test:e2e:electron"
+        sh "npm run test:e2e:electron:record"
       }
     }
   }
