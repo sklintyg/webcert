@@ -1,7 +1,7 @@
 /* globals context cy */
 /// <reference types="Cypress" />
 
-describe('Logga in som vårdgivare', function () {
+describe('Testinloggningssidan', function () {
 
     const destUrlLyckadInloggning = "/#/create/choose-patient/index";
 
@@ -14,7 +14,7 @@ describe('Logga in som vårdgivare', function () {
 		cy.title().should('contain', "Webcert test inloggning");
     });
 
-    it('är mojligt att logga in genom inloggningsknappen', function() {
+    it('är mojligt att logga in vårdgivare genom inloggningsknappen', function() {
         cy.contains(this.vårdgivare.namnSträngInloggning).click().then(() => {
 			cy.contains("Logga in").click();
         });
@@ -22,7 +22,7 @@ describe('Logga in som vårdgivare', function () {
         cy.url().should('include', destUrlLyckadInloggning);
     });
 
-    it('är möjligt att logga in genom dubbelklick i namnlistan', function() {
+    it('är möjligt att logga in vårdgivare genom dubbelklick i namnlistan', function() {
         cy.contains(this.vårdgivare.namnSträngInloggning).dblclick().then(() => {
 			cy.url().should('include', destUrlLyckadInloggning);
         });

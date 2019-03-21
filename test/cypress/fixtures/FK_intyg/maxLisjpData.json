@@ -1,0 +1,28 @@
+{
+    "annat": "Utlåtande från barnmorska",
+
+    "yrkeOchUppgifter": "Snickare. Tunga lyft, arbete på stege, hantera maskinverktyg, mycket gående",
+
+    "diagnosKod1": "O267",
+    "diagnosText1": "Symfyseolys under graviditet, förlossning och barnsängstid",
+    "diagnosKod2": "O470A",
+    "diagnosText2": "Förvärkar utan cervixpåverkan före utgången av graviditetsvecka 37",
+    "diagnosKod3": "O210",
+    "diagnosText3": "Lätta graviditetskräkningar",
+
+    "besvärsbeskrivning": "Uttalade besvär från bäcken, svår smärta vid lägesförändring, hälta, instabilitet bäcken",
+
+    "aktivitetsbegränsning": "starka bäckensmärtor som ger uttalad aktivitetsbegränsning vid fysisk aktivitet och kontorsarbete samt koncentrationssvårigheter",
+    "pågåendeBehandlingar": "Sjukgymnastik och rörelseprogram för att lindra bäckenuppluckring",
+    "planeradeBehandlingar": "Specialist, ultraljudskontroller",
+
+    "längreNedsattArbetsförmåga": "Haft tidigare bäckeninsuffiens vid graviditet, haft tidigare missfall och kräver nu fler kontroller och avlastning",
+
+    "arbetstidAnnorlundaMedicinskaSkäl":"Har lättare kontorsarbete på måndagar som hon klarar av med nuvarande besvär om ingen försämring sker.",
+
+    "flerÅtgärder": "Om anpassningar till lättare uppgifter utan tunga lyft och mycket gående kan ordnas kvarstår arbetsförmåga under en tid framöver.",
+
+    "övrigaUpplysningar": "Planerad partus 2019-09-11",
+
+    "kontaktMedFK": "För att diskutera sjukskrivningsperiod och tydliggörande kring besvärsbilden samt framtida arbetsförmåga."
+}

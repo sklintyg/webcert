@@ -3,10 +3,10 @@
 
 // LISJP = Läkarintyg för sjukpenning, FK 7804
 
-describe('(integrerat) skicka maximalt ifyllt LISJP till FK', function () {
+describe('LISJP-intyg', function () {
 
     before(function() {
-        cy.fixture('FK_intyg/lisjpData').as('lisjpData');
+        cy.fixture('FK_intyg/maxLisjpData').as('lisjpData');
         cy.fixture('vårdgivare/arnoldJohansson').as('vårdgivare');
         cy.fixture('vårdenheter/alfaEnheten').as('vårdenhet');
         cy.fixture('vårdtagare/tolvanTolvansson').as('vårdtagare');

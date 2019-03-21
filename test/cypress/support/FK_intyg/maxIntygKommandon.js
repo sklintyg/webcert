@@ -13,11 +13,11 @@ Cypress.Commands.add("fyllIMaxLuaeFs", aliasesFromCaller => {
     maxIntygFunktioner.sektion_diagnoser_för_sjukdom(intygsdata, intygstyp);
 
     // ----- Sektion 'Funktionsnedsättning' ----- //
-    cy.get("#funktionsnedsattningDebut").type(intygsdata.funktionsnedsättningDebutSkriv);
-    cy.get("#funktionsnedsattningPaverkan").type(intygsdata.funktionsnedsättningPåverkanSkriv);
+    cy.get("#funktionsnedsattningDebut").type(intygsdata.funktionsnedsättningDebut);
+    cy.get("#funktionsnedsattningPaverkan").type(intygsdata.funktionsnedsättningPåverkan);
 
     // ----- Sektion 'Övriga upplysningar' -----//
-    maxIntygFunktioner.sektion_övriga_upplysningar(intygsdata, intygstyp);
+    maxIntygFunktioner.sektion_övriga_upplysningar(intygsdata);
 
     // ----- Sektion 'Kontakt' -----//
     maxIntygFunktioner.sektion_kontakta_mig(intygsdata);
@@ -41,7 +41,7 @@ Cypress.Commands.add("fyllIMaxLuaeNa", aliasesFromCaller => {
     maxIntygFunktioner.sektion_diagnoser_för_sjukdom(intygsdata, intygstyp);
 
     // ----- Sektion 'Bakgrund - beskriv kortfattat förloppet för aktuella sjukdomar' ----- //
-    cy.get('#sjukdomsforlopp').type(intygsdata.bakgrundSjukdomsförloppTextSkriv);
+    cy.get('#sjukdomsforlopp').type(intygsdata.bakgrundSjukdomsförlopp);
 
     // ----- Sektion 'Funktionsnedsättning - beskriv undersökningsfynd och ...' ----- //
     maxIntygFunktioner.sektion_funktionsnedsättning(intygsdata);
@@ -56,7 +56,7 @@ Cypress.Commands.add("fyllIMaxLuaeNa", aliasesFromCaller => {
     maxIntygFunktioner.sektion_medicinska_förutsättningar_för_arbete(intygsdata, intygstyp);
 
     // ----- Sektion 'Övriga upplysningar' -----//
-    maxIntygFunktioner.sektion_övriga_upplysningar(intygsdata, intygstyp);
+    maxIntygFunktioner.sektion_övriga_upplysningar(intygsdata);
 
     // ----- Sektion 'Kontakt' -----//
     maxIntygFunktioner.sektion_kontakta_mig(intygsdata);
@@ -80,7 +80,7 @@ Cypress.Commands.add("fyllIMaxLuse", aliasesFromCaller => {
     maxIntygFunktioner.sektion_diagnoser_för_sjukdom(intygsdata, intygstyp);
 
     // ----- Sektion 'Bakgrund - beskriv kortfattat förloppet för aktuella sjukdomar' ----- //
-    cy.get('#sjukdomsforlopp').type(intygsdata.bakgrundSjukdomsförloppTextSkriv);
+    cy.get('#sjukdomsforlopp').type(intygsdata.bakgrundSjukdomsförlopp);
 
     // ----- Sektion 'Funktionsnedsättning - beskriv undersökningsfynd och ...' ----- //
     maxIntygFunktioner.sektion_funktionsnedsättning(intygsdata);
@@ -95,7 +95,7 @@ Cypress.Commands.add("fyllIMaxLuse", aliasesFromCaller => {
     maxIntygFunktioner.sektion_medicinska_förutsättningar_för_arbete(intygsdata, intygstyp);
 
     // ----- Sektion 'Övriga upplysningar' -----//
-    maxIntygFunktioner.sektion_övriga_upplysningar(intygsdata, intygstyp);
+    maxIntygFunktioner.sektion_övriga_upplysningar(intygsdata);
 
     // ----- Sektion 'Kontakt' -----//
     maxIntygFunktioner.sektion_kontakta_mig(intygsdata);
@@ -116,7 +116,7 @@ Cypress.Commands.add("fyllIMaxLisjp", aliasesFromCaller => {
     const intygstyp = implementeradeIntyg.LISJP;
 
     // Beräkna datum både framåt och bakåt från idag
-    const idagPlus1 = Cypress.moment().add(1,  'days').format('YYYY-MM-DD'); // 25%  sjukskrivning start
+    const idagPlus1 = Cypress.moment().add(1,   'days').format('YYYY-MM-DD'); // 25%  sjukskrivning start
     const idagPlus11 = Cypress.moment().add(11, 'days').format('YYYY-MM-DD'); // 25%  sjukskrivning slut
     const idagPlus12 = Cypress.moment().add(12, 'days').format('YYYY-MM-DD'); // 50%  sjukskrivning start
     const idagPlus19 = Cypress.moment().add(19, 'days').format('YYYY-MM-DD'); // 50%  sjukskrivning slut
@@ -133,13 +133,13 @@ Cypress.Commands.add("fyllIMaxLisjp", aliasesFromCaller => {
     cy.get('#sysselsattning-ARBETSSOKANDE').check();
     cy.get('#sysselsattning-FORALDRALEDIG').check();
     cy.get('#sysselsattning-STUDIER').check();
-    cy.get('#nuvarandeArbete').type(intygsdata.yrkeOchUppgifterText);
+    cy.get('#nuvarandeArbete').type(intygsdata.yrkeOchUppgifter);
 
     // ----- Sektion 'Diagnos/Diagnoser för sjukdom som orsakar nedsatt arbetsförmåga' ----- //
     maxIntygFunktioner.sektion_diagnoser_för_sjukdom(intygsdata, intygstyp);
 
     // ----- Sektion 'Funktionsnedsättning' ----- //
-    cy.get('#funktionsnedsattning').type(intygsdata.besvärsBeskrivning);
+    cy.get('#funktionsnedsattning').type(intygsdata.besvärsbeskrivning);
 
     // ----- Sektion 'Aktivitetsbegränsning' ----- //
     maxIntygFunktioner.sektion_aktivitetsbegränsningar(intygsdata);
@@ -162,10 +162,10 @@ Cypress.Commands.add("fyllIMaxLisjp", aliasesFromCaller => {
     cy.get('#sjukskrivningar-HELT_NEDSATT-from').type(idagPlus29);
     cy.get('#sjukskrivningar-HELT_NEDSATT-tom').type(idagPlus41).type('{enter}');
 
-    cy.get('#forsakringsmedicinsktBeslutsstod').type(intygsdata.längreNedsattArbetsförmågaText);
+    cy.get('#forsakringsmedicinsktBeslutsstod').type(intygsdata.längreNedsattArbetsförmåga);
 
     cy.get('#arbetstidsforlaggningYes').check();
-    cy.get('#arbetstidsforlaggningMotivering').type(intygsdata.arbetstidAnnorlundaMedicinskaSkälBeskrivning);
+    cy.get('#arbetstidsforlaggningMotivering').type(intygsdata.arbetstidAnnorlundaMedicinskaSkäl);
 
     cy.get('#arbetsresor').check();
     cy.get('#prognos-STOR_SANNOLIKHET').check();
@@ -183,11 +183,11 @@ Cypress.Commands.add("fyllIMaxLisjp", aliasesFromCaller => {
     cy.get('#arbetslivsinriktadeAtgarder-OVRIGA_ATGARDER').check();
 
     cy.get('#arbetslivsinriktadeAtgarderBeskrivning').should('be.visible').then((textfält) => {
-        cy.wrap(textfält).type(intygsdata.flerÅtgärderBeskrivning);
+        cy.wrap(textfält).type(intygsdata.flerÅtgärder);
     });
 
     // ----- Sektion 'Övriga upplysningar' -----//
-    maxIntygFunktioner.sektion_övriga_upplysningar(intygsdata, intygstyp);
+    maxIntygFunktioner.sektion_övriga_upplysningar(intygsdata);
 
     // ----- Sektion 'Kontakt' -----//
     maxIntygFunktioner.sektion_kontakta_mig(intygsdata);

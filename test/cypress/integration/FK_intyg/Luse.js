@@ -3,10 +3,10 @@
 
 // LUSE = Läkarutlåtande för sjukersättning, FK 7800
 
-describe('(integrerat) skicka maximalt ifyllt LUSE till FK', function () {
+describe('LUSE-intyg', function () {
 
     before(function() {
-        cy.fixture('FK_intyg/luseData').as('luseData');
+        cy.fixture('FK_intyg/maxLuseData').as('luseData');
         cy.fixture('vårdgivare/arnoldJohansson').as('vårdgivare');
         cy.fixture('vårdenheter/alfaEnheten').as('vårdenhet');
         cy.fixture('vårdtagare/tolvanTolvansson').as('vårdtagare');

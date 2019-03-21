@@ -37,7 +37,7 @@ export function sektion_grund_för_medicinskt_underlag(intygsdata, intygstyp) {
     cy.get("#datepicker_annatGrundForMU").clear().type(idagMinus14);
 
     // Denna textruta dyker upp efter att "Annat" har klickats i
-    cy.get("#annatGrundForMUBeskrivning").type(intygsdata.annatTextareaText);
+    cy.get("#annatGrundForMUBeskrivning").type(intygsdata.annat);
 
     if (intygstyp !== implementeradeIntyg.LISJP) {
         cy.get("#datepicker_kannedomOmPatient").clear().type(idagMinus14);
@@ -57,38 +57,38 @@ export function sektion_grund_för_medicinskt_underlag(intygsdata, intygstyp) {
         // Fyll i alla fält för utredning/underlag 1:
         cy.get("#underlag-0--typ-selected-item-label").click();
         cy.get("#wcdropdown-underlag-0--typ")
-        .contains(intygsdata.underlag1Text)
+        .contains(intygsdata.underlag1)
         .then(option => {
-            cy.wrap(option).contains(intygsdata.underlag1Text); // Säkerställ att rätt alternativ valts
+            cy.wrap(option).contains(intygsdata.underlag1); // Säkerställ att rätt alternativ valts
             option[0].click(); // jquery "click()", inte Cypress "click()"
         });
 
         cy.get("#datepicker_underlag\\[0\\]\\.datum").clear().type(idagMinus2Mån);
-        cy.get("#underlag-0--hamtasFran").type(intygsdata.underlag1HämtasFrånText);
+        cy.get("#underlag-0--hamtasFran").type(intygsdata.underlag1HämtasFrån);
 
         // Fyll i alla fält för utredning/underlag 2
         cy.get("#underlag-1--typ-selected-item-label").click();
         cy.get("#wcdropdown-underlag-1--typ")
-        .contains(intygsdata.underlag2Text)
+        .contains(intygsdata.underlag2)
         .then(option => {
-            cy.wrap(option).contains(intygsdata.underlag2Text); // Säkerställ att rätt alternativ valts
+            cy.wrap(option).contains(intygsdata.underlag2); // Säkerställ att rätt alternativ valts
             option[0].click(); // jquery "click()", inte Cypress "click()"
         });
 
         cy.get("#datepicker_underlag\\[1\\]\\.datum").clear().type(idagMinus2Mån);
-        cy.get("#underlag-1--hamtasFran").type(intygsdata.underlag2HämtasFrånText);
+        cy.get("#underlag-1--hamtasFran").type(intygsdata.underlag2HämtasFrån);
 
         // Fyll i alla fält för utredning/underlag 3
         cy.get("#underlag-2--typ-selected-item-label").click();
         cy.get("#wcdropdown-underlag-2--typ")
-        .contains(intygsdata.underlag3Text)
+        .contains(intygsdata.underlag3)
         .then(option => {
-            cy.wrap(option).contains(intygsdata.underlag3Text); // Säkerställ att rätt alternativ valts
+            cy.wrap(option).contains(intygsdata.underlag3); // Säkerställ att rätt alternativ valts
             option[0].click(); // jquery "click()", inte Cypress "click()"
         });
 
         cy.get("#datepicker_underlag\\[2\\]\\.datum").clear().type(idagMinus2Mån);
-        cy.get("#underlag-2--hamtasFran").type(intygsdata.underlag3HämtasFrånText);
+        cy.get("#underlag-2--hamtasFran").type(intygsdata.underlag3HämtasFrån);
     }
 }
 
@@ -104,65 +104,58 @@ export function sektion_diagnoser_för_sjukdom(intygsdata, intygstyp) {
 
     if (intygstyp === implementeradeIntyg.LUSE ||
         intygstyp === implementeradeIntyg.LUAE_NA) {
-        cy.get("#diagnosgrund").type(intygsdata.diagnosgrundTextSkriv);
+        cy.get("#diagnosgrund").type(intygsdata.diagnosgrund);
 
         // Finns skäl att revidera tidigare diagnos?
         cy.get("#nyBedomningDiagnosgrundYes").click();
-        cy.get("#diagnosForNyBedomning").type(intygsdata.revideraTidigareDiagnosSkriv);
+        cy.get("#diagnosForNyBedomning").type(intygsdata.revideraTidigareDiagnos);
     }
 }
 
 export function sektion_aktivitetsbegränsningar(intygsdata) {
-    cy.get("#aktivitetsbegransning").type(intygsdata.aktivitetsbegränsningSkriv);
+    cy.get("#aktivitetsbegransning").type(intygsdata.aktivitetsbegränsning);
 }
 
 export function sektion_medicinsk_behandling(intygsdata, intygstyp) {
     if (intygstyp === implementeradeIntyg.LUSE ||
         intygstyp === implementeradeIntyg.LUAE_NA) {
-        cy.get("#avslutadBehandling").type(intygsdata.avslutadBehandlingSkriv);
+        cy.get("#avslutadBehandling").type(intygsdata.avslutadBehandling);
     }
 
-    cy.get("#pagaendeBehandling").type(intygsdata.pågåendeBehandlingarSkriv);
-    cy.get("#planeradBehandling").type(intygsdata.planeradeBehandlingarSkriv);
+    cy.get("#pagaendeBehandling").type(intygsdata.pågåendeBehandlingar);
+    cy.get("#planeradBehandling").type(intygsdata.planeradeBehandlingar);
 
     if (intygstyp === implementeradeIntyg.LUSE ||
         intygstyp === implementeradeIntyg.LUAE_NA) {
-        cy.get("#substansintag").type(intygsdata.substansintagSkriv);
+        cy.get("#substansintag").type(intygsdata.substansintag);
     }
 }
 
 export function sektion_medicinska_förutsättningar_för_arbete(intygsdata, intygstyp) {
-    cy.get("#medicinskaForutsattningarForArbete").type(intygsdata.förutsättningarFörArbeteSkriv);
-    cy.get("#formagaTrotsBegransning").type(intygsdata.förmågaTrotsBegränsningSkriv);
+    cy.get("#medicinskaForutsattningarForArbete").type(intygsdata.förutsättningarFörArbete);
+    cy.get("#formagaTrotsBegransning").type(intygsdata.förmågaTrotsBegränsning);
     if (intygstyp === implementeradeIntyg.LUAE_NA) {
-        cy.get("#forslagTillAtgard").type(intygsdata.förslagTillÅtgärdSkriv);
+        cy.get("#forslagTillAtgard").type(intygsdata.förslagTillÅtgärd);
     }
 }
 
-export function sektion_övriga_upplysningar(intygsdata, intygstyp) {
-    cy.get("#ovrigt").type(intygsdata.övrigaUpplysningarSkriv);
+export function sektion_övriga_upplysningar(intygsdata) {
+    cy.get("#ovrigt").type(intygsdata.övrigaUpplysningar);
 }
 
 export function sektion_kontakta_mig(intygsdata) {
     cy.get("#kontaktMedFk").check();
-    cy.get("#anledningTillKontakt").type(intygsdata.kontaktMedFKSkriv);
+    cy.get("#anledningTillKontakt").type(intygsdata.kontaktMedFK);
 }
 
 export function sektion_signera_intyg(intygsdata) {
-    // cy.click() fungerar inte alltid. Det finns issues rapporterade
-    // (stängd pga inaktivitet):
-    // https://github.com/cypress-io/cypress/issues/2551
-    // Nedanstående steg (innan klicket på signera-knappen) är ett försök
-    // till workaround för detta.
     cy.contains("Klart att signera");
     cy.contains("Obligatoriska uppgifter saknas").should('not.exist');
     cy.contains("Utkastet sparas").should('not.exist');
 
-    /* Dessa två rader verkar inte påverka sannolikheten att testfallet går bra eller dåligt
-    cy.get("#signera-utkast-button").invoke('width').should('be.greaterThan', 0);
-    cy.get("#signera-utkast-button").should('not.be.disabled');
-    */
-
+    // cy.click() fungerar inte alltid. Det finns issues rapporterade
+    // (stängd pga inaktivitet):
+    // https://github.com/cypress-io/cypress/issues/2551
     // Har provat att vänta tills "Intyget är sparat" har försvunnit, och även provat
     // att inte kolla alls på den. I båda fallen misslyckas testfallet ofta ("Intyget
     // är sparat" försvinner inte ens efter lång tid och om man inte väntar alls så
@@ -180,23 +173,23 @@ export function skicka_till_FK(intygsdata) {
 
 export function sektion_funktionsnedsättning(intygsdata) {
     cy.get('#toggle-funktionsnedsattningIntellektuell').click();
-    cy.get('#funktionsnedsattningIntellektuell').type(intygsdata.funknedsättningIntellektuellSkriv);
+    cy.get('#funktionsnedsattningIntellektuell').type(intygsdata.funknedsättningIntellektuell);
 
     cy.get('#toggle-funktionsnedsattningKommunikation').click();
-    cy.get('#funktionsnedsattningKommunikation').type(intygsdata.funknedsättningKommunikationSkriv);
+    cy.get('#funktionsnedsattningKommunikation').type(intygsdata.funknedsättningKommunikation);
 
     cy.get('#toggle-funktionsnedsattningKoncentration').click();
-    cy.get('#funktionsnedsattningKoncentration').type(intygsdata.funknedsättningUppmärksamhetSkriv);
+    cy.get('#funktionsnedsattningKoncentration').type(intygsdata.funknedsättningUppmärksamhet);
 
     cy.get('#toggle-funktionsnedsattningPsykisk').click();
-    cy.get('#funktionsnedsattningPsykisk').type(intygsdata.funknedsättningPsykiskSkriv);
+    cy.get('#funktionsnedsattningPsykisk').type(intygsdata.funknedsättningPsykisk);
 
     cy.get('#toggle-funktionsnedsattningSynHorselTal').click();
-    cy.get('#funktionsnedsattningSynHorselTal').type(intygsdata.funknedsättningSinneSkriv);
+    cy.get('#funktionsnedsattningSynHorselTal').type(intygsdata.funknedsättningSinne);
 
     cy.get('#toggle-funktionsnedsattningBalansKoordination').click();
-    cy.get('#funktionsnedsattningBalansKoordination').type(intygsdata.funknedsättningBalansSkriv);
+    cy.get('#funktionsnedsattningBalansKoordination').type(intygsdata.funknedsättningBalans);
 
     cy.get('#toggle-funktionsnedsattningAnnan').click();
-    cy.get('#funktionsnedsattningAnnan').type(intygsdata.funknedsättningAnnanSkriv);
+    cy.get('#funktionsnedsattningAnnan').type(intygsdata.funknedsättningAnnan);
 }

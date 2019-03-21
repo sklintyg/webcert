@@ -3,10 +3,10 @@
 
 // LUAE-NA = Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmånga, FK 7801
 
-describe('(integrerat) skicka maximalt ifyllt LUAE-NA till FK', function () {
+describe('LUAE-NA-intyg', function () {
 
     before(function() {
-        cy.fixture('FK_intyg/luaeNaData').as('luaeNaData');
+        cy.fixture('FK_intyg/maxLuaeNaData').as('luaeNaData');
         cy.fixture('vårdgivare/arnoldJohansson').as('vårdgivare');
         cy.fixture('vårdenheter/alfaEnheten').as('vårdenhet');
         cy.fixture('vårdtagare/tolvanTolvansson').as('vårdtagare');
