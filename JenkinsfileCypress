@@ -17,7 +17,7 @@ pipeline {
     // de riktiga testerna.
     // Se https://jenkins.io/doc/book/using/using-credentials/
     // Nycklarna till dashboard hanteras här: https://dashboard.cypress.io/#/projects/1diiry/settings
-    CYPRESS_RECORD_KEY = bc2e1db3-af72-4fad-9159-b78bf1989af1
+    CYPRESS_RECORD_KEY = 'bc2e1db3-af72-4fad-9159-b78bf1989af1'
   }
 
   agent {
