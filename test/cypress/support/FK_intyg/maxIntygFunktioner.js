@@ -95,11 +95,23 @@ export function sektion_grund_för_medicinskt_underlag(intygsdata, intygstyp) {
 export function sektion_diagnoser_för_sjukdom(intygsdata, intygstyp) {
     // Antag att ICD-10-SE är förvalt
     // Fyll i diagnoskoderna och verifiera att motsvarande beskriving kan läsas i textfältet
-    cy.get('#diagnoseCode-0').type(intygsdata.diagnosKod1).wait(1000).type('{enter}');
+
+    cy.get('#diagnoseCode-0').parent().within(($diagnoskodrad) => {
+        cy.get('#diagnoseCode-0').type(intygsdata.diagnosKod1);
+        cy.wrap($diagnoskodrad).contains(intygsdata.diagnosText1).click();
+    });
     cy.get('#diagnoseDescription-0').invoke('val').should('contain', intygsdata.diagnosText1);
-    cy.get('#diagnoseCode-1').type(intygsdata.diagnosKod2).wait(1000).type('{enter}');
+
+    cy.get('#diagnoseCode-1').parent().within(($diagnoskodrad) => {
+        cy.get('#diagnoseCode-1').type(intygsdata.diagnosKod2);
+        cy.wrap($diagnoskodrad).contains(intygsdata.diagnosText2).click();
+    });
     cy.get('#diagnoseDescription-1').invoke('val').should('contain', intygsdata.diagnosText2);
-    cy.get('#diagnoseCode-2').type(intygsdata.diagnosKod3).wait(1000).type('{enter}');
+
+    cy.get('#diagnoseCode-2').parent().within(($diagnoskodrad) => {
+        cy.get('#diagnoseCode-2').type(intygsdata.diagnosKod3);
+        cy.wrap($diagnoskodrad).contains(intygsdata.diagnosText3).click();
+    });
     cy.get('#diagnoseDescription-2').invoke('val').should('contain', intygsdata.diagnosText3);
 
     if (intygstyp === implementeradeIntyg.LUSE ||
