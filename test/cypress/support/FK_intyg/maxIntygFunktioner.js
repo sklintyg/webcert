@@ -17,7 +17,11 @@ export function sektion_grund_för_medicinskt_underlag(intygsdata, intygstyp) {
     const idagMinus15 = Cypress.moment().subtract(15, 'days').format('YYYY-MM-DD');
     const idagMinus2Mån = Cypress.moment().subtract(2, 'months').format('YYYY-MM-DD');
 
-    cy.get('#checkbox_undersokningAvPatienten').check();
+    // TODO: Lägger väldigt lång timeout vid första elementet i intyget eftersom
+    // sidan ibland inte har hunnit ladda innan den får timeout.
+    // Initial analys är att Jenkins är överbelastad då det verkar fungera bra när
+    // man kör lokalt.
+    cy.get('#checkbox_undersokningAvPatienten', {timeout: 60000}).check();
     cy.get("#datepicker_undersokningAvPatienten").clear().type(idagMinus5);
 
     if (intygstyp === implementeradeIntyg.LISJP) {
@@ -95,7 +99,6 @@ export function sektion_grund_för_medicinskt_underlag(intygsdata, intygstyp) {
 export function sektion_diagnoser_för_sjukdom(intygsdata, intygstyp) {
     // Antag att ICD-10-SE är förvalt
     // Fyll i diagnoskoderna och verifiera att motsvarande beskriving kan läsas i textfältet
-
     cy.get('#diagnoseCode-0').parent().within(($diagnoskodrad) => {
         cy.get('#diagnoseCode-0').type(intygsdata.diagnosKod1);
         cy.wrap($diagnoskodrad).contains(intygsdata.diagnosText1).click();
