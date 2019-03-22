@@ -1,9 +1,8 @@
 pipeline {
 
-  // TODO: Nedanstående ska ge timestamps i console output men känns inte igen av Jenkins
-  //options {
-  //  timestamps ()
-  //}
+  options {
+    timestamps () // Kräver plugin "Timestamper"
+  }
 
   environment {
     HOME = "${env.WORKSPACE}" // TODO: Behövs denna?
