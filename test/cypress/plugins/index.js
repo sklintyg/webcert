@@ -14,4 +14,10 @@
 module.exports = (on, config) => {
   // `on` is used to hook into various events Cypress emits
   // `config` is the resolved Cypress config
+
+  // Spara alla commands från testfall som misslyckas. Dessa skrivs ut i
+  // terminalen och i en JSON-fil i cypress/logs/
+  on('task', {
+    failed: require('cypress-failed-log/src/failed')(),
+  })
 }

@@ -8,6 +8,7 @@ import './commands'
 import './FK_intyg/maxIntygFunktioner'
 import './FK_intyg/maxIntygKommandon'
 import 'cypress-pipe'
+import 'cypress-failed-log'
 
 // Alternatively you can use CommonJS syntax:
 // require('./commands')
