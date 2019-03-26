@@ -71,7 +71,8 @@ pipeline {
 
     stage('Starta resursövervakning') {
       steps {
-        sh "./${env.WORKSPACE}/${CYPRESS_DIR}/${RESURSRAPPORTSKRIPT} ${RESURSINTERVALL} ${env.WORKSPACE}/${CYPRESS_DIR}/${RESULTAT_DIR}/${RESURSRAPPORTERINGSFIL} &"
+        echo "Startar resursövervakning"
+        ./${env.WORKSPACE}/${CYPRESS_DIR}/${RESURSRAPPORTSKRIPT} ${RESURSINTERVALL} ${env.WORKSPACE}/${CYPRESS_DIR}/${RESULTAT_DIR}/${RESURSRAPPORTERINGSFIL} &
       }
     }
 
