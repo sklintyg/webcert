@@ -1,6 +1,17 @@
 APs:
 
-- Rerun failed tests - https://github.com/cypress-io/cypress/issues/1313
+- Ibland får man "Utkastet är raderat" om man är för snabb från det att utkastet skapas med createDraft tills man besöker sidan. Ett sätt att komma förbi det kan vara att titta på URL samt leta efter text på sidan.
+	- URL: https://webcert-devtest-tintyg.app-test1.ind-ocp.sth.basefarm.net/error.jsp?reason=integration.nocontent
+	- Text på sidan: "Intyget gick inte att läsa in" och/eller "Intygsutkastet är raderat och kan därför inte längre visas."
+	- Se https://docs.cypress.io/guides/core-concepts/conditional-testing.html för tips
+
+- Prestanda gör att testfallen failar. Vissa dagar går testfallsexekveringen många 100% långsammare än på natten. Jenkins överlastad? För många cerifikat för en vårdtagare? WebCert som blir långsamt?
+	- Exempel: Cypress fyller i ett LUSE, allt flyter på bra. Helt plötsligt, under tiden som textfältet "Funktionsnedsättning Intellektuell" fylls i, så stannar allt av och förblir stilla (00:40 - 01:26, alltså 46 sekunder). Flera sådana händelser syns i videorna.
+	- Plugin-förslag:
+		https://plugins.jenkins.io/monitoring
+		https://plugins.jenkins.io/jqs-monitoring
+		https://plugins.jenkins.io/systemloadaverage-monitor
+	- Skapa skipt som periodiskt tar en snapshot av slavens CPU-last samt minnesanvändning och spara det bland Jenkins-artefakterna
 
 - Använd utvecklarsatta ID:n, inte såna som genereras av angular osv.
 	Exempel är listor som t.ex.: "#underlag-1--typ-selected-item-label". Kolla gärna om det finns något bättre sätt att selecta dessa. Kanske filtrera ut den <Option> i listan som har ett visst värde?
@@ -22,6 +33,10 @@ Vi diskuterade POM (Page Object Model) och tittade även på vad Cypress anser o
 
 -Försök vara konsekvent i formuleringen för "describe" och "it". Ska innehållet i describe vara en komponent? En sida? En funktion? Om det behöver vara olika lite här och där kanske man kan gruppera dessa med hjälp av mappar beroende vad det är för typ av tester.
 
+- cypress-failed-log skriver just nu i <repo>/cypress vilket är fel katalog. Endera konfigurera om möjligt, eller ta bort den
+
+- Förbättra namnen på variablerna i JenkinsfileCypress så att man förstår om det är relativa eller absoluta sökvägar osv.
+
 - Använd variabler istället för hårdkodat i JenkinfileCypress
 
 - Flytta JenkinsfileCypress in i Cypress-katalogen?
@@ -30,9 +45,14 @@ Vi diskuterade POM (Page Object Model) och tittade även på vad Cypress anser o
 
 - Trigga Jenkins baserat på vad som pushas till repot i vissa kataloger/filer
 
+- Rensa utkast och signerade/skickade intyg periodiskt eller "on demand? Nu byggs det kontinuerligt på och blir fler och fler intyg i databaserna
+
+- Använd Jenkins Credential Store för att spara key som Cypress använder för att spara testresultat (skapa ny nyckel, lägg in i Credential Store och ta bort den gamla som alla kan se)
+
 - Vilken branching strategy ska vi ha? Det finns testfall som ligger inom ett repo (t.ex. testa att fylla i olika intyg), men det pratas också tester som testar integration mellan flera tjänster. Ska dessa ligga i ett helt eget repo? Eller är det så att det inte ska finnas sådana testfall? Vi kanske ska isolera Cypress-testfallen till varje tjänst.
 
-- Lägg till ytterligare testrapport?
+- Rerun failed tests - https://github.com/cypress-io/cypress/issues/1313
+	- Enligt Cypress-skaparna ska det mer eller mindre alltid gå att skriva testfall som inte är "flaky". I första hand ska man kanske fokusera på att få testfallet stabilt, i sista hand titta på mekanismer för omkörning av failande testfall.
 
 ---------- Avklarade APs ---------------
 
