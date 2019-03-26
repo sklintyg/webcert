@@ -7,9 +7,12 @@ pipeline {
   environment {
     HOME = "${env.WORKSPACE}" // TODO: Behövs denna?
     RESURSRAPPORTSKRIPT = "write_resource_stats.sh"
+    RESURSSKRIPT_FULL=""
     CYPRESS_DIR = "test/cypress"
-    RESULTAT_DIR = "results/"
+    RESULTAT_DIR = "results"
     RESURSRAPPORTERINGSFIL = "resursrapporteringsfil.txt"
+    RESURSSKRIPT_ABS="${env.WORKSPACE}/${CYPRESS_DIR}/${RESURSRAPPORTSKRIPT}"
+    RESURSRAPPORTERINGSFIL_ABS="${env.WORKSPACE}/${CYPRESS_DIR}/${RESULTAT_DIR}/${RESURSRAPPORTERINGSFIL}"
     //TESTRAPPORTFILPATTERN = "test-results.*.xml"
     TESTRAPPORTFILPATTERN = "*.xml"
 
@@ -71,8 +74,9 @@ pipeline {
 
     stage('Starta resursövervakning') {
       steps {
-        echo "Startar resursövervakning"
-        ./${env.WORKSPACE}/${CYPRESS_DIR}/${RESURSRAPPORTSKRIPT} ${RESURSINTERVALL} ${env.WORKSPACE}/${CYPRESS_DIR}/${RESULTAT_DIR}/${RESURSRAPPORTERINGSFIL} &
+        echo "Startar resursövervakning:"
+        echo "./${RESURSSKRIPT_ABS} ${RESURSINTERVALL} ${RESURSRAPPORTERINGSFIL_ABS} &"
+        ./${RESURSSKRIPT_ABS} ${RESURSINTERVALL} ${RESURSRAPPORTERINGSFIL_ABS} &
       }
     }
 
