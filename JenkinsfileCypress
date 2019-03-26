@@ -14,6 +14,7 @@ pipeline {
     RESURSRAPPORTERINGSFIL = "resursrapporteringsfil.txt"
     RESURSSKRIPT_ABS="${env.WORKSPACE}/${CYPRESS_DIR}/${RESURSRAPPORTSKRIPT}"
     RESURSRAPPORTERINGSFIL_ABS="${env.WORKSPACE}/${CYPRESS_DIR}/${RESULTAT_DIR}/${RESURSRAPPORTERINGSFIL}"
+    RESURSINTERVALL=30
     //TESTRAPPORTFILPATTERN = "test-results.*.xml"
     TESTRAPPORTFILPATTERN = "*.xml"
 
@@ -62,7 +63,8 @@ pipeline {
         '''
 
         // Resursrapporteringfil
-        sh "rm -fr '${env.WORKSPACE}/${CYPRESS_DIR}/${RESULTAT_DIR}/${RESURSRAPPORTERINGSFIL}'"
+        //sh "rm -fr '${env.WORKSPACE}/${CYPRESS_DIR}/${RESULTAT_DIR}/${RESURSRAPPORTERINGSFIL}'"
+        sh "rm -fr "${RESURSRAPPORTERINGSFIL_ABS}"
       }
     }
 
@@ -73,19 +75,14 @@ pipeline {
       }
     }
 
-    //stage('Starta resursövervakning') {
-    //  steps {
-    //    echo "Startar resursövervakning:"
-    //    echo "./${RESURSSKRIPT_ABS} ${RESURSINTERVALL} ${RESURSRAPPORTERINGSFIL_ABS} &"
-    //    sh "./${RESURSSKRIPT_ABS} ${RESURSINTERVALL} ${RESURSRAPPORTERINGSFIL_ABS} &"
-    //  }
-    //}
-
     stage('Exekvera Cypresstester') {
       parallel {
         stage('Starta resursövervakning') {
           steps {
-            sh "${RESURSSKRIPT_ABS} ${RESURSINTERVALL} ${RESURSRAPPORTERINGSFIL_ABS}"
+            //sh "${RESURSSKRIPT_ABS} ${RESURSINTERVALL} ${RESURSRAPPORTERINGSFIL_ABS}"
+            sh '''#! /bin/bash
+              ${RESURSSKRIPT_ABS} ${RESURSINTERVALL} ${RESURSRAPPORTERINGSFIL_ABS}
+            '''
           }
         }
 
@@ -93,14 +90,15 @@ pipeline {
           steps {
             // TODO: ejeslon - ta bort detta! Bara en debug under utveckling
             sh '''#! /bin/bash
-                  ps -elf | grep ${RESURSRAPPORTSKRIPT}
-                  RESULT_FROM_PS=$(ps -elf | grep ${RESURSRAPPORTSKRIPT} | wc -l)
+                  RESULT_FROM_PS=$(ps -elf | grep ${RESURSRAPPORTSKRIPT} | grep -v "grep " | wc -l)
                   echo "${RESULT_FROM_PS} processer hittades i 'Exekvera Cypresstester'"
             '''
 
             sh "npm run test:e2e:electron:record"
 
-            sh 'pkill -e ${RESURSRAPPORTSKRIPT_NO_SUFFIX}'
+            echo "Printar ut hela ps -elf"
+            sh "ps -elf"
+            sh "pkill -e ${RESURSRAPPORTSKRIPT_NO_SUFFIX}"
           }
         }
       }
@@ -110,10 +108,8 @@ pipeline {
   post {
     always {
       archiveArtifacts artifacts: 'test/cypress/videos/**/*.*', fingerprint: true
-      archiveArtifacts artifacts: '${env.WORKSPACE}/${CYPRESS_DIR}/${RESULTAT_DIR}/${RESURSRAPPORTERINGSFIL}', fingerprint: true
+      archiveArtifacts artifacts: '${RESURSRAPPORTERINGSFIL_ABS}', fingerprint: true
       // TODO: Använd variabler för att hämta JUnit-filer istället för hårdkodade pather
-      //junit '${UNDERKATALOG_TESTRAPPORTER}/*.xml'
-      sh "echo 'testresultatkatalogen holds these files: ' && ls test/cypress/results/"
       junit 'test/cypress/results/*.xml'
     }
 

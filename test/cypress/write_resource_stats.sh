@@ -4,7 +4,11 @@ set -e # Do not allow any command to return non-zero value
 set -u # Don't allow referencing that are not previously defined
 set -o pipefail # If any part of a pipe fails, the return value of the entire piped command will reflect this regardless if the last command succeeds
 
+# Save all parameters in a string
+PARAM_STRING="'$*'"
+
 printHelp() {
+    echo "Script called like this: $0 ${PARAM_STRING}"
     echo "Load script. This script will write down load stats intermittently in a file until it is killed."
     echo ""
     echo "Usage:"
