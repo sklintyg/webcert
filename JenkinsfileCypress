@@ -84,7 +84,9 @@ pipeline {
     stage('Exekvera Cypresstester') {
       parallel {
         stage('Starta resursövervakning') {
-          sh "${RESURSSKRIPT_ABS} ${RESURSINTERVALL} ${RESURSRAPPORTERINGSFIL_ABS}"
+          steps {
+            sh "${RESURSSKRIPT_ABS} ${RESURSINTERVALL} ${RESURSRAPPORTERINGSFIL_ABS}"
+          }
         }
 
         stage('Starta testerna') {
