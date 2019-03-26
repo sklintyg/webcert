@@ -76,7 +76,7 @@ pipeline {
       steps {
         echo "Startar resursövervakning:"
         echo "./${RESURSSKRIPT_ABS} ${RESURSINTERVALL} ${RESURSRAPPORTERINGSFIL_ABS} &"
-        ./${RESURSSKRIPT_ABS} ${RESURSINTERVALL} ${RESURSRAPPORTERINGSFIL_ABS} &
+        sh "./${RESURSSKRIPT_ABS} ${RESURSINTERVALL} ${RESURSRAPPORTERINGSFIL_ABS} &"
       }
     }
 
