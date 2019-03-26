@@ -100,7 +100,7 @@ pipeline {
 
             sh "npm run test:e2e:electron:record"
 
-            pkill "${RESURSRAPPORTSKRIPT_NO_SUFFIX}"
+            sh 'pkill -e ${RESURSRAPPORTSKRIPT_NO_SUFFIX}'
           }
         }
       }
