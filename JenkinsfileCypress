@@ -70,7 +70,9 @@ pipeline {
     }
 
     stage('Starta resursövervakning') {
-      sh './${env.WORKSPACE}/${CYPRESS_DIR}/${RESURSRAPPORTSKRIPT} ${RESURSINTERVALL} ${env.WORKSPACE}/${CYPRESS_DIR}/${RESULTAT_DIR}/${RESURSRAPPORTERINGSFIL} &'
+      steps {
+        sh './${env.WORKSPACE}/${CYPRESS_DIR}/${RESURSRAPPORTSKRIPT} ${RESURSINTERVALL} ${env.WORKSPACE}/${CYPRESS_DIR}/${RESULTAT_DIR}/${RESURSRAPPORTERINGSFIL} &'
+      }
     }
 
     stage('Exekvera Cypresstester') {
