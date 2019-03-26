@@ -64,7 +64,7 @@ pipeline {
 
         // Resursrapporteringfil
         //sh "rm -fr '${env.WORKSPACE}/${CYPRESS_DIR}/${RESULTAT_DIR}/${RESURSRAPPORTERINGSFIL}'"
-        sh "rm -fr "${RESURSRAPPORTERINGSFIL_ABS}"
+        sh "rm -fr '${RESURSRAPPORTERINGSFIL_ABS}'"
       }
     }
 
