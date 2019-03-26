@@ -6,7 +6,8 @@ pipeline {
 
   environment {
     HOME = "${env.WORKSPACE}" // TODO: Behövs denna?
-    RESURSRAPPORTSKRIPT = "write_resource_stats.sh"
+    RESURSRAPPORTSKRIPT_NO_SUFFIX="write_resource_stats"
+    RESURSRAPPORTSKRIPT = "${RESURSRAPPORTSKRIPT_NO_SUFFIX}.sh"
     RESURSSKRIPT_FULL=""
     CYPRESS_DIR = "test/cypress"
     RESULTAT_DIR = "results"
@@ -72,24 +73,34 @@ pipeline {
       }
     }
 
-    stage('Starta resursövervakning') {
-      steps {
-        echo "Startar resursövervakning:"
-        echo "./${RESURSSKRIPT_ABS} ${RESURSINTERVALL} ${RESURSRAPPORTERINGSFIL_ABS} &"
-        sh "./${RESURSSKRIPT_ABS} ${RESURSINTERVALL} ${RESURSRAPPORTERINGSFIL_ABS} &"
-      }
-    }
+    //stage('Starta resursövervakning') {
+    //  steps {
+    //    echo "Startar resursövervakning:"
+    //    echo "./${RESURSSKRIPT_ABS} ${RESURSINTERVALL} ${RESURSRAPPORTERINGSFIL_ABS} &"
+    //    sh "./${RESURSSKRIPT_ABS} ${RESURSINTERVALL} ${RESURSRAPPORTERINGSFIL_ABS} &"
+    //  }
+    //}
 
     stage('Exekvera Cypresstester') {
-      steps {
-        // TODO: ejeslon - ta bort detta! Bara en debug under utveckling
-        sh '''#! /bin/bash
-              ps -elf | grep ${RESURSRAPPORTSKRIPT}
-              RESULT_FROM_PS=$(ps -elf | grep ${RESURSRAPPORTSKRIPT} | wc -l)
-              echo "${RESULT_FROM_PS} processer hittades i 'Exekvera Cypresstester'"
-        '''
+      parallel {
+        stage('Starta resursövervakning') {
+          ./${RESURSSKRIPT_ABS} ${RESURSINTERVALL} ${RESURSRAPPORTERINGSFIL_ABS}
+        }
 
-        sh "npm run test:e2e:electron:record"
+        stage('Starta testerna') {
+          steps {
+            // TODO: ejeslon - ta bort detta! Bara en debug under utveckling
+            sh '''#! /bin/bash
+                  ps -elf | grep ${RESURSRAPPORTSKRIPT}
+                  RESULT_FROM_PS=$(ps -elf | grep ${RESURSRAPPORTSKRIPT} | wc -l)
+                  echo "${RESULT_FROM_PS} processer hittades i 'Exekvera Cypresstester'"
+            '''
+
+            sh "npm run test:e2e:electron:record"
+
+            pkill "${RESURSRAPPORTSKRIPT_NO_SUFFIX}"
+          }
+        }
       }
     }
   }
