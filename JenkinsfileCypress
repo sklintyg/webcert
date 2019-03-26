@@ -71,12 +71,19 @@ pipeline {
 
     stage('Starta resursövervakning') {
       steps {
-        sh './${env.WORKSPACE}/${CYPRESS_DIR}/${RESURSRAPPORTSKRIPT} ${RESURSINTERVALL} ${env.WORKSPACE}/${CYPRESS_DIR}/${RESULTAT_DIR}/${RESURSRAPPORTERINGSFIL} &'
+        sh "./${env.WORKSPACE}/${CYPRESS_DIR}/${RESURSRAPPORTSKRIPT} ${RESURSINTERVALL} ${env.WORKSPACE}/${CYPRESS_DIR}/${RESULTAT_DIR}/${RESURSRAPPORTERINGSFIL} &"
       }
     }
 
     stage('Exekvera Cypresstester') {
       steps {
+        // TODO: ejeslon - ta bort detta! Bara en debug under utveckling
+        sh '''#! /bin/bash
+              ps -elf | grep ${RESURSRAPPORTSKRIPT}
+              RESULT_FROM_PS=$(ps -elf | grep ${RESURSRAPPORTSKRIPT} | wc -l)
+              echo "${RESULT_FROM_PS} processer hittades i 'Exekvera Cypresstester'"
+        '''
+
         sh "npm run test:e2e:electron:record"
       }
     }
