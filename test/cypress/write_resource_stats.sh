@@ -7,6 +7,10 @@ set -o pipefail # If any part of a pipe fails, the return value of the entire pi
 # Save all parameters in a string
 PARAM_STRING="'$*'"
 
+# Exit with code 0 regardless of reason for exit since the "normal" way of
+# exiting the script will be through pkill in Jenkins
+trap 'echo "Exiting through trap with exit code 0"; exit 0' EXIT INT HUP SIGTERM
+
 printHelp() {
     echo "Script called like this: $0 ${PARAM_STRING}"
     echo "Load script. This script will write down load stats intermittently in a file until it is killed."
