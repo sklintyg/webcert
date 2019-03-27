@@ -57,6 +57,8 @@ if [ ! -f ${OUTPUT_FILE} ]; then
     exit 1
 fi
 
+echo "Output file ${OUTPUT_FILE} created. Will write to file every ${NUM_SECS_TO_SLEEP} seconds."
+
 PROC_LOADAVG_COMMAND="cat /proc/loadavg"
 FREE_COMMAND="free -twh"
 
