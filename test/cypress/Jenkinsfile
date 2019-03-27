@@ -60,13 +60,6 @@ pipeline {
       }
     }
 
-    stage('Skapa kataloger') {
-      steps {
-        // Skapa upp resultatkatalogen ifall den inte redan finns
-        sh "mkdir -p ${env.WORKSPACE}/${CYPRESS_DIR}/${RESULTAT_DIR}/"
-      }
-    }
-
     stage('Installera Cypress') {
       steps {
         sh 'npm ci'
@@ -78,6 +71,8 @@ pipeline {
       parallel {
         stage('Starta resursövervakning') {
           steps {
+            // Skapa upp resultatkatalogen ifall den inte redan finns
+            sh "mkdir -p ${env.WORKSPACE}/${CYPRESS_DIR}/${RESULTAT_DIR}/"
             sh "${RESURSSKRIPT_ABS} ${RESURSINTERVALL} ${RESURSRAPPORTERINGSFIL_ABS}"
           }
         }
