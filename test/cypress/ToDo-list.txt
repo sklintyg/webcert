@@ -1,18 +1,5 @@
 APs:
 
-- Ibland får man "Utkastet är raderat" om man är för snabb från det att utkastet skapas med createDraft tills man besöker sidan. Ett sätt att komma förbi det kan vara att titta på URL samt leta efter text på sidan.
-	- URL: https://webcert-devtest-tintyg.app-test1.ind-ocp.sth.basefarm.net/error.jsp?reason=integration.nocontent
-	- Text på sidan: "Intyget gick inte att läsa in" och/eller "Intygsutkastet är raderat och kan därför inte längre visas."
-	- Se https://docs.cypress.io/guides/core-concepts/conditional-testing.html för tips
-
-- Prestanda gör att testfallen failar. Vissa dagar går testfallsexekveringen många 100% långsammare än på natten. Jenkins överlastad? För många cerifikat för en vårdtagare? WebCert som blir långsamt?
-	- Exempel: Cypress fyller i ett LUSE, allt flyter på bra. Helt plötsligt, under tiden som textfältet "Funktionsnedsättning Intellektuell" fylls i, så stannar allt av och förblir stilla (00:40 - 01:26, alltså 46 sekunder). Flera sådana händelser syns i videorna.
-	- Plugin-förslag:
-		https://plugins.jenkins.io/monitoring
-		https://plugins.jenkins.io/jqs-monitoring
-		https://plugins.jenkins.io/systemloadaverage-monitor
-	- Skapa skipt som periodiskt tar en snapshot av slavens CPU-last samt minnesanvändning och spara det bland Jenkins-artefakterna
-
 - Använd utvecklarsatta ID:n, inte såna som genereras av angular osv.
 	Exempel är listor som t.ex.: "#underlag-1--typ-selected-item-label". Kolla gärna om det finns något bättre sätt att selecta dessa. Kanske filtrera ut den <Option> i listan som har ett visst värde?
 
@@ -38,8 +25,6 @@ Vi diskuterade POM (Page Object Model) och tittade även på vad Cypress anser o
 - Förbättra namnen på variablerna i JenkinsfileCypress så att man förstår om det är relativa eller absoluta sökvägar osv.
 
 - Använd variabler istället för hårdkodat i JenkinfileCypress
-
-- Flytta JenkinsfileCypress in i Cypress-katalogen?
 
 - Definiera rimliga timeoutvärden på pageLoad och för commands. Nu är de arbiträrt satta för att få testfallen att gå igenom
 
@@ -71,3 +56,15 @@ Vi diskuterade POM (Page Object Model) och tittade även på vad Cypress anser o
 - Ensa alla namn i fixture-filerna. Nu slutar de på "Text", "Skriv" osv.
 - Gör om alla cy.contains från strängar till ID:n
 - Signera intyg misslyckas utan wait(). Detta verkar gå att komma förbi med cypress-pipe
+- Prestanda gör att testfallen failar. Vissa dagar går testfallsexekveringen många 100% långsammare än på natten. Jenkins överlastad? För många cerifikat för en vårdtagare? WebCert som blir långsamt?
+	- Exempel: Cypress fyller i ett LUSE, allt flyter på bra. Helt plötsligt, under tiden som textfältet "Funktionsnedsättning Intellektuell" fylls i, så stannar allt av och förblir stilla (00:40 - 01:26, alltså 46 sekunder). Flera sådana händelser syns i videorna.
+	- Plugin-förslag:
+		https://plugins.jenkins.io/monitoring
+		https://plugins.jenkins.io/jqs-monitoring
+		https://plugins.jenkins.io/systemloadaverage-monitor
+	- Skapa skipt som periodiskt tar en snapshot av slavens CPU-last samt minnesanvändning och spara det bland Jenkins-artefakterna
+- Ibland får man "Utkastet är raderat" om man är för snabb från det att utkastet skapas med createDraft tills man besöker sidan. Ett sätt att komma förbi det kan vara att titta på URL samt leta efter text på sidan.
+	- URL: https://webcert-devtest-tintyg.app-test1.ind-ocp.sth.basefarm.net/error.jsp?reason=integration.nocontent
+	- Text på sidan: "Intyget gick inte att läsa in" och/eller "Intygsutkastet är raderat och kan därför inte längre visas."
+	- Se https://docs.cypress.io/guides/core-concepts/conditional-testing.html för tips
+- Flytta JenkinsfileCypress in i Cypress-katalogen

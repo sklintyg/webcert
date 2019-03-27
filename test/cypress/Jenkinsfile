@@ -114,6 +114,12 @@ pipeline {
     failure {
       archiveArtifacts artifacts: 'test/cypress/screenshots/**/*.*', fingerprint: false
       archiveArtifacts artifacts: '.npm/_logs/*.log', fingerprint: false
+
+      // TODO: cypress-failed-log skriver i dagsläget till <repo>/cypress oavsett hur man konfigurerar
+      // Cypress. Endera låter vi det vara så (katalogen skapas endast när testfall går fel) eller så
+      // tas cypress-failed-log bort. Det tredje alternativet är att se om en nyare version inför
+      // konfiguration av sökväg.
+      archiveArtifacts artifacts: 'cypress/logs/**/*.json', fingerprint: false
     }
 
     // Denna sektion exekveras enbart om föregående körning gick bra och denna misslyckades
