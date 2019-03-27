@@ -18,7 +18,7 @@ pipeline {
     //TESTRAPPORTFILPATTERN = "test-results.*.xml"
     TESTRAPPORTFILPATTERN = "*.xml"
 
-    // Provar Cypress dashboard. Denna nyckel bör bytas ut när nyckeln ligger
+    // Nyckeln till Cypress Dashboard bör bytas ut när nyckeln ligger
     // i Jenkins Credentials Store eftersom alla kan se denna nyckel, vilket i
     // sin tur betyder att vem som helst kan köra tester som laddas upp bland
     // de riktiga testerna.
@@ -71,11 +71,7 @@ pipeline {
       parallel {
         stage('Starta resursövervakning') {
           steps {
-              // TODO: Använd den enklare varianten (borde funka bra)
-              //sh "${RESURSSKRIPT_ABS} ${RESURSINTERVALL} ${RESURSRAPPORTERINGSFIL_ABS}"
-              sh '''#! /bin/bash
-                  ${RESURSSKRIPT_ABS} ${RESURSINTERVALL} ${RESURSRAPPORTERINGSFIL_ABS}
-              '''
+            sh "${RESURSSKRIPT_ABS} ${RESURSINTERVALL} ${RESURSRAPPORTERINGSFIL_ABS}"
           }
         }
 
@@ -90,7 +86,6 @@ pipeline {
                 echo "Hittade resursrapportskriptets PID ${SKRIPT_PID} som ska stoppas."
                 kill ${SKRIPT_PID}
             '''
-
           }
         }
       }
