@@ -7,12 +7,13 @@ pipeline {
   environment {
     HOME = "${env.WORKSPACE}" // TODO: Behövs denna?
     RESURSRAPPORTSKRIPT = "write_resource_stats.sh"
-    RESURSSKRIPT_FULL=""
     CYPRESS_DIR = "test/cypress"
     RESULTAT_DIR = "results"
     RESURSRAPPORTERINGSFIL = "resursrapporteringsfil.txt"
     RESURSSKRIPT_ABS="${env.WORKSPACE}/${CYPRESS_DIR}/${RESURSRAPPORTSKRIPT}"
-    RESURSRAPPORTERINGSFIL_ABS="${env.WORKSPACE}/${CYPRESS_DIR}/${RESULTAT_DIR}/${RESURSRAPPORTERINGSFIL}"
+    RESURSRAPPORTERINGSFIL_REL="${CYPRESS_DIR}/${RESULTAT_DIR}/${RESURSRAPPORTERINGSFIL}"
+    RESURSRAPPORTERINGSFIL_ABS="${env.WORKSPACE}/${RESURSRAPPORTERINGSFIL_REL}"
+
     RESURSINTERVALL=30
     //TESTRAPPORTFILPATTERN = "test-results.*.xml"
     TESTRAPPORTFILPATTERN = "*.xml"
@@ -82,10 +83,7 @@ pipeline {
           steps {
             sh "npm run test:e2e:electron:record"
 
-            // TODO: TA bort debug-printen
-            echo "Printar ut hela ps -elf FÖRE kill"
-            sh "ps -elf | grep ${RESURSRAPPORTSKRIPT}"
-
+            // Terminera skriptet som skriver ner resursanvändning på slaven
             // pkill returnerar antal processer som matchades (d.v.s != 0), därför används vanliga kill istället
             sh '''#! /bin/bash
                 SKRIPT_PID=$(ps -elf | grep ${RESURSRAPPORTSKRIPT} | grep -v 'grep ' | tr -s ' ' | cut -d ' ' -f 4)
@@ -93,9 +91,6 @@ pipeline {
                 kill ${SKRIPT_PID}
             '''
 
-            // TODO: TA bort debug-printen
-            echo "Printar ut hela ps -elf EFTER kill"
-            sh "ps -elf | grep ${RESURSRAPPORTSKRIPT}"
           }
         }
       }
@@ -105,7 +100,7 @@ pipeline {
   post {
     always {
       archiveArtifacts artifacts: 'test/cypress/videos/**/*.*', fingerprint: false
-      archiveArtifacts artifacts: "${RESURSRAPPORTERINGSFIL_ABS}", fingerprint: false
+      archiveArtifacts artifacts: "${RESURSRAPPORTERINGSFIL_REL}", fingerprint: false
       // TODO: Använd variabler för att hämta JUnit-filer istället för hårdkodade pather
       junit 'test/cypress/results/*.xml'
     }
