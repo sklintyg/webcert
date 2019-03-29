@@ -67,10 +67,8 @@ describe('Create and Sign tstrk1062 utkast', function() {
             UtkastPage.fillOvrigt(data.ovrigt);
         });
         it('fillBedomning', function() {
-            UtkastPage.fillBedomning(data.bedomning);
-        });
-        it('enableAutosave', function() {
             UtkastPage.enableAutosave();
+            UtkastPage.fillBedomning(data.bedomning);
         });
     });
 
