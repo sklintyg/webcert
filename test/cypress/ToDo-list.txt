@@ -1,32 +1,16 @@
 APs:
 
-- Använd utvecklarsatta ID:n, inte såna som genereras av angular osv.
-	Exempel är listor som t.ex.: "#underlag-1--typ-selected-item-label". Kolla gärna om det finns något bättre sätt att selecta dessa. Kanske filtrera ut den <Option> i listan som har ett visst värde?
-
-- Även utan cucumber vill vi behålla en lättläst topnivå utan implementationsdetaljer. Således:
-    - Ett testfall (innehållet i en "it") ska vara lättläst. Här bör inte detaljer som t.ex. DOM-element eller URL:er finnas. Allt som inte är relevant för att förstå vad testfallet försöker utföra bör abstraheras bort. Ofta har du lagt kommentarer för att beskriva vad en del i testfallet gör. Kanske är det lämpligt att bryta ut detta till en metod med samma beskrivande namn som kommentaren istället? Samtidigt i "verifieraMax"-filerna kan jag tycka att du abstraherat bort lite för mycket. Det är många steg som göms i ett Command (fylla i, signera, och skicka) och det är oklart vad det är som ska hålla i testet, alltså vilka assertions som görs.
-    - Försök ha ett återkommande flöde i testfallen så att de ser ganska likadana ut. Gärna enligt Given/When/Then om det är förenligt med ideomatisk Cypress så känner andra på NMT igen sig i flödet också.
-	- Försök ha en tanke med vad som beskrivs i "it". Är det en sida man testar? En komponent? En funktion? (det går att gruppera m.h.a. kataloger om det underlättar)
-•	Testfallen ska gås igenom och beskrivningarna ska ensas så att de följer samma mönster. Dock är det i nuläget svårt att få till beskrivningar där man tar hänsyn till vilka assertions som görs/bör göras då det inte finns någon beskrivning som på den nivån säger vad testfallen ska verifiera.
-
-
--Försök vara konsekvent i formuleringen för "describe" och "it". Ska innehållet i describe vara en komponent? En sida? En funktion? Om det behöver vara olika lite här och där kanske man kan gruppera dessa med hjälp av mappar beroende vad det är för typ av tester.
-
-- Går det att tagga testfall i Cypress? T.ex. "smoketest", "regression" osv.
-
 - Förbättra namnen på variablerna i Jenkinsfile för Cypress så att man förstår om det är relativa eller absoluta sökvägar osv.
 
 - Använd variabler istället för hårdkodat i JenkinfileCypress
 
-- Definiera rimliga timeoutvärden på pageLoad och för commands. Nu är de arbiträrt satta för att få testfallen att gå igenom
-
-- Trigga Jenkins baserat på vad som pushas till repot i vissa kataloger/filer
-
-- Rensa utkast och signerade/skickade intyg periodiskt eller "on demand? Nu byggs det kontinuerligt på och blir fler och fler intyg i databaserna
-
-- Använd Jenkins Credential Store för att spara key som Cypress använder för att spara testresultat (skapa ny nyckel, lägg in i Credential Store och ta bort den gamla som alla kan se)
+- Trigga Jenkins baserat på vad som pushas till repot i vissa branches/kataloger/filer
 
 - Vilken branching strategy ska vi ha? Det finns testfall som ligger inom ett repo (t.ex. testa att fylla i olika intyg), men det pratas också tester som testar integration mellan flera tjänster. Ska dessa ligga i ett helt eget repo? Eller är det så att det inte ska finnas sådana testfall? Vi kanske ska isolera Cypress-testfallen till varje tjänst.
+
+- Definiera rimliga timeoutvärden på pageLoad och för commands. Nu är de arbiträrt satta för att få testfallen att gå igenom
+
+- Rensa utkast och signerade/skickade intyg periodiskt eller "on demand? Nu byggs det kontinuerligt på och blir fler och fler intyg i databaserna
 
 - Rerun failed tests - https://github.com/cypress-io/cypress/issues/1313
 	- Enligt Cypress-skaparna ska det mer eller mindre alltid gå att skriva testfall som inte är "flaky". I första hand ska man kanske fokusera på att få testfallet stabilt, i sista hand titta på mekanismer för omkörning av failande testfall.
@@ -63,3 +47,17 @@ APs:
 - cypress-failed-log skriver just nu i <repo>/cypress vilket är fel katalog. Endera konfigurera om möjligt, eller ta bort den
 - I dagsläget består testfallen som testar intyg bara av ett par rader kod och sista kommandot i exempelvis Lisjp-testfallet är ”fyllIMaxLisjp()”. Det är ganska ogenomträngligt vad som sker i testfallet när så mycket är bortabstraherat från själva testfallet. Kontentan är att vi lägger in koden i testfallen som anropar funktioner som fyller i respektive sektion i intyget.
 - Vi diskuterade POM (Page Object Model) och tittade även på vad Cypress anser om detta. Slutsatsen blev att vi INTE ska följa POM utan fortsätta med Custom Commands. Dock ska testfallen göras om enligt slutsatsen i föregående punkt. Dessutom ska fixtures (filerna som innehåller konstant data) göras om så att data som hör ihop i en viss sektion av intyget samlas i objekt i JSON-strukturen. På detta sätt kan man t.ex. anropa funktionen som fyller i diagnoskoder med det objekt som innehåller diagnoskoderna istället för att skicka med all data som hör till hela intyget.
+- Använd utvecklarsatta ID:n, inte såna som genereras av angular osv.
+	Exempel är listor som t.ex.: "#underlag-1--typ-selected-item-label". Kolla gärna om det finns något bättre sätt att selecta dessa. Kanske filtrera ut den <Option> i listan som har ett visst värde?
+		- Efter vidare funderingar så tror jag inte att det är genererade ID:n. Behåller dessa.
+- Även utan cucumber vill vi behålla en lättläst topnivå utan implementationsdetaljer. Således:
+    - Ett testfall (innehållet i en "it") ska vara lättläst. Här bör inte detaljer som t.ex. DOM-element eller URL:er finnas. Allt som inte är relevant för att förstå vad testfallet försöker utföra bör abstraheras bort. Ofta har du lagt kommentarer för att beskriva vad en del i testfallet gör. Kanske är det lämpligt att bryta ut detta till en metod med samma beskrivande namn som kommentaren istället? Samtidigt i "verifieraMax"-filerna kan jag tycka att du abstraherat bort lite för mycket. Det är många steg som göms i ett Command (fylla i, signera, och skicka) och det är oklart vad det är som ska hålla i testet, alltså vilka assertions som görs.
+    - Försök ha ett återkommande flöde i testfallen så att de ser ganska likadana ut. Gärna enligt Given/When/Then om det är förenligt med ideomatisk Cypress så känner andra på NMT igen sig i flödet också.
+	- Försök ha en tanke med vad som beskrivs i "it". Är det en sida man testar? En komponent? En funktion? (det går att gruppera m.h.a. kataloger om det underlättar)
+- Testfallen ska gås igenom och beskrivningarna ska ensas så att de följer samma mönster. Dock är det i nuläget svårt att få till beskrivningar där man tar hänsyn till vilka assertions som görs/bör göras då det inte finns någon beskrivning som på den nivån säger vad testfallen ska verifiera.
+	- Testfallen får vara kvar som de är m.a.p namn/beskrivningar. Tydliga specar måste skapas först.
+- Försök vara konsekvent i formuleringen för "describe" och "it". Ska innehållet i describe vara en komponent? En sida? En funktion? Om det behöver vara olika lite här och där kanske man kan gruppera dessa med hjälp av mappar beroende vad det är för typ av tester.
+	- Se ovanstående punkt
+- Går det att tagga testfall i Cypress? T.ex. "smoketest", "regression" osv.
+	- Nej, man kan speca med glob vilka specs som ska köras, inte mer än så. Se o	https://docs.cypress.io/guides/guides/command-line.html#cypress-run-spec-lt-spec-gt
+- Använd Jenkins Credential Store för att spara key som Cypress använder för att spara testresultat (skapa ny nyckel, lägg in i Credential Store och ta bort den gamla som alla kan se)
