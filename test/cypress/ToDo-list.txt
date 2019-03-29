@@ -8,21 +8,13 @@ APs:
     - Försök ha ett återkommande flöde i testfallen så att de ser ganska likadana ut. Gärna enligt Given/When/Then om det är förenligt med ideomatisk Cypress så känner andra på NMT igen sig i flödet också.
 	- Försök ha en tanke med vad som beskrivs i "it". Är det en sida man testar? En komponent? En funktion? (det går att gruppera m.h.a. kataloger om det underlättar)
 •	Testfallen ska gås igenom och beskrivningarna ska ensas så att de följer samma mönster. Dock är det i nuläget svårt att få till beskrivningar där man tar hänsyn till vilka assertions som görs/bör göras då det inte finns någon beskrivning som på den nivån säger vad testfallen ska verifiera.
-•	I dagsläget består testfallen som testar intyg bara av ett par rader kod och sista kommandot i exempelvis Lisjp-testfallet är ”fyllIMaxLisjp()”. Detta är ganska ogenomträngligt vad som sker i testfallet när så mycket är bortabstraherat från själva testfallet. Kontentan är att vi lägger in koden i testfallen som anropar funktioner som fyller i respektive sektion i intyget.
 
-
-- Efter att ha kikat på maxIntygFunktioner.js: Jag upplever flera funktioner här som ganska svårlästa. Anledningen tror jag är att det blandas flera koncept. Samma funktion ska hålla ordning på:
-    - Hur givet testdata ska fyllas i i intyget
-    - Vilka DOM-element (ids) som intyget är uppbyggt med
-    - Detaljer specifika för vissa intyg.
-		- Lite överlappande med #1, så hade det varit bra om man kunde separera på "hur man givet ett formulär fyller i intyg" och "hur sidan är uppbyggd för att erbjuda denna funktionaliteten". Till exempel så har vi ju varit inne på "Page Object" tidigare, d.v.s. ett objekt som erbjuder ett lättläsligt interface för att interagera med sidan (typ, fyll_i_diagnoskod(kod) istället för get('#diagnoskod').type(kod)), och abstraherar bort allt som har med HTML/CSS o göra. Har för mig du nämnde att Page Object inte var idemoatisk cypress, och isåfall ska vi inte tvinga in den modellen. Men då måste det finnas något annat som erbjuder samma möjlighet?
-Vi diskuterade POM (Page Object Model) och tittade även på vad Cypress anser om detta. Slutsatsen blev att vi INTE ska följa POM utan fortsätta med Custom Commands. Dock ska testfallen göras om enligt slutsatsen i föregående punkt. Dessutom ska fixtures (filerna som innehåller konstant data) göras om så att data som hör ihop i en viss sektion av intyget samlas i objekt i JSON-strukturen. På detta sätt kan man t.ex. anropa funktionen som fyller i diagnoskoder med det objekt som innehåller diagnoskoderna istället för att skicka med all data som hör till hela intyget.
 
 -Försök vara konsekvent i formuleringen för "describe" och "it". Ska innehållet i describe vara en komponent? En sida? En funktion? Om det behöver vara olika lite här och där kanske man kan gruppera dessa med hjälp av mappar beroende vad det är för typ av tester.
 
-- cypress-failed-log skriver just nu i <repo>/cypress vilket är fel katalog. Endera konfigurera om möjligt, eller ta bort den
+- Går det att tagga testfall i Cypress? T.ex. "smoketest", "regression" osv.
 
-- Förbättra namnen på variablerna i JenkinsfileCypress så att man förstår om det är relativa eller absoluta sökvägar osv.
+- Förbättra namnen på variablerna i Jenkinsfile för Cypress så att man förstår om det är relativa eller absoluta sökvägar osv.
 
 - Använd variabler istället för hårdkodat i JenkinfileCypress
 
@@ -68,3 +60,6 @@ Vi diskuterade POM (Page Object Model) och tittade även på vad Cypress anser o
 	- Text på sidan: "Intyget gick inte att läsa in" och/eller "Intygsutkastet är raderat och kan därför inte längre visas."
 	- Se https://docs.cypress.io/guides/core-concepts/conditional-testing.html för tips
 - Flytta JenkinsfileCypress in i Cypress-katalogen
+- cypress-failed-log skriver just nu i <repo>/cypress vilket är fel katalog. Endera konfigurera om möjligt, eller ta bort den
+- I dagsläget består testfallen som testar intyg bara av ett par rader kod och sista kommandot i exempelvis Lisjp-testfallet är ”fyllIMaxLisjp()”. Det är ganska ogenomträngligt vad som sker i testfallet när så mycket är bortabstraherat från själva testfallet. Kontentan är att vi lägger in koden i testfallen som anropar funktioner som fyller i respektive sektion i intyget.
+- Vi diskuterade POM (Page Object Model) och tittade även på vad Cypress anser om detta. Slutsatsen blev att vi INTE ska följa POM utan fortsätta med Custom Commands. Dock ska testfallen göras om enligt slutsatsen i föregående punkt. Dessutom ska fixtures (filerna som innehåller konstant data) göras om så att data som hör ihop i en viss sektion av intyget samlas i objekt i JSON-strukturen. På detta sätt kan man t.ex. anropa funktionen som fyller i diagnoskoder med det objekt som innehåller diagnoskoderna istället för att skicka med all data som hör till hela intyget.
