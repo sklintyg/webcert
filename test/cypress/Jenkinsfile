@@ -15,24 +15,17 @@ pipeline {
     RESURSRAPPORTERINGSFIL_ABS="${env.WORKSPACE}/${RESURSRAPPORTERINGSFIL_REL}"
 
     RESURSINTERVALL=30
-    //TESTRAPPORTFILPATTERN = "test-results.*.xml"
     TESTRAPPORTFILPATTERN = "*.xml"
 
-    // Nyckeln till Cypress Dashboard bör bytas ut när nyckeln ligger
-    // i Jenkins Credentials Store eftersom alla kan se denna nyckel, vilket i
-    // sin tur betyder att vem som helst kan köra tester som laddas upp bland
-    // de riktiga testerna.
-    // Se https://jenkins.io/doc/book/using/using-credentials/
     // Nycklarna till dashboard hanteras här: https://dashboard.cypress.io/#/projects/1diiry/settings
-    CYPRESS_RECORD_KEY = 'bc2e1db3-af72-4fad-9159-b78bf1989af1'
+    CYPRESS_RECORD_KEY=credentials('CYPRESS_DASHBOARD_NMT_WEBCERT_KEY_1')
   }
 
   agent {
     // this image provides everything needed to run Cypress
     docker {
-      image 'cypress/base:10'
       // image 'cypress/browsers:chrome69'  // Cypress kan inte spela in videos om man nyttjar Chrome
-
+      image 'cypress/base:10'
       label 'docker-slave'
     }
   }
