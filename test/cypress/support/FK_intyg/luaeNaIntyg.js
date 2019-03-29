@@ -44,10 +44,10 @@ export function sektionGrundFörMedicinsktUnderlag(medUnderlag) {
     if (andraUtrEllerUnderlag.ja) {
         cy.get("#underlagFinnsYes").click();
 
-        // TODO: Testa andra id:n här. Fundera också på om det ska brytas ut till en funktion
+        // TODO: Ska nedanstående brytas ut till en funktion och anropas tre gånger istället?
         if (andraUtrEllerUnderlag.rad1) {
             const rad = andraUtrEllerUnderlag.rad1;
-            cy.get("#underlag-0--typ-selected-item-label").click();
+            cy.get("#underlag-0--typ").click();
             cy.get("#wcdropdown-underlag-0--typ")
             .contains(rad.underlagstyp)
             .then(option => {
@@ -62,7 +62,7 @@ export function sektionGrundFörMedicinsktUnderlag(medUnderlag) {
         if (andraUtrEllerUnderlag.rad2) {
             expect(andraUtrEllerUnderlag.rad1).to.exist;
             const rad = andraUtrEllerUnderlag.rad2;
-            cy.get("#underlag-1--typ-selected-item-label").click();
+            cy.get("#underlag-1--typ").click();
             cy.get("#wcdropdown-underlag-1--typ")
             .contains(rad.underlagstyp)
             .then(option => {
@@ -77,7 +77,7 @@ export function sektionGrundFörMedicinsktUnderlag(medUnderlag) {
         if (andraUtrEllerUnderlag.rad3) {
             expect(andraUtrEllerUnderlag.rad2).to.exist;
             const rad = andraUtrEllerUnderlag.rad3;
-            cy.get("#underlag-2--typ-selected-item-label").click();
+            cy.get("#underlag-2--typ").click();
             cy.get("#wcdropdown-underlag-2--typ")
             .contains(rad.underlagstyp)
             .then(option => {
