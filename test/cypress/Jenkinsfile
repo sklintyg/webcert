@@ -5,13 +5,16 @@ pipeline {
   }
 
   environment {
-    HOME = "${env.WORKSPACE}" // TODO: Behövs denna?
-    RESURSRAPPORTSKRIPT = "write_resource_stats.sh"
-    CYPRESS_DIR = "test/cypress"
-    RESULTAT_DIR = "results"
-    RESURSRAPPORTERINGSFIL = "resursrapporteringsfil.txt"
-    RESURSSKRIPT_ABS="${env.WORKSPACE}/${CYPRESS_DIR}/${RESURSRAPPORTSKRIPT}"
-    RESURSRAPPORTERINGSFIL_REL="${CYPRESS_DIR}/${RESULTAT_DIR}/${RESURSRAPPORTERINGSFIL}"
+    HOME = "${env.WORKSPACE}" // Måste sättas för "npm ci"
+
+    CYPRESS_DIR_REL="test/cypress"
+    RESULTAT_DIR_REL="${CYPRESS_DIR_REL}/results"
+    RESULTAT_DIR_ABS="${env.WORKSPACE}/${RESULTAT_DIR_REL}"
+
+    RESURSRAPPORTSKRIPTNAMN = "write_resource_stats.sh"
+    RESURSSKRIPT_ABS="${env.WORKSPACE}/${CYPRESS_DIR_REL}/${RESURSRAPPORTSKRIPTNAMN}"
+
+    RESURSRAPPORTERINGSFIL_REL="${RESULTAT_DIR_REL}/resursrapporteringsfil.txt"
     RESURSRAPPORTERINGSFIL_ABS="${env.WORKSPACE}/${RESURSRAPPORTERINGSFIL_REL}"
 
     RESURSINTERVALL=30
@@ -43,7 +46,7 @@ pipeline {
     stage('Rensa gamla filer') {
       steps {
         // Testrapporter
-        sh "rm -fr '${env.WORKSPACE}/${CYPRESS_DIR}/${RESULTAT_DIR}/${TESTRAPPORTFILPATTERN}'"
+        sh "rm -fr '${RESULTAT_DIR_ABS}/${TESTRAPPORTFILPATTERN}'"
 
         // Loggfiler från tidigare körningar
         sh "rm -fr '${env.WORKSPACE}/.npm/_logs/*.log'"
@@ -65,7 +68,7 @@ pipeline {
         stage('Starta resursövervakning') {
           steps {
             // Skapa upp resultatkatalogen ifall den inte redan finns
-            sh "mkdir -p ${env.WORKSPACE}/${CYPRESS_DIR}/${RESULTAT_DIR}/"
+            sh "mkdir -p ${RESULTAT_DIR_ABS}/"
             sh "${RESURSSKRIPT_ABS} ${RESURSINTERVALL} ${RESURSRAPPORTERINGSFIL_ABS}"
           }
         }
@@ -77,7 +80,7 @@ pipeline {
             // Terminera skriptet som skriver ner resursanvändning på slaven
             // pkill returnerar antal processer som matchades (d.v.s != 0), därför används vanliga kill istället
             sh '''#! /bin/bash
-                SKRIPT_PID=$(ps -elf | grep ${RESURSRAPPORTSKRIPT} | grep -v 'grep ' | tr -s ' ' | cut -d ' ' -f 4)
+                SKRIPT_PID=$(ps -elf | grep ${RESURSRAPPORTSKRIPTNAMN} | grep -v 'grep ' | tr -s ' ' | cut -d ' ' -f 4)
                 echo "Hittade resursrapportskriptets PID ${SKRIPT_PID} som ska stoppas."
                 kill ${SKRIPT_PID}
             '''
