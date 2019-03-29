@@ -49,6 +49,10 @@ describe('LUSE-intyg', function () {
         intyg.sektionÖvrigt(this.intygsdata.övrigt);
         intyg.sektionKontakt(this.intygsdata.kontakt);
 
+        // TODO: Utan wait så tappas ofta slutet på texten bort i sista textboxen.
+        // Antagligen hinner WebCert inte auto-spara innan man trycker på "signera"
+        cy.wait(1000);
+
         // Signera intyget
         cy.contains("Klart att signera");
         cy.contains("Obligatoriska uppgifter saknas").should('not.exist');
