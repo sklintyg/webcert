@@ -1,7 +1,7 @@
 #! /bin/bash
 
 set -e # Do not allow any command to return non-zero value
-set -u # Don't allow referencing variables that are not previously defined
+set -u # Don't allow referencing that are not previously defined
 set -o pipefail # If any part of a pipe fails, the return value of the entire piped command will reflect this regardless if the last command succeeds
 
 # Save all parameters in a string
@@ -13,13 +13,16 @@ clean_up()
 {
     echo "Exiting through trap with exit code 0"
 
-    # Kill any 'sleep' that is still running
-    [[ $pid ]] && kill "$pid"
+    # Clean up child processes (i.e. any running 'sleep')
+    JOBS="$(jobs -p)";
+    if [ -n "${JOBS}" ]; then
+        kill -KILL ${JOBS};
+    fi
 
     exit 0
 }
 
-trap clean_up EXIT
+trap clean_up SIGTERM
 
 printHelp() {
     echo "Script called like this: $0 ${PARAM_STRING}"
@@ -113,10 +116,6 @@ do
     echo "----------------------------------" >> ${OUTPUT_FILE}
     echo "" >> ${OUTPUT_FILE}
 
-    # Sleep command constructed this way to allow kill to terminate
-    # the script immediately instead of waiting for the sleep to end
-    pid=
-    sleep ${NUM_SECS_TO_SLEEP} & pid=$!
-    wait ${pid}
-    pid=
+    sleep ${NUM_SECS_TO_SLEEP} &
+    wait
 done
