@@ -1,5 +1,7 @@
 APs:
 
+- Förbättra namnen på variablerna i Jenkinsfile för Cypress så att man förstår om det är relativa eller absoluta sökvägar osv.
+
 - Använd variabler istället för hårdkodat i JenkinfileCypress
 
 - Trigga Jenkins baserat på vad som pushas till repot i vissa branches/kataloger/filer
@@ -59,6 +61,3 @@ APs:
 - Går det att tagga testfall i Cypress? T.ex. "smoketest", "regression" osv.
 	- Nej, man kan speca med glob vilka specs som ska köras, inte mer än så. Se o	https://docs.cypress.io/guides/guides/command-line.html#cypress-run-spec-lt-spec-gt
 - Använd Jenkins Credential Store för att spara key som Cypress använder för att spara testresultat (skapa ny nyckel, lägg in i Credential Store och ta bort den gamla som alla kan se)
-- Förbättra namnen på variablerna i Jenkinsfile för Cypress så att man förstår om det är relativa eller absoluta sökvägar osv.
-- Lägg till -9 på kill i Jenkinsfile så vi slipper vänta på timeouten?
-	- Nej, använder en annan teknik istället (start sleep med '&' och gör en wait på raden efter)
