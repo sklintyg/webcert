@@ -1,6 +1,8 @@
 APs:
 
-- Förbättra namnen på variablerna i Jenkinsfile för Cypress så att man förstår om det är relativa eller absoluta sökvägar osv.
+- Förbättra resurs-skriptet så att det konsevent avslutar direkt oavsett sleep och sleep-processen dödas.
+	Exempel: http://mywiki.wooledge.org/SignalTrap#When_is_the_signal_handled.3F
+		- Fick dock en exitkod != 0
 
 - Använd variabler istället för hårdkodat i JenkinfileCypress
 
@@ -61,3 +63,4 @@ APs:
 - Går det att tagga testfall i Cypress? T.ex. "smoketest", "regression" osv.
 	- Nej, man kan speca med glob vilka specs som ska köras, inte mer än så. Se o	https://docs.cypress.io/guides/guides/command-line.html#cypress-run-spec-lt-spec-gt
 - Använd Jenkins Credential Store för att spara key som Cypress använder för att spara testresultat (skapa ny nyckel, lägg in i Credential Store och ta bort den gamla som alla kan se)
+- Förbättra namnen på variablerna i Jenkinsfile för Cypress så att man förstår om det är relativa eller absoluta sökvägar osv.
