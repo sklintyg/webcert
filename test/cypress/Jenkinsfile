@@ -25,9 +25,10 @@ pipeline {
   }
 
   agent {
-    // this image provides everything needed to run Cypress
     docker {
-      // image 'cypress/browsers:chrome69'  // Cypress kan inte spela in videos om man nyttjar Chrome
+      // image 'cypress/browsers:chrome69'  // Cypress kan inte spela in videos om man kör Chrome
+
+      // Denna image innehåller allt som krävs för att köra Cypress i Linux med videoinspelning etc.
       image 'cypress/base:10'
       label 'docker-slave'
     }
