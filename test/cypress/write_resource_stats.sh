@@ -7,9 +7,22 @@ set -o pipefail # If any part of a pipe fails, the return value of the entire pi
 # Save all parameters in a string
 PARAM_STRING="'$*'"
 
-# Exit with code 0 regardless of reason for exit since the "normal" way of
-# exiting the script will be through pkill in Jenkins
-trap 'echo "Exiting through trap with exit code 0"; exit 0' EXIT INT HUP SIGTERM
+# Exit with code 0 regardless of reason (the "normal" way of
+# exiting the script will be through kill in Jenkins)
+clean_up()
+{
+    echo "Exiting through trap with exit code 0"
+
+    # Clean up child processes (i.e. any running 'sleep')
+    JOBS="$(jobs -p)";
+    if [ -n "${JOBS}" ]; then
+        kill -KILL ${JOBS};
+    fi
+
+    exit 0
+}
+
+trap clean_up SIGTERM
 
 printHelp() {
     echo "Script called like this: $0 ${PARAM_STRING}"
@@ -103,5 +116,6 @@ do
     echo "----------------------------------" >> ${OUTPUT_FILE}
     echo "" >> ${OUTPUT_FILE}
 
-    sleep ${NUM_SECS_TO_SLEEP}
+    sleep ${NUM_SECS_TO_SLEEP} &
+    wait
 done
