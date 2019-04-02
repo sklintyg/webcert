@@ -34,11 +34,10 @@ public final class AuthConstants {
     public static final String FAKE_AUTHENTICATION_SITHS_CONTEXT_REF = "urn:inera:webcert:siths:fake";
     public static final String FAKE_AUTHENTICATION_ELEG_CONTEXT_REF = "urn:inera:webcert:eleg:fake";
 
-    public static final String URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_TLSCLIENT = "urn:oasis:names:tc:SAML:2.0:ac:classes:TLSClient";
+    public static final String HTTP_ID_SAMBI_SE_LOA_LOA3 = "http://id.sambi.se/loa/loa3";
     public static final String URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_SOFTWARE_PKI = "urn:oasis:names:tc:SAML:2.0:ac:classes:SoftwarePKI";
     public static final String URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_SMARTCARD_PKI = "urn:oasis:names:tc:SAML:2.0:ac:classes:SmartcardPKI";
-    public static final String URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_MOBILE_TWO_FACTOR_CONTRACT =
-            "urn:oasis:names:tc:SAML:2.0:ac:classes:MobileTwofactorContract";
+    public static final String URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_MOBILE_TWO_FACTOR_CONTRACT = "urn:oasis:names:tc:SAML:2.0:ac:classes:MobileTwofactorContract";
     public static final String URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_UNSPECIFIED = "urn:oasis:names:tc:SAML:2.0:ac:classes:unspecified";
 
     private AuthConstants() {

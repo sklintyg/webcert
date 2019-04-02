@@ -33,7 +33,7 @@ import se.inera.intyg.webcert.web.auth.common.AuthConstants;
 /**
  * Custom SAMLEntryPoint for Webcert that overrides the generation of AuthnContexts based on metadata alias:
  *
- * For SITHS (defaultAlias), we only supply the {@link AuthConstants#URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_TLSCLIENT}
+ * For SITHS (defaultAlias), we only supply the {@link AuthConstants#HTTP_ID_SAMBI_SE_LOA_LOA3}
  *
  * For ELEG (eleg), we do not specify anything. This is due to SSO problems at CGIs end when a previously authenticated
  * identity is validated against the IdP to access another system in the same federation.
@@ -75,7 +75,7 @@ public class WebcertSAMLEntryPoint extends SAMLEntryPoint {
 
     private Collection<String> buildTlsClientAuthContexts() {
         Set<String> set = new HashSet<>();
-        set.add(AuthConstants.URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_TLSCLIENT);
+        set.add(AuthConstants.HTTP_ID_SAMBI_SE_LOA_LOA3);
         return set;
     }
 }
