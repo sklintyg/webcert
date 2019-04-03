@@ -1,5 +1,11 @@
 APs:
 
+- Parameterisera baseUrl i Jenkins så att man kan styra vilken miljö man kör emot
+
+- Flytta cypress.json och all påverkan på package.json till test/cypress så att vi isolerar allt i vår egen katalog
+
+- Finns det någon enkel (eller avancerad) metod att spara WebCert-loggar i artefakterna i Jenkins?
+
 - Förbättra resurs-skriptet så att det konsevent avslutar direkt oavsett sleep och sleep-processen dödas.
 	Exempel: http://mywiki.wooledge.org/SignalTrap#When_is_the_signal_handled.3F
 		- Fick dock en exitkod != 0
