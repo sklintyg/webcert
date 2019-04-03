@@ -1,26 +1,7 @@
-/*
- * Copyright (C) 2016 Inera AB (http://www.inera.se)
- *
- * This file is part of sklintyg (https://github.com/sklintyg).
- *
- * sklintyg is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * sklintyg is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
 /******************************************************************************
 Net iD Javascript API
  
-@version: 1.0.5 - 2014-09-19
+@version: 1.1.5 - 2016-03-02
 @copyright: SecMaker AB (http://www.secmaker.com/)
 
 This script should work with all versions of Net iD plugin. The intention is
@@ -64,14 +45,18 @@ bugs or that defects in the script will be corrected.
 // Constants
 //-----------------------------------------------------------------------------
 var IID_NAME_APP = "Net iD";
-var IID_NAME_OBJECT = "iid_object";
-var IID_NAME_PLACE = "iid_place_holder";
+var IID_NAME_OBJECT = "netid_object";
+var IID_NAME_PLACE = "netid_place_holder";
 //-----------------------------------------------------------------------------
 // Globals
 //-----------------------------------------------------------------------------
 var IID_DEVICE_INFO = null;
 var IID_AVAILABLE_CHECK = false;
+var IID_JS_INTERFACE = null;
 var IID_JS_BRIDGE = null;
+var IID_JS_RESPONSE = null;
+var IID_NO_STORAGE = false;
+var IID_INDEX_AS_STRING = null;
 //-----------------------------------------------------------------------------
 // iid_SetProperty
 //-----------------------------------------------------------------------------
@@ -79,7 +64,9 @@ function iid_SetProperty(name, value) {
     var iid = iid_GetObject();
     if (iid != null) {
         try {
-            iid.SetProperty(name, value);
+            if (!iid_IgnoreProperty(name)) {
+                iid.SetProperty(name, value);
+            }
         }
         catch (ex) {
         }
@@ -94,7 +81,9 @@ function iid_GetProperty(name) {
     var iid = iid_GetObject();
     if (iid != null) {
         try {
-            value = iid.GetProperty(name);
+            if ((value = iid.GetProperty(name)) == null) {
+                value = "";
+            }
         }
         catch (ex) {
         }
@@ -109,7 +98,18 @@ function iid_EnumProperty(name, index) {
     var iid = iid_GetObject();
     if (iid != null) {
         try {
-            value = iid.EnumProperty(name, index);
+            if (index == null) {
+                index = "0";
+            }
+            if (typeof index != "string") {
+                index = index.toString();
+            }
+            if (iid_IndexAsInteger()) {
+                index = parseInt(index);
+            }
+            if ((value = iid.EnumProperty(name, index)) == null) {
+                value = "";
+            }
         }
         catch (ex) {
         }
@@ -161,6 +161,18 @@ function iid_Application(command, status, response) {
     catch (ex) {
     }
     return;
+}
+//-----------------------------------------------------------------------
+// iid_IgnoreProperty
+//-----------------------------------------------------------------------
+function iid_IgnoreProperty(name) {
+    var ignore = false;
+    if (iid_IsDeviceType("Android")) {
+        if (name.toLowerCase() == "invokethread") {
+            ignore = true;
+        }
+    }
+    return ignore;
 }
 //-----------------------------------------------------------------------
 // iid_GetDeviceInfo
@@ -253,16 +265,11 @@ function iid_IsAvailable() {
 //-----------------------------------------------------------------------
 function iid_HasApplication() {
     var available = false;
-    var obj = null;
-    if ((obj = iid_GetObject()) != null) {
-        if (typeof obj.Application == "function") {
-            available = true;
-        }
+    if (navigator.userAgent.indexOf(IID_NAME_APP) != -1) {
+        available = true;
     }
-    if (!available) {
-        if (navigator.userAgent.indexOf(IID_NAME_APP) != -1) {
-            available = true;
-        }
+    else if (iid_IsDeviceType("Android;iOS;iPhone;iPad")) {
+        available = true;
     }
     return available;
 }
@@ -271,13 +278,38 @@ function iid_HasApplication() {
 //-----------------------------------------------------------------------
 function iid_HasJavascriptInterface() {
     var available = false;
-    if (iid_IsDeviceType("Android")) {
-        if (window.JSInterface != null) {
-            if ((window.JSInterface.SetProperty != null) &&
-                (window.JSInterface.GetProperty != null) &&
-                (window.JSInterface.EnumProperty != null) &&
-                (window.JSInterface.Invoke != null)) {
-                available = true;
+    if (iid_HasApplication()) {
+        if (iid_IsDeviceType("Android")) {
+            if (window.JSInterface != null) {
+                if ((window.JSInterface.SetProperty != null) &&
+                    (window.JSInterface.GetProperty != null) &&
+                    (window.JSInterface.EnumProperty != null) &&
+                    (window.JSInterface.Invoke != null)) {
+                    available = true;
+                    IID_JS_INTERFACE = window.JSInterface;
+                }
+            }
+        }
+        else if (iid_IsDeviceType("Windows")) {
+            if (typeof window.external == "object") {
+                if ((window.external.SetProperty != null) &&
+                    (window.external.GetProperty != null) &&
+                    (window.external.EnumProperty != null) &&
+                    (window.external.Invoke != null)) {
+                    available = true;
+                    IID_JS_INTERFACE = window.external;
+                }
+            }
+        }
+        else if (iid_IsDeviceType("Mac")) {
+            if (typeof window.NetiD == "object") {
+                if ((window.NetiD.SetProperty != null) &&
+                    (window.NetiD.GetProperty != null) &&
+                    (window.NetiD.EnumProperty != null) &&
+                    (window.NetiD.Invoke != null)) {
+                    available = true;
+                    IID_JS_INTERFACE = window.NetiD;
+                }
             }
         }
     }
@@ -303,12 +335,14 @@ function iid_GetJavascriptObject() {
 //-----------------------------------------------------------------------
 function iid_HasJavascriptBridge() {
     var available = false;
-    if (iid_IsDeviceType("iPhone;iPad")) {
-        if (IID_JS_BRIDGE == null) {
-            IID_JS_BRIDGE = new IID_JavascriptBridge();
-        }
-        if (IID_JS_BRIDGE != null) {
-            available = IID_JS_BRIDGE.Available();
+    if (iid_HasApplication()) {
+        if (iid_IsDeviceType("iOS;iPhone;iPad")) {
+            if (IID_JS_BRIDGE == null) {
+                IID_JS_BRIDGE = new IID_JavascriptBridge();
+            }
+            if (IID_JS_BRIDGE != null) {
+                available = IID_JS_BRIDGE.Available();
+            }
         }
     }
     return available;
@@ -350,7 +384,7 @@ function iid_GetObject() {
     }
     if ((obj = iid_GetJavascriptObject()) == null) {
         if (iid_HasJavascriptInterface()) {
-            obj = window.JSInterface;
+            obj = IID_JS_INTERFACE;
         }
         else if (iid_HasJavascriptBridge()) {
             obj = IID_JS_BRIDGE;
@@ -367,9 +401,7 @@ function iid_GetObject() {
 function iid_Declare(name, explorer, live) {
     var success = false;
     var iid_place = null;
-    var iid_object = null;
     var version = 0;
-    var count = 0;
     iid_place = document.getElementById(name);
     if (iid_place != null) {
         // Get object declaration
@@ -398,12 +430,29 @@ function iid_SkipDeclare() {
     return skip;
 }
 //-----------------------------------------------------------------------------
+// iid_IndexAsInteger
+//-----------------------------------------------------------------------------
+function iid_IndexAsInteger() {
+    if (IID_INDEX_AS_STRING == null) {
+        if (iid_IsDeviceType("Android") && (iid_GetProperty("Version") < "06050012")) {
+            IID_INDEX_AS_STRING = "true";
+        }
+        else {
+            IID_INDEX_AS_STRING = "false";
+        }
+    }
+    return (IID_INDEX_AS_STRING == "true");
+}
+//-----------------------------------------------------------------------------
 // Javascript bridge 
 //-----------------------------------------------------------------------------
 function iid_GetJavascriptBridgeResponseValue() {
     var value = null;
     try {
-        if (typeof localStorage == "object") {
+        if (IID_NO_STORAGE) {
+            value = IID_JS_RESPONSE;
+        }
+        else if (typeof localStorage == "object") {
             if (localStorage.getItem != null) {
                 value = localStorage.getItem("iid_JavascriptBridgeResponseValue");
             }
@@ -415,7 +464,10 @@ function iid_GetJavascriptBridgeResponseValue() {
 }
 function iid_SetJavascriptBridgeResponseValue(value) {
     try {
-        if (typeof localStorage == "object") {
+        if (IID_NO_STORAGE) {
+            IID_JS_RESPONSE = value;
+        }
+        else if (typeof localStorage == "object") {
             if (localStorage.setItem != null) {
                 localStorage.setItem("iid_JavascriptBridgeResponseValue", value);
             }
@@ -423,7 +475,7 @@ function iid_SetJavascriptBridgeResponseValue(value) {
     }
     catch (ex) {
     }
-    return iid_GetJavascriptBridgeResponseValue();
+    return;
 }
 function iid_JavascriptBridgeResponse(result) {
     return iid_SetJavascriptBridgeResponseValue(IID_URL.decode(result));
@@ -499,6 +551,7 @@ function IID_JavascriptBridge() {
                     info += "&response=iid_JavascriptBridgeResponse";
                     iframe.src = info;
                     iframe.style.display = "none";
+                    iframe.style.visibility = "hidden";
                     iframe.name = "iid_JavascriptBridgeFrame";
                     iframe.id = "iid_JavascriptBridgeFrame";
                     iframe.width = 0;
