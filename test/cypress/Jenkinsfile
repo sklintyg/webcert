@@ -39,8 +39,10 @@ pipeline {
     stage('Verifiera förkrav') {
       steps {
         echo "Running build ${env.BUILD_ID} on ${env.JENKINS_URL}"
-        sh 'npm --version'
-        sh 'node --version'
+        dir(${CYPRESS_DIR_REL}) {
+          sh 'npm --version'
+          sh 'node --version'
+        }
       }
     }
 
@@ -59,8 +61,10 @@ pipeline {
 
     stage('Installera Cypress') {
       steps {
-        sh 'npm ci'
-        sh 'npm run cy:verify'
+        dir(${CYPRESS_DIR_REL}) {
+          sh 'npm ci'
+          sh 'npm run cy:verify'
+        }
       }
     }
 
@@ -76,7 +80,9 @@ pipeline {
 
         stage('Starta testerna') {
           steps {
-            sh "npm run test:e2e:electron:record"
+            dir(${CYPRESS_DIR_REL}) {
+              sh "npm run test:e2e:electron:record"
+            }
 
             // Terminera skriptet som skriver ner resursanvändning på slaven
             // pkill returnerar antal processer som matchades (d.v.s != 0), därför används vanliga kill istället

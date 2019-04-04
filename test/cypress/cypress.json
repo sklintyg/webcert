@@ -1,0 +1,16 @@
+{
+  "baseUrl": "https://webcert-devtest-tintyg.app-test1.ind-ocp.sth.basefarm.net",
+  "defaultCommandTimeout": 20000,
+  "pageLoadTimeout": 120000,
+  "fixturesFolder": "fixtures",
+  "integrationFolder": "integration",
+  "pluginsFile": "plugins/index.js",
+  "screenshotsFolder": "screenshots",
+  "supportFile": "support/index.js",
+  "videosFolder": "videos",
+  "reporterOptions": {
+    "mochaFile": "results/test-results.[hash].xml",
+    "toConsole": true
+  },
+  "projectId": "1diiry"
+}
