@@ -2,9 +2,11 @@ APs:
 
 - Flytta ut signeringskoden till intyget så att varje testfall inte behöver ha den.
 
+- Undersök varför Jenkins startar om ibland
+
 - Parameterisera baseUrl i Jenkins så att man kan styra vilken miljö man kör emot
 
-- Flytta cypress.json och all påverkan på package.json till test/cypress så att vi isolerar allt i vår egen katalog
+- Sätt maximal timeout för jenkinsjobbet så det inte hänger för evigt.
 
 - Finns det någon enkel (eller avancerad) metod att spara WebCert-loggar i artefakterna i Jenkins?
 
@@ -72,3 +74,4 @@ APs:
 	- Nej, man kan speca med glob vilka specs som ska köras, inte mer än så. Se o	https://docs.cypress.io/guides/guides/command-line.html#cypress-run-spec-lt-spec-gt
 - Använd Jenkins Credential Store för att spara key som Cypress använder för att spara testresultat (skapa ny nyckel, lägg in i Credential Store och ta bort den gamla som alla kan se)
 - Förbättra namnen på variablerna i Jenkinsfile för Cypress så att man förstår om det är relativa eller absoluta sökvägar osv.
+- Flytta cypress.json och all påverkan på package.json till test/cypress så att vi isolerar allt i vår egen katalog
