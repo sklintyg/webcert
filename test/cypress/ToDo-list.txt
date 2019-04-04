@@ -1,5 +1,7 @@
 APs:
 
+- Flytta ut signeringskoden till intyget så att varje testfall inte behöver ha den.
+
 - Parameterisera baseUrl i Jenkins så att man kan styra vilken miljö man kör emot
 
 - Flytta cypress.json och all påverkan på package.json till test/cypress så att vi isolerar allt i vår egen katalog
@@ -10,7 +12,7 @@ APs:
 	Exempel: http://mywiki.wooledge.org/SignalTrap#When_is_the_signal_handled.3F
 		- Fick dock en exitkod != 0
 
-- Använd variabler istället för hårdkodat i JenkinfileCypress
+- Använd variabler istället för hårdkodat i Jenkinfile
 
 - Trigga Jenkins baserat på vad som pushas till repot i vissa branches/kataloger/filer
 
