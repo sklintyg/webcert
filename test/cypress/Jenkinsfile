@@ -39,7 +39,7 @@ pipeline {
     stage('Verifiera förkrav') {
       steps {
         echo "Running build ${env.BUILD_ID} on ${env.JENKINS_URL}"
-        dir(${CYPRESS_DIR_REL}) {
+        dir("${CYPRESS_DIR_REL}") {
           sh 'npm --version'
           sh 'node --version'
 
@@ -64,7 +64,7 @@ pipeline {
 
     stage('Installera Cypress') {
       steps {
-        dir(${CYPRESS_DIR_REL}) {
+        dir("${CYPRESS_DIR_REL}") {
           sh 'npm ci'
           sh 'npm run cy:verify'
         }
@@ -83,7 +83,7 @@ pipeline {
 
         stage('Starta testerna') {
           steps {
-            dir(${CYPRESS_DIR_REL}) {
+            dir("${CYPRESS_DIR_REL}") {
               sh "npm run test:e2e:electron:record"
             }
 
