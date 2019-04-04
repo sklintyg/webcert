@@ -42,6 +42,9 @@ pipeline {
         dir(${CYPRESS_DIR_REL}) {
           sh 'npm --version'
           sh 'node --version'
+
+          // Slå på Chuck Norris-plugin. Kan tas bort utan negativ påverkan.
+          chuckNorris()
         }
       }
     }
