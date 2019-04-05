@@ -47,41 +47,7 @@ describe('LISJP-intyg', function () {
         intyg.sektionÅtgärder(this.intygsdata.åtgärder);
         intyg.sektionÖvrigaUpplysningar(this.intygsdata.övrigaUpplysningar);
         intyg.sektionKontakt(this.intygsdata.kontakt);
-
-        // TODO: Utan wait så tappas ofta slutet på texten bort i sista textboxen.
-        // Antagligen hinner WebCert inte auto-spara innan man trycker på "signera"
-        cy.wait(1000);
-
-        // Signera intyget
-        cy.contains("Klart att signera");
-        cy.contains("Obligatoriska uppgifter saknas").should('not.exist');
-        cy.contains("Utkastet sparas").should('not.exist');
-
-        // cy.click() fungerar inte alltid. Det finns ärenden rapporterade
-        // (stängd pga inaktivitet):
-        // https://github.com/cypress-io/cypress/issues/2551
-        // https://www.cypress.io/blog/2019/01/22/when-can-the-test-click/ :
-        // "If a tree falls in the forest and no one has attached a “fall” event listener, did it really fall?"
-
-        const click = $el => { return $el.click() }
-
-        // Parent() p.g.a. att ett element täcker knappen
-        cy.get('#signera-utkast-button').parent().should('be.visible')
-
-        cy.get('#signera-utkast-button')
-        .pipe(click, {timeout: 60000}) // ToDo: Lång timeout (problem endast på Jenkins, överlastad slav?)
-        .should($el => {
-            expect($el.parent()).to.not.be.visible;
-        })
-
-        // Välj intygsmottagare
-        // TODO: Ger en utökad timeout då modalen i perioder inte hinner laddas. Detta bör ses över
-        cy.get('#approve-receiver-SKANDIA-radio-no', {timeout: 20000}).check();
-        cy.get('#save-approval-settings-btn').click();
-
-        // Skicka iväg intyget
-        cy.get("#sendBtn", { timeout: 60000 }).click();
-        cy.get("#button1send-dialog").click(); // Modal som dyker upp och frågar om man verkligen vill skicka
-        cy.contains("Intyget är skickat till Försäkringskassan");
+        intyg.signera();
+        intyg.skickaTillFk();
     });
 });
