@@ -16,8 +16,14 @@ pipeline {
 
     RESURSRAPPORTERINGSFIL_REL="${RESULTAT_DIR_REL}/resursrapporteringsfil.txt"
     RESURSRAPPORTERINGSFIL_ABS="${env.WORKSPACE}/${RESURSRAPPORTERINGSFIL_REL}"
-
     RESURSINTERVALL=30
+
+    // TODO: cypress-failed-log skriver i dagsläget till <startdir>/cypress/logs oavsett hur
+    // man konfigurerar Cypress. Endera låter vi det vara så (katalogen skapas endast när testfall
+    // går fel), eller så tas cypress-failed-log-pluginet bort. Det tredje alternativet är att se
+    // om en nyare version inför konfiguration av sökväg.
+    CYPRESSFAILEDLOGS_REL="${CYPRESS_DIR_REL}/cypress/logs/**/*.json"
+
     TESTRAPPORTFILPATTERN = "*.xml"
 
     // Nycklarna till dashboard hanteras här: https://dashboard.cypress.io/#/projects/1diiry/settings
@@ -120,12 +126,7 @@ pipeline {
     failure {
       archiveArtifacts artifacts: 'test/cypress/screenshots/**/*.*', fingerprint: false
       archiveArtifacts artifacts: '.npm/_logs/*.log', fingerprint: false
-
-      // TODO: cypress-failed-log skriver i dagsläget till <repo>/cypress oavsett hur man konfigurerar
-      // Cypress. Endera låter vi det vara så (katalogen skapas endast när testfall går fel) eller så
-      // tas cypress-failed-log bort. Det tredje alternativet är att se om en nyare version inför
-      // konfiguration av sökväg.
-      archiveArtifacts artifacts: 'cypress/logs/**/*.json', fingerprint: false
+      archiveArtifacts artifacts: "${CYPRESSFAILEDLOGS_REL}", fingerprint: false
     }
 
     // Denna sektion exekveras enbart om föregående körning gick bra och denna misslyckades
