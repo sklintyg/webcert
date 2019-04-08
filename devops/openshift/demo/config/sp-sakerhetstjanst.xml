@@ -1,18 +1,84 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<md:EntityDescriptor xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata" ID="https___webcert.inera.nordicmedtest.se_21443" entityID="https://demo.webcert.intygstjanster.se">
+<md:EntityDescriptor xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata" xmlns:dsig="http://www.w3.org/2000/09/xmldsig#" ID="https___webcert-demo-demointyg_app-test1_ind-ocp_sth_basefarm_net" entityID="https://webcert-demo-demointyg.app-test1.ind-ocp.sth.basefarm.net">
   <md:SPSSODescriptor AuthnRequestsSigned="false" WantAssertionsSigned="true" protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">
-    <md:SingleLogoutService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="https://demo.webcert.intygstjanster.se/saml/SingleLogout/alias/defaultAlias"/>
-    <md:SingleLogoutService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect" Location="https://demo.webcert.intygstjanster.se/saml/SingleLogout/alias/defaultAlias"/>
-    <md:NameIDFormat>urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress</md:NameIDFormat>
+    <md:KeyDescriptor>
+      <dsig:KeyInfo>
+        <dsig:X509Data>
+          <dsig:X509Certificate>MIIHuzCCBaOgAwIBAgIPAWIKzKvgT15OvMbjwYrKMA0GCSqGSIb3DQEBDQUAMEAx
+            CzAJBgNVBAYTAlNFMREwDwYDVQQKDAhJbmVyYSBBQjEeMBwGA1UEAwwVU0lUSFMg
+            VHlwZSAzIENBIHYxIFBQMB4XDTE4MDMwOTEyNDY0OVoXDTIwMDMwOTIyNTgwMFow
+            gZUxCzAJBgNVBAYTAlNFMRIwEAYDVQQHDAlTdG9ja2hvbG0xETAPBgNVBAoMCElu
+            ZXJhIEFCMTYwNAYDVQQDDC12ZXJpZmllcmluZy53ZWJjZXJ0LmludHlnc3RqYW5z
+            dGVyLnNqdW5ldC5vcmcxJzAlBgNVBAUTHlQtU0VSVklDRVMtU0UxNjU1NjU1OTQy
+            MzAtMTA5RDCCAiIwDQYJKoZIhvcNAQEBBQADggIPADCCAgoCggIBANkd58fxlthT
+            aXOaU7za7Tt+0lxl8BC9o4959mSvVbT6m5TF2rR94U7p0nZGpGMuPa4N/itijz27
+            kKqQstXnqvMNrC4Ao8LyBI1RCzauoyFA0w2oArf+LZQDLDOrypFehjesuVAsEw7f
+            GTSJ7Kl4AUnAZt0GaNqoEzjGzIjraSlYuNzdgpzR5xHkjRoh7TNgdb/gnH29InEU
+            V1yGDIyk8lpjBX3iMTfxEUPSEkSakj0Cz4JM/GooPcOCK5soADbEWX72MbU7jdrF
+            Oftgke23dYfw+3L6ErBeZsd76FJyolFAQcl9RbZY2UDNlZn4tKgkERoTQALPNc1/
+            dctFBdNHXms4f57e5lBGP9ul4fWwVbwJM2a8B76KztyUIeCikU4jfZgtTnBOit29
+            GkCqNyd0VFObBe+NGatRVK/g6+gIFfsoJYWpU5xhmbGn3Sw4lDu5rh4vEQzu3kIk
+            0z+d3+ZiNzd2Grdvj5Pwp7VebA6OE0mLfwIYIMFvk8Bu7gIhkAs99l1xwjOZOHQb
+            qVmYcWkqBI3H16z1PNvYtaADrR/4Nnvksy1T82PwKUJmx6mE1HVz6Q486boGznWp
+            bKl1XziO1wxOD8QX71GzegJe8V/aB9Td/8lKLxbDdUvcxil83kK6h1uu6z+T33xr
+            UItJ74bxoa1H52v4TwymRnmUMia0hrSRAgMBAAGjggJaMIICVjAfBgNVHSMEGDAW
+            gBRRHKa4ZlbRnuTSkKKFw5DLIZufxjAdBgNVHQ4EFgQUn5BRLcvaUMweNKzECFbq
+            Whsu1/QwDgYDVR0PAQH/BAQDAgWgMFUGA1UdIAROMEwwQAYHKoVwI2MCAjA1MDMG
+            CCsGAQUFBwIBFidodHRwOi8vcnBhcHAuc2l0aHMuc2Uvc2l0aHNycGF2MXBwLmh0
+            bWwwCAYGZ4EMAQICMDgGA1UdEQQxMC+CLXZlcmlmaWVyaW5nLndlYmNlcnQuaW50
+            eWdzdGphbnN0ZXIuc2p1bmV0Lm9yZzB3BgNVHR8EcDBuMDGgL6AthitodHRwOi8v
+            Y3JsMXBwLnNpdGhzLnNlL3NpdGhzdHlwZTNjYXYxcHAuY3JsMDmgN6A1hjNodHRw
+            Oi8vY3JsMnBwLnNpdGhzLnNqdW5ldC5vcmcvc2l0aHN0eXBlM2NhdjFwcC5jcmww
+            HQYDVR0lBBYwFAYIKwYBBQUHAwEGCCsGAQUFBwMCMIHaBggrBgEFBQcBAQSBzTCB
+            yjAjBggrBgEFBQcwAYYXaHR0cDovL29jc3AxcHAuc2l0aHMuc2UwKwYIKwYBBQUH
+            MAGGH2h0dHA6Ly9vY3NwMnBwLnNpdGhzLnNqdW5ldC5vcmcwNgYIKwYBBQUHMAKG
+            Kmh0dHA6Ly9haWFwcC5zaXRocy5zZS9zaXRoc3R5cGUzY2F2MXBwLmNlcjA+Bggr
+            BgEFBQcwAoYyaHR0cDovL2FpYXBwLnNpdGhzLnNqdW5ldC5vcmcvc2l0aHN0eXBl
+            M2NhdjFwcC5jZXIwDQYJKoZIhvcNAQENBQADggIBADO1ahTOhyGlm2jyZkei5FAC
+            DF0+79SN2lLY/nPWNP0pdsUbUsVZXqHH6EeDftQgIuAwER51eU7lHpzTQAMMxswO
+            bdMV+C9w7ZbF5Fpt/zZo40PBhW29Y7RNhUKvNqSCzjaZejWqwI+QuN5ol6njVXRR
+            XyNxwO+zFyFRZUiNRhEslxy52V0j07JY2DSV0UqOxFfwLMdbPYVvShErUX3LscLY
+            uLtw8GQ5bZwJkiEJvGUvPDUvbK2Psq2BqQip9VRQVpTj44ieGNTwr3N8ONOgxdE5
+            +VQ3voxWw99pyoSzIe6pH4J4qCOme5tMP7qlgToi+9u2mUVa1yZsRxi9Z1ZYw/+n
+            tn///DlHfb7xiJXVGZa0KM+/FU3N/18DU62m1i7fAWuSN36M/jyouZuARJgtrSpI
+            gj+mP+KUIJMvlY5wDuHLwp9h0xx95NlGH8KayMNCY3Y4ui1FF/Q+bIXKTxBP33H6
+            KSPQLf71RbvP+KoQTQfA8NWgF4zlHmfrjNozXFm8cTmLjnRQSbShaEWlAnuzcZqi
+            UJKIYPzLcvJmZWc4q2yqdPOV0o++qPN7qMoCUYvhrQcokbg4uR6TaeCW2rvvtJGb
+            4us6pebmilUFeKxp21YZ71JzyawXGd5gD8KNAMVsOf8zAhbHQrPvBvYpL5cjpQjg
+            naGPSKApM2Mf1NifzZOp
+          </dsig:X509Certificate>
+        </dsig:X509Data>
+      </dsig:KeyInfo>
+    </md:KeyDescriptor>
+    <md:SingleLogoutService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="https://webcert-demo-demointyg.app-test1.ind-ocp.sth.basefarm.net/saml/SingleLogout/alias/defaultAlias"/>
+    <md:SingleLogoutService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect" Location="https://webcert-demo-demointyg.app-test1.ind-ocp.sth.basefarm.net/saml/SingleLogout/alias/defaultAlias"/>
     <md:NameIDFormat>urn:oasis:names:tc:SAML:2.0:nameid-format:transient</md:NameIDFormat>
-    <md:NameIDFormat>urn:oasis:names:tc:SAML:2.0:nameid-format:persistent</md:NameIDFormat>
-    <md:NameIDFormat>urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified</md:NameIDFormat>
-    <md:NameIDFormat>urn:oasis:names:tc:SAML:1.1:nameid-format:X509SubjectName</md:NameIDFormat>
-    <md:AssertionConsumerService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="https://demo.webcert.intygstjanster.se/saml/SSO/alias/defaultAlias" index="0" isDefault="true"/>
+    <md:AssertionConsumerService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="https://webcert-demo-demointyg.app-test1.ind-ocp.sth.basefarm.net/saml/SSO/alias/defaultAlias" index="0" isDefault="true"/>
     <md:AttributeConsumingService index="1">
-      <md:ServiceName xml:lang="sv">TestSP med HSA-uppslag</md:ServiceName>
+      <md:ServiceName xml:lang="sv">Webcert uppdragslöst</md:ServiceName>
       <md:RequestedAttribute Name="http://sambi.se/attributes/1/employeeHsaId" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri" FriendlyName="employeeHsaId" isRequired="true"/>
       <md:RequestedAttribute Name="urn:sambi:names:attribute:authnMethod" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri" FriendlyName="authnMethod" isRequired="true"/>
     </md:AttributeConsumingService>
   </md:SPSSODescriptor>
+  <md:Organization>
+    <md:OrganizationName xml:lang="sv">Inera AB</md:OrganizationName>
+    <md:OrganizationDisplayName xml:lang="sv">Intygstjänster Webcert Demo</md:OrganizationDisplayName>
+    <md:OrganizationURL xml:lang="sv">https://inera.se</md:OrganizationURL>
+  </md:Organization>
+  <md:ContactPerson xml:lang="sv" contactType="technical">
+    <md:Company>Inera AB</md:Company>
+    <md:EmailAddress>teknik.intyg@inera.se</md:EmailAddress>
+  </md:ContactPerson>
+  <md:ContactPerson xml:lang="en" contactType="technical">
+    <md:Company>Inera AB</md:Company>
+    <md:EmailAddress>teknik.intyg@inera.se</md:EmailAddress>
+  </md:ContactPerson>
+  <md:ContactPerson xml:lang="sv" contactType="support">
+    <md:Company>Inera AB</md:Company>
+    <md:EmailAddress>teknik.intyg@inera.se</md:EmailAddress>
+  </md:ContactPerson>
+  <md:ContactPerson xml:lang="en" contactType="support">
+    <md:Company>Inera AB</md:Company>
+    <md:EmailAddress>teknik.intyg@inera.se</md:EmailAddress>
+  </md:ContactPerson>
 </md:EntityDescriptor>
