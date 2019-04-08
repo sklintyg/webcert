@@ -18,6 +18,18 @@
  */
 package se.inera.intyg.webcert.web.web.controller.moduleapi;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import javax.persistence.OptimisticLockException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+import javax.ws.rs.core.Response;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -27,6 +39,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
+
 import se.inera.intyg.common.fk7263.model.internal.Fk7263Utlatande;
 import se.inera.intyg.common.services.texts.IntygTextsService;
 import se.inera.intyg.common.support.model.UtkastStatus;
@@ -63,18 +76,6 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.CopyIntygResponse;
 import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
 import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.RevokeSignedIntygParameter;
-
-import javax.persistence.OptimisticLockException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-import javax.ws.rs.core.Response;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static javax.ws.rs.core.Response.Status.OK;
 import static org.junit.Assert.assertEquals;
@@ -394,18 +395,31 @@ public class UtkastModuleApiControllerTest {
         verifyZeroInteractions(utkastService);
     }
 
-    @Test(expected = WebCertServiceException.class)
+    @Test
     public void testCopyUtkastKopieraOKFalse() {
         String intygTyp = "fk7263";
         String intygId = "intyg1";
+        String intygTypeVersion = "1.0";
+        String newIntygId = "newIntygId";
         IntegrationParameters integrationParameters = IntegrationParameters.of("", "", "", "", "", "", "", "", "", false, false, false,
                 false);
         setupUser(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG, intygTyp, integrationParameters,
                 AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);
 
-        moduleApiController.copyUtkast(intygTyp, intygId);
+        Utkast utkast = new Utkast();
+        utkast.setPatientPersonnummer(Personnummer.createPersonnummer("19121212-1212").get());
+        when(utkastService.getDraft(eq(intygId), eq(intygTyp))).thenReturn(utkast);
 
-        verifyZeroInteractions(utkastService);
+        ArgumentCaptor<CreateUtkastFromTemplateRequest> captor = ArgumentCaptor.forClass(CreateUtkastFromTemplateRequest.class);
+        when(copyUtkastService.createUtkastCopy(captor.capture()))
+                .thenReturn(new CreateUtkastFromTemplateResponse(intygTyp, intygTypeVersion, newIntygId, intygId));
+
+        Response response = moduleApiController.copyUtkast(intygTyp, intygId);
+
+        verify(copyUtkastService).createUtkastCopy(any());
+        verifyNoMoreInteractions(copyUtkastService);
+        assertEquals(newIntygId, ((CopyIntygResponse) response.getEntity()).getIntygsUtkastId());
+        assertEquals(intygTyp, ((CopyIntygResponse) response.getEntity()).getIntygsTyp());
     }
 
     @Test(expected = WebCertServiceException.class)

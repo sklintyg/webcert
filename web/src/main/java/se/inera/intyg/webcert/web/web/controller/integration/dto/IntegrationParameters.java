@@ -18,12 +18,13 @@
  */
 package se.inera.intyg.webcert.web.web.controller.integration.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import java.util.Objects;
-import org.apache.commons.lang3.StringUtils;
-import se.inera.intyg.webcert.web.web.controller.integration.IntegrationState;
-
 import java.io.Serializable;
+import java.util.Objects;
+
+import org.apache.commons.lang3.StringUtils;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import se.inera.intyg.webcert.web.web.controller.integration.IntegrationState;
 
 public final class IntegrationParameters implements Serializable {
 
@@ -40,7 +41,7 @@ public final class IntegrationParameters implements Serializable {
     private final boolean sjf; //Sammanhållen JournalFöring
     private final boolean patientDeceased;
     private final boolean inactiveUnit;
-    private final boolean copyOk;
+    private final boolean fornyaOk;
 
     private String beforeAlternateSsn = ""; // Sätts när alternateSsn skiljer från intygets patientId för att kunna visa det i utkastet.
 
@@ -51,7 +52,7 @@ public final class IntegrationParameters implements Serializable {
     // CHECKSTYLE:OFF ParameterNumber
     public IntegrationParameters(String reference, String responsibleHospName, String alternateSsn, String fornamn,
                                  String mellannamn, String efternamn, String postadress, String postnummer, String postort,
-                                 boolean sjf, boolean patientDeceased, boolean inactiveUnit, boolean copyOk) {
+                                 boolean sjf, boolean patientDeceased, boolean inactiveUnit, boolean fornyaOk) {
 
         this.reference = reference;
         this.responsibleHospName = responsibleHospName;
@@ -65,7 +66,7 @@ public final class IntegrationParameters implements Serializable {
         this.sjf = sjf;
         this.patientDeceased = patientDeceased;
         this.inactiveUnit = inactiveUnit;
-        this.copyOk = copyOk;
+        this.fornyaOk = fornyaOk;
     }
 
     public static IntegrationParameters of(
@@ -81,7 +82,7 @@ public final class IntegrationParameters implements Serializable {
             final boolean sjf,
             final boolean patientDeceased,
             final boolean inactiveUnit,
-            final boolean copyOk) {
+            final boolean fornyaOk) {
 
         return new IntegrationParameters(
                 StringUtils.trimToNull(reference),
@@ -96,7 +97,7 @@ public final class IntegrationParameters implements Serializable {
                 sjf,
                 patientDeceased,
                 inactiveUnit,
-                copyOk);
+                fornyaOk);
     }
 
     // CHECKSTYLE:ON ParameterNumber
@@ -152,8 +153,8 @@ public final class IntegrationParameters implements Serializable {
         return inactiveUnit;
     }
 
-    public boolean isCopyOk() {
-        return copyOk;
+    public boolean isFornyaOk() {
+        return fornyaOk;
     }
 
 
@@ -187,7 +188,7 @@ public final class IntegrationParameters implements Serializable {
         return sjf == that.sjf
                 && patientDeceased == that.patientDeceased
                 && inactiveUnit == that.inactiveUnit
-                && copyOk == that.copyOk
+                && fornyaOk == that.fornyaOk
                 && Objects.equals(reference, that.reference)
                 && Objects.equals(responsibleHospName, that.responsibleHospName)
                 && Objects.equals(alternateSsn, that.alternateSsn)
@@ -215,7 +216,7 @@ public final class IntegrationParameters implements Serializable {
                 sjf,
                 patientDeceased,
                 inactiveUnit,
-                copyOk,
+                fornyaOk,
                 beforeAlternateSsn,
                 state);
     }
