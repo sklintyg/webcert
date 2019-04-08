@@ -141,15 +141,7 @@ angular.module('webcert').config(function($stateProvider, $urlRouterProvider, $h
                     controller: 'webcert.TermsCtrl'
                 }
             }
-        }).
-       state('webcert.fontdemo', {
-        url: '/font-demo',
-        views: {
-            'content@': {
-                templateUrl: '/app/views/font-demo.html'
-            }
-        }
-    });
+        });
 
     $urlRouterProvider.when('', ['$window', 'common.UserModel', 'common.authorityService', 'common.featureService',
         function($window, UserModel, authorityService, featureService) {
