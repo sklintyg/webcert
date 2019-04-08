@@ -306,8 +306,6 @@ public class IntygModuleApiController extends AbstractApiController {
         LOG.debug("Attempting to create a new certificate with type {} from certificate with type {} and id '{}'", newIntygsTyp,
                 orgIntygsTyp, orgIntygsId);
 
-        WebCertUser user = getWebCertUserService().getUser();
-
         if (!request.isValid()) {
             LOG.error("Request to create utkast from certificate '{}' as template is not valid", orgIntygsId);
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, "Missing vital arguments in payload");
