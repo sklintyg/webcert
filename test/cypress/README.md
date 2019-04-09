@@ -11,15 +11,16 @@ webcert> npm -v
 ```
 Rekommenderad lägsta version för node är 10 och för npm är 6.
 
-Installera Cypress:
+Byt till cypress-katalogen och installera Cypress och dess beroenden:
 ```sh
-webcert> npm install --save-dev cypress
+webcert> cd test/cypress
+cypress> npm install
 ```
 
 ### 2) Konfigurera URL till WebCert-applikationen
 Redigera filen `cypress.json` med ett textredigeringsprogram. I exemplet nedan används notepad.
 ```sh
-webcert> notepad cypress.json
+cypress> notepad cypress.json
 ```
 Leta upp raden med `"baseUrl"` och uppdatera URL:en att peka mot testmiljön.
 
@@ -27,24 +28,24 @@ Leta upp raden med `"baseUrl"` och uppdatera URL:en att peka mot testmiljön.
 ##### 3.1) Köra Cypress i normal webbläsare
 Starta Cypress-gui genom
 ```sh
-webcert> node_modules/.bin/cypress open
+cypress> node_modules/.bin/cypress open
 ```
 Här kan man köra enskilda sviter eller alla på en gång. Testerna exekveras i en synlig webbläsare.
 
 ##### 3.2) Köra Cypress Headlessly
 Det går att köra alla Cypress-tester headlessly (d.v.s. utan synlig webbläsare). Det är så testerna exekveras i Jenkins. Då används den i Cypress inbyggda webbläsaren Electron. Varje testsvit genererar en mp4-videofil där hela exekveringen kan ses, dessa sparas i `test/cypress/videos`.
 ```sh
-webcert> node_modules/.bin/cypress run
+cypress> node_modules/.bin/cypress run
 ```
 Exempel på vad som är ändrat från standardvärden är sökvägarna till kataloger eftersom cypress-filerna inte ligger direkt under `<projektrot>/cypress`.
 
 ## Cypress filstruktur
-Generellt kan sägas att konfigurationsfilen för Cypress ligger i projektroten, och resten av filerna ligger under `test/cypress/`.
+Alla Cypress-relaterade filer ligger under `test/cypress/`.
 
 ### Konfiguration
 Cypress konfigureras via en JSON-fil i projektroten:
 ```sh
-webcert> cypress.json
+cypress> notepad cypress.json
 ```
 I denna fil kan man åsidosätta alla standardvärden som cypress använder sig av. För mer detaljer, se [Cypress configuration](https://docs.cypress.io/guides/references/configuration.html#Options).
 
@@ -53,7 +54,7 @@ Cypress terminologi för testfallsfil är 'spec' och specs ligger i vad som kall
 Testfallen ligger därför i underkatalogen `test/cypress/integration/`.
 
 ### Fixtures
-Konstant data sparas i något som kallas fixturer, se [Cypress Fixtures](https://docs.cypress.io/api/commands/fixture.html) för mer information.
+Indata till testfall sparas i något som kallas fixturer, se [Cypress Fixtures](https://docs.cypress.io/api/commands/fixture.html) för mer information.
 Dessa filer ligger under `test/cypress/fixtures/`. Här kan data sparas t.ex. per läkare, patient och vårdenhet och detta kan läsas in i testfallen.
 
 ### Stödfiler
