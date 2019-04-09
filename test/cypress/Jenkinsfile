@@ -119,7 +119,7 @@ pipeline {
       emailext (
         subject: "Fixat! Jobb '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
         body: "Jobb '${env.JOB_NAME} [${env.BUILD_NUMBER}]' går nu BRA igen. Se konsollutmatning här: '${env.BUILD_URL}'",
-        to: "johannes.larsson@nordicmedtest.se"
+        to: "ec9cf062.inera.se@emea.teams.ms"
       )
     }
 
@@ -135,7 +135,7 @@ pipeline {
       emailext (
         subject: "Misslyckat! Jobb '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
         body: "Jobb '${env.JOB_NAME} [${env.BUILD_NUMBER}]' MISSLYCKADES! Se konsollutmatning här: '${env.BUILD_URL}'. Inga fler mail kommer skickas innan jobbet åter går bra.",
-        to: "johannes.larsson@nordicmedtest.se"
+        to: "ec9cf062.inera.se@emea.teams.ms"
       )
     }
   }
