@@ -4,3 +4,6 @@ screenshots/
 
 # Ignore temporary files
 *~
+
+# Ignore cypress-failed-logs output (that uses hard-coded path)
+cypress/logs/
