@@ -2,6 +2,7 @@ pipeline {
 
   options {
     timestamps () // Kräver plugin "Timestamper"
+    timeout(time: 45, unit: 'MINUTES')
   }
 
   environment {
@@ -77,30 +78,21 @@ pipeline {
       }
     }
 
+    stage('Starta resursövervakning') {
+      steps {
+        // Skapa upp resultatkatalogen ifall den inte redan finns
+        sh "mkdir -p ${RESULTAT_DIR_ABS}/"
+
+        // Starta resursskriptet. Jenkins Process Tree Killer kommer att döda
+        // processen när jobbet är färdigt.
+        sh "${RESURSSKRIPT_ABS} ${RESURSINTERVALL} ${RESURSRAPPORTERINGSFIL_ABS} &"
+      }
+    }
+
     stage('Exekvera Cypresstester') {
-      parallel {
-        stage('Starta resursövervakning') {
-          steps {
-            // Skapa upp resultatkatalogen ifall den inte redan finns
-            sh "mkdir -p ${RESULTAT_DIR_ABS}/"
-            sh "${RESURSSKRIPT_ABS} ${RESURSINTERVALL} ${RESURSRAPPORTERINGSFIL_ABS}"
-          }
-        }
-
-        stage('Starta testerna') {
-          steps {
-            dir("${CYPRESS_DIR_REL}") {
-              sh "npm run test:e2e:electron:record"
-            }
-
-            // Terminera skriptet som skriver ner resursanvändning på slaven
-            // pkill returnerar antal processer som matchades (d.v.s != 0), därför används vanliga kill istället
-            sh '''#! /bin/bash
-                SKRIPT_PID=$(ps -elf | grep ${RESURSRAPPORTSKRIPTNAMN} | grep -v 'grep ' | tr -s ' ' | cut -d ' ' -f 4)
-                echo "Hittade resursrapportskriptets PID ${SKRIPT_PID} som ska stoppas."
-                kill ${SKRIPT_PID}
-            '''
-          }
+      steps {
+        dir("${CYPRESS_DIR_REL}") {
+          sh "npm run test:e2e:electron:record"
         }
       }
     }
@@ -119,7 +111,9 @@ pipeline {
       emailext (
         subject: "Fixat! Jobb '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
         body: "Jobb '${env.JOB_NAME} [${env.BUILD_NUMBER}]' går nu BRA igen. Se konsollutmatning här: '${env.BUILD_URL}'",
-        to: "ec9cf062.inera.se@emea.teams.ms"
+        // Återställ nedanstående adress när resultat ska börja rapporteras
+        // to: "ec9cf062.inera.se@emea.teams.ms"
+        to: "johannes.larsson@nordicmedtest.se"
       )
     }
 
@@ -135,7 +129,9 @@ pipeline {
       emailext (
         subject: "Misslyckat! Jobb '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
         body: "Jobb '${env.JOB_NAME} [${env.BUILD_NUMBER}]' MISSLYCKADES! Se konsollutmatning här: '${env.BUILD_URL}'. Inga fler mail kommer skickas innan jobbet åter går bra.",
-        to: "ec9cf062.inera.se@emea.teams.ms"
+        // Återställ nedanstående adress när resultat ska börja rapporteras
+        // to: "ec9cf062.inera.se@emea.teams.ms"
+        to: "johannes.larsson@nordicmedtest.se"
       )
     }
   }
