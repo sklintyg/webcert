@@ -54,7 +54,6 @@ data:
   MAIL_HOST: "mailout.sth.basefarm.net"
   IDP_OIDC_JWKS_URL: "https://idp.ineratest.org/oidc/jwks.json"
   IDP_OIDC_JWKS_SKEW: 30
-  IDP_OIDC_INTROSPECTION_ENDPOINT_URL: "https://idp.ineratest.org:443/oidc/token/introspect"
 kind: ConfigMap
 metadata:
   name: webcert-configmap-envvar
