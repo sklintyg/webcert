@@ -18,13 +18,12 @@
  */
 package se.inera.intyg.webcert.web.web.controller.integration;
 
-import com.google.common.base.Strings;
-import com.google.common.collect.ImmutableMap;
-import io.swagger.annotations.Api;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URLEncoder;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.FormParam;
@@ -38,12 +37,15 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
-import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.net.URLEncoder;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+
+import com.google.common.base.Strings;
+import com.google.common.collect.ImmutableMap;
+import io.swagger.annotations.Api;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.infra.security.authorities.CommonAuthoritiesResolver;
@@ -74,7 +76,7 @@ public class IntygIntegrationController extends BaseIntegrationController {
     public static final String PARAM_ENHET_ID = "enhet";
     public static final String PARAM_COHERENT_JOURNALING = "sjf";
     public static final String PARAM_INACTIVE_UNIT = "inaktivEnhet";
-    public static final String PARAM_COPY_OK = "kopieringOK";
+    public static final String PARAM_FORNYA_OK = "kopieringOK";
     public static final String PARAM_PATIENT_ALTERNATE_SSN = "alternatePatientSSn";
     public static final String PARAM_PATIENT_DECEASED = "avliden";
     public static final String PARAM_PATIENT_EFTERNAMN = "efternamn";
@@ -139,7 +141,7 @@ public class IntygIntegrationController extends BaseIntegrationController {
             @DefaultValue("false") @QueryParam(PARAM_COHERENT_JOURNALING) boolean coherentJournaling,
             @DefaultValue("false") @QueryParam(PARAM_INACTIVE_UNIT) boolean inactiveUnit,
             @DefaultValue("false") @QueryParam(PARAM_PATIENT_DECEASED) boolean deceased,
-            @DefaultValue("true") @QueryParam(PARAM_COPY_OK) boolean copyOk) {
+            @DefaultValue("true") @QueryParam(PARAM_FORNYA_OK) boolean fornyaOk) {
 
         String internIntygTyp = moduleRegistry.getModuleIdFromExternalId(intygTyp.toUpperCase());
         Map<String, Object> pathParameters = ImmutableMap.of(
@@ -150,7 +152,7 @@ public class IntygIntegrationController extends BaseIntegrationController {
 
         IntegrationParameters integrationParameters = IntegrationParameters.of(
                 reference, responsibleHospName, alternatePatientSSn, fornamn, mellannamn, efternamn,
-                postadress, postnummer, postort, coherentJournaling, deceased, inactiveUnit, copyOk);
+                postadress, postnummer, postort, coherentJournaling, deceased, inactiveUnit, fornyaOk);
 
 
         // Temp. logging in an attempt to track down hashCode failures (hashCode has to be changed for redis updates)
@@ -186,7 +188,7 @@ public class IntygIntegrationController extends BaseIntegrationController {
             @QueryParam(PARAM_REFERENCE) String reference,
             @DefaultValue("false") @QueryParam(PARAM_INACTIVE_UNIT) boolean inactiveUnit,
             @DefaultValue("false") @QueryParam(PARAM_PATIENT_DECEASED) boolean deceased,
-            @DefaultValue("true") @QueryParam(PARAM_COPY_OK) boolean copyOk) {
+            @DefaultValue("true") @QueryParam(PARAM_FORNYA_OK) boolean fornyaOk) {
 
         Map<String, Object> params = ImmutableMap.of(PARAM_CERT_ID, intygId);
 
@@ -195,7 +197,7 @@ public class IntygIntegrationController extends BaseIntegrationController {
 
         IntegrationParameters integrationParameters = IntegrationParameters.of(
                 reference, responsibleHospName, alternatePatientSSn, fornamn, mellannamn, efternamn,
-                postadress, postnummer, postort, coherentJournaling, deceased, inactiveUnit, copyOk);
+                postadress, postnummer, postort, coherentJournaling, deceased, inactiveUnit, fornyaOk);
 
         WebCertUser user = getWebCertUser();
         user.setParameters(integrationParameters);
@@ -260,7 +262,7 @@ public class IntygIntegrationController extends BaseIntegrationController {
             @FormParam(PARAM_REFERENCE) String reference,
             @DefaultValue("false") @FormParam(PARAM_INACTIVE_UNIT) boolean inactiveUnit,
             @DefaultValue("false") @FormParam(PARAM_PATIENT_DECEASED) boolean deceased,
-            @DefaultValue("true") @FormParam(PARAM_COPY_OK) boolean copyOk) {
+            @DefaultValue("true") @FormParam(PARAM_FORNYA_OK) boolean fornyaOk) {
 
         final Map<String, Object> params = ImmutableMap.of(PARAM_CERT_ID, intygId);
 
@@ -268,7 +270,7 @@ public class IntygIntegrationController extends BaseIntegrationController {
 
         IntegrationParameters integrationParameters = IntegrationParameters.of(
                 reference, responsibleHospName, alternatePatientSSn, fornamn, mellannamn, efternamn,
-                postadress, postnummer, postort, coherentJournaling, deceased, inactiveUnit, copyOk);
+                postadress, postnummer, postort, coherentJournaling, deceased, inactiveUnit, fornyaOk);
 
         WebCertUser user = getWebCertUser();
         user.setParameters(integrationParameters);

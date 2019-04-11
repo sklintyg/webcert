@@ -18,19 +18,6 @@
  */
 package se.inera.intyg.webcert.web.web.controller.moduleapi;
 
-import static javax.ws.rs.core.Response.Status.OK;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.fail;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.verifyZeroInteractions;
-import static org.mockito.Mockito.when;
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -39,7 +26,6 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import javax.ws.rs.core.Response;
 
 import org.junit.Before;
@@ -90,6 +76,19 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.CopyIntygResponse;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
 import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.RevokeSignedIntygParameter;
 import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.SendSignedIntygParameter;
+
+import static javax.ws.rs.core.Response.Status.OK;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.when;
 
 /**
  * @author andreaskaltenbach
@@ -246,11 +245,11 @@ public class IntygModuleApiControllerTest {
     }
 
     @Test
-    public void testCreateNewRenewWithCopyOkParamFalse() {
+    public void testCreateNewRenewWithFornyaOkParamFalse() {
         //Given
-        final boolean copyOk = false;
+        final boolean fornyaOk = false;
         final String intygsTyp = "fk7263";
-        setupUser(AuthoritiesConstants.PRIVILEGE_FORNYA_INTYG, intygsTyp, true, copyOk, AuthoritiesConstants.FEATURE_FORNYA_INTYG);
+        setupUser(AuthoritiesConstants.PRIVILEGE_FORNYA_INTYG, intygsTyp, true, fornyaOk, AuthoritiesConstants.FEATURE_FORNYA_INTYG);
 
         //When
         try {
@@ -791,13 +790,13 @@ public class IntygModuleApiControllerTest {
         }
     }
 
-    private void setupUser(String privilegeString, String intygType, boolean coherentJournaling, boolean copyOk,
+    private void setupUser(String privilegeString, String intygType, boolean coherentJournaling, boolean fornyaOk,
             String... features) {
         WebCertUser user = new WebCertUser();
         user.setAuthorities(new HashMap<>());
         addFeatures(user, intygType, features);
         user.setParameters(
-                new IntegrationParameters(null, null, null, null, null, null, null, null, null, coherentJournaling, false, false, copyOk));
+                new IntegrationParameters(null, null, null, null, null, null, null, null, null, coherentJournaling, false, false, fornyaOk));
         Privilege privilege = new Privilege();
         privilege.setIntygstyper(Arrays.asList(intygType));
         RequestOrigin requestOrigin = new RequestOrigin();

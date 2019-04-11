@@ -91,7 +91,7 @@ public class JwtAuthenticationSuccessHandler extends
                 getBooleanParameter(request, IntygIntegrationController.PARAM_COHERENT_JOURNALING, false),
                 getBooleanParameter(request, IntygIntegrationController.PARAM_PATIENT_DECEASED, false),
                 getBooleanParameter(request, IntygIntegrationController.PARAM_INACTIVE_UNIT, false),
-                getBooleanParameter(request, IntygIntegrationController.PARAM_COPY_OK, true));
+                getBooleanParameter(request, IntygIntegrationController.PARAM_FORNYA_OK, true));
 
         webCertUser.setParameters(integrationParameters);
 

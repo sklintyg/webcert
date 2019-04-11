@@ -1365,7 +1365,7 @@
         "inactiveUnit": {
           "type": "boolean"
         },
-        "copyOk": {
+        "fornyaOk": {
           "type": "boolean"
         }
       },
