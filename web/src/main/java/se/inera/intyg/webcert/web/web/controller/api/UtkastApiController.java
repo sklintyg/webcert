@@ -18,11 +18,24 @@
  */
 package se.inera.intyg.webcert.web.web.controller.api;
 
-import io.swagger.annotations.Api;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import io.swagger.annotations.Api;
 import se.inera.intyg.common.services.texts.IntygTextsService;
+import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.Patient;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
@@ -30,13 +43,13 @@ import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.SekretessStatus;
-import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastFilter;
 import se.inera.intyg.webcert.web.converter.IntygDraftsConverter;
 import se.inera.intyg.webcert.web.converter.util.IntygConverterUtil;
+import se.inera.intyg.webcert.web.service.access.AccessService;
 import se.inera.intyg.webcert.web.service.dto.Lakare;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
@@ -48,19 +61,6 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.CreateUtkastRequest;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 import se.inera.intyg.webcert.web.web.controller.api.dto.QueryIntygParameter;
 import se.inera.intyg.webcert.web.web.controller.api.dto.QueryIntygResponse;
-
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
-import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * API controller for REST services concerning certificate drafts.
@@ -90,6 +90,9 @@ public class UtkastApiController extends AbstractApiController {
     @Autowired
     private IntygModuleRegistry moduleRegistry;
 
+    @Autowired
+    private AccessService accessService;
+
     /**
      * Create a new draft.
      */
@@ -109,59 +112,17 @@ public class UtkastApiController extends AbstractApiController {
             return Response.status(Status.BAD_REQUEST).build();
         }
 
-        authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
-                .features(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
-                .privilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG)
-                .orThrow();
-
-        final SekretessStatus sekretessStatus = patientDetailsResolver.getSekretessStatus(request.getPatientPersonnummer());
-
-        if (SekretessStatus.UNDEFINED.equals(sekretessStatus)) {
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.PU_PROBLEM,
-                    "Could not fetch sekretesstatus for patient from PU service");
-        }
-        // INTYG-4086: If the patient is sekretessmarkerad, we need an additional check.
-        boolean sekr = sekretessStatus == SekretessStatus.TRUE;
-        if (sekr) {
-            authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
-                    .privilege(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT)
-                    .orThrow(new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM_SEKRETESSMARKERING,
-                            "User missing required privilege or cannot handle sekretessmarkerad patient"));
-        }
-
         if (!request.isValid()) {
             LOG.error("Request is invalid: " + request.toString());
             return Response.status(Status.BAD_REQUEST).build();
         }
         LOG.debug("Attempting to create draft of type '{}'", intygsTyp);
 
-        if (authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
-                .features(AuthoritiesConstants.FEATURE_UNIKT_INTYG, AuthoritiesConstants.FEATURE_UNIKT_INTYG_INOM_VG,
-                        AuthoritiesConstants.FEATURE_UNIKT_UTKAST_INOM_VG).isVerified()) {
-
-            Map<String, Map<String, PreviousIntyg>> intygstypToStringToBoolean = utkastService.checkIfPersonHasExistingIntyg(
-                    request.getPatientPersonnummer(), getWebCertUserService().getUser());
-
-            PreviousIntyg utkastExists = intygstypToStringToBoolean.get("utkast").get(intygsTyp);
-            PreviousIntyg intygExists = intygstypToStringToBoolean.get("intyg").get(intygsTyp);
-
-            if (utkastExists != null && utkastExists.isSameVardgivare()) {
-                if (authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
-                        .features(AuthoritiesConstants.FEATURE_UNIKT_UTKAST_INOM_VG).isVerified()) {
-                    return Response.status(Status.BAD_REQUEST).build();
-                }
-            }
-
-            if (intygExists != null) {
-                if (authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
-                        .features(AuthoritiesConstants.FEATURE_UNIKT_INTYG).isVerified()) {
-                    return Response.status(Status.BAD_REQUEST).build();
-                } else if (intygExists.isSameVardgivare() && authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
-                        .features(AuthoritiesConstants.FEATURE_UNIKT_INTYG_INOM_VG).isVerified()) {
-                    return Response.status(Status.BAD_REQUEST).build();
-                }
-            }
-
+        final boolean allowedToCreateUtkast = accessService.allowedToCreateUtkast(intygsTyp, request.getPatientPersonnummer());
+        if (!allowedToCreateUtkast) {
+            // TODO: Manage so correct exception can be thrown
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM,
+                    "Not allowed to create utkast");
         }
 
         CreateNewDraftRequest serviceRequest = createServiceRequest(request);

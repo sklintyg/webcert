@@ -18,10 +18,21 @@
  */
 package se.inera.intyg.webcert.web.web.controller.api;
 
-import io.swagger.annotations.Api;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import io.swagger.annotations.Api;
 import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.common.support.modules.registry.IntygModule;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
@@ -34,15 +45,8 @@ import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.SekretessStatus;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
-
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import java.util.List;
-import java.util.stream.Collectors;
+import se.inera.intyg.webcert.web.web.controller.api.dto.IntygModuleDTO;
+import se.inera.intyg.webcert.web.web.util.resourcelinks.ResourceLinkHelper;
 
 /**
  * Controller managing module wiring.
@@ -67,6 +71,8 @@ public class ModuleApiController extends AbstractApiController {
     @Autowired
     private AuthoritiesHelper authoritiesHelper;
 
+    @Autowired
+    private ResourceLinkHelper resourceLinkHelper;
 
     /**
      * Serving module configuration for Angular bootstrapping.
@@ -100,25 +106,13 @@ public class ModuleApiController extends AbstractApiController {
             SekretessStatus sekretessmarkering = patientDetailsResolver.getSekretessStatus(personnummer);
             List<IntygModule> intygModules = moduleRegistry.listAllModules();
 
-            // If patient has sekretessmarkering or PU-service didn't respond, filter out ts-intyg using privilege.
-            if (sekretessmarkering == SekretessStatus.TRUE || sekretessmarkering == SekretessStatus.UNDEFINED) {
+            final List<IntygModuleDTO> intygModuleDTOS = intygModules.stream()
+                    .map(intygModule -> new IntygModuleDTO(intygModule))
+                    .collect(Collectors.toList());
 
-                // INTYG-4086
-                intygModules = intygModules.stream()
-                        .filter(module -> authoritiesValidator.given(getWebCertUserService().getUser(), module.getId())
-                                .privilege(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT)
-                                .isVerified())
-                        .collect(Collectors.toList());
-            }
+            resourceLinkHelper.decorateWithValidActionLinks(intygModuleDTOS, personnummer);
 
-            if (patientDetailsResolver.isAvliden(personnummer)) {
-                intygModules = intygModules.stream()
-                        .filter(module -> authoritiesValidator.given(getWebCertUserService().getUser(), module.getId())
-                                .features(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST_AVLIDEN).isVerified())
-                        .collect(Collectors.toList());
-            }
-
-            return Response.ok(intygModules).build();
+            return Response.ok(intygModuleDTOS).build();
 
         } catch (InvalidPersonNummerException e) {
             LOG.error(e.getMessage());
