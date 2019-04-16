@@ -79,7 +79,7 @@ public class JwtAuthenticationFilter extends AbstractAuthenticationProcessingFil
         // Validate JWS token signature
         Jws<Claims> jwt = jwtValidationService.validateJwsToken(jwsToken);
 
-        // If both signature and introspection is OK, extract the employeeHsaId and initiate authorization.
+        // If signature is OK, extract the employeeHsaId and initiate authorization.
         Object hsaIdObj = jwt.getBody().get("employeeHsaId");
         if (hsaIdObj == null) {
             throw new MissingClaimException(jwt.getHeader(), jwt.getBody(), "Could find claim for employeeHsaId");
