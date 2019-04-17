@@ -92,7 +92,7 @@ pipeline {
     stage('Exekvera Cypresstester') {
       steps {
         dir("${CYPRESS_DIR_REL}") {
-          sh "npm run test:e2e:electron:record"
+          sh "npm run test:e2e:electron"
         }
       }
     }
