@@ -14,10 +14,10 @@ export const implementeradeIntyg = {
 	LUAE_FS: "LUAE_FS",
 }
 
-function loggaInVårdgivare(fx, ärDjup) {
-	const vårdgivare = fx.vårdgivare;
+function loggaInVårdpersonal(fx, ärDjup) {
+	const vårdpersonal = fx.vårdpersonal;
 	const vårdenhet = fx.vårdenhet;
-	expect(vårdgivare).to.exist;
+	expect(vårdpersonal).to.exist;
 	expect(vårdenhet).to.exist;
 	assert.isBoolean(ärDjup);
 
@@ -29,11 +29,11 @@ function loggaInVårdgivare(fx, ärDjup) {
 		form: true,
 		body: {
 			"userJsonDisplay":
-				'{"hsaId": "' + fx.vårdgivare.hsaId + '",\
-				"forNamn": "' + fx.vårdgivare.förnamn + '",\
-				"efterNamn": "' + fx.vårdgivare.efternamn +'",\
+				'{"hsaId": "' + fx.vårdpersonal.hsaId + '",\
+				"forNamn": "' + fx.vårdpersonal.förnamn + '",\
+				"efterNamn": "' + fx.vårdpersonal.efternamn +'",\
 				"enhetId": "' + fx.vårdenhet.id + '",\
-				"legitimeradeYrkesgrupper": ' + fx.vårdgivare.legitimeradeYrkesgrupper + ',\
+				"legitimeradeYrkesgrupper": ' + fx.vårdpersonal.legitimeradeYrkesgrupper + ',\
 				"origin": "' + originSträng + '",\
 				"authenticationMethod": "FAKE"}'
 		}
@@ -42,20 +42,20 @@ function loggaInVårdgivare(fx, ärDjup) {
 	});
 }
 
-Cypress.Commands.add("loggaInVårdgivareNormal", fx => {
-	loggaInVårdgivare(fx, false);
+Cypress.Commands.add("loggaInVårdpersonalNormal", fx => {
+	loggaInVårdpersonal(fx, false);
 });
 
-Cypress.Commands.add("loggaInVårdgivareIntegrerat", fx => {
-	loggaInVårdgivare(fx, true);
+Cypress.Commands.add("loggaInVårdpersonalIntegrerat", fx => {
+	loggaInVårdpersonal(fx, true);
 });
 
 // Skapa ett utkast enligt intygstyp
 function skapaUtkast(fx, intygstyp) {
-	const vårdgivare = fx.vårdgivare;
+	const vårdpersonal = fx.vårdpersonal;
 	const vårdtagare = fx.vårdtagare;
 	const vårdenhet = fx.vårdenhet;
-	expect(vårdgivare).to.exist;
+	expect(vårdpersonal).to.exist;
 	expect(vårdtagare).to.exist;
 	expect(vårdenhet).to.exist;
 
@@ -90,9 +90,9 @@ function skapaUtkast(fx, intygstyp) {
 							<urn1:skapadAv>\
 								<urn1:personal-id>\
 									<urn2:root>1.2.752.129.2.1.4.1</urn2:root>\
-									<urn2:extension>' + vårdgivare.hsaId + '</urn2:extension>\
+									<urn2:extension>' + vårdpersonal.hsaId + '</urn2:extension>\
 								</urn1:personal-id>\
-								<urn1:fullstandigtNamn>' + vårdgivare.förnamn + ' ' + vårdgivare.efternamn + '</urn1:fullstandigtNamn>\
+								<urn1:fullstandigtNamn>' + vårdpersonal.förnamn + ' ' + vårdpersonal.efternamn + '</urn1:fullstandigtNamn>\
 								<urn1:enhet>\
 									<urn1:enhets-id>\
 										<urn2:root>1.2.752.129.2.1.4.1</urn2:root>\

@@ -4,7 +4,7 @@
 describe('Välja patient', function () {
 
     beforeEach(function() {
-        cy.fixture('vårdgivare/arnoldJohansson').as('vårdgivare');
+        cy.fixture('vårdpersonal/arnoldJohansson').as('vårdpersonal');
         cy.fixture('vårdenheter/alfaEnheten').as('vårdenhet');
         cy.fixture('vårdtagare/tolvanTolvansson').as('vårdtagare');
     });
@@ -16,7 +16,7 @@ describe('Välja patient', function () {
             fixtures måste läsas in i beforeEach() (för alla alias som skapas
             i before() rensas efter första testfallet i sviten).
         */
-        cy.loggaInVårdgivareNormal(this).then(() => {
+        cy.loggaInVårdpersonalNormal(this).then(() => {
             cy.visit('/#/create/choose-patient/index');
         })
 
@@ -35,7 +35,7 @@ describe('Välja patient', function () {
     it('är inte möjligt att gå vidare utan fullständigt personnummer', function() {
 
         // Bör egentligen ske i beforeEach(). Se kommentar i översta testfallet.
-        cy.loggaInVårdgivareNormal(this).then(() => {
+        cy.loggaInVårdpersonalNormal(this).then(() => {
             cy.visit('/#/create/choose-patient/index');
         })
 
@@ -55,8 +55,8 @@ describe('Välja patient', function () {
         cy.get('#skapapersonnummerfortsatt').should('be.disabled');
     });
 
-    it('är möjligt att logga ut vårdgivare', function() {
-        cy.loggaInVårdgivareNormal(this);
+    it('är möjligt att logga ut vårdpersonal', function() {
+        cy.loggaInVårdpersonalNormal(this);
         cy.visit('/#/create/choose-patient/index');
 
         // Cookie-banner är ivägen för utloggning, den måste godkännas först

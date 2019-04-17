@@ -8,7 +8,7 @@ describe('LUAE-FS-intyg', function () {
 
     before(function() {
         cy.fixture('FK_intyg/maxLuaeFsData').as('intygsdata');
-        cy.fixture('vårdgivare/arnoldJohansson').as('vårdgivare');
+        cy.fixture('vårdpersonal/arnoldJohansson').as('vårdpersonal');
         cy.fixture('vårdenheter/alfaEnheten').as('vårdenhet');
         cy.fixture('vårdtagare/tolvanTolvansson').as('vårdtagare');
     });
@@ -21,7 +21,7 @@ describe('LUAE-FS-intyg', function () {
     });
 
     it('skapar en maximalt ifylld LUAE-FS och skickar den till FK', function () {
-        cy.loggaInVårdgivareIntegrerat(this);
+        cy.loggaInVårdpersonalIntegrerat(this);
         const önskadUrl = "/visa/intyg/" + this.utkastId + "?enhet=" + this.vårdenhet.id
         cy.visit(önskadUrl);
 
@@ -30,7 +30,7 @@ describe('LUAE-FS-intyg', function () {
         cy.get('body').then(($body) => {
             if ($body.text().includes('Intygsutkastet är raderat och kan därför inte längre visas.')) {
                 cy.log("Kom till 'Intygetsutkastet är raderat', antagligen gick det för snabbt. Provar igen.");
-                cy.loggaInVårdgivareIntegrerat(this); // Vi behöver logga in igen
+                cy.loggaInVårdpersonalIntegrerat(this); // Vi behöver logga in igen
                 cy.visit(önskadUrl);
             }
         });

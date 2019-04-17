@@ -8,7 +8,7 @@ describe('LISJP-intyg', function () {
 
     before(function() {
         cy.fixture('FK_intyg/maxLisjpData').as('intygsdata');
-        cy.fixture('vårdgivare/arnoldJohansson').as('vårdgivare');
+        cy.fixture('vårdpersonal/arnoldJohansson').as('vårdpersonal');
         cy.fixture('vårdenheter/alfaEnheten').as('vårdenhet');
         cy.fixture('vårdtagare/tolvanTolvansson').as('vårdtagare');
     });
@@ -21,7 +21,7 @@ describe('LISJP-intyg', function () {
     });
 
     it('skapar en maximalt ifylld LISJP och skickar den till FK', function () {
-        cy.loggaInVårdgivareIntegrerat(this);
+        cy.loggaInVårdpersonalIntegrerat(this);
 
         const önskadUrl = "/visa/intyg/" + this.utkastId + "?enhet=" + this.vårdenhet.id
         cy.visit(önskadUrl);
@@ -31,12 +31,11 @@ describe('LISJP-intyg', function () {
         cy.get('body').then(($body) => {
             if ($body.text().includes('Intygsutkastet är raderat och kan därför inte längre visas.')) {
                 cy.log("Kom till 'Intygetsutkastet är raderat', antagligen gick det för snabbt. Provar igen.");
-                cy.loggaInVårdgivareIntegrerat(this); // Vi behöver logga in igen
+                cy.loggaInVårdpersonalIntegrerat(this); // Vi behöver logga in igen
                 cy.visit(önskadUrl);
             }
         });
         cy.url().should('include', this.utkastId);
-        cy.log("Nu har vi loggat in, skapat upp draft och navigerat till intyget för att fylla i det"); // TODO: Ta bort
 
         intyg.sektionGrundFörMedicinsktUnderlag(this.intygsdata.grundFörMedicinsktUnderlag);
         intyg.sektionSysselsättning(this.intygsdata.sysselsättning);
