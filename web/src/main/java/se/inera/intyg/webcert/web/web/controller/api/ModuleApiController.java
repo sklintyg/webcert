@@ -36,14 +36,11 @@ import io.swagger.annotations.Api;
 import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.common.support.modules.registry.IntygModule;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
-import se.inera.intyg.infra.dynamiclink.service.DynamicLinkService;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.schemas.contract.InvalidPersonNummerException;
 import se.inera.intyg.schemas.contract.Personnummer;
-import se.inera.intyg.webcert.common.model.SekretessStatus;
-import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
 import se.inera.intyg.webcert.web.web.controller.api.dto.IntygModuleDTO;
 import se.inera.intyg.webcert.web.web.util.resourcelinks.ResourceLinkHelper;
@@ -57,16 +54,8 @@ public class ModuleApiController extends AbstractApiController {
 
     private static final Logger LOG = LoggerFactory.getLogger(ModuleApiController.class);
 
-    private static final String DYNAMIC_LINK_PLACEHOLDER = "<LINK:";
-
     @Autowired
     private IntygModuleRegistry moduleRegistry;
-
-    @Autowired
-    private DynamicLinkService dynamicLinkService;
-
-    @Autowired
-    private PatientDetailsResolver patientDetailsResolver;
 
     @Autowired
     private AuthoritiesHelper authoritiesHelper;
@@ -103,16 +92,15 @@ public class ModuleApiController extends AbstractApiController {
         try {
             Personnummer personnummer = createPnr(patientId);
 
-            SekretessStatus sekretessmarkering = patientDetailsResolver.getSekretessStatus(personnummer);
             List<IntygModule> intygModules = moduleRegistry.listAllModules();
 
-            final List<IntygModuleDTO> intygModuleDTOS = intygModules.stream()
+            final List<IntygModuleDTO> intygModuleDTOs = intygModules.stream()
                     .map(intygModule -> new IntygModuleDTO(intygModule))
                     .collect(Collectors.toList());
 
-            resourceLinkHelper.decorateWithValidActionLinks(intygModuleDTOS, personnummer);
+            resourceLinkHelper.decorateWithValidActionLinks(intygModuleDTOs, personnummer);
 
-            return Response.ok(intygModuleDTOS).build();
+            return Response.ok(intygModuleDTOs).build();
 
         } catch (InvalidPersonNummerException e) {
             LOG.error(e.getMessage());

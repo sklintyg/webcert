@@ -17,19 +17,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.inera.intyg.webcert.web.web.util.resourcelinks;
-
-import java.util.List;
+package se.inera.intyg.webcert.web.service.access;
 
 import se.inera.intyg.schemas.contract.Personnummer;
-import se.inera.intyg.webcert.web.web.controller.api.dto.IntygModuleDTO;
-import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.DraftHolder;
 
-public interface ResourceLinkHelper {
+public interface DraftAccessService {
+    boolean allowToCreateDraft(String intygsTyp, Personnummer personnummer);
 
-    void decorateWithValidActionLinks(List<IntygModuleDTO> intygModules, Personnummer personnummer);
+    boolean allowToReadDraft(String intygsTyp, String enhetsId, Personnummer personnummer);
 
-    void decorateWithValidActionLinks(IntygModuleDTO intygModule, Personnummer personnummer);
+    boolean allowToEditDraft(String intygsTyp, String enhetsId, Personnummer personnummer);
 
-    void decorateWithValidActionLinks(DraftHolder utkast, String intygsTyp, String enhetsId, Personnummer personnummer);
+    boolean allowToDeleteDraft(String intygsTyp, String enhetsId, Personnummer personnummer);
+
+    boolean allowToSignDraft(String intygsTyp, String enhetsId, Personnummer personnummer);
+
+    boolean allowToPrintDraft(String intygsTyp, String enhetsId, Personnummer personnummer);
+
+    boolean allowToForwardDraft(String intygsTyp, String enhetsId, Personnummer personnummer);
 }

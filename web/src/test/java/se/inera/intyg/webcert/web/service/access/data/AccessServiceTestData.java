@@ -17,12 +17,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.inera.intyg.webcert.web.web.util.resourcelinks.dto;
+package se.inera.intyg.webcert.web.service.access.data;
 
-public enum ActionLinkType {
-    SKAPA_UTKAST,
-    TA_BORT_UTKAST,
-    SKRIV_UT_UTKAST,
-    MAKULERA_UTKAST,
-    KOPIERA_UTKAST;
+import java.util.List;
+
+public interface AccessServiceTestData {
+    List<String> getFeatures();
+
+    List<String> getPrivileges();
 }

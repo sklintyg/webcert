@@ -18,7 +18,7 @@
  */
 
 angular.module('webcert').factory('webcert.UtkastProxy',
-    [ '$q', '$http', '$stateParams', '$log', '$location', '$window', '$timeout',
+    ['$q', '$http', '$stateParams', '$log', '$location', '$window', '$timeout',
         'common.User', 'common.dialogService', 'common.authorityService', 'common.featureService',
         'common.messageService', 'common.statService', 'common.UserModel', 'common.moduleService',
         function($q, $http, $stateParams, $log, $location, $window, $timeout, User, dialogService,
@@ -53,7 +53,11 @@ angular.module('webcert').factory('webcert.UtkastProxy',
                 var data = moduleService.getModules();
                 var sortValue = 0;
                 var types = [
-                    { sortValue: sortValue++, id: 'default', label: messageService.getProperty('label.default-intyg-type') }
+                    {
+                        sortValue: sortValue++,
+                        id: 'default',
+                        label: messageService.getProperty('label.default-intyg-type')
+                    }
                 ];
                 for (var i = 0; i < data.length; i++) {
                     var m = data[i];
@@ -61,7 +65,8 @@ angular.module('webcert').factory('webcert.UtkastProxy',
                         feature: featureService.features.HANTERA_INTYGSUTKAST,
                         authority: UserModel.privileges.SKRIVA_INTYG,
                         requestOrigin: UserModel.user.origin,
-                        intygstyp: m.id};
+                        intygstyp: m.id
+                    };
 
                     // Only add type if feature is active and user has global intygTyp access through their role.
                     if (authorityService.isAuthorityActive(options)) {
@@ -97,7 +102,8 @@ angular.module('webcert').factory('webcert.UtkastProxy',
                             feature: featureService.features.HANTERA_INTYGSUTKAST,
                             authority: UserModel.privileges.SKRIVA_INTYG,
                             requestOrigin: UserModel.user.origin,
-                            intygstyp: m.id};
+                            intygstyp: m.id
+                        };
 
                         // Only add type if feature is active and user has global intygTyp access through their role.
                         if (authorityService.isAuthorityActive(options)) {
@@ -144,7 +150,7 @@ angular.module('webcert').factory('webcert.UtkastProxy',
             function _getUtkastList(query, onSuccess, onError) {
                 $log.debug('_getUtkastList:');
                 var restPath = '/api/utkast/'; // release version
-                $http.get(restPath, { params: query }).then(function(response) {
+                $http.get(restPath, {params: query}).then(function(response) {
                     $log.debug(restPath + ' response:' + response.data);
                     onSuccess(response.data);
                 }, function(response) {
@@ -160,7 +166,7 @@ angular.module('webcert').factory('webcert.UtkastProxy',
             function _getUtkastFetchMore(query, onSuccess, onError) {
                 $log.debug('_getUtkastFetchMore');
                 var restPath = '/api/utkast';
-                $http.get(restPath, { params: query }).then(function(response) {
+                $http.get(restPath, {params: query}).then(function(response) {
                     $log.debug('_getUtkastFetchMore got data:' + response.data);
                     onSuccess(response.data);
                 }, function(response) {

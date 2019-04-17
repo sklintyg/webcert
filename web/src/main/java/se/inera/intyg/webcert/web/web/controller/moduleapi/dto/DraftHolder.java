@@ -18,11 +18,15 @@
  */
 package se.inera.intyg.webcert.web.web.controller.moduleapi.dto;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonRawValue;
+
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
-
-import java.time.LocalDateTime;
+import se.inera.intyg.webcert.web.web.util.resourcelinks.dto.ActionLink;
 
 /**
  * Container for a draft and its current status.
@@ -58,6 +62,8 @@ public class DraftHolder {
     private boolean avliden = false;
     private boolean patientNameChangedInPU = false;
     private boolean patientAddressChangedInPU = false;
+
+    private List<ActionLink> links = new ArrayList<>();
 
     public long getVersion() {
         return version;
@@ -201,5 +207,13 @@ public class DraftHolder {
 
     public void setRevokedAt(LocalDateTime revokedAt) {
         this.revokedAt = revokedAt;
+    }
+
+    public List<ActionLink> getLinks() {
+        return links;
+    }
+
+    public void addLink(ActionLink link) {
+        this.links.add(link);
     }
 }

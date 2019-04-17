@@ -24,7 +24,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import javax.ws.rs.*;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
@@ -49,7 +55,7 @@ import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastFilter;
 import se.inera.intyg.webcert.web.converter.IntygDraftsConverter;
 import se.inera.intyg.webcert.web.converter.util.IntygConverterUtil;
-import se.inera.intyg.webcert.web.service.access.AccessService;
+import se.inera.intyg.webcert.web.service.access.DraftAccessService;
 import se.inera.intyg.webcert.web.service.dto.Lakare;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
@@ -91,7 +97,7 @@ public class UtkastApiController extends AbstractApiController {
     private IntygModuleRegistry moduleRegistry;
 
     @Autowired
-    private AccessService accessService;
+    private DraftAccessService draftAccessService;
 
     /**
      * Create a new draft.
@@ -118,7 +124,7 @@ public class UtkastApiController extends AbstractApiController {
         }
         LOG.debug("Attempting to create draft of type '{}'", intygsTyp);
 
-        final boolean allowedToCreateUtkast = accessService.allowedToCreateUtkast(intygsTyp, request.getPatientPersonnummer());
+        final boolean allowedToCreateUtkast = draftAccessService.allowToCreateDraft(intygsTyp, request.getPatientPersonnummer());
         if (!allowedToCreateUtkast) {
             // TODO: Manage so correct exception can be thrown
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM,

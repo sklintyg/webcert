@@ -19,6 +19,8 @@
 
 package se.inera.intyg.webcert.web.web.util.resourcelinks.dto;
 
+import java.util.Objects;
+
 public class ActionLink {
 
     private ActionLinkType type;
@@ -38,5 +40,22 @@ public class ActionLink {
 
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        ActionLink that = (ActionLink) o;
+        return type == that.type && url.equals(that.url);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(type, url);
     }
 }

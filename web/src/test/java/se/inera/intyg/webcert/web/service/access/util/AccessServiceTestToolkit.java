@@ -17,19 +17,29 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.inera.intyg.webcert.web.service.access;
+package se.inera.intyg.webcert.web.service.access.util;
 
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.assertj.core.util.Lists;
 
 import se.inera.intyg.infra.integration.pu.model.Person;
 import se.inera.intyg.infra.integration.pu.model.PersonSvar;
-import se.inera.intyg.infra.security.common.model.*;
+import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.infra.security.common.model.Feature;
+import se.inera.intyg.infra.security.common.model.Privilege;
+import se.inera.intyg.infra.security.common.model.RequestOrigin;
+import se.inera.intyg.infra.security.common.model.Role;
+import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.web.service.access.data.AccessServiceTestData;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.utkast.dto.PreviousIntyg;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
@@ -40,52 +50,41 @@ abstract public class AccessServiceTestToolkit {
         List<String> featureNames = Arrays.asList(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);
         final Map<String, Feature> featureMap = getFeatureMap(intygsTyp, featureNames);
         final Map<String, Privilege> privilegeMap = getUtkastAuthority(intygsTyp);
-        return createUser(intygsTyp, featureMap, privilegeMap, false, true);
-    }
-
-    static WebCertUser createUserWithUtkastAuthorityForUniqueUtkastWithinVG(String intygsTyp) {
-        List<String> featureNames = Arrays.asList(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST,
-                AuthoritiesConstants.FEATURE_UNIKT_UTKAST_INOM_VG);
-        final Map<String, Feature> featureMap = getFeatureMap(intygsTyp, featureNames);
-        final Map<String, Privilege> privilegeMap = getUtkastAuthority(intygsTyp);
-        return createUser(intygsTyp, featureMap, privilegeMap, false, true);
-    }
-
-    static WebCertUser createUserWithUtkastAuthorityForUniqueIntygWithinVG(String intygsTyp) {
-        List<String> featureNames = Arrays.asList(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST,
-                AuthoritiesConstants.FEATURE_UNIKT_INTYG_INOM_VG);
-        final Map<String, Feature> featureMap = getFeatureMap(intygsTyp, featureNames);
-        final Map<String, Privilege> privilegeMap = getUtkastAuthority(intygsTyp);
-        return createUser(intygsTyp, featureMap, privilegeMap, false, true);
-    }
-
-    static WebCertUser createUserWithUtkastAuthorityForUniqueIntyg(String intygsTyp) {
-        List<String> featureNames = Arrays.asList(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST,
-                AuthoritiesConstants.FEATURE_UNIKT_INTYG);
-        final Map<String, Feature> featureMap = getFeatureMap(intygsTyp, featureNames);
-        final Map<String, Privilege> privilegeMap = getUtkastAuthority(intygsTyp);
-        return createUser(intygsTyp, featureMap, privilegeMap, false, true);
+        return createUserWithoutParameters(intygsTyp, featureMap, privilegeMap);
     }
 
     static WebCertUser createUserWithoutUtkastAuthority(String intygsTyp) {
         List<String> featureNames = Arrays.asList(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);
         final Map<String, Feature> featureMap = getFeatureMap(intygsTyp, featureNames);
-        return createUser(intygsTyp, featureMap, new HashMap<>(), false, true);
+        return createUserWithoutParameters(intygsTyp, featureMap, new HashMap<>());
     }
 
     static WebCertUser createUserWithoutUtkastFeature(String intygsTyp) {
         final Map<String, Privilege> privilegeMap = getUtkastAuthority(intygsTyp);
-        return createUser(intygsTyp, new HashMap<>(), privilegeMap, false, true);
+        return createUserWithoutParameters(intygsTyp, new HashMap<>(), privilegeMap);
     }
 
-    static WebCertUser createUserWithUtkastAuthorityOnInactiveUnit(String intygsTyp) {
-        List<String> featureNames = Arrays.asList(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);
-        final Map<String, Feature> featureMap = getFeatureMap(intygsTyp, featureNames);
-        final Map<String, Privilege> privilegeMap = getUtkastAuthority(intygsTyp);
-        return createUser(intygsTyp, featureMap, privilegeMap, true, true);
+    public static WebCertUser createUser(String intygsTyp, AccessServiceTestData accessServiceTestData) {
+        return createUserWithoutParameters(intygsTyp,
+                getFeatureMap(intygsTyp, accessServiceTestData.getFeatures()),
+                getPrivilegesMap(intygsTyp, accessServiceTestData.getPrivileges()));
     }
 
-    private static WebCertUser createUser(String intygsTyp, Map<String, Feature> featureMap, Map<String, Privilege> privilegesMap,
+    public static WebCertUser createUser(String intygsTyp, AccessServiceTestData accessServiceTestData, boolean inactiveUnit) {
+        return createUser(intygsTyp, accessServiceTestData, inactiveUnit, true);
+    }
+
+    public static WebCertUser createUser(String intygsTyp, AccessServiceTestData accessServiceTestData, boolean inactiveUnit,
+            boolean renewOk) {
+        return createUserWithParameters(intygsTyp,
+                getFeatureMap(intygsTyp, accessServiceTestData.getFeatures()),
+                getPrivilegesMap(intygsTyp, accessServiceTestData.getPrivileges()),
+                inactiveUnit,
+                renewOk);
+    }
+
+    private static WebCertUser createUserWithParameters(String intygsTyp, Map<String, Feature> featureMap,
+            Map<String, Privilege> privilegesMap,
             boolean inactiveUnit,
             boolean fornyaOk) {
 
@@ -94,9 +93,22 @@ abstract public class AccessServiceTestToolkit {
         doReturn(featureMap).when(webCertUser).getFeatures();
         doReturn(getRolesMap(AuthoritiesConstants.ROLE_LAKARE)).when(webCertUser).getRoles();
         doReturn(UserOriginType.NORMAL.name()).when(webCertUser).getOrigin();
-        doReturn(privilegesMap).when(webCertUser)
-                .getAuthorities();
+        doReturn(privilegesMap).when(webCertUser).getAuthorities();
         doReturn(getParameters(inactiveUnit, fornyaOk)).when(webCertUser).getParameters();
+
+        return webCertUser;
+    }
+
+    private static WebCertUser createUserWithoutParameters(String intygsTyp, Map<String, Feature> featureMap,
+            Map<String, Privilege> privilegesMap) {
+
+        final WebCertUser webCertUser = mock(WebCertUser.class);
+
+        doReturn(featureMap).when(webCertUser).getFeatures();
+        doReturn(getRolesMap(AuthoritiesConstants.ROLE_LAKARE)).when(webCertUser).getRoles();
+        doReturn(UserOriginType.NORMAL.name()).when(webCertUser).getOrigin();
+        doReturn(privilegesMap).when(webCertUser).getAuthorities();
+        doReturn(null).when(webCertUser).getParameters();
 
         return webCertUser;
     }
@@ -144,6 +156,15 @@ abstract public class AccessServiceTestToolkit {
         role.setName(roleName);
         rolesHashMap.put(roleName, role);
         return rolesHashMap;
+    }
+
+    private static Map<String, Privilege> getPrivilegesMap(String intygsTyp, List<String> privileges) {
+        final HashMap<String, Privilege> privilegesHashMap = new HashMap<>();
+        for (String privilege : privileges) {
+            privilegesHashMap.put(privilege, createPrivilege(privilege, Collections.emptyList(),
+                    Lists.newArrayList(createRequestOrigin(UserOriginType.NORMAL.name(), Arrays.asList(intygsTyp)))));
+        }
+        return privilegesHashMap;
     }
 
     private static Map<String, Privilege> getPrivilegesMap(Privilege privilege) {
@@ -208,6 +229,18 @@ abstract public class AccessServiceTestToolkit {
         return personSvar;
     }
 
+    public static Map<String, Map<String, PreviousIntyg>> createEmptyPreviousForUtkast(String intygsTyp) {
+        final Map<String, PreviousIntyg> previousUtkastMap = new HashMap<>();
+
+        final Map<String, PreviousIntyg> previousIntygMap = new HashMap<>();
+
+        final Map<String, Map<String, PreviousIntyg>> previousIntygUtkastMap = new HashMap<>();
+        previousIntygUtkastMap.put("utkast", previousUtkastMap);
+        previousIntygUtkastMap.put("intyg", previousIntygMap);
+
+        return previousIntygUtkastMap;
+    }
+
     public static Map<String, Map<String, PreviousIntyg>> createPreviousUtkastForUtkast(String intygsTyp) {
         final PreviousIntyg previousIntyg = mock(PreviousIntyg.class);
 
@@ -243,5 +276,4 @@ abstract public class AccessServiceTestToolkit {
 
         return previousIntygUtkastMap;
     }
-
 }

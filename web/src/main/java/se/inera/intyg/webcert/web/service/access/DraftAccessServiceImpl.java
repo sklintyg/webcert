@@ -21,8 +21,10 @@ package se.inera.intyg.webcert.web.service.access;
 
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import se.inera.intyg.common.db.support.DbModuleEntryPoint;
 import se.inera.intyg.common.doi.support.DoiModuleEntryPoint;
 import se.inera.intyg.infra.security.authorities.validation.AuthoritiesValidator;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
@@ -35,13 +37,14 @@ import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 import se.inera.intyg.webcert.web.service.utkast.dto.PreviousIntyg;
 
 @Service
-public class AccessServiceImpl implements AccessService {
+public class DraftAccessServiceImpl implements DraftAccessService {
 
     private final WebCertUserService webCertUserService;
     private final PatientDetailsResolver patientDetailsResolver;
     private final UtkastService utkastService;
 
-    public AccessServiceImpl(final WebCertUserService webCertUserService,
+    @Autowired
+    public DraftAccessServiceImpl(final WebCertUserService webCertUserService,
             final PatientDetailsResolver patientDetailsResolver,
             final UtkastService utkastService) {
         this.webCertUserService = webCertUserService;
@@ -50,12 +53,13 @@ public class AccessServiceImpl implements AccessService {
     }
 
     @Override
-    public boolean allowedToCreateUtkast(String intygsTyp, Personnummer personnummer) {
+    public boolean allowToCreateDraft(String intygsTyp, Personnummer personnummer) {
         final WebCertUser user = webCertUserService.getUser();
 
-        boolean hasAccess = isAuthorized(intygsTyp, user);
+        boolean hasAccess = isAuthorized(intygsTyp, user, AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST,
+                AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG);
 
-        if (hasAccess && !isDeceasedRuleValid(intygsTyp, personnummer)) {
+        if (hasAccess && !isDeceasedRuleValidForCreate(intygsTyp, personnummer)) {
             hasAccess = false;
         }
 
@@ -79,21 +83,102 @@ public class AccessServiceImpl implements AccessService {
         return hasAccess;
     }
 
-    private boolean isAuthorized(String intygsTyp, WebCertUser user) {
+    @Override
+    public boolean allowToReadDraft(String intygsTyp, String enhetsId, Personnummer personnummer) {
+        final WebCertUser user = webCertUserService.getUser();
+
+        boolean hasAccess = isAuthorized(intygsTyp, user, AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST,
+                AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG);
+
+        if (hasAccess && !isSekretessRuleValid(intygsTyp, enhetsId, user, personnummer)) {
+            hasAccess = false;
+        }
+
+        return hasAccess;
+    }
+
+    @Override
+    public boolean allowToEditDraft(String intygsTyp, String enhetsId, Personnummer personnummer) {
+        return allowedToHandleUtkast(intygsTyp, enhetsId, personnummer);
+    }
+
+    @Override
+    public boolean allowToDeleteDraft(String intygsTyp, String enhetsId, Personnummer personnummer) {
+        // TODO Fix so you cant print utkast if delete false and other unit
+        final WebCertUser user = webCertUserService.getUser();
+
+        boolean hasAccess = isAuthorized(intygsTyp, user, AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST,
+                AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG);
+
+        if (hasAccess && !webCertUserService.userIsLoggedInOnEnhetOrUnderenhet(enhetsId)) {
+            if ((intygsTyp.equalsIgnoreCase(DbModuleEntryPoint.MODULE_ID)
+                    || intygsTyp.equalsIgnoreCase(DoiModuleEntryPoint.MODULE_ID))
+                    && isInactiveUnitRuleValid(user)
+                    && isSekretessRuleValid(intygsTyp, enhetsId, user, personnummer)) {
+                hasAccess = true;
+            } else {
+                hasAccess = false;
+            }
+        }
+
+        return hasAccess;
+    }
+
+    @Override
+    public boolean allowToSignDraft(String intygsTyp, String enhetsId, Personnummer personnummer) {
+        return allowedToHandleUtkast(intygsTyp, enhetsId, personnummer);
+    }
+
+    @Override
+    public boolean allowToPrintDraft(String intygsTyp, String enhetsId, Personnummer personnummer) {
+        // TODO Handle print feature authority
+        // TODO Fix so you cant print utkast if renewal false and other unit
+        return allowedToHandleUtkast(intygsTyp, enhetsId, personnummer);
+    }
+
+    @Override
+    public boolean allowToForwardDraft(String intygsTyp, String enhetsId, Personnummer personnummer) {
+        return allowedToHandleUtkast(intygsTyp, enhetsId, personnummer);
+    }
+
+    private boolean allowedToHandleUtkast(String intygsTyp, String enhetsId, Personnummer personnummer) {
+        final WebCertUser user = webCertUserService.getUser();
+
+        boolean hasAccess = isAuthorized(intygsTyp, user, AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST,
+                AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG);
+
+        if (hasAccess && !webCertUserService.userIsLoggedInOnEnhetOrUnderenhet(enhetsId)) {
+            hasAccess = false;
+        }
+
+        if (hasAccess && !isDeceasedRuleValidForEdit(intygsTyp, personnummer)) {
+            hasAccess = false;
+        }
+
+        return hasAccess;
+    }
+
+    private boolean isAuthorized(String intygsTyp, WebCertUser user, String feature, String privilege) {
         final AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
-        return authoritiesValidator.given(user, intygsTyp)
-                .features(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
-                .privilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG)
-                .isVerified();
+        return authoritiesValidator.given(user, intygsTyp).features(feature).privilege(privilege).isVerified();
     }
 
     // TODO: Refactor and move logic to intygstyp-implementation
-    private boolean isDeceasedRuleValid(String intygsTyp, Personnummer personnummer) {
+    private boolean isDeceasedRuleValidForCreate(String intygsTyp, Personnummer personnummer) {
         boolean isDeceasedRuleValid = true;
         final boolean isAvliden = patientDetailsResolver.isAvliden(personnummer);
         if (!isAvliden || (isAvliden && intygsTyp.equalsIgnoreCase(DoiModuleEntryPoint.MODULE_ID))) {
             isDeceasedRuleValid = true;
         } else {
+            isDeceasedRuleValid = false;
+        }
+        return isDeceasedRuleValid;
+    }
+
+    private boolean isDeceasedRuleValidForEdit(String intygsTyp, Personnummer personnummer) {
+        boolean isDeceasedRuleValid = true;
+        final boolean isAvliden = patientDetailsResolver.isAvliden(personnummer);
+        if (isAvliden && intygsTyp.equalsIgnoreCase(DbModuleEntryPoint.MODULE_ID)) {
             isDeceasedRuleValid = false;
         }
         return isDeceasedRuleValid;
@@ -116,6 +201,10 @@ public class AccessServiceImpl implements AccessService {
     }
 
     private boolean isSekretessRuleValid(String intygsTyp, WebCertUser user, Personnummer personnummer) {
+        return isSekretessRuleValid(intygsTyp, null, user, personnummer);
+    }
+
+    private boolean isSekretessRuleValid(String intygsTyp, String enhetsId, WebCertUser user, Personnummer personnummer) {
         boolean isSekretessRuleValid = true;
         final SekretessStatus sekretessStatus = patientDetailsResolver.getSekretessStatus(personnummer);
         if (SekretessStatus.UNDEFINED.equals(sekretessStatus)) {
@@ -126,6 +215,10 @@ public class AccessServiceImpl implements AccessService {
             isSekretessRuleValid = authoritiesValidator.given(user, intygsTyp)
                     .privilege(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT)
                     .isVerified();
+
+            if (enhetsId != null && webCertUserService.userIsLoggedInOnEnhetOrUnderenhet(enhetsId)) {
+                isSekretessRuleValid = true;
+            }
         }
         return isSekretessRuleValid;
     }

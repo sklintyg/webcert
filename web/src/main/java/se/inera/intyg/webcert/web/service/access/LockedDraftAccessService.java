@@ -21,6 +21,12 @@ package se.inera.intyg.webcert.web.service.access;
 
 import se.inera.intyg.schemas.contract.Personnummer;
 
-public interface AccessService {
-    boolean allowedToCreateUtkast(String intygsTyp, Personnummer personnummer);
+public interface LockedDraftAccessService {
+    boolean allowToRead(String intygsTyp, String enhetsId, Personnummer personnummer);
+
+    boolean allowedToCopyLockedUtkast(String intygsTyp, String enhetsId, Personnummer personnummer);
+
+    boolean allowedToInvalidateLockedUtkast(String intygsTyp, String enhetsId, Personnummer personnummer);
+
+    boolean allowToPrint(String intygsTyp, String enhetsId, Personnummer personnummer);
 }

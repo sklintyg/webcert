@@ -20,6 +20,7 @@ package se.inera.intyg.webcert.web.web.controller.moduleapi;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+
 import javax.persistence.OptimisticLockException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -55,10 +56,11 @@ import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
+import se.inera.intyg.webcert.web.service.access.DraftAccessService;
+import se.inera.intyg.webcert.web.service.access.LockedDraftAccessService;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 import se.inera.intyg.webcert.web.service.relation.CertificateRelationService;
-import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.utkast.CopyUtkastService;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateUtkastFromTemplateRequest;
@@ -72,6 +74,7 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.CopyIntygResponse;
 import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
 import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.DraftHolder;
 import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.RevokeSignedIntygParameter;
+import se.inera.intyg.webcert.web.web.util.resourcelinks.ResourceLinkHelper;
 
 /**
  * Controller for module interaction with drafts.
@@ -110,6 +113,15 @@ public class UtkastModuleApiController extends AbstractApiController {
     @Autowired
     private CopyUtkastServiceHelper copyUtkastServiceHelper;
 
+    @Autowired
+    private DraftAccessService draftAccessService;
+
+    @Autowired
+    private LockedDraftAccessService lockedDraftAccessService;
+
+    @Autowired
+    private ResourceLinkHelper resourceLinkHelper;
+
     /**
      * Returns the draft certificate as JSON identified by the intygId.
      *
@@ -135,12 +147,13 @@ public class UtkastModuleApiController extends AbstractApiController {
                     "Could not resolve Patient in PU-service when opening draft.");
         }
 
-        authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
-                .features(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
-                .privilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG)
-                .orThrow();
-
-        verifySekretessmarkering(intygsTyp, utkast.getEnhetsId(), resolvedPatient);
+        final boolean allowedToReadUtkast = draftAccessService.allowToReadDraft(intygsTyp, utkast.getEnhetsId(),
+                resolvedPatient.getPersonId());
+        if (!allowedToReadUtkast) {
+            // TODO: Manage so correct exception can be thrown
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM,
+                    "Not allowed to create utkast");
+        }
 
         request.getSession(true).removeAttribute(LAST_SAVED_DRAFT);
 
@@ -190,6 +203,8 @@ public class UtkastModuleApiController extends AbstractApiController {
             utkast.setModel(updatedModel);
             draftHolder.setContent(utkast.getModel());
 
+            resourceLinkHelper.decorateWithValidActionLinks(draftHolder, intygsTyp, utkast.getEnhetsId(), resolvedPatient.getPersonId());
+
             return Response.ok(draftHolder).build();
         } catch (ModuleException | ModuleNotFoundException e) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, e.getMessage());
@@ -213,25 +228,6 @@ public class UtkastModuleApiController extends AbstractApiController {
         }
     }
 
-    private void verifySekretessmarkering(String intygsTyp, String enhetsId, Patient resolvedPatient) {
-        WebCertUser user = getWebCertUserService().getUser();
-
-        authoritiesValidator.given(user, intygsTyp)
-                .privilegeIf(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT,
-                        resolvedPatient != null && resolvedPatient.isSekretessmarkering())
-                .orThrow(new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM_SEKRETESSMARKERING,
-                        "User missing required privilege or cannot handle sekretessmarkerad patient"));
-
-        // INTYG-4231: Om patienten är sekretessmarkerad så måste användaren vara inloggad på exakt samma vårdenhet
-        // som utkastet tillhör
-        if (resolvedPatient != null && resolvedPatient.isSekretessmarkering()
-                && !getWebCertUserService().userIsLoggedInOnEnhetOrUnderenhet(enhetsId)) {
-            LOG.debug("User not logged in on same unit as draft unit for sekretessmarkerad patient.");
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM_SEKRETESSMARKERING_ENHET,
-                    "User not logged in on same unit as draft unit for sekretessmarkerad patient.");
-        }
-    }
-
     /**
      * Persists the supplied draft certificate using the intygId as key.
      *
@@ -249,10 +245,15 @@ public class UtkastModuleApiController extends AbstractApiController {
             @PathParam("version") long version,
             @DefaultValue("false") @QueryParam("autoSave") boolean autoSave, byte[] payload, @Context HttpServletRequest request) {
 
-        authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
-                .features(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
-                .privilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG)
-                .orThrow();
+        Utkast utkast = utkastService.getDraft(intygsId, intygsTyp);
+
+        final boolean allowedToEditUtkast = draftAccessService.allowToReadDraft(intygsTyp, utkast.getEnhetsId(),
+                utkast.getPatientPersonnummer());
+        if (!allowedToEditUtkast) {
+            // TODO: Manage so correct exception can be thrown
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM,
+                    "Not allowed to create utkast");
+        }
 
         LOG.debug("Saving utkast with id '{}', autosave is {}", intygsId, autoSave);
 
@@ -294,10 +295,15 @@ public class UtkastModuleApiController extends AbstractApiController {
     public Response validateDraft(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId,
             byte[] payload) {
 
-        authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
-                .features(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
-                .privilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG)
-                .orThrow();
+        Utkast utkast = utkastService.getDraft(intygsId, intygsTyp);
+
+        final boolean allowedToEditUtkast = draftAccessService.allowToReadDraft(intygsTyp, utkast.getEnhetsId(),
+                utkast.getPatientPersonnummer());
+        if (!allowedToEditUtkast) {
+            // TODO: Manage so correct exception can be thrown
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM,
+                    "Not allowed to create utkast");
+        }
 
         LOG.debug("Validating utkast with id '{}'", intygsId);
 
@@ -321,29 +327,17 @@ public class UtkastModuleApiController extends AbstractApiController {
     @PrometheusTimeMethod
     public Response copyUtkast(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String orgIntygsId) {
 
-        authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
-                .features(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
-                .privilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG)
-                .orThrow();
-
         LOG.debug("Attempting to create a new certificate from certificate with type {} and id '{}'",
                 intygsTyp, orgIntygsId);
 
-        WebCertUser user = getWebCertUserService().getUser();
-
-        if (user.getParameters() != null && user.getParameters().isInactiveUnit()) {
-            LOG.info("User is not allowed to request a copy for id '{}' due to true inaktivEnhet-parameter", orgIntygsId);
-            final String message = "Authorization failed due to true inaktivEnhet-parameter";
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM, message);
-        }
-
         Utkast utkast = utkastService.getDraft(orgIntygsId, intygsTyp);
 
-        // Check avliden
-        if (patientDetailsResolver.isAvliden(utkast.getPatientPersonnummer())) {
-            authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
-                    .features(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST_AVLIDEN)
-                    .orThrow();
+        final boolean allowedToCopyLockedUtkast = lockedDraftAccessService.allowedToCopyLockedUtkast(intygsTyp, utkast.getEnhetsId(),
+                utkast.getPatientPersonnummer());
+        if (!allowedToCopyLockedUtkast) {
+            // TODO: Manage so correct exception can be thrown
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM,
+                    "Not allowed to create utkast");
         }
 
         CopyIntygRequest request = new CopyIntygRequest();
@@ -383,10 +377,15 @@ public class UtkastModuleApiController extends AbstractApiController {
             @PathParam("version") long version,
             @Context HttpServletRequest request) {
 
-        authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
-                .features(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
-                .privilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG)
-                .orThrow();
+        Utkast utkast = utkastService.getDraft(intygsId, intygsTyp);
+
+        final boolean allowedToDeleteUtkast = draftAccessService.allowToDeleteDraft(intygsTyp, utkast.getEnhetsId(),
+                utkast.getPatientPersonnummer());
+        if (!allowedToDeleteUtkast) {
+            // TODO: Manage so correct exception can be thrown
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM,
+                    "Not allowed to create utkast");
+        }
 
         LOG.debug("Deleting draft with id {}", intygsId);
 
@@ -417,7 +416,16 @@ public class UtkastModuleApiController extends AbstractApiController {
     @PrometheusTimeMethod
     public Response revokeLockedDraft(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId,
             RevokeSignedIntygParameter param) {
-        validateRevokeAuthority(intygsTyp);
+
+        Utkast utkast = utkastService.getDraft(intygsId, intygsTyp);
+
+        final boolean allowedToInvalidateUtkast = lockedDraftAccessService.allowedToInvalidateLockedUtkast(intygsTyp, utkast.getEnhetsId(),
+                utkast.getPatientPersonnummer());
+        if (!allowedToInvalidateUtkast) {
+            // TODO: Manage so correct exception can be thrown
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM,
+                    "Not allowed to create utkast");
+        }
 
         if (authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
                 .features(AuthoritiesConstants.FEATURE_MAKULERA_INTYG_KRAVER_ANLEDNING).isVerified() && !param.isValid()) {
@@ -428,12 +436,5 @@ public class UtkastModuleApiController extends AbstractApiController {
         utkastService.revokeLockedDraft(intygsId, intygsTyp, param.getMessage(), param.getReason());
 
         return Response.ok().build();
-    }
-
-    private void validateRevokeAuthority(String intygsTyp) {
-        authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
-                .features(AuthoritiesConstants.FEATURE_MAKULERA_INTYG)
-                .privilege(AuthoritiesConstants.PRIVILEGE_MAKULERA_INTYG)
-                .orThrow();
     }
 }

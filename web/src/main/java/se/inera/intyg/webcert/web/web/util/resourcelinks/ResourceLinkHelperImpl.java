@@ -24,9 +24,12 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.schemas.contract.Personnummer;
-import se.inera.intyg.webcert.web.service.access.AccessService;
+import se.inera.intyg.webcert.web.service.access.DraftAccessService;
+import se.inera.intyg.webcert.web.service.access.LockedDraftAccessService;
 import se.inera.intyg.webcert.web.web.controller.api.dto.IntygModuleDTO;
+import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.DraftHolder;
 import se.inera.intyg.webcert.web.web.util.resourcelinks.dto.ActionLink;
 import se.inera.intyg.webcert.web.web.util.resourcelinks.dto.ActionLinkType;
 
@@ -34,7 +37,10 @@ import se.inera.intyg.webcert.web.web.util.resourcelinks.dto.ActionLinkType;
 public class ResourceLinkHelperImpl implements ResourceLinkHelper {
 
     @Autowired
-    private AccessService accessService;
+    private DraftAccessService draftAccessService;
+
+    @Autowired
+    private LockedDraftAccessService lockedDraftAccessService;
 
     @Override
     public void decorateWithValidActionLinks(List<IntygModuleDTO> intygModules, Personnummer personnummer) {
@@ -45,11 +51,51 @@ public class ResourceLinkHelperImpl implements ResourceLinkHelper {
 
     @Override
     public void decorateWithValidActionLinks(IntygModuleDTO intygModule, Personnummer personnummer) {
-        if (accessService.allowedToCreateUtkast(intygModule.getId(), personnummer)) {
+        if (draftAccessService.allowToCreateDraft(intygModule.getId(), personnummer)) {
             final ActionLink actionLink = new ActionLink();
             actionLink.setType(ActionLinkType.SKAPA_UTKAST);
             actionLink.setUrl("testurl");
             intygModule.addLink(actionLink);
         }
+    }
+
+    @Override
+    public void decorateWithValidActionLinks(DraftHolder utkast, String intygsTyp, String enhetsId, Personnummer personnummer) {
+        boolean isLocked = utkast.getStatus() != null ? utkast.getStatus().equals(UtkastStatus.DRAFT_LOCKED) : false;
+        // TODO Manage print when revoked.
+        if (isLocked) {
+            if (lockedDraftAccessService.allowedToInvalidateLockedUtkast(intygsTyp, enhetsId, personnummer)) {
+                final ActionLink actionLink = new ActionLink();
+                actionLink.setType(ActionLinkType.MAKULERA_UTKAST);
+                actionLink.setUrl("testurl");
+                utkast.addLink(actionLink);
+            }
+            if (lockedDraftAccessService.allowedToCopyLockedUtkast(intygsTyp, enhetsId, personnummer)) {
+                final ActionLink actionLink = new ActionLink();
+                actionLink.setType(ActionLinkType.KOPIERA_UTKAST);
+                actionLink.setUrl("testurl");
+                utkast.addLink(actionLink);
+            }
+            if (lockedDraftAccessService.allowToPrint(intygsTyp, enhetsId, personnummer)) {
+                final ActionLink actionLink = new ActionLink();
+                actionLink.setType(ActionLinkType.SKRIV_UT_UTKAST);
+                actionLink.setUrl("testurl");
+                utkast.addLink(actionLink);
+            }
+        } else {
+            if (draftAccessService.allowToDeleteDraft(intygsTyp, enhetsId, personnummer)) {
+                final ActionLink actionLink = new ActionLink();
+                actionLink.setType(ActionLinkType.TA_BORT_UTKAST);
+                actionLink.setUrl("testurl");
+                utkast.addLink(actionLink);
+            }
+            if (draftAccessService.allowToPrintDraft(intygsTyp, enhetsId, personnummer)) {
+                final ActionLink actionLink = new ActionLink();
+                actionLink.setType(ActionLinkType.SKRIV_UT_UTKAST);
+                actionLink.setUrl("testurl");
+                utkast.addLink(actionLink);
+            }
+        }
+
     }
 }

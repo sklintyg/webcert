@@ -17,12 +17,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.inera.intyg.webcert.web.web.util.resourcelinks.dto;
+package se.inera.intyg.webcert.web.service.access.data;
 
-public enum ActionLinkType {
-    SKAPA_UTKAST,
-    TA_BORT_UTKAST,
-    SKRIV_UT_UTKAST,
-    MAKULERA_UTKAST,
-    KOPIERA_UTKAST;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
+import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
+
+public class TsAccessServiceTestData implements AccessServiceTestData {
+    private static List<String> FEATURES = Arrays.asList(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);
+    private static List<String> PRIVILEGES = Arrays.asList(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG);
+
+    @Override
+    public List<String> getFeatures() {
+        return Collections.unmodifiableList(FEATURES);
+    }
+
+    @Override
+    public List<String> getPrivileges() {
+        return Collections.unmodifiableList(PRIVILEGES);
+    }
 }
