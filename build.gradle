@@ -7,12 +7,15 @@ plugins {
 ext {
     commonVersion = System.properties['commonVersion'] ?: '0-SNAPSHOT'
     infraVersion = System.properties['infraVersion'] ?: '0-SNAPSHOT'
-    refDataVersion = System.properties['refDataVersion'] ?: '1.0.0.+'
+//    refDataVersion = System.properties['refDataVersion'] ?: '1.0.0.+'
+    refDataVersion = System.properties['refDataVersion'] ?: '0-SNAPSHOT'
 
     commonsIoVersion = "2.4"
 
     schemasContractVersion = "2.1.7"
     schemasRehabilitationVersion = "1.1.2"
+
+    srsSchemasVersion = "0-SNAPSHOT"
 
     funktionstjansterGrpSchemasVersion = "1.0.3"
     intygClinicalprocessSchemasVersion = "1.0.16"

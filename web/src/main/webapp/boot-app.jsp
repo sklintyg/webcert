@@ -99,6 +99,7 @@
       <script type="text/javascript" src="/bower_components/angular-ui-router/release/angular-ui-router.js"></script>
       <script type="text/javascript" src="/bower_components/bootstrap-sass/assets/javascripts/bootstrap.js"></script>
       <script type="text/javascript" src="/bower_components/momentjs/moment.js"></script>
+      <script type="text/javascript" src="/bower_components/highcharts/highcharts.js"></script>
       <!-- endbower -->
       <script type="text/javascript" src="/vendor/polyfill.js"></script>
       <script type="text/javascript" src="/vendor/angular-smooth-scroll.js"></script>

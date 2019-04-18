@@ -24,9 +24,10 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import org.apache.commons.lang3.EnumUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.intyg.clinicalprocess.healthcond.srs.getconsent.v1.Samtyckesstatus;
-import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.Utdatafilter;
+import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v2.Utdatafilter;
 import se.inera.intyg.common.support.common.enumerations.Diagnoskodverk;
 import se.inera.intyg.infra.integration.srs.model.SrsForDiagnosisResponse;
 import se.inera.intyg.infra.integration.srs.model.SrsQuestion;
@@ -44,6 +45,7 @@ import se.inera.intyg.webcert.web.service.log.LogService;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
+import se.riv.clinicalprocess.healthcond.certificate.types.v2.EgenBedomningRiskType;
 import se.riv.clinicalprocess.healthcond.certificate.types.v2.ResultCodeEnum;
 
 import javax.ws.rs.Consumes;
@@ -173,6 +175,43 @@ public class SrsApiController extends AbstractApiController {
             monitoringLog.logSetSrsConsent(p, consent);
             return Response.ok(result).build();
         } catch (InvalidPersonNummerException e) {
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
+    }
+
+    @GET
+    @Path("/opinion/{vardgivareHsaId}/{vardenhetHsaId}/{intygId}")
+    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    @ApiOperation(value = "Get own opinion for risk prediction", httpMethod = "GET", produces = MediaType.APPLICATION_JSON)
+    @PrometheusTimeMethod
+    public Response getOwnOpinion(
+            @ApiParam(value = "HSA-Id för vårdgivare") @PathParam("vardgivareHsaId") String vardgivareHsaId,
+            @ApiParam(value = "HSA-Id för vårdenhet") @PathParam("vardenhetHsaId") String vardenhetHsaId,
+            @ApiParam(value = "Intyg id", required = true) @PathParam("intygId") String intygId) {
+        authoritiesValidator.given(getWebCertUserService().getUser()).features(AuthoritiesConstants.FEATURE_SRS).orThrow();
+
+        EgenBedomningRiskType response = srsService.getOwnOpinion(vardgivareHsaId, vardenhetHsaId, intygId);
+        return Response.ok(response).build();
+    }
+
+    @PUT
+    @Path("/opinion/{vardgivareHsaId}/{vardenhetHsaId}/{intygId}")
+    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "Set own opinion for risk prediction", httpMethod = "PUT", produces = MediaType.APPLICATION_JSON)
+    @PrometheusTimeMethod
+    public Response setOwnOpinion(
+            @ApiParam(value = "HSA-Id för vårdgivare") @PathParam("vardgivareHsaId") String vardgivareHsaId,
+            @ApiParam(value = "HSA-Id för vårdenhet") @PathParam("vardenhetHsaId") String vardenhetHsaId,
+            @ApiParam(value = "Intyg id", required = true) @PathParam("intygId") String intygId,
+            String opinion) {
+        authoritiesValidator.given(getWebCertUserService().getUser()).features(AuthoritiesConstants.FEATURE_SRS).orThrow();
+
+        if (EnumUtils.isValidEnum(EgenBedomningRiskType.class, opinion)) {
+            ResultCodeEnum result = srsService.setOwnOpinion(vardgivareHsaId, vardenhetHsaId, intygId, EgenBedomningRiskType.fromValue(opinion));
+            monitoringLog.logSetSrsRiskOpinion(intygId, vardgivareHsaId, vardenhetHsaId, opinion);
+            return Response.ok(result).build();
+        } else {
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
     }
