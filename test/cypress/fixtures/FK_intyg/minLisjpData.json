@@ -2,19 +2,19 @@
     "grundFörMedicinsktUnderlag": {
         "intygetÄrBaseratPå": {
             "minUndersökning": true,
-            "minTelefonkontakt": true,
-            "journaluppgifter": true,
-            "annat": true,
+            "minTelefonkontakt": false,
+            "journaluppgifter": false,
+            "annat": false,
             "annatText": "Utlåtande från barnmorska"
         }
     },
 
     "sysselsättning": {
         "iRelationTillVilkenSysselsättningBedömerDuArbetsförmågan": {
-            "nuvarandeArbete": true,
+            "nuvarandeArbete": false,
             "yrkeOchArbetsuppgifter": "Snickare. Tunga lyft, arbete på stege, hantera maskinverktyg, mycket gående",
-            "arbetssökande": true,
-            "föräldraledighet": true,
+            "arbetssökande": false,
+            "föräldraledighet": false,
             "studier": true
         }
     },
@@ -24,14 +24,8 @@
             "kod": "O267",
             "text": "Symfyseolys under graviditet, förlossning och barnsängstid"
         },
-        "rad2": {
-            "kod": "O470A",
-            "text": "Förvärkar utan cervixpåverkan före utgången av graviditetsvecka 37"
-        },
-        "rad3": {
-            "kod": "O210",
-            "text": "Lätta graviditetskräkningar"
-        }
+        "rad2": false,
+        "rad3": false
     },
 
     "sjukdomensKonsekvenserFörPatienten": {
@@ -47,40 +41,40 @@
     "bedömning": {
         "minBedömningAvPatientensNedsättningAvArbetsförmågan": {
             "enFjärdedel": true,
-            "hälften": true,
-            "treFjärdedel": true,
-            "hel": true
+            "hälften": false,
+            "treFjärdedel": false,
+            "hel": false
         },
         "längreNedsattArbetsförmåga": "Haft tidigare bäckeninsufficens vid graviditet, haft tidigare missfall och kräver nu fler kontroller och avlastning",
         "förläggaArbetstidOlika": {
-            "ja": true,
+            "ja": false,
             "arbetstidsförläggningstext": "Har lättare kontorsarbete på måndagar som hon klarar av med nuvarande besvär om ingen försämring sker."
         },
-        "resorTillOchFrånArbete": true,
+        "resorTillOchFrånArbete": false,
         "prognosFörArbetsförmågaUtifrånAktuelltUndersökningstillfälle": {
             "återgåHeltEfterSjukskrivning": true
         }
     },
 
     "åtgärder": {
-        "inteAktuellt": false,
-        "arbetsträning": true,
-        "arbetsanspassning": true,
-        "sökaNyttArbete": true,
-        "besökPåArbetsplatsen": true,
-        "ergonomiskBedömning": true,
-        "hjälpmedel": true,
-        "konflikthantering": true,
-        "kontaktMedFöretagshälsovård": true,
-        "omfördelningAvArbetsuppgifter": true,
-        "övrigt": true,
-        "flerÅtgärder": "Om anpassningar till lättare uppgifter utan tunga lyft och mycket gående kan ordnas kvarstår arbetsförmåga under en tid framöver."
+        "inteAktuellt": true,
+        "arbetsträning": false,
+        "arbetsanspassning": false,
+        "sökaNyttArbete": false,
+        "besökPåArbetsplatsen": false,
+        "ergonomiskBedömning": false,
+        "hjälpmedel": false,
+        "konflikthantering": false,
+        "kontaktMedFöretagshälsovård": false,
+        "omfördelningAvArbetsuppgifter": false,
+        "övrigt": false,
+        "flerÅtgärder": false
     },
 
-    "övrigaUpplysningar": "Planerad partus 2019-09-11",
+    "övrigaUpplysningar": false,
 
     "kontakt": {
-        "jagÖnskarKontakt": true,
+        "jagÖnskarKontakt": false,
         "anledningKontaktMedFK": "För att diskutera sjukskrivningsperiod och tydliggörande kring besvärsbilden samt framtida arbetsförmåga."
     }
 }
