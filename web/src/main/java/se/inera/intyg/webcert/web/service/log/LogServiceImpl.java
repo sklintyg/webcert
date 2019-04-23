@@ -94,7 +94,8 @@ public class LogServiceImpl implements LogService {
 
     @Override
     public void logCreateIntyg(LogRequest logRequest, LogUser user) {
-        send(logMessagePopulator.populateLogMessage(logRequest, IntygCreateMessage.build(logRequest.getIntygId()), user));
+        send(logMessagePopulator.populateLogMessage(
+                IntygCreateMessage.build(logRequest.getIntygId()), logRequest, user));
     }
 
     @Override
@@ -104,7 +105,8 @@ public class LogServiceImpl implements LogService {
 
     @Override
     public void logUpdateIntyg(LogRequest logRequest, LogUser user) {
-        send(logMessagePopulator.populateLogMessage(logRequest, IntygUpdateMessage.build(logRequest.getIntygId()), user));
+        send(logMessagePopulator.populateLogMessage(
+                IntygUpdateMessage.build(logRequest.getIntygId()), logRequest, user));
     }
 
     @Override
@@ -114,7 +116,8 @@ public class LogServiceImpl implements LogService {
 
     @Override
     public void logReadIntyg(LogRequest logRequest, LogUser user) {
-        send(logMessagePopulator.populateLogMessage(logRequest, IntygReadMessage.build(logRequest.getIntygId()), user));
+        send(logMessagePopulator.populateLogMessage(
+                IntygReadMessage.build(logRequest.getIntygId()), logRequest, user));
     }
 
     @Override
@@ -124,7 +127,8 @@ public class LogServiceImpl implements LogService {
 
     @Override
     public void logDeleteIntyg(LogRequest logRequest, LogUser user) {
-        send(logMessagePopulator.populateLogMessage(logRequest, IntygDeleteMessage.build(logRequest.getIntygId()), user));
+        send(logMessagePopulator.populateLogMessage(
+                IntygDeleteMessage.build(logRequest.getIntygId()), logRequest, user));
     }
 
     @Override
@@ -134,7 +138,8 @@ public class LogServiceImpl implements LogService {
 
     @Override
     public void logSignIntyg(LogRequest logRequest, LogUser user) {
-        send(logMessagePopulator.populateLogMessage(logRequest, IntygSignMessage.build(logRequest.getIntygId()), user));
+        send(logMessagePopulator.populateLogMessage(
+                IntygSignMessage.build(logRequest.getIntygId()), logRequest, user));
     }
 
     @Override
@@ -144,7 +149,8 @@ public class LogServiceImpl implements LogService {
 
     @Override
     public void logRevokeIntyg(LogRequest logRequest, LogUser user) {
-        send(logMessagePopulator.populateLogMessage(logRequest, IntygRevokeMessage.build(logRequest.getIntygId()), user));
+        send(logMessagePopulator.populateLogMessage(
+                IntygRevokeMessage.build(logRequest.getIntygId()), logRequest, user));
     }
 
     @Override
@@ -154,7 +160,8 @@ public class LogServiceImpl implements LogService {
 
     @Override
     public void logPrintIntygAsPDF(LogRequest logRequest, LogUser user) {
-        send(logMessagePopulator.populateLogMessage(logRequest, IntygPrintMessage.build(logRequest.getIntygId(), PRINTED_AS_PDF), user));
+        send(logMessagePopulator.populateLogMessage(
+                IntygPrintMessage.build(logRequest.getIntygId(), PRINTED_AS_PDF), logRequest, user));
     }
 
     @Override
@@ -164,7 +171,8 @@ public class LogServiceImpl implements LogService {
 
     @Override
     public void logPrintIntygAsDraft(LogRequest logRequest, LogUser user) {
-        send(logMessagePopulator.populateLogMessage(logRequest, IntygPrintMessage.build(logRequest.getIntygId(), PRINTED_AS_DRAFT), user));
+        send(logMessagePopulator.populateLogMessage(
+                IntygPrintMessage.build(logRequest.getIntygId(), PRINTED_AS_DRAFT), logRequest, user));
     }
 
     @Override
@@ -174,8 +182,8 @@ public class LogServiceImpl implements LogService {
 
     @Override
     public void logPrintRevokedIntygAsPDF(LogRequest logRequest, LogUser user) {
-        send(logMessagePopulator.populateLogMessage(logRequest, IntygPrintMessage.build(logRequest.getIntygId(), PRINTED_WHEN_REVOKED),
-                user));
+        send(logMessagePopulator.populateLogMessage(
+                IntygPrintMessage.build(logRequest.getIntygId(), PRINTED_WHEN_REVOKED),logRequest, user));
     }
 
     @Override
@@ -185,8 +193,8 @@ public class LogServiceImpl implements LogService {
 
     @Override
     public void logSendIntygToRecipient(LogRequest logRequest, LogUser user) {
-        send(logMessagePopulator.populateLogMessage(logRequest,
-                IntygSendMessage.build(logRequest.getIntygId(), logRequest.getAdditionalInfo()), user));
+        send(logMessagePopulator.populateLogMessage(
+                IntygSendMessage.build(logRequest.getIntygId(), logRequest.getAdditionalInfo()), logRequest, user));
     }
 
     @Override
@@ -197,7 +205,8 @@ public class LogServiceImpl implements LogService {
 
     @Override
     public void logShowPrediction(LogRequest logRequest, LogUser user) {
-        send(logMessagePopulator.populateLogMessage(logRequest, IntygPredictionMessage.build(SHOW_PREDICTION), user));
+        send(logMessagePopulator.populateLogMessage(
+                IntygPredictionMessage.build(SHOW_PREDICTION), logRequest, user));
     }
 
     @Override
