@@ -183,7 +183,7 @@ public class LogServiceImpl implements LogService {
     @Override
     public void logPrintRevokedIntygAsPDF(LogRequest logRequest, LogUser user) {
         send(logMessagePopulator.populateLogMessage(
-                IntygPrintMessage.build(logRequest.getIntygId(), PRINTED_WHEN_REVOKED),logRequest, user));
+                IntygPrintMessage.build(logRequest.getIntygId(), PRINTED_WHEN_REVOKED), logRequest, user));
     }
 
     @Override
