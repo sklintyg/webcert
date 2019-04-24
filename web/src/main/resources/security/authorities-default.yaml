@@ -173,6 +173,7 @@ privileges:
           - *ki070 # luae_fs
           - *ki080 # db
           - *ki090 # doi
+          - *ki100 # af00213
           - *ki120 # ag7804
           - *ki130 # TSTRK1062
           - *ki140 # tstrk1009
@@ -512,6 +513,7 @@ roles:
         intygstyper:
           - *ki010 # fk7263
           - *ki040 # lisjp
+          - *ki100 # af00213
           - *ki110 # ag114
           - *ki120 # ag7804
           - *ki111 # af00251
@@ -525,6 +527,7 @@ roles:
         intygstyper:
           - *ki010 # fk7263
           - *ki040 # lisjp
+          - *ki100 # af00213
           - *ki110 # ag114
           - *ki120 # ag7804
           - *ki111 # af00251
@@ -534,6 +537,7 @@ roles:
       - <<: *p010 # SIGNERA_INTYG
         intygstyper:
           - *ki040 # lisjp
+          - *ki100 # af00213
           - *ki110 # ag114
           - *ki120 # ag7804
           - *ki111 # af00251
@@ -544,6 +548,7 @@ roles:
         intygstyper:
           - *ki010
           - *ki040
+          - *ki100 # af00213
           - *ki110
           - *ki120 # ag7804
           - *ki111 # af00251
@@ -561,6 +566,7 @@ roles:
       - <<: *p031 # ERSATTA_INTYG
         intygstyper:
           - *ki040 # lisjp
+          - *ki100 # af00213
           - *ki110 # ag114
           - *ki120 # ag7804
           - *ki111 # af00251
@@ -574,6 +580,7 @@ roles:
           - <<: *ro010 # NORMAL
             intygstyper:
               - *ki040
+              - *ki100 # af00213
               - *ki120 # ag7804
               - *ki111 # af00251
           - <<: *ro030 # UTHOPP
@@ -606,6 +613,7 @@ roles:
         intygstyper:
           - *ki010
           - *ki040
+          - *ki100 # af00213
           - *ki120 # ag7804
           - *ki111 # af00251
         requestOrigins:
@@ -613,17 +621,20 @@ roles:
             intygstyper:
               - *ki010
               - *ki040
+              - *ki100 # af00213
               - *ki120 # ag7804
               - *ki111 # af00251
       - <<: *p080 # ATKOMST_ANDRA_ENHETER
         intygstyper:
           - *ki010
           - *ki040
+          - *ki100 # af00213
         requestOrigins:
           - <<: *ro010 # NORMAL
             intygstyper:
               - *ki010
               - *ki040
+              - *ki100 # af00213
               - *ki120 # ag7804
               - *ki111 # af00251
           - <<: *ro030 # UTHOPP
@@ -633,6 +644,7 @@ roles:
         intygstyper:
           - *ki010
           - *ki040
+          - *ki100 #af00213
           - *ki120 # ag7804
           - *ki111 # af00251
         requestOrigins:
@@ -640,6 +652,7 @@ roles:
             intygstyper:
               - *ki010
               - *ki040
+              - *ki100 # af00213
               - *ki120 # ag7804
               - *ki111 # af00251
           - <<: *ro030 # UTHOPP
@@ -649,6 +662,7 @@ roles:
         intygstyper:
           - *ki010
           - *ki040
+          - *ki100 # af00213
           - *ki120 # ag7804
           - *ki111 # af00251
         requestOrigins:
@@ -656,6 +670,7 @@ roles:
             intygstyper:
               - *ki010
               - *ki040
+              - *ki100 # af00213
               - *ki120 # ag7804
               - *ki111 # af00251
           - <<: *ro030 # UTHOPP
@@ -665,6 +680,7 @@ roles:
         intygstyper:
           - *ki010
           - *ki040
+          - *ki100 # af00213
           - *ki120 # ag7804
           - *ki111 # af00251
         requestOrigins:
@@ -672,6 +688,7 @@ roles:
             intygstyper:
               - *ki010
               - *ki040
+              - *ki100 # af00213
               - *ki120 # ag7804
               - *ki111 # af00251
           - <<: *ro030 # UTHOPP
@@ -691,6 +708,7 @@ roles:
         intygstyper:
           - *ki010 # fk7263
           - *ki040 # lisjp
+          - *ki100 # af00213
           - *ki110 # ag114
           - *ki120 # ag7804
           - *ki111 # af00251
