@@ -1,0 +1,293 @@
+apiVersion: v1
+data:
+  idp-eleg.xml: |
+    <?xml version="1.0" encoding="UTF-8"?><md:EntityDescriptor xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata" ID="_06bf97b99cc9447d5a3f8d9e7187cf4f70" cacheDuration="PT12H0M0.000S" entityID="https://m00-mg-local.idp.funktionstjanster.se/samlv2/idp/metadata/0/10"><ds:Signature xmlns:ds="http://www.w3.org/2000/09/xmldsig#"><ds:SignedInfo><ds:CanonicalizationMethod Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"/><ds:SignatureMethod Algorithm="http://www.w3.org/2001/04/xmldsig-more#rsa-sha256"/><ds:Reference URI="#_06bf97b99cc9447d5a3f8d9e7187cf4f70"><ds:Transforms><ds:Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"/><ds:Transform Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"/></ds:Transforms><ds:DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"/><ds:DigestValue>LM5pclggqs+qLk9Wuk5EvUIAWkZCeGO25DLLbpwYzDw=</ds:DigestValue></ds:Reference></ds:SignedInfo><ds:SignatureValue>PT5WacsdwIlWpagPRpziND07uGLX8NuTWQN7qIaUW7UNpsGg+GB8FOuH8o9T5BLqjF6tB4zTLSqG0KsZ622tLhIAj7FFcomYdc7DhHiPhPj16BZjEE4X3ZJxvOz9snpb4c7kJj0wUcjCjnksgyYLDalrZmhrTPN5ZNwmLmc1C6gWd648GKor6Ge2ul4M+JtowMVQuJ3VVBN7GYmcy7uQPhIK0QhV76KJHNPZpOhKUWsf9Gb9qtrRd7yhT93McGDbacx54TefM6DLbC1iwUVFt086XTXXfB5W4k9kf0iA9+IQzlOVtLC9B147VSnhiSNevHTpY5aikegMr02DL7hFHw==</ds:SignatureValue><ds:KeyInfo><ds:X509Data><ds:X509Certificate>MIIG5zCCBc+gAwIBAgIMIGWIxqzx+2jNIW40MA0GCSqGSIb3DQEBCwUAMEwxCzAJBgNVBAYTAkJF
+    MRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMSIwIAYDVQQDExlBbHBoYVNTTCBDQSAtIFNIQTI1
+    NiAtIEcyMB4XDTE2MTEyOTE1MDAwMloXDTE5MTEzMDE1MDAwMlowUzELMAkGA1UEBhMCU0UxITAf
+    BgNVBAsTGERvbWFpbiBDb250cm9sIFZhbGlkYXRlZDEhMB8GA1UEAwwYaWRwLmZ1bmt0aW9uc3Rq
+    YW5zdGVyLnNlMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAuOg5+n3YhAOGB5sxdLX0
+    9LalcElSEkwAnfB6ayw8Ek8sAqvscbd7OQYxw6VORoYBjqhC0lQOTw8+tw6ZRtp3RFH9rhhOMBDY
+    Ue76XK8zg3xvBx827GR6FJrDVF+tmfliIEC8/RBqAKWealWplPREbJXTwHRX+TSxwa53L/stTE7A
+    Ih4uEhFMHbPvC5Rqi0TLtPyo1PFs61wad6AJnMkQTQaKO17c+ntG0uUXzQplWOt5QeTzGpm+/tcc
+    N3lgZ1K7fq0jay3MyulzWsKe7+SWDohm5xmFo6rJwpONf5gqC5ueqferO9U3WIy1rAiLFHQPGcaq
+    /yNj0t7UxhFI/J3R8wIDAQABo4IDwDCCA7wwDgYDVR0PAQH/BAQDAgWgMIGJBggrBgEFBQcBAQR9
+    MHswQgYIKwYBBQUHMAKGNmh0dHA6Ly9zZWN1cmUyLmFscGhhc3NsLmNvbS9jYWNlcnQvZ3NhbHBo
+    YXNoYTJnMnIxLmNydDA1BggrBgEFBQcwAYYpaHR0cDovL29jc3AyLmdsb2JhbHNpZ24uY29tL2dz
+    YWxwaGFzaGEyZzIwVwYDVR0gBFAwTjBCBgorBgEEAaAyAQoKMDQwMgYIKwYBBQUHAgEWJmh0dHBz
+    Oi8vd3d3Lmdsb2JhbHNpZ24uY29tL3JlcG9zaXRvcnkvMAgGBmeBDAECATAJBgNVHRMEAjAAMD4G
+    A1UdHwQ3MDUwM6AxoC+GLWh0dHA6Ly9jcmwyLmFscGhhc3NsLmNvbS9ncy9nc2FscGhhc2hhMmcy
+    LmNybDAjBgNVHREEHDAaghhpZHAuZnVua3Rpb25zdGphbnN0ZXIuc2UwHQYDVR0lBBYwFAYIKwYB
+    BQUHAwEGCCsGAQUFBwMCMB0GA1UdDgQWBBT4SY3iSBzJV9577ACLxAn4T7OaSjAfBgNVHSMEGDAW
+    gBT1zdU8CFD5ak86t5faVoPmadJo9zCCAfQGCisGAQQB1nkCBAIEggHkBIIB4AHeAHUA3esdK3oN
+    T6Ygi4GtgWhwfi6OnQHVXIiNPRHEzbbsvswAAAFYsJmPHQAABAMARjBEAiALaPh5rjJLn6B0naiF
+    tsrIurU+j9lKP5hOJ8v7GqdbxAIgedkHKCjNg2FCwUJXvHg3gwsU9frKVgRC7jbUgMPcSeMAdgBW
+    FAaaL9fC7NP14b1Esj7HRna5vJkRXMDvlJhV1onQ3QAAAViwmZG3AAAEAwBHMEUCIHVU7NB6wvDo
+    y9ijf+jNKDgVbIcQ4n9HhCyN3UXBOc+QAiEAoXKKffoBokfxg+c4XLgmhWTORFuzk3YHbmuaaggS
+    MrwAdgCkuQmQtBhYFIe7E6LMZ3AKPDWYBPkb37jjd80OyA3cEAAAAViwmZN2AAAEAwBHMEUCIDCy
+    S8ewRtfDb1qIXW6dWNCru4/lwLZtJZavNP/kMUzfAiEAvgmZZJhMEgomYWS7C+TcP4MtTd17utMN
+    jQxEHF1CML0AdQDuS723dc5guuFCaR+r4Z5mow9+X7By2IMAxHuJeqj9ywAAAViwmZUpAAAEAwBG
+    MEQCICe+/fAio+yXpdUB9uj9jXgEOiDRzfSlzLjRSUmBOb3vAiAY9qX/3FlT6rivR3Kh9n6qsWbO
+    L3nnOR9sQgAp5EhvMzANBgkqhkiG9w0BAQsFAAOCAQEAQznAn5ueKVvOa9E+FI2CKw3Y8BbLHTlr
+    7TYB2UZyPeBkPvFwjiSeuMh1FN7W98X8bo9NwPmtFIrghc9DcT0m8FnAqZDPD443rFS8iMfVGcoS
+    qZzJVPQ3mJWUDUNsNro3JnRFgdNjUOSIbewnD7gVJIyfw2B8SznvhunyVWqyrUUSnziecKAXPxFM
+    nxQ748H6glHMXzaL5T4hTHcib4K7tGckrJHo7YLqLsVnKhyh9xzGVJdD0pUgM1jPDE/4ASdjfkOn
+    z5DvjBF8L1sW1zND2jVKkPSi/ImgMrqdLiEMY2i1x/5EevEMZMqWJ4FMpNx14/0S/O0DM2qP1Bu4
+    XtucKw==</ds:X509Certificate></ds:X509Data></ds:KeyInfo></ds:Signature><md:IDPSSODescriptor WantAuthnRequestsSigned="false" protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol"><md:KeyDescriptor use="signing"><ds:KeyInfo xmlns:ds="http://www.w3.org/2000/09/xmldsig#"><ds:X509Data><ds:X509Certificate>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</ds:X509Certificate></ds:X509Data><ds:KeyName>IDP Funktionstjanster 2017--2016-idp.funktionstjanster.se.crt</ds:KeyName></ds:KeyInfo></md:KeyDescriptor><md:SingleLogoutService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="https://m00-mg-local.idp.funktionstjanster.se/samlv2/idp/sloreq/0/10?mgvhostparam=0" ResponseLocation="https://m00-mg-local.idp.funktionstjanster.se/samlv2/idp/sloresp/0/10?mgvhostparam=0"/><md:SingleLogoutService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect" Location="https://m00-mg-local.idp.funktionstjanster.se/samlv2/idp/sloreq/0/10?mgvhostparam=0" ResponseLocation="https://m00-mg-local.idp.funktionstjanster.se/samlv2/idp/sloresp/0/10?mgvhostparam=0"/><md:NameIDFormat>urn:oasis:names:tc:SAML:2.0:nameid-format:transient</md:NameIDFormat><md:SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="https://m00-mg-local.idp.funktionstjanster.se/samlv2/idp/req/0/10?mgvhostparam=0"/><md:SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect" Location="https://m00-mg-local.idp.funktionstjanster.se/samlv2/idp/req/0/10?mgvhostparam=0"/></md:IDPSSODescriptor></md:EntityDescriptor>
+  idp-sakerhetstjanst.xml: |
+    <?xml version="1.0" encoding="UTF-8"?>
+    <md:EntityDescriptor xmlns:mdattr="urn:oasis:names:tc:SAML:metadata:attribute" xmlns:ds="http://www.w3.org/2000/09/xmldsig#" xmlns:idpdisc="urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol" xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion" xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata" xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol" xmlns:xenc="http://www.w3.org/2001/04/xmlenc#" entityID="https://idp2.sakerhetstjanst.inera.se:443/idp/saml">
+      <md:Extensions>
+        <mdattr:EntityAttributes>
+          <saml:Attribute Name="urn:oasis:names:tc:SAML:attribute:assurance-certification" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+            <saml:AttributeValue>https://id.sambi.se/loa/loa3</saml:AttributeValue>
+          </saml:Attribute>
+        </mdattr:EntityAttributes>
+      </md:Extensions>
+      <md:IDPSSODescriptor WantAuthnRequestsSigned="false" protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">
+        <md:KeyDescriptor use="signing">
+          <ds:KeyInfo>
+            <ds:X509Data>
+              <ds:X509Certificate>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</ds:X509Certificate>
+            </ds:X509Data>
+          </ds:KeyInfo>
+        </md:KeyDescriptor>
+        <md:KeyDescriptor use="signing">
+          <ds:KeyInfo>
+            <ds:X509Data>
+              <ds:X509Certificate>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</ds:X509Certificate>
+            </ds:X509Data>
+          </ds:KeyInfo>
+        </md:KeyDescriptor>
+        <md:ArtifactResolutionService Binding="urn:oasis:names:tc:SAML:2.0:bindings:SOAP" Location="https://idp2.sakerhetstjanst.inera.se:443/idp/saml/artifact/SOAP" index="1" isDefault="false"/>
+        <md:SingleLogoutService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="https://idp2.sakerhetstjanst.inera.se:443/idp/saml/slo/HTTP-POST"/>
+        <md:SingleLogoutService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect" Location="https://idp2.sakerhetstjanst.inera.se:443/idp/saml/slo/HTTP-Redirect"/>
+        <md:NameIDFormat>urn:oasis:names:tc:SAML:2.0:nameid-format:transient</md:NameIDFormat>
+        <md:NameIDFormat>urn:oasis:names:tc:SAML:2.0:nameid-format:persistent</md:NameIDFormat>
+        <md:SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect" Location="https://idp2.sakerhetstjanst.inera.se:443/idp/saml/sso/HTTP-Redirect"/>
+        <saml:Attribute Name="http://sambi.se/attributes/1/paTitleCode" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri" FriendlyName="titleCode"/>
+        <saml:Attribute Name="http://sambi.se/attributes/1/commissionPurpose" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri" FriendlyName="commissionPurpose"/>
+        <saml:Attribute Name="http://sambi.se/attributes/1/mobileTelephoneNumber" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri" FriendlyName="mobileTelephoneNumber"/>
+        <saml:Attribute Name="http://sambi.se/attributes/1/employeeHsaId" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri" FriendlyName="employeeHsaId"/>
+        <saml:Attribute Name="http://sambi.se/attributes/1/healthCareUnitName" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri" FriendlyName="careUnitName"/>
+        <saml:Attribute Name="http://sambi.se/attributes/1/systemRole" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri" FriendlyName="systemRole"/>
+        <saml:Attribute Name="http://sambi.se/attributes/1/groupPrescriptionCode" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri" FriendlyName="groupPrescriptionCode"/>
+        <saml:Attribute Name="http://sambi.se/attributes/1/healthCareUnitHsaId" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri" FriendlyName="careUnitHsaId"/>
+        <saml:Attribute Name="http://sambi.se/attributes/1/commissionHsaId" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri" FriendlyName="assignmentHsaId"/>
+        <saml:Attribute Name="http://sambi.se/attributes/1/givenName" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri" FriendlyName="givenName"/>
+        <saml:Attribute Name="http://sambi.se/attributes/1/commissionRight" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri" FriendlyName="commissionRight"/>
+        <saml:Attribute Name="http://sambi.se/attributes/1/healthcareProfessionalLicense" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri" FriendlyName="title"/>
+        <saml:Attribute Name="http://sambi.se/attributes/1/commissionName" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri" FriendlyName="assignmentName"/>
+        <saml:Attribute Name="http://sambi.se/attributes/1/mail" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri" FriendlyName="mail"/>
+        <saml:Attribute Name="http://sambi.se/attributes/1/healthCareProviderName" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri" FriendlyName="careProviderName"/>
+        <saml:Attribute Name="http://sambi.se/attributes/1/telephoneNumber" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri" FriendlyName="telephoneNumber"/>
+        <saml:Attribute Name="http://sambi.se/attributes/1/surname" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri" FriendlyName="middleAndSurname"/>
+        <saml:Attribute Name="http://sambi.se/attributes/1/personalIdentityNumber" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri" FriendlyName="personalIdentityNumber"/>
+        <saml:Attribute Name="http://sambi.se/attributes/1/personalPrescriptionCode" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri" FriendlyName="personalPrescriptionCode"/>
+        <saml:Attribute Name="urn:sambi:names:attribute:levelOfAssurance" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri" FriendlyName="levelOfAssurance"/>
+        <saml:Attribute Name="urn:sambi:names:attribute:x509IssuerName" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri" FriendlyName="x509IssuerName"/>
+        <saml:Attribute Name="http://sambi.se/attributes/1/healthCareProviderHsaId" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri" FriendlyName="careProviderHsaId"/>
+        <saml:Attribute Name="urn:sambi:names:attribute:authnMethod" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri" FriendlyName="authnMethod"/>
+      </md:IDPSSODescriptor>
+      <md:Organization>
+        <md:OrganizationName xml:lang="sv">Säkerhetstjänster</md:OrganizationName>
+        <md:OrganizationDisplayName xml:lang="sv">Säkerhetstjänster</md:OrganizationDisplayName>
+        <md:OrganizationURL xml:lang="sv">https://idp.sakerhetstjanst.inera.se:443/idp/saml</md:OrganizationURL>
+      </md:Organization>
+      <md:ContactPerson xml:lang="sv" contactType="technical">
+        <md:Company>CGI</md:Company>
+        <md:GivenName>-</md:GivenName>
+        <md:SurName>-</md:SurName>
+        <md:EmailAddress>nationella.sakerhetstjanster@cgi.com</md:EmailAddress>
+        <md:TelephoneNumber>063-152299</md:TelephoneNumber>
+      </md:ContactPerson>
+    </md:EntityDescriptor>
+  logback-ocp.xml: |
+    <?xml version="1.0" encoding="UTF-8" ?>
+    <!--
+           ~ Copyright (C) 2018 Inera AB (http://www.inera.se )
+      ~
+      ~ This file is part of sklintyg (https://github.com/sklintyg ).
+      ~
+      ~ sklintyg is free software: you can redistribute it and/or modify
+      ~ it under the terms of the GNU General Public License as published by
+      ~ the Free Software Foundation, either version 3 of the License, or
+      ~ (at your option) any later version.
+      ~
+      ~ sklintyg is distributed in the hope that it will be useful,
+      ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+      ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+      ~ GNU General Public License for more details.
+      ~
+      ~ You should have received a copy of the GNU General Public License
+      ~ along with this program.  If not, see <http://www.gnu.org/licenses/> .
+      -->
+    <configuration>
+        <!-- logback config for the Openshift Container Platform (OCP). Stream to stdout, use layout and appenders from infra. -->
+
+        <property name="APP_NAME" value="${APP_NAME:-webcert}"/>
+
+        <!-- INTYG-7892: Ugly fix to avoid rebuild of infra and all applications for 2018-4 -->
+        <!-- The tags below comes from logback-ocp-base.xml in infra with changes to LINE -->
+        <!-- The changes to LINE will be implemented in 2019-1 and the block below will be removed -->
+        <property name="TIMESTAMP" value="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level"/>
+        <property name="SESSION" value="%X{req.sessionInfo:--}"/>
+        <property name="TRACE" value="%X{req.traceId:--}"/>
+        <property name="LINE" value="--- %-40.40logger{39} : %replace(%m%rEx){'[\r\n]+', '&#x000D;'}%nopex%n"/>
+
+        <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+            <filter class="se.inera.intyg.infra.monitoring.logging.MarkerFilter">
+                <markers>Monitoring,Validation</markers>
+                <onMatch>DENY</onMatch>
+                <onMismatch>ACCEPT</onMismatch>
+            </filter>
+            <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+                <pattern>${TIMESTAMP} [console,${SESSION},${TRACE}] ${LINE}</pattern>
+            </encoder>
+        </appender>
+
+        <appender name="MONITORING" class="ch.qos.logback.core.ConsoleAppender">
+            <filter class="se.inera.intyg.infra.monitoring.logging.MarkerFilter">
+                <marker>Monitoring</marker>
+                <onMatch>ACCEPT</onMatch>
+                <onMismatch>DENY</onMismatch>
+            </filter>
+            <encoder class="se.inera.intyg.infra.monitoring.logging.UserPatternLayout">
+                <pattern>${TIMESTAMP} [monitoring,${SESSION},${TRACE},%user] ${LINE}</pattern>
+            </encoder>
+        </appender>
+
+        <appender name="VALIDATION" class="ch.qos.logback.core.ConsoleAppender">
+            <filter class="se.inera.intyg.infra.monitoring.logging.MarkerFilter">
+                <marker>Validation</marker>
+                <onMatch>ACCEPT</onMatch>
+                <onMismatch>DENY</onMismatch>
+            </filter>
+            <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+                <pattern>${TIMESTAMP} [validation,${SESSION},${TRACE}] ${LINE}</pattern>
+            </encoder>
+        </appender>
+
+        <appender name="PROCESS" class="ch.qos.logback.core.ConsoleAppender">
+            <filter class="se.inera.intyg.infra.monitoring.logging.MarkerFilter">
+                <markers>Monitoring,Validation</markers>
+                <onMatch>DENY</onMatch>
+                <onMismatch>ACCEPT</onMismatch>
+            </filter>
+            <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+                <pattern>${TIMESTAMP} [process,${SESSION},${TRACE}] ${LINE}</pattern>
+            </encoder>
+        </appender>
+
+        <appender name="ACCESS" class="ch.qos.logback.core.ConsoleAppender">
+            <filter class="se.inera.intyg.infra.monitoring.logging.MarkerFilter">
+                <markers>Monitoring,Validation</markers>
+                <onMatch>DENY</onMatch>
+                <onMismatch>ACCEPT</onMismatch>
+            </filter>
+            <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+                <pattern>${TIMESTAMP} [access,${SESSION},${TRACE}] ${LINE}</pattern>
+            </encoder>
+        </appender>
+
+        <appender name="FRONTEND" class="ch.qos.logback.core.ConsoleAppender">
+            <filter class="se.inera.intyg.infra.monitoring.logging.MarkerFilter">
+                <markers>Monitoring,Validation</markers>
+                <onMatch>DENY</onMatch>
+                <onMismatch>ACCEPT</onMismatch>
+            </filter>
+            <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+                <pattern>${TIMESTAMP} [frontend,${SESSION},${TRACE}] ${LINE}</pattern>
+            </encoder>
+        </appender>
+
+        <!-- End of fix for INTYG-7893 -->
+
+        <appender name="HSA" class="ch.qos.logback.core.ConsoleAppender">
+            <filter class="se.inera.intyg.infra.monitoring.logging.MarkerFilter">
+                <marker>HSA</marker>
+                <onMatch>ACCEPT</onMatch>
+                <onMismatch>DENY</onMismatch>
+            </filter>
+            <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+                <pattern>${TIMESTAMP} [hsa,${SESSION},${TRACE}] ${LINE}</pattern>
+            </encoder>
+        </appender>
+
+        <logger name="org.hibernate.engine.jdbc.spi.SqlExceptionHelper" level="off" />
+
+        <logger name="se.inera.intyg.webcert.web.auth" level="info" />
+
+        <logger name="se.inera.intyg.webcert" level="info" />
+
+        <logger name="se.inera.intyg.common" level="info" />
+
+        <logger name="org.apache.cxf" level="off" />
+
+        <logger name="com.fasterxml.jackson" level="off" />
+
+        <logger name="org.springframework.transaction" level="info" />
+
+        <logger name="se.inera.webcert.notifications" level="info" />
+
+        <logger name="se.inera.intyg.intygstyper" level="info" />
+
+        <logger name="se.inera.intyg.infra.integration" level="info" />
+
+        <!-- Log service for monitoring and audit information -->
+        <logger name="se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService" level="info">
+            <appender-ref ref="MONITORING" />
+        </logger>
+
+        <!-- Log service for logging JavaScript exceptions from GUI, set to info or off -->
+        <logger name="se.inera.intyg.webcert.web.web.controller.api.JsLogApiController" level="off" />
+
+        <root level="WARN">
+            <appender-ref ref="CONSOLE"/>
+            <appender-ref ref="HSA"/>
+        </root>
+
+    </configuration>
+  sp-eleg.xml: |
+    <?xml version="1.0" encoding="UTF-8"?>
+    <md:EntityDescriptor xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata" ID="webcert.intygstjanster.inera.se" entityID="https://webcert.intygstjanster.se/eleg">
+      <md:SPSSODescriptor AuthnRequestsSigned="false" WantAssertionsSigned="false" protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">
+        <md:SingleLogoutService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="https://webcert.intygstjanster.se/saml/SingleLogout/alias/eleg"/>
+        <md:SingleLogoutService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect" Location="https://webcert.intygstjanster.se/saml/SingleLogout/alias/eleg"/>
+        <md:NameIDFormat>urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress</md:NameIDFormat>
+        <md:NameIDFormat>urn:oasis:names:tc:SAML:2.0:nameid-format:transient</md:NameIDFormat>
+        <md:NameIDFormat>urn:oasis:names:tc:SAML:2.0:nameid-format:persistent</md:NameIDFormat>
+        <md:NameIDFormat>urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified</md:NameIDFormat>
+        <md:NameIDFormat>urn:oasis:names:tc:SAML:1.1:nameid-format:X509SubjectName</md:NameIDFormat>
+        <md:AssertionConsumerService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="https://webcert.intygstjanster.se/saml/SSO/alias/eleg" index="0" isDefault="true"/>
+        <md:AssertionConsumerService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact" Location="https://webcert.intygstjanster.se/saml/SSO/alias/eleg" index="1"/>
+      </md:SPSSODescriptor>
+    </md:EntityDescriptor>
+  sp-sakerhetstjanst.xml: |-
+    <?xml version="1.0" encoding="UTF-8"?>
+    <md:EntityDescriptor xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata" ID="https___webcert.intygstjanster.se" entityID="https://webcert.intygstjanster.se">
+      <md:SPSSODescriptor AuthnRequestsSigned="false" WantAssertionsSigned="true" protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">
+        <md:SingleLogoutService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="https://webcert.intygstjanster.se/saml/SingleLogout/alias/defaultAlias"/>
+        <md:SingleLogoutService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect" Location="https://webcert.intygstjanster.se/saml/SingleLogout/alias/defaultAlias"/>
+        <md:NameIDFormat>urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress</md:NameIDFormat>
+        <md:NameIDFormat>urn:oasis:names:tc:SAML:2.0:nameid-format:transient</md:NameIDFormat>
+        <md:NameIDFormat>urn:oasis:names:tc:SAML:2.0:nameid-format:persistent</md:NameIDFormat>
+        <md:NameIDFormat>urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified</md:NameIDFormat>
+        <md:NameIDFormat>urn:oasis:names:tc:SAML:1.1:nameid-format:X509SubjectName</md:NameIDFormat>
+        <md:AssertionConsumerService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="https://webcert.intygstjanster.se/saml/SSO/alias/defaultAlias" index="0" isDefault="true"/>
+        <md:AttributeConsumingService index="1">
+          <md:ServiceName xml:lang="sv">SP med HSA-uppslag</md:ServiceName>
+          <md:RequestedAttribute Name="http://sambi.se/attributes/1/employeeHsaId" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri" FriendlyName="employeeHsaId" isRequired="true"/>
+          <md:RequestedAttribute Name="urn:sambi:names:attribute:authnMethod" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri" FriendlyName="authnMethod" isRequired="true"/>
+        </md:AttributeConsumingService>
+      </md:SPSSODescriptor>
+    </md:EntityDescriptor>
+  webcert.properties: |
+    # placeholder
+kind: ConfigMap
+metadata:
+  creationTimestamp: 2019-04-16T17:47:09Z
+  name: webcert-config
+  namespace: pintyg
+  resourceVersion: "76016707"
+  selfLink: /api/v1/namespaces/pintyg/configmaps/webcert-config
+  uid: a824282b-606f-11e9-935a-005056a1387d
