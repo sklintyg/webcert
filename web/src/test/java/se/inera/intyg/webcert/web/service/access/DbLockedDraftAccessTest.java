@@ -19,8 +19,7 @@
 
 package se.inera.intyg.webcert.web.service.access;
 
-import static junit.framework.TestCase.assertFalse;
-import static junit.framework.TestCase.assertTrue;
+import static junit.framework.TestCase.assertEquals;
 
 import java.util.Arrays;
 
@@ -46,207 +45,217 @@ public class DbLockedDraftAccessTest extends LockedDraftAccessTest {
     }
 
     @Override
-    protected void assertAllowToReadUtkastNoConditions(boolean actualValue) {
-        assertTrue(actualValue);
+    protected void assertAllowToReadUtkastNoConditions(AccessResult actualValue) {
+        assertEquals(AccessResultCode.NO_PROBLEM, actualValue.getCode());
     }
 
     @Override
-    protected void assertAllowToReadUtkastOnDeceasedPatient(boolean actualValue) {
-        assertTrue(actualValue);
+    protected void assertAllowToReadUtkastOnDeceasedPatient(AccessResult actualValue) {
+        assertEquals(AccessResultCode.NO_PROBLEM, actualValue.getCode());
     }
 
     @Override
-    protected void assertAllowToReadUtkastOnInactiveUnit(boolean actualValue) {
-        assertTrue(actualValue);
+    protected void assertAllowToReadUtkastOnInactiveUnit(AccessResult actualValue) {
+        assertEquals(AccessResultCode.NO_PROBLEM, actualValue.getCode());
     }
 
     @Override
-    protected void assertAllowToReadUtkastOnRenewFalse(boolean actualValue) {
-        assertTrue(actualValue);
+    protected void assertAllowToReadUtkastOnRenewFalse(AccessResult actualValue) {
+        assertEquals(AccessResultCode.NO_PROBLEM, actualValue.getCode());
     }
 
     @Override
-    protected void assertAllowToReadOnSekretessPatientOnSameUnit(boolean actualValue) {
-        assertTrue(actualValue);
+    protected void assertAllowToReadOnSekretessPatientOnSameUnit(AccessResult actualValue) {
+        assertEquals(AccessResultCode.NO_PROBLEM, actualValue.getCode());
     }
 
     @Override
-    protected void assertAllowToReadUtkastOnSekretessPatientOnDifferentUnit(boolean actualValue) {
-        assertFalse(actualValue);
+    protected void assertAllowToReadUtkastOnSekretessPatientOnDifferentUnit(AccessResult actualValue) {
+        assertEquals(AccessResultCode.AUTHORIZATION_SEKRETESS_UNIT, actualValue.getCode());
     }
 
     @Override
-    protected void assertAllowToReadUtkastNoConditionsOnDifferentUnit(boolean actualValue) {
-        assertTrue(actualValue);
+    protected void assertAllowToReadUtkastNoConditionsOnDifferentUnit(AccessResult actualValue) {
+        assertEquals(AccessResultCode.NO_PROBLEM, actualValue.getCode());
     }
 
     @Override
-    protected void assertAllowToReadUtkastOnDeceasedPatientOnDifferentUnit(boolean actualValue) {
-        assertTrue(actualValue);
+    protected void assertAllowToReadUtkastOnDeceasedPatientOnDifferentUnit(AccessResult actualValue) {
+        assertEquals(AccessResultCode.NO_PROBLEM, actualValue.getCode());
     }
 
     @Override
-    protected void assertAllowToReadUtkastOnInactiveUnitOnDifferentUnit(boolean actualValue) {
-        assertTrue(actualValue);
+    protected void assertAllowToReadUtkastOnInactiveUnitOnDifferentUnit(AccessResult actualValue) {
+        assertEquals(AccessResultCode.NO_PROBLEM, actualValue.getCode());
     }
 
     @Override
-    protected void assertAllowToReadUtkastOnRenewFalseOnDifferentUnit(boolean actualValue) {
-        assertTrue(actualValue);
+    protected void assertAllowToReadUtkastOnRenewFalseOnDifferentUnit(AccessResult actualValue) {
+        assertEquals(AccessResultCode.NO_PROBLEM, actualValue.getCode());
     }
 
     @Override
-    protected void assertAllowToCopyNoConditions(boolean actualValue) {
-        assertTrue(actualValue);
+    protected void assertAllowToCopyNoConditions(AccessResult actualValue) {
+        assertEquals(AccessResultCode.NO_PROBLEM, actualValue.getCode());
     }
 
     @Override
-    protected void assertAllowToCopyOnDeceasedPatient(boolean actualValue) {
-        assertFalse(actualValue);
+    protected void assertAllowToCopyOnDeceasedPatient(AccessResult actualValue) {
+        assertEquals(AccessResultCode.DECEASED_PATIENT, actualValue.getCode());
     }
 
     @Override
-    protected void assertAllowToCopyOnInactiveCareUnit(boolean actualValue) {
-        assertFalse(actualValue);
+    protected void assertAllowToCopyOnInactiveCareUnit(AccessResult actualValue) {
+        assertEquals(AccessResultCode.INACTIVE_UNIT, actualValue.getCode());
     }
 
     @Override
-    protected void assertAllowToCopyOnRenewFalse(boolean actualValue) {
-        assertTrue(actualValue);
+    protected void assertAllowToCopyOnRenewFalse(AccessResult actualValue) {
+        assertEquals(AccessResultCode.NO_PROBLEM, actualValue.getCode());
     }
 
     @Override
-    protected void assertAllowToCopyOnSameCareProviderWhenUtkastSameVGExists(boolean actualValue) {
-        assertFalse(actualValue);
+    protected void assertAllowToCopyOnSameCareProviderWhenUtkastSameVGExists(AccessResult actualValue) {
+        assertEquals(AccessResultCode.UNIQUE_DRAFT, actualValue.getCode());
     }
 
     @Override
-    protected void assertAllowToCopyOnDifferentCareProviderWhenIntygSameVGExists(boolean actualValue) {
-        assertFalse(actualValue);
+    protected void assertAllowToCopyOnDifferentCareProviderWhenIntygSameVGExists(AccessResult actualValue) {
+        assertEquals(AccessResultCode.UNIQUE_CERTIFICATE, actualValue.getCode());
     }
 
     @Override
-    protected void assertAllowToCopyOnSameCareProviderWhenIntygExists(boolean actualValue) {
-        assertFalse(actualValue);
+    protected void assertAllowToCopyOnSameCareProviderWhenIntygExists(AccessResult actualValue) {
+        assertEquals(AccessResultCode.UNIQUE_CERTIFICATE, actualValue.getCode());
     }
 
     @Override
-    protected void assertAllowToCopyNoConditionsDifferentUnit(boolean actualValue) {
-        assertTrue(actualValue);
+    protected void assertAllowToCopyNoConditionsDifferentUnit(AccessResult actualValue) {
+        assertEquals(AccessResultCode.NO_PROBLEM, actualValue.getCode());
     }
 
     @Override
-    protected void assertAllowToCopyOnDeceasedPatientDifferentUnit(boolean actualValue) {
-        assertFalse(actualValue);
+    protected void assertAllowToCopyOnDeceasedPatientDifferentUnit(AccessResult actualValue) {
+        assertEquals(AccessResultCode.DECEASED_PATIENT, actualValue.getCode());
     }
 
     @Override
-    protected void assertAllowToCopyOnInactiveCareUnitDifferentUnit(boolean actualValue) {
-        assertFalse(actualValue);
+    protected void assertAllowToCopyOnInactiveCareUnitDifferentUnit(AccessResult actualValue) {
+        assertEquals(AccessResultCode.INACTIVE_UNIT, actualValue.getCode());
     }
 
     @Override
-    protected void assertAllowToCopyOnRenewFalseDifferentUnit(boolean actualValue) {
-        assertTrue(actualValue);
+    protected void assertAllowToCopyOnRenewFalseDifferentUnit(AccessResult actualValue) {
+        assertEquals(AccessResultCode.NO_PROBLEM, actualValue.getCode());
     }
 
     @Override
-    protected void assertAllowToDeleteUtkastNoConditions(boolean actualValue) {
-        assertTrue(actualValue);
+    protected void assertAllowToCopyOnSekretessPatientOnSameUnit(AccessResult actualValue) {
+        assertEquals(AccessResultCode.NO_PROBLEM, actualValue.getCode());
     }
 
     @Override
-    protected void assertAllowToDeleteUtkastOnDeceasedPatient(boolean actualValue) {
-        assertTrue(actualValue);
+    protected void assertAllowToCopyOnSekretessPatientOnDifferentUnit(AccessResult actualValue) {
+        assertEquals(AccessResultCode.AUTHORIZATION_SEKRETESS_UNIT, actualValue.getCode());
     }
 
     @Override
-    protected void assertAllowToDeleteUtkastOnInactiveUnit(boolean actualValue) {
-        assertTrue(actualValue);
+    protected void assertAllowToDeleteUtkastNoConditions(AccessResult actualValue) {
+        assertEquals(AccessResultCode.NO_PROBLEM, actualValue.getCode());
     }
 
     @Override
-    protected void assertAllowToDeleteUtkastOnRenewFalse(boolean actualValue) {
-        assertTrue(actualValue);
+    protected void assertAllowToDeleteUtkastOnDeceasedPatient(AccessResult actualValue) {
+        assertEquals(AccessResultCode.NO_PROBLEM, actualValue.getCode());
     }
 
     @Override
-    protected void assertAllowToDeleteUtkastOnSekretessPatientOnSameUnit(boolean actualValue) {
-        assertTrue(actualValue);
+    protected void assertAllowToDeleteUtkastOnInactiveUnit(AccessResult actualValue) {
+        assertEquals(AccessResultCode.NO_PROBLEM, actualValue.getCode());
     }
 
     @Override
-    protected void assertAllowToDeleteUtkastOnSekretessPatientOnDifferentUnit(boolean actualValue) {
-        assertFalse(actualValue);
+    protected void assertAllowToDeleteUtkastOnRenewFalse(AccessResult actualValue) {
+        assertEquals(AccessResultCode.NO_PROBLEM, actualValue.getCode());
     }
 
     @Override
-    protected void assertAllowToDeleteUtkastOnDeceasedPatientOnDifferentUnit(boolean actualValue) {
-        assertFalse(actualValue);
+    protected void assertAllowToDeleteUtkastOnSekretessPatientOnSameUnit(AccessResult actualValue) {
+        assertEquals(AccessResultCode.NO_PROBLEM, actualValue.getCode());
     }
 
     @Override
-    protected void assertAllowToDeleteUtkastOnInactiveUnitOnDifferentUnit(boolean actualValue) {
-        assertFalse(actualValue);
+    protected void assertAllowToDeleteUtkastOnSekretessPatientOnDifferentUnit(AccessResult actualValue) {
+        assertEquals(AccessResultCode.AUTHORIZATION_SEKRETESS_UNIT, actualValue.getCode());
     }
 
     @Override
-    protected void assertAllowToDeleteUtkastOnRenewFalseOnDifferentUnit(boolean actualValue) {
-        assertFalse(actualValue);
+    protected void assertAllowToDeleteUtkastOnDeceasedPatientOnDifferentUnit(AccessResult actualValue) {
+        assertEquals(AccessResultCode.DECEASED_PATIENT, actualValue.getCode());
     }
 
     @Override
-    protected void assertAllowToDeleteUtkastNoConditionsDifferentUnit(boolean actualValue) {
-        assertFalse(actualValue);
+    protected void assertAllowToDeleteUtkastOnInactiveUnitOnDifferentUnit(AccessResult actualValue) {
+        assertEquals(AccessResultCode.INACTIVE_UNIT, actualValue.getCode());
     }
 
     @Override
-    protected void assertAllowToPrintUtkastNoConditions(boolean actualValue) {
-        assertTrue(actualValue);
+    protected void assertAllowToDeleteUtkastOnRenewFalseOnDifferentUnit(AccessResult actualValue) {
+        assertEquals(AccessResultCode.RENEW_FALSE, actualValue.getCode());
     }
 
     @Override
-    protected void assertAllowToPrintUtkastOnDeceasedPatient(boolean actualValue) {
-        assertFalse(actualValue);
+    protected void assertAllowToDeleteUtkastNoConditionsDifferentUnit(AccessResult actualValue) {
+        assertEquals(AccessResultCode.AUTHORIZATION_DIFFERENT_UNIT, actualValue.getCode());
     }
 
     @Override
-    protected void assertAllowToPrintUtkastOnInactiveUnit(boolean actualValue) {
-        assertTrue(actualValue);
+    protected void assertAllowToPrintUtkastNoConditions(AccessResult actualValue) {
+        assertEquals(AccessResultCode.NO_PROBLEM, actualValue.getCode());
     }
 
     @Override
-    protected void assertAllowToPrintUtkastOnRenewFalse(boolean actualValue) {
-        assertTrue(actualValue);
+    protected void assertAllowToPrintUtkastOnDeceasedPatient(AccessResult actualValue) {
+        assertEquals(AccessResultCode.DECEASED_PATIENT, actualValue.getCode());
     }
 
     @Override
-    protected void assertAllowToPrintUtkastOnSekretessPatientOnSameUnit(boolean actualValue) {
-        assertTrue(actualValue);
+    protected void assertAllowToPrintUtkastOnInactiveUnit(AccessResult actualValue) {
+        assertEquals(AccessResultCode.NO_PROBLEM, actualValue.getCode());
     }
 
     @Override
-    protected void assertAllowToPrintUtkastOnSekretessPatientOnDifferentUnit(boolean actualValue) {
-        assertFalse(actualValue);
+    protected void assertAllowToPrintUtkastOnRenewFalse(AccessResult actualValue) {
+        assertEquals(AccessResultCode.NO_PROBLEM, actualValue.getCode());
     }
 
     @Override
-    protected void assertAllowToPrintUtkastOnDeceasedPatientOnDifferentUnit(boolean actualValue) {
-        assertFalse(actualValue);
+    protected void assertAllowToPrintUtkastOnSekretessPatientOnSameUnit(AccessResult actualValue) {
+        assertEquals(AccessResultCode.NO_PROBLEM, actualValue.getCode());
     }
 
     @Override
-    protected void assertAllowToPrintUtkastOnInactiveUnitOnDifferentUnit(boolean actualValue) {
-        assertFalse(actualValue);
+    protected void assertAllowToPrintUtkastOnSekretessPatientOnDifferentUnit(AccessResult actualValue) {
+        assertEquals(AccessResultCode.AUTHORIZATION_SEKRETESS_UNIT, actualValue.getCode());
     }
 
     @Override
-    protected void assertAllowToPrintUtkastOnRenewFalseOnDifferentUnit(boolean actualValue) {
-        assertFalse(actualValue);
+    protected void assertAllowToPrintUtkastOnDeceasedPatientOnDifferentUnit(AccessResult actualValue) {
+        assertEquals(AccessResultCode.DECEASED_PATIENT, actualValue.getCode());
     }
 
     @Override
-    protected void assertAllowToPrintUtkastNoConditionsDifferentUnit(boolean actualValue) {
-        assertFalse(actualValue);
+    protected void assertAllowToPrintUtkastOnInactiveUnitOnDifferentUnit(AccessResult actualValue) {
+        assertEquals(AccessResultCode.INACTIVE_UNIT, actualValue.getCode());
+    }
+
+    @Override
+    protected void assertAllowToPrintUtkastOnRenewFalseOnDifferentUnit(AccessResult actualValue) {
+        assertEquals(AccessResultCode.RENEW_FALSE, actualValue.getCode());
+    }
+
+    @Override
+    protected void assertAllowToPrintUtkastNoConditionsDifferentUnit(AccessResult actualValue) {
+        assertEquals(AccessResultCode.AUTHORIZATION_DIFFERENT_UNIT, actualValue.getCode());
     }
 }

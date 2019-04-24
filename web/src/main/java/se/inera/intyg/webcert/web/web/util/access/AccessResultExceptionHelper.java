@@ -17,16 +17,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.inera.intyg.webcert.web.service.access;
+package se.inera.intyg.webcert.web.web.util.access;
 
-import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.web.service.access.AccessResult;
 
-public interface LockedDraftAccessService {
-    AccessResult allowToRead(String intygsTyp, String enhetsId, Personnummer personnummer);
-
-    AccessResult allowedToCopyLockedUtkast(String intygsTyp, String enhetsId, Personnummer personnummer);
-
-    AccessResult allowedToInvalidateLockedUtkast(String intygsTyp, String enhetsId, Personnummer personnummer);
-
-    AccessResult allowToPrint(String intygsTyp, String enhetsId, Personnummer personnummer);
+public interface AccessResultExceptionHelper {
+    void throwException(AccessResult actionResult);
 }

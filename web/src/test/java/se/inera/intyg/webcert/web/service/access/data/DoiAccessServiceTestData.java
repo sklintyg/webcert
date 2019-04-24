@@ -39,7 +39,11 @@ public class DoiAccessServiceTestData implements AccessServiceTestData {
             AuthoritiesConstants.FEATURE_UNIKT_INTYG_INOM_VG,
             AuthoritiesConstants.FEATURE_UNIKT_UTKAST_INOM_VG,
             AuthoritiesConstants.FEATURE_UNIKT_UNDANTAG_OM_SENASTE_INTYG);
-    private static List<String> PRIVILEGES = Arrays.asList(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG);
+    private static List<String> PRIVILEGES = Arrays.asList(
+            AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG,
+            AuthoritiesConstants.PRIVILEGE_VISA_INTYG,
+            AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT,
+            AuthoritiesConstants.PRIVILEGE_MAKULERA_INTYG);
 
     @Override
     public List<String> getFeatures() {

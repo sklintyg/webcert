@@ -49,12 +49,12 @@ import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.SekretessStatus;
-import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
-import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastFilter;
 import se.inera.intyg.webcert.web.converter.IntygDraftsConverter;
 import se.inera.intyg.webcert.web.converter.util.IntygConverterUtil;
+import se.inera.intyg.webcert.web.service.access.AccessResult;
+import se.inera.intyg.webcert.web.service.access.AccessResultCode;
 import se.inera.intyg.webcert.web.service.access.DraftAccessService;
 import se.inera.intyg.webcert.web.service.dto.Lakare;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
@@ -67,6 +67,7 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.CreateUtkastRequest;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 import se.inera.intyg.webcert.web.web.controller.api.dto.QueryIntygParameter;
 import se.inera.intyg.webcert.web.web.controller.api.dto.QueryIntygResponse;
+import se.inera.intyg.webcert.web.web.util.access.AccessResultExceptionHelper;
 
 /**
  * API controller for REST services concerning certificate drafts.
@@ -99,6 +100,9 @@ public class UtkastApiController extends AbstractApiController {
     @Autowired
     private DraftAccessService draftAccessService;
 
+    @Autowired
+    private AccessResultExceptionHelper accessResultExceptionHelper;
+
     /**
      * Create a new draft.
      */
@@ -124,11 +128,14 @@ public class UtkastApiController extends AbstractApiController {
         }
         LOG.debug("Attempting to create draft of type '{}'", intygsTyp);
 
-        final boolean allowedToCreateUtkast = draftAccessService.allowToCreateDraft(intygsTyp, request.getPatientPersonnummer());
-        if (!allowedToCreateUtkast) {
-            // TODO: Manage so correct exception can be thrown
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM,
-                    "Not allowed to create utkast");
+        final AccessResult actionResult = draftAccessService.allowToCreateDraft(intygsTyp, request.getPatientPersonnummer());
+        if (!actionResult.isAllowed()) {
+            if (actionResult.getCode() == AccessResultCode.UNIQUE_DRAFT
+                    || actionResult.getCode() == AccessResultCode.UNIQUE_CERTIFICATE) {
+                return Response.status(Status.BAD_REQUEST).build();
+            } else {
+                accessResultExceptionHelper.throwException(actionResult);
+            }
         }
 
         CreateNewDraftRequest serviceRequest = createServiceRequest(request);

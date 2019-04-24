@@ -19,14 +19,16 @@
 
 package se.inera.intyg.webcert.web.service.access;
 
-import se.inera.intyg.schemas.contract.Personnummer;
-
-public interface LockedDraftAccessService {
-    AccessResult allowToRead(String intygsTyp, String enhetsId, Personnummer personnummer);
-
-    AccessResult allowedToCopyLockedUtkast(String intygsTyp, String enhetsId, Personnummer personnummer);
-
-    AccessResult allowedToInvalidateLockedUtkast(String intygsTyp, String enhetsId, Personnummer personnummer);
-
-    AccessResult allowToPrint(String intygsTyp, String enhetsId, Personnummer personnummer);
+public enum AccessResultCode {
+    NO_PROBLEM,
+    PU_PROBLEM,
+    AUTHORIZATION_SEKRETESS,
+    AUTHORIZATION_SEKRETESS_UNIT,
+    AUTHORIZATION_DIFFERENT_UNIT,
+    UNIQUE_DRAFT,
+    UNIQUE_CERTIFICATE,
+    DECEASED_PATIENT,
+    INACTIVE_UNIT,
+    RENEW_FALSE,
+    AUTHORIZATION_VALIDATION
 }

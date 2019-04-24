@@ -19,14 +19,36 @@
 
 package se.inera.intyg.webcert.web.service.access;
 
-import se.inera.intyg.schemas.contract.Personnummer;
+import javax.validation.constraints.NotNull;
 
-public interface LockedDraftAccessService {
-    AccessResult allowToRead(String intygsTyp, String enhetsId, Personnummer personnummer);
+public final class AccessResult {
+    private AccessResultCode code;
+    private String message;
 
-    AccessResult allowedToCopyLockedUtkast(String intygsTyp, String enhetsId, Personnummer personnummer);
+    public static AccessResult noProblem() {
+        return new AccessResult(AccessResultCode.NO_PROBLEM, "");
+    }
 
-    AccessResult allowedToInvalidateLockedUtkast(String intygsTyp, String enhetsId, Personnummer personnummer);
+    public static AccessResult create(@NotNull AccessResultCode code, @NotNull String message) {
+        return new AccessResult(code, message);
+    }
 
-    AccessResult allowToPrint(String intygsTyp, String enhetsId, Personnummer personnummer);
+    private AccessResult(AccessResultCode code, String message) {
+        this.code = code;
+        this.message = message;
+    }
+
+    @NotNull
+    public AccessResultCode getCode() {
+        return code;
+    }
+
+    @NotNull
+    public String getMessage() {
+        return message;
+    }
+
+    public boolean isAllowed() {
+        return code.equals(AccessResultCode.NO_PROBLEM);
+    }
 }

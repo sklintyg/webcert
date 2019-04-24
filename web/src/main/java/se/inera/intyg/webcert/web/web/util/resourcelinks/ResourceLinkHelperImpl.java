@@ -51,7 +51,7 @@ public class ResourceLinkHelperImpl implements ResourceLinkHelper {
 
     @Override
     public void decorateWithValidActionLinks(IntygModuleDTO intygModule, Personnummer personnummer) {
-        if (draftAccessService.allowToCreateDraft(intygModule.getId(), personnummer)) {
+        if (draftAccessService.allowToCreateDraft(intygModule.getId(), personnummer).isAllowed()) {
             final ActionLink actionLink = new ActionLink();
             actionLink.setType(ActionLinkType.SKAPA_UTKAST);
             actionLink.setUrl("testurl");
@@ -64,32 +64,32 @@ public class ResourceLinkHelperImpl implements ResourceLinkHelper {
         boolean isLocked = utkast.getStatus() != null ? utkast.getStatus().equals(UtkastStatus.DRAFT_LOCKED) : false;
         // TODO Manage print when revoked.
         if (isLocked) {
-            if (lockedDraftAccessService.allowedToInvalidateLockedUtkast(intygsTyp, enhetsId, personnummer)) {
+            if (lockedDraftAccessService.allowedToInvalidateLockedUtkast(intygsTyp, enhetsId, personnummer).isAllowed()) {
                 final ActionLink actionLink = new ActionLink();
                 actionLink.setType(ActionLinkType.MAKULERA_UTKAST);
                 actionLink.setUrl("testurl");
                 utkast.addLink(actionLink);
             }
-            if (lockedDraftAccessService.allowedToCopyLockedUtkast(intygsTyp, enhetsId, personnummer)) {
+            if (lockedDraftAccessService.allowedToCopyLockedUtkast(intygsTyp, enhetsId, personnummer).isAllowed()) {
                 final ActionLink actionLink = new ActionLink();
                 actionLink.setType(ActionLinkType.KOPIERA_UTKAST);
                 actionLink.setUrl("testurl");
                 utkast.addLink(actionLink);
             }
-            if (lockedDraftAccessService.allowToPrint(intygsTyp, enhetsId, personnummer)) {
+            if (lockedDraftAccessService.allowToPrint(intygsTyp, enhetsId, personnummer).isAllowed()) {
                 final ActionLink actionLink = new ActionLink();
                 actionLink.setType(ActionLinkType.SKRIV_UT_UTKAST);
                 actionLink.setUrl("testurl");
                 utkast.addLink(actionLink);
             }
         } else {
-            if (draftAccessService.allowToDeleteDraft(intygsTyp, enhetsId, personnummer)) {
+            if (draftAccessService.allowToDeleteDraft(intygsTyp, enhetsId, personnummer).isAllowed()) {
                 final ActionLink actionLink = new ActionLink();
                 actionLink.setType(ActionLinkType.TA_BORT_UTKAST);
                 actionLink.setUrl("testurl");
                 utkast.addLink(actionLink);
             }
-            if (draftAccessService.allowToPrintDraft(intygsTyp, enhetsId, personnummer)) {
+            if (draftAccessService.allowToPrintDraft(intygsTyp, enhetsId, personnummer).isAllowed()) {
                 final ActionLink actionLink = new ActionLink();
                 actionLink.setType(ActionLinkType.SKRIV_UT_UTKAST);
                 actionLink.setUrl("testurl");

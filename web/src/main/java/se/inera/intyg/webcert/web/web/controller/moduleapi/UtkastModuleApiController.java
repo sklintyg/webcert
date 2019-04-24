@@ -56,6 +56,7 @@ import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
+import se.inera.intyg.webcert.web.service.access.AccessResult;
 import se.inera.intyg.webcert.web.service.access.DraftAccessService;
 import se.inera.intyg.webcert.web.service.access.LockedDraftAccessService;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
@@ -74,6 +75,7 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.CopyIntygResponse;
 import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
 import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.DraftHolder;
 import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.RevokeSignedIntygParameter;
+import se.inera.intyg.webcert.web.web.util.access.AccessResultExceptionHelper;
 import se.inera.intyg.webcert.web.web.util.resourcelinks.ResourceLinkHelper;
 
 /**
@@ -122,6 +124,9 @@ public class UtkastModuleApiController extends AbstractApiController {
     @Autowired
     private ResourceLinkHelper resourceLinkHelper;
 
+    @Autowired
+    private AccessResultExceptionHelper accessResultExceptionHelper;
+
     /**
      * Returns the draft certificate as JSON identified by the intygId.
      *
@@ -147,12 +152,10 @@ public class UtkastModuleApiController extends AbstractApiController {
                     "Could not resolve Patient in PU-service when opening draft.");
         }
 
-        final boolean allowedToReadUtkast = draftAccessService.allowToReadDraft(intygsTyp, utkast.getEnhetsId(),
+        final AccessResult accessResult = draftAccessService.allowToReadDraft(intygsTyp, utkast.getEnhetsId(),
                 resolvedPatient.getPersonId());
-        if (!allowedToReadUtkast) {
-            // TODO: Manage so correct exception can be thrown
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM,
-                    "Not allowed to create utkast");
+        if (!accessResult.isAllowed()) {
+            accessResultExceptionHelper.throwException(accessResult);
         }
 
         request.getSession(true).removeAttribute(LAST_SAVED_DRAFT);
@@ -247,12 +250,10 @@ public class UtkastModuleApiController extends AbstractApiController {
 
         Utkast utkast = utkastService.getDraft(intygsId, intygsTyp);
 
-        final boolean allowedToEditUtkast = draftAccessService.allowToReadDraft(intygsTyp, utkast.getEnhetsId(),
+        final AccessResult accessResult = draftAccessService.allowToEditDraft(intygsTyp, utkast.getEnhetsId(),
                 utkast.getPatientPersonnummer());
-        if (!allowedToEditUtkast) {
-            // TODO: Manage so correct exception can be thrown
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM,
-                    "Not allowed to create utkast");
+        if (!accessResult.isAllowed()) {
+            accessResultExceptionHelper.throwException(accessResult);
         }
 
         LOG.debug("Saving utkast with id '{}', autosave is {}", intygsId, autoSave);
@@ -297,12 +298,10 @@ public class UtkastModuleApiController extends AbstractApiController {
 
         Utkast utkast = utkastService.getDraft(intygsId, intygsTyp);
 
-        final boolean allowedToEditUtkast = draftAccessService.allowToReadDraft(intygsTyp, utkast.getEnhetsId(),
+        final AccessResult accessResult = draftAccessService.allowToEditDraft(intygsTyp, utkast.getEnhetsId(),
                 utkast.getPatientPersonnummer());
-        if (!allowedToEditUtkast) {
-            // TODO: Manage so correct exception can be thrown
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM,
-                    "Not allowed to create utkast");
+        if (!accessResult.isAllowed()) {
+            accessResultExceptionHelper.throwException(accessResult);
         }
 
         LOG.debug("Validating utkast with id '{}'", intygsId);
@@ -332,12 +331,10 @@ public class UtkastModuleApiController extends AbstractApiController {
 
         Utkast utkast = utkastService.getDraft(orgIntygsId, intygsTyp);
 
-        final boolean allowedToCopyLockedUtkast = lockedDraftAccessService.allowedToCopyLockedUtkast(intygsTyp, utkast.getEnhetsId(),
+        final AccessResult accessResult = lockedDraftAccessService.allowedToCopyLockedUtkast(intygsTyp, utkast.getEnhetsId(),
                 utkast.getPatientPersonnummer());
-        if (!allowedToCopyLockedUtkast) {
-            // TODO: Manage so correct exception can be thrown
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM,
-                    "Not allowed to create utkast");
+        if (!accessResult.isAllowed()) {
+            accessResultExceptionHelper.throwException(accessResult);
         }
 
         CopyIntygRequest request = new CopyIntygRequest();
@@ -379,12 +376,10 @@ public class UtkastModuleApiController extends AbstractApiController {
 
         Utkast utkast = utkastService.getDraft(intygsId, intygsTyp);
 
-        final boolean allowedToDeleteUtkast = draftAccessService.allowToDeleteDraft(intygsTyp, utkast.getEnhetsId(),
+        final AccessResult accessResult = draftAccessService.allowToDeleteDraft(intygsTyp, utkast.getEnhetsId(),
                 utkast.getPatientPersonnummer());
-        if (!allowedToDeleteUtkast) {
-            // TODO: Manage so correct exception can be thrown
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM,
-                    "Not allowed to create utkast");
+        if (!accessResult.isAllowed()) {
+            accessResultExceptionHelper.throwException(accessResult);
         }
 
         LOG.debug("Deleting draft with id {}", intygsId);
@@ -419,12 +414,11 @@ public class UtkastModuleApiController extends AbstractApiController {
 
         Utkast utkast = utkastService.getDraft(intygsId, intygsTyp);
 
-        final boolean allowedToInvalidateUtkast = lockedDraftAccessService.allowedToInvalidateLockedUtkast(intygsTyp, utkast.getEnhetsId(),
+        final AccessResult accessResult = lockedDraftAccessService.allowedToInvalidateLockedUtkast(intygsTyp,
+                utkast.getEnhetsId(),
                 utkast.getPatientPersonnummer());
-        if (!allowedToInvalidateUtkast) {
-            // TODO: Manage so correct exception can be thrown
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM,
-                    "Not allowed to create utkast");
+        if (!accessResult.isAllowed()) {
+            accessResultExceptionHelper.throwException(accessResult);
         }
 
         if (authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
