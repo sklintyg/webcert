@@ -63,7 +63,6 @@
     },
 
     "åtgärder": {
-        "inteAktuellt": false,
         "arbetsträning": true,
         "arbetsanspassning": true,
         "sökaNyttArbete": true,

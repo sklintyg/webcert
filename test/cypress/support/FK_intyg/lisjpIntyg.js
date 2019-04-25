@@ -151,8 +151,6 @@ export function sektionBedömning(bedömning) {
         cy.get('#arbetstidsforlaggningYes').check();
         cy.get('#arbetstidsforlaggningMotivering')
             .type(bedömning.förläggaArbetstidOlika.arbetstidsförläggningstext);
-    } else {
-        cy.get('#arbetstidsforlaggningNo').check();
     }
 
     if (bedömning.resorTillOchFrånArbete) {
@@ -167,9 +165,6 @@ export function sektionBedömning(bedömning) {
 
 // -------------------- 'Åtgärder' --------------------
 export function sektionÅtgärder(åtgärder) {
-    if (åtgärder.inteAktuellt) {
-        cy.get('#arbetslivsinriktadeAtgarder-EJ_AKTUELLT').check();
-    }
     if (åtgärder.arbetsträning) {
         cy.get('#arbetslivsinriktadeAtgarder-ARBETSTRANING').check();
     }
