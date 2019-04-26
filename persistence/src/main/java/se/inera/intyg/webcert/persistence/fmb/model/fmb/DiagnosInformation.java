@@ -48,6 +48,9 @@ public final class DiagnosInformation {
     @Column(name = "SYMPTOM_PROGNOS_BEHANDLING", nullable = false)
     private String symptomPrognosBehandling;
 
+    @Column(name = "INFORMATION_OM_REHABILITERING", nullable = true)
+    private String informationOmRehabilitering;
+
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @JoinColumn(name = "DIAGNOS_INFORMATION_ID", nullable = false)
     private List<Beskrivning> beskrivningList = Lists.newArrayList();
@@ -70,12 +73,14 @@ public final class DiagnosInformation {
     private DiagnosInformation(
             final String forsakringsmedicinskInformation,
             final String symptomPrognosBehandling,
+            final String informationOmRehabilitering,
             final List<Beskrivning> beskrivningList,
             final List<Icd10Kod> icd10KodList,
             final List<Referens> referensList,
             final LocalDateTime senastUppdaterad) {
         this.forsakringsmedicinskInformation = forsakringsmedicinskInformation;
         this.symptomPrognosBehandling = symptomPrognosBehandling;
+        this.informationOmRehabilitering = informationOmRehabilitering;
         this.beskrivningList = beskrivningList;
         this.icd10KodList = icd10KodList;
         this.referensList = referensList;
@@ -92,6 +97,10 @@ public final class DiagnosInformation {
 
     public String getSymptomPrognosBehandling() {
         return symptomPrognosBehandling;
+    }
+
+    public String getInformationOmRehabilitering() {
+        return informationOmRehabilitering;
     }
 
     public List<Beskrivning> getBeskrivningList() {
@@ -113,6 +122,7 @@ public final class DiagnosInformation {
     public static final class DiagnosInformationBuilder {
         private String forsakringsmedicinskInformation;
         private String symptomPrognosBehandling;
+        private String informationOmRehabilitering;
         private List<Beskrivning> beskrivningList = Lists.newArrayList();
         private List<Icd10Kod> icd10KodList = Lists.newArrayList();
         private List<Referens> referensList = Lists.newArrayList();
@@ -132,6 +142,11 @@ public final class DiagnosInformation {
 
         public DiagnosInformationBuilder symptomPrognosBehandling(String symptomPrognosBehandling) {
             this.symptomPrognosBehandling = symptomPrognosBehandling;
+            return this;
+        }
+
+        public DiagnosInformationBuilder informationOmRehabilitering(String informationOmRehabilitering) {
+            this.informationOmRehabilitering = informationOmRehabilitering;
             return this;
         }
 
@@ -159,6 +174,7 @@ public final class DiagnosInformation {
             return new DiagnosInformation(
                     forsakringsmedicinskInformation,
                     symptomPrognosBehandling,
+                    informationOmRehabilitering,
                     beskrivningList,
                     icd10KodList,
                     referensList,

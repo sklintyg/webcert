@@ -86,7 +86,7 @@ public class Attributes {
     @JsonProperty("symtomprognosbehandling")
     private Markup symtomprognosbehandling;
     @JsonProperty("informationomrehabilitering")
-    private Informationomrehabilitering informationomrehabilitering;
+    private Markup informationomrehabilitering;
     @JsonProperty("diagnoskod")
     private List<Kod> diagnoskod = null;
     @JsonProperty("aktivitetsbegransning")
@@ -247,12 +247,16 @@ public class Attributes {
     }
 
     @JsonProperty("informationomrehabilitering")
-    public Informationomrehabilitering getInformationomrehabilitering() {
+    public Markup getInformationomrehabilitering() {
         return informationomrehabilitering;
     }
 
+    public Optional<Markup> getOptionalInformationomrehabilitering() {
+        return Optional.ofNullable(informationomrehabilitering);
+    }
+
     @JsonProperty("informationomrehabilitering")
-    public void setInformationomrehabilitering(Informationomrehabilitering informationomrehabilitering) {
+    public void setInformationomrehabilitering(Markup informationomrehabilitering) {
         this.informationomrehabilitering = informationomrehabilitering;
     }
 

@@ -1231,4 +1231,12 @@
     </sql>
   </changeSet>
 
+  <changeSet id="59" author="perbe">
+    <addColumn tableName="FMB_DIAGNOS_INFORMATION">
+      <column name="INFORMATION_OM_REHABILITERING" type="varchar(4085)">
+        <constraints nullable="true"/>
+      </column>
+    </addColumn>
+  </changeSet>
+
 </databaseChangeLog>
