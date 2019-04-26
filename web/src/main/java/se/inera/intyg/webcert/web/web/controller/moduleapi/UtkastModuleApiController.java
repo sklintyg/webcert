@@ -331,12 +331,6 @@ public class UtkastModuleApiController extends AbstractApiController {
 
         Utkast utkast = utkastService.getDraft(orgIntygsId, intygsTyp);
 
-        final AccessResult accessResult = lockedDraftAccessService.allowedToCopyLockedUtkast(intygsTyp, utkast.getEnhetsId(),
-                utkast.getPatientPersonnummer());
-        if (!accessResult.isAllowed()) {
-            accessResultExceptionHelper.throwException(accessResult);
-        }
-
         CopyIntygRequest request = new CopyIntygRequest();
         request.setPatientPersonnummer(utkast.getPatientPersonnummer());
 

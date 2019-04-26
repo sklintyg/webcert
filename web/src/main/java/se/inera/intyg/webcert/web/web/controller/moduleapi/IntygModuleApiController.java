@@ -86,55 +86,50 @@ public class IntygModuleApiController extends AbstractApiController {
     @Autowired
     private IntygTextsService intygTextsService;
 
-
     /**
      * Retrieves a signed intyg from intygstjänst.
      *
-     * @param intygsId intygid
+     * @param intygsId
+     *            intygid
      * @return Response
      */
     @GET
     @Path("/{intygsTyp}/{intygsId}")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public Response getIntyg(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId) {
-
-        authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
-                .privilege(AuthoritiesConstants.PRIVILEGE_VISA_INTYG)
-                .orThrow();
-
         WebCertUser user = getWebCertUserService().getUser();
         boolean coherentJournaling = user.getParameters() != null && user.getParameters().isSjf();
 
         LOG.debug("Fetching signed intyg with id '{}' from IT, coherent journaling {}", intygsId, coherentJournaling);
 
         IntygContentHolder intygAsExternal = intygService.fetchIntygDataWithRelations(intygsId, intygsTyp, coherentJournaling);
+
         return Response.ok().entity(intygAsExternal).build();
     }
 
     /**
      * Return the signed certificate identified by the given id as PDF.
      *
-     * @param intygsTyp the type of certificate
-     * @param intygsId  - the globally unique id of a certificate.
+     * @param intygsTyp
+     *            the type of certificate
+     * @param intygsId
+     *            - the globally unique id of a certificate.
      * @return The certificate in PDF format
      */
     @GET
     @Path("/{intygsTyp}/{intygsId}/pdf")
     @Produces("application/pdf")
     public final Response getIntygAsPdf(@PathParam("intygsTyp") String intygsTyp, @PathParam(value = "intygsId") final String intygsId) {
-        authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
-                .privilege(AuthoritiesConstants.PRIVILEGE_VISA_INTYG)
-                .features(AuthoritiesConstants.FEATURE_UTSKRIFT)
-                .orThrow();
-
         return getPdf(intygsTyp, intygsId, false);
     }
 
     /**
      * Return the signed certificate identified by the given id as PDF suited for the employer of the patient.
      *
-     * @param intygsTyp the type of certificate
-     * @param intygsId  - the globally unique id of a certificate.
+     * @param intygsTyp
+     *            the type of certificate
+     * @param intygsId
+     *            - the globally unique id of a certificate.
      * @return The certificate in PDF format
      */
     @GET
@@ -142,11 +137,6 @@ public class IntygModuleApiController extends AbstractApiController {
     @Produces("application/pdf")
     public final Response getIntygAsPdfForEmployer(@PathParam("intygsTyp") String intygsTyp,
             @PathParam(value = "intygsId") final String intygsId) {
-        authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
-                .privilege(AuthoritiesConstants.PRIVILEGE_VISA_INTYG)
-                .features(AuthoritiesConstants.FEATURE_ARBETSGIVARUTSKRIFT)
-                .orThrow();
-
         return getPdf(intygsTyp, intygsId, true);
     }
 
@@ -176,8 +166,6 @@ public class IntygModuleApiController extends AbstractApiController {
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public Response sendSignedIntyg(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId,
             SendSignedIntygParameter param) {
-        authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp).features(AuthoritiesConstants.FEATURE_SKICKA_INTYG)
-                .orThrow();
 
         IntygServiceResult sendResult = intygService.sendIntyg(intygsId, intygsTyp, param.getRecipient(), false);
         return Response.ok(sendResult).build();
@@ -186,8 +174,10 @@ public class IntygModuleApiController extends AbstractApiController {
     /**
      * Issues a request to Intygstjanst to revoke the signed intyg.
      *
-     * @param intygsId The id of the intyg to revoke
-     * @param param    A JSON struct containing an optional message
+     * @param intygsId
+     *            The id of the intyg to revoke
+     * @param param
+     *            A JSON struct containing an optional message
      */
     @POST
     @Path("/{intygsTyp}/{intygsId}/aterkalla")
@@ -195,7 +185,6 @@ public class IntygModuleApiController extends AbstractApiController {
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public Response revokeSignedIntyg(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId,
             RevokeSignedIntygParameter param) {
-        validateRevokeAuthority(intygsTyp);
 
         if (authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
                 .features(AuthoritiesConstants.FEATURE_MAKULERA_INTYG_KRAVER_ANLEDNING).isVerified() && !param.isValid()) {
@@ -203,7 +192,7 @@ public class IntygModuleApiController extends AbstractApiController {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, "Missing vital arguments in payload");
         }
 
-        IntygServiceResult result = revokeIntyg(intygsTyp, intygsId, param);
+        IntygServiceResult result = intygService.revokeIntyg(intygsId, intygsTyp, param.getMessage(), param.getReason());
         return Response.ok(result).build();
     }
 
@@ -216,11 +205,6 @@ public class IntygModuleApiController extends AbstractApiController {
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public Response createCompletion(CopyIntygRequest request, @PathParam("intygsTyp") String intygsTyp,
             @PathParam("intygsId") String orgIntygsId) {
-
-        authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
-                .features(AuthoritiesConstants.FEATURE_FORNYA_INTYG)
-                .privilege(AuthoritiesConstants.PRIVILEGE_SVARA_MED_NYTT_INTYG)
-                .orThrow();
 
         LOG.debug("Attempting to create a completion of {} with id '{}'", intygsTyp, orgIntygsId);
 
@@ -260,18 +244,7 @@ public class IntygModuleApiController extends AbstractApiController {
     public Response createRenewal(CopyIntygRequest request, @PathParam("intygsTyp") String intygsTyp,
             @PathParam("intygsId") String orgIntygsId) {
 
-        validateCopyAuthority(intygsTyp);
-
         LOG.debug("Attempting to create a renewal of {} with id '{}'", intygsTyp, orgIntygsId);
-
-        WebCertUser user = getWebCertUserService().getUser();
-
-        boolean fornyaOkParam = user.getParameters() == null || user.getParameters().isFornyaOk();
-        if (!fornyaOkParam) {
-            LOG.info("User is not allowed to request a copy for id '{}' due to false kopieraOK-parameter", orgIntygsId);
-            final String message = "Authorization failed due to false kopieraOK-parameter";
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM, message);
-        }
 
         if (!request.isValid()) {
             LOG.error("Request to create renewal of '{}' is not valid", orgIntygsId);
@@ -300,8 +273,6 @@ public class IntygModuleApiController extends AbstractApiController {
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public Response createUtkastFromTemplate(CopyIntygRequest request, @PathParam("intygsTyp") String orgIntygsTyp,
             @PathParam("intygsId") String orgIntygsId, @PathParam("newIntygsTyp") String newIntygsTyp) {
-
-        validateCreateUtkastFromTemplateAuthority(newIntygsTyp);
 
         LOG.debug("Attempting to create a new certificate with type {} from certificate with type {} and id '{}'", newIntygsTyp,
                 orgIntygsTyp, orgIntygsId);
@@ -335,7 +306,6 @@ public class IntygModuleApiController extends AbstractApiController {
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public Response createReplacement(CopyIntygRequest request, @PathParam("intygsTyp") String intygsTyp,
             @PathParam("intygsId") String orgIntygsId) {
-        validateReplaceAuthority(intygsTyp);
 
         LOG.debug("Attempting to create a replacement of {} with id '{}'", intygsTyp, orgIntygsId);
 
@@ -354,36 +324,5 @@ public class IntygModuleApiController extends AbstractApiController {
                 serviceResponse.getNewDraftIntygTypeVersion());
 
         return Response.ok().entity(response).build();
-    }
-
-    private IntygServiceResult revokeIntyg(String intygsTyp, String intygsId, RevokeSignedIntygParameter param) {
-        return intygService.revokeIntyg(intygsId, intygsTyp, param.getMessage(), param.getReason());
-    }
-
-    private void validateRevokeAuthority(String intygsTyp) {
-        authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
-                .features(AuthoritiesConstants.FEATURE_MAKULERA_INTYG)
-                .privilege(AuthoritiesConstants.PRIVILEGE_MAKULERA_INTYG)
-                .orThrow();
-    }
-
-    private void validateReplaceAuthority(String intygsTyp) {
-        authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
-                .privilege(AuthoritiesConstants.PRIVILEGE_ERSATTA_INTYG)
-                .orThrow();
-    }
-
-    private void validateCopyAuthority(String intygsTyp) {
-        authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
-                .features(AuthoritiesConstants.FEATURE_FORNYA_INTYG)
-                .privilege(AuthoritiesConstants.PRIVILEGE_FORNYA_INTYG)
-                .orThrow();
-    }
-
-    private void validateCreateUtkastFromTemplateAuthority(String newIntygTyp) {
-        authoritiesValidator.given(getWebCertUserService().getUser(), newIntygTyp)
-                .features(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
-                .privilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG)
-                .orThrow();
     }
 }

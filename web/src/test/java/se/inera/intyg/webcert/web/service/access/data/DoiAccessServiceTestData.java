@@ -31,7 +31,8 @@ public class DoiAccessServiceTestData implements AccessServiceTestData {
             AuthoritiesConstants.FEATURE_FORNYA_INTYG,
             AuthoritiesConstants.FEATURE_MAKULERA_INTYG,
             AuthoritiesConstants.FEATURE_SKAPA_NYFRAGA,
-            AuthoritiesConstants.FEATURE_SKICKA_INTYG,
+            // TODO verifiera hurvida det skall gå att skicka intygstypen eller inte
+            // AuthoritiesConstants.FEATURE_SKICKA_INTYG,
             AuthoritiesConstants.FEATURE_SIGNERA_SKICKA_DIREKT,
             AuthoritiesConstants.FEATURE_UTSKRIFT,
             AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST_AVLIDEN,
@@ -43,7 +44,8 @@ public class DoiAccessServiceTestData implements AccessServiceTestData {
             AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG,
             AuthoritiesConstants.PRIVILEGE_VISA_INTYG,
             AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT,
-            AuthoritiesConstants.PRIVILEGE_MAKULERA_INTYG);
+            AuthoritiesConstants.PRIVILEGE_MAKULERA_INTYG,
+            AuthoritiesConstants.PRIVILEGE_ERSATTA_INTYG);
 
     @Override
     public List<String> getFeatures() {

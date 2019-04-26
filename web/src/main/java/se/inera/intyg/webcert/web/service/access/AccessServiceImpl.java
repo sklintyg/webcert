@@ -23,9 +23,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.infra.security.authorities.validation.AuthExpectationSpecification;
 import se.inera.intyg.infra.security.authorities.validation.AuthoritiesValidator;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.SekretessStatus;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
@@ -55,6 +57,46 @@ public abstract class AccessServiceImpl {
 
     boolean isUserLoggedInOnDifferentUnit(String enhetsId) {
         return enhetsId != null && !webCertUserService.userIsLoggedInOnEnhetOrUnderenhet(enhetsId);
+    }
+
+    Optional<AccessResult> isUnitRuleValid(String intygsTyp, Vardenhet vardenhet, WebCertUser user, boolean allowSJF,
+            boolean isReadOnlyOperation) {
+
+        if (allowSJF && user.getParameters() != null && user.getParameters().isSjf()) {
+            return Optional.empty();
+        }
+
+        if (user.getOrigin().equals(UserOriginType.DJUPINTEGRATION.name())) {
+            final String vardgivarId = vardenhet.getVardgivare().getVardgivarid();
+            if (isReadOnlyOperation && vardgivarId != null && !user.getValdVardgivare().getId().equals(vardgivarId)) {
+                return Optional.of(AccessResult.create(AccessResultCode.AUTHORIZATION_DIFFERENT_UNIT,
+                        "User is logged in on a different unit than the draft/certificate"));
+            }
+        }
+
+        if (user.getOrigin().equals(UserOriginType.READONLY.name()) && isUserLoggedInOnDifferentUnit(vardenhet.getEnhetsid())) {
+            return Optional.of(AccessResult.create(AccessResultCode.AUTHORIZATION_DIFFERENT_UNIT,
+                    "User is logged in on a different unit than the draft/certificate"));
+        }
+
+        if (!user.getIdsOfSelectedVardenhet().contains(vardenhet.getEnhetsid())) {
+            return Optional.of(AccessResult.create(AccessResultCode.AUTHORIZATION_DIFFERENT_UNIT,
+                    "User is logged in on a different unit than the draft/certificate"));
+        }
+
+        return Optional.empty();
+    }
+
+    Optional<AccessResult> isSJFRuleValid(String intygsTyp, Vardenhet vardenhet, WebCertUser user, boolean isReadOnlyOperation) {
+        if (user.getParameters() == null || !user.getParameters().isSjf()) {
+            if (!webCertUserService.isAuthorizedForUnit(vardenhet.getVardgivare().getVardgivarid(), vardenhet.getEnhetsid(),
+                    isReadOnlyOperation)) {
+                return Optional.of(AccessResult.create(AccessResultCode.AUTHORIZATION_DIFFERENT_UNIT,
+                        "User is logged in on a different unit than the draft/certificate"));
+            }
+        }
+
+        return Optional.empty();
     }
 
     private Optional<AccessResult> isAuthorized(String intygsTyp, WebCertUser user, String privilege) {
@@ -109,12 +151,18 @@ public abstract class AccessServiceImpl {
     }
 
     Optional<AccessResult> isRenewRuleValid(WebCertUser user, String intygsTyp, String enhetsId, List<String> excludeIntygsTyper) {
+        return isRenewRuleValid(user, intygsTyp, enhetsId, excludeIntygsTyper, false);
+    }
+
+    Optional<AccessResult> isRenewRuleValid(WebCertUser user, String intygsTyp, String enhetsId, List<String> excludeIntygsTyper,
+            boolean skipLoggedInUnit) {
 
         if (excludeIntygsTyper.contains("ALL") || excludeIntygsTyper.contains(intygsTyp)) {
             return Optional.empty();
         }
 
-        if (user.getParameters() != null && !user.getParameters().isFornyaOk() && isUserLoggedInOnDifferentUnit(enhetsId)) {
+        if (user.getParameters() != null && !user.getParameters().isFornyaOk()
+                && (skipLoggedInUnit || isUserLoggedInOnDifferentUnit(enhetsId))) {
             return Optional.of(AccessResult.create(AccessResultCode.RENEW_FALSE, "Parameter renewOK is false"));
         }
 

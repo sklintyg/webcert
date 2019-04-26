@@ -29,12 +29,14 @@ public class TsAccessServiceTestData implements AccessServiceTestData {
     private static List<String> FEATURES = Arrays.asList(
             AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST,
             AuthoritiesConstants.FEATURE_UTSKRIFT,
-            AuthoritiesConstants.PRIVILEGE_MAKULERA_INTYG);
+            AuthoritiesConstants.PRIVILEGE_MAKULERA_INTYG,
+            AuthoritiesConstants.FEATURE_SKICKA_INTYG);
     private static List<String> PRIVILEGES = Arrays.asList(
             AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG,
             AuthoritiesConstants.PRIVILEGE_VISA_INTYG,
             AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT,
-            AuthoritiesConstants.PRIVILEGE_MAKULERA_INTYG);
+            AuthoritiesConstants.PRIVILEGE_MAKULERA_INTYG,
+            AuthoritiesConstants.PRIVILEGE_ERSATTA_INTYG);
 
     @Override
     public List<String> getFeatures() {
