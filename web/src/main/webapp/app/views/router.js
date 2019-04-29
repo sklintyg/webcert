@@ -89,6 +89,9 @@ angular.module('webcert').config(function($stateProvider, $urlRouterProvider, $h
         }).
         state('webcert.create-choose-certtype-index', {
             url:'/create/choose-intyg-type/:patientId/index',
+            params: {
+                patientId:''
+            },
             views: {
                 'content@': {
                     templateUrl: '/app/views/sokSkrivIntyg/sokSkrivValjUtkastType.html',
@@ -138,15 +141,7 @@ angular.module('webcert').config(function($stateProvider, $urlRouterProvider, $h
                     controller: 'webcert.TermsCtrl'
                 }
             }
-        }).
-       state('webcert.fontdemo', {
-        url: '/font-demo',
-        views: {
-            'content@': {
-                templateUrl: '/app/views/font-demo.html'
-            }
-        }
-    });
+        });
 
     $urlRouterProvider.when('', ['$window', 'common.UserModel', 'common.authorityService', 'common.featureService',
         function($window, UserModel, authorityService, featureService) {

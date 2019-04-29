@@ -266,8 +266,8 @@ public class IntygModuleApiController extends AbstractApiController {
 
         WebCertUser user = getWebCertUserService().getUser();
 
-        boolean copyOkParam = user.getParameters() == null || user.getParameters().isCopyOk();
-        if (!copyOkParam) {
+        boolean fornyaOkParam = user.getParameters() == null || user.getParameters().isFornyaOk();
+        if (!fornyaOkParam) {
             LOG.info("User is not allowed to request a copy for id '{}' due to false kopieraOK-parameter", orgIntygsId);
             final String message = "Authorization failed due to false kopieraOK-parameter";
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM, message);
@@ -305,15 +305,6 @@ public class IntygModuleApiController extends AbstractApiController {
 
         LOG.debug("Attempting to create a new certificate with type {} from certificate with type {} and id '{}'", newIntygsTyp,
                 orgIntygsTyp, orgIntygsId);
-
-        WebCertUser user = getWebCertUserService().getUser();
-
-        boolean copyOkParam = user.getParameters() == null || user.getParameters().isCopyOk();
-        if (!copyOkParam) {
-            LOG.info("User is not allowed to request a copy for id '{}' due to false kopieraOK-parameter", orgIntygsId);
-            final String message = "Authorization failed due to false kopieraOK-parameter";
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM, message);
-        }
 
         if (!request.isValid()) {
             LOG.error("Request to create utkast from certificate '{}' as template is not valid", orgIntygsId);

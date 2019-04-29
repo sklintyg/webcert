@@ -1,7 +1,0 @@
----
-
-# Spring profiles
-profiles: test,wc-all-stubs,wc-security-test,testability-api,caching-enabled
-
-environment_name: "lab"
-config_etc_folder: "{{ config_folder }}/{{ environment_name }}"

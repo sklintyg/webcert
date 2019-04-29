@@ -68,19 +68,7 @@
       <script type="text/javascript">
           var WEBCERT_DEBUG_MODE = false;
       </script>
-      <script type="text/javascript" src="/bower_components/jquery/dist/jquery.min.js?<spring:message code="buildNumber" />"></script>
-      <script type="text/javascript" src="/bower_components/angular/angular.min.js?<spring:message code="buildNumber" />"></script>
-      <script type="text/javascript" src="/bower_components/angular-animate/angular-animate.min.js?<spring:message code="buildNumber" />"></script>
-      <script type="text/javascript" src="/bower_components/angular-cookies/angular-cookies.min.js?<spring:message code="buildNumber" />"></script>
-      <script type="text/javascript" src="/bower_components/angular-i18n/angular-locale_sv-se.js?<spring:message code="buildNumber" />"></script>
-      <script type="text/javascript" src="/bower_components/angular-sanitize/angular-sanitize.min.js?<spring:message code="buildNumber" />"></script>
-      <script type="text/javascript" src="/bower_components/angular-bootstrap/ui-bootstrap-tpls.min.js?<spring:message code="buildNumber" />"></script>
-      <script type="text/javascript" src="/bower_components/angular-ui-router/release/angular-ui-router.min.js?<spring:message code="buildNumber" />"></script>
-      <script type="text/javascript" src="/bower_components/bootstrap-sass/assets/javascripts/bootstrap.min.js?<spring:message code="buildNumber" />"></script>
-      <script type="text/javascript" src="/bower_components/momentjs/min/moment.min.js?<spring:message code="buildNumber" />"></script>
-      <script type="text/javascript" src="/vendor/polyfill.min.js?<spring:message code="buildNumber" />"></script>
-      <script type="text/javascript" src="/vendor/angular-shims-placeholder/angular-shims-placeholder.min.js?<spring:message code="buildNumber" />"></script>
-      <script type="text/javascript" src="/vendor/angular-smooth-scroll.js?<spring:message code="buildNumber" />"></script>
+      <script type="text/javascript" src="/app/vendor.min.js?<spring:message code="buildNumber" />"></script>
       <script type="text/javascript" src="/app/app.min.js?<spring:message code="buildNumber" />"></script>
     </c:when>
     <c:otherwise>
@@ -99,17 +87,15 @@
       <script type="text/javascript" src="/bower_components/angular-ui-router/release/angular-ui-router.js"></script>
       <script type="text/javascript" src="/bower_components/bootstrap-sass/assets/javascripts/bootstrap.js"></script>
       <script type="text/javascript" src="/bower_components/momentjs/moment.js"></script>
+      <script type="text/javascript" src="/bower_components/oclazyload/dist/ocLazyLoad.js"></script>
       <script type="text/javascript" src="/bower_components/highcharts/highcharts.js"></script>
       <!-- endbower -->
+      <script type="text/javascript" src="/bower_components/angular-ui-router/release/stateEvents.js"></script>
       <script type="text/javascript" src="/vendor/polyfill.js"></script>
       <script type="text/javascript" src="/vendor/angular-smooth-scroll.js"></script>
       <script type="text/javascript" src="/vendor/angular-shims-placeholder/angular-shims-placeholder.js"></script>
       <script type="text/javascript" src="/app/app.js"></script>
     </c:otherwise>
   </c:choose>
-  <script type="text/javascript" src="/vendor/_convert.js"></script>
-  <script type="text/javascript" src="/vendor/_language.js"></script>
-  <script type="text/javascript" src="/vendor/_utility.js"></script>
-  <script type="text/javascript" src="/vendor/netid-1.0.5.js"></script>
 </body>
 </html>

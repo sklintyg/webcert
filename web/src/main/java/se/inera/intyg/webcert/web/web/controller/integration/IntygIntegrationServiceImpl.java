@@ -47,7 +47,7 @@ public class IntygIntegrationServiceImpl extends IntegrationServiceImpl {
     private UtkastService utkastService;
 
     @Override
-    void ensurePreparation(String intygTyp, String intygId, Utkast utkast, WebCertUser user) {
+    void ensurePreparation(String intygTyp, String intygId, Utkast utkast, WebCertUser user, Personnummer prepareBeforeAlternateSsn) {
         if (utkast != null) {
             // INTYG-4086: If the intyg / utkast is authored in webcert, we can check for sekretessmarkering here.
             // If the intyg was authored elsewhere, the check has to be performed after the redirect when the actual intyg
@@ -57,7 +57,7 @@ public class IntygIntegrationServiceImpl extends IntegrationServiceImpl {
             // INTYG-3212: ArendeDraft patient info should always be up-to-date with the patient info supplied by the
             // integrating journaling system
             if (UtkastServiceImpl.isEditableUtkast(utkast)) {
-                ensureDraftPatientInfoUpdated(intygTyp, intygId, utkast.getVersion(), user);
+                ensureDraftPatientInfoUpdated(intygTyp, intygId, utkast.getVersion(), user, prepareBeforeAlternateSsn);
             }
 
             // Monitoring log the usage of coherent journaling
@@ -68,7 +68,9 @@ public class IntygIntegrationServiceImpl extends IntegrationServiceImpl {
     /**
      * Updates Patient section of a draft with updated patient details for selected types.
      */
-    void ensureDraftPatientInfoUpdated(String intygsType, String draftId, long draftVersion, WebCertUser user) {
+    void ensureDraftPatientInfoUpdated(String intygsType, String draftId, long draftVersion, WebCertUser user,
+                                       Personnummer prepareBeforeAlternateSsn) {
+
         // To be allowed to update utkast, we need to have the same authority as when saving a draft..
         authoritiesValidator.given(user, intygsType)
                 .features(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
@@ -78,7 +80,14 @@ public class IntygIntegrationServiceImpl extends IntegrationServiceImpl {
         String alternatePatientSsn = user.getParameters().getAlternateSsn();
         if (!Strings.isNullOrEmpty(alternatePatientSsn)) {
             Personnummer pnr = Personnummer.createPersonnummer(alternatePatientSsn).orElse(null);
-            UpdatePatientOnDraftRequest request = new UpdatePatientOnDraftRequest(pnr, draftId, draftVersion);
+
+            UpdatePatientOnDraftRequest request;
+            if (prepareBeforeAlternateSsn != null) {
+                request = new UpdatePatientOnDraftRequest(pnr, prepareBeforeAlternateSsn, draftId, draftVersion);
+            } else {
+                request =  new UpdatePatientOnDraftRequest(pnr, draftId, draftVersion);
+            }
+
             utkastService.updatePatientOnDraft(request);
         }
     }

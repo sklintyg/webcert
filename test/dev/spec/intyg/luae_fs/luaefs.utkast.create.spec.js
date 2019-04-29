@@ -67,7 +67,6 @@ describe('Create and Sign luae_fs utkast', function() {
         });
 
         it('angeFunktionsnedsattning', function() {
-            UtkastPage.enableAutosave();
             UtkastPage.angeFunktionsnedsattning(data.funktionsnedsattning);
         });
 
@@ -78,14 +77,10 @@ describe('Create and Sign luae_fs utkast', function() {
         it('angeKontaktMedFK', function() {
             UtkastPage.angeKontaktMedFK(data.kontaktMedFk);
         });
-/* no tilläggsfrågor atm. activate if we get such in the future
         it('Ange tilläggsfrågor', function() {
-            UtkastPage.tillaggsfragor0svar.sendKeys('Vad för slags fråga är det där?!?!?');
             UtkastPage.enableAutosave();
-            UtkastPage.tillaggsfragor1svar.sendKeys(
-                'Likheten på en struts? Båda benen är lika långa, särskilt det vänstra.');
+            UtkastPage.angeTillaggsfragorUE(data.tillaggsfragor);
         });
-*/
         it('Signera intyget', function() {
             UtkastPage.whenSigneraButtonIsEnabled();
 

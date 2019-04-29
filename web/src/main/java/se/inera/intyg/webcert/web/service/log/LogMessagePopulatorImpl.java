@@ -48,38 +48,60 @@ public class LogMessagePopulatorImpl implements LogMessagePopulator {
     private String systemName;
 
     @Override
-    public PdlLogMessage populateLogMessage(LogRequest logRequest, PdlLogMessage logMsg, LogUser user) {
+    public PdlLogMessage populateLogMessage(PdlLogMessage logMessage, LogRequest logRequest, LogUser logUser) {
 
-        populateWithCurrentUserAndCareUnit(logMsg, user);
+        populateWithCurrentUserAndCareUnit(logMessage, logUser);
 
+        PdlResource pdlResource = new PdlResource();
+        pdlResource.setPatient(createPatient(logRequest));
+        pdlResource.setResourceOwner(createEnhet(logRequest));
+        pdlResource.setResourceType(ResourceType.RESOURCE_TYPE_INTYG.getResourceTypeName());
+
+        logMessage.getPdlResourceList().add(pdlResource);
+
+        logMessage.setSystemId(systemId);
+        logMessage.setSystemName(systemName);
+        logMessage.setTimestamp(LocalDateTime.now());
+        logMessage.setPurpose(ActivityPurpose.CARE_TREATMENT);
+
+        populateActivityArgsWithAdditionalInformationIfApplicable(logMessage, logRequest);
+
+        // Clear values due to regulations
+        unsetValues(logMessage);
+
+        return logMessage;
+    }
+
+    private Enhet createEnhet(LogRequest logRequest) {
         String careUnitId = logRequest.getIntygCareUnitId();
         String careUnitName = logRequest.getIntygCareUnitName();
-
         String careGiverId = logRequest.getIntygCareGiverId();
         String careGiverName = logRequest.getIntygCareGiverName();
 
-        Patient patient = new Patient(logRequest.getPatientId().getPersonnummer().replace("-", "").replace("+", ""),
-                logRequest.getPatientName());
-        Enhet resourceOwner = new Enhet(careUnitId, careUnitName, careGiverId, careGiverName);
-
-        PdlResource pdlResource = new PdlResource();
-        pdlResource.setPatient(patient);
-        pdlResource.setResourceOwner(resourceOwner);
-        pdlResource.setResourceType(ResourceType.RESOURCE_TYPE_INTYG.getResourceTypeName());
-
-        logMsg.getPdlResourceList().add(pdlResource);
-
-        logMsg.setSystemId(systemId);
-        logMsg.setSystemName(systemName);
-        logMsg.setTimestamp(LocalDateTime.now());
-        logMsg.setPurpose(ActivityPurpose.CARE_TREATMENT);
-
-        populateActivityArgsWithAdditionalInformationIfApplicable(logRequest, logMsg);
-
-        return logMsg;
+        return createEnhet(careUnitId, careUnitName, careGiverId, careGiverName);
     }
 
-    private void populateActivityArgsWithAdditionalInformationIfApplicable(LogRequest logRequest, PdlLogMessage logMsg) {
+    private Enhet createEnhet(LogUser logUser) {
+        return createEnhet(logUser.getEnhetsId(), logUser.getEnhetsNamn(), logUser.getVardgivareId(), logUser.getVardgivareNamn());
+    }
+
+    private Enhet createEnhet(String enhetsId, String enhetsNamn, String vardgivareId, String vardgivareNamn) {
+        return new Enhet(enhetsId, enhetsNamn, vardgivareId, vardgivareNamn);
+    }
+
+    private Patient createPatient(LogRequest logRequest) {
+        return createPatient(
+                logRequest.getPatientId().getPersonnummer().
+                        replace("-", "").
+                        replace("+", ""),
+                logRequest.getPatientName());
+    }
+
+    private Patient createPatient(String patientId, String patientName) {
+        return new Patient(patientId, patientName);
+    }
+
+    private void populateActivityArgsWithAdditionalInformationIfApplicable(PdlLogMessage logMsg, LogRequest logRequest) {
         if (!Strings.isNullOrEmpty(logRequest.getAdditionalInfo())) {
             if (!Strings.isNullOrEmpty(logMsg.getActivityArgs()) && !logMsg.getActivityArgs().equals(logRequest.getAdditionalInfo())) {
                 logMsg.setActivityArgs(logMsg.getActivityArgs() + ". " + logRequest.getAdditionalInfo());
@@ -94,9 +116,18 @@ public class LogMessagePopulatorImpl implements LogMessagePopulator {
         logMsg.setUserName(user.getUserName());
         logMsg.setUserAssignment(user.getUserAssignment());
         logMsg.setUserTitle(user.getUserTitle());
-
-        Enhet vardenhet = new Enhet(user.getEnhetsId(), user.getEnhetsNamn(), user.getVardgivareId(), user.getVardgivareNamn());
-        logMsg.setUserCareUnit(vardenhet);
+        logMsg.setUserCareUnit(createEnhet(user));
     }
+
+    private void unsetValues(final PdlLogMessage logMessage) {
+        // INTYG-8349: Inget användarnamn vid PDL-logging
+        logMessage.setUserName("");
+
+        // INTYG-4647: Inget patientnamn vid PDL-logging
+        logMessage.getPdlResourceList().forEach(pdlResource ->
+                pdlResource.setPatient(createPatient(pdlResource.getPatient().getPatientId(), ""))
+        );
+    }
+
 
 }

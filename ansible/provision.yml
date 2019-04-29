@@ -1,7 +1,0 @@
----
-# This playbook provisions the environment for WebCert 
-
-- include: provision_mysql.yml
-- include: provision_tomcat.yml
-- include: provision_activemq.yml
-- include: unlock_config_folder.yml

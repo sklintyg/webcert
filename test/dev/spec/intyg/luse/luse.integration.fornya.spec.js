@@ -77,6 +77,13 @@ describe('Djupintegration on luse intyg', function() {
             expect(LuseUtkastPage.isAt()).toBeTruthy();
             expect(LuseUtkastPage.patientNamnPersonnummer.getText()).toBe('Lilltolvan Tolvansson - 20121212-1212');
         });
+
+        it('remove utkast should return to signed intyg', function() {
+            LuseUtkastPage.radera.knapp.click();
+            LuseUtkastPage.radera.bekrafta.click();
+
+            expect(LuseIntygPage.isAt()).toBeTruthy();
+        })
     });
 
     describe('utkast', function() {
@@ -119,6 +126,13 @@ describe('Djupintegration on luse intyg', function() {
             expect(LuseUtkastPage.patientNamnPersonnummer.getText()).toBe('Lilltolvan Tolvansson - 20121212-1212');
             expect(LuseUtkastPage.patientNamnPersonnummerFd.getText()).toBe('f.d. 19121212-1212');
         });
+
+        it('remove utkast should display deleted text', function() {
+            LuseUtkastPage.radera.knapp.click();
+            LuseUtkastPage.radera.bekrafta.click();
+
+            expect(element(by.id('integration-deleted')).isDisplayed()).toBeTruthy();
+        })
     });
 
 });

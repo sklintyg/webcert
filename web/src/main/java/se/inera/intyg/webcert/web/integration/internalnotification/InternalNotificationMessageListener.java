@@ -18,6 +18,14 @@
  */
 package se.inera.intyg.webcert.web.integration.internalnotification;
 
+import static com.google.common.base.Preconditions.checkArgument;
+
+
+import javax.jms.JMSException;
+import javax.jms.Message;
+import javax.jms.MessageListener;
+import javax.jms.TextMessage;
+
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,6 +33,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.stereotype.Service;
+
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
@@ -34,13 +43,6 @@ import se.inera.intyg.common.support.modules.support.api.dto.CertificateResponse
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
 import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistry;
 import se.inera.intyg.webcert.web.service.notification.NotificationService;
-
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.MessageListener;
-import javax.jms.TextMessage;
-
-import static com.google.common.base.Preconditions.checkArgument;
 
 @Service
 public class InternalNotificationMessageListener implements MessageListener {
@@ -52,7 +54,8 @@ public class InternalNotificationMessageListener implements MessageListener {
     static final String CERTIFICATE_TYPE_VERSION = "certificate-type-version";
     static final String CARE_UNIT_ID = "care-unit-id";
 
-    private static final String INTERNAL_NOTIFICATION_QUEUE = "internal.notification.queue";
+    @Value("${internal.notification.queueName}")
+    private String queueName;
 
     @Autowired
     private IntygModuleRegistry intygModuleRegistry;
@@ -66,9 +69,8 @@ public class InternalNotificationMessageListener implements MessageListener {
     @Value("${intygstjanst.logicaladdress}")
     private String logicalAddress;
 
-    // How to fix hard-coding in JmsListener?
     @Override
-    @JmsListener(destination = INTERNAL_NOTIFICATION_QUEUE)
+    @JmsListener(destination = "${internal.notification.queueName}")
     public void onMessage(Message message) {
         if (message instanceof TextMessage) {
             TextMessage textMessage = (TextMessage) message;
@@ -79,13 +81,13 @@ public class InternalNotificationMessageListener implements MessageListener {
                 String enhetsId = textMessage.getStringProperty(CARE_UNIT_ID);
 
                 checkArgument(StringUtils.isNotEmpty(intygsId), "Message on queue %s does not have a %s header.",
-                        INTERNAL_NOTIFICATION_QUEUE, CERTIFICATE_ID);
+                        queueName, CERTIFICATE_ID);
                 checkArgument(StringUtils.isNotEmpty(intygsTyp), "Message on queue %s does not have a %s header.",
-                        INTERNAL_NOTIFICATION_QUEUE, CERTIFICATE_TYPE);
+                        queueName, CERTIFICATE_TYPE);
                 checkArgument(StringUtils.isNotEmpty(intygsTypVersion), "Message on queue %s does not have a %s header.",
-                        INTERNAL_NOTIFICATION_QUEUE, CERTIFICATE_TYPE_VERSION);
+                        queueName, CERTIFICATE_TYPE_VERSION);
                 checkArgument(StringUtils.isNotEmpty(enhetsId), "Message on queue %s does not have a %s header.",
-                        INTERNAL_NOTIFICATION_QUEUE, CARE_UNIT_ID);
+                        queueName, CARE_UNIT_ID);
 
                 if (!integreradeEnheterRegistry.isEnhetIntegrerad(enhetsId, intygsTyp)) {
                     LOG.debug("Not forwarding internal notification to care system, care unit '{}' is not integrated.", enhetsId);

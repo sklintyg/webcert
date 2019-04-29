@@ -150,17 +150,23 @@ angular.module('webcert').controller('webcert.SokSkrivValjUtkastTypeCtrl',
 
             function setExtendedStatus(intyg) {
                 intyg.extendedStatus = null;
-                // These 2 scenarios overrides actual status of the intyg.
-                // Maybe we shoould utilize this to remove similar
-                // ersatt/kompletterat checks in tidigareIntyg.filter.js
-                if (isKompletterad(intyg)) {
-                    intyg.extendedStatus = 'KOMPLETTERAT_AV_INTYG';
-                } else if (isErsatt(intyg)) {
-                    intyg.extendedStatus = 'ERSATT_AV_INTYG';
-                }
 
-               if (intyg.extendedStatus === null) {
+                // Handle makulerat
+                if (intyg.status === 'CANCELLED') {
                     intyg.extendedStatus = intyg.status;
+                } else {
+                    // These 2 scenarios overrides actual status of the intyg.
+                    // Maybe we shoould utilize this to remove similar
+                    // ersatt/kompletterat checks in tidigareIntyg.filter.js
+                    if (isKompletterad(intyg)) {
+                        intyg.extendedStatus = 'KOMPLETTERAT_AV_INTYG';
+                    } else if (isErsatt(intyg)) {
+                        intyg.extendedStatus = 'ERSATT_AV_INTYG';
+                    }
+
+                    if (intyg.extendedStatus === null) {
+                        intyg.extendedStatus = intyg.status;
+                    }
                 }
             }
 

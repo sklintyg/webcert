@@ -40,8 +40,6 @@ var LuseUtkast = BaseSmiUtkast._extend({
             utecklasOverTid: element(by.id('medicinskaForutsattningarForArbete')),
             trotsBegransningar: element(by.id('formagaTrotsBegransning'))
         };
-        this.tillaggsfragor0svar = element(by.id('tillaggsfragor[0].svar'));
-        this.tillaggsfragor1svar = element(by.id('tillaggsfragor[1].svar'));
 
         this.underlag = {
             ett: {

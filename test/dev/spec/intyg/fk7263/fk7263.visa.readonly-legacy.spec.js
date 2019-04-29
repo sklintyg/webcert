@@ -30,7 +30,7 @@ var intygGenerator = wcTestTools.intygGenerator;
 
 describe('Verifiera att legacy fk7263-utkast kan visas med uv-ramverket', function() {
 
-
+    
     describe('Verifiera utkast', function() {
         var utkastId = 'fk7263-utkast-1';
 
@@ -57,7 +57,6 @@ describe('Verifiera att legacy fk7263-utkast kan visas med uv-ramverket', functi
         it('skall visa utkast read-only', function() {
             UtkastPage.get(utkastId);
             expect(UtkastPage.isAt()).toBeTruthy();
-
         });
 
     });
@@ -89,7 +88,6 @@ describe('Verifiera att legacy fk7263-utkast kan visas med uv-ramverket', functi
         it('Skall visa signerat intyg med uv-ramverket', function() {
             IntygPage.get(intygsId);
             expect(IntygPage.isAt()).toBeTruthy();
-
         });
 
     });

@@ -19,13 +19,8 @@
 package se.inera.intyg.webcert.web.service.underskrift.xmldsig;
 
 import java.io.IOException;
-import java.io.StringWriter;
 
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.namespace.QName;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,9 +32,9 @@ import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
+import se.inera.intyg.common.support.xml.XmlMarshallerHelper;
+import se.riv.clinicalprocess.healthcond.certificate.registerCertificate.v3.ObjectFactory;
 import se.riv.clinicalprocess.healthcond.certificate.registerCertificate.v3.RegisterCertificateType;
-import se.riv.clinicalprocess.healthcond.certificate.types.v3.DatePeriodType;
-import se.riv.clinicalprocess.healthcond.certificate.types.v3.PartialDateType;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
 
 @Service
@@ -51,25 +46,18 @@ public class UtkastModelToXMLConverter {
     private IntygModuleRegistry intygModuleRegistry;
 
     public String utkastToXml(String json, String intygsTyp) {
-        try {
-            Intyg intyg = utkastToJAXBObject(intygsTyp, json);
-            return handleAsRegisterCertificate3(intyg);
-        } catch (JAXBException e) {
-            LOG.error("Caught JAXBException: {}. Error code: {}", e.getMessage(), e.getErrorCode());
-            throw new IllegalArgumentException(e.getMessage());
-        }
+        Intyg intyg = utkastToJAXBObject(intygsTyp, json);
+        return handleAsRegisterCertificate3(intyg);
     }
 
-    private String handleAsRegisterCertificate3(Intyg intyg) throws JAXBException {
+    private String handleAsRegisterCertificate3(Intyg intyg) {
         RegisterCertificateType registerCertificateType = new RegisterCertificateType();
         registerCertificateType.setIntyg(intyg);
 
         // This context may need to be created dynamically based on the Intygstyp, given that not all intygstyper
         // are based on the same contract / domain version. Get from ModuleApi?
-        JAXBContext context = JAXBContext.newInstance(RegisterCertificateType.class, DatePeriodType.class, PartialDateType.class);
-        QName qname = new QName("urn:riv:clinicalprocess:healthcond:certificate:RegisterCertificateResponder:3", "RegisterCertificateType");
-        JAXBElement<RegisterCertificateType> root = new JAXBElement<>(qname, RegisterCertificateType.class, registerCertificateType);
-        return marshalRegisterCertificateV3(context.createMarshaller(), root);
+        JAXBElement<RegisterCertificateType> root = new ObjectFactory().createRegisterCertificate(registerCertificateType);
+        return XmlMarshallerHelper.marshal(root);
     }
 
     private Intyg utkastToJAXBObject(String intygsTyp, String json) {
@@ -82,11 +70,5 @@ public class UtkastModelToXMLConverter {
             LOG.error("Error building Intyg JAXB object from Utkast. Message: {}", e.getMessage());
             throw new IllegalArgumentException(e.getMessage());
         }
-    }
-
-    private String marshalRegisterCertificateV3(Marshaller marshaller, JAXBElement<RegisterCertificateType> root) throws JAXBException {
-        StringWriter sw = new StringWriter();
-        marshaller.marshal(root, sw);
-        return sw.toString();
     }
 }
