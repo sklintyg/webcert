@@ -158,6 +158,8 @@ public class FmbDiagnosInformationServiceImpl extends FmbBaseService implements 
 
         final String symptom = diagnosInformation.getSymptomPrognosBehandling();
 
+        final String rehabilitering = diagnosInformation.getInformationOmRehabilitering();
+
         final java.util.List<FmbForm> fmbFormList = Lists.newArrayList();
 
         //mapping these codes for now to be backwards compatible with current apis
@@ -172,6 +174,13 @@ public class FmbDiagnosInformationServiceImpl extends FmbBaseService implements 
                 new FmbForm(
                         FmbFormName.AKTIVITETSBEGRANSNING,
                         ImmutableList.of(new FmbContent(FmbType.AKTIVITETSBEGRANSNING, beskrivning.getBeskrivningText())))));
+
+        if (rehabilitering != null) {
+            fmbFormList.add(
+                    new FmbForm(
+                            FmbFormName.INFORMATIONOMREHABILITERING,
+                            ImmutableList.of(new FmbContent(FmbType.INFORMATIONOMREHABILITERING, rehabilitering))));
+        }
 
         funktionsNedsattning.ifPresent(beskrivning -> fmbFormList.add(
                 new FmbForm(
