@@ -37,27 +37,29 @@ public class LogMessagePopulatorImplTest {
 
     @Test
     public void testActivityArgsAddedFromAdditionalInfoWhenActivityArgsAbsent() {
-        PdlLogMessage logMessage = testee.populateLogMessage(buildLogRequest(ADDITIONAL_INFO), buildPdlLogMessage(""), buildLogUser());
+        PdlLogMessage logMessage = testee.populateLogMessage(
+                buildPdlLogMessage(""), buildLogRequest(ADDITIONAL_INFO), buildLogUser());
         assertEquals(ADDITIONAL_INFO, logMessage.getActivityArgs());
     }
 
     @Test
     public void testActivityArgsAppendedFromAdditionalInfoWhenActivityArgsExists() {
-        PdlLogMessage logMessage = testee.populateLogMessage(buildLogRequest(ADDITIONAL_INFO), buildPdlLogMessage(ACTIVITY_ARGS),
-                buildLogUser());
+        PdlLogMessage logMessage = testee.populateLogMessage(
+                buildPdlLogMessage(ACTIVITY_ARGS), buildLogRequest(ADDITIONAL_INFO), buildLogUser());
         assertEquals(ACTIVITY_ARGS + ". " + ADDITIONAL_INFO, logMessage.getActivityArgs());
     }
 
     @Test
     public void testActivityArgsUntouchedWhenActivityArgsExistsButNoAdditionalInfo() {
-        PdlLogMessage logMessage = testee.populateLogMessage(buildLogRequest(""), buildPdlLogMessage(ACTIVITY_ARGS), buildLogUser());
+        PdlLogMessage logMessage = testee.populateLogMessage(
+                buildPdlLogMessage(ACTIVITY_ARGS), buildLogRequest(""), buildLogUser());
         assertEquals(ACTIVITY_ARGS, logMessage.getActivityArgs());
     }
 
     @Test
     public void testActivityArgsUntouchedWhenActivityArgsIsEqualToAdditionalInfo() {
-        PdlLogMessage logMessage = testee.populateLogMessage(buildLogRequest(ACTIVITY_ARGS), buildPdlLogMessage(ACTIVITY_ARGS),
-                buildLogUser());
+        PdlLogMessage logMessage = testee.populateLogMessage(
+                buildPdlLogMessage(ACTIVITY_ARGS), buildLogRequest(ACTIVITY_ARGS), buildLogUser());
         assertEquals(ACTIVITY_ARGS, logMessage.getActivityArgs());
     }
 

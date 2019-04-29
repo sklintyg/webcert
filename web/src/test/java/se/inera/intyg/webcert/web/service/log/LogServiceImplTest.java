@@ -117,7 +117,7 @@ public class LogServiceImplTest extends AuthoritiesConfigurationTestSetup {
         assertEquals("abc123", intygReadMessage.getActivityLevel());
 
         assertEquals("HSAID", intygReadMessage.getUserId());
-        assertEquals("Markus Gran", intygReadMessage.getUserName());
+        assertEquals("", intygReadMessage.getUserName());
         assertEquals("Läkare på vårdcentralen", intygReadMessage.getUserAssignment());
         assertEquals("Överläkare", intygReadMessage.getUserTitle());
 
@@ -127,7 +127,7 @@ public class LogServiceImplTest extends AuthoritiesConfigurationTestSetup {
         assertEquals("Vårdgivaren", intygReadMessage.getUserCareUnit().getVardgivareNamn());
 
         assertEquals("191212121212", intygReadMessage.getPdlResourceList().get(0).getPatient().getPatientId());
-        assertEquals("Hans Olof van der Test", intygReadMessage.getPdlResourceList().get(0).getPatient().getPatientNamn());
+        assertEquals("", intygReadMessage.getPdlResourceList().get(0).getPatient().getPatientNamn());
 
         assertTrue(intygReadMessage.getTimestamp().minusSeconds(DELAY).isBefore(now()));
         assertTrue(intygReadMessage.getTimestamp().plusSeconds(DELAY).isAfter(now()));
