@@ -1,7 +1,9 @@
 APs:
 
 - Lägg till alla i teamet som users i Jenkins
-	- Klart: Shler
+	- Klart: Shler, Markus
+
+- Implementera en integrerad inloggning i WebCert som använder GET som alternativ till POST
 
 - Finns det någon enkel (eller avancerad) metod att spara WebCert-loggar i artefakterna i Jenkins?
 
@@ -43,7 +45,7 @@ APs:
 		https://plugins.jenkins.io/monitoring
 		https://plugins.jenkins.io/jqs-monitoring
 		https://plugins.jenkins.io/systemloadaverage-monitor
-	- Skapa skipt som periodiskt tar en snapshot av slavens CPU-last samt minnesanvändning och spara det bland Jenkins-artefakterna
+	- Skapa skript som periodiskt tar en snapshot av slavens CPU-last samt minnesanvändning och spara det bland Jenkins-artefakterna
 - Ibland får man "Utkastet är raderat" om man är för snabb från det att utkastet skapas med createDraft tills man besöker sidan. Ett sätt att komma förbi det kan vara att titta på URL samt leta efter text på sidan.
 	- URL: https://webcert-devtest-tintyg.app-test1.ind-ocp.sth.basefarm.net/error.jsp?reason=integration.nocontent
 	- Text på sidan: "Intyget gick inte att läsa in" och/eller "Intygsutkastet är raderat och kan därför inte längre visas."
