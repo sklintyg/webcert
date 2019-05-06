@@ -43,6 +43,7 @@
 </head>
 <body>
 
+  <service-banner></service-banner>
   <wc-cookie-banner></wc-cookie-banner>
 
   <div ui-view="header" autoscroll="true" id="wcHeader"></div>
