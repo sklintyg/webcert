@@ -208,7 +208,8 @@ public class SrsApiController extends AbstractApiController {
         authoritiesValidator.given(getWebCertUserService().getUser()).features(AuthoritiesConstants.FEATURE_SRS).orThrow();
 
         if (EnumUtils.isValidEnum(EgenBedomningRiskType.class, opinion)) {
-            ResultCodeEnum result = srsService.setOwnOpinion(vardgivareHsaId, vardenhetHsaId, intygId, EgenBedomningRiskType.fromValue(opinion));
+            ResultCodeEnum result =
+                    srsService.setOwnOpinion(vardgivareHsaId, vardenhetHsaId, intygId, EgenBedomningRiskType.fromValue(opinion));
             monitoringLog.logSetSrsRiskOpinion(intygId, vardgivareHsaId, vardenhetHsaId, opinion);
             return Response.ok(result).build();
         } else {

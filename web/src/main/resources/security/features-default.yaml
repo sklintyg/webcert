@@ -329,5 +329,4 @@ pilots:
         desc: SRS-stöd i Webcert
         global: true
         intygstyper:
-          - *ki010 # FK7263
           - *ki050 # LISJP
