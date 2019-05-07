@@ -117,12 +117,6 @@ module.exports = {
 
                 return element(by.id('wcHeader')).getText().then(function(txt) {
                     logger.info('Webcert Header: ' + txt);
-                }).then(function() {
-                    let wcHeader = secondBrowser ? secondBrowser.findElement(by.id('wcHeader')) : element(by.id('wcHeader'));
-                    return Promise.all([
-                        expect(wcHeader.getText()).to.eventually.contain(user.forNamn + ' ' + user.efterNamn),
-                        expect(wcHeader.getText()).to.eventually.contain(roleName)
-                    ]);
                 });
             });
     }
