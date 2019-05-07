@@ -111,6 +111,7 @@ describe('LISJP-intyg', function () {
         
         // Skriver ut intyget samt populerar pdl-arrayen med förväntad logpost "Utskrift"
         intyg.skrivUt("fullständigt");
+        cy.wait(5000); // ToDo: Ta bort! Provar för att se om modal dyker upp i Jenkins!
         pdlEventArray.push(pdlEvent(this, "Utskrift", "Intyg utskrivet", this.utkastId, this.vårdenhet.vårdgivareId, this.vårdenhet.vårdgivareNamn, this.vårdenhet.id, this.vårdenhet.namn));
 
         //Lite special logga ut/logga in -variant för att sedan öppna intyget på nytt med en ny session och SJF (Sammanhållen journalföring)
