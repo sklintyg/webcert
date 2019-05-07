@@ -132,7 +132,9 @@ describe('Testa sekretessmarkering för läkare', function() {
         it('Ladda om intyget, verifiera att felmeddelande syns', function() {
             LuseIntygPage.get(intygsId);
             expect(LuseIntygPage.isAt()).toBeTruthy();
-            expect(element(by.id('intyg-load-error')).isPresent()).toBe(true);
+            expect(element(by.id('error-panel')).isPresent()).toBe(true);
+            // Error message should now display certificateId
+            expect(element(by.id('error-panel')).getText()).toContain(intygsId);
         });
 
         it('Återställ PU-tjänsten och ladda om intyget', function() {
