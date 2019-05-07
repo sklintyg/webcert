@@ -94,7 +94,6 @@
       <script type="text/javascript" src="/vendor/polyfill.js"></script>
       <script type="text/javascript" src="/vendor/angular-smooth-scroll.js"></script>
       <script type="text/javascript" src="/vendor/angular-shims-placeholder/angular-shims-placeholder.js"></script>
-      <script type="text/javascript" src="/app/app.underscore.js"></script>
       <script type="text/javascript" src="/app/app.js"></script>
     </c:otherwise>
   </c:choose>
