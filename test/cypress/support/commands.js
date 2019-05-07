@@ -333,11 +333,10 @@ Cypress.Commands.add("verifieraPdlLoggar", pdlLogArray => {
                     */
 
                     //---- Element 'Resources' ----//
-                    /*
                     // Verifiera att 'resources' endast har ett underelement, 'resource'
-                    var resources = arr[j].getElementsByTagName("resources");
-                    assert.equal(arr[j].getElementsByTagName("resources").children.length, 1, "Kontrollerar antal underelement till 'resources', index " + j);
-                    var resource = arr[j].getElementsByTagName("resources")[0].getElementsByTagName('resource')[0];
+                    var resources = arr[j].getElementsByTagName("resources")[0];
+                    assert.equal(resources.children.length, 1, "Kontrollerar antal underelement till 'resources', index " + j);
+                    var resource = resources.getElementsByTagName('resource')[0];
                     // Resource har underelement resourcetype, patient, careprovider, careunit
                     assert.equal(resource.children.length, 4, "Kontrollerar antal underelement till 'resource', index " + j);
                     assert.equal(resource.getElementsByTagName('resourcetype')[0].innerText, "Intyg", "Kontrollerar hårdkodat 'resourcetype', index " + j);
@@ -347,8 +346,27 @@ Cypress.Commands.add("verifieraPdlLoggar", pdlLogArray => {
                     assert.equal(patient.children.length, 1, "Kontrollerar antal underelement till 'patient', index " + j);
                     assert.equal(patient.getElementsByTagName('patientid')[0].innerText,
                                  förväntadeHändelser[j].resources.resource.patient.patientId,
-                                 "Kontrollerar patientid, index " + j);
-                    */
+                                 "Kontrollerar 'patientid', index " + j);
+
+                    // Underelement 'CareProvider'
+                    var careproviderResources = resource.getElementsByTagName('careprovider')[0];
+                    assert.equal(careproviderResources.children.length, 2, "Kontrollerar antal underelement till 'careprovider' (under 'resources'), index " + j);
+                    assert.equal(careproviderResources.getElementsByTagName('careproviderid')[0].innerText,
+                                 förväntadeHändelser[j].resources.resource.careProvider.careProviderId,
+                                 "Kontrollerar 'careproviderid' (under 'resources'), index " + j);
+                    assert.equal(careproviderResources.getElementsByTagName('careprovidername')[0].innerText,
+                                 förväntadeHändelser[j].resources.resource.careProvider.careProviderName,
+                                 "Kontrollerar 'careprovidername' (under 'resources'), index " + j);
+
+                    // Underelement 'CareUnit'
+                    var careunitResources = resource.getElementsByTagName('careunit')[0];
+                    assert.equal(careunitResources.children.length, 2, "Kontrollerar antal underelement till 'careunit' (under 'resources'), index " + j);
+                    assert.equal(careunitResources.getElementsByTagName('careunitid')[0].innerText,
+                                 förväntadeHändelser[j].resources.resource.careUnit.careUnitId,
+                                 "Kontrollerar 'careunitid' (under 'resources'), index " + j);
+                    assert.equal(careunitResources.getElementsByTagName('careunitname')[0].innerText,
+                                 förväntadeHändelser[j].resources.resource.careUnit.careUnitName,
+                                 "Kontrollerar 'careunitname' (under 'resources'), index " + j);
                 }
             });
         });
