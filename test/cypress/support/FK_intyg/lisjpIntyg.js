@@ -151,6 +151,8 @@ export function sektionBedömning(bedömning) {
         cy.get('#arbetstidsforlaggningYes').check();
         cy.get('#arbetstidsforlaggningMotivering')
             .type(bedömning.förläggaArbetstidOlika.arbetstidsförläggningstext);
+    } else {
+        cy.get('#arbetstidsforlaggningNo').check();
     }
 
     if (bedömning.resorTillOchFrånArbete) {
@@ -165,6 +167,9 @@ export function sektionBedömning(bedömning) {
 
 // -------------------- 'Åtgärder' --------------------
 export function sektionÅtgärder(åtgärder) {
+    if (åtgärder.inteAktuellt) {
+        cy.get('#arbetslivsinriktadeAtgarder-EJ_AKTUELLT').check();
+    }
     if (åtgärder.arbetsträning) {
         cy.get('#arbetslivsinriktadeAtgarder-ARBETSTRANING').check();
     }
@@ -271,4 +276,31 @@ export function skickaTillFk() {
     // Modal som dyker upp och frågar om man verkligen vill skicka
     cy.get("#button1send-dialog").click();
     cy.contains("Intyget är skickat till Försäkringskassan");
+}
+
+// -------------------- 'Skriv ut intyget' --------------------
+export function skrivUt(typAvUtskrift){
+    switch(typAvUtskrift) {
+        case "utkast":
+            cy.get('#skriv-ut-utkast').click();
+            cy.log('Skriver ut ett utkast');
+            break;
+        case "fullständigt":
+            cy.get('#intyg-header-dropdown-select-pdf-type').click();
+            cy.contains('Fullständigt intyg').click();
+            cy.log('Skriver ut ett fullständig intyg');
+            break;
+        case "minimalt":
+            cy.get('#intyg-header-dropdown-select-pdf-type').click();
+            cy.contains('Minimalt intyg').click();
+            cy.get('#button1print-employee-copy').click();
+            cy.log('Skriver ut ett minimalt intyg');
+            break;
+        default:
+            cy.log('Ingen korrekt typ av utskrift vald');
+    }   
+}
+// ------------------'Förnya intyg'---------------------------
+export function fornya() {
+    cy.get('#fornyaBtn').click();
 }

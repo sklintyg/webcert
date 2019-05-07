@@ -3,5 +3,7 @@
     "efternamn": "Johansson",
     "namnSträngInloggning": "Arnold Johansson (Läkare | Har intyg och ärenden)",
     "hsaId": "TSTNMT2321000156-1079",
-    "legitimeradeYrkesgrupper": "[\"Läkare\"]"
+    "legitimeradeYrkesgrupper": "[\"Läkare\"]",
+    "uppdragsnamn": "NMT_VG3_ AlfaVardOchBehandling",
+    "titel": "Atletläkare"
 }
