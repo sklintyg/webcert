@@ -63,7 +63,7 @@ describe('LISJP-intyg', function () {
     });
 
     it('skapar en minimalt ifylld LISJP', function () {
-        cy.loggaInVårdpersonalIntegrerat(this);
+        cy.loggaInVårdpersonalIntegrerat(this.vårdpersonal, this.vårdenhet);
 
         const önskadUrl = "/visa/intyg/" + this.utkastId + "?enhet=" + this.vårdenhet.id
         cy.visit(önskadUrl);
@@ -73,7 +73,7 @@ describe('LISJP-intyg', function () {
         cy.get('body').then(($body) => {
             if ($body.text().includes('Intygsutkastet är raderat och kan därför inte längre visas.')) {
                 cy.log("Kom till 'Intygetsutkastet är raderat', antagligen gick det för snabbt. Provar igen.");
-                cy.loggaInVårdpersonalIntegrerat(this); // Vi behöver logga in igen
+                cy.loggaInVårdpersonalIntegrerat(this.vårdpersonal, this.vårdenhet); // Vi behöver logga in igen
                 cy.visit(önskadUrl);
             }
         });
@@ -89,7 +89,7 @@ describe('LISJP-intyg', function () {
         // Lite special logga ut/logga in -variant för att sedan öppna intyget på nytt med en ny session
         cy.visit('/error.jsp?reason=logout');
         cy.clearCookies();
-        cy.loggaInVårdpersonalIntegrerat(this);
+        cy.loggaInVårdpersonalIntegrerat(this.vårdpersonal, this.vårdenhet);
         cy.visit(önskadUrl);
         cy.url().should('include', this.utkastId);
 
@@ -118,7 +118,7 @@ describe('LISJP-intyg', function () {
         cy.visit('/error.jsp?reason=logout');
         cy.clearCookies();
         cy.fixture('vårdenheter/nmt_vg1_ve1').as('vårdenhet').then(() => {
-            cy.loggaInVårdpersonalIntegrerat(this);
+            cy.loggaInVårdpersonalIntegrerat(this.vårdpersonal, this.vårdenhet);
         }).then(() => {
             const sjfUrl = "/visa/intyg/" + this.utkastId + "?enhet=" + this.vårdenhet.id + "&sjf=true";
             cy.visit(sjfUrl);
@@ -135,7 +135,7 @@ describe('LISJP-intyg', function () {
         // Lite special logga ut/logga in -variant för att sedan öppna intyget på nytt med en ny session
         cy.visit('/error.jsp?reason=logout');
         cy.clearCookies();
-        cy.loggaInVårdpersonalIntegrerat(this);
+        cy.loggaInVårdpersonalIntegrerat(this.vårdpersonal, this.vårdenhet);
         cy.visit(önskadUrl);
         pdlEventArray.push(pdlEvent(this, "Läsa", undefined, this.utkastId, this.vårdenhet.vårdgivareId, this.vårdenhet.vårdgivareNamn, this.vårdenhet.id, this.vårdenhet.namn));
 

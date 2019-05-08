@@ -14,9 +14,7 @@ export const implementeradeIntyg = {
     LUAE_FS: "LUAE_FS",
 }
 
-function loggaInVårdpersonal(fx, ärDjup) {
-    const vårdpersonal = fx.vårdpersonal;
-    const vårdenhet = fx.vårdenhet;
+function loggaInVårdpersonal(vårdpersonal, vårdenhet, ärDjup) {
     expect(vårdpersonal).to.exist;
     expect(vårdenhet).to.exist;
     assert.isBoolean(ärDjup);
@@ -29,11 +27,11 @@ function loggaInVårdpersonal(fx, ärDjup) {
         form: true,
         body: {
             "userJsonDisplay":
-                '{"hsaId": "' + fx.vårdpersonal.hsaId + '",\
-                "forNamn": "' + fx.vårdpersonal.förnamn + '",\
-                "efterNamn": "' + fx.vårdpersonal.efternamn +'",\
-                "enhetId": "' + fx.vårdenhet.id + '",\
-                "legitimeradeYrkesgrupper": ' + fx.vårdpersonal.legitimeradeYrkesgrupper + ',\
+                '{"hsaId": "' + vårdpersonal.hsaId + '",\
+                "forNamn": "' + vårdpersonal.förnamn + '",\
+                "efterNamn": "' + vårdpersonal.efternamn +'",\
+                "enhetId": "' + vårdenhet.id + '",\
+                "legitimeradeYrkesgrupper": ' + vårdpersonal.legitimeradeYrkesgrupper + ',\
                 "origin": "' + originSträng + '",\
                 "authenticationMethod": "FAKE"}'
         }
@@ -42,12 +40,12 @@ function loggaInVårdpersonal(fx, ärDjup) {
     });
 }
 
-Cypress.Commands.add("loggaInVårdpersonalNormal", fx => {
-    loggaInVårdpersonal(fx, false);
+Cypress.Commands.add("loggaInVårdpersonalNormal", (vårdpersonal, vårdenhet) => {
+    loggaInVårdpersonal(vårdpersonal, vårdenhet, false);
 });
 
-Cypress.Commands.add("loggaInVårdpersonalIntegrerat", fx => {
-    loggaInVårdpersonal(fx, true);
+Cypress.Commands.add("loggaInVårdpersonalIntegrerat", (vårdpersonal, vårdenhet) => {
+    loggaInVårdpersonal(vårdpersonal, vårdenhet, true);
 });
 
 // Skapa ett utkast enligt intygstyp

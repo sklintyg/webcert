@@ -16,7 +16,7 @@ describe('Välja patient', function () {
             fixtures måste läsas in i beforeEach() (för alla alias som skapas
             i before() rensas efter första testfallet i sviten).
         */
-        cy.loggaInVårdpersonalNormal(this).then(() => {
+       cy.loggaInVårdpersonalNormal(this.vårdpersonal, this.vårdenhet).then(() => {
             cy.visit('/#/create/choose-patient/index');
         })
 
@@ -35,7 +35,7 @@ describe('Välja patient', function () {
     it('är inte möjligt att gå vidare utan fullständigt personnummer', function() {
 
         // Bör egentligen ske i beforeEach(). Se kommentar i översta testfallet.
-        cy.loggaInVårdpersonalNormal(this).then(() => {
+        cy.loggaInVårdpersonalNormal(this.vårdpersonal, this.vårdenhet).then(() => {
             cy.visit('/#/create/choose-patient/index');
         })
 
@@ -56,7 +56,7 @@ describe('Välja patient', function () {
     });
 
     it('är möjligt att logga ut vårdpersonal', function() {
-        cy.loggaInVårdpersonalNormal(this);
+        cy.loggaInVårdpersonalNormal(this.vårdpersonal, this.vårdenhet);
         cy.visit('/#/create/choose-patient/index');
 
         // Cookie-banner är ivägen för utloggning, den måste godkännas först

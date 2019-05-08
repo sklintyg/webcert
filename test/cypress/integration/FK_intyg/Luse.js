@@ -21,7 +21,7 @@ describe('LUSE-intyg', function () {
     });
 
     it('skapar en maximalt ifylld LUSE och skickar den till FK', function () {
-        cy.loggaInVårdpersonalIntegrerat(this);
+        cy.loggaInVårdpersonalIntegrerat(this.vårdpersonal, this.vårdenhet);
 
         // Gå till intyget, redigera det, signera och skicka till FK
         const önskadUrl = "/visa/intyg/" + this.utkastId + "?enhet=" + this.vårdenhet.id
@@ -32,7 +32,7 @@ describe('LUSE-intyg', function () {
         cy.get('body').then(($body) => {
             if ($body.text().includes('Intygsutkastet är raderat och kan därför inte längre visas.')) {
                 cy.log("Kom till 'Intygetsutkastet är raderat', antagligen gick det för snabbt. Provar igen.");
-                cy.loggaInVårdpersonalIntegrerat(this); // Vi behöver logga in igen
+                cy.loggaInVårdpersonalIntegrerat(this.vårdpersonal, this.vårdenhet); // Vi behöver logga in igen
                 cy.visit(önskadUrl);
             }
         });
