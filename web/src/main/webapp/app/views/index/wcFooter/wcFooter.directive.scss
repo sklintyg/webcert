@@ -1,10 +1,10 @@
 .wc-footer {
   margin-top:90px;
   display: block;
-  height: 170px;
+  height: calc(100% - 90px);
   background-color: #E9EAED;
   .footer-content {
-    max-width: 1280px;
+    max-width: $wc-max-content-width;
     margin-left: auto;
     margin-right: auto;
     width: 100%;
