@@ -80,10 +80,7 @@ var utbDataLisjp = [{
     "prognosForArbetsformaga": {
         "name": "STOR_SANNOLIKHET"
     },
-    "ovrigt": "Detta är ett Intyg skapat i utbildningssyfte",
-    "arbetstidsforlaggning": {
-        "val": "Nej"
-    },
+    "ovrigt": "Detta är ett Intyg skapat i utbildningssyfte"
 }, {
     // 1
     "smittskydd": false,
