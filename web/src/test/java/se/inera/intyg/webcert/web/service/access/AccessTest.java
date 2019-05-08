@@ -77,6 +77,7 @@ abstract public class AccessTest {
         doReturn(vardgivare).when(vardenhet).getVardgivare();
         doReturn(vardgivarId).when(vardgivare).getVardgivarid();
         doReturn(true).when(webCertUserService).isAuthorizedForUnit(vardgivarId, enhetsId, true);
+        doReturn(true).when(webCertUserService).isAuthorizedForUnit(vardgivarId, enhetsId, false);
     }
 
     protected void setupMocksForNoConditionsDifferentUnit() {
@@ -95,6 +96,7 @@ abstract public class AccessTest {
         doReturn(vardgivare).when(vardenhet).getVardgivare();
         doReturn(vardgivarId).when(vardgivare).getVardgivarid();
         doReturn(true).when(webCertUserService).isAuthorizedForUnit(vardgivarId, enhetsId, true);
+        doReturn(false).when(webCertUserService).isAuthorizedForUnit(vardgivarId, enhetsId, false);
     }
 
     protected void setupMocksForDeceasedPatient() {
@@ -113,6 +115,7 @@ abstract public class AccessTest {
         doReturn(vardgivare).when(vardenhet).getVardgivare();
         doReturn(vardgivarId).when(vardgivare).getVardgivarid();
         doReturn(true).when(webCertUserService).isAuthorizedForUnit(vardgivarId, enhetsId, true);
+        doReturn(true).when(webCertUserService).isAuthorizedForUnit(vardgivarId, enhetsId, false);
     }
 
     protected void setupMocksForDeceasedPatientDifferentUnit() {
@@ -131,6 +134,7 @@ abstract public class AccessTest {
         doReturn(vardgivare).when(vardenhet).getVardgivare();
         doReturn(vardgivarId).when(vardgivare).getVardgivarid();
         doReturn(true).when(webCertUserService).isAuthorizedForUnit(vardgivarId, enhetsId, true);
+        doReturn(false).when(webCertUserService).isAuthorizedForUnit(vardgivarId, enhetsId, false);
     }
 
     protected void setupMocksForInactiveUnit() {
@@ -149,6 +153,7 @@ abstract public class AccessTest {
         doReturn(vardgivare).when(vardenhet).getVardgivare();
         doReturn(vardgivarId).when(vardgivare).getVardgivarid();
         doReturn(true).when(webCertUserService).isAuthorizedForUnit(vardgivarId, enhetsId, true);
+        doReturn(true).when(webCertUserService).isAuthorizedForUnit(vardgivarId, enhetsId, false);
     }
 
     protected void setupMocksForInactiveUnitDifferentUnit() {
@@ -167,6 +172,7 @@ abstract public class AccessTest {
         doReturn(vardgivare).when(vardenhet).getVardgivare();
         doReturn(vardgivarId).when(vardgivare).getVardgivarid();
         doReturn(true).when(webCertUserService).isAuthorizedForUnit(vardgivarId, enhetsId, true);
+        doReturn(false).when(webCertUserService).isAuthorizedForUnit(vardgivarId, enhetsId, false);
     }
 
     protected void setupMocksForOnRenewFalse() {
@@ -185,6 +191,7 @@ abstract public class AccessTest {
         doReturn(vardgivare).when(vardenhet).getVardgivare();
         doReturn(vardgivarId).when(vardgivare).getVardgivarid();
         doReturn(true).when(webCertUserService).isAuthorizedForUnit(vardgivarId, enhetsId, true);
+        doReturn(true).when(webCertUserService).isAuthorizedForUnit(vardgivarId, enhetsId, false);
     }
 
     protected void setupMocksForOnRenewFalseDifferentUnit() {
@@ -203,6 +210,7 @@ abstract public class AccessTest {
         doReturn(vardgivare).when(vardenhet).getVardgivare();
         doReturn(vardgivarId).when(vardgivare).getVardgivarid();
         doReturn(true).when(webCertUserService).isAuthorizedForUnit(vardgivarId, enhetsId, true);
+        doReturn(false).when(webCertUserService).isAuthorizedForUnit(vardgivarId, enhetsId, false);
     }
 
     protected void setupMocksForOnSekretessPatient() {
@@ -221,6 +229,7 @@ abstract public class AccessTest {
         doReturn(vardgivare).when(vardenhet).getVardgivare();
         doReturn(vardgivarId).when(vardgivare).getVardgivarid();
         doReturn(true).when(webCertUserService).isAuthorizedForUnit(vardgivarId, enhetsId, true);
+        doReturn(true).when(webCertUserService).isAuthorizedForUnit(vardgivarId, enhetsId, false);
     }
 
     protected void setupMocksForOnSekretessPatientDifferentUnit() {
@@ -239,5 +248,6 @@ abstract public class AccessTest {
         doReturn(vardgivare).when(vardenhet).getVardgivare();
         doReturn(vardgivarId).when(vardgivare).getVardgivarid();
         doReturn(true).when(webCertUserService).isAuthorizedForUnit(vardgivarId, enhetsId, true);
+        doReturn(false).when(webCertUserService).isAuthorizedForUnit(vardgivarId, enhetsId, false);
     }
 }

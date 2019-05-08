@@ -61,6 +61,7 @@ import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 import se.inera.intyg.webcert.web.web.controller.api.dto.NotifiedState;
+import se.inera.intyg.webcert.web.web.util.resourcelinks.ResourceLinkHelper;
 
 /**
  * Controller for the API that serves WebCert.
@@ -95,6 +96,9 @@ public class IntygApiController extends AbstractApiController {
 
     @Autowired
     private PatientDetailsResolver patientDetailsResolver;
+
+    @Autowired
+    private ResourceLinkHelper resourceLinkHelper;
 
     /**
      * Compiles a list of Intyg from two data sources. Signed Intyg are
@@ -162,6 +166,8 @@ public class IntygApiController extends AbstractApiController {
             Set<String> allowedTypes = authoritiesHelper.getIntygstyperAllowedForSekretessmarkering();
             allIntyg = allIntyg.stream().filter(intyg -> allowedTypes.contains(intyg.getIntygType())).collect(Collectors.toList());
         }
+
+        resourceLinkHelper.decorateIntygWithValidActionLinks(allIntyg, personNummer);
 
         Response.ResponseBuilder responseBuilder = Response.ok(allIntyg);
         if (intygItemListResponse.getRight()) {

@@ -36,4 +36,14 @@ public interface CertificateAccessService {
     AccessResult allowToInvalidate(String intygsTyp, Vardenhet vardenhet, Personnummer personnummer);
 
     AccessResult allowToSend(String intygsTyp, Vardenhet vardenhet, Personnummer personnummer);
+
+    AccessResult allowToCreateQuestion(String intygsTyp, Vardenhet vardenhet, Personnummer personnummer);
+
+    AccessResult allowToAnswerComplementQuestion(String intygsTyp, Vardenhet vardenhet, Personnummer personnummer, boolean newCertificate);
+
+    AccessResult allowToAnswerAdminQuestion(String intygsTyp, Vardenhet vardenhet, Personnummer personnummer);
+
+    AccessResult allowToReadQuestions(String intygsTyp, Vardenhet vardenhet, Personnummer personnummer);
+
+    AccessResult allowToForwardQuestions(String intygsTyp, Vardenhet vardenhet, Personnummer personnummer);
 }

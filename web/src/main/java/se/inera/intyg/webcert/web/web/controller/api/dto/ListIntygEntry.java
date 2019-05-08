@@ -18,9 +18,12 @@
  */
 package se.inera.intyg.webcert.web.web.controller.api.dto;
 
-import se.inera.intyg.schemas.contract.Personnummer;
-
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
+import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.web.web.util.resourcelinks.dto.ActionLink;
 
 public class ListIntygEntry {
 
@@ -44,10 +47,16 @@ public class ListIntygEntry {
 
     private long version;
 
+    private String vardenhetId;
+
+    private String vardgivarId;
+
     private Relations relations = new Relations();
 
     private boolean sekretessmarkering = false;
     private boolean avliden = false;
+
+    private List<ActionLink> links = new ArrayList<>();
 
     public String getIntygId() {
         return intygId;
@@ -151,6 +160,30 @@ public class ListIntygEntry {
 
     public void setIntygTypeVersion(String intygTypeVersion) {
         this.intygTypeVersion = intygTypeVersion;
+    }
+
+    public List<ActionLink> getLinks() {
+        return links;
+    }
+
+    public void addLink(ActionLink link) {
+        this.links.add(link);
+    }
+
+    public String getVardenhetId() {
+        return vardenhetId;
+    }
+
+    public void setVardenhetId(String vardenhetId) {
+        this.vardenhetId = vardenhetId;
+    }
+
+    public String getVardgivarId() {
+        return vardgivarId;
+    }
+
+    public void setVardgivarId(String vardgivarId) {
+        this.vardgivarId = vardgivarId;
     }
 
     @Override

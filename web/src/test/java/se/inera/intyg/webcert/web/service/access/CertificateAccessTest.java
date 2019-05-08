@@ -653,4 +653,383 @@ public abstract class CertificateAccessTest extends AccessTest {
     }
 
     abstract protected void assertAllowToSendNoConditionsDifferentUnit(AccessResult actualValue);
+
+    @Test
+    public void isAllowToAnswerComplementNoConditions() {
+        setupMocksForNoConditions();
+
+        assertAllowToAnswerComplementNoConditions(accessService.allowToAnswerComplementQuestion(intygsTyp, vardenhet, PERSONNUMMER, true));
+    }
+
+    abstract protected void assertAllowToAnswerComplementNoConditions(AccessResult actualValue);
+
+    @Test
+    public void isAllowToAnswerComplementOnDeceasedPatient() {
+        setupMocksForDeceasedPatient();
+
+        assertAllowToAnswerComplementOnDeceasedPatient(
+                accessService.allowToAnswerComplementQuestion(intygsTyp, vardenhet, PERSONNUMMER, true));
+    }
+
+    abstract protected void assertAllowToAnswerComplementOnDeceasedPatient(AccessResult actualValue);
+
+    @Test
+    public void isAllowToAnswerComplementOnInactiveUnit() {
+        setupMocksForInactiveUnit();
+
+        assertAllowToAnswerComplementOnInactiveUnit(
+                accessService.allowToAnswerComplementQuestion(intygsTyp, vardenhet, PERSONNUMMER, true));
+    }
+
+    abstract protected void assertAllowToAnswerComplementOnInactiveUnit(AccessResult actualValue);
+
+    @Test
+    public void isAllowToAnswerComplementOnRenewFalse() {
+        setupMocksForOnRenewFalse();
+
+        assertAllowToAnswerComplementOnRenewFalse(accessService.allowToAnswerComplementQuestion(intygsTyp, vardenhet, PERSONNUMMER, true));
+    }
+
+    abstract protected void assertAllowToAnswerComplementOnRenewFalse(AccessResult actualValue);
+
+    @Test
+    public void isAllowToAnswerComplementOnSekretessPatientOnSameUnit() {
+        setupMocksForOnSekretessPatient();
+
+        assertAllowToAnswerComplementOnSekretessPatientOnSameUnit(
+                accessService.allowToAnswerComplementQuestion(intygsTyp, vardenhet, PERSONNUMMER, true));
+    }
+
+    abstract protected void assertAllowToAnswerComplementOnSekretessPatientOnSameUnit(AccessResult actualValue);
+
+    @Test
+    public void isAllowToAnswerComplementOnSekretessPatientOnDifferentUnit() {
+        setupMocksForOnSekretessPatientDifferentUnit();
+
+        assertAllowToAnswerComplementOnSekretessPatientOnDifferentUnit(
+                accessService.allowToAnswerComplementQuestion(intygsTyp, vardenhet, PERSONNUMMER, true));
+    }
+
+    abstract protected void assertAllowToAnswerComplementOnSekretessPatientOnDifferentUnit(AccessResult actualValue);
+
+    @Test
+    public void isAllowToAnswerComplementOnDeceasedPatientOnDifferentUnit() {
+        setupMocksForDeceasedPatientDifferentUnit();
+
+        assertAllowToAnswerComplementOnDeceasedPatientOnDifferentUnit(
+                accessService.allowToAnswerComplementQuestion(intygsTyp, vardenhet, PERSONNUMMER, true));
+    }
+
+    abstract protected void assertAllowToAnswerComplementOnDeceasedPatientOnDifferentUnit(AccessResult actualValue);
+
+    @Test
+    public void isAllowToAnswerComplementOnInactiveUnitOnDifferentUnit() {
+        setupMocksForInactiveUnitDifferentUnit();
+
+        assertAllowToAnswerComplementOnInactiveUnitOnDifferentUnit(
+                accessService.allowToAnswerComplementQuestion(intygsTyp, vardenhet, PERSONNUMMER, true));
+    }
+
+    abstract protected void assertAllowToAnswerComplementOnInactiveUnitOnDifferentUnit(AccessResult actualValue);
+
+    @Test
+    public void isAllowToAnswerComplementOnRenewFalseOnDifferentUnit() {
+        setupMocksForOnRenewFalseDifferentUnit();
+
+        assertAllowToAnswerComplementOnRenewFalseOnDifferentUnit(
+                accessService.allowToAnswerComplementQuestion(intygsTyp, vardenhet, PERSONNUMMER, true));
+    }
+
+    abstract protected void assertAllowToAnswerComplementOnRenewFalseOnDifferentUnit(AccessResult actualValue);
+
+    @Test
+    public void isAllowToAnswerComplementNoConditionsDifferentUnit() {
+        setupMocksForNoConditionsDifferentUnit();
+
+        assertAllowToAnswerComplementNoConditionsDifferentUnit(
+                accessService.allowToAnswerComplementQuestion(intygsTyp, vardenhet, PERSONNUMMER, true));
+    }
+
+    abstract protected void assertAllowToAnswerComplementNoConditionsDifferentUnit(AccessResult actualValue);
+
+    @Test
+    public void isAllowToAnswerQuestionNoConditions() {
+        setupMocksForNoConditions();
+
+        assertAllowToAnswerQuestionNoConditions(accessService.allowToAnswerComplementQuestion(intygsTyp, vardenhet, PERSONNUMMER, false));
+    }
+
+    abstract protected void assertAllowToAnswerQuestionNoConditions(AccessResult actualValue);
+
+    @Test
+    public void isAllowToAnswerQuestionOnDeceasedPatient() {
+        setupMocksForDeceasedPatient();
+
+        assertAllowToAnswerQuestionOnDeceasedPatient(
+                accessService.allowToAnswerComplementQuestion(intygsTyp, vardenhet, PERSONNUMMER, false));
+    }
+
+    abstract protected void assertAllowToAnswerQuestionOnDeceasedPatient(AccessResult actualValue);
+
+    @Test
+    public void isAllowToAnswerQuestionOnInactiveUnit() {
+        setupMocksForInactiveUnit();
+
+        assertAllowToAnswerQuestionOnInactiveUnit(accessService.allowToAnswerComplementQuestion(intygsTyp, vardenhet, PERSONNUMMER, false));
+    }
+
+    abstract protected void assertAllowToAnswerQuestionOnInactiveUnit(AccessResult actualValue);
+
+    @Test
+    public void isAllowToAnswerQuestionOnRenewFalse() {
+        setupMocksForOnRenewFalse();
+
+        assertAllowToAnswerQuestionOnRenewFalse(accessService.allowToAnswerComplementQuestion(intygsTyp, vardenhet, PERSONNUMMER, false));
+    }
+
+    abstract protected void assertAllowToAnswerQuestionOnRenewFalse(AccessResult actualValue);
+
+    @Test
+    public void isAllowToAnswerQuestionOnSekretessPatientOnSameUnit() {
+        setupMocksForOnSekretessPatient();
+
+        assertAllowToAnswerQuestionOnSekretessPatientOnSameUnit(
+                accessService.allowToAnswerComplementQuestion(intygsTyp, vardenhet, PERSONNUMMER, false));
+    }
+
+    abstract protected void assertAllowToAnswerQuestionOnSekretessPatientOnSameUnit(AccessResult actualValue);
+
+    @Test
+    public void isAllowToAnswerQuestionOnSekretessPatientOnDifferentUnit() {
+        setupMocksForOnSekretessPatientDifferentUnit();
+
+        assertAllowToAnswerQuestionOnSekretessPatientOnDifferentUnit(
+                accessService.allowToAnswerComplementQuestion(intygsTyp, vardenhet, PERSONNUMMER, false));
+    }
+
+    abstract protected void assertAllowToAnswerQuestionOnSekretessPatientOnDifferentUnit(AccessResult actualValue);
+
+    @Test
+    public void isAllowToAnswerQuestionOnDeceasedPatientOnDifferentUnit() {
+        setupMocksForDeceasedPatientDifferentUnit();
+
+        assertAllowToAnswerQuestionOnDeceasedPatientOnDifferentUnit(
+                accessService.allowToAnswerComplementQuestion(intygsTyp, vardenhet, PERSONNUMMER, false));
+    }
+
+    abstract protected void assertAllowToAnswerQuestionOnDeceasedPatientOnDifferentUnit(AccessResult actualValue);
+
+    @Test
+    public void isAllowToAnswerQuestionOnInactiveUnitOnDifferentUnit() {
+        setupMocksForInactiveUnitDifferentUnit();
+
+        assertAllowToAnswerQuestionOnInactiveUnitOnDifferentUnit(
+                accessService.allowToAnswerComplementQuestion(intygsTyp, vardenhet, PERSONNUMMER, false));
+    }
+
+    abstract protected void assertAllowToAnswerQuestionOnInactiveUnitOnDifferentUnit(AccessResult actualValue);
+
+    @Test
+    public void isAllowToAnswerQuestionOnRenewFalseOnDifferentUnit() {
+        setupMocksForOnRenewFalseDifferentUnit();
+
+        assertAllowToAnswerQuestionOnRenewFalseOnDifferentUnit(
+                accessService.allowToAnswerComplementQuestion(intygsTyp, vardenhet, PERSONNUMMER, false));
+    }
+
+    abstract protected void assertAllowToAnswerQuestionOnRenewFalseOnDifferentUnit(AccessResult actualValue);
+
+    @Test
+    public void isAllowToAnswerQuestionNoConditionsDifferentUnit() {
+        setupMocksForNoConditionsDifferentUnit();
+
+        assertAllowToAnswerQuestionNoConditionsDifferentUnit(
+                accessService.allowToAnswerComplementQuestion(intygsTyp, vardenhet, PERSONNUMMER, false));
+    }
+
+    abstract protected void assertAllowToAnswerQuestionNoConditionsDifferentUnit(AccessResult actualValue);
+
+    @Test
+    public void isAllowToReadQuestionsNoConditions() {
+        setupMocksForNoConditions();
+
+        assertAllowToReadQuestionsNoConditions(accessService.allowToReadQuestions(intygsTyp, vardenhet, PERSONNUMMER));
+    }
+
+    abstract protected void assertAllowToReadQuestionsNoConditions(AccessResult actualValue);
+
+    @Test
+    public void isAllowToReadQuestionsOnDeceasedPatient() {
+        setupMocksForDeceasedPatient();
+
+        assertAllowToReadQuestionsOnDeceasedPatient(accessService.allowToReadQuestions(intygsTyp, vardenhet, PERSONNUMMER));
+    }
+
+    abstract protected void assertAllowToReadQuestionsOnDeceasedPatient(AccessResult actualValue);
+
+    @Test
+    public void isAllowToReadQuestionsOnInactiveUnit() {
+        setupMocksForInactiveUnit();
+
+        assertAllowToReadQuestionsOnInactiveUnit(accessService.allowToReadQuestions(intygsTyp, vardenhet, PERSONNUMMER));
+    }
+
+    abstract protected void assertAllowToReadQuestionsOnInactiveUnit(AccessResult actualValue);
+
+    @Test
+    public void isAllowToReadQuestionsOnRenewFalse() {
+        setupMocksForOnRenewFalse();
+
+        assertAllowToReadQuestionsOnRenewFalse(accessService.allowToReadQuestions(intygsTyp, vardenhet, PERSONNUMMER));
+    }
+
+    abstract protected void assertAllowToReadQuestionsOnRenewFalse(AccessResult actualValue);
+
+    @Test
+    public void isAllowToReadQuestionsOnSekretessPatientOnSameUnit() {
+        setupMocksForOnSekretessPatient();
+
+        assertAllowToReadQuestionsOnSekretessPatientOnSameUnit(accessService.allowToReadQuestions(intygsTyp, vardenhet, PERSONNUMMER));
+    }
+
+    abstract protected void assertAllowToReadQuestionsOnSekretessPatientOnSameUnit(AccessResult actualValue);
+
+    @Test
+    public void isAllowToReadQuestionsOnSekretessPatientOnDifferentUnit() {
+        setupMocksForOnSekretessPatientDifferentUnit();
+
+        assertAllowToReadQuestionsOnSekretessPatientOnDifferentUnit(accessService.allowToReadQuestions(intygsTyp, vardenhet, PERSONNUMMER));
+    }
+
+    abstract protected void assertAllowToReadQuestionsOnSekretessPatientOnDifferentUnit(AccessResult actualValue);
+
+    @Test
+    public void isAllowToReadQuestionsOnDeceasedPatientOnDifferentUnit() {
+        setupMocksForDeceasedPatientDifferentUnit();
+
+        assertAllowToReadQuestionsOnDeceasedPatientOnDifferentUnit(accessService.allowToReadQuestions(intygsTyp, vardenhet, PERSONNUMMER));
+    }
+
+    abstract protected void assertAllowToReadQuestionsOnDeceasedPatientOnDifferentUnit(AccessResult actualValue);
+
+    @Test
+    public void isAllowToReadQuestionsOnInactiveUnitOnDifferentUnit() {
+        setupMocksForInactiveUnitDifferentUnit();
+
+        assertAllowToReadQuestionsOnInactiveUnitOnDifferentUnit(accessService.allowToReadQuestions(intygsTyp, vardenhet, PERSONNUMMER));
+    }
+
+    abstract protected void assertAllowToReadQuestionsOnInactiveUnitOnDifferentUnit(AccessResult actualValue);
+
+    @Test
+    public void isAllowToReadQuestionsOnRenewFalseOnDifferentUnit() {
+        setupMocksForOnRenewFalseDifferentUnit();
+
+        assertAllowToReadQuestionsOnRenewFalseOnDifferentUnit(accessService.allowToReadQuestions(intygsTyp, vardenhet, PERSONNUMMER));
+    }
+
+    abstract protected void assertAllowToReadQuestionsOnRenewFalseOnDifferentUnit(AccessResult actualValue);
+
+    @Test
+    public void isAllowToReadQuestionsNoConditionsDifferentUnit() {
+        setupMocksForNoConditionsDifferentUnit();
+
+        assertAllowToReadQuestionsNoConditionsDifferentUnit(accessService.allowToReadQuestions(intygsTyp, vardenhet, PERSONNUMMER));
+    }
+
+    abstract protected void assertAllowToReadQuestionsNoConditionsDifferentUnit(AccessResult actualValue);
+
+    @Test
+    public void isAllowToForwardQuestionsNoConditions() {
+        setupMocksForNoConditions();
+
+        assertAllowToForwardQuestionsNoConditions(accessService.allowToForwardQuestions(intygsTyp, vardenhet, PERSONNUMMER));
+    }
+
+    abstract protected void assertAllowToForwardQuestionsNoConditions(AccessResult actualValue);
+
+    @Test
+    public void isAllowToForwardQuestionsOnDeceasedPatient() {
+        setupMocksForDeceasedPatient();
+
+        assertAllowToForwardQuestionsOnDeceasedPatient(accessService.allowToForwardQuestions(intygsTyp, vardenhet, PERSONNUMMER));
+    }
+
+    abstract protected void assertAllowToForwardQuestionsOnDeceasedPatient(AccessResult actualValue);
+
+    @Test
+    public void isAllowToForwardQuestionsOnInactiveUnit() {
+        setupMocksForInactiveUnit();
+
+        assertAllowToForwardQuestionsOnInactiveUnit(accessService.allowToForwardQuestions(intygsTyp, vardenhet, PERSONNUMMER));
+    }
+
+    abstract protected void assertAllowToForwardQuestionsOnInactiveUnit(AccessResult actualValue);
+
+    @Test
+    public void isAllowToForwardQuestionsOnRenewFalse() {
+        setupMocksForOnRenewFalse();
+
+        assertAllowToForwardQuestionsOnRenewFalse(accessService.allowToForwardQuestions(intygsTyp, vardenhet, PERSONNUMMER));
+    }
+
+    abstract protected void assertAllowToForwardQuestionsOnRenewFalse(AccessResult actualValue);
+
+    @Test
+    public void isAllowToForwardQuestionsOnSekretessPatientOnSameUnit() {
+        setupMocksForOnSekretessPatient();
+
+        assertAllowToForwardQuestionsOnSekretessPatientOnSameUnit(
+                accessService.allowToForwardQuestions(intygsTyp, vardenhet, PERSONNUMMER));
+    }
+
+    abstract protected void assertAllowToForwardQuestionsOnSekretessPatientOnSameUnit(AccessResult actualValue);
+
+    @Test
+    public void isAllowToForwardQuestionsOnSekretessPatientOnDifferentUnit() {
+        setupMocksForOnSekretessPatientDifferentUnit();
+
+        assertAllowToForwardQuestionsOnSekretessPatientOnDifferentUnit(
+                accessService.allowToForwardQuestions(intygsTyp, vardenhet, PERSONNUMMER));
+    }
+
+    abstract protected void assertAllowToForwardQuestionsOnSekretessPatientOnDifferentUnit(AccessResult actualValue);
+
+    @Test
+    public void isAllowToForwardQuestionsOnDeceasedPatientOnDifferentUnit() {
+        setupMocksForDeceasedPatientDifferentUnit();
+
+        assertAllowToForwardQuestionsOnDeceasedPatientOnDifferentUnit(
+                accessService.allowToForwardQuestions(intygsTyp, vardenhet, PERSONNUMMER));
+    }
+
+    abstract protected void assertAllowToForwardQuestionsOnDeceasedPatientOnDifferentUnit(AccessResult actualValue);
+
+    @Test
+    public void isAllowToForwardQuestionsOnInactiveUnitOnDifferentUnit() {
+        setupMocksForInactiveUnitDifferentUnit();
+
+        assertAllowToForwardQuestionsOnInactiveUnitOnDifferentUnit(
+                accessService.allowToForwardQuestions(intygsTyp, vardenhet, PERSONNUMMER));
+    }
+
+    abstract protected void assertAllowToForwardQuestionsOnInactiveUnitOnDifferentUnit(AccessResult actualValue);
+
+    @Test
+    public void isAllowToForwardQuestionsOnRenewFalseOnDifferentUnit() {
+        setupMocksForOnRenewFalseDifferentUnit();
+
+        assertAllowToForwardQuestionsOnRenewFalseOnDifferentUnit(accessService.allowToForwardQuestions(intygsTyp, vardenhet, PERSONNUMMER));
+    }
+
+    abstract protected void assertAllowToForwardQuestionsOnRenewFalseOnDifferentUnit(AccessResult actualValue);
+
+    @Test
+    public void isAllowToForwardQuestionsNoConditionsDifferentUnit() {
+        setupMocksForNoConditionsDifferentUnit();
+
+        assertAllowToForwardQuestionsNoConditionsDifferentUnit(accessService.allowToForwardQuestions(intygsTyp, vardenhet, PERSONNUMMER));
+    }
+
+    abstract protected void assertAllowToForwardQuestionsNoConditionsDifferentUnit(AccessResult actualValue);
 }

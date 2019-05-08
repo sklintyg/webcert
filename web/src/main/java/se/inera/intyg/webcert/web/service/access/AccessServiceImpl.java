@@ -19,6 +19,7 @@
 
 package se.inera.intyg.webcert.web.service.access;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -131,8 +132,17 @@ public abstract class AccessServiceImpl {
 
     Optional<AccessResult> isDeceasedRuleValid(WebCertUser user, String intygsTyp, String enhetsId, Personnummer personnummer,
             List<String> invalidIntygsTyp) {
+        return isDeceasedRuleValid(user, intygsTyp, enhetsId, personnummer, invalidIntygsTyp, Collections.emptyList());
+    }
+
+    Optional<AccessResult> isDeceasedRuleValid(WebCertUser user, String intygsTyp, String enhetsId, Personnummer personnummer,
+            List<String> invalidIntygsTyp, List<String> excludeIntygsTyp) {
 
         if (patientDetailsResolver.isAvliden(personnummer)) {
+
+            if (excludeIntygsTyp.contains(intygsTyp)) {
+                return Optional.empty();
+            }
 
             if (invalidIntygsTyp.contains(intygsTyp)) {
                 return Optional.of(AccessResult.create(AccessResultCode.DECEASED_PATIENT, "Patienten avliden"));
@@ -186,11 +196,21 @@ public abstract class AccessServiceImpl {
         return Optional.empty();
     }
 
-    Optional<AccessResult> isInactiveUnitRuleValid(WebCertUser user, String enhetsId) {
-        if (user.getParameters() != null && user.getParameters().isInactiveUnit() && isUserLoggedInOnDifferentUnit(enhetsId)) {
-            return Optional.of(AccessResult.create(AccessResultCode.INACTIVE_UNIT, "Parameter inactive unit"));
-        }
+    Optional<AccessResult> isInactiveUnitRuleValid(WebCertUser user, String intygsTyp, String enhetsId) {
+        return isInactiveUnitRuleValid(user, intygsTyp, enhetsId, Collections.emptyList());
+    }
 
+    Optional<AccessResult> isInactiveUnitRuleValid(WebCertUser user, String intygsTyp, String enhetsId, List<String> excludeTypes) {
+        if (user.getParameters() != null && user.getParameters().isInactiveUnit()) {
+
+            if (excludeTypes.contains(intygsTyp)) {
+                return Optional.empty();
+            }
+
+            if (isUserLoggedInOnDifferentUnit(enhetsId)) {
+                return Optional.of(AccessResult.create(AccessResultCode.INACTIVE_UNIT, "Parameter inactive unit"));
+            }
+        }
         return Optional.empty();
     }
 

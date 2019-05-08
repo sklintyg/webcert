@@ -104,7 +104,7 @@ public class DraftAccessServiceImpl extends AccessServiceImpl implements DraftAc
         }
 
         if (!accessResult.isPresent()) {
-            accessResult = isInactiveUnitRuleValid(user, enhetsId);
+            accessResult = isInactiveUnitRuleValid(user, intygsTyp, enhetsId);
         }
 
         if (!accessResult.isPresent()) {
@@ -137,7 +137,7 @@ public class DraftAccessServiceImpl extends AccessServiceImpl implements DraftAc
         }
 
         if (!accessResult.isPresent()) {
-            accessResult = isInactiveUnitRuleValid(user, enhetsId);
+            accessResult = isInactiveUnitRuleValid(user, intygsTyp, enhetsId);
         }
 
         if (!accessResult.isPresent() && !(DbModuleEntryPoint.MODULE_ID.equalsIgnoreCase(intygsTyp)
@@ -173,7 +173,7 @@ public class DraftAccessServiceImpl extends AccessServiceImpl implements DraftAc
         }
 
         if (!accessResult.isPresent()) {
-            accessResult = isInactiveUnitRuleValid(user, enhetsId);
+            accessResult = isInactiveUnitRuleValid(user, intygsTyp, enhetsId);
         }
 
         if (!accessResult.isPresent()) {
@@ -206,7 +206,7 @@ public class DraftAccessServiceImpl extends AccessServiceImpl implements DraftAc
         }
 
         if (!accessResult.isPresent()) {
-            accessResult = isInactiveUnitRuleValid(user, enhetsId);
+            accessResult = isInactiveUnitRuleValid(user, intygsTyp, enhetsId);
         }
 
         if (!accessResult.isPresent()) {
@@ -239,7 +239,7 @@ public class DraftAccessServiceImpl extends AccessServiceImpl implements DraftAc
         }
 
         if (!accessResult.isPresent()) {
-            accessResult = isInactiveUnitRuleValid(user, enhetsId);
+            accessResult = isInactiveUnitRuleValid(user, intygsTyp, enhetsId);
         }
 
         if (!accessResult.isPresent()) {

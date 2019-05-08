@@ -57,6 +57,7 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.CopyIntygRequest;
 import se.inera.intyg.webcert.web.web.controller.api.dto.CopyIntygResponse;
 import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.RevokeSignedIntygParameter;
 import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.SendSignedIntygParameter;
+import se.inera.intyg.webcert.web.web.util.resourcelinks.ResourceLinkHelper;
 
 /**
  * Controller exposing services to be used by modules.
@@ -86,6 +87,9 @@ public class IntygModuleApiController extends AbstractApiController {
     @Autowired
     private IntygTextsService intygTextsService;
 
+    @Autowired
+    private ResourceLinkHelper resourceLinkHelper;
+
     /**
      * Retrieves a signed intyg from intygstjänst.
      *
@@ -103,6 +107,8 @@ public class IntygModuleApiController extends AbstractApiController {
         LOG.debug("Fetching signed intyg with id '{}' from IT, coherent journaling {}", intygsId, coherentJournaling);
 
         IntygContentHolder intygAsExternal = intygService.fetchIntygDataWithRelations(intygsId, intygsTyp, coherentJournaling);
+
+        resourceLinkHelper.decorateWithValidActionLinks(intygAsExternal);
 
         return Response.ok().entity(intygAsExternal).build();
     }

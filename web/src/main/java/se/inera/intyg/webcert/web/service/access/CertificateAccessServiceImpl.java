@@ -29,6 +29,8 @@ import org.springframework.stereotype.Service;
 
 import se.inera.intyg.common.db.support.DbModuleEntryPoint;
 import se.inera.intyg.common.doi.support.DoiModuleEntryPoint;
+import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
+import se.inera.intyg.common.lisjp.support.LisjpEntryPoint;
 import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.schemas.contract.Personnummer;
@@ -161,7 +163,7 @@ public class CertificateAccessServiceImpl extends AccessServiceImpl implements C
         }
 
         if (!accessResult.isPresent()) {
-            accessResult = isInactiveUnitRuleValid(user, vardenhet.getEnhetsid());
+            accessResult = isInactiveUnitRuleValid(user, intygsTyp, vardenhet.getEnhetsid());
         }
 
         if (!accessResult.isPresent()) {
@@ -191,7 +193,7 @@ public class CertificateAccessServiceImpl extends AccessServiceImpl implements C
         }
 
         if (!accessResult.isPresent()) {
-            accessResult = isInactiveUnitRuleValid(user, vardenhet.getEnhetsid());
+            accessResult = isInactiveUnitRuleValid(user, intygsTyp, vardenhet.getEnhetsid());
         }
 
         if (!accessResult.isPresent()) {
@@ -221,11 +223,147 @@ public class CertificateAccessServiceImpl extends AccessServiceImpl implements C
         }
 
         if (!accessResult.isPresent()) {
-            accessResult = isInactiveUnitRuleValid(user, vardenhet.getEnhetsid());
+            accessResult = isInactiveUnitRuleValid(user, intygsTyp, vardenhet.getEnhetsid());
         }
 
         if (!accessResult.isPresent()) {
 
+            accessResult = isRenewRuleValid(user, intygsTyp, vardenhet.getEnhetsid(), Collections.emptyList());
+        }
+
+        if (!accessResult.isPresent()) {
+            accessResult = isSekretessRuleValid(intygsTyp, vardenhet.getEnhetsid(), user, personnummer);
+        }
+
+        if (!accessResult.isPresent() && isUserLoggedInOnDifferentUnit(vardenhet.getEnhetsid())) {
+            accessResult = Optional
+                    .of(AccessResult.create(AccessResultCode.AUTHORIZATION_DIFFERENT_UNIT,
+                            "User is logged in on a different unit than the draft/certificate"));
+        }
+
+        return accessResult.isPresent() ? accessResult.get() : AccessResult.noProblem();
+    }
+
+    @Override
+    public AccessResult allowToCreateQuestion(String intygsTyp, Vardenhet vardenhet, Personnummer personnummer) {
+        final WebCertUser user = getUser();
+
+        Optional<AccessResult> accessResult = isAuthorized(intygsTyp, user, AuthoritiesConstants.FEATURE_HANTERA_FRAGOR,
+                AuthoritiesConstants.PRIVILEGE_SKAPA_NYFRAGA);
+
+        if (!accessResult.isPresent()) {
+            accessResult = isDeceasedRuleValid(user, intygsTyp, vardenhet.getEnhetsid(), personnummer, Collections.emptyList());
+        }
+
+        if (!accessResult.isPresent()) {
+            accessResult = isInactiveUnitRuleValid(user, intygsTyp, vardenhet.getEnhetsid());
+        }
+
+        if (!accessResult.isPresent()) {
+            accessResult = isRenewRuleValid(user, intygsTyp, vardenhet.getEnhetsid(), Collections.emptyList());
+        }
+
+        if (!accessResult.isPresent()) {
+            accessResult = isSekretessRuleValid(intygsTyp, vardenhet.getEnhetsid(), user, personnummer);
+        }
+
+        if (!accessResult.isPresent()) {
+            accessResult = isSJFRuleValid(intygsTyp, vardenhet, user, false);
+        }
+
+        return accessResult.isPresent() ? accessResult.get() : AccessResult.noProblem();
+    }
+
+    @Override
+    public AccessResult allowToAnswerComplementQuestion(String intygsTyp, Vardenhet vardenhet, Personnummer personnummer,
+            boolean newCertificate) {
+        final WebCertUser user = getUser();
+
+        String privilegie = null;
+        if (newCertificate) {
+            privilegie = AuthoritiesConstants.PRIVILEGE_SVARA_MED_NYTT_INTYG;
+        } else {
+            privilegie = AuthoritiesConstants.PRIVILEGE_BESVARA_KOMPLETTERINGSFRAGA;
+        }
+
+        Optional<AccessResult> accessResult = isAuthorized(intygsTyp, user, AuthoritiesConstants.FEATURE_HANTERA_FRAGOR, privilegie);
+
+        if (!accessResult.isPresent()) {
+            accessResult = isDeceasedRuleValid(user, intygsTyp, vardenhet.getEnhetsid(), personnummer, Collections.emptyList());
+        }
+
+        if (!accessResult.isPresent()) {
+            accessResult = isInactiveUnitRuleValid(user, intygsTyp, vardenhet.getEnhetsid());
+        }
+
+        if (!accessResult.isPresent()) {
+            accessResult = isRenewRuleValid(user, intygsTyp, vardenhet.getEnhetsid(), Collections.emptyList());
+        }
+
+        if (!accessResult.isPresent()) {
+            accessResult = isSekretessRuleValid(intygsTyp, vardenhet.getEnhetsid(), user, personnummer);
+        }
+
+        if (!accessResult.isPresent()) {
+            accessResult = isSJFRuleValid(intygsTyp, vardenhet, user, false);
+        }
+
+        return accessResult.isPresent() ? accessResult.get() : AccessResult.noProblem();
+    }
+
+    @Override
+    public AccessResult allowToAnswerAdminQuestion(String intygsTyp, Vardenhet vardenhet, Personnummer personnummer) {
+        return null;
+    }
+
+    @Override
+    public AccessResult allowToReadQuestions(String intygsTyp, Vardenhet vardenhet, Personnummer personnummer) {
+        final WebCertUser user = getUser();
+
+        Optional<AccessResult> accessResult = isAuthorized(intygsTyp, user, AuthoritiesConstants.FEATURE_HANTERA_FRAGOR, null);
+
+        if (!accessResult.isPresent()) {
+            final List<String> excludeTypes = Arrays.asList(new String[] { LisjpEntryPoint.MODULE_ID, Fk7263EntryPoint.MODULE_ID });
+            accessResult = isDeceasedRuleValid(user, intygsTyp, vardenhet.getEnhetsid(), personnummer, Collections.emptyList(),
+                    excludeTypes);
+        }
+
+        if (!accessResult.isPresent()) {
+            final List<String> excludeTypes = Arrays.asList(new String[] { LisjpEntryPoint.MODULE_ID, Fk7263EntryPoint.MODULE_ID });
+            accessResult = isInactiveUnitRuleValid(user, intygsTyp, vardenhet.getEnhetsid(), excludeTypes);
+        }
+
+        if (!accessResult.isPresent()) {
+            final List<String> excludeTypes = Arrays.asList(new String[] { LisjpEntryPoint.MODULE_ID, Fk7263EntryPoint.MODULE_ID });
+            accessResult = isRenewRuleValid(user, intygsTyp, vardenhet.getEnhetsid(), excludeTypes);
+        }
+
+        if (!accessResult.isPresent()) {
+            accessResult = isSekretessRuleValid(intygsTyp, vardenhet.getEnhetsid(), user, personnummer);
+        }
+
+        if (!accessResult.isPresent()) {
+            accessResult = isSJFRuleValid(intygsTyp, vardenhet, user, true);
+        }
+
+        return accessResult.isPresent() ? accessResult.get() : AccessResult.noProblem();
+    }
+
+    @Override
+    public AccessResult allowToForwardQuestions(String intygsTyp, Vardenhet vardenhet, Personnummer personnummer) {
+        final WebCertUser user = getUser();
+        Optional<AccessResult> accessResult = isAuthorized(intygsTyp, user, AuthoritiesConstants.FEATURE_HANTERA_FRAGOR,
+                AuthoritiesConstants.PRIVILEGE_VIDAREBEFORDRA_FRAGASVAR);
+
+        if (!accessResult.isPresent()) {
+            accessResult = isDeceasedRuleValid(user, intygsTyp, vardenhet.getEnhetsid(), personnummer, Collections.emptyList());
+        }
+
+        if (!accessResult.isPresent()) {
+            accessResult = isInactiveUnitRuleValid(user, intygsTyp, vardenhet.getEnhetsid());
+        }
+
+        if (!accessResult.isPresent()) {
             accessResult = isRenewRuleValid(user, intygsTyp, vardenhet.getEnhetsid(), Collections.emptyList());
         }
 

@@ -763,16 +763,6 @@ public class IntygServiceImpl implements IntygService {
         }
     }
 
-    protected void verifyEnhetsAuth(Utlatande utlatande, boolean isReadOnlyOperation) {
-        Vardenhet vardenhet = utlatande.getGrundData().getSkapadAv().getVardenhet();
-        if (!webCertUserService.isAuthorizedForUnit(vardenhet.getVardgivare().getVardgivarid(), vardenhet.getEnhetsid(),
-                isReadOnlyOperation)) {
-            String msg = "User not authorized for enhet " + vardenhet.getEnhetsid();
-            LOG.debug(msg);
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM, msg);
-        }
-    }
-
     /**
      * Builds a IntygContentHolder by first trying to get the Intyg from intygstjansten. If
      * not found or the Intygstjanst couldn't be reached, the local Utkast - if available -

@@ -103,7 +103,7 @@ public class LockedDraftAccessServiceImpl extends AccessServiceImpl implements L
         }
 
         if (!accessResult.isPresent()) {
-            accessResult = isInactiveUnitRuleValid(user, enhetsId);
+            accessResult = isInactiveUnitRuleValid(user, intygsTyp, enhetsId);
         }
 
         if (!accessResult.isPresent()) {
@@ -136,7 +136,7 @@ public class LockedDraftAccessServiceImpl extends AccessServiceImpl implements L
         }
 
         if (!accessResult.isPresent()) {
-            accessResult = isInactiveUnitRuleValid(user, enhetsId);
+            accessResult = isInactiveUnitRuleValid(user, intygsTyp, enhetsId);
         }
 
         if (!accessResult.isPresent()) {

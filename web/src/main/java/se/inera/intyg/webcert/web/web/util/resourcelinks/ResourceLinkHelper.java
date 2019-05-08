@@ -22,7 +22,9 @@ package se.inera.intyg.webcert.web.web.util.resourcelinks;
 import java.util.List;
 
 import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
 import se.inera.intyg.webcert.web.web.controller.api.dto.IntygModuleDTO;
+import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.DraftHolder;
 
 public interface ResourceLinkHelper {
@@ -32,4 +34,10 @@ public interface ResourceLinkHelper {
     void decorateWithValidActionLinks(IntygModuleDTO intygModule, Personnummer personnummer);
 
     void decorateWithValidActionLinks(DraftHolder utkast, String intygsTyp, String enhetsId, Personnummer personnummer);
+
+    void decorateWithValidActionLinks(IntygContentHolder intygAsExternal);
+
+    void decorateIntygWithValidActionLinks(List<ListIntygEntry> allIntyg, Personnummer personNummer);
+
+    void decorateWithValidActionLinks(ListIntygEntry intygEntry, Personnummer personNummer);
 }
