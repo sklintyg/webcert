@@ -166,6 +166,7 @@ Cypress.Commands.add("verifieraPdlLoggar", pdlLogArray => {
 
     // Loopa igenom arrayen och plocka ut antal unika intygsid:n (detta påverkar vilka URL:er vi ska hämta loggar från)
     // Skapa en tvådimensionell array med intygsid som första element på varje plats, följt av logghändelserna som ska verifieras.
+    cy.log("Splittar arrayen..."); // ToDo: TA BORT!
     var idSplitArray = []
     for (var i = 0; i < pdlLogArray.length; i++) {
         var nyttId = true
@@ -173,6 +174,7 @@ Cypress.Commands.add("verifieraPdlLoggar", pdlLogArray => {
             if (idSplitArray[j][0] === pdlLogArray[i].activity.activityLevel) {
                 nyttId = false
                 idSplitArray[j].push(pdlLogArray[i]);
+                cy.log("Befintligt id, sparar på plats " + j); // ToDo: TA BORT!
                 break;
             }
         }
@@ -183,6 +185,7 @@ Cypress.Commands.add("verifieraPdlLoggar", pdlLogArray => {
             idSplitArray[nyttIndex] = []
             idSplitArray[nyttIndex].push(pdlLogArray[i].activity.activityLevel)
             idSplitArray[nyttIndex].push(pdlLogArray[i])
+            cy.log("Nytt id, sparar på plats " + nyttIndex); // ToDo: TA BORT!
         }
     }
 
@@ -209,10 +212,6 @@ Cypress.Commands.add("verifieraPdlLoggar", pdlLogArray => {
                 cy.log("Detta är body från response vid hämtning av loggar från mock:");
                 cy.log(body);
 
-                // Loopa igenom alla poster i mocken för detta id och spara i kronologisk ordning.
-                // Första logitem kan vi spara direkt för vi vet att det är minst ett sådant
-                var logghändelser = []
-
                 // Städa bort alla <br>-taggar och alla blanksteg mellan taggar
                 body = body.replace(/<br>/g, "")
                 body = body.replace(/>\s+</g, "><");
@@ -221,7 +220,7 @@ Cypress.Commands.add("verifieraPdlLoggar", pdlLogArray => {
 
                 var bodyDoc = document.createElement("div")
                 bodyDoc.innerHTML = body
-                bodyDoc.children["0"].remove(); // Ta bort headern som skickas med i bodyn
+                bodyDoc.children["0"].remove(); // Ta bort headern som skickas med i bodyn. ToDo: Ska den vara kvar?
 
                 // getElementsByTagName returnerar en HTMLCollection som behöver sorteras. Inspirerat av
                 // https://stackoverflow.com/questions/7059090/using-array-prototype-sort-call-to-sort-a-htmlcollection
@@ -252,7 +251,7 @@ Cypress.Commands.add("verifieraPdlLoggar", pdlLogArray => {
 
                 // Ursprungliga arrayen med förväntade event innehåller URL på index 0. Skapa ny array utan detta värde
                 var förväntadeHändelser = idSplitArray[0].slice(1); // DEBUG! Här ska det vara i men i = 1 av någon anledning! (Asynkron kod?)
-                assert.equal(arr.length, förväntadeHändelser.length, "Kontrollerar antal logghändelser");
+                assert.equal(idSplitArray.length, 1, "Kontrollerar antal unika id:n. Just nu stöds bara ett enda."); // ToDo: Fixa!
 
                 // Gå igenom listan med logghändelser och bocka av, en efter en.
                 // Utgår från https://inera-certificate.atlassian.net/wiki/spaces/IT/pages/41353325/GE-005+PDL-loggning+i+Webcert
@@ -297,7 +296,6 @@ Cypress.Commands.add("verifieraPdlLoggar", pdlLogArray => {
                     assert.equal(activity.getElementsByTagName("purpose")[0].innerText, "Vård och behandling", "Kontrollerar hårdkodat 'purpose', index " + j);
 
                     //---- Element 'User' ----//
-                    /* ToDo: Mocken klarar inte av tomt element för 'name' vilket gör att hela denna sektion måste kommenteras bort tills det är fixat.
                     var user = arr[j].getElementsByTagName("user")[0];
                     // userid, name, assignment, title, careprovider, careunit
                     // OBS! Username ska inte vara med framöver. Då ska antal underelement minskas med 1.
@@ -328,7 +326,6 @@ Cypress.Commands.add("verifieraPdlLoggar", pdlLogArray => {
                     assert.equal(careunit.getElementsByTagName('careunitname')[0].innerText,
                                  förväntadeHändelser[j].user.careUnit.careUnitName,
                                  "Kontrollerar careunitname, index " + j);
-                    */
 
                     //---- Element 'Resources' ----//
                     // Verifiera att 'resources' endast har ett underelement, 'resource'
@@ -366,6 +363,11 @@ Cypress.Commands.add("verifieraPdlLoggar", pdlLogArray => {
                                  förväntadeHändelser[j].resources.resource.careUnit.careUnitName,
                                  "Kontrollerar 'careunitname' (under 'resources'), index " + j);
                 }
+                // Lägger denna assert sist. Kan få märkliga konsekvenser  (om vi läser utanför arrayen
+                // i if-loopen ovan) men då kommer testfallet faila i alla fall. Anledningen till att den
+                // är sist är för att få jämförelser för så många PDL-event som möjligt även om inte
+                // antalet event stämmer mellan förväntat och faktiskt.
+                assert.equal(arr.length, förväntadeHändelser.length, "Kontrollerar antal logghändelser");
             });
         });
     }

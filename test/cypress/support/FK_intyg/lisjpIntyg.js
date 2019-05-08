@@ -279,26 +279,28 @@ export function skickaTillFk() {
 }
 
 // -------------------- 'Skriv ut intyget' --------------------
-export function skrivUt(typAvUtskrift){
+export function skrivUt(typAvUtskrift, intygsId){
     switch(typAvUtskrift) {
         case "utkast":
-            cy.get('#skriv-ut-utkast').click();
-            cy.log('Skriver ut ett utkast');
+            assert.equal(true, false, "Utskrift av utkast ej implementerat än");
             break;
         case "fullständigt":
-            cy.get('#intyg-header-dropdown-select-pdf-type').click();
-            cy.contains('Fullständigt intyg').click();
-            cy.log('Skriver ut ett fullständig intyg');
+            cy.request({
+                method: 'GET',
+                url: 'moduleapi/intyg/lisjp/' + intygsId + "/pdf",
+            });
+            cy.log('Skriver ut ett fullständig intyg (via cy.request, ej grafiskt)');
             break;
         case "minimalt":
-            cy.get('#intyg-header-dropdown-select-pdf-type').click();
-            cy.contains('Minimalt intyg').click();
-            cy.get('#button1print-employee-copy').click();
-            cy.log('Skriver ut ett minimalt intyg');
+            cy.request({
+                method: 'GET',
+                url: 'moduleapi/intyg/lisjp/' + intygsId + "/pdf/arbetsgivarutskrift",
+            })
+            cy.log('Skriver ut ett minimalt intyg (via cy.request, ej grafiskt)');
             break;
         default:
             cy.log('Ingen korrekt typ av utskrift vald');
-    }   
+    }
 }
 // ------------------'Förnya intyg'---------------------------
 export function fornya() {
