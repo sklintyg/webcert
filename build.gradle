@@ -97,7 +97,7 @@ allprojects {
     task createVersionPropertyFile(type: VersionPropertyFileTask)
 
     uploadArchives.repositories.mavenDeployer {
-        repository(url: "https://build-inera.nordicmedtest.se/nexus/repository/releases/") {
+        repository(url: "http://127.0.0.1:18081/nexus/repository/releases/") {
             authentication(userName: System.properties['nexusUsername'], password: System.properties['nexusPassword'])
         }
     }
