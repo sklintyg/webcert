@@ -1,6 +1,6 @@
 # language: sv
 @BACKOFFICE
-Egenskap: Generera Utb-data
+Egenskap: Generera Utb-data för Per Svensson
 
 # Per Svensson TSTNMT2321000156-2013
 # Tallbackens Vårdcentral TSTNMT2321000156-1001

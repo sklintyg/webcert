@@ -1,6 +1,6 @@
 # language: sv
 @BACKOFFICE
-Egenskap: Generera Utb-data
+Egenskap: Generera Utb-data för Marcus Gran (LOR)
 
 # Marcus Gran TSTNMT2321000156-2014
 # Linköpings Östra Rehabcentrum TSTNMT2321000156-2001

@@ -1,6 +1,6 @@
 # language: sv
 @BACKOFFICE
-Egenskap: Generera Utb-data
+Egenskap: Generera Utb-data för Jane Ewery
 
 # Jane Ewery TSTNMT2321000156-2011
 # Linköpings Östra Rehabcentrum TSTNMT2321000156-2001

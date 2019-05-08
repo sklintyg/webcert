@@ -1,11 +1,11 @@
 # language: sv
 @BACKOFFICE
-Egenskap: Generera Utb-data
+Egenskap: Generera Utb-data för Anders Kristensen
 
-# Marcus Gran TSTNMT2321000156-2014
+# Anders Kristensen TSTNMT2321000156-2014
 # Vårdcentralen Klövern TSTNMT2321000156-1002
 Bakgrund: Inloggad som läkare
-   Givet att jag är inloggad som läkare "Marcus Gran"
+   Givet att jag är inloggad som läkare "Anders Kristensen"
 
 
 @UTBDATA-REHABSTOD-RADERA

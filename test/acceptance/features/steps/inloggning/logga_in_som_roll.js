@@ -170,18 +170,21 @@ Given(/^att jag är inloggad som läkare(?: "([^"]*)")?$/, function(lakarNamn) {
         } else if (lakarNamn && lakarNamn === 'Karl Johansson') {
             this.user.hsaId = 'TSTNMT2321000156-1014';
             this.user.enhetId = 'TSTNMT2321000156-1013';
-            this.user.forNamn = lakarNamn.split(' ')[0];
-            this.user.efterNamn = lakarNamn.split(' ')[1];
         } else if (lakarNamn && lakarNamn === 'Markus Gran') {
             this.user.hsaId = 'TSTNMT2321000156-2014';
             this.user.enhetId = 'TSTNMT2321000156-2001';
-            this.user.forNamn = lakarNamn.split(' ')[0];
-            this.user.efterNamn = lakarNamn.split(' ')[1];
         } else if (lakarNamn && lakarNamn === 'Jane Ewery') {
             this.user.hsaId = 'TSTNMT2321000156-2011';
             this.user.enhetId = 'TSTNMT2321000156-2001';
-            this.user.forNamn = lakarNamn.split(' ')[0];
-            this.user.efterNamn = lakarNamn.split(' ')[1];
+        } else if (lakarNamn && lakarNamn === 'Per Svensson') {
+            this.user.hsaId = 'TSTNMT2321000156-2013';
+            this.user.enhetId = 'TSTNMT2321000156-1001';
+        } else if (lakarNamn && lakarNamn === 'Eva Måne') {
+            this.user.hsaId = 'TSTNMT2321000156-2012';
+            this.user.enhetId = 'TSTNMT2321000156-1001';
+        } else if (lakarNamn && lakarNamn === 'Anders Kristensen') {
+            this.user.hsaId = 'TSTNMT2321000156-3012';
+            this.user.enhetId = 'TSTNMT2321000156-1001';
         }
     }
     return logInAsUserRole(this.user, 'Läkare');

@@ -1,6 +1,6 @@
 # language: sv
 @BACKOFFICE
-Egenskap: Generera Utb-data
+Egenskap: Generera Utb-data för Marcus Gran (TV)
 
 # Marcus Gran TSTNMT2321000156-2014
 # Tallbackens Vårdcentral TSTNMT2321000156-1001
