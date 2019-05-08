@@ -70,6 +70,7 @@ var utbDataLisjp = [{
             "from": idag(-120),
             "tom": idag(-55)
         }
+    },
     "atgarder": [{
         "namn": "Inte aktuellt",
         "key": "EJ_AKTUELLT"
