@@ -62,6 +62,7 @@ knownFeatures:
   - &kf090 UTSKRIFT
   - &kf100 ARBETSGIVARUTSKRIFT
   - &kf110 JS_LOGGNING
+  - &kf120 SRS
   - &kf130 HANTERA_INTYGSUTKAST_AVLIDEN
   - &kf140 UNIKT_INTYG
   - &kf150 UNIKT_INTYG_INOM_VG
@@ -233,6 +234,10 @@ features:
     name: *kf110
     desc: JS loggning
     global: true
+  - &f120
+    name: *kf120
+    desc: SRS
+    global: false
   - &f130
     name: *kf130
     desc: Hantera utkast för avlidna patienter
@@ -313,3 +318,15 @@ features:
     global: true
 
 pilots:
+  - name: TEST_PILOT
+    desc: Pilot avsedd för testsyfte
+    hsaIds:
+      - IFV1239877878-1042
+      - TSTNMT2321000156-1077
+    activated:
+      - &pf010
+        name: *kf120
+        desc: SRS-stöd i Webcert
+        global: true
+        intygstyper:
+          - *ki050 # LISJP
