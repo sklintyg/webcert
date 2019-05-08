@@ -3,7 +3,7 @@
 Egenskap: Generera Utb-data
 
 # Marcus Gran TSTNMT2321000156-2014
-# Linköpings Östra Rehabcentrum TSTNMT2321000156-2001
+# Vårdcentralen Klövern TSTNMT2321000156-1002
 Bakgrund: Inloggad som läkare
    Givet att jag är inloggad som läkare "Marcus Gran"
 
@@ -14,16 +14,10 @@ Scenariomall: Ta bort intyg för <Patient>
    Och att jag har raderat alla utkast för "<Patient>" via testAPI   
 
 Exempel:
-  | Patient |
-  | 19620323-3066 |
+  | Patient |  
+  | 19920628-2387 | 
   | 19540187-5769 |
-  | 19671031-3195 | 
-  | 19900614-2385 |
-  | 19550307-1770 | 
-  | 19930905-2380 |
-  | 19590714-2599 |
-  | 19830923-9294 |
-  | 19550224-2687 |
+  | 19810423-9267 |
   
 
 @UTBDATA-REHABSTOD
@@ -38,13 +32,9 @@ Scenariomall: [REHABSTOD] - Generera intyg för <Patient> med utbDataIndex <utbD
 
 Exempel:
   | Patient       | utbDataIndex |
-  | 19620323-3066 | 0            |
+  | 19920628-2387 | 0            | 
   | 19540187-5769 | 1            |
-  | 19671031-3195 | 2            |
-  | 19900614-2385 | 3            |
-  | 19550307-1770 | 4            |
-  | 19930905-2380 | 5            |
-  | 19590714-2599 | 6            |
-  | 19620323-3066 | 7            |
-  | 19830923-9294 | 8            |
-  | 19550224-2687 | 9            |
+  | 19920628-2387 | 2            | 
+  | 19810423-9267 | 3            | 
+
+

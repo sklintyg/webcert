@@ -88,7 +88,10 @@ var utbDataLisjp = [{
         "name": "ATER_X_ANTAL_DGR",
 		"within": "6 månader" 
     },
-    "ovrigt": "Detta är ett Intyg skapat i utbildningssyfte"
+    "ovrigt": "Detta är ett Intyg skapat i utbildningssyfte",
+    "arbetstidsforlaggning": {
+        "val": "Nej"
+    },
 }, {
     // 1 
      "smittskydd": false,
@@ -119,7 +122,10 @@ var utbDataLisjp = [{
     "prognosForArbetsformaga": {
         "name": "PROGNOS_OKLAR"
     },
-    "ovrigt": "Detta är ett Intyg skapat i utbildningssyfte"
+    "ovrigt": "Detta är ett Intyg skapat i utbildningssyfte",
+    "arbetstidsforlaggning": {
+        "val": "Nej"
+    },
 }, {
      // 2
     "smittskydd": false,
@@ -149,7 +155,10 @@ var utbDataLisjp = [{
     "prognosForArbetsformaga": {
         "name": "STOR_SANNOLIKHET"
     },
-    "ovrigt": "Detta är ett Intyg skapat i utbildningssyfte"
+    "ovrigt": "Detta är ett Intyg skapat i utbildningssyfte",
+    "arbetstidsforlaggning": {
+        "val": "Nej"
+    },
 }, {
     // 3
     "smittskydd": false,
@@ -182,7 +191,10 @@ var utbDataLisjp = [{
         "name": "ATER_X_ANTAL_DGR",
 		"within": "2 månader" 
     },
-    "ovrigt": "Detta är ett Intyg skapat i utbildningssyfte"
+    "ovrigt": "Detta är ett Intyg skapat i utbildningssyfte",
+    "arbetstidsforlaggning": {
+        "val": "Nej"
+    },
 }, {
     // 4
     "smittskydd": false,
@@ -214,7 +226,10 @@ var utbDataLisjp = [{
     "prognosForArbetsformaga": {
         "name": "STOR_SANNOLIKHET"
     },
-    "ovrigt": "Detta är ett Intyg skapat i utbildningssyfte"
+    "ovrigt": "Detta är ett Intyg skapat i utbildningssyfte",
+    "arbetstidsforlaggning": {
+        "val": "Nej"
+    },
 }, {
     // 5
      "smittskydd": false,
@@ -263,7 +278,10 @@ var utbDataLisjp = [{
     "prognosForArbetsformaga": {
         "name": "STOR_SANNOLIKHET"
     },
-    "ovrigt": "Detta är ett Intyg skapat i utbildningssyfte"
+    "ovrigt": "Detta är ett Intyg skapat i utbildningssyfte",
+    "arbetstidsforlaggning": {
+        "val": "Nej"
+    },
 
 }, {
     // 6
@@ -295,7 +313,10 @@ var utbDataLisjp = [{
         "name": "ATER_X_ANTAL_DGR",
 		"within": "3 månader" 
     },
-    "ovrigt": "Detta är ett Intyg skapat i utbildningssyfte"
+    "ovrigt": "Detta är ett Intyg skapat i utbildningssyfte",
+    "arbetstidsforlaggning": {
+        "val": "Nej"
+    },
 }, {
     // 7
     "smittskydd": false,
@@ -328,9 +349,12 @@ var utbDataLisjp = [{
         "name": "ATER_X_ANTAL_DGR",
 		"within": "1 månad" 
     },
-    "ovrigt": "Detta är ett Intyg skapat i utbildningssyfte"
+    "ovrigt": "Detta är ett Intyg skapat i utbildningssyfte",
+    "arbetstidsforlaggning": {
+        "val": "Nej"
+    },
 }, {
-    // 8 ongoing
+    // 8
     "smittskydd": false,
     "baseratPa": {
        "minUndersokningAvPatienten": idag(),
@@ -358,7 +382,43 @@ var utbDataLisjp = [{
     "prognosForArbetsformaga": {
         "name": "STOR_SANNOLIKHET"
     },
-    "ovrigt": "Detta är ett Intyg skapat i utbildningssyfte"
+    "ovrigt": "Detta är ett Intyg skapat i utbildningssyfte",
+    "arbetstidsforlaggning": {
+        "val": "Nej"
+    },
+}, {
+    // 9
+    "smittskydd": false,
+    "baseratPa": {
+       "minUndersokningAvPatienten": idag(1),
+    },
+    "sysselsattning": {
+        "typ": "ARBETSSOKANDE"
+	},
+    "diagnos": {
+        "kod": "M545"
+    },
+    "funktionsnedsattning": "Svårt att att lyfta, böja sig och vrida kroppen är begränsad, stelhet och smärta, sömnstörning med påverkad kognitiv funktion.",
+    "aktivitetsbegransning": "Enligt min undersökning och patientens utsaga: Icke ringa svårigheter att ändra och bibehålla kroppsställning, gå och röra sig normalt inomhus, statiskt belasta rygg och ben. Svårt att lyfta, stå framåtböjd, resa sig från stol / säng samt utföra manuellt rörligt arbete. Smärtpräglat rörelsemönster.",
+	"pagaendeBehandling": "Smärtlindring, vila.",
+  	"planeradBehandling": "Remiss till sjukgymnast.",
+    "arbetsformaga": {
+        "nedsattMed100": {
+            "from": idag(1),
+            "tom": idag(30)
+      }
+	},
+    "atgarder": [{
+        "namn": "Inte aktuellt",
+        "key": "EJ_AKTUELLT"
+	}],
+    "prognosForArbetsformaga": {
+        "name": "STOR_SANNOLIKHET"
+    },
+    "ovrigt": "Detta är ett Intyg skapat i utbildningssyfte",
+    "arbetstidsforlaggning": {
+        "val": "Nej"
+    },
 }];
 
 
