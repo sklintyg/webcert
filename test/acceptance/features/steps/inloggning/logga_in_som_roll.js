@@ -170,21 +170,24 @@ Given(/^att jag är inloggad som läkare(?: "([^"]*)")?$/, function(lakarNamn) {
         } else if (lakarNamn && lakarNamn === 'Karl Johansson') {
             this.user.hsaId = 'TSTNMT2321000156-1014';
             this.user.enhetId = 'TSTNMT2321000156-1013';
-        } else if (lakarNamn && lakarNamn === 'Markus Gran') {
+        } else if (lakarNamn && lakarNamn === 'Marcus Gran') {
             this.user.hsaId = 'TSTNMT2321000156-2014';
             this.user.enhetId = 'TSTNMT2321000156-2001';
         } else if (lakarNamn && lakarNamn === 'Jane Ewery') {
             this.user.hsaId = 'TSTNMT2321000156-2011';
             this.user.enhetId = 'TSTNMT2321000156-2001';
-        } else if (lakarNamn && lakarNamn === 'Per Svensson') {
-            this.user.hsaId = 'TSTNMT2321000156-2013';
-            this.user.enhetId = 'TSTNMT2321000156-1001';
-        } else if (lakarNamn && lakarNamn === 'Eva Måne') {
-            this.user.hsaId = 'TSTNMT2321000156-2012';
-            this.user.enhetId = 'TSTNMT2321000156-1001';
-        } else if (lakarNamn && lakarNamn === 'Anders Kristensen') {
-            this.user.hsaId = 'TSTNMT2321000156-3012';
-            this.user.enhetId = 'TSTNMT2321000156-1001';
+        } else if (lakarNamn && lakarNamn === 'Annika Larsson') {
+            this.user.hsaId = 'TSTNMT2321000156-10CD';
+            this.user.enhetId = 'TSTNMT2321000156-1077';
+        } else if (lakarNamn && lakarNamn === 'Arnold Johansson') {
+            this.user.hsaId = 'TSTNMT2321000156-1079';
+            this.user.enhetId = 'TSTNMT2321000156-1077';
+        } else if (lakarNamn && lakarNamn === 'Leonie Keohl') {
+            this.user.hsaId = 'TSTNMT2321000156-103F';
+            this.user.enhetId = 'TSTNMT2321000156-1039';
+        } else if (lakarNamn && lakarNamn === 'Bill Smith') {
+            this.user.hsaId = 'TSTNMT2321000156-103G';
+            this.user.enhetId = 'TSTNMT2321000156-1039';
         }
     }
     return logInAsUserRole(this.user, 'Läkare');

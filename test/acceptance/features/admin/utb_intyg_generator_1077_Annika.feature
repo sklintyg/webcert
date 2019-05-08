@@ -1,11 +1,11 @@
 # language: sv
 @BACKOFFICE
-Egenskap: Generera Utb-data för Marcus Gran (TV)
+Egenskap: Generera Utb-data för Annika Larsson (TV)
 
-# Marcus Gran TSTNMT2321000156-2014
+# Annika Larsson TSTNMT2321000156-10CD
 # Tallbackens Vårdcentral TSTNMT2321000156-1001
 Bakgrund: Inloggad som läkare
-   Givet att jag är inloggad som läkare "Marcus Gran"
+   Givet att jag är inloggad som läkare "Annika Larsson"
 
 
 @UTBDATA-REHABSTOD-RADERA
@@ -37,7 +37,7 @@ Scenariomall: [REHABSTOD] - Generera intyg för <Patient> med utbDataIndex <utbD
    
    När jag går in på testpatienten "<Patient>"
    Och jag går in på att skapa ett "Läkarintyg för sjukpenning" intyg
-   Och jag fyller i alla nödvändiga fält för intyget med utbdata för Marcus Gran "<utbDataIndex>"
+   Och jag fyller i alla nödvändiga fält för intyget med utbdata för Annika Larsson "<utbDataIndex>"
    Så är signeraknappen tillgänglig
    När jag signerar intyget
    Så ska jag se den data jag angett för intyget

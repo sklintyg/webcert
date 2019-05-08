@@ -40,8 +40,13 @@ const {
 var fillIn = require('../fillIn').fillIn;
 var demoDataLisjp = require('./demoDataLisjp.js');
 var statistikData = require('./statistikData.js');
-var utbDataJaneEwery = require('./utbDataLisjp_JE_LOR.js');
-var utbDataMarcusGran = require('./utbDataLisjp_MG_LOR.js');
+var utbData1039Bill = require('./utbDataLisjp_1039_Bill.js');
+var utbData1039Leonie = require('./utbDataLisjp_1039_Leonie.js');
+var utbData1077Annika = require('./utbDataLisjp_1077_Annika.js');
+var utbData1077Arnold = require('./utbDataLisjp_1077_Arnold.js');
+var utbData2001Jane = require('./utbDataLisjp_2001_Jane.js');
+var utbData2001Marcus = require('./utbDataLisjp_2001_Marcus.js');
+
 /*
  *	Stödfunktioner
  *
@@ -101,7 +106,7 @@ When(/^jag fyller i alla nödvändiga fält för intyget med utbdata för Jane E
     if (!this.intyg.typ) {
         throw 'intyg.typ odefinierad.';
     } else {
-        this.intyg = utbDataJaneEwery.get(index, this.intyg.id);
+        this.intyg = utbData2001Jane.get(index, this.intyg.id);
         logger.silly(this.intyg);
         return fillIn(this);
     }
@@ -112,7 +117,47 @@ When(/^jag fyller i alla nödvändiga fält för intyget med utbdata för Marcus
     if (!this.intyg.typ) {
         throw 'intyg.typ odefinierad.';
     } else {
-        this.intyg = utbDataMarcusGran.get(index, this.intyg.id);
+        this.intyg = utbData2001Marcus.get(index, this.intyg.id);
+        logger.silly(this.intyg);
+        return fillIn(this);
+    }
+});
+
+When(/^jag fyller i alla nödvändiga fält för intyget med utbdata för Leonie Keohl "([^"]*)"$/, function(index) {
+    if (!this.intyg.typ) {
+        throw 'intyg.typ odefinierad.';
+    } else {
+        this.intyg = utbData1039Leonie.get(index, this.intyg.id);
+        logger.silly(this.intyg);
+        return fillIn(this);
+    }
+});
+
+When(/^jag fyller i alla nödvändiga fält för intyget med utbdata för Bill Smith "([^"]*)"$/, function(index) {
+    if (!this.intyg.typ) {
+        throw 'intyg.typ odefinierad.';
+    } else {
+        this.intyg = utbData1039Bill.get(index, this.intyg.id);
+        logger.silly(this.intyg);
+        return fillIn(this);
+    }
+});
+
+When(/^jag fyller i alla nödvändiga fält för intyget med utbdata för Annika Larsson "([^"]*)"$/, function(index) {
+    if (!this.intyg.typ) {
+        throw 'intyg.typ odefinierad.';
+    } else {
+        this.intyg = utbData1077Annika.get(index, this.intyg.id);
+        logger.silly(this.intyg);
+        return fillIn(this);
+    }
+});
+
+When(/^jag fyller i alla nödvändiga fält för intyget med utbdata för Arnold Johansson "([^"]*)"$/, function(index) {
+    if (!this.intyg.typ) {
+        throw 'intyg.typ odefinierad.';
+    } else {
+        this.intyg = utbData1077Arnold.get(index, this.intyg.id);
         logger.silly(this.intyg);
         return fillIn(this);
     }
