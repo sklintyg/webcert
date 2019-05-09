@@ -49,6 +49,7 @@
   <security:http security="none" pattern="/"/>
   <security:http security="none" pattern="/boot-app.jsp"/>
   <security:http security="none" pattern="/version.jsp"/>
+  <security:http security="none" pattern="/empty.html"/>
   <security:http security="none" pattern="/error.jsp"/>
   <security:http security="none" pattern="/saml/web/**"/>
   <security:http security="none" pattern="/saml2/web/**"/>
@@ -260,7 +261,7 @@
   <beans profile="wc-security-test">
 
     <!-- JWT based OAuth authentication -->
-    <security:http use-expressions="false" entry-point-ref="http403ForbiddenEntryPoint" pattern="(\/oauth\/token)" request-matcher="regex">
+    <security:http use-expressions="false" entry-point-ref="http403ForbiddenEntryPoint" pattern="(\/oauth\/token\/.*)" request-matcher="regex">
       <security:csrf disabled="true"/>
       <security:logout logout-url="/logout" logout-success-url="/welcome.html" invalidate-session="true"/>
       <security:intercept-url pattern="/**" access="IS_AUTHENTICATED_FULLY"/>
@@ -274,7 +275,7 @@
     </security:http>
 
     <!-- /visa/intyg/ and /webcert/web are deep-integration links used by VAS and Cosmic and should use SAML SSO -->
-    <security:http use-expressions="false" request-matcher="regex" pattern="(\/fake)|(\/welcome.html)|(\/logout)|(\/saml\/.*)|(\/visa\/intyg\/.*)|(\/webcert\/web\/.*)|(\/web\/maillink\/.*)" entry-point-ref="samlEntryPoint">
+    <security:http use-expressions="false" request-matcher="regex" pattern="(\/fake)|(\/welcome.html)|(\/saml\/.*)|(\/visa\/intyg\/.*)|(\/webcert\/web\/.*)|(\/web\/maillink\/.*)" entry-point-ref="samlEntryPoint">
       <security:csrf disabled="true"/>
       <security:logout logout-url="/logout" logout-success-url="/welcome.html" invalidate-session="true"/>
       <security:intercept-url pattern="/**" access="IS_AUTHENTICATED_FULLY"/>
@@ -325,7 +326,7 @@
     <!-- JWT based OAuth authentication -->
     <security:http use-expressions="false" entry-point-ref="http403ForbiddenEntryPoint" pattern="(\/oauth\/token)" request-matcher="regex">
       <security:csrf disabled="true"/>
-      <security:logout logout-url="/logout" logout-success-url="/welcome.html" invalidate-session="true"/>
+      <security:logout logout-url="/logout" logout-success-url="/empty.html" invalidate-session="true"/>
       <security:intercept-url pattern="/**" access="IS_AUTHENTICATED_FULLY"/>
       <security:custom-filter position="PRE_AUTH_FILTER" ref="jwtAuthFilter"/>
       <security:request-cache ref="redisSavedRequestCache"/>
@@ -413,7 +414,7 @@
          Second constructor argument is set to null to match all HTTP methods.
     -->
     <bean id="saveRequestMatcher" class="org.springframework.security.web.util.matcher.RegexRequestMatcher">
-      <constructor-arg index="0" value="\/web\/.*|\/visa\/.*|\/webcert\/.*|\/oauth/token"/>
+      <constructor-arg index="0" value="\/web\/.*|\/visa\/.*|\/webcert\/.*|\/oauth/token\/.*"/>
       <constructor-arg index="1"><null/></constructor-arg>
     </bean>
 
