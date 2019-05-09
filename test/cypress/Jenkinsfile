@@ -43,7 +43,7 @@ pipeline {
 
     // Denna variabel måste börja på "CYPRESS" och därefter heta exakt samma som parametern i
     // cypress.json eftersom den då skrivs över
-    CYPRESS_intygMockBaseUrl="https://intyg-validatemock.nordicmedtest.se"
+    CYPRESS_intygMockBaseUrl = "https://intyg-validatemock.nordicmedtest.se"
   }
 
   agent {
@@ -107,7 +107,7 @@ pipeline {
     stage('Exekvera Cypresstester') {
       steps {
         dir("${CYPRESS_DIR_REL}") {
-          sh "npm run test:e2e:electron --env intygMockBaseUrl=${EXTERNAL_URL_MOCK}"
+          sh "npm run test:e2e:electron"
         }
       }
     }
