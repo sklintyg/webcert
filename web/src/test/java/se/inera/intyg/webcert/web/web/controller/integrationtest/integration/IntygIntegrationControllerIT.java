@@ -213,7 +213,7 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
                 .put("enhet", "IFV1239877878-1042")
                 .build();
 
-        given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
+        spec()
                 .redirects()
                 .follow(false)
                 .pathParam("intygsId", utkastId)
@@ -261,7 +261,7 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
                 .then()
                 .header(HttpHeaders.LOCATION, endsWith("/luse/" + LUSE_BASE_INTYG_TYPE_VERSION + "/edit/" + utkastId + "/"));
 
-        spec()
+        spec(100)
                 .expect().statusCode(200)
                 .when().get("api/anvandare")
                 .prettyPeek()
@@ -320,7 +320,7 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
                 .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-get-utkast-response-schema.json"))
                 .body("content.grundData.patient.personId", equalTo(formatPersonnummer(queryParams.get("alternatePatientSSn"))));
 
-        spec()
+        spec(100)
                 .expect().statusCode(200)
                 .when().get("api/anvandare")
                 .prettyPeek()
@@ -386,7 +386,7 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
                 // .body("content.grundData.patient.fullstandigtNamn", isEmptyOrNullString());
 
 
-        spec()
+        spec(100)
                 .expect().statusCode(200)
                 .when().get("api/anvandare")
                 .prettyPeek()
@@ -434,7 +434,7 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
                 .expect().statusCode(HttpServletResponse.SC_TEMPORARY_REDIRECT).when().get("/visa/intyg/{intygsId}")
                 .then().header(HttpHeaders.LOCATION, endsWith("/intyg/luse/" + LUSE_BASE_INTYG_TYPE_VERSION + "/" + intygsId + "/"));
 
-        spec()
+        spec(100)
                 .expect().statusCode(200)
                 .when().get("api/anvandare")
                 .prettyPeek()
@@ -467,7 +467,7 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
                 .when().get("visa/intyg/{intygsId}?alternatePatientSSn=x&responsibleHospName=x&enhet=IFV1239877878-1042")
                 .then().header(HttpHeaders.LOCATION, endsWith("/luse/" + LUSE_BASE_INTYG_TYPE_VERSION + "/edit/" + utkastId + "/"));
 
-        spec()
+        spec(100)
                 .expect().statusCode(200)
                 .when().get("api/anvandare")
                 .prettyPeek()
@@ -531,7 +531,7 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
                 .when()
                 .get("/visa/intyg/{intygsId}");
 
-        spec()
+        spec(100)
                 .expect().statusCode(200)
                 .when().get("api/anvandare")
                 .then()
@@ -560,7 +560,7 @@ public class IntygIntegrationControllerIT extends BaseRestIntegrationTest {
                 .when()
                 .get("/visa/intyg/{intygsId}");
 
-        spec()
+        spec(100)
                 .expect().statusCode(200)
                 .when().get("api/anvandare")
                 .then()

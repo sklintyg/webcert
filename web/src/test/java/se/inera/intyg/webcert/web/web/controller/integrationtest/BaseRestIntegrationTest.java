@@ -551,4 +551,17 @@ public abstract class BaseRestIntegrationTest {
         return spec;
     }
 
+    void sleep(long milllis) {
+        try {
+            Thread.sleep(milllis);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    protected RequestSpecification spec(long delayInMillis) {
+        sleep(delayInMillis);
+        return spec();
+    }
+
 }
