@@ -206,13 +206,9 @@ Cypress.Commands.add("verifieraPdlLoggar", pdlLogArray => {
 
         cy.request({
             method: 'GET',
-            url: mockBaseUrl + idSplitArray[i][0],
-            failOnStatusCode: false // ToDo: REMOVE!!! Detta är enbart för Jenkins troubleshooting!
+            url: mockBaseUrl + idSplitArray[i][0]
         }).then((resp) => {
-            cy.log("Response från mocken:"); // ToDo: REMOVE! Troubleshooting!
-            cy.log(resp); // ToDo: REMOVE! Troubleshooting!
-
-            //expect(resp.status).to.equal(200); // ToDo: Ta tillbaka denna. Bortkommenterad för debugging
+            expect(resp.status).to.equal(200);
             cy.wrap(resp).its('body').then((body) => {
                 cy.log("Detta är body från response vid hämtning av loggar från mock:");
                 cy.log(body);
@@ -240,10 +236,9 @@ Cypress.Commands.add("verifieraPdlLoggar", pdlLogArray => {
                     if (datumA > datumB) {
                         return 1
                     }
-                    // ToDo: Inträffar detta ibland? I så fall får vi ta ett beslut hur vi ska hantera det. Endera lägga in wait() i testfallen så att händelserna inträffar vid
-                    // olika tidpunkter alternativt så implementeras en avancerad jämförelsefunktion senare som checkar alla kombinationer av loggar som inträffar vid samma
-                    // tidpunkt. Går det att öka upplösningen för tidsstämplarna så att ex.vis millisekunder också inkluderas?
-                    assert.Equal(true, false, 'Sorteringsalgoritmen för logghändelser från mocken hittade två tidsstämplar som är lika. Vi vet därför inte vilken som kom först!')
+                    // Två PDL-event kan få samma tidstämpel. För att skilja dessa åt måste en cy.wait() eller motsvarande
+                    // läggas in i testfallet mellan händelserna som generera dessa event.
+                    assert.equal(true, false, "Två tidstämplar är lika: " + a + " och " + b);
                     return 0
                 });
 
