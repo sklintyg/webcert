@@ -37,7 +37,7 @@ Scenariomall: [REHABSTOD] - Generera intyg för <Patient> med utbDataIndex <utbD
    
    När jag går in på testpatienten "<Patient>"
    Och jag går in på att skapa ett "Läkarintyg för sjukpenning" intyg
-   Och jag fyller i alla nödvändiga fält för intyget med utbdata för Annika Larsson "<utbDataIndex>"
+   Och jag fyller i alla nödvändiga fält för intyget med utbdata för Eva Olsson "<utbDataIndex>"
    Så är signeraknappen tillgänglig
    När jag signerar intyget
 

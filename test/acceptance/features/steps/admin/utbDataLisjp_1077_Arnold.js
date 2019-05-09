@@ -81,10 +81,7 @@ var utbDataLisjp = [{
         "name": "ATER_X_ANTAL_DGR",
 		"within": "3 månad" 
     },
-    "ovrigt": "Detta är ett Intyg skapat i utbildningssyfte",
-    "arbetstidsforlaggning": {
-        "val": "Nej"
-    },
+    "ovrigt": "Detta är ett Intyg skapat i utbildningssyfte"
 }, {
     // 1 
     "smittskydd": false,
@@ -187,10 +184,7 @@ var utbDataLisjp = [{
     "prognosForArbetsformaga": {
         "name": "STOR_SANNOLIKHET"
     },
-    "ovrigt": "Detta är ett Intyg skapat i utbildningssyfte",
-    "arbetstidsforlaggning": {
-        "val": "Nej"
-    },
+    "ovrigt": "Detta är ett Intyg skapat i utbildningssyfte"
 }, {
     // 4
     "smittskydd": false,
@@ -222,10 +216,7 @@ var utbDataLisjp = [{
         "name": "ATER_X_ANTAL_DGR",
 		"within": "1 månad" 
     },
-    "ovrigt": "Detta är ett Intyg skapat i utbildningssyfte",
-    "arbetstidsforlaggning": {
-        "val": "Nej"
-    },
+    "ovrigt": "Detta är ett Intyg skapat i utbildningssyfte"
 }, {
     // 5
     "smittskydd": false,
@@ -297,10 +288,7 @@ var utbDataLisjp = [{
     "prognosForArbetsformaga": {
         "name": "STOR_SANNOLIKHET"
     },
-    "ovrigt": "Detta är ett Intyg skapat i utbildningssyfte",
-    "arbetstidsforlaggning": {
-        "val": "Nej"
-    },
+    "ovrigt": "Detta är ett Intyg skapat i utbildningssyfte"
 }, {
     // 7
     "smittskydd": false,
@@ -331,10 +319,7 @@ var utbDataLisjp = [{
         "name": "ATER_X_ANTAL_DGR",
 		"within": "1 månad" 
     },
-    "ovrigt": "Detta är ett Intyg skapat i utbildningssyfte",
-    "arbetstidsforlaggning": {
-        "val": "Nej"
-    },
+    "ovrigt": "Detta är ett Intyg skapat i utbildningssyfte"
 }, {
     // 8
     "smittskydd": false,
@@ -371,10 +356,7 @@ var utbDataLisjp = [{
         "name": "ATER_X_ANTAL_DGR",
 		"within": "3 månad" 
     },
-    "ovrigt": "Detta är ett Intyg skapat i utbildningssyfte",
-    "arbetstidsforlaggning": {
-        "val": "Nej"
-    },
+    "ovrigt": "Detta är ett Intyg skapat i utbildningssyfte"
 }, {
     // 9
     "smittskydd": false,
@@ -404,10 +386,7 @@ var utbDataLisjp = [{
     "prognosForArbetsformaga": {
         "name": "STOR_SANNOLIKHET"
     },
-    "ovrigt": "Detta är ett Intyg skapat i utbildningssyfte",
-    "arbetstidsforlaggning": {
-        "val": "Nej"
-    },
+    "ovrigt": "Detta är ett Intyg skapat i utbildningssyfte"
 }, {
     // 10
     "smittskydd": false,
@@ -472,10 +451,7 @@ var utbDataLisjp = [{
     "prognosForArbetsformaga": {
         "name": "STOR_SANNOLIKHET"
     },
-    "ovrigt": "Detta är ett Intyg skapat i utbildningssyfte",
-    "arbetstidsforlaggning": {
-        "val": "Nej"
-    },
+    "ovrigt": "Detta är ett Intyg skapat i utbildningssyfte"
 }, {
     // 12
     "smittskydd": false,
@@ -507,10 +483,7 @@ var utbDataLisjp = [{
     "prognosForArbetsformaga": {
         "name": "STOR_SANNOLIKHET"
     },
-    "ovrigt": "Detta är ett Intyg skapat i utbildningssyfte",
-    "arbetstidsforlaggning": {
-        "val": "Nej"
-    },
+    "ovrigt": "Detta är ett Intyg skapat i utbildningssyfte"
 }, {
     // 13
     "smittskydd": false,
@@ -541,10 +514,7 @@ var utbDataLisjp = [{
     "prognosForArbetsformaga": {
         "name": "STOR_SANNOLIKHET"
     },
-    "ovrigt": "Detta är ett Intyg skapat i utbildningssyfte",
-    "arbetstidsforlaggning": {
-        "val": "Nej"
-    },
+    "ovrigt": "Detta är ett Intyg skapat i utbildningssyfte"
 }, {
     // 14
     "smittskydd": false,
