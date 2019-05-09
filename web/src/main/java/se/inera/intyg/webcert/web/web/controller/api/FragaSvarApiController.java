@@ -30,11 +30,17 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import io.swagger.annotations.Api;
+import se.inera.intyg.common.support.model.common.internal.Vardenhet;
+import se.inera.intyg.common.support.model.common.internal.Vardgivare;
+import se.inera.intyg.infra.integration.hsa.model.SelectableVardenhet;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.webcert.web.service.arende.ArendeService;
 import se.inera.intyg.webcert.web.service.fragasvar.dto.QueryFragaSvarParameter;
 import se.inera.intyg.webcert.web.service.fragasvar.dto.QueryFragaSvarResponse;
+import se.inera.intyg.webcert.web.service.user.WebCertUserService;
+import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
+import se.inera.intyg.webcert.web.web.util.resourcelinks.ResourceLinkHelper;
 
 @Path("/fragasvar")
 @Api(value = "fragasvar", description = "REST API för fråga/svar", produces = MediaType.APPLICATION_JSON)
@@ -45,12 +51,19 @@ public class FragaSvarApiController extends AbstractApiController {
     @Autowired
     private ArendeService arendeService;
 
+    @Autowired
+    private ResourceLinkHelper resourceLinkHelper;
+
+    @Autowired
+    private WebCertUserService webCertUserService;
+
     @GET
     @Path("/sok")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
     public Response query(@QueryParam("") QueryFragaSvarParameter queryParam) {
         QueryFragaSvarResponse result = arendeService.filterArende(queryParam);
+        resourceLinkHelper.decorateWithValidActionLinks(result.getResults(), getVardenhet());
         LOG.debug("/api/fragasvar/sok about to return : " + result.getTotalCount());
         return Response.ok(result).build();
     }
@@ -61,5 +74,21 @@ public class FragaSvarApiController extends AbstractApiController {
     @PrometheusTimeMethod
     public Response getFragaSvarLakareByEnhet(@QueryParam("enhetsId") String enhetsId) {
         return Response.ok(arendeService.listSignedByForUnits(enhetsId)).build();
+    }
+
+    // Get the user´s logged in Vardenhet
+    private Vardenhet getVardenhet() {
+        final WebCertUser user = webCertUserService.getUser();
+        final SelectableVardenhet selectedVardenhet = user.getValdVardenhet();
+        final SelectableVardenhet selectedVardgivare = user.getValdVardgivare();
+
+        final Vardgivare vardgivare = new Vardgivare();
+        vardgivare.setVardgivarid(selectedVardgivare.getId());
+
+        final Vardenhet vardenhet = new Vardenhet();
+        vardenhet.setEnhetsid(selectedVardenhet.getId());
+        vardenhet.setVardgivare(vardgivare);
+
+        return vardenhet;
     }
 }

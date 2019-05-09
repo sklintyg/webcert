@@ -431,8 +431,6 @@ public class ArendeServiceImpl implements ArendeService {
     @Override
     public List<Lakare> listSignedByForUnits(String enhetsId) {
 
-        // TODO add validation with AccessService
-
         List<String> enhetsIdParams = new ArrayList<>();
         if (enhetsId != null) {
             verifyEnhetsAuth(enhetsId, true);
@@ -474,8 +472,6 @@ public class ArendeServiceImpl implements ArendeService {
 
         WebCertUser user = webcertUserService.getUser();
         Set<String> intygstyperForPrivilege = authoritiesHelper.getIntygstyperForPrivilege(user, AuthoritiesConstants.PRIVILEGE_VISA_INTYG);
-
-        // TODO add validation with AccessService
 
         Filter filter;
         if (!Strings.isNullOrEmpty(filterParameters.getEnhetId())) {

@@ -32,6 +32,7 @@ import se.inera.intyg.webcert.web.service.access.CertificateAccessService;
 import se.inera.intyg.webcert.web.service.access.DraftAccessService;
 import se.inera.intyg.webcert.web.service.access.LockedDraftAccessService;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
+import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeListItem;
 import se.inera.intyg.webcert.web.web.controller.api.dto.IntygModuleDTO;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.DraftHolder;
@@ -68,38 +69,67 @@ public class ResourceLinkHelperImpl implements ResourceLinkHelper {
     }
 
     @Override
-    public void decorateWithValidActionLinks(DraftHolder utkast, String intygsTyp, String enhetsId, Personnummer personnummer) {
+    public void decorateWithValidActionLinks(DraftHolder utkast, String intygsTyp, Vardenhet vardenhet, Personnummer personnummer) {
         boolean isLocked = utkast.getStatus() != null ? utkast.getStatus().equals(UtkastStatus.DRAFT_LOCKED) : false;
-        // TODO Manage print when revoked.
         if (isLocked) {
-            if (lockedDraftAccessService.allowedToInvalidateLockedUtkast(intygsTyp, enhetsId, personnummer).isAllowed()) {
+            if (lockedDraftAccessService.allowedToInvalidateLockedUtkast(intygsTyp, vardenhet.getEnhetsid(), personnummer).isAllowed()) {
                 final ActionLink actionLink = new ActionLink();
                 actionLink.setType(ActionLinkType.MAKULERA_UTKAST);
                 actionLink.setUrl("testurl");
                 utkast.addLink(actionLink);
             }
-            if (lockedDraftAccessService.allowedToCopyLockedUtkast(intygsTyp, enhetsId, personnummer).isAllowed()) {
+            if (lockedDraftAccessService.allowedToCopyLockedUtkast(intygsTyp, vardenhet.getEnhetsid(), personnummer).isAllowed()) {
                 final ActionLink actionLink = new ActionLink();
                 actionLink.setType(ActionLinkType.KOPIERA_UTKAST);
                 actionLink.setUrl("testurl");
                 utkast.addLink(actionLink);
             }
-            if (lockedDraftAccessService.allowToPrint(intygsTyp, enhetsId, personnummer).isAllowed()) {
+            if (lockedDraftAccessService.allowToPrint(intygsTyp, vardenhet.getEnhetsid(), personnummer).isAllowed()) {
                 final ActionLink actionLink = new ActionLink();
                 actionLink.setType(ActionLinkType.SKRIV_UT_UTKAST);
                 actionLink.setUrl("testurl");
                 utkast.addLink(actionLink);
             }
         } else {
-            if (draftAccessService.allowToDeleteDraft(intygsTyp, enhetsId, personnummer).isAllowed()) {
+            if (draftAccessService.allowToDeleteDraft(intygsTyp, vardenhet.getEnhetsid(), personnummer).isAllowed()) {
                 final ActionLink actionLink = new ActionLink();
                 actionLink.setType(ActionLinkType.TA_BORT_UTKAST);
                 actionLink.setUrl("testurl");
                 utkast.addLink(actionLink);
             }
-            if (draftAccessService.allowToPrintDraft(intygsTyp, enhetsId, personnummer).isAllowed()) {
+            if (draftAccessService.allowToPrintDraft(intygsTyp, vardenhet.getEnhetsid(), personnummer).isAllowed()) {
                 final ActionLink actionLink = new ActionLink();
                 actionLink.setType(ActionLinkType.SKRIV_UT_UTKAST);
+                actionLink.setUrl("testurl");
+                utkast.addLink(actionLink);
+            }
+            if (certificateAccessService.allowToCreateQuestion(intygsTyp, vardenhet, personnummer).isAllowed()) {
+                final ActionLink actionLink = new ActionLink();
+                actionLink.setType(ActionLinkType.SKAPA_FRAGA);
+                actionLink.setUrl("testurl");
+                utkast.addLink(actionLink);
+            }
+            if (certificateAccessService.allowToReadQuestions(intygsTyp, vardenhet, personnummer).isAllowed()) {
+                final ActionLink actionLink = new ActionLink();
+                actionLink.setType(ActionLinkType.LASA_FRAGA);
+                actionLink.setUrl("testurl");
+                utkast.addLink(actionLink);
+            }
+            if (certificateAccessService.allowToAnswerComplementQuestion(intygsTyp, vardenhet, personnummer, false).isAllowed()) {
+                final ActionLink actionLink = new ActionLink();
+                actionLink.setType(ActionLinkType.BESVARA_FRAGA);
+                actionLink.setUrl("testurl");
+                utkast.addLink(actionLink);
+            }
+            if (certificateAccessService.allowToAnswerComplementQuestion(intygsTyp, vardenhet, personnummer, true).isAllowed()) {
+                final ActionLink actionLink = new ActionLink();
+                actionLink.setType(ActionLinkType.BESVARA_KOMPLETTERING);
+                actionLink.setUrl("testurl");
+                utkast.addLink(actionLink);
+            }
+            if (certificateAccessService.allowToForwardQuestions(intygsTyp, vardenhet, personnummer).isAllowed()) {
+                final ActionLink actionLink = new ActionLink();
+                actionLink.setType(ActionLinkType.VIDAREBEFODRA_FRAGA);
                 actionLink.setUrl("testurl");
                 utkast.addLink(actionLink);
             }
@@ -199,6 +229,19 @@ public class ResourceLinkHelperImpl implements ResourceLinkHelper {
             actionLink.setType(ActionLinkType.FORNYA_INTYG);
             actionLink.setUrl("testurl");
             intygEntry.addLink(actionLink);
+        }
+    }
+
+    @Override
+    public void decorateWithValidActionLinks(List<ArendeListItem> arendeItemList, Vardenhet vardenhet) {
+        for (ArendeListItem arendeListItem : arendeItemList) {
+            if (certificateAccessService.allowToForwardQuestions(arendeListItem.getIntygTyp(), vardenhet,
+                    Personnummer.createPersonnummer(arendeListItem.getPatientId()).get()).isAllowed()) {
+                final ActionLink actionLink = new ActionLink();
+                actionLink.setType(ActionLinkType.VIDAREBEFODRA_FRAGA);
+                actionLink.setUrl("testurl");
+                arendeListItem.addLink(actionLink);
+            }
         }
     }
 }

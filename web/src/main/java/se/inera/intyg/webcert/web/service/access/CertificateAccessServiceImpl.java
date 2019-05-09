@@ -320,7 +320,8 @@ public class CertificateAccessServiceImpl extends AccessServiceImpl implements C
     public AccessResult allowToReadQuestions(String intygsTyp, Vardenhet vardenhet, Personnummer personnummer) {
         final WebCertUser user = getUser();
 
-        Optional<AccessResult> accessResult = isAuthorized(intygsTyp, user, AuthoritiesConstants.FEATURE_HANTERA_FRAGOR, null);
+        Optional<AccessResult> accessResult = isAuthorized(intygsTyp, user, AuthoritiesConstants.FEATURE_HANTERA_FRAGOR,
+                AuthoritiesConstants.PRIVILEGE_LASA_FRAGA);
 
         if (!accessResult.isPresent()) {
             final List<String> excludeTypes = Arrays.asList(new String[] { LisjpEntryPoint.MODULE_ID, Fk7263EntryPoint.MODULE_ID });

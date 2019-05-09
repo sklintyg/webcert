@@ -206,7 +206,8 @@ public class UtkastModuleApiController extends AbstractApiController {
             utkast.setModel(updatedModel);
             draftHolder.setContent(utkast.getModel());
 
-            resourceLinkHelper.decorateWithValidActionLinks(draftHolder, intygsTyp, utkast.getEnhetsId(), resolvedPatient.getPersonId());
+            resourceLinkHelper.decorateWithValidActionLinks(draftHolder, intygsTyp, utlatande.getGrundData().getSkapadAv().getVardenhet(),
+                    resolvedPatient.getPersonId());
 
             return Response.ok(draftHolder).build();
         } catch (ModuleException | ModuleNotFoundException e) {

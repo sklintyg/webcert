@@ -59,7 +59,7 @@
               <td>{{arende.signeratAvNamn}}</td>
               <td class="unbreakable">{{arende.receivedDate | date:'short'}}</td>
               <td class="center">
-                <div wc-authority="VIDAREBEFORDRA_FRAGASVAR" intygstyp="{{::arende.intygTyp}}" class="center">
+                <div ng-if="showVidarebefodra(arende)" class="center">
                   <div ng-if="arende.vidarebefordrad"><i class="material-icons check-color">check</i></div>
                 </div>
               </td>
@@ -68,7 +68,7 @@
                         class="btn btn-primary"
                         uib-popover-html="forwardTooltip"  popover-placement="top" popover-popup-delay="300" popover-append-to-body="true" popover-is-open="mailBtnTooltipShow"
                         ng-click="mailBtnTooltipShow=false;openMailDialog(arende)"
-                        wc-authority="VIDAREBEFORDRA_FRAGASVAR" intygstyp="{{::arende.intygTyp}}">
+                        ng-if="showVidarebefodra(arende)">
                   <i class="icon-wc-ikon-reply"></i> Vidarebefordra
                 </button>
               </td>

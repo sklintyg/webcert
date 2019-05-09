@@ -22,11 +22,11 @@ angular.module('webcert').directive('wcEnhetArendenList', [
     'common.ArendeVidarebefordraHelper', 'common.ArendeProxy', 'common.dialogService',
     'webcert.enhetArendenListService', 'webcert.enhetArendenModel', 'webcert.enhetArendenListModel',
     'common.messageService', 'webcert.vardenhetFilterModel', 'webcert.enhetArendenFilterModel',
-    'common.UserModel', 'common.IntygProxy',
+    'common.UserModel', 'common.IntygProxy', 'common.ResourceLinkService',
     function($location, $log, $timeout, $window,
         ArendeVidarebefordraHelper, ArendeProxy, dialogService,
         enhetArendenListService, enhetArendenModel, enhetArendenListModel, messageService,
-        vardenhetFilterModel, enhetArendenFilterModel, UserModel, IntygProxy) {
+        vardenhetFilterModel, enhetArendenFilterModel, UserModel, IntygProxy, ResourceLinkService) {
         'use strict';
 
         return {
@@ -79,7 +79,7 @@ angular.module('webcert').directive('wcEnhetArendenList', [
                         enhetArendenListModel.totalCount = arendenListResult.totalCount;
                         enhetArendenListModel.arendenList = arendenListResult.arendenList;
                         if (firstRun) {
-                           $scope.totalCount = arendenListResult.totalCount;
+                            $scope.totalCount = arendenListResult.totalCount;
                         }
                     }, function(errorData) {
                         $log.debug('Query Error: ' + errorData);
@@ -121,31 +121,38 @@ angular.module('webcert').directive('wcEnhetArendenList', [
 
                 $scope.$on('enhetArendenList.requestListUpdate', updateArenden);
 
+                $scope.showVidarebefodra = function(arende) {
+                    return ResourceLinkService.isLinkTypeExists(arende.links, 'VIDAREBEFODRA_FRAGA');
+                };
+
                 $scope.fetchMore = function() {
                     enhetArendenListModel.viewState.fetchingMoreInProgress = true;
                     enhetArendenListModel.viewState.activeErrorMessageKey = null;
-                    enhetArendenListService.getArenden(enhetArendenListModel.prevFilterQuery.startFrom + enhetArendenModel.PAGE_SIZE).then(function(arendenListResult){
+                    enhetArendenListService.getArenden(
+                        enhetArendenListModel.prevFilterQuery.startFrom + enhetArendenModel.PAGE_SIZE).then(
+                        function(arendenListResult) {
 
-                        // Add fetch more result to existing list
-                        enhetArendenListModel.prevFilterQuery = arendenListResult.query;
-                        enhetArendenListModel.totalCount = arendenListResult.totalCount;
-                        var arendenList = enhetArendenListModel.arendenList;
-                        for (var i = 0; i < arendenListResult.arendenList.length; i++) {
-                            arendenList.push(arendenListResult.arendenList[i]);
-                        }
-                        enhetArendenListModel.fetchingMoreInProgress = false;
+                            // Add fetch more result to existing list
+                            enhetArendenListModel.prevFilterQuery = arendenListResult.query;
+                            enhetArendenListModel.totalCount = arendenListResult.totalCount;
+                            var arendenList = enhetArendenListModel.arendenList;
+                            for (var i = 0; i < arendenListResult.arendenList.length; i++) {
+                                arendenList.push(arendenListResult.arendenList[i]);
+                            }
+                            enhetArendenListModel.fetchingMoreInProgress = false;
 
-                    }, function(errorData){
-                        $log.debug('Query Error: ' + errorData);
-                        enhetArendenListModel.fetchingMoreInProgress = false;
-                        enhetArendenListModel.viewState.activeErrorMessageKey = 'info.query.error';
-                    });
+                        }, function(errorData) {
+                            $log.debug('Query Error: ' + errorData);
+                            enhetArendenListModel.fetchingMoreInProgress = false;
+                            enhetArendenListModel.viewState.activeErrorMessageKey = 'info.query.error';
+                        });
                 };
 
                 $scope.openIntyg = function(intygId, intygTyp) {
                     $log.debug('open intyg ' + intygId + ' of type ' + intygTyp);
                     IntygProxy.getIntygTypeInfo(intygId, function success(typeInfo) {
-                        $location.url('/fragasvar/' + intygTyp.toLowerCase() + '/' + typeInfo.intygTypeVersion + '/' + intygId);
+                        $location.url(
+                            '/fragasvar/' + intygTyp.toLowerCase() + '/' + typeInfo.intygTypeVersion + '/' + intygId);
                     }, function fail() {
                         enhetArendenListModel.viewState.activeErrorMessageKey = 'info.query.error';
                     });
@@ -183,8 +190,9 @@ angular.module('webcert').directive('wcEnhetArendenList', [
                 };
 
                 $scope.orderByProperty = function(property) {
-                    if(enhetArendenFilterModel.filterForm.orderBy === property) {
-                        enhetArendenFilterModel.filterForm.orderAscending = !enhetArendenFilterModel.filterForm.orderAscending;
+                    if (enhetArendenFilterModel.filterForm.orderBy === property) {
+                        enhetArendenFilterModel.filterForm.orderAscending =
+                            !enhetArendenFilterModel.filterForm.orderAscending;
                     } else {
                         enhetArendenFilterModel.filterForm.orderAscending = false;
                     }
