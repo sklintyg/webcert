@@ -8,7 +8,6 @@ ext {
     commonVersion = System.properties['commonVersion'] ?: '0-SNAPSHOT'
     infraVersion = System.properties['infraVersion'] ?: '0-SNAPSHOT'
     refDataVersion = System.properties['refDataVersion'] ?: '1.0-SNAPSHOT'
-    nexusUploadBaseUrl = System.properties['nexusUploadBaseUrl'] ?: 'https://build-inera.nordicmedtest.se' // För att komma runt att Ntm's proxy har max 100 mb i post body 
 
     commonsIoVersion = "2.4"
 
@@ -98,7 +97,7 @@ allprojects {
     task createVersionPropertyFile(type: VersionPropertyFileTask)
 
     uploadArchives.repositories.mavenDeployer {
-        repository(url: "${nexusUploadBaseUrl}/nexus/repository/releases/") {
+        repository(url: "https://build-inera.nordicmedtest.se/nexus/repository/releases/") {
             authentication(userName: System.properties['nexusUsername'], password: System.properties['nexusPassword'])
         }
     }

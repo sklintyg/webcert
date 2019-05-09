@@ -5,8 +5,7 @@ def buildVersion = "6.4.0.${BUILD_NUMBER}"
 def commonVersion = "3.10.0.+"
 def infraVersion = "3.10.0.+"
 def refDataVersion = "1.0-SNAPSHOT"
-def nexusUploadBaseUrl = "http://localhost"
-def versionFlags = "-DbuildVersion=${buildVersion} -DcommonVersion=${commonVersion} -DinfraVersion=${infraVersion} -DrefDataVersion=${refDataVersion} -DnexusUploadBaseUrl=${nexusUploadBaseUrl}"
+def versionFlags = "-DbuildVersion=${buildVersion} -DcommonVersion=${commonVersion} -DinfraVersion=${infraVersion} -DrefDataVersion=${refDataVersion}"
 
 stage('checkout') {
     node {
