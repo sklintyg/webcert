@@ -202,6 +202,7 @@ Cypress.Commands.add("verifieraPdlLoggar", pdlLogArray => {
     for (var i = 0; i < idSplitArray.length; i++) {
         // Hämta alla loggar från mocken
         cy.log("Hämtar loggar för intygsid " + idSplitArray[i][0])
+        cy.log("Adressen där loggarna hämtas med get-request är " + mockBaseUrl + idSplitArray[i][0]);
 
         cy.request({
             method: 'GET',
