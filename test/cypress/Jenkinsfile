@@ -35,6 +35,15 @@ pipeline {
 
     // Nycklarna till dashboard hanteras här: https://dashboard.cypress.io/#/projects/1diiry/settings
     CYPRESS_RECORD_KEY=credentials('CYPRESS_DASHBOARD_NMT_WEBCERT_KEY_1')
+
+    // Användarnamn och lösenord till mocken som hanterar e.g. PDL-loggar. Tre miljövariabler sätts
+    // här, CYPRESS_MOCK_USERNAME_PASSWORD, CYPRESS_MOCK_USERNAME_PASSWORD_USR och
+    // CYPRESS_MOCK_USERNAME_PASSWORD_PSW
+    CYPRESS_MOCK_USERNAME_PASSWORD=credentials('VALIDATION_MOCK_USERNAME_PASSWORD')
+
+    // Denna variabel måste börja på "CYPRESS" och därefter heta exakt samma som parametern i
+    // cypress.json eftersom den då skrivs över
+    CYPRESS_intygMockBaseUrl="https://intyg-validatemock.nordicmedtest.se"
   }
 
   agent {
@@ -98,7 +107,7 @@ pipeline {
     stage('Exekvera Cypresstester') {
       steps {
         dir("${CYPRESS_DIR_REL}") {
-          sh "npm run test:e2e:electron"
+          sh "npm run test:e2e:electron --env intygMockBaseUrl=${EXTERNAL_URL_MOCK}"
         }
       }
     }

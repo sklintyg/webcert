@@ -151,7 +151,7 @@ describe('LISJP-intyg', function () {
         cy.contains("Smittbärarpenning"); // Vänta på att intyget ska laddas färdigt
         pdlEventArray.push(pdlEvent(this, "Läsa", undefined, this.utkastId, this.vårdenhet.uppdragsnamn, this.vårdenhet.vårdgivareId, this.vårdenhet.vårdgivareNamn, this.vårdenhet.id, this.vårdenhet.namn));
 
-        // Bug?! Varför blir det 2 "Läsa" på rad?
+        // ToDo: Bug?! Varför blir det 2 "Läsa" på rad?
         pdlEventArray.push(pdlEvent(this, "Läsa", undefined, this.utkastId, this.vårdenhet.uppdragsnamn, this.vårdenhet.vårdgivareId, this.vårdenhet.vårdgivareNamn, this.vårdenhet.id, this.vårdenhet.namn));
 
         /*

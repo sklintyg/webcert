@@ -159,6 +159,12 @@ Cypress.Commands.add("verifieraPdlLoggar", pdlLogArray => {
     // Konstanterna ska brytas ut till ex.vis cypress.json
     const logSenderTimeout = 15000;
     const mockBaseUrl = Cypress.env('intygMockBaseUrl') + "/validate/cypressAssertPayload/Webcert-pdl-"
+    const användarnamn = Cypress.env('MOCK_USERNAME_PASSWORD_USR')
+    const lösenord = Cypress.env('MOCK_USERNAME_PASSWORD_PSW')
+    //cy.log("Mockens URL: " + mockBaseUrl);
+    //cy.log("mockens användarnamn och lösenord:");
+    //cy.log(användarnamn);
+    //cy.log(lösenord);
     // const mockBaseUrl = "http://mocks.sm.nordicmedtest.se:43000/validate/cypressAssertPayload/Webcert-pdl-" // ToDo: Ta bort!
 
     // Säkerställ att LogSender har skickat alla loggar
@@ -206,7 +212,11 @@ Cypress.Commands.add("verifieraPdlLoggar", pdlLogArray => {
 
         cy.request({
             method: 'GET',
-            url: mockBaseUrl + idSplitArray[i][0]
+            url: mockBaseUrl + idSplitArray[i][0],
+            auth: {
+                username: 'validate',
+                password: 'wsy4sL7yfLanBXbj2y9syMDVnGwgfHJL'
+            }
         }).then((resp) => {
             expect(resp.status).to.equal(200);
             cy.wrap(resp).its('body').then((body) => {
@@ -238,7 +248,7 @@ Cypress.Commands.add("verifieraPdlLoggar", pdlLogArray => {
                     }
                     // Två PDL-event kan få samma tidstämpel. För att skilja dessa åt måste en cy.wait() eller motsvarande
                     // läggas in i testfallet mellan händelserna som generera dessa event.
-                    assert.equal(true, false, "Två tidstämplar är lika: " + a + " och " + b);
+                    assert.equal(true, false, "Två event har samma tidstämpel: " + datumA);
                     return 0
                 });
 
