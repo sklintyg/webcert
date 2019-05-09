@@ -218,7 +218,7 @@ var LisjpUtkast = BaseSmiUtkast._extend({
     },
     angeArbetstidsforlaggning: function(arbetstidsforlaggning) {
         var el = this.sjukskrivning.arbetstidsforlaggning;
-        if (!arbetstidsforlaggning) {
+        if (!arbetstidsforlaggning || !(el.ja.isPresent())) {
             return Promise.resolve();
         } else {
             if (arbetstidsforlaggning.val === 'Ja') {
