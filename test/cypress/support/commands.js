@@ -206,8 +206,12 @@ Cypress.Commands.add("verifieraPdlLoggar", pdlLogArray => {
 
         cy.request({
             method: 'GET',
-            url: mockBaseUrl + idSplitArray[i][0]
+            url: mockBaseUrl + idSplitArray[i][0],
+            failOnStatusCode: false // ToDo: REMOVE!!! Detta är enbart för Jenkins troubleshooting!
         }).then((resp) => {
+            cy.log("Response från mocken:"); // ToDo: REMOVE! Troubleshooting!
+            cy.log(resp); // ToDo: REMOVE! Troubleshooting!
+
             expect(resp.status).to.equal(200);
             cy.wrap(resp).its('body').then((body) => {
                 cy.log("Detta är body från response vid hämtning av loggar från mock:");
