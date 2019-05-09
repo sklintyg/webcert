@@ -28,7 +28,6 @@ Scenariomall: [REHABSTOD] - Generera intyg för <Patient> med utbDataIndex <utbD
    Och jag fyller i alla nödvändiga fält för intyget med utbdata för Bill Smith "<utbDataIndex>"
    Så är signeraknappen tillgänglig
    När jag signerar intyget
-   Så ska jag se den data jag angett för intyget
 
 Exempel:
   | Patient       | utbDataIndex |

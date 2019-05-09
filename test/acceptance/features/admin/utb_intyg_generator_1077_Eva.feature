@@ -1,11 +1,11 @@
 # language: sv
 @BACKOFFICE
-Egenskap: Generera Utb-data för Annika Larsson (TV)
+Egenskap: Generera Utb-data för Eva Olsson
 
-# Annika Larsson TSTNMT2321000156-10CD
-# Tallbackens Vårdcentral TSTNMT2321000156-1001
+# Eva Olsson TSTNMT2321000156-10CN
+# Alfaenheten TSTNMT2321000156-1077
 Bakgrund: Inloggad som läkare
-   Givet att jag är inloggad som läkare "Annika Larsson"
+   Givet att jag är inloggad som läkare "Eva Olsson"
 
 
 @UTBDATA-REHABSTOD-RADERA
@@ -40,7 +40,6 @@ Scenariomall: [REHABSTOD] - Generera intyg för <Patient> med utbDataIndex <utbD
    Och jag fyller i alla nödvändiga fält för intyget med utbdata för Annika Larsson "<utbDataIndex>"
    Så är signeraknappen tillgänglig
    När jag signerar intyget
-   Så ska jag se den data jag angett för intyget
 
 Exempel:
   | Patient       | utbDataIndex |

@@ -1,6 +1,6 @@
 # language: sv
 @BACKOFFICE
-Egenskap: Generera Utb-data för Marcus Gran (LOR)
+Egenskap: Generera Utb-data för Marcus Gran
 
 # Marcus Gran TSTNMT2321000156-2014
 # Linköpings Östra Rehabcentrum TSTNMT2321000156-2001
@@ -23,7 +23,6 @@ Exempel:
   | 19930905-2380 |
   | 19590714-2599 |
   | 19830923-9294 |
-  | 19550224-2687 |
   
 
 @UTBDATA-REHABSTOD
@@ -34,7 +33,6 @@ Scenariomall: [REHABSTOD] - Generera intyg för <Patient> med utbDataIndex <utbD
    Och jag fyller i alla nödvändiga fält för intyget med utbdata för Marcus Gran "<utbDataIndex>"
    Så är signeraknappen tillgänglig
    När jag signerar intyget
-   Så ska jag se den data jag angett för intyget
 
 Exempel:
   | Patient       | utbDataIndex |
@@ -47,4 +45,3 @@ Exempel:
   | 19590714-2599 | 6            |
   | 19620323-3066 | 7            |
   | 19830923-9294 | 8            |
-  | 19550224-2687 | 9            |

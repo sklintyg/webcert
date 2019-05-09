@@ -386,39 +386,6 @@ var utbDataLisjp = [{
     "arbetstidsforlaggning": {
         "val": "Nej"
     },
-}, {
-    // 9
-    "smittskydd": false,
-    "baseratPa": {
-       "minUndersokningAvPatienten": idag(1),
-    },
-    "sysselsattning": {
-        "typ": "ARBETSSOKANDE"
-	},
-    "diagnos": {
-        "kod": "M545"
-    },
-    "funktionsnedsattning": "Svårt att att lyfta, böja sig och vrida kroppen är begränsad, stelhet och smärta, sömnstörning med påverkad kognitiv funktion.",
-    "aktivitetsbegransning": "Enligt min undersökning och patientens utsaga: Icke ringa svårigheter att ändra och bibehålla kroppsställning, gå och röra sig normalt inomhus, statiskt belasta rygg och ben. Svårt att lyfta, stå framåtböjd, resa sig från stol / säng samt utföra manuellt rörligt arbete. Smärtpräglat rörelsemönster.",
-	"pagaendeBehandling": "Smärtlindring, vila.",
-  	"planeradBehandling": "Remiss till sjukgymnast.",
-    "arbetsformaga": {
-        "nedsattMed100": {
-            "from": idag(1),
-            "tom": idag(30)
-      }
-	},
-    "atgarder": [{
-        "namn": "Inte aktuellt",
-        "key": "EJ_AKTUELLT"
-	}],
-    "prognosForArbetsformaga": {
-        "name": "STOR_SANNOLIKHET"
-    },
-    "ovrigt": "Detta är ett Intyg skapat i utbildningssyfte",
-    "arbetstidsforlaggning": {
-        "val": "Nej"
-    },
 }];
 
 

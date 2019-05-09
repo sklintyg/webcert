@@ -176,8 +176,8 @@ Given(/^att jag är inloggad som läkare(?: "([^"]*)")?$/, function(lakarNamn) {
         } else if (lakarNamn && lakarNamn === 'Jane Ewery') {
             this.user.hsaId = 'TSTNMT2321000156-2011';
             this.user.enhetId = 'TSTNMT2321000156-2001';
-        } else if (lakarNamn && lakarNamn === 'Annika Larsson') {
-            this.user.hsaId = 'TSTNMT2321000156-10CD';
+        } else if (lakarNamn && lakarNamn === 'Eva Olsson') {
+            this.user.hsaId = 'TSTNMT2321000156-10CN';
             this.user.enhetId = 'TSTNMT2321000156-1077';
         } else if (lakarNamn && lakarNamn === 'Arnold Johansson') {
             this.user.hsaId = 'TSTNMT2321000156-1079';
