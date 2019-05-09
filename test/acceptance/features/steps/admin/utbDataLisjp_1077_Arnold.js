@@ -79,7 +79,7 @@ var utbDataLisjp = [{
 	}],
     "prognosForArbetsformaga": {
         "name": "ATER_X_ANTAL_DGR",
-		"within": "3 månader" 
+		"within": "3 månad" 
     },
     "ovrigt": "Detta är ett Intyg skapat i utbildningssyfte",
     "arbetstidsforlaggning": {
@@ -220,7 +220,7 @@ var utbDataLisjp = [{
 	}],
     "prognosForArbetsformaga": {
         "name": "ATER_X_ANTAL_DGR",
-		"within": "1 månader" 
+		"within": "1 månad" 
     },
     "ovrigt": "Detta är ett Intyg skapat i utbildningssyfte",
     "arbetstidsforlaggning": {
@@ -261,7 +261,7 @@ var utbDataLisjp = [{
 	}],
     "prognosForArbetsformaga": {
         "name": "ATER_X_ANTAL_DGR",
-		"within": "1 månader" 
+		"within": "1 månad" 
     },
     "ovrigt": "Detta är ett Intyg skapat i utbildningssyfte",
     "arbetstidsforlaggning": {
@@ -369,7 +369,7 @@ var utbDataLisjp = [{
 	}],
     "prognosForArbetsformaga": {
         "name": "ATER_X_ANTAL_DGR",
-		"within": "3 månader" 
+		"within": "3 månad" 
     },
     "ovrigt": "Detta är ett Intyg skapat i utbildningssyfte",
     "arbetstidsforlaggning": {

@@ -42,7 +42,7 @@ var demoDataLisjp = require('./demoDataLisjp.js');
 var statistikData = require('./statistikData.js');
 var utbData1039Bill = require('./utbDataLisjp_1039_Bill.js');
 var utbData1039Leonie = require('./utbDataLisjp_1039_Leonie.js');
-var utbData1077Annika = require('./utbDataLisjp_1077_Annika.js');
+var utbData1077Eva = require('./utbDataLisjp_1077_Eva.js');
 var utbData1077Arnold = require('./utbDataLisjp_1077_Arnold.js');
 var utbData2001Jane = require('./utbDataLisjp_2001_Jane.js');
 var utbData2001Marcus = require('./utbDataLisjp_2001_Marcus.js');
@@ -143,11 +143,11 @@ When(/^jag fyller i alla nödvändiga fält för intyget med utbdata för Bill S
     }
 });
 
-When(/^jag fyller i alla nödvändiga fält för intyget med utbdata för Annika Larsson "([^"]*)"$/, function(index) {
+When(/^jag fyller i alla nödvändiga fält för intyget med utbdata för Eva Olsson "([^"]*)"$/, function(index) {
     if (!this.intyg.typ) {
         throw 'intyg.typ odefinierad.';
     } else {
-        this.intyg = utbData1077Annika.get(index, this.intyg.id);
+        this.intyg = utbData1077Eva.get(index, this.intyg.id);
         logger.silly(this.intyg);
         return fillIn(this);
     }
