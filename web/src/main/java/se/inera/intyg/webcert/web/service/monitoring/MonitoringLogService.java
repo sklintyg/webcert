@@ -109,6 +109,8 @@ public interface MonitoringLogService extends AuthenticationLogger {
 
     void logSetSrsConsent(Personnummer personnummer, boolean consent);
 
+    void logSetSrsRiskOpinion(String intygsId, String vardgivareHsaId, String vardenhetHsaId, String opinion);
+
     void logListSrsQuestions(String diagnosisCode);
 
     void logSrsInformationRetreived(String diagnosisCode, String intygId);

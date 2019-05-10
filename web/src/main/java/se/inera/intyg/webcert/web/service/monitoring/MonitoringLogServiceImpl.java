@@ -271,6 +271,11 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
     }
 
     @Override
+    public void logSetSrsRiskOpinion(String intygsId, String vardgivareHsaId, String vardenhetHsaId, String opinion) {
+        logEvent(MonitoringEvent.SRS_OPINION_SET, opinion, intygsId, vardenhetHsaId, vardgivareHsaId);
+    }
+
+    @Override
     public void logListSrsQuestions(String diagnosisCode) {
         logEvent(MonitoringEvent.SRS_QUESTIONS_LISTED, diagnosisCode);
     }
@@ -365,6 +370,7 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
         DIAGNOSKODVERK_CHANGED("Diagnoskodverk changed for utkast '{}' of type '{}'"),
         SCREEN_RESOLUTION("Width '{}', height '{}'"),
         SRS_CONSENT_SET("Consent set for '{}' to '{}'"),
+        SRS_OPINION_SET("Own risk opinion set to '{}' for certificate '{}' on care unit '{}' and care giver '{}'"),
         SRS_QUESTIONS_LISTED("Questions listed for diagnosis code '{}'"),
         SRS_INFORMATION_RETREIVED("SRS information retreived for certifiacte '{}' for diagnosis code '{}'"),
         SRS_SHOWN("SRS shown"),

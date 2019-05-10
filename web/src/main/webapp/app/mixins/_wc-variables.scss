@@ -1,3 +1,6 @@
+//how wide should effective content on page grow to before add spacing to sides
+$wc-max-content-width: 1440px;
+
 // Bootstrap variables (Here we override bootstraps default values with WC custom variables defined above)
 $icon-font-path: '../bower_components/bootstrap-sass/assets/fonts/bootstrap/';
 

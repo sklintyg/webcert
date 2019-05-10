@@ -12,7 +12,8 @@
     "angular-ui-router": "1.0.20",
     "bootstrap-sass": "^3.3.7",
     "momentjs": "2.21.0",
-    "oclazyload": "1.1.0"
+    "oclazyload": "1.1.0",
+    "highcharts": "6.0.7"
   },
   "devDependencies": {
     "angular-mocks": "1.6.9"
@@ -20,6 +21,11 @@
   "overrides": {
     "angular-i18n": {
       "main": "angular-locale_sv-se.js"
+    },
+    "highcharts": {
+      "main": [
+        "highcharts.js"
+      ]
     }
   },
   "resolutions": {
