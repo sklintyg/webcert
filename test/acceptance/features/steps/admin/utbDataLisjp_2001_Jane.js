@@ -72,9 +72,6 @@ var utbDataLisjp = [{
             "tom": idag(8)
         }
     },
-    "arbetstidsforlaggning": {
-        "val": "Nej"
-    },
     "atgarder": [{
         "namn": "Inte aktuellt",
         "key": "EJ_AKTUELLT"

@@ -82,7 +82,7 @@ var utbDataLisjp = [{
 	{
         "namn": "Hjälpmedel",
         "beskrivning": "Hjälpmedel-beskrivning",
-        "key": "HJÄLPMEDEL"
+        "key": "HJALPMEDEL"
 	}],
     "prognosForArbetsformaga": {
         "name": "ATER_X_ANTAL_DGR",
