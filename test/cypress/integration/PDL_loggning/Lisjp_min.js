@@ -110,11 +110,14 @@ describe('LISJP-intyg', function () {
 
         cy.log("Testar återigen utan SJF");
 
+        cy.wait(2000); // Debug - FÖr att slippa "Välkommen till Webcert"-sidan
+
         // Lite special logga ut/logga in -variant för att sedan öppna intyget på nytt med en ny session
-        cy.visit('/error.jsp?reason=logout');
+        cy.visit('/error.jsp?reason=logout').contains("Du är nu utloggad");
         cy.clearCookies();
+        cy.wait(1500); // debug - hjälper detta? Vi kommer ofta till "Välkommen till Webcert" istället för intyget nedan
         cy.loggaInVårdpersonalIntegrerat(this.vårdpersonal, this.vårdenhet);
-        cy.wait(1500);
+        cy.wait(1500); // debug - hjälper detta? Vi kommer ofta till "Välkommen till Webcert" istället för intyget nedan
         cy.visit(önskadUrl);
         cy.contains("Smittbärarpenning"); // Vänta på att intyget ska laddas färdigt
         pdlEventArray.push(lisjPdlEvent(this, "Läsa", undefined, this.utkastId, this.vårdenhet.uppdragsnamn, this.vårdenhet.vårdgivareId, this.vårdenhet.vårdgivareNamn, this.vårdenhet.id, this.vårdenhet.namn));

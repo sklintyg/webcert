@@ -145,7 +145,6 @@ Cypress.Commands.add("skapaLuaeFsUtkast", fx => {
     return skapaUtkast(fx, implementeradeIntyg.LUAE_FS);
 });
 
-
 Cypress.Commands.add("verifieraPdlLoggar", pdlLogArray => {
 
     cy.log("cy.verifieraPdlLoggar - enter. Antal loggar: " + pdlLogArray.length)
@@ -236,6 +235,7 @@ Cypress.Commands.add("verifieraPdlLoggar", pdlLogArray => {
                 // getElementsByTagName returnerar en HTMLCollection som behöver sorteras. Inspirerat av
                 // https://stackoverflow.com/questions/7059090/using-array-prototype-sort-call-to-sort-a-htmlcollection
                 var arr = [].slice.call(bodyDoc.getElementsByTagName("ns2:Log"));
+                cy.log("Sorterar arrayen från mocken"); // ToDo: Ta bort!!!!
                 arr.sort(function(a,b) {
                     var datumA = a.getElementsByTagName("startdate")[0].innerText
                     var datumB = b.getElementsByTagName("startdate")[0].innerText
@@ -246,10 +246,29 @@ Cypress.Commands.add("verifieraPdlLoggar", pdlLogArray => {
                     if (datumA > datumB) {
                         return 1
                     }
-                    // Två PDL-event kan få samma tidstämpel. För att skilja dessa åt måste en cy.wait() eller motsvarande
-                    // läggas in i testfallet mellan händelserna som generera dessa event.
-                    assert.equal(true, false, "Två event har samma tidstämpel: " + datumA);
-                    return 0
+
+                    // De båda eventen har samma tidstämpel. Kolla om det gäller samma activity, i så fall kvittar det i vilken ordning
+                    // de kommer. Om de inte är lika "på djupet" så kommer testfallet ändå att faila längre ner när vi jämför alla fält.
+                    var ärActTypeLika = a.getElementsByTagName("activitytype")[0].innerText === b.getElementsByTagName("activitytype")[0].innerText;
+
+                    var aActivityArgs = "undefined";
+                    var bActivityArgs = "undefined";
+                    if (a.getElementsByTagName("activityargs")[0]) {
+                        aActivityArgs = a.getElementsByTagName("activityargs")[0].innerText;
+                    }
+                    if (b.getElementsByTagName("activityargs")[0]) {
+                        bActivityArgs = b.getElementsByTagName("activityargs")[0].innerText;
+                    }
+
+                    var ärEventLika = false;
+                    if (ärActTypeLika && (aActivityArgs === bActivityArgs)) {
+                        cy.log("a och b var lika!"); // DEBUG! Ta bort!
+                        ärEventLika = true;
+                    }
+
+                    assert.isTrue(ärEventLika,
+                        "Sorterar event på mocken. Två event har samma tidstämpel (om de är lika så är det ok)");
+                    return 0;
                 });
 
                 // debug - ta bort när det funkar
