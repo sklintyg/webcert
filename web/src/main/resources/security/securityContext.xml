@@ -538,7 +538,7 @@
             <constructor-arg>
               <bean class="org.opensaml.saml2.metadata.provider.FilesystemMetadataProvider">
                 <constructor-arg>
-                  <value type="java.io.File">${config.dir}/sp-sakerhetstjanst.xml</value>
+                  <value type="java.io.File">${config.dir}/sp-inera.xml</value>
                 </constructor-arg>
                 <property name="parserPool" ref="parserPool"/>
               </bean>
@@ -568,7 +568,7 @@
             <constructor-arg>
               <bean class="org.opensaml.saml2.metadata.provider.FilesystemMetadataProvider">
                 <constructor-arg>
-                  <value type="java.io.File">${config.dir}/idp-sakerhetstjanst.xml</value>
+                  <value type="java.io.File">${config.dir}/idp-inera.xml</value>
                 </constructor-arg>
                 <property name="parserPool" ref="parserPool"/>
               </bean>
@@ -587,11 +587,11 @@
       <property name="refreshCheckInterval" value="86400000"/>
 
       <!-- Setting SITHS as default login method to be redirected to when requesting protected resource. -->
-      <!-- This value _must_ match the entityID specified in idp-sakerhetstjanst.xml.  -->
+      <!-- This value _must_ match the entityID specified in idp-inera.xml.  -->
       <property name="defaultIDP" value="${sakerhetstjanst.saml.idp.metadata.url}"/>
 
       <!-- This makes sure the Sakerhetstjanst SP metadata is used by default -->
-      <!-- This value _must_ match the entityID specified in sp-sakerhetstjanst.xml  -->
+      <!-- This value _must_ match the entityID specified in sp-inera.xml  -->
       <property name="hostedSPName" value="${sakerhetstjanst.saml.entityId}"/>
 
     </bean>

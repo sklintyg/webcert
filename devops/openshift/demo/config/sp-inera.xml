@@ -1,4 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (C) 2019 Inera AB (http://www.inera.se)
+  ~
+  ~ This file is part of sklintyg (https://github.com/sklintyg).
+  ~
+  ~ sklintyg is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ sklintyg is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
 <md:EntityDescriptor xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata" xmlns:dsig="http://www.w3.org/2000/09/xmldsig#" ID="https___webcert-demo-demointyg_app-test1_ind-ocp_sth_basefarm_net" entityID="https://webcert-demo-demointyg.app-test1.ind-ocp.sth.basefarm.net">
   <md:SPSSODescriptor AuthnRequestsSigned="false" WantAssertionsSigned="true" protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">
     <md:KeyDescriptor>
@@ -62,7 +81,7 @@
   </md:SPSSODescriptor>
   <md:Organization>
     <md:OrganizationName xml:lang="sv">Inera AB</md:OrganizationName>
-    <md:OrganizationDisplayName xml:lang="sv">Intygstjänster Webcert Demo</md:OrganizationDisplayName>
+    <md:OrganizationDisplayName xml:lang="sv">Webcert DEMO</md:OrganizationDisplayName>
     <md:OrganizationURL xml:lang="sv">https://inera.se</md:OrganizationURL>
   </md:Organization>
   <md:ContactPerson xml:lang="sv" contactType="technical">
