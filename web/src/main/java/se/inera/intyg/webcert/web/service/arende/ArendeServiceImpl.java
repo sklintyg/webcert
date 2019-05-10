@@ -343,10 +343,7 @@ public class ArendeServiceImpl implements ArendeService {
     }
 
     private List<Arende> getArendeForIntygId(String intygsId, WebCertUser user) {
-        return arendeRepository.findByIntygsId(intygsId)
-                .stream()
-                .filter(isCorrectEnhet(user))
-                .collect(Collectors.toList());
+        return arendeRepository.findByIntygsId(intygsId);
     }
 
     @Override

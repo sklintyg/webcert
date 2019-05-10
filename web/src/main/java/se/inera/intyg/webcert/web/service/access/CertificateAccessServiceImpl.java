@@ -53,8 +53,7 @@ public class CertificateAccessServiceImpl extends AccessServiceImpl implements C
     public AccessResult allowToRead(String intygsTyp, Vardenhet vardenhet, Personnummer personnummer) {
         final WebCertUser user = getUser();
 
-        Optional<AccessResult> accessResult = isAuthorized(intygsTyp, user, AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST,
-                AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG);
+        Optional<AccessResult> accessResult = isAuthorized(intygsTyp, user, AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST, null);
 
         if (!accessResult.isPresent()) {
             accessResult = isSekretessRuleValid(intygsTyp, vardenhet.getEnhetsid(), user, personnummer);
@@ -267,8 +266,10 @@ public class CertificateAccessServiceImpl extends AccessServiceImpl implements C
             accessResult = isSekretessRuleValid(intygsTyp, vardenhet.getEnhetsid(), user, personnummer);
         }
 
-        if (!accessResult.isPresent()) {
-            accessResult = isSJFRuleValid(intygsTyp, vardenhet, user, false);
+        if (!accessResult.isPresent() && isUserLoggedInOnDifferentUnit(vardenhet.getEnhetsid())) {
+            accessResult = Optional
+                    .of(AccessResult.create(AccessResultCode.AUTHORIZATION_DIFFERENT_UNIT,
+                            "User is logged in on a different unit than the draft/certificate"));
         }
 
         return accessResult.isPresent() ? accessResult.get() : AccessResult.noProblem();
@@ -304,8 +305,10 @@ public class CertificateAccessServiceImpl extends AccessServiceImpl implements C
             accessResult = isSekretessRuleValid(intygsTyp, vardenhet.getEnhetsid(), user, personnummer);
         }
 
-        if (!accessResult.isPresent()) {
-            accessResult = isSJFRuleValid(intygsTyp, vardenhet, user, false);
+        if (!accessResult.isPresent() && isUserLoggedInOnDifferentUnit(vardenhet.getEnhetsid())) {
+            accessResult = Optional
+                    .of(AccessResult.create(AccessResultCode.AUTHORIZATION_DIFFERENT_UNIT,
+                            "User is logged in on a different unit than the draft/certificate"));
         }
 
         return accessResult.isPresent() ? accessResult.get() : AccessResult.noProblem();
