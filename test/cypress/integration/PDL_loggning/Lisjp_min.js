@@ -1,48 +1,16 @@
 /* globals context cy */
 /// <reference types="Cypress" />
 import * as intyg from '../../support/FK_intyg/lisjpIntyg'
+import * as pdl from '../../support/pdl_helpers'
 
 // LISJP = Läkarintyg för sjukpenning, FK 7804
 
 var pdlEventArray = [];
-function pdlEvent(env, actType, actArgs, actLevel, assignment, vgId_mod, vgNamn_mod, veId_mod, veNamn_mod) {
-    var loggHandelse = {
-        activity: {
-            activityType: actType,
-            activityLevel: actLevel,
-            activityArgs: actArgs,
-        },
-        user: {
-            userId: env.vårdpersonal.hsaId,
-            assignment: assignment,
-            title: env.vårdpersonal.titel,
-            careProvider: {
-                careProviderId: vgId_mod,
-                careProviderName: vgNamn_mod
-            },
-            careUnit: {
-                careUnitId: veId_mod,
-                careUnitName: veNamn_mod
-            }
-        },
-        resources: {
-            resource: {
-                patient: {
-                    patientId: env.vårdtagare.personnummerKompakt
-                },
-                careProvider: {
-                    careProviderId: env.vårdenhet.vårdgivareId,
-                    careProviderName: env.vårdenhet.vårdgivareNamn
-                },
-                careUnit: {
-                    careUnitId: env.vårdenhet.id,
-                    careUnitName: env.vårdenhet.namn
-                }
-            }
-        }
-    }
-    return loggHandelse;
-}
+
+function lisjPdlEvent(env, actType, actArgs, actLevel, assignment, vgId_mod, vgNamn_mod, veId_mod, veNamn_mod) {
+    return pdl.pdlEvent(env, actType, actArgs, actLevel, env.vårdpersonal.hsaId, assignment, env.vårdpersonal.titel, vgId_mod, vgNamn_mod, veId_mod, 
+        veNamn_mod, env.vårdtagare.personnummerKompakt, env.vårdenhet.vårdgivareId, env.vårdenhet.vårdgivareNamn, env.vårdenhet.id, env.vårdenhet.namn)   
+};
 
 describe('LISJP-intyg', function () {
     
@@ -59,7 +27,7 @@ describe('LISJP-intyg', function () {
         cy.skapaLisjpUtkast(this).then((utkastId) => {
             cy.wrap(utkastId).as('utkastId');
             cy.log("LISJP-utkast med id " + utkastId + " skapat och används i testfallet");
-            pdlEventArray.push(pdlEvent(this, "Skriva", undefined, utkastId, this.vårdenhet.uppdragsnamn, this.vårdenhet.vårdgivareId, this.vårdenhet.vårdgivareNamn, this.vårdenhet.id, this.vårdenhet.namn));    
+            pdlEventArray.push(lisjPdlEvent(this, pdl.enumHandelse.SKRIVA, undefined, utkastId, this.vårdenhet.uppdragsnamn, this.vårdenhet.vårdgivareId, this.vårdenhet.vårdgivareNamn, this.vårdenhet.id, this.vårdenhet.namn)); 
         });
     });
 
@@ -80,12 +48,12 @@ describe('LISJP-intyg', function () {
         });
         cy.url().should('include', this.utkastId);
         // Populerar pdl-array med förväntade logposter "Läsa" och "Skriva" samt fyller i halva intyget
-        pdlEventArray.push(pdlEvent(this, "Läsa", undefined, this.utkastId, this.vårdenhet.uppdragsnamn, this.vårdenhet.vårdgivareId, this.vårdenhet.vårdgivareNamn, this.vårdenhet.id, this.vårdenhet.namn));
+        pdlEventArray.push(lisjPdlEvent(this, pdl.enumHandelse.LÄSA, undefined, this.utkastId, this.vårdenhet.uppdragsnamn, this.vårdenhet.vårdgivareId, this.vårdenhet.vårdgivareNamn, this.vårdenhet.id, this.vårdenhet.namn));
         intyg.sektionGrundFörMedicinsktUnderlag(this.intygsdata.grundFörMedicinsktUnderlag);
         intyg.sektionSysselsättning(this.intygsdata.sysselsättning);
         intyg.sektionDiagnos(this.intygsdata.diagnos);
         cy.contains("Utkastet är sparat").should('exist');
-        pdlEventArray.push(pdlEvent(this, "Skriva", undefined, this.utkastId, this.vårdenhet.uppdragsnamn, this.vårdenhet.vårdgivareId, this.vårdenhet.vårdgivareNamn, this.vårdenhet.id, this.vårdenhet.namn));
+        pdlEventArray.push(lisjPdlEvent(this, pdl.enumHandelse.SKRIVA, undefined, this.utkastId, this.vårdenhet.uppdragsnamn, this.vårdenhet.vårdgivareId, this.vårdenhet.vårdgivareNamn, this.vårdenhet.id, this.vårdenhet.namn));
         
         // Lite special logga ut/logga in -variant för att sedan öppna intyget på nytt med en ny session
         cy.visit('/error.jsp?reason=logout');
@@ -95,27 +63,27 @@ describe('LISJP-intyg', function () {
         cy.url().should('include', this.utkastId);
 
         // Populerar pdl-array med förväntade logposter "Läsa" och "Skriva" samt fyller i resten av intyget
-        pdlEventArray.push(pdlEvent(this, "Läsa", undefined, this.utkastId, this.vårdenhet.uppdragsnamn, this.vårdenhet.vårdgivareId, this.vårdenhet.vårdgivareNamn, this.vårdenhet.id, this.vårdenhet.namn));
+        pdlEventArray.push(lisjPdlEvent(this, pdl.enumHandelse.LÄSA, undefined, this.utkastId, this.vårdenhet.uppdragsnamn, this.vårdenhet.vårdgivareId, this.vårdenhet.vårdgivareNamn, this.vårdenhet.id, this.vårdenhet.namn));
         intyg.sektionSjukdomensKonsekvenserFörPatienten(this.intygsdata.sjukdomensKonsekvenserFörPatienten);
         intyg.sektionBedömning(this.intygsdata.bedömning);
         intyg.sektionÅtgärder(this.intygsdata.åtgärder);
-        pdlEventArray.push(pdlEvent(this, "Skriva", undefined, this.utkastId, this.vårdenhet.uppdragsnamn, this.vårdenhet.vårdgivareId, this.vårdenhet.vårdgivareNamn, this.vårdenhet.id, this.vårdenhet.namn));
+        pdlEventArray.push(lisjPdlEvent(this, pdl.enumHandelse.SKRIVA, undefined, this.utkastId, this.vårdenhet.uppdragsnamn, this.vårdenhet.vårdgivareId, this.vårdenhet.vårdgivareNamn, this.vårdenhet.id, this.vårdenhet.namn));
 
         // Signerar intyget och populerar pdl-arrayen med förväntade logposter "Signera" och "Läsa"
         intyg.signera();
-        pdlEventArray.push(pdlEvent(this, "Signera", undefined, this.utkastId, this.vårdenhet.uppdragsnamn, this.vårdenhet.vårdgivareId, this.vårdenhet.vårdgivareNamn, this.vårdenhet.id, this.vårdenhet.namn));
-        pdlEventArray.push(pdlEvent(this, "Läsa", undefined, this.utkastId, this.vårdenhet.uppdragsnamn, this.vårdenhet.vårdgivareId, this.vårdenhet.vårdgivareNamn, this.vårdenhet.id, this.vårdenhet.namn));
+        pdlEventArray.push(lisjPdlEvent(this, pdl.enumHandelse.SIGNERA, undefined, this.utkastId, this.vårdenhet.uppdragsnamn, this.vårdenhet.vårdgivareId, this.vårdenhet.vårdgivareNamn, this.vårdenhet.id, this.vårdenhet.namn));
+        pdlEventArray.push(lisjPdlEvent(this, pdl.enumHandelse.LÄSA, undefined, this.utkastId, this.vårdenhet.uppdragsnamn, this.vårdenhet.vårdgivareId, this.vårdenhet.vårdgivareNamn, this.vårdenhet.id, this.vårdenhet.namn));
 
         // Skickar intyget till FK samt populerar pdl-arrayen med förväntad logpost "Utskrift" med argument att det är skickat till FK
         intyg.skickaTillFk();
-        pdlEventArray.push(pdlEvent(this, "Utskrift", "Intyg skickat till mottagare FKASSA", this.utkastId, this.vårdenhet.uppdragsnamn, this.vårdenhet.vårdgivareId, this.vårdenhet.vårdgivareNamn, this.vårdenhet.id, this.vårdenhet.namn));
+        pdlEventArray.push(lisjPdlEvent(this, pdl.enumHandelse.UTSKRIFT, pdl.enumHandelseArgument.FKASSA, this.utkastId, this.vårdenhet.uppdragsnamn, this.vårdenhet.vårdgivareId, this.vårdenhet.vårdgivareNamn, this.vårdenhet.id, this.vårdenhet.namn));
 
         // Introducerar en wait då skrivUt går så fort att man riskerar att få samma timestamp som för "skicka"
         cy.wait(1500);
 
         // Skriver ut intyget samt populerar pdl-arrayen med förväntad logpost "Utskrift"
         intyg.skrivUt("fullständigt", this.utkastId);
-        pdlEventArray.push(pdlEvent(this, "Utskrift", "Intyg utskrivet", this.utkastId, this.vårdenhet.uppdragsnamn, this.vårdenhet.vårdgivareId, this.vårdenhet.vårdgivareNamn, this.vårdenhet.id, this.vårdenhet.namn));
+        pdlEventArray.push(lisjPdlEvent(this, pdl.enumHandelse.UTSKRIFT, pdl.enumHandelseArgument.UTSKRIFT, this.utkastId, this.vårdenhet.uppdragsnamn, this.vårdenhet.vårdgivareId, this.vårdenhet.vårdgivareNamn, this.vårdenhet.id, this.vårdenhet.namn));
 
         cy.log("Testar SJF");
 
@@ -132,12 +100,12 @@ describe('LISJP-intyg', function () {
         cy.contains("Smittbärarpenning");
 
         cy.url().should('include', this.utkastId);
-        pdlEventArray.push(pdlEvent(this, "Läsa", "Läsning i enlighet med sammanhållen journalföring", this.utkastId, this.vårdenhet_2.uppdragsnamn, this.vårdenhet_2.vårdgivareId, this.vårdenhet_2.vårdgivareNamn, this.vårdenhet_2.id, this.vårdenhet_2.namn));
+        pdlEventArray.push(lisjPdlEvent(this, pdl.enumHandelse.LÄSA, pdl.enumHandelseArgument.LÄSASJF, this.utkastId, this.vårdenhet_2.uppdragsnamn, this.vårdenhet_2.vårdgivareId, this.vårdenhet_2.vårdgivareNamn, this.vårdenhet_2.id, this.vårdenhet_2.namn));
         cy.log(this.utkastId + this.vårdenhet_2.vårdgivareId + this.vårdenhet_2.vårdgivareNamn + this.vårdenhet_2.id + this.vårdenhet_2.namn);
 
         // Skriver ut intyget samt populerar pdl-arrayen med förväntad logpost "Utskrift"
         intyg.skrivUt("minimalt", this.utkastId);
-        pdlEventArray.push(pdlEvent(this, "Utskrift", "Intyg utskrivet. Läsning i enlighet med sammanhållen journalföring", 
+        pdlEventArray.push(lisjPdlEvent(this, pdl.enumHandelse.UTSKRIFT, pdl.enumHandelseArgument.UTSKRIFTSJF, 
             this.utkastId, this.vårdenhet_2.uppdragsnamn, this.vårdenhet_2.vårdgivareId, this.vårdenhet_2.vårdgivareNamn, this.vårdenhet_2.id, this.vårdenhet_2.namn));
 
         cy.log("Testar återigen utan SJF");
@@ -146,13 +114,13 @@ describe('LISJP-intyg', function () {
         cy.visit('/error.jsp?reason=logout');
         cy.clearCookies();
         cy.loggaInVårdpersonalIntegrerat(this.vårdpersonal, this.vårdenhet);
-
+        cy.wait(1500);
         cy.visit(önskadUrl);
         cy.contains("Smittbärarpenning"); // Vänta på att intyget ska laddas färdigt
-        pdlEventArray.push(pdlEvent(this, "Läsa", undefined, this.utkastId, this.vårdenhet.uppdragsnamn, this.vårdenhet.vårdgivareId, this.vårdenhet.vårdgivareNamn, this.vårdenhet.id, this.vårdenhet.namn));
+        pdlEventArray.push(lisjPdlEvent(this, "Läsa", undefined, this.utkastId, this.vårdenhet.uppdragsnamn, this.vårdenhet.vårdgivareId, this.vårdenhet.vårdgivareNamn, this.vårdenhet.id, this.vårdenhet.namn));
 
         // ToDo: Bug?! Varför blir det 2 "Läsa" på rad?
-        pdlEventArray.push(pdlEvent(this, "Läsa", undefined, this.utkastId, this.vårdenhet.uppdragsnamn, this.vårdenhet.vårdgivareId, this.vårdenhet.vårdgivareNamn, this.vårdenhet.id, this.vårdenhet.namn));
+        pdlEventArray.push(lisjPdlEvent(this, "Läsa", undefined, this.utkastId, this.vårdenhet.uppdragsnamn, this.vårdenhet.vårdgivareId, this.vårdenhet.vårdgivareNamn, this.vårdenhet.id, this.vårdenhet.namn));
 
         /*
         // Förnya intyget -> utkast skapas. Populerar pdl-arrayen med förväntade logposter "Skriva" och "Läsa"
