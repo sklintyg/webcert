@@ -646,6 +646,16 @@ public class ArendeServiceImpl implements ArendeService {
         return getLatestKomplArende(intygsId, arendeList).getMeddelandeId();
     }
 
+    @Override
+    public List<Arende> getKompletteringar(List<String> intygsIds) {
+        WebCertUser user = webcertUserService.getUser();
+        List<Arende> kompletteringar = arendeRepository.findByIntygsIdAndType(intygsIds, ArendeAmne.KOMPLT);
+        
+        return kompletteringar.stream()
+                .filter(isCorrectEnhet(user))
+                .collect(Collectors.toList());
+    }
+
     @VisibleForTesting
     void setMockSystemClock(Clock systemClock) {
         this.systemClock = systemClock;

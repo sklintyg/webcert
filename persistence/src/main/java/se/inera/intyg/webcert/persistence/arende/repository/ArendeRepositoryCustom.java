@@ -26,6 +26,8 @@ import org.springframework.data.repository.query.Param;
 
 import se.inera.intyg.webcert.common.model.GroupableItem;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
+import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
+import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
 
 // CHECKSTYLE:OFF LineLength
 public interface ArendeRepositoryCustom extends ArendeFilteredRepositoryCustom {
@@ -68,6 +70,32 @@ public interface ArendeRepositoryCustom extends ArendeFilteredRepositoryCustom {
      *         an empty list.
      */
     List<Arende> findByIntygsId(String intygsId);
+
+    /**
+     * Should return a list of {@link Arende} entities in the repository related to the
+     * list of specified certificate identifiers and a specific type.
+     *
+     * @param intygsIds The certificate identifiers we are interested of
+     * @param amne The type of amne we are interested of
+     * @return A list of {@link Arende} matching the search criteria. If no entities are found, this method returns
+     *         an empty list.
+     */
+    @Query("SELECT ar FROM ARENDE ar WHERE ar.intygsId IN (:idList) AND ar.amne = (:amne)")
+    List<Arende> findByIntygsIdAndType(
+        @Param("idList") List<String> intygsIds, 
+        @Param("amne") ArendeAmne amne);
+
+    /**
+     * Should return a list of {@link FragaSvar} entities in the repository that has an enhetsId matching one of the
+     * supplied list of id's. Is also discards any entity with
+     * {@link se.inera.intyg.webcert.persistence.fragasvar.model.Status.CLOSED}. The result is NOT ordered.
+     *
+     * @param enhetsIds
+     * @return A list of {@link FragaSvar} matching the search criteria. If no entities are found, this method returns
+     *         an empty list.
+     */
+    @Query("SELECT fs FROM FragaSvar fs WHERE fs.vardperson.enhetsId IN (:idList) AND fs.status <> 'CLOSED'")
+    List<FragaSvar> findByEnhetsId(@Param("idList") List<String> enhetsIds);
 
     /**
      * Returns the {@link Arende} with the sought for meddelandeId.
