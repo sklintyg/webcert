@@ -94,6 +94,10 @@
       <script type="text/javascript" src="/vendor/polyfill.js"></script>
       <script type="text/javascript" src="/vendor/angular-smooth-scroll.js"></script>
       <script type="text/javascript" src="/vendor/angular-shims-placeholder/angular-shims-placeholder.js"></script>
+      <script type="text/javascript" src="/vendor/_convert.js"></script>
+      <script type="text/javascript" src="/vendor/_language.js"></script>
+      <script type="text/javascript" src="/vendor/_utility.js"></script>
+      <script type="text/javascript" src="/vendor/netid-1.1.5.js"></script>
       <script type="text/javascript" src="/app/app.js"></script>
     </c:otherwise>
   </c:choose>

@@ -18,22 +18,20 @@
  */
 package se.inera.intyg.webcert.web.auth.common;
 
+import static se.inera.intyg.webcert.web.auth.common.AuthConstants.*;
+
+import java.util.Arrays;
+
+import javax.annotation.Resource;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.security.saml.SAMLCredential;
 import org.springframework.security.saml.userdetails.SAMLUserDetailsService;
 import org.springframework.stereotype.Service;
+
 import se.inera.intyg.webcert.web.auth.WebcertUserDetailsService;
 import se.inera.intyg.webcert.web.auth.eleg.ElegWebCertUserDetailsService;
-
-import javax.annotation.Resource;
-import java.util.Arrays;
-
-import static se.inera.intyg.webcert.web.auth.common.AuthConstants.URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_MOBILE_TWO_FACTOR_CONTRACT;
-import static se.inera.intyg.webcert.web.auth.common.AuthConstants.URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_SMARTCARD_PKI;
-import static se.inera.intyg.webcert.web.auth.common.AuthConstants.URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_SOFTWARE_PKI;
-import static se.inera.intyg.webcert.web.auth.common.AuthConstants.URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_TLSCLIENT;
-import static se.inera.intyg.webcert.web.auth.common.AuthConstants.URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_UNSPECIFIED;
 
 /**
  * Created by eriklupander on 2015-08-12.
@@ -42,7 +40,7 @@ import static se.inera.intyg.webcert.web.auth.common.AuthConstants.URN_OASIS_NAM
  *
  * Checks the Authentication context class ref to determine method:
  *
- * <li>urn:oasis:names:tc:SAML:2.0:ac:classes:TLSClient - SITHS</li>
+ * <li>http://id.sambi.se/loa/loa3 - SITHS</li>
  * <li>urn:oasis:names:tc:SAML:2.0:ac:classes:SoftwarePKI - E-leg</li>
  * <li>urn:oasis:names:tc:SAML:2.0:ac:classes:SmartcardPKI - E-leg</li>
  * <li>urn:oasis:names:tc:SAML:2.0:ac:classes:MobileTwofactorContract - E-leg</li>
@@ -76,7 +74,7 @@ public class UnifiedUserDetailsService implements SAMLUserDetailsService {
         if (authnContextClassRef == null || authnContextClassRef.trim().length() == 0) {
             throw new IllegalArgumentException("Cannot determine which underlying UserDetailsService to use for SAMLCredential. "
                     + "AuthenticationContextClassRef was null or empty. Should be one of:\n"
-                    + URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_TLSCLIENT + "\n"
+                    + HTTP_ID_SAMBI_SE_LOA_LOA3 + " or "
                     + URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_SOFTWARE_PKI + " or "
                     + URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_MOBILE_TWO_FACTOR_CONTRACT + " or "
                     + URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_SMARTCARD_PKI);
@@ -87,7 +85,7 @@ public class UnifiedUserDetailsService implements SAMLUserDetailsService {
         case URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_SMARTCARD_PKI:
         case URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_SOFTWARE_PKI:
             return elegWebCertUserDetailsService.loadUserBySAML(samlCredential);
-        case URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_TLSCLIENT:
+        case HTTP_ID_SAMBI_SE_LOA_LOA3:
             return webcertUserDetailsService.loadUserBySAML(samlCredential);
         case URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_UNSPECIFIED:
             if (Arrays.stream(environment.getActiveProfiles()).anyMatch("wc-security-test"::equalsIgnoreCase)) {
@@ -97,7 +95,7 @@ public class UnifiedUserDetailsService implements SAMLUserDetailsService {
                     "AuthorizationContextClassRef " + URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_UNSPECIFIED + " is not allowed");
         default:
             throw new IllegalArgumentException("AuthorizationContextClassRef was " + authnContextClassRef + ", expected one of: "
-                    + URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_TLSCLIENT + "\n"
+                    + HTTP_ID_SAMBI_SE_LOA_LOA3 + " or "
                     + URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_SOFTWARE_PKI + " or "
                     + URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_MOBILE_TWO_FACTOR_CONTRACT + " or "
                     + URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_SMARTCARD_PKI);

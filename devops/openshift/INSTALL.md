@@ -18,16 +18,10 @@ The following configuration properties have been added:
 * `REFDATA_URL` -- Location of reference data, see below
 * `IDP_OIDC_JWKS_URL` -- URL for OpenID Connect endpoint (IODC Token exchange)
 * `IDP_OIDC_JWKS_SKEW` -- Allowed clock skew in seconds when validating age of token
-* `IDP_OIDC_INTROSPECTION_ENDPOINT_URL` -- Token validation endpoint
 
 The following configuration properties can be removed:
 
 * `CERTIFICATE_SENDER_QUEUEMAME` -- typo has been corrected (since 2019-1)
-
-The following secret properties have been added:
-
-* `IDP_OIDC_CLIENT_ID` -- Client id (OIDC/OAuth2)
-* `IDP_OIDC_CLIENT_SECRET` -- Client secret/password (OIDC/OAuth2)
 
 ### 1.3 Configuration of reference data
 
@@ -206,8 +200,6 @@ Open _&lt;env>/secret-vars.yaml_ and and assign correct values:
 	HSA_WS_CERTIFICATE_PASSWORD: "<password>"
 	HSA_WS_KEY_MANAGER_PASSWORD: "<password>"
 	HSA_WS_TRUSTSTORE_PASSWORD: "<password>"
-	IDP_OIDC_CLIENT_ID: "<id>"
-	IDP_OIDC_CLIENT_SECRET: "<password>"  
 	NTJP_WS_CERTIFICATE_PASSWORD: "<password>"
 	NTJP_WS_KEY_MANAGER_PASSWORD: "<password>"
 	NTJP_WS_TRUSTSTORE_PASSWORD: "<password>"
@@ -273,7 +265,6 @@ Open _&lt;env>/configmap-vars.yaml_ and replace example `<value>` with expected 
 	SENDMESSAGETOFK_LOGICALADDRESS: "2021005521"
 	IDP_OIDC_JWKS_URL: "https://idp.ineratest.org/oidc/jwks.json"
 	IDP_OIDC_JWKS_SKEW: 30
-	IDP_OIDC_INTROSPECTION_ENDPOINT_URL: "https://idp.ineratest.org/oidc/token/introspect"
    
 Note 1: The `DATABASE_NAME` variable is assumed to be defined within the application deployment config.
 

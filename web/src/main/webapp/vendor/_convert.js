@@ -58,7 +58,7 @@ var UTF8 = {
         var i = 0;
         if (text != null) {
             // Text is either latin-1 or utf-8 encoded, let's assume utf8 if text contain
-            // C3h followed by a character with 0x80 set. C3h is ï¿½ in latin-1, so we may
+            // C3h followed by a character with 0x80 set. C3h is Ã in latin-1, so we may
             // fail, but not likely...
             for (i = 0; i < text.length; i++) {
                 if (((i + 1) < text.length) && (text.charCodeAt(i) == 0xC3)) {
@@ -66,7 +66,7 @@ var UTF8 = {
                     encode = false;
                     i++;
                     if ((text.charCodeAt(i) & 0x80) == 0) {
-                        // Not two bytes, so text contain latin1 ï¿½
+                        // Not two bytes, so text contain latin1 Ã
                         encode = true;
                         break;
                     }
@@ -84,7 +84,7 @@ var UTF8 = {
 //-----------------------------------------------------------------------------
 // BASE64 converter
 //-----------------------------------------------------------------------------
-var B64_STR =
+var B64_STR = 
     "ABCDEFGHIJKLMNOP" +
     "QRSTUVWXYZabcdef" +
     "ghijklmnopqrstuv" +
@@ -112,10 +112,10 @@ var BASE64 = {
                     enc4 = 64;
                 }
                 output +=
-                    B64_STR.charAt(enc1) +
-                    B64_STR.charAt(enc2) +
-                    B64_STR.charAt(enc3) +
-                    B64_STR.charAt(enc4);
+              B64_STR.charAt(enc1) +
+              B64_STR.charAt(enc2) +
+              B64_STR.charAt(enc3) +
+              B64_STR.charAt(enc4);
                 chr1 = chr2 = chr3 = "";
                 enc1 = enc2 = enc3 = enc4 = "";
             }
@@ -299,7 +299,7 @@ function FormatXML(value, cls_tag, cls_data) {
     value = ReplaceAll(value, "\r", "");
     value = ReplaceAll(value, " <", "<");
     value = ReplaceAll(value, "> ", ">");
-    // All tags should get __TAG_START__/__TAG_END__, also add new line if two tags
+    // All tags should get __TAG_START__/__TAG_END__, also add new line if two tags 
     // are beside each other. All values should get __VALUE_START__/__VALUE_END__.
     while (value.length > 0) {
         if (value.charAt(0) == '<') {
@@ -462,7 +462,7 @@ function FormatHTML(input) {
                     output += "&lt;";
                 else if (c == 0x3E)
                     output += "&gt;";
-                // Accept all other as-is
+                // Accept all other as-is    
                 else
                     output += String.fromCharCode(c);
             }
