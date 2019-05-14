@@ -64,7 +64,7 @@ module.exports = function(grunt) {
         SRC_DIR + '../vendor/_convert.js',
         SRC_DIR + '../vendor/_language.js',
         SRC_DIR + '../vendor/_utility.js',
-        SRC_DIR + '../vendor/netid-1.0.5.js'];
+        SRC_DIR + '../vendor/netid-1.1.5.js'];
 
     var webcert = grunt.file.expand({cwd: SRC_DIR}, ['**/*.js', '!**/*.spec.js', '!**/*.test.js', '!**/app.js']).sort();
     grunt.file.write(DEST_DIR + 'app-deps.json', JSON.stringify(webcert.
