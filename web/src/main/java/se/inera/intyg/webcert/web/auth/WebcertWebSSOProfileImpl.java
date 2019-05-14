@@ -25,6 +25,7 @@ import org.opensaml.saml2.metadata.SingleSignOnService;
 import org.opensaml.saml2.metadata.provider.MetadataProviderException;
 import org.springframework.security.saml.context.SAMLMessageContext;
 import org.springframework.security.saml.websso.WebSSOProfileOptions;
+
 import se.inera.intyg.webcert.web.auth.common.AuthConstants;
 
 /**
@@ -37,23 +38,29 @@ public class WebcertWebSSOProfileImpl extends org.springframework.security.saml.
      *
      * This overridden version explicitly sets the attributeConsumingServiceIndex for better control over IdP behaviour.
      *
-     * @param context           message context
-     * @param options           preferences of message creation
-     * @param assertionConsumer assertion consumer where the IDP should respond
-     * @param bindingService    service used to deliver the request
+     * @param context
+     *            message context
+     * @param options
+     *            preferences of message creation
+     * @param assertionConsumer
+     *            assertion consumer where the IDP should respond
+     * @param bindingService
+     *            service used to deliver the request
      * @return authnRequest ready to be sent to IDP
-     * @throws SAMLException             error creating the message
-     * @throws MetadataProviderException error retreiving metadata
+     * @throws SAMLException
+     *             error creating the message
+     * @throws MetadataProviderException
+     *             error retreiving metadata
      */
     @Override
     protected AuthnRequest getAuthnRequest(SAMLMessageContext context, WebSSOProfileOptions options,
-                                           AssertionConsumerService assertionConsumer,
-                                           SingleSignOnService bindingService) throws SAMLException, MetadataProviderException {
+            AssertionConsumerService assertionConsumer,
+            SingleSignOnService bindingService) throws SAMLException, MetadataProviderException {
 
         AuthnRequest authnRequest = super.getAuthnRequest(context, options, assertionConsumer, bindingService);
 
         // Only specify attributeConsumingServiceIndex for SITHS-based authentications.
-        if (options.getAuthnContexts().contains(AuthConstants.URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_TLSCLIENT)) {
+        if (options.getAuthnContexts().contains(AuthConstants.HTTP_ID_SAMBI_SE_LOA_LOA3)) {
             authnRequest.setAttributeConsumingServiceIndex(1);
         }
 

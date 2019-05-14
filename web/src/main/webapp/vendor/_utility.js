@@ -4,7 +4,7 @@
 var GUI_VERSION = "08x";
 // Default configuration
 var DEFAULT_SERVICE_ADDRESS = "";
-// The following images are stored locally (images/srv_<id>.png), but
+// The following images are stored locally (images/srv_<id>.png), but 
 // correspond to a server image (avoid download)
 var IMAGE_ID = "fk;inera;skv;sm;telia;service";
 // The following images are stored locally (images/tile_<name>.png)
@@ -322,8 +322,8 @@ function HasPluginApp() {
             }
         }
         else if (IsSystem("iOS") ||
-            IsSystem("iPad") ||
-            IsSystem("iPhone")) {
+                 IsSystem("iPad") ||
+                 IsSystem("iPhone")) {
             available = true;
         }
         else if (IsSystem("Android")) {
@@ -449,8 +449,8 @@ function CallPluginObject(pluginInfo) {
         // Send result unless none specified
         if (pluginInfo.next != "none") {
             // Reload if new events (card inserted/removed during loading). Still
-            // some action like ResetToken will generate new events, so only
-            // check for events when enumerating.
+            // some action like ResetToken will generate new events, so only 
+            // check for events when enumerating. 
             if ((pluginInfo.result == 0) &&
                 (pluginInfo.param_invoke.indexOf("Reset") == -1) &&
                 (pluginInfo.param_enum != null) &&
@@ -526,7 +526,7 @@ function CallPluginApp(next, action, param_set, param_invoke, param_enum, param_
 //-----------------------------------------------------------------------------
 function CallPluginComponent(next, action, param_set, param_invoke, param_enum, param_get, callback) {
     var available = true;
-    // Action "reload" is only available for plugin app, so change to load of
+    // Action "reload" is only available for plugin app, so change to load of 
     // start page
     if ((action.indexOf("reload") != -1) && !HasPluginApp()) {
         next = "index.html";
@@ -547,7 +547,7 @@ function CallPluginComponent(next, action, param_set, param_invoke, param_enum, 
     else {
         available = false;
     }
-    return available;
+    return available; 
 }
 //-----------------------------------------------------------------------------
 // PackAllVariables
@@ -1125,7 +1125,7 @@ function SetActiveUserInfo(userInfo, secret) {
             newValue += information;
         }
     }
-    // Keep value less than 2K. Updated values are added at end, so
+    // Keep value less than 2K. Updated values are added at end, so 
     // remove from start
     while (newValue.length > 2048) {
         newValue = newValue.substr(newValue.indexOf(';') + 1);
@@ -1318,7 +1318,7 @@ function ParseBrowserInfo(value) {
     }
     // Chrome/Chromium include WebKit, so take first (<name>/<version>)
     else if (((i = value.lastIndexOf("Chromium")) > 0) ||
-        ((i = value.lastIndexOf("Chrome")) > 0)) {
+             ((i = value.lastIndexOf("Chrome")) > 0)) {
         j = 0;
         while ((value.charAt(i + j) != 0) && (value.charAt(i + j) != '/')) {
             j++;
@@ -1359,7 +1359,7 @@ function ParseBrowserInfo(value) {
     if (version == null) {
         version = "0.0";
     }
-    // Create name version info object
+    // Create name version info object 
     return new NameVersionInfo(name, version);
 }
 //-----------------------------------------------------------------------------
@@ -1394,7 +1394,7 @@ function ParseDeviceInfo(value) {
             // Get eventual following version number
             k = 0;
             while ((part.length > (j + k)) &&
-            ((part.charAt(j + k) < '0') || (part.charAt(j + k) > '9'))) {
+                   ((part.charAt(j + k) < '0') || (part.charAt(j + k) > '9'))) {
                 k++;
             }
             // Set all except version number as name (Android may be specified with Linux too)
@@ -1408,7 +1408,7 @@ function ParseDeviceInfo(value) {
                 part = part.replace(new RegExp("_", 'g'), ".");
                 k = 0;
                 while ((part.charAt(k) == '.') ||
-                ((part.charAt(k) >= '0') && (part.charAt(k) <= '9'))) {
+                       ((part.charAt(k) >= '0') && (part.charAt(k) <= '9'))) {
                     k++;
                 }
                 version = part.substr(0, k);
@@ -1431,7 +1431,7 @@ function ParseDeviceInfo(value) {
     if (version == null) {
         version = "0.0";
     }
-    // Create name version info object
+    // Create name version info object 
     return new NameVersionInfo(name, version);
 }
 //-----------------------------------------------------------------------------
@@ -1592,7 +1592,7 @@ function CertificateInfo(slotid, issuer, subject, validFrom, validTo, ca, cred, 
     }
     // If unable to get image, still try to get company with same order as above.
     if ((company = GetValueByOid(subject, "O", false)) == "") {
-        if ((company = GetValueByOid(issuer, "O", false)) == "") {
+        if ((company = GetValueByOid(issuer, "O", false)) == "") { 
             company = GetValueByOid(issuer, "CN", false);
         }
     }
@@ -1953,14 +1953,14 @@ function CreateUserList(vars, service) {
                         }
                         // Create user object
                         if ((user = new UserInfo(
-                            listCert[i].personalNumber,
-                            listCert[i].name,
-                            listCert[i].company,
-                            tokenLabel,
-                            certID,
-                            null,
-                            null,
-                            null)) != null) {
+                                listCert[i].personalNumber,
+                                listCert[i].name,
+                                listCert[i].company,
+                                tokenLabel,
+                                certID,
+                                null,
+                                null,
+                                null)) != null) {
                             listUser[count++] = user;
                         }
                     }
@@ -2625,7 +2625,7 @@ function SetProductInformationArea(custom, productName, productCompany, productV
     if (customVersion == null) {
         customVersion = productVersion;
     }
-    // There are two areor, one with "big" image and one with "small"
+    // There are two areor, one with "big" image and one with "small" 
     // image. Standard behavior will Net iD be part of "big" area, and
     // license information part of "small" area. For some custom package
     // will we allow focus to be set for customer information.
@@ -2692,17 +2692,17 @@ function SetProductInformationArea(custom, productName, productCompany, productV
             SetElementHidden("info0");
         }
     }
-    /* REMOVED - Not correct handled in Setup GUI
-        if (!licenseValid) {
-            SetElementClass("license", "tile_license_01");
-            SetElementLabel("info0", GetString("TEXT_INVALID_LICENSE"));
+/* REMOVED - Not correct handled in Setup GUI    
+    if (!licenseValid) {
+        SetElementClass("license", "tile_license_01");
+        SetElementLabel("info0", GetString("TEXT_INVALID_LICENSE"));
+    }
+    else {
+        if (productVersion == customVersion) {
+            SetElementHidden("info0");
         }
-        else {
-            if (productVersion == customVersion) {
-                SetElementHidden("info0");
-            }
-        }
-    */
+    }
+*/    
     return;
 }
 //-----------------------------------------------------------------------------
@@ -2730,7 +2730,7 @@ function CreateElemList(count, type, title) {
             if ((elem = document.getElementById("head0")) != null) {
                 value = elem.innerHTML;
                 value = value.replace("title0", type + "title");
-                innerHTML = value + innerHTML;
+                innerHTML = value + innerHTML; 
             }
         }
         if ((elem = document.getElementById(type + "s")) != null) {
@@ -2936,7 +2936,7 @@ function ShowPopup(type) {
     SetFieldUnfocus("popup_btn_ok");
     // Disable until know how to clear enter key event, will cause dialog to
     // close direct if opened by enter key
-    /*
+    /* 
     if (type == "confirm") {
         SetFieldFocus("popup_btn_cancel");
     }
@@ -2997,5 +2997,5 @@ function ShowErrorPkcs11(rv) {
     info = GetPartBy(text, 1, '|');
     text = GetPartBy(text, 0, '|');
     ShowError(text, info);
-    return;
+    return; 
 }

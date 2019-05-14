@@ -24,16 +24,20 @@ import org.springframework.security.authentication.AuthenticationServiceExceptio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.providers.ExpiringUsernameAuthenticationToken;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.webcert.web.auth.WebcertUserDetailsService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 
 /**
  * JWT based authentication provider. Given that the supplied {@link org.springframework.security.core.Authentication}
- * is supported, the standard Webcert UserDetailsService is used to check user authorization and build the user principal.
+ * is supported, the standard Webcert UserDetailsService is used to check user authorization and build the user
+ * principal.
  *
  * @author eriklupander
  */
@@ -54,8 +58,7 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
         if (principal != null) {
             WebCertUser webCertUser = new WebCertUser((IntygUser) principal);
 
-            // Force origin DJUPINTEGRATION always
-            webCertUser.setOrigin(UserOriginType.DJUPINTEGRATION.name());
+            webCertUser.setOrigin(getUserOrigin().name());
 
             ExpiringUsernameAuthenticationToken result = new ExpiringUsernameAuthenticationToken(null, webCertUser, jwtAuthenticationToken,
                     new ArrayList<>());
@@ -74,5 +77,22 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
     @Autowired
     public void setWebcertUserDetailsService(WebcertUserDetailsService webcertUserDetailsService) {
         this.webcertUserDetailsService = webcertUserDetailsService;
+    }
+
+    private UserOriginType getUserOrigin() {
+        String uri = getCurrentRequest().getRequestURI();
+
+        if (uri.endsWith("read")) {
+            return UserOriginType.READONLY;
+        } else if (uri.endsWith("edit")) {
+            return UserOriginType.DJUPINTEGRATION;
+        }
+
+        throw new AuthenticationServiceException("The context path for JWT authentication was invalid {" + uri + "},"
+                + " throwing exception.");
+    }
+
+    private HttpServletRequest getCurrentRequest() {
+        return ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
     }
 }

@@ -22,7 +22,7 @@ data:
   CGI_GRP_WS_CERTIFICATE_TYPE: ""
   CGI_GRP_WS_TRUSTSTORE_FILE: "${certificate.folder}/grp.test.truststore.jks"
   CGI_GRP_WS_TRUSTSTORE_TYPE: "JKS"
-  SAKERHETSTJANST_SAML_IDP_METADATA_URL: "file:///opt/${app.name}/config/sp-sakerhetstjanst.xml"
+  SAKERHETSTJANST_SAML_IDP_METADATA_URL: "file:///opt/${app.name}/config/sp-inera.xml"
   SAKERHETSTJANST_SAML_KEYSTORE_FILE: ""
   WEBCERT_HOST_URL: "http://${app.name}:8080"
   INTYGSTJANST_BASE_URL: "http://${intygstjanst.test.webcert.test.service.host}:8080/inera-certificate"

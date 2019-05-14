@@ -79,11 +79,11 @@ Ungefär så här:
 2. Logga in med ditt _riktiga_ BankID / Mobila BankID
 3. Välj Issue test BankID
 
-![bild1](docs/images/bankid1.png)
+    ![bild1](docs/images/bankid1.png)
 
 4. Knappa in Frida Kranstege 197705232382
 
-![bild2](docs/images/bankid2.png)
+    ![bild2](docs/images/bankid2.png)
 
 5. Följ instruktionerna. Du kommer behöva öppna Mobilt BankID-appen på testtelefonen, knappa in Fridas (eller annan hittepå-persons) personnummer samt den kod som visas på skärmen. Välj en kod (jag kör på 123654) och sen är det faktiskt klart!
 
@@ -92,8 +92,8 @@ Ungefär så här:
 1. Se till att du har /webcert-konfiguration clonat och avkrypterat.
 
 2. Öppna web/build.gradle och kommentera bort hela stycket med:
-
-    jvmArgs = ["-Dcatalina.base=${buildDir}/catalina.base",
+    ```
+        jvmArgs = ["-Dcatalina.base=${buildDir}/catalina.base",
                    "-Dspring.profiles.active=dev,caching-enabled",
                    "-Dresources.folder=${projectDir}/../src/main/resources",
                    "-Dcredentials.file=${projectDir}/webcert-credentials.properties",
@@ -101,10 +101,12 @@ Ungefär så här:
                    "-Dlogback.file=${projectDir}/webcert-logback.xml",
                    "-DuseMinifiedJavaScript=${minified}",
                    "-Djetty.port=9088"]
-                   
-Ersätt ovanstående med nedanstående, byt ut _/Users/myuser/intyg_ mot egen absolut sökväg:
+    ```
 
-    jvmArgs = ["-Dcatalina.base=${buildDir}/catalina.base",
+    Ersätt ovanstående med nedanstående, byt ut _/Users/myuser/intyg_ mot egen absolut sökväg:
+
+    ```
+        jvmArgs = ["-Dcatalina.base=${buildDir}/catalina.base",
                    "-Dspring.profiles.active=dev,caching-enabled,wc-security-test",
                    "-Dconfig.folder=/Users/myuser/intyg/webcert-konfiguration/test/",
                    "-Dresources.folder=${projectDir}/../src/main/resources",
@@ -114,34 +116,35 @@ Ersätt ovanstående med nedanstående, byt ut _/Users/myuser/intyg_ mot egen ab
                    "-DuseMinifiedJavaScript=${minified}",
                    "-Djetty.port=9088",
                    "-Dwebcert.stubs.port=9088"]
-                   
+    ```
+
 3. Modifiera /webcert-konfiguration/test/sp-eleg.xml så AssertionConsumerService Location pekar på ditt lokala LAN-ip. Ta reda på det mha _ifconfig_ eller motsvarande. I det här exemplet har jag LAN-ip 192.168.0.180
 
-Ändra sp-eleg.xml så Location pekar på din lokala webcert via LAN-ip. Glöm inte porten. Kör du med _grunt server_ peka gärna på 9089:
-
-    <?xml version="1.0" encoding="UTF-8"?>
-    <md:EntityDescriptor xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata" ID="webcert.intygstjanster.inera.se" entityID="eleg">
-      <md:SPSSODescriptor AuthnRequestsSigned="false" WantAssertionsSigned="false" protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">
-    
-        <md:SingleLogoutService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="http://192.168.0.180:9089/saml/SingleLogout/alias/eleg"/>
-        <md:SingleLogoutService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect" Location="http://192.168.0.180:9089/saml/SingleLogout/alias/eleg"/>
-        <md:NameIDFormat>urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress</md:NameIDFormat>
-        <md:NameIDFormat>urn:oasis:names:tc:SAML:2.0:nameid-format:transient</md:NameIDFormat>
-        <md:NameIDFormat>urn:oasis:names:tc:SAML:2.0:nameid-format:persistent</md:NameIDFormat>
-        <md:NameIDFormat>urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified</md:NameIDFormat>
-        <md:NameIDFormat>urn:oasis:names:tc:SAML:1.1:nameid-format:X509SubjectName</md:NameIDFormat>
-        <md:AssertionConsumerService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="http://192.168.0.180:9089/saml/SSO/alias/eleg" index="0" isDefault="true"/>
-        <md:AssertionConsumerService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact" Location="http://192.168.0.180:9089/saml/SSO/alias/eleg" index="1"/>
-      </md:SPSSODescriptor>
-    </md:EntityDescriptor>
-    
+    Ändra sp-eleg.xml så Location pekar på din lokala webcert via LAN-ip. Glöm inte porten. Kör du med _grunt server_ peka gärna på 9089:
+    ```
+        <?xml version="1.0" encoding="UTF-8"?>
+        <md:EntityDescriptor xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata" ID="webcert.intygstjanster.inera.se" entityID="eleg">
+          <md:SPSSODescriptor AuthnRequestsSigned="false" WantAssertionsSigned="false" protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">
+        
+            <md:SingleLogoutService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="http://192.168.0.180:9089/saml/SingleLogout/alias/eleg"/>
+            <md:SingleLogoutService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect" Location="http://192.168.0.180:9089/saml/SingleLogout/alias/eleg"/>
+            <md:NameIDFormat>urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress</md:NameIDFormat>
+            <md:NameIDFormat>urn:oasis:names:tc:SAML:2.0:nameid-format:transient</md:NameIDFormat>
+            <md:NameIDFormat>urn:oasis:names:tc:SAML:2.0:nameid-format:persistent</md:NameIDFormat>
+            <md:NameIDFormat>urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified</md:NameIDFormat>
+            <md:NameIDFormat>urn:oasis:names:tc:SAML:1.1:nameid-format:X509SubjectName</md:NameIDFormat>
+            <md:AssertionConsumerService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="http://192.168.0.180:9089/saml/SSO/alias/eleg" index="0" isDefault="true"/>
+            <md:AssertionConsumerService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact" Location="http://192.168.0.180:9089/saml/SSO/alias/eleg" index="1"/>
+          </md:SPSSODescriptor>
+        </md:EntityDescriptor>
+    ```
 4. Starta webcert från /webcert/web
-
-    ./gradlew appRun
-    
+    ```
+        ./gradlew appRun
+    ```
 5. Knappa in LAN-adressen till Webcert i din webbläsares adressfält, t.ex: http://192.168.0.180:9089/
 
-Klicka på "E-legitimation" och logga in mha BankID eller Mobilt BankID
+    Klicka på "E-legitimation" och logga in mha BankID eller Mobilt BankID
 
 ### Testa SAML-inloggning via extern test-IDP
 Det går att konfigurera Webcert så man kan logga in via formuläret på https://stubidp.sustainsys.com/

@@ -49,6 +49,7 @@
   <security:http security="none" pattern="/"/>
   <security:http security="none" pattern="/boot-app.jsp"/>
   <security:http security="none" pattern="/version.jsp"/>
+  <security:http security="none" pattern="/empty.html"/>
   <security:http security="none" pattern="/error.jsp"/>
   <security:http security="none" pattern="/saml/web/**"/>
   <security:http security="none" pattern="/saml2/web/**"/>
@@ -260,7 +261,7 @@
   <beans profile="wc-security-test">
 
     <!-- JWT based OAuth authentication -->
-    <security:http use-expressions="false" entry-point-ref="http403ForbiddenEntryPoint" pattern="(\/oauth\/token)" request-matcher="regex">
+    <security:http use-expressions="false" entry-point-ref="http403ForbiddenEntryPoint" pattern="(\/oauth\/token\/.*)" request-matcher="regex">
       <security:csrf disabled="true"/>
       <security:logout logout-url="/logout" logout-success-url="/welcome.html" invalidate-session="true"/>
       <security:intercept-url pattern="/**" access="IS_AUTHENTICATED_FULLY"/>
@@ -274,7 +275,7 @@
     </security:http>
 
     <!-- /visa/intyg/ and /webcert/web are deep-integration links used by VAS and Cosmic and should use SAML SSO -->
-    <security:http use-expressions="false" request-matcher="regex" pattern="(\/fake)|(\/welcome.html)|(\/logout)|(\/saml\/.*)|(\/visa\/intyg\/.*)|(\/webcert\/web\/.*)|(\/web\/maillink\/.*)" entry-point-ref="samlEntryPoint">
+    <security:http use-expressions="false" request-matcher="regex" pattern="(\/fake)|(\/welcome.html)|(\/saml\/.*)|(\/visa\/intyg\/.*)|(\/webcert\/web\/.*)|(\/web\/maillink\/.*)" entry-point-ref="samlEntryPoint">
       <security:csrf disabled="true"/>
       <security:logout logout-url="/logout" logout-success-url="/welcome.html" invalidate-session="true"/>
       <security:intercept-url pattern="/**" access="IS_AUTHENTICATED_FULLY"/>
@@ -306,6 +307,7 @@
 
     <security:authentication-manager alias="authenticationManager">
       <security:authentication-provider ref="samlAuthenticationProvider"/>
+      <security:authentication-provider ref="jwtAuthenticationProvider" />
       <security:authentication-provider ref="fakeElegAuthenticationProvider"/>
       <security:authentication-provider ref="commonFakeAuthenticationProvider"/>
     </security:authentication-manager>
@@ -324,7 +326,7 @@
     <!-- JWT based OAuth authentication -->
     <security:http use-expressions="false" entry-point-ref="http403ForbiddenEntryPoint" pattern="(\/oauth\/token)" request-matcher="regex">
       <security:csrf disabled="true"/>
-      <security:logout logout-url="/logout" logout-success-url="/welcome.html" invalidate-session="true"/>
+      <security:logout logout-url="/logout" logout-success-url="/empty.html" invalidate-session="true"/>
       <security:intercept-url pattern="/**" access="IS_AUTHENTICATED_FULLY"/>
       <security:custom-filter position="PRE_AUTH_FILTER" ref="jwtAuthFilter"/>
       <security:request-cache ref="redisSavedRequestCache"/>
@@ -364,6 +366,7 @@
 
     <security:authentication-manager alias="authenticationManager">
       <security:authentication-provider ref="samlAuthenticationProvider"/>
+      <security:authentication-provider ref="jwtAuthenticationProvider" />
     </security:authentication-manager>
   </beans>
 
@@ -411,7 +414,7 @@
          Second constructor argument is set to null to match all HTTP methods.
     -->
     <bean id="saveRequestMatcher" class="org.springframework.security.web.util.matcher.RegexRequestMatcher">
-      <constructor-arg index="0" value="\/web\/.*|\/visa\/.*|\/webcert\/.*|\/oauth/token"/>
+      <constructor-arg index="0" value="\/web\/.*|\/visa\/.*|\/webcert\/.*|\/oauth/token\/.*"/>
       <constructor-arg index="1"><null/></constructor-arg>
     </bean>
 
@@ -431,6 +434,7 @@
         <security:filter-chain pattern="/saml/logout/**" filters="samlLogoutFilter"/>
         <security:filter-chain pattern="/saml/SSO/**" filters="samlWebSSOProcessingFilter"/>
         <security:filter-chain pattern="/saml/SingleLogout/**" filters="samlLogoutProcessingFilter"/>
+        <security:filter-chain pattern="/saml/metadata/**" filters="metadataDisplayFilter"/>
       </security:filter-chain-map>
     </bean>
 
@@ -461,13 +465,15 @@
           <property name="authnContexts">
             <list>
               <!-- Important: In the custom WebcertSAMLEntryPoint we mutate these for the authnRequests due to SSO problems -->
-              <value>urn:oasis:names:tc:SAML:2.0:ac:classes:TLSClient</value>
+              <value>http://id.sambi.se/loa/loa3</value>
               <value>urn:oasis:names:tc:SAML:2.0:ac:classes:SoftwarePKI</value>
             </list>
           </property>
         </bean>
       </property>
     </bean>
+
+    <bean id="metadataDisplayFilter" class="org.springframework.security.saml.metadata.MetadataDisplayFilter"/>
 
     <!-- IDP Metadata configuration - paths to metadata of IDPs in circle of trust is here -->
     <bean id="metadata" class="org.springframework.security.saml.metadata.CachingMetadataManager">
@@ -532,7 +538,7 @@
             <constructor-arg>
               <bean class="org.opensaml.saml2.metadata.provider.FilesystemMetadataProvider">
                 <constructor-arg>
-                  <value type="java.io.File">${config.dir}/sp-sakerhetstjanst.xml</value>
+                  <value type="java.io.File">${config.dir}/sp-inera.xml</value>
                 </constructor-arg>
                 <property name="parserPool" ref="parserPool"/>
               </bean>
@@ -562,7 +568,7 @@
             <constructor-arg>
               <bean class="org.opensaml.saml2.metadata.provider.FilesystemMetadataProvider">
                 <constructor-arg>
-                  <value type="java.io.File">${config.dir}/idp-sakerhetstjanst.xml</value>
+                  <value type="java.io.File">${config.dir}/idp-inera.xml</value>
                 </constructor-arg>
                 <property name="parserPool" ref="parserPool"/>
               </bean>
@@ -581,11 +587,11 @@
       <property name="refreshCheckInterval" value="86400000"/>
 
       <!-- Setting SITHS as default login method to be redirected to when requesting protected resource. -->
-      <!-- This value _must_ match the entityID specified in idp-sakerhetstjanst.xml.  -->
+      <!-- This value _must_ match the entityID specified in idp-inera.xml.  -->
       <property name="defaultIDP" value="${sakerhetstjanst.saml.idp.metadata.url}"/>
 
       <!-- This makes sure the Sakerhetstjanst SP metadata is used by default -->
-      <!-- This value _must_ match the entityID specified in sp-sakerhetstjanst.xml  -->
+      <!-- This value _must_ match the entityID specified in sp-inera.xml  -->
       <property name="hostedSPName" value="${sakerhetstjanst.saml.entityId}"/>
 
     </bean>
