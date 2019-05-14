@@ -184,6 +184,23 @@ public class DraftAccessServiceImpl extends AccessServiceImpl implements DraftAc
             accessResult = isSekretessRuleValid(intygsTyp, enhetsId, user, personnummer);
         }
 
+        // TODO Handle unique rule
+        // Additional constraints for specific types of intyg.
+        // Personnummer patientPersonnummer = utkast.getPatientPersonnummer();
+        // Map<String, Map<String, PreviousIntyg>> intygstypToPreviousIntyg = utkastService
+        // .checkIfPersonHasExistingIntyg(patientPersonnummer, user);
+        // Optional<WebCertServiceErrorCodeEnum> uniqueErrorCode = AuthoritiesHelperUtil.validateIntygMustBeUnique(
+        // user,
+        // utkast.getIntygsTyp(),
+        // intygstypToPreviousIntyg,
+        // utkast.getSkapad());
+        // if (uniqueErrorCode.isPresent()) {
+        // LOG.warn("Utkast '{}' av typ {} kan inte signeras då det redan existerar ett signerat intyg för samma personnummer",
+        // intygId, utkast.getIntygsTyp());
+        // throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTYG_FROM_OTHER_VARDGIVARE_EXISTS,
+        // "An intyg already exists, application rules forbide signing another");
+        // }
+
         if (!accessResult.isPresent() && isUserLoggedInOnDifferentUnit(enhetsId)) {
             accessResult = Optional
                     .of(AccessResult.create(AccessResultCode.AUTHORIZATION_DIFFERENT_UNIT,

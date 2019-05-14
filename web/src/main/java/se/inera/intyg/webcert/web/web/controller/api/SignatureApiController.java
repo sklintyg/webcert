@@ -75,8 +75,6 @@ public class SignatureApiController extends AbstractApiController {
     public SignaturStateDTO signeraUtkast(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId,
             @PathParam("version") long version, @PathParam("signMethod") String signMethodStr) {
 
-        authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp).features(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
-                .orThrow();
         SignMethod signMethod = null;
         try {
             signMethod = SignMethod.valueOf(signMethodStr);
@@ -126,9 +124,6 @@ public class SignatureApiController extends AbstractApiController {
     public SignaturStateDTO klientSigneraUtkast(@PathParam("intygsTyp") String intygsTyp, @PathParam("biljettId") String biljettId,
             @Context HttpServletRequest request, KlientSignaturRequest signaturRequest) {
 
-        // TODO: Verify authorities
-        verifyIsAuthorizedToSignIntyg(intygsTyp);
-
         LOG.debug("Signerar intyg med biljettId {}", biljettId);
 
         if (signaturRequest.getSignatur() == null) {
@@ -152,12 +147,5 @@ public class SignatureApiController extends AbstractApiController {
         request.getSession(true).removeAttribute(LAST_SAVED_DRAFT);
 
         return convertToSignatureStateDTO(sb);
-    }
-
-    private void verifyIsAuthorizedToSignIntyg(String intygsTyp) {
-        authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
-                .features(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
-                .privilege(AuthoritiesConstants.PRIVILEGE_SIGNERA_INTYG)
-                .orThrow();
     }
 }

@@ -20,8 +20,6 @@ package se.inera.intyg.webcert.web.service.underskrift;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.Map;
-import java.util.Optional;
 
 import javax.persistence.OptimisticLockException;
 
@@ -36,13 +34,13 @@ import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
-import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.converter.util.IntygConverterUtil;
-import se.inera.intyg.webcert.web.integration.util.AuthoritiesHelperUtil;
+import se.inera.intyg.webcert.web.service.access.AccessResult;
+import se.inera.intyg.webcert.web.service.access.DraftAccessService;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.log.LogService;
 import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
@@ -58,7 +56,7 @@ import se.inera.intyg.webcert.web.service.underskrift.xmldsig.XmlUnderskriftServ
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
-import se.inera.intyg.webcert.web.service.utkast.dto.PreviousIntyg;
+import se.inera.intyg.webcert.web.web.util.access.AccessResultExceptionHelper;
 
 @Service
 public class UnderskriftServiceImpl implements UnderskriftService {
@@ -103,6 +101,12 @@ public class UnderskriftServiceImpl implements UnderskriftService {
 
     @Autowired
     private NiasUnderskriftService niasUnderskriftService;
+
+    @Autowired
+    private DraftAccessService draftAccessService;
+
+    @Autowired
+    private AccessResultExceptionHelper accessResultExceptionHelper;
 
     @Override
     public SignaturBiljett startSigningProcess(String intygsId, String intygsTyp, long version, SignMethod signMethod) {
@@ -244,10 +248,9 @@ public class UnderskriftServiceImpl implements UnderskriftService {
                             + "' could not be found");
         }
 
-        if (!user.getIdsOfAllVardenheter().contains(utkast.getEnhetsId())) {
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM,
-                    "User does not have privileges to sign utkast '" + intygId + "'");
-        } else if (utkast.getVersion() != version) {
+        verifyAccessToSignDraft(utkast);
+
+        if (utkast.getVersion() != version) {
             LOG.debug("Utkast '{}' was concurrently modified", intygId);
             throw new OptimisticLockException(utkast.getSenastSparadAv().getNamn());
         } else if (utkast.getStatus() != UtkastStatus.DRAFT_COMPLETE) {
@@ -256,24 +259,8 @@ public class UnderskriftServiceImpl implements UnderskriftService {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE,
                     "Internal error signing utkast, the utkast '" + intygId
                             + "' was not in state " + UtkastStatus.DRAFT_COMPLETE);
-        } else {
-            // Additional constraints for specific types of intyg.
-            Personnummer patientPersonnummer = utkast.getPatientPersonnummer();
-            Map<String, Map<String, PreviousIntyg>> intygstypToPreviousIntyg = utkastService
-                    .checkIfPersonHasExistingIntyg(patientPersonnummer, user);
-            Optional<WebCertServiceErrorCodeEnum> uniqueErrorCode = AuthoritiesHelperUtil.validateIntygMustBeUnique(
-                    user,
-                    utkast.getIntygsTyp(),
-                    intygstypToPreviousIntyg,
-                    utkast.getSkapad());
-            if (uniqueErrorCode.isPresent()) {
-                LOG.warn("Utkast '{}' av typ {} kan inte signeras då det redan existerar ett signerat intyg för samma personnummer",
-                        intygId, utkast.getIntygsTyp());
-                throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTYG_FROM_OTHER_VARDGIVARE_EXISTS,
-                        "An intyg already exists, application rules forbide signing another");
-            }
-
         }
+
         return utkast;
     }
 
@@ -292,5 +279,14 @@ public class UnderskriftServiceImpl implements UnderskriftService {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM,
                     "Unable to sign certificate: " + e.getMessage());
         }
+    }
+
+    private void verifyAccessToSignDraft(Utkast utkast) {
+        final AccessResult accessResult = draftAccessService.allowToSignDraft(
+                utkast.getIntygsTyp(),
+                utkast.getEnhetsId(),
+                utkast.getPatientPersonnummer());
+
+        accessResultExceptionHelper.throwExceptionIfDenied(accessResult);
     }
 }
