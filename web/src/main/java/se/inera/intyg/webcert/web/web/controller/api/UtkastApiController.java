@@ -129,7 +129,7 @@ public class UtkastApiController extends AbstractApiController {
         LOG.debug("Attempting to create draft of type '{}'", intygsTyp);
 
         final AccessResult actionResult = draftAccessService.allowToCreateDraft(intygsTyp, request.getPatientPersonnummer());
-        if (!actionResult.isAllowed()) {
+        if (actionResult.isDenied()) {
             if (actionResult.getCode() == AccessResultCode.UNIQUE_DRAFT
                     || actionResult.getCode() == AccessResultCode.UNIQUE_CERTIFICATE) {
                 return Response.status(Status.BAD_REQUEST).build();
