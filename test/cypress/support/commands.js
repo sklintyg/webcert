@@ -151,7 +151,6 @@ vi ska hämta loggar från). Skapa en tvådimensionell array med intygsid som f�
 element på varje plats, följt av logghändelserna som ska verifieras.
 */
 function delaPdlEventsPåIntygsid(pdlLoggar) {
-    cy.log("Splittar arrayen..."); // ToDo: TA BORT!
     var eventPerIntygsid = [];
     for (var i = 0; i < pdlLoggar.length; i++) {
         var nyttId = true
@@ -159,22 +158,18 @@ function delaPdlEventsPåIntygsid(pdlLoggar) {
             if (eventPerIntygsid[j][0] === pdlLoggar[i].activity.activityLevel) {
                 nyttId = false
                 eventPerIntygsid[j].push(pdlLoggar[i]);
-                cy.log("Befintligt id, sparar på plats " + j); // ToDo: TA BORT!
                 break;
             }
         }
 
         if (nyttId) {
-            // Vi hittade inte intygsId:t i idSplitArray vilket betyder att det är ett nytt id som ska läggas till
+            // Vi hittade inte intygsId:t i den nya arrayen vilket betyder att det är ett nytt id som ska läggas till
             var nyttIndex = eventPerIntygsid.length
             eventPerIntygsid[nyttIndex] = []
             eventPerIntygsid[nyttIndex].push(pdlLoggar[i].activity.activityLevel)
             eventPerIntygsid[nyttIndex].push(pdlLoggar[i])
-            cy.log("Nytt id, sparar på plats " + nyttIndex); // ToDo: TA BORT!
         }
     }
-
-    cy.log("Hittade " + eventPerIntygsid.length + " unika intygsid:n.");
 
     return eventPerIntygsid;
 }
@@ -183,7 +178,9 @@ function delaPdlEventsPåIntygsid(pdlLoggar) {
 Sorterar en array bestående av PDL-event från mocken i kronologisk ordning
 */
 function sorteraEventKronologiskt(array) {
-    cy.log("Sorterar arrayen från mocken"); // ToDo: Ta bort!!!!
+
+    // getElementsByTagName returnerar en HTMLCollection som behöver sorteras. Inspirerat av
+    // https://stackoverflow.com/questions/7059090/using-array-prototype-sort-call-to-sort-a-htmlcollection
 
     expect(array.length).to.be.greaterThan(0);
     array.sort(function(a,b) {
@@ -350,12 +347,10 @@ riktiga PDL-events som hämtas från loggkälla.
 */
 Cypress.Commands.add("verifieraPdlLoggar", pdlLogArray => {
 
-    cy.log("cy.verifieraPdlLoggar - enter. Antal loggar: " + pdlLogArray.length)
-
     // Returnera om det inte finns några element i arrayen att verifiera
     if(pdlLogArray === undefined || pdlLogArray.length === 0) {
-        cy.log("undefined array eller 0 element... returnerar bara.")
-        return
+        cy.log("undefined array eller 0 element... returnerar direkt.");
+        return;
     }
 
     // Säkerställ att LogSender har skickat alla loggar
@@ -375,7 +370,7 @@ Cypress.Commands.add("verifieraPdlLoggar", pdlLogArray => {
 
     var idSplitArray = delaPdlEventsPåIntygsid(pdlLogArray);
 
-    // Speciallösning för att stega i asynkront. Denna måste stegas tillsammans med "vanliga" i
+    // Speciallösning för att stega i (index) asynkront. Denna måste stegas tillsammans med "vanliga" i
     cy.wrap(0).as('index');
     for (var i = 0; i < idSplitArray.length; i++) {
         // Hämta alla loggar från mocken
@@ -393,20 +388,17 @@ Cypress.Commands.add("verifieraPdlLoggar", pdlLogArray => {
             expect(resp.status).to.equal(200);
             cy.wrap(resp).its('body').then(function(body) {
                 // Städa bort alla <br>-taggar och alla blanksteg mellan taggar
-                body = body.replace(/<br>/g, "")
+                body = body.replace(/<br>/g, "");
                 body = body.replace(/>\s+</g, "><");
 
-                var bodyDoc = document.createElement("div")
-                bodyDoc.innerHTML = body
-                bodyDoc.children["0"].remove(); // Ta bort headern som skickas med i bodyn. ToDo: Ska denna rad vara kvar?
+                var bodyDoc = document.createElement("div");
+                bodyDoc.innerHTML = body;
 
-                // getElementsByTagName returnerar en HTMLCollection som behöver sorteras. Inspirerat av
-                // https://stackoverflow.com/questions/7059090/using-array-prototype-sort-call-to-sort-a-htmlcollection
                 var arr = [].slice.call(bodyDoc.getElementsByTagName("ns2:Log"));
                 sorteraEventKronologiskt(arr);
 
-                // Ursprungliga arrayen med förväntade event innehåller URL på index 0. Skapa ny array utan detta värde
-                var förväntadeHändelser = idSplitArray[this.index].slice(1); // DEBUG! Här ska det vara i men i = 1 av någon anledning! (Asynkron kod?)
+                // Arrayen med förväntade event innehåller mockens URL på index 0. Skapa ny array från index 1.
+                var förväntadeHändelser = idSplitArray[this.index].slice(1);
                 verifieraHändelserFörIntyg(förväntadeHändelser, arr);
                 cy.wrap(this.index + 1).as('index'); // Del av speciallösningen för att kunna använda index asynkront.
             });
