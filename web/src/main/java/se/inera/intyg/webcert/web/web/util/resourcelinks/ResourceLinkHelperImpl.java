@@ -19,6 +19,7 @@
 
 package se.inera.intyg.webcert.web.web.util.resourcelinks;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,10 +62,7 @@ public class ResourceLinkHelperImpl implements ResourceLinkHelper {
     @Override
     public void decorateWithValidActionLinks(IntygModuleDTO intygModule, Personnummer personnummer) {
         if (draftAccessService.allowToCreateDraft(intygModule.getId(), personnummer).isAllowed()) {
-            final ActionLink actionLink = new ActionLink();
-            actionLink.setType(ActionLinkType.SKAPA_UTKAST);
-            actionLink.setUrl("testurl");
-            intygModule.addLink(actionLink);
+            intygModule.addLink(new ActionLink(ActionLinkType.SKAPA_UTKAST));
         }
     }
 
@@ -72,65 +70,32 @@ public class ResourceLinkHelperImpl implements ResourceLinkHelper {
     public void decorateWithValidActionLinks(DraftHolder utkast, String intygsTyp, Vardenhet vardenhet, Personnummer personnummer) {
         boolean isLocked = utkast.getStatus() != null ? utkast.getStatus().equals(UtkastStatus.DRAFT_LOCKED) : false;
         if (isLocked) {
+
             if (lockedDraftAccessService.allowedToInvalidateLockedUtkast(intygsTyp, vardenhet.getEnhetsid(), personnummer).isAllowed()) {
-                final ActionLink actionLink = new ActionLink();
-                actionLink.setType(ActionLinkType.MAKULERA_UTKAST);
-                actionLink.setUrl("testurl");
-                utkast.addLink(actionLink);
+                utkast.addLink(new ActionLink(ActionLinkType.MAKULERA_UTKAST));
             }
+
             if (lockedDraftAccessService.allowedToCopyLockedUtkast(intygsTyp, vardenhet.getEnhetsid(), personnummer).isAllowed()) {
-                final ActionLink actionLink = new ActionLink();
-                actionLink.setType(ActionLinkType.KOPIERA_UTKAST);
-                actionLink.setUrl("testurl");
-                utkast.addLink(actionLink);
+                utkast.addLink(new ActionLink(ActionLinkType.KOPIERA_UTKAST));
             }
+
             if (lockedDraftAccessService.allowToPrint(intygsTyp, vardenhet.getEnhetsid(), personnummer).isAllowed()) {
-                final ActionLink actionLink = new ActionLink();
-                actionLink.setType(ActionLinkType.SKRIV_UT_UTKAST);
-                actionLink.setUrl("testurl");
-                utkast.addLink(actionLink);
+                utkast.addLink(new ActionLink(ActionLinkType.SKRIV_UT_UTKAST));
             }
+
         } else {
+
             if (draftAccessService.allowToDeleteDraft(intygsTyp, vardenhet.getEnhetsid(), personnummer).isAllowed()) {
-                final ActionLink actionLink = new ActionLink();
-                actionLink.setType(ActionLinkType.TA_BORT_UTKAST);
-                actionLink.setUrl("testurl");
-                utkast.addLink(actionLink);
+                utkast.addLink(new ActionLink(ActionLinkType.TA_BORT_UTKAST));
             }
+
             if (draftAccessService.allowToPrintDraft(intygsTyp, vardenhet.getEnhetsid(), personnummer).isAllowed()) {
-                final ActionLink actionLink = new ActionLink();
-                actionLink.setType(ActionLinkType.SKRIV_UT_UTKAST);
-                actionLink.setUrl("testurl");
-                utkast.addLink(actionLink);
+                utkast.addLink(new ActionLink(ActionLinkType.SKRIV_UT_UTKAST));
             }
-            if (certificateAccessService.allowToCreateQuestion(intygsTyp, vardenhet, personnummer).isAllowed()) {
-                final ActionLink actionLink = new ActionLink();
-                actionLink.setType(ActionLinkType.SKAPA_FRAGA);
-                actionLink.setUrl("testurl");
-                utkast.addLink(actionLink);
-            }
-            if (certificateAccessService.allowToReadQuestions(intygsTyp, vardenhet, personnummer).isAllowed()) {
-                final ActionLink actionLink = new ActionLink();
-                actionLink.setType(ActionLinkType.LASA_FRAGA);
-                actionLink.setUrl("testurl");
-                utkast.addLink(actionLink);
-            }
-            if (certificateAccessService.allowToAnswerComplementQuestion(intygsTyp, vardenhet, personnummer, false).isAllowed()) {
-                final ActionLink actionLink = new ActionLink();
-                actionLink.setType(ActionLinkType.BESVARA_FRAGA);
-                actionLink.setUrl("testurl");
-                utkast.addLink(actionLink);
-            }
-            if (certificateAccessService.allowToAnswerComplementQuestion(intygsTyp, vardenhet, personnummer, true).isAllowed()) {
-                final ActionLink actionLink = new ActionLink();
-                actionLink.setType(ActionLinkType.BESVARA_KOMPLETTERING);
-                actionLink.setUrl("testurl");
-                utkast.addLink(actionLink);
-            }
-            if (certificateAccessService.allowToForwardQuestions(intygsTyp, vardenhet, personnummer).isAllowed()) {
-                final ActionLink actionLink = new ActionLink();
-                actionLink.setType(ActionLinkType.VIDAREBEFODRA_FRAGA);
-                actionLink.setUrl("testurl");
+
+            // Add action links related to questions, as the utkast can be part of a kompletteringsbegäran.
+            final List<ActionLink> actionLinkList = getActionLinksForQuestions(intygsTyp, vardenhet, personnummer);
+            for (ActionLink actionLink : actionLinkList) {
                 utkast.addLink(actionLink);
             }
         }
@@ -141,64 +106,29 @@ public class ResourceLinkHelperImpl implements ResourceLinkHelper {
         final String intygsTyp = intygAsExternal.getUtlatande().getTyp();
         final Vardenhet vardenhet = intygAsExternal.getUtlatande().getGrundData().getSkapadAv().getVardenhet();
         final Personnummer personnummer = intygAsExternal.getUtlatande().getGrundData().getPatient().getPersonId();
+
         if (certificateAccessService.allowToRenew(intygsTyp, vardenhet, personnummer, false).isAllowed()) {
-            final ActionLink actionLink = new ActionLink();
-            actionLink.setType(ActionLinkType.FORNYA_INTYG);
-            actionLink.setUrl("testurl");
-            intygAsExternal.addLink(actionLink);
+            intygAsExternal.addLink(new ActionLink(ActionLinkType.FORNYA_INTYG));
         }
+
         if (certificateAccessService.allowToInvalidate(intygsTyp, vardenhet, personnummer).isAllowed()) {
-            final ActionLink actionLink = new ActionLink();
-            actionLink.setType(ActionLinkType.MAKULERA_INTYG);
-            actionLink.setUrl("testurl");
-            intygAsExternal.addLink(actionLink);
+            intygAsExternal.addLink(new ActionLink(ActionLinkType.MAKULERA_INTYG));
         }
+
         if (certificateAccessService.allowToPrint(intygsTyp, vardenhet, personnummer, false).isAllowed()) {
-            final ActionLink actionLink = new ActionLink();
-            actionLink.setType(ActionLinkType.SKRIV_UT_INTYG);
-            actionLink.setUrl("testurl");
-            intygAsExternal.addLink(actionLink);
+            intygAsExternal.addLink(new ActionLink(ActionLinkType.SKRIV_UT_INTYG));
         }
+
         if (certificateAccessService.allowToReplace(intygsTyp, vardenhet, personnummer).isAllowed()) {
-            final ActionLink actionLink = new ActionLink();
-            actionLink.setType(ActionLinkType.ERSATT_INTYG);
-            actionLink.setUrl("testurl");
-            intygAsExternal.addLink(actionLink);
+            intygAsExternal.addLink(new ActionLink(ActionLinkType.ERSATT_INTYG));
         }
+
         if (certificateAccessService.allowToSend(intygsTyp, vardenhet, personnummer).isAllowed()) {
-            final ActionLink actionLink = new ActionLink();
-            actionLink.setType(ActionLinkType.SKICKA_INTYG);
-            actionLink.setUrl("testurl");
-            intygAsExternal.addLink(actionLink);
+            intygAsExternal.addLink(new ActionLink(ActionLinkType.SKICKA_INTYG));
         }
-        if (certificateAccessService.allowToCreateQuestion(intygsTyp, vardenhet, personnummer).isAllowed()) {
-            final ActionLink actionLink = new ActionLink();
-            actionLink.setType(ActionLinkType.SKAPA_FRAGA);
-            actionLink.setUrl("testurl");
-            intygAsExternal.addLink(actionLink);
-        }
-        if (certificateAccessService.allowToReadQuestions(intygsTyp, vardenhet, personnummer).isAllowed()) {
-            final ActionLink actionLink = new ActionLink();
-            actionLink.setType(ActionLinkType.LASA_FRAGA);
-            actionLink.setUrl("testurl");
-            intygAsExternal.addLink(actionLink);
-        }
-        if (certificateAccessService.allowToAnswerComplementQuestion(intygsTyp, vardenhet, personnummer, false).isAllowed()) {
-            final ActionLink actionLink = new ActionLink();
-            actionLink.setType(ActionLinkType.BESVARA_FRAGA);
-            actionLink.setUrl("testurl");
-            intygAsExternal.addLink(actionLink);
-        }
-        if (certificateAccessService.allowToAnswerComplementQuestion(intygsTyp, vardenhet, personnummer, true).isAllowed()) {
-            final ActionLink actionLink = new ActionLink();
-            actionLink.setType(ActionLinkType.BESVARA_KOMPLETTERING);
-            actionLink.setUrl("testurl");
-            intygAsExternal.addLink(actionLink);
-        }
-        if (certificateAccessService.allowToForwardQuestions(intygsTyp, vardenhet, personnummer).isAllowed()) {
-            final ActionLink actionLink = new ActionLink();
-            actionLink.setType(ActionLinkType.VIDAREBEFODRA_FRAGA);
-            actionLink.setUrl("testurl");
+
+        final List<ActionLink> actionLinkList = getActionLinksForQuestions(intygsTyp, vardenhet, personnummer);
+        for (ActionLink actionLink : actionLinkList) {
             intygAsExternal.addLink(actionLink);
         }
     }
@@ -218,17 +148,11 @@ public class ResourceLinkHelperImpl implements ResourceLinkHelper {
         vardenhet.getVardgivare().setVardgivarid(intygEntry.getVardgivarId());
 
         if (certificateAccessService.allowToRead(intygEntry.getIntygType(), vardenhet, personNummer).isAllowed()) {
-            final ActionLink actionLink = new ActionLink();
-            actionLink.setType(ActionLinkType.LASA_INTYG);
-            actionLink.setUrl("testurl");
-            intygEntry.addLink(actionLink);
+            intygEntry.addLink(new ActionLink(ActionLinkType.LASA_INTYG));
         }
 
         if (certificateAccessService.allowToRenew(intygEntry.getIntygType(), vardenhet, personNummer, false).isAllowed()) {
-            final ActionLink actionLink = new ActionLink();
-            actionLink.setType(ActionLinkType.FORNYA_INTYG);
-            actionLink.setUrl("testurl");
-            intygEntry.addLink(actionLink);
+            intygEntry.addLink(new ActionLink(ActionLinkType.FORNYA_INTYG));
         }
     }
 
@@ -237,11 +161,34 @@ public class ResourceLinkHelperImpl implements ResourceLinkHelper {
         for (ArendeListItem arendeListItem : arendeItemList) {
             if (certificateAccessService.allowToForwardQuestions(arendeListItem.getIntygTyp(), vardenhet,
                     Personnummer.createPersonnummer(arendeListItem.getPatientId()).get()).isAllowed()) {
-                final ActionLink actionLink = new ActionLink();
-                actionLink.setType(ActionLinkType.VIDAREBEFODRA_FRAGA);
-                actionLink.setUrl("testurl");
-                arendeListItem.addLink(actionLink);
+                arendeListItem.addLink(new ActionLink(ActionLinkType.VIDAREBEFODRA_FRAGA));
             }
         }
+    }
+
+    private List<ActionLink> getActionLinksForQuestions(String intygsTyp, Vardenhet vardenhet, Personnummer personnummer) {
+        final List<ActionLink> actionLinkList = new ArrayList<>();
+
+        if (certificateAccessService.allowToCreateQuestion(intygsTyp, vardenhet, personnummer).isAllowed()) {
+            actionLinkList.add(new ActionLink(ActionLinkType.SKAPA_FRAGA));
+        }
+
+        if (certificateAccessService.allowToReadQuestions(intygsTyp, vardenhet, personnummer).isAllowed()) {
+            actionLinkList.add(new ActionLink(ActionLinkType.LASA_FRAGA));
+        }
+
+        if (certificateAccessService.allowToAnswerComplementQuestion(intygsTyp, vardenhet, personnummer, false).isAllowed()) {
+            actionLinkList.add(new ActionLink(ActionLinkType.BESVARA_FRAGA));
+        }
+
+        if (certificateAccessService.allowToAnswerComplementQuestion(intygsTyp, vardenhet, personnummer, true).isAllowed()) {
+            actionLinkList.add(new ActionLink(ActionLinkType.BESVARA_KOMPLETTERING));
+        }
+
+        if (certificateAccessService.allowToForwardQuestions(intygsTyp, vardenhet, personnummer).isAllowed()) {
+            actionLinkList.add(new ActionLink(ActionLinkType.VIDAREBEFODRA_FRAGA));
+        }
+
+        return actionLinkList;
     }
 }

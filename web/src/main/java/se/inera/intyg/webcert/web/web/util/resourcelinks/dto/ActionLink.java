@@ -24,7 +24,14 @@ import java.util.Objects;
 public class ActionLink {
 
     private ActionLinkType type;
-    private String url;
+
+    public ActionLink() {
+
+    }
+
+    public ActionLink(ActionLinkType type) {
+        this.type = type;
+    }
 
     public ActionLinkType getType() {
         return type;
@@ -32,14 +39,6 @@ public class ActionLink {
 
     public void setType(ActionLinkType type) {
         this.type = type;
-    }
-
-    public String getUrl() {
-        return url;
-    }
-
-    public void setUrl(String url) {
-        this.url = url;
     }
 
     @Override
@@ -51,11 +50,11 @@ public class ActionLink {
             return false;
         }
         ActionLink that = (ActionLink) o;
-        return type == that.type && url.equals(that.url);
+        return type == that.type;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(type, url);
+        return Objects.hash(type);
     }
 }
