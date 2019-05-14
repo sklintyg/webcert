@@ -44,8 +44,6 @@ import se.inera.intyg.common.support.modules.support.api.dto.ValidateDraftRespon
 import se.inera.intyg.common.support.modules.support.api.dto.ValidationStatus;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
 import se.inera.intyg.infra.integration.pu.model.Person;
-import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
-import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
@@ -96,7 +94,7 @@ public abstract class AbstractUtkastBuilder<T extends AbstractCreateCopyRequest>
      */
     @Override
     public CopyUtkastBuilderResponse populateCopyUtkastFromSignedIntyg(T copyRequest, Person patientDetails, boolean addRelation,
-            boolean coherentJournaling, boolean enforceEnhet) throws ModuleNotFoundException, ModuleException {
+            boolean coherentJournaling) throws ModuleNotFoundException, ModuleException {
 
         String orignalIntygsId = copyRequest.getOriginalIntygId();
         String originalIntygsTyp = copyRequest.getOriginalIntygTyp();
@@ -113,11 +111,6 @@ public abstract class AbstractUtkastBuilder<T extends AbstractCreateCopyRequest>
         }
         GrundData grundData = signedIntygHolder.getUtlatande().getGrundData();
         se.inera.intyg.common.support.model.common.internal.Vardenhet vardenhet = grundData.getSkapadAv().getVardenhet();
-
-        // TODO Skall detta tas bort
-        if (coherentJournaling && enforceEnhet) {
-            verifyEnhetsAuth(vardenhet.getVardgivare().getVardgivarid(), vardenhet.getEnhetsid(), true);
-        }
 
         LOG.debug("Populating copy with details from signed Intyg '{}'", orignalIntygsId);
 
@@ -171,7 +164,7 @@ public abstract class AbstractUtkastBuilder<T extends AbstractCreateCopyRequest>
     @Override
     @Transactional(readOnly = true)
     public CopyUtkastBuilderResponse populateCopyUtkastFromOrignalUtkast(T copyRequest, Person patientDetails, boolean addRelation,
-            boolean coherentJournaling, boolean enforceEnhet) throws ModuleNotFoundException, ModuleException {
+            boolean coherentJournaling) throws ModuleNotFoundException, ModuleException {
 
         String orignalIntygsId = copyRequest.getOriginalIntygId();
 
@@ -188,14 +181,8 @@ public abstract class AbstractUtkastBuilder<T extends AbstractCreateCopyRequest>
             throw new ModuleException("Could not convert original certificate to Utlatande", e);
         }
 
-        // TODO Skall detta tas bort?
-        // Perform enhets auth if coherent journaling is not active.
-        if (!coherentJournaling || enforceEnhet) {
-            verifyEnhetsAuth(orgUtkast.getVardgivarId(), orgUtkast.getEnhetsId(), true);
-        } else {
-            LogRequest logRequest = logRequestFactory.createLogRequestFromUtkast(orgUtkast, coherentJournaling);
-            logService.logReadIntyg(logRequest);
-        }
+        LogRequest logRequest = logRequestFactory.createLogRequestFromUtkast(orgUtkast, coherentJournaling);
+        logService.logReadIntyg(logRequest);
 
         CopyUtkastBuilderResponse builderResponse = new CopyUtkastBuilderResponse();
         builderResponse.setOrginalEnhetsId(orgUtkast.getEnhetsId());
@@ -233,14 +220,6 @@ public abstract class AbstractUtkastBuilder<T extends AbstractCreateCopyRequest>
         builderResponse.setUtkastCopy(utkast);
 
         return builderResponse;
-    }
-
-    protected void verifyEnhetsAuth(String vardgivarId, String enhetId, boolean isReadOnlyOperation) {
-        if (!webCertUserService.isAuthorizedForUnit(vardgivarId, enhetId, isReadOnlyOperation)) {
-            String msg = "User not authorized for enhet " + enhetId;
-            LOG.debug(msg);
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM, msg);
-        }
     }
 
     protected String getInternalModel(Utlatande template, ModuleApi moduleApi, AbstractCreateCopyRequest copyRequest,

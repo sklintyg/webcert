@@ -501,10 +501,10 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
         CopyUtkastBuilderResponse builderResponse;
         if (utkastRepository.exists(originalIntygId)) {
             builderResponse = copyCompletionUtkastBuilder.populateCopyUtkastFromOrignalUtkast(copyRequest, patientDetails, addRelation,
-                    false, false);
+                    false);
         } else {
             builderResponse = copyCompletionUtkastBuilder.populateCopyUtkastFromSignedIntyg(copyRequest, patientDetails, addRelation,
-                    false, false);
+                    false);
         }
 
         return builderResponse;
@@ -518,10 +518,10 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
         CopyUtkastBuilderResponse builderResponse;
         if (utkastRepository.exists(originalIntygId)) {
             builderResponse = createRenewalUtkastBuilder.populateCopyUtkastFromOrignalUtkast(copyRequest, patientDetails, true,
-                    coherentJournaling, false);
+                    coherentJournaling);
         } else {
             builderResponse = createRenewalUtkastBuilder.populateCopyUtkastFromSignedIntyg(copyRequest, patientDetails, false,
-                    coherentJournaling, false);
+                    coherentJournaling);
         }
 
         return builderResponse;
@@ -535,10 +535,10 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
         CopyUtkastBuilderResponse builderResponse;
         if (utkastRepository.exists(originalIntygId)) {
             builderResponse = createUtkastFromTemplateBuilder.populateCopyUtkastFromOrignalUtkast(copyRequest, patientDetails, addRelation,
-                    coherentJournaling, false);
+                    coherentJournaling);
         } else {
             builderResponse = createUtkastFromTemplateBuilder.populateCopyUtkastFromSignedIntyg(copyRequest, patientDetails, addRelation,
-                    coherentJournaling, false);
+                    coherentJournaling);
         }
 
         return builderResponse;
@@ -552,7 +552,7 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
         CopyUtkastBuilderResponse builderResponse;
         if (utkastRepository.exists(originalIntygId)) {
             builderResponse = createUtkastCopyBuilder.populateCopyUtkastFromOrignalUtkast(copyRequest, patientDetails, true,
-                    coherentJournaling, false);
+                    coherentJournaling);
         } else {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND, "Certificates not found.");
         }
@@ -568,10 +568,10 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
         CopyUtkastBuilderResponse builderResponse;
         if (utkastRepository.exists(originalIntygId)) {
             builderResponse = createReplacementUtkastBuilder.populateCopyUtkastFromOrignalUtkast(replacementCopyRequest, patientDetails,
-                    true, replacementCopyRequest.isCoherentJournaling(), true);
+                    true, replacementCopyRequest.isCoherentJournaling());
         } else {
             builderResponse = createReplacementUtkastBuilder.populateCopyUtkastFromSignedIntyg(replacementCopyRequest, patientDetails, true,
-                    replacementCopyRequest.isCoherentJournaling(), true);
+                    replacementCopyRequest.isCoherentJournaling());
         }
 
         return builderResponse;
