@@ -57,6 +57,7 @@ import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistr
 import se.inera.intyg.webcert.web.integration.registry.dto.IntegreradEnhetEntry;
 import se.inera.intyg.webcert.web.service.access.AccessResult;
 import se.inera.intyg.webcert.web.service.access.CertificateAccessService;
+import se.inera.intyg.webcert.web.service.access.DraftAccessService;
 import se.inera.intyg.webcert.web.service.access.LockedDraftAccessService;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
@@ -150,6 +151,9 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
 
     @Autowired
     private LockedDraftAccessService lockedDraftAccessService;
+
+    @Autowired
+    private DraftAccessService draftAccessService;
 
     @Autowired
     private AccessResultExceptionHelper accessResultExceptionHelper;
@@ -342,13 +346,15 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
                     copyRequest.getOriginalIntygTyp(),
                     coherentJournaling);
 
-            // TODO Vilket regelverk gäller för kopiering för att skapa nytt utkast? Samma som för att kopiera låsta utkast?
-            validateAccessToRenewIntyg(utlatande, false);
+            // Update patient details here instead of later in buildUtkast... Need to validate access logic.
+            Person patientDetails = updatePatientDetails(copyRequest);
+
+            validateAccessToCreateUtkast(copyRequest.getTyp(), patientDetails.getPersonnummer());
 
             verifyNotReplacedWithSigned(copyRequest.getOriginalIntygId(), "create utkast from template");
 
-            CopyUtkastBuilderResponse builderResponse = buildUtkastFromTemplateBuilderResponse(copyRequest, originalIntygId, true,
-                    coherentJournaling);
+            CopyUtkastBuilderResponse builderResponse = buildUtkastFromTemplateBuilderResponse(copyRequest, patientDetails,
+                    originalIntygId, true, coherentJournaling);
 
             Utkast savedUtkast = saveAndNotify(builderResponse, user);
 
@@ -528,9 +534,8 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
     }
 
     private CopyUtkastBuilderResponse buildUtkastFromTemplateBuilderResponse(CreateUtkastFromTemplateRequest copyRequest,
-            String originalIntygId, boolean addRelation, boolean coherentJournaling) throws ModuleNotFoundException, ModuleException {
-
-        Person patientDetails = updatePatientDetails(copyRequest);
+            Person patientDetails, String originalIntygId, boolean addRelation, boolean coherentJournaling)
+            throws ModuleNotFoundException, ModuleException {
 
         CopyUtkastBuilderResponse builderResponse;
         if (utkastRepository.exists(originalIntygId)) {
@@ -681,9 +686,18 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
     }
 
     private void validateAccessToCopyLockedUtkast(Utkast utkast) {
-        final AccessResult accessResult = lockedDraftAccessService.allowedToCopyLockedUtkast(utkast.getIntygsTyp(),
+        final AccessResult accessResult = lockedDraftAccessService.allowedToCopyLockedUtkast(
+                utkast.getIntygsTyp(),
                 utkast.getEnhetsId(),
                 utkast.getPatientPersonnummer());
+
+        accessResultExceptionHelper.throwExceptionIfDenied(accessResult);
+    }
+
+    private void validateAccessToCreateUtkast(String intygsTyp, Personnummer personnummer) {
+        final AccessResult accessResult = draftAccessService.allowToCreateDraft(
+                intygsTyp,
+                personnummer);
 
         accessResultExceptionHelper.throwExceptionIfDenied(accessResult);
     }
