@@ -193,10 +193,6 @@ public class IntygApiController extends AbstractApiController {
     @PrometheusTimeMethod
     public Response setNotifiedOnIntyg(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId,
             @PathParam("version") long version, NotifiedState notifiedState) {
-        authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
-                .features(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
-                .privilege(AuthoritiesConstants.PRIVILEGE_VIDAREBEFORDRA_UTKAST)
-                .orThrow();
 
         Utkast updatedIntyg;
         try {
