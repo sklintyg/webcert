@@ -172,18 +172,13 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
         WebCertUser user = userService.getUser();
 
         try {
-            boolean coherentJournaling = user != null && user.getParameters() != null && user.getParameters().isSjf();
+            boolean coherentJournaling = isCoherentJournaling(user);
 
             final Utlatande utlatande = getUtlatande(copyRequest.getOriginalIntygId(),
                     copyRequest.getOriginalIntygTyp(),
                     coherentJournaling);
-            final Personnummer personnummer = utlatande.getGrundData().getPatient().getPersonId();
-            final Vardenhet vardenhet = utlatande.getGrundData().getSkapadAv().getVardenhet();
-            final AccessResult accessResult = certificateAccessService.allowToRenew(copyRequest.getOriginalIntygTyp(), vardenhet,
-                    personnummer, true);
-            if (!accessResult.isAllowed()) {
-                accessResultExceptionHelper.throwException(accessResult);
-            }
+
+            validateAccessToRenewIntyg(utlatande, true);
 
             if (intygService.isRevoked(copyRequest.getOriginalIntygId(), copyRequest.getTyp(), false)) {
                 LOG.debug("Cannot create completion copy of certificate with id '{}', the certificate is revoked", originalIntygId);
@@ -223,19 +218,14 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
         LOG.debug("Creating renewal for intyg '{}'", originalIntygId);
 
         WebCertUser user = userService.getUser();
-        boolean coherentJournaling = user != null && user.getParameters() != null && user.getParameters().isSjf();
+        boolean coherentJournaling = isCoherentJournaling(user);
 
         try {
             final Utlatande utlatande = getUtlatande(copyRequest.getOriginalIntygId(),
                     copyRequest.getOriginalIntygTyp(),
                     coherentJournaling);
-            final Personnummer personnummer = utlatande.getGrundData().getPatient().getPersonId();
-            final Vardenhet vardenhet = utlatande.getGrundData().getSkapadAv().getVardenhet();
-            final AccessResult accessResult = certificateAccessService.allowToRenew(copyRequest.getOriginalIntygTyp(), vardenhet,
-                    personnummer);
-            if (!accessResult.isAllowed()) {
-                accessResultExceptionHelper.throwException(accessResult);
-            }
+
+            validateAccessToRenewIntyg(utlatande, false);
 
             if (intygService.isRevoked(copyRequest.getOriginalIntygId(), copyRequest.getOriginalIntygTyp(), coherentJournaling)) {
                 LOG.debug("Cannot renew certificate with id '{}', the certificate is revoked", originalIntygId);
@@ -277,13 +267,8 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
             final Utlatande utlatande = getUtlatande(replacementRequest.getOriginalIntygId(),
                     replacementRequest.getOriginalIntygTyp(),
                     replacementRequest.isCoherentJournaling());
-            final Personnummer personnummer = utlatande.getGrundData().getPatient().getPersonId();
-            final Vardenhet vardenhet = utlatande.getGrundData().getSkapadAv().getVardenhet();
-            final AccessResult accessResult = certificateAccessService.allowToReplace(replacementRequest.getOriginalIntygTyp(), vardenhet,
-                    personnummer);
-            if (!accessResult.isAllowed()) {
-                accessResultExceptionHelper.throwException(accessResult);
-            }
+
+            validateAccessToReplaceIntyg(utlatande);
 
             if (intygService.isRevoked(replacementRequest.getOriginalIntygId(), replacementRequest.getTyp(),
                     replacementRequest.isCoherentJournaling())) {
@@ -345,7 +330,7 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
         LOG.debug("Creating utkast from template certificate '{}'", originalIntygId);
 
         WebCertUser user = userService.getUser();
-        boolean coherentJournaling = user != null && user.getParameters() != null && user.getParameters().isSjf();
+        boolean coherentJournaling = isCoherentJournaling(user);
 
         try {
             if (intygService.isRevoked(copyRequest.getOriginalIntygId(), copyRequest.getOriginalIntygTyp(), coherentJournaling)) {
@@ -356,14 +341,9 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
             final Utlatande utlatande = getUtlatande(copyRequest.getOriginalIntygId(),
                     copyRequest.getOriginalIntygTyp(),
                     coherentJournaling);
-            final Personnummer personnummer = utlatande.getGrundData().getPatient().getPersonId();
-            final Vardenhet vardenhet = utlatande.getGrundData().getSkapadAv().getVardenhet();
+
             // TODO Vilket regelverk gäller för kopiering för att skapa nytt utkast? Samma som för att kopiera låsta utkast?
-            final AccessResult accessResult = certificateAccessService.allowToRenew(copyRequest.getOriginalIntygTyp(), vardenhet,
-                    personnummer);
-            if (!accessResult.isAllowed()) {
-                accessResultExceptionHelper.throwException(accessResult);
-            }
+            validateAccessToRenewIntyg(utlatande, false);
 
             verifyNotReplacedWithSigned(copyRequest.getOriginalIntygId(), "create utkast from template");
 
@@ -392,7 +372,7 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
         LOG.debug("Creating utkast from utkast certificate '{}'", originalIntygId);
 
         WebCertUser user = userService.getUser();
-        boolean coherentJournaling = user != null && user.getParameters() != null && user.getParameters().isSjf();
+        boolean coherentJournaling = isCoherentJournaling(user);
 
         try {
             if (intygService.isRevoked(copyRequest.getOriginalIntygId(), copyRequest.getOriginalIntygTyp(), coherentJournaling)) {
@@ -402,12 +382,7 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
 
             Utkast utkast = utkastService.getDraft(copyRequest.getOriginalIntygId(), copyRequest.getOriginalIntygTyp());
 
-            final AccessResult accessResult = lockedDraftAccessService.allowedToCopyLockedUtkast(utkast.getIntygsTyp(),
-                    utkast.getEnhetsId(),
-                    utkast.getPatientPersonnummer());
-            if (!accessResult.isAllowed()) {
-                accessResultExceptionHelper.throwException(accessResult);
-            }
+            validateAccessToCopyLockedUtkast(utkast);
 
             // Validate draft locked
             if (!UtkastStatus.DRAFT_LOCKED.equals(utkast.getStatus())) {
@@ -684,5 +659,44 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
                 utkastCopy.getVardgivarNamn());
 
         integreradeEnheterRegistry.addIfSameVardgivareButDifferentUnits(orginalEnhetsId, newEntry, utkastCopy.getIntygsTyp());
+    }
+
+    private void validateAccessToRenewIntyg(Utlatande utlatande, boolean complement) {
+        final AccessResult accessResult = certificateAccessService.allowToRenew(
+                utlatande.getTyp(),
+                getVardenhet(utlatande),
+                getPersonnummer(utlatande),
+                true);
+
+        accessResultExceptionHelper.throwExceptionIfDenied(accessResult);
+    }
+
+    private void validateAccessToReplaceIntyg(Utlatande utlatande) {
+        final AccessResult accessResult = certificateAccessService.allowToReplace(
+                utlatande.getTyp(),
+                getVardenhet(utlatande),
+                getPersonnummer(utlatande));
+
+        accessResultExceptionHelper.throwExceptionIfDenied(accessResult);
+    }
+
+    private void validateAccessToCopyLockedUtkast(Utkast utkast) {
+        final AccessResult accessResult = lockedDraftAccessService.allowedToCopyLockedUtkast(utkast.getIntygsTyp(),
+                utkast.getEnhetsId(),
+                utkast.getPatientPersonnummer());
+
+        accessResultExceptionHelper.throwExceptionIfDenied(accessResult);
+    }
+
+    private Vardenhet getVardenhet(Utlatande utlatande) {
+        return utlatande.getGrundData().getSkapadAv().getVardenhet();
+    }
+
+    private Personnummer getPersonnummer(Utlatande utlatande) {
+        return utlatande.getGrundData().getPatient().getPersonId();
+    }
+
+    private boolean isCoherentJournaling(WebCertUser user) {
+        return user != null && user.getParameters() != null && user.getParameters().isSjf();
     }
 }
