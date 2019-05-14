@@ -177,7 +177,7 @@ function delaPdlEventsPåIntygsid(pdlLoggar) {
 /*
 Sorterar en array bestående av PDL-event från mocken i kronologisk ordning
 */
-function sorteraEventKronologiskt(array) {
+function sorteraHändelserKronologiskt(array) {
 
     // getElementsByTagName returnerar en HTMLCollection som behöver sorteras. Inspirerat av
     // https://stackoverflow.com/questions/7059090/using-array-prototype-sort-call-to-sort-a-htmlcollection
@@ -196,25 +196,32 @@ function sorteraEventKronologiskt(array) {
 
         // De båda eventen har samma tidstämpel. Kolla om det gäller samma activity, i så fall kvittar det i vilken ordning
         // de kommer. Om de inte är lika "på djupet" så kommer testfallet ändå att faila längre ner när vi jämför alla fält.
-        var ärActTypeLika = a.getElementsByTagName("activitytype")[0].innerText === b.getElementsByTagName("activitytype")[0].innerText;
+        const activityTypeA = a.getElementsByTagName("activitytype")[0].innerText;
+        const activityTypeB = b.getElementsByTagName("activitytype")[0].innerText;
 
-        var aActivityArgs = "undefined";
-        var bActivityArgs = "undefined";
+        var activityArgsA = "undefined";
+        var activityArgsB = "undefined";
         if (a.getElementsByTagName("activityargs")[0]) {
-            aActivityArgs = a.getElementsByTagName("activityargs")[0].innerText;
+            activityArgsA = a.getElementsByTagName("activityargs")[0].innerText;
         }
         if (b.getElementsByTagName("activityargs")[0]) {
-            bActivityArgs = b.getElementsByTagName("activityargs")[0].innerText;
+            activityArgsB = b.getElementsByTagName("activityargs")[0].innerText;
         }
 
         var ärEventLika = false;
-        if (ärActTypeLika && (aActivityArgs === bActivityArgs)) {
+        if ((activityTypeA ===  activityTypeB) &&
+            (activityArgsA === activityArgsB)) {
             cy.log("a och b var lika!"); // DEBUG! Ta bort!
             ärEventLika = true;
         }
 
-        assert.isTrue(ärEventLika,
-            "Sorterar event på mocken. Två event har samma tidstämpel (om de är lika så är det ok)");
+        // Bygg upp en sträng som skrivs ut i asserten innehållande vilka två event som är lika
+        var assertSträng = "Sorteringsalgoritmen hittade två event med samma tidstämpel. "
+        assertSträng += "Dessa var " + (ärEventLika ? "" :  "inte ") + "lika. ";
+        assertSträng += "A: " + activityTypeA + ", " + activityArgsA + ", " + datumA + ". ";
+        assertSträng += "B: " + activityTypeB + ", " + activityArgsB + ", " + datumB + ". ";
+
+        assert.isTrue(ärEventLika, assertSträng);
         return 0;
     });
 }
@@ -269,10 +276,9 @@ function verifieraHändelserFörIntyg(förväntadeHändelser, arr) {
         //---- Element 'User' ----//
         var user = arr[j].getElementsByTagName("user")[0];
         // userid, name, assignment, title, careprovider, careunit
-        // OBS! Username ska inte vara med framöver. Då ska antal underelement minskas med 1.
         assert.equal(user.children.length, 6, "Kontrollerar antal underelement till 'user', index " + j);
         assert.equal(user.getElementsByTagName("userid")[0].innerText, förväntadeHändelser[j].user.userId, "Kontrollerar userid, index " + j);
-        // assert.equal(user.getElementsByTagName("name")[0].innerText, förväntadeHändelser[j].user.name, "Kontrollerar name, index " + j); // ToDo: Ska tas bort - när?
+        assert.equal(user.getElementsByTagName("name")[0].innerText, "", "Kontrollerar att name är tomt, index " + j);
         assert.equal(user.getElementsByTagName("assignment")[0].innerText, förväntadeHändelser[j].user.assignment, "Kontrollerar assignment, index " + j);
         assert.equal(user.getElementsByTagName("title")[0].innerText, förväntadeHändelser[j].user.title, "Kontrollerar title, index " + j);
 
@@ -356,7 +362,7 @@ Cypress.Commands.add("verifieraPdlLoggar", pdlLogArray => {
     // Säkerställ att LogSender har skickat alla loggar
     cy.wait(Cypress.env('logSenderTimeout'));
 
-    const mockBaseUrl = Cypress.env('intygMockBaseUrl') + "/validate/cypressAssertPayload/Webcert-pdl-"
+    const mockUrl = Cypress.env('intygMockBaseUrl') + "/validate/cypressAssertPayload/Webcert-pdl-"
     var användarnamn = Cypress.env('MOCK_USERNAME_PASSWORD_USR')
     var lösenord = Cypress.env('MOCK_USERNAME_PASSWORD_PSW')
     // Internt kräver mocken ingen autentisering. Jenkins körs externt så
@@ -368,18 +374,17 @@ Cypress.Commands.add("verifieraPdlLoggar", pdlLogArray => {
         lösenord = "";
     }
 
-    var idSplitArray = delaPdlEventsPåIntygsid(pdlLogArray);
+    var förväntadeHändelserPerIntygsid = delaPdlEventsPåIntygsid(pdlLogArray);
 
     // Speciallösning för att stega i (index) asynkront. Denna måste stegas tillsammans med "vanliga" i
     cy.wrap(0).as('index');
-    for (var i = 0; i < idSplitArray.length; i++) {
+    for (var i = 0; i < förväntadeHändelserPerIntygsid.length; i++) {
         // Hämta alla loggar från mocken
-        cy.log("Hämtar loggar för intygsid " + idSplitArray[i][0])
-        cy.log("Adressen där loggarna hämtas med get-request är " + mockBaseUrl + idSplitArray[i][0]);
+        cy.log("URL till mock för att hämta PDL: " + mockUrl + förväntadeHändelserPerIntygsid[i][0]);
 
         cy.request({
             method: 'GET',
-            url: mockBaseUrl + idSplitArray[i][0],
+            url: mockUrl + förväntadeHändelserPerIntygsid[i][0],
             auth: {
                 username: användarnamn,
                 password: lösenord
@@ -394,12 +399,12 @@ Cypress.Commands.add("verifieraPdlLoggar", pdlLogArray => {
                 var bodyDoc = document.createElement("div");
                 bodyDoc.innerHTML = body;
 
-                var arr = [].slice.call(bodyDoc.getElementsByTagName("ns2:Log"));
-                sorteraEventKronologiskt(arr);
+                var mockHändelser = [].slice.call(bodyDoc.getElementsByTagName("ns2:Log"));
+                sorteraHändelserKronologiskt(mockHändelser);
 
                 // Arrayen med förväntade event innehåller mockens URL på index 0. Skapa ny array från index 1.
-                var förväntadeHändelser = idSplitArray[this.index].slice(1);
-                verifieraHändelserFörIntyg(förväntadeHändelser, arr);
+                var förväntadeHändelser = förväntadeHändelserPerIntygsid[this.index].slice(1);
+                verifieraHändelserFörIntyg(förväntadeHändelser, mockHändelser);
                 cy.wrap(this.index + 1).as('index'); // Del av speciallösningen för att kunna använda index asynkront.
             });
         });
