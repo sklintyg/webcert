@@ -23,7 +23,7 @@
 
 <%
 WebCertUser user = (WebCertUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-if ("urn:oasis:names:tc:SAML:2.0:ac:classes:TLSClient".equals(user.getAuthenticationScheme())) { %>
+if ("http://id.sambi.se/loa/loa3".equals(user.getAuthenticationScheme())) { %>
 
     (function () {
 

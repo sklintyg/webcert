@@ -110,7 +110,12 @@ gretty {
     contextConfigFile = file("src/main/webapp/WEB-INF/jetty-web.xml")
     integrationTestTask = null
     scanInterval = 0
+    httpEnabled = true
+    httpsEnabled = true
+    sslKeyStorePath = file("../devops/dev/certifikat/localhost.p12")
+    sslKeyStorePassword = 'password'
     httpPort = 9088
+    httpsPort = 19088
     debugPort = 5007
     fastReload = true
     inplaceMode = 'hard'
@@ -119,13 +124,15 @@ gretty {
     def minified = System.properties['useMinifiedJavaScript'] ?: false
 
     jvmArgs = ["-Dcatalina.base=${buildDir}/catalina.base",
-               "-Dspring.profiles.active=dev,caching-enabled",
+               "-Dspring.profiles.active=dev,caching-enabled,wc-security-test",
+               "-Dconfig.folder=${projectDir}/../devops/dev",
                "-Dresources.folder=classpath:",
                "-Dcredentials.file=${projectDir}/webcert-credentials.properties",
                "-Dconfig.file=${projectDir}/webcert-dev.properties",
                "-Dlogback.file=classpath:logback-ocp.xml",
                "-DuseMinifiedJavaScript=${minified}",
-               "-Djetty.port=${httpPort}"]
+               "-Djetty.port=${httpPort}",
+               "-Djetty.https.port=${httpsPort}"]
 
     extraResourceBase webappOutputDir
 }

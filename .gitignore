@@ -30,6 +30,4 @@ typings.json
 out
 secret-*
 secret-*
-*.jks
-*.p12
 test/reports

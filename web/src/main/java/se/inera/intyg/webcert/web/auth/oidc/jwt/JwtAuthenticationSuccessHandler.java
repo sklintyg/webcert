@@ -41,7 +41,7 @@ import static se.inera.intyg.webcert.web.web.controller.integration.IntygIntegra
  * session with {@link IntegrationParameters} and redirect the user to the originally requested resource given a certId
  * parameter.
  *
- * Uses the same /visa/intyg/{intygsId}/saved controller as the {@link WebcertAuthenticationSuccessHandler}.
+ * Uses the same /visa/intyg/{intygsId}/saved controller as the {@link WebcertAuthenticationSuccessHandler} or .
  *
  * @author eriklupander
  */
@@ -62,6 +62,9 @@ public class JwtAuthenticationSuccessHandler extends
         }
 
         clearAuthenticationAttributes(request);
+
+        String requestURI = request.getRequestURI();
+
         String intygsId = request.getParameter("certId");
 
         WebCertUser webCertUser = (WebCertUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -78,24 +81,32 @@ public class JwtAuthenticationSuccessHandler extends
                             + "Please use a new user session for each deep integration link.");
         }
 
-        IntegrationParameters integrationParameters = IntegrationParameters.of(
-                getStringParam(request, IntygIntegrationController.PARAM_REFERENCE),
-                getStringParam(request, IntygIntegrationController.PARAM_RESPONSIBLE_HOSP_NAME),
-                getStringParam(request, IntygIntegrationController.PARAM_PATIENT_ALTERNATE_SSN),
-                getStringParam(request, IntygIntegrationController.PARAM_PATIENT_FORNAMN),
-                getStringParam(request, IntygIntegrationController.PARAM_PATIENT_MELLANNAMN),
-                getStringParam(request, IntygIntegrationController.PARAM_PATIENT_EFTERNAMN),
-                getStringParam(request, IntygIntegrationController.PARAM_PATIENT_POSTADRESS),
-                getStringParam(request, IntygIntegrationController.PARAM_PATIENT_POSTNUMMER),
-                getStringParam(request, IntygIntegrationController.PARAM_PATIENT_POSTORT),
-                getBooleanParameter(request, IntygIntegrationController.PARAM_COHERENT_JOURNALING, false),
-                getBooleanParameter(request, IntygIntegrationController.PARAM_PATIENT_DECEASED, false),
-                getBooleanParameter(request, IntygIntegrationController.PARAM_INACTIVE_UNIT, false),
-                getBooleanParameter(request, IntygIntegrationController.PARAM_FORNYA_OK, true));
+        String redirectUrl = "/visa/intyg/" + intygsId;
 
-        webCertUser.setParameters(integrationParameters);
+        if (requestURI.endsWith("edit")) {
+            IntegrationParameters integrationParameters = IntegrationParameters.of(
+                    getStringParam(request, IntygIntegrationController.PARAM_REFERENCE),
+                    getStringParam(request, IntygIntegrationController.PARAM_RESPONSIBLE_HOSP_NAME),
+                    getStringParam(request, IntygIntegrationController.PARAM_PATIENT_ALTERNATE_SSN),
+                    getStringParam(request, IntygIntegrationController.PARAM_PATIENT_FORNAMN),
+                    getStringParam(request, IntygIntegrationController.PARAM_PATIENT_MELLANNAMN),
+                    getStringParam(request, IntygIntegrationController.PARAM_PATIENT_EFTERNAMN),
+                    getStringParam(request, IntygIntegrationController.PARAM_PATIENT_POSTADRESS),
+                    getStringParam(request, IntygIntegrationController.PARAM_PATIENT_POSTNUMMER),
+                    getStringParam(request, IntygIntegrationController.PARAM_PATIENT_POSTORT),
+                    getBooleanParameter(request, IntygIntegrationController.PARAM_COHERENT_JOURNALING, false),
+                    getBooleanParameter(request, IntygIntegrationController.PARAM_PATIENT_DECEASED, false),
+                    getBooleanParameter(request, IntygIntegrationController.PARAM_INACTIVE_UNIT, false),
+                    getBooleanParameter(request, IntygIntegrationController.PARAM_FORNYA_OK, true));
+            webCertUser.setParameters(integrationParameters);
+            redirectUrl = redirectUrl + "/saved";
+        } else if (requestURI.endsWith("read")) {
+            redirectUrl = redirectUrl + "/readonly";
+        } else {
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM,
+                    "The context path for JWT authentication was invalid {" + requestURI + "}");
+        }
 
-        String redirectUrl = "/visa/intyg/" + intygsId + "/saved";
         if (!Strings.isNullOrEmpty(getStringParam(request, PARAM_ENHET_ID))) {
             redirectUrl = redirectUrl + "?" + PARAM_ENHET_ID + "=" + getStringParam(request, PARAM_ENHET_ID);
         }

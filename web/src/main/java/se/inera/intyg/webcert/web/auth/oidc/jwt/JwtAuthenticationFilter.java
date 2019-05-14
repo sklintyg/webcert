@@ -18,11 +18,11 @@
  */
 package se.inera.intyg.webcert.web.auth.oidc.jwt;
 
-import com.google.common.base.Strings;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.IncorrectClaimException;
-import io.jsonwebtoken.Jws;
-import io.jsonwebtoken.MissingClaimException;
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,14 +32,16 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.security.web.util.matcher.RequestMatcher;
+
+import com.google.common.base.Strings;
+
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.IncorrectClaimException;
+import io.jsonwebtoken.Jws;
+import io.jsonwebtoken.MissingClaimException;
 import se.inera.intyg.infra.security.authorities.FeaturesHelper;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
-import se.inera.intyg.webcert.web.service.jwt.JwtIntrospectionService;
 import se.inera.intyg.webcert.web.service.jwt.JwtValidationService;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.util.List;
 
 /**
  * Custom authentication filter that supports extraction of JWT tokens from either an Authorization: Bearer: token
@@ -53,9 +55,6 @@ public class JwtAuthenticationFilter extends AbstractAuthenticationProcessingFil
 
     @Autowired
     private JwtValidationService jwtValidationService;
-
-    @Autowired
-    private JwtIntrospectionService jwtIntrospectionService;
 
     @Autowired
     private FeaturesHelper featuresHelper;
@@ -80,10 +79,7 @@ public class JwtAuthenticationFilter extends AbstractAuthenticationProcessingFil
         // Validate JWS token signature
         Jws<Claims> jwt = jwtValidationService.validateJwsToken(jwsToken);
 
-        // If the JWT has a valid signature, call the introspection service to validate it.
-        jwtIntrospectionService.validateToken(jwsToken);
-
-        // If both signature and introspection is OK, extract the employeeHsaId and initiate authorization.
+        // If signature is OK, extract the employeeHsaId and initiate authorization.
         Object hsaIdObj = jwt.getBody().get("employeeHsaId");
         if (hsaIdObj == null) {
             throw new MissingClaimException(jwt.getHeader(), jwt.getBody(), "Could find claim for employeeHsaId");

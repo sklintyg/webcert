@@ -36,16 +36,16 @@ function LoadStringTable(language) {
     }
     switch (language) {
         case "English":
-            table = LoadStringTableEnglish();
+            table = LoadStringTableEnglish(); 
             break;
         case "Svenska":
-            table = LoadStringTableSwedish();
+            table = LoadStringTableSwedish(); 
             break;
         case "Svenska (SAMSET)":
-            table = LoadStringTableSwedishSamset();
+            table = LoadStringTableSwedishSamset(); 
             break;
         default:
-            table = LoadStringTableEnglish();
+            table = LoadStringTableEnglish(); 
             break;
     }
     return table;
@@ -83,7 +83,7 @@ function LoadStringTableEnglish() {
     table["BUTTON_DOWNLOAD"] = "Download";
     table["BUTTON_UPGRADE"] = "Install";
     table["BUTTON_POSTPONE"] = "Postpone";
-
+ 
     table["TEXT_INVALID_LICENSE"] = "License is invalid";
     table["TEXT_ACTIVATE"] = "Activate";
     table["TEXT_SIGNATURE"] = "Signature";
@@ -158,7 +158,7 @@ function LoadStringTableEnglish() {
     table["TEXT_STATUS_DOWNLOADING"] = "Downloading <current> of <size>, <percent>%";
     table["TEXT_STATUS_UPGRADE"] = "Install update (<size>)";
     table["TEXT_STATUS_UPGRADING"] = "Installing...";
-
+    
     table["INFO_TOKEN_NOT_PRESENT"] = "Insert a smart card in the smart card reader and try again.";
     table["INFO_BAD_SERVICE_ADDRESS"] = "Enter a valid address to a service provider and try again.";
     table["INFO_SERVICE_ALREADY_PRESENT"] = "The specified address is already present in the list of active services.";
@@ -189,7 +189,7 @@ function LoadStringTableEnglish() {
     table["INFO_TOKEN_RESET"] = "Token is reset.";
     table["INFO_PIN_CHANGED"] = "Password is changed.";
     table["INFO_PIN_UNLOCKED"] = "Password is unlocked.";
-
+    
     table["ERROR_TOKEN_NOT_PRESENT"] = "Smart card not present.";
     table["ERROR_BAD_SERVICE_ADDRESS"] = "Invalid service address.";
     table["ERROR_SERVICE_ALREADY_PRESENT"] = "Address is already present.";
@@ -210,7 +210,7 @@ function LoadStringTableEnglish() {
 //-----------------------------------------------------------------------------
 function LoadStringTableSwedish() {
     var table = new Array();
-
+    
     table["TITLE_ABOUT"] = "Om";
     table["TITLE_CERTIFICATE"] = "Certifikat";
     table["TITLE_CERTIFICATES"] = "Certifikat";
@@ -219,7 +219,7 @@ function LoadStringTableSwedish() {
     table["TITLE_SUPPORT_SERVICES"] = "Tj&auml;nster";
     table["TITLE_LICENSE_AGREEMENT"] = "Licens";
     table["TITLE_UPDATE"] = "Update";
-
+    
     table["BUTTON_OK"] = "OK";
     table["BUTTON_CANCEL"] = "Avbryt";
     table["BUTTON_YES"] = "Ja";
@@ -238,7 +238,7 @@ function LoadStringTableSwedish() {
     table["BUTTON_DOWNLOAD"] = "H&auml;mta";
     table["BUTTON_UPGRADE"] = "Installera";
     table["BUTTON_POSTPONE"] = "Skjut upp";
-
+ 
     table["TEXT_INVALID_LICENSE"] = "Licensen &auml;r ogiltig";
     table["TEXT_ACTIVATE"] = "Aktivera";
     table["TEXT_SIGNATURE"] = "Underskrift";
@@ -344,7 +344,7 @@ function LoadStringTableSwedish() {
     table["INFO_TOKEN_RESET"] = "Enheten &auml;r &aring;terst&auml;lld.";
     table["INFO_PIN_CHANGED"] = "S&auml;kerhetskod &auml;r &auml;ndrad.";
     table["INFO_PIN_UNLOCKED"] = "S&auml;kerhetskod &auml;r uppl&aring;st.";
-
+    
     table["ERROR_TOKEN_NOT_PRESENT"] = "Kort saknas i kortl&auml;saren.";
     table["ERROR_BAD_SERVICE_ADDRESS"] = "Tj&auml;nsteleverant&ouml;rens address &auml;r ogiltig.";
     table["ERROR_SERVICE_ALREADY_PRESENT"] = "Adressen finns redan.";
@@ -366,7 +366,7 @@ function LoadStringTableSwedish() {
 function LoadStringTableSwedishSamset() {
     var table = null;
     if ((table = LoadStringTableSwedish()) != null) {
-
+    
         table["TITLE_CERTIFICATES"] = "E-legitimationer";
         table["TITLE_CERTIFICATE"] = "E-legitimation";
 
@@ -394,7 +394,7 @@ function LoadStringTableSwedishSamset() {
         table["INFO_DELETE_CERTIFICATE"] = "Ta bort e-legitimationen.";
         table["INFO_PIN_CHANGED"] = "S&auml;kerhetskoden &auml;r &auml;ndrad.";
         table["INFO_PIN_UNLOCKED"] = "S&auml;kerhetskoden &auml;r uppl&aring;st.";
-
+        
         table["CONFIRM_DELETE_CERTIFICATE"] = "Vill du verkligen ta bort din e-legitimation?";
         table["CONFIRM_DELETE_TOKEN"] = "Vill du verkligen ta bort din filbaserade e-legitimation?";
     }
@@ -423,16 +423,16 @@ function LoadErrorTable(language) {
     }
     switch (language) {
         case "English":
-            table = LoadErrorTableEnglish();
+            table = LoadErrorTableEnglish(); 
             break;
         case "Svenska":
-            table = LoadErrorTableSwedish();
+            table = LoadErrorTableSwedish(); 
             break;
         case "Svenska (SAMSET)":
-            table = LoadErrorTableSwedishSamset();
+            table = LoadErrorTableSwedishSamset(); 
             break;
         default:
-            table = LoadErrorTableEnglish();
+            table = LoadErrorTableEnglish(); 
             break;
     }
     return table;
