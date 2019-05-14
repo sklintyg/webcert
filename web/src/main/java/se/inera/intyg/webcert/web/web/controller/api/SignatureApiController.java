@@ -18,11 +18,27 @@
  */
 package se.inera.intyg.webcert.web.web.controller.api;
 
-import com.google.common.base.Strings;
+import java.util.Arrays;
+import java.util.stream.Collectors;
+
+import javax.persistence.OptimisticLockException;
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.OptimisticLockingFailureException;
+
+import com.google.common.base.Strings;
+
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.xmldsig.service.FakeSignatureServiceImpl;
@@ -35,19 +51,6 @@ import se.inera.intyg.webcert.web.service.underskrift.model.SignaturBiljett;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
 import se.inera.intyg.webcert.web.web.controller.api.dto.KlientSignaturRequest;
 import se.inera.intyg.webcert.web.web.controller.api.dto.SignaturStateDTO;
-
-import javax.persistence.OptimisticLockException;
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import java.util.Arrays;
-import java.util.stream.Collectors;
 
 @Path("/signature")
 public class SignatureApiController extends AbstractApiController {
@@ -76,13 +79,13 @@ public class SignatureApiController extends AbstractApiController {
                 .orThrow();
         SignMethod signMethod = null;
         try {
-             signMethod = SignMethod.valueOf(signMethodStr);
+            signMethod = SignMethod.valueOf(signMethodStr);
         } catch (IllegalArgumentException e) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MISSING_PARAMETER,
                     "Parameter signMethod is missing or has illegal value. Allowed values are: "
                             + Arrays.asList(SignMethod.values()).stream()
-                            .map(SignMethod::name)
-                            .collect(Collectors.joining(", ")));
+                                    .map(SignMethod::name)
+                                    .collect(Collectors.joining(", ")));
         }
 
         try {
@@ -105,8 +108,6 @@ public class SignatureApiController extends AbstractApiController {
                 .build();
     }
 
-
-
     @GET
     @Path("/{intygsTyp}/{ticketId}/signeringsstatus")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
@@ -125,6 +126,7 @@ public class SignatureApiController extends AbstractApiController {
     public SignaturStateDTO klientSigneraUtkast(@PathParam("intygsTyp") String intygsTyp, @PathParam("biljettId") String biljettId,
             @Context HttpServletRequest request, KlientSignaturRequest signaturRequest) {
 
+        // TODO: Verify authorities
         verifyIsAuthorizedToSignIntyg(intygsTyp);
 
         LOG.debug("Signerar intyg med biljettId {}", biljettId);
