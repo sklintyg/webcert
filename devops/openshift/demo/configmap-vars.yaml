@@ -6,7 +6,7 @@ data:
   PRIVATEPRACTITIONER_PORTAL_REGISTRATION_URL: "https://demo.registrering.intygstjanster.se/#/"
   NTJP_BASE_URL: "http://127.0.0.1:8080/services/stubs"
   TAK_BASE_URL: "${ntjp.base.url}/takstub"
-  SRS_BASE_URL: "${ntjp.base.url}"
+  SRS_BASE_URL: "https://srs-demo-demointyg.app-test1.ind-ocp.sth.basefarm.net/services"
   PRIVATEPRACTITIONER_BASE_URL: "${ntjp.base.url}"
   FMB_ENDPOINT_URL: "https://api.socialstyrelsen.se/fmb"
   NETID_ACCESS_SERVER_URL: "https://showroom.lab.secmaker.com/nias/ServiceServer.asmx?WSDL"
