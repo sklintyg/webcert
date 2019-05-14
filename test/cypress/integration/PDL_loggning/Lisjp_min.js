@@ -56,8 +56,8 @@ describe('LISJP-intyg', function () {
         pdlEventArray.push(lisjPdlEvent(this, pdl.enumHandelse.SKRIVA, undefined, this.utkastId, this.vårdenhet.uppdragsnamn, this.vårdenhet.vårdgivareId, this.vårdenhet.vårdgivareNamn, this.vårdenhet.id, this.vårdenhet.namn));
         
         // Lite special logga ut/logga in -variant för att sedan öppna intyget på nytt med en ny session
-        cy.visit('/error.jsp?reason=logout');
         cy.clearCookies();
+        cy.visit('/logout');
         cy.loggaInVårdpersonalIntegrerat(this.vårdpersonal, this.vårdenhet);
         cy.visit(önskadUrl);
         cy.url().should('include', this.utkastId);
@@ -88,8 +88,8 @@ describe('LISJP-intyg', function () {
         cy.log("Testar SJF");
 
         // Lite special logga ut/logga in -variant för att sedan öppna intyget på nytt med en ny session och SJF (Sammanhållen journalföring)
-        cy.visit('/error.jsp?reason=logout');
         cy.clearCookies();
+        cy.visit('/logout');
         cy.loggaInVårdpersonalIntegrerat(this.vårdpersonal, this.vårdenhet_2);
 
         const sjfUrl = "/visa/intyg/" + this.utkastId + "?enhet=" + this.vårdenhet_2.id + "&sjf=true";
@@ -111,11 +111,9 @@ describe('LISJP-intyg', function () {
         cy.log("Testar återigen utan SJF");
 
         cy.wait(2000); // Debug - FÖr att slippa "Välkommen till Webcert"-sidan
-
         // Lite special logga ut/logga in -variant för att sedan öppna intyget på nytt med en ny session
-        cy.visit('/error.jsp?reason=logout').contains("Du är nu utloggad");
         cy.clearCookies();
-        cy.wait(1500); // debug - hjälper detta? Vi kommer ofta till "Välkommen till Webcert" istället för intyget nedan
+        cy.visit('/logout');
         cy.loggaInVårdpersonalIntegrerat(this.vårdpersonal, this.vårdenhet);
         cy.wait(1500); // debug - hjälper detta? Vi kommer ofta till "Välkommen till Webcert" istället för intyget nedan
         cy.visit(önskadUrl);
