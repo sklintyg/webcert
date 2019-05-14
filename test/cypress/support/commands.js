@@ -145,6 +145,44 @@ Cypress.Commands.add("skapaLuaeFsUtkast", fx => {
     return skapaUtkast(fx, implementeradeIntyg.LUAE_FS);
 });
 
+/*
+Loopa igenom arrayen och plocka ut antal unika intygsid:n (detta påverkar vilka URL:er
+vi ska hämta loggar från). Skapa en tvådimensionell array med intygsid som första
+element på varje plats, följt av logghändelserna som ska verifieras.
+*/
+function delaPdlEventsPåIntygsid(pdlLoggar) {
+    cy.log("Splittar arrayen..."); // ToDo: TA BORT!
+    var eventPerIntygsid = [];
+    for (var i = 0; i < pdlLoggar.length; i++) {
+        var nyttId = true
+        for (var j = 0; j < eventPerIntygsid.length; j++) {
+            if (eventPerIntygsid[j][0] === pdlLoggar[i].activity.activityLevel) {
+                nyttId = false
+                eventPerIntygsid[j].push(pdlLoggar[i]);
+                cy.log("Befintligt id, sparar på plats " + j); // ToDo: TA BORT!
+                break;
+            }
+        }
+
+        if (nyttId) {
+            // Vi hittade inte intygsId:t i idSplitArray vilket betyder att det är ett nytt id som ska läggas till
+            var nyttIndex = eventPerIntygsid.length
+            eventPerIntygsid[nyttIndex] = []
+            eventPerIntygsid[nyttIndex].push(pdlLoggar[i].activity.activityLevel)
+            eventPerIntygsid[nyttIndex].push(pdlLoggar[i])
+            cy.log("Nytt id, sparar på plats " + nyttIndex); // ToDo: TA BORT!
+        }
+    }
+
+    cy.log("Hittade " + eventPerIntygsid.length + " unika intygsid:n.");
+
+    return eventPerIntygsid;
+}
+
+/*
+Detta command tar in en array med förväntade PDL-loggar. Dessa verifieras mot
+riktiga PDL-events som hämtas från loggkälla.
+*/
 Cypress.Commands.add("verifieraPdlLoggar", pdlLogArray => {
 
     cy.log("cy.verifieraPdlLoggar - enter. Antal loggar: " + pdlLogArray.length)
@@ -158,8 +196,20 @@ Cypress.Commands.add("verifieraPdlLoggar", pdlLogArray => {
     // Konstanterna ska brytas ut till ex.vis cypress.json
     const logSenderTimeout = 15000;
     const mockBaseUrl = Cypress.env('intygMockBaseUrl') + "/validate/cypressAssertPayload/Webcert-pdl-"
-    const användarnamn = Cypress.env('MOCK_USERNAME_PASSWORD_USR')
-    const lösenord = Cypress.env('MOCK_USERNAME_PASSWORD_PSW')
+    var användarnamn = Cypress.env('MOCK_USERNAME_PASSWORD_USR')
+    var lösenord = Cypress.env('MOCK_USERNAME_PASSWORD_PSW')
+
+    expect(mockBaseUrl).to.exist;
+
+    // Internt kräver mocken ingen autentisering. Jenkins körs externt så
+    // den har användarnamn och lösen satt som miljövariabler
+    if (!användarnamn) {
+        användarnamn = "";
+    }
+    if (!lösenord) {
+        lösenord = "";
+    }
+
     //cy.log("Mockens URL: " + mockBaseUrl);
     //cy.log("mockens användarnamn och lösenord:");
     //cy.log(användarnamn);
@@ -169,32 +219,7 @@ Cypress.Commands.add("verifieraPdlLoggar", pdlLogArray => {
     // Säkerställ att LogSender har skickat alla loggar
     cy.wait(logSenderTimeout);
 
-    // Loopa igenom arrayen och plocka ut antal unika intygsid:n (detta påverkar vilka URL:er vi ska hämta loggar från)
-    // Skapa en tvådimensionell array med intygsid som första element på varje plats, följt av logghändelserna som ska verifieras.
-    cy.log("Splittar arrayen..."); // ToDo: TA BORT!
-    var idSplitArray = []
-    for (var i = 0; i < pdlLogArray.length; i++) {
-        var nyttId = true
-        for (var j = 0; j < idSplitArray.length; j++) {
-            if (idSplitArray[j][0] === pdlLogArray[i].activity.activityLevel) {
-                nyttId = false
-                idSplitArray[j].push(pdlLogArray[i]);
-                cy.log("Befintligt id, sparar på plats " + j); // ToDo: TA BORT!
-                break;
-            }
-        }
-
-        if (nyttId) {
-            // Vi hittade inte intygsId:t i idSplitArray vilket betyder att det är ett nytt id som ska läggas till
-            var nyttIndex = idSplitArray.length
-            idSplitArray[nyttIndex] = []
-            idSplitArray[nyttIndex].push(pdlLogArray[i].activity.activityLevel)
-            idSplitArray[nyttIndex].push(pdlLogArray[i])
-            cy.log("Nytt id, sparar på plats " + nyttIndex); // ToDo: TA BORT!
-        }
-    }
-
-    cy.log("Vi hittade " + idSplitArray.length + " unika intygsid:n i arrayen")
+    var idSplitArray = delaPdlEventsPåIntygsid(pdlLogArray);
 
     // Extra sanity check. Denna kan tas bort när det funkar pålitligt.
     for (var i = 0; i < idSplitArray.length; i++) {
@@ -213,8 +238,8 @@ Cypress.Commands.add("verifieraPdlLoggar", pdlLogArray => {
             method: 'GET',
             url: mockBaseUrl + idSplitArray[i][0],
             auth: {
-                username: 'validate',
-                password: 'wsy4sL7yfLanBXbj2y9syMDVnGwgfHJL'
+                username: användarnamn,
+                password: lösenord
             }
         }).then((resp) => {
             expect(resp.status).to.equal(200);
