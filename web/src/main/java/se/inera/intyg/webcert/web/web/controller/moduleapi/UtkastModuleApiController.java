@@ -53,6 +53,7 @@ import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
@@ -152,11 +153,7 @@ public class UtkastModuleApiController extends AbstractApiController {
                     "Could not resolve Patient in PU-service when opening draft.");
         }
 
-        final AccessResult accessResult = draftAccessService.allowToReadDraft(intygsTyp, utkast.getEnhetsId(),
-                resolvedPatient.getPersonId());
-        if (!accessResult.isAllowed()) {
-            accessResultExceptionHelper.throwException(accessResult);
-        }
+        validateAllowToReadUtkast(utkast, resolvedPatient.getPersonId());
 
         request.getSession(true).removeAttribute(LAST_SAVED_DRAFT);
 
@@ -251,11 +248,7 @@ public class UtkastModuleApiController extends AbstractApiController {
 
         Utkast utkast = utkastService.getDraft(intygsId, intygsTyp);
 
-        final AccessResult accessResult = draftAccessService.allowToEditDraft(intygsTyp, utkast.getEnhetsId(),
-                utkast.getPatientPersonnummer());
-        if (!accessResult.isAllowed()) {
-            accessResultExceptionHelper.throwException(accessResult);
-        }
+        validateAllowToEditUtkast(utkast);
 
         LOG.debug("Saving utkast with id '{}', autosave is {}", intygsId, autoSave);
 
@@ -299,11 +292,7 @@ public class UtkastModuleApiController extends AbstractApiController {
 
         Utkast utkast = utkastService.getDraft(intygsId, intygsTyp);
 
-        final AccessResult accessResult = draftAccessService.allowToEditDraft(intygsTyp, utkast.getEnhetsId(),
-                utkast.getPatientPersonnummer());
-        if (!accessResult.isAllowed()) {
-            accessResultExceptionHelper.throwException(accessResult);
-        }
+        validateAllowToEditUtkast(utkast);
 
         LOG.debug("Validating utkast with id '{}'", intygsId);
 
@@ -371,11 +360,7 @@ public class UtkastModuleApiController extends AbstractApiController {
 
         Utkast utkast = utkastService.getDraft(intygsId, intygsTyp);
 
-        final AccessResult accessResult = draftAccessService.allowToDeleteDraft(intygsTyp, utkast.getEnhetsId(),
-                utkast.getPatientPersonnummer());
-        if (!accessResult.isAllowed()) {
-            accessResultExceptionHelper.throwException(accessResult);
-        }
+        validateAllowToDeleteUtkast(utkast);
 
         LOG.debug("Deleting draft with id {}", intygsId);
 
@@ -409,12 +394,7 @@ public class UtkastModuleApiController extends AbstractApiController {
 
         Utkast utkast = utkastService.getDraft(intygsId, intygsTyp);
 
-        final AccessResult accessResult = lockedDraftAccessService.allowedToInvalidateLockedUtkast(intygsTyp,
-                utkast.getEnhetsId(),
-                utkast.getPatientPersonnummer());
-        if (!accessResult.isAllowed()) {
-            accessResultExceptionHelper.throwException(accessResult);
-        }
+        validateAllowToInvalidateLockedUtkast(utkast);
 
         if (authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
                 .features(AuthoritiesConstants.FEATURE_MAKULERA_INTYG_KRAVER_ANLEDNING).isVerified() && !param.isValid()) {
@@ -425,5 +405,41 @@ public class UtkastModuleApiController extends AbstractApiController {
         utkastService.revokeLockedDraft(intygsId, intygsTyp, param.getMessage(), param.getReason());
 
         return Response.ok().build();
+    }
+
+    private void validateAllowToReadUtkast(Utkast utkast, Personnummer personnummer) {
+        final AccessResult accessResult = draftAccessService.allowToReadDraft(
+                utkast.getIntygsTyp(),
+                utkast.getEnhetsId(),
+                personnummer);
+
+        accessResultExceptionHelper.throwExceptionIfDenied(accessResult);
+    }
+
+    private void validateAllowToEditUtkast(Utkast utkast) {
+        final AccessResult accessResult = draftAccessService.allowToEditDraft(
+                utkast.getIntygsTyp(),
+                utkast.getEnhetsId(),
+                utkast.getPatientPersonnummer());
+
+        accessResultExceptionHelper.throwExceptionIfDenied(accessResult);
+    }
+
+    private void validateAllowToDeleteUtkast(Utkast utkast) {
+        final AccessResult accessResult = draftAccessService.allowToDeleteDraft(
+                utkast.getIntygsTyp(),
+                utkast.getEnhetsId(),
+                utkast.getPatientPersonnummer());
+
+        accessResultExceptionHelper.throwExceptionIfDenied(accessResult);
+    }
+
+    private void validateAllowToInvalidateLockedUtkast(Utkast utkast) {
+        final AccessResult accessResult = lockedDraftAccessService.allowedToInvalidateLockedUtkast(
+                utkast.getIntygsTyp(),
+                utkast.getEnhetsId(),
+                utkast.getPatientPersonnummer());
+
+        accessResultExceptionHelper.throwExceptionIfDenied(accessResult);
     }
 }
