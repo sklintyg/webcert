@@ -217,13 +217,7 @@ public class ArendeServiceImpl implements ArendeService {
 
         validateArende(intygId, utkast);
 
-        final Utlatande utlatande = modelFacade.getUtlatandeFromInternalModel(utkast.getIntygsTyp(), utkast.getModel());
-        final Vardenhet vardenhet = utlatande.getGrundData().getSkapadAv().getVardenhet();
-        final Personnummer personnummer = utlatande.getGrundData().getPatient().getPersonId();
-        final AccessResult accessResult = certificateAccessService.allowToCreateQuestion(utkast.getIntygsTyp(), vardenhet, personnummer);
-        if (!accessResult.isAllowed()) {
-            accessResultExceptionHelper.throwException(accessResult);
-        }
+        validateAccessRightsToCreateQuestion(utkast);
 
         Arende arende = ArendeConverter.createArendeFromUtkast(amne, rubrik, meddelande, utkast, LocalDateTime.now(systemClock),
                 webcertUserService.getUser().getNamn(), hsaEmployeeService);
@@ -242,16 +236,7 @@ public class ArendeServiceImpl implements ArendeService {
         }
         Arende svarPaMeddelande = lookupArende(svarPaMeddelandeId);
 
-        final Utkast utkast = utkastRepository.findOne(svarPaMeddelande.getIntygsId());
-        final Utlatande utlatande = modelFacade.getUtlatandeFromInternalModel(utkast.getIntygsTyp(), utkast.getModel());
-        final Vardenhet vardenhet = utlatande.getGrundData().getSkapadAv().getVardenhet();
-        final Personnummer personnummer = utlatande.getGrundData().getPatient().getPersonId();
-        final AccessResult accessResult = certificateAccessService.allowToAnswerComplementQuestion(utkast.getIntygsTyp(), vardenhet,
-                personnummer,
-                false);
-        if (!accessResult.isAllowed()) {
-            accessResultExceptionHelper.throwException(accessResult);
-        }
+        validateAccessRightsToAnswerComplement(svarPaMeddelande.getIntygsId(), false);
 
         if (!Status.PENDING_INTERNAL_ACTION.equals(svarPaMeddelande.getStatus())) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, "Arende with id "
@@ -296,16 +281,7 @@ public class ArendeServiceImpl implements ArendeService {
 
         Arende latestKomplArende = getLatestKomplArende(intygsId, arendeList);
 
-        final Utkast utkast = utkastRepository.findOne(latestKomplArende.getIntygsId());
-        final Utlatande utlatande = modelFacade.getUtlatandeFromInternalModel(utkast.getIntygsTyp(), utkast.getModel());
-        final Vardenhet vardenhet = utlatande.getGrundData().getSkapadAv().getVardenhet();
-        final Personnummer personnummer = utlatande.getGrundData().getPatient().getPersonId();
-        final AccessResult accessResult = certificateAccessService.allowToAnswerComplementQuestion(utkast.getIntygsTyp(), vardenhet,
-                personnummer,
-                true);
-        if (!accessResult.isAllowed()) {
-            accessResultExceptionHelper.throwException(accessResult);
-        }
+        validateAccessRightsToAnswerComplement(intygsId, true);
 
         // Close all Arende for intyg, _except_ question from recipient (latestKomplArende) which we handle separately below.
         arendeList.stream()
@@ -354,14 +330,7 @@ public class ArendeServiceImpl implements ArendeService {
 
         List<Arende> allArende = arendeRepository.findByIntygsId(intygsId);
 
-        final Utkast utkast = utkastRepository.findOne(intygsId);
-        final Utlatande utlatande = modelFacade.getUtlatandeFromInternalModel(utkast.getIntygsTyp(), utkast.getModel());
-        final Vardenhet vardenhet = utlatande.getGrundData().getSkapadAv().getVardenhet();
-        final Personnummer personnummer = utlatande.getGrundData().getPatient().getPersonId();
-        final AccessResult accessResult = certificateAccessService.allowToForwardQuestions(utkast.getIntygsTyp(), vardenhet, personnummer);
-        if (!accessResult.isAllowed()) {
-            accessResultExceptionHelper.throwException(accessResult);
-        }
+        validateAccessRightsToForwardQuestions(intygsId);
 
         List<Arende> arendenToForward = arendeRepository.save(
                 allArende
@@ -383,16 +352,7 @@ public class ArendeServiceImpl implements ArendeService {
 
         Arende arende = lookupArende(meddelandeId);
 
-        final Utkast utkast = utkastRepository.findOne(arende.getIntygsId());
-        final Utlatande utlatande = modelFacade.getUtlatandeFromInternalModel(utkast.getIntygsTyp(), utkast.getModel());
-        final Vardenhet vardenhet = utlatande.getGrundData().getSkapadAv().getVardenhet();
-        final Personnummer personnummer = utlatande.getGrundData().getPatient().getPersonId();
-        final AccessResult accessResult = certificateAccessService.allowToAnswerComplementQuestion(utkast.getIntygsTyp(), vardenhet,
-                personnummer,
-                false);
-        if (!accessResult.isAllowed()) {
-            accessResultExceptionHelper.throwException(accessResult);
-        }
+        validateAccessRightsToAnswerComplement(arende.getIntygsId(), false);
 
         boolean arendeIsAnswered = !arendeRepository.findBySvarPaId(meddelandeId).isEmpty();
 
@@ -451,14 +411,7 @@ public class ArendeServiceImpl implements ArendeService {
         WebCertUser user = webcertUserService.getUser();
         List<Arende> arendeList = getArendeForIntygId(intygsId, user);
 
-        final Utkast utkast = utkastRepository.findOne(intygsId);
-        final Utlatande utlatande = modelFacade.getUtlatandeFromInternalModel(utkast.getIntygsTyp(), utkast.getModel());
-        final Vardenhet vardenhet = utlatande.getGrundData().getSkapadAv().getVardenhet();
-        final Personnummer personnummer = utlatande.getGrundData().getPatient().getPersonId();
-        final AccessResult accessResult = certificateAccessService.allowToReadQuestions(utkast.getIntygsTyp(), vardenhet, personnummer);
-        if (!accessResult.isAllowed()) {
-            accessResultExceptionHelper.throwException(accessResult);
-        }
+        validateAccessRightsToReadArenden(intygsId);
 
         return getArendeConversationViewList(intygsId, arendeList);
     }
@@ -609,16 +562,7 @@ public class ArendeServiceImpl implements ArendeService {
     public ArendeConversationView closeArendeAsHandled(String meddelandeId, String intygTyp) {
         final Arende arende = lookupArende(meddelandeId);
 
-        final Utkast utkast = utkastRepository.findOne(arende.getIntygsId());
-        final Utlatande utlatande = modelFacade.getUtlatandeFromInternalModel(utkast.getIntygsTyp(), utkast.getModel());
-        final Vardenhet vardenhet = utlatande.getGrundData().getSkapadAv().getVardenhet();
-        final Personnummer personnummer = utlatande.getGrundData().getPatient().getPersonId();
-        final AccessResult accessResult = certificateAccessService.allowToAnswerComplementQuestion(utkast.getIntygsTyp(), vardenhet,
-                personnummer,
-                false);
-        if (!accessResult.isAllowed()) {
-            accessResultExceptionHelper.throwException(accessResult);
-        }
+        validateAccessRightsToAnswerComplement(arende.getIntygsId(), false);
 
         if (Fk7263EntryPoint.MODULE_ID.equalsIgnoreCase(intygTyp)) {
             fragaSvarService.closeQuestionAsHandled(Long.parseLong(meddelandeId));
@@ -835,5 +779,69 @@ public class ArendeServiceImpl implements ArendeService {
         sendNotification(closedArende, notificationEvent);
 
         return closedArende;
+    }
+
+    private void validateAccessRightsToAnswerComplement(String intygsId, boolean newCertificate) {
+        final Utlatande utlatande = getUtlatande(intygsId);
+        final AccessResult accessResult = certificateAccessService.allowToAnswerComplementQuestion(
+                utlatande.getTyp(),
+                getVardenhet(utlatande),
+                getPersonnummer(utlatande),
+                newCertificate);
+
+        throwExceptionIfAccessDenied(accessResult);
+    }
+
+    private void validateAccessRightsToForwardQuestions(String intygsId) {
+        final Utlatande utlatande = getUtlatande(intygsId);
+        final AccessResult accessResult = certificateAccessService.allowToForwardQuestions(
+                utlatande.getTyp(),
+                getVardenhet(utlatande),
+                getPersonnummer(utlatande));
+
+        throwExceptionIfAccessDenied(accessResult);
+    }
+
+    private void validateAccessRightsToCreateQuestion(Utkast utkast) {
+        final Utlatande utlatande = getUtlatande(utkast);
+        final AccessResult accessResult = certificateAccessService.allowToCreateQuestion(
+                utlatande.getTyp(),
+                getVardenhet(utlatande),
+                getPersonnummer(utlatande));
+
+        throwExceptionIfAccessDenied(accessResult);
+    }
+
+    private void validateAccessRightsToReadArenden(String intygsId) {
+        final Utlatande utlatande = getUtlatande(intygsId);
+        final AccessResult accessResult = certificateAccessService.allowToReadQuestions(
+                utlatande.getTyp(),
+                getVardenhet(utlatande),
+                getPersonnummer(utlatande));
+
+        throwExceptionIfAccessDenied(accessResult);
+    }
+
+    private void throwExceptionIfAccessDenied(AccessResult accessResult) {
+        if (accessResult.isDenied()) {
+            accessResultExceptionHelper.throwException(accessResult);
+        }
+    }
+
+    private Utlatande getUtlatande(String intygsId) {
+        final Utkast utkast = utkastRepository.findOne(intygsId);
+        return getUtlatande(utkast);
+    }
+
+    private Utlatande getUtlatande(Utkast utkast) {
+        return modelFacade.getUtlatandeFromInternalModel(utkast.getIntygsTyp(), utkast.getModel());
+    }
+
+    private Vardenhet getVardenhet(Utlatande utlatande) {
+        return utlatande.getGrundData().getSkapadAv().getVardenhet();
+    }
+
+    private Personnummer getPersonnummer(Utlatande utlatande) {
+        return utlatande.getGrundData().getPatient().getPersonId();
     }
 }

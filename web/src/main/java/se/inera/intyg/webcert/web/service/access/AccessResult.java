@@ -51,4 +51,8 @@ public final class AccessResult {
     public boolean isAllowed() {
         return code.equals(AccessResultCode.NO_PROBLEM);
     }
+
+    public boolean isDenied() {
+        return !code.equals(AccessResultCode.NO_PROBLEM);
+    }
 }
