@@ -70,7 +70,6 @@ import se.inera.intyg.common.support.modules.support.api.dto.CertificateResponse
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
 import se.inera.intyg.common.support.modules.support.api.notification.ArendeCount;
 import se.inera.intyg.common.support.peristence.dao.util.DaoUtil;
-import se.inera.intyg.infra.integration.pu.model.PersonSvar;
 import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
@@ -386,17 +385,6 @@ public class IntygServiceImpl implements IntygService {
 
         } catch (IntygModuleFacadeException e) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, e);
-        }
-    }
-
-    private void verifyPuServiceAvailable(IntygContentHolder intyg) {
-        // INTYG-4086: All PDF-printing must pass through here. GE-002 explicitly states that if the PU-service is
-        // unavailable, we must not let anyone print!
-        PersonSvar personFromPUService = patientDetailsResolver
-                .getPersonFromPUService(intyg.getUtlatande().getGrundData().getPatient().getPersonId());
-        if (personFromPUService == null || personFromPUService.getStatus() != PersonSvar.Status.FOUND) {
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.PU_PROBLEM,
-                    "PU-service unreachable, PDF printing is not allowed.");
         }
     }
 
@@ -843,17 +831,6 @@ public class IntygServiceImpl implements IntygService {
         } catch (ModuleNotFoundException | ModuleException e) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, e);
         }
-    }
-
-    /**
-     * As the name of the method implies, this method builds a IntygContentHolder instance
-     * from the Utkast stored in Webcert. If not present, it will try to fetch from Intygstjansten
-     * instead.
-     */
-    private IntygContentHolder getIntygDataPreferWebcert(String intygId, String intygTyp) {
-        Utkast utkast = utkastRepository.findOne(intygId);
-        return utkast != null ? buildIntygContentHolderFromUtkast(utkast, false)
-                : getIntygData(intygId, intygTyp, false);
     }
 
     // NOTE! INTYG-4086. This method is used when fetching Intyg/Utkast from WC locally.
