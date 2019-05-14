@@ -31,17 +31,17 @@ import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.DraftHolder;
 
 public interface ResourceLinkHelper {
 
-    void decorateWithValidActionLinks(List<IntygModuleDTO> intygModules, Personnummer personnummer);
+    void decorateWithValidActionLinks(List<IntygModuleDTO> intygModuleDTOList, Personnummer personnummer);
 
-    void decorateWithValidActionLinks(IntygModuleDTO intygModule, Personnummer personnummer);
+    void decorateWithValidActionLinks(IntygModuleDTO intygModuleDTO, Personnummer personnummer);
 
-    void decorateWithValidActionLinks(DraftHolder utkast, String intygsTyp, Vardenhet vardenhet, Personnummer personnummer);
+    void decorateWithValidActionLinks(DraftHolder draftHolder, String intygsTyp, Vardenhet vardenhet, Personnummer personnummer);
 
-    void decorateWithValidActionLinks(IntygContentHolder intygAsExternal);
+    void decorateWithValidActionLinks(IntygContentHolder intygContentHolder);
 
-    void decorateIntygWithValidActionLinks(List<ListIntygEntry> allIntyg, Personnummer personNummer);
+    void decorateIntygWithValidActionLinks(List<ListIntygEntry> listIntygEntryList, Personnummer personNummer);
 
-    void decorateWithValidActionLinks(ListIntygEntry intygEntry, Personnummer personNummer);
+    void decorateWithValidActionLinks(ListIntygEntry listIntygEntry, Personnummer personNummer);
 
-    void decorateWithValidActionLinks(List<ArendeListItem> results, Vardenhet vardenhet);
+    void decorateWithValidActionLinks(List<ArendeListItem> arendeListItems, Vardenhet vardenhet);
 }

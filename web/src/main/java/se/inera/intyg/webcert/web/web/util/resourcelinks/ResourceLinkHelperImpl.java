@@ -53,112 +53,112 @@ public class ResourceLinkHelperImpl implements ResourceLinkHelper {
     private CertificateAccessService certificateAccessService;
 
     @Override
-    public void decorateWithValidActionLinks(List<IntygModuleDTO> intygModules, Personnummer personnummer) {
-        for (IntygModuleDTO intygModule : intygModules) {
+    public void decorateWithValidActionLinks(List<IntygModuleDTO> intygModuleDTOList, Personnummer personnummer) {
+        for (IntygModuleDTO intygModule : intygModuleDTOList) {
             decorateWithValidActionLinks(intygModule, personnummer);
         }
     }
 
     @Override
-    public void decorateWithValidActionLinks(IntygModuleDTO intygModule, Personnummer personnummer) {
-        if (draftAccessService.allowToCreateDraft(intygModule.getId(), personnummer).isAllowed()) {
-            intygModule.addLink(new ActionLink(ActionLinkType.SKAPA_UTKAST));
+    public void decorateWithValidActionLinks(IntygModuleDTO intygModuleDTO, Personnummer personnummer) {
+        if (draftAccessService.allowToCreateDraft(intygModuleDTO.getId(), personnummer).isAllowed()) {
+            intygModuleDTO.addLink(new ActionLink(ActionLinkType.SKAPA_UTKAST));
         }
     }
 
     @Override
-    public void decorateWithValidActionLinks(DraftHolder utkast, String intygsTyp, Vardenhet vardenhet, Personnummer personnummer) {
-        boolean isLocked = utkast.getStatus() != null ? utkast.getStatus().equals(UtkastStatus.DRAFT_LOCKED) : false;
+    public void decorateWithValidActionLinks(DraftHolder draftHolder, String intygsTyp, Vardenhet vardenhet, Personnummer personnummer) {
+        boolean isLocked = draftHolder.getStatus() != null ? draftHolder.getStatus().equals(UtkastStatus.DRAFT_LOCKED) : false;
         if (isLocked) {
 
             if (lockedDraftAccessService.allowedToInvalidateLockedUtkast(intygsTyp, vardenhet.getEnhetsid(), personnummer).isAllowed()) {
-                utkast.addLink(new ActionLink(ActionLinkType.MAKULERA_UTKAST));
+                draftHolder.addLink(new ActionLink(ActionLinkType.MAKULERA_UTKAST));
             }
 
             if (lockedDraftAccessService.allowedToCopyLockedUtkast(intygsTyp, vardenhet.getEnhetsid(), personnummer).isAllowed()) {
-                utkast.addLink(new ActionLink(ActionLinkType.KOPIERA_UTKAST));
+                draftHolder.addLink(new ActionLink(ActionLinkType.KOPIERA_UTKAST));
             }
 
             if (lockedDraftAccessService.allowToPrint(intygsTyp, vardenhet.getEnhetsid(), personnummer).isAllowed()) {
-                utkast.addLink(new ActionLink(ActionLinkType.SKRIV_UT_UTKAST));
+                draftHolder.addLink(new ActionLink(ActionLinkType.SKRIV_UT_UTKAST));
             }
 
         } else {
 
             if (draftAccessService.allowToDeleteDraft(intygsTyp, vardenhet.getEnhetsid(), personnummer).isAllowed()) {
-                utkast.addLink(new ActionLink(ActionLinkType.TA_BORT_UTKAST));
+                draftHolder.addLink(new ActionLink(ActionLinkType.TA_BORT_UTKAST));
             }
 
             if (draftAccessService.allowToPrintDraft(intygsTyp, vardenhet.getEnhetsid(), personnummer).isAllowed()) {
-                utkast.addLink(new ActionLink(ActionLinkType.SKRIV_UT_UTKAST));
+                draftHolder.addLink(new ActionLink(ActionLinkType.SKRIV_UT_UTKAST));
             }
 
             // Add action links related to questions, as the utkast can be part of a kompletteringsbegäran.
             final List<ActionLink> actionLinkList = getActionLinksForQuestions(intygsTyp, vardenhet, personnummer);
             for (ActionLink actionLink : actionLinkList) {
-                utkast.addLink(actionLink);
+                draftHolder.addLink(actionLink);
             }
         }
     }
 
     @Override
-    public void decorateWithValidActionLinks(IntygContentHolder intygAsExternal) {
-        final String intygsTyp = intygAsExternal.getUtlatande().getTyp();
-        final Vardenhet vardenhet = intygAsExternal.getUtlatande().getGrundData().getSkapadAv().getVardenhet();
-        final Personnummer personnummer = intygAsExternal.getUtlatande().getGrundData().getPatient().getPersonId();
+    public void decorateWithValidActionLinks(IntygContentHolder intygContentHolder) {
+        final String intygsTyp = intygContentHolder.getUtlatande().getTyp();
+        final Vardenhet vardenhet = intygContentHolder.getUtlatande().getGrundData().getSkapadAv().getVardenhet();
+        final Personnummer personnummer = intygContentHolder.getUtlatande().getGrundData().getPatient().getPersonId();
 
         if (certificateAccessService.allowToRenew(intygsTyp, vardenhet, personnummer, false).isAllowed()) {
-            intygAsExternal.addLink(new ActionLink(ActionLinkType.FORNYA_INTYG));
+            intygContentHolder.addLink(new ActionLink(ActionLinkType.FORNYA_INTYG));
         }
 
         if (certificateAccessService.allowToInvalidate(intygsTyp, vardenhet, personnummer).isAllowed()) {
-            intygAsExternal.addLink(new ActionLink(ActionLinkType.MAKULERA_INTYG));
+            intygContentHolder.addLink(new ActionLink(ActionLinkType.MAKULERA_INTYG));
         }
 
         if (certificateAccessService.allowToPrint(intygsTyp, vardenhet, personnummer, false).isAllowed()) {
-            intygAsExternal.addLink(new ActionLink(ActionLinkType.SKRIV_UT_INTYG));
+            intygContentHolder.addLink(new ActionLink(ActionLinkType.SKRIV_UT_INTYG));
         }
 
         if (certificateAccessService.allowToReplace(intygsTyp, vardenhet, personnummer).isAllowed()) {
-            intygAsExternal.addLink(new ActionLink(ActionLinkType.ERSATT_INTYG));
+            intygContentHolder.addLink(new ActionLink(ActionLinkType.ERSATT_INTYG));
         }
 
         if (certificateAccessService.allowToSend(intygsTyp, vardenhet, personnummer).isAllowed()) {
-            intygAsExternal.addLink(new ActionLink(ActionLinkType.SKICKA_INTYG));
+            intygContentHolder.addLink(new ActionLink(ActionLinkType.SKICKA_INTYG));
         }
 
         final List<ActionLink> actionLinkList = getActionLinksForQuestions(intygsTyp, vardenhet, personnummer);
         for (ActionLink actionLink : actionLinkList) {
-            intygAsExternal.addLink(actionLink);
+            intygContentHolder.addLink(actionLink);
         }
     }
 
     @Override
-    public void decorateIntygWithValidActionLinks(List<ListIntygEntry> allIntyg, Personnummer personNummer) {
-        for (ListIntygEntry intyg : allIntyg) {
+    public void decorateIntygWithValidActionLinks(List<ListIntygEntry> listIntygEntryList, Personnummer personNummer) {
+        for (ListIntygEntry intyg : listIntygEntryList) {
             decorateWithValidActionLinks(intyg, personNummer);
         }
     }
 
     @Override
-    public void decorateWithValidActionLinks(ListIntygEntry intygEntry, Personnummer personNummer) {
+    public void decorateWithValidActionLinks(ListIntygEntry listIntygEntry, Personnummer personNummer) {
         final Vardenhet vardenhet = new Vardenhet();
-        vardenhet.setEnhetsid(intygEntry.getVardenhetId());
+        vardenhet.setEnhetsid(listIntygEntry.getVardenhetId());
         vardenhet.setVardgivare(new Vardgivare());
-        vardenhet.getVardgivare().setVardgivarid(intygEntry.getVardgivarId());
+        vardenhet.getVardgivare().setVardgivarid(listIntygEntry.getVardgivarId());
 
-        if (certificateAccessService.allowToRead(intygEntry.getIntygType(), vardenhet, personNummer).isAllowed()) {
-            intygEntry.addLink(new ActionLink(ActionLinkType.LASA_INTYG));
+        if (certificateAccessService.allowToRead(listIntygEntry.getIntygType(), vardenhet, personNummer).isAllowed()) {
+            listIntygEntry.addLink(new ActionLink(ActionLinkType.LASA_INTYG));
         }
 
-        if (certificateAccessService.allowToRenew(intygEntry.getIntygType(), vardenhet, personNummer, false).isAllowed()) {
-            intygEntry.addLink(new ActionLink(ActionLinkType.FORNYA_INTYG));
+        if (certificateAccessService.allowToRenew(listIntygEntry.getIntygType(), vardenhet, personNummer, false).isAllowed()) {
+            listIntygEntry.addLink(new ActionLink(ActionLinkType.FORNYA_INTYG));
         }
     }
 
     @Override
-    public void decorateWithValidActionLinks(List<ArendeListItem> arendeItemList, Vardenhet vardenhet) {
-        for (ArendeListItem arendeListItem : arendeItemList) {
+    public void decorateWithValidActionLinks(List<ArendeListItem> arendeListItems, Vardenhet vardenhet) {
+        for (ArendeListItem arendeListItem : arendeListItems) {
             if (certificateAccessService.allowToForwardQuestions(arendeListItem.getIntygTyp(), vardenhet,
                     Personnummer.createPersonnummer(arendeListItem.getPatientId()).get()).isAllowed()) {
                 arendeListItem.addLink(new ActionLink(ActionLinkType.VIDAREBEFODRA_FRAGA));
