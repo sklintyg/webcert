@@ -789,7 +789,7 @@ public class ArendeServiceImpl implements ArendeService {
                 getPersonnummer(utlatande),
                 newCertificate);
 
-        throwExceptionIfAccessDenied(accessResult);
+        accessResultExceptionHelper.throwExceptionIfDenied(accessResult);
     }
 
     private void validateAccessRightsToForwardQuestions(String intygsId) {
@@ -799,7 +799,7 @@ public class ArendeServiceImpl implements ArendeService {
                 getVardenhet(utlatande),
                 getPersonnummer(utlatande));
 
-        throwExceptionIfAccessDenied(accessResult);
+        accessResultExceptionHelper.throwExceptionIfDenied(accessResult);
     }
 
     private void validateAccessRightsToCreateQuestion(Utkast utkast) {
@@ -809,7 +809,7 @@ public class ArendeServiceImpl implements ArendeService {
                 getVardenhet(utlatande),
                 getPersonnummer(utlatande));
 
-        throwExceptionIfAccessDenied(accessResult);
+        accessResultExceptionHelper.throwExceptionIfDenied(accessResult);
     }
 
     private void validateAccessRightsToReadArenden(String intygsId) {
@@ -819,13 +819,7 @@ public class ArendeServiceImpl implements ArendeService {
                 getVardenhet(utlatande),
                 getPersonnummer(utlatande));
 
-        throwExceptionIfAccessDenied(accessResult);
-    }
-
-    private void throwExceptionIfAccessDenied(AccessResult accessResult) {
-        if (accessResult.isDenied()) {
-            accessResultExceptionHelper.throwException(accessResult);
-        }
+        accessResultExceptionHelper.throwExceptionIfDenied(accessResult);
     }
 
     private Utlatande getUtlatande(String intygsId) {

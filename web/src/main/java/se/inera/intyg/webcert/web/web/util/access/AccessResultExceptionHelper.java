@@ -23,4 +23,6 @@ import se.inera.intyg.webcert.web.service.access.AccessResult;
 
 public interface AccessResultExceptionHelper {
     void throwException(AccessResult actionResult);
+
+    void throwExceptionIfDenied(AccessResult actionResult);
 }

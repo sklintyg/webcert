@@ -31,25 +31,32 @@ import se.inera.intyg.webcert.web.service.access.AccessResultCode;
 public class AccessResultExceptionHelperImpl implements AccessResultExceptionHelper {
 
     @Override
-    public void throwException(AccessResult actionResult) {
-        if (actionResult.getCode() == AccessResultCode.PU_PROBLEM) {
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.PU_PROBLEM, actionResult.getMessage());
+    public void throwException(AccessResult accessResult) {
+        if (accessResult.getCode() == AccessResultCode.PU_PROBLEM) {
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.PU_PROBLEM, accessResult.getMessage());
         }
 
-        if (actionResult.getCode() == AccessResultCode.AUTHORIZATION_VALIDATION) {
-            throw new AuthoritiesException(actionResult.getMessage());
+        if (accessResult.getCode() == AccessResultCode.AUTHORIZATION_VALIDATION) {
+            throw new AuthoritiesException(accessResult.getMessage());
         }
 
-        if (actionResult.getCode() == AccessResultCode.AUTHORIZATION_SEKRETESS) {
+        if (accessResult.getCode() == AccessResultCode.AUTHORIZATION_SEKRETESS) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM_SEKRETESSMARKERING,
-                    actionResult.getMessage());
+                    accessResult.getMessage());
         }
 
-        if (actionResult.getCode() == AccessResultCode.AUTHORIZATION_SEKRETESS_UNIT) {
+        if (accessResult.getCode() == AccessResultCode.AUTHORIZATION_SEKRETESS_UNIT) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM_SEKRETESSMARKERING_ENHET,
-                    actionResult.getMessage());
+                    accessResult.getMessage());
         }
 
-        throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM, actionResult.getMessage());
+        throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM, accessResult.getMessage());
+    }
+
+    @Override
+    public void throwExceptionIfDenied(AccessResult accessResult) {
+        if (accessResult.isDenied()) {
+            throwException(accessResult);
+        }
     }
 }

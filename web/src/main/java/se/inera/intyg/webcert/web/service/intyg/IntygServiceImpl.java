@@ -247,13 +247,7 @@ public class IntygServiceImpl implements IntygService {
     private IntygContentHolder fetchIntygData(String intygsId, String intygsTyp, boolean relations, boolean coherentJournaling) {
         IntygContentHolder intygsData = getIntygData(intygsId, intygsTyp, relations);
 
-        Personnummer pnr = intygsData.getUtlatande().getGrundData().getPatient().getPersonId();
-        Vardenhet vardenhet = intygsData.getUtlatande().getGrundData().getSkapadAv().getVardenhet();
-
-        final AccessResult accessResult = certificateAccessService.allowToRead(intygsTyp, vardenhet, pnr);
-        if (!accessResult.isAllowed()) {
-            accessResultExceptionHelper.throwException(accessResult);
-        }
+        validateAccessToReadIntyg(intygsData.getUtlatande());
 
         LogRequest logRequest = logRequestFactory.createLogRequestFromUtlatande(intygsData.getUtlatande(), coherentJournaling);
 
@@ -380,12 +374,7 @@ public class IntygServiceImpl implements IntygService {
                 throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, "Can't print revoked certificate.");
             }
 
-            final Personnummer personnummer = intyg.getUtlatande().getGrundData().getPatient().getPersonId();
-            final Vardenhet vardenhet = intyg.getUtlatande().getGrundData().getSkapadAv().getVardenhet();
-            final AccessResult accessResult = certificateAccessService.allowToPrint(intygsTyp, vardenhet, personnummer, isEmployer);
-            if (!accessResult.isAllowed()) {
-                accessResultExceptionHelper.throwException(accessResult);
-            }
+            validateAccessToPrintIntyg(intyg.getUtlatande(), isEmployer);
 
             IntygPdf intygPdf = modelFacade.convertFromInternalToPdfDocument(intygsTyp, intyg.getContents(), intyg.getStatuses(),
                     utkastStatus, isEmployer);
@@ -474,12 +463,7 @@ public class IntygServiceImpl implements IntygService {
                 .map(utkast -> modelFacade.getUtlatandeFromInternalModel(utkast.getIntygsTyp(), utkast.getModel()))
                 .orElseGet(() -> getIntygData(intygsId, typ, false).getUtlatande());
 
-        final Vardenhet vardenhet = utlatande.getGrundData().getSkapadAv().getVardenhet();
-        final Personnummer personnummer = utlatande.getGrundData().getPatient().getPersonId();
-        final AccessResult accessResult = certificateAccessService.allowToSend(utlatande.getTyp(), vardenhet, personnummer);
-        if (!accessResult.isAllowed()) {
-            accessResultExceptionHelper.throwException(accessResult);
-        }
+        validateAccessToSendIntyg(utlatande);
 
         if (optionalUtkast.isPresent()) {
             verifyIsNotRevoked(optionalUtkast.get(), IntygOperation.SEND);
@@ -562,12 +546,7 @@ public class IntygServiceImpl implements IntygService {
         LOG.debug("Attempting to revoke intyg {}", intygsId);
         IntygContentHolder intyg = getIntygData(intygsId, intygsTyp, false);
 
-        final Personnummer personnummer = intyg.getUtlatande().getGrundData().getPatient().getPersonId();
-        final Vardenhet vardenhet = intyg.getUtlatande().getGrundData().getSkapadAv().getVardenhet();
-        final AccessResult accessResult = certificateAccessService.allowToInvalidate(intygsTyp, vardenhet, personnummer);
-        if (!accessResult.isAllowed()) {
-            accessResultExceptionHelper.throwException(accessResult);
-        }
+        validateAccessToInvalidateIntyg(intyg.getUtlatande());
 
         verifyIsSigned(intyg, IntygOperation.REVOKE);
 
@@ -1000,9 +979,49 @@ public class IntygServiceImpl implements IntygService {
         }
     }
 
-    private String getUserReference() {
-        WebCertUser user = webCertUserService.getUser();
-        return user.getParameters() != null ? user.getParameters().getReference() : null;
+    private void validateAccessToPrintIntyg(Utlatande utlatande, boolean isEmployer) {
+        final AccessResult accessResult = certificateAccessService.allowToPrint(
+                utlatande.getTyp(),
+                getVardEnhet(utlatande),
+                getPersonnummer(utlatande),
+                isEmployer);
+
+        accessResultExceptionHelper.throwExceptionIfDenied(accessResult);
+    }
+
+    private void validateAccessToInvalidateIntyg(Utlatande utlatande) {
+        final AccessResult accessResult = certificateAccessService.allowToInvalidate(
+                utlatande.getTyp(),
+                getVardEnhet(utlatande),
+                getPersonnummer(utlatande));
+
+        accessResultExceptionHelper.throwExceptionIfDenied(accessResult);
+    }
+
+    private void validateAccessToReadIntyg(Utlatande utlatande) {
+        final AccessResult accessResult = certificateAccessService.allowToRead(
+                utlatande.getTyp(),
+                getVardEnhet(utlatande),
+                getPersonnummer(utlatande));
+
+        accessResultExceptionHelper.throwExceptionIfDenied(accessResult);
+    }
+
+    private void validateAccessToSendIntyg(Utlatande utlatande) {
+        final AccessResult accessResult = certificateAccessService.allowToSend(
+                utlatande.getTyp(),
+                getVardEnhet(utlatande),
+                getPersonnummer(utlatande));
+
+        accessResultExceptionHelper.throwExceptionIfDenied(accessResult);
+    }
+
+    private Vardenhet getVardEnhet(Utlatande utlatande) {
+        return utlatande.getGrundData().getSkapadAv().getVardenhet();
+    }
+
+    private Personnummer getPersonnummer(Utlatande utlatande) {
+        return utlatande.getGrundData().getPatient().getPersonId();
     }
 
     public enum IntygOperation {
