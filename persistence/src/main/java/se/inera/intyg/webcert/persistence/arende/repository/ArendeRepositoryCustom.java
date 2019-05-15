@@ -18,16 +18,15 @@
  */
 package se.inera.intyg.webcert.persistence.arende.repository;
 
-import java.util.List;
-import java.util.Set;
-
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-
 import se.inera.intyg.webcert.common.model.GroupableItem;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
+
+import java.util.List;
+import java.util.Set;
 
 // CHECKSTYLE:OFF LineLength
 public interface ArendeRepositoryCustom extends ArendeFilteredRepositoryCustom {
@@ -80,9 +79,9 @@ public interface ArendeRepositoryCustom extends ArendeFilteredRepositoryCustom {
      * @return A list of {@link Arende} matching the search criteria. If no entities are found, this method returns
      *         an empty list.
      */
-    @Query("SELECT ar FROM ARENDE ar WHERE ar.intygsId IN (:idList) AND ar.amne = (:amne)")
+    @Query("SELECT ar FROM Arende ar WHERE ar.intygsId IN (:idList) AND ar.amne = (:amne)")
     List<Arende> findByIntygsIdAndType(
-        @Param("idList") List<String> intygsIds, 
+        @Param("idList") List<String> intygsIds,
         @Param("amne") ArendeAmne amne);
 
     /**

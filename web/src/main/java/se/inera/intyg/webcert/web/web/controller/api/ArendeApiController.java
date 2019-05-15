@@ -41,6 +41,7 @@ import se.riv.clinicalprocess.healthcond.certificate.types.v3.IIType;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.IntygId;
 import se.riv.clinicalprocess.healthcond.certificate.v3.ResultCodeType;
 
+import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -71,6 +72,7 @@ public class ArendeApiController extends AbstractApiController {
 
     @POST
     @Path("/kompletteringar")
+    @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @ApiOperation(value = "Get complementary data", httpMethod = "POST", produces = MediaType.APPLICATION_JSON)
     @ApiResponses(value = {
@@ -80,8 +82,8 @@ public class ArendeApiController extends AbstractApiController {
     })
     @PrometheusTimeMethod
     public Response getKompletteringar(GetCertificateAdditionsType request) {
-        if (isValidRequest(request)) {
-            return Response.status(Response.Status.BAD_REQUEST).build();
+        if (!isValidRequest(request)) {
+            return Response.status(BAD_REQUEST).build();
         }
 
         LocalTime start = LocalTime.now();
@@ -105,7 +107,7 @@ public class ArendeApiController extends AbstractApiController {
 
             List<Arende> kompletteringar = arendeService.getKompletteringar(extensions);
             if (kompletteringar == null || kompletteringar.isEmpty()) {
-                return Response.noContent().entity(response).build();
+                return Response.noContent().build();
             }
 
             identifiers.forEach(identity ->
@@ -125,7 +127,7 @@ public class ArendeApiController extends AbstractApiController {
     }
 
     private boolean isValidRequest(GetCertificateAdditionsType request) {
-        return request == null || request.getIntygsId() == null || request.getIntygsId().isEmpty();
+        return request != null && request.getIntygsId() != null && !request.getIntygsId().isEmpty();
     }
 
     private String getExecutionTime(LocalTime start) {

@@ -18,64 +18,54 @@
  */
 package se.inera.intyg.webcert.web.web.controller.integrationtest.api;
 
-import static com.jayway.restassured.RestAssured.sessionId;
-import static com.jayway.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
-import static org.hamcrest.CoreMatchers.equalTo;
-
+import com.fasterxml.jackson.core.JsonProcessingException;
+import org.hamcrest.Matchers;
 import org.junit.Test;
-
-import com.jayway.restassured.http.ContentType;
-
-import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeDraftEntry;
+import se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificateadditions.v1.GetCertificateAdditionsType;
+import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.web.web.controller.integrationtest.BaseRestIntegrationTest;
+import se.riv.clinicalprocess.healthcond.certificate.types.v3.IntygId;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static com.jayway.restassured.RestAssured.sessionId;
 
 public class ArendeApiControllerIT extends BaseRestIntegrationTest {
 
+    private static final String INTYGSTYP = "lisjp";
+
     @Test
-    public void testArendeForIntyg() {
+    public void testKompletteringarForIntyg() throws JsonProcessingException {
         sessionId = getAuthSession(DEFAULT_LAKARE);
 
-        String intygId = "intygId";
-        String text = "text";
-        String amne = "amne";
-        createArendeDraft(intygId, text, amne);
+        List<String> intygsIds = new ArrayList<String>() {{
+            add(createSignedIntyg(INTYGSTYP, DEFAULT_PATIENT_PERSONNUMMER));
+            add(createSignedIntyg(INTYGSTYP, DEFAULT_PATIENT_PERSONNUMMER));
+            add(createSignedIntyg(INTYGSTYP, DEFAULT_PATIENT_PERSONNUMMER));
+        }};
+
+        intygsIds.forEach(id -> createArendeQuestion(INTYGSTYP, id, DEFAULT_PATIENT_PERSONNUMMER, ArendeAmne.KOMPLT));
+
+        GetCertificateAdditionsType request = new GetCertificateAdditionsType();
+        intygsIds.forEach(id -> {
+            IntygId iid = new IntygId();
+            iid.setRoot("some-root-value");
+            iid.setExtension(id);
+            request.getIntygsId().add(iid);
+        });
 
         spec()
-                .pathParameter("intygId", intygId)
+                .body(objectMapper.writeValueAsString(request))
                 .expect()
                     .statusCode(200)
                 .when()
-                    .get("api/arende/draft/{intygId}")
+                    .post("api/arende/kompletteringar")
                 .then()
-                    .body(matchesJsonSchemaInClasspath("jsonschema/webcert-arende-draft.json"))
-                    .body("text", equalTo(text))
-                    .body("intygId", equalTo(intygId))
-                    .body("amne", equalTo(amne));
+                    .body("additions", Matchers.notNullValue())
+                    .body("additions", Matchers.hasSize(request.getIntygsId().size()));
 
-        deleteDraft(intygId);
+        // {"additions":[],"result":null,"any":[]}
     }
 
-    private void deleteDraft(String intygId) {
-
-        spec()
-                .pathParameters("intygId", intygId)
-                .expect()
-                    .statusCode(200)
-                .when()
-                    .delete("api/arende/draft/{intygId}");
-    }
-
-    private void createArendeDraft(String intygId, String text, String amne) {
-        ArendeDraftEntry entry = new ArendeDraftEntry();
-        entry.setIntygId(intygId);
-        entry.setText(text);
-        entry.setAmne(amne);
-
-        spec()
-                .contentType(ContentType.JSON).and().body(entry)
-                .expect()
-                    .statusCode(200)
-                .when()
-                    .put("api/arende/draft");
-    }
 }

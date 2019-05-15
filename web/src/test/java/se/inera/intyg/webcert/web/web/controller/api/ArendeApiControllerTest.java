@@ -48,6 +48,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.when;
 
 /**
@@ -89,9 +90,7 @@ public class ArendeApiControllerTest {
 
         Response response = testee.getKompletteringar(buildRequest());
         assertEquals(ArendeApiController.NO_CONTENT, response.getStatus());
-
-        GetCertificateAdditionsResponseType additions = (GetCertificateAdditionsResponseType) response.getEntity();
-        assertEquals(0, additions.getAdditions().size());
+        assertNull(response.getEntity());
     }
 
     @Test
@@ -100,12 +99,15 @@ public class ArendeApiControllerTest {
 
         response = testee.getKompletteringar(null);
         assertEquals(ArendeApiController.BAD_REQUEST, response.getStatus());
+        assertNull(response.getEntity());
 
         response = testee.getKompletteringar(new GetCertificateAdditionsType());
         assertEquals(ArendeApiController.BAD_REQUEST, response.getStatus());
+        assertNull(response.getEntity());
 
         response = testee.getKompletteringar(buildEmptyRequest());
         assertEquals(ArendeApiController.BAD_REQUEST, response.getStatus());
+        assertNull(response.getEntity());
     }
 
     private GetCertificateAdditionsType buildEmptyRequest() {
