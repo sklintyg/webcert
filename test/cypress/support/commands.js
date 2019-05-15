@@ -211,17 +211,15 @@ function sorteraHändelserKronologiskt(array) {
         var ärEventLika = false;
         if ((activityTypeA ===  activityTypeB) &&
             (activityArgsA === activityArgsB)) {
-            cy.log("a och b var lika!"); // DEBUG! Ta bort!
             ärEventLika = true;
         }
 
-        // Bygg upp en sträng som skrivs ut i asserten innehållande vilka två event som är lika
-        var assertSträng = "Sorteringsalgoritmen hittade två event med samma tidstämpel. "
-        assertSträng += "Dessa var " + (ärEventLika ? "" :  "inte ") + "lika. ";
-        assertSträng += "A: " + activityTypeA + ", " + activityArgsA + ", " + datumA + ". ";
-        assertSträng += "B: " + activityTypeB + ", " + activityArgsB + ", " + datumB + ". ";
+        var beskrivningEvents = "Sorteringsalgoritmen hittade två event med samma tidstämpel. "
+        beskrivningEvents += "Dessa var " + (ärEventLika ? "" :  "inte ") + "lika. ";
+        beskrivningEvents += "A: " + activityTypeA + ", " + activityArgsA + ", " + datumA + ". ";
+        beskrivningEvents += "B: " + activityTypeB + ", " + activityArgsB + ", " + datumB + ". ";
+        cy.log(beskrivningEvents);
 
-        assert.isTrue(ärEventLika, assertSträng);
         return 0;
     });
 }
@@ -233,6 +231,7 @@ ett intyg.
 function verifieraHändelserFörIntyg(förväntadeHändelser, arr) {
     // Gå igenom listan med logghändelser och bocka av, en efter en.
     // Utgår från https://inera-certificate.atlassian.net/wiki/spaces/IT/pages/41353325/GE-005+PDL-loggning+i+Webcert
+    assert.equal(arr.length, förväntadeHändelser.length, "Kontrollerar antal logghändelser");
     for (var j = 0; j < förväntadeHändelser.length; j++) {
         // Verifiera att antalet children är rätt, d.v.s att antalet element på högsta nivån stämmer
         assert.equal(arr[j].children.length, 5)
@@ -339,11 +338,6 @@ function verifieraHändelserFörIntyg(förväntadeHändelser, arr) {
                         förväntadeHändelser[j].resources.resource.careUnit.careUnitName,
                         "Kontrollerar 'careunitname' (under 'resources'), index " + j);
     }
-    // Lägger denna assert sist. Kan få märkliga konsekvenser (om vi läser utanför arrayen
-    // i if-loopen ovan) men då kommer testfallet faila i alla fall. Anledningen till att den
-    // är sist är för att få jämförelser för så många PDL-event som möjligt även om inte
-    // antalet event stämmer mellan förväntat och faktiskt.
-    assert.equal(arr.length, förväntadeHändelser.length, "Kontrollerar antal logghändelser");
 }
 
 /*
@@ -351,10 +345,11 @@ Detta command tar in en array med förväntade PDL-loggar. Dessa verifieras mot
 riktiga PDL-events som hämtas från loggkälla.
 */
 Cypress.Commands.add("verifieraPdlLoggar", pdlLogArray => {
+    assert.isTrue(Array.isArray(pdlLogArray));
 
     // Returnera om det inte finns några element i arrayen att verifiera
-    if(pdlLogArray === undefined || pdlLogArray.length === 0) {
-        cy.log("undefined array eller 0 element... returnerar direkt.");
+    if(!pdlLogArray.length) {
+        cy.log("0 element... returnerar direkt.");
         return;
     }
 
@@ -377,35 +372,37 @@ Cypress.Commands.add("verifieraPdlLoggar", pdlLogArray => {
 
     // Speciallösning för att stega i (index) asynkront. Denna måste stegas tillsammans med "vanliga" i
     cy.wrap(0).as('index');
+
     for (var i = 0; i < förväntadeHändelserPerIntygsid.length; i++) {
         // Hämta alla loggar från mocken
-        cy.log("URL till mock för att hämta PDL: " + mockUrl + förväntadeHändelserPerIntygsid[i][0]);
+        cy.get('@index').then((ix) => {
+            cy.log("URL till mock för att hämta PDL: " + mockUrl + förväntadeHändelserPerIntygsid[ix][0]);
+            cy.request({
+                method: 'GET',
+                url: mockUrl + förväntadeHändelserPerIntygsid[ix][0],
+                auth: {
+                    username: användarnamn,
+                    password: lösenord
+                }
+            }).then((resp) => {
+                expect(resp.status).to.equal(200);
+                cy.wrap(resp).its('body').then(function(body) {
+                    // Städa bort alla <br>-taggar och alla blanksteg mellan taggar
+                    body = body.replace(/<br>/g, "");
+                    body = body.replace(/>\s+</g, "><");
 
-        cy.request({
-            method: 'GET',
-            url: mockUrl + förväntadeHändelserPerIntygsid[i][0],
-            auth: {
-                username: användarnamn,
-                password: lösenord
-            }
-        }).then((resp) => {
-            expect(resp.status).to.equal(200);
-            cy.wrap(resp).its('body').then(function(body) {
-                // Städa bort alla <br>-taggar och alla blanksteg mellan taggar
-                body = body.replace(/<br>/g, "");
-                body = body.replace(/>\s+</g, "><");
+                    var bodyDoc = document.createElement("div");
+                    bodyDoc.innerHTML = body;
 
-                var bodyDoc = document.createElement("div");
-                bodyDoc.innerHTML = body;
+                    var mockHändelser = [].slice.call(bodyDoc.getElementsByTagName("ns2:Log"));
+                    sorteraHändelserKronologiskt(mockHändelser);
 
-                var mockHändelser = [].slice.call(bodyDoc.getElementsByTagName("ns2:Log"));
-                sorteraHändelserKronologiskt(mockHändelser);
-
-                // Arrayen med förväntade event innehåller mockens URL på index 0. Skapa ny array från index 1.
-                var förväntadeHändelser = förväntadeHändelserPerIntygsid[this.index].slice(1);
-                verifieraHändelserFörIntyg(förväntadeHändelser, mockHändelser);
-                cy.wrap(this.index + 1).as('index'); // Del av speciallösningen för att kunna använda index asynkront.
+                    // Arrayen med förväntade event innehåller mockens URL på index 0. Skapa ny array från index 1.
+                    var förväntadeHändelser = förväntadeHändelserPerIntygsid[ix].slice(1);
+                    verifieraHändelserFörIntyg(förväntadeHändelser, mockHändelser);
+                    cy.wrap(ix + 1).as('index'); // Del av speciallösningen för att kunna använda index asynkront.
+                });
             });
-        });
+        })
     }
 });

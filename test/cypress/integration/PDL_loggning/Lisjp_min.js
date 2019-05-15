@@ -123,40 +123,40 @@ describe('LISJP-intyg', function () {
         // ToDo: Bug?! Varför blir det 2 "Läsa" på rad?
         pdlEventArray.push(lisjPdlEvent(this, "Läsa", undefined, this.utkastId, this.vårdenhet.uppdragsnamn, this.vårdenhet.vårdgivareId, this.vårdenhet.vårdgivareNamn, this.vårdenhet.id, this.vårdenhet.namn));
 
-        
-        // // Förnya intyget -> utkast skapas. Populerar pdl-arrayen med förväntade logposter "Skriva" och "Läsa" samt nytt intygsID.
-        // cy.url().should('include', this.utkastId);
-        // intyg.fornya();
-        // cy.contains("Smittbärarpenning"); // Vänta på att intyget ska laddas färdigt
-        // cy.get('.intygs-id').invoke('text').then((text1) => {
-        //     var intygsID_2 = text1.replace(/\s/g, '');
-        //     intygsID_2 = intygsID_2.substring(intygsID_2.length-36, intygsID_2.length);
-        //     cy.log('IntygsID fönyande utkast: ' + intygsID_2);
-        //     cy.wrap(intygsID_2).as('intygsID_2');
-        // });
-        // cy.get('@intygsID_2').then((intygID_2)=> {
-        //     pdlEventArray.push(lisjPdlEvent(this, pdl.enumHandelse.SKRIVA, undefined, intygID_2, this.vårdenhet.uppdragsnamn, this.vårdenhet.vårdgivareId, this.vårdenhet.vårdgivareNamn, this.vårdenhet.id, this.vårdenhet.namn));
-        //     pdlEventArray.push(lisjPdlEvent(this, pdl.enumHandelse.LÄSA, undefined, intygID_2, this.vårdenhet.uppdragsnamn, this.vårdenhet.vårdgivareId, this.vårdenhet.vårdgivareNamn, this.vårdenhet.id, this.vårdenhet.namn));
-        // });
+        // Förnya intyget -> utkast skapas. Populerar pdl-arrayen med förväntade logposter "Skriva" och "Läsa" samt nytt intygsID.
+        cy.url().should('include', this.utkastId);
+        intyg.fornya();
+        cy.contains("Smittbärarpenning"); // Vänta på att intyget ska laddas färdigt
+        cy.get('.intygs-id').invoke('text').then((text1) => {
+            var intygsID_2 = text1.replace(/\s/g, '');
+            intygsID_2 = intygsID_2.substring(intygsID_2.length-36, intygsID_2.length);
+            cy.log('IntygsID fönyande utkast: ' + intygsID_2);
+            cy.wrap(intygsID_2).as('intygsID_2');
+        });
+        cy.get('@intygsID_2').then((intygID_2)=> {
+            pdlEventArray.push(lisjPdlEvent(this, pdl.enumHandelse.SKRIVA, undefined, intygID_2, this.vårdenhet.uppdragsnamn, this.vårdenhet.vårdgivareId, this.vårdenhet.vårdgivareNamn, this.vårdenhet.id, this.vårdenhet.namn));
+            pdlEventArray.push(lisjPdlEvent(this, pdl.enumHandelse.LÄSA, undefined, intygID_2, this.vårdenhet.uppdragsnamn, this.vårdenhet.vårdgivareId, this.vårdenhet.vårdgivareNamn, this.vårdenhet.id, this.vårdenhet.namn));
+        });
 
-        
-    
-        // // Skriva ut utkast. Populerar PDL-arrayen med förväntad logpost "Utskrift" 
-        // cy.get('@intygsID_2').then((intygID_2)=> {
-        //     intyg.skrivUt("fullständigt", intygID_2);
-        //     pdlEventArray.push(lisjPdlEvent(this, pdl.enumHandelse.UTSKRIFT, pdl.enumHandelseArgument.UTSKRIFTUTKAST, intygID_2, this.vårdenhet.uppdragsnamn, this.vårdenhet.vårdgivareId, this.vårdenhet.vårdgivareNamn, this.vårdenhet.id, this.vårdenhet.namn));
-        // });
+        // Skriva ut utkast. Populerar PDL-arrayen med förväntad logpost "Utskrift" 
+        cy.get('@intygsID_2').then((intygID_2)=> {
+            intyg.skrivUt("fullständigt", intygID_2);
+            pdlEventArray.push(lisjPdlEvent(this, pdl.enumHandelse.UTSKRIFT, pdl.enumHandelseArgument.UTSKRIFTUTKAST, intygID_2, this.vårdenhet.uppdragsnamn, this.vårdenhet.vårdgivareId, this.vårdenhet.vårdgivareNamn, this.vårdenhet.id, this.vårdenhet.namn));
+        });
 
-        // // Raderar intygsutkast
-        // intyg.raderaUtkast();
-        // cy.get('@intygsID_2').then((intygID_2)=> {
-        //     pdlEventArray.push(lisjPdlEvent(this, pdl.enumHandelse.RADERA, undefined, intygID_2, this.vårdenhet.uppdragsnamn, this.vårdenhet.vårdgivareId, this.vårdenhet.vårdgivareNamn, this.vårdenhet.id, this.vårdenhet.namn));
-        // });
+        // Raderar intygsutkast
+        intyg.raderaUtkast();
+        cy.get('@intygsID_2').then((intygID_2)=> {
+            pdlEventArray.push(lisjPdlEvent(this, pdl.enumHandelse.RADERA, undefined, intygID_2, this.vårdenhet.uppdragsnamn, this.vårdenhet.vårdgivareId, this.vårdenhet.vårdgivareNamn, this.vårdenhet.id, this.vårdenhet.namn));
+        });
 
-        // // Makulerar ursprungsintyget
-        // // intyg.makuleraIntyg('Annat allvarligt fel');
-        // intyg.makuleraIntyg();
-        // pdlEventArray.push(lisjPdlEvent(this, pdl.enumHandelse.MAKULERA, undefined, this.utkastId, this.vårdenhet.uppdragsnamn, this.vårdenhet.vårdgivareId, this.vårdenhet.vårdgivareNamn, this.vårdenhet.id, this.vårdenhet.namn));
+        // Redirect till originalintyget genererar en ny "Läsa"
+        pdlEventArray.push(lisjPdlEvent(this, pdl.enumHandelse.LÄSA, undefined, this.utkastId, this.vårdenhet.uppdragsnamn, this.vårdenhet.vårdgivareId, this.vårdenhet.vårdgivareNamn, this.vårdenhet.id, this.vårdenhet.namn));
+
+        // Makulerar ursprungsintyget
+        // intyg.makuleraIntyg('Annat allvarligt fel');
+        intyg.makuleraIntyg();
+        pdlEventArray.push(lisjPdlEvent(this, pdl.enumHandelse.MAKULERA, undefined, this.utkastId, this.vårdenhet.uppdragsnamn, this.vårdenhet.vårdgivareId, this.vårdenhet.vårdgivareNamn, this.vårdenhet.id, this.vårdenhet.namn));
 
         cy.verifieraPdlLoggar(pdlEventArray);
     });
