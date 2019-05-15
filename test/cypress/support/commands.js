@@ -240,7 +240,6 @@ function verifieraHändelserFörIntyg(förväntadeHändelser, arr) {
         //---- Element 'Logid' ----//
         var logIdElems = arr[j].getElementsByTagName("logid")
         assert.equal(logIdElems.length, 1, "Kontrollerar antal underelement till 'logid', index " + j);
-        // ToDo: Verifierar endast att det finns ett id. Tittar inte på format eller liknande. Räcker det?
         assert.isTrue(logIdElems[0].innerText.length > 0, "Kontrollerar att logid existerar, index " + j)
 
         //---- Element 'System' ----//
@@ -340,7 +339,7 @@ function verifieraHändelserFörIntyg(förväntadeHändelser, arr) {
                         förväntadeHändelser[j].resources.resource.careUnit.careUnitName,
                         "Kontrollerar 'careunitname' (under 'resources'), index " + j);
     }
-    // Lägger denna assert sist. Kan få märkliga konsekvenser  (om vi läser utanför arrayen
+    // Lägger denna assert sist. Kan få märkliga konsekvenser (om vi läser utanför arrayen
     // i if-loopen ovan) men då kommer testfallet faila i alla fall. Anledningen till att den
     // är sist är för att få jämförelser för så många PDL-event som möjligt även om inte
     // antalet event stämmer mellan förväntat och faktiskt.
