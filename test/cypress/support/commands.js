@@ -409,4 +409,5 @@ Cypress.Commands.add("verifieraPdlLoggar", pdlLogArray => {
             });
         });
     }
+    assert.isTrue(false); // ToDo - TA BORT! ENDAST FÖR ATT TESTA JENKINS!
 });
