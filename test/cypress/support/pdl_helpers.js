@@ -43,12 +43,15 @@ export const enumHandelse = {
     LÄSA: "Läsa",
     SKRIVA: "Skriva",
     SIGNERA: "Signera",
-    UTSKRIFT: "Utskrift"
+    UTSKRIFT: "Utskrift",
+    MAKULERA: "Radera",
+    RADERA: "Radera"
 };
 
 export const enumHandelseArgument = {
     FKASSA: "Intyg skickat till mottagare FKASSA",
     LÄSASJF: "Läsning i enlighet med sammanhållen journalföring",
     UTSKRIFTSJF: "Intyg utskrivet. Läsning i enlighet med sammanhållen journalföring",
-    UTSKRIFT: "Intyg utskrivet"
+    UTSKRIFT: "Intyg utskrivet",
+    UTSKRIFTUTKAST: "Utkastet utskrivet"
 };
