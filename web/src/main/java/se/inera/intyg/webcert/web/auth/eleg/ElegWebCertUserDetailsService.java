@@ -91,7 +91,6 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
     @Autowired(required = false)
     private Optional<UserOrigin> userOrigin;
 
-
     @Override
     public Object loadUserBySAML(SAMLCredential samlCredential) {
 
@@ -102,7 +101,7 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
                 throw e;
             }
 
-            LOG.error("Error building user {}, failed with message {}", e.getMessage());
+            LOG.error("Error building user with error message {}", e.getMessage());
             throw new HsaServiceException("privatlakare, ej hsa", e);
         }
     }
@@ -188,7 +187,7 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
 
     private void decorateWebcertUserWithSekretessMarkering(WebCertUser webCertUser, HoSPersonType hosPerson) {
         // Make sure we have a valid personnr to work with..
-        Personnummer personNummer =  Personnummer
+        Personnummer personNummer = Personnummer
                 .createPersonnummer(hosPerson.getPersonId().getExtension())
                 .orElseThrow(() -> new WebCertServiceException(WebCertServiceErrorCodeEnum.PU_PROBLEM,
                         String.format("Can't determine sekretesstatus for invalid personId %s",
@@ -200,7 +199,7 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
         } else {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.PU_PROBLEM,
                     String.format("PU replied with %s - Sekretesstatus cannot be determined for person %s", person.getStatus(),
-                            personNummer.getPersonnummerWithDash()));
+                            personNummer.getPersonnummerHash()));
         }
     }
 

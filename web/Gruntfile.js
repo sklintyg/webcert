@@ -58,13 +58,14 @@ module.exports = function(grunt) {
         SRC_DIR + '../bower_components/bootstrap-sass/assets/javascripts/bootstrap.min.js',
         SRC_DIR + '../bower_components/momentjs/min/moment.min.js',
         SRC_DIR + '../bower_components/oclazyload/dist/ocLazyLoad.min.js',
+        SRC_DIR + '../bower_components/highcharts/highcharts.js',
         SRC_DIR + '../vendor/polyfill.min.js',
         SRC_DIR + '../vendor/angular-shims-placeholder/angular-shims-placeholder.min.js',
         SRC_DIR + '../vendor/angular-smooth-scroll.js',
         SRC_DIR + '../vendor/_convert.js',
         SRC_DIR + '../vendor/_language.js',
         SRC_DIR + '../vendor/_utility.js',
-        SRC_DIR + '../vendor/netid-1.0.5.js'];
+        SRC_DIR + '../vendor/netid-1.1.5.js'];
 
     var webcert = grunt.file.expand({cwd: SRC_DIR}, ['**/*.js', '!**/*.spec.js', '!**/*.test.js', '!**/app.js']).sort();
     grunt.file.write(DEST_DIR + 'app-deps.json', JSON.stringify(webcert.

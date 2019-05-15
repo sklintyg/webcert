@@ -104,6 +104,14 @@ module.exports = {
         restUtil.login();
         return restUtil.deleteUtkast(id);
     },
+    deleteHandelserForUtkast: function(id) {
+        restUtil.login();
+        return restUtil.deleteHandelserForUtkast(id);
+    },
+    deleteHandelserForPatient: function(id) {
+        restUtil.login();
+        return restUtil.deleteHandelserForPatient(id);
+    },
 
     // Ärenden
     createArende: createArende,
