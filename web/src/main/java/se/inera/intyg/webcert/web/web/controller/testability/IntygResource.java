@@ -286,12 +286,28 @@ public class IntygResource {
     public Response deleteHandelserOnIntyg(@PathParam("id") String intygsId) {
         List<Handelse> toDelete = handelseRepository.findByIntygsId(intygsId);
 
-        if (toDelete.isEmpty()) {
-            LOG.info("No HANDELSE/R found for {}", intygsId);
-            return Response.serverError().build();
-        } else {
+        if (!toDelete.isEmpty()) {
             LOG.info("Removing HANDELSEr from {}", intygsId);
             handelseRepository.delete(toDelete);
+        }
+        return Response.ok().build();
+    }
+
+    @DELETE
+    @Path("/handelser/patient/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response deleteHandelserForPatient(@PathParam("id") String patientId) {
+        Set<String> intygTyper = moduleRegistry.listAllModules().stream()
+                .map(IntygModule::getId).collect(Collectors.toSet());
+        List<Utkast> utkast = utkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(patientId, intygTyper);
+        List<String> utkastId = utkast.stream().map(Utkast::getIntygsId).collect(Collectors.toList());
+        List<List<Handelse>> toDelete = utkastId.stream()
+                .map(it -> handelseRepository.findByIntygsId(it)).collect(Collectors.toList());
+
+        if (!toDelete.isEmpty()) {
+            for (List<Handelse> i : toDelete) {
+                handelseRepository.delete(i);
+            }
         }
         return Response.ok().build();
     }

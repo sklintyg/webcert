@@ -95,6 +95,13 @@ module.exports = {
       };
       return restClient.run(options, 'json');
     },
+    deleteHandelserForPatient: function(id) {
+        var options = {
+            url: 'testability/intyg/handelser/patient/' + id,
+            method: 'DELETE'
+        };
+        return restClient.run(options, 'json');
+    },
     createWebcertIntyg: function(createJson) {
         var options = {
             url: 'testability/intyg/utkast',
