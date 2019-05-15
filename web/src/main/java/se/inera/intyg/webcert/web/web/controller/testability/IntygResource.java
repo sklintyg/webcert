@@ -76,6 +76,8 @@ import se.inera.intyg.webcert.persistence.arende.model.Arende;
 import se.inera.intyg.webcert.persistence.arende.repository.ArendeRepository;
 import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.intyg.webcert.persistence.fragasvar.repository.FragaSvarRepository;
+import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
+import se.inera.intyg.webcert.persistence.handelse.repository.HandelseRepository;
 import se.inera.intyg.webcert.persistence.utkast.model.Signatur;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
@@ -121,6 +123,9 @@ public class IntygResource {
 
     @Autowired
     private IntygModuleRegistry moduleRegistry;
+
+    @Autowired
+    private HandelseRepository handelseRepository;
 
     /**
      * This method is not very safe nor accurate - it parses the [intygsTyp].sch file using XPath and tries
@@ -271,6 +276,22 @@ public class IntygResource {
             for (Utkast u : utkast) {
                 deleteDraftAndRelatedQAs(u);
             }
+        }
+        return Response.ok().build();
+    }
+
+    @DELETE
+    @Path("/handelser/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response deleteHandelserOnIntyg(@PathParam("id") String intygsId) {
+        List<Handelse> toDelete = handelseRepository.findByIntygsId(intygsId);
+
+        if (toDelete.isEmpty()) {
+            LOG.info("No HANDELSE/R found for {}", intygsId);
+            return Response.serverError().build();
+        } else {
+            LOG.info("Removing HANDELSEr from {}", intygsId);
+            handelseRepository.delete(toDelete);
         }
         return Response.ok().build();
     }

@@ -88,6 +88,13 @@ module.exports = {
         };
         return restClient.run(options, 'json');
     },
+    deleteHandelserForUtkast: function(id) {
+      var options = {
+          url: 'testability/intyg/handelser/' + id,
+          method: 'DELETE'
+      };
+      return restClient.run(options, 'json');
+    },
     createWebcertIntyg: function(createJson) {
         var options = {
             url: 'testability/intyg/utkast',
