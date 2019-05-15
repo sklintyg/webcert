@@ -18,27 +18,29 @@
  */
 package se.inera.intyg.webcert.web.web.controller.api;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.env.Environment;
-import org.springframework.web.context.support.SpringBeanAutowiringSupport;
-import se.inera.intyg.infra.dynamiclink.model.DynamicLink;
-import se.inera.intyg.infra.dynamiclink.service.DynamicLinkService;
-import se.inera.intyg.infra.integration.postnummer.service.PostnummerService;
-import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
-import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
-import se.inera.intyg.webcert.web.web.controller.api.dto.ConfigResponse;
-
+import java.util.List;
+import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.List;
-import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
+import org.springframework.web.context.support.SpringBeanAutowiringSupport;
+
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import se.inera.intyg.infra.dynamiclink.model.DynamicLink;
+import se.inera.intyg.infra.dynamiclink.service.DynamicLinkService;
+import se.inera.intyg.infra.integration.postnummer.service.PostnummerService;
+import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
+import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
+import se.inera.intyg.webcert.web.web.controller.api.dto.ConfigResponse;
+import se.inera.intyg.infra.integration.ia.services.IABannerService;
 
 @Path("/config")
 @Api(value = "config", description = "REST API för konfigurationsparametrar", produces = MediaType.APPLICATION_JSON)
@@ -71,14 +73,20 @@ public class ConfigApiController extends AbstractApiController {
     @Autowired
     private PostnummerService postnummerService;
 
+    @Autowired
+    private IABannerService iaBannerService;
+
     @GET
     @Path("/")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @ApiOperation(value = "Get module configuration for Webcert", httpMethod = "GET", produces = MediaType.APPLICATION_JSON)
     @PrometheusTimeMethod
     public Response getConfig() {
-        return Response.ok(new ConfigResponse(version, build, ppHost, dashboardUrl, Boolean.parseBoolean(environment.getProperty(
-                "useMinifiedJavaScript", "true")), sakerhetstjanstIdpUrl, cgiFunktionstjansterIdpUrl)).build();
+        Boolean useMinifiedJavaScript = Boolean.parseBoolean(environment.getProperty("useMinifiedJavaScript", "true"));
+        ConfigResponse configResponse = new ConfigResponse(version, build, ppHost, dashboardUrl, useMinifiedJavaScript,
+                sakerhetstjanstIdpUrl, cgiFunktionstjansterIdpUrl, iaBannerService.getCurrentBanners());
+
+        return Response.ok(configResponse).build();
     }
 
     @GET
