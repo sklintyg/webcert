@@ -18,7 +18,7 @@
  */
 package se.inera.intyg.webcert.arendestub;
 
-import riv.clinicalprocess.healthcond.certificate.getcertificateadditions._1.rivtabp21.GetCertificateAdditionsResponderInterface;
+import se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificateadditions.v1.GetCertificateAdditionsResponderInterface;
 import se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificateadditions.v1.GetCertificateAdditionsResponseType;
 import se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificateadditions.v1.GetCertificateAdditionsType;
 
