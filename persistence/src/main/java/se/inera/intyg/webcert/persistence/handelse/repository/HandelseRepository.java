@@ -26,4 +26,6 @@ import java.util.List;
 public interface HandelseRepository extends JpaRepository<Handelse, Long> {
 
     List<Handelse> findByIntygsId(String intygsId);
+
+    List<Handelse> findByPersonnummer(String personId);
 }
