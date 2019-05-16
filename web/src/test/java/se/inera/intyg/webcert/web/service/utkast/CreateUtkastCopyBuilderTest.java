@@ -94,7 +94,7 @@ public class CreateUtkastCopyBuilderTest extends AbstractBuilderTest {
 
         CopyUtkastBuilderResponse builderResponse = createUtkastCopyBuilder
                 .populateCopyUtkastFromSignedIntyg(createUtkastFromTemplateRequest, patientDetails, false,
-                        false, false);
+                        false);
 
         assertNotNull(builderResponse.getUtkastCopy());
         assertNotNull(builderResponse.getUtkastCopy().getModel());
@@ -133,7 +133,7 @@ public class CreateUtkastCopyBuilderTest extends AbstractBuilderTest {
 
         CopyUtkastBuilderResponse builderResponse = createUtkastCopyBuilder
                 .populateCopyUtkastFromOrignalUtkast(createUtkastFromTemplateRequest, patientDetails, true,
-                        false, false);
+                        false);
 
         assertNotNull(builderResponse.getUtkastCopy());
         assertNotNull(builderResponse.getUtkastCopy().getModel());

@@ -141,7 +141,7 @@ abstract public class DraftAccessTest extends AccessTest {
     public void isAllowToReadUtkastNoConditions() {
         setupMocksForNoConditions();
 
-        assertAllowToReadUtkastNoConditions(accessService.allowToReadDraft(intygsTyp, enhetsId, PERSONNUMMER));
+        assertAllowToReadUtkastNoConditions(accessService.allowToReadDraft(intygsTyp, vardenhet, PERSONNUMMER));
     }
 
     abstract protected void assertAllowToReadUtkastNoConditions(AccessResult actualValue);
@@ -150,7 +150,7 @@ abstract public class DraftAccessTest extends AccessTest {
     public void isAllowToReadUtkastOnDeceasedPatient() {
         setupMocksForDeceasedPatient();
 
-        assertAllowToReadUtkastOnDeceasedPatient(accessService.allowToReadDraft(intygsTyp, enhetsId, PERSONNUMMER));
+        assertAllowToReadUtkastOnDeceasedPatient(accessService.allowToReadDraft(intygsTyp, vardenhet, PERSONNUMMER));
     }
 
     abstract protected void assertAllowToReadUtkastOnDeceasedPatient(AccessResult actualValue);
@@ -159,7 +159,7 @@ abstract public class DraftAccessTest extends AccessTest {
     public void isAllowToReadUtkastOnInactiveUnit() {
         setupMocksForInactiveUnit();
 
-        assertAllowToReadUtkastOnInactiveUnit(accessService.allowToReadDraft(intygsTyp, enhetsId, PERSONNUMMER));
+        assertAllowToReadUtkastOnInactiveUnit(accessService.allowToReadDraft(intygsTyp, vardenhet, PERSONNUMMER));
     }
 
     abstract protected void assertAllowToReadUtkastOnInactiveUnit(AccessResult actualValue);
@@ -168,7 +168,7 @@ abstract public class DraftAccessTest extends AccessTest {
     public void isAllowToReadUtkastOnRenewFalse() {
         setupMocksForOnRenewFalse();
 
-        assertAllowToReadUtkastOnRenewFalse(accessService.allowToReadDraft(intygsTyp, enhetsId, PERSONNUMMER));
+        assertAllowToReadUtkastOnRenewFalse(accessService.allowToReadDraft(intygsTyp, vardenhet, PERSONNUMMER));
     }
 
     abstract protected void assertAllowToReadUtkastOnRenewFalse(AccessResult actualValue);
@@ -177,7 +177,7 @@ abstract public class DraftAccessTest extends AccessTest {
     public void isAllowToReadOnSekretessPatientOnSameUnit() {
         setupMocksForOnSekretessPatient();
 
-        assertAllowToReadOnSekretessPatientOnSameUnit(accessService.allowToReadDraft(intygsTyp, enhetsId, PERSONNUMMER));
+        assertAllowToReadOnSekretessPatientOnSameUnit(accessService.allowToReadDraft(intygsTyp, vardenhet, PERSONNUMMER));
     }
 
     abstract protected void assertAllowToReadOnSekretessPatientOnSameUnit(AccessResult actualValue);
@@ -186,7 +186,7 @@ abstract public class DraftAccessTest extends AccessTest {
     public void isAllowToReadUtkastOnSekretessPatientOnDifferentUnit() {
         setupMocksForOnSekretessPatientDifferentUnit();
 
-        assertAllowToReadUtkastOnSekretessPatientOnDifferentUnit(accessService.allowToReadDraft(intygsTyp, enhetsId, PERSONNUMMER));
+        assertAllowToReadUtkastOnSekretessPatientOnDifferentUnit(accessService.allowToReadDraft(intygsTyp, vardenhet, PERSONNUMMER));
     }
 
     abstract protected void assertAllowToReadUtkastOnSekretessPatientOnDifferentUnit(AccessResult actualValue);
@@ -195,7 +195,7 @@ abstract public class DraftAccessTest extends AccessTest {
     public void isAllowToReadUtkastNoConditionsOnDifferentUnit() {
         setupMocksForNoConditionsDifferentUnit();
 
-        assertAllowToReadUtkastNoConditionsOnDifferentUnit(accessService.allowToReadDraft(intygsTyp, enhetsId, PERSONNUMMER));
+        assertAllowToReadUtkastNoConditionsOnDifferentUnit(accessService.allowToReadDraft(intygsTyp, vardenhet, PERSONNUMMER));
     }
 
     abstract protected void assertAllowToReadUtkastNoConditionsOnDifferentUnit(AccessResult actualValue);
@@ -204,7 +204,7 @@ abstract public class DraftAccessTest extends AccessTest {
     public void isAllowToReadUtkastOnDeceasedPatientOnDifferentUnit() {
         setupMocksForDeceasedPatientDifferentUnit();
 
-        assertAllowToReadUtkastOnDeceasedPatientOnDifferentUnit(accessService.allowToReadDraft(intygsTyp, enhetsId, PERSONNUMMER));
+        assertAllowToReadUtkastOnDeceasedPatientOnDifferentUnit(accessService.allowToReadDraft(intygsTyp, vardenhet, PERSONNUMMER));
     }
 
     abstract protected void assertAllowToReadUtkastOnDeceasedPatientOnDifferentUnit(AccessResult actualValue);
@@ -213,7 +213,7 @@ abstract public class DraftAccessTest extends AccessTest {
     public void isAllowToReadUtkastOnInactiveUnitOnDifferentUnit() {
         setupMocksForInactiveUnitDifferentUnit();
 
-        assertAllowToReadUtkastOnInactiveUnitOnDifferentUnit(accessService.allowToReadDraft(intygsTyp, enhetsId, PERSONNUMMER));
+        assertAllowToReadUtkastOnInactiveUnitOnDifferentUnit(accessService.allowToReadDraft(intygsTyp, vardenhet, PERSONNUMMER));
     }
 
     abstract protected void assertAllowToReadUtkastOnInactiveUnitOnDifferentUnit(AccessResult actualValue);
@@ -222,7 +222,7 @@ abstract public class DraftAccessTest extends AccessTest {
     public void isAllowToReadUtkastOnRenewFalseOnDifferentUnit() {
         setupMocksForOnRenewFalseDifferentUnit();
 
-        assertAllowToReadUtkastOnRenewFalseOnDifferentUnit(accessService.allowToReadDraft(intygsTyp, enhetsId, PERSONNUMMER));
+        assertAllowToReadUtkastOnRenewFalseOnDifferentUnit(accessService.allowToReadDraft(intygsTyp, vardenhet, PERSONNUMMER));
     }
 
     abstract protected void assertAllowToReadUtkastOnRenewFalseOnDifferentUnit(AccessResult actualValue);
@@ -231,7 +231,7 @@ abstract public class DraftAccessTest extends AccessTest {
     public void isAllowToEditUtkastNoConditions() {
         setupMocksForNoConditions();
 
-        assertAllowToEditUtkastNoConditions(accessService.allowToEditDraft(intygsTyp, enhetsId, PERSONNUMMER));
+        assertAllowToEditUtkastNoConditions(accessService.allowToEditDraft(intygsTyp, vardenhet, PERSONNUMMER));
     }
 
     abstract protected void assertAllowToEditUtkastNoConditions(AccessResult actualValue);
@@ -240,7 +240,7 @@ abstract public class DraftAccessTest extends AccessTest {
     public void isAllowToEditUtkastOnDeceasedPatient() {
         setupMocksForDeceasedPatient();
 
-        assertAllowToEditUtkastOnDeceasedPatient(accessService.allowToEditDraft(intygsTyp, enhetsId, PERSONNUMMER));
+        assertAllowToEditUtkastOnDeceasedPatient(accessService.allowToEditDraft(intygsTyp, vardenhet, PERSONNUMMER));
     }
 
     abstract protected void assertAllowToEditUtkastOnDeceasedPatient(AccessResult actualValue);
@@ -249,7 +249,7 @@ abstract public class DraftAccessTest extends AccessTest {
     public void isAllowToEditUtkastOnInactiveUnit() {
         setupMocksForInactiveUnit();
 
-        assertAllowToEditUtkastOnInactiveUnit(accessService.allowToEditDraft(intygsTyp, enhetsId, PERSONNUMMER));
+        assertAllowToEditUtkastOnInactiveUnit(accessService.allowToEditDraft(intygsTyp, vardenhet, PERSONNUMMER));
     }
 
     abstract protected void assertAllowToEditUtkastOnInactiveUnit(AccessResult actualValue);
@@ -258,7 +258,7 @@ abstract public class DraftAccessTest extends AccessTest {
     public void isAllowToEditUtkastOnRenewFalse() {
         setupMocksForOnRenewFalse();
 
-        assertAllowToEditUtkastOnRenewFalse(accessService.allowToEditDraft(intygsTyp, enhetsId, PERSONNUMMER));
+        assertAllowToEditUtkastOnRenewFalse(accessService.allowToEditDraft(intygsTyp, vardenhet, PERSONNUMMER));
     }
 
     abstract protected void assertAllowToEditUtkastOnRenewFalse(AccessResult actualValue);
@@ -267,7 +267,7 @@ abstract public class DraftAccessTest extends AccessTest {
     public void isAllowToEditUtkastOnSekretessPatientOnSameUnit() {
         setupMocksForOnSekretessPatient();
 
-        assertAllowToEditUtkastOnSekretessPatientOnSameUnit(accessService.allowToEditDraft(intygsTyp, enhetsId, PERSONNUMMER));
+        assertAllowToEditUtkastOnSekretessPatientOnSameUnit(accessService.allowToEditDraft(intygsTyp, vardenhet, PERSONNUMMER));
     }
 
     abstract protected void assertAllowToEditUtkastOnSekretessPatientOnSameUnit(AccessResult actualValue);
@@ -276,7 +276,7 @@ abstract public class DraftAccessTest extends AccessTest {
     public void isAllowToEditUtkastOnSekretessPatientOnDifferentUnit() {
         setupMocksForOnSekretessPatientDifferentUnit();
 
-        assertAllowToEditUtkastOnSekretessPatientOnDifferentUnit(accessService.allowToEditDraft(intygsTyp, enhetsId, PERSONNUMMER));
+        assertAllowToEditUtkastOnSekretessPatientOnDifferentUnit(accessService.allowToEditDraft(intygsTyp, vardenhet, PERSONNUMMER));
     }
 
     abstract protected void assertAllowToEditUtkastOnSekretessPatientOnDifferentUnit(AccessResult actualValue);
@@ -285,7 +285,7 @@ abstract public class DraftAccessTest extends AccessTest {
     public void isAllowToEditUtkastOnDeceasedPatientOnDifferentUnit() {
         setupMocksForDeceasedPatientDifferentUnit();
 
-        assertAllowToEditUtkastOnDeceasedPatientOnDifferentUnit(accessService.allowToEditDraft(intygsTyp, enhetsId, PERSONNUMMER));
+        assertAllowToEditUtkastOnDeceasedPatientOnDifferentUnit(accessService.allowToEditDraft(intygsTyp, vardenhet, PERSONNUMMER));
     }
 
     abstract protected void assertAllowToEditUtkastOnDeceasedPatientOnDifferentUnit(AccessResult actualValue);
@@ -294,7 +294,7 @@ abstract public class DraftAccessTest extends AccessTest {
     public void isAllowToEditUtkastOnInactiveUnitOnDifferentUnit() {
         setupMocksForInactiveUnitDifferentUnit();
 
-        assertAllowToEditUtkastOnInactiveUnitOnDifferentUnit(accessService.allowToEditDraft(intygsTyp, enhetsId, PERSONNUMMER));
+        assertAllowToEditUtkastOnInactiveUnitOnDifferentUnit(accessService.allowToEditDraft(intygsTyp, vardenhet, PERSONNUMMER));
     }
 
     abstract protected void assertAllowToEditUtkastOnInactiveUnitOnDifferentUnit(AccessResult actualValue);
@@ -303,7 +303,7 @@ abstract public class DraftAccessTest extends AccessTest {
     public void isAllowToEditUtkastOnRenewFalseOnDifferentUnit() {
         setupMocksForOnRenewFalseDifferentUnit();
 
-        assertAllowToEditUtkastOnRenewFalseOnDifferentUnit(accessService.allowToEditDraft(intygsTyp, enhetsId, PERSONNUMMER));
+        assertAllowToEditUtkastOnRenewFalseOnDifferentUnit(accessService.allowToEditDraft(intygsTyp, vardenhet, PERSONNUMMER));
     }
 
     abstract protected void assertAllowToEditUtkastOnRenewFalseOnDifferentUnit(AccessResult actualValue);
@@ -312,7 +312,7 @@ abstract public class DraftAccessTest extends AccessTest {
     public void isAllowToEditUtkastNoConditionsDifferentUnit() {
         setupMocksForNoConditionsDifferentUnit();
 
-        assertAllowToEditUtkastNoConditionsDifferentUnit(accessService.allowToEditDraft(intygsTyp, enhetsId, PERSONNUMMER));
+        assertAllowToEditUtkastNoConditionsDifferentUnit(accessService.allowToEditDraft(intygsTyp, vardenhet, PERSONNUMMER));
     }
 
     abstract protected void assertAllowToEditUtkastNoConditionsDifferentUnit(AccessResult actualValue);
@@ -321,7 +321,7 @@ abstract public class DraftAccessTest extends AccessTest {
     public void isAllowToSignUtkastNoConditions() {
         setupMocksForNoConditions();
 
-        assertAllowToSignUtkastNoConditions(accessService.allowToSignDraft(intygsTyp, enhetsId, PERSONNUMMER));
+        assertAllowToSignUtkastNoConditions(accessService.allowToSignDraft(intygsTyp, vardenhet, PERSONNUMMER));
     }
 
     abstract protected void assertAllowToSignUtkastNoConditions(AccessResult actualValue);
@@ -330,7 +330,7 @@ abstract public class DraftAccessTest extends AccessTest {
     public void isAllowToSignUtkastOnDeceasedPatient() {
         setupMocksForDeceasedPatient();
 
-        assertAllowToSignUtkastOnDeceasedPatient(accessService.allowToSignDraft(intygsTyp, enhetsId, PERSONNUMMER));
+        assertAllowToSignUtkastOnDeceasedPatient(accessService.allowToSignDraft(intygsTyp, vardenhet, PERSONNUMMER));
     }
 
     abstract protected void assertAllowToSignUtkastOnDeceasedPatient(AccessResult actualValue);
@@ -339,7 +339,7 @@ abstract public class DraftAccessTest extends AccessTest {
     public void isAllowToSignUtkastOnInactiveUnit() {
         setupMocksForInactiveUnit();
 
-        assertAllowToSignUtkastOnInactiveUnit(accessService.allowToSignDraft(intygsTyp, enhetsId, PERSONNUMMER));
+        assertAllowToSignUtkastOnInactiveUnit(accessService.allowToSignDraft(intygsTyp, vardenhet, PERSONNUMMER));
     }
 
     abstract protected void assertAllowToSignUtkastOnInactiveUnit(AccessResult actualValue);
@@ -348,7 +348,7 @@ abstract public class DraftAccessTest extends AccessTest {
     public void isAllowToSignUtkastOnRenewFalse() {
         setupMocksForOnRenewFalse();
 
-        assertAllowToSignUtkastOnRenewFalse(accessService.allowToSignDraft(intygsTyp, enhetsId, PERSONNUMMER));
+        assertAllowToSignUtkastOnRenewFalse(accessService.allowToSignDraft(intygsTyp, vardenhet, PERSONNUMMER));
     }
 
     abstract protected void assertAllowToSignUtkastOnRenewFalse(AccessResult actualValue);
@@ -357,7 +357,7 @@ abstract public class DraftAccessTest extends AccessTest {
     public void isAllowToSignUtkastOnSekretessPatientOnSameUnit() {
         setupMocksForOnSekretessPatient();
 
-        assertAllowToSignUtkastOnSekretessPatientOnSameUnit(accessService.allowToSignDraft(intygsTyp, enhetsId, PERSONNUMMER));
+        assertAllowToSignUtkastOnSekretessPatientOnSameUnit(accessService.allowToSignDraft(intygsTyp, vardenhet, PERSONNUMMER));
     }
 
     abstract protected void assertAllowToSignUtkastOnSekretessPatientOnSameUnit(AccessResult actualValue);
@@ -366,7 +366,7 @@ abstract public class DraftAccessTest extends AccessTest {
     public void isAllowToSignUtkastOnSekretessPatientOnDifferentUnit() {
         setupMocksForOnSekretessPatientDifferentUnit();
 
-        assertAllowToSignUtkastOnSekretessPatientOnDifferentUnit(accessService.allowToSignDraft(intygsTyp, enhetsId, PERSONNUMMER));
+        assertAllowToSignUtkastOnSekretessPatientOnDifferentUnit(accessService.allowToSignDraft(intygsTyp, vardenhet, PERSONNUMMER));
     }
 
     abstract protected void assertAllowToSignUtkastOnSekretessPatientOnDifferentUnit(AccessResult actualValue);
@@ -375,7 +375,7 @@ abstract public class DraftAccessTest extends AccessTest {
     public void isAllowToSignUtkastOnDeceasedPatientOnDifferentUnit() {
         setupMocksForDeceasedPatientDifferentUnit();
 
-        assertAllowToSignUtkastOnDeceasedPatientOnDifferentUnit(accessService.allowToSignDraft(intygsTyp, enhetsId, PERSONNUMMER));
+        assertAllowToSignUtkastOnDeceasedPatientOnDifferentUnit(accessService.allowToSignDraft(intygsTyp, vardenhet, PERSONNUMMER));
     }
 
     abstract protected void assertAllowToSignUtkastOnDeceasedPatientOnDifferentUnit(AccessResult actualValue);
@@ -384,7 +384,7 @@ abstract public class DraftAccessTest extends AccessTest {
     public void isAllowToSignUtkastOnInactiveUnitOnDifferentUnit() {
         setupMocksForInactiveUnitDifferentUnit();
 
-        assertAllowToSignUtkastOnInactiveUnitOnDifferentUnit(accessService.allowToSignDraft(intygsTyp, enhetsId, PERSONNUMMER));
+        assertAllowToSignUtkastOnInactiveUnitOnDifferentUnit(accessService.allowToSignDraft(intygsTyp, vardenhet, PERSONNUMMER));
     }
 
     abstract protected void assertAllowToSignUtkastOnInactiveUnitOnDifferentUnit(AccessResult actualValue);
@@ -393,7 +393,7 @@ abstract public class DraftAccessTest extends AccessTest {
     public void isAllowToSignUtkastOnRenewFalseOnDifferentUnit() {
         setupMocksForOnRenewFalseDifferentUnit();
 
-        assertAllowToSignUtkastOnRenewFalseOnDifferentUnit(accessService.allowToSignDraft(intygsTyp, enhetsId, PERSONNUMMER));
+        assertAllowToSignUtkastOnRenewFalseOnDifferentUnit(accessService.allowToSignDraft(intygsTyp, vardenhet, PERSONNUMMER));
     }
 
     abstract protected void assertAllowToSignUtkastOnRenewFalseOnDifferentUnit(AccessResult actualValue);
@@ -402,7 +402,7 @@ abstract public class DraftAccessTest extends AccessTest {
     public void isAllowToSignUtkastNoConditionsDifferentUnit() {
         setupMocksForNoConditionsDifferentUnit();
 
-        assertAllowToSignUtkastNoConditionsDifferentUnit(accessService.allowToSignDraft(intygsTyp, enhetsId, PERSONNUMMER));
+        assertAllowToSignUtkastNoConditionsDifferentUnit(accessService.allowToSignDraft(intygsTyp, vardenhet, PERSONNUMMER));
     }
 
     abstract protected void assertAllowToSignUtkastNoConditionsDifferentUnit(AccessResult actualValue);
@@ -411,7 +411,7 @@ abstract public class DraftAccessTest extends AccessTest {
     public void isAllowToDeleteUtkastNoConditions() {
         setupMocksForNoConditions();
 
-        assertAllowToDeleteUtkastNoConditions(accessService.allowToDeleteDraft(intygsTyp, enhetsId, PERSONNUMMER));
+        assertAllowToDeleteUtkastNoConditions(accessService.allowToDeleteDraft(intygsTyp, vardenhet, PERSONNUMMER));
     }
 
     abstract protected void assertAllowToDeleteUtkastNoConditions(AccessResult actualValue);
@@ -420,7 +420,7 @@ abstract public class DraftAccessTest extends AccessTest {
     public void isAllowToDeleteUtkastOnDeceasedPatient() {
         setupMocksForDeceasedPatient();
 
-        assertAllowToDeleteUtkastOnDeceasedPatient(accessService.allowToDeleteDraft(intygsTyp, enhetsId, PERSONNUMMER));
+        assertAllowToDeleteUtkastOnDeceasedPatient(accessService.allowToDeleteDraft(intygsTyp, vardenhet, PERSONNUMMER));
     }
 
     abstract protected void assertAllowToDeleteUtkastOnDeceasedPatient(AccessResult actualValue);
@@ -429,7 +429,7 @@ abstract public class DraftAccessTest extends AccessTest {
     public void isAllowToDeleteUtkastOnInactiveUnit() {
         setupMocksForInactiveUnit();
 
-        assertAllowToDeleteUtkastOnInactiveUnit(accessService.allowToDeleteDraft(intygsTyp, enhetsId, PERSONNUMMER));
+        assertAllowToDeleteUtkastOnInactiveUnit(accessService.allowToDeleteDraft(intygsTyp, vardenhet, PERSONNUMMER));
     }
 
     abstract protected void assertAllowToDeleteUtkastOnInactiveUnit(AccessResult actualValue);
@@ -438,7 +438,7 @@ abstract public class DraftAccessTest extends AccessTest {
     public void isAllowToDeleteUtkastOnRenewFalse() {
         setupMocksForOnRenewFalse();
 
-        assertAllowToDeleteUtkastOnRenewFalse(accessService.allowToDeleteDraft(intygsTyp, enhetsId, PERSONNUMMER));
+        assertAllowToDeleteUtkastOnRenewFalse(accessService.allowToDeleteDraft(intygsTyp, vardenhet, PERSONNUMMER));
     }
 
     abstract protected void assertAllowToDeleteUtkastOnRenewFalse(AccessResult actualValue);
@@ -447,7 +447,7 @@ abstract public class DraftAccessTest extends AccessTest {
     public void isAllowToDeleteUtkastOnSekretessPatientOnSameUnit() {
         setupMocksForOnSekretessPatient();
 
-        assertAllowToDeleteUtkastOnSekretessPatientOnSameUnit(accessService.allowToDeleteDraft(intygsTyp, enhetsId, PERSONNUMMER));
+        assertAllowToDeleteUtkastOnSekretessPatientOnSameUnit(accessService.allowToDeleteDraft(intygsTyp, vardenhet, PERSONNUMMER));
     }
 
     abstract protected void assertAllowToDeleteUtkastOnSekretessPatientOnSameUnit(AccessResult actualValue);
@@ -456,7 +456,7 @@ abstract public class DraftAccessTest extends AccessTest {
     public void isAllowToDeleteUtkastOnSekretessPatientOnDifferentUnit() {
         setupMocksForOnSekretessPatientDifferentUnit();
 
-        assertAllowToDeleteUtkastOnSekretessPatientOnDifferentUnit(accessService.allowToDeleteDraft(intygsTyp, enhetsId, PERSONNUMMER));
+        assertAllowToDeleteUtkastOnSekretessPatientOnDifferentUnit(accessService.allowToDeleteDraft(intygsTyp, vardenhet, PERSONNUMMER));
     }
 
     abstract protected void assertAllowToDeleteUtkastOnSekretessPatientOnDifferentUnit(AccessResult actualValue);
@@ -465,7 +465,7 @@ abstract public class DraftAccessTest extends AccessTest {
     public void isAllowToDeleteUtkastOnDeceasedPatientOnDifferentUnit() {
         setupMocksForDeceasedPatientDifferentUnit();
 
-        assertAllowToDeleteUtkastOnDeceasedPatientOnDifferentUnit(accessService.allowToDeleteDraft(intygsTyp, enhetsId, PERSONNUMMER));
+        assertAllowToDeleteUtkastOnDeceasedPatientOnDifferentUnit(accessService.allowToDeleteDraft(intygsTyp, vardenhet, PERSONNUMMER));
     }
 
     abstract protected void assertAllowToDeleteUtkastOnDeceasedPatientOnDifferentUnit(AccessResult actualValue);
@@ -474,7 +474,7 @@ abstract public class DraftAccessTest extends AccessTest {
     public void isAllowToDeleteUtkastOnInactiveUnitOnDifferentUnit() {
         setupMocksForInactiveUnitDifferentUnit();
 
-        assertAllowToDeleteUtkastOnInactiveUnitOnDifferentUnit(accessService.allowToDeleteDraft(intygsTyp, enhetsId, PERSONNUMMER));
+        assertAllowToDeleteUtkastOnInactiveUnitOnDifferentUnit(accessService.allowToDeleteDraft(intygsTyp, vardenhet, PERSONNUMMER));
     }
 
     abstract protected void assertAllowToDeleteUtkastOnInactiveUnitOnDifferentUnit(AccessResult actualValue);
@@ -483,7 +483,7 @@ abstract public class DraftAccessTest extends AccessTest {
     public void isAllowToDeleteUtkastOnRenewFalseOnDifferentUnit() {
         setupMocksForOnRenewFalseDifferentUnit();
 
-        assertAllowToDeleteUtkastOnRenewFalseOnDifferentUnit(accessService.allowToDeleteDraft(intygsTyp, enhetsId, PERSONNUMMER));
+        assertAllowToDeleteUtkastOnRenewFalseOnDifferentUnit(accessService.allowToDeleteDraft(intygsTyp, vardenhet, PERSONNUMMER));
     }
 
     abstract protected void assertAllowToDeleteUtkastOnRenewFalseOnDifferentUnit(AccessResult actualValue);
@@ -492,7 +492,7 @@ abstract public class DraftAccessTest extends AccessTest {
     public void isAllowToDeleteUtkastNoConditionsDifferentUnit() {
         setupMocksForNoConditionsDifferentUnit();
 
-        assertAllowToDeleteUtkastNoConditionsDifferentUnit(accessService.allowToDeleteDraft(intygsTyp, enhetsId, PERSONNUMMER));
+        assertAllowToDeleteUtkastNoConditionsDifferentUnit(accessService.allowToDeleteDraft(intygsTyp, vardenhet, PERSONNUMMER));
     }
 
     abstract protected void assertAllowToDeleteUtkastNoConditionsDifferentUnit(AccessResult actualValue);
@@ -501,7 +501,7 @@ abstract public class DraftAccessTest extends AccessTest {
     public void isAllowToPrintUtkastNoConditions() {
         setupMocksForNoConditions();
 
-        assertAllowToPrintUtkastNoConditions(accessService.allowToPrintDraft(intygsTyp, enhetsId, PERSONNUMMER));
+        assertAllowToPrintUtkastNoConditions(accessService.allowToPrintDraft(intygsTyp, vardenhet, PERSONNUMMER));
     }
 
     abstract protected void assertAllowToPrintUtkastNoConditions(AccessResult actualValue);
@@ -510,7 +510,7 @@ abstract public class DraftAccessTest extends AccessTest {
     public void isAllowToPrintUtkastOnDeceasedPatient() {
         setupMocksForDeceasedPatient();
 
-        assertAllowToPrintUtkastOnDeceasedPatient(accessService.allowToPrintDraft(intygsTyp, enhetsId, PERSONNUMMER));
+        assertAllowToPrintUtkastOnDeceasedPatient(accessService.allowToPrintDraft(intygsTyp, vardenhet, PERSONNUMMER));
     }
 
     abstract protected void assertAllowToPrintUtkastOnDeceasedPatient(AccessResult actualValue);
@@ -519,7 +519,7 @@ abstract public class DraftAccessTest extends AccessTest {
     public void isAllowToPrintUtkastOnInactiveUnit() {
         setupMocksForInactiveUnit();
 
-        assertAllowToPrintUtkastOnInactiveUnit(accessService.allowToPrintDraft(intygsTyp, enhetsId, PERSONNUMMER));
+        assertAllowToPrintUtkastOnInactiveUnit(accessService.allowToPrintDraft(intygsTyp, vardenhet, PERSONNUMMER));
     }
 
     abstract protected void assertAllowToPrintUtkastOnInactiveUnit(AccessResult actualValue);
@@ -528,7 +528,7 @@ abstract public class DraftAccessTest extends AccessTest {
     public void isAllowToPrintUtkastOnRenewFalse() {
         setupMocksForOnRenewFalse();
 
-        assertAllowToPrintUtkastOnRenewFalse(accessService.allowToPrintDraft(intygsTyp, enhetsId, PERSONNUMMER));
+        assertAllowToPrintUtkastOnRenewFalse(accessService.allowToPrintDraft(intygsTyp, vardenhet, PERSONNUMMER));
     }
 
     abstract protected void assertAllowToPrintUtkastOnRenewFalse(AccessResult actualValue);
@@ -537,7 +537,7 @@ abstract public class DraftAccessTest extends AccessTest {
     public void isAllowToPrintUtkastOnSekretessPatientOnSameUnit() {
         setupMocksForOnSekretessPatient();
 
-        assertAllowToPrintUtkastOnSekretessPatientOnSameUnit(accessService.allowToPrintDraft(intygsTyp, enhetsId, PERSONNUMMER));
+        assertAllowToPrintUtkastOnSekretessPatientOnSameUnit(accessService.allowToPrintDraft(intygsTyp, vardenhet, PERSONNUMMER));
     }
 
     abstract protected void assertAllowToPrintUtkastOnSekretessPatientOnSameUnit(AccessResult actualValue);
@@ -546,7 +546,7 @@ abstract public class DraftAccessTest extends AccessTest {
     public void isAllowToPrintUtkastOnSekretessPatientOnDifferentUnit() {
         setupMocksForOnSekretessPatientDifferentUnit();
 
-        assertAllowToPrintUtkastOnSekretessPatientOnDifferentUnit(accessService.allowToPrintDraft(intygsTyp, enhetsId, PERSONNUMMER));
+        assertAllowToPrintUtkastOnSekretessPatientOnDifferentUnit(accessService.allowToPrintDraft(intygsTyp, vardenhet, PERSONNUMMER));
     }
 
     abstract protected void assertAllowToPrintUtkastOnSekretessPatientOnDifferentUnit(AccessResult actualValue);
@@ -555,7 +555,7 @@ abstract public class DraftAccessTest extends AccessTest {
     public void isAllowToPrintUtkastOnDeceasedPatientOnDifferentUnit() {
         setupMocksForDeceasedPatientDifferentUnit();
 
-        assertAllowToPrintUtkastOnDeceasedPatientOnDifferentUnit(accessService.allowToPrintDraft(intygsTyp, enhetsId, PERSONNUMMER));
+        assertAllowToPrintUtkastOnDeceasedPatientOnDifferentUnit(accessService.allowToPrintDraft(intygsTyp, vardenhet, PERSONNUMMER));
     }
 
     abstract protected void assertAllowToPrintUtkastOnDeceasedPatientOnDifferentUnit(AccessResult actualValue);
@@ -564,7 +564,7 @@ abstract public class DraftAccessTest extends AccessTest {
     public void isAllowToPrintUtkastOnInactiveUnitOnDifferentUnit() {
         setupMocksForInactiveUnitDifferentUnit();
 
-        assertAllowToPrintUtkastOnInactiveUnitOnDifferentUnit(accessService.allowToPrintDraft(intygsTyp, enhetsId, PERSONNUMMER));
+        assertAllowToPrintUtkastOnInactiveUnitOnDifferentUnit(accessService.allowToPrintDraft(intygsTyp, vardenhet, PERSONNUMMER));
     }
 
     abstract protected void assertAllowToPrintUtkastOnInactiveUnitOnDifferentUnit(AccessResult actualValue);
@@ -573,7 +573,7 @@ abstract public class DraftAccessTest extends AccessTest {
     public void isAllowToPrintUtkastOnRenewFalseOnDifferentUnit() {
         setupMocksForOnRenewFalseDifferentUnit();
 
-        assertAllowToPrintUtkastOnRenewFalseOnDifferentUnit(accessService.allowToPrintDraft(intygsTyp, enhetsId, PERSONNUMMER));
+        assertAllowToPrintUtkastOnRenewFalseOnDifferentUnit(accessService.allowToPrintDraft(intygsTyp, vardenhet, PERSONNUMMER));
     }
 
     abstract protected void assertAllowToPrintUtkastOnRenewFalseOnDifferentUnit(AccessResult actualValue);
@@ -582,7 +582,7 @@ abstract public class DraftAccessTest extends AccessTest {
     public void isAllowToPrintUtkastNoConditionsDifferentUnit() {
         setupMocksForNoConditionsDifferentUnit();
 
-        assertAllowToPrintUtkastNoConditionsDifferentUnit(accessService.allowToPrintDraft(intygsTyp, enhetsId, PERSONNUMMER));
+        assertAllowToPrintUtkastNoConditionsDifferentUnit(accessService.allowToPrintDraft(intygsTyp, vardenhet, PERSONNUMMER));
     }
 
     abstract protected void assertAllowToPrintUtkastNoConditionsDifferentUnit(AccessResult actualValue);
@@ -591,7 +591,7 @@ abstract public class DraftAccessTest extends AccessTest {
     public void isAllowToForwardUtkastNoConditions() {
         setupMocksForNoConditions();
 
-        assertAllowToForwardUtkastNoConditions(accessService.allowToForwardDraft(intygsTyp, enhetsId, PERSONNUMMER));
+        assertAllowToForwardUtkastNoConditions(accessService.allowToForwardDraft(intygsTyp, vardenhet, PERSONNUMMER));
     }
 
     abstract protected void assertAllowToForwardUtkastNoConditions(AccessResult actualValue);
@@ -600,7 +600,7 @@ abstract public class DraftAccessTest extends AccessTest {
     public void isAllowToForwardUtkastOnDeceasedPatient() {
         setupMocksForDeceasedPatient();
 
-        assertAllowToForwardUtkastOnDeceasedPatient(accessService.allowToForwardDraft(intygsTyp, enhetsId, PERSONNUMMER));
+        assertAllowToForwardUtkastOnDeceasedPatient(accessService.allowToForwardDraft(intygsTyp, vardenhet, PERSONNUMMER));
     }
 
     abstract protected void assertAllowToForwardUtkastOnDeceasedPatient(AccessResult actualValue);
@@ -609,7 +609,7 @@ abstract public class DraftAccessTest extends AccessTest {
     public void isAllowToForwardUtkastOnInactiveUnit() {
         setupMocksForInactiveUnit();
 
-        assertAllowToForwardUtkastOnInactiveUnit(accessService.allowToForwardDraft(intygsTyp, enhetsId, PERSONNUMMER));
+        assertAllowToForwardUtkastOnInactiveUnit(accessService.allowToForwardDraft(intygsTyp, vardenhet, PERSONNUMMER));
     }
 
     abstract protected void assertAllowToForwardUtkastOnInactiveUnit(AccessResult actualValue);
@@ -618,7 +618,7 @@ abstract public class DraftAccessTest extends AccessTest {
     public void isAllowToForwardUtkastOnRenewFalse() {
         setupMocksForOnRenewFalse();
 
-        assertAllowToForwardUtkastOnRenewFalse(accessService.allowToForwardDraft(intygsTyp, enhetsId, PERSONNUMMER));
+        assertAllowToForwardUtkastOnRenewFalse(accessService.allowToForwardDraft(intygsTyp, vardenhet, PERSONNUMMER));
     }
 
     abstract protected void assertAllowToForwardUtkastOnRenewFalse(AccessResult actualValue);
@@ -627,7 +627,7 @@ abstract public class DraftAccessTest extends AccessTest {
     public void isAllowToForwardUtkastOnSekretessPatientOnSameUnit() {
         setupMocksForOnSekretessPatient();
 
-        assertAllowToForwardUtkastOnSekretessPatientOnSameUnit(accessService.allowToForwardDraft(intygsTyp, enhetsId, PERSONNUMMER));
+        assertAllowToForwardUtkastOnSekretessPatientOnSameUnit(accessService.allowToForwardDraft(intygsTyp, vardenhet, PERSONNUMMER));
     }
 
     abstract protected void assertAllowToForwardUtkastOnSekretessPatientOnSameUnit(AccessResult actualValue);
@@ -636,7 +636,7 @@ abstract public class DraftAccessTest extends AccessTest {
     public void isAllowToForwardUtkastOnSekretessPatientOnDifferentUnit() {
         setupMocksForOnSekretessPatientDifferentUnit();
 
-        assertAllowToForwardUtkastOnSekretessPatientOnDifferentUnit(accessService.allowToForwardDraft(intygsTyp, enhetsId, PERSONNUMMER));
+        assertAllowToForwardUtkastOnSekretessPatientOnDifferentUnit(accessService.allowToForwardDraft(intygsTyp, vardenhet, PERSONNUMMER));
     }
 
     abstract protected void assertAllowToForwardUtkastOnSekretessPatientOnDifferentUnit(AccessResult actualValue);
@@ -645,7 +645,7 @@ abstract public class DraftAccessTest extends AccessTest {
     public void isAllowToForwardUtkastOnDeceasedPatientOnDifferentUnit() {
         setupMocksForDeceasedPatientDifferentUnit();
 
-        assertAllowToForwardUtkastOnDeceasedPatientOnDifferentUnit(accessService.allowToForwardDraft(intygsTyp, enhetsId, PERSONNUMMER));
+        assertAllowToForwardUtkastOnDeceasedPatientOnDifferentUnit(accessService.allowToForwardDraft(intygsTyp, vardenhet, PERSONNUMMER));
     }
 
     abstract protected void assertAllowToForwardUtkastOnDeceasedPatientOnDifferentUnit(AccessResult actualValue);
@@ -654,7 +654,7 @@ abstract public class DraftAccessTest extends AccessTest {
     public void isAllowToForwardUtkastOnInactiveUnitOnDifferentUnit() {
         setupMocksForInactiveUnitDifferentUnit();
 
-        assertAllowToForwardUtkastOnInactiveUnitOnDifferentUnit(accessService.allowToForwardDraft(intygsTyp, enhetsId, PERSONNUMMER));
+        assertAllowToForwardUtkastOnInactiveUnitOnDifferentUnit(accessService.allowToForwardDraft(intygsTyp, vardenhet, PERSONNUMMER));
     }
 
     abstract protected void assertAllowToForwardUtkastOnInactiveUnitOnDifferentUnit(AccessResult actualValue);
@@ -663,7 +663,7 @@ abstract public class DraftAccessTest extends AccessTest {
     public void isAllowToForwardUtkastOnRenewFalseOnDifferentUnit() {
         setupMocksForOnRenewFalseDifferentUnit();
 
-        assertAllowToForwardUtkastOnRenewFalseOnDifferentUnit(accessService.allowToForwardDraft(intygsTyp, enhetsId, PERSONNUMMER));
+        assertAllowToForwardUtkastOnRenewFalseOnDifferentUnit(accessService.allowToForwardDraft(intygsTyp, vardenhet, PERSONNUMMER));
     }
 
     abstract protected void assertAllowToForwardUtkastOnRenewFalseOnDifferentUnit(AccessResult actualValue);
@@ -672,7 +672,7 @@ abstract public class DraftAccessTest extends AccessTest {
     public void isAllowToForwardUtkastNoConditionsDifferentUnit() {
         setupMocksForNoConditionsDifferentUnit();
 
-        assertAllowToForwardUtkastNoConditionsDifferentUnit(accessService.allowToForwardDraft(intygsTyp, enhetsId, PERSONNUMMER));
+        assertAllowToForwardUtkastNoConditionsDifferentUnit(accessService.allowToForwardDraft(intygsTyp, vardenhet, PERSONNUMMER));
     }
 
     abstract protected void assertAllowToForwardUtkastNoConditionsDifferentUnit(AccessResult actualValue);

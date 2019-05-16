@@ -936,9 +936,20 @@ public class UtkastServiceImpl implements UtkastService {
     private void verifyAccessToForwardDraft(Utkast utkast) {
         final AccessResult accessResult = draftAccessService.allowToForwardDraft(
                 utkast.getIntygsTyp(),
-                utkast.getEnhetsId(),
+                getVardenhet(utkast),
                 utkast.getPatientPersonnummer());
 
         accessResultExceptionHelper.throwExceptionIfDenied(accessResult);
+    }
+
+    private Vardenhet getVardenhet(Utkast utkast) {
+        final Vardgivare vardgivare = new Vardgivare();
+        vardgivare.setVardgivarid(utkast.getVardgivarId());
+
+        final Vardenhet vardenhet = new Vardenhet();
+        vardenhet.setEnhetsid(utkast.getEnhetsId());
+        vardenhet.setVardgivare(vardgivare);
+
+        return vardenhet;
     }
 }

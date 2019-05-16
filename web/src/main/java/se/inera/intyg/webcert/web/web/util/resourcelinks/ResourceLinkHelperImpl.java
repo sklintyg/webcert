@@ -71,25 +71,25 @@ public class ResourceLinkHelperImpl implements ResourceLinkHelper {
         boolean isLocked = draftHolder.getStatus() != null ? draftHolder.getStatus().equals(UtkastStatus.DRAFT_LOCKED) : false;
         if (isLocked) {
 
-            if (lockedDraftAccessService.allowedToInvalidateLockedUtkast(intygsTyp, vardenhet.getEnhetsid(), personnummer).isAllowed()) {
+            if (lockedDraftAccessService.allowedToInvalidateLockedUtkast(intygsTyp, vardenhet, personnummer).isAllowed()) {
                 draftHolder.addLink(new ActionLink(ActionLinkType.MAKULERA_UTKAST));
             }
 
-            if (lockedDraftAccessService.allowedToCopyLockedUtkast(intygsTyp, vardenhet.getEnhetsid(), personnummer).isAllowed()) {
+            if (lockedDraftAccessService.allowedToCopyLockedUtkast(intygsTyp, vardenhet, personnummer).isAllowed()) {
                 draftHolder.addLink(new ActionLink(ActionLinkType.KOPIERA_UTKAST));
             }
 
-            if (lockedDraftAccessService.allowToPrint(intygsTyp, vardenhet.getEnhetsid(), personnummer).isAllowed()) {
+            if (lockedDraftAccessService.allowToPrint(intygsTyp, vardenhet, personnummer).isAllowed()) {
                 draftHolder.addLink(new ActionLink(ActionLinkType.SKRIV_UT_UTKAST));
             }
 
         } else {
 
-            if (draftAccessService.allowToDeleteDraft(intygsTyp, vardenhet.getEnhetsid(), personnummer).isAllowed()) {
+            if (draftAccessService.allowToDeleteDraft(intygsTyp, vardenhet, personnummer).isAllowed()) {
                 draftHolder.addLink(new ActionLink(ActionLinkType.TA_BORT_UTKAST));
             }
 
-            if (draftAccessService.allowToPrintDraft(intygsTyp, vardenhet.getEnhetsid(), personnummer).isAllowed()) {
+            if (draftAccessService.allowToPrintDraft(intygsTyp, vardenhet, personnummer).isAllowed()) {
                 draftHolder.addLink(new ActionLink(ActionLinkType.SKRIV_UT_UTKAST));
             }
 

@@ -19,15 +19,12 @@
 
 package se.inera.intyg.webcert.web.service.access;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import se.inera.intyg.common.db.support.DbModuleEntryPoint;
+import se.inera.intyg.common.doi.support.DoiModuleEntryPoint;
+import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
@@ -36,124 +33,84 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 
 @Service
-public class LockedDraftAccessServiceImpl extends AccessServiceImpl implements LockedDraftAccessService {
+public class LockedDraftAccessServiceImpl implements LockedDraftAccessService {
+
+    private final WebCertUserService webCertUserService;
+    private final PatientDetailsResolver patientDetailsResolver;
+    private final UtkastService utkastService;
 
     @Autowired
     public LockedDraftAccessServiceImpl(final WebCertUserService webCertUserService,
             final PatientDetailsResolver patientDetailsResolver,
             final UtkastService utkastService) {
-        super(webCertUserService, patientDetailsResolver, utkastService);
+        this.webCertUserService = webCertUserService;
+        this.patientDetailsResolver = patientDetailsResolver;
+        this.utkastService = utkastService;
     }
 
     @Override
-    public AccessResult allowToRead(String intygsTyp, String enhetsId, Personnummer personnummer) {
-        final WebCertUser user = getUser();
-
-        Optional<AccessResult> accessResult = isAuthorized(intygsTyp, user, AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST,
-                AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG);
-
-        if (!accessResult.isPresent()) {
-            accessResult = isSekretessRuleValid(intygsTyp, enhetsId, user, personnummer);
-        }
-
-        return accessResult.isPresent() ? accessResult.get() : AccessResult.noProblem();
+    public AccessResult allowToRead(String intygsTyp, Vardenhet vardenhet, Personnummer personnummer) {
+        return getAccessServiceEvaluation().given(getUser(), intygsTyp)
+                .feature(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
+                .privilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG)
+                .careUnit(vardenhet)
+                .patient(personnummer)
+                .checkPatientSecrecy()
+                .evaluate();
     }
 
     @Override
-    public AccessResult allowedToCopyLockedUtkast(String intygsTyp, String enhetsId, Personnummer personnummer) {
-        final WebCertUser user = getUser();
-
-        Optional<AccessResult> accessResult = isAuthorized(intygsTyp, user, AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST,
-                AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG);
-
-        if (!accessResult.isPresent()) {
-            final List<String> invalidTypes = Arrays.asList(new String[] { DbModuleEntryPoint.MODULE_ID });
-            accessResult = isDeceasedRuleValid(user, intygsTyp, null, personnummer, invalidTypes);
-        }
-
-        if (!accessResult.isPresent()) {
-            accessResult = isInactiveUnitRuleValidCreate(user);
-        }
-
-        if (!accessResult.isPresent()) {
-            final List<String> invalidTypes = Arrays.asList(new String[] { "ALL" });
-            accessResult = isRenewRuleValid(user, intygsTyp, enhetsId, invalidTypes);
-        }
-
-        if (!accessResult.isPresent()) {
-            accessResult = isSekretessRuleValid(intygsTyp, enhetsId, user, personnummer);
-        }
-
-        if (!accessResult.isPresent()) {
-            accessResult = isUniqueUtkastRuleValid(intygsTyp, user, personnummer);
-        }
-
-        return accessResult.isPresent() ? accessResult.get() : AccessResult.noProblem();
+    public AccessResult allowedToCopyLockedUtkast(String intygsTyp, Vardenhet vardenhet, Personnummer personnummer) {
+        return getAccessServiceEvaluation().given(getUser(), intygsTyp)
+                .feature(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
+                .privilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG)
+                .careUnit(vardenhet)
+                .patient(personnummer)
+                .checkPatientDeceased(false)
+                .excludeCertificateTypesForDeceased(DoiModuleEntryPoint.MODULE_ID)
+                .checkInactiveCareUnit(false)
+                .checkPatientSecrecy()
+                .checkUnique()
+                .checkUnit(true, true)
+                .evaluate();
     }
 
     @Override
-    public AccessResult allowedToInvalidateLockedUtkast(String intygsTyp, String enhetsId, Personnummer personnummer) {
-        final WebCertUser user = getUser();
-
-        Optional<AccessResult> accessResult = isAuthorized(intygsTyp, user, AuthoritiesConstants.FEATURE_MAKULERA_INTYG,
-                AuthoritiesConstants.PRIVILEGE_MAKULERA_INTYG);
-
-        if (!accessResult.isPresent()) {
-            accessResult = isDeceasedRuleValid(user, intygsTyp, enhetsId, personnummer, Collections.emptyList());
-        }
-
-        if (!accessResult.isPresent()) {
-            accessResult = isInactiveUnitRuleValid(user, intygsTyp, enhetsId);
-        }
-
-        if (!accessResult.isPresent()) {
-            accessResult = isRenewRuleValid(user, intygsTyp, enhetsId, Collections.emptyList());
-        }
-
-        if (!accessResult.isPresent()) {
-            accessResult = isSekretessRuleValid(intygsTyp, enhetsId, user, personnummer);
-        }
-
-        if (!accessResult.isPresent() && isUserLoggedInOnDifferentUnit(enhetsId)) {
-            accessResult = Optional
-                    .of(AccessResult.create(AccessResultCode.AUTHORIZATION_DIFFERENT_UNIT,
-                            "User is logged in on a different unit than the draft/certificate"));
-        }
-
-        return accessResult.isPresent() ? accessResult.get() : AccessResult.noProblem();
+    public AccessResult allowedToInvalidateLockedUtkast(String intygsTyp, Vardenhet vardenhet, Personnummer personnummer) {
+        return getAccessServiceEvaluation().given(getUser(), intygsTyp)
+                .feature(AuthoritiesConstants.FEATURE_MAKULERA_INTYG)
+                .privilege(AuthoritiesConstants.PRIVILEGE_MAKULERA_INTYG)
+                .careUnit(vardenhet)
+                .patient(personnummer)
+                .checkPatientDeceased(true)
+                .checkInactiveCareUnit(true)
+                .checkRenew(true)
+                .checkPatientSecrecy()
+                .checkUnit(false, false)
+                .evaluate();
     }
 
     @Override
-    public AccessResult allowToPrint(String intygsTyp, String enhetsId, Personnummer personnummer) {
-        final WebCertUser user = getUser();
+    public AccessResult allowToPrint(String intygsTyp, Vardenhet vardenhet, Personnummer personnummer) {
+        return getAccessServiceEvaluation().given(getUser(), intygsTyp)
+                .feature(AuthoritiesConstants.FEATURE_UTSKRIFT)
+                .privilege(AuthoritiesConstants.PRIVILEGE_VISA_INTYG)
+                .careUnit(vardenhet)
+                .patient(personnummer)
+                .checkPatientDeceased(true)
+                .invalidCertificateTypeForDeceased(DbModuleEntryPoint.MODULE_ID)
+                .checkInactiveCareUnit(true)
+                .checkRenew(true)
+                .checkPatientSecrecy()
+                .checkUnit(false, false)
+                .evaluate();
+    }
 
-        Optional<AccessResult> accessResult = isAuthorized(intygsTyp, user, AuthoritiesConstants.FEATURE_UTSKRIFT,
-                AuthoritiesConstants.PRIVILEGE_VISA_INTYG);
+    private AccessServiceEvaluation getAccessServiceEvaluation() {
+        return AccessServiceEvaluation.create(this.webCertUserService, this.patientDetailsResolver, this.utkastService);
+    }
 
-        if (!accessResult.isPresent()) {
-            final List<String> invalidTypes = Arrays.asList(new String[] { DbModuleEntryPoint.MODULE_ID });
-            accessResult = isDeceasedRuleValid(user, intygsTyp, enhetsId, personnummer, invalidTypes);
-        }
-
-        if (!accessResult.isPresent()) {
-            accessResult = isInactiveUnitRuleValid(user, intygsTyp, enhetsId);
-        }
-
-        if (!accessResult.isPresent()) {
-
-            accessResult = isRenewRuleValid(user, intygsTyp, enhetsId, Collections.emptyList());
-        }
-
-        if (!accessResult.isPresent()) {
-            accessResult = isSekretessRuleValid(intygsTyp, enhetsId, user, personnummer);
-        }
-
-        if (!accessResult.isPresent() && isUserLoggedInOnDifferentUnit(enhetsId)) {
-            accessResult = Optional
-                    .of(AccessResult.create(AccessResultCode.AUTHORIZATION_DIFFERENT_UNIT,
-                            "User is logged in on a different unit than the draft/certificate"));
-        }
-
-        return accessResult.isPresent() ? accessResult.get() : AccessResult.noProblem();
+    private WebCertUser getUser() {
+        return webCertUserService.getUser();
     }
 }

@@ -47,6 +47,8 @@ import io.swagger.annotations.Api;
 import se.inera.intyg.common.services.texts.IntygTextsService;
 import se.inera.intyg.common.support.model.common.internal.Patient;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
+import se.inera.intyg.common.support.model.common.internal.Vardenhet;
+import se.inera.intyg.common.support.model.common.internal.Vardgivare;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
@@ -410,7 +412,7 @@ public class UtkastModuleApiController extends AbstractApiController {
     private void validateAllowToReadUtkast(Utkast utkast, Personnummer personnummer) {
         final AccessResult accessResult = draftAccessService.allowToReadDraft(
                 utkast.getIntygsTyp(),
-                utkast.getEnhetsId(),
+                getVardenhet(utkast),
                 personnummer);
 
         accessResultExceptionHelper.throwExceptionIfDenied(accessResult);
@@ -419,7 +421,7 @@ public class UtkastModuleApiController extends AbstractApiController {
     private void validateAllowToEditUtkast(Utkast utkast) {
         final AccessResult accessResult = draftAccessService.allowToEditDraft(
                 utkast.getIntygsTyp(),
-                utkast.getEnhetsId(),
+                getVardenhet(utkast),
                 utkast.getPatientPersonnummer());
 
         accessResultExceptionHelper.throwExceptionIfDenied(accessResult);
@@ -428,7 +430,7 @@ public class UtkastModuleApiController extends AbstractApiController {
     private void validateAllowToDeleteUtkast(Utkast utkast) {
         final AccessResult accessResult = draftAccessService.allowToDeleteDraft(
                 utkast.getIntygsTyp(),
-                utkast.getEnhetsId(),
+                getVardenhet(utkast),
                 utkast.getPatientPersonnummer());
 
         accessResultExceptionHelper.throwExceptionIfDenied(accessResult);
@@ -437,9 +439,20 @@ public class UtkastModuleApiController extends AbstractApiController {
     private void validateAllowToInvalidateLockedUtkast(Utkast utkast) {
         final AccessResult accessResult = lockedDraftAccessService.allowedToInvalidateLockedUtkast(
                 utkast.getIntygsTyp(),
-                utkast.getEnhetsId(),
+                getVardenhet(utkast),
                 utkast.getPatientPersonnummer());
 
         accessResultExceptionHelper.throwExceptionIfDenied(accessResult);
+    }
+
+    private Vardenhet getVardenhet(Utkast utkast) {
+        final Vardgivare vardgivare = new Vardgivare();
+        vardgivare.setVardgivarid(utkast.getVardgivarId());
+
+        final Vardenhet vardenhet = new Vardenhet();
+        vardenhet.setEnhetsid(utkast.getEnhetsId());
+        vardenhet.setVardgivare(vardgivare);
+
+        return vardenhet;
     }
 }

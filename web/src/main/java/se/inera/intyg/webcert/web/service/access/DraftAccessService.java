@@ -19,20 +19,21 @@
 
 package se.inera.intyg.webcert.web.service.access;
 
+import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.schemas.contract.Personnummer;
 
 public interface DraftAccessService {
     AccessResult allowToCreateDraft(String intygsTyp, Personnummer personnummer);
 
-    AccessResult allowToReadDraft(String intygsTyp, String enhetsId, Personnummer personnummer);
+    AccessResult allowToReadDraft(String intygsTyp, Vardenhet vardenhet, Personnummer personnummer);
 
-    AccessResult allowToEditDraft(String intygsTyp, String enhetsId, Personnummer personnummer);
+    AccessResult allowToEditDraft(String intygsTyp, Vardenhet vardenhet, Personnummer personnummer);
 
-    AccessResult allowToDeleteDraft(String intygsTyp, String enhetsId, Personnummer personnummer);
+    AccessResult allowToDeleteDraft(String intygsTyp, Vardenhet vardenhet, Personnummer personnummer);
 
-    AccessResult allowToSignDraft(String intygsTyp, String enhetsId, Personnummer personnummer);
+    AccessResult allowToSignDraft(String intygsTyp, Vardenhet vardenhet, Personnummer personnummer);
 
-    AccessResult allowToPrintDraft(String intygsTyp, String enhetsId, Personnummer personnummer);
+    AccessResult allowToPrintDraft(String intygsTyp, Vardenhet vardenhet, Personnummer personnummer);
 
-    AccessResult allowToForwardDraft(String intygsTyp, String enhetsId, Personnummer personnummer);
+    AccessResult allowToForwardDraft(String intygsTyp, Vardenhet vardenhet, Personnummer personnummer);
 }

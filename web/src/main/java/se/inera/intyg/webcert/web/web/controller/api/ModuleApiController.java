@@ -90,7 +90,6 @@ public class ModuleApiController extends AbstractApiController {
     public Response getModulesMap(@PathParam("patientId") String patientId) {
 
         try {
-            Personnummer personnummer = createPnr(patientId);
 
             List<IntygModule> intygModules = moduleRegistry.listAllModules();
 
@@ -98,6 +97,7 @@ public class ModuleApiController extends AbstractApiController {
                     .map(intygModule -> new IntygModuleDTO(intygModule))
                     .collect(Collectors.toList());
 
+            final Personnummer personnummer = createPnr(patientId);
             resourceLinkHelper.decorateWithValidActionLinks(intygModuleDTOs, personnummer);
 
             return Response.ok(intygModuleDTOs).build();

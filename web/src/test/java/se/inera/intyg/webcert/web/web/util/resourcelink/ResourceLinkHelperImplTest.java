@@ -57,7 +57,6 @@ public class ResourceLinkHelperImplTest {
 
         final ActionLink expectedActionLink = new ActionLink();
         expectedActionLink.setType(ActionLinkType.SKAPA_UTKAST);
-        expectedActionLink.setUrl("testurl");
 
         final IntygModuleDTO intygModuleDTO = createIntygModuleDTO(intygsTyp);
         resourceLinkHelper.decorateWithValidActionLinks(intygModuleDTO, personnummer);
@@ -67,7 +66,6 @@ public class ResourceLinkHelperImplTest {
         assertNotNull(actualLinks);
         assertEquals("Should be one link", 1, actualLinks.size());
         assertEquals("ActionLink type should be same", expectedActionLink.getType(), actualLinks.get(0).getType());
-        assertEquals("ActionLink url should be same", expectedActionLink.getUrl(), actualLinks.get(0).getUrl());
     }
 
     private IntygModuleDTO createIntygModuleDTO(String intygsTyp) {

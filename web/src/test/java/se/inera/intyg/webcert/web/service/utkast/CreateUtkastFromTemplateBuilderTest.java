@@ -18,6 +18,17 @@
  */
 package se.inera.intyg.webcert.web.service.utkast;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.AdditionalMatchers.or;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -45,17 +56,6 @@ import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
 import se.inera.intyg.webcert.web.service.utkast.dto.CopyUtkastBuilderResponse;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateUtkastFromTemplateRequest;
 import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.mockito.AdditionalMatchers.or;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.isNull;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CreateUtkastFromTemplateBuilderTest extends AbstractBuilderTest {
@@ -94,7 +94,7 @@ public class CreateUtkastFromTemplateBuilderTest extends AbstractBuilderTest {
 
         CopyUtkastBuilderResponse builderResponse = createUtkastFromTemplateBuilder
                 .populateCopyUtkastFromSignedIntyg(createUtkastFromTemplateRequest, patientDetails, false,
-                        false, false);
+                        false);
 
         assertNotNull(builderResponse.getUtkastCopy());
         assertNotNull(builderResponse.getUtkastCopy().getModel());
@@ -130,7 +130,7 @@ public class CreateUtkastFromTemplateBuilderTest extends AbstractBuilderTest {
 
         CopyUtkastBuilderResponse builderResponse = createUtkastFromTemplateBuilder
                 .populateCopyUtkastFromOrignalUtkast(createUtkastFromTemplateRequest, patientDetails, false,
-                        false, false);
+                        false);
 
         assertNotNull(builderResponse.getUtkastCopy());
         assertNotNull(builderResponse.getUtkastCopy().getModel());

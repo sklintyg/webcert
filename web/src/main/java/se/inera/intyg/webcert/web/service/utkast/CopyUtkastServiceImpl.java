@@ -39,6 +39,7 @@ import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.Patient;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.support.model.common.internal.Vardenhet;
+import se.inera.intyg.common.support.model.common.internal.Vardgivare;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
@@ -341,10 +342,6 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
                 LOG.debug("Cannot create utkast from template certificate with id '{}', the certificate is revoked", originalIntygId);
                 throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, "Original certificate is revoked");
             }
-
-            final Utlatande utlatande = getUtlatande(copyRequest.getOriginalIntygId(),
-                    copyRequest.getOriginalIntygTyp(),
-                    coherentJournaling);
 
             // Update patient details here instead of later in buildUtkast... Need to validate access logic.
             Person patientDetails = updatePatientDetails(copyRequest);
@@ -688,7 +685,7 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
     private void validateAccessToCopyLockedUtkast(Utkast utkast) {
         final AccessResult accessResult = lockedDraftAccessService.allowedToCopyLockedUtkast(
                 utkast.getIntygsTyp(),
-                utkast.getEnhetsId(),
+                getVardenhet(utkast),
                 utkast.getPatientPersonnummer());
 
         accessResultExceptionHelper.throwExceptionIfDenied(accessResult);
@@ -712,5 +709,16 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
 
     private boolean isCoherentJournaling(WebCertUser user) {
         return user != null && user.getParameters() != null && user.getParameters().isSjf();
+    }
+
+    private Vardenhet getVardenhet(Utkast utkast) {
+        final Vardgivare vardgivare = new Vardgivare();
+        vardgivare.setVardgivarid(utkast.getVardgivarId());
+
+        final Vardenhet vardenhet = new Vardenhet();
+        vardenhet.setEnhetsid(utkast.getEnhetsId());
+        vardenhet.setVardgivare(vardgivare);
+
+        return vardenhet;
     }
 }

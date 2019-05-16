@@ -30,6 +30,7 @@ import org.springframework.stereotype.Service;
 
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.Vardenhet;
+import se.inera.intyg.common.support.model.common.internal.Vardgivare;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
@@ -284,9 +285,20 @@ public class UnderskriftServiceImpl implements UnderskriftService {
     private void verifyAccessToSignDraft(Utkast utkast) {
         final AccessResult accessResult = draftAccessService.allowToSignDraft(
                 utkast.getIntygsTyp(),
-                utkast.getEnhetsId(),
+                getVardenhet(utkast),
                 utkast.getPatientPersonnummer());
 
         accessResultExceptionHelper.throwExceptionIfDenied(accessResult);
+    }
+
+    private Vardenhet getVardenhet(Utkast utkast) {
+        final Vardgivare vardgivare = new Vardgivare();
+        vardgivare.setVardgivarid(utkast.getVardgivarId());
+
+        final Vardenhet vardenhet = new Vardenhet();
+        vardenhet.setEnhetsid(utkast.getEnhetsId());
+        vardenhet.setVardgivare(vardgivare);
+
+        return vardenhet;
     }
 }

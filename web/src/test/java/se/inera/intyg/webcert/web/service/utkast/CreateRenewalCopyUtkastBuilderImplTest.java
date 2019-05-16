@@ -18,6 +18,15 @@
  */
 package se.inera.intyg.webcert.web.service.utkast;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -48,15 +57,6 @@ import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
 import se.inera.intyg.webcert.web.service.utkast.dto.CopyUtkastBuilderResponse;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateRenewalCopyRequest;
 import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CreateRenewalCopyUtkastBuilderImplTest extends AbstractBuilderTest {
@@ -95,7 +95,7 @@ public class CreateRenewalCopyUtkastBuilderImplTest extends AbstractBuilderTest 
         when(mockModuleApi.validateDraft(anyString())).thenReturn(vdr);
 
         CopyUtkastBuilderResponse builderResponse = renewalBuilder.populateCopyUtkastFromSignedIntyg(renewalRequest, patientDetails, false,
-                false, false);
+                false);
 
         assertNotNull(builderResponse.getUtkastCopy());
         assertNotNull(builderResponse.getUtkastCopy().getModel());
@@ -125,7 +125,7 @@ public class CreateRenewalCopyUtkastBuilderImplTest extends AbstractBuilderTest 
                 "postort");
 
         renewalBuilder.populateCopyUtkastFromSignedIntyg(renewalRequest, patientDetails, false,
-                true, true);
+                true);
     }
 
     @Test
@@ -143,8 +143,9 @@ public class CreateRenewalCopyUtkastBuilderImplTest extends AbstractBuilderTest 
         ValidateDraftResponse vdr = new ValidateDraftResponse(ValidationStatus.VALID, new ArrayList<>());
         when(mockModuleApi.validateDraft(anyString())).thenReturn(vdr);
 
-        CopyUtkastBuilderResponse builderResponse = renewalBuilder.populateCopyUtkastFromOrignalUtkast(renewalRequest, patientDetails, false,
-                false, false);
+        CopyUtkastBuilderResponse builderResponse = renewalBuilder.populateCopyUtkastFromOrignalUtkast(renewalRequest, patientDetails,
+                false,
+                false);
 
         assertNotNull(builderResponse.getUtkastCopy());
         assertNotNull(builderResponse.getUtkastCopy().getModel());
@@ -166,7 +167,7 @@ public class CreateRenewalCopyUtkastBuilderImplTest extends AbstractBuilderTest 
         Person patientDetails = new Person(PATIENT_SSN, false, false, PATIENT_FNAME, PATIENT_MNAME, PATIENT_LNAME, "Postadr", "12345",
                 "postort");
 
-        renewalBuilder.populateCopyUtkastFromOrignalUtkast(renewalRequest, patientDetails, false, true, true);
+        renewalBuilder.populateCopyUtkastFromOrignalUtkast(renewalRequest, patientDetails, false, true);
     }
 
     @Test
@@ -184,7 +185,7 @@ public class CreateRenewalCopyUtkastBuilderImplTest extends AbstractBuilderTest 
         ValidateDraftResponse vdr = new ValidateDraftResponse(ValidationStatus.VALID, new ArrayList<>());
         when(mockModuleApi.validateDraft(anyString())).thenReturn(vdr);
 
-        CopyUtkastBuilderResponse builderResponse = renewalBuilder.populateCopyUtkastFromOrignalUtkast(renewalRequest, null, false, false, false);
+        CopyUtkastBuilderResponse builderResponse = renewalBuilder.populateCopyUtkastFromOrignalUtkast(renewalRequest, null, false, false);
 
         assertNotNull(builderResponse.getUtkastCopy());
         assertNotNull(builderResponse.getUtkastCopy().getModel());
@@ -208,7 +209,7 @@ public class CreateRenewalCopyUtkastBuilderImplTest extends AbstractBuilderTest 
         ValidateDraftResponse vdr = new ValidateDraftResponse(ValidationStatus.VALID, new ArrayList<>());
         when(mockModuleApi.validateDraft(anyString())).thenReturn(vdr);
 
-        CopyUtkastBuilderResponse builderResponse = renewalBuilder.populateCopyUtkastFromSignedIntyg(renewalRequest, null, false, false, false);
+        CopyUtkastBuilderResponse builderResponse = renewalBuilder.populateCopyUtkastFromSignedIntyg(renewalRequest, null, false, false);
 
         assertNotNull(builderResponse.getUtkastCopy());
         assertNotNull(builderResponse.getUtkastCopy().getModel());

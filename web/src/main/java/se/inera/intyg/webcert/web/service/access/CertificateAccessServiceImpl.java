@@ -19,11 +19,6 @@
 
 package se.inera.intyg.webcert.web.service.access;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -40,66 +35,48 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 
 @Service
-public class CertificateAccessServiceImpl extends AccessServiceImpl implements CertificateAccessService {
+public class CertificateAccessServiceImpl implements CertificateAccessService {
+
+    private final WebCertUserService webCertUserService;
+    private final PatientDetailsResolver patientDetailsResolver;
+    private final UtkastService utkastService;
 
     @Autowired
     public CertificateAccessServiceImpl(final WebCertUserService webCertUserService,
             final PatientDetailsResolver patientDetailsResolver,
             final UtkastService utkastService) {
-        super(webCertUserService, patientDetailsResolver, utkastService);
+        this.webCertUserService = webCertUserService;
+        this.patientDetailsResolver = patientDetailsResolver;
+        this.utkastService = utkastService;
     }
 
     @Override
     public AccessResult allowToRead(String intygsTyp, Vardenhet vardenhet, Personnummer personnummer) {
-        final WebCertUser user = getUser();
-
-        Optional<AccessResult> accessResult = isAuthorized(intygsTyp, user, AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST, null);
-
-        if (!accessResult.isPresent()) {
-            accessResult = isSekretessRuleValid(intygsTyp, vardenhet.getEnhetsid(), user, personnummer);
-        }
-
-        if (!accessResult.isPresent()) {
-            accessResult = isSJFRuleValid(intygsTyp, vardenhet, user, true);
-        }
-
-        return accessResult.isPresent() ? accessResult.get() : AccessResult.noProblem();
+        return getAccessServiceEvaluation().given(getUser(), intygsTyp)
+                .feature(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
+                .careUnit(vardenhet)
+                .patient(personnummer)
+                .checkPatientSecrecy()
+                .checkUnit(true, true)
+                .evaluate();
     }
 
     @Override
     public AccessResult allowToReplace(String intygsTyp, Vardenhet vardenhet, Personnummer personnummer) {
-        final WebCertUser user = getUser();
-
-        Optional<AccessResult> accessResult = isAuthorized(intygsTyp, user, null,
-                AuthoritiesConstants.PRIVILEGE_ERSATTA_INTYG);
-
-        if (!accessResult.isPresent()) {
-            accessResult = isDeceasedRuleValid(user, intygsTyp, null, personnummer, Collections.emptyList());
-        }
-
-        if (!accessResult.isPresent()) {
-            accessResult = isInactiveUnitRuleValidCreate(user);
-        }
-
-        if (!accessResult.isPresent()) {
-            final List<String> excludeIntygsTyper = Arrays.asList(new String[] { DbModuleEntryPoint.MODULE_ID,
-                    DoiModuleEntryPoint.MODULE_ID });
-            accessResult = isRenewRuleValid(user, intygsTyp, vardenhet.getEnhetsid(), excludeIntygsTyper);
-        }
-
-        if (!accessResult.isPresent()) {
-            accessResult = isSekretessRuleValid(intygsTyp, vardenhet.getEnhetsid(), user, personnummer);
-        }
-
-        if (!accessResult.isPresent() && isUserLoggedInOnDifferentUnit(vardenhet.getEnhetsid())
-                && !(DbModuleEntryPoint.MODULE_ID.equalsIgnoreCase(intygsTyp)
-                        || DoiModuleEntryPoint.MODULE_ID.equalsIgnoreCase(intygsTyp))) {
-            accessResult = Optional
-                    .of(AccessResult.create(AccessResultCode.AUTHORIZATION_DIFFERENT_UNIT,
-                            "User is logged in on a different unit than the draft/certificate"));
-        }
-
-        return accessResult.isPresent() ? accessResult.get() : AccessResult.noProblem();
+        return getAccessServiceEvaluation().given(getUser(), intygsTyp)
+                .feature(AuthoritiesConstants.FEATURE_MAKULERA_INTYG)
+                .privilege(AuthoritiesConstants.PRIVILEGE_MAKULERA_INTYG)
+                .careUnit(vardenhet)
+                .patient(personnummer)
+                .excludeCertificateTypesForDeceased(DbModuleEntryPoint.MODULE_ID, DoiModuleEntryPoint.MODULE_ID)
+                .checkPatientDeceased(false)
+                .checkInactiveCareUnit(false)
+                .excludeCertificateTypesForRenew(DbModuleEntryPoint.MODULE_ID, DoiModuleEntryPoint.MODULE_ID)
+                .checkRenew(true)
+                .checkPatientSecrecy()
+                .excludeCertificateTypesForUnit(DbModuleEntryPoint.MODULE_ID, DoiModuleEntryPoint.MODULE_ID)
+                .checkUnit(false, false)
+                .evaluate();
     }
 
     @Override
@@ -109,278 +86,141 @@ public class CertificateAccessServiceImpl extends AccessServiceImpl implements C
 
     @Override
     public AccessResult allowToRenew(String intygsTyp, Vardenhet vardenhet, Personnummer personnummer, boolean isComplement) {
-        final WebCertUser user = getUser();
-
-        String privilegie = AuthoritiesConstants.PRIVILEGE_FORNYA_INTYG;
-        if (isComplement) {
-            privilegie = AuthoritiesConstants.PRIVILEGE_SVARA_MED_NYTT_INTYG;
-        }
-
-        Optional<AccessResult> accessResult = isAuthorized(intygsTyp, user, AuthoritiesConstants.FEATURE_FORNYA_INTYG, privilegie);
-
-        if (!accessResult.isPresent()) {
-            final List<String> invalidTypes = Arrays.asList(new String[] { DbModuleEntryPoint.MODULE_ID });
-            accessResult = isDeceasedRuleValid(user, intygsTyp, null, personnummer, invalidTypes);
-        }
-
-        if (!accessResult.isPresent()) {
-            accessResult = isInactiveUnitRuleValidCreate(user);
-        }
-
-        if (!accessResult.isPresent()) {
-            accessResult = isRenewRuleValid(user, intygsTyp, vardenhet.getEnhetsid(), Collections.emptyList(), true);
-        }
-
-        if (!accessResult.isPresent()) {
-            accessResult = isSekretessRuleValid(intygsTyp, vardenhet.getEnhetsid(), user, personnummer);
-        }
-
-        if (!accessResult.isPresent()) {
-            accessResult = isUniqueUtkastRuleValid(intygsTyp, user, personnummer);
-        }
-
-        if (!accessResult.isPresent()) {
-            accessResult = isSJFRuleValid(intygsTyp, vardenhet, user, true);
-        }
-
-        return accessResult.isPresent() ? accessResult.get() : AccessResult.noProblem();
+        return getAccessServiceEvaluation().given(getUser(), intygsTyp)
+                .feature(AuthoritiesConstants.FEATURE_FORNYA_INTYG)
+                .privilege(AuthoritiesConstants.PRIVILEGE_FORNYA_INTYG)
+                .privilegeIf(AuthoritiesConstants.PRIVILEGE_SVARA_MED_NYTT_INTYG, isComplement)
+                .careUnit(vardenhet)
+                .patient(personnummer)
+                .checkPatientDeceased(false)
+                .checkInactiveCareUnit(false)
+                .checkRenew(false)
+                .checkPatientSecrecy()
+                .checkUnit(true, true)
+                .evaluate();
     }
 
     @Override
     public AccessResult allowToPrint(String intygsTyp, Vardenhet vardenhet, Personnummer personnummer, boolean isEmployer) {
-        final WebCertUser user = getUser();
-
-        String feature = AuthoritiesConstants.FEATURE_UTSKRIFT;
-        if (isEmployer) {
-            feature = AuthoritiesConstants.FEATURE_ARBETSGIVARUTSKRIFT;
-        }
-
-        Optional<AccessResult> accessResult = isAuthorized(intygsTyp, user, feature, AuthoritiesConstants.PRIVILEGE_VISA_INTYG);
-
-        if (!accessResult.isPresent()) {
-            accessResult = isDeceasedRuleValid(user, intygsTyp, vardenhet.getEnhetsid(), personnummer, Collections.emptyList());
-        }
-
-        if (!accessResult.isPresent()) {
-            accessResult = isInactiveUnitRuleValid(user, intygsTyp, vardenhet.getEnhetsid());
-        }
-
-        if (!accessResult.isPresent()) {
-            accessResult = isRenewRuleValid(user, intygsTyp, vardenhet.getEnhetsid(), Collections.emptyList());
-        }
-
-        if (!accessResult.isPresent()) {
-            accessResult = isSekretessRuleValid(intygsTyp, vardenhet.getEnhetsid(), user, personnummer);
-        }
-
-        if (!accessResult.isPresent()) {
-            accessResult = isUnitRuleValid(intygsTyp, vardenhet, user, true, true);
-        }
-
-        return accessResult.isPresent() ? accessResult.get() : AccessResult.noProblem();
+        return getAccessServiceEvaluation().given(getUser(), intygsTyp)
+                .featureIf(AuthoritiesConstants.FEATURE_ARBETSGIVARUTSKRIFT, isEmployer)
+                .featureIf(AuthoritiesConstants.FEATURE_UTSKRIFT, !isEmployer)
+                .privilege(AuthoritiesConstants.PRIVILEGE_VISA_INTYG)
+                .careUnit(vardenhet)
+                .patient(personnummer)
+                .checkPatientDeceased(true)
+                .checkInactiveCareUnit(true)
+                .checkRenew(true)
+                .checkPatientSecrecy()
+                .checkUnit(false, false)
+                .evaluate();
     }
 
     @Override
     public AccessResult allowToInvalidate(String intygsTyp, Vardenhet vardenhet, Personnummer personnummer) {
-        final WebCertUser user = getUser();
-
-        Optional<AccessResult> accessResult = isAuthorized(intygsTyp, user, AuthoritiesConstants.FEATURE_MAKULERA_INTYG,
-                AuthoritiesConstants.PRIVILEGE_MAKULERA_INTYG);
-
-        if (!accessResult.isPresent()) {
-            accessResult = isDeceasedRuleValid(user, intygsTyp, vardenhet.getEnhetsid(), personnummer, Collections.emptyList());
-        }
-
-        if (!accessResult.isPresent()) {
-            accessResult = isInactiveUnitRuleValid(user, intygsTyp, vardenhet.getEnhetsid());
-        }
-
-        if (!accessResult.isPresent()) {
-            accessResult = isRenewRuleValid(user, intygsTyp, vardenhet.getEnhetsid(), Collections.emptyList());
-        }
-
-        if (!accessResult.isPresent()) {
-            accessResult = isSekretessRuleValid(intygsTyp, vardenhet.getEnhetsid(), user, personnummer);
-        }
-
-        if (!accessResult.isPresent()) {
-            accessResult = isUnitRuleValid(intygsTyp, vardenhet, user, false, true);
-        }
-
-        return accessResult.isPresent() ? accessResult.get() : AccessResult.noProblem();
+        return getAccessServiceEvaluation().given(getUser(), intygsTyp)
+                .feature(AuthoritiesConstants.FEATURE_MAKULERA_INTYG)
+                .privilege(AuthoritiesConstants.PRIVILEGE_MAKULERA_INTYG)
+                .careUnit(vardenhet)
+                .patient(personnummer)
+                .checkPatientDeceased(true)
+                .checkInactiveCareUnit(true)
+                .checkRenew(true)
+                .checkPatientSecrecy()
+                .checkUnit(true, false)
+                .evaluate();
     }
 
     @Override
     public AccessResult allowToSend(String intygsTyp, Vardenhet vardenhet, Personnummer personnummer) {
-        final WebCertUser user = getUser();
-
-        Optional<AccessResult> accessResult = isAuthorized(intygsTyp, user, AuthoritiesConstants.FEATURE_SKICKA_INTYG, null);
-
-        if (!accessResult.isPresent()) {
-            final List<String> invalidTypes = Arrays.asList(new String[] { DbModuleEntryPoint.MODULE_ID });
-            accessResult = isDeceasedRuleValid(user, intygsTyp, vardenhet.getEnhetsid(), personnummer, invalidTypes);
-        }
-
-        if (!accessResult.isPresent()) {
-            accessResult = isInactiveUnitRuleValid(user, intygsTyp, vardenhet.getEnhetsid());
-        }
-
-        if (!accessResult.isPresent()) {
-
-            accessResult = isRenewRuleValid(user, intygsTyp, vardenhet.getEnhetsid(), Collections.emptyList());
-        }
-
-        if (!accessResult.isPresent()) {
-            accessResult = isSekretessRuleValid(intygsTyp, vardenhet.getEnhetsid(), user, personnummer);
-        }
-
-        if (!accessResult.isPresent() && isUserLoggedInOnDifferentUnit(vardenhet.getEnhetsid())) {
-            accessResult = Optional
-                    .of(AccessResult.create(AccessResultCode.AUTHORIZATION_DIFFERENT_UNIT,
-                            "User is logged in on a different unit than the draft/certificate"));
-        }
-
-        return accessResult.isPresent() ? accessResult.get() : AccessResult.noProblem();
+        return getAccessServiceEvaluation().given(getUser(), intygsTyp)
+                .feature(AuthoritiesConstants.FEATURE_SKICKA_INTYG)
+                .careUnit(vardenhet)
+                .patient(personnummer)
+                .checkPatientDeceased(true)
+                .checkInactiveCareUnit(true)
+                .checkRenew(true)
+                .checkPatientSecrecy()
+                .checkUnit(false, false)
+                .evaluate();
     }
 
     @Override
     public AccessResult allowToCreateQuestion(String intygsTyp, Vardenhet vardenhet, Personnummer personnummer) {
-        final WebCertUser user = getUser();
-
-        Optional<AccessResult> accessResult = isAuthorized(intygsTyp, user, AuthoritiesConstants.FEATURE_HANTERA_FRAGOR,
-                AuthoritiesConstants.PRIVILEGE_SKAPA_NYFRAGA);
-
-        if (!accessResult.isPresent()) {
-            accessResult = isDeceasedRuleValid(user, intygsTyp, vardenhet.getEnhetsid(), personnummer, Collections.emptyList());
-        }
-
-        if (!accessResult.isPresent()) {
-            accessResult = isInactiveUnitRuleValid(user, intygsTyp, vardenhet.getEnhetsid());
-        }
-
-        if (!accessResult.isPresent()) {
-            accessResult = isRenewRuleValid(user, intygsTyp, vardenhet.getEnhetsid(), Collections.emptyList());
-        }
-
-        if (!accessResult.isPresent()) {
-            accessResult = isSekretessRuleValid(intygsTyp, vardenhet.getEnhetsid(), user, personnummer);
-        }
-
-        if (!accessResult.isPresent() && isUserLoggedInOnDifferentUnit(vardenhet.getEnhetsid())) {
-            accessResult = Optional
-                    .of(AccessResult.create(AccessResultCode.AUTHORIZATION_DIFFERENT_UNIT,
-                            "User is logged in on a different unit than the draft/certificate"));
-        }
-
-        return accessResult.isPresent() ? accessResult.get() : AccessResult.noProblem();
+        return getAccessServiceEvaluation().given(getUser(), intygsTyp)
+                .feature(AuthoritiesConstants.FEATURE_HANTERA_FRAGOR)
+                .privilege(AuthoritiesConstants.PRIVILEGE_SKAPA_NYFRAGA)
+                .careUnit(vardenhet)
+                .patient(personnummer)
+                .checkPatientDeceased(true)
+                .checkInactiveCareUnit(true)
+                .checkRenew(true)
+                .checkPatientSecrecy()
+                .checkUnit(false, false)
+                .evaluate();
     }
 
     @Override
     public AccessResult allowToAnswerComplementQuestion(String intygsTyp, Vardenhet vardenhet, Personnummer personnummer,
             boolean newCertificate) {
-        final WebCertUser user = getUser();
-
-        String privilegie = null;
-        if (newCertificate) {
-            privilegie = AuthoritiesConstants.PRIVILEGE_SVARA_MED_NYTT_INTYG;
-        } else {
-            privilegie = AuthoritiesConstants.PRIVILEGE_BESVARA_KOMPLETTERINGSFRAGA;
-        }
-
-        Optional<AccessResult> accessResult = isAuthorized(intygsTyp, user, AuthoritiesConstants.FEATURE_HANTERA_FRAGOR, privilegie);
-
-        if (!accessResult.isPresent()) {
-            accessResult = isDeceasedRuleValid(user, intygsTyp, vardenhet.getEnhetsid(), personnummer, Collections.emptyList());
-        }
-
-        if (!accessResult.isPresent()) {
-            accessResult = isInactiveUnitRuleValid(user, intygsTyp, vardenhet.getEnhetsid());
-        }
-
-        if (!accessResult.isPresent()) {
-            accessResult = isRenewRuleValid(user, intygsTyp, vardenhet.getEnhetsid(), Collections.emptyList());
-        }
-
-        if (!accessResult.isPresent()) {
-            accessResult = isSekretessRuleValid(intygsTyp, vardenhet.getEnhetsid(), user, personnummer);
-        }
-
-        if (!accessResult.isPresent() && isUserLoggedInOnDifferentUnit(vardenhet.getEnhetsid())) {
-            accessResult = Optional
-                    .of(AccessResult.create(AccessResultCode.AUTHORIZATION_DIFFERENT_UNIT,
-                            "User is logged in on a different unit than the draft/certificate"));
-        }
-
-        return accessResult.isPresent() ? accessResult.get() : AccessResult.noProblem();
+        return getAccessServiceEvaluation().given(getUser(), intygsTyp)
+                .feature(AuthoritiesConstants.FEATURE_HANTERA_FRAGOR)
+                .privilege(AuthoritiesConstants.PRIVILEGE_BESVARA_KOMPLETTERINGSFRAGA)
+                .privilegeIf(AuthoritiesConstants.PRIVILEGE_SVARA_MED_NYTT_INTYG, newCertificate)
+                .careUnit(vardenhet)
+                .patient(personnummer)
+                .checkPatientDeceased(true)
+                .checkInactiveCareUnit(true)
+                .checkRenew(true)
+                .checkPatientSecrecy()
+                .checkUnit(false, false)
+                .evaluate();
     }
 
     @Override
     public AccessResult allowToAnswerAdminQuestion(String intygsTyp, Vardenhet vardenhet, Personnummer personnummer) {
+        // TODO Implement with new privilege
         return null;
     }
 
     @Override
     public AccessResult allowToReadQuestions(String intygsTyp, Vardenhet vardenhet, Personnummer personnummer) {
-        final WebCertUser user = getUser();
-
-        Optional<AccessResult> accessResult = isAuthorized(intygsTyp, user, AuthoritiesConstants.FEATURE_HANTERA_FRAGOR,
-                AuthoritiesConstants.PRIVILEGE_LASA_FRAGA);
-
-        if (!accessResult.isPresent()) {
-            final List<String> excludeTypes = Arrays.asList(new String[] { LisjpEntryPoint.MODULE_ID, Fk7263EntryPoint.MODULE_ID });
-            accessResult = isDeceasedRuleValid(user, intygsTyp, vardenhet.getEnhetsid(), personnummer, Collections.emptyList(),
-                    excludeTypes);
-        }
-
-        if (!accessResult.isPresent()) {
-            final List<String> excludeTypes = Arrays.asList(new String[] { LisjpEntryPoint.MODULE_ID, Fk7263EntryPoint.MODULE_ID });
-            accessResult = isInactiveUnitRuleValid(user, intygsTyp, vardenhet.getEnhetsid(), excludeTypes);
-        }
-
-        if (!accessResult.isPresent()) {
-            final List<String> excludeTypes = Arrays.asList(new String[] { LisjpEntryPoint.MODULE_ID, Fk7263EntryPoint.MODULE_ID });
-            accessResult = isRenewRuleValid(user, intygsTyp, vardenhet.getEnhetsid(), excludeTypes);
-        }
-
-        if (!accessResult.isPresent()) {
-            accessResult = isSekretessRuleValid(intygsTyp, vardenhet.getEnhetsid(), user, personnummer);
-        }
-
-        if (!accessResult.isPresent()) {
-            accessResult = isSJFRuleValid(intygsTyp, vardenhet, user, true);
-        }
-
-        return accessResult.isPresent() ? accessResult.get() : AccessResult.noProblem();
+        return getAccessServiceEvaluation().given(getUser(), intygsTyp)
+                .feature(AuthoritiesConstants.FEATURE_HANTERA_FRAGOR)
+                .privilege(AuthoritiesConstants.PRIVILEGE_LASA_FRAGA)
+                .careUnit(vardenhet)
+                .patient(personnummer)
+                .checkPatientDeceased(true)
+                .excludeCertificateTypesForDeceased(LisjpEntryPoint.MODULE_ID, Fk7263EntryPoint.MODULE_ID)
+                .checkInactiveCareUnit(true)
+                .excludeCertificateTypesForInactive(LisjpEntryPoint.MODULE_ID, Fk7263EntryPoint.MODULE_ID)
+                .checkRenew(true)
+                .excludeCertificateTypesForRenew(LisjpEntryPoint.MODULE_ID, Fk7263EntryPoint.MODULE_ID)
+                .checkPatientSecrecy()
+                .checkUnit(true, true)
+                .evaluate();
     }
 
     @Override
     public AccessResult allowToForwardQuestions(String intygsTyp, Vardenhet vardenhet, Personnummer personnummer) {
-        final WebCertUser user = getUser();
-        Optional<AccessResult> accessResult = isAuthorized(intygsTyp, user, AuthoritiesConstants.FEATURE_HANTERA_FRAGOR,
-                AuthoritiesConstants.PRIVILEGE_VIDAREBEFORDRA_FRAGASVAR);
+        return getAccessServiceEvaluation().given(getUser(), intygsTyp)
+                .feature(AuthoritiesConstants.FEATURE_HANTERA_FRAGOR)
+                .privilege(AuthoritiesConstants.PRIVILEGE_VIDAREBEFORDRA_FRAGASVAR)
+                .careUnit(vardenhet)
+                .patient(personnummer)
+                .checkPatientDeceased(true)
+                .checkInactiveCareUnit(true)
+                .checkRenew(true)
+                .checkPatientSecrecy()
+                .checkUnit(false, false)
+                .evaluate();
+    }
 
-        if (!accessResult.isPresent()) {
-            accessResult = isDeceasedRuleValid(user, intygsTyp, vardenhet.getEnhetsid(), personnummer, Collections.emptyList());
-        }
+    private AccessServiceEvaluation getAccessServiceEvaluation() {
+        return AccessServiceEvaluation.create(this.webCertUserService, this.patientDetailsResolver, this.utkastService);
+    }
 
-        if (!accessResult.isPresent()) {
-            accessResult = isInactiveUnitRuleValid(user, intygsTyp, vardenhet.getEnhetsid());
-        }
-
-        if (!accessResult.isPresent()) {
-            accessResult = isRenewRuleValid(user, intygsTyp, vardenhet.getEnhetsid(), Collections.emptyList());
-        }
-
-        if (!accessResult.isPresent()) {
-            accessResult = isSekretessRuleValid(intygsTyp, vardenhet.getEnhetsid(), user, personnummer);
-        }
-
-        if (!accessResult.isPresent() && isUserLoggedInOnDifferentUnit(vardenhet.getEnhetsid())) {
-            accessResult = Optional
-                    .of(AccessResult.create(AccessResultCode.AUTHORIZATION_DIFFERENT_UNIT,
-                            "User is logged in on a different unit than the draft/certificate"));
-        }
-
-        return accessResult.isPresent() ? accessResult.get() : AccessResult.noProblem();
+    private WebCertUser getUser() {
+        return webCertUserService.getUser();
     }
 }
