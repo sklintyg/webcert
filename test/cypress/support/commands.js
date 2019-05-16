@@ -233,6 +233,34 @@ function verifieraHändelserFörIntyg(förväntadeHändelser, arr) {
     // Utgår från https://inera-certificate.atlassian.net/wiki/spaces/IT/pages/41353325/GE-005+PDL-loggning+i+Webcert
     assert.equal(arr.length, förväntadeHändelser.length, "Kontrollerar antal logghändelser");
     for (var j = 0; j < förväntadeHändelser.length; j++) {
+
+        // Speciallösning främst för problemet att en förnyelse av intyg genererar en "Läsa"
+        // och en "Skriva" som ofta har tidstämpel. Då vet vi inte om det är nuvarande eller
+        // nästa händelse i arrayen från mocken som vi ska jämföra mot. Lösning:
+        // Peeka på nästa event i händelser för mocken (om vi inte har nått till slutet).
+        // Ifall den har samma tidstämpel och den matchar vår förväntade så flyttar vi
+        // runt i mockens array för att matcha ordningen
+        if (arr[j + 1]) {
+            var startDateCurr = arr[j].getElementsByTagName("startdate")[0].innerText
+            var startDateNext = arr[j + 1].getElementsByTagName("startdate")[0].innerText;
+            if (startDateCurr === startDateNext) {
+                // Nuvarande och nästa händelse i arrayen från mocken har samma tidstämpel.
+                // Kontrollera om nästa händelserna matchar det förväntade eventet. Vi tittar
+                // bara på activityType och activityArgs
+                if(förväntadeHändelser[j].activity.activityType === arr[j + 1].getElementsByTagName("activitytype")[0].innerText) {
+                    var activityArgsNext;
+                    if  (arr[j + 1].getElementsByTagName("activityargs")[0]) {
+                        activityArgsNext = arr[j + 1].getElementsByTagName("activityargs")[0].innerText;
+                    }
+                    if (förväntadeHändelser[j].activity.activityArgs === activityArgsNext) {
+                        // Både activityArgs och activityType för förväntad händelse stämmer med
+                        // händelsen från mocken som kommer i nästa iteration. Byt plats på dem.
+                        [arr[j], arr[j + 1]] = [arr[j + 1], arr[j]];
+                    }
+                }
+            }
+        }
+
         // Verifiera att antalet children är rätt, d.v.s att antalet element på högsta nivån stämmer
         assert.equal(arr[j].children.length, 5)
 
@@ -265,7 +293,7 @@ function verifieraHändelserFörIntyg(förväntadeHändelser, arr) {
         }
 
         // Startdate. Verifiera inte exakt tidstämpel, endast att den är i ett giltigt format
-        var startDate = activity.getElementsByTagName("startdate")[0].innerText
+        const startDate = activity.getElementsByTagName("startdate")[0].innerText
         assert.notEqual(new Date(startDate), "Invalid Date", "Kontrollerar datumstämpel, index " + j);
 
         // Purpose
