@@ -297,17 +297,9 @@ public class IntygResource {
     @Path("/handelser/patient/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response deleteHandelserForPatient(@PathParam("id") String patientId) {
-        Set<String> intygTyper = moduleRegistry.listAllModules().stream()
-                .map(IntygModule::getId).collect(Collectors.toSet());
-        List<Utkast> utkast = utkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(patientId, intygTyper);
-        List<String> utkastId = utkast.stream().map(Utkast::getIntygsId).collect(Collectors.toList());
-        List<List<Handelse>> toDelete = utkastId.stream()
-                .map(it -> handelseRepository.findByIntygsId(it)).collect(Collectors.toList());
-
+        List<Handelse> toDelete = handelseRepository.findByPersonnummer(patientId);
         if (!toDelete.isEmpty()) {
-            for (List<Handelse> i : toDelete) {
-                handelseRepository.delete(i);
-            }
+            handelseRepository.delete(toDelete);
         }
         return Response.ok().build();
     }
