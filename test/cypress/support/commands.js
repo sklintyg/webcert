@@ -235,15 +235,13 @@ function verifieraHändelserFörIntyg(förväntadeHändelser, arr) {
     for (var j = 0; j < förväntadeHändelser.length; j++) {
 
         // Speciallösning främst för problemet att en förnyelse av intyg genererar en "Läsa"
-        // och en "Skriva" som ofta har tidstämpel. Då vet vi inte om det är nuvarande eller
-        // nästa händelse i arrayen från mocken som vi ska jämföra mot. Lösning:
+        // och en "Skriva" som ofta har samma tidstämpel. Då vet vi inte om det är nuvarande
+        // eller nästa händelse i arrayen från mocken som vi ska jämföra mot. Lösning:
         // Peeka på nästa event i händelser för mocken (om vi inte har nått till slutet).
         // Ifall den har samma tidstämpel och den matchar vår förväntade så flyttar vi
         // runt i mockens array för att matcha ordningen
         if (arr[j + 1]) {
-            var startDateCurr = arr[j].getElementsByTagName("startdate")[0].innerText
-            var startDateNext = arr[j + 1].getElementsByTagName("startdate")[0].innerText;
-            if (startDateCurr === startDateNext) {
+            if (arr[j].getElementsByTagName("startdate")[0].innerText === arr[j + 1].getElementsByTagName("startdate")[0].innerText) {
                 // Nuvarande och nästa händelse i arrayen från mocken har samma tidstämpel.
                 // Kontrollera om nästa händelserna matchar det förväntade eventet. Vi tittar
                 // bara på activityType och activityArgs
