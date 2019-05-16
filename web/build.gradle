@@ -124,7 +124,7 @@ gretty {
     def minified = System.properties['useMinifiedJavaScript'] ?: false
 
     jvmArgs = ["-Dcatalina.base=${buildDir}/catalina.base",
-               "-Dspring.profiles.active=dev,caching-enabled,wc-security-test",
+               "-Dspring.profiles.active=dev,caching-enabled,wc-security-test,ia-stub",
                "-Dconfig.folder=${projectDir}/../devops/dev",
                "-Dresources.folder=classpath:",
                "-Dcredentials.file=${projectDir}/webcert-credentials.properties",
@@ -168,6 +168,7 @@ dependencies {
     compile "se.inera.intyg.infra:monitoring:${infraVersion}"
     compile "se.inera.intyg.infra:common-redis-cache-core:${infraVersion}"
     compile "se.inera.intyg.infra:sjukfall-engine:${infraVersion}"
+    compile "se.inera.intyg.infra:ia-integration:${infraVersion}"
 
     compile "se.inera.intyg.common:ts-bas:${commonVersion}"
     compile "se.inera.intyg.common:ts-diabetes:${commonVersion}"
