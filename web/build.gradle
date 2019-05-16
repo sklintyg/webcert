@@ -149,6 +149,7 @@ dependencies {
     compile project(':pp-integration')
     compile project(':tak-integration')
     compile project(':notification-sender')
+    compile project(':arende-stub')
     compile project(':fk-stub')
     compile project(':notification-stub')
     compile project(':intygstjanst-stub')

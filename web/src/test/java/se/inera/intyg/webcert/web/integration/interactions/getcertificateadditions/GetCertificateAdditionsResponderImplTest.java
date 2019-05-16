@@ -17,9 +17,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.inera.intyg.webcert.web.web.controller.api;
+package se.inera.intyg.webcert.web.integration.interactions.getcertificateadditions;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -27,60 +26,42 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificateadditions.v1.GetCertificateAdditionsResponseType;
 import se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificateadditions.v1.GetCertificateAdditionsType;
-import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
-import se.inera.intyg.infra.security.common.model.Privilege;
-import se.inera.intyg.infra.security.common.model.RequestOrigin;
-import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
 import se.inera.intyg.webcert.persistence.model.Status;
 import se.inera.intyg.webcert.web.service.arende.ArendeService;
-import se.inera.intyg.webcert.web.service.user.WebCertUserService;
-import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.IntygId;
 
-import javax.ws.rs.core.Response;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.when;
 
 /**
- * @author Magnus Ekstrand on 2019-05-13.
+ * @author Magnus Ekstrand on 2019-05-16.
  */
 @RunWith(MockitoJUnitRunner.class)
-public class ArendeApiControllerTest {
+public class GetCertificateAdditionsResponderImplTest {
 
     private static final List<Long> ARENDE_IDS = Arrays.asList(1234567L, 2345678L, 3456789L);
 
     private static final List<String> INTYG_IDS = Arrays.asList("ABC123", "DEF456", "GHI789");
 
     @Mock
-    private WebCertUserService webCertUserService;
-
-    @Mock
     private ArendeService arendeService;
 
     @InjectMocks
-    ArendeApiController testee;
-
-    @Before
-    public void setUp() {
-        when(webCertUserService.getUser()).thenReturn(mockUser());
-    }
+    GetCertificateAdditionsResponderImpl testee;
 
     @Test
     public void whenGettingKompletteringarSuccessfully() {
         when(arendeService.getKompletteringar(INTYG_IDS)).thenReturn(mockKompetteringar());
 
-        GetCertificateAdditionsResponseType additions
-                = (GetCertificateAdditionsResponseType) testee.getKompletteringar(buildRequest()).getEntity();
+        GetCertificateAdditionsResponseType additions = testee.getCertificateAdditions("", buildRequest());
         assertEquals(3, additions.getAdditions().size());
     }
 
@@ -88,26 +69,13 @@ public class ArendeApiControllerTest {
     public void whenThereAreNoKompletteringar() {
         when(arendeService.getKompletteringar(INTYG_IDS)).thenReturn(new ArrayList<>());
 
-        Response response = testee.getKompletteringar(buildRequest());
-        assertEquals(ArendeApiController.NO_CONTENT, response.getStatus());
-        assertNull(response.getEntity());
+        GetCertificateAdditionsResponseType additions = testee.getCertificateAdditions("", buildRequest());
+        assertEquals(0, additions.getAdditions().size());
     }
 
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void whenInvalidRequest() {
-        Response response = null;
-
-        response = testee.getKompletteringar(null);
-        assertEquals(ArendeApiController.BAD_REQUEST, response.getStatus());
-        assertNull(response.getEntity());
-
-        response = testee.getKompletteringar(new GetCertificateAdditionsType());
-        assertEquals(ArendeApiController.BAD_REQUEST, response.getStatus());
-        assertNull(response.getEntity());
-
-        response = testee.getKompletteringar(buildEmptyRequest());
-        assertEquals(ArendeApiController.BAD_REQUEST, response.getStatus());
-        assertNull(response.getEntity());
+        testee.getCertificateAdditions("", buildEmptyRequest());
     }
 
     private GetCertificateAdditionsType buildEmptyRequest() {
@@ -146,21 +114,6 @@ public class ArendeApiControllerTest {
         }
 
         return arenden;
-    }
-
-    private WebCertUser mockUser() {
-        RequestOrigin requestOrigin = new RequestOrigin();
-        requestOrigin.setName(UserOriginType.READONLY.name());
-
-        Privilege privilege = new Privilege();
-        privilege.setRequestOrigins(Arrays.asList(requestOrigin));
-
-        WebCertUser user = new WebCertUser();
-        user.setAuthorities(new HashMap<>());
-        user.getAuthorities().put(AuthoritiesConstants.PRIVILEGE_VISA_INTYG, privilege);
-        user.setOrigin(UserOriginType.READONLY.name());
-
-        return user;
     }
 
 }

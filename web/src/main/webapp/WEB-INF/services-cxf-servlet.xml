@@ -33,6 +33,7 @@
 
   <context:annotation-config />
 
+  <import resource="classpath:arende-stub-context.xml" />
   <import resource="classpath:fk-stub-context.xml" />
   <import resource="classpath:fmb-stub-context.xml" />
   <import resource="classpath:hsa-stub-context.xml" />
@@ -115,6 +116,14 @@
         <jaxws:schemaLocation>classpath:/core_components/clinicalprocess_healthcond_certificate_3.2.xsd</jaxws:schemaLocation>
         <jaxws:schemaLocation>classpath:/core_components/clinicalprocess_healthcond_certificate_types_3.2.xsd</jaxws:schemaLocation>
         <jaxws:schemaLocation>classpath:/interactions/ListCertificatesForCareWithQAInteraction/ListCertificatesForCareWithQAResponder_3.2.xsd</jaxws:schemaLocation>
+    </jaxws:schemaLocations>
+  </jaxws:endpoint>
+
+  <jaxws:endpoint address="/get-certificate-additions/v1.0" implementor="se.inera.intyg.webcert.web.integration.interactions.getcertificateadditions.GetCertificateAdditionsResponderImpl">
+    <jaxws:schemaLocations>
+      <jaxws:schemaLocation>classpath:/core_components/clinicalprocess_healthcond_certificate_3.2.xsd</jaxws:schemaLocation>
+      <jaxws:schemaLocation>classpath:/core_components/clinicalprocess_healthcond_certificate_types_3.2.xsd</jaxws:schemaLocation>
+      <jaxws:schemaLocation>classpath:/interactions/GetCertificateAdditionsInteraction/GetCertificateAdditionsResponder_1.0.xsd</jaxws:schemaLocation>
     </jaxws:schemaLocations>
   </jaxws:endpoint>
 

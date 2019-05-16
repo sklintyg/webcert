@@ -16,37 +16,27 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.web.web.controller.api;
+package se.inera.intyg.webcert.web.integration.interactions.getcertificateadditions;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import org.apache.cxf.annotations.SchemaValidation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import riv.clinicalprocess.healthcond.certificate.getcertificateadditions._1.rivtabp21.GetCertificateAdditionsResponderInterface;
 import se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificateadditions.v1.AdditionType;
 import se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificateadditions.v1.GetCertificateAdditionsResponseType;
 import se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificateadditions.v1.GetCertificateAdditionsType;
 import se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificateadditions.v1.IntygAdditionsType;
 import se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificateadditions.v1.StatusType;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
-import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
 import se.inera.intyg.webcert.persistence.model.Status;
 import se.inera.intyg.webcert.web.service.arende.ArendeService;
 import se.inera.intyg.webcert.web.util.StreamUtil;
-import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.IIType;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.IntygId;
 import se.riv.clinicalprocess.healthcond.certificate.v3.ResultCodeType;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
@@ -55,46 +45,30 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Controller to get access to 'kompletteringar'.
+ * Created by eriklupander on 2017-05-11.
  */
-@Path("/arende")
-@Api(value = "komplettering", description = "REST API för kompletteringar", produces = MediaType.APPLICATION_JSON)
-public class ArendeApiController extends AbstractApiController {
+@SchemaValidation
+public class GetCertificateAdditionsResponderImpl implements GetCertificateAdditionsResponderInterface {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ArendeApiController.class);
-
-    static final int OK = 200;
-    static final int NO_CONTENT = 204;
-    static final int BAD_REQUEST = 400;
+    private static final Logger LOG = LoggerFactory.getLogger(GetCertificateAdditionsResponderImpl.class);
 
     @Autowired
     private ArendeService arendeService;
 
-    @POST
-    @Path("/kompletteringar")
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    @ApiOperation(value = "Get complementary data", httpMethod = "POST", produces = MediaType.APPLICATION_JSON)
-    @ApiResponses(value = {
-            @ApiResponse(code = OK, message = "Complementary data found", response = GetCertificateAdditionsResponseType.class),
-            @ApiResponse(code = BAD_REQUEST, message = "Bad request"),
-            @ApiResponse(code = NO_CONTENT, message = "No complementary data found")
-    })
+    @Override
     @PrometheusTimeMethod
-    public Response getKompletteringar(GetCertificateAdditionsType request) {
-        if (!isValidRequest(request)) {
-            return Response.status(BAD_REQUEST).build();
+    public GetCertificateAdditionsResponseType getCertificateAdditions(
+            String logicalAddress,
+            GetCertificateAdditionsType request) {
+
+        if (isNullOrEmpty(request)) {
+            throw new IllegalArgumentException("Request to GetCertificateType is missing required parameter 'intygs-id'");
         }
 
         LocalTime start = LocalTime.now();
 
         GetCertificateAdditionsResponseType response = new GetCertificateAdditionsResponseType();
         response.getAdditions().addAll(new ArrayList<>());
-
-        // Do authority check
-        authoritiesValidator.given(getWebCertUserService().getUser())
-                .privilege(AuthoritiesConstants.PRIVILEGE_VISA_INTYG)
-                .orThrow();
 
         try {
             List<IntygId> identifiers = request.getIntygsId().stream()
@@ -106,28 +80,30 @@ public class ArendeApiController extends AbstractApiController {
                     .collect(Collectors.toList());
 
             List<Arende> kompletteringar = arendeService.getKompletteringar(extensions);
-            if (kompletteringar == null || kompletteringar.isEmpty()) {
-                return Response.noContent().build();
+            if (!isNullOrEmpty(kompletteringar)) {
+                identifiers.forEach(identity ->
+                        response.getAdditions().add(buildIntygAdditionsType(identity, kompletteringar)));
             }
 
-            identifiers.forEach(identity ->
-                    response.getAdditions().add(buildIntygAdditionsType(identity, kompletteringar)));
-
-            response.setResult(ResultCodeType.OK);
-
-            LOG.debug("ArendeApiController: Successfully returned {} komplettering in {} seconds",
+            LOG.debug("GetCertificateAdditionsResponderImpl: Successfully returned {} kompletteringar in {} seconds",
                     response.getAdditions().stream().map(IntygAdditionsType::getAddition).mapToLong(List::size).sum(),
                     getExecutionTime(start));
-            return Response.ok(response).build();
+            response.setResult(ResultCodeType.OK);
+
         } catch (Exception e) {
-            LOG.error("ArendeApiController: Failed returning kompletteringar", e);
+            LOG.error("GetCertificateAdditionsResponderImpl: Failed returning kompletteringar", e);
             response.setResult(ResultCodeType.ERROR);
-            return Response.serverError().entity(response).build();
         }
+
+        return response;
     }
 
-    private boolean isValidRequest(GetCertificateAdditionsType request) {
-        return request != null && request.getIntygsId() != null && !request.getIntygsId().isEmpty();
+    private boolean isNullOrEmpty(GetCertificateAdditionsType request) {
+        return request == null || request.getIntygsId() == null || request.getIntygsId().size() == 0;
+    }
+
+    private boolean isNullOrEmpty(List<Arende> kompletteringar) {
+        return kompletteringar == null || kompletteringar.size() == 0;
     }
 
     private String getExecutionTime(LocalTime start) {
@@ -137,7 +113,7 @@ public class ArendeApiController extends AbstractApiController {
     }
 
     private IntygAdditionsType buildIntygAdditionsType(IntygId intygId,
-                                                     List<Arende> kompletteringar) {
+                                                       List<Arende> kompletteringar) {
 
         List<AdditionType> additions = kompletteringar.stream()
                 .filter(kmplt -> kmplt.getIntygsId().equals(intygId.getExtension()))
@@ -168,5 +144,6 @@ public class ArendeApiController extends AbstractApiController {
                 return StatusType.OBESVARAD;
         }
     }
+
 
 }
