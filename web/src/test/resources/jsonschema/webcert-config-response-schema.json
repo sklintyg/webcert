@@ -23,6 +23,46 @@
     },
     "SAKERHETSTJANST_IDP_URL": {
       "type": "string"
+    },
+    "BANNERS": {
+      "type": "array",
+      "minItems": 0,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string"
+          },
+          "displayFrom": {
+            "type": "string"
+          },
+          "displayTo": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "application": {
+            "type": "string"
+          },
+          "priority": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "createdAt",
+          "displayFrom",
+          "displayTo",
+          "message",
+          "application",
+          "priority"
+        ]
+      }
     }
   },
   "required": [
@@ -32,6 +72,7 @@
     "DASHBOARD_URL",
     "JS_MINIFIED",
     "CGI_FUNKTIONSTJANSTER_IDP_URL",
-    "SAKERHETSTJANST_IDP_URL"
+    "SAKERHETSTJANST_IDP_URL",
+    "BANNERS"
   ]
 }
