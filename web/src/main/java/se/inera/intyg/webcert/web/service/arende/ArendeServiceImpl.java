@@ -648,12 +648,7 @@ public class ArendeServiceImpl implements ArendeService {
 
     @Override
     public List<Arende> getKompletteringar(List<String> intygsIds) {
-        WebCertUser user = webcertUserService.getUser();
-        List<Arende> kompletteringar = arendeRepository.findByIntygsIdAndType(intygsIds, ArendeAmne.KOMPLT);
-        
-        return kompletteringar.stream()
-                .filter(isCorrectEnhet(user))
-                .collect(Collectors.toList());
+        return arendeRepository.findByIntygsIdAndType(intygsIds, ArendeAmne.KOMPLT);
     }
 
     @VisibleForTesting
