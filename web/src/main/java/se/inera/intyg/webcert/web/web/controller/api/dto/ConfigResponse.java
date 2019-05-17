@@ -18,10 +18,12 @@
  */
 package se.inera.intyg.webcert.web.web.controller.api.dto;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import se.inera.intyg.infra.integration.ia.model.Banner;
 
 @ApiModel(description = "The global configuration of Webcert")
 public class ConfigResponse {
@@ -47,8 +49,12 @@ public class ConfigResponse {
     @ApiModelProperty(name = "CGI_FUNKTIONSTJANSTER_IDP_URL", dataType = "String")
     private String cgiFunktionstjansterIdpUrl;
 
+    @ApiModelProperty(name = "BANNERS")
+    private List<Banner> banners;
+
+    // CHECKSTYLE:OFF ParameterNumber
     public ConfigResponse(String version, String buildNumber, String ppHost, String dashboardUrl, Boolean jsMinified,
-                          String sakerhetstjanstIdpUrl, String cgiFunktionstjansterIdpUrl) {
+                          String sakerhetstjanstIdpUrl, String cgiFunktionstjansterIdpUrl, List<Banner> banners) {
         this.version = version;
         this.buildNumber = buildNumber;
         this.ppHost = ppHost;
@@ -56,7 +62,9 @@ public class ConfigResponse {
         this.jsMinified = jsMinified;
         this.sakerhetstjanstIdpUrl = sakerhetstjanstIdpUrl;
         this.cgiFunktionstjansterIdpUrl = cgiFunktionstjansterIdpUrl;
+        this.banners = banners;
     }
+    // CHECKSTYLE:ON ParameterNumber
 
     @JsonProperty("VERSION")
     public String getVersion() {
@@ -91,5 +99,10 @@ public class ConfigResponse {
     @JsonProperty("CGI_FUNKTIONSTJANSTER_IDP_URL")
     public String getCgiFunktionstjansterIdpUrl() {
         return cgiFunktionstjansterIdpUrl;
+    }
+
+    @JsonProperty("BANNERS")
+    public List<Banner> getBanners() {
+        return banners;
     }
 }
