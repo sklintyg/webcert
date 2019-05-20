@@ -117,6 +117,9 @@ var Ag114Utkast = AgBaseUtkast._extend({
             var el = this.bedomning;
             return pageHelpers.moveAndSendKeys(el.sjukskrivningsgrad, bedomning.sjukskrivningsgrad)
                 .then(function () {
+                    return el.from.clear();
+                })
+                .then(function () {
                     return pageHelpers.moveAndSendKeys(el.from, bedomning.from);
                 })
                 .then(function () {
