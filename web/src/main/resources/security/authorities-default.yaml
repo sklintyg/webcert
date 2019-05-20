@@ -88,6 +88,7 @@ knownPrivileges:
   - &kp150 GODKANNA_MOTTAGARE
   - &kp160 SKAPA_NY_FRAGA
   - &kp170 LASA_FRAGA
+  - &kp180 BESVARA_FRAGA
 
 # De roller som systemet har
 knownRoles:
@@ -335,6 +336,16 @@ privileges:
       - *ki060 # luae_na
       - *ki070 # luae_fs
     requestOrigins: # Implicit alla
+  - &p180
+    name: *kp180
+    desc: Besvara administrativ fråga
+    intygstyper:
+      - *ki010 # fk7263
+      - *ki040 # lisjp
+      - *ki050 # luse
+      - *ki060 # luae_na
+      - *ki070 # luae_fs
+    requestOrigins: # Implicit alla
 # Roller
 roles:
   - &r010
@@ -486,6 +497,21 @@ roles:
               - *ki060 # luae_na
               - *ki070 # luae_fs
           - <<: *ro030 # UTHOPP
+      - <<: *p180 # BESVARA_FRAGA
+        requestOrigins:
+          - <<: *ro010 # NORMAL
+            intygstyper:
+              - *ki040 # lisjp
+              - *ki050 # luse
+              - *ki060 # luae_na
+              - *ki070 # luae_fs
+          - <<: *ro020 # DJUPINTEGRATION
+            intygstyper:
+              - *ki040 # lisjp
+              - *ki050 # luse
+              - *ki060 # luae_na
+              - *ki070 # luae_fs
+          - <<: *ro030 # UTHOPP
   - &r020
     name: *kr020 # PRIVATLAKARE
     desc: Privatläkare
@@ -565,6 +591,14 @@ roles:
               - *ki060 # luae_na
               - *ki070 # luae_fs
       - <<: *p170 # LASA_FRAGA
+        requestOrigins:
+          - <<: *ro010 # NORMAL
+            intygstyper:
+              - *ki040 # lisjp
+              - *ki050 # luse
+              - *ki060 # luae_na
+              - *ki070 # luae_fs
+      - <<: *p180 # BESVARA_FRAGA
         requestOrigins:
           - <<: *ro010 # NORMAL
             intygstyper:
@@ -813,6 +847,19 @@ roles:
           - <<: *ro030 # UTHOPP
             intygstyper:
               - *ki010
+      - <<: *p180 # BESVARA_FRAGA
+        intygstyper:
+          - *ki040
+        requestOrigins:
+          - <<: *ro010 # NORMAL
+            intygstyper:
+              - *ki040
+          - <<: *ro020 # DJUPINTEGRATION
+            intygstyper:
+              - *ki040
+          - <<: *ro030 # UTHOPP
+            intygstyper:
+              - *ki010
   - &r040
     name: *kr040 # VARDADMINISTRATOR
     desc: Vårdadministratör
@@ -897,6 +944,21 @@ roles:
               - *ki070 # luae_fs
           - <<: *ro030 # UTHOPP
       - <<: *p170 # LASA_FRAGA
+        requestOrigins:
+          - <<: *ro010 # NORMAL
+            intygstyper:
+              - *ki040 # lisjp
+              - *ki050 # luse
+              - *ki060 # luae_na
+              - *ki070 # luae_fs
+          - <<: *ro020 # DJUPINTEGRATION
+            intygstyper:
+              - *ki040 # lisjp
+              - *ki050 # luse
+              - *ki060 # luae_na
+              - *ki070 # luae_fs
+          - <<: *ro030 # UTHOPP
+      - <<: *p180 # BESVARA_FRAGA
         requestOrigins:
           - <<: *ro010 # NORMAL
             intygstyper:
