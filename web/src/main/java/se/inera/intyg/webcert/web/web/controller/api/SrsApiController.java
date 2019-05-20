@@ -211,7 +211,8 @@ public class SrsApiController extends AbstractApiController {
 
         if (EnumUtils.isValidEnum(EgenBedomningRiskType.class, opinion)) {
             ResultCodeEnum result =
-                    srsService.setOwnOpinion(vardgivareHsaId, vardenhetHsaId, intygId, diagnosisCode, EgenBedomningRiskType.fromValue(opinion));
+                    srsService.setOwnOpinion(vardgivareHsaId, vardenhetHsaId, intygId, diagnosisCode,
+                            EgenBedomningRiskType.fromValue(opinion));
             monitoringLog.logSetSrsRiskOpinion(intygId, vardgivareHsaId, vardenhetHsaId, opinion, diagnosisCode);
             return Response.ok(result).build();
         } else {
