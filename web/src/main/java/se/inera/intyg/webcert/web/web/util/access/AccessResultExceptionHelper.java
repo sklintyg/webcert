@@ -21,8 +21,24 @@ package se.inera.intyg.webcert.web.web.util.access;
 
 import se.inera.intyg.webcert.web.service.access.AccessResult;
 
+/**
+ * Helper to throw exceptions based on AccessResult.
+ */
 public interface AccessResultExceptionHelper {
+    /**
+     * Throw an exception of correct type based on the ActionResult.
+     * 
+     * @param actionResult
+     *            ActionResult to consider when throwing the exception.
+     */
     void throwException(AccessResult actionResult);
 
+    /**
+     * Throw an exception of correct type based on the ActionResults. An exception is only thrown
+     * if the ActionResultType is NOT NO_PROBLEM.
+     * 
+     * @param actionResult
+     *            ActionResult to evaluate and base exception on.
+     */
     void throwExceptionIfDenied(AccessResult actionResult);
 }

@@ -26,6 +26,7 @@ import org.mockito.Mock;
 
 import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.common.support.model.common.internal.Vardgivare;
+import se.inera.intyg.infra.integration.hsa.model.SelectableVardenhet;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.SekretessStatus;
 import se.inera.intyg.webcert.web.service.access.data.AccessServiceTestData;
@@ -50,6 +51,8 @@ abstract public class AccessTest {
 
     public static final Vardenhet vardenhet = mock(Vardenhet.class);
     public static final Vardgivare vardgivare = mock(Vardgivare.class);
+    public static final SelectableVardenhet selectedVardgivare = mock(SelectableVardenhet.class);
+    public static final SelectableVardenhet selectedVardenhet = mock(SelectableVardenhet.class);
     public static final String enhetsId = "EnhetsId";
     public static final boolean isEmployer = false;
     public static final String vardgivarId = "VardgivarId";
@@ -73,6 +76,10 @@ abstract public class AccessTest {
                 .when(webCertUserService).userIsLoggedInOnEnhetOrUnderenhet(enhetsId);
         doReturn(AccessServiceTestToolkit.createEmptyPreviousForUtkast(intygsTyp))
                 .when(utkastService).checkIfPersonHasExistingIntyg(PERSONNUMMER, user);
+        doReturn(selectedVardgivare).when(user).getValdVardgivare();
+        doReturn(vardgivarId).when(selectedVardgivare).getId();
+        doReturn(selectedVardenhet).when(user).getValdVardenhet();
+        doReturn(enhetsId).when(selectedVardenhet).getId();
         doReturn(enhetsId).when(vardenhet).getEnhetsid();
         doReturn(vardgivare).when(vardenhet).getVardgivare();
         doReturn(vardgivarId).when(vardgivare).getVardgivarid();
@@ -92,6 +99,10 @@ abstract public class AccessTest {
                 .when(webCertUserService).userIsLoggedInOnEnhetOrUnderenhet(enhetsId);
         doReturn(AccessServiceTestToolkit.createEmptyPreviousForUtkast(intygsTyp))
                 .when(utkastService).checkIfPersonHasExistingIntyg(PERSONNUMMER, user);
+        doReturn(selectedVardgivare).when(user).getValdVardgivare();
+        doReturn(vardgivarId).when(selectedVardgivare).getId();
+        doReturn(selectedVardenhet).when(user).getValdVardenhet();
+        doReturn(enhetsId).when(selectedVardenhet).getId();
         doReturn(enhetsId).when(vardenhet).getEnhetsid();
         doReturn(vardgivare).when(vardenhet).getVardgivare();
         doReturn(vardgivarId).when(vardgivare).getVardgivarid();
@@ -111,6 +122,10 @@ abstract public class AccessTest {
                 .when(webCertUserService).userIsLoggedInOnEnhetOrUnderenhet(enhetsId);
         doReturn(AccessServiceTestToolkit.createEmptyPreviousForUtkast(intygsTyp))
                 .when(utkastService).checkIfPersonHasExistingIntyg(PERSONNUMMER, user);
+        doReturn(selectedVardgivare).when(user).getValdVardgivare();
+        doReturn(vardgivarId).when(selectedVardgivare).getId();
+        doReturn(selectedVardenhet).when(user).getValdVardenhet();
+        doReturn(enhetsId).when(selectedVardenhet).getId();
         doReturn(enhetsId).when(vardenhet).getEnhetsid();
         doReturn(vardgivare).when(vardenhet).getVardgivare();
         doReturn(vardgivarId).when(vardgivare).getVardgivarid();
@@ -130,6 +145,10 @@ abstract public class AccessTest {
                 .when(webCertUserService).userIsLoggedInOnEnhetOrUnderenhet(enhetsId);
         doReturn(AccessServiceTestToolkit.createEmptyPreviousForUtkast(intygsTyp))
                 .when(utkastService).checkIfPersonHasExistingIntyg(PERSONNUMMER, user);
+        doReturn(selectedVardgivare).when(user).getValdVardgivare();
+        doReturn(vardgivarId).when(selectedVardgivare).getId();
+        doReturn(selectedVardenhet).when(user).getValdVardenhet();
+        doReturn(enhetsId).when(selectedVardenhet).getId();
         doReturn(enhetsId).when(vardenhet).getEnhetsid();
         doReturn(vardgivare).when(vardenhet).getVardgivare();
         doReturn(vardgivarId).when(vardgivare).getVardgivarid();
@@ -149,6 +168,10 @@ abstract public class AccessTest {
                 .when(webCertUserService).userIsLoggedInOnEnhetOrUnderenhet(enhetsId);
         doReturn(AccessServiceTestToolkit.createEmptyPreviousForUtkast(intygsTyp))
                 .when(utkastService).checkIfPersonHasExistingIntyg(PERSONNUMMER, user);
+        doReturn(selectedVardgivare).when(user).getValdVardgivare();
+        doReturn(vardgivarId).when(selectedVardgivare).getId();
+        doReturn(selectedVardenhet).when(user).getValdVardenhet();
+        doReturn(enhetsId).when(selectedVardenhet).getId();
         doReturn(enhetsId).when(vardenhet).getEnhetsid();
         doReturn(vardgivare).when(vardenhet).getVardgivare();
         doReturn(vardgivarId).when(vardgivare).getVardgivarid();
@@ -168,6 +191,10 @@ abstract public class AccessTest {
                 .when(webCertUserService).userIsLoggedInOnEnhetOrUnderenhet(enhetsId);
         doReturn(AccessServiceTestToolkit.createEmptyPreviousForUtkast(intygsTyp))
                 .when(utkastService).checkIfPersonHasExistingIntyg(PERSONNUMMER, user);
+        doReturn(selectedVardgivare).when(user).getValdVardgivare();
+        doReturn(vardgivarId).when(selectedVardgivare).getId();
+        doReturn(selectedVardenhet).when(user).getValdVardenhet();
+        doReturn(enhetsId).when(selectedVardenhet).getId();
         doReturn(enhetsId).when(vardenhet).getEnhetsid();
         doReturn(vardgivare).when(vardenhet).getVardgivare();
         doReturn(vardgivarId).when(vardgivare).getVardgivarid();
@@ -187,6 +214,10 @@ abstract public class AccessTest {
                 .when(webCertUserService).userIsLoggedInOnEnhetOrUnderenhet(enhetsId);
         doReturn(AccessServiceTestToolkit.createEmptyPreviousForUtkast(intygsTyp))
                 .when(utkastService).checkIfPersonHasExistingIntyg(PERSONNUMMER, user);
+        doReturn(selectedVardgivare).when(user).getValdVardgivare();
+        doReturn(vardgivarId).when(selectedVardgivare).getId();
+        doReturn(selectedVardenhet).when(user).getValdVardenhet();
+        doReturn(enhetsId).when(selectedVardenhet).getId();
         doReturn(enhetsId).when(vardenhet).getEnhetsid();
         doReturn(vardgivare).when(vardenhet).getVardgivare();
         doReturn(vardgivarId).when(vardgivare).getVardgivarid();
@@ -206,6 +237,10 @@ abstract public class AccessTest {
                 .when(webCertUserService).userIsLoggedInOnEnhetOrUnderenhet(enhetsId);
         doReturn(AccessServiceTestToolkit.createEmptyPreviousForUtkast(intygsTyp))
                 .when(utkastService).checkIfPersonHasExistingIntyg(PERSONNUMMER, user);
+        doReturn(selectedVardgivare).when(user).getValdVardgivare();
+        doReturn(vardgivarId).when(selectedVardgivare).getId();
+        doReturn(selectedVardenhet).when(user).getValdVardenhet();
+        doReturn(enhetsId).when(selectedVardenhet).getId();
         doReturn(enhetsId).when(vardenhet).getEnhetsid();
         doReturn(vardgivare).when(vardenhet).getVardgivare();
         doReturn(vardgivarId).when(vardgivare).getVardgivarid();
@@ -225,6 +260,10 @@ abstract public class AccessTest {
                 .when(webCertUserService).userIsLoggedInOnEnhetOrUnderenhet(enhetsId);
         doReturn(AccessServiceTestToolkit.createEmptyPreviousForUtkast(intygsTyp))
                 .when(utkastService).checkIfPersonHasExistingIntyg(PERSONNUMMER, user);
+        doReturn(selectedVardgivare).when(user).getValdVardgivare();
+        doReturn(vardgivarId).when(selectedVardgivare).getId();
+        doReturn(selectedVardenhet).when(user).getValdVardenhet();
+        doReturn(enhetsId).when(selectedVardenhet).getId();
         doReturn(enhetsId).when(vardenhet).getEnhetsid();
         doReturn(vardgivare).when(vardenhet).getVardgivare();
         doReturn(vardgivarId).when(vardgivare).getVardgivarid();
@@ -244,6 +283,10 @@ abstract public class AccessTest {
                 .when(webCertUserService).userIsLoggedInOnEnhetOrUnderenhet(enhetsId);
         doReturn(AccessServiceTestToolkit.createEmptyPreviousForUtkast(intygsTyp))
                 .when(utkastService).checkIfPersonHasExistingIntyg(PERSONNUMMER, user);
+        doReturn(selectedVardgivare).when(user).getValdVardgivare();
+        doReturn(vardgivarId).when(selectedVardgivare).getId();
+        doReturn(selectedVardenhet).when(user).getValdVardenhet();
+        doReturn(enhetsId).when(selectedVardenhet).getId();
         doReturn(enhetsId).when(vardenhet).getEnhetsid();
         doReturn(vardgivare).when(vardenhet).getVardgivare();
         doReturn(vardgivarId).when(vardgivare).getVardgivarid();

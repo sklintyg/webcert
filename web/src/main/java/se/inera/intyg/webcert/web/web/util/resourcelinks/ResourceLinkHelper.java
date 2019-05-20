@@ -29,19 +29,81 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.IntygModuleDTO;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.DraftHolder;
 
+/**
+ * Helper that decorates different resources with valid actions based on access rights. Uses access services for
+ * Drafts, Locked drafts and Certificates to evaluate what actions are available.
+ */
 public interface ResourceLinkHelper {
 
-    void decorateWithValidActionLinks(List<IntygModuleDTO> intygModuleDTOList, Personnummer personnummer);
+    /**
+     * Add available actions links for a list of IntygModuleDTO.
+     * 
+     * @param intygModuleDTOList
+     *            List of dtos to decorate.
+     * @param patient
+     *            Which patient access rights should be validated for.
+     */
+    void decorateIntygModuleWithValidActionLinks(List<IntygModuleDTO> intygModuleDTOList, Personnummer patient);
 
-    void decorateWithValidActionLinks(IntygModuleDTO intygModuleDTO, Personnummer personnummer);
+    /**
+     * Add available action links for a IntygModuleDTO.
+     * 
+     * @param intygModuleDTO
+     *            DTO to decorate.
+     * @param patient
+     *            Which patient access rights should be validated for.
+     */
+    void decorateIntygModuleWithValidActionLinks(IntygModuleDTO intygModuleDTO, Personnummer patient);
 
-    void decorateWithValidActionLinks(DraftHolder draftHolder, String intygsTyp, Vardenhet vardenhet, Personnummer personnummer);
+    /**
+     * Add available action links for DraftHolder.
+     * 
+     * @param draftHolder
+     *            DraftHolder to decorate.
+     * @param certificateType
+     *            Certificate type to consider.
+     * @param careUnit
+     *            Care Unit to consider.
+     * @param patient
+     *            Patient to consider.
+     */
+    void decorateUtkastWithValidActionLinks(DraftHolder draftHolder, String certificateType, Vardenhet careUnit, Personnummer patient);
 
-    void decorateWithValidActionLinks(IntygContentHolder intygContentHolder);
+    /**
+     * Add available action links for IntygContentHolder.
+     * 
+     * @param intygContentHolder
+     *            Holder to decorate
+     */
+    void decorateIntygWithValidActionLinks(IntygContentHolder intygContentHolder);
 
-    void decorateIntygWithValidActionLinks(List<ListIntygEntry> listIntygEntryList, Personnummer personNummer);
+    /**
+     * Add available action links to a list of ListIntygEntry.
+     * 
+     * @param listIntygEntryList
+     *            List of entries to decorate
+     * @param patient
+     *            Patient to consider.
+     */
+    void decorateIntygWithValidActionLinks(List<ListIntygEntry> listIntygEntryList, Personnummer patient);
 
-    void decorateWithValidActionLinks(ListIntygEntry listIntygEntry, Personnummer personNummer);
+    /**
+     * Add available action links to a ListIntygEntry.
+     * 
+     * @param listIntygEntry
+     *            Entry to decorate.
+     * @param patient
+     *            Patient to consider.
+     */
+    void decorateIntygWithValidActionLinks(ListIntygEntry listIntygEntry, Personnummer patient);
 
-    void decorateWithValidActionLinks(List<ArendeListItem> arendeListItems, Vardenhet vardenhet);
+    /**
+     * Add available action links to a list of ArendeListItem.
+     * 
+     * @param arendeListItems
+     *            List of items to decorate.
+     * @param careUnit
+     *            Care Unit to consider.
+     */
+    void decorateArendeWithValidActionLinks(List<ArendeListItem> arendeListItems, Vardenhet careUnit);
 }

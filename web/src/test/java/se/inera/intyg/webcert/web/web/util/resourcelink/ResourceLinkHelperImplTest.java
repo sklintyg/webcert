@@ -59,7 +59,7 @@ public class ResourceLinkHelperImplTest {
         expectedActionLink.setType(ActionLinkType.SKAPA_UTKAST);
 
         final IntygModuleDTO intygModuleDTO = createIntygModuleDTO(intygsTyp);
-        resourceLinkHelper.decorateWithValidActionLinks(intygModuleDTO, personnummer);
+        resourceLinkHelper.decorateIntygModuleWithValidActionLinks(intygModuleDTO, personnummer);
 
         final List<ActionLink> actualLinks = intygModuleDTO.getLinks();
 

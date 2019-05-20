@@ -34,6 +34,9 @@ import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 
+/**
+ * Implementation of CertificateAccessService.
+ */
 @Service
 public class CertificateAccessServiceImpl implements CertificateAccessService {
 
@@ -51,8 +54,8 @@ public class CertificateAccessServiceImpl implements CertificateAccessService {
     }
 
     @Override
-    public AccessResult allowToRead(String intygsTyp, Vardenhet vardenhet, Personnummer personnummer) {
-        return getAccessServiceEvaluation().given(getUser(), intygsTyp)
+    public AccessResult allowToRead(String certificateType, Vardenhet vardenhet, Personnummer personnummer) {
+        return getAccessServiceEvaluation().given(getUser(), certificateType)
                 .feature(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
                 .careUnit(vardenhet)
                 .patient(personnummer)
@@ -62,8 +65,8 @@ public class CertificateAccessServiceImpl implements CertificateAccessService {
     }
 
     @Override
-    public AccessResult allowToReplace(String intygsTyp, Vardenhet vardenhet, Personnummer personnummer) {
-        return getAccessServiceEvaluation().given(getUser(), intygsTyp)
+    public AccessResult allowToReplace(String certificateType, Vardenhet vardenhet, Personnummer personnummer) {
+        return getAccessServiceEvaluation().given(getUser(), certificateType)
                 .feature(AuthoritiesConstants.FEATURE_MAKULERA_INTYG)
                 .privilege(AuthoritiesConstants.PRIVILEGE_MAKULERA_INTYG)
                 .careUnit(vardenhet)
@@ -80,18 +83,18 @@ public class CertificateAccessServiceImpl implements CertificateAccessService {
     }
 
     @Override
-    public AccessResult allowToRenew(String intygsTyp, Vardenhet vardenhet, Personnummer personnummer) {
-        return allowToRenew(intygsTyp, vardenhet, personnummer, false);
+    public AccessResult allowToRenew(String certificateType, Vardenhet careUnit, Personnummer patient) {
+        return allowToRenew(certificateType, careUnit, patient, false);
     }
 
     @Override
-    public AccessResult allowToRenew(String intygsTyp, Vardenhet vardenhet, Personnummer personnummer, boolean isComplement) {
-        return getAccessServiceEvaluation().given(getUser(), intygsTyp)
+    public AccessResult allowToRenew(String certificateType, Vardenhet careUnit, Personnummer patient, boolean isComplement) {
+        return getAccessServiceEvaluation().given(getUser(), certificateType)
                 .feature(AuthoritiesConstants.FEATURE_FORNYA_INTYG)
                 .privilege(AuthoritiesConstants.PRIVILEGE_FORNYA_INTYG)
                 .privilegeIf(AuthoritiesConstants.PRIVILEGE_SVARA_MED_NYTT_INTYG, isComplement)
-                .careUnit(vardenhet)
-                .patient(personnummer)
+                .careUnit(careUnit)
+                .patient(patient)
                 .checkPatientDeceased(false)
                 .checkInactiveCareUnit(false)
                 .checkRenew(false)
@@ -101,13 +104,13 @@ public class CertificateAccessServiceImpl implements CertificateAccessService {
     }
 
     @Override
-    public AccessResult allowToPrint(String intygsTyp, Vardenhet vardenhet, Personnummer personnummer, boolean isEmployer) {
-        return getAccessServiceEvaluation().given(getUser(), intygsTyp)
+    public AccessResult allowToPrint(String certificateType, Vardenhet careUnit, Personnummer patient, boolean isEmployer) {
+        return getAccessServiceEvaluation().given(getUser(), certificateType)
                 .featureIf(AuthoritiesConstants.FEATURE_ARBETSGIVARUTSKRIFT, isEmployer)
                 .featureIf(AuthoritiesConstants.FEATURE_UTSKRIFT, !isEmployer)
                 .privilege(AuthoritiesConstants.PRIVILEGE_VISA_INTYG)
-                .careUnit(vardenhet)
-                .patient(personnummer)
+                .careUnit(careUnit)
+                .patient(patient)
                 .checkPatientDeceased(true)
                 .checkInactiveCareUnit(true)
                 .checkRenew(true)
@@ -117,12 +120,12 @@ public class CertificateAccessServiceImpl implements CertificateAccessService {
     }
 
     @Override
-    public AccessResult allowToInvalidate(String intygsTyp, Vardenhet vardenhet, Personnummer personnummer) {
-        return getAccessServiceEvaluation().given(getUser(), intygsTyp)
+    public AccessResult allowToInvalidate(String certificateType, Vardenhet careUnit, Personnummer patient) {
+        return getAccessServiceEvaluation().given(getUser(), certificateType)
                 .feature(AuthoritiesConstants.FEATURE_MAKULERA_INTYG)
                 .privilege(AuthoritiesConstants.PRIVILEGE_MAKULERA_INTYG)
-                .careUnit(vardenhet)
-                .patient(personnummer)
+                .careUnit(careUnit)
+                .patient(patient)
                 .checkPatientDeceased(true)
                 .checkInactiveCareUnit(true)
                 .checkRenew(true)
@@ -132,11 +135,11 @@ public class CertificateAccessServiceImpl implements CertificateAccessService {
     }
 
     @Override
-    public AccessResult allowToSend(String intygsTyp, Vardenhet vardenhet, Personnummer personnummer) {
-        return getAccessServiceEvaluation().given(getUser(), intygsTyp)
+    public AccessResult allowToSend(String certificateType, Vardenhet careUnit, Personnummer patient) {
+        return getAccessServiceEvaluation().given(getUser(), certificateType)
                 .feature(AuthoritiesConstants.FEATURE_SKICKA_INTYG)
-                .careUnit(vardenhet)
-                .patient(personnummer)
+                .careUnit(careUnit)
+                .patient(patient)
                 .checkPatientDeceased(true)
                 .checkInactiveCareUnit(true)
                 .checkRenew(true)
@@ -146,12 +149,12 @@ public class CertificateAccessServiceImpl implements CertificateAccessService {
     }
 
     @Override
-    public AccessResult allowToCreateQuestion(String intygsTyp, Vardenhet vardenhet, Personnummer personnummer) {
-        return getAccessServiceEvaluation().given(getUser(), intygsTyp)
+    public AccessResult allowToCreateQuestion(String certificateType, Vardenhet careUnit, Personnummer patient) {
+        return getAccessServiceEvaluation().given(getUser(), certificateType)
                 .feature(AuthoritiesConstants.FEATURE_HANTERA_FRAGOR)
                 .privilege(AuthoritiesConstants.PRIVILEGE_SKAPA_NYFRAGA)
-                .careUnit(vardenhet)
-                .patient(personnummer)
+                .careUnit(careUnit)
+                .patient(patient)
                 .checkPatientDeceased(true)
                 .checkInactiveCareUnit(true)
                 .checkRenew(true)
@@ -161,14 +164,14 @@ public class CertificateAccessServiceImpl implements CertificateAccessService {
     }
 
     @Override
-    public AccessResult allowToAnswerComplementQuestion(String intygsTyp, Vardenhet vardenhet, Personnummer personnummer,
+    public AccessResult allowToAnswerComplementQuestion(String certificateType, Vardenhet careUnit, Personnummer patient,
             boolean newCertificate) {
-        return getAccessServiceEvaluation().given(getUser(), intygsTyp)
+        return getAccessServiceEvaluation().given(getUser(), certificateType)
                 .feature(AuthoritiesConstants.FEATURE_HANTERA_FRAGOR)
                 .privilege(AuthoritiesConstants.PRIVILEGE_BESVARA_KOMPLETTERINGSFRAGA)
                 .privilegeIf(AuthoritiesConstants.PRIVILEGE_SVARA_MED_NYTT_INTYG, newCertificate)
-                .careUnit(vardenhet)
-                .patient(personnummer)
+                .careUnit(careUnit)
+                .patient(patient)
                 .checkPatientDeceased(true)
                 .checkInactiveCareUnit(true)
                 .checkRenew(true)
@@ -178,18 +181,27 @@ public class CertificateAccessServiceImpl implements CertificateAccessService {
     }
 
     @Override
-    public AccessResult allowToAnswerAdminQuestion(String intygsTyp, Vardenhet vardenhet, Personnummer personnummer) {
-        // TODO Implement with new privilege
-        return null;
+    public AccessResult allowToAnswerAdminQuestion(String certificateType, Vardenhet careUnit, Personnummer patient) {
+        return getAccessServiceEvaluation().given(getUser(), certificateType)
+                .feature(AuthoritiesConstants.FEATURE_HANTERA_FRAGOR)
+                .privilege(AuthoritiesConstants.PRIVILEGE_BESVARA_FRAGA)
+                .careUnit(careUnit)
+                .patient(patient)
+                .checkPatientDeceased(true)
+                .checkInactiveCareUnit(true)
+                .checkRenew(true)
+                .checkPatientSecrecy()
+                .checkUnit(false, false)
+                .evaluate();
     }
 
     @Override
-    public AccessResult allowToReadQuestions(String intygsTyp, Vardenhet vardenhet, Personnummer personnummer) {
-        return getAccessServiceEvaluation().given(getUser(), intygsTyp)
+    public AccessResult allowToReadQuestions(String certificateType, Vardenhet careUnit, Personnummer patient) {
+        return getAccessServiceEvaluation().given(getUser(), certificateType)
                 .feature(AuthoritiesConstants.FEATURE_HANTERA_FRAGOR)
                 .privilege(AuthoritiesConstants.PRIVILEGE_LASA_FRAGA)
-                .careUnit(vardenhet)
-                .patient(personnummer)
+                .careUnit(careUnit)
+                .patient(patient)
                 .checkPatientDeceased(true)
                 .excludeCertificateTypesForDeceased(LisjpEntryPoint.MODULE_ID, Fk7263EntryPoint.MODULE_ID)
                 .checkInactiveCareUnit(true)
@@ -202,12 +214,12 @@ public class CertificateAccessServiceImpl implements CertificateAccessService {
     }
 
     @Override
-    public AccessResult allowToForwardQuestions(String intygsTyp, Vardenhet vardenhet, Personnummer personnummer) {
-        return getAccessServiceEvaluation().given(getUser(), intygsTyp)
+    public AccessResult allowToForwardQuestions(String certificateType, Vardenhet careUnit, Personnummer patient) {
+        return getAccessServiceEvaluation().given(getUser(), certificateType)
                 .feature(AuthoritiesConstants.FEATURE_HANTERA_FRAGOR)
                 .privilege(AuthoritiesConstants.PRIVILEGE_VIDAREBEFORDRA_FRAGASVAR)
-                .careUnit(vardenhet)
-                .patient(personnummer)
+                .careUnit(careUnit)
+                .patient(patient)
                 .checkPatientDeceased(true)
                 .checkInactiveCareUnit(true)
                 .checkRenew(true)

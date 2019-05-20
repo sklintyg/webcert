@@ -108,7 +108,7 @@ public class IntygModuleApiController extends AbstractApiController {
 
         IntygContentHolder intygAsExternal = intygService.fetchIntygDataWithRelations(intygsId, intygsTyp, coherentJournaling);
 
-        resourceLinkHelper.decorateWithValidActionLinks(intygAsExternal);
+        resourceLinkHelper.decorateIntygWithValidActionLinks(intygAsExternal);
 
         return Response.ok().entity(intygAsExternal).build();
     }

@@ -93,6 +93,10 @@ abstract public class DraftAccessTest extends AccessTest {
                 .when(webCertUserService).userIsLoggedInOnEnhetOrUnderenhet(enhetsId);
         doReturn(AccessServiceTestToolkit.createPreviousUtkastForUtkast(intygsTyp))
                 .when(utkastService).checkIfPersonHasExistingIntyg(PERSONNUMMER, user);
+        doReturn(selectedVardgivare).when(user).getValdVardgivare();
+        doReturn(vardgivarId).when(selectedVardgivare).getId();
+        doReturn(selectedVardenhet).when(user).getValdVardenhet();
+        doReturn(enhetsId).when(selectedVardenhet).getId();
 
         assertAllowToCreateUtkastOnSameCareProviderWhenUtkastSameVGExists(accessService.allowToCreateDraft(intygsTyp, PERSONNUMMER));
     }
@@ -112,6 +116,10 @@ abstract public class DraftAccessTest extends AccessTest {
                 .when(webCertUserService).userIsLoggedInOnEnhetOrUnderenhet(enhetsId);
         doReturn(AccessServiceTestToolkit.createPreviousIntygForUtkast(intygsTyp, true))
                 .when(utkastService).checkIfPersonHasExistingIntyg(PERSONNUMMER, user);
+        doReturn(selectedVardgivare).when(user).getValdVardgivare();
+        doReturn(vardgivarId).when(selectedVardgivare).getId();
+        doReturn(selectedVardenhet).when(user).getValdVardenhet();
+        doReturn(enhetsId).when(selectedVardenhet).getId();
 
         assertAllowToCreateUtkastOnDifferentCareProviderWhenIntygSameVGExists(accessService.allowToCreateDraft(intygsTyp, PERSONNUMMER));
     }
@@ -131,11 +139,24 @@ abstract public class DraftAccessTest extends AccessTest {
                 .when(webCertUserService).userIsLoggedInOnEnhetOrUnderenhet(enhetsId);
         doReturn(AccessServiceTestToolkit.createPreviousIntygForUtkast(intygsTyp, false))
                 .when(utkastService).checkIfPersonHasExistingIntyg(PERSONNUMMER, user);
+        doReturn(selectedVardgivare).when(user).getValdVardgivare();
+        doReturn(vardgivarId).when(selectedVardgivare).getId();
+        doReturn(selectedVardenhet).when(user).getValdVardenhet();
+        doReturn(enhetsId).when(selectedVardenhet).getId();
 
         assertAllowToCreateUtkastOnSameCareProviderWhenIntygExists(accessService.allowToCreateDraft(intygsTyp, PERSONNUMMER));
     }
 
     abstract protected void assertAllowToCreateUtkastOnSameCareProviderWhenIntygExists(AccessResult actualValue);
+
+    @Test
+    public void isAllowedToCreateUtkastOnSekretessPatient() {
+        setupMocksForOnSekretessPatient();
+
+        assertAllowedToCreateUtkastOnSekretessPatient(accessService.allowToCreateDraft(intygsTyp, PERSONNUMMER));
+    }
+
+    abstract protected void assertAllowedToCreateUtkastOnSekretessPatient(AccessResult actualValue);
 
     @Test
     public void isAllowToReadUtkastNoConditions() {

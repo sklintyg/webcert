@@ -22,18 +22,103 @@ package se.inera.intyg.webcert.web.service.access;
 import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.schemas.contract.Personnummer;
 
+/**
+ * Service to check the current users right to access actions on a Draft.
+ */
 public interface DraftAccessService {
-    AccessResult allowToCreateDraft(String intygsTyp, Personnummer personnummer);
 
-    AccessResult allowToReadDraft(String intygsTyp, Vardenhet vardenhet, Personnummer personnummer);
+    /**
+     * Check if the user is allowed to create a new draft.
+     * 
+     * @param certificateType
+     *            The type of the certificate being checked.
+     * @param patient
+     *            The patient which the certificate belongs to.
+     * @return
+     */
+    AccessResult allowToCreateDraft(String certificateType, Personnummer patient);
 
-    AccessResult allowToEditDraft(String intygsTyp, Vardenhet vardenhet, Personnummer personnummer);
+    /**
+     * Check if the user is allowed to read a draft.
+     *
+     * @param certificateType
+     *            The type of the certificate being checked.
+     * @param careUnit
+     *            The careUnit which the certificate belongs to.
+     * @param patient
+     *            The patient which the certificate belongs to.
+     * @return
+     *         AccessResult which contains the answer if the user is allowed or not.
+     */
+    AccessResult allowToReadDraft(String certificateType, Vardenhet careUnit, Personnummer patient);
 
-    AccessResult allowToDeleteDraft(String intygsTyp, Vardenhet vardenhet, Personnummer personnummer);
+    /**
+     * Check if the user is allowed to edit a draft.
+     *
+     * @param certificateType
+     *            The type of the certificate being checked.
+     * @param careUnit
+     *            The careUnit which the certificate belongs to.
+     * @param patient
+     *            The patient which the certificate belongs to.
+     * @return
+     *         AccessResult which contains the answer if the user is allowed or not.
+     */
+    AccessResult allowToEditDraft(String certificateType, Vardenhet careUnit, Personnummer patient);
 
-    AccessResult allowToSignDraft(String intygsTyp, Vardenhet vardenhet, Personnummer personnummer);
+    /**
+     * Check if the user is allowed to delete a draft.
+     *
+     * @param certificateType
+     *            The type of the certificate being checked.
+     * @param careUnit
+     *            The careUnit which the certificate belongs to.
+     * @param patient
+     *            The patient which the certificate belongs to.
+     * @return
+     *         AccessResult which contains the answer if the user is allowed or not.
+     */
+    AccessResult allowToDeleteDraft(String certificateType, Vardenhet careUnit, Personnummer patient);
 
-    AccessResult allowToPrintDraft(String intygsTyp, Vardenhet vardenhet, Personnummer personnummer);
+    /**
+     * Check if the user is allowed to sign a draft.
+     *
+     * @param certificateType
+     *            The type of the certificate being checked.
+     * @param careUnit
+     *            The careUnit which the certificate belongs to.
+     * @param patient
+     *            The patient which the certificate belongs to.
+     * @return
+     *         AccessResult which contains the answer if the user is allowed or not.
+     */
+    AccessResult allowToSignDraft(String certificateType, Vardenhet careUnit, Personnummer patient);
 
-    AccessResult allowToForwardDraft(String intygsTyp, Vardenhet vardenhet, Personnummer personnummer);
+    /**
+     * Check if the user is allowed to print a draft.
+     *
+     * @param certificateType
+     *            The type of the certificate being checked.
+     * @param careUnit
+     *            The careUnit which the certificate belongs to.
+     * @param patient
+     *            The patient which the certificate belongs to.
+     * @return
+     *         AccessResult which contains the answer if the user is allowed or not.
+     */
+    AccessResult allowToPrintDraft(String certificateType, Vardenhet careUnit, Personnummer patient);
+
+    /**
+     * Check if the user is allowed to forward a draft.
+     *
+     * @param certificateType
+     *            The type of the certificate being checked.
+     * @param careUnit
+     *            The careUnit which the certificate belongs to.
+     * @param patient
+     *            The patient which the certificate belongs to.
+     * @return
+     *         AccessResult which contains the answer if the user is allowed or not.
+     */
+    AccessResult allowToForwardDraft(String certificateType, Vardenhet careUnit, Personnummer patient);
 }

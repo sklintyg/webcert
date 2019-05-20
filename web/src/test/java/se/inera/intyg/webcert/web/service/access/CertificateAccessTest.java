@@ -850,6 +850,106 @@ public abstract class CertificateAccessTest extends AccessTest {
     abstract protected void assertAllowToAnswerQuestionNoConditionsDifferentUnit(AccessResult actualValue);
 
     @Test
+    public void isAllowToAnswerAdminQuestionNoConditions() {
+        setupMocksForNoConditions();
+
+        assertAllowToAnswerAdminQuestionNoConditions(
+                accessService.allowToAnswerAdminQuestion(intygsTyp, vardenhet, PERSONNUMMER));
+    }
+
+    abstract protected void assertAllowToAnswerAdminQuestionNoConditions(AccessResult actualValue);
+
+    @Test
+    public void isAllowToAnswerAdminQuestionOnDeceasedPatient() {
+        setupMocksForDeceasedPatient();
+
+        assertAllowToAnswerAdminQuestionOnDeceasedPatient(
+                accessService.allowToAnswerAdminQuestion(intygsTyp, vardenhet, PERSONNUMMER));
+    }
+
+    abstract protected void assertAllowToAnswerAdminQuestionOnDeceasedPatient(AccessResult actualValue);
+
+    @Test
+    public void isAllowToAnswerAdminQuestionOnInactiveUnit() {
+        setupMocksForInactiveUnit();
+
+        assertAllowToAnswerAdminQuestionOnInactiveUnit(
+                accessService.allowToAnswerAdminQuestion(intygsTyp, vardenhet, PERSONNUMMER));
+    }
+
+    abstract protected void assertAllowToAnswerAdminQuestionOnInactiveUnit(AccessResult actualValue);
+
+    @Test
+    public void isAllowToAnswerAdminQuestionOnRenewFalse() {
+        setupMocksForOnRenewFalse();
+
+        assertAllowToAnswerAdminQuestionOnRenewFalse(
+                accessService.allowToAnswerAdminQuestion(intygsTyp, vardenhet, PERSONNUMMER));
+    }
+
+    abstract protected void assertAllowToAnswerAdminQuestionOnRenewFalse(AccessResult actualValue);
+
+    @Test
+    public void isAllowToAnswerAdminQuestionOnSekretessPatientOnSameUnit() {
+        setupMocksForOnSekretessPatient();
+
+        assertAllowToAnswerAdminQuestionOnSekretessPatientOnSameUnit(
+                accessService.allowToAnswerAdminQuestion(intygsTyp, vardenhet, PERSONNUMMER));
+    }
+
+    abstract protected void assertAllowToAnswerAdminQuestionOnSekretessPatientOnSameUnit(AccessResult actualValue);
+
+    @Test
+    public void isAllowToAnswerAdminQuestionOnSekretessPatientOnDifferentUnit() {
+        setupMocksForOnSekretessPatientDifferentUnit();
+
+        assertAllowToAnswerAdminQuestionOnSekretessPatientOnDifferentUnit(
+                accessService.allowToAnswerAdminQuestion(intygsTyp, vardenhet, PERSONNUMMER));
+    }
+
+    abstract protected void assertAllowToAnswerAdminQuestionOnSekretessPatientOnDifferentUnit(AccessResult actualValue);
+
+    @Test
+    public void isAllowToAnswerAdminQuestionOnDeceasedPatientOnDifferentUnit() {
+        setupMocksForDeceasedPatientDifferentUnit();
+
+        assertAllowToAnswerAdminQuestionOnDeceasedPatientOnDifferentUnit(
+                accessService.allowToAnswerAdminQuestion(intygsTyp, vardenhet, PERSONNUMMER));
+    }
+
+    abstract protected void assertAllowToAnswerAdminQuestionOnDeceasedPatientOnDifferentUnit(AccessResult actualValue);
+
+    @Test
+    public void isAllowToAnswerAdminQuestionOnInactiveUnitOnDifferentUnit() {
+        setupMocksForInactiveUnitDifferentUnit();
+
+        assertAllowToAnswerAdminQuestionOnInactiveUnitOnDifferentUnit(
+                accessService.allowToAnswerAdminQuestion(intygsTyp, vardenhet, PERSONNUMMER));
+    }
+
+    abstract protected void assertAllowToAnswerAdminQuestionOnInactiveUnitOnDifferentUnit(AccessResult actualValue);
+
+    @Test
+    public void isAllowToAnswerAdminQuestionOnRenewFalseOnDifferentUnit() {
+        setupMocksForOnRenewFalseDifferentUnit();
+
+        assertAllowToAnswerAdminQuestionOnRenewFalseOnDifferentUnit(
+                accessService.allowToAnswerAdminQuestion(intygsTyp, vardenhet, PERSONNUMMER));
+    }
+
+    abstract protected void assertAllowToAnswerAdminQuestionOnRenewFalseOnDifferentUnit(AccessResult actualValue);
+
+    @Test
+    public void isAllowToAnswerAdminQuestionNoConditionsDifferentUnit() {
+        setupMocksForNoConditionsDifferentUnit();
+
+        assertAllowToAnswerAdminQuestionNoConditionsDifferentUnit(
+                accessService.allowToAnswerAdminQuestion(intygsTyp, vardenhet, PERSONNUMMER));
+    }
+
+    abstract protected void assertAllowToAnswerAdminQuestionNoConditionsDifferentUnit(AccessResult actualValue);
+
+    @Test
     public void isAllowToReadQuestionsNoConditions() {
         setupMocksForNoConditions();
 

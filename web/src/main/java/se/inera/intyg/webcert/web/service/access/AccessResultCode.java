@@ -19,16 +19,64 @@
 
 package se.inera.intyg.webcert.web.service.access;
 
+/**
+ * Enum that defines different results when access is checked. If NO_PROBLEM is returned,
+ * the user is considered having access. If any other code is returned, no access is given and
+ * the code explains the reason for the restriction.
+ */
 public enum AccessResultCode {
+    /**
+     * Has access
+     */
     NO_PROBLEM,
+
+    /**
+     * No access, could not check if patient has sekretess or not due to unavailable PersonUppgiftsTjänst.
+     */
     PU_PROBLEM,
+
+    /**
+     * No access. Missing privilege to handle patient with sekretess.
+     */
     AUTHORIZATION_SEKRETESS,
+
+    /**
+     * No access. Not allowed to handle patient with sekretess on another CareUnit than the user is logged in to.
+     */
     AUTHORIZATION_SEKRETESS_UNIT,
+
+    /**
+     * No Access. Not allowed to handle patient on another CareUnit than the user is logged in to.
+     */
     AUTHORIZATION_DIFFERENT_UNIT,
+
+    /**
+     * No Access. Not allowed to create new draft due to Unique draft feature.
+     */
     UNIQUE_DRAFT,
+
+    /**
+     * No Access. Not allowed to create new draft due to Unique certificate feature.
+     */
     UNIQUE_CERTIFICATE,
+
+    /**
+     * No Access. Not allowed to handle deceased patient.
+     */
     DECEASED_PATIENT,
+
+    /**
+     * No Access. Not allowed to handle patient when logged in with inactive unit parameter.
+     */
     INACTIVE_UNIT,
+
+    /**
+     * No Access. Not allowed to handle patient when logged in with renew false parameter.
+     */
     RENEW_FALSE,
+
+    /**
+     * No Access. Not allowed due to feature or privilege missing.
+     */
     AUTHORIZATION_VALIDATION
 }

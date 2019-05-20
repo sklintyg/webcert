@@ -26,6 +26,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import javax.validation.constraints.NotNull;
+
 import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.infra.security.authorities.validation.AuthExpectationSpecification;
 import se.inera.intyg.infra.security.authorities.validation.AuthoritiesValidator;
@@ -39,7 +41,11 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 import se.inera.intyg.webcert.web.service.utkast.dto.PreviousIntyg;
 
-public final class AccessServiceEvaluation {
+/**
+ * Implementation used to evaluate access criterias. Set the criterias that will be considered and then call
+ * evaluate(). Make sure to set basic information as user, certificateType, careUnit and patient first.
+ */
+final class AccessServiceEvaluation {
     private static final String DRAFT = "utkast";
     private static final String CERTIFICATE = "intyg";
 
@@ -81,100 +87,256 @@ public final class AccessServiceEvaluation {
         this.utkastService = utkastService;
     }
 
-    public static AccessServiceEvaluation create(WebCertUserService webCertUserService,
-            PatientDetailsResolver patientDetailsResolver,
-            UtkastService utkastService) {
+    /**
+     * Creates a new instance of AccessServiceEvaluation with injected services and helpers.
+     * 
+     * @param webCertUserService
+     *            Service to fetch and evaluate the current user.
+     * @param patientDetailsResolver
+     *            Service to fetch and evaluate the current patient.
+     * @param utkastService
+     *            Service to fetch drafts and certificates when evaluating certain rules.
+     * @return
+     *         An AccessServiceEvaluation to be used once and then thrown away.
+     */
+    public static AccessServiceEvaluation create(@NotNull WebCertUserService webCertUserService,
+            @NotNull PatientDetailsResolver patientDetailsResolver,
+            @NotNull UtkastService utkastService) {
         return new AccessServiceEvaluation(webCertUserService, patientDetailsResolver, utkastService);
     }
 
-    public AccessServiceEvaluation given(WebCertUser user, String certificateType) {
+    /**
+     * Specifies which user and certificate type this evaluation will be done for. If called more than once,
+     * the old values will be overridden.
+     * 
+     * @param user
+     *            Current user.
+     * @param certificateType
+     *            Certificate type being evaluated.
+     * @return
+     *         AccessServiceEvaluation
+     */
+    public AccessServiceEvaluation given(@NotNull WebCertUser user, @NotNull String certificateType) {
         this.user = user;
         this.certificateType = certificateType;
         return this;
     }
 
-    public AccessServiceEvaluation privilege(String privilege) {
+    /**
+     * Add a privilege to consider. This method can be called multiple times.
+     * 
+     * @param privilege
+     *            Privilege to consider
+     * @return
+     *         AccessServiceEvaluation
+     */
+    public AccessServiceEvaluation privilege(@NotNull String privilege) {
         this.privileges.add(privilege);
         return this;
     }
 
-    public AccessServiceEvaluation privilegeIf(String privilege, boolean addPrivilege) {
+    /**
+     * Add a privilege to consider IF the addPrivilege is true. This method can be called multiple times.
+     * 
+     * @param privilege
+     *            Privilege to consider
+     * @param addPrivilege
+     *            Only add privilege if true.
+     * @return
+     *         AccessServiceEvaluation
+     */
+    public AccessServiceEvaluation privilegeIf(@NotNull String privilege, @NotNull boolean addPrivilege) {
         if (addPrivilege) {
             this.privileges.add(privilege);
         }
         return this;
     }
 
-    public AccessServiceEvaluation feature(String feature) {
+    /**
+     * Add a feature to consider. This method can be called multiple times.
+     * 
+     * @param feature
+     *            feature to consider.
+     * @return
+     *         AccessServiceEvaluation
+     * 
+     */
+    public AccessServiceEvaluation feature(@NotNull String feature) {
         this.features.add(feature);
         return this;
     }
 
-    public AccessServiceEvaluation featureIf(String feature, boolean addFeature) {
+    /**
+     * Add a feature to consider IF the addFeature is true. This method can be called multiple times.
+     * 
+     * @param feature
+     *            feature to consider.
+     * @param addFeature
+     *            Only add feature if true.
+     * @return
+     */
+    public AccessServiceEvaluation featureIf(@NotNull String feature, @NotNull boolean addFeature) {
         if (addFeature) {
             this.features.add(feature);
         }
         return this;
     }
 
-    public AccessServiceEvaluation careUnit(Vardenhet careUnit) {
+    /**
+     * Set care unit to consider. If called more than once, the old values will be overridden.
+     * 
+     * @param careUnit
+     *            Care unit to consider.
+     * @return
+     *         AccessServiceEvaluation
+     */
+    public AccessServiceEvaluation careUnit(@NotNull Vardenhet careUnit) {
         this.careUnit = careUnit;
         return this;
     }
 
-    public AccessServiceEvaluation patient(Personnummer personnummer) {
+    /**
+     * Set patient to consider. If called more than once, the old values will be overridden.
+     * 
+     * @param personnummer
+     *            Patient to consider.
+     * @return
+     *         AccessServiceEvaluation
+     */
+    public AccessServiceEvaluation patient(@NotNull Personnummer personnummer) {
         this.patient = personnummer;
         return this;
     }
 
+    /**
+     * Consider if patient is deceased when evaluating. If called more than once, the old values will be overridden.
+     * 
+     * @param allowForSameUnit
+     *            Allow handling (if all other criterias are met) when user is on the same unit.
+     * @return
+     *         AccessServiceEvaluation
+     */
     public AccessServiceEvaluation checkPatientDeceased(boolean allowForSameUnit) {
         this.checkPatientDeceased = true;
         this.allowDeceasedForSameUnit = allowForSameUnit;
         return this;
     }
 
-    public AccessServiceEvaluation excludeCertificateTypesForDeceased(String... moduleId) {
-        this.excludeDeceasedCertificateTypes.addAll(Arrays.asList(moduleId));
+    /**
+     * Set certificate types that should be excluded from checkPatientDeceased. This means that the certificate types
+     * will be allowed. This method can be called multiple times.
+     * 
+     * @param certificateType
+     *            Certificate types to exclude
+     * @return
+     *         AccessServiceEvaluation
+     */
+    public AccessServiceEvaluation excludeCertificateTypesForDeceased(String... certificateType) {
+        this.excludeDeceasedCertificateTypes.addAll(Arrays.asList(certificateType));
         return this;
     }
 
-    public AccessServiceEvaluation invalidCertificateTypeForDeceased(String... moduleId) {
-        this.invalidDeceasedCertificateTypes.addAll(Arrays.asList(moduleId));
+    /**
+     * Set certificate types that should always be invalid when checkPatientDeceased. This means that the
+     * certificate types will never be allowed if patient is deceased. This method can be called multiple times.
+     * 
+     * @param certificateType
+     *            Certificate types that are invalid
+     * @return
+     *         AccessServiceEvaluation
+     */
+    public AccessServiceEvaluation invalidCertificateTypeForDeceased(String... certificateType) {
+        this.invalidDeceasedCertificateTypes.addAll(Arrays.asList(certificateType));
         return this;
     }
 
+    /**
+     * Consider if parameter inactiveUnit when evaluating. If called more than once, the old values will be overridden.
+     * 
+     * @param allowForSameUnit
+     *            Allowe handling (if all other criterias are met) when use ris on the same unit.
+     * @return
+     *         AccessServiceEvaluation
+     */
     public AccessServiceEvaluation checkInactiveCareUnit(boolean allowForSameUnit) {
         this.checkInactiveCareUnit = true;
         this.allowInactiveForSameUnit = allowForSameUnit;
         return this;
     }
 
-    public AccessServiceEvaluation excludeCertificateTypesForInactive(String... moduleId) {
-        this.excludeInactiveCertificateTypes.addAll(Arrays.asList(moduleId));
+    /**
+     * Set certificate types that should be excluded from checkInactiveCareUnit. This means that the certificate types
+     * will be allowed. This method can be called multiple times.
+     *
+     * @param certificateType
+     *            Certificate types to exclude
+     * @return
+     *         AccessServiceEvaluation
+     */
+    public AccessServiceEvaluation excludeCertificateTypesForInactive(String... certificateType) {
+        this.excludeInactiveCertificateTypes.addAll(Arrays.asList(certificateType));
         return this;
     }
 
+    /**
+     * Consider if patient sekretess when evaluating. If called more than once, the old values will be overridden.
+     *
+     * @return
+     *         AccessServiceEvaluation
+     */
     public AccessServiceEvaluation checkPatientSecrecy() {
         this.checkPatientSecrecy = true;
         return this;
     }
 
+    /**
+     * Consider if parameter renewOk when evaluating. If called more than once, the old values will be overridden.
+     *
+     * @param allowForSameUnit
+     *            Allowe handling (if all other criterias are met) when use ris on the same unit.
+     * @return
+     *         AccessServiceEvaluation
+     */
     public AccessServiceEvaluation checkRenew(boolean allowForSameUnit) {
         this.checkRenew = true;
         this.allowRenewForSameUnit = allowForSameUnit;
         return this;
     }
 
-    public AccessServiceEvaluation excludeCertificateTypesForRenew(String... moduleId) {
-        this.excludeRenewCertificateTypes.addAll(Arrays.asList(moduleId));
+    /**
+     * Set certificate types that should be excluded from checkRenew. This means that the certificate types
+     * will be allowed. This method can be called multiple times.
+     *
+     * @param certificateType
+     *            Certificate types to exclude
+     * @return
+     *         AccessServiceEvaluation
+     */
+    public AccessServiceEvaluation excludeCertificateTypesForRenew(String... certificateType) {
+        this.excludeRenewCertificateTypes.addAll(Arrays.asList(certificateType));
         return this;
     }
 
+    /**
+     * Consider unique draft/certificate rules when evaluating. If called more than once, the old values will be overridden.
+     *
+     * @return
+     *         AccessServiceEvaluation
+     */
     public AccessServiceEvaluation checkUnique() {
         this.checkUnique = true;
         return this;
     }
 
+    /**
+     * Consider logged in unit when evaluating. If called more than once, the old values will be overridden.
+     * 
+     * @param allowSJF
+     *            If Sammanhållen journalföring should be considered when evaluating.
+     * @param isReadOnlyOperation
+     *            If the operation only includes read only.
+     * @return
+     */
     public AccessServiceEvaluation checkUnit(boolean allowSJF, boolean isReadOnlyOperation) {
         this.allowSJF = allowSJF;
         this.isReadOnlyOperation = isReadOnlyOperation;
@@ -182,11 +344,26 @@ public final class AccessServiceEvaluation {
         return this;
     }
 
-    public AccessServiceEvaluation excludeCertificateTypesForUnit(String... moduleId) {
-        this.excludeUnitCertificateTypes.addAll(Arrays.asList(moduleId));
+    /**
+     * Set certificate types that should be excluded from checkUnit. This means that the certificate types
+     * will be allowed. This method can be called multiple times.
+     *
+     * @param certificateType
+     *            Certificate types to exclude
+     * @return
+     *         AccessServiceEvaluation
+     */
+    public AccessServiceEvaluation excludeCertificateTypesForUnit(String... certificateType) {
+        this.excludeUnitCertificateTypes.addAll(Arrays.asList(certificateType));
         return this;
     }
 
+    /**
+     * Evaluate criterias and returns an AccessResult.
+     * 
+     * @return
+     *         AccessResult
+     */
     public AccessResult evaluate() {
         Optional<AccessResult> accessResult = isAuthorized(certificateType, user, features, privileges);
 

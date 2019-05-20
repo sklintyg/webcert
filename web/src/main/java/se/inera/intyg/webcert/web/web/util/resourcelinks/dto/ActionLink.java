@@ -21,22 +21,46 @@ package se.inera.intyg.webcert.web.web.util.resourcelinks.dto;
 
 import java.util.Objects;
 
+/**
+ * DTO for available actions.
+ */
 public class ActionLink {
 
     private ActionLinkType type;
 
+    /**
+     * Empty action link. Type will be null.
+     */
     public ActionLink() {
 
     }
 
+    /**
+     * New action link.
+     * 
+     * @param type
+     *            Type of action link.
+     */
     public ActionLink(ActionLinkType type) {
         this.type = type;
     }
 
+    /**
+     * Get the type of the link.
+     * 
+     * @return
+     *         Type of link. Can be null.
+     */
     public ActionLinkType getType() {
         return type;
     }
 
+    /**
+     * Set the type of the link.
+     * 
+     * @param type
+     *            Type of link.
+     */
     public void setType(ActionLinkType type) {
         this.type = type;
     }

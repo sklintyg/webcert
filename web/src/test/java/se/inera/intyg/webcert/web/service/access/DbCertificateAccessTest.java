@@ -66,12 +66,12 @@ public class DbCertificateAccessTest extends CertificateAccessTest {
 
     @Override
     protected void assertAllowToReadOnSekretessPatientOnSameUnit(AccessResult actualValue) {
-        assertEquals(AccessResultCode.NO_PROBLEM, actualValue.getCode());
+        assertEquals(AccessResultCode.AUTHORIZATION_SEKRETESS, actualValue.getCode());
     }
 
     @Override
     protected void assertAllowToReadOnSekretessPatientOnDifferentUnit(AccessResult actualValue) {
-        assertEquals(AccessResultCode.AUTHORIZATION_SEKRETESS_UNIT, actualValue.getCode());
+        assertEquals(AccessResultCode.AUTHORIZATION_SEKRETESS, actualValue.getCode());
     }
 
     @Override
@@ -136,12 +136,12 @@ public class DbCertificateAccessTest extends CertificateAccessTest {
 
     @Override
     protected void assertAllowToReplaceOnSekretessPatientOnSameUnit(AccessResult actualValue) {
-        assertEquals(AccessResultCode.NO_PROBLEM, actualValue.getCode());
+        assertEquals(AccessResultCode.AUTHORIZATION_SEKRETESS, actualValue.getCode());
     }
 
     @Override
     protected void assertAllowToReplaceOnSekretessPatientOnDifferentUnit(AccessResult actualValue) {
-        assertEquals(AccessResultCode.AUTHORIZATION_SEKRETESS_UNIT, actualValue.getCode());
+        assertEquals(AccessResultCode.AUTHORIZATION_SEKRETESS, actualValue.getCode());
     }
 
     @Override
@@ -231,12 +231,12 @@ public class DbCertificateAccessTest extends CertificateAccessTest {
 
     @Override
     protected void assertAllowToDeleteOnSekretessPatientOnSameUnit(AccessResult actualValue) {
-        assertEquals(AccessResultCode.NO_PROBLEM, actualValue.getCode());
+        assertEquals(AccessResultCode.AUTHORIZATION_SEKRETESS, actualValue.getCode());
     }
 
     @Override
     protected void assertAllowToDeleteOnSekretessPatientOnDifferentUnit(AccessResult actualValue) {
-        assertEquals(AccessResultCode.AUTHORIZATION_SEKRETESS_UNIT, actualValue.getCode());
+        assertEquals(AccessResultCode.AUTHORIZATION_SEKRETESS, actualValue.getCode());
     }
 
     @Override
@@ -281,12 +281,12 @@ public class DbCertificateAccessTest extends CertificateAccessTest {
 
     @Override
     protected void assertAllowToPrintOnSekretessPatientOnSameUnit(AccessResult actualValue) {
-        assertEquals(AccessResultCode.NO_PROBLEM, actualValue.getCode());
+        assertEquals(AccessResultCode.AUTHORIZATION_SEKRETESS, actualValue.getCode());
     }
 
     @Override
     protected void assertAllowToPrintOnSekretessPatientOnDifferentUnit(AccessResult actualValue) {
-        assertEquals(AccessResultCode.AUTHORIZATION_SEKRETESS_UNIT, actualValue.getCode());
+        assertEquals(AccessResultCode.AUTHORIZATION_SEKRETESS, actualValue.getCode());
     }
 
     @Override
@@ -456,6 +456,56 @@ public class DbCertificateAccessTest extends CertificateAccessTest {
 
     @Override
     protected void assertAllowToAnswerQuestionNoConditionsDifferentUnit(AccessResult actualValue) {
+        assertEquals(AccessResultCode.AUTHORIZATION_VALIDATION, actualValue.getCode());
+    }
+
+    @Override
+    protected void assertAllowToAnswerAdminQuestionNoConditions(AccessResult actualValue) {
+        assertEquals(AccessResultCode.AUTHORIZATION_VALIDATION, actualValue.getCode());
+    }
+
+    @Override
+    protected void assertAllowToAnswerAdminQuestionOnDeceasedPatient(AccessResult actualValue) {
+        assertEquals(AccessResultCode.AUTHORIZATION_VALIDATION, actualValue.getCode());
+    }
+
+    @Override
+    protected void assertAllowToAnswerAdminQuestionOnInactiveUnit(AccessResult actualValue) {
+        assertEquals(AccessResultCode.AUTHORIZATION_VALIDATION, actualValue.getCode());
+    }
+
+    @Override
+    protected void assertAllowToAnswerAdminQuestionOnRenewFalse(AccessResult actualValue) {
+        assertEquals(AccessResultCode.AUTHORIZATION_VALIDATION, actualValue.getCode());
+    }
+
+    @Override
+    protected void assertAllowToAnswerAdminQuestionOnSekretessPatientOnSameUnit(AccessResult actualValue) {
+        assertEquals(AccessResultCode.AUTHORIZATION_VALIDATION, actualValue.getCode());
+    }
+
+    @Override
+    protected void assertAllowToAnswerAdminQuestionOnSekretessPatientOnDifferentUnit(AccessResult actualValue) {
+        assertEquals(AccessResultCode.AUTHORIZATION_VALIDATION, actualValue.getCode());
+    }
+
+    @Override
+    protected void assertAllowToAnswerAdminQuestionOnDeceasedPatientOnDifferentUnit(AccessResult actualValue) {
+        assertEquals(AccessResultCode.AUTHORIZATION_VALIDATION, actualValue.getCode());
+    }
+
+    @Override
+    protected void assertAllowToAnswerAdminQuestionOnInactiveUnitOnDifferentUnit(AccessResult actualValue) {
+        assertEquals(AccessResultCode.AUTHORIZATION_VALIDATION, actualValue.getCode());
+    }
+
+    @Override
+    protected void assertAllowToAnswerAdminQuestionOnRenewFalseOnDifferentUnit(AccessResult actualValue) {
+        assertEquals(AccessResultCode.AUTHORIZATION_VALIDATION, actualValue.getCode());
+    }
+
+    @Override
+    protected void assertAllowToAnswerAdminQuestionNoConditionsDifferentUnit(AccessResult actualValue) {
         assertEquals(AccessResultCode.AUTHORIZATION_VALIDATION, actualValue.getCode());
     }
 

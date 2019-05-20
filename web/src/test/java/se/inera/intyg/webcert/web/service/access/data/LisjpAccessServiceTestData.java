@@ -43,7 +43,8 @@ public class LisjpAccessServiceTestData implements AccessServiceTestData {
             AuthoritiesConstants.PRIVILEGE_BESVARA_KOMPLETTERINGSFRAGA,
             AuthoritiesConstants.PRIVILEGE_VIDAREBEFORDRA_FRAGASVAR,
             AuthoritiesConstants.PRIVILEGE_LASA_FRAGA,
-            AuthoritiesConstants.PRIVILEGE_SKAPA_NYFRAGA);
+            AuthoritiesConstants.PRIVILEGE_SKAPA_NYFRAGA,
+            AuthoritiesConstants.PRIVILEGE_BESVARA_FRAGA);
 
     @Override
     public List<String> getFeatures() {

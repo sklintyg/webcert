@@ -72,12 +72,12 @@ public class TsLockedDraftAccessTest extends LockedDraftAccessTest {
 
     @Override
     protected void assertAllowToReadOnSekretessPatientOnSameUnit(AccessResult actualValue) {
-        assertEquals(AccessResultCode.NO_PROBLEM, actualValue.getCode());
+        assertEquals(AccessResultCode.AUTHORIZATION_SEKRETESS, actualValue.getCode());
     }
 
     @Override
     protected void assertAllowToReadUtkastOnSekretessPatientOnDifferentUnit(AccessResult actualValue) {
-        assertEquals(AccessResultCode.AUTHORIZATION_SEKRETESS_UNIT, actualValue.getCode());
+        assertEquals(AccessResultCode.AUTHORIZATION_SEKRETESS, actualValue.getCode());
     }
 
     @Override
@@ -157,12 +157,12 @@ public class TsLockedDraftAccessTest extends LockedDraftAccessTest {
 
     @Override
     protected void assertAllowToCopyOnSekretessPatientOnSameUnit(AccessResult actualValue) {
-        assertEquals(AccessResultCode.NO_PROBLEM, actualValue.getCode());
+        assertEquals(AccessResultCode.AUTHORIZATION_SEKRETESS, actualValue.getCode());
     }
 
     @Override
     protected void assertAllowToCopyOnSekretessPatientOnDifferentUnit(AccessResult actualValue) {
-        assertEquals(AccessResultCode.AUTHORIZATION_SEKRETESS_UNIT, actualValue.getCode());
+        assertEquals(AccessResultCode.AUTHORIZATION_SEKRETESS, actualValue.getCode());
     }
 
     @Override
@@ -187,12 +187,12 @@ public class TsLockedDraftAccessTest extends LockedDraftAccessTest {
 
     @Override
     protected void assertAllowToDeleteUtkastOnSekretessPatientOnSameUnit(AccessResult actualValue) {
-        assertEquals(AccessResultCode.NO_PROBLEM, actualValue.getCode());
+        assertEquals(AccessResultCode.AUTHORIZATION_SEKRETESS, actualValue.getCode());
     }
 
     @Override
     protected void assertAllowToDeleteUtkastOnSekretessPatientOnDifferentUnit(AccessResult actualValue) {
-        assertEquals(AccessResultCode.AUTHORIZATION_SEKRETESS_UNIT, actualValue.getCode());
+        assertEquals(AccessResultCode.AUTHORIZATION_SEKRETESS, actualValue.getCode());
     }
 
     @Override
@@ -237,12 +237,12 @@ public class TsLockedDraftAccessTest extends LockedDraftAccessTest {
 
     @Override
     protected void assertAllowToPrintUtkastOnSekretessPatientOnSameUnit(AccessResult actualValue) {
-        assertEquals(AccessResultCode.NO_PROBLEM, actualValue.getCode());
+        assertEquals(AccessResultCode.AUTHORIZATION_SEKRETESS, actualValue.getCode());
     }
 
     @Override
     protected void assertAllowToPrintUtkastOnSekretessPatientOnDifferentUnit(AccessResult actualValue) {
-        assertEquals(AccessResultCode.AUTHORIZATION_SEKRETESS_UNIT, actualValue.getCode());
+        assertEquals(AccessResultCode.AUTHORIZATION_SEKRETESS, actualValue.getCode());
     }
 
     @Override

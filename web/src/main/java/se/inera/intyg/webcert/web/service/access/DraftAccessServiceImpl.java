@@ -25,6 +25,7 @@ import org.springframework.stereotype.Service;
 import se.inera.intyg.common.db.support.DbModuleEntryPoint;
 import se.inera.intyg.common.doi.support.DoiModuleEntryPoint;
 import se.inera.intyg.common.support.model.common.internal.Vardenhet;
+import se.inera.intyg.common.support.model.common.internal.Vardgivare;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
@@ -32,6 +33,9 @@ import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 
+/**
+ * Implementation of DraftAccessService.
+ */
 @Service
 public class DraftAccessServiceImpl implements DraftAccessService {
     private final WebCertUserService webCertUserService;
@@ -48,11 +52,21 @@ public class DraftAccessServiceImpl implements DraftAccessService {
     }
 
     @Override
-    public AccessResult allowToCreateDraft(String intygsTyp, Personnummer personnummer) {
-        return getAccessServiceEvaluation().given(getUser(), intygsTyp)
+    public AccessResult allowToCreateDraft(String certificateType, Personnummer patient) {
+        final WebCertUser user = getUser();
+
+        final Vardgivare vardgivare = new Vardgivare();
+        vardgivare.setVardgivarid(user.getValdVardgivare().getId());
+
+        final Vardenhet vardenhet = new Vardenhet();
+        vardenhet.setVardgivare(vardgivare);
+        vardenhet.setEnhetsid(user.getValdVardenhet().getId());
+
+        return getAccessServiceEvaluation().given(user, certificateType)
                 .feature(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
                 .privilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG)
-                .patient(personnummer)
+                .careUnit(vardenhet)
+                .patient(patient)
                 .checkPatientDeceased(false)
                 .excludeCertificateTypesForDeceased(DoiModuleEntryPoint.MODULE_ID)
                 .checkInactiveCareUnit(false)
@@ -63,23 +77,23 @@ public class DraftAccessServiceImpl implements DraftAccessService {
     }
 
     @Override
-    public AccessResult allowToReadDraft(String intygsTyp, Vardenhet vardenhet, Personnummer personnummer) {
-        return getAccessServiceEvaluation().given(getUser(), intygsTyp)
+    public AccessResult allowToReadDraft(String certificateType, Vardenhet careUnit, Personnummer patient) {
+        return getAccessServiceEvaluation().given(getUser(), certificateType)
                 .feature(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
                 .privilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG)
-                .careUnit(vardenhet)
-                .patient(personnummer)
+                .careUnit(careUnit)
+                .patient(patient)
                 .checkPatientSecrecy()
                 .evaluate();
     }
 
     @Override
-    public AccessResult allowToEditDraft(String intygsTyp, Vardenhet vardenhet, Personnummer personnummer) {
-        return getAccessServiceEvaluation().given(getUser(), intygsTyp)
+    public AccessResult allowToEditDraft(String certificateType, Vardenhet careUnit, Personnummer patient) {
+        return getAccessServiceEvaluation().given(getUser(), certificateType)
                 .feature(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
                 .privilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG)
-                .careUnit(vardenhet)
-                .patient(personnummer)
+                .careUnit(careUnit)
+                .patient(patient)
                 .checkPatientDeceased(true)
                 .invalidCertificateTypeForDeceased(DbModuleEntryPoint.MODULE_ID)
                 .checkInactiveCareUnit(true)
@@ -90,12 +104,12 @@ public class DraftAccessServiceImpl implements DraftAccessService {
     }
 
     @Override
-    public AccessResult allowToDeleteDraft(String intygsTyp, Vardenhet vardenhet, Personnummer personnummer) {
-        return getAccessServiceEvaluation().given(getUser(), intygsTyp)
+    public AccessResult allowToDeleteDraft(String certificateType, Vardenhet careUnit, Personnummer patient) {
+        return getAccessServiceEvaluation().given(getUser(), certificateType)
                 .feature(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
                 .privilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG)
-                .careUnit(vardenhet)
-                .patient(personnummer)
+                .careUnit(careUnit)
+                .patient(patient)
                 .checkPatientDeceased(true)
                 .excludeCertificateTypesForDeceased(DbModuleEntryPoint.MODULE_ID, DoiModuleEntryPoint.MODULE_ID)
                 .checkInactiveCareUnit(true)
@@ -108,7 +122,7 @@ public class DraftAccessServiceImpl implements DraftAccessService {
     }
 
     @Override
-    public AccessResult allowToSignDraft(String intygsTyp, Vardenhet vardenhet, Personnummer personnummer) {
+    public AccessResult allowToSignDraft(String certificateType, Vardenhet careUnit, Personnummer patient) {
         // TODO Handle unique rule
         // Additional constraints for specific types of intyg.
         // Personnummer patientPersonnummer = utkast.getPatientPersonnummer();
@@ -126,11 +140,11 @@ public class DraftAccessServiceImpl implements DraftAccessService {
         // "An intyg already exists, application rules forbide signing another");
         // }
 
-        return getAccessServiceEvaluation().given(getUser(), intygsTyp)
+        return getAccessServiceEvaluation().given(getUser(), certificateType)
                 .feature(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
                 .privilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG)
-                .careUnit(vardenhet)
-                .patient(personnummer)
+                .careUnit(careUnit)
+                .patient(patient)
                 .checkPatientDeceased(true)
                 .invalidCertificateTypeForDeceased(DbModuleEntryPoint.MODULE_ID)
                 .checkInactiveCareUnit(true)
@@ -141,12 +155,12 @@ public class DraftAccessServiceImpl implements DraftAccessService {
     }
 
     @Override
-    public AccessResult allowToPrintDraft(String intygsTyp, Vardenhet vardenhet, Personnummer personnummer) {
-        return getAccessServiceEvaluation().given(getUser(), intygsTyp)
+    public AccessResult allowToPrintDraft(String certificateType, Vardenhet careUnit, Personnummer patient) {
+        return getAccessServiceEvaluation().given(getUser(), certificateType)
                 .feature(AuthoritiesConstants.FEATURE_UTSKRIFT)
                 .privilege(AuthoritiesConstants.PRIVILEGE_VISA_INTYG)
-                .careUnit(vardenhet)
-                .patient(personnummer)
+                .careUnit(careUnit)
+                .patient(patient)
                 .checkPatientDeceased(true)
                 .invalidCertificateTypeForDeceased(DbModuleEntryPoint.MODULE_ID)
                 .checkInactiveCareUnit(true)
@@ -157,12 +171,12 @@ public class DraftAccessServiceImpl implements DraftAccessService {
     }
 
     @Override
-    public AccessResult allowToForwardDraft(String intygsTyp, Vardenhet vardenhet, Personnummer personnummer) {
-        return getAccessServiceEvaluation().given(getUser(), intygsTyp)
+    public AccessResult allowToForwardDraft(String certificateType, Vardenhet careUnit, Personnummer patient) {
+        return getAccessServiceEvaluation().given(getUser(), certificateType)
                 .feature(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
                 .privilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG)
-                .careUnit(vardenhet)
-                .patient(personnummer)
+                .careUnit(careUnit)
+                .patient(patient)
                 .checkPatientDeceased(true)
                 .invalidCertificateTypeForDeceased(DbModuleEntryPoint.MODULE_ID)
                 .checkInactiveCareUnit(true)

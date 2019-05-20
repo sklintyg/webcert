@@ -98,7 +98,7 @@ public class ModuleApiController extends AbstractApiController {
                     .collect(Collectors.toList());
 
             final Personnummer personnummer = createPnr(patientId);
-            resourceLinkHelper.decorateWithValidActionLinks(intygModuleDTOs, personnummer);
+            resourceLinkHelper.decorateIntygModuleWithValidActionLinks(intygModuleDTOs, personnummer);
 
             return Response.ok(intygModuleDTOs).build();
 

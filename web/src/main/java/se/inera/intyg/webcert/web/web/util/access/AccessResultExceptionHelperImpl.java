@@ -27,6 +27,9 @@ import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.web.service.access.AccessResult;
 import se.inera.intyg.webcert.web.service.access.AccessResultCode;
 
+/**
+ * Implementation of AccessResultExceptionHelper.
+ */
 @Component
 public class AccessResultExceptionHelperImpl implements AccessResultExceptionHelper {
 

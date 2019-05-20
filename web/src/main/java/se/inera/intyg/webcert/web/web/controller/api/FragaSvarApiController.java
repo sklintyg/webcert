@@ -63,7 +63,7 @@ public class FragaSvarApiController extends AbstractApiController {
     @PrometheusTimeMethod
     public Response query(@QueryParam("") QueryFragaSvarParameter queryParam) {
         QueryFragaSvarResponse result = arendeService.filterArende(queryParam);
-        resourceLinkHelper.decorateWithValidActionLinks(result.getResults(), getVardenhet());
+        resourceLinkHelper.decorateArendeWithValidActionLinks(result.getResults(), getVardenhet());
         LOG.debug("/api/fragasvar/sok about to return : " + result.getTotalCount());
         return Response.ok(result).build();
     }

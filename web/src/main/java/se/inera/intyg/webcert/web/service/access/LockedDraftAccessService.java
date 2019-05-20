@@ -22,12 +22,64 @@ package se.inera.intyg.webcert.web.service.access;
 import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.schemas.contract.Personnummer;
 
+/**
+ * Service to check the current users right to access actions on a Locked Draft.
+ */
 public interface LockedDraftAccessService {
-    AccessResult allowToRead(String intygsTyp, Vardenhet vardenhet, Personnummer personnummer);
 
-    AccessResult allowedToCopyLockedUtkast(String intygsTyp, Vardenhet vardenhet, Personnummer personnummer);
+    /**
+     * Check if the user is allowed to read a locked draft.
+     *
+     * @param certificateType
+     *            The type of the certificate being checked.
+     * @param careUnit
+     *            The careUnit which the certificate belongs to.
+     * @param patient
+     *            The patient which the certificate belongs to.
+     * @return
+     *         AccessResult which contains the answer if the user is allowed or not.
+     */
+    AccessResult allowToRead(String certificateType, Vardenhet careUnit, Personnummer patient);
 
-    AccessResult allowedToInvalidateLockedUtkast(String intygsTyp, Vardenhet vardenhet, Personnummer personnummer);
+    /**
+     * Check if the user is allowed to copy a locked draft.
+     *
+     * @param certificateType
+     *            The type of the certificate being checked.
+     * @param careUnit
+     *            The careUnit which the certificate belongs to.
+     * @param patient
+     *            The patient which the certificate belongs to.
+     * @return
+     *         AccessResult which contains the answer if the user is allowed or not.
+     */
+    AccessResult allowedToCopyLockedUtkast(String certificateType, Vardenhet careUnit, Personnummer patient);
 
-    AccessResult allowToPrint(String intygsTyp, Vardenhet vardenhet, Personnummer personnummer);
+    /**
+     * Check if the user is allowed to invalidate a locked draft.
+     *
+     * @param certificateType
+     *            The type of the certificate being checked.
+     * @param careUnit
+     *            The careUnit which the certificate belongs to.
+     * @param patient
+     *            The patient which the certificate belongs to.
+     * @return
+     *         AccessResult which contains the answer if the user is allowed or not.
+     */
+    AccessResult allowedToInvalidateLockedUtkast(String certificateType, Vardenhet careUnit, Personnummer patient);
+
+    /**
+     * Check if the user is allowed to print a locked draft.
+     *
+     * @param certificateType
+     *            The type of the certificate being checked.
+     * @param careUnit
+     *            The careUnit which the certificate belongs to.
+     * @param patient
+     *            The patient which the certificate belongs to.
+     * @return
+     *         AccessResult which contains the answer if the user is allowed or not.
+     */
+    AccessResult allowToPrint(String certificateType, Vardenhet careUnit, Personnummer patient);
 }

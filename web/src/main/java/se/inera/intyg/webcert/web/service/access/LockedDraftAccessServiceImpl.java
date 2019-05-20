@@ -32,6 +32,9 @@ import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 
+/**
+ * Implementation of LockedDraftAccessService.
+ */
 @Service
 public class LockedDraftAccessServiceImpl implements LockedDraftAccessService {
 
@@ -49,23 +52,23 @@ public class LockedDraftAccessServiceImpl implements LockedDraftAccessService {
     }
 
     @Override
-    public AccessResult allowToRead(String intygsTyp, Vardenhet vardenhet, Personnummer personnummer) {
-        return getAccessServiceEvaluation().given(getUser(), intygsTyp)
+    public AccessResult allowToRead(String certificateType, Vardenhet careUnit, Personnummer patient) {
+        return getAccessServiceEvaluation().given(getUser(), certificateType)
                 .feature(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
                 .privilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG)
-                .careUnit(vardenhet)
-                .patient(personnummer)
+                .careUnit(careUnit)
+                .patient(patient)
                 .checkPatientSecrecy()
                 .evaluate();
     }
 
     @Override
-    public AccessResult allowedToCopyLockedUtkast(String intygsTyp, Vardenhet vardenhet, Personnummer personnummer) {
-        return getAccessServiceEvaluation().given(getUser(), intygsTyp)
+    public AccessResult allowedToCopyLockedUtkast(String certificateType, Vardenhet careUnit, Personnummer patient) {
+        return getAccessServiceEvaluation().given(getUser(), certificateType)
                 .feature(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
                 .privilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG)
-                .careUnit(vardenhet)
-                .patient(personnummer)
+                .careUnit(careUnit)
+                .patient(patient)
                 .checkPatientDeceased(false)
                 .excludeCertificateTypesForDeceased(DoiModuleEntryPoint.MODULE_ID)
                 .checkInactiveCareUnit(false)
@@ -76,12 +79,12 @@ public class LockedDraftAccessServiceImpl implements LockedDraftAccessService {
     }
 
     @Override
-    public AccessResult allowedToInvalidateLockedUtkast(String intygsTyp, Vardenhet vardenhet, Personnummer personnummer) {
-        return getAccessServiceEvaluation().given(getUser(), intygsTyp)
+    public AccessResult allowedToInvalidateLockedUtkast(String certificateType, Vardenhet careUnit, Personnummer patient) {
+        return getAccessServiceEvaluation().given(getUser(), certificateType)
                 .feature(AuthoritiesConstants.FEATURE_MAKULERA_INTYG)
                 .privilege(AuthoritiesConstants.PRIVILEGE_MAKULERA_INTYG)
-                .careUnit(vardenhet)
-                .patient(personnummer)
+                .careUnit(careUnit)
+                .patient(patient)
                 .checkPatientDeceased(true)
                 .checkInactiveCareUnit(true)
                 .checkRenew(true)
@@ -91,12 +94,12 @@ public class LockedDraftAccessServiceImpl implements LockedDraftAccessService {
     }
 
     @Override
-    public AccessResult allowToPrint(String intygsTyp, Vardenhet vardenhet, Personnummer personnummer) {
-        return getAccessServiceEvaluation().given(getUser(), intygsTyp)
+    public AccessResult allowToPrint(String certificateType, Vardenhet careUnit, Personnummer patient) {
+        return getAccessServiceEvaluation().given(getUser(), certificateType)
                 .feature(AuthoritiesConstants.FEATURE_UTSKRIFT)
                 .privilege(AuthoritiesConstants.PRIVILEGE_VISA_INTYG)
-                .careUnit(vardenhet)
-                .patient(personnummer)
+                .careUnit(careUnit)
+                .patient(patient)
                 .checkPatientDeceased(true)
                 .invalidCertificateTypeForDeceased(DbModuleEntryPoint.MODULE_ID)
                 .checkInactiveCareUnit(true)
