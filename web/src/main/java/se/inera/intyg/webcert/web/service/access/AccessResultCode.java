@@ -25,8 +25,9 @@ package se.inera.intyg.webcert.web.service.access;
  * the code explains the reason for the restriction.
  */
 public enum AccessResultCode {
+
     /**
-     * Has access
+     * Has access.
      */
     NO_PROBLEM,
 

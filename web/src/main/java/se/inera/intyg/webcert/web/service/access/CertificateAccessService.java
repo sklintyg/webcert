@@ -28,7 +28,7 @@ import se.inera.intyg.schemas.contract.Personnummer;
 public interface CertificateAccessService {
     /**
      * Check if the user is allowed to read a certificate.
-     * 
+     *
      * @param certificateType
      *            The type of the certificate being checked.
      * @param vardenhet
@@ -70,7 +70,7 @@ public interface CertificateAccessService {
 
     /**
      * Check if the user is allowed to renew a certificate.
-     * 
+     *
      * @param certificateType
      *            The type of the certificate being checked.
      * @param careUnit

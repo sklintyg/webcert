@@ -45,7 +45,7 @@ import se.inera.intyg.webcert.web.service.utkast.dto.PreviousIntyg;
  * Implementation used to evaluate access criterias. Set the criterias that will be considered and then call
  * evaluate(). Make sure to set basic information as user, certificateType, careUnit and patient first.
  */
-final class AccessServiceEvaluation {
+public final class AccessServiceEvaluation {
     private static final String DRAFT = "utkast";
     private static final String CERTIFICATE = "intyg";
 
@@ -89,7 +89,7 @@ final class AccessServiceEvaluation {
 
     /**
      * Creates a new instance of AccessServiceEvaluation with injected services and helpers.
-     * 
+     *
      * @param webCertUserService
      *            Service to fetch and evaluate the current user.
      * @param patientDetailsResolver
@@ -108,7 +108,7 @@ final class AccessServiceEvaluation {
     /**
      * Specifies which user and certificate type this evaluation will be done for. If called more than once,
      * the old values will be overridden.
-     * 
+     *
      * @param user
      *            Current user.
      * @param certificateType
@@ -124,7 +124,7 @@ final class AccessServiceEvaluation {
 
     /**
      * Add a privilege to consider. This method can be called multiple times.
-     * 
+     *
      * @param privilege
      *            Privilege to consider
      * @return
@@ -137,7 +137,7 @@ final class AccessServiceEvaluation {
 
     /**
      * Add a privilege to consider IF the addPrivilege is true. This method can be called multiple times.
-     * 
+     *
      * @param privilege
      *            Privilege to consider
      * @param addPrivilege
@@ -154,12 +154,11 @@ final class AccessServiceEvaluation {
 
     /**
      * Add a feature to consider. This method can be called multiple times.
-     * 
+     *
      * @param feature
      *            feature to consider.
      * @return
      *         AccessServiceEvaluation
-     * 
      */
     public AccessServiceEvaluation feature(@NotNull String feature) {
         this.features.add(feature);
@@ -168,7 +167,7 @@ final class AccessServiceEvaluation {
 
     /**
      * Add a feature to consider IF the addFeature is true. This method can be called multiple times.
-     * 
+     *
      * @param feature
      *            feature to consider.
      * @param addFeature
@@ -184,7 +183,7 @@ final class AccessServiceEvaluation {
 
     /**
      * Set care unit to consider. If called more than once, the old values will be overridden.
-     * 
+     *
      * @param careUnit
      *            Care unit to consider.
      * @return
@@ -197,7 +196,7 @@ final class AccessServiceEvaluation {
 
     /**
      * Set patient to consider. If called more than once, the old values will be overridden.
-     * 
+     *
      * @param personnummer
      *            Patient to consider.
      * @return
@@ -210,7 +209,7 @@ final class AccessServiceEvaluation {
 
     /**
      * Consider if patient is deceased when evaluating. If called more than once, the old values will be overridden.
-     * 
+     *
      * @param allowForSameUnit
      *            Allow handling (if all other criterias are met) when user is on the same unit.
      * @return
@@ -225,7 +224,7 @@ final class AccessServiceEvaluation {
     /**
      * Set certificate types that should be excluded from checkPatientDeceased. This means that the certificate types
      * will be allowed. This method can be called multiple times.
-     * 
+     *
      * @param certificateType
      *            Certificate types to exclude
      * @return
@@ -239,7 +238,7 @@ final class AccessServiceEvaluation {
     /**
      * Set certificate types that should always be invalid when checkPatientDeceased. This means that the
      * certificate types will never be allowed if patient is deceased. This method can be called multiple times.
-     * 
+     *
      * @param certificateType
      *            Certificate types that are invalid
      * @return
@@ -252,7 +251,7 @@ final class AccessServiceEvaluation {
 
     /**
      * Consider if parameter inactiveUnit when evaluating. If called more than once, the old values will be overridden.
-     * 
+     *
      * @param allowForSameUnit
      *            Allowe handling (if all other criterias are met) when use ris on the same unit.
      * @return
@@ -330,7 +329,7 @@ final class AccessServiceEvaluation {
 
     /**
      * Consider logged in unit when evaluating. If called more than once, the old values will be overridden.
-     * 
+     *
      * @param allowSJF
      *            If Sammanhållen journalföring should be considered when evaluating.
      * @param isReadOnlyOperation
@@ -360,7 +359,7 @@ final class AccessServiceEvaluation {
 
     /**
      * Evaluate criterias and returns an AccessResult.
-     * 
+     *
      * @return
      *         AccessResult
      */

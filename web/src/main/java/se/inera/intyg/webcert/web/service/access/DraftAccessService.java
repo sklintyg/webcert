@@ -29,12 +29,13 @@ public interface DraftAccessService {
 
     /**
      * Check if the user is allowed to create a new draft.
-     * 
+     *
      * @param certificateType
      *            The type of the certificate being checked.
      * @param patient
      *            The patient which the certificate belongs to.
      * @return
+     *         AccessResult which contains the answer if the user is allowed or not.
      */
     AccessResult allowToCreateDraft(String certificateType, Personnummer patient);
 

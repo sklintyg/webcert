@@ -37,7 +37,7 @@ public interface ResourceLinkHelper {
 
     /**
      * Add available actions links for a list of IntygModuleDTO.
-     * 
+     *
      * @param intygModuleDTOList
      *            List of dtos to decorate.
      * @param patient
@@ -47,7 +47,7 @@ public interface ResourceLinkHelper {
 
     /**
      * Add available action links for a IntygModuleDTO.
-     * 
+     *
      * @param intygModuleDTO
      *            DTO to decorate.
      * @param patient
@@ -57,7 +57,7 @@ public interface ResourceLinkHelper {
 
     /**
      * Add available action links for DraftHolder.
-     * 
+     *
      * @param draftHolder
      *            DraftHolder to decorate.
      * @param certificateType
@@ -71,7 +71,7 @@ public interface ResourceLinkHelper {
 
     /**
      * Add available action links for IntygContentHolder.
-     * 
+     *
      * @param intygContentHolder
      *            Holder to decorate
      */
@@ -79,7 +79,7 @@ public interface ResourceLinkHelper {
 
     /**
      * Add available action links to a list of ListIntygEntry.
-     * 
+     *
      * @param listIntygEntryList
      *            List of entries to decorate
      * @param patient
@@ -89,7 +89,7 @@ public interface ResourceLinkHelper {
 
     /**
      * Add available action links to a ListIntygEntry.
-     * 
+     *
      * @param listIntygEntry
      *            Entry to decorate.
      * @param patient
@@ -99,7 +99,7 @@ public interface ResourceLinkHelper {
 
     /**
      * Add available action links to a list of ArendeListItem.
-     * 
+     *
      * @param arendeListItems
      *            List of items to decorate.
      * @param careUnit

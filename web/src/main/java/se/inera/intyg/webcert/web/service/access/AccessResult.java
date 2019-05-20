@@ -31,7 +31,7 @@ public final class AccessResult {
 
     /**
      * Create access result that allows access. Code will be NO_PROBLEM and message empty String.
-     * 
+     *
      * @return
      *         Created access result
      */
@@ -42,7 +42,7 @@ public final class AccessResult {
     /**
      * Create access result. Use this method when creating access result that denies access. If access is
      * allowed, then use noProblem().
-     * 
+     *
      * @param code
      *            Code as the result of the evaluation.
      * @param message
@@ -61,7 +61,7 @@ public final class AccessResult {
 
     /**
      * Code containing the result of the access evaluation.
-     * 
+     *
      * @return
      *         Code is NO_PROBLEM if access allowed. Any other code means access is denied.
      */
@@ -72,7 +72,7 @@ public final class AccessResult {
 
     /**
      * Message why access is denied.
-     * 
+     *
      * @return
      *         Message is empty if access is allowed.
      */
@@ -83,7 +83,7 @@ public final class AccessResult {
 
     /**
      * If access was given.
-     * 
+     *
      * @return
      *         true if user has access.
      */
@@ -93,7 +93,7 @@ public final class AccessResult {
 
     /**
      * If access was denied.
-     * 
+     *
      * @return
      *         true if user is denied access.
      */
