@@ -139,18 +139,18 @@ public class SrsApiController extends AbstractApiController {
     }
 
     @GET
-    @Path("/consent/{personnummer}/{hsaId}")
+    @Path("/consent/{personnummer}/{vardenhetHsaId}")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @ApiOperation(value = "Get consent for patient and careunit", httpMethod = "GET", produces = MediaType.APPLICATION_JSON)
     @PrometheusTimeMethod
     public Response getConsent(
             @ApiParam(value = "Personnummer") @PathParam("personnummer") String personnummer,
-            @ApiParam(value = "HsaId för vårdenhet") @PathParam("hsaId") String hsaId) {
+            @ApiParam(value = "HsaId för vårdenhet") @PathParam("vardenhetHsaId") String careUnitsaId) {
         authoritiesValidator.given(getWebCertUserService().getUser()).features(AuthoritiesConstants.FEATURE_SRS).orThrow();
 
         try {
             Personnummer p = createPnr(personnummer);
-            Samtyckesstatus response = srsService.getConsent(hsaId, p);
+            Samtyckesstatus response = srsService.getConsent(careUnitsaId, p);
             return Response.ok(response).build();
         } catch (InvalidPersonNummerException e) {
             return Response.status(Response.Status.BAD_REQUEST).build();
@@ -158,20 +158,20 @@ public class SrsApiController extends AbstractApiController {
     }
 
     @PUT
-    @Path("/consent/{personnummer}/{hsaId}")
+    @Path("/consent/{personnummer}/{vardenhetHsaId}")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "Set consent for patient and careunit", httpMethod = "PUT", produces = MediaType.APPLICATION_JSON)
     @PrometheusTimeMethod
     public Response setConsent(
             @ApiParam(value = "Personnummer") @PathParam("personnummer") String personnummer,
-            @ApiParam(value = "HsaId för vårdenhet") @PathParam("hsaId") String hsaId,
+            @ApiParam(value = "HsaId för vårdenhet") @PathParam("vardenhetHsaId") String careUnitHsaId,
             boolean consent) {
         authoritiesValidator.given(getWebCertUserService().getUser()).features(AuthoritiesConstants.FEATURE_SRS).orThrow();
 
         try {
             Personnummer p = createPnr(personnummer);
-            ResultCodeEnum result = srsService.setConsent(hsaId, p, consent);
+            ResultCodeEnum result = srsService.setConsent(careUnitHsaId, p, consent);
             monitoringLog.logSetSrsConsent(p, consent);
             return Response.ok(result).build();
         } catch (InvalidPersonNummerException e) {
@@ -180,22 +180,23 @@ public class SrsApiController extends AbstractApiController {
     }
 
     @GET
-    @Path("/opinion/{vardgivareHsaId}/{vardenhetHsaId}/{intygId}")
+    @Path("/opinion/{vardgivareHsaId}/{vardenhetHsaId}/{intygId}/{diagnoskod}")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @ApiOperation(value = "Get own opinion for risk prediction", httpMethod = "GET", produces = MediaType.APPLICATION_JSON)
     @PrometheusTimeMethod
     public Response getOwnOpinion(
             @ApiParam(value = "HSA-Id för vårdgivare") @PathParam("vardgivareHsaId") String vardgivareHsaId,
             @ApiParam(value = "HSA-Id för vårdenhet") @PathParam("vardenhetHsaId") String vardenhetHsaId,
-            @ApiParam(value = "Intyg id", required = true) @PathParam("intygId") String intygId) {
+            @ApiParam(value = "Intyg id", required = true) @PathParam("intygId") String intygId,
+            @ApiParam(value = "Diagnoskod", required = true) @PathParam("diagnoskod") String diagnosisCode) {
         authoritiesValidator.given(getWebCertUserService().getUser()).features(AuthoritiesConstants.FEATURE_SRS).orThrow();
 
-        EgenBedomningRiskType response = srsService.getOwnOpinion(vardgivareHsaId, vardenhetHsaId, intygId);
+        EgenBedomningRiskType response = srsService.getOwnOpinion(vardgivareHsaId, vardenhetHsaId, intygId, diagnosisCode);
         return Response.ok(response).build();
     }
 
     @PUT
-    @Path("/opinion/{vardgivareHsaId}/{vardenhetHsaId}/{intygId}")
+    @Path("/opinion/{vardgivareHsaId}/{vardenhetHsaId}/{intygId}/{diagnoskod}")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "Set own opinion for risk prediction", httpMethod = "PUT", produces = MediaType.APPLICATION_JSON)
@@ -204,13 +205,14 @@ public class SrsApiController extends AbstractApiController {
             @ApiParam(value = "HSA-Id för vårdgivare") @PathParam("vardgivareHsaId") String vardgivareHsaId,
             @ApiParam(value = "HSA-Id för vårdenhet") @PathParam("vardenhetHsaId") String vardenhetHsaId,
             @ApiParam(value = "Intyg id", required = true) @PathParam("intygId") String intygId,
+            @ApiParam(value = "Diagnoskod", required = true) @PathParam("diagnoskod") String diagnosisCode,
             String opinion) {
         authoritiesValidator.given(getWebCertUserService().getUser()).features(AuthoritiesConstants.FEATURE_SRS).orThrow();
 
         if (EnumUtils.isValidEnum(EgenBedomningRiskType.class, opinion)) {
             ResultCodeEnum result =
-                    srsService.setOwnOpinion(vardgivareHsaId, vardenhetHsaId, intygId, EgenBedomningRiskType.fromValue(opinion));
-            monitoringLog.logSetSrsRiskOpinion(intygId, vardgivareHsaId, vardenhetHsaId, opinion);
+                    srsService.setOwnOpinion(vardgivareHsaId, vardenhetHsaId, intygId, diagnosisCode, EgenBedomningRiskType.fromValue(opinion));
+            monitoringLog.logSetSrsRiskOpinion(intygId, vardgivareHsaId, vardenhetHsaId, opinion, diagnosisCode);
             return Response.ok(result).build();
         } else {
             return Response.status(Response.Status.BAD_REQUEST).build();

@@ -271,8 +271,8 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
     }
 
     @Override
-    public void logSetSrsRiskOpinion(String intygsId, String vardgivareHsaId, String vardenhetHsaId, String opinion) {
-        logEvent(MonitoringEvent.SRS_OPINION_SET, opinion, intygsId, vardenhetHsaId, vardgivareHsaId);
+    public void logSetSrsRiskOpinion(String intygsId, String vardgivareHsaId, String vardenhetHsaId, String diagnosisCode, String opinion) {
+        logEvent(MonitoringEvent.SRS_OPINION_SET, opinion, diagnosisCode, intygsId, vardenhetHsaId, vardgivareHsaId);
     }
 
     @Override
