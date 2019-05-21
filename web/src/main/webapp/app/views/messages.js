@@ -61,7 +61,7 @@ angular.module('webcert').constant('webcert.messages', {
         'info.loadingintyg': '<strong>Laddar intyg...</strong>',
         'info.loadingdata': '<strong>Uppdaterar lista...</strong>',
         'info.nounanswered.arende.for.unit': 'Det finns inga ohanterade ärenden för den enhet eller de enheter du är inloggad på.',
-        'info.nointygfound': 'Det finns inga tidigare intyg för denna patient.',
+        'info.nointygfound': 'Det finns inga tidigare intyg för patienten.',
         'info.query.error': '<strong>Sökningen kunde inte utföras.</strong>',
         'info.intygload.error': '<strong>Kunde inte hämta intyg.</strong>',
         'info.intygload.offline': '<strong>Intygstjänsten ej tillgänglig, endast Intyg utfärdade av Webcert visas.</strong>',
@@ -93,14 +93,14 @@ angular.module('webcert').constant('webcert.messages', {
         //Table headings
         //Tidigare intyg tabell
         'th.label.intyg-type': 'Typ av intyg',
-        'th.help.intyg-type': 'Typ av intyg.',
+        'th.help.intyg-type': 'Intygstyp',
         'th.label.status': 'Status',
         'th.help.status': 'Visar utkastets/intygets status:<ul><li>Utkast, uppgifter saknas = Utkastet är sparat, men obligatoriska uppgifter saknas.</li><li>Utkast, kan signeras = Utkastet är komplett, sparat och kan signeras.</li><li>Utkast, låst = Utkastet är låst.</li><li>Signerat = Intyget är signerat.</li><li>Skickat = Intyget är skickat till mottagaren.</li><li>Makulerat = Intyget är makulerat.</li><li>Ersatt = Intyget är ersatt.</li><li>Kompletterat = Intyget är kompletterat.</li></ul>',
         'th.label.saved-date': 'Senast sparat',
         'th.help.saved-date': 'Datum och klockslag då utkastet senast sparades.',
         'th.label.saved-signed-by': 'Sparat/signerat av',
         'th.help.saved-signed-by': 'Person som senast sparade utkastet/intyget alternativt person som signerade intyget.',
-        'th.no-result': 'Inga resultat',
+        'th.no-result': 'Inga resultat att visa.',
 
         //Ej signerade utkast
         'th.label.draft-forwarded': 'Vidarebefordrad',
@@ -139,7 +139,7 @@ angular.module('webcert').constant('webcert.messages', {
         'th.help.arende-sent-recv-date': 'Datum och klockslag för senaste händelse.',
         'th.label.arende-forwarded': 'Vidarebefordrad',
         'th.help.arende-forwarded': 'Visar om ärendet är vidarebefordrat.',
-        'th.help.forward': 'Skapar ett e-postmeddelande med länk till intyget.',
+        'th.help.forward': 'Skapar ett e-postmeddelande i din e-postklient med en direktlänk till frågan/svaret.',
         'th.help.open': 'Öppnar intyget och frågan/svaret.',
         'th.help.morehits': 'Visa fler frågor/svar.',
 

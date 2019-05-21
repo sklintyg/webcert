@@ -120,10 +120,10 @@ public class IcfServiceImpl extends FmbBaseService implements IcfService {
         final Optional<IcfKoder> gemensammaNedsattning = findGemensammaKoder(funktionsKoder, BeskrivningTyp.FUNKTIONSNEDSATTNING);
         final Optional<IcfKoder> gemensammaAktivitet = findGemensammaKoder(aktivitetsKoder, BeskrivningTyp.AKTIVITETSBEGRANSNING);
 
-        if (!(gemensammaNedsattning.isPresent() && gemensammaAktivitet.isPresent())) {
+        if ((!gemensammaNedsattning.isPresent() && !gemensammaAktivitet.isPresent())) {
             return IcfDiagnoskodResponse.empty();
         } else {
-            return IcfDiagnoskodResponse.of(gemensammaNedsattning.get(), gemensammaAktivitet.get());
+            return IcfDiagnoskodResponse.of(gemensammaNedsattning.orElse(null), gemensammaAktivitet.orElse(null));
         }
     }
 

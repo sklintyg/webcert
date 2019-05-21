@@ -720,7 +720,9 @@ public class IntygServiceImpl implements IntygService {
                     requestType);
             return new IntygTypeInfo(intygsId, certificateTypeInfo.getTyp().getCode(), certificateTypeInfo.getTypVersion());
         } catch (WebServiceException e) {
-            throw new WebCertServiceException(DATA_NOT_FOUND, "Failed to get certificateTypeInfo for certificate " + intygsId, e);
+            throw new WebCertServiceException(DATA_NOT_FOUND, String.format(
+                    "Failed retrieving certificate type information from Intygstjänsten. "
+                    + "The certificate might not exist. Certificate id: %s", intygsId), e);
         }
     }
 

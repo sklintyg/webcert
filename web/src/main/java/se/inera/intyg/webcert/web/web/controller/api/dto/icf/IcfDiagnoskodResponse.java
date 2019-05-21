@@ -78,7 +78,6 @@ public class IcfDiagnoskodResponse {
         if (funktionsNedsattningsKoder == null && aktivitetsBegransningsKoder == null) {
             return null;
         }
-
         return new IcfDiagnoskodResponse(
                 icf10Kod,
                 (FunktionsNedsattningsKoder) funktionsNedsattningsKoder,

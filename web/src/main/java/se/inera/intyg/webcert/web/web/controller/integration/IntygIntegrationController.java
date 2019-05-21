@@ -18,12 +18,26 @@
  */
 package se.inera.intyg.webcert.web.web.controller.integration;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.net.URLEncoder;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import com.google.common.base.Strings;
+import com.google.common.collect.ImmutableMap;
+import io.swagger.annotations.Api;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
+import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
+import se.inera.intyg.infra.security.authorities.CommonAuthoritiesResolver;
+import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.infra.security.common.model.UserOriginType;
+import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
+import se.inera.intyg.webcert.web.service.referens.ReferensService;
+import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
+import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
+import se.inera.intyg.webcert.web.web.controller.integration.dto.PrepareRedirectToIntyg;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.FormParam;
@@ -37,27 +51,12 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-
-import com.google.common.base.Strings;
-import com.google.common.collect.ImmutableMap;
-import io.swagger.annotations.Api;
-import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
-import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
-import se.inera.intyg.infra.security.authorities.CommonAuthoritiesResolver;
-import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
-import se.inera.intyg.infra.security.common.model.UserOriginType;
-import se.inera.intyg.schemas.contract.Personnummer;
-import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
-import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
-import se.inera.intyg.webcert.web.service.referens.ReferensService;
-import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
-import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
-import se.inera.intyg.webcert.web.web.controller.integration.dto.PrepareRedirectToIntyg;
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URLEncoder;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Controller to enable an external user to access certificates directly from a
@@ -381,7 +380,7 @@ public class IntygIntegrationController extends BaseIntegrationController {
             }
         } catch (WebCertServiceException e) {
             if (e.getErrorCode().equals(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND)) {
-                LOG.error(e.getMessage());
+                LOG.info(e.getMessage());
                 return buildNoContentErrorResponse(uriInfo);
             } else {
                 throw e;
