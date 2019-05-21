@@ -2,7 +2,8 @@
   "baseUrl": "https://webcert-devtest-tintyg.app-test1.ind-ocp.sth.basefarm.net",
   "env": {
     "intygMockBaseUrl": "http://mocks.sm.nordicmedtest.se:43000",
-    "logSenderTimeout": 15000
+    "logSenderTimeout": 15000,
+    "RETRIES": 2
   },
   "defaultCommandTimeout": 20000,
   "pageLoadTimeout": 120000,
