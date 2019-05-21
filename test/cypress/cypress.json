@@ -17,5 +17,7 @@
     "mochaFile": "results/test-results.[hash].xml",
     "toConsole": true
   },
+  "viewportHeight": 900,
+  "viewportWidth": 1440,
   "projectId": "1diiry"
 }
