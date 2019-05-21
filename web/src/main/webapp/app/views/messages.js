@@ -93,7 +93,7 @@ angular.module('webcert').constant('webcert.messages', {
         //Table headings
         //Tidigare intyg tabell
         'th.label.intyg-type': 'Typ av intyg',
-        'th.help.intyg-type': 'Typ av intyg.',
+        'th.help.intyg-type': 'Intygstyp',
         'th.label.status': 'Status',
         'th.help.status': 'Visar utkastets/intygets status:<ul><li>Utkast, uppgifter saknas = Utkastet är sparat, men obligatoriska uppgifter saknas.</li><li>Utkast, kan signeras = Utkastet är komplett, sparat och kan signeras.</li><li>Utkast, låst = Utkastet är låst.</li><li>Signerat = Intyget är signerat.</li><li>Skickat = Intyget är skickat till mottagaren.</li><li>Makulerat = Intyget är makulerat.</li><li>Ersatt = Intyget är ersatt.</li><li>Kompletterat = Intyget är kompletterat.</li></ul>',
         'th.label.saved-date': 'Senast sparat',
