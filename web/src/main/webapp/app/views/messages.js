@@ -139,7 +139,7 @@ angular.module('webcert').constant('webcert.messages', {
         'th.help.arende-sent-recv-date': 'Datum och klockslag för senaste händelse.',
         'th.label.arende-forwarded': 'Vidarebefordrad',
         'th.help.arende-forwarded': 'Visar om ärendet är vidarebefordrat.',
-        'th.help.forward': 'Skapar ett e-postmeddelande med länk till intyget.',
+        'th.help.forward': 'Skapar ett e-postmeddelande i din e-postklient med en direktlänk till frågan/svaret.',
         'th.help.open': 'Öppnar intyget och frågan/svaret.',
         'th.help.morehits': 'Visa fler frågor/svar.',
 
