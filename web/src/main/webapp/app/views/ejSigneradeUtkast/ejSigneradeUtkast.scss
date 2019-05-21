@@ -38,7 +38,7 @@
   }
 
   .no-drafts-icon-box {
-
+    @extend %wc-typo-06;
     text-align: center;
     padding-top: 25px;
     width: 536px;
