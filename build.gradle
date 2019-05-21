@@ -73,11 +73,10 @@ allprojects {
     apply plugin: 'idea'
 
     repositories {
-        jcenter()
         mavenLocal()
         maven { url "https://build-inera.nordicmedtest.se/nexus/repository/snapshots/" }
         maven { url "https://build-inera.nordicmedtest.se/nexus/repository/releases/" }
-        maven { url "http://repo.maven.apache.org/maven2" }
+        jcenter()
     }
 
     dependencies {
