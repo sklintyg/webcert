@@ -74,8 +74,19 @@ allprojects {
 
     repositories {
         mavenLocal()
-        maven { url "https://build-inera.nordicmedtest.se/nexus/repository/snapshots/" }
-        maven { url "https://build-inera.nordicmedtest.se/nexus/repository/releases/" }
+        maven {
+            url "https://build-inera.nordicmedtest.se/nexus/repository/releases/"
+            mavenContent {
+                releasesOnly()
+            }
+        }
+        maven {
+            url "https://build-inera.nordicmedtest.se/nexus/repository/snapshots/"
+            mavenContent {
+                snapshotsOnly()
+            }
+        }
+        mavenCentral()
         jcenter()
     }
 
