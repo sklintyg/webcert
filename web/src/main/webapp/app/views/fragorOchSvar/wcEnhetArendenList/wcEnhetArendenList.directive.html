@@ -13,7 +13,7 @@
     <div class="arende-table-section">
 
       <!-- error message -->
-      <wc-alert-message id="current-list-noResults-error" ng-show="listModel.viewState.activeErrorMessageKey"
+      <wc-alert-message id="current-list-noResults-error" ng-if="listModel.viewState.activeErrorMessageKey"
                         alert-severity="danger"
                         alert-message-id="{{listModel.viewState.activeErrorMessageKey}}"></wc-alert-message>
 
