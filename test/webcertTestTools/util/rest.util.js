@@ -257,5 +257,20 @@ module.exports = {
             method: 'DELETE'
         };
         return restClient.run(options);
+    },
+    createBanners: function(banner) {
+        var options = {
+            url: 'services/api/ia-api/banner',
+            method: 'PUT',
+            body: banner
+        };
+        return restClient.run(options, 'json');
+    },
+    clearBanners: function() {
+        var options = {
+            url: '/services/api/ia-api/cache',
+            method: 'DELETE'
+        };
+        return restClient.run(options, 'json');
     }
 };
