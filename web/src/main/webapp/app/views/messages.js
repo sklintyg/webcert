@@ -93,7 +93,7 @@ angular.module('webcert').constant('webcert.messages', {
         //Table headings
         //Tidigare intyg tabell
         'th.label.intyg-type': 'Typ av intyg',
-        'th.help.intyg-type': 'Typ av intyg.',
+        'th.help.intyg-type': 'Intygstyp',
         'th.label.status': 'Status',
         'th.help.status': 'Visar utkastets/intygets status:<ul><li>Utkast, uppgifter saknas = Utkastet är sparat, men obligatoriska uppgifter saknas.</li><li>Utkast, kan signeras = Utkastet är komplett, sparat och kan signeras.</li><li>Utkast, låst = Utkastet är låst.</li><li>Signerat = Intyget är signerat.</li><li>Skickat = Intyget är skickat till mottagaren.</li><li>Makulerat = Intyget är makulerat.</li><li>Ersatt = Intyget är ersatt.</li><li>Kompletterat = Intyget är kompletterat.</li></ul>',
         'th.label.saved-date': 'Senast sparat',
@@ -139,7 +139,7 @@ angular.module('webcert').constant('webcert.messages', {
         'th.help.arende-sent-recv-date': 'Datum och klockslag för senaste händelse.',
         'th.label.arende-forwarded': 'Vidarebefordrad',
         'th.help.arende-forwarded': 'Visar om ärendet är vidarebefordrat.',
-        'th.help.forward': 'Skapar ett e-postmeddelande med länk till intyget.',
+        'th.help.forward': 'Skapar ett e-postmeddelande i din e-postklient med en direktlänk till frågan/svaret.',
         'th.help.open': 'Öppnar intyget och frågan/svaret.',
         'th.help.morehits': 'Visa fler frågor/svar.',
 
