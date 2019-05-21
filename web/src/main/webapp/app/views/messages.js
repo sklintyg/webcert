@@ -100,7 +100,7 @@ angular.module('webcert').constant('webcert.messages', {
         'th.help.saved-date': 'Datum och klockslag då utkastet senast sparades.',
         'th.label.saved-signed-by': 'Sparat/signerat av',
         'th.help.saved-signed-by': 'Person som senast sparade utkastet/intyget alternativt person som signerade intyget.',
-        'th.no-result': 'Inga resultat',
+        'th.no-result': 'Inga resultat att visa.',
 
         //Ej signerade utkast
         'th.label.draft-forwarded': 'Vidarebefordrad',
