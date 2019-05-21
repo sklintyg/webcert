@@ -61,7 +61,7 @@ angular.module('webcert').constant('webcert.messages', {
         'info.loadingintyg': '<strong>Laddar intyg...</strong>',
         'info.loadingdata': '<strong>Uppdaterar lista...</strong>',
         'info.nounanswered.arende.for.unit': 'Det finns inga ohanterade ärenden för den enhet eller de enheter du är inloggad på.',
-        'info.nointygfound': 'Det finns inga tidigare intyg för denna patient.',
+        'info.nointygfound': 'Det finns inga tidigare intyg för patienten.',
         'info.query.error': '<strong>Sökningen kunde inte utföras.</strong>',
         'info.intygload.error': '<strong>Kunde inte hämta intyg.</strong>',
         'info.intygload.offline': '<strong>Intygstjänsten ej tillgänglig, endast Intyg utfärdade av Webcert visas.</strong>',
