@@ -96,7 +96,7 @@
                                                                   key="intyg.status.{{intyg.extendedStatus}}"></span></td>
                                     <td class="unbreakable">{{intyg.lastUpdatedSigned | date:'short'}}</td>
                                     <td class="unbreakable">{{intyg.updatedSignedBy}}</td>
-                                    <td ng-if="!patientModel.avliden">
+                                    <td class="text-right" ng-if="!patientModel.avliden">
                                         <button type="button"
                                                 wc-authority="FORNYA_INTYG"
                                                 feature="FORNYA_INTYG"
@@ -115,7 +115,7 @@
                                             {{messageService.getProperty('common.fornya')}}
                                         </button>
                                     </td>
-                                    <td>
+                                    <td class="text-right right-column">
                                         <button type="button"
                                                 id="showBtn-{{intyg.intygId}}"
                                                 class="btn btn-primary"
