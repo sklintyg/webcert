@@ -1,7 +1,7 @@
 <div>
 
   <div ng-show="totalCount > 0"> <!-- NOTE: must be ng-show since event from vardenhetfilter is sent to filter controller which doesnt exist with ng-if -->
-    <h2 class="page-heading1"  ng-class="{'less-top-padding' : vardenhetFilterModel.units.length < 3}">
+    <h2 class="page-heading1">
       Ärenden visas för {{ selectedUnitName }}
     </h2>
     <wc-enhet-arenden-filter></wc-enhet-arenden-filter>
