@@ -50,6 +50,7 @@ export const enumHandelse = {
 
 export const enumHandelseArgument = {
     FKASSA: "Intyg skickat till mottagare FKASSA",
+    TRANSP: "Intyg skickat till mottagare TRANSP",
     LÄSASJF: "Läsning i enlighet med sammanhållen journalföring",
     UTSKRIFTSJF: "Intyg utskrivet. Läsning i enlighet med sammanhållen journalföring",
     UTSKRIFT: "Intyg utskrivet",

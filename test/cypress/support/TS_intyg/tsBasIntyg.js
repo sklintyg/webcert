@@ -416,39 +416,33 @@ export function signera() {
 }
 
 // -------------------- 'Skicka intyget' --------------------
-export function skickaTillFk() {
+export function skickaTillTs() {
     cy.get("#sendBtn", { timeout: 60000 }).click();
 
     // Modal som dyker upp och frågar om man verkligen vill skicka
     cy.get("#button1send-dialog").click();
-    cy.contains("Intyget är skickat till Försäkringskassan");
+    cy.contains("Intyget är skickat till Transportstyrelsen");
 }
 
 // -------------------- 'Skriv ut intyget' --------------------
-export function skrivUt(typAvUtskrift, intygsId){
+export function skrivUt(typAvUtskrift, intygsId, typAvIntyg){
     switch(typAvUtskrift) {
         case "utkast":
         case "fullständigt":
             cy.request({
                 method: 'GET',
-                url: 'moduleapi/intyg/lisjp/' + intygsId + "/pdf",
+                url: 'moduleapi/intyg/' + typAvIntyg +'/' + intygsId + "/pdf",
             });
             cy.log('Skriver ut ett ' + typAvUtskrift+ ' intyg (via cy.request, ej grafiskt)');
-            break;
-        case "minimalt":
-            cy.request({
-                method: 'GET',
-                url: 'moduleapi/intyg/lisjp/' + intygsId + "/pdf/arbetsgivarutskrift",
-            })
-            cy.log('Skriver ut ett minimalt intyg (via cy.request, ej grafiskt)');
             break;
         default:
             cy.log('Ingen korrekt typ av utskrift vald');
     }
 }
-// ------------------'Förnya intyg'---------------------------
-export function fornya() {
-    cy.get('#fornyaBtn').click();
+// ------------------'Ersätta intyg'---------------------------
+export function ersatta() {
+    cy.get('#ersattBtn').click();
+    cy.get('#button1ersatt-dialog').click();
 }
 
 // ------------------'Radera utkast'--------------------------
