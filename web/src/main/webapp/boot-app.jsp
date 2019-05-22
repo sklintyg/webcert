@@ -47,6 +47,9 @@
   <wc-cookie-banner></wc-cookie-banner>
 
   <div ui-view="header" autoscroll="true" id="wcHeader"></div>
+  <div class="wc-main-menu-wrapper">
+    <wc-main-menu></wc-main-menu>
+  </div>
 
   <%-- ui-view that holds dynamic content managed by angular app --%>
   <div ui-view="content" autoscroll="false" id="view" class="webcert-workarea"></div>
