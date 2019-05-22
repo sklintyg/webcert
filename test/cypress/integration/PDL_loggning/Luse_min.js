@@ -1,8 +1,16 @@
 /* globals context cy */
 /// <reference types="Cypress" />
 import * as intyg from '../../support/FK_intyg/luseIntyg'
+import * as pdl from '../../support/pdl_helpers'
 
 // LUSE = Läkarutlåtande för sjukersättning, FK 7800
+
+var pdlEventArray = [];
+
+function lusePdlEvent(env, actType, actArgs, actLevel, assignment, vgId_mod, vgNamn_mod, veId_mod, veNamn_mod) {
+    return pdl.pdlEvent(env, actType, actArgs, actLevel, env.vårdpersonal.hsaId, assignment, env.vårdpersonal.titel, vgId_mod, vgNamn_mod, veId_mod, 
+        veNamn_mod, env.vårdtagare.personnummerKompakt, env.vårdenhet.vårdgivareId, env.vårdenhet.vårdgivareNamn, env.vårdenhet.id, env.vårdenhet.namn)   
+};
 
 describe('LUSE-intyg', function () {
 
@@ -10,13 +18,16 @@ describe('LUSE-intyg', function () {
         cy.fixture('FK_intyg/minLuseData').as('intygsdata');
         cy.fixture('vårdpersonal/arnoldJohansson').as('vårdpersonal');
         cy.fixture('vårdenheter/alfaEnheten').as('vårdenhet');
+        cy.fixture('vårdenheter/nmt_vg1_ve1').as('vårdenhet_2');
         cy.fixture('vårdtagare/tolvanTolvansson').as('vårdtagare');
     });
 
     beforeEach(function() {
+        pdlEventArray = [];
         cy.skapaLuseUtkast(this).then((utkastId) => {
             cy.wrap(utkastId).as('utkastId');
             cy.log("LUSE-utkast med id " + utkastId + " skapat och används i testfallet");
+            pdlEventArray.push(lusePdlEvent(this, pdl.enumHandelse.SKRIVA, undefined, utkastId, this.vårdenhet.uppdragsnamn, this.vårdenhet.vårdgivareId, this.vårdenhet.vårdgivareNamn, this.vårdenhet.id, this.vårdenhet.namn)); 
         });
     });
 
@@ -38,17 +49,97 @@ describe('LUSE-intyg', function () {
         });
 
         cy.url().should('include', this.utkastId);
+        pdlEventArray.push(lusePdlEvent(this, pdl.enumHandelse.LÄSA, undefined, this.utkastId, this.vårdenhet.uppdragsnamn, this.vårdenhet.vårdgivareId, this.vårdenhet.vårdgivareNamn, this.vårdenhet.id, this.vårdenhet.namn));
 
         intyg.sektionGrundFörMedicinsktUnderlag(this.intygsdata.grundFörMedicinsktUnderlag);
         intyg.sektionDiagnos(this.intygsdata.diagnos);
         intyg.sektionBakgrund(this.intygsdata.bakgrund);
+        cy.wait(3000); // Finns inget bra element att leta efter för att se att intyget är sparat
+
+        cy.contains("Utkastet är sparat").should('exist');
+        pdlEventArray.push(lusePdlEvent(this, pdl.enumHandelse.SKRIVA, undefined, this.utkastId, this.vårdenhet.uppdragsnamn, this.vårdenhet.vårdgivareId, this.vårdenhet.vårdgivareNamn, this.vårdenhet.id, this.vårdenhet.namn));
+
+        // Lite special logga ut/logga in -variant för att sedan öppna intyget på nytt med en ny session
+        cy.clearCookies();
+        cy.visit('/logout');
+        cy.loggaInVårdpersonalIntegrerat(this.vårdpersonal, this.vårdenhet);
+        cy.visit(önskadUrl);
+        cy.url().should('include', this.utkastId);
+        pdlEventArray.push(lusePdlEvent(this, pdl.enumHandelse.LÄSA, undefined, this.utkastId, this.vårdenhet.uppdragsnamn, this.vårdenhet.vårdgivareId, this.vårdenhet.vårdgivareNamn, this.vårdenhet.id, this.vårdenhet.namn));
+
         intyg.sektionFunktionsnedsättningar(this.intygsdata.funkNedsättningar);
         intyg.sektionAktivitetsbegränsningar(this.intygsdata.aktivitetsbegränsningar);
         intyg.sektionMedicinskBehandling(this.intygsdata.medicinskBehandling);
         intyg.sektionMedicinskaFörutsättningarFörArbete(this.intygsdata.medicinskaFörutsättningar);
         intyg.sektionÖvrigt(this.intygsdata.övrigt);
         intyg.sektionKontakt(this.intygsdata.kontakt);
+        pdlEventArray.push(lusePdlEvent(this, pdl.enumHandelse.SKRIVA, undefined, this.utkastId, this.vårdenhet.uppdragsnamn, this.vårdenhet.vårdgivareId, this.vårdenhet.vårdgivareNamn, this.vårdenhet.id, this.vårdenhet.namn));
+
+        // ToDo: Ska vi skriva ut utkast och verifiera PDL?
+
         intyg.signera();
-        // intyg.skickaTillFk();
+        pdlEventArray.push(lusePdlEvent(this, pdl.enumHandelse.SIGNERA, undefined, this.utkastId, this.vårdenhet.uppdragsnamn, this.vårdenhet.vårdgivareId, this.vårdenhet.vårdgivareNamn, this.vårdenhet.id, this.vårdenhet.namn));
+        pdlEventArray.push(lusePdlEvent(this, pdl.enumHandelse.LÄSA, undefined, this.utkastId, this.vårdenhet.uppdragsnamn, this.vårdenhet.vårdgivareId, this.vårdenhet.vårdgivareNamn, this.vårdenhet.id, this.vårdenhet.namn));
+
+        intyg.skickaTillFk();
+        pdlEventArray.push(lusePdlEvent(this, pdl.enumHandelse.UTSKRIFT, pdl.enumHandelseArgument.FKASSA, this.utkastId, this.vårdenhet.uppdragsnamn, this.vårdenhet.vårdgivareId, this.vårdenhet.vårdgivareNamn, this.vårdenhet.id, this.vårdenhet.namn));
+
+        // Introducerar en wait då skrivUt går så fort att man riskerar att få samma timestamp som för "skicka"
+        cy.wait(1500);
+
+        intyg.skrivUt("fullständigt", this.utkastId);
+        pdlEventArray.push(lusePdlEvent(this, pdl.enumHandelse.UTSKRIFT, pdl.enumHandelseArgument.UTSKRIFT, this.utkastId, this.vårdenhet.uppdragsnamn, this.vårdenhet.vårdgivareId, this.vårdenhet.vårdgivareNamn, this.vårdenhet.id, this.vårdenhet.namn));
+
+        cy.log("Testar SJF");
+        // Lite special logga ut/logga in -variant för att sedan öppna intyget på nytt med en ny session och SJF (Sammanhållen journalföring)
+        cy.clearCookies();
+        cy.visit('/logout');
+        cy.loggaInVårdpersonalIntegrerat(this.vårdpersonal, this.vårdenhet_2);
+
+        const sjfUrl = "/visa/intyg/" + this.utkastId + "?enhet=" + this.vårdenhet_2.id + "&sjf=true";
+        cy.visit(sjfUrl);
+        cy.url().should('include', this.utkastId);
+        pdlEventArray.push(lusePdlEvent(this, pdl.enumHandelse.LÄSA, pdl.enumHandelseArgument.LÄSASJF, this.utkastId, this.vårdenhet_2.uppdragsnamn, this.vårdenhet_2.vårdgivareId, this.vårdenhet_2.vårdgivareNamn, this.vårdenhet_2.id, this.vårdenhet_2.namn));
+
+        // Om vi inte väntar på (valfritt) elementet nedan i intyget
+        // så kommer "utskrift" att inträffa före "läsa"
+        cy.contains("Grund för medicinskt underlag");
+        intyg.skrivUt("fullständigt", this.utkastId);
+        pdlEventArray.push(lusePdlEvent(this, pdl.enumHandelse.UTSKRIFT, pdl.enumHandelseArgument.UTSKRIFTSJF, 
+            this.utkastId, this.vårdenhet_2.uppdragsnamn, this.vårdenhet_2.vårdgivareId, this.vårdenhet_2.vårdgivareNamn, this.vårdenhet_2.id, this.vårdenhet_2.namn));
+
+        cy.log("Testar återigen utan SJF");
+
+        // Lite special logga ut/logga in -variant för att sedan öppna intyget på nytt med en ny session
+        cy.clearCookies();
+        cy.visit('/logout');
+        cy.loggaInVårdpersonalIntegrerat(this.vårdpersonal, this.vårdenhet);
+        cy.visit(önskadUrl);
+        cy.contains("Grund för medicinskt underlag");
+        pdlEventArray.push(lusePdlEvent(this, "Läsa", undefined, this.utkastId, this.vårdenhet.uppdragsnamn, this.vårdenhet.vårdgivareId, this.vårdenhet.vårdgivareNamn, this.vårdenhet.id, this.vårdenhet.namn));
+        pdlEventArray.push(lusePdlEvent(this, "Läsa", undefined, this.utkastId, this.vårdenhet.uppdragsnamn, this.vårdenhet.vårdgivareId, this.vårdenhet.vårdgivareNamn, this.vårdenhet.id, this.vårdenhet.namn));
+
+        // Förnya intyget
+        cy.url().should('include', this.utkastId);
+        intyg.fornya();
+        cy.contains("Grund för medicinskt underlag");
+
+        cy.get('.intygs-id').invoke('text').then((text1) => {
+            var intygsID_2 = text1.replace(/\s/g, '');
+            intygsID_2 = intygsID_2.substring(intygsID_2.length-36, intygsID_2.length);
+            cy.log('IntygsID fönyande utkast: ' + intygsID_2);
+            cy.wrap(intygsID_2).as('intygsID_2');
+        });
+        cy.get('@intygsID_2').then((intygID_2)=> {
+            pdlEventArray.push(lusePdlEvent(this, pdl.enumHandelse.SKRIVA, undefined, intygID_2, this.vårdenhet.uppdragsnamn, this.vårdenhet.vårdgivareId, this.vårdenhet.vårdgivareNamn, this.vårdenhet.id, this.vårdenhet.namn));
+            pdlEventArray.push(lusePdlEvent(this, pdl.enumHandelse.LÄSA, undefined, intygID_2, this.vårdenhet.uppdragsnamn, this.vårdenhet.vårdgivareId, this.vårdenhet.vårdgivareNamn, this.vårdenhet.id, this.vårdenhet.namn));
+        });
+
+        // ToDo: Skriv ut utkastet
+        // ToDo: Radera utkastet
+        // ToDo: Redirect till original genererar en "LÄSA"
+        // ToDo: Makulera originalintyget
+
+        cy.verifieraPdlLoggar(pdlEventArray);
     });
 });

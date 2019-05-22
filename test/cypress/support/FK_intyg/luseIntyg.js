@@ -262,3 +262,24 @@ export function skickaTillFk() {
     cy.get("#button1send-dialog").click();
     cy.contains("Intyget är skickat till Försäkringskassan");
 }
+
+// -------------------- 'Skriv ut intyget' --------------------
+export function skrivUt(typAvUtskrift, intygsId){
+    switch(typAvUtskrift) {
+        case "utkast":
+        case "fullständigt":
+            cy.request({
+                method: 'GET',
+                url: 'moduleapi/intyg/luse/' + intygsId + "/pdf",
+            });
+            cy.log('Skriver ut ett ' + typAvUtskrift + ' intyg (via cy.request, ej grafiskt)');
+            break;
+        default:
+            cy.log('Ingen korrekt typ av utskrift vald');
+    }
+}
+
+// ------------------'Förnya intyg'---------------------------
+export function fornya() {
+    cy.get('#fornyaBtn').click();
+}
