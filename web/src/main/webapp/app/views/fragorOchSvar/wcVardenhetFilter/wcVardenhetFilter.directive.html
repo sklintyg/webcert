@@ -1,5 +1,6 @@
 <div>
-  <div ng-show="vardenhetFilterModel.units.length > 2 && vardenhetFilterModel.units[0].fragaSvar > 0">
+  <span ng-if="!showSelect" class="page-heading2" style="padding-bottom: 4px !important">&nbsp;</span>
+  <div ng-if="showSelect">
     <p class="page-heading2">Välj för vilken/vilka enheter eller arbetsplatser du vill se ej hanterade kompletteringsbegäran, frågor och svar.</p>
 
     <div class="row">
