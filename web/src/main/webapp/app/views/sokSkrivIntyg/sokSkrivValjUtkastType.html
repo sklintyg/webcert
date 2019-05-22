@@ -3,7 +3,7 @@
   <div class="centered-constrained-content">
     <wc-spinner label="info.loadingdata" show-spinner="viewState.patientLoading" ng-if="hasPrivilege()">
 
-      <wc-alert-message id="load-error" ng-show="viewState.loadErrorMessageKey != null"
+      <wc-alert-message id="load-error" ng-if="viewState.loadErrorMessageKey != null"
                         alert-severity="danger"
                         alert-message-id="{{viewState.loadErrorMessageKey}}">
       </wc-alert-message>
