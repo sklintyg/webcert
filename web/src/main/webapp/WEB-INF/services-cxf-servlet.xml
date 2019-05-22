@@ -33,7 +33,6 @@
 
   <context:annotation-config />
 
-  <import resource="classpath:arende-stub-context.xml" />
   <import resource="classpath:fk-stub-context.xml" />
   <import resource="classpath:fmb-stub-context.xml" />
   <import resource="classpath:hsa-stub-context.xml" />
