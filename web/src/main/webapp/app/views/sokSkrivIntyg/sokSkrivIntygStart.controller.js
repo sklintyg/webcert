@@ -22,5 +22,5 @@ angular.module('webcert').controller('webcert.SokSkrivIntygStartCtrl',
             'use strict';
 
             PatientModel.build();
-            $state.go('webcert.create-choosepatient-index', {}, { location: 'replace', reload: true});
+            $state.go('webcert.create-choosepatient-index', {}, { location: 'replace'});
         }]);
