@@ -88,6 +88,8 @@ export function sektionGrundFörMedicinsktUnderlag(medUnderlag) {
             cy.get("#datepicker_underlag\\[2\\]\\.datum").clear().type(idagMinus2Mån);
             cy.get("#underlag-2--hamtasFran").type(rad.underlagHämtasFrån);
         }
+    } else {
+        cy.get("#underlagFinnsNo").click();
     }
 }
 
@@ -124,6 +126,8 @@ export function sektionDiagnos(diagnos) {
     if (diagnos.revidera.ja) {
         cy.get("#nyBedomningDiagnosgrundYes").click();
         cy.get("#diagnosForNyBedomning").type(diagnos.revidera.text);
+    } else {
+        cy.get('#nyBedomningDiagnosgrundNo').click();
     }
 }
 
@@ -205,7 +209,9 @@ export function sektionMedicinskaFörutsättningarFörArbete(medFörutsättninga
 
 // -------------------- 'Övrigt' --------------------
 export function sektionÖvrigt(övrigt) {
-    cy.get("#ovrigt").type(övrigt.text);
+    if (övrigt) {
+        cy.get("#ovrigt").type(övrigt.text);
+    }
 }
 
 // -------------------- 'Kontakt' --------------------
