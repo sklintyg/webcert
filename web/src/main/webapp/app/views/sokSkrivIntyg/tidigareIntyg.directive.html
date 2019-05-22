@@ -42,11 +42,11 @@
                 <div class="row" id="prevIntygTable">
                     <div class="col-md-12">
                         <!-- error message -->
-                        <wc-alert-message ng-show="viewState.intygListErrorMessageKey"
+                        <wc-alert-message ng-if="viewState.intygListErrorMessageKey"
                                           alert-message-id="{{viewState.intygListErrorMessageKey}}"
                                           alert-severity="danger"
                                           id="current-list-noResults-error"></wc-alert-message>
-                        <wc-alert-message ng-show="viewState.inlineErrorMessageKey"
+                        <wc-alert-message ng-if="viewState.inlineErrorMessageKey"
                                           alert-message-id="{{viewState.inlineErrorMessageKey}}"
                                           alert-severity="danger"></wc-alert-message>
                         <div class="rounded-table-wrapper full-width">
@@ -96,7 +96,7 @@
                                                                   key="intyg.status.{{intyg.extendedStatus}}"></span></td>
                                     <td class="unbreakable">{{intyg.lastUpdatedSigned | date:'short'}}</td>
                                     <td class="unbreakable">{{intyg.updatedSignedBy}}</td>
-                                    <td ng-if="!patientModel.avliden">
+                                    <td class="text-right" ng-if="!patientModel.avliden">
                                         <button type="button"
                                                 wc-authority="FORNYA_INTYG"
                                                 feature="FORNYA_INTYG"
@@ -115,7 +115,7 @@
                                             {{messageService.getProperty('common.fornya')}}
                                         </button>
                                     </td>
-                                    <td>
+                                    <td class="text-right right-column">
                                         <button type="button"
                                                 id="showBtn-{{intyg.intygId}}"
                                                 class="btn btn-primary"

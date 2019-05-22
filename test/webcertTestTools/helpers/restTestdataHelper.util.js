@@ -104,6 +104,14 @@ module.exports = {
         restUtil.login();
         return restUtil.deleteUtkast(id);
     },
+    deleteHandelserForUtkast: function(id) {
+        restUtil.login();
+        return restUtil.deleteHandelserForUtkast(id);
+    },
+    deleteHandelserForPatient: function(id) {
+        restUtil.login();
+        return restUtil.deleteHandelserForPatient(id);
+    },
 
     // Ärenden
     createArende: createArende,
@@ -187,6 +195,24 @@ module.exports = {
         }
         restUtil.login();
         return restUtil.setSekretessmarkering(personId, isSekretessmarkerad);
+    },
+    createBanners: function(message, prio) {
+        var toDate = new Date();
+        toDate.setFullYear(toDate.getFullYear() + 1);
+
+        var banner = {
+            message: message,
+            priority: prio,
+            application: 'WEBCERT',
+            createdAt: new Date().toISOString().substring(0, 19),
+            displayFrom: new Date().toISOString().substring(0, 19),
+            displayTo: toDate.toISOString().substring(0, 19)
+        };
+
+        return restUtil.createBanners(banner);
+    },
+    clearBanners: function() {
+        return restUtil.clearBanners();
     }
 
 };

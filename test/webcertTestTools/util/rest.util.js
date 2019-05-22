@@ -88,6 +88,20 @@ module.exports = {
         };
         return restClient.run(options, 'json');
     },
+    deleteHandelserForUtkast: function(id) {
+      var options = {
+          url: 'testability/intyg/handelser/' + id,
+          method: 'DELETE'
+      };
+      return restClient.run(options, 'json');
+    },
+    deleteHandelserForPatient: function(id) {
+        var options = {
+            url: 'testability/intyg/handelser/patient/' + id,
+            method: 'DELETE'
+        };
+        return restClient.run(options, 'json');
+    },
     createWebcertIntyg: function(createJson) {
         var options = {
             url: 'testability/intyg/utkast',
@@ -243,5 +257,20 @@ module.exports = {
             method: 'DELETE'
         };
         return restClient.run(options);
+    },
+    createBanners: function(banner) {
+        var options = {
+            url: 'services/api/ia-api/banner',
+            method: 'PUT',
+            body: banner
+        };
+        return restClient.run(options, 'json');
+    },
+    clearBanners: function() {
+        var options = {
+            url: '/services/api/ia-api/cache',
+            method: 'DELETE'
+        };
+        return restClient.run(options, 'json');
     }
 };

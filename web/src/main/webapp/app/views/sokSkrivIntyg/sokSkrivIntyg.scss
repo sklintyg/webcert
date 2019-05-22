@@ -1,6 +1,10 @@
 .sokSkrivIntygWrapper {
   padding-left: 15px;
 
+  label {
+    @extend %wc-typo-01;
+    color: $wc-color-19;
+  }
   .sokSkrivIntygInput {
     display: flex;
     flex-direction: row;

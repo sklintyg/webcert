@@ -386,7 +386,7 @@ public class IntygIntegrationController extends BaseIntegrationController {
             }
         } catch (WebCertServiceException e) {
             if (e.getErrorCode().equals(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND)) {
-                LOG.error(e.getMessage());
+                LOG.info(e.getMessage());
                 return buildNoContentErrorResponse(uriInfo);
             } else {
                 throw e;
