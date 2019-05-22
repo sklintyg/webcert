@@ -54,7 +54,7 @@ angular.module('webcert').directive('wcVardenhetFilter',
                         };
 
                         $scope.$watch('vardenhetFilterModel.units', function() {
-                            $scope.showSelect = vardenhetFilterModel.units.length > 2 && vardenhetFilterModel.units[0].fragaSvar > 0;
+                            $scope.showSelect = vardenhetFilterModel.units && vardenhetFilterModel.units.length > 2 && vardenhetFilterModel.units[0].fragaSvar > 0;
                         });
                     };
 
