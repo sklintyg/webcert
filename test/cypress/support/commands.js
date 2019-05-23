@@ -12,7 +12,8 @@ export const implementeradeIntyg = {
     LUSE: "LUSE",
     LUAE_NA: "LUAE_NA",
     LUAE_FS: "LUAE_FS",
-    TS_BAS: "TSTRK1007"
+    TS_BAS: "TSTRK1007",
+    TS_DIABETES: "TSTRK1031"
 }
 
 function loggaInVårdpersonal(vårdpersonal, vårdenhet, ärDjup) {
@@ -151,6 +152,10 @@ Cypress.Commands.add("skapaLuaeFsUtkast", fx => {
 
 Cypress.Commands.add("skapaTsBasUtkast", fx => {
     return skapaUtkast(fx, implementeradeIntyg.TS_BAS);
+});
+
+Cypress.Commands.add("skapaTsDiabetesUtkast", fx => {
+    return skapaUtkast(fx, implementeradeIntyg.TS_DIABETES);
 });
 
 /*
