@@ -1,7 +1,7 @@
 /* globals context cy */
 /// <reference types="Cypress" />
-import * as intyg from '../../support/FK_intyg/luseIntyg'
-import * as pdl from '../../support/pdl_helpers'
+import * as intyg from '../../../support/FK_intyg/luseIntyg'
+import * as pdl from '../../../support/pdl_helpers'
 
 // LUSE = Läkarutlåtande för sjukersättning, FK 7800
 

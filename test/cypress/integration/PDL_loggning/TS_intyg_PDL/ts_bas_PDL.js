@@ -1,7 +1,7 @@
 /* globals context cy */
 /// <reference types="Cypress" />
-import * as intyg from '../../support/TS_intyg/tsBasIntyg'
-import * as pdl from '../../support/pdl_helpers'
+import * as intyg from '../../../support/TS_intyg/tsBasIntyg'
+import * as pdl from '../../../support/pdl_helpers'
 
 var pdlEventArray = [];
 
