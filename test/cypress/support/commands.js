@@ -85,6 +85,9 @@ function skapaUtkast(fx, intygstyp) {
                                 </urn3:person-id>\
                                 <urn3:fornamn>' + vårdtagare.förnamn + '</urn3:fornamn>\
                                 <urn3:efternamn>' + vårdtagare.efternamn + '</urn3:efternamn>\
+                                <urn3:postadress>' + vårdtagare.postadress + '</urn3:postadress>\
+                                <urn3:postnummer>' + vårdtagare.postnummer + '</urn3:postnummer>\
+                                <urn3:postort>' + vårdtagare.postort + '</urn3:postort>\
                             </urn1:patient>\
                             <urn1:skapadAv>\
                                 <urn1:personal-id>\
