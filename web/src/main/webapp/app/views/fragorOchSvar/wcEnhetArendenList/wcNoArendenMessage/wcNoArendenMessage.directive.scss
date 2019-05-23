@@ -3,6 +3,7 @@ wc-no-arenden-message {
   flex-direction: column;
   text-align: center;
   padding-left: 65px;
+  @extend %wc-typo-06;
 
   div {
     img {

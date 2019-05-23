@@ -93,7 +93,7 @@ angular.module('webcert').constant('webcert.messages', {
         //Table headings
         //Tidigare intyg tabell
         'th.label.intyg-type': 'Typ av intyg',
-        'th.help.intyg-type': 'Intygstyp',
+        'th.help.intyg-type': 'Typ av intyg',
         'th.label.status': 'Status',
         'th.help.status': 'Visar utkastets/intygets status:<ul><li>Utkast, uppgifter saknas = Utkastet är sparat, men obligatoriska uppgifter saknas.</li><li>Utkast, kan signeras = Utkastet är komplett, sparat och kan signeras.</li><li>Utkast, låst = Utkastet är låst.</li><li>Signerat = Intyget är signerat.</li><li>Skickat = Intyget är skickat till mottagaren.</li><li>Makulerat = Intyget är makulerat.</li><li>Ersatt = Intyget är ersatt.</li><li>Kompletterat = Intyget är kompletterat.</li></ul>',
         'th.label.saved-date': 'Senast sparat',
@@ -106,7 +106,7 @@ angular.module('webcert').constant('webcert.messages', {
         'th.label.draft-forwarded': 'Vidarebefordrad',
         'th.help.draft-forwarded': 'Visar om utkastet är vidarebefordrat.',
         'th.label.draft-type': 'Typ av intyg',
-        'th.help.draft-type': 'Typ av intyg.',
+        'th.help.draft-type': 'Intygstyp',
         'th.label.draft-status': 'Status',
         'th.help.draft-status': 'Visar utkastets status:<ul><li>Utkast, uppgifter saknas = utkastet är sparat, men obligatoriska uppgifter saknas.</li><li>Utkast, kan signeras = utkastet är komplett, sparat och kan signeras.</li><li>Utkast, låst = Utkastet är låst.</li></ul>',
         'th.label.draft-saved-date': 'Senast sparat',
