@@ -18,6 +18,31 @@
  */
 package se.inera.intyg.webcert.web.service.arende;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anySet;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.ArgumentMatchers.nullable;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.only;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.when;
+
 import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -47,6 +72,8 @@ import org.mockito.junit.MockitoJUnitRunner;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.MoreCollectors;
+
+import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
 import se.inera.intyg.infra.integration.hsa.model.Vardgivare;
 import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
@@ -81,6 +108,7 @@ import se.inera.intyg.webcert.web.service.fragasvar.FragaSvarService;
 import se.inera.intyg.webcert.web.service.fragasvar.dto.FrageStallare;
 import se.inera.intyg.webcert.web.service.fragasvar.dto.QueryFragaSvarParameter;
 import se.inera.intyg.webcert.web.service.fragasvar.dto.QueryFragaSvarResponse;
+import se.inera.intyg.webcert.web.service.intyg.converter.IntygModuleFacade;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.notification.NotificationEvent;
 import se.inera.intyg.webcert.web.service.notification.NotificationService;
@@ -91,31 +119,6 @@ import se.inera.intyg.webcert.web.service.util.StatisticsGroupByUtil;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeConversationView;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeListItem;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeView;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
-import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anySet;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.isNull;
-import static org.mockito.ArgumentMatchers.nullable;
-import static org.mockito.Mockito.atLeastOnce;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.only;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.verifyZeroInteractions;
-import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
@@ -171,6 +174,9 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
 
     @Mock
     private StatisticsGroupByUtil statisticsGroupByUtil;
+
+    @Mock
+    private IntygModuleFacade modelFacade;
 
     @InjectMocks
     private ArendeServiceImpl service;
@@ -901,6 +907,12 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         arende.setSkickatAv(FrageStallare.FORSAKRINGSKASSAN.getKod());
         arende.setStatus(Status.CLOSED);
         when(arendeRepository.findOneByMeddelandeId(MEDDELANDE_ID)).thenReturn(arende);
+
+        final Utkast utkast = mock(Utkast.class);
+        doReturn(utkast).when(utkastRepository).findOne(any());
+
+        final Utlatande utlatande = mock(Utlatande.class);
+        doReturn(utlatande).when(modelFacade).getUtlatandeFromInternalModel(any(), any());
 
         service.openArendeAsUnhandled(MEDDELANDE_ID);
         ArgumentCaptor<Arende> arendeCaptor = ArgumentCaptor.forClass(Arende.class);
