@@ -1,15 +1,14 @@
-package se.inera.webcert
-import io.gatling.core.Predef._
-import io.gatling.http.Predef._
-import scala.io.Source._
-import scala.concurrent.duration._
-import scalaj.http._
+package se.inera.webcert.util
+
+import scalaj.http.{Http, HttpOptions, HttpResponse}
+
+import scala.io.Source.fromFile
 
 object Utils {
   val baseUrl = System.getProperty("baseUrl", "http://localhost:9088" )
 
   def injectPersonsIntoPU(file : String, column : Int) = {
-    val bufferedSource = fromFile("src/test/resources/data/" + file)
+    val bufferedSource = fromFile("src/gatling/resources/data/" + file)
     for (line <- bufferedSource.getLines) {
       val cols = line.split(",").map(_.trim)
       injectPersonIntoPU(cols(column))
@@ -29,7 +28,7 @@ object Utils {
   }
 
   def removePersonsFromPU(file : String, column : Int) = {
-    val bufferedSource = fromFile("src/test/resources/data/" + file)
+    val bufferedSource = fromFile("src/gatling/resources/data/" + file)
     for (line <- bufferedSource.getLines) {
       val cols = line.split(",").map(_.trim)
       removePersonFromPU(cols(column))
@@ -49,7 +48,7 @@ object Utils {
   }
 
   def cleanCertificates() = {
-    val bufferedSource = fromFile("src/test/resources/data/intyg.csv")
+    val bufferedSource = fromFile("src/gatling/resources/data/intyg.csv")
     for (line <- bufferedSource.getLines) {
       val cols = line.split(",").map(_.trim)
       deleteCertificate(cols(0))

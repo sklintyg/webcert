@@ -1,4 +1,4 @@
-package se.inera.webcert
+package se.inera.webcert.util
 
 object Headers {
 

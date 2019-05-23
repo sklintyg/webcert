@@ -1,17 +1,19 @@
-package se.inera.webcert
+package se.inera.webcert.simulations
+
+import java.util.UUID
+
 import io.gatling.core.Predef._
 import io.gatling.http.Predef._
-import io.gatling.jdbc.Predef._
-import scala.concurrent.duration._
-import java.util.UUID
-import io.gatling.core.feeder._
+import se.inera.webcert.util.{Conf, Headers, Login, Utils}
+
 import scala.collection.mutable.ListBuffer
+import scala.concurrent.duration._
 
 class Arende extends Simulation {
 
   private var internReferenser = new ListBuffer[String]
 
-  val intyg = csv("data/intyg.csv").circular
+  val intyg = csv("intyg.csv").circular
 
   val uuid = Iterator.continually(
     // Random UUID will be accessible in session under variable "UUID"
@@ -27,7 +29,7 @@ class Arende extends Simulation {
         .exec(http("Inject Intyg")
           .post("/testability/intyg/utkast")
           .headers(Headers.json)
-            .body(ELFileBody("request/intyg.json")).check(status.is(200)))
+            .body(ELFileBody("resources/request/intyg.json")).check(status.is(200)))
         .exec(http("Inject Arende")
           .post("/testability/arendetest")
           .headers(Headers.json)
