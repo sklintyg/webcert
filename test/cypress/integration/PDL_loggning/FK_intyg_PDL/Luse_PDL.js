@@ -117,6 +117,8 @@ describe('LUSE-intyg', function () {
         cy.visit(önskadUrl);
         cy.contains("Grund för medicinskt underlag");
         pdlEventArray.push(lusePdlEvent(this, "Läsa", undefined, this.utkastId, this.vårdenhet.uppdragsnamn, this.vårdenhet.vårdgivareId, this.vårdenhet.vårdgivareNamn, this.vårdenhet.id, this.vårdenhet.namn));
+
+        // ToDo: Bug?! Varför blir det 2 "Läsa" på rad?
         pdlEventArray.push(lusePdlEvent(this, "Läsa", undefined, this.utkastId, this.vårdenhet.uppdragsnamn, this.vårdenhet.vårdgivareId, this.vårdenhet.vårdgivareNamn, this.vårdenhet.id, this.vårdenhet.namn));
 
         // Förnya intyget
@@ -135,10 +137,24 @@ describe('LUSE-intyg', function () {
             pdlEventArray.push(lusePdlEvent(this, pdl.enumHandelse.LÄSA, undefined, intygID_2, this.vårdenhet.uppdragsnamn, this.vårdenhet.vårdgivareId, this.vårdenhet.vårdgivareNamn, this.vårdenhet.id, this.vårdenhet.namn));
         });
 
-        // ToDo: Skriv ut utkastet
-        // ToDo: Radera utkastet
-        // ToDo: Redirect till original genererar en "LÄSA"
-        // ToDo: Makulera originalintyget
+        // Skriva ut utkast.
+        cy.get('@intygsID_2').then((intygID_2)=> {
+            intyg.skrivUt("fullständigt", intygID_2);
+            pdlEventArray.push(lusePdlEvent(this, pdl.enumHandelse.UTSKRIFT, pdl.enumHandelseArgument.UTSKRIFTUTKAST, intygID_2, this.vårdenhet.uppdragsnamn, this.vårdenhet.vårdgivareId, this.vårdenhet.vårdgivareNamn, this.vårdenhet.id, this.vårdenhet.namn));
+        });
+
+        // Raderar intygsutkast
+        intyg.raderaUtkast();
+        cy.get('@intygsID_2').then((intygID_2)=> {
+            pdlEventArray.push(lusePdlEvent(this, pdl.enumHandelse.RADERA, undefined, intygID_2, this.vårdenhet.uppdragsnamn, this.vårdenhet.vårdgivareId, this.vårdenhet.vårdgivareNamn, this.vårdenhet.id, this.vårdenhet.namn));
+        });
+
+        // Redirect till originalintyget genererar en ny "Läsa"
+        pdlEventArray.push(lusePdlEvent(this, pdl.enumHandelse.LÄSA, undefined, this.utkastId, this.vårdenhet.uppdragsnamn, this.vårdenhet.vårdgivareId, this.vårdenhet.vårdgivareNamn, this.vårdenhet.id, this.vårdenhet.namn));
+
+        // Makulerar ursprungsintyget
+        intyg.makuleraIntyg();
+        pdlEventArray.push(lusePdlEvent(this, pdl.enumHandelse.MAKULERA, undefined, this.utkastId, this.vårdenhet.uppdragsnamn, this.vårdenhet.vårdgivareId, this.vårdenhet.vårdgivareNamn, this.vårdenhet.id, this.vårdenhet.namn));
 
         cy.verifieraPdlLoggar(pdlEventArray);
     });

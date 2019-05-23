@@ -283,3 +283,22 @@ export function skrivUt(typAvUtskrift, intygsId){
 export function fornya() {
     cy.get('#fornyaBtn').click();
 }
+
+// ------------------'Radera utkast'--------------------------
+export function raderaUtkast() {
+    cy.get('#ta-bort-utkast').click();
+    cy.get('#confirm-draft-delete-button').click();
+}
+
+// ------------------'Makulera intyg'-------------------------
+export function makuleraIntyg(arg) {
+    cy.get('#makuleraBtn').click();
+    if (arg === "Annat allvarligt fel") {
+        cy.get('#reason-ANNAT_ALLVARLIGT_FEL').check();
+        cy.get('#clarification-ANNAT_ALLVARLIGT_FEL').type('Testanledning');
+        cy.get('#button1makulera-dialog').click();
+    } else {
+        cy.get('#reason-FEL_PATIENT').check();
+        cy.get('#button1makulera-dialog').click();
+    }
+}
