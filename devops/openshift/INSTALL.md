@@ -127,6 +127,13 @@ To run database migration tool:
 * java
 * tar
 
+### 2.9 Logstash filters (Inera Drift ELK stack)
+
+The application logs are written to stdout/console. All pod output will be processed by logstash, where relevant data is extracted to fields. The resulting log-records (json) are sent to Elasticsearch for persistence. Kibana is used to filter, search and visualize the persisted log data.
+
+The logstash filters and grok patterns need to be updated if any log formats are changed.
+https://github.com/sklintyg/monitoring/tree/develop/logstash/
+
 # 3 Installation Procedure
 
 ### 3.1 Installation Checklist
