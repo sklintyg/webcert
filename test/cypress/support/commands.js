@@ -13,7 +13,8 @@ export const implementeradeIntyg = {
     LUAE_NA: "LUAE_NA",
     LUAE_FS: "LUAE_FS",
     TS_BAS: "TSTRK1007",
-    TS_DIABETES: "TSTRK1031"
+    TS_DIABETES: "TSTRK1031",
+    TS_ANMÄLAN: "TSTRK1009"
 }
 
 function loggaInVårdpersonal(vårdpersonal, vårdenhet, ärDjup) {
@@ -156,6 +157,10 @@ Cypress.Commands.add("skapaTsBasUtkast", fx => {
 
 Cypress.Commands.add("skapaTsDiabetesUtkast", fx => {
     return skapaUtkast(fx, implementeradeIntyg.TS_DIABETES);
+});
+
+Cypress.Commands.add("skapaTsAnmälanUtkast", fx => {
+    return skapaUtkast(fx, implementeradeIntyg.TS_ANMÄLAN);
 });
 
 /*
@@ -313,9 +318,12 @@ function verifieraHändelserFörIntyg(förväntadeHändelser, arr) {
         //---- Element 'User' ----//
         var user = arr[j].getElementsByTagName("user")[0];
         // userid, name, assignment, title, careprovider, careunit
-        assert.equal(user.children.length, 6, "Kontrollerar antal underelement till 'user', index " + j);
+
+        //Kommenterat bort kod som har med elementet name som nu är borttaget ur logsender. Samt ändrad children.length from 6 till 5
+
+        assert.equal(user.children.length, 5, "Kontrollerar antal underelement till 'user', index " + j);
         assert.equal(user.getElementsByTagName("userid")[0].innerText, förväntadeHändelser[j].user.userId, "Kontrollerar userid, index " + j);
-        assert.equal(user.getElementsByTagName("name")[0].innerText, "", "Kontrollerar att name är tomt, index " + j);
+        // assert.equal(user.getElementsByTagName("name")[0].innerText, "", "Kontrollerar att name är tomt, index " + j);
         assert.equal(user.getElementsByTagName("assignment")[0].innerText, förväntadeHändelser[j].user.assignment, "Kontrollerar assignment, index " + j);
         assert.equal(user.getElementsByTagName("title")[0].innerText, förväntadeHändelser[j].user.title, "Kontrollerar title, index " + j);
 
