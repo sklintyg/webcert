@@ -65,6 +65,7 @@ public final class AccessServiceEvaluation {
     private boolean checkRenew;
     private boolean checkPatientSecrecy;
     private boolean checkUnique;
+    private boolean checkUniqueOnlyCertificate;
     private boolean checkUnit;
     private boolean allowSJF;
     private boolean isReadOnlyOperation;
@@ -96,8 +97,7 @@ public final class AccessServiceEvaluation {
      *            Service to fetch and evaluate the current patient.
      * @param utkastService
      *            Service to fetch drafts and certificates when evaluating certain rules.
-     * @return
-     *         An AccessServiceEvaluation to be used once and then thrown away.
+     * @return An AccessServiceEvaluation to be used once and then thrown away.
      */
     public static AccessServiceEvaluation create(@NotNull WebCertUserService webCertUserService,
             @NotNull PatientDetailsResolver patientDetailsResolver,
@@ -113,8 +113,7 @@ public final class AccessServiceEvaluation {
      *            Current user.
      * @param certificateType
      *            Certificate type being evaluated.
-     * @return
-     *         AccessServiceEvaluation
+     * @return AccessServiceEvaluation
      */
     public AccessServiceEvaluation given(@NotNull WebCertUser user, @NotNull String certificateType) {
         this.user = user;
@@ -127,8 +126,7 @@ public final class AccessServiceEvaluation {
      *
      * @param privilege
      *            Privilege to consider
-     * @return
-     *         AccessServiceEvaluation
+     * @return AccessServiceEvaluation
      */
     public AccessServiceEvaluation privilege(@NotNull String privilege) {
         this.privileges.add(privilege);
@@ -142,8 +140,7 @@ public final class AccessServiceEvaluation {
      *            Privilege to consider
      * @param addPrivilege
      *            Only add privilege if true.
-     * @return
-     *         AccessServiceEvaluation
+     * @return AccessServiceEvaluation
      */
     public AccessServiceEvaluation privilegeIf(@NotNull String privilege, @NotNull boolean addPrivilege) {
         if (addPrivilege) {
@@ -157,8 +154,7 @@ public final class AccessServiceEvaluation {
      *
      * @param feature
      *            feature to consider.
-     * @return
-     *         AccessServiceEvaluation
+     * @return AccessServiceEvaluation
      */
     public AccessServiceEvaluation feature(@NotNull String feature) {
         this.features.add(feature);
@@ -186,8 +182,7 @@ public final class AccessServiceEvaluation {
      *
      * @param careUnit
      *            Care unit to consider.
-     * @return
-     *         AccessServiceEvaluation
+     * @return AccessServiceEvaluation
      */
     public AccessServiceEvaluation careUnit(@NotNull Vardenhet careUnit) {
         this.careUnit = careUnit;
@@ -199,8 +194,7 @@ public final class AccessServiceEvaluation {
      *
      * @param personnummer
      *            Patient to consider.
-     * @return
-     *         AccessServiceEvaluation
+     * @return AccessServiceEvaluation
      */
     public AccessServiceEvaluation patient(@NotNull Personnummer personnummer) {
         this.patient = personnummer;
@@ -212,8 +206,7 @@ public final class AccessServiceEvaluation {
      *
      * @param allowForSameUnit
      *            Allow handling (if all other criterias are met) when user is on the same unit.
-     * @return
-     *         AccessServiceEvaluation
+     * @return AccessServiceEvaluation
      */
     public AccessServiceEvaluation checkPatientDeceased(boolean allowForSameUnit) {
         this.checkPatientDeceased = true;
@@ -227,8 +220,7 @@ public final class AccessServiceEvaluation {
      *
      * @param certificateType
      *            Certificate types to exclude
-     * @return
-     *         AccessServiceEvaluation
+     * @return AccessServiceEvaluation
      */
     public AccessServiceEvaluation excludeCertificateTypesForDeceased(String... certificateType) {
         this.excludeDeceasedCertificateTypes.addAll(Arrays.asList(certificateType));
@@ -241,8 +233,7 @@ public final class AccessServiceEvaluation {
      *
      * @param certificateType
      *            Certificate types that are invalid
-     * @return
-     *         AccessServiceEvaluation
+     * @return AccessServiceEvaluation
      */
     public AccessServiceEvaluation invalidCertificateTypeForDeceased(String... certificateType) {
         this.invalidDeceasedCertificateTypes.addAll(Arrays.asList(certificateType));
@@ -254,8 +245,7 @@ public final class AccessServiceEvaluation {
      *
      * @param allowForSameUnit
      *            Allowe handling (if all other criterias are met) when use ris on the same unit.
-     * @return
-     *         AccessServiceEvaluation
+     * @return AccessServiceEvaluation
      */
     public AccessServiceEvaluation checkInactiveCareUnit(boolean allowForSameUnit) {
         this.checkInactiveCareUnit = true;
@@ -269,8 +259,7 @@ public final class AccessServiceEvaluation {
      *
      * @param certificateType
      *            Certificate types to exclude
-     * @return
-     *         AccessServiceEvaluation
+     * @return AccessServiceEvaluation
      */
     public AccessServiceEvaluation excludeCertificateTypesForInactive(String... certificateType) {
         this.excludeInactiveCertificateTypes.addAll(Arrays.asList(certificateType));
@@ -280,8 +269,7 @@ public final class AccessServiceEvaluation {
     /**
      * Consider if patient sekretess when evaluating. If called more than once, the old values will be overridden.
      *
-     * @return
-     *         AccessServiceEvaluation
+     * @return AccessServiceEvaluation
      */
     public AccessServiceEvaluation checkPatientSecrecy() {
         this.checkPatientSecrecy = true;
@@ -293,8 +281,7 @@ public final class AccessServiceEvaluation {
      *
      * @param allowForSameUnit
      *            Allowe handling (if all other criterias are met) when use ris on the same unit.
-     * @return
-     *         AccessServiceEvaluation
+     * @return AccessServiceEvaluation
      */
     public AccessServiceEvaluation checkRenew(boolean allowForSameUnit) {
         this.checkRenew = true;
@@ -308,8 +295,7 @@ public final class AccessServiceEvaluation {
      *
      * @param certificateType
      *            Certificate types to exclude
-     * @return
-     *         AccessServiceEvaluation
+     * @return AccessServiceEvaluation
      */
     public AccessServiceEvaluation excludeCertificateTypesForRenew(String... certificateType) {
         this.excludeRenewCertificateTypes.addAll(Arrays.asList(certificateType));
@@ -319,11 +305,22 @@ public final class AccessServiceEvaluation {
     /**
      * Consider unique draft/certificate rules when evaluating. If called more than once, the old values will be overridden.
      *
-     * @return
-     *         AccessServiceEvaluation
+     * @return AccessServiceEvaluation
      */
     public AccessServiceEvaluation checkUnique() {
         this.checkUnique = true;
+        this.checkUniqueOnlyCertificate = false;
+        return this;
+    }
+
+    /**
+     * Consider unique draft/certificate rules when evaluating. If called more than once, the old values will be overridden.
+     *
+     * @return AccessServiceEvaluation
+     */
+    public AccessServiceEvaluation checkUnique(boolean onlyCertificates) {
+        this.checkUnique = true;
+        this.checkUniqueOnlyCertificate = onlyCertificates;
         return this;
     }
 
@@ -349,8 +346,7 @@ public final class AccessServiceEvaluation {
      *
      * @param certificateType
      *            Certificate types to exclude
-     * @return
-     *         AccessServiceEvaluation
+     * @return AccessServiceEvaluation
      */
     public AccessServiceEvaluation excludeCertificateTypesForUnit(String... certificateType) {
         this.excludeUnitCertificateTypes.addAll(Arrays.asList(certificateType));
@@ -360,8 +356,7 @@ public final class AccessServiceEvaluation {
     /**
      * Evaluate criterias and returns an AccessResult.
      *
-     * @return
-     *         AccessResult
+     * @return AccessResult
      */
     public AccessResult evaluate() {
         Optional<AccessResult> accessResult = isAuthorized(certificateType, user, features, privileges);
@@ -388,7 +383,7 @@ public final class AccessServiceEvaluation {
         }
 
         if (checkUnique && !accessResult.isPresent()) {
-            accessResult = isUniqueUtkastRuleValid(certificateType, user, patient);
+            accessResult = isUniqueUtkastRuleValid(certificateType, user, patient, checkUniqueOnlyCertificate);
         }
 
         return accessResult.isPresent() ? accessResult.get() : AccessResult.noProblem();
@@ -522,7 +517,8 @@ public final class AccessServiceEvaluation {
         return enhetsId != null && !webCertUserService.userIsLoggedInOnEnhetOrUnderenhet(enhetsId);
     }
 
-    private Optional<AccessResult> isUniqueUtkastRuleValid(String intygsTyp, WebCertUser user, Personnummer personnummer) {
+    private Optional<AccessResult> isUniqueUtkastRuleValid(String intygsTyp, WebCertUser user, Personnummer personnummer,
+            boolean onlyCertificate) {
         if (isAnyUniqueFeatureEnabled(intygsTyp, user)) {
             final Map<String, Map<String, PreviousIntyg>> intygstypToStringToBoolean = utkastService
                     .checkIfPersonHasExistingIntyg(personnummer, user);
@@ -530,7 +526,7 @@ public final class AccessServiceEvaluation {
             final PreviousIntyg utkastExists = intygstypToStringToBoolean.get(DRAFT).get(intygsTyp);
             final PreviousIntyg intygExists = intygstypToStringToBoolean.get(CERTIFICATE).get(intygsTyp);
 
-            if (utkastExists != null && utkastExists.isSameVardgivare()) {
+            if (!onlyCertificate && utkastExists != null && utkastExists.isSameVardgivare()) {
                 if (isUniqueUtkastFeatureEnabled(intygsTyp, user)) {
                     return Optional.of(AccessResult.create(AccessResultCode.UNIQUE_DRAFT,
                             "Already exists drafts for this patient"));

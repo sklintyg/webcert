@@ -123,23 +123,6 @@ public class DraftAccessServiceImpl implements DraftAccessService {
 
     @Override
     public AccessResult allowToSignDraft(String certificateType, Vardenhet careUnit, Personnummer patient) {
-        // TODO Handle unique rule
-        // Additional constraints for specific types of intyg.
-        // Personnummer patientPersonnummer = utkast.getPatientPersonnummer();
-        // Map<String, Map<String, PreviousIntyg>> intygstypToPreviousIntyg = utkastService
-        // .checkIfPersonHasExistingIntyg(patientPersonnummer, user);
-        // Optional<WebCertServiceErrorCodeEnum> uniqueErrorCode = AuthoritiesHelperUtil.validateIntygMustBeUnique(
-        // user,
-        // utkast.getIntygsTyp(),
-        // intygstypToPreviousIntyg,
-        // utkast.getSkapad());
-        // if (uniqueErrorCode.isPresent()) {
-        // LOG.warn("Utkast '{}' av typ {} kan inte signeras då det redan existerar ett signerat intyg för samma personnummer",
-        // intygId, utkast.getIntygsTyp());
-        // throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTYG_FROM_OTHER_VARDGIVARE_EXISTS,
-        // "An intyg already exists, application rules forbide signing another");
-        // }
-
         return getAccessServiceEvaluation().given(getUser(), certificateType)
                 .feature(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
                 .privilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG)
@@ -150,6 +133,7 @@ public class DraftAccessServiceImpl implements DraftAccessService {
                 .checkInactiveCareUnit(true)
                 .checkRenew(true)
                 .checkPatientSecrecy()
+                .checkUnique(true)
                 .checkUnit(false, false)
                 .evaluate();
     }
