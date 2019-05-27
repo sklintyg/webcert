@@ -26,6 +26,9 @@ import se.inera.intyg.common.db.support.DbModuleEntryPoint;
 import se.inera.intyg.common.doi.support.DoiModuleEntryPoint;
 import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.common.lisjp.support.LisjpEntryPoint;
+import se.inera.intyg.common.luae_fs.support.LuaefsEntryPoint;
+import se.inera.intyg.common.luae_na.support.LuaenaEntryPoint;
+import se.inera.intyg.common.luse.support.LuseEntryPoint;
 import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.schemas.contract.Personnummer;
@@ -203,11 +206,14 @@ public class CertificateAccessServiceImpl implements CertificateAccessService {
                 .careUnit(careUnit)
                 .patient(patient)
                 .checkPatientDeceased(true)
-                .excludeCertificateTypesForDeceased(LisjpEntryPoint.MODULE_ID, Fk7263EntryPoint.MODULE_ID)
+                .excludeCertificateTypesForDeceased(LisjpEntryPoint.MODULE_ID, Fk7263EntryPoint.MODULE_ID, LuaefsEntryPoint.MODULE_ID,
+                        LuaenaEntryPoint.MODULE_ID, LuseEntryPoint.MODULE_ID)
                 .checkInactiveCareUnit(true)
-                .excludeCertificateTypesForInactive(LisjpEntryPoint.MODULE_ID, Fk7263EntryPoint.MODULE_ID)
+                .excludeCertificateTypesForInactive(LisjpEntryPoint.MODULE_ID, Fk7263EntryPoint.MODULE_ID, LuaefsEntryPoint.MODULE_ID,
+                        LuaenaEntryPoint.MODULE_ID, LuseEntryPoint.MODULE_ID)
                 .checkRenew(true)
-                .excludeCertificateTypesForRenew(LisjpEntryPoint.MODULE_ID, Fk7263EntryPoint.MODULE_ID)
+                .excludeCertificateTypesForRenew(LisjpEntryPoint.MODULE_ID, Fk7263EntryPoint.MODULE_ID, LuaefsEntryPoint.MODULE_ID,
+                        LuaenaEntryPoint.MODULE_ID, LuseEntryPoint.MODULE_ID)
                 .checkPatientSecrecy()
                 .checkUnit(true, true)
                 .evaluate();
