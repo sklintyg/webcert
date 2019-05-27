@@ -638,6 +638,11 @@ public class ArendeServiceImpl implements ArendeService {
         return getLatestKomplArende(intygsId, arendeList).getMeddelandeId();
     }
 
+    @Override
+    public List<Arende> getKompletteringar(List<String> intygsIds) {
+        return arendeRepository.findByIntygsIdAndType(intygsIds, ArendeAmne.KOMPLT);
+    }
+
     @VisibleForTesting
     void setMockSystemClock(Clock systemClock) {
         this.systemClock = systemClock;

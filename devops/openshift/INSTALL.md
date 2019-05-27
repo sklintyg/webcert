@@ -9,7 +9,11 @@ Installation of Web application WebCert (WC) on OpenShift.
 
 Database schema doesn't need any updates.
 
-### 1.2 New configuration and secret properties
+### 1.2 Message objects
+
+No message (ActiveMQ) objects have been changed.
+
+### 1.3 New configuration and secret properties
 
 **Note:** The new token OpenID Connect (OIDC) exchange feature is not yet activated but the settings have to be defined.
 
@@ -23,7 +27,7 @@ The following configuration properties can be removed:
 
 * `CERTIFICATE_SENDER_QUEUEMAME` -- typo has been corrected (since 2019-1)
 
-### 1.3 Configuration of reference data
+### 1.4 Configuration of reference data
 
 The main update is activation of the new reference data concept (master data for shared configurations). Refdata is provided as a JAR file and configured with the `REFDATA_URL` and `RESOURCES_FOLDER` parameters. Normally the default value of `RESOURCES_FOLDER` should be set to  `classpath:`. Three configuration updates is required in order to activate the new refdata:
 
@@ -89,9 +93,13 @@ The queues listed below are required and depending on permissions those might be
 - `webcert.aggregated.notification.queue` -- sends and receives aggregation/batches of notifications
 - `internal.notification.queue` -- receives Notifications from IT
 
+_Note: Message Queues are persistent and it's of great importance to know if any message object/format has been changed prior to an upgrade. Breaking changes shall be avoided as far as possible._ 
+
 ### 2.5 Database
 
 A database for the application must have been created.  It's recommended to use character set `utf8mb4` and case-sensitive collation. 
+
+_Note: It's of great importance to know if an update includes database schema changes. Breaking changes shall be avoided as far as possible._   
 
 ### 2.6 Access to Software Artifacts
 
@@ -119,17 +127,25 @@ To run database migration tool:
 * java
 * tar
 
+### 2.9 Logstash filters (Inera Drift ELK stack)
+
+The application logs are written to stdout/console. All pod output will be processed by logstash, where relevant data is extracted to fields. The resulting log-records (json) are sent to Elasticsearch for persistence. Kibana is used to filter, search and visualize the persisted log data.
+
+The logstash filters and grok patterns need to be updated if any log formats are changed.
+https://github.com/sklintyg/monitoring/tree/develop/logstash/
+
 # 3 Installation Procedure
 
 ### 3.1 Installation Checklist
 
 1. All Pre-Installation Requirements are fulfilled, se above
 2. Check if a database migration is required
-3. Ensure that the secrets `webcert-env`, `webcert-certifikat` and `webcert-secret-envvar` are up to date
-4. Ensure that the config maps `webcert-config` and `webcert-configmap-envvar` are up to date
-5. Check that deployment works as expected 
-6. Fine-tune memory settings for container and java process
-7. Setup policies for number of replicas, auto-scaling and rolling upgrade strategy
+3. Check if the logstash filter need to be updated
+4. Ensure that the secrets `webcert-env`, `webcert-certifikat` and `webcert-secret-envvar` are up to date
+5. Ensure that the config maps `webcert-config` and `webcert-configmap-envvar` are up to date
+6. Check that deployment works as expected
+7. Fine-tune memory settings for container and java process
+8. Setup policies for number of replicas, auto-scaling and rolling upgrade strategy
 
 
 ### 3.2 Migrate Database Schema
