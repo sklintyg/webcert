@@ -360,6 +360,56 @@ public class DoiCertificateAccessTest extends CertificateAccessTest {
     }
 
     @Override
+    protected void assertAllowToCreateQuestionNoConditions(AccessResult actualValue) {
+        assertEquals(AccessResultCode.AUTHORIZATION_VALIDATION, actualValue.getCode());
+    }
+
+    @Override
+    protected void assertAllowToCreateQuestionOnDeceasedPatient(AccessResult actualValue) {
+        assertEquals(AccessResultCode.AUTHORIZATION_VALIDATION, actualValue.getCode());
+    }
+
+    @Override
+    protected void assertAllowToCreateQuestionOnInactiveUnit(AccessResult actualValue) {
+        assertEquals(AccessResultCode.AUTHORIZATION_VALIDATION, actualValue.getCode());
+    }
+
+    @Override
+    protected void assertAllowToCreateQuestionOnRenewFalse(AccessResult actualValue) {
+        assertEquals(AccessResultCode.AUTHORIZATION_VALIDATION, actualValue.getCode());
+    }
+
+    @Override
+    protected void assertAllowToCreateQuestionOnSekretessPatientOnSameUnit(AccessResult actualValue) {
+        assertEquals(AccessResultCode.AUTHORIZATION_VALIDATION, actualValue.getCode());
+    }
+
+    @Override
+    protected void assertAllowToCreateQuestionOnSekretessPatientOnDifferentUnit(AccessResult actualValue) {
+        assertEquals(AccessResultCode.AUTHORIZATION_VALIDATION, actualValue.getCode());
+    }
+
+    @Override
+    protected void assertAllowToCreateQuestionOnDeceasedPatientOnDifferentUnit(AccessResult actualValue) {
+        assertEquals(AccessResultCode.AUTHORIZATION_VALIDATION, actualValue.getCode());
+    }
+
+    @Override
+    protected void assertAllowToCreateQuestionOnInactiveUnitOnDifferentUnit(AccessResult actualValue) {
+        assertEquals(AccessResultCode.AUTHORIZATION_VALIDATION, actualValue.getCode());
+    }
+
+    @Override
+    protected void assertAllowToCreateQuestionOnRenewFalseOnDifferentUnit(AccessResult actualValue) {
+        assertEquals(AccessResultCode.AUTHORIZATION_VALIDATION, actualValue.getCode());
+    }
+
+    @Override
+    protected void assertAllowToCreateQuestionNoConditionsDifferentUnit(AccessResult actualValue) {
+        assertEquals(AccessResultCode.AUTHORIZATION_VALIDATION, actualValue.getCode());
+    }
+
+    @Override
     protected void assertAllowToAnswerComplementNoConditions(AccessResult actualValue) {
         assertEquals(AccessResultCode.AUTHORIZATION_VALIDATION, actualValue.getCode());
     }

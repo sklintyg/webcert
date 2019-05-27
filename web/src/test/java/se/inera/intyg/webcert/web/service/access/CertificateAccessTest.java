@@ -655,6 +655,98 @@ public abstract class CertificateAccessTest extends AccessTest {
     abstract protected void assertAllowToSendNoConditionsDifferentUnit(AccessResult actualValue);
 
     @Test
+    public void isallowToCreateQuestionNoConditions() {
+        setupMocksForNoConditions();
+
+        assertAllowToCreateQuestionNoConditions(accessService.allowToCreateQuestion(intygsTyp, vardenhet, PERSONNUMMER));
+    }
+
+    abstract protected void assertAllowToCreateQuestionNoConditions(AccessResult actualValue);
+
+    @Test
+    public void isallowToCreateQuestionOnDeceasedPatient() {
+        setupMocksForDeceasedPatient();
+
+        assertAllowToCreateQuestionOnDeceasedPatient(accessService.allowToCreateQuestion(intygsTyp, vardenhet, PERSONNUMMER));
+    }
+
+    abstract protected void assertAllowToCreateQuestionOnDeceasedPatient(AccessResult actualValue);
+
+    @Test
+    public void isallowToCreateQuestionOnInactiveUnit() {
+        setupMocksForInactiveUnit();
+
+        assertAllowToCreateQuestionOnInactiveUnit(accessService.allowToCreateQuestion(intygsTyp, vardenhet, PERSONNUMMER));
+    }
+
+    abstract protected void assertAllowToCreateQuestionOnInactiveUnit(AccessResult actualValue);
+
+    @Test
+    public void isallowToCreateQuestionOnRenewFalse() {
+        setupMocksForOnRenewFalse();
+
+        assertAllowToCreateQuestionOnRenewFalse(accessService.allowToCreateQuestion(intygsTyp, vardenhet, PERSONNUMMER));
+    }
+
+    abstract protected void assertAllowToCreateQuestionOnRenewFalse(AccessResult actualValue);
+
+    @Test
+    public void isallowToCreateQuestionOnSekretessPatientOnSameUnit() {
+        setupMocksForOnSekretessPatient();
+
+        assertAllowToCreateQuestionOnSekretessPatientOnSameUnit(accessService.allowToCreateQuestion(intygsTyp, vardenhet, PERSONNUMMER));
+    }
+
+    abstract protected void assertAllowToCreateQuestionOnSekretessPatientOnSameUnit(AccessResult actualValue);
+
+    @Test
+    public void isallowToCreateQuestionOnSekretessPatientOnDifferentUnit() {
+        setupMocksForOnSekretessPatientDifferentUnit();
+
+        assertAllowToCreateQuestionOnSekretessPatientOnDifferentUnit(
+                accessService.allowToCreateQuestion(intygsTyp, vardenhet, PERSONNUMMER));
+    }
+
+    abstract protected void assertAllowToCreateQuestionOnSekretessPatientOnDifferentUnit(AccessResult actualValue);
+
+    @Test
+    public void isallowToCreateQuestionOnDeceasedPatientOnDifferentUnit() {
+        setupMocksForDeceasedPatientDifferentUnit();
+
+        assertAllowToCreateQuestionOnDeceasedPatientOnDifferentUnit(
+                accessService.allowToCreateQuestion(intygsTyp, vardenhet, PERSONNUMMER));
+    }
+
+    abstract protected void assertAllowToCreateQuestionOnDeceasedPatientOnDifferentUnit(AccessResult actualValue);
+
+    @Test
+    public void isallowToCreateQuestionOnInactiveUnitOnDifferentUnit() {
+        setupMocksForInactiveUnitDifferentUnit();
+
+        assertAllowToCreateQuestionOnInactiveUnitOnDifferentUnit(accessService.allowToCreateQuestion(intygsTyp, vardenhet, PERSONNUMMER));
+    }
+
+    abstract protected void assertAllowToCreateQuestionOnInactiveUnitOnDifferentUnit(AccessResult actualValue);
+
+    @Test
+    public void isallowToCreateQuestionOnRenewFalseOnDifferentUnit() {
+        setupMocksForOnRenewFalseDifferentUnit();
+
+        assertAllowToCreateQuestionOnRenewFalseOnDifferentUnit(accessService.allowToCreateQuestion(intygsTyp, vardenhet, PERSONNUMMER));
+    }
+
+    abstract protected void assertAllowToCreateQuestionOnRenewFalseOnDifferentUnit(AccessResult actualValue);
+
+    @Test
+    public void isallowToCreateQuestionNoConditionsDifferentUnit() {
+        setupMocksForNoConditionsDifferentUnit();
+
+        assertAllowToCreateQuestionNoConditionsDifferentUnit(accessService.allowToCreateQuestion(intygsTyp, vardenhet, PERSONNUMMER));
+    }
+
+    abstract protected void assertAllowToCreateQuestionNoConditionsDifferentUnit(AccessResult actualValue);
+
+    @Test
     public void isAllowToAnswerComplementNoConditions() {
         setupMocksForNoConditions();
 
