@@ -140,11 +140,12 @@ https://github.com/sklintyg/monitoring/tree/develop/logstash/
 
 1. All Pre-Installation Requirements are fulfilled, se above
 2. Check if a database migration is required
-3. Ensure that the secrets `webcert-env`, `webcert-certifikat` and `webcert-secret-envvar` are up to date
-4. Ensure that the config maps `webcert-config` and `webcert-configmap-envvar` are up to date
-5. Check that deployment works as expected 
-6. Fine-tune memory settings for container and java process
-7. Setup policies for number of replicas, auto-scaling and rolling upgrade strategy
+3. Check if the logstash filter need to be updated
+4. Ensure that the secrets `webcert-env`, `webcert-certifikat` and `webcert-secret-envvar` are up to date
+5. Ensure that the config maps `webcert-config` and `webcert-configmap-envvar` are up to date
+6. Check that deployment works as expected
+7. Fine-tune memory settings for container and java process
+8. Setup policies for number of replicas, auto-scaling and rolling upgrade strategy
 
 
 ### 3.2 Migrate Database Schema
