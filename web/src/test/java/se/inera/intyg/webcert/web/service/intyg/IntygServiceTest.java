@@ -18,8 +18,45 @@
  */
 package se.inera.intyg.webcert.web.service.intyg;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.Sets;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.AdditionalMatchers.or;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anySet;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.when;
+
+import java.io.IOException;
+import java.lang.reflect.Field;
+import java.time.LocalDateTime;
+import java.time.Month;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.ws.WebServiceException;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.cxf.helpers.FileUtils;
@@ -33,6 +70,10 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.core.io.ClassPathResource;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.Sets;
+
 import se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificatetypeinfo.v1.GetCertificateTypeInfoResponderInterface;
 import se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificatetypeinfo.v1.GetCertificateTypeInfoResponseType;
 import se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificatetypeinfo.v1.GetCertificateTypeInfoType;
@@ -66,6 +107,7 @@ import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.converter.IntygDraftsConverter;
+import se.inera.intyg.webcert.web.service.access.CertificateAccessService;
 import se.inera.intyg.webcert.web.service.arende.ArendeService;
 import se.inera.intyg.webcert.web.service.certificatesender.CertificateSenderService;
 import se.inera.intyg.webcert.web.service.intyg.converter.IntygModuleFacade;
@@ -90,54 +132,17 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
+import se.inera.intyg.webcert.web.web.util.access.AccessResultExceptionHelper;
 import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v3.ListCertificatesForCareResponderInterface;
 import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v3.ListCertificatesForCareResponseType;
 import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v3.ListCertificatesForCareType;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.TypAvIntyg;
 import se.riv.clinicalprocess.healthcond.certificate.v3.IntygsStatus;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.transform.stream.StreamSource;
-import javax.xml.ws.WebServiceException;
-import java.io.IOException;
-import java.lang.reflect.Field;
-import java.time.LocalDateTime;
-import java.time.Month;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.AdditionalMatchers.or;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
-import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.ArgumentMatchers.anySet;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.isNull;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.verifyZeroInteractions;
-import static org.mockito.Mockito.when;
-
 /**
  * @author andreaskaltenbach
  */
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(MockitoJUnitRunner.Silent.class)
 public class IntygServiceTest {
 
     private static final String HSA_ID = "HSA-123";
@@ -224,6 +229,12 @@ public class IntygServiceTest {
     @Mock
     private GetCertificateTypeInfoResponderInterface getCertificateTypeInfoService;
 
+    @Mock
+    private CertificateAccessService certificateAccessService;
+
+    @Mock
+    private AccessResultExceptionHelper accessResultExceptionHelper;
+
     @InjectMocks
     private IntygDraftsConverter intygConverter = new IntygDraftsConverter();
 
@@ -300,7 +311,8 @@ public class IntygServiceTest {
     public void setupPUService() {
         when(patientDetailsResolver.getPersonFromPUService(any(Personnummer.class)))
                 .thenReturn(getPersonSvar(false));
-        when(patientDetailsResolver.resolvePatient(any(Personnummer.class), anyString(), anyString())).thenReturn(buildPatient(false, false));
+        when(patientDetailsResolver.resolvePatient(any(Personnummer.class), anyString(), anyString()))
+                .thenReturn(buildPatient(false, false));
     }
 
     @Before
@@ -315,10 +327,10 @@ public class IntygServiceTest {
 
     @Before
     public void setupLookForIntygTypeInfo() throws IOException {
-        //For when finding it in utkast
+        // For when finding it in utkast
         when(utkastRepository.findOne(anyString())).thenReturn(getIntyg(CERTIFICATE_ID,
                 LocalDateTime.now(), null));
-        //For when finding it via lookup in IT
+        // For when finding it via lookup in IT
         GetCertificateTypeInfoResponseType typeInfo = new GetCertificateTypeInfoResponseType();
         TypAvIntyg typAvIntyg = new TypAvIntyg();
         typAvIntyg.setCode(CERTIFICATE_TYPE);
@@ -356,13 +368,6 @@ public class IntygServiceTest {
     public void testFetchIntygWithFailingIntygstjanst() throws IntygModuleFacadeException {
 
         when(moduleFacade.getCertificate(any(String.class), any(String.class), anyString())).thenThrow(new IntygModuleFacadeException(""));
-
-        intygService.fetchIntygData(CERTIFICATE_ID, CERTIFICATE_TYPE, false);
-    }
-
-    @Test(expected = WebCertServiceException.class)
-    public void testFetchIntygWithFailingAuth() {
-        when(webCertUserService.isAuthorizedForUnit(any(String.class), any(String.class), eq(true))).thenReturn(false);
 
         intygService.fetchIntygData(CERTIFICATE_ID, CERTIFICATE_TYPE, false);
     }
@@ -651,7 +656,8 @@ public class IntygServiceTest {
         Utkast utkast = getIntyg(CERTIFICATE_ID, null, null);
         utkast.setIntygsTyp(CERTIFICATE_TYPE);
         utkast.setSkapad(timestamp);
-        when(moduleFacade.getCertificate(CERTIFICATE_ID, CERTIFICATE_TYPE, CERTIFICATE_TYPE_VERSION_1_0)).thenThrow(WebServiceException.class);
+        when(moduleFacade.getCertificate(CERTIFICATE_ID, CERTIFICATE_TYPE, CERTIFICATE_TYPE_VERSION_1_0))
+                .thenThrow(WebServiceException.class);
         when(utkastRepository.findByIntygsIdAndIntygsTyp(CERTIFICATE_ID, CERTIFICATE_TYPE)).thenReturn(utkast);
         IntygContentHolder intygContentHolder = intygService.fetchIntygData(CERTIFICATE_ID, CERTIFICATE_TYPE, false);
         assertEquals(intygContentHolder.getStatuses().size(), 1);
@@ -669,7 +675,8 @@ public class IntygServiceTest {
     @SuppressWarnings("unchecked")
     @Test
     public void testFetchIntygDataHasSentStatusWhenIntygstjanstIsUnavailableAndDraftHadSentDate() throws Exception {
-        when(moduleFacade.getCertificate(CERTIFICATE_ID, CERTIFICATE_TYPE, CERTIFICATE_TYPE_VERSION_1_0)).thenThrow(WebServiceException.class);
+        when(moduleFacade.getCertificate(CERTIFICATE_ID, CERTIFICATE_TYPE, CERTIFICATE_TYPE_VERSION_1_0))
+                .thenThrow(WebServiceException.class);
         when(utkastRepository.findByIntygsIdAndIntygsTyp(CERTIFICATE_ID, CERTIFICATE_TYPE))
                 .thenReturn(getIntyg(CERTIFICATE_ID, LocalDateTime.now(), null));
         IntygContentHolder intygContentHolder = intygService.fetchIntygData(CERTIFICATE_ID, CERTIFICATE_TYPE, false);
@@ -687,7 +694,8 @@ public class IntygServiceTest {
     @Test
     public void testFetchIntygDataHasSentAndRevokedStatusesWhenIntygstjanstIsUnavailableAndDraftHadSentDateAndRevokedDate()
             throws Exception {
-        when(moduleFacade.getCertificate(CERTIFICATE_ID, CERTIFICATE_TYPE, CERTIFICATE_TYPE_VERSION_1_0)).thenThrow(WebServiceException.class);
+        when(moduleFacade.getCertificate(CERTIFICATE_ID, CERTIFICATE_TYPE, CERTIFICATE_TYPE_VERSION_1_0))
+                .thenThrow(WebServiceException.class);
         when(utkastRepository.findByIntygsIdAndIntygsTyp(CERTIFICATE_ID, CERTIFICATE_TYPE))
                 .thenReturn(getIntyg(CERTIFICATE_ID, LocalDateTime.now(), LocalDateTime.now()));
         IntygContentHolder intygContentHolder = intygService.fetchIntygData(CERTIFICATE_ID, CERTIFICATE_TYPE, false);
@@ -706,7 +714,8 @@ public class IntygServiceTest {
     @SuppressWarnings("unchecked")
     @Test(expected = WebCertServiceException.class)
     public void testFetchIntygDataFailsWhenIntygstjanstIsUnavailableAndUtkastIsNotFound() throws Exception {
-        when(moduleFacade.getCertificate(CERTIFICATE_ID, CERTIFICATE_TYPE, CERTIFICATE_TYPE_VERSION_1_0)).thenThrow(WebServiceException.class);
+        when(moduleFacade.getCertificate(CERTIFICATE_ID, CERTIFICATE_TYPE, CERTIFICATE_TYPE_VERSION_1_0))
+                .thenThrow(WebServiceException.class);
         when(utkastRepository.findByIntygsIdAndIntygsTyp(CERTIFICATE_ID, CERTIFICATE_TYPE)).thenReturn(null);
         try {
             intygService.fetchIntygData(CERTIFICATE_ID, CERTIFICATE_TYPE, false);
@@ -822,15 +831,12 @@ public class IntygServiceTest {
         verify(logservice).logPrintIntygAsPDF(any(LogRequest.class));
         verifyNoMoreInteractions(logservice);
         verify(moduleFacade, times(0)).getCertificate(CERTIFICATE_ID, CERTIFICATE_TYPE, CERTIFICATE_TYPE_VERSION_1_0);
-
-        // Verify that the enhetsAuth verification was performed.
-        verify(webCertUserService, times(1)).isAuthorizedForUnit(anyString(), anyString(), anyBoolean());
     }
 
     @SuppressWarnings("unchecked")
     @Test(expected = WebCertServiceException.class)
     public void testFetchRevokedIntygAsPdfFromIntygstjansten() throws IOException, IntygModuleFacadeException {
-        //Return a signed utkast, to make it fetch intyg from IT
+        // Return a signed utkast, to make it fetch intyg from IT
         when(utkastRepository.findOne(CERTIFICATE_ID)).thenReturn(getIntyg(CERTIFICATE_ID, LocalDateTime.now(), LocalDateTime.now()));
 
         CertificateMetaData metaData = buildCertificateMetaData();
@@ -847,7 +853,7 @@ public class IntygServiceTest {
         metaData.setStatus(Lists.newArrayList(status));
 
         CertificateResponse certificateResponse = new CertificateResponse(json, utlatande, metaData, true);
-        //Return a revoked intyg.
+        // Return a revoked intyg.
         when(moduleFacade.getCertificate(CERTIFICATE_ID, CERTIFICATE_TYPE, CERTIFICATE_TYPE_VERSION_1_0)).thenReturn(certificateResponse);
 
         try {
@@ -983,7 +989,8 @@ public class IntygServiceTest {
         when(moduleRegistry.getModuleEntryPoint(intygTyp)).thenReturn(new Fk7263EntryPoint());
 
         utkast.setStatus(UtkastStatus.SIGNED);
-        utkast.setSignatur(new Signatur(LocalDateTime.of(2011, 11, 11, 11, 11, 11, 11), "Signe Signatur", intygId, "data", "hash", "signatur"));
+        utkast.setSignatur(
+                new Signatur(LocalDateTime.of(2011, 11, 11, 11, 11, 11, 11), "Signe Signatur", intygId, "data", "hash", "signatur"));
 
         CertificateMetaData metaData = buildCertificateMetaData();
 
@@ -1028,7 +1035,8 @@ public class IntygServiceTest {
         utkast.setIntygTypeVersion(intygTypVersion);
         utkast.setModel(json);
         utkast.setStatus(UtkastStatus.SIGNED);
-        utkast.setSignatur(new Signatur(LocalDateTime.of(2011, 11, 11, 11, 11, 11, 11), "Signe Signatur", intygId, "data", "hash", "signatur"));
+        utkast.setSignatur(
+                new Signatur(LocalDateTime.of(2011, 11, 11, 11, 11, 11, 11), "Signe Signatur", intygId, "data", "hash", "signatur"));
 
         CertificateMetaData metaData = buildCertificateMetaData();
 
@@ -1247,7 +1255,8 @@ public class IntygServiceTest {
         when(webcertUser.getOrigin()).thenReturn(UserOriginType.DJUPINTEGRATION.name());
         when(webcertUser.getParameters())
                 .thenReturn(new IntegrationParameters("", "", "", "", "", "", "", "", "", false, true, false, true));
-        when(patientDetailsResolver.resolvePatient(any(Personnummer.class), anyString(), anyString())).thenReturn(buildPatient(false, true));
+        when(patientDetailsResolver.resolvePatient(any(Personnummer.class), anyString(), anyString()))
+                .thenReturn(buildPatient(false, true));
         IntygContentHolder intygData = intygService.fetchIntygData(CERTIFICATE_ID, CERTIFICATE_TYPE, false);
         assertTrue(intygData.isDeceased());
     }
@@ -1262,7 +1271,8 @@ public class IntygServiceTest {
         patientWithIncompleteAddress.setPostadress(postadress);
         patientWithIncompleteAddress.setPostort(postort);
         patientWithIncompleteAddress.setPostnummer(postnummer);
-        when(patientDetailsResolver.resolvePatient(any(Personnummer.class), anyString(), anyString())).thenReturn(patientWithIncompleteAddress);
+        when(patientDetailsResolver.resolvePatient(any(Personnummer.class), anyString(), anyString()))
+                .thenReturn(patientWithIncompleteAddress);
 
         // When
         IntygContentHolder intygData = intygService.fetchIntygData(CERTIFICATE_ID, CERTIFICATE_TYPE, false);
@@ -1285,7 +1295,8 @@ public class IntygServiceTest {
         patientWithIncompleteAddress.setPostadress(postadress);
         patientWithIncompleteAddress.setPostort(postort);
         patientWithIncompleteAddress.setPostnummer(postnummer);
-        when(patientDetailsResolver.resolvePatient(any(Personnummer.class), anyString(), anyString())).thenReturn(patientWithIncompleteAddress);
+        when(patientDetailsResolver.resolvePatient(any(Personnummer.class), anyString(), anyString()))
+                .thenReturn(patientWithIncompleteAddress);
 
         // When
         IntygContentHolder intygData = intygService.fetchIntygData(CERTIFICATE_ID, CERTIFICATE_TYPE, false);
@@ -1310,7 +1321,8 @@ public class IntygServiceTest {
         patientWithIncompleteAddress.setPostadress(postadress);
         patientWithIncompleteAddress.setPostort(postort);
         patientWithIncompleteAddress.setPostnummer(postnummer);
-        when(patientDetailsResolver.resolvePatient(any(Personnummer.class), anyString(), anyString())).thenReturn(patientWithIncompleteAddress);
+        when(patientDetailsResolver.resolvePatient(any(Personnummer.class), anyString(), anyString()))
+                .thenReturn(patientWithIncompleteAddress);
 
         // When
         IntygContentHolder intygData = intygService.fetchIntygData(CERTIFICATE_ID, CERTIFICATE_TYPE, false);
@@ -1337,7 +1349,8 @@ public class IntygServiceTest {
         patientWithIncompleteAddress.setPostadress(postadress);
         patientWithIncompleteAddress.setPostort(postort);
         patientWithIncompleteAddress.setPostnummer(postnummer);
-        when(patientDetailsResolver.resolvePatient(any(Personnummer.class), anyString(), anyString())).thenReturn(patientWithIncompleteAddress);
+        when(patientDetailsResolver.resolvePatient(any(Personnummer.class), anyString(), anyString()))
+                .thenReturn(patientWithIncompleteAddress);
 
         // When
         IntygContentHolder intygData = intygService.fetchIntygData(CERTIFICATE_ID, CERTIFICATE_TYPE, false);

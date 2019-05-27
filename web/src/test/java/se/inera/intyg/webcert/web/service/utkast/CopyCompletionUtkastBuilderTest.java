@@ -57,11 +57,13 @@ import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.intyg.webcert.web.service.arende.ArendeService;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
+import se.inera.intyg.webcert.web.service.log.LogService;
+import se.inera.intyg.webcert.web.service.log.factory.LogRequestFactory;
 import se.inera.intyg.webcert.web.service.utkast.dto.CopyUtkastBuilderResponse;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateCompletionCopyRequest;
 import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
 
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(MockitoJUnitRunner.Silent.class)
 public class CopyCompletionUtkastBuilderTest extends AbstractBuilderTest {
 
     private static final String INTYG_TYPE = "fk7263";
@@ -74,6 +76,12 @@ public class CopyCompletionUtkastBuilderTest extends AbstractBuilderTest {
     private ArendeService arendeService;
 
     private ModuleApi mockModuleApi;
+
+    @Mock
+    private LogService logService;
+
+    @Mock
+    private LogRequestFactory logRequestFactory;
 
     @InjectMocks
     private CopyCompletionUtkastBuilder copyCompletionBuilder = new CopyCompletionUtkastBuilder();
