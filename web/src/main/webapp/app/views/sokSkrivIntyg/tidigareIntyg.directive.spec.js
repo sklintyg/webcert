@@ -36,7 +36,6 @@ describe('SokSkrivValjUtkastTypeCtrl', function() {
     var AuthorityService = {};
     var UserModel;
     var $q;
-    var ResourceLinkService;
 
     beforeEach(function() {
         module('htmlTemplates');

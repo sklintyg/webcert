@@ -33,6 +33,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import se.inera.intyg.common.support.modules.registry.IntygModule;
 import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.web.service.access.AccessResult;
 import se.inera.intyg.webcert.web.service.access.DraftAccessService;
 import se.inera.intyg.webcert.web.web.controller.api.dto.IntygModuleDTO;
 import se.inera.intyg.webcert.web.web.util.resourcelinks.ResourceLinkHelperImpl;
@@ -53,7 +54,7 @@ public class ResourceLinkHelperImplTest {
         final String intygsTyp = "intygstyp";
         final Personnummer personnummer = Personnummer.createPersonnummer("191212121212").get();
 
-        doReturn(true).when(draftAccessService).allowToCreateDraft(intygsTyp, personnummer);
+        doReturn(AccessResult.noProblem()).when(draftAccessService).allowToCreateDraft(intygsTyp, personnummer);
 
         final ActionLink expectedActionLink = new ActionLink();
         expectedActionLink.setType(ActionLinkType.SKAPA_UTKAST);

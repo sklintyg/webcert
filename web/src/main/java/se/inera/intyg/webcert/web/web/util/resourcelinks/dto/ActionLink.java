@@ -37,7 +37,7 @@ public class ActionLink {
 
     /**
      * New action link.
-     * 
+     *
      * @param type
      *            Type of action link.
      */
@@ -47,7 +47,7 @@ public class ActionLink {
 
     /**
      * Get the type of the link.
-     * 
+     *
      * @return
      *         Type of link. Can be null.
      */
@@ -57,7 +57,7 @@ public class ActionLink {
 
     /**
      * Set the type of the link.
-     * 
+     *
      * @param type
      *            Type of link.
      */

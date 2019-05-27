@@ -46,6 +46,15 @@
       },
       "sekretessmarkering": {
         "type": "boolean"
+      },
+      "vardenhetId": {
+        "type": "string"
+      },
+      "vardgivarId": {
+        "type": "string"
+      },
+      "links": {
+        "type": "array"
       }
     },
     "additionalProperties": false,

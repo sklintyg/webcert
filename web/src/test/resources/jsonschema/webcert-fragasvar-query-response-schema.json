@@ -74,14 +74,17 @@
           },
           "sekretessmarkering": {
             "type": "boolean"
+          },
+          "links": {
+            "type": "array"
           }
         },
         "required": [
-            "meddelandeId",
-            "intygId",
-            "intygTyp",
-            "avliden",
-            "sekretessmarkering"
+          "meddelandeId",
+          "intygId",
+          "intygTyp",
+          "avliden",
+          "sekretessmarkering"
         ]
       }
     }
