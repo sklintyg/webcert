@@ -85,7 +85,7 @@ describe('uthopp - arende on luse intyg', function() {
                     browser.ignoreSynchronization = false;
 
                     LuseIntygPage.get(intygId);
-                    expect(LuseIntygPage.kompletteraIntygButton.isPresent()).toBeFalsy();
+                    expect(LuseIntygPage.kompletteraIntygButton.isDisplayed()).toBeFalsy();
                     expect(LuseIntygPage.kanInteKompletteraButton.isDisplayed()).toBeTruthy();
                     expect(LuseIntygPage.uthoppKompletteraLink.isDisplayed()).toBeTruthy();
                     LuseIntygPage.kanInteKompletteraButton.click();

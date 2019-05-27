@@ -281,7 +281,7 @@ public class ArendeServiceImpl implements ArendeService {
 
         Arende latestKomplArende = getLatestKomplArende(intygsId, arendeList);
 
-        validateAccessRightsToAnswerComplement(intygsId, true);
+        validateAccessRightsToAnswerComplement(intygsId, false);
 
         // Close all Arende for intyg, _except_ question from recipient (latestKomplArende) which we handle separately below.
         arendeList.stream()
