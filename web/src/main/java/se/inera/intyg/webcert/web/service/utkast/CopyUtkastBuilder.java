@@ -27,11 +27,11 @@ import se.inera.intyg.webcert.web.service.utkast.dto.CopyUtkastBuilderResponse;
 public interface CopyUtkastBuilder<T extends AbstractCreateCopyRequest> {
 
     CopyUtkastBuilderResponse populateCopyUtkastFromOrignalUtkast(T copyRequest, Person patientDetails, boolean addRelation,
-            boolean coherentJournaling, boolean checkVardgivare)
+            boolean coherentJournaling)
             throws ModuleNotFoundException, ModuleException;
 
     CopyUtkastBuilderResponse populateCopyUtkastFromSignedIntyg(T copyRequest, Person patientDetails, boolean addRelation,
-            boolean coherentJournaling, boolean checkVardgivare)
+            boolean coherentJournaling)
             throws ModuleNotFoundException, ModuleException;
 
 }

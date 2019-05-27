@@ -18,6 +18,15 @@
  */
 package se.inera.intyg.webcert.web.service.utkast;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,6 +36,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.core.io.ClassPathResource;
 
@@ -41,24 +51,16 @@ import se.inera.intyg.common.support.modules.support.api.dto.ValidationStatus;
 import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
 import se.inera.intyg.infra.integration.pu.model.Person;
 import se.inera.intyg.schemas.contract.Personnummer;
-import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
+import se.inera.intyg.webcert.web.service.log.LogService;
+import se.inera.intyg.webcert.web.service.log.factory.LogRequestFactory;
 import se.inera.intyg.webcert.web.service.utkast.dto.CopyUtkastBuilderResponse;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateRenewalCopyRequest;
 import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(MockitoJUnitRunner.Silent.class)
 public class CreateRenewalCopyUtkastBuilderImplTest extends AbstractBuilderTest {
 
     private static final String INTYG_TYPE = "fk7263";
@@ -67,6 +69,12 @@ public class CreateRenewalCopyUtkastBuilderImplTest extends AbstractBuilderTest 
     private static final String INTYG_TYPE_VERSION = "2.2";
 
     private ModuleApi mockModuleApi;
+
+    @Mock
+    private LogService logService;
+
+    @Mock
+    private LogRequestFactory logRequestFactory;
 
     @InjectMocks
     private CreateRenewalCopyUtkastBuilder renewalBuilder = new CreateRenewalCopyUtkastBuilder();
@@ -95,7 +103,7 @@ public class CreateRenewalCopyUtkastBuilderImplTest extends AbstractBuilderTest 
         when(mockModuleApi.validateDraft(anyString())).thenReturn(vdr);
 
         CopyUtkastBuilderResponse builderResponse = renewalBuilder.populateCopyUtkastFromSignedIntyg(renewalRequest, patientDetails, false,
-                false, false);
+                false);
 
         assertNotNull(builderResponse.getUtkastCopy());
         assertNotNull(builderResponse.getUtkastCopy().getModel());
@@ -114,20 +122,6 @@ public class CreateRenewalCopyUtkastBuilderImplTest extends AbstractBuilderTest 
                 requestCaptor.getValue().getPatient().getFullstandigtNamn());
     }
 
-    @Test(expected = WebCertServiceException.class)
-    public void testPopulateRenewalUtkastFromSignedIntygEnforceVardenhet() throws Exception {
-
-        IntygContentHolder ich = createIntygContentHolder();
-        when(mockIntygService.fetchIntygData(INTYG_ID, INTYG_TYPE, true)).thenReturn(ich);
-
-        CreateRenewalCopyRequest renewalRequest = buildRenewalRequest();
-        Person patientDetails = new Person(PATIENT_SSN, false, false, PATIENT_FNAME, PATIENT_MNAME, PATIENT_LNAME, "Postadr", "12345",
-                "postort");
-
-        renewalBuilder.populateCopyUtkastFromSignedIntyg(renewalRequest, patientDetails, false,
-                true, true);
-    }
-
     @Test
     public void testPopulateRenewalUtkastFromOriginal() throws Exception {
 
@@ -143,8 +137,9 @@ public class CreateRenewalCopyUtkastBuilderImplTest extends AbstractBuilderTest 
         ValidateDraftResponse vdr = new ValidateDraftResponse(ValidationStatus.VALID, new ArrayList<>());
         when(mockModuleApi.validateDraft(anyString())).thenReturn(vdr);
 
-        CopyUtkastBuilderResponse builderResponse = renewalBuilder.populateCopyUtkastFromOrignalUtkast(renewalRequest, patientDetails, false,
-                false, false);
+        CopyUtkastBuilderResponse builderResponse = renewalBuilder.populateCopyUtkastFromOrignalUtkast(renewalRequest, patientDetails,
+                false,
+                false);
 
         assertNotNull(builderResponse.getUtkastCopy());
         assertNotNull(builderResponse.getUtkastCopy().getModel());
@@ -153,20 +148,6 @@ public class CreateRenewalCopyUtkastBuilderImplTest extends AbstractBuilderTest 
         assertEquals(PATIENT_FNAME, builderResponse.getUtkastCopy().getPatientFornamn());
         assertNotNull(builderResponse.getUtkastCopy().getPatientMellannamn());
         assertEquals(PATIENT_LNAME, builderResponse.getUtkastCopy().getPatientEfternamn());
-    }
-
-    @Test(expected = WebCertServiceException.class)
-    public void testPopulateRenewalUtkastFromOriginalEnforceVardenhet() throws Exception {
-
-        Utkast orgUtkast = createOriginalUtkast();
-        orgUtkast.setEnhetsId("OTHER_ID");
-        when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(orgUtkast);
-
-        CreateRenewalCopyRequest renewalRequest = buildRenewalRequest();
-        Person patientDetails = new Person(PATIENT_SSN, false, false, PATIENT_FNAME, PATIENT_MNAME, PATIENT_LNAME, "Postadr", "12345",
-                "postort");
-
-        renewalBuilder.populateCopyUtkastFromOrignalUtkast(renewalRequest, patientDetails, false, true, true);
     }
 
     @Test
@@ -184,7 +165,7 @@ public class CreateRenewalCopyUtkastBuilderImplTest extends AbstractBuilderTest 
         ValidateDraftResponse vdr = new ValidateDraftResponse(ValidationStatus.VALID, new ArrayList<>());
         when(mockModuleApi.validateDraft(anyString())).thenReturn(vdr);
 
-        CopyUtkastBuilderResponse builderResponse = renewalBuilder.populateCopyUtkastFromOrignalUtkast(renewalRequest, null, false, false, false);
+        CopyUtkastBuilderResponse builderResponse = renewalBuilder.populateCopyUtkastFromOrignalUtkast(renewalRequest, null, false, false);
 
         assertNotNull(builderResponse.getUtkastCopy());
         assertNotNull(builderResponse.getUtkastCopy().getModel());
@@ -208,7 +189,7 @@ public class CreateRenewalCopyUtkastBuilderImplTest extends AbstractBuilderTest 
         ValidateDraftResponse vdr = new ValidateDraftResponse(ValidationStatus.VALID, new ArrayList<>());
         when(mockModuleApi.validateDraft(anyString())).thenReturn(vdr);
 
-        CopyUtkastBuilderResponse builderResponse = renewalBuilder.populateCopyUtkastFromSignedIntyg(renewalRequest, null, false, false, false);
+        CopyUtkastBuilderResponse builderResponse = renewalBuilder.populateCopyUtkastFromSignedIntyg(renewalRequest, null, false, false);
 
         assertNotNull(builderResponse.getUtkastCopy());
         assertNotNull(builderResponse.getUtkastCopy().getModel());

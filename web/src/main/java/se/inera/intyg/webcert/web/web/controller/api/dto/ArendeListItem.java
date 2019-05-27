@@ -18,9 +18,12 @@
  */
 package se.inera.intyg.webcert.web.web.controller.api.dto;
 
-import se.inera.intyg.webcert.persistence.model.Status;
-
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
+import se.inera.intyg.webcert.persistence.model.Status;
+import se.inera.intyg.webcert.web.web.util.resourcelinks.dto.ActionLink;
 
 public class ArendeListItem {
 
@@ -39,6 +42,8 @@ public class ArendeListItem {
     private String vardgivarnamn;
     private boolean sekretessmarkering;
     private boolean avliden;
+
+    private List<ActionLink> links = new ArrayList<>();
 
     public String getMeddelandeId() {
         return meddelandeId;
@@ -158,5 +163,13 @@ public class ArendeListItem {
 
     public void setAvliden(boolean avliden) {
         this.avliden = avliden;
+    }
+
+    public List<ActionLink> getLinks() {
+        return links;
+    }
+
+    public void addLink(ActionLink link) {
+        this.links.add(link);
     }
 }

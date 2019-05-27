@@ -87,6 +87,8 @@ public class IntygDraftsConverter {
         entry.setVidarebefordrad(utkast.getVidarebefordrad());
         entry.setStatus(resolveStatus(utkast));
         entry.setVersion(utkast.getVersion());
+        entry.setVardenhetId(utkast.getEnhetsId());
+        entry.setVardgivarId(utkast.getVardgivarId());
 
         return entry;
     }
@@ -135,8 +137,8 @@ public class IntygDraftsConverter {
     public List<ListIntygEntry> convertIntygToListIntygEntries(List<Intyg> intygList, List<ListIntygEntry> webcertIntyg) {
         return intygList.stream()
                 .map(intyg -> convertIntygToListIntygEntry(intyg,
-                        webcertIntyg.stream().filter(it ->
-                                it.getIntygId().equals(intyg.getIntygsId().getExtension())).findFirst().orElse(null)))
+                        webcertIntyg.stream().filter(it -> it.getIntygId().equals(intyg.getIntygsId().getExtension())).findFirst()
+                                .orElse(null)))
                 .sorted(INTYG_ENTRY_DATE_COMPARATOR_DESC)
                 .collect(Collectors.toList());
     }
@@ -158,6 +160,8 @@ public class IntygDraftsConverter {
         entry.setUpdatedSignedBy(source.getSkapadAv().getFullstandigtNamn());
         entry.setLastUpdatedSigned(source.getSigneringstidpunkt());
         entry.setPatientId(createPnr(source.getPatient().getPersonId().getExtension()));
+        entry.setVardenhetId(source.getSkapadAv().getEnhet().getEnhetsId().getExtension());
+        entry.setVardgivarId(source.getSkapadAv().getEnhet().getVardgivare().getVardgivareId().getExtension());
         return entry;
     }
 

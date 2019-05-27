@@ -18,12 +18,25 @@
  */
 package se.inera.intyg.webcert.web.service.intyg;
 
+import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.when;
+
+import java.time.LocalDateTime;
+
 import org.apache.cxf.helpers.FileUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.core.io.ClassPathResource;
+
 import se.inera.intyg.common.fk7263.model.internal.Fk7263Utlatande;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
@@ -40,6 +53,7 @@ import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
+import se.inera.intyg.webcert.web.service.access.AccessResult;
 import se.inera.intyg.webcert.web.service.intyg.converter.IntygModuleFacadeException;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygServiceResult;
 import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
@@ -47,18 +61,7 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
 
-import java.time.LocalDateTime;
-
-import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
-import static org.mockito.Mockito.when;
-
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(MockitoJUnitRunner.Silent.class)
 public class IntygServiceRevokeTest extends AbstractIntygServiceTest {
 
     private static final String REVOKE_MSG = "This is revoked";
@@ -98,7 +101,8 @@ public class IntygServiceRevokeTest extends AbstractIntygServiceTest {
         when(moduleFacade.getCertificate(any(String.class), any(String.class), anyString())).thenReturn(certificateResponse);
         when(intygRelationHelper.getRelationsForIntyg(anyString())).thenReturn(new Relations());
 
-        when(patientDetailsResolver.resolvePatient(any(Personnummer.class), anyString(), anyString())).thenReturn(buildPatient(false, false));
+        when(patientDetailsResolver.resolvePatient(any(Personnummer.class), anyString(), anyString()))
+                .thenReturn(buildPatient(false, false));
         when(moduleRegistry.getModuleApi(anyString(), anyString())).thenReturn(moduleApi);
         when(moduleApi.getUtlatandeFromJson(anyString())).thenReturn(new Fk7263Utlatande());
         when(moduleApi.updateBeforeViewing(anyString(), any(Patient.class))).thenReturn("MODEL");
@@ -114,6 +118,8 @@ public class IntygServiceRevokeTest extends AbstractIntygServiceTest {
 
         when(logRequestFactory.createLogRequestFromUtlatande(any(Utlatande.class))).thenReturn(new LogRequest());
         when(intygRepository.findOne(INTYG_ID)).thenReturn(signedUtkast);
+
+        doReturn(AccessResult.noProblem()).when(certificateAccessService).allowToInvalidate(any(), any(), any());
 
         // do the call
         IntygServiceResult res = intygService.revokeIntyg(INTYG_ID, INTYG_TYP_FK, REVOKE_MSG, REVOKE_REASON);
@@ -152,7 +158,8 @@ public class IntygServiceRevokeTest extends AbstractIntygServiceTest {
         return person;
     }
 
-    private Utkast buildUtkast(String intygId, String type, String intygTypeVersion, UtkastStatus status, String model, VardpersonReferens vardperson) {
+    private Utkast buildUtkast(String intygId, String type, String intygTypeVersion, UtkastStatus status, String model,
+            VardpersonReferens vardperson) {
 
         Utkast intyg = new Utkast();
         intyg.setIntygsId(intygId);

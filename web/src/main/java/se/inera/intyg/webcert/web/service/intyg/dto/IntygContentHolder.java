@@ -18,17 +18,21 @@
  */
 package se.inera.intyg.webcert.web.service.intyg.dto;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.annotation.Nullable;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonRawValue;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.google.auto.value.AutoValue;
+
 import se.inera.intyg.common.support.model.Status;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
-
-import javax.annotation.Nullable;
-import java.time.LocalDateTime;
-import java.util.List;
+import se.inera.intyg.webcert.web.web.util.resourcelinks.dto.ActionLink;
 
 @AutoValue
 @JsonDeserialize(builder = AutoValue_IntygContentHolder.Builder.class)
@@ -59,6 +63,16 @@ public abstract class IntygContentHolder {
     public abstract boolean isPatientNameChangedInPU();
 
     public abstract boolean isPatientAddressChangedInPU();
+
+    private List<ActionLink> links = new ArrayList<>();
+
+    public List<ActionLink> getLinks() {
+        return links;
+    }
+
+    public void addLink(ActionLink link) {
+        links.add(link);
+    }
 
     public static Builder builder() {
         return new AutoValue_IntygContentHolder.Builder()

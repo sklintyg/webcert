@@ -18,13 +18,24 @@
  */
 package se.inera.intyg.webcert.web.service.intyg;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
 import org.apache.cxf.helpers.FileUtils;
 import org.junit.Before;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.springframework.core.io.ClassPathResource;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import se.inera.intyg.common.fk7263.model.internal.Fk7263Utlatande;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.model.CertificateState;
@@ -39,6 +50,7 @@ import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.auth.bootstrap.AuthoritiesConfigurationTestSetup;
+import se.inera.intyg.webcert.web.service.access.CertificateAccessService;
 import se.inera.intyg.webcert.web.service.arende.ArendeService;
 import se.inera.intyg.webcert.web.service.certificatesender.CertificateSenderService;
 import se.inera.intyg.webcert.web.service.intyg.converter.IntygModuleFacade;
@@ -53,15 +65,7 @@ import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 import se.inera.intyg.webcert.web.service.relation.CertificateRelationService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
-
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
+import se.inera.intyg.webcert.web.web.util.access.AccessResultExceptionHelper;
 
 public abstract class AbstractIntygServiceTest extends AuthoritiesConfigurationTestSetup {
 
@@ -117,6 +121,12 @@ public abstract class AbstractIntygServiceTest extends AuthoritiesConfigurationT
     @Spy
     protected ObjectMapper objectMapper = new CustomObjectMapper();
 
+    @Mock
+    protected CertificateAccessService certificateAccessService;
+
+    @Mock
+    protected AccessResultExceptionHelper accessResultExceptionHelper;
+
     @InjectMocks
     protected IntygServiceImpl intygService = new IntygServiceImpl();
 
@@ -131,10 +141,12 @@ public abstract class AbstractIntygServiceTest extends AuthoritiesConfigurationT
         CertificateMetaData metaData = buildCertificateMetaData();
         certificateResponse = new CertificateResponse(json, utlatande, metaData, false);
         when(moduleFacade.getCertificate(any(String.class), any(String.class), anyString())).thenReturn(certificateResponse);
-        when(certificateRelationService.getNewestRelationOfType(anyString(), any(RelationKod.class), any(List.class))).thenReturn(Optional.empty());
+        when(certificateRelationService.getNewestRelationOfType(anyString(), any(RelationKod.class), any(List.class)))
+                .thenReturn(Optional.empty());
         when(intygRelationHelper.getRelationsForIntyg(anyString())).thenReturn(new Relations());
 
-        when(patientDetailsResolver.resolvePatient(any(Personnummer.class), anyString(), anyString())).thenReturn(buildPatient(false, false));
+        when(patientDetailsResolver.resolvePatient(any(Personnummer.class), anyString(), anyString()))
+                .thenReturn(buildPatient(false, false));
         when(moduleRegistry.getModuleApi(anyString(), anyString())).thenReturn(moduleApi);
         when(moduleApi.getUtlatandeFromJson(anyString())).thenReturn(new Fk7263Utlatande());
         when(moduleApi.updateBeforeViewing(anyString(), any(Patient.class))).thenReturn("MODEL");

@@ -18,23 +18,36 @@
  */
 package se.inera.intyg.webcert.web.service.utkast;
 
-import com.google.common.base.Strings;
+import java.io.IOException;
+import java.text.MessageFormat;
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Optional;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.google.common.base.Strings;
+
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.Patient;
+import se.inera.intyg.common.support.model.common.internal.Utlatande;
+import se.inera.intyg.common.support.model.common.internal.Vardenhet;
+import se.inera.intyg.common.support.model.common.internal.Vardgivare;
+import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
+import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
 import se.inera.intyg.infra.integration.pu.model.Person;
 import se.inera.intyg.infra.integration.pu.model.PersonSvar;
 import se.inera.intyg.infra.integration.pu.services.PUService;
 import se.inera.intyg.infra.security.authorities.validation.AuthoritiesValidator;
-import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.WebcertCertificateRelation;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
@@ -43,7 +56,12 @@ import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistry;
 import se.inera.intyg.webcert.web.integration.registry.dto.IntegreradEnhetEntry;
+import se.inera.intyg.webcert.web.service.access.AccessResult;
+import se.inera.intyg.webcert.web.service.access.CertificateAccessService;
+import se.inera.intyg.webcert.web.service.access.DraftAccessService;
+import se.inera.intyg.webcert.web.service.access.LockedDraftAccessService;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
+import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
 import se.inera.intyg.webcert.web.service.log.LogService;
 import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
 import se.inera.intyg.webcert.web.service.log.factory.LogRequestFactory;
@@ -63,14 +81,7 @@ import se.inera.intyg.webcert.web.service.utkast.dto.CreateReplacementCopyReques
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateReplacementCopyResponse;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateUtkastFromTemplateRequest;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateUtkastFromTemplateResponse;
-import se.inera.intyg.webcert.web.service.utkast.dto.PreviousIntyg;
-
-import java.text.MessageFormat;
-import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Map;
-import java.util.Optional;
+import se.inera.intyg.webcert.web.web.util.access.AccessResultExceptionHelper;
 
 @Service
 public class CopyUtkastServiceImpl implements CopyUtkastService {
@@ -133,6 +144,21 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
     @Autowired
     private ReferensService referensService;
 
+    @Autowired
+    private IntygModuleRegistry moduleRegistry;
+
+    @Autowired
+    private CertificateAccessService certificateAccessService;
+
+    @Autowired
+    private LockedDraftAccessService lockedDraftAccessService;
+
+    @Autowired
+    private DraftAccessService draftAccessService;
+
+    @Autowired
+    private AccessResultExceptionHelper accessResultExceptionHelper;
+
     private AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
 
     /*
@@ -151,6 +177,14 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
         WebCertUser user = userService.getUser();
 
         try {
+            boolean coherentJournaling = isCoherentJournaling(user);
+
+            final Utlatande utlatande = getUtlatande(copyRequest.getOriginalIntygId(),
+                    copyRequest.getOriginalIntygTyp(),
+                    coherentJournaling);
+
+            validateAccessToRenewIntyg(utlatande, true);
+
             if (intygService.isRevoked(copyRequest.getOriginalIntygId(), copyRequest.getTyp(), false)) {
                 LOG.debug("Cannot create completion copy of certificate with id '{}', the certificate is revoked", originalIntygId);
                 throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, "Original certificate is revoked");
@@ -189,9 +223,15 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
         LOG.debug("Creating renewal for intyg '{}'", originalIntygId);
 
         WebCertUser user = userService.getUser();
-        boolean coherentJournaling = user != null && user.getParameters() != null && user.getParameters().isSjf();
+        boolean coherentJournaling = isCoherentJournaling(user);
 
         try {
+            final Utlatande utlatande = getUtlatande(copyRequest.getOriginalIntygId(),
+                    copyRequest.getOriginalIntygTyp(),
+                    coherentJournaling);
+
+            validateAccessToRenewIntyg(utlatande, false);
+
             if (intygService.isRevoked(copyRequest.getOriginalIntygId(), copyRequest.getOriginalIntygTyp(), coherentJournaling)) {
                 LOG.debug("Cannot renew certificate with id '{}', the certificate is revoked", originalIntygId);
                 throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, "Original certificate is revoked");
@@ -229,6 +269,12 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
         LOG.debug("Creating replacement copy of intyg '{}'", originalIntygId);
 
         try {
+            final Utlatande utlatande = getUtlatande(replacementRequest.getOriginalIntygId(),
+                    replacementRequest.getOriginalIntygTyp(),
+                    replacementRequest.isCoherentJournaling());
+
+            validateAccessToReplaceIntyg(utlatande);
+
             if (intygService.isRevoked(replacementRequest.getOriginalIntygId(), replacementRequest.getTyp(),
                     replacementRequest.isCoherentJournaling())) {
                 LOG.debug("Cannot create replacement certificate for id '{}', the certificate is revoked", originalIntygId);
@@ -258,6 +304,30 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
         }
     }
 
+    private Utlatande getUtlatande(String intygId, String intygsTyp, boolean coherentJournaling)
+            throws ModuleException, ModuleNotFoundException {
+        Utlatande utlatande;
+        if (utkastRepository.exists(intygId)) {
+            final Utkast utkast = utkastRepository.findOne(intygId);
+
+            if (utkast == null) {
+                throw new ModuleException("Could not convert original certificate to Utlatande. Original certificate not found");
+            }
+
+            ModuleApi orgModuleApi = moduleRegistry.getModuleApi(intygsTyp, utkast.getIntygTypeVersion());
+
+            try {
+                utlatande = orgModuleApi.getUtlatandeFromJson(utkast.getModel());
+            } catch (IOException e) {
+                throw new ModuleException("Could not convert original certificate to Utlatande", e);
+            }
+        } else {
+            IntygContentHolder signedIntygHolder = intygService.fetchIntygData(intygId, intygsTyp, coherentJournaling);
+            utlatande = signedIntygHolder.getUtlatande();
+        }
+        return utlatande;
+    }
+
     @Override
     public CreateUtkastFromTemplateResponse createUtkastFromTemplate(CreateUtkastFromTemplateRequest copyRequest) {
         String originalIntygId = copyRequest.getOriginalIntygId();
@@ -265,7 +335,7 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
         LOG.debug("Creating utkast from template certificate '{}'", originalIntygId);
 
         WebCertUser user = userService.getUser();
-        boolean coherentJournaling = user != null && user.getParameters() != null && user.getParameters().isSjf();
+        boolean coherentJournaling = isCoherentJournaling(user);
 
         try {
             if (intygService.isRevoked(copyRequest.getOriginalIntygId(), copyRequest.getOriginalIntygTyp(), coherentJournaling)) {
@@ -273,12 +343,15 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
                 throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, "Original certificate is revoked");
             }
 
-            verifyUniktIntyg(user, copyRequest);
+            // Update patient details here instead of later in buildUtkast... Need to validate access logic.
+            Person patientDetails = updatePatientDetails(copyRequest);
+
+            validateAccessToCreateUtkast(copyRequest.getTyp(), patientDetails.getPersonnummer());
 
             verifyNotReplacedWithSigned(copyRequest.getOriginalIntygId(), "create utkast from template");
 
-            CopyUtkastBuilderResponse builderResponse = buildUtkastFromTemplateBuilderResponse(copyRequest, originalIntygId, true,
-                    coherentJournaling);
+            CopyUtkastBuilderResponse builderResponse = buildUtkastFromTemplateBuilderResponse(copyRequest, patientDetails,
+                    originalIntygId, true, coherentJournaling);
 
             Utkast savedUtkast = saveAndNotify(builderResponse, user);
 
@@ -302,7 +375,7 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
         LOG.debug("Creating utkast from utkast certificate '{}'", originalIntygId);
 
         WebCertUser user = userService.getUser();
-        boolean coherentJournaling = user != null && user.getParameters() != null && user.getParameters().isSjf();
+        boolean coherentJournaling = isCoherentJournaling(user);
 
         try {
             if (intygService.isRevoked(copyRequest.getOriginalIntygId(), copyRequest.getOriginalIntygTyp(), coherentJournaling)) {
@@ -311,6 +384,8 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
             }
 
             Utkast utkast = utkastService.getDraft(copyRequest.getOriginalIntygId(), copyRequest.getOriginalIntygTyp());
+
+            validateAccessToCopyLockedUtkast(utkast);
 
             // Validate draft locked
             if (!UtkastStatus.DRAFT_LOCKED.equals(utkast.getStatus())) {
@@ -325,8 +400,6 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
             }
 
             verifyNoDraftCopy(copyRequest.getOriginalIntygId(), "create utkast copy");
-
-            verifyUniktIntyg(user, copyRequest);
 
             CopyUtkastBuilderResponse builderResponse = buildUtkastCopyBuilderResponse(copyRequest, originalIntygId, coherentJournaling);
 
@@ -353,43 +426,6 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
 
             LOG.debug(message);
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, message);
-        }
-    }
-
-    private void verifyUniktIntyg(WebCertUser user, CreateUtkastFromTemplateRequest copyRequest) {
-        String intygsTyp = copyRequest.getTyp();
-
-        if (authoritiesValidator.given(user, intygsTyp)
-                .features(AuthoritiesConstants.FEATURE_UNIKT_INTYG, AuthoritiesConstants.FEATURE_UNIKT_INTYG_INOM_VG,
-                        AuthoritiesConstants.FEATURE_UNIKT_UTKAST_INOM_VG).isVerified()) {
-
-            Personnummer personnummer = copyRequest.containsNyttPatientPersonnummer() ? copyRequest.getNyttPatientPersonnummer()
-                    : copyRequest.getPatient().getPersonId();
-
-            Map<String, Map<String, PreviousIntyg>> intygstypToStringToPreviousIntyg = utkastService.checkIfPersonHasExistingIntyg(
-                    personnummer, user);
-
-            PreviousIntyg utkastExists = intygstypToStringToPreviousIntyg.get("utkast").get(intygsTyp);
-            PreviousIntyg intygExists = intygstypToStringToPreviousIntyg.get("intyg").get(intygsTyp);
-
-            if (utkastExists != null && utkastExists.isSameVardgivare()) {
-                if (authoritiesValidator.given(user, intygsTyp).features(AuthoritiesConstants.FEATURE_UNIKT_UTKAST_INOM_VG)
-                        .isVerified()) {
-                    throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE,
-                            "Drafts of this type must be unique within this caregiver.");
-                }
-            }
-
-            if (intygExists != null) {
-                if (authoritiesValidator.given(user, intygsTyp).features(AuthoritiesConstants.FEATURE_UNIKT_INTYG).isVerified()) {
-                    throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE,
-                            "Certificates of this type must be globally unique.");
-                } else if (intygExists.isSameVardgivare() && authoritiesValidator.given(user, intygsTyp)
-                        .features(AuthoritiesConstants.FEATURE_UNIKT_INTYG_INOM_VG).isVerified()) {
-                    throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE,
-                            "Certificates of this type must be unique within this caregiver.");
-                }
-            }
         }
     }
 
@@ -468,10 +504,10 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
         CopyUtkastBuilderResponse builderResponse;
         if (utkastRepository.exists(originalIntygId)) {
             builderResponse = copyCompletionUtkastBuilder.populateCopyUtkastFromOrignalUtkast(copyRequest, patientDetails, addRelation,
-                    false, false);
+                    false);
         } else {
             builderResponse = copyCompletionUtkastBuilder.populateCopyUtkastFromSignedIntyg(copyRequest, patientDetails, addRelation,
-                    false, false);
+                    false);
         }
 
         return builderResponse;
@@ -485,41 +521,40 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
         CopyUtkastBuilderResponse builderResponse;
         if (utkastRepository.exists(originalIntygId)) {
             builderResponse = createRenewalUtkastBuilder.populateCopyUtkastFromOrignalUtkast(copyRequest, patientDetails, true,
-                    coherentJournaling, false);
+                    coherentJournaling);
         } else {
             builderResponse = createRenewalUtkastBuilder.populateCopyUtkastFromSignedIntyg(copyRequest, patientDetails, false,
-                    coherentJournaling, false);
+                    coherentJournaling);
         }
 
         return builderResponse;
     }
 
     private CopyUtkastBuilderResponse buildUtkastFromTemplateBuilderResponse(CreateUtkastFromTemplateRequest copyRequest,
-            String originalIntygId, boolean addRelation, boolean coherentJournaling) throws ModuleNotFoundException, ModuleException {
-
-        Person patientDetails = updatePatientDetails(copyRequest);
+            Person patientDetails, String originalIntygId, boolean addRelation, boolean coherentJournaling)
+            throws ModuleNotFoundException, ModuleException {
 
         CopyUtkastBuilderResponse builderResponse;
         if (utkastRepository.exists(originalIntygId)) {
             builderResponse = createUtkastFromTemplateBuilder.populateCopyUtkastFromOrignalUtkast(copyRequest, patientDetails, addRelation,
-                    coherentJournaling, false);
+                    coherentJournaling);
         } else {
             builderResponse = createUtkastFromTemplateBuilder.populateCopyUtkastFromSignedIntyg(copyRequest, patientDetails, addRelation,
-                    coherentJournaling, false);
+                    coherentJournaling);
         }
 
         return builderResponse;
     }
 
     private CopyUtkastBuilderResponse buildUtkastCopyBuilderResponse(CreateUtkastFromTemplateRequest copyRequest,
-             String originalIntygId, boolean coherentJournaling) throws ModuleNotFoundException, ModuleException {
+            String originalIntygId, boolean coherentJournaling) throws ModuleNotFoundException, ModuleException {
 
         Person patientDetails = updatePatientDetails(copyRequest);
 
         CopyUtkastBuilderResponse builderResponse;
         if (utkastRepository.exists(originalIntygId)) {
             builderResponse = createUtkastCopyBuilder.populateCopyUtkastFromOrignalUtkast(copyRequest, patientDetails, true,
-                    coherentJournaling, false);
+                    coherentJournaling);
         } else {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND, "Certificates not found.");
         }
@@ -535,10 +570,10 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
         CopyUtkastBuilderResponse builderResponse;
         if (utkastRepository.exists(originalIntygId)) {
             builderResponse = createReplacementUtkastBuilder.populateCopyUtkastFromOrignalUtkast(replacementCopyRequest, patientDetails,
-                    true, replacementCopyRequest.isCoherentJournaling(), true);
+                    true, replacementCopyRequest.isCoherentJournaling());
         } else {
             builderResponse = createReplacementUtkastBuilder.populateCopyUtkastFromSignedIntyg(replacementCopyRequest, patientDetails, true,
-                    replacementCopyRequest.isCoherentJournaling(), true);
+                    replacementCopyRequest.isCoherentJournaling());
         }
 
         return builderResponse;
@@ -626,5 +661,64 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
                 utkastCopy.getVardgivarNamn());
 
         integreradeEnheterRegistry.addIfSameVardgivareButDifferentUnits(orginalEnhetsId, newEntry, utkastCopy.getIntygsTyp());
+    }
+
+    private void validateAccessToRenewIntyg(Utlatande utlatande, boolean complement) {
+        final AccessResult accessResult = certificateAccessService.allowToRenew(
+                utlatande.getTyp(),
+                getVardenhet(utlatande),
+                getPersonnummer(utlatande),
+                true);
+
+        accessResultExceptionHelper.throwExceptionIfDenied(accessResult);
+    }
+
+    private void validateAccessToReplaceIntyg(Utlatande utlatande) {
+        final AccessResult accessResult = certificateAccessService.allowToReplace(
+                utlatande.getTyp(),
+                getVardenhet(utlatande),
+                getPersonnummer(utlatande));
+
+        accessResultExceptionHelper.throwExceptionIfDenied(accessResult);
+    }
+
+    private void validateAccessToCopyLockedUtkast(Utkast utkast) {
+        final AccessResult accessResult = lockedDraftAccessService.allowedToCopyLockedUtkast(
+                utkast.getIntygsTyp(),
+                getVardenhet(utkast),
+                utkast.getPatientPersonnummer());
+
+        accessResultExceptionHelper.throwExceptionIfDenied(accessResult);
+    }
+
+    private void validateAccessToCreateUtkast(String intygsTyp, Personnummer personnummer) {
+        final AccessResult accessResult = draftAccessService.allowToCreateDraft(
+                intygsTyp,
+                personnummer);
+
+        accessResultExceptionHelper.throwExceptionIfDenied(accessResult);
+    }
+
+    private Vardenhet getVardenhet(Utlatande utlatande) {
+        return utlatande.getGrundData().getSkapadAv().getVardenhet();
+    }
+
+    private Personnummer getPersonnummer(Utlatande utlatande) {
+        return utlatande.getGrundData().getPatient().getPersonId();
+    }
+
+    private boolean isCoherentJournaling(WebCertUser user) {
+        return user != null && user.getParameters() != null && user.getParameters().isSjf();
+    }
+
+    private Vardenhet getVardenhet(Utkast utkast) {
+        final Vardgivare vardgivare = new Vardgivare();
+        vardgivare.setVardgivarid(utkast.getVardgivarId());
+
+        final Vardenhet vardenhet = new Vardenhet();
+        vardenhet.setEnhetsid(utkast.getEnhetsId());
+        vardenhet.setVardgivare(vardgivare);
+
+        return vardenhet;
     }
 }

@@ -61,6 +61,7 @@ import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 import se.inera.intyg.webcert.web.web.controller.api.dto.NotifiedState;
+import se.inera.intyg.webcert.web.web.util.resourcelinks.ResourceLinkHelper;
 
 /**
  * Controller for the API that serves WebCert.
@@ -95,6 +96,9 @@ public class IntygApiController extends AbstractApiController {
 
     @Autowired
     private PatientDetailsResolver patientDetailsResolver;
+
+    @Autowired
+    private ResourceLinkHelper resourceLinkHelper;
 
     /**
      * Compiles a list of Intyg from two data sources. Signed Intyg are
@@ -163,6 +167,8 @@ public class IntygApiController extends AbstractApiController {
             allIntyg = allIntyg.stream().filter(intyg -> allowedTypes.contains(intyg.getIntygType())).collect(Collectors.toList());
         }
 
+        resourceLinkHelper.decorateIntygWithValidActionLinks(allIntyg, personNummer);
+
         Response.ResponseBuilder responseBuilder = Response.ok(allIntyg);
         if (intygItemListResponse.getRight()) {
             responseBuilder = responseBuilder.header(OFFLINE_MODE, Boolean.TRUE.toString());
@@ -187,10 +193,6 @@ public class IntygApiController extends AbstractApiController {
     @PrometheusTimeMethod
     public Response setNotifiedOnIntyg(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId,
             @PathParam("version") long version, NotifiedState notifiedState) {
-        authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
-                .features(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
-                .privilege(AuthoritiesConstants.PRIVILEGE_VIDAREBEFORDRA_UTKAST)
-                .orThrow();
 
         Utkast updatedIntyg;
         try {

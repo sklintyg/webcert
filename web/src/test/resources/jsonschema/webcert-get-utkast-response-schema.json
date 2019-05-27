@@ -87,6 +87,9 @@
     },
     "validPatientAddressAquiredFromPU": {
       "type": "boolean"
+    },
+    "links": {
+      "type": "array"
     }
   },
   "additionalProperties": false,

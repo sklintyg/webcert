@@ -18,12 +18,17 @@
  */
 package se.inera.intyg.webcert.web.service.utkast;
 
-import com.google.common.base.Joiner;
-import com.google.common.base.Strings;
+import java.io.IOException;
+import java.util.Arrays;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.google.common.base.Joiner;
+import com.google.common.base.Strings;
+
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.GrundData;
 import se.inera.intyg.common.support.model.common.internal.Patient;
@@ -39,8 +44,6 @@ import se.inera.intyg.common.support.modules.support.api.dto.ValidateDraftRespon
 import se.inera.intyg.common.support.modules.support.api.dto.ValidationStatus;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
 import se.inera.intyg.infra.integration.pu.model.Person;
-import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
-import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
@@ -55,9 +58,6 @@ import se.inera.intyg.webcert.web.service.util.UpdateUserUtil;
 import se.inera.intyg.webcert.web.service.utkast.dto.AbstractCreateCopyRequest;
 import se.inera.intyg.webcert.web.service.utkast.dto.CopyUtkastBuilderResponse;
 import se.inera.intyg.webcert.web.service.utkast.util.CreateIntygsIdStrategy;
-
-import java.io.IOException;
-import java.util.Arrays;
 
 public abstract class AbstractUtkastBuilder<T extends AbstractCreateCopyRequest> implements CopyUtkastBuilder<T> {
     private static final String SPACE = " ";
@@ -94,7 +94,7 @@ public abstract class AbstractUtkastBuilder<T extends AbstractCreateCopyRequest>
      */
     @Override
     public CopyUtkastBuilderResponse populateCopyUtkastFromSignedIntyg(T copyRequest, Person patientDetails, boolean addRelation,
-            boolean coherentJournaling, boolean enforceEnhet) throws ModuleNotFoundException, ModuleException {
+            boolean coherentJournaling) throws ModuleNotFoundException, ModuleException {
 
         String orignalIntygsId = copyRequest.getOriginalIntygId();
         String originalIntygsTyp = copyRequest.getOriginalIntygTyp();
@@ -112,10 +112,6 @@ public abstract class AbstractUtkastBuilder<T extends AbstractCreateCopyRequest>
         GrundData grundData = signedIntygHolder.getUtlatande().getGrundData();
         se.inera.intyg.common.support.model.common.internal.Vardenhet vardenhet = grundData.getSkapadAv().getVardenhet();
 
-        if (coherentJournaling && enforceEnhet) {
-            verifyEnhetsAuth(vardenhet.getVardgivare().getVardgivarid(), vardenhet.getEnhetsid(), true);
-        }
-
         LOG.debug("Populating copy with details from signed Intyg '{}'", orignalIntygsId);
 
         CopyUtkastBuilderResponse builderResponse = new CopyUtkastBuilderResponse();
@@ -124,7 +120,7 @@ public abstract class AbstractUtkastBuilder<T extends AbstractCreateCopyRequest>
         builderResponse.setOrginalVardgivarId(vardenhet.getVardgivare().getVardgivarid());
         builderResponse.setOrginalVardgivarNamn(vardenhet.getVardgivare().getVardgivarnamn());
 
-        //NOTE: see INTYG-7212 can we really just take textVersion of orgUtlatande like when db->doi?
+        // NOTE: see INTYG-7212 can we really just take textVersion of orgUtlatande like when db->doi?
         ModuleApi moduleApi = moduleRegistry.getModuleApi(intygsTyp, signedIntygHolder.getUtlatande().getTextVersion());
 
         // Set relation to null if not applicable
@@ -136,7 +132,7 @@ public abstract class AbstractUtkastBuilder<T extends AbstractCreateCopyRequest>
 
         UtkastStatus utkastStatus = validateDraft(moduleApi, draftCopyJson);
 
-        //NOTE: See INTYG-7212 can we really just take textVersion of orgUtlatande like when db->doi?
+        // NOTE: See INTYG-7212 can we really just take textVersion of orgUtlatande like when db->doi?
         Utkast utkast = buildUtkastCopy(copyRequest, newDraftCopyId, intygsTyp, signedIntygHolder.getUtlatande().getTextVersion(),
                 addRelation, relation,
                 draftCopyJson, utkastStatus);
@@ -168,7 +164,7 @@ public abstract class AbstractUtkastBuilder<T extends AbstractCreateCopyRequest>
     @Override
     @Transactional(readOnly = true)
     public CopyUtkastBuilderResponse populateCopyUtkastFromOrignalUtkast(T copyRequest, Person patientDetails, boolean addRelation,
-            boolean coherentJournaling, boolean enforceEnhet) throws ModuleNotFoundException, ModuleException {
+            boolean coherentJournaling) throws ModuleNotFoundException, ModuleException {
 
         String orignalIntygsId = copyRequest.getOriginalIntygId();
 
@@ -185,13 +181,8 @@ public abstract class AbstractUtkastBuilder<T extends AbstractCreateCopyRequest>
             throw new ModuleException("Could not convert original certificate to Utlatande", e);
         }
 
-        // Perform enhets auth if coherent journaling is not active.
-        if (!coherentJournaling || enforceEnhet) {
-            verifyEnhetsAuth(orgUtkast.getVardgivarId(), orgUtkast.getEnhetsId(), true);
-        } else {
-            LogRequest logRequest = logRequestFactory.createLogRequestFromUtkast(orgUtkast, coherentJournaling);
-            logService.logReadIntyg(logRequest);
-        }
+        LogRequest logRequest = logRequestFactory.createLogRequestFromUtkast(orgUtkast, coherentJournaling);
+        logService.logReadIntyg(logRequest);
 
         CopyUtkastBuilderResponse builderResponse = new CopyUtkastBuilderResponse();
         builderResponse.setOrginalEnhetsId(orgUtkast.getEnhetsId());
@@ -200,8 +191,8 @@ public abstract class AbstractUtkastBuilder<T extends AbstractCreateCopyRequest>
         builderResponse.setOrginalVardgivarNamn(orgUtkast.getVardgivarNamn());
 
         LOG.debug("Populating copy with details from Utkast '{}'", orignalIntygsId);
-        //NOTE: see INTYG-7212 can we really just take textVersion of orgUtlatande like when db->doi?
-        //The new Utkast's version is assumed to be of the same version as original.
+        // NOTE: see INTYG-7212 can we really just take textVersion of orgUtlatande like when db->doi?
+        // The new Utkast's version is assumed to be of the same version as original.
         ModuleApi moduleApi = moduleRegistry.getModuleApi(copyRequest.getTyp(), orgUtkast.getIntygTypeVersion());
 
         // Set relation to null if not applicable
@@ -212,8 +203,8 @@ public abstract class AbstractUtkastBuilder<T extends AbstractCreateCopyRequest>
                 newDraftCopyId);
 
         UtkastStatus utkastStatus = validateDraft(moduleApi, draftCopyJson);
-        //NOTE: See INTYG-7212 can we really just take textVersion of orgUtlatande like when db->doi?
-        //I.e when copying within the same intygType A -> A this should be OK, but maybe not for DB -> DOI
+        // NOTE: See INTYG-7212 can we really just take textVersion of orgUtlatande like when db->doi?
+        // I.e when copying within the same intygType A -> A this should be OK, but maybe not for DB -> DOI
         Utkast utkast = buildUtkastCopy(copyRequest, newDraftCopyId, copyRequest.getTyp(), orgUtkast.getIntygTypeVersion(), addRelation,
                 relation,
                 draftCopyJson, utkastStatus);
@@ -231,16 +222,8 @@ public abstract class AbstractUtkastBuilder<T extends AbstractCreateCopyRequest>
         return builderResponse;
     }
 
-    protected void verifyEnhetsAuth(String vardgivarId, String enhetId, boolean isReadOnlyOperation) {
-        if (!webCertUserService.isAuthorizedForUnit(vardgivarId, enhetId, isReadOnlyOperation)) {
-            String msg = "User not authorized for enhet " + enhetId;
-            LOG.debug(msg);
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM, msg);
-        }
-    }
-
     protected String getInternalModel(Utlatande template, ModuleApi moduleApi, AbstractCreateCopyRequest copyRequest,
-                                      Person person, Relation relation, String newDraftCopyId) throws ModuleException {
+            Person person, Relation relation, String newDraftCopyId) throws ModuleException {
         CreateDraftCopyHolder draftCopyHolder = createModuleRequestForCopying(copyRequest, person, relation, newDraftCopyId);
         return moduleApi.createNewInternalFromTemplate(draftCopyHolder, template);
     }

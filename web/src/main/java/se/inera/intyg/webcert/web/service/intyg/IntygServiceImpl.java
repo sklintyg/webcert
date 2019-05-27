@@ -18,10 +18,24 @@
  */
 package se.inera.intyg.webcert.web.service.intyg;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.annotations.VisibleForTesting;
-import com.google.common.collect.Lists;
+import static se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum.DATA_NOT_FOUND;
+import static se.inera.intyg.webcert.web.service.intyg.util.IntygVerificationHelper.verifyIsNotRevoked;
+import static se.inera.intyg.webcert.web.service.intyg.util.IntygVerificationHelper.verifyIsSigned;
+
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.chrono.ChronoLocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import javax.annotation.PostConstruct;
+import javax.xml.ws.WebServiceException;
+
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,6 +43,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.annotations.VisibleForTesting;
+import com.google.common.collect.Lists;
+
 import se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificatetypeinfo.v1.GetCertificateTypeInfoResponderInterface;
 import se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificatetypeinfo.v1.GetCertificateTypeInfoResponseType;
 import se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificatetypeinfo.v1.GetCertificateTypeInfoType;
@@ -50,9 +70,7 @@ import se.inera.intyg.common.support.modules.support.api.dto.CertificateResponse
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
 import se.inera.intyg.common.support.modules.support.api.notification.ArendeCount;
 import se.inera.intyg.common.support.peristence.dao.util.DaoUtil;
-import se.inera.intyg.infra.integration.pu.model.PersonSvar;
 import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
-import se.inera.intyg.infra.security.authorities.validation.AuthoritiesValidator;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.schemas.contract.Personnummer;
@@ -65,6 +83,8 @@ import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.converter.IntygDraftsConverter;
 import se.inera.intyg.webcert.web.converter.util.IntygConverterUtil;
+import se.inera.intyg.webcert.web.service.access.AccessResult;
+import se.inera.intyg.webcert.web.service.access.CertificateAccessService;
 import se.inera.intyg.webcert.web.service.arende.ArendeService;
 import se.inera.intyg.webcert.web.service.certificatesender.CertificateSenderException;
 import se.inera.intyg.webcert.web.service.certificatesender.CertificateSenderService;
@@ -92,27 +112,11 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.api.dto.IntygTypeInfo;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
+import se.inera.intyg.webcert.web.web.util.access.AccessResultExceptionHelper;
 import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v3.ListCertificatesForCareResponderInterface;
 import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v3.ListCertificatesForCareResponseType;
 import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v3.ListCertificatesForCareType;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
-
-import javax.annotation.PostConstruct;
-import javax.xml.ws.WebServiceException;
-import java.io.IOException;
-import java.time.LocalDateTime;
-import java.time.chrono.ChronoLocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import static se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum.DATA_NOT_FOUND;
-import static se.inera.intyg.webcert.web.service.intyg.util.IntygVerificationHelper.verifyIsNotRevoked;
-import static se.inera.intyg.webcert.web.service.intyg.util.IntygVerificationHelper.verifyIsSigned;
 
 /**
  * @author andreaskaltenbach
@@ -192,9 +196,13 @@ public class IntygServiceImpl implements IntygService {
     @Autowired
     private ReferensService referensService;
 
-    private ChronoLocalDateTime sekretessmarkeringStartDatum;
+    @Autowired
+    private CertificateAccessService certificateAccessService;
 
-    private AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
+    @Autowired
+    private AccessResultExceptionHelper accessResultExceptionHelper;
+
+    private ChronoLocalDateTime sekretessmarkeringStartDatum;
 
     private static void copyOldAddressToNewPatientData(Patient oldPatientData, Patient newPatientData) {
         if (oldPatientData == null) {
@@ -237,16 +245,10 @@ public class IntygServiceImpl implements IntygService {
      */
     private IntygContentHolder fetchIntygData(String intygsId, String intygsTyp, boolean relations, boolean coherentJournaling) {
         IntygContentHolder intygsData = getIntygData(intygsId, intygsTyp, relations);
+
+        validateAccessToReadIntyg(intygsData.getUtlatande());
+
         LogRequest logRequest = logRequestFactory.createLogRequestFromUtlatande(intygsData.getUtlatande(), coherentJournaling);
-
-        if (!coherentJournaling) {
-            verifyEnhetsAuth(intygsData.getUtlatande(), true);
-        }
-        Personnummer pnr = intygsData.getUtlatande().getGrundData().getPatient().getPersonId();
-        String enhetsId = intygsData.getUtlatande().getGrundData().getSkapadAv().getVardenhet()
-                .getEnhetsid();
-
-        verifySekretessmarkering(intygsTyp, webCertUserService.getUser(), enhetsId, pnr);
 
         // Log read to PDL
         logService.logReadIntyg(logRequest);
@@ -255,29 +257,6 @@ public class IntygServiceImpl implements IntygService {
         monitoringService.logIntygRead(intygsId, intygsTyp);
 
         return intygsData;
-    }
-
-    private void verifySekretessmarkering(String intygsTyp, WebCertUser user, String enhetsId, Personnummer pnr) {
-
-        SekretessStatus sekretessStatus = patientDetailsResolver.getSekretessStatus(pnr);
-
-        if (sekretessStatus == SekretessStatus.UNDEFINED) {
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.PU_PROBLEM,
-                    "PU-service unavailable, cannot check sekretessmarkering.");
-        }
-
-        if (sekretessStatus == SekretessStatus.TRUE) {
-            authoritiesValidator.given(user, intygsTyp)
-                    .privilege(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT)
-                    .orThrow();
-
-            // INTYG-4231: Verifiera enhet / mottagning. Får ej visa utanför vald enhet (och dess underenheter)
-            if (!webCertUserService.userIsLoggedInOnEnhetOrUnderenhet(enhetsId)) {
-                LOG.debug("User not logged in on same unit as intyg unit for sekretessmarkerad patient.");
-                throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM_SEKRETESSMARKERING_ENHET,
-                        "User not logged in on same unit as intyg unit for sekretessmarkerad patient.");
-            }
-        }
     }
 
     @Override
@@ -394,34 +373,18 @@ public class IntygServiceImpl implements IntygService {
                 throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, "Can't print revoked certificate.");
             }
 
-            verifyPuServiceAvailable(intyg);
-
-            boolean coherentJournaling = userIsDjupintegreradWithSjf();
-            if (!coherentJournaling) {
-                verifyEnhetsAuth(intyg.getUtlatande(), true);
-            }
+            validateAccessToPrintIntyg(intyg.getUtlatande(), isEmployer);
 
             IntygPdf intygPdf = modelFacade.convertFromInternalToPdfDocument(intygsTyp, intyg.getContents(), intyg.getStatuses(),
                     utkastStatus, isEmployer);
 
             // Log print as PDF to PDL log
-            logPdfPrinting(intyg, coherentJournaling);
+            logPdfPrinting(intyg, userIsDjupintegreradWithSjf());
 
             return intygPdf;
 
         } catch (IntygModuleFacadeException e) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, e);
-        }
-    }
-
-    private void verifyPuServiceAvailable(IntygContentHolder intyg) {
-        // INTYG-4086: All PDF-printing must pass through here. GE-002 explicitly states that if the PU-service is
-        // unavailable, we must not let anyone print!
-        PersonSvar personFromPUService = patientDetailsResolver
-                .getPersonFromPUService(intyg.getUtlatande().getGrundData().getPatient().getPersonId());
-        if (personFromPUService == null || personFromPUService.getStatus() != PersonSvar.Status.FOUND) {
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.PU_PROBLEM,
-                    "PU-service unreachable, PDF printing is not allowed.");
         }
     }
 
@@ -488,7 +451,7 @@ public class IntygServiceImpl implements IntygService {
                 .map(utkast -> modelFacade.getUtlatandeFromInternalModel(utkast.getIntygsTyp(), utkast.getModel()))
                 .orElseGet(() -> getIntygData(intygsId, typ, false).getUtlatande());
 
-        verifyEnhetsAuth(utlatande, true);
+        validateAccessToSendIntyg(utlatande);
 
         if (optionalUtkast.isPresent()) {
             verifyIsNotRevoked(optionalUtkast.get(), IntygOperation.SEND);
@@ -571,7 +534,8 @@ public class IntygServiceImpl implements IntygService {
         LOG.debug("Attempting to revoke intyg {}", intygsId);
         IntygContentHolder intyg = getIntygData(intygsId, intygsTyp, false);
 
-        verifyEnhetsAuth(intyg.getUtlatande(), true);
+        validateAccessToInvalidateIntyg(intyg.getUtlatande());
+
         verifyIsSigned(intyg, IntygOperation.REVOKE);
 
         if (intyg.isRevoked()) {
@@ -768,16 +732,6 @@ public class IntygServiceImpl implements IntygService {
         }
     }
 
-    protected void verifyEnhetsAuth(Utlatande utlatande, boolean isReadOnlyOperation) {
-        Vardenhet vardenhet = utlatande.getGrundData().getSkapadAv().getVardenhet();
-        if (!webCertUserService.isAuthorizedForUnit(vardenhet.getVardgivare().getVardgivarid(), vardenhet.getEnhetsid(),
-                isReadOnlyOperation)) {
-            String msg = "User not authorized for enhet " + vardenhet.getEnhetsid();
-            LOG.debug(msg);
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM, msg);
-        }
-    }
-
     /**
      * Builds a IntygContentHolder by first trying to get the Intyg from intygstjansten. If
      * not found or the Intygstjanst couldn't be reached, the local Utkast - if available -
@@ -879,17 +833,6 @@ public class IntygServiceImpl implements IntygService {
         } catch (ModuleNotFoundException | ModuleException e) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, e);
         }
-    }
-
-    /**
-     * As the name of the method implies, this method builds a IntygContentHolder instance
-     * from the Utkast stored in Webcert. If not present, it will try to fetch from Intygstjansten
-     * instead.
-     */
-    private IntygContentHolder getIntygDataPreferWebcert(String intygId, String intygTyp) {
-        Utkast utkast = utkastRepository.findOne(intygId);
-        return utkast != null ? buildIntygContentHolderFromUtkast(utkast, false)
-                : getIntygData(intygId, intygTyp, false);
     }
 
     // NOTE! INTYG-4086. This method is used when fetching Intyg/Utkast from WC locally.
@@ -1015,9 +958,49 @@ public class IntygServiceImpl implements IntygService {
         }
     }
 
-    private String getUserReference() {
-        WebCertUser user = webCertUserService.getUser();
-        return user.getParameters() != null ? user.getParameters().getReference() : null;
+    private void validateAccessToPrintIntyg(Utlatande utlatande, boolean isEmployer) {
+        final AccessResult accessResult = certificateAccessService.allowToPrint(
+                utlatande.getTyp(),
+                getVardEnhet(utlatande),
+                getPersonnummer(utlatande),
+                isEmployer);
+
+        accessResultExceptionHelper.throwExceptionIfDenied(accessResult);
+    }
+
+    private void validateAccessToInvalidateIntyg(Utlatande utlatande) {
+        final AccessResult accessResult = certificateAccessService.allowToInvalidate(
+                utlatande.getTyp(),
+                getVardEnhet(utlatande),
+                getPersonnummer(utlatande));
+
+        accessResultExceptionHelper.throwExceptionIfDenied(accessResult);
+    }
+
+    private void validateAccessToReadIntyg(Utlatande utlatande) {
+        final AccessResult accessResult = certificateAccessService.allowToRead(
+                utlatande.getTyp(),
+                getVardEnhet(utlatande),
+                getPersonnummer(utlatande));
+
+        accessResultExceptionHelper.throwExceptionIfDenied(accessResult);
+    }
+
+    private void validateAccessToSendIntyg(Utlatande utlatande) {
+        final AccessResult accessResult = certificateAccessService.allowToSend(
+                utlatande.getTyp(),
+                getVardEnhet(utlatande),
+                getPersonnummer(utlatande));
+
+        accessResultExceptionHelper.throwExceptionIfDenied(accessResult);
+    }
+
+    private Vardenhet getVardEnhet(Utlatande utlatande) {
+        return utlatande.getGrundData().getSkapadAv().getVardenhet();
+    }
+
+    private Personnummer getPersonnummer(Utlatande utlatande) {
+        return utlatande.getGrundData().getPatient().getPersonId();
     }
 
     public enum IntygOperation {

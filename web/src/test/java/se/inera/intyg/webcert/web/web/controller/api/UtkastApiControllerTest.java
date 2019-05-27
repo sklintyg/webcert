@@ -18,7 +18,30 @@
  */
 package se.inera.intyg.webcert.web.web.controller.api;
 
-import com.google.common.base.Strings;
+import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
+import static javax.ws.rs.core.Response.Status.OK;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import javax.ws.rs.core.Response;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -26,6 +49,9 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+
+import com.google.common.base.Strings;
+
 import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.common.luse.support.LuseEntryPoint;
 import se.inera.intyg.common.services.texts.IntygTextsService;
@@ -37,7 +63,6 @@ import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.infra.integration.hsa.model.SelectableVardenhet;
 import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
 import se.inera.intyg.infra.integration.hsa.model.Vardgivare;
-import se.inera.intyg.infra.security.authorities.AuthoritiesException;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.Feature;
 import se.inera.intyg.infra.security.common.model.Privilege;
@@ -46,6 +71,8 @@ import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.SekretessStatus;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
+import se.inera.intyg.webcert.web.service.access.AccessResult;
+import se.inera.intyg.webcert.web.service.access.DraftAccessService;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
@@ -55,30 +82,9 @@ import se.inera.intyg.webcert.web.service.utkast.dto.PreviousIntyg;
 import se.inera.intyg.webcert.web.web.controller.api.dto.CreateUtkastRequest;
 import se.inera.intyg.webcert.web.web.controller.api.dto.QueryIntygParameter;
 import se.inera.intyg.webcert.web.web.controller.api.dto.QueryIntygResponse;
+import se.inera.intyg.webcert.web.web.util.access.AccessResultExceptionHelper;
 
-import javax.ws.rs.core.Response;
-import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
-import static javax.ws.rs.core.Response.Status.OK;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(MockitoJUnitRunner.Silent.class)
 public class UtkastApiControllerTest {
 
     private static final String PATIENT_EFTERNAMN = "Tolvansson";
@@ -107,6 +113,12 @@ public class UtkastApiControllerTest {
     @Mock
     private IntygTextsService intygTextsService;
 
+    @Mock
+    private DraftAccessService draftAccessService;
+
+    @Mock
+    private AccessResultExceptionHelper accessResultExceptionHelper;
+
     @InjectMocks
     private UtkastApiController utkastController;
 
@@ -114,8 +126,10 @@ public class UtkastApiControllerTest {
     public void setup() throws ModuleNotFoundException {
         when(patientDetailsResolver.getSekretessStatus(eq(PATIENT_PERSONNUMMER))).thenReturn(SekretessStatus.FALSE);
         when(patientDetailsResolver.resolvePatient(any(Personnummer.class), anyString(), anyString())).thenReturn(buildPatient());
-        when(moduleRegistry.getIntygModule(eq(LuseEntryPoint.MODULE_ID))).thenReturn(new IntygModule("luse", "", "", "", "", "", "", "","", false));
-        when(moduleRegistry.getIntygModule(eq(Fk7263EntryPoint.MODULE_ID))).thenReturn(new IntygModule("fk7263", "", "", "", "", "", "", "","", true));
+        when(moduleRegistry.getIntygModule(eq(LuseEntryPoint.MODULE_ID)))
+                .thenReturn(new IntygModule("luse", "", "", "", "", "", "", "", "", false));
+        when(moduleRegistry.getIntygModule(eq(Fk7263EntryPoint.MODULE_ID)))
+                .thenReturn(new IntygModule("fk7263", "", "", "", "", "", "", "", "", true));
 
         Map<String, Map<String, PreviousIntyg>> hasPrevious = new HashMap<>();
         Map<String, PreviousIntyg> hasPreviousIntyg = new HashMap<>();
@@ -125,6 +139,7 @@ public class UtkastApiControllerTest {
         when(intygTextsService.getLatestVersion(any(String.class))).thenReturn(INTYG_TYPE_VERSION);
 
     }
+
     @Test
     public void testCreateUtkastFailsForDeprecated() {
         String intygsTyp = "fk7263";
@@ -140,6 +155,7 @@ public class UtkastApiControllerTest {
         setupUser(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG, intygsTyp, AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);
 
         when(utkastService.createNewDraft(any(CreateNewDraftRequest.class))).thenReturn(new Utkast());
+        doReturn(AccessResult.noProblem()).when(draftAccessService).allowToCreateDraft(any(), any());
 
         Response response = utkastController.createUtkast(intygsTyp, buildRequest("luse"));
         assertEquals(OK.getStatusCode(), response.getStatus());
@@ -149,7 +165,7 @@ public class UtkastApiControllerTest {
     public void testCreateUtkastSetsPatientFullName() {
         String intygsTyp = "luse";
         setupUser(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG, intygsTyp, AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);
-
+        doReturn(AccessResult.noProblem()).when(draftAccessService).allowToCreateDraft(any(), any());
         when(utkastService.createNewDraft(any(CreateNewDraftRequest.class))).thenReturn(new Utkast());
 
         Response response = utkastController.createUtkast(intygsTyp, buildRequest("luse"));
@@ -171,7 +187,7 @@ public class UtkastApiControllerTest {
 
         // Fake PU service being down
         when(patientDetailsResolver.resolvePatient(PATIENT_PERSONNUMMER, intygsTyp, INTYG_TYPE_VERSION)).thenReturn(null);
-
+        doReturn(AccessResult.noProblem()).when(draftAccessService).allowToCreateDraft(any(), any());
         CreateUtkastRequest utkastRequest = buildRequest("luse");
         utkastRequest.setPatientMellannamn(null); // no middlename
         Response response = utkastController.createUtkast(intygsTyp, utkastRequest);
@@ -190,7 +206,7 @@ public class UtkastApiControllerTest {
         setupUser(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG, intygsTyp, AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);
 
         when(utkastService.createNewDraft(any(CreateNewDraftRequest.class))).thenReturn(new Utkast());
-
+        doReturn(AccessResult.noProblem()).when(draftAccessService).allowToCreateDraft(any(), any());
         CreateUtkastRequest utkastRequest = buildRequest(intygsTyp);
         utkastRequest.setPatientFornamn(Strings.repeat("a", 255));
         Response response = utkastController.createUtkast(intygsTyp, utkastRequest);
@@ -214,6 +230,7 @@ public class UtkastApiControllerTest {
         setupUser(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG, intygsTyp, AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);
 
         when(utkastService.createNewDraft(any(CreateNewDraftRequest.class))).thenReturn(new Utkast());
+        doReturn(AccessResult.noProblem()).when(draftAccessService).allowToCreateDraft(any(), any());
 
         CreateUtkastRequest utkastRequest = buildRequest(intygsTyp);
         utkastRequest.setPatientEfternamn(Strings.repeat("a", 255));
@@ -230,13 +247,6 @@ public class UtkastApiControllerTest {
         utkastRequest.setPatientEfternamn(Strings.repeat("a", 256));
         Response response = utkastController.createUtkast(intygsTyp, utkastRequest);
         assertEquals(BAD_REQUEST.getStatusCode(), response.getStatus());
-    }
-
-    @Test(expected = AuthoritiesException.class)
-    public void createUtkastWithoutPrivilegeSkrivIntygFails() {
-        String intygsTyp = "luse";
-        setupUser("", intygsTyp, AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);
-        utkastController.createUtkast(intygsTyp, buildRequest("luse"));
     }
 
     @Test

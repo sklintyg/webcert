@@ -18,12 +18,30 @@
  */
 package se.inera.intyg.webcert.web.service.utkast;
 
-import com.google.common.base.Strings;
+import java.io.IOException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import javax.persistence.OptimisticLockException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.google.common.base.Strings;
+
 import se.inera.intyg.common.services.texts.IntygTextsService;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.GrundData;
@@ -52,6 +70,8 @@ import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastFilter;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.converter.util.IntygConverterUtil;
+import se.inera.intyg.webcert.web.service.access.AccessResult;
+import se.inera.intyg.webcert.web.service.access.DraftAccessService;
 import se.inera.intyg.webcert.web.service.dto.Lakare;
 import se.inera.intyg.webcert.web.service.log.LogService;
 import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
@@ -71,21 +91,7 @@ import se.inera.intyg.webcert.web.service.utkast.dto.PreviousIntyg;
 import se.inera.intyg.webcert.web.service.utkast.dto.SaveDraftResponse;
 import se.inera.intyg.webcert.web.service.utkast.dto.UpdatePatientOnDraftRequest;
 import se.inera.intyg.webcert.web.service.utkast.util.CreateIntygsIdStrategy;
-
-import javax.persistence.OptimisticLockException;
-import java.io.IOException;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
+import se.inera.intyg.webcert.web.web.util.access.AccessResultExceptionHelper;
 
 @Service
 public class UtkastServiceImpl implements UtkastService {
@@ -132,6 +138,12 @@ public class UtkastServiceImpl implements UtkastService {
 
     @Autowired
     private ReferensService referensService;
+
+    @Autowired
+    private DraftAccessService draftAccessService;
+
+    @Autowired
+    private AccessResultExceptionHelper accessResultExceptionHelper;
 
     public static boolean isUtkast(Utkast utkast) {
         return utkast != null && ALL_DRAFT_STATUSES_INCLUDE_LOCKED.contains(utkast.getStatus());
@@ -233,14 +245,12 @@ public class UtkastServiceImpl implements UtkastService {
 
         ret.put(INTYG_INDICATOR, signedList.stream()
                 .collect(Collectors.groupingBy(Utkast::getIntygsTyp,
-                        Collectors.mapping(utkast ->
-                                        PreviousIntyg.of(
-                                                Objects.equals(user.getValdVardgivare().getId(), utkast.getVardgivarId()),
-                                                Objects.equals(user.getValdVardenhet().getId(), utkast.getEnhetsId()),
-                                                utkast.getEnhetsNamn(),
-                                                utkast.getIntygsId(),
-                                                utkast.getSkapad()
-                                        ),
+                        Collectors.mapping(utkast -> PreviousIntyg.of(
+                                Objects.equals(user.getValdVardgivare().getId(), utkast.getVardgivarId()),
+                                Objects.equals(user.getValdVardenhet().getId(), utkast.getEnhetsId()),
+                                utkast.getEnhetsNamn(),
+                                utkast.getIntygsId(),
+                                utkast.getSkapad()),
                                 Collectors.reducing(new PreviousIntyg(), (a, b) -> b.isSameVardgivare() ? b : a)))));
 
         ret.put(UTKAST_INDICATOR, toFilter.stream()
@@ -248,12 +258,11 @@ public class UtkastServiceImpl implements UtkastService {
                 .sorted(Comparator.comparing(Utkast::getSkapad, Comparator.nullsFirst(Comparator.naturalOrder())))
                 .collect(Collectors.groupingBy(Utkast::getIntygsTyp,
                         Collectors.mapping(utkast -> PreviousIntyg.of(
-                                        Objects.equals(user.getValdVardgivare().getId(), utkast.getVardgivarId()),
-                                        Objects.equals(user.getValdVardenhet().getId(), utkast.getEnhetsId()),
-                                        utkast.getEnhetsNamn(),
-                                        utkast.getIntygsId(),
-                                        utkast.getSkapad()
-                                ),
+                                Objects.equals(user.getValdVardgivare().getId(), utkast.getVardgivarId()),
+                                Objects.equals(user.getValdVardenhet().getId(), utkast.getEnhetsId()),
+                                utkast.getEnhetsNamn(),
+                                utkast.getIntygsId(),
+                                utkast.getSkapad()),
                                 Collectors.reducing(new PreviousIntyg(), (a, b) -> b.isSameVardgivare() ? b : a)))));
 
         return ret;
@@ -392,7 +401,6 @@ public class UtkastServiceImpl implements UtkastService {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND, "The utkast could not be found");
         }
 
-
         // check that the draft hasn't been modified concurrently
         if (utkast.getVersion() != version) {
             LOG.debug("Utkast '{}' was concurrently modified", intygId);
@@ -462,7 +470,6 @@ public class UtkastServiceImpl implements UtkastService {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND, "The utkast could not be found");
         }
 
-
         if (webCertUserService.getUser().getIdsOfAllVardenheter().stream()
                 .noneMatch(enhet -> enhet.equalsIgnoreCase(utkast.getEnhetsId()))) {
             LOG.error("User did not have any medarbetaruppdrag for enhet '{}'", utkast.getEnhetsId());
@@ -503,8 +510,7 @@ public class UtkastServiceImpl implements UtkastService {
         }
 
         if ((optionalPnr.isPresent() || SamordningsnummerValidator.isSamordningsNummer(optionalPnr))
-            && !isHashEqual(optionalPnr, optionalDraftPnr)) {
-
+                && !isHashEqual(optionalPnr, optionalDraftPnr)) {
 
             // INTYG-4086: Ta reda på om man skall kunna uppdatera annat än personnumret? Och om man uppdaterar
             // personnumret -
@@ -537,6 +543,8 @@ public class UtkastServiceImpl implements UtkastService {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND,
                     "Could not find Utkast with id: " + intygsId);
         }
+
+        verifyAccessToForwardDraft(utkast);
 
         // check that the draft is still unsigned
         if (!isTheDraftStillADraft(utkast.getStatus())) {
@@ -848,18 +856,18 @@ public class UtkastServiceImpl implements UtkastService {
     private void sendNotification(Utkast utkast, Event event) {
 
         switch (event) {
-            case CHANGED:
-                notificationService.sendNotificationForDraftChanged(utkast);
-                break;
-            case CREATED:
-                notificationService.sendNotificationForDraftCreated(utkast);
-                break;
-            case DELETED:
-                notificationService.sendNotificationForDraftDeleted(utkast);
-                break;
-            case REVOKED:
-                notificationService.sendNotificationForDraftRevoked(utkast);
-                break;
+        case CHANGED:
+            notificationService.sendNotificationForDraftChanged(utkast);
+            break;
+        case CREATED:
+            notificationService.sendNotificationForDraftCreated(utkast);
+            break;
+        case DELETED:
+            notificationService.sendNotificationForDraftDeleted(utkast);
+            break;
+        case REVOKED:
+            notificationService.sendNotificationForDraftRevoked(utkast);
+            break;
         }
     }
 
@@ -923,5 +931,25 @@ public class UtkastServiceImpl implements UtkastService {
         CREATED,
         DELETED,
         REVOKED
+    }
+
+    private void verifyAccessToForwardDraft(Utkast utkast) {
+        final AccessResult accessResult = draftAccessService.allowToForwardDraft(
+                utkast.getIntygsTyp(),
+                getVardenhet(utkast),
+                utkast.getPatientPersonnummer());
+
+        accessResultExceptionHelper.throwExceptionIfDenied(accessResult);
+    }
+
+    private Vardenhet getVardenhet(Utkast utkast) {
+        final Vardgivare vardgivare = new Vardgivare();
+        vardgivare.setVardgivarid(utkast.getVardgivarId());
+
+        final Vardenhet vardenhet = new Vardenhet();
+        vardenhet.setEnhetsid(utkast.getEnhetsId());
+        vardenhet.setVardgivare(vardgivare);
+
+        return vardenhet;
     }
 }

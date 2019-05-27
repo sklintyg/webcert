@@ -28,6 +28,11 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.Optional;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.cxf.helpers.FileUtils;
 import org.assertj.core.api.Assertions;
@@ -37,11 +42,7 @@ import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.test.util.ReflectionTestUtils;
-import se.riv.clinicalprocess.healthcond.certificate.sendCertificateToRecipient.v2.SendCertificateToRecipientResponseType;
-import java.io.IOException;
-import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.Optional;
+
 import se.inera.intyg.common.fk7263.model.internal.Fk7263Utlatande;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.integration.converter.util.ResultTypeUtil;
@@ -66,8 +67,9 @@ import se.inera.intyg.webcert.web.service.intyg.dto.IntygServiceResult;
 import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
+import se.riv.clinicalprocess.healthcond.certificate.sendCertificateToRecipient.v2.SendCertificateToRecipientResponseType;
 
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(MockitoJUnitRunner.Silent.class)
 public class IntygServiceSendTest extends AbstractIntygServiceTest {
 
     private static final String INTYG_TYPE_VERSION_1_0 = "1.0";
@@ -310,7 +312,8 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
         utkast.setIntygsId(intygId);
         utkast.setIntygTypeVersion(INTYG_TYPE_VERSION_1_0);
         utkast.setStatus(UtkastStatus.SIGNED);
-        utkast.setSignatur(new Signatur(LocalDateTime.of(2011, 11, 11, 11, 11, 11, 11), "Signe Signatur", INTYG_ID, "data", "hash", "signatur"));
+        utkast.setSignatur(
+                new Signatur(LocalDateTime.of(2011, 11, 11, 11, 11, 11, 11), "Signe Signatur", INTYG_ID, "data", "hash", "signatur"));
         return utkast;
     }
 }

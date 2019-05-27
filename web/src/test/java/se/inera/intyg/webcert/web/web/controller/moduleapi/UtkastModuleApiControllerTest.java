@@ -18,6 +18,18 @@
  */
 package se.inera.intyg.webcert.web.web.controller.moduleapi;
 
+import static javax.ws.rs.core.Response.Status.OK;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -25,6 +37,7 @@ import java.util.HashMap;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
 import javax.persistence.OptimisticLockException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -43,14 +56,16 @@ import org.mockito.junit.MockitoJUnitRunner;
 import se.inera.intyg.common.fk7263.model.internal.Fk7263Utlatande;
 import se.inera.intyg.common.services.texts.IntygTextsService;
 import se.inera.intyg.common.support.model.UtkastStatus;
+import se.inera.intyg.common.support.model.common.internal.GrundData;
+import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.model.common.internal.Patient;
+import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.common.support.modules.support.api.dto.ValidationMessageType;
 import se.inera.intyg.common.support.modules.support.api.dto.ValidationStatus;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
-import se.inera.intyg.infra.security.authorities.AuthoritiesException;
 import se.inera.intyg.infra.security.common.model.AuthenticationMethod;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.Feature;
@@ -59,6 +74,8 @@ import se.inera.intyg.infra.security.common.model.RequestOrigin;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
+import se.inera.intyg.webcert.web.service.access.DraftAccessService;
+import se.inera.intyg.webcert.web.service.access.LockedDraftAccessService;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 import se.inera.intyg.webcert.web.service.relation.CertificateRelationService;
@@ -76,20 +93,10 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.CopyIntygResponse;
 import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
 import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.RevokeSignedIntygParameter;
+import se.inera.intyg.webcert.web.web.util.access.AccessResultExceptionHelper;
+import se.inera.intyg.webcert.web.web.util.resourcelinks.ResourceLinkHelper;
 
-import static javax.ws.rs.core.Response.Status.OK;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.verifyZeroInteractions;
-import static org.mockito.Mockito.when;
-
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(MockitoJUnitRunner.Silent.class)
 public class UtkastModuleApiControllerTest {
 
     private static final String CERTIFICATE_ID = "123";
@@ -137,6 +144,18 @@ public class UtkastModuleApiControllerTest {
     @Mock
     private CopyUtkastService copyUtkastService;
 
+    @Mock
+    private DraftAccessService draftAccessService;
+
+    @Mock
+    private LockedDraftAccessService lockedDraftAccessService;
+
+    @Mock
+    private ResourceLinkHelper resourceLinkHelper;
+
+    @Mock
+    private AccessResultExceptionHelper accessResultExceptionHelper;
+
     @Spy
     private CopyUtkastServiceHelper copyUtkastServiceHelper = new CopyUtkastServiceHelper();
 
@@ -159,7 +178,7 @@ public class UtkastModuleApiControllerTest {
     }
 
     @Test
-    public void testGetDraft() {
+    public void testGetDraft() throws Exception {
         String intygTyp = "fk7263";
         String intygId = "intyg1";
         setupUser(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG, intygTyp, false, AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);
@@ -167,17 +186,16 @@ public class UtkastModuleApiControllerTest {
         when(utkastService.getDraft(CERTIFICATE_ID, intygTyp)).thenReturn(buildUtkast(intygTyp, intygId));
         when(certificateRelationService.getRelations(eq(intygId))).thenReturn(new Relations());
 
+        final Utlatande utlatande = mock(Utlatande.class);
+        doReturn(utlatande).when(moduleApi).getUtlatandeFromJson(any());
+        final GrundData grundData = mock(GrundData.class);
+        doReturn(grundData).when(utlatande).getGrundData();
+        final HoSPersonal skapadAv = mock(HoSPersonal.class);
+        doReturn(skapadAv).when(grundData).getSkapadAv();
+
         Response response = moduleApiController.getDraft(intygTyp, CERTIFICATE_ID, request);
         verify(utkastService).getDraft(CERTIFICATE_ID, intygTyp);
         assertEquals(OK.getStatusCode(), response.getStatus());
-    }
-
-    @Test(expected = AuthoritiesException.class)
-    public void getDraftWithoutPrivilegeSkrivaIntygFails() {
-        String intygType = "fk7263";
-        setupUser("", intygType, false, AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);
-        when(utkastService.getDraft(CERTIFICATE_ID, intygType)).thenReturn(buildUtkast(intygType, CERTIFICATE_ID));
-        moduleApiController.getDraft(intygType, CERTIFICATE_ID, request);
     }
 
     @Test
@@ -198,6 +216,15 @@ public class UtkastModuleApiControllerTest {
         patientWithIncompleteAddress.setPostnummer(postnummer);
         when(patientDetailsResolver.resolvePatient(any(Personnummer.class), anyString(), anyString()))
                 .thenReturn(patientWithIncompleteAddress);
+
+        doReturn(buildUtkast("intygtyp", "intygsid")).when(utkastService).getDraft(anyString(), anyString());
+
+        final Utlatande utlatande = mock(Utlatande.class);
+        doReturn(utlatande).when(moduleApi).getUtlatandeFromJson(any());
+        final GrundData grundData = mock(GrundData.class);
+        doReturn(grundData).when(utlatande).getGrundData();
+        final HoSPersonal skapadAv = mock(HoSPersonal.class);
+        doReturn(skapadAv).when(grundData).getSkapadAv();
 
         // When
         Response response = moduleApiController.getDraft(intygsTyp, CERTIFICATE_ID, request);
@@ -229,6 +256,13 @@ public class UtkastModuleApiControllerTest {
         when(patientDetailsResolver.resolvePatient(any(Personnummer.class), anyString(), anyString()))
                 .thenReturn(patientWithIncompleteAddress);
 
+        final Utlatande utlatande = mock(Utlatande.class);
+        doReturn(utlatande).when(moduleApi).getUtlatandeFromJson(any());
+        final GrundData grundData = mock(GrundData.class);
+        doReturn(grundData).when(utlatande).getGrundData();
+        final HoSPersonal skapadAv = mock(HoSPersonal.class);
+        doReturn(skapadAv).when(grundData).getSkapadAv();
+
         // When
         Response response = moduleApiController.getDraft(intygsTyp, CERTIFICATE_ID, request);
 
@@ -250,20 +284,12 @@ public class UtkastModuleApiControllerTest {
         when(utkastService.saveDraft(intygId, UTKAST_VERSION, draftAsJson, true))
                 .thenReturn(new SaveDraftResponse(UTKAST_VERSION, UtkastStatus.DRAFT_COMPLETE));
 
+        doReturn(buildUtkast("intygtyp", "intygsid")).when(utkastService).getDraft(anyString(), anyString());
+
         Response response = moduleApiController.saveDraft(intygTyp, intygId, UTKAST_VERSION, false, payload, request);
 
         verify(utkastService).saveDraft(intygId, UTKAST_VERSION, draftAsJson, true);
         assertEquals(OK.getStatusCode(), response.getStatus());
-    }
-
-    @Test(expected = AuthoritiesException.class)
-    public void saveDraftWithoutPrivilegeSkrivaIntygFails() {
-        String intygTyp = "fk7263";
-        String intygId = "intyg1";
-        byte[] payload = "test".getBytes();
-        setupUser("", intygTyp, false, AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);
-
-        moduleApiController.saveDraft(intygTyp, intygId, UTKAST_VERSION, false, payload, request);
     }
 
     @Test(expected = WebCertServiceException.class)
@@ -275,6 +301,7 @@ public class UtkastModuleApiControllerTest {
         setupUser(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG, intygTyp, false, AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);
 
         when(utkastService.saveDraft(intygId, UTKAST_VERSION, draftAsJson, true)).thenThrow(new OptimisticLockException(""));
+        doReturn(buildUtkast("intygtyp", "intygsid")).when(utkastService).getDraft(anyString(), anyString());
 
         try {
             moduleApiController.saveDraft(intygTyp, intygId, UTKAST_VERSION, false, payload, request);
@@ -293,25 +320,12 @@ public class UtkastModuleApiControllerTest {
 
         when(utkastService.validateDraft(intygId, intygTyp, draftAsJson)).thenReturn(buildDraftValidation());
 
+        doReturn(buildUtkast("intygtyp", "intygsid")).when(utkastService).getDraft(anyString(), anyString());
+
         Response response = moduleApiController.validateDraft(intygTyp, intygId, payload);
 
         verify(utkastService).validateDraft(intygId, intygTyp, draftAsJson);
         assertEquals(OK.getStatusCode(), response.getStatus());
-    }
-
-    @Test(expected = AuthoritiesException.class)
-    public void testValidateDraftUnauthorized() {
-        String intygTyp = "fk7263";
-        String intygId = "intyg1";
-        String draftAsJson = "test";
-        byte[] payload = draftAsJson.getBytes();
-        setupUser("", intygTyp, false, AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);
-
-        try {
-            moduleApiController.validateDraft(intygTyp, intygId, payload);
-        } finally {
-            verifyZeroInteractions(utkastService);
-        }
     }
 
     @Test
@@ -320,19 +334,12 @@ public class UtkastModuleApiControllerTest {
         String intygId = "intyg1";
         setupUser(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG, intygTyp, false, AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);
 
+        doReturn(buildUtkast("intygtyp", "intygsid")).when(utkastService).getDraft(anyString(), anyString());
+
         Response response = moduleApiController.discardDraft(intygTyp, intygId, UTKAST_VERSION, request);
 
         verify(utkastService).deleteUnsignedDraft(intygId, UTKAST_VERSION);
         assertEquals(OK.getStatusCode(), response.getStatus());
-    }
-
-    @Test(expected = AuthoritiesException.class)
-    public void discardDraftWithoutPrivilegeSkrivaIntygFails() {
-        String intygTyp = "fk7263";
-        String intygId = "intyg1";
-        setupUser("", intygTyp, false, AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);
-
-        moduleApiController.discardDraft(intygTyp, intygId, UTKAST_VERSION, request);
     }
 
     @Test
@@ -347,6 +354,8 @@ public class UtkastModuleApiControllerTest {
                 new DraftValidationMessage("category", "field", ValidationMessageType.WARN, "this.is.a.message", "dy.nam.ic.key"));
 
         when(utkastService.validateDraft(intygId, intygTyp, draftAsJson)).thenReturn(draftValidation);
+
+        doReturn(buildUtkast("intygtyp", "intygsid")).when(utkastService).getDraft(anyString(), anyString());
 
         Response response = moduleApiController.validateDraft(intygTyp, intygId, payload);
 
@@ -384,17 +393,6 @@ public class UtkastModuleApiControllerTest {
         assertEquals(intygTyp, ((CopyIntygResponse) response.getEntity()).getIntygsTyp());
     }
 
-    @Test(expected = AuthoritiesException.class)
-    public void testCopyUtkastUnauthorized() {
-        String intygTyp = "fk7263";
-        String intygId = "intyg1";
-        setupUser("", intygTyp, false, AuthoritiesConstants.FEATURE_MAKULERA_INTYG);
-
-        moduleApiController.copyUtkast(intygTyp, intygId);
-
-        verifyZeroInteractions(utkastService);
-    }
-
     @Test
     public void testCopyUtkastKopieraOKFalse() {
         String intygTyp = "fk7263";
@@ -422,41 +420,6 @@ public class UtkastModuleApiControllerTest {
         assertEquals(intygTyp, ((CopyIntygResponse) response.getEntity()).getIntygsTyp());
     }
 
-    @Test(expected = WebCertServiceException.class)
-    public void testCopyUtkastInaktivEnhetTrue() {
-        String intygTyp = "fk7263";
-        String intygId = "intyg1";
-        IntegrationParameters integrationParameters = IntegrationParameters.of("", "", "", "", "", "", "", "", "", false, false, true,
-                true);
-        setupUser(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG, intygTyp, integrationParameters,
-                AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);
-
-        moduleApiController.copyUtkast(intygTyp, intygId);
-
-        verifyZeroInteractions(utkastService);
-    }
-
-    @Test(expected = AuthoritiesException.class)
-    public void testCopyUtkastAvlidenTrue() {
-        String intygTyp = "fk7263";
-        String intygId = "intyg1";
-        IntegrationParameters integrationParameters = IntegrationParameters.of("", "", "", "", "", "", "", "", "", false, true, false,
-                true);
-        setupUser(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG, intygTyp, integrationParameters,
-                AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);
-
-        Utkast utkast = new Utkast();
-        Personnummer personnummer = Personnummer.createPersonnummer("19121212-1212").get();
-        utkast.setPatientPersonnummer(personnummer);
-        when(utkastService.getDraft(eq(intygId), eq(intygTyp))).thenReturn(utkast);
-
-        when(patientDetailsResolver.isAvliden(personnummer)).thenReturn(true);
-
-        moduleApiController.copyUtkast(intygTyp, intygId);
-
-        verifyZeroInteractions(utkastService);
-    }
-
     @Test
     public void testRevokeLockedDraft() {
         String intygTyp = "fk7263";
@@ -464,22 +427,12 @@ public class UtkastModuleApiControllerTest {
         setupUser(AuthoritiesConstants.PRIVILEGE_MAKULERA_INTYG, intygTyp, false, AuthoritiesConstants.FEATURE_MAKULERA_INTYG);
         RevokeSignedIntygParameter param = new RevokeSignedIntygParameter();
 
+        doReturn(buildUtkast("intygtyp", "intygsid")).when(utkastService).getDraft(anyString(), anyString());
+
         Response response = moduleApiController.revokeLockedDraft(intygTyp, intygId, param);
 
         verify(utkastService).revokeLockedDraft(intygId, intygTyp, param.getMessage(), param.getReason());
         assertEquals(OK.getStatusCode(), response.getStatus());
-    }
-
-    @Test(expected = AuthoritiesException.class)
-    public void testRevokeLockedDraftUnauthorized() {
-        String intygTyp = "fk7263";
-        String intygId = "intyg1";
-        setupUser("", intygTyp, false, AuthoritiesConstants.FEATURE_MAKULERA_INTYG);
-        RevokeSignedIntygParameter param = new RevokeSignedIntygParameter();
-
-        moduleApiController.revokeLockedDraft(intygTyp, intygId, param);
-
-        verifyZeroInteractions(utkastService);
     }
 
     private DraftValidation buildDraftValidation() {

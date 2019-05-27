@@ -18,6 +18,15 @@
  */
 package se.inera.intyg.webcert.web.service.utkast;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -48,20 +57,13 @@ import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.intyg.webcert.web.service.arende.ArendeService;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
+import se.inera.intyg.webcert.web.service.log.LogService;
+import se.inera.intyg.webcert.web.service.log.factory.LogRequestFactory;
 import se.inera.intyg.webcert.web.service.utkast.dto.CopyUtkastBuilderResponse;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateCompletionCopyRequest;
 import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.isNull;
-import static org.mockito.Mockito.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(MockitoJUnitRunner.Silent.class)
 public class CopyCompletionUtkastBuilderTest extends AbstractBuilderTest {
 
     private static final String INTYG_TYPE = "fk7263";
@@ -74,6 +76,12 @@ public class CopyCompletionUtkastBuilderTest extends AbstractBuilderTest {
     private ArendeService arendeService;
 
     private ModuleApi mockModuleApi;
+
+    @Mock
+    private LogService logService;
+
+    @Mock
+    private LogRequestFactory logRequestFactory;
 
     @InjectMocks
     private CopyCompletionUtkastBuilder copyCompletionBuilder = new CopyCompletionUtkastBuilder();
@@ -101,7 +109,7 @@ public class CopyCompletionUtkastBuilderTest extends AbstractBuilderTest {
         when(mockModuleApi.getUtlatandeFromJson(any(String.class))).thenReturn(utlatande);
 
         CopyUtkastBuilderResponse builderResponse = copyCompletionBuilder.populateCopyUtkastFromSignedIntyg(copyRequest, patientDetails,
-                true, false, false);
+                true, false);
 
         assertNotNull(builderResponse.getUtkastCopy());
         assertNotNull(builderResponse.getUtkastCopy().getModel());
@@ -137,7 +145,7 @@ public class CopyCompletionUtkastBuilderTest extends AbstractBuilderTest {
         when(mockModuleApi.validateDraft(isNull())).thenReturn(vdr);
 
         CopyUtkastBuilderResponse builderResponse = copyCompletionBuilder.populateCopyUtkastFromOrignalUtkast(copyRequest, patientDetails,
-                true, false, false);
+                true, false);
 
         assertNotNull(builderResponse.getUtkastCopy());
         assertNotNull(builderResponse.getUtkastCopy().getModel());
@@ -173,7 +181,7 @@ public class CopyCompletionUtkastBuilderTest extends AbstractBuilderTest {
         Person patientDetails = new Person(PATIENT_SSN, false, false, PATIENT_FNAME, PATIENT_MNAME, PATIENT_LNAME, "Postadr", "12345",
                 "postort");
 
-        copyCompletionBuilder.populateCopyUtkastFromSignedIntyg(copyRequest, patientDetails, true, false, false);
+        copyCompletionBuilder.populateCopyUtkastFromSignedIntyg(copyRequest, patientDetails, true, false);
 
         ArgumentCaptor<CreateDraftCopyHolder> createDraftCopyHolderCaptor = ArgumentCaptor.forClass(CreateDraftCopyHolder.class);
         verify(mockModuleApi).createCompletionFromTemplate(createDraftCopyHolderCaptor.capture(), any(), eq(KOMMENTAR));
@@ -208,7 +216,7 @@ public class CopyCompletionUtkastBuilderTest extends AbstractBuilderTest {
         Person patientDetails = new Person(PATIENT_SSN, false, false, PATIENT_FNAME, PATIENT_MNAME, PATIENT_LNAME, "Postadr", "12345",
                 "postort");
 
-        copyCompletionBuilder.populateCopyUtkastFromOrignalUtkast(copyRequest, patientDetails, true, false, false);
+        copyCompletionBuilder.populateCopyUtkastFromOrignalUtkast(copyRequest, patientDetails, true, false);
 
         ArgumentCaptor<CreateDraftCopyHolder> createDraftCopyHolderCaptor = ArgumentCaptor.forClass(CreateDraftCopyHolder.class);
         verify(mockModuleApi).createCompletionFromTemplate(createDraftCopyHolderCaptor.capture(), any(), eq(KOMMENTAR));
@@ -236,8 +244,8 @@ public class CopyCompletionUtkastBuilderTest extends AbstractBuilderTest {
                 .setStatuses(status)
                 .setRevoked(false)
                 .setRelations(new Relations())
-              //  .setReplacedByRelation(null)
-              //  .setComplementedByRelation(null)
+                // .setReplacedByRelation(null)
+                // .setComplementedByRelation(null)
                 .setDeceased(false)
                 .setSekretessmarkering(false)
                 .setPatientNameChangedInPU(false)

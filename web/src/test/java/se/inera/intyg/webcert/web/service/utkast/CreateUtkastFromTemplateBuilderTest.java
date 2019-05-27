@@ -18,6 +18,17 @@
  */
 package se.inera.intyg.webcert.web.service.utkast;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.AdditionalMatchers.or;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,6 +38,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.core.io.ClassPathResource;
 
@@ -42,22 +54,13 @@ import se.inera.intyg.infra.integration.pu.model.Person;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
+import se.inera.intyg.webcert.web.service.log.LogService;
+import se.inera.intyg.webcert.web.service.log.factory.LogRequestFactory;
 import se.inera.intyg.webcert.web.service.utkast.dto.CopyUtkastBuilderResponse;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateUtkastFromTemplateRequest;
 import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.mockito.AdditionalMatchers.or;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.isNull;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(MockitoJUnitRunner.Silent.class)
 public class CreateUtkastFromTemplateBuilderTest extends AbstractBuilderTest {
 
     private static final String INTYG_TYPE_1 = "db";
@@ -65,6 +68,12 @@ public class CreateUtkastFromTemplateBuilderTest extends AbstractBuilderTest {
 
     private ModuleApi mockModuleApi1;
     private ModuleApi mockModuleApi2;
+
+    @Mock
+    private LogService logService;
+
+    @Mock
+    private LogRequestFactory logRequestFactory;
 
     @InjectMocks
     private CreateUtkastFromTemplateBuilder createUtkastFromTemplateBuilder = new CreateUtkastFromTemplateBuilder();
@@ -94,7 +103,7 @@ public class CreateUtkastFromTemplateBuilderTest extends AbstractBuilderTest {
 
         CopyUtkastBuilderResponse builderResponse = createUtkastFromTemplateBuilder
                 .populateCopyUtkastFromSignedIntyg(createUtkastFromTemplateRequest, patientDetails, false,
-                        false, false);
+                        false);
 
         assertNotNull(builderResponse.getUtkastCopy());
         assertNotNull(builderResponse.getUtkastCopy().getModel());
@@ -130,7 +139,7 @@ public class CreateUtkastFromTemplateBuilderTest extends AbstractBuilderTest {
 
         CopyUtkastBuilderResponse builderResponse = createUtkastFromTemplateBuilder
                 .populateCopyUtkastFromOrignalUtkast(createUtkastFromTemplateRequest, patientDetails, false,
-                        false, false);
+                        false);
 
         assertNotNull(builderResponse.getUtkastCopy());
         assertNotNull(builderResponse.getUtkastCopy().getModel());

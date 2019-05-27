@@ -44,6 +44,8 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 
 import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
+import se.inera.intyg.common.support.model.common.internal.Utlatande;
+import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.common.ts_bas.support.TsBasEntryPoint;
 import se.inera.intyg.common.ts_diabetes.support.TsDiabetesEntryPoint;
 import se.inera.intyg.infra.integration.hsa.services.HsaEmployeeService;
@@ -71,6 +73,8 @@ import se.inera.intyg.webcert.web.converter.ArendeViewConverter;
 import se.inera.intyg.webcert.web.converter.FilterConverter;
 import se.inera.intyg.webcert.web.converter.util.AnsweredWithIntygUtil;
 import se.inera.intyg.webcert.web.integration.builders.SendMessageToRecipientTypeBuilder;
+import se.inera.intyg.webcert.web.service.access.AccessResult;
+import se.inera.intyg.webcert.web.service.access.CertificateAccessService;
 import se.inera.intyg.webcert.web.service.certificatesender.CertificateSenderException;
 import se.inera.intyg.webcert.web.service.certificatesender.CertificateSenderService;
 import se.inera.intyg.webcert.web.service.dto.Lakare;
@@ -78,6 +82,7 @@ import se.inera.intyg.webcert.web.service.fragasvar.FragaSvarService;
 import se.inera.intyg.webcert.web.service.fragasvar.dto.FrageStallare;
 import se.inera.intyg.webcert.web.service.fragasvar.dto.QueryFragaSvarParameter;
 import se.inera.intyg.webcert.web.service.fragasvar.dto.QueryFragaSvarResponse;
+import se.inera.intyg.webcert.web.service.intyg.converter.IntygModuleFacade;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.notification.NotificationEvent;
 import se.inera.intyg.webcert.web.service.notification.NotificationService;
@@ -88,6 +93,7 @@ import se.inera.intyg.webcert.web.service.util.StatisticsGroupByUtil;
 import se.inera.intyg.webcert.web.web.controller.api.dto.AnsweredWithIntyg;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeConversationView;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeListItem;
+import se.inera.intyg.webcert.web.web.util.access.AccessResultExceptionHelper;
 import se.riv.clinicalprocess.healthcond.certificate.sendMessageToRecipient.v2.SendMessageToRecipientType;
 
 @Service
@@ -149,6 +155,13 @@ public class ArendeServiceImpl implements ArendeService {
     private PatientDetailsResolver patientDetailsResolver;
     @Autowired
     private StatisticsGroupByUtil statisticsGroupByUtil;
+    @Autowired
+    private IntygModuleFacade modelFacade;
+    @Autowired
+    private CertificateAccessService certificateAccessService;
+    @Autowired
+    private AccessResultExceptionHelper accessResultExceptionHelper;
+
     private AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
 
     private static Predicate<Arende> isQuestion() {
@@ -204,8 +217,7 @@ public class ArendeServiceImpl implements ArendeService {
 
         validateArende(intygId, utkast);
 
-
-        verifyEnhetsAuth(utkast.getEnhetsId(), false);
+        validateAccessRightsToCreateQuestion(utkast);
 
         Arende arende = ArendeConverter.createArendeFromUtkast(amne, rubrik, meddelande, utkast, LocalDateTime.now(systemClock),
                 webcertUserService.getUser().getNamn(), hsaEmployeeService);
@@ -224,7 +236,7 @@ public class ArendeServiceImpl implements ArendeService {
         }
         Arende svarPaMeddelande = lookupArende(svarPaMeddelandeId);
 
-        verifyEnhetsAuth(svarPaMeddelande.getEnhetId(), false);
+        validateAccessRightsToAnswerComplement(svarPaMeddelande.getIntygsId(), false);
 
         if (!Status.PENDING_INTERNAL_ACTION.equals(svarPaMeddelande.getStatus())) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, "Arende with id "
@@ -269,19 +281,7 @@ public class ArendeServiceImpl implements ArendeService {
 
         Arende latestKomplArende = getLatestKomplArende(intygsId, arendeList);
 
-        verifyEnhetsAuth(latestKomplArende.getEnhetId(), false);
-
-        boolean verified = authoritiesValidator
-                .given(user, latestKomplArende.getIntygTyp())
-                .privilege(AuthoritiesConstants.PRIVILEGE_BESVARA_KOMPLETTERINGSFRAGA)
-                .isVerified();
-
-        if (!verified) {
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM, "Arende with id "
-                    + latestKomplArende.getId() + " and amne (" + latestKomplArende.getAmne()
-                    + ") can only be answered by user that is Lakare");
-        }
-
+        validateAccessRightsToAnswerComplement(intygsId, false);
 
         // Close all Arende for intyg, _except_ question from recipient (latestKomplArende) which we handle separately below.
         arendeList.stream()
@@ -319,10 +319,7 @@ public class ArendeServiceImpl implements ArendeService {
     }
 
     private List<Arende> getArendeForIntygId(String intygsId, WebCertUser user) {
-        return arendeRepository.findByIntygsId(intygsId)
-                .stream()
-                .filter(isCorrectEnhet(user))
-                .collect(Collectors.toList());
+        return arendeRepository.findByIntygsId(intygsId);
     }
 
     @Override
@@ -333,15 +330,12 @@ public class ArendeServiceImpl implements ArendeService {
 
         List<Arende> allArende = arendeRepository.findByIntygsId(intygsId);
 
+        validateAccessRightsToForwardQuestions(intygsId);
+
         List<Arende> arendenToForward = arendeRepository.save(
                 allArende
                         .stream()
                         .filter(isCorrectEnhet(user))
-                        .peek(arende -> authoritiesValidator
-                                .given(user, arende.getIntygTyp())
-                                .features(AuthoritiesConstants.FEATURE_HANTERA_FRAGOR)
-                                .privilege(AuthoritiesConstants.PRIVILEGE_VIDAREBEFORDRA_FRAGASVAR)
-                                .orThrow())
                         .peek(Arende::setArendeToVidareBerordrat)
                         .collect(Collectors.toList()));
 
@@ -355,7 +349,11 @@ public class ArendeServiceImpl implements ArendeService {
 
     @Override
     public ArendeConversationView openArendeAsUnhandled(String meddelandeId) {
+
         Arende arende = lookupArende(meddelandeId);
+
+        validateAccessRightsToAnswerComplement(arende.getIntygsId(), false);
+
         boolean arendeIsAnswered = !arendeRepository.findBySvarPaId(meddelandeId).isEmpty();
 
         // Enforce business rule FS-011, from FK + answer should remain closed
@@ -413,17 +411,7 @@ public class ArendeServiceImpl implements ArendeService {
         WebCertUser user = webcertUserService.getUser();
         List<Arende> arendeList = getArendeForIntygId(intygsId, user);
 
-        arendeList.stream()
-                .findFirst()
-                .map(Arende::getPatientPersonId)
-                .map(personNummer -> Personnummer.createPersonnummer(personNummer)
-                        .orElseThrow(() -> new IllegalArgumentException("Could not parse personnummer when querying for arenden.")))
-                .ifPresent(pn -> authoritiesValidator
-                        .given(user)
-                        .privilegeIf(
-                                AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT,
-                                SekretessStatus.TRUE.equals(patientDetailsResolver.getSekretessStatus(pn)))
-                        .orThrow());
+        validateAccessRightsToReadArenden(intygsId);
 
         return getArendeConversationViewList(intygsId, arendeList);
     }
@@ -518,28 +506,28 @@ public class ArendeServiceImpl implements ArendeService {
             comparator = Comparator.comparing(ArendeListItem::getReceivedDate);
         } else {
             switch (orderBy) {
-                case "amne":
-                    comparator = (a1, a2) -> {
-                        return getAmneString(a1.getAmne(), a1.getStatus(), a1.isPaminnelse(), a1.getFragestallare())
+            case "amne":
+                comparator = (a1, a2) -> {
+                    return getAmneString(a1.getAmne(), a1.getStatus(), a1.isPaminnelse(), a1.getFragestallare())
                             .compareTo(getAmneString(a2.getAmne(), a2.getStatus(), a2.isPaminnelse(), a2.getFragestallare()));
-                    };
-                    break;
-                case "fragestallare":
-                    comparator = Comparator.comparing(ArendeListItem::getFragestallare);
-                    break;
-                case "patientId":
-                    comparator = Comparator.comparing(ArendeListItem::getPatientId);
-                    break;
-                case "signeratAvNamn":
-                    comparator = Comparator.comparing(ArendeListItem::getSigneratAvNamn);
-                    break;
-                case "vidarebefordrad":
-                    comparator = Comparator.comparing(ArendeListItem::isVidarebefordrad);
-                    break;
-                case "receivedDate":
-                default:
-                    comparator = Comparator.comparing(ArendeListItem::getReceivedDate);
-                    break;
+                };
+                break;
+            case "fragestallare":
+                comparator = Comparator.comparing(ArendeListItem::getFragestallare);
+                break;
+            case "patientId":
+                comparator = Comparator.comparing(ArendeListItem::getPatientId);
+                break;
+            case "signeratAvNamn":
+                comparator = Comparator.comparing(ArendeListItem::getSigneratAvNamn);
+                break;
+            case "vidarebefordrad":
+                comparator = Comparator.comparing(ArendeListItem::isVidarebefordrad);
+                break;
+            case "receivedDate":
+            default:
+                comparator = Comparator.comparing(ArendeListItem::getReceivedDate);
+                break;
             }
         }
 
@@ -572,11 +560,15 @@ public class ArendeServiceImpl implements ArendeService {
     @Override
     @Transactional
     public ArendeConversationView closeArendeAsHandled(String meddelandeId, String intygTyp) {
+        final Arende arende = lookupArende(meddelandeId);
+
+        validateAccessRightsToAnswerComplement(arende.getIntygsId(), false);
+
         if (Fk7263EntryPoint.MODULE_ID.equalsIgnoreCase(intygTyp)) {
             fragaSvarService.closeQuestionAsHandled(Long.parseLong(meddelandeId));
             return null;
         } else {
-            Arende closedArende = closeArendeAsHandled(lookupArende(meddelandeId));
+            Arende closedArende = closeArendeAsHandled(arende);
             return arendeViewConverter.convertToArendeConversationView(closedArende,
                     arendeRepository.findBySvarPaId(meddelandeId).stream().findFirst().orElse(null),
                     null,
@@ -792,5 +784,63 @@ public class ArendeServiceImpl implements ArendeService {
         sendNotification(closedArende, notificationEvent);
 
         return closedArende;
+    }
+
+    private void validateAccessRightsToAnswerComplement(String intygsId, boolean newCertificate) {
+        final Utlatande utlatande = getUtlatande(intygsId);
+        final AccessResult accessResult = certificateAccessService.allowToAnswerComplementQuestion(
+                utlatande.getTyp(),
+                getVardenhet(utlatande),
+                getPersonnummer(utlatande),
+                newCertificate);
+
+        accessResultExceptionHelper.throwExceptionIfDenied(accessResult);
+    }
+
+    private void validateAccessRightsToForwardQuestions(String intygsId) {
+        final Utlatande utlatande = getUtlatande(intygsId);
+        final AccessResult accessResult = certificateAccessService.allowToForwardQuestions(
+                utlatande.getTyp(),
+                getVardenhet(utlatande),
+                getPersonnummer(utlatande));
+
+        accessResultExceptionHelper.throwExceptionIfDenied(accessResult);
+    }
+
+    private void validateAccessRightsToCreateQuestion(Utkast utkast) {
+        final Utlatande utlatande = getUtlatande(utkast);
+        final AccessResult accessResult = certificateAccessService.allowToCreateQuestion(
+                utlatande.getTyp(),
+                getVardenhet(utlatande),
+                getPersonnummer(utlatande));
+
+        accessResultExceptionHelper.throwExceptionIfDenied(accessResult);
+    }
+
+    private void validateAccessRightsToReadArenden(String intygsId) {
+        final Utlatande utlatande = getUtlatande(intygsId);
+        final AccessResult accessResult = certificateAccessService.allowToReadQuestions(
+                utlatande.getTyp(),
+                getVardenhet(utlatande),
+                getPersonnummer(utlatande));
+
+        accessResultExceptionHelper.throwExceptionIfDenied(accessResult);
+    }
+
+    private Utlatande getUtlatande(String intygsId) {
+        final Utkast utkast = utkastRepository.findOne(intygsId);
+        return getUtlatande(utkast);
+    }
+
+    private Utlatande getUtlatande(Utkast utkast) {
+        return modelFacade.getUtlatandeFromInternalModel(utkast.getIntygsTyp(), utkast.getModel());
+    }
+
+    private Vardenhet getVardenhet(Utlatande utlatande) {
+        return utlatande.getGrundData().getSkapadAv().getVardenhet();
+    }
+
+    private Personnummer getPersonnummer(Utlatande utlatande) {
+        return utlatande.getGrundData().getPatient().getPersonId();
     }
 }

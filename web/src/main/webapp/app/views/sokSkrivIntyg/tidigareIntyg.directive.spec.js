@@ -120,10 +120,16 @@ describe('SokSkrivValjUtkastTypeCtrl', function() {
             };
             $provide.value('common.authorityService', AuthorityService);
 
-            var moduleService  = jasmine.createSpyObj('common.moduleService', [ 'getModuleName' ]);
+            var moduleService = jasmine.createSpyObj('common.moduleService', ['getModuleName']);
             $provide.value('common.moduleService', moduleService);
 
             $provide.value('common.User', {});
+
+            $provide.value('common.ResourceLinkService', {
+                isLinkTypeExists: function(links, type) {
+                    return true;
+                }
+            });
         });
 
         inject(function($rootScope, _$location_, _$controller_, _$q_, _$compile_) {
@@ -159,12 +165,6 @@ describe('SokSkrivValjUtkastTypeCtrl', function() {
 
         it('is förnya allowed', function() {
 
-            intyg.intygType = 'ts-bas';
-            expect(element.isolateScope().isRenewalAllowed(intyg)).toBeFalsy();
-
-            intyg.intygType = 'fk7263';
-            expect(element.isolateScope().isRenewalAllowed(intyg)).toBeTruthy();
-
             intyg.status = 'DRAFT_INCOMPLETE';
             expect(element.isolateScope().isRenewalAllowed(intyg)).toBeFalsy();
 
@@ -181,13 +181,6 @@ describe('SokSkrivValjUtkastTypeCtrl', function() {
 
             intyg.relations.latestChildRelations.complementedByIntyg = false;
             expect(element.isolateScope().isRenewalAllowed(intyg)).toBeTruthy();
-
-            PatientModelMock.avliden = true;
-            expect(element.isolateScope().isRenewalAllowed(intyg)).toBeFalsy();
-
-            PatientModelMock.avliden = false;
-            expect(element.isolateScope().isRenewalAllowed(intyg)).toBeTruthy();
-
         });
 
         it('should förnya intyg', function() {
@@ -223,25 +216,29 @@ describe('SokSkrivValjUtkastTypeCtrl', function() {
         it('should set utkast path', function() {
             intyg.status = 'DRAFT_COMPLETE';
             element.isolateScope().openIntyg(intyg);
-            expect($location.path()).toBe('/' + intyg.intygType + '/' + intyg.intygTypeVersion + '/edit/' + intyg.intygId + '/');
+            expect($location.path()).toBe(
+                '/' + intyg.intygType + '/' + intyg.intygTypeVersion + '/edit/' + intyg.intygId + '/');
         });
 
         it('should set utkast path', function() {
             intyg.status = 'DRAFT_INCOMPLETE';
             element.isolateScope().openIntyg(intyg);
-            expect($location.path()).toBe('/' + intyg.intygType + '/' + intyg.intygTypeVersion + '/edit/' + intyg.intygId + '/');
+            expect($location.path()).toBe(
+                '/' + intyg.intygType + '/' + intyg.intygTypeVersion + '/edit/' + intyg.intygId + '/');
         });
 
         it('should set utkast path', function() {
             intyg.status = 'DRAFT_LOCKED';
             element.isolateScope().openIntyg(intyg);
-            expect($location.path()).toBe('/' + intyg.intygType + '/' + intyg.intygTypeVersion + '/edit/' + intyg.intygId + '/');
+            expect($location.path()).toBe(
+                '/' + intyg.intygType + '/' + intyg.intygTypeVersion + '/edit/' + intyg.intygId + '/');
         });
 
         it('should set signed path', function() {
             intyg.status = 'RECEIVED';
             element.isolateScope().openIntyg(intyg);
-            expect($location.path()).toBe('/intyg/' + intyg.intygType + '/' + intyg.intygTypeVersion + '/' + intyg.intygId + '/');
+            expect($location.path()).toBe(
+                '/intyg/' + intyg.intygType + '/' + intyg.intygTypeVersion + '/' + intyg.intygId + '/');
         });
     });
 

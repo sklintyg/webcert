@@ -18,25 +18,12 @@
  */
 package se.inera.intyg.webcert.web.web.controller.integration;
 
-import com.google.common.base.Strings;
-import com.google.common.collect.ImmutableMap;
-import io.swagger.annotations.Api;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
-import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
-import se.inera.intyg.infra.security.authorities.CommonAuthoritiesResolver;
-import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
-import se.inera.intyg.infra.security.common.model.UserOriginType;
-import se.inera.intyg.schemas.contract.Personnummer;
-import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
-import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
-import se.inera.intyg.webcert.web.service.referens.ReferensService;
-import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
-import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
-import se.inera.intyg.webcert.web.web.controller.integration.dto.PrepareRedirectToIntyg;
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URLEncoder;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
@@ -51,12 +38,28 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
-import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.net.URLEncoder;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+
+import com.google.common.base.Strings;
+import com.google.common.collect.ImmutableMap;
+
+import io.swagger.annotations.Api;
+import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
+import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
+import se.inera.intyg.infra.security.authorities.CommonAuthoritiesResolver;
+import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.infra.security.common.model.UserOriginType;
+import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
+import se.inera.intyg.webcert.web.service.referens.ReferensService;
+import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
+import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
+import se.inera.intyg.webcert.web.web.controller.integration.dto.PrepareRedirectToIntyg;
 
 /**
  * Controller to enable an external user to access certificates directly from a
@@ -118,8 +121,10 @@ public class IntygIntegrationController extends BaseIntegrationController {
      * Fetches a certificate from IT or webcert and then performs a redirect to the view that displays
      * the certificate. Can be used for all types of certificates.
      *
-     * @param intygId  The id of the certificate to view.
-     * @param intygTyp The type of certificate
+     * @param intygId
+     *            The id of the certificate to view.
+     * @param intygTyp
+     *            The type of certificate
      */
     @GET
     @Path("/{certType}/{certId}")
@@ -153,7 +158,6 @@ public class IntygIntegrationController extends BaseIntegrationController {
                 reference, responsibleHospName, alternatePatientSSn, fornamn, mellannamn, efternamn,
                 postadress, postnummer, postort, coherentJournaling, deceased, inactiveUnit, fornyaOk);
 
-
         // Temp. logging in an attempt to track down hashCode failures (hashCode has to be changed for redis updates)
         WebCertUser user = getWebCertUser();
         LOG.info("WebCertUser.hashCode BEFORE parameters update: {}", user.hashCode());
@@ -167,7 +171,8 @@ public class IntygIntegrationController extends BaseIntegrationController {
      * Fetches an certificate from IT or Webcert and then performs a redirect to the view that displays
      * the certificate.
      *
-     * @param intygId The id of the certificate to view.
+     * @param intygId
+     *            The id of the certificate to view.
      */
     @GET
     @Path("{certId}")
@@ -217,14 +222,15 @@ public class IntygIntegrationController extends BaseIntegrationController {
      *
      * Note that this method requires the IntegrationParameters to be present or an exception will be thrown.
      *
-     * @param intygId The id of the certificate to view.
+     * @param intygId
+     *            The id of the certificate to view.
      */
     @GET
     @Path("{certId}/saved")
     @PrometheusTimeMethod
     public Response getRedirectToIntyg(@Context UriInfo uriInfo,
-                                       @PathParam(PARAM_CERT_ID) String intygId,
-                                       @DefaultValue("") @QueryParam(PARAM_ENHET_ID) String enhetId) {
+            @PathParam(PARAM_CERT_ID) String intygId,
+            @DefaultValue("") @QueryParam(PARAM_ENHET_ID) String enhetId) {
 
         Map<String, Object> params = ImmutableMap.of(PARAM_CERT_ID, intygId);
 
