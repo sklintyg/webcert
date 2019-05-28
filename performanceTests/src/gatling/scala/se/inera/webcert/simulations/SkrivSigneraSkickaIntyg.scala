@@ -1,12 +1,14 @@
-package se.inera.webcert
+package se.inera.webcert.simulations
+
 import io.gatling.core.Predef._
 import io.gatling.http.Predef._
-import io.gatling.jdbc.Predef._
+import se.inera.webcert.util.{Conf, Headers, Login, Utils}
+
 import scala.concurrent.duration._
 
 class SkrivSigneraSkickaIntyg extends Simulation {
 
-  val testpersonnummer = csv("data/testpersonnummer_skatteverket_subset.cvs").circular
+  val testpersonnummer = csv("testpersonnummer_skatteverket_subset.cvs").circular
 
   val scn = scenario("SkrivSigneraSkicka")
     .exec(Login.loginAs("Leonie"))

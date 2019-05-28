@@ -1,14 +1,16 @@
-package se.inera.webcert
+package se.inera.webcert.simulations
+
 import io.gatling.core.Predef._
 import io.gatling.http.Predef._
-import io.gatling.jdbc.Predef._
-import scala.concurrent.duration._
+import se.inera.webcert.util.{Conf, Headers, Login, Utils}
+
 import scala.collection.mutable.ListBuffer
+import scala.concurrent.duration._
 
 class FragaSvar extends Simulation {
   var internReferenser = new ListBuffer[String]
 
-  val intyg = csv("data/intyg.csv").circular
+  val intyg = csv("intyg.csv").circular
 
   val scn = scenario("FragaSvar")
     .exec(Login.loginAs("Åsa-Enhet1"))

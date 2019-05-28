@@ -12,8 +12,8 @@ Sekundärt kan man mycket väl köra prestandatesterna mot lokal maskin för att
 ## Konfiguration och loggning
 Om man vill finjustera hur gatling beter sig så finns följande konfigurationsfiler:
 
-- src/test/resources/gatling.conf
-- src/test/resources/logback-test.xml
+- src/gatling/resources/conf/gatling.conf
+- src/gatling/resources/logback-test.xml
 
 Det man ofta vill komma åt är felloggar när ens tester börjar spruta ur sig 500 Server Error eller påstår att de inte kan parsa ut saker ur svaren. Öppna då logback-test.xml och kommentera in följande:
 
@@ -25,19 +25,19 @@ Det man ofta vill komma åt är felloggar när ens tester börjar spruta ur sig 
 Som framgår ovan så kan man slå på antingen all HTTP eller enbart failade request/responses. Ovärderligt då Gatling inte ger särskilt mycket hjälp annat än HTTP Status när något går fel på servern. 
 
 ## Seedning av testdata
-I mappen src/test/resources finns två csv-filer. En med intyg och en med testpersonnummer från skatteverket. (ca 16000 st)
+I mappen src/gatling/resources finns två csv-filer. En med intyg och en med testpersonnummer från skatteverket. (ca 16000 st)
 
 ### Skapa frågor
 Seedning av en enskild fråga kan ske genom följande simulering:
 
-- gradle gatling -DgatlingSimulation=InjiceraFraga
+- gradle gatlingRun-se.inera.webcert.simulations.InjiceraFraga
 
 Vill man seeda in fler frågor är det enklast att redigera InjiceraFraga och ändra users(1) till users(N)
 
 ### Radera frågor
 Man kan även radera frågor som skapats enl. ovan mha:
 
-- gradle gatling -DgatlingSimulation=TaBortFraga
+- gradle gatlingRun-se.inera.webcert.simulations.TaBortFraga
 
 ### Testpersonnummer
 Testpersonnummer används primärt mot demo/QA eller annan miljö där PU-tjänstens testmiljö är aktiv.
@@ -59,11 +59,11 @@ Alternativt kan man ange -Dcertificate.baseUrl=....... på kommandoraden.
 Från command-line fungerar följande:
 
 - Fråga/Svar
-  gradle gatling -DgatlingSimulation=FragaSvar
+  gradle gatlingRun-se.inera.webcert.simulations.FragaSvar
 
   
 - Skriv, signera och skicka intyg
-  gradle gatling -DgatlingSimulation=SkrivSigneraSkickaIntyg
+  gradle gatlingRun-se.inera.webcert.simulations.SkrivSigneraSkickaIntyg
 
 ## Hur följer jag upp utfallet?
 Medan testet kör skriver Gatling ut lite progress-info på command-line men den ger ganska rudimentär information. Det intressanta är att titta på rapporterna som genereras efter att testerna slutförts. Dessa finns under mappen:
