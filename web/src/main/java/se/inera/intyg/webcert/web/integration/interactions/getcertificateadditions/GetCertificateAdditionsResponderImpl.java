@@ -18,10 +18,18 @@
  */
 package se.inera.intyg.webcert.web.integration.interactions.getcertificateadditions;
 
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.apache.cxf.annotations.SchemaValidation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+
 import se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificateadditions.v1.AdditionType;
 import se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificateadditions.v1.GetCertificateAdditionsResponderInterface;
 import se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificateadditions.v1.GetCertificateAdditionsResponseType;
@@ -36,13 +44,6 @@ import se.inera.intyg.webcert.web.util.StreamUtil;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.IIType;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.IntygId;
 import se.riv.clinicalprocess.healthcond.certificate.v3.ResultCodeType;
-
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Created by eriklupander on 2017-05-11.
@@ -80,10 +81,7 @@ public class GetCertificateAdditionsResponderImpl implements GetCertificateAddit
                     .collect(Collectors.toList());
 
             List<Arende> kompletteringar = arendeService.getKompletteringar(extensions);
-            if (!isNullOrEmpty(kompletteringar)) {
-                identifiers.forEach(identity ->
-                        response.getAdditions().add(buildIntygAdditionsType(identity, kompletteringar)));
-            }
+            identifiers.forEach(identity -> response.getAdditions().add(buildIntygAdditionsType(identity, kompletteringar)));
 
             LOG.debug("GetCertificateAdditionsResponderImpl: Successfully returned {} kompletteringar in {} seconds",
                     response.getAdditions().stream().map(IntygAdditionsType::getAddition).mapToLong(List::size).sum(),
@@ -100,10 +98,6 @@ public class GetCertificateAdditionsResponderImpl implements GetCertificateAddit
 
     private boolean isNullOrEmpty(GetCertificateAdditionsType request) {
         return request == null || request.getIntygsId() == null || request.getIntygsId().size() == 0;
-    }
-
-    private boolean isNullOrEmpty(List<Arende> kompletteringar) {
-        return kompletteringar == null || kompletteringar.size() == 0;
     }
 
     private String getExecutionTime(LocalTime start) {

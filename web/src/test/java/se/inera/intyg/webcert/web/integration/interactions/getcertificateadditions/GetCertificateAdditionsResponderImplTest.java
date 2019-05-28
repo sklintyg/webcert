@@ -63,6 +63,9 @@ public class GetCertificateAdditionsResponderImplTest {
 
         GetCertificateAdditionsResponseType additions = testee.getCertificateAdditions("", buildRequest());
         assertEquals(3, additions.getAdditions().size());
+        assertEquals(1, additions.getAdditions().get(0).getAddition().size());
+        assertEquals(1, additions.getAdditions().get(1).getAddition().size());
+        assertEquals(1, additions.getAdditions().get(2).getAddition().size());
     }
 
     @Test
@@ -70,7 +73,10 @@ public class GetCertificateAdditionsResponderImplTest {
         when(arendeService.getKompletteringar(INTYG_IDS)).thenReturn(new ArrayList<>());
 
         GetCertificateAdditionsResponseType additions = testee.getCertificateAdditions("", buildRequest());
-        assertEquals(0, additions.getAdditions().size());
+        assertEquals(3, additions.getAdditions().size());
+        assertEquals(0, additions.getAdditions().get(0).getAddition().size());
+        assertEquals(0, additions.getAdditions().get(1).getAddition().size());
+        assertEquals(0, additions.getAdditions().get(2).getAddition().size());
     }
 
     @Test(expected = IllegalArgumentException.class)
