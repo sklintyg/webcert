@@ -1,7 +1,7 @@
-package se.inera.webcert
-import io.gatling.core.Predef._
-import io.gatling.http.Predef._
-import io.gatling.jdbc.Predef._
+package se.inera.webcert.util
+
+import io.gatling.http.Predef.http
+import io.gatling.core.session.ExpressionWrapper
 
 object Login {
 
@@ -11,9 +11,9 @@ object Login {
     "Leonie" -> """{"forNamn": "Leonie", "efterNamn": "Koehl", "hsaId": "TSTNMT2321000156-103F", "enhetId": "TSTNMT2321000156-1039", "legitimeradeYrkesgrupper": ["Läkare"], "origin": "NORMAL"}""")
 
   def loginAs(login: String) = {
-    http("Login")
-      .post("/fake")
+    http(ExpressionWrapper("Login").expression)
+      .post(ExpressionWrapper("/fake").expression)
       .headers(Headers.form_urlencoded)
-      .formParam("userJsonDisplay", logins(login))
+      .formParam(ExpressionWrapper("userJsonDisplay").expression, ExpressionWrapper(logins(login)).expression)
   }
 }

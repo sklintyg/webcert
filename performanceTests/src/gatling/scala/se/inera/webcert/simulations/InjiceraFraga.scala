@@ -1,8 +1,7 @@
-package se.inera.webcert
+package se.inera.webcert.simulations
+
 import io.gatling.core.Predef._
 import io.gatling.http.Predef._
-import io.gatling.jdbc.Predef._
-import scala.concurrent.duration._
 
 class InjiceraFraga extends Simulation {
 
