@@ -323,6 +323,7 @@ pilots:
     hsaIds:
       - IFV1239877878-1042
       - TSTNMT2321000156-1077
+      - TSTNMT2321000156-105N
     activated:
       - &pf010
         name: *kf120
