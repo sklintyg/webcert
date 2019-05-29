@@ -18,18 +18,17 @@
  */
 package se.inera.intyg.webcert.web.service.monitoring;
 
-import java.util.List;
-
+import com.google.common.base.Joiner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-
-import com.google.common.base.Joiner;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.util.logging.LogMarkers;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.persistence.fragasvar.model.Amne;
+
+import java.util.List;
 
 import static se.inera.intyg.webcert.persistence.fragasvar.model.Amne.KOMPLETTERING_AV_LAKARINTYG;
 
@@ -195,6 +194,11 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
     }
 
     @Override
+    public void logUtkastSignFailed(String errorMessage, String intygsId) {
+        logEvent(MonitoringEvent.UTKAST_SIGN_FAILED, intygsId, errorMessage);
+    }
+
+    @Override
     public void logPULookup(Personnummer personNummer, String result) {
         logEvent(MonitoringEvent.PU_LOOKUP, Personnummer.getPersonnummerHashSafe(personNummer), result);
     }
@@ -356,6 +360,7 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
         UTKAST_REVOKED("Utkast '{}' revoked by '{}' reason '{}' message '{}'"),
         UTKAST_PRINT("Intyg '{}' of type '{}' was printed"),
         UTKAST_READY_NOTIFICATION_SENT("Utkast '{}' of type '{}' was marked as ready and notification was sent"),
+        UTKAST_SIGN_FAILED("Utkast '{}' failed signing process with message '{}'"),
         PU_LOOKUP("Lookup performed on '{}' with result '{}'"),
         PP_TERMS_ACCEPTED("User '{}', personId '{}' accepted private practitioner terms of version '{}'"),
         NOTIFICATION_SENT("Sent notification of type '{}' to unit '{}' for '{}'"),
