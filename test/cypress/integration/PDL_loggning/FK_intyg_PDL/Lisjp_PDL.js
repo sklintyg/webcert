@@ -103,11 +103,6 @@ describe('LISJP-intyg', function () {
         pdlEventArray.push(lisjpPdlEvent(this, pdl.enumHandelse.LÄSA, pdl.enumHandelseArgument.LÄSASJF, this.utkastId, this.vårdenhet_2.uppdragsnamn, this.vårdenhet_2.vårdgivareId, this.vårdenhet_2.vårdgivareNamn, this.vårdenhet_2.id, this.vårdenhet_2.namn));
         cy.log(this.utkastId + this.vårdenhet_2.vårdgivareId + this.vårdenhet_2.vårdgivareNamn + this.vårdenhet_2.id + this.vårdenhet_2.namn);
 
-        // Skriver ut intyget samt populerar pdl-arrayen med förväntad logpost "Utskrift"
-        intyg.skrivUt("minimalt", this.utkastId);
-        pdlEventArray.push(lisjpPdlEvent(this, pdl.enumHandelse.UTSKRIFT, pdl.enumHandelseArgument.UTSKRIFTSJF, 
-            this.utkastId, this.vårdenhet_2.uppdragsnamn, this.vårdenhet_2.vårdgivareId, this.vårdenhet_2.vårdgivareNamn, this.vårdenhet_2.id, this.vårdenhet_2.namn));
-
         cy.log("Testar återigen utan SJF");
 
         // Lite special logga ut/logga in -variant för att sedan öppna intyget på nytt med en ny session

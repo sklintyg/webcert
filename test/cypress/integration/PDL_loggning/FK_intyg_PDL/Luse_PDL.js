@@ -101,13 +101,6 @@ describe('LUSE-intyg', function () {
         cy.url().should('include', this.utkastId);
         pdlEventArray.push(lusePdlEvent(this, pdl.enumHandelse.LÄSA, pdl.enumHandelseArgument.LÄSASJF, this.utkastId, this.vårdenhet_2.uppdragsnamn, this.vårdenhet_2.vårdgivareId, this.vårdenhet_2.vårdgivareNamn, this.vårdenhet_2.id, this.vårdenhet_2.namn));
 
-        // Om vi inte väntar på (valfritt) elementet nedan i intyget
-        // så kommer "utskrift" att inträffa före "läsa"
-        cy.contains("Grund för medicinskt underlag");
-        intyg.skrivUt("fullständigt", this.utkastId);
-        pdlEventArray.push(lusePdlEvent(this, pdl.enumHandelse.UTSKRIFT, pdl.enumHandelseArgument.UTSKRIFTSJF, 
-            this.utkastId, this.vårdenhet_2.uppdragsnamn, this.vårdenhet_2.vårdgivareId, this.vårdenhet_2.vårdgivareNamn, this.vårdenhet_2.id, this.vårdenhet_2.namn));
-
         cy.log("Testar återigen utan SJF");
 
         // Lite special logga ut/logga in -variant för att sedan öppna intyget på nytt med en ny session
