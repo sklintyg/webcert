@@ -69,10 +69,7 @@ describe('LUSE-intyg', function () {
 
         intyg.sektionFunktionsnedsättningar(this.intygsdata.funkNedsättningar);
         intyg.sektionAktivitetsbegränsningar(this.intygsdata.aktivitetsbegränsningar);
-        intyg.sektionMedicinskBehandling(this.intygsdata.medicinskBehandling);
         intyg.sektionMedicinskaFörutsättningarFörArbete(this.intygsdata.medicinskaFörutsättningar);
-        intyg.sektionÖvrigt(this.intygsdata.övrigt);
-        intyg.sektionKontakt(this.intygsdata.kontakt);
         pdlEventArray.push(lusePdlEvent(this, pdl.enumHandelse.SKRIVA, undefined, this.utkastId, this.vårdenhet.uppdragsnamn, this.vårdenhet.vårdgivareId, this.vårdenhet.vårdgivareNamn, this.vårdenhet.id, this.vårdenhet.namn));
 
         // ToDo: Ska vi skriva ut utkast och verifiera PDL?

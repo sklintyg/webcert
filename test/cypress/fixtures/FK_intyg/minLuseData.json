@@ -4,23 +4,10 @@
             "minUndersökning": true,
             "journaluppgifter": false,
             "anhörigsBeskrivning": false,
-            "annat": false,
-            "annatText": "Psykologutlåtande"
+            "annat": false
         },
         "andraUtredningarEllerUnderlag": {
-            "ja": false,
-            "rad1": {
-                "underlagstyp": "Neuropsykiatriskt utlåtande",
-                "underlagHämtasFrån": "Psykiatriska mottagningen X-stad"
-            },
-            "rad2": {
-                "underlagstyp": "Underlag från habiliteringen",
-                "underlagHämtasFrån": "Barn- och ungdomspsykiatriska avdelningen Y-stad"
-            },
-            "rad3": {
-                "underlagstyp": "Övrigt",
-                "underlagHämtasFrån": "Rättspsykiatriska kliniken X-stad"
-            }
+            "ja": false
         }
     },
 
@@ -29,12 +16,9 @@
             "kod": "f310",
             "text": "Bipolär sjukdom, hypoman episod"
         },
-        "rad2": false,
-        "rad3": false,
         "diagnosgrund": "Autismen fastställd vid BUP, och bipolär sjukdom fastställd vid rättspsykiatriska kliniken.",
         "revidera": {
-            "ja": false,
-            "text": "Alkoholberoendet"
+            "ja": false
         }
     },
 
@@ -45,35 +29,14 @@
     "funkNedsättningar": {
         "intellektuell": {
             "text": "WAIS-IV visade allmänna intellektuella nivåer, på genomsnittlig nivå är verbala förmågan starkast, snabbhet som svagast, klart under genomsnittet."
-        },
-        "kommunikation": false,
-        "koncentration": false,
-        "psykisk": false,
-        "sinnesfunktionerOchSmärta": false,
-        "balansOchKoordination": false,
-        "annan": false
+        }
     },
 
     "aktivitetsbegränsningar": {
         "text": "Stora svårigheter att på egen hand sköta sitt hem och planera aktiviteter på vardagarna."
     },
 
-    "medicinskBehandling": {
-        "avslutadBehandling": false,
-        "pågåendeBehandling": false,
-        "planeradBehandling": false,
-        "substansintag": false
-    },
-
     "medicinskaFörutsättningar": {
-        "utvecklingÖverTid": "Patienten har under längre tid, med ett välplanerat schema med utökade aktiviteter och krav försökt etablera sig på arbetsmarknaden eller med studier. Men utan framgång, och bedöms inte heller ha förmågan att kunna tillgodogöra sig en sådan förmåga.",
-        "förmågaTrotsBegränsning": false
-    },
-
-    "övrigt": false,
-
-    "kontakt": {
-        "ja": false,
-        "text": "Jag kompletterar gärna underlaget."
+        "utvecklingÖverTid": "Patienten har under längre tid, med ett välplanerat schema med utökade aktiviteter och krav försökt etablera sig på arbetsmarknaden eller med studier. Men utan framgång, och bedöms inte heller ha förmågan att kunna tillgodogöra sig en sådan förmåga."
     }
 }
