@@ -38,6 +38,7 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
 import static javax.ws.rs.core.Response.ok;
 import static javax.ws.rs.core.Response.status;
+import static se.inera.intyg.webcert.web.web.controller.api.dto.MonitoringRequest.ERROR_MESSAGE;
 import static se.inera.intyg.webcert.web.web.controller.api.dto.MonitoringRequest.HEIGHT;
 import static se.inera.intyg.webcert.web.web.controller.api.dto.MonitoringRequest.INTYG_ID;
 import static se.inera.intyg.webcert.web.web.controller.api.dto.MonitoringRequest.INTYG_TYPE;
@@ -78,6 +79,9 @@ public class JsLogApiController extends AbstractApiController {
             break;
         case DIAGNOSKODVERK_CHANGED:
             monitoringService.logDiagnoskodverkChanged(request.getInfo().get(INTYG_ID), request.getInfo().get(INTYG_TYPE));
+            break;
+        case SIGNING_FAILED:
+            monitoringService.logUtkastSignFailed(request.getInfo().get(ERROR_MESSAGE), request.getInfo().get(INTYG_ID));
             break;
         }
         return ok().build();

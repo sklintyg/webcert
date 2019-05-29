@@ -26,6 +26,7 @@ public class MonitoringRequest {
     public static final String HEIGHT = "height";
     public static final String INTYG_ID = "intygId";
     public static final String INTYG_TYPE = "intygType";
+    public static final String ERROR_MESSAGE = "errorMessage";
     private MonitoringRequestEvent event;
     private Map<String, String> info;
 
@@ -54,12 +55,15 @@ public class MonitoringRequest {
             return info != null && info.get(WIDTH) != null && info.get(HEIGHT) != null;
         case DIAGNOSKODVERK_CHANGED:
             return info != null && info.get(INTYG_ID) != null && info.get(INTYG_TYPE) != null;
+        case SIGNING_FAILED:
+            return info != null && info.get(ERROR_MESSAGE) != null && info.get(INTYG_ID) != null;
         }
         return true;
     }
 
     public enum MonitoringRequestEvent {
         SCREEN_RESOLUTION,
-        DIAGNOSKODVERK_CHANGED
+        DIAGNOSKODVERK_CHANGED,
+        SIGNING_FAILED
     }
 }
