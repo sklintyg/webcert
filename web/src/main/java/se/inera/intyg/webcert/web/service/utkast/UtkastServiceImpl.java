@@ -341,15 +341,25 @@ public class UtkastServiceImpl implements UtkastService {
     @Override
     @Transactional(readOnly = true)
     public Utkast getDraft(String intygId, String intygType) {
+        return getDraft(intygId, intygType, true);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Utkast getDraft(String intygId, String intygType, boolean createPdlLogEvent) {
         Utkast utkast = getIntygAsDraft(intygId, intygType);
-        LogRequest logRequest = logRequestFactory.createLogRequestFromUtkast(utkast);
+
         abortIfUserNotAuthorizedForUnit(utkast.getVardgivarId(), utkast.getEnhetsId());
 
-        // Log read to PDL
-        logService.logReadIntyg(logRequest);
+        if (createPdlLogEvent) {
+            // Log read to PDL
+            LogRequest logRequest = logRequestFactory.createLogRequestFromUtkast(utkast);
+            logService.logReadIntyg(logRequest);
 
-        // Log read to monitoring log
-        monitoringService.logUtkastRead(utkast.getIntygsId(), utkast.getIntygsTyp());
+            // Log read to monitoring log
+            monitoringService.logUtkastRead(utkast.getIntygsId(), utkast.getIntygsTyp());
+        }
+
         return utkast;
     }
 
