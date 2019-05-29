@@ -19,7 +19,7 @@ describe('AF00251-intyg', function () {
         cy.fixture('vårdpersonal/arnoldJohansson').as('vårdpersonal');
         cy.fixture('vårdenheter/alfaEnheten').as('vårdenhet');
         cy.fixture('vårdenheter/nmt_vg1_ve1').as('vårdenhet_2');
-        cy.fixture('vårdtagare/tolvanTolvansson').as('vårdtagare');
+        cy.fixture('vårdtagare/balanarNattjagare').as('vårdtagare');
     })
 
     beforeEach(function() {

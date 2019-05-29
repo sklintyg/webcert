@@ -9,7 +9,7 @@ describe('LUAE-NA-intyg', function () {
         cy.fixture('FK_intyg/maxLuaeNaData').as('intygsdata');
         cy.fixture('vårdpersonal/arnoldJohansson').as('vårdpersonal');
         cy.fixture('vårdenheter/alfaEnheten').as('vårdenhet');
-        cy.fixture('vårdtagare/tolvanTolvansson').as('vårdtagare');
+        cy.fixture('vårdtagare/balanarNattjagare').as('vårdtagare');
     });
 
     beforeEach(function() {
