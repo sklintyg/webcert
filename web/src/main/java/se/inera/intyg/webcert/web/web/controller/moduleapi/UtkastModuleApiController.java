@@ -249,7 +249,7 @@ public class UtkastModuleApiController extends AbstractApiController {
             @PathParam("version") long version,
             @DefaultValue("false") @QueryParam("autoSave") boolean autoSave, byte[] payload, @Context HttpServletRequest request) {
 
-        Utkast utkast = utkastService.getDraft(intygsId, intygsTyp);
+        Utkast utkast = utkastService.getDraft(intygsId, intygsTyp, false);
 
         validateAllowToEditUtkast(utkast);
 
@@ -293,7 +293,7 @@ public class UtkastModuleApiController extends AbstractApiController {
     public Response validateDraft(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId,
             byte[] payload) {
 
-        Utkast utkast = utkastService.getDraft(intygsId, intygsTyp);
+        Utkast utkast = utkastService.getDraft(intygsId, intygsTyp, false);
 
         validateAllowToEditUtkast(utkast);
 
@@ -361,7 +361,7 @@ public class UtkastModuleApiController extends AbstractApiController {
             @PathParam("version") long version,
             @Context HttpServletRequest request) {
 
-        Utkast utkast = utkastService.getDraft(intygsId, intygsTyp);
+        Utkast utkast = utkastService.getDraft(intygsId, intygsTyp, false);
 
         validateAllowToDeleteUtkast(utkast);
 
@@ -395,7 +395,7 @@ public class UtkastModuleApiController extends AbstractApiController {
     public Response revokeLockedDraft(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId,
             RevokeSignedIntygParameter param) {
 
-        Utkast utkast = utkastService.getDraft(intygsId, intygsTyp);
+        Utkast utkast = utkastService.getDraft(intygsId, intygsTyp, false);
 
         validateAllowToInvalidateLockedUtkast(utkast);
 

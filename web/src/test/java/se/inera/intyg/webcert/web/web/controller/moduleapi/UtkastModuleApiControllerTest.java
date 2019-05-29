@@ -22,6 +22,7 @@ import static javax.ws.rs.core.Response.Status.OK;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
@@ -284,7 +285,7 @@ public class UtkastModuleApiControllerTest {
         when(utkastService.saveDraft(intygId, UTKAST_VERSION, draftAsJson, true))
                 .thenReturn(new SaveDraftResponse(UTKAST_VERSION, UtkastStatus.DRAFT_COMPLETE));
 
-        doReturn(buildUtkast("intygtyp", "intygsid")).when(utkastService).getDraft(anyString(), anyString());
+        doReturn(buildUtkast("intygtyp", "intygsid")).when(utkastService).getDraft(anyString(), anyString(), anyBoolean());
 
         Response response = moduleApiController.saveDraft(intygTyp, intygId, UTKAST_VERSION, false, payload, request);
 
@@ -301,7 +302,7 @@ public class UtkastModuleApiControllerTest {
         setupUser(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG, intygTyp, false, AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);
 
         when(utkastService.saveDraft(intygId, UTKAST_VERSION, draftAsJson, true)).thenThrow(new OptimisticLockException(""));
-        doReturn(buildUtkast("intygtyp", "intygsid")).when(utkastService).getDraft(anyString(), anyString());
+        doReturn(buildUtkast("intygtyp", "intygsid")).when(utkastService).getDraft(anyString(), anyString(), anyBoolean());
 
         try {
             moduleApiController.saveDraft(intygTyp, intygId, UTKAST_VERSION, false, payload, request);
@@ -320,7 +321,7 @@ public class UtkastModuleApiControllerTest {
 
         when(utkastService.validateDraft(intygId, intygTyp, draftAsJson)).thenReturn(buildDraftValidation());
 
-        doReturn(buildUtkast("intygtyp", "intygsid")).when(utkastService).getDraft(anyString(), anyString());
+        doReturn(buildUtkast("intygtyp", "intygsid")).when(utkastService).getDraft(anyString(), anyString(), anyBoolean());
 
         Response response = moduleApiController.validateDraft(intygTyp, intygId, payload);
 
@@ -334,7 +335,7 @@ public class UtkastModuleApiControllerTest {
         String intygId = "intyg1";
         setupUser(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG, intygTyp, false, AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);
 
-        doReturn(buildUtkast("intygtyp", "intygsid")).when(utkastService).getDraft(anyString(), anyString());
+        doReturn(buildUtkast("intygtyp", "intygsid")).when(utkastService).getDraft(anyString(), anyString(), anyBoolean());
 
         Response response = moduleApiController.discardDraft(intygTyp, intygId, UTKAST_VERSION, request);
 
@@ -355,7 +356,7 @@ public class UtkastModuleApiControllerTest {
 
         when(utkastService.validateDraft(intygId, intygTyp, draftAsJson)).thenReturn(draftValidation);
 
-        doReturn(buildUtkast("intygtyp", "intygsid")).when(utkastService).getDraft(anyString(), anyString());
+        doReturn(buildUtkast("intygtyp", "intygsid")).when(utkastService).getDraft(anyString(), anyString(), anyBoolean());
 
         Response response = moduleApiController.validateDraft(intygTyp, intygId, payload);
 
@@ -427,7 +428,7 @@ public class UtkastModuleApiControllerTest {
         setupUser(AuthoritiesConstants.PRIVILEGE_MAKULERA_INTYG, intygTyp, false, AuthoritiesConstants.FEATURE_MAKULERA_INTYG);
         RevokeSignedIntygParameter param = new RevokeSignedIntygParameter();
 
-        doReturn(buildUtkast("intygtyp", "intygsid")).when(utkastService).getDraft(anyString(), anyString());
+        doReturn(buildUtkast("intygtyp", "intygsid")).when(utkastService).getDraft(anyString(), anyString(), anyBoolean());
 
         Response response = moduleApiController.revokeLockedDraft(intygTyp, intygId, param);
 
