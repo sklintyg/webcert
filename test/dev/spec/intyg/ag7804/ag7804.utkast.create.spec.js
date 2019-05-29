@@ -61,10 +61,10 @@ describe('Create and Sign an AG7804 utkast', function() {
             });
             it('angeArbetsformaga', function() {
                 UtkastPage.angeArbetsformaga(data.arbetsformaga);
-                UtkastPage.enableAutosave();
             });
             it('angeOvrigaUpplysningar', function() {
                 UtkastPage.angeOvrigt(data.ovrigt);
+                UtkastPage.enableAutosave();
             });
             it('angeKontaktMedAg', function() {
                 UtkastPage.angeKontakt(data.kontaktMedAg, data.anledningTillKontakt);
@@ -80,16 +80,18 @@ describe('Create and Sign an AG7804 utkast', function() {
 
         });
 
-        it('Verifiera intyg', function() {
+        it('Wait until intyg in IT', function() {
             // Om intyget inte hunnit processas av IT så hämtas det från WC. Då är inte uppgifter flyttade till övriga
             // upplysningar ännu.
             // Vänta tills intyget tagits emot av IT. Ladda därefter om sidan så datan säkert kommer från IT.
             IntygPage.waitUntilIntygInIT(utkastId);
             browser.refresh();
+        });
 
+        it('Verifiera intyg', function() {
             IntygPage.whenCertificateLoaded().then(function() {
-		        IntygPage.verify(data);
-		    });
+                IntygPage.verify(data);
+            });
 
             expect(IntygPage.skrivUtBtn.isDisplayed()).toBeTruthy();
         });
