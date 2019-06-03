@@ -37,7 +37,32 @@ public interface UtkastService {
 
     Utkast createNewDraft(CreateNewDraftRequest request);
 
+    /**
+     * Retrieves an utkast and always create a PDL log event.
+     *
+     * @param intygId
+     *            utkast id
+     * @param intygType
+     *            utkast type
+     * @return
+     *         Utkast
+     */
     Utkast getDraft(String intygId, String intygType);
+
+    /**
+     * Retrieves an utkast and will only create a PDL log event if createPdlLogEvent is set as true.
+     *
+     * Can be used when the utkast need to be retrieved for another service but won't be returned to the user.
+     *
+     * @param intygId
+     *            utkast id
+     * @param intygType
+     *            utkast type
+     * @param createPdlLogEvent
+     *            true if a PDL log event should be logged.
+     * @return Utkast
+     */
+    Utkast getDraft(String intygId, String intygType, boolean createPdlLogEvent);
 
     Utkast setNotifiedOnDraft(String intygsId, long version, Boolean notified);
 
@@ -66,8 +91,10 @@ public interface UtkastService {
      * Returns a Map of either "Utkast" or "Intyg" to Map of String, Boolean, where String is the intyg type and the
      * Boolean indicates that a previous Intyg or Utkast of the same type exists within the same caregiver.
      *
-     * @param personnummer the personnummer of the patient to check for existing intyg
-     * @param user         the intended creator of the certificate or the logged in user
+     * @param personnummer
+     *            the personnummer of the patient to check for existing intyg
+     * @param user
+     *            the intended creator of the certificate or the logged in user
      * @return
      */
     Map<String, Map<String, PreviousIntyg>> checkIfPersonHasExistingIntyg(Personnummer personnummer, IntygUser user);
