@@ -350,7 +350,7 @@ public class IntygServiceImpl implements IntygService {
     }
 
     @Override
-    public IntygPdf fetchIntygAsPdf(String intygsId, String intygsTyp, boolean isEmployer) {
+    public IntygPdf fetchIntygAsPdf(String intygsId, String intygsTyp, boolean isEmployerCopy) {
         try {
             LOG.debug("Fetching intyg '{}' as PDF", intygsId);
 
@@ -373,13 +373,13 @@ public class IntygServiceImpl implements IntygService {
                 throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, "Can't print revoked certificate.");
             }
 
-            validateAccessToPrintIntyg(intyg.getUtlatande(), isEmployer);
+            validateAccessToPrintIntyg(intyg.getUtlatande(), isEmployerCopy);
 
             IntygPdf intygPdf = modelFacade.convertFromInternalToPdfDocument(intygsTyp, intyg.getContents(), intyg.getStatuses(),
-                    utkastStatus, isEmployer);
+                    utkastStatus, isEmployerCopy);
 
             // Log print as PDF to PDL log
-            logPdfPrinting(intyg, userIsDjupintegreradWithSjf());
+            logPdfPrinting(intyg, userIsDjupintegreradWithSjf(), isEmployerCopy);
 
             return intygPdf;
 
@@ -404,7 +404,7 @@ public class IntygServiceImpl implements IntygService {
      *
      * @param intyg
      */
-    private void logPdfPrinting(IntygContentHolder intyg, boolean coherentJournaling) {
+    private void logPdfPrinting(IntygContentHolder intyg, boolean coherentJournaling, boolean isEmployerCopy) {
 
         final String intygsId = intyg.getUtlatande().getId();
         final String intygsTyp = intyg.getUtlatande().getTyp();
@@ -423,7 +423,7 @@ public class IntygServiceImpl implements IntygService {
                 monitoringService.logRevokedPrint(intygsId, intygsTyp);
             } else {
                 logService.logPrintIntygAsPDF(logRequest);
-                monitoringService.logIntygPrintPdf(intygsId, intygsTyp);
+                monitoringService.logIntygPrintPdf(intygsId, intygsTyp, isEmployerCopy);
             }
         }
     }
