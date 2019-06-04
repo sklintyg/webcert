@@ -20,6 +20,7 @@ package se.inera.intyg.webcert.web.service.notification;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +29,7 @@ import org.springframework.jms.JmsException;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
 import org.springframework.mail.MailSendException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
@@ -51,6 +53,7 @@ import se.inera.intyg.webcert.web.service.mail.MailNotification;
 import se.inera.intyg.webcert.web.service.mail.MailNotificationService;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.referens.ReferensService;
+import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.Amneskod;
 
 import javax.annotation.PostConstruct;
@@ -443,11 +446,14 @@ public class NotificationServiceImpl implements NotificationService {
 
         String notificationMessageAsJson = notificationMessageToJson(notificationMessage);
 
+        WebCertUser webCertUser = (WebCertUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
         try {
             jmsTemplateForAggregation.send(
                     new NotificationMessageCreator(
                             notificationMessageAsJson, notificationMessage.getIntygsId(), notificationMessage.getIntygsTyp(),
-                            intygTypeVersion, notificationMessage.getHandelse()));
+                            intygTypeVersion, notificationMessage.getHandelse(),
+                            Objects.isNull(webCertUser) ? null : webCertUser.getHsaId()));
         } catch (JmsException e) {
             LOGGER.error("Could not send message", e);
             throw e;
@@ -501,14 +507,17 @@ public class NotificationServiceImpl implements NotificationService {
         private final String intygsTyp;
         private final String intygTypeVersion;
         private final HandelsekodEnum handelseTyp;
+        private final String userId;
 
         private NotificationMessageCreator(String notificationMessage, String intygsId, String intygsTyp, String intygTypeVersion,
-                                           HandelsekodEnum handelseTyp) {
+                                           HandelsekodEnum handelseTyp,
+                                           String userId) {
             this.value = notificationMessage;
             this.intygsId = intygsId;
             this.intygsTyp = intygsTyp;
             this.intygTypeVersion = intygTypeVersion;
             this.handelseTyp = handelseTyp;
+            this.userId = userId;
         }
 
         /**
@@ -521,6 +530,7 @@ public class NotificationServiceImpl implements NotificationService {
             textMessage.setStringProperty(NotificationRouteHeaders.INTYGS_TYP, this.intygsTyp);
             textMessage.setStringProperty(NotificationRouteHeaders.INTYG_TYPE_VERSION, this.intygTypeVersion);
             textMessage.setStringProperty(NotificationRouteHeaders.HANDELSE, this.handelseTyp.value());
+            textMessage.setStringProperty(NotificationRouteHeaders.USER_ID, this.userId);
             return textMessage;
         }
     }

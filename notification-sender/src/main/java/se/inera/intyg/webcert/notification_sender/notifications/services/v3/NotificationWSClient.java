@@ -19,23 +19,27 @@
 package se.inera.intyg.webcert.notification_sender.notifications.services.v3;
 
 // CHECKSTYLE:OFF LineLength
+
+import java.util.Objects;
 import org.apache.camel.Header;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.infra.security.authorities.FeaturesHelper;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
-import se.inera.intyg.webcert.common.sender.exception.PermanentException;
 import se.inera.intyg.webcert.common.sender.exception.DiscardCandidateException;
+import se.inera.intyg.webcert.common.sender.exception.PermanentException;
 import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
 import se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareResponderInterface;
-import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareResponseType;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareType;
+import se.riv.clinicalprocess.healthcond.certificate.types.v3.HsaId;
 import se.riv.clinicalprocess.healthcond.certificate.v3.ErrorIdType;
 import se.riv.clinicalprocess.healthcond.certificate.v3.ResultType;
+
+
+import static se.inera.intyg.common.support.Constants.HSA_ID_OID;
 // CHECKSTYLE:ON LineLength
 
 public class NotificationWSClient {
@@ -49,22 +53,16 @@ public class NotificationWSClient {
     private FeaturesHelper featuresHelper;
 
     public void sendStatusUpdate(CertificateStatusUpdateForCareType request,
-            @Header(NotificationRouteHeaders.LOGISK_ADRESS) String logicalAddress)
+                                 @Header(NotificationRouteHeaders.LOGISK_ADRESS) String logicalAddress,
+                                 @Header(NotificationRouteHeaders.USER_ID) String userId)
             throws TemporaryException, DiscardCandidateException, PermanentException {
 
-        LOG.debug("RehabstodAuthoritiesResolverTes to '{}' for intyg '{}'", logicalAddress,
-                request.getIntyg().getIntygsId().getExtension());
-
-        CertificateStatusUpdateForCareResponseType response = null;
-
-        try {
-            response = statusUpdateForCareClient.certificateStatusUpdateForCare(logicalAddress, request);
-        } catch (Exception e) {
-            LOG.warn("Exception occured when sending status update: {}", e.getMessage());
-            throw new TemporaryException(e);
+        if (Objects.nonNull(userId)) {
+            request.setHanteratAv(hsaId(userId));
         }
 
-        ResultType result = response.getResult();
+        final ResultType result = exchange(logicalAddress, request);
+
         switch (result.getResultCode()) {
         case ERROR:
             if (ErrorIdType.TECHNICAL_ERROR.equals(result.getErrorId())) {
@@ -96,6 +94,27 @@ public class NotificationWSClient {
         case OK:
             break;
         }
+    }
 
+    //
+    ResultType exchange(String logicalAddress, CertificateStatusUpdateForCareType request) throws TemporaryException {
+        try {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Send status update to '{}' for intyg '{}'", logicalAddress,
+                        request.getIntyg().getIntygsId().getExtension());
+            }
+            return statusUpdateForCareClient.certificateStatusUpdateForCare(logicalAddress, request).getResult();
+        } catch (Exception e) {
+            LOG.warn("Exception occured when sending status update: {}", e.getMessage());
+            throw new TemporaryException(e);
+        }
+    }
+
+    //
+    HsaId hsaId(String id) {
+        final HsaId hsaId = new HsaId();
+        hsaId.setExtension(id);
+        hsaId.setRoot(HSA_ID_OID);
+        return hsaId;
     }
 }
