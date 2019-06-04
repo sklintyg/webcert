@@ -51,7 +51,7 @@ public interface MonitoringLogService extends AuthenticationLogger {
 
     void logIntygRevokeStatusRead(String intygsId, String intygsTyp);
 
-    void logIntygPrintPdf(String intygsId, String intygsTyp);
+    void logIntygPrintPdf(String intygsId, String intygsTyp, boolean isEmployerCopy);
 
     void logIntygSigned(String intygsId, String intygsTyp, String userHsaId, String authScheme, RelationKod relationCode);
 
