@@ -243,7 +243,6 @@ features:
     desc: Hantera utkast för avlidna patienter
     global: true
     intygstyper:
-      - *ki080 # DB
       - *ki090 # DOI
   - &f140
     name: *kf140
