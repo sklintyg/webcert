@@ -54,5 +54,6 @@ export const enumHandelseArgument = {
     AF: "Intyg skickat till mottagare AF",
     LÄSASJF: "Läsning i enlighet med sammanhållen journalföring",
     UTSKRIFT: "Intyg utskrivet",
-    UTSKRIFTUTKAST: "Utkastet utskrivet"
+    UTSKRIFTUTKAST: "Utkastet utskrivet",
+    SRS: "Prediktion från SRS av risk för lång sjukskrivning"
 };
