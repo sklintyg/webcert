@@ -1,4 +1,4 @@
-{
+vårdenhet = {
     "id": "TSTNMT2321000156-1003",
     "namn": "nmt_vg1_ve1",
     "vårdgivareId": "TSTNMT2321000156-1002",

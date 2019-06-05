@@ -1,4 +1,4 @@
-{
+patient = {
     "förnamn": "Tolvan",
     "efternamn": "Tolvansson",
     "personnummerKompakt": "191212121212",
