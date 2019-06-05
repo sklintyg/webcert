@@ -1,3 +1,5 @@
+import * as fk from './fk_helpers'
+
 // Intyget är uppdelat på samma sätt som det är uppdelat när det fylls i genom WebCert
 
 // Datumen är inte specifika för något testfall
@@ -216,20 +218,13 @@ export function sektionÅtgärder(åtgärder) {
 }
 
 // -------------------- 'Övriga upplysningar' --------------------
-export function sektionÖvrigaUpplysningar(övrigaUpplysningar) {
-    if (övrigaUpplysningar) {
-        cy.get("#ovrigt").type(övrigaUpplysningar);
-    }
+export function sektionÖvrigaUpplysningar(övrigt) {
+    fk.sektionÖvrigt(övrigt);
 }
 
 // -------------------- 'Kontakt' --------------------
 export function sektionKontakt(kontakt) {
-    if (kontakt.jagÖnskarKontakt) {
-        cy.get("#kontaktMedFk").check();
-        if (kontakt.anledningKontaktMedFK) {
-            cy.get("#anledningTillKontakt").type(kontakt.anledningKontaktMedFK);
-        }
-    }
+    fk.sektionKontakt(kontakt);
 }
 
 // -------------------- 'Vårdenhetens adress' --------------------
@@ -237,31 +232,7 @@ export function sektionKontakt(kontakt) {
 
 // -------------------- 'Signera intyget' --------------------
 export function signera() {
-    // TODO: Utan wait så tappas ofta slutet på texten bort i sista textboxen.
-    // Antagligen hinner WebCert inte auto-spara innan man trycker på "signera".
-    // Wait är dock ett anti-pattern så finns något annat sätt så är det att föredra.
-    cy.wait(1000);
-
-    cy.contains("Klart att signera");
-    cy.contains("Obligatoriska uppgifter saknas").should('not.exist');
-    cy.contains("Utkastet sparas").should('not.exist');
-
-    // cy.click() fungerar inte alltid. Det finns ärenden rapporterade
-    // (stängd pga inaktivitet):
-    // https://github.com/cypress-io/cypress/issues/2551
-    // https://www.cypress.io/blog/2019/01/22/when-can-the-test-click/ :
-    // "If a tree falls in the forest and no one has attached a “fall” event listener, did it really fall?"
-
-    const click = $el => { return $el.click() }
-
-    // Parent() p.g.a. att ett element täcker knappen
-    cy.get('#signera-utkast-button').parent().should('be.visible')
-
-    cy.get('#signera-utkast-button')
-    .pipe(click, {timeout: 60000}) // ToDo: Lång timeout (problem endast på Jenkins, överlastad slav?)
-    .should($el => {
-        expect($el.parent()).to.not.be.visible;
-    })
+    fk.signera();
 
     // Välj intygsmottagare
     // TODO: Ger en utökad timeout då modalen i perioder inte hinner laddas. Detta bör ses över
@@ -271,11 +242,7 @@ export function signera() {
 
 // -------------------- 'Skicka intyget' --------------------
 export function skickaTillFk() {
-    cy.get("#sendBtn", { timeout: 60000 }).click();
-
-    // Modal som dyker upp och frågar om man verkligen vill skicka
-    cy.get("#button1send-dialog").click();
-    cy.contains("Intyget är skickat till Försäkringskassan");
+    fk.skickaTillFk();
 }
 
 // -------------------- 'Skriv ut intyget' --------------------
@@ -307,19 +274,10 @@ export function fornya() {
 
 // ------------------'Radera utkast'--------------------------
 export function raderaUtkast() {
-    cy.get('#ta-bort-utkast').click();
-    cy.get('#confirm-draft-delete-button').click();   
+    fk.raderaUtkast();
 }
 
 // ------------------'Makulera intyg'-------------------------
 export function makuleraIntyg(arg) {
-    cy.get('#makuleraBtn').click();
-    if (arg === "Annat allvarligt fel") {
-        cy.get('#reason-ANNAT_ALLVARLIGT_FEL').check();
-        cy.get('#clarification-ANNAT_ALLVARLIGT_FEL').type('Testanledning');
-        cy.get('#button1makulera-dialog').click();
-    } else {
-        cy.get('#reason-FEL_PATIENT').check();
-        cy.get('#button1makulera-dialog').click();
-    }
+    fk.makuleraIntyg(arg);
 }

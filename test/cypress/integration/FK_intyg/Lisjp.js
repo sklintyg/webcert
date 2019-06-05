@@ -44,7 +44,7 @@ describe('LISJP-intyg', function () {
         intyg.sektionMedicinskBehandling(this.intygsdata.medicinskBehandling);
         intyg.sektionBedömning(this.intygsdata.bedömning);
         intyg.sektionÅtgärder(this.intygsdata.åtgärder);
-        intyg.sektionÖvrigaUpplysningar(this.intygsdata.övrigaUpplysningar);
+        intyg.sektionÖvrigaUpplysningar(this.intygsdata.övrigt);
         intyg.sektionKontakt(this.intygsdata.kontakt);
         intyg.signera();
         intyg.skickaTillFk();
