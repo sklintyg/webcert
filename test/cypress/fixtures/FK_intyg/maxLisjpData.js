@@ -1,4 +1,4 @@
-{
+fk = {
     "grundFörMedicinsktUnderlag": {
         "intygetÄrBaseratPå": {
             "minUndersökning": true,

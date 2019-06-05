@@ -1,21 +1,21 @@
-{
+ts = {
     "intygetAvser": {
-        "AM": true,
-        "A1": true,
-        "A2": true,
-        "A": true,
+        "AM": false,
+        "A1": false,
+        "A2": false,
+        "A": false,
         "B": true,
-        "BE": true,
-        "Traktor": true,
-        "C1": true,
-        "C1E": true,
-        "C": true,
-        "CE": true,
-        "D1": true,
-        "D1E": true,
-        "D": true,
-        "DE": true,
-        "Taxi": true
+        "BE": false,
+        "Traktor": false,
+        "C1": false,
+        "C1E": false,
+        "C": false,
+        "CE": false,
+        "D1": false,
+        "D1E": false,
+        "D": false,
+        "DE": false,
+        "Taxi": false
     },
 
     "identitet": {
@@ -29,22 +29,22 @@
 
     "Allmänt": {
         "diabetes": {
-            "typ1": false,
+            "typ1": true,
             "typ2": false,
-            "annan": true,
+            "annan": false,
             "annanText": "Sockersjukan"
         },
         "behandling": {
             "kost": true,
             "tabletter": {
-                "ja": true,
+                "ja": false,
                 "hypoglykemiRisk": true
             },
             "insulin": {
-                "ja": true
+                "ja": false
             },
             "annanBehandling": {
-                "ja": true,
+                "ja": false,
                 "text": "Hypnos"
             }
         }
@@ -64,36 +64,36 @@
     },
 
     "synfunktioner": {
-        "ögonsjukdomar": false,
-        "ögonbottenfoto": false,
+        "ögonsjukdomar": true,
+        "ögonbottenfoto": true,
         "synskärpa": {
             "högerÖga": {
                 "utanKorrektion": {
-                    "ja": true,
+                    "ja": false,
                     "värde": "1.1"
                 },
                 "medKorrektion": {
-                    "ja": true,
+                    "ja": false,
                     "värde": "1.2"
                 }
             },
             "vänsterÖga": {
                 "utanKorrektion": {
-                    "ja": true,
+                    "ja": false,
                     "värde": "0.9"
                 },
                 "medKorrektion": {
-                    "ja": true,
+                    "ja": false,
                     "värde": "1.3"
                 }
             },
             "binokulärt": {
                 "utanKorrektion": {
-                    "ja": true,
+                    "ja": false,
                     "värde": "1.0"
                 },
                 "medKorrektion": {
-                    "ja": true,
+                    "ja": false,
                     "värde": "1.1"
                 }
             }
@@ -101,12 +101,12 @@
     },
 
     "övrigt": {
-        "ja": true,
+        "ja": false,
         "text": "Bra gött i Storfors!"
     },
 
     "bedömning": {
-        "kanInteTaStällning": false,
+        "kanInteTaStällning": true,
         "kanTaStällning": {
             "AM": true,
             "A1": true,
@@ -125,9 +125,9 @@
             "DE": true,
             "Taxi": true
         },
-        "lämplighet": true,
+        "lämplighet": false,
         "specialistkompetens": {
-            "ja": true,
+            "ja": false,
             "text": "Leva life"
         }
     }

@@ -1,4 +1,4 @@
-{
+af = {
     "funktionsnedsättning": {
         "ja": true,
         "text": "Problem med tunga lyft. Kan vara permanent alternativt bli bättre med tiden"

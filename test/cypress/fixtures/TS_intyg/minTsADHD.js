@@ -1,4 +1,4 @@
-{
+ts = {
     "intygetAvser": {
         "AM": false,
         "A1": false,

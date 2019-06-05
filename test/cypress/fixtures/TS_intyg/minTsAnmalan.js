@@ -1,4 +1,4 @@
-{
+ts = {
     "identitet": {
         "IDkort": false,
         "FöretagskortTjänstekort": false,

@@ -1,4 +1,4 @@
-{
+fk = {
     "grundFörMedicinsktUnderlag": {
         "utlåtandetÄrBaseratPå": {
             "minUndersökning": true,

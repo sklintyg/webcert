@@ -1,4 +1,4 @@
-{
+af = {
     "medicinsktUnderlag": {
         "undersökning": true,
         "annat": false,

@@ -1,51 +1,51 @@
-{
+fk = {
     "grundFörMedicinsktUnderlag": {
         "utlåtandetÄrBaseratPå": {
             "minUndersökning": true,
             "journaluppgifter": true,
             "anhörigsBeskrivning": true,
             "annat": true,
-            "annatText": "Arbetsterapeutisk utredning"
+            "annatText": "Psykologutlåtande"
         },
         "andraUtredningarEllerUnderlag": {
             "ja": true,
             "rad1": {
-                "underlagstyp": "Underlag från arbetsterapeut",
-                "underlagHämtasFrån": "Privata psykiatriska kliniken X-stad"
+                "underlagstyp": "Neuropsykiatriskt utlåtande",
+                "underlagHämtasFrån": "Psykiatriska mottagningen X-stad"
             },
             "rad2": {
-                "underlagstyp": "Neuropsykiatriskt utlåtande",
-                "underlagHämtasFrån": "BUP X-stad"
+                "underlagstyp": "Underlag från habiliteringen",
+                "underlagHämtasFrån": "Barn- och ungdomspsykiatriska avdelningen Y-stad"
             },
             "rad3": {
-                "underlagstyp": "Underlag från psykolog",
-                "underlagHämtasFrån": "Psykiatriska kliniken X-stad"
+                "underlagstyp": "Övrigt",
+                "underlagHämtasFrån": "Rättspsykiatriska kliniken X-stad"
             }
         }
     },
 
     "diagnos": {
         "rad1": {
-            "kod": "F900x",
-            "text": "Aktivitets- och uppmärksamhetsstörning UNS"
+            "kod": "f310",
+            "text": "Bipolär sjukdom, hypoman episod"
         },
         "rad2": {
-            "kod": "F411",
-            "text": "Generaliserat ångestsyndrom"
+            "kod": "f843",
+            "text": "Annan desintegrativ störning i barndomen"
         },
         "rad3": {
-            "kod": "f401",
-            "text": "Social fobi"
+            "kod": "f102x",
+            "text": "Alkoholberoendesyndrom, ospecificerad"
         },
-        "diagnosgrund": "BUP 2012, Privata psykiatriska klinken 2013 och psykiatriska mottagningen 2016.",
+        "diagnosgrund": "Autismen fastställd vid BUP, och bipolär sjukdom fastställd vid rättspsykiatriska kliniken.",
         "revidera": {
             "ja": true,
-            "text": "Möjligen autismsymptom"
+            "text": "Alkoholberoendet"
         }
     },
 
     "bakgrund": {
-        "text": "BUP-kontakt i tonårstiden, varit inlagd efter konflikt med modern och slagit sönder saker. Samt haft depressiva episoder. Genomgått bred psykiatrisk utredning, medicinerat med antidepressiva med god men inte fullständig effekt. Patientens tillstånd försämrats under vår och sommar, isolerar sig och svårt att sköta ADL. Vårdats inneliggande med stöd av LPT."
+        "text": "Kontakt med BUP p.g.a. problem i skolan. I tonåren även utvecklat alkoholberoende. Senare inlagd för rättspsykiatrisk vård."
     },
 
     "funkNedsättningar": {
@@ -65,10 +65,10 @@
             "text": "Avvikande perception av känsel och känslig för höga ljud."
         },
         "balansOchKoordination": {
-            "text": "Rastlöst beteendemönster, ticsar med munnen."
+            "text": "Rastlöst beteendemönster, ticsar med benet."
         },
         "annan": {
-            "text": "Nedsatt hörsel höger öra."
+            "text": "Nedsatt syn vänster öga."
         }
     },
 
@@ -81,7 +81,7 @@
             "text": "Har genomgått en bred utredning där psykolog, arbetsterapeut, och läkare deltagit. Provat flera antidepressiva behandlingar och centralstimulerande. Dock utan övertygande effekt."
         },
         "pågåendeBehandling": {
-            "text": "Pågående kontakt med öppenvården och regelbunden psykologkontakt."
+            "text": "Pågående kontakt med öppenvården och regelbunden psykologkontakt. I syfte att ge stöd i vardagen. Förväntas inte förbättra hälsotillståndet."
         },
         "planeradBehandling": {
             "text": "Planerar deltagande i Ångestgrupp, i syfte att hantera ångest, men inte lyckats påbörja insatsen. Planeras för neuropsykiatrisk utredning under 2020."
@@ -92,21 +92,18 @@
     },
 
     "medicinskaFörutsättningar": {
-        "utvecklingÖverTid": "Patienten behöver längre tid, ett välplanerat schema med utökade aktiviteter med belastning och krav för att eventuellt kunna etablera sig på arbetsmarknaden eller med studier.",
+        "utvecklingÖverTid": "Patienten har under längre tid, med ett välplanerat schema med utökade aktiviteter och krav försökt etablera sig på arbetsmarknaden eller med studier. Men utan framgång, och bedöms inte heller ha förmågan att kunna tillgodogöra sig en sådan förmåga.",
         "förmågaTrotsBegränsning": {
-            "text": "Svårt att säga, behöver både psykoterapeutiska, farmakologiska och sociala insatser."
-        },
-        "förslagTillÅtgärd": {
-            "text": "Behöver stöd i att utveckla förmåga att kunna leva i sin lägenhet, och med stöd sköta lägenheten samt att komma igång i regelbunden aktivitet."
+            "text": "Svårt att säga, behöver både psykoterapeutiska, farmakologiska och sociala insatser för att upprätthålla en normal vardag."
         }
     },
 
     "övrigt": {
-        "text": "Även diagnoserad med social fobi F40.1 och Sömnstörning F51.9."
+        "text": "Har haft borrelia som nu bedöms vara färdigbehandlad."
     },
 
     "kontakt": {
         "ja": true,
-        "text": "Det kan vara aktuellt att gemensamt planera för stödinsatser."
+        "text": "Jag kompletterar gärna underlaget."
     }
 }
