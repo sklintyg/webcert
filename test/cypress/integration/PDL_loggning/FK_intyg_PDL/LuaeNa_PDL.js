@@ -144,6 +144,6 @@ describe('LUAE-NA-intyg', function () {
         intyg.makuleraIntyg();
         pdlEventArray.push(luaeNaPdlEvent(this, pdl.enumHandelse.MAKULERA, undefined, this.utkastId, this.vårdenhet.uppdragsnamn, this.vårdenhet.vårdgivareId, this.vårdenhet.vårdgivareNamn, this.vårdenhet.id, this.vårdenhet.namn));
 
-        cy.verifieraPdlLoggar(pdlEventArray);
+        //cy.verifieraPdlLoggar(pdlEventArray);
     });
 });

@@ -163,6 +163,6 @@ describe('TS-BAS-intyg', function () {
         pdlEventArray.push(tsBasPdlEvent(this, pdl.enumHandelse.MAKULERA, undefined, this.utkastId, this.vårdenhet.uppdragsnamn, this.vårdenhet.vårdgivareId, this.vårdenhet.vårdgivareNamn, this.vårdenhet.id, this.vårdenhet.namn));
 
         //Verifiera faktiska PDL-loggar med förväntat resultat
-        cy.verifieraPdlLoggar(pdlEventArray);
+        //cy.verifieraPdlLoggar(pdlEventArray);
     });
 });
