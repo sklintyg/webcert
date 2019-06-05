@@ -35,11 +35,13 @@ import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.SekretessStatus;
+import se.inera.intyg.webcert.common.model.WebcertCertificateRelation;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 import se.inera.intyg.webcert.web.service.utkast.dto.PreviousIntyg;
+import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
 
 /**
  * Implementation used to evaluate access criterias. Set the criterias that will be considered and then call
@@ -67,11 +69,15 @@ public final class AccessServiceEvaluation {
     private boolean checkUnique;
     private boolean checkUniqueOnlyCertificate;
     private boolean checkUnit;
+    private boolean checkRelation;
+
     private boolean allowSJF;
     private boolean isReadOnlyOperation;
     private boolean allowRenewForSameUnit;
     private boolean allowInactiveForSameUnit;
     private boolean allowDeceasedForSameUnit;
+
+    private Relations relations;
 
     private List<String> excludeRenewCertificateTypes = new ArrayList<>();
     private List<String> excludeUnitCertificateTypes = new ArrayList<>();
@@ -353,6 +359,12 @@ public final class AccessServiceEvaluation {
         return this;
     }
 
+    public AccessServiceEvaluation checkReplaced(@NotNull Relations relations) {
+        this.checkRelation = true;
+        this.relations = relations;
+        return this;
+    }
+
     /**
      * Evaluate criterias and returns an AccessResult.
      *
@@ -384,6 +396,10 @@ public final class AccessServiceEvaluation {
 
         if (checkUnique && !accessResult.isPresent()) {
             accessResult = isUniqueUtkastRuleValid(certificateType, user, patient, checkUniqueOnlyCertificate);
+        }
+
+        if (checkRelation && !accessResult.isPresent()) {
+            accessResult = isReplaced(relations);
         }
 
         return accessResult.isPresent() ? accessResult.get() : AccessResult.noProblem();
@@ -573,5 +589,30 @@ public final class AccessServiceEvaluation {
                 .features(AuthoritiesConstants.FEATURE_UNIKT_INTYG, AuthoritiesConstants.FEATURE_UNIKT_INTYG_INOM_VG,
                         AuthoritiesConstants.FEATURE_UNIKT_UTKAST_INOM_VG)
                 .isVerified();
+    }
+
+    private Optional<AccessResult> isReplaced(Relations relations) {
+        if (relations != null && relations.getLatestChildRelations() != null) {
+            final Relations.FrontendRelations lastRelation = relations.getLatestChildRelations();
+
+            WebcertCertificateRelation relation = lastRelation.getComplementedByIntyg();
+            if (relation == null) {
+                relation = lastRelation.getComplementedByUtkast();
+            }
+
+            if (relation == null) {
+                relation = lastRelation.getReplacedByIntyg();
+            }
+
+            if (relation == null) {
+                relation = lastRelation.getReplacedByUtkast();
+            }
+
+            if (relation != null) {
+                return Optional.of(AccessResult.create(AccessResultCode.AUTHORIZATION_VALIDATION, "The certificate has been "
+                        + relation.getRelationKod().getKlartext() + "by certificate " + relation.getIntygsId()));
+            }
+        }
+        return Optional.empty();
     }
 }

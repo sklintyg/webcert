@@ -36,6 +36,7 @@ import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
+import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
 
 /**
  * Implementation of CertificateAccessService.
@@ -152,7 +153,7 @@ public class CertificateAccessServiceImpl implements CertificateAccessService {
     }
 
     @Override
-    public AccessResult allowToCreateQuestion(String certificateType, Vardenhet careUnit, Personnummer patient) {
+    public AccessResult allowToCreateQuestion(String certificateType, Vardenhet careUnit, Personnummer patient, Relations relations) {
         return getAccessServiceEvaluation().given(getUser(), certificateType)
                 .feature(AuthoritiesConstants.FEATURE_HANTERA_FRAGOR)
                 .privilege(AuthoritiesConstants.PRIVILEGE_SKAPA_NYFRAGA)
@@ -163,12 +164,13 @@ public class CertificateAccessServiceImpl implements CertificateAccessService {
                 .checkRenew(true)
                 .checkPatientSecrecy()
                 .checkUnit(false, false)
+                .checkReplaced(relations)
                 .evaluate();
     }
 
     @Override
     public AccessResult allowToAnswerComplementQuestion(String certificateType, Vardenhet careUnit, Personnummer patient,
-            boolean newCertificate) {
+            boolean newCertificate, Relations relations) {
         return getAccessServiceEvaluation().given(getUser(), certificateType)
                 .feature(AuthoritiesConstants.FEATURE_HANTERA_FRAGOR)
                 .privilege(AuthoritiesConstants.PRIVILEGE_BESVARA_KOMPLETTERINGSFRAGA)
@@ -180,11 +182,12 @@ public class CertificateAccessServiceImpl implements CertificateAccessService {
                 .checkRenew(true)
                 .checkPatientSecrecy()
                 .checkUnit(false, false)
+                .checkReplaced(relations)
                 .evaluate();
     }
 
     @Override
-    public AccessResult allowToAnswerAdminQuestion(String certificateType, Vardenhet careUnit, Personnummer patient) {
+    public AccessResult allowToAnswerAdminQuestion(String certificateType, Vardenhet careUnit, Personnummer patient, Relations relations) {
         return getAccessServiceEvaluation().given(getUser(), certificateType)
                 .feature(AuthoritiesConstants.FEATURE_HANTERA_FRAGOR)
                 .privilege(AuthoritiesConstants.PRIVILEGE_BESVARA_FRAGA)
@@ -195,6 +198,7 @@ public class CertificateAccessServiceImpl implements CertificateAccessService {
                 .checkRenew(true)
                 .checkPatientSecrecy()
                 .checkUnit(false, false)
+                .checkReplaced(relations)
                 .evaluate();
     }
 
@@ -220,7 +224,7 @@ public class CertificateAccessServiceImpl implements CertificateAccessService {
     }
 
     @Override
-    public AccessResult allowToForwardQuestions(String certificateType, Vardenhet careUnit, Personnummer patient) {
+    public AccessResult allowToForwardQuestions(String certificateType, Vardenhet careUnit, Personnummer patient, Relations relations) {
         return getAccessServiceEvaluation().given(getUser(), certificateType)
                 .feature(AuthoritiesConstants.FEATURE_HANTERA_FRAGOR)
                 .privilege(AuthoritiesConstants.PRIVILEGE_VIDAREBEFORDRA_FRAGASVAR)
@@ -231,6 +235,7 @@ public class CertificateAccessServiceImpl implements CertificateAccessService {
                 .checkRenew(true)
                 .checkPatientSecrecy()
                 .checkUnit(false, false)
+                .checkReplaced(relations)
                 .evaluate();
     }
 

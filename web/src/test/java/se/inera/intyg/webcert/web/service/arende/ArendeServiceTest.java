@@ -1541,11 +1541,13 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
                     anyString(),
                     any(),
                     any(),
-                    anyBoolean());
+                    anyBoolean(),
+                    any());
             break;
         case VIDAREBEFODRA_FRAGA:
             doReturn(AccessResult.noProblem()).when(certificateAccessService).allowToForwardQuestions(
                     anyString(),
+                    any(),
                     any(),
                     any());
             break;
@@ -1558,6 +1560,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         case SKAPA_FRAGA:
             doReturn(AccessResult.noProblem()).when(certificateAccessService).allowToCreateQuestion(
                     anyString(),
+                    any(),
                     any(),
                     any());
             break;
