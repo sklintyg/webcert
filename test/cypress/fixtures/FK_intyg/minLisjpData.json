@@ -1,20 +1,12 @@
 {
     "grundFörMedicinsktUnderlag": {
         "intygetÄrBaseratPå": {
-            "minUndersökning": true,
-            "minTelefonkontakt": false,
-            "journaluppgifter": false,
-            "annat": false,
-            "annatText": "Utlåtande från barnmorska"
+            "minUndersökning": true
         }
     },
 
     "sysselsättning": {
         "iRelationTillVilkenSysselsättningBedömerDuArbetsförmågan": {
-            "nuvarandeArbete": false,
-            "yrkeOchArbetsuppgifter": "Snickare. Tunga lyft, arbete på stege, hantera maskinverktyg, mycket gående",
-            "arbetssökande": false,
-            "föräldraledighet": false,
             "studier": true
         }
     },
@@ -23,9 +15,7 @@
         "rad1": {
             "kod": "O267",
             "text": "Symfyseolys under graviditet, förlossning och barnsängstid"
-        },
-        "rad2": false,
-        "rad3": false
+        }
     },
 
     "sjukdomensKonsekvenserFörPatienten": {
@@ -40,34 +30,18 @@
 
     "bedömning": {
         "minBedömningAvPatientensNedsättningAvArbetsförmågan": {
-            "enFjärdedel": true,
-            "hälften": false,
-            "treFjärdedel": false,
-            "hel": false
+            "enFjärdedel": true
         },
         "längreNedsattArbetsförmåga": "Haft tidigare bäckeninsufficens vid graviditet, haft tidigare missfall och kräver nu fler kontroller och avlastning",
         "förläggaArbetstidOlika": {
-            "ja": false,
-            "arbetstidsförläggningstext": "Har lättare kontorsarbete på måndagar som hon klarar av med nuvarande besvär om ingen försämring sker."
+            "ja": false
         },
-        "resorTillOchFrånArbete": false,
         "prognosFörArbetsförmågaUtifrånAktuelltUndersökningstillfälle": {
             "återgåHeltEfterSjukskrivning": true
         }
     },
 
     "åtgärder": {
-        "inteAktuellt": true,
-        "arbetsträning": false,
-        "arbetsanspassning": false,
-        "sökaNyttArbete": false,
-        "besökPåArbetsplatsen": false,
-        "ergonomiskBedömning": false,
-        "hjälpmedel": false,
-        "konflikthantering": false,
-        "kontaktMedFöretagshälsovård": false,
-        "omfördelningAvArbetsuppgifter": false,
-        "övrigt": false,
-        "flerÅtgärder": false
+        "inteAktuellt": true
     }
 }
