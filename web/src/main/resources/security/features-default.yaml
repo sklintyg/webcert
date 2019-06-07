@@ -243,7 +243,6 @@ features:
     desc: Hantera utkast för avlidna patienter
     global: true
     intygstyper:
-      - *ki080 # DB
       - *ki090 # DOI
   - &f140
     name: *kf140
@@ -323,6 +322,7 @@ pilots:
     hsaIds:
       - IFV1239877878-1042
       - TSTNMT2321000156-1077
+      - TSTNMT2321000156-105N
     activated:
       - &pf010
         name: *kf120

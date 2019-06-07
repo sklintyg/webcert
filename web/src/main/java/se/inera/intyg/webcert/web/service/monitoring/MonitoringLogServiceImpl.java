@@ -113,8 +113,8 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
     }
 
     @Override
-    public void logIntygPrintPdf(String intygsId, String intygsTyp) {
-        logEvent(MonitoringEvent.INTYG_PRINT_PDF, intygsId, intygsTyp);
+    public void logIntygPrintPdf(String intygsId, String intygsTyp, boolean isEmployerCopy) {
+        logEvent(MonitoringEvent.INTYG_PRINT_PDF, intygsId, intygsTyp, isEmployerCopy ? "MINIMAL" : "FULL");
     }
 
     @Override
@@ -342,7 +342,7 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
                 + "with subject '{}'"),
         INTYG_READ("Intyg '{}' of type '{}' was read"),
         INTYG_REVOKE_STATUS_READ("Revoke status of Intyg '{}' of type '{}' was read."),
-        INTYG_PRINT_PDF("Intyg '{}' of type '{}' was printed as PDF"),
+        INTYG_PRINT_PDF("Intyg '{}' of type '{}' was printed as PDF with '{}' content"),
         INTYG_SIGNED("Intyg '{}' of type '{}' signed by '{}' using scheme '{}' and relation code '{}'"),
         INTYG_REGISTERED("Intyg '{}' of type '{}' registered with Intygstjänsten"),
         INTYG_SENT("Intyg '{}' sent to recipient '{}'"),

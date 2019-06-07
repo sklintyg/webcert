@@ -155,9 +155,15 @@ public class MonitoringLogServiceImplTest {
     }
 
     @Test
-    public void shouldLogIntygPrintPdf() {
-        logService.logIntygPrintPdf(INTYGS_ID, INTYGS_TYP);
-        verifyLog(Level.INFO, "INTYG_PRINT_PDF Intyg 'INTYGS_ID' of type 'INTYGS_TYP' was printed as PDF");
+    public void shouldLogIntygPrintPdfMinimal() {
+        logService.logIntygPrintPdf(INTYGS_ID, INTYGS_TYP, true);
+        verifyLog(Level.INFO, "INTYG_PRINT_PDF Intyg 'INTYGS_ID' of type 'INTYGS_TYP' was printed as PDF with 'MINIMAL' content");
+    }
+
+    @Test
+    public void shouldLogIntygPrintPdfComplete() {
+        logService.logIntygPrintPdf(INTYGS_ID, INTYGS_TYP, false);
+        verifyLog(Level.INFO, "INTYG_PRINT_PDF Intyg 'INTYGS_ID' of type 'INTYGS_TYP' was printed as PDF with 'FULL' content");
     }
 
     @Test

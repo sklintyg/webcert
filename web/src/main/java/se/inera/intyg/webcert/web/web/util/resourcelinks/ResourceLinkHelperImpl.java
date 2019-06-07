@@ -36,6 +36,7 @@ import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeListItem;
 import se.inera.intyg.webcert.web.web.controller.api.dto.IntygModuleDTO;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
+import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
 import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.DraftHolder;
 import se.inera.intyg.webcert.web.web.util.resourcelinks.dto.ActionLink;
 import se.inera.intyg.webcert.web.web.util.resourcelinks.dto.ActionLinkType;
@@ -98,7 +99,8 @@ public class ResourceLinkHelperImpl implements ResourceLinkHelper {
             }
 
             // Add action links related to questions, as the utkast can be part of a kompletteringsbegäran.
-            final List<ActionLink> actionLinkList = getActionLinksForQuestions(certificateType, careUnit, patient);
+            final Relations relations = draftHolder.getRelations();
+            final List<ActionLink> actionLinkList = getActionLinksForQuestions(certificateType, careUnit, patient, relations);
             for (ActionLink actionLink : actionLinkList) {
                 draftHolder.addLink(actionLink);
             }
@@ -110,6 +112,7 @@ public class ResourceLinkHelperImpl implements ResourceLinkHelper {
         final String intygsTyp = intygContentHolder.getUtlatande().getTyp();
         final Vardenhet vardenhet = intygContentHolder.getUtlatande().getGrundData().getSkapadAv().getVardenhet();
         final Personnummer personnummer = intygContentHolder.getUtlatande().getGrundData().getPatient().getPersonId();
+        final Relations relations = intygContentHolder.getRelations();
 
         if (certificateAccessService.allowToRenew(intygsTyp, vardenhet, personnummer, false).isAllowed()) {
             intygContentHolder.addLink(new ActionLink(ActionLinkType.FORNYA_INTYG));
@@ -131,7 +134,7 @@ public class ResourceLinkHelperImpl implements ResourceLinkHelper {
             intygContentHolder.addLink(new ActionLink(ActionLinkType.SKICKA_INTYG));
         }
 
-        final List<ActionLink> actionLinkList = getActionLinksForQuestions(intygsTyp, vardenhet, personnummer);
+        final List<ActionLink> actionLinkList = getActionLinksForQuestions(intygsTyp, vardenhet, personnummer, relations);
         for (ActionLink actionLink : actionLinkList) {
             intygContentHolder.addLink(actionLink);
         }
@@ -164,16 +167,17 @@ public class ResourceLinkHelperImpl implements ResourceLinkHelper {
     public void decorateArendeWithValidActionLinks(List<ArendeListItem> arendeListItems, Vardenhet careUnit) {
         for (ArendeListItem arendeListItem : arendeListItems) {
             if (certificateAccessService.allowToForwardQuestions(arendeListItem.getIntygTyp(), careUnit,
-                    Personnummer.createPersonnummer(arendeListItem.getPatientId()).get()).isAllowed()) {
+                    Personnummer.createPersonnummer(arendeListItem.getPatientId()).get(), null).isAllowed()) {
                 arendeListItem.addLink(new ActionLink(ActionLinkType.VIDAREBEFODRA_FRAGA));
             }
         }
     }
 
-    private List<ActionLink> getActionLinksForQuestions(String intygsTyp, Vardenhet vardenhet, Personnummer personnummer) {
+    private List<ActionLink> getActionLinksForQuestions(String intygsTyp, Vardenhet vardenhet, Personnummer personnummer,
+            Relations relations) {
         final List<ActionLink> actionLinkList = new ArrayList<>();
 
-        if (certificateAccessService.allowToCreateQuestion(intygsTyp, vardenhet, personnummer).isAllowed()) {
+        if (certificateAccessService.allowToCreateQuestion(intygsTyp, vardenhet, personnummer, relations).isAllowed()) {
             actionLinkList.add(new ActionLink(ActionLinkType.SKAPA_FRAGA));
         }
 
@@ -181,15 +185,15 @@ public class ResourceLinkHelperImpl implements ResourceLinkHelper {
             actionLinkList.add(new ActionLink(ActionLinkType.LASA_FRAGA));
         }
 
-        if (certificateAccessService.allowToAnswerAdminQuestion(intygsTyp, vardenhet, personnummer).isAllowed()) {
+        if (certificateAccessService.allowToAnswerAdminQuestion(intygsTyp, vardenhet, personnummer, relations).isAllowed()) {
             actionLinkList.add(new ActionLink(ActionLinkType.BESVARA_FRAGA));
         }
 
-        if (certificateAccessService.allowToAnswerComplementQuestion(intygsTyp, vardenhet, personnummer, true).isAllowed()) {
+        if (certificateAccessService.allowToAnswerComplementQuestion(intygsTyp, vardenhet, personnummer, true, relations).isAllowed()) {
             actionLinkList.add(new ActionLink(ActionLinkType.BESVARA_KOMPLETTERING));
         }
 
-        if (certificateAccessService.allowToForwardQuestions(intygsTyp, vardenhet, personnummer).isAllowed()) {
+        if (certificateAccessService.allowToForwardQuestions(intygsTyp, vardenhet, personnummer, relations).isAllowed()) {
             actionLinkList.add(new ActionLink(ActionLinkType.VIDAREBEFODRA_FRAGA));
         }
 

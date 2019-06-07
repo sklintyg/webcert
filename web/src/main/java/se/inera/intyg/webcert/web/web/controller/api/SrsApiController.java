@@ -19,15 +19,14 @@
 package se.inera.intyg.webcert.web.web.controller.api;
 
 import com.google.common.base.Strings;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.annotations.*;
 import org.apache.commons.lang3.EnumUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.intyg.clinicalprocess.healthcond.srs.getconsent.v1.Samtyckesstatus;
 import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v2.Utdatafilter;
+import se.inera.intyg.clinicalprocess.healthcond.srs.types.v1.EgenBedomningRiskType;
 import se.inera.intyg.common.support.common.enumerations.Diagnoskodverk;
 import se.inera.intyg.infra.integration.srs.model.SrsForDiagnosisResponse;
 import se.inera.intyg.infra.integration.srs.model.SrsQuestion;
@@ -45,18 +44,9 @@ import se.inera.intyg.webcert.web.service.log.LogService;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
-import se.riv.clinicalprocess.healthcond.certificate.types.v2.EgenBedomningRiskType;
 import se.riv.clinicalprocess.healthcond.certificate.types.v2.ResultCodeEnum;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.List;
@@ -65,6 +55,8 @@ import java.util.List;
 @Path("/srs")
 @Api(value = "srs", description = "REST API för Stöd för rätt sjukskrivning", produces = MediaType.APPLICATION_JSON)
 public class SrsApiController extends AbstractApiController {
+
+    private static final Logger LOG = LoggerFactory.getLogger(SrsApiController.class);
 
     private static final int OK = 200;
     private static final int NO_CONTENT = 204;
@@ -177,22 +169,6 @@ public class SrsApiController extends AbstractApiController {
         } catch (InvalidPersonNummerException e) {
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
-    }
-
-    @GET
-    @Path("/opinion/{vardgivareHsaId}/{vardenhetHsaId}/{intygId}/{diagnoskod}")
-    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    @ApiOperation(value = "Get own opinion for risk prediction", httpMethod = "GET", produces = MediaType.APPLICATION_JSON)
-    @PrometheusTimeMethod
-    public Response getOwnOpinion(
-            @ApiParam(value = "HSA-Id för vårdgivare") @PathParam("vardgivareHsaId") String vardgivareHsaId,
-            @ApiParam(value = "HSA-Id för vårdenhet") @PathParam("vardenhetHsaId") String vardenhetHsaId,
-            @ApiParam(value = "Intyg id", required = true) @PathParam("intygId") String intygId,
-            @ApiParam(value = "Diagnoskod", required = true) @PathParam("diagnoskod") String diagnosisCode) {
-        authoritiesValidator.given(getWebCertUserService().getUser()).features(AuthoritiesConstants.FEATURE_SRS).orThrow();
-
-        EgenBedomningRiskType response = srsService.getOwnOpinion(vardgivareHsaId, vardenhetHsaId, intygId, diagnosisCode);
-        return Response.ok(response).build();
     }
 
     @PUT

@@ -41,6 +41,7 @@ module.exports = {
         'visaIntyg': require('./sokSkrivIntyg/sokSkrivValjIntyg.page.js')
     },
     fragorOchSvar: require('./fragorOchSvar.js'), //Ärendehanteringsidan
+    readonlypage: require('./readonly.page.js'),
     intyg: {
         hogerfaltet: require(intygPath + 'hogerfaltet.js'),
         fk: {
