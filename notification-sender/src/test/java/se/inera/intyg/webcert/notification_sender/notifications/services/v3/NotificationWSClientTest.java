@@ -18,7 +18,9 @@
  */
 package se.inera.intyg.webcert.notification_sender.notifications.services.v3;
 
+import javax.xml.soap.SOAPFault;
 import javax.xml.ws.WebServiceException;
+import javax.xml.ws.soap.SOAPFaultException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -107,6 +109,20 @@ public class NotificationWSClientTest {
     public void testSendStatusUpdateErrorIdNull() throws Exception {
         when(statusUpdateForCareClient.certificateStatusUpdateForCare(anyString(), any(CertificateStatusUpdateForCareType.class)))
                 .thenReturn(buildResponse(ResultCodeType.ERROR, null, "error text"));
+        notificationWsClient.sendStatusUpdate(createRequest(), LOGICAL_ADDRESS, USER_ID);
+    }
+
+    @Test(expected = PermanentException.class)
+    public void xmlMarshallingErrorTest() throws Exception {
+        when(statusUpdateForCareClient.certificateStatusUpdateForCare(anyString(), any(CertificateStatusUpdateForCareType.class)))
+                .thenThrow(new RuntimeException("Lorem ipsum...Marshalling Error: WTF"));
+        notificationWsClient.sendStatusUpdate(createRequest(), LOGICAL_ADDRESS, USER_ID);
+    }
+
+    @Test(expected = PermanentException.class)
+    public void xmlUnarshallingErrorTest() throws Exception {
+        when(statusUpdateForCareClient.certificateStatusUpdateForCare(anyString(), any(CertificateStatusUpdateForCareType.class)))
+                .thenThrow(new RuntimeException("Unmarshalling Error: WTF"));
         notificationWsClient.sendStatusUpdate(createRequest(), LOGICAL_ADDRESS, USER_ID);
     }
 

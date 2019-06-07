@@ -21,6 +21,7 @@ package se.inera.intyg.webcert.notification_sender.notifications.services.v3;
 // CHECKSTYLE:OFF LineLength
 
 import java.util.Objects;
+import java.util.regex.Pattern;
 import org.apache.camel.Header;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,6 +52,8 @@ public class NotificationWSClient {
 
     @Autowired
     private FeaturesHelper featuresHelper;
+
+    private Pattern xmlErrorPattern = Pattern.compile(".*(Unm|M)arshalling Error.*");
 
     public void sendStatusUpdate(CertificateStatusUpdateForCareType request,
                                  @Header(NotificationRouteHeaders.LOGISK_ADRESS) String logicalAddress,
@@ -118,10 +121,16 @@ public class NotificationWSClient {
         }
     }
 
-    //
-    boolean isMarshallingError(Exception e) {
-        final String message = Objects.nonNull(e.getCause()) ? e.getCause().getMessage() : null;
-        return Objects.nonNull(message) ? message.matches(".*(Unm|M)arshalling Error.*") : false;
+    // recursively walk through stack
+    boolean isMarshallingError(Throwable e) {
+        if (Objects.isNull(e)) {
+            return false;
+        }
+        final String msg = e.getMessage();
+        if (Objects.nonNull(msg) && xmlErrorPattern.matcher(msg).matches()) {
+            return true;
+        }
+        return isMarshallingError(e.getCause());
     }
 
     //
