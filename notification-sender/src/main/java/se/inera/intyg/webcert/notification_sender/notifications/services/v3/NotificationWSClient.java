@@ -36,11 +36,16 @@ import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforc
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareType;
 import se.riv.clinicalprocess.healthcond.certificate.v3.ErrorIdType;
 import se.riv.clinicalprocess.healthcond.certificate.v3.ResultType;
+
+import javax.xml.ws.soap.SOAPFaultException;
 // CHECKSTYLE:ON LineLength
 
 public class NotificationWSClient {
 
     private static final Logger LOG = LoggerFactory.getLogger(NotificationWSClient.class);
+
+    private static final String MARSALLING_ERROR = "Marshalling Error";
+    private static final String UNMARSALLING_ERROR = "Unmarshalling Error";
 
     @Autowired
     private CertificateStatusUpdateForCareResponderInterface statusUpdateForCareClient;
@@ -59,8 +64,17 @@ public class NotificationWSClient {
 
         try {
             response = statusUpdateForCareClient.certificateStatusUpdateForCare(logicalAddress, request);
+        } catch (SOAPFaultException e) {
+            if (e.getCause() != null && e.getCause().getMessage() != null
+                    && (e.getCause().getMessage().contains(MARSALLING_ERROR) || e.getCause().getMessage().contains(UNMARSALLING_ERROR))) {
+                LOG.error(String.format("%s occurred when sending status update: %s", UNMARSALLING_ERROR, e.getMessage()));
+                throw new PermanentException(e);
+            } else {
+                LOG.warn("SOAPFaultException occurred when sending status update: {}", e.getMessage());
+                throw new TemporaryException(e);
+            }
         } catch (Exception e) {
-            LOG.warn("Exception occured when sending status update: {}", e.getMessage());
+            LOG.warn("Exception occurred when sending status update: {}", e.getMessage());
             throw new TemporaryException(e);
         }
 
