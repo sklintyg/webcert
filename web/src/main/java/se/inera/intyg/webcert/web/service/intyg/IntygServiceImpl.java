@@ -224,12 +224,17 @@ public class IntygServiceImpl implements IntygService {
 
     @Override
     public IntygContentHolder fetchIntygData(String intygsId, String intygsTyp, boolean coherentJournaling) {
-        return fetchIntygData(intygsId, intygsTyp, false, coherentJournaling);
+        return fetchIntygData(intygsId, intygsTyp, false, coherentJournaling, true);
+    }
+
+    @Override
+    public IntygContentHolder fetchIntygData(String intygsId, String intygsTyp, boolean coherentJournaling, boolean pdlLogging) {
+        return fetchIntygData(intygsId, intygsTyp, false, coherentJournaling, pdlLogging);
     }
 
     @Override
     public IntygContentHolder fetchIntygDataWithRelations(String intygId, String intygsTyp, boolean coherentJournaling) {
-        return fetchIntygData(intygId, intygsTyp, true, coherentJournaling);
+        return fetchIntygData(intygId, intygsTyp, true, coherentJournaling, true);
     }
 
     /**
@@ -242,19 +247,25 @@ public class IntygServiceImpl implements IntygService {
      * @param relations
      *            If the relations between intyg should be populated. This can be expensive (several database
      *            operations). Use sparsely.
+     * @param pdlLogging
+     *            If the call should be logged.
+     * @return IntygContentHolder.
      */
-    private IntygContentHolder fetchIntygData(String intygsId, String intygsTyp, boolean relations, boolean coherentJournaling) {
+    private IntygContentHolder fetchIntygData(String intygsId, String intygsTyp, boolean relations, boolean coherentJournaling,
+            boolean pdlLogging) {
         IntygContentHolder intygsData = getIntygData(intygsId, intygsTyp, relations);
 
         validateAccessToReadIntyg(intygsData.getUtlatande());
 
-        LogRequest logRequest = logRequestFactory.createLogRequestFromUtlatande(intygsData.getUtlatande(), coherentJournaling);
+        if (pdlLogging) {
+            LogRequest logRequest = logRequestFactory.createLogRequestFromUtlatande(intygsData.getUtlatande(), coherentJournaling);
 
-        // Log read to PDL
-        logService.logReadIntyg(logRequest);
+            // Log read to PDL
+            logService.logReadIntyg(logRequest);
 
-        // Log read to monitoring log
-        monitoringService.logIntygRead(intygsId, intygsTyp);
+            // Log read to monitoring log
+            monitoringService.logIntygRead(intygsId, intygsTyp);
+        }
 
         return intygsData;
     }
@@ -686,7 +697,8 @@ public class IntygServiceImpl implements IntygService {
         } catch (WebServiceException e) {
             throw new WebCertServiceException(DATA_NOT_FOUND, String.format(
                     "Failed retrieving certificate type information from Intygstjänsten. "
-                    + "The certificate might not exist. Certificate id: %s", intygsId), e);
+                            + "The certificate might not exist. Certificate id: %s",
+                    intygsId), e);
         }
     }
 

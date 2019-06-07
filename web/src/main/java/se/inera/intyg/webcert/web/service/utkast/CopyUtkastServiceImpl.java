@@ -181,7 +181,8 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
 
             final Utlatande utlatande = getUtlatande(copyRequest.getOriginalIntygId(),
                     copyRequest.getOriginalIntygTyp(),
-                    coherentJournaling);
+                    coherentJournaling,
+                    false);
 
             validateAccessToRenewIntyg(utlatande, true);
 
@@ -228,7 +229,8 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
         try {
             final Utlatande utlatande = getUtlatande(copyRequest.getOriginalIntygId(),
                     copyRequest.getOriginalIntygTyp(),
-                    coherentJournaling);
+                    coherentJournaling,
+                    false);
 
             validateAccessToRenewIntyg(utlatande, false);
 
@@ -271,7 +273,8 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
         try {
             final Utlatande utlatande = getUtlatande(replacementRequest.getOriginalIntygId(),
                     replacementRequest.getOriginalIntygTyp(),
-                    replacementRequest.isCoherentJournaling());
+                    replacementRequest.isCoherentJournaling(),
+                    false);
 
             validateAccessToReplaceIntyg(utlatande);
 
@@ -304,7 +307,7 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
         }
     }
 
-    private Utlatande getUtlatande(String intygId, String intygsTyp, boolean coherentJournaling)
+    private Utlatande getUtlatande(String intygId, String intygsTyp, boolean coherentJournaling, boolean pdlLoggning)
             throws ModuleException, ModuleNotFoundException {
         Utlatande utlatande;
         if (utkastRepository.exists(intygId)) {
@@ -322,7 +325,7 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
                 throw new ModuleException("Could not convert original certificate to Utlatande", e);
             }
         } else {
-            IntygContentHolder signedIntygHolder = intygService.fetchIntygData(intygId, intygsTyp, coherentJournaling);
+            IntygContentHolder signedIntygHolder = intygService.fetchIntygData(intygId, intygsTyp, coherentJournaling, true);
             utlatande = signedIntygHolder.getUtlatande();
         }
         return utlatande;
