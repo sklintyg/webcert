@@ -181,8 +181,10 @@ public abstract class AbstractUtkastBuilder<T extends AbstractCreateCopyRequest>
             throw new ModuleException("Could not convert original certificate to Utlatande", e);
         }
 
-        LogRequest logRequest = logRequestFactory.createLogRequestFromUtkast(orgUtkast, coherentJournaling);
-        logService.logReadIntyg(logRequest);
+        if (coherentJournaling) {
+            LogRequest logRequest = logRequestFactory.createLogRequestFromUtkast(orgUtkast, coherentJournaling);
+            logService.logReadIntyg(logRequest);
+        }
 
         CopyUtkastBuilderResponse builderResponse = new CopyUtkastBuilderResponse();
         builderResponse.setOrginalEnhetsId(orgUtkast.getEnhetsId());

@@ -70,7 +70,7 @@ public class NotificationWSClient {
                 // Added ugly null check to make notification_sender testSendStatusUpdateErrorTechnical pass
                 // The featuresHelper does not seem to load properly in the gradle tests
                 if (Objects.nonNull(featuresHelper)
-                SjukfallServiceImpl&& featuresHelper.isFeatureActive(AuthoritiesConstants.FEATURE_NOTIFICATION_DISCARD_FELB)) {
+                        && featuresHelper.isFeatureActive(AuthoritiesConstants.FEATURE_NOTIFICATION_DISCARD_FELB)) {
                     if (result.getResultText()
                             .startsWith("Certificate not found in COSMIC and ref field is missing, cannot store certificate. "
                             + "Possible race condition. Retry later when the certificate may have been stored in COSMIC.")
@@ -99,7 +99,8 @@ public class NotificationWSClient {
     }
 
     //
-    ResultType exchange(String logicalAddress, CertificateStatusUpdateForCareType request) throws TemporaryException {
+    ResultType exchange(String logicalAddress, CertificateStatusUpdateForCareType request)
+            throws PermanentException, TemporaryException {
         try {
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Send status update to '{}' for intyg '{}'", logicalAddress,
@@ -107,9 +108,20 @@ public class NotificationWSClient {
             }
             return statusUpdateForCareClient.certificateStatusUpdateForCare(logicalAddress, request).getResult();
         } catch (Exception e) {
-            LOG.warn("Exception occured when sending status update: {}", e.getMessage());
-            throw new TemporaryException(e);
+            if (isMarshallingError(e)) {
+                LOG.error("XML marshalling error occurred when sending status update: {}", e.getMessage());
+                throw new PermanentException(e);
+            } else {
+                LOG.warn("Exception occured when sending status update: {}", e.getMessage());
+                throw new TemporaryException(e);
+            }
         }
+    }
+
+    //
+    boolean isMarshallingError(Exception e) {
+        final String message = Objects.nonNull(e.getCause()) ? e.getCause().getMessage() : null;
+        return Objects.nonNull(message) ? message.matches(".*(Unm|M)arshalling Error.*") : false;
     }
 
     //

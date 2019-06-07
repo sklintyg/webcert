@@ -18,14 +18,19 @@
  */
 package se.inera.intyg.webcert.web.service.intyg;
 
+import java.util.List;
+
 import org.apache.commons.lang3.tuple.Pair;
+
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
-import se.inera.intyg.webcert.web.service.intyg.dto.*;
+import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
+import se.inera.intyg.webcert.web.service.intyg.dto.IntygPdf;
+import se.inera.intyg.webcert.web.service.intyg.dto.IntygServiceResult;
+import se.inera.intyg.webcert.web.service.intyg.dto.IntygWithNotificationsRequest;
+import se.inera.intyg.webcert.web.service.intyg.dto.IntygWithNotificationsResponse;
 import se.inera.intyg.webcert.web.web.controller.api.dto.IntygTypeInfo;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
-
-import java.util.List;
 
 /**
  * @author andreaskaltenbach
@@ -37,6 +42,8 @@ public interface IntygService {
      *
      * If the Intygstjanst couldn't find the intyg or the Intygstjanst was not available,
      * an attempt to find an utkast stored in Webcert will be performed.
+     *
+     * The call will be pdl logged.
      */
     IntygContentHolder fetchIntygData(String intygId, String typ, boolean coherentJournaling);
 
@@ -46,7 +53,27 @@ public interface IntygService {
      * If the Intygstjanst couldn't find the intyg or the Intygstjanst was not available,
      * an attempt to find an utkast stored in Webcert will be performed.
      *
+     * @param intygId
+     *            Certificate id.
+     * @param typ
+     *            Certificate type.
+     * @param coherentJournaling
+     *            If coherentJournaling should be considered.
+     * @param pdlLogging
+     *            If the call should be logged.
+     * @return IntygContentHolder.
+     */
+    IntygContentHolder fetchIntygData(String intygId, String typ, boolean coherentJournaling, boolean pdlLogging);
+
+    /**
+     * Fetches the intyg data from the Intygstjanst and returns the intyg content in internal model representation.
+     *
+     * If the Intygstjanst couldn't find the intyg or the Intygstjanst was not available,
+     * an attempt to find an utkast stored in Webcert will be performed.
+     *
      * Also includes a list of the relations the intyg has to other intyg.
+     *
+     * The call will be pdl logged.
      */
     IntygContentHolder fetchIntygDataWithRelations(String intygId, String typ, boolean coherentJournaling);
 

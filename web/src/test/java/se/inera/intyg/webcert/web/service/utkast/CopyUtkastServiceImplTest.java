@@ -845,7 +845,7 @@ public class CopyUtkastServiceImplTest {
                 .setPatientAddressChangedInPU(false)
                 .setUtlatande(utlatande).build();
 
-        doReturn(intygContentHolder).when(intygService).fetchIntygData(anyString(), anyString(), anyBoolean());
+        doReturn(intygContentHolder).when(intygService).fetchIntygData(anyString(), anyString(), anyBoolean(), anyBoolean());
 
         Utkast utkast = new Utkast();
         utkast.setStatus(UtkastStatus.DRAFT_LOCKED);
