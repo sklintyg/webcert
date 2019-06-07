@@ -42,6 +42,8 @@ public interface IntygService {
      *
      * If the Intygstjanst couldn't find the intyg or the Intygstjanst was not available,
      * an attempt to find an utkast stored in Webcert will be performed.
+     *
+     * The call will be pdl logged.
      */
     IntygContentHolder fetchIntygData(String intygId, String typ, boolean coherentJournaling);
 
@@ -70,6 +72,8 @@ public interface IntygService {
      * an attempt to find an utkast stored in Webcert will be performed.
      *
      * Also includes a list of the relations the intyg has to other intyg.
+     *
+     * The call will be pdl logged.
      */
     IntygContentHolder fetchIntygDataWithRelations(String intygId, String typ, boolean coherentJournaling);
 
