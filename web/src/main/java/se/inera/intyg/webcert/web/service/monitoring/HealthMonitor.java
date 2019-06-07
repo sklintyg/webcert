@@ -109,6 +109,7 @@ public class HealthMonitor extends Collector {
     @Value("${intygstjanst.metrics.url}")
     private String itMetricsUrl;
 
+    @FunctionalInterface
     interface Tester {
         void run() throws Exception;
     }
