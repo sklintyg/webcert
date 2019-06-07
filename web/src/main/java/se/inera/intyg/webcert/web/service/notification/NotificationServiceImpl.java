@@ -20,7 +20,15 @@ package se.inera.intyg.webcert.web.service.notification;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.time.LocalDate;
+import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
+import javax.annotation.PostConstruct;
+import javax.jms.JMSException;
+import javax.jms.Message;
+import javax.jms.Session;
+import javax.jms.TextMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +37,7 @@ import org.springframework.jms.JmsException;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
 import org.springframework.mail.MailSendException;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -56,14 +65,6 @@ import se.inera.intyg.webcert.web.service.referens.ReferensService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.Amneskod;
 
-import javax.annotation.PostConstruct;
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.Session;
-import javax.jms.TextMessage;
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Optional;
 
 import static se.inera.intyg.common.support.common.enumerations.HandelsekodEnum.ANDRAT;
 import static se.inera.intyg.common.support.common.enumerations.HandelsekodEnum.HANFRFM;
@@ -122,7 +123,7 @@ public class NotificationServiceImpl implements NotificationService {
 
     @PostConstruct
     public void checkJmsTemplate() {
-        if (jmsTemplateForAggregation == null) {
+        if (Objects.isNull(jmsTemplateForAggregation)) {
             LOGGER.error("Notification is disabled!");
         }
     }
@@ -439,21 +440,19 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     private void send(NotificationMessage notificationMessage, String enhetsId, String intygTypeVersion) {
-        if (jmsTemplateForAggregation == null) {
+        if (Objects.isNull(jmsTemplateForAggregation)) {
             LOGGER.warn("Can not notify listeners! The JMS transport is not initialized.");
             return;
         }
 
-        String notificationMessageAsJson = notificationMessageToJson(notificationMessage);
-
-        WebCertUser webCertUser = (WebCertUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        final String notificationMessageAsJson = notificationMessageToJson(notificationMessage);
 
         try {
             jmsTemplateForAggregation.send(
                     new NotificationMessageCreator(
                             notificationMessageAsJson, notificationMessage.getIntygsId(), notificationMessage.getIntygsTyp(),
                             intygTypeVersion, notificationMessage.getHandelse(),
-                            Objects.isNull(webCertUser) ? null : webCertUser.getHsaId()));
+                            currentUserId()));
         } catch (JmsException e) {
             LOGGER.error("Could not send message", e);
             throw e;
@@ -461,6 +460,12 @@ public class NotificationServiceImpl implements NotificationService {
 
         LOGGER.debug("Notification sent: {}", notificationMessage);
         monitoringLog.logNotificationSent(notificationMessage.getHandelse().name(), enhetsId, notificationMessage.getIntygsId());
+    }
+
+    //
+    private String currentUserId() {
+        final Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        return (Objects.isNull(auth)) ? null : ((WebCertUser) auth.getPrincipal()).getHsaId();
     }
 
     private Utkast getUtkast(String intygsId) {

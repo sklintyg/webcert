@@ -58,6 +58,7 @@ public class NotificationWSClient {
             throws TemporaryException, DiscardCandidateException, PermanentException {
 
         if (Objects.nonNull(userId)) {
+            LOG.debug("Set hanteratAv to '{}'", userId);
             request.setHanteratAv(hsaId(userId));
         }
 
@@ -68,7 +69,8 @@ public class NotificationWSClient {
             if (ErrorIdType.TECHNICAL_ERROR.equals(result.getErrorId())) {
                 // Added ugly null check to make notification_sender testSendStatusUpdateErrorTechnical pass
                 // The featuresHelper does not seem to load properly in the gradle tests
-                if (featuresHelper != null && featuresHelper.isFeatureActive(AuthoritiesConstants.FEATURE_NOTIFICATION_DISCARD_FELB)) {
+                if (Objects.nonNull(featuresHelper)
+                SjukfallServiceImpl&& featuresHelper.isFeatureActive(AuthoritiesConstants.FEATURE_NOTIFICATION_DISCARD_FELB)) {
                     if (result.getResultText()
                             .startsWith("Certificate not found in COSMIC and ref field is missing, cannot store certificate. "
                             + "Possible race condition. Retry later when the certificate may have been stored in COSMIC.")
