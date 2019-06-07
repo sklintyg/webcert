@@ -54,7 +54,7 @@ public interface DiagnosInformationRepository extends JpaRepository<DiagnosInfor
 
     // CHECKSTYLE:OFF OperatorWrap
     // CHECKSTYLE:OFF LineLength
-    @Query("SELECT new se.inera.intyg.webcert.persistence.fmb.model.dto.MaximalSjukskrivningstidDagar(icd10Kod.kod, max(typfall.maximalSjukrivningstidDagar)) FROM DiagnosInformation diagnosInfo " +
+    @Query("SELECT new se.inera.intyg.webcert.persistence.fmb.model.dto.MaximalSjukskrivningstidDagar(icd10Kod.kod, max(typfall.maximalSjukrivningstidDagar), typfall.maximalSjukrivningstidSourceValue, typfall.maximalSjukrivningstidSourceUnit) FROM DiagnosInformation diagnosInfo " +
            "JOIN diagnosInfo.icd10KodList icd10Kod " +
            "JOIN icd10Kod.typFallList typfall " +
            "WHERE typfall.maximalSjukrivningstidDagar IS NOT NULL " +

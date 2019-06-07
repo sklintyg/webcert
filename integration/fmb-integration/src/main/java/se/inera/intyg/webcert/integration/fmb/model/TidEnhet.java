@@ -25,16 +25,33 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 public enum TidEnhet {
-    DAG("d", 1),
-    VECKA("wk", 7),
-    MANAD("mo", 31);
+    DAG("d", 1, "dag", "dagar"),
+    VECKA("wk", 7, "vecka", "veckor"),
+    MANAD("mo", 31, "månad", "månader");
 
     private final String code;
     private final int inDays;
+    private final String singleName;
+    private final String pluralisName;
 
-    TidEnhet(final String code, final int inDays) {
+    TidEnhet(final String code, final int inDays, final String singleName, final String pluralisName) {
         this.code = code;
         this.inDays = inDays;
+        this.singleName = singleName;
+        this.pluralisName = pluralisName;
+    }
+
+    public static Optional<TidEnhet> of(final String text) {
+        return Stream.of(TidEnhet.values())
+                .filter(code -> equalsIgnoreCase(text, code.getCode()))
+                .collect(toOptional());
+    }
+
+    public String getUnitDisplayValue(Integer value) {
+        if (value == null) {
+            return "";
+        }
+        return value + " " + (value > 1 ? pluralisName : singleName);
     }
 
     public String getCode() {
@@ -43,11 +60,5 @@ public enum TidEnhet {
 
     public int getInDays() {
         return inDays;
-    }
-
-    public static Optional<TidEnhet> of(final String text) {
-        return Stream.of(TidEnhet.values())
-                .filter(code -> equalsIgnoreCase(text, code.getCode()))
-                .collect(toOptional());
     }
 }

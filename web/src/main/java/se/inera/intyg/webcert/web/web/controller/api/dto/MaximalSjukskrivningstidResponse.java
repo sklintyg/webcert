@@ -26,6 +26,7 @@ public final class MaximalSjukskrivningstidResponse {
     private int totalSjukskrivningstidInklusiveForeslagen;
     private Integer maximaltRekommenderadSjukskrivningstid;
     private String aktuellIcd10Kod;
+    private String maximaltRekommenderadSjukskrivningstidSource;
 
     public MaximalSjukskrivningstidResponse() {
     }
@@ -36,13 +37,15 @@ public final class MaximalSjukskrivningstidResponse {
             final int totalTidigareSjukskrivningstid,
             final int totalSjukskrivningstidInklusiveForeslagen,
             final Integer maximalRekommenderadSjukskrivningstid,
-            final String aktuellIcd10Kod) {
+            final String aktuellIcd10Kod,
+            final String maximaltRekommenderadSjukskrivningstidSource) {
         this.foreslagenSjukskrivningstid = foreslagenSjukskrivningstid;
         this.overskriderRekommenderadSjukskrivningstid = overskriderRekommenderadSjukskrivningstid;
         this.totalTidigareSjukskrivningstid = totalTidigareSjukskrivningstid;
         this.totalSjukskrivningstidInklusiveForeslagen = totalSjukskrivningstidInklusiveForeslagen;
         this.maximaltRekommenderadSjukskrivningstid = maximalRekommenderadSjukskrivningstid;
         this.aktuellIcd10Kod = aktuellIcd10Kod;
+        this.maximaltRekommenderadSjukskrivningstidSource = maximaltRekommenderadSjukskrivningstidSource;
     }
 
     public int getForeslagenSjukskrivningstid() {
@@ -97,7 +100,8 @@ public final class MaximalSjukskrivningstidResponse {
             final int totalTidigareSjukskrivningstid,
             final int foreslagenSjukskrivningstid,
             final int maximaltRekommenderadSjukskrivningstid,
-            final String aktuellIcd10Kod) {
+            final String aktuellIcd10Kod,
+            final String maximaltRekommenderadSjukskrivningstidSource) {
 
         final int totalSjukskrivningsTidInklusiveForeslagen = totalTidigareSjukskrivningstid + foreslagenSjukskrivningstid;
         final boolean overskriden = totalSjukskrivningsTidInklusiveForeslagen > maximaltRekommenderadSjukskrivningstid;
@@ -108,7 +112,8 @@ public final class MaximalSjukskrivningstidResponse {
                 totalTidigareSjukskrivningstid,
                 totalSjukskrivningsTidInklusiveForeslagen,
                 maximaltRekommenderadSjukskrivningstid,
-                aktuellIcd10Kod);
+                aktuellIcd10Kod,
+                maximaltRekommenderadSjukskrivningstidSource);
     }
 
     public static MaximalSjukskrivningstidResponse ingenFmbRekommendation(
@@ -123,6 +128,15 @@ public final class MaximalSjukskrivningstidResponse {
                 totalTidigareSjukskrivningstid,
                 totalSjukskrivningsTidInklusiveForeslagen,
                 null,
+                null,
                 null);
+    }
+
+    public String getMaximaltRekommenderadSjukskrivningstidSource() {
+        return maximaltRekommenderadSjukskrivningstidSource;
+    }
+
+    public void setMaximaltRekommenderadSjukskrivningstidSource(String maximaltRekommenderadSjukskrivningstidSource) {
+        this.maximaltRekommenderadSjukskrivningstidSource = maximaltRekommenderadSjukskrivningstidSource;
     }
 }

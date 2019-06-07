@@ -1239,4 +1239,17 @@
     </addColumn>
   </changeSet>
 
+  <changeSet id="60" author="mc">
+    <addColumn tableName="FMB_TYPFALL">
+      <column name="MAXIMALSJUKRIVNINGSTID_SOURCE_VALUE" type="varchar(10)">
+        <constraints nullable="true"/>
+      </column>
+    </addColumn>
+    <addColumn tableName="FMB_TYPFALL">
+      <column name="MAXIMALSJUKRIVNINGSTID_SOURCE_UNIT" type="varchar(10)">
+        <constraints nullable="true"/>
+      </column>
+    </addColumn>
+  </changeSet>
+
 </databaseChangeLog>
