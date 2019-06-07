@@ -67,7 +67,7 @@ describe('Djupintegration on luse with updated personnummer', function() {
                     alternatePatientSSn: personnummer1
                 });
                 expect(LuseIntygPage.isAt()).toBeTruthy();
-                expect(LuseIntygPage.newPersonIdMessage.isDisplayed()).toBeFalsy();
+                expect(LuseIntygPage.newPersonIdMessage.isPresent()).toBeFalsy();
             });
         });
 
@@ -145,7 +145,7 @@ describe('Djupintegration on luse with updated personnummer', function() {
                     alternatePatientSSn: personnummer1
                 });
                 expect(LuseUtkastPage.isAt()).toBeTruthy();
-                expect(LuseUtkastPage.newPersonIdMessage.isDisplayed()).toBeFalsy();
+                expect(LuseUtkastPage.newPersonIdMessage.isPresent()).toBeFalsy();
             });
         });
 
