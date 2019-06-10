@@ -215,6 +215,25 @@ var Ag7804Intyg = AgBaseIntyg._extend({
 
     verifieraOvrigt: function(data) {
         expect(this.ovrigt.getText()).toBe(data.ovrigt);
+    },
+
+    whenCertificateLoaded: function() {
+        var that = this;
+
+        return browser.sleep(2000).then(function() {
+            //1 sec sleep för GET request och page/angular reload
+            return browser.wait(that.certficate.isPresent(), 15000).then(function() {
+                //15sec är timeout
+                return browser.wait(that.certficate.isDisplayed(), 15000);
+            });
+        }).catch(function(e) {
+            //Debug
+            browser.getCurrentUrl().then(function(url) {
+                logger.warn('url: ' + url);
+                console.trace(e);
+                throw (e.message);
+            });
+        });
     }
 });
 
