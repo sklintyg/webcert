@@ -30,15 +30,7 @@ import static se.inera.intyg.webcert.persistence.fmb.model.fmb.DiagnosInformatio
 import static se.inera.intyg.webcert.persistence.fmb.model.fmb.Icd10Kod.Icd10KodBuilder.anIcd10Kod;
 import static se.inera.intyg.webcert.persistence.fmb.model.fmb.TypFall.TypFallBuilder.aTypFall;
 
-import com.google.common.collect.ImmutableList;
-import org.assertj.core.util.Lists;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -46,6 +38,16 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import org.assertj.core.util.Lists;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
+
+import com.google.common.collect.ImmutableList;
+
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.persistence.fmb.model.dto.MaximalSjukskrivningstidDagar;
 import se.inera.intyg.webcert.persistence.fmb.model.fmb.BeskrivningTyp;
@@ -83,11 +85,14 @@ public class FmbDiagnosInformationServiceImplTest {
     @Test
     public void validateSjukskrivningtidForPatientShouldReturnOK() {
 
-        final int rekommenderad = 13;
+        final int rekommenderad = 14;
         final int foreslagen = 1;
         final int tidigare = 12;
+        final String sourceValue = "2";
+        final String sourceUnit = "wk";
 
-        final List<MaximalSjukskrivningstidDagar> max = Lists.newArrayList(MaximalSjukskrivningstidDagar.of("kod1", rekommenderad));
+        final List<MaximalSjukskrivningstidDagar> max = Lists
+                .newArrayList(MaximalSjukskrivningstidDagar.of("kod1", rekommenderad, sourceValue, sourceUnit));
 
         doReturn(max)
                 .when(diagnosInformationRepository)
@@ -107,16 +112,20 @@ public class FmbDiagnosInformationServiceImplTest {
         assertThat(response.getForeslagenSjukskrivningstid()).isEqualTo(foreslagen);
         assertThat(response.getTotalTidigareSjukskrivningstid()).isEqualTo(tidigare);
         assertThat(response.getTotalSjukskrivningstidInklusiveForeslagen()).isEqualTo(tidigare + foreslagen);
+        assertThat(response.getMaximaltRekommenderadSjukskrivningstidSource()).isEqualTo("2 veckor");
     }
 
     @Test
     public void validateSjukskrivningtidForPatientShouldReturnNotOK() {
 
-        final int rekommenderad = 12;
+        final int rekommenderad = 7;
         final int foreslagen = 1;
         final int tidigare = 12;
+        final String sourceValue = "1";
+        final String sourceUnit = "wk";
 
-        final List<MaximalSjukskrivningstidDagar> max = Lists.newArrayList(MaximalSjukskrivningstidDagar.of("kod1", rekommenderad));
+        final List<MaximalSjukskrivningstidDagar> max = Lists
+                .newArrayList(MaximalSjukskrivningstidDagar.of("kod1", rekommenderad, sourceValue, sourceUnit));
 
         doReturn(max)
                 .when(diagnosInformationRepository)
@@ -136,6 +145,7 @@ public class FmbDiagnosInformationServiceImplTest {
         assertThat(response.getForeslagenSjukskrivningstid()).isEqualTo(foreslagen);
         assertThat(response.getTotalTidigareSjukskrivningstid()).isEqualTo(tidigare);
         assertThat(response.getTotalSjukskrivningstidInklusiveForeslagen()).isEqualTo(tidigare + foreslagen);
+        assertThat(response.getMaximaltRekommenderadSjukskrivningstidSource()).isEqualTo("1 vecka");
     }
 
     @Test
