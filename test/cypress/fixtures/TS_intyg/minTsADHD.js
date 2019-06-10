@@ -30,7 +30,7 @@ ts = {
     "Allmänt": {
         "icd10": true,
         "fritext": "F900B - Attention Deficit and Hyperactivity Disorder (ADHD)",
-        "antalDiagnoser": 1,
+        "antalDiagnoser": 1, // 1-4
         "diagnos": {
             "rad1": {
                 "kod": "F900A",

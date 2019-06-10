@@ -90,7 +90,10 @@ export function sektionAllmänt(Allmänt) {
         var avsluta = 0
         for (var key in Allmänt.diagnos) {
             cy.get(diagnosRader[key].kod).type(Allmänt.diagnos[key].kod);
+            //Todo: Misslyckas här ibland. Lade till en wait på 1 sekund innan enter skickas. Titta om det går att lösas utan wait.
+            cy.wait(1000);
             cy.get(diagnosRader[key].kod).type('{enter}');
+
             cy.get(diagnosRader[key].diagnos).invoke('val').should('contain', Allmänt.diagnos[key].text);
             const iÅrMinus2År  = Cypress.moment().subtract(2,  'years').format('YYYY');
             cy.get(diagnosRader[key].årtal).type(iÅrMinus2År);

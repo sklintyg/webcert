@@ -17,7 +17,8 @@ export const implementeradeIntyg = {
     TS_ANMÄLAN: "TSTRK1009",
     TS_ADHD: "TSTRK1062",
     AFMU: "AF00213",
-    AF00251: "AF00251"
+    AF00251: "AF00251",
+    DB: "DB"
 }
 
 function loggaInVårdpersonal(vårdpersonal, vårdenhet, ärDjup) {
@@ -176,6 +177,10 @@ Cypress.Commands.add("skapaAFMUUtkast", fx => {
 
 Cypress.Commands.add("skapaAF00251Utkast", fx => {
     return skapaUtkast(fx, implementeradeIntyg.AF00251);
+});
+
+Cypress.Commands.add("skapaDBUtkast", fx => {
+    return skapaUtkast(fx, implementeradeIntyg.DB);
 });
 
 /*
