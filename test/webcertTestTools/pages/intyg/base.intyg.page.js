@@ -37,6 +37,7 @@ var BaseIntyg = JClass._extend({
     init: function() {
         this.intygType = null;
         this.intygTypeVersion = null; // overridden by subclasses
+        this.certficate = element(by.id('certificate'));
         this.at = element(by.id('viewCertAndQA'));
         this.makulera = {
             btn: element(by.id('makuleraBtn')),
@@ -316,6 +317,24 @@ var BaseIntyg = JClass._extend({
             return element(by.id('cancel-approval-settings-btn')).click();
         }
 
+    },
+    whenCertificateLoaded: function() {
+        var that = this;
+
+        //1 sec sleep för GET request och page/angular reload
+        var until = protractor.ExpectedConditions;
+        return browser.wait(until.presenceOf(that.certficate), 15000).then(function() {
+            //15sec är timeout
+
+            return browser.wait(until.visibilityOf(that.certficate), 15000);
+        }).catch(function(e) {
+            //Debug
+            browser.getCurrentUrl().then(function(url) {
+                logger.warn('url: ' + url);
+                console.trace(e);
+                throw (e.message);
+            });
+        });
     }
 });
 
