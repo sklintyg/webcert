@@ -65,9 +65,8 @@ public class NotificationWSClient {
         try {
             response = statusUpdateForCareClient.certificateStatusUpdateForCare(logicalAddress, request);
         } catch (SOAPFaultException e) {
-            if (e.getCause() != null && e.getCause().getMessage() != null
-                    && (e.getCause().getMessage().contains(MARSALLING_ERROR) || e.getCause().getMessage().contains(UNMARSALLING_ERROR))) {
-                LOG.error(String.format("%s occurred when sending status update: %s", UNMARSALLING_ERROR, e.getMessage()));
+            if (e.getMessage() != null && (e.getMessage().contains(MARSALLING_ERROR) || e.getMessage().contains(UNMARSALLING_ERROR))) {
+                LOG.error("SOAPFaultException occurred when sending status update: {}", e.getMessage());
                 throw new PermanentException(e);
             } else {
                 LOG.warn("SOAPFaultException occurred when sending status update: {}", e.getMessage());

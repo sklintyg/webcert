@@ -24,7 +24,10 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import javax.xml.namespace.QName;
+import javax.xml.soap.SOAPFactory;
 import javax.xml.ws.WebServiceException;
+import javax.xml.ws.soap.SOAPFaultException;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -55,9 +58,23 @@ public class NotificationWSClientTest {
     private CertificateStatusUpdateForCareResponderInterface statusUpdateForCareClient;
 
     @Test(expected = TemporaryException.class)
-    public void testSendStatusUpdateClientThrowsException() throws Exception {
+    public void testSendStatusUpdateClientThrowsTemporaryException() throws Exception {
         when(statusUpdateForCareClient.certificateStatusUpdateForCare(anyString(), any(CertificateStatusUpdateForCareType.class)))
                 .thenThrow(new WebServiceException());
+        notificationWsClient.sendStatusUpdate(createRequest(), LOGICAL_ADDRESS);
+    }
+
+    @Test(expected = PermanentException.class)
+    public void testSendStatusUpdateClientThrowsPermanentExceptionMarshallingError() throws Exception {
+        when(statusUpdateForCareClient.certificateStatusUpdateForCare(anyString(), any(CertificateStatusUpdateForCareType.class)))
+                .thenThrow(new SOAPFaultException(SOAPFactory.newInstance().createFault("Marshalling Error", new QName(""))));
+        notificationWsClient.sendStatusUpdate(createRequest(), LOGICAL_ADDRESS);
+    }
+
+    @Test(expected = PermanentException.class)
+    public void testSendStatusUpdateClientThrowsPermanentExceptionUnmarshallingError() throws Exception {
+        when(statusUpdateForCareClient.certificateStatusUpdateForCare(anyString(), any(CertificateStatusUpdateForCareType.class)))
+                .thenThrow(new SOAPFaultException(SOAPFactory.newInstance().createFault("Unmarshalling Error", new QName(""))));
         notificationWsClient.sendStatusUpdate(createRequest(), LOGICAL_ADDRESS);
     }
 
