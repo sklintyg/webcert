@@ -18,7 +18,6 @@
  */
 package se.inera.intyg.webcert.notification_sender.notifications.integration;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDateTime;
 import java.util.Enumeration;
 import java.util.List;
@@ -27,6 +26,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import javax.jms.JMSException;
 import javax.jms.Queue;
 import javax.jms.TextMessage;
+
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.command.ActiveMQQueue;
 import org.apache.camel.test.spring.CamelSpringJUnit4ClassRunner;
@@ -38,6 +38,8 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.test.annotation.DirtiesContext;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 import se.inera.intyg.common.fk7263.model.internal.Fk7263Utlatande;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
@@ -49,7 +51,6 @@ import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
 import se.inera.intyg.webcert.notification_sender.mocks.v3.CertificateStatusUpdateForCareResponderStub;
 import se.inera.intyg.webcert.notification_sender.notifications.helper.NotificationTestHelper;
 import se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders;
-
 
 import static java.util.stream.Collectors.toList;
 import static org.mockito.AdditionalMatchers.or;
@@ -120,14 +121,12 @@ public abstract class AbstractBaseIT {
         return objectMapper.writeValueAsString(notificationMessage);
     }
 
-    void sendMessage(final NotificationMessage message) {
+    void sendMessage(final NotificationMessage message) throws Exception {
         jmsTemplate.send(sendQueue, session -> {
             try {
                 TextMessage textMessage = session.createTextMessage(notificationMessageToJson(message));
                 textMessage.setStringProperty(NotificationRouteHeaders.INTYGS_TYP, message.getIntygsTyp());
                 textMessage.setStringProperty(NotificationRouteHeaders.HANDELSE, message.getHandelse().value());
-                textMessage.setStringProperty(NotificationRouteHeaders.USER_ID, "userId");
-                textMessage.setStringProperty(NotificationRouteHeaders.LOGISK_ADRESS, "logicalAddress");
                 return textMessage;
             } catch (Exception e) {
                 throw new RuntimeException(e);

@@ -26,7 +26,6 @@ public final class NotificationRouteHeaders {
     public static final String INTYG_TYPE_VERSION = "intygTypeVersion";
     public static final String HANDELSE = "handelse";
     public static final String VERSION = "version";
-    public static final String USER_ID = "userId";
 
     private NotificationRouteHeaders() {
     }
