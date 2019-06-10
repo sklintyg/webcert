@@ -18,23 +18,8 @@
  */
 package se.inera.intyg.webcert.notification_sender.notifications.integration;
 
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-import org.junit.Before;
-import org.junit.Test;
-import org.springframework.test.context.ContextConfiguration;
-import se.inera.intyg.common.fk7263.model.internal.Fk7263Utlatande;
-import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
-import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
-import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
-import se.inera.intyg.webcert.notification_sender.mocks.NotificationStubEntry;
-import se.inera.intyg.webcert.notification_sender.notifications.helper.NotificationTestHelper;
-
-
 import static org.awaitility.Awaitility.await;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 import static org.mockito.AdditionalMatchers.or;
 import static org.mockito.ArgumentMatchers.any;
@@ -42,6 +27,22 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.when;
 import static se.inera.intyg.webcert.notification_sender.mocks.v3.CertificateStatusUpdateForCareResponderStub.FALLERAT_MEDDELANDE;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.springframework.test.context.ContextConfiguration;
+
+import se.inera.intyg.common.fk7263.model.internal.Fk7263Utlatande;
+import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
+
+import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
+import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
+import se.inera.intyg.webcert.notification_sender.mocks.NotificationStubEntry;
+import se.inera.intyg.webcert.notification_sender.notifications.helper.NotificationTestHelper;
 
 @ContextConfiguration("/notifications/integration-test-notification-sender-config.xml")
 public class RouteIT extends AbstractBaseIT {
@@ -86,21 +87,6 @@ public class RouteIT extends AbstractBaseIT {
                 }
             }
             return (numberOfReceivedMessages == 2);
-        });
-    }
-
-    @Test
-    public void ensureUserIdExists() {
-        NotificationMessage msg = createNotificationMessage("1", "fk7263", HandelsekodEnum.SKAPAT);
-
-        sendMessage(msg);
-
-        await().atMost(SECONDS_TO_WAIT, TimeUnit.SECONDS).until(() -> {
-            int num = certificateStatusUpdateForCareResponderV3.getNumberOfReceivedMessages();
-            if (num == 1) {
-                assertNotNull(certificateStatusUpdateForCareResponderV3.getNotificationMessages().get(0).userId);
-            }
-            return (num == 1);
         });
     }
 

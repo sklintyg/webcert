@@ -19,7 +19,6 @@
 package se.inera.intyg.webcert.notification_sender.mocks;
 
 import java.time.LocalDateTime;
-import se.riv.clinicalprocess.healthcond.certificate.types.v3.HsaId;
 
 /**
  * Created by eriklupander on 2016-07-06.
@@ -28,13 +27,10 @@ public class NotificationStubEntry {
     public String intygsId;
     public String handelseTyp;
     public LocalDateTime handelseTid;
-    public HsaId userId;
 
-    public NotificationStubEntry(String intygsId, String handelseTyp,
-                                 LocalDateTime handelseTid, HsaId userId) {
+    public NotificationStubEntry(String intygsId, String handelseTyp, LocalDateTime handelseTid) {
         this.intygsId = intygsId;
         this.handelseTyp = handelseTyp;
         this.handelseTid = handelseTid;
-        this.userId = userId;
     }
 }
