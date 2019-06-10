@@ -127,20 +127,6 @@ public class NotificationWSClientTest {
         notificationWsClient.sendStatusUpdate(createRequest(), LOGICAL_ADDRESS, USER_ID);
     }
 
-    @Test(expected = PermanentException.class)
-    public void xmlMarshallingErrorTest() throws Exception {
-        when(statusUpdateForCareClient.certificateStatusUpdateForCare(anyString(), any(CertificateStatusUpdateForCareType.class)))
-                .thenThrow(new RuntimeException("Lorem ipsum...Marshalling Error: WTF"));
-        notificationWsClient.sendStatusUpdate(createRequest(), LOGICAL_ADDRESS, USER_ID);
-    }
-
-    @Test(expected = PermanentException.class)
-    public void xmlUnarshallingErrorTest() throws Exception {
-        when(statusUpdateForCareClient.certificateStatusUpdateForCare(anyString(), any(CertificateStatusUpdateForCareType.class)))
-                .thenThrow(new RuntimeException("Unmarshalling Error: WTF"));
-        notificationWsClient.sendStatusUpdate(createRequest(), LOGICAL_ADDRESS, USER_ID);
-    }
-
     private CertificateStatusUpdateForCareType createRequest() {
         CertificateStatusUpdateForCareType res = new CertificateStatusUpdateForCareType();
         res.setIntyg(new Intyg());
