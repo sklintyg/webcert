@@ -21,7 +21,7 @@ package se.inera.intyg.webcert.notification_sender.notifications.services.v3;
 // CHECKSTYLE:OFF LineLength
 
 import java.util.Objects;
-import java.util.regex.Pattern;
+import javax.xml.ws.soap.SOAPFaultException;
 import org.apache.camel.Header;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,23 +47,25 @@ public class NotificationWSClient {
 
     private static final Logger LOG = LoggerFactory.getLogger(NotificationWSClient.class);
 
+    private static final String MARSALLING_ERROR = "Marshalling Error";
+    private static final String UNMARSALLING_ERROR = "Unmarshalling Error";
+
     @Autowired
     private CertificateStatusUpdateForCareResponderInterface statusUpdateForCareClient;
 
     @Autowired
     private FeaturesHelper featuresHelper;
 
-    private Pattern xmlErrorPattern = Pattern.compile(".*(Unm|M)arshalling Error.*");
 
     public void sendStatusUpdate(CertificateStatusUpdateForCareType request,
                                  @Header(NotificationRouteHeaders.LOGISK_ADRESS) String logicalAddress,
                                  @Header(NotificationRouteHeaders.USER_ID) String userId)
             throws TemporaryException, DiscardCandidateException, PermanentException {
 
-        if (Objects.nonNull(userId)) {
-            LOG.debug("Set hanteratAv to '{}'", userId);
-            request.setHanteratAv(hsaId(userId));
-        }
+       if (Objects.nonNull(userId)) {
+           LOG.debug("Set hanteratAv to '{}'", userId);
+           request.setHanteratAv(hsaId(userId));
+       }
 
         final ResultType result = exchange(logicalAddress, request);
 
@@ -114,23 +116,19 @@ public class NotificationWSClient {
             if (isMarshallingError(e)) {
                 LOG.error("XML marshalling error occurred when sending status update: {}", e.getMessage());
                 throw new PermanentException(e);
-            } else {
-                LOG.warn("Exception occurred when sending status update: {}", e.getMessage());
-                throw new TemporaryException(e);
             }
+            LOG.warn("Exception occurred when sending status update: {}", e.getMessage());
+            throw new TemporaryException(e);
         }
     }
 
-    // recursively walk through stack
-    boolean isMarshallingError(Throwable e) {
-        if (Objects.isNull(e)) {
-            return false;
+    //
+    boolean isMarshallingError(Exception e) {
+        if (e instanceof SOAPFaultException) {
+            final String msg = e.getMessage();
+             return Objects.nonNull(msg) && (msg.contains(MARSALLING_ERROR) || msg.contains(UNMARSALLING_ERROR));
         }
-        final String msg = e.getMessage();
-        if (Objects.nonNull(msg) && xmlErrorPattern.matcher(msg).matches()) {
-            return true;
-        }
-        return isMarshallingError(e.getCause());
+        return false;
     }
 
     //

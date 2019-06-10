@@ -18,7 +18,8 @@
  */
 package se.inera.intyg.webcert.notification_sender.notifications.services.v3;
 
-import javax.xml.soap.SOAPFault;
+import javax.xml.namespace.QName;
+import javax.xml.soap.SOAPFactory;
 import javax.xml.ws.WebServiceException;
 import javax.xml.ws.soap.SOAPFaultException;
 import org.junit.Test;
@@ -60,9 +61,23 @@ public class NotificationWSClientTest {
     private CertificateStatusUpdateForCareResponderInterface statusUpdateForCareClient;
 
     @Test(expected = TemporaryException.class)
-    public void testSendStatusUpdateClientThrowsException() throws Exception {
+    public void testSendStatusUpdateClientThrowsTemporaryException() throws Exception {
         when(statusUpdateForCareClient.certificateStatusUpdateForCare(anyString(), any(CertificateStatusUpdateForCareType.class)))
                 .thenThrow(new WebServiceException());
+        notificationWsClient.sendStatusUpdate(createRequest(), LOGICAL_ADDRESS, USER_ID);
+    }
+
+    @Test(expected = PermanentException.class)
+    public void testSendStatusUpdateClientThrowsPermanentExceptionMarshallingError() throws Exception {
+        when(statusUpdateForCareClient.certificateStatusUpdateForCare(anyString(), any(CertificateStatusUpdateForCareType.class)))
+                .thenThrow(new SOAPFaultException(SOAPFactory.newInstance().createFault("Marshalling Error", new QName(""))));
+        notificationWsClient.sendStatusUpdate(createRequest(), LOGICAL_ADDRESS, USER_ID);
+    }
+
+    @Test(expected = PermanentException.class)
+    public void testSendStatusUpdateClientThrowsPermanentExceptionUnmarshallingError() throws Exception {
+        when(statusUpdateForCareClient.certificateStatusUpdateForCare(anyString(), any(CertificateStatusUpdateForCareType.class)))
+                .thenThrow(new SOAPFaultException(SOAPFactory.newInstance().createFault("Unmarshalling Error", new QName(""))));
         notificationWsClient.sendStatusUpdate(createRequest(), LOGICAL_ADDRESS, USER_ID);
     }
 
@@ -109,20 +124,6 @@ public class NotificationWSClientTest {
     public void testSendStatusUpdateErrorIdNull() throws Exception {
         when(statusUpdateForCareClient.certificateStatusUpdateForCare(anyString(), any(CertificateStatusUpdateForCareType.class)))
                 .thenReturn(buildResponse(ResultCodeType.ERROR, null, "error text"));
-        notificationWsClient.sendStatusUpdate(createRequest(), LOGICAL_ADDRESS, USER_ID);
-    }
-
-    @Test(expected = PermanentException.class)
-    public void xmlMarshallingErrorTest() throws Exception {
-        when(statusUpdateForCareClient.certificateStatusUpdateForCare(anyString(), any(CertificateStatusUpdateForCareType.class)))
-                .thenThrow(new RuntimeException("Lorem ipsum...Marshalling Error: WTF"));
-        notificationWsClient.sendStatusUpdate(createRequest(), LOGICAL_ADDRESS, USER_ID);
-    }
-
-    @Test(expected = PermanentException.class)
-    public void xmlUnarshallingErrorTest() throws Exception {
-        when(statusUpdateForCareClient.certificateStatusUpdateForCare(anyString(), any(CertificateStatusUpdateForCareType.class)))
-                .thenThrow(new RuntimeException("Unmarshalling Error: WTF"));
         notificationWsClient.sendStatusUpdate(createRequest(), LOGICAL_ADDRESS, USER_ID);
     }
 
