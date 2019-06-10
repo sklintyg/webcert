@@ -18,12 +18,11 @@
  */
 package se.inera.intyg.webcert.notificationstub;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import se.inera.intyg.webcert.notificationstub.v3.NotificationStoreV3;
-import se.inera.intyg.webcert.notificationstub.v3.NotificationStubStateBean;
-import se.inera.intyg.webcert.notificationstub.v3.stat.NotificationStubEntry;
-import se.inera.intyg.webcert.notificationstub.v3.stat.StatTransformerUtil;
-
+import java.time.format.DateTimeFormatter;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -31,11 +30,12 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.time.format.DateTimeFormatter;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import org.springframework.beans.factory.annotation.Autowired;
+import se.inera.intyg.webcert.notificationstub.v3.NotificationStoreV3;
+import se.inera.intyg.webcert.notificationstub.v3.NotificationStubStateBean;
+import se.inera.intyg.webcert.notificationstub.v3.stat.NotificationStubEntry;
+import se.inera.intyg.webcert.notificationstub.v3.stat.StatTransformerUtil;
+import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareType;
 
 // CHECKSTYLE:OFF LineLength
 public class NotificationStubRestApi {
@@ -49,7 +49,7 @@ public class NotificationStubRestApi {
     @GET
     @Path("/notifieringar/v3")
     @Produces(MediaType.APPLICATION_JSON)
-    public Collection<se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareType> notifieringarV3() {
+    public Collection<CertificateStatusUpdateForCareType> notifieringarV3() {
         return notificationStoreV3.getNotifications();
     }
 
@@ -57,7 +57,7 @@ public class NotificationStubRestApi {
     @Path("/notifieringar/v3/stats")
     @Produces(MediaType.APPLICATION_JSON)
     public Response notifieringarV3Stats() {
-        Collection<se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareType> notifs = notificationStoreV3
+        Collection<CertificateStatusUpdateForCareType> notifs = notificationStoreV3
                 .getNotifications();
         Map<String, List<NotificationStubEntry>> stringListMap = new StatTransformerUtil().toStat(notifs);
         StringBuilder buf = new StringBuilder();

@@ -18,23 +18,16 @@
  */
 package se.inera.intyg.webcert.notification_sender.notifications.services.v3;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 import javax.xml.namespace.QName;
 import javax.xml.soap.SOAPFactory;
 import javax.xml.ws.WebServiceException;
 import javax.xml.ws.soap.SOAPFaultException;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-
+import se.inera.intyg.common.support.Constants;
 import se.inera.intyg.webcert.common.sender.exception.PermanentException;
 import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareResponderInterface;
@@ -46,10 +39,20 @@ import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
 import se.riv.clinicalprocess.healthcond.certificate.v3.ResultCodeType;
 import se.riv.clinicalprocess.healthcond.certificate.v3.ResultType;
 
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 @RunWith(MockitoJUnitRunner.class)
 public class NotificationWSClientTest {
 
     private static final String LOGICAL_ADDRESS = "address1";
+    private static final String USER_ID= "hsaId";
 
     @InjectMocks
     private NotificationWSClient notificationWsClient;
@@ -61,60 +64,67 @@ public class NotificationWSClientTest {
     public void testSendStatusUpdateClientThrowsTemporaryException() throws Exception {
         when(statusUpdateForCareClient.certificateStatusUpdateForCare(anyString(), any(CertificateStatusUpdateForCareType.class)))
                 .thenThrow(new WebServiceException());
-        notificationWsClient.sendStatusUpdate(createRequest(), LOGICAL_ADDRESS);
+        notificationWsClient.sendStatusUpdate(createRequest(), LOGICAL_ADDRESS, USER_ID);
     }
 
     @Test(expected = PermanentException.class)
     public void testSendStatusUpdateClientThrowsPermanentExceptionMarshallingError() throws Exception {
         when(statusUpdateForCareClient.certificateStatusUpdateForCare(anyString(), any(CertificateStatusUpdateForCareType.class)))
                 .thenThrow(new SOAPFaultException(SOAPFactory.newInstance().createFault("Marshalling Error", new QName(""))));
-        notificationWsClient.sendStatusUpdate(createRequest(), LOGICAL_ADDRESS);
+        notificationWsClient.sendStatusUpdate(createRequest(), LOGICAL_ADDRESS, USER_ID);
     }
 
     @Test(expected = PermanentException.class)
     public void testSendStatusUpdateClientThrowsPermanentExceptionUnmarshallingError() throws Exception {
         when(statusUpdateForCareClient.certificateStatusUpdateForCare(anyString(), any(CertificateStatusUpdateForCareType.class)))
                 .thenThrow(new SOAPFaultException(SOAPFactory.newInstance().createFault("Unmarshalling Error", new QName(""))));
-        notificationWsClient.sendStatusUpdate(createRequest(), LOGICAL_ADDRESS);
+        notificationWsClient.sendStatusUpdate(createRequest(), LOGICAL_ADDRESS, USER_ID);
     }
 
     @Test
     public void testSendStatusUpdateOk() throws Exception {
         when(statusUpdateForCareClient.certificateStatusUpdateForCare(anyString(), any(CertificateStatusUpdateForCareType.class)))
                 .thenReturn(buildResponse(ResultCodeType.OK, null, null));
-        notificationWsClient.sendStatusUpdate(createRequest(), LOGICAL_ADDRESS);
+        CertificateStatusUpdateForCareType request = createRequest();
+        notificationWsClient.sendStatusUpdate(request, LOGICAL_ADDRESS, USER_ID);
         verify(statusUpdateForCareClient).certificateStatusUpdateForCare(eq(LOGICAL_ADDRESS),
                 any(CertificateStatusUpdateForCareType.class));
+        assertEquals(request.getHanteratAv().getExtension(), USER_ID);
+        assertEquals(request.getHanteratAv().getRoot(), Constants.HSA_ID_OID);
     }
 
     @Test
     public void testSendStatusUpdateInfo() throws Exception {
         when(statusUpdateForCareClient.certificateStatusUpdateForCare(anyString(), any(CertificateStatusUpdateForCareType.class)))
                 .thenReturn(buildResponse(ResultCodeType.INFO, null, "info text"));
-        notificationWsClient.sendStatusUpdate(createRequest(), LOGICAL_ADDRESS);
+        CertificateStatusUpdateForCareType request = createRequest();
+        notificationWsClient.sendStatusUpdate(request, LOGICAL_ADDRESS, null);
         verify(statusUpdateForCareClient).certificateStatusUpdateForCare(eq(LOGICAL_ADDRESS),
                 any(CertificateStatusUpdateForCareType.class));
+        verify(statusUpdateForCareClient).certificateStatusUpdateForCare(eq(LOGICAL_ADDRESS),
+                any(CertificateStatusUpdateForCareType.class));
+        assertNull(request.getHanteratAv());
     }
 
     @Test(expected = TemporaryException.class)
     public void testSendStatusUpdateErrorTechnical() throws Exception {
         when(statusUpdateForCareClient.certificateStatusUpdateForCare(anyString(), any(CertificateStatusUpdateForCareType.class)))
                 .thenReturn(buildResponse(ResultCodeType.ERROR, ErrorIdType.TECHNICAL_ERROR, "error text"));
-        notificationWsClient.sendStatusUpdate(createRequest(), LOGICAL_ADDRESS);
+        notificationWsClient.sendStatusUpdate(createRequest(), LOGICAL_ADDRESS, USER_ID);
     }
 
     @Test(expected = PermanentException.class)
     public void testSendStatusUpdateErrorOther() throws Exception {
         when(statusUpdateForCareClient.certificateStatusUpdateForCare(anyString(), any(CertificateStatusUpdateForCareType.class)))
                 .thenReturn(buildResponse(ResultCodeType.ERROR, ErrorIdType.VALIDATION_ERROR, "error text"));
-        notificationWsClient.sendStatusUpdate(createRequest(), LOGICAL_ADDRESS);
+        notificationWsClient.sendStatusUpdate(createRequest(), LOGICAL_ADDRESS, USER_ID);
     }
 
     @Test(expected = PermanentException.class)
     public void testSendStatusUpdateErrorIdNull() throws Exception {
         when(statusUpdateForCareClient.certificateStatusUpdateForCare(anyString(), any(CertificateStatusUpdateForCareType.class)))
                 .thenReturn(buildResponse(ResultCodeType.ERROR, null, "error text"));
-        notificationWsClient.sendStatusUpdate(createRequest(), LOGICAL_ADDRESS);
+        notificationWsClient.sendStatusUpdate(createRequest(), LOGICAL_ADDRESS, USER_ID);
     }
 
     private CertificateStatusUpdateForCareType createRequest() {

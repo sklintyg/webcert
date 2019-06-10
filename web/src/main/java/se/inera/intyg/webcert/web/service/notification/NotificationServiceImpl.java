@@ -20,6 +20,15 @@ package se.inera.intyg.webcert.web.service.notification;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import javax.annotation.PostConstruct;
+import javax.jms.JMSException;
+import javax.jms.Message;
+import javax.jms.Session;
+import javax.jms.TextMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +37,8 @@ import org.springframework.jms.JmsException;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
 import org.springframework.mail.MailSendException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
@@ -51,16 +62,9 @@ import se.inera.intyg.webcert.web.service.mail.MailNotification;
 import se.inera.intyg.webcert.web.service.mail.MailNotificationService;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.referens.ReferensService;
+import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.Amneskod;
 
-import javax.annotation.PostConstruct;
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.Session;
-import javax.jms.TextMessage;
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Optional;
 
 import static se.inera.intyg.common.support.common.enumerations.HandelsekodEnum.ANDRAT;
 import static se.inera.intyg.common.support.common.enumerations.HandelsekodEnum.HANFRFM;
@@ -119,7 +123,7 @@ public class NotificationServiceImpl implements NotificationService {
 
     @PostConstruct
     public void checkJmsTemplate() {
-        if (jmsTemplateForAggregation == null) {
+        if (Objects.isNull(jmsTemplateForAggregation)) {
             LOGGER.error("Notification is disabled!");
         }
     }
@@ -436,18 +440,19 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     private void send(NotificationMessage notificationMessage, String enhetsId, String intygTypeVersion) {
-        if (jmsTemplateForAggregation == null) {
+        if (Objects.isNull(jmsTemplateForAggregation)) {
             LOGGER.warn("Can not notify listeners! The JMS transport is not initialized.");
             return;
         }
 
-        String notificationMessageAsJson = notificationMessageToJson(notificationMessage);
+        final String notificationMessageAsJson = notificationMessageToJson(notificationMessage);
 
         try {
             jmsTemplateForAggregation.send(
                     new NotificationMessageCreator(
                             notificationMessageAsJson, notificationMessage.getIntygsId(), notificationMessage.getIntygsTyp(),
-                            intygTypeVersion, notificationMessage.getHandelse()));
+                            intygTypeVersion, notificationMessage.getHandelse(),
+                            currentUserId()));
         } catch (JmsException e) {
             LOGGER.error("Could not send message", e);
             throw e;
@@ -455,6 +460,12 @@ public class NotificationServiceImpl implements NotificationService {
 
         LOGGER.debug("Notification sent: {}", notificationMessage);
         monitoringLog.logNotificationSent(notificationMessage.getHandelse().name(), enhetsId, notificationMessage.getIntygsId());
+    }
+
+    //
+    private String currentUserId() {
+        final Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        return (Objects.isNull(auth)) ? null : ((WebCertUser) auth.getPrincipal()).getHsaId();
     }
 
     private Utkast getUtkast(String intygsId) {
@@ -501,14 +512,17 @@ public class NotificationServiceImpl implements NotificationService {
         private final String intygsTyp;
         private final String intygTypeVersion;
         private final HandelsekodEnum handelseTyp;
+        private final String userId;
 
         private NotificationMessageCreator(String notificationMessage, String intygsId, String intygsTyp, String intygTypeVersion,
-                                           HandelsekodEnum handelseTyp) {
+                                           HandelsekodEnum handelseTyp,
+                                           String userId) {
             this.value = notificationMessage;
             this.intygsId = intygsId;
             this.intygsTyp = intygsTyp;
             this.intygTypeVersion = intygTypeVersion;
             this.handelseTyp = handelseTyp;
+            this.userId = userId;
         }
 
         /**
@@ -521,6 +535,7 @@ public class NotificationServiceImpl implements NotificationService {
             textMessage.setStringProperty(NotificationRouteHeaders.INTYGS_TYP, this.intygsTyp);
             textMessage.setStringProperty(NotificationRouteHeaders.INTYG_TYPE_VERSION, this.intygTypeVersion);
             textMessage.setStringProperty(NotificationRouteHeaders.HANDELSE, this.handelseTyp.value());
+            textMessage.setStringProperty(NotificationRouteHeaders.USER_ID, this.userId);
             return textMessage;
         }
     }

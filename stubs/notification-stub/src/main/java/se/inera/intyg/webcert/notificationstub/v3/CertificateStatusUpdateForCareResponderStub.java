@@ -53,6 +53,11 @@ public class CertificateStatusUpdateForCareResponderStub implements CertificateS
 
         StringBuilder sb = new StringBuilder();
 
+        if (request.getHanteratAv() != null) {
+            sb.append("Hanterat av: " + request.getHanteratAv().getExtension());
+            sb.append("\n");
+        }
+
         if (intyg.getSigneringstidpunkt() != null) {
             sb.append(" Signeringstidpunkt: " + intyg.getSigneringstidpunkt());
             sb.append("\n");
@@ -77,7 +82,7 @@ public class CertificateStatusUpdateForCareResponderStub implements CertificateS
         sb.append("\n");
 
         LOG.info("\n*********************************************************************************\n"
-                + " Request to address '{}' recieved for intyg: {} handelse: {}.\n"
+                + " Request to address '{}' received for intyg: {} handelse: {}.\n"
                 + "{}"
                 + "*********************************************************************************", logicalAddress, intygsId,
                 handelseKod, sb.toString());
