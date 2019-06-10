@@ -56,7 +56,6 @@ public class NotificationWSClient {
     @Autowired
     private FeaturesHelper featuresHelper;
 
-
     public void sendStatusUpdate(CertificateStatusUpdateForCareType request,
                                  @Header(NotificationRouteHeaders.LOGISK_ADRESS) String logicalAddress,
                                  @Header(NotificationRouteHeaders.USER_ID) String userId)
