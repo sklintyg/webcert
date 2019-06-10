@@ -70,6 +70,9 @@ export function skrivUt(typAvUtskrift, intygsId, intygsTyp){
 
 export function fornya() {
     cy.get('#fornyaBtn').click();
+    if (cy.get('#button1fornya-dialog')) {
+        cy.get('#button1fornya-dialog').click();
+    }
 }
 
 export function raderaUtkast() {

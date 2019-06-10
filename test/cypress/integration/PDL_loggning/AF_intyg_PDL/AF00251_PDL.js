@@ -1,16 +1,16 @@
 /* globals context cy */
 /// <reference types="Cypress" />
 import * as intyg from '../../../support/AF_intyg/af00251Intyg'
-// import * as pdl from '../../../support/pdl_helpers'
+import * as pdl from '../../../support/pdl_helpers'
 
-// // LISJP = Läkarintyg för sjukpenning, FK 7804
+// LISJP = Läkarintyg för sjukpenning, FK 7804
 
-// var pdlEventArray = [];
+var pdlEventArray = [];
 
-// function Af00251PdlEvent(env, actType, actArgs, actLevel, assignment, vgId_mod, vgNamn_mod, veId_mod, veNamn_mod) {
-//     return pdl.pdlEvent(env, actType, actArgs, actLevel, env.vårdpersonal.hsaId, assignment, env.vårdpersonal.titel, vgId_mod, vgNamn_mod, veId_mod, 
-//         veNamn_mod, env.vårdtagare.personnummerKompakt, env.vårdenhet.vårdgivareId, env.vårdenhet.vårdgivareNamn, env.vårdenhet.id, env.vårdenhet.namn)   
-// };
+function Af00251PdlEvent(env, actType, actArgs, actLevel, assignment, vgId_mod, vgNamn_mod, veId_mod, veNamn_mod) {
+    return pdl.pdlEvent(env, actType, actArgs, actLevel, env.vårdpersonal.hsaId, assignment, env.vårdpersonal.titel, vgId_mod, vgNamn_mod, veId_mod, 
+        veNamn_mod, env.vårdtagare.personnummerKompakt, env.vårdenhet.vårdgivareId, env.vårdenhet.vårdgivareNamn, env.vårdenhet.id, env.vårdenhet.namn)   
+};
 
 describe('AF00251-intyg', function () {
     
@@ -27,7 +27,7 @@ describe('AF00251-intyg', function () {
         cy.skapaAF00251Utkast(this).then((utkastId) => {
             cy.wrap(utkastId).as('utkastId');
             cy.log("AF00251-utkast med id " + utkastId + " skapat och används i testfallet");
-            // pdlEventArray.push(Af00251PdlEvent(this, pdl.enumHandelse.SKRIVA, undefined, utkastId, this.vårdenhet.uppdragsnamn, this.vårdenhet.vårdgivareId, this.vårdenhet.vårdgivareNamn, this.vårdenhet.id, this.vårdenhet.namn)); 
+            pdlEventArray.push(Af00251PdlEvent(this, pdl.enumHandelse.SKRIVA, undefined, utkastId, this.vårdenhet.uppdragsnamn, this.vårdenhet.vårdgivareId, this.vårdenhet.vårdgivareNamn, this.vårdenhet.id, this.vårdenhet.namn)); 
         });
     });
 
@@ -48,10 +48,10 @@ describe('AF00251-intyg', function () {
         });
         cy.url().should('include', this.utkastId);
         // Populerar pdl-array med förväntade logposter "Läsa" och "Skriva" samt fyller i halva intyget
-        // pdlEventArray.push(Af00251PdlEvent(this, pdl.enumHandelse.LÄSA, undefined, this.utkastId, this.vårdenhet.uppdragsnamn, this.vårdenhet.vårdgivareId, this.vårdenhet.vårdgivareNamn, this.vårdenhet.id, this.vårdenhet.namn));
+        pdlEventArray.push(Af00251PdlEvent(this, pdl.enumHandelse.LÄSA, undefined, this.utkastId, this.vårdenhet.uppdragsnamn, this.vårdenhet.vårdgivareId, this.vårdenhet.vårdgivareNamn, this.vårdenhet.id, this.vårdenhet.namn));
         intyg.sektionGrundMedicinsktUnderlag(this.intygsdata.medicinsktUnderlag);
         intyg.sektionArbetsmarknadspolitisktProgram(this.intygsdata.arbetsmarknadspolitiskt);
-        // pdlEventArray.push(Af00251PdlEvent(this, pdl.enumHandelse.SKRIVA, undefined, this.utkastId, this.vårdenhet.uppdragsnamn, this.vårdenhet.vårdgivareId, this.vårdenhet.vårdgivareNamn, this.vårdenhet.id, this.vårdenhet.namn));
+        pdlEventArray.push(Af00251PdlEvent(this, pdl.enumHandelse.SKRIVA, undefined, this.utkastId, this.vårdenhet.uppdragsnamn, this.vårdenhet.vårdgivareId, this.vårdenhet.vårdgivareNamn, this.vårdenhet.id, this.vårdenhet.namn));
         cy.contains("Utkastet är sparat").should('exist');
 
         // Lite special logga ut/logga in -variant för att sedan öppna intyget på nytt med en ny session
@@ -62,26 +62,26 @@ describe('AF00251-intyg', function () {
         cy.url().should('include', this.utkastId);
 
         // Populerar pdl-array med förväntade logposter "Läsa" och "Skriva" samt fyller i resten av intyget
-        // pdlEventArray.push(Af00251PdlEvent(this, pdl.enumHandelse.LÄSA, undefined, this.utkastId, this.vårdenhet.uppdragsnamn, this.vårdenhet.vårdgivareId, this.vårdenhet.vårdgivareNamn, this.vårdenhet.id, this.vårdenhet.namn));
+        pdlEventArray.push(Af00251PdlEvent(this, pdl.enumHandelse.LÄSA, undefined, this.utkastId, this.vårdenhet.uppdragsnamn, this.vårdenhet.vårdgivareId, this.vårdenhet.vårdgivareNamn, this.vårdenhet.id, this.vårdenhet.namn));
         intyg.sektionSjukdomensKonsekvenser(this.intygsdata.konsekvenser);
         intyg.sektionBedömning(this.intygsdata.bedömning);
-        // pdlEventArray.push(Af00251PdlEvent(this, pdl.enumHandelse.SKRIVA, undefined, this.utkastId, this.vårdenhet.uppdragsnamn, this.vårdenhet.vårdgivareId, this.vårdenhet.vårdgivareNamn, this.vårdenhet.id, this.vårdenhet.namn));
+        pdlEventArray.push(Af00251PdlEvent(this, pdl.enumHandelse.SKRIVA, undefined, this.utkastId, this.vårdenhet.uppdragsnamn, this.vårdenhet.vårdgivareId, this.vårdenhet.vårdgivareNamn, this.vårdenhet.id, this.vårdenhet.namn));
 
         // Signerar intyget och populerar pdl-arrayen med förväntade logposter "Signera" och "Läsa"
         intyg.signera();
-        // pdlEventArray.push(Af00251PdlEvent(this, pdl.enumHandelse.SIGNERA, undefined, this.utkastId, this.vårdenhet.uppdragsnamn, this.vårdenhet.vårdgivareId, this.vårdenhet.vårdgivareNamn, this.vårdenhet.id, this.vårdenhet.namn));
-        // pdlEventArray.push(Af00251PdlEvent(this, pdl.enumHandelse.LÄSA, undefined, this.utkastId, this.vårdenhet.uppdragsnamn, this.vårdenhet.vårdgivareId, this.vårdenhet.vårdgivareNamn, this.vårdenhet.id, this.vårdenhet.namn));
+        pdlEventArray.push(Af00251PdlEvent(this, pdl.enumHandelse.SIGNERA, undefined, this.utkastId, this.vårdenhet.uppdragsnamn, this.vårdenhet.vårdgivareId, this.vårdenhet.vårdgivareNamn, this.vårdenhet.id, this.vårdenhet.namn));
+        pdlEventArray.push(Af00251PdlEvent(this, pdl.enumHandelse.LÄSA, undefined, this.utkastId, this.vårdenhet.uppdragsnamn, this.vårdenhet.vårdgivareId, this.vårdenhet.vårdgivareNamn, this.vårdenhet.id, this.vårdenhet.namn));
 
         // Skickar intyget till Arbetsförmeddlingen. Populerar pdl-arrayen med förväntad loggpost "Utskrift" med argument att det är skickat till AF
         intyg.skickaTillAf();
-        // pdlEventArray.push(Af00251PdlEvent(this, pdl.enumHandelse.UTSKRIFT, pdl.enumHandelseArgument.AF, this.utkastId, this.vårdenhet.uppdragsnamn, this.vårdenhet.vårdgivareId, this.vårdenhet.vårdgivareNamn, this.vårdenhet.id, this.vårdenhet.namn));
+        pdlEventArray.push(Af00251PdlEvent(this, pdl.enumHandelse.UTSKRIFT, pdl.enumHandelseArgument.AF, this.utkastId, this.vårdenhet.uppdragsnamn, this.vårdenhet.vårdgivareId, this.vårdenhet.vårdgivareNamn, this.vårdenhet.id, this.vårdenhet.namn));
 
         // Introducerar en wait då skrivUt går så fort att man riskerar att få samma timestamp som för "skicka"
         cy.wait(1500);
 
         // Skriver ut intyget samt populerar pdl-arrayen med förväntad logpost "Utskrift"
         intyg.skrivUt("fullständigt", this.utkastId, "af00251");
-        // pdlEventArray.push(Af00251PdlEvent(this, pdl.enumHandelse.UTSKRIFT, pdl.enumHandelseArgument.UTSKRIFT, this.utkastId, this.vårdenhet.uppdragsnamn, this.vårdenhet.vårdgivareId, this.vårdenhet.vårdgivareNamn, this.vårdenhet.id, this.vårdenhet.namn));
+        pdlEventArray.push(Af00251PdlEvent(this, pdl.enumHandelse.UTSKRIFT, pdl.enumHandelseArgument.UTSKRIFT, this.utkastId, this.vårdenhet.uppdragsnamn, this.vårdenhet.vårdgivareId, this.vårdenhet.vårdgivareNamn, this.vårdenhet.id, this.vårdenhet.namn));
 
         cy.log("Testar SJF");
 
@@ -98,13 +98,13 @@ describe('AF00251-intyg', function () {
         cy.contains("Arbetsmarknadspolitiskt program");
 
         cy.url().should('include', this.utkastId);
-        // pdlEventArray.push(Af00251PdlEvent(this, pdl.enumHandelse.LÄSA, pdl.enumHandelseArgument.LÄSASJF, this.utkastId, this.vårdenhet_2.uppdragsnamn, this.vårdenhet_2.vårdgivareId, this.vårdenhet_2.vårdgivareNamn, this.vårdenhet_2.id, this.vårdenhet_2.namn));
+        pdlEventArray.push(Af00251PdlEvent(this, pdl.enumHandelse.LÄSA, pdl.enumHandelseArgument.LÄSASJF, this.utkastId, this.vårdenhet_2.uppdragsnamn, this.vårdenhet_2.vårdgivareId, this.vårdenhet_2.vårdgivareNamn, this.vårdenhet_2.id, this.vårdenhet_2.namn));
         cy.log(this.utkastId + this.vårdenhet_2.vårdgivareId + this.vårdenhet_2.vårdgivareNamn + this.vårdenhet_2.id + this.vårdenhet_2.namn);
 
         // Skriver ut intyget samt populerar pdl-arrayen med förväntad logpost "Utskrift"
         // intyg.skrivUt("fullständigt", this.utkastId, "af00251");
         // pdlEventArray.push(Af00251PdlEvent(this, pdl.enumHandelse.UTSKRIFT, pdl.enumHandelseArgument.UTSKRIFTSJF, 
-        //     this.utkastId, this.vårdenhet_2.uppdragsnamn, this.vårdenhet_2.vårdgivareId, this.vårdenhet_2.vårdgivareNamn, this.vårdenhet_2.id, this.vårdenhet_2.namn));
+            // this.utkastId, this.vårdenhet_2.uppdragsnamn, this.vårdenhet_2.vårdgivareId, this.vårdenhet_2.vårdgivareNamn, this.vårdenhet_2.id, this.vårdenhet_2.namn));
 
         cy.log("Testar återigen utan SJF");
 
@@ -114,10 +114,10 @@ describe('AF00251-intyg', function () {
         cy.loggaInVårdpersonalIntegrerat(this.vårdpersonal, this.vårdenhet);
         cy.visit(önskadUrl);
         cy.contains("Arbetsmarknadspolitiskt program"); // Vänta på att intyget ska laddas färdigt
-        // pdlEventArray.push(Af00251PdlEvent(this, "Läsa", undefined, this.utkastId, this.vårdenhet.uppdragsnamn, this.vårdenhet.vårdgivareId, this.vårdenhet.vårdgivareNamn, this.vårdenhet.id, this.vårdenhet.namn));
+        pdlEventArray.push(Af00251PdlEvent(this, "Läsa", undefined, this.utkastId, this.vårdenhet.uppdragsnamn, this.vårdenhet.vårdgivareId, this.vårdenhet.vårdgivareNamn, this.vårdenhet.id, this.vårdenhet.namn));
 
         // ToDo: Bug?! Varför blir det 2 "Läsa" på rad?
-        // pdlEventArray.push(Af00251PdlEvent(this, "Läsa", undefined, this.utkastId, this.vårdenhet.uppdragsnamn, this.vårdenhet.vårdgivareId, this.vårdenhet.vårdgivareNamn, this.vårdenhet.id, this.vårdenhet.namn));
+        pdlEventArray.push(Af00251PdlEvent(this, "Läsa", undefined, this.utkastId, this.vårdenhet.uppdragsnamn, this.vårdenhet.vårdgivareId, this.vårdenhet.vårdgivareNamn, this.vårdenhet.id, this.vårdenhet.namn));
 
         // Förnya intyget -> utkast skapas. Populerar pdl-arrayen med förväntade logposter "Skriva" och "Läsa" samt nytt intygsID.
         cy.url().should('include', this.utkastId);
@@ -129,31 +129,31 @@ describe('AF00251-intyg', function () {
             cy.log('IntygsID fönyande utkast: ' + intygsID_2);
             cy.wrap(intygsID_2).as('intygsID_2');
         });
-        // cy.get('@intygsID_2').then((intygID_2)=> {
-        //     pdlEventArray.push(Af00251PdlEvent(this, pdl.enumHandelse.SKRIVA, undefined, intygID_2, this.vårdenhet.uppdragsnamn, this.vårdenhet.vårdgivareId, this.vårdenhet.vårdgivareNamn, this.vårdenhet.id, this.vårdenhet.namn));
-        //     pdlEventArray.push(Af00251PdlEvent(this, pdl.enumHandelse.LÄSA, undefined, intygID_2, this.vårdenhet.uppdragsnamn, this.vårdenhet.vårdgivareId, this.vårdenhet.vårdgivareNamn, this.vårdenhet.id, this.vårdenhet.namn));
-        // });
+        cy.get('@intygsID_2').then((intygID_2)=> {
+            pdlEventArray.push(Af00251PdlEvent(this, pdl.enumHandelse.SKRIVA, undefined, intygID_2, this.vårdenhet.uppdragsnamn, this.vårdenhet.vårdgivareId, this.vårdenhet.vårdgivareNamn, this.vårdenhet.id, this.vårdenhet.namn));
+            pdlEventArray.push(Af00251PdlEvent(this, pdl.enumHandelse.LÄSA, undefined, intygID_2, this.vårdenhet.uppdragsnamn, this.vårdenhet.vårdgivareId, this.vårdenhet.vårdgivareNamn, this.vårdenhet.id, this.vårdenhet.namn));
+        });
 
         // Skriva ut utkast. Populerar PDL-arrayen med förväntad logpost "Utskrift" 
         cy.get('@intygsID_2').then((intygID_2)=> {
             intyg.skrivUt("fullständigt", intygID_2, "af00251");
-            // pdlEventArray.push(Af00251PdlEvent(this, pdl.enumHandelse.UTSKRIFT, pdl.enumHandelseArgument.UTSKRIFTUTKAST, intygID_2, this.vårdenhet.uppdragsnamn, this.vårdenhet.vårdgivareId, this.vårdenhet.vårdgivareNamn, this.vårdenhet.id, this.vårdenhet.namn));
+            pdlEventArray.push(Af00251PdlEvent(this, pdl.enumHandelse.UTSKRIFT, pdl.enumHandelseArgument.UTSKRIFTUTKAST, intygID_2, this.vårdenhet.uppdragsnamn, this.vårdenhet.vårdgivareId, this.vårdenhet.vårdgivareNamn, this.vårdenhet.id, this.vårdenhet.namn));
         });
 
         // Raderar intygsutkast
         intyg.raderaUtkast();
-        // cy.get('@intygsID_2').then((intygID_2)=> {
-        //     pdlEventArray.push(Af00251PdlEvent(this, pdl.enumHandelse.RADERA, undefined, intygID_2, this.vårdenhet.uppdragsnamn, this.vårdenhet.vårdgivareId, this.vårdenhet.vårdgivareNamn, this.vårdenhet.id, this.vårdenhet.namn));
-        // });
+        cy.get('@intygsID_2').then((intygID_2)=> {
+            pdlEventArray.push(Af00251PdlEvent(this, pdl.enumHandelse.RADERA, undefined, intygID_2, this.vårdenhet.uppdragsnamn, this.vårdenhet.vårdgivareId, this.vårdenhet.vårdgivareNamn, this.vårdenhet.id, this.vårdenhet.namn));
+        });
 
         // Redirect till originalintyget genererar en ny "Läsa"
-        // pdlEventArray.push(Af00251PdlEvent(this, pdl.enumHandelse.LÄSA, undefined, this.utkastId, this.vårdenhet.uppdragsnamn, this.vårdenhet.vårdgivareId, this.vårdenhet.vårdgivareNamn, this.vårdenhet.id, this.vårdenhet.namn));
+        pdlEventArray.push(Af00251PdlEvent(this, pdl.enumHandelse.LÄSA, undefined, this.utkastId, this.vårdenhet.uppdragsnamn, this.vårdenhet.vårdgivareId, this.vårdenhet.vårdgivareNamn, this.vårdenhet.id, this.vårdenhet.namn));
 
         // Makulerar ursprungsintyget
         // intyg.makuleraIntyg('Annat allvarligt fel');
         intyg.makuleraIntyg();
-        // pdlEventArray.push(Af00251PdlEvent(this, pdl.enumHandelse.MAKULERA, undefined, this.utkastId, this.vårdenhet.uppdragsnamn, this.vårdenhet.vårdgivareId, this.vårdenhet.vårdgivareNamn, this.vårdenhet.id, this.vårdenhet.namn));
+        pdlEventArray.push(Af00251PdlEvent(this, pdl.enumHandelse.MAKULERA, undefined, this.utkastId, this.vårdenhet.uppdragsnamn, this.vårdenhet.vårdgivareId, this.vårdenhet.vårdgivareNamn, this.vårdenhet.id, this.vårdenhet.namn));
 
-        // cy.verifieraPdlLoggar(pdlEventArray);
+        cy.verifieraPdlLoggar(pdlEventArray);
     });
 });

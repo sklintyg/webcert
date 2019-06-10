@@ -26,6 +26,7 @@ describe('TS-Diabetes-intyg', function () {
             cy.wrap(utkastId).as('utkastId');
             cy.log("TS-Diabetes-utkast med id " + utkastId + " skapat och används i testfallet");
             pdlEventArray.push(tsDiabetesPdlEvent(this, pdl.enumHandelse.SKRIVA, undefined, utkastId, this.vårdenhet.uppdragsnamn, this.vårdenhet.vårdgivareId, this.vårdenhet.vårdgivareNamn, this.vårdenhet.id, this.vårdenhet.namn));
+            cy.log('Funkar detta verkligen? ' + this.vårdenhet.uppdragsnamn);
         });
     });
 
@@ -151,6 +152,6 @@ describe('TS-Diabetes-intyg', function () {
         pdlEventArray.push(tsDiabetesPdlEvent(this, pdl.enumHandelse.MAKULERA, undefined, this.utkastId, this.vårdenhet.uppdragsnamn, this.vårdenhet.vårdgivareId, this.vårdenhet.vårdgivareNamn, this.vårdenhet.id, this.vårdenhet.namn));
 
         //Verifiera faktiska PDL-loggar med förväntat resultat
-        //cy.verifieraPdlLoggar(pdlEventArray);
+        cy.verifieraPdlLoggar(pdlEventArray);
     });
 });

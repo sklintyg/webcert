@@ -269,7 +269,7 @@ export function skrivUt(typAvUtskrift, intygsId){
 }
 // ------------------'Förnya intyg'---------------------------
 export function fornya() {
-    cy.get('#fornyaBtn').click();
+    fk.fornya();
 }
 
 // ------------------'Radera utkast'--------------------------

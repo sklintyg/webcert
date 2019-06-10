@@ -97,7 +97,7 @@ describe('LISJP-intyg', function () {
 
         // Om vi inte väntar på (valfritt) elementet nedan i intyget
         // så kommer "utskrift" att inträffa före "läsa"
-        cy.contains("Smittbärarpenning");
+        cy.contains("Smittbärarpenning"); // Vänta på att intyget ska laddas färdigt
 
         cy.url().should('include', this.utkastId);
         pdlEventArray.push(lisjpPdlEvent(this, pdl.enumHandelse.LÄSA, pdl.enumHandelseArgument.LÄSASJF, this.utkastId, this.vårdenhet_2.uppdragsnamn, this.vårdenhet_2.vårdgivareId, this.vårdenhet_2.vårdgivareNamn, this.vårdenhet_2.id, this.vårdenhet_2.namn));
@@ -151,6 +151,6 @@ describe('LISJP-intyg', function () {
         intyg.makuleraIntyg();
         pdlEventArray.push(lisjpPdlEvent(this, pdl.enumHandelse.MAKULERA, undefined, this.utkastId, this.vårdenhet.uppdragsnamn, this.vårdenhet.vårdgivareId, this.vårdenhet.vårdgivareNamn, this.vårdenhet.id, this.vårdenhet.namn));
 
-        //cy.verifieraPdlLoggar(pdlEventArray);
+        cy.verifieraPdlLoggar(pdlEventArray);
     });
 });

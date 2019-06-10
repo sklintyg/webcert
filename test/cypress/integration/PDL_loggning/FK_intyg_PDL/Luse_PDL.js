@@ -95,6 +95,7 @@ describe('LUSE-intyg', function () {
 
         const sjfUrl = "/visa/intyg/" + this.utkastId + "?enhet=" + this.vårdenhet_2.id + "&sjf=true";
         cy.visit(sjfUrl);
+        cy.contains("Grund för medicinskt underlag"); // Vänta på att intyget ska laddas färdigt
         cy.url().should('include', this.utkastId);
         pdlEventArray.push(lusePdlEvent(this, pdl.enumHandelse.LÄSA, pdl.enumHandelseArgument.LÄSASJF, this.utkastId, this.vårdenhet_2.uppdragsnamn, this.vårdenhet_2.vårdgivareId, this.vårdenhet_2.vårdgivareNamn, this.vårdenhet_2.id, this.vårdenhet_2.namn));
 
@@ -146,6 +147,6 @@ describe('LUSE-intyg', function () {
         intyg.makuleraIntyg();
         pdlEventArray.push(lusePdlEvent(this, pdl.enumHandelse.MAKULERA, undefined, this.utkastId, this.vårdenhet.uppdragsnamn, this.vårdenhet.vårdgivareId, this.vårdenhet.vårdgivareNamn, this.vårdenhet.id, this.vårdenhet.namn));
 
-        //cy.verifieraPdlLoggar(pdlEventArray);
+        cy.verifieraPdlLoggar(pdlEventArray);
     });
 });
