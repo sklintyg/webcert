@@ -195,6 +195,8 @@ public class FmbServiceImpl implements FmbService {
                 .map(attributes -> aTypFall()
                         .typfallsMening(attributes.getTypfallsmening())
                         .maximalSjukrivningstidDagar(convertToAntalDagar(attributes.getRekommenderadsjukskrivning()))
+                        .maximalSjukrivningstidSourceValue(attributes.getRekommenderadsjukskrivning().getMaximalsjukskrivningstid())
+                        .maximalSjukrivningstidSourceUnit(attributes.getRekommenderadsjukskrivning().getMaximalsjukskrivningsenhet())
                         .build())
                 .collect(Collectors.toList());
     }

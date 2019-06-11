@@ -40,12 +40,21 @@ public class TypFall {
     @Column(name = "MAXIMALSJUKRIVNINGSTID_DAGAR")
     private Integer maximalSjukrivningstidDagar;
 
+    @Column(name = "MAXIMALSJUKRIVNINGSTID_SOURCE_VALUE")
+    private String maximalSjukrivningstidSourceValue;
+
+    @Column(name = "MAXIMALSJUKRIVNINGSTID_SOURCE_UNIT")
+    private String maximalSjukrivningstidSourceUnit;
+
     protected TypFall() {
     }
 
-    private TypFall(final String typfallsMening, final Integer maximalSjukrivningstidDagar) {
+    private TypFall(final String typfallsMening, final Integer maximalSjukrivningstidDagar, final String maximalSjukrivningstidSourceValue,
+            final String maximalSjukrivningstidSourceUnit) {
         this.typfallsMening = typfallsMening;
         this.maximalSjukrivningstidDagar = maximalSjukrivningstidDagar;
+        this.maximalSjukrivningstidSourceValue = maximalSjukrivningstidSourceValue;
+        this.maximalSjukrivningstidSourceUnit = maximalSjukrivningstidSourceUnit;
     }
 
     public Long getId() {
@@ -60,9 +69,19 @@ public class TypFall {
         return maximalSjukrivningstidDagar;
     }
 
+    public String getMaximalSjukrivningstidSourceValue() {
+        return maximalSjukrivningstidSourceValue;
+    }
+
+    public String getMaximalSjukrivningstidSourceUnit() {
+        return maximalSjukrivningstidSourceUnit;
+    }
+
     public static final class TypFallBuilder {
         private String typfallsMening;
         private Integer maximalSjukrivningstidDagar;
+        private String maximalSjukrivningstidSourceValue;
+        private String maximalSjukrivningstidSourceUnit;
 
         private TypFallBuilder() {
         }
@@ -81,8 +100,19 @@ public class TypFall {
             return this;
         }
 
+        public TypFallBuilder maximalSjukrivningstidSourceValue(String maximalSjukrivningstidSourceValue) {
+            this.maximalSjukrivningstidSourceValue = maximalSjukrivningstidSourceValue;
+            return this;
+        }
+
+        public TypFallBuilder maximalSjukrivningstidSourceUnit(String maximalSjukrivningstidSourceUnit) {
+            this.maximalSjukrivningstidSourceUnit = maximalSjukrivningstidSourceUnit;
+            return this;
+        }
+
         public TypFall build() {
-            return new TypFall(typfallsMening, maximalSjukrivningstidDagar);
+            return new TypFall(typfallsMening, maximalSjukrivningstidDagar, maximalSjukrivningstidSourceValue,
+                    maximalSjukrivningstidSourceUnit);
         }
     }
 }

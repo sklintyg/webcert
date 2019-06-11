@@ -18,16 +18,29 @@
  */
 package se.inera.intyg.webcert.web.service.fmb;
 
-import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
-import io.vavr.Tuple2;
+import static com.google.common.collect.MoreCollectors.onlyElement;
+import static com.google.common.collect.MoreCollectors.toOptional;
+import static java.util.Objects.nonNull;
+
+import java.util.Comparator;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
+
+import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
+import com.google.common.primitives.Ints;
+
+import io.vavr.Tuple2;
 import se.inera.intyg.common.support.common.enumerations.Diagnoskodverk;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.integration.fmb.model.TidEnhet;
 import se.inera.intyg.webcert.persistence.fmb.model.FmbType;
 import se.inera.intyg.webcert.persistence.fmb.model.dto.MaximalSjukskrivningstidDagar;
 import se.inera.intyg.webcert.persistence.fmb.model.fmb.Beskrivning;
@@ -50,15 +63,6 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.FmbResponse;
 import se.inera.intyg.webcert.web.web.controller.api.dto.Icd10KoderRequest;
 import se.inera.intyg.webcert.web.web.controller.api.dto.MaximalSjukskrivningstidRequest;
 import se.inera.intyg.webcert.web.web.controller.api.dto.MaximalSjukskrivningstidResponse;
-
-import java.util.Comparator;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
-import static com.google.common.collect.MoreCollectors.onlyElement;
-import static com.google.common.collect.MoreCollectors.toOptional;
-import static java.util.Objects.nonNull;
 
 @Service
 public class FmbDiagnosInformationServiceImpl extends FmbBaseService implements FmbDiagnosInformationService {
@@ -94,11 +98,16 @@ public class FmbDiagnosInformationServiceImpl extends FmbBaseService implements 
 
         return maxRek
                 .map(rek -> MaximalSjukskrivningstidResponse.fromFmbRekommendation(
-                        totalt, foreslagen, rek.getMaximalSjukrivningstidDagar(), rek.getIcd10Kod()))
+                        totalt, foreslagen, rek.getMaximalSjukrivningstidDagar(), rek.getIcd10Kod(),
+                        toDisplayFormat(rek.getMaximalSjukrivningstidSourceValue(), rek.getMaximalSjukrivningstidSourceUnit())))
                 .orElseGet(() -> MaximalSjukskrivningstidResponse.ingenFmbRekommendation(
                         totalt, foreslagen));
     }
 
+    private String toDisplayFormat(String maximalSjukrivningstidSourceValue, String maximalSjukrivningstidSourceUnit) {
+        return TidEnhet.of(maximalSjukrivningstidSourceUnit)
+                .map(te -> te.getUnitDisplayValue(Ints.tryParse(maximalSjukrivningstidSourceValue))).orElse("");
+    }
 
     @Override
     public Optional<FmbResponse> findFmbDiagnosInformationByIcd10Kod(final String icd10Kod) {
