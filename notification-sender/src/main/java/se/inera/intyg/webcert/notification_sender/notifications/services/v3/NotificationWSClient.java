@@ -19,25 +19,28 @@
 package se.inera.intyg.webcert.notification_sender.notifications.services.v3;
 
 // CHECKSTYLE:OFF LineLength
+
+import java.util.Objects;
+import javax.xml.ws.soap.SOAPFaultException;
 import org.apache.camel.Header;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.infra.security.authorities.FeaturesHelper;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
-import se.inera.intyg.webcert.common.sender.exception.PermanentException;
 import se.inera.intyg.webcert.common.sender.exception.DiscardCandidateException;
+import se.inera.intyg.webcert.common.sender.exception.PermanentException;
 import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
 import se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareResponderInterface;
-import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareResponseType;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareType;
+import se.riv.clinicalprocess.healthcond.certificate.types.v3.HsaId;
 import se.riv.clinicalprocess.healthcond.certificate.v3.ErrorIdType;
 import se.riv.clinicalprocess.healthcond.certificate.v3.ResultType;
 
-import javax.xml.ws.soap.SOAPFaultException;
+
+import static se.inera.intyg.common.support.Constants.HSA_ID_OID;
 // CHECKSTYLE:ON LineLength
 
 public class NotificationWSClient {
@@ -54,37 +57,24 @@ public class NotificationWSClient {
     private FeaturesHelper featuresHelper;
 
     public void sendStatusUpdate(CertificateStatusUpdateForCareType request,
-            @Header(NotificationRouteHeaders.LOGISK_ADRESS) String logicalAddress)
+                                 @Header(NotificationRouteHeaders.LOGISK_ADRESS) String logicalAddress,
+                                 @Header(NotificationRouteHeaders.USER_ID) String userId)
             throws TemporaryException, DiscardCandidateException, PermanentException {
 
-        LOG.debug("RehabstodAuthoritiesResolverTes to '{}' for intyg '{}'", logicalAddress,
-                request.getIntyg().getIntygsId().getExtension());
+       if (Objects.nonNull(userId)) {
+           LOG.debug("Set hanteratAv to '{}'", userId);
+           request.setHanteratAv(hsaId(userId));
+       }
 
-        CertificateStatusUpdateForCareResponseType response = null;
+        final ResultType result = exchange(logicalAddress, request);
 
-        try {
-            response = statusUpdateForCareClient.certificateStatusUpdateForCare(logicalAddress, request);
-        } catch (SOAPFaultException e) {
-            if (e.getCause() != null && e.getCause().getMessage() != null
-                    && (e.getCause().getMessage().contains(MARSALLING_ERROR) || e.getCause().getMessage().contains(UNMARSALLING_ERROR))) {
-                LOG.error(String.format("%s occurred when sending status update: %s", UNMARSALLING_ERROR, e.getMessage()));
-                throw new PermanentException(e);
-            } else {
-                LOG.warn("SOAPFaultException occurred when sending status update: {}", e.getMessage());
-                throw new TemporaryException(e);
-            }
-        } catch (Exception e) {
-            LOG.warn("Exception occurred when sending status update: {}", e.getMessage());
-            throw new TemporaryException(e);
-        }
-
-        ResultType result = response.getResult();
         switch (result.getResultCode()) {
         case ERROR:
             if (ErrorIdType.TECHNICAL_ERROR.equals(result.getErrorId())) {
                 // Added ugly null check to make notification_sender testSendStatusUpdateErrorTechnical pass
                 // The featuresHelper does not seem to load properly in the gradle tests
-                if (featuresHelper != null && featuresHelper.isFeatureActive(AuthoritiesConstants.FEATURE_NOTIFICATION_DISCARD_FELB)) {
+                if (Objects.nonNull(featuresHelper)
+                        && featuresHelper.isFeatureActive(AuthoritiesConstants.FEATURE_NOTIFICATION_DISCARD_FELB)) {
                     if (result.getResultText()
                             .startsWith("Certificate not found in COSMIC and ref field is missing, cannot store certificate. "
                             + "Possible race condition. Retry later when the certificate may have been stored in COSMIC.")
@@ -110,6 +100,41 @@ public class NotificationWSClient {
         case OK:
             break;
         }
+    }
 
+    //
+    ResultType exchange(String logicalAddress, CertificateStatusUpdateForCareType request)
+            throws PermanentException, TemporaryException {
+        try {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Send status update to '{}' for intyg '{}'", logicalAddress,
+                        request.getIntyg().getIntygsId().getExtension());
+            }
+            return statusUpdateForCareClient.certificateStatusUpdateForCare(logicalAddress, request).getResult();
+        } catch (Exception e) {
+            if (isMarshallingError(e)) {
+                LOG.error("XML marshalling error occurred when sending status update: {}", e.getMessage());
+                throw new PermanentException(e);
+            }
+            LOG.warn("Exception occurred when sending status update: {}", e.getMessage());
+            throw new TemporaryException(e);
+        }
+    }
+
+    //
+    boolean isMarshallingError(Exception e) {
+        if (e instanceof SOAPFaultException) {
+            final String msg = e.getMessage();
+             return Objects.nonNull(msg) && (msg.contains(MARSALLING_ERROR) || msg.contains(UNMARSALLING_ERROR));
+        }
+        return false;
+    }
+
+    //
+    HsaId hsaId(String id) {
+        final HsaId hsaId = new HsaId();
+        hsaId.setExtension(id);
+        hsaId.setRoot(HSA_ID_OID);
+        return hsaId;
     }
 }
