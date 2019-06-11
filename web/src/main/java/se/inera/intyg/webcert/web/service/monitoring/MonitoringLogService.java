@@ -109,21 +109,30 @@ public interface MonitoringLogService extends AuthenticationLogger {
 
     void logUtkastMarkedAsReadyToSignNotificationSent(String intygsId, String intygsTyp);
 
-    void logSetSrsConsent(Personnummer personnummer, boolean consent);
+    // SRS
 
-    void logSetSrsRiskOpinion(String intygsId, String vardgivareHsaId, String vardenhetHsaId, String diagnosisCode, String opinion);
+    void logSrsLoaded(String userClientContext, String intygsId, String caregiverId, String careUnitId, String diagnosisCode);
 
-    void logListSrsQuestions(String diagnosisCode);
+    void logSrsPanelActivated(String userClientContext, String intygsId, String caregiverId, String careUnitId);
 
-    void logSrsInformationRetreived(String diagnosisCode, String intygId);
+    void logSrsConsentAnswered(String userClientContext, String intygsId, String caregiverId, String careUnitId);
 
-    void logSrsShown();
+    void logSrsQuestionAnswered(String userClientContext, String intygsId, String caregiverId, String careUnitId);
 
-    void logSrsAtgardClicked();
+    void logSrsCalculateClicked(String userClientContext, String intygsId, String caregiverId, String careUnitId);
 
-    void logSrsStatistikClicked();
+    void logSrsHideQuestionsClicked(String userClientContext, String intygsId, String caregiverId, String careUnitId);
 
-    void logSrsClicked();
+    void logSrsShowQuestionsClicked(String userClientContext, String intygsId, String caregiverId, String careUnitId);
+
+    void logSrsMeasuresShowMoreClicked(String userClientContext, String intygsId, String caregiverId, String careUnitId);
+
+    void logSrsMeasuresLinkClicked(String userClientContext, String intygsId, String caregiverId, String careUnitId);
+
+    void logSrsStatisticsActivated(String userClientContext, String intygsId, String caregiverId, String careUnitId);
+
+    void logSrsStatisticsLinkClicked(String userClientContext, String intygsId, String caregiverId, String careUnitId);
 
     void logGetSrsForDiagnose(String diagnosisCode);
+
 }

@@ -41,6 +41,8 @@ import se.inera.intyg.webcert.web.service.diagnos.DiagnosService;
 import se.inera.intyg.webcert.web.service.diagnos.dto.DiagnosResponse;
 import se.inera.intyg.webcert.web.service.diagnos.dto.DiagnosResponseType;
 import se.inera.intyg.webcert.web.service.log.LogService;
+import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
+import se.inera.intyg.webcert.web.service.log.factory.LogRequestFactory;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
@@ -77,6 +79,9 @@ public class SrsApiController extends AbstractApiController {
     @Autowired
     private DiagnosService diagnosService;
 
+    @Autowired
+    private LogRequestFactory logRequestFactory;
+
     @POST
     @Path("/{intygId}/{personnummer}/{diagnosisCode}")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
@@ -103,9 +108,8 @@ public class SrsApiController extends AbstractApiController {
             Utdatafilter filter = buildUtdatafilter(prediktion, atgard, statistik);
             SrsResponse response = srsService
                     .getSrs(userService.getUser(), intygId, createPnr(personnummer), diagnosisCode, filter, questions);
-            if (prediktion) {
-                logService.logShowPrediction(personnummer);
-                monitoringLog.logSrsInformationRetreived(diagnosisCode, intygId);
+            if (response.getPredictionProbabilityOverLimit() != null) {
+                logService.logShowPrediction(personnummer, intygId);
             }
             decorateWithDiagnosisDescription(response);
             return Response.ok(response).build();
@@ -126,7 +130,6 @@ public class SrsApiController extends AbstractApiController {
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
         List<SrsQuestion> response = srsService.getQuestions(diagnosisCode);
-        monitoringLog.logListSrsQuestions(diagnosisCode);
         return Response.ok(response).build();
     }
 
@@ -164,7 +167,6 @@ public class SrsApiController extends AbstractApiController {
         try {
             Personnummer p = createPnr(personnummer);
             ResultCodeEnum result = srsService.setConsent(careUnitHsaId, p, consent);
-            monitoringLog.logSetSrsConsent(p, consent);
             return Response.ok(result).build();
         } catch (InvalidPersonNummerException e) {
             return Response.status(Response.Status.BAD_REQUEST).build();
@@ -172,12 +174,13 @@ public class SrsApiController extends AbstractApiController {
     }
 
     @PUT
-    @Path("/opinion/{vardgivareHsaId}/{vardenhetHsaId}/{intygId}/{diagnoskod}")
+    @Path("/opinion/{personnummer}/{vardgivareHsaId}/{vardenhetHsaId}/{intygId}/{diagnoskod}")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "Set own opinion for risk prediction", httpMethod = "PUT", produces = MediaType.APPLICATION_JSON)
     @PrometheusTimeMethod
     public Response setOwnOpinion(
+            @ApiParam(value = "Personnummer") @PathParam("personnummer") String personnummer,
             @ApiParam(value = "HSA-Id för vårdgivare") @PathParam("vardgivareHsaId") String vardgivareHsaId,
             @ApiParam(value = "HSA-Id för vårdenhet") @PathParam("vardenhetHsaId") String vardenhetHsaId,
             @ApiParam(value = "Intyg id", required = true) @PathParam("intygId") String intygId,
@@ -189,7 +192,11 @@ public class SrsApiController extends AbstractApiController {
             ResultCodeEnum result =
                     srsService.setOwnOpinion(vardgivareHsaId, vardenhetHsaId, intygId, diagnosisCode,
                             EgenBedomningRiskType.fromValue(opinion));
-            monitoringLog.logSetSrsRiskOpinion(intygId, vardgivareHsaId, vardenhetHsaId, opinion, diagnosisCode);
+            if (result != ResultCodeEnum.ERROR) {
+
+                // send PDL log event
+                logService.logSetOwnOpinion(personnummer, intygId);
+            }
             return Response.ok(result).build();
         } else {
             return Response.status(Response.Status.BAD_REQUEST).build();

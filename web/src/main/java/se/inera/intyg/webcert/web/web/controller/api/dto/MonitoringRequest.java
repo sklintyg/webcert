@@ -26,6 +26,10 @@ public class MonitoringRequest {
     public static final String HEIGHT = "height";
     public static final String INTYG_ID = "intygId";
     public static final String INTYG_TYPE = "intygType";
+    public static final String CAREGIVER_ID = "caregiverId";
+    public static final String CARE_UNIT_ID = "careUnitId";
+    public static final String USER_CLIENT_CONTEXT = "userClientContext";
+    public static final String MAIN_DIAGNOSIS_CODE = "mainDiagnosisCode";
     public static final String ERROR_MESSAGE = "errorMessage";
     private MonitoringRequestEvent event;
     private Map<String, String> info;
@@ -57,6 +61,21 @@ public class MonitoringRequest {
             return info != null && info.get(INTYG_ID) != null && info.get(INTYG_TYPE) != null;
         case SIGNING_FAILED:
             return info != null && info.get(ERROR_MESSAGE) != null && info.get(INTYG_ID) != null;
+        case SRS_LOADED:
+            return info != null && info.get(INTYG_ID) != null && info.get(USER_CLIENT_CONTEXT) != null
+                    && info.get(CARE_UNIT_ID) != null && info.get(CAREGIVER_ID) != null && info.get(MAIN_DIAGNOSIS_CODE) != null;
+        case SRS_PANEL_ACTIVATED:
+        case SRS_CONSENT_ANSWERED:
+        case SRS_QUESTION_ANSWERED:
+        case SRS_CALCULATE_CLICKED:
+        case SRS_HIDE_QUESTIONS_CLICKED:
+        case SRS_SHOW_QUESTIONS_CLICKED:
+        case SRS_MEASURES_SHOW_MORE_CLICKED:
+        case SRS_MEASURES_LINK_CLICKED:
+        case SRS_STATISTICS_ACTIVATED:
+        case SRS_STATISTICS_LINK_CLICKED:
+            return info != null && info.get(INTYG_ID) != null && info.get(USER_CLIENT_CONTEXT) != null
+                    && info.get(CARE_UNIT_ID) != null && info.get(CAREGIVER_ID) != null;
         }
         return true;
     }
@@ -64,6 +83,17 @@ public class MonitoringRequest {
     public enum MonitoringRequestEvent {
         SCREEN_RESOLUTION,
         DIAGNOSKODVERK_CHANGED,
-        SIGNING_FAILED
+        SIGNING_FAILED,
+        SRS_LOADED,
+        SRS_PANEL_ACTIVATED,
+        SRS_CONSENT_ANSWERED,
+        SRS_QUESTION_ANSWERED,
+        SRS_CALCULATE_CLICKED,
+        SRS_HIDE_QUESTIONS_CLICKED,
+        SRS_SHOW_QUESTIONS_CLICKED,
+        SRS_MEASURES_SHOW_MORE_CLICKED,
+        SRS_MEASURES_LINK_CLICKED,
+        SRS_STATISTICS_ACTIVATED,
+        SRS_STATISTICS_LINK_CLICKED
     }
 }

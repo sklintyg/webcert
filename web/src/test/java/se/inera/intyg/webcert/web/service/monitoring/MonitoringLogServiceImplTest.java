@@ -451,45 +451,69 @@ public class MonitoringLogServiceImplTest {
     }
 
     @Test
-    public void shouldLogConsentSet() {
-        logService.logSetSrsConsent(PERSON_NUMMER, true);
-        verifyLog(Level.INFO,
-                "SRS_CONSENT_SET Consent set for '9a8b138a666f84da32e9383b49a15f46f6e08d2c492352aa0dfcc3f993773b0d' to 'true'");
+    public void shouldLogSrsLoaded() {
+        logService.logSrsLoaded("UTK", "intyg", "vardgivare", "vardenhet", "F438A");
+        verifyLog(Level.INFO, "SRS_LOADED SRS loaded in client context 'UTK' for intyg 'intyg' and diagnosis code 'F438A' with caregiver 'vardgivare' and care unit 'vardenhet'");
     }
 
     @Test
-    public void shouldLogQuestionsListed() {
-        logService.logListSrsQuestions("J20");
-        verifyLog(Level.INFO, "SRS_QUESTIONS_LISTED Questions listed for diagnosis code 'J20'");
+    public void shouldLogSrsPanelActivated() {
+        logService.logSrsPanelActivated("FRL", "intyg", "vardgivare", "vardenhet");
+        verifyLog(Level.INFO, "SRS_PANEL_ACTIVATED SRS panel activated in client context 'FRL' for intyg 'intyg' with caregiver 'vardgivare' and care unit 'vardenhet'");
     }
 
     @Test
-    public void shouldLogSrsInformationRetreived() {
-        logService.logSrsInformationRetreived("J20", "INTYGS_ID");
-        verifyLog(Level.INFO, "SRS_INFORMATION_RETREIVED SRS information retreived for certifiacte 'INTYGS_ID' for diagnosis code 'J20'");
+    public void shouldLogSrsConsentAnswered() {
+        logService.logSrsConsentAnswered("UTK", "intyg", "vardgivare", "vardenhet");
+        verifyLog(Level.INFO, "SRS_CONSENT_ANSWERED SRS consent answered in client context 'UTK' for intyg 'intyg' with caregiver 'vardgivare' and care unit 'vardenhet'");
     }
 
     @Test
-    public void shouldLogSrsShown() {
-        logService.logSrsShown();
-        verifyLog(Level.INFO, "SRS_SHOWN SRS shown");
+    public void shouldLogSrsQuestionAnswered() {
+        logService.logSrsQuestionAnswered("UTK", "intyg", "vardgivare", "vardenhet");
+        verifyLog(Level.INFO, "SRS_QUESTION_ANSWERED SRS question answered in client context 'UTK' for intyg 'intyg' with caregiver 'vardgivare' and care unit 'vardenhet'");
     }
 
     @Test
-    public void shouldLogSrsClicked() {
-        logService.logSrsClicked();
-        verifyLog(Level.INFO, "SRS_CLICKED SRS clicked");
+    public void shouldLogSrsCalculateClicked() {
+        logService.logSrsCalculateClicked("UTK", "intyg", "vardgivare", "vardenhet");
+        verifyLog(Level.INFO, "SRS_CALCULATE_CLICKED SRS calculate prediction clicked in client context 'UTK' for intyg 'intyg' with caregiver 'vardgivare' and care unit 'vardenhet'");
     }
 
     @Test
-    public void shouldLogSrsAtgardClicked() {
-        logService.logSrsAtgardClicked();
-        verifyLog(Level.INFO, "SRS_ATGARD_CLICKED SRS atgard clicked");
+    public void shouldLogSrsHideQuestionsClicked() {
+        logService.logSrsHideQuestionsClicked("UTK", "intyg", "vardgivare", "vardenhet");
+        verifyLog(Level.INFO, "SRS_HIDE_QUESTIONS_CLICKED SRS hide questions clicked in client context 'UTK' for intyg 'intyg' with caregiver 'vardgivare' and care unit 'vardenhet'");
     }
 
     @Test
-    public void shouldLogSrsStatistikClicked() {
-        logService.logSrsStatistikClicked();
-        verifyLog(Level.INFO, "SRS_STATISTIK_CLICKED SRS statistik clicked");
+    public void shouldLogSrsShowQuestionsClicked() {
+        logService.logSrsShowQuestionsClicked("UTK", "intyg", "vardgivare", "vardenhet");
+        verifyLog(Level.INFO, "SRS_SHOW_QUESTIONS_CLICKED SRS show questions clicked in client context 'UTK' for intyg 'intyg' with caregiver 'vardgivare' and care unit 'vardenhet'");
     }
+
+    @Test
+    public void shouldLogSrsMeasuresShowMoreClicked() {
+        logService.logSrsMeasuresShowMoreClicked("UTK", "intyg", "vardgivare", "vardenhet");
+        verifyLog(Level.INFO, "SRS_MEASURES_SHOW_MORE_CLICKED SRS show more measures clicked in client context 'UTK' for intyg 'intyg' with caregiver 'vardgivare' and care unit 'vardenhet'");
+    }
+
+    @Test
+    public void shouldLogSrsMeasuresLinkClicked() {
+        logService.logSrsMeasuresLinkClicked("UTK", "intyg", "vardgivare", "vardenhet");
+        verifyLog(Level.INFO, "SRS_MEASURES_LINK_CLICKED SRS measures link clicked in client context 'UTK' for intyg 'intyg' with caregiver 'vardgivare' and care unit 'vardenhet'");
+    }
+
+    @Test
+    public void shouldLogSrsStatisticsActivated() {
+        logService.logSrsStatisticsActivated("UTK", "intyg", "vardgivare", "vardenhet");
+        verifyLog(Level.INFO, "SRS_STATISTICS_ACTIVATED SRS statistics tab activated in client context 'UTK' for intyg 'intyg' with caregiver 'vardgivare' and care unit 'vardenhet'");
+    }
+
+    @Test
+    public void shouldLogSrsStatisticsLinkClicked() {
+        logService.logSrsStatisticsLinkClicked("UTK", "intyg", "vardgivare", "vardenhet");
+        verifyLog(Level.INFO, "SRS_STATISTICS_LINK_CLICKED SRS statistics link clicked in client context 'UTK' for intyg 'intyg' with caregiver 'vardgivare' and care unit 'vardenhet'");
+    }
+
 }
