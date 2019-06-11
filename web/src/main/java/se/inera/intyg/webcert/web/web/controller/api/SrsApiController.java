@@ -41,7 +41,6 @@ import se.inera.intyg.webcert.web.service.diagnos.DiagnosService;
 import se.inera.intyg.webcert.web.service.diagnos.dto.DiagnosResponse;
 import se.inera.intyg.webcert.web.service.diagnos.dto.DiagnosResponseType;
 import se.inera.intyg.webcert.web.service.log.LogService;
-import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
 import se.inera.intyg.webcert.web.service.log.factory.LogRequestFactory;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;

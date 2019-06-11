@@ -196,14 +196,14 @@ public interface LogService {
     void logShowPrediction(LogRequest logRequest, LogUser user);
 
     /**
-     * Creates a log event when a user sets an own opinion on a SRS risk prediction
+     * Creates a log event when a user sets an own opinion on a SRS risk prediction.
      * @param patientId the id of the patient
      * @param intygId the id of the certificate
      */
     void logSetOwnOpinion(String patientId, String intygId);
 
     /**
-     * Creates a log event when a user sets an own opinion on a SRS risk prediction
+     * Creates a log event when a user sets an own opinion on a SRS risk prediction.
      * @param logRequest the logging details
      * @param user the user who performs the action that is being logged
      */
