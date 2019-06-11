@@ -165,7 +165,9 @@ public class CertificateStatusUpdateForCareResponderStub implements CertificateS
         List<NotificationStubEntry> returnList = new ArrayList<>();
         for (CertificateStatusUpdateForCareType request : store) {
             returnList.add(new NotificationStubEntry(request.getIntyg().getIntygsId().getExtension(),
-                    request.getHandelse().getHandelsekod().getCode(), request.getHandelse().getTidpunkt()));
+                    request.getHandelse().getHandelsekod().getCode(),
+                    request.getHandelse().getTidpunkt(),
+                    request.getHanteratAv()));
         }
         return returnList;
     }
