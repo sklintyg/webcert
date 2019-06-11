@@ -117,6 +117,17 @@ function skapaUtkast(fx, intygstyp) {
         expect(resp.status).to.equal(200);
 
         cy.wrap(resp).its('body').then((body) => {
+
+            // Check för att konstatera att responsen på tjänsteanropet innehåller resultCode och att värdet är OK
+            expect(body).to.contain("resultCode");
+            var resultCodeStart = "<ns5:resultCode>"
+            var resultCodeEnd = "</ns5:resultCode>"
+            var resultCodeStartIdx = body.indexOf(resultCodeStart);
+            var resultCodeEndIdx = body.indexOf(resultCodeEnd);
+            var resultCode = body.substring(resultCodeStartIdx + resultCodeStart.length, resultCodeEndIdx);
+            expect(resultCode).to.equal("OK");
+            cy.log(resultCode);
+
             // Lokalisera intygs-id:t i response body och returnera värdet.
             // Det ligger mellan desa två strängar:
             var substringStart = "ns3:extension";
