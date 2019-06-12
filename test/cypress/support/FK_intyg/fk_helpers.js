@@ -2,6 +2,21 @@
  * Denna fil innehåller FK-gemensamma funktioner för att reducera mängden duplicerad kod
  */
 
+export function besökÖnskadUrl(önskadUrl, vårdpersonal, vårdenhet, utkastId) {
+    cy.visit(önskadUrl);
+
+    // Om vi dirigeras till sidan som säger att 'Intygsutkastet är raderat'
+    // så försöker vi igen eftersom det antagligen gick för snabbt.
+    cy.get('body').then(($body) => {
+        if ($body.text().includes('Intygsutkastet är raderat och kan därför inte längre visas.')) {
+            cy.log("Kom till 'Intygetsutkastet är raderat', antagligen gick det för snabbt. Provar igen.");
+            cy.loggaInVårdpersonalIntegrerat(vårdpersonal, vårdenhet); // Vi behöver logga in igen
+            cy.visit(önskadUrl);
+        }
+    });
+    cy.url().should('include', utkastId);
+}
+
 export function sektionÖvrigt(övrigt) {
     cy.get("#ovrigt").type(övrigt.text);
 }

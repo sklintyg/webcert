@@ -25,19 +25,7 @@ describe('LUSE-intyg', function () {
 
         // Gå till intyget, redigera det, signera och skicka till FK
         const önskadUrl = "/visa/intyg/" + this.utkastId + "?enhet=" + this.vårdenhet.id
-        cy.visit(önskadUrl);
-
-        // Om vi dirigeras till sidan som säger att 'Intygsutkastet är raderat'
-        // så försöker vi igen eftersom det antagligen gick för snabbt.
-        cy.get('body').then(($body) => {
-            if ($body.text().includes('Intygsutkastet är raderat och kan därför inte längre visas.')) {
-                cy.log("Kom till 'Intygetsutkastet är raderat', antagligen gick det för snabbt. Provar igen.");
-                cy.loggaInVårdpersonalIntegrerat(this.vårdpersonal, this.vårdenhet); // Vi behöver logga in igen
-                cy.visit(önskadUrl);
-            }
-        });
-
-        cy.url().should('include', this.utkastId);
+        intyg.besökÖnskadUrl(önskadUrl, this.vårdpersonal, this.vårdenhet, this.utkastId);
 
         intyg.sektionGrundFörMedicinsktUnderlag(this.intygsdata.grundFörMedicinsktUnderlag);
         intyg.sektionDiagnos(this.intygsdata.diagnos);

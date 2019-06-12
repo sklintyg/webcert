@@ -4,6 +4,10 @@ import * as fk from './fk_helpers'
 
 // Datumen är inte specifika för något testfall
 
+// De funktioner etc. som är gemensamma för alla FK-intyg kan exporteras direkt
+export {besökÖnskadUrl, sektionÖvrigt, sektionKontakt, signera,
+        skickaTillFk, fornya, raderaUtkast, makuleraIntyg} from './fk_helpers';
+
 // -------------------- 'Grund för medicinskt underlag' --------------------
 export function sektionGrundFörMedicinsktUnderlag(medUnderlag) {
     const idagMinus5    = Cypress.moment().subtract(5,   'days').format('YYYY-MM-DD');
@@ -212,43 +216,8 @@ export function sektionMedicinskaFörutsättningarFörArbete(medFörutsättninga
     }
 }
 
-// -------------------- 'Övrigt' --------------------
-export function sektionÖvrigt(övrigt) {
-    fk.sektionÖvrigt(övrigt);
-}
-
-// -------------------- 'Kontakt' --------------------
-export function sektionKontakt(kontakt) {
-    fk.sektionKontakt(kontakt);
-}
-
-// -------------------- 'Signera intyget' --------------------
-export function signera() {
-    fk.signera();
-}
-
-// -------------------- 'Skicka intyget' --------------------
-export function skickaTillFk() {
-    fk.skickaTillFk();
-}
-
 // -------------------- 'Skriv ut intyget' --------------------
 export function skrivUt(typAvUtskrift, intygsId){
     // ToDo: Använd konstant från ex.vis commands.js istället?
     fk.skrivUt(typAvUtskrift, intygsId, 'luae_na');
-}
-
-// ------------------'Förnya intyg'---------------------------
-export function fornya() {
-    fk.fornya();
-}
-
-// ------------------'Radera utkast'--------------------------
-export function raderaUtkast() {
-    fk.raderaUtkast();
-}
-
-// ------------------'Makulera intyg'-------------------------
-export function makuleraIntyg(arg) {
-    fk.makuleraIntyg(arg);
 }

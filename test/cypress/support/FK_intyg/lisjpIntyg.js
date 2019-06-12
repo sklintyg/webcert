@@ -4,6 +4,10 @@ import * as fk from './fk_helpers'
 
 // Datumen är inte specifika för något testfall
 
+// De funktioner etc. som är gemensamma för alla FK-intyg kan exporteras direkt
+export {besökÖnskadUrl, sektionÖvrigt, sektionKontakt,
+        skickaTillFk, fornya, raderaUtkast, makuleraIntyg} from './fk_helpers';
+
 // -------------------- 'Smittbärarpenning' --------------------
 // Ej implementerad än
 
@@ -217,16 +221,6 @@ export function sektionÅtgärder(åtgärder) {
     }
 }
 
-// -------------------- 'Övriga upplysningar' --------------------
-export function sektionÖvrigaUpplysningar(övrigt) {
-    fk.sektionÖvrigt(övrigt);
-}
-
-// -------------------- 'Kontakt' --------------------
-export function sektionKontakt(kontakt) {
-    fk.sektionKontakt(kontakt);
-}
-
 // -------------------- 'Vårdenhetens adress' --------------------
 // Ej implementerad
 
@@ -238,11 +232,6 @@ export function signera() {
     // TODO: Ger en utökad timeout då modalen i perioder inte hinner laddas. Detta bör ses över
     cy.get('#approve-receiver-SKANDIA-radio-no', {timeout: 20000}).check();
     cy.get('#save-approval-settings-btn').click();
-}
-
-// -------------------- 'Skicka intyget' --------------------
-export function skickaTillFk() {
-    fk.skickaTillFk();
 }
 
 // -------------------- 'Skriv ut intyget' --------------------
@@ -266,18 +255,4 @@ export function skrivUt(typAvUtskrift, intygsId){
         default:
             cy.log('Ingen korrekt typ av utskrift vald');
     }
-}
-// ------------------'Förnya intyg'---------------------------
-export function fornya() {
-    fk.fornya();
-}
-
-// ------------------'Radera utkast'--------------------------
-export function raderaUtkast() {
-    fk.raderaUtkast();
-}
-
-// ------------------'Makulera intyg'-------------------------
-export function makuleraIntyg(arg) {
-    fk.makuleraIntyg(arg);
 }
