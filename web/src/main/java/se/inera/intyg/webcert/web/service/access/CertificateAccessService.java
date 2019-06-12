@@ -21,7 +21,6 @@ package se.inera.intyg.webcert.web.service.access;
 
 import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.schemas.contract.Personnummer;
-import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
 
 /**
  * Service to check the current users right to access actions on a Certificate.
@@ -138,12 +137,10 @@ public interface CertificateAccessService {
      *            The careUnit which the certificate belongs to.
      * @param patient
      *            The patient which the certificate belongs to.
-     * @param relations
-     *            The relations of the certificate.
      * @return
      *         AccessResult which contains the answer if the user is allowed or not.
      */
-    AccessResult allowToCreateQuestion(String certificateType, Vardenhet careUnit, Personnummer patient, Relations relations);
+    AccessResult allowToCreateQuestion(String certificateType, Vardenhet careUnit, Personnummer patient);
 
     /**
      * Check if the user is allowed to answer a complement question for a certificate.
@@ -156,13 +153,10 @@ public interface CertificateAccessService {
      *            The patient which the certificate belongs to.
      * @param newCertificate
      *            If the answer includes creating a new certificate/draft.
-     * @param relations
-     *            The relations of the certificate.
      * @return
      *         AccessResult which contains the answer if the user is allowed or not.
      */
-    AccessResult allowToAnswerComplementQuestion(String certificateType, Vardenhet careUnit, Personnummer patient, boolean newCertificate,
-            Relations relations);
+    AccessResult allowToAnswerComplementQuestion(String certificateType, Vardenhet careUnit, Personnummer patient, boolean newCertificate);
 
     /**
      * Check if the user is allowed to answer a administrative question for a certificate.
@@ -173,12 +167,10 @@ public interface CertificateAccessService {
      *            The careUnit which the certificate belongs to.
      * @param patient
      *            The patient which the certificate belongs to.
-     * @param relations
-     *            The relations of the certificate.
      * @return
      *         AccessResult which contains the answer if the user is allowed or not.
      */
-    AccessResult allowToAnswerAdminQuestion(String certificateType, Vardenhet careUnit, Personnummer patient, Relations relations);
+    AccessResult allowToAnswerAdminQuestion(String certificateType, Vardenhet careUnit, Personnummer patient);
 
     /**
      * Check if the user is allowed to read questions for a certificate.
@@ -203,10 +195,8 @@ public interface CertificateAccessService {
      *            The careUnit which the certificate belongs to.
      * @param patient
      *            The patient which the certificate belongs to.
-     * @param relations
-     *            The relations of the certificate.
      * @return
      *         AccessResult which contains the answer if the user is allowed or not.
      */
-    AccessResult allowToForwardQuestions(String certificateType, Vardenhet careUnit, Personnummer patient, Relations relations);
+    AccessResult allowToForwardQuestions(String certificateType, Vardenhet careUnit, Personnummer patient);
 }

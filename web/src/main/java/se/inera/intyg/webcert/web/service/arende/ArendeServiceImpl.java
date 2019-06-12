@@ -792,8 +792,7 @@ public class ArendeServiceImpl implements ArendeService {
                 utlatande.getTyp(),
                 getVardenhet(utlatande),
                 getPersonnummer(utlatande),
-                newCertificate,
-                null);
+                newCertificate);
 
         accessResultExceptionHelper.throwExceptionIfDenied(accessResult);
     }
@@ -803,8 +802,7 @@ public class ArendeServiceImpl implements ArendeService {
         final AccessResult accessResult = certificateAccessService.allowToForwardQuestions(
                 utlatande.getTyp(),
                 getVardenhet(utlatande),
-                getPersonnummer(utlatande),
-                null);
+                getPersonnummer(utlatande));
 
         accessResultExceptionHelper.throwExceptionIfDenied(accessResult);
     }
@@ -814,8 +812,7 @@ public class ArendeServiceImpl implements ArendeService {
         final AccessResult accessResult = certificateAccessService.allowToCreateQuestion(
                 utlatande.getTyp(),
                 getVardenhet(utlatande),
-                getPersonnummer(utlatande),
-                null);
+                getPersonnummer(utlatande));
 
         accessResultExceptionHelper.throwExceptionIfDenied(accessResult);
     }
