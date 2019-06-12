@@ -125,7 +125,7 @@ public class NotificationWSClient {
     boolean isMarshallingError(Exception e) {
         if (e instanceof SOAPFaultException) {
             final String msg = e.getMessage();
-             return Objects.nonNull(msg) && (msg.contains(MARSALLING_ERROR) || msg.contains(UNMARSALLING_ERROR));
+            return Objects.nonNull(msg) && (msg.contains(MARSALLING_ERROR) || msg.contains(UNMARSALLING_ERROR));
         }
         return false;
     }
