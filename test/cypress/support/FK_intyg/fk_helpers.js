@@ -17,6 +17,13 @@ export function besökÖnskadUrl(önskadUrl, vårdpersonal, vårdenhet, utkastId
     cy.url().should('include', utkastId);
 }
 
+export function loggaUtLoggaIn(vårdpersonal, vårdenhet) {
+    // Lite specialvariant av logga ut/logga in för att sedan öppna intyget på nytt med en ny session
+    cy.clearCookies();
+    cy.visit('/logout');
+    cy.loggaInVårdpersonalIntegrerat(vårdpersonal, vårdenhet);
+}
+
 export function sektionÖvrigt(övrigt) {
     cy.get("#ovrigt").type(övrigt.text);
 }

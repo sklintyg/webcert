@@ -5,7 +5,7 @@ import * as fk from './fk_helpers'
 // Datumen är inte specifika för något testfall
 
 // De funktioner etc. som är gemensamma för alla FK-intyg kan exporteras direkt
-export {besökÖnskadUrl, sektionÖvrigt, sektionKontakt,
+export {besökÖnskadUrl, loggaUtLoggaIn, sektionÖvrigt, sektionKontakt,
         skickaTillFk, fornya, raderaUtkast, makuleraIntyg} from './fk_helpers';
 
 // -------------------- 'Smittbärarpenning' --------------------

@@ -47,10 +47,7 @@ describe('LUAE-NA-intyg', function () {
         cy.wait(5000); // Finns inget bra element att leta efter för att se att intyget är sparat
         cy.contains("Utkastet är sparat").should('exist');
 
-        // Lite special logga ut/logga in -variant för att sedan öppna intyget på nytt med en ny session
-        cy.clearCookies();
-        cy.visit('/logout');
-        cy.loggaInVårdpersonalIntegrerat(this.vårdpersonal, this.vårdenhet);
+        intyg.loggaUtLoggaIn(this.vårdpersonal, this.vårdenhet);
         cy.visit(önskadUrl);
         cy.url().should('include', this.utkastId);
         pdlEventArray.push(luaeNaPdlEvent(this, pdl.enumHandelse.LÄSA, undefined, this.utkastId, this.vårdenhet.uppdragsnamn, this.vårdenhet.vårdgivareId, this.vårdenhet.vårdgivareNamn, this.vårdenhet.id, this.vårdenhet.namn));
@@ -75,11 +72,7 @@ describe('LUAE-NA-intyg', function () {
         pdlEventArray.push(luaeNaPdlEvent(this, pdl.enumHandelse.UTSKRIFT, pdl.enumHandelseArgument.UTSKRIFT, this.utkastId, this.vårdenhet.uppdragsnamn, this.vårdenhet.vårdgivareId, this.vårdenhet.vårdgivareNamn, this.vårdenhet.id, this.vårdenhet.namn));
 
         cy.log("Testar SJF");
-        // Lite special logga ut/logga in -variant för att sedan öppna intyget på nytt med en ny session och SJF (Sammanhållen journalföring)
-        cy.clearCookies();
-        cy.visit('/logout');
-        cy.loggaInVårdpersonalIntegrerat(this.vårdpersonal, this.vårdenhet_2);
-
+        intyg.loggaUtLoggaIn(this.vårdpersonal, this.vårdenhet_2);
         const sjfUrl = "/visa/intyg/" + this.utkastId + "?enhet=" + this.vårdenhet_2.id + "&sjf=true";
         cy.visit(sjfUrl);
         cy.contains("Grund för medicinskt underlag"); // Vänta på att intyget ska laddas färdigt
@@ -87,11 +80,7 @@ describe('LUAE-NA-intyg', function () {
         pdlEventArray.push(luaeNaPdlEvent(this, pdl.enumHandelse.LÄSA, pdl.enumHandelseArgument.LÄSASJF, this.utkastId, this.vårdenhet_2.uppdragsnamn, this.vårdenhet_2.vårdgivareId, this.vårdenhet_2.vårdgivareNamn, this.vårdenhet_2.id, this.vårdenhet_2.namn));
 
         cy.log("Testar återigen utan SJF");
-
-        // Lite special logga ut/logga in -variant för att sedan öppna intyget på nytt med en ny session
-        cy.clearCookies();
-        cy.visit('/logout');
-        cy.loggaInVårdpersonalIntegrerat(this.vårdpersonal, this.vårdenhet);
+        intyg.loggaUtLoggaIn(this.vårdpersonal, this.vårdenhet);
         cy.visit(önskadUrl);
         cy.contains("Grund för medicinskt underlag");
         pdlEventArray.push(luaeNaPdlEvent(this, "Läsa", undefined, this.utkastId, this.vårdenhet.uppdragsnamn, this.vårdenhet.vårdgivareId, this.vårdenhet.vårdgivareNamn, this.vårdenhet.id, this.vårdenhet.namn));
