@@ -19,5 +19,7 @@
   },
   "viewportHeight": 900,
   "viewportWidth": 1440,
-  "projectId": "1diiry"
+  "projectId": "1diiry",
+  "ignoreTestFiles": "DB_PDL.js"
 }
+
