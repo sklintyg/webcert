@@ -59,7 +59,7 @@ public interface DiagnosInformationRepository extends JpaRepository<DiagnosInfor
            "JOIN icd10Kod.typFallList typfall " +
            "WHERE typfall.maximalSjukrivningstidDagar IS NOT NULL " +
            "AND icd10Kod.kod IN :koder " +
-           "GROUP BY icd10Kod.kod, typfall.maximalSjukrivningstidDagar " +
+           "GROUP BY icd10Kod.kod, typfall.maximalSjukrivningstidDagar, typfall.maximalSjukrivningstidSourceValue, typfall.maximalSjukrivningstidSourceUnit " +
            "ORDER BY typfall.maximalSjukrivningstidDagar DESC"
     )
     List<MaximalSjukskrivningstidDagar> findMaximalSjukrivningstidDagarByIcd10Koder(@Param("koder") Set<String> koder);
