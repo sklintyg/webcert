@@ -31,6 +31,7 @@ import org.springframework.jms.core.MessageCreator;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
 import se.inera.intyg.infra.integration.hsa.model.SelectableVardenhet;
+import se.inera.intyg.infra.logmessages.ActivityType;
 import se.inera.intyg.infra.logmessages.PdlLogMessage;
 import se.inera.intyg.webcert.common.service.log.template.IntygCreateMessage;
 import se.inera.intyg.webcert.common.service.log.template.IntygDeleteMessage;
@@ -66,6 +67,7 @@ public class LogServiceImpl implements LogService {
     private static final String PRINTED_AS_DRAFT = "Utkastet utskrivet";
     private static final String PRINTED_WHEN_REVOKED = "Makulerat intyg utskrivet";
     private static final String SHOW_PREDICTION = "Prediktion från SRS av risk för lång sjukskrivning";
+    private static final String SET_OWN_OPINION = "Läkarens egen bedömning";
 
     @Autowired(required = false)
     @Qualifier("jmsPDLLogTemplate")
@@ -198,15 +200,29 @@ public class LogServiceImpl implements LogService {
     }
 
     @Override
-    public void logShowPrediction(String patientId) {
-        logShowPrediction(logRequestFactory.createLogRequestFromUser(webCertUserService.getUser(), patientId),
-                getLogUser(webCertUserService.getUser()));
+    public void logShowPrediction(String patientId, String intygId) {
+        LogRequest logReq = logRequestFactory.createLogRequestFromUser(webCertUserService.getUser(), patientId);
+        logReq.setIntygId(intygId);
+        logShowPrediction(logReq, getLogUser(webCertUserService.getUser()));
     }
 
     @Override
     public void logShowPrediction(LogRequest logRequest, LogUser user) {
         send(logMessagePopulator.populateLogMessage(
-                IntygPredictionMessage.build(SHOW_PREDICTION), logRequest, user));
+                IntygPredictionMessage.build(logRequest.getIntygId(), SHOW_PREDICTION, ActivityType.READ), logRequest, user));
+    }
+
+    @Override
+    public void logSetOwnOpinion(String patientId, String intygId) {
+        LogRequest logRequest = logRequestFactory.createLogRequestFromUser(webCertUserService.getUser(), patientId);
+        logRequest.setIntygId(intygId);
+        logSetOwnOpinion(logRequest, getLogUser(webCertUserService.getUser()));
+    }
+
+    @Override
+    public void logSetOwnOpinion(LogRequest logRequest, LogUser user) {
+        send(logMessagePopulator.populateLogMessage(
+                IntygPredictionMessage.build(logRequest.getIntygId(), SET_OWN_OPINION, ActivityType.CREATE), logRequest, user));
     }
 
     @Override

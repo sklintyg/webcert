@@ -183,8 +183,9 @@ public interface LogService {
      * Creates a log event when a user sends a signed intyg directly to a recipient.
      *
      * @param patientId the id of the patient
+     * @param intygId The id of the current certificate
      */
-    void logShowPrediction(String patientId);
+    void logShowPrediction(String patientId, String intygId);
 
     /**
      * Creates a log event when a user shows SRS prediction.
@@ -193,6 +194,20 @@ public interface LogService {
      * @param user the user who performs the action that is being logged
      */
     void logShowPrediction(LogRequest logRequest, LogUser user);
+
+    /**
+     * Creates a log event when a user sets an own opinion on a SRS risk prediction.
+     * @param patientId the id of the patient
+     * @param intygId the id of the certificate
+     */
+    void logSetOwnOpinion(String patientId, String intygId);
+
+    /**
+     * Creates a log event when a user sets an own opinion on a SRS risk prediction.
+     * @param logRequest the logging details
+     * @param user the user who performs the action that is being logged
+     */
+    void logSetOwnOpinion(LogRequest logRequest, LogUser user);
 
     /**
      * Use this to create a {@link LogUser} instance from a supplied {@link WebCertUser}
