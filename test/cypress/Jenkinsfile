@@ -1,29 +1,3 @@
-// Går till kanal "Nordic Medtest - Intygsförvaltningen" -> "Nationell Jenkins"
-EPOSTMOTTAGARE = "ec9cf062.inera.se@emea.teams.ms"
-
-notificationSent = false
-
-def sendNotificationOnChange()
-{
-  if (notificationSent) {
-    return
-  }
-  notificationSent = true
-
-  if (currentBuild.currentResult == 'SUCCESS')
-  {
-    mail to: EPOSTMOTTAGARE,
-      subject: "${currentBuild.projectName} fixat!",
-      body: "Jobb '${currentBuild.projectName} [${currentBuild.BUILD_NUMBER}]' går nu BRA igen (status ${currentBuild.currentResult})."
-  }
-  else
-  {
-    mail to: EPOSTMOTTAGARE,
-      subject: "${currentBuild.projectName} trasigt!",
-      body: "Jobb '${currentBuild.projectName} [${currentBuild.BUILD_NUMBER}]' misslyckades med status ${currentBuild.currentResult}."
-  }
-}
-
 pipeline {
 
   options {
@@ -32,6 +6,9 @@ pipeline {
   }
 
   environment {
+
+    // Går till kanal "Nordic Medtest - Intygsförvaltningen" -> "Nationell Jenkins"
+    EPOSTMOTTAGARE = "ec9cf062.inera.se@emea.teams.ms"
 
     HOME = "${env.WORKSPACE}" // Måste sättas för "npm ci"
 
@@ -135,22 +112,9 @@ pipeline {
         }
       }
     }
-
-    stage('Success') {
-      steps {
-        script {
-          currentBuild.result = 'SUCCESS'
-        }
-      }
-    }
   }
 
   post {
-    changed {
-      // Skicka epost om status för jobbet ändras (ex SUCCESS -> FAILURE)
-      sendNotificationOnChange
-    }
-
     always {
       archiveArtifacts artifacts: 'test/cypress/videos/**/*.*', fingerprint: false
       archiveArtifacts artifacts: "${RESURSRAPPORTERINGSFIL_REL}", fingerprint: false
@@ -158,10 +122,29 @@ pipeline {
       junit 'test/cypress/results/*.xml'
     }
 
+    fixed {
+      // Skicka epost om jobbet går bra igen
+      emailext (
+        subject: "Fixat! Jobb '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
+        body: "Jobb '${env.JOB_NAME} [${env.BUILD_NUMBER}]' går nu BRA igen. Se konsollutmatning här: '${env.BUILD_URL}'",
+        to: "${EPOSTMOTTAGARE}"
+      )
+    }
+
     failure {
       archiveArtifacts artifacts: 'test/cypress/screenshots/**/*.*', fingerprint: false
       archiveArtifacts artifacts: '.npm/_logs/*.log', fingerprint: false
       archiveArtifacts artifacts: "${CYPRESSFAILEDLOGS_REL}", fingerprint: false
+    }
+
+    // Denna sektion exekveras enbart om föregående körning gick bra och denna misslyckades
+    regression {
+      // Skicka epost om jobbet misslyckas
+      emailext (
+        subject: "Misslyckat! Jobb '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
+        body: "Jobb '${env.JOB_NAME} [${env.BUILD_NUMBER}]' MISSLYCKADES! Se konsollutmatning här: '${env.BUILD_URL}'. Inga fler mail kommer skickas innan jobbet åter går bra.",
+        to: "${EPOSTMOTTAGARE}"
+      )
     }
   }
 }
