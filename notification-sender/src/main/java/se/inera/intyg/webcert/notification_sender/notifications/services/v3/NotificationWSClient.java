@@ -21,6 +21,7 @@ package se.inera.intyg.webcert.notification_sender.notifications.services.v3;
 // CHECKSTYLE:OFF LineLength
 
 import java.util.Objects;
+import java.util.function.Function;
 import javax.xml.ws.soap.SOAPFaultException;
 import org.apache.camel.Header;
 import org.slf4j.Logger;
@@ -111,37 +112,10 @@ public class NotificationWSClient {
 
         switch (result.getResultCode()) {
             case ERROR:
-                if (ErrorIdType.TECHNICAL_ERROR.equals(result.getErrorId())) {
-                    // Added ugly null check to make notification_sender testSendStatusUpdateErrorTechnical pass
-                    // The featuresHelper does not seem to load properly in the gradle tests
-                    if (Objects.nonNull(featuresHelper)
-                            && featuresHelper.isFeatureActive(AuthoritiesConstants.FEATURE_NOTIFICATION_DISCARD_FELB)) {
-                        if (result.getResultText()
-                                .startsWith("Certificate not found in COSMIC and ref field is missing, cannot store certificate. "
-                                        + "Possible race condition. Retry later when the certificate may have been stored in COSMIC.")
-                                && (request.getHandelse().getHandelsekod().getCode().equals(HandelsekodEnum.ANDRAT.value())
-                                || request.getHandelse().getHandelsekod().getCode().equals(HandelsekodEnum.SKAPAT.value()))) {
-                            throw new DiscardCandidateException(
-                                    String.format("correlationId: %s caught COSMIC-typB with error code: %s and message \"%s\"",
-                                            mc.correlationId(),
-                                            result.getErrorId(),
-                                            result.getResultText()));
-                        }
-                    }
-                    throw new TemporaryException(
-                            String.format("correlationId: %s failed with error code: %s and message \"%s\"",
-                            mc.correlationId(),
-                            result.getErrorId(),
-                            result.getResultText()));
-                } else {
-                    throw new PermanentException(
-                            String.format("correlationId: %s failed with non-recoverable error code: %s and message \"%s\"",
-                            mc.correlationId(),
-                            result.getErrorId(),
-                            result.getResultText()));
-                }
+                handleError(mc, result);
+                break;
             case INFO:
-                LOG.info("{} got message: {}", mc, result.getResultText());
+                LOG.info("{} message: {}", mc, result.getResultText());
                 break;
             case OK:
                 break;
@@ -167,6 +141,32 @@ public class NotificationWSClient {
         } finally {
             messageContextTL.remove();
         }
+    }
+
+    //
+    void handleError(MessageContext mc, ResultType result)
+            throws TemporaryException, PermanentException, DiscardCandidateException {
+
+        final Function<String, String> fmt = msg ->
+                String.format("WSClient correlationId: %s, %s with error code: %s and message \"%s\"",
+                        mc.correlationId(), msg, result.getErrorId(), result.getResultText());
+
+        if (ErrorIdType.TECHNICAL_ERROR.equals(result.getErrorId())) {
+            // Added ugly null check to make notification_sender testSendStatusUpdateErrorTechnical pass
+            // The featuresHelper does not seem to load properly in the gradle tests
+            if (Objects.nonNull(featuresHelper)
+                    && featuresHelper.isFeatureActive(AuthoritiesConstants.FEATURE_NOTIFICATION_DISCARD_FELB)) {
+                if (result.getResultText()
+                        .startsWith("Certificate not found in COSMIC and ref field is missing, cannot store certificate. "
+                                + "Possible race condition. Retry later when the certificate may have been stored in COSMIC.")
+                        && (mc.message().getHandelse().getHandelsekod().getCode().equals(HandelsekodEnum.ANDRAT.value())
+                        || mc.message().getHandelse().getHandelsekod().getCode().equals(HandelsekodEnum.SKAPAT.value()))) {
+                    throw new DiscardCandidateException(fmt.apply("caught COSMIC-typB"));
+                }
+            }
+            throw new TemporaryException(fmt.apply("failed"));
+        }
+        throw new PermanentException(fmt.apply("failed with non-recoverable "));
     }
 
     //
