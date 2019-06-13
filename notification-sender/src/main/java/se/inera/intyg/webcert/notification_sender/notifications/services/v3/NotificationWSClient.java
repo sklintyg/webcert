@@ -41,6 +41,7 @@ import se.riv.clinicalprocess.healthcond.certificate.v3.ResultType;
 
 
 import static se.inera.intyg.common.support.Constants.HSA_ID_OID;
+
 // CHECKSTYLE:ON LineLength
 
 public class NotificationWSClient {
@@ -50,6 +51,44 @@ public class NotificationWSClient {
     private static final String MARSALLING_ERROR = "Marshalling Error";
     private static final String UNMARSALLING_ERROR = "Unmarshalling Error";
 
+    // keep track of context, see NotificationInInterceptor
+    static class MessageContext {
+        private CertificateStatusUpdateForCareType message;
+        private String correlationId;
+        private String logicalAddress;
+
+        public CertificateStatusUpdateForCareType message() {
+            return this.message;
+        }
+
+        public String correlationId() {
+            return this.correlationId;
+        }
+
+        public String logicalAddress() {
+            return this.logicalAddress;
+        }
+
+        @Override
+        public String toString() {
+            return String.format("[logicalAddress: %s, intygId: %s, correlationId: %s]",
+                    logicalAddress(),
+                    message().getIntyg().getIntygsId().getExtension(),
+                    correlationId());
+        }
+
+        public static MessageContext of(CertificateStatusUpdateForCareType message, String logicalAddress, String correlationId) {
+            final MessageContext mc = new MessageContext();
+            mc.message = message;
+            mc.logicalAddress = logicalAddress;
+            mc.correlationId = correlationId;
+            return mc;
+        }
+    }
+
+    // keep track of context during the request.
+    private static ThreadLocal<MessageContext> messageContextTL = new ThreadLocal<>();
+
     @Autowired
     private CertificateStatusUpdateForCareResponderInterface statusUpdateForCareClient;
 
@@ -58,66 +97,75 @@ public class NotificationWSClient {
 
     public void sendStatusUpdate(CertificateStatusUpdateForCareType request,
                                  @Header(NotificationRouteHeaders.LOGISK_ADRESS) String logicalAddress,
-                                 @Header(NotificationRouteHeaders.USER_ID) String userId)
+                                 @Header(NotificationRouteHeaders.USER_ID) String userId,
+                                 @Header(NotificationRouteHeaders.CORRELATION_ID) String correlationId)
             throws TemporaryException, DiscardCandidateException, PermanentException {
 
-       if (Objects.nonNull(userId)) {
-           LOG.debug("Set hanteratAv to '{}'", userId);
-           request.setHanteratAv(hsaId(userId));
-       }
+        if (Objects.nonNull(userId)) {
+            LOG.debug("Set hanteratAv to '{}'", userId);
+            request.setHanteratAv(hsaId(userId));
+        }
 
-        final ResultType result = exchange(logicalAddress, request);
+        final MessageContext mc = MessageContext.of(request, logicalAddress, correlationId);
+        final ResultType result = exchange(mc);
 
         switch (result.getResultCode()) {
-        case ERROR:
-            if (ErrorIdType.TECHNICAL_ERROR.equals(result.getErrorId())) {
-                // Added ugly null check to make notification_sender testSendStatusUpdateErrorTechnical pass
-                // The featuresHelper does not seem to load properly in the gradle tests
-                if (Objects.nonNull(featuresHelper)
-                        && featuresHelper.isFeatureActive(AuthoritiesConstants.FEATURE_NOTIFICATION_DISCARD_FELB)) {
-                    if (result.getResultText()
-                            .startsWith("Certificate not found in COSMIC and ref field is missing, cannot store certificate. "
-                            + "Possible race condition. Retry later when the certificate may have been stored in COSMIC.")
-                            && (request.getHandelse().getHandelsekod().getCode().equals(HandelsekodEnum.ANDRAT.value())
-                            || request.getHandelse().getHandelsekod().getCode().equals(HandelsekodEnum.SKAPAT.value()))) {
-                        throw new DiscardCandidateException(
-                                String.format("NotificationWSClient caught COSMIC-typB with error code: %s and message %s",
-                                result.getErrorId(),
-                                result.getResultText()));
+            case ERROR:
+                if (ErrorIdType.TECHNICAL_ERROR.equals(result.getErrorId())) {
+                    // Added ugly null check to make notification_sender testSendStatusUpdateErrorTechnical pass
+                    // The featuresHelper does not seem to load properly in the gradle tests
+                    if (Objects.nonNull(featuresHelper)
+                            && featuresHelper.isFeatureActive(AuthoritiesConstants.FEATURE_NOTIFICATION_DISCARD_FELB)) {
+                        if (result.getResultText()
+                                .startsWith("Certificate not found in COSMIC and ref field is missing, cannot store certificate. "
+                                        + "Possible race condition. Retry later when the certificate may have been stored in COSMIC.")
+                                && (request.getHandelse().getHandelsekod().getCode().equals(HandelsekodEnum.ANDRAT.value())
+                                || request.getHandelse().getHandelsekod().getCode().equals(HandelsekodEnum.SKAPAT.value()))) {
+                            throw new DiscardCandidateException(
+                                    String.format("correlationId: %s caught COSMIC-typB with error code: %s and message \"%s\"",
+                                            mc.correlationId(),
+                                            result.getErrorId(),
+                                            result.getResultText()));
+                        }
                     }
+                    throw new TemporaryException(
+                            String.format("correlationId: %s failed with error code: %s and message \"%s\"",
+                            mc.correlationId(),
+                            result.getErrorId(),
+                            result.getResultText()));
+                } else {
+                    throw new PermanentException(
+                            String.format("correlationId: %s failed with non-recoverable error code: %s and message \"%s\"",
+                            mc.correlationId(),
+                            result.getErrorId(),
+                            result.getResultText()));
                 }
-                throw new TemporaryException(String.format("NotificationWSClient failed with error code: %s and message %s",
-                        result.getErrorId(),
-                        result.getResultText()));
-            } else {
-                throw new PermanentException(String.format("NotificationWSClient failed with non-recoverable error code: %s and message %s",
-                        result.getErrorId(),
-                        result.getResultText()));
-            }
-        case INFO:
-            LOG.info("NotificationWSClient got message:" + result.getResultText());
-            break;
-        case OK:
-            break;
+            case INFO:
+                LOG.info("{} got message: {}", mc, result.getResultText());
+                break;
+            case OK:
+                break;
         }
     }
 
     //
-    ResultType exchange(String logicalAddress, CertificateStatusUpdateForCareType request)
+    ResultType exchange(MessageContext mc)
             throws PermanentException, TemporaryException {
+        messageContextTL.set(mc);
         try {
             if (LOG.isDebugEnabled()) {
-                LOG.debug("Send status update to '{}' for intyg '{}'", logicalAddress,
-                        request.getIntyg().getIntygsId().getExtension());
+                LOG.debug("Send status update: {}", mc);
             }
-            return statusUpdateForCareClient.certificateStatusUpdateForCare(logicalAddress, request).getResult();
+            return statusUpdateForCareClient.certificateStatusUpdateForCare(mc.logicalAddress(), mc.message()).getResult();
         } catch (Exception e) {
             if (isMarshallingError(e)) {
-                LOG.error("XML marshalling error occurred when sending status update: {}", e.getMessage());
+                LOG.error("XML marshalling error occurred when sending status update {}: {}", mc, e.getMessage());
                 throw new PermanentException(e);
             }
-            LOG.warn("Exception occurred when sending status update: {}", e.getMessage());
+            LOG.warn("Exception occurred when sending status update {}: {}", mc, e.getMessage());
             throw new TemporaryException(e);
+        } finally {
+            messageContextTL.remove();
         }
     }
 
@@ -136,5 +184,10 @@ public class NotificationWSClient {
         hsaId.setExtension(id);
         hsaId.setRoot(HSA_ID_OID);
         return hsaId;
+    }
+
+    // returns message context
+    static MessageContext messageContext() {
+        return messageContextTL.get();
     }
 }

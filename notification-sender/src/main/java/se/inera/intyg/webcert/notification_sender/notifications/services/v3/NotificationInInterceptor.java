@@ -18,18 +18,18 @@
  */
 package se.inera.intyg.webcert.notification_sender.notifications.services.v3;
 
+import com.google.common.base.Charsets;
+import java.io.InputStream;
+import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.io.IOUtils;
-import org.apache.cxf.binding.soap.SoapMessage;
 import org.apache.cxf.message.Message;
 import org.apache.cxf.phase.AbstractPhaseInterceptor;
 import org.apache.cxf.phase.Phase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.nio.charset.Charset;
+
+import static se.inera.intyg.webcert.notification_sender.notifications.services.v3.NotificationWSClient.messageContext;
 
 /**
  * Custom CXF InInterceptor that checks the HTTP status code. If > 399, we log the raw message body and then
@@ -50,48 +50,30 @@ public class NotificationInInterceptor extends AbstractPhaseInterceptor<Message>
         super(Phase.RECEIVE);
     }
 
+    // Log the raw body "as-is"
     @Override
     public void handleMessage(Message message) {
+        final int status = intValue(message.get(RESPONSE_CODE));
+        if (status >= HttpStatus.SC_BAD_REQUEST) {
+            try {
+                final String payload = IOUtils.toString(message.getContent(InputStream.class), Charsets.UTF_8);
 
-        // We're only checking SoapMessages.
-        if (!(message instanceof SoapMessage)) {
-            return;
-        }
+                LOG.error("Handling HTTP error {} in CertificateStatusUpdateForCareResponse: {}, [payload: {}]",
+                        status, messageContext(), payload);
 
-        if (message.containsKey(RESPONSE_CODE)) {
-            Object o = message.get(RESPONSE_CODE);
-            if (o instanceof Integer) {
-                Integer status = (Integer) o;
-
-                // We treat 400 and above as errors.
-                if (status >= HttpStatus.BAD_REQUEST.value()) {
-
-                    // Log the raw body "as-is"
-                    try {
-                        String soapBody = IOUtils.toString(message.getContent(InputStream.class), "UTF-8");
-                        LOG.error("Handling HTTP " + status + " error in CertificateStatusUpdateForCareResponse. Raw body is:\n\n"
-                                + soapBody);
-                        // Re-write response body back into message.
-                        ByteArrayInputStream bais = new ByteArrayInputStream(soapBody.getBytes(Charset.forName("UTF-8")));
-                        message.setContent(InputStream.class, bais);
-                        bais.close();
-                    } catch (Exception e) {
-                        LOG.error(
-                                "Failed to capture body of CertificateStatusUpdateForCareResponse response with non "
-                                        + "200 status code, reason: {}",
-                                e.getMessage());
-                    }
-                }
-            } else {
-                LOG.warn(
-                        "Inbound SOAP response contained '{}' property of non-integer type, unable to determine HTTP "
-                                + "status code, but treating as OK",
-                        RESPONSE_CODE);
+                message.setContent(InputStream.class, IOUtils.toInputStream(payload, Charsets.UTF_8));
+            } catch (Exception e) {
+                LOG.error("Failed to capture body of CertificateStatusUpdateForCareResponse response with non "
+                                + "200 status code, reason: {}",
+                        e.getMessage());
             }
         } else {
-            LOG.warn("Inbound SOAP response contained no '{}' property, unable to determine HTTP status code, but "
-                    + "treating as OK",
-                    RESPONSE_CODE);
+            LOG.warn("Unable to determine HTTP status code, assuming everything is OK");
         }
+    }
+
+    // returns the int value of Object if it's an instance of Integer, otherwise -1
+    private int intValue(Object o) {
+        return (o instanceof Integer) ? (Integer) o : -1;
     }
 }
