@@ -1,7 +1,7 @@
 pipeline {
 
   options {
-    timestamps () // Kräver plugin "Timestamper"
+    //timestamps () // Kräver plugin "Timestamper"
     timeout(time: 60, unit: 'MINUTES')
   }
 
@@ -64,7 +64,7 @@ pipeline {
           sh 'node --version'
 
           // Slå på Chuck Norris-plugin. Kan tas bort utan negativ påverkan.
-          chuckNorris()
+          //chuckNorris()
         }
       }
     }
