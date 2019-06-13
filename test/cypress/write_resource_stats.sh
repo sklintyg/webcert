@@ -26,7 +26,7 @@ trap clean_up SIGTERM
 
 printHelp() {
     echo "Script called like this: $0 ${PARAM_STRING}"
-    echo "Load script. This script will write down load stats intermittently in a file until it is killed."
+    echo "This script will write down load stats intermittently in a file until it is killed."
     echo ""
     echo "Usage:"
     echo " $0 <number of seconds between saving load to file> <output file>"
@@ -73,6 +73,8 @@ fi
 echo "Output file ${OUTPUT_FILE} created. Will write to file every ${NUM_SECS_TO_SLEEP} seconds."
 
 PROC_LOADAVG_COMMAND="cat /proc/loadavg"
+PROC_STAT_COMMAND="cat /proc/stat"
+PROC_CPUINFO_COMMAND="cat /proc/cpuinfo"
 FREE_COMMAND="free -twh"
 
 # Write general information to the output file
@@ -82,12 +84,30 @@ echo "The fourth field consists of two numbers separated by a slash (/). The fir
 echo "The fifth field is the PID of the process that was most recently created on the system." >> ${OUTPUT_FILE}
 echo "" >> ${OUTPUT_FILE}
 
+echo "${PROC_STAT_COMMAND} information:" >> ${OUTPUT_FILE}
+echo "First line aggregates the other cpuX lines. Time units are jiffies or similar. The numbers indicate time spent performing various work." >> ${OUTPUT_FILE}
+echo "The first columns are USER (normal procs), NICE (niced procs), SYSTEM (kernel procs), IDLE, IOWAIT (waiting for I/O to complete), IRQ (servicing interrupts), SOFTIRQ (servicing softirqs)." >> ${OUTPUT_FILE}
+echo "initrd counts interrupts serviuced since boot for each possible sys interrupt (the first column is an aggregation of the rest)." >> ${OUTPUT_FILE}
+echo "ctxt is total number of context switches across all CPUs." >> ${OUTPUT_FILE}
+echo "btime is time of system boot in seconds since epoch." >> ${OUTPUT_FILE}
+echo "processes is total number of procs and threads created, including created by fork() and clone() sys calls." >> ${OUTPUT_FILE}
+echo "procs_running is total number of procs currently running on all CPUs." >> ${OUTPUT_FILE}
+echo "procs_blocked is total number of procs currently blocked, waiting for I/O to complete." >> ${OUTPUT_FILE}
+echo "" >> ${OUTPUT_FILE}
+
 echo "ps command information:" >> ${OUTPUT_FILE}
 echo "ps command outputs the 5 most CPU intensive processes, including memory usage etc. The list is sorted on CPU usage." >> ${OUTPUT_FILE}
 echo "" >> ${OUTPUT_FILE}
 
 echo "${FREE_COMMAND} information:" >> ${OUTPUT_FILE}
 echo "The free command outputs memory information (options: t=total, w=wide format, h=human readable)." >> ${OUTPUT_FILE}
+echo "----------------------------------" >> ${OUTPUT_FILE}
+
+# proc/cpuinfo information
+echo "The number of CPUs/cores information is only written once since it does not change during execution:" >> ${OUTPUT_FILE}
+echo "" >> ${OUTPUT_FILE}
+echo "${PROC_CPUINFO_COMMAND}:" >> ${OUTPUT_FILE}
+${PROC_CPUINFO_COMMAND} >> ${OUTPUT_FILE}
 echo "----------------------------------" >> ${OUTPUT_FILE}
 
 # Write to the output file periodically based on the sleep time
@@ -101,6 +121,11 @@ do
     echo "" >> ${OUTPUT_FILE}
     echo "${PROC_LOADAVG_COMMAND}:" >> ${OUTPUT_FILE}
     ${PROC_LOADAVG_COMMAND} >> ${OUTPUT_FILE}
+
+    # proc/stat information
+    echo "" >> ${OUTPUT_FILE}
+    echo "${PROC_STAT_COMMAND}:" >> ${OUTPUT_FILE}
+    ${PROC_STAT_COMMAND} >> ${OUTPUT_FILE}
 
     # ps command
     echo "" >> ${OUTPUT_FILE}
