@@ -194,7 +194,7 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
         Optional<WebCertServiceErrorCodeEnum> utkastUnique = AuthoritiesHelperUtil.validateUtkastMustBeUnique(user, intygsTyp,
                 intygstypToPreviousIntyg);
         Optional<WebCertServiceErrorCodeEnum> intygUnique = AuthoritiesHelperUtil.validateIntygMustBeUnique(user, intygsTyp,
-                intygstypToPreviousIntyg, null);
+                intygstypToPreviousIntyg, LocalDateTime.now());
         WebCertServiceErrorCodeEnum uniqueErrorCode = utkastUnique.orElse(intygUnique.orElse(null));
 
         if (uniqueErrorCode != null) {
