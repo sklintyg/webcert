@@ -77,7 +77,7 @@ public final class AuthoritiesHelperUtil {
 
         if (intygExists != null) {
 
-            if (authoritiesValidator.given(user, intygsTyp)
+            if (intygExists.isSameVardgivare() && authoritiesValidator.given(user, intygsTyp)
                     .features(AuthoritiesConstants.FEATURE_UNIKT_UNDANTAG_OM_SENASTE_INTYG).isVerified()) {
                 // Certificates of this type must not be globally unique, but it is only the certficate with the latest
                 // SKAPAT_DATUM that is valid.
