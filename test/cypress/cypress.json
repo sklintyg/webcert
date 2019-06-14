@@ -20,6 +20,6 @@
   "viewportHeight": 900,
   "viewportWidth": 1440,
   "projectId": "1diiry",
-  "ignoreTestFiles": "DB_PDL.js"
+  "ignoreTestFiles": ["DB_PDL.js", "ts_ADHD_PDL.js", "ts_anmalan_PDL.js", "ts_bas_PDL.js", "ts_diabetes_PDL.js", "AF00251_PDL.js", "AFMU_PDL.js", "Lisjp_SRS_PDL.js"]
 }
 
