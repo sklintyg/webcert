@@ -24,6 +24,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.UUID;
 import javax.annotation.PostConstruct;
 import javax.jms.JMSException;
 import javax.jms.Message;
@@ -49,7 +50,6 @@ import se.inera.intyg.common.support.modules.support.api.notification.SchemaVers
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.common.service.notification.AmneskodCreator;
-import se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
@@ -78,6 +78,12 @@ import static se.inera.intyg.common.support.common.enumerations.HandelsekodEnum.
 import static se.inera.intyg.common.support.common.enumerations.HandelsekodEnum.SIGNAT;
 import static se.inera.intyg.common.support.common.enumerations.HandelsekodEnum.SKAPAT;
 import static se.inera.intyg.common.support.common.enumerations.HandelsekodEnum.SKICKA;
+import static se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders.CORRELATION_ID;
+import static se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders.HANDELSE;
+import static se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders.INTYGS_ID;
+import static se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders.INTYGS_TYP;
+import static se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders.INTYG_TYPE_VERSION;
+import static se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders.USER_ID;
 
 /**
  * Service that notifies a unit care of incoming changes.
@@ -530,13 +536,16 @@ public class NotificationServiceImpl implements NotificationService {
          */
         @Override
         public Message createMessage(Session session) throws JMSException {
-            TextMessage textMessage = session.createTextMessage(this.value);
-            textMessage.setStringProperty(NotificationRouteHeaders.INTYGS_ID, this.intygsId);
-            textMessage.setStringProperty(NotificationRouteHeaders.INTYGS_TYP, this.intygsTyp);
-            textMessage.setStringProperty(NotificationRouteHeaders.INTYG_TYPE_VERSION, this.intygTypeVersion);
-            textMessage.setStringProperty(NotificationRouteHeaders.HANDELSE, this.handelseTyp.value());
-            textMessage.setStringProperty(NotificationRouteHeaders.USER_ID, this.userId);
-            return textMessage;
+            final TextMessage msg = session.createTextMessage(this.value);
+            msg.setStringProperty(INTYGS_ID, this.intygsId);
+            msg.setStringProperty(INTYGS_TYP, this.intygsTyp);
+            msg.setStringProperty(INTYG_TYPE_VERSION, this.intygTypeVersion);
+            msg.setStringProperty(HANDELSE, this.handelseTyp.value());
+            if (Objects.nonNull(this.userId)) {
+                msg.setStringProperty(USER_ID, this.userId);
+            }
+            msg.setStringProperty(CORRELATION_ID, UUID.randomUUID().toString());
+            return msg;
         }
     }
 
