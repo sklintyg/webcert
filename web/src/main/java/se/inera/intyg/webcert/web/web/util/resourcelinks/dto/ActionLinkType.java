@@ -31,6 +31,11 @@ public enum ActionLinkType {
     SKAPA_UTKAST,
 
     /**
+     * Edit draft.
+     */
+    REDIGERA_UTKAST,
+
+    /**
      * Delete draft.
      */
     TA_BORT_UTKAST,

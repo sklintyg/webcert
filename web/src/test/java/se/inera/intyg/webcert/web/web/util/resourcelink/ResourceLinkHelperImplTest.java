@@ -183,6 +183,7 @@ public class ResourceLinkHelperImplTest {
         final Personnummer patient = Personnummer.createPersonnummer("191212121212").get();
         final Vardenhet vardenhet = mock(Vardenhet.class);
 
+        doReturn(AccessResult.noProblem()).when(draftAccessService).allowToEditDraft(intygsTyp, vardenhet, patient);
         doReturn(AccessResult.noProblem()).when(draftAccessService).allowToDeleteDraft(intygsTyp, vardenhet, patient);
         doReturn(AccessResult.noProblem()).when(draftAccessService).allowToPrintDraft(intygsTyp, vardenhet, patient);
         doReturn(AccessResult.noProblem()).when(certificateAccessService).allowToCreateQuestion(intygsTyp, vardenhet, patient);
@@ -193,6 +194,7 @@ public class ResourceLinkHelperImplTest {
         doReturn(AccessResult.noProblem()).when(certificateAccessService).allowToForwardQuestions(intygsTyp, vardenhet, patient);
 
         final List<ActionLink> expectedLinks = new ArrayList<>();
+        expectedLinks.add(new ActionLink(ActionLinkType.REDIGERA_UTKAST));
         expectedLinks.add(new ActionLink(ActionLinkType.TA_BORT_UTKAST));
         expectedLinks.add(new ActionLink(ActionLinkType.SKRIV_UT_UTKAST));
         expectedLinks.add(new ActionLink(ActionLinkType.SKAPA_FRAGA));
@@ -216,6 +218,8 @@ public class ResourceLinkHelperImplTest {
         final Personnummer patient = Personnummer.createPersonnummer("191212121212").get();
         final Vardenhet vardenhet = mock(Vardenhet.class);
 
+        doReturn(AccessResult.create(AccessResultCode.AUTHORIZATION_VALIDATION, "No access")).when(draftAccessService)
+                .allowToEditDraft(intygsTyp, vardenhet, patient);
         doReturn(AccessResult.create(AccessResultCode.AUTHORIZATION_VALIDATION, "No access")).when(draftAccessService)
                 .allowToDeleteDraft(intygsTyp, vardenhet, patient);
         doReturn(AccessResult.create(AccessResultCode.AUTHORIZATION_VALIDATION, "No access")).when(draftAccessService)
