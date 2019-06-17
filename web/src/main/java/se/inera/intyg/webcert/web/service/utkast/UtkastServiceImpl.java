@@ -349,8 +349,6 @@ public class UtkastServiceImpl implements UtkastService {
     public Utkast getDraft(String intygId, String intygType, boolean createPdlLogEvent) {
         Utkast utkast = getIntygAsDraft(intygId, intygType);
 
-        abortIfUserNotAuthorizedForUnit(utkast.getVardgivarId(), utkast.getEnhetsId());
-
         if (createPdlLogEvent) {
             // Log read to PDL
             LogRequest logRequest = logRequestFactory.createLogRequestFromUtkast(utkast);
@@ -641,8 +639,6 @@ public class UtkastServiceImpl implements UtkastService {
                     "Already revoked : " + utkast.getAterkalladDatum());
         }
 
-        abortIfUserNotAuthorizedForUnit(utkast.getVardgivarId(), utkast.getEnhetsId());
-
         revokeUtkast(utkast, reason, revokeMessage);
     }
 
@@ -665,14 +661,6 @@ public class UtkastServiceImpl implements UtkastService {
         // Third: create a log event
         LogRequest logRequest = logRequestFactory.createLogRequestFromUtkast(utkast);
         logService.logRevokeIntyg(logRequest);
-    }
-
-    private void abortIfUserNotAuthorizedForUnit(String vardgivarHsaId, String enhetsHsaId) {
-        if (!webCertUserService.isAuthorizedForUnit(vardgivarHsaId, enhetsHsaId, false)) {
-            LOG.debug("User not authorized for enhet");
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM,
-                    "User not authorized for for enhet " + enhetsHsaId);
-        }
     }
 
     private LogUser createLogUser(CreateNewDraftRequest request) {

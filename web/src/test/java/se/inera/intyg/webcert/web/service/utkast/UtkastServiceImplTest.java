@@ -1027,7 +1027,6 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         WebCertUser user = createUser();
         when(userService.getUser()).thenReturn(user);
         when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(lockedUtkast);
-        when(userService.isAuthorizedForUnit(any(), any(), eq(false))).thenReturn(true);
 
         String reason = "reason";
         String revokeMessage = "revokeMessage";
@@ -1039,18 +1038,6 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         verify(mockUtkastRepository, times(1)).save(lockedUtkast);
         verify(mockMonitoringService).logUtkastRevoked(INTYG_ID, user.getHsaId(), reason, revokeMessage);
         verify(logService).logRevokeIntyg(any());
-    }
-
-    @Test(expected = WebCertServiceException.class)
-    public void testRevokeLockedDraftWrongUnit() {
-        when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(lockedUtkast);
-        when(userService.isAuthorizedForUnit(any(), any(), eq(false))).thenReturn(false);
-
-        String reason = "";
-
-        draftService.revokeLockedDraft(INTYG_ID, INTYG_TYPE, "", reason);
-        verifyZeroInteractions(mockMonitoringService);
-        verifyZeroInteractions(logService);
     }
 
     @Test(expected = WebCertServiceException.class)

@@ -89,6 +89,10 @@ public class ResourceLinkHelperImpl implements ResourceLinkHelper {
 
         } else {
 
+            if (draftAccessService.allowToEditDraft(certificateType, careUnit, patient).isAllowed()) {
+                draftHolder.addLink(new ActionLink(ActionLinkType.REDIGERA_UTKAST));
+            }
+
             if (draftAccessService.allowToDeleteDraft(certificateType, careUnit, patient).isAllowed()) {
                 draftHolder.addLink(new ActionLink(ActionLinkType.TA_BORT_UTKAST));
             }
