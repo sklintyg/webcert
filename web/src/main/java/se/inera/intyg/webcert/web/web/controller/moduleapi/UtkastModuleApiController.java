@@ -295,7 +295,7 @@ public class UtkastModuleApiController extends AbstractApiController {
 
         Utkast utkast = utkastService.getDraft(intygsId, intygsTyp, false);
 
-        validateAllowToEditUtkast(utkast);
+        validateAllowToReadUtkast(utkast, utkast.getPatientPersonnummer());
 
         LOG.debug("Validating utkast with id '{}'", intygsId);
 

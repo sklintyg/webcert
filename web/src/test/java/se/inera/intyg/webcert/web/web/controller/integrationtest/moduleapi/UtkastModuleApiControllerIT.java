@@ -18,20 +18,6 @@
  */
 package se.inera.intyg.webcert.web.web.controller.integrationtest.moduleapi;
 
-import com.google.common.base.Strings;
-import com.jayway.restassured.RestAssured;
-import com.jayway.restassured.path.json.JsonPath;
-import com.jayway.restassured.response.Response;
-import org.junit.Test;
-import se.inera.intyg.common.support.model.UtkastStatus;
-import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
-import se.inera.intyg.webcert.web.web.controller.integrationtest.BaseRestIntegrationTest;
-import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.RevokeSignedIntygParameter;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Map;
-
 import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
 import static org.hamcrest.Matchers.isEmptyString;
@@ -39,6 +25,22 @@ import static org.hamcrest.core.IsEqual.equalTo;
 import static org.hamcrest.core.IsNot.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Map;
+
+import org.junit.Test;
+
+import com.google.common.base.Strings;
+import com.jayway.restassured.RestAssured;
+import com.jayway.restassured.path.json.JsonPath;
+import com.jayway.restassured.response.Response;
+
+import se.inera.intyg.common.support.model.UtkastStatus;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
+import se.inera.intyg.webcert.web.web.controller.integrationtest.BaseRestIntegrationTest;
+import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.RevokeSignedIntygParameter;
 
 /**
  * Basic test suite that verifies that the endpoint (/moduleapi/utkast) is available and respond according to
@@ -60,36 +62,9 @@ public class UtkastModuleApiControllerIT extends BaseRestIntegrationTest {
         String intygsId = createUtkast(intygsTyp, DEFAULT_PATIENT_PERSONNUMMER);
 
         spec()
-            .expect().statusCode(200)
-            .when().get(MODULEAPI_UTKAST_BASE + "/" + intygsTyp + "/" + intygsId)
-            .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-get-utkast-response-schema.json"));
-    }
-
-    @Test
-    public void testThatGetDraftIgnoresCoherentJournaling() {
-        // First use DEFAULT_LAKARE to create a signed certificate on care unit A.
-        RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
-
-        String intygsTyp = "luse";
-        String intygsId = createUtkast(intygsTyp, DEFAULT_PATIENT_PERSONNUMMER);
-        // Then logout
-        spec()
-            .redirects().follow(false)
-            .expect().statusCode(302)
-            .when().get("logout");
-
-        // Next, create new user credentials with another care unit B, and attempt to access the certificate created in
-        // previous step.
-        RestAssured.sessionId = getAuthSession(LEONIE_KOEHL);
-        changeOriginTo("DJUPINTEGRATION");
-        setSjf();
-
-        spec()
-            .expect().statusCode(500)
-            .when().get(MODULEAPI_UTKAST_BASE + "/" + intygsTyp + "/" + intygsId)
-            .then()
-            .body("errorCode", equalTo(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM.name()))
-            .body("message", not(isEmptyString()));
+                .expect().statusCode(200)
+                .when().get(MODULEAPI_UTKAST_BASE + "/" + intygsTyp + "/" + intygsId)
+                .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-get-utkast-response-schema.json"));
     }
 
     @Test
@@ -100,8 +75,8 @@ public class UtkastModuleApiControllerIT extends BaseRestIntegrationTest {
         String intygsId = createUtkast(intygsTyp, DEFAULT_PATIENT_PERSONNUMMER);
         // Then logout
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId).redirects().follow(false)
-            .expect().statusCode(302)
-            .when().get("logout");
+                .expect().statusCode(302)
+                .when().get("logout");
 
         // Next, create new user credentials with another care unit B, and attempt to access the certificate created in
         // previous step.
@@ -109,11 +84,11 @@ public class UtkastModuleApiControllerIT extends BaseRestIntegrationTest {
         changeOriginTo("DJUPINTEGRATION");
 
         spec()
-            .expect().statusCode(500)
-            .when().get(MODULEAPI_UTKAST_BASE + "/" + intygsTyp + "/" + intygsId)
-            .then()
-            .body("errorCode", equalTo(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM.name()))
-            .body("message", not(isEmptyString()));
+                .expect().statusCode(500)
+                .when().get(MODULEAPI_UTKAST_BASE + "/" + intygsTyp + "/" + intygsId)
+                .then()
+                .body("errorCode", equalTo(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM.name()))
+                .body("message", not(isEmptyString()));
     }
 
     @Test
@@ -124,20 +99,20 @@ public class UtkastModuleApiControllerIT extends BaseRestIntegrationTest {
         String intygsId = createUtkast(intygsTyp, DEFAULT_PATIENT_PERSONNUMMER);
 
         Response responseIntyg = spec()
-            .expect().statusCode(200)
-            .when().get(MODULEAPI_UTKAST_BASE + "/" + intygsTyp + "/" + intygsId)
-            .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-get-utkast-response-schema.json")).extract().response();
+                .expect().statusCode(200)
+                .when().get(MODULEAPI_UTKAST_BASE + "/" + intygsTyp + "/" + intygsId)
+                .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-get-utkast-response-schema.json")).extract().response();
 
         JsonPath model = new JsonPath(responseIntyg.body().asString());
         String version = model.getString("version");
         Map<String, String> content = model.getJsonObject("content");
 
         spec()
-            .body(content)
-            .expect().statusCode(200)
-            .when().put(MODULEAPI_UTKAST_BASE + "/" + intygsTyp + "/" + intygsId + "/" + version)
-            .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-save-draft-response-schema.json"))
-            .body("version", equalTo(Integer.parseInt(version) + 1));
+                .body(content)
+                .expect().statusCode(200)
+                .when().put(MODULEAPI_UTKAST_BASE + "/" + intygsTyp + "/" + intygsId + "/" + version)
+                .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-save-draft-response-schema.json"))
+                .body("version", equalTo(Integer.parseInt(version) + 1));
     }
 
     @Test
@@ -148,20 +123,20 @@ public class UtkastModuleApiControllerIT extends BaseRestIntegrationTest {
         String intygsId = createUtkast(intygsTyp, DEFAULT_PATIENT_PERSONNUMMER);
 
         Response responseIntyg = spec()
-            .expect().statusCode(200)
-            .when().get(MODULEAPI_UTKAST_BASE + "/" + intygsTyp + "/" + intygsId)
-            .then()
-            .body(matchesJsonSchemaInClasspath("jsonschema/webcert-get-utkast-response-schema.json"))
-            .extract().response();
+                .expect().statusCode(200)
+                .when().get(MODULEAPI_UTKAST_BASE + "/" + intygsTyp + "/" + intygsId)
+                .then()
+                .body(matchesJsonSchemaInClasspath("jsonschema/webcert-get-utkast-response-schema.json"))
+                .extract().response();
 
         JsonPath model = new JsonPath(responseIntyg.body().asString());
         Map<String, String> content = model.getJsonObject("content");
 
         spec()
-            .body(content).pathParams("intygsTyp", intygsTyp, "intygsId", intygsId)
-            .expect().statusCode(200)
-            .when().post(MODULEAPI_UTKAST_BASE + "/{intygsTyp}/{intygsId}/validate")
-            .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-validate-draft-response-schema.json"));
+                .body(content).pathParams("intygsTyp", intygsTyp, "intygsId", intygsId)
+                .expect().statusCode(200)
+                .when().post(MODULEAPI_UTKAST_BASE + "/{intygsTyp}/{intygsId}/validate")
+                .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-validate-draft-response-schema.json"));
     }
 
     @Test
@@ -172,23 +147,23 @@ public class UtkastModuleApiControllerIT extends BaseRestIntegrationTest {
         String intygsId = createUtkast(intygsTyp, DEFAULT_PATIENT_PERSONNUMMER);
 
         Response responseIntyg = spec()
-            .expect().statusCode(200)
-            .when().get(MODULEAPI_UTKAST_BASE + "/" + intygsTyp + "/" + intygsId)
-            .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-get-utkast-response-schema.json")).extract().response();
+                .expect().statusCode(200)
+                .when().get(MODULEAPI_UTKAST_BASE + "/" + intygsTyp + "/" + intygsId)
+                .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-get-utkast-response-schema.json")).extract().response();
 
         JsonPath model = new JsonPath(responseIntyg.body().asString());
         String version = model.getString("version");
 
         spec()
-            .expect().statusCode(200)
-            .when().delete(MODULEAPI_UTKAST_BASE + "/" + intygsTyp + "/" + intygsId + "/" + version);
+                .expect().statusCode(200)
+                .when().delete(MODULEAPI_UTKAST_BASE + "/" + intygsTyp + "/" + intygsId + "/" + version);
 
         spec()
-            .expect().statusCode(500)
-            .when().get(MODULEAPI_UTKAST_BASE + "/" + intygsTyp + "/" + intygsId)
-            .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-error-response-schema.json"))
-            .body("errorCode", equalTo(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND.name()))
-            .body("message", not(isEmptyString()));
+                .expect().statusCode(500)
+                .when().get(MODULEAPI_UTKAST_BASE + "/" + intygsTyp + "/" + intygsId)
+                .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-error-response-schema.json"))
+                .body("errorCode", equalTo(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND.name()))
+                .body("message", not(isEmptyString()));
     }
 
     @Test
@@ -200,16 +175,16 @@ public class UtkastModuleApiControllerIT extends BaseRestIntegrationTest {
 
         // Update draft via testability-api
         spec()
-            .body(UtkastStatus.DRAFT_LOCKED.name()).pathParams( "intygsId", intygsId)
-            .expect().statusCode(200)
-            .when().put(TESTABILITY_BASE + "/{intygsId}/status");
+                .body(UtkastStatus.DRAFT_LOCKED.name()).pathParams("intygsId", intygsId)
+                .expect().statusCode(200)
+                .when().put(TESTABILITY_BASE + "/{intygsId}/status");
 
         // Check that draft is locked
         spec()
-            .expect().statusCode(200)
-            .when().get(MODULEAPI_UTKAST_BASE + "/" + intygsTyp + "/" + intygsId)
-            .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-get-utkast-response-schema.json"))
-            .body("status", equalTo(UtkastStatus.DRAFT_LOCKED.name()));
+                .expect().statusCode(200)
+                .when().get(MODULEAPI_UTKAST_BASE + "/" + intygsTyp + "/" + intygsId)
+                .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-get-utkast-response-schema.json"))
+                .body("status", equalTo(UtkastStatus.DRAFT_LOCKED.name()));
 
         // Revoke locked draft
         RevokeSignedIntygParameter parameter = new RevokeSignedIntygParameter();
@@ -217,15 +192,15 @@ public class UtkastModuleApiControllerIT extends BaseRestIntegrationTest {
         parameter.setMessage("A message for the drawer");
 
         spec()
-            .body(parameter)
-            .expect().statusCode(200)
-            .when().post(MODULEAPI_UTKAST_BASE + "/" + intygsTyp + "/" + intygsId + "/aterkalla");
+                .body(parameter)
+                .expect().statusCode(200)
+                .when().post(MODULEAPI_UTKAST_BASE + "/" + intygsTyp + "/" + intygsId + "/aterkalla");
 
         // Check if draft is revoked
         Response response = spec()
-            .expect().statusCode(200)
-            .when().get(MODULEAPI_UTKAST_BASE + "/" + intygsTyp + "/" + intygsId)
-            .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-get-utkast-response-schema.json")).extract().response();
+                .expect().statusCode(200)
+                .when().get(MODULEAPI_UTKAST_BASE + "/" + intygsTyp + "/" + intygsId)
+                .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-get-utkast-response-schema.json")).extract().response();
 
         // Get the JsonPath object instance from the Response interface
         JsonPath jsonPathEvaluator = response.jsonPath();
