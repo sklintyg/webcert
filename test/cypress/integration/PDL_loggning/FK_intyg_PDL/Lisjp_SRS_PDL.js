@@ -31,7 +31,7 @@ describe('LISJP-intyg med SRS', function () {
         });
     });
 
-    it('skapar en minimalt ifylld LISJP med SRS-stöd', function () {
+    it.skip('skapar en minimalt ifylld LISJP med SRS-stöd', function () {
         cy.loggaInVårdpersonalIntegrerat(this.vårdpersonal, this.vårdenhet);
 
         const önskadUrl = "/visa/intyg/" + this.utkastId + "?enhet=" + this.vårdenhet.id
