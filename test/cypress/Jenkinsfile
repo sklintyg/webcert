@@ -109,7 +109,11 @@ pipeline {
     stage('Exekvera Cypresstester') {
       steps {
         dir("${CYPRESS_DIR_REL}") {
-          sh "npm run test:e2e:electron"
+          // ToDo: SPECFILES_TO_RUN sätts som parameter i Jenkinsjobbet.
+          // När troubleshootingen är klar gällande vart problemet med timeouts ligger
+          // så ska nedanstående rad återställas:
+          // sh "npm run test:e2e:electron"
+          sh "npm run test:e2e:electron -- --spec '${SPECFILES_TO_RUN}'"
         }
       }
     }
