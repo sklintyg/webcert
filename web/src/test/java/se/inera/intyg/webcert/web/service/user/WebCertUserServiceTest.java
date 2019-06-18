@@ -18,6 +18,15 @@
  */
 package se.inera.intyg.webcert.web.service.user;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -25,6 +34,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
+
 import javax.servlet.http.HttpSession;
 
 import org.junit.Test;
@@ -49,15 +59,6 @@ import se.inera.intyg.webcert.persistence.anvandarmetadata.model.AnvandarPrefere
 import se.inera.intyg.webcert.persistence.anvandarmetadata.repository.AnvandarPreferenceRepository;
 import se.inera.intyg.webcert.web.auth.bootstrap.AuthoritiesConfigurationTestSetup;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class WebCertUserServiceTest extends AuthoritiesConfigurationTestSetup {
@@ -254,6 +255,24 @@ public class WebCertUserServiceTest extends AuthoritiesConfigurationTestSetup {
         assertFalse(webcertUserService.taskMap.containsKey(sessionId));
 
         verify(future).cancel(false);
+    }
+
+    @Test
+    public void testIsValdVardenhetMottagning() {
+        WebCertUser user = createWebCertUser(false);
+        Mottagning mottagning = new Mottagning(MOTTAGNING_1, "Mottagningen");
+        mottagning.setParentHsaId(VARDENHET_1);
+        ((Vardenhet) user.getValdVardenhet()).getMottagningar().add(mottagning);
+
+        // After setup vald vardenhet is vg1ve1
+        assertFalse(user.isValdVardenhetMottagning());
+
+        // Change to our added mottagnings
+        user.setValdVardenhet(((Vardenhet) user.getValdVardenhet()).getMottagningar().get(0));
+        assertTrue(user.isValdVardenhetMottagning());
+
+        user.setValdVardenhet(null);
+        assertFalse(user.isValdVardenhetMottagning());
     }
 
     private WebCertUser setupUserMottagningAccessTest() {

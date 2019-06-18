@@ -22,6 +22,10 @@ import io.vavr.control.Try;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import se.inera.intyg.infra.integration.hsa.model.Mottagning;
+import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
+import se.inera.intyg.infra.integration.hsa.model.Vardgivare;
+import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.riv.clinicalprocess.healthcond.certificate.types.v2.HsaId;
 import se.riv.clinicalprocess.healthcond.certificate.types.v2.PersonId;
 import se.riv.clinicalprocess.healthcond.rehabilitation.v1.IntygsData;
@@ -102,10 +106,10 @@ public class FmbSjukfallServiceImpl implements FmbSjukfallService {
         PersonId personId = new PersonId();
         personId.setExtension(personnummer.getOriginalPnr());
 
-        final String hsa = webCertUserService.getUser().getValdVardenhet().getId();
+        final String hsaQueryEnhet = getEnhetsIdForQueryingIntygstjansten(webCertUserService.getUser());
 
         HsaId hsaId = new HsaId();
-        hsaId.setExtension(hsa);
+        hsaId.setExtension(hsaQueryEnhet);
         hsaId.setRoot("");
 
         ListActiveSickLeavesForCareUnitType request = new ListActiveSickLeavesForCareUnitType();
@@ -116,6 +120,25 @@ public class FmbSjukfallServiceImpl implements FmbSjukfallService {
         return request;
     }
 
+    private String getEnhetsIdForQueryingIntygstjansten(WebCertUser user) {
+        if (user.isValdVardenhetMottagning()) {
+            // Must return PARENT id if selected unit is an underenhet aka "mottagning".
+            for (Vardgivare vg : user.getVardgivare()) {
+                for (Vardenhet ve : vg.getVardenheter()) {
+                    for (Mottagning m : ve.getMottagningar()) {
+                        if (m.getId().equals(user.getValdVardenhet().getId())) {
+                            //Return the selected mottagnings parent
+                            return ve.getId();
+                        }
+                    }
+                }
+            }
+            throw new IllegalStateException("User object is in invalid state. "
+                    + "Current selected enhet is an underenhet, but no ID for the parent enhet was found.");
+        } else {
+            return user.getValdVardenhet().getId();
+        }
+    }
     private int getTotaltAntalDagar(final List<SjukfallEnhet> sjukfallForEnhet) {
         return sjukfallForEnhet.stream()
                 .map(SjukfallEnhet::getDagar)
