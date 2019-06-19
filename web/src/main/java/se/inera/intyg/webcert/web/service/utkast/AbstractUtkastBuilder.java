@@ -18,17 +18,12 @@
  */
 package se.inera.intyg.webcert.web.service.utkast;
 
-import java.io.IOException;
-import java.util.Arrays;
-
+import com.google.common.base.Joiner;
+import com.google.common.base.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.google.common.base.Joiner;
-import com.google.common.base.Strings;
-
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.GrundData;
 import se.inera.intyg.common.support.model.common.internal.Patient;
@@ -58,6 +53,9 @@ import se.inera.intyg.webcert.web.service.util.UpdateUserUtil;
 import se.inera.intyg.webcert.web.service.utkast.dto.AbstractCreateCopyRequest;
 import se.inera.intyg.webcert.web.service.utkast.dto.CopyUtkastBuilderResponse;
 import se.inera.intyg.webcert.web.service.utkast.util.CreateIntygsIdStrategy;
+
+import java.io.IOException;
+import java.util.Arrays;
 
 public abstract class AbstractUtkastBuilder<T extends AbstractCreateCopyRequest> implements CopyUtkastBuilder<T> {
     private static final String SPACE = " ";
@@ -208,8 +206,7 @@ public abstract class AbstractUtkastBuilder<T extends AbstractCreateCopyRequest>
         // NOTE: See INTYG-7212 can we really just take textVersion of orgUtlatande like when db->doi?
         // I.e when copying within the same intygType A -> A this should be OK, but maybe not for DB -> DOI
         Utkast utkast = buildUtkastCopy(copyRequest, newDraftCopyId, copyRequest.getTyp(), orgUtkast.getIntygTypeVersion(), addRelation,
-                relation,
-                draftCopyJson, utkastStatus);
+                relation, draftCopyJson, utkastStatus);
 
         if (patientDetails != null) {
             populatePatientDetailsFromPerson(utkast, patientDetails);
