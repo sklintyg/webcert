@@ -19,15 +19,6 @@
 
 package se.inera.intyg.webcert.web.service.access;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
-import javax.validation.constraints.NotNull;
-
 import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.infra.security.authorities.validation.AuthExpectationSpecification;
 import se.inera.intyg.infra.security.authorities.validation.AuthoritiesValidator;
@@ -40,6 +31,14 @@ import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 import se.inera.intyg.webcert.web.service.utkast.dto.PreviousIntyg;
+
+import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 /**
  * Implementation used to evaluate access criterias. Set the criterias that will be considered and then call
@@ -244,7 +243,7 @@ public final class AccessServiceEvaluation {
      * Consider if parameter inactiveUnit when evaluating. If called more than once, the old values will be overridden.
      *
      * @param allowForSameUnit
-     *            Allowe handling (if all other criterias are met) when use ris on the same unit.
+     *            Allow handling (if all other criterias are met) when use ris on the same unit.
      * @return AccessServiceEvaluation
      */
     public AccessServiceEvaluation checkInactiveCareUnit(boolean allowForSameUnit) {
@@ -280,7 +279,7 @@ public final class AccessServiceEvaluation {
      * Consider if parameter renewOk when evaluating. If called more than once, the old values will be overridden.
      *
      * @param allowForSameUnit
-     *            Allowe handling (if all other criterias are met) when use ris on the same unit.
+     *            Allow handling (if all other criterias are met) when user is on the same unit.
      * @return AccessServiceEvaluation
      */
     public AccessServiceEvaluation checkRenew(boolean allowForSameUnit) {
@@ -453,7 +452,6 @@ public final class AccessServiceEvaluation {
     }
 
     private Optional<AccessResult> isRenewRuleValid(WebCertUser user, String intygsTyp, String enhetsId, boolean allowRenewForSameUnit) {
-
         if (user.getParameters() != null && !user.getParameters().isFornyaOk()
                 && (isUserLoggedInOnDifferentUnit(enhetsId) || !allowRenewForSameUnit)) {
             return Optional.of(AccessResult.create(AccessResultCode.RENEW_FALSE, "Parameter renewOK is false"));
