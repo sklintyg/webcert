@@ -18,13 +18,22 @@
  */
 package se.inera.intyg.webcert.web.service.utkast;
 
-import com.google.common.base.Strings;
+import java.io.IOException;
+import java.text.MessageFormat;
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Optional;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.google.common.base.Strings;
+
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.Patient;
@@ -73,13 +82,6 @@ import se.inera.intyg.webcert.web.service.utkast.dto.CreateReplacementCopyRespon
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateUtkastFromTemplateRequest;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateUtkastFromTemplateResponse;
 import se.inera.intyg.webcert.web.web.util.access.AccessResultExceptionHelper;
-
-import java.io.IOException;
-import java.text.MessageFormat;
-import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Optional;
 
 @Service
 public class CopyUtkastServiceImpl implements CopyUtkastService {
@@ -674,7 +676,7 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
                 utlatande.getTyp(),
                 getVardenhet(utlatande),
                 getPersonnummer(utlatande),
-                true);
+                complement);
 
         accessResultExceptionHelper.throwExceptionIfDenied(accessResult);
     }
