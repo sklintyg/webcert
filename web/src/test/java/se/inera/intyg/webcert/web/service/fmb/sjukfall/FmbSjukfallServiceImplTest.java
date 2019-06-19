@@ -20,29 +20,13 @@ package se.inera.intyg.webcert.web.service.fmb.sjukfall;
 
 import static java.time.temporal.ChronoUnit.DAYS;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.times;
 
-import com.google.common.collect.Lists;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
-import se.riv.clinicalprocess.healthcond.certificate.types.v2.Befattning;
-import se.riv.clinicalprocess.healthcond.certificate.types.v2.HsaId;
-import se.riv.clinicalprocess.healthcond.certificate.types.v2.PersonId;
-import se.riv.clinicalprocess.healthcond.rehabilitation.v1.Arbetsformaga;
-import se.riv.clinicalprocess.healthcond.rehabilitation.v1.Befattningar;
-import se.riv.clinicalprocess.healthcond.rehabilitation.v1.Enhet;
-import se.riv.clinicalprocess.healthcond.rehabilitation.v1.Formaga;
-import se.riv.clinicalprocess.healthcond.rehabilitation.v1.HosPersonal;
-import se.riv.clinicalprocess.healthcond.rehabilitation.v1.IntygsData;
-import se.riv.clinicalprocess.healthcond.rehabilitation.v1.IntygsLista;
-import se.riv.clinicalprocess.healthcond.rehabilitation.v1.Patient;
-import se.riv.clinicalprocess.healthcond.rehabilitation.v1.Vardgivare;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -50,10 +34,23 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.junit.MockitoJUnitRunner;
+
+import com.google.common.collect.Lists;
+
 import se.inera.intyg.clinicalprocess.healthcond.rehabilitation.listactivesickleavesforcareunit.v1.ListActiveSickLeavesForCareUnitResponderInterface;
 import se.inera.intyg.clinicalprocess.healthcond.rehabilitation.listactivesickleavesforcareunit.v1.ListActiveSickLeavesForCareUnitResponseType;
 import se.inera.intyg.clinicalprocess.healthcond.rehabilitation.listactivesickleavesforcareunit.v1.ListActiveSickLeavesForCareUnitType;
 import se.inera.intyg.clinicalprocess.healthcond.rehabilitation.listactivesickleavesforcareunit.v1.ResultCodeEnum;
+import se.inera.intyg.infra.integration.hsa.model.Mottagning;
 import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.Feature;
@@ -67,6 +64,18 @@ import se.inera.intyg.infra.sjukfall.services.SjukfallEngineService;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
+import se.riv.clinicalprocess.healthcond.certificate.types.v2.Befattning;
+import se.riv.clinicalprocess.healthcond.certificate.types.v2.HsaId;
+import se.riv.clinicalprocess.healthcond.certificate.types.v2.PersonId;
+import se.riv.clinicalprocess.healthcond.rehabilitation.v1.Arbetsformaga;
+import se.riv.clinicalprocess.healthcond.rehabilitation.v1.Befattningar;
+import se.riv.clinicalprocess.healthcond.rehabilitation.v1.Enhet;
+import se.riv.clinicalprocess.healthcond.rehabilitation.v1.Formaga;
+import se.riv.clinicalprocess.healthcond.rehabilitation.v1.HosPersonal;
+import se.riv.clinicalprocess.healthcond.rehabilitation.v1.IntygsData;
+import se.riv.clinicalprocess.healthcond.rehabilitation.v1.IntygsLista;
+import se.riv.clinicalprocess.healthcond.rehabilitation.v1.Patient;
+import se.riv.clinicalprocess.healthcond.rehabilitation.v1.Vardgivare;
 
 @RunWith(MockitoJUnitRunner.class)
 public class FmbSjukfallServiceImplTest {
@@ -90,6 +99,8 @@ public class FmbSjukfallServiceImplTest {
     private static final String FULLSTANDIGT_NAMN = "Full Standigt Namn";
     private static final String DIAGNOS_KOD = "diagnos-kod";
     private static final boolean ENKELT_INTYG = false;
+    protected static final String MOTTAGNING_VE1M1 = "ve1m1";
+    protected static final String VARDENHET_VE1 = "ve1";
 
     @Mock
     private ListActiveSickLeavesForCareUnitResponderInterface sickLeavesForCareUnit;
@@ -99,6 +110,9 @@ public class FmbSjukfallServiceImplTest {
 
     @Mock
     private WebCertUserService webCertUserService;
+
+    @Captor
+    private ArgumentCaptor<ListActiveSickLeavesForCareUnitType> requestCaptor;
 
     @InjectMocks
     private FmbSjukfallServiceImpl fmbSjukfallService;
@@ -123,8 +137,45 @@ public class FmbSjukfallServiceImplTest {
                 .when(sjukfallEngineService)
                 .beraknaSjukfallForEnhet(anyList(), any(IntygParametrar.class));
 
-        final int tid = fmbSjukfallService.totalSjukskrivningstidForPatientAndCareUnit(Personnummer.createPersonnummer(PERSON_NUMMER).get());
+        final int tid = fmbSjukfallService
+                .totalSjukskrivningstidForPatientAndCareUnit(Personnummer.createPersonnummer(PERSON_NUMMER).get());
 
+        Mockito.verify(sickLeavesForCareUnit, times(1)).listActiveSickLeavesForCareUnit(anyString(), requestCaptor.capture());
+        final ListActiveSickLeavesForCareUnitType actualRequest = requestCaptor.getValue();
+
+        assertEquals(VARDENHET_VE1, actualRequest.getEnhetsId().getExtension());
+        assertThat(tid).isEqualTo((int) DAYS.between(START_DATUM, SLUT_DATUM));
+
+    }
+
+    @Test
+    public void totalSjukskrivningstidForPatientAndCareUnitMottagning() {
+
+        final WebCertUser user = createDefaultUser(AuthoritiesConstants.PRIVILEGE_SIGNERA_INTYG);
+        user.setValdVardenhet(user.getVardgivare().get(0).getVardenheter().get(0).getMottagningar().get(0));
+        final ListActiveSickLeavesForCareUnitResponseType response = createResponse();
+
+        final SjukfallEnhet sjukfallEnhet = createSjukfallForEnhet();
+
+        doReturn(user)
+                .when(webCertUserService)
+                .getUser();
+
+        doReturn(response)
+                .when(sickLeavesForCareUnit)
+                .listActiveSickLeavesForCareUnit(anyString(), any(ListActiveSickLeavesForCareUnitType.class));
+
+        doReturn(Collections.singletonList(sjukfallEnhet))
+                .when(sjukfallEngineService)
+                .beraknaSjukfallForEnhet(anyList(), any(IntygParametrar.class));
+
+        final int tid = fmbSjukfallService
+                .totalSjukskrivningstidForPatientAndCareUnit(Personnummer.createPersonnummer(PERSON_NUMMER).get());
+
+        Mockito.verify(sickLeavesForCareUnit, times(1)).listActiveSickLeavesForCareUnit(anyString(), requestCaptor.capture());
+        final ListActiveSickLeavesForCareUnitType actualRequest = requestCaptor.getValue();
+
+        assertEquals(VARDENHET_VE1, actualRequest.getEnhetsId().getExtension());
         assertThat(tid).isEqualTo((int) DAYS.between(START_DATUM, SLUT_DATUM));
 
     }
@@ -250,10 +301,24 @@ public class FmbSjukfallServiceImplTest {
 
         user.setRoles(roleHashMap);
 
+
+        
         Vardenhet vardenhet = new Vardenhet();
+        vardenhet.setId(VARDENHET_VE1);
         vardenhet.setVardgivareHsaId("vardenhet-id");
 
+        Mottagning mottagning = new Mottagning();
+        mottagning.setParentHsaId(vardenhet.getId());
+        mottagning.setId(MOTTAGNING_VE1M1);
+        mottagning.setNamn("Mottagning1 ve1");
+
+        vardenhet.getMottagningar().add(mottagning);
         user.setValdVardenhet(vardenhet);
+
+        se.inera.intyg.infra.integration.hsa.model.Vardgivare vardgivare = new se.inera.intyg.infra.integration.hsa.model.Vardgivare();
+        vardgivare.setId("vg1");
+        vardgivare.getVardenheter().add(vardenhet);
+        user.setVardgivare(Arrays.asList(vardgivare));
         return user;
     }
 
