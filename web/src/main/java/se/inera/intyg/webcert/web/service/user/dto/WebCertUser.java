@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import se.inera.intyg.infra.integration.hsa.model.Mottagning;
 import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
 import se.inera.intyg.infra.integration.hsa.model.Vardgivare;
@@ -99,6 +100,7 @@ public class WebCertUser extends IntygUser {
         this.parameters = parameters;
     }
 
+    @JsonIgnore
     public boolean isValdVardenhetMottagning() {
         if (valdVardenhet == null) {
             return false;
