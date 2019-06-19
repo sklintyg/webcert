@@ -22,6 +22,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+import se.inera.intyg.infra.integration.hsa.model.Mottagning;
+import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
+import se.inera.intyg.infra.integration.hsa.model.Vardgivare;
 import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
 
@@ -94,5 +97,25 @@ public class WebCertUser extends IntygUser {
 
     public void setParameters(IntegrationParameters parameters) {
         this.parameters = parameters;
+    }
+
+    public boolean isValdVardenhetMottagning() {
+        if (valdVardenhet == null) {
+            return false;
+        }
+
+        for (Vardgivare vg : vardgivare) {
+            for (Vardenhet ve : vg.getVardenheter()) {
+                if (ve.getId().equals(valdVardenhet.getId())) {
+                    return false;
+                }
+                for (Mottagning m : ve.getMottagningar()) {
+                    if (m.getId().equals(valdVardenhet.getId())) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
 }
