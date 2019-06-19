@@ -418,6 +418,23 @@ function verifieraHändelserFörIntyg(förväntadeHändelser, arr) {
     }
 }
 
+// Debug-funktion. Anropa denna för att skriva ut alla aktivitetstyper (e.g. Läsa)
+// och argument (om de finns). Kommer ej att skrivas ut om någon assert misslyckas
+// på vägen eftersom alla cy-kommandon köas och exekveras i tur och ordning (asynkront).
+function skrivUtHändelser(händelseArray) {
+    for (var debugLoop = 0; debugLoop < händelseArray.length; debugLoop++) {
+        var debugActivity = händelseArray[debugLoop].getElementsByTagName("activity")[0];
+
+        var debugActivityType = "ActivityType: " + debugActivity.getElementsByTagName("activitytype")[0].innerText;
+
+        var debugActivityArgs = ""
+        if (debugActivity.getElementsByTagName("activityargs") && debugActivity.getElementsByTagName("activityargs")[0]) {
+            debugActivityArgs = ", activityArgs: " + debugActivity.getElementsByTagName("activityargs")[0].innerText;
+        }
+        cy.log(debugActivityType + debugActivityArgs);
+    }
+}
+
 /*
 Detta command tar in en array med förväntade PDL-loggar. Dessa verifieras mot
 riktiga PDL-events som hämtas från loggkälla.
@@ -474,6 +491,9 @@ Cypress.Commands.add("verifieraPdlLoggar", pdlLogArray => {
 
                     var mockHändelser = [].slice.call(bodyDoc.getElementsByTagName("ns2:Log"));
                     sorteraHändelserKronologiskt(mockHändelser);
+
+                    // Debug för att skriva ut alla händelser från mocken i kronologisk ordning
+                    // skrivUtHändelser(mockHändelser);
 
                     // Arrayen med förväntade event innehåller mockens URL på index 0. Skapa ny array från index 1.
                     var förväntadeHändelser = förväntadeHändelserPerIntygsid[ix].slice(1);
