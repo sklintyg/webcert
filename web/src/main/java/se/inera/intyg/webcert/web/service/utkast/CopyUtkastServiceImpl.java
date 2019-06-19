@@ -18,22 +18,13 @@
  */
 package se.inera.intyg.webcert.web.service.utkast;
 
-import java.io.IOException;
-import java.text.MessageFormat;
-import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Optional;
-
+import com.google.common.base.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.google.common.base.Strings;
-
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.Patient;
@@ -82,6 +73,13 @@ import se.inera.intyg.webcert.web.service.utkast.dto.CreateReplacementCopyRespon
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateUtkastFromTemplateRequest;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateUtkastFromTemplateResponse;
 import se.inera.intyg.webcert.web.web.util.access.AccessResultExceptionHelper;
+
+import java.io.IOException;
+import java.text.MessageFormat;
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Optional;
 
 @Service
 public class CopyUtkastServiceImpl implements CopyUtkastService {
@@ -332,33 +330,34 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
     }
 
     @Override
-    public CreateUtkastFromTemplateResponse createUtkastFromTemplate(CreateUtkastFromTemplateRequest copyRequest) {
-        String originalIntygId = copyRequest.getOriginalIntygId();
+    public CreateUtkastFromTemplateResponse createUtkastFromTemplate(CreateUtkastFromTemplateRequest templateRequest) {
+        String originalIntygId = templateRequest.getOriginalIntygId();
 
-        LOG.debug("Creating utkast from template certificate '{}'", originalIntygId);
+        LOG.debug("Creating utkast from template (certificate). Certificate = '{}'", originalIntygId);
 
         WebCertUser user = userService.getUser();
         boolean coherentJournaling = isCoherentJournaling(user);
 
         try {
-            if (intygService.isRevoked(copyRequest.getOriginalIntygId(), copyRequest.getOriginalIntygTyp(), coherentJournaling)) {
-                LOG.debug("Cannot create utkast from template certificate with id '{}', the certificate is revoked", originalIntygId);
+            if (intygService.isRevoked(templateRequest.getOriginalIntygId(), templateRequest.getOriginalIntygTyp(), coherentJournaling)) {
+                LOG.debug("Cannot create utkast from template. The certificate is revoked. Certificate id = '{}'", originalIntygId);
                 throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, "Original certificate is revoked");
             }
 
-            // Update patient details here instead of later in buildUtkast... Need to validate access logic.
-            Person patientDetails = updatePatientDetails(copyRequest);
+            // Update patient details here instead of later in the buildUtkastFromTemplateBuilderResponse method.
+            // We need to validate access logic early and then depend on patient information available.
+            Person patientDetails = updatePatientDetails(templateRequest, false);
 
-            validateAccessToCreateUtkast(copyRequest.getTyp(), patientDetails.getPersonnummer());
+            validateAccessToCreateUtkast(templateRequest.getTyp(), patientDetails.getPersonnummer());
 
-            verifyNotReplacedWithSigned(copyRequest.getOriginalIntygId(), "create utkast from template");
+            verifyNotReplacedWithSigned(templateRequest.getOriginalIntygId(), "create utkast from template");
 
-            CopyUtkastBuilderResponse builderResponse = buildUtkastFromTemplateBuilderResponse(copyRequest, patientDetails,
+            CopyUtkastBuilderResponse builderResponse = buildUtkastFromTemplateBuilderResponse(templateRequest, patientDetails,
                     originalIntygId, true, coherentJournaling);
 
             Utkast savedUtkast = saveAndNotify(builderResponse, user);
 
-            if (copyRequest.isDjupintegrerad()) {
+            if (templateRequest.isDjupintegrerad()) {
                 checkIntegreradEnhet(builderResponse);
             }
 
@@ -538,6 +537,7 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
             throws ModuleNotFoundException, ModuleException {
 
         CopyUtkastBuilderResponse builderResponse;
+
         if (utkastRepository.exists(originalIntygId)) {
             builderResponse = createUtkastFromTemplateBuilder.populateCopyUtkastFromOrignalUtkast(copyRequest, patientDetails, addRelation,
                     coherentJournaling);
@@ -583,9 +583,16 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
     }
 
     private Person updatePatientDetails(AbstractCreateCopyRequest copyRequest) {
-        // I djupintegration version 1 (fk7263) kommer inte patientinformation med i copyrequest.
-        // I djupintegration version 3 (nya fkintygen) är patientinformation i copyrequest obligatorisk.
+        return updatePatientDetails(copyRequest, true);
+    }
+
+    private Person updatePatientDetails(AbstractCreateCopyRequest copyRequest, boolean isCopyRequest) {
+        // I djupintegration version 1 (fk7263) kommer inte patientinformation med i copyRequest.
+        // I djupintegration version 3 (nya fkintygen) är patientinformation i copyRequest obligatorisk.
         if (copyRequest.isDjupintegrerad()) {
+            if (isCopyRequest && !hasRequiredPatientDetails(copyRequest.getPatient())) {
+                return null;
+            }
             return copyPatientDetailsFromRequest(copyRequest);
         } else {
             return refreshPatientDetailsFromPUService(copyRequest);
@@ -603,9 +610,6 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
     }
 
     private Person copyPatientDetailsFromRequest(AbstractCreateCopyRequest copyRequest) {
-        if (!hasRequiredPatientDetails(copyRequest.getPatient())) {
-            return null;
-        }
         return new Person(
                 copyRequest.getPatient().getPersonId(),
                 false,
@@ -619,7 +623,6 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
     }
 
     private Person refreshPatientDetailsFromPUService(AbstractCreateCopyRequest copyRequest) {
-
         Personnummer personnummer;
 
         if (copyRequest.containsNyttPatientPersonnummer()) {
