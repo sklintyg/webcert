@@ -19,6 +19,15 @@
 
 package se.inera.intyg.webcert.web.service.access;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
+import javax.validation.constraints.NotNull;
+
 import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.infra.security.authorities.validation.AuthExpectationSpecification;
 import se.inera.intyg.infra.security.authorities.validation.AuthoritiesValidator;
@@ -31,14 +40,6 @@ import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 import se.inera.intyg.webcert.web.service.utkast.dto.PreviousIntyg;
-
-import javax.validation.constraints.NotNull;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
 /**
  * Implementation used to evaluate access criterias. Set the criterias that will be considered and then call
@@ -485,7 +486,7 @@ public final class AccessServiceEvaluation {
     private Optional<AccessResult> isUnitRuleValid(String intygsTyp, Vardenhet vardenhet, WebCertUser user, boolean allowSJF,
             boolean isReadOnlyOperation) {
 
-        if (allowSJF && user.getParameters() != null && user.getParameters().isSjf()) {
+        if (allowSJF && user.isLakare() && user.getParameters() != null && user.getParameters().isSjf()) {
             return Optional.empty();
         }
 
