@@ -46,33 +46,63 @@ export function sektionDödsdatumDödsplats(dödsuppgifter) {
 }
 
 // -------------------- 'Barn som avlidigt senast 28 dygn efter födseln' --------------------
-export function sektionBarnAvlidigt(utredning) {
+export function sektionBarnAvlidigt(avlidit28dagar) {
     
-    if (utredning.ja) {
-        cy.get('#harUtredningBehandlingYes').check();
-        cy.get('#utredningBehandling').type(utredning.text);
+    cy.get('#barnYes').then((ele) => {
+        cy.log('Är radioknapparna disable:ade för 28 dygn frågan: ' + ele[0].disabled);
+        if (!ele[0].disabled) {
+            if (avlidit28dagar.ja) {
+                cy.get('#barnYes').check();
+            } else {
+                cy.get('#barnNo').check();
+            }
+        }
+    });
+}
+
+// -------------------- 'Explosivt implantat' --------------------
+export function sektionExplosivtImplantat(implantat) {
+    
+    if (implantat.ja) {
+        cy.get('#explosivImplantatYes').check();
+        if (implantat.avlägsnats) {
+            cy.get('#explosivAvlagsnatYes').check();
+        } else {
+            cy.get('#explosivAvlagsnatNo').check();
+        }
     } else {
-        cy.get('#harUtredningBehandlingNo').check();
+        cy.get('#explosivImplantatNo').check();
     }
 }
 
-// -------------------- 'Arbetets påverkan på sjukdom/skada' --------------------
-export function sektionArbetetsPåverkanSjukdomSkada(påverkan) {
-    
-    if (påverkan.ja) {
-        cy.get('#harArbetetsPaverkanYes').check();
-        cy.get('#arbetetsPaverkan').type(påverkan.text);
-    } else {
-        cy.get('#harArbetetsPaverkanNo').check();
+// -------------------- 'Yttre undersökning' --------------------
+export function sektionYttreUndersökning(undersökning) {
+    const idagMinus10Dagar  = Cypress.moment().subtract(10,  'days').format('YYYY-MM-DD');
+    if (undersökning.ja) {
+        cy.get('#undersokningYttre-JA').check();
+    }
+    if (undersökning.skaGöras) {
+        cy.get('#undersokningYttre-UNDERSOKNING_SKA_GORAS').check();
+    }
+    if (undersökning.kortFöreDöden) {
+        cy.get('#undersokningYttre-UNDERSOKNING_GJORT_KORT_FORE_DODEN').check();
+        cy.get('#datepicker_undersokningDatum').type(idagMinus10Dagar);
     }
 }
 
-// -------------------- 'Övrigt' --------------------
-export function sektionÖvrigt(övrigt) {
+// -------------------- 'Polisanmälan' --------------------
+export function sektionPolisanmälan(polisanmälan) {
     
-    if (övrigt.ja) {
-        cy.get('#ovrigt').type(övrigt.text);
-    }
+    cy.get('#polisanmalanYes').then((ele) => {
+        cy.log('Är radioknapparna disable:ade för polisanmälan: ' + ele[0].disabled);
+        if (!ele[0].disabled) {
+            if (polisanmälan.ja) {
+                cy.get('#polisanmalanYes').check();
+            } else {
+                cy.get('#polisanmalanNo').check();
+            }
+        }
+    })
 }
 
 // -------------------- 'Vårdenhetens adress' --------------------
@@ -106,16 +136,7 @@ export function signeraOchSkicka() {
         expect($el.parent()).to.not.be.visible;
     })
 
-    cy.contains("Intyget är skickat till Arbetsförmedlingen");
-}
-
-// -------------------- 'Skicka intyget' --------------------
-export function skickaTillFk() {
-    cy.get("#sendBtn", { timeout: 60000 }).click();
-
-    // Modal som dyker upp och frågar om man verkligen vill skicka
-    cy.get("#button1send-dialog").click();
-    cy.contains("Intyget är skickat till Försäkringskassan");
+    cy.contains("Intyget är skickat till Skatteverket");
 }
 
 // -------------------- 'Skriv ut intyget' --------------------
@@ -146,14 +167,7 @@ export function raderaUtkast() {
 }
 
 // ------------------'Makulera intyg'-------------------------
-export function makuleraIntyg(arg) {
+export function makuleraIntyg() {
     cy.get('#makuleraBtn').click();
-    if (arg === "Annat allvarligt fel") {
-        cy.get('#reason-ANNAT_ALLVARLIGT_FEL').check();
-        cy.get('#clarification-ANNAT_ALLVARLIGT_FEL').type('Testanledning');
-        cy.get('#button1makulera-dialog').click();
-    } else {
-        cy.get('#reason-FEL_PATIENT').check();
-        cy.get('#button1makulera-dialog').click();
-    }
+    cy.get('#button1makulera-dialog').click();
 }

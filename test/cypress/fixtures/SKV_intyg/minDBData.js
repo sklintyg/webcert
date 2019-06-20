@@ -2,32 +2,32 @@ skv = {
     "identitet": "Pass",
     "dödsuppgifter": {
         "dödsdatum": {
-            "säkert": false,
+            "säkert": true,
             //Datum sätts i funktionen "sektionDödsdatumDödsplats" i dbIntyg.js
         },
         "dödsplats": "Karlstad",
         "påträffades": {
-            //En av dessa ska vara true
+            //Enbart en av dessa ska vara true
             "sjukhus": true,
             "ordinärt": false,
             "särskilt": false,
             "okänd": false
         }
     },
-    "aktivitetsbegränsning": {
-        "ja": true,
-        "text": "Kan inte utföra normala arbetsuppgifter. Behöver nya, mindre fysiska, uppgifter."
+    "avlidit28dagar": {
+        "ja": true
     },
-    "utredning": {
-        "ja": true,
-        "text": "Beroende på om medicinerna verkar som förväntat eller inte så kan Arbetsförmedlingens planering behöva skjutas på"
+    "implantat": {
+        "ja": false,
+        "avlägsnats": true
     },
-    "påverkan": {
+    "undersökning": {
+        // Enbart en av dessa ska vara true
         "ja": true,
-        "text": "Olika typer av lyft kan förvärra skadan. Bör åtminstone till en början om möjligt sitta med mer administrativa uppgifter"
+        "skaGöras": false,
+        "kortFöreDöden": false
     },
-    "övrigt": {
-        "ja": true,
-        "text": "Personen i fråga är gjord av is"
+    "polisanmälan": {
+        "ja": false
     }
 }
