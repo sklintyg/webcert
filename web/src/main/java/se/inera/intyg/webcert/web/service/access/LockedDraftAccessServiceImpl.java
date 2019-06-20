@@ -59,6 +59,7 @@ public class LockedDraftAccessServiceImpl implements LockedDraftAccessService {
                 .careUnit(careUnit)
                 .patient(patient)
                 .checkPatientSecrecy()
+                .checkUnit(true, true)
                 .evaluate();
     }
 
