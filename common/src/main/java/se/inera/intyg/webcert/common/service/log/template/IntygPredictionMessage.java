@@ -24,7 +24,7 @@ import se.inera.intyg.infra.logmessages.PdlLogMessage;
 public abstract class IntygPredictionMessage {
 
     public static PdlLogMessage build(String intygId, String activityArgs, ActivityType activityType) {
-        PdlLogMessage pdlLogMessage = new PdlLogMessage(ActivityType.READ);
+        PdlLogMessage pdlLogMessage = new PdlLogMessage(activityType);
         pdlLogMessage.setActivityLevel(intygId);
         pdlLogMessage.setActivityArgs(activityArgs);
         return pdlLogMessage;
