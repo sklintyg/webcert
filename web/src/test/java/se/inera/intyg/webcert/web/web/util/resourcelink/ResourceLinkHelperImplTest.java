@@ -22,7 +22,6 @@ package se.inera.intyg.webcert.web.web.util.resourcelink;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -253,7 +252,7 @@ public class ResourceLinkHelperImplTest {
         final Personnummer patient = Personnummer.createPersonnummer("191212121212").get();
         final Vardenhet vardenhet = mock(Vardenhet.class);
 
-        doReturn(AccessResult.noProblem()).when(certificateAccessService).allowToRenew(intygsTyp, vardenhet, patient, false);
+        doReturn(AccessResult.noProblem()).when(certificateAccessService).allowToRenew(intygsTyp, vardenhet, patient);
         doReturn(AccessResult.noProblem()).when(certificateAccessService).allowToInvalidate(intygsTyp, vardenhet, patient);
         doReturn(AccessResult.noProblem()).when(certificateAccessService).allowToPrint(intygsTyp, vardenhet, patient, false);
         doReturn(AccessResult.noProblem()).when(certificateAccessService).allowToReplace(intygsTyp, vardenhet, patient);
@@ -312,7 +311,7 @@ public class ResourceLinkHelperImplTest {
         final Vardenhet vardenhet = mock(Vardenhet.class);
 
         doReturn(AccessResult.create(AccessResultCode.AUTHORIZATION_VALIDATION, "No access")).when(certificateAccessService)
-                .allowToRenew(intygsTyp, vardenhet, patient, false);
+                .allowToRenew(intygsTyp, vardenhet, patient);
         doReturn(AccessResult.create(AccessResultCode.AUTHORIZATION_VALIDATION, "No access")).when(certificateAccessService)
                 .allowToInvalidate(intygsTyp, vardenhet, patient);
         doReturn(AccessResult.create(AccessResultCode.AUTHORIZATION_VALIDATION, "No access")).when(certificateAccessService)
@@ -372,7 +371,7 @@ public class ResourceLinkHelperImplTest {
         doReturn(AccessResult.noProblem()).when(certificateAccessService).allowToRead(anyString(), any(Vardenhet.class),
                 any(Personnummer.class));
         doReturn(AccessResult.noProblem()).when(certificateAccessService).allowToRenew(anyString(), any(Vardenhet.class),
-                any(Personnummer.class), anyBoolean());
+                any(Personnummer.class));
 
         final List<ActionLink> expectedLinks = new ArrayList<>();
         expectedLinks.add(new ActionLink(ActionLinkType.LASA_INTYG));
@@ -403,7 +402,7 @@ public class ResourceLinkHelperImplTest {
                 any(Personnummer.class));
         doReturn(AccessResult.create(AccessResultCode.AUTHORIZATION_VALIDATION, "No access")).when(certificateAccessService).allowToRenew(
                 anyString(), any(Vardenhet.class),
-                any(Personnummer.class), anyBoolean());
+                any(Personnummer.class));
 
         final List<ActionLink> expectedLinks = new ArrayList<>();
 
