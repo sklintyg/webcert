@@ -115,7 +115,7 @@ public class ResourceLinkHelperImpl implements ResourceLinkHelper {
         final Vardenhet vardenhet = intygContentHolder.getUtlatande().getGrundData().getSkapadAv().getVardenhet();
         final Personnummer personnummer = intygContentHolder.getUtlatande().getGrundData().getPatient().getPersonId();
 
-        if (certificateAccessService.allowToRenew(intygsTyp, vardenhet, personnummer, false).isAllowed()) {
+        if (certificateAccessService.allowToRenew(intygsTyp, vardenhet, personnummer).isAllowed()) {
             intygContentHolder.addLink(new ActionLink(ActionLinkType.FORNYA_INTYG));
         }
 
@@ -159,7 +159,7 @@ public class ResourceLinkHelperImpl implements ResourceLinkHelper {
             listIntygEntry.addLink(new ActionLink(ActionLinkType.LASA_INTYG));
         }
 
-        if (certificateAccessService.allowToRenew(listIntygEntry.getIntygType(), vardenhet, patient, false).isAllowed()) {
+        if (certificateAccessService.allowToRenew(listIntygEntry.getIntygType(), vardenhet, patient).isAllowed()) {
             listIntygEntry.addLink(new ActionLink(ActionLinkType.FORNYA_INTYG));
         }
     }

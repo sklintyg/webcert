@@ -87,15 +87,9 @@ public class CertificateAccessServiceImpl implements CertificateAccessService {
 
     @Override
     public AccessResult allowToRenew(String certificateType, Vardenhet careUnit, Personnummer patient) {
-        return allowToRenew(certificateType, careUnit, patient, false);
-    }
-
-    @Override
-    public AccessResult allowToRenew(String certificateType, Vardenhet careUnit, Personnummer patient, boolean isComplement) {
         return getAccessServiceEvaluation().given(getUser(), certificateType)
                 .feature(AuthoritiesConstants.FEATURE_FORNYA_INTYG)
                 .privilege(AuthoritiesConstants.PRIVILEGE_FORNYA_INTYG)
-                .privilegeIf(AuthoritiesConstants.PRIVILEGE_SVARA_MED_NYTT_INTYG, isComplement)
                 .careUnit(careUnit)
                 .patient(patient)
                 .checkPatientDeceased(false)

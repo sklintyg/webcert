@@ -69,22 +69,6 @@ public interface CertificateAccessService {
     AccessResult allowToRenew(String certificateType, Vardenhet careUnit, Personnummer patient);
 
     /**
-     * Check if the user is allowed to renew a certificate.
-     *
-     * @param certificateType
-     *            The type of the certificate being checked.
-     * @param careUnit
-     *            The careUnit which the certificate belongs to.
-     * @param patient
-     *            The patient which the certificate belongs to.
-     * @param complement
-     *            If the renewal is a complement
-     * @return
-     *         AccessResult which contains the answer if the user is allowed or not.
-     */
-    AccessResult allowToRenew(String certificateType, Vardenhet careUnit, Personnummer patient, boolean complement);
-
-    /**
      * Check if the user is allowed to print a certificate.
      *
      * @param certificateType

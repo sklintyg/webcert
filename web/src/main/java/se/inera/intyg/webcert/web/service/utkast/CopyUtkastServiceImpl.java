@@ -184,7 +184,7 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
                     coherentJournaling,
                     false);
 
-            validateAccessToRenewIntyg(utlatande, true);
+            validateAccessToComplementIntyg(utlatande);
 
             if (intygService.isRevoked(copyRequest.getOriginalIntygId(), copyRequest.getTyp(), false)) {
                 LOG.debug("Cannot create completion copy of certificate with id '{}', the certificate is revoked", originalIntygId);
@@ -232,7 +232,7 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
                     coherentJournaling,
                     false);
 
-            validateAccessToRenewIntyg(utlatande, false);
+            validateAccessToRenewIntyg(utlatande);
 
             if (intygService.isRevoked(copyRequest.getOriginalIntygId(), copyRequest.getOriginalIntygTyp(), coherentJournaling)) {
                 LOG.debug("Cannot renew certificate with id '{}', the certificate is revoked", originalIntygId);
@@ -671,12 +671,21 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
         integreradeEnheterRegistry.addIfSameVardgivareButDifferentUnits(orginalEnhetsId, newEntry, utkastCopy.getIntygsTyp());
     }
 
-    private void validateAccessToRenewIntyg(Utlatande utlatande, boolean complement) {
+    private void validateAccessToRenewIntyg(Utlatande utlatande) {
         final AccessResult accessResult = certificateAccessService.allowToRenew(
                 utlatande.getTyp(),
                 getVardenhet(utlatande),
+                getPersonnummer(utlatande));
+
+        accessResultExceptionHelper.throwExceptionIfDenied(accessResult);
+    }
+
+    private void validateAccessToComplementIntyg(Utlatande utlatande) {
+        final AccessResult accessResult = certificateAccessService.allowToAnswerComplementQuestion(
+                utlatande.getTyp(),
+                getVardenhet(utlatande),
                 getPersonnummer(utlatande),
-                complement);
+                true);
 
         accessResultExceptionHelper.throwExceptionIfDenied(accessResult);
     }
