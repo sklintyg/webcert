@@ -22,6 +22,8 @@ env:
     value: $REF_DATA_VERSION
   - name: release
     value: '${RELEASE_FLAG}'
+  - name: backingServices
+    value: intygstjanst-test:3.9.0.256
     """
                 sh 'curl -k -X POST -H "Content-Type: application/yaml" --data-binary @hook.yml $BF_URL'
             }
