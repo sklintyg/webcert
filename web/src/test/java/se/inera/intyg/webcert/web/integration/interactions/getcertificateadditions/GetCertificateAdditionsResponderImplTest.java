@@ -32,7 +32,6 @@ import se.inera.intyg.webcert.web.service.arende.ArendeService;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.IntygId;
 
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -113,7 +112,7 @@ public class GetCertificateAdditionsResponderImplTest {
             Arende arende = new Arende();
             arende.setId(ARENDE_IDS.get(i));
             arende.setStatus(Status.PENDING_INTERNAL_ACTION);
-            arende.setTimestamp(LocalDateTime.now(ZoneId.systemDefault()));
+            arende.setTimestamp(LocalDateTime.now());
             arende.setIntygsId(INTYG_IDS.get(i));
 
             arenden.add(arende);
