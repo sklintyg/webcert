@@ -39,8 +39,6 @@ describe('LISJP-intyg med SRS', function () {
 
         // Populerar pdl-array med förväntade logposter "Läsa" och "Skriva" samt fyller i halva intyget
         pdlEventArray.push(lisjpPdlEvent(this, pdl.enumHandelse.LÄSA, undefined, this.utkastId, this.vårdenhet.uppdragsnamn, this.vårdenhet.vårdgivareId, this.vårdenhet.vårdgivareNamn, this.vårdenhet.id, this.vårdenhet.namn));
-        intyg.sektionGrundFörMedicinsktUnderlag(this.intygsdata.grundFörMedicinsktUnderlag);
-        intyg.sektionSysselsättning(this.intygsdata.sysselsättning);
         intyg.sektionDiagnos(this.intygsdata.diagnos);
         cy.contains("Utkastet är sparat").should('exist');
         pdlEventArray.push(lisjpPdlEvent(this, pdl.enumHandelse.SKRIVA, undefined, this.utkastId, this.vårdenhet.uppdragsnamn, this.vårdenhet.vårdgivareId, this.vårdenhet.vårdgivareNamn, this.vårdenhet.id, this.vårdenhet.namn));
