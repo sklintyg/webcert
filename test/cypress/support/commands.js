@@ -302,6 +302,7 @@ function verifieraHändelserFörIntyg(förväntadeHändelser, arr) {
                     if (förväntadeHändelser[j].activity.activityArgs === activityArgsNext) {
                         // Både activityArgs och activityType för förväntad händelse stämmer med
                         // händelsen från mocken som kommer i nästa iteration. Byt plats på dem.
+                        assert.isTrue(true, "Två händelser har samma tidstämpel och kriterierna för att byta plats är uppfyllda för händelserna på index " + j + " och " + j + 1);
                         [arr[j], arr[j + 1]] = [arr[j + 1], arr[j]];
                     }
                 }
@@ -419,9 +420,10 @@ function verifieraHändelserFörIntyg(förväntadeHändelser, arr) {
 }
 
 // Debug-funktion. Anropa denna för att skriva ut alla aktivitetstyper (e.g. Läsa)
-// och argument (om de finns). Kommer ej att skrivas ut om någon assert misslyckas
-// på vägen eftersom alla cy-kommandon köas och exekveras i tur och ordning (asynkront).
+// och argument (om de finns). Använder assert istället för cy.log() för att få ut
+// dem i loggen direkt.
 function skrivUtHändelser(händelseArray) {
+    assert.isTrue(true, "Skriver ut activityType och activityArgs för alla händelser:");
     for (var debugLoop = 0; debugLoop < händelseArray.length; debugLoop++) {
         var debugActivity = händelseArray[debugLoop].getElementsByTagName("activity")[0];
 
@@ -431,7 +433,7 @@ function skrivUtHändelser(händelseArray) {
         if (debugActivity.getElementsByTagName("activityargs") && debugActivity.getElementsByTagName("activityargs")[0]) {
             debugActivityArgs = ", activityArgs: " + debugActivity.getElementsByTagName("activityargs")[0].innerText;
         }
-        cy.log(debugActivityType + debugActivityArgs);
+        assert.isTrue(true, debugActivityType + debugActivityArgs);
     }
 }
 

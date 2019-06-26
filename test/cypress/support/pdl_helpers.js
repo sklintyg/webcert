@@ -56,5 +56,6 @@ export const enumHandelseArgument = {
     LÄSASJF: "Läsning i enlighet med sammanhållen journalföring",
     UTSKRIFT: "Intyg utskrivet",
     UTSKRIFTUTKAST: "Utkastet utskrivet",
-    SRS: "Prediktion från SRS av risk för lång sjukskrivning"
+    SRS_PREDIKTION: "Prediktion från SRS av risk för lång sjukskrivning",
+    SRS_LÄKARES_ÅSIKT: "Läkarens egen bedömning"
 };
