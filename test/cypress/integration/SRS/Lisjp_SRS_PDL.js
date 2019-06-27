@@ -1,7 +1,7 @@
 /* globals context cy */
 /// <reference types="Cypress" />
-import * as intyg from '../../../support/FK_intyg/lisjpIntyg'
-import * as pdl from '../../../support/pdl_helpers'
+import * as intyg from '../../support/FK_intyg/lisjpIntyg'
+import * as pdl from '../../support/pdl_helpers'
 
 // LISJP = Läkarintyg för sjukpenning, FK 7804
 
@@ -31,7 +31,7 @@ describe('LISJP-intyg med SRS', function () {
         });
     });
 
-    it.skip('skapar en minimalt ifylld LISJP med SRS-stöd', function () {
+    it('skapar en minimalt ifylld LISJP med SRS-stöd', function () {
         cy.loggaInVårdpersonalIntegrerat(this.vårdpersonal, this.vårdenhet);
 
         const önskadUrl = "/visa/intyg/" + this.utkastId + "?enhet=" + this.vårdenhet.id
