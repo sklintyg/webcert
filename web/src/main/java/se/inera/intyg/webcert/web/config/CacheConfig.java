@@ -18,10 +18,18 @@
  */
 package se.inera.intyg.webcert.web.config;
 
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportResource;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.core.StringRedisTemplate;
 
 @Configuration
 @ImportResource({"classpath:basic-cache-config.xml"})
 public class CacheConfig {
+
+    @Bean
+    StringRedisTemplate stringRedisTemplate(RedisConnectionFactory redisConnectionFactory) {
+        return new StringRedisTemplate(redisConnectionFactory);
+    }
 }

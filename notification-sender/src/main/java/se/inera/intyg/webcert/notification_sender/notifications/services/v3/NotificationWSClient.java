@@ -30,6 +30,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.infra.security.authorities.FeaturesHelper;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.webcert.common.Constants;
 import se.inera.intyg.webcert.common.sender.exception.DiscardCandidateException;
 import se.inera.intyg.webcert.common.sender.exception.PermanentException;
 import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
@@ -57,6 +58,7 @@ public class NotificationWSClient {
         private CertificateStatusUpdateForCareType message;
         private String correlationId;
         private String logicalAddress;
+        private String key;
 
         public CertificateStatusUpdateForCareType message() {
             return this.message;
@@ -68,6 +70,10 @@ public class NotificationWSClient {
 
         public String logicalAddress() {
             return this.logicalAddress;
+        }
+
+        public String key() {
+            return this.key;
         }
 
         @Override
@@ -83,6 +89,7 @@ public class NotificationWSClient {
             mc.message = message;
             mc.logicalAddress = logicalAddress;
             mc.correlationId = correlationId;
+            mc.key = "webcert:notificationSender:" + message.getIntyg().getIntygsId().getExtension() + ":redeliveryFlag";
             return mc;
         }
     }
@@ -96,10 +103,14 @@ public class NotificationWSClient {
     @Autowired
     private FeaturesHelper featuresHelper;
 
+    @Autowired
+    private MessageRedeliveryFlag messageRedeliveryFlag;
+
     public void sendStatusUpdate(CertificateStatusUpdateForCareType request,
                                  @Header(NotificationRouteHeaders.LOGISK_ADRESS) String logicalAddress,
                                  @Header(NotificationRouteHeaders.USER_ID) String userId,
-                                 @Header(NotificationRouteHeaders.CORRELATION_ID) String correlationId)
+                                 @Header(NotificationRouteHeaders.CORRELATION_ID) String correlationId,
+                                 @Header(Constants.JMS_TIMESTAMP) long messageTimestamp)
             throws TemporaryException, DiscardCandidateException, PermanentException {
 
         if (Objects.nonNull(userId)) {
@@ -108,17 +119,28 @@ public class NotificationWSClient {
         }
 
         final MessageContext mc = MessageContext.of(request, logicalAddress, correlationId);
-        final ResultType result = exchange(mc);
 
-        switch (result.getResultCode()) {
-            case ERROR:
-                handleError(mc, result);
-                break;
-            case INFO:
-                LOG.info("{} message: {}", mc, result.getResultText());
-                break;
-            case OK:
-                break;
+        if (messageRedeliveryFlag.isOutdated(mc.key(), messageTimestamp)) {
+            LOG.info("WSClient outdated status update for {} is silently dropped", mc);
+            return;
+        }
+
+        try {
+            final ResultType result = exchange(mc);
+            switch (result.getResultCode()) {
+                case ERROR:
+                    handleError(mc, result);
+                    break;
+                case INFO:
+                    LOG.info("{} message: {}", mc, result.getResultText());
+                    break;
+                case OK:
+                    break;
+            }
+            messageRedeliveryFlag.lowerError(mc.key());
+        } catch (TemporaryException e) {
+            messageRedeliveryFlag.raiseError(mc.key());
+            throw e;
         }
     }
 

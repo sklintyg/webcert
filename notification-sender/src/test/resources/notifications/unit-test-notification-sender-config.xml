@@ -49,6 +49,10 @@
     <constructor-arg value="se.inera.intyg.infra.integration.pu.services.PUService" />
   </bean>
 
+  <bean id="mockedStringRedisTemplate" class="org.mockito.Mockito" factory-method="mock">
+    <constructor-arg value="org.springframework.data.redis.core.StringRedisTemplate" />
+  </bean>
+
   <bean id="notificationPatientEnricher" class="se.inera.intyg.webcert.notification_sender.notifications.services.NotificationPatientEnricher">
      <property name="puService" ref="mockedPuService" />
   </bean>

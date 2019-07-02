@@ -28,6 +28,8 @@
 
   <bean id="notificationWSClientV3" class="se.inera.intyg.webcert.notification_sender.notifications.services.v3.NotificationWSClient"></bean>
 
+  <bean id="messageRedeliveryFlag" class="se.inera.intyg.webcert.notification_sender.notifications.services.v3.MessageRedeliveryFlag"></bean>
+
   <bean id="processNotificationRequestRouteBuilder" class="se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteBuilder"/>
 
   <bean id="customObjectMapper" class="se.inera.intyg.common.util.integration.json.CustomObjectMapper"/>

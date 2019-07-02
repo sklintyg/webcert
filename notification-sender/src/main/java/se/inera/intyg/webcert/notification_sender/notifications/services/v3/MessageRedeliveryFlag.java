@@ -1,0 +1,114 @@
+package se.inera.intyg.webcert.notification_sender.notifications.services.v3;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.Objects;
+import java.util.concurrent.Callable;
+import java.util.concurrent.TimeUnit;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
+import org.springframework.stereotype.Component;
+
+/**
+ * Keeps track of status flag for failed messages (redelivery).
+ */
+@Component
+public class MessageRedeliveryFlag {
+
+    @Autowired
+    private StringRedisTemplate stringRedisTemplate;
+
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    // TTL in minutes
+    @Value("${notificationSender.redeliveryflagTTL:120}")
+    private int redeliveryflagTTL;
+
+    // state for flag
+    static class StatusFlag {
+        private boolean success;
+        private long successTimestamp;
+
+        public boolean isSuccess() {
+            return success;
+        }
+
+        public long getSuccessTimestamp() {
+            return successTimestamp;
+        }
+
+        public boolean isOutdated(long timestamp) {
+            return success && timestamp < successTimestamp;
+        }
+
+        void raise() {
+            this.success = false;
+            this.successTimestamp = 0L;
+        }
+
+        void lower() {
+            this.success = true;
+            this.successTimestamp = System.currentTimeMillis();
+        }
+    }
+
+    /**
+     * Returns if a timestamp (message) is outdated and shall be ignored.
+     *
+     * @param key the message key.
+     * @param timestamp the message timestamp.
+     * @return true if the message is outdated, otherwise false.
+     */
+    public boolean isOutdated(final String key, final long timestamp) {
+        final ValueOperations<String, String> ops = stringRedisTemplate.opsForValue();
+        StatusFlag statusFlag = unmarshal(ops.get(key));
+        return Objects.isNull(statusFlag) ? false : statusFlag.isOutdated(timestamp);
+    }
+
+    /**
+     * Raise error flag.
+     *
+     * @param key the key.
+     */
+    public void raiseError(final String key) {
+        final ValueOperations<String, String> ops = stringRedisTemplate.opsForValue();
+        StatusFlag statusFlag = unmarshal(ops.get(key));
+        if (Objects.isNull(statusFlag)) {
+            statusFlag = new StatusFlag();
+        }
+        statusFlag.raise();
+        ops.set(key, marshal(statusFlag), redeliveryflagTTL, TimeUnit.MINUTES);
+    }
+
+    /**
+     * Lower error flag.
+     *
+     * @param key the key.
+     */
+    public void lowerError(final String key) {
+        final ValueOperations<String, String> ops = stringRedisTemplate.opsForValue();
+        final StatusFlag statusFlag = unmarshal(ops.get(key));
+        if (Objects.nonNull(statusFlag) && !statusFlag.isSuccess()) {
+            statusFlag.lower();
+            ops.set(key, marshal(statusFlag), redeliveryflagTTL, TimeUnit.MINUTES);
+        }
+    }
+
+    String marshal(final StatusFlag statusFlag) {
+        return Objects.isNull(statusFlag) ? null : uncheck(() -> objectMapper.writeValueAsString(statusFlag));
+    }
+
+    StatusFlag unmarshal(final String s) {
+        return Objects.isNull(s) ? null : uncheck(() -> objectMapper.readValue(s, StatusFlag.class));
+    }
+
+    <T> T uncheck(final Callable<T> c) {
+        try {
+            return c.call();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+}
