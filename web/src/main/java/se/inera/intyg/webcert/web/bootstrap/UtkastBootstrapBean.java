@@ -18,16 +18,30 @@
  */
 package se.inera.intyg.webcert.web.bootstrap;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.google.common.base.Charsets;
-import com.google.common.base.Splitter;
-import com.google.common.collect.Iterables;
-import com.google.common.io.Resources;
+import java.io.IOException;
+import java.io.StringReader;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Random;
+import java.util.UUID;
+import javax.annotation.PostConstruct;
+import javax.xml.bind.JAXB;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.google.common.base.Charsets;
+import com.google.common.base.Splitter;
+import com.google.common.collect.Iterables;
+import com.google.common.io.Resources;
 import se.inera.ifv.insuranceprocess.healthreporting.registermedicalcertificateresponder.v3.RegisterMedicalCertificateType;
 import se.inera.ifv.insuranceprocess.healthreporting.v2.PatientType;
 import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
@@ -61,19 +75,6 @@ import se.inera.intyg.webcert.web.converter.util.IntygConverterUtil;
 import se.inera.intyg.webcert.web.service.fragasvar.dto.FrageStallare;
 import se.riv.clinicalprocess.healthcond.certificate.registerCertificate.v3.RegisterCertificateType;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Patient;
-
-import javax.annotation.PostConstruct;
-import javax.xml.bind.JAXB;
-import java.io.IOException;
-import java.io.StringReader;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Random;
-import java.util.UUID;
 
 public class UtkastBootstrapBean {
 
@@ -119,6 +120,7 @@ public class UtkastBootstrapBean {
                             fragaRepo.save(createFragaSvar(utlatande, FrageStallare.WEBCERT, false, false));
                             fragaRepo.save(createFragaSvar(utlatande, FrageStallare.FORSAKRINGSKASSAN, false, true));
                             fragaRepo.save(createFragaSvar(utlatande, FrageStallare.FORSAKRINGSKASSAN, false, false));
+                            fragaRepo.save(createFragaSvar(utlatande, FrageStallare.FORSAKRINGSKASSAN, false, false, "Test person"));
                             break;
                         case LuaefsEntryPoint.MODULE_ID:
                         case LuaenaEntryPoint.MODULE_ID:
@@ -235,6 +237,11 @@ public class UtkastBootstrapBean {
     }
 
     private FragaSvar createFragaSvar(Utlatande utlatande, FrageStallare fragestallare, boolean komplettering, boolean paminnelse) {
+        return createFragaSvar(utlatande, fragestallare, komplettering, paminnelse, null);
+    }
+
+    private FragaSvar createFragaSvar(Utlatande utlatande, FrageStallare fragestallare, boolean komplettering, boolean paminnelse,
+                                      String vardPersonName) {
         FragaSvar fs = new FragaSvar();
         fs.setFrageSigneringsDatum(LocalDateTime.now());
         fs.setFrageSkickadDatum(LocalDateTime.now());
@@ -266,6 +273,11 @@ public class UtkastBootstrapBean {
         fs.setVardAktorNamn(utlatande.getGrundData().getSkapadAv().getFullstandigtNamn());
         fs.setVardperson(FragaSvarConverter.convert(utlatande.getGrundData().getSkapadAv()));
         fs.setVidarebefordrad(false);
+
+        if (!Objects.isNull(vardPersonName)) {
+            fs.getVardperson().setNamn(vardPersonName);
+        }
+
         return fs;
     }
 

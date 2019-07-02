@@ -21,7 +21,6 @@ package se.inera.intyg.webcert.web.service.utkast;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -31,7 +30,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-
 import javax.persistence.OptimisticLockException;
 
 import org.slf4j.Logger;
@@ -41,7 +39,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.base.Strings;
-
 import se.inera.intyg.common.services.texts.IntygTextsService;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.GrundData;
@@ -58,6 +55,7 @@ import se.inera.intyg.common.support.modules.support.api.dto.ValidationMessage;
 import se.inera.intyg.common.support.modules.support.api.dto.ValidationStatus;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
 import se.inera.intyg.common.support.validate.SamordningsnummerValidator;
+import se.inera.intyg.infra.integration.hsa.services.HsaEmployeeService;
 import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.IntygUser;
@@ -69,6 +67,7 @@ import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastFilter;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
+import se.inera.intyg.webcert.web.converter.ArendeConverter;
 import se.inera.intyg.webcert.web.converter.util.IntygConverterUtil;
 import se.inera.intyg.webcert.web.service.access.AccessResult;
 import se.inera.intyg.webcert.web.service.access.DraftAccessService;
@@ -144,6 +143,9 @@ public class UtkastServiceImpl implements UtkastService {
 
     @Autowired
     private AccessResultExceptionHelper accessResultExceptionHelper;
+
+    @Autowired
+    private HsaEmployeeService hsaEmployeeService;
 
     public static boolean isUtkast(Utkast utkast) {
         return utkast != null && ALL_DRAFT_STATUSES_INCLUDE_LOCKED.contains(utkast.getStatus());
@@ -365,15 +367,16 @@ public class UtkastServiceImpl implements UtkastService {
     @Transactional(readOnly = true)
     public List<Lakare> getLakareWithDraftsByEnhet(String enhetsId) {
 
-        List<Lakare> lakareList = new ArrayList<>();
-
         List<Object[]> result = utkastRepository.findDistinctLakareFromIntygEnhetAndStatuses(enhetsId, ALL_DRAFT_STATUSES_INCLUDE_LOCKED);
 
-        for (Object[] lakareArr : result) {
-            lakareList.add(new Lakare((String) lakareArr[0], (String) lakareArr[1]));
-        }
+        return result.stream()
+                .map(lakareArr -> new Lakare((String) lakareArr[0], getLakareName((String) lakareArr[0])))
+                .sorted(Comparator.comparing(Lakare::getName))
+                .collect(Collectors.toList());
+    }
 
-        return lakareList;
+    private String getLakareName(String hsaId) {
+        return ArendeConverter.getNameByHsaId(hsaId, hsaEmployeeService);
     }
 
     @Override
