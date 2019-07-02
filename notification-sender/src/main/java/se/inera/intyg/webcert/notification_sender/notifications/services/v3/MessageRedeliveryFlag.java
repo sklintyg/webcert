@@ -66,9 +66,9 @@ public class MessageRedeliveryFlag {
             this.successTimestamp = 0L;
         }
 
-        void lower() {
+        void lower(final long timestamp) {
             this.success = true;
-            this.successTimestamp = System.currentTimeMillis();
+            this.successTimestamp = timestamp;
         }
     }
 
@@ -104,12 +104,13 @@ public class MessageRedeliveryFlag {
      * Lower error flag.
      *
      * @param key the key.
+     * @param messageTimestamp
      */
-    public void lowerError(final String key) {
+    public void lowerError(final String key, long messageTimestamp) {
         final ValueOperations<String, String> ops = stringRedisTemplate.opsForValue();
         final StatusFlag statusFlag = unmarshal(ops.get(key));
         if (Objects.nonNull(statusFlag) && !statusFlag.isSuccess()) {
-            statusFlag.lower();
+            statusFlag.lower(messageTimestamp);
             ops.set(key, marshal(statusFlag), redeliveryflagTTL, TimeUnit.MINUTES);
         }
     }

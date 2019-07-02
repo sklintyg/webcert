@@ -139,7 +139,7 @@ public class NotificationWSClientTest {
         when(messageRedeliveryFlag.isOutdated(anyString(), anyLong())).thenReturn(true);
         sendStatusUpdate(createRequest());
         verify(messageRedeliveryFlag, times(1)).isOutdated(anyString(), anyLong());
-        verify(messageRedeliveryFlag, times(0)).lowerError(anyString());
+        verify(messageRedeliveryFlag, times(0)).lowerError(anyString(), anyLong());
         verify(messageRedeliveryFlag, times(0)).raiseError(anyString());
     }
 
@@ -149,7 +149,7 @@ public class NotificationWSClientTest {
                 .thenReturn(buildResponse(ResultCodeType.OK, null, null));
         when(messageRedeliveryFlag.isOutdated(anyString(), anyLong())).thenReturn(false);
         sendStatusUpdate(createRequest());
-        verify(messageRedeliveryFlag, times(1)).lowerError(anyString());
+        verify(messageRedeliveryFlag, times(1)).lowerError(anyString(), anyLong());
         verify(messageRedeliveryFlag, times(0)).raiseError(anyString());
     }
 
@@ -162,7 +162,7 @@ public class NotificationWSClientTest {
         } catch (TemporaryException e) {
         }
         verify(messageRedeliveryFlag, times(1)).isOutdated(anyString(), anyLong());
-        verify(messageRedeliveryFlag, times(0)).lowerError(anyString());
+        verify(messageRedeliveryFlag, times(0)).lowerError(anyString(), anyLong());
         verify(messageRedeliveryFlag, times(1)).raiseError(anyString());
     }
 
@@ -175,7 +175,7 @@ public class NotificationWSClientTest {
         } catch (TemporaryException e) {
         }
         verify(messageRedeliveryFlag, times(1)).isOutdated(anyString(), anyLong());
-        verify(messageRedeliveryFlag, times(0)).lowerError(anyString());
+        verify(messageRedeliveryFlag, times(0)).lowerError(anyString(), anyLong());
         verify(messageRedeliveryFlag, times(1)).raiseError(anyString());
     }
 

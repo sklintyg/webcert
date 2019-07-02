@@ -137,7 +137,7 @@ public class NotificationWSClient {
                 case OK:
                     break;
             }
-            messageRedeliveryFlag.lowerError(mc.key());
+            messageRedeliveryFlag.lowerError(mc.key(), messageTimestamp);
         } catch (TemporaryException e) {
             messageRedeliveryFlag.raiseError(mc.key());
             throw e;

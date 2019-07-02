@@ -30,7 +30,7 @@ public class MessageRedeliveryFlagTest {
         long t0 = System.currentTimeMillis() - 1L;
         MessageRedeliveryFlag.StatusFlag sf = new MessageRedeliveryFlag.StatusFlag();
 
-        sf.lower();
+        sf.lower(System.currentTimeMillis());
 
         assertEquals(true, sf.isSuccess());
         assertEquals(true, sf.getSuccessTimestamp() > t0);
