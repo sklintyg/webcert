@@ -82,6 +82,7 @@ public class IntygDraftsConverter {
         entry.setIntygTypeVersion(utkast.getIntygTypeVersion());
         entry.setSource(IntygSource.WC);
         entry.setUpdatedSignedBy(resolvedSignedBy(utkast));
+        entry.setUpdatedSignedById(resolvedSignedById(utkast));
         entry.setLastUpdatedSigned(utkast.getSenastSparadDatum());
         entry.setPatientId(utkast.getPatientPersonnummer());
         entry.setVidarebefordrad(utkast.getVidarebefordrad());
@@ -113,6 +114,23 @@ public class IntygDraftsConverter {
         } else if (utkast.getSenastSparadAv() != null
                 && utkast.getSenastSparadAv().getHsaId().equals(utkast.getSignatur().getSigneradAv())) {
             return utkast.getSenastSparadAv().getNamn();
+        } else {
+            return utkast.getSignatur().getSigneradAv();
+        }
+    }
+
+    /**
+     * If either the hsaId of the SkapadAv or SenastSparadAv matches the signing hsaId,
+     * we return the Name instead of the HSA ID.
+     */
+    private static String resolvedSignedById(Utkast utkast) {
+        if (utkast.getSignatur() == null) {
+            return utkast.getSenastSparadAv().getHsaId();
+        } else if (utkast.getSkapadAv() != null && utkast.getSkapadAv().getHsaId().equals(utkast.getSignatur().getSigneradAv())) {
+            return utkast.getSkapadAv().getHsaId();
+        } else if (utkast.getSenastSparadAv() != null
+                && utkast.getSenastSparadAv().getHsaId().equals(utkast.getSignatur().getSigneradAv())) {
+            return utkast.getSenastSparadAv().getHsaId();
         } else {
             return utkast.getSignatur().getSigneradAv();
         }
@@ -158,6 +176,7 @@ public class IntygDraftsConverter {
         }
 
         entry.setUpdatedSignedBy(source.getSkapadAv().getFullstandigtNamn());
+        entry.setUpdatedSignedById(source.getSkapadAv().getPersonalId().toString());
         entry.setLastUpdatedSigned(source.getSigneringstidpunkt());
         entry.setPatientId(createPnr(source.getPatient().getPersonId().getExtension()));
         entry.setVardenhetId(source.getSkapadAv().getEnhet().getEnhetsId().getExtension());

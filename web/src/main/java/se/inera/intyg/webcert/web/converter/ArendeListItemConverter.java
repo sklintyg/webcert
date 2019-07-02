@@ -40,6 +40,7 @@ public final class ArendeListItemConverter {
         res.setReceivedDate(fragaSvar.getSenasteHandelseDatum());
         res.setPatientId(fragaSvar.getIntygsReferens().getPatientId().getPersonnummer());
         res.setSigneratAvNamn(fragaSvar.getVardperson().getNamn());
+        res.setSigneratAv(fragaSvar.getVardperson().getHsaId());
         res.setStatus(fragaSvar.getStatus());
         res.setVidarebefordrad(fragaSvar.getVidarebefordrad());
         res.setAmne(ArendeAmne.fromAmne(fragaSvar.getAmne()).map(ArendeAmne::name).orElse(fragaSvar.getAmne().name()));
@@ -58,6 +59,7 @@ public final class ArendeListItemConverter {
         res.setPatientId(arende.getPatientPersonId());
         res.setReceivedDate(arende.getSenasteHandelse());
         res.setSigneratAvNamn(arende.getSigneratAvName());
+        res.setSigneratAv(arende.getSigneratAv());
         res.setStatus(arende.getStatus());
         res.setVidarebefordrad(getSafeBooleanValue(arende.getVidarebefordrad()));
         res.setEnhetsnamn(arende.getEnhetName());
