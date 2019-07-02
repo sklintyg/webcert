@@ -22,6 +22,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.web.util.resourcelinks.dto.ActionLink;
 
@@ -42,6 +43,8 @@ public class ListIntygEntry {
     private LocalDateTime lastUpdatedSigned;
 
     private String updatedSignedBy;
+    @JsonIgnore
+    private String updatedSignedById;
 
     private boolean vidarebefordrad;
 
@@ -112,6 +115,14 @@ public class ListIntygEntry {
 
     public void setUpdatedSignedBy(String updatedSignedBy) {
         this.updatedSignedBy = updatedSignedBy;
+    }
+
+    public String getUpdatedSignedById() {
+        return updatedSignedById;
+    }
+
+    public void setUpdatedSignedById(String updatedSignedById) {
+        this.updatedSignedById = updatedSignedById;
     }
 
     public boolean isVidarebefordrad() {

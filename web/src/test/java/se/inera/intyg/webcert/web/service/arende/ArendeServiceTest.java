@@ -18,31 +18,6 @@
  */
 package se.inera.intyg.webcert.web.service.arende;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
-import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anySet;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.isNull;
-import static org.mockito.ArgumentMatchers.nullable;
-import static org.mockito.Mockito.atLeastOnce;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.only;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.verifyZeroInteractions;
-import static org.mockito.Mockito.when;
-
 import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -72,13 +47,13 @@ import org.mockito.junit.MockitoJUnitRunner;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.MoreCollectors;
-
 import se.inera.intyg.common.support.model.common.internal.GrundData;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.model.common.internal.Patient;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
 import se.inera.intyg.infra.integration.hsa.model.Vardgivare;
+import se.inera.intyg.infra.integration.hsa.services.HsaEmployeeService;
 import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
 import se.inera.intyg.infra.security.authorities.AuthoritiesResolverUtil;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
@@ -126,6 +101,32 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeListItem;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeView;
 import se.inera.intyg.webcert.web.web.util.access.AccessResultExceptionHelper;
 import se.inera.intyg.webcert.web.web.util.resourcelinks.dto.ActionLinkType;
+import se.riv.infrastructure.directory.v1.PersonInformationType;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anySet;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.ArgumentMatchers.nullable;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.only;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.Silent.class)
 public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
@@ -189,6 +190,9 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
     private CertificateAccessService certificateAccessService;
 
     @Mock
+    private HsaEmployeeService hsaEmployeeService;
+
+    @Mock
     private AccessResultExceptionHelper accessResultExceptionHelper;
 
     @InjectMocks
@@ -201,6 +205,16 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
 
         // always return the Arende that is saved
         when(arendeRepository.save(any(Arende.class))).thenAnswer(invocation -> invocation.getArguments()[0]);
+
+        // Return hsaId as name
+        when(hsaEmployeeService.getEmployee(anyString(), any())).thenAnswer(invocation -> {
+            PersonInformationType personInformation = new PersonInformationType();
+            personInformation.setMiddleAndSurName((String) invocation.getArguments()[0]);
+
+            List<PersonInformationType> personInformationTypeList = new ArrayList<>();
+            personInformationTypeList.add(personInformation);
+            return personInformationTypeList;
+        });
 
         Map<Personnummer, SekretessStatus> map = mock(Map.class);
         when(map.get(any(Personnummer.class))).thenReturn(SekretessStatus.FALSE);
@@ -954,7 +968,8 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         final String[] lakare2 = { "hsaid2", "namn2" };
         final String[] lakare3 = { "hsaid3", "namn3" };
         final String[] lakare4 = { "hsaid4", "namn4" };
-        final List<Object[]> repoResult = Arrays.asList(lakare1, lakare2, lakare3);
+        final String[] lakare4_1 = { "hsaid4", "namn4_1" };
+        final List<Object[]> repoResult = Arrays.asList(lakare1, lakare2, lakare3, lakare4_1);
         final List<Object[]> expected = Arrays.asList(lakare1, lakare2, lakare3, lakare4);
 
         WebCertUser user = Mockito.mock(WebCertUser.class);
@@ -965,7 +980,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
 
         List<Lakare> res = service.listSignedByForUnits(null);
 
-        assertEquals(expected.stream().map(arr -> new Lakare((String) arr[0], (String) arr[1])).collect(Collectors.toList()), res);
+        assertEquals(expected.stream().map(arr -> new Lakare((String) arr[0], (String) arr[0])).collect(Collectors.toList()), res);
 
         verify(webcertUserService).getUser();
         verify(arendeRepository).findSigneratAvByEnhet(selectedUnits);
@@ -984,7 +999,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
 
         List<Lakare> res = service.listSignedByForUnits(selectedUnit.get(0));
 
-        assertEquals(repoResult.stream().map(arr -> new Lakare((String) arr[0], (String) arr[1])).collect(Collectors.toList()), res);
+        assertEquals(repoResult.stream().map(arr -> new Lakare((String) arr[0], (String) arr[0])).collect(Collectors.toList()), res);
 
         verify(arendeRepository).findSigneratAvByEnhet(selectedUnit);
     }
@@ -1453,6 +1468,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         arende.setIntygId(INTYG_ID);
         arende.setReceivedDate(receivedDate);
         arende.setPatientId(PNR.getPersonnummer());
+        arende.setSigneratAv("signeratAv");
 
         return arende;
     }
