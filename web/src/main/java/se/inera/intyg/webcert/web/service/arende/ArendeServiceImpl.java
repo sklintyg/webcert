@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -396,14 +397,27 @@ public class ArendeServiceImpl implements ArendeService {
             enhetsIdParams.addAll(webcertUserService.getUser().getIdsOfSelectedVardenhet());
         }
 
-        List<Lakare> arendeList = arendeRepository.findSigneratAvByEnhet(enhetsIdParams).stream()
-                .map(arr -> new Lakare((String) arr[0], (String) arr[1]))
+        List<String> arendeListHsaId = arendeRepository.findSigneratAvByEnhet(enhetsIdParams).stream()
+                .map(arr -> (String) arr[0])
                 .collect(Collectors.toList());
 
         // We need to maintain backwards compatibility. When FragaSvar no longer exist remove this part and return above
         // arendeList
-        List<Lakare> fragaSvarList = fragaSvarService.getFragaSvarHsaIdByEnhet(enhetsId);
-        return Lakare.merge(arendeList, fragaSvarList);
+        List<String> fragaSvarListHsaId = fragaSvarService.getFragaSvarHsaIdByEnhet(enhetsId).stream()
+                .map(Lakare::getHsaId)
+                .collect(Collectors.toList());
+
+        Set<String> hsaIds = new HashSet<>(arendeListHsaId);
+        hsaIds.addAll(fragaSvarListHsaId);
+
+        return hsaIds.stream()
+                .map(hsaId -> new Lakare(hsaId, getLakareName(hsaId)))
+                .sorted(Comparator.comparing(Lakare::getName))
+                .collect(Collectors.toList());
+    }
+
+    private String getLakareName(String hsaId) {
+        return ArendeConverter.getNameByHsaId(hsaId, hsaEmployeeService);
     }
 
     @Override
@@ -472,7 +486,21 @@ public class ArendeServiceImpl implements ArendeService {
         if (originalStartFrom >= results.size()) {
             response.setResults(new ArrayList<>());
         } else {
-            response.setResults(results.subList(originalStartFrom, Math.min(originalPageSize + originalStartFrom, results.size())));
+            List<ArendeListItem> resultList = results
+                    .subList(originalStartFrom, Math.min(originalPageSize + originalStartFrom, results.size()));
+
+            // Get lakare name
+            Set<String> hsaIds = resultList.stream().map(ArendeListItem::getSigneratAv).collect(Collectors.toSet());
+            Map<String, String> hsaIdNameMap = hsaIds.stream().collect(Collectors.toMap(a -> a, this::getLakareName));
+
+            // Update lakare name
+            resultList.forEach(row -> {
+                if (hsaIdNameMap.containsKey(row.getSigneratAv())) {
+                    row.setSigneratAvNamn(hsaIdNameMap.get(row.getSigneratAv()));
+                }
+            });
+
+            response.setResults(resultList);
         }
         return response;
     }

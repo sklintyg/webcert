@@ -22,6 +22,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import se.inera.intyg.webcert.persistence.model.Status;
 import se.inera.intyg.webcert.web.web.util.resourcelinks.dto.ActionLink;
 
@@ -31,6 +32,8 @@ public class ArendeListItem {
     private String intygId;
     private String intygTyp;
     private String signeratAvNamn;
+    @JsonIgnore
+    private String signeratAv;
     private Status status;
     private String patientId;
     private LocalDateTime receivedDate;
@@ -75,6 +78,14 @@ public class ArendeListItem {
 
     public void setSigneratAvNamn(String signeratAvNamn) {
         this.signeratAvNamn = signeratAvNamn;
+    }
+
+    public String getSigneratAv() {
+        return signeratAv;
+    }
+
+    public void setSigneratAv(String signeratAv) {
+        this.signeratAv = signeratAv;
     }
 
     public Status getStatus() {

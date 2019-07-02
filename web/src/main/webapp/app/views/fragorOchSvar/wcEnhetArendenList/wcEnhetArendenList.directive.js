@@ -90,25 +90,25 @@ angular.module('webcert').directive('wcEnhetArendenList', [
                         }
 
                         enhetArendenListModel.viewState.runningQuery = false;
+
+                        if ($scope.totalCount === undefined || $scope.totalCount === 0) {
+                            enhetArendenFilterModel.filterForm.lakareSelector = undefined;
+                            enhetArendenListService.getArenden(data.startFrom).then(function(arendenListResult) {
+                                if (firstRun) {
+                                    $scope.totalCount = arendenListResult.totalCount;
+                                }
+                            }, function(errorData) {
+                                $log.debug('Query Error: ' + errorData);
+                                enhetArendenListModel.viewState.activeErrorMessageKey = 'info.query.error';
+                            }).finally(function() {  // jshint ignore:line
+                                if (spinnerWaiting) {
+                                    $timeout.cancel(spinnerWaiting);
+                                }
+
+                                enhetArendenListModel.viewState.runningQuery = false;
+                            });
+                        }
                     });
-
-                    if ($scope.totalCount === undefined || $scope.totalCount === 0) {
-                        enhetArendenFilterModel.filterForm.lakareSelector = undefined;
-                        enhetArendenListService.getArenden(data.startFrom).then(function(arendenListResult) {
-                            if (firstRun) {
-                                $scope.totalCount = arendenListResult.totalCount;
-                            }
-                        }, function(errorData) {
-                            $log.debug('Query Error: ' + errorData);
-                            enhetArendenListModel.viewState.activeErrorMessageKey = 'info.query.error';
-                        }).finally(function() {  // jshint ignore:line
-                            if (spinnerWaiting) {
-                                $timeout.cancel(spinnerWaiting);
-                            }
-
-                            enhetArendenListModel.viewState.runningQuery = false;
-                        });
-                    }
                 }
 
                 function setVidarebefordradStateInView(intygId) {

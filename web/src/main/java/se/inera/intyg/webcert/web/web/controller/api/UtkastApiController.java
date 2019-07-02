@@ -22,8 +22,8 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
-
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -45,12 +45,14 @@ import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.Patient;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
+import se.inera.intyg.infra.integration.hsa.services.HsaEmployeeService;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.SekretessStatus;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastFilter;
+import se.inera.intyg.webcert.web.converter.ArendeConverter;
 import se.inera.intyg.webcert.web.converter.IntygDraftsConverter;
 import se.inera.intyg.webcert.web.converter.util.IntygConverterUtil;
 import se.inera.intyg.webcert.web.service.access.AccessResult;
@@ -102,6 +104,9 @@ public class UtkastApiController extends AbstractApiController {
 
     @Autowired
     private AccessResultExceptionHelper accessResultExceptionHelper;
+
+    @Autowired
+    private HsaEmployeeService hsaEmployeeService;
 
     /**
      * Create a new draft.
@@ -294,6 +299,17 @@ public class UtkastApiController extends AbstractApiController {
                 toIndex = listIntygEntries.size();
             }
             listIntygEntries = listIntygEntries.subList(filter.getStartFrom(), toIndex);
+
+            // Get lakare name
+            Set<String> hsaIds = listIntygEntries.stream().map(ListIntygEntry::getUpdatedSignedById).collect(Collectors.toSet());
+            Map<String, String> hsaIdNameMap = hsaIds.stream().collect(Collectors.toMap(a -> a, this::getLakareName));
+
+            // Update lakare name
+            listIntygEntries.forEach(row -> {
+                if (hsaIdNameMap.containsKey(row.getUpdatedSignedById())) {
+                    row.setUpdatedSignedBy(hsaIdNameMap.get(row.getUpdatedSignedById()));
+                }
+            });
         } else {
             // Index out of range
             listIntygEntries.clear();
@@ -302,6 +318,10 @@ public class UtkastApiController extends AbstractApiController {
         QueryIntygResponse response = new QueryIntygResponse(listIntygEntries);
         response.setTotalCount(totalCountOfFilteredIntyg);
         return response;
+    }
+
+    private String getLakareName(String hsaId) {
+        return ArendeConverter.getNameByHsaId(hsaId, hsaEmployeeService);
     }
 
     private Comparator<ListIntygEntry> getIntygComparator(String orderBy, Boolean ascending) {

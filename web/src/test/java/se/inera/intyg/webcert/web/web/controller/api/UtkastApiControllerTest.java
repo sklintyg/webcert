@@ -18,28 +18,15 @@
  */
 package se.inera.intyg.webcert.web.web.controller.api;
 
-import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
-import static javax.ws.rs.core.Response.Status.OK;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import javax.ws.rs.core.Response;
 
 import org.junit.Before;
@@ -51,7 +38,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import com.google.common.base.Strings;
-
 import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.common.luse.support.LuseEntryPoint;
 import se.inera.intyg.common.services.texts.IntygTextsService;
@@ -63,6 +49,7 @@ import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.infra.integration.hsa.model.SelectableVardenhet;
 import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
 import se.inera.intyg.infra.integration.hsa.model.Vardgivare;
+import se.inera.intyg.infra.integration.hsa.services.HsaEmployeeService;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.Feature;
 import se.inera.intyg.infra.security.common.model.Privilege;
@@ -83,6 +70,21 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.CreateUtkastRequest;
 import se.inera.intyg.webcert.web.web.controller.api.dto.QueryIntygParameter;
 import se.inera.intyg.webcert.web.web.controller.api.dto.QueryIntygResponse;
 import se.inera.intyg.webcert.web.web.util.access.AccessResultExceptionHelper;
+import se.riv.infrastructure.directory.v1.PersonInformationType;
+
+import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
+import static javax.ws.rs.core.Response.Status.OK;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.Silent.class)
 public class UtkastApiControllerTest {
@@ -119,6 +121,9 @@ public class UtkastApiControllerTest {
     @Mock
     private AccessResultExceptionHelper accessResultExceptionHelper;
 
+    @Mock
+    private HsaEmployeeService hsaEmployeeService;
+
     @InjectMocks
     private UtkastApiController utkastController;
 
@@ -138,6 +143,15 @@ public class UtkastApiControllerTest {
         when(utkastService.checkIfPersonHasExistingIntyg(eq(PATIENT_PERSONNUMMER), any())).thenReturn(hasPrevious);
         when(intygTextsService.getLatestVersion(any(String.class))).thenReturn(INTYG_TYPE_VERSION);
 
+        // Return hsaId as name
+        when(hsaEmployeeService.getEmployee(anyString(), any())).thenAnswer(invocation -> {
+            PersonInformationType personInformation = new PersonInformationType();
+            personInformation.setMiddleAndSurName((String) invocation.getArguments()[0]);
+
+            List<PersonInformationType> personInformationTypeList = new ArrayList<>();
+            personInformationTypeList.add(personInformation);
+            return personInformationTypeList;
+        });
     }
 
     @Test
@@ -377,7 +391,7 @@ public class UtkastApiControllerTest {
         utkast.setIntygsTyp("luse");
         utkast.setVardgivarId("456");
         utkast.setStatus(UtkastStatus.DRAFT_COMPLETE);
-        utkast.setSenastSparadAv(new VardpersonReferens());
+        utkast.setSenastSparadAv(new VardpersonReferens("hsa1", "name"));
         utkast.setSenastSparadDatum(LocalDateTime.now());
         utkast.setPatientPersonnummer(personnr);
 
