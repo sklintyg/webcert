@@ -46,28 +46,21 @@ public class MessageRedeliveryFlag {
 
     // state for flag
     static class StatusFlag {
-        private boolean success;
         private long successTimestamp;
-
-        public boolean isSuccess() {
-            return success;
-        }
 
         public long getSuccessTimestamp() {
             return successTimestamp;
         }
 
         public boolean isOutdated(long timestamp) {
-            return success && timestamp < successTimestamp;
+            return timestamp < successTimestamp;
         }
 
-        void raise() {
-            this.success = false;
+        void raised() {
             this.successTimestamp = 0L;
         }
 
-        void lower(final long timestamp) {
-            this.success = true;
+        void lowered(final long timestamp) {
             this.successTimestamp = timestamp;
         }
     }
@@ -96,7 +89,7 @@ public class MessageRedeliveryFlag {
         if (Objects.isNull(statusFlag)) {
             statusFlag = new StatusFlag();
         }
-        statusFlag.raise();
+        statusFlag.raised();
         ops.set(key, marshal(statusFlag), redeliveryflagTTL, TimeUnit.MINUTES);
     }
 
@@ -109,8 +102,8 @@ public class MessageRedeliveryFlag {
     public void lowerError(final String key, long messageTimestamp) {
         final ValueOperations<String, String> ops = stringRedisTemplate.opsForValue();
         final StatusFlag statusFlag = unmarshal(ops.get(key));
-        if (Objects.nonNull(statusFlag) && !statusFlag.isSuccess()) {
-            statusFlag.lower(messageTimestamp);
+        if (Objects.nonNull(statusFlag)) {
+            statusFlag.lowered(messageTimestamp);
             ops.set(key, marshal(statusFlag), redeliveryflagTTL, TimeUnit.MINUTES);
         }
     }
@@ -123,7 +116,7 @@ public class MessageRedeliveryFlag {
         return Objects.isNull(s) ? null : uncheck(() -> objectMapper.readValue(s, StatusFlag.class));
     }
 
-    <T> T uncheck(final Callable<T> c) {
+    final static <T> T uncheck(final Callable<T> c) {
         try {
             return c.call();
         } catch (Exception e) {
