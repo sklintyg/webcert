@@ -43,6 +43,16 @@ angular.module('webcert').directive('wcEnhetArendenFilter', [
                     enhetArendenFilterService.initLakareList(enhetArendenModel.enhetId);
 
                     $scope.enhetArendenFilterModel = enhetArendenFilterModel;
+                    $scope.showDateFromErrors = false;
+                    $scope.showDateToErrors = false;
+
+                    $scope.setShowDateFromVisible = function() {
+                        $scope.showDateFromErrors = !!$scope.filterForm['filter-changedate-from'].$viewValue;
+                    };
+
+                    $scope.setShowDateToVisible = function() {
+                        $scope.showDateToErrors = !!$scope.filterForm['filter-changedate-to'].$viewValue;
+                    };
 
                     $scope.hasUnhandledArenden = function(){
                         return vardenhetFilterModel.units ? vardenhetFilterModel.units[0].fragaSvar : false;
@@ -56,9 +66,15 @@ angular.module('webcert').directive('wcEnhetArendenFilter', [
                         $rootScope.$broadcast('enhetArendenList.requestListUpdate', {startFrom: 0});
                     }
 
-                    $scope.resetFilterForm = function() {
+                    function resetFrom() {
                         enhetArendenFilterModel.reset();
                         resetInvalidData();
+                        $scope.showDateFromErrors = false;
+                        $scope.showDateToErrors = false;
+                    }
+
+                    $scope.resetFilterForm = function() {
+                        resetFrom();
                         updateArendenList();
                     };
 
@@ -71,8 +87,7 @@ angular.module('webcert').directive('wcEnhetArendenFilter', [
 
                         // If we change enhet then we probably don't want the same filter criterias
                         if (unit.id !== enhetArendenModel.enhetId) {
-                            enhetArendenFilterModel.reset();
-                            resetInvalidData();
+                            resetFrom();
                         }
                         enhetArendenModel.enhetId = unit.id;
 
