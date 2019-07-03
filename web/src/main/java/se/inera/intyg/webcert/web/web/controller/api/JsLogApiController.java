@@ -150,6 +150,13 @@ public class JsLogApiController extends AbstractApiController {
                         request.getInfo().get(CAREGIVER_ID),
                         request.getInfo().get(CARE_UNIT_ID));
                 break;
+            case SRS_MEASURES_EXPAND_ONE_CLICKED:
+                monitoringService.logSrsMeasuresExpandOneClicked(
+                        request.getInfo().get(USER_CLIENT_CONTEXT),
+                        request.getInfo().get(INTYG_ID),
+                        request.getInfo().get(CAREGIVER_ID),
+                        request.getInfo().get(CARE_UNIT_ID));
+                break;
             case SRS_MEASURES_LINK_CLICKED:
                 monitoringService.logSrsMeasuresLinkClicked(
                         request.getInfo().get(USER_CLIENT_CONTEXT),

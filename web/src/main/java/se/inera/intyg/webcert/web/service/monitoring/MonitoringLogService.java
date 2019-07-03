@@ -127,6 +127,8 @@ public interface MonitoringLogService extends AuthenticationLogger {
 
     void logSrsMeasuresShowMoreClicked(String userClientContext, String intygsId, String caregiverId, String careUnitId);
 
+    void logSrsMeasuresExpandOneClicked(String userClientContext, String intygsId, String caregiverId, String careUnitId);
+
     void logSrsMeasuresLinkClicked(String userClientContext, String intygsId, String caregiverId, String careUnitId);
 
     void logSrsStatisticsActivated(String userClientContext, String intygsId, String caregiverId, String careUnitId);
