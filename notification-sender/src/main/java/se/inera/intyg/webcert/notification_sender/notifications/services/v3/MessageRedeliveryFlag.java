@@ -116,7 +116,7 @@ public class MessageRedeliveryFlag {
         return Objects.isNull(s) ? null : uncheck(() -> objectMapper.readValue(s, StatusFlag.class));
     }
 
-    final static <T> T uncheck(final Callable<T> c) {
+    static final <T> T uncheck(final Callable<T> c) {
         try {
             return c.call();
         } catch (Exception e) {
