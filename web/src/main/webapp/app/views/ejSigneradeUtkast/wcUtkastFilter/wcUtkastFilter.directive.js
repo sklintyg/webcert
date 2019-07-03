@@ -30,6 +30,17 @@ angular.module('webcert').directive('wcUtkastFilter', ['$timeout', 'webcert.Utka
                     filter: '='
                 },
                 controller: function($scope) {
+                    $scope.showDateFromErrors = false;
+                    $scope.showDateToErrors = false;
+
+                    $scope.setShowDateFromVisible = function() {
+                        $scope.showDateFromErrors = !!$scope.filterForm['filter-changedate-from'].$viewValue;
+                    };
+
+                    $scope.setShowDateToVisible = function() {
+                        $scope.showDateToErrors = !!$scope.filterForm['filter-changedate-to'].$viewValue;
+                    };
+
                     $scope.maxdate = moment().format('YYYY-MM-DD');
 
                     $scope.widgetState = {
@@ -63,6 +74,9 @@ angular.module('webcert').directive('wcUtkastFilter', ['$timeout', 'webcert.Utka
                             $scope.filterForm['filter-changedate-from'].$setViewValue('');
                             $scope.filterForm['filter-changedate-to'].$setViewValue('');
                         }
+
+                        $scope.showDateFromErrors = false;
+                        $scope.showDateToErrors = false;
                     }
 
                     function loadSavedByList() {
