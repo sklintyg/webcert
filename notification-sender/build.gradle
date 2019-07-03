@@ -40,4 +40,5 @@ dependencies {
     testCompile "org.apache.camel:camel-test-spring:${camelVersion}"
     testCompile "org.springframework:spring-test:${springVersion}"
     testCompile "org.apache.activemq:activemq-spring:${activeMqVersion}"
+    testCompile "org.springframework.data:spring-data-redis:${springDataRedisVersion}"
 }

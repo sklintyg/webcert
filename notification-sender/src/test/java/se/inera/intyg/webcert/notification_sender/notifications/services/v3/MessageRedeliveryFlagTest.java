@@ -16,20 +16,32 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.web.config;
+package se.inera.intyg.webcert.notification_sender.notifications.services.v3;
 
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.ImportResource;
-import org.springframework.data.redis.connection.RedisConnectionFactory;
-import org.springframework.data.redis.core.StringRedisTemplate;
+import org.junit.Test;
 
-@Configuration
-@ImportResource({"classpath:basic-cache-config.xml"})
-public class CacheConfig {
 
-    @Bean
-    StringRedisTemplate stringRedisTemplate(RedisConnectionFactory redisConnectionFactory) {
-        return new StringRedisTemplate(redisConnectionFactory);
+import static org.junit.Assert.assertEquals;
+
+public class MessageRedeliveryFlagTest {
+
+    @Test
+    public void lowerAndoutdatedTest() {
+        long t0 = System.currentTimeMillis() - 1L;
+        MessageRedeliveryFlag.StatusFlag sf = new MessageRedeliveryFlag.StatusFlag();
+
+        sf.lowered(System.currentTimeMillis());
+
+        assertEquals(true, sf.getSuccessTimestamp() > t0);
+        assertEquals(true, sf.isOutdated(t0));
+    }
+
+    @Test
+    public void raisedTest() {
+        MessageRedeliveryFlag.StatusFlag sf = new MessageRedeliveryFlag.StatusFlag();
+
+        sf.raised();
+
+        assertEquals(0L, sf.getSuccessTimestamp());
     }
 }
