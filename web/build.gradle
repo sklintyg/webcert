@@ -103,11 +103,10 @@ task zipResources(type: ArchiveDirectoryTask) {
 build.dependsOn zipResources
 
 gretty {
-
     servletContainer = 'jetty9'
-
     contextPath = '/'
     contextConfigFile = file("src/main/webapp/WEB-INF/jetty-web.xml")
+
     integrationTestTask = null
     scanInterval = 0
     httpEnabled = true
