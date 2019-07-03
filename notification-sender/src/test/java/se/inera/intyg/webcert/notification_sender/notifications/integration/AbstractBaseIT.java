@@ -49,11 +49,13 @@ import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
 import se.inera.intyg.webcert.notification_sender.mocks.v3.CertificateStatusUpdateForCareResponderStub;
 import se.inera.intyg.webcert.notification_sender.notifications.helper.NotificationTestHelper;
 import se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders;
+import se.inera.intyg.webcert.notification_sender.notifications.services.v3.MessageRedeliveryFlag;
 
 
 import static java.util.stream.Collectors.toList;
 import static org.mockito.AdditionalMatchers.or;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.when;
@@ -87,6 +89,9 @@ public abstract class AbstractBaseIT {
     @Autowired
     protected CertificateStatusUpdateForCareResponderStub certificateStatusUpdateForCareResponderV3;
 
+    @Autowired
+    protected MessageRedeliveryFlag messageRedeliveryFlag;
+
     protected ObjectMapper objectMapper = new CustomObjectMapper();
 
     @Before
@@ -94,7 +99,7 @@ public abstract class AbstractBaseIT {
         when(fk7263ModuleApi.getIntygFromUtlatande(any())).thenReturn(NotificationTestHelper.createIntyg("fk7263"));
         when(fk7263ModuleApi.getUtlatandeFromJson(anyString())).thenReturn(new Fk7263Utlatande());
         when(mockIntygModuleRegistry.getModuleApi(anyString(), or(isNull(), anyString()))).thenReturn(fk7263ModuleApi);
-
+        when(messageRedeliveryFlag.isOutdated(anyString(), anyLong())).thenReturn(false);
         certificateStatusUpdateForCareResponderV3.reset();
     }
 

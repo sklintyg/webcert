@@ -38,6 +38,9 @@
     <property name="puService" ref="mockedPuService" />
   </bean>
 
+  <bean id="stringRedisTemplate" class="org.mockito.Mockito" factory-method="mock">
+    <constructor-arg value="org.springframework.data.redis.core.StringRedisTemplate" />
+  </bean>
 
   <import resource="beans-context.xml"/>
   <import resource="camel-context.xml"/>
@@ -48,6 +51,10 @@
 
   <bean id="moduleApi" class="org.mockito.Mockito" factory-method="mock">
     <constructor-arg value="se.inera.intyg.common.support.modules.support.api.ModuleApi"/>
+  </bean>
+
+  <bean id="messageRedeliveryFlag" class="org.mockito.Mockito" factory-method="mock" primary="true">
+    <constructor-arg value="se.inera.intyg.webcert.notification_sender.notifications.services.v3.MessageRedeliveryFlag" />
   </bean>
 
   <bean id="mockIntygModuleRegistry" class="org.mockito.Mockito" factory-method="mock">
