@@ -308,6 +308,10 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
         logEvent(MonitoringEvent.SRS_MEASURES_SHOW_MORE_CLICKED, userClientContext, intygsId, caregiverId, careUnitId);
     }
     @Override
+    public void logSrsMeasuresExpandOneClicked(String userClientContext, String intygsId, String caregiverId, String careUnitId) {
+        logEvent(MonitoringEvent.SRS_MEASURES_EXPAND_ONE_CLICKED, userClientContext, intygsId, caregiverId, careUnitId);
+    }
+    @Override
     public void logSrsMeasuresLinkClicked(String userClientContext, String intygsId, String caregiverId, String careUnitId) {
         logEvent(MonitoringEvent.SRS_MEASURES_LINK_CLICKED, userClientContext, intygsId, caregiverId, careUnitId);
     }
@@ -395,6 +399,8 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
                 "SRS show questions clicked in client context '{}' for intyg '{}' with caregiver '{}' and care unit '{}'"),
         SRS_MEASURES_SHOW_MORE_CLICKED(
                 "SRS show more measures clicked in client context '{}' for intyg '{}' with caregiver '{}' and care unit '{}'"),
+        SRS_MEASURES_EXPAND_ONE_CLICKED(
+                "SRS expand one measure text clicked in client context '{}' for intyg '{}' with caregiver '{}' and care unit '{}'"),
         SRS_MEASURES_LINK_CLICKED(
                 "SRS measures link clicked in client context '{}' for intyg '{}' with caregiver '{}' and care unit '{}'"),
         SRS_STATISTICS_ACTIVATED(
