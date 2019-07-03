@@ -21,10 +21,8 @@ package se.inera.intyg.webcert.notification_sender.notifications.integration;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-import org.junit.Before;
 import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
-import se.inera.intyg.common.fk7263.model.internal.Fk7263Utlatande;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
 import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
@@ -36,25 +34,12 @@ import static org.awaitility.Awaitility.await;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
-import static org.mockito.AdditionalMatchers.or;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.when;
 import static se.inera.intyg.webcert.notification_sender.mocks.v3.CertificateStatusUpdateForCareResponderStub.FALLERAT_MEDDELANDE;
 
 @ContextConfiguration("/notifications/integration-test-notification-sender-config.xml")
 public class RouteIT extends AbstractBaseIT {
-
-    @Before
-    public void init() throws Exception {
-        when(fk7263ModuleApi.getIntygFromUtlatande(any())).thenReturn(NotificationTestHelper.createIntyg("fk7263"));
-        when(fk7263ModuleApi.getUtlatandeFromJson(anyString())).thenReturn(new Fk7263Utlatande());
-        when(mockIntygModuleRegistry.getModuleApi(anyString(), or(isNull(), anyString()))).thenReturn(fk7263ModuleApi);
-        when(messageRedeliveryFlag.isOutdated(anyString(), anyLong())).thenReturn(false);
-        certificateStatusUpdateForCareResponderV3.reset();
-    }
 
     @Test
     public void ensureAggregatorFiltersOutOldestAndratMessages() throws Exception {
