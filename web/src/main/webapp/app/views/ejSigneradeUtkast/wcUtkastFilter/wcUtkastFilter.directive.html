@@ -23,11 +23,11 @@
   <div class="filter-field date-group col-md-5">
     <label class="offset-label">Sparat datum</label><br>
     <label class="inline-label">Från</label>
-    <span dom-id="filter-changedate-from" target-model="filter.selection.savedFrom" wc-date-picker-field
+    <span dom-id="filter-changedate-from" target-model="filter.selection.savedFrom" wc-date-picker-field  on-blur="setShowDateFromVisible()"
           add-date-parser="strict" max-date={{maxdate}}></span>
     <label class="inline-label">till</label>
     <span dom-id="filter-changedate-to" target-model="filter.selection.savedTo" wc-date-picker-field add-date-parser="strict" max-date={{maxdate}}
-          wc-date-is-after-validator="filter-changedate-from"></span>
+          wc-date-is-after-validator="filter-changedate-from"  on-blur="setShowDateToVisible()"></span>
 
   </div>
 
@@ -43,20 +43,24 @@
           ng-click="resetFilter()" id="reset-search-form">Återställ sökfilter</button>
 </div>
 
-<div ng-if="filterForm.$invalid && !filterForm.$pristine" ng-cloak class="filter-errors">
-  <p ng-show="filterForm['filter-changedate-from'].$error.date">
-    <span dynamic-label key="common.validation.date_invalid"></span>
-  </p>
-  <p ng-show="filterForm['filter-changedate-to'].$error.date">
-    <span dynamic-label key="common.validation.date_invalid"></span>
-  </p>
-  <p ng-show="filterForm['filter-changedate-from'].$error.maxDate">
-    <span dynamic-label key="common.validation.future.datum"></span>
-  </p>
-  <p ng-show="filterForm['filter-changedate-to'].$error.maxDate">
-    <span dynamic-label key="common.validation.future.datum"></span>
-  </p>
-  <p ng-show="filterForm['filter-changedate-to'].$error.isBefore">
-    <span dynamic-label key="common.validation.date-period.invalid_order"></span>
-  </p>
+<div ng-if="(showDateFromErrors || showDateToErrors) && filterForm.$invalid && !filterForm.$pristine" ng-cloak class="filter-errors">
+  <div ng-if="showDateFromErrors">
+    <p ng-show="filterForm['filter-changedate-from'].$error.date">
+      <span dynamic-label key="common.validation.date_invalid"></span>
+    </p>
+    <p ng-show="filterForm['filter-changedate-from'].$error.maxDate">
+      <span dynamic-label key="common.validation.future.datum"></span>
+    </p>
+  </div>
+  <div ng-if="showDateToErrors">
+    <p ng-show="filterForm['filter-changedate-to'].$error.date">
+      <span dynamic-label key="common.validation.date_invalid"></span>
+    </p>
+    <p ng-show="filterForm['filter-changedate-to'].$error.maxDate">
+      <span dynamic-label key="common.validation.future.datum"></span>
+    </p>
+    <p ng-show="filterForm['filter-changedate-to'].$error.isBefore">
+      <span dynamic-label key="common.validation.date-period.invalid_order"></span>
+    </p>
+  </div>
 </div>
