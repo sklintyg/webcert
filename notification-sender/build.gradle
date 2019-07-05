@@ -7,6 +7,7 @@ task camelTest(type: Test) {
     include '**/*IT*'
 }
 
+camelTest.mustRunAfter test
 
 task copyResources(type: Copy) {
     from "${projectDir}/../web/src/main/resources/security"
