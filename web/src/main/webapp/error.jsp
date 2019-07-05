@@ -164,6 +164,12 @@
                 <spring:message code="error.auth-exception-sekretessmarkering.text" />
               </wc-alert-message>
             </c:when>
+            <c:when test="${param.reason eq 'auth-exception-user-already-active'}">
+              <h1><spring:message code="error.auth-exception-user-already-active.title" /></h1>
+              <wc-alert-message alert-id="noAuth" alert-severity="info">
+                <spring:message code="error.auth-exception-user-already-active.text" />
+              </wc-alert-message>
+            </c:when>
             <c:when test="${param.reason eq 'enhet.auth.exception'}">
               <h1><spring:message code="error.enhet.auth.exception.title" /></h1>
               <wc-alert-message alert-id="notFound" alert-severity="danger">

@@ -41,6 +41,12 @@ public class WebcertRedirectIntegrationExceptionHandler implements ExceptionMapp
 
     private static final Logger LOG = LoggerFactory.getLogger(WebcertRedirectIntegrationExceptionHandler.class);
 
+    public static final String ERROR_REASON_MISSING_PARAMETER = "missing-parameter";
+    public static final String ERROR_REASON_AUTH_EXCEPTION = "auth-exception";
+    public static final String ERROR_REASON_AUTH_EXCEPTION_SEKRETESSMARKERING = "auth-exception-sekretessmarkering";
+    public static final String ERROR_REASON_AUTH_EXCEPTION_USER_ALREADY_ACTIVE = "auth-exception-user-already-active";
+    public static final String ERROR_REASON_PU_PROBLEM = "pu-problem";
+
     @Context
     UriInfo uriInfo;
 
@@ -63,7 +69,7 @@ public class WebcertRedirectIntegrationExceptionHandler implements ExceptionMapp
      */
     private Response handleAuthorityException(AuthoritiesException e) {
         LOG.warn("AuthValidation occured: ", e);
-        return buildErrorRedirectResponse("auth-exception", e.getMessage());
+        return buildErrorRedirectResponse(ERROR_REASON_AUTH_EXCEPTION, e.getMessage());
     }
 
     private Response handleRuntimeException(RuntimeException re) {
@@ -71,13 +77,15 @@ public class WebcertRedirectIntegrationExceptionHandler implements ExceptionMapp
             LOG.warn("WebCertServiceException caught", re.getMessage());
             WebCertServiceException we = (WebCertServiceException) re;
             if (we.getErrorCode() == WebCertServiceErrorCodeEnum.MISSING_PARAMETER) {
-                return buildErrorRedirectResponse("missing-parameter", we.getMessage());
+                return buildErrorRedirectResponse(ERROR_REASON_MISSING_PARAMETER, we.getMessage());
             } else if (we.getErrorCode() == WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM) {
-                return buildErrorRedirectResponse("auth-exception", we.getMessage());
+                return buildErrorRedirectResponse(ERROR_REASON_AUTH_EXCEPTION, we.getMessage());
             } else if (we.getErrorCode() == WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM_SEKRETESSMARKERING) {
-                return buildErrorRedirectResponse("auth-exception-sekretessmarkering", we.getMessage());
+                return buildErrorRedirectResponse(ERROR_REASON_AUTH_EXCEPTION_SEKRETESSMARKERING, we.getMessage());
+            } else if (we.getErrorCode() == WebCertServiceErrorCodeEnum.AUTHORIZATION_USER_SESSION_ALREADY_ACTIVE) {
+                return buildErrorRedirectResponse(ERROR_REASON_AUTH_EXCEPTION_USER_ALREADY_ACTIVE, we.getMessage());
             } else if (we.getErrorCode() == WebCertServiceErrorCodeEnum.PU_PROBLEM) {
-                return buildErrorRedirectResponse("pu-problem", we.getMessage());
+                return buildErrorRedirectResponse(ERROR_REASON_PU_PROBLEM, we.getMessage());
             }
         }
         LOG.error("Unhandled RuntimeException occured!", re);
@@ -85,13 +93,14 @@ public class WebcertRedirectIntegrationExceptionHandler implements ExceptionMapp
     }
 
     private Response buildErrorRedirectResponse(String errorReason, String message) {
-        URI location = "missing-parameter".equals(errorReason) ? uriInfo.getBaseUriBuilder().replacePath("/error.jsp")
+        URI location = ERROR_REASON_MISSING_PARAMETER.equals(errorReason)
+            ? uriInfo.getBaseUriBuilder().replacePath("/error.jsp")
                 .queryParam("reason", errorReason)
                 .queryParam("message", message)
                 .build()
-                : uriInfo.getBaseUriBuilder().replacePath("/error.jsp")
-                    .queryParam("reason", errorReason)
-                    .build();
+            : uriInfo.getBaseUriBuilder().replacePath("/error.jsp")
+                .queryParam("reason", errorReason)
+                .build();
 
         return Response.temporaryRedirect(location).build();
     }
