@@ -39,6 +39,7 @@ public enum WebCertServiceErrorCodeEnum {
     AUTHORIZATION_PROBLEM,           // User is not authorized for the operation
     AUTHORIZATION_PROBLEM_SEKRETESSMARKERING,
     AUTHORIZATION_PROBLEM_SEKRETESSMARKERING_ENHET,
+    AUTHORIZATION_USER_SESSION_ALREADY_ACTIVE,  // The user already uses Webcert and has an active session
     PU_PROBLEM,                      // The PU service did not return useful data
     INDETERMINATE_IDENTITY,          // Operation not allowed due to identity being indeterminate-
     EXTERNAL_SYSTEM_PROBLEM,         // Other system in unavailable, gave technical error response

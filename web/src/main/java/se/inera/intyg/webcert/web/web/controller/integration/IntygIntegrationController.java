@@ -471,7 +471,7 @@ public class IntygIntegrationController extends BaseIntegrationController {
 
         // Throw an exception if user already has the integration parameters set
         if (user.getParameters() != null && !user.getParameters().getState().hasUserBeenRedirectedToEnhetsval()) {
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM,
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_USER_SESSION_ALREADY_ACTIVE,
                     "This user session is already active and using Webcert. Please use a new user session for each deep integration link.");
         }
 
