@@ -67,7 +67,7 @@ public class NotificationInInterceptor extends AbstractPhaseInterceptor<Message>
                                 + "200 status code, reason: {}",
                         e.getMessage());
             }
-        } else {
+        } else if (status == -1) {
             LOG.warn("Unable to determine HTTP status code, assuming everything is OK");
         }
     }
