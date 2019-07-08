@@ -26,7 +26,7 @@ node {
     npmWorkDir = file("${rootProject.projectDir}/.gradle/npm")
 }
 
-task jsTests(type: NodeTask, dependsOn: npmInstall) {
+task jsTests(type: NodeTask, dependsOn: npm_install) {
     inputs.dir("$projectDir/src/main/resources")
     inputs.dir("$projectDir/src/main/webapp")
     inputs.files(fileTree(projectDir).include('*.js'))
@@ -40,7 +40,7 @@ task jsTests(type: NodeTask, dependsOn: npmInstall) {
 
 test.dependsOn(jsTests)
 
-task jsInclude(type: NodeTask, dependsOn: npmInstall) {
+task jsInclude(type: NodeTask, dependsOn: npm_install) {
     inputs.dir("$projectDir/src/main/resources")
     inputs.dir("$projectDir/src/main/webapp")
     inputs.files(fileTree(projectDir).include('*.js'))
@@ -63,7 +63,7 @@ task unzipBuildTools(type: Copy) {
     }
 }
 
-task jsCodeQuality(type: NodeTask, dependsOn: [npmInstall, unzipBuildTools]) {
+task jsCodeQuality(type: NodeTask, dependsOn: [npm_install, unzipBuildTools]) {
     outputs.upToDateWhen { false }
 
     script = file('node_modules/grunt-cli/bin/grunt')

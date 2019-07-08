@@ -20,7 +20,7 @@ node {
     npmWorkDir = file("${rootProject.projectDir}/.gradle/npm")
 }
 
-task protractorTests(type: NodeTask, dependsOn: npmInstall) {
+task protractorTests(type: NodeTask, dependsOn: npm_install) {
     outputs.upToDateWhen { false }
     def environment = System.properties['protractor.env'] ?: "dev"
 
