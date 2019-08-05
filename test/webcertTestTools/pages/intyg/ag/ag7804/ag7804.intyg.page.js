@@ -51,7 +51,6 @@ var Ag7804Intyg = AgBaseIntyg._extend({
             }
         };
         this.konsekvenser = {
-            onskarFormedlaFunktionsnedsattning: element(by.id('onskarFormedlaFunktionsnedsattning')),
             funktionsnedsattning: element(by.id('funktionsnedsattning')),
             aktivitetsbegransning: element(by.id('aktivitetsbegransning'))
         };
@@ -136,11 +135,10 @@ var Ag7804Intyg = AgBaseIntyg._extend({
 
     },
     verifieraKonsekvenser: function(data) {
-        if (data.onskarFormedlaFunktionsnedsattning) {
-            expect(this.konsekvenser.onskarFormedlaFunktionsnedsattning.getText()).toBe('Ja');
+        if (data.funktionsnedsattning) {
             expect(this.konsekvenser.funktionsnedsattning.getText()).toBe(data.funktionsnedsattning);
         } else {
-            expect(this.konsekvenser.onskarFormedlaDiagnos.getText()).toBe('Ej angivet');
+            expect(this.konsekvenser.funktionsnedsattning.getText()).toBe('Ej angivet');
         }
         if (data.aktivitetsbegransning) {
             expect(this.konsekvenser.aktivitetsbegransning.getText()).toBe(data.aktivitetsbegransning);

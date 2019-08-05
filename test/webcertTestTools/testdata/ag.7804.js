@@ -94,7 +94,6 @@ module.exports = {
                 "planerad": "IawIÖIdU8sCfä7Uq",
                 "pagaende": "cnEYDuNuqWBd59åY"
             },
-            "onskarFormedlaFunktionsnedsattning": true,
             "funktionsnedsattning": "3wexbyEqÄsoxaWWl",
             "aktivitetsbegransning": "Wpnv0SMoElXnTJXh",
             "arbetsformaga": {
