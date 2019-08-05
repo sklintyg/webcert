@@ -55,6 +55,7 @@ var Ag114Intyg = AgBaseIntyg._extend({
         get._super.call(this, intygId);
     },
     verify: function(data) {
+        this.verifieraBaseratPa(data);
         this.verifieraSysselsattning(data);
         this.verifieraOnskarFormedlaDiagnos(data);
         this.verifieraNedsattArbetsformaga(data);

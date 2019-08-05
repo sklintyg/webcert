@@ -30,25 +30,6 @@ var Ag7804Utkast = AgBaseUtkast._extend({
         this.intygTypeVersion = '1.0';
         this.smittskydd = element(by.id('form_avstangningSmittskydd')).element(by.css('input[type=checkbox]'));
 
-        this.baseratPa = {
-            minUndersokningAvPatienten: {
-                checkbox: element(by.id('form_undersokningAvPatienten')).element(by.css('input[type=checkbox]')),
-                datum: element(by.id('form_undersokningAvPatienten')).element(by.css('input[type=text]'))
-            },
-            telefonkontakt: {
-                checkbox: element(by.id('form_telefonkontaktMedPatienten')).element(by.css('input[type=checkbox]')),
-                datum: element(by.id('form_telefonkontaktMedPatienten')).element(by.css('input[type=text]'))
-            },
-            journaluppgifter: {
-                checkbox: element(by.id('form_journaluppgifter')).element(by.css('input[type=checkbox]')),
-                datum: element(by.id('form_journaluppgifter')).element(by.css('input[type=text]'))
-            },
-            annat: {
-                beskrivning: element(by.id('annatGrundForMUBeskrivning')),
-                checkbox: element(by.id('form_annatGrundForMU')).element(by.css('input[type=checkbox]')),
-                datum: element(by.id('form_annatGrundForMU')).element(by.css('input[type=text]'))
-            }
-        };
         this.sysselsattning = {
             form: element(by.id('form_sysselsattning')),
             typ: {
@@ -157,37 +138,6 @@ var Ag7804Utkast = AgBaseUtkast._extend({
         }
         return Promise.all(promiseArr);
 
-    },
-
-    angeBaseratPa: function(baseratPa) {
-
-        var baseratPaElmObj = this.baseratPa;
-        return new Promise(function(resolve) {
-            resolve('anger BaseratPa');
-        })
-            .then(function() {
-                if (baseratPa.minUndersokningAvPatienten) {
-                    return pageHelpers.moveAndSendKeys(baseratPaElmObj.minUndersokningAvPatienten.datum, baseratPa.minUndersokningAvPatienten);
-                }
-            })
-            .then(function() {
-                if (baseratPa.journaluppgifter) {
-                    return pageHelpers.moveAndSendKeys(baseratPaElmObj.journaluppgifter.datum, baseratPa.journaluppgifter);
-                }
-            })
-            .then(function() {
-                if (baseratPa.telefonkontakt) {
-                    return pageHelpers.moveAndSendKeys(baseratPaElmObj.telefonkontakt.datum, baseratPa.telefonkontakt);
-                }
-            })
-            .then(function() {
-                if (baseratPa.annat) {
-                    return pageHelpers.moveAndSendKeys(baseratPaElmObj.annat.datum, baseratPa.annat)
-                        .then(function() {
-                            return pageHelpers.moveAndSendKeys(baseratPaElmObj.annat.beskrivning, baseratPa.annatBeskrivning);
-                        });
-                }
-            });
     },
 
     angeKonsekvenser: function(data) {

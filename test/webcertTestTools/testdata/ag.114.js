@@ -30,6 +30,13 @@ module.exports = {
         return {
             id: intygsID,
             typ: 'Arbetsgivarintyg dag 1-14',
+            baseratPa: {
+                'minUndersokningAvPatienten': '2017-09-27',
+                'journaluppgifter': '2017-09-27',
+                'telefonkontakt': '2017-09-27',
+                'annat': '2017-09-27',
+                'annatBeskrivning': 'tFEöSdJD1yVrIq5D'
+            },
             sysselsattning: {
                 text: 'Beskrivning av nuvarande arbete.'
             },

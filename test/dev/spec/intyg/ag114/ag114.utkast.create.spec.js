@@ -52,6 +52,10 @@ describe('Create and Sign ag114 utkast', function() {
 
         describe('Fyll i intyget', function() {
 
+            it('angeBaseratPa', function() {
+                UtkastPage.angeBaseratPa(data.baseratPa);
+            });
+
             it('angeSysselsattning', function() {
                 UtkastPage.angeSysselsattning(data.sysselsattning);
             });
