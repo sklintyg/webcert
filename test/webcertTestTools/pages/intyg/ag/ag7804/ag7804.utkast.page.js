@@ -41,10 +41,6 @@ var Ag7804Utkast = AgBaseUtkast._extend({
             nuvarandeArbeteBeskrivning: element(by.id('nuvarandeArbete'))
         };
         this.konsekvenser = {
-            onskarFormedlaFunktionsnedsattning: {
-                ja: element(by.id('onskarFormedlaFunktionsnedsattningYes')),
-                nej: element(by.id('onskarFormedlaFunktionsnedsattningNo'))
-            },
             funktionsnedsattning: element(by.id('funktionsnedsattning')),
             aktivitetsbegransning: element(by.id('aktivitetsbegransning'))
         };
@@ -143,13 +139,10 @@ var Ag7804Utkast = AgBaseUtkast._extend({
     angeKonsekvenser: function(data) {
         var that = this;
         var promisesArr = [];
-        if (data.onskarFormedlaFunktionsnedsattning) {
-            promisesArr.push(pageHelpers.moveAndSendKeys(this.konsekvenser.onskarFormedlaFunktionsnedsattning.ja, protractor.Key.SPACE));
+        if (data.funktionsnedsattning) {
             promisesArr.push(pageHelpers.moveAndSendKeys(this.konsekvenser.funktionsnedsattning, data.funktionsnedsattning, data.funktionsnedsattning).then(function() {
                 return pageHelpers.moveAndSendKeys(that.konsekvenser.funktionsnedsattning, protractor.Key.TAB, 'TAB');
             }));
-        } else {
-            promisesArr.push(pageHelpers.moveAndSendKeys(this.konsekvenser.onskarFormedlaFunktionsnedsattning.nej, protractor.Key.SPACE));
         }
 
         if (data.aktivitetsbegransning) {
