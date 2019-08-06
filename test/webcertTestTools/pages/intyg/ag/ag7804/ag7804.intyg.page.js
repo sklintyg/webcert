@@ -28,13 +28,6 @@ var Ag7804Intyg = AgBaseIntyg._extend({
         this.intygTypeVersion = '1.0';
         this.certficate = element(by.id('certificate'));
         this.smittskydd = element(by.id('avstangningSmittskydd'));
-        this.baseratPa = {
-            minUndersokningAvPatienten: element(by.id('undersokningAvPatienten')),
-            journaluppgifter: element(by.id('journaluppgifter')),
-            telefonkontakt: element(by.id('telefonkontaktMedPatienten')),
-            annat: element(by.id('annatGrundForMU')),
-            annatBeskrivning: element(by.id('annatGrundForMUBeskrivning'))
-        };
         this.sjukdomsforlopp = element(by.id('sjukdomsforlopp'));
         this.behandling = {
             pagaende: element(by.id('pagaendeBehandling')),
@@ -112,28 +105,7 @@ var Ag7804Intyg = AgBaseIntyg._extend({
 
         }
     },
-    verifieraBaseratPa: function(data) {
-        if (data.baseratPa.minUndersokningAvPatienten) {
-            expect(this.baseratPa.minUndersokningAvPatienten.getText()).toBe(data.baseratPa.minUndersokningAvPatienten);
-        }
 
-        if (data.baseratPa.journaluppgifter) {
-            expect(this.baseratPa.journaluppgifter.getText()).toBe(data.baseratPa.journaluppgifter);
-        }
-
-        if (data.baseratPa.telefonkontakt) {
-            expect(this.baseratPa.telefonkontakt.getText()).toBe(data.baseratPa.telefonkontakt);
-        }
-
-        if (data.baseratPa.annat) {
-            expect(this.baseratPa.annat.getText()).toBe(data.baseratPa.annat);
-        }
-
-        if (data.baseratPa.annatBeskrivning) {
-            expect(this.baseratPa.annatBeskrivning.getText()).toBe(data.baseratPa.annatBeskrivning);
-        }
-
-    },
     verifieraKonsekvenser: function(data) {
         if (data.funktionsnedsattning) {
             expect(this.konsekvenser.funktionsnedsattning.getText()).toBe(data.funktionsnedsattning);
