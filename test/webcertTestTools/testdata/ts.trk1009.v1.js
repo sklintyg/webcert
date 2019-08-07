@@ -33,7 +33,7 @@ module.exports = {
         }
         return {
             'id': intygsID,
-            'typ': 'Transportstyrelsens läkares anmälan',
+            'typ': 'Läkares anmälan till Transportstyrelsen',
             'identitetStyrktGenom': 'Svenskt körkort',
             'anmalanAvser': 'OLAMPLIGHET',
             'medicinskaForhallanden': 'Sjuk men hyfsat alert i benstommen.',
