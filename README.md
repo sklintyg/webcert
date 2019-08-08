@@ -38,28 +38,23 @@ Man kan även starta Webcert i ett läge där endast de funktioner som är tillg
 ### Utvecka frontend
 Om du ändrar enbart frontend kan du se ändringarna direkt utan att starta om Webcert genom att starta grunt
 
-        $ cd web
-        $ grunt serve
+    $ cd web
+    $ grunt serve
 
 Ändringarna deployas nu direkt till http://localhost:9089.
 
 ### Visa databasen
-Man kan även komma åt H2-databasen som startas:
-
-    $ open http://localhost:9090/
-
-För att komma åt Webcert eller Intygsdatabasen fyll i JDBC URL'n :
+Man kan även komma åt H2-databasen:
 
 WebCert 
 
-    JDBC URL : jdbc:h2:tcp://localhost:9094/mem:dataSource
+    http://localhost:9090/
+    JDBC URL : jdbc:h2:mem:dataSource
 
-Intyg
+Intygtjänst (om en instans av Intygstjänsten är startad)
 
-    JDBC URL : jdbc:h2:tcp://localhost:9092/mem:dataSource
-
-### Köra flera Webcert-instanser för dev-ändamål
-(Detta avsnitt var skrivet specifikt för Maven, behöver uppdateras med gradle-instruktioner)
+    http://localhost:8082/
+    JDBC URL : jdbc:h2:mem:dataSource
 
 ### Köra lokal webcert med fungerande testinloggning med BankID / Mobilt BankID
 OBS! Kräver antingen kortläsare + kort samt testmodifierad BankID säkerhetsprogram _eller_ testklient för Mobilt BankID på telefon/platta med installerat testcertifikat
