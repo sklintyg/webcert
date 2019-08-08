@@ -51,25 +51,10 @@ WebCert
     http://localhost:9090/
     JDBC URL : jdbc:h2:mem:dataSource
 
-Intygtjänst
+Intygtjänst (om en instans av Intygstjänsten är startad)
 
     http://localhost:8082/
     JDBC URL : jdbc:h2:mem:dataSource
-
-### Köra flera Webcert-instanser för dev-ändamål
-Det är möjligt att starta flera lokala Webcert-instanser men man får se till att separera ett antal portar. Notera att databas _ej_ kommer delas.
-
-1. Clona Webcert till två olika kataloger
-2. Bygg och starta Webcert som vanligt i en av katalogerna
-3. I den andra katalogen ändra följande portar i web/build.gradle:<br/>
-httpPort = 9089<br/>
-httpsPort = 19089<br/>
-debugPort = 5009<br/>
-och följande port i web/webcert-dev.properties:<br/>
-db.httpPort=9099
-5. Bygg och starta Webcert som vanligt i den andra katalogen
-
-Nu borde två parallella jetty-instanser körandes Webcert vara igång. Kan vara användbart för att exempelvis testa av saker som kan påverkas av att vi kör multipla noder i produktion.
 
 ### Köra lokal webcert med fungerande testinloggning med BankID / Mobilt BankID
 OBS! Kräver antingen kortläsare + kort samt testmodifierad BankID säkerhetsprogram _eller_ testklient för Mobilt BankID på telefon/platta med installerat testcertifikat
