@@ -186,7 +186,7 @@ dependencies {
     compile "se.inera.intyg.infrastructure.directory.privatepractitioner.terms:intyg-infrastructure-directory-privatepractitioner-terms-schemas:${ppTermsSchemasVersion}"
     compile "se.inera.intyg.clinicalprocess.healthcond.certificate:intyg-clinicalprocess-healthcond-certificate-schemas:${intygClinicalprocessSchemasVersion}"
     compile "se.funktionstjanster.grp:funktionstjanster-grp-schemas:${funktionstjansterGrpSchemasVersion}"
-    compile "com.secmaker.netid.nias:netid-access-server-schemas:1.0.0"
+    compile "com.secmaker.netid.nias:netid-access-server-schemas:1.0.1"
     compile "se.riv.itintegration.monitoring:itintegration-monitoring-schemas:${rivtaItintegrationMonitoringSchemasVersion}"
 
     compile "se.inera.intyg.schemas:schemas-contract:${schemasContractVersion}"
