@@ -21,7 +21,6 @@ package se.inera.intyg.webcert.notification_sender.notifications.routes;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.namespace.QName;
-
 import org.apache.camel.LoggingLevel;
 import org.apache.camel.Predicate;
 import org.apache.camel.builder.PredicateBuilder;
@@ -31,17 +30,11 @@ import org.apache.camel.spring.SpringRouteBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.w3._2002._06.xmldsig_filter2.XPathType;
-
 import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.webcert.common.Constants;
 import se.inera.intyg.webcert.common.sender.exception.DiscardCandidateException;
 import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
-import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareType;
-import se.riv.clinicalprocess.healthcond.certificate.types.v3.DatePeriodType;
-import se.riv.clinicalprocess.healthcond.certificate.types.v3.PQType;
-import se.riv.clinicalprocess.healthcond.certificate.types.v3.PartialDateType;
 
 public class NotificationRouteBuilder extends SpringRouteBuilder {
     private static final Logger LOG = LoggerFactory.getLogger(NotificationRouteBuilder.class);
@@ -200,16 +193,18 @@ public class NotificationRouteBuilder extends SpringRouteBuilder {
 
     // CHECKSTYLE:OFF LineLength
     private JaxbDataFormat initializeJaxbMessageDataFormatV3() throws JAXBException {
-        // We need to register DatePeriodType with the JAXBContext explicitly for some reason.
-        JaxbDataFormat jaxbMessageDataFormatV3 = new JaxbDataFormat(
-                JAXBContext.newInstance(CertificateStatusUpdateForCareType.class, DatePeriodType.class, PartialDateType.class,
-                        XPathType.class, PQType.class));
-        jaxbMessageDataFormatV3.setPartClass(
+        final String contextPath = "se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3"
+            + ":se.riv.clinicalprocess.healthcond.certificate.types.v3"
+            + ":org.w3._2002._06.xmldsig_filter2";
+
+        JAXBContext jaxbContext = JAXBContext.newInstance(contextPath);
+        JaxbDataFormat jaxbDataFormat = new JaxbDataFormat(jaxbContext);
+        jaxbDataFormat.setPartClass(
                 "se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareType");
-        jaxbMessageDataFormatV3
+        jaxbDataFormat
                 .setPartNamespace(new QName("urn:riv:clinicalprocess:healthcond:certificate:CertificateStatusUpdateForCareResponder:3",
                         "CertificateStatusUpdateForCare"));
-        return jaxbMessageDataFormatV3;
+        return jaxbDataFormat;
     }
     // CHECKSTYLE:ON LineLength
 
