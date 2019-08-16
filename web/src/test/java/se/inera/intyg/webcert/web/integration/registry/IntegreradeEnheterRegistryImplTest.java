@@ -112,6 +112,18 @@ public class IntegreradeEnheterRegistryImplTest {
     }
 
     @Test
+    public void testGetIntegreradEnhet() {
+        final String enhetsId = "enhetsId";
+
+        IntegreradEnhet enhet = new IntegreradEnhet();
+        enhet.setEnhetsId(enhetsId);
+        when(integreradEnhetRepository.findOne(eq(enhetsId))).thenReturn(enhet);
+
+        IntegreradEnhet integreradEnhet = registry.getIntegreradEnhet(enhetsId);
+        assertEquals(integreradEnhet.getEnhetsId(), enhetsId);
+    }
+
+    @Test
     public void testAddIfSameVardgivareButDifferentUnitsCopiesSchemaVersion() {
         final String enhetsId = "enhetsId";
         final String vardgivarId = "vardgivarId";

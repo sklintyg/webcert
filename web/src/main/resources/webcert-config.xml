@@ -169,6 +169,8 @@
     <!-- Eleg login redirect filter for easier URL handling in PP -->
     <bean id="elegRedirectFilter" class="se.inera.intyg.webcert.web.auth.eleg.ElegRedirectFilter" />
 
+    <bean id="internalApiFilter" class="se.inera.intyg.infra.security.filter.InternalApiFilter" />
+
     <!-- JSON mappers and providers -->
     <bean id="objectMapper"
       class="se.inera.intyg.common.util.integration.json.CustomObjectMapper" />

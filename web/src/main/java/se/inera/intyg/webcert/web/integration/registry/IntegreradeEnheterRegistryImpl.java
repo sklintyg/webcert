@@ -63,7 +63,7 @@ public class IntegreradeEnheterRegistryImpl implements IntegreradeEnheterRegistr
         String enhetsId = entry.getEnhetsId();
         IntegreradEnhet integreradEnhet = integreradEnhetRepository.findOne(enhetsId);
         if (integreradEnhet != null) {
-            LOG.debug("Updating existing integrerad enhet", enhetsId);
+            LOG.debug("Updating existing integrerad enhet: {}", enhetsId);
             if (schemaVersion1) {
                 integreradEnhet.setSchemaVersion1(schemaVersion1);
             }
@@ -78,7 +78,7 @@ public class IntegreradeEnheterRegistryImpl implements IntegreradeEnheterRegistr
             integreradEnhet.setVardgivarNamn(entry.getVardgivareNamn());
             integreradEnhet.setSchemaVersion1(schemaVersion1);
             integreradEnhet.setSchemaVersion3(schemaVersion3);
-            LOG.debug("Adding unit to registry: {}", integreradEnhet.toString());
+            LOG.debug("Adding unit to registry: {}", integreradEnhet);
         }
         integreradEnhetRepository.save(integreradEnhet);
     }
@@ -96,10 +96,16 @@ public class IntegreradeEnheterRegistryImpl implements IntegreradeEnheterRegistr
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public IntegreradEnhet getIntegreradEnhet(String enhetsId) {
+        return integreradEnhetRepository.findOne(enhetsId);
+    }
+
+    @Override
     @Transactional
     public void addIfSameVardgivareButDifferentUnits(String orgEnhetsHsaId, IntegreradEnhetEntry newEntry, String intygType) {
         if (getSchemaVersion(orgEnhetsHsaId, intygType).isPresent()) {
-            IntegreradEnhet enhet = getIntegreradEnhet(orgEnhetsHsaId);
+            IntegreradEnhet enhet = getIntegreradEnhetAndUpdateControlDate(orgEnhetsHsaId);
             IntegreradEnhetEntry orgEntry = getIntegreradEnhetEntry(enhet);
 
             if (orgEntry != null && orgEntry.compareTo(newEntry) != 0) {
@@ -121,7 +127,7 @@ public class IntegreradeEnheterRegistryImpl implements IntegreradeEnheterRegistr
     @Override
     @Transactional
     public Optional<SchemaVersion> getSchemaVersion(String enhetsHsaId, String intygType) {
-        IntegreradEnhet enhet = getIntegreradEnhet(enhetsHsaId);
+        IntegreradEnhet enhet = getIntegreradEnhetAndUpdateControlDate(enhetsHsaId);
 
         if (enhet == null) {
             return Optional.empty();
@@ -158,7 +164,7 @@ public class IntegreradeEnheterRegistryImpl implements IntegreradeEnheterRegistr
         return hsaIds;
     }
 
-    private IntegreradEnhet getIntegreradEnhet(String enhetsHsaId) {
+    private IntegreradEnhet getIntegreradEnhetAndUpdateControlDate(String enhetsHsaId) {
         IntegreradEnhet enhet = integreradEnhetRepository.findOne(enhetsHsaId);
 
         if (enhet == null) {
