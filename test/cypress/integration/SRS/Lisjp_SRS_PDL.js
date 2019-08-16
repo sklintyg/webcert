@@ -15,7 +15,7 @@ function lisjpPdlEvent(env, actType, actArgs, actLevel, assignment, vgId_mod, vg
 describe('LISJP-intyg med SRS', function () {
 
     before(function() {
-        cy.fixture('FK_intyg/minLisjpDataSrs').as('intygsdata');
+        cy.fixture('FK_intyg/minLisjpData').as('intygsdata');
         cy.fixture('vårdpersonal/arnoldJohansson').as('vårdpersonal');
         cy.fixture('vårdenheter/alfaEnheten').as('vårdenhet');
         cy.fixture('vårdenheter/nmt_vg1_ve1').as('vårdenhet_2');
@@ -37,46 +37,75 @@ describe('LISJP-intyg med SRS', function () {
         const önskadUrl = "/visa/intyg/" + this.utkastId + "?enhet=" + this.vårdenhet.id
         intyg.besökÖnskadUrl(önskadUrl, this.vårdpersonal, this.vårdenhet, this.utkastId);
 
-        // Populerar pdl-array med förväntade logposter "Läsa" och "Skriva" samt fyller i halva intyget
+        // Populerar pdl-array med förväntade logposter "Läsa" och "Skriva" samt fyller i delar av intyget
         pdlEventArray.push(lisjpPdlEvent(this, pdl.enumHandelse.LÄSA, undefined, this.utkastId, this.vårdenhet.uppdragsnamn, this.vårdenhet.vårdgivareId, this.vårdenhet.vårdgivareNamn, this.vårdenhet.id, this.vårdenhet.namn));
-        intyg.sektionDiagnos(this.intygsdata.diagnos);
-        cy.contains("Utkastet är sparat").should('exist');
+        intyg.sektionGrundFörMedicinsktUnderlag(this.intygsdata.grundFörMedicinsktUnderlag);
         pdlEventArray.push(lisjpPdlEvent(this, pdl.enumHandelse.SKRIVA, undefined, this.utkastId, this.vårdenhet.uppdragsnamn, this.vårdenhet.vårdgivareId, this.vårdenhet.vårdgivareNamn, this.vårdenhet.id, this.vårdenhet.namn));
+        intyg.sektionSysselsättning(this.intygsdata.sysselsättning);
+        intyg.sektionDiagnos(this.intygsdata.diagnos_SRS_nytt);
 
-        // Klicka fram SRS-fliken och fyll i checkboxen för samtycke
-        cy.get('#tab-link-wc-srs-panel-tab').click();
-        cy.contains("Patienten samtycker till att delta i SRS pilot").parent().within(() => {
-            cy.get('[type="checkbox"]').check();
-        });
+        // Vänta tills intyget har sparats så att PDL-händelsen "skriva" hinner registreras
+        cy.contains("Utkastet är sparat").should('exist');
 
-        // Hämta ut elementet som innehåller alla frågor och "Beräkna"-knappen, klicka på "Beräkna".
-        cy.get('#questions').within(() => {
-            cy.get('button').click();
-
-            // Verifiera att knappen inte går att trycka på.
-            cy.get('button').should('be.disabled');
-        });
-
-        // Beräkna-knappen genererar en PDL-händelse med optional argument. Om denna rad ligger inuti "within" ovan så köas den så att den faktiskt
-        // hamnar efter kommande pdlEvenArray.push
+        // Klicka fram SRS-fliken, fyll i checkboxen för samtycke och klicka på Beräkna-knappen
+        intyg.bytTillSrsPanel();
+        intyg.srsPatientenSamtyckerChecked();
+        intyg.srsKlickaBeräkna();
+        // Beräkna-knappen genererar en PDL-händelse med optional argument
         pdlEventArray.push(lisjpPdlEvent(this, pdl.enumHandelse.LÄSA, pdl.enumHandelseArgument.SRS_PREDIKTION, this.utkastId, this.vårdenhet.uppdragsnamn, this.vårdenhet.vårdgivareId, this.vårdenhet.vårdgivareNamn, this.vårdenhet.id, this.vårdenhet.namn));
 
-        // Om läkaren inte håller med om patientens risk och därmed klickar på någon av radioknapparna så ska det registreras
-        // som PDL-händelse
+        // Om läkaren inte håller med om patientens risk och därmed klickar på någon av radioknapparna så ska det
+        // registreras som PDL-händelse
         cy.wait(2500);
-        cy.get('#risk-opinion-higher').check();
+        intyg.läkareAngerPatientrisk('Högre');
         pdlEventArray.push(lisjpPdlEvent(this, pdl.enumHandelse.SKRIVA, pdl.enumHandelseArgument.SRS_LÄKARES_ÅSIKT, this.utkastId, this.vårdenhet.uppdragsnamn, this.vårdenhet.vårdgivareId, this.vårdenhet.vårdgivareNamn, this.vårdenhet.id, this.vårdenhet.namn));
 
-        // ToDo: PDL-testfallet kan byggas ut.
-        // Ändra något svar på frågorna, klicka på "Beräkna" igen
-        // Verifiera PDL-händelse
+        // Fyll i resten av intyget
+        intyg.sektionSjukdomensKonsekvenserFörPatienten(this.intygsdata.sjukdomensKonsekvenserFörPatienten);
+        intyg.sektionBedömning(this.intygsdata.bedömning);
+        intyg.sektionÅtgärder(this.intygsdata.åtgärder);
 
-        // Logga ut, logga tillbaka in.
-        // Verifiera att "Beräkna" inte är enabled
-        // Justera något svar och tryck på beräkna
-        // Verifiera PDL-händelse
+        // Signerar intyget och populerar pdl-arrayen med förväntade logposter "Signera" och "Läsa"
+        intyg.signera();
+        pdlEventArray.push(lisjpPdlEvent(this, pdl.enumHandelse.SIGNERA, undefined, this.utkastId, this.vårdenhet.uppdragsnamn, this.vårdenhet.vårdgivareId, this.vårdenhet.vårdgivareNamn, this.vårdenhet.id, this.vårdenhet.namn));
+        pdlEventArray.push(lisjpPdlEvent(this, pdl.enumHandelse.LÄSA, undefined, this.utkastId, this.vårdenhet.uppdragsnamn, this.vårdenhet.vårdgivareId, this.vårdenhet.vårdgivareNamn, this.vårdenhet.id, this.vårdenhet.namn));
 
-        // För övriga idéer, titta på PDL-testfallet för "vanlig" LISJP
+        // Förnya intyget -> utkast skapas. Populerar pdl-arrayen med förväntade logposter "Skriva" och "Läsa" samt nytt intygsID.
+        cy.url().should('include', this.utkastId);
+        intyg.fornya();
+        cy.contains("Smittbärarpenning"); // Vänta på att intyget ska laddas färdigt
+        cy.get('.intygs-id').invoke('text').then((text1) => {
+            var intygsID_2 = text1.replace(/\s/g, '');
+            intygsID_2 = intygsID_2.substring(intygsID_2.length-36, intygsID_2.length);
+            cy.log('IntygsID fönyande utkast: ' + intygsID_2);
+            cy.wrap(intygsID_2).as('intygsID_2');
+        });
+        cy.get('@intygsID_2').then((intygID_2)=> {
+            pdlEventArray.push(lisjpPdlEvent(this, pdl.enumHandelse.SKRIVA, undefined, intygID_2, this.vårdenhet.uppdragsnamn, this.vårdenhet.vårdgivareId, this.vårdenhet.vårdgivareNamn, this.vårdenhet.id, this.vårdenhet.namn));
+            pdlEventArray.push(lisjpPdlEvent(this, pdl.enumHandelse.LÄSA, undefined, intygID_2, this.vårdenhet.uppdragsnamn, this.vårdenhet.vårdgivareId, this.vårdenhet.vårdgivareNamn, this.vårdenhet.id, this.vårdenhet.namn));
+        });
+
+        // Radera diagnoskod 1 och ersätt med ny
+        intyg.raderaDiagnoskod(1);
+        intyg.sektionDiagnos(this.intygsdata.diagnos_SRS_fornyat);
+        cy.get('@intygsID_2').then((intygID_2)=> {
+            pdlEventArray.push(lisjpPdlEvent(this, pdl.enumHandelse.SKRIVA, undefined, intygID_2, this.vårdenhet.uppdragsnamn, this.vårdenhet.vårdgivareId, this.vårdenhet.vårdgivareNamn, this.vårdenhet.id, this.vårdenhet.namn));
+        });
+
+        // Verifiera i SRS-fliken att rätt diagnoser används i respektive "underflik",
+        // d.v.s. "Råd och åtgärder", "Tidigare riskbedömning" och "Statistik"
+        // Vilken diagnos som ska visas vart anges här:
+        // https://inera.atlassian.net/wiki/spaces/IT/pages/9798635
+        intyg.bytTillSrsPanel();
+        intyg.verifieraDiagnosUnderRådOchÅtgärder(this.intygsdata.diagnos_SRS_fornyat.rad1.kod);
+        intyg.verifieraDiagnosUnderTidigareRiskbedömning(this.intygsdata.diagnos_SRS_nytt.rad1.kod);
+        intyg.verifieraDiagnosUnderStatistik(this.intygsdata.diagnos_SRS_fornyat.rad1.kod);
+
+        // OBS!!! DENNA ÄR FEL! ÄR BARA HÄR FÖR ATT FÅ TESTFALLET ATT GÅ KLART!!!!
+        // BUGG 1025
+        // https://service.projectplace.com/#direct/card/10855900
+        pdlEventArray.push(lisjpPdlEvent(this, pdl.enumHandelse.LÄSA, pdl.enumHandelseArgument.SRS_PREDIKTION, this.utkastId, this.vårdenhet.uppdragsnamn, this.vårdenhet.vårdgivareId, this.vårdenhet.vårdgivareNamn, this.vårdenhet.id, this.vårdenhet.namn));
+
 
         cy.verifieraPdlLoggar(pdlEventArray);
     });

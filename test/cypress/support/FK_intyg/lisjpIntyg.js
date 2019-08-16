@@ -102,6 +102,25 @@ export function sektionDiagnos(diagnos) {
     }
 }
 
+// Raderar diagnoskoden på angiven rad (1-3)
+export function raderaDiagnoskod(rad) {
+    assert.isTrue(rad >= 1 && rad <= 3);
+
+    if (rad === 1) {
+        cy.get('#diagnoseCode-0').parent().within(($diagnoskodrad) => {
+            cy.get('#diagnoseCode-0').clear();
+        });
+    } else if (rad === 2) {
+        cy.get('#diagnoseCode-1').parent().within(($diagnoskodrad) => {
+            cy.get('#diagnoseCode-1').clear();
+        });
+    } else {
+        cy.get('#diagnoseCode-2').parent().within(($diagnoskodrad) => {
+            cy.get('#diagnoseCode-2').clear();
+        });
+    }
+}
+
 // -------------------- 'Sjukdomens konsekvenser för patienten' --------------------
 export function sektionSjukdomensKonsekvenserFörPatienten(konsekvenser) {
     cy.get('#funktionsnedsattning').type(konsekvenser.funktionsnedsättning);
@@ -255,4 +274,53 @@ export function skrivUt(typAvUtskrift, intygsId){
         default:
             cy.log('Ingen korrekt typ av utskrift vald');
     }
+}
+
+// -------------------- SRS-specifika funktioner --------------------
+export function bytTillSrsPanel() {
+    cy.get('#tab-link-wc-srs-panel-tab').click();
+    // Vänta på att text från SRS-panelen syns
+    cy.contains("Patienten samtycker till att delta i SRS pilot").should('be.visible');
+}
+
+export function srsPatientenSamtyckerChecked() {
+    cy.contains("Patienten samtycker till att delta i SRS pilot").parent().within(() => {
+        cy.get('[type="checkbox"]').check();
+    });
+}
+
+export function srsKlickaBeräkna() {
+    // Hämta ut elementet som innehåller alla frågor och "Beräkna"-knappen, klicka på "Beräkna".
+    cy.get('#questions').within(() => {
+        cy.get('button').click();
+
+        // Verifiera att knappen inte går att trycka på.
+        cy.get('button').should('be.disabled');
+    });
+}
+
+export function läkareAngerPatientrisk(nivå) {
+    assert.equal(nivå, 'Högre'); // Endast "Högre" är implementerad nedan just nu
+
+    if (nivå === 'Högre') {
+        cy.get('#risk-opinion-higher').check();
+    }
+}
+
+// Verifierar att angiven diagnoskod syns under "Råd och åtgärder"
+export function verifieraDiagnosUnderRådOchÅtgärder(diagnoskod) {
+    cy.contains("Råd och åtgärder").click();
+    cy.get('#atgarder').contains(diagnoskod);
+}
+
+// Verifierar att angiven diagnoskod syns under "Tidigare Riskbedömning"
+export function verifieraDiagnosUnderTidigareRiskbedömning(diagnoskod) {
+    cy.contains("Tidigare riskbedömning").click();
+    cy.get('#riskDiagram').contains(diagnoskod);
+}
+
+// Verifierar att angiven diagnoskod syns under "Statistik"
+export function verifieraDiagnosUnderStatistik(diagnoskod) {
+    cy.contains("Statistik").click();
+    cy.get('#nationalStatisticsHeader').contains(diagnoskod);
 }

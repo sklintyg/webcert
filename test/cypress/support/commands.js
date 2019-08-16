@@ -324,7 +324,11 @@ function verifieraHändelserFörIntyg(förväntadeHändelser, arr) {
         assert.equal(system.getElementsByTagName("systemname")[0].innerText, "Webcert", "Kontrollerar att hårdkodat systemnamn är satt, index " + j);
 
         //---- Element 'Activity' ----//
+        // activitytype, activitylevel, activityargs
         var activity = arr[j].getElementsByTagName("activity")[0];
+        assert.equal(activity.getElementsByTagName("activitytype")[0].innerText, förväntadeHändelser[j].activity.activityType, "Kontrollerar aktivitetstyp, index " + j);
+        assert.equal(activity.getElementsByTagName("activitylevel")[0].innerText, förväntadeHändelser[j].activity.activityLevel, "Kontrollerar intygsid, index " + j);
+
         var antalFaktiskaElementActivity = activity.children.length;
         var antalFörväntadeElementActivity = 4;
         // ActivityArgs är optional
@@ -332,10 +336,7 @@ function verifieraHändelserFörIntyg(förväntadeHändelser, arr) {
             antalFörväntadeElementActivity = 5;
         }
 
-        // activitytype, activitylevel, activityargs
         assert.equal(antalFaktiskaElementActivity, antalFörväntadeElementActivity, "Kontrollerar antal underelement till 'activity', index " + j);
-        assert.equal(activity.getElementsByTagName("activitytype")[0].innerText, förväntadeHändelser[j].activity.activityType, "Kontrollerar aktivitetstyp, index " + j);
-        assert.equal(activity.getElementsByTagName("activitylevel")[0].innerText, förväntadeHändelser[j].activity.activityLevel, "Kontrollerar intygsid, index " + j);
         if (förväntadeHändelser[j].activity.activityArgs) {
             assert.equal(activity.getElementsByTagName("activityargs")[0].innerText, förväntadeHändelser[j].activity.activityArgs, "Kontrollerar extra aktivitetsargument, index " + j);
         }
