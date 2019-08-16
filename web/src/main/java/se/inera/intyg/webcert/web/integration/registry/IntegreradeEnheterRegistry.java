@@ -19,6 +19,7 @@
 package se.inera.intyg.webcert.web.integration.registry;
 
 import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
+import se.inera.intyg.webcert.persistence.integreradenhet.model.IntegreradEnhet;
 import se.inera.intyg.webcert.web.integration.registry.dto.IntegreradEnhetEntry;
 import se.inera.intyg.webcert.web.web.controller.testability.dto.IntegreradEnhetEntryWithSchemaVersion;
 
@@ -30,6 +31,8 @@ public interface IntegreradeEnheterRegistry {
     void putIntegreradEnhet(IntegreradEnhetEntry entry, boolean schemaVersion1, boolean schemaVersion2);
 
     boolean isEnhetIntegrerad(String enhetHsaId, String intygType);
+
+    IntegreradEnhet getIntegreradEnhet(String enhetsId);
 
     void addIfSameVardgivareButDifferentUnits(String orgEnhetsHsaId, IntegreradEnhetEntry newEntry, String intygType);
 

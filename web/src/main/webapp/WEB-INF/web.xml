@@ -82,6 +82,16 @@
         <load-on-startup>1</load-on-startup>
     </servlet>
 
+    <servlet>
+        <servlet-name>internalapi</servlet-name>
+        <servlet-class>org.apache.cxf.transport.servlet.CXFServlet</servlet-class>
+        <init-param>
+            <param-name>config-location</param-name>
+            <param-value>/WEB-INF/internalapi-cxf-servlet.xml</param-value>
+        </init-param>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
     <!-- Webcert integration services -->
     <servlet>
         <servlet-name>services</servlet-name>
@@ -154,6 +164,10 @@
     <servlet-mapping>
         <servlet-name>moduleapi</servlet-name>
         <url-pattern>/moduleapi/*</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>internalapi</servlet-name>
+        <url-pattern>/internalapi/*</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>services</servlet-name>
@@ -282,6 +296,15 @@
     <filter-mapping>
         <filter-name>securityHeadersFilter</filter-name>
         <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <filter>
+        <filter-name>internalApiFilter</filter-name>
+        <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>internalApiFilter</filter-name>
+        <url-pattern>/internalapi/*</url-pattern>
     </filter-mapping>
 
     <welcome-file-list>
