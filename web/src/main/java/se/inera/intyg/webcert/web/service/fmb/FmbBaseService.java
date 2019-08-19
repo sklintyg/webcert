@@ -20,8 +20,8 @@ package se.inera.intyg.webcert.web.service.fmb;
 
 import io.vavr.Tuple;
 import io.vavr.Tuple2;
-import org.apache.commons.lang3.StringUtils;
 import java.util.Optional;
+import org.apache.commons.lang3.StringUtils;
 import se.inera.intyg.webcert.persistence.fmb.model.fmb.DiagnosInformation;
 import se.inera.intyg.webcert.persistence.fmb.repository.DiagnosInformationRepository;
 

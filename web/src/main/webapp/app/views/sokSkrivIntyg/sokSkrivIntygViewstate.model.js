@@ -19,27 +19,27 @@
 
 angular.module('webcert').factory('webcert.SokSkrivIntygViewstate',
     ['$log',
-        function($log) {
-            'use strict';
+      function($log) {
+        'use strict';
 
-            return {
-                build: function() {
-                    this.focusFirstInput = true;
+        return {
+          build: function() {
+            this.focusFirstInput = true;
 
-                    this.patientLoading = false;
-                    this.tidigareIntygLoading = false;
+            this.patientLoading = false;
+            this.tidigareIntygLoading = false;
 
-                    this.loadErrorMessageKey = null;
-                    this.intygListErrorMessageKey = null;
-                    this.createErrorMessageKey = null;
-                    this.inlineErrorMessageKey = null;
+            this.loadErrorMessageKey = null;
+            this.intygListErrorMessageKey = null;
+            this.createErrorMessageKey = null;
+            this.inlineErrorMessageKey = null;
 
-                    this.currentList = undefined;
-                    this.unsigned = 'intyglist-empty'; // unsigned, unsigned-mixed,
-                    this.intygFilter = 'current'; // possible values: current, revoked, all
+            this.currentList = undefined;
+            this.unsigned = 'intyglist-empty'; // unsigned, unsigned-mixed,
+            this.intygFilter = 'current'; // possible values: current, revoked, all
 
-                    return this;
-                }
-            };
-        }
+            return this;
+          }
+        };
+      }
     ]);

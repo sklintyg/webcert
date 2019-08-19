@@ -18,8 +18,16 @@
  */
 package se.inera.intyg.webcert.web.service.monitoring;
 
-import java.util.Arrays;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.mockito.Mockito.verify;
 
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.classic.spi.LoggingEvent;
+import ch.qos.logback.core.Appender;
+import java.util.Arrays;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -29,21 +37,11 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.slf4j.LoggerFactory;
-
-import ch.qos.logback.classic.Level;
-import ch.qos.logback.classic.Logger;
-import ch.qos.logback.classic.spi.ILoggingEvent;
-import ch.qos.logback.classic.spi.LoggingEvent;
-import ch.qos.logback.core.Appender;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.persistence.fragasvar.model.Amne;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
 public class MonitoringLogServiceImplTest {
@@ -95,14 +93,14 @@ public class MonitoringLogServiceImplTest {
     public void shouldLogAnswerReceived() {
         logService.logAnswerReceived(EXTERN_REFERENS, INTERN_REFERENS, INTYGS_ID, ENHET, AMNE);
         verifyLog(Level.INFO,
-                "ANSWER_RECEIVED Received answer to question with external reference 'EXTERN_REFERENS' and internal reference '97' regarding intyg 'INTYGS_ID' to unit 'ENHET' with subject 'ARBETSTIDSFORLAGGNING'");
+            "ANSWER_RECEIVED Received answer to question with external reference 'EXTERN_REFERENS' and internal reference '97' regarding intyg 'INTYGS_ID' to unit 'ENHET' with subject 'ARBETSTIDSFORLAGGNING'");
     }
 
     @Test
     public void shouldLogAnswerReceivedWhenAllParamtersNull() {
         logService.logAnswerReceived(null, null, null, null, null);
         verifyLog(Level.INFO,
-                "ANSWER_RECEIVED Received answer to question with external reference 'null' and internal reference 'null' regarding intyg 'null' to unit 'null' with subject 'NO AMNE'");
+            "ANSWER_RECEIVED Received answer to question with external reference 'null' and internal reference 'null' regarding intyg 'null' to unit 'null' with subject 'NO AMNE'");
     }
 
     private void verifyLog(Level logLevel, String logMessage) {
@@ -113,21 +111,21 @@ public class MonitoringLogServiceImplTest {
         // Verify log
         assertThat(loggingEvent.getLevel(), equalTo(logLevel));
         assertThat(loggingEvent.getFormattedMessage(),
-                equalTo(logMessage));
+            equalTo(logMessage));
     }
 
     @Test
     public void shouldLogAnswerSent() {
         logService.logAnswerSent(EXTERN_REFERENS, INTERN_REFERENS, INTYGS_ID, ENHET, AMNE);
         verifyLog(Level.INFO,
-                "ANSWER_SENT Sent answer to question with external reference 'EXTERN_REFERENS' and internal reference '97' regarding intyg 'INTYGS_ID' to unit 'ENHET' with subject 'ARBETSTIDSFORLAGGNING'");
+            "ANSWER_SENT Sent answer to question with external reference 'EXTERN_REFERENS' and internal reference '97' regarding intyg 'INTYGS_ID' to unit 'ENHET' with subject 'ARBETSTIDSFORLAGGNING'");
     }
 
     @Test
     public void shouldLogAnswerSentWithAllParametersNull() {
         logService.logAnswerSent(null, null, null, null, null);
         verifyLog(Level.INFO,
-                "ANSWER_SENT Sent answer to question with external reference 'null' and internal reference 'null' regarding intyg 'null' to unit 'null' with subject 'NO AMNE'");
+            "ANSWER_SENT Sent answer to question with external reference 'null' and internal reference 'null' regarding intyg 'null' to unit 'null' with subject 'NO AMNE'");
     }
 
     @Test
@@ -194,14 +192,14 @@ public class MonitoringLogServiceImplTest {
     public void shouldLogIntygSigned() {
         logService.logIntygSigned(INTYGS_ID, INTYGS_TYP, HSA_ID, AUTH_SCHEME, null);
         verifyLog(Level.INFO,
-                "INTYG_SIGNED Intyg 'INTYGS_ID' of type 'INTYGS_TYP' signed by 'HSA_ID' using scheme 'AUTH_SCHEME' and relation code 'NO RELATION'");
+            "INTYG_SIGNED Intyg 'INTYGS_ID' of type 'INTYGS_TYP' signed by 'HSA_ID' using scheme 'AUTH_SCHEME' and relation code 'NO RELATION'");
     }
 
     @Test
     public void shouldLogIntygSignedWithRelation() {
         logService.logIntygSigned(INTYGS_ID, INTYGS_TYP, HSA_ID, AUTH_SCHEME, RelationKod.KOMPLT);
         verifyLog(Level.INFO,
-                "INTYG_SIGNED Intyg 'INTYGS_ID' of type 'INTYGS_TYP' signed by 'HSA_ID' using scheme 'AUTH_SCHEME' and relation code 'KOMPLT'");
+            "INTYG_SIGNED Intyg 'INTYGS_ID' of type 'INTYGS_TYP' signed by 'HSA_ID' using scheme 'AUTH_SCHEME' and relation code 'KOMPLT'");
     }
 
     @Test
@@ -238,7 +236,7 @@ public class MonitoringLogServiceImplTest {
     public void shouldLogArendeReceived() {
         logService.logArendeReceived(INTYGS_ID, INTYGS_TYP, ENHET, ArendeAmne.KONTKT, null, false);
         verifyLog(Level.INFO,
-                "ARENDE_RECEIVED_QUESTION Received arende with amne 'KONTKT' for 'INTYGS_ID' of type 'INTYGS_TYP' for unit 'ENHET'");
+            "ARENDE_RECEIVED_QUESTION Received arende with amne 'KONTKT' for 'INTYGS_ID' of type 'INTYGS_TYP' for unit 'ENHET'");
     }
 
     @Test
@@ -251,28 +249,28 @@ public class MonitoringLogServiceImplTest {
     public void shouldLogArendeReceivedCompletion() {
         logService.logArendeReceived(INTYGS_ID, INTYGS_TYP, ENHET, ArendeAmne.KOMPLT, Arrays.asList("1", "2"), false);
         verifyLog(Level.INFO,
-                "MEDICINSKT_ARENDE_RECEIVED Received medicinskt arende for 'INTYGS_ID' of type 'INTYGS_TYP' for unit 'ENHET' on questions '[1, 2]'");
+            "MEDICINSKT_ARENDE_RECEIVED Received medicinskt arende for 'INTYGS_ID' of type 'INTYGS_TYP' for unit 'ENHET' on questions '[1, 2]'");
     }
 
     @Test
     public void shouldLogArendeReceivedAnswer() {
         logService.logArendeReceived(INTYGS_ID, INTYGS_TYP, ENHET, ArendeAmne.KONTKT, null, true);
         verifyLog(Level.INFO,
-                "ARENDE_RECEIVED_ANSWER Received arende with amne 'KONTKT' for 'INTYGS_ID' of type 'INTYGS_TYP' for unit 'ENHET'");
+            "ARENDE_RECEIVED_ANSWER Received arende with amne 'KONTKT' for 'INTYGS_ID' of type 'INTYGS_TYP' for unit 'ENHET'");
     }
 
     @Test
     public void shouldLogArendeReceivedAnswerAmneMissing() {
         logService.logArendeReceived(INTYGS_ID, INTYGS_TYP, ENHET, null, null, true);
         verifyLog(Level.INFO,
-                "ARENDE_RECEIVED_ANSWER Received arende with amne 'NO AMNE' for 'INTYGS_ID' of type 'INTYGS_TYP' for unit 'ENHET'");
+            "ARENDE_RECEIVED_ANSWER Received arende with amne 'NO AMNE' for 'INTYGS_ID' of type 'INTYGS_TYP' for unit 'ENHET'");
     }
 
     @Test
     public void shouldLogArendeCreated() {
         logService.logArendeCreated(INTYGS_ID, INTYGS_TYP, ENHET, ArendeAmne.AVSTMN, false);
         verifyLog(Level.INFO,
-                "ARENDE_CREATED_QUESTION Created arende with amne 'AVSTMN' for 'INTYGS_ID' of type 'INTYGS_TYP' for unit 'ENHET'");
+            "ARENDE_CREATED_QUESTION Created arende with amne 'AVSTMN' for 'INTYGS_ID' of type 'INTYGS_TYP' for unit 'ENHET'");
     }
 
     @Test
@@ -285,7 +283,7 @@ public class MonitoringLogServiceImplTest {
     public void shouldLogArendeCreatedAnswer() {
         logService.logArendeCreated(INTYGS_ID, INTYGS_TYP, ENHET, ArendeAmne.AVSTMN, true);
         verifyLog(Level.INFO,
-                "ARENDE_CREATED_ANSWER Created arende with amne 'AVSTMN' for 'INTYGS_ID' of type 'INTYGS_TYP' for unit 'ENHET'");
+            "ARENDE_CREATED_ANSWER Created arende with amne 'AVSTMN' for 'INTYGS_ID' of type 'INTYGS_TYP' for unit 'ENHET'");
     }
 
     @Test
@@ -298,58 +296,58 @@ public class MonitoringLogServiceImplTest {
     public void shouldLogPrivatePractitionerTermsApproved() {
         logService.logPrivatePractitionerTermsApproved(HSA_ID, PERSON_NUMMER, AVTAL_VERSION);
         verifyLog(Level.INFO,
-                "PP_TERMS_ACCEPTED User 'HSA_ID', personId '9a8b138a666f84da32e9383b49a15f46f6e08d2c492352aa0dfcc3f993773b0d' accepted private practitioner terms of version '98'");
+            "PP_TERMS_ACCEPTED User 'HSA_ID', personId '9a8b138a666f84da32e9383b49a15f46f6e08d2c492352aa0dfcc3f993773b0d' accepted private practitioner terms of version '98'");
     }
 
     @Test
     public void shouldLogPULookup() {
         logService.logPULookup(PERSON_NUMMER, RESULT);
         verifyLog(Level.INFO,
-                "PU_LOOKUP Lookup performed on '9a8b138a666f84da32e9383b49a15f46f6e08d2c492352aa0dfcc3f993773b0d' with result 'RESULT'");
+            "PU_LOOKUP Lookup performed on '9a8b138a666f84da32e9383b49a15f46f6e08d2c492352aa0dfcc3f993773b0d' with result 'RESULT'");
     }
 
     @Test
     public void shouldLogQuestionReceived() {
         logService.logQuestionReceived(FRAGESTALLARE, INTYGS_ID, EXTERN_REFERENS, INTERN_REFERENS, ENHET, AMNE, null);
         verifyLog(Level.INFO,
-                "QUESTION_RECEIVED Received question from 'FRAGESTALLARE' with external reference 'EXTERN_REFERENS' and internal reference '97' regarding intyg 'INTYGS_ID' to unit 'ENHET' with subject 'ARBETSTIDSFORLAGGNING'");
+            "QUESTION_RECEIVED Received question from 'FRAGESTALLARE' with external reference 'EXTERN_REFERENS' and internal reference '97' regarding intyg 'INTYGS_ID' to unit 'ENHET' with subject 'ARBETSTIDSFORLAGGNING'");
     }
 
     @Test
     public void shouldLogQuestionReceivedWhenAllParametersNull() {
         logService.logQuestionReceived(null, null, null, null, null, null, null);
         verifyLog(Level.INFO,
-                "QUESTION_RECEIVED Received question from 'null' with external reference 'null' and internal reference 'null' regarding intyg 'null' to unit 'null' with subject 'NO AMNE'");
+            "QUESTION_RECEIVED Received question from 'null' with external reference 'null' and internal reference 'null' regarding intyg 'null' to unit 'null' with subject 'NO AMNE'");
     }
 
     @Test
     public void shouldLogQuestionReceivedCompletion() {
         logService.logQuestionReceived(FRAGESTALLARE, INTYGS_ID, EXTERN_REFERENS, INTERN_REFERENS, ENHET, Amne.KOMPLETTERING_AV_LAKARINTYG,
-                Arrays.asList("KOMP1", "KOMP2"));
+            Arrays.asList("KOMP1", "KOMP2"));
         verifyLog(Level.INFO,
-                "QUESTION_RECEIVED_COMPLETION Received completion question from 'FRAGESTALLARE' with external reference 'EXTERN_REFERENS' and internal reference '97' regarding intyg 'INTYGS_ID' to unit 'ENHET' with completion for questions 'KOMP1,KOMP2'");
+            "QUESTION_RECEIVED_COMPLETION Received completion question from 'FRAGESTALLARE' with external reference 'EXTERN_REFERENS' and internal reference '97' regarding intyg 'INTYGS_ID' to unit 'ENHET' with completion for questions 'KOMP1,KOMP2'");
     }
 
     @Test
     public void shouldLogQuestionReceivedCompletionWrongSubject() {
         logService.logQuestionReceived(FRAGESTALLARE, INTYGS_ID, EXTERN_REFERENS, INTERN_REFERENS, ENHET, AMNE,
-                Arrays.asList("KOMP1", "KOMP2"));
+            Arrays.asList("KOMP1", "KOMP2"));
         verifyLog(Level.INFO,
-                "QUESTION_RECEIVED Received question from 'FRAGESTALLARE' with external reference 'EXTERN_REFERENS' and internal reference '97' regarding intyg 'INTYGS_ID' to unit 'ENHET' with subject 'ARBETSTIDSFORLAGGNING'");
+            "QUESTION_RECEIVED Received question from 'FRAGESTALLARE' with external reference 'EXTERN_REFERENS' and internal reference '97' regarding intyg 'INTYGS_ID' to unit 'ENHET' with subject 'ARBETSTIDSFORLAGGNING'");
     }
 
     @Test
     public void shouldLogQuestionSent() {
         logService.logQuestionSent(EXTERN_REFERENS, INTERN_REFERENS, INTYGS_ID, ENHET, AMNE);
         verifyLog(Level.INFO,
-                "QUESTION_SENT Sent question with external reference 'EXTERN_REFERENS' and internal reference '97' regarding intyg 'INTYGS_ID' to unit 'ENHET' with subject 'ARBETSTIDSFORLAGGNING'");
+            "QUESTION_SENT Sent question with external reference 'EXTERN_REFERENS' and internal reference '97' regarding intyg 'INTYGS_ID' to unit 'ENHET' with subject 'ARBETSTIDSFORLAGGNING'");
     }
 
     @Test
     public void shouldLogQuestionSentWhenParametersAllNull() {
         logService.logQuestionSent(null, null, null, null, null);
         verifyLog(Level.INFO,
-                "QUESTION_SENT Sent question with external reference 'null' and internal reference 'null' regarding intyg 'null' to unit 'null' with subject 'NO AMNE'");
+            "QUESTION_SENT Sent question with external reference 'null' and internal reference 'null' regarding intyg 'null' to unit 'null' with subject 'NO AMNE'");
     }
 
     @Test
@@ -374,7 +372,7 @@ public class MonitoringLogServiceImplTest {
     public void shouldLogUtkastConcurrentlyEdited() {
         logService.logUtkastConcurrentlyEdited(INTYGS_ID, INTYGS_TYP);
         verifyLog(Level.INFO,
-                "UTKAST_CONCURRENTLY_EDITED Utkast 'INTYGS_ID' of type 'INTYGS_TYP' was concurrently edited by multiple users");
+            "UTKAST_CONCURRENTLY_EDITED Utkast 'INTYGS_ID' of type 'INTYGS_TYP' was concurrently edited by multiple users");
     }
 
     @Test
@@ -423,7 +421,7 @@ public class MonitoringLogServiceImplTest {
     public void shouldLogIntegratedOtherCaregiver() {
         logService.logIntegratedOtherCaregiver(INTYGS_ID, INTYGS_TYP, VARDGIVARE, ENHET);
         verifyLog(Level.INFO,
-                "LOGIN_OTHER_CAREGIVER Viewed intyg 'INTYGS_ID' of type 'INTYGS_TYP' on other caregiver 'VARDGIVARE' unit 'ENHET'");
+            "LOGIN_OTHER_CAREGIVER Viewed intyg 'INTYGS_ID' of type 'INTYGS_TYP' on other caregiver 'VARDGIVARE' unit 'ENHET'");
     }
 
     @Test
@@ -453,67 +451,78 @@ public class MonitoringLogServiceImplTest {
     @Test
     public void shouldLogSrsLoaded() {
         logService.logSrsLoaded("UTK", "intyg", "vardgivare", "vardenhet", "F438A");
-        verifyLog(Level.INFO, "SRS_LOADED SRS loaded in client context 'UTK' for intyg 'intyg' and diagnosis code 'F438A' with caregiver 'vardgivare' and care unit 'vardenhet'");
+        verifyLog(Level.INFO,
+            "SRS_LOADED SRS loaded in client context 'UTK' for intyg 'intyg' and diagnosis code 'F438A' with caregiver 'vardgivare' and care unit 'vardenhet'");
     }
 
     @Test
     public void shouldLogSrsPanelActivated() {
         logService.logSrsPanelActivated("FRL", "intyg", "vardgivare", "vardenhet");
-        verifyLog(Level.INFO, "SRS_PANEL_ACTIVATED SRS panel activated in client context 'FRL' for intyg 'intyg' with caregiver 'vardgivare' and care unit 'vardenhet'");
+        verifyLog(Level.INFO,
+            "SRS_PANEL_ACTIVATED SRS panel activated in client context 'FRL' for intyg 'intyg' with caregiver 'vardgivare' and care unit 'vardenhet'");
     }
 
     @Test
     public void shouldLogSrsConsentAnswered() {
         logService.logSrsConsentAnswered("UTK", "intyg", "vardgivare", "vardenhet");
-        verifyLog(Level.INFO, "SRS_CONSENT_ANSWERED SRS consent answered in client context 'UTK' for intyg 'intyg' with caregiver 'vardgivare' and care unit 'vardenhet'");
+        verifyLog(Level.INFO,
+            "SRS_CONSENT_ANSWERED SRS consent answered in client context 'UTK' for intyg 'intyg' with caregiver 'vardgivare' and care unit 'vardenhet'");
     }
 
     @Test
     public void shouldLogSrsQuestionAnswered() {
         logService.logSrsQuestionAnswered("UTK", "intyg", "vardgivare", "vardenhet");
-        verifyLog(Level.INFO, "SRS_QUESTION_ANSWERED SRS question answered in client context 'UTK' for intyg 'intyg' with caregiver 'vardgivare' and care unit 'vardenhet'");
+        verifyLog(Level.INFO,
+            "SRS_QUESTION_ANSWERED SRS question answered in client context 'UTK' for intyg 'intyg' with caregiver 'vardgivare' and care unit 'vardenhet'");
     }
 
     @Test
     public void shouldLogSrsCalculateClicked() {
         logService.logSrsCalculateClicked("UTK", "intyg", "vardgivare", "vardenhet");
-        verifyLog(Level.INFO, "SRS_CALCULATE_CLICKED SRS calculate prediction clicked in client context 'UTK' for intyg 'intyg' with caregiver 'vardgivare' and care unit 'vardenhet'");
+        verifyLog(Level.INFO,
+            "SRS_CALCULATE_CLICKED SRS calculate prediction clicked in client context 'UTK' for intyg 'intyg' with caregiver 'vardgivare' and care unit 'vardenhet'");
     }
 
     @Test
     public void shouldLogSrsHideQuestionsClicked() {
         logService.logSrsHideQuestionsClicked("UTK", "intyg", "vardgivare", "vardenhet");
-        verifyLog(Level.INFO, "SRS_HIDE_QUESTIONS_CLICKED SRS hide questions clicked in client context 'UTK' for intyg 'intyg' with caregiver 'vardgivare' and care unit 'vardenhet'");
+        verifyLog(Level.INFO,
+            "SRS_HIDE_QUESTIONS_CLICKED SRS hide questions clicked in client context 'UTK' for intyg 'intyg' with caregiver 'vardgivare' and care unit 'vardenhet'");
     }
 
     @Test
     public void shouldLogSrsShowQuestionsClicked() {
         logService.logSrsShowQuestionsClicked("UTK", "intyg", "vardgivare", "vardenhet");
-        verifyLog(Level.INFO, "SRS_SHOW_QUESTIONS_CLICKED SRS show questions clicked in client context 'UTK' for intyg 'intyg' with caregiver 'vardgivare' and care unit 'vardenhet'");
+        verifyLog(Level.INFO,
+            "SRS_SHOW_QUESTIONS_CLICKED SRS show questions clicked in client context 'UTK' for intyg 'intyg' with caregiver 'vardgivare' and care unit 'vardenhet'");
     }
 
     @Test
     public void shouldLogSrsMeasuresShowMoreClicked() {
         logService.logSrsMeasuresShowMoreClicked("UTK", "intyg", "vardgivare", "vardenhet");
-        verifyLog(Level.INFO, "SRS_MEASURES_SHOW_MORE_CLICKED SRS show more measures clicked in client context 'UTK' for intyg 'intyg' with caregiver 'vardgivare' and care unit 'vardenhet'");
+        verifyLog(Level.INFO,
+            "SRS_MEASURES_SHOW_MORE_CLICKED SRS show more measures clicked in client context 'UTK' for intyg 'intyg' with caregiver 'vardgivare' and care unit 'vardenhet'");
     }
 
     @Test
     public void shouldLogSrsMeasuresLinkClicked() {
         logService.logSrsMeasuresLinkClicked("UTK", "intyg", "vardgivare", "vardenhet");
-        verifyLog(Level.INFO, "SRS_MEASURES_LINK_CLICKED SRS measures link clicked in client context 'UTK' for intyg 'intyg' with caregiver 'vardgivare' and care unit 'vardenhet'");
+        verifyLog(Level.INFO,
+            "SRS_MEASURES_LINK_CLICKED SRS measures link clicked in client context 'UTK' for intyg 'intyg' with caregiver 'vardgivare' and care unit 'vardenhet'");
     }
 
     @Test
     public void shouldLogSrsStatisticsActivated() {
         logService.logSrsStatisticsActivated("UTK", "intyg", "vardgivare", "vardenhet");
-        verifyLog(Level.INFO, "SRS_STATISTICS_ACTIVATED SRS statistics tab activated in client context 'UTK' for intyg 'intyg' with caregiver 'vardgivare' and care unit 'vardenhet'");
+        verifyLog(Level.INFO,
+            "SRS_STATISTICS_ACTIVATED SRS statistics tab activated in client context 'UTK' for intyg 'intyg' with caregiver 'vardgivare' and care unit 'vardenhet'");
     }
 
     @Test
     public void shouldLogSrsStatisticsLinkClicked() {
         logService.logSrsStatisticsLinkClicked("UTK", "intyg", "vardgivare", "vardenhet");
-        verifyLog(Level.INFO, "SRS_STATISTICS_LINK_CLICKED SRS statistics link clicked in client context 'UTK' for intyg 'intyg' with caregiver 'vardgivare' and care unit 'vardenhet'");
+        verifyLog(Level.INFO,
+            "SRS_STATISTICS_LINK_CLICKED SRS statistics link clicked in client context 'UTK' for intyg 'intyg' with caregiver 'vardgivare' and care unit 'vardenhet'");
     }
 
 }

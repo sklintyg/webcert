@@ -28,90 +28,90 @@ var SokSkrivIntygPage = wcTestTools.pages.sokSkrivIntyg.pickPatient;
 
 describe('Testa sekretessmarkering för vårdadmin', function() {
 
-    var utkastId,
-        unhandledCertsCount = 0,
-        intygTypeVersion = '1.1';
+  var utkastId,
+      unhandledCertsCount = 0,
+      intygTypeVersion = '1.1';
 
-    beforeAll(function() {
-        browser.ignoreSynchronization = false;
+  beforeAll(function() {
+    browser.ignoreSynchronization = false;
 
-        // Börja med att säkerställa att Tolvan ej är s-markerad
-        restHelper.setSekretessmarkering('191212121212', false);
+    // Börja med att säkerställa att Tolvan ej är s-markerad
+    restHelper.setSekretessmarkering('191212121212', false);
+  });
+
+  afterAll(function() {
+    restUtil.deleteUtkast(utkastId);
+
+    // Explicitly make sure the PU-service is enabled and s-markering removed from
+    // Tolvansson.
+    restUtil.setPuServiceState(true).then(function() {
+      restHelper.setSekretessmarkering('191212121212', false).then(function() {
+        SokSkrivIntygPage.get();
+        specHelper.logout();
+      });
+    });
+  });
+
+  it('login through the welcome page with vardadmin user', function() {
+
+    WelcomePage.get();
+    WelcomePage.login('IFV1239877878-104N_IFV1239877878-1045');
+    specHelper.waitForAngularTestability();
+  });
+
+  describe('Skapa ett utkast', function() {
+    it('Skapa utkast för Tolvansson', function() {
+      SokSkrivIntygPage.get();
+
+      element(by.id('stat-unitstat-unsigned-certs-count')).isPresent().then(function(present) {
+        if (present) {
+          element(by.id('stat-unitstat-unsigned-certs-count')).getText().then(function(value) {
+            unhandledCertsCount = parseInt(value, 10);
+          });
+        }
+      });
+
+      specHelper.createUtkastForPatient('191212121212', 'luse');
+      specHelper.getUtkastIdFromUrl().then(function(id) {
+        utkastId = id;
+      });
+    });
+  });
+
+  describe('Gå till listan över fråga/svar', function() {
+
+    it('Räkna antal obesvarade frågor i headern innan vi sekretessmarkerat', function() {
+      element(by.css('a[ng-href="/#/enhet-arenden"]')).click();
+      expect(element(by.id('stat-unitstat-unhandled-question-count')).isPresent()).toBe(false);
     });
 
-    afterAll(function() {
-        restUtil.deleteUtkast(utkastId);
+    it('Räkna antal ej signerade utkast i headern innan vi sekretessmarkerat', function() {
+      expect(element(by.id('stat-unitstat-unsigned-certs-count')).getText()).toBe((unhandledCertsCount + 1) + '');
+    });
+  });
 
-        // Explicitly make sure the PU-service is enabled and s-markering removed from
-        // Tolvansson.
-        restUtil.setPuServiceState(true).then(function() {
-            restHelper.setSekretessmarkering('191212121212', false).then(function() {
-                SokSkrivIntygPage.get();
-                specHelper.logout();
-            });
-        });
+  describe('Sekretessmarkera Tolvan', function() {
+    it('set sekr and view patient', function() {
+      restHelper.setSekretessmarkering('191212121212', true).then(function() {
+        SokSkrivIntygPage.get();
+        SokSkrivIntygPage.selectPersonnummer('19121212-1212');
+        expect(element(by.id('wc-sekretessmarkering-text-191212121212')).isPresent()).toBe(true);
+      });
     });
 
-    it('login through the welcome page with vardadmin user', function() {
-
-        WelcomePage.get();
-        WelcomePage.login('IFV1239877878-104N_IFV1239877878-1045');
-        specHelper.waitForAngularTestability();
+    it('Räkna antal obesvarade frågor i headern efter vi sekretessmarkerat', function() {
+      element(by.css('a[ng-href="/#/enhet-arenden"]')).click();
+      expect(element(by.id('stat-unitstat-unhandled-question-count')).isPresent()).toBe(false);
+      expect(element(by.css('wc-no-arenden-message div:last-of-type'))
+      .getText()).toBe('Det finns inga ohanterade ärenden för den enhet eller de enheter du är inloggad på.');
     });
 
-    describe('Skapa ett utkast', function() {
-        it('Skapa utkast för Tolvansson', function() {
-            SokSkrivIntygPage.get();
-
-            element(by.id('stat-unitstat-unsigned-certs-count')).isPresent().then(function(present) {
-                if(present) {
-                    element(by.id('stat-unitstat-unsigned-certs-count')).getText().then(function(value) {
-                        unhandledCertsCount = parseInt(value, 10);
-                    });
-                }
-            });
-
-            specHelper.createUtkastForPatient('191212121212', 'luse');
-            specHelper.getUtkastIdFromUrl().then(function(id) {
-                utkastId = id;
-            });
-        });
+    it('Försök öppna utkastet via direktlänk', function() {
+      browser.get('/#/luse/' + intygTypeVersion + '/edit/' + utkastId + '/').then(function() {
+        expect(element(by.id('error-panel')).isPresent()).toBe(true);
+        // Error message should now display certificateId
+        expect(element(by.id('error-panel')).getText()).toContain(utkastId);
+      });
     });
-
-    describe('Gå till listan över fråga/svar', function() {
-
-        it('Räkna antal obesvarade frågor i headern innan vi sekretessmarkerat', function() {
-            element(by.css('a[ng-href="/#/enhet-arenden"]')).click();
-            expect(element(by.id('stat-unitstat-unhandled-question-count')).isPresent()).toBe(false);
-        });
-
-        it('Räkna antal ej signerade utkast i headern innan vi sekretessmarkerat', function() {
-            expect(element(by.id('stat-unitstat-unsigned-certs-count')).getText()).toBe((unhandledCertsCount + 1) + '');
-        });
-    });
-
-    describe('Sekretessmarkera Tolvan', function() {
-        it('set sekr and view patient', function() {
-            restHelper.setSekretessmarkering('191212121212', true).then(function() {
-                SokSkrivIntygPage.get();
-                SokSkrivIntygPage.selectPersonnummer('19121212-1212');
-                expect(element(by.id('wc-sekretessmarkering-text-191212121212')).isPresent()).toBe(true);
-            });
-        });
-
-        it('Räkna antal obesvarade frågor i headern efter vi sekretessmarkerat', function() {
-            element(by.css('a[ng-href="/#/enhet-arenden"]')).click();
-            expect(element(by.id('stat-unitstat-unhandled-question-count')).isPresent()).toBe(false);
-            expect(element(by.css('wc-no-arenden-message div:last-of-type'))
-                .getText()).toBe('Det finns inga ohanterade ärenden för den enhet eller de enheter du är inloggad på.');
-        });
-
-        it('Försök öppna utkastet via direktlänk', function() {
-            browser.get('/#/luse/'+ intygTypeVersion + '/edit/' + utkastId + '/').then(function() {
-                expect(element(by.id('error-panel')).isPresent()).toBe(true);
-                // Error message should now display certificateId
-                expect(element(by.id('error-panel')).getText()).toContain(utkastId);
-            });
-        });
-    });
+  });
 });

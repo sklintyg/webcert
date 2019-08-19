@@ -37,11 +37,11 @@ public class PreviousIntyg {
     }
 
     private PreviousIntyg(
-            final boolean sameVardgivare,
-            final LocalDateTime skapat,
-            final boolean sameEnhet,
-            final String enhetName,
-            final String latestIntygsId) {
+        final boolean sameVardgivare,
+        final LocalDateTime skapat,
+        final boolean sameEnhet,
+        final String enhetName,
+        final String latestIntygsId) {
         this.sameVardgivare = sameVardgivare;
         this.latestIntygsId = latestIntygsId;
         this.sameEnhet = sameEnhet;
@@ -50,11 +50,11 @@ public class PreviousIntyg {
     }
 
     public static PreviousIntyg of(
-            final boolean sameVardgivare,
-            final boolean sameEnhet,
-            final String enhetName,
-            final String latestIntygsId,
-            final LocalDateTime skapat) {
+        final boolean sameVardgivare,
+        final boolean sameEnhet,
+        final String enhetName,
+        final String latestIntygsId,
+        final LocalDateTime skapat) {
 
         if (sameVardgivare) {
             return new PreviousIntyg(sameVardgivare, skapat, sameEnhet, enhetName, latestIntygsId);

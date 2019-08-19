@@ -19,7 +19,6 @@
 package se.inera.intyg.webcert.persistence.arende.repository;
 
 import java.util.List;
-
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
 import se.inera.intyg.webcert.persistence.model.Filter;
 

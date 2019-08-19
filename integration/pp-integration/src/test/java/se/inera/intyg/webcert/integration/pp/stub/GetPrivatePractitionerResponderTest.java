@@ -30,7 +30,6 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-
 import se.inera.intyg.webcert.integration.pp.util.ObjectCreator;
 import se.riv.infrastructure.directory.privatepractitioner.getprivatepractitioner.v1.rivtabp21.GetPrivatePractitionerResponderInterface;
 import se.riv.infrastructure.directory.privatepractitioner.getprivatepractitionerresponder.v1.GetPrivatePractitionerResponseType;
@@ -41,7 +40,7 @@ import se.riv.infrastructure.directory.privatepractitioner.v1.ResultCodeEnum;
 @RunWith(MockitoJUnitRunner.class)
 public class GetPrivatePractitionerResponderTest {
 
-    private final static String HSAID        = "HSA0000-123456789";
+    private final static String HSAID = "HSA0000-123456789";
     private final static String PERSONNUMMER = "19121212-1212";
 
     @Mock
@@ -50,12 +49,12 @@ public class GetPrivatePractitionerResponderTest {
     @InjectMocks
     private GetPrivatePractitionerResponderInterface ws = new GetPrivatePractitionerResponderStub();
 
-    @Test (expected = IllegalArgumentException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void nullParametersThrowsException() {
         ws.getPrivatePractitioner(null, null);
     }
 
-    @Test (expected = IllegalArgumentException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void noPersonIdThrowsException() {
         GetPrivatePractitionerType request = new GetPrivatePractitionerType();
         ws.getPrivatePractitioner(null, request);

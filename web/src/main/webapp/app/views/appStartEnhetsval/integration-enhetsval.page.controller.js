@@ -18,71 +18,71 @@
  */
 
 angular.module('webcert').controller('integration.EnhetsvalPageCtrl',
-        [ '$scope', '$window', '$uibModal', 'common.UserModel', function($scope, $window, $uibModal, UserModel) {
-            'use strict';
+    ['$scope', '$window', '$uibModal', 'common.UserModel', function($scope, $window, $uibModal, UserModel) {
+      'use strict';
 
-            // Construct base destination url
-            var baseDestUrl = getParameterByName('destination', $window.location.search);
+      // Construct base destination url
+      var baseDestUrl = getParameterByName('destination', $window.location.search);
 
-            //Util function that parses destination argument from current url
-            function getParameterByName(name, url) {
-                var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'), results = regex.exec(url);
-                if (!results || !results[2]) {
-                    return '';
-                }
-                return decodeURIComponent(results[2].replace(/\+/g, ' '));
-            }
+      //Util function that parses destination argument from current url
+      function getParameterByName(name, url) {
+        var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'), results = regex.exec(url);
+        if (!results || !results[2]) {
+          return '';
+        }
+        return decodeURIComponent(results[2].replace(/\+/g, ' '));
+      }
 
-            function updateQueryParameter(uri, key, value) {
-                var re = new RegExp('([?|&])' + key + '=.*?(&|#|$)', 'i');
-                if (uri.match(re)) {
-                    return uri.replace(re, '$1' + key + '=' + value + '$2');
-                } else {
-                    var hash = '';
-                    if( uri.indexOf('#') !== -1 ){
-                        hash = uri.replace(/.*#/, '#');
-                        uri = uri.replace(/#.*/, '');
-                    }
-                    var separator = uri.indexOf('?') !== -1 ? '&' : '?';
-                    return uri + separator + key + '=' + value + hash;
-                }
-            }
+      function updateQueryParameter(uri, key, value) {
+        var re = new RegExp('([?|&])' + key + '=.*?(&|#|$)', 'i');
+        if (uri.match(re)) {
+          return uri.replace(re, '$1' + key + '=' + value + '$2');
+        } else {
+          var hash = '';
+          if (uri.indexOf('#') !== -1) {
+            hash = uri.replace(/.*#/, '#');
+            uri = uri.replace(/#.*/, '');
+          }
+          var separator = uri.indexOf('?') !== -1 ? '&' : '?';
+          return uri + separator + key + '=' + value + hash;
+        }
+      }
 
-            function buildTargetUri(baseUrl, enhetsId) {
-                return updateQueryParameter(baseUrl, 'enhet', enhetsId);
-            }
+      function buildTargetUri(baseUrl, enhetsId) {
+        return updateQueryParameter(baseUrl, 'enhet', enhetsId);
+      }
 
-            //When enhet is selected in dialog, redirect window to original destination + &enhet=<selected enhetsid>
-            function onUnitSelected(enhet) {
-                var uri = buildTargetUri(baseDestUrl, enhet.id);
-                $window.location.replace(uri);
-            }
+      //When enhet is selected in dialog, redirect window to original destination + &enhet=<selected enhetsid>
+      function onUnitSelected(enhet) {
+        var uri = buildTargetUri(baseDestUrl, enhet.id);
+        $window.location.replace(uri);
+      }
 
+      $scope.onUnitSelected = onUnitSelected;
+
+      function showDialog() {
+        // We don't handle any results from this dialog - and it cant be closed other than by choosing
+        // an enhet which will result in a full page redirect..
+        $uibModal.open({
+          templateUrl: '/app/views/appStartEnhetsval/enhetsval.dialog.html',
+          backdrop: 'static',
+          keyboard: false,
+          windowClass: 'wc-integration-enhet-selector',
+          controller: function($scope, $uibModalInstance, userModel, onUnitSelected) {
+            $scope.user = userModel;
             $scope.onUnitSelected = onUnitSelected;
-
-            function showDialog() {
-                // We don't handle any results from this dialog - and it cant be closed other than by choosing
-                // an enhet which will result in a full page redirect..
-                $uibModal.open({
-                    templateUrl: '/app/views/appStartEnhetsval/enhetsval.dialog.html',
-                    backdrop: 'static',
-                    keyboard: false,
-                    windowClass: 'wc-integration-enhet-selector',
-                    controller: function($scope, $uibModalInstance, userModel, onUnitSelected) {
-                        $scope.user = userModel;
-                        $scope.onUnitSelected = onUnitSelected;
-                    },
-                    resolve: {
-                        userModel: function() {
-                            return UserModel.user;
-                        },
-                        onUnitSelected: function() {
-                            return onUnitSelected;
-                        }
-                    }
-                });
+          },
+          resolve: {
+            userModel: function() {
+              return UserModel.user;
+            },
+            onUnitSelected: function() {
+              return onUnitSelected;
             }
+          }
+        });
+      }
 
-            showDialog();
+      showDialog();
 
-        } ]);
+    }]);

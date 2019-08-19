@@ -22,12 +22,12 @@
 'use strict';
 
 module.exports = {
-    container: element(by.id('webcertLanding')),
+  container: element(by.id('webcertLanding')),
 
-    get: function() {
-        return browser.get(process.env.WEBCERT_URL);
-    },
-    isAt: function() {
-        return this.container.isDisplayed();
-    }
+  get: function() {
+    return browser.get(process.env.WEBCERT_URL);
+  },
+  isAt: function() {
+    return this.container.isDisplayed();
+  }
 };

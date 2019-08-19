@@ -22,20 +22,18 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
-
 import javax.annotation.PostConstruct;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
-
 import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
 import se.inera.intyg.webcert.persistence.integreradenhet.model.IntegreradEnhet;
 import se.inera.intyg.webcert.persistence.integreradenhet.repository.IntegreradEnhetRepository;
 
 public class IntegreradeEnheterBootstrapBean {
+
     private static final Logger LOG = LoggerFactory.getLogger(IntegreradeEnheterBootstrapBean.class);
 
     @Autowired

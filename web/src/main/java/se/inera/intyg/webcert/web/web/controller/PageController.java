@@ -19,9 +19,7 @@
 package se.inera.intyg.webcert.web.web.controller;
 
 import java.net.URI;
-
 import javax.ws.rs.core.UriBuilder;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +30,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.maillink.MailLinkService;
@@ -64,7 +61,7 @@ public class PageController {
         String enhetHsaId = intygService.getIssuingVardenhetHsaId(intygId, typ);
         if (enhetHsaId == null) {
             LOG.error("Could not redirect user to utkast using /maillink for intygsId '" + intygId
-                    + "'. No enhetsId found for utkast. Does the utkast exist?");
+                + "'. No enhetsId found for utkast. Does the utkast exist?");
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
@@ -72,9 +69,9 @@ public class PageController {
         if (!user.changeValdVardenhet(enhetHsaId)) {
             HttpHeaders httpHeaders = new HttpHeaders();
             URI uri = UriBuilder.fromPath("/error.jsp")
-                    .queryParam("reason", "enhet.auth.exception")
-                    .queryParam("enhetHsaId", enhetHsaId)
-                    .build();
+                .queryParam("reason", "enhet.auth.exception")
+                .queryParam("enhetHsaId", enhetHsaId)
+                .build();
             httpHeaders.setLocation(uri);
             return new ResponseEntity<>(httpHeaders, HttpStatus.FOUND);
         }

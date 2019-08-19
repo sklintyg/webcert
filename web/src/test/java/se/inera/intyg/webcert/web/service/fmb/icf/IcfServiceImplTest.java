@@ -30,11 +30,11 @@ import static se.inera.intyg.webcert.persistence.fmb.model.fmb.Icd10Kod.Icd10Kod
 import static se.inera.intyg.webcert.persistence.fmb.model.fmb.IcfKod.IcfKodBuilder.anIcfKod;
 import static se.inera.intyg.webcert.persistence.fmb.model.fmb.Referens.ReferensBuilder.aReferens;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -63,23 +63,23 @@ public class IcfServiceImplTest {
     @Test
     public void testNoRequest() {
         assertThatThrownBy(() -> icfService.findIcfInformationByIcd10Koder(null))
-                .isExactlyInstanceOf(IllegalArgumentException.class)
-                .hasMessage("Icd10KoderRequest can not be null");
+            .isExactlyInstanceOf(IllegalArgumentException.class)
+            .hasMessage("Icd10KoderRequest can not be null");
     }
 
     @Test
     public void testNoIcd10Code1() {
         assertThatThrownBy(() -> icfService.findIcfInformationByIcd10Koder(Icd10KoderRequest.of(null, null, null)))
-                .isExactlyInstanceOf(IllegalArgumentException.class)
-                .hasMessage("Icd10KoderRequest must have an icfCode1");
+            .isExactlyInstanceOf(IllegalArgumentException.class)
+            .hasMessage("Icd10KoderRequest must have an icfCode1");
     }
 
     @Test
     public void testNoMatchingIcfCodes() {
 
         doReturn(Optional.empty())
-                .when(repository)
-                .findFirstByIcd10KodList_kod(anyString());
+            .when(repository)
+            .findFirstByIcd10KodList_kod(anyString());
 
         final IcfResponse response = icfService.findIcfInformationByIcd10Koder(Icd10KoderRequest.of("code", null, null));
 
@@ -99,28 +99,29 @@ public class IcfServiceImplTest {
         final String icd10Kod = "icd10";
 
         doReturn(Optional.empty())
-                .when(repository)
-                .findFirstByIcd10KodList_kod(eq(noMatch1));
+            .when(repository)
+            .findFirstByIcd10KodList_kod(eq(noMatch1));
 
         doReturn(Optional.empty())
-                .when(repository)
-                .findFirstByIcd10KodList_kod(eq(noMatch2));
+            .when(repository)
+            .findFirstByIcd10KodList_kod(eq(noMatch2));
 
         doReturn(Optional.of(buildDiagnosInformationSingleMatch(icd10Kod, match1)))
-                .when(repository)
-                .findFirstByIcd10KodList_kod(eq(match1));
+            .when(repository)
+            .findFirstByIcd10KodList_kod(eq(match1));
 
         final IcfResponse icfInformationByIcd10Koder = icfService.findIcfInformationByIcd10Koder(
-                Icd10KoderRequest.of(noMatch1, noMatch2, match1));
-
+            Icd10KoderRequest.of(noMatch1, noMatch2, match1));
 
         assertThat(icfInformationByIcd10Koder).isNotNull();
 
         assertThat(icfInformationByIcd10Koder.getUnika()).isNotNull();
         assertThat(icfInformationByIcd10Koder.getUnika()).hasSize(1);
         assertThat(icfInformationByIcd10Koder.getUnika().get(0).getIcd10Kod()).isEqualTo(match1);
-        assertThat(icfInformationByIcd10Koder.getUnika().get(0).getFunktionsNedsattningsKoder().getIcfKoder().get(0).getKod()).isEqualTo(match1);
-        assertThat(icfInformationByIcd10Koder.getUnika().get(0).getFunktionsNedsattningsKoder().getIcfKoder().get(0).getKod()).isEqualTo(match1);
+        assertThat(icfInformationByIcd10Koder.getUnika().get(0).getFunktionsNedsattningsKoder().getIcfKoder().get(0).getKod())
+            .isEqualTo(match1);
+        assertThat(icfInformationByIcd10Koder.getUnika().get(0).getFunktionsNedsattningsKoder().getIcfKoder().get(0).getKod())
+            .isEqualTo(match1);
 
         assertThat(icfInformationByIcd10Koder.getGemensamma()).isNotNull();
         assertThat(icfInformationByIcd10Koder.getGemensamma().getIcd10Kod()).isNull();
@@ -139,20 +140,19 @@ public class IcfServiceImplTest {
         final String icd10Kod2 = "icd10";
 
         doReturn(Optional.empty())
-                .when(repository)
-                .findFirstByIcd10KodList_kod(eq(noMatch1));
+            .when(repository)
+            .findFirstByIcd10KodList_kod(eq(noMatch1));
 
         doReturn(Optional.of(buildDiagnosInformation(icd10Kod1, match1)))
-                .when(repository)
-                .findFirstByIcd10KodList_kod(eq(match1));
+            .when(repository)
+            .findFirstByIcd10KodList_kod(eq(match1));
 
         doReturn(Optional.of(buildDiagnosInformation(icd10Kod2, match2)))
-                .when(repository)
-                .findFirstByIcd10KodList_kod(eq(match2));
+            .when(repository)
+            .findFirstByIcd10KodList_kod(eq(match2));
 
         final IcfResponse icfInformationByIcd10Koder = icfService.findIcfInformationByIcd10Koder(
-                Icd10KoderRequest.of(noMatch1, match1, match2));
-
+            Icd10KoderRequest.of(noMatch1, match1, match2));
 
         assertThat(icfInformationByIcd10Koder).isNotNull();
 
@@ -170,11 +170,11 @@ public class IcfServiceImplTest {
         List<String> expected = Lists.newArrayList(icd10KodGeneralized);
 
         doReturn(Optional.of(buildDiagnosInformation(icd10KodGeneralized, matchingCode)))
-                .when(repository)
-                .findFirstByIcd10KodList_kod(eq(icd10KodGeneralized));
+            .when(repository)
+            .findFirstByIcd10KodList_kod(eq(icd10KodGeneralized));
 
         final IcfResponse icfInformationByIcd10Koder = icfService.findIcfInformationByIcd10Koder(
-                Icd10KoderRequest.of(icd10KodTooSpecific, null, null));
+            Icd10KoderRequest.of(icd10KodTooSpecific, null, null));
 
         assertThat(icfInformationByIcd10Koder).isNotNull();
 
@@ -196,12 +196,11 @@ public class IcfServiceImplTest {
         List<String> expected = Lists.newArrayList(icd10KodGeneralized);
 
         doReturn(Optional.of(buildDiagnosInformation(icd10KodGeneralized, matchingCode)))
-                .when(repository)
-                .findFirstByIcd10KodList_kod(eq(icd10KodGeneralized));
+            .when(repository)
+            .findFirstByIcd10KodList_kod(eq(icd10KodGeneralized));
 
         final IcfResponse icfInformationByIcd10Koder = icfService.findIcfInformationByIcd10Koder(
-                Icd10KoderRequest.of(icd10KodTooSpecific1, icd10KodTooSpecific2, null));
-
+            Icd10KoderRequest.of(icd10KodTooSpecific1, icd10KodTooSpecific2, null));
 
         assertThat(icfInformationByIcd10Koder).isNotNull();
 
@@ -214,70 +213,70 @@ public class IcfServiceImplTest {
 
     private DiagnosInformation buildDiagnosInformation(final String icd10Kod, final String icfKod) {
         return aDiagnosInformation()
-                .forsakringsmedicinskInformation("forsakringsmedicinskInformation")
-                .symptomPrognosBehandling("symptomPrognosBehandling")
-                .beskrivningList(ImmutableList.of(
-                        aBeskrivning()
-                                .beskrivningText("beskrivningsText")
-                                .beskrivningTyp(BeskrivningTyp.FUNKTIONSNEDSATTNING)
-                                .icfKodList(ImmutableList.of(
-                                        anIcfKod()
-                                                .kod(icfKod)
-                                                .icfKodTyp(IcfKodTyp.CENTRAL)
-                                                .build(),
-                                        anIcfKod()
-                                                .kod(icfKod)
-                                                .icfKodTyp(IcfKodTyp.KOMPLETTERANDE)
-                                                .build()))
-                                .build()))
-                .icd10KodList(ImmutableList.of(
-                        anIcd10Kod()
-                                .kod(icd10Kod)
-                                .beskrivning("beskrivning")
-                                .typFallList(ImmutableList.of())
-                                .build(),
-                        anIcd10Kod()
-                                .kod(icd10Kod)
-                                .beskrivning("beskrivning")
-                                .typFallList(ImmutableList.of())
-                                .build()))
-                .referensList(ImmutableList.of(
-                        aReferens()
-                                .text("text")
-                                .uri("www.uri.com")
-                                .build()))
-                .senastUppdaterad(LocalDateTime.of(2018, 11, 11, 11, 11))
-                .build();
+            .forsakringsmedicinskInformation("forsakringsmedicinskInformation")
+            .symptomPrognosBehandling("symptomPrognosBehandling")
+            .beskrivningList(ImmutableList.of(
+                aBeskrivning()
+                    .beskrivningText("beskrivningsText")
+                    .beskrivningTyp(BeskrivningTyp.FUNKTIONSNEDSATTNING)
+                    .icfKodList(ImmutableList.of(
+                        anIcfKod()
+                            .kod(icfKod)
+                            .icfKodTyp(IcfKodTyp.CENTRAL)
+                            .build(),
+                        anIcfKod()
+                            .kod(icfKod)
+                            .icfKodTyp(IcfKodTyp.KOMPLETTERANDE)
+                            .build()))
+                    .build()))
+            .icd10KodList(ImmutableList.of(
+                anIcd10Kod()
+                    .kod(icd10Kod)
+                    .beskrivning("beskrivning")
+                    .typFallList(ImmutableList.of())
+                    .build(),
+                anIcd10Kod()
+                    .kod(icd10Kod)
+                    .beskrivning("beskrivning")
+                    .typFallList(ImmutableList.of())
+                    .build()))
+            .referensList(ImmutableList.of(
+                aReferens()
+                    .text("text")
+                    .uri("www.uri.com")
+                    .build()))
+            .senastUppdaterad(LocalDateTime.of(2018, 11, 11, 11, 11))
+            .build();
 
     }
 
     private DiagnosInformation buildDiagnosInformationSingleMatch(final String icd10Kod, final String icfKod) {
         return aDiagnosInformation()
-                .forsakringsmedicinskInformation("forsakringsmedicinskInformation")
-                .symptomPrognosBehandling("symptomPrognosBehandling")
-                .beskrivningList(ImmutableList.of(
-                        aBeskrivning()
-                                .beskrivningText("beskrivningsText")
-                                .beskrivningTyp(BeskrivningTyp.FUNKTIONSNEDSATTNING)
-                                .icfKodList(ImmutableList.of(
-                                        anIcfKod()
-                                                .kod(icfKod)
-                                                .icfKodTyp(IcfKodTyp.CENTRAL)
-                                                .build()))
-                                .build()))
-                .icd10KodList(ImmutableList.of(
-                        anIcd10Kod()
-                                .kod(icd10Kod)
-                                .beskrivning("beskrivning")
-                                .typFallList(ImmutableList.of())
-                                .build()))
-                .referensList(ImmutableList.of(
-                        aReferens()
-                                .text("text")
-                                .uri("www.uri.com")
-                                .build()))
-                .senastUppdaterad(LocalDateTime.of(2018, 11, 11, 11, 11))
-                .build();
+            .forsakringsmedicinskInformation("forsakringsmedicinskInformation")
+            .symptomPrognosBehandling("symptomPrognosBehandling")
+            .beskrivningList(ImmutableList.of(
+                aBeskrivning()
+                    .beskrivningText("beskrivningsText")
+                    .beskrivningTyp(BeskrivningTyp.FUNKTIONSNEDSATTNING)
+                    .icfKodList(ImmutableList.of(
+                        anIcfKod()
+                            .kod(icfKod)
+                            .icfKodTyp(IcfKodTyp.CENTRAL)
+                            .build()))
+                    .build()))
+            .icd10KodList(ImmutableList.of(
+                anIcd10Kod()
+                    .kod(icd10Kod)
+                    .beskrivning("beskrivning")
+                    .typFallList(ImmutableList.of())
+                    .build()))
+            .referensList(ImmutableList.of(
+                aReferens()
+                    .text("text")
+                    .uri("www.uri.com")
+                    .build()))
+            .senastUppdaterad(LocalDateTime.of(2018, 11, 11, 11, 11))
+            .build();
 
     }
 }

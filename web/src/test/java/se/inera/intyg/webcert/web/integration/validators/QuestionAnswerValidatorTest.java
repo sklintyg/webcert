@@ -21,14 +21,11 @@ package se.inera.intyg.webcert.web.integration.validators;
 import static org.junit.Assert.assertEquals;
 
 import java.util.List;
-
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.stream.StreamSource;
-
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
-
 import se.inera.ifv.insuranceprocess.healthreporting.receivemedicalcertificateanswerresponder.v1.AnswerFromFkType;
 import se.inera.ifv.insuranceprocess.healthreporting.receivemedicalcertificateanswerresponder.v1.ReceiveMedicalCertificateAnswerType;
 import se.inera.ifv.insuranceprocess.healthreporting.receivemedicalcertificatequestionsponder.v1.QuestionFromFkType;
@@ -478,9 +475,9 @@ public class QuestionAnswerValidatorTest {
             Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
 
             AnswerFromFkType answer = unmarshaller
-                    .unmarshal(new StreamSource(new ClassPathResource("QuestionAnswerValidator/valid-answer-from-fk.xml").getInputStream()),
-                            AnswerFromFkType.class)
-                    .getValue();
+                .unmarshal(new StreamSource(new ClassPathResource("QuestionAnswerValidator/valid-answer-from-fk.xml").getInputStream()),
+                    AnswerFromFkType.class)
+                .getValue();
             request.setAnswer(answer);
 
             return request;
@@ -499,9 +496,9 @@ public class QuestionAnswerValidatorTest {
             Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
 
             QuestionFromFkType question = unmarshaller
-                    .unmarshal(new StreamSource(new ClassPathResource("QuestionAnswerValidator/valid-question-from-fk.xml").getInputStream()),
-                            QuestionFromFkType.class)
-                    .getValue();
+                .unmarshal(new StreamSource(new ClassPathResource("QuestionAnswerValidator/valid-question-from-fk.xml").getInputStream()),
+                    QuestionFromFkType.class)
+                .getValue();
             request.setQuestion(question);
 
             return request;

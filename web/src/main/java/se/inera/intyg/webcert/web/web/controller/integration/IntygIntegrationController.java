@@ -18,13 +18,15 @@
  */
 package se.inera.intyg.webcert.web.web.controller.integration;
 
+import com.google.common.base.Strings;
+import com.google.common.collect.ImmutableMap;
+import io.swagger.annotations.Api;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.FormParam;
@@ -38,16 +40,10 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-
-import com.google.common.base.Strings;
-import com.google.common.collect.ImmutableMap;
-
-import io.swagger.annotations.Api;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.infra.security.authorities.CommonAuthoritiesResolver;
@@ -95,10 +91,10 @@ public class IntygIntegrationController extends BaseIntegrationController {
 
     private static final UserOriginType GRANTED_ORIGIN = UserOriginType.DJUPINTEGRATION;
 
-    private static final String[] GRANTED_ROLES = new String[] {
-            AuthoritiesConstants.ROLE_LAKARE,
-            AuthoritiesConstants.ROLE_TANDLAKARE,
-            AuthoritiesConstants.ROLE_ADMIN
+    private static final String[] GRANTED_ROLES = new String[]{
+        AuthoritiesConstants.ROLE_LAKARE,
+        AuthoritiesConstants.ROLE_TANDLAKARE,
+        AuthoritiesConstants.ROLE_ADMIN
     };
 
     private String urlIntygFragmentTemplate;
@@ -121,42 +117,40 @@ public class IntygIntegrationController extends BaseIntegrationController {
      * Fetches a certificate from IT or webcert and then performs a redirect to the view that displays
      * the certificate. Can be used for all types of certificates.
      *
-     * @param intygId
-     *            The id of the certificate to view.
-     * @param intygTyp
-     *            The type of certificate
+     * @param intygId The id of the certificate to view.
+     * @param intygTyp The type of certificate
      */
     @GET
     @Path("/{certType}/{certId}")
     @PrometheusTimeMethod
     public Response getRedirectToIntyg(@Context UriInfo uriInfo,
-            @PathParam(PARAM_CERT_TYPE) String intygTyp,
-            @PathParam(PARAM_CERT_ID) String intygId,
-            @DefaultValue("") @QueryParam(PARAM_ENHET_ID) String enhetId,
-            @DefaultValue("") @QueryParam(PARAM_PATIENT_ALTERNATE_SSN) String alternatePatientSSn,
-            @DefaultValue("") @QueryParam(PARAM_RESPONSIBLE_HOSP_NAME) String responsibleHospName,
-            @QueryParam(PARAM_PATIENT_FORNAMN) String fornamn,
-            @QueryParam(PARAM_PATIENT_EFTERNAMN) String efternamn,
-            @QueryParam(PARAM_PATIENT_MELLANNAMN) String mellannamn,
-            @QueryParam(PARAM_PATIENT_POSTADRESS) String postadress,
-            @QueryParam(PARAM_PATIENT_POSTNUMMER) String postnummer,
-            @QueryParam(PARAM_PATIENT_POSTORT) String postort,
-            @QueryParam(PARAM_REFERENCE) String reference,
-            @DefaultValue("false") @QueryParam(PARAM_COHERENT_JOURNALING) boolean coherentJournaling,
-            @DefaultValue("false") @QueryParam(PARAM_INACTIVE_UNIT) boolean inactiveUnit,
-            @DefaultValue("false") @QueryParam(PARAM_PATIENT_DECEASED) boolean deceased,
-            @DefaultValue("true") @QueryParam(PARAM_FORNYA_OK) boolean fornyaOk) {
+        @PathParam(PARAM_CERT_TYPE) String intygTyp,
+        @PathParam(PARAM_CERT_ID) String intygId,
+        @DefaultValue("") @QueryParam(PARAM_ENHET_ID) String enhetId,
+        @DefaultValue("") @QueryParam(PARAM_PATIENT_ALTERNATE_SSN) String alternatePatientSSn,
+        @DefaultValue("") @QueryParam(PARAM_RESPONSIBLE_HOSP_NAME) String responsibleHospName,
+        @QueryParam(PARAM_PATIENT_FORNAMN) String fornamn,
+        @QueryParam(PARAM_PATIENT_EFTERNAMN) String efternamn,
+        @QueryParam(PARAM_PATIENT_MELLANNAMN) String mellannamn,
+        @QueryParam(PARAM_PATIENT_POSTADRESS) String postadress,
+        @QueryParam(PARAM_PATIENT_POSTNUMMER) String postnummer,
+        @QueryParam(PARAM_PATIENT_POSTORT) String postort,
+        @QueryParam(PARAM_REFERENCE) String reference,
+        @DefaultValue("false") @QueryParam(PARAM_COHERENT_JOURNALING) boolean coherentJournaling,
+        @DefaultValue("false") @QueryParam(PARAM_INACTIVE_UNIT) boolean inactiveUnit,
+        @DefaultValue("false") @QueryParam(PARAM_PATIENT_DECEASED) boolean deceased,
+        @DefaultValue("true") @QueryParam(PARAM_FORNYA_OK) boolean fornyaOk) {
 
         String internIntygTyp = moduleRegistry.getModuleIdFromExternalId(intygTyp.toUpperCase());
         Map<String, Object> pathParameters = ImmutableMap.of(
-                PARAM_CERT_TYPE, internIntygTyp,
-                PARAM_CERT_ID, intygId);
+            PARAM_CERT_TYPE, internIntygTyp,
+            PARAM_CERT_ID, intygId);
 
         validateRequest(pathParameters);
 
         IntegrationParameters integrationParameters = IntegrationParameters.of(
-                reference, responsibleHospName, alternatePatientSSn, fornamn, mellannamn, efternamn,
-                postadress, postnummer, postort, coherentJournaling, deceased, inactiveUnit, fornyaOk);
+            reference, responsibleHospName, alternatePatientSSn, fornamn, mellannamn, efternamn,
+            postadress, postnummer, postort, coherentJournaling, deceased, inactiveUnit, fornyaOk);
 
         // Temp. logging in an attempt to track down hashCode failures (hashCode has to be changed for redis updates)
         WebCertUser user = getWebCertUser();
@@ -171,28 +165,27 @@ public class IntygIntegrationController extends BaseIntegrationController {
      * Fetches an certificate from IT or Webcert and then performs a redirect to the view that displays
      * the certificate.
      *
-     * @param intygId
-     *            The id of the certificate to view.
+     * @param intygId The id of the certificate to view.
      */
     @GET
     @Path("{certId}")
     @PrometheusTimeMethod
     public Response getRedirectToIntyg(@Context UriInfo uriInfo,
-            @PathParam(PARAM_CERT_ID) String intygId,
-            @DefaultValue("") @QueryParam(PARAM_ENHET_ID) String enhetId,
-            @DefaultValue("") @QueryParam(PARAM_PATIENT_ALTERNATE_SSN) String alternatePatientSSn,
-            @DefaultValue("") @QueryParam(PARAM_RESPONSIBLE_HOSP_NAME) String responsibleHospName,
-            @QueryParam(PARAM_PATIENT_FORNAMN) String fornamn,
-            @QueryParam(PARAM_PATIENT_EFTERNAMN) String efternamn,
-            @QueryParam(PARAM_PATIENT_MELLANNAMN) String mellannamn,
-            @QueryParam(PARAM_PATIENT_POSTADRESS) String postadress,
-            @QueryParam(PARAM_PATIENT_POSTNUMMER) String postnummer,
-            @QueryParam(PARAM_PATIENT_POSTORT) String postort,
-            @DefaultValue("false") @QueryParam(PARAM_COHERENT_JOURNALING) boolean coherentJournaling,
-            @QueryParam(PARAM_REFERENCE) String reference,
-            @DefaultValue("false") @QueryParam(PARAM_INACTIVE_UNIT) boolean inactiveUnit,
-            @DefaultValue("false") @QueryParam(PARAM_PATIENT_DECEASED) boolean deceased,
-            @DefaultValue("true") @QueryParam(PARAM_FORNYA_OK) boolean fornyaOk) {
+        @PathParam(PARAM_CERT_ID) String intygId,
+        @DefaultValue("") @QueryParam(PARAM_ENHET_ID) String enhetId,
+        @DefaultValue("") @QueryParam(PARAM_PATIENT_ALTERNATE_SSN) String alternatePatientSSn,
+        @DefaultValue("") @QueryParam(PARAM_RESPONSIBLE_HOSP_NAME) String responsibleHospName,
+        @QueryParam(PARAM_PATIENT_FORNAMN) String fornamn,
+        @QueryParam(PARAM_PATIENT_EFTERNAMN) String efternamn,
+        @QueryParam(PARAM_PATIENT_MELLANNAMN) String mellannamn,
+        @QueryParam(PARAM_PATIENT_POSTADRESS) String postadress,
+        @QueryParam(PARAM_PATIENT_POSTNUMMER) String postnummer,
+        @QueryParam(PARAM_PATIENT_POSTORT) String postort,
+        @DefaultValue("false") @QueryParam(PARAM_COHERENT_JOURNALING) boolean coherentJournaling,
+        @QueryParam(PARAM_REFERENCE) String reference,
+        @DefaultValue("false") @QueryParam(PARAM_INACTIVE_UNIT) boolean inactiveUnit,
+        @DefaultValue("false") @QueryParam(PARAM_PATIENT_DECEASED) boolean deceased,
+        @DefaultValue("true") @QueryParam(PARAM_FORNYA_OK) boolean fornyaOk) {
 
         Map<String, Object> params = ImmutableMap.of(PARAM_CERT_ID, intygId);
 
@@ -200,8 +193,8 @@ public class IntygIntegrationController extends BaseIntegrationController {
         validateRequest(params);
 
         IntegrationParameters integrationParameters = IntegrationParameters.of(
-                reference, responsibleHospName, alternatePatientSSn, fornamn, mellannamn, efternamn,
-                postadress, postnummer, postort, coherentJournaling, deceased, inactiveUnit, fornyaOk);
+            reference, responsibleHospName, alternatePatientSSn, fornamn, mellannamn, efternamn,
+            postadress, postnummer, postort, coherentJournaling, deceased, inactiveUnit, fornyaOk);
 
         WebCertUser user = getWebCertUser();
         user.setParameters(integrationParameters);
@@ -222,15 +215,14 @@ public class IntygIntegrationController extends BaseIntegrationController {
      *
      * Note that this method requires the IntegrationParameters to be present or an exception will be thrown.
      *
-     * @param intygId
-     *            The id of the certificate to view.
+     * @param intygId The id of the certificate to view.
      */
     @GET
     @Path("{certId}/saved")
     @PrometheusTimeMethod
     public Response getRedirectToIntyg(@Context UriInfo uriInfo,
-            @PathParam(PARAM_CERT_ID) String intygId,
-            @DefaultValue("") @QueryParam(PARAM_ENHET_ID) String enhetId) {
+        @PathParam(PARAM_CERT_ID) String intygId,
+        @DefaultValue("") @QueryParam(PARAM_ENHET_ID) String enhetId) {
 
         Map<String, Object> params = ImmutableMap.of(PARAM_CERT_ID, intygId);
 
@@ -253,29 +245,29 @@ public class IntygIntegrationController extends BaseIntegrationController {
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @PrometheusTimeMethod
     public Response postRedirectToIntyg(@Context UriInfo uriInfo,
-            @PathParam(PARAM_CERT_ID) String intygId,
-            @DefaultValue("") @FormParam(PARAM_ENHET_ID) String enhetId,
-            @DefaultValue("") @FormParam(PARAM_PATIENT_ALTERNATE_SSN) String alternatePatientSSn,
-            @DefaultValue("") @FormParam(PARAM_RESPONSIBLE_HOSP_NAME) String responsibleHospName,
-            @FormParam(PARAM_PATIENT_FORNAMN) String fornamn,
-            @FormParam(PARAM_PATIENT_EFTERNAMN) String efternamn,
-            @FormParam(PARAM_PATIENT_MELLANNAMN) String mellannamn,
-            @FormParam(PARAM_PATIENT_POSTADRESS) String postadress,
-            @FormParam(PARAM_PATIENT_POSTNUMMER) String postnummer,
-            @FormParam(PARAM_PATIENT_POSTORT) String postort,
-            @DefaultValue("false") @FormParam(PARAM_COHERENT_JOURNALING) boolean coherentJournaling,
-            @FormParam(PARAM_REFERENCE) String reference,
-            @DefaultValue("false") @FormParam(PARAM_INACTIVE_UNIT) boolean inactiveUnit,
-            @DefaultValue("false") @FormParam(PARAM_PATIENT_DECEASED) boolean deceased,
-            @DefaultValue("true") @FormParam(PARAM_FORNYA_OK) boolean fornyaOk) {
+        @PathParam(PARAM_CERT_ID) String intygId,
+        @DefaultValue("") @FormParam(PARAM_ENHET_ID) String enhetId,
+        @DefaultValue("") @FormParam(PARAM_PATIENT_ALTERNATE_SSN) String alternatePatientSSn,
+        @DefaultValue("") @FormParam(PARAM_RESPONSIBLE_HOSP_NAME) String responsibleHospName,
+        @FormParam(PARAM_PATIENT_FORNAMN) String fornamn,
+        @FormParam(PARAM_PATIENT_EFTERNAMN) String efternamn,
+        @FormParam(PARAM_PATIENT_MELLANNAMN) String mellannamn,
+        @FormParam(PARAM_PATIENT_POSTADRESS) String postadress,
+        @FormParam(PARAM_PATIENT_POSTNUMMER) String postnummer,
+        @FormParam(PARAM_PATIENT_POSTORT) String postort,
+        @DefaultValue("false") @FormParam(PARAM_COHERENT_JOURNALING) boolean coherentJournaling,
+        @FormParam(PARAM_REFERENCE) String reference,
+        @DefaultValue("false") @FormParam(PARAM_INACTIVE_UNIT) boolean inactiveUnit,
+        @DefaultValue("false") @FormParam(PARAM_PATIENT_DECEASED) boolean deceased,
+        @DefaultValue("true") @FormParam(PARAM_FORNYA_OK) boolean fornyaOk) {
 
         final Map<String, Object> params = ImmutableMap.of(PARAM_CERT_ID, intygId);
 
         validateRequest(params);
 
         IntegrationParameters integrationParameters = IntegrationParameters.of(
-                reference, responsibleHospName, alternatePatientSSn, fornamn, mellannamn, efternamn,
-                postadress, postnummer, postort, coherentJournaling, deceased, inactiveUnit, fornyaOk);
+            reference, responsibleHospName, alternatePatientSSn, fornamn, mellannamn, efternamn,
+            postadress, postnummer, postort, coherentJournaling, deceased, inactiveUnit, fornyaOk);
 
         WebCertUser user = getWebCertUser();
         user.setParameters(integrationParameters);
@@ -287,16 +279,16 @@ public class IntygIntegrationController extends BaseIntegrationController {
     @Path("/{certType}/{certTypeVersion}/{certId}/resume")
     @PrometheusTimeMethod
     public Response resumeRedirectToIntyg(
-            @Context UriInfo uriInfo,
-            @PathParam(PARAM_CERT_TYPE) String intygTyp,
-            @PathParam(PARAM_CERT_TYPE_VERSION) String certTypeVersion,
-            @PathParam(PARAM_CERT_ID) String intygId,
-            @DefaultValue("") @QueryParam(PARAM_ENHET_ID) String enhetId) {
+        @Context UriInfo uriInfo,
+        @PathParam(PARAM_CERT_TYPE) String intygTyp,
+        @PathParam(PARAM_CERT_TYPE_VERSION) String certTypeVersion,
+        @PathParam(PARAM_CERT_ID) String intygId,
+        @DefaultValue("") @QueryParam(PARAM_ENHET_ID) String enhetId) {
 
         Map<String, Object> params = ImmutableMap.of(
-                INTYG_TYP, intygTyp,
-                PARAM_CERT_ID, intygId,
-                PARAM_ENHET_ID, enhetId);
+            INTYG_TYP, intygTyp,
+            PARAM_CERT_ID, intygId,
+            PARAM_ENHET_ID, enhetId);
 
         validateRequest(params);
 
@@ -381,7 +373,7 @@ public class IntygIntegrationController extends BaseIntegrationController {
                 }
 
                 LOG.warn("Validation failed for deep-integration request because user {} is not authorized for enhet {}",
-                        user.getHsaId(), enhetId);
+                    user.getHsaId(), enhetId);
                 return buildAuthorizedErrorResponse(uriInfo);
             }
         } catch (WebCertServiceException e) {
@@ -412,9 +404,9 @@ public class IntygIntegrationController extends BaseIntegrationController {
 
     private Response buildErrorResponse(UriInfo uriInfo, String errorReason) {
         URI location = uriInfo.getBaseUriBuilder()
-                .replacePath("/error.jsp")
-                .queryParam("reason", errorReason)
-                .build();
+            .replacePath("/error.jsp")
+            .queryParam("reason", errorReason)
+            .build();
 
         return Response.temporaryRedirect(location).build();
     }
@@ -472,7 +464,7 @@ public class IntygIntegrationController extends BaseIntegrationController {
         // Throw an exception if user already has the integration parameters set
         if (user.getParameters() != null && !user.getParameters().getState().hasUserBeenRedirectedToEnhetsval()) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_USER_SESSION_ALREADY_ACTIVE,
-                    "This user session is already active and using Webcert. Please use a new user session for each deep integration link.");
+                "This user session is already active and using Webcert. Please use a new user session for each deep integration link.");
         }
 
         return user;
@@ -480,14 +472,14 @@ public class IntygIntegrationController extends BaseIntegrationController {
 
     private void updateUserWithActiveFeatures(WebCertUser webCertUser) {
         webCertUser.setFeatures(commonAuthoritiesResolver
-                .getFeatures(Arrays.asList(webCertUser.getValdVardenhet().getId(), webCertUser.getValdVardgivare().getId())));
+            .getFeatures(Arrays.asList(webCertUser.getValdVardenhet().getId(), webCertUser.getValdVardgivare().getId())));
     }
 
     private boolean userHasExactlyOneSelectableVardenhet(WebCertUser webCertUser) {
         return webCertUser.getVardgivare().stream()
-                .distinct()
-                .flatMap(vg -> vg.getVardenheter().stream().distinct())
-                .count() == 1L;
+            .distinct()
+            .flatMap(vg -> vg.getVardenheter().stream().distinct())
+            .count() == 1L;
     }
 
     private void validateRequest(Map<String, Object> pathParameters) {

@@ -52,7 +52,7 @@ public class TakConsumerImpl implements TakConsumer {
 
         LOG.debug("Checking TAK for careunit {} and contract {}", careUnitId, contract);
         TakLogicalAddress[] res = customRestTemplate.getForEntity(String.format(LOGICAL_ADDRESS_URL,
-                baseUrl, careUnitId, ntjpId, contract), TakLogicalAddress[].class).getBody();
+            baseUrl, careUnitId, ntjpId, contract), TakLogicalAddress[].class).getBody();
         LOG.debug("TAK for careunit {} and contract {} returned {} results", careUnitId, contract, res != null ? res.length : 0);
         return res;
     }

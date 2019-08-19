@@ -18,6 +18,7 @@
  */
 package se.inera.intyg.webcert.web.web.controller.api;
 
+import io.swagger.annotations.Api;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -36,12 +37,9 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import io.swagger.annotations.Api;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.infra.security.authorities.CommonAuthoritiesResolver;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
@@ -73,8 +71,6 @@ public class UserApiController extends AbstractApiController {
 
     /**
      * Retrieves the security context of the logged in user as JSON.
-     *
-     * @return
      */
     @GET
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
@@ -99,9 +95,6 @@ public class UserApiController extends AbstractApiController {
 
     /**
      * Changes the selected care unit in the security context for the logged in user.
-     *
-     * @param request
-     * @return
      */
     @POST
     @Path("/andraenhet")
@@ -113,7 +106,7 @@ public class UserApiController extends AbstractApiController {
         WebCertUser user = getWebCertUserService().getUser();
 
         LOG.debug("Attempting to change selected unit for user '{}', currently selected unit is '{}'", user.getHsaId(),
-                user.getValdVardenhet() != null ? user.getValdVardenhet().getId() : "(none)");
+            user.getValdVardenhet() != null ? user.getValdVardenhet().getId() : "(none)");
 
         boolean changeSuccess = user.changeValdVardenhet(request.getId());
 
@@ -123,7 +116,7 @@ public class UserApiController extends AbstractApiController {
         }
 
         user.setFeatures(commonAuthoritiesResolver.getFeatures(
-                Arrays.asList(user.getValdVardenhet().getId(), user.getValdVardgivare().getId())));
+            Arrays.asList(user.getValdVardenhet().getId(), user.getValdVardgivare().getId())));
 
         LOG.debug("Seleced vardenhet is now '{}'", user.getValdVardenhet().getId());
 
@@ -132,8 +125,6 @@ public class UserApiController extends AbstractApiController {
 
     /**
      * Retrieves the security context of the logged in user as JSON.
-     *
-     * @return
      */
     @PUT
     @Path("/godkannavtal")
@@ -150,8 +141,6 @@ public class UserApiController extends AbstractApiController {
 
     /**
      * Deletes privatlakaravtal approval for the specified user.
-     *
-     * @return
      */
     @DELETE
     @Path("/privatlakaravtal")

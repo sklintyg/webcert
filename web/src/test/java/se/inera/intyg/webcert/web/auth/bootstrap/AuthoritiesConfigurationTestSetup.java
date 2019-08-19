@@ -31,7 +31,7 @@ public class AuthoritiesConfigurationTestSetup {
     protected static final String FEATURES_CONFIGURATION_LOCATION = "classpath:AuthoritiesConfigurationLoaderTest/features-test.yaml";
 
     protected static final SecurityConfigurationLoader CONFIGURATION_LOADER = new SecurityConfigurationLoader(
-            AUTHORITIES_CONFIGURATION_LOCATION, FEATURES_CONFIGURATION_LOCATION);
+        AUTHORITIES_CONFIGURATION_LOCATION, FEATURES_CONFIGURATION_LOCATION);
     protected static final CommonAuthoritiesResolver AUTHORITIES_RESOLVER = new CommonAuthoritiesResolver();
 
     @BeforeClass

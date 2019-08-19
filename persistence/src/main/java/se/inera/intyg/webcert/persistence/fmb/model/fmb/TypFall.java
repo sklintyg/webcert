@@ -50,7 +50,7 @@ public class TypFall {
     }
 
     private TypFall(final String typfallsMening, final Integer maximalSjukrivningstidDagar, final String maximalSjukrivningstidSourceValue,
-            final String maximalSjukrivningstidSourceUnit) {
+        final String maximalSjukrivningstidSourceUnit) {
         this.typfallsMening = typfallsMening;
         this.maximalSjukrivningstidDagar = maximalSjukrivningstidDagar;
         this.maximalSjukrivningstidSourceValue = maximalSjukrivningstidSourceValue;
@@ -78,6 +78,7 @@ public class TypFall {
     }
 
     public static final class TypFallBuilder {
+
         private String typfallsMening;
         private Integer maximalSjukrivningstidDagar;
         private String maximalSjukrivningstidSourceValue;
@@ -112,7 +113,7 @@ public class TypFall {
 
         public TypFall build() {
             return new TypFall(typfallsMening, maximalSjukrivningstidDagar, maximalSjukrivningstidSourceValue,
-                    maximalSjukrivningstidSourceUnit);
+                maximalSjukrivningstidSourceUnit);
         }
     }
 }

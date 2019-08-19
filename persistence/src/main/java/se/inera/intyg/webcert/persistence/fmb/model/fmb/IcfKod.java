@@ -65,6 +65,7 @@ public class IcfKod {
 
 
     public static final class IcfKodBuilder {
+
         private String kod;
         private IcfKodTyp icfKodTyp;
 

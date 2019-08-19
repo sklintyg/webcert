@@ -24,6 +24,7 @@ import java.time.LocalDateTime;
  * Created by eriklupander on 2016-07-05.
  */
 public class NotificationStubEntry {
+
     public String intygsId;
     public String handelseKod;
     public LocalDateTime handelseTid;

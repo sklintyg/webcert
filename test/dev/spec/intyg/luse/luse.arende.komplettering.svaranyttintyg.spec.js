@@ -31,94 +31,94 @@ var intygGenerator = wcTestTools.intygGenerator;
 
 describe('svaranyttintyg - arende on luse intyg', function() {
 
-    var utkastId;
-    var intygId = 'luse-arende-intyg-2';
-    var meddelandeId = 'luse-arende-komplt';
+  var utkastId;
+  var intygId = 'luse-arende-intyg-2';
+  var meddelandeId = 'luse-arende-komplt';
 
-    beforeAll(function() {
-        browser.ignoreSynchronization = false;
-        specHelper.login();
-        var testData = {
-            'contents': intygGenerator.getIntygJson({'intygType': 'luse', 'intygId': intygId}),
-            'utkastStatus': 'SIGNED',
-            'revoked': false
-        };
+  beforeAll(function() {
+    browser.ignoreSynchronization = false;
+    specHelper.login();
+    var testData = {
+      'contents': intygGenerator.getIntygJson({'intygType': 'luse', 'intygId': intygId}),
+      'utkastStatus': 'SIGNED',
+      'revoked': false
+    };
 
-        restTestdataHelper.deleteAllArenden().then(function() {
-            restTestdataHelper.createWebcertIntyg(testData).then(function() {
-                restTestdataHelper.markeraSkickatTillFK(intygId).then(function() {
-                    // Intygstatus is sorted by timestamps with second resolution (no milliseconds)
-                    // Sleep here to make sure arende timestamp is after signed timestamp
-                    browser.sleep(1500);
-                    restTestdataHelper.createArendeFromTemplate('luse', intygId, meddelandeId, 'Hur är det med arbetstiden?',
-                        'KOMPLT', 'PENDING_INTERNAL_ACTION', [
-                            {
-                                'frageId': '1',
-                                'instans': 1,
-                                'text': 'Fixa.'
-                            }
-                        ],
-                        'test'
-                    );
+    restTestdataHelper.deleteAllArenden().then(function() {
+      restTestdataHelper.createWebcertIntyg(testData).then(function() {
+        restTestdataHelper.markeraSkickatTillFK(intygId).then(function() {
+          // Intygstatus is sorted by timestamps with second resolution (no milliseconds)
+          // Sleep here to make sure arende timestamp is after signed timestamp
+          browser.sleep(1500);
+          restTestdataHelper.createArendeFromTemplate('luse', intygId, meddelandeId, 'Hur är det med arbetstiden?',
+              'KOMPLT', 'PENDING_INTERNAL_ACTION', [
+                {
+                  'frageId': '1',
+                  'instans': 1,
+                  'text': 'Fixa.'
+                }
+              ],
+              'test'
+          );
 
-                });
-            });
         });
+      });
+    });
+  });
+
+  afterAll(function() {
+    restTestdataHelper.deleteArende(meddelandeId);
+    restTestdataHelper.deleteUtkast(intygId);
+    restTestdataHelper.deleteUtkast(utkastId);
+  });
+
+  describe('make sure intyg page has been loaded', function() {
+    it('and showing fk intyg', function() {
+      LuseIntygPage.get(intygId);
+      expect(LuseIntygPage.isAt()).toBeTruthy();
+    });
+  });
+
+  describe('make sure', function() {
+    it('pushed arende is visible', function() {
+      var arende = LuseIntygPage.getArendeById(true, meddelandeId);
+      expect(arende.isDisplayed()).toBeTruthy();
+
     });
 
-    afterAll(function() {
-        restTestdataHelper.deleteArende(meddelandeId);
-        restTestdataHelper.deleteUtkast(intygId);
-        restTestdataHelper.deleteUtkast(utkastId);
+    it('should display message that intyg has komplettering', function() {
+      expect(LuseIntygPage.getIntygHasKompletteringMessage().isDisplayed()).toBeTruthy();
     });
 
-    describe('make sure intyg page has been loaded', function() {
-        it('and showing fk intyg', function() {
-            LuseIntygPage.get(intygId);
-            expect(LuseIntygPage.isAt()).toBeTruthy();
-        });
+    it('should display kompletteringbegaran text below relevant field', function() {
+      expect(LuseIntygPage.getIntygKompletteringFrageText('FRG_1.RBK', 0).isDisplayed()).toBeTruthy();
+      expect(LuseIntygPage.getIntygKompletteringFrageText('FRG_1.RBK', 0).getText()).toContain('Fixa.');
     });
 
-    describe('make sure', function() {
-        it('pushed arende is visible', function() {
-            var arende = LuseIntygPage.getArendeById(true, meddelandeId);
-            expect(arende.isDisplayed()).toBeTruthy();
-
-        });
-
-        it('should display message that intyg has komplettering', function() {
-            expect(LuseIntygPage.getIntygHasKompletteringMessage().isDisplayed()).toBeTruthy();
-        });
-
-        it('should display kompletteringbegaran text below relevant field', function() {
-            expect(LuseIntygPage.getIntygKompletteringFrageText('FRG_1.RBK', 0).isDisplayed()).toBeTruthy();
-            expect(LuseIntygPage.getIntygKompletteringFrageText('FRG_1.RBK', 0).getText()).toContain('Fixa.');
-        });
-
-        it('click svara pa komplettering', function() {
-            expect(LuseIntygPage.kompletteringUtkastLink.isPresent()).toBeFalsy();
-            LuseIntygPage.kompletteraIntygButton.click();
-        });
-
-        it('should go to utkast page after komplettera med nytt intyg button is clicked', function() {
-            expect(LuseUtkastPage.isAt()).toBeTruthy();
-
-            // Extract ID of new utkast so we can delete it when we're done.
-            // Save id so it can be removed in cleanup stage.
-            specHelper.getUtkastIdFromUrl().then(function(id) {
-                utkastId = id;
-            });
-        });
+    it('click svara pa komplettering', function() {
+      expect(LuseIntygPage.kompletteringUtkastLink.isPresent()).toBeFalsy();
+      LuseIntygPage.kompletteraIntygButton.click();
     });
 
-    describe('make sure "Svara med nytt intyg" button have changed to "Fortsätt på intygsutkast"', function() {
-        it('Is showing the Fortsatt button in arende view', function() {
-            LuseIntygPage.get(intygId);
-            expect(LuseIntygPage.isAt()).toBeTruthy();
-            expect(LuseIntygPage.kompletteringUtkastLink.isPresent()).toBeTruthy();
-            LuseIntygPage.kompletteringUtkastLink.click();
-            expect(LuseUtkastPage.isAt()).toBeTruthy();
-        });
+    it('should go to utkast page after komplettera med nytt intyg button is clicked', function() {
+      expect(LuseUtkastPage.isAt()).toBeTruthy();
+
+      // Extract ID of new utkast so we can delete it when we're done.
+      // Save id so it can be removed in cleanup stage.
+      specHelper.getUtkastIdFromUrl().then(function(id) {
+        utkastId = id;
+      });
     });
+  });
+
+  describe('make sure "Svara med nytt intyg" button have changed to "Fortsätt på intygsutkast"', function() {
+    it('Is showing the Fortsatt button in arende view', function() {
+      LuseIntygPage.get(intygId);
+      expect(LuseIntygPage.isAt()).toBeTruthy();
+      expect(LuseIntygPage.kompletteringUtkastLink.isPresent()).toBeTruthy();
+      LuseIntygPage.kompletteringUtkastLink.click();
+      expect(LuseUtkastPage.isAt()).toBeTruthy();
+    });
+  });
 
 });

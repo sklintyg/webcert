@@ -18,6 +18,10 @@
  */
 package se.inera.intyg.webcert.web.auth.eleg;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,11 +54,6 @@ import se.riv.infrastructure.directory.privatepractitioner.v1.BefattningType;
 import se.riv.infrastructure.directory.privatepractitioner.v1.HoSPersonType;
 import se.riv.infrastructure.directory.privatepractitioner.v1.LegitimeradYrkesgruppType;
 import se.riv.infrastructure.directory.privatepractitioner.v1.SpecialitetType;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Optional;
 
 /**
  * Created by eriklupander on 2015-06-16.
@@ -140,7 +139,7 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
         if (!authorized) {
             // Throw exception that spring-security can pick up and redirect user to privatläkarportalen
             throw new PrivatePractitionerAuthorizationException(
-                    "User is not authorized to access webcert according to private practitioner portal");
+                "User is not authorized to access webcert according to private practitioner portal");
         }
     }
 
@@ -188,18 +187,18 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
     private void decorateWebcertUserWithSekretessMarkering(WebCertUser webCertUser, HoSPersonType hosPerson) {
         // Make sure we have a valid personnr to work with..
         Personnummer personNummer = Personnummer
-                .createPersonnummer(hosPerson.getPersonId().getExtension())
-                .orElseThrow(() -> new WebCertServiceException(WebCertServiceErrorCodeEnum.PU_PROBLEM,
-                        String.format("Can't determine sekretesstatus for invalid personId %s",
-                                hosPerson.getPersonId().getExtension())));
+            .createPersonnummer(hosPerson.getPersonId().getExtension())
+            .orElseThrow(() -> new WebCertServiceException(WebCertServiceErrorCodeEnum.PU_PROBLEM,
+                String.format("Can't determine sekretesstatus for invalid personId %s",
+                    hosPerson.getPersonId().getExtension())));
 
         PersonSvar person = puService.getPerson(personNummer);
         if (person.getStatus() == PersonSvar.Status.FOUND) {
             webCertUser.setSekretessMarkerad(person.getPerson().isSekretessmarkering());
         } else {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.PU_PROBLEM,
-                    String.format("PU replied with %s - Sekretesstatus cannot be determined for person %s", person.getStatus(),
-                            personNummer.getPersonnummerHash()));
+                String.format("PU replied with %s - Sekretesstatus cannot be determined for person %s", person.getStatus(),
+                    personNummer.getPersonnummerHash()));
         }
     }
 
@@ -214,7 +213,7 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
     private void decorateWebCertUserWithAuthenticationScheme(SAMLCredential samlCredential, WebCertUser webCertUser) {
         if (samlCredential.getAuthenticationAssertion() != null) {
             String authnContextClassRef = samlCredential.getAuthenticationAssertion().getAuthnStatements().get(0).getAuthnContext()
-                    .getAuthnContextClassRef().getAuthnContextClassRef();
+                .getAuthnContextClassRef().getAuthnContextClassRef();
             webCertUser.setAuthenticationScheme(authnContextClassRef);
         }
     }
@@ -287,7 +286,7 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
      */
     private void resolveArbetsplatsKod(HoSPersonType hosPerson, Vardenhet vardenhet) {
         if (hosPerson.getEnhet().getArbetsplatskod() == null || hosPerson.getEnhet().getArbetsplatskod().getExtension() == null
-                || hosPerson.getEnhet().getArbetsplatskod().getExtension().trim().length() == 0) {
+            || hosPerson.getEnhet().getArbetsplatskod().getExtension().trim().length() == 0) {
             vardenhet.setArbetsplatskod(hosPerson.getHsaId().getExtension());
         } else {
             vardenhet.setArbetsplatskod(hosPerson.getEnhet().getArbetsplatskod().getExtension());

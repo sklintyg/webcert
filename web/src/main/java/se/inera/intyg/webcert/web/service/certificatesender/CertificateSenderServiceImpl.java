@@ -18,6 +18,10 @@
  */
 package se.inera.intyg.webcert.web.service.certificatesender;
 
+import javax.annotation.PostConstruct;
+import javax.jms.JMSException;
+import javax.jms.Message;
+import javax.jms.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,11 +33,6 @@ import org.springframework.jms.core.MessageCreator;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.Constants;
-
-import javax.annotation.PostConstruct;
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.Session;
 
 /**
  * Created by eriklupander on 2015-05-20.
@@ -131,7 +130,7 @@ public class CertificateSenderServiceImpl implements CertificateSenderService {
         private boolean delay;
 
         private SendCertificateMessageCreator(String intygsId, Personnummer personId, String body, String recipientId,
-                                              String logicalAddress, boolean delay) {
+            String logicalAddress, boolean delay) {
             this.intygsId = intygsId;
             this.personId = personId;
             this.body = body;
@@ -157,6 +156,7 @@ public class CertificateSenderServiceImpl implements CertificateSenderService {
     }
 
     static final class RevokeCertificateMessageCreator implements MessageCreator {
+
         private final String intygsId;
         private final String intygsTyp;
         private final String intygsTypVersion;
@@ -164,7 +164,7 @@ public class CertificateSenderServiceImpl implements CertificateSenderService {
         private final String logicalAddress;
 
         private RevokeCertificateMessageCreator(String intygsId, String xmlBody, String logicalAddress, String intygsTyp,
-                String intygsTypVersion) {
+            String intygsTypVersion) {
             this.intygsId = intygsId;
             this.intygsTyp = intygsTyp;
             this.intygsTypVersion = intygsTypVersion;
@@ -186,6 +186,7 @@ public class CertificateSenderServiceImpl implements CertificateSenderService {
     }
 
     static final class SendMessageToRecipientMessageCreator implements MessageCreator {
+
         private final String intygsId;
         private final String xmlBody;
         private final String logicalAddress;
@@ -208,6 +209,7 @@ public class CertificateSenderServiceImpl implements CertificateSenderService {
     }
 
     static final class RegisterApprovedReceiversMessageCreator implements MessageCreator {
+
         private final String intygsId;
         private final String intygsTyp;
         private final String jsonBody;

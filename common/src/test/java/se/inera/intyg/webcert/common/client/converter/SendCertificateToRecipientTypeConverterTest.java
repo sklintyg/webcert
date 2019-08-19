@@ -18,14 +18,14 @@
  */
 package se.inera.intyg.webcert.common.client.converter;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import org.junit.Test;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.common.support.model.common.internal.Vardgivare;
 import se.riv.clinicalprocess.healthcond.certificate.sendCertificateToRecipient.v2.SendCertificateToRecipientType;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
 public class SendCertificateToRecipientTypeConverterTest {
 
@@ -49,11 +49,11 @@ public class SendCertificateToRecipientTypeConverterTest {
         final String recipient = "TRANSP";
 
         HoSPersonal skickatAv = buildHosPersonal(enhetsId, enhetsnamn, skapadAvFullstandigtNamn, skapadAvPersonId, arbetsplatsKod,
-                postadress,
-                postNummer, postOrt, epost, telefonNummer, vardgivarid, vardgivarNamn, forskrivarKod);
+            postadress,
+            postNummer, postOrt, epost, telefonNummer, vardgivarid, vardgivarNamn, forskrivarKod);
 
         SendCertificateToRecipientType result = SendCertificateToRecipientTypeConverter.convert(intygsId, patientPersonId, skickatAv,
-                recipient);
+            recipient);
 
         assertNotNull(result.getIntygsId().getRoot());
         assertEquals(intygsId, result.getIntygsId().getExtension());
@@ -83,9 +83,9 @@ public class SendCertificateToRecipientTypeConverterTest {
     }
 
     private HoSPersonal buildHosPersonal(String enhetsId, String enhetsnamn, String skapadAvFullstandigtNamn, String skapadAvPersonId,
-            String arbetsplatsKod, String postadress, String postNummer, String postOrt, String epost, String telefonNummer,
-            String vardgivarid,
-            String vardgivarNamn, String forskrivarKod) {
+        String arbetsplatsKod, String postadress, String postNummer, String postOrt, String epost, String telefonNummer,
+        String vardgivarid,
+        String vardgivarNamn, String forskrivarKod) {
         HoSPersonal hosPersonal = new HoSPersonal();
         Vardenhet vardenhet = new Vardenhet();
         vardenhet.setEnhetsid(enhetsId);

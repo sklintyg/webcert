@@ -21,5 +21,6 @@ package se.inera.intyg.webcert.web.service.underskrift.nias;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturBiljett;
 
 public interface NiasUnderskriftService {
+
     void startNiasCollectPoller(String personId, SignaturBiljett signaturBiljett);
 }

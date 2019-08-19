@@ -21,11 +21,6 @@ package se.inera.intyg.webcert.web.web.controller.testability;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistry;
-import se.inera.intyg.webcert.web.web.controller.testability.dto.IntegreradEnhetEntryWithSchemaVersion;
-
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -34,6 +29,10 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistry;
+import se.inera.intyg.webcert.web.web.controller.testability.dto.IntegreradEnhetEntryWithSchemaVersion;
 
 /**
  * Testbarhetsresurs för att till och börja med radera och lista identifierade integrerade vårdenheter.
@@ -52,8 +51,8 @@ public class IntegreradEnhetResource {
     @DELETE
     @Path("/{hsaId}")
     @ApiResponses(value = {
-            @ApiResponse(code = OK, message = "Given identified integrated unit was deleted"),
-            @ApiResponse(code = BAD_REQUEST, message = "If supplied hsaId was null or blank")
+        @ApiResponse(code = OK, message = "Given identified integrated unit was deleted"),
+        @ApiResponse(code = BAD_REQUEST, message = "If supplied hsaId was null or blank")
     })
     public Response deleteIntegreradVardenhet(@PathParam("hsaId") String hsaId) {
         if (isNullOrEmpty(hsaId)) {
@@ -72,7 +71,7 @@ public class IntegreradEnhetResource {
     @Path("/")
     @Produces("application/json")
     @ApiResponses(value = {
-            @ApiResponse(code = OK, message = "Listed current set of integrerade Vårdenheter")
+        @ApiResponse(code = OK, message = "Listed current set of integrerade Vårdenheter")
     })
     public Response getIntegreradeVardenheter() {
         return Response.ok(integreradeEnheterRegistry.getIntegreradeVardenheter()).build();
@@ -83,11 +82,11 @@ public class IntegreradEnhetResource {
     @Consumes("application/json")
     @Produces("application/json")
     @ApiResponses(value = {
-            @ApiResponse(code = OK, message = "Registered integrerad vardenhet")
+        @ApiResponse(code = OK, message = "Registered integrerad vardenhet")
     })
     public Response registerIntegreradVardenhet(IntegreradEnhetEntryWithSchemaVersion enhet) {
         integreradeEnheterRegistry.putIntegreradEnhet(enhet, "1.0".equals(enhet.getSchemaVersion()),
-                "2.0".equals(enhet.getSchemaVersion()));
+            "2.0".equals(enhet.getSchemaVersion()));
         return Response.ok(enhet).build();
     }
 

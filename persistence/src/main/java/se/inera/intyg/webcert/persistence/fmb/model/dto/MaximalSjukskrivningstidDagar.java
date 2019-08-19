@@ -26,7 +26,7 @@ public class MaximalSjukskrivningstidDagar {
     private String maximalSjukrivningstidSourceUnit;
 
     public MaximalSjukskrivningstidDagar(final String icd10Kod, final int maximalSjukrivningstidDagar,
-            final String maximalSjukrivningstidSourceValue, final String maximalSjukrivningstidSourceUnit) {
+        final String maximalSjukrivningstidSourceValue, final String maximalSjukrivningstidSourceUnit) {
         this.icd10Kod = icd10Kod;
         this.maximalSjukrivningstidDagar = maximalSjukrivningstidDagar;
         this.maximalSjukrivningstidSourceValue = maximalSjukrivningstidSourceValue;
@@ -34,9 +34,9 @@ public class MaximalSjukskrivningstidDagar {
     }
 
     public static MaximalSjukskrivningstidDagar of(final String icd10Kod, final Integer maximalSjukrivningstidDagar,
-            final String maximalSjukrivningstidSourceValue, final String maximalSjukrivningstidSourceUnit) {
+        final String maximalSjukrivningstidSourceValue, final String maximalSjukrivningstidSourceUnit) {
         return new MaximalSjukskrivningstidDagar(icd10Kod, maximalSjukrivningstidDagar, maximalSjukrivningstidSourceValue,
-                maximalSjukrivningstidSourceUnit);
+            maximalSjukrivningstidSourceUnit);
     }
 
     public String getIcd10Kod() {

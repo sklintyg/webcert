@@ -18,6 +18,8 @@
  */
 package se.inera.intyg.webcert.persistence.referens.repository;
 
+import static org.junit.Assert.assertEquals;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -29,11 +31,9 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 import se.inera.intyg.webcert.persistence.referens.model.Referens;
 
-import static org.junit.Assert.*;
-
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "classpath:repository-context.xml" })
-@ActiveProfiles({ "dev", "unit-testing" })
+@ContextConfiguration(locations = {"classpath:repository-context.xml"})
+@ActiveProfiles({"dev", "unit-testing"})
 @Transactional
 public class ReferensRepositoryTest {
 

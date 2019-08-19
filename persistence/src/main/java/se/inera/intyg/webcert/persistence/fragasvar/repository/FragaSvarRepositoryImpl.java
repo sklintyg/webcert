@@ -18,10 +18,10 @@
  */
 package se.inera.intyg.webcert.persistence.fragasvar.repository;
 
+import com.google.common.base.Strings;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
@@ -30,9 +30,6 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-
-import com.google.common.base.Strings;
-
 import se.inera.intyg.webcert.persistence.fragasvar.model.Amne;
 import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.intyg.webcert.persistence.model.Filter;
@@ -101,55 +98,55 @@ public class FragaSvarRepositoryImpl implements FragaSvarFilteredRepositoryCusto
         }
 
         if (filter.getVidarebefordrad() != null) {
-            pred = builder.and(pred, builder.equal(root.<Boolean> get("vidarebefordrad"), filter.getVidarebefordrad()));
+            pred = builder.and(pred, builder.equal(root.<Boolean>get("vidarebefordrad"), filter.getVidarebefordrad()));
         }
 
         if (filter.getChangedFrom() != null) {
-            pred = builder.and(pred, builder.greaterThanOrEqualTo(root.<LocalDateTime> get("senasteHandelse"), filter.getChangedFrom()));
+            pred = builder.and(pred, builder.greaterThanOrEqualTo(root.<LocalDateTime>get("senasteHandelse"), filter.getChangedFrom()));
         }
 
         if (filter.getChangedTo() != null) {
-            pred = builder.and(pred, builder.lessThan(root.<LocalDateTime> get("senasteHandelse"), filter.getChangedTo()));
+            pred = builder.and(pred, builder.lessThan(root.<LocalDateTime>get("senasteHandelse"), filter.getChangedTo()));
         }
 
         if (filter.getReplyLatest() != null) {
-            pred = builder.and(pred, builder.lessThanOrEqualTo(root.<LocalDate> get("sistaDatumForSvar"), filter.getReplyLatest()));
+            pred = builder.and(pred, builder.lessThanOrEqualTo(root.<LocalDate>get("sistaDatumForSvar"), filter.getReplyLatest()));
         }
 
         switch (filter.getVantarPa()) {
-        case ALLA_OHANTERADE:
-            pred = builder.and(pred, builder.notEqual(root.<Status> get("status"), Status.CLOSED));
-            break;
-        case HANTERAD:
-            pred = builder.and(pred, builder.equal(root.<Status> get("status"), Status.CLOSED));
-            break;
-        case KOMPLETTERING_FRAN_VARDEN:
-            pred = builder.and(pred, builder.equal(root.<Status> get("status"), Status.PENDING_INTERNAL_ACTION),
-                    builder.equal(root.<Amne> get("amne"), Amne.KOMPLETTERING_AV_LAKARINTYG));
-            break;
-        case SVAR_FRAN_VARDEN:
-            Predicate careReplyAmnePred = builder.or(builder.equal(root.<Amne> get("amne"), Amne.OVRIGT),
-                    builder.equal(root.<Amne> get("amne"), Amne.ARBETSTIDSFORLAGGNING),
-                    builder.equal(root.<Amne> get("amne"), Amne.AVSTAMNINGSMOTE), builder.equal(root.<Amne> get("amne"), Amne.KONTAKT));
-            pred = builder.and(pred, builder.equal(root.<Status> get("status"), Status.PENDING_INTERNAL_ACTION), careReplyAmnePred);
-            break;
-        case SVAR_FRAN_FK:
-            pred = builder.and(pred, builder.equal(root.<Status> get("status"), Status.PENDING_EXTERNAL_ACTION),
-                    builder.notEqual(root.<Amne> get("amne"), Amne.MAKULERING_AV_LAKARINTYG));
-            break;
-        case MARKERA_SOM_HANTERAD:
-            Predicate amnePred1;
-            amnePred1 = builder.and(builder.equal(root.<Status> get("status"), Status.PENDING_INTERNAL_ACTION),
-                    builder.equal(root.<Amne> get("amne"), Amne.MAKULERING_AV_LAKARINTYG));
+            case ALLA_OHANTERADE:
+                pred = builder.and(pred, builder.notEqual(root.<Status>get("status"), Status.CLOSED));
+                break;
+            case HANTERAD:
+                pred = builder.and(pred, builder.equal(root.<Status>get("status"), Status.CLOSED));
+                break;
+            case KOMPLETTERING_FRAN_VARDEN:
+                pred = builder.and(pred, builder.equal(root.<Status>get("status"), Status.PENDING_INTERNAL_ACTION),
+                    builder.equal(root.<Amne>get("amne"), Amne.KOMPLETTERING_AV_LAKARINTYG));
+                break;
+            case SVAR_FRAN_VARDEN:
+                Predicate careReplyAmnePred = builder.or(builder.equal(root.<Amne>get("amne"), Amne.OVRIGT),
+                    builder.equal(root.<Amne>get("amne"), Amne.ARBETSTIDSFORLAGGNING),
+                    builder.equal(root.<Amne>get("amne"), Amne.AVSTAMNINGSMOTE), builder.equal(root.<Amne>get("amne"), Amne.KONTAKT));
+                pred = builder.and(pred, builder.equal(root.<Status>get("status"), Status.PENDING_INTERNAL_ACTION), careReplyAmnePred);
+                break;
+            case SVAR_FRAN_FK:
+                pred = builder.and(pred, builder.equal(root.<Status>get("status"), Status.PENDING_EXTERNAL_ACTION),
+                    builder.notEqual(root.<Amne>get("amne"), Amne.MAKULERING_AV_LAKARINTYG));
+                break;
+            case MARKERA_SOM_HANTERAD:
+                Predicate amnePred1;
+                amnePred1 = builder.and(builder.equal(root.<Status>get("status"), Status.PENDING_INTERNAL_ACTION),
+                    builder.equal(root.<Amne>get("amne"), Amne.MAKULERING_AV_LAKARINTYG));
 
-            Predicate amnePred2;
-            amnePred2 = builder.and(builder.equal(root.<Status> get("status"), Status.PENDING_INTERNAL_ACTION),
-                    builder.equal(root.<Amne> get("amne"), Amne.PAMINNELSE));
+                Predicate amnePred2;
+                amnePred2 = builder.and(builder.equal(root.<Status>get("status"), Status.PENDING_INTERNAL_ACTION),
+                    builder.equal(root.<Amne>get("amne"), Amne.PAMINNELSE));
 
-            pred = builder.and(pred, builder.or(amnePred1, amnePred2, builder.equal(root.<Status> get("status"), Status.ANSWERED)));
-            break;
-        case ALLA:
-            break;
+                pred = builder.and(pred, builder.or(amnePred1, amnePred2, builder.equal(root.<Status>get("status"), Status.ANSWERED)));
+                break;
+            case ALLA:
+                break;
         }
 
         if (filter.getPatientPersonId() != null) {

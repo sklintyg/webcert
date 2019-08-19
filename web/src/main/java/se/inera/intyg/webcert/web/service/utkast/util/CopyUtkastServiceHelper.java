@@ -18,14 +18,12 @@
  */
 package se.inera.intyg.webcert.web.service.utkast.util;
 
+import com.google.common.base.Strings;
 import java.util.Optional;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import com.google.common.base.Strings;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.model.common.internal.Patient;
 import se.inera.intyg.common.support.validate.SamordningsnummerValidator;
@@ -58,19 +56,19 @@ public class CopyUtkastServiceHelper {
     }
 
     public CreateUtkastFromTemplateRequest createUtkastFromUtkast(String orgIntygsId, String intygsTyp,
-                                                                  CopyIntygRequest request) {
+        CopyIntygRequest request) {
 
         return createUtkastFromDifferentIntygTypeRequest(orgIntygsId, intygsTyp, intygsTyp, request);
     }
 
     public CreateUtkastFromTemplateRequest createUtkastFromDifferentIntygTypeRequest(String orgIntygsId, String newIntygsTyp,
-                                                                                            String orgIntygsTyp,
-                                                                                            CopyIntygRequest request) {
+        String orgIntygsTyp,
+        CopyIntygRequest request) {
         HoSPersonal hosPerson = createHoSPersonFromUser();
         Patient patient = createPatientFromCopyIntygRequest(request);
 
         CreateUtkastFromTemplateRequest req = new CreateUtkastFromTemplateRequest(orgIntygsId, newIntygsTyp, patient,
-                hosPerson, orgIntygsTyp);
+            hosPerson, orgIntygsTyp);
 
         addValuesOnRequest(req, webCertUserService.getUser().getParameters());
 
@@ -104,12 +102,12 @@ public class CopyUtkastServiceHelper {
     }
 
     public CreateCompletionCopyRequest createCompletionCopyRequest(String orgIntygsId, String intygsTyp, String meddelandeId,
-                                                                    CopyIntygRequest copyRequest) {
+        CopyIntygRequest copyRequest) {
         HoSPersonal hosPerson = createHoSPersonFromUser();
         Patient patient = createPatientFromCopyIntygRequest(copyRequest);
 
         CreateCompletionCopyRequest req = new CreateCompletionCopyRequest(orgIntygsId, intygsTyp, meddelandeId,
-                patient, hosPerson, copyRequest.getKommentar());
+            patient, hosPerson, copyRequest.getKommentar());
 
         addValuesOnRequest(req, webCertUserService.getUser().getParameters());
 
@@ -178,7 +176,7 @@ public class CopyUtkastServiceHelper {
 
     private boolean isNewValidPatientPersonId(Optional<Personnummer> newPersonnummer) {
         return (newPersonnummer != null
-                && (newPersonnummer.isPresent() || SamordningsnummerValidator.isSamordningsNummer(newPersonnummer)));
+            && (newPersonnummer.isPresent() || SamordningsnummerValidator.isSamordningsNummer(newPersonnummer)));
     }
 
     private Optional<Personnummer> createOptPnr(String personId) {

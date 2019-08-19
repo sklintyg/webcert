@@ -18,11 +18,10 @@
  */
 package se.inera.intyg.webcert.web.web.controller.api.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import se.inera.intyg.webcert.persistence.model.Status;
 import se.inera.intyg.webcert.web.web.util.resourcelinks.dto.ActionLink;
 

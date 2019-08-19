@@ -28,20 +28,20 @@
 var BaseIntyg = require('../base.intyg.page.js');
 
 var skvBaseIntyg = BaseIntyg._extend({
-    init: function init() {
-        init._super.call(this);
+  init: function init() {
+    init._super.call(this);
 
-        this.at = element(by.id('viewCertAndQA'));
-        this.enhetsAdress = {
-            postAdress: element(by.id('vardperson_postadress')),
-            postNummer: element(by.id('vardperson_postnummer')),
-            postOrt: element(by.id('vardperson_postort')),
-            enhetsTelefon: element(by.id('vardperson_telefonnummer'))
-        };
-    },
-    somefunction: function(txt) {
-        return txt;
-    }
+    this.at = element(by.id('viewCertAndQA'));
+    this.enhetsAdress = {
+      postAdress: element(by.id('vardperson_postadress')),
+      postNummer: element(by.id('vardperson_postnummer')),
+      postOrt: element(by.id('vardperson_postort')),
+      enhetsTelefon: element(by.id('vardperson_telefonnummer'))
+    };
+  },
+  somefunction: function(txt) {
+    return txt;
+  }
 });
 
 module.exports = skvBaseIntyg;

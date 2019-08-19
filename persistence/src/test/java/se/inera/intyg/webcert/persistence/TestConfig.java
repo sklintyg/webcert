@@ -18,16 +18,13 @@
  */
 package se.inera.intyg.webcert.persistence;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.orm.jpa.JpaTransactionManager;
-import org.springframework.transaction.PlatformTransactionManager;
 
 @Configuration
 @DependsOn("dbUpdate")
 @PropertySource("classpath:test.properties")
 public class TestConfig {
+
 }

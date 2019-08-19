@@ -18,15 +18,12 @@
  */
 package se.inera.intyg.webcert.web.web.controller.integrationtest.api;
 
-import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.RestAssured.sessionId;
 import static com.jayway.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
 import static org.hamcrest.CoreMatchers.equalTo;
 
-import org.junit.Test;
-
 import com.jayway.restassured.http.ContentType;
-
+import org.junit.Test;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeDraftEntry;
 import se.inera.intyg.webcert.web.web.controller.integrationtest.BaseRestIntegrationTest;
 
@@ -42,16 +39,16 @@ public class ArendeDraftApiControllerIT extends BaseRestIntegrationTest {
         createArendeDraft(intygId, text, amne);
 
         spec()
-                .pathParameter("intygId", intygId)
-                .expect()
-                    .statusCode(200)
-                .when()
-                    .get("api/arende/draft/{intygId}")
-                .then()
-                    .body(matchesJsonSchemaInClasspath("jsonschema/webcert-arende-draft.json"))
-                    .body("text", equalTo(text))
-                    .body("intygId", equalTo(intygId))
-                    .body("amne", equalTo(amne));
+            .pathParameter("intygId", intygId)
+            .expect()
+            .statusCode(200)
+            .when()
+            .get("api/arende/draft/{intygId}")
+            .then()
+            .body(matchesJsonSchemaInClasspath("jsonschema/webcert-arende-draft.json"))
+            .body("text", equalTo(text))
+            .body("intygId", equalTo(intygId))
+            .body("amne", equalTo(amne));
 
         deleteDraft(intygId);
     }
@@ -59,11 +56,11 @@ public class ArendeDraftApiControllerIT extends BaseRestIntegrationTest {
     private void deleteDraft(String intygId) {
 
         spec()
-                .pathParameters("intygId", intygId)
-                .expect()
-                    .statusCode(200)
-                .when()
-                    .delete("api/arende/draft/{intygId}");
+            .pathParameters("intygId", intygId)
+            .expect()
+            .statusCode(200)
+            .when()
+            .delete("api/arende/draft/{intygId}");
     }
 
     private void createArendeDraft(String intygId, String text, String amne) {
@@ -73,10 +70,10 @@ public class ArendeDraftApiControllerIT extends BaseRestIntegrationTest {
         entry.setAmne(amne);
 
         spec()
-                .contentType(ContentType.JSON).and().body(entry)
-                .expect()
-                    .statusCode(200)
-                .when()
-                    .put("api/arende/draft");
+            .contentType(ContentType.JSON).and().body(entry)
+            .expect()
+            .statusCode(200)
+            .when()
+            .put("api/arende/draft");
     }
 }

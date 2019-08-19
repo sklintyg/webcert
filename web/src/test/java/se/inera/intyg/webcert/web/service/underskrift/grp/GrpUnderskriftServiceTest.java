@@ -18,6 +18,13 @@
  */
 package se.inera.intyg.webcert.web.service.underskrift.grp;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.time.LocalDateTime;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -43,14 +50,6 @@ import se.inera.intyg.webcert.web.service.underskrift.model.SignaturStatus;
 import se.inera.intyg.webcert.web.service.underskrift.tracker.RedisTicketTracker;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
-
-import java.time.LocalDateTime;
-
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 /**
  * Created by eriklupander on 2015-08-25.
@@ -151,13 +150,13 @@ public class GrpUnderskriftServiceTest extends AuthoritiesConfigurationTestSetup
 
     private SignaturBiljett buildSignaturBiljett() {
         SignaturBiljett ticket = SignaturBiljett.SignaturBiljettBuilder
-                .aSignaturBiljett(TX_ID, SignaturTyp.PKCS7, SignMethod.GRP)
-                .withHash("hash")
-                .withSkapad(LocalDateTime.now())
-                .withStatus(SignaturStatus.OKAND)
-                .withVersion(VERSION)
-                .withIntygsId(INTYG_ID)
-                .build();
+            .aSignaturBiljett(TX_ID, SignaturTyp.PKCS7, SignMethod.GRP)
+            .withHash("hash")
+            .withSkapad(LocalDateTime.now())
+            .withStatus(SignaturStatus.OKAND)
+            .withVersion(VERSION)
+            .withIntygsId(INTYG_ID)
+            .build();
         return ticket;
     }
 

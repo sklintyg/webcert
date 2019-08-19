@@ -18,8 +18,8 @@
  */
 package se.inera.intyg.webcert.persistence.arende.repository;
 
+import com.google.common.base.Strings;
 import java.util.List;
-
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
@@ -28,9 +28,6 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-
-import com.google.common.base.Strings;
-
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.persistence.model.Filter;
@@ -122,11 +119,11 @@ public class ArendeRepositoryImpl implements ArendeFilteredRepositoryCustom {
                 break;
             case KOMPLETTERING_FRAN_VARDEN:
                 pred = builder.and(pred, builder.equal(root.get("status"), Status.PENDING_INTERNAL_ACTION),
-                        builder.equal(root.get("amne"), ArendeAmne.KOMPLT));
+                    builder.equal(root.get("amne"), ArendeAmne.KOMPLT));
                 break;
             case SVAR_FRAN_VARDEN:
                 Predicate careReplyAmnePred = builder.or(builder.equal(root.get("amne"), ArendeAmne.OVRIGT),
-                        builder.equal(root.get("amne"), ArendeAmne.AVSTMN), builder.equal(root.get("amne"), ArendeAmne.KONTKT));
+                    builder.equal(root.get("amne"), ArendeAmne.AVSTMN), builder.equal(root.get("amne"), ArendeAmne.KONTKT));
                 pred = builder.and(pred, builder.equal(root.get("status"), Status.PENDING_INTERNAL_ACTION), careReplyAmnePred);
                 break;
             case SVAR_FRAN_FK:
@@ -135,7 +132,7 @@ public class ArendeRepositoryImpl implements ArendeFilteredRepositoryCustom {
             case MARKERA_SOM_HANTERAD:
                 Predicate amnePred;
                 amnePred = builder.and(builder.equal(root.get("status"), Status.PENDING_INTERNAL_ACTION),
-                        builder.equal(root.get("amne"), ArendeAmne.PAMINN));
+                    builder.equal(root.get("amne"), ArendeAmne.PAMINN));
 
                 pred = builder.and(pred, builder.or(amnePred, builder.equal(root.get("status"), Status.ANSWERED)));
                 break;

@@ -18,6 +18,13 @@
  */
 package se.inera.intyg.webcert.web.service.intyg;
 
+import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+
 import org.apache.cxf.helpers.FileUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -25,20 +32,13 @@ import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.core.io.ClassPathResource;
 import se.inera.intyg.common.fk7263.model.internal.Fk7263Utlatande;
+import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.modules.support.api.dto.CertificateMetaData;
 import se.inera.intyg.common.support.modules.support.api.dto.CertificateResponse;
-import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.web.service.certificatesender.CertificateSenderException;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygServiceResult;
-
-import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
 public class IntygServiceStoreTest extends AbstractIntygServiceTest {
@@ -64,7 +64,8 @@ public class IntygServiceStoreTest extends AbstractIntygServiceTest {
 
     @Test(expected = WebCertServiceException.class)
     public void testStoreIntygThrowsCertificateSenderException() throws Exception {
-        doThrow(new CertificateSenderException("")).when(certificateSenderService).storeCertificate(eq(INTYG_ID), eq(INTYG_TYP_FK), anyString());
+        doThrow(new CertificateSenderException("")).when(certificateSenderService)
+            .storeCertificate(eq(INTYG_ID), eq(INTYG_TYP_FK), anyString());
         intygService.storeIntyg(createUtkast());
     }
 

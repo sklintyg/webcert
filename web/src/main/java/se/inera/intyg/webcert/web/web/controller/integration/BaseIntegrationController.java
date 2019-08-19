@@ -19,12 +19,11 @@
 package se.inera.intyg.webcert.web.web.controller.integration;
 
 import com.google.common.base.Strings;
+import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.intyg.infra.security.authorities.validation.AuthoritiesValidator;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
-
-import java.util.Map;
 
 /**
  * Base class for deep-integration and uthopp controllers.
@@ -39,7 +38,6 @@ public abstract class BaseIntegrationController {
 
     protected AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
 
-
     // api
 
     @Autowired
@@ -52,13 +50,10 @@ public abstract class BaseIntegrationController {
         this.webCertUserService = webCertUserService;
     }
 
-
     // protected scope
 
     /**
      * Method should return the granted roles that allows.
-     *
-     * @return
      */
     protected abstract String[] getGrantedRoles();
 
@@ -80,16 +75,16 @@ public abstract class BaseIntegrationController {
         // Input validation
         if (Strings.nullToEmpty(paramValue).trim().isEmpty()) {
             throw new IllegalArgumentException(
-                    String.format("Path/query parameter '%s' was either whitespace, empty (\"\") or null", paramName));
+                String.format("Path/query parameter '%s' was either whitespace, empty (\"\") or null", paramName));
         }
     }
 
     protected void validateAuthorities() {
         // Do Auth validation, given the subclass role/origin constraints
         authoritiesValidator.given(webCertUserService.getUser())
-                .roles(getGrantedRoles())
-                .origins(getGrantedRequestOrigin())
-                .orThrow();
+            .roles(getGrantedRoles())
+            .origins(getGrantedRequestOrigin())
+            .orThrow();
     }
 
 }

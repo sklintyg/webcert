@@ -18,27 +18,26 @@
  */
 
 angular.module('webcert').directive('wcFooter', ['common.dialogService',
-    function(dialogService) {
+  function(dialogService) {
     'use strict';
-        return {
-            restrict: 'E',
-            templateUrl: '/app/views/index/wcFooter/wcFooter.directive.html',
-            scope: {
-            },
-            link: function(scope) {
-                var dialogInstance;
+    return {
+      restrict: 'E',
+      templateUrl: '/app/views/index/wcFooter/wcFooter.directive.html',
+      scope: {},
+      link: function(scope) {
+        var dialogInstance;
 
-                scope.openAboutCookies = function () {
-                    dialogInstance = dialogService.showDialog({
-                        dialogId: 'about-cookies-modal',
-                        templateUrl: 'app/views/index/wcFooter/aboutCookies.html',
-                        button1click: function() {
-                            dialogInstance.close();
-                        },
-                        autoClose: false,
-                        size: 'lg'
-                    });
-                };
-            }
+        scope.openAboutCookies = function() {
+          dialogInstance = dialogService.showDialog({
+            dialogId: 'about-cookies-modal',
+            templateUrl: 'app/views/index/wcFooter/aboutCookies.html',
+            button1click: function() {
+              dialogInstance.close();
+            },
+            autoClose: false,
+            size: 'lg'
+          });
         };
-} ]);
+      }
+    };
+  }]);

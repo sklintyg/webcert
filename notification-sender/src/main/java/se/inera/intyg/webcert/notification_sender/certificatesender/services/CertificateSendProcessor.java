@@ -19,15 +19,13 @@
 package se.inera.intyg.webcert.notification_sender.certificatesender.services;
 
 import javax.xml.ws.WebServiceException;
-
 import org.apache.camel.Body;
 import org.apache.camel.Header;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import se.inera.intyg.webcert.common.client.SendCertificateServiceClient;
 import se.inera.intyg.webcert.common.Constants;
+import se.inera.intyg.webcert.common.client.SendCertificateServiceClient;
 import se.inera.intyg.webcert.common.sender.exception.PermanentException;
 import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
 import se.riv.clinicalprocess.healthcond.certificate.sendCertificateToRecipient.v2.SendCertificateToRecipientResponseType;
@@ -45,10 +43,10 @@ public class CertificateSendProcessor {
     private SendCertificateServiceClient sendServiceClient;
 
     public void process(@Body String skickatAv,
-            @Header(Constants.INTYGS_ID) String intygsId,
-            @Header(Constants.PERSON_ID) String personId,
-            @Header(Constants.RECIPIENT) String recipient,
-            @Header(Constants.LOGICAL_ADDRESS) String logicalAddress) throws TemporaryException, PermanentException {
+        @Header(Constants.INTYGS_ID) String intygsId,
+        @Header(Constants.PERSON_ID) String personId,
+        @Header(Constants.RECIPIENT) String recipient,
+        @Header(Constants.LOGICAL_ADDRESS) String logicalAddress) throws TemporaryException, PermanentException {
 
         SendCertificateToRecipientResponseType response;
         try {

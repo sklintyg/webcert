@@ -22,13 +22,11 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import javax.xml.ws.WebServiceException;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-
 import se.inera.intyg.webcert.common.client.SendCertificateServiceClient;
 import se.inera.intyg.webcert.common.sender.exception.PermanentException;
 import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
@@ -124,7 +122,7 @@ public class CertificateSendProcessorTest {
     public void testSendCertificateThrowsPermanentOnWebServiceException() throws Exception {
         // Given
         when(sendServiceClient.sendCertificate(INTYGS_ID1, PERSON_ID1, SKICKAT_AV, RECIPIENT1, LOGICAL_ADDRESS1))
-                .thenThrow(new WebServiceException());
+            .thenThrow(new WebServiceException());
 
         // When
         certificateSendProcessor.process(SKICKAT_AV, INTYGS_ID1, PERSON_ID1, RECIPIENT1, LOGICAL_ADDRESS1);

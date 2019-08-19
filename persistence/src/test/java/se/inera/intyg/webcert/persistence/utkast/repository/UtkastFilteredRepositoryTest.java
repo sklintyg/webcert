@@ -18,6 +18,16 @@
  */
 package se.inera.intyg.webcert.persistence.utkast.repository;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
+import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -29,20 +39,9 @@ import org.springframework.transaction.annotation.Transactional;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 
-import java.time.LocalDate;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "classpath:repository-context.xml" })
-@ActiveProfiles({ "dev", "unit-testing" })
+@ContextConfiguration(locations = {"classpath:repository-context.xml"})
+@ActiveProfiles({"dev", "unit-testing"})
 @Transactional
 public class UtkastFilteredRepositoryTest {
 
@@ -53,29 +52,41 @@ public class UtkastFilteredRepositoryTest {
 
     @Before
     public void setup() {
-        utkastRepository.save(UtkastTestUtil.buildUtkast(UtkastTestUtil.ENHET_1_ID, UtkastTestUtil.HOS_PERSON2_ID, UtkastTestUtil.HOS_PERSON2_NAMN,
+        utkastRepository
+            .save(UtkastTestUtil.buildUtkast(UtkastTestUtil.ENHET_1_ID, UtkastTestUtil.HOS_PERSON2_ID, UtkastTestUtil.HOS_PERSON2_NAMN,
                 UtkastStatus.SIGNED, "2014-03-01"));
-        utkastRepository.save(UtkastTestUtil.buildUtkast(UtkastTestUtil.ENHET_2_ID, UtkastTestUtil.HOS_PERSON3_ID, UtkastTestUtil.HOS_PERSON2_NAMN,
+        utkastRepository
+            .save(UtkastTestUtil.buildUtkast(UtkastTestUtil.ENHET_2_ID, UtkastTestUtil.HOS_PERSON3_ID, UtkastTestUtil.HOS_PERSON2_NAMN,
                 UtkastStatus.DRAFT_COMPLETE, "2014-03-01"));
-        utkastRepository.save(UtkastTestUtil.buildUtkast(UtkastTestUtil.ENHET_1_ID, UtkastTestUtil.HOS_PERSON1_ID, UtkastTestUtil.HOS_PERSON1_NAMN,
+        utkastRepository
+            .save(UtkastTestUtil.buildUtkast(UtkastTestUtil.ENHET_1_ID, UtkastTestUtil.HOS_PERSON1_ID, UtkastTestUtil.HOS_PERSON1_NAMN,
                 UtkastStatus.DRAFT_INCOMPLETE, "2014-03-01"));
-        utkastRepository.save(UtkastTestUtil.buildUtkast(UtkastTestUtil.ENHET_2_ID, UtkastTestUtil.HOS_PERSON1_ID, UtkastTestUtil.HOS_PERSON1_NAMN,
+        utkastRepository
+            .save(UtkastTestUtil.buildUtkast(UtkastTestUtil.ENHET_2_ID, UtkastTestUtil.HOS_PERSON1_ID, UtkastTestUtil.HOS_PERSON1_NAMN,
                 UtkastStatus.SIGNED, "2014-03-02"));
-        utkastRepository.save(UtkastTestUtil.buildUtkast(UtkastTestUtil.ENHET_1_ID, UtkastTestUtil.HOS_PERSON2_ID, UtkastTestUtil.HOS_PERSON2_NAMN,
+        utkastRepository
+            .save(UtkastTestUtil.buildUtkast(UtkastTestUtil.ENHET_1_ID, UtkastTestUtil.HOS_PERSON2_ID, UtkastTestUtil.HOS_PERSON2_NAMN,
                 UtkastStatus.DRAFT_COMPLETE, "2014-03-02"));
-        utkastRepository.save(UtkastTestUtil.buildUtkast(UtkastTestUtil.ENHET_2_ID, UtkastTestUtil.HOS_PERSON3_ID, UtkastTestUtil.HOS_PERSON3_NAMN,
+        utkastRepository
+            .save(UtkastTestUtil.buildUtkast(UtkastTestUtil.ENHET_2_ID, UtkastTestUtil.HOS_PERSON3_ID, UtkastTestUtil.HOS_PERSON3_NAMN,
                 UtkastStatus.DRAFT_INCOMPLETE, "2014-03-02"));
-        utkastRepository.save(UtkastTestUtil.buildUtkast(UtkastTestUtil.ENHET_1_ID, UtkastTestUtil.HOS_PERSON2_ID, UtkastTestUtil.HOS_PERSON2_NAMN,
+        utkastRepository
+            .save(UtkastTestUtil.buildUtkast(UtkastTestUtil.ENHET_1_ID, UtkastTestUtil.HOS_PERSON2_ID, UtkastTestUtil.HOS_PERSON2_NAMN,
                 UtkastStatus.SIGNED, "2014-03-03"));
-        utkastRepository.save(UtkastTestUtil.buildUtkast(UtkastTestUtil.ENHET_2_ID, UtkastTestUtil.HOS_PERSON1_ID, UtkastTestUtil.HOS_PERSON1_NAMN,
+        utkastRepository
+            .save(UtkastTestUtil.buildUtkast(UtkastTestUtil.ENHET_2_ID, UtkastTestUtil.HOS_PERSON1_ID, UtkastTestUtil.HOS_PERSON1_NAMN,
                 UtkastStatus.DRAFT_COMPLETE, "2014-03-03"));
-        utkastRepository.save(UtkastTestUtil.buildUtkast(UtkastTestUtil.ENHET_1_ID, UtkastTestUtil.HOS_PERSON2_ID, UtkastTestUtil.HOS_PERSON2_NAMN,
+        utkastRepository
+            .save(UtkastTestUtil.buildUtkast(UtkastTestUtil.ENHET_1_ID, UtkastTestUtil.HOS_PERSON2_ID, UtkastTestUtil.HOS_PERSON2_NAMN,
                 UtkastStatus.DRAFT_INCOMPLETE, "2014-03-03"));
-        utkastRepository.save(UtkastTestUtil.buildUtkast(UtkastTestUtil.ENHET_2_ID, UtkastTestUtil.HOS_PERSON3_ID, UtkastTestUtil.HOS_PERSON3_NAMN,
+        utkastRepository
+            .save(UtkastTestUtil.buildUtkast(UtkastTestUtil.ENHET_2_ID, UtkastTestUtil.HOS_PERSON3_ID, UtkastTestUtil.HOS_PERSON3_NAMN,
                 UtkastStatus.SIGNED, "2014-03-04"));
-        utkastRepository.save(UtkastTestUtil.buildUtkast(UtkastTestUtil.ENHET_1_ID, UtkastTestUtil.HOS_PERSON2_ID, UtkastTestUtil.HOS_PERSON2_NAMN,
+        utkastRepository
+            .save(UtkastTestUtil.buildUtkast(UtkastTestUtil.ENHET_1_ID, UtkastTestUtil.HOS_PERSON2_ID, UtkastTestUtil.HOS_PERSON2_NAMN,
                 UtkastStatus.DRAFT_COMPLETE, "2014-03-04"));
-        utkastRepository.save(UtkastTestUtil.buildUtkast(UtkastTestUtil.ENHET_2_ID, UtkastTestUtil.HOS_PERSON1_ID, UtkastTestUtil.HOS_PERSON1_NAMN,
+        utkastRepository
+            .save(UtkastTestUtil.buildUtkast(UtkastTestUtil.ENHET_2_ID, UtkastTestUtil.HOS_PERSON1_ID, UtkastTestUtil.HOS_PERSON1_NAMN,
                 UtkastStatus.DRAFT_INCOMPLETE, "2014-03-04"));
     }
 

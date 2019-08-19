@@ -29,37 +29,37 @@ var JClass = require('jclass');
  */
 
 var WebcertBasePage = JClass._extend({
-    init: function() {
-        this.doctor = element(by.css('.logged-in'));
-        this.header = element(by.id('wcHeader'));
+  init: function() {
+    this.doctor = element(by.css('.logged-in'));
+    this.header = element(by.id('wcHeader'));
 
-        this.flikar = {
-            sokSkrivIntyg: element(by.id('menu-skrivintyg')),
-            notSigned: element(by.id('menu-unsigned'))
-        };
-        this.expandUnitMenu = element(by.id('expand-unitmenu-btn'));
-        this.changeUnit = element(by.id('wc-care-unit-clinic-selector-link'));
-        //ID saknas för vårdenhet: this.careUnit = element(by.css('.clearfix')); 
-        this.warnings = {
-            protectedInfo: element(by.id('sekretessmarkering'))
-        };
-        this.cookie = {
-            consentBanner: element(by.tagName('wc-cookie-banner')),
-            consentBtn: element(by.id('cookie-usage-consent-btn'))
-        };
+    this.flikar = {
+      sokSkrivIntyg: element(by.id('menu-skrivintyg')),
+      notSigned: element(by.id('menu-unsigned'))
+    };
+    this.expandUnitMenu = element(by.id('expand-unitmenu-btn'));
+    this.changeUnit = element(by.id('wc-care-unit-clinic-selector-link'));
+    //ID saknas för vårdenhet: this.careUnit = element(by.css('.clearfix'));
+    this.warnings = {
+      protectedInfo: element(by.id('sekretessmarkering'))
+    };
+    this.cookie = {
+      consentBanner: element(by.tagName('wc-cookie-banner')),
+      consentBtn: element(by.id('cookie-usage-consent-btn'))
+    };
 
-        this.cookieConsentBtnId = 'cookie-usage-consent-btn';
+    this.cookieConsentBtnId = 'cookie-usage-consent-btn';
 
-    },
-    isAt: function() {
-        var at = this.at;
-        return browser.wait(function() {
-            return at.isPresent();
-        }, 5000);
-    },
-    getDoctorText: function() {
-        return this.doctor.getText();
-    }
+  },
+  isAt: function() {
+    var at = this.at;
+    return browser.wait(function() {
+      return at.isPresent();
+    }, 5000);
+  },
+  getDoctorText: function() {
+    return this.doctor.getText();
+  }
 });
 
 module.exports = WebcertBasePage;

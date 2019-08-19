@@ -18,112 +18,110 @@
  */
 
 angular.module('webcert').factory('webcert.SokSkrivValjUtkastService',
-    [ '$q', '$filter', 'common.PersonIdValidatorService', 'common.PatientProxy', 'common.ObjectHelper',
-        function($q, $filter, PersonIdValidator, PatientProxy, ObjectHelper) {
-            'use strict';
+    ['$q', '$filter', 'common.PersonIdValidatorService', 'common.PatientProxy', 'common.ObjectHelper',
+      function($q, $filter, PersonIdValidator, PatientProxy, ObjectHelper) {
+        'use strict';
 
-            function _setupPatientModel(PatientModel, patientIdParam){
-                if(patientIdParam === 'default'){
-                    // if param is 'default' we won't use it, instead try to rely on already stored id in PatientModel
-                    patientIdParam = null;
-                } else {
-                    // if param is a valid personnummer use that
-                    if(PersonIdValidator.validResult(PersonIdValidator.validate(patientIdParam))) {
-                        PatientModel.personnummer = patientIdParam;
-                    } else {
-                        patientIdParam = null;
-                    }
-                }
+        function _setupPatientModel(PatientModel, patientIdParam) {
+          if (patientIdParam === 'default') {
+            // if param is 'default' we won't use it, instead try to rely on already stored id in PatientModel
+            patientIdParam = null;
+          } else {
+            // if param is a valid personnummer use that
+            if (PersonIdValidator.validResult(PersonIdValidator.validate(patientIdParam))) {
+              PatientModel.personnummer = patientIdParam;
+            } else {
+              patientIdParam = null;
+            }
+          }
 
-                if(!PatientModel.isValid()){
-                    var patientModel = PatientModel.build();
-                    if(!ObjectHelper.isEmpty(patientIdParam)){
-                        PatientModel.personnummer = patientIdParam;
-                    }
-                    return patientModel;
-                } else {
-                    return PatientModel;
-                }
+          if (!PatientModel.isValid()) {
+            var patientModel = PatientModel.build();
+            if (!ObjectHelper.isEmpty(patientIdParam)) {
+              PatientModel.personnummer = patientIdParam;
+            }
+            return patientModel;
+          } else {
+            return PatientModel;
+          }
+        }
+
+        function _lookupPatient(personnummer) {
+
+          var deferred = $q.defer();
+
+          var onSuccess = function(patientResult) {
+
+            if (!patientResult.personnummer) {
+              // This shouldn't ever happen but in case we don't receive a personnummer we should tell the user.
+              deferred.reject('error.pu.nopersonnummer');
+            } else if (!patientResult.fornamn || !patientResult.efternamn) {
+              // If the successful result does not contain mandatory name information, present an error (should never happen in production)
+              deferred.reject('error.pu.noname');
+            } else {
+              deferred.resolve(patientResult);
+            }
+          };
+
+          var onNotFound = function() {
+
+            // If the pu-service says noone exists with this pnr we just show an error message.
+            if (PersonIdValidator.validResult(
+                PersonIdValidator.validateSamordningsnummer(personnummer))) {
+              // This is a samordningsnummer that does not exist
+              deferred.reject('error.pu.samordningsnummernotfound');
+            } else {
+              // This is a personnummer that does not exist
+              deferred.reject('error.pu.namenotfound');
+            }
+          };
+
+          var onError = function(isPUError) {
+            if (isPUError) {
+              deferred.reject('error.pu_problem');
+            } else {
+              deferred.reject('error.pu.server-error');
             }
 
-            function _lookupPatient(personnummer) {
+          };
 
-                var deferred = $q.defer();
+          PatientProxy.getPatient(personnummer, onSuccess, onNotFound, onError);
 
-                var onSuccess = function(patientResult) {
+          return deferred.promise;
+        }
 
-                    if (!patientResult.personnummer) {
-                        // This shouldn't ever happen but in case we don't receive a personnummer we should tell the user.
-                        deferred.reject('error.pu.nopersonnummer');
-                    } else if (!patientResult.fornamn || !patientResult.efternamn) {
-                        // If the successful result does not contain mandatory name information, present an error (should never happen in production)
-                        deferred.reject('error.pu.noname');
-                    } else {
-                        deferred.resolve(patientResult);
-                    }
-                };
-
-                var onNotFound = function() {
-
-                    // If the pu-service says noone exists with this pnr we just show an error message.
-                    if (PersonIdValidator.validResult(
-                            PersonIdValidator.validateSamordningsnummer(personnummer))) {
-                        // This is a samordningsnummer that does not exist
-                        deferred.reject('error.pu.samordningsnummernotfound');
-                    } else {
-                        // This is a personnummer that does not exist
-                        deferred.reject('error.pu.namenotfound');
-                    }
-                };
-
-                var onError = function(isPUError) {
-                    if (isPUError) {
-                        deferred.reject('error.pu_problem');
-                    } else {
-                        deferred.reject('error.pu.server-error');
-                    }
-
-                };
-
-                PatientProxy.getPatient(personnummer, onSuccess, onNotFound, onError);
-
-                return deferred.promise;
+        function _hasUnsigned(list) {
+          if (!list) {
+            return null;
+          }
+          if (list.length === 0) {
+            return 'intyglist-empty';
+          }
+          var unsigned = true;
+          for (var i = 0; i < list.length; i++) {
+            var item = list[i];
+            if (item.status === 'DRAFT_COMPLETE') {
+              unsigned = false;
+              break;
             }
+          }
+          if (unsigned) {
+            return 'unsigned';
+          } else {
+            return 'signed';
+          }
+        }
 
-            function _hasUnsigned(list) {
-                if (!list) {
-                    return null;
-                }
-                if (list.length === 0) {
-                    return 'intyglist-empty';
-                }
-                var unsigned = true;
-                for (var i = 0; i < list.length; i++) {
-                    var item = list[i];
-                    if (item.status === 'DRAFT_COMPLETE') {
-                        unsigned = false;
-                        break;
-                    }
-                }
-                if (unsigned) {
-                    return 'unsigned';
-                } else {
-                    return 'signed';
-                }
-            }
+        function _updateIntygList(Viewstate) {
+          Viewstate.currentList =
+              $filter('TidigareIntygFilter')(Viewstate.intygListUnhandled, Viewstate.intygFilter);
+        }
 
-
-            function _updateIntygList(Viewstate) {
-                Viewstate.currentList =
-                    $filter('TidigareIntygFilter')(Viewstate.intygListUnhandled, Viewstate.intygFilter);
-            }
-
-
-            // Return public API for the service
-            return {
-                setupPatientModel: _setupPatientModel,
-                lookupPatient: _lookupPatient,
-                hasUnsigned: _hasUnsigned,
-                updateIntygList: _updateIntygList
-            };
-        }]);
+        // Return public API for the service
+        return {
+          setupPatientModel: _setupPatientModel,
+          lookupPatient: _lookupPatient,
+          hasUnsigned: _hasUnsigned,
+          updateIntygList: _updateIntygList
+        };
+      }]);

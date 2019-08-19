@@ -22,14 +22,14 @@
 var BaseUtkast = require('../base.utkast.page.js');
 
 var AfBaseUtkast = BaseUtkast._extend({
-    init: function init() {
-        init._super.call(this);
+  init: function init() {
+    init._super.call(this);
 
-        this.at = element(by.css('.edit-form'));
-    },
-    get: function get(intygId) {
-        get._super.call(this, this.intygType, intygId);
-    }
+    this.at = element(by.css('.edit-form'));
+  },
+  get: function get(intygId) {
+    get._super.call(this, this.intygType, intygId);
+  }
 });
 
 module.exports = AfBaseUtkast;

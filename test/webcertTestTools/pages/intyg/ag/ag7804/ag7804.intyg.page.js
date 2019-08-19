@@ -22,170 +22,170 @@
 var AgBaseIntyg = require('../ag.base.intyg.page.js');
 
 var Ag7804Intyg = AgBaseIntyg._extend({
-    init: function init() {
-        init._super.call(this);
-        this.intygType = 'ag7804';
-        this.intygTypeVersion = '1.0';
-        this.certficate = element(by.id('certificate'));
-        this.smittskydd = element(by.id('avstangningSmittskydd'));
-        this.sjukdomsforlopp = element(by.id('sjukdomsforlopp'));
-        this.behandling = {
-            pagaende: element(by.id('pagaendeBehandling')),
-            planerad: element(by.id('planeradBehandling'))
+  init: function init() {
+    init._super.call(this);
+    this.intygType = 'ag7804';
+    this.intygTypeVersion = '1.0';
+    this.certficate = element(by.id('certificate'));
+    this.smittskydd = element(by.id('avstangningSmittskydd'));
+    this.sjukdomsforlopp = element(by.id('sjukdomsforlopp'));
+    this.behandling = {
+      pagaende: element(by.id('pagaendeBehandling')),
+      planerad: element(by.id('planeradBehandling'))
+    };
+    this.diagnoser = {
+      onskarFormedlaDiagnos: element(by.id('onskarFormedlaDiagnos')),
+      getDiagnos: function(index) {
+        index = index || 0;
+        return {
+          kod: element(by.id('diagnoser-row' + index + '-col0')),
+          beskrivning: element(by.id('diagnoser-row' + index + '-col1'))
         };
-        this.diagnoser = {
-            onskarFormedlaDiagnos: element(by.id('onskarFormedlaDiagnos')),
-            getDiagnos: function(index) {
-                index = index || 0;
-                return {
-                    kod: element(by.id('diagnoser-row' + index + '-col0')),
-                    beskrivning: element(by.id('diagnoser-row' + index + '-col1'))
-                };
-            }
-        };
-        this.konsekvenser = {
-            funktionsnedsattning: element(by.id('funktionsnedsattning')),
-            aktivitetsbegransning: element(by.id('aktivitetsbegransning'))
-        };
-        this.sysselsattning = {
-            list: element(by.id('sysselsattning-list'))
-        };
-        this.sjukskrivningar = {
-            grad: function(index) {
-                return element(by.id('sjukskrivningar-row' + index + '-col0'));
-            },
-            from: function(index) {
-                return element(by.id('sjukskrivningar-row' + index + '-col1'));
-            },
-            to: function(index) {
-                return element(by.id('sjukskrivningar-row' + index + '-col2'));
-            }
-        };
-        this.arbetsformagaFMB = element(by.id('forsakringsmedicinsktBeslutsstod'));
+      }
+    };
+    this.konsekvenser = {
+      funktionsnedsattning: element(by.id('funktionsnedsattning')),
+      aktivitetsbegransning: element(by.id('aktivitetsbegransning'))
+    };
+    this.sysselsattning = {
+      list: element(by.id('sysselsattning-list'))
+    };
+    this.sjukskrivningar = {
+      grad: function(index) {
+        return element(by.id('sjukskrivningar-row' + index + '-col0'));
+      },
+      from: function(index) {
+        return element(by.id('sjukskrivningar-row' + index + '-col1'));
+      },
+      to: function(index) {
+        return element(by.id('sjukskrivningar-row' + index + '-col2'));
+      }
+    };
+    this.arbetsformagaFMB = element(by.id('forsakringsmedicinsktBeslutsstod'));
 
-        this.arbetstidsforlaggning = {
-            val: element(by.id('arbetstidsforlaggning')),
-            motivering: element(by.id('arbetstidsforlaggningMotivering'))
-        };
-        this.resorTillArbete = element(by.id('arbetsresor'));
-        this.prognosForArbetsformaga = element(by.id('prognos-typ'));
-        this.atgarder = element(by.id('arbetslivsinriktadeAtgarder'));
-        this.atgarderBeskrivning = element(by.id('arbetslivsinriktadeAtgarderBeskrivning'));
-        this.aktivitetsbegransning = element(by.id('aktivitetsbegransning'));
-        this.ovrigt = element(by.id('ovrigt'));
-        this.kontakt = {
-            onskas: element(by.id('kontaktMedAg')),
-            anledning: element(by.id('anledningTillKontakt'))
-        };
+    this.arbetstidsforlaggning = {
+      val: element(by.id('arbetstidsforlaggning')),
+      motivering: element(by.id('arbetstidsforlaggningMotivering'))
+    };
+    this.resorTillArbete = element(by.id('arbetsresor'));
+    this.prognosForArbetsformaga = element(by.id('prognos-typ'));
+    this.atgarder = element(by.id('arbetslivsinriktadeAtgarder'));
+    this.atgarderBeskrivning = element(by.id('arbetslivsinriktadeAtgarderBeskrivning'));
+    this.aktivitetsbegransning = element(by.id('aktivitetsbegransning'));
+    this.ovrigt = element(by.id('ovrigt'));
+    this.kontakt = {
+      onskas: element(by.id('kontaktMedAg')),
+      anledning: element(by.id('anledningTillKontakt'))
+    };
 
-    },
+  },
 
-    get: function get(intygId) {
-        get._super.call(this, intygId);
-    },
+  get: function get(intygId) {
+    get._super.call(this, intygId);
+  },
 
-    verify: function(data) {
+  verify: function(data) {
 
-        this.verifieraDiagnos(data);
+    this.verifieraDiagnos(data);
 
-        this.verifieraOvrigt(data);
+    this.verifieraOvrigt(data);
 
-        this.verifyArbetsformaga(data.arbetsformaga);
+    this.verifyArbetsformaga(data.arbetsformaga);
 
-        if (!data.smittskydd) {
-            this.verifieraBaseratPa(data);
+    if (!data.smittskydd) {
+      this.verifieraBaseratPa(data);
 
-            this.verifieraSysselsattning(data);
+      this.verifieraSysselsattning(data);
 
-            this.verifieraKonsekvenser(data);
+      this.verifieraKonsekvenser(data);
 
-            this.verifieraMedicinskbehandling(data);
+      this.verifieraMedicinskbehandling(data);
 
-            this.verifieraKontakt(data);
+      this.verifieraKontakt(data);
 
-        }
-    },
-
-    verifieraKonsekvenser: function(data) {
-        if (data.funktionsnedsattning) {
-            expect(this.konsekvenser.funktionsnedsattning.getText()).toBe(data.funktionsnedsattning);
-        } else {
-            expect(this.konsekvenser.funktionsnedsattning.getText()).toBe('Ej angivet');
-        }
-        if (data.aktivitetsbegransning) {
-            expect(this.konsekvenser.aktivitetsbegransning.getText()).toBe(data.aktivitetsbegransning);
-        } else {
-            expect(this.konsekvenser.aktivitetsbegransning.getText()).toBe('Ej angivet');
-        }
-    },
-
-    verifieraDiagnos: function(data) {
-
-        if (data.diagnos.onskarFormedlaDiagnos) {
-            expect(this.diagnoser.onskarFormedlaDiagnos.getText()).toBe('Ja');
-            for (var j = 0; j < data.diagnos.rows.length; j++) {
-                expect(this.diagnoser.getDiagnos(j).kod.getText()).toBe(data.diagnos.rows[j].kod);
-            }
-        } else {
-            expect(this.diagnoser.onskarFormedlaDiagnos.getText()).toBe('Nej');
-        }
-    },
-
-    verifieraMedicinskbehandling: function(data) {
-
-        if (data.medicinskbehandling.pagaende) {
-            expect(this.behandling.pagaende.getText()).toBe(data.medicinskbehandling.pagaende);
-        }
-
-        if (data.medicinskbehandling.planerad) {
-            expect(this.behandling.planerad.getText()).toBe(data.medicinskbehandling.planerad);
-        }
-
-    },
-
-    verifyArbetsformaga: function(arbetsformaga) {
-
-        var formagor = [];
-
-        if (arbetsformaga.nedsattMed100) {
-            formagor.push(arbetsformaga.nedsattMed100);
-        }
-
-        if (arbetsformaga.nedsattMed75) {
-            formagor.push(arbetsformaga.nedsattMed75);
-        }
-
-        if (arbetsformaga.nedsattMed50) {
-            formagor.push(arbetsformaga.nedsattMed50);
-        }
-
-        if (arbetsformaga.nedsattMed25) {
-            formagor.push(arbetsformaga.nedsattMed25);
-        }
-
-        for (var i = 0; i < formagor.length; i++) {
-            expect(this.sjukskrivningar.from(i).getText()).toBe(formagor[i].from);
-            expect(this.sjukskrivningar.to(i).getText()).toBe(formagor[i].tom);
-        }
-    },
-    verifieraKontakt: function(data) {
-        if (data.kontaktMedAg) {
-            expect(this.kontakt.onskas.getText()).toBe('Ja');
-        } else {
-            expect(this.kontakt.onskas.getText()).toBe('Ej angivet');
-        }
-
-        if (data.anledningTillKontakt) {
-            expect(this.kontakt.anledning.getText()).toBe(data.anledningTillKontakt);
-        }
-    },
-    verifieraSysselsattning: function(data) {
-        expect(element(by.id('sysselsattning-0')).getText()).toBe(data.sysselsattning.translated);
-    },
-
-    verifieraOvrigt: function(data) {
-        expect(this.ovrigt.getText()).toBe(data.ovrigt);
     }
+  },
+
+  verifieraKonsekvenser: function(data) {
+    if (data.funktionsnedsattning) {
+      expect(this.konsekvenser.funktionsnedsattning.getText()).toBe(data.funktionsnedsattning);
+    } else {
+      expect(this.konsekvenser.funktionsnedsattning.getText()).toBe('Ej angivet');
+    }
+    if (data.aktivitetsbegransning) {
+      expect(this.konsekvenser.aktivitetsbegransning.getText()).toBe(data.aktivitetsbegransning);
+    } else {
+      expect(this.konsekvenser.aktivitetsbegransning.getText()).toBe('Ej angivet');
+    }
+  },
+
+  verifieraDiagnos: function(data) {
+
+    if (data.diagnos.onskarFormedlaDiagnos) {
+      expect(this.diagnoser.onskarFormedlaDiagnos.getText()).toBe('Ja');
+      for (var j = 0; j < data.diagnos.rows.length; j++) {
+        expect(this.diagnoser.getDiagnos(j).kod.getText()).toBe(data.diagnos.rows[j].kod);
+      }
+    } else {
+      expect(this.diagnoser.onskarFormedlaDiagnos.getText()).toBe('Nej');
+    }
+  },
+
+  verifieraMedicinskbehandling: function(data) {
+
+    if (data.medicinskbehandling.pagaende) {
+      expect(this.behandling.pagaende.getText()).toBe(data.medicinskbehandling.pagaende);
+    }
+
+    if (data.medicinskbehandling.planerad) {
+      expect(this.behandling.planerad.getText()).toBe(data.medicinskbehandling.planerad);
+    }
+
+  },
+
+  verifyArbetsformaga: function(arbetsformaga) {
+
+    var formagor = [];
+
+    if (arbetsformaga.nedsattMed100) {
+      formagor.push(arbetsformaga.nedsattMed100);
+    }
+
+    if (arbetsformaga.nedsattMed75) {
+      formagor.push(arbetsformaga.nedsattMed75);
+    }
+
+    if (arbetsformaga.nedsattMed50) {
+      formagor.push(arbetsformaga.nedsattMed50);
+    }
+
+    if (arbetsformaga.nedsattMed25) {
+      formagor.push(arbetsformaga.nedsattMed25);
+    }
+
+    for (var i = 0; i < formagor.length; i++) {
+      expect(this.sjukskrivningar.from(i).getText()).toBe(formagor[i].from);
+      expect(this.sjukskrivningar.to(i).getText()).toBe(formagor[i].tom);
+    }
+  },
+  verifieraKontakt: function(data) {
+    if (data.kontaktMedAg) {
+      expect(this.kontakt.onskas.getText()).toBe('Ja');
+    } else {
+      expect(this.kontakt.onskas.getText()).toBe('Ej angivet');
+    }
+
+    if (data.anledningTillKontakt) {
+      expect(this.kontakt.anledning.getText()).toBe(data.anledningTillKontakt);
+    }
+  },
+  verifieraSysselsattning: function(data) {
+    expect(element(by.id('sysselsattning-0')).getText()).toBe(data.sysselsattning.translated);
+  },
+
+  verifieraOvrigt: function(data) {
+    expect(this.ovrigt.getText()).toBe(data.ovrigt);
+  }
 });
 
 module.exports = new Ag7804Intyg();

@@ -18,12 +18,14 @@
  */
 package se.inera.intyg.webcert.web.auth;
 
+import static se.inera.intyg.webcert.web.security.WebCertUserOrigin.REGEXP_REQUESTURI_DJUPINTEGRATION;
+import static se.inera.intyg.webcert.web.web.controller.integration.IntygIntegrationController.PARAM_ENHET_ID;
+
 import java.io.IOException;
 import java.util.regex.Pattern;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import org.springframework.http.HttpMethod;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -33,18 +35,14 @@ import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 import org.springframework.security.web.savedrequest.RequestCache;
 import org.springframework.security.web.savedrequest.SavedRequest;
 import org.springframework.util.StringUtils;
-
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.integration.IntygIntegrationController;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
 
-import static se.inera.intyg.webcert.web.security.WebCertUserOrigin.REGEXP_REQUESTURI_DJUPINTEGRATION;
-import static se.inera.intyg.webcert.web.web.controller.integration.IntygIntegrationController.PARAM_ENHET_ID;
-
 public class WebcertAuthenticationSuccessHandler extends
-        SimpleUrlAuthenticationSuccessHandler {
+    SimpleUrlAuthenticationSuccessHandler {
 
     private RequestCache requestCache = new HttpSessionRequestCache();
 
@@ -52,8 +50,8 @@ public class WebcertAuthenticationSuccessHandler extends
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request,
-            HttpServletResponse response, Authentication authentication)
-            throws ServletException, IOException {
+        HttpServletResponse response, Authentication authentication)
+        throws ServletException, IOException {
         SavedRequest savedRequest = requestCache.getRequest(request, response);
 
         if (savedRequest == null) {
@@ -63,8 +61,8 @@ public class WebcertAuthenticationSuccessHandler extends
         }
         String targetUrlParameter = getTargetUrlParameter();
         if (isAlwaysUseDefaultTargetUrl()
-                || (targetUrlParameter != null && StringUtils.hasText(request
-                        .getParameter(targetUrlParameter)))) {
+            || (targetUrlParameter != null && StringUtils.hasText(request
+            .getParameter(targetUrlParameter)))) {
             requestCache.removeRequest(request, response);
             super.onAuthenticationSuccess(request, response, authentication);
 
@@ -89,24 +87,24 @@ public class WebcertAuthenticationSuccessHandler extends
             // Make sure this is a fresh session, e.g. must NOT have any existing params.
             if (webCertUser.getParameters() != null) {
                 throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM,
-                        "This user session is already active and using Webcert. "
+                    "This user session is already active and using Webcert. "
                         + "Please use a new user session for each deep integration link.");
             }
 
             IntegrationParameters integrationParameters = IntegrationParameters.of(
-                    fromSavedReq(savedRequest, IntygIntegrationController.PARAM_REFERENCE),
-                    fromSavedReq(savedRequest, IntygIntegrationController.PARAM_RESPONSIBLE_HOSP_NAME),
-                    fromSavedReq(savedRequest, IntygIntegrationController.PARAM_PATIENT_ALTERNATE_SSN),
-                    fromSavedReq(savedRequest, IntygIntegrationController.PARAM_PATIENT_FORNAMN),
-                    fromSavedReq(savedRequest, IntygIntegrationController.PARAM_PATIENT_MELLANNAMN),
-                    fromSavedReq(savedRequest, IntygIntegrationController.PARAM_PATIENT_EFTERNAMN),
-                    fromSavedReq(savedRequest, IntygIntegrationController.PARAM_PATIENT_POSTADRESS),
-                    fromSavedReq(savedRequest, IntygIntegrationController.PARAM_PATIENT_POSTNUMMER),
-                    fromSavedReq(savedRequest, IntygIntegrationController.PARAM_PATIENT_POSTORT),
-                    fromSavedReqBoolean(savedRequest, IntygIntegrationController.PARAM_COHERENT_JOURNALING),
-                    fromSavedReqBoolean(savedRequest, IntygIntegrationController.PARAM_PATIENT_DECEASED),
-                    fromSavedReqBoolean(savedRequest, IntygIntegrationController.PARAM_INACTIVE_UNIT),
-                    fromSavedReqBoolean(savedRequest, IntygIntegrationController.PARAM_FORNYA_OK, true));
+                fromSavedReq(savedRequest, IntygIntegrationController.PARAM_REFERENCE),
+                fromSavedReq(savedRequest, IntygIntegrationController.PARAM_RESPONSIBLE_HOSP_NAME),
+                fromSavedReq(savedRequest, IntygIntegrationController.PARAM_PATIENT_ALTERNATE_SSN),
+                fromSavedReq(savedRequest, IntygIntegrationController.PARAM_PATIENT_FORNAMN),
+                fromSavedReq(savedRequest, IntygIntegrationController.PARAM_PATIENT_MELLANNAMN),
+                fromSavedReq(savedRequest, IntygIntegrationController.PARAM_PATIENT_EFTERNAMN),
+                fromSavedReq(savedRequest, IntygIntegrationController.PARAM_PATIENT_POSTADRESS),
+                fromSavedReq(savedRequest, IntygIntegrationController.PARAM_PATIENT_POSTNUMMER),
+                fromSavedReq(savedRequest, IntygIntegrationController.PARAM_PATIENT_POSTORT),
+                fromSavedReqBoolean(savedRequest, IntygIntegrationController.PARAM_COHERENT_JOURNALING),
+                fromSavedReqBoolean(savedRequest, IntygIntegrationController.PARAM_PATIENT_DECEASED),
+                fromSavedReqBoolean(savedRequest, IntygIntegrationController.PARAM_INACTIVE_UNIT),
+                fromSavedReqBoolean(savedRequest, IntygIntegrationController.PARAM_FORNYA_OK, true));
 
             webCertUser.setParameters(integrationParameters);
 

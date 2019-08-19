@@ -21,143 +21,130 @@
  * Created by stephenwhite on 04/03/15.
  */
 angular.module('webcert').config(function($stateProvider, $urlRouterProvider, $httpProvider) {
-    'use strict';
+  'use strict';
 
-    var commonPath = '/web/webjars/common/webcert/';
+  var commonPath = '/web/webjars/common/webcert/';
 
-    $stateProvider.
-        state('normal-origin-enhetsval', {
-            url: '/normal-origin-enhetsval',
-            params: {
-                destinationState: null
-            },
-            views: {
-                'header': {
-                    templateUrl: commonPath + 'components/headers/wcHeader.partial.html'
-                },
-                'content@': {
-                    templateUrl: '/app/views/appStartEnhetsval/normal-enhetsval.page.html',
-                    controller: 'normal.EnhetsvalPageCtrl'
-                }
-            }
-        }).
-        state('integrationenhetsval', {
-            url: '/integration-enhetsval',
-            views: {
-                'header': {
-                    templateUrl: commonPath + 'components/headers/wcHeader.partial.html'
-                },
-                'content@': {
-                    templateUrl: '/app/views/appStartEnhetsval/integration-enhetsval.page.html',
-                    controller: 'integration.EnhetsvalPageCtrl'
-                }
-            }
-        }).
-        state('webcert', {
-            views: {
-                'header': {
-                    templateUrl: commonPath + 'components/headers/wcHeader.partial.html'
-                }
-            }
-        }).
-        state('webcert.index', {
-            url: '/',
-            views: {
-                'landing@': {
-                    templateUrl: '/app/views/index/index.html',
-                    controller: 'webcert.IndexCtrl'
-                }
-            }
-        }).
-        state('webcert.create-index', {
-            url: '/create/index',
-            views: {
-                'content@': {
-                    templateUrl: '/app/views/sokSkrivIntyg/sokSkrivIntyg.html',
-                    controller: 'webcert.SokSkrivIntygStartCtrl'
-                }
-            }
-        }).
-        state('webcert.create-choosepatient-index', {
-            url: '/create/choose-patient/index',
-            views: {
-                'content@': {
-                    templateUrl: '/app/views/sokSkrivIntyg/sokSkrivIntyg.html',
-                    controller: 'webcert.SokSkrivIntygCtrl'
-                }
-            }
-        }).
-        state('webcert.create-choose-certtype-index', {
-            url:'/create/choose-intyg-type/:patientId/index',
-            params: {
-                patientId:''
-            },
-            views: {
-                'content@': {
-                    templateUrl: '/app/views/sokSkrivIntyg/sokSkrivValjUtkastType.html',
-                    controller: 'webcert.SokSkrivValjUtkastTypeCtrl'
-                }
-            }
-        }).
-        state('webcert.enhet-arenden', {
-            url:'/enhet-arenden',
-            views: {
-                'content@': {
-                    templateUrl: '/app/views/fragorOchSvar/enhetArenden.html',
-                    controller: 'webcert.enhetArendenCtrl'
-                }
-            }
-        }).
-        state('webcert.unsigned', {
-            url: '/unsigned',
-            views: {
-                'content@': {
-                    templateUrl: '/app/views/ejSigneradeUtkast/ejSigneradeUtkast.html',
-                    controller: 'webcert.EjSigneradeUtkastCtrl'
-                }
-            }
-        }).
-        state('webcert.intyg', {
-            data: { defaultActive : 'index', backState: 'webcert.create-choose-certtype-index' },
-            views: {
-                'content@': {
-                    templateUrl: '/app/views/visaIntygFragasvar/intyg.html'
-                }
-            }
-        }).
-        state('webcert.fragasvar', {
-            data: { backState: 'webcert.enhet-arenden' },
-            views: {
-                'content@' : {
-                    templateUrl: '/app/views/visaIntygFragasvar/fragasvar.html'
-                }
-            }
-        }).
-        state('webcert.terms', {
-            url: '/terms',
-            views: {
-                'dialogs@webcert': {
-                    templateUrl: '/app/views/terms/terms.main.html',
-                    controller: 'webcert.TermsCtrl'
-                }
-            }
-        });
+  $stateProvider.state('normal-origin-enhetsval', {
+    url: '/normal-origin-enhetsval',
+    params: {
+      destinationState: null
+    },
+    views: {
+      'header': {
+        templateUrl: commonPath + 'components/headers/wcHeader.partial.html'
+      },
+      'content@': {
+        templateUrl: '/app/views/appStartEnhetsval/normal-enhetsval.page.html',
+        controller: 'normal.EnhetsvalPageCtrl'
+      }
+    }
+  }).state('integrationenhetsval', {
+    url: '/integration-enhetsval',
+    views: {
+      'header': {
+        templateUrl: commonPath + 'components/headers/wcHeader.partial.html'
+      },
+      'content@': {
+        templateUrl: '/app/views/appStartEnhetsval/integration-enhetsval.page.html',
+        controller: 'integration.EnhetsvalPageCtrl'
+      }
+    }
+  }).state('webcert', {
+    views: {
+      'header': {
+        templateUrl: commonPath + 'components/headers/wcHeader.partial.html'
+      }
+    }
+  }).state('webcert.index', {
+    url: '/',
+    views: {
+      'landing@': {
+        templateUrl: '/app/views/index/index.html',
+        controller: 'webcert.IndexCtrl'
+      }
+    }
+  }).state('webcert.create-index', {
+    url: '/create/index',
+    views: {
+      'content@': {
+        templateUrl: '/app/views/sokSkrivIntyg/sokSkrivIntyg.html',
+        controller: 'webcert.SokSkrivIntygStartCtrl'
+      }
+    }
+  }).state('webcert.create-choosepatient-index', {
+    url: '/create/choose-patient/index',
+    views: {
+      'content@': {
+        templateUrl: '/app/views/sokSkrivIntyg/sokSkrivIntyg.html',
+        controller: 'webcert.SokSkrivIntygCtrl'
+      }
+    }
+  }).state('webcert.create-choose-certtype-index', {
+    url: '/create/choose-intyg-type/:patientId/index',
+    params: {
+      patientId: ''
+    },
+    views: {
+      'content@': {
+        templateUrl: '/app/views/sokSkrivIntyg/sokSkrivValjUtkastType.html',
+        controller: 'webcert.SokSkrivValjUtkastTypeCtrl'
+      }
+    }
+  }).state('webcert.enhet-arenden', {
+    url: '/enhet-arenden',
+    views: {
+      'content@': {
+        templateUrl: '/app/views/fragorOchSvar/enhetArenden.html',
+        controller: 'webcert.enhetArendenCtrl'
+      }
+    }
+  }).state('webcert.unsigned', {
+    url: '/unsigned',
+    views: {
+      'content@': {
+        templateUrl: '/app/views/ejSigneradeUtkast/ejSigneradeUtkast.html',
+        controller: 'webcert.EjSigneradeUtkastCtrl'
+      }
+    }
+  }).state('webcert.intyg', {
+    data: {defaultActive: 'index', backState: 'webcert.create-choose-certtype-index'},
+    views: {
+      'content@': {
+        templateUrl: '/app/views/visaIntygFragasvar/intyg.html'
+      }
+    }
+  }).state('webcert.fragasvar', {
+    data: {backState: 'webcert.enhet-arenden'},
+    views: {
+      'content@': {
+        templateUrl: '/app/views/visaIntygFragasvar/fragasvar.html'
+      }
+    }
+  }).state('webcert.terms', {
+    url: '/terms',
+    views: {
+      'dialogs@webcert': {
+        templateUrl: '/app/views/terms/terms.main.html',
+        controller: 'webcert.TermsCtrl'
+      }
+    }
+  });
 
-    $urlRouterProvider.when('', ['$window', 'common.UserModel', 'common.authorityService', 'common.featureService',
-        function($window, UserModel, authorityService, featureService) {
-            if ((UserModel.isLakare() || UserModel.isTandlakare() || UserModel.isPrivatLakare()) &&
-                authorityService.isAuthorityActive({feature: featureService.features.HANTERA_INTYGSUTKAST})) {
-                return '/create/index';
-            } else if (authorityService.isAuthorityActive({feature: featureService.features.HANTERA_FRAGOR})) {
-                return '/enhet-arenden';
-            } else {
-                if (!UserModel.user) {
-                    return '/';
-                }
-                else {
-                    $window.location.href = '/error.jsp?reason=denied';
-                }
-            }
-        }]);
+  $urlRouterProvider.when('', ['$window', 'common.UserModel', 'common.authorityService', 'common.featureService',
+    function($window, UserModel, authorityService, featureService) {
+      if ((UserModel.isLakare() || UserModel.isTandlakare() || UserModel.isPrivatLakare()) &&
+          authorityService.isAuthorityActive({feature: featureService.features.HANTERA_INTYGSUTKAST})) {
+        return '/create/index';
+      } else if (authorityService.isAuthorityActive({feature: featureService.features.HANTERA_FRAGOR})) {
+        return '/enhet-arenden';
+      } else {
+        if (!UserModel.user) {
+          return '/';
+        } else {
+          $window.location.href = '/error.jsp?reason=denied';
+        }
+      }
+    }]);
 
 });

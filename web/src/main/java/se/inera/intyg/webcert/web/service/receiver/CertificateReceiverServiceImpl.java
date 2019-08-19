@@ -18,23 +18,19 @@
  */
 package se.inera.intyg.webcert.web.service.receiver;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.base.Strings;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-
 import javax.xml.ws.WebServiceException;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.base.Strings;
-
 import se.inera.intyg.clinicalprocess.healthcond.certificate.listapprovedreceivers.v1.ListApprovedReceiversResponderInterface;
 import se.inera.intyg.clinicalprocess.healthcond.certificate.listapprovedreceivers.v1.ListApprovedReceiversResponseType;
 import se.inera.intyg.clinicalprocess.healthcond.certificate.listapprovedreceivers.v1.ListApprovedReceiversType;
@@ -78,19 +74,16 @@ public class CertificateReceiverServiceImpl implements CertificateReceiverServic
 
     /**
      * Registration of approved receivers goes through our messaging solution.
-     *
-     * @param intygsId
-     * @param receiverIds
      */
     @Override
     public void registerApprovedReceivers(String intygsId, String intygsTyp, List<String> receiverIds) {
         if (Strings.isNullOrEmpty(intygsId)) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MISSING_PARAMETER,
-                    "intygsId must be specified");
+                "intygsId must be specified");
         }
         if (Strings.isNullOrEmpty(intygsTyp)) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MISSING_PARAMETER,
-                    "intygsTyp must be specified");
+                "intygsTyp must be specified");
         }
 
         List<IntygReceiver> intygReceivers = listPossibleReceivers(intygsTyp);
@@ -104,10 +97,10 @@ public class CertificateReceiverServiceImpl implements CertificateReceiverServic
 
         try {
             certificateSenderService.sendRegisterApprovedReceivers(intygsId, intygsTyp,
-                    objectMapper.writeValueAsString(receiverApprovalStatuses));
+                objectMapper.writeValueAsString(receiverApprovalStatuses));
         } catch (JsonProcessingException e) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM,
-                    "Could not convert list of approved receivers to JSON array.");
+                "Could not convert list of approved receivers to JSON array.");
         }
     }
 
@@ -115,11 +108,11 @@ public class CertificateReceiverServiceImpl implements CertificateReceiverServic
     public List<IntygReceiver> listPossibleReceiversWithApprovedInfo(String intygsTyp, String intygsId) {
         if (Strings.isNullOrEmpty(intygsTyp)) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MISSING_PARAMETER,
-                    "intygsTyp must be specified");
+                "intygsTyp must be specified");
         }
         if (Strings.isNullOrEmpty(intygsId)) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MISSING_PARAMETER,
-                    "intygsId must be specified");
+                "intygsId must be specified");
         }
 
         try {
@@ -149,12 +142,12 @@ public class CertificateReceiverServiceImpl implements CertificateReceiverServic
             ModuleEntryPoint moduleEntryPoint = intygModuleRegistry.getModuleEntryPoint(intygsTyp);
             String recipientId = moduleEntryPoint.getDefaultRecipient();
             IntygReceiver intygReceiver = IntygReceiver.IntygReceiverBuilder.anIntygReceiver()
-                    .withId(recipientId)
-                    .withReceiverType(CertificateReceiverTypeType.HUVUDMOTTAGARE.name())
-                    .withApprovalStatus(IntygReceiver.ApprovalStatus.YES)
-                    .withLocked(true)
-                    .withName(recipientId)
-                    .build();
+                .withId(recipientId)
+                .withReceiverType(CertificateReceiverTypeType.HUVUDMOTTAGARE.name())
+                .withApprovalStatus(IntygReceiver.ApprovalStatus.YES)
+                .withLocked(true)
+                .withName(recipientId)
+                .build();
             return Arrays.asList(intygReceiver);
         } catch (Exception e) {
             LOG.error("Unable to resolve default recipient using ModuleEntryPoint for '{}', throwing exception.", intygsTyp);
@@ -163,19 +156,19 @@ public class CertificateReceiverServiceImpl implements CertificateReceiverServic
     }
 
     private IntygReceiver.ApprovalStatus resolveApprovalStatus(boolean isHuvudmottagare, String receiverId,
-            List<CertificateReceiverRegistrationType> receiverList) {
+        List<CertificateReceiverRegistrationType> receiverList) {
         if (isHuvudmottagare) {
             return IntygReceiver.ApprovalStatus.YES;
         }
         for (CertificateReceiverRegistrationType crrt : receiverList) {
             if (crrt.getReceiverId().equalsIgnoreCase(receiverId)) {
                 switch (crrt.getApprovalStatus()) {
-                case YES:
-                    return IntygReceiver.ApprovalStatus.YES;
-                case NO:
-                    return IntygReceiver.ApprovalStatus.NO;
-                case UNDEFINED:
-                    return IntygReceiver.ApprovalStatus.UNDEFINED;
+                    case YES:
+                        return IntygReceiver.ApprovalStatus.YES;
+                    case NO:
+                        return IntygReceiver.ApprovalStatus.NO;
+                    case UNDEFINED:
+                        return IntygReceiver.ApprovalStatus.UNDEFINED;
                 }
                 break;
             }
@@ -188,7 +181,7 @@ public class CertificateReceiverServiceImpl implements CertificateReceiverServic
 
         if (Strings.isNullOrEmpty(intygsTyp)) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MISSING_PARAMETER,
-                    "intygsTyp must be specified");
+                "intygsTyp must be specified");
         }
 
         ListPossibleReceiversType request = new ListPossibleReceiversType();
@@ -200,20 +193,20 @@ public class CertificateReceiverServiceImpl implements CertificateReceiverServic
 
             if (response == null || response.getReceiverList() == null || response.getReceiverList().size() == 0) {
                 LOG.info("Call to ListPossibleReceivers for intygstyp '{}' returned no possible receivers, check recipient "
-                        + "configuration in intygstjänsten.", intygsTyp);
+                    + "configuration in intygstjänsten.", intygsTyp);
                 return new ArrayList<>();
             }
 
             return response.getReceiverList().stream().map(rcpt -> IntygReceiver.IntygReceiverBuilder.anIntygReceiver()
-                    .withId(rcpt.getReceiverId())
-                    .withName(rcpt.getReceiverName())
-                    .withReceiverType(rcpt.getReceiverType().name())
-                    .withApprovalStatus(
-                            rcpt.getReceiverType() == CertificateReceiverTypeType.HUVUDMOTTAGARE ? IntygReceiver.ApprovalStatus.YES
-                                    : IntygReceiver.ApprovalStatus.UNDEFINED)
-                    .withLocked(rcpt.getReceiverType() == CertificateReceiverTypeType.HUVUDMOTTAGARE)
-                    .build())
-                    .collect(Collectors.toList());
+                .withId(rcpt.getReceiverId())
+                .withName(rcpt.getReceiverName())
+                .withReceiverType(rcpt.getReceiverType().name())
+                .withApprovalStatus(
+                    rcpt.getReceiverType() == CertificateReceiverTypeType.HUVUDMOTTAGARE ? IntygReceiver.ApprovalStatus.YES
+                        : IntygReceiver.ApprovalStatus.UNDEFINED)
+                .withLocked(rcpt.getReceiverType() == CertificateReceiverTypeType.HUVUDMOTTAGARE)
+                .build())
+                .collect(Collectors.toList());
         } catch (WebServiceException e) {
             LOG.warn("Caught WebServiceException fetching approved or possible receivers, only returning Huvudmottagare.");
             return getIntygReceiverFromEntryPoint(intygsTyp);

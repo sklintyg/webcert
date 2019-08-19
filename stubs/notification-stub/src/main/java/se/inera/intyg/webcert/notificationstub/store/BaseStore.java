@@ -19,11 +19,6 @@
 package se.inera.intyg.webcert.notificationstub.store;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import org.apache.commons.lang3.tuple.Pair;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
-
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Comparator;
@@ -33,6 +28,10 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import org.apache.commons.lang3.tuple.Pair;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
 
 /**
  * Created by eriklupander on 2017-05-29.
@@ -65,10 +64,10 @@ public abstract class BaseStore<T> {
         LOG.debug("NotificationStoreV3 contains {} notifications, pruning old ones...", notificationsMap.values().size());
 
         List<Pair<String, T>> values = notificationsMap.entrySet().stream()
-                .map(entry -> Pair.of(entry.getKey(), transform(entry.getValue())))
-                .filter(Objects::nonNull)
-                .sorted(Comparator.comparing(this::getTidpunkt))
-                .collect(Collectors.toList());
+            .map(entry -> Pair.of(entry.getKey(), transform(entry.getValue())))
+            .filter(Objects::nonNull)
+            .sorted(Comparator.comparing(this::getTidpunkt))
+            .collect(Collectors.toList());
         Iterator<Pair<String, T>> iter = values.iterator();
 
         // trim map down to minSize
@@ -83,9 +82,9 @@ public abstract class BaseStore<T> {
     protected abstract LocalDateTime getTidpunkt(Pair<String, T> left);
 
     public Collection<T> getNotifications() {
-        return notificationsMap.values().stream().map(this::<T> transform)
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList());
+        return notificationsMap.values().stream().map(this::<T>transform)
+            .filter(Objects::nonNull)
+            .collect(Collectors.toList());
     }
 
     public int size() {

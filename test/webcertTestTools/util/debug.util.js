@@ -28,48 +28,48 @@ var fs = require('fs');
 
 function _writeScreenShot(data, filename) {
 
-    if (fs.existsSync(filename)) {
-        fs.unlinkSync(filename);
-    }
+  if (fs.existsSync(filename)) {
+    fs.unlinkSync(filename);
+  }
 
-    var stream = fs.createWriteStream(filename);
-    stream.write(Buffer.from(data, 'base64'));
-    stream.end();
+  var stream = fs.createWriteStream(filename);
+  stream.write(Buffer.from(data, 'base64'));
+  stream.end();
 }
 
 module.exports = {
-    takeScreenshot: function(filename) {
-        return browser.takeScreenshot().then(function(png) {
-            _writeScreenShot(png, filename);
-        });
-    },
-    takeScreenshots: function _takeScreenshots() {
+  takeScreenshot: function(filename) {
+    return browser.takeScreenshot().then(function(png) {
+      _writeScreenShot(png, filename);
+    });
+  },
+  takeScreenshots: function _takeScreenshots() {
 
-        // Check our custom property if addExpectationResult has already been overridden
-        if (jasmine.Spec.prototype.itrOriginalAddExpectationResult) {
-            logger.debug('takeScreenshots already activated!');
-            return;
-        }
-
-        // Jasmine 2.1
-        jasmine.Spec.prototype.itrOriginalAddExpectationResult = jasmine.Spec.prototype.addExpectationResult;
-        jasmine.Spec.prototype.addExpectationResult = function() {
-            if (!arguments[0]) {
-                // take screenshot
-                // this.description and arguments[1].message can be useful to constructing the filename.
-                logger.warn('ERROR! Taking screenshot!');
-                logger.info(this.description);
-                logger.info(arguments[1].message);
-                browser.takeScreenshot().then(function(png) {
-                    _writeScreenShot(png, 'exception.png');
-                });
-            }
-            return jasmine.Spec.prototype.itrOriginalAddExpectationResult.apply(this, arguments);
-        };
-    },
-    printClientLog: function _printClientLog() {
-        browser.manage().logs().get('browser').then(function(browserLog) {
-            logger.info('log: ' + require('util').inspect(browserLog));
-        });
+    // Check our custom property if addExpectationResult has already been overridden
+    if (jasmine.Spec.prototype.itrOriginalAddExpectationResult) {
+      logger.debug('takeScreenshots already activated!');
+      return;
     }
+
+    // Jasmine 2.1
+    jasmine.Spec.prototype.itrOriginalAddExpectationResult = jasmine.Spec.prototype.addExpectationResult;
+    jasmine.Spec.prototype.addExpectationResult = function() {
+      if (!arguments[0]) {
+        // take screenshot
+        // this.description and arguments[1].message can be useful to constructing the filename.
+        logger.warn('ERROR! Taking screenshot!');
+        logger.info(this.description);
+        logger.info(arguments[1].message);
+        browser.takeScreenshot().then(function(png) {
+          _writeScreenShot(png, 'exception.png');
+        });
+      }
+      return jasmine.Spec.prototype.itrOriginalAddExpectationResult.apply(this, arguments);
+    };
+  },
+  printClientLog: function _printClientLog() {
+    browser.manage().logs().get('browser').then(function(browserLog) {
+      logger.info('log: ' + require('util').inspect(browserLog));
+    });
+  }
 };

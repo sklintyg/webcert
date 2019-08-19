@@ -45,8 +45,8 @@ public class IntegrationState implements Serializable {
     private boolean redirectToEnhetsval;
 
     /**
-     *  If true, user has been redirected to 'enhetsväljaren' to select
-     *  the healt care unit on which the certificate is written.
+     * If true, user has been redirected to 'enhetsväljaren' to select
+     * the healt care unit on which the certificate is written.
      *
      * @return true if user has been redirected to 'enhetsväljaren', otherwise false
      */

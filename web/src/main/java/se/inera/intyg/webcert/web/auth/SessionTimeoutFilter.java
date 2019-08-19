@@ -19,11 +19,11 @@
 package se.inera.intyg.webcert.web.auth;
 
 import java.io.IOException;
-
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
-import javax.servlet.http.*;
-
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 public class SessionTimeoutFilter extends OncePerRequestFilter {
@@ -35,14 +35,14 @@ public class SessionTimeoutFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-            throws ServletException, IOException {
+        throws ServletException, IOException {
 
         HttpSession session = request.getSession(false);
         if (session != null) {
             Long lastAccess = (Long) session.getAttribute(SESSION_LAST_ACCESS_TIME);
 
             long inactiveTime = lastAccess == null ? 0 : System.currentTimeMillis() - lastAccess;
-            long maxInactiveTime =  MILLISECONDS_PER_SECONDS * session.getMaxInactiveInterval();
+            long maxInactiveTime = MILLISECONDS_PER_SECONDS * session.getMaxInactiveInterval();
 
             if (inactiveTime > maxInactiveTime) {
                 session.invalidate();

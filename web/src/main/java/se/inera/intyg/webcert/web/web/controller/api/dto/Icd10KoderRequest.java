@@ -64,8 +64,8 @@ public class Icd10KoderRequest {
 
     public Set<String> getIcd10Codes() {
         return Sets.newHashSet(icd10Kod1, icd10Kod2, icd10Kod3).stream()
-                .filter(Objects::nonNull)
-                .collect(Collectors.toSet());
+            .filter(Objects::nonNull)
+            .collect(Collectors.toSet());
     }
 
     public static Icd10KoderRequest of(final String icd10Code1, final String icd10Code2, final String icd10Code3) {

@@ -27,19 +27,18 @@ var SokSkrivIntygPage = wcTestTools.pages.sokSkrivIntyg.pickPatient;
 
 describe('Logga in och godkänn kakor', function() {
 
-    it('Öppna och logga in utan att disabla cookiebanner', function() {
-        browser.ignoreSynchronization = false;
-        WelcomePage.get();
-        WelcomePage.login('IFV1239877878-104B_IFV1239877878-1042', true);
-        // Need explicit get here to load protractor mocks in main angular app since welcomepage is a separate angular app
-        SokSkrivIntygPage.get();
+  it('Öppna och logga in utan att disabla cookiebanner', function() {
+    browser.ignoreSynchronization = false;
+    WelcomePage.get();
+    WelcomePage.login('IFV1239877878-104B_IFV1239877878-1042', true);
+    // Need explicit get here to load protractor mocks in main angular app since welcomepage is a separate angular app
+    SokSkrivIntygPage.get();
 
-        expect(basepage.cookie.consentBanner.isDisplayed()).toBeTruthy();
-        expect(basepage.cookie.consentBtn.isDisplayed()).toBeTruthy();
-        basepage.cookie.consentBtn.sendKeys(protractor.Key.SPACE);
-        expect(basepage.cookie.consentBtn.isPresent()).toBeFalsy();
+    expect(basepage.cookie.consentBanner.isDisplayed()).toBeTruthy();
+    expect(basepage.cookie.consentBtn.isDisplayed()).toBeTruthy();
+    basepage.cookie.consentBtn.sendKeys(protractor.Key.SPACE);
+    expect(basepage.cookie.consentBtn.isPresent()).toBeFalsy();
 
-    });
-
+  });
 
 });

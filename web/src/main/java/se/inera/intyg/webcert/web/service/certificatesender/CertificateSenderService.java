@@ -37,7 +37,7 @@ public interface CertificateSenderService {
      * sendCertificate in the same operation.
      */
     void sendCertificate(String intygsId, Personnummer personId, String jsonBody, String recipientId, boolean delay)
-            throws CertificateSenderException;
+        throws CertificateSenderException;
 
     void revokeCertificate(String intygsId, String xmlBody, String intygsTyp, String intygsTypVersion) throws CertificateSenderException;
 

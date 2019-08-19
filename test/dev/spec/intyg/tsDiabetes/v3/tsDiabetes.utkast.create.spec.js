@@ -27,68 +27,68 @@ var IntygPage = wcTestTools.pages.intyg.ts.diabetes.v3.intyg;
 
 describe('Create and Sign ts-diabetes v3 utkast', function() {
 
-    var utkastId = null,
-        data = null;
+  var utkastId = null,
+      data = null;
 
-    beforeAll(function() {
-        browser.ignoreSynchronization = false;
-        specHelper.login();
-        specHelper.createUtkastForPatient('191212121212', 'ts-diabetes');
+  beforeAll(function() {
+    browser.ignoreSynchronization = false;
+    specHelper.login();
+    specHelper.createUtkastForPatient('191212121212', 'ts-diabetes');
+  });
+
+  it('Spara undan intygsId från URL', function() {
+    UtkastPage.disableAutosave();
+
+    specHelper.getUtkastIdFromUrl().then(function(id) {
+      utkastId = id;
+    });
+    data = wcTestTools.testdata.ts.diabetes.v3.get(utkastId);
+  });
+
+  describe('Fyll i intyget', function() {
+
+    it('fillInKorkortstyper', function() {
+      UtkastPage.fillInKorkortstyper(data.korkortstyper);
     });
 
-    it('Spara undan intygsId från URL', function() {
-        UtkastPage.disableAutosave();
-
-        specHelper.getUtkastIdFromUrl().then(function(id) {
-            utkastId = id;
-        });
-        data = wcTestTools.testdata.ts.diabetes.v3.get(utkastId);
+    it('fillInIdentitetStyrktGenom', function() {
+      UtkastPage.fillInIdentitetStyrktGenom(data.identitetStyrktGenom);
     });
 
-    describe('Fyll i intyget', function() {
-
-        it('fillInKorkortstyper', function() {
-            UtkastPage.fillInKorkortstyper(data.korkortstyper);
-        });
-
-        it('fillInIdentitetStyrktGenom', function() {
-            UtkastPage.fillInIdentitetStyrktGenom(data.identitetStyrktGenom);
-        });
-
-        it('fillInAllmant', function() {
-            UtkastPage.fillInAllmant(data.allmant);
-        });
-
-        it('fillInSynfunktion', function() {
-            UtkastPage.fillInSynfunktion(data.synfunktion);
-        });
-
-        it('fillInBedomning', function() {
-            UtkastPage.fillInBedomning(data.bedomning);
-        });
-
-        it('fillInHypoglykemier', function() {
-           UtkastPage.fillInHypoglykemier(data.hypoglykemier);
-        });
-
-        it('fillInOvrigKommentar', function() {
-            UtkastPage.enableAutosave();
-            UtkastPage.fillInOvrigKommentar(data);
-        });
+    it('fillInAllmant', function() {
+      UtkastPage.fillInAllmant(data.allmant);
     });
 
-    it('Signera intyget', function() {
-        UtkastPage.whenSigneraButtonIsEnabled();
-        UtkastPage.signeraButtonClick();
-        expect(IntygPage.isAt()).toBeTruthy();
+    it('fillInSynfunktion', function() {
+      UtkastPage.fillInSynfunktion(data.synfunktion);
     });
 
-    it('Verifiera intyg', function() {
-        IntygPage.verify(data);
+    it('fillInBedomning', function() {
+      UtkastPage.fillInBedomning(data.bedomning);
     });
 
-    afterAll(function() {
-        testdataHelper.deleteIntyg(utkastId);
-        testdataHelper.deleteUtkast(utkastId);
+    it('fillInHypoglykemier', function() {
+      UtkastPage.fillInHypoglykemier(data.hypoglykemier);
     });
+
+    it('fillInOvrigKommentar', function() {
+      UtkastPage.enableAutosave();
+      UtkastPage.fillInOvrigKommentar(data);
+    });
+  });
+
+  it('Signera intyget', function() {
+    UtkastPage.whenSigneraButtonIsEnabled();
+    UtkastPage.signeraButtonClick();
+    expect(IntygPage.isAt()).toBeTruthy();
+  });
+
+  it('Verifiera intyg', function() {
+    IntygPage.verify(data);
+  });
+
+  afterAll(function() {
+    testdataHelper.deleteIntyg(utkastId);
+    testdataHelper.deleteUtkast(utkastId);
+  });
 });

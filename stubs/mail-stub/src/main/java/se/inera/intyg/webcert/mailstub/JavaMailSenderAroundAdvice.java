@@ -18,18 +18,15 @@
  */
 package se.inera.intyg.webcert.mailstub;
 
+import com.google.common.base.Strings;
 import java.util.stream.Collectors;
-
 import javax.mail.internet.MimeMessage;
-
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import com.google.common.base.Strings;
 
 /**
  * @author andreaskaltenbach
@@ -67,8 +64,8 @@ public class JavaMailSenderAroundAdvice {
                             + " Intercepting mail to : '{}' subject: '{}' from: '{}'.\n"
                             + "{}\n"
                             + "*********************************************************************************",
-                            outgoingMail.getRecipients().stream().collect(Collectors.joining(", ")), outgoingMail.getSubject(),
-                            outgoingMail.getFrom(), outgoingMail.getBody());
+                        outgoingMail.getRecipients().stream().collect(Collectors.joining(", ")), outgoingMail.getSubject(),
+                        outgoingMail.getFrom(), outgoingMail.getBody());
 
                     mailStore.waitToContinue();
                 }

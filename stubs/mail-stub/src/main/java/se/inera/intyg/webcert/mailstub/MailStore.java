@@ -20,16 +20,16 @@ package se.inera.intyg.webcert.mailstub;
 
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
-
-import org.springframework.stereotype.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 /**
  * @author andreaskaltenbach
  */
 @Component
 public class MailStore {
+
     private static final Logger LOG = LoggerFactory.getLogger(MailStore.class);
 
     private static final long MAX_TIMEOUT = 5000;

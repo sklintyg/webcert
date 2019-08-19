@@ -18,11 +18,12 @@
  */
 package se.inera.intyg.webcert.web.service.diagnos.repo;
 
+import com.google.common.base.CharMatcher;
+import com.google.common.base.Strings;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
@@ -39,17 +40,12 @@ import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.search.WildcardQuery;
 import org.apache.lucene.store.RAMDirectory;
-
-import com.google.common.base.CharMatcher;
-import com.google.common.base.Strings;
-
 import se.inera.intyg.webcert.web.service.diagnos.model.Diagnos;
 
 /**
  * Map-based repository holding diagnosises.
  *
  * @author npet
- *
  */
 public class DiagnosRepositoryImpl implements DiagnosRepository {
 

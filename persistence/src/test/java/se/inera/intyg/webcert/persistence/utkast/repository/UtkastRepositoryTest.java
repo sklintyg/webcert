@@ -18,30 +18,6 @@
  */
 package se.inera.intyg.webcert.persistence.utkast.repository;
 
-import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.transaction.annotation.Transactional;
-
-import com.google.common.collect.Sets;
-import se.inera.intyg.common.support.common.enumerations.RelationKod;
-import se.inera.intyg.common.support.model.UtkastStatus;
-import se.inera.intyg.webcert.common.model.GroupableItem;
-import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
-
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
@@ -54,9 +30,31 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static se.inera.intyg.webcert.persistence.utkast.repository.UtkastTestUtil.PERSON_NUMMER;
 
+import com.google.common.collect.Sets;
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.transaction.annotation.Transactional;
+import se.inera.intyg.common.support.common.enumerations.RelationKod;
+import se.inera.intyg.common.support.model.UtkastStatus;
+import se.inera.intyg.webcert.common.model.GroupableItem;
+import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
+
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "classpath:repository-context.xml" })
-@ActiveProfiles({ "dev", "unit-testing" })
+@ContextConfiguration(locations = {"classpath:repository-context.xml"})
+@ActiveProfiles({"dev", "unit-testing"})
 @Transactional
 public class UtkastRepositoryTest {
 
@@ -108,8 +106,8 @@ public class UtkastRepositoryTest {
         utkastRepository.save(UtkastTestUtil.buildUtkast(UtkastTestUtil.ENHET_2_ID, UtkastStatus.SIGNED));
 
         List<Utkast> result = utkastRepository.findByEnhetsIdsAndStatuses(
-                Arrays.asList(UtkastTestUtil.ENHET_1_ID, UtkastTestUtil.ENHET_3_ID),
-                Arrays.asList(UtkastStatus.DRAFT_COMPLETE));
+            Arrays.asList(UtkastTestUtil.ENHET_1_ID, UtkastTestUtil.ENHET_3_ID),
+            Arrays.asList(UtkastStatus.DRAFT_COMPLETE));
 
         assertThat(result.size(), is(3));
 
@@ -131,9 +129,9 @@ public class UtkastRepositoryTest {
         utkastRepository.save(UtkastTestUtil.buildUtkast(UtkastTestUtil.ENHET_3_ID, UtkastStatus.SIGNED));
 
         List<GroupableItem> result = utkastRepository.getIntygWithStatusesByEnhetsId(
-                Arrays.asList(UtkastTestUtil.ENHET_1_ID),
-                UtkastStatus.getEditableDraftStatuses(),
-                Stream.of(UtkastTestUtil.INTYGSTYP_FK7263).collect(Collectors.toCollection(HashSet::new)));
+            Arrays.asList(UtkastTestUtil.ENHET_1_ID),
+            UtkastStatus.getEditableDraftStatuses(),
+            Stream.of(UtkastTestUtil.INTYGSTYP_FK7263).collect(Collectors.toCollection(HashSet::new)));
         assertThat(result.size(), is(3));
 
         GroupableItem resObjs = result.get(0);
@@ -153,7 +151,7 @@ public class UtkastRepositoryTest {
         List<String> enhetsIds = Arrays.asList(UtkastTestUtil.ENHET_1_ID);
         List<UtkastStatus> statuses = Arrays.asList(UtkastStatus.DRAFT_COMPLETE, UtkastStatus.DRAFT_INCOMPLETE);
         List<Utkast> results = utkastRepository.findDraftsByPatientAndEnhetAndStatus(PERSON_NUMMER.getPersonnummerWithDash(),
-                enhetsIds, statuses, allIntygsTyper());
+            enhetsIds, statuses, allIntygsTyper());
 
         assertThat(results.size(), is(2));
 
@@ -170,7 +168,7 @@ public class UtkastRepositoryTest {
         String vardgivarId = UtkastTestUtil.ENHET_1_ID;
         List<UtkastStatus> statuses = Arrays.asList(UtkastStatus.DRAFT_COMPLETE, UtkastStatus.DRAFT_INCOMPLETE);
         List<Utkast> results = utkastRepository.findDraftsByPatientAndVardgivareAndStatus(PERSON_NUMMER.getPersonnummerWithDash(),
-                vardgivarId, statuses, allIntygsTyper());
+            vardgivarId, statuses, allIntygsTyper());
 
         assertThat(results.size(), is(2));
 
@@ -188,20 +186,20 @@ public class UtkastRepositoryTest {
     public void testFindDistinctIntygHsaIdByEnhet() {
 
         utkastRepository.save(UtkastTestUtil.buildUtkast(UtkastTestUtil.ENHET_1_ID, UtkastTestUtil.HOS_PERSON2_ID,
-                UtkastTestUtil.HOS_PERSON2_NAMN, UtkastStatus.SIGNED, "2014-03-01"));
+            UtkastTestUtil.HOS_PERSON2_NAMN, UtkastStatus.SIGNED, "2014-03-01"));
         utkastRepository.save(UtkastTestUtil.buildUtkast(UtkastTestUtil.ENHET_2_ID, UtkastTestUtil.HOS_PERSON3_ID,
-                UtkastTestUtil.HOS_PERSON3_NAMN, UtkastStatus.DRAFT_COMPLETE, "2014-03-01"));
+            UtkastTestUtil.HOS_PERSON3_NAMN, UtkastStatus.DRAFT_COMPLETE, "2014-03-01"));
         utkastRepository.save(UtkastTestUtil.buildUtkast(UtkastTestUtil.ENHET_1_ID, UtkastTestUtil.HOS_PERSON1_ID,
-                UtkastTestUtil.HOS_PERSON1_NAMN, UtkastStatus.DRAFT_INCOMPLETE, "2014-03-01"));
+            UtkastTestUtil.HOS_PERSON1_NAMN, UtkastStatus.DRAFT_INCOMPLETE, "2014-03-01"));
         utkastRepository.save(UtkastTestUtil.buildUtkast(UtkastTestUtil.ENHET_2_ID, UtkastTestUtil.HOS_PERSON1_ID,
-                UtkastTestUtil.HOS_PERSON1_NAMN, UtkastStatus.SIGNED, "2014-03-02"));
+            UtkastTestUtil.HOS_PERSON1_NAMN, UtkastStatus.SIGNED, "2014-03-02"));
         utkastRepository.save(UtkastTestUtil.buildUtkast(UtkastTestUtil.ENHET_1_ID, UtkastTestUtil.HOS_PERSON2_ID,
-                UtkastTestUtil.HOS_PERSON2_NAMN, UtkastStatus.DRAFT_COMPLETE, "2014-03-02"));
+            UtkastTestUtil.HOS_PERSON2_NAMN, UtkastStatus.DRAFT_COMPLETE, "2014-03-02"));
         utkastRepository.save(UtkastTestUtil.buildUtkast(UtkastTestUtil.ENHET_2_ID, UtkastTestUtil.HOS_PERSON3_ID,
-                UtkastTestUtil.HOS_PERSON3_NAMN, UtkastStatus.DRAFT_INCOMPLETE, "2014-03-02"));
+            UtkastTestUtil.HOS_PERSON3_NAMN, UtkastStatus.DRAFT_INCOMPLETE, "2014-03-02"));
 
         List<Object[]> res = utkastRepository.findDistinctLakareFromIntygEnhetAndStatuses(UtkastTestUtil.ENHET_1_ID,
-                UtkastStatus.getEditableDraftStatuses());
+            UtkastStatus.getEditableDraftStatuses());
 
         assertThat(res.size(), is(2));
     }
@@ -296,7 +294,8 @@ public class UtkastRepositoryTest {
         utkastRepository.save(UtkastTestUtil.buildUtkast(UtkastTestUtil.ENHET_2_ID, UtkastTestUtil.INTYGSTYP_LISJP));
         utkastRepository.save(UtkastTestUtil.buildUtkast(UtkastTestUtil.ENHET_3_ID, UtkastTestUtil.INTYGSTYP_DB));
 
-        List<Utkast> res = utkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(UtkastTestUtil.PERSON_NUMMER.getPersonnummerWithDash(),
+        List<Utkast> res = utkastRepository
+            .findAllByPatientPersonnummerAndIntygsTypIn(UtkastTestUtil.PERSON_NUMMER.getPersonnummerWithDash(),
                 Sets.newHashSet(UtkastTestUtil.INTYGSTYP_FK7263, UtkastTestUtil.INTYGSTYP_DB));
         assertNotNull(res);
         assertEquals(2, res.size());

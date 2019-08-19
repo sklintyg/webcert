@@ -22,17 +22,17 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import org.assertj.core.util.Lists;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.Feature;
 import se.inera.intyg.infra.security.common.model.Privilege;
@@ -64,14 +64,14 @@ public class WcAuthorityAsserterTest {
         WebCertUser webCertUser = createDefaultUser(AuthoritiesConstants.PRIVILEGE_SIGNERA_INTYG);
 
         doReturn(webCertUser)
-                .when(webCertUserService).getUser();
+            .when(webCertUserService).getUser();
 
         doReturn(SekretessStatus.FALSE)
-                .when(patientDetailsResolver).getSekretessStatus(any(Personnummer.class));
+            .when(patientDetailsResolver).getSekretessStatus(any(Personnummer.class));
 
         authorityAsserter.assertIsAuthorized(
-                Personnummer.createPersonnummer("191212121212").get(),
-                AuthoritiesConstants.PRIVILEGE_SIGNERA_INTYG);
+            Personnummer.createPersonnummer("191212121212").get(),
+            AuthoritiesConstants.PRIVILEGE_SIGNERA_INTYG);
 
     }
 
@@ -81,11 +81,11 @@ public class WcAuthorityAsserterTest {
         WebCertUser webCertUser = createDefaultUser(AuthoritiesConstants.PRIVILEGE_ERSATTA_INTYG); //Not correct privilegie
 
         doReturn(webCertUser)
-                .when(webCertUserService).getUser();
+            .when(webCertUserService).getUser();
 
         assertThatThrownBy(() -> authorityAsserter.assertIsAuthorized(
-                Personnummer.createPersonnummer("191212121212").get(),
-                AuthoritiesConstants.PRIVILEGE_SIGNERA_INTYG)).isExactlyInstanceOf(WebCertServiceException.class);
+            Personnummer.createPersonnummer("191212121212").get(),
+            AuthoritiesConstants.PRIVILEGE_SIGNERA_INTYG)).isExactlyInstanceOf(WebCertServiceException.class);
 
     }
 
@@ -105,13 +105,13 @@ public class WcAuthorityAsserterTest {
         featureMap.put(feature2.getName(), feature2);
 
         return createUser(AuthoritiesConstants.ROLE_LAKARE,
-                createPrivilege(privilegie,
-                        Collections.emptyList(),
-                        Lists.newArrayList(
-                                createRequestOrigin(UserOriginType.NORMAL.name(), Arrays.asList("fk7263")),
-                                createRequestOrigin(UserOriginType.DJUPINTEGRATION.name(), Arrays.asList("ts-bas")))),
-                featureMap,
-                UserOriginType.NORMAL.name());
+            createPrivilege(privilegie,
+                Collections.emptyList(),
+                Lists.newArrayList(
+                    createRequestOrigin(UserOriginType.NORMAL.name(), Arrays.asList("fk7263")),
+                    createRequestOrigin(UserOriginType.DJUPINTEGRATION.name(), Arrays.asList("ts-bas")))),
+            featureMap,
+            UserOriginType.NORMAL.name());
     }
 
     private WebCertUser createUser(String roleName, Privilege p, Map<String, Feature> features, String origin) {

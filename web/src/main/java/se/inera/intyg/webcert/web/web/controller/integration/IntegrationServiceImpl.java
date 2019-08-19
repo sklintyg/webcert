@@ -66,8 +66,8 @@ public abstract class IntegrationServiceImpl implements IntegrationService {
 
     @Override
     public PrepareRedirectToIntyg prepareRedirectToIntyg(
-            final String intygTyp, final String intygId,
-            final WebCertUser user, final Personnummer prepareBeforeAlternateSsn) {
+        final String intygTyp, final String intygId,
+        final WebCertUser user, final Personnummer prepareBeforeAlternateSsn) {
 
         Utkast utkast = utkastRepository.findOne(intygId);
 
@@ -83,7 +83,7 @@ public abstract class IntegrationServiceImpl implements IntegrationService {
     // protected scope
 
     abstract void ensurePreparation(
-            String intygTyp, String intygId, Utkast utkast, WebCertUser user, Personnummer prepareBeforeAlternateSsn);
+        String intygTyp, String intygId, Utkast utkast, WebCertUser user, Personnummer prepareBeforeAlternateSsn);
 
     // default scope
 
@@ -91,14 +91,14 @@ public abstract class IntegrationServiceImpl implements IntegrationService {
         SekretessStatus sekretessStatus = patientDetailsResolver.getSekretessStatus(utkast.getPatientPersonnummer());
         if (SekretessStatus.UNDEFINED.equals(sekretessStatus)) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.PU_PROBLEM,
-                    "Could not fetch sekretesstatus for patient from PU service");
+                "Could not fetch sekretesstatus for patient from PU service");
         }
 
         authoritiesValidator.given(user, utkast.getIntygsTyp())
-                .privilegeIf(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT,
-                        sekretessStatus == SekretessStatus.TRUE)
-                .orThrow(new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM_SEKRETESSMARKERING,
-                        "User missing required privilege or cannot handle sekretessmarkerad patient"));
+            .privilegeIf(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT,
+                sekretessStatus == SekretessStatus.TRUE)
+            .orThrow(new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM_SEKRETESSMARKERING,
+                "User missing required privilege or cannot handle sekretessmarkerad patient"));
     }
 
     // private scope

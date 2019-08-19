@@ -18,13 +18,11 @@
  */
 package se.inera.intyg.webcert.web.logging;
 
-import java.util.Set;
-
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-
 import ch.qos.logback.classic.pattern.ClassicConverter;
 import ch.qos.logback.classic.spi.ILoggingEvent;
+import java.util.Set;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 public class RoleConverter extends ClassicConverter {

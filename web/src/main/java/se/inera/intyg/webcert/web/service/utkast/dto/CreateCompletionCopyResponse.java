@@ -29,7 +29,7 @@ public class CreateCompletionCopyResponse {
     private String originalIntygId;
 
     public CreateCompletionCopyResponse(String newDraftIntygType, String newDraftIntygTypeVersion, String newDraftIntygId,
-            String originalIntygId) {
+        String originalIntygId) {
         this.newDraftIntygId = newDraftIntygId;
         this.newDraftIntygType = newDraftIntygType;
         this.newDraftIntygTypeVersion = newDraftIntygTypeVersion;

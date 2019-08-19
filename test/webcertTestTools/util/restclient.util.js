@@ -25,82 +25,82 @@ var request = require('request');
 // cookie jar
 var jar = request.jar();
 var request = request.defaults({
-    jar: jar,
-    strictSSL: false
+  jar: jar,
+  strictSSL: false
 });
 
 function post(options, baseUrl) {
-    var defer = protractor.promise.defer();
-    if (!baseUrl) {
-        baseUrl = browser.baseUrl;
+  var defer = protractor.promise.defer();
+  if (!baseUrl) {
+    baseUrl = browser.baseUrl;
+  }
+  options.url = baseUrl + options.url;
+  logger.debug('== NEW REQUEST - ', 'URL: ' + options.url);
+  logger.debug('HEADERS:' + JSON.stringify(options));
+  logger.debug('== END REQUEST ==');
+  request(options, function(error, message) {
+    if (error || message.statusCode >= 400) {
+      logger.warn('Request error for ' + JSON.stringify(options) + ':', error);
+      if (message) {
+        logger.error('Error message:', message.statusCode, message.statusMessage /*, body*/);
+      }
+      defer.fulfill({
+        error: error,
+        message: message
+      });
+    } else {
+      logger.debug('Request success!', message.statusCode, message.statusMessage);
+      defer.fulfill(message);
     }
-    options.url = baseUrl + options.url;
-    logger.debug('== NEW REQUEST - ', 'URL: ' + options.url);
-    logger.debug('HEADERS:' + JSON.stringify(options));
-    logger.debug('== END REQUEST ==');
-    request(options, function(error, message) {
-        if (error || message.statusCode >= 400) {
-            logger.warn('Request error for ' + JSON.stringify(options) + ':', error);
-            if (message) {
-                logger.error('Error message:', message.statusCode, message.statusMessage /*, body*/ );
-            }
-            defer.fulfill({
-                error: error,
-                message: message
-            });
-        } else {
-            logger.debug('Request success!', message.statusCode, message.statusMessage);
-            defer.fulfill(message);
-        }
-    });
-    return defer.promise;
+  });
+  return defer.promise;
 }
 
 function _run(options, json, baseUrl) {
-    options.json = json ? json === 'json' : true;
+  options.json = json ? json === 'json' : true;
 
-    if (options.json) {
-        options.headers = {
-            'content-type': 'application/json',
-            'connection': 'Keep-Alive'
-        };
-    } else {
-        var postData = options.body;
-        options.headers = {
-            'Content-Type': 'application/x-www-form-urlencoded',
-            'Content-Length': Buffer.byteLength(postData)
-        };
-    }
+  if (options.json) {
+    options.headers = {
+      'content-type': 'application/json',
+      'connection': 'Keep-Alive'
+    };
+  } else {
+    var postData = options.body;
+    options.headers = {
+      'Content-Type': 'application/x-www-form-urlencoded',
+      'Content-Length': Buffer.byteLength(postData)
+    };
+  }
 
-    if (options.accept) {
-        options.headers.accept = options.accept;
-    }
+  if (options.accept) {
+    options.headers.accept = options.accept;
+  }
 
-    return browser.controlFlow().execute(function() {
+  return browser.controlFlow().execute(function() {
 
-        return browser.manage().getCookies()
-            .then(function (cookies) {
+    return browser.manage().getCookies()
+    .then(function(cookies) {
 
-                if(cookies.length > 0) {
-                    if (!options.headers) {
-                        options.headers = {};
-                    }
+      if (cookies.length > 0) {
+        if (!options.headers) {
+          options.headers = {};
+        }
 
-                    var cookieHeader = cookies.map(function(cookie) {
-                        if(cookie.name === 'XSRF-TOKEN') {
-                            options.headers['X-XSRF-TOKEN'] = cookie.value;
-                        }
-                        return cookie.name + '=' + cookie.value;
-                    }).join('; ');
+        var cookieHeader = cookies.map(function(cookie) {
+          if (cookie.name === 'XSRF-TOKEN') {
+            options.headers['X-XSRF-TOKEN'] = cookie.value;
+          }
+          return cookie.name + '=' + cookie.value;
+        }).join('; ');
 
-                    options.headers.Cookie = cookieHeader;
-                }
+        options.headers.Cookie = cookieHeader;
+      }
 
-                return post(options, baseUrl);
-            });
+      return post(options, baseUrl);
     });
+  });
 }
 
 module.exports = {
-    run: _run
+  run: _run
 };

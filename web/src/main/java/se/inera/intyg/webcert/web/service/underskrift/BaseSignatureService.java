@@ -21,7 +21,6 @@ package se.inera.intyg.webcert.web.service.underskrift;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
@@ -66,32 +65,32 @@ public abstract class BaseSignatureService {
     protected void checkVersion(Utkast utkast, SignaturBiljett biljett) {
         if (utkast.getVersion() != biljett.getVersion()) {
             LOG.error(
-                    "Signing of utkast '{}' failed since the version on the utkast ({}) differs from when the signing was initialized ({})",
-                    utkast.getIntygsId(), utkast.getVersion(), biljett.getVersion());
+                "Signing of utkast '{}' failed since the version on the utkast ({}) differs from when the signing was initialized ({})",
+                utkast.getIntygsId(), utkast.getVersion(), biljett.getVersion());
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.CONCURRENT_MODIFICATION,
-                    "Cannot complete signing, Utkast version differs from signature ticket version.");
+                "Cannot complete signing, Utkast version differs from signature ticket version.");
         }
     }
 
     protected void checkDigests(Utkast utkast, String computedHash, String signatureHash) {
         if (!computedHash.equals(signatureHash)) {
             LOG.error("Signing of utkast '{}' failed since the payload has been modified since signing was initialized",
-                    utkast.getIntygsId());
+                utkast.getIntygsId());
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE,
-                    "Internal error signing utkast, the payload of utkast "
-                            + utkast.getIntygsId() + " has been modified since signing was initialized");
+                "Internal error signing utkast, the payload of utkast "
+                    + utkast.getIntygsId() + " has been modified since signing was initialized");
         }
     }
 
     protected void checkIntysId(Utkast utkast, SignaturBiljett biljett) {
         if (!biljett.getIntygsId().equals(utkast.getIntygsId())) {
             LOG.error(
-                    "Signing of utkast '{}' failed since the intygsId ({}) on the Utkast is different from the one "
-                            + "on the signing operation ({})",
-                    utkast.getIntygsId(), biljett.getIntygsId());
+                "Signing of utkast '{}' failed since the intygsId ({}) on the Utkast is different from the one "
+                    + "on the signing operation ({})",
+                utkast.getIntygsId(), biljett.getIntygsId());
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE,
-                    "Internal error signing utkast, the intygsId of utkast "
-                            + utkast.getIntygsId() + " has been modified since signing was initialized");
+                "Internal error signing utkast, the intygsId of utkast "
+                    + utkast.getIntygsId() + " has been modified since signing was initialized");
         }
     }
 }

@@ -22,6 +22,11 @@ import static com.google.common.collect.MoreCollectors.onlyElement;
 import static org.awaitility.Awaitility.await;
 import static org.junit.Assert.assertEquals;
 
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.activemq.ActiveMQConnection;
 import org.apache.activemq.command.ActiveMQQueue;
 import org.apache.commons.lang3.tuple.Pair;
@@ -29,11 +34,6 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Set;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
 import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
@@ -51,24 +51,26 @@ public class RouteFelBUnHandledIT extends AbstractBaseIT {
         String orgErrorCode = notificationStubStateBean.getErrorCode();
         notificationStubStateBean.setErrorCode("1");
 
-        NotificationMessage message = createNotificationMessage("intyg1", LocalDateTime.now(), HandelsekodEnum.ANDRAT, "luae_fs", SchemaVersion.VERSION_3);
+        NotificationMessage message = createNotificationMessage("intyg1", LocalDateTime.now(), HandelsekodEnum.ANDRAT, "luae_fs",
+            SchemaVersion.VERSION_3);
 
         sendMessage(message);
 
         AtomicInteger nbr = new AtomicInteger(0);
         await()
-                .atMost(SECONDS_TO_WAIT, TimeUnit.SECONDS)
-                .until(() -> {
-                    nbr.set(certificateStatusUpdateForCareResponderV3.getNumberOfReceivedMessages());
-                    return nbr.get() == 4;
-                });
+            .atMost(SECONDS_TO_WAIT, TimeUnit.SECONDS)
+            .until(() -> {
+                nbr.set(certificateStatusUpdateForCareResponderV3.getNumberOfReceivedMessages());
+                return nbr.get() == 4;
+            });
 
         final ActiveMQConnection connection = (ActiveMQConnection) activeMQConnectionFactory.createConnection();
         connection.start();
 
         final Set<ActiveMQQueue> queues = connection.getDestinationSource().getQueues();
         final List<Pair<String, Integer>> status = getAmqStatus(queues);
-        final int nbrMessages = status.stream().filter(pair -> pair.getLeft().equals("DLQ.sendNotificationToWS")).map(Pair::getRight).collect(onlyElement());
+        final int nbrMessages = status.stream().filter(pair -> pair.getLeft().equals("DLQ.sendNotificationToWS")).map(Pair::getRight)
+            .collect(onlyElement());
 
         assertEquals(1, nbrMessages);
         notificationStubStateBean.setErrorCode(orgErrorCode);

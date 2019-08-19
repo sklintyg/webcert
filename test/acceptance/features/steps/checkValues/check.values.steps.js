@@ -23,18 +23,16 @@
 /*jshint newcap:false */
 //TODO Uppgradera Jshint p.g.a. newcap kommer bli depricated. (klarade inte att ignorera i grunt-task)
 
-
 /*
  *	Stödlib och ramverk
  *
  */
 
 const {
-    Given, // jshint ignore:line
-    When, // jshint ignore:line
-    Then // jshint ignore:line
+  Given, // jshint ignore:line
+  When, // jshint ignore:line
+  Then // jshint ignore:line
 } = require('cucumber');
-
 
 var lusePage = pages.intyg.luse.intyg;
 var fkUtkastPage = pages.intyg.fk['7263'].utkast;
@@ -48,16 +46,15 @@ const checkValues = require('../checkValues');
  */
 
 Then(/^(?:ska jag|jag ska) se den data jag angett för intyget$/, function() {
-    return checkValues.forIntyg(this.intyg, this.user);
+  return checkValues.forIntyg(this.intyg, this.user);
 });
 
-
 Then(/^ska intyget visa den nya addressen$/, function() {
-    return Promise.all([
-        expect(lusePage.patientAdress.postadress.getText()).to.eventually.contain(this.patient.adress.postadress),
-        expect(lusePage.patientAdress.postort.getText()).to.eventually.contain(this.patient.adress.postort),
-        expect(lusePage.patientAdress.postnummer.getText()).to.eventually.contain(this.patient.adress.postnummer)
-    ]);
+  return Promise.all([
+    expect(lusePage.patientAdress.postadress.getText()).to.eventually.contain(this.patient.adress.postadress),
+    expect(lusePage.patientAdress.postort.getText()).to.eventually.contain(this.patient.adress.postort),
+    expect(lusePage.patientAdress.postnummer.getText()).to.eventually.contain(this.patient.adress.postnummer)
+  ]);
 });
 
 // Then(/^ska intyget visa det nya namnet$/, function() {
@@ -65,45 +62,53 @@ Then(/^ska intyget visa den nya addressen$/, function() {
 // });
 
 Then(/^ska intyget visa det (gamla|nya) person-id:numret$/, function(arg1) {
-    let elm;
-    if (arg1 === 'nya') {
-        elm = lusePage.patientNamnOchPersonnummer;
-    } else {
-        elm = lusePage.FdPersonnummer;
-    }
+  let elm;
+  if (arg1 === 'nya') {
+    elm = lusePage.patientNamnOchPersonnummer;
+  } else {
+    elm = lusePage.FdPersonnummer;
+  }
 
-    return expect(elm.getText()).to.eventually.contain(helpers.insertDashInPnr(this.patient.id));
+  return expect(elm.getText()).to.eventually.contain(helpers.insertDashInPnr(this.patient.id));
 
 });
 
 Then(/^ska adressen vara ifylld på det förnyade intyget$/, function() {
-    var promiseArray = [];
-    var isSMIIntyg = helpers.isSMIIntyg(this.intyg.typ);
-    if (isSMIIntyg) {
-        promiseArray.push(expect(luseUtkastPage.enhetensAdress.enhetsTelefon.getAttribute('value')).to.eventually.equal(this.user.enhetsAdress.telefon));
-        promiseArray.push(expect(luseUtkastPage.enhetensAdress.postAdress.getAttribute('value')).to.eventually.equal(this.user.enhetsAdress.postadress));
-        promiseArray.push(expect(luseUtkastPage.enhetensAdress.postNummer.getAttribute('value')).to.eventually.equal(this.user.enhetsAdress.postnummer));
-        promiseArray.push(expect(luseUtkastPage.enhetensAdress.postOrt.getAttribute('value')).to.eventually.equal(this.user.enhetsAdress.postort));
+  var promiseArray = [];
+  var isSMIIntyg = helpers.isSMIIntyg(this.intyg.typ);
+  if (isSMIIntyg) {
+    promiseArray.push(
+        expect(luseUtkastPage.enhetensAdress.enhetsTelefon.getAttribute('value')).to.eventually.equal(this.user.enhetsAdress.telefon));
+    promiseArray.push(
+        expect(luseUtkastPage.enhetensAdress.postAdress.getAttribute('value')).to.eventually.equal(this.user.enhetsAdress.postadress));
+    promiseArray.push(
+        expect(luseUtkastPage.enhetensAdress.postNummer.getAttribute('value')).to.eventually.equal(this.user.enhetsAdress.postnummer));
+    promiseArray.push(
+        expect(luseUtkastPage.enhetensAdress.postOrt.getAttribute('value')).to.eventually.equal(this.user.enhetsAdress.postort));
 
-    } else {
+  } else {
 
-        promiseArray.push(expect(fkUtkastPage.enhetensAdress.postAdress.getAttribute('value')).to.eventually.equal(this.user.enhetsAdress.postadress));
-        promiseArray.push(expect(fkUtkastPage.enhetensAdress.postNummer.getAttribute('value')).to.eventually.equal(this.user.enhetsAdress.postnummer));
-        promiseArray.push(expect(fkUtkastPage.enhetensAdress.postOrt.getAttribute('value')).to.eventually.equal(this.user.enhetsAdress.postort));
-        promiseArray.push(expect(fkUtkastPage.enhetensAdress.enhetsTelefon.getAttribute('value')).to.eventually.equal(this.user.enhetsAdress.telefon));
-    }
-    return Promise.all(promiseArray);
+    promiseArray.push(
+        expect(fkUtkastPage.enhetensAdress.postAdress.getAttribute('value')).to.eventually.equal(this.user.enhetsAdress.postadress));
+    promiseArray.push(
+        expect(fkUtkastPage.enhetensAdress.postNummer.getAttribute('value')).to.eventually.equal(this.user.enhetsAdress.postnummer));
+    promiseArray.push(
+        expect(fkUtkastPage.enhetensAdress.postOrt.getAttribute('value')).to.eventually.equal(this.user.enhetsAdress.postort));
+    promiseArray.push(
+        expect(fkUtkastPage.enhetensAdress.enhetsTelefon.getAttribute('value')).to.eventually.equal(this.user.enhetsAdress.telefon));
+  }
+  return Promise.all(promiseArray);
 
 });
 
 Then(/^ska jag( inte)? se signerande läkare "([^"]*)"$/, function(inte, name) {
-    if (typeof(inte) === 'undefined') {
-        return expect(fkUtkastPage.signingDoctorName.getText()).to.eventually.equal(name);
-    } else {
-        return helpers.largeDelay().then(function() {
-            return fkUtkastPage.signingDoctorName.isPresent();
-        }).then(function(present) {
-            return expect(present).to.equal.false;
-        });
-    }
+  if (typeof (inte) === 'undefined') {
+    return expect(fkUtkastPage.signingDoctorName.getText()).to.eventually.equal(name);
+  } else {
+    return helpers.largeDelay().then(function() {
+      return fkUtkastPage.signingDoctorName.isPresent();
+    }).then(function(present) {
+      return expect(present).to.equal.false;
+    });
+  }
 });

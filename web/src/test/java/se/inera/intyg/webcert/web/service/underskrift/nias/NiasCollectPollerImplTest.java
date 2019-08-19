@@ -18,25 +18,6 @@
  */
 package se.inera.intyg.webcert.web.service.underskrift.nias;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
-
-import com.secmaker.netid.nias.v1.NetiDAccessServerSoap;
-import com.secmaker.netid.nias.v1.ResultCollect;
-import com.secmaker.netid.nias.v1.UserInfoType;
-import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
-import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
-import se.inera.intyg.webcert.web.service.underskrift.UnderskriftService;
-import se.inera.intyg.webcert.web.service.underskrift.model.SignaturStatus;
-import se.inera.intyg.webcert.web.service.underskrift.tracker.RedisTicketTracker;
-import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
-
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -47,6 +28,24 @@ import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 import static se.inera.intyg.webcert.web.service.underskrift.testutil.UnderskriftTestUtil.ORDER_REF;
 import static se.inera.intyg.webcert.web.service.underskrift.testutil.UnderskriftTestUtil.TICKET_ID;
+
+import com.secmaker.netid.nias.v1.NetiDAccessServerSoap;
+import com.secmaker.netid.nias.v1.ResultCollect;
+import com.secmaker.netid.nias.v1.UserInfoType;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
+import se.inera.intyg.webcert.web.service.underskrift.UnderskriftService;
+import se.inera.intyg.webcert.web.service.underskrift.model.SignaturStatus;
+import se.inera.intyg.webcert.web.service.underskrift.tracker.RedisTicketTracker;
+import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 @RunWith(MockitoJUnitRunner.class)
 public class NiasCollectPollerImplTest {
@@ -109,7 +108,7 @@ public class NiasCollectPollerImplTest {
     public void testPollCompleteResponseForWrongHsaIdUpdatesBiljettWithError() {
 
         when(underskriftService.netidSignature(eq(TICKET_ID), any(byte[].class), anyString()))
-                .thenThrow(new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, "some problem"));
+            .thenThrow(new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, "some problem"));
         when(netiDAccessServerSoap.collect(ORDER_REF)).thenReturn(buildCollectResponse(HSA_ID));
 
         testee.run();

@@ -22,10 +22,8 @@ package se.inera.intyg.webcert.web.service.access;
 import static junit.framework.TestCase.assertEquals;
 
 import java.util.Arrays;
-
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-
 import se.inera.intyg.common.lisjp.support.LisjpEntryPoint;
 import se.inera.intyg.webcert.web.service.access.data.AccessServiceTestData;
 import se.inera.intyg.webcert.web.service.access.data.LisjpAccessServiceTestData;
@@ -35,8 +33,8 @@ public class FkCertificateAccessTest extends CertificateAccessTest {
 
     @Parameterized.Parameters(name = "{0}")
     public static Iterable<Object[]> data() {
-        return Arrays.asList(new Object[][] {
-                { LisjpEntryPoint.MODULE_ID, new LisjpAccessServiceTestData() }
+        return Arrays.asList(new Object[][]{
+            {LisjpEntryPoint.MODULE_ID, new LisjpAccessServiceTestData()}
         });
     }
 

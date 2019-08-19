@@ -18,25 +18,6 @@
  */
 package se.inera.intyg.webcert.web.auth;
 
-import java.util.concurrent.TimeUnit;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.data.redis.core.ValueOperations;
-import org.springframework.security.web.savedrequest.DefaultSavedRequest;
-import org.springframework.security.web.savedrequest.SavedRequest;
-import org.springframework.security.web.util.matcher.RegexRequestMatcher;
-
-import com.helger.commons.collection.iterate.EmptyEnumeration;
-
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
@@ -47,6 +28,23 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
+
+import com.helger.commons.collection.iterate.EmptyEnumeration;
+import java.util.concurrent.TimeUnit;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.data.redis.core.ValueOperations;
+import org.springframework.security.web.savedrequest.DefaultSavedRequest;
+import org.springframework.security.web.savedrequest.SavedRequest;
+import org.springframework.security.web.util.matcher.RegexRequestMatcher;
 
 @RunWith(MockitoJUnitRunner.class)
 public class RedisSavedRequestCacheTest {
@@ -72,7 +70,7 @@ public class RedisSavedRequestCacheTest {
         testee.saveRequest(mockReq(HTTP_SESSION_ID, null), mockResp());
 
         verify(valueOps, times(1)).set(eq(PREFIX + HTTP_SESSION_ID), any(DefaultSavedRequest.class), anyLong(),
-                eq(TimeUnit.MINUTES));
+            eq(TimeUnit.MINUTES));
     }
 
     @Test
@@ -80,7 +78,7 @@ public class RedisSavedRequestCacheTest {
         testee.saveRequest(mockReq(HTTP_SESSION_ID, COOKIE_SESSION_ID), mockResp());
 
         verify(valueOps, times(1)).set(eq(PREFIX + HTTP_SESSION_ID), any(DefaultSavedRequest.class), anyLong(),
-                eq(TimeUnit.MINUTES));
+            eq(TimeUnit.MINUTES));
     }
 
     @Test

@@ -18,6 +18,11 @@
  */
 package se.inera.intyg.webcert.web.bootstrap;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.google.common.base.Charsets;
+import com.google.common.base.Splitter;
+import com.google.common.collect.Iterables;
+import com.google.common.io.Resources;
 import java.io.IOException;
 import java.io.StringReader;
 import java.time.LocalDate;
@@ -30,18 +35,11 @@ import java.util.Random;
 import java.util.UUID;
 import javax.annotation.PostConstruct;
 import javax.xml.bind.JAXB;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.google.common.base.Charsets;
-import com.google.common.base.Splitter;
-import com.google.common.collect.Iterables;
-import com.google.common.io.Resources;
 import se.inera.ifv.insuranceprocess.healthreporting.registermedicalcertificateresponder.v3.RegisterMedicalCertificateType;
 import se.inera.ifv.insuranceprocess.healthreporting.v2.PatientType;
 import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
@@ -115,23 +113,23 @@ public class UtkastBootstrapBean {
                         utkastRepo.save(createUtkast(utlatande, status));
 
                         switch (utlatande.getTyp()) {
-                        case Fk7263EntryPoint.MODULE_ID:
-                            fragaRepo.save(createFragaSvar(utlatande, FrageStallare.FORSAKRINGSKASSAN, true, false));
-                            fragaRepo.save(createFragaSvar(utlatande, FrageStallare.WEBCERT, false, false));
-                            fragaRepo.save(createFragaSvar(utlatande, FrageStallare.FORSAKRINGSKASSAN, false, true));
-                            fragaRepo.save(createFragaSvar(utlatande, FrageStallare.FORSAKRINGSKASSAN, false, false));
-                            fragaRepo.save(createFragaSvar(utlatande, FrageStallare.FORSAKRINGSKASSAN, false, false, "Test person"));
-                            break;
-                        case LuaefsEntryPoint.MODULE_ID:
-                        case LuaenaEntryPoint.MODULE_ID:
-                        case LisjpEntryPoint.MODULE_ID:
-                        case LuseEntryPoint.MODULE_ID:
-                            setupArende(utlatande, true, true, FrageStallare.FORSAKRINGSKASSAN);
-                            setupArende(utlatande, false, false, FrageStallare.WEBCERT);
-                            setupArende(utlatande, false, false, FrageStallare.FORSAKRINGSKASSAN);
-                            break;
-                        default: // SIT certificates
-                            break;
+                            case Fk7263EntryPoint.MODULE_ID:
+                                fragaRepo.save(createFragaSvar(utlatande, FrageStallare.FORSAKRINGSKASSAN, true, false));
+                                fragaRepo.save(createFragaSvar(utlatande, FrageStallare.WEBCERT, false, false));
+                                fragaRepo.save(createFragaSvar(utlatande, FrageStallare.FORSAKRINGSKASSAN, false, true));
+                                fragaRepo.save(createFragaSvar(utlatande, FrageStallare.FORSAKRINGSKASSAN, false, false));
+                                fragaRepo.save(createFragaSvar(utlatande, FrageStallare.FORSAKRINGSKASSAN, false, false, "Test person"));
+                                break;
+                            case LuaefsEntryPoint.MODULE_ID:
+                            case LuaenaEntryPoint.MODULE_ID:
+                            case LisjpEntryPoint.MODULE_ID:
+                            case LuseEntryPoint.MODULE_ID:
+                                setupArende(utlatande, true, true, FrageStallare.FORSAKRINGSKASSAN);
+                                setupArende(utlatande, false, false, FrageStallare.WEBCERT);
+                                setupArende(utlatande, false, false, FrageStallare.FORSAKRINGSKASSAN);
+                                break;
+                            default: // SIT certificates
+                                break;
                         }
                     }
                 }
@@ -144,36 +142,36 @@ public class UtkastBootstrapBean {
     // INTYG-4086: An incredibly ugly hack to mitigate the fact that we're populating test-data using the XML format
     // and also directly to WC instead of storing in IT where these actually belong...
     private Utlatande buildUtlatande(Resource resource, String moduleName, String intygTypeVersion)
-            throws ModuleException, ModuleNotFoundException, IOException {
+        throws ModuleException, ModuleNotFoundException, IOException {
 
         String xml = Resources.toString(resource.getURL(), Charsets.UTF_8);
         Utlatande utlatande = registry.getModuleApi(moduleName, intygTypeVersion)
-                .getUtlatandeFromXml(xml);
+            .getUtlatandeFromXml(xml);
 
         switch (moduleName) {
-        case "luse":
-        case "luae_fs":
-        case "luae_na":
-        case "lisjp":
-            RegisterCertificateType jaxbObject = JAXB.unmarshal(new StringReader(Resources.toString(resource.getURL(), Charsets.UTF_8)),
+            case "luse":
+            case "luae_fs":
+            case "luae_na":
+            case "lisjp":
+                RegisterCertificateType jaxbObject = JAXB.unmarshal(new StringReader(Resources.toString(resource.getURL(), Charsets.UTF_8)),
                     RegisterCertificateType.class);
-            Patient patient = jaxbObject.getIntyg().getPatient();
-            utlatande.getGrundData().getPatient().setFornamn(patient.getFornamn());
-            utlatande.getGrundData().getPatient().setMellannamn(patient.getMellannamn());
-            utlatande.getGrundData().getPatient().setEfternamn(patient.getEfternamn());
-            utlatande.getGrundData().getPatient().setFullstandigtNamn(
+                Patient patient = jaxbObject.getIntyg().getPatient();
+                utlatande.getGrundData().getPatient().setFornamn(patient.getFornamn());
+                utlatande.getGrundData().getPatient().setMellannamn(patient.getMellannamn());
+                utlatande.getGrundData().getPatient().setEfternamn(patient.getEfternamn());
+                utlatande.getGrundData().getPatient().setFullstandigtNamn(
                     IntygConverterUtil.concatPatientName(patient.getFornamn(), patient.getMellannamn(), patient.getEfternamn()));
-            break;
-        case "fk7263":
-            RegisterMedicalCertificateType jaxbObject2 = JAXB.unmarshal(
+                break;
+            case "fk7263":
+                RegisterMedicalCertificateType jaxbObject2 = JAXB.unmarshal(
                     new StringReader(Resources.toString(resource.getURL(), Charsets.UTF_8)), RegisterMedicalCertificateType.class);
-            PatientType patient2 = jaxbObject2.getLakarutlatande().getPatient();
-            utlatande.getGrundData().getPatient().setEfternamn(patient2.getFullstandigtNamn());
-            utlatande.getGrundData().getPatient().setFullstandigtNamn(patient2.getFullstandigtNamn());
-            break;
-        case "ts-bas":
-        case "ts-diabetes":
-            break;
+                PatientType patient2 = jaxbObject2.getLakarutlatande().getPatient();
+                utlatande.getGrundData().getPatient().setEfternamn(patient2.getFullstandigtNamn());
+                utlatande.getGrundData().getPatient().setFullstandigtNamn(patient2.getFullstandigtNamn());
+                break;
+            case "ts-bas":
+            case "ts-diabetes":
+                break;
         }
 
         return utlatande;
@@ -193,7 +191,7 @@ public class UtkastBootstrapBean {
     }
 
     private String createArende(Utlatande utlatande, boolean komplettering, String paminnelseMeddelandeId, FrageStallare fragestallare,
-            ArendeAmne amne) {
+        ArendeAmne amne) {
         Arende arende = new Arende();
         arende.setAmne(amne);
         arende.setEnhetId(utlatande.getGrundData().getSkapadAv().getVardenhet().getEnhetsid());
@@ -241,7 +239,7 @@ public class UtkastBootstrapBean {
     }
 
     private FragaSvar createFragaSvar(Utlatande utlatande, FrageStallare fragestallare, boolean komplettering, boolean paminnelse,
-                                      String vardPersonName) {
+        String vardPersonName) {
         FragaSvar fs = new FragaSvar();
         fs.setFrageSigneringsDatum(LocalDateTime.now());
         fs.setFrageSkickadDatum(LocalDateTime.now());
@@ -256,7 +254,7 @@ public class UtkastBootstrapBean {
         fs.setFrageStallare(fragestallare.getKod());
         fs.setFrageText("Detta är frågan");
         fs.setIntygsReferens(new IntygsReferens(utlatande.getId(), utlatande.getTyp(), utlatande.getGrundData().getPatient().getPersonId(),
-                null, utlatande.getGrundData().getSigneringsdatum()));
+            null, utlatande.getGrundData().getSigneringsdatum()));
         if (komplettering) {
             fs.setAmne(Amne.KOMPLETTERING_AV_LAKARINTYG);
             Komplettering kompl1 = new Komplettering();
@@ -309,8 +307,8 @@ public class UtkastBootstrapBean {
         utkast.setStatus(status);
         if (status == UtkastStatus.SIGNED) {
             utkast.setSignatur(new Signatur(json.getGrundData().getSigneringsdatum(), json.getGrundData().getSkapadAv().getPersonId(),
-                    json.getId(), "intygData",
-                    "intygHash", "signatur", SignaturTyp.LEGACY));
+                json.getId(), "intygData",
+                "intygHash", "signatur", SignaturTyp.LEGACY));
             utkast.setSkickadTillMottagare("FKASSA");
             utkast.setSkickadTillMottagareDatum(json.getGrundData().getSigneringsdatum().plusMinutes(2));
         }

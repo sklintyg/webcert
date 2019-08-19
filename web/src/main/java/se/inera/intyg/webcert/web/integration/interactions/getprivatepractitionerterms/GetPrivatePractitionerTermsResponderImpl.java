@@ -20,17 +20,15 @@ package se.inera.intyg.webcert.web.integration.interactions.getprivatepractition
 
 // CHECKSTYLE:OFF LineLength
 
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.intyg.webcert.persistence.privatlakaravtal.model.Avtal;
 import se.inera.intyg.webcert.web.service.privatlakaravtal.AvtalService;
 import se.riv.infrastructure.directory.privatepractitioner.getprivatepractitionerterms.v1.rivtabp21.GetPrivatePractitionerTermsResponderInterface;
 import se.riv.infrastructure.directory.privatepractitioner.getprivatepractitionertermsresponder.v1.GetPrivatePractitionerTermsResponseType;
 import se.riv.infrastructure.directory.privatepractitioner.getprivatepractitionertermsresponder.v1.GetPrivatePractitionerTermsType;
-
 import se.riv.infrastructure.directory.privatepractitioner.terms.v1.AvtalType;
 import se.riv.infrastructure.directory.privatepractitioner.terms.v1.ResultCodeEnum;
-
-import java.util.Optional;
 
 // CHECKSTYLE:ON LineLength
 
@@ -44,7 +42,7 @@ public class GetPrivatePractitionerTermsResponderImpl implements GetPrivatePract
 
     @Override
     public GetPrivatePractitionerTermsResponseType getPrivatePractitionerTerms(String logicalAddress,
-            GetPrivatePractitionerTermsType parameters) {
+        GetPrivatePractitionerTermsType parameters) {
 
         Optional<Avtal> latestAvtalOptional = avtalService.getLatestAvtal();
         GetPrivatePractitionerTermsResponseType response = new GetPrivatePractitionerTermsResponseType();

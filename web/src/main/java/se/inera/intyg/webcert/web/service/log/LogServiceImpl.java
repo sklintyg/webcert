@@ -21,6 +21,10 @@ package se.inera.intyg.webcert.web.service.log;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.annotations.VisibleForTesting;
+import javax.annotation.PostConstruct;
+import javax.jms.JMSException;
+import javax.jms.Message;
+import javax.jms.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,11 +51,6 @@ import se.inera.intyg.webcert.web.service.log.dto.LogUser;
 import se.inera.intyg.webcert.web.service.log.factory.LogRequestFactory;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
-
-import javax.annotation.PostConstruct;
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.Session;
 
 /**
  * Implementation of service for logging user actions according to PDL requirements.
@@ -97,7 +96,7 @@ public class LogServiceImpl implements LogService {
     @Override
     public void logCreateIntyg(LogRequest logRequest, LogUser user) {
         send(logMessagePopulator.populateLogMessage(
-                IntygCreateMessage.build(logRequest.getIntygId()), logRequest, user));
+            IntygCreateMessage.build(logRequest.getIntygId()), logRequest, user));
     }
 
     @Override
@@ -108,7 +107,7 @@ public class LogServiceImpl implements LogService {
     @Override
     public void logUpdateIntyg(LogRequest logRequest, LogUser user) {
         send(logMessagePopulator.populateLogMessage(
-                IntygUpdateMessage.build(logRequest.getIntygId()), logRequest, user));
+            IntygUpdateMessage.build(logRequest.getIntygId()), logRequest, user));
     }
 
     @Override
@@ -119,7 +118,7 @@ public class LogServiceImpl implements LogService {
     @Override
     public void logReadIntyg(LogRequest logRequest, LogUser user) {
         send(logMessagePopulator.populateLogMessage(
-                IntygReadMessage.build(logRequest.getIntygId()), logRequest, user));
+            IntygReadMessage.build(logRequest.getIntygId()), logRequest, user));
     }
 
     @Override
@@ -130,7 +129,7 @@ public class LogServiceImpl implements LogService {
     @Override
     public void logDeleteIntyg(LogRequest logRequest, LogUser user) {
         send(logMessagePopulator.populateLogMessage(
-                IntygDeleteMessage.build(logRequest.getIntygId()), logRequest, user));
+            IntygDeleteMessage.build(logRequest.getIntygId()), logRequest, user));
     }
 
     @Override
@@ -141,7 +140,7 @@ public class LogServiceImpl implements LogService {
     @Override
     public void logSignIntyg(LogRequest logRequest, LogUser user) {
         send(logMessagePopulator.populateLogMessage(
-                IntygSignMessage.build(logRequest.getIntygId()), logRequest, user));
+            IntygSignMessage.build(logRequest.getIntygId()), logRequest, user));
     }
 
     @Override
@@ -152,7 +151,7 @@ public class LogServiceImpl implements LogService {
     @Override
     public void logRevokeIntyg(LogRequest logRequest, LogUser user) {
         send(logMessagePopulator.populateLogMessage(
-                IntygRevokeMessage.build(logRequest.getIntygId()), logRequest, user));
+            IntygRevokeMessage.build(logRequest.getIntygId()), logRequest, user));
     }
 
     @Override
@@ -163,7 +162,7 @@ public class LogServiceImpl implements LogService {
     @Override
     public void logPrintIntygAsPDF(LogRequest logRequest, LogUser user) {
         send(logMessagePopulator.populateLogMessage(
-                IntygPrintMessage.build(logRequest.getIntygId(), PRINTED_AS_PDF), logRequest, user));
+            IntygPrintMessage.build(logRequest.getIntygId(), PRINTED_AS_PDF), logRequest, user));
     }
 
     @Override
@@ -174,7 +173,7 @@ public class LogServiceImpl implements LogService {
     @Override
     public void logPrintIntygAsDraft(LogRequest logRequest, LogUser user) {
         send(logMessagePopulator.populateLogMessage(
-                IntygPrintMessage.build(logRequest.getIntygId(), PRINTED_AS_DRAFT), logRequest, user));
+            IntygPrintMessage.build(logRequest.getIntygId(), PRINTED_AS_DRAFT), logRequest, user));
     }
 
     @Override
@@ -185,7 +184,7 @@ public class LogServiceImpl implements LogService {
     @Override
     public void logPrintRevokedIntygAsPDF(LogRequest logRequest, LogUser user) {
         send(logMessagePopulator.populateLogMessage(
-                IntygPrintMessage.build(logRequest.getIntygId(), PRINTED_WHEN_REVOKED), logRequest, user));
+            IntygPrintMessage.build(logRequest.getIntygId(), PRINTED_WHEN_REVOKED), logRequest, user));
     }
 
     @Override
@@ -196,7 +195,7 @@ public class LogServiceImpl implements LogService {
     @Override
     public void logSendIntygToRecipient(LogRequest logRequest, LogUser user) {
         send(logMessagePopulator.populateLogMessage(
-                IntygSendMessage.build(logRequest.getIntygId(), logRequest.getAdditionalInfo()), logRequest, user));
+            IntygSendMessage.build(logRequest.getIntygId(), logRequest.getAdditionalInfo()), logRequest, user));
     }
 
     @Override
@@ -209,7 +208,7 @@ public class LogServiceImpl implements LogService {
     @Override
     public void logShowPrediction(LogRequest logRequest, LogUser user) {
         send(logMessagePopulator.populateLogMessage(
-                IntygPredictionMessage.build(logRequest.getIntygId(), SHOW_PREDICTION, ActivityType.READ), logRequest, user));
+            IntygPredictionMessage.build(logRequest.getIntygId(), SHOW_PREDICTION, ActivityType.READ), logRequest, user));
     }
 
     @Override
@@ -222,7 +221,7 @@ public class LogServiceImpl implements LogService {
     @Override
     public void logSetOwnOpinion(LogRequest logRequest, LogUser user) {
         send(logMessagePopulator.populateLogMessage(
-                IntygPredictionMessage.build(logRequest.getIntygId(), SET_OWN_OPINION, ActivityType.CREATE), logRequest, user));
+            IntygPredictionMessage.build(logRequest.getIntygId(), SET_OWN_OPINION, ActivityType.CREATE), logRequest, user));
     }
 
     @Override
@@ -231,12 +230,12 @@ public class LogServiceImpl implements LogService {
         SelectableVardenhet valdVardgivare = webCertUser.getValdVardgivare();
 
         return new LogUser.Builder(webCertUser.getHsaId(), valdVardenhet.getId(), valdVardgivare.getId())
-                .userName(webCertUser.getNamn())
-                .userAssignment(webCertUser.getSelectedMedarbetarUppdragNamn())
-                .userTitle(webCertUser.getTitel())
-                .enhetsNamn(valdVardenhet.getNamn())
-                .vardgivareNamn(valdVardgivare.getNamn())
-                .build();
+            .userName(webCertUser.getNamn())
+            .userAssignment(webCertUser.getSelectedMedarbetarUppdragNamn())
+            .userTitle(webCertUser.getTitel())
+            .enhetsNamn(valdVardenhet.getNamn())
+            .vardgivareNamn(valdVardgivare.getNamn())
+            .build();
     }
 
     private void send(PdlLogMessage logMsg) {
@@ -262,6 +261,7 @@ public class LogServiceImpl implements LogService {
     }
 
     private static final class MC implements MessageCreator {
+
         private final PdlLogMessage logMsg;
 
         private ObjectMapper objectMapper = new CustomObjectMapper();
@@ -276,7 +276,7 @@ public class LogServiceImpl implements LogService {
                 return session.createTextMessage(objectMapper.writeValueAsString(logMsg));
             } catch (JsonProcessingException e) {
                 throw new IllegalArgumentException("Could not serialize log message of type '" + logMsg.getClass().getName()
-                        + "' into JSON, message: " + e.getMessage());
+                    + "' into JSON, message: " + e.getMessage());
             }
         }
     }

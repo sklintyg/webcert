@@ -22,21 +22,18 @@ import static com.google.common.collect.MoreCollectors.onlyElement;
 import static com.google.common.collect.MoreCollectors.toOptional;
 import static java.util.Objects.nonNull;
 
-import java.util.Comparator;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Service;
-
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.primitives.Ints;
-
 import io.vavr.Tuple2;
+import java.util.Comparator;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.common.enumerations.Diagnoskodverk;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.schemas.contract.Personnummer;
@@ -72,10 +69,10 @@ public class FmbDiagnosInformationServiceImpl extends FmbBaseService implements 
     private final AuthorityAsserter authorityAsserter;
 
     public FmbDiagnosInformationServiceImpl(
-            final DiagnosService diagnosService,
-            final FmbSjukfallService sjukfallService,
-            final AuthorityAsserter authorityAsserter,
-            final DiagnosInformationRepository repository) {
+        final DiagnosService diagnosService,
+        final FmbSjukfallService sjukfallService,
+        final AuthorityAsserter authorityAsserter,
+        final DiagnosInformationRepository repository) {
         super(repository);
         this.diagnosService = diagnosService;
         this.sjukfallService = sjukfallService;
@@ -85,7 +82,7 @@ public class FmbDiagnosInformationServiceImpl extends FmbBaseService implements 
 
     @Override
     public MaximalSjukskrivningstidResponse validateSjukskrivningtidForPatient(
-            final MaximalSjukskrivningstidRequest maximalSjukskrivningstidRequest) {
+        final MaximalSjukskrivningstidRequest maximalSjukskrivningstidRequest) {
 
         final Personnummer personnummer = maximalSjukskrivningstidRequest.getPersonnummer();
         final Integer foreslagen = maximalSjukskrivningstidRequest.getForeslagenSjukskrivningstid();
@@ -97,16 +94,16 @@ public class FmbDiagnosInformationServiceImpl extends FmbBaseService implements 
         final int totalt = sjukfallService.totalSjukskrivningstidForPatientAndCareUnit(personnummer);
 
         return maxRek
-                .map(rek -> MaximalSjukskrivningstidResponse.fromFmbRekommendation(
-                        totalt, foreslagen, rek.getMaximalSjukrivningstidDagar(), rek.getIcd10Kod(),
-                        toDisplayFormat(rek.getMaximalSjukrivningstidSourceValue(), rek.getMaximalSjukrivningstidSourceUnit())))
-                .orElseGet(() -> MaximalSjukskrivningstidResponse.ingenFmbRekommendation(
-                        totalt, foreslagen));
+            .map(rek -> MaximalSjukskrivningstidResponse.fromFmbRekommendation(
+                totalt, foreslagen, rek.getMaximalSjukrivningstidDagar(), rek.getIcd10Kod(),
+                toDisplayFormat(rek.getMaximalSjukrivningstidSourceValue(), rek.getMaximalSjukrivningstidSourceUnit())))
+            .orElseGet(() -> MaximalSjukskrivningstidResponse.ingenFmbRekommendation(
+                totalt, foreslagen));
     }
 
     private String toDisplayFormat(String maximalSjukrivningstidSourceValue, String maximalSjukrivningstidSourceUnit) {
         return TidEnhet.of(maximalSjukrivningstidSourceUnit)
-                .map(te -> te.getUnitDisplayValue(Ints.tryParse(maximalSjukrivningstidSourceValue))).orElse("");
+            .map(te -> te.getUnitDisplayValue(Ints.tryParse(maximalSjukrivningstidSourceValue))).orElse("");
     }
 
     @Override
@@ -137,31 +134,31 @@ public class FmbDiagnosInformationServiceImpl extends FmbBaseService implements 
     }
 
     private FmbResponse convertToResponse(
-            final String icdTrimmed,
-            final String icd10CodeDeskription,
-            final DiagnosInformation diagnosInformation) {
+        final String icdTrimmed,
+        final String icd10CodeDeskription,
+        final DiagnosInformation diagnosInformation) {
 
         final String upperCaseIcd10 = icdTrimmed.toUpperCase();
 
         final Icd10Kod kod = diagnosInformation.getIcd10KodList().stream()
-                .filter(icd10Kod -> StringUtils.equalsIgnoreCase(icd10Kod.getKod(), upperCaseIcd10))
-                .collect(onlyElement());
+            .filter(icd10Kod -> StringUtils.equalsIgnoreCase(icd10Kod.getKod(), upperCaseIcd10))
+            .collect(onlyElement());
 
         final Optional<Beskrivning> aktivitetsBegransing = diagnosInformation.getBeskrivningList().stream()
-                .filter(beskrivning -> Objects.equals(beskrivning.getBeskrivningTyp(), BeskrivningTyp.AKTIVITETSBEGRANSNING))
-                .filter(beskrivning -> StringUtils.isNotEmpty(beskrivning.getBeskrivningText()))
-                .collect(toOptional());
+            .filter(beskrivning -> Objects.equals(beskrivning.getBeskrivningTyp(), BeskrivningTyp.AKTIVITETSBEGRANSNING))
+            .filter(beskrivning -> StringUtils.isNotEmpty(beskrivning.getBeskrivningText()))
+            .collect(toOptional());
 
         final Optional<Beskrivning> funktionsNedsattning = diagnosInformation.getBeskrivningList().stream()
-                .filter(beskrivning -> Objects.equals(beskrivning.getBeskrivningTyp(), BeskrivningTyp.FUNKTIONSNEDSATTNING))
-                .filter(beskrivning -> StringUtils.isNotEmpty(beskrivning.getBeskrivningText()))
-                .collect(toOptional());
+            .filter(beskrivning -> Objects.equals(beskrivning.getBeskrivningTyp(), BeskrivningTyp.FUNKTIONSNEDSATTNING))
+            .filter(beskrivning -> StringUtils.isNotEmpty(beskrivning.getBeskrivningText()))
+            .collect(toOptional());
 
         final java.util.List<String> typfallList = kod.getTypFallList().stream()
-                .sorted(Comparator.comparing(TypFall::getMaximalSjukrivningstid, Comparator.nullsLast(Comparator.naturalOrder())))
-                .map(TypFall::getTypfallsMening)
-                .distinct()
-                .collect(Collectors.toList());
+            .sorted(Comparator.comparing(TypFall::getMaximalSjukrivningstid, Comparator.nullsLast(Comparator.naturalOrder())))
+            .map(TypFall::getTypfallsMening)
+            .distinct()
+            .collect(Collectors.toList());
 
         final String generell = diagnosInformation.getForsakringsmedicinskInformation();
 
@@ -173,40 +170,39 @@ public class FmbDiagnosInformationServiceImpl extends FmbBaseService implements 
 
         //mapping these codes for now to be backwards compatible with current apis
         fmbFormList.add(
-                new FmbForm(
-                        FmbFormName.DIAGNOS,
-                        ImmutableList.of(
-                                new FmbContent(FmbType.GENERELL_INFO, generell),
-                                new FmbContent(FmbType.SYMPTOM_PROGNOS_BEHANDLING, symptom))));
+            new FmbForm(
+                FmbFormName.DIAGNOS,
+                ImmutableList.of(
+                    new FmbContent(FmbType.GENERELL_INFO, generell),
+                    new FmbContent(FmbType.SYMPTOM_PROGNOS_BEHANDLING, symptom))));
 
         aktivitetsBegransing.ifPresent(beskrivning -> fmbFormList.add(
-                new FmbForm(
-                        FmbFormName.AKTIVITETSBEGRANSNING,
-                        ImmutableList.of(new FmbContent(FmbType.AKTIVITETSBEGRANSNING, beskrivning.getBeskrivningText())))));
+            new FmbForm(
+                FmbFormName.AKTIVITETSBEGRANSNING,
+                ImmutableList.of(new FmbContent(FmbType.AKTIVITETSBEGRANSNING, beskrivning.getBeskrivningText())))));
 
         if (rehabilitering != null) {
             fmbFormList.add(
-                    new FmbForm(
-                            FmbFormName.INFORMATIONOMREHABILITERING,
-                            ImmutableList.of(new FmbContent(FmbType.INFORMATIONOMREHABILITERING, rehabilitering))));
+                new FmbForm(
+                    FmbFormName.INFORMATIONOMREHABILITERING,
+                    ImmutableList.of(new FmbContent(FmbType.INFORMATIONOMREHABILITERING, rehabilitering))));
         }
 
         funktionsNedsattning.ifPresent(beskrivning -> fmbFormList.add(
-                new FmbForm(
-                        FmbFormName.FUNKTIONSNEDSATTNING,
-                        ImmutableList.of(new FmbContent(FmbType.FUNKTIONSNEDSATTNING, beskrivning.getBeskrivningText())))));
-
+            new FmbForm(
+                FmbFormName.FUNKTIONSNEDSATTNING,
+                ImmutableList.of(new FmbContent(FmbType.FUNKTIONSNEDSATTNING, beskrivning.getBeskrivningText())))));
 
         if (typfallList.size() == 1) {
             fmbFormList.add(
-                    new FmbForm(
-                            FmbFormName.ARBETSFORMAGA,
-                            Lists.newArrayList(new FmbContent(FmbType.BESLUTSUNDERLAG_TEXTUELLT, typfallList.get(0)))));
+                new FmbForm(
+                    FmbFormName.ARBETSFORMAGA,
+                    Lists.newArrayList(new FmbContent(FmbType.BESLUTSUNDERLAG_TEXTUELLT, typfallList.get(0)))));
         } else if (CollectionUtils.isNotEmpty(typfallList)) {
             fmbFormList.add(
-                    new FmbForm(
-                            FmbFormName.ARBETSFORMAGA,
-                            Lists.newArrayList(new FmbContent(FmbType.BESLUTSUNDERLAG_TEXTUELLT, typfallList))));
+                new FmbForm(
+                    FmbFormName.ARBETSFORMAGA,
+                    Lists.newArrayList(new FmbContent(FmbType.BESLUTSUNDERLAG_TEXTUELLT, typfallList))));
         }
 
         final Optional<Referens> referens = diagnosInformation.getReferensList().stream().findFirst();
@@ -214,10 +210,10 @@ public class FmbDiagnosInformationServiceImpl extends FmbBaseService implements 
         final String referensLink = referens.map(Referens::getUri).orElse(null);
 
         return FmbResponse.of(
-                upperCaseIcd10,
-                icd10CodeDeskription,
-                referensDescription,
-                referensLink,
-                fmbFormList);
+            upperCaseIcd10,
+            icd10CodeDeskription,
+            referensDescription,
+            referensLink,
+            fmbFormList);
     }
 }

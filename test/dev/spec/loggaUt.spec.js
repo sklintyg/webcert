@@ -31,66 +31,66 @@ var restTestdataHelper = wcTestTools.helpers.restTestdata;
 
 describe('Utloggning vid vidarenavigering', function() {
 
-    var utkastId = 'new-utkast-123';
-    var parameters = '?';
-        parameters += 'fornamn=' + encodeURIComponent("firstname") + '&';
-        parameters += 'efternamn=' + encodeURIComponent("lastname") + '&';
-        parameters += 'postadress=' + encodeURIComponent("adress") + '&';
-        parameters += 'postnummer=' + encodeURIComponent("123") + '&';
-        parameters += 'postort=' + encodeURIComponent("test");
+  var utkastId = 'new-utkast-123';
+  var parameters = '?';
+  parameters += 'fornamn=' + encodeURIComponent("firstname") + '&';
+  parameters += 'efternamn=' + encodeURIComponent("lastname") + '&';
+  parameters += 'postadress=' + encodeURIComponent("adress") + '&';
+  parameters += 'postnummer=' + encodeURIComponent("123") + '&';
+  parameters += 'postort=' + encodeURIComponent("test");
 
-    beforeEach(function() {
-        browser.ignoreSynchronization = false;
+  beforeEach(function() {
+    browser.ignoreSynchronization = false;
+  });
+
+  it('Logga in', function() {
+
+    specHelper.login();
+    restTestdataHelper.createEmptyUtkast(UtkastPage.intygType, UtkastPage.intygTypeVersion, utkastId);
+
+    browser.ignoreSynchronization = true;
+    specHelper.setUserOrigin('DJUPINTEGRATION').then(function() {
+      browser.ignoreSynchronization = false;
     });
+  });
 
-    it('Logga in', function() {
+  it('Öppna intyg ' + browser.baseUrl + 'visa/intyg/' + utkastId + parameters, function() {
+    browser.driver.get(browser.baseUrl + 'visa/intyg/' + utkastId + parameters);
 
-        specHelper.login();
-        restTestdataHelper.createEmptyUtkast(UtkastPage.intygType, UtkastPage.intygTypeVersion, utkastId);
+    expect(UtkastPage.isAt()).toBeTruthy();
+  });
 
-        browser.ignoreSynchronization = true;
-        specHelper.setUserOrigin('DJUPINTEGRATION').then(function() {
-            browser.ignoreSynchronization = false;
-        });
-    });
+  it('Besök extern sida', function() {
+    browser.ignoreSynchronization = true;
+    browser.driver.get('http://www.google.com');
+    expect(browser.getTitle()).toContain('Google');
+  });
 
-    it('Öppna intyg ' + browser.baseUrl + 'visa/intyg/' + utkastId + parameters, function() {
-        browser.driver.get(browser.baseUrl + 'visa/intyg/' + utkastId + parameters);
+  it('Gå tillbaka till utkastet', function() {
+    //browser.driver.get(browser.baseUrl);
+    UtkastPage.get(utkastId);
 
-        expect(UtkastPage.isAt()).toBeTruthy();
-    });
+    specHelper.waitForAngularTestability();
+    expect(UtkastPage.isAt()).toBeTruthy();
+  });
 
-    it('Besök extern sida', function() {
-        browser.ignoreSynchronization = true;
-        browser.driver.get('http://www.google.com');
-        expect(browser.getTitle()).toContain('Google');
-    });
+  it('Besök extern sida och vänta 9 sekunder', function() {
+    browser.ignoreSynchronization = true;
+    browser.driver.get('http://www.google.com');
+    expect(browser.getTitle()).toContain('Google');
+    browser.driver.sleep(9000);
+  });
 
-    it('Gå tillbaka till utkastet', function() {
-        //browser.driver.get(browser.baseUrl);
-        UtkastPage.get(utkastId);
+  it('Access denied visas om invånaren försöker navigera till startsidan', function() {
+    UtkastPage.get(utkastId);
 
-        specHelper.waitForAngularTestability();
-        expect(UtkastPage.isAt()).toBeTruthy();
-    });
+    specHelper.waitForAngularTestability();
+    expect(landingPage.isAt()).toBeTruthy();
+  });
 
-    it('Besök extern sida och vänta 9 sekunder', function() {
-        browser.ignoreSynchronization = true;
-        browser.driver.get('http://www.google.com');
-        expect(browser.getTitle()).toContain('Google');
-        browser.driver.sleep(9000);
-    });
-
-    it('Access denied visas om invånaren försöker navigera till startsidan', function() {
-        UtkastPage.get(utkastId);
-
-        specHelper.waitForAngularTestability();
-        expect(landingPage.isAt()).toBeTruthy();
-    });
-
-    afterAll(function() {
-        restTestdataHelper.deleteIntyg(utkastId);
-        restTestdataHelper.deleteUtkast(utkastId);
-    });
+  afterAll(function() {
+    restTestdataHelper.deleteIntyg(utkastId);
+    restTestdataHelper.deleteUtkast(utkastId);
+  });
 
 });

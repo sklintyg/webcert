@@ -22,77 +22,74 @@
 var testdataHelper = wcTestTools.helpers.testdata;
 
 module.exports = {
-    fk: {
-        LUSE: function(intyg, patient) {
-            return Promise.all([
-                expect(element(by.id('patient-crn')).getText()).to.eventually.equal(patient.id.replace('-', ''))
-                .then(function(value) {
-                    logger.info('OK - Personnummer');
-                }, function(reason) {
-                    return Promise.reject('FEL, Personnummer: ' + reason);
-                }),
+  fk: {
+    LUSE: function(intyg, patient) {
+      return Promise.all([
+        expect(element(by.id('patient-crn')).getText()).to.eventually.equal(patient.id.replace('-', ''))
+        .then(function(value) {
+          logger.info('OK - Personnummer');
+        }, function(reason) {
+          return Promise.reject('FEL, Personnummer: ' + reason);
+        }),
 
-                //Baserat på
-                checkBaseratPa(intyg.baseratPa)
-                .then(function(value) {
-                    logger.info('OK - Baseras på');
-                }, function(reason) {
-                    return Promise.reject('FEL, Baseras på: ' + reason);
-                }),
+        //Baserat på
+        checkBaseratPa(intyg.baseratPa)
+        .then(function(value) {
+          logger.info('OK - Baseras på');
+        }, function(reason) {
+          return Promise.reject('FEL, Baseras på: ' + reason);
+        }),
 
-                //Medicinska utredningar
-                checkMedicinskaUtredningar(intyg.andraMedicinskaUtredningar)
-                .then(function(value) {
-                    logger.info('OK - Medicinska utredningar');
-                }, function(reason) {
-                    return Promise.reject('FEL, Medicinska utredningar: ' + reason);
-                })
-            ]);
-        }
+        //Medicinska utredningar
+        checkMedicinskaUtredningar(intyg.andraMedicinskaUtredningar)
+        .then(function(value) {
+          logger.info('OK - Medicinska utredningar');
+        }, function(reason) {
+          return Promise.reject('FEL, Medicinska utredningar: ' + reason);
+        })
+      ]);
     }
+  }
 };
 
-
-
 function checkBaseratPa(baseratPa) {
-    var minUndersokningText = testdataHelper.ejAngivetIfNull(baseratPa.minUndersokningAvPatienten);
-    var journaluppgifterText = testdataHelper.ejAngivetIfNull(baseratPa.journaluppgifter);
-    var anhorigBeskrivningText = testdataHelper.ejAngivetIfNull(baseratPa.anhorigsBeskrivning);
-    // var annatText = testdataHelper.ejAngivetIfNull(baseratPa.annat));
-    // var annatBeskrivningText = ejAngivetIfNull(baseratPa.annatBeskrivning);
-    var personligKannedomText = testdataHelper.ejAngivetIfNull(baseratPa.personligKannedom);
+  var minUndersokningText = testdataHelper.ejAngivetIfNull(baseratPa.minUndersokningAvPatienten);
+  var journaluppgifterText = testdataHelper.ejAngivetIfNull(baseratPa.journaluppgifter);
+  var anhorigBeskrivningText = testdataHelper.ejAngivetIfNull(baseratPa.anhorigsBeskrivning);
+  // var annatText = testdataHelper.ejAngivetIfNull(baseratPa.annat));
+  // var annatBeskrivningText = ejAngivetIfNull(baseratPa.annatBeskrivning);
+  var personligKannedomText = testdataHelper.ejAngivetIfNull(baseratPa.personligKannedom);
 
-    return Promise.all([
-        expect(element(by.id('undersokningAvPatienten')).getText()).to.eventually.contain(minUndersokningText),
-        expect(element(by.id('journaluppgifter')).getText()).to.eventually.contain(journaluppgifterText),
-        expect(element(by.id('anhorigsBeskrivningAvPatienten')).getText()).to.eventually.contain(anhorigBeskrivningText),
-        // expect(element(by.id('undersokningAvPatienten')).getText()).to.eventually.contain(annatText),
-        // expect(element(by.id('undersokningAvPatienten')).getText()).to.eventually.contain(annatBeskrivningText),
-        expect(element(by.id('kannedomOmPatient')).getText()).to.eventually.contain(personligKannedomText)
-    ]);
+  return Promise.all([
+    expect(element(by.id('undersokningAvPatienten')).getText()).to.eventually.contain(minUndersokningText),
+    expect(element(by.id('journaluppgifter')).getText()).to.eventually.contain(journaluppgifterText),
+    expect(element(by.id('anhorigsBeskrivningAvPatienten')).getText()).to.eventually.contain(anhorigBeskrivningText),
+    // expect(element(by.id('undersokningAvPatienten')).getText()).to.eventually.contain(annatText),
+    // expect(element(by.id('undersokningAvPatienten')).getText()).to.eventually.contain(annatBeskrivningText),
+    expect(element(by.id('kannedomOmPatient')).getText()).to.eventually.contain(personligKannedomText)
+  ]);
 }
 
-
 function checkMedicinskaUtredningar(andraMedicinskaUtredningar) {
-    var field = element(by.cssContainingText('.body-row', 'Är utlåtandet även baserat på andra medicinska utredningar eller underlag?'));
+  var field = element(by.cssContainingText('.body-row', 'Är utlåtandet även baserat på andra medicinska utredningar eller underlag?'));
 
-    if (andraMedicinskaUtredningar) {
-        var promiseArr = [];
+  if (andraMedicinskaUtredningar) {
+    var promiseArr = [];
 
-        promiseArr.push(expect(field.getText()).to.eventually.contain('Ja'));
+    promiseArr.push(expect(field.getText()).to.eventually.contain('Ja'));
 
-        for (var i = 0; i < andraMedicinskaUtredningar.length; i++) {
-            var typEL = element(by.id('underlag_' + i + '_typ'));
-            var datumEL = element(by.id('underlag_' + i + '_datum'));
-            var infoEL = element(by.id('underlag_' + i + '_hamtasFran'));
+    for (var i = 0; i < andraMedicinskaUtredningar.length; i++) {
+      var typEL = element(by.id('underlag_' + i + '_typ'));
+      var datumEL = element(by.id('underlag_' + i + '_datum'));
+      var infoEL = element(by.id('underlag_' + i + '_hamtasFran'));
 
-            var utredningDatum = testdataHelper.ejAngivetIfNull(andraMedicinskaUtredningar[i].datum);
-            promiseArr.push(expect(typEL.getText()).to.eventually.equal(andraMedicinskaUtredningar[i].underlag));
-            promiseArr.push(expect(datumEL.getText()).to.eventually.equal(utredningDatum));
-            promiseArr.push(expect(infoEL.getText()).to.eventually.equal(andraMedicinskaUtredningar[i].infoOmUtredningen));
-        }
-        return Promise.all(promiseArr);
-    } else if (!andraMedicinskaUtredningar) {
-        return expect(field.getText()).to.eventually.contain('Nej');
+      var utredningDatum = testdataHelper.ejAngivetIfNull(andraMedicinskaUtredningar[i].datum);
+      promiseArr.push(expect(typEL.getText()).to.eventually.equal(andraMedicinskaUtredningar[i].underlag));
+      promiseArr.push(expect(datumEL.getText()).to.eventually.equal(utredningDatum));
+      promiseArr.push(expect(infoEL.getText()).to.eventually.equal(andraMedicinskaUtredningar[i].infoOmUtredningen));
     }
+    return Promise.all(promiseArr);
+  } else if (!andraMedicinskaUtredningar) {
+    return expect(field.getText()).to.eventually.contain('Nej');
+  }
 }

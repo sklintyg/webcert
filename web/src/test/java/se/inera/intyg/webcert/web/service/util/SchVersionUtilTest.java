@@ -18,9 +18,9 @@
  */
 package se.inera.intyg.webcert.web.service.util;
 
-import org.junit.Test;
-
 import static org.junit.Assert.assertEquals;
+
+import org.junit.Test;
 
 public class SchVersionUtilTest {
 

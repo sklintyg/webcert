@@ -18,6 +18,20 @@
  */
 package se.inera.intyg.webcert.persistence.fragasvar.repository;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,24 +48,9 @@ import se.inera.intyg.webcert.persistence.fragasvar.model.Vardperson;
 import se.inera.intyg.webcert.persistence.model.Filter;
 import se.inera.intyg.webcert.persistence.model.Status;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "classpath:repository-context.xml" })
-@ActiveProfiles({ "dev", "unit-testing" })
+@ContextConfiguration(locations = {"classpath:repository-context.xml"})
+@ActiveProfiles({"dev", "unit-testing"})
 @Transactional
 public class FragaSvarRepositoryTest {
 
@@ -69,7 +68,7 @@ public class FragaSvarRepositoryTest {
     private LocalDateTime SVAR_SENT_DATE = LocalDateTime.parse("2013-04-01T12:00:00");
 
     private IntygsReferens INTYGS_REFERENS = new IntygsReferens(INTYGS_ID, "fk7263",
-            Personnummer.createPersonnummer("19121212-1212").get(),"Sven Persson", FRAGA_SENT_DATE);
+        Personnummer.createPersonnummer("19121212-1212").get(), "Sven Persson", FRAGA_SENT_DATE);
 
     private static String ENHET_1_ID = "ENHET_1_ID";
     private static String ENHET_2_ID = "ENHET_2_ID";
@@ -159,7 +158,8 @@ public class FragaSvarRepositoryTest {
         fragasvarRepository.save(buildFragaSvarFraga(ENHET_1_ID, Status.CLOSED));
         fragasvarRepository.save(buildFragaSvarFraga(ENHET_3_ID, Status.CLOSED));
 
-        List<GroupableItem> res = fragasvarRepository.getUnhandledWithEnhetIdsAndIntygstyper(Arrays.asList(ENHET_1_ID, ENHET_2_ID), set("fk7263"));
+        List<GroupableItem> res = fragasvarRepository
+            .getUnhandledWithEnhetIdsAndIntygstyper(Arrays.asList(ENHET_1_ID, ENHET_2_ID), set("fk7263"));
         assertNotNull(res);
         assertEquals(3, res.size());
     }
@@ -177,7 +177,8 @@ public class FragaSvarRepositoryTest {
         fragasvarRepository.save(buildFragaSvarFraga(ENHET_3_ID, Status.CLOSED));
 
         // With valid type
-        List<GroupableItem> res = fragasvarRepository.getUnhandledWithEnhetIdsAndIntygstyper(Arrays.asList(ENHET_1_ID, ENHET_2_ID), set("fk7263"));
+        List<GroupableItem> res = fragasvarRepository
+            .getUnhandledWithEnhetIdsAndIntygstyper(Arrays.asList(ENHET_1_ID, ENHET_2_ID), set("fk7263"));
         assertNotNull(res);
         assertEquals(3, res.size());
 
@@ -191,7 +192,7 @@ public class FragaSvarRepositoryTest {
     public void testFindByIntygsReferens() {
         FragaSvar saved = buildFragaSvarFraga(ENHET_1_ID);
         saved.setIntygsReferens(new IntygsReferens("non-existing-intygs-id", "fk",
-                Personnummer.createPersonnummer("19121212-1212").get(), "Sven Persson", FRAGA_SENT_DATE));
+            Personnummer.createPersonnummer("19121212-1212").get(), "Sven Persson", FRAGA_SENT_DATE));
         fragasvarRepository.save(saved);
         fragasvarRepository.save(buildFragaSvarFraga(ENHET_3_ID));
         fragasvarRepository.save(buildFragaSvarFraga(ENHET_4_ID));
@@ -388,7 +389,7 @@ public class FragaSvarRepositoryTest {
         assertEquals(0, fragaSvar.size());
     }
 
-    private Set<String> set(String ... vals) {
+    private Set<String> set(String... vals) {
         return Stream.of(vals).collect(Collectors.toSet());
     }
 }

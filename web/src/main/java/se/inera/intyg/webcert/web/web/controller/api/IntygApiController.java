@@ -18,12 +18,12 @@
  */
 package se.inera.intyg.webcert.web.web.controller.api;
 
+import io.swagger.annotations.Api;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-
 import javax.persistence.OptimisticLockException;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -34,14 +34,11 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.OptimisticLockingFailureException;
-
-import io.swagger.annotations.Api;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.peristence.dao.util.DaoUtil;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
@@ -75,7 +72,7 @@ public class IntygApiController extends AbstractApiController {
     private static final Logger LOG = LoggerFactory.getLogger(IntygApiController.class);
 
     private static final List<UtkastStatus> ALL_DRAFTS = Arrays.asList(UtkastStatus.DRAFT_COMPLETE,
-            UtkastStatus.DRAFT_INCOMPLETE, UtkastStatus.DRAFT_LOCKED);
+        UtkastStatus.DRAFT_INCOMPLETE, UtkastStatus.DRAFT_LOCKED);
 
     private static final String OFFLINE_MODE = "offline_mode";
 
@@ -105,8 +102,7 @@ public class IntygApiController extends AbstractApiController {
      * retrieved from Intygstjänst, drafts are retrieved from Webcerts db. Both
      * types of Intyg are converted and merged into one sorted list.
      *
-     * @param personNummerIn
-     *            personnummer
+     * @param personNummerIn personnummer
      * @return a Response carrying a list containing all Intyg for a person.
      */
     @GET
@@ -122,14 +118,14 @@ public class IntygApiController extends AbstractApiController {
         SekretessStatus patientSekretess = patientDetailsResolver.getSekretessStatus(personNummer);
         if (patientSekretess == SekretessStatus.UNDEFINED) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.PU_PROBLEM,
-                    "Error checking sekretessmarkering state in PU-service.");
+                "Error checking sekretessmarkering state in PU-service.");
         }
 
         authoritiesValidator.given(getWebCertUserService().getUser())
-                .privilegeIf(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT,
-                        patientSekretess == SekretessStatus.TRUE)
-                .orThrow(new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM_SEKRETESSMARKERING,
-                        "User missing required privilege or cannot handle sekretessmarkerad patient"));
+            .privilegeIf(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT,
+                patientSekretess == SekretessStatus.TRUE)
+            .orThrow(new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM_SEKRETESSMARKERING,
+                "User missing required privilege or cannot handle sekretessmarkerad patient"));
 
         List<String> enhetsIds = getEnhetIdsForCurrentUser();
 
@@ -144,15 +140,15 @@ public class IntygApiController extends AbstractApiController {
         List<Utkast> utkastList;
 
         if (authoritiesValidator.given(getWebCertUserService().getUser()).features(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
-                .isVerified()) {
+            .isVerified()) {
             Set<String> intygstyper = authoritiesHelper.getIntygstyperForPrivilege(getWebCertUserService().getUser(),
-                    AuthoritiesConstants.PRIVILEGE_VISA_INTYG);
+                AuthoritiesConstants.PRIVILEGE_VISA_INTYG);
 
             utkastList = utkastRepository.findDraftsByPatientAndEnhetAndStatus(
-                    DaoUtil.formatPnrForPersistence(personNummer),
-                    enhetsIds,
-                    ALL_DRAFTS,
-                    intygstyper);
+                DaoUtil.formatPnrForPersistence(personNummer),
+                enhetsIds,
+                ALL_DRAFTS,
+                intygstyper);
 
             LOG.debug("Got #{} utkast", utkastList.size());
         } else {
@@ -180,10 +176,8 @@ public class IntygApiController extends AbstractApiController {
     /**
      * Sets the notified flag on an Intyg.
      *
-     * @param intygsId
-     *            Id of the Intyg
-     * @param notifiedState
-     *            True or False
+     * @param intygsId Id of the Intyg
+     * @param notifiedState True or False
      * @return Response
      */
     @PUT
@@ -192,7 +186,7 @@ public class IntygApiController extends AbstractApiController {
     @Consumes(MediaType.APPLICATION_JSON)
     @PrometheusTimeMethod
     public Response setNotifiedOnIntyg(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId,
-            @PathParam("version") long version, NotifiedState notifiedState) {
+        @PathParam("version") long version, NotifiedState notifiedState) {
 
         Utkast updatedIntyg;
         try {
@@ -203,7 +197,7 @@ public class IntygApiController extends AbstractApiController {
         }
 
         LOG.debug("Set forward to {} on intyg {} with id '{}'",
-                new Object[] { updatedIntyg.getVidarebefordrad(), intygsTyp, updatedIntyg.getIntygsId() });
+            new Object[]{updatedIntyg.getVidarebefordrad(), intygsTyp, updatedIntyg.getIntygsId()});
 
         ListIntygEntry intygEntry = IntygDraftsConverter.convertUtkastToListIntygEntry(updatedIntyg);
 
@@ -216,11 +210,11 @@ public class IntygApiController extends AbstractApiController {
     @Consumes(MediaType.APPLICATION_JSON)
     @PrometheusTimeMethod
     public Response setKlarForSigneraAndSendStatusMessage(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId,
-            @PathParam("version") long version) {
+        @PathParam("version") long version) {
 
         authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
-                .privilege(AuthoritiesConstants.PRIVILEGE_NOTIFIERING_UTKAST)
-                .orThrow();
+            .privilege(AuthoritiesConstants.PRIVILEGE_NOTIFIERING_UTKAST)
+            .orThrow();
 
         utkastService.setKlarForSigneraAndSendStatusMessage(intygsId, intygsTyp);
         return Response.ok().build();
@@ -228,8 +222,8 @@ public class IntygApiController extends AbstractApiController {
 
     private Personnummer createPnr(String pnr) {
         return Personnummer.createPersonnummer(pnr)
-                .orElseThrow(() -> new WebCertServiceException(WebCertServiceErrorCodeEnum.MISSING_PARAMETER,
-                        String.format("Cannot create Personnummer object with invalid personId %s", pnr)));
+            .orElseThrow(() -> new WebCertServiceException(WebCertServiceErrorCodeEnum.MISSING_PARAMETER,
+                String.format("Cannot create Personnummer object with invalid personId %s", pnr)));
     }
 
     @GET

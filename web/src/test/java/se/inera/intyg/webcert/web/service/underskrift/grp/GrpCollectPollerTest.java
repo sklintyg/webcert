@@ -18,6 +18,15 @@
  */
 package se.inera.intyg.webcert.web.service.underskrift.grp;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static se.funktionstjanster.grp.v1.ProgressStatusType.COMPLETE;
+import static se.funktionstjanster.grp.v1.ProgressStatusType.OUTSTANDING_TRANSACTION;
+import static se.funktionstjanster.grp.v1.ProgressStatusType.STARTED;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -44,15 +53,6 @@ import se.inera.intyg.webcert.web.service.underskrift.UnderskriftService;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturStatus;
 import se.inera.intyg.webcert.web.service.underskrift.tracker.RedisTicketTracker;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
-
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static se.funktionstjanster.grp.v1.ProgressStatusType.COMPLETE;
-import static se.funktionstjanster.grp.v1.ProgressStatusType.OUTSTANDING_TRANSACTION;
-import static se.funktionstjanster.grp.v1.ProgressStatusType.STARTED;
 
 @RunWith(MockitoJUnitRunner.class)
 public class GrpCollectPollerTest extends AuthoritiesConfigurationTestSetup {
@@ -92,9 +92,9 @@ public class GrpCollectPollerTest extends AuthoritiesConfigurationTestSetup {
     public void testSuccessfulCollectAfterTwoOngoingPlusOneComplete() throws GrpFault {
 
         when(grpService.collect(any(CollectRequestType.class))).thenReturn(
-                buildResp(STARTED),
-                buildResp(OUTSTANDING_TRANSACTION),
-                buildResp(COMPLETE));
+            buildResp(STARTED),
+            buildResp(OUTSTANDING_TRANSACTION),
+            buildResp(COMPLETE));
         grpCollectPoller.setOrderRef(ORDER_REF);
         grpCollectPoller.setTicketId(TX_ID);
         grpCollectPoller.setSecurityContext(buildAuthentication());

@@ -24,18 +24,18 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-
 import java.util.HashMap;
 import java.util.Map;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
-        "id",
-        "platform",
-        "environment",
-        "snapshotTime"
+    "id",
+    "platform",
+    "environment",
+    "snapshotTime"
 })
 public class ConnectionPoint {
+
     @JsonProperty("id")
     private String id;
     @JsonProperty("platform")

@@ -18,6 +18,18 @@
  */
 package se.inera.intyg.webcert.web.integration.interactions.receivemedicalcertificate;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.when;
+
+import java.time.LocalDateTime;
+import java.util.HashSet;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.Unmarshaller;
+import javax.xml.transform.stream.StreamSource;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -31,22 +43,15 @@ import se.inera.ifv.insuranceprocess.healthreporting.receivemedicalcertificatequ
 import se.inera.ifv.insuranceprocess.healthreporting.v2.ErrorIdEnum;
 import se.inera.ifv.insuranceprocess.healthreporting.v2.ResultCodeEnum;
 import se.inera.intyg.schemas.contract.Personnummer;
-import se.inera.intyg.webcert.persistence.fragasvar.model.*;
+import se.inera.intyg.webcert.persistence.fragasvar.model.Amne;
+import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
+import se.inera.intyg.webcert.persistence.fragasvar.model.IntygsReferens;
+import se.inera.intyg.webcert.persistence.fragasvar.model.Komplettering;
+import se.inera.intyg.webcert.persistence.fragasvar.model.Vardperson;
 import se.inera.intyg.webcert.persistence.model.Status;
 import se.inera.intyg.webcert.web.converter.FragaSvarConverter;
 import se.inera.intyg.webcert.web.service.fragasvar.FragaSvarService;
 import se.inera.intyg.webcert.web.service.notification.NotificationService;
-
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Unmarshaller;
-import javax.xml.transform.stream.StreamSource;
-import java.time.LocalDateTime;
-import java.util.HashSet;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ReceiveQuestionResponderImplTest {
@@ -116,9 +121,9 @@ public class ReceiveQuestionResponderImplTest {
             JAXBContext jaxbContext = JAXBContext.newInstance(QuestionFromFkType.class);
             Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
             QuestionFromFkType question = unmarshaller
-                    .unmarshal(new StreamSource(new ClassPathResource(filePath).getInputStream()),
-                            QuestionFromFkType.class)
-                    .getValue();
+                .unmarshal(new StreamSource(new ClassPathResource(filePath).getInputStream()),
+                    QuestionFromFkType.class)
+                .getValue();
             return question;
         } catch (Exception e) {
             return null;

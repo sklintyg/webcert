@@ -18,18 +18,15 @@
  */
 package se.inera.intyg.webcert.web.service.maillink;
 
+import com.google.common.base.Strings;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
-
 import javax.ws.rs.core.UriBuilder;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-
-import com.google.common.base.Strings;
 
 /**
  * Created by pebe on 2015-10-05.

@@ -24,7 +24,6 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
 import org.junit.Test;
-
 import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
 
 public class IntygServiceConfigurationManagerTest {

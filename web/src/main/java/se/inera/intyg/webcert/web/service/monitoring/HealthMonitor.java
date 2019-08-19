@@ -57,6 +57,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class HealthMonitor extends Collector {
+
     private static final String PREFIX = "health_";
     private static final String NORMAL = "_normal";
     private static final String VALUE = "_value";
@@ -64,29 +65,29 @@ public class HealthMonitor extends Collector {
     private static final long START_TIME = System.currentTimeMillis();
 
     private static final Gauge UPTIME = Gauge.build()
-            .name(PREFIX + "uptime" + VALUE)
-            .help("Current uptime in seconds")
-            .register();
+        .name(PREFIX + "uptime" + VALUE)
+        .help("Current uptime in seconds")
+        .register();
 
     private static final Gauge DB_ACCESSIBLE = Gauge.build()
-            .name(PREFIX + "db_accessible" + NORMAL)
-            .help("0 == OK 1 == NOT OK")
-            .register();
+        .name(PREFIX + "db_accessible" + NORMAL)
+        .help("0 == OK 1 == NOT OK")
+        .register();
 
     private static final Gauge JMS_ACCESSIBLE = Gauge.build()
-            .name(PREFIX + "jms_accessible" + NORMAL)
-            .help("0 == OK 1 == NOT OK")
-            .register();
+        .name(PREFIX + "jms_accessible" + NORMAL)
+        .help("0 == OK 1 == NOT OK")
+        .register();
 
     private static final Gauge IT_ACCESSIBLE = Gauge.build()
-            .name(PREFIX + "intygstjanst_accessible" + NORMAL)
-            .help("0 == OK 1 == NOT OK")
-            .register();
+        .name(PREFIX + "intygstjanst_accessible" + NORMAL)
+        .help("0 == OK 1 == NOT OK")
+        .register();
 
     private static final Gauge SIGNATURE_QUEUE_DEPTH = Gauge.build()
-            .name(PREFIX + "signature_queue_depth" + VALUE)
-            .help("Number of waiting messages")
-            .register();
+        .name(PREFIX + "signature_queue_depth" + VALUE)
+        .help("Number of waiting messages")
+        .register();
 
     private static final long MILLIS_PER_SECOND = 1000L;
 
@@ -111,6 +112,7 @@ public class HealthMonitor extends Collector {
 
     @FunctionalInterface
     interface Tester {
+
         void run() throws Exception;
     }
 
@@ -126,8 +128,7 @@ public class HealthMonitor extends Collector {
      * Somewhat hacky way of updating our gauges "on-demand" (each being registered itself as a collector),
      * with this method always returning an empty list of MetricFamilySamples.
      *
-     * @return
-     *      Always returns an empty list.
+     * @return Always returns an empty list.
      */
     @Override
     public List<MetricFamilySamples> collect() {

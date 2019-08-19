@@ -20,7 +20,6 @@ package se.inera.intyg.webcert.web.integration.integrationtest;
 
 import java.io.IOException;
 import java.io.InputStream;
-
 import org.apache.cxf.common.xmlschema.LSInputImpl;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;

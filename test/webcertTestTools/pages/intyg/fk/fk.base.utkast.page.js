@@ -28,38 +28,36 @@
 var BaseUtkast = require('../base.utkast.page.js');
 
 var FkBaseUtkast = BaseUtkast._extend({
-    init: function init() {
-        init._super.call(this);
+  init: function init() {
+    init._super.call(this);
 
-        this.at = element(by.css('.edit-form'));
-        this.intygType = null;
-        this.intygTypeVersion = null;
+    this.at = element(by.css('.edit-form'));
+    this.intygType = null;
+    this.intygTypeVersion = null;
 
-        // The "markera klart för att signera" functionality is common to all SIT / SMI intygstyper.
-        this.markeraKlartForSigneringButton = element(by.id('markeraKlartForSigneringButton'));
-        this.markeraKlartForSigneringModalYesButton = element(by.id('buttonYes'));
-        this.markeradKlartForSigneringText = element(by.id('draft-marked-ready-text'));
+    // The "markera klart för att signera" functionality is common to all SIT / SMI intygstyper.
+    this.markeraKlartForSigneringButton = element(by.id('markeraKlartForSigneringButton'));
+    this.markeraKlartForSigneringModalYesButton = element(by.id('buttonYes'));
+    this.markeradKlartForSigneringText = element(by.id('draft-marked-ready-text'));
 
-        // Override, we do not handle patientAdress for FK-intyg.
-        this.patientAdress = {
+    // Override, we do not handle patientAdress for FK-intyg.
+    this.patientAdress = {};
+  },
+  //Locates the dynamic text based on text-key. see luaefs.dynamictexts.spec.js for example
+  getDynamicLabelText: function(textKey) {
+    return element(by.xpath('//span[@key="' + textKey + '"]')).getText();
+  },
+  //in ue-form-label the dynamic text is rendered differently
+  getDynamicLabelTextById: function(id) {
+    return element(by.id(id)).getText();
+  },
 
-        };
-    },
-    //Locates the dynamic text based on text-key. see luaefs.dynamictexts.spec.js for example
-    getDynamicLabelText: function(textKey) {
-        return element(by.xpath('//span[@key="' + textKey + '"]')).getText();
-    },
-    //in ue-form-label the dynamic text is rendered differently
-    getDynamicLabelTextById: function(id) {
-        return element(by.id(id)).getText();
-    },
-
-    isMarkeraSomKlartAttSigneraButtonDisplayed: function() {
-        return this.markeraKlartForSigneringButton.isDisplayed();
-    },
-    markeraSomKlartAttSigneraButtonClick: function() {
-        this.markeraKlartForSigneringButton.sendKeys(protractor.Key.SPACE);
-    }
+  isMarkeraSomKlartAttSigneraButtonDisplayed: function() {
+    return this.markeraKlartForSigneringButton.isDisplayed();
+  },
+  markeraSomKlartAttSigneraButtonClick: function() {
+    this.markeraKlartForSigneringButton.sendKeys(protractor.Key.SPACE);
+  }
 });
 
 module.exports = FkBaseUtkast;

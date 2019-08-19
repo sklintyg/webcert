@@ -19,6 +19,7 @@
 package se.inera.intyg.webcert.web.service.utkast.dto;
 
 public class CreateRenewalCopyResponse {
+
     private String newDraftIntygType;
 
     private String newDraftIntygTypeVersion;
@@ -28,7 +29,7 @@ public class CreateRenewalCopyResponse {
     private String originalIntygId;
 
     public CreateRenewalCopyResponse(String newDraftIntygType, String newDraftIntygTypeVersion, String newDraftIntygId,
-            String originalIntygId) {
+        String originalIntygId) {
         this.newDraftIntygId = newDraftIntygId;
         this.newDraftIntygType = newDraftIntygType;
         this.newDraftIntygTypeVersion = newDraftIntygTypeVersion;

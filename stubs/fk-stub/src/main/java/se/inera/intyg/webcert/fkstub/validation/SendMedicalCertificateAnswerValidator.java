@@ -18,14 +18,13 @@
  */
 package se.inera.intyg.webcert.fkstub.validation;
 
+import com.google.common.base.Strings;
 import java.util.ArrayList;
 import java.util.List;
-
-import com.google.common.base.Strings;
-
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateanswerresponder.v1.AnswerToFkType;
 
 public class SendMedicalCertificateAnswerValidator {
+
     private final AnswerToFkType answerType;
     private final List<String> validationErrors = new ArrayList<>();
 

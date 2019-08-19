@@ -18,12 +18,12 @@
  */
 package se.inera.intyg.webcert.web.web.controller.integrationtest.api;
 
+import static com.jayway.restassured.RestAssured.given;
+import static com.jayway.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
+
 import com.jayway.restassured.RestAssured;
 import org.junit.Test;
 import se.inera.intyg.webcert.web.web.controller.integrationtest.BaseRestIntegrationTest;
-
-import static com.jayway.restassured.RestAssured.given;
-import static com.jayway.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
 
 /**
  * Very basic test of the List* endpoints of the /api/receiver endpoint.
@@ -34,17 +34,17 @@ public class ReceiverAPIControllerIT extends BaseRestIntegrationTest {
     public void listPossibleReceivers() {
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
-                .expect().statusCode(200).when().get("api/receiver/possiblereceivers/af00213")
-                .then()
-                .body(matchesJsonSchemaInClasspath("jsonschema/webcert-list-possible-receivers-response-schema.json"));
+            .expect().statusCode(200).when().get("api/receiver/possiblereceivers/af00213")
+            .then()
+            .body(matchesJsonSchemaInClasspath("jsonschema/webcert-list-possible-receivers-response-schema.json"));
     }
 
     @Test
     public void listPossibleReceiversWithApprovedForUnknownIntygsId() {
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
-                .expect().statusCode(200).when().get("api/receiver/approvedreceivers/af00213/123").then()
-                .body(matchesJsonSchemaInClasspath("jsonschema/webcert-list-approved-receivers-response-schema.json"));
+            .expect().statusCode(200).when().get("api/receiver/approvedreceivers/af00213/123").then()
+            .body(matchesJsonSchemaInClasspath("jsonschema/webcert-list-approved-receivers-response-schema.json"));
 
     }
 }

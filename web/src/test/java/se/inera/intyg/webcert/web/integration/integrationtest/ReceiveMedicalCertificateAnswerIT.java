@@ -18,10 +18,17 @@
  */
 package se.inera.intyg.webcert.web.integration.integrationtest;
 
+import static com.jayway.restassured.RestAssured.given;
+import static com.jayway.restassured.matcher.RestAssuredMatchers.matchesXsd;
+import static org.hamcrest.core.Is.is;
+
 import com.google.common.collect.ImmutableMap;
 import com.jayway.restassured.http.ContentType;
 import com.jayway.restassured.path.json.JsonPath;
 import com.jayway.restassured.response.Response;
+import java.io.IOException;
+import java.io.InputStream;
+import java.time.LocalDateTime;
 import org.junit.Before;
 import org.junit.Test;
 import org.stringtemplate.v4.ST;
@@ -37,14 +44,6 @@ import se.inera.intyg.webcert.persistence.model.Status;
 import se.inera.intyg.webcert.web.service.fragasvar.dto.FrageStallare;
 import se.riv.clinicalprocess.healthcond.certificate.v3.ErrorIdType;
 import se.riv.clinicalprocess.healthcond.certificate.v3.ResultCodeType;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.time.LocalDateTime;
-
-import static com.jayway.restassured.RestAssured.given;
-import static com.jayway.restassured.matcher.RestAssuredMatchers.matchesXsd;
-import static org.hamcrest.core.Is.is;
 
 /**
  * Created by eriklupander, marced on 2016-05-10.
@@ -71,38 +70,38 @@ public class ReceiveMedicalCertificateAnswerIT extends BaseWSIntegrationTest {
         requestTemplate = templateGroup.getInstanceOf("request");
 
         xsdInputstream = ClasspathSchemaResourceResolver
-                .load("interactions/ReceiveMedicalCertificateAnswerInteraction/ReceiveMedicalCertificateAnswerResponder_1.0.xsd");
+            .load("interactions/ReceiveMedicalCertificateAnswerInteraction/ReceiveMedicalCertificateAnswerResponder_1.0.xsd");
 
         // We want to validate against the body of the response, and not the entire soap response. This filter will
         // extract that for us.
         responseBodyExtractorFilter = new BodyExtractorFilter(
-                ImmutableMap.of("lc", "urn:riv:insuranceprocess:healthreporting:ReceiveMedicalCertificateAnswerResponder:1"),
-                "soap:Envelope/soap:Body/lc:ReceiveMedicalCertificateAnswerResponse");
+            ImmutableMap.of("lc", "urn:riv:insuranceprocess:healthreporting:ReceiveMedicalCertificateAnswerResponder:1"),
+            "soap:Envelope/soap:Body/lc:ReceiveMedicalCertificateAnswerResponse");
     }
 
     @Test
     public void testReceiveAnswer() throws IOException {
         final int internalReferens = createQuestion(Fk7263EntryPoint.MODULE_ID, INTYGSID, PATIENT_PERSONNR);
         given().body(createRequestBody(internalReferens, HOS_PERSONAL_ID, SVAR_MEDDELANDE_TEXT, SIGNERINGS_TIDPUNKT))
-                .when()
-                .post(RECEIVE_QUESTION_V1_0)
-                .then()
-                .statusCode(200)
-                .rootPath(BASE)
-                .body("result.resultCode", is(ResultCodeType.OK.value()));
+            .when()
+            .post(RECEIVE_QUESTION_V1_0)
+            .then()
+            .statusCode(200)
+            .rootPath(BASE)
+            .body("result.resultCode", is(ResultCodeType.OK.value()));
     }
 
     @Test
     public void testResponseMatchesSchema() throws IOException {
         final int internalReferens = createQuestion(Fk7263EntryPoint.MODULE_ID, INTYGSID, PATIENT_PERSONNR);
         given().filter(
-                responseBodyExtractorFilter)
-                .body(createRequestBody(internalReferens, HOS_PERSONAL_ID, "Här är ett svar från FK", SIGNERINGS_TIDPUNKT))
-                .when()
-                .post(RECEIVE_QUESTION_V1_0)
-                .then()
-                .statusCode(200)
-                .body(matchesXsd(xsdInputstream).with(new ClasspathSchemaResourceResolver()));
+            responseBodyExtractorFilter)
+            .body(createRequestBody(internalReferens, HOS_PERSONAL_ID, "Här är ett svar från FK", SIGNERINGS_TIDPUNKT))
+            .when()
+            .post(RECEIVE_QUESTION_V1_0)
+            .then()
+            .statusCode(200)
+            .body(matchesXsd(xsdInputstream).with(new ClasspathSchemaResourceResolver()));
 
     }
 
@@ -114,13 +113,13 @@ public class ReceiveMedicalCertificateAnswerIT extends BaseWSIntegrationTest {
     @Test
     public void testRequestSchemaValidationError() {
         given().body(createRequestBody(1, HOS_PERSONAL_ID, "Här är ett svar från FK", ""))
-                .when()
-                .post(RECEIVE_QUESTION_V1_0)
-                .then()
-                .statusCode(200)
-                .rootPath(BASE)
-                .body("result.resultCode", is(ResultCodeType.ERROR.value()))
-                .body("result.errorId", is(ErrorIdType.VALIDATION_ERROR.value()));
+            .when()
+            .post(RECEIVE_QUESTION_V1_0)
+            .then()
+            .statusCode(200)
+            .rootPath(BASE)
+            .body("result.resultCode", is(ResultCodeType.ERROR.value()))
+            .body("result.errorId", is(ErrorIdType.VALIDATION_ERROR.value()));
     }
 
     /**
@@ -130,13 +129,13 @@ public class ReceiveMedicalCertificateAnswerIT extends BaseWSIntegrationTest {
     public void testEmptyHosPersonalIdFailsWithValidationError() {
         final int internalReferens = createQuestion(Fk7263EntryPoint.MODULE_ID, INTYGSID, PATIENT_PERSONNR);
         given().body(createRequestBody(internalReferens, "", "", SIGNERINGS_TIDPUNKT))
-                .when()
-                .post(RECEIVE_QUESTION_V1_0)
-                .then()
-                .statusCode(200)
-                .rootPath(BASE)
-                .body("result.resultCode", is(ResultCodeType.ERROR.value()))
-                .body("result.errorId", is(ErrorIdType.VALIDATION_ERROR.value()));
+            .when()
+            .post(RECEIVE_QUESTION_V1_0)
+            .then()
+            .statusCode(200)
+            .rootPath(BASE)
+            .body("result.resultCode", is(ResultCodeType.ERROR.value()))
+            .body("result.errorId", is(ErrorIdType.VALIDATION_ERROR.value()));
     }
 
     /**
@@ -147,13 +146,13 @@ public class ReceiveMedicalCertificateAnswerIT extends BaseWSIntegrationTest {
     public void testCreateAnswerWithInvalidXMLFailsWithApplicationError() {
         ST brokenTemplate = templateGroup.getInstanceOf("brokenrequest");
         given().body(brokenTemplate.render())
-                .when()
-                .post(RECEIVE_QUESTION_V1_0)
-                .then()
-                .statusCode(200)
-                .rootPath(BASE)
-                .body("result.resultCode", is(ResultCodeType.ERROR.value()))
-                .body("result.errorId", is(ErrorIdType.APPLICATION_ERROR.value()));
+            .when()
+            .post(RECEIVE_QUESTION_V1_0)
+            .then()
+            .statusCode(200)
+            .rootPath(BASE)
+            .body("result.resultCode", is(ResultCodeType.ERROR.value()))
+            .body("result.errorId", is(ErrorIdType.APPLICATION_ERROR.value()));
     }
 
     private String createRequestBody(int internalReferens, String hosPersonalId, String meddelandeText, String signeringsTidpunkt) {
@@ -167,7 +166,7 @@ public class ReceiveMedicalCertificateAnswerIT extends BaseWSIntegrationTest {
         fs.setAmne(Amne.ARBETSTIDSFORLAGGNING);
         fs.setFrageText("Frågetext");
         fs.setIntygsReferens(new IntygsReferens(intygId, typ,
-                Personnummer.createPersonnummer(personnummer).get(), "Api Restman", now));
+            Personnummer.createPersonnummer(personnummer).get(), "Api Restman", now));
         fs.setStatus(Status.PENDING_INTERNAL_ACTION);
         fs.setFrageSkickadDatum(now);
         fs.setMeddelandeRubrik("Meddelanderubrik");
@@ -188,8 +187,8 @@ public class ReceiveMedicalCertificateAnswerIT extends BaseWSIntegrationTest {
         fs.setVardperson(vardperson);
 
         Response response = given().log().all().contentType(ContentType.JSON)
-                .body(fs).expect().statusCode(200).when()
-                .post("testability/fragasvar").then().extract().response();
+            .body(fs).expect().statusCode(200).when()
+            .post("testability/fragasvar").then().extract().response();
 
         JsonPath model = new JsonPath(response.body().asString());
         return model.get("internReferens");
@@ -197,6 +196,7 @@ public class ReceiveMedicalCertificateAnswerIT extends BaseWSIntegrationTest {
 
     // String Template Data object
     private static final class AnswerData {
+
         public final int internalReferens;
         public final String hosPersonalId;
         public final String meddelandeText;

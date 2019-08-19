@@ -18,6 +18,7 @@
  */
 package se.inera.intyg.webcert.web.web.controller.moduleapi;
 
+import io.swagger.annotations.Api;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -26,12 +27,9 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import io.swagger.annotations.Api;
 import se.inera.intyg.common.services.texts.IntygTextsService;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
@@ -93,8 +91,7 @@ public class IntygModuleApiController extends AbstractApiController {
     /**
      * Retrieves a signed intyg from intygstjänst.
      *
-     * @param intygsId
-     *            intygid
+     * @param intygsId intygid
      * @return Response
      */
     @GET
@@ -116,10 +113,8 @@ public class IntygModuleApiController extends AbstractApiController {
     /**
      * Return the signed certificate identified by the given id as PDF.
      *
-     * @param intygsTyp
-     *            the type of certificate
-     * @param intygsId
-     *            - the globally unique id of a certificate.
+     * @param intygsTyp the type of certificate
+     * @param intygsId - the globally unique id of a certificate.
      * @return The certificate in PDF format
      */
     @GET
@@ -132,17 +127,15 @@ public class IntygModuleApiController extends AbstractApiController {
     /**
      * Return the signed certificate identified by the given id as PDF suited for the employer of the patient.
      *
-     * @param intygsTyp
-     *            the type of certificate
-     * @param intygsId
-     *            - the globally unique id of a certificate.
+     * @param intygsTyp the type of certificate
+     * @param intygsId - the globally unique id of a certificate.
      * @return The certificate in PDF format
      */
     @GET
     @Path("/{intygsTyp}/{intygsId}/pdf/arbetsgivarutskrift")
     @Produces("application/pdf")
     public final Response getIntygAsPdfForEmployer(@PathParam("intygsTyp") String intygsTyp,
-            @PathParam(value = "intygsId") final String intygsId) {
+        @PathParam(value = "intygsId") final String intygsId) {
         return getPdf(intygsTyp, intygsId, true);
     }
 
@@ -156,7 +149,7 @@ public class IntygModuleApiController extends AbstractApiController {
         IntygPdf intygPdfResponse = intygService.fetchIntygAsPdf(intygsId, intygsTyp, isEmployerCopy);
 
         return Response.ok(intygPdfResponse.getPdfData()).header(CONTENT_DISPOSITION, buildPdfHeader(intygPdfResponse.getFilename()))
-                .build();
+            .build();
     }
 
     private String buildPdfHeader(String pdfFileName) {
@@ -171,7 +164,7 @@ public class IntygModuleApiController extends AbstractApiController {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public Response sendSignedIntyg(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId,
-            SendSignedIntygParameter param) {
+        SendSignedIntygParameter param) {
 
         IntygServiceResult sendResult = intygService.sendIntyg(intygsId, intygsTyp, param.getRecipient(), false);
         return Response.ok(sendResult).build();
@@ -180,20 +173,18 @@ public class IntygModuleApiController extends AbstractApiController {
     /**
      * Issues a request to Intygstjanst to revoke the signed intyg.
      *
-     * @param intygsId
-     *            The id of the intyg to revoke
-     * @param param
-     *            A JSON struct containing an optional message
+     * @param intygsId The id of the intyg to revoke
+     * @param param A JSON struct containing an optional message
      */
     @POST
     @Path("/{intygsTyp}/{intygsId}/aterkalla")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public Response revokeSignedIntyg(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId,
-            RevokeSignedIntygParameter param) {
+        RevokeSignedIntygParameter param) {
 
         if (authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
-                .features(AuthoritiesConstants.FEATURE_MAKULERA_INTYG_KRAVER_ANLEDNING).isVerified() && !param.isValid()) {
+            .features(AuthoritiesConstants.FEATURE_MAKULERA_INTYG_KRAVER_ANLEDNING).isVerified() && !param.isValid()) {
             LOG.warn("Request to revoke '{}' is not valid", intygsId);
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, "Missing vital arguments in payload");
         }
@@ -210,7 +201,7 @@ public class IntygModuleApiController extends AbstractApiController {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public Response createCompletion(CopyIntygRequest request, @PathParam("intygsTyp") String intygsTyp,
-            @PathParam("intygsId") String orgIntygsId) {
+        @PathParam("intygsId") String orgIntygsId) {
 
         LOG.debug("Attempting to create a completion of {} with id '{}'", intygsTyp, orgIntygsId);
 
@@ -222,33 +213,28 @@ public class IntygModuleApiController extends AbstractApiController {
         String meddelandeId = arendeService.getLatestMeddelandeIdForCurrentCareUnit(orgIntygsId);
 
         CreateCompletionCopyRequest serviceRequest = copyUtkastServiceHelper.createCompletionCopyRequest(orgIntygsId, intygsTyp,
-                meddelandeId, request);
+            meddelandeId, request);
         CreateCompletionCopyResponse serviceResponse = copyUtkastService.createCompletion(serviceRequest);
 
         LOG.debug("Created a new draft with id: '{}' and type: {}, completing certificate with id '{}'.",
-                serviceResponse.getNewDraftIntygId(),
-                serviceResponse.getNewDraftIntygType(), orgIntygsId);
+            serviceResponse.getNewDraftIntygId(),
+            serviceResponse.getNewDraftIntygType(), orgIntygsId);
 
         CopyIntygResponse response = new CopyIntygResponse(serviceResponse.getNewDraftIntygId(), serviceResponse.getNewDraftIntygType(),
-                serviceResponse.getNewDraftIntygTypeVersion());
+            serviceResponse.getNewDraftIntygTypeVersion());
 
         return Response.ok().entity(response).build();
     }
 
     /**
      * Create a copy that is a renewal of an existing certificate.
-     *
-     * @param request
-     * @param intygsTyp
-     * @param orgIntygsId
-     * @return
      */
     @POST
     @Path("/{intygsTyp}/{intygsId}/fornya")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public Response createRenewal(CopyIntygRequest request, @PathParam("intygsTyp") String intygsTyp,
-            @PathParam("intygsId") String orgIntygsId) {
+        @PathParam("intygsId") String orgIntygsId) {
 
         LOG.debug("Attempting to create a renewal of {} with id '{}'", intygsTyp, orgIntygsId);
 
@@ -260,10 +246,10 @@ public class IntygModuleApiController extends AbstractApiController {
         CreateRenewalCopyResponse serviceResponse = copyUtkastService.createRenewalCopy(serviceRequest);
 
         LOG.debug("Created a new draft with id: '{}' and type: {}, renewing certificate with id '{}'.",
-                serviceResponse.getNewDraftIntygId(), serviceResponse.getNewDraftIntygType(), orgIntygsId);
+            serviceResponse.getNewDraftIntygId(), serviceResponse.getNewDraftIntygType(), orgIntygsId);
 
         CopyIntygResponse response = new CopyIntygResponse(serviceResponse.getNewDraftIntygId(), serviceResponse.getNewDraftIntygType(),
-                serviceResponse.getNewDraftIntygTypeVersion());
+            serviceResponse.getNewDraftIntygTypeVersion());
 
         return Response.ok().entity(response).build();
     }
@@ -278,27 +264,27 @@ public class IntygModuleApiController extends AbstractApiController {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public Response createUtkastFromTemplate(CopyIntygRequest request, @PathParam("intygsTyp") String orgIntygsTyp,
-            @PathParam("intygsId") String orgIntygsId, @PathParam("newIntygsTyp") String newIntygsTyp) {
+        @PathParam("intygsId") String orgIntygsId, @PathParam("newIntygsTyp") String newIntygsTyp) {
 
         LOG.debug("Attempting to create a new certificate with type {} from certificate with type {} and id '{}'", newIntygsTyp,
-                orgIntygsTyp, orgIntygsId);
+            orgIntygsTyp, orgIntygsId);
 
         if (!request.isValid()) {
             LOG.error("Request to create utkast from certificate '{}' as template is not valid", orgIntygsId);
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, "Missing vital arguments in payload");
         }
         CreateUtkastFromTemplateRequest serviceRequest = copyUtkastServiceHelper.createUtkastFromDifferentIntygTypeRequest(orgIntygsId,
-                newIntygsTyp, orgIntygsTyp, request);
+            newIntygsTyp, orgIntygsTyp, request);
 
         serviceRequest.setTypVersion(intygTextsService.getLatestVersion(newIntygsTyp));
 
         CreateUtkastFromTemplateResponse serviceResponse = copyUtkastService.createUtkastFromTemplate(serviceRequest);
 
         LOG.debug("Created a new draft with id: '{}' and type: {} from certificate with type: {} and id '{}'.",
-                serviceResponse.getNewDraftIntygId(), serviceResponse.getNewDraftIntygType(), orgIntygsTyp, orgIntygsId);
+            serviceResponse.getNewDraftIntygId(), serviceResponse.getNewDraftIntygType(), orgIntygsTyp, orgIntygsId);
 
         CopyIntygResponse response = new CopyIntygResponse(serviceResponse.getNewDraftIntygId(), serviceResponse.getNewDraftIntygType(),
-                serviceResponse.getNewDraftIntygTypeVersion());
+            serviceResponse.getNewDraftIntygTypeVersion());
 
         return Response.ok().entity(response).build();
     }
@@ -311,7 +297,7 @@ public class IntygModuleApiController extends AbstractApiController {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public Response createReplacement(CopyIntygRequest request, @PathParam("intygsTyp") String intygsTyp,
-            @PathParam("intygsId") String orgIntygsId) {
+        @PathParam("intygsId") String orgIntygsId) {
 
         LOG.debug("Attempting to create a replacement of {} with id '{}'", intygsTyp, orgIntygsId);
 
@@ -324,10 +310,10 @@ public class IntygModuleApiController extends AbstractApiController {
         CreateReplacementCopyResponse serviceResponse = copyUtkastService.createReplacementCopy(serviceRequest);
 
         LOG.debug("Created a new replacement draft with id: '{}' and type: {}, replacing certificate with id '{}'.",
-                serviceResponse.getNewDraftIntygId(), serviceResponse.getNewDraftIntygType(), orgIntygsId);
+            serviceResponse.getNewDraftIntygId(), serviceResponse.getNewDraftIntygType(), orgIntygsId);
 
         CopyIntygResponse response = new CopyIntygResponse(serviceResponse.getNewDraftIntygId(), serviceResponse.getNewDraftIntygType(),
-                serviceResponse.getNewDraftIntygTypeVersion());
+            serviceResponse.getNewDraftIntygTypeVersion());
 
         return Response.ok().entity(response).build();
     }

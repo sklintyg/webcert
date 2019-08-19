@@ -18,17 +18,17 @@
  */
 package se.inera.intyg.webcert.web.service.underskrift.model;
 
-import java.io.Serializable;
-import java.time.LocalDateTime;
-import java.util.Objects;
-
-import se.inera.intyg.common.support.common.enumerations.SignaturTyp;
-import se.inera.intyg.infra.xmldsig.model.IntygSignature;
-
 import static com.google.common.base.Preconditions.checkArgument;
 import static java.util.Objects.nonNull;
 
+import java.io.Serializable;
+import java.time.LocalDateTime;
+import java.util.Objects;
+import se.inera.intyg.common.support.common.enumerations.SignaturTyp;
+import se.inera.intyg.infra.xmldsig.model.IntygSignature;
+
 public class SignaturBiljett implements Serializable {
+
     private String ticketId;
     private String intygsId;
     private long version;
@@ -121,8 +121,8 @@ public class SignaturBiljett implements Serializable {
         }
         SignaturBiljett that = (SignaturBiljett) o;
         return version == that.version
-                && Objects.equals(ticketId, that.ticketId)
-                && Objects.equals(intygsId, that.intygsId);
+            && Objects.equals(ticketId, that.ticketId)
+            && Objects.equals(intygsId, that.intygsId);
     }
 
     @Override
@@ -132,6 +132,7 @@ public class SignaturBiljett implements Serializable {
 
 
     public static final class SignaturBiljettBuilder {
+
         private String ticketId;
         private String intygsId;
         private long version;

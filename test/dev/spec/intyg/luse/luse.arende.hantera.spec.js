@@ -30,57 +30,57 @@ var intygGenerator = wcTestTools.intygGenerator;
 
 describe('answer arende on luse intyg', function() {
 
-    var intygId = 'luse-arende-intyg-1';
-    var arendeId = 'luse-arende-avstmn-hantera';
+  var intygId = 'luse-arende-intyg-1';
+  var arendeId = 'luse-arende-avstmn-hantera';
 
-    beforeAll(function() {
-        browser.ignoreSynchronization = false;
-        specHelper.login();
-        var testData = {
-            'contents': intygGenerator.getIntygJson({'intygType': 'luse', 'intygId': intygId}),
-            'utkastStatus': 'SIGNED',
-            'revoked': false
-        };
-        restTestdataHelper.deleteUtkast(intygId);
-        restTestdataHelper.deleteAllArenden();
-        restTestdataHelper.createWebcertIntyg(testData).then(function() {
-            restTestdataHelper.markeraSkickatTillFK(intygId).then(function() {
-            restTestdataHelper.createArendeFromTemplate('luse', intygId, arendeId, 'Hur är det med arbetstiden?',
-                'AVSTMN', 'PENDING_EXTERNAL_ACTION');
-            });
-        });
+  beforeAll(function() {
+    browser.ignoreSynchronization = false;
+    specHelper.login();
+    var testData = {
+      'contents': intygGenerator.getIntygJson({'intygType': 'luse', 'intygId': intygId}),
+      'utkastStatus': 'SIGNED',
+      'revoked': false
+    };
+    restTestdataHelper.deleteUtkast(intygId);
+    restTestdataHelper.deleteAllArenden();
+    restTestdataHelper.createWebcertIntyg(testData).then(function() {
+      restTestdataHelper.markeraSkickatTillFK(intygId).then(function() {
+        restTestdataHelper.createArendeFromTemplate('luse', intygId, arendeId, 'Hur är det med arbetstiden?',
+            'AVSTMN', 'PENDING_EXTERNAL_ACTION');
+      });
+    });
+  });
+
+  afterAll(function() {
+    restTestdataHelper.deleteUtkast(intygId);
+  });
+
+  describe('make sure intyg page has loaded', function() {
+    it('should view fk intyg', function() {
+      LuseIntygPage.get(intygId);
+      expect(LuseIntygPage.isAt()).toBeTruthy();
+    });
+  });
+
+  describe('answer arende', function() {
+    it('make sure pushed arende is visible', function() {
+      var arende = LuseIntygPage.getArendeById(false, arendeId); // false = adminfråga
+      expect(arende.isDisplayed()).toBeTruthy();
     });
 
-    afterAll(function() {
-       restTestdataHelper.deleteUtkast(intygId);
+    it('mark arende as handled', function() {
+      LuseIntygPage.markArendeAsHandled(arendeId).click().then(function() {
+        var arende = LuseIntygPage.getArendeById(false, arendeId); // false = adminfråga
+        expect(arende.isDisplayed()).toBeTruthy();
+      });
     });
 
-    describe('make sure intyg page has loaded', function() {
-        it('should view fk intyg', function() {
-            LuseIntygPage.get(intygId);
-            expect(LuseIntygPage.isAt()).toBeTruthy();
-        });
+    it('mark arende as unhandled', function() {
+      LuseIntygPage.markArendeAsHandled(arendeId).click().then(function() {
+        var arende = LuseIntygPage.getArendeById(false, arendeId); // false = adminfråga
+        expect(arende.isDisplayed()).toBeTruthy();
+      });
     });
-
-    describe('answer arende', function() {
-        it('make sure pushed arende is visible', function() {
-            var arende = LuseIntygPage.getArendeById(false, arendeId); // false = adminfråga
-            expect(arende.isDisplayed()).toBeTruthy();
-        });
-
-        it('mark arende as handled', function() {
-            LuseIntygPage.markArendeAsHandled(arendeId).click().then(function() {
-                var arende = LuseIntygPage.getArendeById(false, arendeId); // false = adminfråga
-                expect(arende.isDisplayed()).toBeTruthy();
-            });
-        });
-
-        it('mark arende as unhandled', function() {
-            LuseIntygPage.markArendeAsHandled(arendeId).click().then(function() {
-                var arende = LuseIntygPage.getArendeById(false, arendeId); // false = adminfråga
-                expect(arende.isDisplayed()).toBeTruthy();
-            });
-        });
-    });
+  });
 
 });

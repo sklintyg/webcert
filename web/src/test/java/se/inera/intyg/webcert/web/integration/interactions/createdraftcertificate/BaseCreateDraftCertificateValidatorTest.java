@@ -18,7 +18,15 @@
  */
 package se.inera.intyg.webcert.web.integration.interactions.createdraftcertificate;
 
-import org.junit.Before;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.when;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import org.mockito.Mock;
 import se.inera.intyg.common.db.support.DbModuleEntryPoint;
 import se.inera.intyg.common.doi.support.DoiModuleEntryPoint;
@@ -41,16 +49,6 @@ import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.when;
-
 /**
  * Created by eriklupander on 2017-09-19.
  */
@@ -61,9 +59,9 @@ public abstract class BaseCreateDraftCertificateValidatorTest {
     protected static final String LUSE = LuseEntryPoint.MODULE_ID;
 
     protected static List<String> ALL_INTYG_TYPES = Arrays.asList(Fk7263EntryPoint.MODULE_ID,
-            TsBasEntryPoint.MODULE_ID, TsDiabetesEntryPoint.MODULE_ID,
-            LisjpEntryPoint.MODULE_ID, LuaefsEntryPoint.MODULE_ID, LuseEntryPoint.MODULE_ID,
-            LuaenaEntryPoint.MODULE_ID, DbModuleEntryPoint.MODULE_ID, DoiModuleEntryPoint.MODULE_ID);
+        TsBasEntryPoint.MODULE_ID, TsDiabetesEntryPoint.MODULE_ID,
+        LisjpEntryPoint.MODULE_ID, LuaefsEntryPoint.MODULE_ID, LuseEntryPoint.MODULE_ID,
+        LuaenaEntryPoint.MODULE_ID, DbModuleEntryPoint.MODULE_ID, DoiModuleEntryPoint.MODULE_ID);
     protected WebCertUser user;
 
     @Mock
@@ -75,16 +73,16 @@ public abstract class BaseCreateDraftCertificateValidatorTest {
     @Mock
     protected AuthoritiesHelper authoritiesHelper;
 
-//    @Before
+    //    @Before
     public void setup() throws ModuleNotFoundException {
         when(authoritiesHelper.isFeatureActive(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST, FK7263.toLowerCase())).thenReturn(true);
         when(authoritiesHelper.isFeatureActive(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST, TSBAS.toLowerCase())).thenReturn(true);
         when(authoritiesHelper.isFeatureActive(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST, LUSE.toLowerCase())).thenReturn(true);
 
         when(authoritiesHelper.getIntygstyperAllowedForAvliden())
-                .thenReturn(Arrays.asList(DbModuleEntryPoint.MODULE_ID, DoiModuleEntryPoint.MODULE_ID));
+            .thenReturn(Arrays.asList(DbModuleEntryPoint.MODULE_ID, DoiModuleEntryPoint.MODULE_ID));
         when(moduleRegistry.getModuleIdFromExternalId(anyString()))
-                .thenAnswer(invocation -> ((String) invocation.getArguments()[0]).toLowerCase());
+            .thenAnswer(invocation -> ((String) invocation.getArguments()[0]).toLowerCase());
         when(moduleRegistry.moduleExists(Fk7263EntryPoint.MODULE_ID)).thenReturn(true);
         when(moduleRegistry.moduleExists(TsBasEntryPoint.MODULE_ID)).thenReturn(true);
         when(moduleRegistry.moduleExists(LuseEntryPoint.MODULE_ID)).thenReturn(true);
@@ -107,9 +105,9 @@ public abstract class BaseCreateDraftCertificateValidatorTest {
         user.setAuthorities(new HashMap<>());
 
         user.getAuthorities().put(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT,
-                createPrivilege(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT));
+            createPrivilege(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT));
         user.getAuthorities().put(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG,
-                createPrivilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG));
+            createPrivilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG));
         Feature feature = new Feature();
         feature.setName(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);
         feature.setIntygstyper(Arrays.asList(Fk7263EntryPoint.MODULE_ID, TsBasEntryPoint.MODULE_ID));
@@ -124,14 +122,14 @@ public abstract class BaseCreateDraftCertificateValidatorTest {
         user.setAuthorities(new HashMap<>());
 
         user.getAuthorities().put(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT,
-                createPrivilege(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT, ALL_INTYG_TYPES));
+            createPrivilege(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT, ALL_INTYG_TYPES));
         user.getAuthorities().put(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG,
-                createPrivilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG, ALL_INTYG_TYPES));
+            createPrivilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG, ALL_INTYG_TYPES));
         Feature feature = new Feature();
         feature.setName(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);
         feature.setIntygstyper(Arrays.asList(Fk7263EntryPoint.MODULE_ID, TsBasEntryPoint.MODULE_ID, TsDiabetesEntryPoint.MODULE_ID,
-                LisjpEntryPoint.MODULE_ID, LuaenaEntryPoint.MODULE_ID, LuaefsEntryPoint.MODULE_ID, LuseEntryPoint.MODULE_ID,
-                DbModuleEntryPoint.MODULE_ID, DoiModuleEntryPoint.MODULE_ID));
+            LisjpEntryPoint.MODULE_ID, LuaenaEntryPoint.MODULE_ID, LuaefsEntryPoint.MODULE_ID, LuseEntryPoint.MODULE_ID,
+            DbModuleEntryPoint.MODULE_ID, DoiModuleEntryPoint.MODULE_ID));
         feature.setGlobal(true);
         user.setFeatures(Collections.singletonMap(feature.getName(), feature));
         user.setOrigin(UserOriginType.DJUPINTEGRATION.name());

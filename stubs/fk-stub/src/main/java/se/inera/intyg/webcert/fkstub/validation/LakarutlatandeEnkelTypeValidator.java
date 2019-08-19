@@ -18,9 +18,8 @@
  */
 package se.inera.intyg.webcert.fkstub.validation;
 
-import se.inera.ifv.insuranceprocess.healthreporting.medcertqa.v1.LakarutlatandeEnkelType;
-
 import java.util.List;
+import se.inera.ifv.insuranceprocess.healthreporting.medcertqa.v1.LakarutlatandeEnkelType;
 
 
 /**

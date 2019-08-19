@@ -18,6 +18,14 @@
  */
 package se.inera.intyg.webcert.notification_sender.notifications.integration;
 
+import static java.util.stream.Collectors.toList;
+import static org.mockito.AdditionalMatchers.or;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.Mockito.when;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDateTime;
 import java.util.Enumeration;
@@ -50,15 +58,6 @@ import se.inera.intyg.webcert.notification_sender.mocks.v3.CertificateStatusUpda
 import se.inera.intyg.webcert.notification_sender.notifications.helper.NotificationTestHelper;
 import se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders;
 import se.inera.intyg.webcert.notification_sender.notifications.services.v3.MessageRedeliveryFlag;
-
-
-import static java.util.stream.Collectors.toList;
-import static org.mockito.AdditionalMatchers.or;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.isNull;
-import static org.mockito.Mockito.when;
 
 @RunWith(CamelSpringJUnit4ClassRunner.class)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
@@ -108,12 +107,12 @@ public abstract class AbstractBaseIT {
     }
 
     NotificationMessage createNotificationMessage(String intygsId, LocalDateTime handelseTid, HandelsekodEnum handelseType,
-                                                  String intygsTyp,
-                                                  SchemaVersion schemaVersion) {
+        String intygsTyp,
+        SchemaVersion schemaVersion) {
         if (SchemaVersion.VERSION_3 == schemaVersion) {
             return new NotificationMessage(intygsId, intygsTyp, handelseTid, handelseType, "address2", INTYG_JSON, null,
-                    ArendeCount.getEmpty(), ArendeCount.getEmpty(),
-                    schemaVersion, "ref");
+                ArendeCount.getEmpty(), ArendeCount.getEmpty(),
+                schemaVersion, "ref");
         } else {
             throw new IllegalArgumentException("SchemaVersion 1 not supported anymore.");
             // return new NotificationMessage(intygsId, intygsTyp, handelseTid, handelseType, "address2", INTYG_JSON,
@@ -155,14 +154,14 @@ public abstract class AbstractBaseIT {
 
     List<Pair<String, Integer>> getAmqStatus(Set<ActiveMQQueue> queues) {
         return getQueueNames(queues).stream()
-                .map(queue -> jmsTemplate.browse(queue, (session, browser) -> {
-                    AtomicInteger nbrMessages = new AtomicInteger(0);
-                    Enumeration<?> messages = browser.getEnumeration();
-                    while (messages.hasMoreElements()) {
-                        messages.nextElement();
-                        nbrMessages.incrementAndGet();
-                    }
-                    return Pair.of(queue, nbrMessages.get());
-                })).collect(toList());
+            .map(queue -> jmsTemplate.browse(queue, (session, browser) -> {
+                AtomicInteger nbrMessages = new AtomicInteger(0);
+                Enumeration<?> messages = browser.getEnumeration();
+                while (messages.hasMoreElements()) {
+                    messages.nextElement();
+                    nbrMessages.incrementAndGet();
+                }
+                return Pair.of(queue, nbrMessages.get());
+            })).collect(toList());
     }
 }

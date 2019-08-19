@@ -25,27 +25,26 @@
 var intygPage;
 
 function checkEnhetAdress(adressObj) {
-    return Promise.all([
-        expect(intygPage.enhetsAdress.postAdress.getText()).to.eventually.contain(adressObj.postadress),
-        expect(intygPage.enhetsAdress.postNummer.getText()).to.eventually.contain(adressObj.postnummer),
-        expect(intygPage.enhetsAdress.postOrt.getText()).to.eventually.contain(adressObj.postort),
-        expect(intygPage.enhetsAdress.enhetsTelefon.getText()).to.eventually.contain(adressObj.telefon)
-    ]);
+  return Promise.all([
+    expect(intygPage.enhetsAdress.postAdress.getText()).to.eventually.contain(adressObj.postadress),
+    expect(intygPage.enhetsAdress.postNummer.getText()).to.eventually.contain(adressObj.postnummer),
+    expect(intygPage.enhetsAdress.postOrt.getText()).to.eventually.contain(adressObj.postort),
+    expect(intygPage.enhetsAdress.enhetsTelefon.getText()).to.eventually.contain(adressObj.telefon)
+  ]);
 }
 
-
 module.exports = {
-    checkValues: function(intyg, user) {
-        intygPage = pages.getIntygPageByType(intyg.typ);
+  checkValues: function(intyg, user) {
+    intygPage = pages.getIntygPageByType(intyg.typ);
 
-        return checkEnhetAdress(user.enhetsAdress).then(function(value) {
-            logger.info('OK - checkEnhetAdress = ' + value);
-        }, function(reason) {
-            throw ('FEL - checkEnhetAdress: ' + reason);
-        });
-    },
+    return checkEnhetAdress(user.enhetsAdress).then(function(value) {
+      logger.info('OK - checkEnhetAdress = ' + value);
+    }, function(reason) {
+      throw ('FEL - checkEnhetAdress: ' + reason);
+    });
+  },
 
-    regExp: function(regexp) {
-        return new RegExp(regexp, 'g');
-    }
+  regExp: function(regexp) {
+    return new RegExp(regexp, 'g');
+  }
 };

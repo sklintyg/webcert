@@ -19,7 +19,23 @@
 package se.inera.intyg.webcert.web.web.controller.api;
 
 import com.google.common.base.Strings;
-import io.swagger.annotations.*;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
+import java.util.List;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DefaultValue;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import org.apache.commons.lang3.EnumUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,11 +62,6 @@ import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
 import se.riv.clinicalprocess.healthcond.certificate.types.v2.ResultCodeEnum;
-
-import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import java.util.List;
 
 //CHECKSTYLE:OFF ParameterNumber
 @Path("/srs")
@@ -86,18 +97,18 @@ public class SrsApiController extends AbstractApiController {
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @ApiOperation(value = "Get SRS data", httpMethod = "POST", produces = MediaType.APPLICATION_JSON)
     @ApiResponses(value = {
-            @ApiResponse(code = OK, message = "SRS data found", response = SrsResponse.class),
-            @ApiResponse(code = BAD_REQUEST, message = "Bad request"),
-            @ApiResponse(code = NO_CONTENT, message = "No prediction model found")
+        @ApiResponse(code = OK, message = "SRS data found", response = SrsResponse.class),
+        @ApiResponse(code = BAD_REQUEST, message = "Bad request"),
+        @ApiResponse(code = NO_CONTENT, message = "No prediction model found")
     })
     @PrometheusTimeMethod
     public Response getSrs(@ApiParam(value = "Intyg id", required = true) @PathParam("intygId") String intygId,
-            @ApiParam(value = "Personnummer", required = true) @PathParam("personnummer") String personnummer,
-            @ApiParam(value = "Diagnosis Code", required = true) @PathParam("diagnosisCode") String diagnosisCode,
-            @ApiParam(value = "Utdatafilter: Prediktion") @QueryParam("prediktion") @DefaultValue("false") boolean prediktion,
-            @ApiParam(value = "Utdatafilter: AtgardRekommendation") @QueryParam("atgard") @DefaultValue("false") boolean atgard,
-            @ApiParam(value = "Utdatafilter: Statistik") @QueryParam("statistik") @DefaultValue("false") boolean statistik,
-            @ApiParam(value = "Svar på frågor") List<SrsQuestionResponse> questions) {
+        @ApiParam(value = "Personnummer", required = true) @PathParam("personnummer") String personnummer,
+        @ApiParam(value = "Diagnosis Code", required = true) @PathParam("diagnosisCode") String diagnosisCode,
+        @ApiParam(value = "Utdatafilter: Prediktion") @QueryParam("prediktion") @DefaultValue("false") boolean prediktion,
+        @ApiParam(value = "Utdatafilter: AtgardRekommendation") @QueryParam("atgard") @DefaultValue("false") boolean atgard,
+        @ApiParam(value = "Utdatafilter: Statistik") @QueryParam("statistik") @DefaultValue("false") boolean statistik,
+        @ApiParam(value = "Svar på frågor") List<SrsQuestionResponse> questions) {
         authoritiesValidator.given(getWebCertUserService().getUser()).features(AuthoritiesConstants.FEATURE_SRS).orThrow();
 
         if (Strings.isNullOrEmpty(personnummer) || Strings.isNullOrEmpty(diagnosisCode)) {
@@ -106,7 +117,7 @@ public class SrsApiController extends AbstractApiController {
         try {
             Utdatafilter filter = buildUtdatafilter(prediktion, atgard, statistik);
             SrsResponse response = srsService
-                    .getSrs(userService.getUser(), intygId, createPnr(personnummer), diagnosisCode, filter, questions);
+                .getSrs(userService.getUser(), intygId, createPnr(personnummer), diagnosisCode, filter, questions);
             if (response.getPredictionProbabilityOverLimit() != null) {
                 logService.logShowPrediction(personnummer, intygId);
             }
@@ -138,8 +149,8 @@ public class SrsApiController extends AbstractApiController {
     @ApiOperation(value = "Get consent for patient and careunit", httpMethod = "GET", produces = MediaType.APPLICATION_JSON)
     @PrometheusTimeMethod
     public Response getConsent(
-            @ApiParam(value = "Personnummer") @PathParam("personnummer") String personnummer,
-            @ApiParam(value = "HsaId för vårdenhet") @PathParam("vardenhetHsaId") String careUnitsaId) {
+        @ApiParam(value = "Personnummer") @PathParam("personnummer") String personnummer,
+        @ApiParam(value = "HsaId för vårdenhet") @PathParam("vardenhetHsaId") String careUnitsaId) {
         authoritiesValidator.given(getWebCertUserService().getUser()).features(AuthoritiesConstants.FEATURE_SRS).orThrow();
 
         try {
@@ -158,9 +169,9 @@ public class SrsApiController extends AbstractApiController {
     @ApiOperation(value = "Set consent for patient and careunit", httpMethod = "PUT", produces = MediaType.APPLICATION_JSON)
     @PrometheusTimeMethod
     public Response setConsent(
-            @ApiParam(value = "Personnummer") @PathParam("personnummer") String personnummer,
-            @ApiParam(value = "HsaId för vårdenhet") @PathParam("vardenhetHsaId") String careUnitHsaId,
-            boolean consent) {
+        @ApiParam(value = "Personnummer") @PathParam("personnummer") String personnummer,
+        @ApiParam(value = "HsaId för vårdenhet") @PathParam("vardenhetHsaId") String careUnitHsaId,
+        boolean consent) {
         authoritiesValidator.given(getWebCertUserService().getUser()).features(AuthoritiesConstants.FEATURE_SRS).orThrow();
 
         try {
@@ -179,18 +190,18 @@ public class SrsApiController extends AbstractApiController {
     @ApiOperation(value = "Set own opinion for risk prediction", httpMethod = "PUT", produces = MediaType.APPLICATION_JSON)
     @PrometheusTimeMethod
     public Response setOwnOpinion(
-            @ApiParam(value = "Personnummer") @PathParam("personnummer") String personnummer,
-            @ApiParam(value = "HSA-Id för vårdgivare") @PathParam("vardgivareHsaId") String vardgivareHsaId,
-            @ApiParam(value = "HSA-Id för vårdenhet") @PathParam("vardenhetHsaId") String vardenhetHsaId,
-            @ApiParam(value = "Intyg id", required = true) @PathParam("intygId") String intygId,
-            @ApiParam(value = "Diagnoskod", required = true) @PathParam("diagnoskod") String diagnosisCode,
-            String opinion) {
+        @ApiParam(value = "Personnummer") @PathParam("personnummer") String personnummer,
+        @ApiParam(value = "HSA-Id för vårdgivare") @PathParam("vardgivareHsaId") String vardgivareHsaId,
+        @ApiParam(value = "HSA-Id för vårdenhet") @PathParam("vardenhetHsaId") String vardenhetHsaId,
+        @ApiParam(value = "Intyg id", required = true) @PathParam("intygId") String intygId,
+        @ApiParam(value = "Diagnoskod", required = true) @PathParam("diagnoskod") String diagnosisCode,
+        String opinion) {
         authoritiesValidator.given(getWebCertUserService().getUser()).features(AuthoritiesConstants.FEATURE_SRS).orThrow();
 
         if (EnumUtils.isValidEnum(EgenBedomningRiskType.class, opinion)) {
             ResultCodeEnum result =
-                    srsService.setOwnOpinion(vardgivareHsaId, vardenhetHsaId, intygId, diagnosisCode,
-                            EgenBedomningRiskType.fromValue(opinion));
+                srsService.setOwnOpinion(vardgivareHsaId, vardenhetHsaId, intygId, diagnosisCode,
+                    EgenBedomningRiskType.fromValue(opinion));
             if (result != ResultCodeEnum.ERROR) {
 
                 // send PDL log event
@@ -236,25 +247,25 @@ public class SrsApiController extends AbstractApiController {
     private void decorateWithDiagnosisDescription(SrsResponse response) {
         if (!Strings.isNullOrEmpty(response.getPredictionDiagnosisCode())) {
             DiagnosResponse diagnosResponse = diagnosService
-                    .getDiagnosisByCode(response.getPredictionDiagnosisCode(), Diagnoskodverk.ICD_10_SE);
+                .getDiagnosisByCode(response.getPredictionDiagnosisCode(), Diagnoskodverk.ICD_10_SE);
             if (diagnosResponse.getResultat() == DiagnosResponseType.OK && diagnosResponse.getDiagnoser() != null
-                    && !diagnosResponse.getDiagnoser().isEmpty()) {
+                && !diagnosResponse.getDiagnoser().isEmpty()) {
                 response.setPredictionDiagnosisDescription(diagnosResponse.getDiagnoser().get(0).getBeskrivning());
             }
         }
         if (!Strings.isNullOrEmpty(response.getAtgarderDiagnosisCode())) {
             DiagnosResponse diagnosResponse = diagnosService
-                    .getDiagnosisByCode(response.getAtgarderDiagnosisCode(), Diagnoskodverk.ICD_10_SE);
+                .getDiagnosisByCode(response.getAtgarderDiagnosisCode(), Diagnoskodverk.ICD_10_SE);
             if (diagnosResponse.getResultat() == DiagnosResponseType.OK && diagnosResponse.getDiagnoser() != null
-                    && !diagnosResponse.getDiagnoser().isEmpty()) {
+                && !diagnosResponse.getDiagnoser().isEmpty()) {
                 response.setAtgarderDiagnosisDescription(diagnosResponse.getDiagnoser().get(0).getBeskrivning());
             }
         }
         if (!Strings.isNullOrEmpty(response.getStatistikDiagnosisCode())) {
             DiagnosResponse diagnosResponse = diagnosService
-                    .getDiagnosisByCode(response.getStatistikDiagnosisCode(), Diagnoskodverk.ICD_10_SE);
+                .getDiagnosisByCode(response.getStatistikDiagnosisCode(), Diagnoskodverk.ICD_10_SE);
             if (diagnosResponse.getResultat() == DiagnosResponseType.OK && diagnosResponse.getDiagnoser() != null
-                    && !diagnosResponse.getDiagnoser().isEmpty()) {
+                && !diagnosResponse.getDiagnoser().isEmpty()) {
                 response.setStatistikDiagnosisDescription(diagnosResponse.getDiagnoser().get(0).getBeskrivning());
             }
         }
@@ -262,7 +273,7 @@ public class SrsApiController extends AbstractApiController {
 
     private Personnummer createPnr(String personId) throws InvalidPersonNummerException {
         return Personnummer.createPersonnummer(personId)
-                .orElseThrow(() -> new InvalidPersonNummerException("Could not parse personnummer: " + personId));
+            .orElseThrow(() -> new InvalidPersonNummerException("Could not parse personnummer: " + personId));
     }
 
 }

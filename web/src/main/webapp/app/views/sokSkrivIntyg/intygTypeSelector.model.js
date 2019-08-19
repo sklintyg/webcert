@@ -19,19 +19,19 @@
 
 angular.module('webcert').factory('webcert.IntygTypeSelectorModel',
     ['$log',
-        function($log) {
-            'use strict';
+      function($log) {
+        'use strict';
 
-            return {
-                build: function() {
-                    this.intygType = 'default';
-                    this.certificateTypeText = '';
-                    this.intygTypes = []; // Format: { id: 'default', label: '' }
-                    this.userIntygTypes = []; // Only the types the current user can actually access in this context.
-                    this.previousIntygWarnings = {};
-                    this.previousUtkastWarnings = {};
-                    return this;
-                }
-            };
-        }
+        return {
+          build: function() {
+            this.intygType = 'default';
+            this.certificateTypeText = '';
+            this.intygTypes = []; // Format: { id: 'default', label: '' }
+            this.userIntygTypes = []; // Only the types the current user can actually access in this context.
+            this.previousIntygWarnings = {};
+            this.previousUtkastWarnings = {};
+            return this;
+          }
+        };
+      }
     ]);

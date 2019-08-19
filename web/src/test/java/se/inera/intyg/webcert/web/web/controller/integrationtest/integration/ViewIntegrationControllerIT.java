@@ -23,16 +23,12 @@ import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.Matchers.isEmptyOrNullString;
 import static org.springframework.security.web.header.writers.frameoptions.XFrameOptionsHeaderWriter.XFRAME_OPTIONS_HEADER;
 
+import com.jayway.restassured.RestAssured;
 import java.util.HashMap;
 import java.util.Map;
-
 import javax.servlet.http.HttpServletResponse;
-
 import org.junit.Test;
 import org.springframework.http.HttpHeaders;
-
-import com.jayway.restassured.RestAssured;
-
 import se.inera.intyg.webcert.web.web.controller.integrationtest.BaseRestIntegrationTest;
 
 /**
@@ -63,13 +59,13 @@ public class ViewIntegrationControllerIT extends BaseRestIntegrationTest {
         queryParams.put("enhet", "IFV1239877878-1042");
 
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId).redirects().follow(false)
-                .and().pathParams(pathParams)
-                .and().queryParams(queryParams)
-                .expect().statusCode(HttpServletResponse.SC_TEMPORARY_REDIRECT)
-                .when().get("/visa/intyg/{intygsId}/readonly")
-                .then()
-                .header(HttpHeaders.LOCATION, endsWith("/intyg-read-only/lisjp/" + LISJP_BASE_VERSION + "/" + utkastId))
-                .header(XFRAME_OPTIONS_HEADER, isEmptyOrNullString());
+            .and().pathParams(pathParams)
+            .and().queryParams(queryParams)
+            .expect().statusCode(HttpServletResponse.SC_TEMPORARY_REDIRECT)
+            .when().get("/visa/intyg/{intygsId}/readonly")
+            .then()
+            .header(HttpHeaders.LOCATION, endsWith("/intyg-read-only/lisjp/" + LISJP_BASE_VERSION + "/" + utkastId))
+            .header(XFRAME_OPTIONS_HEADER, isEmptyOrNullString());
     }
 
 }

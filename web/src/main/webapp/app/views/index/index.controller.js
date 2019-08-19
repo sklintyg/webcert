@@ -18,25 +18,26 @@
  */
 
 angular.module('webcert').controller('webcert.IndexCtrl',
-        [ '$scope', '$http', '$timeout', 'moduleConfig', function($scope, $http, $timeout, moduleConfig) {
-            'use strict';
+    ['$scope', '$http', '$timeout', 'moduleConfig', function($scope, $http, $timeout, moduleConfig) {
+      'use strict';
 
-            $scope.config = moduleConfig;
+      $scope.config = moduleConfig;
 
-            function loadIntygTypes() {
-                $scope.intygTypes = [];
-                $http.get('/api/modules/active').then(function(response) {
-                    $scope.intygTypes = response.data;
-                });
-            }
-            loadIntygTypes();
-            var _show = false;
+      function loadIntygTypes() {
+        $scope.intygTypes = [];
+        $http.get('/api/modules/active').then(function(response) {
+          $scope.intygTypes = response.data;
+        });
+      }
 
-            $scope.showme = function() {
-                return _show;
-            };
-            $timeout(function() {
-                _show = true;
-            }, 100);
+      loadIntygTypes();
+      var _show = false;
 
-        } ]);
+      $scope.showme = function() {
+        return _show;
+      };
+      $timeout(function() {
+        _show = true;
+      }, 100);
+
+    }]);

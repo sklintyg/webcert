@@ -25,23 +25,23 @@ var testdataHelper = require('common-testtools').testdataHelper;
 var testValues = require('./testvalues.js').ts;
 
 module.exports = {
-    get: function(intygsID) {
+  get: function(intygsID) {
 
-        if (!intygsID) {
-            intygsID = testdataHelper.generateTestGuid();
+    if (!intygsID) {
+      intygsID = testdataHelper.generateTestGuid();
 
-        }
-        return {
-            'id': intygsID,
-            'typ': 'Läkares anmälan till Transportstyrelsen',
-            'identitetStyrktGenom': 'Svenskt körkort',
-            'anmalanAvser': 'OLAMPLIGHET',
-            'medicinskaForhallanden': 'Sjuk men hyfsat alert i benstommen.',
-            'senasteUndersokningsdatum': '2019-01-01',
-            'intygetAvserBehorigheter': [
-                'Alla behörigheter inkl. körkortstillstånd, traktorkort och taxiförarlegitimation'
-            ],
-            informationOmTsBeslutOnskas: true
-        };
     }
+    return {
+      'id': intygsID,
+      'typ': 'Läkares anmälan till Transportstyrelsen',
+      'identitetStyrktGenom': 'Svenskt körkort',
+      'anmalanAvser': 'OLAMPLIGHET',
+      'medicinskaForhallanden': 'Sjuk men hyfsat alert i benstommen.',
+      'senasteUndersokningsdatum': '2019-01-01',
+      'intygetAvserBehorigheter': [
+        'Alla behörigheter inkl. körkortstillstånd, traktorkort och taxiförarlegitimation'
+      ],
+      informationOmTsBeslutOnskas: true
+    };
+  }
 };

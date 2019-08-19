@@ -28,35 +28,35 @@ var duplicateIds = [];
 var helpers = require('./helpers');
 
 function writeScreenShot(data, filename, cb) {
-    var stream = fs.createWriteStream(filename);
-    stream.write(new Buffer(data, 'base64'));
-    stream.end();
-    stream.on('finish', cb);
+  var stream = fs.createWriteStream(filename);
+  stream.write(new Buffer(data, 'base64'));
+  stream.end();
+  stream.on('finish', cb);
 }
 
 function checkConsoleErrors(world) {
-    if (hasFoundConsoleErrors) {
+  if (hasFoundConsoleErrors) {
 
-        // 500-error är ett godkänt fel i detta test, se INTYG-3524
-        if (world.scenario.getName().indexOf('Kan byta vårdenhet') >= 0 && hasFoundConsoleErrors.indexOf('error 500') > -1) {
-            return logger.info('Hittade 500-fel. Detta fel är accepterat, se INTYG-3524');
-        } else if (hasFoundConsoleErrors.indexOf('ID-dubletter') > -1) {
-            return logger.warn(hasFoundConsoleErrors);
-        } else {
-            logger.error(hasFoundConsoleErrors);
-            throw ('Hittade script-fel under körning');
-        }
+    // 500-error är ett godkänt fel i detta test, se INTYG-3524
+    if (world.scenario.getName().indexOf('Kan byta vårdenhet') >= 0 && hasFoundConsoleErrors.indexOf('error 500') > -1) {
+      return logger.info('Hittade 500-fel. Detta fel är accepterat, se INTYG-3524');
+    } else if (hasFoundConsoleErrors.indexOf('ID-dubletter') > -1) {
+      return logger.warn(hasFoundConsoleErrors);
     } else {
-        return logger.info('OK - Inga scriptfel hittades');
+      logger.error(hasFoundConsoleErrors);
+      throw ('Hittade script-fel under körning');
     }
+  } else {
+    return logger.info('OK - Inga scriptfel hittades');
+  }
 }
 
 const {
-    setDefaultTimeout, // jshint ignore:line
-    Before, // jshint ignore:line
-    BeforeAll, // jshint ignore:line
-    After, // jshint ignore:line
-    AfterStep // jshint ignore:line
+  setDefaultTimeout, // jshint ignore:line
+  Before, // jshint ignore:line
+  BeforeAll, // jshint ignore:line
+  After, // jshint ignore:line
+  AfterStep // jshint ignore:line
 } = require('cucumber');
 
 let ScenarioLogg = '';
@@ -139,101 +139,95 @@ global.externalPageLinks = [];
 });*/
 
 Before(function() {
-    ScenarioLogg = '';
-    logger.info('Återställer globala variabler');
-    this.patient = {};
-    this.intyg = {};
+  ScenarioLogg = '';
+  logger.info('Återställer globala variabler');
+  this.patient = {};
+  this.intyg = {};
 
-    this.user = {};
-    this.ursprungligtIntyg = {};
-    this.ursprungligPatient = {};
+  this.user = {};
+  this.ursprungligtIntyg = {};
+  this.ursprungligPatient = {};
 
-    hasFoundConsoleErrors = false;
-    duplicateIds = [];
-    //return browser.executeScript('window.autoSave = false;');
+  hasFoundConsoleErrors = false;
+  duplicateIds = [];
+  //return browser.executeScript('window.autoSave = false;');
 
 });
-
-
 
 After(function(testCase) {
 
-    var world = this;
-    browser.ignoreSynchronization = true;
+  var world = this;
+  browser.ignoreSynchronization = true;
 
+  if (testCase.result.status === 'failed') {
 
-    if (testCase.result.status === 'failed') {
+    var frontEndJS = 'var div = document.createElement("DIV"); ';
+    frontEndJS += 'div.style.position = "fixed";';
+    frontEndJS += 'div.style.height = (window.innerHeight - 2) + "px";';
+    frontEndJS += 'div.style.width = (window.innerWidth - 2) + "px";';
+    frontEndJS += 'div.style.border = "1px solid red";';
+    frontEndJS += 'div.style.top = "1px";';
+    frontEndJS += 'div.style.zIndex = "10000";';
+    frontEndJS += 'var body = document.getElementsByTagName("BODY")[0];';
+    frontEndJS += 'body.appendChild(div);';
 
-        var frontEndJS = 'var div = document.createElement("DIV"); ';
-        frontEndJS += 'div.style.position = "fixed";';
-        frontEndJS += 'div.style.height = (window.innerHeight - 2) + "px";';
-        frontEndJS += 'div.style.width = (window.innerWidth - 2) + "px";';
-        frontEndJS += 'div.style.border = "1px solid red";';
-        frontEndJS += 'div.style.top = "1px";';
-        frontEndJS += 'div.style.zIndex = "10000";';
-        frontEndJS += 'var body = document.getElementsByTagName("BODY")[0];';
-        frontEndJS += 'body.appendChild(div);';
-
-        return browser.executeScript(frontEndJS)
-            .then(function() {
-                return browser.takeScreenshot();
-            }).then(function(png) {
-                var ssPath = './node_modules/common-testtools/cucumber-html-report/';
-                var filename = 'screenshots/' + new Date().getTime() + '.png';
-                return writeScreenShot(png, ssPath + filename, function() {
-                    logger.silly('Skärmbild tagen: ' + filename);
-                    return world.attach(new Buffer(png, 'base64'), 'image/png', function(err) {
-                        //return world.attach(filename, 'image/png', function(err) {
-                        if (err) {
-                            throw err;
-                        }
-                        return checkConsoleErrors(world);
-                    });
-                });
-            }).then(function() {
-                logger.silly('Rensar session-storage');
-                return browser.executeScript('window.sessionStorage.clear();');
-            }).then(function() {
-                logger.silly('Rensar local-storage');
-                return browser.executeScript('window.localStorage.clear();');
-            })
-            .then(function() {
-                var url = 'about:blank';
-                return helpers.getUrl(url);
-            })
-            .then(function() {
-                return world.attach(Buffer.from(ScenarioLogg).toString('base64'), 'text/html');
-            }).then(function() {
-                logger.silly('browser.refresh');
-                return browser.refresh();
-            });
-
-    } else {
-        logger.silly('Rensar session-storage');
-        return browser.executeScript('window.sessionStorage.clear();').then(function() {
-            return checkConsoleErrors(world);
-        }).then(function() {
-            logger.silly('Rensar local-storage');
-            return browser.executeScript('window.localStorage.clear();');
-        }).then(function() {
-            var url = 'about:blank';
-            return helpers.getUrl(url);
-        }).then(function() {
-            return browser.refresh();
+    return browser.executeScript(frontEndJS)
+    .then(function() {
+      return browser.takeScreenshot();
+    }).then(function(png) {
+      var ssPath = './node_modules/common-testtools/cucumber-html-report/';
+      var filename = 'screenshots/' + new Date().getTime() + '.png';
+      return writeScreenShot(png, ssPath + filename, function() {
+        logger.silly('Skärmbild tagen: ' + filename);
+        return world.attach(new Buffer(png, 'base64'), 'image/png', function(err) {
+          //return world.attach(filename, 'image/png', function(err) {
+          if (err) {
+            throw err;
+          }
+          return checkConsoleErrors(world);
         });
-    }
+      });
+    }).then(function() {
+      logger.silly('Rensar session-storage');
+      return browser.executeScript('window.sessionStorage.clear();');
+    }).then(function() {
+      logger.silly('Rensar local-storage');
+      return browser.executeScript('window.localStorage.clear();');
+    })
+    .then(function() {
+      var url = 'about:blank';
+      return helpers.getUrl(url);
+    })
+    .then(function() {
+      return world.attach(Buffer.from(ScenarioLogg).toString('base64'), 'text/html');
+    }).then(function() {
+      logger.silly('browser.refresh');
+      return browser.refresh();
+    });
+
+  } else {
+    logger.silly('Rensar session-storage');
+    return browser.executeScript('window.sessionStorage.clear();').then(function() {
+      return checkConsoleErrors(world);
+    }).then(function() {
+      logger.silly('Rensar local-storage');
+      return browser.executeScript('window.localStorage.clear();');
+    }).then(function() {
+      var url = 'about:blank';
+      return helpers.getUrl(url);
+    }).then(function() {
+      return browser.refresh();
+    });
+  }
 });
 
-
-
 logger.on('logging', function(transport, level, msg, meta) {
-    var date = new Date();
-    var dateString = date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds() + ' ' + date.getMilliseconds();
+  var date = new Date();
+  var dateString = date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds() + ' ' + date.getMilliseconds();
 
-    ScenarioLogg += dateString + ' - ' + level + ': ' + msg + '<br /> ';
+  ScenarioLogg += dateString + ' - ' + level + ': ' + msg + '<br /> ';
 
-
-    /*if (global.scenario) {
-        global.scenario.attach(Buffer.from(dateString + ' - ' + level + ': ' + msg).toString('base64'));
-    }*/
+  /*if (global.scenario) {
+      global.scenario.attach(Buffer.from(dateString + ' - ' + level + ': ' + msg).toString('base64'));
+  }*/
 });

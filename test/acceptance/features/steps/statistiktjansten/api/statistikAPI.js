@@ -23,115 +23,110 @@ var request = require('request');
 var helpers = require('../../helpers');
 
 var defaultRESTAPIOptions = {
-    url: process.env.STATISTIKTJANST_URL + '/api/',
-    method: 'GET',
-    headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        'Content-Length': Buffer.byteLength('')
-    },
-    body: ''
+  url: process.env.STATISTIKTJANST_URL + '/api/',
+  method: 'GET',
+  headers: {
+    'Content-Type': 'application/x-www-form-urlencoded',
+    'Content-Length': Buffer.byteLength('')
+  },
+  body: ''
 };
-
 
 module.exports = {
-    processIntyg: function() {
-        var options = defaultRESTAPIOptions;
-        options.method = 'POST';
-        options.url = process.env.STATISTIKTJANST_URL + '/api/testsupport/processIntyg';
-        return apiRequest(options);
-    },
-    setFilter: function(body) {
-        var options = defaultRESTAPIOptions;
-        options.url = options.url + 'filter';
-        options.method = 'POST';
+  processIntyg: function() {
+    var options = defaultRESTAPIOptions;
+    options.method = 'POST';
+    options.url = process.env.STATISTIKTJANST_URL + '/api/testsupport/processIntyg';
+    return apiRequest(options);
+  },
+  setFilter: function(body) {
+    var options = defaultRESTAPIOptions;
+    options.url = options.url + 'filter';
+    options.method = 'POST';
 
-        if (body) {
-            options.body = body;
-        } else {
-            options.body = {
-                'enheter': [],
-                'verksamhetstyper': [],
-                'sjukskrivningslangd': [],
-                'aldersgrupp': [],
-                'intygstyper': [],
-                'diagnoser': [],
-                'fromDate': null,
-                'toDate': null,
-                'useDefaultPeriod': true
-            };
-        }
-        return apiRequest(options);
-    },
-    getMeddelandenPerAmne: function(vardgivare, filter) {
-        /*var options = defaultRESTAPIOptions;
-        options.url = process.env.STATISTIKTJANST_URL + '/api/' + 'verksamhet/getMeddelandenPerAmne?vgid=' + vardgivare;;
-
-        console.log(options.url);
-        console.log('https://statistik.ip30.nordicmedtest.se/api/verksamhet/getMeddelandenPerAmne?vgid=TSTNMT2321000156-107M');
-
-
-        if (filter) {
-            options.url += '&filter=' + filter;
-        }
-        return apiRequest(options);*/
-        browser.ignoreSynchronization = true;
-        return helpers.getUrl(process.env.STATISTIKTJANST_URL + '/api/' + 'verksamhet/getMeddelandenPerAmne?vgid=' + vardgivare);
-    },
-    getMeddelandenPerAmneLandsting: function() {
-
-    },
-    getMeddelandenPerAmneOchEnhetLandsting: function() {
-
-    },
-    getMeddelandenPerAmneOchEnhetTvarsnittVerksamhet: function() {
-
-    },
-    getMeddelandenPerAmneOchEnhetVerksamhet: function() {
-
-    },
-    getMeddelandenPerAmneTvarsnittVerksamhet: function() {
-
-    },
-    getMeddelandenPerAmneVerksamhet: function() {
-
-    },
-    getNumberOfMeddelandenPerMonth: function() {
-
-    },
-    getNumberOfMeddelandenPerMonthTvarsnittVerksamhet: function() {
-
-    },
-    getNumberOfMeddelandenPerMonthVerksamhet: function() {
-
+    if (body) {
+      options.body = body;
+    } else {
+      options.body = {
+        'enheter': [],
+        'verksamhetstyper': [],
+        'sjukskrivningslangd': [],
+        'aldersgrupp': [],
+        'intygstyper': [],
+        'diagnoser': [],
+        'fromDate': null,
+        'toDate': null,
+        'useDefaultPeriod': true
+      };
     }
+    return apiRequest(options);
+  },
+  getMeddelandenPerAmne: function(vardgivare, filter) {
+    /*var options = defaultRESTAPIOptions;
+    options.url = process.env.STATISTIKTJANST_URL + '/api/' + 'verksamhet/getMeddelandenPerAmne?vgid=' + vardgivare;;
+
+    console.log(options.url);
+    console.log('https://statistik.ip30.nordicmedtest.se/api/verksamhet/getMeddelandenPerAmne?vgid=TSTNMT2321000156-107M');
+
+
+    if (filter) {
+        options.url += '&filter=' + filter;
+    }
+    return apiRequest(options);*/
+    browser.ignoreSynchronization = true;
+    return helpers.getUrl(process.env.STATISTIKTJANST_URL + '/api/' + 'verksamhet/getMeddelandenPerAmne?vgid=' + vardgivare);
+  },
+  getMeddelandenPerAmneLandsting: function() {
+
+  },
+  getMeddelandenPerAmneOchEnhetLandsting: function() {
+
+  },
+  getMeddelandenPerAmneOchEnhetTvarsnittVerksamhet: function() {
+
+  },
+  getMeddelandenPerAmneOchEnhetVerksamhet: function() {
+
+  },
+  getMeddelandenPerAmneTvarsnittVerksamhet: function() {
+
+  },
+  getMeddelandenPerAmneVerksamhet: function() {
+
+  },
+  getNumberOfMeddelandenPerMonth: function() {
+
+  },
+  getNumberOfMeddelandenPerMonthTvarsnittVerksamhet: function() {
+
+  },
+  getNumberOfMeddelandenPerMonthVerksamhet: function() {
+
+  }
 };
 
-
-
 function apiRequest(options) {
-    var defer = protractor.promise.defer();
-    logger.silly(options.url);
-    logger.silly(options.body);
+  var defer = protractor.promise.defer();
+  logger.silly(options.url);
+  logger.silly(options.body);
 
-
-    request(options, function(error, message) {
-        if (error || message.statusCode >= 400) {
-            logger.info('Request error:', error);
-            if (message) {
-                logger.error('Error message: ' + message.statusCode, message.statusMessage /*, body*/ );
-            }
-            defer.reject({
-                error: error,
-                message: message
-            });
-        } else {
-            logger.info('Request success!', message.statusCode, message.statusMessage);
-            defer.fulfill(message);
-        }
-    });
-    return defer.promise;
+  request(options, function(error, message) {
+    if (error || message.statusCode >= 400) {
+      logger.info('Request error:', error);
+      if (message) {
+        logger.error('Error message: ' + message.statusCode, message.statusMessage /*, body*/);
+      }
+      defer.reject({
+        error: error,
+        message: message
+      });
+    } else {
+      logger.info('Request success!', message.statusCode, message.statusMessage);
+      defer.fulfill(message);
+    }
+  });
+  return defer.promise;
 }
-
 
 /*	Available API endpoints
 api.clearLandstingEnhets

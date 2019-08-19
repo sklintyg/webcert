@@ -19,6 +19,7 @@
 package se.inera.intyg.webcert.web.service.log;
 
 import com.google.common.base.Strings;
+import java.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.infra.logmessages.ActivityPurpose;
@@ -29,8 +30,6 @@ import se.inera.intyg.infra.logmessages.PdlResource;
 import se.inera.intyg.infra.logmessages.ResourceType;
 import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
 import se.inera.intyg.webcert.web.service.log.dto.LogUser;
-
-import java.time.LocalDateTime;
 
 /**
  * Provides population of a {@link PdlLogMessage} instance from {@link LogRequest} and {@link LogUser}
@@ -91,10 +90,10 @@ public class LogMessagePopulatorImpl implements LogMessagePopulator {
 
     private Patient createPatient(LogRequest logRequest) {
         return createPatient(
-                logRequest.getPatientId().getPersonnummer().
-                        replace("-", "").
-                        replace("+", ""),
-                logRequest.getPatientName());
+            logRequest.getPatientId().getPersonnummer().
+                replace("-", "").
+                replace("+", ""),
+            logRequest.getPatientName());
     }
 
     private Patient createPatient(String patientId, String patientName) {
@@ -125,7 +124,7 @@ public class LogMessagePopulatorImpl implements LogMessagePopulator {
 
         // INTYG-4647: Inget patientnamn vid PDL-logging
         logMessage.getPdlResourceList().forEach(pdlResource ->
-                pdlResource.setPatient(createPatient(pdlResource.getPatient().getPatientId(), ""))
+            pdlResource.setPatient(createPatient(pdlResource.getPatient().getPatientId(), ""))
         );
     }
 

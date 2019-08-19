@@ -22,9 +22,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
-
 import org.springframework.stereotype.Component;
-
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.web.controller.api.dto.AnsweredWithIntyg;
@@ -40,26 +38,21 @@ public final class AnsweredWithIntygUtil {
      * intyg exist, null is returned.
      *
      * Note: using this method is inefficient if checking multiple messages, due to unnecessary database lookups.
-     *
-     * @param intygsId
-     * @param messageSendDate
-     * @param utkastRepository
-     * @return
      */
     public static AnsweredWithIntyg findIntygKompletteringForMessage(String intygsId, LocalDateTime messageSendDate,
-            UtkastRepository utkastRepository) {
+        UtkastRepository utkastRepository) {
         return returnOldestKompltOlderThan(messageSendDate, findAllKomplementForGivenIntyg(intygsId, utkastRepository));
     }
 
     public static AnsweredWithIntyg returnOldestKompltOlderThan(LocalDateTime fragaSendDate,
-            List<AnsweredWithIntyg> kompltForIntyg) {
+        List<AnsweredWithIntyg> kompltForIntyg) {
         return kompltForIntyg.stream()
-                .reduce(null, (saved, current) -> {
-                    if (saved == null) {
-                        return current;
-                    }
-                    return isInsideBounds(current.getSigneratDatum(), fragaSendDate, saved.getSkickatDatum()) ? current : saved;
-                });
+            .reduce(null, (saved, current) -> {
+                if (saved == null) {
+                    return current;
+                }
+                return isInsideBounds(current.getSigneratDatum(), fragaSendDate, saved.getSkickatDatum()) ? current : saved;
+            });
     }
 
     private static boolean isInsideBounds(LocalDateTime arg, LocalDateTime lowerBound, LocalDateTime upperBound) {
@@ -69,17 +62,13 @@ public final class AnsweredWithIntygUtil {
     /**
      * Given an existing intyg's id, will return info about all associated supplemental (kompletterande) intyg, and an
      * empty list if no such intyg are found.
-     *
-     * @param intygsId
-     * @param utkastRepository
-     * @return
      */
     public static List<AnsweredWithIntyg> findAllKomplementForGivenIntyg(String intygsId, UtkastRepository utkastRepository) {
         return utkastRepository.findAllByRelationIntygsId(intygsId).stream()
-                .filter(u -> Objects.equals(u.getRelationKod(), RelationKod.KOMPLT))
-                .filter(u -> u.getSignatur() != null)
-                .map(AnsweredWithIntyg::create)
-                .collect(Collectors.toList());
+            .filter(u -> Objects.equals(u.getRelationKod(), RelationKod.KOMPLT))
+            .filter(u -> u.getSignatur() != null)
+            .map(AnsweredWithIntyg::create)
+            .collect(Collectors.toList());
     }
 
 }

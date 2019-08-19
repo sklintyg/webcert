@@ -17,10 +17,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 angular.module('webcert').controller('webcert.SokSkrivIntygStartCtrl',
-    [ '$state', 'common.PatientModel',
-        function($state, PatientModel) {
-            'use strict';
+    ['$state', 'common.PatientModel',
+      function($state, PatientModel) {
+        'use strict';
 
-            PatientModel.build();
-            $state.go('webcert.create-choosepatient-index', {}, { location: 'replace', reload: true});
-        }]);
+        PatientModel.build();
+        $state.go('webcert.create-choosepatient-index', {}, {location: 'replace', reload: true});
+      }]);

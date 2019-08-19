@@ -18,11 +18,6 @@
  */
 package se.inera.intyg.webcert.web.auth;
 
-import javax.net.ssl.KeyManager;
-import javax.net.ssl.KeyManagerFactory;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.TrustManagerFactory;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
@@ -32,7 +27,11 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.UnrecoverableKeyException;
 import java.util.ServiceConfigurationError;
-
+import javax.net.ssl.KeyManager;
+import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.TrustManagerFactory;
 import org.apache.commons.httpclient.params.HttpConnectionParams;
 import org.apache.commons.httpclient.protocol.SSLProtocolSocketFactory;
 import org.apache.commons.httpclient.protocol.SecureProtocolSocketFactory;
@@ -78,7 +77,7 @@ public class KeystoreBasedSocketFactory implements SecureProtocolSocketFactory {
 
     @Override
     public Socket createSocket(String host, int port, InetAddress localAddress, int localPort,
-            HttpConnectionParams params) throws IOException {
+        HttpConnectionParams params) throws IOException {
 
         int timeout = params.getConnectionTimeout();
         if (timeout == 0) {
@@ -94,7 +93,7 @@ public class KeystoreBasedSocketFactory implements SecureProtocolSocketFactory {
     }
 
     private static SSLContext createSSLContext(final KeyStore truststore) throws NoSuchAlgorithmException,
-            KeyStoreException, UnrecoverableKeyException, KeyManagementException {
+        KeyStoreException, UnrecoverableKeyException, KeyManagementException {
         KeyManagerFactory kmfactory = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
         kmfactory.init(null, null);
         KeyManager[] keymanagers = kmfactory.getKeyManagers();

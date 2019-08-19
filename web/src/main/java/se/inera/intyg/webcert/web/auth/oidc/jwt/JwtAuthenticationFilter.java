@@ -23,6 +23,9 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.IncorrectClaimException;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.MissingClaimException;
+import java.util.List;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,10 +39,6 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
 import se.inera.intyg.infra.security.authorities.FeaturesHelper;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.webcert.web.service.jwt.JwtValidationService;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.util.List;
 
 /**
  * Custom authentication filter that supports extraction of JWT tokens from either an Authorization: Bearer: token
@@ -63,7 +62,7 @@ public class JwtAuthenticationFilter extends AbstractAuthenticationProcessingFil
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
-            throws AuthenticationException {
+        throws AuthenticationException {
 
         if (!featuresHelper.isFeatureActive(AuthoritiesConstants.FEATURE_OAUTH_AUTHENTICATION)) {
             throw new AuthenticationServiceException("OAuth authentication is not enabled");
@@ -98,11 +97,11 @@ public class JwtAuthenticationFilter extends AbstractAuthenticationProcessingFil
                 employeeHsaId = parts.get(0);
             } else {
                 throw new IncorrectClaimException(jwt.getHeader(), jwt.getBody(),
-                        "Could not extract claim for employeeHsaId, array type contained zero elements");
+                    "Could not extract claim for employeeHsaId, array type contained zero elements");
             }
         } else {
             throw new IncorrectClaimException(jwt.getHeader(), jwt.getBody(),
-                    "Could not extract claim for employeeHsaId, claim was neither of class String nor ArrayList");
+                "Could not extract claim for employeeHsaId, claim was neither of class String nor ArrayList");
         }
         if (Strings.isNullOrEmpty(employeeHsaId)) {
             throw new MissingClaimException(jwt.getHeader(), jwt.getBody(), "Could not extract claim for employeeHsaId");
@@ -134,6 +133,6 @@ public class JwtAuthenticationFilter extends AbstractAuthenticationProcessingFil
 
         // If neither worked, throw an exception.
         throw new AuthenticationServiceException("Request contained no 'Authorization: Bearer: <JWS token>' header or "
-                + "POST body with access_token form parameter");
+            + "POST body with access_token form parameter");
     }
 }

@@ -21,9 +21,7 @@ package se.inera.intyg.webcert.web.service.underskrift;
 import java.nio.charset.Charset;
 import java.time.LocalDateTime;
 import java.util.Base64;
-
 import javax.xml.bind.JAXBElement;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +29,6 @@ import org.w3._2000._09.xmldsig_.KeyInfoType;
 import org.w3._2000._09.xmldsig_.ObjectFactory;
 import org.w3._2000._09.xmldsig_.SignatureType;
 import org.w3._2000._09.xmldsig_.SignatureValueType;
-
 import se.inera.intyg.common.support.common.enumerations.SignaturTyp;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
@@ -65,8 +62,8 @@ public abstract class BaseXMLSignatureService extends BaseSignatureService {
     private XMLDSigService xmldSigService;
 
     protected SignaturBiljett finalizeXMLDSigSignature(String x509certificate, WebCertUser user, SignaturBiljett biljett,
-            byte[] rawSignature,
-            Utkast utkast) {
+        byte[] rawSignature,
+        Utkast utkast) {
         try {
             IntygXMLDSignature intygXmldSignature = (IntygXMLDSignature) biljett.getIntygSignature();
 
@@ -104,7 +101,7 @@ public abstract class BaseXMLSignatureService extends BaseSignatureService {
         // <RegisterCertificate><intyg>...data...<Signature>...</Signature></intyg></<RegisterCertificate>>
         // that we're storing.
         String finalXml = prepareSignatureService.encodeSignatureIntoSignedXml(intygXmldSignature.getSignatureType(),
-                utkastXml);
+            utkastXml);
 
         // Only store if we received a certificate. Note - if cert comes from NIAS, it's been encoded as Base64 already.
         if (x509certificate != null && !x509certificate.isEmpty()) {
@@ -129,32 +126,32 @@ public abstract class BaseXMLSignatureService extends BaseSignatureService {
     private void applySignature(WebCertUser user, byte[] rawSignature, IntygXMLDSignature intygXmldSignature, SignMethod signMethod) {
         SignatureValueType svt = new SignatureValueType();
         switch (signMethod) {
-        case NETID_PLUGIN:
-        case FAKE:
-            // Don't decode RAW signatures from the NetiD plugin.
-            svt.setValue(rawSignature);
-            break;
+            case NETID_PLUGIN:
+            case FAKE:
+                // Don't decode RAW signatures from the NetiD plugin.
+                svt.setValue(rawSignature);
+                break;
 
-        case NETID_ACCESS:
-            // From NetiD Access Server, we must decode from Base64 to binary.
-            svt.setValue(Base64.getDecoder().decode(rawSignature));
-            break;
+            case NETID_ACCESS:
+                // From NetiD Access Server, we must decode from Base64 to binary.
+                svt.setValue(Base64.getDecoder().decode(rawSignature));
+                break;
 
-        case GRP:
-            throw new IllegalStateException("We do not handle signatures as XMLDSig for GRP, "
+            case GRP:
+                throw new IllegalStateException("We do not handle signatures as XMLDSig for GRP, "
                     + "if you're here something has gone wrong.");
         }
         intygXmldSignature.getSignatureType().setSignatureValue(svt);
     }
 
     protected SignaturBiljett createAndPersistSignatureForXMLDSig(Utkast utkast, SignaturBiljett biljett, String signaturXml,
-            WebCertUser user) {
+        WebCertUser user) {
         IntygXMLDSignature intygXMLDSignature = (IntygXMLDSignature) biljett.getIntygSignature();
 
         final String payloadJson = intygXMLDSignature.getIntygJson();
 
         final String signingXmlHash = Base64.getEncoder()
-                .encodeToString(intygXMLDSignature.getSignatureType().getSignedInfo().getReference().get(0).getDigestValue());
+            .encodeToString(intygXMLDSignature.getSignatureType().getSignedInfo().getReference().get(0).getDigestValue());
 
         checkIntysId(utkast, biljett);
 
@@ -167,7 +164,7 @@ public abstract class BaseXMLSignatureService extends BaseSignatureService {
         IntygXMLDSignature intygSignature = prepareSignatureService.prepareSignature(utkastXml, biljett.getIntygsId());
 
         checkDigests(utkast, signingXmlHash, Base64.getEncoder()
-                .encodeToString(intygSignature.getSignatureType().getSignedInfo().getReference().get(0).getDigestValue()));
+            .encodeToString(intygSignature.getSignatureType().getSignedInfo().getReference().get(0).getDigestValue()));
         checkVersion(utkast, biljett);
 
         // For WC 6.1, we want to store the following:
@@ -177,13 +174,13 @@ public abstract class BaseXMLSignatureService extends BaseSignatureService {
         // intyg data and the XMLDSig.
         final String signingXml = intygXMLDSignature.getCanonicalizedIntyg();
         final Signatur signatur = new Signatur(LocalDateTime.now(), user.getHsaId(), biljett.getIntygsId(), signingXml,
-                signingXmlHash, signaturXml, SignaturTyp.XMLDSIG);
+            signingXmlHash, signaturXml, SignaturTyp.XMLDSIG);
 
         // Encode the DSIG signature into the JSON model.
         String finalJson;
         try {
             finalJson = moduleRegistry.getModuleApi(utkast.getIntygsTyp(), utkast.getIntygTypeVersion())
-                    .updateAfterSigning(payloadJson, signaturXml);
+                .updateAfterSigning(payloadJson, signaturXml);
         } catch (ModuleNotFoundException | ModuleException e) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, e);
         }

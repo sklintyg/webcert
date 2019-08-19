@@ -22,62 +22,61 @@
 var helpers = require('../helpers');
 
 function loginByJSON(userJson, giveCookieConsent, self) {
-    if (giveCookieConsent) {
-        self.disableCookieConsentBanner();
-    }
+  if (giveCookieConsent) {
+    self.disableCookieConsentBanner();
+  }
 
-    var loginButton = element(by.id('login_btn'));
-    var jsonDisplay = element(by.id('userJsonDisplay'));
+  var loginButton = element(by.id('login_btn'));
+  var jsonDisplay = element(by.id('userJsonDisplay'));
 
-    jsonDisplay.clear();
-    return jsonDisplay.sendKeys(userJson).then(function() {
-        return loginButton.click();
-    });
+  jsonDisplay.clear();
+  return jsonDisplay.sendKeys(userJson).then(function() {
+    return loginButton.click();
+  });
 
 }
 
 var logInAsUserStatistik = function(user, roleName, skipCookieConsent, self) {
-    if (skipCookieConsent) {
-        logger.info('Lämnar inte samtycke för kakor');
-    }
-    logger.info('Loggar in som ' + user.fornamn + ' ' + user.efternamn);
+  if (skipCookieConsent) {
+    logger.info('Lämnar inte samtycke för kakor');
+  }
+  logger.info('Loggar in som ' + user.fornamn + ' ' + user.efternamn);
 
-    let userObj = {
-        fornamn: user.fornamn,
-        efternamn: user.efternamn,
-        hsaId: user.hsaId,
-        vardgivarIdSomProcessLedare: user.vardgivarIdSomProcessLedare,
-        vardgivarniva: user.vardgivarniva
-    };
+  let userObj = {
+    fornamn: user.fornamn,
+    efternamn: user.efternamn,
+    hsaId: user.hsaId,
+    vardgivarIdSomProcessLedare: user.vardgivarIdSomProcessLedare,
+    vardgivarniva: user.vardgivarniva
+  };
 
-    browser.ignoreSynchronization = true;
-    return helpers.getUrl('/#/fakelogin').then(function() {
-        return loginByJSON(JSON.stringify(userObj), !skipCookieConsent, self);
-    }).then(function() {
-        browser.ignoreSynchronization = false;
-        return helpers.pageReloadDelay();
-    });
+  browser.ignoreSynchronization = true;
+  return helpers.getUrl('/#/fakelogin').then(function() {
+    return loginByJSON(JSON.stringify(userObj), !skipCookieConsent, self);
+  }).then(function() {
+    browser.ignoreSynchronization = false;
+    return helpers.pageReloadDelay();
+  });
 };
 
 module.exports = {
-    logInAsUserStatistik: logInAsUserStatistik,
-    logInAsUserRoleStatistik: function(user, roleName, skipCookieConsent) {
-        logger.silly(user);
-        var self = this;
-        return logInAsUserStatistik(user, roleName, skipCookieConsent, self).then(function() {
-            logger.info('Login default browser successful');
-            var headerboxUserProfile = element(by.css('.header-container'));
-            browser.driver.switchTo().alert().then(function(alert) {
-                    alert.accept();
-                    return expect(headerboxUserProfile.getText()).to.eventually.contain(user.fornamn + ' ' + user.efternamn);
+  logInAsUserStatistik: logInAsUserStatistik,
+  logInAsUserRoleStatistik: function(user, roleName, skipCookieConsent) {
+    logger.silly(user);
+    var self = this;
+    return logInAsUserStatistik(user, roleName, skipCookieConsent, self).then(function() {
+      logger.info('Login default browser successful');
+      var headerboxUserProfile = element(by.css('.header-container'));
+      browser.driver.switchTo().alert().then(function(alert) {
+            alert.accept();
+            return expect(headerboxUserProfile.getText()).to.eventually.contain(user.fornamn + ' ' + user.efternamn);
 
-                },
-                function(err) {
-                    return expect(headerboxUserProfile.getText()).to.eventually.contain(user.fornamn + ' ' + user.efternamn);
-                });
-        });
+          },
+          function(err) {
+            return expect(headerboxUserProfile.getText()).to.eventually.contain(user.fornamn + ' ' + user.efternamn);
+          });
+    });
 
-    }
-
+  }
 
 };

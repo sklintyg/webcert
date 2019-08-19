@@ -19,13 +19,13 @@
 package se.inera.intyg.webcert.web.web.controller.api.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.nio.charset.Charset;
+import java.util.Base64;
 import se.inera.intyg.common.support.common.enumerations.SignaturTyp;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturStatus;
 
-import java.nio.charset.Charset;
-import java.util.Base64;
-
 public class SignaturStateDTO {
+
     private String id;
     private String intygsId;
     private long version;
@@ -94,6 +94,7 @@ public class SignaturStateDTO {
     }
 
     public static final class SignaturStateDTOBuilder {
+
         private String id;
         private String intygsId;
         private long version;

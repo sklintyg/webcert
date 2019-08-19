@@ -30,87 +30,83 @@ var restUtil = wcTestTools.restUtil;
 
 describe('Create luae_fs utkast and check dynamic texts', function() {
 
-    var utkast = null;
-    var intyg = null;
+  var utkast = null;
+  var intyg = null;
 
-    var texts = null;
+  var texts = null;
 
-
-    beforeAll(function() {
-        testdataHelper.createUtkast('luae_fs').then(function(response) {
-            utkast = response.body;
-            expect(utkast.intygsId).not.toBeNull();
-        }, function(error) {
-            logger.error('Error calling createUtkast' + error);
-        });
-
-        // Load and cache expected dynamictext-values for this intygstype.
-        restUtil.getResource('classpath:texts/texterMU_LUAE_FS_v1.0.xml').then(
-            function (response) {
-                textHelper.parseTextXml(response.body).then(
-                    function (response) {
-                        texts = response;
-                    }, function () {
-                        fail('Error during text parse');
-                    });
-            }, function () {
-                fail('Unable to get text (texterMU_LUAE_FS_v1.0.xml) from API');
-            });
+  beforeAll(function() {
+    testdataHelper.createUtkast('luae_fs').then(function(response) {
+      utkast = response.body;
+      expect(utkast.intygsId).not.toBeNull();
+    }, function(error) {
+      logger.error('Error calling createUtkast' + error);
     });
 
-    describe('Check dynamic labels', function() {
-        it('should login and open created utkast', function() {
-            browser.ignoreSynchronization = false;
-            specHelper.login();
-            UtkastPage.get(utkast.intygsId);
+    // Load and cache expected dynamictext-values for this intygstype.
+    restUtil.getResource('classpath:texts/texterMU_LUAE_FS_v1.0.xml').then(
+        function(response) {
+          textHelper.parseTextXml(response.body).then(
+              function(response) {
+                texts = response;
+              }, function() {
+                fail('Error during text parse');
+              });
+        }, function() {
+          fail('Unable to get text (texterMU_LUAE_FS_v1.0.xml) from API');
         });
+  });
 
-        it('should have dynamic texts on luae_fs draft', function() {
+  describe('Check dynamic labels', function() {
+    it('should login and open created utkast', function() {
+      browser.ignoreSynchronization = false;
+      specHelper.login();
+      UtkastPage.get(utkast.intygsId);
+    });
 
-            //Min undersökning av patienten
-            expect(UtkastPage.getDynamicLabelText('KV_FKMU_0001.UNDERSOKNING.RBK')).toBe(texts['KV_FKMU_0001.UNDERSOKNING.RBK']);
+    it('should have dynamic texts on luae_fs draft', function() {
 
-            //Funktionsnedsättning/påverkan
-            expect(UtkastPage.getDynamicLabelTextById('FRG_16-RBK')).toContain(texts['FRG_16.RBK']);
+      //Min undersökning av patienten
+      expect(UtkastPage.getDynamicLabelText('KV_FKMU_0001.UNDERSOKNING.RBK')).toBe(texts['KV_FKMU_0001.UNDERSOKNING.RBK']);
 
-            //Tilläggsfråga
-            //expect(UtkastPage.getDynamicLabelText('DFR_9001.1.RBK')).toBe(texts['DFR_9001.1.RBK']);
-            // No tilläggsfrågor is available
+      //Funktionsnedsättning/påverkan
+      expect(UtkastPage.getDynamicLabelTextById('FRG_16-RBK')).toContain(texts['FRG_16.RBK']);
 
-        });
-
+      //Tilläggsfråga
+      //expect(UtkastPage.getDynamicLabelText('DFR_9001.1.RBK')).toBe(texts['DFR_9001.1.RBK']);
+      // No tilläggsfrågor is available
 
     });
 
-    describe('Verify dynamic texts on luae_fs certificate', function() {
+  });
 
-        it('creates certificate via testabilityAPI...', function() {
-            intyg = intygFromJsonFactory.defaultLuaefs();
-            restUtil.createIntyg(intyg);
+  describe('Verify dynamic texts on luae_fs certificate', function() {
 
-            IntygPage.get(intyg.id);
-            expect(IntygPage.isAt()).toBeTruthy();
-        });
+    it('creates certificate via testabilityAPI...', function() {
+      intyg = intygFromJsonFactory.defaultLuaefs();
+      restUtil.createIntyg(intyg);
 
-        it('should have dynamic texts on certificate', function() {
-            //Min undersökning av patienten
-            expect(IntygPage.getDynamicLabelText('KV_FKMU_0001.UNDERSOKNING.RBK')).toBe(texts['KV_FKMU_0001.UNDERSOKNING.RBK']);
-
-            //Funktionsnedsättning/påverkan
-            expect(IntygPage.getDynamicLabelText('FRG_16.RBK')).toBe(texts['FRG_16.RBK']);
-
-            //Tilläggsfråga
-            //expect(IntygPage.getDynamicLabelText('DFR_9001.1.RBK')).toBe(texts['DFR_9001.1.RBK']);
-        });
-
-
-
+      IntygPage.get(intyg.id);
+      expect(IntygPage.isAt()).toBeTruthy();
     });
 
-    afterAll(function() {
-        testdataHelper.deleteUtkast(utkast.intygsId);
-        testdataHelper.deleteIntyg(intyg.id);
-        specHelper.logout();
+    it('should have dynamic texts on certificate', function() {
+      //Min undersökning av patienten
+      expect(IntygPage.getDynamicLabelText('KV_FKMU_0001.UNDERSOKNING.RBK')).toBe(texts['KV_FKMU_0001.UNDERSOKNING.RBK']);
+
+      //Funktionsnedsättning/påverkan
+      expect(IntygPage.getDynamicLabelText('FRG_16.RBK')).toBe(texts['FRG_16.RBK']);
+
+      //Tilläggsfråga
+      //expect(IntygPage.getDynamicLabelText('DFR_9001.1.RBK')).toBe(texts['DFR_9001.1.RBK']);
     });
+
+  });
+
+  afterAll(function() {
+    testdataHelper.deleteUtkast(utkast.intygsId);
+    testdataHelper.deleteIntyg(intyg.id);
+    specHelper.logout();
+  });
 
 });

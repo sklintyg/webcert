@@ -22,10 +22,8 @@ package se.inera.intyg.webcert.web.service.access;
 import static junit.framework.TestCase.assertEquals;
 
 import java.util.Arrays;
-
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-
 import se.inera.intyg.common.doi.support.DoiModuleEntryPoint;
 import se.inera.intyg.webcert.web.service.access.data.AccessServiceTestData;
 import se.inera.intyg.webcert.web.service.access.data.DoiAccessServiceTestData;
@@ -35,8 +33,8 @@ public class DoiCertificateAccessTest extends CertificateAccessTest {
 
     @Parameterized.Parameters(name = "{0}")
     public static Iterable<Object[]> data() {
-        return Arrays.asList(new Object[][] {
-                { DoiModuleEntryPoint.MODULE_ID, new DoiAccessServiceTestData() }
+        return Arrays.asList(new Object[][]{
+            {DoiModuleEntryPoint.MODULE_ID, new DoiAccessServiceTestData()}
         });
     }
 

@@ -19,15 +19,14 @@
 package se.inera.intyg.webcert.web.auth.common;
 
 import com.google.common.base.Strings;
+import java.util.Arrays;
+import java.util.Collections;
+import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import se.inera.intyg.infra.security.authorities.CommonAuthoritiesResolver;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
-
-import javax.servlet.http.HttpServletRequest;
-import java.util.Arrays;
-import java.util.Collections;
 
 /**
  * Base UserDetailsService for both Siths and E-leg based authentication.
@@ -67,7 +66,7 @@ public abstract class BaseWebCertUserDetailsService {
     protected void decorateWebCertUserWithAvailableFeatures(WebCertUser webcertUser) {
         if (webcertUser.getValdVardenhet() != null && webcertUser.getValdVardgivare() != null) {
             webcertUser.setFeatures(authoritiesResolver
-                    .getFeatures(Arrays.asList(webcertUser.getValdVardenhet().getId(), webcertUser.getValdVardgivare().getId())));
+                .getFeatures(Arrays.asList(webcertUser.getValdVardenhet().getId(), webcertUser.getValdVardgivare().getId())));
         } else {
             webcertUser.setFeatures(authoritiesResolver.getFeatures(Collections.emptyList()));
         }

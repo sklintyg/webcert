@@ -18,6 +18,8 @@
  */
 package se.inera.intyg.webcert.web.web.controller.testability;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import io.swagger.annotations.Api;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.time.LocalDate;
@@ -27,7 +29,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -46,7 +47,6 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,10 +57,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
-
-import com.fasterxml.jackson.databind.JsonNode;
-
-import io.swagger.annotations.Api;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.common.enumerations.SignaturTyp;
 import se.inera.intyg.common.support.model.UtkastStatus;
@@ -132,9 +128,7 @@ public class IntygResource {
      * to assemble a list of "frageId"'s. It used for the Arendeverktyg testing tool and is _not_ meant to be
      * used in production code.
      *
-     * @param intygsTyp
-     *            SIT-intyg: luae_fs, luae_na, luse, lisjp
-     * @return
+     * @param intygsTyp SIT-intyg: luae_fs, luae_na, luse, lisjp
      */
     @GET
     @Path("/questions/{intygsTyp}/{version}")
@@ -173,24 +167,19 @@ public class IntygResource {
 
     /**
      * Returns a List of {@link SigningUnit} of vardenheter having at least one signed and sent intyg.
-     *
-     * @return
      */
     @GET
     @Path("/signingunits")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getSigningUnits() {
         return Response.ok(utkastRepository.findAllUnitsWithSentCertificate()
-                .stream()
-                .map(arr -> new SigningUnit((String) arr[0], (String) arr[1]))
-                .collect(Collectors.toList())).build();
+            .stream()
+            .map(arr -> new SigningUnit((String) arr[0], (String) arr[1]))
+            .collect(Collectors.toList())).build();
     }
 
     /**
      * Returns all signed and sent Intyg (based on the Utkast table) for the specified enhetsId.
-     *
-     * @param enhetsId
-     * @return
      */
     @GET
     @Path("/{enhetsId}")
@@ -198,16 +187,13 @@ public class IntygResource {
     public Response getAllSignedAndSentIntygOnUnit(@PathParam("enhetsId") String enhetsId) {
         List<Utkast> all = utkastRepository.findByEnhetsIdsAndStatuses(Arrays.asList(enhetsId), Arrays.asList(UtkastStatus.SIGNED));
         return Response.ok(all.stream()
-                .filter(utkast -> utkast.getSkickadTillMottagareDatum() != null && utkast.getSignatur() != null)
-                .sorted((u1, u2) -> u2.getSignatur().getSigneringsDatum().compareTo(u1.getSignatur().getSigneringsDatum()))
-                .collect(Collectors.toList())).build();
+            .filter(utkast -> utkast.getSkickadTillMottagareDatum() != null && utkast.getSignatur() != null)
+            .sorted((u1, u2) -> u2.getSignatur().getSigneringsDatum().compareTo(u1.getSignatur().getSigneringsDatum()))
+            .collect(Collectors.toList())).build();
     }
 
     /**
      * Returns all complete drafts for the specified enhetsId.
-     *
-     * @param enhetsId
-     * @return
      */
     @GET
     @Path("/{enhetsId}/drafts")
@@ -215,7 +201,7 @@ public class IntygResource {
     public Response getAllCompleteDraftsOnUnit(@PathParam("enhetsId") String enhetsId) {
         List<Utkast> all = utkastRepository.findByEnhetsIdsAndStatuses(Arrays.asList(enhetsId), Arrays.asList(UtkastStatus.DRAFT_COMPLETE));
         return Response.ok(all.stream()
-                .collect(Collectors.toList())).build();
+            .collect(Collectors.toList())).build();
     }
 
     // returrns any resource from app env.
@@ -270,7 +256,7 @@ public class IntygResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response deleteDraftsByPatient(@PathParam("patientId") String patientId) {
         Set<String> intygTyper = moduleRegistry.listAllModules().stream()
-                .map(IntygModule::getId).collect(Collectors.toSet());
+            .map(IntygModule::getId).collect(Collectors.toSet());
         List<Utkast> utkast = utkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(patientId, intygTyper);
         if (utkast != null) {
             for (Utkast u : utkast) {
@@ -340,8 +326,8 @@ public class IntygResource {
         utkast.setVidarebefordrad(false);
         if (utkast.getStatus() == UtkastStatus.SIGNED) {
             Signatur signatur = new Signatur(LocalDateTime.now(), utlatande.getGrundData().getSkapadAv().getPersonId(), utlatande.getId(),
-                    model,
-                    "ruffel", "fusk", SignaturTyp.LEGACY);
+                model,
+                "ruffel", "fusk", SignaturTyp.LEGACY);
             utkast.setSignatur(signatur);
         }
         VardpersonReferens vardpersonReferens = new VardpersonReferens();
@@ -469,9 +455,9 @@ public class IntygResource {
         Utkast utkast = utkastRepository.findOne(id);
         Utkast relatedUtkast = utkastRepository.findOne(oldIntygId);
         if ((utkast != null)
-                && (relatedUtkast != null)
-                && (relatedUtkast.getSignatur() != null)
-                && (relatedUtkast.getSkickadTillMottagareDatum() != null)) {
+            && (relatedUtkast != null)
+            && (relatedUtkast.getSignatur() != null)
+            && (relatedUtkast.getSkickadTillMottagareDatum() != null)) {
             utkast.setRelationIntygsId(oldIntygId);
             utkast.setRelationKod(RelationKod.KOMPLT);
         }
@@ -538,6 +524,7 @@ public class IntygResource {
     }
 
     static class IntygContentWrapper {
+
         private JsonNode contents;
         private boolean revoked;
         private UtkastStatus utkastStatus;

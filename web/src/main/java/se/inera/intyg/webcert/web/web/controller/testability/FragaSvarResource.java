@@ -18,10 +18,10 @@
  */
 package se.inera.intyg.webcert.web.web.controller.testability;
 
+import io.swagger.annotations.Api;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.ws.rs.Consumes;
@@ -34,7 +34,6 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,8 +46,6 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
-
-import io.swagger.annotations.Api;
 import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
 import se.inera.intyg.infra.integration.hsa.model.Vardgivare;
 import se.inera.intyg.infra.security.authorities.AuthoritiesResolverUtil;
@@ -107,7 +104,7 @@ public class FragaSvarResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
     public Response answer(@PathParam("vardgivare") final String vardgivarId,
-            @PathParam("enhet") final String enhetsId, @PathParam("id") final Long frageSvarId, String svarsText) {
+        @PathParam("enhet") final String enhetsId, @PathParam("id") final Long frageSvarId, String svarsText) {
         SecurityContext originalContext = SecurityContextHolder.getContext();
         SecurityContextHolder.setContext(getSecurityContext(vardgivarId, enhetsId));
         try {
@@ -123,8 +120,8 @@ public class FragaSvarResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON + ";charset=utf-8")
     public Response askQuestion(@PathParam("vardgivare") final String vardgivarId,
-            @PathParam("enhet") final String enhetsId, @PathParam("intygId") final String intygId, @PathParam("typ") final String typ,
-            CreateQuestionParameter parameter) {
+        @PathParam("enhet") final String enhetsId, @PathParam("intygId") final String intygId, @PathParam("typ") final String typ,
+        CreateQuestionParameter parameter) {
         SecurityContext originalContext = SecurityContextHolder.getContext();
         SecurityContextHolder.setContext(getSecurityContext(vardgivarId, enhetsId));
         try {

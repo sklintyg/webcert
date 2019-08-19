@@ -18,9 +18,9 @@
  */
 package se.inera.intyg.webcert.web.web.controller.moduleapi;
 
+import io.swagger.annotations.Api;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-
 import javax.persistence.OptimisticLockException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -37,13 +37,10 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.OptimisticLockingFailureException;
-
-import io.swagger.annotations.Api;
 import se.inera.intyg.common.services.texts.IntygTextsService;
 import se.inera.intyg.common.support.model.common.internal.Patient;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
@@ -133,8 +130,7 @@ public class UtkastModuleApiController extends AbstractApiController {
     /**
      * Returns the draft certificate as JSON identified by the intygId.
      *
-     * @param intygsId
-     *            The id of the certificate
+     * @param intygsId The id of the certificate
      * @return a JSON object
      */
     @GET
@@ -142,17 +138,17 @@ public class UtkastModuleApiController extends AbstractApiController {
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
     public Response getDraft(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId,
-            @Context HttpServletRequest request) {
+        @Context HttpServletRequest request) {
 
         LOG.debug("Retrieving Intyg with id {} and type {}", intygsId, intygsTyp);
 
         Utkast utkast = utkastService.getDraft(intygsId, intygsTyp);
 
         Patient resolvedPatient = patientDetailsResolver.resolvePatient(utkast.getPatientPersonnummer(), intygsTyp,
-                utkast.getIntygTypeVersion());
+            utkast.getIntygTypeVersion());
         if (resolvedPatient == null) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.PU_PROBLEM,
-                    "Could not resolve Patient in PU-service when opening draft.");
+                "Could not resolve Patient in PU-service when opening draft.");
         }
 
         validateAllowToReadUtkast(utkast, resolvedPatient.getPersonId());
@@ -167,7 +163,7 @@ public class UtkastModuleApiController extends AbstractApiController {
         draftHolder.setVardgivareNamn(utkast.getVardgivarNamn());
         // Upgrade to latest minor version available for major version of the intygtype
         draftHolder.setLatestTextVersion(
-                intygTextsService.getLatestVersionForSameMajorVersion(utkast.getIntygsTyp(), utkast.getIntygTypeVersion()));
+            intygTextsService.getLatestVersionForSameMajorVersion(utkast.getIntygsTyp(), utkast.getIntygTypeVersion()));
 
         Relations relations1 = certificateRelationService.getRelations(utkast.getIntygsId());
         draftHolder.setRelations(relations1);
@@ -186,12 +182,12 @@ public class UtkastModuleApiController extends AbstractApiController {
             Utlatande utlatande = moduleApi.getUtlatandeFromJson(utkast.getModel());
 
             draftHolder.setPatientNameChangedInPU(patientDetailsResolver.isPatientNamedChanged(
-                    utlatande.getGrundData().getPatient(), resolvedPatient));
+                utlatande.getGrundData().getPatient(), resolvedPatient));
 
             if (resolvedPatient.isCompleteAddressProvided()) {
                 draftHolder.setValidPatientAddressAquiredFromPU(true);
                 draftHolder.setPatientAddressChangedInPU(patientDetailsResolver.isPatientAddressChanged(
-                        utlatande.getGrundData().getPatient(), resolvedPatient));
+                    utlatande.getGrundData().getPatient(), resolvedPatient));
             } else {
                 // Overwrite retrieved address data with saved one.
                 draftHolder.setValidPatientAddressAquiredFromPU(false);
@@ -206,8 +202,8 @@ public class UtkastModuleApiController extends AbstractApiController {
             draftHolder.setContent(utkast.getModel());
 
             resourceLinkHelper.decorateUtkastWithValidActionLinks(draftHolder, intygsTyp,
-                    utlatande.getGrundData().getSkapadAv().getVardenhet(),
-                    resolvedPatient.getPersonId());
+                utlatande.getGrundData().getSkapadAv().getVardenhet(),
+                resolvedPatient.getPersonId());
 
             return Response.ok(draftHolder).build();
         } catch (ModuleException | ModuleNotFoundException e) {
@@ -235,10 +231,8 @@ public class UtkastModuleApiController extends AbstractApiController {
     /**
      * Persists the supplied draft certificate using the intygId as key.
      *
-     * @param intygsId
-     *            The id of the certificate.
-     * @param payload
-     *            Object holding the certificate and its current status.
+     * @param intygsId The id of the certificate.
+     * @param payload Object holding the certificate and its current status.
      */
     @PUT
     @Path("/{intygsTyp}/{intygsId}/{version}")
@@ -246,8 +240,8 @@ public class UtkastModuleApiController extends AbstractApiController {
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
     public Response saveDraft(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId,
-            @PathParam("version") long version,
-            @DefaultValue("false") @QueryParam("autoSave") boolean autoSave, byte[] payload, @Context HttpServletRequest request) {
+        @PathParam("version") long version,
+        @DefaultValue("false") @QueryParam("autoSave") boolean autoSave, byte[] payload, @Context HttpServletRequest request) {
 
         Utkast utkast = utkastService.getDraft(intygsId, intygsTyp, false);
 
@@ -280,10 +274,8 @@ public class UtkastModuleApiController extends AbstractApiController {
     /**
      * Validate the supplied draft certificate.
      *
-     * @param intygsId
-     *            The id of the certificate.
-     * @param payload
-     *            Object holding the certificate and its current status.
+     * @param intygsId The id of the certificate.
+     * @param payload Object holding the certificate and its current status.
      */
     @POST
     @Path("/{intygsTyp}/{intygsId}/validate")
@@ -291,7 +283,7 @@ public class UtkastModuleApiController extends AbstractApiController {
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
     public Response validateDraft(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId,
-            byte[] payload) {
+        byte[] payload) {
 
         Utkast utkast = utkastService.getDraft(intygsId, intygsTyp, false);
 
@@ -320,7 +312,7 @@ public class UtkastModuleApiController extends AbstractApiController {
     public Response copyUtkast(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String orgIntygsId) {
 
         LOG.debug("Attempting to create a new certificate from certificate with type {} and id '{}'",
-                intygsTyp, orgIntygsId);
+            intygsTyp, orgIntygsId);
 
         Utkast utkast = utkastService.getDraft(orgIntygsId, intygsTyp);
 
@@ -331,10 +323,10 @@ public class UtkastModuleApiController extends AbstractApiController {
         CreateUtkastFromTemplateResponse serviceResponse = copyUtkastService.createUtkastCopy(serviceRequest);
 
         LOG.debug("Created a new draft with id: '{}' and type: {} from certificate with type: {} and id '{}'.",
-                serviceResponse.getNewDraftIntygId(), serviceResponse.getNewDraftIntygType(), intygsTyp, orgIntygsId);
+            serviceResponse.getNewDraftIntygId(), serviceResponse.getNewDraftIntygType(), intygsTyp, orgIntygsId);
 
         CopyIntygResponse response = new CopyIntygResponse(serviceResponse.getNewDraftIntygId(), serviceResponse.getNewDraftIntygType(),
-                serviceResponse.getNewDraftIntygTypeVersion());
+            serviceResponse.getNewDraftIntygTypeVersion());
 
         return Response.ok().entity(response).build();
     }
@@ -350,16 +342,15 @@ public class UtkastModuleApiController extends AbstractApiController {
     /**
      * Deletes a draft certificate identified by the certificateId.
      *
-     * @param intygsId
-     *            The id of the certificate
+     * @param intygsId The id of the certificate
      */
     @DELETE
     @Path("/{intygsTyp}/{intygsId}/{version}")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
     public Response discardDraft(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId,
-            @PathParam("version") long version,
-            @Context HttpServletRequest request) {
+        @PathParam("version") long version,
+        @Context HttpServletRequest request) {
 
         Utkast utkast = utkastService.getDraft(intygsId, intygsTyp, false);
 
@@ -382,10 +373,8 @@ public class UtkastModuleApiController extends AbstractApiController {
     /**
      * Revoke a locked draft.
      *
-     * @param intygsId
-     *            The id of the intyg to revoke
-     * @param param
-     *            A JSON struct containing an optional message
+     * @param intygsId The id of the intyg to revoke
+     * @param param A JSON struct containing an optional message
      */
     @POST
     @Path("/{intygsTyp}/{intygsId}/aterkalla")
@@ -393,14 +382,14 @@ public class UtkastModuleApiController extends AbstractApiController {
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
     public Response revokeLockedDraft(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId,
-            RevokeSignedIntygParameter param) {
+        RevokeSignedIntygParameter param) {
 
         Utkast utkast = utkastService.getDraft(intygsId, intygsTyp, false);
 
         validateAllowToInvalidateLockedUtkast(utkast);
 
         if (authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
-                .features(AuthoritiesConstants.FEATURE_MAKULERA_INTYG_KRAVER_ANLEDNING).isVerified() && !param.isValid()) {
+            .features(AuthoritiesConstants.FEATURE_MAKULERA_INTYG_KRAVER_ANLEDNING).isVerified() && !param.isValid()) {
             LOG.warn("Request to revoke '{}' is not valid", intygsId);
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, "Missing vital arguments in payload");
         }
@@ -412,36 +401,36 @@ public class UtkastModuleApiController extends AbstractApiController {
 
     private void validateAllowToReadUtkast(Utkast utkast, Personnummer personnummer) {
         final AccessResult accessResult = draftAccessService.allowToReadDraft(
-                utkast.getIntygsTyp(),
-                getVardenhet(utkast),
-                personnummer);
+            utkast.getIntygsTyp(),
+            getVardenhet(utkast),
+            personnummer);
 
         accessResultExceptionHelper.throwExceptionIfDenied(accessResult);
     }
 
     private void validateAllowToEditUtkast(Utkast utkast) {
         final AccessResult accessResult = draftAccessService.allowToEditDraft(
-                utkast.getIntygsTyp(),
-                getVardenhet(utkast),
-                utkast.getPatientPersonnummer());
+            utkast.getIntygsTyp(),
+            getVardenhet(utkast),
+            utkast.getPatientPersonnummer());
 
         accessResultExceptionHelper.throwExceptionIfDenied(accessResult);
     }
 
     private void validateAllowToDeleteUtkast(Utkast utkast) {
         final AccessResult accessResult = draftAccessService.allowToDeleteDraft(
-                utkast.getIntygsTyp(),
-                getVardenhet(utkast),
-                utkast.getPatientPersonnummer());
+            utkast.getIntygsTyp(),
+            getVardenhet(utkast),
+            utkast.getPatientPersonnummer());
 
         accessResultExceptionHelper.throwExceptionIfDenied(accessResult);
     }
 
     private void validateAllowToInvalidateLockedUtkast(Utkast utkast) {
         final AccessResult accessResult = lockedDraftAccessService.allowedToInvalidateLockedUtkast(
-                utkast.getIntygsTyp(),
-                getVardenhet(utkast),
-                utkast.getPatientPersonnummer());
+            utkast.getIntygsTyp(),
+            getVardenhet(utkast),
+            utkast.getPatientPersonnummer());
 
         accessResultExceptionHelper.throwExceptionIfDenied(accessResult);
     }

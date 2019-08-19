@@ -18,6 +18,25 @@
  */
 package se.inera.intyg.webcert.web.web.controller.moduleapi;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anySet;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.when;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import javax.ws.rs.core.Response;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -45,26 +64,6 @@ import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.StatsResponse;
-
-import javax.ws.rs.core.Response;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.ArgumentMatchers.anySet;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
-import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class StatModuleApiControllerTest extends AuthoritiesConfigurationTestSetup {
@@ -143,7 +142,8 @@ public class StatModuleApiControllerTest extends AuthoritiesConfigurationTestSet
         mockUser.setVardgivare(Collections.singletonList(vg));
         mockUser.setValdVardgivare(vg);
 
-        when(authoritiesHelper.getIntygstyperForPrivilege(any(UserDetails.class), anyString())).thenReturn(Stream.of("fk7263").collect(Collectors.toSet()));
+        when(authoritiesHelper.getIntygstyperForPrivilege(any(UserDetails.class), anyString()))
+            .thenReturn(Stream.of("fk7263").collect(Collectors.toSet()));
         when(webCertUserService.getUser()).thenReturn(mockUser);
     }
 
@@ -311,7 +311,7 @@ public class StatModuleApiControllerTest extends AuthoritiesConfigurationTestSet
     private StatsResponse getReference(String referenceFilePath) {
         try {
             return new CustomObjectMapper().readValue(new ClassPathResource(
-                    referenceFilePath).getFile(), StatsResponse.class);
+                referenceFilePath).getFile(), StatsResponse.class);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

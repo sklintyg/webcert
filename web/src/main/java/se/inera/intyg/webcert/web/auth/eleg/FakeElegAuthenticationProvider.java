@@ -18,6 +18,9 @@
  */
 package se.inera.intyg.webcert.web.auth.eleg;
 
+import static se.inera.intyg.webcert.web.auth.common.AuthConstants.FAKE_AUTHENTICATION_ELEG_CONTEXT_REF;
+
+import java.util.ArrayList;
 import org.opensaml.saml2.core.Assertion;
 import org.opensaml.saml2.core.AttributeStatement;
 import org.opensaml.saml2.core.NameID;
@@ -30,10 +33,6 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.providers.ExpiringUsernameAuthenticationToken;
 import org.springframework.security.saml.SAMLCredential;
 import se.inera.intyg.webcert.web.auth.common.BaseFakeAuthenticationProvider;
-
-import java.util.ArrayList;
-
-import static se.inera.intyg.webcert.web.auth.common.AuthConstants.FAKE_AUTHENTICATION_ELEG_CONTEXT_REF;
 
 /**
  * AuthenticationProvider for fake logged in private practitioners.
@@ -54,7 +53,7 @@ public class FakeElegAuthenticationProvider extends BaseFakeAuthenticationProvid
         applyAuthenticationMethod(authentication, details);
 
         ExpiringUsernameAuthenticationToken result = new ExpiringUsernameAuthenticationToken(null, details, credential,
-                new ArrayList<>());
+            new ArrayList<>());
         result.setDetails(details);
 
         return result;
@@ -78,7 +77,7 @@ public class FakeElegAuthenticationProvider extends BaseFakeAuthenticationProvid
         attributeStatement.getAttributes().add(createAttribute(CgiElegAssertion.PERSON_ID_ATTRIBUTE, fakeCredentials.getPersonId()));
         attributeStatement.getAttributes().add(createAttribute(CgiElegAssertion.FORNAMN_ATTRIBUTE, fakeCredentials.getFirstName()));
         attributeStatement.getAttributes().add(
-                createAttribute(CgiElegAssertion.MELLAN_OCH_EFTERNAMN_ATTRIBUTE, fakeCredentials.getLastName()));
+            createAttribute(CgiElegAssertion.MELLAN_OCH_EFTERNAMN_ATTRIBUTE, fakeCredentials.getLastName()));
 
         NameID nameId = new NameIDBuilder().buildObject();
         nameId.setValue(token.getCredentials().toString());

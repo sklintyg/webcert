@@ -18,7 +18,10 @@
  */
 package se.inera.intyg.webcert.web.service.monitoring;
 
+import static se.inera.intyg.webcert.persistence.fragasvar.model.Amne.KOMPLETTERING_AV_LAKARINTYG;
+
 import com.google.common.base.Joiner;
+import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -27,10 +30,6 @@ import se.inera.intyg.common.util.logging.LogMarkers;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.persistence.fragasvar.model.Amne;
-
-import java.util.List;
-
-import static se.inera.intyg.webcert.persistence.fragasvar.model.Amne.KOMPLETTERING_AV_LAKARINTYG;
 
 @Service
 public class MonitoringLogServiceImpl implements MonitoringLogService {
@@ -76,14 +75,14 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
 
     @Override
     public void logQuestionReceived(String fragestallare, String intygsId, String externReferens, Long internReferens, String enhet,
-            Amne amne,
-            List<String> frageIds) {
+        Amne amne,
+        List<String> frageIds) {
         if (KOMPLETTERING_AV_LAKARINTYG == amne) {
             logEvent(MonitoringEvent.QUESTION_RECEIVED_COMPLETION, fragestallare, externReferens, internReferens, intygsId, enhet,
-                    Joiner.on(",").join(frageIds));
+                Joiner.on(",").join(frageIds));
         } else {
             logEvent(MonitoringEvent.QUESTION_RECEIVED, fragestallare, externReferens, internReferens, intygsId, enhet,
-                    amne != null ? amne.name() : "NO AMNE");
+                amne != null ? amne.name() : "NO AMNE");
         }
     }
 
@@ -120,7 +119,7 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
     @Override
     public void logIntygSigned(String intygsId, String intygsTyp, String userHsaId, String authScheme, RelationKod relationCode) {
         logEvent(MonitoringEvent.INTYG_SIGNED, intygsId, intygsTyp, userHsaId, authScheme,
-                relationCode != null ? relationCode.name() : "NO RELATION");
+            relationCode != null ? relationCode.name() : "NO RELATION");
     }
 
     @Override
@@ -215,7 +214,7 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
 
     @Override
     public void logArendeReceived(String intygsId, String intygsTyp, String unitHsaId, ArendeAmne amne, List<String> frageIds,
-            boolean isAnswer) {
+        boolean isAnswer) {
         if (ArendeAmne.KOMPLT == amne) {
             logEvent(MonitoringEvent.MEDICINSKT_ARENDE_RECEIVED, intygsId, intygsTyp, unitHsaId, frageIds);
         } else if (isAnswer) {
@@ -279,46 +278,57 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
     public void logSrsLoaded(String userClientContext, String intygsId, String caregiverId, String careUnitId, String diagnosisCode) {
         logEvent(MonitoringEvent.SRS_LOADED, userClientContext, intygsId, diagnosisCode, caregiverId, careUnitId);
     }
+
     @Override
     public void logSrsPanelActivated(String userClientContext, String intygsId, String caregiverId, String careUnitId) {
         logEvent(MonitoringEvent.SRS_PANEL_ACTIVATED, userClientContext, intygsId, caregiverId, careUnitId);
     }
+
     @Override
     public void logSrsConsentAnswered(String userClientContext, String intygsId, String caregiverId, String careUnitId) {
         logEvent(MonitoringEvent.SRS_CONSENT_ANSWERED, userClientContext, intygsId, caregiverId, careUnitId);
     }
+
     @Override
     public void logSrsQuestionAnswered(String userClientContext, String intygsId, String caregiverId, String careUnitId) {
         logEvent(MonitoringEvent.SRS_QUESTION_ANSWERED, userClientContext, intygsId, caregiverId, careUnitId);
     }
+
     @Override
     public void logSrsCalculateClicked(String userClientContext, String intygsId, String caregiverId, String careUnitId) {
         logEvent(MonitoringEvent.SRS_CALCULATE_CLICKED, userClientContext, intygsId, caregiverId, careUnitId);
     }
+
     @Override
     public void logSrsHideQuestionsClicked(String userClientContext, String intygsId, String caregiverId, String careUnitId) {
         logEvent(MonitoringEvent.SRS_HIDE_QUESTIONS_CLICKED, userClientContext, intygsId, caregiverId, careUnitId);
     }
+
     @Override
     public void logSrsShowQuestionsClicked(String userClientContext, String intygsId, String caregiverId, String careUnitId) {
         logEvent(MonitoringEvent.SRS_SHOW_QUESTIONS_CLICKED, userClientContext, intygsId, caregiverId, careUnitId);
     }
+
     @Override
     public void logSrsMeasuresShowMoreClicked(String userClientContext, String intygsId, String caregiverId, String careUnitId) {
         logEvent(MonitoringEvent.SRS_MEASURES_SHOW_MORE_CLICKED, userClientContext, intygsId, caregiverId, careUnitId);
     }
+
     @Override
     public void logSrsMeasuresExpandOneClicked(String userClientContext, String intygsId, String caregiverId, String careUnitId) {
         logEvent(MonitoringEvent.SRS_MEASURES_EXPAND_ONE_CLICKED, userClientContext, intygsId, caregiverId, careUnitId);
     }
+
     @Override
     public void logSrsMeasuresLinkClicked(String userClientContext, String intygsId, String caregiverId, String careUnitId) {
         logEvent(MonitoringEvent.SRS_MEASURES_LINK_CLICKED, userClientContext, intygsId, caregiverId, careUnitId);
     }
+
     @Override
     public void logSrsStatisticsActivated(String userClientContext, String intygsId, String caregiverId, String careUnitId) {
         logEvent(MonitoringEvent.SRS_STATISTICS_ACTIVATED, userClientContext, intygsId, caregiverId, careUnitId);
     }
+
     @Override
     public void logSrsStatisticsLinkClicked(String userClientContext, String intygsId, String caregiverId, String careUnitId) {
         logEvent(MonitoringEvent.SRS_STATISTICS_LINK_CLICKED, userClientContext, intygsId, caregiverId, careUnitId);
@@ -341,16 +351,16 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
         USER_MISSING_MIU("No valid MIU was found for user '{}'"),
         USER_MISSING_MIU_ON_ENHET("No valid MIU was found for user '{}' on unit '{}'"),
         QUESTION_RECEIVED("Received question from '{}' with external reference '{}' and internal reference '{}' regarding intyg '{}' "
-                + "to unit '{}' with subject '{}'"),
+            + "to unit '{}' with subject '{}'"),
         QUESTION_RECEIVED_COMPLETION(
-                "Received completion question from '{}' with external reference '{}' and internal reference '{}' "
+            "Received completion question from '{}' with external reference '{}' and internal reference '{}' "
                 + "regarding intyg '{}' to unit '{}' with completion for questions '{}'"),
         ANSWER_RECEIVED("Received answer to question with external reference '{}' and internal reference '{}' regarding intyg '{}' "
-                + "to unit '{}' with subject '{}'"),
+            + "to unit '{}' with subject '{}'"),
         QUESTION_SENT("Sent question with external reference '{}' and internal reference '{}' regarding intyg '{}' to unit '{}' "
-                + "with subject '{}'"),
+            + "with subject '{}'"),
         ANSWER_SENT(
-                "Sent answer to question with external reference '{}' and internal reference '{}' regarding intyg '{}' to unit '{}' "
+            "Sent answer to question with external reference '{}' and internal reference '{}' regarding intyg '{}' to unit '{}' "
                 + "with subject '{}'"),
         INTYG_READ("Intyg '{}' of type '{}' was read"),
         INTYG_REVOKE_STATUS_READ("Revoke status of Intyg '{}' of type '{}' was read."),
@@ -392,21 +402,21 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
         SRS_CONSENT_ANSWERED("SRS consent answered in client context '{}' for intyg '{}' with caregiver '{}' and care unit '{}'"),
         SRS_QUESTION_ANSWERED("SRS question answered in client context '{}' for intyg '{}' with caregiver '{}' and care unit '{}'"),
         SRS_CALCULATE_CLICKED(
-                "SRS calculate prediction clicked in client context '{}' for intyg '{}' with caregiver '{}' and care unit '{}'"),
+            "SRS calculate prediction clicked in client context '{}' for intyg '{}' with caregiver '{}' and care unit '{}'"),
         SRS_HIDE_QUESTIONS_CLICKED(
-                "SRS hide questions clicked in client context '{}' for intyg '{}' with caregiver '{}' and care unit '{}'"),
+            "SRS hide questions clicked in client context '{}' for intyg '{}' with caregiver '{}' and care unit '{}'"),
         SRS_SHOW_QUESTIONS_CLICKED(
-                "SRS show questions clicked in client context '{}' for intyg '{}' with caregiver '{}' and care unit '{}'"),
+            "SRS show questions clicked in client context '{}' for intyg '{}' with caregiver '{}' and care unit '{}'"),
         SRS_MEASURES_SHOW_MORE_CLICKED(
-                "SRS show more measures clicked in client context '{}' for intyg '{}' with caregiver '{}' and care unit '{}'"),
+            "SRS show more measures clicked in client context '{}' for intyg '{}' with caregiver '{}' and care unit '{}'"),
         SRS_MEASURES_EXPAND_ONE_CLICKED(
-                "SRS expand one measure text clicked in client context '{}' for intyg '{}' with caregiver '{}' and care unit '{}'"),
+            "SRS expand one measure text clicked in client context '{}' for intyg '{}' with caregiver '{}' and care unit '{}'"),
         SRS_MEASURES_LINK_CLICKED(
-                "SRS measures link clicked in client context '{}' for intyg '{}' with caregiver '{}' and care unit '{}'"),
+            "SRS measures link clicked in client context '{}' for intyg '{}' with caregiver '{}' and care unit '{}'"),
         SRS_STATISTICS_ACTIVATED(
-                "SRS statistics tab activated in client context '{}' for intyg '{}' with caregiver '{}' and care unit '{}'"),
+            "SRS statistics tab activated in client context '{}' for intyg '{}' with caregiver '{}' and care unit '{}'"),
         SRS_STATISTICS_LINK_CLICKED(
-                "SRS statistics link clicked in client context '{}' for intyg '{}' with caregiver '{}' and care unit '{}'"),
+            "SRS statistics link clicked in client context '{}' for intyg '{}' with caregiver '{}' and care unit '{}'"),
 
         SRS_GET_SRS_FOR_DIAGNOSIS_CODE("SRS information retreived for diagnosis code '{}'");
 

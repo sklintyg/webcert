@@ -18,6 +18,12 @@
  */
 package se.inera.intyg.webcert.web.service.intyg.decorator;
 
+import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.nullable;
+import static org.mockito.Mockito.when;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,13 +39,6 @@ import se.inera.intyg.common.support.modules.support.api.dto.CertificateResponse
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
-
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-
-import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.nullable;
-import static org.mockito.Mockito.when;
 
 /**
  * Created by eriklupander on 2015-06-23.
@@ -91,8 +90,9 @@ public class UtkastIntygDecoratorTest {
     public void testRevokedIntygDoesNotAddAnyStatuses() {
 
         CertificateResponse response = buildCertificateResponse();
-        CertificateResponse revokedResponse = new CertificateResponse(response.getInternalModel(), response.getUtlatande(), response.getMetaData(),
-                true);
+        CertificateResponse revokedResponse = new CertificateResponse(response.getInternalModel(), response.getUtlatande(),
+            response.getMetaData(),
+            true);
 
         testee.decorateWithUtkastStatus(revokedResponse);
         assertEquals(1, response.getMetaData().getStatus().size());

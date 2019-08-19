@@ -18,6 +18,9 @@
  */
 package se.inera.intyg.webcert.common.client.converter;
 
+import static se.inera.intyg.common.support.Constants.KV_PART_CODE_SYSTEM;
+
+import java.time.LocalDateTime;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.modules.converter.InternalConverterUtil;
 import se.inera.intyg.schemas.contract.Personnummer;
@@ -25,10 +28,6 @@ import se.riv.clinicalprocess.healthcond.certificate.sendCertificateToRecipient.
 import se.riv.clinicalprocess.healthcond.certificate.sendCertificateToRecipient.v2.SendCertificateToRecipientType.SkickatAv;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.IntygId;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.Part;
-
-import java.time.LocalDateTime;
-
-import static se.inera.intyg.common.support.Constants.KV_PART_CODE_SYSTEM;
 
 public final class SendCertificateToRecipientTypeConverter {
 
@@ -67,6 +66,6 @@ public final class SendCertificateToRecipientTypeConverter {
 
     private static Personnummer createPnr(String personId) {
         return Personnummer.createPersonnummer(personId)
-                .orElseThrow(() -> new IllegalArgumentException("Could not parse passed personnummer: " + personId));
+            .orElseThrow(() -> new IllegalArgumentException("Could not parse passed personnummer: " + personId));
     }
 }

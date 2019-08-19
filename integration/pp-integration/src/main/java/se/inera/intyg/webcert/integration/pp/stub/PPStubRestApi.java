@@ -18,14 +18,13 @@
  */
 package se.inera.intyg.webcert.integration.pp.stub;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import se.riv.infrastructure.directory.privatepractitioner.v1.HoSPersonType;
-
+import java.util.List;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import java.util.List;
+import org.springframework.beans.factory.annotation.Autowired;
+import se.riv.infrastructure.directory.privatepractitioner.v1.HoSPersonType;
 
 /**
  * Testability API for accessing identities from the PP (Privatlakare) stub.

@@ -24,12 +24,10 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-
 import org.apache.cxf.annotations.SchemaValidation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-
 import se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificateadditions.v1.AdditionType;
 import se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificateadditions.v1.GetCertificateAdditionsResponderInterface;
 import se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificateadditions.v1.GetCertificateAdditionsResponseType;
@@ -59,8 +57,8 @@ public class GetCertificateAdditionsResponderImpl implements GetCertificateAddit
     @Override
     @PrometheusTimeMethod
     public GetCertificateAdditionsResponseType getCertificateAdditions(
-            String logicalAddress,
-            GetCertificateAdditionsType request) {
+        String logicalAddress,
+        GetCertificateAdditionsType request) {
 
         if (isNullOrEmpty(request)) {
             throw new IllegalArgumentException("Request to GetCertificateType is missing required parameter 'intygs-id'");
@@ -73,19 +71,19 @@ public class GetCertificateAdditionsResponderImpl implements GetCertificateAddit
 
         try {
             List<IntygId> identifiers = request.getIntygsId().stream()
-                    .filter(StreamUtil.distinctByKeys(IIType::getExtension))
-                    .collect(Collectors.toList());
+                .filter(StreamUtil.distinctByKeys(IIType::getExtension))
+                .collect(Collectors.toList());
 
             List<String> extensions = identifiers.stream()
-                    .map(IIType::getExtension)
-                    .collect(Collectors.toList());
+                .map(IIType::getExtension)
+                .collect(Collectors.toList());
 
             List<Arende> kompletteringar = arendeService.getKompletteringar(extensions);
             identifiers.forEach(identity -> response.getAdditions().add(buildIntygAdditionsType(identity, kompletteringar)));
 
             LOG.debug("GetCertificateAdditionsResponderImpl: Successfully returned {} kompletteringar in {} seconds",
-                    response.getAdditions().stream().map(IntygAdditionsType::getAddition).mapToLong(List::size).sum(),
-                    getExecutionTime(start));
+                response.getAdditions().stream().map(IntygAdditionsType::getAddition).mapToLong(List::size).sum(),
+                getExecutionTime(start));
             response.setResult(ResultCodeType.OK);
 
         } catch (Exception e) {
@@ -102,17 +100,17 @@ public class GetCertificateAdditionsResponderImpl implements GetCertificateAddit
 
     private String getExecutionTime(LocalTime start) {
         return LocalTime.now()
-                .minus(start.toNanoOfDay(), ChronoUnit.NANOS)
-                .format(DateTimeFormatter.ofPattern("ss.SSS"));
+            .minus(start.toNanoOfDay(), ChronoUnit.NANOS)
+            .format(DateTimeFormatter.ofPattern("ss.SSS"));
     }
 
     private IntygAdditionsType buildIntygAdditionsType(IntygId intygId,
-                                                       List<Arende> kompletteringar) {
+        List<Arende> kompletteringar) {
 
         List<AdditionType> additions = kompletteringar.stream()
-                .filter(kmplt -> kmplt.getIntygsId().equals(intygId.getExtension()))
-                .map(this::mapArende)
-                .collect(Collectors.toList());
+            .filter(kmplt -> kmplt.getIntygsId().equals(intygId.getExtension()))
+            .map(this::mapArende)
+            .collect(Collectors.toList());
 
         IntygAdditionsType intygAdditionsType = new IntygAdditionsType();
         intygAdditionsType.setIntygsId(intygId);

@@ -28,14 +28,13 @@ import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.JwsHeader;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SigningKeyResolverAdapter;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.authentication.AuthenticationServiceException;
-import org.springframework.stereotype.Service;
-
-import javax.annotation.PostConstruct;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.Key;
+import javax.annotation.PostConstruct;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.AuthenticationServiceException;
+import org.springframework.stereotype.Service;
 
 /**
  * Class responsible for validating a JWT token given the configured JWKS URI.
@@ -61,9 +60,9 @@ public class JwtValidationServiceImpl implements JwtValidationService {
     public Jws<Claims> validateJwsToken(String jwtToken) {
 
         return Jwts.parser()
-                .setSigningKeyResolver(new WebcertSigningKeyResolverAdapter(provider))
-                .setAllowedClockSkewSeconds(idpOidcJwksSkewSeconds)
-                .parseClaimsJws(jwtToken);
+            .setSigningKeyResolver(new WebcertSigningKeyResolverAdapter(provider))
+            .setAllowedClockSkewSeconds(idpOidcJwksSkewSeconds)
+            .parseClaimsJws(jwtToken);
     }
 
     private URL buildUrl() {
@@ -71,7 +70,7 @@ public class JwtValidationServiceImpl implements JwtValidationService {
             return new URL(idpOidcJwksUrl);
         } catch (MalformedURLException e) {
             throw new AuthenticationServiceException(
-                    "Unable to construct URL for jwks from " + idpOidcJwksUrl + ". Message: " + e.getMessage());
+                "Unable to construct URL for jwks from " + idpOidcJwksUrl + ". Message: " + e.getMessage());
         }
     }
 
@@ -90,8 +89,8 @@ public class JwtValidationServiceImpl implements JwtValidationService {
                 return jwk.getPublicKey();
             } catch (JwkException e) {
                 throw new AuthenticationServiceException("Unable to resolve public key for JWS signature validation from " + idpOidcJwksUrl
-                        + ". Message: " + e.getMessage());
+                    + ". Message: " + e.getMessage());
             }
         }
-    };
+    }
 }

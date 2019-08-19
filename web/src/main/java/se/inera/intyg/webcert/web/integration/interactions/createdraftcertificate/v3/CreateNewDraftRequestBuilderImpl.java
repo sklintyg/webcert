@@ -38,16 +38,16 @@ public class CreateNewDraftRequestBuilderImpl implements CreateNewDraftRequestBu
     @Override
     public CreateNewDraftRequest buildCreateNewDraftRequest(Intyg intyg, String intygTypeVersion, IntygUser user) {
         HoSPersonal hosPerson = createHoSPerson(intyg.getSkapadAv(),
-                HoSPersonHelper.createVardenhetFromIntygUser(intyg.getSkapadAv().getEnhet().getEnhetsId().getExtension(), user));
+            HoSPersonHelper.createVardenhetFromIntygUser(intyg.getSkapadAv().getEnhet().getEnhetsId().getExtension(), user));
         HoSPersonHelper.enrichHoSPerson(hosPerson, user);
         return new CreateNewDraftRequest(null, moduleRegistry.getModuleIdFromExternalId(intyg.getTypAvIntyg().getCode()), intygTypeVersion,
-                null, hosPerson,
-                TransportConverterUtil.getPatient(intyg.getPatient(), true), intyg.getRef());
+            null, hosPerson,
+            TransportConverterUtil.getPatient(intyg.getPatient(), true), intyg.getRef());
     }
 
     private HoSPersonal createHoSPerson(
-            se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v3.HosPersonal hoSPersonType,
-            Vardenhet vardenhet) {
+        se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v3.HosPersonal hoSPersonType,
+        Vardenhet vardenhet) {
         HoSPersonal hoSPerson = new HoSPersonal();
         hoSPerson.setFullstandigtNamn(hoSPersonType.getFullstandigtNamn());
         hoSPerson.setPersonId(hoSPersonType.getPersonalId().getExtension());

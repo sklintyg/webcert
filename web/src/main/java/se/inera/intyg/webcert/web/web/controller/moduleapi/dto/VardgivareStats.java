@@ -18,14 +18,13 @@
  */
 package se.inera.intyg.webcert.web.web.controller.moduleapi.dto;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import java.util.ArrayList;
+import java.util.List;
 
-@JsonPropertyOrder({"namn", "id", "vardenheter" })
+@JsonPropertyOrder({"namn", "id", "vardenheter"})
 public class VardgivareStats {
 
     @JsonProperty("namn")

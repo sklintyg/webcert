@@ -19,11 +19,9 @@
 package se.inera.intyg.webcert.web.auth;
 
 import java.util.Date;
-
 import org.opensaml.saml2.core.AuthnStatement;
 import org.springframework.security.saml.SAMLAuthenticationProvider;
 import org.springframework.security.saml.SAMLCredential;
-
 import se.inera.intyg.webcert.web.auth.common.AuthConstants;
 
 /**
@@ -44,10 +42,9 @@ public class WebcertAuthenticationProvider extends SAMLAuthenticationProvider {
      * with null
      * if there is a "SITHS" authenticationStatement.
      *
-     * @param credential
-     *            credential to use for expiration parsing.
+     * @param credential credential to use for expiration parsing.
      * @return null if no expiration is present OR if this is a SITHS-based authentication. Otherwise, expiration time
-     *         based on SAML attribute onOrAfter.
+     * based on SAML attribute onOrAfter.
      */
     @Override
     protected Date getExpirationDate(SAMLCredential credential) {
@@ -74,6 +71,6 @@ public class WebcertAuthenticationProvider extends SAMLAuthenticationProvider {
             return false;
         }
         return statement.getAuthnContext().getAuthnContextClassRef().getAuthnContextClassRef()
-                .equals(AuthConstants.HTTP_ID_SAMBI_SE_LOA_LOA3);
+            .equals(AuthConstants.HTTP_ID_SAMBI_SE_LOA_LOA3);
     }
 }

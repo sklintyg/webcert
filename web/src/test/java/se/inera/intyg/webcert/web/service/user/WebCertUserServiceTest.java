@@ -34,9 +34,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
-
 import javax.servlet.http.HttpSession;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -46,7 +44,6 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-
 import se.inera.intyg.infra.integration.hsa.model.Mottagning;
 import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
 import se.inera.intyg.infra.integration.hsa.model.Vardgivare;
@@ -87,13 +84,13 @@ public class WebCertUserServiceTest extends AuthoritiesConfigurationTestSetup {
         WebCertUser user = createWebCertUser(false);
 
         assertTrue("ska kunna titta på ett intyg inom VE1",
-                webcertUserService.checkIfAuthorizedForUnit(user, VARDGIVARE_1, VARDENHET_1, true));
+            webcertUserService.checkIfAuthorizedForUnit(user, VARDGIVARE_1, VARDENHET_1, true));
         assertFalse("ska INTE kunna titta på ett intyg inom VE2",
-                webcertUserService.checkIfAuthorizedForUnit(user, VARDGIVARE_1, VARDENHET_2, true));
+            webcertUserService.checkIfAuthorizedForUnit(user, VARDGIVARE_1, VARDENHET_2, true));
         assertTrue("ska kunna redigera ett intyg inom VE1",
-                webcertUserService.checkIfAuthorizedForUnit(user, VARDGIVARE_1, VARDENHET_1, false));
+            webcertUserService.checkIfAuthorizedForUnit(user, VARDGIVARE_1, VARDENHET_1, false));
         assertFalse("ska INTE kunna redigera ett intyg inom VE2",
-                webcertUserService.checkIfAuthorizedForUnit(user, VARDGIVARE_1, VARDENHET_2, false));
+            webcertUserService.checkIfAuthorizedForUnit(user, VARDGIVARE_1, VARDENHET_2, false));
     }
 
     @Test
@@ -102,13 +99,13 @@ public class WebCertUserServiceTest extends AuthoritiesConfigurationTestSetup {
         WebCertUser user = createWebCertUser(true);
 
         assertTrue("ska kunna titta på ett intyg inom VE1",
-                webcertUserService.checkIfAuthorizedForUnit(user, VARDGIVARE_1, VARDENHET_1, true));
+            webcertUserService.checkIfAuthorizedForUnit(user, VARDGIVARE_1, VARDENHET_1, true));
         assertTrue("ska kunna titta på ett intyg inom VE2",
-                webcertUserService.checkIfAuthorizedForUnit(user, VARDGIVARE_1, VARDENHET_2, true));
+            webcertUserService.checkIfAuthorizedForUnit(user, VARDGIVARE_1, VARDENHET_2, true));
         assertTrue("ska kunna redigera ett intyg inom VE1",
-                webcertUserService.checkIfAuthorizedForUnit(user, VARDGIVARE_1, VARDENHET_1, false));
+            webcertUserService.checkIfAuthorizedForUnit(user, VARDGIVARE_1, VARDENHET_1, false));
         assertFalse("ska INTE kunna redigera ett intyg inom VE2",
-                webcertUserService.checkIfAuthorizedForUnit(user, VARDGIVARE_1, VARDENHET_2, false));
+            webcertUserService.checkIfAuthorizedForUnit(user, VARDGIVARE_1, VARDENHET_2, false));
     }
 
     @Test
@@ -116,7 +113,7 @@ public class WebCertUserServiceTest extends AuthoritiesConfigurationTestSetup {
         WebCertUser user = createWebCertUser(false);
         applyUserToThreadLocalCtx(user);
         when(anvandarPreferenceRepository.findByHsaIdAndKey("HSA-id", "key1"))
-                .thenReturn(new AnvandarPreference("HSA-id", "key1", "value1"));
+            .thenReturn(new AnvandarPreference("HSA-id", "key1", "value1"));
 
         webcertUserService.storeUserPreference("key1", "value1");
         assertEquals("value1", user.getAnvandarPreference().get("key1"));

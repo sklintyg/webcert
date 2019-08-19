@@ -18,10 +18,10 @@
  */
 package se.inera.intyg.webcert.persistence.privatlakaravtal.repository;
 
+import com.google.common.base.Charsets;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import javax.annotation.PostConstruct;
-
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,8 +31,6 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ResourceUtils;
-
-import com.google.common.base.Charsets;
 import se.inera.intyg.webcert.persistence.privatlakaravtal.model.Avtal;
 
 /**
@@ -65,7 +63,7 @@ public class AvtalRepositoryFactory {
         if (latestAvtalVersion == -1) {
             try {
                 final String avtalText = IOUtils.toString(resourceLoader.getResource(location).getInputStream(),
-                        Charsets.UTF_8);
+                    Charsets.UTF_8);
                 final Avtal avtal = new Avtal();
                 avtal.setAvtalText(avtalText);
                 avtal.setAvtalVersion(1);

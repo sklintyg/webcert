@@ -22,6 +22,10 @@ import static se.inera.intyg.webcert.common.service.exception.WebCertServiceErro
 import static se.inera.intyg.webcert.web.service.intyg.util.IntygVerificationHelper.verifyIsNotRevoked;
 import static se.inera.intyg.webcert.web.service.intyg.util.IntygVerificationHelper.verifyIsSigned;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.annotations.VisibleForTesting;
+import com.google.common.collect.Lists;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.chrono.ChronoLocalDateTime;
@@ -32,10 +36,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-
 import javax.annotation.PostConstruct;
 import javax.xml.ws.WebServiceException;
-
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,12 +45,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.annotations.VisibleForTesting;
-import com.google.common.collect.Lists;
-
 import se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificatetypeinfo.v1.GetCertificateTypeInfoResponderInterface;
 import se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificatetypeinfo.v1.GetCertificateTypeInfoResponseType;
 import se.inera.intyg.clinicalprocess.healthcond.certificate.getcertificatetypeinfo.v1.GetCertificateTypeInfoType;
@@ -240,19 +236,15 @@ public class IntygServiceImpl implements IntygService {
     /**
      * Returns the IntygContentHolder. Used both externally to frontend and internally in the modules.
      *
-     * @param intygsId
-     *            the identifier of the intyg.
-     * @param intygsTyp
-     *            the typ of the intyg. Used to call the correct module.
-     * @param relations
-     *            If the relations between intyg should be populated. This can be expensive (several database
-     *            operations). Use sparsely.
-     * @param pdlLogging
-     *            If the call should be logged.
+     * @param intygsId the identifier of the intyg.
+     * @param intygsTyp the typ of the intyg. Used to call the correct module.
+     * @param relations If the relations between intyg should be populated. This can be expensive (several database
+     * operations). Use sparsely.
+     * @param pdlLogging If the call should be logged.
      * @return IntygContentHolder.
      */
     private IntygContentHolder fetchIntygData(String intygsId, String intygsTyp, boolean relations, boolean coherentJournaling,
-            boolean pdlLogging) {
+        boolean pdlLogging) {
         IntygContentHolder intygsData = getIntygData(intygsId, intygsTyp, relations);
 
         validateAccessToReadIntyg(intygsData.getUtlatande());
@@ -287,7 +279,7 @@ public class IntygServiceImpl implements IntygService {
         try {
             ListCertificatesForCareResponseType response = listCertificateService.listCertificatesForCare(logicalAddress, request);
             List<ListIntygEntry> fullIntygItemList = intygConverter
-                    .convertIntygToListIntygEntries(response.getIntygsLista().getIntyg(), webcertCerts);
+                .convertIntygToListIntygEntries(response.getIntygsLista().getIntyg(), webcertCerts);
             intygRelationHelper.decorateIntygListWithRelations(fullIntygItemList);
             fullIntygItemList = filterByIntygTypeForUser(fullIntygItemList, sekretessmarkering);
             addDraftsToListForIntygNotSavedInIntygstjansten(fullIntygItemList, webcertCerts);
@@ -307,15 +299,15 @@ public class IntygServiceImpl implements IntygService {
     }
 
     private List<ListIntygEntry> filterByIntygTypeForUser(List<ListIntygEntry> fullIntygItemList,
-            SekretessStatus sekretessmarkering) {
+        SekretessStatus sekretessmarkering) {
         // Get intygstyper from the view privilege
         Set<String> base = authoritiesHelper.getIntygstyperForPrivilege(webCertUserService.getUser(),
-                AuthoritiesConstants.PRIVILEGE_VISA_INTYG);
+            AuthoritiesConstants.PRIVILEGE_VISA_INTYG);
 
         // Remove intygstyper that cannot be issued for a sekretessmarkerad patient
         Set<String> intygsTyper = (sekretessmarkering == SekretessStatus.TRUE || sekretessmarkering == SekretessStatus.UNDEFINED)
-                ? filterAllowedForSekretessMarkering(base)
-                : base;
+            ? filterAllowedForSekretessMarkering(base)
+            : base;
 
         // The user is only granted access to view intyg of intygstyper that are in the set.
         return fullIntygItemList.stream().filter(i -> intygsTyper.contains(i.getIntygType())).collect(Collectors.toList());
@@ -325,7 +317,7 @@ public class IntygServiceImpl implements IntygService {
      * Adds any IntygItems found in Webcert for this patient not present in the list from intygstjansten.
      */
     private void addDraftsToListForIntygNotSavedInIntygstjansten(List<ListIntygEntry> fullIntygItemList,
-            List<ListIntygEntry> webcertIntygItems) {
+        List<ListIntygEntry> webcertIntygItems) {
         webcertIntygItems.removeAll(fullIntygItemList);
         fullIntygItemList.addAll(webcertIntygItems);
     }
@@ -341,23 +333,23 @@ public class IntygServiceImpl implements IntygService {
         SekretessStatus sekretessmarkering = patientDetailsResolver.getSekretessStatus(personnummer);
 
         Set<String> base = authoritiesHelper.getIntygstyperForPrivilege(webCertUserService.getUser(),
-                AuthoritiesConstants.PRIVILEGE_VISA_INTYG);
+            AuthoritiesConstants.PRIVILEGE_VISA_INTYG);
 
         Set<String> intygsTyper = (sekretessmarkering == SekretessStatus.TRUE || sekretessmarkering == SekretessStatus.UNDEFINED)
-                ? filterAllowedForSekretessMarkering(base)
-                : base;
+            ? filterAllowedForSekretessMarkering(base)
+            : base;
 
         List<Utkast> drafts = utkastRepository.findDraftsByPatientAndEnhetAndStatus(DaoUtil.formatPnrForPersistence(personnummer), enhetId,
-                statuses,
-                intygsTyper);
+            statuses,
+            intygsTyper);
         return buildIntygItemListFromDrafts(drafts);
     }
 
     private Set<String> filterAllowedForSekretessMarkering(Set<String> base) {
         Set<String> allowedForSekretess = authoritiesHelper.getIntygstyperAllowedForSekretessmarkering();
         return base.stream()
-                .filter(allowedForSekretess::contains)
-                .collect(Collectors.toSet());
+            .filter(allowedForSekretess::contains)
+            .collect(Collectors.toSet());
     }
 
     @Override
@@ -378,8 +370,8 @@ public class IntygServiceImpl implements IntygService {
             UtkastStatus utkastStatus = (utkast != null) ? utkast.getStatus() : UtkastStatus.SIGNED;
 
             boolean revoked = intyg.getStatuses() != null && intyg.getStatuses()
-                    .stream()
-                    .anyMatch(s -> s.getType().equals(CertificateState.CANCELLED));
+                .stream()
+                .anyMatch(s -> s.getType().equals(CertificateState.CANCELLED));
             if (revoked) {
                 throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, "Can't print revoked certificate.");
             }
@@ -387,7 +379,7 @@ public class IntygServiceImpl implements IntygService {
             validateAccessToPrintIntyg(intyg.getUtlatande(), isEmployerCopy);
 
             IntygPdf intygPdf = modelFacade.convertFromInternalToPdfDocument(intygsTyp, intyg.getContents(), intyg.getStatuses(),
-                    utkastStatus, isEmployerCopy);
+                utkastStatus, isEmployerCopy);
 
             // Log print as PDF to PDL log
             logPdfPrinting(intyg, userIsDjupintegreradWithSjf(), isEmployerCopy);
@@ -405,15 +397,13 @@ public class IntygServiceImpl implements IntygService {
     private boolean userIsDjupintegreradWithSjf() {
         WebCertUser user = webCertUserService.getUser();
         return user.getOrigin().equals(UserOriginType.DJUPINTEGRATION.name())
-                && user.getParameters() != null
-                && user.getParameters().isSjf();
+            && user.getParameters() != null
+            && user.getParameters().isSjf();
     }
 
     /**
      * Creates log events for PDF printing actions. Creates both PDL and monitoring log events
      * depending the state of the intyg.
-     *
-     * @param intyg
      */
     private void logPdfPrinting(IntygContentHolder intyg, boolean coherentJournaling, boolean isEmployerCopy) {
 
@@ -459,8 +449,8 @@ public class IntygServiceImpl implements IntygService {
         final Optional<Utkast> optionalUtkast = Optional.ofNullable(utkastRepository.findOne(intygsId));
 
         final Utlatande utlatande = optionalUtkast
-                .map(utkast -> modelFacade.getUtlatandeFromInternalModel(utkast.getIntygsTyp(), utkast.getModel()))
-                .orElseGet(() -> getIntygData(intygsId, typ, false).getUtlatande());
+            .map(utkast -> modelFacade.getUtlatandeFromInternalModel(utkast.getIntygsTyp(), utkast.getModel()))
+            .orElseGet(() -> getIntygData(intygsId, typ, false).getUtlatande());
 
         validateAccessToSendIntyg(utlatande);
 
@@ -508,7 +498,7 @@ public class IntygServiceImpl implements IntygService {
         // Om PU-tjänsten är otillgänglig får vi inte skicka. (Detta kollas redan client-side)
         if (sekretessStatus == SekretessStatus.UNDEFINED) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM,
-                    "Cannot send intyg to recipient, PU-service is not accessible so sekretessmarkering cannot be checked.");
+                "Cannot send intyg to recipient, PU-service is not accessible so sekretessmarkering cannot be checked.");
         }
 
         // Specialfall för fk7263 utfärdade innan patientuppgifter rensades från intyg.
@@ -516,7 +506,7 @@ public class IntygServiceImpl implements IntygService {
             if (sekretessStatus != SekretessStatus.FALSE) {
                 if (intyg.getGrundData().getSigneringsdatum().isBefore(sekretessmarkeringStartDatum)) {
                     throw new WebCertServiceException(WebCertServiceErrorCodeEnum.CERTIFICATE_TYPE_SEKRETESSMARKERING_HAS_PUDATA,
-                            "Cannot send certificate for sekretessmarkerad patient having existing name or address.");
+                        "Cannot send certificate for sekretessmarkerad patient having existing name or address.");
                 }
 
             }
@@ -525,13 +515,13 @@ public class IntygServiceImpl implements IntygService {
 
     private void verifyNotReplacedBySignedIntyg(final String intygsId, final IntygOperation operation) {
         final Optional<WebcertCertificateRelation> replacedByRelation = certificateRelationService.getNewestRelationOfType(intygsId,
-                RelationKod.ERSATT, Arrays.asList(UtkastStatus.SIGNED));
+            RelationKod.ERSATT, Arrays.asList(UtkastStatus.SIGNED));
         if (replacedByRelation.isPresent() && !replacedByRelation.get().isMakulerat()) {
             String errorString = String.format("Cannot %s certificate '%s', the certificate is replaced by certificate '%s'",
-                    operation.getValue(), intygsId, replacedByRelation.get().getIntygsId());
+                operation.getValue(), intygsId, replacedByRelation.get().getIntygsId());
             LOG.debug(errorString);
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE,
-                    errorString);
+                errorString);
         }
     }
 
@@ -556,8 +546,8 @@ public class IntygServiceImpl implements IntygService {
 
         try {
             certificateSenderService.revokeCertificate(intygsId, modelFacade.getRevokeCertificateRequest(intygsTyp, intyg.getUtlatande(),
-                    IntygConverterUtil.buildHosPersonalFromWebCertUser(webCertUserService.getUser(), null), revokeMessage), intygsTyp,
-                    intyg.getUtlatande().getTextVersion());
+                IntygConverterUtil.buildHosPersonalFromWebCertUser(webCertUserService.getUser(), null), revokeMessage), intygsTyp,
+                intyg.getUtlatande().getTextVersion());
             whenSuccessfulRevoke(intyg.getUtlatande(), reason);
             return IntygServiceResult.OK;
         } catch (CertificateSenderException | ModuleException | IntygModuleFacadeException e) {
@@ -577,18 +567,18 @@ public class IntygServiceImpl implements IntygService {
     @Override
     public void handleAfterSigned(Utkast utkast) {
         List<RelationKod> shouldCloseCompletionCodes = Lists.newArrayList(RelationKod.KOMPLT, RelationKod.ERSATT,
-                RelationKod.FRLANG);
+            RelationKod.FRLANG);
         boolean shouldCloseCompletions = shouldCloseCompletionCodes.stream().anyMatch(it -> it == utkast.getRelationKod());
         boolean isSigneraSkickaDirekt = authoritiesHelper
-                .isFeatureActive(AuthoritiesConstants.FEATURE_SIGNERA_SKICKA_DIREKT, utkast.getIntygsTyp());
+            .isFeatureActive(AuthoritiesConstants.FEATURE_SIGNERA_SKICKA_DIREKT, utkast.getIntygsTyp());
         if (isSigneraSkickaDirekt || utkast.getRelationKod() == RelationKod.KOMPLT) {
             try {
                 LOG.info("Send intyg '{}' directly to recipient", utkast.getIntygsId());
                 sendIntyg(utkast.getIntygsId(), utkast.getIntygsTyp(), moduleRegistry.getModuleEntryPoint(
-                        utkast.getIntygsTyp()).getDefaultRecipient(), true);
+                    utkast.getIntygsTyp()).getDefaultRecipient(), true);
             } catch (ModuleNotFoundException e) {
                 throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM,
-                        "Could not send intyg directly to recipient", e);
+                    "Could not send intyg directly to recipient", e);
             }
         }
         if (shouldCloseCompletions) {
@@ -624,13 +614,13 @@ public class IntygServiceImpl implements IntygService {
         List<Utkast> utkastList;
         if (request.shouldUseEnhetId()) {
             utkastList = utkastRepository.findDraftsByPatientAndEnhetAndStatus(
-                    DaoUtil.formatPnrForPersistence(request.getPersonnummer()), request.getEnhetId(), Arrays.asList(UtkastStatus.values()),
-                    moduleRegistry.listAllModules().stream().map(IntygModule::getId).collect(Collectors.toSet()));
+                DaoUtil.formatPnrForPersistence(request.getPersonnummer()), request.getEnhetId(), Arrays.asList(UtkastStatus.values()),
+                moduleRegistry.listAllModules().stream().map(IntygModule::getId).collect(Collectors.toSet()));
         } else {
             utkastList = utkastRepository.findDraftsByPatientAndVardgivareAndStatus(
-                    DaoUtil.formatPnrForPersistence(request.getPersonnummer()), request.getVardgivarId(),
-                    Arrays.asList(UtkastStatus.values()),
-                    moduleRegistry.listAllModules().stream().map(IntygModule::getId).collect(Collectors.toSet()));
+                DaoUtil.formatPnrForPersistence(request.getPersonnummer()), request.getVardgivarId(),
+                Arrays.asList(UtkastStatus.values()),
+                moduleRegistry.listAllModules().stream().map(IntygModule::getId).collect(Collectors.toSet()));
         }
 
         List<IntygWithNotificationsResponse> res = new ArrayList<>();
@@ -659,7 +649,7 @@ public class IntygServiceImpl implements IntygService {
                 ModuleApi api = moduleRegistry.getModuleApi(utkast.getIntygsTyp(), utkast.getIntygTypeVersion());
                 Intyg intyg = api.getIntygFromUtlatande(api.getUtlatandeFromJson(utkast.getModel()));
                 Pair<ArendeCount, ArendeCount> arenden = fragorOchSvarCreator.createArenden(utkast.getIntygsId(),
-                        utkast.getIntygsTyp());
+                    utkast.getIntygsTyp());
                 res.add(new IntygWithNotificationsResponse(intyg, notifications, arenden.getLeft(), arenden.getRight(), ref));
             } catch (ModuleNotFoundException | ModuleException | IOException e) {
                 LOG.error("Could not convert intyg {} to external format", utkast.getIntygsId());
@@ -691,14 +681,14 @@ public class IntygServiceImpl implements IntygService {
 
         try {
             final GetCertificateTypeInfoResponseType certificateTypeInfo = getCertificateTypeInfoService.getCertificateTypeInfo(
-                    logicalAddress,
-                    requestType);
+                logicalAddress,
+                requestType);
             return new IntygTypeInfo(intygsId, certificateTypeInfo.getTyp().getCode(), certificateTypeInfo.getTypVersion());
         } catch (WebServiceException e) {
             throw new WebCertServiceException(DATA_NOT_FOUND, String.format(
-                    "Failed retrieving certificate type information from Intygstjänsten. "
-                            + "The certificate might not exist. Certificate id: %s",
-                    intygsId), e);
+                "Failed retrieving certificate type information from Intygstjänsten. "
+                    + "The certificate might not exist. Certificate id: %s",
+                intygsId), e);
         }
     }
 
@@ -723,7 +713,7 @@ public class IntygServiceImpl implements IntygService {
 
             // Ask the certificateSenderService to post a 'send' message onto the queue.
             certificateSenderService.sendCertificate(intygsId, intyg.getGrundData().getPatient().getPersonId(),
-                    objectMapper.writeValueAsString(skickatAv), recipient, delay);
+                objectMapper.writeValueAsString(skickatAv), recipient, delay);
 
             // Notify stakeholders when a certificate is sent
             notificationService.sendNotificationForIntygSent(intygsId);
@@ -754,8 +744,6 @@ public class IntygServiceImpl implements IntygService {
      * data about sent state from the Utkast)
      * <p>
      * The data will be updated with current patient data from PU unless otherwise stated in the module api.
-     *
-     * @param relations
      */
     private IntygContentHolder getIntygData(String intygId, String typ, boolean relations) {
         try {
@@ -771,7 +759,7 @@ public class IntygServiceImpl implements IntygService {
 
             if (newPatientData == null) {
                 throw new WebCertServiceException(WebCertServiceErrorCodeEnum.PU_PROBLEM,
-                        "Patient data could not be fetched from the PU service or resolved from integration parameters.");
+                    "Patient data could not be fetched from the PU service or resolved from integration parameters.");
             }
 
             Utlatande utlatande = null;
@@ -780,9 +768,9 @@ public class IntygServiceImpl implements IntygService {
             try {
                 utlatande = moduleRegistry.getModuleApi(typ, intygTypeVersion).getUtlatandeFromJson(internalIntygJsonModel);
                 patientNameChanged = patientDetailsResolver.isPatientNamedChanged(utlatande.getGrundData().getPatient(),
-                        newPatientData);
+                    newPatientData);
                 patientAddressChanged = patientDetailsResolver.isPatientAddressChanged(utlatande.getGrundData().getPatient(),
-                        newPatientData);
+                    newPatientData);
             } catch (IOException e) {
                 LOG.error("Failed to getUtlatandeFromJson intygsId {} while checking for updated patient information", intygId);
             }
@@ -805,7 +793,7 @@ public class IntygServiceImpl implements IntygService {
             final SekretessStatus sekretessStatus = patientDetailsResolver.getSekretessStatus(personId);
             if (SekretessStatus.UNDEFINED.equals(sekretessStatus)) {
                 throw new WebCertServiceException(WebCertServiceErrorCodeEnum.PU_PROBLEM,
-                        "Sekretesstatus could not be fetched from the PU service");
+                    "Sekretesstatus could not be fetched from the PU service");
             }
             final boolean sekretessmarkering = SekretessStatus.TRUE.equals(sekretessStatus);
 
@@ -813,17 +801,17 @@ public class IntygServiceImpl implements IntygService {
             final LocalDateTime created = utkast != null ? utkast.getSkapad() : null;
 
             return IntygContentHolder.builder()
-                    .setContents(internalIntygJsonModel)
-                    .setUtlatande(certificate.getUtlatande())
-                    .setStatuses(certificate.getMetaData().getStatus())
-                    .setRevoked(certificate.isRevoked())
-                    .setRelations(certificateRelations)
-                    .setCreated(created)
-                    .setDeceased(isDeceased(personId))
-                    .setSekretessmarkering(sekretessmarkering)
-                    .setPatientNameChangedInPU(patientNameChanged)
-                    .setPatientAddressChangedInPU(patientAddressChanged)
-                    .build();
+                .setContents(internalIntygJsonModel)
+                .setUtlatande(certificate.getUtlatande())
+                .setStatuses(certificate.getMetaData().getStatus())
+                .setRevoked(certificate.isRevoked())
+                .setRelations(certificateRelations)
+                .setCreated(created)
+                .setDeceased(isDeceased(personId))
+                .setSekretessmarkering(sekretessmarkering)
+                .setPatientNameChangedInPU(patientNameChanged)
+                .setPatientAddressChangedInPU(patientAddressChanged)
+                .build();
 
         } catch (IntygModuleFacadeException me) {
             // It's possible the Intygstjanst hasn't received the Intyg yet, look for it locally before rethrowing
@@ -838,8 +826,8 @@ public class IntygServiceImpl implements IntygService {
             Utkast utkast = utkastRepository.findByIntygsIdAndIntygsTyp(intygId, typ);
             if (utkast == null) {
                 throw new WebCertServiceException(DATA_NOT_FOUND,
-                        "Cannot get intyg. Intygstjansten was not reachable and the Utkast could "
-                                + "not be found, perhaps it was issued by a non-webcert system?");
+                    "Cannot get intyg. Intygstjansten was not reachable and the Utkast could "
+                        + "not be found, perhaps it was issued by a non-webcert system?");
             }
             return buildIntygContentHolderFromUtkast(utkast, relations);
         } catch (ModuleNotFoundException | ModuleException e) {
@@ -853,7 +841,7 @@ public class IntygServiceImpl implements IntygService {
         try {
             // INTYG-4086: Patient object populated according to ruleset for the intygstyp at hand.
             Patient newPatientData = patientDetailsResolver.resolvePatient(utkast.getPatientPersonnummer(), utkast.getIntygsTyp(),
-                    utkast.getIntygTypeVersion());
+                utkast.getIntygTypeVersion());
 
             // Copied from getDraft in UtkastModuleApiController
             // INTYG-4086: Temporary, don't know if this is correct yet. If no patient was resolved,
@@ -873,7 +861,7 @@ public class IntygServiceImpl implements IntygService {
             }
             // INTYG-7449, INTYG-7529: Update patient data before (will not be done on intyg that store address data)
             String internalIntygJsonModel = moduleRegistry.getModuleApi(utkast.getIntygsTyp(), utkast.getIntygTypeVersion())
-                    .updateBeforeViewing(utkast.getModel(), newPatientData);
+                .updateBeforeViewing(utkast.getModel(), newPatientData);
 
             utlatande = modelFacade.getUtlatandeFromInternalModel(utkast.getIntygsTyp(), internalIntygJsonModel);
             List<Status> statuses = IntygConverterUtil.buildStatusesFromUtkast(utkast);
@@ -882,27 +870,27 @@ public class IntygServiceImpl implements IntygService {
             final SekretessStatus sekretessStatus = patientDetailsResolver.getSekretessStatus(newPatientData.getPersonId());
             if (SekretessStatus.UNDEFINED.equals(sekretessStatus)) {
                 throw new WebCertServiceException(WebCertServiceErrorCodeEnum.PU_PROBLEM,
-                        "Sekretesstatus could not be fetched from the PU service");
+                    "Sekretesstatus could not be fetched from the PU service");
             }
             final boolean sekretessmarkerad = SekretessStatus.TRUE.equals(sekretessStatus);
 
             boolean patientNameChanged = patientDetailsResolver.isPatientNamedChanged(utlatande.getGrundData().getPatient(),
-                    newPatientData);
+                newPatientData);
             boolean patientAddressChanged = patientDetailsResolver.isPatientAddressChanged(utlatande.getGrundData().getPatient(),
-                    newPatientData);
+                newPatientData);
 
             return IntygContentHolder.builder()
-                    .setContents(internalIntygJsonModel)
-                    .setUtlatande(utlatande)
-                    .setStatuses(statuses)
-                    .setRevoked(utkast.getAterkalladDatum() != null)
-                    .setRelations(certificateRelations)
-                    .setCreated(utkast.getSkapad())
-                    .setDeceased(isDeceased(utkast.getPatientPersonnummer()))
-                    .setSekretessmarkering(sekretessmarkerad)
-                    .setPatientNameChangedInPU(patientNameChanged)
-                    .setPatientAddressChangedInPU(patientAddressChanged)
-                    .build();
+                .setContents(internalIntygJsonModel)
+                .setUtlatande(utlatande)
+                .setStatuses(statuses)
+                .setRevoked(utkast.getAterkalladDatum() != null)
+                .setRelations(certificateRelations)
+                .setCreated(utkast.getSkapad())
+                .setDeceased(isDeceased(utkast.getPatientPersonnummer()))
+                .setSekretessmarkering(sekretessmarkerad)
+                .setPatientNameChangedInPU(patientNameChanged)
+                .setPatientAddressChangedInPU(patientAddressChanged)
+                .build();
 
         } catch (ModuleException | ModuleNotFoundException e) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, e);
@@ -940,8 +928,8 @@ public class IntygServiceImpl implements IntygService {
     private void markUtkastWithSendDateAndRecipient(final Utkast foundUtkast, String intygsId, String recipient) {
 
         final Utkast utkast = (foundUtkast != null)
-                ? foundUtkast
-                : utkastRepository.findOne(intygsId);
+            ? foundUtkast
+            : utkastRepository.findOne(intygsId);
 
         if (utkast != null) {
             utkast.setSkickadTillMottagareDatum(LocalDateTime.now());
@@ -972,37 +960,37 @@ public class IntygServiceImpl implements IntygService {
 
     private void validateAccessToPrintIntyg(Utlatande utlatande, boolean isEmployer) {
         final AccessResult accessResult = certificateAccessService.allowToPrint(
-                utlatande.getTyp(),
-                getVardEnhet(utlatande),
-                getPersonnummer(utlatande),
-                isEmployer);
+            utlatande.getTyp(),
+            getVardEnhet(utlatande),
+            getPersonnummer(utlatande),
+            isEmployer);
 
         accessResultExceptionHelper.throwExceptionIfDenied(accessResult);
     }
 
     private void validateAccessToInvalidateIntyg(Utlatande utlatande) {
         final AccessResult accessResult = certificateAccessService.allowToInvalidate(
-                utlatande.getTyp(),
-                getVardEnhet(utlatande),
-                getPersonnummer(utlatande));
+            utlatande.getTyp(),
+            getVardEnhet(utlatande),
+            getPersonnummer(utlatande));
 
         accessResultExceptionHelper.throwExceptionIfDenied(accessResult);
     }
 
     private void validateAccessToReadIntyg(Utlatande utlatande) {
         final AccessResult accessResult = certificateAccessService.allowToRead(
-                utlatande.getTyp(),
-                getVardEnhet(utlatande),
-                getPersonnummer(utlatande));
+            utlatande.getTyp(),
+            getVardEnhet(utlatande),
+            getPersonnummer(utlatande));
 
         accessResultExceptionHelper.throwExceptionIfDenied(accessResult);
     }
 
     private void validateAccessToSendIntyg(Utlatande utlatande) {
         final AccessResult accessResult = certificateAccessService.allowToSend(
-                utlatande.getTyp(),
-                getVardEnhet(utlatande),
-                getPersonnummer(utlatande));
+            utlatande.getTyp(),
+            getVardEnhet(utlatande),
+            getPersonnummer(utlatande));
 
         accessResultExceptionHelper.throwExceptionIfDenied(accessResult);
     }

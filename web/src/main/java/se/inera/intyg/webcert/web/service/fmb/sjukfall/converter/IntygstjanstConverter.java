@@ -18,7 +18,6 @@
  */
 package se.inera.intyg.webcert.web.service.fmb.sjukfall.converter;
 
-import se.riv.clinicalprocess.healthcond.rehabilitation.v1.IntygsData;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -27,6 +26,7 @@ import java.util.stream.Stream;
 import se.inera.intyg.infra.sjukfall.dto.DiagnosKod;
 import se.inera.intyg.infra.sjukfall.dto.Formaga;
 import se.inera.intyg.infra.sjukfall.dto.IntygData;
+import se.riv.clinicalprocess.healthcond.rehabilitation.v1.IntygsData;
 
 public final class IntygstjanstConverter {
 
@@ -42,8 +42,8 @@ public final class IntygstjanstConverter {
 
     private static List<IntygData> toSjukfallFormat(final Stream<IntygsData> intygsDataStream) {
         return intygsDataStream
-                .map(IntygstjanstConverter::toSjukfallFormat)
-                .collect(Collectors.toList());
+            .map(IntygstjanstConverter::toSjukfallFormat)
+            .collect(Collectors.toList());
     }
 
     private static IntygData toSjukfallFormat(IntygsData from) {

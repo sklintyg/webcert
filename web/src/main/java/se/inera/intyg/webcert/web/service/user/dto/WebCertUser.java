@@ -18,11 +18,10 @@
  */
 package se.inera.intyg.webcert.web.service.user.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import se.inera.intyg.infra.integration.hsa.model.Mottagning;
 import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
 import se.inera.intyg.infra.integration.hsa.model.Vardgivare;
@@ -43,7 +42,9 @@ public class WebCertUser extends IntygUser {
         super("only-for-test-use");
     }
 
-    /** The copy-constructor. */
+    /**
+     * The copy-constructor.
+     */
     public WebCertUser(IntygUser intygUser) {
         super(intygUser.getHsaId());
         this.privatLakareAvtalGodkand = intygUser.isPrivatLakareAvtalGodkand();
@@ -77,7 +78,7 @@ public class WebCertUser extends IntygUser {
         if (super.equals(o)) {
             WebCertUser that = (WebCertUser) o;
             return Objects.equals(this.anvandarPreference, that.anvandarPreference)
-                    && Objects.equals(this.parameters, that.parameters);
+                && Objects.equals(this.parameters, that.parameters);
         }
         return false;
     }

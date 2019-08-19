@@ -18,93 +18,93 @@
  */
 
 angular.module('webcert').service('webcert.enhetArendenFilterModel', [
-    function() {
-        'use strict';
+  function() {
+    'use strict';
 
-        // General directive viewstate
-        this.viewState = {
-            loadingLakare: false
-        };
+    // General directive viewstate
+    this.viewState = {
+      loadingLakare: false
+    };
 
-        this.vidarebefordradOptions = [
-            {id:'default', label: 'Visa alla'},
-            {id:'true', label: 'Vidarebefordrade'},
-            {id:'false', label: 'Ej vidarebefordrade'}
-        ];
+    this.vidarebefordradOptions = [
+      {id: 'default', label: 'Visa alla'},
+      {id: 'true', label: 'Vidarebefordrade'},
+      {id: 'false', label: 'Ej vidarebefordrade'}
+    ];
 
-        // Status filter choices
-        this.statusList = [
-            {
-                label: 'Visa alla',
-                id: 'ALLA'
-            },
-            {
-                label: 'Alla ej hanterade',
-                id: 'ALLA_OHANTERADE'
-            },
-            {
-                label: 'Alla hanterade',
-                id: 'HANTERAD'
-            },
-            {
-                label: 'Komplettera',
-                id: 'KOMPLETTERING_FRAN_VARDEN'
-            },
-            {
-                label: 'Svara',
-                id: 'SVAR_FRAN_VARDEN'
-            },
-            {
-                label: 'Läs inkommet svar',
-                id: 'MARKERA_SOM_HANTERAD'
-            },
-            {
-                label: 'Invänta svar',
-                id: 'SVAR_FRAN_FK'
-            }
-        ];
+    // Status filter choices
+    this.statusList = [
+      {
+        label: 'Visa alla',
+        id: 'ALLA'
+      },
+      {
+        label: 'Alla ej hanterade',
+        id: 'ALLA_OHANTERADE'
+      },
+      {
+        label: 'Alla hanterade',
+        id: 'HANTERAD'
+      },
+      {
+        label: 'Komplettera',
+        id: 'KOMPLETTERING_FRAN_VARDEN'
+      },
+      {
+        label: 'Svara',
+        id: 'SVAR_FRAN_VARDEN'
+      },
+      {
+        label: 'Läs inkommet svar',
+        id: 'MARKERA_SOM_HANTERAD'
+      },
+      {
+        label: 'Invänta svar',
+        id: 'SVAR_FRAN_FK'
+      }
+    ];
 
-        this.avsandareList = [
-            {
-                label: 'Visa alla',
-                id: 'default'
-            },
-            {
-                label: 'Försäkringskassan',
-                id: 'FK'
-            },
-            {
-                label: 'Vårdenheten',
-                id: 'WC'
-            }
-        ];
+    this.avsandareList = [
+      {
+        label: 'Visa alla',
+        id: 'default'
+      },
+      {
+        label: 'Försäkringskassan',
+        id: 'FK'
+      },
+      {
+        label: 'Vårdenheten',
+        id: 'WC'
+      }
+    ];
 
-        // Läkare filter choices
-        this.lakareListEmptyChoice = {
-            id: undefined,
-            label: 'Visa alla'
-        };
-        this.lakareList = [this.lakareListEmptyChoice];
-        var defaultLakareList = angular.copy(this.lakareList);
+    // Läkare filter choices
+    this.lakareListEmptyChoice = {
+      id: undefined,
+      label: 'Visa alla'
+    };
+    this.lakareList = [this.lakareListEmptyChoice];
+    var defaultLakareList = angular.copy(this.lakareList);
 
-        // Filter form model
-        this.filterForm = {};
+    // Filter form model
+    this.filterForm = {};
 
-        this.reset = function() {
-            var defaultLakare = this.defaultLakareSelector || defaultLakareList[0].id;
-            var statusList = this.statusList;
-            this.filterForm = {
-                vantarPaSelector: statusList[1].id,
-                lakareSelector: defaultLakare,
-                questionFrom: 'default',
-                vidarebefordrad: 'default',
-                changedFrom: undefined,
-                changedTo: undefined,
-                orderBy: 'receivedDate',
-                orderAscending: true,
-                patientPersonId: ''
-            };
-        };
+    this.reset = function() {
+      var defaultLakare = this.defaultLakareSelector || defaultLakareList[0].id;
+      var statusList = this.statusList;
+      this.filterForm = {
+        vantarPaSelector: statusList[1].id,
+        lakareSelector: defaultLakare,
+        questionFrom: 'default',
+        vidarebefordrad: 'default',
+        changedFrom: undefined,
+        changedTo: undefined,
+        orderBy: 'receivedDate',
+        orderAscending: true,
+        patientPersonId: ''
+      };
+    };
 
-        this.reset();
-    }]);
+    this.reset();
+  }]);

@@ -28,56 +28,52 @@ var restUtil = wcTestTools.restUtil;
 
 describe('Testa enkelt flöde för sekretessmarkerad vårdpersonal', function() {
 
-    var sekretessDialogCheckbox = element(by.id('wc-vardperson-sekretess-modal-dialog--checkbox'));
-    var sekretessDialogOKBtn = element(by.id('wc-vardperson-sekretess-modal-dialog--consent-btn'));
+  var sekretessDialogCheckbox = element(by.id('wc-vardperson-sekretess-modal-dialog--checkbox'));
+  var sekretessDialogOKBtn = element(by.id('wc-vardperson-sekretess-modal-dialog--consent-btn'));
 
-    var sekretessInfoDialogLink = element(by.id('wc-vardperson-sekretess-info-dialog--link'));
-    var sekretessInfoDialogOkBtn = element(by.id('wc-vardperson-sekretess-info-dialog-confirmationOkButton'));
+  var sekretessInfoDialogLink = element(by.id('wc-vardperson-sekretess-info-dialog--link'));
+  var sekretessInfoDialogOkBtn = element(by.id('wc-vardperson-sekretess-info-dialog-confirmationOkButton'));
 
+  beforeAll(function() {
+    //Säkerställ att det inte finns ett sparat dialoggodkännande för denna användaren
+    restUtil.deleteAnvandarPreference('TSTNMT2321000156-1099', 'wc.vardperson.sekretess.approved');
+  });
 
+  it('Logga in med en sekretessmarkerad användare', function() {
+    WelcomePage.get();
+    expect(WelcomePage.isAt()).toBeTruthy();
+    //Logga in som "Sara Sekretess"
+    WelcomePage.login('TSTNMT2321000156-1099_TSTNMT2321000156-1077', false);
+    specHelper.waitForAngularTestability();
+    expect(SokSkrivIntygPage.isAt()).toBeTruthy();
+    expect(SokSkrivIntygPage.getDoctorText()).toContain('Sara Sekretess');
 
-    beforeAll(function() {
-        //Säkerställ att det inte finns ett sparat dialoggodkännande för denna användaren
-        restUtil.deleteAnvandarPreference('TSTNMT2321000156-1099', 'wc.vardperson.sekretess.approved');
-    });
+    expect(sekretessInfoDialogLink.isDisplayed()).toBe(true);
+    //Dialog med checkbox skall visas - men vara disabled
+    expect(sekretessDialogCheckbox.isDisplayed()).toBe(true);
+    expect(sekretessDialogOKBtn.isDisplayed()).toBe(true);
+    expect(sekretessDialogOKBtn.isEnabled()).toBe(false);
+  });
 
+  it('Bocka i godkännande och då skall OK enablas', function() {
+    sekretessDialogCheckbox.sendKeys(protractor.Key.SPACE);
 
-    it('Logga in med en sekretessmarkerad användare', function() {
-        WelcomePage.get();
-        expect(WelcomePage.isAt()).toBeTruthy();
-        //Logga in som "Sara Sekretess"
-        WelcomePage.login('TSTNMT2321000156-1099_TSTNMT2321000156-1077', false);
-        specHelper.waitForAngularTestability();
-        expect(SokSkrivIntygPage.isAt()).toBeTruthy();
-        expect(SokSkrivIntygPage.getDoctorText()).toContain('Sara Sekretess');
+    expect(sekretessDialogOKBtn.isEnabled()).toBe(true);
+  });
 
-        expect(sekretessInfoDialogLink.isDisplayed()).toBe(true);
-        //Dialog med checkbox skall visas - men vara disabled
-        expect(sekretessDialogCheckbox.isDisplayed()).toBe(true);
-        expect(sekretessDialogOKBtn.isDisplayed()).toBe(true);
-        expect(sekretessDialogOKBtn.isEnabled()).toBe(false);
-    });
+  it('Tryck OK och sekretessgodkännandedialogen skall stängas', function() {
+    sekretessDialogOKBtn.sendKeys(protractor.Key.SPACE);
+    expect(sekretessDialogOKBtn).toDisappear();
+  });
 
+  it('Klicka på sekretessinfo länken, så skall sekretessinfo modalen visas', function() {
+    sekretessInfoDialogLink.sendKeys(protractor.Key.ENTER);
+    expect(sekretessInfoDialogOkBtn.isPresent()).toBe(true);
+  });
 
-    it('Bocka i godkännande och då skall OK enablas', function() {
-        sekretessDialogCheckbox.sendKeys(protractor.Key.SPACE);
-
-        expect(sekretessDialogOKBtn.isEnabled()).toBe(true);
-    });
-
-    it('Tryck OK och sekretessgodkännandedialogen skall stängas', function() {
-        sekretessDialogOKBtn.sendKeys(protractor.Key.SPACE);
-        expect(sekretessDialogOKBtn).toDisappear();
-    });
-
-    it('Klicka på sekretessinfo länken, så skall sekretessinfo modalen visas', function() {
-        sekretessInfoDialogLink.sendKeys(protractor.Key.ENTER);
-        expect(sekretessInfoDialogOkBtn.isPresent()).toBe(true);
-    });
-
-    it('Klicka OK sekretessinfo modalen, så skall den stängas', function() {
-        sekretessInfoDialogOkBtn.sendKeys(protractor.Key.SPACE);
-        expect(sekretessInfoDialogOkBtn).toDisappear();
-    });
+  it('Klicka OK sekretessinfo modalen, så skall den stängas', function() {
+    sekretessInfoDialogOkBtn.sendKeys(protractor.Key.SPACE);
+    expect(sekretessInfoDialogOkBtn).toDisappear();
+  });
 
 });

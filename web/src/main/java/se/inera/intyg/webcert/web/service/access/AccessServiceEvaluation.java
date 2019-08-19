@@ -25,9 +25,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-
 import javax.validation.constraints.NotNull;
-
 import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.infra.security.authorities.validation.AuthExpectationSpecification;
 import se.inera.intyg.infra.security.authorities.validation.AuthoritiesValidator;
@@ -46,6 +44,7 @@ import se.inera.intyg.webcert.web.service.utkast.dto.PreviousIntyg;
  * evaluate(). Make sure to set basic information as user, certificateType, careUnit and patient first.
  */
 public final class AccessServiceEvaluation {
+
     private static final String DRAFT = "utkast";
     private static final String CERTIFICATE = "intyg";
 
@@ -81,8 +80,8 @@ public final class AccessServiceEvaluation {
     private List<String> invalidDeceasedCertificateTypes = new ArrayList<>();
 
     private AccessServiceEvaluation(WebCertUserService webCertUserService,
-            PatientDetailsResolver patientDetailsResolver,
-            UtkastService utkastService) {
+        PatientDetailsResolver patientDetailsResolver,
+        UtkastService utkastService) {
         this.webCertUserService = webCertUserService;
         this.patientDetailsResolver = patientDetailsResolver;
         this.utkastService = utkastService;
@@ -91,17 +90,14 @@ public final class AccessServiceEvaluation {
     /**
      * Creates a new instance of AccessServiceEvaluation with injected services and helpers.
      *
-     * @param webCertUserService
-     *            Service to fetch and evaluate the current user.
-     * @param patientDetailsResolver
-     *            Service to fetch and evaluate the current patient.
-     * @param utkastService
-     *            Service to fetch drafts and certificates when evaluating certain rules.
+     * @param webCertUserService Service to fetch and evaluate the current user.
+     * @param patientDetailsResolver Service to fetch and evaluate the current patient.
+     * @param utkastService Service to fetch drafts and certificates when evaluating certain rules.
      * @return An AccessServiceEvaluation to be used once and then thrown away.
      */
     public static AccessServiceEvaluation create(@NotNull WebCertUserService webCertUserService,
-            @NotNull PatientDetailsResolver patientDetailsResolver,
-            @NotNull UtkastService utkastService) {
+        @NotNull PatientDetailsResolver patientDetailsResolver,
+        @NotNull UtkastService utkastService) {
         return new AccessServiceEvaluation(webCertUserService, patientDetailsResolver, utkastService);
     }
 
@@ -109,10 +105,8 @@ public final class AccessServiceEvaluation {
      * Specifies which user and certificate type this evaluation will be done for. If called more than once,
      * the old values will be overridden.
      *
-     * @param user
-     *            Current user.
-     * @param certificateType
-     *            Certificate type being evaluated.
+     * @param user Current user.
+     * @param certificateType Certificate type being evaluated.
      * @return AccessServiceEvaluation
      */
     public AccessServiceEvaluation given(@NotNull WebCertUser user, @NotNull String certificateType) {
@@ -124,8 +118,7 @@ public final class AccessServiceEvaluation {
     /**
      * Add a privilege to consider. This method can be called multiple times.
      *
-     * @param privilege
-     *            Privilege to consider
+     * @param privilege Privilege to consider
      * @return AccessServiceEvaluation
      */
     public AccessServiceEvaluation privilege(@NotNull String privilege) {
@@ -136,10 +129,8 @@ public final class AccessServiceEvaluation {
     /**
      * Add a privilege to consider IF the addPrivilege is true. This method can be called multiple times.
      *
-     * @param privilege
-     *            Privilege to consider
-     * @param addPrivilege
-     *            Only add privilege if true.
+     * @param privilege Privilege to consider
+     * @param addPrivilege Only add privilege if true.
      * @return AccessServiceEvaluation
      */
     public AccessServiceEvaluation privilegeIf(@NotNull String privilege, @NotNull boolean addPrivilege) {
@@ -152,8 +143,7 @@ public final class AccessServiceEvaluation {
     /**
      * Add a feature to consider. This method can be called multiple times.
      *
-     * @param feature
-     *            feature to consider.
+     * @param feature feature to consider.
      * @return AccessServiceEvaluation
      */
     public AccessServiceEvaluation feature(@NotNull String feature) {
@@ -164,11 +154,8 @@ public final class AccessServiceEvaluation {
     /**
      * Add a feature to consider IF the addFeature is true. This method can be called multiple times.
      *
-     * @param feature
-     *            feature to consider.
-     * @param addFeature
-     *            Only add feature if true.
-     * @return
+     * @param feature feature to consider.
+     * @param addFeature Only add feature if true.
      */
     public AccessServiceEvaluation featureIf(@NotNull String feature, @NotNull boolean addFeature) {
         if (addFeature) {
@@ -180,8 +167,7 @@ public final class AccessServiceEvaluation {
     /**
      * Set care unit to consider. If called more than once, the old values will be overridden.
      *
-     * @param careUnit
-     *            Care unit to consider.
+     * @param careUnit Care unit to consider.
      * @return AccessServiceEvaluation
      */
     public AccessServiceEvaluation careUnit(@NotNull Vardenhet careUnit) {
@@ -192,8 +178,7 @@ public final class AccessServiceEvaluation {
     /**
      * Set patient to consider. If called more than once, the old values will be overridden.
      *
-     * @param personnummer
-     *            Patient to consider.
+     * @param personnummer Patient to consider.
      * @return AccessServiceEvaluation
      */
     public AccessServiceEvaluation patient(@NotNull Personnummer personnummer) {
@@ -204,8 +189,7 @@ public final class AccessServiceEvaluation {
     /**
      * Consider if patient is deceased when evaluating. If called more than once, the old values will be overridden.
      *
-     * @param allowForSameUnit
-     *            Allow handling (if all other criterias are met) when user is on the same unit.
+     * @param allowForSameUnit Allow handling (if all other criterias are met) when user is on the same unit.
      * @return AccessServiceEvaluation
      */
     public AccessServiceEvaluation checkPatientDeceased(boolean allowForSameUnit) {
@@ -218,8 +202,7 @@ public final class AccessServiceEvaluation {
      * Set certificate types that should be excluded from checkPatientDeceased. This means that the certificate types
      * will be allowed. This method can be called multiple times.
      *
-     * @param certificateType
-     *            Certificate types to exclude
+     * @param certificateType Certificate types to exclude
      * @return AccessServiceEvaluation
      */
     public AccessServiceEvaluation excludeCertificateTypesForDeceased(String... certificateType) {
@@ -231,8 +214,7 @@ public final class AccessServiceEvaluation {
      * Set certificate types that should always be invalid when checkPatientDeceased. This means that the
      * certificate types will never be allowed if patient is deceased. This method can be called multiple times.
      *
-     * @param certificateType
-     *            Certificate types that are invalid
+     * @param certificateType Certificate types that are invalid
      * @return AccessServiceEvaluation
      */
     public AccessServiceEvaluation invalidCertificateTypeForDeceased(String... certificateType) {
@@ -243,8 +225,7 @@ public final class AccessServiceEvaluation {
     /**
      * Consider if parameter inactiveUnit when evaluating. If called more than once, the old values will be overridden.
      *
-     * @param allowForSameUnit
-     *            Allow handling (if all other criterias are met) when use ris on the same unit.
+     * @param allowForSameUnit Allow handling (if all other criterias are met) when use ris on the same unit.
      * @return AccessServiceEvaluation
      */
     public AccessServiceEvaluation checkInactiveCareUnit(boolean allowForSameUnit) {
@@ -257,8 +238,7 @@ public final class AccessServiceEvaluation {
      * Set certificate types that should be excluded from checkInactiveCareUnit. This means that the certificate types
      * will be allowed. This method can be called multiple times.
      *
-     * @param certificateType
-     *            Certificate types to exclude
+     * @param certificateType Certificate types to exclude
      * @return AccessServiceEvaluation
      */
     public AccessServiceEvaluation excludeCertificateTypesForInactive(String... certificateType) {
@@ -279,8 +259,7 @@ public final class AccessServiceEvaluation {
     /**
      * Consider if parameter renewOk when evaluating. If called more than once, the old values will be overridden.
      *
-     * @param allowForSameUnit
-     *            Allow handling (if all other criterias are met) when user is on the same unit.
+     * @param allowForSameUnit Allow handling (if all other criterias are met) when user is on the same unit.
      * @return AccessServiceEvaluation
      */
     public AccessServiceEvaluation checkRenew(boolean allowForSameUnit) {
@@ -293,8 +272,7 @@ public final class AccessServiceEvaluation {
      * Set certificate types that should be excluded from checkRenew. This means that the certificate types
      * will be allowed. This method can be called multiple times.
      *
-     * @param certificateType
-     *            Certificate types to exclude
+     * @param certificateType Certificate types to exclude
      * @return AccessServiceEvaluation
      */
     public AccessServiceEvaluation excludeCertificateTypesForRenew(String... certificateType) {
@@ -327,11 +305,8 @@ public final class AccessServiceEvaluation {
     /**
      * Consider logged in unit when evaluating. If called more than once, the old values will be overridden.
      *
-     * @param allowSJF
-     *            If Sammanhållen journalföring should be considered when evaluating.
-     * @param isReadOnlyOperation
-     *            If the operation only includes read only.
-     * @return
+     * @param allowSJF If Sammanhållen journalföring should be considered when evaluating.
+     * @param isReadOnlyOperation If the operation only includes read only.
      */
     public AccessServiceEvaluation checkUnit(boolean allowSJF, boolean isReadOnlyOperation) {
         this.allowSJF = allowSJF;
@@ -344,8 +319,7 @@ public final class AccessServiceEvaluation {
      * Set certificate types that should be excluded from checkUnit. This means that the certificate types
      * will be allowed. This method can be called multiple times.
      *
-     * @param certificateType
-     *            Certificate types to exclude
+     * @param certificateType Certificate types to exclude
      * @return AccessServiceEvaluation
      */
     public AccessServiceEvaluation excludeCertificateTypesForUnit(String... certificateType) {
@@ -363,7 +337,7 @@ public final class AccessServiceEvaluation {
 
         if (checkPatientDeceased && !excludeDeceasedCertificateTypes.contains(certificateType) && !accessResult.isPresent()) {
             accessResult = isDeceasedRuleValid(user, certificateType, careUnit.getEnhetsid(), patient, allowDeceasedForSameUnit,
-                    invalidDeceasedCertificateTypes);
+                invalidDeceasedCertificateTypes);
         }
 
         if (checkInactiveCareUnit && !excludeInactiveCertificateTypes.contains(certificateType) && !accessResult.isPresent()) {
@@ -391,10 +365,10 @@ public final class AccessServiceEvaluation {
 
     private Optional<AccessResult> isAuthorized(String intygsTyp, WebCertUser user, List<String> features, List<String> privilege) {
         final AuthExpectationSpecification authExpectationSpecification = getAuthExpectationSpecification(
-                intygsTyp,
-                user,
-                features,
-                privilege);
+            intygsTyp,
+            user,
+            features,
+            privilege);
 
         if (authExpectationSpecification.isVerified()) {
             return Optional.empty();
@@ -404,7 +378,7 @@ public final class AccessServiceEvaluation {
     }
 
     private AuthExpectationSpecification getAuthExpectationSpecification(String intygsTyp, WebCertUser user, List<String> features,
-            List<String> privileges) {
+        List<String> privileges) {
         final AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
 
         final AuthExpectationSpecification authExpectationSpecification = authoritiesValidator.given(user, intygsTyp);
@@ -421,7 +395,7 @@ public final class AccessServiceEvaluation {
     }
 
     private Optional<AccessResult> isDeceasedRuleValid(WebCertUser user, String intygsTyp, String enhetsId, Personnummer personnummer,
-            boolean allowDeceasedForSameUnit, List<String> invalidDeceasedCertificateTypes) {
+        boolean allowDeceasedForSameUnit, List<String> invalidDeceasedCertificateTypes) {
 
         if (patientDetailsResolver.isAvliden(personnummer)) {
 
@@ -434,7 +408,7 @@ public final class AccessServiceEvaluation {
             }
 
             if (enhetsId == null && isAuthorized(intygsTyp, user, Arrays.asList(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST_AVLIDEN),
-                    Collections.emptyList()).isPresent()) {
+                Collections.emptyList()).isPresent()) {
                 return Optional.of(AccessResult.create(AccessResultCode.DECEASED_PATIENT, "Patienten avliden"));
             }
         }
@@ -443,7 +417,7 @@ public final class AccessServiceEvaluation {
     }
 
     private Optional<AccessResult> isInactiveUnitRuleValid(WebCertUser user, String intygsTyp, String enhetsId,
-            boolean allowInactiveForSameUnit) {
+        boolean allowInactiveForSameUnit) {
         if (user.getParameters() != null && user.getParameters().isInactiveUnit()) {
             if (isUserLoggedInOnDifferentUnit(enhetsId) || !allowInactiveForSameUnit) {
                 return Optional.of(AccessResult.create(AccessResultCode.INACTIVE_UNIT, "Parameter inactive unit"));
@@ -454,7 +428,7 @@ public final class AccessServiceEvaluation {
 
     private Optional<AccessResult> isRenewRuleValid(WebCertUser user, String intygsTyp, String enhetsId, boolean allowRenewForSameUnit) {
         if (user.getParameters() != null && !user.getParameters().isFornyaOk()
-                && (isUserLoggedInOnDifferentUnit(enhetsId) || !allowRenewForSameUnit)) {
+            && (isUserLoggedInOnDifferentUnit(enhetsId) || !allowRenewForSameUnit)) {
             return Optional.of(AccessResult.create(AccessResultCode.RENEW_FALSE, "Parameter renewOK is false"));
         }
 
@@ -469,14 +443,14 @@ public final class AccessServiceEvaluation {
 
         if (SekretessStatus.TRUE.equals(sekretessStatus)) {
             final Optional<AccessResult> accessResult = isAuthorized(intygsTyp, user, Collections.emptyList(),
-                    Arrays.asList(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT));
+                Arrays.asList(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT));
             if (accessResult.isPresent()) {
                 return Optional.of(AccessResult.create(AccessResultCode.AUTHORIZATION_SEKRETESS,
-                        "User missing required privilege or cannot handle sekretessmarkerad patient"));
+                    "User missing required privilege or cannot handle sekretessmarkerad patient"));
             }
             if (isUserLoggedInOnDifferentUnit(enhetsId)) {
                 return Optional.of(AccessResult.create(AccessResultCode.AUTHORIZATION_SEKRETESS_UNIT,
-                        "User not logged in on same unit as draft/intyg unit for sekretessmarkerad patient."));
+                    "User not logged in on same unit as draft/intyg unit for sekretessmarkerad patient."));
             }
         }
 
@@ -484,7 +458,7 @@ public final class AccessServiceEvaluation {
     }
 
     private Optional<AccessResult> isUnitRuleValid(String intygsTyp, Vardenhet vardenhet, WebCertUser user, boolean allowSJF,
-            boolean isReadOnlyOperation) {
+        boolean isReadOnlyOperation) {
 
         if (allowSJF && user.isLakare() && user.getParameters() != null && user.getParameters().isSjf()) {
             return Optional.empty();
@@ -494,19 +468,19 @@ public final class AccessServiceEvaluation {
             final String vardgivarId = vardenhet.getVardgivare().getVardgivarid();
             if (isReadOnlyOperation && vardgivarId != null && !user.getValdVardgivare().getId().equals(vardgivarId)) {
                 return Optional.of(AccessResult.create(AccessResultCode.AUTHORIZATION_DIFFERENT_UNIT,
-                        "User is logged in on a different unit than the draft/certificate"));
+                    "User is logged in on a different unit than the draft/certificate"));
             }
         }
 
         if (user.getOrigin().equals(UserOriginType.READONLY.name()) && isUserLoggedInOnDifferentUnit(vardenhet.getEnhetsid())) {
             return Optional.of(AccessResult.create(AccessResultCode.AUTHORIZATION_DIFFERENT_UNIT,
-                    "User is logged in on a different unit than the draft/certificate"));
+                "User is logged in on a different unit than the draft/certificate"));
         }
 
         if (!webCertUserService.isAuthorizedForUnit(vardenhet.getVardgivare().getVardgivarid(), vardenhet.getEnhetsid(),
-                isReadOnlyOperation)) {
+            isReadOnlyOperation)) {
             return Optional.of(AccessResult.create(AccessResultCode.AUTHORIZATION_DIFFERENT_UNIT,
-                    "User is logged in on a different unit than the draft/certificate"));
+                "User is logged in on a different unit than the draft/certificate"));
         }
 
         return Optional.empty();
@@ -517,10 +491,10 @@ public final class AccessServiceEvaluation {
     }
 
     private Optional<AccessResult> isUniqueUtkastRuleValid(String intygsTyp, WebCertUser user, Personnummer personnummer,
-            boolean onlyCertificate) {
+        boolean onlyCertificate) {
         if (isAnyUniqueFeatureEnabled(intygsTyp, user)) {
             final Map<String, Map<String, PreviousIntyg>> intygstypToStringToBoolean = utkastService
-                    .checkIfPersonHasExistingIntyg(personnummer, user);
+                .checkIfPersonHasExistingIntyg(personnummer, user);
 
             final PreviousIntyg utkastExists = intygstypToStringToBoolean.get(DRAFT).get(intygsTyp);
             final PreviousIntyg intygExists = intygstypToStringToBoolean.get(CERTIFICATE).get(intygsTyp);
@@ -528,19 +502,19 @@ public final class AccessServiceEvaluation {
             if (!onlyCertificate && utkastExists != null && utkastExists.isSameVardgivare()) {
                 if (isUniqueUtkastFeatureEnabled(intygsTyp, user)) {
                     return Optional.of(AccessResult.create(AccessResultCode.UNIQUE_DRAFT,
-                            "Already exists drafts for this patient"));
+                        "Already exists drafts for this patient"));
                 }
             } else {
                 if (intygExists != null) {
                     if (isUniqueFeatureEnabled(intygsTyp, user)) {
                         return Optional.of(
-                                AccessResult.create(AccessResultCode.UNIQUE_CERTIFICATE,
-                                        "Already exists certificates for this patient"));
+                            AccessResult.create(AccessResultCode.UNIQUE_CERTIFICATE,
+                                "Already exists certificates for this patient"));
                     }
 
                     if (intygExists.isSameVardgivare() && isUniqueIntygFeatureEnabled(intygsTyp, user)) {
                         return Optional.of(AccessResult.create(AccessResultCode.UNIQUE_CERTIFICATE,
-                                "Already exists certificates for this care provider on this patient"));
+                            "Already exists certificates for this care provider on this patient"));
                     }
                 }
             }
@@ -551,26 +525,26 @@ public final class AccessServiceEvaluation {
     private boolean isUniqueIntygFeatureEnabled(String intygsTyp, WebCertUser user) {
         final AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
         return authoritiesValidator.given(user, intygsTyp)
-                .features(AuthoritiesConstants.FEATURE_UNIKT_INTYG_INOM_VG).isVerified();
+            .features(AuthoritiesConstants.FEATURE_UNIKT_INTYG_INOM_VG).isVerified();
     }
 
     private boolean isUniqueFeatureEnabled(String intygsTyp, WebCertUser user) {
         final AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
         return authoritiesValidator.given(user, intygsTyp)
-                .features(AuthoritiesConstants.FEATURE_UNIKT_INTYG).isVerified();
+            .features(AuthoritiesConstants.FEATURE_UNIKT_INTYG).isVerified();
     }
 
     private boolean isUniqueUtkastFeatureEnabled(String intygsTyp, WebCertUser user) {
         final AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
         return authoritiesValidator.given(user, intygsTyp)
-                .features(AuthoritiesConstants.FEATURE_UNIKT_UTKAST_INOM_VG).isVerified();
+            .features(AuthoritiesConstants.FEATURE_UNIKT_UTKAST_INOM_VG).isVerified();
     }
 
     private boolean isAnyUniqueFeatureEnabled(String intygsTyp, WebCertUser user) {
         final AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
         return authoritiesValidator.given(user, intygsTyp)
-                .features(AuthoritiesConstants.FEATURE_UNIKT_INTYG, AuthoritiesConstants.FEATURE_UNIKT_INTYG_INOM_VG,
-                        AuthoritiesConstants.FEATURE_UNIKT_UTKAST_INOM_VG)
-                .isVerified();
+            .features(AuthoritiesConstants.FEATURE_UNIKT_INTYG, AuthoritiesConstants.FEATURE_UNIKT_INTYG_INOM_VG,
+                AuthoritiesConstants.FEATURE_UNIKT_UTKAST_INOM_VG)
+            .isVerified();
     }
 }

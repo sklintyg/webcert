@@ -34,49 +34,49 @@ var skvDBCheckValues = require('./skv.db.js').checkValues;
 var socDOICheckValues = require('./soc.doi.js').checkValues;
 
 module.exports = {
-    fk: {
-        '7263': fk7263CheckValues,
-        'LUSE': fkLUSECheckValues,
-        'LISJP': fkLISJPCheckValues
-    },
-    ts: {
-        common: tsCommonCheckValues,
-        bas: tsBasCheckValues,
-        diabetes: tsDiabetesCheckValues
-    },
-    forIntyg: function(intyg, user) {
-        'use strict';
-        var promiseArr = [commonCheckValues(intyg, user)];
-        if (intyg.typ === 'Transportstyrelsens läkarintyg diabetes') {
-            promiseArr.push(
-                tsCommonCheckValues(intyg).then(function() {
-                    return tsDiabetesCheckValues(intyg);
-                })
-            );
-        } else if (intyg.typ === 'Transportstyrelsens läkarintyg högre körkortsbehörighet') {
-            promiseArr.push(
-                tsCommonCheckValues(intyg).then(function() {
-                    return tsBasCheckValues(intyg);
-                })
-            );
-        } else if (intyg.typ === 'Läkarintyg FK 7263') {
-            promiseArr.push(fk7263CheckValues(intyg));
-        } else if (intyg.typ === 'Läkarutlåtande för sjukersättning') {
-            promiseArr.push(fkLUSECheckValues(intyg));
-        } else if (intyg.typ === 'Läkarintyg för sjukpenning') {
-            promiseArr.push(fkLISJPCheckValues(intyg));
-        } else if (intyg.typ === 'Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga') {
-            promiseArr.push(fkLUAENACheckValues(intyg));
-        } else if (intyg.typ === 'Läkarutlåtande för aktivitetsersättning vid förlängd skolgång') {
-            promiseArr.push(fkLUAEFSCheckValues(intyg));
-        } else if (intyg.typ === 'Dödsbevis') {
-            promiseArr.push(skvDBCheckValues(intyg));
-        } else if (intyg.typ === 'Dödsorsaksintyg') {
-            promiseArr.push(socDOICheckValues(intyg));
-        } else {
-            throw ('Saknar värdecheckar för intygstyp: ' + intyg.typ);
-        }
-
-        return Promise.all(promiseArr);
+  fk: {
+    '7263': fk7263CheckValues,
+    'LUSE': fkLUSECheckValues,
+    'LISJP': fkLISJPCheckValues
+  },
+  ts: {
+    common: tsCommonCheckValues,
+    bas: tsBasCheckValues,
+    diabetes: tsDiabetesCheckValues
+  },
+  forIntyg: function(intyg, user) {
+    'use strict';
+    var promiseArr = [commonCheckValues(intyg, user)];
+    if (intyg.typ === 'Transportstyrelsens läkarintyg diabetes') {
+      promiseArr.push(
+          tsCommonCheckValues(intyg).then(function() {
+            return tsDiabetesCheckValues(intyg);
+          })
+      );
+    } else if (intyg.typ === 'Transportstyrelsens läkarintyg högre körkortsbehörighet') {
+      promiseArr.push(
+          tsCommonCheckValues(intyg).then(function() {
+            return tsBasCheckValues(intyg);
+          })
+      );
+    } else if (intyg.typ === 'Läkarintyg FK 7263') {
+      promiseArr.push(fk7263CheckValues(intyg));
+    } else if (intyg.typ === 'Läkarutlåtande för sjukersättning') {
+      promiseArr.push(fkLUSECheckValues(intyg));
+    } else if (intyg.typ === 'Läkarintyg för sjukpenning') {
+      promiseArr.push(fkLISJPCheckValues(intyg));
+    } else if (intyg.typ === 'Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga') {
+      promiseArr.push(fkLUAENACheckValues(intyg));
+    } else if (intyg.typ === 'Läkarutlåtande för aktivitetsersättning vid förlängd skolgång') {
+      promiseArr.push(fkLUAEFSCheckValues(intyg));
+    } else if (intyg.typ === 'Dödsbevis') {
+      promiseArr.push(skvDBCheckValues(intyg));
+    } else if (intyg.typ === 'Dödsorsaksintyg') {
+      promiseArr.push(socDOICheckValues(intyg));
+    } else {
+      throw ('Saknar värdecheckar för intygstyp: ' + intyg.typ);
     }
+
+    return Promise.all(promiseArr);
+  }
 };

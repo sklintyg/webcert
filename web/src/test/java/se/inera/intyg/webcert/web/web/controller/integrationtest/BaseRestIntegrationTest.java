@@ -18,17 +18,13 @@
  */
 package se.inera.intyg.webcert.web.web.controller.integrationtest;
 
-import java.io.FileNotFoundException;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.UUID;
-import javax.servlet.http.HttpServletResponse;
-
-import org.junit.After;
-import org.junit.Before;
+import static com.jayway.restassured.RestAssured.given;
+import static com.jayway.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
+import static java.util.Arrays.asList;
+import static org.hamcrest.core.IsEqual.equalTo;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.base.Strings;
@@ -39,6 +35,16 @@ import com.jayway.restassured.http.ContentType;
 import com.jayway.restassured.path.json.JsonPath;
 import com.jayway.restassured.response.Response;
 import com.jayway.restassured.specification.RequestSpecification;
+import java.io.FileNotFoundException;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.UUID;
+import javax.servlet.http.HttpServletResponse;
+import org.junit.After;
+import org.junit.Before;
 import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
@@ -52,14 +58,6 @@ import se.inera.intyg.webcert.persistence.model.Status;
 import se.inera.intyg.webcert.web.auth.common.FakeCredential;
 import se.inera.intyg.webcert.web.auth.fake.FakeCredentials;
 import se.inera.intyg.webcert.web.web.controller.api.dto.CreateUtkastRequest;
-
-import static com.jayway.restassured.RestAssured.given;
-import static com.jayway.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
-import static java.util.Arrays.asList;
-import static org.hamcrest.core.IsEqual.equalTo;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 /**
  * Base class for "REST-ish" integrationTests using RestAssured.
@@ -83,22 +81,24 @@ public abstract class BaseRestIntegrationTest {
 
     private static final List<String> LAKARE = asList("Läkare");
 
-    /** Use to create a ROUTEID cookie to ensure the correct tomcat-node is used */
+    /**
+     * Use to create a ROUTEID cookie to ensure the correct tomcat-node is used
+     */
     public static String routeId;
 
     protected static String csrfToken;
 
     protected static FakeCredentials DEFAULT_LAKARE = new FakeCredentials.FakeCredentialsBuilder("IFV1239877878-1049",
-            "IFV1239877878-1042").legitimeradeYrkesgrupper(LAKARE).build();
+        "IFV1239877878-1042").legitimeradeYrkesgrupper(LAKARE).build();
 
     protected static FakeCredentials LEONIE_KOEHL = new FakeCredentials.FakeCredentialsBuilder("TSTNMT2321000156-103F",
-            "TSTNMT2321000156-1039").legitimeradeYrkesgrupper(LAKARE).build();
+        "TSTNMT2321000156-1039").legitimeradeYrkesgrupper(LAKARE).build();
 
     /**
      * Has multiple vardenheter.
      */
     protected static FakeCredentials ASA_ANDERSSON = new FakeCredentials.FakeCredentialsBuilder("IFV1239877878-104B",
-            "IFV1239877878-1046").legitimeradeYrkesgrupper(LAKARE).build();
+        "IFV1239877878-1046").legitimeradeYrkesgrupper(LAKARE).build();
 
     protected final String DEFAULT_PATIENT_PERSONNUMMER = "19010101-0101";
 
@@ -112,8 +112,8 @@ public abstract class BaseRestIntegrationTest {
         RestAssured.baseURI = System.getProperty("integration.tests.baseUrl", "http://localhost:9088");
         LogConfig logconfig = new LogConfig().enableLoggingOfRequestAndResponseIfValidationFails().enablePrettyPrinting(true);
         RestAssured.config = RestAssured.config()
-                .logConfig(logconfig)
-                .sessionConfig(new SessionConfig("SESSION", null));
+            .logConfig(logconfig)
+            .sessionConfig(new SessionConfig("SESSION", null));
     }
 
     /**
@@ -129,8 +129,7 @@ public abstract class BaseRestIntegrationTest {
     /**
      * Log in to webcert using the supplied FakeCredentials.
      *
-     * @param fakeCredential
-     *            who to log in as
+     * @param fakeCredential who to log in as
      * @return sessionId for the now authorized user session
      */
     protected String getAuthSession(FakeCredential fakeCredential) {
@@ -143,10 +142,10 @@ public abstract class BaseRestIntegrationTest {
 
     private String getAuthSession(String credentialsJson) {
         Response response = given().contentType(ContentType.URLENC).and().redirects().follow(false).and()
-                .formParam(USER_JSON_FORM_PARAMETER, credentialsJson)
-                .expect().statusCode(HttpServletResponse.SC_FOUND)
-                .when().post(FAKE_LOGIN_URI)
-                .then().extract().response();
+            .formParam(USER_JSON_FORM_PARAMETER, credentialsJson)
+            .expect().statusCode(HttpServletResponse.SC_FOUND)
+            .when().post(FAKE_LOGIN_URI)
+            .then().extract().response();
 
         assertNotNull(response.sessionId());
         routeId = response.getCookie("ROUTEID") != null ? response.getCookie("ROUTEID") : "nah";
@@ -159,26 +158,22 @@ public abstract class BaseRestIntegrationTest {
     /**
      * Change user's role for the current session.
      * This method require that a session is already established.
-     *
-     * @param newRole
      */
     protected void changeRoleTo(String newRole) {
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId).pathParam("role", newRole)
-                .expect().statusCode(200)
-                .when().get("authtestability/user/role/{role}");
+            .expect().statusCode(200)
+            .when().get("authtestability/user/role/{role}");
     }
 
     /**
      * Change user's request origin for the current session.
      * This method require that a session is already established.
-     *
-     * @param newOrigin
      */
     protected void changeOriginTo(String newOrigin) {
         spec()
-                .pathParam("origin", newOrigin)
-                .expect().statusCode(200)
-                .when().get("authtestability/user/origin/{origin}");
+            .pathParam("origin", newOrigin)
+            .expect().statusCode(200)
+            .when().get("authtestability/user/origin/{origin}");
 
         try {
             Thread.sleep(100);
@@ -191,31 +186,29 @@ public abstract class BaseRestIntegrationTest {
      */
     protected void setSjf() {
         spec()
-                .expect()
-                .statusCode(200)
-                .when()
-                .post("authtestability/user/parameters/sjf");
+            .expect()
+            .statusCode(200)
+            .when()
+            .post("authtestability/user/parameters/sjf");
     }
 
     /**
      * Helper method to create an utkast of a given type for a given patient.
      * The request will be made with the current auth session.
      *
-     * @param intygsTyp
-     *            Type to create
-     * @param patientPersonNummer
-     *            the patient to create the utkast for
+     * @param intygsTyp Type to create
+     * @param patientPersonNummer the patient to create the utkast for
      * @return Id for the new utkast
      */
     protected String createUtkast(String intygsTyp, String patientPersonNummer) {
         CreateUtkastRequest utkastRequest = createUtkastRequest(intygsTyp, patientPersonNummer);
 
         Response response = spec()
-                .pathParam("intygstyp", intygsTyp).contentType(ContentType.JSON).body(utkastRequest)
-                .expect().statusCode(200)
-                .when().post("api/utkast/{intygstyp}")
-                .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-generic-utkast-response-schema.json"))
-                .body("intygsTyp", equalTo(utkastRequest.getIntygType())).extract().response();
+            .pathParam("intygstyp", intygsTyp).contentType(ContentType.JSON).body(utkastRequest)
+            .expect().statusCode(200)
+            .when().post("api/utkast/{intygstyp}")
+            .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-generic-utkast-response-schema.json"))
+            .body("intygsTyp", equalTo(utkastRequest.getIntygType())).extract().response();
 
         // The type-specific model is a serialized json within the model property, need to extract that first.
         JsonPath draft = new JsonPath(response.body().asString());
@@ -232,23 +225,18 @@ public abstract class BaseRestIntegrationTest {
     /**
      * Creates a new sent intyg, with a komplettering relation to the given intyg id. It is assumed that the specified
      * intyg already exists (and is signed & sent), otherwise setting the relation will fail.
-     *
-     * @param earlierSentIntygId
-     * @param intygTyp
-     * @param patientPersonnummer
-     * @return
      */
     protected String createSentIntygAsKompletteringToIntyg(String earlierSentIntygId, String intygTyp,
-            String patientPersonnummer) {
+        String patientPersonnummer) {
 
         // Create Utkast not Intyg, since relation data needs to be set before signing with new certificates like luse
         String utkastId = createUtkast(intygTyp, patientPersonnummer);
 
         // Mark as komplettering for the given id
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
-                .pathParam("intygsId", utkastId).body(earlierSentIntygId)
-                .expect().statusCode(200)
-                .when().put("testability/intyg/{intygsId}/kompletterarintyg");
+            .pathParam("intygsId", utkastId).body(earlierSentIntygId)
+            .expect().statusCode(200)
+            .when().put("testability/intyg/{intygsId}/kompletterarintyg");
 
         // Sign and send.
         signUtkast(utkastId);
@@ -261,10 +249,6 @@ public abstract class BaseRestIntegrationTest {
 
     /**
      * Create a intyg with status SIGNED
-     *
-     * @param intygsTyp
-     * @param patientPersonNummer
-     * @return
      */
     protected String createSignedIntyg(String intygsTyp, String patientPersonNummer) {
 
@@ -280,10 +264,8 @@ public abstract class BaseRestIntegrationTest {
     /**
      * Create Utkast Request with default values for all but type and patient
      *
-     * @param intygsType
-     *            type to create
-     * @param patientPersonNummer
-     *            patient to create it for
+     * @param intygsType type to create
+     * @param patientPersonNummer patient to create it for
      * @return a new CreateUtkastRequest
      */
     protected CreateUtkastRequest createUtkastRequest(String intygsType, String patientPersonNummer) {
@@ -301,13 +283,9 @@ public abstract class BaseRestIntegrationTest {
     /**
      * Inserts a question for an existing certificate
      *
-     * @param typ
-     *            type to create
-     * @param intygId
-     *            id of the intyg to create the question for
-     * @param personnummer
-     *            patient to create it for
-     * @return
+     * @param typ type to create
+     * @param intygId id of the intyg to create the question for
+     * @param personnummer patient to create it for
      */
     protected int createQuestion(String typ, String intygId, String personnummer) {
         return createQuestion(typ, intygId, personnummer, Amne.ARBETSTIDSFORLAGGNING);
@@ -317,10 +295,10 @@ public abstract class BaseRestIntegrationTest {
         FragaSvar fs = createTestQuestion(typ, intygId, personnummer, amne);
 
         Response response = spec()
-                .contentType(ContentType.JSON).body(fs)
-                .expect().statusCode(200)
-                .when().post("testability/fragasvar")
-                .then().extract().response();
+            .contentType(ContentType.JSON).body(fs)
+            .expect().statusCode(200)
+            .when().post("testability/fragasvar")
+            .then().extract().response();
 
         JsonPath model = new JsonPath(response.body().asString());
         return model.get("internReferens");
@@ -329,32 +307,28 @@ public abstract class BaseRestIntegrationTest {
     /**
      * Inserts a question of type arende for an existing certificate
      *
-     * @param intygTyp
-     *            type to create
-     * @param intygsId
-     *            id of the intyg to create the arende for
-     * @param personnummer
-     *            patient to create it for
-     * @return
+     * @param intygTyp type to create
+     * @param intygsId id of the intyg to create the arende for
+     * @param personnummer patient to create it for
      */
     protected String createArendeQuestion(String intygTyp, String intygsId, String personnummer, ArendeAmne messageType) {
         Arende arende;
         switch (messageType) {
-        case AVSTMN:
-            arende = createAvstamningArendeFromFktoWebcertUser(intygTyp, intygsId, personnummer);
-            break;
-        case KOMPLT:
-            arende = createKompletteringArendeFromFkToWebcertUser(intygTyp, intygsId, personnummer);
-            break;
-        default:
-            throw new IllegalArgumentException();
+            case AVSTMN:
+                arende = createAvstamningArendeFromFktoWebcertUser(intygTyp, intygsId, personnummer);
+                break;
+            case KOMPLT:
+                arende = createKompletteringArendeFromFkToWebcertUser(intygTyp, intygsId, personnummer);
+                break;
+            default:
+                throw new IllegalArgumentException();
         }
 
         Response response = spec()
-                .body(arende)
-                .expect().statusCode(200)
-                .when().post("testability/arendetest")
-                .then().extract().response();
+            .body(arende)
+            .expect().statusCode(200)
+            .when().post("testability/arendetest")
+            .then().extract().response();
 
         JsonPath model = new JsonPath(response.body().asString());
         return model.get("meddelandeId");
@@ -363,31 +337,26 @@ public abstract class BaseRestIntegrationTest {
     /**
      * Removes a question after using it for a test
      *
-     * @param internId
-     *            internal id of the question to remove
+     * @param internId internal id of the question to remove
      */
     protected void deleteQuestion(int internId) {
         spec().pathParam("id", internId)
-                .expect().statusCode(200)
-                .when().delete("testability/fragasvar/{id}");
+            .expect().statusCode(200)
+            .when().delete("testability/fragasvar/{id}");
     }
 
     protected void deleteQuestionsByEnhet(String enhetsId) {
         spec().pathParam("enhetsId", enhetsId)
-                .expect().statusCode(200)
-                .when().delete("testability/fragasvar/enhet/{enhetsId}");
+            .expect().statusCode(200)
+            .when().delete("testability/fragasvar/enhet/{enhetsId}");
     }
 
     /**
      * Creates a test question with information specified in most fields.
      *
-     * @param typ
-     *            Certificate type of which the question refers to
-     * @param intygId
-     *            Certificate id of which the question refers to
-     * @param personnummer
-     *            Social security number of the patient the certificate is made out to
-     * @return
+     * @param typ Certificate type of which the question refers to
+     * @param intygId Certificate id of which the question refers to
+     * @param personnummer Social security number of the patient the certificate is made out to
      */
     private FragaSvar createTestQuestion(String typ, String intygId, String personnummer, Amne amne) {
         LocalDateTime now = LocalDateTime.now();
@@ -395,7 +364,7 @@ public abstract class BaseRestIntegrationTest {
         fs.setAmne(amne);
         fs.setFrageText(DEFAULT_FRAGE_TEXT);
         fs.setIntygsReferens(new IntygsReferens(intygId, typ,
-                Personnummer.createPersonnummer(personnummer).get(), "Api Restman", now));
+            Personnummer.createPersonnummer(personnummer).get(), "Api Restman", now));
         fs.setStatus(Status.PENDING_INTERNAL_ACTION);
         fs.setFrageSkickadDatum(now);
         fs.setMeddelandeRubrik("Meddelanderubrik");
@@ -436,13 +405,9 @@ public abstract class BaseRestIntegrationTest {
     /**
      * Creates a test question of type arende with information specified in most fields.
      *
-     * @param intygTyp
-     *            Certificate type of which the question refers to
-     * @param intygsId
-     *            Certificate id of which the question refers to
-     * @param personnummer
-     *            Social security number of the patient the certificate is made out to
-     * @return
+     * @param intygTyp Certificate type of which the question refers to
+     * @param intygsId Certificate id of which the question refers to
+     * @param personnummer Social security number of the patient the certificate is made out to
      */
     private Arende createAvstamningArendeFromFktoWebcertUser(String intygTyp, String intygsId, String personnummer) {
         LocalDateTime now = LocalDateTime.now();
@@ -509,8 +474,8 @@ public abstract class BaseRestIntegrationTest {
      */
     protected String formatPersonnummer(String patientPersonnummer) {
         Personnummer personnummer = Personnummer
-                .createPersonnummer(patientPersonnummer)
-                .orElseThrow(() -> new IllegalArgumentException("Could not create personnummer with id: " + patientPersonnummer));
+            .createPersonnummer(patientPersonnummer)
+            .orElseThrow(() -> new IllegalArgumentException("Could not create personnummer with id: " + patientPersonnummer));
 
         return personnummer.getPersonnummer();
     }
@@ -518,27 +483,24 @@ public abstract class BaseRestIntegrationTest {
     /**
      * Marks the intyg as sent
      *
-     * @param intygId
-     *            the internal reference to the intyg to be marked
+     * @param intygId the internal reference to the intyg to be marked
      */
     protected void sendIntyg(String intygId) {
         spec()
-                .pathParams("id", intygId)
-                .expect().statusCode(200)
-                .when().put("/testability/intyg/{id}/skickat");
+            .pathParams("id", intygId)
+            .expect().statusCode(200)
+            .when().put("/testability/intyg/{id}/skickat");
     }
 
     /**
      * Creates a 'fake signature' for the given utkast, which is now for all (?) intents and purposes, an intyg.
-     *
-     * @param utkastId
      */
     protected void signUtkast(String utkastId) {
         // Maybe we should set more signature related metadata?
         spec()
-                .pathParam("intygsId", utkastId).body(DEFAULT_LAKARE.getHsaId())
-                .expect().statusCode(200)
-                .when().put("testability/intyg/{intygsId}/signerat");
+            .pathParam("intygsId", utkastId).body(DEFAULT_LAKARE.getHsaId())
+            .expect().statusCode(200)
+            .when().put("testability/intyg/{intygsId}/signerat");
     }
 
     /**
@@ -548,11 +510,11 @@ public abstract class BaseRestIntegrationTest {
      */
     protected RequestSpecification spec() {
         RequestSpecification spec = given().cookie("ROUTEID", routeId)
-                .contentType(ContentType.JSON);
+            .contentType(ContentType.JSON);
         if (!Strings.isNullOrEmpty(csrfToken)) {
             spec
-                    .cookie("XSRF-TOKEN", csrfToken)
-                    .header("X-XSRF-TOKEN", csrfToken); // Usually set by angularjs, using value from cookie.
+                .cookie("XSRF-TOKEN", csrfToken)
+                .header("X-XSRF-TOKEN", csrfToken); // Usually set by angularjs, using value from cookie.
         }
         return spec;
     }

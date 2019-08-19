@@ -18,6 +18,14 @@
  */
 package se.inera.intyg.webcert.web.integration.interactions.createdraftcertificate;
 
+import static org.mockito.Mockito.when;
+
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.mockito.Mock;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
@@ -29,15 +37,6 @@ import se.inera.intyg.infra.security.common.model.RequestOrigin;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.webcert.web.auth.WebcertUserDetailsService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
-
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import static org.mockito.Mockito.when;
 
 /**
  * Created by eriklupander on 2017-09-27.
@@ -72,18 +71,18 @@ public abstract class BaseCreateDraftCertificateTest {
         user.setAuthorities(new HashMap<>());
 
         user.getAuthorities().put(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT,
-                createPrivilege(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT));
+            createPrivilege(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT));
         user.getAuthorities().put(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG,
-                createPrivilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG));
+            createPrivilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG));
         // TODO
         user.setFeatures(Stream.of(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST, AuthoritiesConstants.FEATURE_TAK_KONTROLL)
-                .collect(Collectors.toMap(Function.identity(), s -> {
-                    Feature feature = new Feature();
-                    feature.setName(s);
-                    feature.setGlobal(true);
-                    feature.setIntygstyper(Arrays.asList(FK7263, TSBAS));
-                    return feature;
-                })));
+            .collect(Collectors.toMap(Function.identity(), s -> {
+                Feature feature = new Feature();
+                feature.setName(s);
+                feature.setGlobal(true);
+                feature.setIntygstyper(Arrays.asList(FK7263, TSBAS));
+                return feature;
+            })));
         user.setOrigin(UserOriginType.DJUPINTEGRATION.name());
         user.setBefattningar(Arrays.asList(TITLE_CODE));
         user.setSpecialiseringar(Arrays.asList(ALLMAN_MEDICIN, INVARTES_MEDICIN));

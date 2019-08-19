@@ -28,16 +28,16 @@
 var BaseUtkast = require('../base.utkast.page.js');
 
 var SocBaseUtkast = BaseUtkast._extend({
-    init: function init() {
-        init._super.call(this);
+  init: function init() {
+    init._super.call(this);
 
-        this.at = element(by.css('.edit-form'));
+    this.at = element(by.css('.edit-form'));
 
-        this.element = element(by.id('some-element'));
-    },
-    somefunction: function(txt) {
-        return txt;
-    }
+    this.element = element(by.id('some-element'));
+  },
+  somefunction: function(txt) {
+    return txt;
+  }
 
 });
 module.exports = SocBaseUtkast;

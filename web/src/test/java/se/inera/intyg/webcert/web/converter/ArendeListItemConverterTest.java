@@ -18,6 +18,11 @@
  */
 package se.inera.intyg.webcert.web.converter;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+
+import java.time.LocalDateTime;
 import org.junit.Test;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
@@ -28,10 +33,6 @@ import se.inera.intyg.webcert.persistence.fragasvar.model.IntygsReferens;
 import se.inera.intyg.webcert.persistence.fragasvar.model.Vardperson;
 import se.inera.intyg.webcert.persistence.model.Status;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeListItem;
-
-import java.time.LocalDateTime;
-
-import static org.junit.Assert.*;
 
 public class ArendeListItemConverterTest {
 
@@ -52,7 +53,7 @@ public class ArendeListItemConverterTest {
         final Status status = Status.PENDING_INTERNAL_ACTION;
 
         FragaSvar fs = createFragaSvar(fragestallare, intygId, intygTyp, patientId, internReferens, senasteHandelse, signeratAv, enhetsnamn,
-                vardgivarnamn, amne, vidarebefordrad, status);
+            vardgivarnamn, amne, vidarebefordrad, status);
         ArendeListItem arende = ArendeListItemConverter.convert(fs);
 
         assertNotNull(arende);
@@ -74,7 +75,7 @@ public class ArendeListItemConverterTest {
     public void testConvertFragaSvarWithoutCorrespondingArendeAmne() {
         final Amne amne = Amne.ARBETSTIDSFORLAGGNING;
         FragaSvar fs = createFragaSvar("fragestallare", "intygId", "intygTyp", patientId, (long) 13, LocalDateTime.now(), "signeratAv",
-                "enhetsnamn", "vardgivarnamn", amne, false, Status.PENDING_INTERNAL_ACTION);
+            "enhetsnamn", "vardgivarnamn", amne, false, Status.PENDING_INTERNAL_ACTION);
         ArendeListItem arende = ArendeListItemConverter.convert(fs);
 
         assertNotNull(arende);
@@ -113,8 +114,8 @@ public class ArendeListItemConverterTest {
         final String vardgivarnamn = "vardgivarnamn";
 
         Arende arende = createArende(amne, intygsId, intygTyp, meddelandeId, patientPersonId, signeratAvName, skickatAv, skickatTidpunkt,
-                status,
-                vidarebefordrad, enhetsnamn, vardgivarnamn);
+            status,
+            vidarebefordrad, enhetsnamn, vardgivarnamn);
         ArendeListItem result = ArendeListItemConverter.convert(arende);
 
         assertEquals(amne.name(), result.getAmne());
@@ -134,21 +135,21 @@ public class ArendeListItemConverterTest {
     @Test
     public void testConvertArendeVidarebefordradNull() {
         Arende arende = createArende(ArendeAmne.KONTKT, "intygsId", "intygTyp", "meddelandeId", "patientPersonId", "signeratAvName",
-                "skickatAv",
-                LocalDateTime.now(), Status.ANSWERED,
-                null, "enhetsnamn", "vardgivarnamn");
+            "skickatAv",
+            LocalDateTime.now(), Status.ANSWERED,
+            null, "enhetsnamn", "vardgivarnamn");
         ArendeListItem result = ArendeListItemConverter.convert(arende);
 
         assertEquals(false, result.isVidarebefordrad());
     }
 
     private FragaSvar createFragaSvar(String fragestallare, String intygsId, String intygsTyp, String patientId, Long internReferens,
-            LocalDateTime senasteHandelse, String signeratAv, String enhetsnamn, String vardgivarnamn, Amne amne, Boolean vidarebefordrad,
-            Status status) {
+        LocalDateTime senasteHandelse, String signeratAv, String enhetsnamn, String vardgivarnamn, Amne amne, Boolean vidarebefordrad,
+        Status status) {
         FragaSvar res = new FragaSvar();
         res.setFrageStallare(fragestallare);
         res.setIntygsReferens(new IntygsReferens(intygsId, intygsTyp,
-                Personnummer.createPersonnummer(patientId).get(), null, null));
+            Personnummer.createPersonnummer(patientId).get(), null, null));
         res.setInternReferens(internReferens);
         res.setFrageSkickadDatum(senasteHandelse);
         Vardperson vp = new Vardperson();
@@ -163,8 +164,8 @@ public class ArendeListItemConverterTest {
     }
 
     private Arende createArende(ArendeAmne amne, String intygsId, String intygTyp, String meddelandeId, String patientPersonId,
-            String signeratAvName, String skickatAv, LocalDateTime senasteHandelse, Status status, Boolean vidarebefordrad,
-            String enhetName, String vardgivareName) {
+        String signeratAvName, String skickatAv, LocalDateTime senasteHandelse, Status status, Boolean vidarebefordrad,
+        String enhetName, String vardgivareName) {
 
         Arende arende = new Arende();
         arende.setAmne(amne);

@@ -30,9 +30,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
 import javax.ws.rs.core.Response;
-
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Before;
 import org.junit.Test;
@@ -40,7 +38,6 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.infra.integration.hsa.model.SelectableVardenhet;
 import se.inera.intyg.schemas.contract.Personnummer;
@@ -64,7 +61,7 @@ public class IntygApiControllerTest {
 
     private static final List<String> ENHET_IDS = Arrays.asList("ABC123", "DEF456");
     private static final List<UtkastStatus> DRAFT_STATUSES = Arrays.asList(UtkastStatus.DRAFT_COMPLETE,
-            UtkastStatus.DRAFT_INCOMPLETE);
+        UtkastStatus.DRAFT_INCOMPLETE);
 
     private static final Set<String> USER_INTYGSTYPER = new HashSet<>();
 
@@ -128,7 +125,7 @@ public class IntygApiControllerTest {
 
     @Test
     public void testListIntygWhenUserHasNoAssignments() {
-        when(user.getIdsOfSelectedVardenhet()).thenReturn(Collections.<String> emptyList());
+        when(user.getIdsOfSelectedVardenhet()).thenReturn(Collections.<String>emptyList());
 
         Response response = intygCtrl.listDraftsAndIntygForPerson(PNR.getPersonnummer());
 

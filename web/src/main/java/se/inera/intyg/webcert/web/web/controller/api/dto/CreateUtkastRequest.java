@@ -19,7 +19,6 @@
 package se.inera.intyg.webcert.web.web.controller.api.dto;
 
 import com.google.common.base.Strings;
-
 import se.inera.intyg.schemas.contract.Personnummer;
 
 public class CreateUtkastRequest {
@@ -53,7 +52,7 @@ public class CreateUtkastRequest {
         }
 
         return (patientFornamn == null || patientFornamn.length() <= NAME_MAX_LENGTH)
-                && (patientEfternamn == null || patientEfternamn.length() <= NAME_MAX_LENGTH);
+            && (patientEfternamn == null || patientEfternamn.length() <= NAME_MAX_LENGTH);
     }
 
     public String getIntygType() {

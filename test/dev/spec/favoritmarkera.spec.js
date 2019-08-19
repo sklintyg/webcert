@@ -27,27 +27,27 @@ var SokSkrivValjUtkastType = wcTestTools.pages.sokSkrivIntyg.valjUtkastType;
 
 describe('Verify favoritmarkerad', function() {
 
-    var intygsTyp = 'ag114';
+  var intygsTyp = 'ag114';
 
-    it('can add and remove favoritmarkerad intygstyp', function() {
-        browser.ignoreSynchronization = false;
-        restUtil.deleteAnvandarPreference('TSTNMT2321000156-103F', 'wc.favoritIntyg');
-        specHelper.login();
+  it('can add and remove favoritmarkerad intygstyp', function() {
+    browser.ignoreSynchronization = false;
+    restUtil.deleteAnvandarPreference('TSTNMT2321000156-103F', 'wc.favoritIntyg');
+    specHelper.login();
 
-        SokSkrivIntygPage.selectPersonnummer('191212121212');
-        expect(SokSkrivValjUtkastType.isAt());
+    SokSkrivIntygPage.selectPersonnummer('191212121212');
+    expect(SokSkrivValjUtkastType.isAt());
 
-        // check intygstyp is moved to top when selected as favourite
-        SokSkrivValjUtkastType.clickToggleFavourite(intygsTyp);
-        expect(SokSkrivValjUtkastType.verifyTypeIsAtIndex(intygsTyp, 0)).toBe(true);
+    // check intygstyp is moved to top when selected as favourite
+    SokSkrivValjUtkastType.clickToggleFavourite(intygsTyp);
+    expect(SokSkrivValjUtkastType.verifyTypeIsAtIndex(intygsTyp, 0)).toBe(true);
 
-        // reload page and check favourite is still on top
-        browser.refresh();
-        expect(SokSkrivValjUtkastType.verifyTypeIsAtIndex(intygsTyp, 0)).toBe(true);
+    // reload page and check favourite is still on top
+    browser.refresh();
+    expect(SokSkrivValjUtkastType.verifyTypeIsAtIndex(intygsTyp, 0)).toBe(true);
 
-        // Remove intyg from favourites, and then it should not be on top of list
-        SokSkrivValjUtkastType.clickToggleFavourite(intygsTyp);
-        expect(SokSkrivValjUtkastType.verifyTypeIsAtIndex(intygsTyp, 0)).toBe(false);
+    // Remove intyg from favourites, and then it should not be on top of list
+    SokSkrivValjUtkastType.clickToggleFavourite(intygsTyp);
+    expect(SokSkrivValjUtkastType.verifyTypeIsAtIndex(intygsTyp, 0)).toBe(false);
 
-    });
+  });
 });

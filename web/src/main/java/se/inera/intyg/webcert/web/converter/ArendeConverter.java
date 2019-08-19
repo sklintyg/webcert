@@ -18,12 +18,11 @@
  */
 package se.inera.intyg.webcert.web.converter;
 
+import com.google.common.base.Strings;
 import java.time.LocalDateTime;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import javax.xml.ws.WebServiceException;
-
-import com.google.common.base.Strings;
 import se.inera.intyg.infra.integration.hsa.services.HsaEmployeeService;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
@@ -79,7 +78,7 @@ public final class ArendeConverter {
     }
 
     public static Arende createArendeFromUtkast(ArendeAmne amne, String rubrik, String meddelande, Utkast utkast, LocalDateTime now,
-            String vardaktorNamn, HsaEmployeeService hsaEmployeeService) {
+        String vardaktorNamn, HsaEmployeeService hsaEmployeeService) {
         Arende arende = new Arende();
         arende.setStatus(Status.PENDING_EXTERNAL_ACTION);
         arende.setAmne(amne);
@@ -141,7 +140,7 @@ public final class ArendeConverter {
         if (utkast.getSkapadAv() != null && utkast.getSkapadAv().getHsaId().equals(utkast.getSignatur().getSigneradAv())) {
             return utkast.getSkapadAv().getNamn();
         } else if (utkast.getSenastSparadAv() != null
-                && utkast.getSenastSparadAv().getHsaId().equals(utkast.getSignatur().getSigneradAv())) {
+            && utkast.getSenastSparadAv().getHsaId().equals(utkast.getSignatur().getSigneradAv())) {
             return utkast.getSenastSparadAv().getNamn();
         } else {
             return getNameByHsaId(utkast.getSignatur().getSigneradAv(), hsaEmployeeService);
@@ -151,17 +150,17 @@ public final class ArendeConverter {
     public static String getNameByHsaId(String hsaId, HsaEmployeeService hsaEmployeeService) {
         try {
             return hsaEmployeeService.getEmployee(hsaId, null)
-                    .stream()
-                    .filter(pit -> !Strings.isNullOrEmpty(pit.getMiddleAndSurName()))
-                    .map(pit -> !Strings.isNullOrEmpty(pit.getGivenName())
-                            ? pit.getGivenName() + " " + pit.getMiddleAndSurName()
-                            : pit.getMiddleAndSurName())
-                    .findFirst()
-                    .orElseThrow(
-                            () -> new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND, "No name was found in HSA"));
+                .stream()
+                .filter(pit -> !Strings.isNullOrEmpty(pit.getMiddleAndSurName()))
+                .map(pit -> !Strings.isNullOrEmpty(pit.getGivenName())
+                    ? pit.getGivenName() + " " + pit.getMiddleAndSurName()
+                    : pit.getMiddleAndSurName())
+                .findFirst()
+                .orElseThrow(
+                    () -> new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND, "No name was found in HSA"));
         } catch (WebServiceException e) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.EXTERNAL_SYSTEM_PROBLEM,
-                    "Could not communicate with HSA. Cause: " + e.getMessage());
+                "Could not communicate with HSA. Cause: " + e.getMessage());
         }
     }
 }

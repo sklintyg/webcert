@@ -18,18 +18,19 @@
  */
 package se.inera.intyg.webcert.web.auth.common;
 
-import static se.inera.intyg.webcert.web.auth.common.AuthConstants.*;
+import static se.inera.intyg.webcert.web.auth.common.AuthConstants.HTTP_ID_SAMBI_SE_LOA_LOA3;
+import static se.inera.intyg.webcert.web.auth.common.AuthConstants.URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_MOBILE_TWO_FACTOR_CONTRACT;
+import static se.inera.intyg.webcert.web.auth.common.AuthConstants.URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_SMARTCARD_PKI;
+import static se.inera.intyg.webcert.web.auth.common.AuthConstants.URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_SOFTWARE_PKI;
+import static se.inera.intyg.webcert.web.auth.common.AuthConstants.URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_UNSPECIFIED;
 
 import java.util.Arrays;
-
 import javax.annotation.Resource;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.security.saml.SAMLCredential;
 import org.springframework.security.saml.userdetails.SAMLUserDetailsService;
 import org.springframework.stereotype.Service;
-
 import se.inera.intyg.webcert.web.auth.WebcertUserDetailsService;
 import se.inera.intyg.webcert.web.auth.eleg.ElegWebCertUserDetailsService;
 
@@ -54,11 +55,15 @@ public class UnifiedUserDetailsService implements SAMLUserDetailsService {
     @Resource
     private Environment environment;
 
-    /** User details service for e-leg authenticated private practitioners. */
+    /**
+     * User details service for e-leg authenticated private practitioners.
+     */
     @Autowired
     private ElegWebCertUserDetailsService elegWebCertUserDetailsService;
 
-    /** User details service for SITHS authenticated personnel. */
+    /**
+     * User details service for SITHS authenticated personnel.
+     */
     @Autowired
     private WebcertUserDetailsService webcertUserDetailsService;
 
@@ -66,35 +71,35 @@ public class UnifiedUserDetailsService implements SAMLUserDetailsService {
     public Object loadUserBySAML(SAMLCredential samlCredential) {
         if (samlCredential.getAuthenticationAssertion() == null) {
             throw new IllegalArgumentException("Cannot determine which underlying UserDetailsService to use for SAMLCredential. "
-                    + "Must contain an authenticationAssertion");
+                + "Must contain an authenticationAssertion");
         }
 
         String authnContextClassRef = samlCredential.getAuthenticationAssertion().getAuthnStatements().get(0).getAuthnContext()
-                .getAuthnContextClassRef().getAuthnContextClassRef();
+            .getAuthnContextClassRef().getAuthnContextClassRef();
         if (authnContextClassRef == null || authnContextClassRef.trim().length() == 0) {
             throw new IllegalArgumentException("Cannot determine which underlying UserDetailsService to use for SAMLCredential. "
-                    + "AuthenticationContextClassRef was null or empty. Should be one of:\n"
-                    + HTTP_ID_SAMBI_SE_LOA_LOA3 + " or "
-                    + URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_SOFTWARE_PKI + " or "
-                    + URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_MOBILE_TWO_FACTOR_CONTRACT + " or "
-                    + URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_SMARTCARD_PKI);
+                + "AuthenticationContextClassRef was null or empty. Should be one of:\n"
+                + HTTP_ID_SAMBI_SE_LOA_LOA3 + " or "
+                + URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_SOFTWARE_PKI + " or "
+                + URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_MOBILE_TWO_FACTOR_CONTRACT + " or "
+                + URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_SMARTCARD_PKI);
         }
 
         switch (authnContextClassRef) {
-        case URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_MOBILE_TWO_FACTOR_CONTRACT:
-        case URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_SMARTCARD_PKI:
-        case URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_SOFTWARE_PKI:
-            return elegWebCertUserDetailsService.loadUserBySAML(samlCredential);
-        case HTTP_ID_SAMBI_SE_LOA_LOA3:
-            return webcertUserDetailsService.loadUserBySAML(samlCredential);
-        case URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_UNSPECIFIED:
-            if (Arrays.stream(environment.getActiveProfiles()).anyMatch("wc-security-test"::equalsIgnoreCase)) {
+            case URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_MOBILE_TWO_FACTOR_CONTRACT:
+            case URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_SMARTCARD_PKI:
+            case URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_SOFTWARE_PKI:
+                return elegWebCertUserDetailsService.loadUserBySAML(samlCredential);
+            case HTTP_ID_SAMBI_SE_LOA_LOA3:
                 return webcertUserDetailsService.loadUserBySAML(samlCredential);
-            }
-            throw new IllegalArgumentException(
+            case URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_UNSPECIFIED:
+                if (Arrays.stream(environment.getActiveProfiles()).anyMatch("wc-security-test"::equalsIgnoreCase)) {
+                    return webcertUserDetailsService.loadUserBySAML(samlCredential);
+                }
+                throw new IllegalArgumentException(
                     "AuthorizationContextClassRef " + URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_UNSPECIFIED + " is not allowed");
-        default:
-            throw new IllegalArgumentException("AuthorizationContextClassRef was " + authnContextClassRef + ", expected one of: "
+            default:
+                throw new IllegalArgumentException("AuthorizationContextClassRef was " + authnContextClassRef + ", expected one of: "
                     + HTTP_ID_SAMBI_SE_LOA_LOA3 + " or "
                     + URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_SOFTWARE_PKI + " or "
                     + URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_MOBILE_TWO_FACTOR_CONTRACT + " or "

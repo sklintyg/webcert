@@ -20,10 +20,10 @@ package se.inera.intyg.webcert.web.service.intyg.dto;
 
 import java.time.LocalDateTime;
 import java.util.List;
-
 import se.inera.intyg.schemas.contract.Personnummer;
 
 public final class IntygWithNotificationsRequest {
+
     private final LocalDateTime startDate;
     private final LocalDateTime endDate;
     private final List<String> enhetId;
@@ -31,7 +31,7 @@ public final class IntygWithNotificationsRequest {
     private final Personnummer personnummer;
 
     public IntygWithNotificationsRequest(LocalDateTime startDate, LocalDateTime endDate, List<String> enhetId, String vardgivarId,
-            Personnummer personnummer) {
+        Personnummer personnummer) {
         this.startDate = startDate;
         this.endDate = endDate;
         this.enhetId = enhetId;
@@ -64,6 +64,7 @@ public final class IntygWithNotificationsRequest {
     }
 
     public static class Builder {
+
         private LocalDateTime startDate;
         private LocalDateTime endDate;
         private List<String> enhetId;

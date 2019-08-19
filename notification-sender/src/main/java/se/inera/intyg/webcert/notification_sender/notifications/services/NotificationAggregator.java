@@ -21,12 +21,10 @@ package se.inera.intyg.webcert.notification_sender.notifications.services;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
-
 import org.apache.camel.Exchange;
 import org.apache.camel.Message;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import se.inera.intyg.webcert.notification_sender.notifications.filter.NotificationMessageDiscardFilter;
 
 /**
@@ -58,8 +56,8 @@ public class NotificationAggregator {
 
         // Pull the inbound messages from the exchanges
         List<Message> aggregatedList = grouped.stream()
-                .map(Exchange::getIn)
-                .collect(Collectors.toList());
+            .map(Exchange::getIn)
+            .collect(Collectors.toList());
 
         // And finally let the filtering component do its job, passing on a List of those messages we want to pass down
         // the route.

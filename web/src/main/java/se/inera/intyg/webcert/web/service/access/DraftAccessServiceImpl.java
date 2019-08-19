@@ -21,7 +21,6 @@ package se.inera.intyg.webcert.web.service.access;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import se.inera.intyg.common.db.support.DbModuleEntryPoint;
 import se.inera.intyg.common.doi.support.DoiModuleEntryPoint;
 import se.inera.intyg.common.support.model.common.internal.Vardenhet;
@@ -38,14 +37,15 @@ import se.inera.intyg.webcert.web.service.utkast.UtkastService;
  */
 @Service
 public class DraftAccessServiceImpl implements DraftAccessService {
+
     private final WebCertUserService webCertUserService;
     private final PatientDetailsResolver patientDetailsResolver;
     private final UtkastService utkastService;
 
     @Autowired
     public DraftAccessServiceImpl(final WebCertUserService webCertUserService,
-            final PatientDetailsResolver patientDetailsResolver,
-            final UtkastService utkastService) {
+        final PatientDetailsResolver patientDetailsResolver,
+        final UtkastService utkastService) {
         this.webCertUserService = webCertUserService;
         this.patientDetailsResolver = patientDetailsResolver;
         this.utkastService = utkastService;
@@ -63,112 +63,112 @@ public class DraftAccessServiceImpl implements DraftAccessService {
         vardenhet.setEnhetsid(user.getValdVardenhet().getId());
 
         return getAccessServiceEvaluation().given(user, certificateType)
-                .feature(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
-                .privilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG)
-                .careUnit(vardenhet)
-                .patient(patient)
-                .checkPatientDeceased(false)
-                .excludeCertificateTypesForDeceased(DoiModuleEntryPoint.MODULE_ID)
-                .checkInactiveCareUnit(false)
-                .checkRenew(false)
-                .checkPatientSecrecy()
-                .checkUnique()
-                .evaluate();
+            .feature(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
+            .privilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG)
+            .careUnit(vardenhet)
+            .patient(patient)
+            .checkPatientDeceased(false)
+            .excludeCertificateTypesForDeceased(DoiModuleEntryPoint.MODULE_ID)
+            .checkInactiveCareUnit(false)
+            .checkRenew(false)
+            .checkPatientSecrecy()
+            .checkUnique()
+            .evaluate();
     }
 
     @Override
     public AccessResult allowToReadDraft(String certificateType, Vardenhet careUnit, Personnummer patient) {
         return getAccessServiceEvaluation().given(getUser(), certificateType)
-                .feature(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
-                .privilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG)
-                .careUnit(careUnit)
-                .patient(patient)
-                .checkPatientSecrecy()
-                .checkUnit(true, true)
-                .evaluate();
+            .feature(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
+            .privilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG)
+            .careUnit(careUnit)
+            .patient(patient)
+            .checkPatientSecrecy()
+            .checkUnit(true, true)
+            .evaluate();
     }
 
     @Override
     public AccessResult allowToEditDraft(String certificateType, Vardenhet careUnit, Personnummer patient) {
         return getAccessServiceEvaluation().given(getUser(), certificateType)
-                .feature(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
-                .privilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG)
-                .careUnit(careUnit)
-                .patient(patient)
-                .checkPatientDeceased(true)
-                .invalidCertificateTypeForDeceased(DbModuleEntryPoint.MODULE_ID)
-                .checkInactiveCareUnit(true)
-                .checkRenew(true)
-                .checkPatientSecrecy()
-                .checkUnit(false, false)
-                .evaluate();
+            .feature(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
+            .privilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG)
+            .careUnit(careUnit)
+            .patient(patient)
+            .checkPatientDeceased(true)
+            .invalidCertificateTypeForDeceased(DbModuleEntryPoint.MODULE_ID)
+            .checkInactiveCareUnit(true)
+            .checkRenew(true)
+            .checkPatientSecrecy()
+            .checkUnit(false, false)
+            .evaluate();
     }
 
     @Override
     public AccessResult allowToDeleteDraft(String certificateType, Vardenhet careUnit, Personnummer patient) {
         return getAccessServiceEvaluation().given(getUser(), certificateType)
-                .feature(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
-                .privilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG)
-                .careUnit(careUnit)
-                .patient(patient)
-                .checkPatientDeceased(true)
-                .excludeCertificateTypesForDeceased(DbModuleEntryPoint.MODULE_ID, DoiModuleEntryPoint.MODULE_ID)
-                .checkInactiveCareUnit(true)
-                .checkRenew(true)
-                .excludeCertificateTypesForRenew(DbModuleEntryPoint.MODULE_ID, DoiModuleEntryPoint.MODULE_ID)
-                .checkPatientSecrecy()
-                .checkUnit(false, false)
-                .excludeCertificateTypesForUnit(DbModuleEntryPoint.MODULE_ID, DoiModuleEntryPoint.MODULE_ID)
-                .evaluate();
+            .feature(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
+            .privilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG)
+            .careUnit(careUnit)
+            .patient(patient)
+            .checkPatientDeceased(true)
+            .excludeCertificateTypesForDeceased(DbModuleEntryPoint.MODULE_ID, DoiModuleEntryPoint.MODULE_ID)
+            .checkInactiveCareUnit(true)
+            .checkRenew(true)
+            .excludeCertificateTypesForRenew(DbModuleEntryPoint.MODULE_ID, DoiModuleEntryPoint.MODULE_ID)
+            .checkPatientSecrecy()
+            .checkUnit(false, false)
+            .excludeCertificateTypesForUnit(DbModuleEntryPoint.MODULE_ID, DoiModuleEntryPoint.MODULE_ID)
+            .evaluate();
     }
 
     @Override
     public AccessResult allowToSignDraft(String certificateType, Vardenhet careUnit, Personnummer patient) {
         return getAccessServiceEvaluation().given(getUser(), certificateType)
-                .feature(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
-                .privilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG)
-                .careUnit(careUnit)
-                .patient(patient)
-                .checkPatientDeceased(true)
-                .invalidCertificateTypeForDeceased(DbModuleEntryPoint.MODULE_ID)
-                .checkInactiveCareUnit(true)
-                .checkRenew(true)
-                .checkPatientSecrecy()
-                .checkUnique(true)
-                .checkUnit(false, false)
-                .evaluate();
+            .feature(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
+            .privilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG)
+            .careUnit(careUnit)
+            .patient(patient)
+            .checkPatientDeceased(true)
+            .invalidCertificateTypeForDeceased(DbModuleEntryPoint.MODULE_ID)
+            .checkInactiveCareUnit(true)
+            .checkRenew(true)
+            .checkPatientSecrecy()
+            .checkUnique(true)
+            .checkUnit(false, false)
+            .evaluate();
     }
 
     @Override
     public AccessResult allowToPrintDraft(String certificateType, Vardenhet careUnit, Personnummer patient) {
         return getAccessServiceEvaluation().given(getUser(), certificateType)
-                .feature(AuthoritiesConstants.FEATURE_UTSKRIFT)
-                .privilege(AuthoritiesConstants.PRIVILEGE_VISA_INTYG)
-                .careUnit(careUnit)
-                .patient(patient)
-                .checkPatientDeceased(true)
-                .invalidCertificateTypeForDeceased(DbModuleEntryPoint.MODULE_ID)
-                .checkInactiveCareUnit(true)
-                .checkRenew(true)
-                .checkPatientSecrecy()
-                .checkUnit(false, false)
-                .evaluate();
+            .feature(AuthoritiesConstants.FEATURE_UTSKRIFT)
+            .privilege(AuthoritiesConstants.PRIVILEGE_VISA_INTYG)
+            .careUnit(careUnit)
+            .patient(patient)
+            .checkPatientDeceased(true)
+            .invalidCertificateTypeForDeceased(DbModuleEntryPoint.MODULE_ID)
+            .checkInactiveCareUnit(true)
+            .checkRenew(true)
+            .checkPatientSecrecy()
+            .checkUnit(false, false)
+            .evaluate();
     }
 
     @Override
     public AccessResult allowToForwardDraft(String certificateType, Vardenhet careUnit, Personnummer patient) {
         return getAccessServiceEvaluation().given(getUser(), certificateType)
-                .feature(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
-                .privilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG)
-                .careUnit(careUnit)
-                .patient(patient)
-                .checkPatientDeceased(true)
-                .invalidCertificateTypeForDeceased(DbModuleEntryPoint.MODULE_ID)
-                .checkInactiveCareUnit(true)
-                .checkRenew(true)
-                .checkPatientSecrecy()
-                .checkUnit(false, false)
-                .evaluate();
+            .feature(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
+            .privilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG)
+            .careUnit(careUnit)
+            .patient(patient)
+            .checkPatientDeceased(true)
+            .invalidCertificateTypeForDeceased(DbModuleEntryPoint.MODULE_ID)
+            .checkInactiveCareUnit(true)
+            .checkRenew(true)
+            .checkPatientSecrecy()
+            .checkUnit(false, false)
+            .evaluate();
     }
 
     private AccessServiceEvaluation getAccessServiceEvaluation() {

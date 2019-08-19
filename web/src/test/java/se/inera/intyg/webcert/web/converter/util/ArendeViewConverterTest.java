@@ -18,9 +18,32 @@
  */
 package se.inera.intyg.webcert.web.converter.util;
 
+import static org.assertj.core.api.Assertions.catchThrowable;
+import static org.assertj.core.api.Assertions.tuple;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.google.common.collect.ImmutableList;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.assertj.core.api.Assertions;
 import org.junit.Before;
 import org.junit.Test;
@@ -35,7 +58,12 @@ import se.inera.intyg.common.luse.v1.model.internal.LuseUtlatandeV1;
 import se.inera.intyg.common.support.model.CertificateState;
 import se.inera.intyg.common.support.model.InternalDate;
 import se.inera.intyg.common.support.model.Status;
-import se.inera.intyg.common.support.model.common.internal.*;
+import se.inera.intyg.common.support.model.common.internal.GrundData;
+import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
+import se.inera.intyg.common.support.model.common.internal.Patient;
+import se.inera.intyg.common.support.model.common.internal.Utlatande;
+import se.inera.intyg.common.support.model.common.internal.Vardenhet;
+import se.inera.intyg.common.support.model.common.internal.Vardgivare;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistryImpl;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
@@ -53,21 +81,9 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeConversationView;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeView;
 import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
 
-import java.io.IOException;
-import java.io.StringWriter;
-import java.time.LocalDateTime;
-import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import static org.assertj.core.api.Assertions.catchThrowable;
-import static org.assertj.core.api.Assertions.tuple;
-import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
-
 @RunWith(MockitoJUnitRunner.class)
 public class ArendeViewConverterTest {
+
     private static final String PATIENT_PERSON_ID = "19121212-1212";
     private static final String SKAPADAV_PERSON_ID = "19121212-1212";
     private static final String ENHETS_ID = "enhetsId";
@@ -94,7 +110,7 @@ public class ArendeViewConverterTest {
         when(moduleRegistry.getModuleApi(anyString(), anyString())).thenReturn(moduleApi);
         Map<String, List<String>> map = new HashMap<>();
         map.put("1", Arrays.asList(RespConstants.GRUNDFORMEDICINSKTUNDERLAG_SVAR_JSON_ID_1,
-                RespConstants.GRUNDFORMEDICINSKTUNDERLAG_TELEFONKONTAKT_PATIENT_SVAR_JSON_ID_1));
+            RespConstants.GRUNDFORMEDICINSKTUNDERLAG_TELEFONKONTAKT_PATIENT_SVAR_JSON_ID_1));
         map.put("2", Arrays.asList(RespConstants.KANNEDOM_SVAR_JSON_ID_2));
         map.put("4", Arrays.asList("", "", RespConstants.UNDERLAG_SVAR_JSON_ID_4));
         when(moduleApi.getModuleSpecificArendeParameters(any(Utlatande.class), any(List.class))).thenReturn(map);
@@ -103,22 +119,22 @@ public class ArendeViewConverterTest {
     @Before
     public void setupDefaultMocksForIntygService() {
         when(intygService.fetchIntygData(any(String.class), any(String.class), Mockito.anyBoolean()))
-                .thenReturn(
-                        IntygContentHolder.builder()
-                                .setContents("")
-                                .setUtlatande(buildLuseUtlatande(intygsId, ENHETS_ID, ENHETS_NAMN, PATIENT_PERSON_ID, "Test Testsson",
-                                        SKAPADAV_PERSON_ID, LocalDateTime.now().minusDays(2)))
-                                .setStatuses(
-                                        Arrays.asList(new Status(CertificateState.RECEIVED, intygsId, LocalDateTime.now().minusDays(2))))
-                                .setRevoked(false)
-                                .setRelations(new Relations())
-                               // .setReplacedByRelation(null)
-                               // .setComplementedByRelation(null)
-                                .setDeceased(false)
-                                .setSekretessmarkering(false)
-                                .setPatientNameChangedInPU(false)
-                                .setPatientAddressChangedInPU(false)
-                                .build());
+            .thenReturn(
+                IntygContentHolder.builder()
+                    .setContents("")
+                    .setUtlatande(buildLuseUtlatande(intygsId, ENHETS_ID, ENHETS_NAMN, PATIENT_PERSON_ID, "Test Testsson",
+                        SKAPADAV_PERSON_ID, LocalDateTime.now().minusDays(2)))
+                    .setStatuses(
+                        Arrays.asList(new Status(CertificateState.RECEIVED, intygsId, LocalDateTime.now().minusDays(2))))
+                    .setRevoked(false)
+                    .setRelations(new Relations())
+                    // .setReplacedByRelation(null)
+                    // .setComplementedByRelation(null)
+                    .setDeceased(false)
+                    .setSekretessmarkering(false)
+                    .setPatientNameChangedInPU(false)
+                    .setPatientAddressChangedInPU(false)
+                    .build());
     }
 
     @SuppressWarnings("unchecked")
@@ -128,9 +144,9 @@ public class ArendeViewConverterTest {
 
         assertNotNull(result.getKompletteringar().get(0).getJsonPropertyHandle());
         assertEquals(RespConstants.KANNEDOM_SVAR_JSON_ID_2,
-                result.getKompletteringar().get(1).getJsonPropertyHandle());
+            result.getKompletteringar().get(1).getJsonPropertyHandle());
         assertEquals(RespConstants.UNDERLAG_SVAR_JSON_ID_4,
-                result.getKompletteringar().get(2).getJsonPropertyHandle());
+            result.getKompletteringar().get(2).getJsonPropertyHandle());
         assertEquals(new Integer(0), result.getKompletteringar().get(0).getPosition());
         assertEquals(new Integer(0), result.getKompletteringar().get(1).getPosition());
         assertEquals(new Integer(1), result.getKompletteringar().get(2).getPosition());
@@ -154,11 +170,11 @@ public class ArendeViewConverterTest {
         ArendeView result = converter.convertToDto(buildArende("lisjp"));
 
         assertEquals(RespConstants.GRUNDFORMEDICINSKTUNDERLAG_TELEFONKONTAKT_PATIENT_SVAR_JSON_ID_1,
-                result.getKompletteringar().get(0).getJsonPropertyHandle());
+            result.getKompletteringar().get(0).getJsonPropertyHandle());
         assertEquals(RespConstants.KANNEDOM_SVAR_JSON_ID_2,
-                result.getKompletteringar().get(1).getJsonPropertyHandle());
+            result.getKompletteringar().get(1).getJsonPropertyHandle());
         assertEquals(RespConstants.UNDERLAG_SVAR_JSON_ID_4,
-                result.getKompletteringar().get(2).getJsonPropertyHandle());
+            result.getKompletteringar().get(2).getJsonPropertyHandle());
         assertEquals(new Integer(0), result.getKompletteringar().get(0).getPosition());
         assertEquals(new Integer(0), result.getKompletteringar().get(1).getPosition());
         assertEquals(new Integer(1), result.getKompletteringar().get(2).getPosition());
@@ -239,11 +255,11 @@ public class ArendeViewConverterTest {
         final LocalDateTime paminnelse2Timestamp = paminnelse1Timestamp.minusDays(2);
 
         ArendeConversationView res = converter.convertToArendeConversationView(
-                buildArende(fragaMeddelandeId, senasteHandelseFraga, LocalDateTime.now()),
-                buildArende(svarMeddelandeId, null, LocalDateTime.now()), null,
-                Arrays.asList(buildArende(paminnelse2MeddelandeId, null, paminnelse2Timestamp),
-                        buildArende(paminnelse1MeddelandeId, null, paminnelse1Timestamp)),
-                null);
+            buildArende(fragaMeddelandeId, senasteHandelseFraga, LocalDateTime.now()),
+            buildArende(svarMeddelandeId, null, LocalDateTime.now()), null,
+            Arrays.asList(buildArende(paminnelse2MeddelandeId, null, paminnelse2Timestamp),
+                buildArende(paminnelse1MeddelandeId, null, paminnelse1Timestamp)),
+            null);
 
         assertNotNull(res);
         assertNotNull(res.getFraga());
@@ -276,7 +292,7 @@ public class ArendeViewConverterTest {
         arendeList.add(buildArende(UUID.randomUUID().toString(), january, january));
 
         List<ArendeConversationView> result = converter.buildArendeConversations(intygsId, arendeList, Collections.emptyList(),
-                Collections.emptyList());
+            Collections.emptyList());
 
         assertEquals(4, result.size());
         assertEquals(1, result.get(0).getPaminnelser().size());
@@ -304,15 +320,15 @@ public class ArendeViewConverterTest {
 
         // When
         ArendeConversationView messageThread = converter.convertToArendeConversationView(fraga, svar, null,
-                ImmutableList.of(p3, p1, p2), null);
+            ImmutableList.of(p3, p1, p2), null);
 
         // Then
         List<ArendeView> expectedPaminnelserOrder = Stream.of(p3, p2, p1)
-                .map(converter::convertToDto)
-                .collect(Collectors.toList());
+            .map(converter::convertToDto)
+            .collect(Collectors.toList());
         Assertions.assertThat(messageThread.getPaminnelser())
-                .hasSize(3)
-                .containsExactlyElementsOf(expectedPaminnelserOrder);
+            .hasSize(3)
+            .containsExactlyElementsOf(expectedPaminnelserOrder);
     }
 
     @Test
@@ -335,20 +351,20 @@ public class ArendeViewConverterTest {
 
         // When
         List<ArendeConversationView> createdList = converter.buildArendeConversations(intygsId, mixedThreads, Collections.emptyList(),
-                Collections.emptyList());
+            Collections.emptyList());
 
         // Then
         List<ArendeView> expectedPaminnelser1Dtos = Stream.of(p13, p12, p11)
-                .map(converter::convertToDto)
-                .collect(Collectors.toList());
+            .map(converter::convertToDto)
+            .collect(Collectors.toList());
         List<ArendeView> expectedPaminnelser2Dtos = Stream.of(p22, p21)
-                .map(converter::convertToDto)
-                .collect(Collectors.toList());
+            .map(converter::convertToDto)
+            .collect(Collectors.toList());
         Assertions.assertThat(createdList)
-                .hasSize(2)
-                .extracting("fraga", "svar", "paminnelser")
-                .contains(tuple(converter.convertToDto(fraga1), converter.convertToDto(svar1), expectedPaminnelser1Dtos),
-                        tuple(converter.convertToDto(fraga2), converter.convertToDto(svar2), expectedPaminnelser2Dtos));
+            .hasSize(2)
+            .extracting("fraga", "svar", "paminnelser")
+            .contains(tuple(converter.convertToDto(fraga1), converter.convertToDto(svar1), expectedPaminnelser1Dtos),
+                tuple(converter.convertToDto(fraga2), converter.convertToDto(svar2), expectedPaminnelser2Dtos));
     }
 
     @Test
@@ -360,13 +376,13 @@ public class ArendeViewConverterTest {
 
         // When
         List<ArendeConversationView> res = converter.buildArendeConversations(fraga.getIntygsId(), ImmutableList.of(fraga, svar),
-                Collections.emptyList(), Collections.emptyList());
+            Collections.emptyList(), Collections.emptyList());
 
         // Then
         Assertions.assertThat(res)
-                .hasSize(1)
-                .extracting("fraga", "svar", "answeredWithIntyg")
-                .contains(tuple(converter.convertToDto(fraga), converter.convertToDto(svar), null));
+            .hasSize(1)
+            .extracting("fraga", "svar", "answeredWithIntyg")
+            .contains(tuple(converter.convertToDto(fraga), converter.convertToDto(svar), null));
     }
 
     @Test
@@ -379,10 +395,10 @@ public class ArendeViewConverterTest {
         // When
         Throwable thrown = catchThrowable(() -> {
             converter.buildArendeConversations(
-                    fraga.getIntygsId(),
-                    ImmutableList.of(fraga, svar),
-                    null,
-                    Collections.emptyList());
+                fraga.getIntygsId(),
+                ImmutableList.of(fraga, svar),
+                null,
+                Collections.emptyList());
         });
 
         // Then
@@ -395,19 +411,19 @@ public class ArendeViewConverterTest {
         LocalDateTime fragaDate = LocalDateTime.parse("2016-03-01T11:22:11");
         Arende fraga = createValidArendeForLuse("fraga", fragaDate, "fraga-id", null);
         List<AnsweredWithIntyg> komplt = ImmutableList.of(
-                createMatchingAnsweredWithIntyg(fraga, fragaDate.plusDays(3)),
-                createMatchingAnsweredWithIntyg(fraga, fragaDate.plusDays(1)),
-                createMatchingAnsweredWithIntyg(fraga, fragaDate.plusDays(2)));
+            createMatchingAnsweredWithIntyg(fraga, fragaDate.plusDays(3)),
+            createMatchingAnsweredWithIntyg(fraga, fragaDate.plusDays(1)),
+            createMatchingAnsweredWithIntyg(fraga, fragaDate.plusDays(2)));
 
         // When
         List<ArendeConversationView> messageThreads = converter.buildArendeConversations(fraga.getIntygsId(), ImmutableList.of(fraga),
-                komplt, Collections.emptyList());
+            komplt, Collections.emptyList());
 
         // Then
         Assertions.assertThat(messageThreads)
-                .hasSize(1)
-                .extracting(ArendeConversationView::getAnsweredWithIntyg)
-                .contains(komplt.get(1));
+            .hasSize(1)
+            .extracting(ArendeConversationView::getAnsweredWithIntyg)
+            .contains(komplt.get(1));
     }
 
     private AnsweredWithIntyg createMatchingAnsweredWithIntyg(Arende fraga, LocalDateTime signDate) {
@@ -454,23 +470,23 @@ public class ArendeViewConverterTest {
 
         // Then, set fields which are specific per type
         switch (typeOfArende) {
-        case "fraga":
-            arende.setRubrik("Fraga");
-            arende.setSistaDatumForSvar(LocalDateTime.now().plusDays(4).toLocalDate());
-            arende.setAmne(ArendeAmne.KOMPLT);
-            break;
-        case "svar":
-            arende.setRubrik("Svar");
-            arende.setSvarPaId(relatedFraga.getMeddelandeId()); // Contains the thread root's meddelandeId.
-            arende.setAmne(ArendeAmne.KOMPLT);
-            break;
-        case "paminnelse":
-            arende.setRubrik("Paminnelse");
-            arende.setSistaDatumForSvar(LocalDateTime.now().plusDays(4).toLocalDate());
-            // Contains the thread root's meddelandeId.
-            arende.setPaminnelseMeddelandeId(relatedFraga.getMeddelandeId());
-            arende.setAmne(ArendeAmne.PAMINN);
-            break;
+            case "fraga":
+                arende.setRubrik("Fraga");
+                arende.setSistaDatumForSvar(LocalDateTime.now().plusDays(4).toLocalDate());
+                arende.setAmne(ArendeAmne.KOMPLT);
+                break;
+            case "svar":
+                arende.setRubrik("Svar");
+                arende.setSvarPaId(relatedFraga.getMeddelandeId()); // Contains the thread root's meddelandeId.
+                arende.setAmne(ArendeAmne.KOMPLT);
+                break;
+            case "paminnelse":
+                arende.setRubrik("Paminnelse");
+                arende.setSistaDatumForSvar(LocalDateTime.now().plusDays(4).toLocalDate());
+                // Contains the thread root's meddelandeId.
+                arende.setPaminnelseMeddelandeId(relatedFraga.getMeddelandeId());
+                arende.setAmne(ArendeAmne.PAMINN);
+                break;
         }
 
         // Finally, update the root message (fraga) of the thread
@@ -482,7 +498,7 @@ public class ArendeViewConverterTest {
     }
 
     private LisjpUtlatandeV1 buildLisjpUtlatande(String intygsid2, String enhetsId, String enhetsNamn, String patientPersonId,
-                                                 String skapadAvNamn, String skapadavPersonId, LocalDateTime timeStamp) {
+        String skapadAvNamn, String skapadavPersonId, LocalDateTime timeStamp) {
 
         LisjpUtlatandeV1.Builder template = LisjpUtlatandeV1.builder();
 
@@ -496,7 +512,7 @@ public class ArendeViewConverterTest {
     }
 
     private LuseUtlatandeV1 buildLuseUtlatande(String intygsId, String enhetsId, String enhetsnamn, String patientPersonId,
-                                               String string, String skapadAvId, LocalDateTime timeStamp) {
+        String string, String skapadAvId, LocalDateTime timeStamp) {
         LuseUtlatandeV1.Builder template = LuseUtlatandeV1.builder();
         template.setId(intygsId);
         GrundData grundData = buildGrundData(enhetsId, enhetsnamn, patientPersonId, skapadAvId, timeStamp);
@@ -508,7 +524,7 @@ public class ArendeViewConverterTest {
     }
 
     private GrundData buildGrundData(String enhetsId, String enhetsNamn, String patientPersonId, String skapadavPersonId,
-            LocalDateTime timeStamp) {
+        LocalDateTime timeStamp) {
         GrundData grundData = new GrundData();
         HoSPersonal skapadAv = new HoSPersonal();
         Vardenhet vardenhet = new Vardenhet();

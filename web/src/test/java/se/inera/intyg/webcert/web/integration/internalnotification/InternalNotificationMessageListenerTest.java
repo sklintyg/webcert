@@ -18,28 +18,6 @@
  */
 package se.inera.intyg.webcert.web.integration.internalnotification;
 
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.TextMessage;
-
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.test.util.ReflectionTestUtils;
-
-import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
-import se.inera.intyg.common.support.model.common.internal.Utlatande;
-import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
-import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
-import se.inera.intyg.common.support.modules.support.api.ModuleApi;
-import se.inera.intyg.common.support.modules.support.api.dto.CertificateResponse;
-import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
-import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistry;
-import se.inera.intyg.webcert.web.service.notification.NotificationService;
-
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -52,6 +30,26 @@ import static se.inera.intyg.webcert.web.integration.internalnotification.Intern
 import static se.inera.intyg.webcert.web.integration.internalnotification.InternalNotificationMessageListener.CERTIFICATE_ID;
 import static se.inera.intyg.webcert.web.integration.internalnotification.InternalNotificationMessageListener.CERTIFICATE_TYPE;
 import static se.inera.intyg.webcert.web.integration.internalnotification.InternalNotificationMessageListener.CERTIFICATE_TYPE_VERSION;
+
+import javax.jms.JMSException;
+import javax.jms.Message;
+import javax.jms.TextMessage;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.test.util.ReflectionTestUtils;
+import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
+import se.inera.intyg.common.support.model.common.internal.Utlatande;
+import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
+import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
+import se.inera.intyg.common.support.modules.support.api.ModuleApi;
+import se.inera.intyg.common.support.modules.support.api.dto.CertificateResponse;
+import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
+import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistry;
+import se.inera.intyg.webcert.web.service.notification.NotificationService;
 
 @RunWith(MockitoJUnitRunner.class)
 public class InternalNotificationMessageListenerTest {
@@ -90,7 +88,7 @@ public class InternalNotificationMessageListenerTest {
         when(integreradeEnheterRegistry.isEnhetIntegrerad(anyString(), anyString())).thenReturn(true);
         testee.onMessage(createMessage());
         verify(notificationService, times(1))
-                .forwardInternalNotification(anyString(), anyString(), any(Utlatande.class), eq(HandelsekodEnum.SKICKA));
+            .forwardInternalNotification(anyString(), anyString(), any(Utlatande.class), eq(HandelsekodEnum.SKICKA));
     }
 
     @Test

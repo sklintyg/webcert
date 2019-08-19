@@ -18,25 +18,25 @@
  */
 
 angular.module('webcert').service('webcert.enhetArendenListModel', [
-    'webcert.enhetArendenModel',
-    function(enhetArendenModel) {
-        'use strict';
+  'webcert.enhetArendenModel',
+  function(enhetArendenModel) {
+    'use strict';
 
-        this.reset = function() {
-            // General directive viewstate
-            this.viewState = {
-                runningQuery: false,
-                activeErrorMessageKey: null,
-                fetchingMoreInProgress: false
-            };
+    this.reset = function() {
+      // General directive viewstate
+      this.viewState = {
+        runningQuery: false,
+        activeErrorMessageKey: null,
+        fetchingMoreInProgress: false
+      };
 
-            // same as filter query above, stores previous request
-            this.prevFilterQuery = {};
+      // same as filter query above, stores previous request
+      this.prevFilterQuery = {};
 
-            // The actual list of arenden fetched from backend
-            this.arendenList = [];
-            this.totalCount = 0;
-        };
+      // The actual list of arenden fetched from backend
+      this.arendenList = [];
+      this.totalCount = 0;
+    };
 
-        this.reset();
-    }]);
+    this.reset();
+  }]);

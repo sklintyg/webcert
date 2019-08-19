@@ -28,13 +28,13 @@ import io.vavr.Tuple3;
 import io.vavr.collection.HashSet;
 import io.vavr.collection.List;
 import io.vavr.collection.Map;
-import org.apache.commons.collections.CollectionUtils;
-import org.springframework.stereotype.Service;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import org.apache.commons.collections.CollectionUtils;
+import org.springframework.stereotype.Service;
 import se.inera.intyg.webcert.persistence.fmb.model.fmb.Beskrivning;
 import se.inera.intyg.webcert.persistence.fmb.model.fmb.BeskrivningTyp;
 import se.inera.intyg.webcert.persistence.fmb.model.fmb.DiagnosInformation;
@@ -62,8 +62,8 @@ public class IcfServiceImpl extends FmbBaseService implements IcfService {
     private final IcfTextResource textResource;
 
     public IcfServiceImpl(
-            final IcfTextResource textResource,
-            final DiagnosInformationRepository repository) {
+        final IcfTextResource textResource,
+        final DiagnosInformationRepository repository) {
         super(repository);
         this.textResource = textResource;
         this.repository = repository;
@@ -76,8 +76,8 @@ public class IcfServiceImpl extends FmbBaseService implements IcfService {
         Preconditions.checkArgument(Objects.nonNull(icd10KoderRequest.getIcd10Kod1()), "Icd10KoderRequest must have an icfCode1");
 
         final List<Tuple2<String, Optional<DiagnosInformation>>> collect = List.ofAll(icd10KoderRequest.getIcd10Codes())
-                .map(this::searchDiagnosInformationByIcd10Kod)
-                .distinctBy(response -> response._1);
+            .map(this::searchDiagnosInformationByIcd10Kod)
+            .distinctBy(response -> response._1);
 
         return convertToResponse(collect);
     }
@@ -88,34 +88,34 @@ public class IcfServiceImpl extends FmbBaseService implements IcfService {
         final List<IcfDiagnoskodResponse> unikaKoder = getUnikaKoder(responsList, gemensammaKoder);
 
         return IcfResponse.of(
-                gemensammaKoder,
-                unikaKoder.toJavaList());
+            gemensammaKoder,
+            unikaKoder.toJavaList());
     }
 
     private List<IcfDiagnoskodResponse> getUnikaKoder(
-            final List<Tuple2<String, Optional<DiagnosInformation>>> responsList, final IcfDiagnoskodResponse gemensammaKoder) {
+        final List<Tuple2<String, Optional<DiagnosInformation>>> responsList, final IcfDiagnoskodResponse gemensammaKoder) {
 
         return responsList
-                .filter(tuple -> tuple._2.isPresent())
-                .filter(hasIcfCodes())
-                .map(pair -> IcfDiagnoskodResponse.of(
-                        pair._1,
-                        pair._2.map(getDiagnosKoder(BeskrivningTyp.FUNKTIONSNEDSATTNING, gemensammaKoder.getFunktionsNedsattningsKoder()))
-                                .orElse(null),
-                        pair._2.map(getDiagnosKoder(BeskrivningTyp.AKTIVITETSBEGRANSNING, gemensammaKoder.getAktivitetsBegransningsKoder()))
-                                .orElse(null)
-                )).filter(Objects::nonNull);
+            .filter(tuple -> tuple._2.isPresent())
+            .filter(hasIcfCodes())
+            .map(pair -> IcfDiagnoskodResponse.of(
+                pair._1,
+                pair._2.map(getDiagnosKoder(BeskrivningTyp.FUNKTIONSNEDSATTNING, gemensammaKoder.getFunktionsNedsattningsKoder()))
+                    .orElse(null),
+                pair._2.map(getDiagnosKoder(BeskrivningTyp.AKTIVITETSBEGRANSNING, gemensammaKoder.getAktivitetsBegransningsKoder()))
+                    .orElse(null)
+            )).filter(Objects::nonNull);
     }
 
     private IcfDiagnoskodResponse getGemensammaKoder(final List<Tuple2<String, Optional<DiagnosInformation>>> responsList) {
 
         List<Tuple2<String, IcfKoder>> funktionsKoder = responsList
-                .map(getDiagnosKoder(BeskrivningTyp.FUNKTIONSNEDSATTNING))
-                .filter(Objects::nonNull);
+            .map(getDiagnosKoder(BeskrivningTyp.FUNKTIONSNEDSATTNING))
+            .filter(Objects::nonNull);
 
         List<Tuple2<String, IcfKoder>> aktivitetsKoder = responsList
-                .map(getDiagnosKoder(BeskrivningTyp.AKTIVITETSBEGRANSNING))
-                .filter(Objects::nonNull);
+            .map(getDiagnosKoder(BeskrivningTyp.AKTIVITETSBEGRANSNING))
+            .filter(Objects::nonNull);
 
         final Optional<IcfKoder> gemensammaNedsattning = findGemensammaKoder(funktionsKoder, BeskrivningTyp.FUNKTIONSNEDSATTNING);
         final Optional<IcfKoder> gemensammaAktivitet = findGemensammaKoder(aktivitetsKoder, BeskrivningTyp.AKTIVITETSBEGRANSNING);
@@ -136,14 +136,14 @@ public class IcfServiceImpl extends FmbBaseService implements IcfService {
 
         final List<Tuple3<String, IcfKod, String>> koder = icfKoderList.flatMap(diagnos -> {
             final List<Tuple3<String, IcfKod, String>> tempList =
-                    List.ofAll(emptyIfNull(diagnos._2.getIcfKoder()))
-                            .filter(IcfCentralKod.class::isInstance)
-                            .map(kod -> Tuple.of(diagnos._1, kod, central));
+                List.ofAll(emptyIfNull(diagnos._2.getIcfKoder()))
+                    .filter(IcfCentralKod.class::isInstance)
+                    .map(kod -> Tuple.of(diagnos._1, kod, central));
 
             return tempList.appendAll(
-                    List.ofAll(emptyIfNull(diagnos._2.getIcfKoder()))
-                            .filter(IcfKompletterandeKod.class::isInstance)
-                            .map(kod -> Tuple.of(diagnos._1, kod, kompletterande)));
+                List.ofAll(emptyIfNull(diagnos._2.getIcfKoder()))
+                    .filter(IcfKompletterandeKod.class::isInstance)
+                    .map(kod -> Tuple.of(diagnos._1, kod, kompletterande)));
         });
 
         List<IcfKod> gemensammaCentralKoder = List.empty();
@@ -218,7 +218,6 @@ public class IcfServiceImpl extends FmbBaseService implements IcfService {
             return Optional.empty();
         }
 
-
         List<IcfKod> all = List.ofAll(gemensammaCentralKoder);
         all = all.appendAll(gemensammaBlandadeKoder);
         all = all.appendAll(gemensammaKompletterandeKoder);
@@ -239,8 +238,8 @@ public class IcfServiceImpl extends FmbBaseService implements IcfService {
             }
 
             final List<se.inera.intyg.webcert.persistence.fmb.model.fmb.IcfKod> icfKods = List.ofAll(pair._2.get().getBeskrivningList())
-                    .flatMap(Beskrivning::getIcfKodList)
-                    .orElse(List.empty());
+                .flatMap(Beskrivning::getIcfKodList)
+                .orElse(List.empty());
 
             return !icfKods.isEmpty();
         };
@@ -248,21 +247,21 @@ public class IcfServiceImpl extends FmbBaseService implements IcfService {
 
     private Function<Tuple2<String, Optional<DiagnosInformation>>, Tuple2<String, IcfKoder>> getDiagnosKoder(final BeskrivningTyp typ) {
         return pair -> pair._2
-                .map(info -> info.getBeskrivningList().stream()
-                        .filter(filterBeskrivning(typ))
-                        .collect(toOptional())
-                        .map(toIcfKoder(null))
-                        .map(koder -> Tuple.of(pair._1, koder))
-                        .orElse(null))
-                .orElse(null);
+            .map(info -> info.getBeskrivningList().stream()
+                .filter(filterBeskrivning(typ))
+                .collect(toOptional())
+                .map(toIcfKoder(null))
+                .map(koder -> Tuple.of(pair._1, koder))
+                .orElse(null))
+            .orElse(null);
     }
 
     private Function<DiagnosInformation, IcfKoder> getDiagnosKoder(final BeskrivningTyp typ, final IcfKoder exkludera) {
         return info -> info.getBeskrivningList().stream()
-                .filter(filterBeskrivning(typ))
-                .collect(toOptional())
-                .map(toIcfKoder(exkludera))
-                .orElse(null);
+            .filter(filterBeskrivning(typ))
+            .collect(toOptional())
+            .map(toIcfKoder(exkludera))
+            .orElse(null);
     }
 
     private Predicate<Beskrivning> filterBeskrivning(final BeskrivningTyp beskrivningTyp) {
@@ -272,18 +271,18 @@ public class IcfServiceImpl extends FmbBaseService implements IcfService {
     private Function<Beskrivning, IcfKoder> toIcfKoder(final IcfKoder exkludera) {
         return beskrivning -> {
             final java.util.List<IcfKod> centralKoder = beskrivning.getIcfKodList().stream()
-                    .filter(kod -> kod.getIcfKodTyp() == IcfKodTyp.CENTRAL)
-                    .map(getIcfKodFromResource())
-                    .filter(kod -> exkludera == null
-                            || (exkludera.getIcfKoder() != null && !exkludera.getIcfKoder().contains(kod)))
-                    .collect(Collectors.toList());
+                .filter(kod -> kod.getIcfKodTyp() == IcfKodTyp.CENTRAL)
+                .map(getIcfKodFromResource())
+                .filter(kod -> exkludera == null
+                    || (exkludera.getIcfKoder() != null && !exkludera.getIcfKoder().contains(kod)))
+                .collect(Collectors.toList());
 
             final java.util.List<IcfKod> kompletterandeKoder = beskrivning.getIcfKodList().stream()
-                    .filter(kod -> kod.getIcfKodTyp() == IcfKodTyp.KOMPLETTERANDE)
-                    .map(getIcfKodFromResource())
-                    .filter(kod -> exkludera == null
-                            || (exkludera.getIcfKoder() != null && !exkludera.getIcfKoder().contains(kod)))
-                    .collect(Collectors.toList());
+                .filter(kod -> kod.getIcfKodTyp() == IcfKodTyp.KOMPLETTERANDE)
+                .map(getIcfKodFromResource())
+                .filter(kod -> exkludera == null
+                    || (exkludera.getIcfKoder() != null && !exkludera.getIcfKoder().contains(kod)))
+                .collect(Collectors.toList());
 
             if (CollectionUtils.isEmpty(centralKoder) && CollectionUtils.isEmpty(kompletterandeKoder)) {
                 return null;
@@ -321,13 +320,13 @@ public class IcfServiceImpl extends FmbBaseService implements IcfService {
 
                 final IcfKod found = lookup.get();
                 return kod.getIcfKodTyp() == IcfKodTyp.CENTRAL
-                        ? IcfCentralKod.of(kod.getKod(), found.getBenamning(), found.getBeskrivning(), found.getInnefattar())
-                        : IcfKompletterandeKod.of(kod.getKod(), found.getBenamning(), found.getBeskrivning(), found.getInnefattar());
+                    ? IcfCentralKod.of(kod.getKod(), found.getBenamning(), found.getBeskrivning(), found.getInnefattar())
+                    : IcfKompletterandeKod.of(kod.getKod(), found.getBenamning(), found.getBeskrivning(), found.getInnefattar());
             }
 
             return kod.getIcfKodTyp() == IcfKodTyp.CENTRAL
-                    ? IcfCentralKod.of(kod.getKod(), "", "", "")
-                    : IcfKompletterandeKod.of(kod.getKod(), "", "", "");
+                ? IcfCentralKod.of(kod.getKod(), "", "", "")
+                : IcfKompletterandeKod.of(kod.getKod(), "", "", "");
         };
     }
 

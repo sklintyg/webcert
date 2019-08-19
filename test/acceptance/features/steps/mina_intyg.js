@@ -23,36 +23,32 @@
 /*jshint newcap:false */
 //TODO Uppgradera Jshint p.g.a. newcap kommer bli depricated. (klarade inte att ignorera i grunt-task)
 
-
 /*
  *	Stödlib och ramverk
  *
  */
 
 const {
-    Given, // jshint ignore:line
-    When, // jshint ignore:line
-    Then // jshint ignore:line
+  Given, // jshint ignore:line
+  When, // jshint ignore:line
+  Then // jshint ignore:line
 } = require('cucumber');
-
 
 var miCheckValues = require('./checkValues/minaintyg');
 var STATUS_REGEX;
 var helpers = require('./helpers');
-
 
 /*
  *	Stödfunktioner
  *
  */
 
-
 function matchString(element) {
-    return element.match(STATUS_REGEX);
+  return element.match(STATUS_REGEX);
 }
 
 function stringToArray(text) {
-    return text.split(/\n/g);
+  return text.split(/\n/g);
 }
 
 /*
@@ -61,70 +57,70 @@ function stringToArray(text) {
  */
 
 Then(/^ska intyget( inte)? finnas i Mina intyg$/, function(inte) {
-    var skaFinnas = typeof(inte) === 'undefined';
-    var intygElement = element(by.id('certificate-' + this.intyg.id));
-    return expect(intygElement.isPresent()).to.eventually.equal(skaFinnas).then(function(value) {
-        logger.info('OK - skaFinnas=' + skaFinnas + ':' + value);
-    }, function(reason) {
-        throw ('FEL,Expected skaFinnas=' + skaFinnas + ' Reason:' + reason);
-    });
+  var skaFinnas = typeof (inte) === 'undefined';
+  var intygElement = element(by.id('certificate-' + this.intyg.id));
+  return expect(intygElement.isPresent()).to.eventually.equal(skaFinnas).then(function(value) {
+    logger.info('OK - skaFinnas=' + skaFinnas + ':' + value);
+  }, function(reason) {
+    throw ('FEL,Expected skaFinnas=' + skaFinnas + ' Reason:' + reason);
+  });
 });
 
 When(/^jag går till Mina intyg för patienten$/, function() {
-    browser.ignoreSynchronization = true;
-    return helpers.getUrl(process.env.MINAINTYG_URL + '/web/sso?guid=' + this.patient.id).then(function() {
-        // Om samtyckesruta visas
-        return element(by.id('consentTerms')).isPresent();
-    }).then(function(present) {
-        if (present) {
-            logger.info('Lämnar samtycke..');
-            return element(by.id('giveConsentCheckbox')).sendKeys(protractor.Key.SPACE)
-                .then(function() {
-                    browser.ignoreSynchronization = false;
-                    return helpers.largeDelay();
-                }).then(function() {
-                    element(by.id('giveConsentButton')).sendKeys(protractor.Key.SPACE);
-                    browser.ignoreSynchronization = false;
-                    return helpers.largeDelay();
-                });
-        } else {
-            browser.ignoreSynchronization = false;
-            return;
-        }
-    });
+  browser.ignoreSynchronization = true;
+  return helpers.getUrl(process.env.MINAINTYG_URL + '/web/sso?guid=' + this.patient.id).then(function() {
+    // Om samtyckesruta visas
+    return element(by.id('consentTerms')).isPresent();
+  }).then(function(present) {
+    if (present) {
+      logger.info('Lämnar samtycke..');
+      return element(by.id('giveConsentCheckbox')).sendKeys(protractor.Key.SPACE)
+      .then(function() {
+        browser.ignoreSynchronization = false;
+        return helpers.largeDelay();
+      }).then(function() {
+        element(by.id('giveConsentButton')).sendKeys(protractor.Key.SPACE);
+        browser.ignoreSynchronization = false;
+        return helpers.largeDelay();
+      });
+    } else {
+      browser.ignoreSynchronization = false;
+      return;
+    }
+  });
 });
 
 Then(/^ska intygets status i Mina intyg visa "([^"]*)"$/, function(status) {
-    // STATUS_REGEX = status.replace(/(\{).+?(\})/g, '(.*)');
-    STATUS_REGEX = status;
-    var intygElement = element(by.id('certificate-' + this.intyg.id));
-    return intygElement.getText().then(function(text) {
-        text = stringToArray(text);
-        var match = text.find(matchString);
-        return expect(match).to.be.ok;
-    });
+  // STATUS_REGEX = status.replace(/(\{).+?(\})/g, '(.*)');
+  STATUS_REGEX = status;
+  var intygElement = element(by.id('certificate-' + this.intyg.id));
+  return intygElement.getText().then(function(text) {
+    text = stringToArray(text);
+    var match = text.find(matchString);
+    return expect(match).to.be.ok;
+  });
 });
 
 When(/^jag går in på intyget i Mina intyg$/, function(callback) {
-    element(by.id('viewCertificateBtn-' + this.intyg.id)).sendKeys(protractor.Key.SPACE).then(callback());
+  element(by.id('viewCertificateBtn-' + this.intyg.id)).sendKeys(protractor.Key.SPACE).then(callback());
 });
 
 Then(/^ska intygets information i Mina intyg vara den jag angett$/, function(callback) {
-    if (this.intyg.typ === 'Läkarutlåtande för sjukersättning') {
-        miCheckValues.fk.LUSE(this.intyg).then(function(value) {
-            logger.info('Alla kontroller utförda OK');
-            callback();
-        }, function(reason) {
-            callback(reason);
-        });
-    } else {
-        callback.pending();
-    }
+  if (this.intyg.typ === 'Läkarutlåtande för sjukersättning') {
+    miCheckValues.fk.LUSE(this.intyg).then(function(value) {
+      logger.info('Alla kontroller utförda OK');
+      callback();
+    }, function(reason) {
+      callback(reason);
+    });
+  } else {
+    callback.pending();
+  }
 });
 
 When(/^jag loggar ut ur Mina intyg$/, function() {
-    return element(by.id('mvklogoutLink')).sendKeys(protractor.Key.SPACE).then(function() {
-        return helpers.hugeDelay();
-    });
+  return element(by.id('mvklogoutLink')).sendKeys(protractor.Key.SPACE).then(function() {
+    return helpers.hugeDelay();
+  });
 
 });

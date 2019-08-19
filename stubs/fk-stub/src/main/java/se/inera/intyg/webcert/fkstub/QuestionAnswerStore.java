@@ -20,7 +20,6 @@ package se.inera.intyg.webcert.fkstub;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-
 import org.springframework.stereotype.Component;
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateanswerresponder.v1.AnswerToFkType;
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificatequestionresponder.v1.QuestionToFkType;

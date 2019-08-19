@@ -19,7 +19,6 @@
 package se.inera.intyg.webcert.web.service.utkast.util;
 
 import java.util.UUID;
-
 import org.springframework.stereotype.Component;
 
 /**

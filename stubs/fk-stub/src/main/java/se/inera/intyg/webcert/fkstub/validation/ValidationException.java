@@ -18,9 +18,8 @@
  */
 package se.inera.intyg.webcert.fkstub.validation;
 
-import java.util.List;
-
 import com.google.common.base.Joiner;
+import java.util.List;
 
 /**
  * @author andreaskaltenbach

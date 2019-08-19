@@ -17,103 +17,100 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 angular.module('webcert').directive('wcUtkastFilter', ['$timeout', 'webcert.UtkastProxy',
-        function($timeout, UtkastProxy) {
-            'use strict';
+      function($timeout, UtkastProxy) {
+        'use strict';
 
-            return {
-                restrict: 'E',
-                templateUrl: '/app/views/ejSigneradeUtkast/wcUtkastFilter/wcUtkastFilter.directive.html',
-                scope: {
-                    onSearch: '&',
-                    filter: '='
-                },
-                controller: function($scope) {
-                    $scope.showDateFromErrors = false;
-                    $scope.showDateToErrors = false;
+        return {
+          restrict: 'E',
+          templateUrl: '/app/views/ejSigneradeUtkast/wcUtkastFilter/wcUtkastFilter.directive.html',
+          scope: {
+            onSearch: '&',
+            filter: '='
+          },
+          controller: function($scope) {
+            $scope.showDateFromErrors = false;
+            $scope.showDateToErrors = false;
 
-                    $scope.setShowDateFromVisible = function() {
-                        $scope.showDateFromErrors = !!$scope.filterForm['filter-changedate-from'].$viewValue;
-                    };
-
-                    $scope.setShowDateToVisible = function() {
-                        $scope.showDateToErrors = !!$scope.filterForm['filter-changedate-to'].$viewValue;
-                    };
-
-                    $scope.maxdate = moment().format('YYYY-MM-DD');
-
-                    $scope.widgetState = {
-                        loadingSavedByList: undefined,
-                        savedByList: [],
-                        searched: false,
-                        activeErrorMessageKey: null
-                    };
-
-                    //Clicked Search
-                    $scope.search = function() {
-                        $scope.widgetState.searched = true;
-                        $scope.onSearch();
-                    };
-                    //Clicked Återställ
-                    $scope.resetFilter = function() {
-                        resetFilterState();
-                        $scope.widgetState.searched = false;
-                        $timeout (function (){
-                            $scope.onSearch();
-                        });
-
-                    };
-
-                    function resetFilterState() {
-                        $scope.filter.reset();
-                        // fiddle with the DOM to get rid of invalid data which isn't bind through the model
-                        angular.element('#filter-changedate-from').val('');
-                        angular.element('#filter-changedate-to').val('');
-                        if ($scope.filterForm['filter-changedate-from'] && $scope.filterForm['filter-changedate-to']) {
-                            $scope.filterForm['filter-changedate-from'].$setViewValue('');
-                            $scope.filterForm['filter-changedate-to'].$setViewValue('');
-                        }
-
-                        $scope.showDateFromErrors = false;
-                        $scope.showDateToErrors = false;
-                    }
-
-                    function loadSavedByList() {
-
-                        $scope.widgetState.loadingSavedByList = true;
-
-                        UtkastProxy.getUtkastSavedByList(function(list) {
-                            $scope.widgetState.loadingSavedByList = false;
-                            $scope.widgetState.savedByList = list || [];
-                            $scope.widgetState.savedByList.unshift({
-                                    label: 'Visa alla',
-                                    id: undefined
-                            });
-
-                            $scope.filter.savedByOptions = $scope.widgetState.savedByList;
-                            //if only 1 option avaiable it must be 'Visa alla'
-                            if ($scope.filter.savedByOptions.length === 1) {
-                                $scope.filter.selection.savedBy = undefined;
-                            }
-                        }, function() {
-                            $scope.widgetState.loadingSavedByList = false;
-                            $scope.widgetState.savedByList = [{
-                                id: undefined,
-                                label: '<Kunde inte hämta lista>'
-                            }];
-                            $scope.filter.savedByOptions = $scope.widgetState.savedByList;
-                        });
-                    }
-
-
-
-                    /**
-                     *  Load initial data
-                     */
-                    loadSavedByList();
-                }
+            $scope.setShowDateFromVisible = function() {
+              $scope.showDateFromErrors = !!$scope.filterForm['filter-changedate-from'].$viewValue;
             };
-        }
+
+            $scope.setShowDateToVisible = function() {
+              $scope.showDateToErrors = !!$scope.filterForm['filter-changedate-to'].$viewValue;
+            };
+
+            $scope.maxdate = moment().format('YYYY-MM-DD');
+
+            $scope.widgetState = {
+              loadingSavedByList: undefined,
+              savedByList: [],
+              searched: false,
+              activeErrorMessageKey: null
+            };
+
+            //Clicked Search
+            $scope.search = function() {
+              $scope.widgetState.searched = true;
+              $scope.onSearch();
+            };
+            //Clicked Återställ
+            $scope.resetFilter = function() {
+              resetFilterState();
+              $scope.widgetState.searched = false;
+              $timeout(function() {
+                $scope.onSearch();
+              });
+
+            };
+
+            function resetFilterState() {
+              $scope.filter.reset();
+              // fiddle with the DOM to get rid of invalid data which isn't bind through the model
+              angular.element('#filter-changedate-from').val('');
+              angular.element('#filter-changedate-to').val('');
+              if ($scope.filterForm['filter-changedate-from'] && $scope.filterForm['filter-changedate-to']) {
+                $scope.filterForm['filter-changedate-from'].$setViewValue('');
+                $scope.filterForm['filter-changedate-to'].$setViewValue('');
+              }
+
+              $scope.showDateFromErrors = false;
+              $scope.showDateToErrors = false;
+            }
+
+            function loadSavedByList() {
+
+              $scope.widgetState.loadingSavedByList = true;
+
+              UtkastProxy.getUtkastSavedByList(function(list) {
+                $scope.widgetState.loadingSavedByList = false;
+                $scope.widgetState.savedByList = list || [];
+                $scope.widgetState.savedByList.unshift({
+                  label: 'Visa alla',
+                  id: undefined
+                });
+
+                $scope.filter.savedByOptions = $scope.widgetState.savedByList;
+                //if only 1 option avaiable it must be 'Visa alla'
+                if ($scope.filter.savedByOptions.length === 1) {
+                  $scope.filter.selection.savedBy = undefined;
+                }
+              }, function() {
+                $scope.widgetState.loadingSavedByList = false;
+                $scope.widgetState.savedByList = [{
+                  id: undefined,
+                  label: '<Kunde inte hämta lista>'
+                }];
+                $scope.filter.savedByOptions = $scope.widgetState.savedByList;
+              });
+            }
+
+            /**
+             *  Load initial data
+             */
+            loadSavedByList();
+          }
+        };
+      }
     ]
 );

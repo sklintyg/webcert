@@ -19,9 +19,12 @@
 package se.inera.intyg.webcert.persistence.integreradenhet.model;
 
 import java.time.LocalDateTime;
-
-import javax.persistence.*;
-
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
+import javax.persistence.Table;
 import org.hibernate.annotations.Type;
 
 /**
@@ -59,6 +62,7 @@ public class IntegreradEnhet {
 
     @Column(name = "SCHEMA_VERSION_3")
     private boolean schemaVersion3;
+
     @PrePersist
     void onPrePersist() {
         if (skapadDatum == null) {
@@ -74,8 +78,8 @@ public class IntegreradEnhet {
     @Override
     public String toString() {
         return "IntegreradEnhet [enhetsId=" + enhetsId + ", enhetsNamn=" + enhetsNamn + ", vardgivarId=" + vardgivarId + ", vardgivarNamn="
-                + vardgivarNamn + ", skapadDatum=" + skapadDatum + ", senasteKontrollDatum=" + senasteKontrollDatum + ", version1="
-                + isSchemaVersion1() + ", version2=" + isSchemaVersion3() + "]";
+            + vardgivarNamn + ", skapadDatum=" + skapadDatum + ", senasteKontrollDatum=" + senasteKontrollDatum + ", version1="
+            + isSchemaVersion1() + ", version2=" + isSchemaVersion3() + "]";
     }
 
     public String getEnhetsId() {

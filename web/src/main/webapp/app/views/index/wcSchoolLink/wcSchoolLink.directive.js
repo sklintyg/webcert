@@ -18,18 +18,18 @@
  */
 
 angular.module('webcert').directive('wcSchoolLink', [
-    function() {
+  function() {
     'use strict';
-        return {
-            restrict: 'E',
-            templateUrl: '/app/views/index/wcSchoolLink/wcSchoolLink.directive.html',
-            scope: {
-                useBgPlate: '=?'
-            },
-            link: function(scope) {
-                if(!angular.isDefined(scope.useBgPlate)){
-                    scope.useBgPlate = false;
-                }
-            }
-        };
-} ]);
+    return {
+      restrict: 'E',
+      templateUrl: '/app/views/index/wcSchoolLink/wcSchoolLink.directive.html',
+      scope: {
+        useBgPlate: '=?'
+      },
+      link: function(scope) {
+        if (!angular.isDefined(scope.useBgPlate)) {
+          scope.useBgPlate = false;
+        }
+      }
+    };
+  }]);

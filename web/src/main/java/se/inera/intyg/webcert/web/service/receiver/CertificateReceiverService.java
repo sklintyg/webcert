@@ -18,9 +18,8 @@
  */
 package se.inera.intyg.webcert.web.service.receiver;
 
-import se.inera.intyg.webcert.web.web.controller.api.dto.IntygReceiver;
-
 import java.util.List;
+import se.inera.intyg.webcert.web.web.controller.api.dto.IntygReceiver;
 
 public interface CertificateReceiverService {
 

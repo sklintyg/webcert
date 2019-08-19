@@ -18,6 +18,10 @@
  */
 package se.inera.intyg.webcert.web.service.underskrift.fake;
 
+import java.nio.charset.Charset;
+import java.security.cert.CertificateEncodingException;
+import java.security.cert.X509Certificate;
+import java.util.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
@@ -30,13 +34,8 @@ import se.inera.intyg.webcert.web.service.underskrift.BaseXMLSignatureService;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturBiljett;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
-import java.nio.charset.Charset;
-import java.security.cert.CertificateEncodingException;
-import java.security.cert.X509Certificate;
-import java.util.Base64;
-
 @Service
-@Profile({ "!prod" })
+@Profile({"!prod"})
 public class FakeUnderskriftServiceImpl extends BaseXMLSignatureService implements FakeUnderskriftService {
 
     @Autowired
@@ -57,18 +56,18 @@ public class FakeUnderskriftServiceImpl extends BaseXMLSignatureService implemen
 
         // Encode the <SignedInfo>...</SignedInfo> into a Base64 string.
         String base64EncodedSignedInfoXml = Base64.getEncoder()
-                .encodeToString(biljett.getIntygSignature().getSigningData().getBytes(Charset.forName("UTF-8")));
+            .encodeToString(biljett.getIntygSignature().getSigningData().getBytes(Charset.forName("UTF-8")));
         String fakeSignatureData = fakeSignatureService.createSignature(base64EncodedSignedInfoXml);
 
         monitoringLogService.logIntygSigned(utkast.getIntygsId(), utkast.getIntygsTyp(), user.getHsaId(), user.getAuthenticationScheme(),
-                utkast.getRelationKod());
+            utkast.getRelationKod());
 
         // Pull the X509 from the keystore used for fake signing.
         X509Certificate x509Certificate = fakeSignatureService.getX509Certificate();
 
         try {
             biljett = finalizeXMLDSigSignature(Base64.getEncoder().encodeToString(x509Certificate.getEncoded()), user, biljett,
-                    Base64.getDecoder().decode(fakeSignatureData), utkast);
+                Base64.getDecoder().decode(fakeSignatureData), utkast);
             return redisTicketTracker.updateStatus(biljett.getTicketId(), biljett.getStatus());
         } catch (CertificateEncodingException e) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, e.getMessage());

@@ -21,6 +21,14 @@ package se.inera.intyg.webcert.web.service.patient;
 import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,15 +54,6 @@ import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
 /**
  * This class is responsible for implementing GE-002, e.g. requirements on how to fetch patient details for a given
  * intygstyp.
@@ -66,7 +65,7 @@ import java.util.stream.Collectors;
 public class PatientDetailsResolverImpl implements PatientDetailsResolver {
 
     private static final List<UtkastStatus> UTKAST_STATUSES = Arrays.asList(UtkastStatus.DRAFT_INCOMPLETE,
-            UtkastStatus.DRAFT_COMPLETE, UtkastStatus.SIGNED);
+        UtkastStatus.DRAFT_COMPLETE, UtkastStatus.SIGNED);
 
     private static final Logger LOG = LoggerFactory.getLogger(PatientDetailsResolverImpl.class);
     @Autowired
@@ -118,7 +117,7 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
         persons.forEach((key, value) -> {
             if (value != null && value.getStatus() == PersonSvar.Status.FOUND) {
                 sekretessStatusMap.put(key,
-                        value.getPerson().isSekretessmarkering() ? SekretessStatus.TRUE : SekretessStatus.FALSE);
+                    value.getPerson().isSekretessmarkering() ? SekretessStatus.TRUE : SekretessStatus.FALSE);
             } else {
                 // contains no person instance.
                 sekretessStatusMap.put(key, SekretessStatus.UNDEFINED);
@@ -142,16 +141,16 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
     @Override
     public boolean isPatientAddressChanged(Patient oldPatient, Patient newPatient) {
         return oldPatient != null && (newPatient == null
-                || (oldPatient.getPostadress() != null && !oldPatient.getPostadress().equals(newPatient.getPostadress()))
-                || (oldPatient.getPostnummer() != null && !oldPatient.getPostnummer().equals(newPatient.getPostnummer()))
-                || (oldPatient.getPostort() != null && !oldPatient.getPostort().equals(newPatient.getPostort())));
+            || (oldPatient.getPostadress() != null && !oldPatient.getPostadress().equals(newPatient.getPostadress()))
+            || (oldPatient.getPostnummer() != null && !oldPatient.getPostnummer().equals(newPatient.getPostnummer()))
+            || (oldPatient.getPostort() != null && !oldPatient.getPostort().equals(newPatient.getPostort())));
     }
 
     @Override
     public boolean isPatientNamedChanged(Patient oldPatient, Patient newPatient) {
         return oldPatient != null && (newPatient == null
-                || (oldPatient.getFornamn() != null && !oldPatient.getFornamn().equals(newPatient.getFornamn()))
-                || (oldPatient.getEfternamn() != null && !oldPatient.getEfternamn().equals(newPatient.getEfternamn())));
+            || (oldPatient.getFornamn() != null && !oldPatient.getFornamn().equals(newPatient.getFornamn()))
+            || (oldPatient.getEfternamn() != null && !oldPatient.getEfternamn().equals(newPatient.getEfternamn())));
     }
 
     @Override
@@ -163,7 +162,7 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
             user = webCertUserService.getUser();
         } else {
             throw new IllegalStateException("The PatientDetailsResolver#resolvePatient method cannot be used without a "
-                    + "valid authentication context");
+                + "valid authentication context");
         }
 
         // Make sure any external intygstyp representations (such as TSTRK1007) are mapped to our internal types.
@@ -196,9 +195,9 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
             List<Utkast> utkastList = getPredecessor(personnummer, user, resolveOrder.getPredecessorType());
             if (utkastList.size() > 0) {
                 Utkast newest = utkastList.stream()
-                        .sorted((u1, u2) -> u2.getSenastSparadDatum().compareTo(u1.getSenastSparadDatum()))
-                        .findFirst()
-                        .orElseThrow(() -> new IllegalStateException("List was > 0 but findFirst() returned no result."));
+                    .sorted((u1, u2) -> u2.getSenastSparadDatum().compareTo(u1.getSenastSparadDatum()))
+                    .findFirst()
+                    .orElseThrow(() -> new IllegalStateException("List was > 0 but findFirst() returned no result."));
                 try {
                     ModuleApi moduleApi = moduleRegistry.getModuleApi(resolveOrder.getPredecessorType(), newest.getIntygTypeVersion());
                     predecessor = moduleApi.getUtlatandeFromJson(newest.getModel());
@@ -226,72 +225,72 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
     }
 
     private void resolvePatientAdressDetails(Patient patient, PatientDetailResolveOrder resolveOrder,
-            PersonSvar personSvar, WebCertUser user, Utlatande predecessor) {
+        PersonSvar personSvar, WebCertUser user, Utlatande predecessor) {
         List<PatientDetailResolveOrder.ResolveOrder> adressStrategy = resolveOrder.getAdressStrategy();
         int index = 0;
         boolean done = false;
         while (index < adressStrategy.size() && !done) {
             switch (adressStrategy.get(index)) {
-            case PARAMS:
-                done = setAdressFromParams(patient, user);
-                break;
-            case PU:
-                done = setAdressFromPu(patient, personSvar);
-                break;
-            case PREDECESSOR:
-                done = setAdressFromPredecessor(patient, predecessor);
-                break;
-            default:
-                LOG.info("Unexpected adress lookup strategy encountered, bailing out.");
-                break;
+                case PARAMS:
+                    done = setAdressFromParams(patient, user);
+                    break;
+                case PU:
+                    done = setAdressFromPu(patient, personSvar);
+                    break;
+                case PREDECESSOR:
+                    done = setAdressFromPredecessor(patient, predecessor);
+                    break;
+                default:
+                    LOG.info("Unexpected adress lookup strategy encountered, bailing out.");
+                    break;
             }
             index++;
         }
     }
 
     private void resolvePatientAvlidenDetails(Patient patient, PatientDetailResolveOrder resolveOrder,
-            PersonSvar personSvar, WebCertUser user, Utlatande predecessor) {
+        PersonSvar personSvar, WebCertUser user, Utlatande predecessor) {
         List<PatientDetailResolveOrder.ResolveOrder> avlidenStrategy = resolveOrder.getAvlidenStrategy();
         int index = 0;
         boolean done = false;
         while (index < avlidenStrategy.size() && !done) {
             switch (avlidenStrategy.get(index)) {
-            case PARAMS:
-                done = setAvlidenFromParams(patient, user);
-                break;
-            case PU:
-                done = setAvlidenFromPu(patient, personSvar);
-                break;
-            case PARAMS_OR_PU:
-                done = setAvlidenFromParamsOrPU(patient, personSvar, user);
-                break;
-            case PREDECESSOR:
-                done = setAvlidenFromPredecessor(patient, predecessor);
-                break;
+                case PARAMS:
+                    done = setAvlidenFromParams(patient, user);
+                    break;
+                case PU:
+                    done = setAvlidenFromPu(patient, personSvar);
+                    break;
+                case PARAMS_OR_PU:
+                    done = setAvlidenFromParamsOrPU(patient, personSvar, user);
+                    break;
+                case PREDECESSOR:
+                    done = setAvlidenFromPredecessor(patient, predecessor);
+                    break;
             }
             index++;
         }
     }
 
     private void resolvePatientOtherDetails(Patient patient, PatientDetailResolveOrder resolveOrder,
-            PersonSvar personSvar, WebCertUser user, Utlatande predecessor) {
+        PersonSvar personSvar, WebCertUser user, Utlatande predecessor) {
         List<PatientDetailResolveOrder.ResolveOrder> otherStrategy = resolveOrder.getOtherStrategy();
         int index = 0;
         boolean done = false;
         while (index < otherStrategy.size() && !done) {
             switch (otherStrategy.get(index)) {
-            case PARAMS:
-                done = setOtherFromParams(patient, user);
-                break;
-            case PU:
-                done = setOtherFromPu(patient, personSvar);
-                break;
-            case PREDECESSOR:
-                done = setOtherFromPredecessor(patient, predecessor);
-                break;
-            default:
-                LOG.info("Unexpected other lookup strategy encountered, bailing out.");
-                break;
+                case PARAMS:
+                    done = setOtherFromParams(patient, user);
+                    break;
+                case PU:
+                    done = setOtherFromPu(patient, personSvar);
+                    break;
+                case PREDECESSOR:
+                    done = setOtherFromPredecessor(patient, predecessor);
+                    break;
+                default:
+                    LOG.info("Unexpected other lookup strategy encountered, bailing out.");
+                    break;
             }
             index++;
         }
@@ -316,7 +315,7 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
             patient.setEfternamn(personSvar.getPerson().getEfternamn());
             patient.setMellannamn(personSvar.getPerson().getMellannamn());
             patient.setFullstandigtNamn(Joiner.on(' ').skipNulls().join(personSvar.getPerson().getFornamn(),
-                    personSvar.getPerson().getMellannamn(), personSvar.getPerson().getEfternamn()));
+                personSvar.getPerson().getMellannamn(), personSvar.getPerson().getEfternamn()));
             patient.setSekretessmarkering(personSvar.getPerson().isSekretessmarkering());
             return true;
         }
@@ -330,7 +329,7 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
             patient.setEfternamn(parameters.getEfternamn());
             patient.setMellannamn(parameters.getMellannamn());
             patient.setFullstandigtNamn(Joiner.on(' ').skipNulls().join(parameters.getFornamn(), parameters.getMellannamn(),
-                    parameters.getEfternamn()));
+                parameters.getEfternamn()));
             return true;
         }
         return false;
@@ -338,9 +337,9 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
 
     private boolean setAvlidenFromParamsOrPU(Patient patient, PersonSvar personSvar, WebCertUser user) {
         patient.setAvliden(
-                (personSvar.getStatus() == PersonSvar.Status.FOUND && personSvar.getPerson().isAvliden())
-                        || (user.getParameters() != null && user.getParameters().isPatientDeceased())
-                        || (personSvar.getStatus() != PersonSvar.Status.FOUND && user.getParameters() == null));
+            (personSvar.getStatus() == PersonSvar.Status.FOUND && personSvar.getPerson().isAvliden())
+                || (user.getParameters() != null && user.getParameters().isPatientDeceased())
+                || (personSvar.getStatus() != PersonSvar.Status.FOUND && user.getParameters() == null));
         return true;
     }
 
@@ -390,9 +389,9 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
 
     private boolean setAdressFromParams(Patient patient, WebCertUser user) {
         if (user.getOrigin().equals(UserOriginType.DJUPINTEGRATION.name())
-                && isNotNullOrEmpty(user.getParameters().getPostadress())
-                && isNotNullOrEmpty(user.getParameters().getPostnummer())
-                && isNotNullOrEmpty(user.getParameters().getPostort())) {
+            && isNotNullOrEmpty(user.getParameters().getPostadress())
+            && isNotNullOrEmpty(user.getParameters().getPostnummer())
+            && isNotNullOrEmpty(user.getParameters().getPostort())) {
             patient.setPostadress(user.getParameters().getPostadress());
             patient.setPostnummer(user.getParameters().getPostnummer());
             patient.setPostort(user.getParameters().getPostort());
@@ -415,29 +414,29 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
         List<Utkast> utkastList = new ArrayList<>();
         if (user.getOrigin().equals(UserOriginType.DJUPINTEGRATION.name())) {
             utkastList.addAll(utkastRepository.findDraftsByPatientAndVardgivareAndStatus(personnummer.getPersonnummerWithDash(),
-                    user.getValdVardgivare().getId(),
-                    UTKAST_STATUSES, Sets.newHashSet(intygsTyp)));
+                user.getValdVardgivare().getId(),
+                UTKAST_STATUSES, Sets.newHashSet(intygsTyp)));
         } else {
             utkastList.addAll(utkastRepository.findDraftsByPatientAndEnhetAndStatus(personnummer.getPersonnummerWithDash(),
-                    Collections.singletonList(user.getValdVardenhet().getId()), UTKAST_STATUSES,
-                    Sets.newHashSet(intygsTyp)));
+                Collections.singletonList(user.getValdVardenhet().getId()), UTKAST_STATUSES,
+                Sets.newHashSet(intygsTyp)));
         }
         return utkastList;
     }
 
     private boolean isPuOnlyStrategy(PatientDetailResolveOrder resolveOrder) {
         return resolveOrder.getOtherStrategy().stream().allMatch(it -> it.equals(PatientDetailResolveOrder.ResolveOrder.PU))
-                && resolveOrder.getAvlidenStrategy().stream().allMatch(it -> it.equals(PatientDetailResolveOrder.ResolveOrder.PU))
-                && resolveOrder.getAdressStrategy().stream().allMatch(it -> it.equals(PatientDetailResolveOrder.ResolveOrder.PU));
+            && resolveOrder.getAvlidenStrategy().stream().allMatch(it -> it.equals(PatientDetailResolveOrder.ResolveOrder.PU))
+            && resolveOrder.getAdressStrategy().stream().allMatch(it -> it.equals(PatientDetailResolveOrder.ResolveOrder.PU));
     }
 
     private boolean isPredecessorStrategy(PatientDetailResolveOrder resolveOrder) {
         return (resolveOrder.getAdressStrategy() != null
-                && resolveOrder.getAdressStrategy().stream().anyMatch(it -> it.equals(PatientDetailResolveOrder.ResolveOrder.PREDECESSOR)))
-                || (resolveOrder.getAvlidenStrategy() != null && resolveOrder.getAvlidenStrategy().stream()
-                        .anyMatch(it -> it.equals(PatientDetailResolveOrder.ResolveOrder.PREDECESSOR)))
-                || (resolveOrder.getOtherStrategy() != null && resolveOrder.getOtherStrategy().stream()
-                        .anyMatch(it -> it.equals(PatientDetailResolveOrder.ResolveOrder.PREDECESSOR)));
+            && resolveOrder.getAdressStrategy().stream().anyMatch(it -> it.equals(PatientDetailResolveOrder.ResolveOrder.PREDECESSOR)))
+            || (resolveOrder.getAvlidenStrategy() != null && resolveOrder.getAvlidenStrategy().stream()
+            .anyMatch(it -> it.equals(PatientDetailResolveOrder.ResolveOrder.PREDECESSOR)))
+            || (resolveOrder.getOtherStrategy() != null && resolveOrder.getOtherStrategy().stream()
+            .anyMatch(it -> it.equals(PatientDetailResolveOrder.ResolveOrder.PREDECESSOR)));
     }
 
     private boolean isNotNullOrEmpty(String value) {

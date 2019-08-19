@@ -22,8 +22,8 @@
  */
 
 module.exports = {
-    'spec': require('./specHelper.util.js'),
-    'restTestdata': require('./restTestdataHelper.util.js'),
-    'testdata': require('common-testtools').testdataHelper,
-    'fkTextHelper': require('./fkTextHelper.js')
+  'spec': require('./specHelper.util.js'),
+  'restTestdata': require('./restTestdataHelper.util.js'),
+  'testdata': require('common-testtools').testdataHelper,
+  'fkTextHelper': require('./fkTextHelper.js')
 };

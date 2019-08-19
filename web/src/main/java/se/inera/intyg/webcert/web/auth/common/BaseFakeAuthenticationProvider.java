@@ -18,6 +18,12 @@
  */
 package se.inera.intyg.webcert.web.auth.common;
 
+import java.util.Arrays;
+import java.util.stream.Collectors;
+import javax.xml.namespace.QName;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import org.opensaml.saml2.core.Assertion;
 import org.opensaml.saml2.core.Attribute;
 import org.opensaml.saml2.core.AuthnContext;
@@ -37,19 +43,13 @@ import se.inera.intyg.infra.security.authorities.AuthoritiesException;
 import se.inera.intyg.infra.security.common.model.AuthenticationMethod;
 import se.inera.intyg.infra.security.common.model.IntygUser;
 
-import javax.xml.namespace.QName;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import java.util.Arrays;
-import java.util.stream.Collectors;
-
 /**
  * Provides some common functionality for Fake authentication providers.
  *
  * Created by eriklupander on 2015-06-16.
  */
 public abstract class BaseFakeAuthenticationProvider implements AuthenticationProvider {
+
     private static DocumentBuilder documentBuilder;
 
     static {
@@ -99,12 +99,12 @@ public abstract class BaseFakeAuthenticationProvider implements AuthenticationPr
                     }
                 } catch (IllegalArgumentException e) {
                     String allowedTypes = Arrays.asList(AuthenticationMethod.values())
-                            .stream()
-                            .map(val -> val.name())
-                            .collect(Collectors.joining(", "));
+                        .stream()
+                        .map(val -> val.name())
+                        .collect(Collectors.joining(", "));
                     throw new AuthoritiesException(
-                            "Could not set authenticationMethod '" + authenticationMethod + "'. Unknown, allowed types are "
-                                    + allowedTypes);
+                        "Could not set authenticationMethod '" + authenticationMethod + "'. Unknown, allowed types are "
+                            + allowedTypes);
                 }
             }
         }

@@ -23,11 +23,11 @@ import org.apache.camel.spring.SpringRouteBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-
 import se.inera.intyg.webcert.common.Constants;
 import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
 
 public class CertificateRouteBuilder extends SpringRouteBuilder {
+
     private static final Logger LOG = LoggerFactory.getLogger(CertificateRouteBuilder.class);
 
     @Value("${camel.message.delay.millis}")
@@ -52,48 +52,48 @@ public class CertificateRouteBuilder extends SpringRouteBuilder {
             messageDelay = Long.parseLong(messageDelayMillis);
         } catch (NumberFormatException e) {
             throw new IllegalArgumentException(
-                    "Cannot build certificate route, supplied message delay could not be parsed: " + e.getMessage());
+                "Cannot build certificate route, supplied message delay could not be parsed: " + e.getMessage());
         }
         errorHandler(transactionErrorHandler().logExhausted(false));
 
         from("receiveCertificateTransferEndpoint").routeId("transferCertificate")
-                .onException(TemporaryException.class).to("direct:certTemporaryErrorHandlerEndpoint").end()
-                .onException(Exception.class).handled(true).to("direct:certPermanentErrorHandlerEndpoint").end()
-                .transacted("txTemplate")
-                .choice()
-                .when(header(Constants.DELAY_MESSAGE)).delay(messageDelay).asyncDelayed().endChoice()
-                .end()
-                .choice()
-                .when(header(Constants.MESSAGE_TYPE).isEqualTo(Constants.STORE_MESSAGE)).to("bean:certificateStoreProcessor").stop()
-                .when(header(Constants.MESSAGE_TYPE).isEqualTo(Constants.SEND_MESSAGE)).to("bean:certificateSendProcessor").stop()
-                .when(header(Constants.MESSAGE_TYPE).isEqualTo(Constants.REVOKE_MESSAGE)).to("bean:certificateRevokeProcessor").stop()
-                .when(header(Constants.MESSAGE_TYPE).isEqualTo(Constants.SEND_MESSAGE_TO_RECIPIENT))
-                    .to("bean:sendMessageToRecipientProcessor").stop()
-                .when(header(Constants.MESSAGE_TYPE).isEqualTo(Constants.REGISTER_APPROVED_RECEIVERS_MESSAGE))
-                    .to("bean:registerApprovedReceiversProcessor").stop()
+            .onException(TemporaryException.class).to("direct:certTemporaryErrorHandlerEndpoint").end()
+            .onException(Exception.class).handled(true).to("direct:certPermanentErrorHandlerEndpoint").end()
+            .transacted("txTemplate")
+            .choice()
+            .when(header(Constants.DELAY_MESSAGE)).delay(messageDelay).asyncDelayed().endChoice()
+            .end()
+            .choice()
+            .when(header(Constants.MESSAGE_TYPE).isEqualTo(Constants.STORE_MESSAGE)).to("bean:certificateStoreProcessor").stop()
+            .when(header(Constants.MESSAGE_TYPE).isEqualTo(Constants.SEND_MESSAGE)).to("bean:certificateSendProcessor").stop()
+            .when(header(Constants.MESSAGE_TYPE).isEqualTo(Constants.REVOKE_MESSAGE)).to("bean:certificateRevokeProcessor").stop()
+            .when(header(Constants.MESSAGE_TYPE).isEqualTo(Constants.SEND_MESSAGE_TO_RECIPIENT))
+            .to("bean:sendMessageToRecipientProcessor").stop()
+            .when(header(Constants.MESSAGE_TYPE).isEqualTo(Constants.REGISTER_APPROVED_RECEIVERS_MESSAGE))
+            .to("bean:registerApprovedReceiversProcessor").stop()
 
-                .otherwise()
-                .log(LoggingLevel.ERROR, LOG, simple("Unknown message type: ${in.headers.MESSAGE_TYPE}").getText()).stop();
+            .otherwise()
+            .log(LoggingLevel.ERROR, LOG, simple("Unknown message type: ${in.headers.MESSAGE_TYPE}").getText()).stop();
 
         from("direct:certPermanentErrorHandlerEndpoint").routeId("permanentErrorLogging")
-                .log(LoggingLevel.ERROR, LOG,
-                        simple("Permanent exception for intygs-id: ${header[INTYGS_ID]}, of message type ${header[MESSAGE_TYPE]}, "
-                                + "with message: ${exception.message}\n ${exception.stacktrace}")
-                                        .getText())
-                .stop();
+            .log(LoggingLevel.ERROR, LOG,
+                simple("Permanent exception for intygs-id: ${header[INTYGS_ID]}, of message type ${header[MESSAGE_TYPE]}, "
+                    + "with message: ${exception.message}\n ${exception.stacktrace}")
+                    .getText())
+            .stop();
 
         from("direct:certTemporaryErrorHandlerEndpoint").routeId("temporaryErrorLogging")
-                .choice()
-                .when(header(Constants.JMS_REDELIVERED).isEqualTo("false"))
-                .log(LoggingLevel.ERROR, LOG,
-                        simple("Temporary exception for intygs-id: ${header[INTYGS_ID]}, of message type ${header[MESSAGE_TYPE]}, "
-                                + "with message: ${exception.message}\n ${exception.stacktrace}")
-                                        .getText())
-                .otherwise()
-                .log(LoggingLevel.WARN, LOG,
-                        simple("Temporary exception for intygs-id: ${header[INTYGS_ID]}, of message type ${header[MESSAGE_TYPE]}, "
-                                + "with message: ${exception.message}").getText())
-                .stop();
+            .choice()
+            .when(header(Constants.JMS_REDELIVERED).isEqualTo("false"))
+            .log(LoggingLevel.ERROR, LOG,
+                simple("Temporary exception for intygs-id: ${header[INTYGS_ID]}, of message type ${header[MESSAGE_TYPE]}, "
+                    + "with message: ${exception.message}\n ${exception.stacktrace}")
+                    .getText())
+            .otherwise()
+            .log(LoggingLevel.WARN, LOG,
+                simple("Temporary exception for intygs-id: ${header[INTYGS_ID]}, of message type ${header[MESSAGE_TYPE]}, "
+                    + "with message: ${exception.message}").getText())
+            .stop();
     }
 
 }

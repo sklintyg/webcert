@@ -21,6 +21,11 @@ package se.inera.intyg.webcert.intygstjanststub;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
+import javax.annotation.PostConstruct;
+import javax.xml.bind.JAXBException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,13 +34,8 @@ import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import se.inera.intyg.common.support.modules.support.api.CertificateHolder;
 import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
 
-import javax.annotation.PostConstruct;
-import javax.xml.bind.JAXBException;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
-
 public class BootstrapBean {
+
     private static final Logger LOG = LoggerFactory.getLogger(BootstrapBean.class);
 
     @Autowired

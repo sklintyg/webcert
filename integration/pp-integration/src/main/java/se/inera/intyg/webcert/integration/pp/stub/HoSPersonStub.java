@@ -18,12 +18,11 @@
  */
 package se.inera.intyg.webcert.integration.pp.stub;
 
-import se.riv.infrastructure.directory.privatepractitioner.v1.HoSPersonType;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import se.riv.infrastructure.directory.privatepractitioner.v1.HoSPersonType;
 
 /**
  * Created by Magnus Ekstrand on 18/06/15.

@@ -21,14 +21,11 @@ package se.inera.intyg.webcert.web.web.controller.integrationtest.api;
 import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import org.junit.Test;
-
 import com.jayway.restassured.RestAssured;
 import com.jayway.restassured.response.ResponseBody;
-
+import java.util.HashMap;
+import java.util.Map;
+import org.junit.Test;
 import se.inera.intyg.webcert.web.web.controller.integrationtest.BaseRestIntegrationTest;
 
 /**
@@ -48,8 +45,8 @@ public class FmbAPIControllerIT extends BaseRestIntegrationTest {
 
         //J22 is added programatically by the fmbStub ad also used by other tests.
         final ResponseBody body = given().cookie("ROUTEID", BaseRestIntegrationTest.routeId).pathParam("icd10", "J22")
-                .expect().statusCode(200)
-                .when().get("api/fmb/{icd10}").getBody();
+            .expect().statusCode(200)
+            .when().get("api/fmb/{icd10}").getBody();
 
         String test = "";
 
@@ -66,8 +63,8 @@ public class FmbAPIControllerIT extends BaseRestIntegrationTest {
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
 
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId).pathParam("icd10", "X1337")
-                .expect().statusCode(204)
-                .when().get("api/fmb/{icd10}");
+            .expect().statusCode(204)
+            .when().get("api/fmb/{icd10}");
     }
 
     @Test
@@ -86,9 +83,9 @@ public class FmbAPIControllerIT extends BaseRestIntegrationTest {
         params.put("personnummer", "191212121212");
 
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId).queryParams(params)
-                .expect().statusCode(200)
-                .when().get("api/fmb/valideraSjukskrivningstid").then()
-                .body(matchesJsonSchemaInClasspath("jsonschema/webcert-fmb-validerasjukskrivningstid-response-schema.json"));
+            .expect().statusCode(200)
+            .when().get("api/fmb/valideraSjukskrivningstid").then()
+            .body(matchesJsonSchemaInClasspath("jsonschema/webcert-fmb-validerasjukskrivningstid-response-schema.json"));
     }
 
 }

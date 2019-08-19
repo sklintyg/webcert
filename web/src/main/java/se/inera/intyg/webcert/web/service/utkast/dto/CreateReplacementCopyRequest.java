@@ -29,7 +29,7 @@ public class CreateReplacementCopyRequest extends AbstractCreateCopyRequest {
     private boolean coherentJournaling = false;
 
     public CreateReplacementCopyRequest(String orginalIntygsId, String intygsTyp, Patient patient, HoSPersonal hosPerson,
-            boolean coherentJournaling) {
+        boolean coherentJournaling) {
         super(orginalIntygsId, intygsTyp, patient, hosPerson);
         this.coherentJournaling = coherentJournaling;
     }

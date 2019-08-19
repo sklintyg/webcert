@@ -24,11 +24,9 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
-
 import javax.mail.Address;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
-
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.junit.Before;
 import org.junit.Test;
@@ -54,12 +52,12 @@ public class JavaMailSenderAroundAdviceTest {
 
     @InjectMocks
     private JavaMailSenderAroundAdvice advice = new JavaMailSenderAroundAdvice();
-    
+
     @Before
     public void setUp() throws Exception {
         when(mailStore.getMails()).thenReturn(mails);
-        when(message.getFrom()).thenReturn(new Address[] {new InternetAddress("from")});
-        when(message.getAllRecipients()).thenReturn(new Address[] {new InternetAddress("to")});
+        when(message.getFrom()).thenReturn(new Address[]{new InternetAddress("from")});
+        when(message.getAllRecipients()).thenReturn(new Address[]{new InternetAddress("to")});
         when(message.getSubject()).thenReturn("subject");
         when(message.getContent()).thenReturn("body");
     }
@@ -67,7 +65,7 @@ public class JavaMailSenderAroundAdviceTest {
     @Test
     public void testAroundAdviceInterceptsAndStoresMessageWhenMailServerNotSet() throws Throwable {
         advice.setMailHost(null);
-        Object[] args = new Object[] {new Object(), message, new Object()};
+        Object[] args = new Object[]{new Object(), message, new Object()};
         when(pjp.getArgs()).thenReturn(args);
         advice.interceptMailSending(pjp);
         verify(mails).add(new OutgoingMail(message));

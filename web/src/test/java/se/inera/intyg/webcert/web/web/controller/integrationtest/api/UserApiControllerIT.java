@@ -25,7 +25,6 @@ import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.core.IsEqual.equalTo;
 
 import com.jayway.restassured.RestAssured;
-import com.jayway.restassured.http.ContentType;
 import org.junit.Test;
 import se.inera.intyg.webcert.web.auth.fake.FakeCredentials;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ChangeSelectedUnitRequest;
@@ -45,11 +44,11 @@ public class UserApiControllerIT extends BaseRestIntegrationTest {
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
 
         spec()
-                .expect().statusCode(200).when().get("api/anvandare")
-                .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-user-response-schema.json"))
-                .body("hsaId", equalTo(DEFAULT_LAKARE.getHsaId()))
-                .body("valdVardenhet.id", equalTo(DEFAULT_LAKARE.getEnhetId()))
-                .body("namn", equalTo(DEFAULT_LAKARE_NAME));
+            .expect().statusCode(200).when().get("api/anvandare")
+            .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-user-response-schema.json"))
+            .body("hsaId", equalTo(DEFAULT_LAKARE.getHsaId()))
+            .body("valdVardenhet.id", equalTo(DEFAULT_LAKARE.getEnhetId()))
+            .body("namn", equalTo(DEFAULT_LAKARE_NAME));
     }
 
     @Test
@@ -65,7 +64,7 @@ public class UserApiControllerIT extends BaseRestIntegrationTest {
 
         // Log in as user having medarbetaruppdrag at several vardenheter.
         FakeCredentials user = new FakeCredentials.FakeCredentialsBuilder("IFV1239877878-104B",
-                "IFV1239877878-1042").legitimeradeYrkesgrupper(asList("Läkare")).build();
+            "IFV1239877878-1042").legitimeradeYrkesgrupper(asList("Läkare")).build();
         RestAssured.sessionId = getAuthSession(user);
 
         // An improvement of this would be to call hsaStub rest api to add testa data as we want it to
@@ -75,10 +74,10 @@ public class UserApiControllerIT extends BaseRestIntegrationTest {
         changeRequest.setId(vardEnhetToChangeTo);
 
         spec()
-                .and().body(changeRequest)
-                .when().post("api/anvandare/andraenhet")
-                .then().statusCode(200).body(matchesJsonSchemaInClasspath("jsonschema/webcert-user-response-schema.json"))
-                .body("valdVardenhet.id", equalTo(vardEnhetToChangeTo));
+            .and().body(changeRequest)
+            .when().post("api/anvandare/andraenhet")
+            .then().statusCode(200).body(matchesJsonSchemaInClasspath("jsonschema/webcert-user-response-schema.json"))
+            .body("valdVardenhet.id", equalTo(vardEnhetToChangeTo));
     }
 
     /**
@@ -89,7 +88,7 @@ public class UserApiControllerIT extends BaseRestIntegrationTest {
 
         // Log in as user having medarbetaruppdrag at several vardenheter.
         FakeCredentials user = new FakeCredentials.FakeCredentialsBuilder("IFV1239877878-104B",
-                "IFV1239877878-1042").legitimeradeYrkesgrupper(asList("Läkare")).build();
+            "IFV1239877878-1042").legitimeradeYrkesgrupper(asList("Läkare")).build();
         RestAssured.sessionId = getAuthSession(user);
 
         // An improvement of this would be to call hsaStub rest api to add testa data as we want it to
@@ -99,9 +98,9 @@ public class UserApiControllerIT extends BaseRestIntegrationTest {
         changeRequest.setId(vardEnhetToChangeTo);
 
         spec()
-                .and().body(changeRequest)
-                .expect().statusCode(400)
-                .when().post("api/anvandare/andraenhet");
+            .and().body(changeRequest)
+            .expect().statusCode(400)
+            .when().post("api/anvandare/andraenhet");
     }
 
     @Test
@@ -110,8 +109,8 @@ public class UserApiControllerIT extends BaseRestIntegrationTest {
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
 
         spec()
-                .when().put("api/anvandare/godkannavtal")
-                .then().statusCode(200);
+            .when().put("api/anvandare/godkannavtal")
+            .then().statusCode(200);
     }
 
     @Test
@@ -120,8 +119,8 @@ public class UserApiControllerIT extends BaseRestIntegrationTest {
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
 
         spec()
-                .when().delete("api/anvandare/privatlakaravtal")
-                .then().statusCode(200);
+            .when().delete("api/anvandare/privatlakaravtal")
+            .then().statusCode(200);
     }
 
     @Test
@@ -130,8 +129,8 @@ public class UserApiControllerIT extends BaseRestIntegrationTest {
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
 
         spec()
-                .when().get("api/anvandare/latestavtal")
-                .then().statusCode(200).body(matchesJsonSchemaInClasspath("jsonschema/webcert-avtal-response-schema.json"));
+            .when().get("api/anvandare/latestavtal")
+            .then().statusCode(200).body(matchesJsonSchemaInClasspath("jsonschema/webcert-avtal-response-schema.json"));
     }
 
     @Test
@@ -140,8 +139,8 @@ public class UserApiControllerIT extends BaseRestIntegrationTest {
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
 
         spec()
-                .expect().statusCode(200)
-                .when().get("api/anvandare/ping");
+            .expect().statusCode(200)
+            .when().get("api/anvandare/ping");
     }
 
     @Test
@@ -151,21 +150,21 @@ public class UserApiControllerIT extends BaseRestIntegrationTest {
         storeRequest.setKey("key1");
         storeRequest.setValue("value1");
         spec()
-                .when().delete("api/anvandare/preferences/key1").then().statusCode(200);
+            .when().delete("api/anvandare/preferences/key1").then().statusCode(200);
 
         spec()
-                .and().body(storeRequest)
-                .when().put("api/anvandare/preferences")
-                .then().statusCode(200);
+            .and().body(storeRequest)
+            .when().put("api/anvandare/preferences")
+            .then().statusCode(200);
 
         spec()
-                .expect().statusCode(200).when().get("api/anvandare")
-                .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-user-response-schema.json"))
-                .body("hsaId", equalTo(DEFAULT_LAKARE.getHsaId()))
-                .body("anvandarPreference.key1", equalTo("value1"));
+            .expect().statusCode(200).when().get("api/anvandare")
+            .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-user-response-schema.json"))
+            .body("hsaId", equalTo(DEFAULT_LAKARE.getHsaId()))
+            .body("anvandarPreference.key1", equalTo("value1"));
 
         spec()
-                .when().delete("api/anvandare/preferences/key1").then().statusCode(200);
+            .when().delete("api/anvandare/preferences/key1").then().statusCode(200);
     }
 
     @Test
@@ -176,18 +175,18 @@ public class UserApiControllerIT extends BaseRestIntegrationTest {
         storeRequest.setValue("value1");
 
         spec()
-                .and()
-                .body(storeRequest)
-                .when().put("api/anvandare/preferences").then().statusCode(200);
+            .and()
+            .body(storeRequest)
+            .when().put("api/anvandare/preferences").then().statusCode(200);
 
         spec()
-                .when().delete("api/anvandare/preferences/key1").then().statusCode(200);
+            .when().delete("api/anvandare/preferences/key1").then().statusCode(200);
 
         spec()
-                .expect().statusCode(200)
-                .when().get("api/anvandare")
-                .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-user-response-schema.json"))
-                .body("hsaId", equalTo(DEFAULT_LAKARE.getHsaId()))
-                .body("anvandarPreference.key1", nullValue());
+            .expect().statusCode(200)
+            .when().get("api/anvandare")
+            .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-user-response-schema.json"))
+            .body("hsaId", equalTo(DEFAULT_LAKARE.getHsaId()))
+            .body("anvandarPreference.key1", nullValue());
     }
 }

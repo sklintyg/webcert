@@ -20,6 +20,11 @@ package se.inera.intyg.webcert.integration.pp.stub;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
+import java.util.ArrayList;
+import java.util.List;
+import javax.xml.soap.SOAPFactory;
+import javax.xml.soap.SOAPFault;
+import javax.xml.ws.soap.SOAPFaultException;
 import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.riv.infrastructure.directory.privatepractitioner.getprivatepractitioner.v1.rivtabp21.GetPrivatePractitionerResponderInterface;
@@ -27,12 +32,6 @@ import se.riv.infrastructure.directory.privatepractitioner.getprivatepractitione
 import se.riv.infrastructure.directory.privatepractitioner.getprivatepractitionerresponder.v1.GetPrivatePractitionerType;
 import se.riv.infrastructure.directory.privatepractitioner.v1.HoSPersonType;
 import se.riv.infrastructure.directory.privatepractitioner.v1.ResultCodeEnum;
-
-import javax.xml.soap.SOAPFactory;
-import javax.xml.soap.SOAPFault;
-import javax.xml.ws.soap.SOAPFaultException;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Stubbed responder for get private practitioner.
@@ -107,7 +106,7 @@ public class GetPrivatePractitionerResponderStub implements GetPrivatePractition
             response.setHoSPerson(null);
             response.setResultCode(ResultCodeEnum.ERROR);
             response.setResultText("FAILURE: an error occured while trying to get private practitioner with personal identity number: "
-                    + Personnummer.getPersonnummerHashSafe(personnummer) + " exists.");
+                + Personnummer.getPersonnummerHashSafe(personnummer) + " exists.");
             return response;
         }
 
@@ -121,7 +120,7 @@ public class GetPrivatePractitionerResponderStub implements GetPrivatePractition
         if (person == null) {
             response.setResultCode(ResultCodeEnum.INFO);
             response.setResultText("No private practitioner with personal identity number: "
-                    + Personnummer.getPersonnummerHashSafe(personnummer) + " exists.");
+                + Personnummer.getPersonnummerHashSafe(personnummer) + " exists.");
         } else {
             response.setHoSPerson(person);
             response.setResultCode(ResultCodeEnum.OK);

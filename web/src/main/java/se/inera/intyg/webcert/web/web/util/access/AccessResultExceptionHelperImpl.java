@@ -20,7 +20,6 @@
 package se.inera.intyg.webcert.web.web.util.access;
 
 import org.springframework.stereotype.Component;
-
 import se.inera.intyg.infra.security.authorities.AuthoritiesException;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
@@ -45,12 +44,12 @@ public class AccessResultExceptionHelperImpl implements AccessResultExceptionHel
 
         if (accessResult.getCode() == AccessResultCode.AUTHORIZATION_SEKRETESS) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM_SEKRETESSMARKERING,
-                    accessResult.getMessage());
+                accessResult.getMessage());
         }
 
         if (accessResult.getCode() == AccessResultCode.AUTHORIZATION_SEKRETESS_UNIT) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM_SEKRETESSMARKERING_ENHET,
-                    accessResult.getMessage());
+                accessResult.getMessage());
         }
 
         throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM, accessResult.getMessage());

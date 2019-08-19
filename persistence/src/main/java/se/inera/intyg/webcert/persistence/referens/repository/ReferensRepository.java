@@ -22,5 +22,6 @@ import org.springframework.data.repository.CrudRepository;
 import se.inera.intyg.webcert.persistence.referens.model.Referens;
 
 public interface ReferensRepository extends CrudRepository<Referens, Long> {
+
     Referens findByIntygId(String intygsId);
 }

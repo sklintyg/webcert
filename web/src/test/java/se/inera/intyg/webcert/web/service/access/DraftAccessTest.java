@@ -25,13 +25,13 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.MockitoAnnotations;
-
 import se.inera.intyg.webcert.common.model.SekretessStatus;
 import se.inera.intyg.webcert.web.service.access.data.AccessServiceTestData;
 import se.inera.intyg.webcert.web.service.access.util.AccessServiceTestToolkit;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 abstract public class DraftAccessTest extends AccessTest {
+
     @InjectMocks
     private DraftAccessServiceImpl accessService;
 
@@ -84,15 +84,15 @@ abstract public class DraftAccessTest extends AccessTest {
     public void isAllowToCreateUtkastOnSameCareProviderWhenUtkastSameVGExists() {
         final WebCertUser user = AccessServiceTestToolkit.createUser(intygsTyp, accessServiceTestData);
         doReturn(user)
-                .when(webCertUserService).getUser();
+            .when(webCertUserService).getUser();
         doReturn(false)
-                .when(patientDetailsResolver).isAvliden(PERSONNUMMER);
+            .when(patientDetailsResolver).isAvliden(PERSONNUMMER);
         doReturn(SekretessStatus.FALSE)
-                .when(patientDetailsResolver).getSekretessStatus(PERSONNUMMER);
+            .when(patientDetailsResolver).getSekretessStatus(PERSONNUMMER);
         doReturn(true)
-                .when(webCertUserService).userIsLoggedInOnEnhetOrUnderenhet(enhetsId);
+            .when(webCertUserService).userIsLoggedInOnEnhetOrUnderenhet(enhetsId);
         doReturn(AccessServiceTestToolkit.createPreviousUtkastForUtkast(intygsTyp))
-                .when(utkastService).checkIfPersonHasExistingIntyg(PERSONNUMMER, user);
+            .when(utkastService).checkIfPersonHasExistingIntyg(PERSONNUMMER, user);
         doReturn(selectedVardgivare).when(user).getValdVardgivare();
         doReturn(vardgivarId).when(selectedVardgivare).getId();
         doReturn(selectedVardenhet).when(user).getValdVardenhet();
@@ -107,15 +107,15 @@ abstract public class DraftAccessTest extends AccessTest {
     public void isAllowToCreateUtkastOnDifferentCareProviderWhenIntygSameVGExists() {
         final WebCertUser user = AccessServiceTestToolkit.createUser(intygsTyp, accessServiceTestData);
         doReturn(user)
-                .when(webCertUserService).getUser();
+            .when(webCertUserService).getUser();
         doReturn(false)
-                .when(patientDetailsResolver).isAvliden(PERSONNUMMER);
+            .when(patientDetailsResolver).isAvliden(PERSONNUMMER);
         doReturn(SekretessStatus.FALSE)
-                .when(patientDetailsResolver).getSekretessStatus(PERSONNUMMER);
+            .when(patientDetailsResolver).getSekretessStatus(PERSONNUMMER);
         doReturn(true)
-                .when(webCertUserService).userIsLoggedInOnEnhetOrUnderenhet(enhetsId);
+            .when(webCertUserService).userIsLoggedInOnEnhetOrUnderenhet(enhetsId);
         doReturn(AccessServiceTestToolkit.createPreviousIntygForUtkast(intygsTyp, true))
-                .when(utkastService).checkIfPersonHasExistingIntyg(PERSONNUMMER, user);
+            .when(utkastService).checkIfPersonHasExistingIntyg(PERSONNUMMER, user);
         doReturn(selectedVardgivare).when(user).getValdVardgivare();
         doReturn(vardgivarId).when(selectedVardgivare).getId();
         doReturn(selectedVardenhet).when(user).getValdVardenhet();
@@ -130,15 +130,15 @@ abstract public class DraftAccessTest extends AccessTest {
     public void isAllowToCreateUtkastOnSameCareProviderWhenIntygExists() {
         final WebCertUser user = AccessServiceTestToolkit.createUser(intygsTyp, accessServiceTestData);
         doReturn(user)
-                .when(webCertUserService).getUser();
+            .when(webCertUserService).getUser();
         doReturn(false)
-                .when(patientDetailsResolver).isAvliden(PERSONNUMMER);
+            .when(patientDetailsResolver).isAvliden(PERSONNUMMER);
         doReturn(SekretessStatus.FALSE)
-                .when(patientDetailsResolver).getSekretessStatus(PERSONNUMMER);
+            .when(patientDetailsResolver).getSekretessStatus(PERSONNUMMER);
         doReturn(true)
-                .when(webCertUserService).userIsLoggedInOnEnhetOrUnderenhet(enhetsId);
+            .when(webCertUserService).userIsLoggedInOnEnhetOrUnderenhet(enhetsId);
         doReturn(AccessServiceTestToolkit.createPreviousIntygForUtkast(intygsTyp, false))
-                .when(utkastService).checkIfPersonHasExistingIntyg(PERSONNUMMER, user);
+            .when(utkastService).checkIfPersonHasExistingIntyg(PERSONNUMMER, user);
         doReturn(selectedVardgivare).when(user).getValdVardgivare();
         doReturn(vardgivarId).when(selectedVardgivare).getId();
         doReturn(selectedVardenhet).when(user).getValdVardenhet();

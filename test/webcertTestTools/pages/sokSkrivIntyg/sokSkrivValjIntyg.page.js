@@ -27,13 +27,13 @@ var intygTypeSelector = element(by.id('select-intyg-type-table'));
 
 module.exports = {
 
-    get: function() {
-        browser.get('#/create/choose-intyg-type/default/index');
-    },
-    isAt: function() {
-        return intygTypeSelector.isDisplayed();
-    },
-    selectIntygById: function(intygId) {
-        element(by.id('showBtn-' + intygId)).click();
-    }
+  get: function() {
+    browser.get('#/create/choose-intyg-type/default/index');
+  },
+  isAt: function() {
+    return intygTypeSelector.isDisplayed();
+  },
+  selectIntygById: function(intygId) {
+    element(by.id('showBtn-' + intygId)).click();
+  }
 };

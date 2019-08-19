@@ -18,22 +18,35 @@
  */
 package se.inera.intyg.webcert.web.web.controller.swagger;
 
-import java.util.*;
-
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
-import javax.ws.rs.*;
-import javax.ws.rs.core.*;
-
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.config.FilterFactory;
 import io.swagger.core.filter.SpecFilter;
 import io.swagger.core.filter.SwaggerSpecFilter;
 import io.swagger.jaxrs.Reader;
-import io.swagger.jaxrs.config.*;
+import io.swagger.jaxrs.config.JaxrsScanner;
+import io.swagger.jaxrs.config.ReaderConfigUtils;
+import io.swagger.jaxrs.config.ReflectiveJaxrsScanner;
 import io.swagger.jaxrs.listing.SwaggerSerializers;
 import io.swagger.models.Swagger;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Application;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.Cookie;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 
 /**
  * This class intefaces with io.swagger core classes for on-the-fly generation of Swagger .JSON files for use by
@@ -55,10 +68,14 @@ public class ApiScanner {
     @Context
     private ServletContext context;
 
-    /** Keeps track of whether a given endpoint has been initialized and stored in the context. */
+    /**
+     * Keeps track of whether a given endpoint has been initialized and stored in the context.
+     */
     private Map<String, Boolean> apiInitialized = new HashMap<>();
 
-    /** Populated from CXF xml file swagger-cxf-servlet.xml. */
+    /**
+     * Populated from CXF xml file swagger-cxf-servlet.xml.
+     */
     private Map<String, String> basepathMap = new HashMap<>();
 
     /**
@@ -66,11 +83,10 @@ public class ApiScanner {
      * customized
      * swagger-ui to list available endpoints.
      *
-     * @return
-     *         List of serialized Map.Entry items.
+     * @return List of serialized Map.Entry items.
      */
     @GET
-    @Produces({ MediaType.APPLICATION_JSON })
+    @Produces({MediaType.APPLICATION_JSON})
     @Path("/")
     @ApiOperation(value = "List available APIs", hidden = true)
     public Response getApiList() {
@@ -78,11 +94,11 @@ public class ApiScanner {
     }
 
     @GET
-    @Produces({ MediaType.APPLICATION_JSON })
+    @Produces({MediaType.APPLICATION_JSON})
     @Path("/{api}")
     @ApiOperation(value = "The swagger definition in JSON", hidden = true)
     public Response getListingJson(@PathParam("api") String api, @Context Application app, @Context ServletConfig sc,
-            @Context HttpHeaders headers, @Context UriInfo uriInfo) {
+        @Context HttpHeaders headers, @Context UriInfo uriInfo) {
         Swagger swagger = process(app, sc, headers, uriInfo, api);
 
         if (swagger != null) {
@@ -131,7 +147,7 @@ public class ApiScanner {
             return basepathMap.get(api);
         } else {
             throw new IllegalArgumentException(
-                    "Cannot generate Swagger docs for API '" + api + "'. Its basepath must be mapped in swagger-cxf-servlet.xml");
+                "Cannot generate Swagger docs for API '" + api + "'. Its basepath must be mapped in swagger-cxf-servlet.xml");
         }
     }
 
@@ -146,7 +162,7 @@ public class ApiScanner {
             if (filterImpl != null) {
                 SpecFilter f = new SpecFilter();
                 swagger = f.filter(swagger, filterImpl, getQueryParams(uriInfo.getQueryParameters()), getCookies(headers),
-                        getHeaders(headers));
+                    getHeaders(headers));
             }
         }
         return swagger;

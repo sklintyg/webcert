@@ -18,6 +18,7 @@
  */
 package se.inera.intyg.webcert.web.integration.integrationtest;
 
+import com.google.common.collect.ImmutableMap;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.Iterator;
@@ -33,13 +34,10 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathFactory;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
-
-import com.google.common.collect.ImmutableMap;
 
 /*
  * Detta är en kopia av motsvarande klass i IT. Efter införande av gradle som byggsystem
@@ -48,6 +46,7 @@ import com.google.common.collect.ImmutableMap;
  * Se INTYG-2391, INTYG-2536
  */
 public class XPathExtractor {
+
     private XPath xpath;
     private Document xmlDocument;
 

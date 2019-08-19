@@ -23,6 +23,7 @@ import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.web.service.fragasvar.dto.FrageStallare;
 
 public final class FragestallareConverterUtil {
+
     private FragestallareConverterUtil() {
     }
 
@@ -33,7 +34,7 @@ public final class FragestallareConverterUtil {
             return ret.getKod();
         } catch (IllegalArgumentException ie) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM,
-                    "Invalid PartCode found when converting Arende");
+                "Invalid PartCode found when converting Arende");
         }
     }
 

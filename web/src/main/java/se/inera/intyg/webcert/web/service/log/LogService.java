@@ -18,9 +18,9 @@
  */
 package se.inera.intyg.webcert.web.service.log;
 
-import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
 import se.inera.intyg.webcert.web.service.log.dto.LogUser;
+import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 /**
  * Service for logging user actions according to PDL requirements.
@@ -197,6 +197,7 @@ public interface LogService {
 
     /**
      * Creates a log event when a user sets an own opinion on a SRS risk prediction.
+     *
      * @param patientId the id of the patient
      * @param intygId the id of the certificate
      */
@@ -204,6 +205,7 @@ public interface LogService {
 
     /**
      * Creates a log event when a user sets an own opinion on a SRS risk prediction.
+     *
      * @param logRequest the logging details
      * @param user the user who performs the action that is being logged
      */

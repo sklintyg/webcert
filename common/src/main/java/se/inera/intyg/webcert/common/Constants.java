@@ -25,7 +25,9 @@ package se.inera.intyg.webcert.common;
  */
 public final class Constants {
 
-    /** Messaging. */
+    /**
+     * Messaging.
+     */
     public static final String STORE_MESSAGE = "STORE";
     public static final String SEND_MESSAGE = "SEND";
     public static final String REVOKE_MESSAGE = "REVOKE";

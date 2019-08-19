@@ -18,6 +18,9 @@
  */
 package se.inera.intyg.webcert.web.auth.oidc.jwt;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import com.auth0.jwk.Jwk;
 import com.auth0.jwk.JwkException;
 import com.auth0.jwk.JwkProvider;
@@ -30,17 +33,13 @@ import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.JwsHeader;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SigningKeyResolverAdapter;
-import org.apache.commons.io.IOUtils;
-import org.junit.Test;
-import org.springframework.core.io.ClassPathResource;
-
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.security.Key;
 import java.util.ArrayList;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import org.apache.commons.io.IOUtils;
+import org.junit.Test;
+import org.springframework.core.io.ClassPathResource;
 
 public class JwtParserTest {
 
@@ -51,9 +50,9 @@ public class JwtParserTest {
 
         SigningKeyResolverAdapter signingKeyResolverAdapter = buildResolverWithDiskBasedJwks();
         Jws<Claims> jws = Jwts.parser()
-                .setSigningKeyResolver(signingKeyResolverAdapter)
-                .setAllowedClockSkewSeconds(999999999999999L)
-                .parseClaimsJws(jwtToken);
+            .setSigningKeyResolver(signingKeyResolverAdapter)
+            .setAllowedClockSkewSeconds(999999999999999L)
+            .parseClaimsJws(jwtToken);
 
         assertNotNull(jws);
         ArrayList<String> employeeHsaIdList = (ArrayList<String>) jws.getBody().get("employeeHsaId");
@@ -67,9 +66,9 @@ public class JwtParserTest {
         SigningKeyResolverAdapter signingKeyResolverAdapter = buildResolverWithDiskBasedJwks();
 
         Jws<Claims> jws = Jwts.parser()
-                .setSigningKeyResolver(signingKeyResolverAdapter)
-                .setAllowedClockSkewSeconds(1)
-                .parseClaimsJws(jwtToken);
+            .setSigningKeyResolver(signingKeyResolverAdapter)
+            .setAllowedClockSkewSeconds(1)
+            .parseClaimsJws(jwtToken);
     }
 
     private String readTokenFromDisk() throws IOException {

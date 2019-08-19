@@ -18,6 +18,9 @@
  */
 package se.inera.intyg.webcert.intygstjanststub;
 
+import java.io.StringReader;
+import java.time.format.DateTimeFormatter;
+import javax.xml.bind.JAXB;
 import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.ifv.insuranceprocess.healthreporting.registermedicalcertificateresponder.v3.RegisterMedicalCertificateType;
 import se.inera.intyg.clinicalprocess.healthcond.certificate.getmedicalcertificate.v1.GetMedicalCertificateRequestType;
@@ -30,12 +33,8 @@ import se.inera.intyg.webcert.intygstjanststub.mode.StubLatencyAware;
 import se.inera.intyg.webcert.intygstjanststub.mode.StubModeAware;
 import se.riv.clinicalprocess.healthcond.certificate.v1.ErrorIdType;
 
-import javax.xml.bind.JAXB;
-import java.io.StringReader;
-import java.time.format.DateTimeFormatter;
-
 public class GetMedicalCertificateResponderStub implements
-        GetMedicalCertificateResponderInterface {
+    GetMedicalCertificateResponderInterface {
 
     @Autowired
     private IntygStore intygStore;
@@ -44,7 +43,7 @@ public class GetMedicalCertificateResponderStub implements
     @StubLatencyAware
     @StubModeAware
     public GetMedicalCertificateResponseType getMedicalCertificate(String logicalAddress,
-            GetMedicalCertificateRequestType request) {
+        GetMedicalCertificateRequestType request) {
 
         GetMedicalCertificateResponseType response = new GetMedicalCertificateResponseType();
         CertificateHolder intygResponse = intygStore.getIntygForCertificateId(request.getCertificateId());
@@ -53,8 +52,8 @@ public class GetMedicalCertificateResponderStub implements
             attachCertificateDocument(intygResponse, response);
             if (intygResponse.isRevoked()) {
                 response.setResult(
-                        ResultTypeUtil.errorResult(ErrorIdType.REVOKED,
-                                String.format("Certificate '%s' has been revoked", intygResponse.getId())));
+                    ResultTypeUtil.errorResult(ErrorIdType.REVOKED,
+                        String.format("Certificate '%s' has been revoked", intygResponse.getId())));
             } else {
                 response.setResult(ResultTypeUtil.okResult());
             }
@@ -66,15 +65,15 @@ public class GetMedicalCertificateResponderStub implements
 
     private void attachCertificateDocument(CertificateHolder certificate, GetMedicalCertificateResponseType response) {
         String content = intygStore.getContentTemplate("intyg-fk7263-content.xml")
-                .replace("CERTIFICATE_ID", certificate.getId())
-                .replace("PATIENT_CRN", certificate.getCivicRegistrationNumber().getPersonnummer())
-                .replace("CAREUNIT_ID", certificate.getCareUnitId())
-                .replace("CAREUNIT_NAME", certificate.getCareUnitName())
-                .replace("CAREGIVER_ID", certificate.getCareGiverId())
-                .replace("DOCTOR_NAME", certificate.getSigningDoctorName())
-                .replace("SIGNED_DATE", certificate.getSignedDate().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+            .replace("CERTIFICATE_ID", certificate.getId())
+            .replace("PATIENT_CRN", certificate.getCivicRegistrationNumber().getPersonnummer())
+            .replace("CAREUNIT_ID", certificate.getCareUnitId())
+            .replace("CAREUNIT_NAME", certificate.getCareUnitName())
+            .replace("CAREGIVER_ID", certificate.getCareGiverId())
+            .replace("DOCTOR_NAME", certificate.getSigningDoctorName())
+            .replace("SIGNED_DATE", certificate.getSignedDate().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
         RegisterMedicalCertificateType jaxbObject = JAXB.unmarshal(new StringReader(content),
-                RegisterMedicalCertificateType.class);
+            RegisterMedicalCertificateType.class);
         response.setLakarutlatande(jaxbObject.getLakarutlatande());
     }
 }

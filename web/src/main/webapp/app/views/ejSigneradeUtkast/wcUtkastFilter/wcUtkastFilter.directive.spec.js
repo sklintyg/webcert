@@ -1,4 +1,3 @@
-
 /*
  * Copyright (C) 2016 Inera AB (http://www.inera.se)
  *
@@ -19,104 +18,111 @@
  */
 
 describe('wcUtkastFilterSpec', function() {
-    'use strict';
+  'use strict';
 
-    var $scope;
-    var $httpBackend;
-    var $timeout;
-    var mockFactory;
-    var element;
-    var utkastFilterModel;
-    var emptyFilter;
+  var $scope;
+  var $httpBackend;
+  var $timeout;
+  var mockFactory;
+  var element;
+  var utkastFilterModel;
+  var emptyFilter;
 
-    beforeEach(angular.mock.module('htmlTemplates'));
-    beforeEach(function() {
-        module('webcertTest');
-        module('webcert', ['$provide', '$stateProvider', function($provide) {
+  beforeEach(angular.mock.module('htmlTemplates'));
+  beforeEach(function() {
+    module('webcertTest');
+    module('webcert', ['$provide', '$stateProvider', function($provide) {
 
-            var webcertTest = angular.injector(['webcertTest', 'ng']);
-            mockFactory = webcertTest.get('mockFactory');
+      var webcertTest = angular.injector(['webcertTest', 'ng']);
+      mockFactory = webcertTest.get('mockFactory');
 
-            var User = mockFactory.buildUserMinimal();
-            $provide.value('common.User', User);
-            $provide.value('common.UserModel', { userContext: { authenticationScheme: null }, getActiveFeatures: function() {},
-                hasIntygsTyp: function() {return true;}, isLakare: function() {return true;} });
-            $provide.value('common.dialogService', mockFactory.buildDialogService());
-            var featureService = jasmine.createSpyObj('common.featureService', [ 'isFeatureActive' ]);
-            featureService.features = {};
-            $provide.value('common.featureService', featureService);
-            $provide.value('common.authorityService', jasmine.createSpyObj('common.authorityService', [ 'isAuthorityActive' ]));
-            $provide.value('common.messageService', {});
-            $provide.value('common.moduleService', {});
-            $provide.value('common.statService', jasmine.createSpyObj('common.statService', [ 'refreshStat' ]));
-        }]);
+      var User = mockFactory.buildUserMinimal();
+      $provide.value('common.User', User);
+      $provide.value('common.UserModel', {
+        userContext: {authenticationScheme: null}, getActiveFeatures: function() {
+        },
+        hasIntygsTyp: function() {
+          return true;
+        }, isLakare: function() {
+          return true;
+        }
+      });
+      $provide.value('common.dialogService', mockFactory.buildDialogService());
+      var featureService = jasmine.createSpyObj('common.featureService', ['isFeatureActive']);
+      featureService.features = {};
+      $provide.value('common.featureService', featureService);
+      $provide.value('common.authorityService', jasmine.createSpyObj('common.authorityService', ['isAuthorityActive']));
+      $provide.value('common.messageService', {});
+      $provide.value('common.moduleService', {});
+      $provide.value('common.statService', jasmine.createSpyObj('common.statService', ['refreshStat']));
+    }]);
 
-        inject(['$rootScope', '$compile', '$httpBackend', '$timeout', 'webcert.UtkastFilterModel', '$templateCache',
-            function($rootScope, $compile, _$httpBackend_, _$timeout_, _utkastFilterModel_, $templateCache) {
+    inject(['$rootScope', '$compile', '$httpBackend', '$timeout', 'webcert.UtkastFilterModel', '$templateCache',
+      function($rootScope, $compile, _$httpBackend_, _$timeout_, _utkastFilterModel_, $templateCache) {
 
-                $templateCache.put('/web/webjars/common/webcert/components/headers/wcHeader.partial.html', '');
+        $templateCache.put('/web/webjars/common/webcert/components/headers/wcHeader.partial.html', '');
 
-                $httpBackend = _$httpBackend_;
-                $timeout = _$timeout_;
-                utkastFilterModel = _utkastFilterModel_;
-                emptyFilter = _utkastFilterModel_.build();
+        $httpBackend = _$httpBackend_;
+        $timeout = _$timeout_;
+        utkastFilterModel = _utkastFilterModel_;
+        emptyFilter = _utkastFilterModel_.build();
 
-                var tpl = angular.element(
-                    '<wc-utkast-filter on-search="testFilter()" filter="filter"></wc-utkast-filter>'
-                );
-                $scope = $rootScope.$new();
-                $scope.filter = emptyFilter;
-                $scope.testFilter = function(filter) {
-                };
-                element = $compile(tpl)($scope);
-            }
-        ]);
+        var tpl = angular.element(
+            '<wc-utkast-filter on-search="testFilter()" filter="filter"></wc-utkast-filter>'
+        );
+        $scope = $rootScope.$new();
+        $scope.filter = emptyFilter;
+        $scope.testFilter = function(filter) {
+        };
+        element = $compile(tpl)($scope);
+      }
+    ]);
+  });
+
+  function setupHttp(status) {
+    $httpBackend.expectGET('/api/utkast/lakare/').respond(status, []);
+    $scope.$digest();
+    $httpBackend.flush();
+  }
+
+  describe('startup', function() {
+    it('should show error message if loading /api/utkast/lakare/ fails', function() {
+      setupHttp(500);
+
+      expect(element.isolateScope().widgetState.savedByList.length).toBe(1);
+      expect(element.isolateScope().widgetState.savedByList[0].id).toBe(undefined);
+      expect(element.isolateScope().widgetState.savedByList[0].label).toBe('<Kunde inte hämta lista>');
     });
+  });
 
-    function setupHttp(status) {
-        $httpBackend.expectGET('/api/utkast/lakare/').respond(status, []);
-        $scope.$digest();
-        $httpBackend.flush();
-    }
+  describe('search button', function() {
 
-    describe('startup', function() {
-        it('should show error message if loading /api/utkast/lakare/ fails', function() {
-            setupHttp(500);
+    it('should call search function ', function() {
 
-            expect(element.isolateScope().widgetState.savedByList.length).toBe(1);
-            expect(element.isolateScope().widgetState.savedByList[0].id).toBe(undefined);
-            expect(element.isolateScope().widgetState.savedByList[0].label).toBe('<Kunde inte hämta lista>');
-        });
+      setupHttp(200);
+
+      spyOn($scope, 'testFilter');
+      $scope.filter.selection.status = 'DRAFT_COMPLETE';
+      $scope.$digest();
+
+      var button = element.find('#uc-filter-btn')[0];
+      button.click();
+
+      expect($scope.testFilter).toHaveBeenCalled();
     });
+  });
 
-    describe('search button', function() {
+  describe('reset filter button', function() {
 
-        it('should call search function ', function() {
+    it('should reset filter parameters', function() {
 
-            setupHttp(200);
+      setupHttp(200);
 
-            spyOn($scope, 'testFilter');
-            $scope.filter.selection.status = 'DRAFT_COMPLETE';
-            $scope.$digest();
-
-            var button = element.find('#uc-filter-btn')[0];
-            button.click();
-
-            expect($scope.testFilter).toHaveBeenCalled();
-        });
+      spyOn($scope, 'testFilter');
+      element.isolateScope().resetFilter();
+      $scope.$digest();
+      $timeout.flush();
+      expect($scope.testFilter).toHaveBeenCalled();
     });
-
-    describe('reset filter button', function() {
-
-        it('should reset filter parameters', function() {
-
-            setupHttp(200);
-
-            spyOn($scope, 'testFilter');
-            element.isolateScope().resetFilter();
-            $scope.$digest();
-            $timeout.flush();
-            expect($scope.testFilter).toHaveBeenCalled();
-        });
-    });
+  });
 });

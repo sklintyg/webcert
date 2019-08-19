@@ -18,11 +18,10 @@
  */
 package se.inera.intyg.webcert.persistence.utkast.repository;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
-
 import java.util.List;
 import java.util.Set;
+import org.springframework.data.jpa.repository.JpaRepository;
+import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 
 public interface UtkastRepository extends JpaRepository<Utkast, String>, UtkastRepositoryCustom {
 

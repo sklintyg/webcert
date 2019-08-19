@@ -20,7 +20,6 @@ package se.inera.intyg.webcert.intygstjanststub;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.w3.wsaddressing10.AttributedURIType;
-
 import se.inera.ifv.insuranceprocess.healthreporting.registermedicalcertificate.rivtabp20.v3.RegisterMedicalCertificateResponderInterface;
 import se.inera.ifv.insuranceprocess.healthreporting.registermedicalcertificateresponder.v3.RegisterMedicalCertificateResponseType;
 import se.inera.ifv.insuranceprocess.healthreporting.registermedicalcertificateresponder.v3.RegisterMedicalCertificateType;
@@ -45,7 +44,7 @@ public class RegisterMedicalCertificateResponderStub implements RegisterMedicalC
     @StubLatencyAware
     @StubModeAware
     public RegisterMedicalCertificateResponseType registerMedicalCertificate(AttributedURIType attributedURIType,
-            RegisterMedicalCertificateType registerMedicalCertificateType) {
+        RegisterMedicalCertificateType registerMedicalCertificateType) {
 
         intygStore.addIntyg(buildStubInternalCertificate(registerMedicalCertificateType));
 
@@ -65,14 +64,14 @@ public class RegisterMedicalCertificateResponderStub implements RegisterMedicalC
         certificate.setId(source.getLakarutlatande().getLakarutlatandeId());
         certificate.setType(source.getLakarutlatande().getTypAvUtlatande());
         certificate.setCivicRegistrationNumber(
-                Personnummer.createPersonnummer(source.getLakarutlatande().getPatient().getPersonId().getExtension()).get());
+            Personnummer.createPersonnummer(source.getLakarutlatande().getPatient().getPersonId().getExtension()).get());
         certificate.setSignedDate(source.getLakarutlatande().getSigneringsdatum());
         certificate.setCareUnitId(source.getLakarutlatande().getSkapadAvHosPersonal().getEnhet().getEnhetsId().getExtension());
         certificate.setCareUnitName(source.getLakarutlatande().getSkapadAvHosPersonal().getEnhet().getEnhetsnamn());
         certificate.setSigningDoctorName(source.getLakarutlatande().getSkapadAvHosPersonal().getFullstandigtNamn());
         certificate.setAdditionalInfo(source.getLakarutlatande().getKommentar());
         certificate.setCareGiverId(
-                source.getLakarutlatande().getSkapadAvHosPersonal().getEnhet().getVardgivare().getVardgivareId().getExtension());
+            source.getLakarutlatande().getSkapadAvHosPersonal().getEnhet().getVardgivare().getVardgivareId().getExtension());
         return certificate;
     }
 

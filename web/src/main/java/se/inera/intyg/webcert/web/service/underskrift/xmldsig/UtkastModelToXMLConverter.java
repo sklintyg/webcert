@@ -19,14 +19,11 @@
 package se.inera.intyg.webcert.web.service.underskrift.xmldsig;
 
 import java.io.IOException;
-
 import javax.xml.bind.JAXBElement;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
@@ -63,7 +60,7 @@ public class UtkastModelToXMLConverter {
     private Intyg utkastToJAXBObject(String intygsTyp, String json) {
         try {
             ModuleApi moduleApi = intygModuleRegistry.getModuleApi(intygsTyp,
-                    intygModuleRegistry.resolveVersionFromUtlatandeJson(intygsTyp, json));
+                intygModuleRegistry.resolveVersionFromUtlatandeJson(intygsTyp, json));
             Utlatande utlatandeFromJson = moduleApi.getUtlatandeFromJson(json);
             return moduleApi.getIntygFromUtlatande(utlatandeFromJson);
         } catch (ModuleNotFoundException | IOException | ModuleException e) {

@@ -18,14 +18,13 @@
  */
 package se.inera.intyg.webcert.web.service.notification;
 
+import java.util.List;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
 import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
-
-import java.util.List;
 
 /**
  * Service that notifies a unit care of incoming changes.
@@ -99,9 +98,7 @@ public interface NotificationService {
     /**
      * Returns all notifications saved for an intyg.
      *
-     * @param intygsId
-     *            the id of the intyg
-     *
+     * @param intygsId the id of the intyg
      * @return a list of all the notifications
      */
     List<Handelse> getNotifications(String intygsId);

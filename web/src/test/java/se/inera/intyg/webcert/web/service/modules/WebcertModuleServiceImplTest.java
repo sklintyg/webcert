@@ -25,13 +25,11 @@ import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-
 import se.inera.intyg.common.support.common.enumerations.Diagnoskodverk;
 import se.inera.intyg.webcert.web.service.diagnos.DiagnosService;
 import se.inera.intyg.webcert.web.service.diagnos.dto.DiagnosResponse;
@@ -115,7 +113,8 @@ public class WebcertModuleServiceImplTest {
         final String code = "code";
         final String codeSystemStr = "codesystem";
 
-        when(diagnosService.getDiagnosisByCode(code, codeSystemStr)).thenReturn(DiagnosResponse.ok(Arrays.asList(new Diagnos(), new Diagnos()), false));
+        when(diagnosService.getDiagnosisByCode(code, codeSystemStr))
+            .thenReturn(DiagnosResponse.ok(Arrays.asList(new Diagnos(), new Diagnos()), false));
         String res = service.getDescriptionFromDiagnosKod(code, codeSystemStr);
 
         assertEquals("", res);

@@ -18,12 +18,12 @@
  */
 package se.inera.intyg.webcert.web.web.controller.integrationtest.api;
 
+import static com.jayway.restassured.RestAssured.given;
+import static com.jayway.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
+
 import com.jayway.restassured.RestAssured;
 import org.junit.Test;
 import se.inera.intyg.webcert.web.web.controller.integrationtest.BaseRestIntegrationTest;
-
-import static com.jayway.restassured.RestAssured.given;
-import static com.jayway.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
 
 public class ConfigApiControllerIT extends BaseRestIntegrationTest {
 
@@ -31,29 +31,29 @@ public class ConfigApiControllerIT extends BaseRestIntegrationTest {
     public void testGetConfig() {
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
-                .expect().statusCode(200)
-                .when().get("api/config")
-                .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-config-response-schema.json"));
+            .expect().statusCode(200)
+            .when().get("api/config")
+            .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-config-response-schema.json"));
     }
 
     @Test
     public void testGetLinks() {
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
-                .expect().statusCode(200)
-                .when().get("api/config/links")
-                .then().statusCode(200).and()
-                .body(matchesJsonSchemaInClasspath("jsonschema/webcert-links-schema.json"));
+            .expect().statusCode(200)
+            .when().get("api/config/links")
+            .then().statusCode(200).and()
+            .body(matchesJsonSchemaInClasspath("jsonschema/webcert-links-schema.json"));
     }
 
     @Test
     public void testGetKommuner() {
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
-                .expect().statusCode(200)
-                .when().get("api/config/kommuner")
-                .then().statusCode(200).and()
-                .body(matchesJsonSchemaInClasspath("jsonschema/webcert-kommuner-schema.json"));
+            .expect().statusCode(200)
+            .when().get("api/config/kommuner")
+            .then().statusCode(200).and()
+            .body(matchesJsonSchemaInClasspath("jsonschema/webcert-kommuner-schema.json"));
     }
 
 

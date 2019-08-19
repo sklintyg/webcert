@@ -19,6 +19,14 @@
 
 package se.inera.intyg.webcert.web.integration.interactions.getcertificateadditions;
 
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.when;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -30,15 +38,6 @@ import se.inera.intyg.webcert.persistence.arende.model.Arende;
 import se.inera.intyg.webcert.persistence.model.Status;
 import se.inera.intyg.webcert.web.service.arende.ArendeService;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.IntygId;
-
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.when;
 
 /**
  * @author Magnus Ekstrand on 2019-05-16.
@@ -91,13 +90,13 @@ public class GetCertificateAdditionsResponderImplTest {
 
     private GetCertificateAdditionsType buildRequest() {
         List<IntygId> identities = INTYG_IDS.stream()
-                .map(s -> {
-                    IntygId intygId = new IntygId();
-                    intygId.setRoot("some-root-value");
-                    intygId.setExtension(s);
-                    return intygId;
-                })
-                .collect(Collectors.toList());
+            .map(s -> {
+                IntygId intygId = new IntygId();
+                intygId.setRoot("some-root-value");
+                intygId.setExtension(s);
+                return intygId;
+            })
+            .collect(Collectors.toList());
 
         GetCertificateAdditionsType request = new GetCertificateAdditionsType();
         request.getIntygsId().addAll(identities);

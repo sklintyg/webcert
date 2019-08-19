@@ -28,165 +28,164 @@ var ValjIntygPage = wcTestTools.pages.sokSkrivIntyg.pickPatient;
 
 describe('Create and Sign an AG7804 utkast', function() {
 
-    var utkastId = null,
-        data = null;
+  var utkastId = null,
+      data = null;
 
+  beforeAll(function() {
+    browser.ignoreSynchronization = false;
+    specHelper.login();
+  });
+
+  describe('smittskydd', function() {
     beforeAll(function() {
-        browser.ignoreSynchronization = false;
-        specHelper.login();
+      ValjIntygPage.get();
+      specHelper.createUtkastForPatient('191212121212', 'ag7804');
     });
 
-    describe('smittskydd', function() {
-        beforeAll(function() {
-            ValjIntygPage.get();
-            specHelper.createUtkastForPatient('191212121212', 'ag7804');
+    describe('Fyll i intyget', function() {
+
+      it('Spara undan intygsId från URL', function() {
+        UtkastPage.disableAutosave();
+
+        specHelper.getUtkastIdFromUrl().then(function(id) {
+          utkastId = id;
         });
+        data = wcTestTools.testdata.ag.ag7804.get(utkastId, true);
+      });
 
-        describe('Fyll i intyget', function() {
-
-            it('Spara undan intygsId från URL', function() {
-                UtkastPage.disableAutosave();
-
-                specHelper.getUtkastIdFromUrl().then(function(id) {
-                    utkastId = id;
-                });
-                data = wcTestTools.testdata.ag.ag7804.get(utkastId, true);
-            });
-
-            it('angeSmittskydd', function() {
-                UtkastPage.angeSmittskydd(data.smittskydd);
-            });
-            it('angeDiagnos', function() {
-                UtkastPage.angeDiagnos(data.diagnos);
-            });
-            it('angeArbetsformaga', function() {
-                UtkastPage.angeArbetsformaga(data.arbetsformaga);
-            });
-            it('angeOvrigaUpplysningar', function() {
-                UtkastPage.angeOvrigt(data.ovrigt);
-                UtkastPage.enableAutosave();
-            });
-            it('angeKontaktMedAg', function() {
-                UtkastPage.angeKontakt(data.kontaktMedAg, data.anledningTillKontakt);
-            });
-        });
-
-        it('Signera intyget', function() {
-            UtkastPage.whenSigneraButtonIsEnabled();
-
-            UtkastPage.signeraButtonClick();
-
-            expect(IntygPage.isAt()).toBeTruthy();
-
-        });
-
-        it('Wait until intyg in IT', function() {
-            // Om intyget inte hunnit processas av IT så hämtas det från WC. Då är inte uppgifter flyttade till övriga
-            // upplysningar ännu.
-            // Vänta tills intyget tagits emot av IT. Ladda därefter om sidan så datan säkert kommer från IT.
-            IntygPage.waitUntilIntygInIT(utkastId);
-            browser.refresh();
-        });
-
-        it('Verifiera intyg', function() {
-            IntygPage.whenCertificateLoaded().then(function() {
-                IntygPage.verify(data);
-            });
-
-            expect(IntygPage.skrivUtBtn.isDisplayed()).toBeTruthy();
-        });
-
-        afterAll(function() {
-            testdataHelper.deleteIntyg(utkastId);
-            testdataHelper.deleteUtkast(utkastId);
-        });
+      it('angeSmittskydd', function() {
+        UtkastPage.angeSmittskydd(data.smittskydd);
+      });
+      it('angeDiagnos', function() {
+        UtkastPage.angeDiagnos(data.diagnos);
+      });
+      it('angeArbetsformaga', function() {
+        UtkastPage.angeArbetsformaga(data.arbetsformaga);
+      });
+      it('angeOvrigaUpplysningar', function() {
+        UtkastPage.angeOvrigt(data.ovrigt);
+        UtkastPage.enableAutosave();
+      });
+      it('angeKontaktMedAg', function() {
+        UtkastPage.angeKontakt(data.kontaktMedAg, data.anledningTillKontakt);
+      });
     });
 
-    describe('normalt intyg', function() {
-        beforeAll(function() {
-            ValjIntygPage.get();
-            specHelper.createUtkastForPatient('191212121212', 'ag7804');
-        });
+    it('Signera intyget', function() {
+      UtkastPage.whenSigneraButtonIsEnabled();
 
-        describe('Fyll i intyget', function() {
+      UtkastPage.signeraButtonClick();
 
-            it('Spara undan intygsId från URL', function() {
-                UtkastPage.disableAutosave();
+      expect(IntygPage.isAt()).toBeTruthy();
 
-                specHelper.getUtkastIdFromUrl().then(function(id) {
-                    utkastId = id;
-                });
-                data = wcTestTools.testdata.ag.ag7804.get(utkastId);
-            });
-
-
-            it('angeBaseratPa', function() {
-                UtkastPage.angeBaseratPa(data.baseratPa);
-            });
-            it('angeSysselsättning', function() {
-                UtkastPage.angeSysselsattning(data.sysselsattning);
-            });
-            it('angeDiagnos', function() {
-                UtkastPage.angeDiagnos(data.diagnos);
-            });
-            it('angeKonsekvenser', function() {
-                UtkastPage.angeKonsekvenser(data);
-            });
-            it('angeMedicinskBehandling', function() {
-                UtkastPage.angeMedicinskBehandling(data.medicinskbehandling);
-            });
-            it('angeArbetsformaga', function() {
-                UtkastPage.angeArbetsformaga(data.arbetsformaga);
-            });
-            it('angeArbetstidsforlaggning', function() {
-                UtkastPage.angeArbetstidsforlaggning(data.arbetstidsforlaggning);
-            });
-            it('angeResorTillArbete', function() {
-                UtkastPage.angeArbetsformaga(data.resorTillArbete);
-            });
-            it('angePrognosForArbetsformaga', function() {
-                UtkastPage.angePrognosForArbetsformaga(data.prognosForArbetsformaga);
-            });
-            it('angeAtgarder', function() {
-                UtkastPage.angeAtgarder(data.atgarder);
-            });
-            it('angeOvrigaUpplysningar', function() {
-                UtkastPage.angeOvrigt(data.ovrigt);
-            });
-
-            it('angeKontaktMedAG', function() {
-                UtkastPage.enableAutosave();
-                UtkastPage.angeKontakt(data.kontaktMedAg, data.anledningTillKontakt);
-            });
-
-        });
-
-        it('Signera intyget', function() {
-            UtkastPage.whenSigneraButtonIsEnabled();
-
-            UtkastPage.signeraButtonClick();
-
-            expect(IntygPage.isAt()).toBeTruthy();
-        });
-
-        it('Wait until intyg in IT', function() {
-            // Om intyget inte hunnit processas av IT så hämtas det från WC. Då är inte uppgifter flyttade till övriga
-            // upplysningar ännu.
-            // Vänta tills intyget tagits emot av IT. Ladda därefter om sidan så datan säkert kommer från IT.
-            IntygPage.waitUntilIntygInIT(utkastId);
-            browser.refresh();
-        });
-
-        it('Verifiera intyg', function() {
-            IntygPage.whenCertificateLoaded().then(function() {
-		        IntygPage.verify(data);
-		    });
-        });
-
-        afterAll(function() {
-            testdataHelper.deleteIntyg(utkastId);
-            testdataHelper.deleteUtkast(utkastId);
-        });
     });
+
+    it('Wait until intyg in IT', function() {
+      // Om intyget inte hunnit processas av IT så hämtas det från WC. Då är inte uppgifter flyttade till övriga
+      // upplysningar ännu.
+      // Vänta tills intyget tagits emot av IT. Ladda därefter om sidan så datan säkert kommer från IT.
+      IntygPage.waitUntilIntygInIT(utkastId);
+      browser.refresh();
+    });
+
+    it('Verifiera intyg', function() {
+      IntygPage.whenCertificateLoaded().then(function() {
+        IntygPage.verify(data);
+      });
+
+      expect(IntygPage.skrivUtBtn.isDisplayed()).toBeTruthy();
+    });
+
+    afterAll(function() {
+      testdataHelper.deleteIntyg(utkastId);
+      testdataHelper.deleteUtkast(utkastId);
+    });
+  });
+
+  describe('normalt intyg', function() {
+    beforeAll(function() {
+      ValjIntygPage.get();
+      specHelper.createUtkastForPatient('191212121212', 'ag7804');
+    });
+
+    describe('Fyll i intyget', function() {
+
+      it('Spara undan intygsId från URL', function() {
+        UtkastPage.disableAutosave();
+
+        specHelper.getUtkastIdFromUrl().then(function(id) {
+          utkastId = id;
+        });
+        data = wcTestTools.testdata.ag.ag7804.get(utkastId);
+      });
+
+      it('angeBaseratPa', function() {
+        UtkastPage.angeBaseratPa(data.baseratPa);
+      });
+      it('angeSysselsättning', function() {
+        UtkastPage.angeSysselsattning(data.sysselsattning);
+      });
+      it('angeDiagnos', function() {
+        UtkastPage.angeDiagnos(data.diagnos);
+      });
+      it('angeKonsekvenser', function() {
+        UtkastPage.angeKonsekvenser(data);
+      });
+      it('angeMedicinskBehandling', function() {
+        UtkastPage.angeMedicinskBehandling(data.medicinskbehandling);
+      });
+      it('angeArbetsformaga', function() {
+        UtkastPage.angeArbetsformaga(data.arbetsformaga);
+      });
+      it('angeArbetstidsforlaggning', function() {
+        UtkastPage.angeArbetstidsforlaggning(data.arbetstidsforlaggning);
+      });
+      it('angeResorTillArbete', function() {
+        UtkastPage.angeArbetsformaga(data.resorTillArbete);
+      });
+      it('angePrognosForArbetsformaga', function() {
+        UtkastPage.angePrognosForArbetsformaga(data.prognosForArbetsformaga);
+      });
+      it('angeAtgarder', function() {
+        UtkastPage.angeAtgarder(data.atgarder);
+      });
+      it('angeOvrigaUpplysningar', function() {
+        UtkastPage.angeOvrigt(data.ovrigt);
+      });
+
+      it('angeKontaktMedAG', function() {
+        UtkastPage.enableAutosave();
+        UtkastPage.angeKontakt(data.kontaktMedAg, data.anledningTillKontakt);
+      });
+
+    });
+
+    it('Signera intyget', function() {
+      UtkastPage.whenSigneraButtonIsEnabled();
+
+      UtkastPage.signeraButtonClick();
+
+      expect(IntygPage.isAt()).toBeTruthy();
+    });
+
+    it('Wait until intyg in IT', function() {
+      // Om intyget inte hunnit processas av IT så hämtas det från WC. Då är inte uppgifter flyttade till övriga
+      // upplysningar ännu.
+      // Vänta tills intyget tagits emot av IT. Ladda därefter om sidan så datan säkert kommer från IT.
+      IntygPage.waitUntilIntygInIT(utkastId);
+      browser.refresh();
+    });
+
+    it('Verifiera intyg', function() {
+      IntygPage.whenCertificateLoaded().then(function() {
+        IntygPage.verify(data);
+      });
+    });
+
+    afterAll(function() {
+      testdataHelper.deleteIntyg(utkastId);
+      testdataHelper.deleteUtkast(utkastId);
+    });
+  });
 
 });

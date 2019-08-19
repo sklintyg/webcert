@@ -18,9 +18,9 @@
  */
 package se.inera.intyg.webcert.web.service.utkast.dto;
 
+import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.model.common.internal.Patient;
-import se.inera.intyg.common.support.model.UtkastStatus;
 
 public class CreateNewDraftRequest {
 
@@ -43,12 +43,12 @@ public class CreateNewDraftRequest {
     }
 
     public CreateNewDraftRequest(String intygId, String intygType, String intygTypeVersion, UtkastStatus status, HoSPersonal hosPerson,
-            Patient patient) {
+        Patient patient) {
         this(intygId, intygType, intygTypeVersion, status, hosPerson, patient, null);
     }
 
     public CreateNewDraftRequest(String intygId, String intygType, String intygTypeVersion, UtkastStatus status, HoSPersonal hosPerson,
-                                 Patient patient, String referens) {
+        Patient patient, String referens) {
         this.intygId = intygId;
         this.intygType = intygType;
         this.intygTypeVersion = intygTypeVersion;
@@ -57,6 +57,7 @@ public class CreateNewDraftRequest {
         this.hosPerson = hosPerson;
         this.patient = patient;
     }
+
     public String getIntygId() {
         return intygId;
     }

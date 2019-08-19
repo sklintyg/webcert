@@ -18,9 +18,8 @@
  */
 package se.inera.intyg.webcert.notificationstub.v3;
 
-import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareType;
-
 import java.util.Collection;
+import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareType;
 
 public interface NotificationStoreV3 {
 
