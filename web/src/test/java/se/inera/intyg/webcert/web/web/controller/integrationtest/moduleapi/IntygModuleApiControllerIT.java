@@ -18,12 +18,24 @@
  */
 package se.inera.intyg.webcert.web.web.controller.integrationtest.moduleapi;
 
+import static com.jayway.restassured.RestAssured.given;
+import static com.jayway.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.isEmptyString;
+import static org.hamcrest.core.IsEqual.equalTo;
+import static org.hamcrest.core.IsNot.not;
+import static se.inera.intyg.webcert.web.web.controller.integrationtest.moduleapi.UtkastModuleApiControllerIT.MODULEAPI_UTKAST_BASE;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.jayway.restassured.RestAssured;
 import com.jayway.restassured.http.ContentType;
 import com.jayway.restassured.path.json.JsonPath;
 import com.jayway.restassured.response.Response;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import javax.servlet.http.HttpServletResponse;
 import org.junit.Test;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
@@ -35,19 +47,6 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.CopyIntygRequest;
 import se.inera.intyg.webcert.web.web.controller.integrationtest.BaseRestIntegrationTest;
 import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.RevokeSignedIntygParameter;
 import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.SendSignedIntygParameter;
-
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-
-import static com.jayway.restassured.RestAssured.given;
-import static com.jayway.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.isEmptyString;
-import static org.hamcrest.core.IsEqual.equalTo;
-import static org.hamcrest.core.IsNot.not;
-import static se.inera.intyg.webcert.web.web.controller.integrationtest.moduleapi.UtkastModuleApiControllerIT.MODULEAPI_UTKAST_BASE;
 
 /**
  * Integration test for {@link se.inera.intyg.webcert.web.web.controller.moduleapi.IntygModuleApiController}.
@@ -65,11 +64,11 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
         String intygsId = createUtkast(intygsTyp, DEFAULT_PATIENT_PERSONNUMMER);
 
         spec()
-                .expect().statusCode(200)
-                .when().get("moduleapi/intyg/" + intygsTyp + "/" + intygsId)
-                .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-get-intyg-response-schema.json"))
-                .body("contents.grundData.skapadAv.personId", equalTo(DEFAULT_LAKARE.getHsaId()))
-                .body("contents.grundData.patient.personId", equalTo(formatPersonnummer(DEFAULT_PATIENT_PERSONNUMMER)));
+            .expect().statusCode(200)
+            .when().get("moduleapi/intyg/" + intygsTyp + "/" + intygsId)
+            .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-get-intyg-response-schema.json"))
+            .body("contents.grundData.skapadAv.personId", equalTo(DEFAULT_LAKARE.getHsaId()))
+            .body("contents.grundData.patient.personId", equalTo(formatPersonnummer(DEFAULT_PATIENT_PERSONNUMMER)));
 
         deleteUtkast(intygsId);
     }
@@ -82,11 +81,11 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
         String intygsId = createUtkast(intygsTyp, DEFAULT_PATIENT_PERSONNUMMER);
 
         spec()
-                .expect().statusCode(200)
-                .when().get("moduleapi/intyg/" + intygsTyp + "/" + intygsId)
-                .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-get-intyg-response-schema.json"))
-                .body("contents.grundData.skapadAv.personId", equalTo(DEFAULT_LAKARE.getHsaId()))
-                .body("contents.grundData.patient.personId", equalTo(formatPersonnummer(DEFAULT_PATIENT_PERSONNUMMER)));
+            .expect().statusCode(200)
+            .when().get("moduleapi/intyg/" + intygsTyp + "/" + intygsId)
+            .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-get-intyg-response-schema.json"))
+            .body("contents.grundData.skapadAv.personId", equalTo(DEFAULT_LAKARE.getHsaId()))
+            .body("contents.grundData.patient.personId", equalTo(formatPersonnummer(DEFAULT_PATIENT_PERSONNUMMER)));
 
         deleteUtkast(intygsId);
     }
@@ -99,11 +98,11 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
         String intygsId = createUtkast(intygsTyp, DEFAULT_PATIENT_PERSONNUMMER);
 
         spec()
-                .expect().statusCode(200)
-                .when().get("moduleapi/intyg/" + intygsTyp + "/" + intygsId)
-                .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-get-intyg-response-schema.json"))
-                .body("contents.grundData.skapadAv.personId", equalTo(DEFAULT_LAKARE.getHsaId()))
-                .body("contents.grundData.patient.personId", equalTo(formatPersonnummer(DEFAULT_PATIENT_PERSONNUMMER)));
+            .expect().statusCode(200)
+            .when().get("moduleapi/intyg/" + intygsTyp + "/" + intygsId)
+            .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-get-intyg-response-schema.json"))
+            .body("contents.grundData.skapadAv.personId", equalTo(DEFAULT_LAKARE.getHsaId()))
+            .body("contents.grundData.patient.personId", equalTo(formatPersonnummer(DEFAULT_PATIENT_PERSONNUMMER)));
 
         deleteUtkast(intygsId);
     }
@@ -134,10 +133,10 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
         SendSignedIntygParameter sendParam = new SendSignedIntygParameter();
         sendParam.setRecipient("FKASSA");
         spec()
-                .body(sendParam)
-                .expect().statusCode(200)
-                .when().post("moduleapi/intyg/" + intygsTyp + "/" + intygsId + "/skicka")
-                .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-send-signed-intyg-response-schema.json"));
+            .body(sendParam)
+            .expect().statusCode(200)
+            .when().post("moduleapi/intyg/" + intygsTyp + "/" + intygsId + "/skicka")
+            .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-send-signed-intyg-response-schema.json"));
 
         deleteUtkast(intygsId);
     }
@@ -154,10 +153,10 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
         revokeParam.setMessage("Makulera!");
         revokeParam.setReason("FELAKTIGT_INTYG");
         spec()
-                .body(revokeParam)
-                .expect().statusCode(200)
-                .when().post("moduleapi/intyg/" + intygsTyp + "/" + intygsId + "/aterkalla")
-                .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-send-signed-intyg-response-schema.json"));
+            .body(revokeParam)
+            .expect().statusCode(200)
+            .when().post("moduleapi/intyg/" + intygsTyp + "/" + intygsId + "/aterkalla")
+            .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-send-signed-intyg-response-schema.json"));
 
         deleteUtkast(intygsId);
     }
@@ -177,11 +176,11 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
         revokeParam.setMessage("Makulera!");
         revokeParam.setReason("FELAKTIGT_INTYG");
         spec()
-                .body(revokeParam)
-                .expect().statusCode(500)
-                .when().post("moduleapi/intyg/" + intygsTyp + "/" + intygsId + "/aterkalla")
-                .then().body("errorCode", equalTo(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM.name()))
-                .body("message", not(isEmptyString()));
+            .body(revokeParam)
+            .expect().statusCode(500)
+            .when().post("moduleapi/intyg/" + intygsTyp + "/" + intygsId + "/aterkalla")
+            .then().body("errorCode", equalTo(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM.name()))
+            .body("message", not(isEmptyString()));
 
         deleteUtkast(intygsId);
     }
@@ -193,9 +192,9 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
         String intygsId = createSignedIntyg("lisjp", DEFAULT_PATIENT_PERSONNUMMER);
         // Then logout
         spec()
-                .redirects().follow(false)
-                .expect().statusCode(HttpServletResponse.SC_FOUND)
-                .when().get("logout");
+            .redirects().follow(false)
+            .expect().statusCode(HttpServletResponse.SC_FOUND)
+            .when().get("logout");
 
         // Next, create new user credentials with another care unit B, and attempt to access the certificate created in
         // previous step.
@@ -205,13 +204,13 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
         setSjf();
 
         spec()
-                .redirects().follow(false).and().pathParam("intygsId", intygsId)
-                .expect().statusCode(HttpServletResponse.SC_OK)
-                .when().get("moduleapi/intyg/lisjp/{intygsId}")
-                .then()
-                .body(matchesJsonSchemaInClasspath("jsonschema/webcert-get-intyg-response-schema.json"))
-                .body("contents.grundData.skapadAv.personId", equalTo(DEFAULT_LAKARE.getHsaId()))
-                .body("contents.grundData.patient.personId", equalTo(formatPersonnummer(DEFAULT_PATIENT_PERSONNUMMER)));
+            .redirects().follow(false).and().pathParam("intygsId", intygsId)
+            .expect().statusCode(HttpServletResponse.SC_OK)
+            .when().get("moduleapi/intyg/lisjp/{intygsId}")
+            .then()
+            .body(matchesJsonSchemaInClasspath("jsonschema/webcert-get-intyg-response-schema.json"))
+            .body("contents.grundData.skapadAv.personId", equalTo(DEFAULT_LAKARE.getHsaId()))
+            .body("contents.grundData.patient.personId", equalTo(formatPersonnummer(DEFAULT_PATIENT_PERSONNUMMER)));
     }
 
     @Test
@@ -221,9 +220,9 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
         String intygsId = createSignedIntyg("lisjp", DEFAULT_PATIENT_PERSONNUMMER);
         // Then logout
         spec()
-                .redirects().follow(false)
-                .expect().statusCode(HttpServletResponse.SC_FOUND)
-                .when().get("logout");
+            .redirects().follow(false)
+            .expect().statusCode(HttpServletResponse.SC_FOUND)
+            .when().get("logout");
 
         // Next, create new user credentials with another care unit B, and attempt to access the certificate created in
         // previous step.
@@ -232,12 +231,12 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
         changeOriginTo("DJUPINTEGRATION");
 
         spec()
-                .redirects().follow(false).and().pathParam("intygsId", intygsId)
-                .expect().statusCode(HttpServletResponse.SC_INTERNAL_SERVER_ERROR)
-                .when().get("moduleapi/intyg/lisjp/{intygsId}")
-                .then()
-                .body("errorCode", equalTo(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM.name()))
-                .body("message", not(isEmptyString()));
+            .redirects().follow(false).and().pathParam("intygsId", intygsId)
+            .expect().statusCode(HttpServletResponse.SC_INTERNAL_SERVER_ERROR)
+            .when().get("moduleapi/intyg/lisjp/{intygsId}")
+            .then()
+            .body("errorCode", equalTo(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM.name()))
+            .body("message", not(isEmptyString()));
     }
 
     @Test
@@ -258,13 +257,13 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
         pathParams.put("intygsId", utkastId);
 
         spec()
-                .contentType(ContentType.JSON).and().pathParams(pathParams).and().body(copyIntygRequest)
-                .expect().statusCode(200)
-                .when().post("moduleapi/intyg/{intygsTyp}/{intygsId}/fornya")
-                .then()
-                .body("intygsUtkastId", not(isEmptyString()))
-                .body("intygsUtkastId", not(equalTo(utkastId)))
-                .body("intygsTyp", equalTo("lisjp"));
+            .contentType(ContentType.JSON).and().pathParams(pathParams).and().body(copyIntygRequest)
+            .expect().statusCode(200)
+            .when().post("moduleapi/intyg/{intygsTyp}/{intygsId}/fornya")
+            .then()
+            .body("intygsUtkastId", not(isEmptyString()))
+            .body("intygsUtkastId", not(equalTo(utkastId)))
+            .body("intygsTyp", equalTo("lisjp"));
     }
 
     @Test
@@ -287,11 +286,11 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
         pathParams.put("intygsId", utkastId);
 
         spec()
-                .contentType(ContentType.JSON).and().pathParams(pathParams).and().body(copyIntygRequest)
-                .expect().statusCode(500)
-                .when().post("moduleapi/intyg/{intygsTyp}/{intygsId}/fornya")
-                .then().body("errorCode", equalTo(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM.name()))
-                .body("message", not(isEmptyString()));
+            .contentType(ContentType.JSON).and().pathParams(pathParams).and().body(copyIntygRequest)
+            .expect().statusCode(500)
+            .when().post("moduleapi/intyg/{intygsTyp}/{intygsId}/fornya")
+            .then().body("errorCode", equalTo(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM.name()))
+            .body("message", not(isEmptyString()));
 
     }
 
@@ -314,11 +313,11 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
         pathParams.put("intygsId", utkastId);
 
         spec()
-                .contentType(ContentType.JSON).and().pathParams(pathParams).and().body(copyIntygRequest)
-                .expect().statusCode(500)
-                .when().post("moduleapi/intyg/{intygsTyp}/{intygsId}/fornya")
-                .then().body("errorCode", equalTo(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM.name()))
-                .body("message", not(isEmptyString()));
+            .contentType(ContentType.JSON).and().pathParams(pathParams).and().body(copyIntygRequest)
+            .expect().statusCode(500)
+            .when().post("moduleapi/intyg/{intygsTyp}/{intygsId}/fornya")
+            .then().body("errorCode", equalTo(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM.name()))
+            .body("message", not(isEmptyString()));
 
     }
 
@@ -331,9 +330,9 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
 
         // Then logout
         spec()
-                .redirects().follow(false)
-                .expect().statusCode(HttpServletResponse.SC_FOUND)
-                .when().get("logout");
+            .redirects().follow(false)
+            .expect().statusCode(HttpServletResponse.SC_FOUND)
+            .when().get("logout");
 
         // Next, create new user credentials with another care unit B, and attempt to access the certificate created in
         // previous step.
@@ -350,24 +349,24 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
         pathParams.put("intygsId", intygsId);
 
         String newIntygsId = spec()
-                .and().pathParams(pathParams).and().body(copyIntygRequest)
-                .expect().statusCode(HttpServletResponse.SC_OK)
-                .when().post("moduleapi/intyg/{intygsTyp}/{intygsId}/fornya")
-                .then()
-                .body("intygsUtkastId", not(isEmptyString()))
-                .body("intygsUtkastId", not(equalTo(intygsId)))
-                .body("intygsTyp", equalTo("lisjp"))
-                .extract()
-                .path("intygsUtkastId");
+            .and().pathParams(pathParams).and().body(copyIntygRequest)
+            .expect().statusCode(HttpServletResponse.SC_OK)
+            .when().post("moduleapi/intyg/{intygsTyp}/{intygsId}/fornya")
+            .then()
+            .body("intygsUtkastId", not(isEmptyString()))
+            .body("intygsUtkastId", not(equalTo(intygsId)))
+            .body("intygsTyp", equalTo("lisjp"))
+            .extract()
+            .path("intygsUtkastId");
 
         // Check that the copy contains the correct stuff
         spec()
-                .expect().statusCode(200)
-                .when().get("moduleapi/intyg/lisjp/" + newIntygsId)
-                .then()
-                .body(matchesJsonSchemaInClasspath("jsonschema/webcert-get-intyg-response-schema.json"))
-                .body("contents.grundData.skapadAv.personId", equalTo(LEONIE_KOEHL.getHsaId()))
-                .body("contents.grundData.patient.personId", equalTo(formatPersonnummer(DEFAULT_PATIENT_PERSONNUMMER)));
+            .expect().statusCode(200)
+            .when().get("moduleapi/intyg/lisjp/" + newIntygsId)
+            .then()
+            .body(matchesJsonSchemaInClasspath("jsonschema/webcert-get-intyg-response-schema.json"))
+            .body("contents.grundData.skapadAv.personId", equalTo(LEONIE_KOEHL.getHsaId()))
+            .body("contents.grundData.patient.personId", equalTo(formatPersonnummer(DEFAULT_PATIENT_PERSONNUMMER)));
     }
 
     @Test
@@ -379,9 +378,9 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
 
         // Then logout
         spec()
-                .redirects().follow(false)
-                .expect().statusCode(HttpServletResponse.SC_FOUND)
-                .when().get("logout");
+            .redirects().follow(false)
+            .expect().statusCode(HttpServletResponse.SC_FOUND)
+            .when().get("logout");
 
         // Next, create new user credentials with another care unit B, and attempt to access the certificate created in
         // previous step.
@@ -397,12 +396,12 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
         pathParams.put("intygsId", intygsId);
 
         spec()
-                .and().pathParams(pathParams).and().body(copyIntygRequest)
-                .expect().statusCode(HttpServletResponse.SC_INTERNAL_SERVER_ERROR)
-                .when().post("moduleapi/intyg/{intygsTyp}/{intygsId}/fornya")
-                .then()
-                .body("errorCode", equalTo(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM.name()))
-                .body("message", not(isEmptyString()));
+            .and().pathParams(pathParams).and().body(copyIntygRequest)
+            .expect().statusCode(HttpServletResponse.SC_INTERNAL_SERVER_ERROR)
+            .when().post("moduleapi/intyg/{intygsTyp}/{intygsId}/fornya")
+            .then()
+            .body("errorCode", equalTo(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM.name()))
+            .body("message", not(isEmptyString()));
     }
 
     @Test
@@ -422,13 +421,13 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
         pathParams.put("intygsId", intygsId);
 
         final Response response = spec()
-                .and().pathParams(pathParams).and().body(copyIntygRequest)
-                .expect().statusCode(200)
-                .when().post("moduleapi/intyg/{intygsTyp}/{intygsId}/ersatt")
-                .then()
-                .body("intygsUtkastId", not(isEmptyString()))
-                .body("intygsUtkastId", not(equalTo(intygsId)))
-                .body("intygsTyp", equalTo("lisjp")).extract().response();
+            .and().pathParams(pathParams).and().body(copyIntygRequest)
+            .expect().statusCode(200)
+            .when().post("moduleapi/intyg/{intygsTyp}/{intygsId}/ersatt")
+            .then()
+            .body("intygsUtkastId", not(isEmptyString()))
+            .body("intygsUtkastId", not(equalTo(intygsId)))
+            .body("intygsTyp", equalTo("lisjp")).extract().response();
 
         JsonPath intygJson = new JsonPath(response.body().asString());
 
@@ -436,17 +435,17 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
 
         // Verify that the new draft has correct relations
         spec()
-                .expect().statusCode(200)
-                .when().get(MODULEAPI_UTKAST_BASE + "/lisjp/" + utkastId).then()
-                .body("relations.parent.intygsId", equalTo(intygsId))
-                .body("relations.parent.relationKod", equalTo(RelationKod.ERSATT.name()));
+            .expect().statusCode(200)
+            .when().get(MODULEAPI_UTKAST_BASE + "/lisjp/" + utkastId).then()
+            .body("relations.parent.intygsId", equalTo(intygsId))
+            .body("relations.parent.relationKod", equalTo(RelationKod.ERSATT.name()));
 
         // Verify the original certficate has a child relationship
         spec()
-                .expect().statusCode(200)
-                .when().get("moduleapi/intyg/lisjp/" + intygsId).then()
-                .body("relations.latestChildRelations.replacedByUtkast.intygsId", equalTo(utkastId))
-                .body("relations.latestChildRelations.replacedByUtkast.relationKod", equalTo(RelationKod.ERSATT.name()));
+            .expect().statusCode(200)
+            .when().get("moduleapi/intyg/lisjp/" + intygsId).then()
+            .body("relations.latestChildRelations.replacedByUtkast.intygsId", equalTo(utkastId))
+            .body("relations.latestChildRelations.replacedByUtkast.relationKod", equalTo(RelationKod.ERSATT.name()));
 
 
     }
@@ -468,13 +467,13 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
         pathParams.put("newIntygsTyp", "doi");
 
         spec()
-                .and().pathParams(pathParams).and().body(copyIntygRequest)
-                .expect().statusCode(200)
-                .when().post("moduleapi/intyg/{intygsTyp}/{intygsId}/{newIntygsTyp}/create")
-                .then()
-                .body("intygsUtkastId", not(isEmptyString()))
-                .body("intygsUtkastId", not(equalTo(dbIntyg)))
-                .body("intygsTyp", equalTo("doi"));
+            .and().pathParams(pathParams).and().body(copyIntygRequest)
+            .expect().statusCode(200)
+            .when().post("moduleapi/intyg/{intygsTyp}/{intygsId}/{newIntygsTyp}/create")
+            .then()
+            .body("intygsUtkastId", not(isEmptyString()))
+            .body("intygsUtkastId", not(equalTo(dbIntyg)))
+            .body("intygsTyp", equalTo("doi"));
     }
 
     @Test
@@ -500,22 +499,22 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
         copyIntygRequest.setKommentar(kommentar);
 
         final Response response = spec()
-                .and().pathParams(pathParams).and().body(copyIntygRequest)
-                .expect().statusCode(200)
-                .when().post("moduleapi/intyg/{intygsTyp}/{intygsId}/komplettera")
-                .then()
-                .body("intygsUtkastId", not(isEmptyString()))
-                .body("intygsUtkastId", not(equalTo(intygsId)))
-                .body("intygsTyp", equalTo(intygsTyp)).extract().response();
+            .and().pathParams(pathParams).and().body(copyIntygRequest)
+            .expect().statusCode(200)
+            .when().post("moduleapi/intyg/{intygsTyp}/{intygsId}/komplettera")
+            .then()
+            .body("intygsUtkastId", not(isEmptyString()))
+            .body("intygsUtkastId", not(equalTo(intygsId)))
+            .body("intygsTyp", equalTo(intygsTyp)).extract().response();
 
         JsonPath intygJson = new JsonPath(response.body().asString());
         String newUtkastId = intygJson.getString("intygsUtkastId");
 
         spec()
-                .expect().statusCode(200)
-                .when().get("moduleapi/intyg/" + intygsTyp + "/" + newUtkastId)
-                .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-get-intyg-response-schema.json"))
-                .body("contents.ovrigt", containsString(kommentar));
+            .expect().statusCode(200)
+            .when().get("moduleapi/intyg/" + intygsTyp + "/" + newUtkastId)
+            .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-get-intyg-response-schema.json"))
+            .body("contents.ovrigt", containsString(kommentar));
     }
 
     private String createDbIntyg(String personnummer) throws IOException {
@@ -524,9 +523,9 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
         String intygsId = createUtkast(intygsTyp, personnummer);
 
         Response responseIntyg = spec()
-                .expect().statusCode(200)
-                .when().get(MODULEAPI_UTKAST_BASE + "/" + intygsTyp + "/" + intygsId)
-                .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-get-utkast-response-schema.json")).extract().response();
+            .expect().statusCode(200)
+            .when().get(MODULEAPI_UTKAST_BASE + "/" + intygsTyp + "/" + intygsId)
+            .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-get-utkast-response-schema.json")).extract().response();
 
         ObjectMapper mapper = new ObjectMapper();
         ObjectNode rootNode = (ObjectNode) mapper.readTree(responseIntyg.body().asString());
@@ -556,11 +555,11 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
         node.put("tom", "2016-01-25");
 
         spec()
-                .body(content)
-                .expect().statusCode(200)
-                .when().put(MODULEAPI_UTKAST_BASE + "/" + intygsTyp + "/" + intygsId + "/" + version)
-                .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-save-draft-response-schema.json"))
-                .body("version", equalTo(Integer.parseInt(version) + 1)).extract().response();
+            .body(content)
+            .expect().statusCode(200)
+            .when().put(MODULEAPI_UTKAST_BASE + "/" + intygsTyp + "/" + intygsId + "/" + version)
+            .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-save-draft-response-schema.json"))
+            .body("version", equalTo(Integer.parseInt(version) + 1)).extract().response();
 
         return intygsId;
     }
@@ -577,8 +576,8 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
         String intygsId = "unknown-1";
         spec()
-                .expect().statusCode(500)
-                .when().get("moduleapi/intyg/" + intygsTyp + "/" + intygsId);
+            .expect().statusCode(500)
+            .when().get("moduleapi/intyg/" + intygsTyp + "/" + intygsId);
     }
 
     private void deleteUtkast(String id) {
@@ -587,7 +586,7 @@ public class IntygModuleApiControllerIT extends BaseRestIntegrationTest {
 
     private Personnummer createPnr(String personId) {
         return Personnummer.createPersonnummer(personId)
-                .orElseThrow(() -> new IllegalArgumentException("Could not parse passed personnummer: " + personId));
+            .orElseThrow(() -> new IllegalArgumentException("Could not parse passed personnummer: " + personId));
     }
 
 }

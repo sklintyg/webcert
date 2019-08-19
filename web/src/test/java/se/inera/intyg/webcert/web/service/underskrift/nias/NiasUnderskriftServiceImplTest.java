@@ -18,6 +18,18 @@
  */
 package se.inera.intyg.webcert.web.service.underskrift.nias;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.when;
+import static se.inera.intyg.webcert.web.service.underskrift.testutil.UnderskriftTestUtil.PERSON_ID;
+import static se.inera.intyg.webcert.web.service.underskrift.testutil.UnderskriftTestUtil.createSignaturBiljett;
+
 import com.secmaker.netid.nias.v1.NetiDAccessServerSoap;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -30,18 +42,6 @@ import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturStatus;
 import se.inera.intyg.webcert.web.service.underskrift.nias.factory.NiasCollectPollerFactory;
 import se.inera.intyg.webcert.web.service.underskrift.tracker.RedisTicketTracker;
-
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
-import static org.mockito.Mockito.when;
-import static se.inera.intyg.webcert.web.service.underskrift.testutil.UnderskriftTestUtil.PERSON_ID;
-import static se.inera.intyg.webcert.web.service.underskrift.testutil.UnderskriftTestUtil.createSignaturBiljett;
 
 @RunWith(MockitoJUnitRunner.class)
 public class NiasUnderskriftServiceImplTest {
@@ -64,7 +64,7 @@ public class NiasUnderskriftServiceImplTest {
     @Test
     public void testSignOk() {
         when(netiDAccessServerSoap.sign(anyString(), ArgumentMatchers.isNull(), anyString(), ArgumentMatchers.isNull()))
-                .thenReturn(buildSignResponse());
+            .thenReturn(buildSignResponse());
         when(niasCollectPollerFactory.getInstance()).thenReturn(mock(NiasCollectPoller.class));
 
         testee.startNiasCollectPoller(PERSON_ID, createSignaturBiljett(SignaturStatus.BEARBETAR));
@@ -75,7 +75,7 @@ public class NiasUnderskriftServiceImplTest {
     @Test(expected = WebCertServiceException.class)
     public void testSignFails() {
         when(netiDAccessServerSoap.sign(anyString(), ArgumentMatchers.isNull(), anyString(), ArgumentMatchers.isNull()))
-                .thenThrow(new RuntimeException("some exception"));
+            .thenThrow(new RuntimeException("some exception"));
 
         try {
             testee.startNiasCollectPoller(PERSON_ID, createSignaturBiljett(SignaturStatus.BEARBETAR));

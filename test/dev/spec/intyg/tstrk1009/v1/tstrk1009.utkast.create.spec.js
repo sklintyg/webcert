@@ -29,64 +29,64 @@ var restTestdataHelper = wcTestTools.helpers.restTestdata;
 
 describe('Create and Sign tstrk1009 v1 utkast', function() {
 
-    var utkastId = null,
-        data = null;
+  var utkastId = null,
+      data = null;
 
-    beforeAll(function() {
-        browser.ignoreSynchronization = false;
-        specHelper.login();
-        specHelper.createUtkastForPatient('191212121212', 'tstrk1009');
+  beforeAll(function() {
+    browser.ignoreSynchronization = false;
+    specHelper.login();
+    specHelper.createUtkastForPatient('191212121212', 'tstrk1009');
+  });
+
+  it('Öppna intyget', function() {
+
+    UtkastPage.disableAutosave();
+
+    specHelper.getUtkastIdFromUrl().then(function(id) {
+      utkastId = id;
     });
 
-    it('Öppna intyget', function() {
+    data = wcTestTools.testdata.ts.trk1009.v1.get(utkastId);
+  });
 
-        UtkastPage.disableAutosave();
-
-        specHelper.getUtkastIdFromUrl().then(function(id) {
-            utkastId = id;
-        });
-
-        data = wcTestTools.testdata.ts.trk1009.v1.get(utkastId);
+  describe('Fyll i intyget', function() {
+    it('fillInIdentitetStyrktGenom', function() {
+      UtkastPage.fillInIdentitetStyrktGenom1009(data.identitetStyrktGenom);
     });
 
-    describe('Fyll i intyget', function() {
-        it('fillInIdentitetStyrktGenom', function() {
-            UtkastPage.fillInIdentitetStyrktGenom1009(data.identitetStyrktGenom);
-        });
-
-        it('fillAnmalanAvser', function() {
-            UtkastPage.fillAnmalanAvser(data.anmalanAvser);
-        });
-
-        it('fillMedicinskaForhallanden', function() {
-            UtkastPage.fillMedicinskaForhallanden(data.medicinskaForhallanden, data.senasteUndersokningsdatum);
-        });
-
-        it('fillBehorigheter', function() {
-            UtkastPage.fillBehorigheter(data.intygetAvserBehorigheter);
-        });
-
-        it('fillInformationOmTsBeslutOnskas ', function() {
-            UtkastPage.enableAutosave();
-            UtkastPage.fillInformationOmTsBeslutOnskas(data.informationOmTsBeslutOnskas);
-        });
-
+    it('fillAnmalanAvser', function() {
+      UtkastPage.fillAnmalanAvser(data.anmalanAvser);
     });
 
-    it('Signera intyget', function() {
-        UtkastPage.whenSigneraButtonIsEnabled();
-
-        UtkastPage.signeraButtonClick();
-
-        expect(IntygPage.isAt()).toBeTruthy();
+    it('fillMedicinskaForhallanden', function() {
+      UtkastPage.fillMedicinskaForhallanden(data.medicinskaForhallanden, data.senasteUndersokningsdatum);
     });
 
-    it('Verifiera intyg', function() {
-        IntygPage.verify(data);
+    it('fillBehorigheter', function() {
+      UtkastPage.fillBehorigheter(data.intygetAvserBehorigheter);
     });
 
-    afterAll(function() {
-        restTestdataHelper.deleteIntyg(utkastId);
-        restTestdataHelper.deleteUtkast(utkastId);
+    it('fillInformationOmTsBeslutOnskas ', function() {
+      UtkastPage.enableAutosave();
+      UtkastPage.fillInformationOmTsBeslutOnskas(data.informationOmTsBeslutOnskas);
     });
+
+  });
+
+  it('Signera intyget', function() {
+    UtkastPage.whenSigneraButtonIsEnabled();
+
+    UtkastPage.signeraButtonClick();
+
+    expect(IntygPage.isAt()).toBeTruthy();
+  });
+
+  it('Verifiera intyg', function() {
+    IntygPage.verify(data);
+  });
+
+  afterAll(function() {
+    restTestdataHelper.deleteIntyg(utkastId);
+    restTestdataHelper.deleteUtkast(utkastId);
+  });
 });

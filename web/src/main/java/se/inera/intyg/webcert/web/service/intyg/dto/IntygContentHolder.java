@@ -18,17 +18,14 @@
  */
 package se.inera.intyg.webcert.web.service.intyg.dto;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.annotation.Nullable;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonRawValue;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.google.auto.value.AutoValue;
-
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import javax.annotation.Nullable;
 import se.inera.intyg.common.support.model.Status;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
@@ -76,7 +73,7 @@ public abstract class IntygContentHolder {
 
     public static Builder builder() {
         return new AutoValue_IntygContentHolder.Builder()
-                .setRelations(new Relations());
+            .setRelations(new Relations());
     }
 
     @AutoValue.Builder

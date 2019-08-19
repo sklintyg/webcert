@@ -18,8 +18,7 @@
  */
 package se.inera.intyg.webcert.persistence.utkast.model;
 
-import org.hibernate.annotations.Type;
-
+import java.time.LocalDateTime;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -29,7 +28,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Lob;
 import javax.persistence.Table;
-import java.time.LocalDateTime;
+import org.hibernate.annotations.Type;
 
 /**
  * Defines an ongoing signature operation. Started, but not yet ready to be commited to the INTYG table.

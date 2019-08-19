@@ -20,15 +20,12 @@ package se.inera.intyg.webcert.notification_sender.notifications.services;
 
 import static se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders.INTYG_TYPE_VERSION;
 
+import com.google.common.annotations.VisibleForTesting;
 import java.io.IOException;
-
 import org.apache.camel.Message;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import com.google.common.annotations.VisibleForTesting;
-
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
@@ -41,6 +38,7 @@ import se.inera.intyg.webcert.notification_sender.notifications.routes.Notificat
 import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
 
 public class NotificationTransformer {
+
     private static final Logger LOG = LoggerFactory.getLogger(NotificationTransformer.class);
 
     @Autowired
@@ -82,10 +80,10 @@ public class NotificationTransformer {
             Intyg intyg = moduleApi.getIntygFromUtlatande(utlatande);
             notificationPatientEnricher.enrichWithPatient(intyg);
             message.setBody(NotificationTypeConverter.convert(notificationMessage,
-                    intyg));
+                intyg));
         } else {
             throw new IllegalArgumentException("Unsupported combination of version '" + notificationMessage.getVersion() + "' and type '"
-                    + notificationMessage.getIntygsTyp() + "'");
+                + notificationMessage.getIntygsTyp() + "'");
 
         }
     }

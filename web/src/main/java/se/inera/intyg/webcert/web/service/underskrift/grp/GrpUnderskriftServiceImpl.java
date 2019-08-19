@@ -25,7 +25,6 @@ import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
-
 import org.apache.commons.codec.binary.Hex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,7 +33,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-
 import se.funktionstjanster.grp.v1.AuthenticateRequestType;
 import se.funktionstjanster.grp.v1.FaultStatusType;
 import se.funktionstjanster.grp.v1.GrpFault;
@@ -62,7 +60,9 @@ public class GrpUnderskriftServiceImpl extends BaseSignatureService implements C
 
     static final String BANK_ID_PROVIDER = "bankid"; // As specified in CGI GRP docs
 
-    /** Assigned to us by the GRP provider (e.g. CGI). Used in the 'policy' attribute of auth and collect requests. */
+    /**
+     * Assigned to us by the GRP provider (e.g. CGI). Used in the 'policy' attribute of auth and collect requests.
+     */
     @Value("${cgi.grp.serviceId}")
     private String serviceId;
 
@@ -83,20 +83,20 @@ public class GrpUnderskriftServiceImpl extends BaseSignatureService implements C
 
     @Override
     public SignaturBiljett skapaSigneringsBiljettMedDigest(String intygsId, String intygsTyp, long version, String intygJson,
-            SignMethod signMethod) {
+        SignMethod signMethod) {
         String hash = createHash(intygJson);
 
         IntygGRPSignature intygGRPSignature = new IntygGRPSignature(intygJson, hash);
 
         SignaturBiljett biljett = SignaturBiljett.SignaturBiljettBuilder
-                .aSignaturBiljett(UUID.randomUUID().toString(), SignaturTyp.PKCS7, signMethod)
-                .withIntygsId(intygsId)
-                .withVersion(version)
-                .withIntygSignature(intygGRPSignature)
-                .withStatus(SignaturStatus.BEARBETAR)
-                .withSkapad(LocalDateTime.now())
-                .withHash(intygGRPSignature.getSigningData())
-                .build();
+            .aSignaturBiljett(UUID.randomUUID().toString(), SignaturTyp.PKCS7, signMethod)
+            .withIntygsId(intygsId)
+            .withVersion(version)
+            .withIntygSignature(intygGRPSignature)
+            .withStatus(SignaturStatus.BEARBETAR)
+            .withSkapad(LocalDateTime.now())
+            .withHash(intygGRPSignature.getSigningData())
+            .build();
 
         redisTicketTracker.trackBiljett(biljett);
         return biljett;
@@ -130,7 +130,7 @@ public class GrpUnderskriftServiceImpl extends BaseSignatureService implements C
 
     @Override
     public SignaturBiljett finalizeSignature(SignaturBiljett biljett, byte[] signatur, String certifikat, Utkast utkast,
-            WebCertUser user) {
+        WebCertUser user) {
         SignaturBiljett sb = finalizePkcs7Signature(user, biljett, new String(signatur, Charset.forName("UTF-8")), utkast);
         return redisTicketTracker.updateStatus(sb.getTicketId(), sb.getStatus());
     }
@@ -142,7 +142,7 @@ public class GrpUnderskriftServiceImpl extends BaseSignatureService implements C
         checkVersion(utkast, biljett);
 
         Signatur signatur = new Signatur(biljett.getSkapad(), user.getHsaId(), biljett.getIntygsId(), payloadJson,
-                biljett.getHash(), rawSignature, SignaturTyp.PKCS7);
+            biljett.getHash(), rawSignature, SignaturTyp.PKCS7);
         Utkast savedUtkast = updateAndSaveUtkast(utkast, payloadJson, signatur, user);
 
         // Send to Intygstjanst

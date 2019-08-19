@@ -18,8 +18,8 @@
  */
 package se.inera.intyg.webcert.web.web.controller.api;
 
+import io.swagger.annotations.Api;
 import java.util.List;
-
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -28,10 +28,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-
 import org.springframework.beans.factory.annotation.Autowired;
-
-import io.swagger.annotations.Api;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.webcert.web.service.receiver.CertificateReceiverService;
@@ -47,9 +44,6 @@ public class ReceiverApiController extends AbstractApiController {
 
     /**
      * Used after the signing of the intyg if the doctor wants to see (and possibly edit) approved receivers.
-     *
-     * @param intygsId
-     * @return
      */
     @GET
     @Path("/approvedreceivers/{intygsTyp}/{intygsId}")
@@ -62,9 +56,6 @@ public class ReceiverApiController extends AbstractApiController {
 
     /**
      * Lists possible receivers for the intygstyp.
-     *
-     * @param intygsTyp
-     * @return
      */
     @GET
     @Path("/possiblereceivers/{intygsTyp}")
@@ -81,11 +72,11 @@ public class ReceiverApiController extends AbstractApiController {
     @Consumes(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
     public Response registerApprovedReceivers(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId,
-            List<String> receiverIds) {
+        List<String> receiverIds) {
         authoritiesValidator
-                .given(getWebCertUserService().getUser(), intygsTyp)
-                .privilege(AuthoritiesConstants.PRIVILEGE_GODKANNA_MOTTAGARE)
-                .orThrow();
+            .given(getWebCertUserService().getUser(), intygsTyp)
+            .privilege(AuthoritiesConstants.PRIVILEGE_GODKANNA_MOTTAGARE)
+            .orThrow();
         certificateReceiverService.registerApprovedReceivers(intygsId, intygsTyp, receiverIds);
         return Response.ok().build();
     }

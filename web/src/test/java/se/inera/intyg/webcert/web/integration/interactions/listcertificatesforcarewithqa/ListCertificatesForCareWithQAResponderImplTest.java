@@ -18,6 +18,14 @@
  */
 package se.inera.intyg.webcert.web.integration.interactions.listcertificatesforcarewithqa;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Arrays;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -35,15 +43,6 @@ import se.riv.clinicalprocess.healthcond.certificate.listCertificatesForCareWith
 import se.riv.clinicalprocess.healthcond.certificate.listCertificatesForCareWithQA.v3.ListCertificatesForCareWithQAType;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.HsaId;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.PersonId;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Arrays;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ListCertificatesForCareWithQAResponderImplTest {
@@ -67,8 +66,8 @@ public class ListCertificatesForCareWithQAResponderImplTest {
         handelse.setSistaDatumForSvar(deadline);
 
         when(intygService.listCertificatesForCareWithQA(any(IntygWithNotificationsRequest.class))).thenReturn(Arrays.asList(
-                new IntygWithNotificationsResponse(null, Arrays.asList(handelse), new ArendeCount(1, 1, 1, 1),
-                        new ArendeCount(2, 2, 2, 2), reference)));
+            new IntygWithNotificationsResponse(null, Arrays.asList(handelse), new ArendeCount(1, 1, 1, 1),
+                new ArendeCount(2, 2, 2, 2), reference)));
 
         ListCertificatesForCareWithQAType request = new ListCertificatesForCareWithQAType();
         PersonId personId = new PersonId();
@@ -89,7 +88,7 @@ public class ListCertificatesForCareWithQAResponderImplTest {
         assertEquals(reference, response.getList().getItem().get(0).getRef());
         assertEquals(deadline, response.getList().getItem().get(0).getHandelser().getHandelse().get(0).getSistaDatumForSvar());
         assertEquals(HandelsekodEnum.SKAPAT.name(),
-                response.getList().getItem().get(0).getHandelser().getHandelse().get(0).getHandelsekod().getCode());
+            response.getList().getItem().get(0).getHandelser().getHandelse().get(0).getHandelsekod().getCode());
         assertEquals(ArendeAmne.AVSTMN.name(), response.getList().getItem().get(0).getHandelser().getHandelse().get(0).getAmne().getCode());
     }
 

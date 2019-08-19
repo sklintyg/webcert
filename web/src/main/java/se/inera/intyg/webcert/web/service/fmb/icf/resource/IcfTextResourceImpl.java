@@ -21,13 +21,16 @@ package se.inera.intyg.webcert.web.service.fmb.icf.resource;
 import static java.lang.invoke.MethodHandles.lookup;
 import static org.apache.commons.lang3.StringUtils.lowerCase;
 
-
+import io.vavr.collection.HashMap;
+import io.vavr.control.Try;
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.Optional;
-
 import javax.annotation.PostConstruct;
-
+import jxl.Sheet;
+import jxl.Workbook;
+import jxl.WorkbookSettings;
+import jxl.read.biff.BiffException;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,13 +38,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Component;
-
-import io.vavr.collection.HashMap;
-import io.vavr.control.Try;
-import jxl.Sheet;
-import jxl.Workbook;
-import jxl.WorkbookSettings;
-import jxl.read.biff.BiffException;
 import org.springframework.util.ResourceUtils;
 import se.inera.intyg.webcert.web.web.controller.api.dto.icf.IcfKod;
 
@@ -138,8 +134,8 @@ public class IcfTextResourceImpl implements IcfTextResource {
 
             //om alternativTerm finns ska den alltid trumfa vanlig benämning
             final String benamningToReturn = StringUtils.isNotEmpty(alternativTerm)
-                    ? alternativTerm
-                    : benamning;
+                ? alternativTerm
+                : benamning;
 
             icfKoder = icfKoder.put(icfKod, IcfKod.of(icfKod, benamningToReturn, beskrivning, innefattar));
         });

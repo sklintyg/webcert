@@ -18,6 +18,22 @@
  */
 package se.inera.intyg.webcert.web.service.underskrift.xmldsig;
 
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.when;
+import static se.inera.intyg.webcert.web.service.underskrift.testutil.UnderskriftTestUtil.buildIntygXMLSignature;
+import static se.inera.intyg.webcert.web.service.underskrift.testutil.UnderskriftTestUtil.createSignaturBiljett;
+import static se.inera.intyg.webcert.web.service.underskrift.testutil.UnderskriftTestUtil.createUtkast;
+import static se.inera.intyg.webcert.web.service.underskrift.testutil.UnderskriftTestUtil.createVardperson;
+
+import java.nio.charset.Charset;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -48,25 +64,6 @@ import se.inera.intyg.webcert.web.service.underskrift.testutil.UnderskriftTestUt
 import se.inera.intyg.webcert.web.service.underskrift.tracker.RedisTicketTracker;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
-import java.nio.charset.Charset;
-
-import static org.junit.Assert.assertNotNull;
-import static org.mockito.AdditionalMatchers.or;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.isNull;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
-import static org.mockito.Mockito.when;
-import static se.inera.intyg.webcert.web.service.underskrift.testutil.UnderskriftTestUtil.buildIntygXMLSignature;
-import static se.inera.intyg.webcert.web.service.underskrift.testutil.UnderskriftTestUtil.createSignaturBiljett;
-import static se.inera.intyg.webcert.web.service.underskrift.testutil.UnderskriftTestUtil.createUtkast;
-import static se.inera.intyg.webcert.web.service.underskrift.testutil.UnderskriftTestUtil.createVardperson;
-
 @RunWith(MockitoJUnitRunner.class)
 public class XmlUnderskriftServiceImplTest {
 
@@ -78,10 +75,10 @@ public class XmlUnderskriftServiceImplTest {
     private static final Long VERSION = 1L;
 
     private static final ValidationResponse okValidationResult = ValidationResponse.ValidationResponseBuilder.aValidationResponse()
-            .withSignatureValid(ValidationResult.OK).withReferencesValid(ValidationResult.OK).build();
+        .withSignatureValid(ValidationResult.OK).withReferencesValid(ValidationResult.OK).build();
 
     private static final ValidationResponse failedValidationResult = ValidationResponse.ValidationResponseBuilder.aValidationResponse()
-            .withSignatureValid(ValidationResult.INVALID).withReferencesValid(ValidationResult.NOT_CHCEKED).build();
+        .withSignatureValid(ValidationResult.INVALID).withReferencesValid(ValidationResult.NOT_CHCEKED).build();
 
     @Mock
     private UtkastModelToXMLConverter utkastModelToXMLConverter;
@@ -138,22 +135,22 @@ public class XmlUnderskriftServiceImplTest {
         when(utkastModelToXMLConverter.utkastToXml(anyString(), anyString())).thenReturn("<xml/>");
         when(prepareSignatureService.prepareSignature(anyString(), anyString())).thenReturn(UnderskriftTestUtil.buildIntygXMLSignature());
         when(utkastRepository.save(any(Utkast.class)))
-                .thenReturn(createUtkast(INTYG_ID, 2L, INTYG_TYP, UtkastStatus.SIGNED, "model", createVardperson(),
-                        ENHET_ID, PERSON_ID));
+            .thenReturn(createUtkast(INTYG_ID, 2L, INTYG_TYP, UtkastStatus.SIGNED, "model", createVardperson(),
+                ENHET_ID, PERSON_ID));
         when(redisTicketTracker.updateStatus(TICKET_ID, SignaturStatus.SIGNERAD))
-                .thenReturn(createSignaturBiljett(SignaturStatus.SIGNERAD));
+            .thenReturn(createSignaturBiljett(SignaturStatus.SIGNERAD));
 
         WebCertUser user = mock(WebCertUser.class);
         when(user.getAuthenticationScheme()).thenReturn("scheme");
         when(user.getHsaId()).thenReturn("user-1");
         SignaturBiljett signaturBiljett = testee.finalizeSignature(createSignaturBiljett(SignaturStatus.BEARBETAR),
-                "signatur".getBytes(Charset.forName("UTF-8")),
-                "certifikat", createUtkast(INTYG_ID, 1L, INTYG_TYP, UtkastStatus.DRAFT_COMPLETE, "model", createVardperson(),
-                        ENHET_ID, PERSON_ID),
-                user);
+            "signatur".getBytes(Charset.forName("UTF-8")),
+            "certifikat", createUtkast(INTYG_ID, 1L, INTYG_TYP, UtkastStatus.DRAFT_COMPLETE, "model", createVardperson(),
+                ENHET_ID, PERSON_ID),
+            user);
         assertNotNull(signaturBiljett);
         verify(monitoringLogService, times(1)).logIntygSigned(anyString(), anyString(), eq("user-1"), eq("scheme"),
-                ArgumentMatchers.isNull());
+            ArgumentMatchers.isNull());
         verify(redisTicketTracker, times(1)).updateStatus(anyString(), eq(SignaturStatus.SIGNERAD));
         verify(intygService, times(1)).storeIntyg(any(Utkast.class));
     }
@@ -167,10 +164,10 @@ public class XmlUnderskriftServiceImplTest {
 
         try {
             testee.finalizeSignature(createSignaturBiljett(SignaturStatus.BEARBETAR),
-                    "signatur".getBytes(Charset.forName("UTF-8")),
-                    "certifikat", createUtkast(INTYG_ID, 1L, INTYG_TYP, UtkastStatus.DRAFT_COMPLETE, "model", createVardperson(),
-                            ENHET_ID, PERSON_ID),
-                    buildUser());
+                "signatur".getBytes(Charset.forName("UTF-8")),
+                "certifikat", createUtkast(INTYG_ID, 1L, INTYG_TYP, UtkastStatus.DRAFT_COMPLETE, "model", createVardperson(),
+                    ENHET_ID, PERSON_ID),
+                buildUser());
         } finally {
             verifyZeroInteractions(monitoringLogService);
             verify(redisTicketTracker, times(1)).updateStatus(anyString(), eq(SignaturStatus.OKAND));
@@ -189,10 +186,10 @@ public class XmlUnderskriftServiceImplTest {
 
         try {
             testee.finalizeSignature(createSignaturBiljett(SignaturStatus.BEARBETAR),
-                    "signatur".getBytes(Charset.forName("UTF-8")),
-                    "certifikat", createUtkast(INTYG_ID, 1111L, INTYG_TYP, UtkastStatus.DRAFT_COMPLETE, "model", createVardperson(),
-                            ENHET_ID, PERSON_ID),
-                    buildUser());
+                "signatur".getBytes(Charset.forName("UTF-8")),
+                "certifikat", createUtkast(INTYG_ID, 1111L, INTYG_TYP, UtkastStatus.DRAFT_COMPLETE, "model", createVardperson(),
+                    ENHET_ID, PERSON_ID),
+                buildUser());
         } finally {
             verifyZeroInteractions(monitoringLogService);
             verify(redisTicketTracker, times(1)).updateStatus(anyString(), eq(SignaturStatus.OKAND));
@@ -214,11 +211,11 @@ public class XmlUnderskriftServiceImplTest {
 
         try {
             testee.finalizeSignature(createSignaturBiljett(SignaturStatus.BEARBETAR),
-                    "signatur".getBytes(Charset.forName("UTF-8")),
-                    "certifikat",
-                    createUtkast(INTYG_ID + "-difference", 1L, INTYG_TYP, UtkastStatus.DRAFT_COMPLETE, "model", createVardperson(),
-                            ENHET_ID, PERSON_ID),
-                    buildUser());
+                "signatur".getBytes(Charset.forName("UTF-8")),
+                "certifikat",
+                createUtkast(INTYG_ID + "-difference", 1L, INTYG_TYP, UtkastStatus.DRAFT_COMPLETE, "model", createVardperson(),
+                    ENHET_ID, PERSON_ID),
+                buildUser());
         } finally {
             verifyZeroInteractions(monitoringLogService);
             verify(redisTicketTracker, times(1)).updateStatus(anyString(), eq(SignaturStatus.OKAND));

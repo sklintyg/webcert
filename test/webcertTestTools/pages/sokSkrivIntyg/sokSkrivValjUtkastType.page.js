@@ -24,30 +24,30 @@
 'use strict';
 
 module.exports = {
-    sekretessmarkering: element(by.id('sekretessmarkering')),
-    namnFortsatt: element(by.id('namnFortsatt')),
-    intygTypeTable: element(by.id('select-intyg-type-table')),
-    get: function() {
-        browser.get('#/create/choose-intyg-type/default/index');
-    },
-    isAt: function() {
-        return element(by.id('sokSkrivValjUtkastType')).isDisplayed();
-    },
-    createUtkast: function(IntygTypShortcode) {
-        return element(by.id('intygTypeFortsatt-' + IntygTypShortcode)).sendKeys(protractor.Key.SPACE);
-    },
-    clickFornyaBtnById: function(id) {
-        return element(by.id('fornyaBtn-' + id)).click();
-    },
-    clickToggleFavourite: function(typeId) {
-        return element(by.id('intygType-row-' + typeId))
-            .element(by.css('.favourite'))
-            .click();
-    },
-    verifyTypeIsAtIndex: function(typeId, index) {
-        return element(by.id('select-intyg-type-table'))
-            .all(by.css('.flex-list-col'))
-            .get(index)
-            .element(by.id('intygType-row-' + typeId)).isPresent();
-    }
+  sekretessmarkering: element(by.id('sekretessmarkering')),
+  namnFortsatt: element(by.id('namnFortsatt')),
+  intygTypeTable: element(by.id('select-intyg-type-table')),
+  get: function() {
+    browser.get('#/create/choose-intyg-type/default/index');
+  },
+  isAt: function() {
+    return element(by.id('sokSkrivValjUtkastType')).isDisplayed();
+  },
+  createUtkast: function(IntygTypShortcode) {
+    return element(by.id('intygTypeFortsatt-' + IntygTypShortcode)).sendKeys(protractor.Key.SPACE);
+  },
+  clickFornyaBtnById: function(id) {
+    return element(by.id('fornyaBtn-' + id)).click();
+  },
+  clickToggleFavourite: function(typeId) {
+    return element(by.id('intygType-row-' + typeId))
+    .element(by.css('.favourite'))
+    .click();
+  },
+  verifyTypeIsAtIndex: function(typeId, index) {
+    return element(by.id('select-intyg-type-table'))
+    .all(by.css('.flex-list-col'))
+    .get(index)
+    .element(by.id('intygType-row-' + typeId)).isPresent();
+  }
 };

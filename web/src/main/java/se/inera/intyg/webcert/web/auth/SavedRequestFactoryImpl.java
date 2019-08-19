@@ -18,12 +18,11 @@
  */
 package se.inera.intyg.webcert.web.auth;
 
+import javax.servlet.http.HttpServletRequest;
 import org.springframework.security.web.PortResolverImpl;
 import org.springframework.security.web.savedrequest.DefaultSavedRequest;
 import org.springframework.security.web.savedrequest.SavedRequest;
 import org.springframework.stereotype.Service;
-
-import javax.servlet.http.HttpServletRequest;
 
 /**
  * Produces DefaultSavedRequest instances.
@@ -32,6 +31,7 @@ import javax.servlet.http.HttpServletRequest;
  */
 @Service
 public class SavedRequestFactoryImpl implements SavedRequestFactory {
+
     @Override
     public SavedRequest buildSavedRequest(HttpServletRequest req) {
         return new DefaultSavedRequest(req, new PortResolverImpl());

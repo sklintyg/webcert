@@ -17,4 +17,4 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-angular.module('webcert', [ 'ui.bootstrap', 'ngCookies', 'ui.router', 'ngSanitize' ]);
+angular.module('webcert', ['ui.bootstrap', 'ngCookies', 'ui.router', 'ngSanitize']);

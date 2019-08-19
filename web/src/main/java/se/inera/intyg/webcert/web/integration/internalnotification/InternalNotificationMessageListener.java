@@ -20,12 +20,10 @@ package se.inera.intyg.webcert.web.integration.internalnotification;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
-
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.TextMessage;
-
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,7 +31,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.stereotype.Service;
-
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
@@ -81,13 +78,13 @@ public class InternalNotificationMessageListener implements MessageListener {
                 String enhetsId = textMessage.getStringProperty(CARE_UNIT_ID);
 
                 checkArgument(StringUtils.isNotEmpty(intygsId), "Message on queue %s does not have a %s header.",
-                        queueName, CERTIFICATE_ID);
+                    queueName, CERTIFICATE_ID);
                 checkArgument(StringUtils.isNotEmpty(intygsTyp), "Message on queue %s does not have a %s header.",
-                        queueName, CERTIFICATE_TYPE);
+                    queueName, CERTIFICATE_TYPE);
                 checkArgument(StringUtils.isNotEmpty(intygsTypVersion), "Message on queue %s does not have a %s header.",
-                        queueName, CERTIFICATE_TYPE_VERSION);
+                    queueName, CERTIFICATE_TYPE_VERSION);
                 checkArgument(StringUtils.isNotEmpty(enhetsId), "Message on queue %s does not have a %s header.",
-                        queueName, CARE_UNIT_ID);
+                    queueName, CARE_UNIT_ID);
 
                 if (!integreradeEnheterRegistry.isEnhetIntegrerad(enhetsId, intygsTyp)) {
                     LOG.debug("Not forwarding internal notification to care system, care unit '{}' is not integrated.", enhetsId);

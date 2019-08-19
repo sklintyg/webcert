@@ -30,93 +30,95 @@ testTools.protractorHelpers.init('certificate-content-container');
 var moveAndSendKeys;
 
 if (testTools.protractorHelpers) {
-    moveAndSendKeys = testTools.protractorHelpers.moveAndSendKeys;
+  moveAndSendKeys = testTools.protractorHelpers.moveAndSendKeys;
 } else {
-    moveAndSendKeys = function(elm, keys, description) {
-        return elm.sendKeys(keys).then(function() {
-            return logger.silly('sendKeys OK - ' + description);
-        }, function(reason) {
-            console.trace(reason);
-            throw ('FEL, ' + description + ', ' + reason);
-        });
-    };
+  moveAndSendKeys = function(elm, keys, description) {
+    return elm.sendKeys(keys).then(function() {
+      return logger.silly('sendKeys OK - ' + description);
+    }, function(reason) {
+      console.trace(reason);
+      throw ('FEL, ' + description + ', ' + reason);
+    });
+  };
 }
 
 module.exports = {
-    moveAndSendKeys: moveAndSendKeys,
-    clickAll: function(elementArray, elementTextsArray) {
-        if (!elementTextsArray) {
-            return Promise.resolve();
+  moveAndSendKeys: moveAndSendKeys,
+  clickAll: function(elementArray, elementTextsArray) {
+    if (!elementTextsArray) {
+      return Promise.resolve();
 
-        }
-        return elementArray.filter(function(elem) {
-
-            return elem.getText().then(function(text) {
-                return (elementTextsArray.indexOf(text) >= 0);
-            });
-        }).then(function(filteredElements) {
-
-            return filteredElements.forEach(function(element, i) {
-                filteredElements[i].getText().then(function(description) {
-
-                    moveAndSendKeys(filteredElements[i], protractor.Key.SPACE, description);
-                });
-            });
-        });
-    },
-    selectAllCheckBoxes: function(elementArray, elementTextsArray) {
-        if (!elementTextsArray) {
-            return Promise.resolve();
-
-        }
-        return elementArray.filter(function(elem) {
-
-            return elem.getText().then(function(text) {
-                return (elementTextsArray.indexOf(text) >= 0);
-            });
-        }).then(function(filteredElements) {
-
-            return filteredElements.forEach(function(element, i) {
-                filteredElements[i].getText().then(function(description) {
-
-                    filteredElements[i].click();
-                });
-            });
-        });
-    },
-    selectCheckBoxesById: function(elementIds) {
-        if (!elementIds) {
-            return Promise.resolve();
-
-        }
-        var promiseArr = [];
-        elementIds.forEach(function(elementId, i) {
-            promiseArr.push(moveAndSendKeys(element(by.id(elementId)), protractor.Key.SPACE, 'Checking checkbox (' + i + '/' + elementIds.length + ') with id "' + elementId + '"'));
-        });
-
-        return Promise.all(promiseArr);
-    },
-
-    hasHogreKorkortsbehorigheter: function(korkortstyper) {
-        function findArrayElementsInArray(targetArray, compareArray) {
-            // find all elements in targetArray matching any elements in compareArray
-            var result = targetArray.filter(function(element) {
-                return (compareArray.indexOf(element) >= 0);
-            });
-
-            return result;
-        }
-        var td = require('./../testdata/testvalues.js').ts;
-        var foundHogreBehorigheter = findArrayElementsInArray(korkortstyper, td.korkortstyperHogreBehorighet);
-        return foundHogreBehorigheter.length > 0;
-    },
-    smallDelay: function() {
-        return browser.sleep(100);
-    },
-    mediumDelay: function() {
-        return browser.sleep(500);
-    },
-    largeDelay: function() {
-        return browser.sleep(1000);
     }
+    return elementArray.filter(function(elem) {
+
+      return elem.getText().then(function(text) {
+        return (elementTextsArray.indexOf(text) >= 0);
+      });
+    }).then(function(filteredElements) {
+
+      return filteredElements.forEach(function(element, i) {
+        filteredElements[i].getText().then(function(description) {
+
+          moveAndSendKeys(filteredElements[i], protractor.Key.SPACE, description);
+        });
+      });
+    });
+  },
+  selectAllCheckBoxes: function(elementArray, elementTextsArray) {
+    if (!elementTextsArray) {
+      return Promise.resolve();
+
+    }
+    return elementArray.filter(function(elem) {
+
+      return elem.getText().then(function(text) {
+        return (elementTextsArray.indexOf(text) >= 0);
+      });
+    }).then(function(filteredElements) {
+
+      return filteredElements.forEach(function(element, i) {
+        filteredElements[i].getText().then(function(description) {
+
+          filteredElements[i].click();
+        });
+      });
+    });
+  },
+  selectCheckBoxesById: function(elementIds) {
+    if (!elementIds) {
+      return Promise.resolve();
+
+    }
+    var promiseArr = [];
+    elementIds.forEach(function(elementId, i) {
+      promiseArr.push(moveAndSendKeys(element(by.id(elementId)), protractor.Key.SPACE,
+          'Checking checkbox (' + i + '/' + elementIds.length + ') with id "' + elementId + '"'));
+    });
+
+    return Promise.all(promiseArr);
+  },
+
+  hasHogreKorkortsbehorigheter: function(korkortstyper) {
+    function findArrayElementsInArray(targetArray, compareArray) {
+      // find all elements in targetArray matching any elements in compareArray
+      var result = targetArray.filter(function(element) {
+        return (compareArray.indexOf(element) >= 0);
+      });
+
+      return result;
+    }
+
+    var td = require('./../testdata/testvalues.js').ts;
+    var foundHogreBehorigheter = findArrayElementsInArray(korkortstyper, td.korkortstyperHogreBehorighet);
+    return foundHogreBehorigheter.length > 0;
+  },
+  smallDelay: function() {
+    return browser.sleep(100);
+  },
+  mediumDelay: function() {
+    return browser.sleep(500);
+  },
+  largeDelay: function() {
+    return browser.sleep(1000);
+  }
 };

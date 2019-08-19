@@ -18,6 +18,10 @@
  */
 package se.inera.intyg.webcert.notificationstub.v3;
 
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import javax.annotation.PostConstruct;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
@@ -25,11 +29,6 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.support.collections.DefaultRedisMap;
 import se.inera.intyg.webcert.notificationstub.store.BaseStore;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareType;
-
-import javax.annotation.PostConstruct;
-import java.io.IOException;
-import java.time.LocalDateTime;
-import java.util.HashMap;
 
 public class NotificationStoreV3Impl extends BaseStore<CertificateStatusUpdateForCareType> implements NotificationStoreV3 {
 

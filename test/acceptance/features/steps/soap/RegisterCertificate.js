@@ -17,12 +17,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 'use strict';
 
 const smiIntyg = {
-    'Läkarutlåtande för sjukersättning': function(patient, user, intyg) {
-        return `<urn2:RegisterCertificate 
+  'Läkarutlåtande för sjukersättning': function(patient, user, intyg) {
+    return `<urn2:RegisterCertificate 
                xmlns="urn:riv:clinicalprocess:healthcond:certificate:3" 
                 xmlns:urn2="urn:riv:clinicalprocess:healthcond:certificate:RegisterCertificateResponder:3" 
                 xmlns:urn3="urn:riv:clinicalprocess:healthcond:certificate:types:3" 
@@ -284,9 +283,9 @@ const smiIntyg = {
             </svar>
          </urn2:intyg>
       </urn2:RegisterCertificate>`;
-    },
-    'Läkarintyg för sjukpenning': function(patient, user, intyg) {
-        return `<urn2:RegisterCertificate 
+  },
+  'Läkarintyg för sjukpenning': function(patient, user, intyg) {
+    return `<urn2:RegisterCertificate 
              xmlns="urn:riv:clinicalprocess:healthcond:certificate:3"
              xmlns:urn2="urn:riv:clinicalprocess:healthcond:certificate:RegisterCertificateResponder:3"
              xmlns:urn3="urn:riv:clinicalprocess:healthcond:certificate:types:3"
@@ -692,9 +691,9 @@ const smiIntyg = {
          </urn2:intyg>
          <!--You may enter ANY elements at this point-->
       </urn2:RegisterCertificate>`;
-    }
+  }
 };
 
 module.exports.RegisterCertificate = function(patient, user, intyg) {
-    return smiIntyg[intyg.typ](patient, user, intyg);
+  return smiIntyg[intyg.typ](patient, user, intyg);
 };

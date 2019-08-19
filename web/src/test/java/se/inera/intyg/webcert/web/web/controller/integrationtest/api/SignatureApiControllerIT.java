@@ -18,12 +18,12 @@
  */
 package se.inera.intyg.webcert.web.web.controller.integrationtest.api;
 
-import java.io.IOException;
-import java.util.concurrent.TimeUnit;
-
-import org.awaitility.Duration;
-import org.hamcrest.Matchers;
-import org.junit.Test;
+import static com.jayway.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
+import static org.awaitility.Awaitility.await;
+import static org.hamcrest.Matchers.isEmptyString;
+import static org.hamcrest.core.IsEqual.equalTo;
+import static org.hamcrest.core.IsNot.not;
+import static se.inera.intyg.webcert.web.web.controller.integrationtest.moduleapi.UtkastModuleApiControllerIT.GRPAPI_STUBBE_BASE;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -32,19 +32,17 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.jayway.restassured.RestAssured;
 import com.jayway.restassured.path.json.JsonPath;
 import com.jayway.restassured.response.Response;
+import java.io.IOException;
+import java.util.concurrent.TimeUnit;
+import org.awaitility.Duration;
+import org.hamcrest.Matchers;
+import org.junit.Test;
 import se.funktionstjanster.grp.v1.ProgressStatusType;
 import se.inera.intyg.infra.security.common.model.AuthenticationMethod;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.web.auth.eleg.FakeElegCredentials;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignMethod;
 import se.inera.intyg.webcert.web.web.controller.integrationtest.BaseRestIntegrationTest;
-
-import static com.jayway.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
-import static org.awaitility.Awaitility.await;
-import static org.hamcrest.Matchers.isEmptyString;
-import static org.hamcrest.core.IsEqual.equalTo;
-import static org.hamcrest.core.IsNot.not;
-import static se.inera.intyg.webcert.web.web.controller.integrationtest.moduleapi.UtkastModuleApiControllerIT.GRPAPI_STUBBE_BASE;
 
 public class SignatureApiControllerIT extends BaseRestIntegrationTest {
 
@@ -61,12 +59,12 @@ public class SignatureApiControllerIT extends BaseRestIntegrationTest {
         Intyg intyg = createIntyg();
 
         spec()
-                .expect().statusCode(200)
-                .when().post(SIGNATURE_API_BASE + "/" + intyg.getIntygsTyp() + "/" + intyg.getId() + "/" + intyg.getVersion()
-                        + "/signeringshash/" + SignMethod.FAKE.name())
-                .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-signatur-response-schema.json"))
-                .body("hash", Matchers.notNullValue())
-                .extract().response();
+            .expect().statusCode(200)
+            .when().post(SIGNATURE_API_BASE + "/" + intyg.getIntygsTyp() + "/" + intyg.getId() + "/" + intyg.getVersion()
+            + "/signeringshash/" + SignMethod.FAKE.name())
+            .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-signatur-response-schema.json"))
+            .body("hash", Matchers.notNullValue())
+            .extract().response();
     }
 
     @Test
@@ -76,23 +74,23 @@ public class SignatureApiControllerIT extends BaseRestIntegrationTest {
         Intyg intyg = createIntyg();
 
         Response response = spec()
-                .expect().statusCode(200)
-                .when().post(SIGNATURE_API_BASE + "/" + intyg.getIntygsTyp() + "/" + intyg.getId() + "/" + intyg.getVersion()
-                        + "/signeringshash/" + SignMethod.FAKE.name())
-                .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-signatur-response-schema.json"))
-                .body("hash", Matchers.notNullValue())
-                .body("status", equalTo("BEARBETAR"))
-                .extract().response();
+            .expect().statusCode(200)
+            .when().post(SIGNATURE_API_BASE + "/" + intyg.getIntygsTyp() + "/" + intyg.getId() + "/" + intyg.getVersion()
+                + "/signeringshash/" + SignMethod.FAKE.name())
+            .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-signatur-response-schema.json"))
+            .body("hash", Matchers.notNullValue())
+            .body("status", equalTo("BEARBETAR"))
+            .extract().response();
 
         String ticketId = response.body().jsonPath().getString("id");
 
         spec()
-                .expect().statusCode(200)
-                .when().post(SIGNATURE_FAKE_API_BASE + "/" + intyg.getIntygsTyp() + "/" + intyg.getId() + "/" + intyg.getVersion()
-                        + "/fejksignera/" + ticketId)
-                .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-signatur-response-schema.json"))
-                .body("status", equalTo("SIGNERAD"))
-                .extract().response();
+            .expect().statusCode(200)
+            .when().post(SIGNATURE_FAKE_API_BASE + "/" + intyg.getIntygsTyp() + "/" + intyg.getId() + "/" + intyg.getVersion()
+            + "/fejksignera/" + ticketId)
+            .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-signatur-response-schema.json"))
+            .body("status", equalTo("SIGNERAD"))
+            .extract().response();
     }
 
     @Test
@@ -111,14 +109,14 @@ public class SignatureApiControllerIT extends BaseRestIntegrationTest {
 
         // Påbörja signering
         Response responseTicket = spec()
-                .expect().statusCode(200)
-                .when()
-                .post(SIGNATURE_API_BASE + "/" + intyg.getIntygsTyp() + "/" + intyg.getId() + "/" + intyg.getVersion()
-                        + "/signeringshash/" + SignMethod.GRP.name())
-                .then()
-                .body(matchesJsonSchemaInClasspath("jsonschema/webcert-signatur-response-schema.json"))
-                .body("status", equalTo("BEARBETAR"))
-                .extract().response();
+            .expect().statusCode(200)
+            .when()
+            .post(SIGNATURE_API_BASE + "/" + intyg.getIntygsTyp() + "/" + intyg.getId() + "/" + intyg.getVersion()
+                + "/signeringshash/" + SignMethod.GRP.name())
+            .then()
+            .body(matchesJsonSchemaInClasspath("jsonschema/webcert-signatur-response-schema.json"))
+            .body("status", equalTo("BEARBETAR"))
+            .extract().response();
 
         // Hämta ut biljett-id från svaret
         JsonPath model = new JsonPath(responseTicket.body().asString());
@@ -127,44 +125,44 @@ public class SignatureApiControllerIT extends BaseRestIntegrationTest {
         // biljettId är inte samma sak som orderRef.
         // Hämta ut orderRef först
         Response responseOrderRef = spec()
-                .expect().statusCode(200)
-                .when()
-                .get(GRPAPI_STUBBE_BASE + "/orderref/" + biljettId)
-                .then()
-                .extract().response();
+            .expect().statusCode(200)
+            .when()
+            .get(GRPAPI_STUBBE_BASE + "/orderref/" + biljettId)
+            .then()
+            .extract().response();
 
         String orderRef = responseOrderRef.body().asString();
 
         // Ändra GRP-status till USER_SIGN och kontrollera
         spec()
-                .body(createGrpSignatureStatus(orderRef, ProgressStatusType.USER_SIGN))
-                .expect().statusCode(200)
-                .when()
-                .put(GRPAPI_STUBBE_BASE + "/status");
+            .body(createGrpSignatureStatus(orderRef, ProgressStatusType.USER_SIGN))
+            .expect().statusCode(200)
+            .when()
+            .put(GRPAPI_STUBBE_BASE + "/status");
 
         // Verifiera att vi får status VANTA_SIGN inom 6 sekunder.
         await().atMost(6, TimeUnit.SECONDS).untilAsserted(() -> spec()
-                .expect().statusCode(200)
-                .when()
-                .get(SIGNATURE_API_BASE + "/" + intyg.getIntygsTyp() + "/" + biljettId + "/signeringsstatus")
-                .then()
-                .body(matchesJsonSchemaInClasspath("jsonschema/webcert-signatur-response-schema.json"))
-                .body("status", equalTo("VANTA_SIGN")));
+            .expect().statusCode(200)
+            .when()
+            .get(SIGNATURE_API_BASE + "/" + intyg.getIntygsTyp() + "/" + biljettId + "/signeringsstatus")
+            .then()
+            .body(matchesJsonSchemaInClasspath("jsonschema/webcert-signatur-response-schema.json"))
+            .body("status", equalTo("VANTA_SIGN")));
 
         // Ändra GRP-status till COMPLETE och kontrollera
         spec()
-                .body(createGrpSignatureStatus(orderRef, ProgressStatusType.COMPLETE))
-                .expect().statusCode(200)
-                .when()
-                .put(GRPAPI_STUBBE_BASE + "/status");
+            .body(createGrpSignatureStatus(orderRef, ProgressStatusType.COMPLETE))
+            .expect().statusCode(200)
+            .when()
+            .put(GRPAPI_STUBBE_BASE + "/status");
 
         await().pollDelay(Duration.TWO_SECONDS).atMost(6, TimeUnit.SECONDS).untilAsserted(() -> spec()
-                .expect().statusCode(200)
-                .when()
-                .get(SIGNATURE_API_BASE + "/" + intyg.getIntygsTyp() + "/" + biljettId + "/signeringsstatus")
-                .then()
-                .body(matchesJsonSchemaInClasspath("jsonschema/webcert-signatur-response-schema.json"))
-                .body("status", equalTo("SIGNERAD")));
+            .expect().statusCode(200)
+            .when()
+            .get(SIGNATURE_API_BASE + "/" + intyg.getIntygsTyp() + "/" + biljettId + "/signeringsstatus")
+            .then()
+            .body(matchesJsonSchemaInClasspath("jsonschema/webcert-signatur-response-schema.json"))
+            .body("status", equalTo("SIGNERAD")));
 
     }
 
@@ -175,18 +173,18 @@ public class SignatureApiControllerIT extends BaseRestIntegrationTest {
         Intyg intyg = createIntyg();
 
         Response responseTicket = spec()
-                .expect().statusCode(200)
-                .when().post(SIGNATURE_API_BASE + "/" + intyg.getIntygsTyp() + "/" + intyg.getId() + "/" + intyg.getVersion()
-                        + "/signeringshash/" + SignMethod.FAKE.name())
-                .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-signatur-response-schema.json")).extract().response();
+            .expect().statusCode(200)
+            .when().post(SIGNATURE_API_BASE + "/" + intyg.getIntygsTyp() + "/" + intyg.getId() + "/" + intyg.getVersion()
+                + "/signeringshash/" + SignMethod.FAKE.name())
+            .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-signatur-response-schema.json")).extract().response();
 
         JsonPath model = new JsonPath(responseTicket.body().asString());
         String biljettId = model.getString("id");
 
         spec()
-                .expect().statusCode(200)
-                .when().get(SIGNATURE_API_BASE + "/" + intyg.getIntygsTyp() + "/" + biljettId + "/signeringsstatus")
-                .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-signatur-response-schema.json"));
+            .expect().statusCode(200)
+            .when().get(SIGNATURE_API_BASE + "/" + intyg.getIntygsTyp() + "/" + biljettId + "/signeringsstatus")
+            .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-signatur-response-schema.json"));
     }
 
     @Test
@@ -197,22 +195,22 @@ public class SignatureApiControllerIT extends BaseRestIntegrationTest {
         String intygsId = createUtkast(intygsTyp, DEFAULT_PATIENT_PERSONNUMMER);
 
         Response responseIntyg = spec()
-                .expect().statusCode(200)
-                .when().get(MODULEAPI_UTKAST_BASE + "/" + intygsTyp + "/" + intygsId)
-                .then()
-                .body(matchesJsonSchemaInClasspath("jsonschema/webcert-get-utkast-response-schema.json"))
-                .extract().response();
+            .expect().statusCode(200)
+            .when().get(MODULEAPI_UTKAST_BASE + "/" + intygsTyp + "/" + intygsId)
+            .then()
+            .body(matchesJsonSchemaInClasspath("jsonschema/webcert-get-utkast-response-schema.json"))
+            .extract().response();
 
         JsonPath model = new JsonPath(responseIntyg.body().asString());
         String version = model.getString("version");
 
         spec()
-                .expect().statusCode(500)
-                .when()
-                .post(SIGNATURE_API_BASE + "/" + intygsTyp + "/" + intygsId + "/" + version + "/signeringshash/" + SignMethod.FAKE.name())
-                .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-error-response-schema.json"))
-                .body("errorCode", equalTo(WebCertServiceErrorCodeEnum.INVALID_STATE.name()))
-                .body("message", not(isEmptyString()));
+            .expect().statusCode(500)
+            .when()
+            .post(SIGNATURE_API_BASE + "/" + intygsTyp + "/" + intygsId + "/" + version + "/signeringshash/" + SignMethod.FAKE.name())
+            .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-error-response-schema.json"))
+            .body("errorCode", equalTo(WebCertServiceErrorCodeEnum.INVALID_STATE.name()))
+            .body("message", not(isEmptyString()));
     }
 
     private Intyg createIntyg() throws IOException {
@@ -221,9 +219,9 @@ public class SignatureApiControllerIT extends BaseRestIntegrationTest {
         String intygsId = createUtkast(intygsTyp, DEFAULT_PATIENT_PERSONNUMMER);
 
         Response responseIntyg = spec()
-                .expect().statusCode(200)
-                .when().get(MODULEAPI_UTKAST_BASE + "/" + intygsTyp + "/" + intygsId)
-                .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-get-utkast-response-schema.json")).extract().response();
+            .expect().statusCode(200)
+            .when().get(MODULEAPI_UTKAST_BASE + "/" + intygsTyp + "/" + intygsId)
+            .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-get-utkast-response-schema.json")).extract().response();
 
         ObjectMapper mapper = new ObjectMapper();
         ObjectNode rootNode = (ObjectNode) mapper.readTree(responseIntyg.body().asString());
@@ -256,13 +254,13 @@ public class SignatureApiControllerIT extends BaseRestIntegrationTest {
         sjukskrivningar.add(sjukskrivning);
 
         responseIntyg = spec()
-                .body(content)
-                .log().all()
-                .expect().statusCode(200)
-                .when()
-                .put(MODULEAPI_UTKAST_BASE + "/" + intygsTyp + "/" + intygsId + "/" + version)
-                .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-save-draft-response-schema.json"))
-                .body("version", equalTo(Integer.parseInt(version) + 1)).extract().response();
+            .body(content)
+            .log().all()
+            .expect().statusCode(200)
+            .when()
+            .put(MODULEAPI_UTKAST_BASE + "/" + intygsTyp + "/" + intygsId + "/" + version)
+            .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-save-draft-response-schema.json"))
+            .body("version", equalTo(Integer.parseInt(version) + 1)).extract().response();
 
         JsonPath model = new JsonPath(responseIntyg.body().asString());
 
@@ -276,6 +274,7 @@ public class SignatureApiControllerIT extends BaseRestIntegrationTest {
     }
 
     private class Intyg {
+
         private String id;
         private String intygsTyp;
         private String version;

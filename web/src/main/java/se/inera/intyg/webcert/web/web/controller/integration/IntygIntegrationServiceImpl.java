@@ -69,13 +69,13 @@ public class IntygIntegrationServiceImpl extends IntegrationServiceImpl {
      * Updates Patient section of a draft with updated patient details for selected types.
      */
     void ensureDraftPatientInfoUpdated(String intygsType, String draftId, long draftVersion, WebCertUser user,
-                                       Personnummer prepareBeforeAlternateSsn) {
+        Personnummer prepareBeforeAlternateSsn) {
 
         // To be allowed to update utkast, we need to have the same authority as when saving a draft..
         authoritiesValidator.given(user, intygsType)
-                .features(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
-                .privilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG)
-                .orThrow();
+            .features(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
+            .privilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG)
+            .orThrow();
 
         String alternatePatientSsn = user.getParameters().getAlternateSsn();
         if (!Strings.isNullOrEmpty(alternatePatientSsn)) {
@@ -85,7 +85,7 @@ public class IntygIntegrationServiceImpl extends IntegrationServiceImpl {
             if (prepareBeforeAlternateSsn != null) {
                 request = new UpdatePatientOnDraftRequest(pnr, prepareBeforeAlternateSsn, draftId, draftVersion);
             } else {
-                request =  new UpdatePatientOnDraftRequest(pnr, draftId, draftVersion);
+                request = new UpdatePatientOnDraftRequest(pnr, draftId, draftVersion);
             }
 
             utkastService.updatePatientOnDraft(request);

@@ -23,7 +23,7 @@ var testdataHelper = wcTestTools.helpers.restTestdata;
 
 describe('Clean utkast via rest', function() {
 
-    it('should login rest client and clean all utkast', function() {
-        testdataHelper.deleteAllUtkast();
-    });
+  it('should login rest client and clean all utkast', function() {
+    testdataHelper.deleteAllUtkast();
+  });
 });

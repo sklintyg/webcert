@@ -30,6 +30,7 @@ import static se.inera.intyg.webcert.persistence.fmb.model.fmb.DiagnosInformatio
 import static se.inera.intyg.webcert.persistence.fmb.model.fmb.Icd10Kod.Icd10KodBuilder.anIcd10Kod;
 import static se.inera.intyg.webcert.persistence.fmb.model.fmb.TypFall.TypFallBuilder.aTypFall;
 
+import com.google.common.collect.ImmutableList;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collection;
@@ -38,16 +39,12 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
 import org.assertj.core.util.Lists;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-
-import com.google.common.collect.ImmutableList;
-
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.persistence.fmb.model.dto.MaximalSjukskrivningstidDagar;
 import se.inera.intyg.webcert.persistence.fmb.model.fmb.BeskrivningTyp;
@@ -92,18 +89,18 @@ public class FmbDiagnosInformationServiceImplTest {
         final String sourceUnit = "wk";
 
         final List<MaximalSjukskrivningstidDagar> max = Lists
-                .newArrayList(MaximalSjukskrivningstidDagar.of("kod1", rekommenderad, sourceValue, sourceUnit));
+            .newArrayList(MaximalSjukskrivningstidDagar.of("kod1", rekommenderad, sourceValue, sourceUnit));
 
         doReturn(max)
-                .when(diagnosInformationRepository)
-                .findMaximalSjukrivningstidDagarByIcd10Koder(anySet());
+            .when(diagnosInformationRepository)
+            .findMaximalSjukrivningstidDagarByIcd10Koder(anySet());
 
         doReturn(tidigare)
-                .when(sjukfallService)
-                .totalSjukskrivningstidForPatientAndCareUnit(any(Personnummer.class));
+            .when(sjukfallService)
+            .totalSjukskrivningstidForPatientAndCareUnit(any(Personnummer.class));
 
         final MaximalSjukskrivningstidRequest request = MaximalSjukskrivningstidRequest.of(
-                Icd10KoderRequest.of("kod1", "kod2", "kod3"), Personnummer.createPersonnummer("191212121212").get(), foreslagen);
+            Icd10KoderRequest.of("kod1", "kod2", "kod3"), Personnummer.createPersonnummer("191212121212").get(), foreslagen);
 
         final MaximalSjukskrivningstidResponse response = diagnosInformationService.validateSjukskrivningtidForPatient(request);
 
@@ -125,18 +122,18 @@ public class FmbDiagnosInformationServiceImplTest {
         final String sourceUnit = "wk";
 
         final List<MaximalSjukskrivningstidDagar> max = Lists
-                .newArrayList(MaximalSjukskrivningstidDagar.of("kod1", rekommenderad, sourceValue, sourceUnit));
+            .newArrayList(MaximalSjukskrivningstidDagar.of("kod1", rekommenderad, sourceValue, sourceUnit));
 
         doReturn(max)
-                .when(diagnosInformationRepository)
-                .findMaximalSjukrivningstidDagarByIcd10Koder(anySet());
+            .when(diagnosInformationRepository)
+            .findMaximalSjukrivningstidDagarByIcd10Koder(anySet());
 
         doReturn(tidigare)
-                .when(sjukfallService)
-                .totalSjukskrivningstidForPatientAndCareUnit(any(Personnummer.class));
+            .when(sjukfallService)
+            .totalSjukskrivningstidForPatientAndCareUnit(any(Personnummer.class));
 
         final MaximalSjukskrivningstidRequest request = MaximalSjukskrivningstidRequest.of(
-                Icd10KoderRequest.of("kod1", "kod2", "kod3"), Personnummer.createPersonnummer("191212121212").get(), foreslagen);
+            Icd10KoderRequest.of("kod1", "kod2", "kod3"), Personnummer.createPersonnummer("191212121212").get(), foreslagen);
 
         final MaximalSjukskrivningstidResponse response = diagnosInformationService.validateSjukskrivningtidForPatient(request);
 
@@ -154,22 +151,22 @@ public class FmbDiagnosInformationServiceImplTest {
         final DiagnosInformation diagnosInformation = createDiagnosInformation("test", "test", "A10");
 
         doReturn(Optional.of(diagnosInformation))
-                .when(diagnosInformationRepository)
-                .findFirstByIcd10KodList_kod(anyString());
+            .when(diagnosInformationRepository)
+            .findFirstByIcd10KodList_kod(anyString());
 
         final Optional<FmbResponse> response = diagnosInformationService.findFmbDiagnosInformationByIcd10Kod("A10");
 
         final long count = response.get().getForms().stream()
-                .filter(fmbForm -> Objects.equals(fmbForm.getName(), FmbFormName.ARBETSFORMAGA))
-                .map(FmbForm::getContent)
-                .mapToLong(Collection::size)
-                .sum();
+            .filter(fmbForm -> Objects.equals(fmbForm.getName(), FmbFormName.ARBETSFORMAGA))
+            .map(FmbForm::getContent)
+            .mapToLong(Collection::size)
+            .sum();
 
         final List<FmbContent> contentList = response.get().getForms().stream()
-                .filter(fmbForm -> Objects.equals(fmbForm.getName(), FmbFormName.ARBETSFORMAGA))
-                .map(FmbForm::getContent)
-                .findAny()
-                .orElse(Lists.emptyList());
+            .filter(fmbForm -> Objects.equals(fmbForm.getName(), FmbFormName.ARBETSFORMAGA))
+            .map(FmbForm::getContent)
+            .findAny()
+            .orElse(Lists.emptyList());
 
         assertEquals(1, count);
         assertEquals("test", contentList.get(0).getText());
@@ -182,22 +179,22 @@ public class FmbDiagnosInformationServiceImplTest {
         final DiagnosInformation diagnosInformation = createDiagnosInformation("test1", "test2", "A10");
 
         doReturn(Optional.of(diagnosInformation))
-                .when(diagnosInformationRepository)
-                .findFirstByIcd10KodList_kod(anyString());
+            .when(diagnosInformationRepository)
+            .findFirstByIcd10KodList_kod(anyString());
 
         final Optional<FmbResponse> response = diagnosInformationService.findFmbDiagnosInformationByIcd10Kod("A10");
 
         final long count = response.get().getForms().stream()
-                .filter(fmbForm -> Objects.equals(fmbForm.getName(), FmbFormName.ARBETSFORMAGA))
-                .map(FmbForm::getContent)
-                .mapToLong(Collection::size)
-                .sum();
+            .filter(fmbForm -> Objects.equals(fmbForm.getName(), FmbFormName.ARBETSFORMAGA))
+            .map(FmbForm::getContent)
+            .mapToLong(Collection::size)
+            .sum();
 
         final List<FmbContent> contentList = response.get().getForms().stream()
-                .filter(fmbForm -> Objects.equals(fmbForm.getName(), FmbFormName.ARBETSFORMAGA))
-                .map(FmbForm::getContent)
-                .findAny()
-                .orElse(null);
+            .filter(fmbForm -> Objects.equals(fmbForm.getName(), FmbFormName.ARBETSFORMAGA))
+            .map(FmbForm::getContent)
+            .findAny()
+            .orElse(null);
 
         assertEquals(1, count);
         assertEquals(2, contentList.get(0).getList().size());
@@ -207,8 +204,8 @@ public class FmbDiagnosInformationServiceImplTest {
     public void faultySearch() {
 
         doReturn(Optional.empty())
-                .when(diagnosInformationRepository)
-                .findFirstByIcd10KodList_kod(anyString());
+            .when(diagnosInformationRepository)
+            .findFirstByIcd10KodList_kod(anyString());
 
         final Optional<FmbResponse> response = diagnosInformationService.findFmbDiagnosInformationByIcd10Kod("A10M");
 
@@ -221,8 +218,8 @@ public class FmbDiagnosInformationServiceImplTest {
         final DiagnosInformation diagnosInformation = createDiagnosInformation("test1", "test2", icd10);
 
         doReturn(Optional.of(diagnosInformation))
-                .when(diagnosInformationRepository)
-                .findFirstByIcd10KodList_kod(anyString());
+            .when(diagnosInformationRepository)
+            .findFirstByIcd10KodList_kod(anyString());
 
         final Optional<FmbResponse> response = diagnosInformationService.findFmbDiagnosInformationByIcd10Kod(icd10);
 
@@ -230,34 +227,35 @@ public class FmbDiagnosInformationServiceImplTest {
     }
 
 
-    private DiagnosInformation createDiagnosInformation(final String firstTypFallText, final String secondTypfalltext, final String... icd10Koder) {
+    private DiagnosInformation createDiagnosInformation(final String firstTypFallText, final String secondTypfalltext,
+        final String... icd10Koder) {
         return aDiagnosInformation()
-                .forsakringsmedicinskInformation("info")
-                .symptomPrognosBehandling("behandling x")
-                .beskrivningList(ImmutableList.of(
-                        aBeskrivning()
-                                .beskrivningTyp(BeskrivningTyp.AKTIVITETSBEGRANSNING)
-                                .beskrivningText("begränsad")
-                                .icfKodList(Collections.emptyList())
-                                .build()))
-                .icd10KodList(Arrays.stream(icd10Koder)
-                        .map(kod -> anIcd10Kod()
-                                .kod(kod)
-                                .beskrivning("besk")
-                                .typFallList(ImmutableList.of(
-                                        aTypFall()
-                                                .typfallsMening(firstTypFallText)
-                                                .maximalSjukrivningstidDagar(1)
-                                                .build(),
-                                        aTypFall()
-                                                .typfallsMening(secondTypfalltext)
-                                                .maximalSjukrivningstidDagar(1)
-                                                .build()))
-                                .build())
-                        .collect(Collectors.toList()))
-                .referensList(Collections.emptyList())
-                .senastUppdaterad(LocalDateTime.of(2018, 12, 12, 12, 12))
-                .build();
+            .forsakringsmedicinskInformation("info")
+            .symptomPrognosBehandling("behandling x")
+            .beskrivningList(ImmutableList.of(
+                aBeskrivning()
+                    .beskrivningTyp(BeskrivningTyp.AKTIVITETSBEGRANSNING)
+                    .beskrivningText("begränsad")
+                    .icfKodList(Collections.emptyList())
+                    .build()))
+            .icd10KodList(Arrays.stream(icd10Koder)
+                .map(kod -> anIcd10Kod()
+                    .kod(kod)
+                    .beskrivning("besk")
+                    .typFallList(ImmutableList.of(
+                        aTypFall()
+                            .typfallsMening(firstTypFallText)
+                            .maximalSjukrivningstidDagar(1)
+                            .build(),
+                        aTypFall()
+                            .typfallsMening(secondTypfalltext)
+                            .maximalSjukrivningstidDagar(1)
+                            .build()))
+                    .build())
+                .collect(Collectors.toList()))
+            .referensList(Collections.emptyList())
+            .senastUppdaterad(LocalDateTime.of(2018, 12, 12, 12, 12))
+            .build();
     }
 
 }

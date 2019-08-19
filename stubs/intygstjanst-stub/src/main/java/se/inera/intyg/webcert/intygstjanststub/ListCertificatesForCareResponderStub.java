@@ -18,6 +18,11 @@
  */
 package se.inera.intyg.webcert.intygstjanststub;
 
+import java.io.StringReader;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.stream.Collectors;
+import javax.xml.bind.JAXB;
 import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.intyg.common.fkparent.model.converter.CertificateStateHolderConverter;
 import se.inera.intyg.common.support.modules.support.api.CertificateHolder;
@@ -30,12 +35,6 @@ import se.riv.clinicalprocess.healthcond.certificate.listcertificatesforcare.v3.
 import se.riv.clinicalprocess.healthcond.certificate.registerCertificate.v3.RegisterCertificateType;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.HsaId;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
-
-import javax.xml.bind.JAXB;
-import java.io.StringReader;
-import java.time.format.DateTimeFormatter;
-import java.util.List;
-import java.util.stream.Collectors;
 
 public class ListCertificatesForCareResponderStub implements ListCertificatesForCareResponderInterface {
 
@@ -52,8 +51,8 @@ public class ListCertificatesForCareResponderStub implements ListCertificatesFor
         response.getIntygsLista().getIntyg();
 
         List<CertificateHolder> intygForEnhetAndPersonnummer = intygStore.getIntygForEnhetAndPersonnummer(
-                parameters.getEnhetsId().stream().map(HsaId::getExtension).collect(Collectors.toList()),
-                parameters.getPersonId().getExtension());
+            parameters.getEnhetsId().stream().map(HsaId::getExtension).collect(Collectors.toList()),
+            parameters.getPersonId().getExtension());
 
         for (CertificateHolder cert : intygForEnhetAndPersonnummer) {
             Intyg intyg = getIntyg(cert);
@@ -66,16 +65,16 @@ public class ListCertificatesForCareResponderStub implements ListCertificatesFor
 
     private Intyg getIntyg(CertificateHolder certificate) {
         String content = intygStore.getContentTemplate("minimal-rivta-content.xml")
-                .replace("CERTIFICATE_ID", certificate.getId())
-                .replace("CERTIFICATE_TYPE", certificate.getType().toUpperCase())
-                .replace("PATIENT_CRN", certificate.getCivicRegistrationNumber().getPersonnummer())
-                .replace("CAREUNIT_ID", certificate.getCareUnitId())
-                .replace("CAREUNIT_NAME", certificate.getCareUnitName())
-                .replace("CAREGIVER_ID", certificate.getCareGiverId())
-                .replace("DOCTOR_NAME", certificate.getSigningDoctorName())
-                .replace("SIGNED_DATE", certificate.getSignedDate().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+            .replace("CERTIFICATE_ID", certificate.getId())
+            .replace("CERTIFICATE_TYPE", certificate.getType().toUpperCase())
+            .replace("PATIENT_CRN", certificate.getCivicRegistrationNumber().getPersonnummer())
+            .replace("CAREUNIT_ID", certificate.getCareUnitId())
+            .replace("CAREUNIT_NAME", certificate.getCareUnitName())
+            .replace("CAREGIVER_ID", certificate.getCareGiverId())
+            .replace("DOCTOR_NAME", certificate.getSigningDoctorName())
+            .replace("SIGNED_DATE", certificate.getSignedDate().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
         RegisterCertificateType jaxbObject = JAXB.unmarshal(new StringReader(content),
-                RegisterCertificateType.class);
+            RegisterCertificateType.class);
         return jaxbObject.getIntyg();
     }
 }

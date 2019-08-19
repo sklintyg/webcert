@@ -18,14 +18,13 @@
  */
 package se.inera.intyg.webcert.web.integration.integrationtest;
 
-import java.util.Map;
-
 import com.jayway.restassured.builder.ResponseBuilder;
 import com.jayway.restassured.filter.Filter;
 import com.jayway.restassured.filter.FilterContext;
 import com.jayway.restassured.response.Response;
 import com.jayway.restassured.specification.FilterableRequestSpecification;
 import com.jayway.restassured.specification.FilterableResponseSpecification;
+import java.util.Map;
 
 /*
  * Detta är en kopia av motsvarande klass i IT. Efter införande av gradle som byggsystem

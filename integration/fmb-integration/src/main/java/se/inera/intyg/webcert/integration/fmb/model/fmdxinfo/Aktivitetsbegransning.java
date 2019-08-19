@@ -32,9 +32,9 @@ import se.inera.intyg.webcert.integration.fmb.model.Kod;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
-        "aktivitetsbegransningsbeskrivning",
-        "kompletterandekod",
-        "centralkod"
+    "aktivitetsbegransningsbeskrivning",
+    "kompletterandekod",
+    "centralkod"
 })
 public class Aktivitetsbegransning implements FmxBeskrivning {
 

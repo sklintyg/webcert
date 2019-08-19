@@ -24,6 +24,7 @@ import java.io.Serializable;
  * Created by eriklupander on 2015-11-09.
  */
 public class NotifiedState implements Serializable {
+
     private boolean notified;
 
     public boolean isNotified() {

@@ -27,6 +27,7 @@ import org.junit.Test;
  * Created by marced on 2019-02-07.
  */
 public class IcfKodTest {
+
     private static final String KOD = "kod";
     private static final String BENAMNING = "benamning";
     private static final String BESKRIVNING = "beskrivning";

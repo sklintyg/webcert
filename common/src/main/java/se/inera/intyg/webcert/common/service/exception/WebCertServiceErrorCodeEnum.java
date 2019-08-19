@@ -25,8 +25,8 @@ public enum WebCertServiceErrorCodeEnum {
     INVALID_STATE,                   // Operation not allowed at this state, probably because of concurrency issues
 
     INVALID_STATE_REPLACED,          // Operation not allowed at this state (because it's replaced). This error code is a
-                                     // temporary fix until we can get relations for intyg from IT and therefore disable certain
-                                     // actions in gui, (see INTYG-3619)
+    // temporary fix until we can get relations for intyg from IT and therefore disable certain
+    // actions in gui, (see INTYG-3619)
 
     COMPLEMENT_INTYG_EXISTS,            // Due to existence of complement intyg, operation is not allowed.
 

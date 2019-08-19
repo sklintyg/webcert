@@ -18,22 +18,20 @@
  */
 package se.inera.intyg.webcert.web.test;
 
-import se.inera.intyg.common.support.model.CertificateState;
-import se.inera.intyg.schemas.contract.Personnummer;
-import se.inera.intyg.common.support.model.UtkastStatus;
-import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
-import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
-import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import se.inera.intyg.common.support.model.CertificateState;
+import se.inera.intyg.common.support.model.UtkastStatus;
+import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
+import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
+import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 
 /**
  * Util for building test data.
  *
  * @author nikpet
- *
  */
 public final class TestIntygFactory {
 
@@ -77,11 +75,11 @@ public final class TestIntygFactory {
 
     public static Utkast createUtkast(String id, LocalDateTime lastUpdated) {
         return createUtkast(id, lastUpdated, "A Type", "A Person", "HSA1234",
-                UtkastStatus.DRAFT_COMPLETE, Personnummer.createPersonnummer("19121212-1212").get());
+            UtkastStatus.DRAFT_COMPLETE, Personnummer.createPersonnummer("19121212-1212").get());
     }
 
     public static Utkast createUtkast(String id, LocalDateTime lastUpdated, String type, String modifiedBy, String modifiedByHsaId,
-                                      UtkastStatus status, Personnummer patientId) {
+        UtkastStatus status, Personnummer patientId) {
 
         VardpersonReferens vp = new VardpersonReferens();
         vp.setNamn(modifiedBy);

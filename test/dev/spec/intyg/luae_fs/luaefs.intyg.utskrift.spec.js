@@ -30,43 +30,43 @@ var IntygPage = wcTestTools.pages.intyg.luaeFS.intyg;
 
 describe('verify luaefs\' print buttons', function() {
 
-    var intygId;
+  var intygId;
 
-    beforeAll(function() {
-        browser.ignoreSynchronization = false;
+  beforeAll(function() {
+    browser.ignoreSynchronization = false;
 
-        var intyg = intygFromJsonFactory.defaultLuaefs();
-        intygId = intyg.id;
+    var intyg = intygFromJsonFactory.defaultLuaefs();
+    intygId = intyg.id;
 
-        restUtil.deleteAllIntyg();
-        restUtil.createIntyg(intyg).then(function(response) {
-            var intyg = JSON.parse(response.request.body);
-            expect(intyg.id).not.toBeNull();
-        }, function(error) {
-            logger.error('Error calling createIntyg');
-        });
+    restUtil.deleteAllIntyg();
+    restUtil.createIntyg(intyg).then(function(response) {
+      var intyg = JSON.parse(response.request.body);
+      expect(intyg.id).not.toBeNull();
+    }, function(error) {
+      logger.error('Error calling createIntyg');
     });
+  });
 
-    afterAll(function() {
-        restUtil.deleteIntyg(intygId);
-        specHelper.logout();
-    });
+  afterAll(function() {
+    restUtil.deleteIntyg(intygId);
+    specHelper.logout();
+  });
 
-    it('login through the welcome page with default user', function() {
-        specHelper.login();
-    });
+  it('login through the welcome page with default user', function() {
+    specHelper.login();
+  });
 
-    it('view luaefs intyg', function() {
-        IntygPage.get(intygId);
-        expect(IntygPage.isAt()).toBeTruthy();
-    });
+  it('view luaefs intyg', function() {
+    IntygPage.get(intygId);
+    expect(IntygPage.isAt()).toBeTruthy();
+  });
 
-    it('verify the employer print button is not displayed', function() {
-        expect(element(by.id('intyg-header-dropdown-select-pdf-type')).isPresent()).toBeFalsy();
-    });
+  it('verify the employer print button is not displayed', function() {
+    expect(element(by.id('intyg-header-dropdown-select-pdf-type')).isPresent()).toBeFalsy();
+  });
 
-    it('verify the normal print button is not displayed', function() {
-        expect(element(by.id('downloadprint')).isDisplayed()).toBeTruthy();
-    });
+  it('verify the normal print button is not displayed', function() {
+    expect(element(by.id('downloadprint')).isDisplayed()).toBeTruthy();
+  });
 
 });

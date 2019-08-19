@@ -19,15 +19,17 @@
 package se.inera.intyg.webcert.intygstjanststub;
 
 import java.util.Collection;
-
-import javax.ws.rs.*;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-
 import se.inera.intyg.common.support.modules.support.api.CertificateHolder;
 import se.inera.intyg.webcert.intygstjanststub.mode.StubMode;
 import se.inera.intyg.webcert.intygstjanststub.mode.StubModeSingleton;
@@ -70,8 +72,8 @@ public class StubRestApi {
             intygstjanstStubBootstrapBean.initData();
         } else {
             LOG.warn(
-                    "Could not reset intyg stub store. Bootstrap bean not available in the current spring profile. "
-                            + "(E.g. dev or dev,wc-all-stubs or wc-it-stub required)");
+                "Could not reset intyg stub store. Bootstrap bean not available in the current spring profile. "
+                    + "(E.g. dev or dev,wc-all-stubs or wc-it-stub required)");
         }
         return Response.noContent().build();
     }
@@ -79,8 +81,7 @@ public class StubRestApi {
     /**
      * Sets the @{StubMode} of this stub.
      *
-     * @param mode
-     *            ONLINE or OFFLINE
+     * @param mode ONLINE or OFFLINE
      * @return 204 No Content if OK, 400 Bad Request if fail.
      */
     @PUT
@@ -92,17 +93,16 @@ public class StubRestApi {
             return Response.noContent().build();
         } catch (IllegalArgumentException e) {
             return Response.status(Response.Status.BAD_REQUEST)
-                    .entity("Invalid stub mode requested: '" + mode + ". Allowed values are '" + StubMode.ONLINE.name()
-                            + "' and '" + StubMode.OFFLINE.name() + "'")
-                    .build();
+                .entity("Invalid stub mode requested: '" + mode + ". Allowed values are '" + StubMode.ONLINE.name()
+                    + "' and '" + StubMode.OFFLINE.name() + "'")
+                .build();
         }
     }
 
     /**
      * Sets the artifical latency of the stub for serving annotated requests.
      *
-     * @param millis
-     *            0 to Long.MAX_VALUE
+     * @param millis 0 to Long.MAX_VALUE
      * @return 204 No Content if OK, 400 Bad Request if fail.
      */
     @PUT
@@ -116,8 +116,8 @@ public class StubRestApi {
             return Response.noContent().build();
         } catch (IllegalArgumentException e) {
             return Response.status(Response.Status.BAD_REQUEST)
-                    .entity("Invalid stub latency requested: '" + millis + ". Allowed values are 0 to " + Long.MAX_VALUE)
-                    .build();
+                .entity("Invalid stub latency requested: '" + millis + ". Allowed values are 0 to " + Long.MAX_VALUE)
+                .build();
         }
     }
 

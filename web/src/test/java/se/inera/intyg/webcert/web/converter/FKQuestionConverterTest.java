@@ -22,16 +22,13 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.StringWriter;
 import java.io.Writer;
-
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.stream.StreamSource;
-
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
-
 import se.inera.ifv.insuranceprocess.healthreporting.receivemedicalcertificatequestionsponder.v1.QuestionFromFkType;
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificatequestionresponder.v1.ObjectFactory;
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificatequestionresponder.v1.QuestionToFkType;
@@ -48,18 +45,18 @@ public class FKQuestionConverterTest {
 
     private QuestionFromFkType inflateQuestionFromFK() throws Exception {
         JAXBContext jaxbContext = JAXBContext
-                .newInstance(QuestionFromFkType.class);
+            .newInstance(QuestionFromFkType.class);
         Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
         return unmarshaller.unmarshal(new StreamSource(new ClassPathResource("FragaSvarConverterTest/question.xml").getInputStream()),
-                QuestionFromFkType.class).getValue();
+            QuestionFromFkType.class).getValue();
     }
 
     private QuestionToFkType inflateQuestionToFK() throws Exception {
         JAXBContext jaxbContext = JAXBContext
-                .newInstance(QuestionToFkType.class);
+            .newInstance(QuestionToFkType.class);
         Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
         return unmarshaller.unmarshal(new StreamSource(new ClassPathResource("FragaSvarConverterTest/question_to_fk.xml").getInputStream()),
-                QuestionToFkType.class).getValue();
+            QuestionToFkType.class).getValue();
     }
 
     private String jaxbToXml(QuestionToFkType object) throws JAXBException {

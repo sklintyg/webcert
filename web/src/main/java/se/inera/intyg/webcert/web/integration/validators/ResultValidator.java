@@ -19,7 +19,6 @@
 package se.inera.intyg.webcert.web.integration.validators;
 
 import com.google.common.base.Joiner;
-
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;

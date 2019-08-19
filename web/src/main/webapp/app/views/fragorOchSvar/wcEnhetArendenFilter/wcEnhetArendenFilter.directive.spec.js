@@ -18,76 +18,77 @@
  */
 
 describe('wcEnhetArendenFilter', function() {
-    'use strict';
+  'use strict';
 
-    var $rootScope;
-    var $scope;
-    var $compile;
-    var element;
-    var enhetArendenFilterModel;
-    var enhetArendenFilterService;
+  var $rootScope;
+  var $scope;
+  var $compile;
+  var element;
+  var enhetArendenFilterModel;
+  var enhetArendenFilterService;
 
-    beforeEach(function() {
+  beforeEach(function() {
 
-        module('htmlTemplates');
-        module('webcertTest');
-        module('webcert', ['$provide', function($provide) {
-            $provide.value('webcert.vardenhetFilterModel', {});
-            $provide.value('common.UserModel', jasmine.createSpyObj('common.UserModel', ['isLakare', 'isTandlakare', 'isPrivatLakare', 'isDjupintegration', 'isVardAdministrator']));
-        }]);
+    module('htmlTemplates');
+    module('webcertTest');
+    module('webcert', ['$provide', function($provide) {
+      $provide.value('webcert.vardenhetFilterModel', {});
+      $provide.value('common.UserModel', jasmine.createSpyObj('common.UserModel',
+          ['isLakare', 'isTandlakare', 'isPrivatLakare', 'isDjupintegration', 'isVardAdministrator']));
+    }]);
 
-        inject(['$rootScope', '$compile', 'webcert.enhetArendenFilterModel', 'webcert.enhetArendenFilterService', '$httpBackend',
-            function(_$rootScope_, _$compile_, _enhetArendenFilterModel_, _enhetArendenFilterService_, _$httpBackend_) {
-                $rootScope = _$rootScope_;
-                $compile = _$compile_;
-                enhetArendenFilterModel = _enhetArendenFilterModel_;
-                enhetArendenFilterService = _enhetArendenFilterService_;
+    inject(['$rootScope', '$compile', 'webcert.enhetArendenFilterModel', 'webcert.enhetArendenFilterService', '$httpBackend',
+      function(_$rootScope_, _$compile_, _enhetArendenFilterModel_, _enhetArendenFilterService_, _$httpBackend_) {
+        $rootScope = _$rootScope_;
+        $compile = _$compile_;
+        enhetArendenFilterModel = _enhetArendenFilterModel_;
+        enhetArendenFilterService = _enhetArendenFilterService_;
 
-                _$httpBackend_.expectGET('/api/fragasvar/lakare').respond(200, []);
+        _$httpBackend_.expectGET('/api/fragasvar/lakare').respond(200, []);
 
-                $scope = $rootScope.$new();
-                element = $compile('<wc-enhet-arenden-filter></wc-enhet-arenden-filter>')($scope);
-                $scope.$digest();
-                $scope = element.isolateScope();
-            }]);
+        $scope = $rootScope.$new();
+        element = $compile('<wc-enhet-arenden-filter></wc-enhet-arenden-filter>')($scope);
+        $scope.$digest();
+        $scope = element.isolateScope();
+      }]);
+  });
+
+  describe('filterList', function() {
+
+    it('should send event updating arenden list', function() {
+
+      // Make sure update list event is called
+      spyOn($rootScope, '$broadcast').and.stub();
+
+      $scope.filterList();
+
+      expect($rootScope.$broadcast).toHaveBeenCalled();
     });
 
-    describe('filterList', function() {
+    it('should reset filter parameters if user clicks reset', function() {
+      // Make sure update list event is called
+      spyOn($rootScope, '$broadcast').and.stub();
 
-        it('should send event updating arenden list', function() {
+      enhetArendenFilterModel.filterForm.changedTo = '2010-01-01';
+      $scope.resetFilterForm();
 
-            // Make sure update list event is called
-            spyOn($rootScope, '$broadcast').and.stub();
-
-            $scope.filterList();
-
-            expect($rootScope.$broadcast).toHaveBeenCalled();
-        });
-
-        it('should reset filter parameters if user clicks reset', function() {
-            // Make sure update list event is called
-            spyOn($rootScope, '$broadcast').and.stub();
-
-            enhetArendenFilterModel.filterForm.changedTo = '2010-01-01';
-            $scope.resetFilterForm();
-
-            expect(enhetArendenFilterModel.filterForm.changedTo).toBeUndefined();
-            expect($rootScope.$broadcast).toHaveBeenCalled();
-        });
+      expect(enhetArendenFilterModel.filterForm.changedTo).toBeUndefined();
+      expect($rootScope.$broadcast).toHaveBeenCalled();
     });
+  });
 
-    describe('events', function() {
+  describe('events', function() {
 
-        it('should update active unit and update lakare list wcVardenhetFilter.unitSelected message is received', function() {
+    it('should update active unit and update lakare list wcVardenhetFilter.unitSelected message is received', function() {
 
-            spyOn(enhetArendenFilterModel, 'reset').and.callThrough();
-            spyOn(enhetArendenFilterService, 'initLakareList').and.stub();
+      spyOn(enhetArendenFilterModel, 'reset').and.callThrough();
+      spyOn(enhetArendenFilterService, 'initLakareList').and.stub();
 
-            $scope.$broadcast('wcVardenhetFilter.unitSelected', { id: 'unitId'});
+      $scope.$broadcast('wcVardenhetFilter.unitSelected', {id: 'unitId'});
 
-            expect(enhetArendenFilterModel.reset).toHaveBeenCalled();
-            expect(enhetArendenFilterService.initLakareList).toHaveBeenCalledWith('unitId');
-        });
+      expect(enhetArendenFilterModel.reset).toHaveBeenCalled();
+      expect(enhetArendenFilterService.initLakareList).toHaveBeenCalledWith('unitId');
     });
+  });
 
 });

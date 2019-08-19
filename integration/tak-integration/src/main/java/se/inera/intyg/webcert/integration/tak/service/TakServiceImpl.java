@@ -18,6 +18,14 @@
  */
 package se.inera.intyg.webcert.integration.tak.service;
 
+import static se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion.VERSION_3;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,33 +46,25 @@ import se.inera.intyg.webcert.integration.tak.consumer.TakServiceException;
 import se.inera.intyg.webcert.integration.tak.model.TakLogicalAddress;
 import se.inera.intyg.webcert.integration.tak.model.TakResult;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-
-import static se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion.VERSION_3;
-
 @Service
 @EnableScheduling
 public class TakServiceImpl implements TakService {
+
     private static final Logger LOG = LoggerFactory.getLogger(TakServiceImpl.class);
 
     private static final String CERT_STATUS_FOR_CARE_V3_NS =
-            "urn:riv:clinicalprocess:healthcond:certificate:CertificateStatusUpdateForCareResponder:3";
+        "urn:riv:clinicalprocess:healthcond:certificate:CertificateStatusUpdateForCareResponder:3";
     private static final String RECEIVE_MEDICAL_CERT_QUESTION_NS =
-            "urn:riv:insuranceprocess:healthreporting:ReceiveMedicalCertificateQuestionResponder:1";
+        "urn:riv:insuranceprocess:healthreporting:ReceiveMedicalCertificateQuestionResponder:1";
     private static final String RECEIVE_MEDICAL_CERT_ANSWER_NS =
-            "urn:riv:insuranceprocess:healthreporting:ReceiveMedicalCertificateAnswerResponder:1";
+        "urn:riv:insuranceprocess:healthreporting:ReceiveMedicalCertificateAnswerResponder:1";
     private static final String SEND_MESSAGE_TO_CARE_NS =
-            "urn:riv:clinicalprocess:healthcond:certificate:SendMessageToCareResponder:2";
+        "urn:riv:clinicalprocess:healthcond:certificate:SendMessageToCareResponder:2";
 
     private static final String ERROR_STRING_BASE = "Tjänsten %s är inte registrerad för enhet %s i tjänsteadresseringskatalogen.";
 
     private static final String ERROR_STRING_ARENDEHANTERING = "Den angivna enheten går ej att adressera för ärendekommunikation. "
-            + ERROR_STRING_BASE;
+        + ERROR_STRING_BASE;
 
     private String ntjpId;
     private String certificateStatusUpdateForCareV3Id;
@@ -100,9 +100,9 @@ public class TakServiceImpl implements TakService {
         sendMessageToCareId = consumer.getServiceContractId(SEND_MESSAGE_TO_CARE_NS);
 
         LOG.info("Updated IDs via TAK-rest-api. Ntjp-id: {}, statusUpdateForCareV3: {} "
-                        + "receiveQuestion: {}, receiveAnswer: {}, sendMsgToCare: {}",
-                ntjpId, certificateStatusUpdateForCareV3Id, receiveMedicalCertificateQuestionId,
-                receiveMedicalCertificateAnswerId, sendMessageToCareId);
+                + "receiveQuestion: {}, receiveAnswer: {}, sendMsgToCare: {}",
+            ntjpId, certificateStatusUpdateForCareV3Id, receiveMedicalCertificateQuestionId,
+            receiveMedicalCertificateAnswerId, sendMessageToCareId);
 
     }
 

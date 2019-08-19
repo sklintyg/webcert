@@ -18,6 +18,7 @@
  */
 package se.inera.intyg.webcert.web.web.controller.api;
 
+import io.swagger.annotations.Api;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
@@ -34,12 +35,9 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import io.swagger.annotations.Api;
 import se.inera.intyg.common.services.texts.IntygTextsService;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.Patient;
@@ -83,7 +81,7 @@ public class UtkastApiController extends AbstractApiController {
     private static final Logger LOG = LoggerFactory.getLogger(UtkastApiController.class);
 
     private static final List<UtkastStatus> ALL_DRAFTS = Arrays.asList(UtkastStatus.DRAFT_COMPLETE, UtkastStatus.DRAFT_INCOMPLETE,
-            UtkastStatus.DRAFT_LOCKED);
+        UtkastStatus.DRAFT_LOCKED);
 
     private static final Integer DEFAULT_PAGE_SIZE = 10;
 
@@ -136,7 +134,7 @@ public class UtkastApiController extends AbstractApiController {
         final AccessResult actionResult = draftAccessService.allowToCreateDraft(intygsTyp, request.getPatientPersonnummer());
         if (actionResult.isDenied()) {
             if (actionResult.getCode() == AccessResultCode.UNIQUE_DRAFT
-                    || actionResult.getCode() == AccessResultCode.UNIQUE_CERTIFICATE) {
+                || actionResult.getCode() == AccessResultCode.UNIQUE_CERTIFICATE) {
                 return Response.status(Status.BAD_REQUEST).build();
             } else {
                 accessResultExceptionHelper.throwException(actionResult);
@@ -210,8 +208,8 @@ public class UtkastApiController extends AbstractApiController {
     @PrometheusTimeMethod
     public Response getPreviousCertificateWarnings(@PathParam("personnummer") String personnummer) {
         Map<String, Map<String, PreviousIntyg>> res = utkastService
-                .checkIfPersonHasExistingIntyg(Personnummer.createPersonnummer(personnummer).get(),
-                        getWebCertUserService().getUser());
+            .checkIfPersonHasExistingIntyg(Personnummer.createPersonnummer(personnummer).get(),
+                getWebCertUserService().getUser());
         return Response.ok(res).build();
     }
 
@@ -272,19 +270,19 @@ public class UtkastApiController extends AbstractApiController {
         filter.setPageSize(null);
 
         List<ListIntygEntry> listIntygEntries = IntygDraftsConverter
-                .convertUtkastsToListIntygEntries(utkastService.filterIntyg(filter),
-                        getIntygComparator(filter.getOrderBy(), filter.getOrderAscending()));
+            .convertUtkastsToListIntygEntries(utkastService.filterIntyg(filter),
+                getIntygComparator(filter.getOrderBy(), filter.getOrderAscending()));
 
         // INTYG-4486, INTYG-4086: Always filter out any items with UNDEFINED sekretessmarkering status and not
         // authorized
         Map<Personnummer, SekretessStatus> sekretessStatusMap = patientDetailsResolver.getSekretessStatusForList(listIntygEntries.stream()
-                .map(lie -> lie.getPatientId())
-                .collect(Collectors.toList()));
+            .map(lie -> lie.getPatientId())
+            .collect(Collectors.toList()));
 
         final WebCertUser user = getWebCertUserService().getUser();
         listIntygEntries = listIntygEntries.stream()
-                .filter(lie -> this.passesSekretessCheck(lie.getPatientId(), lie.getIntygType(), user, sekretessStatusMap))
-                .collect(Collectors.toList());
+            .filter(lie -> this.passesSekretessCheck(lie.getPatientId(), lie.getIntygType(), user, sekretessStatusMap))
+            .collect(Collectors.toList());
 
         // INTYG-4086: Mark all remaining ListIntygEntry having a patient with sekretessmarkering
         listIntygEntries.stream().forEach(lie -> markSekretessMarkering(lie, sekretessStatusMap));
@@ -327,26 +325,26 @@ public class UtkastApiController extends AbstractApiController {
     private Comparator<ListIntygEntry> getIntygComparator(String orderBy, Boolean ascending) {
         Comparator<ListIntygEntry> comparator;
         switch (orderBy) {
-        case "intygsTyp":
-            comparator = Comparator.comparing(ListIntygEntry::getIntygType);
-            break;
-        case "status":
-            comparator = Comparator.comparing(ListIntygEntry::getStatus);
-            break;
-        case "patientPersonnummer":
-            comparator = (ie1, ie2) -> ie2.getPatientId().toString()
+            case "intygsTyp":
+                comparator = Comparator.comparing(ListIntygEntry::getIntygType);
+                break;
+            case "status":
+                comparator = Comparator.comparing(ListIntygEntry::getStatus);
+                break;
+            case "patientPersonnummer":
+                comparator = (ie1, ie2) -> ie2.getPatientId().toString()
                     .compareTo(ie1.getPatientId().toString());
-            break;
-        case "senastSparadAv":
-            comparator = Comparator.comparing(ListIntygEntry::getUpdatedSignedBy);
-            break;
-        case "vidarebefordrad":
-            comparator = (ie1, ie2) -> Boolean.compare(ie2.isVidarebefordrad(), ie1.isVidarebefordrad());
-            break;
-        case "senasteSparadDatum":
-        default:
-            comparator = Comparator.comparing(ListIntygEntry::getLastUpdatedSigned);
-            break;
+                break;
+            case "senastSparadAv":
+                comparator = Comparator.comparing(ListIntygEntry::getUpdatedSignedBy);
+                break;
+            case "vidarebefordrad":
+                comparator = (ie1, ie2) -> Boolean.compare(ie2.isVidarebefordrad(), ie1.isVidarebefordrad());
+                break;
+            case "senasteSparadDatum":
+            default:
+                comparator = Comparator.comparing(ListIntygEntry::getLastUpdatedSigned);
+                break;
         }
 
         if (!ascending) {
@@ -356,7 +354,7 @@ public class UtkastApiController extends AbstractApiController {
     }
 
     private boolean passesSekretessCheck(Personnummer patientId, String intygsTyp, WebCertUser user,
-            Map<Personnummer, SekretessStatus> sekretessStatusMap) {
+        Map<Personnummer, SekretessStatus> sekretessStatusMap) {
         final SekretessStatus sekretessStatus = sekretessStatusMap.get(patientId);
 
         if (sekretessStatus == SekretessStatus.UNDEFINED) {
@@ -364,8 +362,8 @@ public class UtkastApiController extends AbstractApiController {
             return false;
         } else {
             return sekretessStatus == SekretessStatus.FALSE || authoritiesValidator.given(user, intygsTyp)
-                    .privilege(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT)
-                    .isVerified();
+                .privilege(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT)
+                .isVerified();
         }
 
     }

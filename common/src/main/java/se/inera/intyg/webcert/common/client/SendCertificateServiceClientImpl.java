@@ -18,11 +18,9 @@
  */
 package se.inera.intyg.webcert.common.client;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.webcert.common.client.converter.SendCertificateToRecipientTypeConverter;
 import se.riv.clinicalprocess.healthcond.certificate.sendCertificateToRecipient.v2.SendCertificateToRecipientResponderInterface;
@@ -45,7 +43,7 @@ public class SendCertificateServiceClientImpl implements SendCertificateServiceC
 
     @Override
     public SendCertificateToRecipientResponseType sendCertificate(String intygsId, String personId, String skickatAvJson, String recipient,
-            String logicalAddress) {
+        String logicalAddress) {
 
         validateArgument(intygsId, "Cannot send certificate, argument 'intygsId' is null or empty.");
         validateArgument(personId, "Cannot send certificate, argument 'personId' is null or empty.");

@@ -31,51 +31,50 @@ var intygGenerator = wcTestTools.intygGenerator;
 
 describe('Luse diagnos tests', function() {
 
-    var intygsId;
+  var intygsId;
 
-    beforeAll(function() {
-        browser.ignoreSynchronization = false;
-        specHelper.login();
+  beforeAll(function() {
+    browser.ignoreSynchronization = false;
+    specHelper.login();
 
-        testdataHelper.createUtkast('luse').then(function(response){
-            var utkast = response.body;
-            intygsId = utkast.intygsId;
+    testdataHelper.createUtkast('luse').then(function(response) {
+      var utkast = response.body;
+      intygsId = utkast.intygsId;
 
-            var utkastData = JSON.parse(intygGenerator.buildIntyg({
-                intygType: 'luse',
-                intygId: intygsId,
-                personnr: utkast.patientPersonnummer
-            }).document);
+      var utkastData = JSON.parse(intygGenerator.buildIntyg({
+        intygType: 'luse',
+        intygId: intygsId,
+        personnr: utkast.patientPersonnummer
+      }).document);
 
-            testdataHelper.saveUtkast('luse', intygsId, utkast.version, utkastData, function(){
-            });
-        });
+      testdataHelper.saveUtkast('luse', intygsId, utkast.version, utkastData, function() {
+      });
     });
+  });
 
-    afterAll(function() {
-        testdataHelper.deleteUtkast(intygsId);
-    });
+  afterAll(function() {
+    testdataHelper.deleteUtkast(intygsId);
+  });
 
-    it('should load utkast', function () {
-        LuseUtkastPage.get(intygsId);
-        LuseUtkastPage.disableAutosave();
-    });
+  it('should load utkast', function() {
+    LuseUtkastPage.get(intygsId);
+    LuseUtkastPage.disableAutosave();
+  });
 
-    it ('should not clear diagnoskod if 4-character psykiskdiagnos is entered', function() {
-        LuseUtkastPage.diagnos.diagnosRow(0).kod.clear();
-        LuseUtkastPage.diagnos.diagnosRow(0).kod.sendKeys('Z730');
-        LuseUtkastPage.diagnos.diagnosRow(0).kod.sendKeys(protractor.Key.TAB, protractor.Key.TAB);
-        expect(LuseUtkastPage.diagnos.diagnosRow(0).kod.getAttribute('value')).toEqual('Z730');
-        expect(LuseUtkastPage.diagnos.diagnosRow(0).beskrivning.getAttribute('value')).toEqual('Utbrändhet');
-    });
+  it('should not clear diagnoskod if 4-character psykiskdiagnos is entered', function() {
+    LuseUtkastPage.diagnos.diagnosRow(0).kod.clear();
+    LuseUtkastPage.diagnos.diagnosRow(0).kod.sendKeys('Z730');
+    LuseUtkastPage.diagnos.diagnosRow(0).kod.sendKeys(protractor.Key.TAB, protractor.Key.TAB);
+    expect(LuseUtkastPage.diagnos.diagnosRow(0).kod.getAttribute('value')).toEqual('Z730');
+    expect(LuseUtkastPage.diagnos.diagnosRow(0).beskrivning.getAttribute('value')).toEqual('Utbrändhet');
+  });
 
-    it ('should clear diagnoskod if 3-character psykiskdiagnos is entered', function() {
-        LuseUtkastPage.diagnos.diagnosRow(0).kod.clear();
-        LuseUtkastPage.enableAutosave();
-        LuseUtkastPage.diagnos.diagnosRow(0).kod.sendKeys('Z73', protractor.Key.TAB, protractor.Key.TAB);
-        expect(LuseUtkastPage.diagnos.diagnosRow(0).kod.getAttribute('value')).toEqual('');
-        expect(LuseUtkastPage.diagnos.diagnosRow(0).beskrivning.getAttribute('value')).toEqual('');
-    });
-
+  it('should clear diagnoskod if 3-character psykiskdiagnos is entered', function() {
+    LuseUtkastPage.diagnos.diagnosRow(0).kod.clear();
+    LuseUtkastPage.enableAutosave();
+    LuseUtkastPage.diagnos.diagnosRow(0).kod.sendKeys('Z73', protractor.Key.TAB, protractor.Key.TAB);
+    expect(LuseUtkastPage.diagnos.diagnosRow(0).kod.getAttribute('value')).toEqual('');
+    expect(LuseUtkastPage.diagnos.diagnosRow(0).beskrivning.getAttribute('value')).toEqual('');
+  });
 
 });

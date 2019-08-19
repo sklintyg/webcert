@@ -30,56 +30,40 @@ public interface LockedDraftAccessService {
     /**
      * Check if the user is allowed to read a locked draft.
      *
-     * @param certificateType
-     *            The type of the certificate being checked.
-     * @param careUnit
-     *            The careUnit which the certificate belongs to.
-     * @param patient
-     *            The patient which the certificate belongs to.
-     * @return
-     *         AccessResult which contains the answer if the user is allowed or not.
+     * @param certificateType The type of the certificate being checked.
+     * @param careUnit The careUnit which the certificate belongs to.
+     * @param patient The patient which the certificate belongs to.
+     * @return AccessResult which contains the answer if the user is allowed or not.
      */
     AccessResult allowToRead(String certificateType, Vardenhet careUnit, Personnummer patient);
 
     /**
      * Check if the user is allowed to copy a locked draft.
      *
-     * @param certificateType
-     *            The type of the certificate being checked.
-     * @param careUnit
-     *            The careUnit which the certificate belongs to.
-     * @param patient
-     *            The patient which the certificate belongs to.
-     * @return
-     *         AccessResult which contains the answer if the user is allowed or not.
+     * @param certificateType The type of the certificate being checked.
+     * @param careUnit The careUnit which the certificate belongs to.
+     * @param patient The patient which the certificate belongs to.
+     * @return AccessResult which contains the answer if the user is allowed or not.
      */
     AccessResult allowedToCopyLockedUtkast(String certificateType, Vardenhet careUnit, Personnummer patient);
 
     /**
      * Check if the user is allowed to invalidate a locked draft.
      *
-     * @param certificateType
-     *            The type of the certificate being checked.
-     * @param careUnit
-     *            The careUnit which the certificate belongs to.
-     * @param patient
-     *            The patient which the certificate belongs to.
-     * @return
-     *         AccessResult which contains the answer if the user is allowed or not.
+     * @param certificateType The type of the certificate being checked.
+     * @param careUnit The careUnit which the certificate belongs to.
+     * @param patient The patient which the certificate belongs to.
+     * @return AccessResult which contains the answer if the user is allowed or not.
      */
     AccessResult allowedToInvalidateLockedUtkast(String certificateType, Vardenhet careUnit, Personnummer patient);
 
     /**
      * Check if the user is allowed to print a locked draft.
      *
-     * @param certificateType
-     *            The type of the certificate being checked.
-     * @param careUnit
-     *            The careUnit which the certificate belongs to.
-     * @param patient
-     *            The patient which the certificate belongs to.
-     * @return
-     *         AccessResult which contains the answer if the user is allowed or not.
+     * @param certificateType The type of the certificate being checked.
+     * @param careUnit The careUnit which the certificate belongs to.
+     * @param patient The patient which the certificate belongs to.
+     * @return AccessResult which contains the answer if the user is allowed or not.
      */
     AccessResult allowToPrint(String certificateType, Vardenhet careUnit, Personnummer patient);
 }

@@ -22,21 +22,21 @@
 'use strict';
 
 module.exports = {
-    container: element(by.id('certificate-content-container')),
+  container: element(by.id('certificate-content-container')),
 
-    get: function(intygTyp, intygVersion, intygsId) {
-        return browser.get('/#/intyg-read-only/' + intygTyp + '/' + intygVersion + '/' + intygsId);
-    },
-    getKompletteringLinkElement: function(meddelandeId) {
-        return element(by.css('#kompletteringar-fkKompletteringar-' + meddelandeId + ' button'));
-    },
-    getKompletteringFrageTextElement: function(meddelandeId) {
-        return element(by.id('kompletteringar-arende-fragetext-' + meddelandeId));
-    },
-    getIntygKompletteringFrageContainer: function(frageId) {
-        return element(by.id('inline-komplettering-FRG_' + frageId + '.RBK-0'));
-    },
-    isAt: function() {
-        return this.container.isDisplayed();
-    }
+  get: function(intygTyp, intygVersion, intygsId) {
+    return browser.get('/#/intyg-read-only/' + intygTyp + '/' + intygVersion + '/' + intygsId);
+  },
+  getKompletteringLinkElement: function(meddelandeId) {
+    return element(by.css('#kompletteringar-fkKompletteringar-' + meddelandeId + ' button'));
+  },
+  getKompletteringFrageTextElement: function(meddelandeId) {
+    return element(by.id('kompletteringar-arende-fragetext-' + meddelandeId));
+  },
+  getIntygKompletteringFrageContainer: function(frageId) {
+    return element(by.id('inline-komplettering-FRG_' + frageId + '.RBK-0'));
+  },
+  isAt: function() {
+    return this.container.isDisplayed();
+  }
 };

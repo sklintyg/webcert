@@ -38,9 +38,7 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import javax.ws.rs.core.Response;
-
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -50,7 +48,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
-
 import se.inera.intyg.common.fk7263.model.internal.Fk7263Utlatande;
 import se.inera.intyg.common.services.texts.IntygTextsService;
 import se.inera.intyg.common.support.model.CertificateState;
@@ -271,7 +268,7 @@ public class IntygModuleApiControllerTest {
         final String revokeReason = "";
 
         setupUser(AuthoritiesConstants.PRIVILEGE_MAKULERA_INTYG, intygType, false, true, AuthoritiesConstants.FEATURE_MAKULERA_INTYG,
-                AuthoritiesConstants.FEATURE_MAKULERA_INTYG_KRAVER_ANLEDNING);
+            AuthoritiesConstants.FEATURE_MAKULERA_INTYG_KRAVER_ANLEDNING);
 
         RevokeSignedIntygParameter param = new RevokeSignedIntygParameter();
         param.setMessage(revokeMessage);
@@ -316,15 +313,15 @@ public class IntygModuleApiControllerTest {
 
         WebCertUser user = new WebCertUser();
         user.setParameters(new IntegrationParameters(null, null,
-                newPersonnummer, fornamn, mellannamn, efternamn, postadress, postnummer, postort,
-                false, false, false, true));
+            newPersonnummer, fornamn, mellannamn, efternamn, postadress, postnummer, postort,
+            false, false, false, true));
         addFeatures(user, CERTIFICATE_TYPE, AuthoritiesConstants.FEATURE_FORNYA_INTYG);
         addPrivileges(user, CERTIFICATE_TYPE, AuthoritiesConstants.PRIVILEGE_FORNYA_INTYG);
         user.setOrigin("NORMAL");
 
         ArgumentCaptor<CreateRenewalCopyRequest> captor = ArgumentCaptor.forClass(CreateRenewalCopyRequest.class);
         when(copyUtkastService.createRenewalCopy(captor.capture()))
-                .thenReturn(new CreateRenewalCopyResponse(CERTIFICATE_TYPE, CERTIFICATE_VERSION, newIntygId, CERTIFICATE_ID));
+            .thenReturn(new CreateRenewalCopyResponse(CERTIFICATE_TYPE, CERTIFICATE_VERSION, newIntygId, CERTIFICATE_ID));
         when(webcertUserService.getUser()).thenReturn(user);
 
         Response response = moduleApiController.createRenewal(copyIntygRequest, CERTIFICATE_TYPE, CERTIFICATE_ID);
@@ -363,14 +360,14 @@ public class IntygModuleApiControllerTest {
 
         WebCertUser user = new WebCertUser();
         user.setParameters(new IntegrationParameters(null, null, newReservnummer, fornamn, mellannamn, efternamn, postadress, postnummer,
-                postort, false, false, false, true));
+            postort, false, false, false, true));
         addFeatures(user, CERTIFICATE_TYPE, AuthoritiesConstants.FEATURE_FORNYA_INTYG);
         addPrivileges(user, CERTIFICATE_TYPE, AuthoritiesConstants.PRIVILEGE_FORNYA_INTYG);
         user.setOrigin("NORMAL");
 
         ArgumentCaptor<CreateRenewalCopyRequest> captor = ArgumentCaptor.forClass(CreateRenewalCopyRequest.class);
         when(copyUtkastService.createRenewalCopy(captor.capture()))
-                .thenReturn(new CreateRenewalCopyResponse(CERTIFICATE_TYPE, CERTIFICATE_VERSION, newIntygId, CERTIFICATE_ID));
+            .thenReturn(new CreateRenewalCopyResponse(CERTIFICATE_TYPE, CERTIFICATE_VERSION, newIntygId, CERTIFICATE_ID));
         when(webcertUserService.getUser()).thenReturn(user);
 
         Response response = moduleApiController.createRenewal(copyIntygRequest, CERTIFICATE_TYPE, CERTIFICATE_ID);
@@ -421,7 +418,7 @@ public class IntygModuleApiControllerTest {
 
         ArgumentCaptor<CreateReplacementCopyRequest> captor = ArgumentCaptor.forClass(CreateReplacementCopyRequest.class);
         when(copyUtkastService.createReplacementCopy(captor.capture()))
-                .thenReturn(new CreateReplacementCopyResponse(CERTIFICATE_TYPE, CERTIFICATE_VERSION, newIntygId, CERTIFICATE_ID));
+            .thenReturn(new CreateReplacementCopyResponse(CERTIFICATE_TYPE, CERTIFICATE_VERSION, newIntygId, CERTIFICATE_ID));
         when(webcertUserService.getUser()).thenReturn(user);
 
         Response response = moduleApiController.createReplacement(copyIntygRequest, CERTIFICATE_TYPE, CERTIFICATE_ID);
@@ -449,14 +446,14 @@ public class IntygModuleApiControllerTest {
 
         WebCertUser user = new WebCertUser();
         user.setParameters(new IntegrationParameters(null, null, newPersonnummer, fornamn, mellannamn, efternamn, postadress, postnummer,
-                postort, false, false, false, true));
+            postort, false, false, false, true));
         addFeatures(user, CERTIFICATE_TYPE, AuthoritiesConstants.FEATURE_FORNYA_INTYG);
         addPrivileges(user, CERTIFICATE_TYPE, AuthoritiesConstants.PRIVILEGE_SVARA_MED_NYTT_INTYG);
         user.setOrigin("NORMAL");
 
         ArgumentCaptor<CreateCompletionCopyRequest> captor = ArgumentCaptor.forClass(CreateCompletionCopyRequest.class);
         when(copyUtkastService.createCompletion(captor.capture()))
-                .thenReturn(new CreateCompletionCopyResponse(CERTIFICATE_TYPE, CERTIFICATE_VERSION, newIntygId, CERTIFICATE_ID));
+            .thenReturn(new CreateCompletionCopyResponse(CERTIFICATE_TYPE, CERTIFICATE_VERSION, newIntygId, CERTIFICATE_ID));
         when(webcertUserService.getUser()).thenReturn(user);
 
         Response response = moduleApiController.createCompletion(request, CERTIFICATE_TYPE, CERTIFICATE_ID);
@@ -507,14 +504,14 @@ public class IntygModuleApiControllerTest {
 
         WebCertUser user = new WebCertUser();
         user.setParameters(new IntegrationParameters(null, null, newPersonnummer, fornamn, mellannamn, efternamn, postadress, postnummer,
-                postort, false, false, false, true));
+            postort, false, false, false, true));
         addFeatures(user, CERTIFICATE_TYPE, AuthoritiesConstants.FEATURE_FORNYA_INTYG);
         addPrivileges(user, CERTIFICATE_TYPE, AuthoritiesConstants.PRIVILEGE_FORNYA_INTYG);
         user.setOrigin("NORMAL");
 
         ArgumentCaptor<CreateRenewalCopyRequest> captor = ArgumentCaptor.forClass(CreateRenewalCopyRequest.class);
         when(copyUtkastService.createRenewalCopy(captor.capture()))
-                .thenReturn(new CreateRenewalCopyResponse(CERTIFICATE_TYPE, CERTIFICATE_VERSION, newDraftIntygId, CERTIFICATE_ID));
+            .thenReturn(new CreateRenewalCopyResponse(CERTIFICATE_TYPE, CERTIFICATE_VERSION, newDraftIntygId, CERTIFICATE_ID));
         when(webcertUserService.getUser()).thenReturn(user);
 
         Response response = moduleApiController.createRenewal(request, CERTIFICATE_TYPE, CERTIFICATE_ID);
@@ -564,11 +561,11 @@ public class IntygModuleApiControllerTest {
 
         ArgumentCaptor<CreateUtkastFromTemplateRequest> captor = ArgumentCaptor.forClass(CreateUtkastFromTemplateRequest.class);
         when(copyUtkastService.createUtkastFromTemplate(captor.capture()))
-                .thenReturn(new CreateUtkastFromTemplateResponse(newCertificateType, CERTIFICATE_VERSION, newIntygId, CERTIFICATE_ID));
+            .thenReturn(new CreateUtkastFromTemplateResponse(newCertificateType, CERTIFICATE_VERSION, newIntygId, CERTIFICATE_ID));
         when(webcertUserService.getUser()).thenReturn(user);
 
         Response response = moduleApiController
-                .createUtkastFromTemplate(copyIntygRequest, CERTIFICATE_TYPE, CERTIFICATE_ID, newCertificateType);
+            .createUtkastFromTemplate(copyIntygRequest, CERTIFICATE_TYPE, CERTIFICATE_ID, newCertificateType);
 
         verify(copyUtkastService).createUtkastFromTemplate(any());
         verifyNoMoreInteractions(copyUtkastService);
@@ -593,13 +590,13 @@ public class IntygModuleApiControllerTest {
     }
 
     private void setupUser(String privilegeString, String intygType, boolean coherentJournaling, boolean fornyaOk,
-            String... features) {
+        String... features) {
         WebCertUser user = new WebCertUser();
         user.setAuthorities(new HashMap<>());
         addFeatures(user, intygType, features);
         user.setParameters(
-                new IntegrationParameters(null, null, null, null, null, null, null, null, null, coherentJournaling, false, false,
-                        fornyaOk));
+            new IntegrationParameters(null, null, null, null, null, null, null, null, null, coherentJournaling, false, false,
+                fornyaOk));
         Privilege privilege = new Privilege();
         privilege.setIntygstyper(Arrays.asList(intygType));
         RequestOrigin requestOrigin = new RequestOrigin();
@@ -636,7 +633,7 @@ public class IntygModuleApiControllerTest {
 
     private static Personnummer createPnr(String personId) {
         return Personnummer.createPersonnummer(personId)
-                .orElseThrow(() -> new IllegalArgumentException("Could not parse passed personnummer: " + personId));
+            .orElseThrow(() -> new IllegalArgumentException("Could not parse passed personnummer: " + personId));
     }
 
 }

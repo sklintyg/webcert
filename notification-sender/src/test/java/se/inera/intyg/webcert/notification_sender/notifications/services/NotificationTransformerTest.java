@@ -18,6 +18,18 @@
  */
 package se.inera.intyg.webcert.notification_sender.notifications.services;
 
+import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.when;
+
+import java.time.LocalDateTime;
 import org.apache.camel.Message;
 import org.apache.camel.impl.DefaultMessage;
 import org.junit.Test;
@@ -41,19 +53,6 @@ import se.riv.clinicalprocess.healthcond.certificate.v3.HosPersonal;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Vardgivare;
 
-import java.time.LocalDateTime;
-
-import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
-import static org.mockito.Mockito.when;
-
 @RunWith(MockitoJUnitRunner.class)
 public class NotificationTransformerTest {
 
@@ -75,7 +74,7 @@ public class NotificationTransformerTest {
     public void testSendVersion1ThrowsException() throws Exception {
         // Given
         NotificationMessage notificationMessage = new NotificationMessage(INTYGS_ID, FK7263, LocalDateTime.now(), HandelsekodEnum.SKAPAT,
-                LOGISK_ADRESS, "{ }", FragorOchSvar.getEmpty(), null, null, SchemaVersion.VERSION_1, "ref");
+            LOGISK_ADRESS, "{ }", FragorOchSvar.getEmpty(), null, null, SchemaVersion.VERSION_1, "ref");
         Message message = spy(new DefaultMessage());
         message.setBody(notificationMessage);
 
@@ -90,7 +89,7 @@ public class NotificationTransformerTest {
     @Test
     public void testSchemaVersion2Transformation() throws Exception {
         NotificationMessage notificationMessage = new NotificationMessage(INTYGS_ID, LUSE, LocalDateTime.now(), HandelsekodEnum.SKAPAT,
-                LOGISK_ADRESS, "{ }", null, ArendeCount.getEmpty(), ArendeCount.getEmpty(), SchemaVersion.VERSION_3, "ref");
+            LOGISK_ADRESS, "{ }", null, ArendeCount.getEmpty(), ArendeCount.getEmpty(), SchemaVersion.VERSION_3, "ref");
         Message message = spy(new DefaultMessage());
         message.setBody(notificationMessage);
 
@@ -113,8 +112,8 @@ public class NotificationTransformerTest {
         transformer.process(message);
 
         assertEquals(INTYGS_ID,
-                ((se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareType) message
-                        .getBody()).getIntyg().getIntygsId().getExtension());
+            ((se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareType) message
+                .getBody()).getIntyg().getIntygsId().getExtension());
         assertEquals(HandelsekodEnum.SKAPAT.value(), message.getHeader(NotificationRouteHeaders.HANDELSE));
         assertEquals(INTYGS_ID, message.getHeader(NotificationRouteHeaders.INTYGS_ID));
         assertEquals(LOGISK_ADRESS, message.getHeader(NotificationRouteHeaders.LOGISK_ADRESS));
@@ -124,7 +123,7 @@ public class NotificationTransformerTest {
         verify(message, times(1)).setHeader(eq(NotificationRouteHeaders.INTYGS_ID), eq(INTYGS_ID));
         verify(message, times(1)).setHeader(eq(NotificationRouteHeaders.HANDELSE), eq(HandelsekodEnum.SKAPAT.value()));
         verify(message, times(1)).setHeader(eq(NotificationRouteHeaders.VERSION), eq(SchemaVersion.VERSION_3.name()));
-        verify(moduleRegistry, times(1)).getModuleApi(eq(LUSE), eq("1.0") );
+        verify(moduleRegistry, times(1)).getModuleApi(eq(LUSE), eq("1.0"));
         verify(moduleApi, times(1)).getUtlatandeFromJson(any());
         verify(moduleApi, times(1)).getIntygFromUtlatande(any());
         verify(notificationPatientEnricher, times(1)).enrichWithPatient(any());
@@ -133,7 +132,7 @@ public class NotificationTransformerTest {
     @Test(expected = IllegalArgumentException.class)
     public void testSituationanpassatCertificateOnSchemaVersion1() throws Exception {
         NotificationMessage notificationMessage = new NotificationMessage(INTYGS_ID, LUSE, LocalDateTime.now(), HandelsekodEnum.SKAPAT,
-                LOGISK_ADRESS, "{ }", FragorOchSvar.getEmpty(), null, null, SchemaVersion.VERSION_1, "ref");
+            LOGISK_ADRESS, "{ }", FragorOchSvar.getEmpty(), null, null, SchemaVersion.VERSION_1, "ref");
         Message message = new DefaultMessage();
         message.setBody(notificationMessage);
         transformer.process(message);

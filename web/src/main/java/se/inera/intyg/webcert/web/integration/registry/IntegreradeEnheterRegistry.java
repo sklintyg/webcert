@@ -18,13 +18,12 @@
  */
 package se.inera.intyg.webcert.web.integration.registry;
 
+import java.util.List;
+import java.util.Optional;
 import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
 import se.inera.intyg.webcert.persistence.integreradenhet.model.IntegreradEnhet;
 import se.inera.intyg.webcert.web.integration.registry.dto.IntegreradEnhetEntry;
 import se.inera.intyg.webcert.web.web.controller.testability.dto.IntegreradEnhetEntryWithSchemaVersion;
-
-import java.util.List;
-import java.util.Optional;
 
 public interface IntegreradeEnheterRegistry {
 

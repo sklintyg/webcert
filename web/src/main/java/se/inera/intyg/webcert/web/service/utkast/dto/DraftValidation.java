@@ -20,7 +20,6 @@ package se.inera.intyg.webcert.web.service.utkast.dto;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import se.inera.intyg.common.support.modules.support.api.dto.ValidationStatus;
 
 public class DraftValidation {

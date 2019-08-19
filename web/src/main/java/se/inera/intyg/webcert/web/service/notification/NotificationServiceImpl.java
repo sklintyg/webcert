@@ -18,6 +18,25 @@
  */
 package se.inera.intyg.webcert.web.service.notification;
 
+import static se.inera.intyg.common.support.common.enumerations.HandelsekodEnum.ANDRAT;
+import static se.inera.intyg.common.support.common.enumerations.HandelsekodEnum.HANFRFM;
+import static se.inera.intyg.common.support.common.enumerations.HandelsekodEnum.HANFRFV;
+import static se.inera.intyg.common.support.common.enumerations.HandelsekodEnum.KFSIGN;
+import static se.inera.intyg.common.support.common.enumerations.HandelsekodEnum.MAKULE;
+import static se.inera.intyg.common.support.common.enumerations.HandelsekodEnum.NYFRFM;
+import static se.inera.intyg.common.support.common.enumerations.HandelsekodEnum.NYFRFV;
+import static se.inera.intyg.common.support.common.enumerations.HandelsekodEnum.NYSVFM;
+import static se.inera.intyg.common.support.common.enumerations.HandelsekodEnum.RADERA;
+import static se.inera.intyg.common.support.common.enumerations.HandelsekodEnum.SIGNAT;
+import static se.inera.intyg.common.support.common.enumerations.HandelsekodEnum.SKAPAT;
+import static se.inera.intyg.common.support.common.enumerations.HandelsekodEnum.SKICKA;
+import static se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders.CORRELATION_ID;
+import static se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders.HANDELSE;
+import static se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders.INTYGS_ID;
+import static se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders.INTYGS_TYP;
+import static se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders.INTYG_TYPE_VERSION;
+import static se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders.USER_ID;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDate;
@@ -64,26 +83,6 @@ import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.referens.ReferensService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.Amneskod;
-
-
-import static se.inera.intyg.common.support.common.enumerations.HandelsekodEnum.ANDRAT;
-import static se.inera.intyg.common.support.common.enumerations.HandelsekodEnum.HANFRFM;
-import static se.inera.intyg.common.support.common.enumerations.HandelsekodEnum.HANFRFV;
-import static se.inera.intyg.common.support.common.enumerations.HandelsekodEnum.KFSIGN;
-import static se.inera.intyg.common.support.common.enumerations.HandelsekodEnum.MAKULE;
-import static se.inera.intyg.common.support.common.enumerations.HandelsekodEnum.NYFRFM;
-import static se.inera.intyg.common.support.common.enumerations.HandelsekodEnum.NYFRFV;
-import static se.inera.intyg.common.support.common.enumerations.HandelsekodEnum.NYSVFM;
-import static se.inera.intyg.common.support.common.enumerations.HandelsekodEnum.RADERA;
-import static se.inera.intyg.common.support.common.enumerations.HandelsekodEnum.SIGNAT;
-import static se.inera.intyg.common.support.common.enumerations.HandelsekodEnum.SKAPAT;
-import static se.inera.intyg.common.support.common.enumerations.HandelsekodEnum.SKICKA;
-import static se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders.CORRELATION_ID;
-import static se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders.HANDELSE;
-import static se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders.INTYGS_ID;
-import static se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders.INTYGS_TYP;
-import static se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders.INTYG_TYPE_VERSION;
-import static se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders.USER_ID;
 
 /**
  * Service that notifies a unit care of incoming changes.
@@ -247,12 +246,12 @@ public class NotificationServiceImpl implements NotificationService {
     public void sendNotificationForQuestionReceived(FragaSvar fragaSvar) {
         if (integreradeEnheterRegistry.isEnhetIntegrerad(fragaSvar.getVardperson().getEnhetsId(), Fk7263EntryPoint.MODULE_ID)) {
             sendNotificationForQAs(fragaSvar.getIntygsReferens().getIntygsId(), NotificationEvent.NEW_QUESTION_FROM_RECIPIENT,
-                    fragaSvar.getSistaDatumForSvar(), ArendeAmne.fromAmne(fragaSvar.getAmne()).orElse(null));
+                fragaSvar.getSistaDatumForSvar(), ArendeAmne.fromAmne(fragaSvar.getAmne()).orElse(null));
         } else {
             sendNotificationForIncomingQuestionByMail(new MailNotification(fragaSvar.getInternReferens().toString(),
-                    fragaSvar.getIntygsReferens().getIntygsId(), Fk7263EntryPoint.MODULE_ID,
-                    fragaSvar.getVardperson().getEnhetsId(), fragaSvar.getVardperson().getEnhetsnamn(),
-                    fragaSvar.getVardperson().getHsaId()));
+                fragaSvar.getIntygsReferens().getIntygsId(), Fk7263EntryPoint.MODULE_ID,
+                fragaSvar.getVardperson().getEnhetsId(), fragaSvar.getVardperson().getEnhetsnamn(),
+                fragaSvar.getVardperson().getHsaId()));
         }
     }
 
@@ -262,9 +261,9 @@ public class NotificationServiceImpl implements NotificationService {
             sendNotificationForQAs(fragaSvar.getIntygsReferens().getIntygsId(), NotificationEvent.NEW_ANSWER_FROM_RECIPIENT);
         } else {
             sendNotificationForIncomingAnswerByMail(new MailNotification(fragaSvar.getInternReferens().toString(),
-                    fragaSvar.getIntygsReferens().getIntygsId(), Fk7263EntryPoint.MODULE_ID,
-                    fragaSvar.getVardperson().getEnhetsId(), fragaSvar.getVardperson().getEnhetsnamn(),
-                    fragaSvar.getVardperson().getHsaId()));
+                fragaSvar.getIntygsReferens().getIntygsId(), Fk7263EntryPoint.MODULE_ID,
+                fragaSvar.getVardperson().getEnhetsId(), fragaSvar.getVardperson().getEnhetsnamn(),
+                fragaSvar.getVardperson().getHsaId()));
         }
     }
 
@@ -272,10 +271,10 @@ public class NotificationServiceImpl implements NotificationService {
     public void sendNotificationForQuestionReceived(Arende arende) {
         if (integreradeEnheterRegistry.isEnhetIntegrerad(arende.getEnhetId(), arende.getIntygTyp())) {
             sendNotificationForQAs(arende.getIntygsId(), NotificationEvent.NEW_QUESTION_FROM_RECIPIENT, arende.getSistaDatumForSvar(),
-                    arende.getAmne());
+                arende.getAmne());
         } else {
             sendNotificationForIncomingQuestionByMail(new MailNotification(arende.getMeddelandeId(), arende.getIntygsId(),
-                    arende.getIntygTyp(), arende.getEnhetId(), arende.getEnhetName(), arende.getSigneratAv()));
+                arende.getIntygTyp(), arende.getEnhetId(), arende.getEnhetName(), arende.getSigneratAv()));
         }
     }
 
@@ -285,7 +284,7 @@ public class NotificationServiceImpl implements NotificationService {
             sendNotificationForQAs(arende.getIntygsId(), NotificationEvent.NEW_ANSWER_FROM_RECIPIENT);
         } else {
             sendNotificationForIncomingAnswerByMail(new MailNotification(arende.getMeddelandeId(), arende.getIntygsId(),
-                    arende.getIntygTyp(), arende.getEnhetId(), arende.getEnhetName(), arende.getSigneratAv()));
+                arende.getIntygTyp(), arende.getEnhetId(), arende.getEnhetName(), arende.getSigneratAv()));
         }
     }
 
@@ -301,7 +300,7 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     public void forwardInternalNotification(final String intygsId, final String intygstyp, final Utlatande utlatande,
-            final HandelsekodEnum handelse) {
+        final HandelsekodEnum handelse) {
         final String careUnitId = utlatande.getGrundData().getSkapadAv().getVardenhet().getEnhetsid();
         final String careGiverId = utlatande.getGrundData().getSkapadAv().getVardenhet().getVardgivare().getVardgivarid();
         final String reference = referensService.getReferensForIntygsId(intygsId);
@@ -309,11 +308,11 @@ public class NotificationServiceImpl implements NotificationService {
         try {
             String json = objectMapper.writeValueAsString(utlatande);
             NotificationMessage notificationMessage = notificationMessageFactory.createNotificationMessage(intygsId, intygstyp, careUnitId,
-                    json, handelse,
-                    SchemaVersion.VERSION_3, reference, null, null);
+                json, handelse,
+                SchemaVersion.VERSION_3, reference, null, null);
 
             save(notificationMessage, careUnitId, careGiverId,
-                    utlatande.getGrundData().getPatient().getPersonId().getPersonnummerWithDash(), null, null);
+                utlatande.getGrundData().getPatient().getPersonId().getPersonnummerWithDash(), null, null);
 
             send(notificationMessage, careUnitId, utlatande.getTextVersion());
         } catch (JsonProcessingException e) {
@@ -334,7 +333,7 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     private void createAndSendNotification(Utkast utkast, HandelsekodEnum handelse,
-            ArendeAmne amne, LocalDate sistaDatumForSvar) {
+        ArendeAmne amne, LocalDate sistaDatumForSvar) {
 
         Optional<SchemaVersion> version = sendNotificationStrategy.decideNotificationForIntyg(utkast);
         if (!version.isPresent()) {
@@ -346,7 +345,7 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     private void createAndSendNotification(Utkast utkast, HandelsekodEnum handelse,
-            ArendeAmne amne, LocalDate sistaDatumForSvar, SchemaVersion version) {
+        ArendeAmne amne, LocalDate sistaDatumForSvar, SchemaVersion version) {
         Amneskod amneskod = null;
         if (amne != null) {
             amneskod = AmneskodCreator.create(amne.name(), amne.getDescription());
@@ -355,10 +354,10 @@ public class NotificationServiceImpl implements NotificationService {
         String reference = referensService.getReferensForIntygsId(utkast.getIntygsId());
 
         NotificationMessage notificationMessage = notificationMessageFactory.createNotificationMessage(utkast, handelse,
-                version, reference, amneskod, sistaDatumForSvar);
+            version, reference, amneskod, sistaDatumForSvar);
 
         save(notificationMessage, utkast.getEnhetsId(), utkast.getVardgivarId(),
-                utkast.getPatientPersonnummer().getPersonnummer(), amne, sistaDatumForSvar);
+            utkast.getPatientPersonnummer().getPersonnummer(), amne, sistaDatumForSvar);
 
         send(notificationMessage, utkast.getEnhetsId(), utkast.getIntygTypeVersion());
     }
@@ -388,49 +387,49 @@ public class NotificationServiceImpl implements NotificationService {
 
     private HandelsekodEnum getHandelseV1(NotificationEvent event) {
         switch (event) {
-        case QUESTION_FROM_CARE_WITH_ANSWER_HANDLED:
-            return HANFRFV;
-        case QUESTION_FROM_CARE_WITH_ANSWER_UNHANDLED:
-        case NEW_ANSWER_FROM_RECIPIENT:
-            return NYSVFM;
-        case NEW_ANSWER_FROM_CARE:
-        case QUESTION_FROM_RECIPIENT_HANDLED:
-            return HANFRFM;
-        case NEW_QUESTION_FROM_RECIPIENT:
-        case QUESTION_FROM_RECIPIENT_UNHANDLED:
-            return NYFRFM;
-        case NEW_QUESTION_FROM_CARE:
-            return NYFRFV;
-        case QUESTION_FROM_CARE_HANDLED:
-        case QUESTION_FROM_CARE_UNHANDLED:
-            return null;
+            case QUESTION_FROM_CARE_WITH_ANSWER_HANDLED:
+                return HANFRFV;
+            case QUESTION_FROM_CARE_WITH_ANSWER_UNHANDLED:
+            case NEW_ANSWER_FROM_RECIPIENT:
+                return NYSVFM;
+            case NEW_ANSWER_FROM_CARE:
+            case QUESTION_FROM_RECIPIENT_HANDLED:
+                return HANFRFM;
+            case NEW_QUESTION_FROM_RECIPIENT:
+            case QUESTION_FROM_RECIPIENT_UNHANDLED:
+                return NYFRFM;
+            case NEW_QUESTION_FROM_CARE:
+                return NYFRFV;
+            case QUESTION_FROM_CARE_HANDLED:
+            case QUESTION_FROM_CARE_UNHANDLED:
+                return null;
         }
         return null;
     }
 
     private HandelsekodEnum getHandelseV3(NotificationEvent event) {
         switch (event) {
-        case QUESTION_FROM_CARE_WITH_ANSWER_HANDLED:
-        case QUESTION_FROM_CARE_WITH_ANSWER_UNHANDLED:
-        case QUESTION_FROM_CARE_HANDLED:
-        case QUESTION_FROM_CARE_UNHANDLED:
-            return HANFRFV;
-        case NEW_ANSWER_FROM_CARE:
-        case QUESTION_FROM_RECIPIENT_HANDLED:
-        case QUESTION_FROM_RECIPIENT_UNHANDLED:
-            return HANFRFM;
-        case NEW_QUESTION_FROM_CARE:
-            return NYFRFV;
-        case NEW_QUESTION_FROM_RECIPIENT:
-            return NYFRFM;
-        case NEW_ANSWER_FROM_RECIPIENT:
-            return NYSVFM;
+            case QUESTION_FROM_CARE_WITH_ANSWER_HANDLED:
+            case QUESTION_FROM_CARE_WITH_ANSWER_UNHANDLED:
+            case QUESTION_FROM_CARE_HANDLED:
+            case QUESTION_FROM_CARE_UNHANDLED:
+                return HANFRFV;
+            case NEW_ANSWER_FROM_CARE:
+            case QUESTION_FROM_RECIPIENT_HANDLED:
+            case QUESTION_FROM_RECIPIENT_UNHANDLED:
+                return HANFRFM;
+            case NEW_QUESTION_FROM_CARE:
+                return NYFRFV;
+            case NEW_QUESTION_FROM_RECIPIENT:
+                return NYFRFM;
+            case NEW_ANSWER_FROM_RECIPIENT:
+                return NYSVFM;
         }
         return null;
     }
 
     private void save(NotificationMessage notificationMessage, String enhetsId, String vardgivarId, String personnummer,
-            ArendeAmne amne, LocalDate sistaDatumForSvar) {
+        ArendeAmne amne, LocalDate sistaDatumForSvar) {
 
         Handelse handelse = new Handelse();
         handelse.setCode(notificationMessage.getHandelse());
@@ -455,10 +454,10 @@ public class NotificationServiceImpl implements NotificationService {
 
         try {
             jmsTemplateForAggregation.send(
-                    new NotificationMessageCreator(
-                            notificationMessageAsJson, notificationMessage.getIntygsId(), notificationMessage.getIntygsTyp(),
-                            intygTypeVersion, notificationMessage.getHandelse(),
-                            currentUserId()));
+                new NotificationMessageCreator(
+                    notificationMessageAsJson, notificationMessage.getIntygsId(), notificationMessage.getIntygsTyp(),
+                    intygTypeVersion, notificationMessage.getHandelse(),
+                    currentUserId()));
         } catch (JmsException e) {
             LOGGER.error("Could not send message", e);
             throw e;
@@ -493,9 +492,9 @@ public class NotificationServiceImpl implements NotificationService {
             mailNotificationService.sendMailForIncomingQuestion(mailNotification);
         } catch (MailSendException e) {
             LOGGER.error("Notification mail for question '" + mailNotification.getQaId()
-                    + "' concerning certificate '" + mailNotification.getCertificateId()
-                    + "' couldn't be sent to " + mailNotification.getCareUnitId()
-                    + " (" + mailNotification.getCareUnitName() + "): " + e.getMessage());
+                + "' concerning certificate '" + mailNotification.getCertificateId()
+                + "' couldn't be sent to " + mailNotification.getCareUnitId()
+                + " (" + mailNotification.getCareUnitName() + "): " + e.getMessage());
         }
     }
 
@@ -505,9 +504,9 @@ public class NotificationServiceImpl implements NotificationService {
             mailNotificationService.sendMailForIncomingAnswer(mailNotification);
         } catch (MailSendException e) {
             LOGGER.error("Notification mail for answer '" + mailNotification.getQaId()
-                    + "' concerning certificate '" + mailNotification.getCertificateId()
-                    + "' couldn't be sent to " + mailNotification.getCareUnitId()
-                    + " (" + mailNotification.getCareUnitName() + "): " + e.getMessage());
+                + "' concerning certificate '" + mailNotification.getCertificateId()
+                + "' couldn't be sent to " + mailNotification.getCareUnitId()
+                + " (" + mailNotification.getCareUnitName() + "): " + e.getMessage());
         }
     }
 
@@ -521,8 +520,8 @@ public class NotificationServiceImpl implements NotificationService {
         private final String userId;
 
         private NotificationMessageCreator(String notificationMessage, String intygsId, String intygsTyp, String intygTypeVersion,
-                                           HandelsekodEnum handelseTyp,
-                                           String userId) {
+            HandelsekodEnum handelseTyp,
+            String userId) {
             this.value = notificationMessage;
             this.intygsId = intygsId;
             this.intygsTyp = intygsTyp;

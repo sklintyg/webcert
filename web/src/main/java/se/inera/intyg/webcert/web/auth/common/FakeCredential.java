@@ -19,5 +19,6 @@
 package se.inera.intyg.webcert.web.auth.common;
 
 public interface FakeCredential {
+
     String getAuthenticationMethod();
 }

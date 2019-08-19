@@ -27,31 +27,31 @@
 var WebcertBasePage = require('../webcert.base.page.js');
 
 var SokSkrivIntyg = WebcertBasePage._extend({
-    init: function init() {
-        init._super.call(this);
+  init: function init() {
+    init._super.call(this);
 
-        this.at = element(by.id('skapa-valj-patient'));
-        this.personnummer = element(by.id('pnr'));
-        this.pnButton = element(by.id('skapapersonnummerfortsatt'));
-        this.sekretessmarkering = element(by.id('sekretessmarkering'));
-        this.puerror = element(by.id('puerror'));
-        this.namnFortsatt = element(by.id('namnFortsatt'));
-        this.patientNamn = element(by.id('patientNamn'));
-        this.intygLista = element(by.id('intygLista'));
-        this.sokSkrivIntygForm = element(by.css('form[name=certForm]'));
-    },
-    get: function() {
-        browser.get('#/create/choose-intyg-type/default/index');
-    },
-    setPersonnummer: function(pn) {
-        return this.personnummer.sendKeys(pn);
-    },
-    selectPersonnummer: function(pn) {
-        var pnButton = this.pnButton;
-        return this.setPersonnummer(pn).then(function() {
-            return pnButton.click();
-        });
-    }
+    this.at = element(by.id('skapa-valj-patient'));
+    this.personnummer = element(by.id('pnr'));
+    this.pnButton = element(by.id('skapapersonnummerfortsatt'));
+    this.sekretessmarkering = element(by.id('sekretessmarkering'));
+    this.puerror = element(by.id('puerror'));
+    this.namnFortsatt = element(by.id('namnFortsatt'));
+    this.patientNamn = element(by.id('patientNamn'));
+    this.intygLista = element(by.id('intygLista'));
+    this.sokSkrivIntygForm = element(by.css('form[name=certForm]'));
+  },
+  get: function() {
+    browser.get('#/create/choose-intyg-type/default/index');
+  },
+  setPersonnummer: function(pn) {
+    return this.personnummer.sendKeys(pn);
+  },
+  selectPersonnummer: function(pn) {
+    var pnButton = this.pnButton;
+    return this.setPersonnummer(pn).then(function() {
+      return pnButton.click();
+    });
+  }
 });
 
 module.exports = new SokSkrivIntyg();

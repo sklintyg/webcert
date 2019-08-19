@@ -18,6 +18,8 @@
  */
 package se.inera.intyg.webcert.notification_sender.notifications.services.v3;
 
+import static se.inera.intyg.webcert.notification_sender.notifications.services.v3.NotificationWSClient.messageContext;
+
 import com.google.common.base.Charsets;
 import java.io.InputStream;
 import org.apache.commons.httpclient.HttpStatus;
@@ -27,9 +29,6 @@ import org.apache.cxf.phase.AbstractPhaseInterceptor;
 import org.apache.cxf.phase.Phase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-
-import static se.inera.intyg.webcert.notification_sender.notifications.services.v3.NotificationWSClient.messageContext;
 
 /**
  * Custom CXF InInterceptor that checks the HTTP status code. If > 399, we log the raw message body and then
@@ -59,13 +58,13 @@ public class NotificationInInterceptor extends AbstractPhaseInterceptor<Message>
                 final String payload = IOUtils.toString(message.getContent(InputStream.class), Charsets.UTF_8);
 
                 LOG.error("Handling HTTP error {} in CertificateStatusUpdateForCareResponse: {}, [payload: {}]",
-                        status, messageContext(), payload);
+                    status, messageContext(), payload);
 
                 message.setContent(InputStream.class, IOUtils.toInputStream(payload, Charsets.UTF_8));
             } catch (Exception e) {
                 LOG.error("Failed to capture body of CertificateStatusUpdateForCareResponse response with non "
-                                + "200 status code, reason: {}",
-                        e.getMessage());
+                        + "200 status code, reason: {}",
+                    e.getMessage());
             }
         } else if (status == -1) {
             LOG.warn("Unable to determine HTTP status code, assuming everything is OK");

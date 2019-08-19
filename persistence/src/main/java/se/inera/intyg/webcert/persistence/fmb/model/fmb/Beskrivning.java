@@ -19,6 +19,7 @@
 package se.inera.intyg.webcert.persistence.fmb.model.fmb;
 
 import com.google.common.collect.Lists;
+import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -31,7 +32,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import java.util.List;
 
 @Entity
 @Table(name = "FMB_BESKRIVNING")
@@ -57,9 +57,9 @@ public class Beskrivning {
     }
 
     public Beskrivning(
-            final BeskrivningTyp beskrivningTyp,
-            final String beskrivningText,
-            final List<IcfKod> icfKodList) {
+        final BeskrivningTyp beskrivningTyp,
+        final String beskrivningText,
+        final List<IcfKod> icfKodList) {
         this.beskrivningTyp = beskrivningTyp;
         this.beskrivningText = beskrivningText;
         this.icfKodList = icfKodList;
@@ -82,6 +82,7 @@ public class Beskrivning {
     }
 
     public static final class BeskrivningBuilder {
+
         private BeskrivningTyp beskrivningTyp;
         private String beskrivningText;
         private List<IcfKod> icfKodList;

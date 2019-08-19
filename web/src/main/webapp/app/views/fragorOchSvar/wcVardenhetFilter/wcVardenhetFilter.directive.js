@@ -18,86 +18,87 @@
  */
 
 angular.module('webcert').directive('wcVardenhetFilter',
-    [ '$cookies', '$rootScope', '$timeout',
-        'common.User', 'common.statService',
-        'webcert.vardenhetFilterModel', 'webcert.enhetArendenModel',
-        function($cookies, $rootScope, $timeout, User, statService, vardenhetFilterModel, enhetArendenModel) {
-            'use strict';
+    ['$cookies', '$rootScope', '$timeout',
+      'common.User', 'common.statService',
+      'webcert.vardenhetFilterModel', 'webcert.enhetArendenModel',
+      function($cookies, $rootScope, $timeout, User, statService, vardenhetFilterModel, enhetArendenModel) {
+        'use strict';
 
-            return {
-                restrict: 'E',
-                scope: {},
-                templateUrl: '/app/views/fragorOchSvar/wcVardenhetFilter/wcVardenhetFilter.directive.html',
-                controller: function($scope) {
+        return {
+          restrict: 'E',
+          scope: {},
+          templateUrl: '/app/views/fragorOchSvar/wcVardenhetFilter/wcVardenhetFilter.directive.html',
+          controller: function($scope) {
 
-                    this.$onInit = function(){
-                        vardenhetFilterModel.initialize(User.getVardenhetFilterList(User.getValdVardenhet()));
+            this.$onInit = function() {
+              vardenhetFilterModel.initialize(User.getVardenhetFilterList(User.getValdVardenhet()));
 
-                        $scope.vardenhetFilterModel = vardenhetFilterModel;
+              $scope.vardenhetFilterModel = vardenhetFilterModel;
 
-                        if (statService.getLatestData()) {
-                            updateStats(null, statService.getLatestData());
-                        }
-                        $scope.$on('statService.stat-update', updateStats);
+              if (statService.getLatestData()) {
+                updateStats(null, statService.getLatestData());
+              }
+              $scope.$on('statService.stat-update', updateStats);
 
-                        /**
-                         * Toggles if the enheter without an active question should
-                         * be shown
-                         */
-                        $scope.toggleShowInactive = function() {
-                            vardenhetFilterModel.showInactive = !vardenhetFilterModel.showInactive;
-                        };
+              /**
+               * Toggles if the enheter without an active question should
+               * be shown
+               */
+              $scope.toggleShowInactive = function() {
+                vardenhetFilterModel.showInactive = !vardenhetFilterModel.showInactive;
+              };
 
-                        $scope.selectUnit = function(unit) {
-                            vardenhetFilterModel.selectedUnit = unit;
-                            $rootScope.$broadcast('wcVardenhetFilter.unitSelected', vardenhetFilterModel.selectedUnit);
-                        };
+              $scope.selectUnit = function(unit) {
+                vardenhetFilterModel.selectedUnit = unit;
+                $rootScope.$broadcast('wcVardenhetFilter.unitSelected', vardenhetFilterModel.selectedUnit);
+              };
 
-                        $scope.$watch('vardenhetFilterModel.units', function() {
-                            $scope.showSelect = vardenhetFilterModel.units && vardenhetFilterModel.units.length > 2 && vardenhetFilterModel.units[0].fragaSvar > 0;
-                        });
-                    };
-
-                    function updateStats(event, message) {
-                        // Get the latest stats
-                        var unitStats = message;
-
-                        // Get the chosen vardgivare
-                        var valdVardgivare = User.getValdVardgivare();
-
-                        // Find stats for the chosen vardenhets units below the chosen vardgivare
-                        var valdVardenheterStats = {};
-                        angular.forEach(unitStats.vardgivare, function(vardgivareStats) {
-                            if (vardgivareStats.id === valdVardgivare.id) {
-                                valdVardenheterStats = vardgivareStats.vardenheter;
-                            }
-                        });
-
-                        // Set stats for each unit available for the filter
-                        angular.forEach(vardenhetFilterModel.units, function(unit) {
-
-                            // If it's the all choice, we know we want the total of everything
-                            if (unit.id === enhetArendenModel.ALL_UNITS) {
-                                unit.fragaSvar = unitStats.fragaSvarValdEnhet;
-                                unit.tooltip =
-                                    'Totalt antal ej hanterade ärenden för den vårdenhet där du är inloggad. ' +
-                                    'Här visas samtliga ärenden på vårdenhetsnivå och på mottagningsnivå.';
-                            } else {
-                                // Otherwise find the stats for the unit
-                                angular.forEach(valdVardenheterStats, function(unitStat) {
-                                    if (unit.id === unitStat.id) {
-                                        unit.fragaSvar = unitStat.fragaSvar;
-                                        unit.tooltip =
-                                            'Det totala antalet ej hanterade ärenden som finns registrerade på ' +
-                                            'vårdenheten. Det kan finnas ärenden som gäller denna vårdenhet men ' +
-                                            'som inte visas här. För säkerhets skull bör du även kontrollera ärenden ' +
-                                            'för övriga vårdenheter och mottagningar.';
-                                    }
-                                });
-                            }
-                        });
-                    }
-
-                }
+              $scope.$watch('vardenhetFilterModel.units', function() {
+                $scope.showSelect =
+                    vardenhetFilterModel.units && vardenhetFilterModel.units.length > 2 && vardenhetFilterModel.units[0].fragaSvar > 0;
+              });
             };
-        }]);
+
+            function updateStats(event, message) {
+              // Get the latest stats
+              var unitStats = message;
+
+              // Get the chosen vardgivare
+              var valdVardgivare = User.getValdVardgivare();
+
+              // Find stats for the chosen vardenhets units below the chosen vardgivare
+              var valdVardenheterStats = {};
+              angular.forEach(unitStats.vardgivare, function(vardgivareStats) {
+                if (vardgivareStats.id === valdVardgivare.id) {
+                  valdVardenheterStats = vardgivareStats.vardenheter;
+                }
+              });
+
+              // Set stats for each unit available for the filter
+              angular.forEach(vardenhetFilterModel.units, function(unit) {
+
+                // If it's the all choice, we know we want the total of everything
+                if (unit.id === enhetArendenModel.ALL_UNITS) {
+                  unit.fragaSvar = unitStats.fragaSvarValdEnhet;
+                  unit.tooltip =
+                      'Totalt antal ej hanterade ärenden för den vårdenhet där du är inloggad. ' +
+                      'Här visas samtliga ärenden på vårdenhetsnivå och på mottagningsnivå.';
+                } else {
+                  // Otherwise find the stats for the unit
+                  angular.forEach(valdVardenheterStats, function(unitStat) {
+                    if (unit.id === unitStat.id) {
+                      unit.fragaSvar = unitStat.fragaSvar;
+                      unit.tooltip =
+                          'Det totala antalet ej hanterade ärenden som finns registrerade på ' +
+                          'vårdenheten. Det kan finnas ärenden som gäller denna vårdenhet men ' +
+                          'som inte visas här. För säkerhets skull bör du även kontrollera ärenden ' +
+                          'för övriga vårdenheter och mottagningar.';
+                    }
+                  });
+                }
+              });
+            }
+
+          }
+        };
+      }]);

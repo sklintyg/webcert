@@ -24,6 +24,7 @@ package se.inera.intyg.webcert.web.auth.common;
  * Created by eriklupander on 2015-10-13.
  */
 public final class AuthConstants {
+
     // CHECKSTYLE:OFF LineLength
     public static final String ALIAS_SITHS = "defaultAlias";
     public static final String ALIAS_ELEG = "eleg";

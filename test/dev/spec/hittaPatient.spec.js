@@ -26,13 +26,13 @@ var SokSkrivValjUtkastType = wcTestTools.pages.sokSkrivIntyg.valjUtkastType;
 
 describe('Find person with personnummer', function() {
 
-    describe('Login through the welcome page', function() {
-        it('with user', function() {
-            browser.ignoreSynchronization = false;
-            specHelper.login();
-            SokSkrivIntygPage.selectPersonnummer('191212121212');
-            expect(SokSkrivValjUtkastType.isAt()).toBe(true);
-        });
+  describe('Login through the welcome page', function() {
+    it('with user', function() {
+      browser.ignoreSynchronization = false;
+      specHelper.login();
+      SokSkrivIntygPage.selectPersonnummer('191212121212');
+      expect(SokSkrivValjUtkastType.isAt()).toBe(true);
     });
+  });
 
 });

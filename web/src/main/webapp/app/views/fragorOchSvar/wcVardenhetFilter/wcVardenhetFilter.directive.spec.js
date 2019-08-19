@@ -18,53 +18,54 @@
  */
 
 describe('wcVardenhetFilter', function() {
-    'use strict';
+  'use strict';
 
-    var $rootScope;
-    var $scope;
-    var $compile;
-    var element;
-    var User;
-    var vardenhetFilterModel;
+  var $rootScope;
+  var $scope;
+  var $compile;
+  var element;
+  var User;
+  var vardenhetFilterModel;
 
-    beforeEach(function() {
+  beforeEach(function() {
 
-        module('htmlTemplates');
-        module('webcertTest');
-        module('webcert', ['$provide', function($provide) {
-            $provide.value('common.User', jasmine.createSpyObj('common.User', [ 'getValdVardenhet', 'getValdVardgivare', 'getVardenhetFilterList' ]));
-            $provide.value('common.statService', jasmine.createSpyObj('common.statService', [ 'refreshStat', 'getLatestData' ]));
-        }]);
+    module('htmlTemplates');
+    module('webcertTest');
+    module('webcert', ['$provide', function($provide) {
+      $provide.value('common.User',
+          jasmine.createSpyObj('common.User', ['getValdVardenhet', 'getValdVardgivare', 'getVardenhetFilterList']));
+      $provide.value('common.statService', jasmine.createSpyObj('common.statService', ['refreshStat', 'getLatestData']));
+    }]);
 
-        inject(['$rootScope', '$compile', 'common.User', 'webcert.vardenhetFilterModel',
-            function(_$rootScope_, _$compile_, _User_, _vardenhetFilterModel_) {
+    inject(['$rootScope', '$compile', 'common.User', 'webcert.vardenhetFilterModel',
+      function(_$rootScope_, _$compile_, _User_, _vardenhetFilterModel_) {
 
-                $rootScope = _$rootScope_;
-                $compile = _$compile_;
-                User = _User_;
-                vardenhetFilterModel = _vardenhetFilterModel_;
+        $rootScope = _$rootScope_;
+        $compile = _$compile_;
+        User = _User_;
+        vardenhetFilterModel = _vardenhetFilterModel_;
 
-                $scope = $rootScope.$new();
-                element = $compile('<wc-vardenhet-filter></wc-vardenhet-filter>')($scope);
-                $scope.$digest();
-                $scope = element.isolateScope();
+        $scope = $rootScope.$new();
+        element = $compile('<wc-vardenhet-filter></wc-vardenhet-filter>')($scope);
+        $scope.$digest();
+        $scope = element.isolateScope();
 
-            }]);
+      }]);
+  });
+
+  describe('updateStats', function() {
+
+    it('should update units when statService.stat-update message is received', function() {
+
+      vardenhetFilterModel.units = [
+        {id: 'wc-all'},
+        {id: '2'}
+      ];
+      $scope.$broadcast('statService.stat-update', {fragaSvarValdEnhet: 1});
+
+      expect(vardenhetFilterModel.units[0].fragaSvar).toEqual(1);
+      expect(vardenhetFilterModel.units[0].tooltip).toBeTruthy();
     });
-
-    describe('updateStats', function() {
-
-        it('should update units when statService.stat-update message is received', function() {
-
-            vardenhetFilterModel.units = [
-                { id: 'wc-all'},
-                { id: '2'}
-            ];
-            $scope.$broadcast('statService.stat-update', {fragaSvarValdEnhet: 1});
-
-            expect(vardenhetFilterModel.units[0].fragaSvar).toEqual(1);
-            expect(vardenhetFilterModel.units[0].tooltip).toBeTruthy();
-        });
-    });
+  });
 
 });

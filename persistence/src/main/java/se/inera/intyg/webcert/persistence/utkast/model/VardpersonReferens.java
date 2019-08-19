@@ -23,6 +23,7 @@ import javax.persistence.Embeddable;
 
 @Embeddable
 public class VardpersonReferens {
+
     @Column(name = "HSAID")
     private String hsaId;
 

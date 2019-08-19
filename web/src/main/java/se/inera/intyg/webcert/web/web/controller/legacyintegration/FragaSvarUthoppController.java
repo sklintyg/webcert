@@ -18,10 +18,11 @@
  */
 package se.inera.intyg.webcert.web.web.controller.legacyintegration;
 
+import com.google.common.base.Strings;
+import io.swagger.annotations.Api;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
-
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -32,14 +33,9 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import com.google.common.base.Strings;
-
-import io.swagger.annotations.Api;
 import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
@@ -69,8 +65,8 @@ public class FragaSvarUthoppController extends BaseIntegrationController {
     private static final String PARAM_CERT_TYPE_VERSION = "certTypeVersion";
     private static final String PARAM_CERT_ID = "certId";
 
-    private static final String[] GRANTED_ROLES = new String[] { AuthoritiesConstants.ROLE_ADMIN, AuthoritiesConstants.ROLE_LAKARE,
-            AuthoritiesConstants.ROLE_TANDLAKARE };
+    private static final String[] GRANTED_ROLES = new String[]{AuthoritiesConstants.ROLE_ADMIN, AuthoritiesConstants.ROLE_LAKARE,
+        AuthoritiesConstants.ROLE_TANDLAKARE};
     private static final UserOriginType GRANTED_ORIGIN = UserOriginType.UTHOPP;
     private static final String DEFAULT_TYPE = Fk7263EntryPoint.MODULE_ID;
     private static final String DEFAULT_TYPE_VERSION = Fk7263EntryPoint.DEFAULT_LOCKED_TYPE_VERSION;
@@ -86,16 +82,15 @@ public class FragaSvarUthoppController extends BaseIntegrationController {
      * Fetches a certificate from IT and then performs a redirect to the view that displays
      * the certificate. Can be used for all types of certificates.
      *
-     * @param intygId
-     *            The id of the certificate to view.
+     * @param intygId The id of the certificate to view.
      */
     @GET
     @Path("/{type}/{intygId}/questions")
     @PrometheusTimeMethod
     public Response redirectToIntyg(@Context UriInfo uriInfo,
-                                    @PathParam("type") String type,
-                                    @PathParam("intygId") String intygId,
-                                    @QueryParam("enhet") String enhetHsaId) {
+        @PathParam("type") String type,
+        @PathParam("intygId") String intygId,
+        @QueryParam("enhet") String enhetHsaId) {
 
         super.validateParameter("type", type);
         super.validateParameter("intygId", intygId);
@@ -111,15 +106,14 @@ public class FragaSvarUthoppController extends BaseIntegrationController {
      * Fetches a certificate from IT and then performs a redirect to the view that displays
      * the certificate. Used for FK7263 only.
      *
-     * @param intygId
-     *            The id of the certificate to view.
+     * @param intygId The id of the certificate to view.
      */
     @GET
     @Path("/{intygId}/questions")
     @PrometheusTimeMethod
     public Response redirectToIntyg(@Context UriInfo uriInfo,
-                                    @PathParam("intygId") String intygId,
-                                    @QueryParam("enhet") String enhetHsaId) {
+        @PathParam("intygId") String intygId,
+        @QueryParam("enhet") String enhetHsaId) {
 
         super.validateParameter("intygId", intygId);
         super.validateAuthorities();
@@ -136,7 +130,6 @@ public class FragaSvarUthoppController extends BaseIntegrationController {
         this.urlFragmentTemplate = urlFragmentTemplate;
     }
 
-
     // protected scope
 
     @Override
@@ -149,7 +142,6 @@ public class FragaSvarUthoppController extends BaseIntegrationController {
         return GRANTED_ORIGIN;
     }
 
-
     // private stuff
 
     /**
@@ -161,21 +153,21 @@ public class FragaSvarUthoppController extends BaseIntegrationController {
         if (user == null) {
             LOG.error("No user in session, cannot continue");
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM,
-                    "No user session, cannot view questions for intyg " + intygsId);
+                "No user session, cannot view questions for intyg " + intygsId);
         }
 
         if (!Strings.nullToEmpty(enhetHsaId).trim().isEmpty()) {
             // Link contained not empty ?enhet= query param, try to set on user!
             if (!user.changeValdVardenhet(enhetHsaId)) {
                 throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM,
-                        "User does not have access to enhet " + enhetHsaId);
+                    "User does not have access to enhet " + enhetHsaId);
             }
         } else {
             // No enhet on link (legacy fallback for pre WC 5.0 links)
             String enhet = intygService.getIssuingVardenhetHsaId(intygsId, intygsTyp);
             if (!user.changeValdVardenhet(enhet)) {
                 throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM,
-                        "User does not have access to enhet " + enhetHsaId);
+                    "User does not have access to enhet " + enhetHsaId);
             }
         }
     }

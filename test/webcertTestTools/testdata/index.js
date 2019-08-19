@@ -20,39 +20,39 @@
 'use strict';
 
 module.exports = {
-    fk: {
-        '7263': require('./fk.7263.js'),
-        LUSE: require('./fk.LUSE.js'),
-        LISJP: require('./fk.LISJP.js'),
-        LUAE_FS: require('./fk.LUAE_FS.js'),
-        LUAE_NA: require('./fk.LUAE_NA.js')
+  fk: {
+    '7263': require('./fk.7263.js'),
+    LUSE: require('./fk.LUSE.js'),
+    LISJP: require('./fk.LISJP.js'),
+    LUAE_FS: require('./fk.LUAE_FS.js'),
+    LUAE_NA: require('./fk.LUAE_NA.js')
+  },
+  ts: {
+    bas: require('./ts.bas.js'),
+    diabetes: {
+      v2: require('./ts.diabetes.v2.js'),
+      v3: require('./ts.diabetes.v3.js')
     },
-    ts: {
-        bas: require('./ts.bas.js'),
-        diabetes: {
-            v2: require('./ts.diabetes.v2.js'),
-            v3: require('./ts.diabetes.v3.js')
-        },
-        trk1009: {
-            v1: require('./ts.trk1009.v1')
-        },
-        trk1062: require('./ts.trk1062.js')
+    trk1009: {
+      v1: require('./ts.trk1009.v1')
     },
-    skv: {
-        db: require('./skv.db.js')
-    },
-    soc: {
-        doi: require('./soc.doi.js')
-    },
-    af: {
-        af00213: require('./af.00213.js'),
-        af00251: require('./af.00251.js')
-    },
-    ag: {
-        ag114: require('./ag.114.js'),
-        ag7804: require('./ag.7804.js')
-    },
-    values: require('./testvalues.js'),
-    fmb: require('./diagnoskoderFMB.js'),
-    diagnosKategorier: require('./diagnosKategorier_A-F.js')
+    trk1062: require('./ts.trk1062.js')
+  },
+  skv: {
+    db: require('./skv.db.js')
+  },
+  soc: {
+    doi: require('./soc.doi.js')
+  },
+  af: {
+    af00213: require('./af.00213.js'),
+    af00251: require('./af.00251.js')
+  },
+  ag: {
+    ag114: require('./ag.114.js'),
+    ag7804: require('./ag.7804.js')
+  },
+  values: require('./testvalues.js'),
+  fmb: require('./diagnoskoderFMB.js'),
+  diagnosKategorier: require('./diagnosKategorier_A-F.js')
 };

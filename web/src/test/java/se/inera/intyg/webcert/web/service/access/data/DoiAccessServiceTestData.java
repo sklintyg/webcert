@@ -22,29 +22,29 @@ package se.inera.intyg.webcert.web.service.access.data;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 
 public class DoiAccessServiceTestData implements AccessServiceTestData {
+
     private static List<String> FEATURES = Arrays.asList(
-            AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST,
-            AuthoritiesConstants.FEATURE_FORNYA_INTYG,
-            AuthoritiesConstants.FEATURE_MAKULERA_INTYG,
-            AuthoritiesConstants.FEATURE_SKAPA_NYFRAGA,
-            // TODO verifiera hurvida det skall gå att skicka intygstypen eller inte
-            // AuthoritiesConstants.FEATURE_SKICKA_INTYG,
-            AuthoritiesConstants.FEATURE_SIGNERA_SKICKA_DIREKT,
-            AuthoritiesConstants.FEATURE_UTSKRIFT,
-            AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST_AVLIDEN,
-            AuthoritiesConstants.FEATURE_TAK_KONTROLL,
-            AuthoritiesConstants.FEATURE_UNIKT_INTYG_INOM_VG,
-            AuthoritiesConstants.FEATURE_UNIKT_UTKAST_INOM_VG,
-            AuthoritiesConstants.FEATURE_UNIKT_UNDANTAG_OM_SENASTE_INTYG);
+        AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST,
+        AuthoritiesConstants.FEATURE_FORNYA_INTYG,
+        AuthoritiesConstants.FEATURE_MAKULERA_INTYG,
+        AuthoritiesConstants.FEATURE_SKAPA_NYFRAGA,
+        // TODO verifiera hurvida det skall gå att skicka intygstypen eller inte
+        // AuthoritiesConstants.FEATURE_SKICKA_INTYG,
+        AuthoritiesConstants.FEATURE_SIGNERA_SKICKA_DIREKT,
+        AuthoritiesConstants.FEATURE_UTSKRIFT,
+        AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST_AVLIDEN,
+        AuthoritiesConstants.FEATURE_TAK_KONTROLL,
+        AuthoritiesConstants.FEATURE_UNIKT_INTYG_INOM_VG,
+        AuthoritiesConstants.FEATURE_UNIKT_UTKAST_INOM_VG,
+        AuthoritiesConstants.FEATURE_UNIKT_UNDANTAG_OM_SENASTE_INTYG);
     private static List<String> PRIVILEGES = Arrays.asList(
-            AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG,
-            AuthoritiesConstants.PRIVILEGE_VISA_INTYG,
-            AuthoritiesConstants.PRIVILEGE_MAKULERA_INTYG,
-            AuthoritiesConstants.PRIVILEGE_ERSATTA_INTYG);
+        AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG,
+        AuthoritiesConstants.PRIVILEGE_VISA_INTYG,
+        AuthoritiesConstants.PRIVILEGE_MAKULERA_INTYG,
+        AuthoritiesConstants.PRIVILEGE_ERSATTA_INTYG);
 
     @Override
     public List<String> getFeatures() {

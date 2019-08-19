@@ -20,7 +20,6 @@ package se.inera.intyg.webcert.web.service.user;
 
 import java.util.List;
 import javax.servlet.http.HttpSession;
-
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 public interface WebCertUserService {
@@ -38,15 +37,13 @@ public interface WebCertUserService {
 
     /**
      * Returns the user principal from the session.
-     *
-     * @return
      */
     WebCertUser getUser();
 
     /**
      * Stores (creates or updates) the given key-value pair for current user. Stores in DB and updates the session.
      *
-     * @param key   An arbitrary string-based key.
+     * @param key An arbitrary string-based key.
      * @param value An arbitrary string-based value.
      */
     void storeUserPreference(String key, String value);
@@ -87,7 +84,7 @@ public interface WebCertUserService {
      * <p>
      * This is done after a timeout and invalidation can be cancelled through calling {@link #cancelScheduledLogout}.
      *
-     * @param session   The HttpSession to call invalidate on after timeout.
+     * @param session The HttpSession to call invalidate on after timeout.
      */
     void scheduleSessionRemoval(HttpSession session);
 

@@ -22,12 +22,9 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
-
 import javax.xml.ws.WebServiceException;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import se.inera.intyg.webcert.common.client.SendCertificateServiceClient;
 import se.riv.clinicalprocess.healthcond.certificate.sendCertificateToRecipient.v2.SendCertificateToRecipientResponseType;
 import se.riv.clinicalprocess.healthcond.certificate.v3.ErrorIdType;
@@ -49,7 +46,7 @@ public class MockSendCertificateServiceClientImpl implements SendCertificateServ
 
     @Override
     public SendCertificateToRecipientResponseType sendCertificate(String intygsId, String personId, String skickatAvJson, String recipient,
-            String logicalAddress) {
+        String logicalAddress) {
         count.incrementAndGet();
 
         if (intygsId.startsWith(FALLERAT_MEDDELANDE)) {

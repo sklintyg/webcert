@@ -79,40 +79,46 @@ public class IcfKod {
     // CHECKSTYLE:OFF MagicNumber
     @Override
     public boolean equals(final Object o) {
-        if (this == o) return true;
+        if (this == o) {
+            return true;
+        }
 
-        if (o == null) return false;
+        if (o == null) {
+            return false;
+        }
 
-        if (!(o instanceof IcfKod)) return false;
+        if (!(o instanceof IcfKod)) {
+            return false;
+        }
 
         final IcfKod icfKod = (IcfKod) o;
 
         return new EqualsBuilder()
-                .append(kod, icfKod.kod)
-                .append(benamning, icfKod.benamning)
-                .append(beskrivning, icfKod.beskrivning)
-                .append(innefattar, icfKod.innefattar)
-                .isEquals();
+            .append(kod, icfKod.kod)
+            .append(benamning, icfKod.benamning)
+            .append(beskrivning, icfKod.beskrivning)
+            .append(innefattar, icfKod.innefattar)
+            .isEquals();
     }
 
     @Override
     public int hashCode() {
         return new HashCodeBuilder(17, 37)
-                .append(kod)
-                .append(benamning)
-                .append(beskrivning)
-                .append(innefattar)
-                .toHashCode();
+            .append(kod)
+            .append(benamning)
+            .append(beskrivning)
+            .append(innefattar)
+            .toHashCode();
     }
 
     @Override
     public String toString() {
         return new ToStringBuilder(this)
-                .append("kod", kod)
-                .append("benamning", benamning)
-                .append("beskrivning", beskrivning)
-                .append("innefattar", innefattar)
-                .toString();
+            .append("kod", kod)
+            .append("benamning", benamning)
+            .append("beskrivning", beskrivning)
+            .append("innefattar", innefattar)
+            .toString();
     }
     // CHECKSTYLE:ON NeedBraces
     // CHECKSTYLE:ON MagicNumber

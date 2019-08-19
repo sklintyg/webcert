@@ -21,125 +21,124 @@
  * Controller for logic related to listing unsigned certs
  */
 angular.module('webcert').controller('webcert.EjSigneradeUtkastCtrl',
-    [ '$log', '$scope', '$timeout', '$window', 'common.dialogService', 'webcert.UtkastFilterModel', 'webcert.UtkastProxy', 'common.User',
-        function($log, $scope, $timeout, $window, dialogService, UtkastFilterModel, UtkastProxy, User) {
-            'use strict';
+    ['$log', '$scope', '$timeout', '$window', 'common.dialogService', 'webcert.UtkastFilterModel', 'webcert.UtkastProxy', 'common.User',
+      function($log, $scope, $timeout, $window, dialogService, UtkastFilterModel, UtkastProxy, User) {
+        'use strict';
 
-            // Constant settings
-            var PAGE_SIZE = 10;
+        // Constant settings
+        var PAGE_SIZE = 10;
 
-            $scope.filter = UtkastFilterModel.build(PAGE_SIZE);
+        $scope.filter = UtkastFilterModel.build(PAGE_SIZE);
 
+        // Exposed page state variables
+        $scope.widgetState = {
 
-            // Exposed page state variables
-            $scope.widgetState = {
+          // User context
+          valdVardenhet: User.getValdVardenhet(),
 
-                // User context
-                valdVardenhet: User.getValdVardenhet(),
+          // Loading states
+          doneLoading: true,
+          runningQuery: false,
+          fetchingMoreInProgress: false,
 
-                // Loading states
-                doneLoading: true,
-                runningQuery: false,
-                fetchingMoreInProgress: false,
+          // Error state
+          activeErrorMessageKey: null,
 
-                // Error state
-                activeErrorMessageKey: null,
+          // Search states
+          filteredYet: false,
+          initialQueryWasEmpty: true,
 
-                // Search states
-                filteredYet: false,
-                initialQueryWasEmpty: true,
+          //Active query
+          currentFilterRequest: $scope.filter.convertToPayload(),
 
-                //Active query
-                currentFilterRequest :  $scope.filter.convertToPayload(),
+          // List data
+          totalCount: 0,
+          currentList: undefined
+        };
 
-                // List data
-                totalCount: 0,
-                currentList: undefined
-            };
+        /**
+         *  Load initial data
+         */
+        $scope.widgetState.doneLoading = false;
 
-            /**
-             *  Load initial data
-             */
-            $scope.widgetState.doneLoading = false;
+        UtkastProxy.getUtkastList($scope.filter.convertToPayload(), function(data) {
 
-            UtkastProxy.getUtkastList($scope.filter.convertToPayload(), function(data) {
+          $scope.widgetState.doneLoading = true;
+          $scope.widgetState.activeErrorMessageKey = null;
+          $scope.widgetState.currentList = data.results;
+          $scope.widgetState.totalCount = data.totalCount;
+          $scope.widgetState.initialQueryWasEmpty = (data.totalCount === 0 && !$scope.widgetState.filteredYet);
 
-                $scope.widgetState.doneLoading = true;
-                $scope.widgetState.activeErrorMessageKey = null;
-                $scope.widgetState.currentList = data.results;
-                $scope.widgetState.totalCount = data.totalCount;
-                $scope.widgetState.initialQueryWasEmpty = (data.totalCount === 0 && !$scope.widgetState.filteredYet);
+        }, function() {
+          $log.debug('Query Error');
+          $scope.widgetState.doneLoading = true;
+          $scope.widgetState.activeErrorMessageKey = 'info.query.error';
+        });
 
-            }, function() {
-                $log.debug('Query Error');
-                $scope.widgetState.doneLoading = true;
-                $scope.widgetState.activeErrorMessageKey = 'info.query.error';
-            });
+        /**
+         * Exposed scope functions
+         **/
+        $scope.filterDrafts = function() {
+          $log.debug('filterDrafts');
 
-            /**
-             * Exposed scope functions
-             **/
-            $scope.filterDrafts = function() {
-                $log.debug('filterDrafts');
+          $scope.widgetState.activeErrorMessageKey = null;
+          $scope.widgetState.filteredYet = true;
+          $scope.widgetState.initialQueryWasEmpty = false;
 
-                $scope.widgetState.activeErrorMessageKey = null;
-                $scope.widgetState.filteredYet = true;
-                $scope.widgetState.initialQueryWasEmpty = false;
+          $scope.widgetState.currentFilterRequest.startFrom = 0;
 
-                $scope.widgetState.currentFilterRequest.startFrom = 0;
+          $scope.widgetState.currentFilterRequest = $scope.filter.convertToPayload();
 
-                $scope.widgetState.currentFilterRequest = $scope.filter.convertToPayload();
+          var spinnerWaiting = $timeout(function() {
+            $scope.widgetState.runningQuery = true;
+          }, 700);
+          UtkastProxy.getUtkastFetchMore($scope.widgetState.currentFilterRequest, function(successData) {
+            $scope.widgetState.currentList = successData.results;
+            $scope.widgetState.totalCount = successData.totalCount;
+            if (spinnerWaiting) {
+              $timeout.cancel(spinnerWaiting);
+            }
+            $scope.widgetState.runningQuery = false;
+          }, function() {
+            $log.debug('Query Error');
+            $scope.widgetState.activeErrorMessageKey = 'info.query.error';
+            if (spinnerWaiting) {
+              $timeout.cancel(spinnerWaiting);
+            }
+            $scope.widgetState.runningQuery = false;
+          });
+        };
 
-                var spinnerWaiting = $timeout(function() {
-                        $scope.widgetState.runningQuery = true;
-                    }, 700);
-                UtkastProxy.getUtkastFetchMore($scope.widgetState.currentFilterRequest, function(successData) {
-                    $scope.widgetState.currentList = successData.results;
-                    $scope.widgetState.totalCount = successData.totalCount;
-                    if (spinnerWaiting) {
-                        $timeout.cancel(spinnerWaiting);
-                    }
-                    $scope.widgetState.runningQuery = false;
-                }, function() {
-                    $log.debug('Query Error');
-                    $scope.widgetState.activeErrorMessageKey = 'info.query.error';
-                    if (spinnerWaiting) {
-                        $timeout.cancel(spinnerWaiting);
-                    }
-                    $scope.widgetState.runningQuery = false;
-                });
-            };
+        $scope.showFetchMore = function() {
+          return ($scope.widgetState.currentFilterRequest.startFrom + PAGE_SIZE < $scope.widgetState.totalCount) || $scope.widgetState.fetchingMoreInProgress;
+        };
 
-            $scope.showFetchMore = function() {
-                return ($scope.widgetState.currentFilterRequest.startFrom + PAGE_SIZE < $scope.widgetState.totalCount) || $scope.widgetState.fetchingMoreInProgress;
-            };
+        $scope.fetchMore = function() {
+          $log.debug('fetchMore');
+          $scope.widgetState.activeErrorMessageKey = null;
+          $scope.widgetState.fetchingMoreInProgress = true;
+          //Change nothing but
+          $scope.widgetState.currentFilterRequest.startFrom += PAGE_SIZE;
 
-            $scope.fetchMore = function() {
-                $log.debug('fetchMore');
-                $scope.widgetState.activeErrorMessageKey = null;
-                $scope.widgetState.fetchingMoreInProgress = true;
-                //Change nothing but
-                $scope.widgetState.currentFilterRequest.startFrom += PAGE_SIZE;
+          UtkastProxy.getUtkastFetchMore($scope.widgetState.currentFilterRequest, function(successData) {
+            $scope.widgetState.fetchingMoreInProgress = false;
+            for (var i = 0; i < successData.results.length; i++) {
+              $scope.widgetState.currentList.push(successData.results[i]);
+            }
+          }, function() {
+            $scope.widgetState.fetchingMoreInProgress = false;
+            $log.debug('Query Error');
+            $scope.widgetState.activeErrorMessageKey = 'info.query.error';
+          });
+        };
 
-                UtkastProxy.getUtkastFetchMore($scope.widgetState.currentFilterRequest, function(successData) {
-                    $scope.widgetState.fetchingMoreInProgress = false;
-                    for (var i = 0; i < successData.results.length; i++) {
-                        $scope.widgetState.currentList.push(successData.results[i]);
-                    }
-                }, function() {
-                    $scope.widgetState.fetchingMoreInProgress = false;
-                    $log.debug('Query Error');
-                    $scope.widgetState.activeErrorMessageKey = 'info.query.error';
-                });
-            };
+        $scope.orderByProperty = function(property, ascending) {
+          $log.debug('orderByProperty');
+          $scope.filter.selection.orderBy = property;
+          $scope.filter.selection.orderAscending = ascending;
 
-            $scope.orderByProperty = function(property, ascending) {
-                $log.debug('orderByProperty');
-                $scope.filter.selection.orderBy = property;
-                $scope.filter.selection.orderAscending = ascending;
+          $scope.filterDrafts();
 
-                $scope.filterDrafts();
+        };
 
-            };
-
-        }]);
+      }]);

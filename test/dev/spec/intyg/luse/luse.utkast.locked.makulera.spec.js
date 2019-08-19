@@ -31,42 +31,43 @@ var intygGenerator = wcTestTools.intygGenerator;
 var restTestdataHelper = wcTestTools.helpers.restTestdata;
 
 describe('Luse locked utkast makulera tests', function() {
-    var intygId = 'luse-locked-utkast-1';
+  var intygId = 'luse-locked-utkast-1';
 
-    beforeAll(function() {
-        browser.ignoreSynchronization = false;
-        specHelper.login();
-        var testData = {
-            'contents':intygGenerator.getIntygJson({'intygType':'luse','intygId':intygId}),
-            'utkastStatus':'DRAFT_LOCKED',
-            'revoked':false
-        };
-        restTestdataHelper.createWebcertIntyg(testData);
-    });
+  beforeAll(function() {
+    browser.ignoreSynchronization = false;
+    specHelper.login();
+    var testData = {
+      'contents': intygGenerator.getIntygJson({'intygType': 'luse', 'intygId': intygId}),
+      'utkastStatus': 'DRAFT_LOCKED',
+      'revoked': false
+    };
+    restTestdataHelper.createWebcertIntyg(testData);
+  });
 
-    afterAll(function() {
-        testdataHelper.deleteUtkast(intygId);
-    });
+  afterAll(function() {
+    testdataHelper.deleteUtkast(intygId);
+  });
 
-    it('should load utkast and possible to copy', function() {
-        LuseUtkastPage.get(intygId);
-        expect(LuseUtkastPage.makulera.btn.isPresent()).toBeTruthy();
-    });
+  it('should load utkast and possible to copy', function() {
+    LuseUtkastPage.get(intygId);
+    expect(LuseUtkastPage.makulera.btn.isPresent()).toBeTruthy();
+  });
 
-    it('revoke draft', function() {
-        LuseUtkastPage.makulera.btn.sendKeys(protractor.Key.SPACE);
-        LuseUtkastPage.makulera.dialogRadioAnnatAllvarligtFel.sendKeys(protractor.Key.SPACE);
-        browser.wait(LuseUtkastPage.makulera.dialogRadioAnnatAllvarligtFelClarification.isDisplayed())
-            .then(LuseUtkastPage.makulera.dialogRadioAnnatAllvarligtFelClarification.sendKeys("Patienten har en helt annan diagnos än den angivna, blandade ihop mjältbrand med nageltrång. Lätt hänt..."));
+  it('revoke draft', function() {
+    LuseUtkastPage.makulera.btn.sendKeys(protractor.Key.SPACE);
+    LuseUtkastPage.makulera.dialogRadioAnnatAllvarligtFel.sendKeys(protractor.Key.SPACE);
+    browser.wait(LuseUtkastPage.makulera.dialogRadioAnnatAllvarligtFelClarification.isDisplayed())
+    .then(LuseUtkastPage.makulera.dialogRadioAnnatAllvarligtFelClarification.sendKeys(
+        "Patienten har en helt annan diagnos än den angivna, blandade ihop mjältbrand med nageltrång. Lätt hänt..."));
 
-        LuseUtkastPage.makulera.dialogMakulera.sendKeys(protractor.Key.SPACE);
+    LuseUtkastPage.makulera.dialogMakulera.sendKeys(protractor.Key.SPACE);
 
-        expect(LuseUtkastPage.makulera.statusRevoked.isDisplayed()).toBeTruthy();
+    expect(LuseUtkastPage.makulera.statusRevoked.isDisplayed()).toBeTruthy();
 
-        expect(LuseUtkastPage.makulera.btn.isPresent()).toBeFalsy();
-        expect(LuseUtkastPage.skrivUtBtn.isPresent()).toBeFalsy();
-        expect(LuseUtkastPage.kopiera.btn.isPresent()).toBeFalsy();
-        expect(LuseUtkastPage.signeraButton.isPresent()).toBeFalsy();
-        expect(LuseUtkastPage.radera.knapp.isPresent()).toBeFalsy();
-    });
+    expect(LuseUtkastPage.makulera.btn.isPresent()).toBeFalsy();
+    expect(LuseUtkastPage.skrivUtBtn.isPresent()).toBeFalsy();
+    expect(LuseUtkastPage.kopiera.btn.isPresent()).toBeFalsy();
+    expect(LuseUtkastPage.signeraButton.isPresent()).toBeFalsy();
+    expect(LuseUtkastPage.radera.knapp.isPresent()).toBeFalsy();
+  });
 });

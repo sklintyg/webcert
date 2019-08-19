@@ -32,105 +32,105 @@ var IntygPage = wcTestTools.pages.intyg.ts.bas.intyg;
 
 describe('Create and Sign ts-bas utkast', function() {
 
-    var utkastId = null,
-        data = null;
+  var utkastId = null,
+      data = null;
 
-    beforeAll(function() {
-        browser.ignoreSynchronization = false;
-        specHelper.login();
-        specHelper.createUtkastForPatient('191212121212', 'ts-bas');
+  beforeAll(function() {
+    browser.ignoreSynchronization = false;
+    specHelper.login();
+    specHelper.createUtkastForPatient('191212121212', 'ts-bas');
+  });
+
+  it('Spara undan intygsId från URL', function() {
+    UtkastPage.disableAutosave();
+
+    specHelper.getUtkastIdFromUrl().then(function(id) {
+      utkastId = id;
     });
+    data = wcTestTools.testdata.ts.bas.get(utkastId);
+  });
 
-    it('Spara undan intygsId från URL', function() {
-        UtkastPage.disableAutosave();
-
-        specHelper.getUtkastIdFromUrl().then(function(id) {
-            utkastId = id;
-        });
-        data = wcTestTools.testdata.ts.bas.get(utkastId);
+  describe('Fyll i intyget', function() {
+    it('fillInKorkortstyper', function() {
+      UtkastPage.fillInKorkortstyper(data.korkortstyper);
     });
-
-    describe('Fyll i intyget', function() {
-        it('fillInKorkortstyper', function() {
-            UtkastPage.fillInKorkortstyper(data.korkortstyper);
-        });
-        it('fillInIdentitetStyrktGenom', function() {
-            UtkastPage.fillInIdentitetStyrktGenom(data.identitetStyrktGenom);
-        });
-        it('fillInSynfunktioner', function() {
-            UtkastPage.fillInSynfunktioner(data);
-        });
-        it('fillInHorselOchBalanssinne', function() {
-            UtkastPage.fillInHorselOchBalanssinne(data.horsel);
-        });
-        it('fillInRorelseorganensFunktioner', function() {
-            UtkastPage.fillInRorelseorganensFunktioner(data.rorelseorganensFunktioner);
-        });
-        it('fillInHjartOchKarlsjukdomar', function() {
-            UtkastPage.fillInHjartOchKarlsjukdomar(data);
-        });
-        it('fillInDiabetes', function() {
-            UtkastPage.fillInDiabetes(data.diabetes);
-        });
-        it('fillInHorselOchBalanssinne', function() {
-            UtkastPage.fillInHorselOchBalanssinne(data.horsel);
-        });
-        it('fillInNeurologiskaSjukdomar', function() {
-            UtkastPage.fillInNeurologiskaSjukdomar(data);
-        });
-        it('fillInEpilepsi', function() {
-            UtkastPage.fillInEpilepsi(data);
-        });
-        it('fillInNjursjukdomar', function() {
-            UtkastPage.fillInNjursjukdomar(data);
-        });
-        it('fillInDemens', function() {
-            UtkastPage.fillInDemens(data);
-        });
-        it('fillInSomnOchVakenhet', function() {
-            UtkastPage.fillInSomnOchVakenhet(data);
-        });
-        it('fillInAlkoholNarkotikaLakemedel', function() {
-            UtkastPage.fillInAlkoholNarkotikaLakemedel(data);
-        });
-        it('fillInPsykiska', function() {
-            UtkastPage.fillInPsykiska(data);
-        });
-        it('fillInAdhd', function() {
-            UtkastPage.fillInAdhd(data);
-        });
-        it('fillInSjukhusvard', function() {
-            UtkastPage.fillInSjukhusvard(data);
-        });
-        it('fillInOvrigMedicinering', function() {
-            UtkastPage.fillInOvrigMedicinering(data);
-        });
-        it('fillInOvrigKommentar', function() {
-            UtkastPage.enableAutosave();
-            UtkastPage.fillInOvrigKommentar(data);
-        });
-        it('fillInBedomning', function() {
-            UtkastPage.fillInBedomning(data.bedomning);
-        });
-        it('fillInSpecialist', function() {
-            UtkastPage.fillInSpecialist(data.specialist);
-        });
+    it('fillInIdentitetStyrktGenom', function() {
+      UtkastPage.fillInIdentitetStyrktGenom(data.identitetStyrktGenom);
     });
-
-    it('Signera intyget', function() {
-        UtkastPage.whenSigneraButtonIsEnabled();
-
-        UtkastPage.signeraButtonClick();
-
-        expect(IntygPage.isAt()).toBeTruthy();
+    it('fillInSynfunktioner', function() {
+      UtkastPage.fillInSynfunktioner(data);
     });
-
-    it('Verifiera intyg', function() {
-        IntygPage.verify(data);
+    it('fillInHorselOchBalanssinne', function() {
+      UtkastPage.fillInHorselOchBalanssinne(data.horsel);
     });
-
-    afterAll(function() {
-        testdataHelper.deleteIntyg(utkastId);
-        testdataHelper.deleteUtkast(utkastId);
+    it('fillInRorelseorganensFunktioner', function() {
+      UtkastPage.fillInRorelseorganensFunktioner(data.rorelseorganensFunktioner);
     });
+    it('fillInHjartOchKarlsjukdomar', function() {
+      UtkastPage.fillInHjartOchKarlsjukdomar(data);
+    });
+    it('fillInDiabetes', function() {
+      UtkastPage.fillInDiabetes(data.diabetes);
+    });
+    it('fillInHorselOchBalanssinne', function() {
+      UtkastPage.fillInHorselOchBalanssinne(data.horsel);
+    });
+    it('fillInNeurologiskaSjukdomar', function() {
+      UtkastPage.fillInNeurologiskaSjukdomar(data);
+    });
+    it('fillInEpilepsi', function() {
+      UtkastPage.fillInEpilepsi(data);
+    });
+    it('fillInNjursjukdomar', function() {
+      UtkastPage.fillInNjursjukdomar(data);
+    });
+    it('fillInDemens', function() {
+      UtkastPage.fillInDemens(data);
+    });
+    it('fillInSomnOchVakenhet', function() {
+      UtkastPage.fillInSomnOchVakenhet(data);
+    });
+    it('fillInAlkoholNarkotikaLakemedel', function() {
+      UtkastPage.fillInAlkoholNarkotikaLakemedel(data);
+    });
+    it('fillInPsykiska', function() {
+      UtkastPage.fillInPsykiska(data);
+    });
+    it('fillInAdhd', function() {
+      UtkastPage.fillInAdhd(data);
+    });
+    it('fillInSjukhusvard', function() {
+      UtkastPage.fillInSjukhusvard(data);
+    });
+    it('fillInOvrigMedicinering', function() {
+      UtkastPage.fillInOvrigMedicinering(data);
+    });
+    it('fillInOvrigKommentar', function() {
+      UtkastPage.enableAutosave();
+      UtkastPage.fillInOvrigKommentar(data);
+    });
+    it('fillInBedomning', function() {
+      UtkastPage.fillInBedomning(data.bedomning);
+    });
+    it('fillInSpecialist', function() {
+      UtkastPage.fillInSpecialist(data.specialist);
+    });
+  });
+
+  it('Signera intyget', function() {
+    UtkastPage.whenSigneraButtonIsEnabled();
+
+    UtkastPage.signeraButtonClick();
+
+    expect(IntygPage.isAt()).toBeTruthy();
+  });
+
+  it('Verifiera intyg', function() {
+    IntygPage.verify(data);
+  });
+
+  afterAll(function() {
+    testdataHelper.deleteIntyg(utkastId);
+    testdataHelper.deleteUtkast(utkastId);
+  });
 });

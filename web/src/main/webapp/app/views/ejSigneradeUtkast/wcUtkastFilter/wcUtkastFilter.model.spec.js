@@ -18,60 +18,60 @@
  */
 
 describe('wcUtkastFilterModel', function() {
-    'use strict';
+  'use strict';
 
-    var moduleService;
-    var wcUtkastFilterModel;
+  var moduleService;
+  var wcUtkastFilterModel;
 
-    beforeEach(function() {
+  beforeEach(function() {
 
-        module('webcert', function($provide) {
-            moduleService = jasmine.createSpyObj('common.moduleService', [ 'getModuleName' ]);
-            $provide.value('common.moduleService', moduleService);
-        });
-
-        inject([ 'webcert.UtkastFilterModel', function(_wcUtkastFilterModel_) {
-            wcUtkastFilterModel = _wcUtkastFilterModel_;
-        } ]);
+    module('webcert', function($provide) {
+      moduleService = jasmine.createSpyObj('common.moduleService', ['getModuleName']);
+      $provide.value('common.moduleService', moduleService);
     });
 
-    it('should initilize correctly', function() {
-        var model = wcUtkastFilterModel.build(100);
+    inject(['webcert.UtkastFilterModel', function(_wcUtkastFilterModel_) {
+      wcUtkastFilterModel = _wcUtkastFilterModel_;
+    }]);
+  });
 
-        expect(model.pageSize).toEqual(100);
+  it('should initilize correctly', function() {
+    var model = wcUtkastFilterModel.build(100);
 
-    });
+    expect(model.pageSize).toEqual(100);
 
-    it('should convertToPayload correctly', function() {
-        var model = wcUtkastFilterModel.build(100);
-        model.selection.status = 'DRAFT_COMPLETE';
-        model.selection.notified = 'NOTIFIED_NO';
-        model.selection.savedFrom = new Date('2018-02-03T16:24:00');
-        model.selection.savedTo = new Date('2018-02-09T16:24:00');
-        var payload = model.convertToPayload();
+  });
 
-        expect(payload.pageSize).toEqual(100);
-        expect(payload.startFrom).toEqual(0);
-        expect(payload.status).toBe('DRAFT_COMPLETE');
-        expect(payload.notified).toBe(false);
-        expect(payload.savedFrom).toEqual('2018-02-03');
-        expect(payload.savedTo).toEqual('2018-02-10');
-        expect(payload.notified).toBe(false);
+  it('should convertToPayload correctly', function() {
+    var model = wcUtkastFilterModel.build(100);
+    model.selection.status = 'DRAFT_COMPLETE';
+    model.selection.notified = 'NOTIFIED_NO';
+    model.selection.savedFrom = new Date('2018-02-03T16:24:00');
+    model.selection.savedTo = new Date('2018-02-09T16:24:00');
+    var payload = model.convertToPayload();
 
-    });
+    expect(payload.pageSize).toEqual(100);
+    expect(payload.startFrom).toEqual(0);
+    expect(payload.status).toBe('DRAFT_COMPLETE');
+    expect(payload.notified).toBe(false);
+    expect(payload.savedFrom).toEqual('2018-02-03');
+    expect(payload.savedTo).toEqual('2018-02-10');
+    expect(payload.notified).toBe(false);
 
-    it('should reset correctly', function() {
-        var pristine = wcUtkastFilterModel.build(100);
-        var model = wcUtkastFilterModel.build(100);
-        model.selection.status = 'DRAFT_COMPLETE';
-        model.selection.notified = 'NOTIFIED_NO';
-        model.selection.savedFrom = new Date();
-        model.selection.savedTo = new Date();
+  });
 
-        model.reset();
+  it('should reset correctly', function() {
+    var pristine = wcUtkastFilterModel.build(100);
+    var model = wcUtkastFilterModel.build(100);
+    model.selection.status = 'DRAFT_COMPLETE';
+    model.selection.notified = 'NOTIFIED_NO';
+    model.selection.savedFrom = new Date();
+    model.selection.savedTo = new Date();
 
-        expect(model).toEqual(pristine);
+    model.reset();
 
-    });
+    expect(model).toEqual(pristine);
+
+  });
 
 });

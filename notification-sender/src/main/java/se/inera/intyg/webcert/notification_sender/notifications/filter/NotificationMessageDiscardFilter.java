@@ -19,11 +19,6 @@
 package se.inera.intyg.webcert.notification_sender.notifications.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.camel.Message;
-import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
-import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
-import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -32,6 +27,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import org.apache.camel.Message;
+import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
+import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
+import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
 
 /**
  * Created by eriklupander on 2016-07-04.
@@ -53,27 +52,27 @@ public class NotificationMessageDiscardFilter {
             }
 
             switch (msg.getHandelse()) {
-            case SIGNAT:
-                handleSigneratNotification(latestMessage, camelMsg, msg);
-                break;
+                case SIGNAT:
+                    handleSigneratNotification(latestMessage, camelMsg, msg);
+                    break;
 
-            case ANDRAT:
-                handleAndratNotification(latestMessage, camelMsg, msg);
-                break;
+                case ANDRAT:
+                    handleAndratNotification(latestMessage, camelMsg, msg);
+                    break;
 
-            default:
-                // If some unknown type accidently makes its way in here, just forward it.
-                latestMessage.get(msg.getIntygsId()).add(camelMsg);
-                break;
+                default:
+                    // If some unknown type accidently makes its way in here, just forward it.
+                    latestMessage.get(msg.getIntygsId()).add(camelMsg);
+                    break;
             }
         }
 
         // Flatten out the hashmap values and return as list.
         return latestMessage.values().stream()
-                .flatMap(Collection::stream)
-                .filter(msg -> getNotificationFromBody(msg).getHandelse() != HandelsekodEnum.SIGNAT) // Makes sure no SIGNAT may leave
-                                                                                                     // this filter.
-                .collect(Collectors.toList());
+            .flatMap(Collection::stream)
+            .filter(msg -> getNotificationFromBody(msg).getHandelse() != HandelsekodEnum.SIGNAT) // Makes sure no SIGNAT may leave
+            // this filter.
+            .collect(Collectors.toList());
     }
 
     private void handleAndratNotification(Map<String, List<Message>> latestMessage, Message camelMsg, NotificationMessage msg) {
@@ -81,15 +80,15 @@ public class NotificationMessageDiscardFilter {
 
         // If SIGNERAT entry exists, do nothing
         if (existingMessagesForIntygsId.stream()
-                .filter(existingMsg -> getNotificationFromBody(existingMsg).getHandelse() == HandelsekodEnum.SIGNAT)
-                .count() > 0) {
+            .filter(existingMsg -> getNotificationFromBody(existingMsg).getHandelse() == HandelsekodEnum.SIGNAT)
+            .count() > 0) {
             return;
         }
 
         // Extract the existing msg of ANDRAT type if it exists (Can never be more than one)
         Message andratMsg = existingMessagesForIntygsId.stream()
-                .filter(existingMsg -> getNotificationFromBody(existingMsg).getHandelse() == HandelsekodEnum.ANDRAT)
-                .findFirst().orElse(null);
+            .filter(existingMsg -> getNotificationFromBody(existingMsg).getHandelse() == HandelsekodEnum.ANDRAT)
+            .findFirst().orElse(null);
 
         // No existing of type, add.
         if (andratMsg == null) {

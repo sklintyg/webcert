@@ -20,7 +20,6 @@ package se.inera.intyg.webcert.persistence.utkast.repository;
 
 import java.util.List;
 import java.util.Set;
-
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 
 public interface UtkastFilteredRepositoryCustom {
@@ -30,7 +29,6 @@ public interface UtkastFilteredRepositoryCustom {
      *
      * @param filter Ett filter med värden som satts av användaren
      * @param authorizedIntygstyper Användarens tillåtna intygstyper
-     * @return
      */
     List<Utkast> filterIntyg(UtkastFilter filter, Set<String> authorizedIntygstyper);
 
@@ -39,7 +37,6 @@ public interface UtkastFilteredRepositoryCustom {
      *
      * @param filter Ett filter med värden som satts av användaren
      * @param authorizedIntygstyper Användarens tillåtna intygstyper
-     * @return
      */
     int countFilterIntyg(UtkastFilter filter, Set<String> authorizedIntygstyper);
 }

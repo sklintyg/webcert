@@ -21,11 +21,11 @@ package se.inera.intyg.webcert.web.web.controller.api.dto;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import se.inera.intyg.common.support.modules.registry.IntygModule;
 import se.inera.intyg.webcert.web.web.util.resourcelinks.dto.ActionLink;
 
 public class IntygModuleDTO implements Comparable<IntygModuleDTO> {
+
     private String id;
 
     private String label;

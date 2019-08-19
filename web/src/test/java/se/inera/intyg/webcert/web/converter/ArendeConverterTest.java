@@ -18,6 +18,21 @@
  */
 package se.inera.intyg.webcert.web.converter;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.List;
+import javax.xml.ws.WebServiceException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -43,20 +58,9 @@ import se.riv.clinicalprocess.healthcond.certificate.types.v3.PersonId;
 import se.riv.clinicalprocess.healthcond.certificate.v3.MeddelandeReferens;
 import se.riv.infrastructure.directory.v1.PersonInformationType;
 
-import javax.xml.ws.WebServiceException;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.List;
-
-import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
 @RunWith(MockitoJUnitRunner.class)
 public class ArendeConverterTest {
+
     private static final String FRAGESTALLARKOD_FORSAKRINGSKASSA = "FK";
     private static final String PARTKOD_FKASSA = "FKASSA";
 
@@ -83,9 +87,9 @@ public class ArendeConverterTest {
         final String svarPa = "svarPa";
         final String svarReferensId = "svarReferensId";
         SendMessageToCareType input = createSendMessageToCare(amneskod.name(), intygId, kontaktInfo, skickatAv, frageId, instans,
-                kompletteringsText,
-                meddelande, meddelandeId, paminnelseMeddelandeId, personId, referensId, rubrik, sistaDatum, skickatTidpunkt, svarPa,
-                svarReferensId);
+            kompletteringsText,
+            meddelande, meddelandeId, paminnelseMeddelandeId, personId, referensId, rubrik, sistaDatum, skickatTidpunkt, svarPa,
+            svarReferensId);
         Arende res = ArendeConverter.convert(input);
         assertEquals(amneskod, res.getAmne());
         assertEquals(intygId, res.getIntygsId());
@@ -319,10 +323,10 @@ public class ArendeConverterTest {
     }
 
     private SendMessageToCareType createSendMessageToCare(String amneskod, String intygId, String kontaktInfo, String skickatAv,
-            String frageId,
-            Integer instans, String kompletteringsText, String meddelande, String meddelandeId, String paminnelseMeddelandeId,
-            String personId,
-            String referensId, String rubrik, LocalDate sistaDatum, LocalDateTime skickatTidpunkt, String svarPa, String svarReferensId) {
+        String frageId,
+        Integer instans, String kompletteringsText, String meddelande, String meddelandeId, String paminnelseMeddelandeId,
+        String personId,
+        String referensId, String rubrik, LocalDate sistaDatum, LocalDateTime skickatTidpunkt, String svarPa, String svarReferensId) {
         SendMessageToCareType res = new SendMessageToCareType();
 
         Amneskod amne = new Amneskod();

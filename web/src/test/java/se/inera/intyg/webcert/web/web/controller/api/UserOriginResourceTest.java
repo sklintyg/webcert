@@ -18,17 +18,22 @@
  */
 package se.inera.intyg.webcert.web.web.controller.api;
 
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.times;
+
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.*;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.webcert.web.auth.bootstrap.AuthoritiesConfigurationTestSetup;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.authtestability.UserResource;
-
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.times;
 
 public class UserOriginResourceTest extends AuthoritiesConfigurationTestSetup {
 

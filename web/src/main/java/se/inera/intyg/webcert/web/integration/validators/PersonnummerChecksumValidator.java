@@ -18,11 +18,10 @@
  */
 package se.inera.intyg.webcert.web.integration.validators;
 
-import se.inera.intyg.common.support.validate.ValidatorUtil;
-import se.inera.intyg.schemas.contract.Personnummer;
-
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import se.inera.intyg.common.support.validate.ValidatorUtil;
+import se.inera.intyg.schemas.contract.Personnummer;
 
 public final class PersonnummerChecksumValidator {
 
@@ -56,16 +55,11 @@ public final class PersonnummerChecksumValidator {
     /**
      * Check that the checksum of the personnummer is correct.
      *
-     * @param pnr
-     *            The personnummer. Used in validation messages.
-     * @param dateString
-     *            The date as a string at the form <code>yyyyMMdd</code>.
-     * @param nnn
-     *            The 3 first digits of the last 4.
-     * @param mod10
-     *            The last digit of the personnummer.
-     * @param errors
-     *            ResultValidator that validation messages are added to.
+     * @param pnr The personnummer. Used in validation messages.
+     * @param dateString The date as a string at the form <code>yyyyMMdd</code>.
+     * @param nnn The 3 first digits of the last 4.
+     * @param mod10 The last digit of the personnummer.
+     * @param errors ResultValidator that validation messages are added to.
      */
     private static void checkChecksum(String pnr, String dateString, String nnn, int mod10, ResultValidator errors) {
         if (ValidatorUtil.calculateMod10(dateString.substring(2) + nnn) != mod10) {

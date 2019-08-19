@@ -18,19 +18,24 @@
  */
 package se.inera.intyg.webcert.notification_sender.certificatesender.services;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.when;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.xml.ws.WebServiceException;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import se.inera.intyg.clinicalprocess.healthcond.certificate.registerapprovedreceivers.v1.ReceiverApprovalStatus;
 import se.inera.intyg.clinicalprocess.healthcond.certificate.registerapprovedreceivers.v1.RegisterApprovedReceiversResponderInterface;
 import se.inera.intyg.clinicalprocess.healthcond.certificate.registerapprovedreceivers.v1.RegisterApprovedReceiversResponseType;
@@ -40,13 +45,6 @@ import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
 import se.riv.clinicalprocess.healthcond.certificate.receiver.types.v1.ApprovalStatusType;
 import se.riv.clinicalprocess.healthcond.certificate.v3.ResultCodeType;
 import se.riv.clinicalprocess.healthcond.certificate.v3.ResultType;
-
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
-import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class RegisterApprovedReceiversProcessorTest {
@@ -66,29 +64,35 @@ public class RegisterApprovedReceiversProcessorTest {
 
     @Test
     public void testRegisterOk() throws TemporaryException, PermanentException, JsonProcessingException {
-        when(registerApprovedReceiversClient.registerApprovedReceivers(anyString(), any(RegisterApprovedReceiversType.class))).thenReturn(buildResponse(ResultCodeType.OK));
+        when(registerApprovedReceiversClient.registerApprovedReceivers(anyString(), any(RegisterApprovedReceiversType.class)))
+            .thenReturn(buildResponse(ResultCodeType.OK));
 
         testee.process(buildRequestBody("FKASSA", "FBA"), INTYG_ID, INTYG_TYP, LOGICAL_ADDRESS);
         verify(registerApprovedReceiversClient, times(1)).registerApprovedReceivers(anyString(), any(RegisterApprovedReceiversType.class));
     }
 
     @Test(expected = TemporaryException.class)
-    public void testRegisterThrowsTemporaryExceptionOnWebServiceException() throws TemporaryException, PermanentException, JsonProcessingException {
-        when(registerApprovedReceiversClient.registerApprovedReceivers(anyString(), any(RegisterApprovedReceiversType.class))).thenThrow(new WebServiceException(""));
+    public void testRegisterThrowsTemporaryExceptionOnWebServiceException()
+        throws TemporaryException, PermanentException, JsonProcessingException {
+        when(registerApprovedReceiversClient.registerApprovedReceivers(anyString(), any(RegisterApprovedReceiversType.class)))
+            .thenThrow(new WebServiceException(""));
         try {
             testee.process(buildRequestBody("FKASSA", "FBA"), INTYG_ID, INTYG_TYP, LOGICAL_ADDRESS);
         } finally {
-            verify(registerApprovedReceiversClient, times(1)).registerApprovedReceivers(anyString(), any(RegisterApprovedReceiversType.class));
+            verify(registerApprovedReceiversClient, times(1))
+                .registerApprovedReceivers(anyString(), any(RegisterApprovedReceiversType.class));
         }
     }
 
     @Test(expected = PermanentException.class)
     public void testRegisterThrowsPermanentExceptionOnError() throws TemporaryException, PermanentException, JsonProcessingException {
-        when(registerApprovedReceiversClient.registerApprovedReceivers(anyString(), any(RegisterApprovedReceiversType.class))).thenReturn(buildResponse(ResultCodeType.ERROR));
+        when(registerApprovedReceiversClient.registerApprovedReceivers(anyString(), any(RegisterApprovedReceiversType.class)))
+            .thenReturn(buildResponse(ResultCodeType.ERROR));
         try {
             testee.process(buildRequestBody("FKASSA", "FBA"), INTYG_ID, INTYG_TYP, LOGICAL_ADDRESS);
         } finally {
-            verify(registerApprovedReceiversClient, times(1)).registerApprovedReceivers(anyString(), any(RegisterApprovedReceiversType.class));
+            verify(registerApprovedReceiversClient, times(1))
+                .registerApprovedReceivers(anyString(), any(RegisterApprovedReceiversType.class));
         }
     }
 
@@ -103,7 +107,8 @@ public class RegisterApprovedReceiversProcessorTest {
 
 
     @Test(expected = PermanentException.class)
-    public void testRegisterThrowsPermanentExceptionOnMissingIntygsId() throws TemporaryException, PermanentException, JsonProcessingException {
+    public void testRegisterThrowsPermanentExceptionOnMissingIntygsId()
+        throws TemporaryException, PermanentException, JsonProcessingException {
         try {
             testee.process(buildRequestBody("FKASSA", "FBA"), null, INTYG_TYP, LOGICAL_ADDRESS);
         } finally {
@@ -112,7 +117,8 @@ public class RegisterApprovedReceiversProcessorTest {
     }
 
     @Test(expected = PermanentException.class)
-    public void testRegisterThrowsPermanentExceptionOnMissingIntygsTyp() throws TemporaryException, PermanentException, JsonProcessingException {
+    public void testRegisterThrowsPermanentExceptionOnMissingIntygsTyp()
+        throws TemporaryException, PermanentException, JsonProcessingException {
         try {
             testee.process(buildRequestBody("FKASSA", "FBA"), INTYG_ID, null, LOGICAL_ADDRESS);
         } finally {
@@ -121,7 +127,8 @@ public class RegisterApprovedReceiversProcessorTest {
     }
 
     @Test(expected = PermanentException.class)
-    public void testRegisterThrowsPermanentExceptionOnBlankIntygsTyp() throws TemporaryException, PermanentException, JsonProcessingException {
+    public void testRegisterThrowsPermanentExceptionOnBlankIntygsTyp()
+        throws TemporaryException, PermanentException, JsonProcessingException {
         try {
             testee.process(buildRequestBody("FKASSA", "FBA"), INTYG_ID, "", LOGICAL_ADDRESS);
         } finally {

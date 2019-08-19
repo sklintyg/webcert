@@ -18,6 +18,14 @@
  */
 package se.inera.intyg.webcert.web.web.controller.api;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.when;
+
+import java.util.Arrays;
+import java.util.List;
+import javax.ws.rs.core.Response;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -29,15 +37,6 @@ import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.infra.dynamiclink.service.DynamicLinkService;
 import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
-
-import javax.ws.rs.core.Response;
-import java.util.Arrays;
-import java.util.List;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ModuleApiControllerTest {
@@ -66,9 +65,10 @@ public class ModuleApiControllerTest {
     @Before
     public void setup() {
         when(moduleRegistry.listAllModules())
-                .thenReturn(Arrays.asList(new IntygModule(MODULE_ID_1, null, null, MODULE_1_DETAILED_DESC, ISSUER_TYPE_ID, null, null, null, null, false),
-                        new IntygModule(MODULE_ID_2, null, null, null, ISSUER_TYPE_ID, null, null, null, null, false),
-                        new IntygModule(MODULE_ID_3, null, null, null, ISSUER_TYPE_ID, null, null, null, null, false)));
+            .thenReturn(Arrays
+                .asList(new IntygModule(MODULE_ID_1, null, null, MODULE_1_DETAILED_DESC, ISSUER_TYPE_ID, null, null, null, null, false),
+                    new IntygModule(MODULE_ID_2, null, null, null, ISSUER_TYPE_ID, null, null, null, null, false),
+                    new IntygModule(MODULE_ID_3, null, null, null, ISSUER_TYPE_ID, null, null, null, null, false)));
     }
 
     @SuppressWarnings("unchecked")

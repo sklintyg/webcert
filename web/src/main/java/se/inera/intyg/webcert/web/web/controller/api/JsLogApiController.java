@@ -18,7 +18,26 @@
  */
 package se.inera.intyg.webcert.web.web.controller.api;
 
+import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
+import static javax.ws.rs.core.Response.ok;
+import static javax.ws.rs.core.Response.status;
+import static se.inera.intyg.webcert.web.web.controller.api.dto.MonitoringRequest.CAREGIVER_ID;
+import static se.inera.intyg.webcert.web.web.controller.api.dto.MonitoringRequest.CARE_UNIT_ID;
+import static se.inera.intyg.webcert.web.web.controller.api.dto.MonitoringRequest.ERROR_MESSAGE;
+import static se.inera.intyg.webcert.web.web.controller.api.dto.MonitoringRequest.HEIGHT;
+import static se.inera.intyg.webcert.web.web.controller.api.dto.MonitoringRequest.INTYG_ID;
+import static se.inera.intyg.webcert.web.web.controller.api.dto.MonitoringRequest.INTYG_TYPE;
+import static se.inera.intyg.webcert.web.web.controller.api.dto.MonitoringRequest.MAIN_DIAGNOSIS_CODE;
+import static se.inera.intyg.webcert.web.web.controller.api.dto.MonitoringRequest.USER_CLIENT_CONTEXT;
+import static se.inera.intyg.webcert.web.web.controller.api.dto.MonitoringRequest.WIDTH;
+
 import io.swagger.annotations.Api;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,18 +45,6 @@ import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
 import se.inera.intyg.webcert.web.web.controller.api.dto.MonitoringRequest;
-
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-
-import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
-import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
-import static javax.ws.rs.core.Response.ok;
-import static javax.ws.rs.core.Response.status;
-import static se.inera.intyg.webcert.web.web.controller.api.dto.MonitoringRequest.*;
 
 /**
  * Controller that logs messages from JavaScript to the normal log.
@@ -69,17 +76,17 @@ public class JsLogApiController extends AbstractApiController {
         }
 
         switch (request.getEvent()) {
-        case SCREEN_RESOLUTION:
-            monitoringService.logScreenResolution(request.getInfo().get(WIDTH), request.getInfo().get(HEIGHT));
-            break;
-        case DIAGNOSKODVERK_CHANGED:
-            monitoringService.logDiagnoskodverkChanged(request.getInfo().get(INTYG_ID), request.getInfo().get(INTYG_TYPE));
-            break;
-        case SIGNING_FAILED:
-            monitoringService.logUtkastSignFailed(request.getInfo().get(ERROR_MESSAGE), request.getInfo().get(INTYG_ID));
-            break;
-        default:
-            return status(BAD_REQUEST).build();
+            case SCREEN_RESOLUTION:
+                monitoringService.logScreenResolution(request.getInfo().get(WIDTH), request.getInfo().get(HEIGHT));
+                break;
+            case DIAGNOSKODVERK_CHANGED:
+                monitoringService.logDiagnoskodverkChanged(request.getInfo().get(INTYG_ID), request.getInfo().get(INTYG_TYPE));
+                break;
+            case SIGNING_FAILED:
+                monitoringService.logUtkastSignFailed(request.getInfo().get(ERROR_MESSAGE), request.getInfo().get(INTYG_ID));
+                break;
+            default:
+                return status(BAD_REQUEST).build();
         }
         return ok().build();
     }
@@ -95,88 +102,88 @@ public class JsLogApiController extends AbstractApiController {
         switch (request.getEvent()) {
             case SRS_LOADED:
                 monitoringService.logSrsLoaded(
-                        request.getInfo().get(USER_CLIENT_CONTEXT),
-                        request.getInfo().get(INTYG_ID),
-                        request.getInfo().get(CAREGIVER_ID),
-                        request.getInfo().get(CARE_UNIT_ID),
-                        request.getInfo().get(MAIN_DIAGNOSIS_CODE));
+                    request.getInfo().get(USER_CLIENT_CONTEXT),
+                    request.getInfo().get(INTYG_ID),
+                    request.getInfo().get(CAREGIVER_ID),
+                    request.getInfo().get(CARE_UNIT_ID),
+                    request.getInfo().get(MAIN_DIAGNOSIS_CODE));
                 break;
             case SRS_PANEL_ACTIVATED:
                 monitoringService.logSrsPanelActivated(
-                        request.getInfo().get(USER_CLIENT_CONTEXT),
-                        request.getInfo().get(INTYG_ID),
-                        request.getInfo().get(CAREGIVER_ID),
-                        request.getInfo().get(CARE_UNIT_ID));
+                    request.getInfo().get(USER_CLIENT_CONTEXT),
+                    request.getInfo().get(INTYG_ID),
+                    request.getInfo().get(CAREGIVER_ID),
+                    request.getInfo().get(CARE_UNIT_ID));
                 break;
             case SRS_CONSENT_ANSWERED:
                 monitoringService.logSrsConsentAnswered(
-                        request.getInfo().get(USER_CLIENT_CONTEXT),
-                        request.getInfo().get(INTYG_ID),
-                        request.getInfo().get(CAREGIVER_ID),
-                        request.getInfo().get(CARE_UNIT_ID));
+                    request.getInfo().get(USER_CLIENT_CONTEXT),
+                    request.getInfo().get(INTYG_ID),
+                    request.getInfo().get(CAREGIVER_ID),
+                    request.getInfo().get(CARE_UNIT_ID));
                 break;
             case SRS_QUESTION_ANSWERED:
                 monitoringService.logSrsQuestionAnswered(
-                        request.getInfo().get(USER_CLIENT_CONTEXT),
-                        request.getInfo().get(INTYG_ID),
-                        request.getInfo().get(CAREGIVER_ID),
-                        request.getInfo().get(CARE_UNIT_ID));
+                    request.getInfo().get(USER_CLIENT_CONTEXT),
+                    request.getInfo().get(INTYG_ID),
+                    request.getInfo().get(CAREGIVER_ID),
+                    request.getInfo().get(CARE_UNIT_ID));
                 break;
             case SRS_CALCULATE_CLICKED:
                 monitoringService.logSrsCalculateClicked(
-                        request.getInfo().get(USER_CLIENT_CONTEXT),
-                        request.getInfo().get(INTYG_ID),
-                        request.getInfo().get(CAREGIVER_ID),
-                        request.getInfo().get(CARE_UNIT_ID));
+                    request.getInfo().get(USER_CLIENT_CONTEXT),
+                    request.getInfo().get(INTYG_ID),
+                    request.getInfo().get(CAREGIVER_ID),
+                    request.getInfo().get(CARE_UNIT_ID));
                 break;
             case SRS_HIDE_QUESTIONS_CLICKED:
                 monitoringService.logSrsHideQuestionsClicked(
-                        request.getInfo().get(USER_CLIENT_CONTEXT),
-                        request.getInfo().get(INTYG_ID),
-                        request.getInfo().get(CAREGIVER_ID),
-                        request.getInfo().get(CARE_UNIT_ID));
+                    request.getInfo().get(USER_CLIENT_CONTEXT),
+                    request.getInfo().get(INTYG_ID),
+                    request.getInfo().get(CAREGIVER_ID),
+                    request.getInfo().get(CARE_UNIT_ID));
                 break;
             case SRS_SHOW_QUESTIONS_CLICKED:
                 monitoringService.logSrsShowQuestionsClicked(
-                        request.getInfo().get(USER_CLIENT_CONTEXT),
-                        request.getInfo().get(INTYG_ID),
-                        request.getInfo().get(CAREGIVER_ID),
-                        request.getInfo().get(CARE_UNIT_ID));
+                    request.getInfo().get(USER_CLIENT_CONTEXT),
+                    request.getInfo().get(INTYG_ID),
+                    request.getInfo().get(CAREGIVER_ID),
+                    request.getInfo().get(CARE_UNIT_ID));
                 break;
             case SRS_MEASURES_SHOW_MORE_CLICKED:
                 monitoringService.logSrsMeasuresShowMoreClicked(
-                        request.getInfo().get(USER_CLIENT_CONTEXT),
-                        request.getInfo().get(INTYG_ID),
-                        request.getInfo().get(CAREGIVER_ID),
-                        request.getInfo().get(CARE_UNIT_ID));
+                    request.getInfo().get(USER_CLIENT_CONTEXT),
+                    request.getInfo().get(INTYG_ID),
+                    request.getInfo().get(CAREGIVER_ID),
+                    request.getInfo().get(CARE_UNIT_ID));
                 break;
             case SRS_MEASURES_EXPAND_ONE_CLICKED:
                 monitoringService.logSrsMeasuresExpandOneClicked(
-                        request.getInfo().get(USER_CLIENT_CONTEXT),
-                        request.getInfo().get(INTYG_ID),
-                        request.getInfo().get(CAREGIVER_ID),
-                        request.getInfo().get(CARE_UNIT_ID));
+                    request.getInfo().get(USER_CLIENT_CONTEXT),
+                    request.getInfo().get(INTYG_ID),
+                    request.getInfo().get(CAREGIVER_ID),
+                    request.getInfo().get(CARE_UNIT_ID));
                 break;
             case SRS_MEASURES_LINK_CLICKED:
                 monitoringService.logSrsMeasuresLinkClicked(
-                        request.getInfo().get(USER_CLIENT_CONTEXT),
-                        request.getInfo().get(INTYG_ID),
-                        request.getInfo().get(CAREGIVER_ID),
-                        request.getInfo().get(CARE_UNIT_ID));
+                    request.getInfo().get(USER_CLIENT_CONTEXT),
+                    request.getInfo().get(INTYG_ID),
+                    request.getInfo().get(CAREGIVER_ID),
+                    request.getInfo().get(CARE_UNIT_ID));
                 break;
             case SRS_STATISTICS_ACTIVATED:
                 monitoringService.logSrsStatisticsActivated(
-                        request.getInfo().get(USER_CLIENT_CONTEXT),
-                        request.getInfo().get(INTYG_ID),
-                        request.getInfo().get(CAREGIVER_ID),
-                        request.getInfo().get(CARE_UNIT_ID));
+                    request.getInfo().get(USER_CLIENT_CONTEXT),
+                    request.getInfo().get(INTYG_ID),
+                    request.getInfo().get(CAREGIVER_ID),
+                    request.getInfo().get(CARE_UNIT_ID));
                 break;
             case SRS_STATISTICS_LINK_CLICKED:
                 monitoringService.logSrsStatisticsLinkClicked(
-                        request.getInfo().get(USER_CLIENT_CONTEXT),
-                        request.getInfo().get(INTYG_ID),
-                        request.getInfo().get(CAREGIVER_ID),
-                        request.getInfo().get(CARE_UNIT_ID));
+                    request.getInfo().get(USER_CLIENT_CONTEXT),
+                    request.getInfo().get(INTYG_ID),
+                    request.getInfo().get(CAREGIVER_ID),
+                    request.getInfo().get(CARE_UNIT_ID));
                 break;
             default:
                 return status(BAD_REQUEST).build();

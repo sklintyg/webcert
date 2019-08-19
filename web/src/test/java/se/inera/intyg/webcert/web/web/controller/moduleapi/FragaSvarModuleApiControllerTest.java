@@ -18,7 +18,16 @@
  */
 package se.inera.intyg.webcert.web.web.controller.moduleapi;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 import com.google.common.collect.ImmutableMap;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -36,16 +45,6 @@ import se.inera.intyg.webcert.web.service.fragasvar.FragaSvarService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.api.dto.FragaSvarView;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 /**
  * Created by eriklupander on 2017-10-03.
@@ -100,7 +99,7 @@ public class FragaSvarModuleApiControllerTest {
         user.setAuthorities(new HashMap<>());
 
         user.getAuthorities().put(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG,
-                createPrivilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG));
+            createPrivilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG));
         Feature feature = new Feature();
         feature.setName(AuthoritiesConstants.FEATURE_HANTERA_FRAGOR);
         feature.setIntygstyper(Arrays.asList(FK7263));

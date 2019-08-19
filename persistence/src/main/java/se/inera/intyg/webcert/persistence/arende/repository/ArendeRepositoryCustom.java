@@ -18,15 +18,14 @@
  */
 package se.inera.intyg.webcert.persistence.arende.repository;
 
+import java.util.List;
+import java.util.Set;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import se.inera.intyg.webcert.common.model.GroupableItem;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
-
-import java.util.List;
-import java.util.Set;
 
 // CHECKSTYLE:OFF LineLength
 public interface ArendeRepositoryCustom extends ArendeFilteredRepositoryCustom {
@@ -37,10 +36,10 @@ public interface ArendeRepositoryCustom extends ArendeFilteredRepositoryCustom {
      *
      * @param enhetsIds List of hsa unit id's that should match the counted fraga svar entities.
      * @param intygsTyper Set of intygstyper that arendens related intyg must be of.
-     * @return
      */
     @Query("SELECT new se.inera.intyg.webcert.common.model.GroupableItem(a.id, a.enhetId, a.patientPersonId, a.intygTyp) FROM Arende a WHERE a.enhetId IN (:idList) AND a.status <> 'CLOSED' AND a.amne <> 'PAMINN' AND a.svarPaId = null AND a.intygTyp IN (:intygsTyper)")
-    List<GroupableItem> getUnhandledByEnhetIdsAndIntygstyper(@Param("idList") List<String> enhetsIds, @Param("intygsTyper") Set<String> intygsTyper);
+    List<GroupableItem> getUnhandledByEnhetIdsAndIntygstyper(@Param("idList") List<String> enhetsIds,
+        @Param("intygsTyper") Set<String> intygsTyper);
 
     /**
      * List all unique signing doctors for the supplied units.
@@ -56,7 +55,7 @@ public interface ArendeRepositoryCustom extends ArendeFilteredRepositoryCustom {
      * {@link se.inera.intyg.webcert.persistence.fragasvar.model.Status.CLOSED}. The result is NOT ordered.
      *
      * @return A list of {@link Arende} matching the search criteria. If no entities are found, this method returns
-     *         an empty list.
+     * an empty list.
      */
     @Query("SELECT a FROM Arende AS a WHERE a.enhetId IN (:idList) AND a.status <> 'CLOSED'")
     List<Arende> findByEnhet(@Param("idList") List<String> enhetsIds);
@@ -64,9 +63,8 @@ public interface ArendeRepositoryCustom extends ArendeFilteredRepositoryCustom {
     /**
      * Should return a list of {@link Arende} entities in the repository related to the specified intygsId.
      *
-     * @param intygsId
      * @return A list of {@link Arende} matching the search criteria. If no entities are found, this method returns
-     *         an empty list.
+     * an empty list.
      */
     List<Arende> findByIntygsId(String intygsId);
 
@@ -77,7 +75,7 @@ public interface ArendeRepositoryCustom extends ArendeFilteredRepositoryCustom {
      * @param intygsIds The certificate identifiers we are interested of
      * @param amne The type of amne we are interested of
      * @return A list of {@link Arende} matching the search criteria. If no entities are found, this method returns
-     *         an empty list.
+     * an empty list.
      */
     @Query("SELECT ar FROM Arende ar WHERE ar.intygsId IN (:idList) AND ar.amne = (:amne)")
     List<Arende> findByIntygsIdAndType(
@@ -89,15 +87,15 @@ public interface ArendeRepositoryCustom extends ArendeFilteredRepositoryCustom {
      * supplied list of id's. Is also discards any entity with
      * {@link se.inera.intyg.webcert.persistence.fragasvar.model.Status.CLOSED}. The result is NOT ordered.
      *
-     * @param enhetsIds
      * @return A list of {@link FragaSvar} matching the search criteria. If no entities are found, this method returns
-     *         an empty list.
+     * an empty list.
      */
     @Query("SELECT fs FROM FragaSvar fs WHERE fs.vardperson.enhetsId IN (:idList) AND fs.status <> 'CLOSED'")
     List<FragaSvar> findByEnhetsId(@Param("idList") List<String> enhetsIds);
 
     /**
      * Returns the {@link Arende} with the sought for meddelandeId.
+     *
      * @param meddelandeId the meddelandeId which specifies the {@link Arende}
      * @return the {@link Arende}
      */
@@ -108,7 +106,7 @@ public interface ArendeRepositoryCustom extends ArendeFilteredRepositoryCustom {
      *
      * @param svarPaId the meddelandeId to find answers to
      * @return a list of {@link Arende} matching the search criteria. If no entities are found, this method returns
-     *         an empty list.
+     * an empty list.
      */
     List<Arende> findBySvarPaId(String svarPaId);
 
@@ -117,7 +115,7 @@ public interface ArendeRepositoryCustom extends ArendeFilteredRepositoryCustom {
      *
      * @param paminnelseMeddelandeId the meddelandeId to find reminders to
      * @return a list of {@link Arende} matching the search criteria. If no entities are found, this method returns
-     *         an empty list.
+     * an empty list.
      */
     List<Arende> findByPaminnelseMeddelandeId(String paminnelseMeddelandeId);
 

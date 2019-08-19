@@ -23,23 +23,21 @@
 /*jshint newcap:false */
 //TODO Uppgradera Jshint p.g.a. newcap kommer bli depricated. (klarade inte att ignorera i grunt-task)
 
-
 /*
  *	Stödlib och ramverk
  *
  */
 
 const {
-    Given, // jshint ignore:line
-    When, // jshint ignore:line
-    Then // jshint ignore:line
+  Given, // jshint ignore:line
+  When, // jshint ignore:line
+  Then // jshint ignore:line
 } = require('cucumber');
 
 var sokSkrivIntygUtkastTypePage = pages.sokSkrivIntyg.valjUtkastType;
 
 var testTools = require('common-testtools');
 testTools.protractorHelpers.init();
-
 
 /*
  *	Stödfunktioner
@@ -48,32 +46,32 @@ testTools.protractorHelpers.init();
 
 function textContainsAnyOfValues(text, checkValues) {
 
-    for (var i = 0; i < checkValues.length; i++) {
-        if (text.includes(checkValues[i])) {
-            return true;
-        }
+  for (var i = 0; i < checkValues.length; i++) {
+    if (text.includes(checkValues[i])) {
+      return true;
     }
-    return false;
+  }
+  return false;
 }
 
 function checkElementsForText(els, checkValues) {
-    return els.map(function(elm, index) {
-        return elm.getText();
-    }).then(function(texts) {
+  return els.map(function(elm, index) {
+    return elm.getText();
+  }).then(function(texts) {
 
-        texts.forEach(function(val, index) {
+    texts.forEach(function(val, index) {
 
-            if (index > 0) { //Inga checkar på tabell-header
-                logger.silly('Kontrollerar rad: ' + val);
-                var hasFound = textContainsAnyOfValues(val, checkValues);
-                if (!hasFound) {
-                    throw ('Hittade inte ' + checkValues.join(' eller ') + ' i ' + val);
-                }
-            }
-        });
-        return Promise.resolve('Hittade texter i alla element');
-
+      if (index > 0) { //Inga checkar på tabell-header
+        logger.silly('Kontrollerar rad: ' + val);
+        var hasFound = textContainsAnyOfValues(val, checkValues);
+        if (!hasFound) {
+          throw ('Hittade inte ' + checkValues.join(' eller ') + ' i ' + val);
+        }
+      }
     });
+    return Promise.resolve('Hittade texter i alla element');
+
+  });
 }
 
 /*
@@ -82,29 +80,28 @@ function checkElementsForText(els, checkValues) {
  */
 
 When(/^jag går till Sök\/skriv intyg$/, function() {
-    return element(by.id('menu-skrivintyg')).typeKeys(protractor.Key.SPACE);
+  return element(by.id('menu-skrivintyg')).typeKeys(protractor.Key.SPACE);
 });
 
-
 Then(/^ska jag inte se intyg av annan typ än "([^"]*)"$/, function(typer) {
-    typer = typer.split(',');
-    var els = element(by.id('prevIntygTable')).all(by.css('tr'));
-    return checkElementsForText(els, typer);
+  typer = typer.split(',');
+  var els = element(by.id('prevIntygTable')).all(by.css('tr'));
+  return checkElementsForText(els, typer);
 });
 
 Then(/^ska jag inte se utkast av annan typ än "([^"]*)"$/, function(typer) {
-    typer = typer.split(',');
-    var els = element(by.id('unsignedCertTable')).all(by.css('tr'));
-    return checkElementsForText(els, typer);
+  typer = typer.split(',');
+  var els = element(by.id('unsignedCertTable')).all(by.css('tr'));
+  return checkElementsForText(els, typer);
 });
 
 Then(/^ska jag( inte)? se (?:intygstypen|intygstyperna) "([^"]*)" i Skapa intyg listan$/, function(inte, typer) {
-    typer = typer.split(' & ');
-    let elm = sokSkrivIntygUtkastTypePage.intygTypeTable;
+  typer = typer.split(' & ');
+  let elm = sokSkrivIntygUtkastTypePage.intygTypeTable;
 
-    if (inte) {
-        return Promise.all(typer.map(typ => expect(elm.getText()).to.eventually.not.contain(typ)));
-    } else {
-        return Promise.all(typer.map(typ => expect(elm.getText()).to.eventually.contain(typ)));
-    }
+  if (inte) {
+    return Promise.all(typer.map(typ => expect(elm.getText()).to.eventually.not.contain(typ)));
+  } else {
+    return Promise.all(typer.map(typ => expect(elm.getText()).to.eventually.contain(typ)));
+  }
 });

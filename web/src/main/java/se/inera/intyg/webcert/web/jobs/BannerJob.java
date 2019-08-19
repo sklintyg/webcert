@@ -18,18 +18,18 @@
  */
 package se.inera.intyg.webcert.web.jobs;
 
+import net.javacrumbs.shedlock.core.SchedulerLock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-
-import net.javacrumbs.shedlock.core.SchedulerLock;
 import se.inera.intyg.infra.integration.ia.model.Application;
 import se.inera.intyg.infra.integration.ia.services.IABannerService;
 
 @Component
 public class BannerJob {
+
     private static final Logger LOG = LoggerFactory.getLogger(BannerJob.class);
     private static final String JOB_NAME = "BannerJob.run";
     private static final int LOCK_AT_MOST = 10 * 60 * 1000;

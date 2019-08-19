@@ -27,6 +27,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 
+import com.google.common.collect.Lists;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -34,7 +35,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -43,9 +43,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
-
-import com.google.common.collect.Lists;
-
 import se.inera.intyg.clinicalprocess.healthcond.rehabilitation.listactivesickleavesforcareunit.v1.ListActiveSickLeavesForCareUnitResponderInterface;
 import se.inera.intyg.clinicalprocess.healthcond.rehabilitation.listactivesickleavesforcareunit.v1.ListActiveSickLeavesForCareUnitResponseType;
 import se.inera.intyg.clinicalprocess.healthcond.rehabilitation.listactivesickleavesforcareunit.v1.ListActiveSickLeavesForCareUnitType;
@@ -126,19 +123,19 @@ public class FmbSjukfallServiceImplTest {
         final SjukfallEnhet sjukfallEnhet = createSjukfallForEnhet();
 
         doReturn(user)
-                .when(webCertUserService)
-                .getUser();
+            .when(webCertUserService)
+            .getUser();
 
         doReturn(response)
-                .when(sickLeavesForCareUnit)
-                .listActiveSickLeavesForCareUnit(anyString(), any(ListActiveSickLeavesForCareUnitType.class));
+            .when(sickLeavesForCareUnit)
+            .listActiveSickLeavesForCareUnit(anyString(), any(ListActiveSickLeavesForCareUnitType.class));
 
         doReturn(Collections.singletonList(sjukfallEnhet))
-                .when(sjukfallEngineService)
-                .beraknaSjukfallForEnhet(anyList(), any(IntygParametrar.class));
+            .when(sjukfallEngineService)
+            .beraknaSjukfallForEnhet(anyList(), any(IntygParametrar.class));
 
         final int tid = fmbSjukfallService
-                .totalSjukskrivningstidForPatientAndCareUnit(Personnummer.createPersonnummer(PERSON_NUMMER).get());
+            .totalSjukskrivningstidForPatientAndCareUnit(Personnummer.createPersonnummer(PERSON_NUMMER).get());
 
         Mockito.verify(sickLeavesForCareUnit, times(1)).listActiveSickLeavesForCareUnit(anyString(), requestCaptor.capture());
         final ListActiveSickLeavesForCareUnitType actualRequest = requestCaptor.getValue();
@@ -158,19 +155,19 @@ public class FmbSjukfallServiceImplTest {
         final SjukfallEnhet sjukfallEnhet = createSjukfallForEnhet();
 
         doReturn(user)
-                .when(webCertUserService)
-                .getUser();
+            .when(webCertUserService)
+            .getUser();
 
         doReturn(response)
-                .when(sickLeavesForCareUnit)
-                .listActiveSickLeavesForCareUnit(anyString(), any(ListActiveSickLeavesForCareUnitType.class));
+            .when(sickLeavesForCareUnit)
+            .listActiveSickLeavesForCareUnit(anyString(), any(ListActiveSickLeavesForCareUnitType.class));
 
         doReturn(Collections.singletonList(sjukfallEnhet))
-                .when(sjukfallEngineService)
-                .beraknaSjukfallForEnhet(anyList(), any(IntygParametrar.class));
+            .when(sjukfallEngineService)
+            .beraknaSjukfallForEnhet(anyList(), any(IntygParametrar.class));
 
         final int tid = fmbSjukfallService
-                .totalSjukskrivningstidForPatientAndCareUnit(Personnummer.createPersonnummer(PERSON_NUMMER).get());
+            .totalSjukskrivningstidForPatientAndCareUnit(Personnummer.createPersonnummer(PERSON_NUMMER).get());
 
         Mockito.verify(sickLeavesForCareUnit, times(1)).listActiveSickLeavesForCareUnit(anyString(), requestCaptor.capture());
         final ListActiveSickLeavesForCareUnitType actualRequest = requestCaptor.getValue();
@@ -275,13 +272,13 @@ public class FmbSjukfallServiceImplTest {
         featureMap.put(feature2.getName(), feature2);
 
         return createUser(AuthoritiesConstants.ROLE_LAKARE,
-                createPrivilege(privilegie,
-                        Collections.emptyList(),
-                        Lists.newArrayList(
-                                createRequestOrigin(UserOriginType.NORMAL.name(), Arrays.asList("fk7263")),
-                                createRequestOrigin(UserOriginType.DJUPINTEGRATION.name(), Arrays.asList("ts-bas")))),
-                featureMap,
-                UserOriginType.NORMAL.name());
+            createPrivilege(privilegie,
+                Collections.emptyList(),
+                Lists.newArrayList(
+                    createRequestOrigin(UserOriginType.NORMAL.name(), Arrays.asList("fk7263")),
+                    createRequestOrigin(UserOriginType.DJUPINTEGRATION.name(), Arrays.asList("ts-bas")))),
+            featureMap,
+            UserOriginType.NORMAL.name());
     }
 
     private WebCertUser createUser(String roleName, Privilege p, Map<String, Feature> features, String origin) {
@@ -301,8 +298,6 @@ public class FmbSjukfallServiceImplTest {
 
         user.setRoles(roleHashMap);
 
-
-        
         Vardenhet vardenhet = new Vardenhet();
         vardenhet.setId(VARDENHET_VE1);
         vardenhet.setVardgivareHsaId("vardenhet-id");

@@ -22,17 +22,14 @@ import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.matcher.RestAssuredMatchers.matchesXsd;
 import static org.hamcrest.core.Is.is;
 
+import com.google.common.collect.ImmutableMap;
 import java.io.IOException;
 import java.io.InputStream;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.STGroupFile;
-
-import com.google.common.collect.ImmutableMap;
-
 import se.riv.clinicalprocess.healthcond.certificate.v3.ErrorIdType;
 import se.riv.clinicalprocess.healthcond.certificate.v3.ResultCodeType;
 
@@ -58,13 +55,13 @@ public class ReceiveMedicalCertificateQuestionIT extends BaseWSIntegrationTest {
         requestTemplate = templateGroup.getInstanceOf("request");
 
         xsdInputstream = ClasspathSchemaResourceResolver
-                .load("interactions/ReceiveMedicalCertificateQuestionInteraction/ReceiveMedicalCertificateQuestionResponder_1.0.xsd");
+            .load("interactions/ReceiveMedicalCertificateQuestionInteraction/ReceiveMedicalCertificateQuestionResponder_1.0.xsd");
 
         // We want to validate against the body of the response, and not the entire soap response. This filter will
         // extract that for us.
         responseBodyExtractorFilter = new BodyExtractorFilter(
-                ImmutableMap.of("lc", "urn:riv:insuranceprocess:healthreporting:ReceiveMedicalCertificateQuestionResponder:1"),
-                "soap:Envelope/soap:Body/lc:ReceiveMedicalCertificateQuestionResponse");
+            ImmutableMap.of("lc", "urn:riv:insuranceprocess:healthreporting:ReceiveMedicalCertificateQuestionResponder:1"),
+            "soap:Envelope/soap:Body/lc:ReceiveMedicalCertificateQuestionResponse");
     }
 
     private String createRequestBody(String amne, String intygsId) {
@@ -84,24 +81,24 @@ public class ReceiveMedicalCertificateQuestionIT extends BaseWSIntegrationTest {
     public void testReceiveQuestionSuccess() throws IOException {
 
         given().body(createRequestBody("Komplettering_av_lakarintyg", INTYGS_ID))
-                .when()
-                .post(RECEIVE_QUESTION_V1_0)
-                .then()
-                .statusCode(200)
-                .rootPath(BASE)
-                .body("result.resultCode", is(ResultCodeType.OK.value()));
+            .when()
+            .post(RECEIVE_QUESTION_V1_0)
+            .then()
+            .statusCode(200)
+            .rootPath(BASE)
+            .body("result.resultCode", is(ResultCodeType.OK.value()));
     }
 
     @Test
     public void testResponseMatchesSchema() throws IOException {
         given().filter(
-                responseBodyExtractorFilter)
-                .body(createRequestBody("Komplettering_av_lakarintyg", INTYGS_ID))
-                .when()
-                .post(RECEIVE_QUESTION_V1_0)
-                .then()
-                .statusCode(200)
-                .body(matchesXsd(xsdInputstream).with(new ClasspathSchemaResourceResolver()));
+            responseBodyExtractorFilter)
+            .body(createRequestBody("Komplettering_av_lakarintyg", INTYGS_ID))
+            .when()
+            .post(RECEIVE_QUESTION_V1_0)
+            .then()
+            .statusCode(200)
+            .body(matchesXsd(xsdInputstream).with(new ClasspathSchemaResourceResolver()));
 
     }
 
@@ -113,13 +110,13 @@ public class ReceiveMedicalCertificateQuestionIT extends BaseWSIntegrationTest {
     @Test
     public void testRequestSchemaValidationError() {
         given().body(createRequestBody("Ovrigt", INTYGS_ID, "fk-" + System.currentTimeMillis(), ""))
-                .when()
-                .post(RECEIVE_QUESTION_V1_0)
-                .then()
-                .statusCode(200)
-                .rootPath(BASE)
-                .body("result.resultCode", is(ResultCodeType.ERROR.value()))
-                .body("result.errorId", is(ErrorIdType.VALIDATION_ERROR.value()));
+            .when()
+            .post(RECEIVE_QUESTION_V1_0)
+            .then()
+            .statusCode(200)
+            .rootPath(BASE)
+            .body("result.resultCode", is(ResultCodeType.ERROR.value()))
+            .body("result.errorId", is(ErrorIdType.VALIDATION_ERROR.value()));
     }
 
     /**
@@ -130,13 +127,13 @@ public class ReceiveMedicalCertificateQuestionIT extends BaseWSIntegrationTest {
     public void testCreateQuestionForUnknownAmneFailsWithValidationError() {
 
         given().body(createRequestBody("NON_EXISTING_AMNE", INTYGS_ID))
-                .when()
-                .post(RECEIVE_QUESTION_V1_0)
-                .then()
-                .statusCode(200)
-                .rootPath(BASE)
-                .body("result.resultCode", is(ResultCodeType.ERROR.value()))
-                .body("result.errorId", is(ErrorIdType.VALIDATION_ERROR.value()));
+            .when()
+            .post(RECEIVE_QUESTION_V1_0)
+            .then()
+            .statusCode(200)
+            .rootPath(BASE)
+            .body("result.resultCode", is(ResultCodeType.ERROR.value()))
+            .body("result.errorId", is(ErrorIdType.VALIDATION_ERROR.value()));
     }
 
     /**
@@ -147,17 +144,18 @@ public class ReceiveMedicalCertificateQuestionIT extends BaseWSIntegrationTest {
     public void testCreateQuestionWithInvalidXMLFailsWithApplicationError() {
         ST brokenTemplate = templateGroup.getInstanceOf("brokenrequest");
         given().body(brokenTemplate.render())
-                .when()
-                .post(RECEIVE_QUESTION_V1_0)
-                .then()
-                .statusCode(200)
-                .rootPath(BASE)
-                .body("result.resultCode", is(ResultCodeType.ERROR.value()))
-                .body("result.errorId", is(ErrorIdType.APPLICATION_ERROR.value()));
+            .when()
+            .post(RECEIVE_QUESTION_V1_0)
+            .then()
+            .statusCode(200)
+            .rootPath(BASE)
+            .body("result.resultCode", is(ResultCodeType.ERROR.value()))
+            .body("result.errorId", is(ErrorIdType.APPLICATION_ERROR.value()));
     }
 
     // String Template Data object
     private static final class QuestionData {
+
         public final String amne;
         public final String intygsId;
         public final String fkReferens;

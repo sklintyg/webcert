@@ -19,7 +19,6 @@
 package se.inera.intyg.webcert.persistence.fragasvar.repository;
 
 import java.util.List;
-
 import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.intyg.webcert.persistence.model.Filter;
 

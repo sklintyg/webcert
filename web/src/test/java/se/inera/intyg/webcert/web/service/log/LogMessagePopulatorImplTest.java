@@ -18,13 +18,13 @@
  */
 package se.inera.intyg.webcert.web.service.log;
 
+import static org.junit.Assert.assertEquals;
+
 import org.junit.Test;
 import se.inera.intyg.infra.logmessages.PdlLogMessage;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
 import se.inera.intyg.webcert.web.service.log.dto.LogUser;
-
-import static org.junit.Assert.assertEquals;
 
 /**
  * Created by eriklupander on 2017-04-24.
@@ -38,28 +38,28 @@ public class LogMessagePopulatorImplTest {
     @Test
     public void testActivityArgsAddedFromAdditionalInfoWhenActivityArgsAbsent() {
         PdlLogMessage logMessage = testee.populateLogMessage(
-                buildPdlLogMessage(""), buildLogRequest(ADDITIONAL_INFO), buildLogUser());
+            buildPdlLogMessage(""), buildLogRequest(ADDITIONAL_INFO), buildLogUser());
         assertEquals(ADDITIONAL_INFO, logMessage.getActivityArgs());
     }
 
     @Test
     public void testActivityArgsAppendedFromAdditionalInfoWhenActivityArgsExists() {
         PdlLogMessage logMessage = testee.populateLogMessage(
-                buildPdlLogMessage(ACTIVITY_ARGS), buildLogRequest(ADDITIONAL_INFO), buildLogUser());
+            buildPdlLogMessage(ACTIVITY_ARGS), buildLogRequest(ADDITIONAL_INFO), buildLogUser());
         assertEquals(ACTIVITY_ARGS + ". " + ADDITIONAL_INFO, logMessage.getActivityArgs());
     }
 
     @Test
     public void testActivityArgsUntouchedWhenActivityArgsExistsButNoAdditionalInfo() {
         PdlLogMessage logMessage = testee.populateLogMessage(
-                buildPdlLogMessage(ACTIVITY_ARGS), buildLogRequest(""), buildLogUser());
+            buildPdlLogMessage(ACTIVITY_ARGS), buildLogRequest(""), buildLogUser());
         assertEquals(ACTIVITY_ARGS, logMessage.getActivityArgs());
     }
 
     @Test
     public void testActivityArgsUntouchedWhenActivityArgsIsEqualToAdditionalInfo() {
         PdlLogMessage logMessage = testee.populateLogMessage(
-                buildPdlLogMessage(ACTIVITY_ARGS), buildLogRequest(ACTIVITY_ARGS), buildLogUser());
+            buildPdlLogMessage(ACTIVITY_ARGS), buildLogRequest(ACTIVITY_ARGS), buildLogUser());
         assertEquals(ACTIVITY_ARGS, logMessage.getActivityArgs());
     }
 

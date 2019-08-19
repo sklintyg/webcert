@@ -33,7 +33,7 @@ import se.inera.intyg.webcert.web.web.controller.integrationtest.BaseRestIntegra
  * way that our custom exception handler is used and responds with our custom error json response.
  *
  * @see se.inera.intyg.webcert.web.web.handlers.WebcertRestExceptionHandler
- * 
+ *
  * Created by marced on 01/12/15.
  */
 public class RestExceptionHandlerIT extends BaseRestIntegrationTest {
@@ -45,10 +45,10 @@ public class RestExceptionHandlerIT extends BaseRestIntegrationTest {
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
 
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
-                .expect().statusCode(500)
-                .when().get("api/anvandare/non-existing-endpoint}")
-                .then().body("errorCode", equalTo(WebCertServiceErrorCodeEnum.UNKNOWN_INTERNAL_PROBLEM.name()))
-                .body("message", not(isEmptyString()));
+            .expect().statusCode(500)
+            .when().get("api/anvandare/non-existing-endpoint}")
+            .then().body("errorCode", equalTo(WebCertServiceErrorCodeEnum.UNKNOWN_INTERNAL_PROBLEM.name()))
+            .body("message", not(isEmptyString()));
     }
 
 }

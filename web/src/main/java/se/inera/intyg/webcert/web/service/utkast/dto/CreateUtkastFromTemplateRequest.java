@@ -24,7 +24,7 @@ import se.inera.intyg.common.support.model.common.internal.Patient;
 public class CreateUtkastFromTemplateRequest extends AbstractCreateCopyRequest {
 
     public CreateUtkastFromTemplateRequest(String orginalIntygsId, String intygsTyp, Patient patient, HoSPersonal hosPerson,
-            String originalIntygsTyp) {
+        String originalIntygsTyp) {
         super(orginalIntygsId, intygsTyp, patient, hosPerson, originalIntygsTyp);
     }
 

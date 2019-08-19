@@ -18,6 +18,10 @@
  */
 package se.inera.intyg.webcert.web.service.util;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.infra.security.authorities.validation.AuthoritiesValidator;
@@ -28,11 +32,6 @@ import se.inera.intyg.webcert.common.model.SekretessStatus;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * Helper class for taking a list of arbitrary "id", "unitId", "personnummer", filter out any personnummer being
@@ -63,10 +62,8 @@ public class StatisticsGroupByUtil {
      * This method will filter out any items belonging to a patient having sekretessmarkering and return the result as a
      * map: EnhetsId -> number of id for that unit.
      *
-     * @param groupableItems
-     *            Each item is an array of: id, enhetsId, personnummer, intygsTyp.
-     * @return
-     *         Map with enhetsId -> count, with personummer being sekretessmarkerade has been removed.
+     * @param groupableItems Each item is an array of: id, enhetsId, personnummer, intygsTyp.
+     * @return Map with enhetsId -> count, with personummer being sekretessmarkerade has been removed.
      */
     public Map<String, Long> toSekretessFilteredMap(List<GroupableItem> groupableItems) {
         if (groupableItems == null || groupableItems.size() == 0) {
@@ -77,18 +74,18 @@ public class StatisticsGroupByUtil {
 
         WebCertUser user = webCertUserService.getUser();
         Map<Personnummer, SekretessStatus> sekretessStatusMap
-                = patientDetailsResolver.getSekretessStatusForList(getPersonummerList(filteredGroupableItems));
+            = patientDetailsResolver.getSekretessStatusForList(getPersonummerList(filteredGroupableItems));
 
         // update sekretess status
         filteredGroupableItems.forEach(item -> item.setSekretessStatus(sekretessStatusMap.get(createPnr(item.getPersonnummer()))));
 
         return filteredGroupableItems.stream()
-                .filter(item -> item.getSekretessStatus() != SekretessStatus.UNDEFINED)
-                .filter(item -> authoritiesValidator.given(user, item.getIntygsTyp())
-                        .privilegeIf(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT,
-                                item.getSekretessStatus() == SekretessStatus.TRUE)
-                        .isVerified())
-                .collect(Collectors.groupingBy(GroupableItem::getEnhetsId, Collectors.counting()));
+            .filter(item -> item.getSekretessStatus() != SekretessStatus.UNDEFINED)
+            .filter(item -> authoritiesValidator.given(user, item.getIntygsTyp())
+                .privilegeIf(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT,
+                    item.getSekretessStatus() == SekretessStatus.TRUE)
+                .isVerified())
+            .collect(Collectors.groupingBy(GroupableItem::getEnhetsId, Collectors.counting()));
     }
 
     /*
@@ -99,9 +96,9 @@ public class StatisticsGroupByUtil {
      */
     List<Personnummer> getPersonummerList(List<GroupableItem> results) {
         return results.stream()
-                .map(item -> createPnr(item.getPersonnummer()))
-                .filter(pnr -> pnr != null)     // filter out invalid personnummer
-                .collect(Collectors.toList());
+            .map(item -> createPnr(item.getPersonnummer()))
+            .filter(pnr -> pnr != null)     // filter out invalid personnummer
+            .collect(Collectors.toList());
     }
 
     /*
@@ -112,8 +109,8 @@ public class StatisticsGroupByUtil {
      */
     List<GroupableItem> getFilteredGroupableItemList(List<GroupableItem> results) {
         return results.stream()
-                .filter(item -> createPnr(item.getPersonnummer()) != null)
-                .collect(Collectors.toList());
+            .filter(item -> createPnr(item.getPersonnummer()) != null)
+            .collect(Collectors.toList());
     }
 
     private Personnummer createPnr(String pnr) {

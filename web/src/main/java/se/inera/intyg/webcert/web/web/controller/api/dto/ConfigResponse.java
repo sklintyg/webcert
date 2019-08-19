@@ -18,11 +18,10 @@
  */
 package se.inera.intyg.webcert.web.web.controller.api.dto;
 
-import java.util.List;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import java.util.List;
 import se.inera.intyg.infra.integration.ia.model.Banner;
 
 @ApiModel(description = "The global configuration of Webcert")
@@ -54,7 +53,7 @@ public class ConfigResponse {
 
     // CHECKSTYLE:OFF ParameterNumber
     public ConfigResponse(String version, String buildNumber, String ppHost, String dashboardUrl, Boolean jsMinified,
-                          String sakerhetstjanstIdpUrl, String cgiFunktionstjansterIdpUrl, List<Banner> banners) {
+        String sakerhetstjanstIdpUrl, String cgiFunktionstjansterIdpUrl, List<Banner> banners) {
         this.version = version;
         this.buildNumber = buildNumber;
         this.ppHost = ppHost;

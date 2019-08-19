@@ -31,69 +31,69 @@ var intygGenerator = wcTestTools.intygGenerator;
 var restTestdataHelper = wcTestTools.helpers.restTestdata;
 
 describe('DB locked utkast kopiera tests', function() {
-    var intygsTyp = 'db';
+  var intygsTyp = 'db';
 
-    var intygId = 'db-locked-utkast-1';
-    var intygId2 = 'db-locked-utkast-2';
+  var intygId = 'db-locked-utkast-1';
+  var intygId2 = 'db-locked-utkast-2';
 
-    beforeAll(function() {
-        browser.ignoreSynchronization = false;
-        specHelper.login();
+  beforeAll(function() {
+    browser.ignoreSynchronization = false;
+    specHelper.login();
+    var testData = {
+      'contents': intygGenerator.getIntygJson({'intygType': intygsTyp, 'intygId': intygId}),
+      'utkastStatus': 'DRAFT_LOCKED',
+      'revoked': false
+    };
+    restTestdataHelper.createWebcertIntyg(testData);
+  });
+
+  afterAll(function() {
+    testdataHelper.deleteUtkast(intygId);
+  });
+
+  describe('samma enhet', function() {
+    describe('finns redan draft', function() {
+      beforeAll(function() {
         var testData = {
-            'contents':intygGenerator.getIntygJson({'intygType': intygsTyp,'intygId':intygId}),
-            'utkastStatus': 'DRAFT_LOCKED',
-            'revoked': false
+          'contents': intygGenerator.getIntygJson({'intygType': intygsTyp, 'intygId': intygId2}),
+          'utkastStatus': 'DRAFT_COMPLETE',
+          'revoked': false
         };
         restTestdataHelper.createWebcertIntyg(testData);
+      });
+
+      it('should load utkast and not possible to copy', function() {
+        UtkastPage.get(intygsTyp, intygId);
+        expect(UtkastPage.kopiera.btn.isEnabled()).toBeFalsy();
+
+        expect(UtkastPage.getAlert(intygsTyp, 'previousutkast').isPresent()).toBeTruthy();
+      });
+
+      afterAll(function() {
+        testdataHelper.deleteUtkast(intygId2);
+      });
     });
 
-    afterAll(function() {
-        testdataHelper.deleteUtkast(intygId);
+    describe('finns redan signerad', function() {
+      beforeAll(function() {
+        var testData = {
+          'contents': intygGenerator.getIntygJson({'intygType': intygsTyp, 'intygId': intygId2}),
+          'utkastStatus': 'SIGNED',
+          'revoked': false
+        };
+        restTestdataHelper.createWebcertIntyg(testData);
+      });
+
+      it('should load utkast and not possible to copy', function() {
+        UtkastPage.get(intygsTyp, intygId);
+        expect(UtkastPage.kopiera.btn.isEnabled()).toBeFalsy();
+
+        expect(UtkastPage.getAlert(intygsTyp, 'previousintyg').isPresent()).toBeTruthy();
+      });
+
+      afterAll(function() {
+        testdataHelper.deleteUtkast(intygId2);
+      });
     });
-
-    describe('samma enhet', function() {
-        describe('finns redan draft', function() {
-            beforeAll(function() {
-                var testData = {
-                    'contents': intygGenerator.getIntygJson({'intygType': intygsTyp, 'intygId': intygId2}),
-                    'utkastStatus': 'DRAFT_COMPLETE',
-                    'revoked': false
-                };
-                restTestdataHelper.createWebcertIntyg(testData);
-            });
-
-            it('should load utkast and not possible to copy', function() {
-                UtkastPage.get(intygsTyp, intygId);
-                expect(UtkastPage.kopiera.btn.isEnabled()).toBeFalsy();
-
-                expect(UtkastPage.getAlert(intygsTyp, 'previousutkast').isPresent()).toBeTruthy();
-            });
-
-            afterAll(function() {
-                testdataHelper.deleteUtkast(intygId2);
-            });
-        });
-
-        describe('finns redan signerad', function() {
-            beforeAll(function() {
-                var testData = {
-                    'contents':intygGenerator.getIntygJson({'intygType': intygsTyp,'intygId':intygId2}),
-                    'utkastStatus': 'SIGNED',
-                    'revoked': false
-                };
-                restTestdataHelper.createWebcertIntyg(testData);
-            });
-
-            it('should load utkast and not possible to copy', function() {
-                UtkastPage.get(intygsTyp, intygId);
-                expect(UtkastPage.kopiera.btn.isEnabled()).toBeFalsy();
-
-                expect(UtkastPage.getAlert(intygsTyp, 'previousintyg').isPresent()).toBeTruthy();
-            });
-
-            afterAll(function() {
-                testdataHelper.deleteUtkast(intygId2);
-            });
-        });
-    });
+  });
 });

@@ -29,11 +29,10 @@
  */
 
 const {
-    Given, // jshint ignore:line
-    When, // jshint ignore:line
-    Then // jshint ignore:line
+  Given, // jshint ignore:line
+  When, // jshint ignore:line
+  Then // jshint ignore:line
 } = require('cucumber');
-
 
 var mail = require('./mail');
 
@@ -43,17 +42,17 @@ var mail = require('./mail');
  */
 
 Then(/^ska jag få ett mejl med ämnet "([^"]*)"$/, function(amne) {
-    logger.silly('intygsid:' + this.intyg.id);
-    var textToSearchFor = process.env.WEBCERT_URL + 'webcert/web/user/certificate/' + this.intyg.id + '/questions?enhet=' + user.enhetId;
+  logger.silly('intygsid:' + this.intyg.id);
+  var textToSearchFor = process.env.WEBCERT_URL + 'webcert/web/user/certificate/' + this.intyg.id + '/questions?enhet=' + user.enhetId;
 
-    logger.silly(textToSearchFor);
-    return browser.sleep(30000).then(function() {
-        return mail.readRecentMails()
-            .then(function(mailArr) {
-                logger.silly(mailArr);
-                return mailArr.join(',');
-            })
-            .should.eventually.contain(textToSearchFor);
-    });
+  logger.silly(textToSearchFor);
+  return browser.sleep(30000).then(function() {
+    return mail.readRecentMails()
+    .then(function(mailArr) {
+      logger.silly(mailArr);
+      return mailArr.join(',');
+    })
+    .should.eventually.contain(textToSearchFor);
+  });
 
 });

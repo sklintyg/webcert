@@ -24,6 +24,7 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.MaximalSjukskrivningsti
 import se.inera.intyg.webcert.web.web.controller.api.dto.MaximalSjukskrivningstidResponse;
 
 public interface FmbDiagnosInformationService {
+
     Optional<FmbResponse> findFmbDiagnosInformationByIcd10Kod(String icd10Kod);
 
     MaximalSjukskrivningstidResponse validateSjukskrivningtidForPatient(MaximalSjukskrivningstidRequest maximalSjukskrivningstidRequest);

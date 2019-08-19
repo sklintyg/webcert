@@ -20,8 +20,6 @@ package se.inera.intyg.webcert.fkstub;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.w3.wsaddressing10.AttributedURIType;
-
-// CHECKSTYLE:OFF LineLength
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificatequestion.rivtabp20.v1.SendMedicalCertificateQuestionResponderInterface;
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificatequestionresponder.v1.QuestionToFkType;
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificatequestionresponder.v1.SendMedicalCertificateQuestionResponseType;
@@ -29,13 +27,15 @@ import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificatequest
 import se.inera.intyg.common.schemas.insuranceprocess.healthreporting.utils.ResultOfCallUtil;
 import se.inera.intyg.webcert.fkstub.validation.SendMedicalCertificateQuestionValidator;
 import se.inera.intyg.webcert.fkstub.validation.ValidationException;
+
+// CHECKSTYLE:OFF LineLength
 // CHECKSTYLE:ON LineLength
 
 /**
  * @author andreaskaltenbach
  */
 public class SendQuestionStub implements
-        SendMedicalCertificateQuestionResponderInterface {
+    SendMedicalCertificateQuestionResponderInterface {
 
     private static final String LOGICAL_ADDRESS = "SendQuestionStub";
 
@@ -44,24 +44,24 @@ public class SendQuestionStub implements
 
     @Override
     public SendMedicalCertificateQuestionResponseType sendMedicalCertificateQuestion(
-            AttributedURIType logicalAddress,
-            SendMedicalCertificateQuestionType parameters) {
+        AttributedURIType logicalAddress,
+        SendMedicalCertificateQuestionType parameters) {
         SendMedicalCertificateQuestionResponseType response = new SendMedicalCertificateQuestionResponseType();
 
         if (logicalAddress == null) {
             response.setResult(ResultOfCallUtil
-                    .failResult("Ingen LogicalAddress är satt"));
+                .failResult("Ingen LogicalAddress är satt"));
         } else if (!LOGICAL_ADDRESS.equals(logicalAddress.getValue())) {
             response.setResult(ResultOfCallUtil.failResult("LogicalAddress '"
-                    + logicalAddress.getValue() + "' är inte samma som '"
-                    + LOGICAL_ADDRESS + "'"));
+                + logicalAddress.getValue() + "' är inte samma som '"
+                + LOGICAL_ADDRESS + "'"));
         } else if ("error".equalsIgnoreCase(parameters.getQuestion().getFraga().getMeddelandeText())) {
             response.setResult(ResultOfCallUtil
-                    .failResult("Du ville ju få ett fel"));
+                .failResult("Du ville ju få ett fel"));
         } else {
             QuestionToFkType questionType = parameters.getQuestion();
             SendMedicalCertificateQuestionValidator validator = new SendMedicalCertificateQuestionValidator(
-                    questionType);
+                questionType);
             try {
                 validator.validateAndCorrect();
                 response.setResult(ResultOfCallUtil.okResult());

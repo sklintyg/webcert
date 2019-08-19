@@ -21,11 +21,9 @@ package se.inera.intyg.webcert.web.service.intyg.decorator;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-
 import se.inera.intyg.clinicalprocess.healthcond.certificate.listrelationsforcertificate.v1.IntygRelations;
 import se.inera.intyg.clinicalprocess.healthcond.certificate.listrelationsforcertificate.v1.ListRelationsForCertificateResponderInterface;
 import se.inera.intyg.clinicalprocess.healthcond.certificate.listrelationsforcertificate.v1.ListRelationsForCertificateResponseType;
@@ -60,8 +58,8 @@ public class IntygRelationHelperImpl implements IntygRelationHelper {
 
         // Iterate over all relations fetched from IT, split them up into parent and child relation(s)
         response.getIntygRelation().stream()
-                .flatMap(ir -> ir.getRelation().stream())
-                .forEach(r -> applyRelation(intygId, certificateRelations, r));
+            .flatMap(ir -> ir.getRelation().stream())
+            .forEach(r -> applyRelation(intygId, certificateRelations, r));
 
         // Enrich with any relations present only in Webcert (e.g. for utkast etc.)
         Relations webcertRelations = certificateRelationService.getRelations(intygId);
@@ -73,8 +71,8 @@ public class IntygRelationHelperImpl implements IntygRelationHelper {
     public void decorateIntygListWithRelations(List<ListIntygEntry> fullIntygItemList) {
 
         ListRelationsForCertificateResponseType response = getRelationsFromIntygstjanst(fullIntygItemList.stream()
-                .map(ListIntygEntry::getIntygId)
-                .collect(Collectors.toList()));
+            .map(ListIntygEntry::getIntygId)
+            .collect(Collectors.toList()));
 
         if (response != null) {
             // Very ugly, iterate over both lists, find matches and create relation(s) on the ListIntygEntries.
@@ -141,7 +139,7 @@ public class IntygRelationHelperImpl implements IntygRelationHelper {
     private WebcertCertificateRelation createWebcertCertificateRelation(Relation r, boolean childRelation) {
         String intygsId = childRelation ? r.getFranIntygsId().getExtension() : r.getTillIntygsId().getExtension();
         return new WebcertCertificateRelation(intygsId, RelationKod.fromValue(r.getTyp().getCode()), r.getSkapad(),
-                UtkastStatus.SIGNED, r.isFranIntygMakulerat());
+            UtkastStatus.SIGNED, r.isFranIntygMakulerat());
     }
 
     private ListRelationsForCertificateResponseType getRelationsFromIntygstjanst(String intygId) {
@@ -179,22 +177,22 @@ public class IntygRelationHelperImpl implements IntygRelationHelper {
 
         // Save the latest of each type of relation if found both in webcert and intygstjanst.
         if (firstSkapadLaterDateThanSecond(augmentWith.getLatestChildRelations().getReplacedByIntyg(),
-                startRelations.getLatestChildRelations().getReplacedByIntyg())) {
+            startRelations.getLatestChildRelations().getReplacedByIntyg())) {
             startRelations.getLatestChildRelations().setReplacedByIntyg(augmentWith.getLatestChildRelations().getReplacedByIntyg());
         }
         if (firstSkapadLaterDateThanSecond(augmentWith.getLatestChildRelations().getReplacedByUtkast(),
-                startRelations.getLatestChildRelations().getReplacedByUtkast())) {
+            startRelations.getLatestChildRelations().getReplacedByUtkast())) {
             startRelations.getLatestChildRelations().setReplacedByUtkast(augmentWith.getLatestChildRelations().getReplacedByUtkast());
         }
         if (firstSkapadLaterDateThanSecond(augmentWith.getLatestChildRelations().getComplementedByIntyg(),
-                startRelations.getLatestChildRelations().getComplementedByIntyg())) {
+            startRelations.getLatestChildRelations().getComplementedByIntyg())) {
             startRelations.getLatestChildRelations()
-                    .setComplementedByIntyg(augmentWith.getLatestChildRelations().getComplementedByIntyg());
+                .setComplementedByIntyg(augmentWith.getLatestChildRelations().getComplementedByIntyg());
         }
         if (firstSkapadLaterDateThanSecond(augmentWith.getLatestChildRelations().getComplementedByUtkast(),
-                startRelations.getLatestChildRelations().getComplementedByUtkast())) {
+            startRelations.getLatestChildRelations().getComplementedByUtkast())) {
             startRelations.getLatestChildRelations()
-                    .setComplementedByUtkast(augmentWith.getLatestChildRelations().getComplementedByUtkast());
+                .setComplementedByUtkast(augmentWith.getLatestChildRelations().getComplementedByUtkast());
         }
     }
 }

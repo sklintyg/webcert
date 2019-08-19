@@ -30,7 +30,7 @@ public interface IntegrationService {
     PrepareRedirectToIntyg prepareRedirectToIntyg(String intygTyp, String intygId, WebCertUser user);
 
     PrepareRedirectToIntyg prepareRedirectToIntyg(
-            String intygTyp, String intygId, WebCertUser user, Personnummer prepareBeforeAlternateSsn);
+        String intygTyp, String intygId, WebCertUser user, Personnummer prepareBeforeAlternateSsn);
 
 
 }

@@ -19,6 +19,7 @@
 package se.inera.intyg.webcert.integration.tak.consumer;
 
 public class TakServiceException extends RuntimeException {
+
     public TakServiceException(String msg) {
         super(msg);
     }

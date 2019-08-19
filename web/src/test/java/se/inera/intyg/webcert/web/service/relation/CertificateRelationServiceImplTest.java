@@ -32,14 +32,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.webcert.common.model.WebcertCertificateRelation;
@@ -51,6 +49,7 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
  */
 @RunWith(MockitoJUnitRunner.class)
 public class CertificateRelationServiceImplTest {
+
     private static final String INTYG_ID = "123";
     private static final String OTHER_INTYG_ID = "456";
     private static final String CHILD_INTYG_ID_1 = "789-1";
@@ -95,7 +94,7 @@ public class CertificateRelationServiceImplTest {
     public void testGetRelationOfPresentType() {
         when(utkastRepositoryCustom.findChildRelations(anyString())).thenReturn(buildChildRelations());
         Optional<WebcertCertificateRelation> relationOfType = testee.getNewestRelationOfType(INTYG_ID, RelationKod.ERSATT,
-                Arrays.asList(UtkastStatus.values()));
+            Arrays.asList(UtkastStatus.values()));
         assertTrue(relationOfType.isPresent());
         assertEquals(CHILD_INTYG_ID_1, relationOfType.get().getIntygsId());
     }
@@ -104,26 +103,27 @@ public class CertificateRelationServiceImplTest {
     public void testGetRelationOfNonPresentType() {
         when(utkastRepositoryCustom.findChildRelations(anyString())).thenReturn(buildChildRelations());
         Optional<WebcertCertificateRelation> relationOfType = testee.getNewestRelationOfType(INTYG_ID, RelationKod.FRLANG,
-                Arrays.asList(UtkastStatus.values()));
+            Arrays.asList(UtkastStatus.values()));
         assertFalse(relationOfType.isPresent());
     }
 
     private List<WebcertCertificateRelation> buildParentRelations() {
-        return Stream.of(new WebcertCertificateRelation(OTHER_INTYG_ID, RelationKod.ERSATT, LocalDateTime.now(), UtkastStatus.SIGNED, false))
-                .collect(Collectors.toList());
+        return Stream
+            .of(new WebcertCertificateRelation(OTHER_INTYG_ID, RelationKod.ERSATT, LocalDateTime.now(), UtkastStatus.SIGNED, false))
+            .collect(Collectors.toList());
     }
 
     private List<WebcertCertificateRelation> buildChildRelations() {
         return Stream.of(
-                new WebcertCertificateRelation(CHILD_INTYG_ID_1, RelationKod.ERSATT, LocalDateTime.now().minusDays(5),
-                        UtkastStatus.DRAFT_INCOMPLETE, false),
-                new WebcertCertificateRelation(CHILD_INTYG_ID_2, RelationKod.KOMPLT, LocalDateTime.now(), UtkastStatus.SIGNED, false))
-                .collect(Collectors.toList());
+            new WebcertCertificateRelation(CHILD_INTYG_ID_1, RelationKod.ERSATT, LocalDateTime.now().minusDays(5),
+                UtkastStatus.DRAFT_INCOMPLETE, false),
+            new WebcertCertificateRelation(CHILD_INTYG_ID_2, RelationKod.KOMPLT, LocalDateTime.now(), UtkastStatus.SIGNED, false))
+            .collect(Collectors.toList());
     }
 
     private void assertFrontendRelations(Relations.FrontendRelations fr, WebcertCertificateRelation complementedByIntyg,
-            WebcertCertificateRelation complementedByUtkast, WebcertCertificateRelation replacedByIntyg,
-            WebcertCertificateRelation replacedByUtkast) {
+        WebcertCertificateRelation complementedByUtkast, WebcertCertificateRelation replacedByIntyg,
+        WebcertCertificateRelation replacedByUtkast) {
         assertEquals(complementedByIntyg, fr.getComplementedByIntyg());
         assertEquals(complementedByUtkast, fr.getComplementedByUtkast());
         assertEquals(replacedByIntyg, fr.getReplacedByIntyg());
@@ -131,7 +131,7 @@ public class CertificateRelationServiceImplTest {
     }
 
     private void assertFrontendRelationsIntygsIds(Relations.FrontendRelations fr, String complementedByIntygIntygsId,
-            String complementedByUtkastIntygsId, String replacedByIntygIntygsId, String replacedByUtkastIntygsId) {
+        String complementedByUtkastIntygsId, String replacedByIntygIntygsId, String replacedByUtkastIntygsId) {
         if (fr.getComplementedByIntyg() != null) {
             assertEquals(complementedByIntygIntygsId, fr.getComplementedByIntyg().getIntygsId());
         } else {

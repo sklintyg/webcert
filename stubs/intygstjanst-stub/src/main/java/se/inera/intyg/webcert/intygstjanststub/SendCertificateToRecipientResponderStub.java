@@ -19,10 +19,8 @@
 package se.inera.intyg.webcert.intygstjanststub;
 
 import java.time.LocalDateTime;
-
 import org.apache.cxf.annotations.SchemaValidation;
 import org.springframework.beans.factory.annotation.Autowired;
-
 import se.inera.intyg.common.support.model.CertificateState;
 import se.inera.intyg.common.support.modules.support.api.CertificateHolder;
 import se.inera.intyg.common.support.modules.support.api.CertificateStateHolder;
@@ -48,7 +46,7 @@ public class SendCertificateToRecipientResponderStub implements SendCertificateT
     @StubLatencyAware
     @StubModeAware
     public SendCertificateToRecipientResponseType sendCertificateToRecipient(String logicalAddress,
-            SendCertificateToRecipientType parameters) {
+        SendCertificateToRecipientType parameters) {
         CertificateHolder fromStore = intygStore.getIntygForCertificateId(parameters.getIntygsId().getExtension());
 
         SendCertificateToRecipientResponseType responseType = new SendCertificateToRecipientResponseType();
@@ -62,7 +60,7 @@ public class SendCertificateToRecipientResponderStub implements SendCertificateT
         }
 
         intygStore.addStatus(parameters.getIntygsId().getExtension(),
-                new CertificateStateHolder("FKASSA", CertificateState.SENT, LocalDateTime.now()));
+            new CertificateStateHolder("FKASSA", CertificateState.SENT, LocalDateTime.now()));
 
         ResultType resultType = new ResultType();
         resultType.setResultCode(ResultCodeType.OK);

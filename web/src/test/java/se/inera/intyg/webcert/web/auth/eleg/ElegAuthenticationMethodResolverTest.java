@@ -30,7 +30,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.security.saml.SAMLCredential;
-
 import se.inera.intyg.infra.security.common.model.AuthenticationMethod;
 import se.inera.intyg.webcert.web.auth.common.BaseSAMLCredentialTest;
 
@@ -67,7 +66,8 @@ public class ElegAuthenticationMethodResolverTest extends BaseSAMLCredentialTest
 
     @Test
     public void testMobiltBankID() {
-        when(elegAuthenticationAttributeHelper.getAttribute(any(SAMLCredential.class), anyString())).thenReturn(MOBILT_BANK_ID_LOGIN_METHOD);
+        when(elegAuthenticationAttributeHelper.getAttribute(any(SAMLCredential.class), anyString()))
+            .thenReturn(MOBILT_BANK_ID_LOGIN_METHOD);
         AuthenticationMethod authMetod = testee.resolveAuthenticationMethod(buildPrivatlakareSamlCredential());
         assertEquals(AuthenticationMethod.MOBILT_BANK_ID, authMetod);
     }

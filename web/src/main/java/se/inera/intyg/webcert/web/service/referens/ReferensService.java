@@ -19,24 +19,21 @@
 package se.inera.intyg.webcert.web.service.referens;
 
 public interface ReferensService {
+
     /**
      * Persist a Referens with intygsId and referens.
-     * @param intygsId
-     * @param referens
      */
     void saveReferens(String intygsId, String referens);
 
     /**
      * Attempt to get the referens String corresponding to an intygsId.
-     * @param intygsId
+     *
      * @return the referens string or null if not found in repository.
      */
     String getReferensForIntygsId(String intygsId);
 
     /**
      * Check if a Referens exists in database.
-     * @param intygsId
-     * @return
      */
     boolean referensExists(String intygsId);
 }

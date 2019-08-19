@@ -19,7 +19,6 @@
 package se.inera.intyg.webcert.web.service.notification;
 
 import org.apache.commons.lang3.tuple.Pair;
-
 import se.inera.intyg.common.support.modules.support.api.notification.ArendeCount;
 import se.inera.intyg.common.support.modules.support.api.notification.FragorOchSvar;
 
@@ -30,12 +29,10 @@ public interface FragorOchSvarCreator {
     /**
      * Returns counters for number of handled and unhandled questions and answers for the certificate.
      *
-     * @param intygsId
-     *            the id of the certificate
-     * @param intygstyp
-     *            type of the certificate
+     * @param intygsId the id of the certificate
+     * @param intygstyp type of the certificate
      * @return a pair of the counters split into left side containing the sent questions and right side the received
-     *         questions
+     * questions
      */
     Pair<ArendeCount, ArendeCount> createArenden(String intygsId, String intygstyp);
 

@@ -20,6 +20,8 @@ package se.inera.intyg.webcert.web.service.utkast;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
+import java.io.IOException;
+import java.util.Arrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,10 +56,8 @@ import se.inera.intyg.webcert.web.service.utkast.dto.AbstractCreateCopyRequest;
 import se.inera.intyg.webcert.web.service.utkast.dto.CopyUtkastBuilderResponse;
 import se.inera.intyg.webcert.web.service.utkast.util.CreateIntygsIdStrategy;
 
-import java.io.IOException;
-import java.util.Arrays;
-
 public abstract class AbstractUtkastBuilder<T extends AbstractCreateCopyRequest> implements CopyUtkastBuilder<T> {
+
     private static final String SPACE = " ";
 
     private static final Logger LOG = LoggerFactory.getLogger(AbstractUtkastBuilder.class);
@@ -92,7 +92,7 @@ public abstract class AbstractUtkastBuilder<T extends AbstractCreateCopyRequest>
      */
     @Override
     public CopyUtkastBuilderResponse populateCopyUtkastFromSignedIntyg(T copyRequest, Person patientDetails, boolean addRelation,
-            boolean coherentJournaling) throws ModuleNotFoundException, ModuleException {
+        boolean coherentJournaling) throws ModuleNotFoundException, ModuleException {
 
         String orignalIntygsId = copyRequest.getOriginalIntygId();
         String originalIntygsTyp = copyRequest.getOriginalIntygTyp();
@@ -126,20 +126,20 @@ public abstract class AbstractUtkastBuilder<T extends AbstractCreateCopyRequest>
 
         String newDraftCopyId = intygsIdStrategy.createId();
         String draftCopyJson = getInternalModel(orgUtlatande, moduleApi, copyRequest, patientDetails, relation,
-                newDraftCopyId);
+            newDraftCopyId);
 
         UtkastStatus utkastStatus = validateDraft(moduleApi, draftCopyJson);
 
         // NOTE: See INTYG-7212 can we really just take textVersion of orgUtlatande like when db->doi?
         Utkast utkast = buildUtkastCopy(copyRequest, newDraftCopyId, intygsTyp, signedIntygHolder.getUtlatande().getTextVersion(),
-                addRelation, relation,
-                draftCopyJson, utkastStatus);
+            addRelation, relation,
+            draftCopyJson, utkastStatus);
 
         if (patientDetails != null) {
             populatePatientDetailsFromPerson(utkast, patientDetails);
         } else {
             se.inera.intyg.common.support.model.common.internal.Patient patient = signedIntygHolder.getUtlatande().getGrundData()
-                    .getPatient();
+                .getPatient();
             populatePatientDetailsFromPatient(utkast, patient);
         }
 
@@ -162,7 +162,7 @@ public abstract class AbstractUtkastBuilder<T extends AbstractCreateCopyRequest>
     @Override
     @Transactional(readOnly = true)
     public CopyUtkastBuilderResponse populateCopyUtkastFromOrignalUtkast(T copyRequest, Person patientDetails, boolean addRelation,
-            boolean coherentJournaling) throws ModuleNotFoundException, ModuleException {
+        boolean coherentJournaling) throws ModuleNotFoundException, ModuleException {
 
         String orignalIntygsId = copyRequest.getOriginalIntygId();
 
@@ -200,13 +200,13 @@ public abstract class AbstractUtkastBuilder<T extends AbstractCreateCopyRequest>
 
         String newDraftCopyId = intygsIdStrategy.createId();
         String draftCopyJson = getInternalModel(orgUtlatande, moduleApi, copyRequest, patientDetails, relation,
-                newDraftCopyId);
+            newDraftCopyId);
 
         UtkastStatus utkastStatus = validateDraft(moduleApi, draftCopyJson);
         // NOTE: See INTYG-7212 can we really just take textVersion of orgUtlatande like when db->doi?
         // I.e when copying within the same intygType A -> A this should be OK, but maybe not for DB -> DOI
         Utkast utkast = buildUtkastCopy(copyRequest, newDraftCopyId, copyRequest.getTyp(), orgUtkast.getIntygTypeVersion(), addRelation,
-                relation, draftCopyJson, utkastStatus);
+            relation, draftCopyJson, utkastStatus);
 
         if (patientDetails != null) {
             populatePatientDetailsFromPerson(utkast, patientDetails);
@@ -222,15 +222,15 @@ public abstract class AbstractUtkastBuilder<T extends AbstractCreateCopyRequest>
     }
 
     protected String getInternalModel(Utlatande template, ModuleApi moduleApi, AbstractCreateCopyRequest copyRequest,
-            Person person, Relation relation, String newDraftCopyId) throws ModuleException {
+        Person person, Relation relation, String newDraftCopyId) throws ModuleException {
         CreateDraftCopyHolder draftCopyHolder = createModuleRequestForCopying(copyRequest, person, relation, newDraftCopyId);
         return moduleApi.createNewInternalFromTemplate(draftCopyHolder, template);
     }
 
     // CHECKSTYLE:OFF ParameterNumber
     protected Utkast buildUtkastCopy(T copyRequest, String utkastId, String utkastTyp, String intygTypeVersion, boolean addRelation,
-            Relation relation,
-            String draftCopyJson, UtkastStatus utkastStatus) {
+        Relation relation,
+        String draftCopyJson, UtkastStatus utkastStatus) {
         Utkast utkast = new Utkast();
 
         utkast.setIntygsId(utkastId);
@@ -255,7 +255,7 @@ public abstract class AbstractUtkastBuilder<T extends AbstractCreateCopyRequest>
     }
 
     protected CreateDraftCopyHolder createModuleRequestForCopying(AbstractCreateCopyRequest copyRequest, Person person, Relation relation,
-            String newDraftCopyId) {
+        String newDraftCopyId) {
         LOG.debug("Created id '{}' for the new copy", newDraftCopyId);
 
         CreateDraftCopyHolder newDraftCopyHolder = new CreateDraftCopyHolder(newDraftCopyId, copyRequest.getHosPerson(), relation);
@@ -271,7 +271,7 @@ public abstract class AbstractUtkastBuilder<T extends AbstractCreateCopyRequest>
             patient.setPostnummer(person.getPostnummer());
             patient.setPostort(person.getPostort());
             patient.setFullstandigtNamn(
-                    IntygConverterUtil.concatPatientName(patient.getFornamn(), patient.getMellannamn(), patient.getEfternamn()));
+                IntygConverterUtil.concatPatientName(patient.getFornamn(), patient.getMellannamn(), patient.getEfternamn()));
             newDraftCopyHolder.setPatient(patient);
             LOG.debug("Added new patient data to CreateDraftCopyHolder");
         }
@@ -331,7 +331,7 @@ public abstract class AbstractUtkastBuilder<T extends AbstractCreateCopyRequest>
 
     public String[] extractNamePartsFromFullName(String fullName) {
 
-        String[] res = new String[] { "", "" };
+        String[] res = new String[]{"", ""};
 
         if (Strings.nullToEmpty(fullName).trim().isEmpty()) {
             return res;

@@ -18,10 +18,9 @@
  */
 package se.inera.intyg.webcert.web.service.diagnos.repo;
 
-import se.inera.intyg.webcert.web.service.diagnos.model.Diagnos;
-
 import java.io.IOException;
 import java.util.List;
+import se.inera.intyg.webcert.web.service.diagnos.model.Diagnos;
 
 public interface DiagnosRepository {
 

@@ -26,6 +26,7 @@ import org.apache.camel.spi.RouteContext;
  * Created by eriklupander on 2015-06-05.
  */
 public class MockTransactionPolicy implements org.apache.camel.spi.Policy {
+
     @Override
     public void beforeWrap(RouteContext routeContext, ProcessorDefinition<?> processorDefinition) {
 

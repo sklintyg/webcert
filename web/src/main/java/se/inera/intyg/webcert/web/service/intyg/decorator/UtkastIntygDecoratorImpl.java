@@ -18,6 +18,7 @@
  */
 package se.inera.intyg.webcert.web.service.intyg.decorator;
 
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.common.support.model.CertificateState;
@@ -25,8 +26,6 @@ import se.inera.intyg.common.support.model.Status;
 import se.inera.intyg.common.support.modules.support.api.dto.CertificateResponse;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
-
-import java.util.List;
 
 /**
  * This is a bit of a hack to mitigate states when an intyg is on a resend queue due to a 3rd party being unavailable

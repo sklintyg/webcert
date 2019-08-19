@@ -26,30 +26,30 @@ var intygGenerator = wcTestTools.intygGenerator;
 
 describe('generate', function() {
 
-    it('intyg of all types', function() {
-        browser.ignoreSynchronization = false;
-        specHelper.login();
+  it('intyg of all types', function() {
+    browser.ignoreSynchronization = false;
+    specHelper.login();
 
-        function createIntyg(intygType) {
-            var intygId = intygType + '-protractor';
-            restTestdataHelper.deleteUtkast(intygId);
+    function createIntyg(intygType) {
+      var intygId = intygType + '-protractor';
+      restTestdataHelper.deleteUtkast(intygId);
 
-            var intygData = {
-                'contents': intygGenerator.getIntygJson({'intygType': intygType, 'intygId': intygId}),
-                'utkastStatus': 'SIGNED',
-                'revoked': false
-            };
-            restTestdataHelper.createWebcertIntyg(intygData).then(function(response) {
-                logger.debug('Tried to create intyg ' + intygId);
-            }, function(error) {
-                logger.error('Failed to create intyg ' + intygId);
-            });
-        }
+      var intygData = {
+        'contents': intygGenerator.getIntygJson({'intygType': intygType, 'intygId': intygId}),
+        'utkastStatus': 'SIGNED',
+        'revoked': false
+      };
+      restTestdataHelper.createWebcertIntyg(intygData).then(function(response) {
+        logger.debug('Tried to create intyg ' + intygId);
+      }, function(error) {
+        logger.error('Failed to create intyg ' + intygId);
+      });
+    }
 
-        createIntyg('fk7263');
-        createIntyg('luse');
-        createIntyg('luae_na');
-        createIntyg('luae_fs');
-        createIntyg('lisjp');
-    });
+    createIntyg('fk7263');
+    createIntyg('luse');
+    createIntyg('luae_na');
+    createIntyg('luae_fs');
+    createIntyg('lisjp');
+  });
 });

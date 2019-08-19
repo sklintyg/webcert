@@ -22,6 +22,7 @@ package se.inera.intyg.webcert.web.service.access.data;
 import java.util.List;
 
 public interface AccessServiceTestData {
+
     List<String> getFeatures();
 
     List<String> getPrivileges();

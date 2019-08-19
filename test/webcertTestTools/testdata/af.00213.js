@@ -22,65 +22,65 @@
 var testdataHelper = require('common-testtools').testdataHelper;
 
 module.exports = {
-    get: function(intygsID) {
-        if (!intygsID) {
-            intygsID = testdataHelper.generateTestGuid();
-        }
-
-        return {
-            id: intygsID,
-            typ: 'Arbetsförmedlingens medicinska utlåtande',
-            funktionsnedsattning: {
-                val: 'Ja',
-                text: 'Typ av funktionsnedsättning'
-            },
-            aktivitetsbegransning: {
-                val: 'Ja',
-                text: 'Typ av aktivitetsbegransning'
-            },
-            utredningBehandling: {
-                val: 'Ja',
-                text: 'Typ av utredning/behandling'
-            },
-            arbetetsPaverkan: {
-                val: 'Ja',
-                text: 'Vilken påverkan har arbetet?'
-            },
-            skipparBalte: {
-                val: 'Ja',
-                text: 'Vilken påverkan har arbetet?'
-            },
-            ovrigt: 'Övriga upplysningar'
-        };
-    },
-    getRandom: function(intygsID) {
-        function slumpaValOchText() {
-            return testdataHelper.shuffle([{
-                val: 'Ja',
-                text: testdataHelper.randomTextString(5, 1000)
-            }, {
-                val: 'Nej'
-            }][0]);
-        }
-
-        if (!intygsID) {
-            intygsID = testdataHelper.generateTestGuid();
-        }
-
-        var obj = {
-            id: intygsID,
-            typ: 'Arbetsförmedlingens medicinska utlåtande',
-            funktionsnedsattning: slumpaValOchText(),
-            arbetetsPaverkan: slumpaValOchText(),
-            utredningBehandling: slumpaValOchText(),
-            skipparBalte: slumpaValOchText(),
-            ovrigt: testdataHelper.randomTextString(5, 1000)
-        };
-
-        if (obj.funktionsnedsattning.val === 'Ja') {
-            obj.aktivitetsbegransning = slumpaValOchText();
-        }
-
-        return obj;
+  get: function(intygsID) {
+    if (!intygsID) {
+      intygsID = testdataHelper.generateTestGuid();
     }
+
+    return {
+      id: intygsID,
+      typ: 'Arbetsförmedlingens medicinska utlåtande',
+      funktionsnedsattning: {
+        val: 'Ja',
+        text: 'Typ av funktionsnedsättning'
+      },
+      aktivitetsbegransning: {
+        val: 'Ja',
+        text: 'Typ av aktivitetsbegransning'
+      },
+      utredningBehandling: {
+        val: 'Ja',
+        text: 'Typ av utredning/behandling'
+      },
+      arbetetsPaverkan: {
+        val: 'Ja',
+        text: 'Vilken påverkan har arbetet?'
+      },
+      skipparBalte: {
+        val: 'Ja',
+        text: 'Vilken påverkan har arbetet?'
+      },
+      ovrigt: 'Övriga upplysningar'
+    };
+  },
+  getRandom: function(intygsID) {
+    function slumpaValOchText() {
+      return testdataHelper.shuffle([{
+        val: 'Ja',
+        text: testdataHelper.randomTextString(5, 1000)
+      }, {
+        val: 'Nej'
+      }][0]);
+    }
+
+    if (!intygsID) {
+      intygsID = testdataHelper.generateTestGuid();
+    }
+
+    var obj = {
+      id: intygsID,
+      typ: 'Arbetsförmedlingens medicinska utlåtande',
+      funktionsnedsattning: slumpaValOchText(),
+      arbetetsPaverkan: slumpaValOchText(),
+      utredningBehandling: slumpaValOchText(),
+      skipparBalte: slumpaValOchText(),
+      ovrigt: testdataHelper.randomTextString(5, 1000)
+    };
+
+    if (obj.funktionsnedsattning.val === 'Ja') {
+      obj.aktivitetsbegransning = slumpaValOchText();
+    }
+
+    return obj;
+  }
 };

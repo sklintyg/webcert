@@ -25,16 +25,16 @@ var testdataHelper = wcTestTools.helpers.testdata;
 
 describe('Generate fk utkast', function() {
 
-    it('should generate an fk7263 utkast', function() {
-        var utkastData = {
-            'contents': intygGenerator.getIntygJson({
-                'intygType': 'fk7263',
-                'intygId': testdataHelper.generateTestGuid()
-            }),
-            'utkastStatus': 'DRAFT_INCOMPLETE',
-            'revoked': false
-        };
-        restTestdataHelper.createWebcertIntyg(utkastData);
-    });
+  it('should generate an fk7263 utkast', function() {
+    var utkastData = {
+      'contents': intygGenerator.getIntygJson({
+        'intygType': 'fk7263',
+        'intygId': testdataHelper.generateTestGuid()
+      }),
+      'utkastStatus': 'DRAFT_INCOMPLETE',
+      'revoked': false
+    };
+    restTestdataHelper.createWebcertIntyg(utkastData);
+  });
 
 });

@@ -18,18 +18,17 @@
  */
 package se.inera.intyg.webcert.web.auth;
 
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.when;
+
 import java.util.Locale;
 import java.util.Vector;
 import javax.servlet.http.HttpServletRequest;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.security.web.savedrequest.SavedRequest;
-
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.when;
 
 /**
  * Tests that the {@link SavedRequestFactoryImpl} produces correct SavedRequest instances.
@@ -68,7 +67,8 @@ public class SavedRequestFactoryTest {
         when(req.getRequestURI()).thenReturn(sb.toString());
 
         SavedRequest savedRequest = testee.buildSavedRequest(req);
-        assertEquals(req.getScheme() + "://" + req.getServerName() + ":" + req.getServerPort() + req.getRequestURI(), savedRequest.getRedirectUrl());
+        assertEquals(req.getScheme() + "://" + req.getServerName() + ":" + req.getServerPort() + req.getRequestURI(),
+            savedRequest.getRedirectUrl());
     }
 
 }

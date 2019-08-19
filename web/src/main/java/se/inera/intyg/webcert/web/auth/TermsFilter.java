@@ -25,18 +25,15 @@ import static se.inera.intyg.webcert.web.auth.common.AuthConstants.URN_OASIS_NAM
 import static se.inera.intyg.webcert.web.auth.common.AuthConstants.URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_SOFTWARE_PKI;
 
 import java.io.IOException;
-
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextImpl;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-
 import se.inera.intyg.webcert.web.service.privatlakaravtal.AvtalService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
@@ -64,7 +61,7 @@ public class TermsFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-            throws ServletException, IOException {
+        throws ServletException, IOException {
         HttpSession session = request.getSession(false);
 
         if (session == null) {
@@ -122,8 +119,8 @@ public class TermsFilter extends OncePerRequestFilter {
 
     private boolean isElegAuthContext(WebCertUser webCertUser) {
         return webCertUser.getAuthenticationScheme().equals(URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_SOFTWARE_PKI)
-                || webCertUser.getAuthenticationScheme().equals(URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_SMARTCARD_PKI)
-                || webCertUser.getAuthenticationScheme().equals(URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_MOBILE_TWO_FACTOR_CONTRACT)
-                || webCertUser.getAuthenticationScheme().equals(FAKE_AUTHENTICATION_ELEG_CONTEXT_REF);
+            || webCertUser.getAuthenticationScheme().equals(URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_SMARTCARD_PKI)
+            || webCertUser.getAuthenticationScheme().equals(URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_MOBILE_TWO_FACTOR_CONTRACT)
+            || webCertUser.getAuthenticationScheme().equals(FAKE_AUTHENTICATION_ELEG_CONTEXT_REF);
     }
 }

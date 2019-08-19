@@ -18,6 +18,8 @@
  */
 package se.inera.intyg.webcert.web.auth.oidc.jwt;
 
+import java.util.ArrayList;
+import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.AuthenticationServiceException;
@@ -30,9 +32,6 @@ import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.webcert.web.auth.WebcertUserDetailsService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
-
-import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
 
 /**
  * JWT based authentication provider. Given that the supplied {@link org.springframework.security.core.Authentication}
@@ -50,7 +49,7 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
 
         if (!(authentication instanceof JwtAuthenticationToken)) {
             throw new AuthenticationServiceException("Unsupported Authentication. Expected JwtAuthenticationToken, got "
-                    + authentication.getClass().getName());
+                + authentication.getClass().getName());
         }
 
         JwtAuthenticationToken jwtAuthenticationToken = (JwtAuthenticationToken) authentication;
@@ -61,12 +60,12 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
             webCertUser.setOrigin(getUserOrigin().name());
 
             ExpiringUsernameAuthenticationToken result = new ExpiringUsernameAuthenticationToken(null, webCertUser, jwtAuthenticationToken,
-                    new ArrayList<>());
+                new ArrayList<>());
             result.setDetails(webCertUser);
             return result;
         }
         throw new AuthenticationServiceException("User principal returned from UserDetailsService was not of type WebCertUser,"
-                + " throwing exception.");
+            + " throwing exception.");
     }
 
     @Override
@@ -89,7 +88,7 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
         }
 
         throw new AuthenticationServiceException("The context path for JWT authentication was invalid {" + uri + "},"
-                + " throwing exception.");
+            + " throwing exception.");
     }
 
     private HttpServletRequest getCurrentRequest() {

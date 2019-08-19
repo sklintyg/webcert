@@ -22,17 +22,14 @@ import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.matcher.RestAssuredMatchers.matchesXsd;
 import static org.hamcrest.core.Is.is;
 
+import com.google.common.collect.ImmutableMap;
 import java.io.IOException;
 import java.io.InputStream;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.STGroupFile;
-
-import com.google.common.collect.ImmutableMap;
-
 import se.riv.clinicalprocess.healthcond.certificate.v3.ErrorIdType;
 import se.riv.clinicalprocess.healthcond.certificate.v3.ResultCodeType;
 
@@ -55,13 +52,13 @@ public class SendMessageToCareIT extends BaseWSIntegrationTest {
         requestTemplate = templateGroup.getInstanceOf("request");
 
         xsdInputstream = ClasspathSchemaResourceResolver
-                .load("interactions/SendMessageToCareInteraction/SendMessageToCareResponder_2.0.xsd");
+            .load("interactions/SendMessageToCareInteraction/SendMessageToCareResponder_2.0.xsd");
 
         // We want to validate against the body of the response, and not the entire soap response. This filter will
         // extract that for us.
         responseBodyExtractorFilter = new BodyExtractorFilter(
-                ImmutableMap.of("lc", "urn:riv:clinicalprocess:healthcond:certificate:SendMessageToCareResponder:2"),
-                "soap:Envelope/soap:Body/lc:SendMessageToCareResponse");
+            ImmutableMap.of("lc", "urn:riv:clinicalprocess:healthcond:certificate:SendMessageToCareResponder:2"),
+            "soap:Envelope/soap:Body/lc:SendMessageToCareResponse");
     }
 
     @Test
@@ -73,10 +70,10 @@ public class SendMessageToCareIT extends BaseWSIntegrationTest {
         requestTemplate.add("data", new ArendeData(intygsId, "KOMPL", "191212121212", enhetsId));
 
         given().filter(responseBodyExtractorFilter).body(requestTemplate.render())
-                .when()
-                .post(SEND_MESSAGE_TO_CARE_V2_0)
-                .then()
-                .body(matchesXsd(xsdInputstream).with(new ClasspathSchemaResourceResolver()));
+            .when()
+            .post(SEND_MESSAGE_TO_CARE_V2_0)
+            .then()
+            .body(matchesXsd(xsdInputstream).with(new ClasspathSchemaResourceResolver()));
     }
 
     @Test
@@ -86,11 +83,11 @@ public class SendMessageToCareIT extends BaseWSIntegrationTest {
         requestTemplate.add("data", new ArendeData(intygsId, "KOMPL", "191212121212", enhetsId));
 
         given().body(requestTemplate.render()).when()
-                .post(SEND_MESSAGE_TO_CARE_V2_0)
-                .then().statusCode(200)
-                .rootPath(BASE)
-                .body("result.resultCode", is(ResultCodeType.ERROR.value()))
-                .body("result.errorId", is(ErrorIdType.VALIDATION_ERROR.value()));
+            .post(SEND_MESSAGE_TO_CARE_V2_0)
+            .then().statusCode(200)
+            .rootPath(BASE)
+            .body("result.resultCode", is(ResultCodeType.ERROR.value()))
+            .body("result.errorId", is(ErrorIdType.VALIDATION_ERROR.value()));
     }
 
     @Test
@@ -100,11 +97,11 @@ public class SendMessageToCareIT extends BaseWSIntegrationTest {
         requestTemplate.add("data", new ArendeData(intygsId, "KOMPL", "191212121212", enhetsId));
 
         given().body(requestTemplate.render()).when()
-                .post(SEND_MESSAGE_TO_CARE_V2_0)
-                .then().statusCode(200)
-                .rootPath(BASE)
-                .body("result.resultCode", is(ResultCodeType.ERROR.value()))
-                .body("result.errorId", is(ErrorIdType.VALIDATION_ERROR.value()));
+            .post(SEND_MESSAGE_TO_CARE_V2_0)
+            .then().statusCode(200)
+            .rootPath(BASE)
+            .body("result.resultCode", is(ResultCodeType.ERROR.value()))
+            .body("result.errorId", is(ErrorIdType.VALIDATION_ERROR.value()));
     }
 
     /**
@@ -114,16 +111,17 @@ public class SendMessageToCareIT extends BaseWSIntegrationTest {
     public void testMessageWithInvalidXMLFailsWithApplicationError() {
         ST brokenTemplate = templateGroup.getInstanceOf("brokenrequest");
         given().body(brokenTemplate.render())
-                .when()
-                .post(SEND_MESSAGE_TO_CARE_V2_0)
-                .then()
-                .statusCode(200)
-                .rootPath(BASE)
-                .body("result.resultCode", is(ResultCodeType.ERROR.value()))
-                .body("result.errorId", is(ErrorIdType.APPLICATION_ERROR.value()));
+            .when()
+            .post(SEND_MESSAGE_TO_CARE_V2_0)
+            .then()
+            .statusCode(200)
+            .rootPath(BASE)
+            .body("result.resultCode", is(ResultCodeType.ERROR.value()))
+            .body("result.errorId", is(ErrorIdType.APPLICATION_ERROR.value()));
     }
 
     private static class ArendeData {
+
         public final String intygsId;
         public final String arende;
         public final String personId;

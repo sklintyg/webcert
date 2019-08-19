@@ -33,84 +33,82 @@ var EC = protractor.ExpectedConditions;
 // att Ärendet ej inkluderas i summeringssiffran i Fråga-svar tabben
 describe('fragasvar.intygstyp.filtrering', function() {
 
-    var intygsId;
-    var arendeId = 'luaefs-arende-avstmn';
+  var intygsId;
+  var arendeId = 'luaefs-arende-avstmn';
 
-    beforeAll(function() {
-        browser.ignoreSynchronization = false;
-        specHelper.login();
-        //testdataHelper.deleteAllUtkast();
-        //testdataHelper.deleteAllIntyg();
+  beforeAll(function() {
+    browser.ignoreSynchronization = false;
+    specHelper.login();
+    //testdataHelper.deleteAllUtkast();
+    //testdataHelper.deleteAllIntyg();
+  });
+
+  describe('Visa signerat luae_fs intyg', function() {
+
+    it('Skapa intyget och gå till intygssidan', function() {
+      var intyg = intygFromJsonFactory.defaultLuaefs();
+      intygsId = intyg.id;
+      restUtil.createIntyg(intyg);
+      SokSkrivIntygPage.selectPersonnummer('19121212-1212');
+      SokSkrivValjIntyg.selectIntygById(intygsId);
+
+      expect(IntygPage.isAt()).toBeTruthy();
     });
 
-    describe('Visa signerat luae_fs intyg', function() {
+    it('Skicka intyget', function() {
+      IntygPage.skicka.knapp.sendKeys(protractor.Key.SPACE);
+      browser.wait(IntygPage.skicka.dialogKnapp.isDisplayed())
+      .then(IntygPage.skicka.dialogKnapp.sendKeys(protractor.Key.SPACE));
 
-        it('Skapa intyget och gå till intygssidan', function() {
-            var intyg = intygFromJsonFactory.defaultLuaefs();
-            intygsId = intyg.id;
-            restUtil.createIntyg(intyg);
-            SokSkrivIntygPage.selectPersonnummer('19121212-1212');
-            SokSkrivValjIntyg.selectIntygById(intygsId);
+      element.all(by.id('#sendBtn')).then(function(items) {
+        expect(items.length).toBe(0);
+      });
 
-            expect(IntygPage.isAt()).toBeTruthy();
-        });
-
-        it('Skicka intyget', function() {
-            IntygPage.skicka.knapp.sendKeys(protractor.Key.SPACE);
-            browser.wait(IntygPage.skicka.dialogKnapp.isDisplayed())
-                .then(IntygPage.skicka.dialogKnapp.sendKeys(protractor.Key.SPACE));
-
-
-            element.all(by.id('#sendBtn')).then(function(items) {
-                expect(items.length).toBe(0);
-            });
-
-            // Add a small artificial wait so the send can be processed asynchronously by Intygstjänsten. Not pretty...
-            browser.sleep(500);
-            // expect(isIntygSent(intygsId)).toBeTruthy();
-        });
-
-        it('Skapa ärende på intyget', function() {
-            testdataHelper.createArendeFromTemplate('luae_fs', intygsId, arendeId, 'Hur är det med arbetstiden?',
-                'AVSTMN', 'PENDING_INTERNAL_ACTION');
-        });
-
-        it('Klicka på tabben för Fråga/svar', function() {
-            element(by.css('a[ng-href="/#/enhet-arenden"]')).click();
-            expect(element(by.id('stat-unitstat-unhandled-question-count')).getText()).toBe('1');
-            expect(element.all(by.css('.wc-table-striped tr td button')).first().getText()).toBe('Vidarebefordra');
-        });
-
-        it('Byt läkarens roll till TANDLAKARE mha testbarhets-API, klicka på tabben igen', function() {
-            browser.getCurrentUrl().then(function(url) {
-                browser.driver.get(browser.baseUrl + 'authtestability/user/role/TANDLAKARE').then(function() {
-                    browser.get(url);
-                });
-            });
-        });
-
-        it('Verifiera att tandläkaren INTE ser något ärende/fråga längre och att ingen siffra visas på tabben', function() {
-            browser.wait(EC.invisibilityOf(element(by.id('stat-unitstat-unhandled-question-count'))), 5000);
-            browser.wait(EC.invisibilityOf(element(by.id('.wc-table-striped tr td'))), 5000);
-        });
+      // Add a small artificial wait so the send can be processed asynchronously by Intygstjänsten. Not pretty...
+      browser.sleep(500);
+      // expect(isIntygSent(intygsId)).toBeTruthy();
     });
 
-
-    afterAll(function() {
-        testdataHelper.deleteUtkast(intygsId);
-        testdataHelper.deleteIntyg(intygsId);
-        testdataHelper.deleteAllArenden();
-        specHelper.logout();
-        browser.ignoreSynchronization = false;
+    it('Skapa ärende på intyget', function() {
+      testdataHelper.createArendeFromTemplate('luae_fs', intygsId, arendeId, 'Hur är det med arbetstiden?',
+          'AVSTMN', 'PENDING_INTERNAL_ACTION');
     });
 
-    function isIntygSent(intygsId) {
-        var innerDefer = protractor.promise.defer();
-        restUtil.getIntyg(intygsId).then(function(intygBody) {
-            var result = IntygPage.hasState(intygBody.body.states, 'SENT');
-            innerDefer.fulfill(result);
+    it('Klicka på tabben för Fråga/svar', function() {
+      element(by.css('a[ng-href="/#/enhet-arenden"]')).click();
+      expect(element(by.id('stat-unitstat-unhandled-question-count')).getText()).toBe('1');
+      expect(element.all(by.css('.wc-table-striped tr td button')).first().getText()).toBe('Vidarebefordra');
+    });
+
+    it('Byt läkarens roll till TANDLAKARE mha testbarhets-API, klicka på tabben igen', function() {
+      browser.getCurrentUrl().then(function(url) {
+        browser.driver.get(browser.baseUrl + 'authtestability/user/role/TANDLAKARE').then(function() {
+          browser.get(url);
         });
-        return innerDefer.promise;
-    }
+      });
+    });
+
+    it('Verifiera att tandläkaren INTE ser något ärende/fråga längre och att ingen siffra visas på tabben', function() {
+      browser.wait(EC.invisibilityOf(element(by.id('stat-unitstat-unhandled-question-count'))), 5000);
+      browser.wait(EC.invisibilityOf(element(by.id('.wc-table-striped tr td'))), 5000);
+    });
+  });
+
+  afterAll(function() {
+    testdataHelper.deleteUtkast(intygsId);
+    testdataHelper.deleteIntyg(intygsId);
+    testdataHelper.deleteAllArenden();
+    specHelper.logout();
+    browser.ignoreSynchronization = false;
+  });
+
+  function isIntygSent(intygsId) {
+    var innerDefer = protractor.promise.defer();
+    restUtil.getIntyg(intygsId).then(function(intygBody) {
+      var result = IntygPage.hasState(intygBody.body.states, 'SENT');
+      innerDefer.fulfill(result);
+    });
+    return innerDefer.promise;
+  }
 
 });

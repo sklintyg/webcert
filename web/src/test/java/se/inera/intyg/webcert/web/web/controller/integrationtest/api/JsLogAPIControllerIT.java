@@ -18,18 +18,13 @@
  */
 package se.inera.intyg.webcert.web.web.controller.integrationtest.api;
 
-import static com.jayway.restassured.RestAssured.given;
-import static com.jayway.restassured.http.ContentType.JSON;
 import static se.inera.intyg.webcert.web.web.controller.api.dto.MonitoringRequest.HEIGHT;
-import static se.inera.intyg.webcert.web.web.controller.api.dto.MonitoringRequest.WIDTH;
 import static se.inera.intyg.webcert.web.web.controller.api.dto.MonitoringRequest.MonitoringRequestEvent.SCREEN_RESOLUTION;
-
-import java.util.HashMap;
-
-import org.junit.Test;
+import static se.inera.intyg.webcert.web.web.controller.api.dto.MonitoringRequest.WIDTH;
 
 import com.jayway.restassured.RestAssured;
-
+import java.util.HashMap;
+import org.junit.Test;
 import se.inera.intyg.webcert.web.web.controller.api.dto.MonitoringRequest;
 import se.inera.intyg.webcert.web.web.controller.integrationtest.BaseRestIntegrationTest;
 
@@ -44,9 +39,9 @@ public class JsLogAPIControllerIT extends BaseRestIntegrationTest {
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
 
         spec()
-                .and().body("rest-api-integrationtest-message")
-                .expect().statusCode(200)
-                .when().post("api/jslog/debug");
+            .and().body("rest-api-integrationtest-message")
+            .expect().statusCode(200)
+            .when().post("api/jslog/debug");
     }
 
     @Test
@@ -55,9 +50,9 @@ public class JsLogAPIControllerIT extends BaseRestIntegrationTest {
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
 
         spec()
-                .and().body(new MonitoringRequest())
-                .expect().statusCode(400)
-                .when().post("api/jslog/monitoring");
+            .and().body(new MonitoringRequest())
+            .expect().statusCode(400)
+            .when().post("api/jslog/monitoring");
     }
 
     @Test
@@ -73,8 +68,8 @@ public class JsLogAPIControllerIT extends BaseRestIntegrationTest {
         request.setInfo(info);
 
         spec()
-                .and().body(request)
-                .expect().statusCode(200)
-                .when().post("api/jslog/monitoring");
+            .and().body(request)
+            .expect().statusCode(200)
+            .when().post("api/jslog/monitoring");
     }
 }

@@ -31,51 +31,51 @@ var intygFromJsonFactory = wcTestTools.intygFromJsonFactory;
 
 describe('Validera makulering av luae_na Intyg', function() {
 
-    var intyg = intygFromJsonFactory.defaultLuaena();
-    var intygsId = intyg.id;
+  var intyg = intygFromJsonFactory.defaultLuaena();
+  var intygsId = intyg.id;
 
-    beforeAll(function() {
-        testdataHelper.deleteIntyg(intygsId);
-        browser.ignoreSynchronization = false;
-        specHelper.login();
+  beforeAll(function() {
+    testdataHelper.deleteIntyg(intygsId);
+    browser.ignoreSynchronization = false;
+    specHelper.login();
+  });
+
+  describe('Visa signerat luae_na intyg', function() {
+
+    it('Skapa signerat intyg i IT, visa intyget', function() {
+      restUtil.createIntyg(intyg);
+      SokSkrivIntygPage.selectPersonnummer('19121212-1212');
+      SokSkrivValjIntyg.selectIntygById(intygsId);
+
+      expect(IntygPage.isAt()).toBeTruthy();
+      expect(IntygPage.makulera.statusRevoked.isPresent()).toBeFalsy();
     });
 
-    describe('Visa signerat luae_na intyg', function() {
+    it('Makulera intyget', function() {
+      IntygPage.makulera.btn.sendKeys(protractor.Key.SPACE);
+      IntygPage.makulera.dialogRadioAnnatAllvarligtFel.sendKeys(protractor.Key.SPACE);
+      browser.wait(IntygPage.makulera.dialogRadioAnnatAllvarligtFelClarification.isDisplayed())
+      .then(IntygPage.makulera.dialogRadioAnnatAllvarligtFelClarification.sendKeys(
+          "Patienten har en helt annan diagnos än den angivna, blandade ihop mjältbrand med nageltrång. Lätt hänt..."));
 
-        it('Skapa signerat intyg i IT, visa intyget', function() {
-            restUtil.createIntyg(intyg);
-            SokSkrivIntygPage.selectPersonnummer('19121212-1212');
-            SokSkrivValjIntyg.selectIntygById(intygsId);
+      IntygPage.makulera.dialogMakulera.sendKeys(protractor.Key.SPACE);
 
-            expect(IntygPage.isAt()).toBeTruthy();
-            expect(IntygPage.makulera.statusRevoked.isPresent()).toBeFalsy();
-        });
+      element.all(by.id('#makuleraBtn')).then(function(items) {
+        expect(items.length).toBe(0);
+      });
 
-        it('Makulera intyget', function() {
-            IntygPage.makulera.btn.sendKeys(protractor.Key.SPACE);
-            IntygPage.makulera.dialogRadioAnnatAllvarligtFel.sendKeys(protractor.Key.SPACE);
-            browser.wait(IntygPage.makulera.dialogRadioAnnatAllvarligtFelClarification.isDisplayed())
-                .then(IntygPage.makulera.dialogRadioAnnatAllvarligtFelClarification.sendKeys("Patienten har en helt annan diagnos än den angivna, blandade ihop mjältbrand med nageltrång. Lätt hänt..."));
+      expect(IntygPage.makulera.statusRevoked.isDisplayed()).toBeTruthy();
 
-            IntygPage.makulera.dialogMakulera.sendKeys(protractor.Key.SPACE);
-
-            element.all(by.id('#makuleraBtn')).then(function(items) {
-                expect(items.length).toBe(0);
-            });
-
-            expect(IntygPage.makulera.statusRevoked.isDisplayed()).toBeTruthy();
-
-            // Print button should not exist
-            expect(IntygPage.skrivUtBtn.isPresent()).toBeFalsy();
-        });
-
+      // Print button should not exist
+      expect(IntygPage.skrivUtBtn.isPresent()).toBeFalsy();
     });
 
+  });
 
-    afterAll(function() {
-        testdataHelper.deleteIntyg(intygsId);
-        specHelper.logout();
-        browser.ignoreSynchronization = false;
-    });
+  afterAll(function() {
+    testdataHelper.deleteIntyg(intygsId);
+    specHelper.logout();
+    browser.ignoreSynchronization = false;
+  });
 
 });

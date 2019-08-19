@@ -21,7 +21,6 @@ package se.inera.intyg.webcert.web.auth;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.saml.SAMLCredential;
 import org.springframework.stereotype.Service;
-
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
@@ -45,10 +44,8 @@ public class WebcertUserDetailsService extends BaseUserDetailsService {
      * Calls the default super() impl. from the base class and then builds a {@link WebCertUser} which is passed upwards
      * as Principal.
      *
-     * @param credential
-     *            The SAMLCredential.
-     * @return
-     *         WebCertUser as Principal.
+     * @param credential The SAMLCredential.
+     * @return WebCertUser as Principal.
      */
     @Override
     protected WebCertUser buildUserPrincipal(SAMLCredential credential) {
@@ -61,8 +58,7 @@ public class WebcertUserDetailsService extends BaseUserDetailsService {
     /**
      * Makes sure that the default "fallback" role of Webcert is {@link AuthoritiesConstants#ROLE_ADMIN}.
      *
-     * @return
-     *         AuthoritiesConstants.ROLE_ADMIN as String.
+     * @return AuthoritiesConstants.ROLE_ADMIN as String.
      */
     @Override
     protected String getDefaultRole() {
@@ -77,8 +73,7 @@ public class WebcertUserDetailsService extends BaseUserDetailsService {
      * For users with origin {@link UserOriginType#NORMAL} users will be redirected to the Vårdenhet selection page if
      * they have more than one (1) possible vårdenhet they have the requisite medarbetaruppdrag to select. (INTYG-3211)
      *
-     * @param intygUser
-     *            User principal.
+     * @param intygUser User principal.
      */
     @Override
     protected void decorateIntygUserWithDefaultVardenhet(IntygUser intygUser) {

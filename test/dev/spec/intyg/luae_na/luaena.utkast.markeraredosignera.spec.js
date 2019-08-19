@@ -27,64 +27,64 @@ var restUtil = wcTestTools.restUtil;
 
 describe('Create partially complete luae_na utkast and mark as ready to sign', function() {
 
-    var utkastId = null,
-        data = null;
+  var utkastId = null,
+      data = null;
 
-    beforeAll(function() {
-        browser.ignoreSynchronization = false;
-        restUtil.registerEnhetAsDjupintegrerad('TSTNMT2321000156-1039', 'Vårdenhetens namn', 'vgid', 'vgnamn', false,
-            true);
-        specHelper.login();
-        specHelper.createUtkastForPatient('191212121212', 'luae_na');
-    });
+  beforeAll(function() {
+    browser.ignoreSynchronization = false;
+    restUtil.registerEnhetAsDjupintegrerad('TSTNMT2321000156-1039', 'Vårdenhetens namn', 'vgid', 'vgnamn', false,
+        true);
+    specHelper.login();
+    specHelper.createUtkastForPatient('191212121212', 'luae_na');
+  });
 
-    describe('Skapa luae_na', function() {
+  describe('Skapa luae_na', function() {
 
-        describe('Fyll i utkastet', function() {
+    describe('Fyll i utkastet', function() {
 
-            it('Spara undan intygsId från URL', function() {
+      it('Spara undan intygsId från URL', function() {
 
-                specHelper.getUtkastIdFromUrl().then(function(id) {
-                    utkastId = id;
-                });
-                data = wcTestTools.testdata.fk.LUAE_NA.get(utkastId);
-            });
+        specHelper.getUtkastIdFromUrl().then(function(id) {
+          utkastId = id;
         });
+        data = wcTestTools.testdata.fk.LUAE_NA.get(utkastId);
+      });
+    });
 
-        describe('Byt till djupintegrerad vårdadministratör på utkastet och markera som klar för signering', function() {
+    describe('Byt till djupintegrerad vårdadministratör på utkastet och markera som klar för signering', function() {
 
-            it('Bli vårdadmin och djupintegrerad, ladda sedan om sidan', function() {
-                browser.ignoreSynchronization = true;
-                specHelper.setUserRole("VARDADMINISTRATOR").then(function() {
-                    specHelper.setUserOrigin("DJUPINTEGRATION").then(function() {
-                        browser.ignoreSynchronization = false;
-                        UtkastPage.get(utkastId);
-                    });
-                });
-            });
-
-            it('Verifiera att knappen för Markera som klart att signera syns', function() {
-                expect(UtkastPage.isMarkeraSomKlartAttSigneraButtonDisplayed()).toBeTruthy();
-            });
-
-            it('Klicka på knappen för Markera som klart att signera syns', function() {
-                UtkastPage.markeraSomKlartAttSigneraButtonClick();
-
-                // Vänta på att den modala dialogen öppnas och Yes-knappen blir synlig
-                expect(UtkastPage.markeraKlartForSigneringModalYesButton.isDisplayed()).toBeTruthy();
-            });
-
-            it('Klicka knappen för Markera utkast redo att signera', function() {
-                UtkastPage.markeraKlartForSigneringModalYesButton.sendKeys(protractor.Key.SPACE);
-
-                expect(UtkastPage.markeradKlartForSigneringText.isDisplayed()).toBeTruthy();
-            });
+      it('Bli vårdadmin och djupintegrerad, ladda sedan om sidan', function() {
+        browser.ignoreSynchronization = true;
+        specHelper.setUserRole("VARDADMINISTRATOR").then(function() {
+          specHelper.setUserOrigin("DJUPINTEGRATION").then(function() {
+            browser.ignoreSynchronization = false;
+            UtkastPage.get(utkastId);
+          });
         });
-    });
+      });
 
-    afterAll(function() {
-        testdataHelper.deleteUtkast(utkastId);
-        restUtil.deregisterEnhetAsDjupintegrerad('TSTNMT2321000156-1039');
+      it('Verifiera att knappen för Markera som klart att signera syns', function() {
+        expect(UtkastPage.isMarkeraSomKlartAttSigneraButtonDisplayed()).toBeTruthy();
+      });
+
+      it('Klicka på knappen för Markera som klart att signera syns', function() {
+        UtkastPage.markeraSomKlartAttSigneraButtonClick();
+
+        // Vänta på att den modala dialogen öppnas och Yes-knappen blir synlig
+        expect(UtkastPage.markeraKlartForSigneringModalYesButton.isDisplayed()).toBeTruthy();
+      });
+
+      it('Klicka knappen för Markera utkast redo att signera', function() {
+        UtkastPage.markeraKlartForSigneringModalYesButton.sendKeys(protractor.Key.SPACE);
+
+        expect(UtkastPage.markeradKlartForSigneringText.isDisplayed()).toBeTruthy();
+      });
     });
+  });
+
+  afterAll(function() {
+    testdataHelper.deleteUtkast(utkastId);
+    restUtil.deregisterEnhetAsDjupintegrerad('TSTNMT2321000156-1039');
+  });
 
 });

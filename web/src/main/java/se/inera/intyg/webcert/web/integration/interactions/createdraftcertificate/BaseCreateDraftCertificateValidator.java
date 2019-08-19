@@ -18,15 +18,13 @@
  */
 package se.inera.intyg.webcert.web.integration.interactions.createdraftcertificate;
 
+import com.google.common.base.Strings;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import com.google.common.base.Strings;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.infra.integration.pu.model.PersonSvar;
@@ -69,24 +67,24 @@ public abstract class BaseCreateDraftCertificateValidator {
         PersonSvar personSvar = patientDetailsResolver.getPersonFromPUService(personnummer);
 
         switch (personSvar.getStatus()) {
-        case ERROR:
-            errors.addError("Cannot issue intyg. The PU-service was unreachable. Please try again later.");
-            break;
-        case NOT_FOUND:
-            String msg = "Personnumret du har angivit finns inte i folkbokföringsregistret."
+            case ERROR:
+                errors.addError("Cannot issue intyg. The PU-service was unreachable. Please try again later.");
+                break;
+            case NOT_FOUND:
+                String msg = "Personnumret du har angivit finns inte i folkbokföringsregistret."
                     + " Observera att det inte går att ange reservnummer."
                     + " Webcert hanterar enbart person- och samordningsnummer.";
-            errors.addError(msg);
-            break;
-        default:
-            break; // Do nothing
+                errors.addError(msg);
+                break;
+            default:
+                break; // Do nothing
         }
     }
 
     protected void validateBusinessRulesForSekretessmarkeradPatient(ResultValidator errors,
-            Personnummer personnummer,
-            String intygsTyp,
-            IntygUser user) {
+        Personnummer personnummer,
+        String intygsTyp,
+        IntygUser user) {
         if (personnummer != null) {
             final SekretessStatus sekretessStatus = patientDetailsResolver.getSekretessStatus(personnummer);
             if (sekretessStatus != SekretessStatus.UNDEFINED) {
@@ -97,9 +95,9 @@ public abstract class BaseCreateDraftCertificateValidator {
     }
 
     protected void validateCreateForAvlidenPatientAllowed(
-            ResultValidator errors,
-            Personnummer personnummer,
-            String typAvIntyg) {
+        ResultValidator errors,
+        Personnummer personnummer,
+        String typAvIntyg) {
 
         String intygsTyp = moduleRegistry.getModuleIdFromExternalId(typAvIntyg);
 
@@ -171,11 +169,11 @@ public abstract class BaseCreateDraftCertificateValidator {
         if (sekretessStatus == SekretessStatus.TRUE) {
             AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
             if (!authoritiesValidator.given(user)
-                    .privilege(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT)
-                    .isVerified()) {
+                .privilege(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT)
+                .isVerified()) {
                 errors.addError(
-                        "Du saknar behörighet. För att hantera intyg för patienter med sekretessmarkering krävs "
-                                + "att du har befattningen läkare eller tandläkare");
+                    "Du saknar behörighet. För att hantera intyg för patienter med sekretessmarkering krävs "
+                        + "att du har befattningen läkare eller tandläkare");
             }
         }
     }
@@ -183,15 +181,15 @@ public abstract class BaseCreateDraftCertificateValidator {
     private void validateSekretess(ResultValidator errors, String intygsTyp, SekretessStatus sekretessStatus) {
         if (!authoritiesHelper.getIntygstyperAllowedForSekretessmarkering().contains(intygsTyp)) {
             switch (sekretessStatus) {
-            case TRUE:
-                errors.addError("Intygstypen {0} kan inte utfärdas för patienter med sekretessmarkering.", intygsTyp);
-                break;
-            case UNDEFINED:
-                errors.addError("Cannot issue intyg type {0} for unknown patient. Might be due "
+                case TRUE:
+                    errors.addError("Intygstypen {0} kan inte utfärdas för patienter med sekretessmarkering.", intygsTyp);
+                    break;
+                case UNDEFINED:
+                    errors.addError("Cannot issue intyg type {0} for unknown patient. Might be due "
                         + "to a problem in the PU service.", intygsTyp);
-                break;
-            case FALSE:
-                break; // Do nothing
+                    break;
+                case FALSE:
+                    break; // Do nothing
             }
         }
     }

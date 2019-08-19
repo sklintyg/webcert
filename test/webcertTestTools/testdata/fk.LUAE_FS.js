@@ -26,80 +26,80 @@ var fkValues = require('./testvalues.js').fk;
 var today = testdataHelper.dateFormat(new Date());
 
 module.exports = {
-    get: function(intygsID) {
-        if (!intygsID) {
-            intygsID = testdataHelper.generateTestGuid();
-        }
-        return {
-            "id": intygsID,
-            "typ": "Läkarutlåtande för aktivitetsersättning vid förlängd skolgång",
-            "baseratPa": {
-                "minUndersokningAvPatienten": "2017-09-27",
-                "journaluppgifter": "2017-09-27",
-                "anhorigsBeskrivning": "2017-09-27",
-                "annat": "2017-09-27",
-                "annatBeskrivning": "ÄMk9NcgukFxTMaAn",
-                "personligKannedom": "2017-09-27"
-            },
-            "andraMedicinskaUtredningar": [{
-                "underlag": "Neuropsykiatriskt utlåtande",
-                "datum": "2016-04-09",
-                "infoOmUtredningen": "mÄwwO67piLrbeåID"
-            }],
-            "diagnos": {
-                "diagnoser": [{
-                    "kod": "Z720B",
-                    "bakgrund": "gwskchi5p1LmåzHÖ"
-                }]
-            },
-            "funktionsnedsattning": {
-                "debut": "TTIÅhTZFFÄHjLbOk",
-                "paverkan": "Ö502ZH0bVTLSåijx"
-            },
-            "ovrigt": "åbw0KhHaTjcQgzbÅ",
-            "kontaktMedFk": false,
-            "tillaggsfragor": [{
-                "id": 9001,
-                "svar": "iQ0zn6Yrh7zYSjGI"
-            }, {
-                "id": 9002,
-                "svar": "vZMnfG0Z6jäscuY2"
-            }]
-        };
-    },
-    getRandom: function(intygsID) {
-        if (!intygsID) {
-            intygsID = testdataHelper.generateTestGuid();
-        }
-        return {
-            id: intygsID,
-            typ: 'Läkarutlåtande för aktivitetsersättning vid förlängd skolgång',
-
-            baseratPa: {
-                minUndersokningAvPatienten: today,
-                journaluppgifter: today,
-                anhorigsBeskrivning: today,
-                annat: today,
-                annatBeskrivning: testdataHelper.randomTextString(2, 5) /*3500*/ ,
-                personligKannedom: today
-            },
-            andraMedicinskaUtredningar: fkValues.getRandomMedicinskaUtredningar(),
-
-            diagnos: {
-                diagnoser: [{
-                    kod: shuffle(fkValues.ICD10)[0],
-                    bakgrund: testdataHelper.randomTextString()
-                }]
-            },
-            funktionsnedsattning: {
-                //funktionsnedsattningar
-                debut: testdataHelper.randomTextString(2, 5) /*3500*/ ,
-                paverkan: testdataHelper.randomTextString(2, 5) /*3500*/
-            },
-            ovrigt: testdataHelper.randomTextString(2, 5) /*3500*/ ,
-            kontaktMedFk: shuffle([false, {
-                motivering: testdataHelper.randomTextString(2, 5) /*3500*/
-            }])
-        };
+  get: function(intygsID) {
+    if (!intygsID) {
+      intygsID = testdataHelper.generateTestGuid();
     }
+    return {
+      "id": intygsID,
+      "typ": "Läkarutlåtande för aktivitetsersättning vid förlängd skolgång",
+      "baseratPa": {
+        "minUndersokningAvPatienten": "2017-09-27",
+        "journaluppgifter": "2017-09-27",
+        "anhorigsBeskrivning": "2017-09-27",
+        "annat": "2017-09-27",
+        "annatBeskrivning": "ÄMk9NcgukFxTMaAn",
+        "personligKannedom": "2017-09-27"
+      },
+      "andraMedicinskaUtredningar": [{
+        "underlag": "Neuropsykiatriskt utlåtande",
+        "datum": "2016-04-09",
+        "infoOmUtredningen": "mÄwwO67piLrbeåID"
+      }],
+      "diagnos": {
+        "diagnoser": [{
+          "kod": "Z720B",
+          "bakgrund": "gwskchi5p1LmåzHÖ"
+        }]
+      },
+      "funktionsnedsattning": {
+        "debut": "TTIÅhTZFFÄHjLbOk",
+        "paverkan": "Ö502ZH0bVTLSåijx"
+      },
+      "ovrigt": "åbw0KhHaTjcQgzbÅ",
+      "kontaktMedFk": false,
+      "tillaggsfragor": [{
+        "id": 9001,
+        "svar": "iQ0zn6Yrh7zYSjGI"
+      }, {
+        "id": 9002,
+        "svar": "vZMnfG0Z6jäscuY2"
+      }]
+    };
+  },
+  getRandom: function(intygsID) {
+    if (!intygsID) {
+      intygsID = testdataHelper.generateTestGuid();
+    }
+    return {
+      id: intygsID,
+      typ: 'Läkarutlåtande för aktivitetsersättning vid förlängd skolgång',
+
+      baseratPa: {
+        minUndersokningAvPatienten: today,
+        journaluppgifter: today,
+        anhorigsBeskrivning: today,
+        annat: today,
+        annatBeskrivning: testdataHelper.randomTextString(2, 5) /*3500*/,
+        personligKannedom: today
+      },
+      andraMedicinskaUtredningar: fkValues.getRandomMedicinskaUtredningar(),
+
+      diagnos: {
+        diagnoser: [{
+          kod: shuffle(fkValues.ICD10)[0],
+          bakgrund: testdataHelper.randomTextString()
+        }]
+      },
+      funktionsnedsattning: {
+        //funktionsnedsattningar
+        debut: testdataHelper.randomTextString(2, 5) /*3500*/,
+        paverkan: testdataHelper.randomTextString(2, 5) /*3500*/
+      },
+      ovrigt: testdataHelper.randomTextString(2, 5) /*3500*/,
+      kontaktMedFk: shuffle([false, {
+        motivering: testdataHelper.randomTextString(2, 5) /*3500*/
+      }])
+    };
+  }
 };

@@ -27,9 +27,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.assertj.core.util.Lists;
-
 import se.inera.intyg.infra.integration.pu.model.Person;
 import se.inera.intyg.infra.integration.pu.model.PersonSvar;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
@@ -66,14 +64,14 @@ abstract public class AccessServiceTestToolkit {
 
     public static WebCertUser createUser(String intygsTyp, AccessServiceTestData accessServiceTestData) {
         return createUserWithoutParameters(intygsTyp,
-                getFeatureMap(intygsTyp, accessServiceTestData.getFeatures()),
-                getPrivilegesMap(intygsTyp, accessServiceTestData.getPrivileges()), false);
+            getFeatureMap(intygsTyp, accessServiceTestData.getFeatures()),
+            getPrivilegesMap(intygsTyp, accessServiceTestData.getPrivileges()), false);
     }
 
     public static WebCertUser createUserDifferentUnit(String intygsTyp, AccessServiceTestData accessServiceTestData) {
         return createUserWithoutParameters(intygsTyp,
-                getFeatureMap(intygsTyp, accessServiceTestData.getFeatures()),
-                getPrivilegesMap(intygsTyp, accessServiceTestData.getPrivileges()), true);
+            getFeatureMap(intygsTyp, accessServiceTestData.getFeatures()),
+            getPrivilegesMap(intygsTyp, accessServiceTestData.getPrivileges()), true);
     }
 
     public static WebCertUser createUser(String intygsTyp, AccessServiceTestData accessServiceTestData, boolean inactiveUnit) {
@@ -81,25 +79,25 @@ abstract public class AccessServiceTestToolkit {
     }
 
     public static WebCertUser createUser(String intygsTyp, AccessServiceTestData accessServiceTestData, boolean inactiveUnit,
-            boolean renewOk) {
+        boolean renewOk) {
         return createUser(intygsTyp, accessServiceTestData, inactiveUnit, renewOk, false);
     }
 
     public static WebCertUser createUser(String intygsTyp, AccessServiceTestData accessServiceTestData, boolean inactiveUnit,
-            boolean renewOk, boolean differentUnit) {
+        boolean renewOk, boolean differentUnit) {
         return createUserWithParameters(intygsTyp,
-                getFeatureMap(intygsTyp, accessServiceTestData.getFeatures()),
-                getPrivilegesMap(intygsTyp, accessServiceTestData.getPrivileges()),
-                inactiveUnit,
-                renewOk,
-                differentUnit);
+            getFeatureMap(intygsTyp, accessServiceTestData.getFeatures()),
+            getPrivilegesMap(intygsTyp, accessServiceTestData.getPrivileges()),
+            inactiveUnit,
+            renewOk,
+            differentUnit);
     }
 
     private static WebCertUser createUserWithParameters(String intygsTyp, Map<String, Feature> featureMap,
-            Map<String, Privilege> privilegesMap,
-            boolean inactiveUnit,
-            boolean fornyaOk,
-            boolean differentUnit) {
+        Map<String, Privilege> privilegesMap,
+        boolean inactiveUnit,
+        boolean fornyaOk,
+        boolean differentUnit) {
 
         final WebCertUser webCertUser = mock(WebCertUser.class);
 
@@ -110,16 +108,16 @@ abstract public class AccessServiceTestToolkit {
         doReturn(getParameters(inactiveUnit, fornyaOk)).when(webCertUser).getParameters();
 
         if (differentUnit) {
-            doReturn(Arrays.asList(new String[] { "AnnatEnhetsId" })).when(webCertUser).getIdsOfSelectedVardenhet();
+            doReturn(Arrays.asList(new String[]{"AnnatEnhetsId"})).when(webCertUser).getIdsOfSelectedVardenhet();
         } else {
-            doReturn(Arrays.asList(new String[] { "EnhetsId" })).when(webCertUser).getIdsOfSelectedVardenhet();
+            doReturn(Arrays.asList(new String[]{"EnhetsId"})).when(webCertUser).getIdsOfSelectedVardenhet();
         }
 
         return webCertUser;
     }
 
     private static WebCertUser createUserWithoutParameters(String intygsTyp, Map<String, Feature> featureMap,
-            Map<String, Privilege> privilegesMap, boolean differentUnit) {
+        Map<String, Privilege> privilegesMap, boolean differentUnit) {
 
         final WebCertUser webCertUser = mock(WebCertUser.class);
 
@@ -130,9 +128,9 @@ abstract public class AccessServiceTestToolkit {
         doReturn(null).when(webCertUser).getParameters();
 
         if (differentUnit) {
-            doReturn(Arrays.asList(new String[] { "AnnatEnhetsId" })).when(webCertUser).getIdsOfSelectedVardenhet();
+            doReturn(Arrays.asList(new String[]{"AnnatEnhetsId"})).when(webCertUser).getIdsOfSelectedVardenhet();
         } else {
-            doReturn(Arrays.asList(new String[] { "EnhetsId" })).when(webCertUser).getIdsOfSelectedVardenhet();
+            doReturn(Arrays.asList(new String[]{"EnhetsId"})).when(webCertUser).getIdsOfSelectedVardenhet();
         }
 
         return webCertUser;
@@ -140,9 +138,9 @@ abstract public class AccessServiceTestToolkit {
 
     private static Map<String, Privilege> getUtkastAuthority(String intygsTyp) {
         return getPrivilegesMap(
-                createPrivilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG,
-                        Collections.emptyList(),
-                        Lists.newArrayList(createRequestOrigin(UserOriginType.NORMAL.name(), Arrays.asList(intygsTyp)))));
+            createPrivilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG,
+                Collections.emptyList(),
+                Lists.newArrayList(createRequestOrigin(UserOriginType.NORMAL.name(), Arrays.asList(intygsTyp)))));
     }
 
     private static Map<String, Feature> getFeatureMap(String intygsTyp, List<String> featureNames) {
@@ -161,18 +159,18 @@ abstract public class AccessServiceTestToolkit {
 
     private static IntegrationParameters getParameters(boolean inactiveUnit, boolean fornyaOk) {
         return new IntegrationParameters("",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                false,
-                false,
-                inactiveUnit,
-                fornyaOk);
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            false,
+            false,
+            inactiveUnit,
+            fornyaOk);
     }
 
     private static Map<String, Role> getRolesMap(String roleName) {
@@ -187,7 +185,7 @@ abstract public class AccessServiceTestToolkit {
         final HashMap<String, Privilege> privilegesHashMap = new HashMap<>();
         for (String privilege : privileges) {
             privilegesHashMap.put(privilege, createPrivilege(privilege, Collections.emptyList(),
-                    Lists.newArrayList(createRequestOrigin(UserOriginType.NORMAL.name(), Arrays.asList(intygsTyp)))));
+                Lists.newArrayList(createRequestOrigin(UserOriginType.NORMAL.name(), Arrays.asList(intygsTyp)))));
         }
         return privilegesHashMap;
     }

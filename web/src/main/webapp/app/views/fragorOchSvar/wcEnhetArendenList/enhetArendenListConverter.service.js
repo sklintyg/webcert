@@ -18,88 +18,88 @@
  */
 
 angular.module('webcert').factory('webcert.enhetArendenConverterService',
-    [ '$filter', 'webcert.enhetArendenModel', 'common.UserModel',
-    function($filter, enhetArendenModel, UserModel) {
+    ['$filter', 'webcert.enhetArendenModel', 'common.UserModel',
+      function($filter, enhetArendenModel, UserModel) {
         'use strict';
 
         // Filter query request model. Actual model expected by backend proxy
         var defaultFilterQuery = {
-            enhetId: undefined,
-            startFrom: 0,
-            pageSize: enhetArendenModel.PAGE_SIZE,
+          enhetId: undefined,
+          startFrom: 0,
+          pageSize: enhetArendenModel.PAGE_SIZE,
 
-            questionFromFK: false,
-            questionFromWC: false,
-            hsaId: undefined, // läkare
-            vidarebefordrad: undefined, // 3-state
+          questionFromFK: false,
+          questionFromWC: false,
+          hsaId: undefined, // läkare
+          vidarebefordrad: undefined, // 3-state
 
-            changedFrom: undefined,
-            changedTo: undefined,
+          changedFrom: undefined,
+          changedTo: undefined,
 
-            vantarPa: undefined,
+          vantarPa: undefined,
 
-            orderBy: 'receivedDate',
-            orderAscending: false,
+          orderBy: 'receivedDate',
+          orderAscending: false,
 
-            patientPersonId: undefined
+          patientPersonId: undefined
         };
 
         function _convertFormModelToFilterQuery(filterForm, enhetId) {
-            /*jshint maxcomplexity:false */
+          /*jshint maxcomplexity:false */
 
-            // Converts view values and sets them on a copy of query object
-            var filterQuery = angular.copy(defaultFilterQuery);
+          // Converts view values and sets them on a copy of query object
+          var filterQuery = angular.copy(defaultFilterQuery);
 
-            if (enhetId !== enhetArendenModel.ALL_UNITS) {
-                filterQuery.enhetId = enhetId;
-            }
+          if (enhetId !== enhetArendenModel.ALL_UNITS) {
+            filterQuery.enhetId = enhetId;
+          }
 
-            filterQuery.vantarPa = filterForm.vantarPaSelector;
+          filterQuery.vantarPa = filterForm.vantarPaSelector;
 
-            if (filterForm.lakareSelector) {
-                filterQuery.hsaId = filterForm.lakareSelector;
-            }
+          if (filterForm.lakareSelector) {
+            filterQuery.hsaId = filterForm.lakareSelector;
+          }
 
-            if (filterForm.changedFrom) {
-                filterQuery.changedFrom = $filter('date')(filterForm.changedFrom, 'yyyy-MM-dd');
-            }
+          if (filterForm.changedFrom) {
+            filterQuery.changedFrom = $filter('date')(filterForm.changedFrom, 'yyyy-MM-dd');
+          }
 
-            if (filterForm.changedTo) {
-                filterQuery.changedTo = $filter('date')(filterForm.changedTo, 'yyyy-MM-dd');
-            }
+          if (filterForm.changedTo) {
+            filterQuery.changedTo = $filter('date')(filterForm.changedTo, 'yyyy-MM-dd');
+          }
 
-            if (filterForm.questionFrom === 'FK') {
-                filterQuery.questionFromFK = true;
-                filterQuery.questionFromWC = false;
-            } else if (filterForm.questionFrom === 'WC') {
-                filterQuery.questionFromFK = false;
-                filterQuery.questionFromWC = true;
-            } else {
-                filterQuery.questionFromFK = false;
-                filterQuery.questionFromWC = false;
-            }
+          if (filterForm.questionFrom === 'FK') {
+            filterQuery.questionFromFK = true;
+            filterQuery.questionFromWC = false;
+          } else if (filterForm.questionFrom === 'WC') {
+            filterQuery.questionFromFK = false;
+            filterQuery.questionFromWC = true;
+          } else {
+            filterQuery.questionFromFK = false;
+            filterQuery.questionFromWC = false;
+          }
 
-            if (filterForm.vidarebefordrad !== 'default') {
-                filterQuery.vidarebefordrad = filterForm.vidarebefordrad;
-            }
+          if (filterForm.vidarebefordrad !== 'default') {
+            filterQuery.vidarebefordrad = filterForm.vidarebefordrad;
+          }
 
-            if (filterForm.orderAscending) {
-                filterQuery.orderAscending = filterForm.orderAscending;
-            }
+          if (filterForm.orderAscending) {
+            filterQuery.orderAscending = filterForm.orderAscending;
+          }
 
-            if (filterForm.orderBy) {
-                filterQuery.orderBy = filterForm.orderBy;
-            }
+          if (filterForm.orderBy) {
+            filterQuery.orderBy = filterForm.orderBy;
+          }
 
-            if (filterForm.patientPersonId) {
-                filterQuery.patientPersonId = filterForm.patientPersonId.replace('-', '');
-            }
+          if (filterForm.patientPersonId) {
+            filterQuery.patientPersonId = filterForm.patientPersonId.replace('-', '');
+          }
 
-            return filterQuery;
+          return filterQuery;
         }
 
         // Return public API for the service
         return {
-            convertFormModelToFilterQuery: _convertFormModelToFilterQuery
+          convertFormModelToFilterQuery: _convertFormModelToFilterQuery
         };
-    }]);
+      }]);

@@ -18,6 +18,34 @@
  */
 package se.inera.intyg.webcert.web.service.arende;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anySet;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.ArgumentMatchers.nullable;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.only;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.when;
+
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.MoreCollectors;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -33,7 +61,6 @@ import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -43,10 +70,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
-
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.MoreCollectors;
 import se.inera.intyg.common.support.model.common.internal.GrundData;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.model.common.internal.Patient;
@@ -102,31 +125,6 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeView;
 import se.inera.intyg.webcert.web.web.util.access.AccessResultExceptionHelper;
 import se.inera.intyg.webcert.web.web.util.resourcelinks.dto.ActionLinkType;
 import se.riv.infrastructure.directory.v1.PersonInformationType;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
-import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anySet;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.isNull;
-import static org.mockito.ArgumentMatchers.nullable;
-import static org.mockito.Mockito.atLeastOnce;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.only;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.verifyZeroInteractions;
-import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.Silent.class)
 public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
@@ -237,7 +235,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         assertNotNull(res);
         assertEquals(FIXED_TIME_INSTANT, res.getTimestamp().toInstant(ZoneId.systemDefault().getRules().getOffset(FIXED_TIME_INSTANT)));
         assertEquals(FIXED_TIME_INSTANT,
-                res.getSenasteHandelse().toInstant(ZoneId.systemDefault().getRules().getOffset(FIXED_TIME_INSTANT)));
+            res.getSenasteHandelse().toInstant(ZoneId.systemDefault().getRules().getOffset(FIXED_TIME_INSTANT)));
         assertEquals(utkast.getSignatur().getSigneradAv(), res.getSigneratAv());
         assertEquals(signeratAvName, res.getSigneratAvName());
 
@@ -330,7 +328,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         Arende res = service.processIncomingMessage(svararende);
         assertEquals(Status.ANSWERED, res.getStatus());
         assertEquals(FIXED_TIME_INSTANT,
-                res.getSenasteHandelse().toInstant(ZoneId.systemDefault().getRules().getOffset(FIXED_TIME_INSTANT)));
+            res.getSenasteHandelse().toInstant(ZoneId.systemDefault().getRules().getOffset(FIXED_TIME_INSTANT)));
 
         verify(arendeRepository).findOneByMeddelandeId(eq(frageid));
         ArgumentCaptor<Arende> arendeCaptor = ArgumentCaptor.forClass(Arende.class);
@@ -338,7 +336,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
 
         Arende updatedQuestion = arendeCaptor.getAllValues().get(1);
         assertEquals(FIXED_TIME_INSTANT,
-                updatedQuestion.getSenasteHandelse().toInstant(ZoneId.systemDefault().getRules().getOffset(FIXED_TIME_INSTANT)));
+            updatedQuestion.getSenasteHandelse().toInstant(ZoneId.systemDefault().getRules().getOffset(FIXED_TIME_INSTANT)));
         assertEquals(Status.ANSWERED, updatedQuestion.getStatus());
         verify(notificationService, only()).sendNotificationForAnswerRecieved(any(Arende.class));
         verifyZeroInteractions(arendeDraftService);
@@ -363,7 +361,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
 
         Arende res = service.processIncomingMessage(svararende);
         assertEquals(FIXED_TIME_INSTANT,
-                res.getSenasteHandelse().toInstant(ZoneId.systemDefault().getRules().getOffset(FIXED_TIME_INSTANT)));
+            res.getSenasteHandelse().toInstant(ZoneId.systemDefault().getRules().getOffset(FIXED_TIME_INSTANT)));
 
         verify(arendeRepository).findOneByMeddelandeId(eq(paminnelseid));
         ArgumentCaptor<Arende> arendeCaptor = ArgumentCaptor.forClass(Arende.class);
@@ -371,7 +369,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
 
         Arende updatedQuestion = arendeCaptor.getAllValues().get(1);
         assertEquals(FIXED_TIME_INSTANT,
-                updatedQuestion.getSenasteHandelse().toInstant(ZoneId.systemDefault().getRules().getOffset(FIXED_TIME_INSTANT)));
+            updatedQuestion.getSenasteHandelse().toInstant(ZoneId.systemDefault().getRules().getOffset(FIXED_TIME_INSTANT)));
         verify(notificationService, only()).sendNotificationForQuestionReceived(any(Arende.class));
         verifyZeroInteractions(arendeDraftService);
     }
@@ -469,7 +467,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         assertNotNull(result.getFraga());
         assertNull(result.getSvar());
         assertEquals(FIXED_TIME_INSTANT,
-                result.getSenasteHandelse().toInstant(ZoneId.systemDefault().getRules().getOffset(FIXED_TIME_INSTANT)));
+            result.getSenasteHandelse().toInstant(ZoneId.systemDefault().getRules().getOffset(FIXED_TIME_INSTANT)));
 
         verify(arendeRepository).save(any(Arende.class));
         verify(monitoringLog).logArendeCreated(anyString(), isNull(), isNull(), any(ArendeAmne.class), anyBoolean());
@@ -569,7 +567,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         assertNotNull(result.getFraga());
         assertNotNull(result.getSvar());
         assertEquals(FIXED_TIME_INSTANT,
-                result.getSenasteHandelse().toInstant(ZoneId.systemDefault().getRules().getOffset(FIXED_TIME_INSTANT)));
+            result.getSenasteHandelse().toInstant(ZoneId.systemDefault().getRules().getOffset(FIXED_TIME_INSTANT)));
 
         verify(arendeRepository, times(2)).save(any(Arende.class));
         verify(monitoringLog).logArendeCreated(anyString(), anyString(), isNull(), any(ArendeAmne.class), anyBoolean());
@@ -712,15 +710,15 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         verify(arendeDraftService, times(3)).delete(eq(INTYG_ID), anyString());
 
         assertTrue(result.stream()
-                .map(ArendeConversationView::getFraga)
-                .filter(f -> f.getAmne() == ArendeAmne.KOMPLT)
-                .allMatch(f -> f.getStatus() == Status.CLOSED));
+            .map(ArendeConversationView::getFraga)
+            .filter(f -> f.getAmne() == ArendeAmne.KOMPLT)
+            .allMatch(f -> f.getStatus() == Status.CLOSED));
 
         assertNotNull(result.stream()
-                .map(ArendeConversationView::getSvar)
-                .filter(Objects::nonNull)
-                .map(ArendeView::getInternReferens)
-                .collect(MoreCollectors.onlyElement()));
+            .map(ArendeConversationView::getSvar)
+            .filter(Objects::nonNull)
+            .map(ArendeView::getInternReferens)
+            .collect(MoreCollectors.onlyElement()));
     }
 
     @Test
@@ -740,7 +738,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         assertNotNull(result.getFraga());
         assertNotNull(result.getSvar());
         assertEquals(FIXED_TIME_INSTANT,
-                result.getSenasteHandelse().toInstant(ZoneId.systemDefault().getRules().getOffset(FIXED_TIME_INSTANT)));
+            result.getSenasteHandelse().toInstant(ZoneId.systemDefault().getRules().getOffset(FIXED_TIME_INSTANT)));
         verify(monitoringLog).logArendeCreated(anyString(), anyString(), isNull(), any(ArendeAmne.class), anyBoolean());
         verify(certificateSenderService).sendMessageToRecipient(anyString(), anyString());
         verify(notificationService).sendNotificationForQAs(INTYG_ID, NotificationEvent.NEW_ANSWER_FROM_CARE);
@@ -750,7 +748,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
 
         Arende updatedQuestion = arendeCaptor.getAllValues().get(1);
         assertEquals(FIXED_TIME_INSTANT,
-                updatedQuestion.getSenasteHandelse().toInstant(ZoneId.systemDefault().getRules().getOffset(FIXED_TIME_INSTANT)));
+            updatedQuestion.getSenasteHandelse().toInstant(ZoneId.systemDefault().getRules().getOffset(FIXED_TIME_INSTANT)));
         assertEquals(Status.CLOSED, updatedQuestion.getStatus());
     }
 
@@ -779,7 +777,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         final List<ArendeConversationView> arendeConversationViews = service.setForwarded(INTYG_ID);
 
         assertTrue(arendeConversationViews.stream()
-                .allMatch(arendeConversationView -> arendeConversationView.getFraga().getVidarebefordrad()));
+            .allMatch(arendeConversationView -> arendeConversationView.getFraga().getVidarebefordrad()));
 
         verifyZeroInteractions(notificationService);
     }
@@ -804,7 +802,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         final List<ArendeConversationView> arendeConversationViews = service.setForwarded(INTYG_ID);
 
         assertTrue(arendeConversationViews.stream()
-                .allMatch(arendeConversationView -> arendeConversationView.getFraga().getVidarebefordrad()));
+            .allMatch(arendeConversationView -> arendeConversationView.getFraga().getVidarebefordrad()));
 
         // Should contain both fraga and svar
         assertNotNull(arendeConversationViews.get(0).getFraga());
@@ -877,7 +875,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         arende.setStatus(Status.ANSWERED);
         when(arendeRepository.findOneByMeddelandeId(MEDDELANDE_ID)).thenReturn(arende);
         when(arendeRepository.findBySvarPaId(MEDDELANDE_ID))
-                .thenReturn(Arrays.asList(buildArende(UUID.randomUUID().toString(), null))); // there
+            .thenReturn(Arrays.asList(buildArende(UUID.randomUUID().toString(), null))); // there
         // are
         // answers
         setupMockForAccessService(ActionLinkType.BESVARA_KOMPLETTERING);
@@ -936,7 +934,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         arende.setStatus(Status.CLOSED);
         when(arendeRepository.findOneByMeddelandeId(MEDDELANDE_ID)).thenReturn(arende);
         when(arendeRepository.findBySvarPaId(MEDDELANDE_ID))
-                .thenReturn(Arrays.asList(buildArende(UUID.randomUUID().toString(), null))); // there
+            .thenReturn(Arrays.asList(buildArende(UUID.randomUUID().toString(), null))); // there
         // are
         // answers
         setupMockForAccessService(ActionLinkType.BESVARA_KOMPLETTERING);
@@ -964,11 +962,11 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
     @Test
     public void testListSignedByForUnits() {
         final List<String> selectedUnits = Arrays.asList("enhet1", "enhet2");
-        final String[] lakare1 = { "hsaid1", "namn1" };
-        final String[] lakare2 = { "hsaid2", "namn2" };
-        final String[] lakare3 = { "hsaid3", "namn3" };
-        final String[] lakare4 = { "hsaid4", "namn4" };
-        final String[] lakare4_1 = { "hsaid4", "namn4_1" };
+        final String[] lakare1 = {"hsaid1", "namn1"};
+        final String[] lakare2 = {"hsaid2", "namn2"};
+        final String[] lakare3 = {"hsaid3", "namn3"};
+        final String[] lakare4 = {"hsaid4", "namn4"};
+        final String[] lakare4_1 = {"hsaid4", "namn4_1"};
         final List<Object[]> repoResult = Arrays.asList(lakare1, lakare2, lakare3, lakare4_1);
         final List<Object[]> expected = Arrays.asList(lakare1, lakare2, lakare3, lakare4);
 
@@ -989,9 +987,9 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
     @Test
     public void testListSignedByForUnitsSpecifiedUnit() {
         final List<String> selectedUnit = Arrays.asList("enhet1");
-        final String[] lakare1 = { "hsaid1", "namn1" };
-        final String[] lakare2 = { "hsaid2", "namn2" };
-        final String[] lakare3 = { "hsaid3", "namn3" };
+        final String[] lakare1 = {"hsaid1", "namn1"};
+        final String[] lakare2 = {"hsaid2", "namn2"};
+        final String[] lakare3 = {"hsaid3", "namn3"};
         final List<Object[]> repoResult = Arrays.asList(lakare1, lakare2, lakare3);
 
         when(webcertUserService.isAuthorizedForUnit(anyString(), eq(true))).thenReturn(true);
@@ -1305,7 +1303,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         Arende arendeFromFk = buildArende(UUID.randomUUID().toString(), INTYG_ID, LocalDateTime.now(), LocalDateTime.now(), ENHET_ID);
         arendeFromFk.setSkickatAv(FrageStallare.FORSAKRINGSKASSAN.getKod());
         Arende arendeAlreadyClosed = buildArende(UUID.randomUUID().toString(), INTYG_ID, LocalDateTime.now(), LocalDateTime.now(),
-                ENHET_ID);
+            ENHET_ID);
         arendeAlreadyClosed.setStatus(Status.CLOSED);
         // svar and paminnelse will be ignored
         Arende arendeSvar = buildArende(UUID.randomUUID().toString(), INTYG_ID, LocalDateTime.now(), LocalDateTime.now(), ENHET_ID);
@@ -1314,7 +1312,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         arendePaminnelse.setAmne(ArendeAmne.PAMINN);
         arendePaminnelse.setPaminnelseMeddelandeId(arendeFromFk.getMeddelandeId());
         when(arendeRepository.findByIntygsId(INTYG_ID))
-                .thenReturn(Arrays.asList(arendeFromWc, arendeFromFk, arendeAlreadyClosed, arendeSvar, arendePaminnelse));
+            .thenReturn(Arrays.asList(arendeFromWc, arendeFromFk, arendeAlreadyClosed, arendeSvar, arendePaminnelse));
 
         service.closeAllNonClosedQuestions(INTYG_ID);
 
@@ -1357,9 +1355,9 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         assertEquals(arende3.getMeddelandeId(), arendeCaptor.getAllValues().get(1).getMeddelandeId());
         assertEquals(Status.CLOSED, arendeCaptor.getAllValues().get(1).getStatus());
         assertEquals(FIXED_TIME_INSTANT, arendeCaptor.getAllValues().get(0).getSenasteHandelse()
-                .toInstant(ZoneId.systemDefault().getRules().getOffset(FIXED_TIME_INSTANT)));
+            .toInstant(ZoneId.systemDefault().getRules().getOffset(FIXED_TIME_INSTANT)));
         assertEquals(FIXED_TIME_INSTANT, arendeCaptor.getAllValues().get(1).getSenasteHandelse()
-                .toInstant(ZoneId.systemDefault().getRules().getOffset(FIXED_TIME_INSTANT)));
+            .toInstant(ZoneId.systemDefault().getRules().getOffset(FIXED_TIME_INSTANT)));
         verify(notificationService, times(2)).sendNotificationForQAs(INTYG_ID, NotificationEvent.QUESTION_FROM_RECIPIENT_HANDLED);
     }
 
@@ -1397,7 +1395,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         when(statisticsGroupByUtil.toSekretessFilteredMap(queryResult)).thenReturn(resultMap);
 
         Map<String, Long> result = service.getNbrOfUnhandledArendenForCareUnits(Arrays.asList("HSA1", "HSA2"),
-                Stream.of("FK7263").collect(Collectors.toSet()));
+            Stream.of("FK7263").collect(Collectors.toSet()));
 
         verify(arendeRepository, times(1)).getUnhandledByEnhetIdsAndIntygstyper(anyList(), anySet());
         verify(statisticsGroupByUtil, times(1)).toSekretessFilteredMap(queryResult);
@@ -1439,7 +1437,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
     }
 
     private Arende buildArende(String meddelandeId, String intygId, LocalDateTime senasteHandelse, LocalDateTime timestamp,
-            String enhetId) {
+        String enhetId) {
         Arende arende = new Arende();
         arende.setStatus(Status.PENDING_INTERNAL_ACTION);
         arende.setAmne(ArendeAmne.OVRIGT);
@@ -1504,7 +1502,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         feature.setIntygstyper(ImmutableList.of(INTYG_TYP));
 
         user.setFeatures(ImmutableMap.of(
-                AuthoritiesConstants.FEATURE_HANTERA_FRAGOR, feature));
+            AuthoritiesConstants.FEATURE_HANTERA_FRAGOR, feature));
 
         Vardenhet vardenhet = new Vardenhet(ENHET_ID, "enhet");
 
@@ -1542,7 +1540,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         doReturn(skapadAv).when(grundData).getSkapadAv();
 
         final se.inera.intyg.common.support.model.common.internal.Vardenhet vardenhet = mock(
-                se.inera.intyg.common.support.model.common.internal.Vardenhet.class);
+            se.inera.intyg.common.support.model.common.internal.Vardenhet.class);
         doReturn(vardenhet).when(skapadAv).getVardenhet();
 
         final Patient patient = mock(Patient.class);
@@ -1552,31 +1550,31 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         doReturn(personnummer).when(patient).getPersonId();
 
         switch (accessToCheck) {
-        case BESVARA_KOMPLETTERING:
-            Mockito.doReturn(AccessResult.noProblem()).when(certificateAccessService).allowToAnswerComplementQuestion(
+            case BESVARA_KOMPLETTERING:
+                Mockito.doReturn(AccessResult.noProblem()).when(certificateAccessService).allowToAnswerComplementQuestion(
                     anyString(),
                     any(),
                     any(),
                     anyBoolean());
-            break;
-        case VIDAREBEFODRA_FRAGA:
-            doReturn(AccessResult.noProblem()).when(certificateAccessService).allowToForwardQuestions(
+                break;
+            case VIDAREBEFODRA_FRAGA:
+                doReturn(AccessResult.noProblem()).when(certificateAccessService).allowToForwardQuestions(
                     anyString(),
                     any(),
                     any());
-            break;
-        case LASA_FRAGA:
-            doReturn(AccessResult.noProblem()).when(certificateAccessService).allowToReadQuestions(
+                break;
+            case LASA_FRAGA:
+                doReturn(AccessResult.noProblem()).when(certificateAccessService).allowToReadQuestions(
                     anyString(),
                     any(),
                     any());
-            break;
-        case SKAPA_FRAGA:
-            doReturn(AccessResult.noProblem()).when(certificateAccessService).allowToCreateQuestion(
+                break;
+            case SKAPA_FRAGA:
+                doReturn(AccessResult.noProblem()).when(certificateAccessService).allowToCreateQuestion(
                     anyString(),
                     any(),
                     any());
-            break;
+                break;
         }
     }
 

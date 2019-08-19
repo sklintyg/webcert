@@ -26,67 +26,68 @@
 angular.module('common', []);
 
 angular.module('webcert.pub.login', ['ui.bootstrap', 'common'])
-    .controller('LoginController', ['$scope', '$sce', '$uibModal', '$window', '$http', 'common.dynamicLinkService', function($scope, $sce, $uibModal, $window, $http, dynamicLinkService) {
-        'use strict';
-        var expand = $sce.trustAsHtml('Visa mer om inloggning <span class="glyphicon glyphicon-chevron-down"></span>');
-        var collapse = $sce.trustAsHtml('Visa mindre om inloggning <span class="glyphicon glyphicon-chevron-up"></span>');
+.controller('LoginController', ['$scope', '$sce', '$uibModal', '$window', '$http', 'common.dynamicLinkService',
+  function($scope, $sce, $uibModal, $window, $http, dynamicLinkService) {
+    'use strict';
+    var expand = $sce.trustAsHtml('Visa mer om inloggning <span class="glyphicon glyphicon-chevron-down"></span>');
+    var collapse = $sce.trustAsHtml('Visa mindre om inloggning <span class="glyphicon glyphicon-chevron-up"></span>');
 
-        $http.get('/api/config/links').then(function(links) {
-            dynamicLinkService.addLinks(links.data);
-        });
-        
-        $scope.collapseLoginDesc = true;
+    $http.get('/api/config/links').then(function(links) {
+      dynamicLinkService.addLinks(links.data);
+    });
+
+    $scope.collapseLoginDesc = true;
+    $scope.loginDescText = expand;
+    $scope.toggleLoginDesc = function(evt) {
+      evt.preventDefault();
+      $scope.collapseLoginDesc = !$scope.collapseLoginDesc;
+      if ($scope.collapseLoginDesc) {
         $scope.loginDescText = expand;
-        $scope.toggleLoginDesc = function(evt){
-            evt.preventDefault();
-            $scope.collapseLoginDesc = !$scope.collapseLoginDesc;
-            if($scope.collapseLoginDesc){
-                $scope.loginDescText = expand;
-            } else {
-                $scope.loginDescText = collapse;
-            }
-        };
+      } else {
+        $scope.loginDescText = collapse;
+      }
+    };
 
-        $scope.showELegWarning = (function () {
-            var re = /(?:Chrome\/\d+)|(?:Edge\/\d+)/;
-            var userAgent = $window.navigator.userAgent;
-            return re.test(userAgent);
-        }());
+    $scope.showELegWarning = (function() {
+      var re = /(?:Chrome\/\d+)|(?:Edge\/\d+)/;
+      var userAgent = $window.navigator.userAgent;
+      return re.test(userAgent);
+    }());
 
-        $scope.open = function (which) {
+    $scope.open = function(which) {
 
-            $scope.modalInstance = $uibModal.open({
-                templateUrl: which,
-                scope: $scope,
-                size: 'lg'
-            });
+      $scope.modalInstance = $uibModal.open({
+        templateUrl: which,
+        scope: $scope,
+        size: 'lg'
+      });
 
-            $scope.modalInstance.result.then(function (selectedItem) {
-                $scope.selected = selectedItem;
-            }, function () {
-                // closed the modal
-            });
-        };
+      $scope.modalInstance.result.then(function(selectedItem) {
+        $scope.selected = selectedItem;
+      }, function() {
+        // closed the modal
+      });
+    };
 
-        $scope.ok = function () {
-            $scope.modalInstance.close();
-        };
+    $scope.ok = function() {
+      $scope.modalInstance.close();
+    };
 
-        $scope.toggleCookie = function(evt) {
-            evt.preventDefault();
-            $scope.showCookieText = !$scope.showCookieText;
-        };
+    $scope.toggleCookie = function(evt) {
+      evt.preventDefault();
+      $scope.showCookieText = !$scope.showCookieText;
+    };
 
-        $scope.afterExpand = function() {
-            $window.scrollTo(0,document.body.scrollHeight);
-        };
+    $scope.afterExpand = function() {
+      $window.scrollTo(0, document.body.scrollHeight);
+    };
 
-        function loadIntygTypes() {
-            $scope.intygTypes = [];
-            $http.get('/api/modules/active').then(function(response) {
-                $scope.intygTypes = response.data;
-            });
-        };
-        loadIntygTypes();
+    function loadIntygTypes() {
+      $scope.intygTypes = [];
+      $http.get('/api/modules/active').then(function(response) {
+        $scope.intygTypes = response.data;
+      });
+    };
+    loadIntygTypes();
 
-    }]);
+  }]);

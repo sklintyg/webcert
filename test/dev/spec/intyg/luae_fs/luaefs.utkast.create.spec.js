@@ -27,86 +27,86 @@ var IntygPage = wcTestTools.pages.intyg.luaeFS.intyg;
 
 describe('Create and Sign luae_fs utkast', function() {
 
-    var utkastId = null;
-    var data = null;
+  var utkastId = null;
+  var data = null;
 
-    beforeAll(function() {
-        browser.ignoreSynchronization = false;
-        specHelper.login();
-        specHelper.createUtkastForPatient('191212121212', 'luae_fs');
+  beforeAll(function() {
+    browser.ignoreSynchronization = false;
+    specHelper.login();
+    specHelper.createUtkastForPatient('191212121212', 'luae_fs');
+  });
+
+  describe('Fyll i intyget', function() {
+
+    it('Spara undan intygsId från URL', function() {
+      UtkastPage.disableAutosave();
+
+      // Save id so it can be removed in cleanup stage.
+      specHelper.getUtkastIdFromUrl().then(function(id) {
+        utkastId = id;
+      });
+      data = wcTestTools.testdata.fk.LUAE_FS.get(utkastId);
     });
 
-    describe('Fyll i intyget', function() {
+    it('tomt utkast skall visa lista med fel efter klick på Signera', function() {
+      UtkastPage.signeraButtonClick();
 
-        it('Spara undan intygsId från URL', function() {
-            UtkastPage.disableAutosave();
-
-            // Save id so it can be removed in cleanup stage.
-            specHelper.getUtkastIdFromUrl().then(function(id) {
-                utkastId = id;
-            });
-            data = wcTestTools.testdata.fk.LUAE_FS.get(utkastId);
-        });
-
-        it('tomt utkast skall visa lista med fel efter klick på Signera', function() {
-            UtkastPage.signeraButtonClick();
-
-            expect(UtkastPage.getMissingInfoMessagesCount()).toBe(3);
-        });
-
-        it('angeBaseratPa', function() {
-            UtkastPage.angeBaseratPa(data.baseratPa);
-        });
-
-        it('angeAndraMedicinskaUtredningar', function() {
-            UtkastPage.angeAndraMedicinskaUtredningar(data.andraMedicinskaUtredningar);
-        });
-
-        it('angeDiagnos', function() {
-            UtkastPage.angeDiagnos(data.diagnos);
-        });
-
-        it('angeFunktionsnedsattning', function() {
-            UtkastPage.angeFunktionsnedsattning(data.funktionsnedsattning);
-        });
-
-        it('angeOvrigaUpplysningar', function() {
-            UtkastPage.angeOvrigaUpplysningar(data.ovrigt);
-        });
-
-        it('angeKontaktMedFK', function() {
-            UtkastPage.angeKontaktMedFK(data.kontaktMedFk);
-        });
-        it('Ange tilläggsfrågor', function() {
-            UtkastPage.enableAutosave();
-            UtkastPage.angeTillaggsfragorUE(data.tillaggsfragor);
-        });
-        it('Signera intyget', function() {
-            UtkastPage.whenSigneraButtonIsEnabled();
-
-            UtkastPage.signeraButtonClick();
-
-            expect(IntygPage.isAt()).toBeTruthy();
-        });
-
-        it('Wait until intyg in IT', function() {
-            // Om intyget inte hunnit processas av IT så hämtas det från WC. Då är inte uppgifter flyttade till övriga
-            // upplysningar ännu.
-            // Vänta tills intyget tagits emot av IT. Ladda därefter om sidan så datan säkert kommer från IT.
-            IntygPage.waitUntilIntygInIT(utkastId);
-            browser.refresh();
-        });
-
-        it('Verifiera intyg', function() {
-            IntygPage.whenCertificateLoaded().then(function() {
-                IntygPage.verify(data);
-            });
-        });
+      expect(UtkastPage.getMissingInfoMessagesCount()).toBe(3);
     });
 
-    afterAll(function() {
-        testdataHelper.deleteIntyg(utkastId);
-        testdataHelper.deleteUtkast(utkastId);
+    it('angeBaseratPa', function() {
+      UtkastPage.angeBaseratPa(data.baseratPa);
     });
+
+    it('angeAndraMedicinskaUtredningar', function() {
+      UtkastPage.angeAndraMedicinskaUtredningar(data.andraMedicinskaUtredningar);
+    });
+
+    it('angeDiagnos', function() {
+      UtkastPage.angeDiagnos(data.diagnos);
+    });
+
+    it('angeFunktionsnedsattning', function() {
+      UtkastPage.angeFunktionsnedsattning(data.funktionsnedsattning);
+    });
+
+    it('angeOvrigaUpplysningar', function() {
+      UtkastPage.angeOvrigaUpplysningar(data.ovrigt);
+    });
+
+    it('angeKontaktMedFK', function() {
+      UtkastPage.angeKontaktMedFK(data.kontaktMedFk);
+    });
+    it('Ange tilläggsfrågor', function() {
+      UtkastPage.enableAutosave();
+      UtkastPage.angeTillaggsfragorUE(data.tillaggsfragor);
+    });
+    it('Signera intyget', function() {
+      UtkastPage.whenSigneraButtonIsEnabled();
+
+      UtkastPage.signeraButtonClick();
+
+      expect(IntygPage.isAt()).toBeTruthy();
+    });
+
+    it('Wait until intyg in IT', function() {
+      // Om intyget inte hunnit processas av IT så hämtas det från WC. Då är inte uppgifter flyttade till övriga
+      // upplysningar ännu.
+      // Vänta tills intyget tagits emot av IT. Ladda därefter om sidan så datan säkert kommer från IT.
+      IntygPage.waitUntilIntygInIT(utkastId);
+      browser.refresh();
+    });
+
+    it('Verifiera intyg', function() {
+      IntygPage.whenCertificateLoaded().then(function() {
+        IntygPage.verify(data);
+      });
+    });
+  });
+
+  afterAll(function() {
+    testdataHelper.deleteIntyg(utkastId);
+    testdataHelper.deleteUtkast(utkastId);
+  });
 
 });

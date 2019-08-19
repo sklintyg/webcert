@@ -18,17 +18,16 @@
  */
 package se.inera.intyg.webcert.web.web.handlers;
 
+import java.net.URI;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
+import javax.ws.rs.ext.ExceptionMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se.inera.intyg.infra.security.authorities.AuthoritiesException;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
-
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
-import javax.ws.rs.ext.ExceptionMapper;
-import java.net.URI;
 
 
 /**
@@ -63,9 +62,6 @@ public class WebcertRedirectIntegrationExceptionHandler implements ExceptionMapp
 
     /**
      * The user requested an operation that caused an Auth check to fail.
-     *
-     * @param e
-     * @return
      */
     private Response handleAuthorityException(AuthoritiesException e) {
         LOG.warn("AuthValidation occured: ", e);
@@ -95,9 +91,9 @@ public class WebcertRedirectIntegrationExceptionHandler implements ExceptionMapp
     private Response buildErrorRedirectResponse(String errorReason, String message) {
         URI location = ERROR_REASON_MISSING_PARAMETER.equals(errorReason)
             ? uriInfo.getBaseUriBuilder().replacePath("/error.jsp")
-                .queryParam("reason", errorReason)
-                .queryParam("message", message)
-                .build()
+            .queryParam("reason", errorReason)
+            .queryParam("message", message)
+            .build()
             : uriInfo.getBaseUriBuilder().replacePath("/error.jsp")
                 .queryParam("reason", errorReason)
                 .build();

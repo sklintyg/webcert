@@ -24,215 +24,215 @@ var AfBaseUtkast = require('../af.base.utkast.page.js');
 var pageHelpers = require('../../../pageHelper.util.js');
 
 var Af00251Utkast = AfBaseUtkast._extend({
-        init: function init() {
-            init._super.call(this);
-            this.intygType = 'af00251';
-            this.intygTypeVersion = '1.0';
+      init: function init() {
+        init._super.call(this);
+        this.intygType = 'af00251';
+        this.intygTypeVersion = '1.0';
 
-            this.minUndersokning = {
-                checkbox: element(by.id('checkbox_undersokningsDatum')),
-                datum: element(by.id('datepicker_undersokningsDatum'))
-            };
-            this.annat = {
-                checkbox: element(by.id('checkbox_annatDatum')),
-                datum: element(by.id('datepicker_annatDatum')),
-                text: element(by.id('annatBeskrivning')),
-            };
+        this.minUndersokning = {
+          checkbox: element(by.id('checkbox_undersokningsDatum')),
+          datum: element(by.id('datepicker_undersokningsDatum'))
+        };
+        this.annat = {
+          checkbox: element(by.id('checkbox_annatDatum')),
+          datum: element(by.id('datepicker_annatDatum')),
+          text: element(by.id('annatBeskrivning')),
+        };
 
-            this.arbetsmarknadspolitisktProgram = {
-                text: element(by.id('arbetsmarknadspolitisktProgram-medicinskBedomning')),
-                heltidRadio: element(by.id('arbetsmarknadspolitisktProgram.omfattning-HELTID')),
-                deltidRadio: element(by.id('arbetsmarknadspolitisktProgram.omfattning-DELTID')),
-                okandRadio: element(by.id('arbetsmarknadspolitisktProgram.omfattning-OKAND')),
-                deltidText: element(by.id('arbetsmarknadspolitisktProgram-omfattningDeltid')),
-            };
+        this.arbetsmarknadspolitisktProgram = {
+          text: element(by.id('arbetsmarknadspolitisktProgram-medicinskBedomning')),
+          heltidRadio: element(by.id('arbetsmarknadspolitisktProgram.omfattning-HELTID')),
+          deltidRadio: element(by.id('arbetsmarknadspolitisktProgram.omfattning-DELTID')),
+          okandRadio: element(by.id('arbetsmarknadspolitisktProgram.omfattning-OKAND')),
+          deltidText: element(by.id('arbetsmarknadspolitisktProgram-omfattningDeltid')),
+        };
 
-            this.funktionsnedsattning = element(by.id('funktionsnedsattning'));
+        this.funktionsnedsattning = element(by.id('funktionsnedsattning'));
 
-            this.aktivitetsbegransning = element(by.id('aktivitetsbegransning'));
+        this.aktivitetsbegransning = element(by.id('aktivitetsbegransning'));
 
-            this.harForhinder = {
-                yes: element(by.id('harForhinderYes')),
-                no: element(by.id('harForhinderNo'))
-            };
+        this.harForhinder = {
+          yes: element(by.id('harForhinderYes')),
+          no: element(by.id('harForhinderNo'))
+        };
 
-            this.sjukfranvaro = {
-                checkbox: function (index) {
-                    return element(by.id('sjukfranvaro-' + index + '-checked'))
-                },
-                niva: function (index) {
-                    return element(by.id('sjukfranvaro-' + index + '-niva'))
-                },
-                from: function (index) {
-                    return element(by.id('sjukfranvaro-' + index + '-from'))
-                },
-                tom: function (index) {
-                    return element(by.id('sjukfranvaro-' + index + '-tom'))
-                },
-                addRow: element(by.id('sjukfranvaro-addRow')),
-                deleteRow: function (index) {
-                    return element(by.id('sjukfranvaro-' + index + '-deleteRow'))
-                }
-            };
+        this.sjukfranvaro = {
+          checkbox: function(index) {
+            return element(by.id('sjukfranvaro-' + index + '-checked'))
+          },
+          niva: function(index) {
+            return element(by.id('sjukfranvaro-' + index + '-niva'))
+          },
+          from: function(index) {
+            return element(by.id('sjukfranvaro-' + index + '-from'))
+          },
+          tom: function(index) {
+            return element(by.id('sjukfranvaro-' + index + '-tom'))
+          },
+          addRow: element(by.id('sjukfranvaro-addRow')),
+          deleteRow: function(index) {
+            return element(by.id('sjukfranvaro-' + index + '-deleteRow'))
+          }
+        };
 
-            this.begransningSjukfranvaro = {
-                yes: element(by.id('begransningSjukfranvaro-kanBegransasYes')),
-                no: element(by.id('begransningSjukfranvaro-kanBegransasNo')),
-                text: element(by.id('begransningSjukfranvaro-beskrivning'))
-            };
+        this.begransningSjukfranvaro = {
+          yes: element(by.id('begransningSjukfranvaro-kanBegransasYes')),
+          no: element(by.id('begransningSjukfranvaro-kanBegransasNo')),
+          text: element(by.id('begransningSjukfranvaro-beskrivning'))
+        };
 
-            this.prognosAtergang = {
-                utanAnpassning: element(by.id('prognosAtergang.prognos-ATERGA_UTAN_ANPASSNING')),
-                kanEjAterga: element(by.id('prognosAtergang.prognos-KAN_EJ_ATERGA')),
-                ejMojligtAvgora: element(by.id('prognosAtergang.prognos-EJ_MOJLIGT_AVGORA')),
-                atergaMedAnpassning: element(by.id('prognosAtergang.prognos-ATERGA_MED_ANPASSNING')),
-                text: element(by.id('prognosAtergang-anpassningar'))
-            }
-        },
-        angeMinUndersokning: function (undersokning) {
-            var promises = [];
-            if (undersokning) {
-                if (undersokning.checked) {
-                    var el = this.minUndersokning;
-                    if (undersokning.datum) {
-                        promises.push(pageHelpers.moveAndSendKeys(el.datum, undersokning.datum));
-                    } else {
-                        promises.push(pageHelpers.moveAndSendKeys(el.checkbox, protractor.Key.SPACE));
-                    }
-                }
-            }
-            return Promise.all(promises);
-        },
-        angeAnnanUndersokning: function (undersokning) {
-            var promises = [];
-            if (undersokning) {
-                if (undersokning.checked) {
-                    var el = this.annat;
-                    if (undersokning.datum) {
-                        promises.push(pageHelpers.moveAndSendKeys(el.datum, undersokning.datum)
-                            .then(pageHelpers.moveAndSendKeys(el.text, undersokning.text)));
-                    } else {
-                        promises.push(pageHelpers.moveAndSendKeys(el.checkbox, protractor.Key.SPACE)
-                            .then(pageHelpers.moveAndSendKeys(el.text, undersokning.text)));
-                    }
-                }
-            }
-            return Promise.all(promises);
+        this.prognosAtergang = {
+          utanAnpassning: element(by.id('prognosAtergang.prognos-ATERGA_UTAN_ANPASSNING')),
+          kanEjAterga: element(by.id('prognosAtergang.prognos-KAN_EJ_ATERGA')),
+          ejMojligtAvgora: element(by.id('prognosAtergang.prognos-EJ_MOJLIGT_AVGORA')),
+          atergaMedAnpassning: element(by.id('prognosAtergang.prognos-ATERGA_MED_ANPASSNING')),
+          text: element(by.id('prognosAtergang-anpassningar'))
         }
-        ,
-        angeArbetmarksnadsPolitisktProgram: function (program) {
-            if (!program) {
-                return Promise.resolve();
+      },
+      angeMinUndersokning: function(undersokning) {
+        var promises = [];
+        if (undersokning) {
+          if (undersokning.checked) {
+            var el = this.minUndersokning;
+            if (undersokning.datum) {
+              promises.push(pageHelpers.moveAndSendKeys(el.datum, undersokning.datum));
             } else {
-                var el = this.arbetsmarknadspolitisktProgram;
-                var promise = Promise.resolve();
-                if (program.text) {
-                    promise = promise.then(pageHelpers.moveAndSendKeys(el.text, program.text));
-                }
-                if (program.radio == 'HELTID') {
-                    promise = promise.then(pageHelpers.moveAndSendKeys(el.heltidRadio, protractor.Key.SPACE));
-                } else if (program.radio == 'DELTID') {
-                    promise = promise.then(pageHelpers.moveAndSendKeys(el.deltidRadio, protractor.Key.SPACE))
-                        .then(pageHelpers.moveAndSendKeys(el.deltidText, program.deltidText));
-                } else if (program.radio == 'OKAND') {
-                    promise = promise.then(pageHelpers.moveAndSendKeys(el.okandRadio, protractor.Key.SPACE));
-                }
-                return promise;
+              promises.push(pageHelpers.moveAndSendKeys(el.checkbox, protractor.Key.SPACE));
             }
+          }
         }
-        ,
-        angeFunktionsNedsattning: function (value) {
-            if (!value) {
-                return Promise.resolve();
+        return Promise.all(promises);
+      },
+      angeAnnanUndersokning: function(undersokning) {
+        var promises = [];
+        if (undersokning) {
+          if (undersokning.checked) {
+            var el = this.annat;
+            if (undersokning.datum) {
+              promises.push(pageHelpers.moveAndSendKeys(el.datum, undersokning.datum)
+              .then(pageHelpers.moveAndSendKeys(el.text, undersokning.text)));
             } else {
-                var el = this.funktionsnedsattning;
-                return pageHelpers.moveAndSendKeys(el, value);
+              promises.push(pageHelpers.moveAndSendKeys(el.checkbox, protractor.Key.SPACE)
+              .then(pageHelpers.moveAndSendKeys(el.text, undersokning.text)));
             }
+          }
         }
-        ,
-        angeAktivitetsBegransning: function (value) {
-            if (!value) {
-                return Promise.resolve();
-            } else {
-                var el = this.aktivitetsbegransning;
-                return pageHelpers.moveAndSendKeys(el, value);
-            }
+        return Promise.all(promises);
+      }
+      ,
+      angeArbetmarksnadsPolitisktProgram: function(program) {
+        if (!program) {
+          return Promise.resolve();
+        } else {
+          var el = this.arbetsmarknadspolitisktProgram;
+          var promise = Promise.resolve();
+          if (program.text) {
+            promise = promise.then(pageHelpers.moveAndSendKeys(el.text, program.text));
+          }
+          if (program.radio == 'HELTID') {
+            promise = promise.then(pageHelpers.moveAndSendKeys(el.heltidRadio, protractor.Key.SPACE));
+          } else if (program.radio == 'DELTID') {
+            promise = promise.then(pageHelpers.moveAndSendKeys(el.deltidRadio, protractor.Key.SPACE))
+            .then(pageHelpers.moveAndSendKeys(el.deltidText, program.deltidText));
+          } else if (program.radio == 'OKAND') {
+            promise = promise.then(pageHelpers.moveAndSendKeys(el.okandRadio, protractor.Key.SPACE));
+          }
+          return promise;
         }
-        ,
-        angeHarForhinder: function (value) {
-            var el = this.harForhinder;
-            if (value) {
-                return pageHelpers.moveAndSendKeys(el.yes, protractor.Key.SPACE)
-            } else {
-                return pageHelpers.moveAndSendKeys(el.no, protractor.Key.SPACE)
-            }
+      }
+      ,
+      angeFunktionsNedsattning: function(value) {
+        if (!value) {
+          return Promise.resolve();
+        } else {
+          var el = this.funktionsnedsattning;
+          return pageHelpers.moveAndSendKeys(el, value);
         }
-        ,
-        angeSjukfranvaro: function (franvaro) {
-            var promises = [];
-            if (franvaro && franvaro.length > 0) {
-                var el = this.sjukfranvaro;
+      }
+      ,
+      angeAktivitetsBegransning: function(value) {
+        if (!value) {
+          return Promise.resolve();
+        } else {
+          var el = this.aktivitetsbegransning;
+          return pageHelpers.moveAndSendKeys(el, value);
+        }
+      }
+      ,
+      angeHarForhinder: function(value) {
+        var el = this.harForhinder;
+        if (value) {
+          return pageHelpers.moveAndSendKeys(el.yes, protractor.Key.SPACE)
+        } else {
+          return pageHelpers.moveAndSendKeys(el.no, protractor.Key.SPACE)
+        }
+      }
+      ,
+      angeSjukfranvaro: function(franvaro) {
+        var promises = [];
+        if (franvaro && franvaro.length > 0) {
+          var el = this.sjukfranvaro;
 
-                for (var i = 0; i < franvaro.length; i++) {
-                    if (i > 1) {
-                        promises.push(el.addRow.click());
-                    }
-                    var row = franvaro[i];
-                    if (!row.checked) {
-                        continue;
-                    }
-                    // if (row.checked) {
-                    //     promises.push(pageHelpers.moveAndSendKeys(el.checkbox(i), protractor.Key.SPACE));
-                    // }
-                    if (row.niva && i > 0) {
-                        promises.push(pageHelpers.moveAndSendKeys(el.niva(i), row.niva));
-                    }
-                    if (row.from) {
-                        promises.push(pageHelpers.moveAndSendKeys(el.from(i), row.from));
-                    }
-                    if (row.tom) {
-                        promises.push(pageHelpers.moveAndSendKeys(el.tom(i), row.tom));
-                    }
-                }
+          for (var i = 0; i < franvaro.length; i++) {
+            if (i > 1) {
+              promises.push(el.addRow.click());
             }
-            return Promise.all(promises);
-        }
-        ,
-        angeBegransningSjukfranvaro: function (begransning) {
-            if (!begransning) {
-                return Promise.resolve();
-            } else {
-                var el = this.begransningSjukfranvaro;
-                if (begransning.value) {
-                    return pageHelpers.moveAndSendKeys(el.yes, protractor.Key.SPACE)
-                        .then(pageHelpers.moveAndSendKeys(el.text, begransning.text));
-                } else {
-                    return pageHelpers.moveAndSendKeys(el.no, protractor.Key.SPACE);
-                }
+            var row = franvaro[i];
+            if (!row.checked) {
+              continue;
             }
-        }
-        ,
-        angePrognosAtergang: function (prognos) {
-            if (!prognos) {
-                return Promise.resolve();
-            } else {
-                var el = this.prognosAtergang;
-                if (prognos.radio === 'ATERGA_UTAN_ANPASSNING') {
-                    return pageHelpers.moveAndSendKeys(el.utanAnpassning, protractor.Key.SPACE);
-                } else if (prognos.radio === 'KAN_EJ_ATERGA') {
-                    return pageHelpers.moveAndSendKeys(el.kanEjAterga, protractor.Key.SPACE);
-                } else if (prognos.radio === 'EJ_MOJLIGT_AVGORA') {
-                    return pageHelpers.moveAndSendKeys(el.ejMojligtAvgora, protractor.Key.SPACE);
-                } else {
-                    return pageHelpers.moveAndSendKeys(el.atergaMedAnpassning, protractor.Key.SPACE)
-                        .then(pageHelpers.moveAndSendKeys(el.text, prognos.text));
-                }
+            // if (row.checked) {
+            //     promises.push(pageHelpers.moveAndSendKeys(el.checkbox(i), protractor.Key.SPACE));
+            // }
+            if (row.niva && i > 0) {
+              promises.push(pageHelpers.moveAndSendKeys(el.niva(i), row.niva));
             }
+            if (row.from) {
+              promises.push(pageHelpers.moveAndSendKeys(el.from(i), row.from));
+            }
+            if (row.tom) {
+              promises.push(pageHelpers.moveAndSendKeys(el.tom(i), row.tom));
+            }
+          }
         }
-        ,
-        get: function get(intygId) {
-            get._super.call(this, 'af00251', intygId);
+        return Promise.all(promises);
+      }
+      ,
+      angeBegransningSjukfranvaro: function(begransning) {
+        if (!begransning) {
+          return Promise.resolve();
+        } else {
+          var el = this.begransningSjukfranvaro;
+          if (begransning.value) {
+            return pageHelpers.moveAndSendKeys(el.yes, protractor.Key.SPACE)
+            .then(pageHelpers.moveAndSendKeys(el.text, begransning.text));
+          } else {
+            return pageHelpers.moveAndSendKeys(el.no, protractor.Key.SPACE);
+          }
         }
+      }
+      ,
+      angePrognosAtergang: function(prognos) {
+        if (!prognos) {
+          return Promise.resolve();
+        } else {
+          var el = this.prognosAtergang;
+          if (prognos.radio === 'ATERGA_UTAN_ANPASSNING') {
+            return pageHelpers.moveAndSendKeys(el.utanAnpassning, protractor.Key.SPACE);
+          } else if (prognos.radio === 'KAN_EJ_ATERGA') {
+            return pageHelpers.moveAndSendKeys(el.kanEjAterga, protractor.Key.SPACE);
+          } else if (prognos.radio === 'EJ_MOJLIGT_AVGORA') {
+            return pageHelpers.moveAndSendKeys(el.ejMojligtAvgora, protractor.Key.SPACE);
+          } else {
+            return pageHelpers.moveAndSendKeys(el.atergaMedAnpassning, protractor.Key.SPACE)
+            .then(pageHelpers.moveAndSendKeys(el.text, prognos.text));
+          }
+        }
+      }
+      ,
+      get: function get(intygId) {
+        get._super.call(this, 'af00251', intygId);
+      }
     })
 ;
 

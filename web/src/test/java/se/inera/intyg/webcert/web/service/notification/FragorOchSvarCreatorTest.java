@@ -24,15 +24,17 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
-import java.util.*;
-
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.UUID;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-
 import se.inera.intyg.common.support.modules.support.api.notification.ArendeCount;
 import se.inera.intyg.common.support.modules.support.api.notification.FragorOchSvar;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
@@ -64,7 +66,7 @@ public class FragorOchSvarCreatorTest {
     @Test
     public void testPerformCountHan8() {
         when(fragaSvarRepository.findFragaSvarStatusesForIntyg(INTYG_ID))
-                .thenReturn(Collections.singletonList(new FragaSvarStatus(1L, FRAGESTALLARE_WEBCERT, null, Status.PENDING_EXTERNAL_ACTION)));
+            .thenReturn(Collections.singletonList(new FragaSvarStatus(1L, FRAGESTALLARE_WEBCERT, null, Status.PENDING_EXTERNAL_ACTION)));
         FragorOchSvar fos = fsCreator.createFragorOchSvar(INTYG_ID);
         assertNotNull(fos);
         assertEquals(0, fos.getAntalFragor());
@@ -79,7 +81,7 @@ public class FragorOchSvarCreatorTest {
     @Test
     public void testPerformCountHan7() {
         when(fragaSvarRepository.findFragaSvarStatusesForIntyg(INTYG_ID))
-                .thenReturn(Collections.singletonList(new FragaSvarStatus(1L, FRAGESTALLARE_WEBCERT, "Ett svar från FK", Status.ANSWERED)));
+            .thenReturn(Collections.singletonList(new FragaSvarStatus(1L, FRAGESTALLARE_WEBCERT, "Ett svar från FK", Status.ANSWERED)));
         FragorOchSvar fos = fsCreator.createFragorOchSvar(INTYG_ID);
         assertNotNull(fos);
         assertEquals(0, fos.getAntalFragor());
@@ -94,7 +96,7 @@ public class FragorOchSvarCreatorTest {
     @Test
     public void testPerformCountHan10() {
         when(fragaSvarRepository.findFragaSvarStatusesForIntyg(INTYG_ID))
-                .thenReturn(Collections.singletonList(new FragaSvarStatus(1L, FRAGESTALLARE_WEBCERT, "Ett svar från FK", Status.CLOSED)));
+            .thenReturn(Collections.singletonList(new FragaSvarStatus(1L, FRAGESTALLARE_WEBCERT, "Ett svar från FK", Status.CLOSED)));
         FragorOchSvar fos = fsCreator.createFragorOchSvar(INTYG_ID);
         assertNotNull(fos);
         assertEquals(0, fos.getAntalFragor());
@@ -109,7 +111,7 @@ public class FragorOchSvarCreatorTest {
     @Test
     public void testPerformCountHan6() {
         when(fragaSvarRepository.findFragaSvarStatusesForIntyg(INTYG_ID))
-                .thenReturn(Collections.singletonList(new FragaSvarStatus(1L, FRAGESTALLARE_FK, null, Status.PENDING_INTERNAL_ACTION)));
+            .thenReturn(Collections.singletonList(new FragaSvarStatus(1L, FRAGESTALLARE_FK, null, Status.PENDING_INTERNAL_ACTION)));
         FragorOchSvar fos = fsCreator.createFragorOchSvar(INTYG_ID);
         assertNotNull(fos);
         assertEquals(1, fos.getAntalFragor());
@@ -124,7 +126,7 @@ public class FragorOchSvarCreatorTest {
     @Test
     public void testPerformCountHan9Answered() {
         when(fragaSvarRepository.findFragaSvarStatusesForIntyg(INTYG_ID))
-                .thenReturn(Collections.singletonList(new FragaSvarStatus(1L, FRAGESTALLARE_FK, "Ett svar från WC", Status.CLOSED)));
+            .thenReturn(Collections.singletonList(new FragaSvarStatus(1L, FRAGESTALLARE_FK, "Ett svar från WC", Status.CLOSED)));
         FragorOchSvar fos = fsCreator.createFragorOchSvar(INTYG_ID);
         assertNotNull(fos);
         assertEquals(1, fos.getAntalFragor());
@@ -139,7 +141,7 @@ public class FragorOchSvarCreatorTest {
     @Test
     public void testPerformCountHan9NotAnswered() {
         when(fragaSvarRepository.findFragaSvarStatusesForIntyg(INTYG_ID))
-                .thenReturn(Collections.singletonList(new FragaSvarStatus(1L, FRAGESTALLARE_FK, null, Status.CLOSED)));
+            .thenReturn(Collections.singletonList(new FragaSvarStatus(1L, FRAGESTALLARE_FK, null, Status.CLOSED)));
         FragorOchSvar fos = fsCreator.createFragorOchSvar(INTYG_ID);
         assertNotNull(fos);
         assertEquals(1, fos.getAntalFragor());
@@ -157,7 +159,7 @@ public class FragorOchSvarCreatorTest {
         // 1. Skickar fråga från WC till FK
         // Förväntad statusuppdatering: HAN8 0,0,0,0
         when(fragaSvarRepository.findFragaSvarStatusesForIntyg(INTYG_ID))
-                .thenReturn(Collections.singletonList(new FragaSvarStatus(1L, FRAGESTALLARE_WEBCERT, null, Status.PENDING_EXTERNAL_ACTION)));
+            .thenReturn(Collections.singletonList(new FragaSvarStatus(1L, FRAGESTALLARE_WEBCERT, null, Status.PENDING_EXTERNAL_ACTION)));
         FragorOchSvar fos = fsCreator.createFragorOchSvar(INTYG_ID);
         assertNotNull(fos);
         assertEquals(0, fos.getAntalFragor());
@@ -168,7 +170,7 @@ public class FragorOchSvarCreatorTest {
         // 2. FK svarar på frågan
         // Förväntad statusuppdatering: HAN7 0,0,1,0
         when(fragaSvarRepository.findFragaSvarStatusesForIntyg(INTYG_ID))
-                .thenReturn(Collections.singletonList(new FragaSvarStatus(1L, FRAGESTALLARE_WEBCERT, "Ett svar kom in", Status.ANSWERED)));
+            .thenReturn(Collections.singletonList(new FragaSvarStatus(1L, FRAGESTALLARE_WEBCERT, "Ett svar kom in", Status.ANSWERED)));
         fos = fsCreator.createFragorOchSvar(INTYG_ID);
         assertNotNull(fos);
         assertEquals(0, fos.getAntalFragor());
@@ -179,7 +181,7 @@ public class FragorOchSvarCreatorTest {
         // 3. Markerar svaret som hanterat
         // Förväntad statusuppdatering: HAN10 0,0,1,1
         when(fragaSvarRepository.findFragaSvarStatusesForIntyg(INTYG_ID))
-                .thenReturn(Collections.singletonList(new FragaSvarStatus(1L, FRAGESTALLARE_WEBCERT, "Ett svar kom in", Status.CLOSED)));
+            .thenReturn(Collections.singletonList(new FragaSvarStatus(1L, FRAGESTALLARE_WEBCERT, "Ett svar kom in", Status.CLOSED)));
         fos = fsCreator.createFragorOchSvar(INTYG_ID);
         assertNotNull(fos);
         assertEquals(0, fos.getAntalFragor());
@@ -190,8 +192,8 @@ public class FragorOchSvarCreatorTest {
         // 4. FK skickar fråga till WC
         // Förväntad statusuppdatering: HAN6 1,0,1,1
         when(fragaSvarRepository.findFragaSvarStatusesForIntyg(INTYG_ID))
-                .thenReturn(Arrays.asList(new FragaSvarStatus(1L, FRAGESTALLARE_WEBCERT, "Ett svar kom in", Status.CLOSED),
-                        new FragaSvarStatus(1L, FRAGESTALLARE_FK, null, Status.PENDING_INTERNAL_ACTION)));
+            .thenReturn(Arrays.asList(new FragaSvarStatus(1L, FRAGESTALLARE_WEBCERT, "Ett svar kom in", Status.CLOSED),
+                new FragaSvarStatus(1L, FRAGESTALLARE_FK, null, Status.PENDING_INTERNAL_ACTION)));
         fos = fsCreator.createFragorOchSvar(INTYG_ID);
         assertNotNull(fos);
         assertEquals(1, fos.getAntalFragor());
@@ -202,8 +204,8 @@ public class FragorOchSvarCreatorTest {
         // 5. WC svarar på frågan från FK
         // Förväntad statusuppdatering: HAN9 1,1,1,1
         when(fragaSvarRepository.findFragaSvarStatusesForIntyg(INTYG_ID))
-                .thenReturn(Arrays.asList(new FragaSvarStatus(1L, FRAGESTALLARE_WEBCERT, "Ett svar kom in", Status.CLOSED),
-                        new FragaSvarStatus(1L, FRAGESTALLARE_FK, "Ett svar kom in", Status.CLOSED)));
+            .thenReturn(Arrays.asList(new FragaSvarStatus(1L, FRAGESTALLARE_WEBCERT, "Ett svar kom in", Status.CLOSED),
+                new FragaSvarStatus(1L, FRAGESTALLARE_FK, "Ett svar kom in", Status.CLOSED)));
         fos = fsCreator.createFragorOchSvar(INTYG_ID);
         assertNotNull(fos);
         assertEquals(1, fos.getAntalFragor());
@@ -216,7 +218,7 @@ public class FragorOchSvarCreatorTest {
     @Test
     public void testCountArendeOhanteradFraga() {
         when(arendeRepository.findByIntygsId(INTYG_ID)).thenReturn(Arrays
-                .asList(buildArendeFkFragaOpen()));
+            .asList(buildArendeFkFragaOpen()));
         Pair<ArendeCount, ArendeCount> arenden = fsCreator.createArenden(INTYG_ID, INTYGSTYP_LUSE);
         assertNotNull(arenden);
         assertEquals("Antal skickade frågor", 0, arenden.getLeft().getTotalt());
@@ -235,7 +237,7 @@ public class FragorOchSvarCreatorTest {
     @Test
     public void testCountArendeOhanteradWithPaminnelseFraga() {
         when(arendeRepository.findByIntygsId(INTYG_ID)).thenReturn(Arrays
-                .asList(buildArendeFkFragaOpen(), buildArendeFkFragaPaminnelseOpen()));
+            .asList(buildArendeFkFragaOpen(), buildArendeFkFragaPaminnelseOpen()));
         Pair<ArendeCount, ArendeCount> arenden = fsCreator.createArenden(INTYG_ID, INTYGSTYP_LUSE);
         assertNotNull(arenden);
         assertEquals("Antal skickade frågor", 0, arenden.getLeft().getTotalt());
@@ -254,7 +256,7 @@ public class FragorOchSvarCreatorTest {
     @Test
     public void testCountArendeHanteradFraga() {
         when(arendeRepository.findByIntygsId(INTYG_ID)).thenReturn(Arrays
-                .asList(buildArendeFkFragaClosed()));
+            .asList(buildArendeFkFragaClosed()));
         Pair<ArendeCount, ArendeCount> arenden = fsCreator.createArenden(INTYG_ID, INTYGSTYP_LUSE);
         assertNotNull(arenden);
         assertEquals("Antal skickade frågor", 0, arenden.getLeft().getTotalt());
@@ -332,7 +334,7 @@ public class FragorOchSvarCreatorTest {
     @Test
     public void testCountArendeFk7263OhanteradFraga() {
         when(fragaSvarRepository.findFragaSvarStatusesForIntyg(INTYG_ID))
-                .thenReturn(Collections.singletonList(new FragaSvarStatus(1L, FRAGESTALLARE_FK, null, Status.PENDING_INTERNAL_ACTION)));
+            .thenReturn(Collections.singletonList(new FragaSvarStatus(1L, FRAGESTALLARE_FK, null, Status.PENDING_INTERNAL_ACTION)));
         Pair<ArendeCount, ArendeCount> arenden = fsCreator.createArenden(INTYG_ID, INTYGSTYP_FK7263);
         assertNotNull(arenden);
         assertEquals("Antal skickade frågor", 0, arenden.getLeft().getTotalt());
@@ -351,7 +353,7 @@ public class FragorOchSvarCreatorTest {
     @Test
     public void testCountArendeFk7263HanteradFraga() {
         when(fragaSvarRepository.findFragaSvarStatusesForIntyg(INTYG_ID))
-                .thenReturn(Collections.singletonList(new FragaSvarStatus(1L, FRAGESTALLARE_FK, "Ett svar från WC", Status.CLOSED)));
+            .thenReturn(Collections.singletonList(new FragaSvarStatus(1L, FRAGESTALLARE_FK, "Ett svar från WC", Status.CLOSED)));
         Pair<ArendeCount, ArendeCount> arenden = fsCreator.createArenden(INTYG_ID, INTYGSTYP_FK7263);
         assertNotNull(arenden);
         assertEquals("Antal skickade frågor", 0, arenden.getLeft().getTotalt());
@@ -370,7 +372,7 @@ public class FragorOchSvarCreatorTest {
     @Test
     public void testCountArendeFk7263OhanteratSvar() {
         when(fragaSvarRepository.findFragaSvarStatusesForIntyg(INTYG_ID))
-                .thenReturn(Collections.singletonList(new FragaSvarStatus(1L, FRAGESTALLARE_WEBCERT, "Ett svar från FK", Status.ANSWERED)));
+            .thenReturn(Collections.singletonList(new FragaSvarStatus(1L, FRAGESTALLARE_WEBCERT, "Ett svar från FK", Status.ANSWERED)));
         Pair<ArendeCount, ArendeCount> arenden = fsCreator.createArenden(INTYG_ID, INTYGSTYP_FK7263);
         assertNotNull(arenden);
         assertEquals("Antal skickade frågor", 1, arenden.getLeft().getTotalt());
@@ -389,7 +391,7 @@ public class FragorOchSvarCreatorTest {
     @Test
     public void testCountArendeFk7263HanteratSvar() {
         when(fragaSvarRepository.findFragaSvarStatusesForIntyg(INTYG_ID))
-                .thenReturn(Collections.singletonList(new FragaSvarStatus(1L, FRAGESTALLARE_WEBCERT, "Ett svar från FK", Status.CLOSED)));
+            .thenReturn(Collections.singletonList(new FragaSvarStatus(1L, FRAGESTALLARE_WEBCERT, "Ett svar från FK", Status.CLOSED)));
         Pair<ArendeCount, ArendeCount> arenden = fsCreator.createArenden(INTYG_ID, INTYGSTYP_FK7263);
         assertNotNull(arenden);
         assertEquals("Antal skickade frågor", 1, arenden.getLeft().getTotalt());
@@ -408,8 +410,8 @@ public class FragorOchSvarCreatorTest {
     @Test
     public void testCountArendeFk7263All() {
         when(fragaSvarRepository.findFragaSvarStatusesForIntyg(INTYG_ID))
-                .thenReturn(Arrays.asList(new FragaSvarStatus(1L, FRAGESTALLARE_WEBCERT, "Ett svar kom in", Status.CLOSED),
-                        new FragaSvarStatus(1L, FRAGESTALLARE_FK, "Ett svar kom in", Status.CLOSED)));
+            .thenReturn(Arrays.asList(new FragaSvarStatus(1L, FRAGESTALLARE_WEBCERT, "Ett svar kom in", Status.CLOSED),
+                new FragaSvarStatus(1L, FRAGESTALLARE_FK, "Ett svar kom in", Status.CLOSED)));
 
         Pair<ArendeCount, ArendeCount> arenden = fsCreator.createArenden(INTYG_ID, INTYGSTYP_FK7263);
         assertNotNull(arenden);

@@ -21,15 +21,12 @@ package se.inera.intyg.webcert.web.web.controller.integrationtest.api;
 import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
 
-import java.util.Arrays;
-import java.util.List;
-
-import org.junit.Ignore;
-import org.junit.Test;
-
 import com.jayway.restassured.RestAssured;
 import com.jayway.restassured.http.ContentType;
-
+import java.util.Arrays;
+import java.util.List;
+import org.junit.Ignore;
+import org.junit.Test;
 import se.inera.intyg.infra.integration.srs.model.SrsQuestionResponse;
 import se.inera.intyg.webcert.web.web.controller.integrationtest.BaseRestIntegrationTest;
 
@@ -53,19 +50,19 @@ public class SrsApiControllerIT extends BaseRestIntegrationTest {
         String utkastId = createUtkast("luse", personnummer);
 
         List<SrsQuestionResponse> body = Arrays.asList(
-                SrsQuestionResponse.create("questionId123123", "answerId321321"));
+            SrsQuestionResponse.create("questionId123123", "answerId321321"));
 
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
-                .pathParam("intygId", utkastId)
-                .pathParam("personnummer", personnummer)
-                .pathParam("diagnosisCode", SUPPORTED_DIAGNOSIS_CODE)
-                .queryParam("prediktion", "true")
-                .queryParam("atgard", "true")
-                .queryParam("statistik", "true")
-                .with().contentType(ContentType.JSON).and().body(body)
-                .expect().statusCode(OK)
-                .when().post("api/srs/{intygId}/{personnummer}/{diagnosisCode}")
-                .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-srs-response-schema.json"));
+            .pathParam("intygId", utkastId)
+            .pathParam("personnummer", personnummer)
+            .pathParam("diagnosisCode", SUPPORTED_DIAGNOSIS_CODE)
+            .queryParam("prediktion", "true")
+            .queryParam("atgard", "true")
+            .queryParam("statistik", "true")
+            .with().contentType(ContentType.JSON).and().body(body)
+            .expect().statusCode(OK)
+            .when().post("api/srs/{intygId}/{personnummer}/{diagnosisCode}")
+            .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-srs-response-schema.json"));
     }
 
     @Test
@@ -75,13 +72,13 @@ public class SrsApiControllerIT extends BaseRestIntegrationTest {
         String body = "{adsfasdf";
 
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
-                .pathParam("intygId", "asdfasdf")
-                .pathParam("personnummer", "asdfasdf")
-                .pathParam("diagnosisCode", "asdfasdf")
-                .with().contentType(ContentType.JSON).and().body(body)
-                // Semantically incorrect, should be changed to 400, BAD_REQUEST.
-                .expect().statusCode(INTERNAL_SERVER_ERROR)
-                .when().post("api/srs/{intygId}/{personnummer}/{diagnosisCode}");
+            .pathParam("intygId", "asdfasdf")
+            .pathParam("personnummer", "asdfasdf")
+            .pathParam("diagnosisCode", "asdfasdf")
+            .with().contentType(ContentType.JSON).and().body(body)
+            // Semantically incorrect, should be changed to 400, BAD_REQUEST.
+            .expect().statusCode(INTERNAL_SERVER_ERROR)
+            .when().post("api/srs/{intygId}/{personnummer}/{diagnosisCode}");
     }
 
     @Test
@@ -89,15 +86,15 @@ public class SrsApiControllerIT extends BaseRestIntegrationTest {
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
 
         List<SrsQuestionResponse> body = Arrays.asList(
-                SrsQuestionResponse.create("questionId123123", "answerId321321"));
+            SrsQuestionResponse.create("questionId123123", "answerId321321"));
 
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
-                .pathParam("intygId", "asdfasdf")
-                .pathParam("personnummer", "asdfasdf")
-                .pathParam("diagnosisCode", "asdfasdf")
-                .with().contentType(ContentType.JSON).and().body(body)
-                .expect().statusCode(BAD_REQUEST)
-                .when().post("api/srs/{intygId}/{personnummer}/{diagnosisCode}");
+            .pathParam("intygId", "asdfasdf")
+            .pathParam("personnummer", "asdfasdf")
+            .pathParam("diagnosisCode", "asdfasdf")
+            .with().contentType(ContentType.JSON).and().body(body)
+            .expect().statusCode(BAD_REQUEST)
+            .when().post("api/srs/{intygId}/{personnummer}/{diagnosisCode}");
     }
 
     @Test
@@ -105,18 +102,18 @@ public class SrsApiControllerIT extends BaseRestIntegrationTest {
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
 
         List<SrsQuestionResponse> body = Arrays.asList(
-                SrsQuestionResponse.create("questionId123123", "answerId321321"));
+            SrsQuestionResponse.create("questionId123123", "answerId321321"));
 
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
-                .pathParam("intygId", "asdfasdf")
-                .pathParam("personnummer", "19121212-1212")
-                .pathParam("diagnosisCode", "asdfasdf")
-                .queryParam("prediktion", "true")
-                .queryParam("atgard", "true")
-                .queryParam("statistik", "true")
-                .with().contentType(ContentType.JSON).and().body(body)
-                .expect().statusCode(INTERNAL_SERVER_ERROR)
-                .when().post("api/srs/{intygId}/{personnummer}/{diagnosisCode}");
+            .pathParam("intygId", "asdfasdf")
+            .pathParam("personnummer", "19121212-1212")
+            .pathParam("diagnosisCode", "asdfasdf")
+            .queryParam("prediktion", "true")
+            .queryParam("atgard", "true")
+            .queryParam("statistik", "true")
+            .with().contentType(ContentType.JSON).and().body(body)
+            .expect().statusCode(INTERNAL_SERVER_ERROR)
+            .when().post("api/srs/{intygId}/{personnummer}/{diagnosisCode}");
     }
 
     @Test
@@ -124,10 +121,10 @@ public class SrsApiControllerIT extends BaseRestIntegrationTest {
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
 
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
-                .pathParam("diagnosisCode", SUPPORTED_DIAGNOSIS_CODE)
-                .expect().statusCode(OK)
-                .when().get("api/srs/questions/{diagnosisCode}")
-                .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-srs-question-schema.json"));
+            .pathParam("diagnosisCode", SUPPORTED_DIAGNOSIS_CODE)
+            .expect().statusCode(OK)
+            .when().get("api/srs/questions/{diagnosisCode}")
+            .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-srs-question-schema.json"));
     }
 
     @Test
@@ -135,11 +132,11 @@ public class SrsApiControllerIT extends BaseRestIntegrationTest {
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
 
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
-                .pathParam("personnummer", "19121212-1212")
-                .pathParam("hsaId", DEFAULT_LAKARE.getHsaId())
-                .expect().statusCode(OK)
-                .when().get("api/srs/consent/{personnummer}/{hsaId}")
-                .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-srs-samtyckesstatus-schema.json"));
+            .pathParam("personnummer", "19121212-1212")
+            .pathParam("hsaId", DEFAULT_LAKARE.getHsaId())
+            .expect().statusCode(OK)
+            .when().get("api/srs/consent/{personnummer}/{hsaId}")
+            .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-srs-samtyckesstatus-schema.json"));
     }
 
     @Test
@@ -149,12 +146,12 @@ public class SrsApiControllerIT extends BaseRestIntegrationTest {
         String body = "\"true\"";
 
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
-                .pathParam("personnummer", "19121212-1212")
-                .pathParam("hsaId", DEFAULT_LAKARE.getHsaId())
-                .with().contentType(ContentType.JSON).and().body(body)
-                .expect().statusCode(OK)
-                .when().put("api/srs/consent/{personnummer}/{hsaId}")
-                .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-srs-resultcodeenum-schema.json"));
+            .pathParam("personnummer", "19121212-1212")
+            .pathParam("hsaId", DEFAULT_LAKARE.getHsaId())
+            .with().contentType(ContentType.JSON).and().body(body)
+            .expect().statusCode(OK)
+            .when().put("api/srs/consent/{personnummer}/{hsaId}")
+            .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-srs-resultcodeenum-schema.json"));
     }
 
     @Test
@@ -162,20 +159,21 @@ public class SrsApiControllerIT extends BaseRestIntegrationTest {
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
 
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
-                .expect().statusCode(OK)
-                .when().get("api/srs/codes")
-                .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-srs-listofcodes-schema.json"));
+            .expect().statusCode(OK)
+            .when().get("api/srs/codes")
+            .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-srs-listofcodes-schema.json"));
     }
+
     @Test
     public void getSrsForDiagnosisCodeSimpleTest() {
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
 
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
-                .pathParam("diagnosisCode", SUPPORTED_DIAGNOSIS_CODE)
-                .expect().statusCode(OK)
-                .when()
-                .get("api/srs/atgarder/{diagnosisCode}")
-                .then()
-                .body(matchesJsonSchemaInClasspath("jsonschema/webcert-srs-getfordiagnose-response-schema.json"));
+            .pathParam("diagnosisCode", SUPPORTED_DIAGNOSIS_CODE)
+            .expect().statusCode(OK)
+            .when()
+            .get("api/srs/atgarder/{diagnosisCode}")
+            .then()
+            .body(matchesJsonSchemaInClasspath("jsonschema/webcert-srs-getfordiagnose-response-schema.json"));
     }
 }

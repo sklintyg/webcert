@@ -19,52 +19,52 @@
 
 angular.module('webcert').filter('TidigareIntygFilter',
     function() {
-        'use strict';
+      'use strict';
 
-        function isErsatt(intyg) {
-            if (typeof intyg.relations !== 'undefined' &&
-                typeof intyg.relations.latestChildRelations !== 'undefined' &&
-                typeof intyg.relations.latestChildRelations.replacedByIntyg !== 'undefined') {
-                return true;
+      function isErsatt(intyg) {
+        if (typeof intyg.relations !== 'undefined' &&
+            typeof intyg.relations.latestChildRelations !== 'undefined' &&
+            typeof intyg.relations.latestChildRelations.replacedByIntyg !== 'undefined') {
+          return true;
+        }
+        return false;
+      }
+
+      function isKompletterad(intyg) {
+        if (typeof intyg.relations !== 'undefined' &&
+            typeof intyg.relations.latestChildRelations !== 'undefined' &&
+            typeof intyg.relations.latestChildRelations.complementedByIntyg !== 'undefined' &&
+            !intyg.relations.latestChildRelations.complementedByIntyg.makulerat) {
+          return true;
+        }
+        return false;
+      }
+
+      return function(intygList, intygToInclude) {
+        var result = [];
+
+        switch (intygToInclude) {
+        case 'revoked':
+          angular.forEach(intygList, function(intyg) {
+            if (intyg.status === 'CANCELLED' || intyg.status === 'DRAFT_LOCKED' || intyg.status === 'DRAFT_LOCKED_CANCELLED' ||
+                isErsatt(intyg) || isKompletterad(intyg)) {
+              result.push(intyg);
             }
-            return false;
+          });
+          break;
+        case 'current':
+          angular.forEach(intygList, function(intyg) {
+            if (intyg.status !== 'CANCELLED' && intyg.status !== 'DRAFT_LOCKED' && intyg.status !== 'DRAFT_LOCKED_CANCELLED' &&
+                !isErsatt(intyg) && !isKompletterad(intyg)) {
+              result.push(intyg);
+            }
+          });
+          break;
+        case 'all':
+          result = intygList;
+          break;
         }
 
-        function isKompletterad(intyg) {
-            if (typeof intyg.relations !== 'undefined' &&
-                typeof intyg.relations.latestChildRelations !== 'undefined' &&
-                typeof intyg.relations.latestChildRelations.complementedByIntyg !== 'undefined' &&
-                !intyg.relations.latestChildRelations.complementedByIntyg.makulerat) {
-                return true;
-            }
-            return false;
-        }
-
-        return function(intygList, intygToInclude) {
-            var result = [];
-
-            switch(intygToInclude) {
-            case 'revoked':
-                angular.forEach(intygList, function(intyg) {
-                    if (intyg.status === 'CANCELLED' || intyg.status === 'DRAFT_LOCKED' || intyg.status === 'DRAFT_LOCKED_CANCELLED' ||
-                        isErsatt(intyg) || isKompletterad(intyg)) {
-                        result.push(intyg);
-                    }
-                });
-                break;
-            case 'current':
-                angular.forEach(intygList, function(intyg) {
-                    if (intyg.status !== 'CANCELLED' && intyg.status !== 'DRAFT_LOCKED' && intyg.status !== 'DRAFT_LOCKED_CANCELLED' &&
-                        !isErsatt(intyg) && !isKompletterad(intyg)) {
-                        result.push(intyg);
-                    }
-                });
-                break;
-            case 'all':
-                result = intygList;
-                break;
-            }
-
-            return result;
-        };
+        return result;
+      };
     });

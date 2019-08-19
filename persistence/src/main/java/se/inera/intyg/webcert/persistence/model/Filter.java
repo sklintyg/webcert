@@ -20,7 +20,10 @@ package se.inera.intyg.webcert.persistence.model;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Created by pehr on 10/21/13.
@@ -147,7 +150,7 @@ public class Filter {
         return intygsTyper;
     }
 
-    public void setIntygsTyper(Set<String>  intygsTyper) {
+    public void setIntygsTyper(Set<String> intygsTyper) {
         this.intygsTyper = intygsTyper;
     }
 

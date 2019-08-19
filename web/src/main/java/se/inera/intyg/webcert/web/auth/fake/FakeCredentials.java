@@ -19,11 +19,10 @@
 package se.inera.intyg.webcert.web.auth.fake;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import se.inera.intyg.infra.security.common.model.UserOriginType;
-import se.inera.intyg.webcert.web.auth.common.FakeCredential;
-
 import java.io.Serializable;
 import java.util.List;
+import se.inera.intyg.infra.security.common.model.UserOriginType;
+import se.inera.intyg.webcert.web.auth.common.FakeCredential;
 
 /**
  * @author andreaskaltenbach
@@ -132,14 +131,15 @@ public class FakeCredentials implements Serializable, FakeCredential {
     @Override
     public String toString() {
         return "FakeCredentials{"
-                + "hsaId='" + hsaId + '\''
-                + ", fornamn='" + forNamn + '\''
-                + ", efternamn='" + efterNamn + '\''
-                + ", lakare='" + isLakare() + '\''
-                + '}';
+            + "hsaId='" + hsaId + '\''
+            + ", fornamn='" + forNamn + '\''
+            + ", efternamn='" + efterNamn + '\''
+            + ", lakare='" + isLakare() + '\''
+            + '}';
     }
 
     public static class FakeCredentialsBuilder {
+
         private String hsaId;
         private String forNamn;
         private String efterNamn;
@@ -185,10 +185,12 @@ public class FakeCredentials implements Serializable, FakeCredential {
             this.legitimeradeYrkesgrupper = legitimeradeYrkesgrupper;
             return this;
         }
+
         public FakeCredentialsBuilder sekretessMarkerad(boolean sekretessMarkerad) {
             this.sekretessMarkerad = sekretessMarkerad;
             return this;
         }
+
         public FakeCredentialsBuilder authenticationMethod(String authenticationMethod) {
             this.authenticationMethod = authenticationMethod;
             return this;

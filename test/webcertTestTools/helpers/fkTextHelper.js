@@ -28,44 +28,44 @@ var xml2js = require('xml2js');
 
 module.exports = {
 
-    /**
-     * Parses texts from the specified xml and promises to return a flat object hash consisting of key:value
-     *
-     * @param xxml data
-     * @returns {IPromise<T>}
-     */
-    parseTextXml: function (data) {
-        var deferred = protractor.promise.defer();
-        var parser = new xml2js.Parser();
-        parser.parseString(data, function(err, result) {
-            if (err) {
-                logger.info('data: %o', data);
-                logger.error(err);
-                deferred.reject(null);
-                return deferred.promise;
-            }
-
-            // xml2js converts the xml into an array of nested objects.
-            // We return a simplified flattened structure to make it easy too look up a text
-            // value in specs based on the id, such as texts['text.kod.1']
-            var textArray = result.texter.text.reduce(function (acc, curr) {
-                acc[curr.$.id] = curr._;
-                return acc;
-                }, {});
-
-            // Handle tillaggsfragor also, they are under a different structure..
-            if (result.texter.tillagg) {
-                result.texter.tillagg.forEach(function (tillaggsfraga) {
-                    tillaggsfraga.tillaggsfraga.forEach(function (texter) {
-                        texter.text.forEach(function (text) {
-                            textArray[text.$.id] = text._;
-                        });
-                    });
-                });
-            }
-            logger.debug('Successfully parsed ' + Object.keys(textArray).length + ' texts');
-            deferred.fulfill(textArray);
-        });
+  /**
+   * Parses texts from the specified xml and promises to return a flat object hash consisting of key:value
+   *
+   * @param xxml data
+   * @returns {IPromise<T>}
+   */
+  parseTextXml: function(data) {
+    var deferred = protractor.promise.defer();
+    var parser = new xml2js.Parser();
+    parser.parseString(data, function(err, result) {
+      if (err) {
+        logger.info('data: %o', data);
+        logger.error(err);
+        deferred.reject(null);
         return deferred.promise;
-    }
+      }
+
+      // xml2js converts the xml into an array of nested objects.
+      // We return a simplified flattened structure to make it easy too look up a text
+      // value in specs based on the id, such as texts['text.kod.1']
+      var textArray = result.texter.text.reduce(function(acc, curr) {
+        acc[curr.$.id] = curr._;
+        return acc;
+      }, {});
+
+      // Handle tillaggsfragor also, they are under a different structure..
+      if (result.texter.tillagg) {
+        result.texter.tillagg.forEach(function(tillaggsfraga) {
+          tillaggsfraga.tillaggsfraga.forEach(function(texter) {
+            texter.text.forEach(function(text) {
+              textArray[text.$.id] = text._;
+            });
+          });
+        });
+      }
+      logger.debug('Successfully parsed ' + Object.keys(textArray).length + ' texts');
+      deferred.fulfill(textArray);
+    });
+    return deferred.promise;
+  }
 };

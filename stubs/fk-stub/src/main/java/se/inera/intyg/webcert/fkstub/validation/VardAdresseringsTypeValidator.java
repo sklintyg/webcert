@@ -21,9 +21,10 @@ package se.inera.intyg.webcert.fkstub.validation;
 import static se.inera.intyg.common.support.Constants.HSA_ID_OID;
 
 import java.util.List;
-
 import se.inera.ifv.insuranceprocess.healthreporting.medcertqa.v1.VardAdresseringsType;
-import se.inera.ifv.insuranceprocess.healthreporting.v2.*;
+import se.inera.ifv.insuranceprocess.healthreporting.v2.EnhetType;
+import se.inera.ifv.insuranceprocess.healthreporting.v2.HosPersonalType;
+import se.inera.ifv.insuranceprocess.healthreporting.v2.VardgivareType;
 
 /**
  * @author andreaskaltenbach
@@ -57,7 +58,7 @@ public class VardAdresseringsTypeValidator {
 
         // Check lakar id o.i.d.
         if (hosPersonal.getPersonalId().getRoot() == null
-                || !hosPersonal.getPersonalId().getRoot().equals(HSA_ID_OID)) {
+            || !hosPersonal.getPersonalId().getRoot().equals(HSA_ID_OID)) {
             validationErrors.add("Wrong o.i.d. for personalId! Should be " + HSA_ID_OID);
         }
 
@@ -77,13 +78,13 @@ public class VardAdresseringsTypeValidator {
 
         // Check enhets id - mandatory
         if (enhet.getEnhetsId() == null || enhet.getEnhetsId().getExtension() == null
-                || enhet.getEnhetsId().getExtension().isEmpty()) {
+            || enhet.getEnhetsId().getExtension().isEmpty()) {
             validationErrors.add("No enhets-id found!");
         }
 
         // Check enhets o.i.d
         if (enhet.getEnhetsId() == null || enhet.getEnhetsId().getRoot() == null
-                || !enhet.getEnhetsId().getRoot().equals(HSA_ID_OID)) {
+            || !enhet.getEnhetsId().getRoot().equals(HSA_ID_OID)) {
             validationErrors.add("Wrong o.i.d. for enhetsId! Should be " + HSA_ID_OID);
         }
 
@@ -103,12 +104,12 @@ public class VardAdresseringsTypeValidator {
 
         // Check vardgivare id - mandatory
         if (vardgivare.getVardgivareId() == null || vardgivare.getVardgivareId().getExtension() == null
-                || vardgivare.getVardgivareId().getExtension().isEmpty()) {
+            || vardgivare.getVardgivareId().getExtension().isEmpty()) {
             validationErrors.add("No vardgivare-id found!");
         }
         // Check vardgivare o.i.d.
         if (vardgivare.getVardgivareId() == null || vardgivare.getVardgivareId().getRoot() == null
-                || !vardgivare.getVardgivareId().getRoot().equals(HSA_ID_OID)) {
+            || !vardgivare.getVardgivareId().getRoot().equals(HSA_ID_OID)) {
             validationErrors.add("Wrong o.i.d. for vardgivareId! Should be " + HSA_ID_OID);
         }
 

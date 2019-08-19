@@ -23,7 +23,7 @@ import java.util.List;
 public final class FunktionsNedsattningsKoder extends IcfKoder {
 
     private FunktionsNedsattningsKoder(
-            final List<String> icd10Koder, final List<IcfKod> icfKoder) {
+        final List<String> icd10Koder, final List<IcfKod> icfKoder) {
         super(icd10Koder, icfKoder);
     }
 
@@ -32,7 +32,7 @@ public final class FunktionsNedsattningsKoder extends IcfKoder {
     }
 
     public static FunktionsNedsattningsKoder of(
-            final List<String> icd10Koder, final List<IcfKod> kompletterandeKoder) {
+        final List<String> icd10Koder, final List<IcfKod> kompletterandeKoder) {
         return new FunktionsNedsattningsKoder(icd10Koder, kompletterandeKoder);
     }
 }

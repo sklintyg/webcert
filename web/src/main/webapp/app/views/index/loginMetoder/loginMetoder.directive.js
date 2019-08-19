@@ -18,37 +18,37 @@
  */
 
 angular.module('webcert').directive('wcLoginMetoder', ['$window', '$http', 'moduleConfig',
-    function($window, $http, moduleConfig) {
-        'use strict';
+  function($window, $http, moduleConfig) {
+    'use strict';
 
-        return {
-            restrict: 'E',
-            scope: {
-            },
-            link: function(scope) {
+    return {
+      restrict: 'E',
+      scope: {},
+      link: function(scope) {
 
-                scope.showELegWarning = (function() {
-                    var re = /(?:Trident\/\d+)|(?:MSIE \d+)/;
-                    var userAgent = $window.navigator.userAgent;
-                    return !re.test(userAgent);
-                }());
+        scope.showELegWarning = (function() {
+          var re = /(?:Trident\/\d+)|(?:MSIE \d+)/;
+          var userAgent = $window.navigator.userAgent;
+          return !re.test(userAgent);
+        }());
 
-                scope.loginMethods = [{
-                    url:'/saml/login/alias/defaultAlias?idp=' + moduleConfig.SAKERHETSTJANST_IDP_URL,
-                    name:'SITHS-kort'
-                },{
-                    url:'/saml/login/alias/eleg?idp=' + moduleConfig.CGI_FUNKTIONSTJANSTER_IDP_URL,
-                    name:'E-legitimation'
-                }];
+        scope.loginMethods = [{
+          url: '/saml/login/alias/defaultAlias?idp=' + moduleConfig.SAKERHETSTJANST_IDP_URL,
+          name: 'SITHS-kort'
+        }, {
+          url: '/saml/login/alias/eleg?idp=' + moduleConfig.CGI_FUNKTIONSTJANSTER_IDP_URL,
+          name: 'E-legitimation'
+        }];
 
-                function loadIntygTypes() {
-                    scope.intygTypes = [];
-                    $http.get('/api/modules/active').then(function(response) {
-                        scope.intygTypes = response.data;
-                    });
-                }
-                loadIntygTypes();
-            },
-            templateUrl: '/app/views/index/loginMetoder/loginMetoder.directive.html'
-        };
-    }]);
+        function loadIntygTypes() {
+          scope.intygTypes = [];
+          $http.get('/api/modules/active').then(function(response) {
+            scope.intygTypes = response.data;
+          });
+        }
+
+        loadIntygTypes();
+      },
+      templateUrl: '/app/views/index/loginMetoder/loginMetoder.directive.html'
+    };
+  }]);

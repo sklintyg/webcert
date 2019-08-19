@@ -19,17 +19,16 @@
 package se.inera.intyg.webcert.integration.pp.stub;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
+import javax.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import se.riv.infrastructure.directory.privatepractitioner.v1.HoSPersonType;
-
-import javax.annotation.PostConstruct;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * Created by Magnus Ekstrand on 18/06/15.
@@ -71,7 +70,7 @@ public class PPBootstrapBean {
         HoSPersonType personType = objectMapper.readValue(res.getInputStream(), HoSPersonType.class);
         personStub.add(personType);
         LOG.debug(String.format("Loaded private practitioner %s (%s)", personType.getFullstandigtNamn(),
-                personType.getPersonId().getExtension()));
+            personType.getPersonId().getExtension()));
     }
 
 }

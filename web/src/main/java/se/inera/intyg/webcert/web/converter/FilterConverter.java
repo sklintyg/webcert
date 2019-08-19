@@ -18,11 +18,9 @@
  */
 package se.inera.intyg.webcert.web.converter;
 
+import com.google.common.base.Strings;
 import java.util.List;
 import java.util.Set;
-
-import com.google.common.base.Strings;
-
 import se.inera.intyg.webcert.persistence.model.Filter;
 import se.inera.intyg.webcert.persistence.model.VantarPa;
 import se.inera.intyg.webcert.web.service.fragasvar.dto.QueryFragaSvarParameter;

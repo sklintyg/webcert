@@ -20,10 +20,8 @@ package se.inera.intyg.webcert.intygstjanststub;
 
 import java.time.LocalDateTime;
 import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.w3.wsaddressing10.AttributedURIType;
-
 import se.inera.ifv.insuranceprocess.healthreporting.revokemedicalcertificate.rivtabp20.v1.RevokeMedicalCertificateResponderInterface;
 import se.inera.ifv.insuranceprocess.healthreporting.revokemedicalcertificateresponder.v1.RevokeMedicalCertificateRequestType;
 import se.inera.ifv.insuranceprocess.healthreporting.revokemedicalcertificateresponder.v1.RevokeMedicalCertificateResponseType;
@@ -43,9 +41,9 @@ public class RevokeMedicalCertificateResponderStub implements RevokeMedicalCerti
     @Override
     @StubModeAware
     public RevokeMedicalCertificateResponseType revokeMedicalCertificate(AttributedURIType attributedURIType,
-            RevokeMedicalCertificateRequestType revokeMedicalCertificateRequestType) {
+        RevokeMedicalCertificateRequestType revokeMedicalCertificateRequestType) {
         CertificateHolder certResponseType = intygStore
-                .getIntygForCertificateId(revokeMedicalCertificateRequestType.getRevoke().getLakarutlatande().getLakarutlatandeId());
+            .getIntygForCertificateId(revokeMedicalCertificateRequestType.getRevoke().getLakarutlatande().getLakarutlatandeId());
 
         RevokeMedicalCertificateResponseType responseType = new RevokeMedicalCertificateResponseType();
         ResultOfCall resultOfCall = new ResultOfCall();
@@ -59,7 +57,7 @@ public class RevokeMedicalCertificateResponderStub implements RevokeMedicalCerti
 
         if (!isRevoked(certResponseType.getCertificateStates())) {
             intygStore.addStatus(certResponseType.getId(),
-                    new CertificateStateHolder(attributedURIType.getValue(), CertificateState.CANCELLED, LocalDateTime.now()));
+                new CertificateStateHolder(attributedURIType.getValue(), CertificateState.CANCELLED, LocalDateTime.now()));
         }
 
         resultOfCall.setResultCode(ResultCodeEnum.OK);

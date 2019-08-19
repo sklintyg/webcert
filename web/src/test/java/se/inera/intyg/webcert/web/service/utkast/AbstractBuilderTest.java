@@ -18,10 +18,11 @@
  */
 package se.inera.intyg.webcert.web.service.utkast;
 
+import static org.mockito.Mockito.when;
+
 import org.junit.Before;
 import org.mockito.Mock;
 import org.mockito.Spy;
-
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.model.common.internal.Patient;
 import se.inera.intyg.common.support.model.common.internal.Vardenhet;
@@ -33,10 +34,8 @@ import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.utkast.util.CreateIntygsIdStrategy;
 
-import static org.mockito.Mockito.when;
-
 public class AbstractBuilderTest {
-    
+
     protected static final String INTYG_ID = "abc123";
 
     protected static final String INTYG_JSON = "A bit of text representing json";
@@ -108,6 +107,6 @@ public class AbstractBuilderTest {
 
     protected static Personnummer createPnr(String personId) {
         return Personnummer.createPersonnummer(personId)
-                .orElseThrow(() -> new IllegalArgumentException("Could not parse passed personnummer: " + personId));
+            .orElseThrow(() -> new IllegalArgumentException("Could not parse passed personnummer: " + personId));
     }
 }

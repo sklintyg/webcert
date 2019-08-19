@@ -17,7 +17,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 /*globals describe,it,browser */
 'use strict';
 
@@ -29,66 +28,66 @@ var IntygPage = wcTestTools.pages.intyg.skv.db.intyg;
 
 describe('Create and Sign db utkast', function() {
 
-    var utkastId = null,
-        data = null;
+  var utkastId = null,
+      data = null;
 
-    beforeAll(function() {
-        browser.ignoreSynchronization = false;
-        specHelper.login();
-        testdataHelper.deleteAllUtkast();
-        testdataHelper.deleteAllIntyg();
-        specHelper.createUtkastForPatient('191212121212', 'db');
+  beforeAll(function() {
+    browser.ignoreSynchronization = false;
+    specHelper.login();
+    testdataHelper.deleteAllUtkast();
+    testdataHelper.deleteAllIntyg();
+    specHelper.createUtkastForPatient('191212121212', 'db');
+  });
+
+  it('Spara undan intygsId från URL', function() {
+    UtkastPage.disableAutosave();
+
+    specHelper.getUtkastIdFromUrl().then(function(id) {
+      utkastId = id;
+    });
+    data = wcTestTools.testdata.skv.db.getRandom(utkastId);
+  });
+
+  describe('Fyll i intyget', function() {
+    it('angeIdentitetStyrktGenom', function() {
+      UtkastPage.angeIdentitetStyrktGenom(data.identitetStyrktGenom);
+    });
+    it('angeDodsdatum', function() {
+      UtkastPage.angeDodsdatum(data.dodsdatum);
+    });
+    it('angeDodsPlats', function() {
+      UtkastPage.angeDodsPlats(data.dodsPlats);
+    });
+    it('angeBarn', function() {
+      UtkastPage.angeBarn(data.barn);
+    });
+    it('angeExplosivImplantat', function() {
+      UtkastPage.angeExplosivImplantat(data.explosivImplantat);
+    });
+    it('angeYttreUndersokning', function() {
+      UtkastPage.enableAutosave();
+      UtkastPage.angeYttreUndersokning(data.yttreUndersokning);
+    });
+    it('angePolisanmalan', function() {
+      UtkastPage.angePolisanmalan(data.polisanmalan);
     });
 
-    it('Spara undan intygsId från URL', function() {
-        UtkastPage.disableAutosave();
+  });
 
-        specHelper.getUtkastIdFromUrl().then(function(id) {
-            utkastId = id;
-        });
-        data = wcTestTools.testdata.skv.db.getRandom(utkastId);
-    });
+  it('Signera intyget', function() {
+    UtkastPage.whenSigneraButtonIsEnabled();
 
-    describe('Fyll i intyget', function() {
-        it('angeIdentitetStyrktGenom', function() {
-            UtkastPage.angeIdentitetStyrktGenom(data.identitetStyrktGenom);
-        });
-        it('angeDodsdatum', function() {
-            UtkastPage.angeDodsdatum(data.dodsdatum);
-        });
-        it('angeDodsPlats', function() {
-            UtkastPage.angeDodsPlats(data.dodsPlats);
-        });
-        it('angeBarn', function() {
-            UtkastPage.angeBarn(data.barn);
-        });
-        it('angeExplosivImplantat', function() {
-            UtkastPage.angeExplosivImplantat(data.explosivImplantat);
-        });
-        it('angeYttreUndersokning', function() {
-            UtkastPage.enableAutosave();
-            UtkastPage.angeYttreUndersokning(data.yttreUndersokning);
-        });
-        it('angePolisanmalan', function() {
-            UtkastPage.angePolisanmalan(data.polisanmalan);
-        });
+    UtkastPage.signeraButtonClick();
 
-    });
+    expect(IntygPage.isAt()).toBeTruthy();
+  });
 
-    it('Signera intyget', function() {
-        UtkastPage.whenSigneraButtonIsEnabled();
+  it('Verifiera intyg', function() {
+    IntygPage.verify(data);
+  });
 
-        UtkastPage.signeraButtonClick();
-
-        expect(IntygPage.isAt()).toBeTruthy();
-    });
-
-    it('Verifiera intyg', function() {
-        IntygPage.verify(data);
-    });
-
-    afterAll(function() {
-        testdataHelper.deleteIntyg(utkastId);
-        testdataHelper.deleteUtkast(utkastId);
-    });
+  afterAll(function() {
+    testdataHelper.deleteIntyg(utkastId);
+    testdataHelper.deleteUtkast(utkastId);
+  });
 });

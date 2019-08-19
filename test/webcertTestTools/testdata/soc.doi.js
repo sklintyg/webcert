@@ -17,7 +17,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 'use strict';
 
 //Krav på teckenlängd - Se "Utformning Dödsbevis & dödsorsaksintyg"
@@ -30,156 +29,155 @@ var deathDate = new Date();
 deathDate.setDate(today.getDate() - Math.floor(Math.random() * 365));
 
 function getRelativeDeathDate(modifier) {
-    // Modifier : days
-    var datum = new Date(deathDate);
-    datum.setDate(deathDate.getDate() + modifier);
-    return datum;
+  // Modifier : days
+  var datum = new Date(deathDate);
+  datum.setDate(deathDate.getDate() + modifier);
+  return datum;
 }
 
 function getDodsdatum(datumSakert) {
-    if (datumSakert === true) {
-        return {
-            sakert: {
-                datum: testdataHelper.dateFormat(deathDate)
-            }
-        };
-    } else {
-        var monthArr = ['00', '01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12'];
-        var year = deathDate.getYear() + 1900;
-        year = shuffle([String(year), '0000'])[0];
-        return {
-            inteSakert: {
-                year: year,
-                month: (year === '0000') ? '00' : shuffle(monthArr.slice(0, today.getMonth() + 1))[0],
-                antraffadDod: testdataHelper.dateFormat(today)
-            }
-        };
-    }
+  if (datumSakert === true) {
+    return {
+      sakert: {
+        datum: testdataHelper.dateFormat(deathDate)
+      }
+    };
+  } else {
+    var monthArr = ['00', '01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12'];
+    var year = deathDate.getYear() + 1900;
+    year = shuffle([String(year), '0000'])[0];
+    return {
+      inteSakert: {
+        year: year,
+        month: (year === '0000') ? '00' : shuffle(monthArr.slice(0, today.getMonth() + 1))[0],
+        antraffadDod: testdataHelper.dateFormat(today)
+      }
+    };
+  }
 }
 
 function getDodsOrsak() {
-    var n = Math.floor(Math.random() * 4);
+  var n = Math.floor(Math.random() * 4);
 
-    var obj = {
-        a: getDodsOrsakObj(1)
-    };
-    if (n >= 1) {
-        obj.b = getDodsOrsakObj(2);
-    }
-    if (n >= 2) {
-        obj.c = getDodsOrsakObj(3);
-    }
-    if (n >= 3) {
-        obj.d = getDodsOrsakObj(4);
-    }
+  var obj = {
+    a: getDodsOrsakObj(1)
+  };
+  if (n >= 1) {
+    obj.b = getDodsOrsakObj(2);
+  }
+  if (n >= 2) {
+    obj.c = getDodsOrsakObj(3);
+  }
+  if (n >= 3) {
+    obj.d = getDodsOrsakObj(4);
+  }
 
-    obj.andraSjukdomarSkador = getDodsOrsakObj(5);
+  obj.andraSjukdomarSkador = getDodsOrsakObj(5);
 
-    return obj;
+  return obj;
 }
 
 function getDodsOrsakObj(n) {
 
-    var obj = {
-        beskrivning: testdataHelper.randomTextString(5, 10),
-        datum: testdataHelper.dateFormat(getRelativeDeathDate(-n)),
-        tillstandSpec: shuffle(['Akut', 'Kronisk', 'Uppgift saknas'])[0]
-    };
-    return obj;
+  var obj = {
+    beskrivning: testdataHelper.randomTextString(5, 10),
+    datum: testdataHelper.dateFormat(getRelativeDeathDate(-n)),
+    tillstandSpec: shuffle(['Akut', 'Kronisk', 'Uppgift saknas'])[0]
+  };
+  return obj;
 }
 
 function getSkadaForgiftning() {
-    var ja = {
-        ja: {
-            orsakAvsikt: shuffle(['Olycksfall', 'Självmord', 'Avsiktligt vållad av annan', 'Oklart om avsikt förelegat'])[0],
-            datum: testdataHelper.dateFormat(getRelativeDeathDate(-1)),
-            beskrivning: testdataHelper.randomTextString(5, 400)
-        }
-    };
+  var ja = {
+    ja: {
+      orsakAvsikt: shuffle(['Olycksfall', 'Självmord', 'Avsiktligt vållad av annan', 'Oklart om avsikt förelegat'])[0],
+      datum: testdataHelper.dateFormat(getRelativeDeathDate(-1)),
+      beskrivning: testdataHelper.randomTextString(5, 400)
+    }
+  };
 
-    return shuffle([ja, false])[0];
+  return shuffle([ja, false])[0];
 }
 
-
 function getOperation() {
-    var ja = {
-        ja: {
-            datum: testdataHelper.dateFormat(getRelativeDeathDate(-1)),
-            beskrivning: testdataHelper.randomTextString(5, 100)
-        }
-    };
-    return shuffle([ja, 'Nej', 'Uppgift om operation saknas'])[0];
+  var ja = {
+    ja: {
+      datum: testdataHelper.dateFormat(getRelativeDeathDate(-1)),
+      beskrivning: testdataHelper.randomTextString(5, 100)
+    }
+  };
+  return shuffle([ja, 'Nej', 'Uppgift om operation saknas'])[0];
 }
 
 function getDodsOrsakUppgifter() {
-    var obj = {
-        foreDoden: shuffle(["Undersökning före döden", false, false, false, false, false, false, false, false, false])[0],
-        efterDoden: shuffle(["Yttre undersökning efter döden", false, false, false, false, false, false, false, false, false])[0],
-        kliniskObduktion: shuffle(["Klinisk obduktion", false, false, false, false, false, false, false, false, false])[0],
-        rattsmedicinskObduktion: shuffle(["Rättsmedicinsk obduktion", false, false, false, false, false, false, false, false, false])[0],
-        rattsmedicinskBesiktning: shuffle(["Rättsmedicinsk likbesiktning", false, false, false, false, false, false, false, false, false])[0]
-    };
+  var obj = {
+    foreDoden: shuffle(["Undersökning före döden", false, false, false, false, false, false, false, false, false])[0],
+    efterDoden: shuffle(["Yttre undersökning efter döden", false, false, false, false, false, false, false, false, false])[0],
+    kliniskObduktion: shuffle(["Klinisk obduktion", false, false, false, false, false, false, false, false, false])[0],
+    rattsmedicinskObduktion: shuffle(["Rättsmedicinsk obduktion", false, false, false, false, false, false, false, false, false])[0],
+    rattsmedicinskBesiktning: shuffle(["Rättsmedicinsk likbesiktning", false, false, false, false, false, false, false, false, false])[0]
+  };
 
-    var objHasSomeValue = false;
+  var objHasSomeValue = false;
 
-    for (var key in obj) {
-        if (obj.hasOwnProperty(key) && obj[key] !== false) {
-            objHasSomeValue = true;
-        }
+  for (var key in obj) {
+    if (obj.hasOwnProperty(key) && obj[key] !== false) {
+      objHasSomeValue = true;
     }
+  }
 
-    return (objHasSomeValue === true) ? obj : getDodsOrsakUppgifter();
+  return (objHasSomeValue === true) ? obj : getDodsOrsakUppgifter();
 }
 
-
 module.exports = {
-    get: function(intygsID) {
-        if (!intygsID) {
-            intygsID = testdataHelper.generateTestGuid();
-        }
-    },
-    getRandom: function(intygsID, customFields) {
-        if (customFields) {
-            //deathDate används av många andra funktioner så vi ändrar det först
-            deathDate = customFields.deathDate ? customFields.deathDate : deathDate;
-        }
-        if (!intygsID) {
-            intygsID = testdataHelper.generateTestGuid();
-        }
-
-        var datumSakert = (customFields && customFields.dodsdatum && customFields.dodsdatum.sakert) ? true : testdataHelper.randomTrueFalse();
-
-        var obj = {
-            id: intygsID,
-            typ: "Dödsorsaksintyg",
-            deathDate: deathDate, //datumvariabel som används för att ta fram test-data till andra variablar.
-            identitetStyrktGenom: shuffle(["körkort", "pass", "fingeravtryck", "tandavgjutning", testdataHelper.randomTextString(5, 100)])[0],
-            land: shuffle(["Norge", "Danmark", "Finland", "Island", testdataHelper.randomTextString(5, 100)])[0],
-            dodsdatum: getDodsdatum(datumSakert),
-            dodsPlats: {
-                kommun: shuffle(["Karlstad", "Forshaga", "Hagfors", "Munkfors", "Torsby", testdataHelper.randomTextString(5, 100)])[0],
-                boende: shuffle(["Sjukhus", "Ordinärt boende", "Särskilt boende", "Annan/okänd"])[0]
-            },
-            dodsorsak: getDodsOrsak(),
-            operation: getOperation(),
-            skadaForgiftning: getSkadaForgiftning(),
-            dodsorsaksuppgifter: getDodsOrsakUppgifter()
-        };
-        if (datumSakert === false) {
-            obj.barn = (customFields && customFields.barn) ? customFields.barn : testdataHelper.randomTrueFalse();
-        }
-
-        function useCustom(field) {
-            obj[field] = customFields[field] ? customFields[field] : obj[field];
-        }
-        if (customFields) {
-            //Skriv över 
-            useCustom('identitetStyrktGenom');
-            useCustom('land');
-            useCustom('dodsdatum');
-            useCustom('dodsPlats');
-        }
-        return obj;
-
+  get: function(intygsID) {
+    if (!intygsID) {
+      intygsID = testdataHelper.generateTestGuid();
     }
+  },
+  getRandom: function(intygsID, customFields) {
+    if (customFields) {
+      //deathDate används av många andra funktioner så vi ändrar det först
+      deathDate = customFields.deathDate ? customFields.deathDate : deathDate;
+    }
+    if (!intygsID) {
+      intygsID = testdataHelper.generateTestGuid();
+    }
+
+    var datumSakert = (customFields && customFields.dodsdatum && customFields.dodsdatum.sakert) ? true : testdataHelper.randomTrueFalse();
+
+    var obj = {
+      id: intygsID,
+      typ: "Dödsorsaksintyg",
+      deathDate: deathDate, //datumvariabel som används för att ta fram test-data till andra variablar.
+      identitetStyrktGenom: shuffle(["körkort", "pass", "fingeravtryck", "tandavgjutning", testdataHelper.randomTextString(5, 100)])[0],
+      land: shuffle(["Norge", "Danmark", "Finland", "Island", testdataHelper.randomTextString(5, 100)])[0],
+      dodsdatum: getDodsdatum(datumSakert),
+      dodsPlats: {
+        kommun: shuffle(["Karlstad", "Forshaga", "Hagfors", "Munkfors", "Torsby", testdataHelper.randomTextString(5, 100)])[0],
+        boende: shuffle(["Sjukhus", "Ordinärt boende", "Särskilt boende", "Annan/okänd"])[0]
+      },
+      dodsorsak: getDodsOrsak(),
+      operation: getOperation(),
+      skadaForgiftning: getSkadaForgiftning(),
+      dodsorsaksuppgifter: getDodsOrsakUppgifter()
+    };
+    if (datumSakert === false) {
+      obj.barn = (customFields && customFields.barn) ? customFields.barn : testdataHelper.randomTrueFalse();
+    }
+
+    function useCustom(field) {
+      obj[field] = customFields[field] ? customFields[field] : obj[field];
+    }
+
+    if (customFields) {
+      //Skriv över 
+      useCustom('identitetStyrktGenom');
+      useCustom('land');
+      useCustom('dodsdatum');
+      useCustom('dodsPlats');
+    }
+    return obj;
+
+  }
 };

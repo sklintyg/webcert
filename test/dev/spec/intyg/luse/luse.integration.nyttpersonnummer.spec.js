@@ -28,153 +28,154 @@ var intygGenerator = wcTestTools.intygGenerator;
 
 describe('Djupintegration on luse with updated personnummer', function() {
 
-    var intygId = 'luse-integration-renew-1';
+  var intygId = 'luse-integration-renew-1';
 
-    var personnummer1 = '19121212-1212';
-    var personnummer2 = '20121212-1212';
-    var samordningsnummer = '19540187-5769';
-    var reservnummer = 'AXTY11155566';
+  var personnummer1 = '19121212-1212';
+  var personnummer2 = '20121212-1212';
+  var samordningsnummer = '19540187-5769';
+  var reservnummer = 'AXTY11155566';
 
-    describe('signerat intyg', function() {
-        beforeEach(function() {
-            browser.ignoreSynchronization = false;
-            specHelper.login();
-            var testData = {
-                'contents': intygGenerator.getIntygJson({'intygType': 'luse', 'intygId': intygId}),
-                'utkastStatus': 'SIGNED',
-                'revoked': false
-            };
+  describe('signerat intyg', function() {
+    beforeEach(function() {
+      browser.ignoreSynchronization = false;
+      specHelper.login();
+      var testData = {
+        'contents': intygGenerator.getIntygJson({'intygType': 'luse', 'intygId': intygId}),
+        'utkastStatus': 'SIGNED',
+        'revoked': false
+      };
 
-            // If were not ignoring sync while setting user, protractor complains that it cannot sync
-            // with angular on the testability page loaded during setUserOrigin
-            browser.ignoreSynchronization = true;
-            specHelper.setUserOrigin('DJUPINTEGRATION').then(function() {
-                browser.ignoreSynchronization = false;
-                restTestdataHelper.deleteUtkast(intygId);
-                restTestdataHelper.createWebcertIntyg(testData);
-            });
-        });
-
-        afterEach(function() {
-            restTestdataHelper.deleteUtkast(intygId);
-        });
-
-        it('should not display new person id message', function() {
-            browser.ignoreSynchronization = true;
-            specHelper.setUserOrigin('DJUPINTEGRATION').then(function() {
-                browser.ignoreSynchronization = false;
-                LuseIntygPage.getIntegration(intygId, {
-                    alternatePatientSSn: personnummer1
-                });
-                expect(LuseIntygPage.isAt()).toBeTruthy();
-                expect(LuseIntygPage.newPersonIdMessage.isPresent()).toBeFalsy();
-            });
-        });
-
-        it('should display new person id message', function() {
-            browser.ignoreSynchronization = true;
-            specHelper.setUserOrigin('DJUPINTEGRATION').then(function() {
-                browser.ignoreSynchronization = false;
-                LuseIntygPage.getIntegration(intygId, {
-                    alternatePatientSSn: personnummer2
-                });
-                expect(LuseIntygPage.isAt()).toBeTruthy();
-                expect(LuseIntygPage.newPersonIdMessage.isDisplayed()).toBeTruthy();
-                expect(LuseIntygPage.newPersonIdMessageText.getText()).toBe('Patientens personummer har ändrats');
-            });
-        });
-
-        it('should display new person id message with samordningsnummer', function() {
-            browser.ignoreSynchronization = true;
-            specHelper.setUserOrigin('DJUPINTEGRATION').then(function() {
-                browser.ignoreSynchronization = false;
-                LuseIntygPage.getIntegration(intygId, {
-                    alternatePatientSSn: samordningsnummer
-                });
-                expect(LuseIntygPage.isAt()).toBeTruthy();
-                expect(LuseIntygPage.newPersonIdMessage.isDisplayed()).toBeTruthy();
-                expect(LuseIntygPage.newPersonIdMessageText.getText()).toBe('Patientens personummer har ändrats');
-            });
-        });
-
-        it('should display new person id message with reservnummer', function() {
-            browser.ignoreSynchronization = true;
-            specHelper.setUserOrigin('DJUPINTEGRATION').then(function() {
-                browser.ignoreSynchronization = false;
-                LuseIntygPage.getIntegration(intygId, {
-                    alternatePatientSSn: reservnummer
-                });
-                expect(LuseIntygPage.isAt()).toBeTruthy();
-                expect(LuseIntygPage.newPersonIdMessage.isDisplayed()).toBeTruthy();
-                expect(LuseUtkastPage.newPersonIdMessageText.getText()).toBe(
-                    'Patienten har samordningsnummer kopplat till reservnummer: ' + reservnummer + '.');
-            });
-        });
+      // If were not ignoring sync while setting user, protractor complains that it cannot sync
+      // with angular on the testability page loaded during setUserOrigin
+      browser.ignoreSynchronization = true;
+      specHelper.setUserOrigin('DJUPINTEGRATION').then(function() {
+        browser.ignoreSynchronization = false;
+        restTestdataHelper.deleteUtkast(intygId);
+        restTestdataHelper.createWebcertIntyg(testData);
+      });
     });
 
-    describe('utkast', function() {
-
-        var utkastId;
-
-        beforeEach(function() {
-            browser.ignoreSynchronization = false;
-            specHelper.login();
-
-            specHelper.createUtkastForPatient(personnummer1, 'luse');
-
-            specHelper.getUtkastIdFromUrl().then(function(id) {
-               utkastId = id;
-            });
-
-            // If were nog ignoring sync while setting user, protractor complains that it cannot sync with angular on the testability page loaded during setUserOrigin
-            browser.ignoreSynchronization = true;
-            specHelper.setUserOrigin('DJUPINTEGRATION').then(function() {
-                browser.ignoreSynchronization = false;
-            });
-        });
-
-        afterEach(function() {
-            restTestdataHelper.deleteUtkast(utkastId);
-        });
-
-        it('should not display new person id message', function() {
-            browser.ignoreSynchronization = true;
-            specHelper.setUserOrigin('DJUPINTEGRATION').then(function() {
-                browser.ignoreSynchronization = false;
-                LuseIntygPage.getIntegration(utkastId, {
-                    alternatePatientSSn: personnummer1
-                });
-                expect(LuseUtkastPage.isAt()).toBeTruthy();
-                expect(LuseUtkastPage.newPersonIdMessage.isPresent()).toBeFalsy();
-            });
-        });
-
-        it('should display new person id message', function() {
-            LuseIntygPage.getIntegration(utkastId, {
-                alternatePatientSSn: personnummer2
-            });
-            expect(LuseUtkastPage.isAt()).toBeTruthy();
-            expect(LuseUtkastPage.newPersonIdMessage.isDisplayed()).toBeTruthy();
-            expect(LuseUtkastPage.newPersonIdMessageText.getText()).toBe('Patientens personummer har ändrats');
-        });
-
-        it('should display new person id message with samordningsnummer', function() {
-            LuseIntygPage.getIntegration(utkastId, {
-                alternatePatientSSn: samordningsnummer
-            });
-            expect(LuseUtkastPage.isAt()).toBeTruthy();
-            expect(LuseUtkastPage.newPersonIdMessage.isDisplayed()).toBeTruthy();
-            expect(LuseUtkastPage.newPersonIdMessageText.getText()).toBe('Patientens personummer har ändrats');
-        });
-
-        it('should display new person id message with reservenumber', function() {
-            LuseIntygPage.getIntegration(utkastId, {
-                alternatePatientSSn: reservnummer
-            });
-            expect(LuseUtkastPage.isAt()).toBeTruthy();
-            expect(LuseUtkastPage.newPersonIdMessage.isDisplayed()).toBeTruthy();
-            expect(LuseUtkastPage.newPersonIdMessageText.getText()).toBe('Patienten har samordningsnummer kopplat till reservnummer: ' + reservnummer + '.');
-        });
+    afterEach(function() {
+      restTestdataHelper.deleteUtkast(intygId);
     });
+
+    it('should not display new person id message', function() {
+      browser.ignoreSynchronization = true;
+      specHelper.setUserOrigin('DJUPINTEGRATION').then(function() {
+        browser.ignoreSynchronization = false;
+        LuseIntygPage.getIntegration(intygId, {
+          alternatePatientSSn: personnummer1
+        });
+        expect(LuseIntygPage.isAt()).toBeTruthy();
+        expect(LuseIntygPage.newPersonIdMessage.isPresent()).toBeFalsy();
+      });
+    });
+
+    it('should display new person id message', function() {
+      browser.ignoreSynchronization = true;
+      specHelper.setUserOrigin('DJUPINTEGRATION').then(function() {
+        browser.ignoreSynchronization = false;
+        LuseIntygPage.getIntegration(intygId, {
+          alternatePatientSSn: personnummer2
+        });
+        expect(LuseIntygPage.isAt()).toBeTruthy();
+        expect(LuseIntygPage.newPersonIdMessage.isDisplayed()).toBeTruthy();
+        expect(LuseIntygPage.newPersonIdMessageText.getText()).toBe('Patientens personummer har ändrats');
+      });
+    });
+
+    it('should display new person id message with samordningsnummer', function() {
+      browser.ignoreSynchronization = true;
+      specHelper.setUserOrigin('DJUPINTEGRATION').then(function() {
+        browser.ignoreSynchronization = false;
+        LuseIntygPage.getIntegration(intygId, {
+          alternatePatientSSn: samordningsnummer
+        });
+        expect(LuseIntygPage.isAt()).toBeTruthy();
+        expect(LuseIntygPage.newPersonIdMessage.isDisplayed()).toBeTruthy();
+        expect(LuseIntygPage.newPersonIdMessageText.getText()).toBe('Patientens personummer har ändrats');
+      });
+    });
+
+    it('should display new person id message with reservnummer', function() {
+      browser.ignoreSynchronization = true;
+      specHelper.setUserOrigin('DJUPINTEGRATION').then(function() {
+        browser.ignoreSynchronization = false;
+        LuseIntygPage.getIntegration(intygId, {
+          alternatePatientSSn: reservnummer
+        });
+        expect(LuseIntygPage.isAt()).toBeTruthy();
+        expect(LuseIntygPage.newPersonIdMessage.isDisplayed()).toBeTruthy();
+        expect(LuseUtkastPage.newPersonIdMessageText.getText()).toBe(
+            'Patienten har samordningsnummer kopplat till reservnummer: ' + reservnummer + '.');
+      });
+    });
+  });
+
+  describe('utkast', function() {
+
+    var utkastId;
+
+    beforeEach(function() {
+      browser.ignoreSynchronization = false;
+      specHelper.login();
+
+      specHelper.createUtkastForPatient(personnummer1, 'luse');
+
+      specHelper.getUtkastIdFromUrl().then(function(id) {
+        utkastId = id;
+      });
+
+      // If were nog ignoring sync while setting user, protractor complains that it cannot sync with angular on the testability page loaded during setUserOrigin
+      browser.ignoreSynchronization = true;
+      specHelper.setUserOrigin('DJUPINTEGRATION').then(function() {
+        browser.ignoreSynchronization = false;
+      });
+    });
+
+    afterEach(function() {
+      restTestdataHelper.deleteUtkast(utkastId);
+    });
+
+    it('should not display new person id message', function() {
+      browser.ignoreSynchronization = true;
+      specHelper.setUserOrigin('DJUPINTEGRATION').then(function() {
+        browser.ignoreSynchronization = false;
+        LuseIntygPage.getIntegration(utkastId, {
+          alternatePatientSSn: personnummer1
+        });
+        expect(LuseUtkastPage.isAt()).toBeTruthy();
+        expect(LuseUtkastPage.newPersonIdMessage.isPresent()).toBeFalsy();
+      });
+    });
+
+    it('should display new person id message', function() {
+      LuseIntygPage.getIntegration(utkastId, {
+        alternatePatientSSn: personnummer2
+      });
+      expect(LuseUtkastPage.isAt()).toBeTruthy();
+      expect(LuseUtkastPage.newPersonIdMessage.isDisplayed()).toBeTruthy();
+      expect(LuseUtkastPage.newPersonIdMessageText.getText()).toBe('Patientens personummer har ändrats');
+    });
+
+    it('should display new person id message with samordningsnummer', function() {
+      LuseIntygPage.getIntegration(utkastId, {
+        alternatePatientSSn: samordningsnummer
+      });
+      expect(LuseUtkastPage.isAt()).toBeTruthy();
+      expect(LuseUtkastPage.newPersonIdMessage.isDisplayed()).toBeTruthy();
+      expect(LuseUtkastPage.newPersonIdMessageText.getText()).toBe('Patientens personummer har ändrats');
+    });
+
+    it('should display new person id message with reservenumber', function() {
+      LuseIntygPage.getIntegration(utkastId, {
+        alternatePatientSSn: reservnummer
+      });
+      expect(LuseUtkastPage.isAt()).toBeTruthy();
+      expect(LuseUtkastPage.newPersonIdMessage.isDisplayed()).toBeTruthy();
+      expect(LuseUtkastPage.newPersonIdMessageText.getText()).toBe(
+          'Patienten har samordningsnummer kopplat till reservnummer: ' + reservnummer + '.');
+    });
+  });
 
 });

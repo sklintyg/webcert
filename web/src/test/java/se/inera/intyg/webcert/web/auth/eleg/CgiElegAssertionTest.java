@@ -22,7 +22,6 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
-
 import se.inera.intyg.webcert.web.auth.common.BaseSAMLCredentialTest;
 
 /**

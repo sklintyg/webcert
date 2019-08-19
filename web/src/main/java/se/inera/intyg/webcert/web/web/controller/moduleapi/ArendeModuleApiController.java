@@ -18,9 +18,9 @@
  */
 package se.inera.intyg.webcert.web.web.controller.moduleapi;
 
+import io.swagger.annotations.Api;
 import java.util.List;
 import java.util.Map;
-
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -30,12 +30,9 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import io.swagger.annotations.Api;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.webcert.web.service.arende.ArendeService;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
@@ -66,10 +63,10 @@ public class ArendeModuleApiController extends AbstractApiController {
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
     public Response createMessage(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") final String intygsId,
-            CreateMessageParameter parameter) {
+        CreateMessageParameter parameter) {
         LOGGER.debug("Create arende for {} ({})", intygsId, intygsTyp);
         ArendeConversationView response = arendeService.createMessage(intygsId, parameter.getAmne(), parameter.getRubrik(),
-                parameter.getMeddelande());
+            parameter.getMeddelande());
         return Response.ok(response).build();
     }
 
@@ -79,7 +76,7 @@ public class ArendeModuleApiController extends AbstractApiController {
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
     public Response answer(@PathParam("intygsTyp") String intygsTyp, @PathParam("meddelandeId") final String meddelandeId,
-            String svarsText) {
+        String svarsText) {
         LOGGER.debug("Answer arende {}", meddelandeId);
         ArendeConversationView response = arendeService.answer(meddelandeId, svarsText);
         return Response.ok(response).build();

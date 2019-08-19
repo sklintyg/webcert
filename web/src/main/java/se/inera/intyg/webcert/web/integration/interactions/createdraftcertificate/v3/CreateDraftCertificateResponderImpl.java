@@ -18,6 +18,8 @@
  */
 package se.inera.intyg.webcert.web.integration.interactions.createdraftcertificate.v3;
 
+import com.google.common.base.Joiner;
+import com.google.common.base.Strings;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Comparator;
@@ -26,16 +28,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-
 import org.apache.cxf.annotations.SchemaValidation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
-
-import com.google.common.base.Joiner;
-import com.google.common.base.Strings;
-
 import se.inera.intyg.common.services.texts.IntygTextsService;
 import se.inera.intyg.common.support.integration.converter.util.ResultTypeUtil;
 import se.inera.intyg.common.support.model.UtkastStatus;
@@ -173,45 +170,45 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
         }
 
         LOG.debug("Creating draft for invoker '{}' on unit '{}'", utkastsParams.getSkapadAv().getPersonalId().getExtension(),
-                invokingUnitHsaId);
+            invokingUnitHsaId);
 
         String intygsTyp = moduleRegistry.getModuleIdFromExternalId(utkastsParams.getTypAvIntyg().getCode());
         // Default to use latest version, since there is no info in request specifying version
         String latestIntygTypeVersion = intygTextsService.getLatestVersion(intygsTyp);
 
         Personnummer personnummer = Personnummer.createPersonnummer(
-                utkastsParams.getPatient().getPersonId().getExtension())
-                .orElseThrow(() -> new WebCertServiceException(WebCertServiceErrorCodeEnum.PU_PROBLEM,
-                        "Failed to create valid personnummer for createDraft request"));
+            utkastsParams.getPatient().getPersonId().getExtension())
+            .orElseThrow(() -> new WebCertServiceException(WebCertServiceErrorCodeEnum.PU_PROBLEM,
+                "Failed to create valid personnummer for createDraft request"));
         SekretessStatus sekretessStatus = patientDetailsResolver.getSekretessStatus(personnummer);
 
         if (AuthoritiesHelperUtil.mayNotCreateUtkastForSekretessMarkerad(sekretessStatus, user, intygsTyp)) {
             return createErrorResponse("Intygstypen " + intygsTyp.toUpperCase()
-                    + " kan inte utfärdas för patienter med sekretessmarkering", ErrorIdType.APPLICATION_ERROR);
+                + " kan inte utfärdas för patienter med sekretessmarkering", ErrorIdType.APPLICATION_ERROR);
         }
 
         Map<String, Map<String, PreviousIntyg>> intygstypToPreviousIntyg = utkastService.checkIfPersonHasExistingIntyg(personnummer, user);
         Optional<WebCertServiceErrorCodeEnum> utkastUnique = AuthoritiesHelperUtil.validateUtkastMustBeUnique(user, intygsTyp,
-                intygstypToPreviousIntyg);
+            intygstypToPreviousIntyg);
         Optional<WebCertServiceErrorCodeEnum> intygUnique = AuthoritiesHelperUtil.validateIntygMustBeUnique(user, intygsTyp,
-                intygstypToPreviousIntyg, LocalDateTime.now());
+            intygstypToPreviousIntyg, LocalDateTime.now());
         WebCertServiceErrorCodeEnum uniqueErrorCode = utkastUnique.orElse(intygUnique.orElse(null));
 
         if (uniqueErrorCode != null) {
             String uniqueErrorString = null;
             switch (uniqueErrorCode) {
-            case UTKAST_FROM_SAME_VARDGIVARE_EXISTS:
-                uniqueErrorString = "Draft of this type must be unique within caregiver.";
-                break;
-            case INTYG_FROM_SAME_VARDGIVARE_EXISTS:
-                uniqueErrorString = "Certificates of this type must be unique within this caregiver.";
-                break;
-            case INTYG_FROM_OTHER_VARDGIVARE_EXISTS:
-                uniqueErrorString = "Certificates of this type must be globally unique.";
-                break;
-            default:
-                uniqueErrorString = "Unexpected error occurred.";
-                break;
+                case UTKAST_FROM_SAME_VARDGIVARE_EXISTS:
+                    uniqueErrorString = "Draft of this type must be unique within caregiver.";
+                    break;
+                case INTYG_FROM_SAME_VARDGIVARE_EXISTS:
+                    uniqueErrorString = "Certificates of this type must be unique within this caregiver.";
+                    break;
+                case INTYG_FROM_OTHER_VARDGIVARE_EXISTS:
+                    uniqueErrorString = "Certificates of this type must be globally unique.";
+                    break;
+                default:
+                    uniqueErrorString = "Unexpected error occurred.";
+                    break;
             }
             return createErrorResponse(uniqueErrorString, ErrorIdType.APPLICATION_ERROR);
         }
@@ -242,7 +239,7 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
     private Utkast createNewDraft(Intyg utkastRequest, String latestIntygTypeVersion, IntygUser user) {
 
         LOG.debug("Creating draft for invoker '{}' on unit '{}'", utkastRequest.getSkapadAv().getPersonalId().getExtension(),
-                utkastRequest.getSkapadAv().getEnhet().getEnhetsId().getExtension());
+            utkastRequest.getSkapadAv().getEnhet().getEnhetsId().getExtension());
 
         // Create draft request
         CreateNewDraftRequest draftRequest = draftRequestBuilder.buildCreateNewDraftRequest(utkastRequest, latestIntygTypeVersion, user);
@@ -254,17 +251,17 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
     }
 
     private void decorateNewDraftFromCopyCandidate(Utkast utkast, ModuleApi moduleApi, GetCopyFromCandidate getCopyFromCandidate,
-            String sourceIntygsTyp, IntygUser intygUser) {
+        String sourceIntygsTyp, IntygUser intygUser) {
 
         try {
             Utlatande utkastUtlatande = moduleApi.getUtlatandeFromJson(utkast.getModel());
             CreateDraftCopyHolder draftCopyHolder = new CreateDraftCopyHolder(utkast.getIntygsId(),
-                    utkastUtlatande.getGrundData().getSkapadAv());
+                utkastUtlatande.getGrundData().getSkapadAv());
             draftCopyHolder.setPatient(utkastUtlatande.getGrundData().getPatient());
             draftCopyHolder.setIntygTypeVersion(utkast.getIntygTypeVersion());
 
             Utlatande copyFromUtlatande = moduleFacade.getCertificate(getCopyFromCandidate.getIntygId(),
-                    getCopyFromCandidate.getIntygType(), getCopyFromCandidate.getIntygTypeVersion()).getUtlatande();
+                getCopyFromCandidate.getIntygType(), getCopyFromCandidate.getIntygTypeVersion()).getUtlatande();
 
             final String updatedUtkastModel = moduleApi.createNewInternalFromTemplate(draftCopyHolder, copyFromUtlatande);
             utkast.setModel(updatedUtkastModel);
@@ -275,27 +272,27 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
 
         } catch (ModuleException | IOException | IntygModuleFacadeException e) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM,
-                    "Failed to get decorateNewDraftFromCopyCandidate for intygsType " + sourceIntygsTyp, e);
+                "Failed to get decorateNewDraftFromCopyCandidate for intygsType " + sourceIntygsTyp, e);
 
         }
 
     }
 
     private LogUser createLogUser(IntygUser intygUser) {
-            SelectableVardenhet valdVardenhet = intygUser.getValdVardenhet();
-            SelectableVardenhet valdVardgivare = intygUser.getValdVardgivare();
+        SelectableVardenhet valdVardenhet = intygUser.getValdVardenhet();
+        SelectableVardenhet valdVardgivare = intygUser.getValdVardgivare();
 
-            return new LogUser.Builder(intygUser.getHsaId(), valdVardenhet.getId(), valdVardgivare.getId())
-                    .userName(intygUser.getNamn())
-                    .userAssignment(intygUser.getSelectedMedarbetarUppdragNamn())
-                    .userTitle(intygUser.getTitel())
-                    .enhetsNamn(valdVardenhet.getNamn())
-                    .vardgivareNamn(valdVardgivare.getNamn())
-                    .build();
+        return new LogUser.Builder(intygUser.getHsaId(), valdVardenhet.getId(), valdVardgivare.getId())
+            .userName(intygUser.getNamn())
+            .userAssignment(intygUser.getSelectedMedarbetarUppdragNamn())
+            .userTitle(intygUser.getTitel())
+            .enhetsNamn(valdVardenhet.getNamn())
+            .vardgivareNamn(valdVardgivare.getNamn())
+            .build();
     }
 
     protected Optional<GetCopyFromCandidate> getCopyFromCandidate(ModuleApi moduleApi, IntygUser user,
-            Personnummer personnummer) {
+        Personnummer personnummer) {
 
         final Optional<GetCopyFromCriteria> copyFromCriteria = moduleApi.getCopyFromCriteria();
 
@@ -307,28 +304,28 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
         validIntygType.add(copyFromCriteria.get().getIntygType());
 
         List<Utkast> toFilter = utkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(personnummer.getPersonnummerWithDash(),
-                validIntygType);
+            validIntygType);
 
         LocalDateTime earliestValidDate = LocalDateTime.now().minusDays(copyFromCriteria.get().getMaxAgeDays());
 
         final Optional<Utkast> candidate = toFilter.stream()
-                .filter(utkast -> utkast.getStatus() == UtkastStatus.SIGNED)
-                .filter(utkast -> utkast.getEnhetsId().equals(user.getValdVardenhet().getId()))
-                .filter(utkast -> utkast.getAterkalladDatum() == null)
-                .filter(utkast -> sameMajorVersion(utkast.getIntygTypeVersion(), copyFromCriteria.get().getIntygTypeMajorVersion()))
-                .filter(utkast -> utkast.getSignatur().getSigneringsDatum().isAfter(earliestValidDate))
-                .filter(utkast -> utkast.getSignatur().getSigneradAv().equals(user.getHsaId()))
-                .sorted(Comparator.comparing(u -> u.getSignatur().getSigneringsDatum(), Comparator.reverseOrder()))
-                .findFirst();
+            .filter(utkast -> utkast.getStatus() == UtkastStatus.SIGNED)
+            .filter(utkast -> utkast.getEnhetsId().equals(user.getValdVardenhet().getId()))
+            .filter(utkast -> utkast.getAterkalladDatum() == null)
+            .filter(utkast -> sameMajorVersion(utkast.getIntygTypeVersion(), copyFromCriteria.get().getIntygTypeMajorVersion()))
+            .filter(utkast -> utkast.getSignatur().getSigneringsDatum().isAfter(earliestValidDate))
+            .filter(utkast -> utkast.getSignatur().getSigneradAv().equals(user.getHsaId()))
+            .sorted(Comparator.comparing(u -> u.getSignatur().getSigneringsDatum(), Comparator.reverseOrder()))
+            .findFirst();
 
         return candidate.isPresent() ? Optional.of(new GetCopyFromCandidate(candidate.get().getIntygsTyp(),
-                candidate.get().getIntygTypeVersion(), candidate.get().getIntygsId())) : Optional.empty();
+            candidate.get().getIntygTypeVersion(), candidate.get().getIntygsId())) : Optional.empty();
 
     }
 
     private boolean sameMajorVersion(String intygTypeVersion, String intygTypeMajorVersion) {
         return !Strings.isNullOrEmpty(intygTypeVersion) && !Strings.isNullOrEmpty(intygTypeMajorVersion)
-                && intygTypeVersion.startsWith(intygTypeMajorVersion + ".");
+            && intygTypeVersion.startsWith(intygTypeMajorVersion + ".");
     }
 
     private ModuleApi getModuleApi(String intygsTyp, String latestIntygTypeVersion) {
@@ -336,7 +333,7 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
             return moduleRegistry.getModuleApi(intygsTyp, latestIntygTypeVersion);
         } catch (ModuleNotFoundException e) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM,
-                    "Failed to get getModuleApi for intygsType " + intygsTyp + ", version " + latestIntygTypeVersion, e);
+                "Failed to get getModuleApi for intygsType " + intygsTyp + ", version " + latestIntygTypeVersion, e);
         }
     }
 
@@ -362,7 +359,7 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
         monitoringLogService.logMissingMedarbetarUppdrag(invokingUserHsaId, invokingUnitHsaId);
 
         String errMsg = String.format("No valid MIU was found for person %s on unit %s, can not create draft!", invokingUserHsaId,
-                invokingUnitHsaId);
+            invokingUnitHsaId);
         return createErrorResponse(errMsg, ErrorIdType.VALIDATION_ERROR);
     }
 
@@ -406,7 +403,7 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
         Vardgivare vardgivare = vardenhet.getVardgivare();
 
         IntegreradEnhetEntry integreradEnhet = new IntegreradEnhetEntry(vardenhet.getEnhetsid(),
-                vardenhet.getEnhetsnamn(), vardgivare.getVardgivarid(), vardgivare.getVardgivarnamn());
+            vardenhet.getEnhetsnamn(), vardgivare.getVardgivarid(), vardgivare.getVardgivarnamn());
 
         integreradeEnheterRegistry.putIntegreradEnhet(integreradEnhet, false, true);
     }

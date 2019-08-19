@@ -22,13 +22,11 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.ext.ExceptionMapper;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
+import se.inera.intyg.infra.security.authorities.AuthoritiesException;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
-import se.inera.intyg.infra.security.authorities.AuthoritiesException;
 
 /**
  * Exception handler for REST services. Runtime exceptions thrown as {@link WebCertServiceException}
@@ -58,42 +56,38 @@ public class WebcertRestExceptionHandler implements ExceptionMapper<RuntimeExcep
     private Response handleAuthorityException(AuthoritiesException e) {
         LOG.warn("AuthValidation occured: ", e);
         WebcertRestExceptionResponse exceptionResponse = new WebcertRestExceptionResponse(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM,
-                e.getMessage());
+            e.getMessage());
         return Response.status(Status.INTERNAL_SERVER_ERROR).entity(exceptionResponse).type(MediaType.APPLICATION_JSON)
-                .build();
+            .build();
     }
 
     /**
      * Exceptions thrown by us should be logged as warnings as they are thrown deliberately.
      *
-     * @param wcse
-     *            A WebCertServiceException
-     * @return
+     * @param wcse A WebCertServiceException
      */
     private Response handleWebCertServiceException(WebCertServiceException wcse) {
         // Don't log concurrent modifiation exceptions, they are logged elsewhere
         if (wcse.getErrorCode() != WebCertServiceErrorCodeEnum.CONCURRENT_MODIFICATION) {
             LOG.warn("Internal exception occured! Internal error code: {} Error message: {}", wcse.getErrorCode(),
-                    wcse.getMessage());
+                wcse.getMessage());
         }
         WebcertRestExceptionResponse exceptionResponse = new WebcertRestExceptionResponse(wcse.getErrorCode(), wcse.getMessage());
         return Response.status(Status.INTERNAL_SERVER_ERROR).entity(exceptionResponse).type(MediaType.APPLICATION_JSON)
-                .build();
+            .build();
     }
 
     /**
      * All other runtime exceptions are logged as errors as they are not thrown deliberately.
      *
-     * @param re
-     *            A RuntimeException
-     * @return
+     * @param re A RuntimeException
      */
     private Response handleRuntimeException(RuntimeException re) {
         LOG.error("Unhandled RuntimeException occured!", re);
         WebcertRestExceptionResponse exceptionResponse = new WebcertRestExceptionResponse(
-                WebCertServiceErrorCodeEnum.UNKNOWN_INTERNAL_PROBLEM,
-                re.getMessage());
+            WebCertServiceErrorCodeEnum.UNKNOWN_INTERNAL_PROBLEM,
+            re.getMessage());
         return Response.status(Status.INTERNAL_SERVER_ERROR).entity(exceptionResponse).type(MediaType.APPLICATION_JSON)
-                .build();
+            .build();
     }
 }

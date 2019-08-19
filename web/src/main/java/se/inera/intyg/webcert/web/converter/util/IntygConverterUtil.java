@@ -20,26 +20,25 @@ package se.inera.intyg.webcert.web.converter.util;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 import se.inera.ifv.insuranceprocess.healthreporting.medcertqa.v1.LakarutlatandeEnkelType;
 import se.inera.ifv.insuranceprocess.healthreporting.medcertqa.v1.VardAdresseringsType;
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateresponder.v1.SendType;
 import se.inera.intyg.common.schemas.insuranceprocess.healthreporting.converter.ModelConverter;
 import se.inera.intyg.common.support.model.CertificateState;
 import se.inera.intyg.common.support.model.Status;
+import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.common.support.model.common.internal.Vardgivare;
 import se.inera.intyg.infra.integration.hsa.model.AbstractVardenhet;
 import se.inera.intyg.infra.integration.hsa.model.SelectableVardenhet;
-import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
-
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
 
 public final class IntygConverterUtil {
 
@@ -93,18 +92,18 @@ public final class IntygConverterUtil {
 
         if (draft.getSkickadTillMottagareDatum() != null) {
             Status status = new Status(CertificateState.SENT,
-                    draft.getSkickadTillMottagare(), draft.getSkickadTillMottagareDatum());
+                draft.getSkickadTillMottagare(), draft.getSkickadTillMottagareDatum());
             statuses.add(status);
         }
         if (draft.getAterkalladDatum() != null) {
             Status status = new Status(CertificateState.CANCELLED,
-                    null, draft.getAterkalladDatum());
+                null, draft.getAterkalladDatum());
             statuses.add(status);
         }
         if (draft.getStatus() == UtkastStatus.SIGNED && draft.getSignatur() != null
-                && draft.getSignatur().getSigneringsDatum() != null) {
+            && draft.getSignatur().getSigneringsDatum() != null) {
             Status status = new Status(CertificateState.RECEIVED,
-                    null, draft.getSignatur().getSigneringsDatum());
+                null, draft.getSignatur().getSigneringsDatum());
             statuses.add(status);
         }
         return statuses;

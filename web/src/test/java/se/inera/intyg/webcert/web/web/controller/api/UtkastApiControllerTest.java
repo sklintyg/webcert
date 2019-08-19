@@ -18,6 +18,21 @@
  */
 package se.inera.intyg.webcert.web.web.controller.api;
 
+import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
+import static javax.ws.rs.core.Response.Status.OK;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import com.google.common.base.Strings;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -28,7 +43,6 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.ws.rs.core.Response;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -36,8 +50,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-
-import com.google.common.base.Strings;
 import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.common.luse.support.LuseEntryPoint;
 import se.inera.intyg.common.services.texts.IntygTextsService;
@@ -71,20 +83,6 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.QueryIntygParameter;
 import se.inera.intyg.webcert.web.web.controller.api.dto.QueryIntygResponse;
 import se.inera.intyg.webcert.web.web.util.access.AccessResultExceptionHelper;
 import se.riv.infrastructure.directory.v1.PersonInformationType;
-
-import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
-import static javax.ws.rs.core.Response.Status.OK;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.Silent.class)
 public class UtkastApiControllerTest {
@@ -132,9 +130,9 @@ public class UtkastApiControllerTest {
         when(patientDetailsResolver.getSekretessStatus(eq(PATIENT_PERSONNUMMER))).thenReturn(SekretessStatus.FALSE);
         when(patientDetailsResolver.resolvePatient(any(Personnummer.class), anyString(), anyString())).thenReturn(buildPatient());
         when(moduleRegistry.getIntygModule(eq(LuseEntryPoint.MODULE_ID)))
-                .thenReturn(new IntygModule("luse", "", "", "", "", "", "", "", "", false));
+            .thenReturn(new IntygModule("luse", "", "", "", "", "", "", "", "", false));
         when(moduleRegistry.getIntygModule(eq(Fk7263EntryPoint.MODULE_ID)))
-                .thenReturn(new IntygModule("fk7263", "", "", "", "", "", "", "", "", true));
+            .thenReturn(new IntygModule("fk7263", "", "", "", "", "", "", "", "", true));
 
         Map<String, Map<String, PreviousIntyg>> hasPrevious = new HashMap<>();
         Map<String, PreviousIntyg> hasPreviousIntyg = new HashMap<>();
@@ -189,7 +187,7 @@ public class UtkastApiControllerTest {
         verify(utkastService).createNewDraft(requestCaptor.capture());
         assertNotNull(requestCaptor.getValue().getPatient().getFullstandigtNamn());
         assertEquals(PATIENT_FORNAMN + " " + PATIENT_MELLANNAMN + " " + PATIENT_EFTERNAMN,
-                requestCaptor.getValue().getPatient().getFullstandigtNamn());
+            requestCaptor.getValue().getPatient().getFullstandigtNamn());
     }
 
     @Test
@@ -211,7 +209,7 @@ public class UtkastApiControllerTest {
         verify(utkastService).createNewDraft(requestCaptor.capture());
         assertNotNull(requestCaptor.getValue().getPatient().getFullstandigtNamn());
         assertEquals(PATIENT_FORNAMN + " " + PATIENT_EFTERNAMN,
-                requestCaptor.getValue().getPatient().getFullstandigtNamn());
+            requestCaptor.getValue().getPatient().getFullstandigtNamn());
     }
 
     @Test
@@ -266,10 +264,10 @@ public class UtkastApiControllerTest {
     @Test
     public void testFilterDraftsForUnit() {
         setupUser(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT, LuseEntryPoint.MODULE_ID,
-                AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);
+            AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);
 
         when(utkastService.filterIntyg(any()))
-                .thenReturn(Arrays.asList(buildUtkast(PATIENT_PERSONNUMMER), buildUtkast(PATIENT_PERSONNUMMER)));
+            .thenReturn(Arrays.asList(buildUtkast(PATIENT_PERSONNUMMER), buildUtkast(PATIENT_PERSONNUMMER)));
 
         final Response response = utkastController.filterDraftsForUnit(buildQueryIntygParameter());
         final QueryIntygResponse queryIntygResponse = response.readEntity(QueryIntygResponse.class);
@@ -288,7 +286,7 @@ public class UtkastApiControllerTest {
         when(patientDetailsResolver.getSekretessStatusForList(anyList())).thenReturn(sekretessMap);
 
         when(utkastService.filterIntyg(any()))
-                .thenReturn(Arrays.asList(buildUtkast(PATIENT_PERSONNUMMER), buildUtkast(PATIENT_PERSONNUMMER_PU_SEKRETESS)));
+            .thenReturn(Arrays.asList(buildUtkast(PATIENT_PERSONNUMMER), buildUtkast(PATIENT_PERSONNUMMER_PU_SEKRETESS)));
 
         final Response response = utkastController.filterDraftsForUnit(buildQueryIntygParameter());
         final QueryIntygResponse queryIntygResponse = response.readEntity(QueryIntygResponse.class);
@@ -301,14 +299,14 @@ public class UtkastApiControllerTest {
     @Test
     public void testFilterDraftsForUnitSkipAllIntygWithUndefinedSekretessStatus() {
         setupUser(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT, LuseEntryPoint.MODULE_ID,
-                AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);
+            AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);
 
         Map<Personnummer, SekretessStatus> sekretessMap = mock(Map.class);
         when(sekretessMap.get(any())).thenReturn(SekretessStatus.UNDEFINED);
         when(patientDetailsResolver.getSekretessStatusForList(anyList())).thenReturn(sekretessMap);
 
         when(utkastService.filterIntyg(any()))
-                .thenReturn(Arrays.asList(buildUtkast(PATIENT_PERSONNUMMER), buildUtkast(PATIENT_PERSONNUMMER)));
+            .thenReturn(Arrays.asList(buildUtkast(PATIENT_PERSONNUMMER), buildUtkast(PATIENT_PERSONNUMMER)));
 
         final Response response = utkastController.filterDraftsForUnit(buildQueryIntygParameter());
         final QueryIntygResponse queryIntygResponse = response.readEntity(QueryIntygResponse.class);
@@ -435,7 +433,7 @@ public class UtkastApiControllerTest {
 
     private static Personnummer createPnr(String personId) {
         return Personnummer.createPersonnummer(personId)
-                .orElseThrow(() -> new IllegalArgumentException("Could not parse passed personnummer: " + personId));
+            .orElseThrow(() -> new IllegalArgumentException("Could not parse passed personnummer: " + personId));
     }
 
 }

@@ -19,43 +19,43 @@
 
 angular.module('webcert').factory('webcert.enhetArendenProxy',
     function($http, $log) {
-        'use strict';
+      'use strict';
 
-        /*
-         * Load arenden data
-         */
-        function _getArenden(query, onSuccess, onError) {
-            $log.debug('_getQA');
-            var restPath = '/api/fragasvar/sok';
-            $http.get(restPath, { params: query}).then(function(response) {
-                $log.debug(restPath + ' response:' + response.data);
-                onSuccess(response.data);
-            }, function(response) {
-                $log.error('error ' + response.status);
-                // Let calling code handle the error of no data response
-                onError(response.data);
-            });
-        }
+      /*
+       * Load arenden data
+       */
+      function _getArenden(query, onSuccess, onError) {
+        $log.debug('_getQA');
+        var restPath = '/api/fragasvar/sok';
+        $http.get(restPath, {params: query}).then(function(response) {
+          $log.debug(restPath + ' response:' + response.data);
+          onSuccess(response.data);
+        }, function(response) {
+          $log.error('error ' + response.status);
+          // Let calling code handle the error of no data response
+          onError(response.data);
+        });
+      }
 
-        /*
-         * Get list of lakare for enhet
-         */
-        function _getArendenLakareList(enhetsId, onSuccess, onError) {
-            $log.debug('_getArendenLakareList: ' + enhetsId);
-            var restPath = '/api/fragasvar/lakare';
-            $http.get(restPath, {params: { 'enhetsId': enhetsId}}).then(function(response) {
-                $log.debug('_getArendenLakareList got data:' + response.data);
-                onSuccess(response.data);
-            }, function(response) {
-                $log.error('_getArendenLakareList error ' + response.status);
-                // Let calling code handle the error of no data response
-                onError(response.data);
-            });
-        }
+      /*
+       * Get list of lakare for enhet
+       */
+      function _getArendenLakareList(enhetsId, onSuccess, onError) {
+        $log.debug('_getArendenLakareList: ' + enhetsId);
+        var restPath = '/api/fragasvar/lakare';
+        $http.get(restPath, {params: {'enhetsId': enhetsId}}).then(function(response) {
+          $log.debug('_getArendenLakareList got data:' + response.data);
+          onSuccess(response.data);
+        }, function(response) {
+          $log.error('_getArendenLakareList error ' + response.status);
+          // Let calling code handle the error of no data response
+          onError(response.data);
+        });
+      }
 
-        // Return public API for the service
-        return {
-            getArenden: _getArenden,
-            getArendenLakareList: _getArendenLakareList
-        };
+      // Return public API for the service
+      return {
+        getArenden: _getArenden,
+        getArendenLakareList: _getArendenLakareList
+      };
     });

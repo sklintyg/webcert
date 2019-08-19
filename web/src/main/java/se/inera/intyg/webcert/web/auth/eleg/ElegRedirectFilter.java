@@ -19,12 +19,10 @@
 package se.inera.intyg.webcert.web.auth.eleg;
 
 import java.io.IOException;
-
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -47,10 +45,10 @@ public class ElegRedirectFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, FilterChain filterChain)
-            throws ServletException, IOException {
+        throws ServletException, IOException {
         if (elegIdpUrl == null || elegIdpUrl.trim().length() == 0) {
             throw new IllegalStateException("Cannot redirect to e-leg Identity Provider, "
-                    + "no 'cgi.funktionstjanster.saml.idp.metadata.url' configured. Check your webcert.properties file.");
+                + "no 'cgi.funktionstjanster.saml.idp.metadata.url' configured. Check your webcert.properties file.");
         }
 
         httpServletResponse.sendRedirect("/saml/login/alias/eleg?idp=" + elegIdpUrl);

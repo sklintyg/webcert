@@ -22,6 +22,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeDraft;
 
 public class ArendeDraftEntry {
+
     private String questionId;
     private String intygId;
     private String text;

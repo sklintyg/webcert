@@ -28,9 +28,7 @@ import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.Lob;
 import javax.persistence.Table;
-
 import org.hibernate.annotations.Type;
-
 import se.inera.intyg.common.support.common.enumerations.SignaturTyp;
 
 @Entity
@@ -100,7 +98,7 @@ public class Signatur {
     }
 
     public Signatur(LocalDateTime signeringsDatum, String signeradAv, String intygId, String intygData, String intygHash, String signatur,
-            SignaturTyp signaturTyp) {
+        SignaturTyp signaturTyp) {
         this.signeringsDatum = signeringsDatum;
         this.signeradAv = signeradAv;
         this.intygsId = intygId;

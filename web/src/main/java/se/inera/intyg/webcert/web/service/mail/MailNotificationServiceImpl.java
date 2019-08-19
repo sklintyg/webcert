@@ -19,6 +19,12 @@
 package se.inera.intyg.webcert.web.service.mail;
 
 import com.google.common.base.Strings;
+import java.util.Locale;
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
+import javax.xml.ws.WebServiceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,13 +43,6 @@ import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.riv.infrastructure.directory.privatepractitioner.v1.EnhetType;
 import se.riv.infrastructure.directory.privatepractitioner.v1.HoSPersonType;
-
-import javax.mail.Message;
-import javax.mail.MessagingException;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
-import javax.xml.ws.WebServiceException;
-import java.util.Locale;
 
 /**
  * @author andreaskaltenbach
@@ -95,9 +94,9 @@ public class MailNotificationServiceImpl implements MailNotificationService {
             message = ": " + e.getMessage();
         }
         LOG.error("Notification mail for " + type + " '" + mailNotification.getQaId()
-                + "' concerning certificate '" + mailNotification.getCertificateId()
-                + "' couldn't be sent to " + mailNotification.getCareUnitId()
-                + " (" + mailNotification.getCareUnitName() + ")" + message);
+            + "' concerning certificate '" + mailNotification.getCertificateId()
+            + "' couldn't be sent to " + mailNotification.getCareUnitId()
+            + " (" + mailNotification.getCareUnitName() + ")" + message);
     }
 
     @Override
@@ -112,7 +111,7 @@ public class MailNotificationServiceImpl implements MailNotificationService {
             try {
                 String reason = "incoming question '" + mailNotification.getQaId() + "'";
                 sendNotificationMailToEnhet(type, mailNotification, INCOMING_QUESTION_SUBJECT,
-                        mailBodyForFraga(recipient, mailNotification), recipient, reason);
+                    mailBodyForFraga(recipient, mailNotification), recipient, reason);
             } catch (MailSendException | MessagingException e) {
                 logError(type, mailNotification, e);
             }
@@ -131,7 +130,7 @@ public class MailNotificationServiceImpl implements MailNotificationService {
             try {
                 String reason = "incoming answer on question '" + mailNotification.getQaId() + "'";
                 sendNotificationMailToEnhet(type, mailNotification, INCOMING_ANSWER_SUBJECT, mailBodyForSvar(recipient, mailNotification),
-                        recipient, reason);
+                    recipient, reason);
             } catch (MailSendException | MessagingException e) {
                 logError(type, mailNotification, e);
             }
@@ -147,8 +146,8 @@ public class MailNotificationServiceImpl implements MailNotificationService {
     }
 
     private void sendNotificationMailToEnhet(String type, MailNotification mailNotification, String subject, String body,
-                                             MailNotificationEnhet receivingEnhet,
-                                             String reason) throws MessagingException {
+        MailNotificationEnhet receivingEnhet,
+        String reason) throws MessagingException {
 
         String recipientAddress = receivingEnhet.getEmail();
 
@@ -186,14 +185,14 @@ public class MailNotificationServiceImpl implements MailNotificationService {
 
     private String mailBodyForFraga(MailNotificationEnhet unit, MailNotification mailNotification) {
         return "<p>" + unit.getName() + " har fått en fråga från Försäkringskassan angående ett intyg."
-                + "<br><a href=\"" + intygsUrl(mailNotification)
-                + "\">Läs och besvara frågan i Webcert</a></p><p>OBS! Sätt i ditt SITHS-kort innan du klickar på länken.</p>";
+            + "<br><a href=\"" + intygsUrl(mailNotification)
+            + "\">Läs och besvara frågan i Webcert</a></p><p>OBS! Sätt i ditt SITHS-kort innan du klickar på länken.</p>";
     }
 
     private String mailBodyForSvar(MailNotificationEnhet unit, MailNotification mailNotification) {
         return "<p>Det har kommit ett svar från Försäkringskassan på en fråga som " + unit.getName() + " har ställt"
-                + ".<br><a href=\"" + intygsUrl(mailNotification)
-                + "\">Läs svaret i Webcert</a></p><p>OBS! Sätt i ditt SITHS-kort innan du klickar på länken.</p>";
+            + ".<br><a href=\"" + intygsUrl(mailNotification)
+            + "\">Läs svaret i Webcert</a></p><p>OBS! Sätt i ditt SITHS-kort innan du klickar på länken.</p>";
     }
 
     private void sendNotificationToUnit(String mailAddress, String subject, String body) throws MessagingException {
@@ -207,7 +206,7 @@ public class MailNotificationServiceImpl implements MailNotificationService {
     }
 
     private void sendAdminMailAboutMissingEmailAddress(MailNotificationEnhet unit, MailNotification mailNotification)
-            throws MessagingException {
+        throws MessagingException {
 
         MimeMessage message = mailSender.createMimeMessage();
         message.setFrom(new InternetAddress(fromAddress));
@@ -275,7 +274,7 @@ public class MailNotificationServiceImpl implements MailNotificationService {
     @Transactional(readOnly = true)
     public String intygsUrl(MailNotification mailNotification) {
         String url = String.valueOf(webCertHostUrl) + "/webcert/web/user/"
-                + resolvePathSegment(mailNotification.getCareUnitId(), mailNotification.getCertificateId()) + "/";
+            + resolvePathSegment(mailNotification.getCareUnitId(), mailNotification.getCertificateId()) + "/";
         if (!Fk7263EntryPoint.MODULE_ID.equalsIgnoreCase(mailNotification.getCertificateType())) {
             url += mailNotification.getCertificateType() + "/";
         }

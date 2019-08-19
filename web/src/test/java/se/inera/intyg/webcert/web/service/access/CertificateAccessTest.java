@@ -25,7 +25,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.MockitoAnnotations;
-
 import se.inera.intyg.webcert.common.model.SekretessStatus;
 import se.inera.intyg.webcert.web.service.access.data.AccessServiceTestData;
 import se.inera.intyg.webcert.web.service.access.util.AccessServiceTestToolkit;
@@ -265,19 +264,19 @@ public abstract class CertificateAccessTest extends AccessTest {
     public void isAllowToRenewOnSameCareProviderWhenSameVGExists() {
         final WebCertUser user = AccessServiceTestToolkit.createUser(intygsTyp, accessServiceTestData);
         doReturn(user)
-                .when(webCertUserService).getUser();
+            .when(webCertUserService).getUser();
         // TODO Manage this
         // doReturn(true)
         // .when(patientDetailsResolver).isAvliden(PERSONNUMMER);
         doReturn(false)
-                .when(patientDetailsResolver).isAvliden(PERSONNUMMER);
+            .when(patientDetailsResolver).isAvliden(PERSONNUMMER);
         doReturn(SekretessStatus.FALSE)
-                .when(patientDetailsResolver).getSekretessStatus(PERSONNUMMER);
+            .when(patientDetailsResolver).getSekretessStatus(PERSONNUMMER);
         doReturn(AccessServiceTestToolkit.createPreviousUtkastForUtkast(intygsTyp))
-                .when(utkastService).checkIfPersonHasExistingIntyg(PERSONNUMMER, user);
+            .when(utkastService).checkIfPersonHasExistingIntyg(PERSONNUMMER, user);
 
         assertAllowToRenewOnSameCareProviderWhenSameVGExists(
-                accessService.allowToRenew(intygsTyp, vardenhet, PERSONNUMMER));
+            accessService.allowToRenew(intygsTyp, vardenhet, PERSONNUMMER));
     }
 
     abstract protected void assertAllowToRenewOnSameCareProviderWhenSameVGExists(AccessResult actualValue);
@@ -286,19 +285,19 @@ public abstract class CertificateAccessTest extends AccessTest {
     public void isAllowToRenewOnDifferentCareProviderWhenIntygSameVGExists() {
         final WebCertUser user = AccessServiceTestToolkit.createUser(intygsTyp, accessServiceTestData);
         doReturn(user)
-                .when(webCertUserService).getUser();
+            .when(webCertUserService).getUser();
         // TODO Manage this
         // doReturn(true)
         // .when(patientDetailsResolver).isAvliden(PERSONNUMMER);
         doReturn(false)
-                .when(patientDetailsResolver).isAvliden(PERSONNUMMER);
+            .when(patientDetailsResolver).isAvliden(PERSONNUMMER);
         doReturn(SekretessStatus.FALSE)
-                .when(patientDetailsResolver).getSekretessStatus(PERSONNUMMER);
+            .when(patientDetailsResolver).getSekretessStatus(PERSONNUMMER);
         doReturn(AccessServiceTestToolkit.createPreviousIntygForUtkast(intygsTyp, true))
-                .when(utkastService).checkIfPersonHasExistingIntyg(PERSONNUMMER, user);
+            .when(utkastService).checkIfPersonHasExistingIntyg(PERSONNUMMER, user);
 
         assertAllowToRenewOnDifferentCareProviderWhenIntygSameVGExists(
-                accessService.allowToRenew(intygsTyp, vardenhet, PERSONNUMMER));
+            accessService.allowToRenew(intygsTyp, vardenhet, PERSONNUMMER));
     }
 
     abstract protected void assertAllowToRenewOnDifferentCareProviderWhenIntygSameVGExists(AccessResult actualValue);
@@ -307,19 +306,19 @@ public abstract class CertificateAccessTest extends AccessTest {
     public void isAllowToRenewOnSameCareProviderWhenIntygExists() {
         final WebCertUser user = AccessServiceTestToolkit.createUser(intygsTyp, accessServiceTestData);
         doReturn(user)
-                .when(webCertUserService).getUser();
+            .when(webCertUserService).getUser();
         // TODO Manage this
         // doReturn(true)
         // .when(patientDetailsResolver).isAvliden(PERSONNUMMER);
         doReturn(false)
-                .when(patientDetailsResolver).isAvliden(PERSONNUMMER);
+            .when(patientDetailsResolver).isAvliden(PERSONNUMMER);
         doReturn(SekretessStatus.FALSE)
-                .when(patientDetailsResolver).getSekretessStatus(PERSONNUMMER);
+            .when(patientDetailsResolver).getSekretessStatus(PERSONNUMMER);
         doReturn(AccessServiceTestToolkit.createPreviousIntygForUtkast(intygsTyp, false))
-                .when(utkastService).checkIfPersonHasExistingIntyg(PERSONNUMMER, user);
+            .when(utkastService).checkIfPersonHasExistingIntyg(PERSONNUMMER, user);
 
         assertAllowToRenewOnSameCareProviderWhenIntygExists(
-                accessService.allowToRenew(intygsTyp, vardenhet, PERSONNUMMER));
+            accessService.allowToRenew(intygsTyp, vardenhet, PERSONNUMMER));
     }
 
     abstract protected void assertAllowToRenewOnSameCareProviderWhenIntygExists(AccessResult actualValue);
@@ -419,7 +418,7 @@ public abstract class CertificateAccessTest extends AccessTest {
         setupMocksForOnSekretessPatient();
 
         assertAllowToDeleteOnSekretessPatientOnSameUnit(
-                accessService.allowToInvalidate(intygsTyp, vardenhet, PERSONNUMMER));
+            accessService.allowToInvalidate(intygsTyp, vardenhet, PERSONNUMMER));
     }
 
     abstract protected void assertAllowToDeleteOnSekretessPatientOnSameUnit(AccessResult actualValue);
@@ -429,7 +428,7 @@ public abstract class CertificateAccessTest extends AccessTest {
         setupMocksForOnSekretessPatientDifferentUnit();
 
         assertAllowToDeleteOnSekretessPatientOnDifferentUnit(
-                accessService.allowToInvalidate(intygsTyp, vardenhet, PERSONNUMMER));
+            accessService.allowToInvalidate(intygsTyp, vardenhet, PERSONNUMMER));
     }
 
     abstract protected void assertAllowToDeleteOnSekretessPatientOnDifferentUnit(AccessResult actualValue);
@@ -439,7 +438,7 @@ public abstract class CertificateAccessTest extends AccessTest {
         setupMocksForDeceasedPatientDifferentUnit();
 
         assertAllowToDeleteOnDeceasedPatientOnDifferentUnit(
-                accessService.allowToInvalidate(intygsTyp, vardenhet, PERSONNUMMER));
+            accessService.allowToInvalidate(intygsTyp, vardenhet, PERSONNUMMER));
     }
 
     abstract protected void assertAllowToDeleteOnDeceasedPatientOnDifferentUnit(AccessResult actualValue);
@@ -449,7 +448,7 @@ public abstract class CertificateAccessTest extends AccessTest {
         setupMocksForInactiveUnitDifferentUnit();
 
         assertAllowToDeleteOnInactiveUnitOnDifferentUnit(
-                accessService.allowToInvalidate(intygsTyp, vardenhet, PERSONNUMMER));
+            accessService.allowToInvalidate(intygsTyp, vardenhet, PERSONNUMMER));
     }
 
     abstract protected void assertAllowToDeleteOnInactiveUnitOnDifferentUnit(AccessResult actualValue);
@@ -459,7 +458,7 @@ public abstract class CertificateAccessTest extends AccessTest {
         setupMocksForOnRenewFalseDifferentUnit();
 
         assertAllowToDeleteOnRenewFalseOnDifferentUnit(
-                accessService.allowToInvalidate(intygsTyp, vardenhet, PERSONNUMMER));
+            accessService.allowToInvalidate(intygsTyp, vardenhet, PERSONNUMMER));
     }
 
     abstract protected void assertAllowToDeleteOnRenewFalseOnDifferentUnit(AccessResult actualValue);
@@ -469,7 +468,7 @@ public abstract class CertificateAccessTest extends AccessTest {
         setupMocksForNoConditionsDifferentUnit();
 
         assertAllowToDeleteNoConditionsDifferentUnit(
-                accessService.allowToInvalidate(intygsTyp, vardenhet, PERSONNUMMER));
+            accessService.allowToInvalidate(intygsTyp, vardenhet, PERSONNUMMER));
     }
 
     abstract protected void assertAllowToDeleteNoConditionsDifferentUnit(AccessResult actualValue);
@@ -704,7 +703,7 @@ public abstract class CertificateAccessTest extends AccessTest {
         setupMocksForOnSekretessPatientDifferentUnit();
 
         assertAllowToCreateQuestionOnSekretessPatientOnDifferentUnit(
-                accessService.allowToCreateQuestion(intygsTyp, vardenhet, PERSONNUMMER));
+            accessService.allowToCreateQuestion(intygsTyp, vardenhet, PERSONNUMMER));
     }
 
     abstract protected void assertAllowToCreateQuestionOnSekretessPatientOnDifferentUnit(AccessResult actualValue);
@@ -714,7 +713,7 @@ public abstract class CertificateAccessTest extends AccessTest {
         setupMocksForDeceasedPatientDifferentUnit();
 
         assertAllowToCreateQuestionOnDeceasedPatientOnDifferentUnit(
-                accessService.allowToCreateQuestion(intygsTyp, vardenhet, PERSONNUMMER));
+            accessService.allowToCreateQuestion(intygsTyp, vardenhet, PERSONNUMMER));
     }
 
     abstract protected void assertAllowToCreateQuestionOnDeceasedPatientOnDifferentUnit(AccessResult actualValue);
@@ -760,7 +759,7 @@ public abstract class CertificateAccessTest extends AccessTest {
         setupMocksForDeceasedPatient();
 
         assertAllowToAnswerComplementOnDeceasedPatient(
-                accessService.allowToAnswerComplementQuestion(intygsTyp, vardenhet, PERSONNUMMER, true));
+            accessService.allowToAnswerComplementQuestion(intygsTyp, vardenhet, PERSONNUMMER, true));
     }
 
     abstract protected void assertAllowToAnswerComplementOnDeceasedPatient(AccessResult actualValue);
@@ -770,7 +769,7 @@ public abstract class CertificateAccessTest extends AccessTest {
         setupMocksForInactiveUnit();
 
         assertAllowToAnswerComplementOnInactiveUnit(
-                accessService.allowToAnswerComplementQuestion(intygsTyp, vardenhet, PERSONNUMMER, true));
+            accessService.allowToAnswerComplementQuestion(intygsTyp, vardenhet, PERSONNUMMER, true));
     }
 
     abstract protected void assertAllowToAnswerComplementOnInactiveUnit(AccessResult actualValue);
@@ -789,7 +788,7 @@ public abstract class CertificateAccessTest extends AccessTest {
         setupMocksForOnSekretessPatient();
 
         assertAllowToAnswerComplementOnSekretessPatientOnSameUnit(
-                accessService.allowToAnswerComplementQuestion(intygsTyp, vardenhet, PERSONNUMMER, true));
+            accessService.allowToAnswerComplementQuestion(intygsTyp, vardenhet, PERSONNUMMER, true));
     }
 
     abstract protected void assertAllowToAnswerComplementOnSekretessPatientOnSameUnit(AccessResult actualValue);
@@ -799,7 +798,7 @@ public abstract class CertificateAccessTest extends AccessTest {
         setupMocksForOnSekretessPatientDifferentUnit();
 
         assertAllowToAnswerComplementOnSekretessPatientOnDifferentUnit(
-                accessService.allowToAnswerComplementQuestion(intygsTyp, vardenhet, PERSONNUMMER, true));
+            accessService.allowToAnswerComplementQuestion(intygsTyp, vardenhet, PERSONNUMMER, true));
     }
 
     abstract protected void assertAllowToAnswerComplementOnSekretessPatientOnDifferentUnit(AccessResult actualValue);
@@ -809,7 +808,7 @@ public abstract class CertificateAccessTest extends AccessTest {
         setupMocksForDeceasedPatientDifferentUnit();
 
         assertAllowToAnswerComplementOnDeceasedPatientOnDifferentUnit(
-                accessService.allowToAnswerComplementQuestion(intygsTyp, vardenhet, PERSONNUMMER, true));
+            accessService.allowToAnswerComplementQuestion(intygsTyp, vardenhet, PERSONNUMMER, true));
     }
 
     abstract protected void assertAllowToAnswerComplementOnDeceasedPatientOnDifferentUnit(AccessResult actualValue);
@@ -819,7 +818,7 @@ public abstract class CertificateAccessTest extends AccessTest {
         setupMocksForInactiveUnitDifferentUnit();
 
         assertAllowToAnswerComplementOnInactiveUnitOnDifferentUnit(
-                accessService.allowToAnswerComplementQuestion(intygsTyp, vardenhet, PERSONNUMMER, true));
+            accessService.allowToAnswerComplementQuestion(intygsTyp, vardenhet, PERSONNUMMER, true));
     }
 
     abstract protected void assertAllowToAnswerComplementOnInactiveUnitOnDifferentUnit(AccessResult actualValue);
@@ -829,7 +828,7 @@ public abstract class CertificateAccessTest extends AccessTest {
         setupMocksForOnRenewFalseDifferentUnit();
 
         assertAllowToAnswerComplementOnRenewFalseOnDifferentUnit(
-                accessService.allowToAnswerComplementQuestion(intygsTyp, vardenhet, PERSONNUMMER, true));
+            accessService.allowToAnswerComplementQuestion(intygsTyp, vardenhet, PERSONNUMMER, true));
     }
 
     abstract protected void assertAllowToAnswerComplementOnRenewFalseOnDifferentUnit(AccessResult actualValue);
@@ -839,7 +838,7 @@ public abstract class CertificateAccessTest extends AccessTest {
         setupMocksForNoConditionsDifferentUnit();
 
         assertAllowToAnswerComplementNoConditionsDifferentUnit(
-                accessService.allowToAnswerComplementQuestion(intygsTyp, vardenhet, PERSONNUMMER, true));
+            accessService.allowToAnswerComplementQuestion(intygsTyp, vardenhet, PERSONNUMMER, true));
     }
 
     abstract protected void assertAllowToAnswerComplementNoConditionsDifferentUnit(AccessResult actualValue);
@@ -858,7 +857,7 @@ public abstract class CertificateAccessTest extends AccessTest {
         setupMocksForDeceasedPatient();
 
         assertAllowToAnswerQuestionOnDeceasedPatient(
-                accessService.allowToAnswerComplementQuestion(intygsTyp, vardenhet, PERSONNUMMER, false));
+            accessService.allowToAnswerComplementQuestion(intygsTyp, vardenhet, PERSONNUMMER, false));
     }
 
     abstract protected void assertAllowToAnswerQuestionOnDeceasedPatient(AccessResult actualValue);
@@ -886,7 +885,7 @@ public abstract class CertificateAccessTest extends AccessTest {
         setupMocksForOnSekretessPatient();
 
         assertAllowToAnswerQuestionOnSekretessPatientOnSameUnit(
-                accessService.allowToAnswerComplementQuestion(intygsTyp, vardenhet, PERSONNUMMER, false));
+            accessService.allowToAnswerComplementQuestion(intygsTyp, vardenhet, PERSONNUMMER, false));
     }
 
     abstract protected void assertAllowToAnswerQuestionOnSekretessPatientOnSameUnit(AccessResult actualValue);
@@ -896,7 +895,7 @@ public abstract class CertificateAccessTest extends AccessTest {
         setupMocksForOnSekretessPatientDifferentUnit();
 
         assertAllowToAnswerQuestionOnSekretessPatientOnDifferentUnit(
-                accessService.allowToAnswerComplementQuestion(intygsTyp, vardenhet, PERSONNUMMER, false));
+            accessService.allowToAnswerComplementQuestion(intygsTyp, vardenhet, PERSONNUMMER, false));
     }
 
     abstract protected void assertAllowToAnswerQuestionOnSekretessPatientOnDifferentUnit(AccessResult actualValue);
@@ -906,7 +905,7 @@ public abstract class CertificateAccessTest extends AccessTest {
         setupMocksForDeceasedPatientDifferentUnit();
 
         assertAllowToAnswerQuestionOnDeceasedPatientOnDifferentUnit(
-                accessService.allowToAnswerComplementQuestion(intygsTyp, vardenhet, PERSONNUMMER, false));
+            accessService.allowToAnswerComplementQuestion(intygsTyp, vardenhet, PERSONNUMMER, false));
     }
 
     abstract protected void assertAllowToAnswerQuestionOnDeceasedPatientOnDifferentUnit(AccessResult actualValue);
@@ -916,7 +915,7 @@ public abstract class CertificateAccessTest extends AccessTest {
         setupMocksForInactiveUnitDifferentUnit();
 
         assertAllowToAnswerQuestionOnInactiveUnitOnDifferentUnit(
-                accessService.allowToAnswerComplementQuestion(intygsTyp, vardenhet, PERSONNUMMER, false));
+            accessService.allowToAnswerComplementQuestion(intygsTyp, vardenhet, PERSONNUMMER, false));
     }
 
     abstract protected void assertAllowToAnswerQuestionOnInactiveUnitOnDifferentUnit(AccessResult actualValue);
@@ -926,7 +925,7 @@ public abstract class CertificateAccessTest extends AccessTest {
         setupMocksForOnRenewFalseDifferentUnit();
 
         assertAllowToAnswerQuestionOnRenewFalseOnDifferentUnit(
-                accessService.allowToAnswerComplementQuestion(intygsTyp, vardenhet, PERSONNUMMER, false));
+            accessService.allowToAnswerComplementQuestion(intygsTyp, vardenhet, PERSONNUMMER, false));
     }
 
     abstract protected void assertAllowToAnswerQuestionOnRenewFalseOnDifferentUnit(AccessResult actualValue);
@@ -936,7 +935,7 @@ public abstract class CertificateAccessTest extends AccessTest {
         setupMocksForNoConditionsDifferentUnit();
 
         assertAllowToAnswerQuestionNoConditionsDifferentUnit(
-                accessService.allowToAnswerComplementQuestion(intygsTyp, vardenhet, PERSONNUMMER, false));
+            accessService.allowToAnswerComplementQuestion(intygsTyp, vardenhet, PERSONNUMMER, false));
     }
 
     abstract protected void assertAllowToAnswerQuestionNoConditionsDifferentUnit(AccessResult actualValue);
@@ -946,7 +945,7 @@ public abstract class CertificateAccessTest extends AccessTest {
         setupMocksForNoConditions();
 
         assertAllowToAnswerAdminQuestionNoConditions(
-                accessService.allowToAnswerAdminQuestion(intygsTyp, vardenhet, PERSONNUMMER));
+            accessService.allowToAnswerAdminQuestion(intygsTyp, vardenhet, PERSONNUMMER));
     }
 
     abstract protected void assertAllowToAnswerAdminQuestionNoConditions(AccessResult actualValue);
@@ -956,7 +955,7 @@ public abstract class CertificateAccessTest extends AccessTest {
         setupMocksForDeceasedPatient();
 
         assertAllowToAnswerAdminQuestionOnDeceasedPatient(
-                accessService.allowToAnswerAdminQuestion(intygsTyp, vardenhet, PERSONNUMMER));
+            accessService.allowToAnswerAdminQuestion(intygsTyp, vardenhet, PERSONNUMMER));
     }
 
     abstract protected void assertAllowToAnswerAdminQuestionOnDeceasedPatient(AccessResult actualValue);
@@ -966,7 +965,7 @@ public abstract class CertificateAccessTest extends AccessTest {
         setupMocksForInactiveUnit();
 
         assertAllowToAnswerAdminQuestionOnInactiveUnit(
-                accessService.allowToAnswerAdminQuestion(intygsTyp, vardenhet, PERSONNUMMER));
+            accessService.allowToAnswerAdminQuestion(intygsTyp, vardenhet, PERSONNUMMER));
     }
 
     abstract protected void assertAllowToAnswerAdminQuestionOnInactiveUnit(AccessResult actualValue);
@@ -976,7 +975,7 @@ public abstract class CertificateAccessTest extends AccessTest {
         setupMocksForOnRenewFalse();
 
         assertAllowToAnswerAdminQuestionOnRenewFalse(
-                accessService.allowToAnswerAdminQuestion(intygsTyp, vardenhet, PERSONNUMMER));
+            accessService.allowToAnswerAdminQuestion(intygsTyp, vardenhet, PERSONNUMMER));
     }
 
     abstract protected void assertAllowToAnswerAdminQuestionOnRenewFalse(AccessResult actualValue);
@@ -986,7 +985,7 @@ public abstract class CertificateAccessTest extends AccessTest {
         setupMocksForOnSekretessPatient();
 
         assertAllowToAnswerAdminQuestionOnSekretessPatientOnSameUnit(
-                accessService.allowToAnswerAdminQuestion(intygsTyp, vardenhet, PERSONNUMMER));
+            accessService.allowToAnswerAdminQuestion(intygsTyp, vardenhet, PERSONNUMMER));
     }
 
     abstract protected void assertAllowToAnswerAdminQuestionOnSekretessPatientOnSameUnit(AccessResult actualValue);
@@ -996,7 +995,7 @@ public abstract class CertificateAccessTest extends AccessTest {
         setupMocksForOnSekretessPatientDifferentUnit();
 
         assertAllowToAnswerAdminQuestionOnSekretessPatientOnDifferentUnit(
-                accessService.allowToAnswerAdminQuestion(intygsTyp, vardenhet, PERSONNUMMER));
+            accessService.allowToAnswerAdminQuestion(intygsTyp, vardenhet, PERSONNUMMER));
     }
 
     abstract protected void assertAllowToAnswerAdminQuestionOnSekretessPatientOnDifferentUnit(AccessResult actualValue);
@@ -1006,7 +1005,7 @@ public abstract class CertificateAccessTest extends AccessTest {
         setupMocksForDeceasedPatientDifferentUnit();
 
         assertAllowToAnswerAdminQuestionOnDeceasedPatientOnDifferentUnit(
-                accessService.allowToAnswerAdminQuestion(intygsTyp, vardenhet, PERSONNUMMER));
+            accessService.allowToAnswerAdminQuestion(intygsTyp, vardenhet, PERSONNUMMER));
     }
 
     abstract protected void assertAllowToAnswerAdminQuestionOnDeceasedPatientOnDifferentUnit(AccessResult actualValue);
@@ -1016,7 +1015,7 @@ public abstract class CertificateAccessTest extends AccessTest {
         setupMocksForInactiveUnitDifferentUnit();
 
         assertAllowToAnswerAdminQuestionOnInactiveUnitOnDifferentUnit(
-                accessService.allowToAnswerAdminQuestion(intygsTyp, vardenhet, PERSONNUMMER));
+            accessService.allowToAnswerAdminQuestion(intygsTyp, vardenhet, PERSONNUMMER));
     }
 
     abstract protected void assertAllowToAnswerAdminQuestionOnInactiveUnitOnDifferentUnit(AccessResult actualValue);
@@ -1026,7 +1025,7 @@ public abstract class CertificateAccessTest extends AccessTest {
         setupMocksForOnRenewFalseDifferentUnit();
 
         assertAllowToAnswerAdminQuestionOnRenewFalseOnDifferentUnit(
-                accessService.allowToAnswerAdminQuestion(intygsTyp, vardenhet, PERSONNUMMER));
+            accessService.allowToAnswerAdminQuestion(intygsTyp, vardenhet, PERSONNUMMER));
     }
 
     abstract protected void assertAllowToAnswerAdminQuestionOnRenewFalseOnDifferentUnit(AccessResult actualValue);
@@ -1036,7 +1035,7 @@ public abstract class CertificateAccessTest extends AccessTest {
         setupMocksForNoConditionsDifferentUnit();
 
         assertAllowToAnswerAdminQuestionNoConditionsDifferentUnit(
-                accessService.allowToAnswerAdminQuestion(intygsTyp, vardenhet, PERSONNUMMER));
+            accessService.allowToAnswerAdminQuestion(intygsTyp, vardenhet, PERSONNUMMER));
     }
 
     abstract protected void assertAllowToAnswerAdminQuestionNoConditionsDifferentUnit(AccessResult actualValue);
@@ -1172,7 +1171,7 @@ public abstract class CertificateAccessTest extends AccessTest {
         setupMocksForOnSekretessPatient();
 
         assertAllowToForwardQuestionsOnSekretessPatientOnSameUnit(
-                accessService.allowToForwardQuestions(intygsTyp, vardenhet, PERSONNUMMER));
+            accessService.allowToForwardQuestions(intygsTyp, vardenhet, PERSONNUMMER));
     }
 
     abstract protected void assertAllowToForwardQuestionsOnSekretessPatientOnSameUnit(AccessResult actualValue);
@@ -1182,7 +1181,7 @@ public abstract class CertificateAccessTest extends AccessTest {
         setupMocksForOnSekretessPatientDifferentUnit();
 
         assertAllowToForwardQuestionsOnSekretessPatientOnDifferentUnit(
-                accessService.allowToForwardQuestions(intygsTyp, vardenhet, PERSONNUMMER));
+            accessService.allowToForwardQuestions(intygsTyp, vardenhet, PERSONNUMMER));
     }
 
     abstract protected void assertAllowToForwardQuestionsOnSekretessPatientOnDifferentUnit(AccessResult actualValue);
@@ -1192,7 +1191,7 @@ public abstract class CertificateAccessTest extends AccessTest {
         setupMocksForDeceasedPatientDifferentUnit();
 
         assertAllowToForwardQuestionsOnDeceasedPatientOnDifferentUnit(
-                accessService.allowToForwardQuestions(intygsTyp, vardenhet, PERSONNUMMER));
+            accessService.allowToForwardQuestions(intygsTyp, vardenhet, PERSONNUMMER));
     }
 
     abstract protected void assertAllowToForwardQuestionsOnDeceasedPatientOnDifferentUnit(AccessResult actualValue);
@@ -1202,7 +1201,7 @@ public abstract class CertificateAccessTest extends AccessTest {
         setupMocksForInactiveUnitDifferentUnit();
 
         assertAllowToForwardQuestionsOnInactiveUnitOnDifferentUnit(
-                accessService.allowToForwardQuestions(intygsTyp, vardenhet, PERSONNUMMER));
+            accessService.allowToForwardQuestions(intygsTyp, vardenhet, PERSONNUMMER));
     }
 
     abstract protected void assertAllowToForwardQuestionsOnInactiveUnitOnDifferentUnit(AccessResult actualValue);

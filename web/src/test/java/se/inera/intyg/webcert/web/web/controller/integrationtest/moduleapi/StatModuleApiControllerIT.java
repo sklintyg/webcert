@@ -18,12 +18,12 @@
  */
 package se.inera.intyg.webcert.web.web.controller.integrationtest.moduleapi;
 
+import static com.jayway.restassured.RestAssured.given;
+import static com.jayway.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
+
 import com.jayway.restassured.RestAssured;
 import org.junit.Test;
 import se.inera.intyg.webcert.web.web.controller.integrationtest.BaseRestIntegrationTest;
-
-import static com.jayway.restassured.RestAssured.given;
-import static com.jayway.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
 
 /**
  * Basic test suite that verifies that the endpoint (/moduleapi/stat) is available and repond according to
@@ -47,8 +47,8 @@ public class StatModuleApiControllerIT extends BaseRestIntegrationTest {
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
 
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
-                .expect().statusCode(200)
-                .when().get("moduleapi/stat")
-                .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-stat-response-schema.json"));
+            .expect().statusCode(200)
+            .when().get("moduleapi/stat")
+            .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-stat-response-schema.json"));
     }
 }

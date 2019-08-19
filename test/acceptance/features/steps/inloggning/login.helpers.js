@@ -22,108 +22,108 @@
 var helpers = require('../helpers');
 
 var logInAsUser = function(user, skipCookieConsent, secondBrowser) {
-    if (skipCookieConsent) {
-        logger.info('Lämnar inte samtycke för kakor');
-    }
-    logger.info('Loggar in som ' + user.forNamn + ' ' + user.efterNamn);
+  if (skipCookieConsent) {
+    logger.info('Lämnar inte samtycke för kakor');
+  }
+  logger.info('Loggar in som ' + user.forNamn + ' ' + user.efterNamn);
 
-    logger.silly(user);
+  logger.silly(user);
 
-    //Lägg till en adress för vårdenheten
-    user.enhetsAdress = {
-        postnummer: '66130',
-        postort: 'Karlstad',
-        postadress: 'Testsvängen 3',
-        telefon: '0729192811'
-    };
+  //Lägg till en adress för vårdenheten
+  user.enhetsAdress = {
+    postnummer: '66130',
+    postort: 'Karlstad',
+    postadress: 'Testsvängen 3',
+    telefon: '0729192811'
+  };
 
-    global.sessionUsed = false;
+  global.sessionUsed = false;
 
-    //Ta ut dom variablar som behövs vid inloggning.
-    let userObj = {
-        forNamn: user.forNamn,
-        efterNamn: user.efterNamn,
-        hsaId: user.hsaId,
-        enhetId: user.enhetId
-    };
-    if (user.origin) {
-        userObj.origin = user.origin;
-    }
+  //Ta ut dom variablar som behövs vid inloggning.
+  let userObj = {
+    forNamn: user.forNamn,
+    efterNamn: user.efterNamn,
+    hsaId: user.hsaId,
+    enhetId: user.enhetId
+  };
+  if (user.origin) {
+    userObj.origin = user.origin;
+  }
 
-    if (!secondBrowser) {
-        browser.ignoreSynchronization = true;
-        return pages.welcome.get().then(function() {
-            return helpers.removeAlerts();
-        }).then(function() {
-            return helpers.mediumDelay();
-        }).then(function() {
-            return pages.welcome.loginByJSON(JSON.stringify(userObj), !skipCookieConsent);
-        }).then(function() {
-            return helpers.pageReloadDelay();
-        }).then(function() {
-            logger.silly('browser.wait(wcHeader.isPresent()');
-            return browser.wait(element(by.id('wcHeader')).isPresent(), 10000).then(function(present) {
-                return logger.silly('wcHeader is present ' + present);
-            });
-        }).then(function() {
-            return browser.wait(element(by.id('wcHeader')).isDisplayed(), 10000).then(function(displayed) {
-                logger.silly('wcHeader is displayed ' + displayed);
-                return helpers.smallDelay();
-            }, function(err) {
-                // Log error but continue. With more delay.
-                logger.warn(err);
-                return helpers.pageReloadDelay();
-            });
-        }).then(function() {
-            browser.ignoreSynchronization = false;
-            logger.silly('helpers.injectConsoleTracing();');
-            return helpers.injectConsoleTracing();
+  if (!secondBrowser) {
+    browser.ignoreSynchronization = true;
+    return pages.welcome.get().then(function() {
+      return helpers.removeAlerts();
+    }).then(function() {
+      return helpers.mediumDelay();
+    }).then(function() {
+      return pages.welcome.loginByJSON(JSON.stringify(userObj), !skipCookieConsent);
+    }).then(function() {
+      return helpers.pageReloadDelay();
+    }).then(function() {
+      logger.silly('browser.wait(wcHeader.isPresent()');
+      return browser.wait(element(by.id('wcHeader')).isPresent(), 10000).then(function(present) {
+        return logger.silly('wcHeader is present ' + present);
+      });
+    }).then(function() {
+      return browser.wait(element(by.id('wcHeader')).isDisplayed(), 10000).then(function(displayed) {
+        logger.silly('wcHeader is displayed ' + displayed);
+        return helpers.smallDelay();
+      }, function(err) {
+        // Log error but continue. With more delay.
+        logger.warn(err);
+        return helpers.pageReloadDelay();
+      });
+    }).then(function() {
+      browser.ignoreSynchronization = false;
+      logger.silly('helpers.injectConsoleTracing();');
+      return helpers.injectConsoleTracing();
+    });
+  } else {
+    secondBrowser.ignoreSynchronization = true;
+    logger.info('Loggar in i andra webbläsaren >>');
+    return secondBrowser.get('welcome.html').then(function(result) {
+      return secondBrowser.sleep(100).then(function() {
+        return pages.welcome.loginByJSON(JSON.stringify(userObj), !skipCookieConsent, secondBrowser);
+      }).then(function() {
+        return secondBrowser.sleep(100);
+      }).then(function() {
+        return browser.wait(element(by.id('wcHeader')).isPresent(), 10000).then(function(present) {
+          return logger.silly('wcHeader is present ' + present);
         });
-    } else {
-        secondBrowser.ignoreSynchronization = true;
-        logger.info('Loggar in i andra webbläsaren >>');
-        return secondBrowser.get('welcome.html').then(function(result) {
-            return secondBrowser.sleep(100).then(function() {
-                return pages.welcome.loginByJSON(JSON.stringify(userObj), !skipCookieConsent, secondBrowser);
-            }).then(function() {
-                return secondBrowser.sleep(100);
-            }).then(function() {
-                return browser.wait(element(by.id('wcHeader')).isPresent(), 10000).then(function(present) {
-                    return logger.silly('wcHeader is present ' + present);
-                });
-            }).then(function() {
-                return browser.wait(element(by.id('wcHeader')).isDisplayed(), 10000).then(function(displayed) {
-                    logger.silly('wcHeader is displayed ' + (displayed));
-                    return secondBrowser.sleep(100);
-                });
-            }).then(function() {
-                secondBrowser.ignoreSynchronization = false;
-                logger.silly('helpers.injectConsoleTracing();');
-                return helpers.injectConsoleTracing();
-            });
+      }).then(function() {
+        return browser.wait(element(by.id('wcHeader')).isDisplayed(), 10000).then(function(displayed) {
+          logger.silly('wcHeader is displayed ' + (displayed));
+          return secondBrowser.sleep(100);
         });
-    }
+      }).then(function() {
+        secondBrowser.ignoreSynchronization = false;
+        logger.silly('helpers.injectConsoleTracing();');
+        return helpers.injectConsoleTracing();
+      });
+    });
+  }
 };
 
 module.exports = {
-    logInAsUser: logInAsUser,
-    logInAsUserRole: function(user, roleName, skipCookieConsent, secondBrowser) {
-        logger.silly(user);
-        user.roleName = roleName;
+  logInAsUser: logInAsUser,
+  logInAsUserRole: function(user, roleName, skipCookieConsent, secondBrowser) {
+    logger.silly(user);
+    user.roleName = roleName;
 
-        return logInAsUser(user, skipCookieConsent, secondBrowser)
-            .then(function() {
-                logger.info((secondBrowser) ? 'Login second browser successful' : 'Login default browser successful');
+    return logInAsUser(user, skipCookieConsent, secondBrowser)
+    .then(function() {
+      logger.info((secondBrowser) ? 'Login second browser successful' : 'Login default browser successful');
 
-                return element(by.id('wcHeader')).getText().then(function(txt) {
-                    logger.info('Webcert Header: ' + txt);
-                }).then(function() {
-                    let wcHeader = secondBrowser ? secondBrowser.findElement(by.id('wcHeader')) : element(by.id('wcHeader'));
-                    return Promise.all([
-                        expect(wcHeader.getText()).to.eventually.contain(user.forNamn + ' ' + user.efterNamn),
-                        expect(wcHeader.getText()).to.eventually.contain(roleName)
-                    ]);
-                });
-            });
-    }
+      return element(by.id('wcHeader')).getText().then(function(txt) {
+        logger.info('Webcert Header: ' + txt);
+      }).then(function() {
+        let wcHeader = secondBrowser ? secondBrowser.findElement(by.id('wcHeader')) : element(by.id('wcHeader'));
+        return Promise.all([
+          expect(wcHeader.getText()).to.eventually.contain(user.forNamn + ' ' + user.efterNamn),
+          expect(wcHeader.getText()).to.eventually.contain(roleName)
+        ]);
+      });
+    });
+  }
 };

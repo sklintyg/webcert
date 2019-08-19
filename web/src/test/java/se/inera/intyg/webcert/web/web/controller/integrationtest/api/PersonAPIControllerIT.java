@@ -18,15 +18,15 @@
  */
 package se.inera.intyg.webcert.web.web.controller.integrationtest.api;
 
+import static com.jayway.restassured.RestAssured.given;
+import static com.jayway.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
+import static org.hamcrest.core.IsEqual.equalTo;
+
 import com.jayway.restassured.RestAssured;
 import org.junit.Before;
 import org.junit.Test;
 import se.inera.intyg.infra.integration.pu.model.PersonSvar;
 import se.inera.intyg.webcert.web.web.controller.integrationtest.BaseRestIntegrationTest;
-
-import static com.jayway.restassured.RestAssured.given;
-import static com.jayway.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
-import static org.hamcrest.core.IsEqual.equalTo;
 
 /**
  * Basic verification of endpoint that looks up patients by personnummer.
@@ -46,19 +46,20 @@ public class PersonAPIControllerIT extends BaseRestIntegrationTest {
     public void testGetNonExistingPerson() {
 
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId).pathParam("personNummer", "1201127584")
-                .expect().statusCode(200)
-                .when().get("api/person/{personNummer}")
-                .then().body("status", equalTo(PersonSvar.Status.NOT_FOUND.name()));
+            .expect().statusCode(200)
+            .when().get("api/person/{personNummer}")
+            .then().body("status", equalTo(PersonSvar.Status.NOT_FOUND.name()));
     }
 
     @Test
     public void testGetExistingPerson() {
 
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId).pathParam("personNummer", PATIENT_PERSONNUMMER)
-                .expect().statusCode(200)
-                .when().get("api/person/{personNummer}").then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-person-response-schema.json"))
-                .body("person.personnummer", equalTo(formatPersonnummer(PATIENT_PERSONNUMMER)))
-                .body("status", equalTo(PersonSvar.Status.FOUND.name()));
+            .expect().statusCode(200)
+            .when().get("api/person/{personNummer}").then()
+            .body(matchesJsonSchemaInClasspath("jsonschema/webcert-person-response-schema.json"))
+            .body("person.personnummer", equalTo(formatPersonnummer(PATIENT_PERSONNUMMER)))
+            .body("status", equalTo(PersonSvar.Status.FOUND.name()));
     }
 
 }

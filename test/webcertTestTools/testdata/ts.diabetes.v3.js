@@ -25,56 +25,56 @@ var testdataHelper = require('common-testtools').testdataHelper;
 var testValues = require('./testvalues.js').ts;
 
 module.exports = {
-    get: function(intygsID) {
-        //a valid hypoglykemidatum must be < today and > 1 year ago.
-        var twoDaysAgo = testdataHelper.dateFormat(new Date(new Date().getTime() - 24 * 2 * 60 * 60 * 1000));
+  get: function(intygsID) {
+    //a valid hypoglykemidatum must be < today and > 1 year ago.
+    var twoDaysAgo = testdataHelper.dateFormat(new Date(new Date().getTime() - 24 * 2 * 60 * 60 * 1000));
 
-        if (!intygsID) {
-            intygsID = testdataHelper.generateTestGuid();
+    if (!intygsID) {
+      intygsID = testdataHelper.generateTestGuid();
 
-        }
-        return {
-            'id': intygsID,
-            'typ': 'Transportstyrelsens läkarintyg diabetes',
-            'korkortstyper': ['A1', 'B', 'D', 'DE', 'D1', 'Taxi', 'BE', 'A2', 'Traktor', 'D1E', 'C1', 'A'],
-            'identitetStyrktGenom': 'Svenskt körkort',
-            'allmant': {
-                'year': 2016,
-                'typ': 'Typ 1',
-                'behandling': {
-                    'typer': ['Insulin', 'Annan behandling', 'Tabletter'],
-                    'riskForHypoglykemi': 'Ja',
-                    'insulinYear': 2017,
-                    'annanBehandlingBeskrivning': 'Hypnos behandling'
-                }
-            },
-            'hypoglykemier': {
-                'a': 'Nej',
-                'b': 'Ja',
-                'c': 'Ja',
-                'd': 'Nej',
-                'e': 'Nej',
-                'f': 'Ja',
-                'g': 'Ja',
-                'h': 'Ja',
-                'i': 'Ja',
-                'j': 'Ja',
-                'hDatum': twoDaysAgo,
-                'iDatum': twoDaysAgo,
-                'jDatum': twoDaysAgo
-            },
-            'synfunktion': {
-                'a': 'Ja',
-                'b': 'Nej',
-                'styrkor': testValues.getRandomStyrka()
-            },
-            'kommentar': 'wrlTWNKA08ÖePpBB',
-            'specialist': '4YråJOäqkö2YxRRd',
-            'bedomning': {
-                'lamplig': 'Ja',
-                'borUndersokasBeskrivning': 'Tjillevippen',
-                'behorigheter': ['A1', 'B', 'D', 'DE', 'D1', 'Taxi', 'BE', 'A2', 'Traktor', 'D1E', 'C1', 'A']
-            }
-        };
     }
+    return {
+      'id': intygsID,
+      'typ': 'Transportstyrelsens läkarintyg diabetes',
+      'korkortstyper': ['A1', 'B', 'D', 'DE', 'D1', 'Taxi', 'BE', 'A2', 'Traktor', 'D1E', 'C1', 'A'],
+      'identitetStyrktGenom': 'Svenskt körkort',
+      'allmant': {
+        'year': 2016,
+        'typ': 'Typ 1',
+        'behandling': {
+          'typer': ['Insulin', 'Annan behandling', 'Tabletter'],
+          'riskForHypoglykemi': 'Ja',
+          'insulinYear': 2017,
+          'annanBehandlingBeskrivning': 'Hypnos behandling'
+        }
+      },
+      'hypoglykemier': {
+        'a': 'Nej',
+        'b': 'Ja',
+        'c': 'Ja',
+        'd': 'Nej',
+        'e': 'Nej',
+        'f': 'Ja',
+        'g': 'Ja',
+        'h': 'Ja',
+        'i': 'Ja',
+        'j': 'Ja',
+        'hDatum': twoDaysAgo,
+        'iDatum': twoDaysAgo,
+        'jDatum': twoDaysAgo
+      },
+      'synfunktion': {
+        'a': 'Ja',
+        'b': 'Nej',
+        'styrkor': testValues.getRandomStyrka()
+      },
+      'kommentar': 'wrlTWNKA08ÖePpBB',
+      'specialist': '4YråJOäqkö2YxRRd',
+      'bedomning': {
+        'lamplig': 'Ja',
+        'borUndersokasBeskrivning': 'Tjillevippen',
+        'behorigheter': ['A1', 'B', 'D', 'DE', 'D1', 'Taxi', 'BE', 'A2', 'Traktor', 'D1E', 'C1', 'A']
+      }
+    };
+  }
 };

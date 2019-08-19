@@ -51,8 +51,8 @@ public class WcAuthorityAsserter implements AuthorityAsserter {
         final WebCertUser user = webCertUserService.getUser();
 
         authoritiesValidator.given(user)
-                .privilege(authority)
-                .orThrow(new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM_SEKRETESSMARKERING, AUTH_MSG));
+            .privilege(authority)
+            .orThrow(new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM_SEKRETESSMARKERING, AUTH_MSG));
 
         final SekretessStatus sekretessStatus = patientDetailsResolver.getSekretessStatus(personnummer);
 
@@ -62,8 +62,8 @@ public class WcAuthorityAsserter implements AuthorityAsserter {
 
         if (sekretessStatus == SekretessStatus.TRUE) {
             authoritiesValidator.given(user)
-                    .privilege(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT)
-                    .orThrow(new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM_SEKRETESSMARKERING, AUTH_MSG));
+                .privilege(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT)
+                .orThrow(new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM_SEKRETESSMARKERING, AUTH_MSG));
         }
     }
 }

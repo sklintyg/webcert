@@ -18,6 +18,19 @@
  */
 package se.inera.intyg.webcert.web.service.intyg.decorator;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.when;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -38,22 +51,9 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.IntygId;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.TypAvRelation;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.isNull;
-import static org.mockito.Mockito.verifyZeroInteractions;
-import static org.mockito.Mockito.when;
-
 @RunWith(MockitoJUnitRunner.class)
 public class IntygRelationHelperImplTest {
+
     private static final String INTYG_ID = "intyg-123";
     private static final String OTHER_INTYG_ID = "intyg-456";
 
@@ -79,7 +79,7 @@ public class IntygRelationHelperImplTest {
     @Test
     public void testGetRelationsForIntygNothingInIT() {
         when(listRelationsForCertificateResponderInterface.listRelationsForCertificate(isNull(),
-                any(ListRelationsForCertificateType.class))).thenReturn(new ListRelationsForCertificateResponseType());
+            any(ListRelationsForCertificateType.class))).thenReturn(new ListRelationsForCertificateResponseType());
 
         Relations relationsForIntyg = testee.getRelationsForIntyg(INTYG_ID);
         assertNotNull(relationsForIntyg);
@@ -88,36 +88,37 @@ public class IntygRelationHelperImplTest {
     @Test
     public void testGetRelationsForIntygNothingInITWithMergeFromWebcert() {
         when(listRelationsForCertificateResponderInterface.listRelationsForCertificate(isNull(),
-                any(ListRelationsForCertificateType.class))).thenReturn(new ListRelationsForCertificateResponseType());
+            any(ListRelationsForCertificateType.class))).thenReturn(new ListRelationsForCertificateResponseType());
 
         Relations webcertRelations = new Relations();
         Relations.FrontendRelations fr = webcertRelations.getLatestChildRelations();
         fr.setReplacedByIntyg(new WebcertCertificateRelation(OTHER_INTYG_ID_2, RelationKod.ERSATT, LocalDateTime.now().minusDays(1),
-                UtkastStatus.SIGNED, false));
+            UtkastStatus.SIGNED, false));
         fr.setReplacedByUtkast(new WebcertCertificateRelation(OTHER_INTYG_ID_2, RelationKod.ERSATT, LocalDateTime.now().minusDays(1),
-                UtkastStatus.DRAFT_COMPLETE, false));
+            UtkastStatus.DRAFT_COMPLETE, false));
         fr.setComplementedByIntyg(new WebcertCertificateRelation(OTHER_INTYG_ID_2, RelationKod.KOMPLT, LocalDateTime.now().minusDays(2),
-                UtkastStatus.SIGNED, false));
+            UtkastStatus.SIGNED, false));
         fr.setComplementedByUtkast(new WebcertCertificateRelation(OTHER_INTYG_ID_2, RelationKod.KOMPLT, LocalDateTime.now().minusDays(2),
-                UtkastStatus.DRAFT_INCOMPLETE, false));
+            UtkastStatus.DRAFT_INCOMPLETE, false));
         webcertRelations.setParent(
-                new WebcertCertificateRelation(PARENT_INTYG_1, RelationKod.KOMPLT, LocalDateTime.now().minusDays(3), UtkastStatus.SIGNED, false));
+            new WebcertCertificateRelation(PARENT_INTYG_1, RelationKod.KOMPLT, LocalDateTime.now().minusDays(3), UtkastStatus.SIGNED,
+                false));
 
         when(certificateRelationService.getRelations(INTYG_ID)).thenReturn(webcertRelations);
 
         Relations relationsForIntyg = testee.getRelationsForIntyg(INTYG_ID);
         assertNotNull(relationsForIntyg);
         assertFrontendRelations(relationsForIntyg.getLatestChildRelations(),
-                webcertRelations.getLatestChildRelations().getComplementedByIntyg(),
-                webcertRelations.getLatestChildRelations().getComplementedByUtkast(),
-                webcertRelations.getLatestChildRelations().getReplacedByIntyg(),
-                webcertRelations.getLatestChildRelations().getReplacedByUtkast());
+            webcertRelations.getLatestChildRelations().getComplementedByIntyg(),
+            webcertRelations.getLatestChildRelations().getComplementedByUtkast(),
+            webcertRelations.getLatestChildRelations().getReplacedByIntyg(),
+            webcertRelations.getLatestChildRelations().getReplacedByUtkast());
     }
 
     @Test
     public void testGetRelationsForIntygOneInIT() {
         when(listRelationsForCertificateResponderInterface.listRelationsForCertificate(isNull(),
-                any(ListRelationsForCertificateType.class))).thenReturn(buildResponse());
+            any(ListRelationsForCertificateType.class))).thenReturn(buildResponse());
 
         Relations relationsForIntyg = testee.getRelationsForIntyg(INTYG_ID);
         assertNotNull(relationsForIntyg);
@@ -127,7 +128,7 @@ public class IntygRelationHelperImplTest {
     @Test
     public void testGetRelationsForIntygOneParentInIT() {
         when(listRelationsForCertificateResponderInterface.listRelationsForCertificate(isNull(),
-                any(ListRelationsForCertificateType.class))).thenReturn(buildResponseWithParent());
+            any(ListRelationsForCertificateType.class))).thenReturn(buildResponseWithParent());
 
         Relations relationsForIntyg = testee.getRelationsForIntyg(INTYG_ID);
         assertNotNull(relationsForIntyg);
@@ -138,37 +139,37 @@ public class IntygRelationHelperImplTest {
     @Test
     public void testGetRelationsForIntygOneInITAndTwoFromWebcert() {
         when(listRelationsForCertificateResponderInterface.listRelationsForCertificate(isNull(),
-                any(ListRelationsForCertificateType.class))).thenReturn(buildResponse());
+            any(ListRelationsForCertificateType.class))).thenReturn(buildResponse());
         when(certificateRelationService.getRelations(INTYG_ID)).thenReturn(buildWebcertRelations());
 
         Relations relationsForIntyg = testee.getRelationsForIntyg(INTYG_ID);
         assertNotNull(relationsForIntyg);
         assertFrontendRelationsIntygsIds(relationsForIntyg.getLatestChildRelations(), OTHER_INTYG_ID_3, null, OTHER_INTYG_ID,
-                OTHER_INTYG_ID_2);
+            OTHER_INTYG_ID_2);
     }
 
     @Test
     public void testGetRelationsForIntygOneInITAndThreeFromWebcertIncludingParent() {
         when(listRelationsForCertificateResponderInterface.listRelationsForCertificate(isNull(),
-                any(ListRelationsForCertificateType.class))).thenReturn(buildResponse());
+            any(ListRelationsForCertificateType.class))).thenReturn(buildResponse());
         when(certificateRelationService.getRelations(INTYG_ID)).thenReturn(buildWebcertRelationsWithParent());
 
         Relations relationsForIntyg = testee.getRelationsForIntyg(INTYG_ID);
         assertNotNull(relationsForIntyg);
         assertFrontendRelationsIntygsIds(relationsForIntyg.getLatestChildRelations(), OTHER_INTYG_ID_3, null, OTHER_INTYG_ID,
-                OTHER_INTYG_ID_2);
+            OTHER_INTYG_ID_2);
     }
 
     @Test
     public void testDecorate() {
         when(listRelationsForCertificateResponderInterface.listRelationsForCertificate(isNull(),
-                any(ListRelationsForCertificateType.class))).thenReturn(buildResponse());
+            any(ListRelationsForCertificateType.class))).thenReturn(buildResponse());
         when(certificateRelationService.getRelations(INTYG_ID)).thenReturn(buildWebcertRelationsWithParent());
         List<ListIntygEntry> listIntygEntries = buildList();
         testee.decorateIntygListWithRelations(listIntygEntries);
         ListIntygEntry lie = listIntygEntries.get(0);
         assertFrontendRelationsIntygsIds(lie.getRelations().getLatestChildRelations(), OTHER_INTYG_ID_3, null, OTHER_INTYG_ID,
-                OTHER_INTYG_ID_2);
+            OTHER_INTYG_ID_2);
         assertEquals(lie.getRelations().getParent().getIntygsId(), PARENT_INTYG_1);
     }
 
@@ -184,7 +185,7 @@ public class IntygRelationHelperImplTest {
         ListRelationsForCertificateResponseType response = buildResponse();
         response.getIntygRelation().get(0).getRelation().get(0).setFranIntygMakulerat(true);
         when(listRelationsForCertificateResponderInterface.listRelationsForCertificate(isNull(),
-                any(ListRelationsForCertificateType.class))).thenReturn(response);
+            any(ListRelationsForCertificateType.class))).thenReturn(response);
 
         Relations relationsForIntyg = testee.getRelationsForIntyg(INTYG_ID);
         assertNotNull(relationsForIntyg);
@@ -201,9 +202,9 @@ public class IntygRelationHelperImplTest {
         Relations relations = new Relations();
         Relations.FrontendRelations fr = relations.getLatestChildRelations();
         fr.setReplacedByUtkast(new WebcertCertificateRelation(OTHER_INTYG_ID_2, RelationKod.ERSATT, LocalDateTime.now().minusDays(1),
-                UtkastStatus.DRAFT_COMPLETE, false));
+            UtkastStatus.DRAFT_COMPLETE, false));
         fr.setComplementedByIntyg(new WebcertCertificateRelation(OTHER_INTYG_ID_3, RelationKod.KOMPLT, LocalDateTime.now().minusDays(2),
-                UtkastStatus.SIGNED, false));
+            UtkastStatus.SIGNED, false));
         return relations;
     }
 
@@ -211,11 +212,12 @@ public class IntygRelationHelperImplTest {
         Relations relations = new Relations();
         Relations.FrontendRelations fr = relations.getLatestChildRelations();
         fr.setReplacedByUtkast(new WebcertCertificateRelation(OTHER_INTYG_ID_2, RelationKod.ERSATT, LocalDateTime.now().minusDays(1),
-                UtkastStatus.DRAFT_COMPLETE, false));
+            UtkastStatus.DRAFT_COMPLETE, false));
         fr.setComplementedByIntyg(new WebcertCertificateRelation(OTHER_INTYG_ID_3, RelationKod.KOMPLT, LocalDateTime.now().minusDays(2),
-                UtkastStatus.SIGNED, false));
+            UtkastStatus.SIGNED, false));
         relations.setParent(
-                new WebcertCertificateRelation(PARENT_INTYG_1, RelationKod.KOMPLT, LocalDateTime.now().minusDays(3), UtkastStatus.SIGNED, false));
+            new WebcertCertificateRelation(PARENT_INTYG_1, RelationKod.KOMPLT, LocalDateTime.now().minusDays(3), UtkastStatus.SIGNED,
+                false));
         return relations;
     }
 
@@ -257,8 +259,8 @@ public class IntygRelationHelperImplTest {
     }
 
     private void assertFrontendRelations(Relations.FrontendRelations fr, WebcertCertificateRelation complementedByIntyg,
-            WebcertCertificateRelation complementedByUtkast, WebcertCertificateRelation replacedByIntyg,
-            WebcertCertificateRelation replacedByUtkast) {
+        WebcertCertificateRelation complementedByUtkast, WebcertCertificateRelation replacedByIntyg,
+        WebcertCertificateRelation replacedByUtkast) {
         assertEquals(complementedByIntyg, fr.getComplementedByIntyg());
         assertEquals(complementedByUtkast, fr.getComplementedByUtkast());
         assertEquals(replacedByIntyg, fr.getReplacedByIntyg());
@@ -266,7 +268,7 @@ public class IntygRelationHelperImplTest {
     }
 
     private void assertFrontendRelationsIntygsIds(Relations.FrontendRelations fr, String complementedByIntygIntygsId,
-            String complementedByUtkastIntygsId, String replacedByIntygIntygsId, String replacedByUtkastIntygsId) {
+        String complementedByUtkastIntygsId, String replacedByIntygIntygsId, String replacedByUtkastIntygsId) {
         if (fr.getComplementedByIntyg() != null) {
             assertEquals(complementedByIntygIntygsId, fr.getComplementedByIntyg().getIntygsId());
         } else {

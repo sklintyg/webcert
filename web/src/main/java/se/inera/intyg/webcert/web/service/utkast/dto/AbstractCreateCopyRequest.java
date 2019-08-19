@@ -24,6 +24,7 @@ import se.inera.intyg.common.support.model.common.internal.Patient;
 import se.inera.intyg.schemas.contract.Personnummer;
 
 public abstract class AbstractCreateCopyRequest {
+
     private String originalIntygId;
 
     private String originalIntygTyp;
@@ -45,7 +46,7 @@ public abstract class AbstractCreateCopyRequest {
     }
 
     public AbstractCreateCopyRequest(String originalIntygId, String intygTyp, Patient patient, HoSPersonal hosPerson,
-            String originalIntygTyp) {
+        String originalIntygTyp) {
         this.originalIntygId = originalIntygId;
         this.typ = intygTyp;
         this.patient = patient;

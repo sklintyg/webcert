@@ -18,23 +18,24 @@
  */
 package se.inera.intyg.webcert.web.web.controller.integrationtest.monitoring;
 
+import static com.jayway.restassured.RestAssured.given;
+
 import com.jayway.restassured.http.ContentType;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 import se.inera.intyg.webcert.web.web.controller.integrationtest.BaseRestIntegrationTest;
 
-import static com.jayway.restassured.RestAssured.given;
-
 /**
  * Created by marced on 02/06/16.
  */
 public class PrometheusMetricsIT extends BaseRestIntegrationTest {
+
     @Test
     public void testGetMetrics() {
 
         given().contentType(ContentType.JSON).
-                expect().statusCode(200)
-                .body(Matchers.containsString("OK"))
-                .when().get("metrics");
+            expect().statusCode(200)
+            .body(Matchers.containsString("OK"))
+            .when().get("metrics");
     }
 }

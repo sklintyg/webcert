@@ -19,7 +19,6 @@
 package se.inera.intyg.webcert.persistence.anvandarmetadata.repository;
 
 import java.util.Map;
-
 import se.inera.intyg.webcert.persistence.anvandarmetadata.model.AnvandarPreference;
 
 /**
@@ -30,33 +29,25 @@ public interface AnvandarPreferenceRepositoryCustom {
     /**
      * Returns all anvandar preferences for a given hsaId as key-value pairs.
      *
-     * @param hsaId
-     *      User identifier.
-     * @return
-     *      If no entries exists for the given hsaId, an empty (non-null) map will be returned.
+     * @param hsaId User identifier.
+     * @return If no entries exists for the given hsaId, an empty (non-null) map will be returned.
      */
     Map<String, String> getAnvandarPreference(String hsaId);
 
     /**
      * Returns true if there is an entry for the given hsaId/key.
      *
-     * @param hsaId
-     *      User identifier.
-     * @param key
-     *      Preference identifier.
-     * @return
+     * @param hsaId User identifier.
+     * @param key Preference identifier.
      */
     boolean exists(String hsaId, String key);
 
     /**
      * If no AnvandarPreference exists for the given hsaId and key, null will be returned.
      *
-     * @param hsaId
-     *      User identifier.
-     * @param key
-     *      Preference identifier.
-     * @return
-     *      If found, a AnvandarPreference instance, otherwise null.
+     * @param hsaId User identifier.
+     * @param key Preference identifier.
+     * @return If found, a AnvandarPreference instance, otherwise null.
      */
     AnvandarPreference findByHsaIdAndKey(String hsaId, String key);
 }

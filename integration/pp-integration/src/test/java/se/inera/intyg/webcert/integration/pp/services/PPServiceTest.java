@@ -25,13 +25,11 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import javax.xml.ws.WebServiceException;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
 import se.inera.intyg.webcert.integration.pp.stub.GetPrivatePractitionerResponderStub;
 import se.riv.infrastructure.directory.privatepractitioner.v1.HoSPersonType;
 
@@ -44,20 +42,23 @@ public class PPServiceTest {
 
     @Test
     public void checkExistingPerson() {
-        HoSPersonType hoSPersonType = service.getPrivatePractitioner("address", null, GetPrivatePractitionerResponderStub.PERSONNUMMER_EXISTING);
+        HoSPersonType hoSPersonType = service
+            .getPrivatePractitioner("address", null, GetPrivatePractitionerResponderStub.PERSONNUMMER_EXISTING);
         assertNotNull(hoSPersonType);
         assertEquals(hoSPersonType.getPersonId().getExtension(), GetPrivatePractitionerResponderStub.PERSONNUMMER_EXISTING);
     }
 
     @Test
     public void checkNonExistingPerson() {
-        HoSPersonType hoSPersonType = service.getPrivatePractitioner("address", null, GetPrivatePractitionerResponderStub.PERSONNUMMER_NONEXISTING);
+        HoSPersonType hoSPersonType = service
+            .getPrivatePractitioner("address", null, GetPrivatePractitionerResponderStub.PERSONNUMMER_NONEXISTING);
         assertNull(hoSPersonType);
     }
 
     @Test
     public void whenServiceResultCodeIsErrorThenExpectNullResponse() {
-        HoSPersonType hoSPersonType = service.getPrivatePractitioner("address", null, GetPrivatePractitionerResponderStub.PERSONNUMMER_ERROR_RESPONSE);
+        HoSPersonType hoSPersonType = service
+            .getPrivatePractitioner("address", null, GetPrivatePractitionerResponderStub.PERSONNUMMER_ERROR_RESPONSE);
         assertNull(hoSPersonType);
     }
 

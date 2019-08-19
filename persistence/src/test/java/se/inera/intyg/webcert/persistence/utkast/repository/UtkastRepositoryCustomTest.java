@@ -18,12 +18,16 @@
  */
 package se.inera.intyg.webcert.persistence.utkast.repository;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,20 +35,14 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
-
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.webcert.common.model.WebcertCertificateRelation;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "classpath:repository-context.xml" })
-@ActiveProfiles({ "dev", "unit-testing" })
+@ContextConfiguration(locations = {"classpath:repository-context.xml"})
+@ActiveProfiles({"dev", "unit-testing"})
 @Transactional
 public class UtkastRepositoryCustomTest {
 
@@ -72,23 +70,23 @@ public class UtkastRepositoryCustomTest {
 
         // Hierarchy 1, one parent, three children
         utkastRepository.save(UtkastTestUtil.buildUtkast(intygIdParent, UtkastTestUtil.ENHET_1_ID, UtkastStatus.SIGNED, null, null,
-                LocalDateTime.now().minusDays(10L)));
+            LocalDateTime.now().minusDays(10L)));
         utkastRepository.save(UtkastTestUtil.buildUtkast(intygIdChild1, UtkastTestUtil.ENHET_1_ID, UtkastStatus.SIGNED, intygIdParent,
-                RelationKod.ERSATT, LocalDateTime.now().minusDays(5L)));
+            RelationKod.ERSATT, LocalDateTime.now().minusDays(5L)));
         utkastRepository.save(UtkastTestUtil.buildUtkast(intygIdChild2, UtkastTestUtil.ENHET_1_ID, UtkastStatus.DRAFT_COMPLETE,
-                intygIdParent, RelationKod.KOMPLT, LocalDateTime.now().minusDays(2L)));
+            intygIdParent, RelationKod.KOMPLT, LocalDateTime.now().minusDays(2L)));
         utkastRepository.save(UtkastTestUtil.buildUtkast(intygIdChild3, UtkastTestUtil.ENHET_1_ID, UtkastStatus.DRAFT_INCOMPLETE,
-                intygIdParent, RelationKod.FRLANG, LocalDateTime.now().minusDays(1L)));
-        
+            intygIdParent, RelationKod.FRLANG, LocalDateTime.now().minusDays(1L)));
+
         // Hierarchy 2, one parent, three children as well
         utkastRepository.save(UtkastTestUtil.buildUtkast(intygId2Parent, UtkastTestUtil.ENHET_1_ID, UtkastStatus.SIGNED, null, null,
-                LocalDateTime.now().minusDays(10L)));
+            LocalDateTime.now().minusDays(10L)));
         utkastRepository.save(UtkastTestUtil.buildUtkast(intygId2Child1, UtkastTestUtil.ENHET_1_ID, UtkastStatus.SIGNED, intygId2Parent,
-                RelationKod.ERSATT, LocalDateTime.now().minusDays(5L)));
+            RelationKod.ERSATT, LocalDateTime.now().minusDays(5L)));
         utkastRepository.save(UtkastTestUtil.buildUtkast(intygId2Child2, UtkastTestUtil.ENHET_1_ID, UtkastStatus.DRAFT_COMPLETE,
-                intygId2Parent, RelationKod.KOMPLT, LocalDateTime.now().minusDays(2L)));
+            intygId2Parent, RelationKod.KOMPLT, LocalDateTime.now().minusDays(2L)));
         utkastRepository.save(UtkastTestUtil.buildUtkast(intygId2Child3, UtkastTestUtil.ENHET_1_ID, UtkastStatus.DRAFT_INCOMPLETE,
-                intygId2Parent, RelationKod.FRLANG, LocalDateTime.now().minusDays(1L)));
+            intygId2Parent, RelationKod.FRLANG, LocalDateTime.now().minusDays(1L)));
 
         // Check the parent
         List<WebcertCertificateRelation> parentRelations = utkastRepositoryCustom.findParentRelation(intygIdChild1);
@@ -121,10 +119,9 @@ public class UtkastRepositoryCustomTest {
 
         // Hierarchy 1, one parent, three children
         utkastRepository.save(UtkastTestUtil.buildUtkast(intygIdParent, UtkastTestUtil.ENHET_1_ID, UtkastStatus.SIGNED, null, null,
-                LocalDateTime.now().minusDays(10L)));
+            LocalDateTime.now().minusDays(10L)));
         utkastRepository.save(UtkastTestUtil.buildUtkast(intygIdChild1, UtkastTestUtil.ENHET_1_ID, UtkastStatus.SIGNED, intygIdParent,
-                RelationKod.ERSATT, LocalDateTime.now().minusDays(5L)));
-
+            RelationKod.ERSATT, LocalDateTime.now().minusDays(5L)));
 
         // Verify relation
         Utkast intygChild1 = utkastRepository.findOne(intygIdChild1);
@@ -154,34 +151,38 @@ public class UtkastRepositoryCustomTest {
         String intygId_draft_15_days = "intyg-15";
         String intygId_draft_20_days = "intyg-20";
 
-
         // Hierarchy 1, one parent, three children
         utkastRepository.save(UtkastTestUtil.buildUtkast(intygId_signed, UtkastTestUtil.ENHET_1_ID, UtkastStatus.SIGNED, null, null,
-                LocalDateTime.now().minusDays(20L)));
+            LocalDateTime.now().minusDays(20L)));
         utkastRepository.save(UtkastTestUtil.buildUtkast(intygId_locked, UtkastTestUtil.ENHET_1_ID, UtkastStatus.DRAFT_LOCKED, null,
+            null, LocalDateTime.now().minusDays(25L)));
+
+        utkastRepository
+            .save(UtkastTestUtil.buildUtkast(intygId_draft_complete, UtkastTestUtil.ENHET_1_ID, UtkastStatus.DRAFT_COMPLETE, null,
+                null, LocalDateTime.now().minusDays(25L)));
+        utkastRepository
+            .save(UtkastTestUtil.buildUtkast(intygId_draft_incomplete, UtkastTestUtil.ENHET_1_ID, UtkastStatus.DRAFT_INCOMPLETE, null,
                 null, LocalDateTime.now().minusDays(25L)));
 
-
-        utkastRepository.save(UtkastTestUtil.buildUtkast(intygId_draft_complete, UtkastTestUtil.ENHET_1_ID, UtkastStatus.DRAFT_COMPLETE, null,
-                null, LocalDateTime.now().minusDays(25L)));
-        utkastRepository.save(UtkastTestUtil.buildUtkast(intygId_draft_incomplete, UtkastTestUtil.ENHET_1_ID, UtkastStatus.DRAFT_INCOMPLETE, null,
-                null, LocalDateTime.now().minusDays(25L)));
-
-        utkastRepository.save(UtkastTestUtil.buildUtkast(intygId_draft_10_days, UtkastTestUtil.ENHET_1_ID, UtkastStatus.DRAFT_INCOMPLETE, null,
+        utkastRepository
+            .save(UtkastTestUtil.buildUtkast(intygId_draft_10_days, UtkastTestUtil.ENHET_1_ID, UtkastStatus.DRAFT_INCOMPLETE, null,
                 null, LocalDateTime.now().minusDays(10L)));
-        utkastRepository.save(UtkastTestUtil.buildUtkast(intygId_draft_14_days, UtkastTestUtil.ENHET_1_ID, UtkastStatus.DRAFT_INCOMPLETE, null,
+        utkastRepository
+            .save(UtkastTestUtil.buildUtkast(intygId_draft_14_days, UtkastTestUtil.ENHET_1_ID, UtkastStatus.DRAFT_INCOMPLETE, null,
                 null, LocalDateTime.now().minusDays(14L)));
-        utkastRepository.save(UtkastTestUtil.buildUtkast(intygId_draft_15_days, UtkastTestUtil.ENHET_1_ID, UtkastStatus.DRAFT_INCOMPLETE, null,
+        utkastRepository
+            .save(UtkastTestUtil.buildUtkast(intygId_draft_15_days, UtkastTestUtil.ENHET_1_ID, UtkastStatus.DRAFT_INCOMPLETE, null,
                 null, LocalDateTime.now().minusDays(15L)));
-        utkastRepository.save(UtkastTestUtil.buildUtkast(intygId_draft_20_days, UtkastTestUtil.ENHET_1_ID, UtkastStatus.DRAFT_INCOMPLETE, null,
+        utkastRepository
+            .save(UtkastTestUtil.buildUtkast(intygId_draft_20_days, UtkastTestUtil.ENHET_1_ID, UtkastStatus.DRAFT_INCOMPLETE, null,
                 null, LocalDateTime.now().minusDays(20L)));
-
 
         LocalDateTime skapad = LocalDate.now().minusDays(14L).atStartOfDay();
         List<Utkast> utkasts = utkastRepositoryCustom.findDraftsByNotLockedOrSignedAndSkapadBefore(skapad);
 
         List<String> ids = utkasts.stream().map(Utkast::getIntygsId).collect(Collectors.toList());
-        List<String> intygsIdn = Arrays.asList(intygId_draft_complete, intygId_draft_incomplete, intygId_draft_15_days, intygId_draft_20_days);
+        List<String> intygsIdn = Arrays
+            .asList(intygId_draft_complete, intygId_draft_incomplete, intygId_draft_15_days, intygId_draft_20_days);
 
         assertEquals(4, utkasts.size());
         assertTrue(ids.containsAll(intygsIdn));

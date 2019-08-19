@@ -27,13 +27,11 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import javax.xml.ws.WebServiceException;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.common.support.modules.support.api.exception.ExternalServiceCallException;
@@ -74,8 +72,8 @@ public class CertificateRevokeProcessorTest {
         ModuleApi moduleApi = mock(ModuleApi.class);
         when(registry.getModuleApi(eq(INTYGS_TYP), eq(INTYGS_TYP_VERSION))).thenReturn(moduleApi);
         doThrow(new WebServiceException())
-                .when(moduleApi)
-                .revokeCertificate(eq(BODY), eq(LOGICAL_ADDRESS1));
+            .when(moduleApi)
+            .revokeCertificate(eq(BODY), eq(LOGICAL_ADDRESS1));
 
         certificateRevokeProcessor.process(BODY, INTYGS_ID1, LOGICAL_ADDRESS1, INTYGS_TYP, INTYGS_TYP_VERSION);
     }
@@ -85,8 +83,8 @@ public class CertificateRevokeProcessorTest {
         ModuleApi moduleApi = mock(ModuleApi.class);
         when(registry.getModuleApi(eq(INTYGS_TYP), eq(INTYGS_TYP_VERSION))).thenReturn(moduleApi);
         doThrow(new ExternalServiceCallException("message", ExternalServiceCallException.ErrorIdEnum.APPLICATION_ERROR))
-                .when(moduleApi)
-                .revokeCertificate(eq(BODY), eq(LOGICAL_ADDRESS1));
+            .when(moduleApi)
+            .revokeCertificate(eq(BODY), eq(LOGICAL_ADDRESS1));
 
         certificateRevokeProcessor.process(BODY, INTYGS_ID1, LOGICAL_ADDRESS1, INTYGS_TYP, INTYGS_TYP_VERSION);
     }
@@ -96,8 +94,8 @@ public class CertificateRevokeProcessorTest {
         ModuleApi moduleApi = mock(ModuleApi.class);
         when(registry.getModuleApi(eq(INTYGS_TYP), eq(INTYGS_TYP_VERSION))).thenReturn(moduleApi);
         doThrow(new ExternalServiceCallException("message", ExternalServiceCallException.ErrorIdEnum.TECHNICAL_ERROR))
-                .when(moduleApi)
-                .revokeCertificate(eq(BODY), eq(LOGICAL_ADDRESS1));
+            .when(moduleApi)
+            .revokeCertificate(eq(BODY), eq(LOGICAL_ADDRESS1));
 
         certificateRevokeProcessor.process(BODY, INTYGS_ID1, LOGICAL_ADDRESS1, INTYGS_TYP, INTYGS_TYP_VERSION);
     }
@@ -107,8 +105,8 @@ public class CertificateRevokeProcessorTest {
         ModuleApi moduleApi = mock(ModuleApi.class);
         when(registry.getModuleApi(eq(INTYGS_TYP), eq(INTYGS_TYP_VERSION))).thenReturn(moduleApi);
         doThrow(new ExternalServiceCallException("message", ExternalServiceCallException.ErrorIdEnum.VALIDATION_ERROR))
-                .when(moduleApi)
-                .revokeCertificate(eq(BODY), eq(LOGICAL_ADDRESS1));
+            .when(moduleApi)
+            .revokeCertificate(eq(BODY), eq(LOGICAL_ADDRESS1));
 
         certificateRevokeProcessor.process(BODY, INTYGS_ID1, LOGICAL_ADDRESS1, INTYGS_TYP, INTYGS_TYP_VERSION);
 
@@ -119,8 +117,8 @@ public class CertificateRevokeProcessorTest {
         ModuleApi moduleApi = mock(ModuleApi.class);
         when(registry.getModuleApi(eq(INTYGS_TYP), eq(INTYGS_TYP_VERSION))).thenReturn(moduleApi);
         doThrow(new ExternalServiceCallException("message", ExternalServiceCallException.ErrorIdEnum.TRANSFORMATION_ERROR))
-                .when(moduleApi)
-                .revokeCertificate(eq(BODY), eq(LOGICAL_ADDRESS1));
+            .when(moduleApi)
+            .revokeCertificate(eq(BODY), eq(LOGICAL_ADDRESS1));
 
         certificateRevokeProcessor.process(BODY, INTYGS_ID1, LOGICAL_ADDRESS1, INTYGS_TYP, INTYGS_TYP_VERSION);
 

@@ -19,6 +19,12 @@
 package se.inera.intyg.webcert.web.service.diagnos;
 
 import com.google.common.base.Strings;
+import java.util.Arrays;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import javax.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,12 +32,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
-import javax.annotation.PostConstruct;
-import java.util.Arrays;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 import se.inera.intyg.common.support.common.enumerations.Diagnoskodverk;
 import se.inera.intyg.webcert.web.service.diagnos.dto.DiagnosResponse;
 import se.inera.intyg.webcert.web.service.diagnos.model.Diagnos;
@@ -129,15 +129,15 @@ public class DiagnosServiceImpl implements DiagnosService {
         List<Diagnos> matches;
 
         switch (codeSystem) {
-        case ICD_10_SE:
-            matches = icd10seDiagnosRepo.getDiagnosesByCode(code);
-            break;
-        case KSH_97_P:
-            matches = ksh97pDiagnosRepo.getDiagnosesByCode(code);
-            break;
-        default:
-            LOG.warn("Unknown code system '{}'", codeSystem);
-            return DiagnosResponse.invalidCodesystem();
+            case ICD_10_SE:
+                matches = icd10seDiagnosRepo.getDiagnosesByCode(code);
+                break;
+            case KSH_97_P:
+                matches = ksh97pDiagnosRepo.getDiagnosesByCode(code);
+                break;
+            default:
+                LOG.warn("Unknown code system '{}'", codeSystem);
+                return DiagnosResponse.invalidCodesystem();
         }
 
         if (matches.isEmpty()) {
@@ -167,15 +167,15 @@ public class DiagnosServiceImpl implements DiagnosService {
         List<Diagnos> matches;
 
         switch (codeSystem) {
-        case ICD_10_SE:
-            matches = icd10seDiagnosRepo.searchDiagnosisByCode(codeFragment, nbrOfResults + 1);
-            break;
-        case KSH_97_P:
-            matches = ksh97pDiagnosRepo.searchDiagnosisByCode(codeFragment, nbrOfResults + 1);
-            break;
-        default:
-            LOG.warn("Unknown code system '{}'", codeSystem);
-            return DiagnosResponse.invalidCodesystem();
+            case ICD_10_SE:
+                matches = icd10seDiagnosRepo.searchDiagnosisByCode(codeFragment, nbrOfResults + 1);
+                break;
+            case KSH_97_P:
+                matches = ksh97pDiagnosRepo.searchDiagnosisByCode(codeFragment, nbrOfResults + 1);
+                break;
+            default:
+                LOG.warn("Unknown code system '{}'", codeSystem);
+                return DiagnosResponse.invalidCodesystem();
         }
 
         if (matches.isEmpty()) {
@@ -215,17 +215,17 @@ public class DiagnosServiceImpl implements DiagnosService {
         }
 
         switch (codeSystem) {
-        case ICD_10_SE:
-            matches = icd10seDiagnosRepo.searchDiagnosisByDescription(searchString.trim(), nbrOfResults + 1);
-            matches = filterResultList(matches, Diagnoskodverk.ICD_10_SE);
-            break;
-        case KSH_97_P:
-            matches = ksh97pDiagnosRepo.searchDiagnosisByDescription(searchString.trim(), nbrOfResults + 1);
-            matches = filterResultList(matches, Diagnoskodverk.KSH_97_P);
-            break;
-        default:
-            LOG.warn("Unknown code system '{}'", codeSystem);
-            return DiagnosResponse.invalidCodesystem();
+            case ICD_10_SE:
+                matches = icd10seDiagnosRepo.searchDiagnosisByDescription(searchString.trim(), nbrOfResults + 1);
+                matches = filterResultList(matches, Diagnoskodverk.ICD_10_SE);
+                break;
+            case KSH_97_P:
+                matches = ksh97pDiagnosRepo.searchDiagnosisByDescription(searchString.trim(), nbrOfResults + 1);
+                matches = filterResultList(matches, Diagnoskodverk.KSH_97_P);
+                break;
+            default:
+                LOG.warn("Unknown code system '{}'", codeSystem);
+                return DiagnosResponse.invalidCodesystem();
         }
 
         if (matches.isEmpty()) {
@@ -270,15 +270,15 @@ public class DiagnosServiceImpl implements DiagnosService {
         String regExp;
 
         switch (codeSystem) {
-        case ICD_10_SE:
-            regExp = ICD10_CODE_REGEXP;
-            break;
-        case KSH_97_P:
-            regExp = KSH97P_CODE_REGEXP;
-            break;
-        default:
-            LOG.warn("Tried to validate diagnosis code using unknown code system '{}'", codeSystem);
-            return false;
+            case ICD_10_SE:
+                regExp = ICD10_CODE_REGEXP;
+                break;
+            case KSH_97_P:
+                regExp = KSH97P_CODE_REGEXP;
+                break;
+            default:
+                LOG.warn("Tried to validate diagnosis code using unknown code system '{}'", codeSystem);
+                return false;
         }
 
         Pattern p = Pattern.compile(regExp);
@@ -303,7 +303,7 @@ public class DiagnosServiceImpl implements DiagnosService {
 
     private List<Diagnos> filterResultList(final List<Diagnos> diagnosList, final Diagnoskodverk diagnoskodverk) {
         return diagnosList.stream()
-                .filter(diagnos -> validateDiagnosisCode(diagnos.getKod(), diagnoskodverk))
-                .collect(Collectors.toList());
+            .filter(diagnos -> validateDiagnosisCode(diagnos.getKod(), diagnoskodverk))
+            .collect(Collectors.toList());
     }
 }

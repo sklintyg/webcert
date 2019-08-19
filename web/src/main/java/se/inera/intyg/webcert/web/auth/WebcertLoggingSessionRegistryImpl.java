@@ -23,15 +23,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.session.SessionInformation;
 import org.springframework.security.core.session.SessionRegistryImpl;
-
-import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
+import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 /**
  * Implementation of SessionRegistry that performs audit logging of login and logout.
  *
  * @author npet
- *
  */
 public class WebcertLoggingSessionRegistryImpl extends SessionRegistryImpl {
 

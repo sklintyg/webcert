@@ -38,8 +38,7 @@ public class ActionLink {
     /**
      * New action link.
      *
-     * @param type
-     *            Type of action link.
+     * @param type Type of action link.
      */
     public ActionLink(ActionLinkType type) {
         this.type = type;
@@ -48,8 +47,7 @@ public class ActionLink {
     /**
      * Get the type of the link.
      *
-     * @return
-     *         Type of link. Can be null.
+     * @return Type of link. Can be null.
      */
     public ActionLinkType getType() {
         return type;
@@ -58,8 +56,7 @@ public class ActionLink {
     /**
      * Set the type of the link.
      *
-     * @param type
-     *            Type of link.
+     * @param type Type of link.
      */
     public void setType(ActionLinkType type) {
         this.type = type;

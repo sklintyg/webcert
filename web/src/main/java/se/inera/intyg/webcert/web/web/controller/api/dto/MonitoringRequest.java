@@ -55,27 +55,27 @@ public class MonitoringRequest {
             return false;
         }
         switch (event) {
-        case SCREEN_RESOLUTION:
-            return info != null && info.get(WIDTH) != null && info.get(HEIGHT) != null;
-        case DIAGNOSKODVERK_CHANGED:
-            return info != null && info.get(INTYG_ID) != null && info.get(INTYG_TYPE) != null;
-        case SIGNING_FAILED:
-            return info != null && info.get(ERROR_MESSAGE) != null && info.get(INTYG_ID) != null;
-        case SRS_LOADED:
-            return info != null && info.get(INTYG_ID) != null && info.get(USER_CLIENT_CONTEXT) != null
+            case SCREEN_RESOLUTION:
+                return info != null && info.get(WIDTH) != null && info.get(HEIGHT) != null;
+            case DIAGNOSKODVERK_CHANGED:
+                return info != null && info.get(INTYG_ID) != null && info.get(INTYG_TYPE) != null;
+            case SIGNING_FAILED:
+                return info != null && info.get(ERROR_MESSAGE) != null && info.get(INTYG_ID) != null;
+            case SRS_LOADED:
+                return info != null && info.get(INTYG_ID) != null && info.get(USER_CLIENT_CONTEXT) != null
                     && info.get(CARE_UNIT_ID) != null && info.get(CAREGIVER_ID) != null && info.get(MAIN_DIAGNOSIS_CODE) != null;
-        case SRS_PANEL_ACTIVATED:
-        case SRS_CONSENT_ANSWERED:
-        case SRS_QUESTION_ANSWERED:
-        case SRS_CALCULATE_CLICKED:
-        case SRS_HIDE_QUESTIONS_CLICKED:
-        case SRS_SHOW_QUESTIONS_CLICKED:
-        case SRS_MEASURES_SHOW_MORE_CLICKED:
-        case SRS_MEASURES_EXPAND_ONE_CLICKED:
-        case SRS_MEASURES_LINK_CLICKED:
-        case SRS_STATISTICS_ACTIVATED:
-        case SRS_STATISTICS_LINK_CLICKED:
-            return info != null && info.get(INTYG_ID) != null && info.get(USER_CLIENT_CONTEXT) != null
+            case SRS_PANEL_ACTIVATED:
+            case SRS_CONSENT_ANSWERED:
+            case SRS_QUESTION_ANSWERED:
+            case SRS_CALCULATE_CLICKED:
+            case SRS_HIDE_QUESTIONS_CLICKED:
+            case SRS_SHOW_QUESTIONS_CLICKED:
+            case SRS_MEASURES_SHOW_MORE_CLICKED:
+            case SRS_MEASURES_EXPAND_ONE_CLICKED:
+            case SRS_MEASURES_LINK_CLICKED:
+            case SRS_STATISTICS_ACTIVATED:
+            case SRS_STATISTICS_LINK_CLICKED:
+                return info != null && info.get(INTYG_ID) != null && info.get(USER_CLIENT_CONTEXT) != null
                     && info.get(CARE_UNIT_ID) != null && info.get(CAREGIVER_ID) != null;
         }
         return true;

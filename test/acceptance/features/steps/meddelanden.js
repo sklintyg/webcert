@@ -28,11 +28,10 @@
  */
 
 const {
-    Given, // jshint ignore:line
-    When, // jshint ignore:line
-    Then // jshint ignore:line
+  Given, // jshint ignore:line
+  When, // jshint ignore:line
+  Then // jshint ignore:line
 } = require('cucumber');
-
 
 var soap = require('soap');
 var soapMessageBodies = require('./soap');
@@ -44,48 +43,47 @@ var helpers = require('./helpers');
  *
  */
 
-
 /*
  *	Test steg
  *
  */
 
-
 Then(/^ska (intyget|frågan) ha en indikator som indikerar sekretessmarkering$/, function(typ) {
-    return expect(element(by.css('wc-sekretess-avliden-ikon')).isPresent()).to.eventually.become(true);
+  return expect(element(by.css('wc-sekretess-avliden-ikon')).isPresent()).to.eventually.become(true);
 });
 
 Given(/^Försäkringskassan skickar ett "([^"]*)" meddelande på intyget$/, function(amne, callback) {
-    var body = soapMessageBodies.SendMessageToCare(this.user, this.patient, this.intyg, 'Begär ' + helpers.getSubjectFromCode(amne), testdataHelper.generateTestGuid(), amne);
-    logger.silly(body);
-    var path = '/send-message-to-care/v2.0?wsdl';
-    var url = process.env.INTYGTJANST_URL + path;
-    url = url.replace('https', 'http');
+  var body = soapMessageBodies.SendMessageToCare(this.user, this.patient, this.intyg, 'Begär ' + helpers.getSubjectFromCode(amne),
+      testdataHelper.generateTestGuid(), amne);
+  logger.silly(body);
+  var path = '/send-message-to-care/v2.0?wsdl';
+  var url = process.env.INTYGTJANST_URL + path;
+  url = url.replace('https', 'http');
 
-    soap.createClient(url, function(err, client) {
-        logger.info(url);
+  soap.createClient(url, function(err, client) {
+    logger.info(url);
+    if (err) {
+      callback(err);
+    } else {
+      client.SendMessageToCare(body, function(err, result, resBody) {
+        logger.silly(resBody);
         if (err) {
-            callback(err);
+          callback(err);
         } else {
-            client.SendMessageToCare(body, function(err, result, resBody) {
-                logger.silly(resBody);
-                if (err) {
-                    callback(err);
-                } else {
-                    var resultcode = result.result.resultCode;
-                    logger.info('ResultCode: ' + resultcode);
-                    // logger.silly(result);
-                    if (resultcode !== 'OK') {
-                        logger.info(result);
-                        callback('ResultCode: ' + resultcode + '\n' + resBody);
-                    } else {
-                        logger.info('ResultCode: ' + resultcode);
-                        // logger.silly(JSON.stringify(result));
-                        callback();
-                    }
+          var resultcode = result.result.resultCode;
+          logger.info('ResultCode: ' + resultcode);
+          // logger.silly(result);
+          if (resultcode !== 'OK') {
+            logger.info(result);
+            callback('ResultCode: ' + resultcode + '\n' + resBody);
+          } else {
+            logger.info('ResultCode: ' + resultcode);
+            // logger.silly(JSON.stringify(result));
+            callback();
+          }
 
-                }
-            });
         }
-    });
+      });
+    }
+  });
 });

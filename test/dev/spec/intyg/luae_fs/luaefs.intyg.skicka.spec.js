@@ -30,45 +30,44 @@ var SokSkrivIntygPage = wcTestTools.pages.sokSkrivIntyg.pickPatient;
 
 describe('Validera sändning av luae_fs Intyg', function() {
 
-    var intygsId;
+  var intygsId;
 
-    beforeAll(function() {
-        browser.ignoreSynchronization = false;
-        specHelper.login();
+  beforeAll(function() {
+    browser.ignoreSynchronization = false;
+    specHelper.login();
+  });
+
+  describe('Visa signerat luae_fs intyg', function() {
+
+    it('Skapa intyget och gå till intygssidan', function() {
+      var intyg = intygFromJsonFactory.defaultLuaefs();
+      intygsId = intyg.id;
+      restUtil.createIntyg(intyg);
+      SokSkrivIntygPage.selectPersonnummer('19121212-1212');
+      SokSkrivValjIntyg.selectIntygById(intygsId);
+
+      expect(IntygPage.isAt()).toBeTruthy();
+      expect(IntygPage.skicka.statusSent.isPresent()).toBeFalsy();
     });
 
-    describe('Visa signerat luae_fs intyg', function() {
+    it('Skicka intyget', function() {
+      IntygPage.skicka.knapp.sendKeys(protractor.Key.SPACE);
+      browser.wait(IntygPage.skicka.dialogKnapp.isDisplayed())
+      .then(IntygPage.skicka.dialogKnapp.sendKeys(protractor.Key.SPACE));
 
-        it('Skapa intyget och gå till intygssidan', function() {
-            var intyg = intygFromJsonFactory.defaultLuaefs();
-            intygsId = intyg.id;
-            restUtil.createIntyg(intyg);
-            SokSkrivIntygPage.selectPersonnummer('19121212-1212');
-            SokSkrivValjIntyg.selectIntygById(intygsId);
+      element.all(by.id('#sendBtn')).then(function(items) {
+        expect(items.length).toBe(0);
+      });
 
-            expect(IntygPage.isAt()).toBeTruthy();
-            expect(IntygPage.skicka.statusSent.isPresent()).toBeFalsy();
-        });
-
-        it('Skicka intyget', function() {
-            IntygPage.skicka.knapp.sendKeys(protractor.Key.SPACE);
-            browser.wait(IntygPage.skicka.dialogKnapp.isDisplayed())
-                .then(IntygPage.skicka.dialogKnapp.sendKeys(protractor.Key.SPACE));
-
-
-            element.all(by.id('#sendBtn')).then(function(items) {
-                expect(items.length).toBe(0);
-            });
-
-            expect(IntygPage.skicka.statusSent.isDisplayed()).toBeTruthy();
-        });
-
+      expect(IntygPage.skicka.statusSent.isDisplayed()).toBeTruthy();
     });
 
-    afterAll(function() {
-        testdataHelper.deleteIntyg(intygsId);
-        specHelper.logout();
-        browser.ignoreSynchronization = false;
-    });
+  });
+
+  afterAll(function() {
+    testdataHelper.deleteIntyg(intygsId);
+    specHelper.logout();
+    browser.ignoreSynchronization = false;
+  });
 
 });

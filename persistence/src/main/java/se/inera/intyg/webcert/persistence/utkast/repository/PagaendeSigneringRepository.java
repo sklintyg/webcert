@@ -25,4 +25,5 @@ import se.inera.intyg.webcert.persistence.utkast.model.PagaendeSignering;
  * Provides a CRUD interface for the {@link PagaendeSignering} entity.
  */
 public interface PagaendeSigneringRepository extends JpaRepository<PagaendeSignering, Long> {
+
 }

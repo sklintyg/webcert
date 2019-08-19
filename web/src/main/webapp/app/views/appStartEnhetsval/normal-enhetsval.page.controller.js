@@ -18,58 +18,59 @@
  */
 
 angular.module('webcert').controller('normal.EnhetsvalPageCtrl',
-        [ '$scope', '$window', '$state', '$stateParams', '$uibModal', 'common.UserModel', 'common.User',
-                function($scope, $window, $state, $stateParams, $uibModal, UserModel, UserService) {
-                    'use strict';
+    ['$scope', '$window', '$state', '$stateParams', '$uibModal', 'common.UserModel', 'common.User',
+      function($scope, $window, $state, $stateParams, $uibModal, UserModel, UserService) {
+        'use strict';
 
-                    var dialogInstance;
+        var dialogInstance;
 
-                    $scope.$on('$destroy', function() {
-                        if (dialogInstance) {
-                            dialogInstance.close();
-                            dialogInstance = undefined;
-                        }
-                    });
-                    function onUnitSelected(enhet) {
-                        //persist unit selection - then close dialog and transition to original destination
-                        UserService.setValdVardenhet(enhet, function() {
-                            dialogInstance.close();
-                            dialogInstance = undefined;
-                            $state.go($stateParams.destinationState.name, {}, {
-                                location: 'replace'
-                            });
-                        }, function() {
-                            dialogInstance.close();
-                            dialogInstance = undefined;
-                            //Not much we can do here - redirect to error page
-                            $window.location.href = '/error.jsp?reason=login.failed';
-                        });
+        $scope.$on('$destroy', function() {
+          if (dialogInstance) {
+            dialogInstance.close();
+            dialogInstance = undefined;
+          }
+        });
 
-                    }
+        function onUnitSelected(enhet) {
+          //persist unit selection - then close dialog and transition to original destination
+          UserService.setValdVardenhet(enhet, function() {
+            dialogInstance.close();
+            dialogInstance = undefined;
+            $state.go($stateParams.destinationState.name, {}, {
+              location: 'replace'
+            });
+          }, function() {
+            dialogInstance.close();
+            dialogInstance = undefined;
+            //Not much we can do here - redirect to error page
+            $window.location.href = '/error.jsp?reason=login.failed';
+          });
 
-                    $scope.onUnitSelected = onUnitSelected;
+        }
 
-                    function showDialog() {
-                        dialogInstance = $uibModal.open({
-                            templateUrl: '/app/views/appStartEnhetsval/enhetsval.dialog.html',
-                            backdrop: 'static',
-                            keyboard: false,
-                            windowClass: 'wc-integration-enhet-selector',
-                            controller: function($scope, $uibModalInstance, userModel, onUnitSelected) {
-                                $scope.user = userModel;
-                                $scope.onUnitSelected = onUnitSelected;
-                            },
-                            resolve: {
-                                userModel: function() {
-                                    return UserModel.user;
-                                },
-                                onUnitSelected: function() {
-                                    return onUnitSelected;
-                                }
-                            }
-                        });
-                    }
+        $scope.onUnitSelected = onUnitSelected;
 
-                    showDialog();
+        function showDialog() {
+          dialogInstance = $uibModal.open({
+            templateUrl: '/app/views/appStartEnhetsval/enhetsval.dialog.html',
+            backdrop: 'static',
+            keyboard: false,
+            windowClass: 'wc-integration-enhet-selector',
+            controller: function($scope, $uibModalInstance, userModel, onUnitSelected) {
+              $scope.user = userModel;
+              $scope.onUnitSelected = onUnitSelected;
+            },
+            resolve: {
+              userModel: function() {
+                return UserModel.user;
+              },
+              onUnitSelected: function() {
+                return onUnitSelected;
+              }
+            }
+          });
+        }
 
-                } ]);
+        showDialog();
+
+      }]);

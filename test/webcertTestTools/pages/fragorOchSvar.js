@@ -24,15 +24,15 @@
 var WebcertBasePage = require('./webcert.base.page.js');
 
 var FragorOchSvarPage = WebcertBasePage._extend({
-    init: function init() {
-        init._super.call(this);
-        this.qaTable = element(by.css('table.wc-table-striped'));
-        this.atgardSelect = element(by.id('qp-showStatus'));
-        this.searchBtn = element(by.id('filter-arende-btn'));
-    },
-    get: function() {
-        return browser.get('/#/enhet-arenden');
-    }
+  init: function init() {
+    init._super.call(this);
+    this.qaTable = element(by.css('table.wc-table-striped'));
+    this.atgardSelect = element(by.id('qp-showStatus'));
+    this.searchBtn = element(by.id('filter-arende-btn'));
+  },
+  get: function() {
+    return browser.get('/#/enhet-arenden');
+  }
 });
 
 module.exports = new FragorOchSvarPage();

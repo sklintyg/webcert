@@ -20,6 +20,10 @@ package se.inera.intyg.webcert.web.service.diagnos.repo;
 
 import com.google.common.base.CharMatcher;
 import com.google.common.base.Strings;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.List;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
@@ -39,16 +43,10 @@ import org.springframework.util.Assert;
 import org.springframework.util.ResourceUtils;
 import se.inera.intyg.webcert.web.service.diagnos.model.Diagnos;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.List;
-
 /**
  * Factory responsible for creating the DiagnosRepository out of supplied code files.
  *
  * @author npet
- *
  */
 @Component
 public class DiagnosRepositoryFactory implements InitializingBean {
@@ -110,7 +108,7 @@ public class DiagnosRepositoryFactory implements InitializingBean {
 
             IndexWriterConfig idxWriterConfig = new IndexWriterConfig(new StandardAnalyzer());
             try (IndexWriter idxWriter = new IndexWriter(diagnosRepository.getLuceneIndex(), idxWriterConfig);
-                    BufferedReader reader = new BufferedReader(new InputStreamReader(resource.getInputStream(), fileEncoding));) {
+                BufferedReader reader = new BufferedReader(new InputStreamReader(resource.getInputStream(), fileEncoding));) {
                 while (reader.ready()) {
                     String line = reader.readLine();
                     if (line != null) {

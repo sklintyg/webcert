@@ -20,21 +20,15 @@ package se.inera.intyg.webcert.web.integration.integrationtest;
 
 import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.matcher.RestAssuredMatchers.matchesXsd;
-import static org.hamcrest.core.Is.is;
 
+import com.google.common.collect.ImmutableMap;
 import java.io.IOException;
 import java.io.InputStream;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.STGroupFile;
-
-import com.google.common.collect.ImmutableMap;
-
-import se.riv.clinicalprocess.healthcond.certificate.v3.ErrorIdType;
-import se.riv.clinicalprocess.healthcond.certificate.v3.ResultCodeType;
 
 public class ListCertificatesForCareWithQAIT extends BaseWSIntegrationTest {
 
@@ -52,13 +46,13 @@ public class ListCertificatesForCareWithQAIT extends BaseWSIntegrationTest {
         requestTemplate = templateGroup.getInstanceOf("request");
 
         xsdInputstream = ClasspathSchemaResourceResolver
-                .load("interactions/ListCertificatesForCareWithQAInteraction/ListCertificatesForCareWithQAResponder_3.2.xsd");
+            .load("interactions/ListCertificatesForCareWithQAInteraction/ListCertificatesForCareWithQAResponder_3.2.xsd");
 
         // We want to validate against the body of the response, and not the entire soap response. This filter will
         // extract that for us.
         responseBodyExtractorFilter = new BodyExtractorFilter(
-                ImmutableMap.of("lc", "urn:riv:clinicalprocess:healthcond:certificate:ListCertificatesForCareWithQAResponder:3"),
-                "soap:Envelope/soap:Body/lc:ListCertificatesForCareWithQAResponse");
+            ImmutableMap.of("lc", "urn:riv:clinicalprocess:healthcond:certificate:ListCertificatesForCareWithQAResponder:3"),
+            "soap:Envelope/soap:Body/lc:ListCertificatesForCareWithQAResponse");
     }
 
     @Test
@@ -70,10 +64,10 @@ public class ListCertificatesForCareWithQAIT extends BaseWSIntegrationTest {
         requestTemplate.add("data", new ListCertificatesForCareWithQARequestParameters(personnummer, enhetsId));
 
         given().filter(responseBodyExtractorFilter).body(requestTemplate.render())
-                .when()
-                .post(LIST_CERTIFICATES_FOR_CARE_WITH_QA_URL)
-                .then()
-                .body(matchesXsd(xsdInputstream).with(new ClasspathSchemaResourceResolver()));
+            .when()
+            .post(LIST_CERTIFICATES_FOR_CARE_WITH_QA_URL)
+            .then()
+            .body(matchesXsd(xsdInputstream).with(new ClasspathSchemaResourceResolver()));
     }
 
     @Test
@@ -83,21 +77,22 @@ public class ListCertificatesForCareWithQAIT extends BaseWSIntegrationTest {
         requestTemplate.add("data", new ListCertificatesForCareWithQARequestParameters(personnummer, enhetsid));
 
         given().body(requestTemplate.render()).when()
-                .post(LIST_CERTIFICATES_FOR_CARE_WITH_QA_URL)
-                .then().statusCode(500);
+            .post(LIST_CERTIFICATES_FOR_CARE_WITH_QA_URL)
+            .then().statusCode(500);
     }
 
     @Test
     public void testMessageWithInvalidXMLFails() {
         ST brokenTemplate = templateGroup.getInstanceOf("brokenrequest");
         given().body(brokenTemplate.render())
-                .when()
-                .post(LIST_CERTIFICATES_FOR_CARE_WITH_QA_URL)
-                .then()
-                .statusCode(500);
+            .when()
+            .post(LIST_CERTIFICATES_FOR_CARE_WITH_QA_URL)
+            .then()
+            .statusCode(500);
     }
 
     private static class ListCertificatesForCareWithQARequestParameters {
+
         public final String personnummer;
         public final String enhetsId;
 

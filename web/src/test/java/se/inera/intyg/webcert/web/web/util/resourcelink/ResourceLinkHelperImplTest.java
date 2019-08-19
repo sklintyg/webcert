@@ -29,13 +29,11 @@ import static org.mockito.Mockito.mock;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.GrundData;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
@@ -100,7 +98,7 @@ public class ResourceLinkHelperImplTest {
         final Personnummer personnummer = Personnummer.createPersonnummer("191212121212").get();
 
         doReturn(AccessResult.create(AccessResultCode.AUTHORIZATION_VALIDATION, "No access")).when(draftAccessService)
-                .allowToCreateDraft(intygsTyp, personnummer);
+            .allowToCreateDraft(intygsTyp, personnummer);
 
         final ActionLink expectedActionLink = new ActionLink();
 
@@ -150,11 +148,11 @@ public class ResourceLinkHelperImplTest {
         final Vardenhet vardenhet = mock(Vardenhet.class);
 
         doReturn(AccessResult.create(AccessResultCode.AUTHORIZATION_VALIDATION, "No access")).when(lockedDraftAccessService)
-                .allowedToInvalidateLockedUtkast(intygsTyp, vardenhet, patient);
+            .allowedToInvalidateLockedUtkast(intygsTyp, vardenhet, patient);
         doReturn(AccessResult.create(AccessResultCode.AUTHORIZATION_VALIDATION, "No access")).when(lockedDraftAccessService)
-                .allowedToCopyLockedUtkast(intygsTyp, vardenhet, patient);
+            .allowedToCopyLockedUtkast(intygsTyp, vardenhet, patient);
         doReturn(AccessResult.create(AccessResultCode.AUTHORIZATION_VALIDATION, "No access")).when(lockedDraftAccessService)
-                .allowToPrint(intygsTyp, vardenhet, patient);
+            .allowToPrint(intygsTyp, vardenhet, patient);
 
         final List<ActionLink> expectedLinks = new ArrayList<>();
 
@@ -189,7 +187,7 @@ public class ResourceLinkHelperImplTest {
         doReturn(AccessResult.noProblem()).when(certificateAccessService).allowToReadQuestions(intygsTyp, vardenhet, patient);
         doReturn(AccessResult.noProblem()).when(certificateAccessService).allowToAnswerAdminQuestion(intygsTyp, vardenhet, patient);
         doReturn(AccessResult.noProblem()).when(certificateAccessService).allowToAnswerComplementQuestion(intygsTyp, vardenhet, patient,
-                true);
+            true);
         doReturn(AccessResult.noProblem()).when(certificateAccessService).allowToForwardQuestions(intygsTyp, vardenhet, patient);
 
         final List<ActionLink> expectedLinks = new ArrayList<>();
@@ -218,22 +216,22 @@ public class ResourceLinkHelperImplTest {
         final Vardenhet vardenhet = mock(Vardenhet.class);
 
         doReturn(AccessResult.create(AccessResultCode.AUTHORIZATION_VALIDATION, "No access")).when(draftAccessService)
-                .allowToEditDraft(intygsTyp, vardenhet, patient);
+            .allowToEditDraft(intygsTyp, vardenhet, patient);
         doReturn(AccessResult.create(AccessResultCode.AUTHORIZATION_VALIDATION, "No access")).when(draftAccessService)
-                .allowToDeleteDraft(intygsTyp, vardenhet, patient);
+            .allowToDeleteDraft(intygsTyp, vardenhet, patient);
         doReturn(AccessResult.create(AccessResultCode.AUTHORIZATION_VALIDATION, "No access")).when(draftAccessService)
-                .allowToPrintDraft(intygsTyp, vardenhet, patient);
+            .allowToPrintDraft(intygsTyp, vardenhet, patient);
         doReturn(AccessResult.create(AccessResultCode.AUTHORIZATION_VALIDATION, "No access")).when(certificateAccessService)
-                .allowToCreateQuestion(intygsTyp, vardenhet, patient);
+            .allowToCreateQuestion(intygsTyp, vardenhet, patient);
         doReturn(AccessResult.create(AccessResultCode.AUTHORIZATION_VALIDATION, "No access")).when(certificateAccessService)
-                .allowToReadQuestions(intygsTyp, vardenhet, patient);
+            .allowToReadQuestions(intygsTyp, vardenhet, patient);
         doReturn(AccessResult.create(AccessResultCode.AUTHORIZATION_VALIDATION, "No access")).when(certificateAccessService)
-                .allowToAnswerAdminQuestion(intygsTyp, vardenhet, patient);
+            .allowToAnswerAdminQuestion(intygsTyp, vardenhet, patient);
         doReturn(AccessResult.create(AccessResultCode.AUTHORIZATION_VALIDATION, "No access")).when(certificateAccessService)
-                .allowToAnswerComplementQuestion(intygsTyp, vardenhet, patient,
-                        true);
+            .allowToAnswerComplementQuestion(intygsTyp, vardenhet, patient,
+                true);
         doReturn(AccessResult.create(AccessResultCode.AUTHORIZATION_VALIDATION, "No access")).when(certificateAccessService)
-                .allowToForwardQuestions(intygsTyp, vardenhet, patient);
+            .allowToForwardQuestions(intygsTyp, vardenhet, patient);
 
         final List<ActionLink> expectedLinks = new ArrayList<>();
 
@@ -262,7 +260,7 @@ public class ResourceLinkHelperImplTest {
         doReturn(AccessResult.noProblem()).when(certificateAccessService).allowToReadQuestions(intygsTyp, vardenhet, patient);
         doReturn(AccessResult.noProblem()).when(certificateAccessService).allowToAnswerAdminQuestion(intygsTyp, vardenhet, patient);
         doReturn(AccessResult.noProblem()).when(certificateAccessService).allowToAnswerComplementQuestion(intygsTyp, vardenhet, patient,
-                true);
+            true);
         doReturn(AccessResult.noProblem()).when(certificateAccessService).allowToForwardQuestions(intygsTyp, vardenhet, patient);
 
         final List<ActionLink> expectedLinks = new ArrayList<>();
@@ -289,13 +287,13 @@ public class ResourceLinkHelperImplTest {
         doReturn(patient).when(patientMock).getPersonId();
 
         final IntygContentHolder intygContentHolder = IntygContentHolder.builder()
-                .setRevoked(false)
-                .setDeceased(false)
-                .setSekretessmarkering(false)
-                .setPatientNameChangedInPU(false)
-                .setPatientAddressChangedInPU(false)
-                .setUtlatande(utlatande)
-                .build();
+            .setRevoked(false)
+            .setDeceased(false)
+            .setSekretessmarkering(false)
+            .setPatientNameChangedInPU(false)
+            .setPatientAddressChangedInPU(false)
+            .setUtlatande(utlatande)
+            .build();
 
         resourceLinkHelper.decorateIntygWithValidActionLinks(intygContentHolder);
 
@@ -311,27 +309,27 @@ public class ResourceLinkHelperImplTest {
         final Vardenhet vardenhet = mock(Vardenhet.class);
 
         doReturn(AccessResult.create(AccessResultCode.AUTHORIZATION_VALIDATION, "No access")).when(certificateAccessService)
-                .allowToRenew(intygsTyp, vardenhet, patient);
+            .allowToRenew(intygsTyp, vardenhet, patient);
         doReturn(AccessResult.create(AccessResultCode.AUTHORIZATION_VALIDATION, "No access")).when(certificateAccessService)
-                .allowToInvalidate(intygsTyp, vardenhet, patient);
+            .allowToInvalidate(intygsTyp, vardenhet, patient);
         doReturn(AccessResult.create(AccessResultCode.AUTHORIZATION_VALIDATION, "No access")).when(certificateAccessService)
-                .allowToPrint(intygsTyp, vardenhet, patient, false);
+            .allowToPrint(intygsTyp, vardenhet, patient, false);
         doReturn(AccessResult.create(AccessResultCode.AUTHORIZATION_VALIDATION, "No access")).when(certificateAccessService)
-                .allowToReplace(intygsTyp, vardenhet, patient);
+            .allowToReplace(intygsTyp, vardenhet, patient);
         doReturn(AccessResult.create(AccessResultCode.AUTHORIZATION_VALIDATION, "No access")).when(certificateAccessService)
-                .allowToSend(intygsTyp, vardenhet, patient);
+            .allowToSend(intygsTyp, vardenhet, patient);
 
         doReturn(AccessResult.create(AccessResultCode.AUTHORIZATION_VALIDATION, "No access")).when(certificateAccessService)
-                .allowToCreateQuestion(intygsTyp, vardenhet, patient);
+            .allowToCreateQuestion(intygsTyp, vardenhet, patient);
         doReturn(AccessResult.create(AccessResultCode.AUTHORIZATION_VALIDATION, "No access")).when(certificateAccessService)
-                .allowToReadQuestions(intygsTyp, vardenhet, patient);
+            .allowToReadQuestions(intygsTyp, vardenhet, patient);
         doReturn(AccessResult.create(AccessResultCode.AUTHORIZATION_VALIDATION, "No access")).when(certificateAccessService)
-                .allowToAnswerAdminQuestion(intygsTyp, vardenhet, patient);
+            .allowToAnswerAdminQuestion(intygsTyp, vardenhet, patient);
         doReturn(AccessResult.create(AccessResultCode.AUTHORIZATION_VALIDATION, "No access")).when(certificateAccessService)
-                .allowToAnswerComplementQuestion(intygsTyp, vardenhet, patient,
-                        true);
+            .allowToAnswerComplementQuestion(intygsTyp, vardenhet, patient,
+                true);
         doReturn(AccessResult.create(AccessResultCode.AUTHORIZATION_VALIDATION, "No access")).when(certificateAccessService)
-                .allowToForwardQuestions(intygsTyp, vardenhet, patient);
+            .allowToForwardQuestions(intygsTyp, vardenhet, patient);
 
         final List<ActionLink> expectedLinks = new ArrayList<>();
 
@@ -347,13 +345,13 @@ public class ResourceLinkHelperImplTest {
         doReturn(patient).when(patientMock).getPersonId();
 
         final IntygContentHolder intygContentHolder = IntygContentHolder.builder()
-                .setRevoked(false)
-                .setDeceased(false)
-                .setSekretessmarkering(false)
-                .setPatientNameChangedInPU(false)
-                .setPatientAddressChangedInPU(false)
-                .setUtlatande(utlatande)
-                .build();
+            .setRevoked(false)
+            .setDeceased(false)
+            .setSekretessmarkering(false)
+            .setPatientNameChangedInPU(false)
+            .setPatientAddressChangedInPU(false)
+            .setUtlatande(utlatande)
+            .build();
 
         resourceLinkHelper.decorateIntygWithValidActionLinks(intygContentHolder);
 
@@ -369,9 +367,9 @@ public class ResourceLinkHelperImplTest {
         final Vardenhet vardenhet = mock(Vardenhet.class);
 
         doReturn(AccessResult.noProblem()).when(certificateAccessService).allowToRead(anyString(), any(Vardenhet.class),
-                any(Personnummer.class));
+            any(Personnummer.class));
         doReturn(AccessResult.noProblem()).when(certificateAccessService).allowToRenew(anyString(), any(Vardenhet.class),
-                any(Personnummer.class));
+            any(Personnummer.class));
 
         final List<ActionLink> expectedLinks = new ArrayList<>();
         expectedLinks.add(new ActionLink(ActionLinkType.LASA_INTYG));
@@ -398,11 +396,11 @@ public class ResourceLinkHelperImplTest {
         final Vardenhet vardenhet = mock(Vardenhet.class);
 
         doReturn(AccessResult.create(AccessResultCode.AUTHORIZATION_VALIDATION, "No access")).when(certificateAccessService).allowToRead(
-                anyString(), any(Vardenhet.class),
-                any(Personnummer.class));
+            anyString(), any(Vardenhet.class),
+            any(Personnummer.class));
         doReturn(AccessResult.create(AccessResultCode.AUTHORIZATION_VALIDATION, "No access")).when(certificateAccessService).allowToRenew(
-                anyString(), any(Vardenhet.class),
-                any(Personnummer.class));
+            anyString(), any(Vardenhet.class),
+            any(Personnummer.class));
 
         final List<ActionLink> expectedLinks = new ArrayList<>();
 
@@ -427,7 +425,7 @@ public class ResourceLinkHelperImplTest {
         final Vardenhet vardenhet = mock(Vardenhet.class);
 
         doReturn(AccessResult.noProblem()).when(certificateAccessService).allowToForwardQuestions(anyString(), any(Vardenhet.class),
-                any(Personnummer.class));
+            any(Personnummer.class));
 
         final List<ActionLink> expectedLinks = new ArrayList<>();
         expectedLinks.add(new ActionLink(ActionLinkType.VIDAREBEFODRA_FRAGA));
@@ -452,8 +450,8 @@ public class ResourceLinkHelperImplTest {
         final Vardenhet vardenhet = mock(Vardenhet.class);
 
         doReturn(AccessResult.create(AccessResultCode.AUTHORIZATION_VALIDATION, "No access")).when(certificateAccessService)
-                .allowToForwardQuestions(anyString(), any(Vardenhet.class),
-                        any(Personnummer.class));
+            .allowToForwardQuestions(anyString(), any(Vardenhet.class),
+                any(Personnummer.class));
 
         final List<ActionLink> expectedLinks = new ArrayList<>();
 

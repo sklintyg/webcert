@@ -23,28 +23,31 @@ import static org.junit.Assert.assertNotNull;
 
 import java.time.LocalDateTime;
 import java.util.List;
-
-import org.junit.*;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
-
-import se.inera.intyg.webcert.persistence.fragasvar.model.*;
+import se.inera.intyg.webcert.persistence.fragasvar.model.Amne;
+import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
+import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvarStatus;
 import se.inera.intyg.webcert.persistence.fragasvar.repository.util.FragaSvarTestUtil;
-import se.inera.intyg.webcert.persistence.model.*;
+import se.inera.intyg.webcert.persistence.model.Filter;
+import se.inera.intyg.webcert.persistence.model.Status;
+import se.inera.intyg.webcert.persistence.model.VantarPa;
 
 /**
  * Test for filtering FragaSvar.
  *
  * @author nikpet
- *
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "classpath:repository-context.xml" })
-@ActiveProfiles({ "dev", "unit-testing" })
+@ContextConfiguration(locations = {"classpath:repository-context.xml"})
+@ActiveProfiles({"dev", "unit-testing"})
 @Transactional
 public class FragaSvarFilteredRepositoryCustomTest {
 
@@ -285,45 +288,60 @@ public class FragaSvarFilteredRepositoryCustomTest {
     @Before
     public void setupTestData() {
 
-        fragasvarRepository.save(FragaSvarTestUtil.buildFraga(1L, FragaSvarTestUtil.ENHET_1_ID, Status.CLOSED, Amne.OVRIGT, WEBCERT, HSA_ID_1,
+        fragasvarRepository
+            .save(FragaSvarTestUtil.buildFraga(1L, FragaSvarTestUtil.ENHET_1_ID, Status.CLOSED, Amne.OVRIGT, WEBCERT, HSA_ID_1,
                 "2013-10-01T15:01:00", false));
-        fragasvarRepository.save(FragaSvarTestUtil.buildFraga(2L, FragaSvarTestUtil.ENHET_1_ID, Status.PENDING_INTERNAL_ACTION, Amne.OVRIGT, FK,
+        fragasvarRepository
+            .save(FragaSvarTestUtil.buildFraga(2L, FragaSvarTestUtil.ENHET_1_ID, Status.PENDING_INTERNAL_ACTION, Amne.OVRIGT, FK,
                 HSA_ID_1, "2013-10-01T15:02:00", false));
-        fragasvarRepository.save(FragaSvarTestUtil.buildFraga(3L, FragaSvarTestUtil.ENHET_1_ID, Status.PENDING_EXTERNAL_ACTION, Amne.OVRIGT, WEBCERT,
+        fragasvarRepository
+            .save(FragaSvarTestUtil.buildFraga(3L, FragaSvarTestUtil.ENHET_1_ID, Status.PENDING_EXTERNAL_ACTION, Amne.OVRIGT, WEBCERT,
                 HSA_ID_2, "2013-10-01T15:03:00", false));
-        fragasvarRepository.save(FragaSvarTestUtil.buildFraga(4L, FragaSvarTestUtil.ENHET_1_ID, Status.PENDING_EXTERNAL_ACTION, Amne.AVSTAMNINGSMOTE,
+        fragasvarRepository
+            .save(FragaSvarTestUtil.buildFraga(4L, FragaSvarTestUtil.ENHET_1_ID, Status.PENDING_EXTERNAL_ACTION, Amne.AVSTAMNINGSMOTE,
                 WEBCERT, HSA_ID_1, "2013-10-01T15:04:00", false));
-        fragasvarRepository.save(FragaSvarTestUtil.buildFraga(5L, FragaSvarTestUtil.ENHET_2_ID, Status.PENDING_EXTERNAL_ACTION, Amne.OVRIGT, WEBCERT,
+        fragasvarRepository
+            .save(FragaSvarTestUtil.buildFraga(5L, FragaSvarTestUtil.ENHET_2_ID, Status.PENDING_EXTERNAL_ACTION, Amne.OVRIGT, WEBCERT,
                 HSA_ID_1, "2013-10-01T15:04:00", false));
         fragasvarRepository.save(FragaSvarTestUtil.buildFraga(6L, FragaSvarTestUtil.ENHET_1_ID, Status.PENDING_INTERNAL_ACTION,
-                Amne.ARBETSTIDSFORLAGGNING, FK, HSA_ID_1, "2013-10-01T15:05:00", true));
-        fragasvarRepository.save(FragaSvarTestUtil.buildFraga(7L, FragaSvarTestUtil.ENHET_1_ID, Status.PENDING_INTERNAL_ACTION, Amne.AVSTAMNINGSMOTE,
+            Amne.ARBETSTIDSFORLAGGNING, FK, HSA_ID_1, "2013-10-01T15:05:00", true));
+        fragasvarRepository
+            .save(FragaSvarTestUtil.buildFraga(7L, FragaSvarTestUtil.ENHET_1_ID, Status.PENDING_INTERNAL_ACTION, Amne.AVSTAMNINGSMOTE,
                 FK, HSA_ID_2, "2013-10-01T15:06:00", false));
-        fragasvarRepository.save(FragaSvarTestUtil.buildFraga(8L, FragaSvarTestUtil.ENHET_1_ID, Status.PENDING_EXTERNAL_ACTION, Amne.OVRIGT, WEBCERT,
+        fragasvarRepository
+            .save(FragaSvarTestUtil.buildFraga(8L, FragaSvarTestUtil.ENHET_1_ID, Status.PENDING_EXTERNAL_ACTION, Amne.OVRIGT, WEBCERT,
                 HSA_ID_1, "2013-10-01T15:07:00", false));
-        fragasvarRepository.save(FragaSvarTestUtil.buildFraga(9L, FragaSvarTestUtil.ENHET_1_ID, Status.PENDING_EXTERNAL_ACTION, Amne.AVSTAMNINGSMOTE,
+        fragasvarRepository
+            .save(FragaSvarTestUtil.buildFraga(9L, FragaSvarTestUtil.ENHET_1_ID, Status.PENDING_EXTERNAL_ACTION, Amne.AVSTAMNINGSMOTE,
                 WEBCERT, HSA_ID_1, "2013-10-01T15:08:00", false));
-        fragasvarRepository.save(FragaSvarTestUtil.buildFraga(10L, FragaSvarTestUtil.ENHET_1_ID, Status.PENDING_INTERNAL_ACTION, Amne.KONTAKT, FK,
+        fragasvarRepository
+            .save(FragaSvarTestUtil.buildFraga(10L, FragaSvarTestUtil.ENHET_1_ID, Status.PENDING_INTERNAL_ACTION, Amne.KONTAKT, FK,
                 HSA_ID_1, "2013-10-01T15:09:00", true));
-        fragasvarRepository.save(FragaSvarTestUtil.buildFraga(11L, FragaSvarTestUtil.ENHET_1_ID, Status.PENDING_INTERNAL_ACTION, Amne.KONTAKT, FK,
+        fragasvarRepository
+            .save(FragaSvarTestUtil.buildFraga(11L, FragaSvarTestUtil.ENHET_1_ID, Status.PENDING_INTERNAL_ACTION, Amne.KONTAKT, FK,
                 HSA_ID_2, "2013-10-01T15:10:00", true));
         fragasvarRepository.save(FragaSvarTestUtil.buildFraga(12L, FragaSvarTestUtil.ENHET_1_ID, Status.PENDING_INTERNAL_ACTION,
-                Amne.AVSTAMNINGSMOTE, FK, HSA_ID_1, "2013-10-01T15:11:00", false));
-        fragasvarRepository.save(FragaSvarTestUtil.buildFraga(13L, FragaSvarTestUtil.ENHET_2_ID, Status.PENDING_EXTERNAL_ACTION, Amne.OVRIGT,
+            Amne.AVSTAMNINGSMOTE, FK, HSA_ID_1, "2013-10-01T15:11:00", false));
+        fragasvarRepository
+            .save(FragaSvarTestUtil.buildFraga(13L, FragaSvarTestUtil.ENHET_2_ID, Status.PENDING_EXTERNAL_ACTION, Amne.OVRIGT,
                 WEBCERT, HSA_ID_1, "2013-10-01T15:11:00", false));
-        fragasvarRepository.save(FragaSvarTestUtil.buildFraga(14L, FragaSvarTestUtil.ENHET_1_ID, Status.CLOSED, Amne.OVRIGT, WEBCERT, HSA_ID_1,
+        fragasvarRepository
+            .save(FragaSvarTestUtil.buildFraga(14L, FragaSvarTestUtil.ENHET_1_ID, Status.CLOSED, Amne.OVRIGT, WEBCERT, HSA_ID_1,
                 "2013-10-01T15:12:00", false));
         fragasvarRepository.save(FragaSvarTestUtil.buildFraga(15L, FragaSvarTestUtil.ENHET_1_ID, Status.CLOSED, Amne.OVRIGT, FK, HSA_ID_1,
-                "2013-10-01T15:13:00", false));
+            "2013-10-01T15:13:00", false));
         fragasvarRepository.save(FragaSvarTestUtil.buildFraga(16L, FragaSvarTestUtil.ENHET_1_ID, Status.PENDING_INTERNAL_ACTION,
-                Amne.KOMPLETTERING_AV_LAKARINTYG, FK, HSA_ID_1, "2013-10-01T15:14:00", false));
-        fragasvarRepository.save(FragaSvarTestUtil.buildFraga(17L, FragaSvarTestUtil.ENHET_1_ID, Status.ANSWERED, Amne.OVRIGT, WEBCERT, HSA_ID_1,
+            Amne.KOMPLETTERING_AV_LAKARINTYG, FK, HSA_ID_1, "2013-10-01T15:14:00", false));
+        fragasvarRepository
+            .save(FragaSvarTestUtil.buildFraga(17L, FragaSvarTestUtil.ENHET_1_ID, Status.ANSWERED, Amne.OVRIGT, WEBCERT, HSA_ID_1,
                 "2013-10-01T15:15:00", false));
         fragasvarRepository.save(FragaSvarTestUtil.buildFraga(18L, FragaSvarTestUtil.ENHET_1_ID, Status.PENDING_INTERNAL_ACTION,
-                Amne.MAKULERING_AV_LAKARINTYG, FK, HSA_ID_1, "2013-10-01T15:16:00", false));
-        fragasvarRepository.save(FragaSvarTestUtil.buildFraga(19L, FragaSvarTestUtil.ENHET_1_ID, Status.PENDING_INTERNAL_ACTION, Amne.PAMINNELSE, FK,
+            Amne.MAKULERING_AV_LAKARINTYG, FK, HSA_ID_1, "2013-10-01T15:16:00", false));
+        fragasvarRepository
+            .save(FragaSvarTestUtil.buildFraga(19L, FragaSvarTestUtil.ENHET_1_ID, Status.PENDING_INTERNAL_ACTION, Amne.PAMINNELSE, FK,
                 HSA_ID_1, "2013-10-01T15:17:00", false));
-        fragasvarRepository.save(FragaSvarTestUtil.buildFraga(20L, FragaSvarTestUtil.ENHET_2_ID, Status.PENDING_EXTERNAL_ACTION, Amne.OVRIGT,
+        fragasvarRepository
+            .save(FragaSvarTestUtil.buildFraga(20L, FragaSvarTestUtil.ENHET_2_ID, Status.PENDING_EXTERNAL_ACTION, Amne.OVRIGT,
                 WEBCERT, HSA_ID_2, "2013-10-01T15:18:00", false));
     }
 

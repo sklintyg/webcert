@@ -18,7 +18,12 @@
  */
 package se.inera.intyg.webcert.persistence.anvandarmetadata.model;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 /**
  * Created by eriklupander on 2016-06-22.
@@ -94,7 +99,6 @@ public class AnvandarPreference {
         if (!(o instanceof AnvandarPreference)) {
             return false;
         }
-
 
         AnvandarPreference that = (AnvandarPreference) o;
 

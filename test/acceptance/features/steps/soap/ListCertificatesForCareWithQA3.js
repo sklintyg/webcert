@@ -21,27 +21,27 @@
 
 'use strict';
 module.exports.getBody = function(personID, enhetHSA) {
-    var personIDRoot = '1.2.752.129.2.1.3.1';
-    var isSamordningsnummer = parseInt(personID.slice(6, 8), 10) > 31;
+  var personIDRoot = '1.2.752.129.2.1.3.1';
+  var isSamordningsnummer = parseInt(personID.slice(6, 8), 10) > 31;
 
-    logger.silly('isSamordningsnummer : ' + isSamordningsnummer);
-    if (isSamordningsnummer) {
-        personIDRoot = '1.2.752.129.2.1.3.3';
-    }
+  logger.silly('isSamordningsnummer : ' + isSamordningsnummer);
+  if (isSamordningsnummer) {
+    personIDRoot = '1.2.752.129.2.1.3.3';
+  }
 
-    return '<urn1:ListCertificatesForCareWithQA' +
-        ' xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"' +
-        ' xmlns:urn="urn:riv:itintegration:registry:1"' +
-        ' xmlns:urn1="urn:riv:clinicalprocess:healthcond:certificate:ListCertificatesForCareWithQAResponder:3"' +
-        ' xmlns:urn2="urn:riv:clinicalprocess:healthcond:certificate:types:3"' +
-        '>' +
-        ' <urn1:person-id>' +
-        ' <urn2:root>' + personIDRoot + '</urn2:root>' +
-        ' <urn2:extension>' + personID.replace('-', '') + '</urn2:extension>' +
-        ' </urn1:person-id>' +
-        ' <urn1:enhets-id>' +
-        ' <urn2:root>1.2.752.129.2.1.4.1</urn2:root>' +
-        ' <urn2:extension>' + enhetHSA + '</urn2:extension>' +
-        ' </urn1:enhets-id>' +
-        ' </urn1:ListCertificatesForCareWithQA>';
+  return '<urn1:ListCertificatesForCareWithQA' +
+      ' xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"' +
+      ' xmlns:urn="urn:riv:itintegration:registry:1"' +
+      ' xmlns:urn1="urn:riv:clinicalprocess:healthcond:certificate:ListCertificatesForCareWithQAResponder:3"' +
+      ' xmlns:urn2="urn:riv:clinicalprocess:healthcond:certificate:types:3"' +
+      '>' +
+      ' <urn1:person-id>' +
+      ' <urn2:root>' + personIDRoot + '</urn2:root>' +
+      ' <urn2:extension>' + personID.replace('-', '') + '</urn2:extension>' +
+      ' </urn1:person-id>' +
+      ' <urn1:enhets-id>' +
+      ' <urn2:root>1.2.752.129.2.1.4.1</urn2:root>' +
+      ' <urn2:extension>' + enhetHSA + '</urn2:extension>' +
+      ' </urn1:enhets-id>' +
+      ' </urn1:ListCertificatesForCareWithQA>';
 };

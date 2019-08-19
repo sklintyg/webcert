@@ -5,22 +5,22 @@
  * Usage: expect(<elementlocator>).toDisappear();
  */
 beforeEach(function() {
-    jasmine.addMatchers({
+  jasmine.addMatchers({
 
-        toDisappear: function(util, customEqualityTesters) {
-            return {
-                compare: function(actual, expected) {
-                    return {
-                        pass: browser.wait(protractor.ExpectedConditions.invisibilityOf(actual), 5000).then(function() {
-                            return true
-                        }, function() {
-                            return false
-                        }),
-                        message: 'Expected element ' + actual.parentElementArrayFinder.locator_.toString() + ' to be invisible!'
-                    };
-                }
-            };
+    toDisappear: function(util, customEqualityTesters) {
+      return {
+        compare: function(actual, expected) {
+          return {
+            pass: browser.wait(protractor.ExpectedConditions.invisibilityOf(actual), 5000).then(function() {
+              return true
+            }, function() {
+              return false
+            }),
+            message: 'Expected element ' + actual.parentElementArrayFinder.locator_.toString() + ' to be invisible!'
+          };
         }
+      };
+    }
 
-    })
+  })
 });

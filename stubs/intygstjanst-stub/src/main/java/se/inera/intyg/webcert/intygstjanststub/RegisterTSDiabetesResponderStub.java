@@ -18,6 +18,8 @@
  */
 package se.inera.intyg.webcert.intygstjanststub;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.intyg.common.support.modules.support.api.CertificateHolder;
 import se.inera.intyg.schemas.contract.Personnummer;
@@ -27,9 +29,6 @@ import se.inera.intygstjanster.ts.services.RegisterTSDiabetesResponder.v1.Regist
 import se.inera.intygstjanster.ts.services.RegisterTSDiabetesResponder.v1.RegisterTSDiabetesType;
 import se.inera.intygstjanster.ts.services.v1.ResultCodeType;
 import se.inera.intygstjanster.ts.services.v1.ResultatTyp;
-
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
 /**
  * Created by eriklupander on 2015-06-10.
@@ -57,16 +56,16 @@ public class RegisterTSDiabetesResponderStub implements RegisterTSDiabetesRespon
         certificate.setId(parameters.getIntyg().getIntygsId());
         certificate.setType(parameters.getIntyg().getIntygsTyp());
         certificate.setCivicRegistrationNumber(Personnummer
-                        .createPersonnummer(parameters.getIntyg().getGrundData().getPatient().getPersonId().getExtension())
-                        .orElse(null));
+            .createPersonnummer(parameters.getIntyg().getGrundData().getPatient().getPersonId().getExtension())
+            .orElse(null));
         certificate.setSignedDate(
-                LocalDateTime.parse(parameters.getIntyg().getGrundData().getSigneringsTidstampel(), DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+            LocalDateTime.parse(parameters.getIntyg().getGrundData().getSigneringsTidstampel(), DateTimeFormatter.ISO_LOCAL_DATE_TIME));
         certificate.setCareUnitId(parameters.getIntyg().getGrundData().getSkapadAv().getVardenhet().getEnhetsId().getExtension());
         certificate.setCareUnitName(parameters.getIntyg().getGrundData().getSkapadAv().getVardenhet().getEnhetsnamn());
         certificate.setSigningDoctorName(parameters.getIntyg().getGrundData().getSkapadAv().getFullstandigtNamn());
         certificate.setAdditionalInfo(parameters.getIntyg().getOvrigKommentar());
         certificate.setCareGiverId(
-                parameters.getIntyg().getGrundData().getSkapadAv().getVardenhet().getVardgivare().getVardgivarid().getExtension());
+            parameters.getIntyg().getGrundData().getSkapadAv().getVardenhet().getVardgivare().getVardgivarid().getExtension());
         return certificate;
     }
 }

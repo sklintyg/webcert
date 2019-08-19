@@ -22,37 +22,37 @@
 var BaseSmiIntygPage = require('../smi.base.intyg.page.js');
 
 var LuseIntyg = BaseSmiIntygPage._extend({
-    init: function init() {
-        init._super.call(this);
-        this.intygType = 'luse';
-        this.intygTypeVersion = '1.0';
-    },
+  init: function init() {
+    init._super.call(this);
+    this.intygType = 'luse';
+    this.intygTypeVersion = '1.0';
+  },
 
-    get: function get(intygId) {
-        get._super.call(this, intygId);
-    },
+  get: function get(intygId) {
+    get._super.call(this, intygId);
+  },
 
-    verify: function(data) {
-        this.verifieraBaseratPa(data);
+  verify: function(data) {
+    this.verifieraBaseratPa(data);
 
-        this.verifieraAndraMedicinskaUtredningar(data);
+    this.verifieraAndraMedicinskaUtredningar(data);
 
-        this.verifieraDiagnos(data);
-        this.verifieraDiagnosBedomning(data);
+    this.verifieraDiagnos(data);
+    this.verifieraDiagnosBedomning(data);
 
-        this.verifieraSjukdomsforlopp(data);
+    this.verifieraSjukdomsforlopp(data);
 
-        this.verifieraFunktionsnedsattning(data);
+    this.verifieraFunktionsnedsattning(data);
 
-        this.verifieraAktivitetsbegransning(data);
+    this.verifieraAktivitetsbegransning(data);
 
-        this.verifieraMedicinskbehandling(data);
+    this.verifieraMedicinskbehandling(data);
 
-        this.verifieraMedicinskaForutsattningar(data);
+    this.verifieraMedicinskaForutsattningar(data);
 
-        this.verifieraOvrigt(data);
+    this.verifieraOvrigt(data);
 
-        this.verifieraKontaktFK(data);
-    }
+    this.verifieraKontaktFK(data);
+  }
 });
 module.exports = new LuseIntyg();

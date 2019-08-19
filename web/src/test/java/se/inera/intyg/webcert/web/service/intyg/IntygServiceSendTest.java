@@ -32,7 +32,6 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Optional;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.cxf.helpers.FileUtils;
 import org.assertj.core.api.Assertions;
@@ -42,7 +41,6 @@ import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.test.util.ReflectionTestUtils;
-
 import se.inera.intyg.common.fk7263.model.internal.Fk7263Utlatande;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.integration.converter.util.ResultTypeUtil;
@@ -130,8 +128,8 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
         when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.FALSE);
 
         Assertions.assertThatThrownBy(() -> intygService.sendIntyg(INTYG_ID, INTYG_TYP_FK, "FKASSA", false))
-                .isExactlyInstanceOf(WebCertServiceException.class)
-                .hasMessageEndingWith("cannot send a revoked certificate");
+            .isExactlyInstanceOf(WebCertServiceException.class)
+            .hasMessageEndingWith("cannot send a revoked certificate");
     }
 
     @Test
@@ -148,22 +146,22 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
         certificateResponse = new CertificateResponse(json, utlatande, metaData, false);
 
         WebcertCertificateRelation ersattRelation = new WebcertCertificateRelation(INTYG_ID, RelationKod.ERSATT, LocalDateTime.now(),
-                UtkastStatus.SIGNED, false);
+            UtkastStatus.SIGNED, false);
 
         when(intygRepository.findOne(INTYG_ID)).thenReturn(getUtkast(INTYG_ID));
         when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.FALSE);
         when(webCertUserService.isAuthorizedForUnit(anyString(), anyString(), anyBoolean())).thenReturn(true);
         when(webCertUserService.getUser()).thenReturn(webCertUser);
         when(certificateRelationService.getNewestRelationOfType(anyString(), any(RelationKod.class), anyList()))
-                .thenReturn(Optional.of(ersattRelation));
+            .thenReturn(Optional.of(ersattRelation));
 
         CertificateResponse revokedCertificateResponse = new CertificateResponse(json, utlatande, metaData, false);
         when(moduleFacade.getCertificate(any(String.class), any(String.class), anyString())).thenReturn(revokedCertificateResponse);
 
         Assertions.assertThatThrownBy(() -> intygService.sendIntyg(INTYG_ID, INTYG_TYP_FK, "FKASSA", false))
-                .isExactlyInstanceOf(WebCertServiceException.class)
-                .hasFieldOrPropertyWithValue("errorCode", WebCertServiceErrorCodeEnum.INVALID_STATE)
-                .hasMessageContaining("the certificate is replaced by certificate");
+            .isExactlyInstanceOf(WebCertServiceException.class)
+            .hasFieldOrPropertyWithValue("errorCode", WebCertServiceErrorCodeEnum.INVALID_STATE)
+            .hasMessageContaining("the certificate is replaced by certificate");
     }
 
     @Test
@@ -180,13 +178,13 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
         certificateResponse = new CertificateResponse(json, utlatande, metaData, false);
 
         WebcertCertificateRelation ersattRelation = new WebcertCertificateRelation(INTYG_ID, RelationKod.ERSATT, LocalDateTime.now(),
-                UtkastStatus.SIGNED, true);
+            UtkastStatus.SIGNED, true);
 
         when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.FALSE);
         when(webCertUserService.isAuthorizedForUnit(anyString(), anyString(), anyBoolean())).thenReturn(true);
         when(webCertUserService.getUser()).thenReturn(webCertUser);
         when(certificateRelationService.getNewestRelationOfType(anyString(), any(RelationKod.class), anyList()))
-                .thenReturn(Optional.of(ersattRelation));
+            .thenReturn(Optional.of(ersattRelation));
 
         CertificateResponse revokedCertificateResponse = new CertificateResponse(json, utlatande, metaData, false);
         when(moduleFacade.getCertificate(any(String.class), any(String.class), anyString())).thenReturn(revokedCertificateResponse);
@@ -215,7 +213,7 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
         completionUtlatande.getGrundData().getRelation().setMeddelandeId(completionMeddelandeId);
 
         when(certificateRelationService.getNewestRelationOfType(eq(INTYG_ID), eq(RelationKod.ERSATT),
-                eq(Arrays.asList(UtkastStatus.SIGNED)))).thenReturn(Optional.empty());
+            eq(Arrays.asList(UtkastStatus.SIGNED)))).thenReturn(Optional.empty());
 
         IntygServiceResult res = intygService.sendIntyg(INTYG_ID, INTYG_TYP_FK, "FKASSA", false);
         assertEquals(IntygServiceResult.OK, res);
@@ -267,7 +265,7 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
         when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.UNDEFINED);
 
         Assertions.assertThatThrownBy(() -> intygService.sendIntyg(INTYG_ID, INTYG_TYP_FK, "FKASSA", false))
-                .isExactlyInstanceOf(WebCertServiceException.class);
+            .isExactlyInstanceOf(WebCertServiceException.class);
 
     }
 
@@ -288,7 +286,7 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
         when(webCertUserService.getUser()).thenReturn(webCertUser);
 
         Assertions.assertThatThrownBy(() -> intygService.sendIntyg(INTYG_ID, INTYG_TYP_FK, "FKASSA", false))
-                .isExactlyInstanceOf(WebCertServiceException.class);
+            .isExactlyInstanceOf(WebCertServiceException.class);
 
     }
 
@@ -307,13 +305,13 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
     private Utkast getUtkast(String intygId) throws IOException {
         Utkast utkast = new Utkast();
         String json = IOUtils.toString(new ClassPathResource(
-                "FragaSvarServiceImplTest/utlatande.json").getInputStream(), "UTF-8");
+            "FragaSvarServiceImplTest/utlatande.json").getInputStream(), "UTF-8");
         utkast.setModel(json);
         utkast.setIntygsId(intygId);
         utkast.setIntygTypeVersion(INTYG_TYPE_VERSION_1_0);
         utkast.setStatus(UtkastStatus.SIGNED);
         utkast.setSignatur(
-                new Signatur(LocalDateTime.of(2011, 11, 11, 11, 11, 11, 11), "Signe Signatur", INTYG_ID, "data", "hash", "signatur"));
+            new Signatur(LocalDateTime.of(2011, 11, 11, 11, 11, 11, 11), "Signe Signatur", INTYG_ID, "data", "hash", "signatur"));
         return utkast;
     }
 }

@@ -31,7 +31,6 @@ public class PrepareRedirectToIntyg implements Serializable {
 
     private boolean utkast;
 
-
     // getters and setters
 
     public String getIntygTyp() {
@@ -61,11 +60,11 @@ public class PrepareRedirectToIntyg implements Serializable {
     @Override
     public String toString() {
         return "PrepareRedirectToIntyg {"
-                + "intygTyp='" + intygTyp + '\''
-                + "intygTypeVersion='" + intygTypeVersion + '\''
-                + ", intygId='" + intygId + '\''
-                + ", utkast=" + utkast
-                + "}";
+            + "intygTyp='" + intygTyp + '\''
+            + "intygTypeVersion='" + intygTypeVersion + '\''
+            + ", intygId='" + intygId + '\''
+            + ", utkast=" + utkast
+            + "}";
     }
 
     public String getIntygTypeVersion() {

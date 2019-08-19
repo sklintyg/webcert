@@ -18,11 +18,9 @@
  */
 package se.inera.intyg.webcert.web.service.log.factory;
 
+import com.google.common.base.Joiner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import com.google.common.base.Joiner;
-
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
@@ -40,7 +38,7 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
  * @author eriklupander
  */
 @Service
-public class LogRequestFactoryImpl  implements LogRequestFactory {
+public class LogRequestFactoryImpl implements LogRequestFactory {
 
     private static final String COHERENT_JOURNALING_LOG_POST = "Läsning i enlighet med sammanhållen journalföring";
     private static final String FKASSA = "FKASSA";
@@ -61,8 +59,8 @@ public class LogRequestFactoryImpl  implements LogRequestFactory {
         logRequest.setPatientId(utkast.getPatientPersonnummer());
 
         addPatientNameIfNotFK(
-                Joiner.on(" ").skipNulls().join(utkast.getPatientFornamn(), utkast.getPatientMellannamn(), utkast.getPatientEfternamn()),
-                logRequest, utkast.getIntygsTyp());
+            Joiner.on(" ").skipNulls().join(utkast.getPatientFornamn(), utkast.getPatientMellannamn(), utkast.getPatientEfternamn()),
+            logRequest, utkast.getIntygsTyp());
 
         logRequest.setIntygCareUnitId(utkast.getEnhetsId());
         logRequest.setIntygCareUnitName(utkast.getEnhetsNamn());

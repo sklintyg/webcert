@@ -18,12 +18,10 @@
  */
 package se.inera.intyg.webcert.web.web.controller.integration.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.io.Serializable;
 import java.util.Objects;
-
 import org.apache.commons.lang3.StringUtils;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import se.inera.intyg.webcert.web.web.controller.integration.IntegrationState;
 
 public final class IntegrationParameters implements Serializable {
@@ -51,8 +49,8 @@ public final class IntegrationParameters implements Serializable {
 
     // CHECKSTYLE:OFF ParameterNumber
     public IntegrationParameters(String reference, String responsibleHospName, String alternateSsn, String fornamn,
-                                 String mellannamn, String efternamn, String postadress, String postnummer, String postort,
-                                 boolean sjf, boolean patientDeceased, boolean inactiveUnit, boolean fornyaOk) {
+        String mellannamn, String efternamn, String postadress, String postnummer, String postort,
+        boolean sjf, boolean patientDeceased, boolean inactiveUnit, boolean fornyaOk) {
 
         this.reference = reference;
         this.responsibleHospName = responsibleHospName;
@@ -70,38 +68,37 @@ public final class IntegrationParameters implements Serializable {
     }
 
     public static IntegrationParameters of(
-            final String reference,
-            final String responsibleHospName,
-            final String alternateSsn,
-            final String fornamn,
-            final String mellannamn,
-            final String efternamn,
-            final String postadress,
-            final String postnummer,
-            final String postort,
-            final boolean sjf,
-            final boolean patientDeceased,
-            final boolean inactiveUnit,
-            final boolean fornyaOk) {
+        final String reference,
+        final String responsibleHospName,
+        final String alternateSsn,
+        final String fornamn,
+        final String mellannamn,
+        final String efternamn,
+        final String postadress,
+        final String postnummer,
+        final String postort,
+        final boolean sjf,
+        final boolean patientDeceased,
+        final boolean inactiveUnit,
+        final boolean fornyaOk) {
 
         return new IntegrationParameters(
-                StringUtils.trimToNull(reference),
-                responsibleHospName,
-                alternateSsn,
-                fornamn,
-                mellannamn,
-                efternamn,
-                postadress,
-                postnummer,
-                postort,
-                sjf,
-                patientDeceased,
-                inactiveUnit,
-                fornyaOk);
+            StringUtils.trimToNull(reference),
+            responsibleHospName,
+            alternateSsn,
+            fornamn,
+            mellannamn,
+            efternamn,
+            postadress,
+            postnummer,
+            postort,
+            sjf,
+            patientDeceased,
+            inactiveUnit,
+            fornyaOk);
     }
 
     // CHECKSTYLE:ON ParameterNumber
-
 
     // final class members
 
@@ -157,7 +154,6 @@ public final class IntegrationParameters implements Serializable {
         return fornyaOk;
     }
 
-
     // non-final class members
 
     public String getBeforeAlternateSsn() {
@@ -186,38 +182,38 @@ public final class IntegrationParameters implements Serializable {
         }
         IntegrationParameters that = (IntegrationParameters) o;
         return sjf == that.sjf
-                && patientDeceased == that.patientDeceased
-                && inactiveUnit == that.inactiveUnit
-                && fornyaOk == that.fornyaOk
-                && Objects.equals(reference, that.reference)
-                && Objects.equals(responsibleHospName, that.responsibleHospName)
-                && Objects.equals(alternateSsn, that.alternateSsn)
-                && Objects.equals(fornamn, that.fornamn)
-                && Objects.equals(mellannamn, that.mellannamn)
-                && Objects.equals(efternamn, that.efternamn)
-                && Objects.equals(postadress, that.postadress)
-                && Objects.equals(postnummer, that.postnummer)
-                && Objects.equals(postort, that.postort)
-                && Objects.equals(beforeAlternateSsn, that.beforeAlternateSsn)
-                && Objects.equals(state, that.state);
+            && patientDeceased == that.patientDeceased
+            && inactiveUnit == that.inactiveUnit
+            && fornyaOk == that.fornyaOk
+            && Objects.equals(reference, that.reference)
+            && Objects.equals(responsibleHospName, that.responsibleHospName)
+            && Objects.equals(alternateSsn, that.alternateSsn)
+            && Objects.equals(fornamn, that.fornamn)
+            && Objects.equals(mellannamn, that.mellannamn)
+            && Objects.equals(efternamn, that.efternamn)
+            && Objects.equals(postadress, that.postadress)
+            && Objects.equals(postnummer, that.postnummer)
+            && Objects.equals(postort, that.postort)
+            && Objects.equals(beforeAlternateSsn, that.beforeAlternateSsn)
+            && Objects.equals(state, that.state);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(reference,
-                responsibleHospName,
-                alternateSsn,
-                fornamn,
-                mellannamn,
-                efternamn,
-                postadress,
-                postnummer,
-                postort,
-                sjf,
-                patientDeceased,
-                inactiveUnit,
-                fornyaOk,
-                beforeAlternateSsn,
-                state);
+            responsibleHospName,
+            alternateSsn,
+            fornamn,
+            mellannamn,
+            efternamn,
+            postadress,
+            postnummer,
+            postort,
+            sjf,
+            patientDeceased,
+            inactiveUnit,
+            fornyaOk,
+            beforeAlternateSsn,
+            state);
     }
 }

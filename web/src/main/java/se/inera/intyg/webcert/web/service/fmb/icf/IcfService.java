@@ -22,5 +22,6 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.Icd10KoderRequest;
 import se.inera.intyg.webcert.web.web.controller.api.dto.icf.IcfResponse;
 
 public interface IcfService {
+
     IcfResponse findIcfInformationByIcd10Koder(Icd10KoderRequest icd10KoderRequest);
 }

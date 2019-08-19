@@ -61,6 +61,7 @@ public class Referens {
     }
 
     public static final class ReferensBuilder {
+
         private String text;
         private String uri;
 
