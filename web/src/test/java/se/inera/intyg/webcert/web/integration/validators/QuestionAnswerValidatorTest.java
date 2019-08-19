@@ -20,19 +20,16 @@ package se.inera.intyg.webcert.web.integration.validators;
 
 import static org.junit.Assert.assertEquals;
 
+import java.io.IOException;
 import java.util.List;
-
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Unmarshaller;
-import javax.xml.transform.stream.StreamSource;
-
+import javax.xml.bind.JAXBElement;
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
-
 import se.inera.ifv.insuranceprocess.healthreporting.receivemedicalcertificateanswerresponder.v1.AnswerFromFkType;
 import se.inera.ifv.insuranceprocess.healthreporting.receivemedicalcertificateanswerresponder.v1.ReceiveMedicalCertificateAnswerType;
 import se.inera.ifv.insuranceprocess.healthreporting.receivemedicalcertificatequestionsponder.v1.QuestionFromFkType;
 import se.inera.ifv.insuranceprocess.healthreporting.receivemedicalcertificatequestionsponder.v1.ReceiveMedicalCertificateQuestionType;
+import se.inera.intyg.common.support.xml.XmlMarshallerHelper;
 import se.inera.intyg.webcert.web.integration.interactions.receivemedicalcertificate.QuestionAnswerValidator;
 
 /**
@@ -41,13 +38,13 @@ import se.inera.intyg.webcert.web.integration.interactions.receivemedicalcertifi
 public class QuestionAnswerValidatorTest {
 
     @Test
-    public void testQVPassesValidRequest() {
+    public void testQVPassesValidRequest() throws Exception {
         ReceiveMedicalCertificateQuestionType request = createValidQuestionRequest();
         assertEquals(0, QuestionAnswerValidator.validate(request).size());
     }
 
     @Test
-    public void testQVCatchesMissingFraga() {
+    public void testQVCatchesMissingFraga() throws Exception {
         // Arrange
         ReceiveMedicalCertificateQuestionType request = createValidQuestionRequest();
         request.getQuestion().setFraga(null);
@@ -60,7 +57,7 @@ public class QuestionAnswerValidatorTest {
     }
 
     @Test
-    public void testQVCatchesMissingAmne() {
+    public void testQVCatchesMissingAmne() throws Exception {
         // Arrange
         ReceiveMedicalCertificateQuestionType request = createValidQuestionRequest();
         request.getQuestion().setAmne(null);
@@ -73,7 +70,7 @@ public class QuestionAnswerValidatorTest {
     }
 
     @Test
-    public void testQVCatchesMissingLakarutlatandeId() {
+    public void testQVCatchesMissingLakarutlatandeId() throws Exception {
         // Arrange
         ReceiveMedicalCertificateQuestionType request = createValidQuestionRequest();
         request.getQuestion().getLakarutlatande().setLakarutlatandeId(null);
@@ -86,7 +83,7 @@ public class QuestionAnswerValidatorTest {
     }
 
     @Test
-    public void testQVCatchesMissingHsaPersonIdRoot() {
+    public void testQVCatchesMissingHsaPersonIdRoot() throws Exception {
         // Arrange
         ReceiveMedicalCertificateQuestionType request = createValidQuestionRequest();
         request.getQuestion().getAdressVard().getHosPersonal().getPersonalId().setRoot(null);
@@ -99,7 +96,7 @@ public class QuestionAnswerValidatorTest {
     }
 
     @Test
-    public void testQVCatchesInvalidHsaPersonIdRoot() {
+    public void testQVCatchesInvalidHsaPersonIdRoot() throws Exception {
         // Arrange
         ReceiveMedicalCertificateQuestionType request = createValidQuestionRequest();
         request.getQuestion().getAdressVard().getHosPersonal().getPersonalId().setRoot("INVALID");
@@ -112,7 +109,7 @@ public class QuestionAnswerValidatorTest {
     }
 
     @Test
-    public void testQVCatchesMissingHsaPersonIdExtension() {
+    public void testQVCatchesMissingHsaPersonIdExtension() throws Exception {
         // Arrange
         ReceiveMedicalCertificateQuestionType request = createValidQuestionRequest();
         request.getQuestion().getAdressVard().getHosPersonal().getPersonalId().setExtension(null);
@@ -125,7 +122,7 @@ public class QuestionAnswerValidatorTest {
     }
 
     @Test
-    public void testQVCatchesMissingHsaPersonFullstandigtNamn() {
+    public void testQVCatchesMissingHsaPersonFullstandigtNamn() throws Exception {
         // Arrange
         ReceiveMedicalCertificateQuestionType request = createValidQuestionRequest();
         request.getQuestion().getAdressVard().getHosPersonal().setFullstandigtNamn(null);
@@ -138,7 +135,7 @@ public class QuestionAnswerValidatorTest {
     }
 
     @Test
-    public void testQVCatchesInvalidPatientPersonIdRoot() {
+    public void testQVCatchesInvalidPatientPersonIdRoot() throws Exception {
         // Arrange
         ReceiveMedicalCertificateQuestionType request = createValidQuestionRequest();
         request.getQuestion().getLakarutlatande().getPatient().getPersonId().setRoot("INVALID");
@@ -151,7 +148,7 @@ public class QuestionAnswerValidatorTest {
     }
 
     @Test
-    public void testQVCatchesMissingPatientPersonIdExtension() {
+    public void testQVCatchesMissingPatientPersonIdExtension() throws Exception {
         // Arrange
         ReceiveMedicalCertificateQuestionType request = createValidQuestionRequest();
         request.getQuestion().getLakarutlatande().getPatient().getPersonId().setExtension(null);
@@ -164,7 +161,7 @@ public class QuestionAnswerValidatorTest {
     }
 
     @Test
-    public void testQVCatchesMissingPatientPersonFullstandigtNamn() {
+    public void testQVCatchesMissingPatientPersonFullstandigtNamn() throws Exception {
         // Arrange
         ReceiveMedicalCertificateQuestionType request = createValidQuestionRequest();
         request.getQuestion().getLakarutlatande().getPatient().setFullstandigtNamn(null);
@@ -177,7 +174,7 @@ public class QuestionAnswerValidatorTest {
     }
 
     @Test
-    public void testQVCatchesInvalidHsaEnhetIdRoot() {
+    public void testQVCatchesInvalidHsaEnhetIdRoot() throws Exception {
         // Arrange
         ReceiveMedicalCertificateQuestionType request = createValidQuestionRequest();
         request.getQuestion().getAdressVard().getHosPersonal().getEnhet().getEnhetsId().setRoot("INVALID");
@@ -190,7 +187,7 @@ public class QuestionAnswerValidatorTest {
     }
 
     @Test
-    public void testQVCatchesMissingHsaEnhetIdExtension() {
+    public void testQVCatchesMissingHsaEnhetIdExtension() throws Exception {
         // Arrange
         ReceiveMedicalCertificateQuestionType request = createValidQuestionRequest();
         request.getQuestion().getAdressVard().getHosPersonal().getEnhet().getEnhetsId().setExtension(null);
@@ -203,7 +200,7 @@ public class QuestionAnswerValidatorTest {
     }
 
     @Test
-    public void testQVCatchesMissingHsaEnhetsNamn() {
+    public void testQVCatchesMissingHsaEnhetsNamn() throws Exception {
         // Arrange
         ReceiveMedicalCertificateQuestionType request = createValidQuestionRequest();
         request.getQuestion().getAdressVard().getHosPersonal().getEnhet().setEnhetsnamn(null);
@@ -216,7 +213,7 @@ public class QuestionAnswerValidatorTest {
     }
 
     @Test
-    public void testQVCatchesInvalidVardgivarIdRoot() {
+    public void testQVCatchesInvalidVardgivarIdRoot() throws Exception {
         // Arrange
         ReceiveMedicalCertificateQuestionType request = createValidQuestionRequest();
         request.getQuestion().getAdressVard().getHosPersonal().getEnhet().getVardgivare().getVardgivareId().setRoot("INVALID");
@@ -229,7 +226,7 @@ public class QuestionAnswerValidatorTest {
     }
 
     @Test
-    public void testQVCatchesMissingVardgivarIdExtension() {
+    public void testQVCatchesMissingVardgivarIdExtension() throws Exception {
         // Arrange
         ReceiveMedicalCertificateQuestionType request = createValidQuestionRequest();
         request.getQuestion().getAdressVard().getHosPersonal().getEnhet().getVardgivare().getVardgivareId().setExtension(null);
@@ -242,7 +239,7 @@ public class QuestionAnswerValidatorTest {
     }
 
     @Test
-    public void testQVCatchesMissingVardgivarNamn() {
+    public void testQVCatchesMissingVardgivarNamn() throws Exception {
         // Arrange
         ReceiveMedicalCertificateQuestionType request = createValidQuestionRequest();
         request.getQuestion().getAdressVard().getHosPersonal().getEnhet().getVardgivare().setVardgivarnamn(null);
@@ -256,13 +253,13 @@ public class QuestionAnswerValidatorTest {
 
     // --------- Answer tests
     @Test
-    public void testAVPassesValidRequest() {
+    public void testAVPassesValidRequest() throws Exception {
         ReceiveMedicalCertificateAnswerType request = createValidAnswerRequest();
         assertEquals(0, QuestionAnswerValidator.validate(request).size());
     }
 
     @Test
-    public void testAVCatchesMissingFraga() {
+    public void testAVCatchesMissingFraga() throws Exception {
         // Arrange
         ReceiveMedicalCertificateAnswerType request = createValidAnswerRequest();
         request.getAnswer().setSvar(null);
@@ -275,7 +272,7 @@ public class QuestionAnswerValidatorTest {
     }
 
     @Test
-    public void testAVCatchesMissingAmne() {
+    public void testAVCatchesMissingAmne() throws Exception {
         // Arrange
         ReceiveMedicalCertificateAnswerType request = createValidAnswerRequest();
         request.getAnswer().setAmne(null);
@@ -288,7 +285,7 @@ public class QuestionAnswerValidatorTest {
     }
 
     @Test
-    public void testAVCatchesMissingLakarutlatandeId() {
+    public void testAVCatchesMissingLakarutlatandeId() throws Exception {
         // Arrange
         ReceiveMedicalCertificateAnswerType request = createValidAnswerRequest();
         request.getAnswer().getLakarutlatande().setLakarutlatandeId(null);
@@ -301,7 +298,7 @@ public class QuestionAnswerValidatorTest {
     }
 
     @Test
-    public void testAVCatchesMissingHsaPersonIdRoot() {
+    public void testAVCatchesMissingHsaPersonIdRoot() throws Exception {
         // Arrange
         ReceiveMedicalCertificateAnswerType request = createValidAnswerRequest();
         request.getAnswer().getAdressVard().getHosPersonal().getPersonalId().setRoot(null);
@@ -314,7 +311,7 @@ public class QuestionAnswerValidatorTest {
     }
 
     @Test
-    public void testAVCatchesInvalidHsaPersonIdRoot() {
+    public void testAVCatchesInvalidHsaPersonIdRoot() throws Exception {
         // Arrange
         ReceiveMedicalCertificateAnswerType request = createValidAnswerRequest();
         request.getAnswer().getAdressVard().getHosPersonal().getPersonalId().setRoot("INVALID");
@@ -327,7 +324,7 @@ public class QuestionAnswerValidatorTest {
     }
 
     @Test
-    public void testAVCatchesMissingHsaPersonIdExtension() {
+    public void testAVCatchesMissingHsaPersonIdExtension() throws Exception {
         // Arrange
         ReceiveMedicalCertificateAnswerType request = createValidAnswerRequest();
         request.getAnswer().getAdressVard().getHosPersonal().getPersonalId().setExtension(null);
@@ -340,7 +337,7 @@ public class QuestionAnswerValidatorTest {
     }
 
     @Test
-    public void testAVCatchesMissingHsaPersonFullstandigtNamn() {
+    public void testAVCatchesMissingHsaPersonFullstandigtNamn() throws Exception {
         // Arrange
         ReceiveMedicalCertificateAnswerType request = createValidAnswerRequest();
         request.getAnswer().getAdressVard().getHosPersonal().setFullstandigtNamn(null);
@@ -353,7 +350,7 @@ public class QuestionAnswerValidatorTest {
     }
 
     @Test
-    public void testAVCatchesInvalidPatientPersonIdRoot() {
+    public void testAVCatchesInvalidPatientPersonIdRoot() throws Exception {
         // Arrange
         ReceiveMedicalCertificateAnswerType request = createValidAnswerRequest();
         request.getAnswer().getLakarutlatande().getPatient().getPersonId().setRoot("INVALID");
@@ -366,7 +363,7 @@ public class QuestionAnswerValidatorTest {
     }
 
     @Test
-    public void testAVCatchesMissingPatientPersonIdExtension() {
+    public void testAVCatchesMissingPatientPersonIdExtension() throws Exception {
         // Arrange
         ReceiveMedicalCertificateAnswerType request = createValidAnswerRequest();
         request.getAnswer().getLakarutlatande().getPatient().getPersonId().setExtension(null);
@@ -379,7 +376,7 @@ public class QuestionAnswerValidatorTest {
     }
 
     @Test
-    public void testAVCatchesMissingPatientPersonFullstandigtNamn() {
+    public void testAVCatchesMissingPatientPersonFullstandigtNamn() throws Exception {
         // Arrange
         ReceiveMedicalCertificateAnswerType request = createValidAnswerRequest();
         request.getAnswer().getLakarutlatande().getPatient().setFullstandigtNamn(null);
@@ -392,7 +389,7 @@ public class QuestionAnswerValidatorTest {
     }
 
     @Test
-    public void testAVCatchesInvalidHsaEnhetIdRoot() {
+    public void testAVCatchesInvalidHsaEnhetIdRoot() throws Exception {
         // Arrange
         ReceiveMedicalCertificateAnswerType request = createValidAnswerRequest();
         request.getAnswer().getAdressVard().getHosPersonal().getEnhet().getEnhetsId().setRoot("INVALID");
@@ -405,7 +402,7 @@ public class QuestionAnswerValidatorTest {
     }
 
     @Test
-    public void testAVCatchesMissingHsaEnhetIdExtension() {
+    public void testAVCatchesMissingHsaEnhetIdExtension() throws Exception {
         // Arrange
         ReceiveMedicalCertificateAnswerType request = createValidAnswerRequest();
         request.getAnswer().getAdressVard().getHosPersonal().getEnhet().getEnhetsId().setExtension(null);
@@ -418,7 +415,7 @@ public class QuestionAnswerValidatorTest {
     }
 
     @Test
-    public void testAVCatchesMissingHsaEnhetsNamn() {
+    public void testAVCatchesMissingHsaEnhetsNamn() throws Exception {
         // Arrange
         ReceiveMedicalCertificateAnswerType request = createValidAnswerRequest();
         request.getAnswer().getAdressVard().getHosPersonal().getEnhet().setEnhetsnamn(null);
@@ -431,7 +428,7 @@ public class QuestionAnswerValidatorTest {
     }
 
     @Test
-    public void testAVCatchesInvalidVardgivarIdRoot() {
+    public void testAVCatchesInvalidVardgivarIdRoot() throws Exception {
         // Arrange
         ReceiveMedicalCertificateAnswerType request = createValidAnswerRequest();
         request.getAnswer().getAdressVard().getHosPersonal().getEnhet().getVardgivare().getVardgivareId().setRoot("INVALID");
@@ -444,7 +441,7 @@ public class QuestionAnswerValidatorTest {
     }
 
     @Test
-    public void testAVCatchesMissingVardgivarIdExtension() {
+    public void testAVCatchesMissingVardgivarIdExtension() throws Exception {
         // Arrange
         ReceiveMedicalCertificateAnswerType request = createValidAnswerRequest();
         request.getAnswer().getAdressVard().getHosPersonal().getEnhet().getVardgivare().getVardgivareId().setExtension(null);
@@ -457,7 +454,7 @@ public class QuestionAnswerValidatorTest {
     }
 
     @Test
-    public void testAVCatchesMissingVardgivarNamn() {
+    public void testAVCatchesMissingVardgivarNamn() throws Exception  {
         // Arrange
         ReceiveMedicalCertificateAnswerType request = createValidAnswerRequest();
         request.getAnswer().getAdressVard().getHosPersonal().getEnhet().getVardgivare().setVardgivarnamn(null);
@@ -469,46 +466,24 @@ public class QuestionAnswerValidatorTest {
         assertEquals(1, result.size());
     }
 
-    private ReceiveMedicalCertificateAnswerType createValidAnswerRequest() {
+    private ReceiveMedicalCertificateAnswerType createValidAnswerRequest() throws IOException {
+        ClassPathResource resource = new ClassPathResource("QuestionAnswerValidator/valid-answer-from-fk.xml");
+        JAXBElement<AnswerFromFkType> jaxbElement = XmlMarshallerHelper.unmarshal(resource.getInputStream());
+
         ReceiveMedicalCertificateAnswerType request = new ReceiveMedicalCertificateAnswerType();
+        request.setAnswer(jaxbElement.getValue());
 
-        try {
-            JAXBContext jaxbContext = JAXBContext.newInstance(AnswerFromFkType.class);
-
-            Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-
-            AnswerFromFkType answer = unmarshaller
-                    .unmarshal(new StreamSource(new ClassPathResource("QuestionAnswerValidator/valid-answer-from-fk.xml").getInputStream()),
-                            AnswerFromFkType.class)
-                    .getValue();
-            request.setAnswer(answer);
-
-            return request;
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to load QuestionRequest template");
-        }
-
+        return request;
     }
 
-    private ReceiveMedicalCertificateQuestionType createValidQuestionRequest() {
+    private ReceiveMedicalCertificateQuestionType createValidQuestionRequest() throws IOException {
+        ClassPathResource resource = new ClassPathResource("QuestionAnswerValidator/valid-question-from-fk.xml");
+        JAXBElement<QuestionFromFkType> jaxbElement = XmlMarshallerHelper.unmarshal(resource.getInputStream());
+
         ReceiveMedicalCertificateQuestionType request = new ReceiveMedicalCertificateQuestionType();
+        request.setQuestion(jaxbElement.getValue());
 
-        try {
-            JAXBContext jaxbContext = JAXBContext.newInstance(QuestionFromFkType.class);
-
-            Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-
-            QuestionFromFkType question = unmarshaller
-                    .unmarshal(new StreamSource(new ClassPathResource("QuestionAnswerValidator/valid-question-from-fk.xml").getInputStream()),
-                            QuestionFromFkType.class)
-                    .getValue();
-            request.setQuestion(question);
-
-            return request;
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to load QuestionRequest template");
-        }
-
+        return request;
     }
 
 }

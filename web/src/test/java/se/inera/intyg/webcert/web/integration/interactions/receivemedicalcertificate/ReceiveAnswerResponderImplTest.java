@@ -18,6 +18,19 @@
  */
 package se.inera.intyg.webcert.web.integration.interactions.receivemedicalcertificate;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.when;
+
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.HashSet;
+import javax.xml.bind.JAXBElement;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -29,24 +42,16 @@ import se.inera.ifv.insuranceprocess.healthreporting.receivemedicalcertificatean
 import se.inera.ifv.insuranceprocess.healthreporting.receivemedicalcertificateanswerresponder.v1.ReceiveMedicalCertificateAnswerType;
 import se.inera.ifv.insuranceprocess.healthreporting.v2.ErrorIdEnum;
 import se.inera.ifv.insuranceprocess.healthreporting.v2.ResultCodeEnum;
+import se.inera.intyg.common.support.xml.XmlMarshallerHelper;
 import se.inera.intyg.schemas.contract.Personnummer;
-import se.inera.intyg.webcert.persistence.fragasvar.model.*;
+import se.inera.intyg.webcert.persistence.fragasvar.model.Amne;
+import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
+import se.inera.intyg.webcert.persistence.fragasvar.model.IntygsReferens;
+import se.inera.intyg.webcert.persistence.fragasvar.model.Komplettering;
+import se.inera.intyg.webcert.persistence.fragasvar.model.Vardperson;
 import se.inera.intyg.webcert.persistence.model.Status;
 import se.inera.intyg.webcert.web.service.fragasvar.FragaSvarService;
 import se.inera.intyg.webcert.web.service.notification.NotificationService;
-
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Unmarshaller;
-import javax.xml.transform.stream.StreamSource;
-import java.time.LocalDateTime;
-import java.util.HashSet;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ReceiveAnswerResponderImplTest {
@@ -67,10 +72,10 @@ public class ReceiveAnswerResponderImplTest {
     private ReceiveAnswerResponderImpl receiveAnswerResponder;
 
     @Test
-    public void testReceiveAnswerOK() {
+    public void testReceiveAnswerOK() throws Exception {
+        FragaSvar fragaSvar = buildFraga(QUESTION_ID, "That is the question", Amne.ARBETSTIDSFORLAGGNING, LocalDateTime.now(),
+            INTEGRERAD_ENHET, Status.PENDING_INTERNAL_ACTION);
 
-        FragaSvar fragaSvar = buildFraga(QUESTION_ID, "That is the question", Amne.ARBETSTIDSFORLAGGNING, LocalDateTime.now(), INTEGRERAD_ENHET,
-                Status.PENDING_INTERNAL_ACTION);
         when(mockFragaSvarService.processIncomingAnswer(anyLong(), anyString(), any(LocalDateTime.class))).thenReturn(fragaSvar);
 
         ReceiveMedicalCertificateAnswerType request = createRequest("RecieveQuestionAnswerResponders/answer-from-fk-integrated.xml");
@@ -84,7 +89,7 @@ public class ReceiveAnswerResponderImplTest {
     }
 
     @Test
-    public void testReceiveAnswerValidationError() {
+    public void testReceiveAnswerValidationError() throws Exception {
         ReceiveMedicalCertificateAnswerType request = createRequest("RecieveQuestionAnswerResponders/answer-from-fk-integrated.xml");
         request.getAnswer().setSvar(null); // invalid
         ReceiveMedicalCertificateAnswerResponseType response = receiveAnswerResponder.receiveMedicalCertificateAnswer(null, request);
@@ -98,25 +103,19 @@ public class ReceiveAnswerResponderImplTest {
         assertEquals("Missing svar element.", response.getResult().getErrorText());
     }
 
-    private ReceiveMedicalCertificateAnswerType createRequest(String answerFile) {
+    private ReceiveMedicalCertificateAnswerType createRequest(String answerFile) throws IOException {
+        ClassPathResource resource = new ClassPathResource(answerFile);
+        JAXBElement<AnswerFromFkType> jaxbElement = XmlMarshallerHelper.unmarshal(resource.getInputStream());
+
         ReceiveMedicalCertificateAnswerType request = new ReceiveMedicalCertificateAnswerType();
-        AnswerFromFkType answer = inflateAnswer(answerFile);
+        AnswerFromFkType answer = jaxbElement.getValue();
+
+        if (answer == null) {
+            throw new RuntimeException("Could not unmarshal file");
+        }
+
         request.setAnswer(answer);
         return request;
-    }
-
-    private AnswerFromFkType inflateAnswer(String filePath) {
-        try {
-            JAXBContext jaxbContext = JAXBContext.newInstance(AnswerFromFkType.class);
-            Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-            AnswerFromFkType answer = unmarshaller
-                    .unmarshal(new StreamSource(new ClassPathResource(filePath).getInputStream()),
-                            AnswerFromFkType.class)
-                    .getValue();
-            return answer;
-        } catch (Exception e) {
-            return null;
-        }
     }
 
     private FragaSvar buildFraga(Long id, String frageText, Amne amne, LocalDateTime fragaSkickadDatum, String vardpersonEnhetsId, Status status) {

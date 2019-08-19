@@ -52,9 +52,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
-import javax.xml.transform.stream.StreamSource;
 import javax.xml.ws.WebServiceException;
 
 import org.apache.commons.io.IOUtils;
@@ -92,6 +91,7 @@ import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.common.support.modules.support.api.dto.CertificateMetaData;
 import se.inera.intyg.common.support.modules.support.api.dto.CertificateResponse;
 import se.inera.intyg.common.support.modules.support.api.notification.ArendeCount;
+import se.inera.intyg.common.support.xml.XmlMarshallerHelper;
 import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
 import se.inera.intyg.infra.integration.pu.model.Person;
 import se.inera.intyg.infra.integration.pu.model.PersonSvar;
@@ -262,10 +262,8 @@ public class IntygServiceTest {
     public void setupIntygstjanstListResponse() throws Exception {
         ClassPathResource response = new ClassPathResource("IntygServiceTest/response-list-certificates.xml");
 
-        JAXBContext context = JAXBContext.newInstance(ListCertificatesForCareResponseType.class);
-        listResponse = context.createUnmarshaller()
-                .unmarshal(new StreamSource(response.getInputStream()), ListCertificatesForCareResponseType.class)
-                .getValue();
+        JAXBElement<ListCertificatesForCareResponseType> jaxbElement = XmlMarshallerHelper.unmarshal(response.getInputStream());
+        listResponse = jaxbElement.getValue();
 
         when(intygRelationHelper.getRelationsForIntyg(anyString())).thenReturn(new Relations());
         doNothing().when(intygRelationHelper).decorateIntygListWithRelations(anyList());
@@ -291,7 +289,7 @@ public class IntygServiceTest {
     }
 
     @Before
-    public void IntygServiceConverter() throws Exception {
+    public void setupIntygServiceConverter() throws Exception {
         when(moduleRegistry.getModuleApi(or(isNull(), anyString()), or(isNull(), anyString()))).thenReturn(moduleApi);
         json = FileUtils.getStringFromFile(new ClassPathResource("IntygServiceTest/utlatande.json").getFile());
         Fk7263Utlatande utlatande = objectMapper.readValue(json, Fk7263Utlatande.class);
@@ -629,17 +627,12 @@ public class IntygServiceTest {
 
         ClassPathResource response = new ClassPathResource("IntygServiceTest/response-list-certificates-with-sekretess.xml");
 
-        JAXBContext context = JAXBContext.newInstance(ListCertificatesForCareResponseType.class);
-        ListCertificatesForCareResponseType listResponse2 = context.createUnmarshaller()
-                .unmarshal(new StreamSource(response.getInputStream()), ListCertificatesForCareResponseType.class)
-                .getValue();
+        JAXBElement<ListCertificatesForCareResponseType> jaxbElement = XmlMarshallerHelper.unmarshal(response.getInputStream());
+        ListCertificatesForCareResponseType listResponse2 = jaxbElement.getValue();
 
         when(patientDetailsResolver.getSekretessStatus(any())).thenReturn(SekretessStatus.TRUE);
-
         when(authoritiesHelper.getIntygstyperForPrivilege(any(WebCertUser.class), anyString())).thenReturn(set);
-
         when(authoritiesHelper.getIntygstyperAllowedForSekretessmarkering()).thenReturn(Sets.newHashSet("fk7263"));
-
         when(listCertificatesForCareResponder.listCertificatesForCare(eq(LOGICAL_ADDRESS), any(ListCertificatesForCareType.class)))
                 .thenReturn(listResponse2);
 
