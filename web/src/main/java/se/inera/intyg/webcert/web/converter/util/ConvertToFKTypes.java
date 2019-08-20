@@ -18,7 +18,14 @@
  */
 package se.inera.intyg.webcert.web.converter.util;
 
+import static se.inera.intyg.common.support.Constants.ARBETSPLATS_KOD_OID;
+import static se.inera.intyg.common.support.Constants.HSA_ID_OID;
+import static se.inera.intyg.common.support.Constants.PERSON_ID_OID;
+import static se.inera.intyg.common.support.Constants.SAMORDNING_ID_OID;
+
 import iso.v21090.dt.v1.II;
+import java.time.LocalDateTime;
+import java.util.Optional;
 import se.inera.ifv.insuranceprocess.healthreporting.medcertqa.v1.Amnetyp;
 import se.inera.ifv.insuranceprocess.healthreporting.medcertqa.v1.InnehallType;
 import se.inera.ifv.insuranceprocess.healthreporting.medcertqa.v1.LakarutlatandeEnkelType;
@@ -31,14 +38,6 @@ import se.inera.intyg.common.support.validate.SamordningsnummerValidator;
 import se.inera.intyg.webcert.persistence.fragasvar.model.Amne;
 import se.inera.intyg.webcert.persistence.fragasvar.model.IntygsReferens;
 import se.inera.intyg.webcert.persistence.fragasvar.model.Vardperson;
-
-import java.time.LocalDateTime;
-import java.util.Optional;
-
-import static se.inera.intyg.common.support.Constants.ARBETSPLATS_KOD_OID;
-import static se.inera.intyg.common.support.Constants.HSA_ID_OID;
-import static se.inera.intyg.common.support.Constants.PERSON_ID_OID;
-import static se.inera.intyg.common.support.Constants.SAMORDNING_ID_OID;
 
 /**
  * Created by pehr on 10/2/13.
@@ -60,20 +59,20 @@ public final class ConvertToFKTypes {
 
     public static Amnetyp toAmneTyp(Amne amne) {
         switch (amne) {
-        case ARBETSTIDSFORLAGGNING:
-            return Amnetyp.ARBETSTIDSFORLAGGNING;
-        case AVSTAMNINGSMOTE:
-            return Amnetyp.AVSTAMNINGSMOTE;
-        case KOMPLETTERING_AV_LAKARINTYG:
-            return Amnetyp.KOMPLETTERING_AV_LAKARINTYG;
-        case KONTAKT:
-            return Amnetyp.KONTAKT;
-        case MAKULERING_AV_LAKARINTYG:
-            return Amnetyp.MAKULERING_AV_LAKARINTYG;
-        case OVRIGT:
-            return Amnetyp.OVRIGT;
-        case PAMINNELSE:
-            return Amnetyp.PAMINNELSE;
+            case ARBETSTIDSFORLAGGNING:
+                return Amnetyp.ARBETSTIDSFORLAGGNING;
+            case AVSTAMNINGSMOTE:
+                return Amnetyp.AVSTAMNINGSMOTE;
+            case KOMPLETTERING_AV_LAKARINTYG:
+                return Amnetyp.KOMPLETTERING_AV_LAKARINTYG;
+            case KONTAKT:
+                return Amnetyp.KONTAKT;
+            case MAKULERING_AV_LAKARINTYG:
+                return Amnetyp.MAKULERING_AV_LAKARINTYG;
+            case OVRIGT:
+                return Amnetyp.OVRIGT;
+            case PAMINNELSE:
+                return Amnetyp.PAMINNELSE;
         }
         return null;
     }

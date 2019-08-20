@@ -18,6 +18,9 @@
  */
 package se.inera.intyg.webcert.web.auth.authorities.validation;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -26,9 +29,7 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import org.junit.Test;
-
 import se.inera.intyg.infra.security.authorities.AuthoritiesException;
 import se.inera.intyg.infra.security.authorities.validation.AuthoritiesValidator;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
@@ -38,9 +39,6 @@ import se.inera.intyg.infra.security.common.model.RequestOrigin;
 import se.inera.intyg.infra.security.common.model.Role;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
-
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 ;
 
@@ -56,18 +54,18 @@ public class AuthorityValidatorTest {
         WebCertUser user = createDefaultUser();
 
         user.setFeatures(Stream.of(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST, AuthoritiesConstants.FEATURE_HANTERA_FRAGOR).collect(
-                Collectors.toMap(Function.identity(), s -> {
-                    Feature feature = new Feature();
-                    feature.setName(s);
-                    feature.setIntygstyper(Collections.singletonList("fk7263"));
-                    feature.setGlobal(true);
-                    return feature;
-                })));
+            Collectors.toMap(Function.identity(), s -> {
+                Feature feature = new Feature();
+                feature.setName(s);
+                feature.setIntygstyper(Collections.singletonList("fk7263"));
+                feature.setGlobal(true);
+                return feature;
+            })));
         assertTrue(validator.given(user, "fk7263").
-                features(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST).
-                features(AuthoritiesConstants.FEATURE_HANTERA_FRAGOR).
-                notFeatures(AuthoritiesConstants.FEATURE_FORNYA_INTYG).
-                isVerified());
+            features(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST).
+            features(AuthoritiesConstants.FEATURE_HANTERA_FRAGOR).
+            notFeatures(AuthoritiesConstants.FEATURE_FORNYA_INTYG).
+            isVerified());
     }
 
     @Test
@@ -75,17 +73,17 @@ public class AuthorityValidatorTest {
         WebCertUser user = createDefaultUser();
 
         user.setFeatures(Stream.of(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST, AuthoritiesConstants.FEATURE_HANTERA_FRAGOR).collect(
-                Collectors.toMap(Function.identity(), s -> {
-                    Feature feature = new Feature();
-                    feature.setName(s);
-                    feature.setIntygstyper(Collections.singletonList("fk7263"));
-                    feature.setGlobal(true);
-                    return feature;
-                })));
+            Collectors.toMap(Function.identity(), s -> {
+                Feature feature = new Feature();
+                feature.setName(s);
+                feature.setIntygstyper(Collections.singletonList("fk7263"));
+                feature.setGlobal(true);
+                return feature;
+            })));
 
         assertTrue(validator.given(user, "fk7263")
-                .features(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST, AuthoritiesConstants.FEATURE_ARBETSGIVARUTSKRIFT)
-                .isVerified());
+            .features(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST, AuthoritiesConstants.FEATURE_ARBETSGIVARUTSKRIFT)
+            .isVerified());
     }
 
     @Test
@@ -93,17 +91,17 @@ public class AuthorityValidatorTest {
         WebCertUser user = createDefaultUser();
 
         user.setFeatures(Stream.of(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST, AuthoritiesConstants.FEATURE_HANTERA_FRAGOR).collect(
-                Collectors.toMap(Function.identity(), s -> {
-                    Feature feature = new Feature();
-                    feature.setName(s);
-                    feature.setIntygstyper(Collections.singletonList("fk7263"));
-                    feature.setGlobal(true);
-                    return feature;
-                })));
+            Collectors.toMap(Function.identity(), s -> {
+                Feature feature = new Feature();
+                feature.setName(s);
+                feature.setIntygstyper(Collections.singletonList("fk7263"));
+                feature.setGlobal(true);
+                return feature;
+            })));
 
         assertTrue(validator.given(user).
-                notFeatures(AuthoritiesConstants.FEATURE_ARBETSGIVARUTSKRIFT, AuthoritiesConstants.FEATURE_FORNYA_INTYG).
-                isVerified());
+            notFeatures(AuthoritiesConstants.FEATURE_ARBETSGIVARUTSKRIFT, AuthoritiesConstants.FEATURE_FORNYA_INTYG).
+            isVerified());
     }
 
     @Test(expected = AuthoritiesException.class)
@@ -111,18 +109,18 @@ public class AuthorityValidatorTest {
         WebCertUser user = createDefaultUser();
 
         user.setFeatures(Stream.of(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST, AuthoritiesConstants.FEATURE_HANTERA_FRAGOR).collect(
-                Collectors.toMap(Function.identity(), s -> {
-                    Feature feature = new Feature();
-                    feature.setName(s);
-                    feature.setIntygstyper(Collections.singletonList("fk7263"));
-                    feature.setGlobal(true);
-                    return feature;
-                })));
+            Collectors.toMap(Function.identity(), s -> {
+                Feature feature = new Feature();
+                feature.setName(s);
+                feature.setIntygstyper(Collections.singletonList("fk7263"));
+                feature.setGlobal(true);
+                return feature;
+            })));
         assertFalse(validator.given(user, "fk7263").
-                notFeatures(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST, AuthoritiesConstants.FEATURE_FORNYA_INTYG).isVerified());
+            notFeatures(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST, AuthoritiesConstants.FEATURE_FORNYA_INTYG).isVerified());
 
         validator.given(user, "fk7263").
-                notFeatures(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST, AuthoritiesConstants.FEATURE_FORNYA_INTYG).orThrow();
+            notFeatures(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST, AuthoritiesConstants.FEATURE_FORNYA_INTYG).orThrow();
     }
 
     @Test
@@ -130,9 +128,9 @@ public class AuthorityValidatorTest {
         WebCertUser user = createDefaultUser();
 
         assertTrue(validator.given(user, "fk7263").
-                features(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST).
-                notFeatures(AuthoritiesConstants.FEATURE_ARBETSGIVARUTSKRIFT).
-                isVerified());
+            features(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST).
+            notFeatures(AuthoritiesConstants.FEATURE_ARBETSGIVARUTSKRIFT).
+            isVerified());
     }
 
     @Test(expected = AuthoritiesException.class)
@@ -143,7 +141,7 @@ public class AuthorityValidatorTest {
         }
 
         assertFalse(validator.given(user, "fk7263").features(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
-                .notFeatures(AuthoritiesConstants.FEATURE_ARBETSGIVARUTSKRIFT).isVerified());
+            .notFeatures(AuthoritiesConstants.FEATURE_ARBETSGIVARUTSKRIFT).isVerified());
 
         validator.given(user, "fk7263").features(AuthoritiesConstants.FEATURE_ARBETSGIVARUTSKRIFT).orThrow();
     }
@@ -153,10 +151,10 @@ public class AuthorityValidatorTest {
         WebCertUser user = createDefaultUser();
 
         assertFalse(validator.given(user, "fk7263").
-                features(AuthoritiesConstants.FEATURE_ARBETSGIVARUTSKRIFT).isVerified());
+            features(AuthoritiesConstants.FEATURE_ARBETSGIVARUTSKRIFT).isVerified());
 
         validator.given(user, "fk7263").
-                features(AuthoritiesConstants.FEATURE_ARBETSGIVARUTSKRIFT).orThrow();
+            features(AuthoritiesConstants.FEATURE_ARBETSGIVARUTSKRIFT).orThrow();
     }
 
     @Test(expected = AuthoritiesException.class)
@@ -164,10 +162,10 @@ public class AuthorityValidatorTest {
         WebCertUser user = createDefaultUser();
 
         assertFalse(validator.given(user, "fk7263").
-                notFeatures(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST).isVerified());
+            notFeatures(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST).isVerified());
 
         validator.given(user, "fk7263").
-                notFeatures(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST).orThrow();
+            notFeatures(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST).orThrow();
     }
 
     @Test
@@ -175,7 +173,7 @@ public class AuthorityValidatorTest {
         WebCertUser user = createDefaultUser();
 
         assertTrue(validator.given(user).
-                origins(UserOriginType.NORMAL).isVerified());
+            origins(UserOriginType.NORMAL).isVerified());
     }
 
     @Test(expected = AuthoritiesException.class)
@@ -183,7 +181,7 @@ public class AuthorityValidatorTest {
         WebCertUser user = createDefaultUser();
 
         validator.given(user).
-                origins(UserOriginType.DJUPINTEGRATION).orThrow();
+            origins(UserOriginType.DJUPINTEGRATION).orThrow();
     }
 
     @Test
@@ -191,7 +189,7 @@ public class AuthorityValidatorTest {
         WebCertUser user = createDefaultUser();
 
         assertTrue(validator.given(user).
-                notOrigins(UserOriginType.DJUPINTEGRATION).isVerified());
+            notOrigins(UserOriginType.DJUPINTEGRATION).isVerified());
     }
 
     @Test(expected = AuthoritiesException.class)
@@ -199,7 +197,7 @@ public class AuthorityValidatorTest {
         WebCertUser user = createDefaultUser();
 
         validator.given(user).
-                notOrigins(UserOriginType.NORMAL).orThrow();
+            notOrigins(UserOriginType.NORMAL).orThrow();
     }
 
     @Test
@@ -207,9 +205,9 @@ public class AuthorityValidatorTest {
         WebCertUser user = createDefaultUser();
 
         assertTrue(validator.given(user).
-                privilege("p1").isVerified());
+            privilege("p1").isVerified());
         validator.given(user).
-                privilege("p1").orThrow();
+            privilege("p1").orThrow();
     }
 
     @Test(expected = AuthoritiesException.class)
@@ -217,7 +215,7 @@ public class AuthorityValidatorTest {
         WebCertUser user = createDefaultUser();
 
         validator.given(user).
-                privilege("p2").orThrow();
+            privilege("p2").orThrow();
     }
 
     @Test(expected = AuthoritiesException.class)
@@ -225,7 +223,7 @@ public class AuthorityValidatorTest {
         WebCertUser user = createDefaultUser();
 
         validator.given(user).
-                notPrivilege("p1").orThrow();
+            notPrivilege("p1").orThrow();
     }
 
     @Test
@@ -233,7 +231,7 @@ public class AuthorityValidatorTest {
         WebCertUser user = createDefaultUser();
 
         assertTrue(validator.given(user, "fk7263").
-                privilege("p1").isVerified());
+            privilege("p1").isVerified());
     }
 
     @Test(expected = AuthoritiesException.class)
@@ -241,7 +239,7 @@ public class AuthorityValidatorTest {
         WebCertUser user = createDefaultUser();
 
         validator.given(user, "ts-diabetes").
-                privilege("p1").orThrow();
+            privilege("p1").orThrow();
     }
 
     @Test(expected = AuthoritiesException.class)
@@ -250,7 +248,7 @@ public class AuthorityValidatorTest {
         user.setOrigin(UserOriginType.UTHOPP.name());
 
         validator.given(user, "fk7263").
-                privilege("p1").orThrow();
+            privilege("p1").orThrow();
     }
 
     @Test(expected = AuthoritiesException.class)
@@ -259,7 +257,7 @@ public class AuthorityValidatorTest {
         user.setOrigin(UserOriginType.DJUPINTEGRATION.name());
 
         validator.given(user, "fk7263").
-                privilege("p1").orThrow();
+            privilege("p1").orThrow();
     }
 
     @Test
@@ -267,7 +265,7 @@ public class AuthorityValidatorTest {
         WebCertUser user = createDefaultUser();
 
         validator.given(user, "fk7263").
-                notPrivilege("p3");
+            notPrivilege("p3");
     }
 
     @Test
@@ -275,7 +273,7 @@ public class AuthorityValidatorTest {
         WebCertUser user = createDefaultUser();
 
         assertTrue(validator.given(user).
-                privilege("p1").isVerified());
+            privilege("p1").isVerified());
     }
 
     @Test
@@ -283,7 +281,7 @@ public class AuthorityValidatorTest {
         WebCertUser user = createDefaultUser();
 
         assertTrue(validator.given(user).
-                roles(AuthoritiesConstants.ROLE_LAKARE).isVerified());
+            roles(AuthoritiesConstants.ROLE_LAKARE).isVerified());
     }
 
     @Test
@@ -291,7 +289,7 @@ public class AuthorityValidatorTest {
         WebCertUser user = createDefaultUser();
 
         assertTrue(validator.given(user).
-                roles(AuthoritiesConstants.ROLE_LAKARE, AuthoritiesConstants.ROLE_ADMIN).isVerified());
+            roles(AuthoritiesConstants.ROLE_LAKARE, AuthoritiesConstants.ROLE_ADMIN).isVerified());
     }
 
     @Test
@@ -299,7 +297,7 @@ public class AuthorityValidatorTest {
         WebCertUser user = createDefaultUser();
 
         assertTrue(validator.given(user).
-                notRoles(AuthoritiesConstants.ROLE_TANDLAKARE, AuthoritiesConstants.ROLE_ADMIN).isVerified());
+            notRoles(AuthoritiesConstants.ROLE_TANDLAKARE, AuthoritiesConstants.ROLE_ADMIN).isVerified());
     }
 
     @Test(expected = AuthoritiesException.class)
@@ -307,7 +305,7 @@ public class AuthorityValidatorTest {
         WebCertUser user = createDefaultUser();
 
         validator.given(user).
-                roles(AuthoritiesConstants.ROLE_ADMIN).orThrow();
+            roles(AuthoritiesConstants.ROLE_ADMIN).orThrow();
     }
 
     @Test
@@ -315,7 +313,7 @@ public class AuthorityValidatorTest {
         WebCertUser user = createDefaultUser();
 
         assertTrue(validator.given(user).
-                notRoles(AuthoritiesConstants.ROLE_ADMIN).isVerified());
+            notRoles(AuthoritiesConstants.ROLE_ADMIN).isVerified());
     }
 
     @Test(expected = AuthoritiesException.class)
@@ -323,7 +321,7 @@ public class AuthorityValidatorTest {
         WebCertUser user = createDefaultUser();
 
         validator.given(user).
-                notRoles(AuthoritiesConstants.ROLE_LAKARE).orThrow();
+            notRoles(AuthoritiesConstants.ROLE_LAKARE).orThrow();
     }
 
     @Test
@@ -331,15 +329,15 @@ public class AuthorityValidatorTest {
         WebCertUser user = createDefaultUser();
 
         assertTrue(validator.given(user, "fk7263").
-                features(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST).
-                notFeatures(AuthoritiesConstants.FEATURE_ARBETSGIVARUTSKRIFT).
-                roles(AuthoritiesConstants.ROLE_LAKARE).
-                notRoles("dummy_role").
-                origins(UserOriginType.NORMAL).
-                notOrigins(UserOriginType.DJUPINTEGRATION).
-                privilege("p1").
-                notPrivilege("dummy_privilege").
-                isVerified());
+            features(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST).
+            notFeatures(AuthoritiesConstants.FEATURE_ARBETSGIVARUTSKRIFT).
+            roles(AuthoritiesConstants.ROLE_LAKARE).
+            notRoles("dummy_role").
+            origins(UserOriginType.NORMAL).
+            notOrigins(UserOriginType.DJUPINTEGRATION).
+            privilege("p1").
+            notPrivilege("dummy_privilege").
+            isVerified());
     }
 
     private RequestOrigin createRequestOrigin(String name, List<String> intygstyper) {
@@ -392,17 +390,17 @@ public class AuthorityValidatorTest {
         featureMap.put(feature2.getName(), feature2);
 
         return createUser(AuthoritiesConstants.ROLE_LAKARE,
-                createPrivilege("p1",
-                        Arrays.asList("fk7263", "ts-bas"), // p1 is restricted to these intygstyper
-                        Arrays.asList(
-                                createRequestOrigin(UserOriginType.NORMAL.name(), Arrays.asList("fk7263")),
-                                // Normal restricted to fk7263
-                                createRequestOrigin(UserOriginType.DJUPINTEGRATION.name(), Arrays.asList("ts-bas")))),
-                featureMap,
-                // feature_a is active for
-                // intygscontext fk7263, base_feature
-                // is not.
-                UserOriginType.NORMAL.name());
+            createPrivilege("p1",
+                Arrays.asList("fk7263", "ts-bas"), // p1 is restricted to these intygstyper
+                Arrays.asList(
+                    createRequestOrigin(UserOriginType.NORMAL.name(), Arrays.asList("fk7263")),
+                    // Normal restricted to fk7263
+                    createRequestOrigin(UserOriginType.DJUPINTEGRATION.name(), Arrays.asList("ts-bas")))),
+            featureMap,
+            // feature_a is active for
+            // intygscontext fk7263, base_feature
+            // is not.
+            UserOriginType.NORMAL.name());
     }
 
 }

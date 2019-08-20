@@ -19,6 +19,7 @@
 package se.inera.intyg.webcert.web.web.controller.api.dto;
 
 public final class PreviousCertificateWarningResponse {
+
     private final String moduleId;
     private final boolean withinCareGiver;
 

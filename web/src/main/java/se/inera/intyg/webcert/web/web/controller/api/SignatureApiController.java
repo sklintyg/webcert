@@ -18,9 +18,9 @@
  */
 package se.inera.intyg.webcert.web.web.controller.api;
 
+import com.google.common.base.Strings;
 import java.util.Arrays;
 import java.util.stream.Collectors;
-
 import javax.persistence.OptimisticLockException;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
@@ -31,14 +31,10 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.OptimisticLockingFailureException;
-
-import com.google.common.base.Strings;
-
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.xmldsig.service.FakeSignatureServiceImpl;
@@ -73,17 +69,17 @@ public class SignatureApiController extends AbstractApiController {
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
     public SignaturStateDTO signeraUtkast(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId,
-            @PathParam("version") long version, @PathParam("signMethod") String signMethodStr) {
+        @PathParam("version") long version, @PathParam("signMethod") String signMethodStr) {
 
         SignMethod signMethod = null;
         try {
             signMethod = SignMethod.valueOf(signMethodStr);
         } catch (IllegalArgumentException e) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MISSING_PARAMETER,
-                    "Parameter signMethod is missing or has illegal value. Allowed values are: "
-                            + Arrays.asList(SignMethod.values()).stream()
-                                    .map(SignMethod::name)
-                                    .collect(Collectors.joining(", ")));
+                "Parameter signMethod is missing or has illegal value. Allowed values are: "
+                    + Arrays.asList(SignMethod.values()).stream()
+                    .map(SignMethod::name)
+                    .collect(Collectors.joining(", ")));
         }
 
         try {
@@ -97,13 +93,13 @@ public class SignatureApiController extends AbstractApiController {
 
     private SignaturStateDTO convertToSignatureStateDTO(SignaturBiljett sb) {
         return SignaturStateDTO.SignaturStateDTOBuilder.aSignaturStateDTO()
-                .withId(sb.getTicketId())
-                .withIntygsId(sb.getIntygsId())
-                .withStatus(sb.getStatus())
-                .withVersion(sb.getVersion())
-                .withSignaturTyp(sb.getSignaturTyp())
-                .withHash(sb.getHash()) // This is what you stuff into NetiD SIGN.
-                .build();
+            .withId(sb.getTicketId())
+            .withIntygsId(sb.getIntygsId())
+            .withStatus(sb.getStatus())
+            .withVersion(sb.getVersion())
+            .withSignaturTyp(sb.getSignaturTyp())
+            .withHash(sb.getHash()) // This is what you stuff into NetiD SIGN.
+            .build();
     }
 
     @GET
@@ -111,7 +107,7 @@ public class SignatureApiController extends AbstractApiController {
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public SignaturStateDTO signeringsStatus(@PathParam("intygsTyp") String intygsTyp, @PathParam("ticketId") String ticketId) {
         authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp).features(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
-                .orThrow();
+            .orThrow();
         SignaturBiljett sb = underskriftService.signeringsStatus(ticketId);
 
         return convertToSignatureStateDTO(sb);
@@ -119,10 +115,10 @@ public class SignatureApiController extends AbstractApiController {
 
     @POST
     @Path("/{intygsTyp}/{biljettId}/signeranetidplugin")
-    @Consumes({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_OCTET_STREAM })
+    @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_OCTET_STREAM})
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public SignaturStateDTO klientSigneraUtkast(@PathParam("intygsTyp") String intygsTyp, @PathParam("biljettId") String biljettId,
-            @Context HttpServletRequest request, KlientSignaturRequest signaturRequest) {
+        @Context HttpServletRequest request, KlientSignaturRequest signaturRequest) {
 
         LOG.debug("Signerar intyg med biljettId {}", biljettId);
 

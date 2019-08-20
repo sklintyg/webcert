@@ -18,7 +18,12 @@
  */
 package se.inera.intyg.webcert.web.auth.oidc.jwt;
 
+import static se.inera.intyg.webcert.web.web.controller.integration.IntygIntegrationController.PARAM_ENHET_ID;
+
 import com.google.common.base.Strings;
+import java.io.IOException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
@@ -30,12 +35,6 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.integration.IntygIntegrationController;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-
-import static se.inera.intyg.webcert.web.web.controller.integration.IntygIntegrationController.PARAM_ENHET_ID;
-
 /**
  * Custom Spring Security {@link AuthenticationSuccessHandler} that post-authorization can augment the created
  * session with {@link IntegrationParameters} and redirect the user to the originally requested resource given a certId
@@ -46,15 +45,15 @@ import static se.inera.intyg.webcert.web.web.controller.integration.IntygIntegra
  * @author eriklupander
  */
 public class JwtAuthenticationSuccessHandler extends
-        SimpleUrlAuthenticationSuccessHandler implements
-        AuthenticationSuccessHandler {
+    SimpleUrlAuthenticationSuccessHandler implements
+    AuthenticationSuccessHandler {
 
     public JwtAuthenticationSuccessHandler() {
     }
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication)
-            throws IOException {
+        throws IOException {
 
         if (response.isCommitted()) {
             logger.debug("Response has already been committed. Unable to redirect");
@@ -77,34 +76,34 @@ public class JwtAuthenticationSuccessHandler extends
         // Make sure this is a fresh session, e.g. must NOT have any existing params.
         if (webCertUser.getParameters() != null) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM,
-                    "This user session is already active and using Webcert. "
-                            + "Please use a new user session for each deep integration link.");
+                "This user session is already active and using Webcert. "
+                    + "Please use a new user session for each deep integration link.");
         }
 
         String redirectUrl = "/visa/intyg/" + intygsId;
 
         if (requestURI.endsWith("edit")) {
             IntegrationParameters integrationParameters = IntegrationParameters.of(
-                    getStringParam(request, IntygIntegrationController.PARAM_REFERENCE),
-                    getStringParam(request, IntygIntegrationController.PARAM_RESPONSIBLE_HOSP_NAME),
-                    getStringParam(request, IntygIntegrationController.PARAM_PATIENT_ALTERNATE_SSN),
-                    getStringParam(request, IntygIntegrationController.PARAM_PATIENT_FORNAMN),
-                    getStringParam(request, IntygIntegrationController.PARAM_PATIENT_MELLANNAMN),
-                    getStringParam(request, IntygIntegrationController.PARAM_PATIENT_EFTERNAMN),
-                    getStringParam(request, IntygIntegrationController.PARAM_PATIENT_POSTADRESS),
-                    getStringParam(request, IntygIntegrationController.PARAM_PATIENT_POSTNUMMER),
-                    getStringParam(request, IntygIntegrationController.PARAM_PATIENT_POSTORT),
-                    getBooleanParameter(request, IntygIntegrationController.PARAM_COHERENT_JOURNALING, false),
-                    getBooleanParameter(request, IntygIntegrationController.PARAM_PATIENT_DECEASED, false),
-                    getBooleanParameter(request, IntygIntegrationController.PARAM_INACTIVE_UNIT, false),
-                    getBooleanParameter(request, IntygIntegrationController.PARAM_FORNYA_OK, true));
+                getStringParam(request, IntygIntegrationController.PARAM_REFERENCE),
+                getStringParam(request, IntygIntegrationController.PARAM_RESPONSIBLE_HOSP_NAME),
+                getStringParam(request, IntygIntegrationController.PARAM_PATIENT_ALTERNATE_SSN),
+                getStringParam(request, IntygIntegrationController.PARAM_PATIENT_FORNAMN),
+                getStringParam(request, IntygIntegrationController.PARAM_PATIENT_MELLANNAMN),
+                getStringParam(request, IntygIntegrationController.PARAM_PATIENT_EFTERNAMN),
+                getStringParam(request, IntygIntegrationController.PARAM_PATIENT_POSTADRESS),
+                getStringParam(request, IntygIntegrationController.PARAM_PATIENT_POSTNUMMER),
+                getStringParam(request, IntygIntegrationController.PARAM_PATIENT_POSTORT),
+                getBooleanParameter(request, IntygIntegrationController.PARAM_COHERENT_JOURNALING, false),
+                getBooleanParameter(request, IntygIntegrationController.PARAM_PATIENT_DECEASED, false),
+                getBooleanParameter(request, IntygIntegrationController.PARAM_INACTIVE_UNIT, false),
+                getBooleanParameter(request, IntygIntegrationController.PARAM_FORNYA_OK, true));
             webCertUser.setParameters(integrationParameters);
             redirectUrl = redirectUrl + "/saved";
         } else if (requestURI.endsWith("read")) {
             redirectUrl = redirectUrl + "/readonly";
         } else {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM,
-                    "The context path for JWT authentication was invalid {" + requestURI + "}");
+                "The context path for JWT authentication was invalid {" + requestURI + "}");
         }
 
         if (!Strings.isNullOrEmpty(getStringParam(request, PARAM_ENHET_ID))) {

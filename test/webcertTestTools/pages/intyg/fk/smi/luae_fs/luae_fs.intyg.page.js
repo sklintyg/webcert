@@ -22,38 +22,38 @@
 var BaseSmiIntygPage = require('../smi.base.intyg.page.js');
 
 var LuaefsIntyg = BaseSmiIntygPage._extend({
-    init: function init() {
-        init._super.call(this);
+  init: function init() {
+    init._super.call(this);
 
-        this.intygType = 'luae_fs';
-        this.intygTypeVersion = '1.0';
+    this.intygType = 'luae_fs';
+    this.intygTypeVersion = '1.0';
 
-        this.funktionsnedsattning = {
-            debut: element(by.id('funktionsnedsattningDebut')),
-            paverkan: element(by.id('funktionsnedsattningPaverkan'))
-        };
-    },
+    this.funktionsnedsattning = {
+      debut: element(by.id('funktionsnedsattningDebut')),
+      paverkan: element(by.id('funktionsnedsattningPaverkan'))
+    };
+  },
 
-    get: function get(intygId) {
-        get._super.call(this, intygId);
-    },
+  get: function get(intygId) {
+    get._super.call(this, intygId);
+  },
 
-    verify: function(data) {
+  verify: function(data) {
 
-        this.verifieraBaseratPa(data);
+    this.verifieraBaseratPa(data);
 
-        this.verifieraDiagnos(data);
+    this.verifieraDiagnos(data);
 
-        this.verifieraAndraMedicinskaUtredningar(data);
+    this.verifieraAndraMedicinskaUtredningar(data);
 
-        expect(this.funktionsnedsattning.debut.getText()).toBe(data.funktionsnedsattning.debut);
-        expect(this.funktionsnedsattning.paverkan.getText()).toBe(data.funktionsnedsattning.paverkan);
+    expect(this.funktionsnedsattning.debut.getText()).toBe(data.funktionsnedsattning.debut);
+    expect(this.funktionsnedsattning.paverkan.getText()).toBe(data.funktionsnedsattning.paverkan);
 
-        this.verifieraOvrigt(data);
+    this.verifieraOvrigt(data);
 
-        this.verifieraKontaktFK(data);
+    this.verifieraKontaktFK(data);
 
-        this.verifieraTillaggsfragor(data);
-    }
+    this.verifieraTillaggsfragor(data);
+  }
 });
 module.exports = new LuaefsIntyg();

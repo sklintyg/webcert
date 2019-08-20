@@ -18,14 +18,13 @@
  */
 package se.inera.intyg.webcert.web.integration.util;
 
+import java.util.Optional;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.infra.integration.hsa.model.AbstractVardenhet;
 import se.inera.intyg.infra.integration.hsa.model.Mottagning;
 import se.inera.intyg.infra.integration.hsa.model.Vardgivare;
 import se.inera.intyg.infra.security.common.model.IntygUser;
-
-import java.util.Optional;
 
 /**
  * Helper for finding various HSA organization entities based on hsaId from a User's Vardgivare -> Vardenhet ->
@@ -79,14 +78,14 @@ public final class HoSPersonHelper {
     public static Vardenhet createVardenhetFromIntygUser(String enhetId, IntygUser user) {
 
         AbstractVardenhet enhet = HoSPersonHelper.findVardenhetEllerMottagning(user, enhetId)
-                .orElseThrow(() -> new IllegalStateException("User '" + user.getHsaId() + "' has no MIU for care unit '" + enhetId + "'"));
+            .orElseThrow(() -> new IllegalStateException("User '" + user.getHsaId() + "' has no MIU for care unit '" + enhetId + "'"));
 
         if (enhet instanceof se.inera.intyg.infra.integration.hsa.model.Vardenhet) {
             se.inera.intyg.infra.integration.hsa.model.Vardenhet hsaVardenhet =
-                    (se.inera.intyg.infra.integration.hsa.model.Vardenhet) enhet;
+                (se.inera.intyg.infra.integration.hsa.model.Vardenhet) enhet;
             se.inera.intyg.infra.integration.hsa.model.Vardgivare hsaVardgivare = HoSPersonHelper
-                    .findVardgivare(user, hsaVardenhet.getVardgivareHsaId())
-                    .orElseThrow(() -> new IllegalStateException("Unable to find parent vårdgivare for vardenhet '" + enhetId + "'"));
+                .findVardgivare(user, hsaVardenhet.getVardgivareHsaId())
+                .orElseThrow(() -> new IllegalStateException("Unable to find parent vårdgivare for vardenhet '" + enhetId + "'"));
 
             Vardenhet vardenhet = new Vardenhet();
             vardenhet.setEnhetsnamn(hsaVardenhet.getNamn());
@@ -98,7 +97,7 @@ public final class HoSPersonHelper {
             vardenhet.setTelefonnummer(hsaVardenhet.getTelefonnummer());
 
             se.inera.intyg.common.support.model.common.internal.Vardgivare vardgivare =
-                    new se.inera.intyg.common.support.model.common.internal.Vardgivare();
+                new se.inera.intyg.common.support.model.common.internal.Vardgivare();
 
             vardgivare.setVardgivarid(hsaVardgivare.getId());
             vardgivare.setVardgivarnamn(hsaVardgivare.getNamn());
@@ -108,8 +107,8 @@ public final class HoSPersonHelper {
         if (enhet instanceof Mottagning) {
             Mottagning m = (Mottagning) enhet;
             se.inera.intyg.infra.integration.hsa.model.Vardgivare hsaVardgivare = HoSPersonHelper
-                    .findVardgivareForMottagning(user, m.getId())
-                    .orElseThrow(() -> new IllegalStateException("Unable to find parent vårdgivare for mottagning '" + enhetId + "'"));
+                .findVardgivareForMottagning(user, m.getId())
+                .orElseThrow(() -> new IllegalStateException("Unable to find parent vårdgivare for mottagning '" + enhetId + "'"));
 
             Vardenhet vardenhet = new Vardenhet();
             vardenhet.setEnhetsnamn(m.getNamn());
@@ -121,7 +120,7 @@ public final class HoSPersonHelper {
             vardenhet.setTelefonnummer(m.getTelefonnummer());
 
             se.inera.intyg.common.support.model.common.internal.Vardgivare vardgivare =
-                    new se.inera.intyg.common.support.model.common.internal.Vardgivare();
+                new se.inera.intyg.common.support.model.common.internal.Vardgivare();
 
             vardgivare.setVardgivarid(hsaVardgivare.getId());
             vardgivare.setVardgivarnamn(hsaVardgivare.getNamn());
@@ -129,7 +128,7 @@ public final class HoSPersonHelper {
             return vardenhet;
         }
         throw new IllegalArgumentException(
-                "AbstractVardenhet instance passed to createVardenhetFromIntygUser was of unsupported type: " + enhet.getClass().getName());
+            "AbstractVardenhet instance passed to createVardenhetFromIntygUser was of unsupported type: " + enhet.getClass().getName());
     }
 
     public static void enrichHoSPerson(HoSPersonal hosPerson, IntygUser user) {

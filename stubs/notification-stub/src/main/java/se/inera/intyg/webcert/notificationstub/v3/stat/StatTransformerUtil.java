@@ -22,7 +22,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareType;
 
 /**
@@ -34,9 +33,9 @@ public class StatTransformerUtil {
 
     public Map<String, List<NotificationStubEntry>> toStat(Collection<CertificateStatusUpdateForCareType> notifs) {
         Map<String, List<NotificationStubEntry>> listMap = notifs.stream()
-                .map(model -> new NotificationStubEntry(model.getIntyg().getIntygsId().getExtension(),
-                        model.getHandelse().getHandelsekod().getCode(), model.getHandelse().getTidpunkt()))
-                .collect(Collectors.groupingBy(NotificationStubEntry::getIntygsId));
+            .map(model -> new NotificationStubEntry(model.getIntyg().getIntygsId().getExtension(),
+                model.getHandelse().getHandelsekod().getCode(), model.getHandelse().getTidpunkt()))
+            .collect(Collectors.groupingBy(NotificationStubEntry::getIntygsId));
 
         return listMap;
     }

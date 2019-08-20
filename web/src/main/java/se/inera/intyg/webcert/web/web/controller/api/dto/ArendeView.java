@@ -18,14 +18,11 @@
  */
 package se.inera.intyg.webcert.web.web.controller.api.dto;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-
-import javax.annotation.Nullable;
-
 import com.google.auto.value.AutoValue;
 import com.google.common.collect.ImmutableList;
-
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import javax.annotation.Nullable;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.persistence.model.Status;
 
@@ -101,8 +98,8 @@ public abstract class ArendeView {
 
     public static Builder builder() {
         return new AutoValue_ArendeView.Builder()
-                .setKompletteringar(ImmutableList.of())
-                .setExternaKontakter(ImmutableList.<String> of());
+            .setKompletteringar(ImmutableList.of())
+            .setExternaKontakter(ImmutableList.<String>of());
     }
 
     @AutoValue.Builder

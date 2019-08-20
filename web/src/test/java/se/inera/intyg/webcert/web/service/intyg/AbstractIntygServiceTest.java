@@ -22,20 +22,17 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
 import org.apache.cxf.helpers.FileUtils;
 import org.junit.Before;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.springframework.core.io.ClassPathResource;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import se.inera.intyg.common.fk7263.model.internal.Fk7263Utlatande;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.model.CertificateState;
@@ -142,11 +139,11 @@ public abstract class AbstractIntygServiceTest extends AuthoritiesConfigurationT
         certificateResponse = new CertificateResponse(json, utlatande, metaData, false);
         when(moduleFacade.getCertificate(any(String.class), any(String.class), anyString())).thenReturn(certificateResponse);
         when(certificateRelationService.getNewestRelationOfType(anyString(), any(RelationKod.class), any(List.class)))
-                .thenReturn(Optional.empty());
+            .thenReturn(Optional.empty());
         when(intygRelationHelper.getRelationsForIntyg(anyString())).thenReturn(new Relations());
 
         when(patientDetailsResolver.resolvePatient(any(Personnummer.class), anyString(), anyString()))
-                .thenReturn(buildPatient(false, false));
+            .thenReturn(buildPatient(false, false));
         when(moduleRegistry.getModuleApi(anyString(), anyString())).thenReturn(moduleApi);
         when(moduleApi.getUtlatandeFromJson(anyString())).thenReturn(new Fk7263Utlatande());
         when(moduleApi.updateBeforeViewing(anyString(), any(Patient.class))).thenReturn("MODEL");

@@ -28,89 +28,90 @@ var intygGenerator = wcTestTools.intygGenerator;
 
 describe('webcert intyg', function() {
 
-    var arendeIndex = 1;
+  var arendeIndex = 1;
 
-    it('generate all intyg and all arendetypes', function() {
+  it('generate all intyg and all arendetypes', function() {
 
-        function createIntygWithArenden(intygType) {
+    function createIntygWithArenden(intygType) {
 
-            var intygId = intygType + '-arende-test';
+      var intygId = intygType + '-arende-test';
 
-            // Delete utkast also removes associated Arenden
-            restTestdataHelper.deleteUtkast(intygId);
+      // Delete utkast also removes associated Arenden
+      restTestdataHelper.deleteUtkast(intygId);
 
-            var intygData = {
-                'contents':intygGenerator.getIntygJson({'intygType':intygType,'intygId':intygId}),
-                'utkastStatus':'SIGNED',
-                'revoked':false
-            };
-            restTestdataHelper.createWebcertIntyg(intygData).then(function(response){
+      var intygData = {
+        'contents': intygGenerator.getIntygJson({'intygType': intygType, 'intygId': intygId}),
+        'utkastStatus': 'SIGNED',
+        'revoked': false
+      };
+      restTestdataHelper.createWebcertIntyg(intygData).then(function(response) {
 
-                function createArende(arendeOptions) {
-                    logger.debug('Creating arende:' + arendeOptions.amne);
+        function createArende(arendeOptions) {
+          logger.debug('Creating arende:' + arendeOptions.amne);
 
-                    arendeOptions.meddelandeId = 'arende-test-' + arendeOptions.amne.toLowerCase() + arendeIndex++;
-                    arendeOptions.intygType = intygType;
-                    arendeOptions.intygId = intygId;
+          arendeOptions.meddelandeId = 'arende-test-' + arendeOptions.amne.toLowerCase() + arendeIndex++;
+          arendeOptions.intygType = intygType;
+          arendeOptions.intygId = intygId;
 
-                    var arende = arendeFromJsonFactory.get(arendeOptions);
-                    restTestdataHelper.createArende(arende).then(function(response){
-                        logger.debug('Response code:' + response.statusCode);
-                    });
+          var arende = arendeFromJsonFactory.get(arendeOptions);
+          restTestdataHelper.createArende(arende).then(function(response) {
+            logger.debug('Response code:' + response.statusCode);
+          });
 
-                    return arendeOptions.meddelandeId;
-                }
-
-                createArende({meddelande:'Hur är det med arbetstiden?', amne:'AVSTMN', status:'PENDING_INTERNAL_ACTION'});
-                createArende({meddelande:'Vi behöver prata.', amne:'AVSTMN', status:'PENDING_INTERNAL_ACTION'});
-                createArende({meddelande:'Vi behöver kontakt.', amne:'KONTKT', status:'PENDING_INTERNAL_ACTION'});
-                createArende({meddelande:'Övriga frågor?', amne:'OVRIGT', status:'PENDING_INTERNAL_ACTION'});
-
-                var meddelandeId = createArende({
-                    meddelande:'Komplettera mera.',
-                    amne:'KOMPLT',
-                    status:'PENDING_INTERNAL_ACTION',
-                    kompletteringar:[
-                        {
-                            'frageId':'1',
-                            'instans':1,
-                            'text':'Fixa.'
-                        },
-                        {
-                            'frageId':'2',
-                            'instans':1,
-                            'text':'Här har du ett fel.'
-                        },
-                        {
-                            'frageId':'4',
-                            'instans':3,
-                            'text':'Här har du ett annat fel.'
-                        }
-                    ]
-                });
-
-                createArende({
-                    meddelande: 'Du har facking glömt att komplettera loser!',
-                    amne:'PAMINN',
-                    status:'PENDING_INTERNAL_ACTION',
-                    paminnelseMeddelandeId: meddelandeId});
-            });
+          return arendeOptions.meddelandeId;
         }
 
-        browser.ignoreSynchronization = false;
-        specHelper.login();
+        createArende({meddelande: 'Hur är det med arbetstiden?', amne: 'AVSTMN', status: 'PENDING_INTERNAL_ACTION'});
+        createArende({meddelande: 'Vi behöver prata.', amne: 'AVSTMN', status: 'PENDING_INTERNAL_ACTION'});
+        createArende({meddelande: 'Vi behöver kontakt.', amne: 'KONTKT', status: 'PENDING_INTERNAL_ACTION'});
+        createArende({meddelande: 'Övriga frågor?', amne: 'OVRIGT', status: 'PENDING_INTERNAL_ACTION'});
 
-        createIntygWithArenden('luse');
-        createIntygWithArenden('luae_na');
-        createIntygWithArenden('luae_fs');
-        createIntygWithArenden('lisjp');
-    });
+        var meddelandeId = createArende({
+          meddelande: 'Komplettera mera.',
+          amne: 'KOMPLT',
+          status: 'PENDING_INTERNAL_ACTION',
+          kompletteringar: [
+            {
+              'frageId': '1',
+              'instans': 1,
+              'text': 'Fixa.'
+            },
+            {
+              'frageId': '2',
+              'instans': 1,
+              'text': 'Här har du ett fel.'
+            },
+            {
+              'frageId': '4',
+              'instans': 3,
+              'text': 'Här har du ett annat fel.'
+            }
+          ]
+        });
 
-    // xit this test to keep testdata for manual testing
-    xit('clean up intyg and arende', function() {
-        restTestdataHelper.deleteUtkast('luae_na-arende-test');
-        restTestdataHelper.deleteUtkast('luae_fs-arende-test');
-        restTestdataHelper.deleteUtkast('luse-arende-test');
-        restTestdataHelper.deleteUtkast('lisjp-arende-test');
-    });
+        createArende({
+          meddelande: 'Du har facking glömt att komplettera loser!',
+          amne: 'PAMINN',
+          status: 'PENDING_INTERNAL_ACTION',
+          paminnelseMeddelandeId: meddelandeId
+        });
+      });
+    }
+
+    browser.ignoreSynchronization = false;
+    specHelper.login();
+
+    createIntygWithArenden('luse');
+    createIntygWithArenden('luae_na');
+    createIntygWithArenden('luae_fs');
+    createIntygWithArenden('lisjp');
+  });
+
+  // xit this test to keep testdata for manual testing
+  xit('clean up intyg and arende', function() {
+    restTestdataHelper.deleteUtkast('luae_na-arende-test');
+    restTestdataHelper.deleteUtkast('luae_fs-arende-test');
+    restTestdataHelper.deleteUtkast('luse-arende-test');
+    restTestdataHelper.deleteUtkast('lisjp-arende-test');
+  });
 });

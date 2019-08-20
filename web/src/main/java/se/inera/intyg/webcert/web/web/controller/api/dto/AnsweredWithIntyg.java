@@ -18,10 +18,8 @@
  */
 package se.inera.intyg.webcert.web.web.controller.api.dto;
 
-import java.time.LocalDateTime;
-
 import com.google.auto.value.AutoValue;
-
+import java.time.LocalDateTime;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 
 @AutoValue
@@ -38,12 +36,12 @@ public abstract class AnsweredWithIntyg {
     public abstract String getNamnetPaSkapareAvIntyg();
 
     public static AnsweredWithIntyg create(String intygsId, String signeratAv, LocalDateTime signeratDatum, LocalDateTime skickatDatum,
-            String namnetPaSkapareAvIntyg) {
+        String namnetPaSkapareAvIntyg) {
         return new AutoValue_AnsweredWithIntyg(intygsId, signeratAv, signeratDatum, skickatDatum, namnetPaSkapareAvIntyg);
     }
 
     public static AnsweredWithIntyg create(Utkast intyg) {
         return new AutoValue_AnsweredWithIntyg(intyg.getIntygsId(), intyg.getSignatur().getSigneradAv(),
-                intyg.getSignatur().getSigneringsDatum(), intyg.getSkickadTillMottagareDatum(), intyg.getSkapadAv().getNamn());
+            intyg.getSignatur().getSigneringsDatum(), intyg.getSkickadTillMottagareDatum(), intyg.getSkapadAv().getNamn());
     }
 }

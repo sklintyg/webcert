@@ -18,6 +18,20 @@
  */
 package se.inera.intyg.webcert.web.service.patient;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anySet;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -52,21 +66,6 @@ import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.ArgumentMatchers.anySet;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 /**
  * Created by eriklupander on 2017-08-14.
@@ -149,15 +148,15 @@ public class PatientDetailsResolverTest {
 
     private IntegrationParameters buildIntegrationParameters() {
         IntegrationParameters params = new IntegrationParameters("ref", "hospname", "20121212-1212", INTEGR_FNAMN, INTEGR_MNAMN,
-                INTEGR_LNAMN,
-                INTEGR_POST_ADDR, INTEGR_POST_NR, INTEGR_POST_ORT, false, INTEGR_AVLIDEN, false, true);
+            INTEGR_LNAMN,
+            INTEGR_POST_ADDR, INTEGR_POST_NR, INTEGR_POST_ORT, false, INTEGR_AVLIDEN, false, true);
         return params;
     }
 
     private IntegrationParameters buildIntegrationParametersWithNullAddress() {
         IntegrationParameters params = new IntegrationParameters("ref", "hospname", "20121212-1212", INTEGR_FNAMN, INTEGR_MNAMN,
-                INTEGR_LNAMN,
-                null, null, null, false, INTEGR_AVLIDEN, false, true);
+            INTEGR_LNAMN,
+            null, null, null, false, INTEGR_AVLIDEN, false, true);
         return params;
     }
 
@@ -229,7 +228,7 @@ public class PatientDetailsResolverTest {
         assertNull(patient.getPostadress());
         assertNull(patient.getPostnummer());
         assertNull(patient.getPostort());
-        assertEquals(PU_AVLIDEN||INTEGR_AVLIDEN, patient.isAvliden());
+        assertEquals(PU_AVLIDEN || INTEGR_AVLIDEN, patient.isAvliden());
         assertEquals(false, patient.isSekretessmarkering());
     }
 
@@ -411,7 +410,7 @@ public class PatientDetailsResolverTest {
         assertEquals(POST_ADDR, patient.getPostadress());
         assertEquals(POST_NR, patient.getPostnummer());
         assertEquals(POST_ORT, patient.getPostort());
-        assertEquals(PU_AVLIDEN||INTEGR_AVLIDEN, patient.isAvliden());
+        assertEquals(PU_AVLIDEN || INTEGR_AVLIDEN, patient.isAvliden());
         assertEquals(false, patient.isSekretessmarkering());
     }
 
@@ -470,10 +469,9 @@ public class PatientDetailsResolverTest {
         when(webCertUserService.getUser()).thenReturn(integratedWebCertUser);
         when(integratedWebCertUser.getValdVardgivare()).thenReturn(new Vardgivare("vg-1", "vardgivare-1"));
 
-
         List<Utkast> drafts = buildSosDBDrafts();
         when(utkastRepository.findDraftsByPatientAndVardgivareAndStatus(anyString(), anyString(), anyList(),
-                anySet())).thenReturn(drafts);
+            anySet())).thenReturn(drafts);
 
         ModuleApi moduleApi = mock(ModuleApi.class);
         when(moduleApi.getUtlatandeFromJson(anyString())).thenReturn(buildSosDbUtlatande());
@@ -487,7 +485,7 @@ public class PatientDetailsResolverTest {
         assertEquals(DB_POST_ADDR, patient.getPostadress());
         assertEquals(DB_POST_NR, patient.getPostnummer());
         assertEquals(DB_POST_ORT, patient.getPostort());
-        assertEquals(PU_AVLIDEN||INTEGR_AVLIDEN, patient.isAvliden());
+        assertEquals(PU_AVLIDEN || INTEGR_AVLIDEN, patient.isAvliden());
         assertEquals(false, patient.isSekretessmarkering());
     }
 
@@ -500,10 +498,9 @@ public class PatientDetailsResolverTest {
         when(webCertUserService.getUser()).thenReturn(integratedWebCertUser);
         when(integratedWebCertUser.getValdVardgivare()).thenReturn(new Vardgivare("vg-1", "vardgivare-1"));
 
-
         List<Utkast> drafts = new ArrayList<>();
         when(utkastRepository.findDraftsByPatientAndVardgivareAndStatus(anyString(), anyString(), anyList(),
-                anySet())).thenReturn(drafts);
+            anySet())).thenReturn(drafts);
 
         Patient patient = testee.resolvePatient(PNR, "doi", ANY_VERSION_1);
         assertEquals(PNR.getPersonnummer(), patient.getPersonId().getPersonnummer());
@@ -513,7 +510,7 @@ public class PatientDetailsResolverTest {
         assertEquals(POST_ADDR, patient.getPostadress());
         assertEquals(POST_NR, patient.getPostnummer());
         assertEquals(POST_ORT, patient.getPostort());
-        assertEquals(PU_AVLIDEN||INTEGR_AVLIDEN, patient.isAvliden());
+        assertEquals(PU_AVLIDEN || INTEGR_AVLIDEN, patient.isAvliden());
         assertEquals(false, patient.isSekretessmarkering());
     }
 
@@ -571,10 +568,10 @@ public class PatientDetailsResolverTest {
         GrundData grundData = new GrundData();
         grundData.setPatient(buildPatient());
         return DbUtlatandeV1.builder()
-                .setGrundData(grundData)
-                .setId("abc-123")
-                .setTextVersion("1.0")
-                .build();
+            .setGrundData(grundData)
+            .setId("abc-123")
+            .setTextVersion("1.0")
+            .build();
     }
 
     private Patient buildPatient() {
@@ -609,6 +606,6 @@ public class PatientDetailsResolverTest {
     }
 
     private Person buildPerson() {
-        return new Person(PNR,false, PU_AVLIDEN, FNAMN, MNAMN, LNAMN, POST_ADDR, POST_NR, POST_ORT);
+        return new Person(PNR, false, PU_AVLIDEN, FNAMN, MNAMN, LNAMN, POST_ADDR, POST_NR, POST_ORT);
     }
 }

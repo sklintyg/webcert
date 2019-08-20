@@ -24,75 +24,74 @@ var BaseSmiUtkast = require('../smi.base.utkast.page.js');
 var pageHelpers = require('../../../../pageHelper.util.js');
 
 var LuaefsUtkast = BaseSmiUtkast._extend({
-    init: function init() {
-        init._super.call(this);
-        this.intygType = 'luae_fs';
-        this.intygTypeVersion = '1.0';
-        this.andraMedicinskaUtredningar = {
-            finns: {
-                JA: element(by.id('underlagFinnsYes')),
-                NEJ: element(by.id('underlagFinnsNo'))
-            },
-            underlagRow: function(index) {
-                return {
-                    underlag: element(by.id('underlag-' + index + '--typ')),
-                    datum: element(by.id('datepicker_underlag[' + index + '].datum')),
-                    information: element(by.id('underlag-' + index + '--hamtasFran'))
-                };
-            }
+  init: function init() {
+    init._super.call(this);
+    this.intygType = 'luae_fs';
+    this.intygTypeVersion = '1.0';
+    this.andraMedicinskaUtredningar = {
+      finns: {
+        JA: element(by.id('underlagFinnsYes')),
+        NEJ: element(by.id('underlagFinnsNo'))
+      },
+      underlagRow: function(index) {
+        return {
+          underlag: element(by.id('underlag-' + index + '--typ')),
+          datum: element(by.id('datepicker_underlag[' + index + '].datum')),
+          information: element(by.id('underlag-' + index + '--hamtasFran'))
         };
+      }
+    };
 
-        this.funktionsnedsattning = {
-            debut: element(by.id('funktionsnedsattningDebut')),
-            paverkan: element(by.id('funktionsnedsattningPaverkan'))
-        };
+    this.funktionsnedsattning = {
+      debut: element(by.id('funktionsnedsattningDebut')),
+      paverkan: element(by.id('funktionsnedsattningPaverkan'))
+    };
 
-        this.baseratPa = {
-            minUndersokningAvPatienten: {
-                checkbox: element(by.id('checkbox_undersokningAvPatienten')),
-                datum: element(by.id('form_undersokningAvPatienten')).element(by.css('input[type=text]'))
-            },
-            journaluppgifter: {
-                checkbox: element(by.id('checkbox_journaluppgifter')),
-                datum: element(by.id('form_journaluppgifter')).element(by.css('input[type=text]'))
-            },
-            anhorigBeskrivning: {
-                checkbox: element(by.id('checkbox_anhorigsBeskrivningAvPatienten')),
-                datum: element(by.id('form_anhorigsBeskrivningAvPatienten')).element(by.css('input[type=text]'))
-            },
-            annat: {
-                beskrivning: element(by.id('annatGrundForMUBeskrivning')),
-                checkbox: element(by.id('checkbox_annatGrundForMU')),
-                datum: element(by.id('form_annatGrundForMU')).all(by.css('input[type=text]')).first()
-            },
-            kannedomOmPatient: {
-                datum: element(by.id('form_kannedomOmPatient')).element(by.css('input[type=text]'))
-            }
-        };
-    },
+    this.baseratPa = {
+      minUndersokningAvPatienten: {
+        checkbox: element(by.id('checkbox_undersokningAvPatienten')),
+        datum: element(by.id('form_undersokningAvPatienten')).element(by.css('input[type=text]'))
+      },
+      journaluppgifter: {
+        checkbox: element(by.id('checkbox_journaluppgifter')),
+        datum: element(by.id('form_journaluppgifter')).element(by.css('input[type=text]'))
+      },
+      anhorigBeskrivning: {
+        checkbox: element(by.id('checkbox_anhorigsBeskrivningAvPatienten')),
+        datum: element(by.id('form_anhorigsBeskrivningAvPatienten')).element(by.css('input[type=text]'))
+      },
+      annat: {
+        beskrivning: element(by.id('annatGrundForMUBeskrivning')),
+        checkbox: element(by.id('checkbox_annatGrundForMU')),
+        datum: element(by.id('form_annatGrundForMU')).all(by.css('input[type=text]')).first()
+      },
+      kannedomOmPatient: {
+        datum: element(by.id('form_kannedomOmPatient')).element(by.css('input[type=text]'))
+      }
+    };
+  },
 
-    angeDiagnos: function(diagnosObj) {
-        var diagnoser = diagnosObj.diagnoser;
-        var promiseArr = [];
+  angeDiagnos: function(diagnosObj) {
+    var diagnoser = diagnosObj.diagnoser;
+    var promiseArr = [];
 
+    //Ange diagnoser
+    promiseArr.push(this.angeDiagnosKoder(diagnoser));
 
-        //Ange diagnoser
-        promiseArr.push(this.angeDiagnosKoder(diagnoser));
+    return Promise.all(promiseArr);
+  },
+  angeFunktionsnedsattning: function(funktionsnedsattning) {
+    var fn = this.funktionsnedsattning;
 
-        return Promise.all(promiseArr);
-    },
-    angeFunktionsnedsattning: function(funktionsnedsattning) {
-        var fn = this.funktionsnedsattning;
+    return pageHelpers.moveAndSendKeys(fn.debut, funktionsnedsattning.debut)
+    .then(function() {
+      return pageHelpers.moveAndSendKeys(fn.paverkan, funktionsnedsattning.paverkan);
+    });
+  },
 
-        return pageHelpers.moveAndSendKeys(fn.debut, funktionsnedsattning.debut)
-            .then(function() {
-                return pageHelpers.moveAndSendKeys(fn.paverkan, funktionsnedsattning.paverkan);
-            });
-    },
-
-    get: function get(intygId) {
-        get._super.call(this, 'luae_fs', intygId);
-    }
+  get: function get(intygId) {
+    get._super.call(this, 'luae_fs', intygId);
+  }
 });
 
 module.exports = new LuaefsUtkast();

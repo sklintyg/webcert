@@ -18,6 +18,8 @@
  */
 package se.inera.intyg.webcert.notification_sender.notifications.helper;
 
+import java.time.LocalDate;
+import java.time.Year;
 import se.inera.intyg.common.support.modules.converter.InternalConverterUtil;
 import se.inera.intyg.infra.integration.pu.model.Person;
 import se.inera.intyg.schemas.contract.Personnummer;
@@ -31,9 +33,6 @@ import se.riv.clinicalprocess.healthcond.certificate.v3.HosPersonal;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Patient;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Vardgivare;
-
-import java.time.LocalDate;
-import java.time.Year;
 
 /**
  * Created by eriklupander on 2017-08-18.
@@ -70,15 +69,15 @@ public class NotificationTestHelper {
         intyg.setSkapadAv(hosPersonal);
         // DatePeriodType and PartialDateType must be allowed
         intyg.getSvar().add(InternalConverterUtil.aSvar("")
-                .withDelsvar("", InternalConverterUtil.aDatePeriod(LocalDate.now(), LocalDate.now().plusDays(1)))
-                .withDelsvar("", InternalConverterUtil.aPartialDate(PartialDateTypeFormatEnum.YYYY, Year.of(1999)))
-                .build());
+            .withDelsvar("", InternalConverterUtil.aDatePeriod(LocalDate.now(), LocalDate.now().plusDays(1)))
+            .withDelsvar("", InternalConverterUtil.aPartialDate(PartialDateTypeFormatEnum.YYYY, Year.of(1999)))
+            .build());
         return intyg;
     }
 
     public static Person buildPerson(boolean sekretessmarkering) {
         return new Person(Personnummer.createPersonnummer(PERSNR).get(),
-                sekretessmarkering, false, "Tolvan", "Mellis", "Tolvansson", "Tolvgatan 12", "12121", "Tolvhult");
+            sekretessmarkering, false, "Tolvan", "Mellis", "Tolvansson", "Tolvgatan 12", "12121", "Tolvhult");
     }
 
     public static Patient buildPatient() {

@@ -20,17 +20,13 @@ package se.inera.intyg.webcert.web.service.fmb.icf.resource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-
 import java.util.Optional;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
 import se.inera.intyg.webcert.web.web.controller.api.dto.icf.IcfKod;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -49,7 +45,6 @@ public class IcfTextResourceImplTest {
         final String expectedBenamning = "Orientering";
         final String expectedBeskrivning = "Allmänna psykiska funktioner av att känna till och fastställa sin relation till tid, rum, sig själv och andra, till föremål och närmaste omgivning";
         final String expectedInnefattar = "funktioner av orientering till tid, rum och person; orientering till sig själv och andra; desorientering till tid, rum och person";
-
 
         final Optional<IcfKod> icfKod = icfTextResource.lookupTextByIcfKod(matchingCode);
 

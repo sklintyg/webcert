@@ -18,6 +18,26 @@
  */
 package se.inera.intyg.webcert.integration.tak.service;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -42,27 +62,6 @@ import se.inera.intyg.webcert.integration.tak.consumer.TakServiceException;
 import se.inera.intyg.webcert.integration.tak.model.TakLogicalAddress;
 import se.inera.intyg.webcert.integration.tak.model.TakResult;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.isNull;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 @RunWith(MockitoJUnitRunner.class)
 public class TakServiceImplTest {
 
@@ -82,7 +81,7 @@ public class TakServiceImplTest {
     private final String ERROR_STRING_BASE = "Tjänsten %s är inte registrerad för enhet %s i tjänsteadresseringskatalogen.";
 
     private final String ERROR_STRING_ARENDEHANTERING = "Den angivna enheten går ej att adressera för ärendekommunikation. "
-            + ERROR_STRING_BASE;
+        + ERROR_STRING_BASE;
 
     @Mock
     private HsaOrganizationsServiceImpl hsaService;
@@ -111,8 +110,8 @@ public class TakServiceImplTest {
         when(consumer.getConnectionPointId()).thenReturn(NTJP_ID);
         when(consumer.getServiceContractId(anyString())).thenReturn("2");
 
-        when(consumer.doLookup(eq(NTJP_ID), eq("NOTOK"), anyString())).thenReturn(new TakLogicalAddress[] {});
-        when(consumer.doLookup(eq(NTJP_ID), eq(HSAID_OK), anyString())).thenReturn(new TakLogicalAddress[] {});
+        when(consumer.doLookup(eq(NTJP_ID), eq("NOTOK"), anyString())).thenReturn(new TakLogicalAddress[]{});
+        when(consumer.doLookup(eq(NTJP_ID), eq(HSAID_OK), anyString())).thenReturn(new TakLogicalAddress[]{});
         when(hsaService.getParentUnit("NOTOK")).thenReturn(HSAID_OK);
 
         assertFalse(impl.verifyTakningForCareUnit("NOTOK", "fk7263", SchemaVersion.VERSION_1, user).isValid());
@@ -169,7 +168,7 @@ public class TakServiceImplTest {
     public void testNoTakFoundUseParentHsaUnit() throws HsaServiceCallException {
         setupIds();
 
-        when(consumer.doLookup(eq(NTJP_ID), eq("NOTOK"), anyString())).thenReturn(new TakLogicalAddress[] {});
+        when(consumer.doLookup(eq(NTJP_ID), eq("NOTOK"), anyString())).thenReturn(new TakLogicalAddress[]{});
         when(consumer.doLookup(eq(NTJP_ID), eq(HSAID_OK), anyString())).thenReturn(buildTakLogicalAddress("29"));
         when(hsaService.getParentUnit("NOTOK")).thenReturn(HSAID_OK);
 
@@ -196,13 +195,13 @@ public class TakServiceImplTest {
         setupMockUpdate();
         when(consumer.doLookup(anyString(), anyString(), eq(CERT_STATUS_V3_ID))).thenReturn(buildTakLogicalAddress("16"));
 
-        when(consumer.doLookup(anyString(), anyString(), eq(RECEIVE_CERT_ANSWER_ID))).thenReturn(new TakLogicalAddress[] {});
+        when(consumer.doLookup(anyString(), anyString(), eq(RECEIVE_CERT_ANSWER_ID))).thenReturn(new TakLogicalAddress[]{});
 
         TakResult result = impl.verifyTakningForCareUnit(HSAID_OK, "fk7263", SchemaVersion.VERSION_3, user);
 
         assertTrue(!result.getErrorMessages().isEmpty());
         assertEquals(String.format(ERROR_STRING_ARENDEHANTERING, RECEIVE_MEDICAL_CERT_ANSWER_NS, HSAID_OK),
-                result.getErrorMessages().get(0));
+            result.getErrorMessages().get(0));
     }
 
     @Test
@@ -212,7 +211,7 @@ public class TakServiceImplTest {
         when(consumer.doLookup(anyString(), anyString(), eq(CERT_STATUS_V3_ID))).thenReturn(buildTakLogicalAddress("16"));
         when(consumer.doLookup(anyString(), anyString(), eq(RECEIVE_CERT_ANSWER_ID))).thenReturn(buildTakLogicalAddress("18"));
 
-        when(consumer.doLookup(anyString(), anyString(), eq(RECEIVE_CERT_QUESTION_ID))).thenReturn(new TakLogicalAddress[] {});
+        when(consumer.doLookup(anyString(), anyString(), eq(RECEIVE_CERT_QUESTION_ID))).thenReturn(new TakLogicalAddress[]{});
 
         String hsa = HSAID_OK;
         TakResult result = impl.verifyTakningForCareUnit(hsa, "fk7263", SchemaVersion.VERSION_3, user);
@@ -227,7 +226,7 @@ public class TakServiceImplTest {
         setupMockUpdate();
         when(consumer.doLookup(anyString(), anyString(), eq(CERT_STATUS_V3_ID))).thenReturn(buildTakLogicalAddress("16"));
 
-        when(consumer.doLookup(anyString(), anyString(), eq(SEND_MESSAGE_TO_CARE_ID))).thenReturn(new TakLogicalAddress[] {});
+        when(consumer.doLookup(anyString(), anyString(), eq(SEND_MESSAGE_TO_CARE_ID))).thenReturn(new TakLogicalAddress[]{});
 
         String hsa = HSAID_OK;
         TakResult result = impl.verifyTakningForCareUnit(hsa, "luse", SchemaVersion.VERSION_3, user);
@@ -240,7 +239,7 @@ public class TakServiceImplTest {
     public void testCorrectErrorMessageForCertStatusUpdateForCareV3() throws TakServiceException {
         setupIds();
         setupMockUpdate();
-        when(consumer.doLookup(anyString(), anyString(), eq(CERT_STATUS_V3_ID))).thenReturn(new TakLogicalAddress[] {});
+        when(consumer.doLookup(anyString(), anyString(), eq(CERT_STATUS_V3_ID))).thenReturn(new TakLogicalAddress[]{});
 
         String hsa = HSAID_OK;
         TakResult result = impl.verifyTakningForCareUnit(hsa, "luse", SchemaVersion.VERSION_3, user);
@@ -272,24 +271,24 @@ public class TakServiceImplTest {
         logicalAddress.setId(id);
         logicalAddress.setDescription("A description");
         logicalAddress.setLogicalAddress(HSAID_OK);
-        return new TakLogicalAddress[] { logicalAddress };
+        return new TakLogicalAddress[]{logicalAddress};
     }
 
     private IntygUser createDefaultUser() {
         return createUser(AuthoritiesConstants.ROLE_LAKARE,
-                createPrivilege("p1",
-                        Arrays.asList("fk7263", "ts-bas", "luse"),
-                        Arrays.asList(
-                                createRequestOrigin(UserOriginType.NORMAL.name(), Arrays.asList("fk7263", "ts-bas", "luse")),
-                                createRequestOrigin(UserOriginType.DJUPINTEGRATION.name(), Collections.singletonList("ts-bas")))),
-                Stream.of(AuthoritiesConstants.FEATURE_HANTERA_FRAGOR, AuthoritiesConstants.FEATURE_TAK_KONTROLL_TRADKLATTRING)
-                        .collect(Collectors.toMap(Function.identity(), s -> {
-                            Feature feature = new Feature();
-                            feature.setName(s);
-                            feature.setGlobal(true);
-                            feature.setIntygstyper(Arrays.asList("fk7263", "luse"));
-                            return feature;
-                        })), UserOriginType.NORMAL.name());
+            createPrivilege("p1",
+                Arrays.asList("fk7263", "ts-bas", "luse"),
+                Arrays.asList(
+                    createRequestOrigin(UserOriginType.NORMAL.name(), Arrays.asList("fk7263", "ts-bas", "luse")),
+                    createRequestOrigin(UserOriginType.DJUPINTEGRATION.name(), Collections.singletonList("ts-bas")))),
+            Stream.of(AuthoritiesConstants.FEATURE_HANTERA_FRAGOR, AuthoritiesConstants.FEATURE_TAK_KONTROLL_TRADKLATTRING)
+                .collect(Collectors.toMap(Function.identity(), s -> {
+                    Feature feature = new Feature();
+                    feature.setName(s);
+                    feature.setGlobal(true);
+                    feature.setIntygstyper(Arrays.asList("fk7263", "luse"));
+                    return feature;
+                })), UserOriginType.NORMAL.name());
     }
 
     private RequestOrigin createRequestOrigin(String name, List<String> intygstyper) {

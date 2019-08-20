@@ -58,15 +58,15 @@ public class NotificationStubRestApi {
     @Produces(MediaType.APPLICATION_JSON)
     public Response notifieringarV3Stats() {
         Collection<CertificateStatusUpdateForCareType> notifs = notificationStoreV3
-                .getNotifications();
+            .getNotifications();
         Map<String, List<NotificationStubEntry>> stringListMap = new StatTransformerUtil().toStat(notifs);
         StringBuilder buf = new StringBuilder();
         for (Map.Entry<String, List<NotificationStubEntry>> entry : stringListMap.entrySet()) {
             buf.append("---- ").append(entry.getKey()).append(" ----\n");
             entry.getValue().stream()
-                    .sorted(Comparator.comparing(NotificationStubEntry::getHandelseTid))
-                    .forEach(ie -> buf.append(ie.getHandelseTid().format(DateTimeFormatter.ofPattern("HH:mm:ss"))).append("\t")
-                            .append(ie.getHandelseKod()).append("\n"));
+                .sorted(Comparator.comparing(NotificationStubEntry::getHandelseTid))
+                .forEach(ie -> buf.append(ie.getHandelseTid().format(DateTimeFormatter.ofPattern("HH:mm:ss"))).append("\t")
+                    .append(ie.getHandelseKod()).append("\n"));
             buf.append("-----------------------------------------------\n\n");
         }
         return Response.ok(buf.toString()).build();

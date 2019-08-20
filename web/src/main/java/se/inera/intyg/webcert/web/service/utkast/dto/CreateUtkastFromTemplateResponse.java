@@ -19,6 +19,7 @@
 package se.inera.intyg.webcert.web.service.utkast.dto;
 
 public class CreateUtkastFromTemplateResponse {
+
     private String newDraftIntygType;
 
     private String newDraftIntygTypeVersion;
@@ -28,7 +29,7 @@ public class CreateUtkastFromTemplateResponse {
     private String originalIntygId;
 
     public CreateUtkastFromTemplateResponse(String newDraftIntygType, String newDraftIntygTypeVersion, String newDraftIntygId,
-            String originalIntygId) {
+        String originalIntygId) {
         this.newDraftIntygId = newDraftIntygId;
         this.newDraftIntygType = newDraftIntygType;
         this.newDraftIntygTypeVersion = newDraftIntygTypeVersion;

@@ -48,7 +48,7 @@ public class ElegAuthenticationAttributeHelperImpl implements ElegAuthentication
                             return xmlObject.getDOM().getTextContent();
                         }
                         throw new IllegalArgumentException(
-                                "Cannot parse SAML2 response attribute '" + attributeName + "', is not XSString or DOM is null");
+                            "Cannot parse SAML2 response attribute '" + attributeName + "', is not XSString or DOM is null");
                     }
                 }
             }

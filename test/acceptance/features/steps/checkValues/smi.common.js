@@ -23,82 +23,83 @@
 let smipage = pages.intyg.smi.intyg;
 
 module.exports = {
-    baseratPa: function(data) {
+  baseratPa: function(data) {
 
-        let promiseArr = [];
-        if (data.baseratPa.minUndersokningAvPatienten) {
-            promiseArr.push(expect(smipage.baseratPa.minUndersokningAvPatienten.getText()).to.eventually.equal(data.baseratPa.minUndersokningAvPatienten));
-        }
-
-        if (data.baseratPa.journaluppgifter) {
-            promiseArr.push(expect(smipage.baseratPa.journaluppgifter.getText()).to.eventually.equal(data.baseratPa.journaluppgifter));
-        }
-
-        if (data.baseratPa.telefonkontakt) {
-            promiseArr.push(expect(smipage.baseratPa.telefonkontakt.getText()).to.eventually.equal(data.baseratPa.telefonkontakt));
-        }
-
-        if (data.baseratPa.annat) {
-            promiseArr.push(expect(smipage.baseratPa.annat.getText()).to.eventually.equal(data.baseratPa.annat));
-        }
-
-        if (data.baseratPa.annatBeskrivning) {
-            promiseArr.push(expect(smipage.baseratPa.annatBeskrivning.getText()).to.eventually.equal(data.baseratPa.annatBeskrivning));
-        }
-
-        if (data.baseratPa.personligKannedom) {
-            promiseArr.push(expect(smipage.baseratPa.personligKannedom.getText()).to.eventually.equal(data.baseratPa.personligKannedom));
-        }
-
-        if (data.baseratPa.anhorigsBeskrivning) {
-            promiseArr.push(expect(smipage.baseratPa.anhorigsBeskrivning.getText()).to.eventually.equal(data.baseratPa.anhorigsBeskrivning));
-        }
-        logger.silly('Baserat på: ' + promiseArr.length + ' assertions made');
-        return Promise.all([promiseArr]);
-    },
-    diagnos: function(data) {
-        let promiseArr = [];
-        if (data.diagnos.narOchVarStalldesDiagnoserna) {
-            promiseArr.push(expect(smipage.diagnoser.grund.getText()).to.eventually.equal(data.diagnos.narOchVarStalldesDiagnoserna));
-        }
-
-        promiseArr.push(expect(smipage.diagnoser.getDiagnos(0).kod.getText()).to.eventually.equal(data.diagnos.kod));
-
-        if (data.diagnos.beskrivning) {
-            promiseArr.push(expect(smipage.diagnoser.getDiagnos(0).beskrivning.getText()).to.eventually.equal(data.diagnos.beskrivning));
-        }
-
-        logger.silly('Diagnos: ' + promiseArr.length + ' assertions made');
-        return Promise.all([promiseArr]);
-    },
-    aktivitetsbegransning: function(data) {
-        return expect(smipage.aktivitetsbegransning.getText()).to.eventually.equal(data.aktivitetsbegransning);
-    },
-    medicinskbehandling: function(data) {
-        let promiseArr = [];
-        if (data.medicinskbehandling) {
-            if (data.medicinskbehandling.avslutad) {
-                promiseArr.push(expect(smipage.behandling.avslutad.getText()).to.eventually.equal(data.medicinskbehandling.avslutad));
-            }
-            if (data.medicinskbehandling.pagaende) {
-                promiseArr.push(expect(smipage.behandling.pagaende.getText()).to.eventually.equal(data.medicinskbehandling.pagaende));
-            }
-            if (data.medicinskbehandling.planerad) {
-                promiseArr.push(expect(smipage.behandling.planerad.getText()).to.eventually.equal(data.medicinskbehandling.planerad));
-            }
-            if (data.medicinskbehandling.substansintag) {
-                promiseArr.push(expect(smipage.behandling.substansintag.getText()).to.eventually.equal(data.medicinskbehandling.substansintag));
-            }
-        }
-        logger.silly('Medicinskbehandling: ' + promiseArr.length + ' assertions made');
-        return Promise.all([promiseArr]);
-    },
-    ovrigt: function(data) {
-        expect(smipage.ovrigt.getText()).to.eventually.equal(data.ovrigt);
-    },
-    kontaktFK: function(data) {
-        expect(smipage.kontaktFK.value.getText()).to.eventually.equal(data.kontaktMedFk);
-        expect(smipage.kontaktFK.anledning.getText()).to.eventually.equal(data.kontaktAnledning);
+    let promiseArr = [];
+    if (data.baseratPa.minUndersokningAvPatienten) {
+      promiseArr.push(
+          expect(smipage.baseratPa.minUndersokningAvPatienten.getText()).to.eventually.equal(data.baseratPa.minUndersokningAvPatienten));
     }
+
+    if (data.baseratPa.journaluppgifter) {
+      promiseArr.push(expect(smipage.baseratPa.journaluppgifter.getText()).to.eventually.equal(data.baseratPa.journaluppgifter));
+    }
+
+    if (data.baseratPa.telefonkontakt) {
+      promiseArr.push(expect(smipage.baseratPa.telefonkontakt.getText()).to.eventually.equal(data.baseratPa.telefonkontakt));
+    }
+
+    if (data.baseratPa.annat) {
+      promiseArr.push(expect(smipage.baseratPa.annat.getText()).to.eventually.equal(data.baseratPa.annat));
+    }
+
+    if (data.baseratPa.annatBeskrivning) {
+      promiseArr.push(expect(smipage.baseratPa.annatBeskrivning.getText()).to.eventually.equal(data.baseratPa.annatBeskrivning));
+    }
+
+    if (data.baseratPa.personligKannedom) {
+      promiseArr.push(expect(smipage.baseratPa.personligKannedom.getText()).to.eventually.equal(data.baseratPa.personligKannedom));
+    }
+
+    if (data.baseratPa.anhorigsBeskrivning) {
+      promiseArr.push(expect(smipage.baseratPa.anhorigsBeskrivning.getText()).to.eventually.equal(data.baseratPa.anhorigsBeskrivning));
+    }
+    logger.silly('Baserat på: ' + promiseArr.length + ' assertions made');
+    return Promise.all([promiseArr]);
+  },
+  diagnos: function(data) {
+    let promiseArr = [];
+    if (data.diagnos.narOchVarStalldesDiagnoserna) {
+      promiseArr.push(expect(smipage.diagnoser.grund.getText()).to.eventually.equal(data.diagnos.narOchVarStalldesDiagnoserna));
+    }
+
+    promiseArr.push(expect(smipage.diagnoser.getDiagnos(0).kod.getText()).to.eventually.equal(data.diagnos.kod));
+
+    if (data.diagnos.beskrivning) {
+      promiseArr.push(expect(smipage.diagnoser.getDiagnos(0).beskrivning.getText()).to.eventually.equal(data.diagnos.beskrivning));
+    }
+
+    logger.silly('Diagnos: ' + promiseArr.length + ' assertions made');
+    return Promise.all([promiseArr]);
+  },
+  aktivitetsbegransning: function(data) {
+    return expect(smipage.aktivitetsbegransning.getText()).to.eventually.equal(data.aktivitetsbegransning);
+  },
+  medicinskbehandling: function(data) {
+    let promiseArr = [];
+    if (data.medicinskbehandling) {
+      if (data.medicinskbehandling.avslutad) {
+        promiseArr.push(expect(smipage.behandling.avslutad.getText()).to.eventually.equal(data.medicinskbehandling.avslutad));
+      }
+      if (data.medicinskbehandling.pagaende) {
+        promiseArr.push(expect(smipage.behandling.pagaende.getText()).to.eventually.equal(data.medicinskbehandling.pagaende));
+      }
+      if (data.medicinskbehandling.planerad) {
+        promiseArr.push(expect(smipage.behandling.planerad.getText()).to.eventually.equal(data.medicinskbehandling.planerad));
+      }
+      if (data.medicinskbehandling.substansintag) {
+        promiseArr.push(expect(smipage.behandling.substansintag.getText()).to.eventually.equal(data.medicinskbehandling.substansintag));
+      }
+    }
+    logger.silly('Medicinskbehandling: ' + promiseArr.length + ' assertions made');
+    return Promise.all([promiseArr]);
+  },
+  ovrigt: function(data) {
+    expect(smipage.ovrigt.getText()).to.eventually.equal(data.ovrigt);
+  },
+  kontaktFK: function(data) {
+    expect(smipage.kontaktFK.value.getText()).to.eventually.equal(data.kontaktMedFk);
+    expect(smipage.kontaktFK.anledning.getText()).to.eventually.equal(data.kontaktAnledning);
+  }
 
 };

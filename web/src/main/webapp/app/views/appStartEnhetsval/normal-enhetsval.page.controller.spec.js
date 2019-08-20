@@ -20,95 +20,99 @@
 describe(
     'normlaaEnhetsvalPageCtrlSpec',
     function() {
-        'use strict';
+      'use strict';
 
-        var $controller;
-        var $scope;
-        var $uibModal;
-        var $window;
-        var $windowSpy;
-        var UserModel;
-        var UserServiceMock;
-        var $stateSpy;
-        var $stateParamsMock;
+      var $controller;
+      var $scope;
+      var $uibModal;
+      var $window;
+      var $windowSpy;
+      var UserModel;
+      var UserServiceMock;
+      var $stateSpy;
+      var $stateParamsMock;
+
+      beforeEach(function() {
+
+        module('webcertTest');
+        module('webcert', ['$provide', function($provide) {
+
+          $provide.value('common.UserModel', {});
+          $provide.value('$uibModal', {
+            open: function() {
+            }
+          });
+
+          $stateSpy = jasmine.createSpyObj('$state', ['go']);
+          $provide.value('$state', $stateSpy);
+
+          $stateParamsMock = {
+            destinationState: {name: 'originalState'}
+          };
+          $provide.value('$stateParams', $stateParamsMock);
+
+          UserServiceMock = jasmine.createSpyObj('common.User', ['setValdVardenhet']);
+          $provide.value('common.User', UserServiceMock);
+
+          $windowSpy = jasmine.createSpyObj('$window', ['location', 'location.href']);
+          $provide.value('$window', $windowSpy);
+        }]);
+
+        inject(['$rootScope', '$window', '$uibModal', '$state', '$stateParams', 'common.UserModel', '$controller',
+          function($rootScope, _$window_, _$uibModal_, _UserModel_, _$state_, _$stateParams_, _$controller_) {
+            $scope = $rootScope.$new();
+            $window = _$window_;
+            UserModel = _UserModel_;
+            $controller = _$controller_;
+            $uibModal = _$uibModal_;
+
+            spyOn($uibModal, 'open').and.returnValue({
+              close: function() {
+              }
+            });
+          }]);
+
+      });
+
+      describe('when trying to select a vardenhet', function() {
 
         beforeEach(function() {
-
-            module('webcertTest');
-            module('webcert', [ '$provide', function($provide) {
-
-                $provide.value('common.UserModel', {});
-                $provide.value('$uibModal', { open:function(){} });
-
-                $stateSpy = jasmine.createSpyObj('$state', [ 'go' ]);
-                $provide.value('$state', $stateSpy);
-
-                $stateParamsMock = {
-                    destinationState: { name: 'originalState'}
-                };
-                $provide.value('$stateParams', $stateParamsMock);
-
-                UserServiceMock = jasmine.createSpyObj('common.User', [ 'setValdVardenhet' ]);
-                $provide.value('common.User', UserServiceMock);
-
-
-                $windowSpy = jasmine.createSpyObj('$window',[ 'location', 'location.href' ]);
-                $provide.value('$window', $windowSpy);
-            } ]);
-
-            inject([ '$rootScope', '$window', '$uibModal', '$state', '$stateParams', 'common.UserModel', '$controller',
-                function($rootScope, _$window_, _$uibModal_, _UserModel_, _$state_, _$stateParams_, _$controller_) {
-                    $scope = $rootScope.$new();
-                    $window = _$window_;
-                    UserModel = _UserModel_;
-                    $controller = _$controller_;
-                    $uibModal = _$uibModal_;
-
-                    spyOn($uibModal, 'open').and.returnValue({ close: function() {} });
-                } ]);
-
+          $controller('normal.EnhetsvalPageCtrl', {
+            $scope: $scope
+          });
         });
 
-        describe('when trying to select a vardenhet', function() {
+        it('should change state after successfully changing vardenhet', function() {
 
-            beforeEach(function() {
-                $controller('normal.EnhetsvalPageCtrl', {
-                    $scope: $scope
-                });
-            });
+          UserServiceMock.setValdVardenhet.and.callFake(function(enhet, success, error) {
+            success({user: {}});
+          });
 
-            it('should change state after successfully changing vardenhet', function() {
+          $scope.onUnitSelected({
+            id: '1234'
+          });
 
-                UserServiceMock.setValdVardenhet.and.callFake(function(enhet, success, error) {
-                    success({user: {}});
-                });
-
-                $scope.onUnitSelected({
-                    id: '1234'
-                });
-
-                expect($uibModal.open).toHaveBeenCalled();
-                expect(UserServiceMock.setValdVardenhet).toHaveBeenCalled();
-                expect($stateSpy.go).toHaveBeenCalledWith('originalState', {}, {location: 'replace'});
-            });
-
-            it('should go to error page when failing to change vardenhet', function() {
-
-                UserServiceMock.setValdVardenhet.and.callFake(function(enhet, success, error) {
-                    error({});
-                });
-
-                $scope.onUnitSelected({
-                    id: '1234'
-                });
-
-                expect($uibModal.open).toHaveBeenCalled();
-                expect(UserServiceMock.setValdVardenhet).toHaveBeenCalled();
-                expect($stateSpy.go).not.toHaveBeenCalled();
-                expect($windowSpy.location.href).toBe('/error.jsp?reason=login.failed');
-            });
-
+          expect($uibModal.open).toHaveBeenCalled();
+          expect(UserServiceMock.setValdVardenhet).toHaveBeenCalled();
+          expect($stateSpy.go).toHaveBeenCalledWith('originalState', {}, {location: 'replace'});
         });
 
+        it('should go to error page when failing to change vardenhet', function() {
+
+          UserServiceMock.setValdVardenhet.and.callFake(function(enhet, success, error) {
+            error({});
+          });
+
+          $scope.onUnitSelected({
+            id: '1234'
+          });
+
+          expect($uibModal.open).toHaveBeenCalled();
+          expect(UserServiceMock.setValdVardenhet).toHaveBeenCalled();
+          expect($stateSpy.go).not.toHaveBeenCalled();
+          expect($windowSpy.location.href).toBe('/error.jsp?reason=login.failed');
+        });
+
+      });
 
     });

@@ -43,8 +43,8 @@ public enum TidEnhet {
 
     public static Optional<TidEnhet> of(final String text) {
         return Stream.of(TidEnhet.values())
-                .filter(code -> equalsIgnoreCase(text, code.getCode()))
-                .collect(toOptional());
+            .filter(code -> equalsIgnoreCase(text, code.getCode()))
+            .collect(toOptional());
     }
 
     public String getUnitDisplayValue(Integer value) {

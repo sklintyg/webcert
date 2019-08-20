@@ -18,6 +18,10 @@
  */
 package se.inera.intyg.webcert.intygstjanststub;
 
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -25,16 +29,12 @@ import se.inera.intyg.common.support.modules.support.api.CertificateHolder;
 import se.inera.intyg.common.support.modules.support.api.CertificateStateHolder;
 import se.inera.intyg.schemas.contract.Personnummer;
 
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
-
 /**
  * @author marced
  */
 @Component
 public class IntygStore {
+
     private static final Logger LOG = LoggerFactory.getLogger(IntygStore.class);
 
     private Map<String, CertificateHolder> intyg = new ConcurrentHashMap<>();
@@ -43,7 +43,7 @@ public class IntygStore {
     public void addIntyg(CertificateHolder metaType) {
         LOG.debug("IntygStore: adding intyg " + metaType.getId() + " to store.");
         if (intyg.containsKey(metaType.getId())) {
-            LOG.debug("IntygStore: Not adding "  + metaType.getId() + " to store. Is already present.");
+            LOG.debug("IntygStore: Not adding " + metaType.getId() + " to store. Is already present.");
             return;
         }
         intyg.put(metaType.getId(), metaType);
@@ -56,8 +56,8 @@ public class IntygStore {
     public List<CertificateHolder> getIntygForEnhetAndPersonnummer(final List<String> enhetsIds, final String personnummer) {
         Personnummer pnr = createPnr(personnummer);
         return intyg.values().stream()
-                .filter(s -> enhetsIds.contains(s.getCareUnitId()) && pnr.equals(s.getCivicRegistrationNumber()))
-                .collect(Collectors.toList());
+            .filter(s -> enhetsIds.contains(s.getCareUnitId()) && pnr.equals(s.getCivicRegistrationNumber()))
+            .collect(Collectors.toList());
     }
 
     public CertificateHolder getIntygForCertificateId(String certificateId) {
@@ -85,8 +85,8 @@ public class IntygStore {
 
     private Personnummer createPnr(String personId) {
         return Personnummer
-                .createPersonnummer(personId)
-                .orElseThrow(() -> new IllegalArgumentException("Could not parse passed personnummer: " + personId));
+            .createPersonnummer(personId)
+            .orElseThrow(() -> new IllegalArgumentException("Could not parse passed personnummer: " + personId));
     }
 
 }

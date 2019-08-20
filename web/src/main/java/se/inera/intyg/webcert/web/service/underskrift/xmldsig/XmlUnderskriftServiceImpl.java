@@ -18,6 +18,8 @@
  */
 package se.inera.intyg.webcert.web.service.underskrift.xmldsig;
 
+import java.time.LocalDateTime;
+import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.common.enumerations.SignaturTyp;
@@ -31,9 +33,6 @@ import se.inera.intyg.webcert.web.service.underskrift.model.SignMethod;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturBiljett;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturStatus;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
-
-import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Service
 public class XmlUnderskriftServiceImpl extends BaseXMLSignatureService implements CommonUnderskriftService {
@@ -49,20 +48,20 @@ public class XmlUnderskriftServiceImpl extends BaseXMLSignatureService implement
 
     @Override
     public SignaturBiljett skapaSigneringsBiljettMedDigest(String intygsId, String intygsTyp, long version, String utkastJson,
-            SignMethod signMethod) {
+        SignMethod signMethod) {
         String registerCertificateXml = utkastModelToXMLConverter.utkastToXml(utkastJson, intygsTyp);
         IntygXMLDSignature intygSignature = prepareSignatureService.prepareSignature(registerCertificateXml, intygsId);
         intygSignature.setIntygJson(utkastJson);
 
         SignaturBiljett biljett = SignaturBiljett.SignaturBiljettBuilder
-                .aSignaturBiljett(UUID.randomUUID().toString(), SignaturTyp.XMLDSIG, signMethod)
-                .withIntygsId(intygsId)
-                .withVersion(version)
-                .withIntygSignature(intygSignature)
-                .withStatus(SignaturStatus.BEARBETAR)
-                .withSkapad(LocalDateTime.now())
-                .withHash(intygSignature.getSignedInfoForSigning())
-                .build();
+            .aSignaturBiljett(UUID.randomUUID().toString(), SignaturTyp.XMLDSIG, signMethod)
+            .withIntygsId(intygsId)
+            .withVersion(version)
+            .withIntygSignature(intygSignature)
+            .withStatus(SignaturStatus.BEARBETAR)
+            .withSkapad(LocalDateTime.now())
+            .withHash(intygSignature.getSignedInfoForSigning())
+            .build();
 
         redisTicketTracker.trackBiljett(biljett);
         return biljett;
@@ -70,10 +69,10 @@ public class XmlUnderskriftServiceImpl extends BaseXMLSignatureService implement
 
     @Override
     public SignaturBiljett finalizeSignature(final SignaturBiljett biljett, final byte[] signatur, final String certifikat,
-            final Utkast utkast, WebCertUser user) {
+        final Utkast utkast, WebCertUser user) {
         SignaturBiljett sb = finalizeXMLDSigSignature(certifikat, user, biljett, signatur, utkast);
         monitoringLogService.logIntygSigned(utkast.getIntygsId(), utkast.getIntygsTyp(), user.getHsaId(), user.getAuthenticationScheme(),
-                utkast.getRelationKod());
+            utkast.getRelationKod());
 
         return redisTicketTracker.updateStatus(sb.getTicketId(), sb.getStatus());
     }

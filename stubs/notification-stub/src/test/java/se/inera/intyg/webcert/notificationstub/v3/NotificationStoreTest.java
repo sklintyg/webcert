@@ -18,7 +18,14 @@
  */
 package se.inera.intyg.webcert.notificationstub.v3;
 
+import static org.junit.Assert.assertEquals;
+
 import com.google.common.collect.Iterables;
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,21 +34,13 @@ import se.riv.clinicalprocess.healthcond.certificate.types.v3.IntygId;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Handelse;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
 
-import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import static org.junit.Assert.assertEquals;
-
 public class NotificationStoreTest {
 
     private static final Logger LOG = LoggerFactory.getLogger(NotificationStoreTest.class);
 
     private static List<String> INTYG_IDS = Arrays.asList("intyg1", "intyg2", "intyg3", "intyg4", "intyg5", "intyg6", "intyg7", "intyg8",
-            "intyg9",
-            "intyg10");
+        "intyg9",
+        "intyg10");
 
 
     @Test
@@ -56,7 +55,7 @@ public class NotificationStoreTest {
         assertEquals(80, notificationStore.getNotifications().size());
 
         LOG.info(notificationStore.getNotifications().stream().map(n -> n.getHandelse().getTidpunkt().toString()).sorted()
-                .collect(Collectors.joining("\n")));
+            .collect(Collectors.joining("\n")));
         LOG.info("Oldest should be: {}", now.minusMinutes(100).toString());
     }
 

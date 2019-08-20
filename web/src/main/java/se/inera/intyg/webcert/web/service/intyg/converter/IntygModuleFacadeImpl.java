@@ -21,13 +21,11 @@ package se.inera.intyg.webcert.web.service.intyg.converter;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-
 import se.inera.intyg.common.support.model.CertificateState;
 import se.inera.intyg.common.support.model.Status;
 import se.inera.intyg.common.support.model.UtkastStatus;
@@ -58,18 +56,18 @@ public class IntygModuleFacadeImpl implements IntygModuleFacade {
 
     @Override
     public IntygPdf convertFromInternalToPdfDocument(String intygType, String internalIntygJsonModel, List<Status> statuses,
-                                                     UtkastStatus utkastStatus, boolean isEmployer)
-            throws IntygModuleFacadeException {
+        UtkastStatus utkastStatus, boolean isEmployer)
+        throws IntygModuleFacadeException {
 
         try {
             ModuleApi moduleApi = moduleRegistry.getModuleApi(intygType,
-                    moduleRegistry.resolveVersionFromUtlatandeJson(intygType, internalIntygJsonModel));
+                moduleRegistry.resolveVersionFromUtlatandeJson(intygType, internalIntygJsonModel));
             PdfResponse pdfResponse;
             if (!isEmployer) {
                 pdfResponse = moduleApi.pdf(internalIntygJsonModel, statuses, ApplicationOrigin.WEBCERT, utkastStatus);
             } else {
                 pdfResponse = moduleApi.pdfEmployer(internalIntygJsonModel, statuses, ApplicationOrigin.WEBCERT, Collections.emptyList(),
-                        utkastStatus);
+                    utkastStatus);
             }
             return new IntygPdf(pdfResponse.getPdfData(), pdfResponse.getFilename());
         } catch (ModuleException me) {
@@ -88,7 +86,7 @@ public class IntygModuleFacadeImpl implements IntygModuleFacade {
 
     @Override
     public CertificateResponse getCertificate(String certificateId, String intygType, String intygTypeVersion)
-            throws IntygModuleFacadeException {
+        throws IntygModuleFacadeException {
         try {
             ModuleApi moduleApi = moduleRegistry.getModuleApi(intygType, intygTypeVersion);
             return moduleApi.getCertificate(certificateId, logicalAddress, HSVARD_RECIPIENT_ID);
@@ -104,7 +102,7 @@ public class IntygModuleFacadeImpl implements IntygModuleFacade {
     public void registerCertificate(String intygType, String internalIntygJsonModel) throws ModuleException, IntygModuleFacadeException {
         try {
             ModuleApi moduleApi = moduleRegistry.getModuleApi(intygType,
-                    moduleRegistry.resolveVersionFromUtlatandeJson(intygType, internalIntygJsonModel));
+                moduleRegistry.resolveVersionFromUtlatandeJson(intygType, internalIntygJsonModel));
             moduleApi.registerCertificate(internalIntygJsonModel, logicalAddress);
         } catch (ModuleNotFoundException e) {
             LOG.error("ModuleNotFoundException occured for intygstyp '{}' when registering certificate", intygType);
@@ -114,7 +112,7 @@ public class IntygModuleFacadeImpl implements IntygModuleFacade {
 
     @Override
     public String getRevokeCertificateRequest(String intygType, Utlatande utlatande, HoSPersonal skapatAv, String message)
-            throws ModuleException, IntygModuleFacadeException {
+        throws ModuleException, IntygModuleFacadeException {
         try {
             ModuleApi moduleApi = moduleRegistry.getModuleApi(intygType, utlatande.getTextVersion());
             return moduleApi.createRevokeRequest(utlatande, skapatAv, message);
@@ -128,7 +126,7 @@ public class IntygModuleFacadeImpl implements IntygModuleFacade {
     public Utlatande getUtlatandeFromInternalModel(String intygType, String internalModel) {
         try {
             ModuleApi moduleApi = moduleRegistry.getModuleApi(intygType,
-                    moduleRegistry.resolveVersionFromUtlatandeJson(intygType, internalModel));
+                moduleRegistry.resolveVersionFromUtlatandeJson(intygType, internalModel));
             return moduleApi.getUtlatandeFromJson(internalModel);
         } catch (IOException | ModuleNotFoundException | ModuleException e) {
             LOG.error("Module problems occured when trying to unmarshall Utlatande.", e);

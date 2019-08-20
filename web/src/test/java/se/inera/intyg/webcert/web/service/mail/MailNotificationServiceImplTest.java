@@ -18,6 +18,18 @@
  */
 package se.inera.intyg.webcert.web.service.mail;
 
+import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.when;
+
+import javax.mail.Address;
+import javax.mail.internet.MimeMessage;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -39,19 +51,6 @@ import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.riv.infrastructure.directory.privatepractitioner.v1.EnhetType;
 import se.riv.infrastructure.directory.privatepractitioner.v1.HoSPersonType;
-
-import javax.mail.Address;
-import javax.mail.internet.MimeMessage;
-
-import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.isNull;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
-import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class MailNotificationServiceImplTest {
@@ -95,7 +94,7 @@ public class MailNotificationServiceImplTest {
     public void testSendMailForIncomingQuestionHsaIsCalledIfNotPrivatePractitioner() throws Exception {
         // Given
         MailNotification mailNotification = mailNotification("intygsId",
-                "ThisIsNotPp" + MailNotificationServiceImpl.PRIVATE_PRACTITIONER_HSAID_PREFIX + "1234");
+            "ThisIsNotPp" + MailNotificationServiceImpl.PRIVATE_PRACTITIONER_HSAID_PREFIX + "1234");
 
         // When
         try {
@@ -119,7 +118,7 @@ public class MailNotificationServiceImplTest {
         doReturn(hoSPersonType).when(ppService).getPrivatePractitioner(anyString(), isNull(), isNull());
 
         MailNotification mailNotification = mailNotification("intygsId",
-                MailNotificationServiceImpl.PRIVATE_PRACTITIONER_HSAID_PREFIX + "1234");
+            MailNotificationServiceImpl.PRIVATE_PRACTITIONER_HSAID_PREFIX + "1234");
 
         // When
         mailNotificationService.sendMailForIncomingQuestion(mailNotification);
@@ -140,7 +139,7 @@ public class MailNotificationServiceImplTest {
         doReturn(hoSPersonType).when(ppService).getPrivatePractitioner(anyString(), isNull(), isNull());
 
         MailNotification mailNotification = mailNotification("intygsId",
-                MailNotificationServiceImpl.PRIVATE_PRACTITIONER_HSAID_PREFIX + "1234");
+            MailNotificationServiceImpl.PRIVATE_PRACTITIONER_HSAID_PREFIX + "1234");
 
         // When
         mailNotificationService.sendMailForIncomingQuestion(mailNotification);
@@ -157,7 +156,7 @@ public class MailNotificationServiceImplTest {
     public void testSendMailForIncomingAnswerHsaIsCalledIfNotPrivatePractitioner() throws Exception {
         // Given
         MailNotification mailNotification = mailNotification("intygsId",
-                "ThisIsNotPp" + MailNotificationServiceImpl.PRIVATE_PRACTITIONER_HSAID_PREFIX + "1234");
+            "ThisIsNotPp" + MailNotificationServiceImpl.PRIVATE_PRACTITIONER_HSAID_PREFIX + "1234");
 
         // When
         try {
@@ -181,7 +180,7 @@ public class MailNotificationServiceImplTest {
         doReturn(hoSPersonType).when(ppService).getPrivatePractitioner(anyString(), isNull(), isNull());
 
         MailNotification mailNotification = mailNotification("intygsId",
-                MailNotificationServiceImpl.PRIVATE_PRACTITIONER_HSAID_PREFIX + "1234");
+            MailNotificationServiceImpl.PRIVATE_PRACTITIONER_HSAID_PREFIX + "1234");
 
         // When
         mailNotificationService.sendMailForIncomingAnswer(mailNotification);
@@ -202,7 +201,7 @@ public class MailNotificationServiceImplTest {
         doReturn(hoSPersonType).when(ppService).getPrivatePractitioner(anyString(), isNull(), isNull());
 
         MailNotification mailNotification = mailNotification("intygsId",
-                MailNotificationServiceImpl.PRIVATE_PRACTITIONER_HSAID_PREFIX + "1234");
+            MailNotificationServiceImpl.PRIVATE_PRACTITIONER_HSAID_PREFIX + "1234");
 
         // When
         mailNotificationService.sendMailForIncomingAnswer(mailNotification);
@@ -253,14 +252,14 @@ public class MailNotificationServiceImplTest {
         final String intygsId = "intygsId";
         // Given
         MailNotification mailNotification = mailNotification(intygsId,
-                MailNotificationServiceImpl.PRIVATE_PRACTITIONER_HSAID_PREFIX + "AndSomeOtherText");
+            MailNotificationServiceImpl.PRIVATE_PRACTITIONER_HSAID_PREFIX + "AndSomeOtherText");
 
         // When
         final String url = mailNotificationService.intygsUrl(mailNotification);
 
         // Then
         assertEquals("WebCertHostUrl/webcert/web/user/pp-certificate/intygsId/questions?enhet="
-                + MailNotificationServiceImpl.PRIVATE_PRACTITIONER_HSAID_PREFIX + "AndSomeOtherText", url);
+            + MailNotificationServiceImpl.PRIVATE_PRACTITIONER_HSAID_PREFIX + "AndSomeOtherText", url);
         verifyZeroInteractions(utkastRepository);
     }
 
@@ -302,14 +301,14 @@ public class MailNotificationServiceImplTest {
         final String intygsId = "intygsId";
         // Given
         MailNotification mailNotification = mailNotification(intygsId,
-                MailNotificationServiceImpl.PRIVATE_PRACTITIONER_HSAID_PREFIX + "AndSomeOtherText", LuseEntryPoint.MODULE_ID);
+            MailNotificationServiceImpl.PRIVATE_PRACTITIONER_HSAID_PREFIX + "AndSomeOtherText", LuseEntryPoint.MODULE_ID);
 
         // When
         final String url = mailNotificationService.intygsUrl(mailNotification);
 
         // Then
         assertEquals("WebCertHostUrl/webcert/web/user/pp-certificate/luse/intygsId/questions?enhet="
-                + MailNotificationServiceImpl.PRIVATE_PRACTITIONER_HSAID_PREFIX + "AndSomeOtherText", url);
+            + MailNotificationServiceImpl.PRIVATE_PRACTITIONER_HSAID_PREFIX + "AndSomeOtherText", url);
         verifyZeroInteractions(utkastRepository);
     }
 

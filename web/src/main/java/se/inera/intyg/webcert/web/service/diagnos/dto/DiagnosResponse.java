@@ -19,7 +19,6 @@
 package se.inera.intyg.webcert.web.service.diagnos.dto;
 
 import java.util.List;
-
 import se.inera.intyg.webcert.web.service.diagnos.model.Diagnos;
 
 public class DiagnosResponse {
@@ -30,7 +29,7 @@ public class DiagnosResponse {
 
     private boolean moreResults;
 
-    public static DiagnosResponse ok(List<Diagnos> diagnoser,  boolean moreResults) {
+    public static DiagnosResponse ok(List<Diagnos> diagnoser, boolean moreResults) {
         DiagnosResponse diagnosResponse = new DiagnosResponse();
         diagnosResponse.setDiagnoser(diagnoser);
         diagnosResponse.setMoreResults(moreResults);

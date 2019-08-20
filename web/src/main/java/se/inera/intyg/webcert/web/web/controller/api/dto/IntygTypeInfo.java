@@ -22,6 +22,7 @@ package se.inera.intyg.webcert.web.web.controller.api.dto;
  * Created by marced on 2018-09-17.
  */
 public class IntygTypeInfo {
+
     private String intygId;
     private String intygType;
     private String intygTypeVersion;

@@ -24,14 +24,12 @@ import static org.junit.Assert.assertNull;
 
 import java.util.Arrays;
 import java.util.List;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
 import se.inera.intyg.webcert.web.service.diagnos.model.Diagnos;
 
 @RunWith(SpringJUnit4ClassRunner.class)

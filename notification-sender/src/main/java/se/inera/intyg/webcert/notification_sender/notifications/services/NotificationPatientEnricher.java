@@ -18,12 +18,11 @@
  */
 package se.inera.intyg.webcert.notification_sender.notifications.services;
 
+import com.google.common.annotations.VisibleForTesting;
+import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import com.google.common.annotations.VisibleForTesting;
-
 import se.inera.intyg.common.support.Constants;
 import se.inera.intyg.common.support.validate.SamordningsnummerValidator;
 import se.inera.intyg.infra.integration.pu.model.Person;
@@ -33,8 +32,6 @@ import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.PersonId;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
-
-import java.util.Optional;
 
 /**
  * For SMI-intyg, use the PU-service to fetch patient details and add them to the Utlatande.
@@ -52,45 +49,45 @@ public class NotificationPatientEnricher {
         // INTYG-4190, hämta patientens uppgifter från PU-tjänsten och klistra in i utlåtandet.
         String intygsTyp = intyg.getTyp().getCode();
         switch (intygsTyp.toLowerCase()) {
-        case "luse":
-        case "luae_na":
-        case "luae_fs":
-        case "lisjp":
-            String personId = intyg.getPatient().getPersonId().getExtension();
-            Personnummer personnummer = Personnummer
+            case "luse":
+            case "luae_na":
+            case "luae_fs":
+            case "lisjp":
+                String personId = intyg.getPatient().getPersonId().getExtension();
+                Personnummer personnummer = Personnummer
                     .createPersonnummer(personId)
                     .orElseThrow(() -> new IllegalArgumentException("Cannot create Personummer object from personId: " + personId));
 
-            PersonSvar personSvar = puService.getPerson(personnummer);
-            if (personSvar.getStatus() == PersonSvar.Status.FOUND) {
-                if (!personSvar.getPerson().isSekretessmarkering()) {
-                    intyg.setPatient(buildPatientFromPersonSvar(personSvar.getPerson()));
-                } else {
-                    intyg.getPatient().setEfternamn(SEKRETESSMARKERING);
-                    intyg.getPatient().setFornamn(EMPTY_STRING);
-                    intyg.getPatient().setMellannamn(EMPTY_STRING);
-                    intyg.getPatient().setPostadress(EMPTY_STRING);
-                    intyg.getPatient().setPostnummer(EMPTY_STRING);
-                    intyg.getPatient().setPostort(EMPTY_STRING);
-                }
-            } else if (personSvar.getStatus() == PersonSvar.Status.ERROR) {
-                throw new TemporaryException(
+                PersonSvar personSvar = puService.getPerson(personnummer);
+                if (personSvar.getStatus() == PersonSvar.Status.FOUND) {
+                    if (!personSvar.getPerson().isSekretessmarkering()) {
+                        intyg.setPatient(buildPatientFromPersonSvar(personSvar.getPerson()));
+                    } else {
+                        intyg.getPatient().setEfternamn(SEKRETESSMARKERING);
+                        intyg.getPatient().setFornamn(EMPTY_STRING);
+                        intyg.getPatient().setMellannamn(EMPTY_STRING);
+                        intyg.getPatient().setPostadress(EMPTY_STRING);
+                        intyg.getPatient().setPostnummer(EMPTY_STRING);
+                        intyg.getPatient().setPostort(EMPTY_STRING);
+                    }
+                } else if (personSvar.getStatus() == PersonSvar.Status.ERROR) {
+                    throw new TemporaryException(
                         new IllegalStateException("Could not query PU-service for enriching notification with patient data."));
-            } else {
-                LOG.warn("PU-service returned NOT_FOUND for personnummer: {}, not enriching notification.",
+                } else {
+                    LOG.warn("PU-service returned NOT_FOUND for personnummer: {}, not enriching notification.",
                         personnummer.getPersonnummerHash());
-            }
-            break;
-        default:
-            // Do nothing
-            break;
+                }
+                break;
+            default:
+                // Do nothing
+                break;
         }
     }
 
     private se.riv.clinicalprocess.healthcond.certificate.v3.Patient buildPatientFromPersonSvar(Person person) {
 
         se.riv.clinicalprocess.healthcond.certificate.v3.Patient patient =
-                new se.riv.clinicalprocess.healthcond.certificate.v3.Patient();
+            new se.riv.clinicalprocess.healthcond.certificate.v3.Patient();
 
         Optional<Personnummer> personnummer = Optional.ofNullable(person.getPersonnummer());
 
@@ -100,9 +97,9 @@ public class NotificationPatientEnricher {
 
         PersonId personId = new PersonId();
         personId.setRoot(
-                SamordningsnummerValidator.isSamordningsNummer(personnummer)
-                        ? Constants.SAMORDNING_ID_OID
-                        : Constants.PERSON_ID_OID);
+            SamordningsnummerValidator.isSamordningsNummer(personnummer)
+                ? Constants.SAMORDNING_ID_OID
+                : Constants.PERSON_ID_OID);
         personId.setExtension(personnummer.get().getPersonnummer());
 
         patient.setPersonId(personId);

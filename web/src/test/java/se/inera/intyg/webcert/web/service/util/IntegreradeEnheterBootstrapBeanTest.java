@@ -24,9 +24,10 @@ import static org.mockito.Mockito.verify;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.*;
+import org.mockito.ArgumentCaptor;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-
 import se.inera.intyg.webcert.persistence.integreradenhet.model.IntegreradEnhet;
 import se.inera.intyg.webcert.persistence.integreradenhet.repository.IntegreradEnhetRepository;
 
@@ -50,6 +51,6 @@ public class IntegreradeEnheterBootstrapBeanTest {
             assertNotNull(enhet.getEnhetsNamn());
             assertNotNull(enhet.getVardgivarId());
             assertNotNull(enhet.getVardgivarNamn());
-       }
+        }
     }
 }

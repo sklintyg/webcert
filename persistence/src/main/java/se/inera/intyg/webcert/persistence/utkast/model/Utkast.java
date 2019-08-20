@@ -39,9 +39,7 @@ import javax.persistence.PreUpdate;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
 import javax.persistence.Version;
-
 import org.hibernate.annotations.Type;
-
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.peristence.dao.util.DaoUtil;
@@ -51,7 +49,6 @@ import se.inera.intyg.schemas.contract.Personnummer;
  * A draft of a certificate.
  *
  * @author marced
- *
  */
 @Entity
 @Table(name = "INTYG")
@@ -104,13 +101,13 @@ public class Utkast {
     private long version;
 
     @Embedded
-    @AttributeOverrides({ @AttributeOverride(name = "hsaId", column = @Column(name = "SKAPAD_AV_HSAID")),
-            @AttributeOverride(name = "namn", column = @Column(name = "SKAPAD_AV_NAMN")) })
+    @AttributeOverrides({@AttributeOverride(name = "hsaId", column = @Column(name = "SKAPAD_AV_HSAID")),
+        @AttributeOverride(name = "namn", column = @Column(name = "SKAPAD_AV_NAMN"))})
     private VardpersonReferens skapadAv;
 
     @Embedded
-    @AttributeOverrides({ @AttributeOverride(name = "hsaId", column = @Column(name = "SENAST_SPARAD_AV_HSAID")),
-            @AttributeOverride(name = "namn", column = @Column(name = "SENAST_SPARAD_AV_NAMN")) })
+    @AttributeOverrides({@AttributeOverride(name = "hsaId", column = @Column(name = "SENAST_SPARAD_AV_HSAID")),
+        @AttributeOverride(name = "namn", column = @Column(name = "SENAST_SPARAD_AV_NAMN"))})
     private VardpersonReferens senastSparadAv;
 
     @Column(name = "SENAST_SPARAD_DATUM")

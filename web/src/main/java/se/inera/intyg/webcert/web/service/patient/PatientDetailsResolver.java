@@ -18,18 +18,18 @@
  */
 package se.inera.intyg.webcert.web.service.patient;
 
+import java.util.List;
+import java.util.Map;
 import se.inera.intyg.common.support.model.common.internal.Patient;
 import se.inera.intyg.infra.integration.pu.model.PersonSvar;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.SekretessStatus;
 
-import java.util.List;
-import java.util.Map;
-
 /**
  * Created by eriklupander on 2017-08-14.
  */
 public interface PatientDetailsResolver {
+
     PersonSvar getPersonFromPUService(Personnummer personnummer);
 
     Patient resolvePatient(Personnummer personnummer, String intygsTyp, String intygsTypVersion);

@@ -22,5 +22,6 @@ import java.util.Optional;
 import se.inera.intyg.webcert.web.web.controller.api.dto.icf.IcfKod;
 
 public interface IcfTextResource {
+
     Optional<IcfKod> lookupTextByIcfKod(String icfKod);
 }

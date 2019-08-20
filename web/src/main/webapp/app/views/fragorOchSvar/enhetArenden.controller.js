@@ -22,27 +22,27 @@
  */
 angular.module('webcert').controller('webcert.enhetArendenCtrl',
     ['$rootScope', '$scope', 'common.enhetArendenCommonService', 'webcert.enhetArendenModel',
-        'webcert.vardenhetFilterModel', 'webcert.enhetArendenFilterModel',
-        function($rootScope, $scope, enhetArendenCommonService, enhetArendenModel,
-            vardenhetFilterModel, enhetArendenFilterModel) {
-            'use strict';
+      'webcert.vardenhetFilterModel', 'webcert.enhetArendenFilterModel',
+      function($rootScope, $scope, enhetArendenCommonService, enhetArendenModel,
+          vardenhetFilterModel, enhetArendenFilterModel) {
+        'use strict';
 
-            $scope.enhetArendenModel = enhetArendenModel;
-            $scope.vardenhetFilterModel = vardenhetFilterModel;
+        $scope.enhetArendenModel = enhetArendenModel;
+        $scope.vardenhetFilterModel = vardenhetFilterModel;
 
-            //Reset sub factories on entry
-            enhetArendenFilterModel.reset();
-            enhetArendenModel.reset();
+        //Reset sub factories on entry
+        enhetArendenFilterModel.reset();
+        enhetArendenModel.reset();
 
-            $scope.$on('wcChangeActiveUnitDialog.vardenhetSelected', function(){
-                // When changing active unit, reset selected enhet on 'Ej hanterade ärenden' for units with multiple under units
-                enhetArendenModel.reset();
-                enhetArendenFilterModel.reset();
-            });
+        $scope.$on('wcChangeActiveUnitDialog.vardenhetSelected', function() {
+          // When changing active unit, reset selected enhet on 'Ej hanterade ärenden' for units with multiple under units
+          enhetArendenModel.reset();
+          enhetArendenFilterModel.reset();
+        });
 
-            var unbindLocationChange = $rootScope.$on('$locationChangeStart', function($event, newUrl, currentUrl) {
-                enhetArendenCommonService.checkQAonlyDialog($scope, $event, newUrl, currentUrl, unbindLocationChange);
-            });
-            $scope.$on('$destroy', unbindLocationChange);
+        var unbindLocationChange = $rootScope.$on('$locationChangeStart', function($event, newUrl, currentUrl) {
+          enhetArendenCommonService.checkQAonlyDialog($scope, $event, newUrl, currentUrl, unbindLocationChange);
+        });
+        $scope.$on('$destroy', unbindLocationChange);
 
-       }]);
+      }]);

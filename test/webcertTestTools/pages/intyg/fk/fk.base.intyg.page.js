@@ -28,36 +28,36 @@
 var BaseIntyg = require('../base.intyg.page.js');
 
 var FkBaseIntyg = BaseIntyg._extend({
-    init: function init() {
-        init._super.call(this);
-        this.intygTypeVersion = null; //Overidden by subclasses
+  init: function init() {
+    init._super.call(this);
+    this.intygTypeVersion = null; //Overidden by subclasses
 
-        this.at = element(by.id('viewCertAndQA'));
-        this.enhetsAdress = {
-            postAdress: element(by.id('vardperson_postadress')),
-            postNummer: element(by.id('vardperson_postnummer')),
-            postOrt: element(by.id('vardperson_postort')),
-            enhetsTelefon: element(by.id('vardperson_telefonnummer'))
-        };
-    },
-    //Locates the dynamic text based on text-key. see luaefs.dynamictexts.spec.js for example
-    getDynamicLabelText: function(textKey) {
-        return element(by.xpath('//span[@key="' + textKey + '"]')).getText();
-    },
-    getQAElementByText: function(containingText) {
-        var panel = element(by.cssContainingText('.arende-panel', containingText));
-        return {
-            panel: panel,
-            text: panel.element(by.css('textarea')),
-            sendButton: panel.element(by.css('.btn-success'))
-        };
-    },
-    clickKompletteraIntyg: function() {
-        return element(by.id('komplettera-intyg')).sendKeys(protractor.Key.SPACE);
-    },
-    switchToArendeTab: function() {
-        return element(by.id('tab-link-wc-arende-panel-tab')).click();
-    }
+    this.at = element(by.id('viewCertAndQA'));
+    this.enhetsAdress = {
+      postAdress: element(by.id('vardperson_postadress')),
+      postNummer: element(by.id('vardperson_postnummer')),
+      postOrt: element(by.id('vardperson_postort')),
+      enhetsTelefon: element(by.id('vardperson_telefonnummer'))
+    };
+  },
+  //Locates the dynamic text based on text-key. see luaefs.dynamictexts.spec.js for example
+  getDynamicLabelText: function(textKey) {
+    return element(by.xpath('//span[@key="' + textKey + '"]')).getText();
+  },
+  getQAElementByText: function(containingText) {
+    var panel = element(by.cssContainingText('.arende-panel', containingText));
+    return {
+      panel: panel,
+      text: panel.element(by.css('textarea')),
+      sendButton: panel.element(by.css('.btn-success'))
+    };
+  },
+  clickKompletteraIntyg: function() {
+    return element(by.id('komplettera-intyg')).sendKeys(protractor.Key.SPACE);
+  },
+  switchToArendeTab: function() {
+    return element(by.id('tab-link-wc-arende-panel-tab')).click();
+  }
 });
 
 module.exports = FkBaseIntyg;

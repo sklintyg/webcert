@@ -19,7 +19,6 @@
 package se.inera.intyg.webcert.web.service.utkast;
 
 import org.springframework.stereotype.Component;
-
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.model.common.internal.Relation;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
@@ -47,7 +46,7 @@ public class CreateRenewalCopyUtkastBuilder extends AbstractUtkastBuilder<Create
 
     @Override
     protected String getInternalModel(Utlatande template, ModuleApi moduleApi, AbstractCreateCopyRequest copyRequest,
-                                      Person person, Relation relation, String newDraftCopyId) throws ModuleException {
+        Person person, Relation relation, String newDraftCopyId) throws ModuleException {
         CreateDraftCopyHolder draftCopyHolder = createModuleRequestForCopying(copyRequest, person, relation, newDraftCopyId);
 
         return moduleApi.createRenewalFromTemplate(draftCopyHolder, template);

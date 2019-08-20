@@ -19,13 +19,8 @@
 package se.inera.intyg.webcert.integration.tak.stub;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
-import se.inera.intyg.webcert.integration.tak.model.ConnectionPoint;
-import se.inera.intyg.webcert.integration.tak.model.ServiceContract;
-import se.inera.intyg.webcert.integration.tak.model.TakLogicalAddress;
-
+import java.io.IOException;
+import java.net.URL;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -33,31 +28,36 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.io.IOException;
-import java.net.URL;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+import se.inera.intyg.webcert.integration.tak.model.ConnectionPoint;
+import se.inera.intyg.webcert.integration.tak.model.ServiceContract;
+import se.inera.intyg.webcert.integration.tak.model.TakLogicalAddress;
 
 @Service("takStub")
 @Path("/")
 public class TakStub {
+
     private static final Logger LOG = LoggerFactory.getLogger(TakStub.class);
 
     private static final String CERT_STATUS_FOR_CARE_V3_NS =
-            "urn:riv:clinicalprocess:healthcond:certificate:CertificateStatusUpdateForCareResponder:3";
+        "urn:riv:clinicalprocess:healthcond:certificate:CertificateStatusUpdateForCareResponder:3";
     private static final String RECEIVE_MEDICAL_CERT_QUESTION_NS =
-            "urn:riv:insuranceprocess:healthreporting:ReceiveMedicalCertificateQuestionResponder:1";
+        "urn:riv:insuranceprocess:healthreporting:ReceiveMedicalCertificateQuestionResponder:1";
     private static final String RECEIVE_MEDICAL_CERT_ANSWER_NS =
-            "urn:riv:insuranceprocess:healthreporting:ReceiveMedicalCertificateAnswerResponder:1";
+        "urn:riv:insuranceprocess:healthreporting:ReceiveMedicalCertificateAnswerResponder:1";
     private static final String SEND_MESSAGE_TO_CARE_NS =
-            "urn:riv:clinicalprocess:healthcond:certificate:SendMessageToCareResponder:2";
+        "urn:riv:clinicalprocess:healthcond:certificate:SendMessageToCareResponder:2";
 
     private ObjectMapper mapper = new ObjectMapper();
 
     @GET
     @Path("connectionPoints")
-    @Produces({ MediaType.APPLICATION_JSON })
-    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({MediaType.APPLICATION_JSON})
     public Response getConnectionPoint(@QueryParam("platform") String platform, @QueryParam("environment") String env)
-            throws IOException {
+        throws IOException {
         LOG.debug("Stub got getConnectionPoint request");
         URL jsonUrl = getClass().getResource("/responses/connectionPointResponse.json");
         ConnectionPoint[] cP = mapper.readValue(jsonUrl, ConnectionPoint[].class);
@@ -69,8 +69,8 @@ public class TakStub {
     // CHECKSTYLE:OFF MagicNumber
     @GET
     @Path("serviceContracts")
-    @Produces({ MediaType.APPLICATION_JSON })
-    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({MediaType.APPLICATION_JSON})
     public Response getServiceContracts(@QueryParam("namespace") String ns) throws IOException {
         LOG.debug("Stub got getServiceContracts request for {}", ns);
         URL jsonUrl = getClass().getResource("/responses/serviceContractResponse.json");
@@ -99,11 +99,11 @@ public class TakStub {
     // This is intentionally misspelled to mimic the actual API at NTJP...
     @GET
     @Path("logicalAddresss")
-    @Produces({ MediaType.APPLICATION_JSON })
-    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({MediaType.APPLICATION_JSON})
     public Response getLogicalAddress(@QueryParam("logicalAdress") String hsaId,
-                                      @QueryParam("connectionPointId") String connectionPointId,
-                                      @QueryParam("serviceContractId") String serviceContractId) throws IOException {
+        @QueryParam("connectionPointId") String connectionPointId,
+        @QueryParam("serviceContractId") String serviceContractId) throws IOException {
         LOG.debug("Stub got getLogicalAddress request");
         URL jsonUrl = getClass().getResource("/responses/takningar.json");
         TakLogicalAddress[] takLogicalAddress = mapper.readValue(jsonUrl, TakLogicalAddress[].class);

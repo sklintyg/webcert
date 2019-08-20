@@ -31,67 +31,67 @@ var intygGenerator = wcTestTools.intygGenerator;
 
 describe('Lisjp attic tests', function() {
 
-    var intygsId;
+  var intygsId;
 
-    beforeAll(function() {
-        browser.ignoreSynchronization = false;
-        specHelper.login();
+  beforeAll(function() {
+    browser.ignoreSynchronization = false;
+    specHelper.login();
 
-        testdataHelper.createUtkast('lisjp').then(function(response){
-            var utkast = response.body;
-            intygsId = utkast.intygsId;
+    testdataHelper.createUtkast('lisjp').then(function(response) {
+      var utkast = response.body;
+      intygsId = utkast.intygsId;
 
-            var utkastData = JSON.parse(intygGenerator.buildIntyg({
-                intygType: 'lisjp',
-                intygId: intygsId,
-                personnr: utkast.patientPersonnummer
-            }).document);
+      var utkastData = JSON.parse(intygGenerator.buildIntyg({
+        intygType: 'lisjp',
+        intygId: intygsId,
+        personnr: utkast.patientPersonnummer
+      }).document);
 
-            testdataHelper.saveUtkast('lisjp', intygsId, utkast.version, utkastData, function(){
-            });
-        });
+      testdataHelper.saveUtkast('lisjp', intygsId, utkast.version, utkastData, function() {
+      });
+    });
+  });
+
+  afterAll(function() {
+    testdataHelper.deleteUtkast(intygsId);
+  });
+
+  it('should load utkast', function() {
+    LisjpUtkastPage.get(intygsId);
+    LisjpUtkastPage.disableAutosave();
+  });
+
+  describe('annat', function() {
+    it('should still be valid if annat is empty', function() {
+      LisjpUtkastPage.baseratPa.annat.checkbox.sendKeys(protractor.Key.SPACE);
+
+      expect(LisjpUtkastPage.baseratPa.annat.datum.getAttribute('value')).toBe('');
+      expect(LisjpUtkastPage.baseratPa.annat.beskrivning.isPresent()).toBeFalsy();
+      // annatBeskrivning should be removed from the model sent to the server
+      // if it is still present we should get a validationerror here.
     });
 
-    afterAll(function() {
-        testdataHelper.deleteUtkast(intygsId);
+    it('should restore annatBeskrivning if annat is specified again', function() {
+      LisjpUtkastPage.baseratPa.annat.datum.sendKeys('2016-12-12');
+
+      expect(LisjpUtkastPage.baseratPa.annat.datum.getAttribute('value')).toBe('2016-12-12');
+      expect(LisjpUtkastPage.baseratPa.annat.beskrivning.getAttribute('value')).toBe('Annat underlag');
+    });
+  });
+
+  describe('kontaktMedFk', function() {
+    it('should still be valid if kontaktMedFk is set to no', function() {
+      LisjpUtkastPage.kontaktMedFK.sendKeys(protractor.Key.SPACE);
+
+      expect(LisjpUtkastPage.anledningTillKontakt.isPresent()).toBeFalsy();
     });
 
-    it('should load utkast', function () {
-        LisjpUtkastPage.get(intygsId);
-        LisjpUtkastPage.disableAutosave();
+    it('should restore anledningTillKontakt if kontaktMedFk is set to yes again', function() {
+      LisjpUtkastPage.enableAutosave();
+      LisjpUtkastPage.kontaktMedFK.sendKeys(protractor.Key.SPACE);
+
+      expect(LisjpUtkastPage.anledningTillKontakt.getAttribute('value')).toBe('Egentligen inte');
     });
-
-    describe('annat', function() {
-        it('should still be valid if annat is empty', function() {
-            LisjpUtkastPage.baseratPa.annat.checkbox.sendKeys(protractor.Key.SPACE);
-
-            expect(LisjpUtkastPage.baseratPa.annat.datum.getAttribute('value')).toBe('');
-            expect(LisjpUtkastPage.baseratPa.annat.beskrivning.isPresent()).toBeFalsy();
-            // annatBeskrivning should be removed from the model sent to the server
-            // if it is still present we should get a validationerror here.
-        });
-
-        it ('should restore annatBeskrivning if annat is specified again', function() {
-            LisjpUtkastPage.baseratPa.annat.datum.sendKeys('2016-12-12');
-
-            expect(LisjpUtkastPage.baseratPa.annat.datum.getAttribute('value')).toBe('2016-12-12');
-            expect(LisjpUtkastPage.baseratPa.annat.beskrivning.getAttribute('value')).toBe('Annat underlag');
-        });
-    });
-
-    describe('kontaktMedFk', function() {
-        it('should still be valid if kontaktMedFk is set to no', function() {
-            LisjpUtkastPage.kontaktMedFK.sendKeys(protractor.Key.SPACE);
-
-            expect(LisjpUtkastPage.anledningTillKontakt.isPresent()).toBeFalsy();
-        });
-
-        it('should restore anledningTillKontakt if kontaktMedFk is set to yes again', function() {
-            LisjpUtkastPage.enableAutosave();
-            LisjpUtkastPage.kontaktMedFK.sendKeys(protractor.Key.SPACE);
-
-            expect(LisjpUtkastPage.anledningTillKontakt.getAttribute('value')).toBe('Egentligen inte');
-        });
-    });
+  });
 
 });

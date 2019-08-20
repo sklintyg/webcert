@@ -18,47 +18,48 @@
  */
 
 angular.module('webcert').factory('webcert.enhetArendenListService',
-    [ '$log', '$filter', '$q',
-        'common.enhetArendenCommonService',
-        'webcert.enhetArendenProxy', 'webcert.enhetArendenModel', 'webcert.enhetArendenFilterModel', 'webcert.enhetArendenConverterService',
-    function($log, $filter, $q,
-        enhetArendenCommonService,
-        enhetArendenProxy, enhetArendenModel, enhetArendenFilterModel, enhetArendenConverterService) {
+    ['$log', '$filter', '$q',
+      'common.enhetArendenCommonService',
+      'webcert.enhetArendenProxy', 'webcert.enhetArendenModel', 'webcert.enhetArendenFilterModel', 'webcert.enhetArendenConverterService',
+      function($log, $filter, $q,
+          enhetArendenCommonService,
+          enhetArendenProxy, enhetArendenModel, enhetArendenFilterModel, enhetArendenConverterService) {
         'use strict';
 
         function _getArenden(startFrom) {
 
-            var deferred = $q.defer();
+          var deferred = $q.defer();
 
-            var filterQuery = enhetArendenConverterService.convertFormModelToFilterQuery(enhetArendenFilterModel.filterForm, enhetArendenModel.enhetId);
-            filterQuery.startFrom = startFrom;
-            enhetArendenProxy.getArenden(filterQuery, function(successData) {
+          var filterQuery = enhetArendenConverterService.convertFormModelToFilterQuery(enhetArendenFilterModel.filterForm,
+              enhetArendenModel.enhetId);
+          filterQuery.startFrom = startFrom;
+          enhetArendenProxy.getArenden(filterQuery, function(successData) {
 
-                var arendenList = successData.results;
+            var arendenList = successData.results;
 
-                function decorateList(list) {
-                    angular.forEach(list, function(qa) {
-                        enhetArendenCommonService.decorateSingleItemMeasure(qa);
-                    });
-                }
+            function decorateList(list) {
+              angular.forEach(list, function(qa) {
+                enhetArendenCommonService.decorateSingleItemMeasure(qa);
+              });
+            }
 
-                decorateList(arendenList);
+            decorateList(arendenList);
 
-                deferred.resolve({
-                    query: filterQuery,
-                    totalCount: successData.totalCount,
-                    arendenList: arendenList
-                });
-
-            }, function(errorData) {
-                deferred.reject(errorData);
+            deferred.resolve({
+              query: filterQuery,
+              totalCount: successData.totalCount,
+              arendenList: arendenList
             });
 
-            return deferred.promise;
+          }, function(errorData) {
+            deferred.reject(errorData);
+          });
+
+          return deferred.promise;
         }
 
         // Return public API for the service
         return {
-            getArenden: _getArenden
+          getArenden: _getArenden
         };
-    }]);
+      }]);

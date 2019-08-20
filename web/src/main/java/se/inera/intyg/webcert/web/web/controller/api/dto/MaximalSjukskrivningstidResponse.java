@@ -32,13 +32,13 @@ public final class MaximalSjukskrivningstidResponse {
     }
 
     private MaximalSjukskrivningstidResponse(
-            final int foreslagenSjukskrivningstid,
-            final boolean overskriderRekommenderadSjukskrivningstid,
-            final int totalTidigareSjukskrivningstid,
-            final int totalSjukskrivningstidInklusiveForeslagen,
-            final Integer maximalRekommenderadSjukskrivningstid,
-            final String aktuellIcd10Kod,
-            final String maximaltRekommenderadSjukskrivningstidSource) {
+        final int foreslagenSjukskrivningstid,
+        final boolean overskriderRekommenderadSjukskrivningstid,
+        final int totalTidigareSjukskrivningstid,
+        final int totalSjukskrivningstidInklusiveForeslagen,
+        final Integer maximalRekommenderadSjukskrivningstid,
+        final String aktuellIcd10Kod,
+        final String maximaltRekommenderadSjukskrivningstidSource) {
         this.foreslagenSjukskrivningstid = foreslagenSjukskrivningstid;
         this.overskriderRekommenderadSjukskrivningstid = overskriderRekommenderadSjukskrivningstid;
         this.totalTidigareSjukskrivningstid = totalTidigareSjukskrivningstid;
@@ -97,39 +97,39 @@ public final class MaximalSjukskrivningstidResponse {
     }
 
     public static MaximalSjukskrivningstidResponse fromFmbRekommendation(
-            final int totalTidigareSjukskrivningstid,
-            final int foreslagenSjukskrivningstid,
-            final int maximaltRekommenderadSjukskrivningstid,
-            final String aktuellIcd10Kod,
-            final String maximaltRekommenderadSjukskrivningstidSource) {
+        final int totalTidigareSjukskrivningstid,
+        final int foreslagenSjukskrivningstid,
+        final int maximaltRekommenderadSjukskrivningstid,
+        final String aktuellIcd10Kod,
+        final String maximaltRekommenderadSjukskrivningstidSource) {
 
         final int totalSjukskrivningsTidInklusiveForeslagen = totalTidigareSjukskrivningstid + foreslagenSjukskrivningstid;
         final boolean overskriden = totalSjukskrivningsTidInklusiveForeslagen > maximaltRekommenderadSjukskrivningstid;
 
         return new MaximalSjukskrivningstidResponse(
-                foreslagenSjukskrivningstid,
-                overskriden,
-                totalTidigareSjukskrivningstid,
-                totalSjukskrivningsTidInklusiveForeslagen,
-                maximaltRekommenderadSjukskrivningstid,
-                aktuellIcd10Kod,
-                maximaltRekommenderadSjukskrivningstidSource);
+            foreslagenSjukskrivningstid,
+            overskriden,
+            totalTidigareSjukskrivningstid,
+            totalSjukskrivningsTidInklusiveForeslagen,
+            maximaltRekommenderadSjukskrivningstid,
+            aktuellIcd10Kod,
+            maximaltRekommenderadSjukskrivningstidSource);
     }
 
     public static MaximalSjukskrivningstidResponse ingenFmbRekommendation(
-            final int totalTidigareSjukskrivningstid,
-            final int foreslagenSjukskrivningstid) {
+        final int totalTidigareSjukskrivningstid,
+        final int foreslagenSjukskrivningstid) {
 
         final int totalSjukskrivningsTidInklusiveForeslagen = totalTidigareSjukskrivningstid + foreslagenSjukskrivningstid;
 
         return new MaximalSjukskrivningstidResponse(
-                foreslagenSjukskrivningstid,
-                false,
-                totalTidigareSjukskrivningstid,
-                totalSjukskrivningsTidInklusiveForeslagen,
-                null,
-                null,
-                null);
+            foreslagenSjukskrivningstid,
+            false,
+            totalTidigareSjukskrivningstid,
+            totalSjukskrivningsTidInklusiveForeslagen,
+            null,
+            null,
+            null);
     }
 
     public String getMaximaltRekommenderadSjukskrivningstidSource() {

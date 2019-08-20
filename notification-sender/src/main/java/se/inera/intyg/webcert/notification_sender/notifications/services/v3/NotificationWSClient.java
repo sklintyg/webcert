@@ -20,6 +20,8 @@ package se.inera.intyg.webcert.notification_sender.notifications.services.v3;
 
 // CHECKSTYLE:OFF LineLength
 
+import static se.inera.intyg.common.support.Constants.HSA_ID_OID;
+
 import java.util.Objects;
 import java.util.function.Function;
 import javax.xml.ws.soap.SOAPFaultException;
@@ -41,9 +43,6 @@ import se.riv.clinicalprocess.healthcond.certificate.types.v3.HsaId;
 import se.riv.clinicalprocess.healthcond.certificate.v3.ErrorIdType;
 import se.riv.clinicalprocess.healthcond.certificate.v3.ResultType;
 
-
-import static se.inera.intyg.common.support.Constants.HSA_ID_OID;
-
 // CHECKSTYLE:ON LineLength
 
 public class NotificationWSClient {
@@ -55,6 +54,7 @@ public class NotificationWSClient {
 
     // keep track of context, see NotificationInInterceptor
     static class MessageContext {
+
         private CertificateStatusUpdateForCareType message;
         private String correlationId;
         private String logicalAddress;
@@ -79,9 +79,9 @@ public class NotificationWSClient {
         @Override
         public String toString() {
             return String.format("[logicalAddress: %s, intygId: %s, correlationId: %s]",
-                    logicalAddress(),
-                    message().getIntyg().getIntygsId().getExtension(),
-                    correlationId());
+                logicalAddress(),
+                message().getIntyg().getIntygsId().getExtension(),
+                correlationId());
         }
 
         public static MessageContext of(CertificateStatusUpdateForCareType message, String logicalAddress, String correlationId) {
@@ -107,11 +107,11 @@ public class NotificationWSClient {
     private MessageRedeliveryFlag messageRedeliveryFlag;
 
     public void sendStatusUpdate(CertificateStatusUpdateForCareType request,
-                                 @Header(NotificationRouteHeaders.LOGISK_ADRESS) String logicalAddress,
-                                 @Header(NotificationRouteHeaders.USER_ID) String userId,
-                                 @Header(NotificationRouteHeaders.CORRELATION_ID) String correlationId,
-                                 @Header(Constants.JMS_TIMESTAMP) long messageTimestamp)
-            throws TemporaryException, DiscardCandidateException, PermanentException {
+        @Header(NotificationRouteHeaders.LOGISK_ADRESS) String logicalAddress,
+        @Header(NotificationRouteHeaders.USER_ID) String userId,
+        @Header(NotificationRouteHeaders.CORRELATION_ID) String correlationId,
+        @Header(Constants.JMS_TIMESTAMP) long messageTimestamp)
+        throws TemporaryException, DiscardCandidateException, PermanentException {
 
         if (Objects.nonNull(userId)) {
             LOG.debug("Set hanteratAv to '{}'", userId);
@@ -146,7 +146,7 @@ public class NotificationWSClient {
 
     //
     ResultType exchange(MessageContext mc)
-            throws PermanentException, TemporaryException {
+        throws PermanentException, TemporaryException {
         messageContextTL.set(mc);
         try {
             if (LOG.isDebugEnabled()) {
@@ -167,22 +167,22 @@ public class NotificationWSClient {
 
     //
     void handleError(MessageContext mc, ResultType result)
-            throws TemporaryException, PermanentException, DiscardCandidateException {
+        throws TemporaryException, PermanentException, DiscardCandidateException {
 
         final Function<String, String> fmt = msg ->
-                String.format("WSClient correlationId: %s, %s with error code: %s and message \"%s\"",
-                        mc.correlationId(), msg, result.getErrorId(), result.getResultText());
+            String.format("WSClient correlationId: %s, %s with error code: %s and message \"%s\"",
+                mc.correlationId(), msg, result.getErrorId(), result.getResultText());
 
         if (ErrorIdType.TECHNICAL_ERROR.equals(result.getErrorId())) {
             // Added ugly null check to make notification_sender testSendStatusUpdateErrorTechnical pass
             // The featuresHelper does not seem to load properly in the gradle tests
             if (Objects.nonNull(featuresHelper)
-                    && featuresHelper.isFeatureActive(AuthoritiesConstants.FEATURE_NOTIFICATION_DISCARD_FELB)) {
+                && featuresHelper.isFeatureActive(AuthoritiesConstants.FEATURE_NOTIFICATION_DISCARD_FELB)) {
                 if (result.getResultText()
-                        .startsWith("Certificate not found in COSMIC and ref field is missing, cannot store certificate. "
-                                + "Possible race condition. Retry later when the certificate may have been stored in COSMIC.")
-                        && (mc.message().getHandelse().getHandelsekod().getCode().equals(HandelsekodEnum.ANDRAT.value())
-                        || mc.message().getHandelse().getHandelsekod().getCode().equals(HandelsekodEnum.SKAPAT.value()))) {
+                    .startsWith("Certificate not found in COSMIC and ref field is missing, cannot store certificate. "
+                        + "Possible race condition. Retry later when the certificate may have been stored in COSMIC.")
+                    && (mc.message().getHandelse().getHandelsekod().getCode().equals(HandelsekodEnum.ANDRAT.value())
+                    || mc.message().getHandelse().getHandelsekod().getCode().equals(HandelsekodEnum.SKAPAT.value()))) {
                     throw new DiscardCandidateException(fmt.apply("caught COSMIC-typB"));
                 }
             }

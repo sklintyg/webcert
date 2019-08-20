@@ -18,9 +18,8 @@
  */
 package se.inera.intyg.webcert.web.web.controller.api.dto;
 
-import se.inera.intyg.common.support.model.UtkastStatus;
-
 import java.time.LocalDateTime;
+import se.inera.intyg.common.support.model.UtkastStatus;
 
 public class QueryIntygParameter {
 

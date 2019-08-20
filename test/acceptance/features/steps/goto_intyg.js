@@ -21,25 +21,21 @@
 /*jshint newcap:false */
 //TODO Uppgradera Jshint p.g.a. newcap kommer bli depricated. (klarade inte att ignorera i grunt-task)
 
-
 /*
  *	Stödlib och ramverk
  *
  */
 
 const {
-    Given, // jshint ignore:line
-    When, // jshint ignore:line
-    Then // jshint ignore:line
+  Given, // jshint ignore:line
+  When, // jshint ignore:line
+  Then // jshint ignore:line
 } = require('cucumber');
-
-
 
 var createIntygWithStatus = require('./helpers_create_intyg.js').createIntygWithStatus;
 var helpers = require('./helpers.js');
 var getIntygElementRow = helpers.getIntygElementRow;
 var shuffle = wcTestTools.helpers.testdata.shuffle;
-
 
 /*
  *	Stödfunktioner
@@ -47,42 +43,42 @@ var shuffle = wcTestTools.helpers.testdata.shuffle;
  */
 
 function gotoIntyg(world, status, intygRadElement, cb) {
-    //Om det inte finns några intyg att använda
-    if (!intygRadElement) {
-        logger.info('Hittade inget intyg, skapar ett nytt..');
-        createIntygWithStatus(world, status).then(function() {
+  //Om det inte finns några intyg att använda
+  if (!intygRadElement) {
+    logger.info('Hittade inget intyg, skapar ett nytt..');
+    createIntygWithStatus(world, status).then(function() {
 
-            //Gå till det nyskapade intyget
-            helpers.getUrl(helpers.intygURL(world.intyg)).then(function() {
-                cb();
-            });
-        });
-    }
-    //Gå in på intyg
-    else {
-        intygRadElement.element(by.cssContainingText('button', 'Visa')).sendKeys(protractor.Key.SPACE);
+      //Gå till det nyskapade intyget
+      helpers.getUrl(helpers.intygURL(world.intyg)).then(function() {
         cb();
-    }
+      });
+    });
+  }
+  //Gå in på intyg
+  else {
+    intygRadElement.element(by.cssContainingText('button', 'Visa')).sendKeys(protractor.Key.SPACE);
+    cb();
+  }
 }
 
 function getIER(world, status, callback) {
-    let intyg = world.intyg;
-    getIntygElementRow(intyg.typ, status, function(el) {
-        gotoIntyg(world, status, el, function(err) {
-            browser.getCurrentUrl().then(function(text) {
-                intyg.id = text.split('/').slice(-2)[0];
-                intyg.id = intyg.id.split('?')[0];
-                logger.info('intyg.id:' + intyg.id);
-                logger.info('Status: ' + status);
-                if (err) {
-                    callback(JSON.stringify(err));
-                } else {
-                    callback();
-                }
-            });
-        });
-
+  let intyg = world.intyg;
+  getIntygElementRow(intyg.typ, status, function(el) {
+    gotoIntyg(world, status, el, function(err) {
+      browser.getCurrentUrl().then(function(text) {
+        intyg.id = text.split('/').slice(-2)[0];
+        intyg.id = intyg.id.split('?')[0];
+        logger.info('intyg.id:' + intyg.id);
+        logger.info('Status: ' + status);
+        if (err) {
+          callback(JSON.stringify(err));
+        } else {
+          callback();
+        }
+      });
     });
+
+  });
 }
 
 /*
@@ -91,64 +87,62 @@ function getIER(world, status, callback) {
  */
 
 When(/^jag går in på ett "([^"]*)" med status "([^"]*)"$/, {
-    timeout: 700 * 1000
+  timeout: 700 * 1000
 }, function(intygstyp, status, callback) {
-    this.intyg.typ = intygstyp;
-    getIER(this, status, callback);
+  this.intyg.typ = intygstyp;
+  getIER(this, status, callback);
 });
 
-
-
 When(/^jag går in på ett slumpat SMI\-intyg med status "([^"]*)"$/, {
-    timeout: 700 * 1000
+  timeout: 700 * 1000
 }, function(status, callback) {
-    var randomIntyg = shuffle([
-        'Läkarintyg för sjukpenning',
-        'Läkarutlåtande för sjukersättning',
-        'Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga',
-        'Läkarutlåtande för aktivitetsersättning vid förlängd skolgång'
-    ])[0];
-    logger.info('Intyg type: ' + randomIntyg);
-    this.intyg.typ = randomIntyg;
-    getIER(this, status, callback);
+  var randomIntyg = shuffle([
+    'Läkarintyg för sjukpenning',
+    'Läkarutlåtande för sjukersättning',
+    'Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga',
+    'Läkarutlåtande för aktivitetsersättning vid förlängd skolgång'
+  ])[0];
+  logger.info('Intyg type: ' + randomIntyg);
+  this.intyg.typ = randomIntyg;
+  getIER(this, status, callback);
 });
 
 When(/^jag går in på ett slumpat intyg med status "([^"]*)"$/, {
-    timeout: 700 * 1000
+  timeout: 700 * 1000
 }, function(status, callback) {
-    var randomIntyg = shuffle([
-        'Läkarutlåtande för sjukersättning',
-        'Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga',
-        'Läkarutlåtande för aktivitetsersättning vid förlängd skolgång',
-        //'Läkarintyg FK 7263', //Disabled i fristående läge och ersätts av Lisjp.
-        'Transportstyrelsens läkarintyg högre körkortsbehörighet',
-        'Transportstyrelsens läkarintyg diabetes',
-        'Arbetsförmedlingens medicinska utlåtande'
-    ])[0];
-    logger.info('Intyg type: ' + randomIntyg);
-    this.intyg.typ = randomIntyg;
-    getIER(this, status, callback);
+  var randomIntyg = shuffle([
+    'Läkarutlåtande för sjukersättning',
+    'Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga',
+    'Läkarutlåtande för aktivitetsersättning vid förlängd skolgång',
+    //'Läkarintyg FK 7263', //Disabled i fristående läge och ersätts av Lisjp.
+    'Transportstyrelsens läkarintyg högre körkortsbehörighet',
+    'Transportstyrelsens läkarintyg diabetes',
+    'Arbetsförmedlingens medicinska utlåtande'
+  ])[0];
+  logger.info('Intyg type: ' + randomIntyg);
+  this.intyg.typ = randomIntyg;
+  getIER(this, status, callback);
 });
 
 When(/^jag går in på ett slumpat TS\-intyg med status "([^"]*)"$/, {
-    timeout: 700 * 1000
+  timeout: 700 * 1000
 }, function(status, callback) {
-    var randomIntyg = shuffle([
-        'Transportstyrelsens läkarintyg högre körkortsbehörighet',
-        'Transportstyrelsens läkarintyg diabetes'
-    ])[0];
-    logger.info('Intyg type: ' + randomIntyg);
-    this.intyg.typ = randomIntyg;
-    getIER(this, status, callback);
+  var randomIntyg = shuffle([
+    'Transportstyrelsens läkarintyg högre körkortsbehörighet',
+    'Transportstyrelsens läkarintyg diabetes'
+  ])[0];
+  logger.info('Intyg type: ' + randomIntyg);
+  this.intyg.typ = randomIntyg;
+  getIER(this, status, callback);
 });
 
 When(/^jag går in på ett slumpat AF\-intyg med status "([^"]*)"$/, {
-    timeout: 700 * 1000
+  timeout: 700 * 1000
 }, function(status, callback) {
-    var randomIntyg = shuffle([
-        'Arbetsförmedlingens medicinska utlåtande'
-    ])[0];
-    logger.info('Intyg type: ' + randomIntyg);
-    this.intyg.typ = randomIntyg;
-    getIER(this, status, callback);
+  var randomIntyg = shuffle([
+    'Arbetsförmedlingens medicinska utlåtande'
+  ])[0];
+  logger.info('Intyg type: ' + randomIntyg);
+  this.intyg.typ = randomIntyg;
+  getIER(this, status, callback);
 });

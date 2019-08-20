@@ -18,16 +18,15 @@
  */
 package se.inera.intyg.webcert.web.service.arende;
 
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.web.service.dto.Lakare;
 import se.inera.intyg.webcert.web.service.fragasvar.dto.QueryFragaSvarParameter;
 import se.inera.intyg.webcert.web.service.fragasvar.dto.QueryFragaSvarResponse;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeConversationView;
-
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 public interface ArendeService {
 
@@ -79,9 +78,6 @@ public interface ArendeService {
     /**
      * Return the ID of the most recent message for the care unit currently logged
      * in to.
-     *
-     * @param intygsId
-     * @return
      */
     String getLatestMeddelandeIdForCurrentCareUnit(String intygsId);
 

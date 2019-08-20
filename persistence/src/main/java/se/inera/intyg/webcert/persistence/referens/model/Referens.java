@@ -29,6 +29,7 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "REFERENS")
 public class Referens {
+
     @Id
     @Column(name = "ID")
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -76,8 +77,8 @@ public class Referens {
 
         Referens referens1 = (Referens) o;
         return Objects.equals(id, referens1.id)
-                && Objects.equals(referens, referens1.referens)
-                && Objects.equals(intygId, referens1.intygId);
+            && Objects.equals(referens, referens1.referens)
+            && Objects.equals(intygId, referens1.intygId);
     }
 
     @Override

@@ -20,8 +20,9 @@ package se.inera.intyg.webcert.web.auth.eleg;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import org.opensaml.saml2.core.*;
+import org.opensaml.saml2.core.Assertion;
+import org.opensaml.saml2.core.Attribute;
+import org.opensaml.saml2.core.AttributeStatement;
 import org.opensaml.xml.XMLObject;
 
 /**
@@ -60,36 +61,36 @@ public class CgiElegAssertion {
 
         if (!assertion.getAuthnStatements().isEmpty()) {
             authenticationScheme = assertion.getAuthnStatements().get(0).getAuthnContext().getAuthnContextClassRef()
-                    .getAuthnContextClassRef();
+                .getAuthnContextClassRef();
         }
     }
 
     private void extractAttributes(List<Attribute> attributes) {
         for (Attribute attribute : attributes) {
             switch (attribute.getName()) {
-            case PERSON_ID_ATTRIBUTE:
-                personId = getValue(attribute);
-                break;
-            case FORNAMN_ATTRIBUTE:
-                fornamn = getValue(attribute);
-                break;
-            case MELLAN_OCH_EFTERNAMN_ATTRIBUTE:
-                efternamn = getValue(attribute);
-                break;
-            case UTFARDARE_CA_NAMN_ATTRIBUTE:
-                utfardareCANamn = getValue(attribute);
-                break;
-            case UTFARDARE_ORGANISATIONSNAMN_ATTRIBUTE:
-                utfardareOrganisationsNamn = getValue(attribute);
-                break;
-            case SECURITY_LEVEL_ATTRIBUTE:
-                securityLevel = getValue(attribute);
-                break;
-            case LOGIN_METHOD:
-                loginMethod = getValue(attribute);
-                break;
-            default:
-                // Ignore.
+                case PERSON_ID_ATTRIBUTE:
+                    personId = getValue(attribute);
+                    break;
+                case FORNAMN_ATTRIBUTE:
+                    fornamn = getValue(attribute);
+                    break;
+                case MELLAN_OCH_EFTERNAMN_ATTRIBUTE:
+                    efternamn = getValue(attribute);
+                    break;
+                case UTFARDARE_CA_NAMN_ATTRIBUTE:
+                    utfardareCANamn = getValue(attribute);
+                    break;
+                case UTFARDARE_ORGANISATIONSNAMN_ATTRIBUTE:
+                    utfardareOrganisationsNamn = getValue(attribute);
+                    break;
+                case SECURITY_LEVEL_ATTRIBUTE:
+                    securityLevel = getValue(attribute);
+                    break;
+                case LOGIN_METHOD:
+                    loginMethod = getValue(attribute);
+                    break;
+                default:
+                    // Ignore.
             }
         }
     }

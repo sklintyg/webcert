@@ -18,13 +18,12 @@
  */
 package se.inera.intyg.webcert.web.web.controller.moduleapi.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-
-@JsonPropertyOrder({"fragaSvarValdEnhet", "fragaSvarAndraEnheter", "intygAndraEnheter", "intygValdEnhet", "vardgivare" })
+@JsonPropertyOrder({"fragaSvarValdEnhet", "fragaSvarAndraEnheter", "intygAndraEnheter", "intygValdEnhet", "vardgivare"})
 public class StatsResponse {
 
     @JsonProperty("fragaSvarAndraEnheter")
@@ -85,10 +84,10 @@ public class StatsResponse {
     @Override
     public String toString() {
         return "StatsResponse [totalNbrOfUnhandledFragaSvarOnOtherThanSelected="
-                + totalNbrOfUnhandledFragaSvarOnOtherThanSelected + ", totalNbrOfUnhandledFragaSvarOnSelected="
-                + totalNbrOfUnhandledFragaSvarOnSelected + ", totalNbrOfUnsignedDraftsOnOtherThanSelected="
-                + totalNbrOfUnsignedDraftsOnOtherThanSelected + ", totalNbrOfUnsignedDraftsOnSelected="
-                + totalNbrOfUnsignedDraftsOnSelected + ", vardgivare=" + vardgivare + "]";
+            + totalNbrOfUnhandledFragaSvarOnOtherThanSelected + ", totalNbrOfUnhandledFragaSvarOnSelected="
+            + totalNbrOfUnhandledFragaSvarOnSelected + ", totalNbrOfUnsignedDraftsOnOtherThanSelected="
+            + totalNbrOfUnsignedDraftsOnOtherThanSelected + ", totalNbrOfUnsignedDraftsOnSelected="
+            + totalNbrOfUnsignedDraftsOnSelected + ", vardgivare=" + vardgivare + "]";
     }
 
 }

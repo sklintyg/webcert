@@ -21,7 +21,6 @@ package se.inera.intyg.webcert.persistence.config;
 
 import static se.inera.intyg.webcert.persistence.config.JpaConfigBase.BASE_PACKAGES;
 
-
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;

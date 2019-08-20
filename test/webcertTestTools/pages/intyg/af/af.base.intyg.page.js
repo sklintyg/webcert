@@ -22,9 +22,9 @@
 var BaseIntyg = require('../base.intyg.page.js');
 
 var AfBaseIntyg = BaseIntyg._extend({
-    init: function init() {
-        init._super.call(this);
-    }
+  init: function init() {
+    init._super.call(this);
+  }
 });
 
 module.exports = AfBaseIntyg;

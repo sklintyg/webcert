@@ -19,13 +19,12 @@
 package se.inera.intyg.webcert.web.service.utkast;
 
 import org.springframework.stereotype.Component;
-
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.model.common.internal.Relation;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateUtkastFromTemplateRequest;
 
 @Component
-public class CreateUtkastCopyBuilder  extends AbstractUtkastBuilder<CreateUtkastFromTemplateRequest> {
+public class CreateUtkastCopyBuilder extends AbstractUtkastBuilder<CreateUtkastFromTemplateRequest> {
 
     @Override
     public Relation createRelation(CreateUtkastFromTemplateRequest request) {

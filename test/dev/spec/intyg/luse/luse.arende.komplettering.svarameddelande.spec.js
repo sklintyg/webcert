@@ -33,86 +33,86 @@ var intygFromJsonFactory = wcTestTools.intygFromJsonFactory;
 
 describe('svarameddelande - arende on luse intyg', function() {
 
-    var intygId;
-    var meddelandeId = 'luse-arende-komplt';
+  var intygId;
+  var meddelandeId = 'luse-arende-komplt';
 
-    beforeAll(function() {
-        browser.ignoreSynchronization = false;
-        specHelper.login();
+  beforeAll(function() {
+    browser.ignoreSynchronization = false;
+    specHelper.login();
 
-        var intyg = intygFromJsonFactory.defaultLuse();
-        intygId = intyg.id;
-        restUtil.createIntyg(intyg);
-        var testData = {
-            'contents': intygGenerator.getIntygJson({'intygType': 'luse', 'intygId': intygId}),
-            'utkastStatus': 'SIGNED',
-            'revoked': false
-        };
+    var intyg = intygFromJsonFactory.defaultLuse();
+    intygId = intyg.id;
+    restUtil.createIntyg(intyg);
+    var testData = {
+      'contents': intygGenerator.getIntygJson({'intygType': 'luse', 'intygId': intygId}),
+      'utkastStatus': 'SIGNED',
+      'revoked': false
+    };
 
-        restTestdataHelper.deleteAllArenden().then(function() {
-            restTestdataHelper.createWebcertIntyg(testData).then(function() {
-                restTestdataHelper.markeraSkickatTillFK(intygId).then(function() {
-                    restTestdataHelper.createArendeFromTemplate('luse', intygId, meddelandeId, 'Hur är det med arbetstiden?',
-                        'KOMPLT', 'PENDING_INTERNAL_ACTION', [
-                            {
-                                'frageId': '1',
-                                'instans': 1,
-                                'text': 'Fixa.'
-                            }
-                        ],
-                        'test'
-                    );
+    restTestdataHelper.deleteAllArenden().then(function() {
+      restTestdataHelper.createWebcertIntyg(testData).then(function() {
+        restTestdataHelper.markeraSkickatTillFK(intygId).then(function() {
+          restTestdataHelper.createArendeFromTemplate('luse', intygId, meddelandeId, 'Hur är det med arbetstiden?',
+              'KOMPLT', 'PENDING_INTERNAL_ACTION', [
+                {
+                  'frageId': '1',
+                  'instans': 1,
+                  'text': 'Fixa.'
+                }
+              ],
+              'test'
+          );
 
-                });
-            });
         });
+      });
+    });
+  });
+
+  afterAll(function() {
+    restTestdataHelper.deleteArende(meddelandeId);
+    restTestdataHelper.deleteUtkast(intygId);
+    restTestdataHelper.deleteIntyg(intygId);
+  });
+
+  describe('make sure intyg page has been loaded', function() {
+    it('and showing fk intyg', function() {
+      LuseIntygPage.get(intygId);
+      expect(LuseIntygPage.isAt()).toBeTruthy();
+    });
+  });
+
+  describe('make sure', function() {
+    it('pushed arende is visible', function() {
+      var arende = LuseIntygPage.getArendeById(true, meddelandeId);
+      expect(arende.isDisplayed()).toBeTruthy();
     });
 
-    afterAll(function() {
-        restTestdataHelper.deleteArende(meddelandeId);
-        restTestdataHelper.deleteUtkast(intygId);
-        restTestdataHelper.deleteIntyg(intygId);
+    it('click svara pa komplettering', function() {
+      LuseIntygPage.kompletteraIntygButton.click();
+      expect(LuseUtkastPage.isAt()).toBeTruthy();
+      LuseUtkastPage.radera.knapp.click();
+      LuseUtkastPage.radera.bekrafta.click();
+      expect(LuseIntygPage.isAt()).toBeTruthy();
     });
 
-    describe('make sure intyg page has been loaded', function() {
-        it('and showing fk intyg', function() {
-            LuseIntygPage.get(intygId);
-            expect(LuseIntygPage.isAt()).toBeTruthy();
-        });
+    it('click svara med meddelande', function() {
+      LuseIntygPage.kanInteKompletteraButton.click();
+      expect(LuseIntygPage.kompletteringsAtgardDialog.isDisplayed()).toBeTruthy();
+      expect(LuseIntygPage.kanInteKompletteraModalMeddelandeText.isPresent()).toBeFalsy();
+      LuseIntygPage.kanInteKompletteraModalAnledning2.click();
+      expect(LuseIntygPage.kanInteKompletteraModalMeddelandeText.isDisplayed()).toBeTruthy();
     });
 
-    describe('make sure', function() {
-        it('pushed arende is visible', function() {
-            var arende = LuseIntygPage.getArendeById(true, meddelandeId);
-            expect(arende.isDisplayed()).toBeTruthy();
-        });
-
-        it('click svara pa komplettering', function() {
-            LuseIntygPage.kompletteraIntygButton.click();
-            expect(LuseUtkastPage.isAt()).toBeTruthy();
-            LuseUtkastPage.radera.knapp.click();
-            LuseUtkastPage.radera.bekrafta.click();
-            expect(LuseIntygPage.isAt()).toBeTruthy();
-        });
-
-        it('click svara med meddelande', function() {
-            LuseIntygPage.kanInteKompletteraButton.click();
-            expect(LuseIntygPage.kompletteringsAtgardDialog.isDisplayed()).toBeTruthy();
-            expect(LuseIntygPage.kanInteKompletteraModalMeddelandeText.isPresent()).toBeFalsy();
-            LuseIntygPage.kanInteKompletteraModalAnledning2.click();
-            expect(LuseIntygPage.kanInteKompletteraModalMeddelandeText.isDisplayed()).toBeTruthy();
-        });
-
-        it('push answer button and make sure answered arende is now in the handled list', function() {
-            LuseIntygPage.kanInteKompletteraModalMeddelandeText.sendKeys('Låt oss slänga in ett svar och se vad som händer.');
-            LuseIntygPage.kanInteKompletteraModalSkickaSvarButton.click().then(function() {
-                var arende = LuseIntygPage.getArendeById(true, meddelandeId); // true = komplettering list
-                expect(arende.isDisplayed()).toBeTruthy();
-                expect(LuseIntygPage.getKompletteringSvarTextById(meddelandeId)).toBe('Låt oss slänga in ett svar och se vad som händer.');
-                expect(LuseIntygPage.kompletteringBesvaradesMedMeddelandeAlert.isDisplayed()).toBeTruthy();
-            });
-        });
-
+    it('push answer button and make sure answered arende is now in the handled list', function() {
+      LuseIntygPage.kanInteKompletteraModalMeddelandeText.sendKeys('Låt oss slänga in ett svar och se vad som händer.');
+      LuseIntygPage.kanInteKompletteraModalSkickaSvarButton.click().then(function() {
+        var arende = LuseIntygPage.getArendeById(true, meddelandeId); // true = komplettering list
+        expect(arende.isDisplayed()).toBeTruthy();
+        expect(LuseIntygPage.getKompletteringSvarTextById(meddelandeId)).toBe('Låt oss slänga in ett svar och se vad som händer.');
+        expect(LuseIntygPage.kompletteringBesvaradesMedMeddelandeAlert.isDisplayed()).toBeTruthy();
+      });
     });
+
+  });
 
 });

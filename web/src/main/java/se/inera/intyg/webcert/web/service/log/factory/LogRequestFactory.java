@@ -24,6 +24,7 @@ import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 public interface LogRequestFactory {
+
     LogRequest createLogRequestFromUtkast(Utkast utkast);
 
     LogRequest createLogRequestFromUtkast(Utkast utkast, boolean coherentJournaling);

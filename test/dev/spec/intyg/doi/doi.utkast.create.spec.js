@@ -17,7 +17,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 /*globals describe,it,browser */
 'use strict';
 
@@ -29,70 +28,68 @@ var IntygPage = wcTestTools.pages.intyg.soc.doi.intyg;
 
 describe('Create and Sign doi utkast', function() {
 
-    var utkastId = null,
-        data = null;
+  var utkastId = null,
+      data = null;
 
-    beforeAll(function() {
-        browser.ignoreSynchronization = false;
-        specHelper.login();
-        testdataHelper.deleteAllUtkast();
-        testdataHelper.deleteAllIntyg();
-        specHelper.createUtkastForPatient('191212121212', 'doi');
+  beforeAll(function() {
+    browser.ignoreSynchronization = false;
+    specHelper.login();
+    testdataHelper.deleteAllUtkast();
+    testdataHelper.deleteAllIntyg();
+    specHelper.createUtkastForPatient('191212121212', 'doi');
+  });
+
+  it('Spara undan intygsId från URL', function() {
+    UtkastPage.disableAutosave();
+
+    specHelper.getUtkastIdFromUrl().then(function(id) {
+      utkastId = id;
     });
+    data = wcTestTools.testdata.soc.doi.getRandom(utkastId);
 
-    it('Spara undan intygsId från URL', function() {
-        UtkastPage.disableAutosave();
+  });
 
-        specHelper.getUtkastIdFromUrl().then(function(id) {
-            utkastId = id;
-        });
-        data = wcTestTools.testdata.soc.doi.getRandom(utkastId);
-
+  describe('Fyll i intyget', function() {
+    it('angeIdentitetStyrktGenom', function() {
+      UtkastPage.angeIdentitetStyrktGenom(data.identitetStyrktGenom);
     });
-
-
-    describe('Fyll i intyget', function() {
-        it('angeIdentitetStyrktGenom', function() {
-            UtkastPage.angeIdentitetStyrktGenom(data.identitetStyrktGenom);
-        });
-        it('angeDodsdatum', function() {
-            UtkastPage.angeDodsdatum(data.dodsdatum);
-        });
-        it('angeDodsPlats', function() {
-            UtkastPage.angeDodsPlats(data.dodsPlats);
-        });
-        it('angeBarn', function() {
-            UtkastPage.angeBarn(data.barn);
-        });
-        it('angeUtlatandeOmDodsorsak', function () {
-           UtkastPage.angeUtlatandeOmDodsorsak(data.dodsorsak);
-        });
-        it('angeOperation', function () {
-           UtkastPage.angeOperation(data.operation);
-        });
-        it('angeSkadaForgiftning', function () {
-           UtkastPage.angeSkadaForgiftning(data.skadaForgiftning);
-        });
-        it('angeDodsorsaksuppgifterna', function () {
-            UtkastPage.angeDodsorsaksuppgifterna(data.dodsorsaksuppgifter);
-            UtkastPage.enableAutosave();
-        });
+    it('angeDodsdatum', function() {
+      UtkastPage.angeDodsdatum(data.dodsdatum);
     });
-
-    it('Signera intyget', function() {
-        UtkastPage.whenSigneraButtonIsEnabled();
-        UtkastPage.signeraButtonClick();
-
-        expect(IntygPage.isAt()).toBeTruthy();
+    it('angeDodsPlats', function() {
+      UtkastPage.angeDodsPlats(data.dodsPlats);
     });
-
-    it('Verifiera intyg', function() {
-        IntygPage.verify(data);
+    it('angeBarn', function() {
+      UtkastPage.angeBarn(data.barn);
     });
-
-
-    afterAll(function() {
-        testdataHelper.deleteIntyg(utkastId);
-        testdataHelper.deleteUtkast(utkastId);
+    it('angeUtlatandeOmDodsorsak', function() {
+      UtkastPage.angeUtlatandeOmDodsorsak(data.dodsorsak);
     });
+    it('angeOperation', function() {
+      UtkastPage.angeOperation(data.operation);
+    });
+    it('angeSkadaForgiftning', function() {
+      UtkastPage.angeSkadaForgiftning(data.skadaForgiftning);
+    });
+    it('angeDodsorsaksuppgifterna', function() {
+      UtkastPage.angeDodsorsaksuppgifterna(data.dodsorsaksuppgifter);
+      UtkastPage.enableAutosave();
+    });
+  });
+
+  it('Signera intyget', function() {
+    UtkastPage.whenSigneraButtonIsEnabled();
+    UtkastPage.signeraButtonClick();
+
+    expect(IntygPage.isAt()).toBeTruthy();
+  });
+
+  it('Verifiera intyg', function() {
+    IntygPage.verify(data);
+  });
+
+  afterAll(function() {
+    testdataHelper.deleteIntyg(utkastId);
+    testdataHelper.deleteUtkast(utkastId);
+  });
 });

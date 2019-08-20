@@ -18,7 +18,7 @@
  */
 package se.inera.intyg.webcert.persistence.fmb.model.fmb;
 
-public enum  IcfKodTyp {
+public enum IcfKodTyp {
     CENTRAL,
     KOMPLETTERANDE
 }

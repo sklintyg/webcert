@@ -19,17 +19,17 @@
 
 angular.module('webcert').service('webcert.enhetArendenModel',
     [
-    function() {
+      function() {
         'use strict';
 
         this.reset = function() {
-            this.doneLoading = true;
+          this.doneLoading = true;
 
-            this.PAGE_SIZE = 10;
-            this.ALL_UNITS = 'wc-all';
-            this.enhetId = this.ALL_UNITS;
+          this.PAGE_SIZE = 10;
+          this.ALL_UNITS = 'wc-all';
+          this.enhetId = this.ALL_UNITS;
         };
 
         this.reset();
 
-    }]);
+      }]);

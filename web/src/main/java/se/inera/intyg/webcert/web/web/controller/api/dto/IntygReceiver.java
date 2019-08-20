@@ -72,6 +72,7 @@ public class IntygReceiver {
 
 
     public static final class IntygReceiverBuilder {
+
         private String id;
         private String name;
         private String receiverType;

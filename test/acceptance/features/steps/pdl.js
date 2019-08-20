@@ -22,16 +22,15 @@
 /*jshint newcap:false */
 //TODO Uppgradera Jshint p.g.a. newcap kommer bli depricated. (klarade inte att ignorera i grunt-task)
 
-
 /*
  *	Stödlib och ramverk
  *
  */
 
 const {
-    Given, // jshint ignore:line
-    When, // jshint ignore:line
-    Then // jshint ignore:line
+  Given, // jshint ignore:line
+  When, // jshint ignore:line
+  Then // jshint ignore:line
 } = require('cucumber');
 
 var db = require('./dbActions');
@@ -42,11 +41,11 @@ var db = require('./dbActions');
  */
 
 Then(/^ska loggaktivitet "([^"]*)" skickas till loggtjänsten(?: med argument "([^"]*)")?$/, function(activity, activityarg) {
-    logger.silly(activity);
-    logger.silly(activityarg);
-    return db.storeLog.waitForCount(activity, 1, this.intyg.id, this.user.hsaId, activityarg);
+  logger.silly(activity);
+  logger.silly(activityarg);
+  return db.storeLog.waitForCount(activity, 1, this.intyg.id, this.user.hsaId, activityarg);
 });
 
 Then(/^ska det nu finnas (\d+) loggaktivitet "([^"]*)" för intyget$/, function(count, activity) {
-    return db.storeLog.waitForCount(activity, count, this.intyg.id, this.user.hsaId);
+  return db.storeLog.waitForCount(activity, count, this.intyg.id, this.user.hsaId);
 });

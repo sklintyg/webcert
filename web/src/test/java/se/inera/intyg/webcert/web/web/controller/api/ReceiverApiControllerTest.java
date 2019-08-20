@@ -30,15 +30,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-
 import javax.ws.rs.core.Response;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-
 import se.inera.intyg.infra.security.authorities.AuthoritiesException;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.Privilege;
@@ -73,7 +70,7 @@ public class ReceiverApiControllerTest {
 
     @Test
     public void testRegisterApprovedReceivers() {
-        setupUser(AuthoritiesConstants.PRIVILEGE_GODKANNA_MOTTAGARE,"LISJP");
+        setupUser(AuthoritiesConstants.PRIVILEGE_GODKANNA_MOTTAGARE, "LISJP");
         Response resp = receiverApiController.registerApprovedReceivers("LISJP", INTYG_ID, Arrays.asList("FKASSA"));
         assertNotNull(resp);
         assertEquals(200, resp.getStatus());
@@ -82,7 +79,7 @@ public class ReceiverApiControllerTest {
 
     @Test(expected = AuthoritiesException.class)
     public void testRegisterApprovedReceiversFailsIfNotAuth() {
-        setupUser(AuthoritiesConstants.PRIVILEGE_GODKANNA_MOTTAGARE,"ts-bas");
+        setupUser(AuthoritiesConstants.PRIVILEGE_GODKANNA_MOTTAGARE, "ts-bas");
         Response resp = receiverApiController.registerApprovedReceivers("LISJP", INTYG_ID, Arrays.asList("FKASSA"));
         assertNotNull(resp);
         assertEquals(200, resp.getStatus());
@@ -92,12 +89,12 @@ public class ReceiverApiControllerTest {
     private List<IntygReceiver> buildReceiverList() {
         List<IntygReceiver> list = new ArrayList<>();
         list.add(IntygReceiver.IntygReceiverBuilder.anIntygReceiver()
-                .withId("1")
-                .withName("namnet")
-                .withReceiverType("HUVUDMOTTAGARE")
-                .withApprovalStatus(IntygReceiver.ApprovalStatus.UNDEFINED)
-                .withLocked(false)
-                .build());
+            .withId("1")
+            .withName("namnet")
+            .withReceiverType("HUVUDMOTTAGARE")
+            .withApprovalStatus(IntygReceiver.ApprovalStatus.UNDEFINED)
+            .withLocked(false)
+            .build());
         return list;
     }
 

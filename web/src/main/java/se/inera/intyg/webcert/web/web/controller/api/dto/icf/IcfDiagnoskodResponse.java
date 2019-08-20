@@ -30,9 +30,9 @@ public class IcfDiagnoskodResponse {
     }
 
     private IcfDiagnoskodResponse(
-            final String icd10Kod,
-            final FunktionsNedsattningsKoder funktionsNedsattningsKoder,
-            final AktivitetsBegransningsKoder aktivitetsBegransningsKoder) {
+        final String icd10Kod,
+        final FunktionsNedsattningsKoder funktionsNedsattningsKoder,
+        final AktivitetsBegransningsKoder aktivitetsBegransningsKoder) {
         this.icd10Kod = icd10Kod;
         this.funktionsNedsattningsKoder = funktionsNedsattningsKoder;
         this.aktivitetsBegransningsKoder = aktivitetsBegransningsKoder;
@@ -63,9 +63,9 @@ public class IcfDiagnoskodResponse {
     }
 
     public static IcfDiagnoskodResponse of(
-            final String icf10Kod,
-            final IcfKoder funktionsNedsattningsKoder,
-            final IcfKoder aktivitetsBegransningsKoder) {
+        final String icf10Kod,
+        final IcfKoder funktionsNedsattningsKoder,
+        final IcfKoder aktivitetsBegransningsKoder) {
 
         if (funktionsNedsattningsKoder != null && !(funktionsNedsattningsKoder instanceof FunktionsNedsattningsKoder)) {
             throw new IllegalArgumentException("funktionsNedsattningsKoder must be of type FunktionsNedsattningsKoder");
@@ -79,14 +79,14 @@ public class IcfDiagnoskodResponse {
             return null;
         }
         return new IcfDiagnoskodResponse(
-                icf10Kod,
-                (FunktionsNedsattningsKoder) funktionsNedsattningsKoder,
-                (AktivitetsBegransningsKoder) aktivitetsBegransningsKoder);
+            icf10Kod,
+            (FunktionsNedsattningsKoder) funktionsNedsattningsKoder,
+            (AktivitetsBegransningsKoder) aktivitetsBegransningsKoder);
     }
 
     public static IcfDiagnoskodResponse of(
-            final IcfKoder funktionsNedsattningsKoder,
-            final IcfKoder aktivitetsBegransningsKoder) {
+        final IcfKoder funktionsNedsattningsKoder,
+        final IcfKoder aktivitetsBegransningsKoder) {
 
         if (funktionsNedsattningsKoder != null && !(funktionsNedsattningsKoder instanceof FunktionsNedsattningsKoder)) {
             throw new IllegalArgumentException("funktionsNedsattningsKoder must be of type FunktionsNedsattningsKoder");
@@ -97,9 +97,9 @@ public class IcfDiagnoskodResponse {
         }
 
         return new IcfDiagnoskodResponse(
-                null,
-                (FunktionsNedsattningsKoder) funktionsNedsattningsKoder,
-                (AktivitetsBegransningsKoder) aktivitetsBegransningsKoder);
+            null,
+            (FunktionsNedsattningsKoder) funktionsNedsattningsKoder,
+            (AktivitetsBegransningsKoder) aktivitetsBegransningsKoder);
     }
 
     public static IcfDiagnoskodResponse empty() {
@@ -109,9 +109,9 @@ public class IcfDiagnoskodResponse {
     @Override
     public String toString() {
         return new ToStringBuilder(this)
-                .append("icd10Kod", icd10Kod)
-                .append("funktionsNedsattningsKoder", funktionsNedsattningsKoder)
-                .append("aktivitetsBegransningsKoder", aktivitetsBegransningsKoder)
-                .toString();
+            .append("icd10Kod", icd10Kod)
+            .append("funktionsNedsattningsKoder", funktionsNedsattningsKoder)
+            .append("aktivitetsBegransningsKoder", aktivitetsBegransningsKoder)
+            .toString();
     }
 }

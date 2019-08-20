@@ -22,11 +22,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.webcert.common.model.WebcertCertificateRelation;
@@ -56,7 +54,7 @@ public class CertificateRelationServiceImpl implements CertificateRelationServic
 
     private Relations.FrontendRelations prepareChildRelationDataForFrontend(List<WebcertCertificateRelation> childRelations) {
         Collections.sort(childRelations, (r1, r2) -> r1.getSkapad().compareTo(r2.getSkapad()) * -1); // Descending
-                                                                                                     // order.
+        // order.
         Relations.FrontendRelations latestChildRelations = new Relations.FrontendRelations();
         latestChildRelations.setReplacedByIntyg(findRelationOfType(childRelations, RelationKod.ERSATT, true));
         latestChildRelations.setReplacedByUtkast(findRelationOfType(childRelations, RelationKod.ERSATT, false));
@@ -65,13 +63,14 @@ public class CertificateRelationServiceImpl implements CertificateRelationServic
         latestChildRelations.setUtkastCopy(findRelationOfType(childRelations, RelationKod.KOPIA, false));
         return latestChildRelations;
     }
+
     private WebcertCertificateRelation findRelationOfType(List<WebcertCertificateRelation> relations, RelationKod relationKod,
-            boolean signed) {
+        boolean signed) {
         for (WebcertCertificateRelation wcr : relations) {
             if (wcr.getRelationKod() == relationKod) {
                 if ((signed && wcr.getStatus() == UtkastStatus.SIGNED)
-                        || (!signed
-                                && (wcr.getStatus() == UtkastStatus.DRAFT_INCOMPLETE || wcr.getStatus() == UtkastStatus.DRAFT_COMPLETE))) {
+                    || (!signed
+                    && (wcr.getStatus() == UtkastStatus.DRAFT_INCOMPLETE || wcr.getStatus() == UtkastStatus.DRAFT_COMPLETE))) {
                     if (wcr.getRelationKod() != RelationKod.ERSATT || !wcr.isMakulerat()) {
                         return wcr;
                     }
@@ -95,18 +94,18 @@ public class CertificateRelationServiceImpl implements CertificateRelationServic
     @Transactional(readOnly = true)
     public List<WebcertCertificateRelation> findChildRelations(String intygsId) {
         return utkastRepoCustom.findChildRelations(intygsId)
-                .stream()
-                .sorted((r1, r2) -> r2.getSkapad().compareTo(r1.getSkapad()))
-                .collect(Collectors.toList());
+            .stream()
+            .sorted((r1, r2) -> r2.getSkapad().compareTo(r1.getSkapad()))
+            .collect(Collectors.toList());
     }
 
     @Override
     public Optional<WebcertCertificateRelation> getNewestRelationOfType(String intygsId, RelationKod relationKod,
-            List<UtkastStatus> allowedStatuses) {
+        List<UtkastStatus> allowedStatuses) {
         return findChildRelations(intygsId).stream()
-                .filter(cr -> cr.getRelationKod() == relationKod)
-                .filter(cr -> allowedStatuses.contains(cr.getStatus()))
-                .sorted((cr1, cr2) -> cr2.getSkapad().compareTo(cr1.getSkapad()))
-                .findFirst();
+            .filter(cr -> cr.getRelationKod() == relationKod)
+            .filter(cr -> allowedStatuses.contains(cr.getStatus()))
+            .sorted((cr1, cr2) -> cr2.getSkapad().compareTo(cr1.getSkapad()))
+            .findFirst();
     }
 }

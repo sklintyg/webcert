@@ -18,7 +18,18 @@
  */
 package se.inera.intyg.webcert.common.client;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.when;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
+import javax.xml.ws.WebServiceException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,15 +44,6 @@ import se.riv.clinicalprocess.healthcond.certificate.sendCertificateToRecipient.
 import se.riv.clinicalprocess.healthcond.certificate.sendCertificateToRecipient.v2.SendCertificateToRecipientType;
 import se.riv.clinicalprocess.healthcond.certificate.v3.ResultCodeType;
 import se.riv.clinicalprocess.healthcond.certificate.v3.ResultType;
-
-import javax.xml.ws.WebServiceException;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
 
 /**
  * Created by eriklupander on 2015-06-04.
@@ -94,9 +96,9 @@ public class SendCertificateServiceClientTest {
         when(response.getResult()).thenReturn(buildResultOfCall(ResultCodeType.OK));
 
         when(sendService.sendCertificateToRecipient(anyString(), any(SendCertificateToRecipientType.class)))
-                .thenReturn(response);
+            .thenReturn(response);
         SendCertificateToRecipientResponseType resp = testee.sendCertificate(INTYGS_ID, PERSON_ID, SKICKAT_AV_JSON, RECIPIENT,
-                LOGICAL_ADDRESS);
+            LOGICAL_ADDRESS);
 
         assertEquals(ResultCodeType.OK, resp.getResult().getResultCode());
     }
@@ -156,7 +158,7 @@ public class SendCertificateServiceClientTest {
     @Test(expected = WebServiceException.class)
     public void testExceptionsAreForwardedAsIs() {
         when(sendService.sendCertificateToRecipient(anyString(), any(SendCertificateToRecipientType.class)))
-                .thenThrow(new WebServiceException("FOO BAR"));
+            .thenThrow(new WebServiceException("FOO BAR"));
         testee.sendCertificate(INTYGS_ID, PERSON_ID, SKICKAT_AV_JSON, RECIPIENT, LOGICAL_ADDRESS);
 
         verify(sendService, times(1)).sendCertificateToRecipient(anyString(), any(SendCertificateToRecipientType.class));

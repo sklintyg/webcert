@@ -18,6 +18,8 @@
  */
 package se.inera.intyg.webcert.web.web.controller.moduleapi;
 
+import com.google.common.base.Joiner;
+import io.swagger.annotations.Api;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -26,20 +28,14 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import com.google.common.base.Joiner;
-
-import io.swagger.annotations.Api;
 import se.inera.intyg.infra.integration.hsa.model.Mottagning;
 import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
 import se.inera.intyg.infra.integration.hsa.model.Vardgivare;
@@ -99,7 +95,7 @@ public class StatModuleApiController extends AbstractApiController {
         List<String> allUnitIds = user.getIdsOfAllVardenheter();
         if (allUnitIds == null || allUnitIds.isEmpty()) {
             LOG.warn("getStatistics was called by user {} that have no id:s of vardenheter present in the user context: {}",
-                    user.getHsaId(), user.getAsJson());
+                user.getHsaId(), user.getAsJson());
             return Response.ok(statsResponse).build();
         }
 
@@ -136,11 +132,11 @@ public class StatModuleApiController extends AbstractApiController {
         Map<String, Long> mergedMap = new HashMap<>();
 
         Set<String> uniqueEnhetsId = Stream.of(fragaSvarStatsMap.keySet(), arendeStatsMap.keySet()).flatMap(Collection::stream).distinct()
-                .collect(Collectors.toSet());
+            .collect(Collectors.toSet());
 
         for (String enhetId : uniqueEnhetsId) {
             Long sum = (fragaSvarStatsMap.get(enhetId) != null ? fragaSvarStatsMap.get(enhetId) : 0)
-                    + (arendeStatsMap.get(enhetId) != null ? arendeStatsMap.get(enhetId) : 0);
+                + (arendeStatsMap.get(enhetId) != null ? arendeStatsMap.get(enhetId) : 0);
             mergedMap.put(enhetId, sum);
         }
         return mergedMap;
@@ -157,7 +153,7 @@ public class StatModuleApiController extends AbstractApiController {
     }
 
     private void populateStatsResponseWithVardgivarStats(StatsResponse statsResponse, List<Vardgivare> vardgivare,
-            Map<String, Long> intygStats, Map<String, Long> fragaSvarStats) {
+        Map<String, Long> intygStats, Map<String, Long> fragaSvarStats) {
 
         VardgivareStats vgStats;
 
@@ -169,7 +165,7 @@ public class StatModuleApiController extends AbstractApiController {
     }
 
     private List<VardenhetStats> createAndPopulateVardenheterWithStats(List<Vardenhet> vardenheter,
-            Map<String, Long> intygStats, Map<String, Long> fragaSvarStats) {
+        Map<String, Long> intygStats, Map<String, Long> fragaSvarStats) {
 
         List<VardenhetStats> veStatsList = new ArrayList<>();
 
@@ -190,7 +186,7 @@ public class StatModuleApiController extends AbstractApiController {
     }
 
     private void addStatsForMottagningar(Vardenhet vardenhet, List<VardenhetStats> veStatsList,
-            Map<String, Long> intygStats, Map<String, Long> fragaSvarStats) {
+        Map<String, Long> intygStats, Map<String, Long> fragaSvarStats) {
 
         List<Mottagning> mottagningar = vardenhet.getMottagningar();
 

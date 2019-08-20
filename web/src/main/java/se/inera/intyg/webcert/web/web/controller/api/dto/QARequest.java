@@ -22,6 +22,7 @@ package se.inera.intyg.webcert.web.web.controller.api.dto;
  * Created by stephenwhite on 18/02/15.
  */
 public class QARequest {
+
     private String intygsTyp;
     private Long fragaSvarId;
 

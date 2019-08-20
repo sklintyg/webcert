@@ -21,7 +21,6 @@
 var p = require('./package.json');
 console.log('Using webcert-testtools version', p.version);
 
-
 var environment = require('./environment.js');
 var testdata = require('./testdata');
 var utkastTextmap = require('./testdata/utkastTextmap.js');
@@ -33,14 +32,14 @@ var intygGenerator = require('./util/intygGenerator.util.js');
 var restUtil = require('./util/rest.util.js');
 var debugUtil = require('./util/debug.util.js');
 module.exports = {
-    envConfig: environment.envConfig,
-    testdata: testdata,
-    utkastTextmap: utkastTextmap,
-    pages: pages,
-    helpers: helpers,
-    arendeFromJsonFactory: arendeFromJsonFactory,
-    intygFromJsonFactory: intygFromJsonFactory,
-    intygGenerator: intygGenerator,
-    restUtil: restUtil,
-    debugUtil: debugUtil
+  envConfig: environment.envConfig,
+  testdata: testdata,
+  utkastTextmap: utkastTextmap,
+  pages: pages,
+  helpers: helpers,
+  arendeFromJsonFactory: arendeFromJsonFactory,
+  intygFromJsonFactory: intygFromJsonFactory,
+  intygGenerator: intygGenerator,
+  restUtil: restUtil,
+  debugUtil: debugUtil
 };

@@ -18,16 +18,12 @@
  */
 package se.inera.intyg.webcert.web.web.controller.integrationtest.api;
 
-import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.core.IsEqual.equalTo;
 
-import org.junit.Test;
-
 import com.jayway.restassured.RestAssured;
-import com.jayway.restassured.http.ContentType;
-
+import org.junit.Test;
 import se.inera.intyg.common.support.common.enumerations.Diagnoskodverk;
 import se.inera.intyg.webcert.web.web.controller.integrationtest.BaseRestIntegrationTest;
 import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.DiagnosParameter;
@@ -43,13 +39,13 @@ public class DiagnosModuleApiControllerIT extends BaseRestIntegrationTest {
         body.setCodeSystem(Diagnoskodverk.ICD_10_SE.name());
 
         spec()
-                .body(body)
-                .expect().statusCode(200)
-                .when().post("moduleapi/diagnos/kod")
-                .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-diagnos-sok-schema.json"))
-                .body("diagnoser", hasSize(1))
-                .body("moreResults", equalTo(false))
-                .body("resultat", equalTo("OK"));
+            .body(body)
+            .expect().statusCode(200)
+            .when().post("moduleapi/diagnos/kod")
+            .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-diagnos-sok-schema.json"))
+            .body("diagnoser", hasSize(1))
+            .body("moreResults", equalTo(false))
+            .body("resultat", equalTo("OK"));
     }
 
     @Test
@@ -62,13 +58,13 @@ public class DiagnosModuleApiControllerIT extends BaseRestIntegrationTest {
         body.setNbrOfResults(4);
 
         spec()
-                .body(body)
-                .expect().statusCode(200)
-                .when().post("moduleapi/diagnos/kod/sok")
-                .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-diagnos-sok-schema.json"))
-                .body("diagnoser", hasSize(4))
-                .body("moreResults", equalTo(true))
-                .body("resultat", equalTo("OK"));
+            .body(body)
+            .expect().statusCode(200)
+            .when().post("moduleapi/diagnos/kod/sok")
+            .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-diagnos-sok-schema.json"))
+            .body("diagnoser", hasSize(4))
+            .body("moreResults", equalTo(true))
+            .body("resultat", equalTo("OK"));
     }
 
     @Test
@@ -81,12 +77,12 @@ public class DiagnosModuleApiControllerIT extends BaseRestIntegrationTest {
         body.setNbrOfResults(4);
 
         spec()
-                .body(body)
-                .expect().statusCode(200)
-                .when().post("moduleapi/diagnos/beskrivning/sok")
-                .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-diagnos-sok-schema.json"))
-                .body("diagnoser", hasSize(4))
-                .body("moreResults", equalTo(true))
-                .body("resultat", equalTo("OK"));
+            .body(body)
+            .expect().statusCode(200)
+            .when().post("moduleapi/diagnos/beskrivning/sok")
+            .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-diagnos-sok-schema.json"))
+            .body("diagnoser", hasSize(4))
+            .body("moreResults", equalTo(true))
+            .body("resultat", equalTo("OK"));
     }
 }

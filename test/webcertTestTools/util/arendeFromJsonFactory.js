@@ -28,9 +28,9 @@ var templateArende = require('webcert-testtools/testdata/arende.template.json');
 
 module.exports = {
 
-    /**
-     * Example:
-     {
+  /**
+   * Example:
+   {
          "timestamp": "2016-05-01T12:02:27.200",
          "meddelandeId": "1",
          "referensId": "fkid",
@@ -61,37 +61,38 @@ module.exports = {
         "komplettering": "",
      }
 
-     Ämnen:
-     ARBTID("Arbetstidsförläggning"),
-     AVSTMN("Avstämningsmöte"),
-     KONTKT("Kontakt"),
-     OVRIGT("Övrigt"),
-     PAMINN("Påminnelse"),
-     KOMPLT("Komplettering");
+   Ämnen:
+   ARBTID("Arbetstidsförläggning"),
+   AVSTMN("Avstämningsmöte"),
+   KONTKT("Kontakt"),
+   OVRIGT("Övrigt"),
+   PAMINN("Påminnelse"),
+   KOMPLT("Komplettering");
 
-     Status:
-     PENDING_INTERNAL_ACTION    // The FragaSvar or Arende has been received from an external entity and needs to be answered.
-     PENDING_EXTERNAL_ACTION    // The FragaSvar or Arende has been sent to an external entity and awaits an answer.
-     ANSWERED                   // The FragaSvar or Arende has received an answer from the external entity.
-     CLOSED                     // The FragaSvar or Arende has been handled.
+   Status:
+   PENDING_INTERNAL_ACTION    // The FragaSvar or Arende has been received from an external entity and needs to be answered.
+   PENDING_EXTERNAL_ACTION    // The FragaSvar or Arende has been sent to an external entity and awaits an answer.
+   ANSWERED                   // The FragaSvar or Arende has received an answer from the external entity.
+   CLOSED                     // The FragaSvar or Arende has been handled.
 
-     *
-     * @param arendeOptions
-     * @returns {*|exports}
-     */
+   *
+   * @param arendeOptions
+   * @returns {*|exports}
+   */
 
-    get: function(arendeOptions) {
-        var arende = Object.assign({}, templateArende); // Create clone so not all callers use the same instance
+  get: function(arendeOptions) {
+    var arende = Object.assign({}, templateArende); // Create clone so not all callers use the same instance
 
-        arende.intygTyp = arendeOptions.intygType;
-        arende.intygsId = arendeOptions.intygId;
-        arende.meddelandeId = arendeOptions.meddelandeId;
-        arende.paminnelseMeddelandeId = typeof arendeOptions.paminnelseMeddelandeId !== 'undefined' ? arendeOptions.paminnelseMeddelandeId : undefined;
-        arende.meddelande = arendeOptions.meddelande;
-        arende.amne = arendeOptions.amne;
-        arende.status = arendeOptions.status;
-        arende.komplettering = arendeOptions.kompletteringar;
-        arende.timestamp = arendeOptions.timestamp;
-        return arende;
-    }
+    arende.intygTyp = arendeOptions.intygType;
+    arende.intygsId = arendeOptions.intygId;
+    arende.meddelandeId = arendeOptions.meddelandeId;
+    arende.paminnelseMeddelandeId =
+        typeof arendeOptions.paminnelseMeddelandeId !== 'undefined' ? arendeOptions.paminnelseMeddelandeId : undefined;
+    arende.meddelande = arendeOptions.meddelande;
+    arende.amne = arendeOptions.amne;
+    arende.status = arendeOptions.status;
+    arende.komplettering = arendeOptions.kompletteringar;
+    arende.timestamp = arendeOptions.timestamp;
+    return arende;
+  }
 };

@@ -19,7 +19,6 @@
 package se.inera.intyg.webcert.web.config;
 
 import javax.jms.ConnectionFactory;
-
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -87,12 +86,12 @@ public class JmsConfig {
     @Bean
     public ConnectionFactory jmsConnectionFactory() {
         return new CachingConnectionFactory(
-                new ActiveMQConnectionFactory(activeMqBrokerUsername, activeMqBrokerPassword, activeMqBrokerUrl)
+            new ActiveMQConnectionFactory(activeMqBrokerUsername, activeMqBrokerPassword, activeMqBrokerUrl)
         );
     }
 
     @Bean
-    @Profile({ "dev", "testability-api" })
+    @Profile({"dev", "testability-api"})
     public JmsTemplate jmsPDLLogTemplateNoTx(ConnectionFactory jmsConnectionFactory) {
         final JmsTemplate t = jmsPDLLogTemplate(jmsConnectionFactory);
         t.setSessionTransacted(false);

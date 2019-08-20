@@ -21,9 +21,7 @@ package se.inera.intyg.webcert.persistence.config;
 
 import static se.inera.intyg.webcert.persistence.config.JpaConfigBase.BASE_PACKAGES;
 
-
 import java.sql.SQLException;
-
 import org.h2.tools.Server;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

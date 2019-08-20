@@ -32,7 +32,6 @@ public interface CopyUtkastService {
     /**
      * Create a completion, which is essentially a copy with a relation to the Intyg on which the copy is based.
      *
-     * @param copyRequest
      * @return {@link CreateCompletionCopyResponse}
      */
     CreateCompletionCopyResponse createCompletion(CreateCompletionCopyRequest copyRequest);
@@ -40,15 +39,13 @@ public interface CopyUtkastService {
     /**
      * Create a renewal, which is essentially a copy with a relation to the Intyg on which the copy is based.
      *
-     * @param copyRequest
      * @return {@link CreateRenewalCopyRequest}
      */
     CreateRenewalCopyResponse createRenewalCopy(CreateRenewalCopyRequest copyRequest);
 
     /**
-     *  Create a replacement, which is essentially a copy with a relation to the Intyg on which the replacement is based.
+     * Create a replacement, which is essentially a copy with a relation to the Intyg on which the replacement is based.
      *
-     * @param copyRequest
      * @return {@link CreateReplacementCopyResponse}
      */
     CreateReplacementCopyResponse createReplacementCopy(CreateReplacementCopyRequest copyRequest);
@@ -56,7 +53,6 @@ public interface CopyUtkastService {
     /**
      * Create a new utkast from template.
      *
-     * @param copyRequest
      * @return {@link CreateUtkastFromTemplateRequest}
      */
     CreateUtkastFromTemplateResponse createUtkastFromTemplate(CreateUtkastFromTemplateRequest copyRequest);
@@ -64,7 +60,6 @@ public interface CopyUtkastService {
     /**
      * Create a new utkast from utkast.
      *
-     * @param copyRequest
      * @return {@link CreateUtkastFromTemplateRequest}
      */
     CreateUtkastFromTemplateResponse createUtkastCopy(CreateUtkastFromTemplateRequest copyRequest);

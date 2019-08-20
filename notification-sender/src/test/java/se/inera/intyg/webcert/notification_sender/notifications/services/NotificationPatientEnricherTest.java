@@ -18,6 +18,13 @@
  */
 package se.inera.intyg.webcert.notification_sender.notifications.services;
 
+import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.when;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -31,13 +38,6 @@ import se.inera.intyg.webcert.notification_sender.notifications.helper.Notificat
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.TypAvIntyg;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Patient;
-
-import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
-import static org.mockito.Mockito.when;
 
 /**
  * Created by eriklupander on 2017-08-18.
@@ -60,7 +60,7 @@ public class NotificationPatientEnricherTest {
     @Test(expected = TemporaryException.class)
     public void testExceptionIsThrownWhenPuInvocationFails() throws TemporaryException {
         when(puService.getPerson(any(Personnummer.class)))
-                .thenReturn(PersonSvar.error());
+            .thenReturn(PersonSvar.error());
         try {
             testee.enrichWithPatient(buildIntyg("lisjp"));
         } catch (Exception e) {

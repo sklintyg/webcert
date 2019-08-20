@@ -19,12 +19,10 @@
 package se.inera.intyg.webcert.web.service.notification;
 
 import java.util.Optional;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
 import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistry;
@@ -51,7 +49,7 @@ public class DefaultSendNotificationStrategyImpl implements SendNotificationStra
         Optional<SchemaVersion> schemaVersion = integreradeEnheterRegistry.getSchemaVersion(utkast.getEnhetsId(), utkast.getIntygsTyp());
         if (!schemaVersion.isPresent()) {
             LOG.debug("Utkast '{}' (type = '{}', unit = '{}') will not spawn notifications", utkast.getIntygsId(), utkast.getIntygsTyp(),
-                    utkast.getEnhetsId());
+                utkast.getEnhetsId());
         }
         return schemaVersion;
     }

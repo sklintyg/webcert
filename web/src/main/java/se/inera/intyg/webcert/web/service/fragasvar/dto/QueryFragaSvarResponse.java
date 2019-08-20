@@ -19,10 +19,10 @@
 package se.inera.intyg.webcert.web.service.fragasvar.dto;
 
 import java.util.List;
-
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeListItem;
 
 public class QueryFragaSvarResponse {
+
     private int totalCount;
     private List<ArendeListItem> results;
 

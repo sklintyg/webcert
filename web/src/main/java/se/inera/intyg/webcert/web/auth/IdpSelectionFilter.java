@@ -18,6 +18,15 @@
  */
 package se.inera.intyg.webcert.web.auth;
 
+import static se.inera.intyg.webcert.web.auth.common.AuthConstants.SPRING_SECURITY_CONTEXT;
+import static se.inera.intyg.webcert.web.auth.common.AuthConstants.SPRING_SECURITY_SAVED_REQUEST_KEY;
+
+import java.io.IOException;
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
@@ -27,16 +36,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import se.inera.intyg.webcert.web.auth.common.AuthConstants;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
-
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import java.io.IOException;
-
-import static se.inera.intyg.webcert.web.auth.common.AuthConstants.SPRING_SECURITY_CONTEXT;
-import static se.inera.intyg.webcert.web.auth.common.AuthConstants.SPRING_SECURITY_SAVED_REQUEST_KEY;
 
 /**
  * This class is used to make IDP selection automatic for uthoppslänkar and djupintegratinslänkar for non-authenticated
@@ -63,7 +62,7 @@ public class IdpSelectionFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest req, HttpServletResponse resp, FilterChain filterChain)
-            throws ServletException, IOException {
+        throws ServletException, IOException {
 
         // Check if we're logged in, e.g. have a useful session
         HttpSession session = req.getSession(true);
@@ -113,9 +112,9 @@ public class IdpSelectionFilter extends OncePerRequestFilter {
 
     private boolean isAuthenticatedInWebcert(Authentication authentication) {
         return authentication != null
-                && authentication.isAuthenticated()
-                && authentication.getPrincipal() != null
-                && authentication.getPrincipal() instanceof WebCertUser;
+            && authentication.isAuthenticated()
+            && authentication.getPrincipal() != null
+            && authentication.getPrincipal() instanceof WebCertUser;
     }
 
     private boolean hasSessionWithSpringContext(HttpSession session) {

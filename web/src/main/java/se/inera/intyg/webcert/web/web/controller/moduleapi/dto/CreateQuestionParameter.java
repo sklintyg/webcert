@@ -21,6 +21,7 @@ package se.inera.intyg.webcert.web.web.controller.moduleapi.dto;
 import se.inera.intyg.webcert.persistence.fragasvar.model.Amne;
 
 public class CreateQuestionParameter {
+
     private Amne amne;
     private String frageText;
 

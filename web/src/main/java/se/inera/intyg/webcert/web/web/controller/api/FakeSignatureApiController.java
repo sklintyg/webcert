@@ -18,6 +18,13 @@
  */
 package se.inera.intyg.webcert.web.web.controller.api;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,14 +38,6 @@ import se.inera.intyg.webcert.web.service.underskrift.model.SignaturBiljett;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
 import se.inera.intyg.webcert.web.web.controller.api.dto.SignaturStateDTO;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
 
 @Transactional
 @Path("/signature")
@@ -59,8 +58,7 @@ public class FakeSignatureApiController extends AbstractApiController {
      *
      * FLYTTA TILL EGEN BEAN som är !prod annoterad!!!!
      *
-     * @param intygsId
-     *            intyg id
+     * @param intygsId intyg id
      * @return SignaturTicketResponse
      */
     @POST
@@ -68,13 +66,13 @@ public class FakeSignatureApiController extends AbstractApiController {
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
     public SignaturStateDTO fejkSigneraUtkast(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId,
-            @PathParam("version") long version, @PathParam("ticketId") String ticketId, @Context HttpServletRequest request) {
+        @PathParam("version") long version, @PathParam("ticketId") String ticketId, @Context HttpServletRequest request) {
 
         // Start by doing an extra server-side check of FAKE authentication.
         WebCertUser user = getWebCertUserService().getUser();
         if (user.getAuthenticationMethod() != AuthenticationMethod.FAKE) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM,
-                    "Fake signing is only allowed for users logged in by FAKE AuthenticationMethod.");
+                "Fake signing is only allowed for users logged in by FAKE AuthenticationMethod.");
         }
         verifyIsAuthorizedToSignIntyg(intygsTyp);
 
@@ -83,18 +81,18 @@ public class FakeSignatureApiController extends AbstractApiController {
         SignaturBiljett sb = underskriftService.fakeSignature(intygsId, intygsTyp, version, ticketId);
 
         return SignaturStateDTO.SignaturStateDTOBuilder.aSignaturStateDTO()
-                .withId(sb.getTicketId())
-                .withIntygsId(sb.getIntygsId())
-                .withStatus(sb.getStatus())
-                .withVersion(sb.getVersion())
-                .withHash(sb.getHash()) // This is what you stuff into NetiD SIGN.
-                .build();
+            .withId(sb.getTicketId())
+            .withIntygsId(sb.getIntygsId())
+            .withStatus(sb.getStatus())
+            .withVersion(sb.getVersion())
+            .withHash(sb.getHash()) // This is what you stuff into NetiD SIGN.
+            .build();
     }
 
     private void verifyIsAuthorizedToSignIntyg(String intygsTyp) {
         authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
-                .features(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
-                .privilege(AuthoritiesConstants.PRIVILEGE_SIGNERA_INTYG)
-                .orThrow();
+            .features(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
+            .privilege(AuthoritiesConstants.PRIVILEGE_SIGNERA_INTYG)
+            .orThrow();
     }
 }

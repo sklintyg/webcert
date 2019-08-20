@@ -18,6 +18,7 @@
  */
 package se.inera.intyg.webcert.web.service.user;
 
+import com.google.common.annotations.VisibleForTesting;
 import java.time.Instant;
 import java.util.Date;
 import java.util.List;
@@ -25,7 +26,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
 import javax.servlet.http.HttpSession;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,8 +35,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.session.FindByIndexNameSessionRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.google.common.annotations.VisibleForTesting;
 import se.inera.intyg.infra.security.authorities.AuthoritiesResolverUtil;
 import se.inera.intyg.infra.security.authorities.CommonAuthoritiesResolver;
 import se.inera.intyg.infra.security.common.model.IntygUser;
@@ -74,7 +72,7 @@ public class WebCertUserServiceImpl implements WebCertUserService {
     @Override
     public boolean hasAuthenticationContext() {
         return SecurityContextHolder.getContext() != null && SecurityContextHolder.getContext().getAuthentication() != null
-                && SecurityContextHolder.getContext().getAuthentication().getPrincipal() != null;
+            && SecurityContextHolder.getContext().getAuthentication().getPrincipal() != null;
     }
 
     @Override

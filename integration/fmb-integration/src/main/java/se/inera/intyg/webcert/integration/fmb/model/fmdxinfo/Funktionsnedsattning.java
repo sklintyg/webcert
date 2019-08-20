@@ -37,6 +37,7 @@ import se.inera.intyg.webcert.integration.fmb.model.Kod;
     "centralkod"
 })
 public class Funktionsnedsattning implements FmxBeskrivning {
+
     @JsonProperty("kompletterandekod")
     private List<Kod> kompletterandekod = null;
     @JsonProperty("centralkod")

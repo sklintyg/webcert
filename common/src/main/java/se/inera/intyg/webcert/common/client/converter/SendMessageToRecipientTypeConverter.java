@@ -19,7 +19,6 @@
 package se.inera.intyg.webcert.common.client.converter;
 
 import javax.xml.bind.JAXBElement;
-
 import se.inera.intyg.common.support.xml.XmlMarshallerHelper;
 import se.riv.clinicalprocess.healthcond.certificate.sendMessageToRecipient.v2.ObjectFactory;
 import se.riv.clinicalprocess.healthcond.certificate.sendMessageToRecipient.v2.SendMessageToRecipientType;
@@ -31,7 +30,7 @@ public final class SendMessageToRecipientTypeConverter {
 
     public static String toXml(SendMessageToRecipientType request) {
         JAXBElement<SendMessageToRecipientType> requestElement = new ObjectFactory()
-                .createSendMessageToRecipient(request);
+            .createSendMessageToRecipient(request);
         return XmlMarshallerHelper.marshal(requestElement);
     }
 

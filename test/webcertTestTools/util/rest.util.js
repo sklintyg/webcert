@@ -27,250 +27,250 @@ var env = require('./../environment.js').envConfig;
 
 module.exports = {
 
-    login: function(userJson) {
+  login: function(userJson) {
 
-        // login with doctor Leonie Koehl if noone else is specified
-        var user = userJson || {
-            'hsaId': 'TSTNMT2321000156-103F',
-            'forNamn': 'Leonie',
-            'efterNamn': 'Koehl',
-            'enhetId': 'TSTNMT2321000156-1039',
-            'legitimeradeYrkesgrupper': ['Läkare'],
-            'forskrivarKod': '9300005',
-            'befattningsKod': '203090',
-            'origin': 'NORMAL'
-        };
+    // login with doctor Leonie Koehl if noone else is specified
+    var user = userJson || {
+      'hsaId': 'TSTNMT2321000156-103F',
+      'forNamn': 'Leonie',
+      'efterNamn': 'Koehl',
+      'enhetId': 'TSTNMT2321000156-1039',
+      'legitimeradeYrkesgrupper': ['Läkare'],
+      'forskrivarKod': '9300005',
+      'befattningsKod': '203090',
+      'origin': 'NORMAL'
+    };
 
-        var options = {
-            url: 'fake',
-            method: 'POST',
-            body: 'userJsonDisplay=' + JSON.stringify(user)
-        };
-        return restClient.run(options, 'urlenc');
-    },
+    var options = {
+      url: 'fake',
+      method: 'POST',
+      body: 'userJsonDisplay=' + JSON.stringify(user)
+    };
+    return restClient.run(options, 'urlenc');
+  },
 
-    // Utkast/intyg
+  // Utkast/intyg
 
-    createUtkast: function(intygTyp, createJson) {
-        var options = {
-            url: 'api/utkast/' + intygTyp,
-            method: 'POST',
-            body: createJson
-        };
-        return restClient.run(options, 'json');
-    },
-    saveUtkast: function(intygsTyp, intygsId, version, utkastJson) {
-        var options = {
-            url: 'moduleapi/utkast/' + intygsTyp + '/' + intygsId + '/' + version,
-            method: 'PUT',
-            body: utkastJson
-        };
-        return restClient.run(options, 'json');
-    },
-    deleteAllUtkast: function() {
-        var options = {
-            url: 'testability/intyg',
-            method: 'DELETE'
-        };
-        return restClient.run(options, 'json');
-    },
-    deleteAllUtkastForPatient: function(personnummer) {
-        var options = {
-            url: 'testability/intyg/patient/' + personnummer,
-            method: 'DELETE'
-        };
-        return restClient.run(options, 'json');
-    },
-    deleteUtkast: function(id) {
-        var options = {
-            url: 'testability/intyg/' + id,
-            method: 'DELETE'
-        };
-        return restClient.run(options, 'json');
-    },
-    deleteHandelserForUtkast: function(id) {
-      var options = {
-          url: 'testability/intyg/handelser/' + id,
-          method: 'DELETE'
-      };
-      return restClient.run(options, 'json');
-    },
-    deleteHandelserForPatient: function(id) {
-        var options = {
-            url: 'testability/intyg/handelser/patient/' + id,
-            method: 'DELETE'
-        };
-        return restClient.run(options, 'json');
-    },
-    createWebcertIntyg: function(createJson) {
-        var options = {
-            url: 'testability/intyg/utkast',
-            method: 'POST',
-            body: createJson
-        };
-        return restClient.run(options, 'json');
-    },
-    markeraSkickatTillFK: function(id) {
-        var options = {
-            url: 'testability/intyg/' + id + '/skickat',
-            method: 'PUT'
-        };
-        return restClient.run(options, 'json');
-    },
+  createUtkast: function(intygTyp, createJson) {
+    var options = {
+      url: 'api/utkast/' + intygTyp,
+      method: 'POST',
+      body: createJson
+    };
+    return restClient.run(options, 'json');
+  },
+  saveUtkast: function(intygsTyp, intygsId, version, utkastJson) {
+    var options = {
+      url: 'moduleapi/utkast/' + intygsTyp + '/' + intygsId + '/' + version,
+      method: 'PUT',
+      body: utkastJson
+    };
+    return restClient.run(options, 'json');
+  },
+  deleteAllUtkast: function() {
+    var options = {
+      url: 'testability/intyg',
+      method: 'DELETE'
+    };
+    return restClient.run(options, 'json');
+  },
+  deleteAllUtkastForPatient: function(personnummer) {
+    var options = {
+      url: 'testability/intyg/patient/' + personnummer,
+      method: 'DELETE'
+    };
+    return restClient.run(options, 'json');
+  },
+  deleteUtkast: function(id) {
+    var options = {
+      url: 'testability/intyg/' + id,
+      method: 'DELETE'
+    };
+    return restClient.run(options, 'json');
+  },
+  deleteHandelserForUtkast: function(id) {
+    var options = {
+      url: 'testability/intyg/handelser/' + id,
+      method: 'DELETE'
+    };
+    return restClient.run(options, 'json');
+  },
+  deleteHandelserForPatient: function(id) {
+    var options = {
+      url: 'testability/intyg/handelser/patient/' + id,
+      method: 'DELETE'
+    };
+    return restClient.run(options, 'json');
+  },
+  createWebcertIntyg: function(createJson) {
+    var options = {
+      url: 'testability/intyg/utkast',
+      method: 'POST',
+      body: createJson
+    };
+    return restClient.run(options, 'json');
+  },
+  markeraSkickatTillFK: function(id) {
+    var options = {
+      url: 'testability/intyg/' + id + '/skickat',
+      method: 'PUT'
+    };
+    return restClient.run(options, 'json');
+  },
 
-    // Ärenden
+  // Ärenden
 
-    createArende: function(createJson) {
-        var options = {
-            url: 'testability/arendetest/',
-            method: 'POST',
-            body: createJson
-        };
-        return restClient.run(options, 'json');
-    },
-    deleteAllArenden: function() {
-        var options = {
-            url: 'testability/arendetest/',
-            method: 'DELETE'
-        };
-        return restClient.run(options, 'json');
-    },
-    deleteArende: function(id) {
-        var options = {
-            url: 'testability/arendetest/' + id,
-            method: 'DELETE'
-        };
-        return restClient.run(options, 'json');
-    },
+  createArende: function(createJson) {
+    var options = {
+      url: 'testability/arendetest/',
+      method: 'POST',
+      body: createJson
+    };
+    return restClient.run(options, 'json');
+  },
+  deleteAllArenden: function() {
+    var options = {
+      url: 'testability/arendetest/',
+      method: 'DELETE'
+    };
+    return restClient.run(options, 'json');
+  },
+  deleteArende: function(id) {
+    var options = {
+      url: 'testability/arendetest/' + id,
+      method: 'DELETE'
+    };
+    return restClient.run(options, 'json');
+  },
 
-    // Fråga/svar
-    createFragasvar: function(createJson) {
-        var options = {
-            url: 'testability/fragasvar/',
-            method: 'POST',
-            body: createJson
-        };
-        return restClient.run(options, 'json');
-    },
-    deleteAllFragasvar: function() {
-        var options = {
-            url: 'testability/fragasvar/',
-            method: 'DELETE'
-        };
-        return restClient.run(options, 'json');
-    },
+  // Fråga/svar
+  createFragasvar: function(createJson) {
+    var options = {
+      url: 'testability/fragasvar/',
+      method: 'POST',
+      body: createJson
+    };
+    return restClient.run(options, 'json');
+  },
+  deleteAllFragasvar: function() {
+    var options = {
+      url: 'testability/fragasvar/',
+      method: 'DELETE'
+    };
+    return restClient.run(options, 'json');
+  },
 
-    // get any kind of resource from the app environment
-    getResource: function(location) {
-        var options = {
-            url: 'testability/intyg/resource?location=' + location,
-            method: 'GET',
-            accept: 'application/octet-stream'
-        };
-        return restClient.run(options);
-    },
+  // get any kind of resource from the app environment
+  getResource: function(location) {
+    var options = {
+      url: 'testability/intyg/resource?location=' + location,
+      method: 'GET',
+      accept: 'application/octet-stream'
+    };
+    return restClient.run(options);
+  },
 
-    // Intygstjänst - intyg
+  // Intygstjänst - intyg
 
-    createIntyg: function(createJson) {
-        var options = {
-            url: 'certificate/',
-            method: 'POST',
-            body: createJson
-        };
-        //logger.debug("================================================CREATEJSON");
-        return restClient.run(options, 'json', env.INTYGTJANST_URL + '/resources/');
-    },
-    deleteAllIntyg: function() {
-        var options = {
-            url: 'certificate/',
-            method: 'DELETE'
-        };
-        return restClient.run(options, 'json', env.INTYGTJANST_URL + '/resources/');
-    },
-    deleteAllIntygForPatient: function(personnummer) {
-        var options = {
-            url: 'certificate/citizen/' + personnummer,
-            method: 'DELETE'
-        };
-        return restClient.run(options, 'json', env.INTYGTJANST_URL + '/resources/');
-    },
-    deleteIntyg: function(id) {
-        var options = {
-            url: 'certificate/' + id,
-            method: 'DELETE'
-        };
-        return restClient.run(options, 'json', env.INTYGTJANST_URL + '/resources/');
-    },
-    getIntyg: function(id) {
-        var options = {
-            url: 'certificate/' + id,
-            method: 'GET'
-        };
-        return restClient.run(options, 'json', env.INTYGTJANST_URL + '/resources/');
-    },
-    queryNotificationStub: function() {
-        var options = {
-            url: 'services/api/notification-api/notifieringar/v3',
-            method: 'GET'
-        };
-        return restClient.run(options, 'json');
-    },
-    registerEnhetAsDjupintegrerad: function(veId, veNamn, vgId, vgNamn, v1Enabled, v2Enabled) {
-        var options = {
-            url: 'testability/integreradevardenheter/',
-            method: 'POST',
-            body: {
-                enhetsId: veId,
-                enhetsNamn: veNamn,
-                vardgivareId: vgId,
-                vardgivareNamn: vgNamn,
-                schemaVersion: v2Enabled ? "2.0" : "1.0"
-            }
-        };
-        return restClient.run(options, 'json');
-    },
-    deregisterEnhetAsDjupintegrerad: function(veId) {
-        var options = {
-            url: 'testability/integreradevardenheter/' + veId,
-            method: 'DELETE'
-        };
-        return restClient.run(options, 'json');
-    },
-    setSekretessmarkering: function(patientId, isSekretessmarkerad) {
-        var options = {
-            url: 'services/api/pu-api/person/' + patientId + '/sekretessmarkerad?value=' + (isSekretessmarkerad ? 'true' : 'false'),
-            method: 'GET'
-        };
-        return restClient.run(options);
-    },
-    setPuServiceState: function(enabled) {
-        var options = {
-            url: 'services/api/pu-api/' + (enabled ? 'active' : 'inactive'),
-            method: 'GET'
-        };
-        return restClient.run(options);
-    },
-    deleteAnvandarPreference: function(hsaId, key) {
-        var options = {
-            url: 'testability/anvandare/preferences/' + hsaId + '/' + key,
-            method: 'DELETE'
-        };
-        return restClient.run(options);
-    },
-    createBanners: function(banner) {
-        var options = {
-            url: 'services/api/ia-api/banner',
-            method: 'PUT',
-            body: banner
-        };
-        return restClient.run(options, 'json');
-    },
-    clearBanners: function() {
-        var options = {
-            url: 'services/api/ia-api/cache',
-            method: 'DELETE'
-        };
-        return restClient.run(options, 'json');
-    }
+  createIntyg: function(createJson) {
+    var options = {
+      url: 'certificate/',
+      method: 'POST',
+      body: createJson
+    };
+    //logger.debug("================================================CREATEJSON");
+    return restClient.run(options, 'json', env.INTYGTJANST_URL + '/resources/');
+  },
+  deleteAllIntyg: function() {
+    var options = {
+      url: 'certificate/',
+      method: 'DELETE'
+    };
+    return restClient.run(options, 'json', env.INTYGTJANST_URL + '/resources/');
+  },
+  deleteAllIntygForPatient: function(personnummer) {
+    var options = {
+      url: 'certificate/citizen/' + personnummer,
+      method: 'DELETE'
+    };
+    return restClient.run(options, 'json', env.INTYGTJANST_URL + '/resources/');
+  },
+  deleteIntyg: function(id) {
+    var options = {
+      url: 'certificate/' + id,
+      method: 'DELETE'
+    };
+    return restClient.run(options, 'json', env.INTYGTJANST_URL + '/resources/');
+  },
+  getIntyg: function(id) {
+    var options = {
+      url: 'certificate/' + id,
+      method: 'GET'
+    };
+    return restClient.run(options, 'json', env.INTYGTJANST_URL + '/resources/');
+  },
+  queryNotificationStub: function() {
+    var options = {
+      url: 'services/api/notification-api/notifieringar/v3',
+      method: 'GET'
+    };
+    return restClient.run(options, 'json');
+  },
+  registerEnhetAsDjupintegrerad: function(veId, veNamn, vgId, vgNamn, v1Enabled, v2Enabled) {
+    var options = {
+      url: 'testability/integreradevardenheter/',
+      method: 'POST',
+      body: {
+        enhetsId: veId,
+        enhetsNamn: veNamn,
+        vardgivareId: vgId,
+        vardgivareNamn: vgNamn,
+        schemaVersion: v2Enabled ? "2.0" : "1.0"
+      }
+    };
+    return restClient.run(options, 'json');
+  },
+  deregisterEnhetAsDjupintegrerad: function(veId) {
+    var options = {
+      url: 'testability/integreradevardenheter/' + veId,
+      method: 'DELETE'
+    };
+    return restClient.run(options, 'json');
+  },
+  setSekretessmarkering: function(patientId, isSekretessmarkerad) {
+    var options = {
+      url: 'services/api/pu-api/person/' + patientId + '/sekretessmarkerad?value=' + (isSekretessmarkerad ? 'true' : 'false'),
+      method: 'GET'
+    };
+    return restClient.run(options);
+  },
+  setPuServiceState: function(enabled) {
+    var options = {
+      url: 'services/api/pu-api/' + (enabled ? 'active' : 'inactive'),
+      method: 'GET'
+    };
+    return restClient.run(options);
+  },
+  deleteAnvandarPreference: function(hsaId, key) {
+    var options = {
+      url: 'testability/anvandare/preferences/' + hsaId + '/' + key,
+      method: 'DELETE'
+    };
+    return restClient.run(options);
+  },
+  createBanners: function(banner) {
+    var options = {
+      url: 'services/api/ia-api/banner',
+      method: 'PUT',
+      body: banner
+    };
+    return restClient.run(options, 'json');
+  },
+  clearBanners: function() {
+    var options = {
+      url: 'services/api/ia-api/cache',
+      method: 'DELETE'
+    };
+    return restClient.run(options, 'json');
+  }
 };

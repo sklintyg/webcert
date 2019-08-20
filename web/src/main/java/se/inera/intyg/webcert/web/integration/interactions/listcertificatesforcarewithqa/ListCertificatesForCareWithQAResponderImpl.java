@@ -18,6 +18,12 @@
  */
 package se.inera.intyg.webcert.web.integration.interactions.listcertificatesforcarewithqa;
 
+import static se.inera.intyg.common.support.Constants.KV_AMNE_CODE_SYSTEM;
+import static se.inera.intyg.common.support.Constants.KV_HANDELSE_CODE_SYSTEM;
+import static se.inera.intyg.webcert.notification_sender.notifications.services.NotificationTypeConverter.toArenden;
+
+import java.util.Objects;
+import java.util.stream.Collectors;
 import org.apache.cxf.annotations.SchemaValidation;
 import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.intyg.schemas.contract.Personnummer;
@@ -25,18 +31,16 @@ import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygWithNotificationsRequest;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygWithNotificationsResponse;
-import se.riv.clinicalprocess.healthcond.certificate.listCertificatesForCareWithQA.v3.*;
+import se.riv.clinicalprocess.healthcond.certificate.listCertificatesForCareWithQA.v3.HandelseList;
+import se.riv.clinicalprocess.healthcond.certificate.listCertificatesForCareWithQA.v3.List;
+import se.riv.clinicalprocess.healthcond.certificate.listCertificatesForCareWithQA.v3.ListCertificatesForCareWithQAResponderInterface;
+import se.riv.clinicalprocess.healthcond.certificate.listCertificatesForCareWithQA.v3.ListCertificatesForCareWithQAResponseType;
+import se.riv.clinicalprocess.healthcond.certificate.listCertificatesForCareWithQA.v3.ListCertificatesForCareWithQAType;
+import se.riv.clinicalprocess.healthcond.certificate.listCertificatesForCareWithQA.v3.ListItem;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.Amneskod;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.Handelsekod;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.HsaId;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Handelse;
-
-import java.util.Objects;
-import java.util.stream.Collectors;
-
-import static se.inera.intyg.common.support.Constants.KV_AMNE_CODE_SYSTEM;
-import static se.inera.intyg.common.support.Constants.KV_HANDELSE_CODE_SYSTEM;
-import static se.inera.intyg.webcert.notification_sender.notifications.services.NotificationTypeConverter.toArenden;
 
 @SchemaValidation
 public class ListCertificatesForCareWithQAResponderImpl implements ListCertificatesForCareWithQAResponderInterface {
@@ -54,7 +58,7 @@ public class ListCertificatesForCareWithQAResponderImpl implements ListCertifica
         ListCertificatesForCareWithQAResponseType response = new ListCertificatesForCareWithQAResponseType();
         List list = new List();
         IntygWithNotificationsRequest.Builder builder = new IntygWithNotificationsRequest.Builder()
-                .setPersonnummer(Personnummer.createPersonnummer(request.getPersonId().getExtension()).get());
+            .setPersonnummer(Personnummer.createPersonnummer(request.getPersonId().getExtension()).get());
 
         if (!request.getEnhetsId().isEmpty()) {
             builder = builder.setEnhetId(request.getEnhetsId().stream().map(HsaId::getExtension).collect(Collectors.toList()));
@@ -76,8 +80,8 @@ public class ListCertificatesForCareWithQAResponderImpl implements ListCertifica
             item.setIntyg(intygHolder.getIntyg());
             HandelseList handelseList = new HandelseList();
             handelseList.getHandelse().addAll(intygHolder.getNotifications().stream()
-                    .map(ListCertificatesForCareWithQAResponderImpl::toHandelse)
-                    .collect(Collectors.toList()));
+                .map(ListCertificatesForCareWithQAResponderImpl::toHandelse)
+                .collect(Collectors.toList()));
             item.setHandelser(handelseList);
             item.setSkickadeFragor(toArenden(intygHolder.getSentQuestions()));
             item.setMottagnaFragor(toArenden(intygHolder.getReceivedQuestions()));

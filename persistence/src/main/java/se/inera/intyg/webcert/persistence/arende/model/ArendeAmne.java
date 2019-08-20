@@ -19,7 +19,6 @@
 package se.inera.intyg.webcert.persistence.arende.model;
 
 import java.util.Optional;
-
 import se.inera.intyg.webcert.persistence.fragasvar.model.Amne;
 
 public enum ArendeAmne {
@@ -41,18 +40,18 @@ public enum ArendeAmne {
 
     public static Optional<ArendeAmne> fromAmne(Amne amne) {
         switch (amne) {
-        case KOMPLETTERING_AV_LAKARINTYG:
-            return Optional.of(KOMPLT);
-        case AVSTAMNINGSMOTE:
-            return Optional.of(AVSTMN);
-        case KONTAKT:
-            return Optional.of(KONTKT);
-        case PAMINNELSE:
-            return Optional.of(PAMINN);
-        case OVRIGT:
-            return Optional.of(OVRIGT);
-        default:
-            return Optional.empty();
+            case KOMPLETTERING_AV_LAKARINTYG:
+                return Optional.of(KOMPLT);
+            case AVSTAMNINGSMOTE:
+                return Optional.of(AVSTMN);
+            case KONTAKT:
+                return Optional.of(KONTKT);
+            case PAMINNELSE:
+                return Optional.of(PAMINN);
+            case OVRIGT:
+                return Optional.of(OVRIGT);
+            default:
+                return Optional.empty();
         }
     }
 }

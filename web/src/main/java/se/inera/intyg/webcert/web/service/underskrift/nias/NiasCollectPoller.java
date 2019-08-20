@@ -26,6 +26,8 @@ import org.springframework.security.core.context.SecurityContext;
 public interface NiasCollectPoller extends Runnable {
 
     void setOrderRef(String orderRef);
+
     void setTicketId(String ticketId);
+
     void setSecurityContext(SecurityContext securityContext);
 }

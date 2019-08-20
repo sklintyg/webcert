@@ -18,6 +18,14 @@
  */
 package se.inera.intyg.webcert.web.service.notification;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.when;
+
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -25,18 +33,15 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
+import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.modules.support.api.notification.ArendeCount;
 import se.inera.intyg.common.support.modules.support.api.notification.FragorOchSvar;
 import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
 import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
 import se.inera.intyg.schemas.contract.Personnummer;
-import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
-
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
 
 /**
  * Created by Magnus Ekstrand on 03/12/14.
@@ -63,7 +68,7 @@ public class NotificationMessageFactoryTest {
         String reference = "ref";
 
         NotificationMessage msg = notificationMessageFactory.createNotificationMessage(utkast, HandelsekodEnum.SIGNAT,
-                SchemaVersion.VERSION_1, reference, null, null);
+            SchemaVersion.VERSION_1, reference, null, null);
 
         assertNotNull(msg);
         assertNotNull(msg.getHandelse());
@@ -92,7 +97,7 @@ public class NotificationMessageFactoryTest {
         String reference = "ref";
 
         NotificationMessage msg = notificationMessageFactory.createNotificationMessage(utkast, HandelsekodEnum.SIGNAT,
-                SchemaVersion.VERSION_3, reference, null, null);
+            SchemaVersion.VERSION_3, reference, null, null);
 
         assertNotNull(msg);
         assertNotNull(msg.getHandelse());
@@ -120,7 +125,7 @@ public class NotificationMessageFactoryTest {
         Utkast utkast = createUtkast(INTYGS_ID);
         final String reference = "ref";
         NotificationMessage msg = notificationMessageFactory.createNotificationMessage(utkast, HandelsekodEnum.NYFRFM,
-                SchemaVersion.VERSION_1, reference, null, null);
+            SchemaVersion.VERSION_1, reference, null, null);
 
         assertNotNull(msg);
         assertNotNull(msg.getHandelse());
@@ -149,13 +154,13 @@ public class NotificationMessageFactoryTest {
     @Test
     public void testCreateNotificationMessageForUsesFragorOchSvarSchemaVersion3() {
         when(mockFragorOchSvarCreator.createArenden(INTYGS_ID, INTYGS_TYP)).thenReturn(
-                Pair.of(new ArendeCount(1, 1, 1, 1), new ArendeCount(2, 2, 2, 2)));
+            Pair.of(new ArendeCount(1, 1, 1, 1), new ArendeCount(2, 2, 2, 2)));
 
         Utkast utkast = createUtkast(INTYGS_ID);
         final String reference = "ref";
 
         NotificationMessage msg = notificationMessageFactory.createNotificationMessage(utkast, HandelsekodEnum.NYFRFV,
-                SchemaVersion.VERSION_3, reference, null, null);
+            SchemaVersion.VERSION_3, reference, null, null);
 
         assertNotNull(msg);
         assertNotNull(msg.getHandelse());

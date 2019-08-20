@@ -18,18 +18,15 @@
  */
 package se.inera.intyg.webcert.web.service.notification;
 
+import com.google.common.base.Strings;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import com.google.common.base.Strings;
-
 import org.springframework.transaction.annotation.Transactional;
 import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.common.support.modules.support.api.notification.ArendeCount;
@@ -121,7 +118,7 @@ public class FragorOchSvarCreatorImpl implements FragorOchSvarCreator {
         }
 
         return Pair.of(new ArendeCount(skickadeFragorTotalt, skickadeFragorEjBesvarade, skickadeFragorBesvarade, skickadeFragorHanterade),
-                new ArendeCount(mottagnaFragorTotalt, mottagnaFragorEjBesvarade, mottagnaFragorBesvarade, mottagnaFragorHanterade));
+            new ArendeCount(mottagnaFragorTotalt, mottagnaFragorEjBesvarade, mottagnaFragorBesvarade, mottagnaFragorHanterade));
     }
 
     private Pair<ArendeCount, ArendeCount> performArendeCount(List<Arende> arenden) {
@@ -167,7 +164,7 @@ public class FragorOchSvarCreatorImpl implements FragorOchSvarCreator {
             }
         }
         return Pair.of(new ArendeCount(skickadeFragorTotalt, skickadeFragorEjBesvarade, skickadeFragorBesvarade, skickadeFragorHanterade),
-                new ArendeCount(mottagnaFragorTotalt, mottagnaFragorEjBesvarade, mottagnaFragorBesvarade, mottagnaFragorHanterade));
+            new ArendeCount(mottagnaFragorTotalt, mottagnaFragorEjBesvarade, mottagnaFragorBesvarade, mottagnaFragorHanterade));
     }
 
     private FragorOchSvar performCount(List<FragaSvarStatus> fsStatuses) {
@@ -197,7 +194,7 @@ public class FragorOchSvarCreatorImpl implements FragorOchSvarCreator {
         }
 
         return new FragorOchSvar(antalFragor, antalSvar, antalHanteradeFragor,
-                antalHanteradeSvar);
+            antalHanteradeSvar);
     }
 
     public boolean isFromFK(FragaSvarStatus fsStatus) {
@@ -206,7 +203,7 @@ public class FragorOchSvarCreatorImpl implements FragorOchSvarCreator {
 
     public boolean isFromWebcert(FragaSvarStatus fsStatus) {
         return fsStatus.getFrageStallare().equalsIgnoreCase(
-                FRAGESTALLARE_WEBCERT);
+            FRAGESTALLARE_WEBCERT);
     }
 
 }

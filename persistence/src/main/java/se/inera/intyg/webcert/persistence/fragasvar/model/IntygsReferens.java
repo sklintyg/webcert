@@ -18,12 +18,11 @@
  */
 package se.inera.intyg.webcert.persistence.fragasvar.model;
 
-import org.hibernate.annotations.Type;
-import se.inera.intyg.schemas.contract.Personnummer;
-
+import java.time.LocalDateTime;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
-import java.time.LocalDateTime;
+import org.hibernate.annotations.Type;
+import se.inera.intyg.schemas.contract.Personnummer;
 
 @Embeddable
 public class IntygsReferens {
@@ -49,7 +48,7 @@ public class IntygsReferens {
     }
 
     public IntygsReferens(String intygsId, String intygsTyp, Personnummer patientId,
-                          String patientName, LocalDateTime signeringsDatum) {
+        String patientName, LocalDateTime signeringsDatum) {
         this.intygsId = intygsId;
         this.intygsTyp = intygsTyp;
         this.patientId = patientId.getPersonnummer();

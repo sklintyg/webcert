@@ -22,124 +22,124 @@
 'use strict';
 var luseUtkastPage = pages.intyg.luse.utkast;
 module.exports = {
-    fillIn: function(intyg) {
+  fillIn: function(intyg) {
 
-        //Returnera Promise kedja
-        return new Promise(function(resolve) {
-                logger.info('Fyller i ' + intyg.typ + ' formuläret synkront');
-                browser.ignoreSynchronization = true;
-                resolve('Fyller i ' + intyg.typ + '  formuläret synkront');
-            })
-            .then(function() {
-                //Baserat på
-                return luseUtkastPage.angeBaseratPa(intyg.baseratPa)
-                    .then(function(value) {
-                        logger.info('OK - angeBaseratPa: ' + JSON.stringify(intyg.baseratPa));
-                    }, function(reason) {
-                        console.trace(reason);
-                        throw ('FEL, angeBaseratPa: ' + reason);
-                    });
-            })
-            .then(function() {
-                //Andra medicinska utredningar
-                return luseUtkastPage.angeAndraMedicinskaUtredningar(intyg.andraMedicinskaUtredningar)
-                    .then(function(value) {
-                        logger.info('OK - angeAndraMedicinskaUtredningar: ' + JSON.stringify(intyg.andraMedicinskaUtredningar));
-                    }, function(reason) {
-                        console.trace(reason);
-                        throw ('FEL, angeAndraMedicinskaUtredningar: ' + reason);
-                    });
-            })
-            .then(function() {
-                //Sjukdomsförlopp
-                return luseUtkastPage.angeSjukdomsforlopp(intyg.sjukdomsForlopp)
-                    .then(function(value) {
-                        logger.info('OK - angeSjukdomsforlopp: ' + JSON.stringify(intyg.sjukdomsForlopp));
-                    }, function(reason) {
-                        console.trace(reason);
-                        throw ('FEL, angeSjukdomsforlopp: ' + reason);
-                    });
-            })
-            .then(function() {
-                //Diagnoser
-                return luseUtkastPage.angeDiagnos(intyg.diagnos)
-                    .then(function(value) {
-                        logger.info('OK - angeDiagnos: ' + JSON.stringify(intyg.diagnos));
-                    }, function(reason) {
-                        console.trace(reason);
-                        throw ('FEL, angeDiagnos: ' + reason);
-                    });
-            })
-            .then(function() {
-                //Funktionsnedsättning
-                return luseUtkastPage.angeFunktionsnedsattning(intyg.funktionsnedsattning)
-                    .then(function(value) {
-                        logger.info('OK - angeFunktionsnedsattning: ' + JSON.stringify(intyg.funktionsnedsattning));
-                    }, function(reason) {
-                        console.trace(reason);
-                        throw ('FEL, angeFunktionsnedsattning: ' + reason);
-                    });
-            })
-            .then(function() {
-                //aktivitetsbegränsning
-                return luseUtkastPage.angeAktivitetsbegransning(intyg.aktivitetsbegransning)
-                    .then(function(value) {
-                        logger.info('OK - angeAktivitetsbegransning: ' + JSON.stringify(intyg.aktivitetsbegransning));
-                    }, function(reason) {
-                        console.trace(reason);
-                        throw ('FEL, angeAktivitetsbegransning: ' + reason);
-                    });
-            })
-            .then(function() {
-                //Medicinsk behandling
-                return luseUtkastPage.angeMedicinskBehandling(intyg.medicinskbehandling)
-                    .then(function(value) {
-                        logger.info('OK - angeMedicinskBehandling: ' + JSON.stringify(intyg.medicinskbehandling));
-                    }, function(reason) {
-                        console.trace(reason);
-                        throw ('FEL, angeMedicinskBehandling: ' + reason);
-                    });
-            })
-            .then(function() {
-                //Medicinska förutsättningar
-                return luseUtkastPage.angeMedicinskaForutsattningar(intyg.medicinskaForutsattningar)
-                    .then(function(value) {
-                        logger.info('OK - angeMedicinskaForutsattningar: ' + JSON.stringify(intyg.medicinskaForutsattningar));
-                    }, function(reason) {
-                        console.trace(reason);
-                        throw ('FEL, angeMedicinskaForutsattningar: ' + reason);
-                    });
-            })
-            .then(function() {
-                //Övriga upplysningar
-                return luseUtkastPage.angeOvrigaUpplysningar(intyg.ovrigt)
-                    .then(function(value) {
-                        logger.info('OK - angeOvrigaUpplysningar: ' + JSON.stringify(intyg.ovrigt));
-                    }, function(reason) {
-                        console.trace(reason);
-                        throw ('FEL, angeOvrigaUpplysningar: ' + reason);
-                    });
-            })
-            .then(function() {
-                //Kontakt med FK
-                return luseUtkastPage.angeKontaktMedFK(intyg.kontaktMedFk)
-                    .then(function(value) {
-                        logger.info('OK - angeKontaktMedFK: ' + JSON.stringify(intyg.kontaktMedFk));
-                    }, function(reason) {
-                        console.trace(reason);
-                        throw ('FEL, angeKontaktMedFK: ' + reason);
-                    });
-            })
-            .then(function() {
-                logger.info('Tilläggsfrågor - TODO: Finns detta kvar?');
-                return luseUtkastPage.angeTillaggsfragor(intyg.tillaggsfragor)
-                    .then(function(value) {
-                        logger.info('OK - angeTillaggsfragor: ' + JSON.stringify(intyg.tillaggsfragor));
-                    }, function(reason) {
-                        console.trace(reason);
-                        throw ('FEL, angeTillaggsfragor: ' + reason);
-                    });
-            });
+    //Returnera Promise kedja
+    return new Promise(function(resolve) {
+      logger.info('Fyller i ' + intyg.typ + ' formuläret synkront');
+      browser.ignoreSynchronization = true;
+      resolve('Fyller i ' + intyg.typ + '  formuläret synkront');
+    })
+    .then(function() {
+      //Baserat på
+      return luseUtkastPage.angeBaseratPa(intyg.baseratPa)
+      .then(function(value) {
+        logger.info('OK - angeBaseratPa: ' + JSON.stringify(intyg.baseratPa));
+      }, function(reason) {
+        console.trace(reason);
+        throw ('FEL, angeBaseratPa: ' + reason);
+      });
+    })
+    .then(function() {
+      //Andra medicinska utredningar
+      return luseUtkastPage.angeAndraMedicinskaUtredningar(intyg.andraMedicinskaUtredningar)
+      .then(function(value) {
+        logger.info('OK - angeAndraMedicinskaUtredningar: ' + JSON.stringify(intyg.andraMedicinskaUtredningar));
+      }, function(reason) {
+        console.trace(reason);
+        throw ('FEL, angeAndraMedicinskaUtredningar: ' + reason);
+      });
+    })
+    .then(function() {
+      //Sjukdomsförlopp
+      return luseUtkastPage.angeSjukdomsforlopp(intyg.sjukdomsForlopp)
+      .then(function(value) {
+        logger.info('OK - angeSjukdomsforlopp: ' + JSON.stringify(intyg.sjukdomsForlopp));
+      }, function(reason) {
+        console.trace(reason);
+        throw ('FEL, angeSjukdomsforlopp: ' + reason);
+      });
+    })
+    .then(function() {
+      //Diagnoser
+      return luseUtkastPage.angeDiagnos(intyg.diagnos)
+      .then(function(value) {
+        logger.info('OK - angeDiagnos: ' + JSON.stringify(intyg.diagnos));
+      }, function(reason) {
+        console.trace(reason);
+        throw ('FEL, angeDiagnos: ' + reason);
+      });
+    })
+    .then(function() {
+      //Funktionsnedsättning
+      return luseUtkastPage.angeFunktionsnedsattning(intyg.funktionsnedsattning)
+      .then(function(value) {
+        logger.info('OK - angeFunktionsnedsattning: ' + JSON.stringify(intyg.funktionsnedsattning));
+      }, function(reason) {
+        console.trace(reason);
+        throw ('FEL, angeFunktionsnedsattning: ' + reason);
+      });
+    })
+    .then(function() {
+      //aktivitetsbegränsning
+      return luseUtkastPage.angeAktivitetsbegransning(intyg.aktivitetsbegransning)
+      .then(function(value) {
+        logger.info('OK - angeAktivitetsbegransning: ' + JSON.stringify(intyg.aktivitetsbegransning));
+      }, function(reason) {
+        console.trace(reason);
+        throw ('FEL, angeAktivitetsbegransning: ' + reason);
+      });
+    })
+    .then(function() {
+      //Medicinsk behandling
+      return luseUtkastPage.angeMedicinskBehandling(intyg.medicinskbehandling)
+      .then(function(value) {
+        logger.info('OK - angeMedicinskBehandling: ' + JSON.stringify(intyg.medicinskbehandling));
+      }, function(reason) {
+        console.trace(reason);
+        throw ('FEL, angeMedicinskBehandling: ' + reason);
+      });
+    })
+    .then(function() {
+      //Medicinska förutsättningar
+      return luseUtkastPage.angeMedicinskaForutsattningar(intyg.medicinskaForutsattningar)
+      .then(function(value) {
+        logger.info('OK - angeMedicinskaForutsattningar: ' + JSON.stringify(intyg.medicinskaForutsattningar));
+      }, function(reason) {
+        console.trace(reason);
+        throw ('FEL, angeMedicinskaForutsattningar: ' + reason);
+      });
+    })
+    .then(function() {
+      //Övriga upplysningar
+      return luseUtkastPage.angeOvrigaUpplysningar(intyg.ovrigt)
+      .then(function(value) {
+        logger.info('OK - angeOvrigaUpplysningar: ' + JSON.stringify(intyg.ovrigt));
+      }, function(reason) {
+        console.trace(reason);
+        throw ('FEL, angeOvrigaUpplysningar: ' + reason);
+      });
+    })
+    .then(function() {
+      //Kontakt med FK
+      return luseUtkastPage.angeKontaktMedFK(intyg.kontaktMedFk)
+      .then(function(value) {
+        logger.info('OK - angeKontaktMedFK: ' + JSON.stringify(intyg.kontaktMedFk));
+      }, function(reason) {
+        console.trace(reason);
+        throw ('FEL, angeKontaktMedFK: ' + reason);
+      });
+    })
+    .then(function() {
+      logger.info('Tilläggsfrågor - TODO: Finns detta kvar?');
+      return luseUtkastPage.angeTillaggsfragor(intyg.tillaggsfragor)
+      .then(function(value) {
+        logger.info('OK - angeTillaggsfragor: ' + JSON.stringify(intyg.tillaggsfragor));
+      }, function(reason) {
+        console.trace(reason);
+        throw ('FEL, angeTillaggsfragor: ' + reason);
+      });
+    });
 
-    }
+  }
 };

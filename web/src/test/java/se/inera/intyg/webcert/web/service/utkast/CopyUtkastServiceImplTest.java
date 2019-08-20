@@ -37,14 +37,12 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.GrundData;
@@ -222,7 +220,7 @@ public class CopyUtkastServiceImplTest {
     @Before
     public void expectCallToPUService() throws Exception {
         PersonSvar personSvar = PersonSvar.found(
-                new Person(PATIENT_SSN, false, false, "Adam", "Bertilsson", "Cedergren", "Testgatan 12", "12345", "Testberga"));
+            new Person(PATIENT_SSN, false, false, "Adam", "Bertilsson", "Cedergren", "Testgatan 12", "12345", "Testberga"));
         when(mockPUService.getPerson(PATIENT_SSN)).thenReturn(personSvar);
     }
 
@@ -239,7 +237,7 @@ public class CopyUtkastServiceImplTest {
     @Before
     public void byDefaultReturnNoRelationsFromRelationService() {
         when(certificateRelationService.getNewestRelationOfType(anyString(), any(RelationKod.class), any(List.class)))
-                .thenReturn(Optional.empty());
+            .thenReturn(Optional.empty());
     }
 
     @Before
@@ -255,9 +253,9 @@ public class CopyUtkastServiceImplTest {
         user.setParameters(new IntegrationParameters(reference, "", "", "", "", "", "", "", "", false, false, false, true));
 
         WebcertCertificateRelation ersattRelation = new WebcertCertificateRelation(INTYG_ID, RelationKod.ERSATT, LocalDateTime.now(),
-                UtkastStatus.SIGNED, false);
+            UtkastStatus.SIGNED, false);
         when(certificateRelationService.getNewestRelationOfType(INTYG_ID, RelationKod.ERSATT, Arrays.asList(UtkastStatus.SIGNED)))
-                .thenReturn(Optional.of(ersattRelation));
+            .thenReturn(Optional.of(ersattRelation));
 
         CreateRenewalCopyRequest renewalCopyRequest = buildRenewalRequest();
 
@@ -324,7 +322,7 @@ public class CopyUtkastServiceImplTest {
 
         CopyUtkastBuilderResponse resp = createCopyUtkastBuilderResponse();
         when(createReplacementUtkastBuilder.populateCopyUtkastFromSignedIntyg(any(CreateReplacementCopyRequest.class), any(Person.class),
-                eq(true), any(boolean.class))).thenReturn(resp);
+            eq(true), any(boolean.class))).thenReturn(resp);
 
         CreateReplacementCopyRequest copyReq = buildReplacementCopyRequest();
         setupMockForAccessService();
@@ -336,7 +334,7 @@ public class CopyUtkastServiceImplTest {
 
         verify(mockPUService).getPerson(PATIENT_SSN);
         verify(createReplacementUtkastBuilder).populateCopyUtkastFromSignedIntyg(any(CreateReplacementCopyRequest.class), any(Person.class),
-                any(boolean.class), any(boolean.class));
+            any(boolean.class), any(boolean.class));
         verify(mockUtkastRepository).save(any(Utkast.class));
         verify(referensService).saveReferens(eq(INTYG_COPY_ID), eq(reference));
         verify(mockNotificationService).sendNotificationForDraftCreated(any(Utkast.class));
@@ -355,9 +353,9 @@ public class CopyUtkastServiceImplTest {
         CopyUtkastBuilderResponse resp = createCopyUtkastBuilderResponse();
 
         WebcertCertificateRelation ersattRelation = new WebcertCertificateRelation(INTYG_ID, RelationKod.ERSATT, LocalDateTime.now(),
-                UtkastStatus.SIGNED, false);
+            UtkastStatus.SIGNED, false);
         when(certificateRelationService.getNewestRelationOfType(INTYG_ID, RelationKod.ERSATT, Arrays.asList(UtkastStatus.values())))
-                .thenReturn(Optional.of(ersattRelation));
+            .thenReturn(Optional.of(ersattRelation));
 
         setupMockForAccessService();
 
@@ -371,7 +369,7 @@ public class CopyUtkastServiceImplTest {
 
         verify(mockPUService).getPerson(PATIENT_SSN);
         verify(createReplacementUtkastBuilder).populateCopyUtkastFromSignedIntyg(any(CreateReplacementCopyRequest.class), any(Person.class),
-                any(boolean.class), any(boolean.class));
+            any(boolean.class), any(boolean.class));
         verify(mockUtkastRepository).save(any(Utkast.class));
         verify(mockNotificationService).sendNotificationForDraftCreated(any(Utkast.class));
         verify(userService).getUser();
@@ -391,7 +389,7 @@ public class CopyUtkastServiceImplTest {
 
         CopyUtkastBuilderResponse resp = createCopyUtkastBuilderResponse();
         when(copyCompletionUtkastBuilder.populateCopyUtkastFromOrignalUtkast(any(CreateCompletionCopyRequest.class), any(Person.class),
-                any(boolean.class), any(boolean.class))).thenReturn(resp);
+            any(boolean.class), any(boolean.class))).thenReturn(resp);
 
         CreateCompletionCopyRequest copyReq = buildCompletionRequest();
         setupMockForAccessService();
@@ -404,7 +402,7 @@ public class CopyUtkastServiceImplTest {
 
         verify(mockPUService).getPerson(PATIENT_SSN);
         verify(copyCompletionUtkastBuilder).populateCopyUtkastFromOrignalUtkast(any(CreateCompletionCopyRequest.class), any(Person.class),
-                any(boolean.class), any(boolean.class));
+            any(boolean.class), any(boolean.class));
         verify(mockUtkastRepository).save(any(Utkast.class));
         verify(referensService).saveReferens(eq(INTYG_COPY_ID), eq(reference));
         verify(mockNotificationService).sendNotificationForDraftCreated(any(Utkast.class));
@@ -423,10 +421,10 @@ public class CopyUtkastServiceImplTest {
 
         CopyUtkastBuilderResponse resp = createCopyUtkastBuilderResponse();
         when(createRenewalCopyUtkastBuilder.populateCopyUtkastFromOrignalUtkast(any(CreateRenewalCopyRequest.class), any(Person.class),
-                any(boolean.class), any(boolean.class))).thenReturn(resp);
+            any(boolean.class), any(boolean.class))).thenReturn(resp);
 
         when(certificateRelationService.getNewestRelationOfType(INTYG_ID, RelationKod.ERSATT, Arrays.asList(UtkastStatus.SIGNED)))
-                .thenReturn(Optional.empty());
+            .thenReturn(Optional.empty());
 
         CreateRenewalCopyRequest copyReq = buildRenewalRequest();
 
@@ -441,7 +439,7 @@ public class CopyUtkastServiceImplTest {
 
         verify(mockPUService).getPerson(PATIENT_SSN);
         verify(createRenewalCopyUtkastBuilder).populateCopyUtkastFromOrignalUtkast(any(CreateRenewalCopyRequest.class), any(Person.class),
-                any(boolean.class), eq(false));
+            any(boolean.class), eq(false));
         verify(mockUtkastRepository).save(any(Utkast.class));
         verify(referensService).saveReferens(eq(INTYG_COPY_ID), eq(reference));
         verify(mockNotificationService).sendNotificationForDraftCreated(any(Utkast.class));
@@ -457,9 +455,9 @@ public class CopyUtkastServiceImplTest {
         when(userService.getUser()).thenReturn(user);
 
         WebcertCertificateRelation ersattRelation = new WebcertCertificateRelation(INTYG_ID, RelationKod.ERSATT, LocalDateTime.now(),
-                UtkastStatus.SIGNED, false);
+            UtkastStatus.SIGNED, false);
         when(certificateRelationService.getNewestRelationOfType(INTYG_ID, RelationKod.ERSATT, Arrays.asList(UtkastStatus.SIGNED)))
-                .thenReturn(Optional.of(ersattRelation));
+            .thenReturn(Optional.of(ersattRelation));
 
         CreateRenewalCopyRequest copyReq = buildRenewalRequest();
 
@@ -489,10 +487,10 @@ public class CopyUtkastServiceImplTest {
 
         CopyUtkastBuilderResponse resp = createCopyUtkastBuilderResponse();
         when(createRenewalCopyUtkastBuilder.populateCopyUtkastFromOrignalUtkast(
-                any(CreateRenewalCopyRequest.class),
-                isNull(),
-                any(boolean.class),
-                eq(true))).thenReturn(resp);
+            any(CreateRenewalCopyRequest.class),
+            isNull(),
+            any(boolean.class),
+            eq(true))).thenReturn(resp);
 
         CreateRenewalCopyRequest copyReq = buildRenewalRequest();
         copyReq.setDjupintegrerad(true);
@@ -506,16 +504,16 @@ public class CopyUtkastServiceImplTest {
         assertEquals(INTYG_ID, renewalResponse.getOriginalIntygId());
 
         verify(createRenewalCopyUtkastBuilder).populateCopyUtkastFromOrignalUtkast(
-                any(CreateRenewalCopyRequest.class),
-                isNull(),
-                any(boolean.class),
-                eq(true));
+            any(CreateRenewalCopyRequest.class),
+            isNull(),
+            any(boolean.class),
+            eq(true));
         verify(mockUtkastRepository).save(any(Utkast.class));
         verify(mockNotificationService).sendNotificationForDraftCreated(any(Utkast.class));
         verify(userService).getUser();
         verify(intygService).isRevoked(INTYG_ID, INTYG_TYPE, true);
         verify(mockIntegreradeEnheterRegistry).addIfSameVardgivareButDifferentUnits(any(String.class), any(IntegreradEnhetEntry.class),
-                anyString());
+            anyString());
     }
 
     @Test
@@ -530,10 +528,10 @@ public class CopyUtkastServiceImplTest {
 
         CopyUtkastBuilderResponse resp = createCopyUtkastBuilderResponse();
         when(createRenewalCopyUtkastBuilder.populateCopyUtkastFromSignedIntyg(
-                any(CreateRenewalCopyRequest.class),
-                isNull(),
-                eq(false),
-                eq(false))).thenReturn(resp);
+            any(CreateRenewalCopyRequest.class),
+            isNull(),
+            eq(false),
+            eq(false))).thenReturn(resp);
 
         CreateRenewalCopyRequest renewRequest = buildRenewalRequest();
         renewRequest.setDjupintegrerad(true);
@@ -546,14 +544,14 @@ public class CopyUtkastServiceImplTest {
 
         verifyZeroInteractions(mockPUService);
         verify(createRenewalCopyUtkastBuilder).populateCopyUtkastFromSignedIntyg(
-                any(CreateRenewalCopyRequest.class),
-                isNull(),
-                eq(false),
-                eq(false));
+            any(CreateRenewalCopyRequest.class),
+            isNull(),
+            eq(false),
+            eq(false));
         verify(mockUtkastRepository).save(any(Utkast.class));
         verify(referensService).saveReferens(eq(INTYG_COPY_ID), eq(reference));
         verify(mockIntegreradeEnheterRegistry).addIfSameVardgivareButDifferentUnits(any(String.class), any(IntegreradEnhetEntry.class),
-                anyString());
+            anyString());
         verify(mockNotificationService).sendNotificationForDraftCreated(any(Utkast.class));
         verify(userService).getUser();
         verify(intygService).isRevoked(INTYG_ID, INTYG_TYPE, false);
@@ -574,10 +572,10 @@ public class CopyUtkastServiceImplTest {
 
         CopyUtkastBuilderResponse resp = createCopyUtkastBuilderResponse();
         when(createRenewalCopyUtkastBuilder.populateCopyUtkastFromSignedIntyg(
-                any(CreateRenewalCopyRequest.class),
-                isNull(),
-                eq(false),
-                eq(false))).thenReturn(resp);
+            any(CreateRenewalCopyRequest.class),
+            isNull(),
+            eq(false),
+            eq(false))).thenReturn(resp);
 
         CreateRenewalCopyRequest copyReq = buildRenewalRequest();
         copyReq.setNyttPatientPersonnummer(PATIENT_NEW_SSN);
@@ -592,13 +590,13 @@ public class CopyUtkastServiceImplTest {
 
         verifyZeroInteractions(mockPUService);
         verify(createRenewalCopyUtkastBuilder).populateCopyUtkastFromSignedIntyg(
-                any(CreateRenewalCopyRequest.class),
-                isNull(),
-                eq(false),
-                eq(false));
+            any(CreateRenewalCopyRequest.class),
+            isNull(),
+            eq(false),
+            eq(false));
         verify(mockUtkastRepository).save(any(Utkast.class));
         verify(mockIntegreradeEnheterRegistry).addIfSameVardgivareButDifferentUnits(any(String.class), any(IntegreradEnhetEntry.class),
-                anyString());
+            anyString());
         verify(mockNotificationService).sendNotificationForDraftCreated(any(Utkast.class));
         verify(userService).getUser();
         verify(intygService).isRevoked(INTYG_ID, INTYG_TYPE, false);
@@ -620,8 +618,8 @@ public class CopyUtkastServiceImplTest {
 
         CopyUtkastBuilderResponse resp = createCopyUtkastBuilderResponse();
         when(createUtkastFromTemplateBuilder.populateCopyUtkastFromOrignalUtkast(any(CreateUtkastFromTemplateRequest.class),
-                any(Person.class),
-                any(boolean.class), any(boolean.class))).thenReturn(resp);
+            any(Person.class),
+            any(boolean.class), any(boolean.class))).thenReturn(resp);
 
         CreateUtkastFromTemplateRequest copyReq = buildUtkastFromTemplateRequest();
 
@@ -634,8 +632,8 @@ public class CopyUtkastServiceImplTest {
 
         verify(mockPUService).getPerson(PATIENT_SSN);
         verify(createUtkastFromTemplateBuilder).populateCopyUtkastFromOrignalUtkast(any(CreateUtkastFromTemplateRequest.class),
-                any(Person.class),
-                any(boolean.class), eq(false));
+            any(Person.class),
+            any(boolean.class), eq(false));
         verify(mockUtkastRepository).save(any(Utkast.class));
         verify(referensService).saveReferens(eq(INTYG_COPY_ID), eq(reference));
         verify(mockNotificationService).sendNotificationForDraftCreated(any(Utkast.class));
@@ -654,7 +652,7 @@ public class CopyUtkastServiceImplTest {
 
         CopyUtkastBuilderResponse resp = createCopyUtkastBuilderResponse();
         when(createUtkastCopyBuilder.populateCopyUtkastFromOrignalUtkast(any(CreateUtkastFromTemplateRequest.class), any(Person.class),
-                any(boolean.class), any(boolean.class))).thenReturn(resp);
+            any(boolean.class), any(boolean.class))).thenReturn(resp);
 
         Utkast utkast = new Utkast();
         utkast.setStatus(UtkastStatus.DRAFT_LOCKED);
@@ -673,7 +671,7 @@ public class CopyUtkastServiceImplTest {
 
         verify(mockPUService).getPerson(PATIENT_SSN);
         verify(createUtkastCopyBuilder).populateCopyUtkastFromOrignalUtkast(any(CreateUtkastFromTemplateRequest.class), any(Person.class),
-                any(boolean.class), eq(false));
+            any(boolean.class), eq(false));
         verify(mockUtkastRepository).save(any(Utkast.class));
         verify(referensService).saveReferens(eq(INTYG_COPY_ID), eq(reference));
         verify(mockNotificationService).sendNotificationForDraftCreated(any(Utkast.class));
@@ -716,9 +714,9 @@ public class CopyUtkastServiceImplTest {
         when(utkastService.getDraft(INTYG_ID, INTYG_TYPE)).thenReturn(utkast);
 
         WebcertCertificateRelation webcertRelation = new WebcertCertificateRelation(INTYG_COPY_ID, RelationKod.KOPIA, LocalDateTime.now(),
-                UtkastStatus.DRAFT_INCOMPLETE, false);
+            UtkastStatus.DRAFT_INCOMPLETE, false);
         when(certificateRelationService.getNewestRelationOfType(eq(INTYG_ID), eq(RelationKod.KOPIA), any()))
-                .thenReturn(Optional.of(webcertRelation));
+            .thenReturn(Optional.of(webcertRelation));
 
         CreateUtkastFromTemplateRequest copyReq = buildUtkastCopyRequest();
         setupMockForAccessService();
@@ -830,20 +828,20 @@ public class CopyUtkastServiceImplTest {
 
     private static Personnummer createPnr(String personId) {
         return Personnummer.createPersonnummer(personId)
-                .orElseThrow(() -> new IllegalArgumentException("Could not parse passed personnummer: " + personId));
+            .orElseThrow(() -> new IllegalArgumentException("Could not parse passed personnummer: " + personId));
     }
 
     private void setupMockForAccessService() {
         final Utlatande utlatande = mock(Utlatande.class);
 
         final IntygContentHolder intygContentHolder = IntygContentHolder.builder()
-                .setRevoked(false)
-                .setRelations(new Relations())
-                .setDeceased(false)
-                .setSekretessmarkering(false)
-                .setPatientNameChangedInPU(false)
-                .setPatientAddressChangedInPU(false)
-                .setUtlatande(utlatande).build();
+            .setRevoked(false)
+            .setRelations(new Relations())
+            .setDeceased(false)
+            .setSekretessmarkering(false)
+            .setPatientNameChangedInPU(false)
+            .setPatientAddressChangedInPU(false)
+            .setUtlatande(utlatande).build();
 
         doReturn(intygContentHolder).when(intygService).fetchIntygData(anyString(), anyString(), anyBoolean(), anyBoolean());
 
@@ -872,7 +870,7 @@ public class CopyUtkastServiceImplTest {
         doReturn(skapadAv).when(grundData).getSkapadAv();
 
         final se.inera.intyg.common.support.model.common.internal.Vardenhet vardenhet = mock(
-                se.inera.intyg.common.support.model.common.internal.Vardenhet.class);
+            se.inera.intyg.common.support.model.common.internal.Vardenhet.class);
         doReturn(vardenhet).when(skapadAv).getVardenhet();
 
         final Patient patient = mock(Patient.class);

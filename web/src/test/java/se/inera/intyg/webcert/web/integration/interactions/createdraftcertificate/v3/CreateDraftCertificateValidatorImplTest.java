@@ -18,6 +18,17 @@
  */
 package se.inera.intyg.webcert.web.integration.interactions.createdraftcertificate.v3;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.util.Arrays;
+import java.util.HashSet;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -41,18 +52,6 @@ import se.riv.clinicalprocess.healthcond.certificate.types.v3.PersonId;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.TypAvIntyg;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Patient;
 
-import java.util.Arrays;
-import java.util.HashSet;
-
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 @RunWith(MockitoJUnitRunner.class)
 public class CreateDraftCertificateValidatorImplTest extends BaseCreateDraftCertificateValidatorTest {
 
@@ -62,7 +61,7 @@ public class CreateDraftCertificateValidatorImplTest extends BaseCreateDraftCert
     @Before
     public void setup() throws ModuleNotFoundException {
         when(moduleRegistry.getModuleIdFromExternalId(anyString()))
-                .thenAnswer(invocation -> ((String) invocation.getArguments()[0]).toLowerCase());
+            .thenAnswer(invocation -> ((String) invocation.getArguments()[0]).toLowerCase());
         when(moduleRegistry.moduleExists(Fk7263EntryPoint.MODULE_ID)).thenReturn(true);
         when(moduleRegistry.moduleExists(LuseEntryPoint.MODULE_ID)).thenReturn(true);
 
@@ -77,14 +76,14 @@ public class CreateDraftCertificateValidatorImplTest extends BaseCreateDraftCert
     @Test
     public void testDeprecatedDoesNotValidate() {
         ResultValidator result = validator.validate(buildIntyg(FK7263, "efternamn", "förnamn",
-                "fullständigt namn", "enhetsId", "enhetsnamn", true));
+            "fullständigt namn", "enhetsId", "enhetsnamn", true));
         assertTrue(result.hasErrors());
     }
 
     @Test
     public void testValidate() {
         ResultValidator result = validator.validate(buildIntyg(LUSE, "efternamn", "förnamn",
-                "fullständigt namn", "enhetsId", "enhetsnamn", true));
+            "fullständigt namn", "enhetsId", "enhetsnamn", true));
         assertFalse(result.hasErrors());
     }
 
@@ -92,99 +91,99 @@ public class CreateDraftCertificateValidatorImplTest extends BaseCreateDraftCert
     public void testValidateInvalidIntygsTyp() {
         when(moduleRegistry.moduleExists(LUSE.toLowerCase())).thenReturn(false);
         ResultValidator result = validator.validate(buildIntyg(LUSE, "efternamn", "förnamn",
-                "fullständigt namn", "enhetsId", "enhetsnamn", true));
+            "fullständigt namn", "enhetsId", "enhetsnamn", true));
         assertTrue(result.hasErrors());
     }
 
     @Test
     public void testValidatePatientEfternamnMissing() {
         ResultValidator result = validator.validate(buildIntyg(LUSE, null, "förnamn",
-                "fullständigt namn", "enhetsId", "enhetsnamn", true));
+            "fullständigt namn", "enhetsId", "enhetsnamn", true));
         assertTrue(result.hasErrors());
     }
 
     @Test
     public void testValidatePatientFornamnMissing() {
         ResultValidator result = validator.validate(buildIntyg(LUSE, "efternamn", null,
-                "fullständigt namn", "enhetsId", "enhetsnamn", true));
+            "fullständigt namn", "enhetsId", "enhetsnamn", true));
         assertTrue(result.hasErrors());
     }
 
     @Test
     public void testValidatePatientPersonIdMissing() {
         ResultValidator result = validator
-                .validate(buildIntyg(LUSE, "efternamn", "förnamn",
-                        "fullständigt namn", "enhetsId", "enhetsnamn", true, null));
+            .validate(buildIntyg(LUSE, "efternamn", "förnamn",
+                "fullständigt namn", "enhetsId", "enhetsnamn", true, null));
         assertTrue(result.hasErrors());
     }
 
     @Test
     public void testValidatePatientPersonIdExtensionMissing() {
         ResultValidator result = validator
-                .validate(buildIntyg(LUSE, "efternamn", "förnamn",
-                        "fullständigt namn", "enhetsId", "enhetsnamn", true, ""));
+            .validate(buildIntyg(LUSE, "efternamn", "förnamn",
+                "fullständigt namn", "enhetsId", "enhetsnamn", true, ""));
         assertTrue(result.hasErrors());
     }
 
     @Test
     public void testValidatePatientPersonnummerOk() {
         ResultValidator result = validator
-                .validate(buildIntyg(LUSE, "efternamn", "förnamn",
-                        "fullständigt namn", "enhetsId", "enhetsnamn", true, "191212121212"));
+            .validate(buildIntyg(LUSE, "efternamn", "förnamn",
+                "fullständigt namn", "enhetsId", "enhetsnamn", true, "191212121212"));
         assertFalse(result.hasErrors());
     }
 
     @Test
     public void testValidatePatientSamordningsnummerOk() {
         ResultValidator result = validator
-                .validate(buildIntyg(LUSE, "efternamn", "förnamn",
-                        "fullständigt namn", "enhetsId", "enhetsnamn", true, "198001910002"));
+            .validate(buildIntyg(LUSE, "efternamn", "förnamn",
+                "fullständigt namn", "enhetsId", "enhetsnamn", true, "198001910002"));
         assertFalse(result.hasErrors());
     }
 
     @Test
     public void testValidatePatientInvalidPersonnummer() {
         ResultValidator result = validator
-                .validate(buildIntyg(LUSE, "efternamn", "förnamn",
-                        "fullständigt namn", "enhetsId", "enhetsnamn", true, "190101010101"));
+            .validate(buildIntyg(LUSE, "efternamn", "förnamn",
+                "fullständigt namn", "enhetsId", "enhetsnamn", true, "190101010101"));
         assertTrue(result.hasErrors());
     }
 
     @Test
     public void testValidateHoSPersonalFullstandigtnamnMissing() {
         ResultValidator result = validator.validate(buildIntyg(LUSE, "efternamn", "fornamn",
-                null, "enhetsId", "enhetsnamn", true));
+            null, "enhetsId", "enhetsnamn", true));
         assertTrue(result.hasErrors());
     }
 
     @Test
     public void testValidateHoSPersonalEnhetMissing() {
         ResultValidator result = validator.validate(buildIntyg(LUSE, "efternamn", "fornamn",
-                "fullständigt namn", "enhetsId", "enhetsnamn", false));
+            "fullständigt namn", "enhetsId", "enhetsnamn", false));
         assertTrue(result.hasErrors());
     }
 
     @Test
     public void testValidateHoSPersonalEnhetsIdMissing() {
         ResultValidator result = validator.validate(buildIntyg(LUSE, "efternamn", "fornamn",
-                "fullständigt namn", null, "enhetsnamn", true));
+            "fullständigt namn", null, "enhetsnamn", true));
         assertTrue(result.hasErrors());
     }
 
     @Test
     public void testValidateHoSPersonalEnhetsnamnMissing() {
         ResultValidator result = validator.validate(buildIntyg(LUSE, "efternamn", "fornamn",
-                "fullständigt namn", "enhetsId", null, true));
+            "fullständigt namn", "enhetsId", null, true));
         assertTrue(result.hasErrors());
     }
 
     @Test
     public void testValidationOfPersonnummerDoesNotExistInPU() {
         when(patientDetailsResolver.getPersonFromPUService(any(Personnummer.class)))
-                .thenReturn(PersonSvar.notFound());
+            .thenReturn(PersonSvar.notFound());
 
         ResultValidator result = validator.validateApplicationErrors(buildIntyg(TSBAS, "efternamn", "förnamn",
-                "fullständigt namn", "enhetsId", "enhetsnamn", true), user);
+            "fullständigt namn", "enhetsId", "enhetsnamn", true), user);
         assertTrue(result.hasErrors());
 
         verify(patientDetailsResolver).getPersonFromPUService(any(Personnummer.class));
@@ -195,8 +194,8 @@ public class CreateDraftCertificateValidatorImplTest extends BaseCreateDraftCert
         when(patientDetailsResolver.getPersonFromPUService(any(Personnummer.class))).thenReturn(buildPersonSvar());
         when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.FALSE);
         ResultValidator result = validator
-                .validateApplicationErrors(buildIntyg(TSBAS, "efternamn", "förnamn",
-                        "fullständigt namn", "enhetsId", "enhetsnamn", true), user);
+            .validateApplicationErrors(buildIntyg(TSBAS, "efternamn", "förnamn",
+                "fullständigt namn", "enhetsId", "enhetsnamn", true), user);
         assertFalse(result.hasErrors());
         verify(patientDetailsResolver).getSekretessStatus(any(Personnummer.class));
     }
@@ -204,10 +203,10 @@ public class CreateDraftCertificateValidatorImplTest extends BaseCreateDraftCert
     @Test
     public void testTsBasIsNotAllowedWhenPatientCouldNotBeLookedUpInPu() {
         when(patientDetailsResolver.getPersonFromPUService(any(Personnummer.class)))
-                .thenReturn(PersonSvar.notFound());
+            .thenReturn(PersonSvar.notFound());
         ResultValidator result = validator
-                .validateApplicationErrors(buildIntyg(TSBAS, "efternamn", "förnamn",
-                        "fullständigt namn", "enhetsId", "enhetsnamn", true), user);
+            .validateApplicationErrors(buildIntyg(TSBAS, "efternamn", "förnamn",
+                "fullständigt namn", "enhetsId", "enhetsnamn", true), user);
         assertTrue(result.hasErrors());
         verify(patientDetailsResolver).getPersonFromPUService(any(Personnummer.class));
     }
@@ -215,12 +214,12 @@ public class CreateDraftCertificateValidatorImplTest extends BaseCreateDraftCert
     @Test
     public void testTsBasIsNotAllowedWhenPatientIsSekretessmarkerad() {
         when(authoritiesHelper.getIntygstyperAllowedForSekretessmarkering())
-                .thenReturn(new HashSet<>(Arrays.asList(Fk7263EntryPoint.MODULE_ID)));
+            .thenReturn(new HashSet<>(Arrays.asList(Fk7263EntryPoint.MODULE_ID)));
         when(patientDetailsResolver.getPersonFromPUService(any(Personnummer.class))).thenReturn(buildPersonSvar());
         when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.TRUE);
         ResultValidator result = validator
-                .validateApplicationErrors(buildIntyg(TSBAS, "efternamn", "förnamn",
-                        "fullständigt namn", "enhetsId", "enhetsnamn", true), user);
+            .validateApplicationErrors(buildIntyg(TSBAS, "efternamn", "förnamn",
+                "fullständigt namn", "enhetsId", "enhetsnamn", true), user);
         assertTrue(result.hasErrors());
         verify(patientDetailsResolver).getSekretessStatus(any(Personnummer.class));
     }
@@ -231,9 +230,9 @@ public class CreateDraftCertificateValidatorImplTest extends BaseCreateDraftCert
 
         // We do the same validation as to view the utkast when CreateDraftCertificate.
         ResultValidator result = validator
-                .validateApplicationErrors(
-                        buildIntyg(LisjpEntryPoint.MODULE_ID, "efternamn", "förnamn",
-                                "fullständigt namn", "enhetsId", "enhetsnamn", true), user);
+            .validateApplicationErrors(
+                buildIntyg(LisjpEntryPoint.MODULE_ID, "efternamn", "förnamn",
+                    "fullständigt namn", "enhetsId", "enhetsnamn", true), user);
 
         assertTrue(result.hasErrors());
         verify(patientDetailsResolver, times(0)).getSekretessStatus(any(Personnummer.class));
@@ -245,14 +244,14 @@ public class CreateDraftCertificateValidatorImplTest extends BaseCreateDraftCert
     }
 
     private Intyg buildIntyg(String intygsKod, String patientEfternamn, String patientFornamn, String hosPersonalFullstandigtNamn,
-            String enhetsId, String enhetsnamn, boolean createUnit) {
+        String enhetsId, String enhetsnamn, boolean createUnit) {
         return buildIntyg(intygsKod, patientEfternamn, patientFornamn, hosPersonalFullstandigtNamn, enhetsId, enhetsnamn, createUnit,
-                "191212121212");
+            "191212121212");
     }
 
     private Intyg buildIntyg(String intygsKod, String patientEfternamn, String patientFornamn, String hosPersonalFullstandigtNamn,
-            String enhetsId, String enhetsnamn,
-            boolean createUnit, String personId) {
+        String enhetsId, String enhetsnamn,
+        boolean createUnit, String personId) {
         Intyg intyg = new Intyg();
 
         TypAvIntyg typAvIntyg = new TypAvIntyg();

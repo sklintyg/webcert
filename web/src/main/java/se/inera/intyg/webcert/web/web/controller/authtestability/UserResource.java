@@ -20,6 +20,16 @@ package se.inera.intyg.webcert.web.web.controller.authtestability;
 
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 import io.swagger.annotations.Api;
+import java.util.Map;
+import java.util.Set;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,17 +39,6 @@ import se.inera.intyg.infra.security.common.model.Role;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
-
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * Rest interface only used for testing and in dev environments. It seems like it must be in
@@ -136,18 +135,16 @@ public class UserResource {
     /**
      * Use this endpoint to specify a "reference" DJUPINTEGRATION parameter in tests.
      *
-     * @param refValue
-     *            Whatever string you want to specifiy as reference.
-     * @return
-     *         200 OK unless there's a problem.
+     * @param refValue Whatever string you want to specifiy as reference.
+     * @return 200 OK unless there's a problem.
      */
     @GET
     @Path("/parameters/ref/{refValue}")
     @PrometheusTimeMethod
     public Response setRef(@PathParam("refValue") String refValue) {
         webCertUserService.getUser()
-                .setParameters(
-                        new IntegrationParameters(refValue, null, null, null, null, null, null, null, null, true, false, false, true));
+            .setParameters(
+                new IntegrationParameters(refValue, null, null, null, null, null, null, null, null, true, false, false, true));
         return Response.ok().build();
     }
 

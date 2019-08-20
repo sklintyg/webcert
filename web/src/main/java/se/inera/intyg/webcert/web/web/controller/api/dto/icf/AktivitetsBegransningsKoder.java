@@ -23,7 +23,7 @@ import java.util.List;
 public final class AktivitetsBegransningsKoder extends IcfKoder {
 
     private AktivitetsBegransningsKoder(
-            final List<String> icd10Koder, final List<IcfKod> icfKoder) {
+        final List<String> icd10Koder, final List<IcfKod> icfKoder) {
         super(icd10Koder, icfKoder);
     }
 
@@ -32,7 +32,7 @@ public final class AktivitetsBegransningsKoder extends IcfKoder {
     }
 
     public static AktivitetsBegransningsKoder of(
-            final List<String> icd10Koder, final List<IcfKod> kompletterandeKoder) {
+        final List<String> icd10Koder, final List<IcfKod> kompletterandeKoder) {
         return new AktivitetsBegransningsKoder(icd10Koder, kompletterandeKoder);
     }
 }

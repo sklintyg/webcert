@@ -23,14 +23,12 @@ import static com.jayway.restassured.RestAssured.sessionId;
 import static com.jayway.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
 import static org.hamcrest.Matchers.hasSize;
 
-import com.jayway.restassured.http.ContentType;
+import java.util.ArrayList;
 import org.junit.Test;
 import se.inera.intyg.webcert.persistence.fragasvar.model.Amne;
 import se.inera.intyg.webcert.web.web.controller.api.dto.QARequest;
 import se.inera.intyg.webcert.web.web.controller.integrationtest.BaseRestIntegrationTest;
 import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.CreateQuestionParameter;
-
-import java.util.ArrayList;
 
 public class FragaSvarModuleApiControllerIT extends BaseRestIntegrationTest {
 
@@ -41,11 +39,11 @@ public class FragaSvarModuleApiControllerIT extends BaseRestIntegrationTest {
         int internId = createQuestion(DEFAULT_INTYGSTYP, intygId, DEFAULT_PATIENT_PERSONNUMMER);
 
         spec()
-                .pathParameters("intygsTyp", DEFAULT_INTYGSTYP, "intygsId", intygId)
-                .expect().statusCode(200)
-                .when().get("moduleapi/fragasvar/{intygsTyp}/{intygsId}").then()
-                .body(matchesJsonSchemaInClasspath("jsonschema/webcert-fragasvar-with-extra-info-for-intyg-list-schema.json"))
-                .body("$", hasSize(1));
+            .pathParameters("intygsTyp", DEFAULT_INTYGSTYP, "intygsId", intygId)
+            .expect().statusCode(200)
+            .when().get("moduleapi/fragasvar/{intygsTyp}/{intygsId}").then()
+            .body(matchesJsonSchemaInClasspath("jsonschema/webcert-fragasvar-with-extra-info-for-intyg-list-schema.json"))
+            .body("$", hasSize(1));
 
         deleteQuestion(internId);
     }
@@ -58,9 +56,9 @@ public class FragaSvarModuleApiControllerIT extends BaseRestIntegrationTest {
         int internId = createQuestion("fk7263", intygId, DEFAULT_PATIENT_PERSONNUMMER);
 
         spec()
-                .pathParams("intygsTyp", DEFAULT_INTYGSTYP, "fragasvarId", internId).body("svarsText")
-                .expect().statusCode(200).when().put("moduleapi/fragasvar/{intygsTyp}/{fragasvarId}/besvara").then()
-                .body(matchesJsonSchemaInClasspath("jsonschema/webcert-single-fragasvar-for-intyg-schema.json"));
+            .pathParams("intygsTyp", DEFAULT_INTYGSTYP, "fragasvarId", internId).body("svarsText")
+            .expect().statusCode(200).when().put("moduleapi/fragasvar/{intygsTyp}/{fragasvarId}/besvara").then()
+            .body(matchesJsonSchemaInClasspath("jsonschema/webcert-single-fragasvar-for-intyg-schema.json"));
 
         deleteQuestion(internId);
     }
@@ -73,9 +71,9 @@ public class FragaSvarModuleApiControllerIT extends BaseRestIntegrationTest {
         int internId = createQuestion(DEFAULT_INTYGSTYP, intygId, DEFAULT_PATIENT_PERSONNUMMER, Amne.KOMPLETTERING_AV_LAKARINTYG);
 
         spec()
-                .pathParams("intygsId", intygId).body("svarsText")
-                .expect().statusCode(200).when().put("moduleapi/fragasvar/{intygsId}/besvara").then()
-                .body(matchesJsonSchemaInClasspath("jsonschema/webcert-fragasvar-with-extra-info-for-intyg-list-schema.json"));
+            .pathParams("intygsId", intygId).body("svarsText")
+            .expect().statusCode(200).when().put("moduleapi/fragasvar/{intygsId}/besvara").then()
+            .body(matchesJsonSchemaInClasspath("jsonschema/webcert-fragasvar-with-extra-info-for-intyg-list-schema.json"));
 
         deleteQuestion(internId);
     }
@@ -87,9 +85,9 @@ public class FragaSvarModuleApiControllerIT extends BaseRestIntegrationTest {
         int internId = createQuestion(DEFAULT_INTYGSTYP, intygsId, DEFAULT_PATIENT_PERSONNUMMER);
 
         spec()
-                .pathParams("intygsId", intygsId)
-                .expect().statusCode(200).when().post("moduleapi/fragasvar/{intygsId}/vidarebefordrad").then()
-                .body(matchesJsonSchemaInClasspath("jsonschema/webcert-fragasvar-for-intyg-list-schema.json"));
+            .pathParams("intygsId", intygsId)
+            .expect().statusCode(200).when().post("moduleapi/fragasvar/{intygsId}/vidarebefordrad").then()
+            .body(matchesJsonSchemaInClasspath("jsonschema/webcert-fragasvar-for-intyg-list-schema.json"));
         deleteQuestion(internId);
     }
 
@@ -106,10 +104,10 @@ public class FragaSvarModuleApiControllerIT extends BaseRestIntegrationTest {
         param.setFrageText("Test");
 
         int id = spec()
-                .pathParams("intygsTyp", DEFAULT_INTYGSTYP, "intygsId", intygId).body(param)
-                .expect().statusCode(200).when().post("moduleapi/fragasvar/{intygsTyp}/{intygsId}").then()
-                .body(matchesJsonSchemaInClasspath("jsonschema/webcert-single-fragasvar-for-intyg-schema.json"))
-                .extract().path("internReferens");
+            .pathParams("intygsTyp", DEFAULT_INTYGSTYP, "intygsId", intygId).body(param)
+            .expect().statusCode(200).when().post("moduleapi/fragasvar/{intygsTyp}/{intygsId}").then()
+            .body(matchesJsonSchemaInClasspath("jsonschema/webcert-single-fragasvar-for-intyg-schema.json"))
+            .extract().path("internReferens");
         deleteQuestion(id);
     }
 
@@ -119,10 +117,10 @@ public class FragaSvarModuleApiControllerIT extends BaseRestIntegrationTest {
         String intygId = createSignedIntyg(DEFAULT_INTYGSTYP, DEFAULT_PATIENT_PERSONNUMMER);
         int internId = createQuestion(DEFAULT_INTYGSTYP, intygId, DEFAULT_PATIENT_PERSONNUMMER);
         spec()
-                .pathParams("intygsTyp", DEFAULT_INTYGSTYP, "fragasvarId", internId)
-                .expect().statusCode(200)
-                .when().get("moduleapi/fragasvar/{intygsTyp}/{fragasvarId}/stang")
-                .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-single-fragasvar-for-intyg-schema.json"));
+            .pathParams("intygsTyp", DEFAULT_INTYGSTYP, "fragasvarId", internId)
+            .expect().statusCode(200)
+            .when().get("moduleapi/fragasvar/{intygsTyp}/{fragasvarId}/stang")
+            .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-single-fragasvar-for-intyg-schema.json"));
         deleteQuestion(internId);
     }
 
@@ -140,11 +138,11 @@ public class FragaSvarModuleApiControllerIT extends BaseRestIntegrationTest {
         requests.add(request);
 
         spec()
-                .body(requests)
-                .expect().statusCode(200)
-                .when().put("moduleapi/fragasvar/stang")
-                .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-fragasvar-for-intyg-list-schema.json"))
-                .body("$", hasSize(requests.size()));
+            .body(requests)
+            .expect().statusCode(200)
+            .when().put("moduleapi/fragasvar/stang")
+            .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-fragasvar-for-intyg-list-schema.json"))
+            .body("$", hasSize(requests.size()));
         deleteQuestion(internId);
     }
 
@@ -156,12 +154,12 @@ public class FragaSvarModuleApiControllerIT extends BaseRestIntegrationTest {
 
         // Close the question
         given().pathParams("intygsTyp", DEFAULT_INTYGSTYP, "fragasvarId", internId).expect().statusCode(200).when()
-                .get("moduleapi/fragasvar/{intygsTyp}/{fragasvarId}/stang");
+            .get("moduleapi/fragasvar/{intygsTyp}/{fragasvarId}/stang");
 
         // Open the question again
         given().pathParams("intygsTyp", DEFAULT_INTYGSTYP, "fragasvarId", internId).expect().statusCode(200).when()
-                .get("moduleapi/fragasvar/{intygsTyp}/{fragasvarId}/oppna").then()
-                .body(matchesJsonSchemaInClasspath("jsonschema/webcert-single-fragasvar-for-intyg-schema.json"));
+            .get("moduleapi/fragasvar/{intygsTyp}/{fragasvarId}/oppna").then()
+            .body(matchesJsonSchemaInClasspath("jsonschema/webcert-single-fragasvar-for-intyg-schema.json"));
 
         deleteQuestion(internId);
     }

@@ -18,17 +18,17 @@
  */
 package se.inera.intyg.webcert.web.integration.integrationtest;
 
-import org.junit.After;
-import org.junit.Before;
-
 import com.jayway.restassured.RestAssured;
 import com.jayway.restassured.builder.RequestSpecBuilder;
+import org.junit.After;
+import org.junit.Before;
 
 /**
  * Base for all WS / SOAP oriented Integration tests
  * Created by marced on 26/05/16.
  */
 public abstract class BaseWSIntegrationTest {
+
     /**
      * Common setup for all tests
      */

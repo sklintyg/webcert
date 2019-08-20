@@ -30,7 +30,6 @@ import static org.mockito.Mockito.when;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -39,7 +38,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.core.io.ClassPathResource;
-
 import se.inera.intyg.common.fk7263.model.internal.Fk7263Utlatande;
 import se.inera.intyg.common.support.model.CertificateState;
 import se.inera.intyg.common.support.model.Status;
@@ -93,7 +91,7 @@ public class CreateRenewalCopyUtkastBuilderImplTest extends AbstractBuilderTest 
 
         CreateRenewalCopyRequest renewalRequest = buildRenewalRequest();
         Person patientDetails = new Person(PATIENT_SSN, false, false, PATIENT_FNAME, PATIENT_MNAME, PATIENT_LNAME, "Postadr", "12345",
-                "postort");
+            "postort");
 
         when(mockModuleApi.createRenewalFromTemplate(any(CreateDraftCopyHolder.class), any())).thenReturn(INTYG_JSON);
         Utlatande utlatande = new Fk7263Utlatande();
@@ -103,7 +101,7 @@ public class CreateRenewalCopyUtkastBuilderImplTest extends AbstractBuilderTest 
         when(mockModuleApi.validateDraft(anyString())).thenReturn(vdr);
 
         CopyUtkastBuilderResponse builderResponse = renewalBuilder.populateCopyUtkastFromSignedIntyg(renewalRequest, patientDetails, false,
-                false);
+            false);
 
         assertNotNull(builderResponse.getUtkastCopy());
         assertNotNull(builderResponse.getUtkastCopy().getModel());
@@ -119,7 +117,7 @@ public class CreateRenewalCopyUtkastBuilderImplTest extends AbstractBuilderTest 
         // verify full name is set
         assertNotNull(requestCaptor.getValue().getPatient().getFullstandigtNamn());
         assertEquals(PATIENT_FNAME + " " + PATIENT_MNAME + " " + PATIENT_LNAME,
-                requestCaptor.getValue().getPatient().getFullstandigtNamn());
+            requestCaptor.getValue().getPatient().getFullstandigtNamn());
     }
 
     @Test
@@ -130,7 +128,7 @@ public class CreateRenewalCopyUtkastBuilderImplTest extends AbstractBuilderTest 
 
         CreateRenewalCopyRequest renewalRequest = buildRenewalRequest();
         Person patientDetails = new Person(PATIENT_SSN, false, false, PATIENT_FNAME, PATIENT_MNAME, PATIENT_LNAME, "Postadr", "12345",
-                "postort");
+            "postort");
 
         when(mockModuleApi.createRenewalFromTemplate(any(CreateDraftCopyHolder.class), any())).thenReturn(INTYG_JSON);
 
@@ -138,8 +136,8 @@ public class CreateRenewalCopyUtkastBuilderImplTest extends AbstractBuilderTest 
         when(mockModuleApi.validateDraft(anyString())).thenReturn(vdr);
 
         CopyUtkastBuilderResponse builderResponse = renewalBuilder.populateCopyUtkastFromOrignalUtkast(renewalRequest, patientDetails,
-                false,
-                false);
+            false,
+            false);
 
         assertNotNull(builderResponse.getUtkastCopy());
         assertNotNull(builderResponse.getUtkastCopy().getModel());
@@ -239,18 +237,18 @@ public class CreateRenewalCopyUtkastBuilderImplTest extends AbstractBuilderTest 
         status.add(new Status(CertificateState.RECEIVED, "HSVARD", LocalDateTime.now()));
         status.add(new Status(CertificateState.SENT, "FKASSA", LocalDateTime.now()));
         Fk7263Utlatande utlatande = new CustomObjectMapper().readValue(new ClassPathResource(
-                "IntygDraftServiceImplTest/utlatande.json").getFile(), Fk7263Utlatande.class);
+            "IntygDraftServiceImplTest/utlatande.json").getFile(), Fk7263Utlatande.class);
         return IntygContentHolder.builder()
-                .setContents("<external-json/>")
-                .setUtlatande(utlatande)
-                .setStatuses(status)
-                .setRevoked(false)
-                .setRelations(new Relations())
-                .setDeceased(false)
-                .setSekretessmarkering(false)
-                .setPatientNameChangedInPU(false)
-                .setPatientAddressChangedInPU(false)
-                .build();
+            .setContents("<external-json/>")
+            .setUtlatande(utlatande)
+            .setStatuses(status)
+            .setRevoked(false)
+            .setRelations(new Relations())
+            .setDeceased(false)
+            .setSekretessmarkering(false)
+            .setPatientNameChangedInPU(false)
+            .setPatientAddressChangedInPU(false)
+            .build();
     }
 
     private Utkast createOriginalUtkast() {

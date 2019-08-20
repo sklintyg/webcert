@@ -18,10 +18,8 @@
  */
 package se.inera.intyg.webcert.web.web.controller.api.dto;
 
-import javax.annotation.Nullable;
-
 import com.google.auto.value.AutoValue;
-
+import javax.annotation.Nullable;
 import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
 
 /**

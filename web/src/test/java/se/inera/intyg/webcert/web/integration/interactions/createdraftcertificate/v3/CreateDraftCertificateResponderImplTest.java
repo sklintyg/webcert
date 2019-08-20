@@ -30,6 +30,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.google.common.collect.ImmutableMap;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -38,7 +39,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-
 import org.assertj.core.util.Lists;
 import org.junit.Before;
 import org.junit.Test;
@@ -46,9 +46,6 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-
-import com.google.common.collect.ImmutableMap;
-
 import se.inera.intyg.common.services.texts.IntygTextsService;
 import se.inera.intyg.common.support.common.enumerations.SignaturTyp;
 import se.inera.intyg.common.support.model.UtkastStatus;
@@ -159,8 +156,8 @@ public class CreateDraftCertificateResponderImplTest extends BaseCreateDraftCert
         when(moduleRegistry.getModuleApi(anyString(), anyString())).thenReturn(Ag7804ModuleApiV1Mock);
         when(Ag7804ModuleApiV1Mock.getCopyFromCriteria()).thenReturn(Optional.empty());
         when(mockUtkastService.checkIfPersonHasExistingIntyg(any(), any())).thenReturn(ImmutableMap.of(
-                "utkast", ImmutableMap.of(),
-                "intyg", ImmutableMap.of()));
+            "utkast", ImmutableMap.of(),
+            "intyg", ImmutableMap.of()));
         when(intygTextsService.getLatestVersion(any(String.class))).thenReturn(INTYG_TYPE_VERSION);
     }
 
@@ -170,7 +167,7 @@ public class CreateDraftCertificateResponderImplTest extends BaseCreateDraftCert
         Personnummer personnummer = Personnummer.createPersonnummer("19121212-1212").get();
 
         final Optional<GetCopyFromCandidate> copyFromCandidate = responder.getCopyFromCandidate(Ag7804ModuleApiV1Mock, intygUserMock,
-                personnummer);
+            personnummer);
 
         assertFalse(copyFromCandidate.isPresent());
     }
@@ -188,78 +185,78 @@ public class CreateDraftCertificateResponderImplTest extends BaseCreateDraftCert
 
         // Signed by other user
         List<Utkast> candidates = Arrays.asList(
-                createUtkastCandidate(UtkastStatus.SIGNED,
-                        "correct-ve-hsa-id", null,
-                        "intygId", "1.0", LocalDateTime.now(), "INcorrect-user-hsaid"));
+            createUtkastCandidate(UtkastStatus.SIGNED,
+                "correct-ve-hsa-id", null,
+                "intygId", "1.0", LocalDateTime.now(), "INcorrect-user-hsaid"));
 
         when(utkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(personnummer.getPersonnummerWithDash(), validIntygType))
-                .thenReturn(candidates);
+            .thenReturn(candidates);
         assertFalse(responder.getCopyFromCandidate(Ag7804ModuleApiV1Mock, intygUserMock, personnummer).isPresent());
 
         // Not Signed
         candidates = Arrays.asList(
-                createUtkastCandidate(UtkastStatus.DRAFT_COMPLETE,
-                        "correct-ve-hsa-id", null,
-                        "intygId", "1.0", LocalDateTime.now(), "correct-user-hsaid"));
+            createUtkastCandidate(UtkastStatus.DRAFT_COMPLETE,
+                "correct-ve-hsa-id", null,
+                "intygId", "1.0", LocalDateTime.now(), "correct-user-hsaid"));
 
         when(utkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(personnummer.getPersonnummerWithDash(), validIntygType))
-                .thenReturn(candidates);
+            .thenReturn(candidates);
         assertFalse(responder.getCopyFromCandidate(Ag7804ModuleApiV1Mock, intygUserMock, personnummer).isPresent());
 
         // Wrong enhetsId
         candidates = Arrays.asList(
-                createUtkastCandidate(UtkastStatus.SIGNED,
-                        "INcorrect-ve-hsa-id", null,
-                        "intygId", "1.0", LocalDateTime.now(), "correct-user-hsaid"));
+            createUtkastCandidate(UtkastStatus.SIGNED,
+                "INcorrect-ve-hsa-id", null,
+                "intygId", "1.0", LocalDateTime.now(), "correct-user-hsaid"));
 
         when(utkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(personnummer.getPersonnummerWithDash(), validIntygType))
-                .thenReturn(candidates);
+            .thenReturn(candidates);
         assertFalse(responder.getCopyFromCandidate(Ag7804ModuleApiV1Mock, intygUserMock, personnummer).isPresent());
 
         // Is revoked
         candidates = Arrays.asList(
-                createUtkastCandidate(UtkastStatus.SIGNED,
-                        "correct-ve-hsa-id", LocalDateTime.now(),
-                        "intygId", "1.0", LocalDateTime.now(), "correct-user-hsaid"));
+            createUtkastCandidate(UtkastStatus.SIGNED,
+                "correct-ve-hsa-id", LocalDateTime.now(),
+                "intygId", "1.0", LocalDateTime.now(), "correct-user-hsaid"));
 
         when(utkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(personnummer.getPersonnummerWithDash(), validIntygType))
-                .thenReturn(candidates);
+            .thenReturn(candidates);
         assertFalse(responder.getCopyFromCandidate(Ag7804ModuleApiV1Mock, intygUserMock, personnummer).isPresent());
 
         // To old
         candidates = Arrays.asList(
-                createUtkastCandidate(UtkastStatus.SIGNED,
-                        "correct-ve-hsa-id", null,
-                        "intygId", "1.0", LocalDateTime.now().minusDays(20), "correct-user-hsaid"));
+            createUtkastCandidate(UtkastStatus.SIGNED,
+                "correct-ve-hsa-id", null,
+                "intygId", "1.0", LocalDateTime.now().minusDays(20), "correct-user-hsaid"));
 
         when(utkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(personnummer.getPersonnummerWithDash(), validIntygType))
-                .thenReturn(candidates);
+            .thenReturn(candidates);
         assertFalse(responder.getCopyFromCandidate(Ag7804ModuleApiV1Mock, intygUserMock, personnummer).isPresent());
 
         // Incompatible majorversion
         candidates = Arrays.asList(
-                createUtkastCandidate(UtkastStatus.SIGNED,
-                        "correct-ve-hsa-id", null,
-                        "intygId", "2.0", LocalDateTime.now(), "correct-user-hsaid"));
+            createUtkastCandidate(UtkastStatus.SIGNED,
+                "correct-ve-hsa-id", null,
+                "intygId", "2.0", LocalDateTime.now(), "correct-user-hsaid"));
 
         when(utkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(personnummer.getPersonnummerWithDash(), validIntygType))
-                .thenReturn(candidates);
+            .thenReturn(candidates);
         assertFalse(responder.getCopyFromCandidate(Ag7804ModuleApiV1Mock, intygUserMock, personnummer).isPresent());
 
         // Match!
         candidates = Arrays.asList(
-                createUtkastCandidate(UtkastStatus.SIGNED,
-                        "correct-ve-hsa-id", null,
-                        "correct-but-to-old-intygId", "1.0", LocalDateTime.now().minusDays(20), "correct-user-hsaid"),
-                createUtkastCandidate(UtkastStatus.SIGNED,
-                        "correct-ve-hsa-id", null,
-                        "correct-intygId", "1.0", LocalDateTime.now(), "correct-user-hsaid"));
+            createUtkastCandidate(UtkastStatus.SIGNED,
+                "correct-ve-hsa-id", null,
+                "correct-but-to-old-intygId", "1.0", LocalDateTime.now().minusDays(20), "correct-user-hsaid"),
+            createUtkastCandidate(UtkastStatus.SIGNED,
+                "correct-ve-hsa-id", null,
+                "correct-intygId", "1.0", LocalDateTime.now(), "correct-user-hsaid"));
 
         when(utkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(personnummer.getPersonnummerWithDash(), validIntygType))
-                .thenReturn(candidates);
+            .thenReturn(candidates);
 
         final Optional<GetCopyFromCandidate> copyFromCandidate = responder.getCopyFromCandidate(Ag7804ModuleApiV1Mock, intygUserMock,
-                personnummer);
+            personnummer);
 
         assertTrue(copyFromCandidate.isPresent());
         assertEquals("correct-intygId", copyFromCandidate.get().getIntygId());
@@ -278,54 +275,54 @@ public class CreateDraftCertificateResponderImplTest extends BaseCreateDraftCert
         validIntygType.add(copyFromCriteria.get().getIntygType());
 
         List<Utkast> candidates = Arrays.asList(
-                createUtkastCandidate(UtkastStatus.DRAFT_COMPLETE, // Revoked status
-                        "correct-ve-hsa-id",
-                        null,
-                        "bad-id-1",
-                        "1.0",
-                        LocalDateTime.now().minusDays(1),
-                        "correct-user-hsaid"),
-                createUtkastCandidate(UtkastStatus.SIGNED, // Wrong version
-                        "correct-ve-hsa-id",
-                        null,
-                        "bad-id-2",
-                        "2.0",
-                        LocalDateTime.now().minusDays(1),
-                        "correct-user-hsaid"),
-                createUtkastCandidate(UtkastStatus.SIGNED, // Other enhetsid
-                        "bad-ve-hsa-id",
-                        null,
-                        "bad-id-2",
-                        "1.0",
-                        LocalDateTime.now().minusDays(4),
-                        "correct-user-hsaid"),
-                createUtkastCandidate(UtkastStatus.SIGNED, // Revoked yesterday
-                        "correct-ve-hsa-id",
-                        LocalDateTime.now().minusDays(1),
-                        "bad-id-5",
-                        "1.0",
-                        LocalDateTime.now().minusDays(2),
-                        "correct-user-hsaid"),
-                createUtkastCandidate(UtkastStatus.SIGNED, // The one that should be selected
-                        "correct-ve-hsa-id",
-                        null,
-                        "expected-intygsid",
-                        "1.0",
-                        LocalDateTime.now().minusDays(2),
-                        "correct-user-hsaid"),
-                createUtkastCandidate(UtkastStatus.SIGNED, // Signed by other user
-                        "correct-ve-hsa-id",
-                        null,
-                        "bad-id-6",
-                        "1.0",
-                        LocalDateTime.now(),
-                        "BAD-user-hsaid"));
+            createUtkastCandidate(UtkastStatus.DRAFT_COMPLETE, // Revoked status
+                "correct-ve-hsa-id",
+                null,
+                "bad-id-1",
+                "1.0",
+                LocalDateTime.now().minusDays(1),
+                "correct-user-hsaid"),
+            createUtkastCandidate(UtkastStatus.SIGNED, // Wrong version
+                "correct-ve-hsa-id",
+                null,
+                "bad-id-2",
+                "2.0",
+                LocalDateTime.now().minusDays(1),
+                "correct-user-hsaid"),
+            createUtkastCandidate(UtkastStatus.SIGNED, // Other enhetsid
+                "bad-ve-hsa-id",
+                null,
+                "bad-id-2",
+                "1.0",
+                LocalDateTime.now().minusDays(4),
+                "correct-user-hsaid"),
+            createUtkastCandidate(UtkastStatus.SIGNED, // Revoked yesterday
+                "correct-ve-hsa-id",
+                LocalDateTime.now().minusDays(1),
+                "bad-id-5",
+                "1.0",
+                LocalDateTime.now().minusDays(2),
+                "correct-user-hsaid"),
+            createUtkastCandidate(UtkastStatus.SIGNED, // The one that should be selected
+                "correct-ve-hsa-id",
+                null,
+                "expected-intygsid",
+                "1.0",
+                LocalDateTime.now().minusDays(2),
+                "correct-user-hsaid"),
+            createUtkastCandidate(UtkastStatus.SIGNED, // Signed by other user
+                "correct-ve-hsa-id",
+                null,
+                "bad-id-6",
+                "1.0",
+                LocalDateTime.now(),
+                "BAD-user-hsaid"));
 
         when(utkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(personnummer.getPersonnummerWithDash(), validIntygType))
-                .thenReturn(candidates);
+            .thenReturn(candidates);
 
         final Optional<GetCopyFromCandidate> copyFromCandidate = responder.getCopyFromCandidate(Ag7804ModuleApiV1Mock, intygUserMock,
-                personnummer);
+            personnummer);
 
         assertTrue(copyFromCandidate.isPresent());
         assertEquals("expected-intygsid", copyFromCandidate.get().getIntygId());
@@ -333,7 +330,7 @@ public class CreateDraftCertificateResponderImplTest extends BaseCreateDraftCert
     }
 
     private Utkast createUtkastCandidate(UtkastStatus utkastStatus, String enhetsId, LocalDateTime revokedDate, String intygsId,
-            String intygTypeVersion, LocalDateTime signDate, String signedBy) {
+        String intygTypeVersion, LocalDateTime signDate, String signedBy) {
         Utkast utkast = new Utkast();
         utkast.setIntygsTyp("lisjp");
         utkast.setIntygsId(intygsId);
@@ -371,33 +368,33 @@ public class CreateDraftCertificateResponderImplTest extends BaseCreateDraftCert
         CreateDraftCertificateType certificateType = createCertificateType();
 
         VardpersonReferens vardperson = createVardpersonReferens(
-                certificateType.getIntyg().getSkapadAv().getPersonalId().getRoot(),
-                certificateType.getIntyg().getSkapadAv().getFullstandigtNamn());
+            certificateType.getIntyg().getSkapadAv().getPersonalId().getRoot(),
+            certificateType.getIntyg().getSkapadAv().getFullstandigtNamn());
 
         Utkast newUtkast = createUtkast(UTKAST_ID, Long.parseLong(UTKAST_VERSION), "ag7804", "1.0", UtkastStatus.DRAFT_INCOMPLETE,
-                UTKAST_JSON,
-                vardperson);
+            UTKAST_JSON,
+            vardperson);
         Optional<GetCopyFromCriteria> copyFromCriteria = Optional.of(new GetCopyFromCriteria("lisjp", "1", 10));
         when(Ag7804ModuleApiV1Mock.getCopyFromCriteria()).thenReturn(copyFromCriteria);
 
         Utlatande copyFromCriteriaUtlatande = IntygTestDataBuilder.getUtlatande();
         when(Ag7804ModuleApiV1Mock.getUtlatandeFromJson(anyString())).thenReturn(copyFromCriteriaUtlatande);
         when(moduleFacade.getCertificate(anyString(), anyString(), anyString()))
-                .thenReturn(new CertificateResponse("{}", copyFromCriteriaUtlatande, new CertificateMetaData(), false));
+            .thenReturn(new CertificateResponse("{}", copyFromCriteriaUtlatande, new CertificateMetaData(), false));
         when(mockValidator.validate(any(Intyg.class))).thenReturn(new ResultValidator());
         when(mockRequestBuilder.buildCreateNewDraftRequest(any(Intyg.class), any(String.class), any(IntygUser.class)))
-                .thenReturn(draftRequest);
+            .thenReturn(draftRequest);
         when(mockUtkastService.createNewDraft(any(CreateNewDraftRequest.class))).thenReturn(newUtkast);
         when(takService.verifyTakningForCareUnit(any(String.class), any(String.class), any(SchemaVersion.class), any(IntygUser.class)))
-                .thenReturn(new TakResult(true, Lists.emptyList()));
+            .thenReturn(new TakResult(true, Lists.emptyList()));
         when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.FALSE);
         Utkast utkastCandidate = createUtkastCandidate(UtkastStatus.SIGNED,
-                "SE0987654321",
-                null,
-                "expected-intygsid",
-                "1.0",
-                LocalDateTime.now().minusDays(2),
-                "only-for-test-use");
+            "SE0987654321",
+            null,
+            "expected-intygsid",
+            "1.0",
+            LocalDateTime.now().minusDays(2),
+            "only-for-test-use");
 
         when(utkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(anyString(), anySet())).thenReturn(Arrays.asList(utkastCandidate));
 
@@ -424,19 +421,19 @@ public class CreateDraftCertificateResponderImplTest extends BaseCreateDraftCert
         CreateDraftCertificateType certificateType = createCertificateType();
 
         VardpersonReferens vardperson = createVardpersonReferens(
-                certificateType.getIntyg().getSkapadAv().getPersonalId().getRoot(),
-                certificateType.getIntyg().getSkapadAv().getFullstandigtNamn());
+            certificateType.getIntyg().getSkapadAv().getPersonalId().getRoot(),
+            certificateType.getIntyg().getSkapadAv().getFullstandigtNamn());
 
         Utkast utkast = createUtkast(UTKAST_ID, Long.parseLong(UTKAST_VERSION), UTKAST_TYPE, INTYG_TYPE_VERSION,
-                UtkastStatus.DRAFT_INCOMPLETE, UTKAST_JSON,
-                vardperson);
+            UtkastStatus.DRAFT_INCOMPLETE, UTKAST_JSON,
+            vardperson);
 
         when(mockValidator.validate(any(Intyg.class))).thenReturn(new ResultValidator());
         when(mockRequestBuilder.buildCreateNewDraftRequest(any(Intyg.class), any(String.class), any(IntygUser.class)))
-                .thenReturn(draftRequest);
+            .thenReturn(draftRequest);
         when(mockUtkastService.createNewDraft(any(CreateNewDraftRequest.class))).thenReturn(utkast);
         when(takService.verifyTakningForCareUnit(any(String.class), any(String.class), any(SchemaVersion.class), any(IntygUser.class)))
-                .thenReturn(new TakResult(true, Lists.emptyList()));
+            .thenReturn(new TakResult(true, Lists.emptyList()));
         when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(eq(SekretessStatus.FALSE));
 
         CreateDraftCertificateResponseType response = responder.createDraftCertificate(LOGICAL_ADDR, certificateType);
@@ -457,7 +454,7 @@ public class CreateDraftCertificateResponderImplTest extends BaseCreateDraftCert
 
         when(mockValidator.validate(any(Intyg.class))).thenReturn(new ResultValidator());
         when(takService.verifyTakningForCareUnit(any(String.class), any(String.class), any(SchemaVersion.class), any(IntygUser.class)))
-                .thenReturn(new TakResult(false, Lists.newArrayList("Den angivna enheten går ej att adressera för ärendekommunikation.")));
+            .thenReturn(new TakResult(false, Lists.newArrayList("Den angivna enheten går ej att adressera för ärendekommunikation.")));
 
         CreateDraftCertificateResponseType response = responder.createDraftCertificate(LOGICAL_ADDR, certificateType);
 
@@ -510,19 +507,19 @@ public class CreateDraftCertificateResponderImplTest extends BaseCreateDraftCert
         CreateDraftCertificateType certificateType = createCertificateType();
 
         VardpersonReferens vardperson = createVardpersonReferens(
-                certificateType.getIntyg().getSkapadAv().getPersonalId().getRoot(),
-                certificateType.getIntyg().getSkapadAv().getFullstandigtNamn());
+            certificateType.getIntyg().getSkapadAv().getPersonalId().getRoot(),
+            certificateType.getIntyg().getSkapadAv().getFullstandigtNamn());
 
         Utkast utkast = createUtkast(UTKAST_ID, Long.parseLong(UTKAST_VERSION), UTKAST_TYPE, INTYG_TYPE_VERSION,
-                UtkastStatus.DRAFT_INCOMPLETE, UTKAST_JSON,
-                vardperson);
+            UtkastStatus.DRAFT_INCOMPLETE, UTKAST_JSON,
+            vardperson);
 
         when(mockValidator.validate(any(Intyg.class))).thenReturn(new ResultValidator());
         when(mockRequestBuilder.buildCreateNewDraftRequest(any(Intyg.class), any(String.class), any(IntygUser.class)))
-                .thenReturn(draftRequest);
+            .thenReturn(draftRequest);
         when(mockUtkastService.createNewDraft(any(CreateNewDraftRequest.class))).thenReturn(utkast);
         when(takService.verifyTakningForCareUnit(any(String.class), any(String.class), any(SchemaVersion.class), any(IntygUser.class)))
-                .thenReturn(new TakResult(true, Lists.emptyList()));
+            .thenReturn(new TakResult(true, Lists.emptyList()));
 
         CreateDraftCertificateResponseType response = responder.createDraftCertificate(LOGICAL_ADDR, certificateType);
 
@@ -540,19 +537,19 @@ public class CreateDraftCertificateResponderImplTest extends BaseCreateDraftCert
         CreateDraftCertificateType certificateType = createCertificateType();
 
         VardpersonReferens vardperson = createVardpersonReferens(
-                certificateType.getIntyg().getSkapadAv().getPersonalId().getRoot(),
-                certificateType.getIntyg().getSkapadAv().getFullstandigtNamn());
+            certificateType.getIntyg().getSkapadAv().getPersonalId().getRoot(),
+            certificateType.getIntyg().getSkapadAv().getFullstandigtNamn());
 
         Utkast utkast = createUtkast(UTKAST_ID, Long.parseLong(UTKAST_VERSION), UTKAST_TYPE, INTYG_TYPE_VERSION,
-                UtkastStatus.DRAFT_INCOMPLETE, UTKAST_JSON,
-                vardperson);
+            UtkastStatus.DRAFT_INCOMPLETE, UTKAST_JSON,
+            vardperson);
 
         when(mockValidator.validate(any(Intyg.class))).thenReturn(new ResultValidator());
         when(mockRequestBuilder.buildCreateNewDraftRequest(any(Intyg.class), any(String.class), any(IntygUser.class)))
-                .thenReturn(draftRequest);
+            .thenReturn(draftRequest);
         when(mockUtkastService.createNewDraft(any(CreateNewDraftRequest.class))).thenReturn(utkast);
         when(takService.verifyTakningForCareUnit(any(String.class), any(String.class), any(SchemaVersion.class), any(IntygUser.class)))
-                .thenReturn(new TakResult(true, Lists.emptyList()));
+            .thenReturn(new TakResult(true, Lists.emptyList()));
 
         CreateDraftCertificateResponseType response = responder.createDraftCertificate(LOGICAL_ADDR, certificateType);
 
@@ -639,7 +636,7 @@ public class CreateDraftCertificateResponderImplTest extends BaseCreateDraftCert
     }
 
     private Utkast createUtkast(String intygId, long version, String type, String intygTypeVersion, UtkastStatus status, String model,
-            VardpersonReferens vardperson) {
+        VardpersonReferens vardperson) {
 
         Utkast utkast = new Utkast();
         utkast.setIntygsId(intygId);

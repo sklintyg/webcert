@@ -18,6 +18,7 @@
  */
 package se.inera.intyg.webcert.web.converter;
 
+import com.google.common.collect.ImmutableList;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -26,14 +27,11 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import com.google.common.collect.ImmutableList;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistryImpl;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
@@ -54,6 +52,7 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.MedicinsktArendeView;
 
 @Component
 public class ArendeViewConverter {
+
     private static final Logger LOG = LoggerFactory.getLogger(ArendeViewConverter.class);
 
     @Autowired
@@ -86,44 +85,44 @@ public class ArendeViewConverter {
             return null;
         }
         return ArendeView.builder()
-                .setAmne(arende.getAmne())
-                .setArendeType(getArendeType(arende))
-                .setEnhetsnamn(arende.getEnhetName())
-                .setFrageStallare(arende.getSkickatAv())
-                .setInternReferens(arende.getMeddelandeId())
-                .setIntygId(arende.getIntygsId())
-                .setMeddelande(arende.getMeddelande())
-                .setMeddelandeRubrik(arende.getRubrik())
-                .setPaminnelseMeddelandeId(arende.getPaminnelseMeddelandeId())
-                .setSistaDatumForSvar(arende.getSistaDatumForSvar())
-                .setStatus(arende.getStatus())
-                .setTimestamp(arende.getTimestamp())
-                .setSigneratAv(arende.getSigneratAvName())
-                .setVidarebefordrad(arende.getVidarebefordrad())
-                .setVardaktorNamn(arende.getVardaktorName())
-                .setSvarSkickadDatum(arende.getSkickatTidpunkt())
-                .setVardgivarnamn(arende.getVardgivareName())
-                .setExternaKontakter(ImmutableList.copyOf(arende.getKontaktInfo()))
-                .setKompletteringar(ImmutableList.copyOf(convertToMedicinsktArendeView(arende.getKomplettering(), arende.getIntygsId(),
-                        arende.getIntygTyp())))
-                .setSvarPaId(arende.getSvarPaId())
-                .build();
+            .setAmne(arende.getAmne())
+            .setArendeType(getArendeType(arende))
+            .setEnhetsnamn(arende.getEnhetName())
+            .setFrageStallare(arende.getSkickatAv())
+            .setInternReferens(arende.getMeddelandeId())
+            .setIntygId(arende.getIntygsId())
+            .setMeddelande(arende.getMeddelande())
+            .setMeddelandeRubrik(arende.getRubrik())
+            .setPaminnelseMeddelandeId(arende.getPaminnelseMeddelandeId())
+            .setSistaDatumForSvar(arende.getSistaDatumForSvar())
+            .setStatus(arende.getStatus())
+            .setTimestamp(arende.getTimestamp())
+            .setSigneratAv(arende.getSigneratAvName())
+            .setVidarebefordrad(arende.getVidarebefordrad())
+            .setVardaktorNamn(arende.getVardaktorName())
+            .setSvarSkickadDatum(arende.getSkickatTidpunkt())
+            .setVardgivarnamn(arende.getVardgivareName())
+            .setExternaKontakter(ImmutableList.copyOf(arende.getKontaktInfo()))
+            .setKompletteringar(ImmutableList.copyOf(convertToMedicinsktArendeView(arende.getKomplettering(), arende.getIntygsId(),
+                arende.getIntygTyp())))
+            .setSvarPaId(arende.getSvarPaId())
+            .build();
     }
 
     public ArendeConversationView convertToArendeConversationView(Arende fraga, Arende svar, AnsweredWithIntyg komplt,
-            List<Arende> paminnelser, String draftText) {
+        List<Arende> paminnelser, String draftText) {
         return ArendeConversationView.builder()
-                .setFraga(convertToDto(fraga))
-                .setSvar(convertToDto(svar))
-                .setAnsweredWithIntyg(komplt)
-                .setPaminnelser(
-                        paminnelser.stream()
-                                .map(this::convertToDto)
-                                .sorted(Comparator.comparing(ArendeView::getTimestamp).reversed())
-                                .collect(Collectors.collectingAndThen(Collectors.toList(), ImmutableList::copyOf)))
-                .setSenasteHandelse(fraga.getSenasteHandelse())
-                .setDraftText(draftText)
-                .build();
+            .setFraga(convertToDto(fraga))
+            .setSvar(convertToDto(svar))
+            .setAnsweredWithIntyg(komplt)
+            .setPaminnelser(
+                paminnelser.stream()
+                    .map(this::convertToDto)
+                    .sorted(Comparator.comparing(ArendeView::getTimestamp).reversed())
+                    .collect(Collectors.collectingAndThen(Collectors.toList(), ImmutableList::copyOf)))
+            .setSenasteHandelse(fraga.getSenasteHandelse())
+            .setDraftText(draftText)
+            .build();
     }
 
     /**
@@ -133,27 +132,24 @@ public class ArendeViewConverter {
      *
      * Note that all Arende must belong to the same intyg.
      *
-     * @param intygsId
-     *            the id of the intyg to which all the messages belong to
-     * @param intygMessages
-     *            a list of messages (Arende) relating to the same intyg
-     * @param kompltToIntyg
-     *            a list of kompletterande intyg for the given intyg, if any (empty list is allowed, null is not)
+     * @param intygsId the id of the intyg to which all the messages belong to
+     * @param intygMessages a list of messages (Arende) relating to the same intyg
+     * @param kompltToIntyg a list of kompletterande intyg for the given intyg, if any (empty list is allowed, null is not)
      * @return A list of ArendeConversationView meant for frontend consumption or undefined if messages are not for the
-     *         same intyg
+     * same intyg
      */
     public List<ArendeConversationView> buildArendeConversations(String intygsId, List<Arende> intygMessages,
-            List<AnsweredWithIntyg> kompltToIntyg, List<ArendeDraft> arendeDrafts) {
+        List<AnsweredWithIntyg> kompltToIntyg, List<ArendeDraft> arendeDrafts) {
         Objects.requireNonNull(kompltToIntyg);
         Objects.requireNonNull(intygMessages);
         // Group by conversation thread.
         Map<String, List<Arende>> threads = intygMessages.stream()
-                .collect(Collectors.groupingBy(ArendeViewConverter::getThreadRootMessageId));
+            .collect(Collectors.groupingBy(ArendeViewConverter::getThreadRootMessageId));
 
         List<ArendeConversationView> arendeConversations = threads.values().stream()
-                .filter(ArendeViewConverter::conversationContainsFraga)
-                .map(conversation -> createConversationViewFromArendeList(conversation, kompltToIntyg, arendeDrafts))
-                .collect(Collectors.toList());
+            .filter(ArendeViewConverter::conversationContainsFraga)
+            .map(conversation -> createConversationViewFromArendeList(conversation, kompltToIntyg, arendeDrafts))
+            .collect(Collectors.toList());
 
         Collections.sort(arendeConversations, (a, b) -> {
             boolean aIsEmpty = a.getPaminnelser().isEmpty();
@@ -170,20 +166,20 @@ public class ArendeViewConverter {
     }
 
     private ArendeConversationView createConversationViewFromArendeList(List<Arende> messagesInThread,
-            List<AnsweredWithIntyg> kompltForIntyg, List<ArendeDraft> arendeDrafts) {
+        List<AnsweredWithIntyg> kompltForIntyg, List<ArendeDraft> arendeDrafts) {
         Optional<Arende> fraga = messagesInThread.stream()
-                .filter(a -> getArendeType(a) == ArendeType.FRAGA)
-                .reduce((element, otherElement) -> {
-                    throw new IllegalArgumentException("More than 1 fraga found.");
-                });
+            .filter(a -> getArendeType(a) == ArendeType.FRAGA)
+            .reduce((element, otherElement) -> {
+                throw new IllegalArgumentException("More than 1 fraga found.");
+            });
         Optional<Arende> svar = messagesInThread.stream()
-                .filter(a -> getArendeType(a) == ArendeType.SVAR)
-                .reduce((element, otherElement) -> {
-                    throw new IllegalArgumentException("More than 1 svar found.");
-                });
+            .filter(a -> getArendeType(a) == ArendeType.SVAR)
+            .reduce((element, otherElement) -> {
+                throw new IllegalArgumentException("More than 1 svar found.");
+            });
         List<Arende> paminnelser = messagesInThread.stream()
-                .filter(a -> getArendeType(a) == ArendeType.PAMINNELSE)
-                .collect(Collectors.toList());
+            .filter(a -> getArendeType(a) == ArendeType.PAMINNELSE)
+            .collect(Collectors.toList());
 
         if (!fraga.isPresent()) {
             throw new IllegalArgumentException("No fraga found for the given message thread.");
@@ -192,10 +188,10 @@ public class ArendeViewConverter {
         String draftText = null;
         if (!svar.isPresent() && !FrageStallare.WEBCERT.getKod().equals(fraga.get().getSkickatAv())) {
             draftText = arendeDrafts.stream()
-                    .filter(d -> d.getQuestionId().equals(fraga.get().getMeddelandeId()))
-                    .findAny()
-                    .map(ArendeDraft::getText)
-                    .orElse(null);
+                .filter(d -> d.getQuestionId().equals(fraga.get().getMeddelandeId()))
+                .findAny()
+                .map(ArendeDraft::getText)
+                .orElse(null);
         }
 
         // Find oldest intyg among kompletterande intyg, that's newer than the fraga
@@ -207,7 +203,7 @@ public class ArendeViewConverter {
     }
 
     private List<MedicinsktArendeView> convertToMedicinsktArendeView(List<MedicinsktArende> medicinskaArenden, String intygsId,
-            String intygsTyp) {
+        String intygsTyp) {
         List<MedicinsktArendeView> medicinskaArendenViews = new ArrayList<>();
         if (CollectionUtils.isEmpty(medicinskaArenden)) {
             return medicinskaArendenViews;
@@ -228,13 +224,13 @@ public class ArendeViewConverter {
         try {
             arendeParameters = moduleApi.getModuleSpecificArendeParameters(utlatande, frageIds);
         } catch (ModuleException e) {
-           throw new IllegalArgumentException(e);
+            throw new IllegalArgumentException(e);
         }
         for (MedicinsktArende arende : medicinskaArenden) {
             Integer position = getListPositionForInstanceId(arende);
             String jsonPropertyHandle = getJsonPropertyHandle(arende, position, arendeParameters);
             MedicinsktArendeView view = MedicinsktArendeView.builder().setFrageId(arende.getFrageId()).setInstans(arende.getInstans())
-                    .setText(arende.getText()).setPosition(Math.max(position - 1, 0)).setJsonPropertyHandle(jsonPropertyHandle).build();
+                .setText(arende.getText()).setPosition(Math.max(position - 1, 0)).setJsonPropertyHandle(jsonPropertyHandle).build();
             medicinskaArendenViews.add(view);
         }
         return medicinskaArendenViews;
@@ -246,8 +242,8 @@ public class ArendeViewConverter {
             return filledPositions.get(position < filledPositions.size() ? position : 0);
         }
         LOG.error(
-                "The supplied Arende information for conversion to json parameters for Fraga " + arende.getFrageId()
-                        + " must be a intygMessages of Strings.");
+            "The supplied Arende information for conversion to json parameters for Fraga " + arende.getFrageId()
+                + " must be a intygMessages of Strings.");
         return "";
     }
 

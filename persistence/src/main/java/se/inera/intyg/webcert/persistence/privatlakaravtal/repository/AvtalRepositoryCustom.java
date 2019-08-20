@@ -22,5 +22,6 @@ package se.inera.intyg.webcert.persistence.privatlakaravtal.repository;
  * Created by eriklupander on 2015-08-05.
  */
 public interface AvtalRepositoryCustom {
+
     Integer getLatestAvtalVersion();
 }

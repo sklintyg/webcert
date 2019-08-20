@@ -24,6 +24,7 @@ import java.util.List;
  * TakResult encapsulates a boolean result and a list of errorMessage-strings.
  */
 public class TakResult {
+
     private final boolean valid;
     private final List<String> errorMessages;
 

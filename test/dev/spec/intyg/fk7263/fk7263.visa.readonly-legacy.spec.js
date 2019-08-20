@@ -30,66 +30,65 @@ var intygGenerator = wcTestTools.intygGenerator;
 
 describe('Verifiera att legacy fk7263-utkast kan visas med uv-ramverket', function() {
 
-    
-    describe('Verifiera utkast', function() {
-        var utkastId = 'fk7263-utkast-1';
+  describe('Verifiera utkast', function() {
+    var utkastId = 'fk7263-utkast-1';
 
-        beforeAll(function() {
-            browser.ignoreSynchronization = false;
-            specHelper.login();
+    beforeAll(function() {
+      browser.ignoreSynchronization = false;
+      specHelper.login();
 
-            var utkastData = {
-                'contents': intygGenerator.getIntygJson({
-                    'intygType': 'fk7263',
-                    'intygId': utkastId
-                }),
-                'utkastStatus': 'DRAFT_INCOMPLETE',
-                'revoked': false
-            };
-            restTestdataHelper.deleteUtkast(utkastId);
-            restTestdataHelper.createWebcertIntyg(utkastData);
-        });
+      var utkastData = {
+        'contents': intygGenerator.getIntygJson({
+          'intygType': 'fk7263',
+          'intygId': utkastId
+        }),
+        'utkastStatus': 'DRAFT_INCOMPLETE',
+        'revoked': false
+      };
+      restTestdataHelper.deleteUtkast(utkastId);
+      restTestdataHelper.createWebcertIntyg(utkastData);
+    });
 
-        afterAll(function() {
-            restTestdataHelper.deleteUtkast(utkastId);
-        });
+    afterAll(function() {
+      restTestdataHelper.deleteUtkast(utkastId);
+    });
 
-        it('skall visa utkast read-only', function() {
-            UtkastPage.get(utkastId);
-            expect(UtkastPage.isAt()).toBeTruthy();
-        });
+    it('skall visa utkast read-only', function() {
+      UtkastPage.get(utkastId);
+      expect(UtkastPage.isAt()).toBeTruthy();
+    });
+
+  });
+
+  describe('Verifiera intyg med uv-ramverket', function() {
+
+    var intygsId;
+
+    beforeAll(function() {
+      browser.ignoreSynchronization = false;
+      specHelper.login();
+
+      var intyg = intygFromJsonFactory.defaultFK7263();
+      intygsId = intyg.id;
+
+      restUtil.createIntyg(intyg).then(function(response) {
+        var intyg = JSON.parse(response.request.body);
+        expect(intyg.id).not.toBeNull();
+      }, function(error) {
+        logger.error('Error calling createIntyg');
+      });
 
     });
 
-    describe('Verifiera intyg med uv-ramverket', function() {
-
-        var intygsId;
-
-        beforeAll(function() {
-            browser.ignoreSynchronization = false;
-            specHelper.login();
-
-            var intyg = intygFromJsonFactory.defaultFK7263();
-            intygsId = intyg.id;
-
-            restUtil.createIntyg(intyg).then(function(response) {
-                var intyg = JSON.parse(response.request.body);
-                expect(intyg.id).not.toBeNull();
-            }, function(error) {
-                logger.error('Error calling createIntyg');
-            });
-
-        });
-
-        afterAll(function() {
-            restTestdataHelper.deleteIntyg(intygsId);
-        });
-
-        it('Skall visa signerat intyg med uv-ramverket', function() {
-            IntygPage.get(intygsId);
-            expect(IntygPage.isAt()).toBeTruthy();
-        });
-
+    afterAll(function() {
+      restTestdataHelper.deleteIntyg(intygsId);
     });
+
+    it('Skall visa signerat intyg med uv-ramverket', function() {
+      IntygPage.get(intygsId);
+      expect(IntygPage.isAt()).toBeTruthy();
+    });
+
+  });
 
 });

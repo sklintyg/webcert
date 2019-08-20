@@ -31,43 +31,43 @@ var intygGenerator = wcTestTools.intygGenerator;
 var restTestdataHelper = wcTestTools.helpers.restTestdata;
 
 describe('Luse locked utkast tests', function() {
-    var intygId = 'luse-locked-utkast-1';
+  var intygId = 'luse-locked-utkast-1';
 
-    beforeAll(function() {
-        browser.ignoreSynchronization = false;
-        specHelper.login();
-        var testData = {
-            'contents':intygGenerator.getIntygJson({'intygType':'luse','intygId':intygId}),
-            'utkastStatus':'DRAFT_LOCKED',
-            'revoked':false
-        };
-        restTestdataHelper.createWebcertIntyg(testData);
-    });
+  beforeAll(function() {
+    browser.ignoreSynchronization = false;
+    specHelper.login();
+    var testData = {
+      'contents': intygGenerator.getIntygJson({'intygType': 'luse', 'intygId': intygId}),
+      'utkastStatus': 'DRAFT_LOCKED',
+      'revoked': false
+    };
+    restTestdataHelper.createWebcertIntyg(testData);
+  });
 
-    afterAll(function() {
-        testdataHelper.deleteUtkast(intygId);
-    });
+  afterAll(function() {
+    testdataHelper.deleteUtkast(intygId);
+  });
 
-    it('should load utkast', function() {
-        LuseUtkastPage.get(intygId);
-    });
+  it('should load utkast', function() {
+    LuseUtkastPage.get(intygId);
+  });
 
-    it('input should be disabled', function() {
-        // All input fields should be disabled
-        expect(element.all(by.css('#certificate INPUT')).count()).toBeGreaterThan(0);
-        expect(element.all(by.css('#certificate INPUT:not(:disabled)')).count()).toEqual(0);
-        expect(element.all(by.css('#certificate TEXTAREA:not(:disabled)')).count()).toEqual(0);
-        expect(element.all(by.css('#certificate BUTTON:not(:disabled)')).count()).toEqual(0);
-    });
+  it('input should be disabled', function() {
+    // All input fields should be disabled
+    expect(element.all(by.css('#certificate INPUT')).count()).toBeGreaterThan(0);
+    expect(element.all(by.css('#certificate INPUT:not(:disabled)')).count()).toEqual(0);
+    expect(element.all(by.css('#certificate TEXTAREA:not(:disabled)')).count()).toEqual(0);
+    expect(element.all(by.css('#certificate BUTTON:not(:disabled)')).count()).toEqual(0);
+  });
 
-    it('Correct buttons visible in header', function() {
-        // Should not exist
-        expect(LuseUtkastPage.signeraButton.isPresent()).toBeFalsy();
-        expect(LuseUtkastPage.radera.knapp.isPresent()).toBeFalsy();
+  it('Correct buttons visible in header', function() {
+    // Should not exist
+    expect(LuseUtkastPage.signeraButton.isPresent()).toBeFalsy();
+    expect(LuseUtkastPage.radera.knapp.isPresent()).toBeFalsy();
 
-        // Should exist
-        expect(LuseUtkastPage.skrivUtBtn.isPresent()).toBeTruthy();
-        expect(LuseUtkastPage.kopiera.btn.isPresent()).toBeTruthy();
-        expect(LuseUtkastPage.makulera.btn.isPresent()).toBeTruthy();
-    });
+    // Should exist
+    expect(LuseUtkastPage.skrivUtBtn.isPresent()).toBeTruthy();
+    expect(LuseUtkastPage.kopiera.btn.isPresent()).toBeTruthy();
+    expect(LuseUtkastPage.makulera.btn.isPresent()).toBeTruthy();
+  });
 });

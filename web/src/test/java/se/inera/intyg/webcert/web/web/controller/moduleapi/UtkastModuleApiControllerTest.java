@@ -38,12 +38,10 @@ import java.util.HashMap;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import javax.persistence.OptimisticLockException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.ws.rs.core.Response;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -53,7 +51,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
-
 import se.inera.intyg.common.fk7263.model.internal.Fk7263Utlatande;
 import se.inera.intyg.common.services.texts.IntygTextsService;
 import se.inera.intyg.common.support.model.UtkastStatus;
@@ -216,7 +213,7 @@ public class UtkastModuleApiControllerTest {
         patientWithIncompleteAddress.setPostort(postort);
         patientWithIncompleteAddress.setPostnummer(postnummer);
         when(patientDetailsResolver.resolvePatient(any(Personnummer.class), anyString(), anyString()))
-                .thenReturn(patientWithIncompleteAddress);
+            .thenReturn(patientWithIncompleteAddress);
 
         doReturn(buildUtkast("intygtyp", "intygsid")).when(utkastService).getDraft(anyString(), anyString());
 
@@ -255,7 +252,7 @@ public class UtkastModuleApiControllerTest {
         patientWithIncompleteAddress.setPostort(postort);
         patientWithIncompleteAddress.setPostnummer(postnummer);
         when(patientDetailsResolver.resolvePatient(any(Personnummer.class), anyString(), anyString()))
-                .thenReturn(patientWithIncompleteAddress);
+            .thenReturn(patientWithIncompleteAddress);
 
         final Utlatande utlatande = mock(Utlatande.class);
         doReturn(utlatande).when(moduleApi).getUtlatandeFromJson(any());
@@ -283,7 +280,7 @@ public class UtkastModuleApiControllerTest {
         setupUser(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG, intygTyp, false, AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);
 
         when(utkastService.saveDraft(intygId, UTKAST_VERSION, draftAsJson, true))
-                .thenReturn(new SaveDraftResponse(UTKAST_VERSION, UtkastStatus.DRAFT_COMPLETE));
+            .thenReturn(new SaveDraftResponse(UTKAST_VERSION, UtkastStatus.DRAFT_COMPLETE));
 
         doReturn(buildUtkast("intygtyp", "intygsid")).when(utkastService).getDraft(anyString(), anyString(), anyBoolean());
 
@@ -352,7 +349,7 @@ public class UtkastModuleApiControllerTest {
         setupUser(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG, intygTyp, false, AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);
         DraftValidation draftValidation = buildDraftValidation();
         draftValidation.addWarning(
-                new DraftValidationMessage("category", "field", ValidationMessageType.WARN, "this.is.a.message", "dy.nam.ic.key"));
+            new DraftValidationMessage("category", "field", ValidationMessageType.WARN, "this.is.a.message", "dy.nam.ic.key"));
 
         when(utkastService.validateDraft(intygId, intygTyp, draftAsJson)).thenReturn(draftValidation);
 
@@ -384,7 +381,7 @@ public class UtkastModuleApiControllerTest {
 
         ArgumentCaptor<CreateUtkastFromTemplateRequest> captor = ArgumentCaptor.forClass(CreateUtkastFromTemplateRequest.class);
         when(copyUtkastService.createUtkastCopy(captor.capture()))
-                .thenReturn(new CreateUtkastFromTemplateResponse(intygTyp, intygTypeVersion, newIntygId, intygId));
+            .thenReturn(new CreateUtkastFromTemplateResponse(intygTyp, intygTypeVersion, newIntygId, intygId));
 
         Response response = moduleApiController.copyUtkast(intygTyp, intygId);
 
@@ -401,9 +398,9 @@ public class UtkastModuleApiControllerTest {
         String intygTypeVersion = "1.0";
         String newIntygId = "newIntygId";
         IntegrationParameters integrationParameters = IntegrationParameters.of("", "", "", "", "", "", "", "", "", false, false, false,
-                false);
+            false);
         setupUser(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG, intygTyp, integrationParameters,
-                AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);
+            AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);
 
         Utkast utkast = new Utkast();
         utkast.setPatientPersonnummer(Personnummer.createPersonnummer("19121212-1212").get());
@@ -411,7 +408,7 @@ public class UtkastModuleApiControllerTest {
 
         ArgumentCaptor<CreateUtkastFromTemplateRequest> captor = ArgumentCaptor.forClass(CreateUtkastFromTemplateRequest.class);
         when(copyUtkastService.createUtkastCopy(captor.capture()))
-                .thenReturn(new CreateUtkastFromTemplateResponse(intygTyp, intygTypeVersion, newIntygId, intygId));
+            .thenReturn(new CreateUtkastFromTemplateResponse(intygTyp, intygTypeVersion, newIntygId, intygId));
 
         Response response = moduleApiController.copyUtkast(intygTyp, intygId);
 
@@ -467,7 +464,7 @@ public class UtkastModuleApiControllerTest {
 
     private void setupUser(String privilegeString, String intygType, boolean coherentJournaling, String... features) {
         IntegrationParameters integrationParameters = new IntegrationParameters("", "", "", "", "", "", "", "", "", coherentJournaling,
-                false, false, true);
+            false, false, true);
 
         setupUser(privilegeString, intygType, integrationParameters, features);
     }

@@ -22,41 +22,41 @@
 var testdataHelper = require('common-testtools').testdataHelper;
 
 module.exports = {
-    get: function(intygsID) {
-        if (!intygsID) {
-            intygsID = testdataHelper.generateTestGuid();
-        }
-
-        return {
-            id: intygsID,
-            typ: 'Arbetsgivarintyg dag 1-14',
-            baseratPa: {
-                'minUndersokningAvPatienten': '2017-09-27',
-                'journaluppgifter': '2017-09-27',
-                'telefonkontakt': '2017-09-27',
-                'annat': '2017-09-27',
-                'annatBeskrivning': 'tFEöSdJD1yVrIq5D'
-            },
-            sysselsattning: {
-                text: 'Beskrivning av nuvarande arbete.'
-            },
-            onskarFormedlaDiagnos: {
-                no: 'Nej',
-                yes: 'Ja',
-                diagnoser: ['J22', 'J301', 'F110']
-            },
-            nedsattArbetsformaga: {
-                text: 'Beskrivning av nedsatt arbetsförmåga.',
-                yes: 'Ja',
-                no: 'Nej',
-                formaga: 'Kan utföra lättare uppgifter.'
-            },
-            bedomning: {
-                sjukskrivningsgrad: '71%',
-                from: '2018-10-01',
-                tom: '2018-10-12'
-            },
-            ovrigt: 'Övriga upplysningar'
-        };
+  get: function(intygsID) {
+    if (!intygsID) {
+      intygsID = testdataHelper.generateTestGuid();
     }
+
+    return {
+      id: intygsID,
+      typ: 'Arbetsgivarintyg dag 1-14',
+      baseratPa: {
+        'minUndersokningAvPatienten': '2017-09-27',
+        'journaluppgifter': '2017-09-27',
+        'telefonkontakt': '2017-09-27',
+        'annat': '2017-09-27',
+        'annatBeskrivning': 'tFEöSdJD1yVrIq5D'
+      },
+      sysselsattning: {
+        text: 'Beskrivning av nuvarande arbete.'
+      },
+      onskarFormedlaDiagnos: {
+        no: 'Nej',
+        yes: 'Ja',
+        diagnoser: ['J22', 'J301', 'F110']
+      },
+      nedsattArbetsformaga: {
+        text: 'Beskrivning av nedsatt arbetsförmåga.',
+        yes: 'Ja',
+        no: 'Nej',
+        formaga: 'Kan utföra lättare uppgifter.'
+      },
+      bedomning: {
+        sjukskrivningsgrad: '71%',
+        from: '2018-10-01',
+        tom: '2018-10-12'
+      },
+      ovrigt: 'Övriga upplysningar'
+    };
+  }
 };

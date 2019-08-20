@@ -19,6 +19,20 @@
 package se.inera.intyg.webcert.web.web.controller.testability;
 
 import io.swagger.annotations.Api;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
@@ -31,25 +45,11 @@ import se.inera.intyg.webcert.persistence.model.Status;
 import se.inera.intyg.webcert.web.web.controller.testability.dto.ArendeAffectedResponse;
 import se.inera.intyg.webcert.web.web.controller.testability.dto.SimpleArende;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.stream.Collectors;
-
 @Transactional
 @Api(value = "services arende", description = "REST API för testbarhet - Ärenden")
 @Path("/arendetest")
 public class ArendeResource {
+
     @PersistenceContext
     private EntityManager entityManager;
 
@@ -69,19 +69,16 @@ public class ArendeResource {
     public Response getStalldaFragor(@PathParam("intygsId") String intygsId) {
         List<Arende> byIntygsId = arendeRepository.findByIntygsId(intygsId);
         return Response.ok(byIntygsId.stream()
-                .filter(a -> a.getStatus() == Status.PENDING_EXTERNAL_ACTION)
-                .map(a -> a.getMeddelandeId())
-                .collect(Collectors.toList()))
-        .build();
+            .filter(a -> a.getStatus() == Status.PENDING_EXTERNAL_ACTION)
+            .map(a -> a.getMeddelandeId())
+            .collect(Collectors.toList()))
+            .build();
     }
 
     /**
      * Returnerar ärenden på givet intygsId i status PENDING_INTERNAL_ACTION.
      *
      * Används av ärendeverktyget för att ge förslag på möjliga ärenden att skicka in en påminnelse för.
-     *
-     * @param intygsId
-     * @return
      */
     @GET
     @Path("/intyg/{intygsId}/internal")
@@ -89,10 +86,10 @@ public class ArendeResource {
     public Response getVantarPaSvarFranOss(@PathParam("intygsId") String intygsId) {
         List<Arende> byIntygsId = arendeRepository.findByIntygsId(intygsId);
         return Response.ok(byIntygsId.stream()
-                .filter(a -> a.getStatus() == Status.PENDING_INTERNAL_ACTION)
-                .map(a -> new SimpleArende(a.getMeddelandeId(), a.getRubrik()))
-                .collect(Collectors.toList()))
-                .build();
+            .filter(a -> a.getStatus() == Status.PENDING_INTERNAL_ACTION)
+            .map(a -> new SimpleArende(a.getMeddelandeId(), a.getRubrik()))
+            .collect(Collectors.toList()))
+            .build();
     }
 
     @GET
@@ -149,8 +146,8 @@ public class ArendeResource {
             public Response doInTransaction(TransactionStatus status) {
                 @SuppressWarnings("unchecked")
                 List<Arende> arenden = entityManager.createQuery("SELECT f FROM Arende f WHERE f.enhetId = :enhetId")
-                        .setParameter("enhetId", enhetsId)
-                        .getResultList();
+                    .setParameter("enhetId", enhetsId)
+                    .getResultList();
                 for (Arende arende : arenden) {
                     entityManager.remove(arende);
                 }

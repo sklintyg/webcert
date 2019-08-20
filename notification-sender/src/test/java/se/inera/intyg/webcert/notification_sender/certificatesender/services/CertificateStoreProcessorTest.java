@@ -25,14 +25,12 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import javax.xml.ws.WebServiceException;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
@@ -50,10 +48,14 @@ public class CertificateStoreProcessorTest {
     private static String LOGICAL_ADDRESS1 = "address-1";
     private static String BODY = "body";
 
-    ExternalServiceCallException technicalErrorException = new ExternalServiceCallException("", ExternalServiceCallException.ErrorIdEnum.TECHNICAL_ERROR);
-    ExternalServiceCallException applicationErrorException = new ExternalServiceCallException("", ExternalServiceCallException.ErrorIdEnum.APPLICATION_ERROR);
-    ExternalServiceCallException validationErrorException = new ExternalServiceCallException("", ExternalServiceCallException.ErrorIdEnum.VALIDATION_ERROR);
-    ExternalServiceCallException transformationErrorException = new ExternalServiceCallException("", ExternalServiceCallException.ErrorIdEnum.TRANSFORMATION_ERROR);
+    ExternalServiceCallException technicalErrorException = new ExternalServiceCallException("",
+        ExternalServiceCallException.ErrorIdEnum.TECHNICAL_ERROR);
+    ExternalServiceCallException applicationErrorException = new ExternalServiceCallException("",
+        ExternalServiceCallException.ErrorIdEnum.APPLICATION_ERROR);
+    ExternalServiceCallException validationErrorException = new ExternalServiceCallException("",
+        ExternalServiceCallException.ErrorIdEnum.VALIDATION_ERROR);
+    ExternalServiceCallException transformationErrorException = new ExternalServiceCallException("",
+        ExternalServiceCallException.ErrorIdEnum.TRANSFORMATION_ERROR);
 
     @Mock
     IntygModuleRegistry moduleRegistry;

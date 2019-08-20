@@ -21,10 +21,8 @@ package se.inera.intyg.webcert.web.web.util.resourcelinks;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.common.support.model.common.internal.Vardgivare;
@@ -71,7 +69,7 @@ public class ResourceLinkHelperImpl implements ResourceLinkHelper {
 
     @Override
     public void decorateUtkastWithValidActionLinks(DraftHolder draftHolder, String certificateType, Vardenhet careUnit,
-            Personnummer patient) {
+        Personnummer patient) {
         boolean isLocked = draftHolder.getStatus() != null ? draftHolder.getStatus().equals(UtkastStatus.DRAFT_LOCKED) : false;
         if (isLocked) {
 
@@ -168,7 +166,7 @@ public class ResourceLinkHelperImpl implements ResourceLinkHelper {
     public void decorateArendeWithValidActionLinks(List<ArendeListItem> arendeListItems, Vardenhet careUnit) {
         for (ArendeListItem arendeListItem : arendeListItems) {
             if (certificateAccessService.allowToForwardQuestions(arendeListItem.getIntygTyp(), careUnit,
-                    Personnummer.createPersonnummer(arendeListItem.getPatientId()).get()).isAllowed()) {
+                Personnummer.createPersonnummer(arendeListItem.getPatientId()).get()).isAllowed()) {
                 arendeListItem.addLink(new ActionLink(ActionLinkType.VIDAREBEFODRA_FRAGA));
             }
         }

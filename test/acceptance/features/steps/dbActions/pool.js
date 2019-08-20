@@ -19,10 +19,8 @@
 
 /* globals logger, Promise */
 
-
 'use strict';
 var mysql = require('mysql');
-
 
 /*
 
@@ -46,48 +44,46 @@ USAGE:
 
 logger.info('#### Skapar ny Mysql Pool för ' + process.env.DATABASE_HOST + ' ####');
 var connectionPool = mysql.createPool({
-    host: process.env.DATABASE_HOST,
-    user: process.env.DATABASE_USER,
-    password: process.env.DATABASE_PASSWORD,
-    // database: process.env.DATABASE_NAME,
-    multipleStatements: true,
-    connectionLimit: 5
+  host: process.env.DATABASE_HOST,
+  user: process.env.DATABASE_USER,
+  password: process.env.DATABASE_PASSWORD,
+  // database: process.env.DATABASE_NAME,
+  multipleStatements: true,
+  connectionLimit: 5
 });
-
-
 
 module.exports = {
 
-    getConnection: function() {
+  getConnection: function() {
 
-        return new Promise(function(resolve, reject) {
-            //logger.debug(connectionPool);
+    return new Promise(function(resolve, reject) {
+      //logger.debug(connectionPool);
 
-            connectionPool.getConnection(function(err, connection) {
-                if (connection) {
+      connectionPool.getConnection(function(err, connection) {
+        if (connection) {
 
-                    //logger.debug(connectionPool);
-                    if (connectionPool._allConnections.length > 1) {
-                        logger.info('Number of active MySQL connections:', connectionPool._allConnections.length.toString());
-                        //logger.debug(connectionPool._allConnections);
-                        logger.info('Connection Queue: ', connectionPool._connectionQueue.length.toString());
-                        //logger.debug(connectionPool._connectionQueue);
-                        logger.info('Available Connections', connectionPool._freeConnections.length.toString());
-                        //logger.debug(connectionPool._freeConnections);
-                    }
+          //logger.debug(connectionPool);
+          if (connectionPool._allConnections.length > 1) {
+            logger.info('Number of active MySQL connections:', connectionPool._allConnections.length.toString());
+            //logger.debug(connectionPool._allConnections);
+            logger.info('Connection Queue: ', connectionPool._connectionQueue.length.toString());
+            //logger.debug(connectionPool._connectionQueue);
+            logger.info('Available Connections', connectionPool._freeConnections.length.toString());
+            //logger.debug(connectionPool._freeConnections);
+          }
 
-                    //return connection to the module who called this function.
-                    resolve(connection);
+          //return connection to the module who called this function.
+          resolve(connection);
 
-                } else {
-                    logger.warn('Anslutningsproblem i databaskoppling');
-                    logger.error('connectionPool.getConnection failed');
-                    reject(err);
-                }
-            });
+        } else {
+          logger.warn('Anslutningsproblem i databaskoppling');
+          logger.error('connectionPool.getConnection failed');
+          reject(err);
+        }
+      });
 
-        }).catch(function(reason) {
-            throw (reason.message);
-        });
-    }
+    }).catch(function(reason) {
+      throw (reason.message);
+    });
+  }
 };

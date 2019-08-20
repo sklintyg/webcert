@@ -30,80 +30,80 @@ var intygGenerator = wcTestTools.intygGenerator;
 
 describe('uthopp - arende on luse intyg', function() {
 
-    var intygId = 'luse-arende-intyg-1';
-    var meddelandeId = 'luse-arende-komplt';
+  var intygId = 'luse-arende-intyg-1';
+  var meddelandeId = 'luse-arende-komplt';
 
-    beforeAll(function() {
+  beforeAll(function() {
+    browser.ignoreSynchronization = false;
+    specHelper.login();
+    var testData = {
+      'contents': intygGenerator.getIntygJson({'intygType': 'luse', 'intygId': intygId}),
+      'utkastStatus': 'SIGNED',
+      'revoked': false
+    };
+
+    // If were nog ignoring sync while setting user, protractor complains that it cannot sync with angular on the testability page loaded during setUserOrigin
+    browser.ignoreSynchronization = true;
+    specHelper.setUserOrigin('UTHOPP').then(function() {
+      browser.ignoreSynchronization = false;
+      restTestdataHelper.deleteUtkast(intygId);
+      restTestdataHelper.createWebcertIntyg(testData).then(function() {
+        restTestdataHelper.markeraSkickatTillFK(intygId).then(function() {
+          restTestdataHelper.createArendeFromTemplate('luse', intygId, meddelandeId, 'Hur är det med arbetstiden?',
+              'KOMPLT', 'PENDING_INTERNAL_ACTION', [
+                {
+                  'frageId': '1',
+                  'instans': 1,
+                  'text': 'Fixa.'
+                }
+              ]);
+        });
+      });
+    });
+  });
+
+  afterAll(function() {
+    restTestdataHelper.deleteUtkast(intygId);
+  });
+
+  describe('make sure intyg page has been loaded', function() {
+    it('and showing fk intyg', function() {
+      LuseIntygPage.get(intygId);
+      expect(LuseIntygPage.isAt()).toBeTruthy();
+    });
+  });
+
+  describe('make sure', function() {
+    it('pushed arende is visible', function() {
+      var arende = LuseIntygPage.getArendeById(true, meddelandeId);
+      expect(arende.isDisplayed()).toBeTruthy();
+    });
+
+    it('click svara pa komplettering', function() {
+      browser.ignoreSynchronization = true;
+      specHelper.setUserOrigin('UTHOPP').then(function() {
         browser.ignoreSynchronization = false;
-        specHelper.login();
-        var testData = {
-            'contents': intygGenerator.getIntygJson({'intygType': 'luse', 'intygId': intygId}),
-            'utkastStatus': 'SIGNED',
-            'revoked': false
-        };
 
-        // If were nog ignoring sync while setting user, protractor complains that it cannot sync with angular on the testability page loaded during setUserOrigin
-        browser.ignoreSynchronization = true;
-        specHelper.setUserOrigin('UTHOPP').then(function() {
-            browser.ignoreSynchronization = false;
-            restTestdataHelper.deleteUtkast(intygId);
-            restTestdataHelper.createWebcertIntyg(testData).then(function() {
-                restTestdataHelper.markeraSkickatTillFK(intygId).then(function() {
-                    restTestdataHelper.createArendeFromTemplate('luse', intygId, meddelandeId, 'Hur är det med arbetstiden?',
-                        'KOMPLT', 'PENDING_INTERNAL_ACTION', [
-                            {
-                                'frageId':'1',
-                                'instans':1,
-                                'text':'Fixa.'
-                            }
-                        ]);
-                });
-            });
-        });
+        LuseIntygPage.get(intygId);
+        expect(LuseIntygPage.kompletteraIntygButton.isDisplayed()).toBeFalsy();
+        expect(LuseIntygPage.kanInteKompletteraButton.isDisplayed()).toBeTruthy();
+        expect(LuseIntygPage.uthoppKompletteraLink.isDisplayed()).toBeTruthy();
+        LuseIntygPage.kanInteKompletteraButton.click();
+        expect(LuseIntygPage.kompletteringsAtgardDialog.isDisplayed()).toBeTruthy();
+      });
     });
 
-    afterAll(function() {
-        restTestdataHelper.deleteUtkast(intygId);
+    it('svara med nytt intyg should not be displayed', function() {
+      expect(LuseIntygPage.kanInteKompletteraModalAnledning1.isPresent()).toBeFalsy();
+      expect(LuseIntygPage.kanInteKompletteraModalOvrigaUpplysningar.isPresent()).toBeFalsy();
+      expect(LuseIntygPage.kanInteKompletteraModalAnledning2.isPresent()).toBeFalsy();
     });
 
-    describe('make sure intyg page has been loaded', function() {
-        it('and showing fk intyg', function() {
-            LuseIntygPage.get(intygId);
-            expect(LuseIntygPage.isAt()).toBeTruthy();
-        });
+    it('svara med meddelande should be displayed', function() {
+      LuseIntygPage.kanInteKompletteraModalMeddelandeText.sendKeys('Anledning kommer här');
+      LuseIntygPage.kanInteKompletteraModalSkickaSvarButton.click();
+      expect(LuseIntygPage.kompletteringBesvaradesMedMeddelandeAlert.isDisplayed()).toBeTruthy();
     });
-
-    describe('make sure', function() {
-        it('pushed arende is visible', function() {
-            var arende = LuseIntygPage.getArendeById(true, meddelandeId);
-            expect(arende.isDisplayed()).toBeTruthy();
-        });
-
-        it('click svara pa komplettering', function() {
-            browser.ignoreSynchronization = true;
-            specHelper.setUserOrigin('UTHOPP').then(function() {
-                    browser.ignoreSynchronization = false;
-
-                    LuseIntygPage.get(intygId);
-                    expect(LuseIntygPage.kompletteraIntygButton.isDisplayed()).toBeFalsy();
-                    expect(LuseIntygPage.kanInteKompletteraButton.isDisplayed()).toBeTruthy();
-                    expect(LuseIntygPage.uthoppKompletteraLink.isDisplayed()).toBeTruthy();
-                    LuseIntygPage.kanInteKompletteraButton.click();
-                    expect(LuseIntygPage.kompletteringsAtgardDialog.isDisplayed()).toBeTruthy();
-                });
-        });
-
-        it('svara med nytt intyg should not be displayed', function() {
-            expect(LuseIntygPage.kanInteKompletteraModalAnledning1.isPresent()).toBeFalsy();
-            expect(LuseIntygPage.kanInteKompletteraModalOvrigaUpplysningar.isPresent()).toBeFalsy();
-            expect(LuseIntygPage.kanInteKompletteraModalAnledning2.isPresent()).toBeFalsy();
-        });
-
-        it('svara med meddelande should be displayed', function() {
-            LuseIntygPage.kanInteKompletteraModalMeddelandeText.sendKeys('Anledning kommer här');
-            LuseIntygPage.kanInteKompletteraModalSkickaSvarButton.click();
-            expect(LuseIntygPage.kompletteringBesvaradesMedMeddelandeAlert.isDisplayed()).toBeTruthy();
-        });
-    });
+  });
 
 });

@@ -18,6 +18,10 @@
  */
 package se.inera.intyg.webcert.notificationstub.v3;
 
+import static org.junit.Assert.assertEquals;
+
+import java.time.LocalDateTime;
+import java.util.UUID;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -31,11 +35,6 @@ import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforc
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.IntygId;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Handelse;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
-
-import java.time.LocalDateTime;
-import java.util.UUID;
-
-import static org.junit.Assert.assertEquals;
 
 /**
  * Created by eriklupander on 2017-05-29.
@@ -56,6 +55,7 @@ public class IntegrationTest {
     public void init() {
         notificationStore.clear();
     }
+
     @After
     public void cleanup() {
         notificationStore.clear();

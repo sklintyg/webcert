@@ -19,7 +19,6 @@
 package se.inera.intyg.webcert.web.auth.eleg;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
 import se.inera.intyg.webcert.web.auth.common.FakeCredential;
 
 /**

@@ -18,7 +18,11 @@
  */
 package se.inera.intyg.webcert.web.auth.fake.common;
 
+import static se.inera.intyg.webcert.web.auth.common.AuthConstants.FAKE_AUTHENTICATION_SITHS_CONTEXT_REF;
+
 import com.google.common.base.Strings;
+import java.util.ArrayList;
+import java.util.Arrays;
 import org.opensaml.saml2.core.Assertion;
 import org.opensaml.saml2.core.AttributeStatement;
 import org.opensaml.saml2.core.NameID;
@@ -43,11 +47,6 @@ import se.inera.intyg.infra.security.siths.BaseSakerhetstjanstAssertion;
 import se.inera.intyg.webcert.web.auth.common.BaseFakeAuthenticationProvider;
 import se.inera.intyg.webcert.web.auth.fake.FakeAuthenticationToken;
 import se.inera.intyg.webcert.web.auth.fake.FakeCredentials;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-
-import static se.inera.intyg.webcert.web.auth.common.AuthConstants.FAKE_AUTHENTICATION_SITHS_CONTEXT_REF;
 
 /**
  * @author andreaskaltenbach
@@ -94,7 +93,7 @@ public class CommonFakeAuthenticationProvider extends BaseFakeAuthenticationProv
             IntygUser user = (IntygUser) details;
             if (user.getValdVardenhet() != null && user.getValdVardgivare() != null) {
                 user.setFeatures(
-                        authoritiesResolver.getFeatures(Arrays.asList(user.getValdVardenhet().getId(), user.getValdVardgivare().getId())));
+                    authoritiesResolver.getFeatures(Arrays.asList(user.getValdVardenhet().getId(), user.getValdVardgivare().getId())));
             }
         }
     }
@@ -108,7 +107,7 @@ public class CommonFakeAuthenticationProvider extends BaseFakeAuthenticationProv
                     ((IntygUser) details).setOrigin(origin);
                 } catch (IllegalArgumentException e) {
                     throw new AuthoritiesException(
-                            "Could not set origin '" + origin + "'. Unknown, allowed types are NORMAL, DJUPINTEGRATION, UTHOPP");
+                        "Could not set origin '" + origin + "'. Unknown, allowed types are NORMAL, DJUPINTEGRATION, UTHOPP");
                 }
             }
         }
@@ -120,7 +119,7 @@ public class CommonFakeAuthenticationProvider extends BaseFakeAuthenticationProv
             IntygUser user = (IntygUser) details;
 
             if (user.getAuthenticationMethod() == AuthenticationMethod.MOBILT_BANK_ID
-                    || user.getAuthenticationMethod() == AuthenticationMethod.BANK_ID) {
+                || user.getAuthenticationMethod() == AuthenticationMethod.BANK_ID) {
                 if (user.getPersonId() == null || user.getPersonId().isEmpty()) {
                     user.setPersonId(user.getHsaId());
                 }
@@ -133,8 +132,8 @@ public class CommonFakeAuthenticationProvider extends BaseFakeAuthenticationProv
             IntygUser user = (IntygUser) details;
             if (user.getNamn() == null || user.getNamn().isEmpty()) {
                 user.setNamn(
-                        ((FakeCredentials) token.getCredentials()).getForNamn() + " "
-                                + ((FakeCredentials) token.getCredentials()).getEfterNamn());
+                    ((FakeCredentials) token.getCredentials()).getForNamn() + " "
+                        + ((FakeCredentials) token.getCredentials()).getEfterNamn());
             }
         }
     }

@@ -19,22 +19,18 @@
 package se.inera.intyg.webcert.web.service.fmb.sjukfall;
 
 import io.vavr.control.Try;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
-import se.inera.intyg.infra.integration.hsa.model.Mottagning;
-import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
-import se.inera.intyg.infra.integration.hsa.model.Vardgivare;
-import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
-import se.riv.clinicalprocess.healthcond.certificate.types.v2.HsaId;
-import se.riv.clinicalprocess.healthcond.certificate.types.v2.PersonId;
-import se.riv.clinicalprocess.healthcond.rehabilitation.v1.IntygsData;
 import java.lang.invoke.MethodHandles;
 import java.time.LocalDate;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 import se.inera.intyg.clinicalprocess.healthcond.rehabilitation.listactivesickleavesforcareunit.v1.ListActiveSickLeavesForCareUnitResponderInterface;
 import se.inera.intyg.clinicalprocess.healthcond.rehabilitation.listactivesickleavesforcareunit.v1.ListActiveSickLeavesForCareUnitResponseType;
 import se.inera.intyg.clinicalprocess.healthcond.rehabilitation.listactivesickleavesforcareunit.v1.ListActiveSickLeavesForCareUnitType;
+import se.inera.intyg.infra.integration.hsa.model.Mottagning;
+import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
+import se.inera.intyg.infra.integration.hsa.model.Vardgivare;
 import se.inera.intyg.infra.sjukfall.dto.IntygData;
 import se.inera.intyg.infra.sjukfall.dto.IntygParametrar;
 import se.inera.intyg.infra.sjukfall.dto.SjukfallEnhet;
@@ -44,6 +40,10 @@ import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEn
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.web.service.fmb.sjukfall.converter.IntygstjanstConverter;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
+import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
+import se.riv.clinicalprocess.healthcond.certificate.types.v2.HsaId;
+import se.riv.clinicalprocess.healthcond.certificate.types.v2.PersonId;
+import se.riv.clinicalprocess.healthcond.rehabilitation.v1.IntygsData;
 
 @Service
 public class FmbSjukfallServiceImpl implements FmbSjukfallService {
@@ -51,7 +51,7 @@ public class FmbSjukfallServiceImpl implements FmbSjukfallService {
     private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     private static final String MESSAGE =
-            "Fetch intyg data from Intygstjänst to Calculate total sjukskrivningstid for patient and care unit";
+        "Fetch intyg data from Intygstjänst to Calculate total sjukskrivningstid for patient and care unit";
 
     private static final int MAX_GLAPP = 5;
     private static final int MAX_SEDAN_SJUKAVSLUT = 0;
@@ -61,9 +61,9 @@ public class FmbSjukfallServiceImpl implements FmbSjukfallService {
     private final WebCertUserService webCertUserService;
 
     public FmbSjukfallServiceImpl(
-            final ListActiveSickLeavesForCareUnitResponderInterface sickLeavesForCareUnit,
-            final SjukfallEngineService sjukfallEngineService,
-            final WebCertUserService webCertUserService) {
+        final ListActiveSickLeavesForCareUnitResponderInterface sickLeavesForCareUnit,
+        final SjukfallEngineService sjukfallEngineService,
+        final WebCertUserService webCertUserService) {
         this.sickLeavesForCareUnit = sickLeavesForCareUnit;
         this.sjukfallEngineService = sjukfallEngineService;
         this.webCertUserService = webCertUserService;
@@ -134,14 +134,15 @@ public class FmbSjukfallServiceImpl implements FmbSjukfallService {
                 }
             }
             throw new IllegalStateException("User object is in invalid state. "
-                    + "Current selected enhet is an underenhet, but no ID for the parent enhet was found.");
+                + "Current selected enhet is an underenhet, but no ID for the parent enhet was found.");
         } else {
             return user.getValdVardenhet().getId();
         }
     }
+
     private int getTotaltAntalDagar(final List<SjukfallEnhet> sjukfallForEnhet) {
         return sjukfallForEnhet.stream()
-                .map(SjukfallEnhet::getDagar)
-                .reduce(0, Integer::sum);
+            .map(SjukfallEnhet::getDagar)
+            .reduce(0, Integer::sum);
     }
 }

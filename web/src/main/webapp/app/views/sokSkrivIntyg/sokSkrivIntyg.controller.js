@@ -18,50 +18,50 @@
  */
 
 angular.module('webcert').controller('webcert.SokSkrivIntygCtrl',
-    [ '$scope', '$state', '$filter', 'webcert.SokSkrivValjUtkastService',
-        function($scope, $state, $filter, Service) {
-            'use strict';
-            var viewState = {
-                loading: false,
-                errorid: null
-            };
+    ['$scope', '$state', '$filter', 'webcert.SokSkrivValjUtkastService',
+      function($scope, $state, $filter, Service) {
+        'use strict';
+        var viewState = {
+          loading: false,
+          errorid: null
+        };
 
-            $scope.model = {
-                test: false
-            };
+        $scope.model = {
+          test: false
+        };
 
+        $scope.viewState = angular.copy(viewState);
+
+        // Clear errormessage when user starts typing a new personnummer
+        $scope.$watch('personnummer', function personnummerWatch() {
+          if ($scope.viewState.errorid) {
             $scope.viewState = angular.copy(viewState);
+          }
+        });
 
-            // Clear errormessage when user starts typing a new personnummer
-            $scope.$watch('personnummer', function personnummerWatch () {
-                if ($scope.viewState.errorid) {
-                    $scope.viewState = angular.copy(viewState);
-                }
+        $scope.focusPnr = true; // focus pnr input
+        $scope.personnummer = '';
+
+        $scope.loadPatient = function() {
+
+          if ($scope.pnrForm && $scope.pnrForm.pnr) {
+            $scope.pnrForm.pnr.$setTouched();
+            if ($scope.pnrForm.pnr.$invalid) {
+              return;
+            }
+          }
+
+          $scope.viewState.loading = true;
+          Service.lookupPatient($scope.personnummer).then(function(patientResult) {
+            $scope.viewState.loading = false;
+            $state.go('webcert.create-choose-certtype-index', {
+              'patientId': $filter('PersonIdFormatter')(patientResult.personnummer)
             });
+          }, function(errorId) {
+            $scope.viewState.loading = false;
+            $scope.viewState.errorid = errorId;
+          });
 
-            $scope.focusPnr = true; // focus pnr input
-            $scope.personnummer = '';
+        };
 
-            $scope.loadPatient = function() {
-
-                if($scope.pnrForm && $scope.pnrForm.pnr) {
-                    $scope.pnrForm.pnr.$setTouched();
-                    if($scope.pnrForm.pnr.$invalid){
-                        return;
-                    }
-                }
-
-                $scope.viewState.loading = true;
-                Service.lookupPatient($scope.personnummer).then(function(patientResult) {
-                    $scope.viewState.loading = false;
-                    $state.go('webcert.create-choose-certtype-index', {
-                        'patientId': $filter('PersonIdFormatter')(patientResult.personnummer)
-                    });
-                }, function(errorId) {
-                    $scope.viewState.loading = false;
-                    $scope.viewState.errorid = errorId;
-                });
-                
-            };
-
-        }]);
+      }]);

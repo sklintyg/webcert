@@ -45,11 +45,11 @@ public final class FmbResponse {
     }
 
     private FmbResponse(
-            final String icd10Code,
-            final String icd10Description,
-            final String referenceDescription,
-            final String referenceLink,
-            final List<FmbForm> forms) {
+        final String icd10Code,
+        final String icd10Description,
+        final String referenceDescription,
+        final String referenceLink,
+        final List<FmbForm> forms) {
         this.icd10Code = icd10Code;
         this.icd10Description = icd10Description;
         this.referenceDescription = referenceDescription;
@@ -79,11 +79,11 @@ public final class FmbResponse {
     }
 
     public static FmbResponse of(
-            final String icd10Code,
-            final String icd10Description,
-            final String referenceDescription,
-            final String referenceLink,
-            final List<FmbForm> forms) {
+        final String icd10Code,
+        final String icd10Description,
+        final String referenceDescription,
+        final String referenceLink,
+        final List<FmbForm> forms) {
         return new FmbResponse(icd10Code, icd10Description, referenceDescription, referenceLink, forms);
     }
 

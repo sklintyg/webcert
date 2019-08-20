@@ -19,13 +19,6 @@
 package se.inera.intyg.webcert.web.web.controller.testability;
 
 import io.swagger.annotations.Api;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
-import se.inera.intyg.webcert.persistence.anvandarmetadata.model.AnvandarPreference;
-import se.inera.intyg.webcert.persistence.anvandarmetadata.repository.AnvandarPreferenceRepository;
-import se.inera.intyg.webcert.persistence.privatlakaravtal.repository.AvtalRepository;
-import se.inera.intyg.webcert.persistence.privatlakaravtal.repository.GodkantAvtalRepository;
-
 import javax.ws.rs.DELETE;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
@@ -33,6 +26,12 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
+import se.inera.intyg.webcert.persistence.anvandarmetadata.model.AnvandarPreference;
+import se.inera.intyg.webcert.persistence.anvandarmetadata.repository.AnvandarPreferenceRepository;
+import se.inera.intyg.webcert.persistence.privatlakaravtal.repository.AvtalRepository;
+import se.inera.intyg.webcert.persistence.privatlakaravtal.repository.GodkantAvtalRepository;
 
 @Transactional
 @Api(value = "services anvandare", description = "REST API för testbarhet - Användare")

@@ -28,7 +28,6 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-
 import se.inera.intyg.webcert.integration.pp.util.ObjectCreator;
 import se.riv.infrastructure.directory.privatepractitioner.v1.HoSPersonType;
 import se.riv.infrastructure.directory.privatepractitioner.v1.ResultCodeEnum;
@@ -47,12 +46,12 @@ public class ValidatePrivatePractitionerResponderTest {
     @InjectMocks
     private ValidatePrivatePractitionerResponderInterface ws = new ValidatePrivatePractitionerResponderStub();
 
-    @Test (expected = IllegalArgumentException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void nullParametersThrowsException() {
         ws.validatePrivatePractitioner(null, null);
     }
 
-    @Test (expected = IllegalArgumentException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void noPersonIdThrowsException() {
         ValidatePrivatePractitionerType request = new ValidatePrivatePractitionerType();
         ws.validatePrivatePractitioner(null, request);

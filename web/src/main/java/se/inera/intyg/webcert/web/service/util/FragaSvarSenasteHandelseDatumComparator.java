@@ -19,7 +19,6 @@
 package se.inera.intyg.webcert.web.service.util;
 
 import java.util.Comparator;
-
 import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
 
 /**

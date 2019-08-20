@@ -18,58 +18,58 @@
  */
 
 angular.module('webcert').directive('wcUtkastList',
-    [ 'common.UtkastNotifyService', 'common.moduleService', 'common.IntygHelper',
-        function(utkastNotifyService, moduleService, IntygHelper) {
-            'use strict';
+    ['common.UtkastNotifyService', 'common.moduleService', 'common.IntygHelper',
+      function(utkastNotifyService, moduleService, IntygHelper) {
+        'use strict';
 
-            return {
-                restrict: 'E',
-                replace: false,
-                scope: {
-                    utkastList: '=',
-                    filter: '=',
-                    onOrder: '&'
-                },
-                templateUrl: '/app/views/ejSigneradeUtkast/wcUtkastList/wcUtkastList.directive.html',
-                controller: function($scope) {
+        return {
+          restrict: 'E',
+          replace: false,
+          scope: {
+            utkastList: '=',
+            filter: '=',
+            onOrder: '&'
+          },
+          templateUrl: '/app/views/ejSigneradeUtkast/wcUtkastList/wcUtkastList.directive.html',
+          controller: function($scope) {
 
-                    $scope.sortingProperty = $scope.filter.selection.orderBy;
-                    $scope.sortingAscending = $scope.filter.selection.orderAscending;
+            $scope.sortingProperty = $scope.filter.selection.orderBy;
+            $scope.sortingAscending = $scope.filter.selection.orderAscending;
 
-                    $scope.getTypeName = function(intygsType) {
-                        return moduleService.getModuleName(intygsType);
-                    };
-
-                    $scope.openIntyg = function(intyg) {
-                        IntygHelper.goToDraft(intyg.intygType, intyg.intygTypeVersion, intyg.intygId);
-                    };
-
-                    // Handle forwarding
-                    $scope.openMailDialog = function(utkast) {
-                        utkast.updateState = {
-                            vidarebefordraInProgress: false
-                        };
-                        utkastNotifyService.notifyUtkast(utkast.intygId, utkast.intygType, utkast, utkast.updateState);
-                    };
-
-                    $scope.onNotifyChange = function(utkast) {
-                        utkast.updateState = {
-                            vidarebefordraInProgress: false
-                        };
-                        utkastNotifyService.onNotifyChange(utkast.intygId, utkast.intygType, utkast, utkast.updateState);
-                    };
-
-                    $scope.orderByProperty = function(property) {
-                        var ascending = false;
-                        if ($scope.filter.selection.orderBy === property) {
-                            ascending = !$scope.filter.selection.orderAscending;
-                        }
-                        $scope.sortingProperty = property;
-                        $scope.sortingAscending = ascending;
-                        $scope.onOrder({property: property, ascending: ascending});
-                    };
-                }
+            $scope.getTypeName = function(intygsType) {
+              return moduleService.getModuleName(intygsType);
             };
-        }
+
+            $scope.openIntyg = function(intyg) {
+              IntygHelper.goToDraft(intyg.intygType, intyg.intygTypeVersion, intyg.intygId);
+            };
+
+            // Handle forwarding
+            $scope.openMailDialog = function(utkast) {
+              utkast.updateState = {
+                vidarebefordraInProgress: false
+              };
+              utkastNotifyService.notifyUtkast(utkast.intygId, utkast.intygType, utkast, utkast.updateState);
+            };
+
+            $scope.onNotifyChange = function(utkast) {
+              utkast.updateState = {
+                vidarebefordraInProgress: false
+              };
+              utkastNotifyService.onNotifyChange(utkast.intygId, utkast.intygType, utkast, utkast.updateState);
+            };
+
+            $scope.orderByProperty = function(property) {
+              var ascending = false;
+              if ($scope.filter.selection.orderBy === property) {
+                ascending = !$scope.filter.selection.orderAscending;
+              }
+              $scope.sortingProperty = property;
+              $scope.sortingAscending = ascending;
+              $scope.onOrder({property: property, ascending: ascending});
+            };
+          }
+        };
+      }
     ]
 );

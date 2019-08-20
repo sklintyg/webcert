@@ -18,16 +18,15 @@
  */
 package se.inera.intyg.webcert.web.web.controller.integrationtest.legacyintegration;
 
+import static com.jayway.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.endsWith;
+
 import com.jayway.restassured.RestAssured;
+import javax.servlet.http.HttpServletResponse;
 import org.junit.Test;
 import org.springframework.http.HttpHeaders;
 import se.inera.intyg.webcert.web.auth.eleg.FakeElegCredentials;
 import se.inera.intyg.webcert.web.web.controller.integrationtest.BaseRestIntegrationTest;
-
-import javax.servlet.http.HttpServletResponse;
-
-import static com.jayway.restassured.RestAssured.given;
-import static org.hamcrest.Matchers.endsWith;
 
 /**
  * Check that basic-certificate-links are redirected correctly.
@@ -44,11 +43,11 @@ public class CertificateIntegrationControllerIT extends BaseRestIntegrationTest 
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
 
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
-                .redirects().follow(false).and().pathParam("intygsId", DEFAULT_INTYGSID).
-                expect().statusCode(HttpServletResponse.SC_TEMPORARY_REDIRECT).
-                when().get("webcert/web/user/basic-certificate/{intygsId}/questions?enhet=IFV1239877878-1042").
-                then().
-                header(HttpHeaders.LOCATION, endsWith("/fragasvar/fk7263/" + FK7263_BASE_INTYG_TYPE_VERSION + "/" + DEFAULT_INTYGSID));
+            .redirects().follow(false).and().pathParam("intygsId", DEFAULT_INTYGSID).
+            expect().statusCode(HttpServletResponse.SC_TEMPORARY_REDIRECT).
+            when().get("webcert/web/user/basic-certificate/{intygsId}/questions?enhet=IFV1239877878-1042").
+            then().
+            header(HttpHeaders.LOCATION, endsWith("/fragasvar/fk7263/" + FK7263_BASE_INTYG_TYPE_VERSION + "/" + DEFAULT_INTYGSID));
     }
 
     @Test
@@ -61,10 +60,10 @@ public class CertificateIntegrationControllerIT extends BaseRestIntegrationTest 
         RestAssured.sessionId = getAuthSession(fakeElegCredentials);
 
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
-                .redirects().follow(false).and().pathParam("intygsId", DEFAULT_INTYGSID).
-                expect().statusCode(HttpServletResponse.SC_TEMPORARY_REDIRECT).
-                when().get("webcert/web/user/basic-certificate/{intygsId}/questions").
-                then().header(HttpHeaders.LOCATION, endsWith("/error.jsp?reason=auth-exception"));
+            .redirects().follow(false).and().pathParam("intygsId", DEFAULT_INTYGSID).
+            expect().statusCode(HttpServletResponse.SC_TEMPORARY_REDIRECT).
+            when().get("webcert/web/user/basic-certificate/{intygsId}/questions").
+            then().header(HttpHeaders.LOCATION, endsWith("/error.jsp?reason=auth-exception"));
     }
 
     @Test
@@ -75,11 +74,11 @@ public class CertificateIntegrationControllerIT extends BaseRestIntegrationTest 
         String intygId = createSignedIntyg(INTYGSTYP, DEFAULT_PATIENT_PERSONNUMMER);
 
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
-                .redirects().follow(false).and().pathParams("intygsId", intygId, "intygsTyp", INTYGSTYP).
-                expect().statusCode(HttpServletResponse.SC_TEMPORARY_REDIRECT).
-                when().get("webcert/web/user/basic-certificate/{intygsTyp}/{intygsId}/questions?enhet=IFV1239877878-1042").
-                then().
-                header(HttpHeaders.LOCATION, endsWith("/fragasvar/" + INTYGSTYP + "/" + LUSE_BASE_INTYG_TYPE_VERSION + "/" + intygId));
+            .redirects().follow(false).and().pathParams("intygsId", intygId, "intygsTyp", INTYGSTYP).
+            expect().statusCode(HttpServletResponse.SC_TEMPORARY_REDIRECT).
+            when().get("webcert/web/user/basic-certificate/{intygsTyp}/{intygsId}/questions?enhet=IFV1239877878-1042").
+            then().
+            header(HttpHeaders.LOCATION, endsWith("/fragasvar/" + INTYGSTYP + "/" + LUSE_BASE_INTYG_TYPE_VERSION + "/" + intygId));
     }
 
     @Test
@@ -92,9 +91,9 @@ public class CertificateIntegrationControllerIT extends BaseRestIntegrationTest 
         RestAssured.sessionId = getAuthSession(fakeElegCredentials);
 
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
-                .redirects().follow(false).and().pathParams("intygsId", DEFAULT_INTYGSID, "intygsTyp", INTYGSTYP).
-                expect().statusCode(HttpServletResponse.SC_TEMPORARY_REDIRECT).
-                when().get("webcert/web/user/basic-certificate/{intygsTyp}/{intygsId}/questions").
-                then().header(HttpHeaders.LOCATION, endsWith("/error.jsp?reason=auth-exception"));
+            .redirects().follow(false).and().pathParams("intygsId", DEFAULT_INTYGSID, "intygsTyp", INTYGSTYP).
+            expect().statusCode(HttpServletResponse.SC_TEMPORARY_REDIRECT).
+            when().get("webcert/web/user/basic-certificate/{intygsTyp}/{intygsId}/questions").
+            then().header(HttpHeaders.LOCATION, endsWith("/error.jsp?reason=auth-exception"));
     }
 }

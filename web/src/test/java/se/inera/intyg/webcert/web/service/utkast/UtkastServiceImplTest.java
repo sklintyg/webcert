@@ -48,9 +48,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import javax.persistence.OptimisticLockException;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -59,7 +57,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
-
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.GrundData;
@@ -185,7 +182,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
     private static Personnummer createPnr(String personId) {
         return Personnummer.createPersonnummer(personId)
-                .orElseThrow(() -> new IllegalArgumentException("Could not parse personnummer: " + personId));
+            .orElseThrow(() -> new IllegalArgumentException("Could not parse personnummer: " + personId));
     }
 
     @Before
@@ -226,14 +223,14 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         hoSPerson.setVardenhet(vardenhet);
 
         utkast = createUtkast(INTYG_ID, UTKAST_VERSION, INTYG_TYPE, UtkastStatus.DRAFT_INCOMPLETE, null, INTYG_JSON, vardperson,
-                PERSONNUMMER);
+            PERSONNUMMER);
         signedUtkast = createUtkast(INTYG_ID, INTYG_VERSION, INTYG_TYPE, UtkastStatus.SIGNED, LocalDateTime.parse("2018-04-23T00:00:00"),
-                INTYG_JSON, vardperson, PERSONNUMMER);
+            INTYG_JSON, vardperson, PERSONNUMMER);
         lockedUtkast = createUtkast(INTYG_ID, INTYG_VERSION, INTYG_TYPE, UtkastStatus.DRAFT_LOCKED, null,
-                INTYG_JSON, vardperson, PERSONNUMMER);
+            INTYG_JSON, vardperson, PERSONNUMMER);
 
         revokedLockedUtkast = createUtkast(INTYG_ID, INTYG_VERSION, INTYG_TYPE, UtkastStatus.DRAFT_LOCKED, null,
-                INTYG_JSON, vardperson, PERSONNUMMER);
+            INTYG_JSON, vardperson, PERSONNUMMER);
         revokedLockedUtkast.setAterkalladDatum(LocalDateTime.now());
         when(moduleRegistry.resolveVersionFromUtlatandeJson(anyString(), anyString())).thenReturn(INTYG_TYPE_VERSION);
 
@@ -279,7 +276,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
     private void setupReferensMocks() throws ModuleNotFoundException, ModuleException, IOException {
         ValidationMessage valMsg = new ValidationMessage("a.category", "a.field.somewhere", ValidationMessageType.OTHER,
-                "This is soooo wrong!");
+            "This is soooo wrong!");
         ValidateDraftResponse validationResponse = new ValidateDraftResponse(ValidationStatus.INVALID, Collections.singletonList(valMsg));
         Utlatande utlatande = mock(Utlatande.class);
         when(moduleRegistry.getModuleApi(anyString(), anyString())).thenReturn(mockModuleApi);
@@ -377,7 +374,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
     @Test
     public void testSaveDraftDraftFirstSave() throws Exception {
         ValidationMessage valMsg = new ValidationMessage("a.category", "a.field.somewhere", ValidationMessageType.OTHER,
-                "This is soooo wrong!");
+            "This is soooo wrong!");
         ValidateDraftResponse validationResponse = new ValidateDraftResponse(ValidationStatus.INVALID, Collections.singletonList(valMsg));
         WebCertUser user = createUser();
         Utlatande utlatande = mock(Utlatande.class);
@@ -414,7 +411,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
     @Test
     public void testSaveDraftSecondSave() throws Exception {
         ValidationMessage valMsg = new ValidationMessage("a.category", "a.field.somewhere", ValidationMessageType.OTHER,
-                "This is soooo wrong!");
+            "This is soooo wrong!");
         ValidateDraftResponse validationResponse = new ValidateDraftResponse(ValidationStatus.INVALID, Collections.singletonList(valMsg));
         WebCertUser user = createUser();
         Utlatande utlatande = mock(Utlatande.class);
@@ -587,7 +584,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         Patient newPatient = getUpdatedPatient();
 
         UpdatePatientOnDraftRequest request = new UpdatePatientOnDraftRequest(newPatient.getPersonId(), utkast.getIntygsId(),
-                utkast.getVersion());
+            utkast.getVersion());
 
         WebCertUser user = createUser();
         Utlatande utlatande = mock(Utlatande.class);
@@ -654,7 +651,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         utkast.setEnhetsId(UTKAST_ENHETS_ID);
 
         UpdatePatientOnDraftRequest request = new UpdatePatientOnDraftRequest(defaultPatient.getPersonId(), utkast.getIntygsId(),
-                utkast.getVersion());
+            utkast.getVersion());
 
         WebCertUser user = createUser();
         Utlatande utlatande = mock(Utlatande.class);
@@ -687,7 +684,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         Patient newPatient = getUpdatedPatient();
 
         UpdatePatientOnDraftRequest request = new UpdatePatientOnDraftRequest(newPatient.getPersonId(), utkast.getIntygsId(),
-                utkast.getVersion());
+            utkast.getVersion());
 
         WebCertUser user = createUser();
         Utlatande utlatande = mock(Utlatande.class);
@@ -710,7 +707,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
     @Test(expected = WebCertServiceException.class)
     public void testUpdatePatientOnDraftThatIsLocked() {
         UpdatePatientOnDraftRequest request = new UpdatePatientOnDraftRequest(defaultPatient.getPersonId(), lockedUtkast.getIntygsId(),
-                lockedUtkast.getVersion());
+            lockedUtkast.getVersion());
 
         WebCertUser user = createUser();
 
@@ -782,7 +779,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         when(mockUtkastRepository.findByIntygsIdAndIntygsTyp(INTYG_ID, "luae_fs")).thenReturn(utkast);
         when(mockUtkastRepository.save(utkast)).thenReturn(utkast);
         when(authoritiesHelper.getIntygstyperForPrivilege(any(UserDetails.class), anyString()))
-                .thenReturn(new HashSet<>(Arrays.asList("lisjp", "luse", "luae_fs", "luae_na")));
+            .thenReturn(new HashSet<>(Arrays.asList("lisjp", "luse", "luae_fs", "luae_na")));
 
         draftService.setKlarForSigneraAndSendStatusMessage(INTYG_ID, "luae_fs");
 
@@ -799,7 +796,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
     @Test(expected = WebCertServiceException.class)
     public void testSetKlarForSigneraStatusMessageSentThrowsExceptionForInvalidIntygsTyp() {
         when(authoritiesHelper.getIntygstyperForPrivilege(any(), any()))
-                .thenReturn(new HashSet<>(Arrays.asList("lisjp", "luse", "luae_fs", "luae_na")));
+            .thenReturn(new HashSet<>(Arrays.asList("lisjp", "luse", "luae_fs", "luae_na")));
         draftService.setKlarForSigneraAndSendStatusMessage(INTYG_ID, INTYG_TYPE);
     }
 
@@ -808,7 +805,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         WebCertUser user = createUser();
         when(userService.getUser()).thenReturn(user);
         when(authoritiesHelper.getIntygstyperForPrivilege(any(UserDetails.class), anyString()))
-                .thenReturn(new HashSet<>(Arrays.asList("lisjp", "luse", "luae_fs", "luae_na")));
+            .thenReturn(new HashSet<>(Arrays.asList("lisjp", "luse", "luae_fs", "luae_na")));
         when(mockUtkastRepository.findByIntygsIdAndIntygsTyp(INTYG_ID, "luae_fs")).thenReturn(signedUtkast);
 
         draftService.setKlarForSigneraAndSendStatusMessage(INTYG_ID, "luae_fs");
@@ -824,7 +821,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         WebCertUser user = createUser();
         when(userService.getUser()).thenReturn(user);
         when(authoritiesHelper.getIntygstyperForPrivilege(any(UserDetails.class), anyString()))
-                .thenReturn(new HashSet<>(Arrays.asList("lisjp", "luse", "luae_fs", "luae_na")));
+            .thenReturn(new HashSet<>(Arrays.asList("lisjp", "luse", "luae_fs", "luae_na")));
         when(mockUtkastRepository.findByIntygsIdAndIntygsTyp(INTYG_ID, "luae_fs")).thenReturn(lockedUtkast);
 
         draftService.setKlarForSigneraAndSendStatusMessage(INTYG_ID, "luae_fs");
@@ -850,7 +847,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
         when(authoritiesHelper.getIntygstyperForFeature(any(), any(), any())).thenReturn(activeModules);
         when(mockUtkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(PERSONNUMMER.getPersonnummerWithDash(), activeModules))
-                .thenReturn(Arrays.asList(db1, db2, doi));
+            .thenReturn(Arrays.asList(db1, db2, doi));
 
         Map<String, Map<String, PreviousIntyg>> res = draftService.checkIfPersonHasExistingIntyg(PERSONNUMMER, createUser());
 
@@ -860,7 +857,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         assertFalse(res.get("utkast").get("doi").isSameVardgivare());
 
         verify(mockUtkastRepository).findAllByPatientPersonnummerAndIntygsTypIn(eq(PERSONNUMMER.getPersonnummerWithDash()),
-                eq(activeModules));
+            eq(activeModules));
     }
 
     @Test
@@ -878,7 +875,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
         when(authoritiesHelper.getIntygstyperForFeature(any(), any(), any())).thenReturn(activeModules);
         when(mockUtkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(PERSONNUMMER.getPersonnummerWithDash(), activeModules))
-                .thenReturn(Arrays.asList(db1, db2));
+            .thenReturn(Arrays.asList(db1, db2));
 
         Map<String, Map<String, PreviousIntyg>> res = draftService.checkIfPersonHasExistingIntyg(PERSONNUMMER, createUser());
 
@@ -887,7 +884,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         assertEquals(res.get("utkast").get("db").getLatestIntygsId(), "db1");
 
         verify(mockUtkastRepository).findAllByPatientPersonnummerAndIntygsTypIn(eq(PERSONNUMMER.getPersonnummerWithDash()),
-                eq(activeModules));
+            eq(activeModules));
     }
 
     @Test
@@ -901,12 +898,12 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         Utkast db2 = createUtkast("db2", 1L, "db", UtkastStatus.SIGNED, LocalDateTime.parse("2018-04-24T00:00:00"), "", null, PERSONNUMMER);
         db2.setVardgivarId(vardgivareId);
         Utkast doi = createUtkast("doi1", 1L, "doi", UtkastStatus.SIGNED, LocalDateTime.parse("2018-04-25T00:00:00"), "", null,
-                PERSONNUMMER);
+            PERSONNUMMER);
         doi.setVardgivarId("other");
 
         when(authoritiesHelper.getIntygstyperForFeature(any(), any(), any())).thenReturn(activeModules);
         when(mockUtkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(PERSONNUMMER.getPersonnummerWithDash(), activeModules))
-                .thenReturn(Arrays.asList(db1, db2, doi));
+            .thenReturn(Arrays.asList(db1, db2, doi));
 
         Map<String, Map<String, PreviousIntyg>> res = draftService.checkIfPersonHasExistingIntyg(PERSONNUMMER, createUser());
 
@@ -916,7 +913,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         assertFalse(res.get("intyg").get("doi").isSameVardgivare());
 
         verify(mockUtkastRepository).findAllByPatientPersonnummerAndIntygsTypIn(eq(PERSONNUMMER.getPersonnummerWithDash()),
-                eq(activeModules));
+            eq(activeModules));
     }
 
     @Test
@@ -932,7 +929,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
         when(authoritiesHelper.getIntygstyperForFeature(any(), any(), any())).thenReturn(activeModules);
         when(mockUtkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(PERSONNUMMER.getPersonnummerWithDash(), activeModules))
-                .thenReturn(Arrays.asList(db1, db2));
+            .thenReturn(Arrays.asList(db1, db2));
 
         Map<String, Map<String, PreviousIntyg>> res = draftService.checkIfPersonHasExistingIntyg(PERSONNUMMER, createUser());
 
@@ -941,7 +938,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         assertEquals(res.get("intyg").get("db").getLatestIntygsId(), "db2");
 
         verify(mockUtkastRepository).findAllByPatientPersonnummerAndIntygsTypIn(eq(PERSONNUMMER.getPersonnummerWithDash()),
-                eq(activeModules));
+            eq(activeModules));
     }
 
     @Test
@@ -957,7 +954,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
         when(authoritiesHelper.getIntygstyperForFeature(any(), any(), any())).thenReturn(activeModules);
         when(mockUtkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(PERSONNUMMER.getPersonnummerWithDash(), activeModules))
-                .thenReturn(Arrays.asList(db1, db2));
+            .thenReturn(Arrays.asList(db1, db2));
 
         Map<String, Map<String, PreviousIntyg>> res = draftService.checkIfPersonHasExistingIntyg(PERSONNUMMER, createUser());
 
@@ -966,7 +963,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         assertEquals(res.get("intyg").get("db").getLatestIntygsId(), "db1");
 
         verify(mockUtkastRepository).findAllByPatientPersonnummerAndIntygsTypIn(eq(PERSONNUMMER.getPersonnummerWithDash()),
-                eq(activeModules));
+            eq(activeModules));
     }
 
     @Test
@@ -1100,7 +1097,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
     private ValidateDraftResponse buildValidationResponse() {
         return new ValidateDraftResponse(ValidationStatus.VALID, Collections.emptyList(),
-                Collections.singletonList(new ValidationMessage("testcategory", "testfield", ValidationMessageType.WARN)));
+            Collections.singletonList(new ValidationMessage("testcategory", "testfield", ValidationMessageType.WARN)));
     }
 
     private Patient buildPatient(String pnr, String fornamn, String efternamn) {
@@ -1112,8 +1109,8 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
     }
 
     private Utkast createUtkast(String intygId, long version, String type, UtkastStatus status, LocalDateTime signeringsDatum,
-            String model,
-            VardpersonReferens vardperson, Personnummer personnummer) {
+        String model,
+        VardpersonReferens vardperson, Personnummer personnummer) {
 
         Utkast utkast = new Utkast();
         utkast.setIntygsId(intygId);

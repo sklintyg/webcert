@@ -18,6 +18,7 @@
  */
 package se.inera.intyg.webcert.web.integration.interactions.createdraftcertificate.v3;
 
+import java.util.Arrays;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.infra.security.authorities.validation.AuthoritiesValidator;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
@@ -30,8 +31,6 @@ import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificaterespo
 import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v3.Intyg;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.TypAvIntyg;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Patient;
-
-import java.util.Arrays;
 
 @Component(value = "createDraftCertificateValidatorImplV2")
 public class CreateDraftCertificateValidatorImpl extends BaseCreateDraftCertificateValidator implements CreateDraftCertificateValidator {
@@ -96,17 +95,17 @@ public class CreateDraftCertificateValidatorImpl extends BaseCreateDraftCertific
     }
 
     private void validateSekretessmarkeringOchIntygsTyp(ResultValidator errors,
-                                                        Personnummer personnummer,
-                                                        TypAvIntyg typAvIntyg,
-                                                        IntygUser user) {
+        Personnummer personnummer,
+        TypAvIntyg typAvIntyg,
+        IntygUser user) {
 
         AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
-        String intygsTyp =  moduleRegistry.getModuleIdFromExternalId(typAvIntyg.getCode());
+        String intygsTyp = moduleRegistry.getModuleIdFromExternalId(typAvIntyg.getCode());
 
         if (!authoritiesValidator.given(user, intygsTyp)
-                .features(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
-                .privilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG)
-                .isVerified()) {
+            .features(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
+            .privilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG)
+            .isVerified()) {
             errors.addError("Du saknar behörighet att skapa intyg med denna typ.");
         } else {
             validateBusinessRulesForSekretessmarkeradPatient(errors, personnummer, intygsTyp, user);

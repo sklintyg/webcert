@@ -18,14 +18,13 @@
  */
 package se.inera.intyg.webcert.fkstub;
 
+import java.util.Collection;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import java.util.Collection;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateanswerresponder.v1.AnswerToFkType;
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificatequestionresponder.v1.QuestionToFkType;
@@ -44,11 +43,13 @@ public class StubRestApi {
     public Collection<QuestionToFkType> fragor() {
         return questionAnswerStore.getQuestions().values();
     }
+
     @DELETE
     @Path("/fragor")
     public void rensaFragor() {
         questionAnswerStore.getQuestions().clear();
     }
+
     @DELETE
     @Path("/fragor/{id}")
     public void rensaFraga(@PathParam("id") String id) {

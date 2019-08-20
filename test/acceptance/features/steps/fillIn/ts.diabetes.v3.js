@@ -19,68 +19,66 @@
 
 /* globals logger, pages, JSON, browser, Promise */
 
-
 var tsdUtkastPageV3 = pages.intyg.ts.diabetes.v3.utkast;
 
-
 module.exports = {
-    fillIn: function(intyg) {
-        'use strict';
-        //Returnera Promise kedja
-        return new Promise(function(resolve) {
-            logger.info('Fyller i ' + intyg.typ + ' formuläret synkront');
-            browser.ignoreSynchronization = true;
-            resolve('Fyller i ' + intyg.typ + '  formuläret synkront');
-        }).then(function() {
-            logger.info('Fyller i patient address det sista vi gör (common)');
-        }).then(function() {
-            //Intyget avser körkortstyper
-            return tsdUtkastPageV3.fillInKorkortstyper(intyg.korkortstyper).then(function() {
-                logger.info('OK - fillInKorkortstyper :' + JSON.stringify(intyg.korkortstyper));
-            }, function(reason) {
-                console.trace(reason);
-                throw ('FEL, fillInKorkortstyper,' + reason);
-            });
-        }).then(function() {
-            //Ange Identitet styrkt genom
-            return tsdUtkastPageV3.fillInIdentitetStyrktGenom(intyg.identitetStyrktGenom).then(function() {
-                logger.info('OK - fillInIdentitetStyrktGenom :' + JSON.stringify(intyg.identitetStyrktGenom));
-            }, function(reason) {
-                console.trace(reason);
-                throw ('FEL, fillInIdentitetStyrktGenom,' + reason);
-            });
-        }).then(function() {
-            //Ange allmänt
-            return tsdUtkastPageV3.fillInAllmant(intyg.allmant).then(function() {
-                logger.info('(1) OK - fillInAllmant :' + JSON.stringify(intyg.allmant));
-            }, function(reason) {
-                console.trace(reason);
-                throw ('(1) FEL, fillInAllmant,' + reason);
-            });
-        }).then(function() {
-            console.log("Ange hypoglykemier efter att körkortstyper är ifyllda");
-            return tsdUtkastPageV3.fillInHypoglykemier(intyg.hypoglykemier).then(function() {
-                logger.info('(2) OK - fillInHypoglykemier :' + JSON.stringify(intyg.hypoglykemier));
-            }, function(reason) {
-                console.trace(reason);
-                throw ('(2) FEL, fillInHypoglykemier,' + reason);
-            });
-        }).then(function() {
-            return tsdUtkastPageV3.fillInSynfunktion(intyg.synfunktion).then(function() {
-                logger.info('(3) OK - fillInSynintyg :' + JSON.stringify(intyg.synfunktion));
-            }, function(reason) {
-                console.trace(reason);
-                throw ('(3) FEL, fillInSynintyg,' + reason);
-            });
-        }).then(function() {
-            return tsdUtkastPageV3.fillInBedomning(intyg.bedomning).then(function() {
-                logger.info('(4) OK - fillInBedomning :' + JSON.stringify(intyg.bedomning));
-            }, function(reason) {
-                console.trace(reason);
-                throw ('(4) FEL, fillInBedomning,' + reason);
-            });
-        }).then(function() {
-            logger.info('TODO - Övriga kommentarer och upplysningar');
-        });
-    }
+  fillIn: function(intyg) {
+    'use strict';
+    //Returnera Promise kedja
+    return new Promise(function(resolve) {
+      logger.info('Fyller i ' + intyg.typ + ' formuläret synkront');
+      browser.ignoreSynchronization = true;
+      resolve('Fyller i ' + intyg.typ + '  formuläret synkront');
+    }).then(function() {
+      logger.info('Fyller i patient address det sista vi gör (common)');
+    }).then(function() {
+      //Intyget avser körkortstyper
+      return tsdUtkastPageV3.fillInKorkortstyper(intyg.korkortstyper).then(function() {
+        logger.info('OK - fillInKorkortstyper :' + JSON.stringify(intyg.korkortstyper));
+      }, function(reason) {
+        console.trace(reason);
+        throw ('FEL, fillInKorkortstyper,' + reason);
+      });
+    }).then(function() {
+      //Ange Identitet styrkt genom
+      return tsdUtkastPageV3.fillInIdentitetStyrktGenom(intyg.identitetStyrktGenom).then(function() {
+        logger.info('OK - fillInIdentitetStyrktGenom :' + JSON.stringify(intyg.identitetStyrktGenom));
+      }, function(reason) {
+        console.trace(reason);
+        throw ('FEL, fillInIdentitetStyrktGenom,' + reason);
+      });
+    }).then(function() {
+      //Ange allmänt
+      return tsdUtkastPageV3.fillInAllmant(intyg.allmant).then(function() {
+        logger.info('(1) OK - fillInAllmant :' + JSON.stringify(intyg.allmant));
+      }, function(reason) {
+        console.trace(reason);
+        throw ('(1) FEL, fillInAllmant,' + reason);
+      });
+    }).then(function() {
+      console.log("Ange hypoglykemier efter att körkortstyper är ifyllda");
+      return tsdUtkastPageV3.fillInHypoglykemier(intyg.hypoglykemier).then(function() {
+        logger.info('(2) OK - fillInHypoglykemier :' + JSON.stringify(intyg.hypoglykemier));
+      }, function(reason) {
+        console.trace(reason);
+        throw ('(2) FEL, fillInHypoglykemier,' + reason);
+      });
+    }).then(function() {
+      return tsdUtkastPageV3.fillInSynfunktion(intyg.synfunktion).then(function() {
+        logger.info('(3) OK - fillInSynintyg :' + JSON.stringify(intyg.synfunktion));
+      }, function(reason) {
+        console.trace(reason);
+        throw ('(3) FEL, fillInSynintyg,' + reason);
+      });
+    }).then(function() {
+      return tsdUtkastPageV3.fillInBedomning(intyg.bedomning).then(function() {
+        logger.info('(4) OK - fillInBedomning :' + JSON.stringify(intyg.bedomning));
+      }, function(reason) {
+        console.trace(reason);
+        throw ('(4) FEL, fillInBedomning,' + reason);
+      });
+    }).then(function() {
+      logger.info('TODO - Övriga kommentarer och upplysningar');
+    });
+  }
 };

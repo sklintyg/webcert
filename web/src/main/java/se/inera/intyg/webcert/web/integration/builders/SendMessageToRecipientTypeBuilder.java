@@ -18,6 +18,8 @@
  */
 package se.inera.intyg.webcert.web.integration.builders;
 
+import static se.inera.intyg.common.support.Constants.KV_AMNE_CODE_SYSTEM;
+
 import org.apache.commons.lang3.StringUtils;
 import se.inera.intyg.common.support.modules.converter.InternalConverterUtil;
 import se.inera.intyg.infra.integration.hsa.model.AbstractVardenhet;
@@ -32,8 +34,6 @@ import se.riv.clinicalprocess.healthcond.certificate.v3.Enhet;
 import se.riv.clinicalprocess.healthcond.certificate.v3.HosPersonal;
 import se.riv.clinicalprocess.healthcond.certificate.v3.MeddelandeReferens;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Vardgivare;
-
-import static se.inera.intyg.common.support.Constants.KV_AMNE_CODE_SYSTEM;
 
 public final class SendMessageToRecipientTypeBuilder {
 
@@ -124,7 +124,7 @@ public final class SendMessageToRecipientTypeBuilder {
 
     private static Personnummer createPnr(String personId) {
         return Personnummer.createPersonnummer(personId)
-                .orElseThrow(() -> new IllegalArgumentException("Could not parse passed personnummer: " + personId));
+            .orElseThrow(() -> new IllegalArgumentException("Could not parse passed personnummer: " + personId));
     }
 
 

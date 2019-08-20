@@ -18,11 +18,22 @@
  */
 package se.inera.intyg.webcert.web.converter;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import org.junit.Test;
 import se.inera.intyg.common.support.model.CertificateState;
 import se.inera.intyg.common.support.model.StatusKod;
-import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.common.support.model.UtkastStatus;
+import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.persistence.utkast.model.Signatur;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
@@ -30,15 +41,6 @@ import se.inera.intyg.webcert.web.test.TestIntygFactory;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.Statuskod;
 import se.riv.clinicalprocess.healthcond.certificate.v3.IntygsStatus;
-
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public class IntygDraftsConverterTest {
 
@@ -79,7 +81,7 @@ public class IntygDraftsConverterTest {
         Personnummer patientId = Personnummer.createPersonnummer("19121212-1212").get();
 
         List<Utkast> utkastList = Collections.singletonList(TestIntygFactory.createUtkast(id, modfied, type, updatedSignedBy,
-                updatedSignedByHsaId, UtkastStatus.DRAFT_COMPLETE, patientId));
+            updatedSignedByHsaId, UtkastStatus.DRAFT_COMPLETE, patientId));
 
         List<ListIntygEntry> res = IntygDraftsConverter.convertUtkastsToListIntygEntries(utkastList, null);
 

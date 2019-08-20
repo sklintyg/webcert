@@ -18,11 +18,14 @@
  */
 package se.inera.intyg.webcert.persistence.legacy.model;
 
+import java.time.LocalDateTime;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.PrePersist;
+import javax.persistence.Table;
 import org.hibernate.annotations.Type;
 import se.inera.intyg.schemas.contract.Personnummer;
-
-import javax.persistence.*;
-import java.time.LocalDateTime;
 
 /**
  * Entity for a Medcert certificate migrated into Webcert.

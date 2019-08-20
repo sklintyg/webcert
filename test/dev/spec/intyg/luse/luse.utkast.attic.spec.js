@@ -31,95 +31,96 @@ var intygGenerator = wcTestTools.intygGenerator;
 
 describe('Luse attic tests', function() {
 
-    var intygsId;
+  var intygsId;
 
-    beforeAll(function() {
-        browser.ignoreSynchronization = false;
-        specHelper.login();
+  beforeAll(function() {
+    browser.ignoreSynchronization = false;
+    specHelper.login();
 
-        testdataHelper.createUtkast('luse').then(function(response){
-            var utkast = response.body;
-            intygsId = utkast.intygsId;
+    testdataHelper.createUtkast('luse').then(function(response) {
+      var utkast = response.body;
+      intygsId = utkast.intygsId;
 
-            var utkastData = JSON.parse(intygGenerator.buildIntyg({
-                intygType: 'luse',
-                intygId: intygsId,
-                personnr: utkast.patientPersonnummer
-            }).document);
+      var utkastData = JSON.parse(intygGenerator.buildIntyg({
+        intygType: 'luse',
+        intygId: intygsId,
+        personnr: utkast.patientPersonnummer
+      }).document);
 
-            testdataHelper.saveUtkast('luse', intygsId, utkast.version, utkastData, function(){
-            });
-        });
+      testdataHelper.saveUtkast('luse', intygsId, utkast.version, utkastData, function() {
+      });
+    });
+  });
+
+  afterAll(function() {
+    testdataHelper.deleteUtkast(intygsId);
+  });
+
+  it('should load utkast', function() {
+    LuseUtkastPage.get(intygsId);
+    LuseUtkastPage.disableAutosave();
+  });
+
+  describe('annat', function() {
+    it('should still be valid if annat is empty', function() {
+      LuseUtkastPage.baseratPa.annat.checkbox.sendKeys(protractor.Key.SPACE);
+
+      expect(LuseUtkastPage.baseratPa.annat.datum.getAttribute('value')).toBe('');
+      expect(LuseUtkastPage.baseratPa.annat.beskrivning.isPresent()).toBeFalsy();
+      // annatBeskrivning should be removed from the model sent to the server
+      // if it is still present we should get a validationerror here.
     });
 
-    afterAll(function() {
-        testdataHelper.deleteUtkast(intygsId);
+    it('should restore annatBeskrivning if annat is specified again', function() {
+      LuseUtkastPage.baseratPa.annat.datum.sendKeys('2016-12-12');
+
+      expect(LuseUtkastPage.baseratPa.annat.datum.getAttribute('value')).toBe('2016-12-12');
+      expect(LuseUtkastPage.baseratPa.annat.beskrivning.getAttribute('value')).toBe('Annat underlag.');
+    });
+  });
+  describe('underlag', function() {
+    it('should still be valid if underlagFinns is set to no', function() {
+      LuseUtkastPage.andraMedicinskaUtredningar.finns.NEJ.sendKeys(protractor.Key.SPACE);
+
+      expect(LuseUtkastPage.andraMedicinskaUtredningar.underlagRow(0).underlag.isPresent()).toBeFalsy();
     });
 
-    it('should load utkast', function () {
-        LuseUtkastPage.get(intygsId);
-        LuseUtkastPage.disableAutosave();
+    it('should restore underlag if underlagFinns is set to yes again', function() {
+      LuseUtkastPage.andraMedicinskaUtredningar.finns.JA.sendKeys(protractor.Key.SPACE);
+
+      expect(LuseUtkastPage.andraMedicinskaUtredningar.underlagRow(0).underlag.element(by.css('.dropdown-label span')).getText()).toBe(
+          'Underlag från habiliteringen');
+      expect(LuseUtkastPage.andraMedicinskaUtredningar.underlagRow(0).datum.getAttribute('value')).toBe('2016-04-07');
+      expect(LuseUtkastPage.andraMedicinskaUtredningar.underlagRow(0).information.getAttribute('value')).toBe('Information om utredning.');
+    });
+  });
+
+  describe('skalTillNyBedomning', function() {
+    it('should still be valid if skalTillNyBedomning is set to no', function() {
+      LuseUtkastPage.diagnos.skalTillNyBedomning.NEJ.sendKeys(protractor.Key.SPACE);
+
+      expect(LuseUtkastPage.diagnos.diagnosForNyBedomning.isPresent()).toBeFalsy();
     });
 
-    describe('annat', function() {
-        it('should still be valid if annat is empty', function() {
-            LuseUtkastPage.baseratPa.annat.checkbox.sendKeys(protractor.Key.SPACE);
+    it('should restore diagnosForNyBedomning if skalTillNyBedomning is set to yes again', function() {
+      LuseUtkastPage.diagnos.skalTillNyBedomning.JA.sendKeys(protractor.Key.SPACE);
 
-            expect(LuseUtkastPage.baseratPa.annat.datum.getAttribute('value')).toBe('');
-            expect(LuseUtkastPage.baseratPa.annat.beskrivning.isPresent()).toBeFalsy();
-            // annatBeskrivning should be removed from the model sent to the server
-            // if it is still present we should get a validationerror here.
-        });
-
-        it ('should restore annatBeskrivning if annat is specified again', function() {
-            LuseUtkastPage.baseratPa.annat.datum.sendKeys('2016-12-12');
-
-            expect(LuseUtkastPage.baseratPa.annat.datum.getAttribute('value')).toBe('2016-12-12');
-            expect(LuseUtkastPage.baseratPa.annat.beskrivning.getAttribute('value')).toBe('Annat underlag.');
-        });
+      expect(LuseUtkastPage.diagnos.diagnosForNyBedomning.getAttribute('value')).toBe('Hela diagnosen kan vara trasig');
     });
-    describe('underlag', function() {
-        it('should still be valid if underlagFinns is set to no', function() {
-            LuseUtkastPage.andraMedicinskaUtredningar.finns.NEJ.sendKeys(protractor.Key.SPACE);
+  });
 
-            expect(LuseUtkastPage.andraMedicinskaUtredningar.underlagRow(0).underlag.isPresent()).toBeFalsy();
-        });
+  describe('kontaktMedFk', function() {
+    it('should still be valid if kontaktMedFk is set to no', function() {
+      LuseUtkastPage.kontaktMedFK.sendKeys(protractor.Key.SPACE);
 
-        it('should restore underlag if underlagFinns is set to yes again', function() {
-            LuseUtkastPage.andraMedicinskaUtredningar.finns.JA.sendKeys(protractor.Key.SPACE);
-
-            expect(LuseUtkastPage.andraMedicinskaUtredningar.underlagRow(0).underlag.element(by.css('.dropdown-label span')).getText()).toBe('Underlag från habiliteringen');
-            expect(LuseUtkastPage.andraMedicinskaUtredningar.underlagRow(0).datum.getAttribute('value')).toBe('2016-04-07');
-            expect(LuseUtkastPage.andraMedicinskaUtredningar.underlagRow(0).information.getAttribute('value')).toBe('Information om utredning.');
-        });
+      expect(LuseUtkastPage.anledningTillKontakt.isPresent()).toBeFalsy();
     });
 
-    describe('skalTillNyBedomning', function() {
-        it('should still be valid if skalTillNyBedomning is set to no', function() {
-            LuseUtkastPage.diagnos.skalTillNyBedomning.NEJ.sendKeys(protractor.Key.SPACE);
+    it('should restore anledningTillKontakt if kontaktMedFk is set to yes again', function() {
+      LuseUtkastPage.enableAutosave();
+      LuseUtkastPage.kontaktMedFK.sendKeys(protractor.Key.SPACE);
 
-            expect(LuseUtkastPage.diagnos.diagnosForNyBedomning.isPresent()).toBeFalsy();
-        });
-
-        it('should restore diagnosForNyBedomning if skalTillNyBedomning is set to yes again', function() {
-            LuseUtkastPage.diagnos.skalTillNyBedomning.JA.sendKeys(protractor.Key.SPACE);
-
-            expect(LuseUtkastPage.diagnos.diagnosForNyBedomning.getAttribute('value')).toBe('Hela diagnosen kan vara trasig');
-        });
+      expect(LuseUtkastPage.anledningTillKontakt.getAttribute('value')).toBe('Kontaktinfo.');
     });
-
-    describe('kontaktMedFk', function() {
-        it('should still be valid if kontaktMedFk is set to no', function() {
-            LuseUtkastPage.kontaktMedFK.sendKeys(protractor.Key.SPACE);
-
-            expect(LuseUtkastPage.anledningTillKontakt.isPresent()).toBeFalsy();
-        });
-
-        it('should restore anledningTillKontakt if kontaktMedFk is set to yes again', function() {
-            LuseUtkastPage.enableAutosave();
-            LuseUtkastPage.kontaktMedFK.sendKeys(protractor.Key.SPACE);
-
-            expect(LuseUtkastPage.anledningTillKontakt.getAttribute('value')).toBe('Kontaktinfo.');
-        });
-    });
+  });
 });

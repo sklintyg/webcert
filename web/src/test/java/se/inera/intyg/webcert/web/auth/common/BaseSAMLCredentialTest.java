@@ -18,6 +18,9 @@
  */
 package se.inera.intyg.webcert.web.auth.common;
 
+import static org.mockito.Mockito.mock;
+
+import javax.xml.transform.stream.StreamSource;
 import org.apache.cxf.staxutils.StaxUtils;
 import org.opensaml.DefaultBootstrap;
 import org.opensaml.saml2.core.Assertion;
@@ -32,10 +35,6 @@ import org.springframework.security.saml.SAMLCredential;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import se.inera.intyg.webcert.web.auth.bootstrap.AuthoritiesConfigurationTestSetup;
-
-import javax.xml.transform.stream.StreamSource;
-
-import static org.mockito.Mockito.mock;
 
 /**
  * Base class for tests that needs to build a SAMLCredential from sample XML documents.
@@ -91,7 +90,7 @@ public abstract class BaseSAMLCredentialTest extends AuthoritiesConfigurationTes
 
     private static XMLObject readSamlDocument(String docPath) throws Exception {
         Document doc = StaxUtils.read(new StreamSource(new ClassPathResource(
-                docPath).getInputStream()));
+            docPath).getInputStream()));
         Element documentElement = doc.getDocumentElement();
 
         UnmarshallerFactory unmarshallerFactory = Configuration.getUnmarshallerFactory();

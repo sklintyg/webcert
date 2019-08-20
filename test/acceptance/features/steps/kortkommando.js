@@ -22,23 +22,20 @@
 /*jshint newcap:false */
 //TODO Uppgradera Jshint p.g.a. newcap kommer bli depricated. (klarade inte att ignorera i grunt-task)
 
-
 /*
  *	Stödlib och ramverk
  *
  */
 
 const {
-    Given, // jshint ignore:line
-    When, // jshint ignore:line
-    Then // jshint ignore:line
+  Given, // jshint ignore:line
+  When, // jshint ignore:line
+  Then // jshint ignore:line
 } = require('cucumber');
-
 
 var fkUtkastPage = pages.intyg.fk['7263'].utkast;
 var testdataHelper = wcTestTools.helpers.testdata;
 var helpers = require('./helpers');
-
 
 /*
  *	Stödfunktioner
@@ -52,51 +49,45 @@ var digit;
 
 var pattern = /\d{4}\-\d{2}\-\d{2}/g;
 
-
-
 /*
  *	Test steg
  *
  */
 
-
-
 When(/^jag fyller i ett from datum$/, function() {
-    key = testdataHelper.shuffle(['med25', 'med50', 'med75', 'med100'])[0];
-    var start = testdataHelper.dateFormat(startDate);
-    logger.info('Startdatum: ' + start);
-    return fkUtkastPage.nedsatt[key].from.sendKeys(start);
+  key = testdataHelper.shuffle(['med25', 'med50', 'med75', 'med100'])[0];
+  var start = testdataHelper.dateFormat(startDate);
+  logger.info('Startdatum: ' + start);
+  return fkUtkastPage.nedsatt[key].from.sendKeys(start);
 });
 
-
 When(/^jag fyller i kortkommando som till och med datum$/, function() {
-    digit = Math.floor(Math.random() * 999);
-    var shortcode = 'd' + digit;
-    logger.info('Kortkommando:' + shortcode);
+  digit = Math.floor(Math.random() * 999);
+  var shortcode = 'd' + digit;
+  logger.info('Kortkommando:' + shortcode);
 
-    return fkUtkastPage.nedsatt[key].tom.sendKeys(shortcode).then(function() {
-        return fkUtkastPage.nedsatt[key].tom.sendKeys(protractor.Key.TAB);
-    }).then(function() {
-        return helpers.largeDelay();
-    }).then(function() {
-        return fkUtkastPage.nedsatt[key].tom.getAttribute('value').then(function(dateValue) {
-            date = dateValue;
-        });
-
-
+  return fkUtkastPage.nedsatt[key].tom.sendKeys(shortcode).then(function() {
+    return fkUtkastPage.nedsatt[key].tom.sendKeys(protractor.Key.TAB);
+  }).then(function() {
+    return helpers.largeDelay();
+  }).then(function() {
+    return fkUtkastPage.nedsatt[key].tom.getAttribute('value').then(function(dateValue) {
+      date = dateValue;
     });
+
+  });
 });
 
 Then(/^ska till och med datum räknas ut automatiskt$/, function() {
-    logger.silly(date);
-    var result = pattern.test(date);
-    if (result) {
-        var futureDate = new Date();
-        futureDate.setDate(startDate.getDate() + (digit - 1)); // -1 eftersom from-dagen räknas med 
-        var formattedFutureDate = testdataHelper.dateFormat(futureDate);
-        logger.info('Jämför ' + date + ' med ' + formattedFutureDate + '..');
-        expect(date).to.equal(formattedFutureDate);
-    } else {
-        throw 'Felaktigt datumformat, ' + date;
-    }
+  logger.silly(date);
+  var result = pattern.test(date);
+  if (result) {
+    var futureDate = new Date();
+    futureDate.setDate(startDate.getDate() + (digit - 1)); // -1 eftersom from-dagen räknas med 
+    var formattedFutureDate = testdataHelper.dateFormat(futureDate);
+    logger.info('Jämför ' + date + ' med ' + formattedFutureDate + '..');
+    expect(date).to.equal(formattedFutureDate);
+  } else {
+    throw 'Felaktigt datumformat, ' + date;
+  }
 });

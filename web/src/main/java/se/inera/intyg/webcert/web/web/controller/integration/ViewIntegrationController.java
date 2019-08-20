@@ -18,7 +18,23 @@
  */
 package se.inera.intyg.webcert.web.web.controller.integration;
 
+import static se.inera.intyg.webcert.web.web.controller.integration.IntygIntegrationController.PARAM_CERT_TYPE_VERSION;
+
 import io.swagger.annotations.Api;
+import java.net.URI;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import javax.ws.rs.DefaultValue;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriBuilder;
+import javax.ws.rs.core.UriInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,23 +47,6 @@ import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEn
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.PrepareRedirectToIntyg;
-
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriBuilder;
-import javax.ws.rs.core.UriInfo;
-import java.net.URI;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-
-import static se.inera.intyg.webcert.web.web.controller.integration.IntygIntegrationController.PARAM_CERT_TYPE_VERSION;
 
 /**
  * Controller to enable an external user to access certificates directly from a
@@ -68,8 +67,8 @@ public class ViewIntegrationController extends BaseIntegrationController {
 
     private static final UserOriginType GRANTED_ORIGIN = UserOriginType.READONLY;
 
-    private static final String[] GRANTED_ROLES = new String[] {
-            AuthoritiesConstants.ROLE_LAKARE, AuthoritiesConstants.ROLE_ADMIN
+    private static final String[] GRANTED_ROLES = new String[]{
+        AuthoritiesConstants.ROLE_LAKARE, AuthoritiesConstants.ROLE_ADMIN
     };
 
     private IntegrationService integrationService;
@@ -89,8 +88,8 @@ public class ViewIntegrationController extends BaseIntegrationController {
     @Path("/{intygId}/readonly")
     @PrometheusTimeMethod
     public Response getRedirectToIntyg(@Context UriInfo uriInfo,
-            @PathParam("intygId") String intygId,
-            @DefaultValue("") @QueryParam(PARAM_ENHET_ID) String enhetId) {
+        @PathParam("intygId") String intygId,
+        @DefaultValue("") @QueryParam(PARAM_ENHET_ID) String enhetId) {
 
         validateRequest(intygId, enhetId);
         return handleRedirectToIntyg(uriInfo, intygId, enhetId, getWebCertUser());
@@ -124,7 +123,7 @@ public class ViewIntegrationController extends BaseIntegrationController {
     private Response handleRedirectToIntyg(UriInfo uriInfo, String intygId, String enhetId, WebCertUser user) {
         // Call service
         PrepareRedirectToIntyg prepareRedirectToIntyg =
-                integrationService.prepareRedirectToIntyg(null, intygId, user);
+            integrationService.prepareRedirectToIntyg(null, intygId, user);
 
         // Update user with health care unit
         boolean isUpdated = user.changeValdVardenhet(enhetId);
@@ -137,7 +136,7 @@ public class ViewIntegrationController extends BaseIntegrationController {
         updateUserWithActiveFeatures(user);
 
         LOG.debug("Redirecting to view intyg {} of type {} (version {})", prepareRedirectToIntyg.getIntygId(),
-                prepareRedirectToIntyg.getIntygTyp(), prepareRedirectToIntyg.getIntygTypeVersion());
+            prepareRedirectToIntyg.getIntygTyp(), prepareRedirectToIntyg.getIntygTypeVersion());
         return buildRedirectResponse(uriInfo, prepareRedirectToIntyg);
     }
 
@@ -174,7 +173,7 @@ public class ViewIntegrationController extends BaseIntegrationController {
         // Throw an exception if user already has the integration parameters set
         if (user.getParameters() != null && !user.getParameters().getState().hasUserBeenRedirectedToEnhetsval()) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM,
-                    "This user session is already active and using Webcert. Please use a new user session for each deep integration link.");
+                "This user session is already active and using Webcert. Please use a new user session for each deep integration link.");
         }
 
         return user;
@@ -182,7 +181,7 @@ public class ViewIntegrationController extends BaseIntegrationController {
 
     private void updateUserWithActiveFeatures(WebCertUser webCertUser) {
         webCertUser.setFeatures(commonAuthoritiesResolver
-                .getFeatures(Arrays.asList(webCertUser.getValdVardenhet().getId(), webCertUser.getValdVardgivare().getId())));
+            .getFeatures(Arrays.asList(webCertUser.getValdVardenhet().getId(), webCertUser.getValdVardgivare().getId())));
     }
 
     private void validateRequest(String intygId, String enhetId) {

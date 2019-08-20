@@ -18,51 +18,51 @@
  */
 
 angular.module('webcert').service('webcert.vardenhetFilterModel', [
-    '$cookies',
-    function($cookies) {
-        'use strict';
+  '$cookies',
+  function($cookies) {
+    'use strict';
 
-        this.units = null;
-        this.selectedUnit = null;
+    this.units = null;
+    this.selectedUnit = null;
 
-        this.showInactive = false;
-        this.ALL_ARENDEN = 'wc-all';
+    this.showInactive = false;
+    this.ALL_ARENDEN = 'wc-all';
 
-        this.initialize = function(vardEnheter) {
-            this.units = vardEnheter;
-            if(this.units){
-                this.units = this.units.slice(0, 1)
-                    .concat(this.units.slice(1, this.units.length).sort(
-                        function(a, b) {
-                            return (a.namn > b.namn) - (a.namn < b.namn);
-                        }));
-                this.units.unshift({id: this.ALL_ARENDEN, namn: 'Alla enheter'});
+    this.initialize = function(vardEnheter) {
+      this.units = vardEnheter;
+      if (this.units) {
+        this.units = this.units.slice(0, 1)
+        .concat(this.units.slice(1, this.units.length).sort(
+            function(a, b) {
+              return (a.namn > b.namn) - (a.namn < b.namn);
+            }));
+        this.units.unshift({id: this.ALL_ARENDEN, namn: 'Alla enheter'});
 
-                //initial selection, now handles cases when no enhetsId cookie has been set.
-                if (this.units.length > 2 && $cookies.getObject('enhetsId')) {
-                    this.selectedUnit = selectUnitById(this.units, $cookies.getObject('enhetsId'));
-                } else {
-                    this.selectedUnit = selectFirstUnit(this.units);
-                }
-            }
-        };
-
-        // Local function getting the first care unit's hsa id in the data struct.
-        function selectFirstUnit(units) {
-            if (typeof units === 'undefined' || units.length === 0) {
-                return null;
-            } else {
-                return units[0];
-            }
+        //initial selection, now handles cases when no enhetsId cookie has been set.
+        if (this.units.length > 2 && $cookies.getObject('enhetsId')) {
+          this.selectedUnit = selectUnitById(this.units, $cookies.getObject('enhetsId'));
+        } else {
+          this.selectedUnit = selectFirstUnit(this.units);
         }
+      }
+    };
 
-        function selectUnitById(units, unitName) {
-            for (var count = 0; count < units.length; count++) {
-                if (units[count].id === unitName) {
-                    return units[count];
-                }
-            }
-            return selectFirstUnit(units);
+    // Local function getting the first care unit's hsa id in the data struct.
+    function selectFirstUnit(units) {
+      if (typeof units === 'undefined' || units.length === 0) {
+        return null;
+      } else {
+        return units[0];
+      }
+    }
+
+    function selectUnitById(units, unitName) {
+      for (var count = 0; count < units.length; count++) {
+        if (units[count].id === unitName) {
+          return units[count];
         }
+      }
+      return selectFirstUnit(units);
+    }
 
-    }]);
+  }]);

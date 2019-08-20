@@ -19,7 +19,8 @@
 package se.inera.intyg.webcert.persistence.fmb.model.fmb;
 
 import com.google.common.collect.Lists;
-import org.hibernate.annotations.Type;
+import java.time.LocalDateTime;
+import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -30,8 +31,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import java.time.LocalDateTime;
-import java.util.List;
+import org.hibernate.annotations.Type;
 
 @Entity
 @Table(name = "FMB_DIAGNOS_INFORMATION")
@@ -71,13 +71,13 @@ public final class DiagnosInformation {
     }
 
     private DiagnosInformation(
-            final String forsakringsmedicinskInformation,
-            final String symptomPrognosBehandling,
-            final String informationOmRehabilitering,
-            final List<Beskrivning> beskrivningList,
-            final List<Icd10Kod> icd10KodList,
-            final List<Referens> referensList,
-            final LocalDateTime senastUppdaterad) {
+        final String forsakringsmedicinskInformation,
+        final String symptomPrognosBehandling,
+        final String informationOmRehabilitering,
+        final List<Beskrivning> beskrivningList,
+        final List<Icd10Kod> icd10KodList,
+        final List<Referens> referensList,
+        final LocalDateTime senastUppdaterad) {
         this.forsakringsmedicinskInformation = forsakringsmedicinskInformation;
         this.symptomPrognosBehandling = symptomPrognosBehandling;
         this.informationOmRehabilitering = informationOmRehabilitering;
@@ -120,6 +120,7 @@ public final class DiagnosInformation {
     }
 
     public static final class DiagnosInformationBuilder {
+
         private String forsakringsmedicinskInformation;
         private String symptomPrognosBehandling;
         private String informationOmRehabilitering;
@@ -172,13 +173,13 @@ public final class DiagnosInformation {
 
         public DiagnosInformation build() {
             return new DiagnosInformation(
-                    forsakringsmedicinskInformation,
-                    symptomPrognosBehandling,
-                    informationOmRehabilitering,
-                    beskrivningList,
-                    icd10KodList,
-                    referensList,
-                    senastUppdaterad);
+                forsakringsmedicinskInformation,
+                symptomPrognosBehandling,
+                informationOmRehabilitering,
+                beskrivningList,
+                icd10KodList,
+                referensList,
+                senastUppdaterad);
         }
     }
 }

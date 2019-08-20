@@ -18,7 +18,12 @@
  */
 package se.inera.intyg.webcert.web.converter.util;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+
 import iso.v21090.dt.v1.II;
+import java.time.LocalDateTime;
 import org.junit.Test;
 import se.inera.ifv.insuranceprocess.healthreporting.medcertqa.v1.Amnetyp;
 import se.inera.ifv.insuranceprocess.healthreporting.medcertqa.v1.InnehallType;
@@ -29,10 +34,6 @@ import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.persistence.fragasvar.model.Amne;
 import se.inera.intyg.webcert.persistence.fragasvar.model.IntygsReferens;
 import se.inera.intyg.webcert.persistence.fragasvar.model.Vardperson;
-
-import java.time.LocalDateTime;
-
-import static org.junit.Assert.*;
 
 public class ConvertToFKTypesTest {
 
@@ -248,7 +249,7 @@ public class ConvertToFKTypesTest {
 
     private Personnummer createPnr(String personId) {
         return Personnummer.createPersonnummer(personId)
-                .orElseThrow(() -> new IllegalArgumentException("Could not parse passed personnummer: " + personId));
+            .orElseThrow(() -> new IllegalArgumentException("Could not parse passed personnummer: " + personId));
     }
 
 }

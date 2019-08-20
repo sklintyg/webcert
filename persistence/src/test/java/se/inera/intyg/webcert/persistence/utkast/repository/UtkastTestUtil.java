@@ -21,7 +21,6 @@ package se.inera.intyg.webcert.persistence.utkast.repository;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
-
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.common.enumerations.SignaturTyp;
 import se.inera.intyg.common.support.model.UtkastStatus;
@@ -60,63 +59,65 @@ public final class UtkastTestUtil {
     public static final String INTYGSTYP_DB = "db";
 
     public static final String MODEL = "This is the JSON model of this Intyg "
-            + "with some interesting scandinavian characters like Å, Ä and ö added";
+        + "with some interesting scandinavian characters like Å, Ä and ö added";
 
     public static Utkast buildUtkast(String enhetsId) {
         return buildUtkast(enhetsId, UtkastStatus.DRAFT_INCOMPLETE, INTYGSTYP_FK7263, HOS_PERSON1_ID, HOS_PERSON1_NAMN,
-                PERSON_NUMMER, PERSON_FORNAMN, PERSON_MELLANNAMN, PERSON_EFTERNAMN, MODEL, null);
+            PERSON_NUMMER, PERSON_FORNAMN, PERSON_MELLANNAMN, PERSON_EFTERNAMN, MODEL, null);
     }
 
     public static Utkast buildUtkast(String enhetsId, String type) {
         return buildUtkast(enhetsId, UtkastStatus.DRAFT_INCOMPLETE, type, HOS_PERSON1_ID, HOS_PERSON1_NAMN,
-                PERSON_NUMMER, PERSON_FORNAMN, PERSON_MELLANNAMN, PERSON_EFTERNAMN, MODEL, null);
+            PERSON_NUMMER, PERSON_FORNAMN, PERSON_MELLANNAMN, PERSON_EFTERNAMN, MODEL, null);
     }
 
     public static Utkast buildUtkast(String enhetsId, UtkastStatus status) {
         return buildUtkast(enhetsId, status, INTYGSTYP_FK7263, HOS_PERSON1_ID, HOS_PERSON1_NAMN, PERSON_NUMMER,
-                PERSON_FORNAMN, PERSON_MELLANNAMN, PERSON_EFTERNAMN, MODEL, null);
+            PERSON_FORNAMN, PERSON_MELLANNAMN, PERSON_EFTERNAMN, MODEL, null);
     }
 
     public static Utkast buildUtkast(String intygsId, String enhetsId, UtkastStatus status) {
         return buildUtkast(intygsId, enhetsId, status, INTYGSTYP_FK7263, HOS_PERSON1_ID, HOS_PERSON1_NAMN, PERSON_NUMMER,
-                PERSON_FORNAMN, PERSON_MELLANNAMN, PERSON_EFTERNAMN, MODEL, null);
+            PERSON_FORNAMN, PERSON_MELLANNAMN, PERSON_EFTERNAMN, MODEL, null);
     }
 
-    public static Utkast buildUtkast(String intygsId, String enhetsId, UtkastStatus status, String relationIntygsId, RelationKod relationKod, LocalDateTime senastSparadDatum) {
+    public static Utkast buildUtkast(String intygsId, String enhetsId, UtkastStatus status, String relationIntygsId,
+        RelationKod relationKod, LocalDateTime senastSparadDatum) {
         return buildUtkast(intygsId, enhetsId, status, INTYGSTYP_FK7263, HOS_PERSON1_ID, HOS_PERSON1_NAMN, PERSON_NUMMER,
-                PERSON_FORNAMN, PERSON_MELLANNAMN, PERSON_EFTERNAMN, MODEL, senastSparadDatum, relationIntygsId, relationKod, "vg1");
+            PERSON_FORNAMN, PERSON_MELLANNAMN, PERSON_EFTERNAMN, MODEL, senastSparadDatum, relationIntygsId, relationKod, "vg1");
     }
 
     public static Utkast buildUtkast(String enhetsId, String hoSPersonId, String hoSPersonNamn, UtkastStatus status,
-            String sparadStr) {
+        String sparadStr) {
         LocalDateTime sparad = LocalDate.parse(sparadStr).atStartOfDay();
         return buildUtkast(enhetsId, status, INTYGSTYP_FK7263, hoSPersonId, hoSPersonNamn, PERSON_NUMMER,
-                PERSON_FORNAMN, PERSON_MELLANNAMN, PERSON_EFTERNAMN, MODEL, sparad);
+            PERSON_FORNAMN, PERSON_MELLANNAMN, PERSON_EFTERNAMN, MODEL, sparad);
     }
 
     public static Utkast buildUtkast(String enhetsId, String relationIntygsId, RelationKod relationKod) {
-        return buildUtkast(UUID.randomUUID().toString(), enhetsId, UtkastStatus.DRAFT_INCOMPLETE, INTYGSTYP_FK7263, HOS_PERSON1_ID, HOS_PERSON1_NAMN,
-                PERSON_NUMMER, PERSON_FORNAMN, PERSON_MELLANNAMN, PERSON_EFTERNAMN, MODEL, null, relationIntygsId, relationKod, enhetsId);
+        return buildUtkast(UUID.randomUUID().toString(), enhetsId, UtkastStatus.DRAFT_INCOMPLETE, INTYGSTYP_FK7263, HOS_PERSON1_ID,
+            HOS_PERSON1_NAMN,
+            PERSON_NUMMER, PERSON_FORNAMN, PERSON_MELLANNAMN, PERSON_EFTERNAMN, MODEL, null, relationIntygsId, relationKod, enhetsId);
     }
 
     public static Utkast buildUtkast(String enhetsId, UtkastStatus status, String type, String hoSPersonId,
-            String hoSPersonNamn, Personnummer personNummer, String personFornamn, String personMellannamn,
-            String personEfternamn, String model, LocalDateTime senastSparadDatum) {
+        String hoSPersonNamn, Personnummer personNummer, String personFornamn, String personMellannamn,
+        String personEfternamn, String model, LocalDateTime senastSparadDatum) {
         return buildUtkast(UUID.randomUUID().toString(), enhetsId, status, type, hoSPersonId, hoSPersonNamn,
-                personNummer, personFornamn, personMellannamn, personEfternamn, model, senastSparadDatum);
+            personNummer, personFornamn, personMellannamn, personEfternamn, model, senastSparadDatum);
     }
 
     public static Utkast buildUtkast(String intygsId, String enhetsId, UtkastStatus status, String type,
-            String hoSPersonId, String hoSPersonNamn, Personnummer personNummer, String personFornamn,
-            String personMellannamn, String personEfternamn, String model, LocalDateTime senastSparadDatum) {
+        String hoSPersonId, String hoSPersonNamn, Personnummer personNummer, String personFornamn,
+        String personMellannamn, String personEfternamn, String model, LocalDateTime senastSparadDatum) {
         return buildUtkast(intygsId, enhetsId, status, type, hoSPersonId, hoSPersonNamn, personNummer, personFornamn, personMellannamn,
-                personEfternamn, model, senastSparadDatum, null, null, enhetsId);
+            personEfternamn, model, senastSparadDatum, null, null, enhetsId);
     }
 
     public static Utkast buildUtkast(String intygsId, String enhetsId, UtkastStatus status, String type,
-            String hoSPersonId, String hoSPersonNamn, Personnummer personNummer, String personFornamn,
-            String personMellannamn, String personEfternamn, String model, LocalDateTime senastSparadDatum, String relationIntygsId,
-            RelationKod relationKod, String vardgivarId) {
+        String hoSPersonId, String hoSPersonNamn, Personnummer personNummer, String personFornamn,
+        String personMellannamn, String personEfternamn, String model, LocalDateTime senastSparadDatum, String relationIntygsId,
+        RelationKod relationKod, String vardgivarId) {
         Utkast intyg = new Utkast();
         intyg.setVardgivarId(vardgivarId);
         intyg.setIntygsId(intygsId);

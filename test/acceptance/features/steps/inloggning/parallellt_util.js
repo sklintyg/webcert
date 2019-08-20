@@ -23,109 +23,110 @@ const logInAsUserRole = require('./login.helpers.js').logInAsUserRole;
 const helpers = require('../helpers.js');
 
 module.exports = {
-    login: function(userObj, url, secondBrowser) {
-        return logInAsUserRole(userObj.userObj, userObj.role, false, secondBrowser).then(function(value) {
-            return secondBrowser.get(url).then(function() {
-                logger.info('Default browser sleep for 5 sec,\t' + new Date());
-                return browser.sleep(5000).then(function() {
-                    return Promise.resolve();
-                });
-            });
+  login: function(userObj, url, secondBrowser) {
+    return logInAsUserRole(userObj.userObj, userObj.role, false, secondBrowser).then(function(value) {
+      return secondBrowser.get(url).then(function() {
+        logger.info('Default browser sleep for 5 sec,\t' + new Date());
+        return browser.sleep(5000).then(function() {
+          return Promise.resolve();
         });
-    },
-    changeFields: function(secondBrowser, elementId) {
-        logger.info('Default browser done sleeping,\t\t' + new Date());
+      });
+    });
+  },
+  changeFields: function(secondBrowser, elementId) {
+    logger.info('Default browser done sleeping,\t\t' + new Date());
 
-        var customBrowser = browser.findElement(by.id(elementId));
-        var randomTxt = helpers.randomTextString();
-        return customBrowser.sendKeys(randomTxt).then(function() {
-            // Second browser
-            var customBrowser1 = secondBrowser.findElement(by.id(elementId));
-            var randomTxt1 = helpers.randomTextString();
-            return customBrowser1.sendKeys(randomTxt1).then(function() {
-                //var saveErrorMessage = secondBrowser.findElement(by.binding('viewState.common.error.saveErrorMessage'));
-                var saveErrorMessage = secondBrowser.findElement(by.binding('utkastViewState.common.error.saveErrorMessage'));
-                return expect(saveErrorMessage.getText()).to.eventually.contain('Utkastet har samtidigt ändrats av en annan användare och kunde därför inte sparas. Ladda om sidan och försök igen. Utkastet ändrades av:');
-            });
-        });
-    },
-    refreshBrowser: function(secondBrowser) {
-        return secondBrowser.driver.getCurrentUrl().then(function(url) {
-            secondBrowser.ignoreSynchronization = true;
-            return secondBrowser.sleep(2000).then(function() {
-                return secondBrowser.driver.navigate().refresh().then(function() {
-                    return secondBrowser.sleep(2000).then(function() {
-                        return secondBrowser.driver.switchTo().alert().then(function(alert) {
-                                alert.accept();
-                                secondBrowser.ignoreSynchronization = false;
-                                return secondBrowser.driver.get(url);
+    var customBrowser = browser.findElement(by.id(elementId));
+    var randomTxt = helpers.randomTextString();
+    return customBrowser.sendKeys(randomTxt).then(function() {
+      // Second browser
+      var customBrowser1 = secondBrowser.findElement(by.id(elementId));
+      var randomTxt1 = helpers.randomTextString();
+      return customBrowser1.sendKeys(randomTxt1).then(function() {
+        //var saveErrorMessage = secondBrowser.findElement(by.binding('viewState.common.error.saveErrorMessage'));
+        var saveErrorMessage = secondBrowser.findElement(by.binding('utkastViewState.common.error.saveErrorMessage'));
+        return expect(saveErrorMessage.getText()).to.eventually.contain(
+            'Utkastet har samtidigt ändrats av en annan användare och kunde därför inte sparas. Ladda om sidan och försök igen. Utkastet ändrades av:');
+      });
+    });
+  },
+  refreshBrowser: function(secondBrowser) {
+    return secondBrowser.driver.getCurrentUrl().then(function(url) {
+      secondBrowser.ignoreSynchronization = true;
+      return secondBrowser.sleep(2000).then(function() {
+        return secondBrowser.driver.navigate().refresh().then(function() {
+          return secondBrowser.sleep(2000).then(function() {
+            return secondBrowser.driver.switchTo().alert().then(function(alert) {
+                  alert.accept();
+                  secondBrowser.ignoreSynchronization = false;
+                  return secondBrowser.driver.get(url);
 
-                            },
-                            function(err) {
-                                secondBrowser.ignoreSynchronization = false;
-                                return secondBrowser.driver.get(url);
-                            });
-                    });
+                },
+                function(err) {
+                  secondBrowser.ignoreSynchronization = false;
+                  return secondBrowser.driver.get(url);
                 });
+          });
+        });
+      });
+    });
+  },
+  closeBrowser: function(forkedBrowser) {
+    return forkedBrowser.quit().then(function() {
+      if (!forkedBrowser.getSession()) {
+        logger.info('Forked browser closed (quit)');
+        return Promise.resolve();
+      }
+    });
+  },
+  findErrorMsg: function(secondBrowser, elementIds, msg) {
+    return secondBrowser.findElement(by.id(elementIds.firstBtn)).sendKeys(protractor.Key.SPACE).then(function() {
+      if (elementIds.radioBtn) {
+        return secondBrowser.findElement(by.id(elementIds.radioBtn)).sendKeys(protractor.Key.SPACE).then(function() {
+          return secondBrowser.findElement(by.id(elementIds.btnDialog)).sendKeys(protractor.Key.SPACE).then(function() {
+            return secondBrowser.findElement(by.css(elementIds.alertDanger)).then(function(elem) {
+              return browser.sleep(2000).then(function() {
+                return elem.getText().then(function(text) {
+                  return expect(text).to.have.string(msg);
+                });
+              });
             });
+          });
         });
-    },
-    closeBrowser: function(forkedBrowser) {
-        return forkedBrowser.quit().then(function() {
-            if (!forkedBrowser.getSession()) {
-                logger.info('Forked browser closed (quit)');
-                return Promise.resolve();
-            }
-        });
-    },
-    findErrorMsg: function(secondBrowser, elementIds, msg) {
-        return secondBrowser.findElement(by.id(elementIds.firstBtn)).sendKeys(protractor.Key.SPACE).then(function() {
-            if (elementIds.radioBtn) {
-                return secondBrowser.findElement(by.id(elementIds.radioBtn)).sendKeys(protractor.Key.SPACE).then(function() {
-                    return secondBrowser.findElement(by.id(elementIds.btnDialog)).sendKeys(protractor.Key.SPACE).then(function() {
-                        return secondBrowser.findElement(by.css(elementIds.alertDanger)).then(function(elem) {
-                            return browser.sleep(2000).then(function() {
-                                return elem.getText().then(function(text) {
-                                    return expect(text).to.have.string(msg);
-                                });
-                            });
-                        });
-                    });
-                });
-            } else {
-                return secondBrowser.findElement(by.id(elementIds.btnDialog)).sendKeys(protractor.Key.SPACE).then(function() {
-                    return secondBrowser.findElement(by.css(elementIds.alertDanger)).then(function(elem) {
-                        return browser.sleep(2000).then(function() {
-                            return elem.getText().then(function(text) {
-                                return expect(text).to.have.string(msg);
-                            });
-                        });
-                    });
-                });
-            }
-        });
-    },
-    clickModalBtn: function(browser, elementIds) {
-        return browser.findElement(by.id(elementIds.firstBtn)).sendKeys(protractor.Key.SPACE).then(function() {
-            return browser.findElement(by.id(elementIds.btnDialog)).sendKeys(protractor.Key.SPACE).then(function() {
-                return Promise.resolve();
+      } else {
+        return secondBrowser.findElement(by.id(elementIds.btnDialog)).sendKeys(protractor.Key.SPACE).then(function() {
+          return secondBrowser.findElement(by.css(elementIds.alertDanger)).then(function(elem) {
+            return browser.sleep(2000).then(function() {
+              return elem.getText().then(function(text) {
+                return expect(text).to.have.string(msg);
+              });
             });
-
+          });
         });
-    },
+      }
+    });
+  },
+  clickModalBtn: function(browser, elementIds) {
+    return browser.findElement(by.id(elementIds.firstBtn)).sendKeys(protractor.Key.SPACE).then(function() {
+      return browser.findElement(by.id(elementIds.btnDialog)).sendKeys(protractor.Key.SPACE).then(function() {
+        return Promise.resolve();
+      });
 
-    askNewQuestion: function(forkedBrowser) {
-        return forkedBrowser.findElement(by.id('arende-filter-administrativafragor')).click().then(function() {
-            return forkedBrowser.sleep(1000);
-        }).then(function() {
-            return forkedBrowser.findElement(by.id('askArendeBtn')).sendKeys(protractor.Key.SPACE);
-        }).then(function() {
-            return forkedBrowser.findElement(by.id('arendeNewModelText')).sendKeys(helpers.randomTextString());
-        }).then(function() {
-            return forkedBrowser.findElement(by.cssContainingText('option', 'Kontakt')).click();
-        }).then(function() {
-            return forkedBrowser.findElement(by.id('sendArendeBtn')).sendKeys(protractor.Key.SPACE);
-        });
-    }
+    });
+  },
+
+  askNewQuestion: function(forkedBrowser) {
+    return forkedBrowser.findElement(by.id('arende-filter-administrativafragor')).click().then(function() {
+      return forkedBrowser.sleep(1000);
+    }).then(function() {
+      return forkedBrowser.findElement(by.id('askArendeBtn')).sendKeys(protractor.Key.SPACE);
+    }).then(function() {
+      return forkedBrowser.findElement(by.id('arendeNewModelText')).sendKeys(helpers.randomTextString());
+    }).then(function() {
+      return forkedBrowser.findElement(by.cssContainingText('option', 'Kontakt')).click();
+    }).then(function() {
+      return forkedBrowser.findElement(by.id('sendArendeBtn')).sendKeys(protractor.Key.SPACE);
+    });
+  }
 
 };

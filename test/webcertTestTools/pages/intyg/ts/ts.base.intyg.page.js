@@ -29,55 +29,55 @@ var BaseIntyg = require('../base.intyg.page.js');
 var _ = require('lodash');
 
 var TsBaseIntyg = BaseIntyg._extend({
-    init: function init() {
-        init._super.call(this);
+  init: function init() {
+    init._super.call(this);
 
-        this.idkontroll = element(by.id('vardkontakt-idkontroll'));
-        this.korkortstyp = element(by.id('intygAvser-korkortstyp'));
-        this.idStarktGenom = element(by.id('vardkontakt-idkontroll'));
+    this.idkontroll = element(by.id('vardkontakt-idkontroll'));
+    this.korkortstyp = element(by.id('intygAvser-korkortstyp'));
+    this.idStarktGenom = element(by.id('vardkontakt-idkontroll'));
 
-        this.falt1 = {
-            bedomning: element(by.id('bedomning-korkortstyp'))
-        };
+    this.falt1 = {
+      bedomning: element(by.id('bedomning-korkortstyp'))
+    };
 
-        this.kommentar = element(by.id('kommentar'));
-    },
-    verifieraIntygetAvser: function(korkortstyper, korkort) {
+    this.kommentar = element(by.id('kommentar'));
+  },
+  verifieraIntygetAvser: function(korkortstyper, korkort) {
 
-        var sorted = _.sortBy(korkortstyper, function(x) {
-            return _.indexOf(korkort, x);
-        });
+    var sorted = _.sortBy(korkortstyper, function(x) {
+      return _.indexOf(korkort, x);
+    });
 
-        var text = _.join(sorted, ', ');
+    var text = _.join(sorted, ', ');
 
-        expect(this.korkortstyp.getText()).toBe(text);
-    },
-    verifieraIdKontroll: function(identitetStyrktGenom) {
+    expect(this.korkortstyp.getText()).toBe(text);
+  },
+  verifieraIdKontroll: function(identitetStyrktGenom) {
 
-        if (identitetStyrktGenom === 'Försäkran enligt 18 kap. 4§') {
-            identitetStyrktGenom = 'Försäkran enligt 18 kap 4 §';
-        }
-
-        if (identitetStyrktGenom === 'Företagskort eller tjänstekort') {
-            identitetStyrktGenom = 'Företagskort eller tjänstekort.';
-        }
-
-        expect(this.idkontroll.getText()).toBe(identitetStyrktGenom);
-    },
-    verifieraBedomning: function(bedomning, korkort) {
-
-        if (bedomning.stallningstagande === 'Kan inte ta ställning') {
-            expect(this.falt1.bedomning.getText()).toBe(bedomning.stallningstagande);
-        } else {
-            var sorted = _.sortBy(bedomning.behorigheter, function(x) {
-                return _.indexOf(korkort, x);
-            });
-
-            var text = _.join(sorted, ', ');
-
-            expect(this.falt1.bedomning.getText()).toBe(text);
-        }
+    if (identitetStyrktGenom === 'Försäkran enligt 18 kap. 4§') {
+      identitetStyrktGenom = 'Försäkran enligt 18 kap 4 §';
     }
+
+    if (identitetStyrktGenom === 'Företagskort eller tjänstekort') {
+      identitetStyrktGenom = 'Företagskort eller tjänstekort.';
+    }
+
+    expect(this.idkontroll.getText()).toBe(identitetStyrktGenom);
+  },
+  verifieraBedomning: function(bedomning, korkort) {
+
+    if (bedomning.stallningstagande === 'Kan inte ta ställning') {
+      expect(this.falt1.bedomning.getText()).toBe(bedomning.stallningstagande);
+    } else {
+      var sorted = _.sortBy(bedomning.behorigheter, function(x) {
+        return _.indexOf(korkort, x);
+      });
+
+      var text = _.join(sorted, ', ');
+
+      expect(this.falt1.bedomning.getText()).toBe(text);
+    }
+  }
 });
 
 module.exports = TsBaseIntyg;

@@ -23,7 +23,6 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -84,7 +83,7 @@ public class RedisSavedRequestCache implements RequestCache {
     public void saveRequest(HttpServletRequest request, HttpServletResponse response) {
         if (requestMatcher.matches(request)) {
             DefaultSavedRequest savedRequest = new DefaultSavedRequest(request,
-                    portResolver);
+                portResolver);
             String requestedSessionId = getSessionId(request);
 
             if (requestedSessionId != null) {
@@ -92,7 +91,7 @@ public class RedisSavedRequestCache implements RequestCache {
                 // AbstractAuthenticationProcessingFilter
                 // for redirection after successful authentication (SEC-29)
                 valueOps.set(buildKey(requestedSessionId), savedRequest, TIMEOUT,
-                        TimeUnit.MINUTES);
+                    TimeUnit.MINUTES);
                 logger.debug("DefaultSavedRequest added to Redis: " + savedRequest);
             }
         } else {
@@ -105,7 +104,7 @@ public class RedisSavedRequestCache implements RequestCache {
      */
     @Override
     public SavedRequest getRequest(HttpServletRequest currentRequest,
-            HttpServletResponse response) {
+        HttpServletResponse response) {
 
         String requestedSessionId = getSessionId(currentRequest);
 
@@ -122,7 +121,7 @@ public class RedisSavedRequestCache implements RequestCache {
      */
     @Override
     public void removeRequest(HttpServletRequest currentRequest,
-            HttpServletResponse response) {
+        HttpServletResponse response) {
         String requestedSessionId = getSessionId(currentRequest);
 
         if (requestedSessionId != null) {
@@ -133,7 +132,7 @@ public class RedisSavedRequestCache implements RequestCache {
 
     @Override
     public HttpServletRequest getMatchingRequest(HttpServletRequest request,
-            HttpServletResponse response) {
+        HttpServletResponse response) {
         DefaultSavedRequest saved = (DefaultSavedRequest) getRequest(request, response);
 
         if (saved == null) {
@@ -156,9 +155,8 @@ public class RedisSavedRequestCache implements RequestCache {
      * <p>
      * If set, only matching requests will be cached.
      *
-     * @param requestMatcher
-     *            a request matching strategy which defines which requests
-     *            should be cached.
+     * @param requestMatcher a request matching strategy which defines which requests
+     * should be cached.
      */
     public void setRequestMatcher(RequestMatcher requestMatcher) {
         this.requestMatcher = requestMatcher;

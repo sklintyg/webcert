@@ -20,6 +20,8 @@ package se.inera.intyg.webcert.web.integration.interactions.receivemedicalcertif
 
 import com.google.common.base.Strings;
 import iso.v21090.dt.v1.II;
+import java.util.ArrayList;
+import java.util.List;
 import se.inera.ifv.insuranceprocess.healthreporting.medcertqa.v1.Amnetyp;
 import se.inera.ifv.insuranceprocess.healthreporting.medcertqa.v1.LakarutlatandeEnkelType;
 import se.inera.ifv.insuranceprocess.healthreporting.receivemedicalcertificateanswerresponder.v1.ReceiveMedicalCertificateAnswerType;
@@ -27,9 +29,6 @@ import se.inera.ifv.insuranceprocess.healthreporting.receivemedicalcertificatequ
 import se.inera.ifv.insuranceprocess.healthreporting.v2.HosPersonalType;
 import se.inera.ifv.insuranceprocess.healthreporting.v2.PatientType;
 import se.inera.intyg.common.support.Constants;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public final class QuestionAnswerValidator {
 
@@ -103,7 +102,7 @@ public final class QuestionAnswerValidator {
 
     private static void validatePatient(List<String> messages, PatientType patient) {
         if (!Constants.SAMORDNING_ID_OID.equals(patient.getPersonId().getRoot())
-                && !Constants.PERSON_ID_OID.equals(patient.getPersonId().getRoot())) {
+            && !Constants.PERSON_ID_OID.equals(patient.getPersonId().getRoot())) {
             messages.add("Felaktig root på personid");
         }
         if (Strings.isNullOrEmpty(patient.getPersonId().getExtension())) {

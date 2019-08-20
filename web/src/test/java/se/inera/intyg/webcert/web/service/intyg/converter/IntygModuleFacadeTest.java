@@ -35,7 +35,6 @@ import static org.mockito.Mockito.when;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Arrays;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -43,7 +42,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.test.util.ReflectionTestUtils;
-
 import se.inera.intyg.common.support.model.CertificateState;
 import se.inera.intyg.common.support.model.Status;
 import se.inera.intyg.common.support.model.UtkastStatus;
@@ -82,7 +80,7 @@ public class IntygModuleFacadeTest {
         // setup to return a mocked module API
         when(moduleRegistry.getModuleApi(or(isNull(), anyString()), or(isNull(), anyString()))).thenReturn(moduleApi);
         when(moduleRegistry.resolveVersionFromUtlatandeJson(anyString(), or(isNull(), anyString())))
-                .thenReturn(CERTIFICATE_TYPE_VERSION_1_0);
+            .thenReturn(CERTIFICATE_TYPE_VERSION_1_0);
     }
 
     @SuppressWarnings("unchecked")
@@ -93,7 +91,7 @@ public class IntygModuleFacadeTest {
         when(moduleApi.pdf(anyString(), anyList(), any(ApplicationOrigin.class), eq(UtkastStatus.SIGNED))).thenReturn(pdfResp);
 
         IntygPdf intygPdf = moduleFacade.convertFromInternalToPdfDocument(CERTIFICATE_TYPE, INT_JSON,
-                Arrays.asList(new Status(CertificateState.RECEIVED, "", LocalDateTime.now())), UtkastStatus.SIGNED, false);
+            Arrays.asList(new Status(CertificateState.RECEIVED, "", LocalDateTime.now())), UtkastStatus.SIGNED, false);
         assertNotNull(intygPdf.getPdfData());
         assertEquals("file.pdf", intygPdf.getFilename());
 
@@ -103,19 +101,20 @@ public class IntygModuleFacadeTest {
     @SuppressWarnings("unchecked")
     @Test(expected = IntygModuleFacadeException.class)
     public void testConvertFromInternalToPdfDocumentModuleException() throws IntygModuleFacadeException, ModuleException {
-        when(moduleApi.pdf(anyString(), anyList(), any(ApplicationOrigin.class), eq(UtkastStatus.SIGNED))).thenThrow(new ModuleException(""));
+        when(moduleApi.pdf(anyString(), anyList(), any(ApplicationOrigin.class), eq(UtkastStatus.SIGNED)))
+            .thenThrow(new ModuleException(""));
 
         moduleFacade.convertFromInternalToPdfDocument(CERTIFICATE_TYPE, INT_JSON,
-                Arrays.asList(new Status(CertificateState.RECEIVED, "", LocalDateTime.now())), UtkastStatus.SIGNED, false);
+            Arrays.asList(new Status(CertificateState.RECEIVED, "", LocalDateTime.now())), UtkastStatus.SIGNED, false);
     }
 
     @Test(expected = IntygModuleFacadeException.class)
     public void testConvertFromInternalToPdfDocumentModuleNotFoundException()
-            throws IntygModuleFacadeException, ModuleException, ModuleNotFoundException {
+        throws IntygModuleFacadeException, ModuleException, ModuleNotFoundException {
         when(moduleRegistry.getModuleApi(CERTIFICATE_TYPE, CERTIFICATE_TYPE_VERSION_1_0)).thenThrow(new ModuleNotFoundException());
 
         moduleFacade.convertFromInternalToPdfDocument(CERTIFICATE_TYPE, INT_JSON,
-                Arrays.asList(new Status(CertificateState.RECEIVED, "", LocalDateTime.now())), UtkastStatus.SIGNED, false);
+            Arrays.asList(new Status(CertificateState.RECEIVED, "", LocalDateTime.now())), UtkastStatus.SIGNED, false);
     }
 
     @SuppressWarnings("unchecked")
@@ -123,10 +122,11 @@ public class IntygModuleFacadeTest {
     public void testConvertFromInternalToPdfDocumentEmployer() throws IntygModuleFacadeException, ModuleException {
         byte[] pdfData = "PDFDATA".getBytes();
         PdfResponse pdfResp = new PdfResponse(pdfData, "file.pdf");
-        when(moduleApi.pdfEmployer(anyString(), anyList(), any(ApplicationOrigin.class), anyList(), eq(UtkastStatus.SIGNED))).thenReturn(pdfResp);
+        when(moduleApi.pdfEmployer(anyString(), anyList(), any(ApplicationOrigin.class), anyList(), eq(UtkastStatus.SIGNED)))
+            .thenReturn(pdfResp);
 
         IntygPdf intygPdf = moduleFacade.convertFromInternalToPdfDocument(CERTIFICATE_TYPE, INT_JSON,
-                Arrays.asList(new Status(CertificateState.RECEIVED, "", LocalDateTime.now())), UtkastStatus.SIGNED, true);
+            Arrays.asList(new Status(CertificateState.RECEIVED, "", LocalDateTime.now())), UtkastStatus.SIGNED, true);
         assertNotNull(intygPdf.getPdfData());
         assertEquals("file.pdf", intygPdf.getFilename());
 
@@ -139,7 +139,7 @@ public class IntygModuleFacadeTest {
         final String logicalAddress = "logicalAddress";
         ReflectionTestUtils.setField(moduleFacade, "logicalAddress", logicalAddress);
         when(moduleApi.getCertificate(certificateId, logicalAddress, HSVARD_RECIPIENT_ID))
-                .thenReturn(new CertificateResponse(INT_JSON, null, new CertificateMetaData(), false));
+            .thenReturn(new CertificateResponse(INT_JSON, null, new CertificateMetaData(), false));
         CertificateResponse res = moduleFacade.getCertificate(certificateId, CERTIFICATE_TYPE, CERTIFICATE_TYPE_VERSION_1_0);
 
         assertNotNull(res);

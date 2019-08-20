@@ -20,21 +20,17 @@ package se.inera.intyg.webcert.notification_sender.certificatesender.services;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.util.List;
-
 import javax.xml.ws.WebServiceException;
-
 import org.apache.camel.Body;
 import org.apache.camel.Header;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import se.inera.intyg.clinicalprocess.healthcond.certificate.registerapprovedreceivers.v1.ReceiverApprovalStatus;
 import se.inera.intyg.clinicalprocess.healthcond.certificate.registerapprovedreceivers.v1.RegisterApprovedReceiversResponderInterface;
 import se.inera.intyg.clinicalprocess.healthcond.certificate.registerapprovedreceivers.v1.RegisterApprovedReceiversResponseType;
@@ -56,17 +52,17 @@ public class RegisterApprovedReceiversProcessor {
     private ObjectMapper objectMapper = new ObjectMapper();
 
     public void process(@Body String jsonBody, @Header(Constants.INTYGS_ID) String intygsId, @Header(Constants.INTYGS_TYP) String intygsTyp,
-            @Header(Constants.LOGICAL_ADDRESS) String logicalAddress) throws TemporaryException, PermanentException {
+        @Header(Constants.LOGICAL_ADDRESS) String logicalAddress) throws TemporaryException, PermanentException {
 
         List<ReceiverApprovalStatus> receiverIds = transformMessageBodyToReceiverList(jsonBody);
 
         try {
             checkArgument(StringUtils.isNotEmpty(intygsId), "Message of type %s does not have a %s header.",
-                    Constants.REGISTER_APPROVED_RECEIVERS_MESSAGE,
-                    Constants.INTYGS_ID);
+                Constants.REGISTER_APPROVED_RECEIVERS_MESSAGE,
+                Constants.INTYGS_ID);
             checkArgument(StringUtils.isNotEmpty(intygsTyp), "Message of type %s does not have a %s header.",
-                    Constants.REGISTER_APPROVED_RECEIVERS_MESSAGE,
-                    Constants.INTYGS_TYP);
+                Constants.REGISTER_APPROVED_RECEIVERS_MESSAGE,
+                Constants.INTYGS_TYP);
 
             RegisterApprovedReceiversType req = new RegisterApprovedReceiversType();
             IntygId intygId = new IntygId();
@@ -80,7 +76,7 @@ public class RegisterApprovedReceiversProcessor {
             req.getApprovedReceivers().addAll(receiverIds);
 
             RegisterApprovedReceiversResponseType responseType = registerApprovedReceiversClient.registerApprovedReceivers(logicalAddress,
-                    req);
+                req);
 
             // Any problems on the other end that yields an ERROR result are treated as PermanentExceptions.
             if (responseType.getResult().getResultCode() == ResultCodeType.ERROR) {
@@ -88,11 +84,11 @@ public class RegisterApprovedReceiversProcessor {
             }
         } catch (IllegalArgumentException e) {
             LOG.error("RegisterApprovedReceiversProcessor message processing failed due to IllegalArgumentException, message: {}",
-                    e.getMessage());
+                e.getMessage());
             throw new PermanentException(e.getMessage());
         } catch (WebServiceException e) {
             LOG.error("Call to RegisterApprovedReceivers for intyg {} caused an error: {}. Will retry.",
-                    intygsId, e.getMessage());
+                intygsId, e.getMessage());
             throw new TemporaryException(e.getMessage());
         }
     }

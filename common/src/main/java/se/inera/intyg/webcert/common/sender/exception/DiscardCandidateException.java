@@ -19,6 +19,7 @@
 package se.inera.intyg.webcert.common.sender.exception;
 
 public class DiscardCandidateException extends Exception {
+
     private static final long serialVersionUID = -8184379033317261358L;
 
     public DiscardCandidateException(String message) {

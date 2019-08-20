@@ -19,15 +19,14 @@
 
 angular.module('webcert').directive('wcNoArendenMessage',
     [
-        function() {
-            'use strict';
+      function() {
+        'use strict';
 
-            return {
-                restrict: 'E',
-                templateUrl: '/app/views/fragorOchSvar/wcEnhetArendenList/wcNoArendenMessage/wcNoArendenMessage.directive.html',
-                scope: {
-                },
-                link: function($scope, $element, $attrs) {
-                }
-            };
-        }]);
+        return {
+          restrict: 'E',
+          templateUrl: '/app/views/fragorOchSvar/wcEnhetArendenList/wcNoArendenMessage/wcNoArendenMessage.directive.html',
+          scope: {},
+          link: function($scope, $element, $attrs) {
+          }
+        };
+      }]);

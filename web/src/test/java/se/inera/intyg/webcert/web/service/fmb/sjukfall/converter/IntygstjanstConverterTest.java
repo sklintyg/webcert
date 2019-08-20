@@ -20,7 +20,12 @@ package se.inera.intyg.webcert.web.service.fmb.sjukfall.converter;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.List;
 import org.junit.Test;
+import se.inera.intyg.infra.sjukfall.dto.IntygData;
 import se.riv.clinicalprocess.healthcond.certificate.types.v2.Befattning;
 import se.riv.clinicalprocess.healthcond.certificate.types.v2.HsaId;
 import se.riv.clinicalprocess.healthcond.certificate.types.v2.PersonId;
@@ -32,11 +37,6 @@ import se.riv.clinicalprocess.healthcond.rehabilitation.v1.HosPersonal;
 import se.riv.clinicalprocess.healthcond.rehabilitation.v1.IntygsData;
 import se.riv.clinicalprocess.healthcond.rehabilitation.v1.Patient;
 import se.riv.clinicalprocess.healthcond.rehabilitation.v1.Vardgivare;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.List;
-import se.inera.intyg.infra.sjukfall.dto.IntygData;
 
 public class IntygstjanstConverterTest {
 
@@ -144,7 +144,7 @@ public class IntygstjanstConverterTest {
         intygsData1.setArbetsformaga(arbetsformaga1);
         intygsData1.setEnkeltIntyg(ENKELT_INTYG);
         intygsData1.setSigneringsTidpunkt(SIGNERING_TIDPUNKT);
-        
+
         return intygsData1;
     }
 }

@@ -18,6 +18,12 @@
  */
 package se.inera.intyg.webcert.notification_sender.notifications.route;
 
+import static org.apache.camel.component.mock.MockEndpoint.assertIsSatisfied;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
+import static se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders.INTYG_TYPE_VERSION;
+
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -35,7 +41,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
@@ -56,13 +61,6 @@ import se.inera.intyg.webcert.common.sender.exception.PermanentException;
 import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
 import se.inera.intyg.webcert.notification_sender.notifications.helper.NotificationTestHelper;
 import se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders;
-
-
-import static org.apache.camel.component.mock.MockEndpoint.assertIsSatisfied;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
-import static se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders.INTYG_TYPE_VERSION;
 
 @RunWith(CamelSpringJUnit4ClassRunner.class)
 @ContextConfiguration("/notifications/unit-test-notification-sender-config.xml")
@@ -301,7 +299,7 @@ public class RouteTest {
 
         // When
         producerTemplate.sendBodyAndHeader(createNotificationMessage(SchemaVersion.VERSION_3, "lisjp"),
-                INTYG_TYPE_VERSION, "1.0");
+            INTYG_TYPE_VERSION, "1.0");
 
         // Then
         assertIsSatisfied(notificationWSClientV3);
@@ -452,7 +450,7 @@ public class RouteTest {
     private String createNotificationMessage(SchemaVersion version, String intygsTyp) {
         StringBuilder sb = new StringBuilder();
         sb.append("{\"intygsId\":\"" + currentId++ + "\",\"intygsTyp\":\"" + intygsTyp
-                + "\",\"logiskAdress\":\"SE12345678-1234\",\"handelseTid\":\"2001-12-31T12:34:56.789\",\"handelse\":\"ANDRAT\",");
+            + "\",\"logiskAdress\":\"SE12345678-1234\",\"handelseTid\":\"2001-12-31T12:34:56.789\",\"handelse\":\"ANDRAT\",");
         if (version != null) {
             sb.append("\"version\":\"");
             sb.append(version.name());

@@ -21,11 +21,23 @@ package se.inera.intyg.webcert.persistence.fragasvar.model;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Set;
-
-import javax.persistence.*;
-
+import javax.persistence.CollectionTable;
+import javax.persistence.Column;
+import javax.persistence.ElementCollection;
+import javax.persistence.Embedded;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.PostLoad;
+import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
+import javax.persistence.Table;
 import org.hibernate.annotations.Type;
-
 import se.inera.intyg.webcert.persistence.model.Status;
 
 @Entity

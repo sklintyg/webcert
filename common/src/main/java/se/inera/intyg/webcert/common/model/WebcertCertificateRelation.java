@@ -18,10 +18,9 @@
  */
 package se.inera.intyg.webcert.common.model;
 
+import java.time.LocalDateTime;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.model.UtkastStatus;
-
-import java.time.LocalDateTime;
 
 /**
  * Encapsulates a single relation. Instances of this class should always exist in the context of a {@link Relations} instance,
@@ -58,7 +57,7 @@ public class WebcertCertificateRelation {
     private boolean makulerat;
 
     public WebcertCertificateRelation(String intygsId, RelationKod relationKod, LocalDateTime skapad,
-                                      UtkastStatus status, boolean makulerat) {
+        UtkastStatus status, boolean makulerat) {
         this.intygsId = intygsId;
         this.relationKod = relationKod;
         this.skapad = skapad;

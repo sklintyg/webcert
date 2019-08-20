@@ -31,44 +31,44 @@ var intygGenerator = wcTestTools.intygGenerator;
 var restTestdataHelper = wcTestTools.helpers.restTestdata;
 
 describe('Luse locked utkast kopiera tests', function() {
-    var intygId = 'luse-locked-utkast-1';
+  var intygId = 'luse-locked-utkast-1';
 
-    beforeAll(function() {
-        browser.ignoreSynchronization = false;
-        specHelper.login();
-        var testData = {
-            'contents':intygGenerator.getIntygJson({'intygType':'luse','intygId':intygId}),
-            'utkastStatus':'DRAFT_LOCKED',
-            'revoked':false
-        };
-        restTestdataHelper.createWebcertIntyg(testData);
+  beforeAll(function() {
+    browser.ignoreSynchronization = false;
+    specHelper.login();
+    var testData = {
+      'contents': intygGenerator.getIntygJson({'intygType': 'luse', 'intygId': intygId}),
+      'utkastStatus': 'DRAFT_LOCKED',
+      'revoked': false
+    };
+    restTestdataHelper.createWebcertIntyg(testData);
+  });
+
+  afterAll(function() {
+    testdataHelper.deleteUtkast(intygId);
+  });
+
+  it('should load utkast and possible to copy', function() {
+    LuseUtkastPage.get(intygId);
+    expect(LuseUtkastPage.kopiera.btn.isPresent()).toBeTruthy();
+  });
+
+  it('copy draft', function() {
+    LuseUtkastPage.kopiera.btn.sendKeys(protractor.Key.SPACE);
+
+    LuseUtkastPage.kopiera.confirm.sendKeys(protractor.Key.SPACE);
+  });
+
+  it('Validate', function() {
+    expect(LuseUtkastPage.skrivUtBtn.isPresent()).toBeTruthy();
+    expect(LuseUtkastPage.radera.knapp.isPresent()).toBeTruthy();
+    expect(LuseUtkastPage.signeraButton.isPresent()).toBeTruthy();
+
+    expect(LuseUtkastPage.makulera.btn.isPresent()).toBeFalsy();
+    expect(LuseUtkastPage.kopiera.btn.isPresent()).toBeFalsy();
+
+    specHelper.getUtkastIdFromUrl().then(function(id) {
+      expect(intygId).not.toEqual(id);
     });
-
-    afterAll(function() {
-        testdataHelper.deleteUtkast(intygId);
-    });
-
-    it('should load utkast and possible to copy', function() {
-        LuseUtkastPage.get(intygId);
-        expect(LuseUtkastPage.kopiera.btn.isPresent()).toBeTruthy();
-    });
-
-    it('copy draft', function() {
-        LuseUtkastPage.kopiera.btn.sendKeys(protractor.Key.SPACE);
-
-        LuseUtkastPage.kopiera.confirm.sendKeys(protractor.Key.SPACE);
-    });
-
-    it('Validate', function() {
-        expect(LuseUtkastPage.skrivUtBtn.isPresent()).toBeTruthy();
-        expect(LuseUtkastPage.radera.knapp.isPresent()).toBeTruthy();
-        expect(LuseUtkastPage.signeraButton.isPresent()).toBeTruthy();
-
-        expect(LuseUtkastPage.makulera.btn.isPresent()).toBeFalsy();
-        expect(LuseUtkastPage.kopiera.btn.isPresent()).toBeFalsy();
-
-        specHelper.getUtkastIdFromUrl().then(function(id) {
-            expect(intygId).not.toEqual(id);
-        });
-    });
+  });
 });

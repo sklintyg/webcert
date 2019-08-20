@@ -26,13 +26,13 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
-import org.apache.commons.httpclient.HttpStatus;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import org.apache.commons.httpclient.HttpStatus;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.webcert.web.service.fmb.icf.IcfService;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
@@ -52,17 +52,17 @@ public class IcfApiController extends AbstractApiController {
     @GET
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @ApiOperation(
-            value = "Get ICF data for ICD10 codes", httpMethod = "GET",
-            produces = MediaType.APPLICATION_JSON)
+        value = "Get ICF data for ICD10 codes", httpMethod = "GET",
+        produces = MediaType.APPLICATION_JSON)
     @ApiResponses(value = {
-            @ApiResponse(code = HttpStatus.SC_OK, message = "Given ICF data for ICD10 codes found", response = FmbResponse.class),
-            @ApiResponse(code = HttpStatus.SC_BAD_REQUEST, message = "Bad request due to missing icd10 codes")})
+        @ApiResponse(code = HttpStatus.SC_OK, message = "Given ICF data for ICD10 codes found", response = FmbResponse.class),
+        @ApiResponse(code = HttpStatus.SC_BAD_REQUEST, message = "Bad request due to missing icd10 codes")})
     @PrometheusTimeMethod
     public Response getIcfForIcd10(
-            @ApiParam(value = "ICD10 codes", required = true)
-            @QueryParam("icd10Kod1") final String icd10Kod1,
-            @QueryParam("icd10Kod2") final String icd10Kod2,
-            @QueryParam("icd10Kod3") final String icd10Kod3) {
+        @ApiParam(value = "ICD10 codes", required = true)
+        @QueryParam("icd10Kod1") final String icd10Kod1,
+        @QueryParam("icd10Kod2") final String icd10Kod2,
+        @QueryParam("icd10Kod3") final String icd10Kod3) {
 
         if (isNull(icd10Kod1)) {
             return Response.status(Response.Status.BAD_REQUEST).entity("Missing icd10 codes").build();

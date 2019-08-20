@@ -21,5 +21,6 @@ package se.inera.intyg.webcert.web.service.auth;
 import se.inera.intyg.schemas.contract.Personnummer;
 
 public interface AuthorityAsserter {
+
     void assertIsAuthorized(Personnummer personnummer, String authority);
 }

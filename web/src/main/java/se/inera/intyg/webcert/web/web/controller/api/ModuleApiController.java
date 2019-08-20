@@ -18,21 +18,18 @@
  */
 package se.inera.intyg.webcert.web.web.controller.api;
 
+import io.swagger.annotations.Api;
 import java.util.List;
 import java.util.stream.Collectors;
-
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import io.swagger.annotations.Api;
 import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.common.support.modules.registry.IntygModule;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
@@ -94,8 +91,8 @@ public class ModuleApiController extends AbstractApiController {
             List<IntygModule> intygModules = moduleRegistry.listAllModules();
 
             final List<IntygModuleDTO> intygModuleDTOs = intygModules.stream()
-                    .map(intygModule -> new IntygModuleDTO(intygModule))
-                    .collect(Collectors.toList());
+                .map(intygModule -> new IntygModuleDTO(intygModule))
+                .collect(Collectors.toList());
 
             final Personnummer personnummer = createPnr(patientId);
             resourceLinkHelper.decorateIntygModuleWithValidActionLinks(intygModuleDTOs, personnummer);
@@ -115,14 +112,14 @@ public class ModuleApiController extends AbstractApiController {
     public Response getActiveModules() {
         // Cannot use user as this is used before login
         return Response.ok(moduleRegistry.listAllModules().stream()
-                .filter(i -> authoritiesHelper.isFeatureActive(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST, i.getId()))
-                .filter(m -> !m.getId().equals(Fk7263EntryPoint.MODULE_ID)) // Special case for fk7263
-                .collect(Collectors.toList())).build();
+            .filter(i -> authoritiesHelper.isFeatureActive(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST, i.getId()))
+            .filter(m -> !m.getId().equals(Fk7263EntryPoint.MODULE_ID)) // Special case for fk7263
+            .collect(Collectors.toList())).build();
     }
 
     private Personnummer createPnr(String personId) throws InvalidPersonNummerException {
         return Personnummer.createPersonnummer(personId)
-                .orElseThrow(() -> new InvalidPersonNummerException("Could not parse personnummer: " + personId));
+            .orElseThrow(() -> new InvalidPersonNummerException("Could not parse personnummer: " + personId));
     }
 
 }

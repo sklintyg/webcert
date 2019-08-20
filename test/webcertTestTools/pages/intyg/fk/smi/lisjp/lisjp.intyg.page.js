@@ -17,96 +17,93 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 'use strict';
 
 var BaseSmiIntygPage = require('../smi.base.intyg.page.js');
 
 var LisjpIntyg = BaseSmiIntygPage._extend({
-    init: function init() {
-        init._super.call(this);
-        this.intygType = 'lisjp';
-        this.intygTypeVersion = '1.0';
-        this.funktionsnedsattning = element(by.id('funktionsnedsattning'));
-        this.aktivitetsbegransning = element(by.id('aktivitetsbegransning'));
-        this.smittskydd = element(by.id('avstangningSmittskydd'));
-        this.sysselsattning = {
-            list: element(by.id('sysselsattning-list')),
-            yrkesAktiviteter: element(by.id('nuvarandeArbete'))
-        };
-        this.sjukskrivningar = {
-            grad: function(index) {
-                return element(by.id('sjukskrivningar-row' + index + '-col0'));
-            },
-            from: function(index) {
-                return element(by.id('sjukskrivningar-row' + index + '-col1'));
-            },
-            to: function(index) {
-                return element(by.id('sjukskrivningar-row' + index + '-col2'));
-            }
-        };
-        this.arbetsformagaFMB = element(by.id('forsakringsmedicinsktBeslutsstod'));
+  init: function init() {
+    init._super.call(this);
+    this.intygType = 'lisjp';
+    this.intygTypeVersion = '1.0';
+    this.funktionsnedsattning = element(by.id('funktionsnedsattning'));
+    this.aktivitetsbegransning = element(by.id('aktivitetsbegransning'));
+    this.smittskydd = element(by.id('avstangningSmittskydd'));
+    this.sysselsattning = {
+      list: element(by.id('sysselsattning-list')),
+      yrkesAktiviteter: element(by.id('nuvarandeArbete'))
+    };
+    this.sjukskrivningar = {
+      grad: function(index) {
+        return element(by.id('sjukskrivningar-row' + index + '-col0'));
+      },
+      from: function(index) {
+        return element(by.id('sjukskrivningar-row' + index + '-col1'));
+      },
+      to: function(index) {
+        return element(by.id('sjukskrivningar-row' + index + '-col2'));
+      }
+    };
+    this.arbetsformagaFMB = element(by.id('forsakringsmedicinsktBeslutsstod'));
 
+    this.arbetstidsforlaggning = {
+      val: element(by.id('arbetstidsforlaggning')),
+      motivering: element(by.id('arbetstidsforlaggningMotivering'))
+    };
+    this.resorTillArbete = element(by.id('arbetsresor'));
+    this.prognosForArbetsformaga = element(by.id('prognos-typ'));
+    this.atgarder = element(by.id('arbetslivsinriktadeAtgarder'));
+    this.atgarderBeskrivning = element(by.id('arbetslivsinriktadeAtgarderBeskrivning'));
+  },
 
-        this.arbetstidsforlaggning = {
-            val: element(by.id('arbetstidsforlaggning')),
-            motivering: element(by.id('arbetstidsforlaggningMotivering'))
-        };
-        this.resorTillArbete = element(by.id('arbetsresor'));
-        this.prognosForArbetsformaga = element(by.id('prognos-typ'));
-        this.atgarder = element(by.id('arbetslivsinriktadeAtgarder'));
-        this.atgarderBeskrivning = element(by.id('arbetslivsinriktadeAtgarderBeskrivning'));
-    },
+  get: function get(intygId) {
+    get._super.call(this, intygId);
+  },
 
-    get: function get(intygId) {
-        get._super.call(this, intygId);
-    },
+  verify: function(data) {
 
-    verify: function(data) {
+    this.verifieraDiagnos(data);
 
-        this.verifieraDiagnos(data);
+    this.verifieraOvrigt(data);
 
-        this.verifieraOvrigt(data);
+    this.verifyArbetsformaga(data.arbetsformaga);
 
-        this.verifyArbetsformaga(data.arbetsformaga);
+    if (!data.smittskydd) {
+      this.verifieraBaseratPa(data);
 
-        if (!data.smittskydd) {
-            this.verifieraBaseratPa(data);
+      expect(this.funktionsnedsattning.getText()).toBe(data.funktionsnedsattning);
+      this.verifieraAktivitetsbegransning(data);
 
-            expect(this.funktionsnedsattning.getText()).toBe(data.funktionsnedsattning);
-            this.verifieraAktivitetsbegransning(data);
+      this.verifieraMedicinskbehandling(data);
 
-            this.verifieraMedicinskbehandling(data);
-
-            this.verifieraKontaktFK(data);
-        }
-    },
-
-    verifyArbetsformaga: function(arbetsformaga) {
-
-        var formagor = [];
-
-        if (arbetsformaga.nedsattMed100) {
-            formagor.push(arbetsformaga.nedsattMed100);
-        }
-
-        if (arbetsformaga.nedsattMed75) {
-            formagor.push(arbetsformaga.nedsattMed75);
-        }
-
-        if (arbetsformaga.nedsattMed50) {
-            formagor.push(arbetsformaga.nedsattMed50);
-        }
-
-        if (arbetsformaga.nedsattMed25) {
-            formagor.push(arbetsformaga.nedsattMed25);
-        }
-
-        for (var i = 0; i < formagor.length; i++) {
-            expect(this.sjukskrivningar.from(i).getText()).toBe(formagor[i].from);
-            expect(this.sjukskrivningar.to(i).getText()).toBe(formagor[i].tom);
-        }
+      this.verifieraKontaktFK(data);
     }
+  },
+
+  verifyArbetsformaga: function(arbetsformaga) {
+
+    var formagor = [];
+
+    if (arbetsformaga.nedsattMed100) {
+      formagor.push(arbetsformaga.nedsattMed100);
+    }
+
+    if (arbetsformaga.nedsattMed75) {
+      formagor.push(arbetsformaga.nedsattMed75);
+    }
+
+    if (arbetsformaga.nedsattMed50) {
+      formagor.push(arbetsformaga.nedsattMed50);
+    }
+
+    if (arbetsformaga.nedsattMed25) {
+      formagor.push(arbetsformaga.nedsattMed25);
+    }
+
+    for (var i = 0; i < formagor.length; i++) {
+      expect(this.sjukskrivningar.from(i).getText()).toBe(formagor[i].from);
+      expect(this.sjukskrivningar.to(i).getText()).toBe(formagor[i].tom);
+    }
+  }
 });
 module.exports = new LisjpIntyg();

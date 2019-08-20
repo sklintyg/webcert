@@ -22,14 +22,11 @@ import static java.util.Arrays.asList;
 import static se.inera.intyg.common.support.Constants.PERSON_ID_OID;
 import static se.inera.intyg.common.support.Constants.SAMORDNING_ID_OID;
 
+import com.google.common.base.Joiner;
 import java.util.List;
 import java.util.regex.Pattern;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Joiner;
-
 import se.inera.ifv.insuranceprocess.healthreporting.v2.PatientType;
 import se.inera.intyg.common.util.logging.LogMarkers;
 
@@ -58,8 +55,8 @@ public final class PatientValidator {
 
         // Check patient id - mandatory
         if (patient.getPersonId() == null
-                || patient.getPersonId().getExtension() == null
-                || patient.getPersonId().getExtension().isEmpty()) {
+            || patient.getPersonId().getExtension() == null
+            || patient.getPersonId().getExtension().isEmpty()) {
             validationErrors.add("No Patient Id found!");
             return false;
         }
@@ -68,7 +65,7 @@ public final class PatientValidator {
         if (Pattern.matches(PERSON_NUMBER_WITHOUT_DASH_REGEX, personNumber)) {
             patient.getPersonId().setExtension(formatWithDash(personNumber));
             LOG.warn(LogMarkers.VALIDATION, "Validation warning for intyg " + certificateId + ": Person-id " + personNumber
-                    + " is lacking a separating dash - corrected.");
+                + " is lacking a separating dash - corrected.");
         }
         // Check patient o.i.d.
         if (patient.getPersonId().getRoot() == null || !PATIENT_ID_OIDS.contains(patient.getPersonId().getRoot())) {

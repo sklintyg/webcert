@@ -33,9 +33,9 @@ public final class MaximalSjukskrivningstidRequest {
     }
 
     private MaximalSjukskrivningstidRequest(
-            final Icd10KoderRequest icd10Koder,
-            final Personnummer personnummer,
-            final Integer foreslagenSjukskrivningstid) {
+        final Icd10KoderRequest icd10Koder,
+        final Personnummer personnummer,
+        final Integer foreslagenSjukskrivningstid) {
         this.icd10Koder = icd10Koder;
         this.personnummer = personnummer;
         this.foreslagenSjukskrivningstid = foreslagenSjukskrivningstid;
@@ -66,9 +66,9 @@ public final class MaximalSjukskrivningstidRequest {
     }
 
     public static MaximalSjukskrivningstidRequest of(
-            final Icd10KoderRequest icd10Koder,
-            final Personnummer personnummer,
-            final Integer foreslagenSjukskrivningstid) {
+        final Icd10KoderRequest icd10Koder,
+        final Personnummer personnummer,
+        final Integer foreslagenSjukskrivningstid) {
         return new MaximalSjukskrivningstidRequest(icd10Koder, personnummer, foreslagenSjukskrivningstid);
     }
 
@@ -85,29 +85,29 @@ public final class MaximalSjukskrivningstidRequest {
         final MaximalSjukskrivningstidRequest request = (MaximalSjukskrivningstidRequest) o;
 
         return new EqualsBuilder()
-                .append(icd10Koder, request.icd10Koder)
-                .append(personnummer, request.personnummer)
-                .append(foreslagenSjukskrivningstid, request.foreslagenSjukskrivningstid)
-                .isEquals();
+            .append(icd10Koder, request.icd10Koder)
+            .append(personnummer, request.personnummer)
+            .append(foreslagenSjukskrivningstid, request.foreslagenSjukskrivningstid)
+            .isEquals();
     }
 
     @Override
     public int hashCode() {
         // CHECKSTYLE:OFF MagicNumber
         return new HashCodeBuilder(17, 37)
-                .append(icd10Koder)
-                .append(personnummer)
-                .append(foreslagenSjukskrivningstid)
-                .toHashCode();
+            .append(icd10Koder)
+            .append(personnummer)
+            .append(foreslagenSjukskrivningstid)
+            .toHashCode();
         // CHECKSTYLE:ON MagicNumber
     }
 
     @Override
     public String toString() {
         return new ToStringBuilder(this)
-                .append("icd10Koder", icd10Koder)
-                .append("personnummer", personnummer)
-                .append("foreslagenSjukskrivningstid", foreslagenSjukskrivningstid)
-                .toString();
+            .append("icd10Koder", icd10Koder)
+            .append("personnummer", personnummer)
+            .append("foreslagenSjukskrivningstid", foreslagenSjukskrivningstid)
+            .toString();
     }
 }

@@ -22,6 +22,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import org.junit.Test;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.modules.support.api.notification.ArendeCount;
@@ -35,9 +37,6 @@ import se.riv.clinicalprocess.healthcond.certificate.v3.Enhet;
 import se.riv.clinicalprocess.healthcond.certificate.v3.HosPersonal;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Vardgivare;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 public class NotificationTypeConverterTest {
 
@@ -60,12 +59,12 @@ public class NotificationTypeConverterTest {
         final Intyg intyg = buildIntyg();
 
         ArendeCount skickadeFragor = new ArendeCount(skickadeFragorTotalt, skickadeFragorEjBesvarade, skickadeFragorBesvarade,
-                skickadeFragorHanterade);
+            skickadeFragorHanterade);
         ArendeCount mottagnaFragor = new ArendeCount(mottagnaFragorTotalt, mottagnaFragorEjBesvarade, mottagnaFragorBesvarade,
-                mottagnaFragorHanterade);
+            mottagnaFragorHanterade);
 
         NotificationMessage msg = new NotificationMessage(intygsId, "luse", handelsetid, handelsetyp, "address", "", null, skickadeFragor,
-                mottagnaFragor, SchemaVersion.VERSION_3, "ref");
+            mottagnaFragor, SchemaVersion.VERSION_3, "ref");
 
         CertificateStatusUpdateForCareType res = NotificationTypeConverter.convert(msg, intyg);
 
@@ -83,7 +82,7 @@ public class NotificationTypeConverterTest {
 
         // Make sure we have a valid Intyg according to service contract
         assertEquals(NotificationTypeConverter.TEMPORARY_ARBETSPLATSKOD,
-                res.getIntyg().getSkapadAv().getEnhet().getArbetsplatskod().getExtension());
+            res.getIntyg().getSkapadAv().getEnhet().getArbetsplatskod().getExtension());
         assertNull(res.getIntyg().getSkapadAv().getEnhet().getEpost());
     }
 
@@ -109,12 +108,12 @@ public class NotificationTypeConverterTest {
         final Intyg intyg = buildIntyg();
 
         ArendeCount skickadeFragor = new ArendeCount(skickadeFragorTotalt, skickadeFragorEjBesvarade, skickadeFragorBesvarade,
-                skickadeFragorHanterade);
+            skickadeFragorHanterade);
         ArendeCount mottagnaFragor = new ArendeCount(mottagnaFragorTotalt, mottagnaFragorEjBesvarade, mottagnaFragorBesvarade,
-                mottagnaFragorHanterade);
+            mottagnaFragorHanterade);
 
         NotificationMessage msg = new NotificationMessage(intygsId, "luse", handelsetid, handelsetyp, "address", "", null,
-                skickadeFragor, mottagnaFragor, SchemaVersion.VERSION_3, "ref", amneskod, sistaSvarsDatum);
+            skickadeFragor, mottagnaFragor, SchemaVersion.VERSION_3, "ref", amneskod, sistaSvarsDatum);
 
         CertificateStatusUpdateForCareType res = NotificationTypeConverter.convert(msg, intyg);
 
@@ -134,7 +133,7 @@ public class NotificationTypeConverterTest {
 
         // Make sure we have a valid Intyg according to service contract
         assertEquals(NotificationTypeConverter.TEMPORARY_ARBETSPLATSKOD,
-                res.getIntyg().getSkapadAv().getEnhet().getArbetsplatskod().getExtension());
+            res.getIntyg().getSkapadAv().getEnhet().getArbetsplatskod().getExtension());
         assertNull(res.getIntyg().getSkapadAv().getEnhet().getEpost());
     }
 
@@ -154,9 +153,9 @@ public class NotificationTypeConverterTest {
         enhet.setEpost(epost);
 
         NotificationMessage msg = new NotificationMessage(intygsId, "luse", handelsetid, handelsetyp, "address", "", null,
-                new ArendeCount(4, 3, 2, 1),
-                new ArendeCount(4, 3, 2, 1),
-                SchemaVersion.VERSION_3, "ref");
+            new ArendeCount(4, 3, 2, 1),
+            new ArendeCount(4, 3, 2, 1),
+            SchemaVersion.VERSION_3, "ref");
 
         CertificateStatusUpdateForCareType res = NotificationTypeConverter.convert(msg, intyg);
 
@@ -164,14 +163,16 @@ public class NotificationTypeConverterTest {
         assertEquals(epost, res.getIntyg().getSkapadAv().getEnhet().getEpost());
     }
 
-    private void assertMottagnaFragor(int mottagnaFragorTotalt, int mottagnaFragorHanterade, int mottagnaFragorBesvarade, int mottagnaFragorEjBesvarade, CertificateStatusUpdateForCareType res) {
+    private void assertMottagnaFragor(int mottagnaFragorTotalt, int mottagnaFragorHanterade, int mottagnaFragorBesvarade,
+        int mottagnaFragorEjBesvarade, CertificateStatusUpdateForCareType res) {
         assertEquals(mottagnaFragorTotalt, res.getMottagnaFragor().getTotalt());
         assertEquals(mottagnaFragorEjBesvarade, res.getMottagnaFragor().getEjBesvarade());
         assertEquals(mottagnaFragorBesvarade, res.getMottagnaFragor().getBesvarade());
         assertEquals(mottagnaFragorHanterade, res.getMottagnaFragor().getHanterade());
     }
 
-    private void assertSkickadeFrågor(int skickadeFragorTotalt, int skickadeFragorHanterade, int skickadeFragorBesvarade, int skickadeFragorEjBesvarade, CertificateStatusUpdateForCareType res) {
+    private void assertSkickadeFrågor(int skickadeFragorTotalt, int skickadeFragorHanterade, int skickadeFragorBesvarade,
+        int skickadeFragorEjBesvarade, CertificateStatusUpdateForCareType res) {
         assertEquals(skickadeFragorTotalt, res.getSkickadeFragor().getTotalt());
         assertEquals(skickadeFragorEjBesvarade, res.getSkickadeFragor().getEjBesvarade());
         assertEquals(skickadeFragorBesvarade, res.getSkickadeFragor().getBesvarade());

@@ -19,9 +19,7 @@
 package se.inera.intyg.webcert.web.service.intyg;
 
 import java.util.List;
-
 import org.apache.commons.lang3.tuple.Pair;
-
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
@@ -53,14 +51,10 @@ public interface IntygService {
      * If the Intygstjanst couldn't find the intyg or the Intygstjanst was not available,
      * an attempt to find an utkast stored in Webcert will be performed.
      *
-     * @param intygId
-     *            Certificate id.
-     * @param typ
-     *            Certificate type.
-     * @param coherentJournaling
-     *            If coherentJournaling should be considered.
-     * @param pdlLogging
-     *            If the call should be logged.
+     * @param intygId Certificate id.
+     * @param typ Certificate type.
+     * @param coherentJournaling If coherentJournaling should be considered.
+     * @param pdlLogging If the call should be logged.
      * @return IntygContentHolder.
      */
     IntygContentHolder fetchIntygData(String intygId, String typ, boolean coherentJournaling, boolean pdlLogging);
@@ -80,20 +74,17 @@ public interface IntygService {
     /**
      * Returns all certificates for the given patient within all the given units.
      *
-     * @param enhetId
-     *            list of HSA IDs for the units
-     * @param personnummer
-     *            the person number
+     * @param enhetId list of HSA IDs for the units
+     * @param personnummer the person number
      * @return list of certificates matching the search criteria wrapped in a response container also indicating whether
-     *         the data was fetched from intygstjansten ("online") or from webcert ("offline").
+     * the data was fetched from intygstjansten ("online") or from webcert ("offline").
      */
     Pair<List<ListIntygEntry>, Boolean> listIntyg(List<String> enhetId, Personnummer personnummer);
 
     /**
      * Returns a given certificate as PDF.
      *
-     * @param isEmployer
-     *            Indicates if the certificate should be for the employer.
+     * @param isEmployer Indicates if the certificate should be for the employer.
      */
     IntygPdf fetchIntygAsPdf(String intygId, String typ, boolean isEmployer);
 
@@ -123,12 +114,9 @@ public interface IntygService {
     /**
      * Retrieves the hsaId of the vardenhet this intyg is issued on.
      *
-     * @param intygId
-     *            the certificate identifier
-     * @param intygsTyp
-     *            the certificate type
-     * @return
-     *         The HSA Id of the vardenhet where the intyg was created/issued.
+     * @param intygId the certificate identifier
+     * @param intygsTyp the certificate type
+     * @return The HSA Id of the vardenhet where the intyg was created/issued.
      */
     String getIssuingVardenhetHsaId(String intygId, String intygsTyp);
 
@@ -139,32 +127,23 @@ public interface IntygService {
      * This method will not yield a PDL statement as it doesn't actually show anything to an end-user. It will however
      * log using {@link se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService#logIntygRevokeStatusRead}.
      *
-     * @param intygsId
-     *            ID of the intyg to check revoke status for.
-     * @param intygsTyp
-     *            Type of the intyg.
-     * @param coherentJournaling
-     *            true or false.
-     * @return
-     *         true if the intyg is revoked, false if not.
+     * @param intygsId ID of the intyg to check revoke status for.
+     * @param intygsTyp Type of the intyg.
+     * @param coherentJournaling true or false.
+     * @return true if the intyg is revoked, false if not.
      */
     boolean isRevoked(String intygsId, String intygsTyp, boolean coherentJournaling);
 
     /**
      * Gathers the information required to return the list with notifications and creates a list of
      * IntygWithNotificationsResponse objects.
-     *
-     * @param request
-     * @return
      */
     List<IntygWithNotificationsResponse> listCertificatesForCareWithQA(IntygWithNotificationsRequest request);
 
     /**
      * Gets the certificate's type from utkast entity or Intygstjanst.
      *
-     *
-     * @param intygsId
-     *            the certificate identifier
+     * @param intygsId the certificate identifier
      * @return the certificate type
      */
     IntygTypeInfo getIntygTypeInfo(String intygsId, Utkast ukast);
@@ -174,9 +153,7 @@ public interface IntygService {
      * This is a variant method to be used when no Utkast is available when calling.
      * The implementation still tries to look for an Utkast first.
      *
-     *
-     * @param intygsId
-     *            the certificate identifier
+     * @param intygsId the certificate identifier
      * @return the certificate type
      */
     IntygTypeInfo getIntygTypeInfo(String intygsId);

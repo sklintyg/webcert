@@ -25,7 +25,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.MockitoAnnotations;
-
 import se.inera.intyg.webcert.common.model.SekretessStatus;
 import se.inera.intyg.webcert.web.service.access.data.AccessServiceTestData;
 import se.inera.intyg.webcert.web.service.access.util.AccessServiceTestToolkit;
@@ -175,16 +174,16 @@ abstract public class LockedDraftAccessTest extends AccessTest {
     public void isAllowToCopyOnSameCareProviderWhenUtkastSameVGExists() {
         final WebCertUser user = AccessServiceTestToolkit.createUser(intygsTyp, accessServiceTestData);
         doReturn(user)
-                .when(webCertUserService).getUser();
+            .when(webCertUserService).getUser();
         // TODO Manage this
         // doReturn(true)
         // .when(patientDetailsResolver).isAvliden(PERSONNUMMER);
         doReturn(false)
-                .when(patientDetailsResolver).isAvliden(PERSONNUMMER);
+            .when(patientDetailsResolver).isAvliden(PERSONNUMMER);
         doReturn(SekretessStatus.FALSE)
-                .when(patientDetailsResolver).getSekretessStatus(PERSONNUMMER);
+            .when(patientDetailsResolver).getSekretessStatus(PERSONNUMMER);
         doReturn(AccessServiceTestToolkit.createPreviousUtkastForUtkast(intygsTyp))
-                .when(utkastService).checkIfPersonHasExistingIntyg(PERSONNUMMER, user);
+            .when(utkastService).checkIfPersonHasExistingIntyg(PERSONNUMMER, user);
         doReturn(enhetsId).when(vardenhet).getEnhetsid();
         doReturn(vardgivare).when(vardenhet).getVardgivare();
         doReturn(vardgivarId).when(vardgivare).getVardgivarid();
@@ -192,7 +191,7 @@ abstract public class LockedDraftAccessTest extends AccessTest {
         doReturn(true).when(webCertUserService).isAuthorizedForUnit(vardgivarId, enhetsId, false);
 
         assertAllowToCopyOnSameCareProviderWhenUtkastSameVGExists(
-                accessService.allowedToCopyLockedUtkast(intygsTyp, vardenhet, PERSONNUMMER));
+            accessService.allowedToCopyLockedUtkast(intygsTyp, vardenhet, PERSONNUMMER));
     }
 
     abstract protected void assertAllowToCopyOnSameCareProviderWhenUtkastSameVGExists(AccessResult actualValue);
@@ -201,16 +200,16 @@ abstract public class LockedDraftAccessTest extends AccessTest {
     public void isAllowToCopyOnDifferentCareProviderWhenIntygSameVGExists() {
         final WebCertUser user = AccessServiceTestToolkit.createUser(intygsTyp, accessServiceTestData);
         doReturn(user)
-                .when(webCertUserService).getUser();
+            .when(webCertUserService).getUser();
         // TODO Manage this
         // doReturn(true)
         // .when(patientDetailsResolver).isAvliden(PERSONNUMMER);
         doReturn(false)
-                .when(patientDetailsResolver).isAvliden(PERSONNUMMER);
+            .when(patientDetailsResolver).isAvliden(PERSONNUMMER);
         doReturn(SekretessStatus.FALSE)
-                .when(patientDetailsResolver).getSekretessStatus(PERSONNUMMER);
+            .when(patientDetailsResolver).getSekretessStatus(PERSONNUMMER);
         doReturn(AccessServiceTestToolkit.createPreviousIntygForUtkast(intygsTyp, true))
-                .when(utkastService).checkIfPersonHasExistingIntyg(PERSONNUMMER, user);
+            .when(utkastService).checkIfPersonHasExistingIntyg(PERSONNUMMER, user);
         doReturn(enhetsId).when(vardenhet).getEnhetsid();
         doReturn(vardgivare).when(vardenhet).getVardgivare();
         doReturn(vardgivarId).when(vardgivare).getVardgivarid();
@@ -218,7 +217,7 @@ abstract public class LockedDraftAccessTest extends AccessTest {
         doReturn(true).when(webCertUserService).isAuthorizedForUnit(vardgivarId, enhetsId, false);
 
         assertAllowToCopyOnDifferentCareProviderWhenIntygSameVGExists(
-                accessService.allowedToCopyLockedUtkast(intygsTyp, vardenhet, PERSONNUMMER));
+            accessService.allowedToCopyLockedUtkast(intygsTyp, vardenhet, PERSONNUMMER));
     }
 
     abstract protected void assertAllowToCopyOnDifferentCareProviderWhenIntygSameVGExists(AccessResult actualValue);
@@ -227,23 +226,23 @@ abstract public class LockedDraftAccessTest extends AccessTest {
     public void isAllowToCopyOnSameCareProviderWhenIntygExists() {
         final WebCertUser user = AccessServiceTestToolkit.createUser(intygsTyp, accessServiceTestData);
         doReturn(user)
-                .when(webCertUserService).getUser();
+            .when(webCertUserService).getUser();
         // TODO Manage this
         // doReturn(true)
         // .when(patientDetailsResolver).isAvliden(PERSONNUMMER);
         doReturn(false)
-                .when(patientDetailsResolver).isAvliden(PERSONNUMMER);
+            .when(patientDetailsResolver).isAvliden(PERSONNUMMER);
         doReturn(SekretessStatus.FALSE)
-                .when(patientDetailsResolver).getSekretessStatus(PERSONNUMMER);
+            .when(patientDetailsResolver).getSekretessStatus(PERSONNUMMER);
         doReturn(AccessServiceTestToolkit.createPreviousIntygForUtkast(intygsTyp, false))
-                .when(utkastService).checkIfPersonHasExistingIntyg(PERSONNUMMER, user);
+            .when(utkastService).checkIfPersonHasExistingIntyg(PERSONNUMMER, user);
         doReturn(enhetsId).when(vardenhet).getEnhetsid();
         doReturn(vardgivare).when(vardenhet).getVardgivare();
         doReturn(vardgivarId).when(vardgivare).getVardgivarid();
         doReturn(true).when(webCertUserService).isAuthorizedForUnit(vardgivarId, enhetsId, true);
         doReturn(true).when(webCertUserService).isAuthorizedForUnit(vardgivarId, enhetsId, false);
         assertAllowToCopyOnSameCareProviderWhenIntygExists(
-                accessService.allowedToCopyLockedUtkast(intygsTyp, vardenhet, PERSONNUMMER));
+            accessService.allowedToCopyLockedUtkast(intygsTyp, vardenhet, PERSONNUMMER));
     }
 
     abstract protected void assertAllowToCopyOnSameCareProviderWhenIntygExists(AccessResult actualValue);
@@ -343,7 +342,7 @@ abstract public class LockedDraftAccessTest extends AccessTest {
         setupMocksForOnSekretessPatient();
 
         assertAllowToDeleteUtkastOnSekretessPatientOnSameUnit(
-                accessService.allowedToInvalidateLockedUtkast(intygsTyp, vardenhet, PERSONNUMMER));
+            accessService.allowedToInvalidateLockedUtkast(intygsTyp, vardenhet, PERSONNUMMER));
     }
 
     abstract protected void assertAllowToDeleteUtkastOnSekretessPatientOnSameUnit(AccessResult actualValue);
@@ -353,7 +352,7 @@ abstract public class LockedDraftAccessTest extends AccessTest {
         setupMocksForOnSekretessPatientDifferentUnit();
 
         assertAllowToDeleteUtkastOnSekretessPatientOnDifferentUnit(
-                accessService.allowedToInvalidateLockedUtkast(intygsTyp, vardenhet, PERSONNUMMER));
+            accessService.allowedToInvalidateLockedUtkast(intygsTyp, vardenhet, PERSONNUMMER));
     }
 
     abstract protected void assertAllowToDeleteUtkastOnSekretessPatientOnDifferentUnit(AccessResult actualValue);
@@ -363,7 +362,7 @@ abstract public class LockedDraftAccessTest extends AccessTest {
         setupMocksForDeceasedPatientDifferentUnit();
 
         assertAllowToDeleteUtkastOnDeceasedPatientOnDifferentUnit(
-                accessService.allowedToInvalidateLockedUtkast(intygsTyp, vardenhet, PERSONNUMMER));
+            accessService.allowedToInvalidateLockedUtkast(intygsTyp, vardenhet, PERSONNUMMER));
     }
 
     abstract protected void assertAllowToDeleteUtkastOnDeceasedPatientOnDifferentUnit(AccessResult actualValue);
@@ -373,7 +372,7 @@ abstract public class LockedDraftAccessTest extends AccessTest {
         setupMocksForInactiveUnitDifferentUnit();
 
         assertAllowToDeleteUtkastOnInactiveUnitOnDifferentUnit(
-                accessService.allowedToInvalidateLockedUtkast(intygsTyp, vardenhet, PERSONNUMMER));
+            accessService.allowedToInvalidateLockedUtkast(intygsTyp, vardenhet, PERSONNUMMER));
     }
 
     abstract protected void assertAllowToDeleteUtkastOnInactiveUnitOnDifferentUnit(AccessResult actualValue);
@@ -383,7 +382,7 @@ abstract public class LockedDraftAccessTest extends AccessTest {
         setupMocksForOnRenewFalseDifferentUnit();
 
         assertAllowToDeleteUtkastOnRenewFalseOnDifferentUnit(
-                accessService.allowedToInvalidateLockedUtkast(intygsTyp, vardenhet, PERSONNUMMER));
+            accessService.allowedToInvalidateLockedUtkast(intygsTyp, vardenhet, PERSONNUMMER));
     }
 
     abstract protected void assertAllowToDeleteUtkastOnRenewFalseOnDifferentUnit(AccessResult actualValue);
@@ -393,7 +392,7 @@ abstract public class LockedDraftAccessTest extends AccessTest {
         setupMocksForNoConditionsDifferentUnit();
 
         assertAllowToDeleteUtkastNoConditionsDifferentUnit(
-                accessService.allowedToInvalidateLockedUtkast(intygsTyp, vardenhet, PERSONNUMMER));
+            accessService.allowedToInvalidateLockedUtkast(intygsTyp, vardenhet, PERSONNUMMER));
     }
 
     abstract protected void assertAllowToDeleteUtkastNoConditionsDifferentUnit(AccessResult actualValue);

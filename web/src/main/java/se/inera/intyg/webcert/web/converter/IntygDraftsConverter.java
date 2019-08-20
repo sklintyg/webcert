@@ -23,12 +23,10 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
 import se.inera.intyg.common.support.model.CertificateState;
 import se.inera.intyg.common.support.model.StatusKod;
 import se.inera.intyg.common.support.model.UtkastStatus;
@@ -46,7 +44,7 @@ public class IntygDraftsConverter {
     private static final Logger LOG = LoggerFactory.getLogger(IntygDraftsConverter.class);
 
     private static final Comparator<ListIntygEntry> INTYG_ENTRY_DATE_COMPARATOR_DESC = (ie1, ie2) -> ie2.getLastUpdatedSigned()
-            .compareTo(ie1.getLastUpdatedSigned());
+        .compareTo(ie1.getLastUpdatedSigned());
 
     private static final Comparator<IntygsStatus> INTYG_STATUS_COMPARATOR = (c1, c2) -> c1.getTidpunkt().compareTo(c2.getTidpunkt());
 
@@ -60,18 +58,18 @@ public class IntygDraftsConverter {
         LOG.debug("Merging intyg, signed {}, drafts {}", intygList.size(), utkastList.size());
 
         return Stream.concat(
-                intygList.stream(),
-                utkastList.stream()
-                        .map(IntygDraftsConverter::convertUtkastToListIntygEntry))
-                .sorted(INTYG_ENTRY_DATE_COMPARATOR_DESC)
-                .collect(Collectors.toList());
+            intygList.stream(),
+            utkastList.stream()
+                .map(IntygDraftsConverter::convertUtkastToListIntygEntry))
+            .sorted(INTYG_ENTRY_DATE_COMPARATOR_DESC)
+            .collect(Collectors.toList());
     }
 
     public static List<ListIntygEntry> convertUtkastsToListIntygEntries(List<Utkast> utkastList, Comparator<ListIntygEntry> comparator) {
         return utkastList.stream()
-                .map(IntygDraftsConverter::convertUtkastToListIntygEntry)
-                .sorted((comparator == null ? INTYG_ENTRY_DATE_COMPARATOR_DESC : comparator))
-                .collect(Collectors.toList());
+            .map(IntygDraftsConverter::convertUtkastToListIntygEntry)
+            .sorted((comparator == null ? INTYG_ENTRY_DATE_COMPARATOR_DESC : comparator))
+            .collect(Collectors.toList());
     }
 
     public static ListIntygEntry convertUtkastToListIntygEntry(Utkast utkast) {
@@ -96,10 +94,10 @@ public class IntygDraftsConverter {
 
     public static CertificateState findLatestStatus(List<IntygsStatus> intygStatuses) {
         return intygStatuses.stream()
-                .filter(s -> !ARCHIVED_STATUSES.contains(s.getStatus().getCode()))
-                .max(INTYG_STATUS_COMPARATOR)
-                .map(s -> StatusKod.valueOf(s.getStatus().getCode()).toCertificateState())
-                .orElse(CertificateState.UNHANDLED);
+            .filter(s -> !ARCHIVED_STATUSES.contains(s.getStatus().getCode()))
+            .max(INTYG_STATUS_COMPARATOR)
+            .map(s -> StatusKod.valueOf(s.getStatus().getCode()).toCertificateState())
+            .orElse(CertificateState.UNHANDLED);
     }
 
     /**
@@ -112,7 +110,7 @@ public class IntygDraftsConverter {
         } else if (utkast.getSkapadAv() != null && utkast.getSkapadAv().getHsaId().equals(utkast.getSignatur().getSigneradAv())) {
             return utkast.getSkapadAv().getNamn();
         } else if (utkast.getSenastSparadAv() != null
-                && utkast.getSenastSparadAv().getHsaId().equals(utkast.getSignatur().getSigneradAv())) {
+            && utkast.getSenastSparadAv().getHsaId().equals(utkast.getSignatur().getSigneradAv())) {
             return utkast.getSenastSparadAv().getNamn();
         } else {
             return utkast.getSignatur().getSigneradAv();
@@ -129,7 +127,7 @@ public class IntygDraftsConverter {
         } else if (utkast.getSkapadAv() != null && utkast.getSkapadAv().getHsaId().equals(utkast.getSignatur().getSigneradAv())) {
             return utkast.getSkapadAv().getHsaId();
         } else if (utkast.getSenastSparadAv() != null
-                && utkast.getSenastSparadAv().getHsaId().equals(utkast.getSignatur().getSigneradAv())) {
+            && utkast.getSenastSparadAv().getHsaId().equals(utkast.getSignatur().getSigneradAv())) {
             return utkast.getSenastSparadAv().getHsaId();
         } else {
             return utkast.getSignatur().getSigneradAv();
@@ -154,11 +152,11 @@ public class IntygDraftsConverter {
 
     public List<ListIntygEntry> convertIntygToListIntygEntries(List<Intyg> intygList, List<ListIntygEntry> webcertIntyg) {
         return intygList.stream()
-                .map(intyg -> convertIntygToListIntygEntry(intyg,
-                        webcertIntyg.stream().filter(it -> it.getIntygId().equals(intyg.getIntygsId().getExtension())).findFirst()
-                                .orElse(null)))
-                .sorted(INTYG_ENTRY_DATE_COMPARATOR_DESC)
-                .collect(Collectors.toList());
+            .map(intyg -> convertIntygToListIntygEntry(intyg,
+                webcertIntyg.stream().filter(it -> it.getIntygId().equals(intyg.getIntygsId().getExtension())).findFirst()
+                    .orElse(null)))
+            .sorted(INTYG_ENTRY_DATE_COMPARATOR_DESC)
+            .collect(Collectors.toList());
     }
 
     private ListIntygEntry convertIntygToListIntygEntry(Intyg source, ListIntygEntry altSource) {
@@ -172,7 +170,7 @@ public class IntygDraftsConverter {
             entry.setStatus(findLatestStatus(source.getStatus()).name());
         } else {
             entry.setStatus(determineMostRelevantStatus(findLatestStatus(source.getStatus()),
-                    CertificateState.valueOf(altSource.getStatus())));
+                CertificateState.valueOf(altSource.getStatus())));
         }
 
         entry.setUpdatedSignedBy(source.getSkapadAv().getFullstandigtNamn());
@@ -204,7 +202,7 @@ public class IntygDraftsConverter {
 
     private Personnummer createPnr(String personId) {
         return Personnummer.createPersonnummer(personId)
-                .orElseThrow(() -> new IllegalArgumentException("Could not parse passed personnummer: " + personId));
+            .orElseThrow(() -> new IllegalArgumentException("Could not parse passed personnummer: " + personId));
     }
 
 }

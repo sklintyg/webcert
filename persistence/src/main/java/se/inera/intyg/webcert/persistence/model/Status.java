@@ -22,7 +22,6 @@ package se.inera.intyg.webcert.persistence.model;
  * Possible statuses for a FragaSvar Entity.
  *
  * @author marced
- *
  */
 public enum Status {
 

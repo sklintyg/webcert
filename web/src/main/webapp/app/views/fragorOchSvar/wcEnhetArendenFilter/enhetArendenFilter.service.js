@@ -18,51 +18,51 @@
  */
 
 angular.module('webcert').factory('webcert.enhetArendenFilterService',
-    [ 'webcert.enhetArendenProxy', 'webcert.enhetArendenModel', 'webcert.enhetArendenFilterModel', 'common.UserModel',
-    function(enhetArendenProxy, enhetArendenModel, enhetArendenFilterModel, UserModel) {
+    ['webcert.enhetArendenProxy', 'webcert.enhetArendenModel', 'webcert.enhetArendenFilterModel', 'common.UserModel',
+      function(enhetArendenProxy, enhetArendenModel, enhetArendenFilterModel, UserModel) {
         'use strict';
 
         function _initLakareList(unitId) {
-            enhetArendenFilterModel.viewState.loadingLakare = true;
-            var lakareUnitId = unitId === enhetArendenModel.ALL_UNITS ? undefined : unitId;
-            enhetArendenProxy.getArendenLakareList(lakareUnitId, function(list) {
-                enhetArendenFilterModel.viewState.loadingLakare = false;
-                enhetArendenFilterModel.lakareList = list;
-                    enhetArendenFilterModel.lakareList.unshift(enhetArendenFilterModel.lakareListEmptyChoice);
-                if (!UserModel.isDjupintegration() && !UserModel.isVardAdministrator()) {
+          enhetArendenFilterModel.viewState.loadingLakare = true;
+          var lakareUnitId = unitId === enhetArendenModel.ALL_UNITS ? undefined : unitId;
+          enhetArendenProxy.getArendenLakareList(lakareUnitId, function(list) {
+            enhetArendenFilterModel.viewState.loadingLakare = false;
+            enhetArendenFilterModel.lakareList = list;
+            enhetArendenFilterModel.lakareList.unshift(enhetArendenFilterModel.lakareListEmptyChoice);
+            if (!UserModel.isDjupintegration() && !UserModel.isVardAdministrator()) {
 
-                    var userLakare = {
-                        id: UserModel.user.hsaId, label: UserModel.user.namn
-                    };
+              var userLakare = {
+                id: UserModel.user.hsaId, label: UserModel.user.namn
+              };
 
-                    var inList = false;
-                    enhetArendenFilterModel.lakareList.forEach(function(lakare){
-                        if (lakare.id === userLakare.id) {
-                            inList = true;
-                        }
-                    });
-
-                    if (!inList) {
-                        enhetArendenFilterModel.lakareList.push(userLakare);
-                    }
-                    enhetArendenFilterModel.filterForm.lakareSelector = userLakare.id;
-                } else {
-                    enhetArendenFilterModel.filterForm.lakareSelector = enhetArendenFilterModel.lakareList[0].id;
+              var inList = false;
+              enhetArendenFilterModel.lakareList.forEach(function(lakare) {
+                if (lakare.id === userLakare.id) {
+                  inList = true;
                 }
-                enhetArendenFilterModel.defaultLakareSelector = enhetArendenFilterModel.filterForm.lakareSelector;
+              });
 
-            }, function() {
-                enhetArendenFilterModel.viewState.loadingLakare = false;
-                enhetArendenFilterModel.lakareList = [];
-                enhetArendenFilterModel.lakareList.push({
-                    hsaId: undefined,
-                    name: '<Kunde inte hämta lista>'
-                });
+              if (!inList) {
+                enhetArendenFilterModel.lakareList.push(userLakare);
+              }
+              enhetArendenFilterModel.filterForm.lakareSelector = userLakare.id;
+            } else {
+              enhetArendenFilterModel.filterForm.lakareSelector = enhetArendenFilterModel.lakareList[0].id;
+            }
+            enhetArendenFilterModel.defaultLakareSelector = enhetArendenFilterModel.filterForm.lakareSelector;
+
+          }, function() {
+            enhetArendenFilterModel.viewState.loadingLakare = false;
+            enhetArendenFilterModel.lakareList = [];
+            enhetArendenFilterModel.lakareList.push({
+              hsaId: undefined,
+              name: '<Kunde inte hämta lista>'
             });
+          });
         }
 
         // Return public API for the service
         return {
-            initLakareList: _initLakareList
+          initLakareList: _initLakareList
         };
-    }]);
+      }]);

@@ -30,56 +30,56 @@ var intygFromJsonFactory = wcTestTools.intygFromJsonFactory;
 
 describe('Validera makulering av luae_fs Intyg', function() {
 
-    var intygsId;
+  var intygsId;
 
-    beforeAll(function() {
-        browser.ignoreSynchronization = false;
-        specHelper.login();
+  beforeAll(function() {
+    browser.ignoreSynchronization = false;
+    specHelper.login();
+  });
+
+  describe('Visa signerat luae_fs intyg', function() {
+
+    it('Skapa signerat intyg i IT, visa intyget', function() {
+      var intyg = intygFromJsonFactory.defaultLuaefs();
+      intygsId = intyg.id;
+      restUtil.createIntyg(intyg);
+      SokSkrivIntygPage.selectPersonnummer('19121212-1212');
+      SokSkrivValjIntyg.selectIntygById(intygsId);
+
+      expect(IntygPage.isAt()).toBeTruthy();
     });
 
-    describe('Visa signerat luae_fs intyg', function() {
+    it('Makulera intyget', function() {
+      IntygPage.makulera.btn.sendKeys(protractor.Key.SPACE);
+      IntygPage.makulera.dialogRadioFelPatient.sendKeys(protractor.Key.SPACE);
+      expect(IntygPage.makulera.dialogMakulera.isDisplayed()).toBeTruthy();
 
-        it('Skapa signerat intyg i IT, visa intyget', function() {
-            var intyg = intygFromJsonFactory.defaultLuaefs();
-            intygsId = intyg.id;
-            restUtil.createIntyg(intyg);
-            SokSkrivIntygPage.selectPersonnummer('19121212-1212');
-            SokSkrivValjIntyg.selectIntygById(intygsId);
-
-            expect(IntygPage.isAt()).toBeTruthy();
-        });
-
-        it('Makulera intyget', function() {
-            IntygPage.makulera.btn.sendKeys(protractor.Key.SPACE);
-            IntygPage.makulera.dialogRadioFelPatient.sendKeys(protractor.Key.SPACE);
-            expect(IntygPage.makulera.dialogMakulera.isDisplayed()).toBeTruthy();
-
-            IntygPage.makulera.dialogMakulera.sendKeys(protractor.Key.SPACE);
-        });
-
-        it('check intyg is makulerat', function() {
-            logger.debug("sleeping a while to allow changes to have taken effect in backend before checking revoked status");
-            browser.sleep(2000).then(function() {
-                expect(isIntygRevoked(intygsId)).toBeTruthy();
-                expect(IntygPage.makulera.btn.isPresent()).toBeFalsy();
-            });
-
-        });
+      IntygPage.makulera.dialogMakulera.sendKeys(protractor.Key.SPACE);
     });
 
-    afterAll(function() {
-        testdataHelper.deleteIntyg(intygsId);
-        specHelper.logout();
-        browser.ignoreSynchronization = false;
+    it('check intyg is makulerat', function() {
+      logger.debug("sleeping a while to allow changes to have taken effect in backend before checking revoked status");
+      browser.sleep(2000).then(function() {
+        expect(isIntygRevoked(intygsId)).toBeTruthy();
+        expect(IntygPage.makulera.btn.isPresent()).toBeFalsy();
+      });
+
     });
+  });
+
+  afterAll(function() {
+    testdataHelper.deleteIntyg(intygsId);
+    specHelper.logout();
+    browser.ignoreSynchronization = false;
+  });
 
 });
 
 function isIntygRevoked(intygsId) {
-    var innerDefer = protractor.promise.defer();
-    restUtil.getIntyg(intygsId).then(function(intygBody) {
-        var result = IntygPage.hasState(intygBody.body.states, 'CANCELLED');
-        innerDefer.fulfill(result);
-    });
-    return innerDefer.promise;
+  var innerDefer = protractor.promise.defer();
+  restUtil.getIntyg(intygsId).then(function(intygBody) {
+    var result = IntygPage.hasState(intygBody.body.states, 'CANCELLED');
+    innerDefer.fulfill(result);
+  });
+  return innerDefer.promise;
 }

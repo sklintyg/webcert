@@ -18,11 +18,19 @@
  */
 package se.inera.intyg.webcert.web.auth.oidc.jwt;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.IncorrectClaimException;
+import io.jsonwebtoken.Jws;
+import io.jsonwebtoken.MissingClaimException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -34,19 +42,9 @@ import org.springframework.security.authentication.AuthenticationServiceExceptio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.providers.ExpiringUsernameAuthenticationToken;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.IncorrectClaimException;
-import io.jsonwebtoken.Jws;
-import io.jsonwebtoken.MissingClaimException;
 import se.inera.intyg.infra.security.authorities.FeaturesHelper;
 import se.inera.intyg.webcert.web.service.jwt.JwtValidationService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
-
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class JwtAuthenticationFilterTest {
@@ -79,7 +77,7 @@ public class JwtAuthenticationFilterTest {
         when(req.getMethod()).thenReturn("POST");
         when(req.getParameter("access_token")).thenReturn("access-token");
         when(authenticationManager.authenticate(any(JwtAuthenticationToken.class)))
-                .thenReturn(new ExpiringUsernameAuthenticationToken(mock(WebCertUser.class), mock(WebCertUser.class)));
+            .thenReturn(new ExpiringUsernameAuthenticationToken(mock(WebCertUser.class), mock(WebCertUser.class)));
     }
 
     @Test

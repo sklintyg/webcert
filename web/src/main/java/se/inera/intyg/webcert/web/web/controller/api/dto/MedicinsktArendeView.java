@@ -19,7 +19,6 @@
 package se.inera.intyg.webcert.web.web.controller.api.dto;
 
 import com.google.auto.value.AutoValue;
-
 import javax.annotation.Nullable;
 
 @AutoValue
@@ -44,6 +43,7 @@ public abstract class MedicinsktArendeView {
 
     @AutoValue.Builder
     public abstract static class Builder {
+
         public abstract Builder setPosition(Integer position);
 
         public abstract Builder setInstans(Integer instans);

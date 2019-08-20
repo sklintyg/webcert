@@ -19,17 +19,20 @@
 package se.inera.intyg.webcert.web.auth;
 
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.*;
-import static se.inera.intyg.webcert.web.auth.common.AuthConstants.*;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static se.inera.intyg.webcert.web.auth.common.AuthConstants.HTTP_ID_SAMBI_SE_LOA_LOA3;
+import static se.inera.intyg.webcert.web.auth.common.AuthConstants.SPRING_SECURITY_CONTEXT;
+import static se.inera.intyg.webcert.web.auth.common.AuthConstants.URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_SOFTWARE_PKI;
 
 import java.io.IOException;
-
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -37,7 +40,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextImpl;
-
 import se.inera.intyg.infra.security.authorities.AuthoritiesResolverUtil;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.Privilege;
@@ -108,7 +110,7 @@ public class TermsFilterTest extends AuthoritiesConfigurationTestSetup {
     public void testFilterRedirectsWhenAuthenticatedSessionPrivatePractitionerHasNotAcceptedTerms() throws ServletException, IOException {
         when(avtalService.userHasApprovedLatestAvtal(anyString())).thenReturn(false);
         when(authentication.getPrincipal())
-                .thenReturn(buildWebCertUser(URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_SOFTWARE_PKI));
+            .thenReturn(buildWebCertUser(URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_SOFTWARE_PKI));
         when(securityContext.getAuthentication()).thenReturn(authentication);
         when(request.getSession(false)).thenReturn(session);
         when(session.getAttribute(SPRING_SECURITY_CONTEXT)).thenReturn(securityContext);
@@ -122,10 +124,10 @@ public class TermsFilterTest extends AuthoritiesConfigurationTestSetup {
 
     @Test
     public void testFilterSetsSessionAttributeWhenAuthenticatedSessionPrivatePractitionerHasAcceptedTerms()
-            throws ServletException, IOException {
+        throws ServletException, IOException {
         when(avtalService.userHasApprovedLatestAvtal(anyString())).thenReturn(true);
         when(authentication.getPrincipal())
-                .thenReturn(buildWebCertUser(URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_SOFTWARE_PKI));
+            .thenReturn(buildWebCertUser(URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_SOFTWARE_PKI));
         when(securityContext.getAuthentication()).thenReturn(authentication);
         when(request.getSession(false)).thenReturn(session);
         when(session.getAttribute(SPRING_SECURITY_CONTEXT)).thenReturn(securityContext);

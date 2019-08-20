@@ -19,7 +19,6 @@
 package se.inera.intyg.webcert.web.service.utkast.dto;
 
 import org.springframework.stereotype.Component;
-
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.model.common.internal.Patient;
 
@@ -30,7 +29,7 @@ public class CreateCompletionCopyRequest extends AbstractCreateCopyRequest {
     private String kommentar;
 
     public CreateCompletionCopyRequest(String orginalIntygsId, String intygsTyp, String meddelandeId, Patient patient,
-            HoSPersonal hosPerson, String kommentar) {
+        HoSPersonal hosPerson, String kommentar) {
         super(orginalIntygsId, intygsTyp, patient, hosPerson);
         this.setMeddelandeId(meddelandeId);
         this.kommentar = kommentar;

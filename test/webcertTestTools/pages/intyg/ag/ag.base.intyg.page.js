@@ -22,39 +22,39 @@
 var BaseIntyg = require('../base.intyg.page.js');
 
 var AgBaseIntyg = BaseIntyg._extend({
-    init: function init() {
-        init._super.call(this);
-        this.baseratPa = {
-            minUndersokningAvPatienten: element(by.id('undersokningAvPatienten')),
-            journaluppgifter: element(by.id('journaluppgifter')),
-            telefonkontakt: element(by.id('telefonkontaktMedPatienten')),
-            annat: element(by.id('annatGrundForMU')),
-            annatBeskrivning: element(by.id('annatGrundForMUBeskrivning'))
-        };
-    },
+  init: function init() {
+    init._super.call(this);
+    this.baseratPa = {
+      minUndersokningAvPatienten: element(by.id('undersokningAvPatienten')),
+      journaluppgifter: element(by.id('journaluppgifter')),
+      telefonkontakt: element(by.id('telefonkontaktMedPatienten')),
+      annat: element(by.id('annatGrundForMU')),
+      annatBeskrivning: element(by.id('annatGrundForMUBeskrivning'))
+    };
+  },
 
-    verifieraBaseratPa: function(data) {
-        if (data.baseratPa.minUndersokningAvPatienten) {
-            expect(this.baseratPa.minUndersokningAvPatienten.getText()).toBe(data.baseratPa.minUndersokningAvPatienten);
-        }
-
-        if (data.baseratPa.journaluppgifter) {
-            expect(this.baseratPa.journaluppgifter.getText()).toBe(data.baseratPa.journaluppgifter);
-        }
-
-        if (data.baseratPa.telefonkontakt) {
-            expect(this.baseratPa.telefonkontakt.getText()).toBe(data.baseratPa.telefonkontakt);
-        }
-
-        if (data.baseratPa.annat) {
-            expect(this.baseratPa.annat.getText()).toBe(data.baseratPa.annat);
-        }
-
-        if (data.baseratPa.annatBeskrivning) {
-            expect(this.baseratPa.annatBeskrivning.getText()).toBe(data.baseratPa.annatBeskrivning);
-        }
-
+  verifieraBaseratPa: function(data) {
+    if (data.baseratPa.minUndersokningAvPatienten) {
+      expect(this.baseratPa.minUndersokningAvPatienten.getText()).toBe(data.baseratPa.minUndersokningAvPatienten);
     }
+
+    if (data.baseratPa.journaluppgifter) {
+      expect(this.baseratPa.journaluppgifter.getText()).toBe(data.baseratPa.journaluppgifter);
+    }
+
+    if (data.baseratPa.telefonkontakt) {
+      expect(this.baseratPa.telefonkontakt.getText()).toBe(data.baseratPa.telefonkontakt);
+    }
+
+    if (data.baseratPa.annat) {
+      expect(this.baseratPa.annat.getText()).toBe(data.baseratPa.annat);
+    }
+
+    if (data.baseratPa.annatBeskrivning) {
+      expect(this.baseratPa.annatBeskrivning.getText()).toBe(data.baseratPa.annatBeskrivning);
+    }
+
+  }
 });
 
 module.exports = AgBaseIntyg;

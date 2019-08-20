@@ -18,12 +18,10 @@
  */
 package se.inera.intyg.webcert.web.web.controller.api.dto;
 
-import java.time.LocalDateTime;
-
-import javax.annotation.Nullable;
-
 import com.google.auto.value.AutoValue;
 import com.google.common.collect.ImmutableList;
+import java.time.LocalDateTime;
+import javax.annotation.Nullable;
 
 @AutoValue
 public abstract class ArendeConversationView {

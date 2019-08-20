@@ -19,6 +19,8 @@
 package se.inera.intyg.webcert.persistence.fmb.model.fmb;
 
 import com.google.common.collect.Lists;
+import java.util.List;
+import java.util.Optional;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -29,8 +31,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import java.util.List;
-import java.util.Optional;
 
 @Entity
 @Table(name = "FMB_ICD10_KOD")
@@ -77,6 +77,7 @@ public class Icd10Kod {
     }
 
     public static final class Icd10KodBuilder {
+
         private String kod;
         private String beskrivning;
         private List<TypFall> typFallList = Lists.newArrayList();

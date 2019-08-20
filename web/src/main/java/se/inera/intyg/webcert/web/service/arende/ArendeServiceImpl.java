@@ -18,6 +18,9 @@
  */
 package se.inera.intyg.webcert.web.service.arende;
 
+import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -31,7 +34,6 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,11 +41,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.oxm.MarshallingFailureException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Preconditions;
-import com.google.common.base.Strings;
-
 import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.support.model.common.internal.Vardenhet;
@@ -117,12 +114,12 @@ public class ArendeServiceImpl implements ArendeService {
     private static final Logger LOG = LoggerFactory.getLogger(ArendeServiceImpl.class);
 
     private static final List<String> BLACKLISTED = Arrays.asList(Fk7263EntryPoint.MODULE_ID, TsBasEntryPoint.MODULE_ID,
-            TsDiabetesEntryPoint.MODULE_ID);
+        TsDiabetesEntryPoint.MODULE_ID);
 
     private static final List<ArendeAmne> VALID_VARD_AMNEN = Arrays.asList(
-            ArendeAmne.AVSTMN,
-            ArendeAmne.KONTKT,
-            ArendeAmne.OVRIGT);
+        ArendeAmne.AVSTMN,
+        ArendeAmne.KONTKT,
+        ArendeAmne.OVRIGT);
 
     private Clock systemClock = Clock.systemDefaultZone();
 
@@ -195,8 +192,8 @@ public class ArendeServiceImpl implements ArendeService {
         updateSenasteHandelseAndStatusForRelatedArende(arende);
 
         monitoringLog.logArendeReceived(arende.getIntygsId(), utkast.getIntygsTyp(), utkast.getEnhetsId(), arende.getAmne(),
-                arende.getKomplettering().stream().map(MedicinsktArende::getFrageId).collect(Collectors.toList()),
-                arende.getSvarPaId() != null);
+            arende.getKomplettering().stream().map(MedicinsktArende::getFrageId).collect(Collectors.toList()),
+            arende.getSvarPaId() != null);
 
         Arende saved = arendeRepository.save(arende);
 
@@ -212,7 +209,7 @@ public class ArendeServiceImpl implements ArendeService {
     public ArendeConversationView createMessage(String intygId, ArendeAmne amne, String rubrik, String meddelande) {
         if (!VALID_VARD_AMNEN.contains(amne)) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, "Invalid Amne " + amne
-                    + " for new question from vard!");
+                + " for new question from vard!");
         }
         Utkast utkast = utkastRepository.findOne(intygId);
 
@@ -221,7 +218,7 @@ public class ArendeServiceImpl implements ArendeService {
         validateAccessRightsToCreateQuestion(utkast);
 
         Arende arende = ArendeConverter.createArendeFromUtkast(amne, rubrik, meddelande, utkast, LocalDateTime.now(systemClock),
-                webcertUserService.getUser().getNamn(), hsaEmployeeService);
+            webcertUserService.getUser().getNamn(), hsaEmployeeService);
 
         Arende saved = processOutgoingMessage(arende, NotificationEvent.NEW_QUESTION_FROM_CARE);
 
@@ -233,7 +230,7 @@ public class ArendeServiceImpl implements ArendeService {
     public ArendeConversationView answer(String svarPaMeddelandeId, String meddelande) {
         if (Strings.isNullOrEmpty(meddelande)) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM,
-                    "SvarsText cannot be empty!");
+                "SvarsText cannot be empty!");
         }
         Arende svarPaMeddelande = lookupArende(svarPaMeddelandeId);
 
@@ -241,31 +238,31 @@ public class ArendeServiceImpl implements ArendeService {
 
         if (!Status.PENDING_INTERNAL_ACTION.equals(svarPaMeddelande.getStatus())) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, "Arende with id "
-                    + svarPaMeddelandeId + " has invalid state for saving answer("
-                    + svarPaMeddelande.getStatus() + ")");
+                + svarPaMeddelandeId + " has invalid state for saving answer("
+                + svarPaMeddelande.getStatus() + ")");
         }
 
         // Implement Business Rule FS-007
         if (ArendeAmne.PAMINN.equals(svarPaMeddelande.getAmne())) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, "Arende with id "
-                    + svarPaMeddelandeId + " has invalid Amne(" + svarPaMeddelande.getAmne()
-                    + ") for saving answer");
+                + svarPaMeddelandeId + " has invalid Amne(" + svarPaMeddelande.getAmne()
+                + ") for saving answer");
         }
 
         if (ArendeAmne.KOMPLT.equals(svarPaMeddelande.getAmne())) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, "Arende with id "
-                    + svarPaMeddelandeId + " has invalid Amne(" + svarPaMeddelande.getAmne()
-                    + ") for saving answer");
+                + svarPaMeddelandeId + " has invalid Amne(" + svarPaMeddelande.getAmne()
+                + ") for saving answer");
         }
 
         Arende arende = ArendeConverter.createAnswerFromArende(meddelande, svarPaMeddelande, LocalDateTime.now(systemClock),
-                webcertUserService.getUser().getNamn());
+            webcertUserService.getUser().getNamn());
 
         Arende saved = processOutgoingMessage(arende, NotificationEvent.NEW_ANSWER_FROM_CARE);
 
         arendeDraftService.delete(svarPaMeddelande.getIntygsId(), svarPaMeddelandeId);
         return arendeViewConverter.convertToArendeConversationView(svarPaMeddelande, saved, null,
-                arendeRepository.findByPaminnelseMeddelandeId(svarPaMeddelandeId), null);
+            arendeRepository.findByPaminnelseMeddelandeId(svarPaMeddelandeId), null);
     }
 
     @Override
@@ -286,14 +283,14 @@ public class ArendeServiceImpl implements ArendeService {
 
         // Close all Arende for intyg, _except_ question from recipient (latestKomplArende) which we handle separately below.
         arendeList.stream()
-                .filter(arende -> !Objects.equals(arende.getMeddelandeId(), latestKomplArende.getMeddelandeId()))
-                .forEach(this::closeArendeAsHandled);
+            .filter(arende -> !Objects.equals(arende.getMeddelandeId(), latestKomplArende.getMeddelandeId()))
+            .forEach(this::closeArendeAsHandled);
 
         Arende answer = ArendeConverter.createAnswerFromArende(
-                meddelande,
-                latestKomplArende,
-                LocalDateTime.now(systemClock),
-                user.getNamn());
+            meddelande,
+            latestKomplArende,
+            LocalDateTime.now(systemClock),
+            user.getNamn());
 
         arendeDraftService.delete(latestKomplArende.getIntygsId(), latestKomplArende.getMeddelandeId());
         // processOutgoingMessage modifies latestKomplArende in arendeList, which is invalidated from here on.
@@ -306,17 +303,17 @@ public class ArendeServiceImpl implements ArendeService {
 
     private Arende getLatestKomplArende(String intygsId, List<Arende> arendeList) {
         return arendeList
-                .stream()
-                .max(byTimestamp)
-                .orElseThrow(() -> new IllegalArgumentException("No arende of type KOMPLT exist for intyg: " + intygsId));
+            .stream()
+            .max(byTimestamp)
+            .orElseThrow(() -> new IllegalArgumentException("No arende of type KOMPLT exist for intyg: " + intygsId));
     }
 
     private List<Arende> filterKompletteringar(List<Arende> list) {
         return list
-                .stream()
-                .filter(isQuestion())
-                .filter(isCorrectAmne(ArendeAmne.KOMPLT))
-                .collect(Collectors.toList());
+            .stream()
+            .filter(isQuestion())
+            .filter(isCorrectAmne(ArendeAmne.KOMPLT))
+            .collect(Collectors.toList());
     }
 
     private List<Arende> getArendeForIntygId(String intygsId, WebCertUser user) {
@@ -334,15 +331,15 @@ public class ArendeServiceImpl implements ArendeService {
         validateAccessRightsToForwardQuestions(intygsId);
 
         List<Arende> arendenToForward = arendeRepository.save(
-                allArende
-                        .stream()
-                        .filter(isCorrectEnhet(user))
-                        .peek(Arende::setArendeToVidareBerordrat)
-                        .collect(Collectors.toList()));
+            allArende
+                .stream()
+                .filter(isCorrectEnhet(user))
+                .peek(Arende::setArendeToVidareBerordrat)
+                .collect(Collectors.toList()));
 
         if (arendenToForward.isEmpty()) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND,
-                    "Could not find any arende related to IntygsId: " + intygsId);
+                "Could not find any arende related to IntygsId: " + intygsId);
         }
 
         return getArendeConversationViewList(intygsId, allArende);
@@ -359,9 +356,9 @@ public class ArendeServiceImpl implements ArendeService {
 
         // Enforce business rule FS-011, from FK + answer should remain closed
         if (!FrageStallare.WEBCERT.isKodEqual(arende.getSkickatAv())
-                && arendeIsAnswered) {
+            && arendeIsAnswered) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE,
-                    "FS-011: Cant revert status for question " + meddelandeId);
+                "FS-011: Cant revert status for question " + meddelandeId);
         }
 
         NotificationEvent notificationEvent = determineNotificationEvent(arende, arendeIsAnswered);
@@ -380,10 +377,10 @@ public class ArendeServiceImpl implements ArendeService {
         sendNotification(openedArende, notificationEvent);
 
         return arendeViewConverter.convertToArendeConversationView(openedArende,
-                arendeRepository.findBySvarPaId(meddelandeId).stream().findFirst().orElse(null),
-                null,
-                arendeRepository.findByPaminnelseMeddelandeId(meddelandeId),
-                null);
+            arendeRepository.findBySvarPaId(meddelandeId).stream().findFirst().orElse(null),
+            null,
+            arendeRepository.findByPaminnelseMeddelandeId(meddelandeId),
+            null);
     }
 
     @Override
@@ -398,22 +395,22 @@ public class ArendeServiceImpl implements ArendeService {
         }
 
         List<String> arendeListHsaId = arendeRepository.findSigneratAvByEnhet(enhetsIdParams).stream()
-                .map(arr -> (String) arr[0])
-                .collect(Collectors.toList());
+            .map(arr -> (String) arr[0])
+            .collect(Collectors.toList());
 
         // We need to maintain backwards compatibility. When FragaSvar no longer exist remove this part and return above
         // arendeList
         List<String> fragaSvarListHsaId = fragaSvarService.getFragaSvarHsaIdByEnhet(enhetsId).stream()
-                .map(Lakare::getHsaId)
-                .collect(Collectors.toList());
+            .map(Lakare::getHsaId)
+            .collect(Collectors.toList());
 
         Set<String> hsaIds = new HashSet<>(arendeListHsaId);
         hsaIds.addAll(fragaSvarListHsaId);
 
         return hsaIds.stream()
-                .map(hsaId -> new Lakare(hsaId, getLakareName(hsaId)))
-                .sorted(Comparator.comparing(Lakare::getName))
-                .collect(Collectors.toList());
+            .map(hsaId -> new Lakare(hsaId, getLakareName(hsaId)))
+            .sorted(Comparator.comparing(Lakare::getName))
+            .collect(Collectors.toList());
     }
 
     private String getLakareName(String hsaId) {
@@ -454,13 +451,13 @@ public class ArendeServiceImpl implements ArendeService {
         filter.setPageSize(null);
 
         List<ArendeListItem> results = arendeRepository.filterArende(filter).stream()
-                .map(ArendeListItemConverter::convert)
-                .filter(Objects::nonNull)
-                // We need to decorate the ArendeListItem with information whether there exist a reminder or not because
-                // they want to display this information to the user. We cannot do this without a database access, hence
-                // we do it after the convertToDto
-                .peek(item -> item.setPaminnelse(!arendeRepository.findByPaminnelseMeddelandeId(item.getMeddelandeId()).isEmpty()))
-                .collect(Collectors.toList());
+            .map(ArendeListItemConverter::convert)
+            .filter(Objects::nonNull)
+            // We need to decorate the ArendeListItem with information whether there exist a reminder or not because
+            // they want to display this information to the user. We cannot do this without a database access, hence
+            // we do it after the convertToDto
+            .peek(item -> item.setPaminnelse(!arendeRepository.findByPaminnelseMeddelandeId(item.getMeddelandeId()).isEmpty()))
+            .collect(Collectors.toList());
 
         QueryFragaSvarResponse fsResults = fragaSvarService.filterFragaSvar(filter);
         results.addAll(fsResults.getResults());
@@ -468,18 +465,18 @@ public class ArendeServiceImpl implements ArendeService {
         QueryFragaSvarResponse response = new QueryFragaSvarResponse();
 
         Map<Personnummer, SekretessStatus> sekretessStatusMap = patientDetailsResolver.getSekretessStatusForList(results.stream()
-                .map(ali -> Personnummer.createPersonnummer(ali.getPatientId()).get())
-                .collect(Collectors.toList()));
+            .map(ali -> Personnummer.createPersonnummer(ali.getPatientId()).get())
+            .collect(Collectors.toList()));
 
         // INTYG-4086, INTYG-4486: Filter out any items that doesn't pass sekretessmarkering rules
         results = results.stream()
-                .filter(ali -> this.passesSekretessCheck(ali.getPatientId(), ali.getIntygTyp(), user, sekretessStatusMap))
-                .collect(Collectors.toList());
+            .filter(ali -> this.passesSekretessCheck(ali.getPatientId(), ali.getIntygTyp(), user, sekretessStatusMap))
+            .collect(Collectors.toList());
 
         // We must mark all items having patient with sekretessmarkering
         results.stream()
-                .filter(ali -> hasSekretessStatus(ali, SekretessStatus.TRUE, sekretessStatusMap))
-                .forEach(ali -> ali.setSekretessmarkering(true));
+            .filter(ali -> hasSekretessStatus(ali, SekretessStatus.TRUE, sekretessStatusMap))
+            .forEach(ali -> ali.setSekretessmarkering(true));
 
         response.setTotalCount(results.size());
 
@@ -487,7 +484,7 @@ public class ArendeServiceImpl implements ArendeService {
             response.setResults(new ArrayList<>());
         } else {
             List<ArendeListItem> resultList = results
-                    .subList(originalStartFrom, Math.min(originalPageSize + originalStartFrom, results.size()));
+                .subList(originalStartFrom, Math.min(originalPageSize + originalStartFrom, results.size()));
 
             // Get lakare name
             Set<String> hsaIds = resultList.stream().map(ArendeListItem::getSigneratAv).collect(Collectors.toSet());
@@ -534,28 +531,28 @@ public class ArendeServiceImpl implements ArendeService {
             comparator = Comparator.comparing(ArendeListItem::getReceivedDate);
         } else {
             switch (orderBy) {
-            case "amne":
-                comparator = (a1, a2) -> {
-                    return getAmneString(a1.getAmne(), a1.getStatus(), a1.isPaminnelse(), a1.getFragestallare())
+                case "amne":
+                    comparator = (a1, a2) -> {
+                        return getAmneString(a1.getAmne(), a1.getStatus(), a1.isPaminnelse(), a1.getFragestallare())
                             .compareTo(getAmneString(a2.getAmne(), a2.getStatus(), a2.isPaminnelse(), a2.getFragestallare()));
-                };
-                break;
-            case "fragestallare":
-                comparator = Comparator.comparing(ArendeListItem::getFragestallare);
-                break;
-            case "patientId":
-                comparator = Comparator.comparing(ArendeListItem::getPatientId);
-                break;
-            case "signeratAvNamn":
-                comparator = Comparator.comparing(ArendeListItem::getSigneratAvNamn);
-                break;
-            case "vidarebefordrad":
-                comparator = Comparator.comparing(ArendeListItem::isVidarebefordrad);
-                break;
-            case "receivedDate":
-            default:
-                comparator = Comparator.comparing(ArendeListItem::getReceivedDate);
-                break;
+                    };
+                    break;
+                case "fragestallare":
+                    comparator = Comparator.comparing(ArendeListItem::getFragestallare);
+                    break;
+                case "patientId":
+                    comparator = Comparator.comparing(ArendeListItem::getPatientId);
+                    break;
+                case "signeratAvNamn":
+                    comparator = Comparator.comparing(ArendeListItem::getSigneratAvNamn);
+                    break;
+                case "vidarebefordrad":
+                    comparator = Comparator.comparing(ArendeListItem::isVidarebefordrad);
+                    break;
+                case "receivedDate":
+                default:
+                    comparator = Comparator.comparing(ArendeListItem::getReceivedDate);
+                    break;
             }
         }
 
@@ -566,7 +563,7 @@ public class ArendeServiceImpl implements ArendeService {
     }
 
     private boolean passesSekretessCheck(String patientId, String intygsTyp, WebCertUser user,
-            Map<Personnummer, SekretessStatus> sekretessStatusMap) {
+        Map<Personnummer, SekretessStatus> sekretessStatusMap) {
 
         final SekretessStatus sekretessStatus = sekretessStatusMap.get(Personnummer.createPersonnummer(patientId).get());
 
@@ -574,14 +571,14 @@ public class ArendeServiceImpl implements ArendeService {
             return false;
         } else {
             return sekretessStatus == SekretessStatus.FALSE || authoritiesValidator.given(user, intygsTyp)
-                    .privilege(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT)
-                    .isVerified();
+                .privilege(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT)
+                .isVerified();
         }
 
     }
 
     private boolean hasSekretessStatus(ArendeListItem ali, SekretessStatus sekretessStatus,
-            Map<Personnummer, SekretessStatus> sekretessStatusMap) {
+        Map<Personnummer, SekretessStatus> sekretessStatusMap) {
         return sekretessStatusMap.get(Personnummer.createPersonnummer(ali.getPatientId()).get()) == sekretessStatus;
     }
 
@@ -598,10 +595,10 @@ public class ArendeServiceImpl implements ArendeService {
         } else {
             Arende closedArende = closeArendeAsHandled(arende);
             return arendeViewConverter.convertToArendeConversationView(closedArende,
-                    arendeRepository.findBySvarPaId(meddelandeId).stream().findFirst().orElse(null),
-                    null,
-                    arendeRepository.findByPaminnelseMeddelandeId(meddelandeId),
-                    null);
+                arendeRepository.findBySvarPaId(meddelandeId).stream().findFirst().orElse(null),
+                null,
+                arendeRepository.findByPaminnelseMeddelandeId(meddelandeId),
+                null);
         }
     }
 
@@ -612,7 +609,7 @@ public class ArendeServiceImpl implements ArendeService {
             fragaSvarService.closeCompletionsAsHandled(intygId);
         } else {
             List<Arende> completionArenden = arendeRepository.findByIntygsId(intygId)
-                    .stream().filter(a -> ArendeAmne.KOMPLT == a.getAmne() && a.getSvarPaId() == null).collect(Collectors.toList());
+                .stream().filter(a -> ArendeAmne.KOMPLT == a.getAmne() && a.getSvarPaId() == null).collect(Collectors.toList());
             for (Arende completion : completionArenden) {
                 if (Status.CLOSED != completion.getStatus()) {
                     closeArendeAsHandled(completion);
@@ -628,8 +625,8 @@ public class ArendeServiceImpl implements ArendeService {
 
         for (Arende arende : list) {
             if (arende.getAmne() != ArendeAmne.PAMINN
-                    && arende.getSvarPaId() == null
-                    && arende.getStatus() != Status.CLOSED) {
+                && arende.getSvarPaId() == null
+                && arende.getStatus() != Status.CLOSED) {
                 closeArendeAsHandled(arende);
             }
         }
@@ -679,7 +676,7 @@ public class ArendeServiceImpl implements ArendeService {
     private void verifyEnhetsAuth(String enhetsId, boolean isReadOnlyOperation) {
         if (!webcertUserService.isAuthorizedForUnit(enhetsId, isReadOnlyOperation)) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM,
-                    "User not authorized for enhet " + enhetsId);
+                "User not authorized for enhet " + enhetsId);
         }
     }
 
@@ -690,10 +687,10 @@ public class ArendeServiceImpl implements ArendeService {
         List<ArendeDraft> arendeDraftList = arendeDraftService.listAnswerDrafts(intygsId);
 
         return arendeViewConverter.buildArendeConversations(
-                intygsId,
-                arendeList,
-                kompltToIntyg,
-                arendeDraftList);
+            intygsId,
+            arendeList,
+            kompltToIntyg,
+            arendeDraftList);
 
     }
 
@@ -735,7 +732,7 @@ public class ArendeServiceImpl implements ArendeService {
 
         if (arende == null) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND,
-                    "Could not find Arende with id:" + meddelandeId);
+                "Could not find Arende with id:" + meddelandeId);
         }
         return arende;
     }
@@ -743,28 +740,28 @@ public class ArendeServiceImpl implements ArendeService {
     private void validateArende(String arendeIntygsId, Utkast utkast) {
         if (utkast == null) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND,
-                    "Certificate " + arendeIntygsId + " not found.");
+                "Certificate " + arendeIntygsId + " not found.");
         } else if (utkast.getSignatur() == null) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE,
-                    "Certificate " + arendeIntygsId + " not signed.");
+                "Certificate " + arendeIntygsId + " not signed.");
         } else if (BLACKLISTED.contains(utkast.getIntygsTyp())) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE,
-                    "Certificate " + arendeIntygsId + " has wrong type. " + utkast.getIntygsTyp() + " is blacklisted.");
+                "Certificate " + arendeIntygsId + " has wrong type. " + utkast.getIntygsTyp() + " is blacklisted.");
         } else if (utkast.getAterkalladDatum() != null) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.CERTIFICATE_REVOKED,
-                    "Certificate " + arendeIntygsId + " is revoked.");
+                "Certificate " + arendeIntygsId + " is revoked.");
         }
     }
 
     private Arende processOutgoingMessage(Arende arende, NotificationEvent notificationEvent) {
         Arende saved = arendeRepository.save(arende);
         monitoringLog.logArendeCreated(arende.getIntygsId(), arende.getIntygTyp(), arende.getEnhetId(), arende.getAmne(),
-                arende.getSvarPaId() != null);
+            arende.getSvarPaId() != null);
 
         updateSenasteHandelseAndStatusForRelatedArende(arende);
 
         SendMessageToRecipientType request = SendMessageToRecipientTypeBuilder.build(arende, webcertUserService.getUser(),
-                sendMessageToFKLogicalAddress);
+            sendMessageToFKLogicalAddress);
 
         // Send to recipient
         try {
@@ -817,10 +814,10 @@ public class ArendeServiceImpl implements ArendeService {
     private void validateAccessRightsToAnswerComplement(String intygsId, boolean newCertificate) {
         final Utlatande utlatande = getUtlatande(intygsId);
         final AccessResult accessResult = certificateAccessService.allowToAnswerComplementQuestion(
-                utlatande.getTyp(),
-                getVardenhet(utlatande),
-                getPersonnummer(utlatande),
-                newCertificate);
+            utlatande.getTyp(),
+            getVardenhet(utlatande),
+            getPersonnummer(utlatande),
+            newCertificate);
 
         accessResultExceptionHelper.throwExceptionIfDenied(accessResult);
     }
@@ -828,9 +825,9 @@ public class ArendeServiceImpl implements ArendeService {
     private void validateAccessRightsToForwardQuestions(String intygsId) {
         final Utlatande utlatande = getUtlatande(intygsId);
         final AccessResult accessResult = certificateAccessService.allowToForwardQuestions(
-                utlatande.getTyp(),
-                getVardenhet(utlatande),
-                getPersonnummer(utlatande));
+            utlatande.getTyp(),
+            getVardenhet(utlatande),
+            getPersonnummer(utlatande));
 
         accessResultExceptionHelper.throwExceptionIfDenied(accessResult);
     }
@@ -838,9 +835,9 @@ public class ArendeServiceImpl implements ArendeService {
     private void validateAccessRightsToCreateQuestion(Utkast utkast) {
         final Utlatande utlatande = getUtlatande(utkast);
         final AccessResult accessResult = certificateAccessService.allowToCreateQuestion(
-                utlatande.getTyp(),
-                getVardenhet(utlatande),
-                getPersonnummer(utlatande));
+            utlatande.getTyp(),
+            getVardenhet(utlatande),
+            getPersonnummer(utlatande));
 
         accessResultExceptionHelper.throwExceptionIfDenied(accessResult);
     }
@@ -848,9 +845,9 @@ public class ArendeServiceImpl implements ArendeService {
     private void validateAccessRightsToReadArenden(String intygsId) {
         final Utlatande utlatande = getUtlatande(intygsId);
         final AccessResult accessResult = certificateAccessService.allowToReadQuestions(
-                utlatande.getTyp(),
-                getVardenhet(utlatande),
-                getPersonnummer(utlatande));
+            utlatande.getTyp(),
+            getVardenhet(utlatande),
+            getPersonnummer(utlatande));
 
         accessResultExceptionHelper.throwExceptionIfDenied(accessResult);
     }

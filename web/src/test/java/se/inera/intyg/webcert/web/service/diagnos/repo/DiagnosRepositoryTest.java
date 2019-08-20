@@ -36,7 +36,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.Collections;
 import java.util.List;
-
 import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
@@ -44,7 +43,6 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
 import se.inera.intyg.webcert.web.service.diagnos.model.Diagnos;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -220,8 +218,8 @@ public class DiagnosRepositoryTest {
 
         // Then
         assertThat(result, allOf(
-                is(notNullValue()),
-                is(empty())));
+            is(notNullValue()),
+            is(empty())));
     }
 
     @Test
@@ -235,8 +233,8 @@ public class DiagnosRepositoryTest {
 
         // Then
         assertThat(result, allOf(
-                is(notNullValue()),
-                is(empty())));
+            is(notNullValue()),
+            is(empty())));
     }
 
     @Test
@@ -250,9 +248,9 @@ public class DiagnosRepositoryTest {
 
         // Then
         assertThat(result, allOf(
-                is(notNullValue()),
-                hasSize(1),
-                contains(hasProperty("beskrivning", startsWith(searchTerm)))));
+            is(notNullValue()),
+            hasSize(1),
+            contains(hasProperty("beskrivning", startsWith(searchTerm)))));
     }
 
     @Test
@@ -266,9 +264,9 @@ public class DiagnosRepositoryTest {
 
         // Then
         assertThat(result, allOf(
-                is(notNullValue()),
-                hasSize(1),
-                contains(hasProperty("beskrivning", containsString(searchTerm)))));
+            is(notNullValue()),
+            hasSize(1),
+            contains(hasProperty("beskrivning", containsString(searchTerm)))));
     }
 
     @Test
@@ -283,9 +281,9 @@ public class DiagnosRepositoryTest {
         // Then
         String expectedResult = "sputumundersökning";
         assertThat(result, allOf(
-                is(notNullValue()),
-                hasSize(1),
-                contains(hasProperty("beskrivning", containsString(expectedResult)))));
+            is(notNullValue()),
+            hasSize(1),
+            contains(hasProperty("beskrivning", containsString(expectedResult)))));
     }
 
     @Test
@@ -298,10 +296,10 @@ public class DiagnosRepositoryTest {
         List<Diagnos> result = repo.searchDiagnosisByDescription(searchTerm, greaterThanAvailableResults);
 
         // Then
-        assertThat(result, Matchers.<List<Diagnos>> allOf(
-                is(notNullValue()),
-                hasSize(4),
-                everyItem(hasProperty("beskrivning", containsString(searchTerm)))));
+        assertThat(result, Matchers.<List<Diagnos>>allOf(
+            is(notNullValue()),
+            hasSize(4),
+            everyItem(hasProperty("beskrivning", containsString(searchTerm)))));
     }
 
     @Test
@@ -314,10 +312,10 @@ public class DiagnosRepositoryTest {
         List<Diagnos> result = repo.searchDiagnosisByDescription(searchTerm, greaterThanAvailableResults);
 
         // Then
-        assertThat(result, Matchers.<List<Diagnos>> allOf(
-                is(notNullValue()),
-                hasSize(1),
-                contains(hasProperty("beskrivning", containsString(searchTerm)))));
+        assertThat(result, Matchers.<List<Diagnos>>allOf(
+            is(notNullValue()),
+            hasSize(1),
+            contains(hasProperty("beskrivning", containsString(searchTerm)))));
     }
 
     @Test
@@ -331,10 +329,10 @@ public class DiagnosRepositoryTest {
 
         // Then
         String expectedResult = "Tuberkulos i intratorakala lymfkörtlar, utan uppgift om bakteriologisk eller histologisk verifikation";
-        assertThat(result, Matchers.<List<Diagnos>> allOf(
-                is(notNullValue()),
-                hasSize(1),
-                contains(hasProperty("beskrivning", containsString(expectedResult)))));
+        assertThat(result, Matchers.<List<Diagnos>>allOf(
+            is(notNullValue()),
+            hasSize(1),
+            contains(hasProperty("beskrivning", containsString(expectedResult)))));
     }
 
     @Test
@@ -348,10 +346,10 @@ public class DiagnosRepositoryTest {
 
         // Then
         String expectedResult = "Tuberkulos i intratorakala lymfkörtlar, utan uppgift om bakteriologisk eller histologisk verifikation";
-        assertThat(result, Matchers.<List<Diagnos>> allOf(
-                is(notNullValue()),
-                hasSize(1),
-                contains(hasProperty("beskrivning", containsString(expectedResult)))));
+        assertThat(result, Matchers.<List<Diagnos>>allOf(
+            is(notNullValue()),
+            hasSize(1),
+            contains(hasProperty("beskrivning", containsString(expectedResult)))));
     }
 
     @Test
@@ -364,10 +362,10 @@ public class DiagnosRepositoryTest {
         List<Diagnos> result = repo.searchDiagnosisByDescription(searchTerm, oneLessThanAvailableResults);
 
         // Then
-        assertThat(result, Matchers.<List<Diagnos>> allOf(
-                is(notNullValue()),
-                hasSize(oneLessThanAvailableResults),
-                everyItem(hasProperty("beskrivning", containsString(searchTerm)))));
+        assertThat(result, Matchers.<List<Diagnos>>allOf(
+            is(notNullValue()),
+            hasSize(oneLessThanAvailableResults),
+            everyItem(hasProperty("beskrivning", containsString(searchTerm)))));
     }
 
     @Test
@@ -382,12 +380,12 @@ public class DiagnosRepositoryTest {
         List<Diagnos> lowerCaseResults = repo.searchDiagnosisByDescription(searchTerm.toLowerCase(), greaterThanAvailableResults);
 
         // Then
-        assertThat(mixedCaseResults, Matchers.<List<Diagnos>> allOf(
-                is(notNullValue()),
-                hasSize(7),
-                everyItem(hasProperty("beskrivning", containsString(searchTerm))),
-                contains(upperCaseResults.toArray()), // Converting to array needed, to match correct method signature
-                contains(lowerCaseResults.toArray())));
+        assertThat(mixedCaseResults, Matchers.<List<Diagnos>>allOf(
+            is(notNullValue()),
+            hasSize(7),
+            everyItem(hasProperty("beskrivning", containsString(searchTerm))),
+            contains(upperCaseResults.toArray()), // Converting to array needed, to match correct method signature
+            contains(lowerCaseResults.toArray())));
     }
 
 }

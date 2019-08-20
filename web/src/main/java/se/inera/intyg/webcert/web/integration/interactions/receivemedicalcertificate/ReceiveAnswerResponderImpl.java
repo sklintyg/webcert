@@ -21,6 +21,8 @@ package se.inera.intyg.webcert.web.integration.interactions.receivemedicalcertif
 // CHECKSTYLE:OFF LineLength
 
 import com.google.common.base.Joiner;
+import java.time.LocalDateTime;
+import java.util.List;
 import org.apache.cxf.annotations.SchemaValidation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,9 +37,6 @@ import se.inera.intyg.common.schemas.insuranceprocess.healthreporting.utils.Resu
 import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.intyg.webcert.web.service.fragasvar.FragaSvarService;
 import se.inera.intyg.webcert.web.service.notification.NotificationService;
-
-import java.time.LocalDateTime;
-import java.util.List;
 
 // CHECKSTYLE:ON LineLength
 
@@ -57,7 +56,7 @@ public class ReceiveAnswerResponderImpl implements ReceiveMedicalCertificateAnsw
 
     @Override
     public ReceiveMedicalCertificateAnswerResponseType receiveMedicalCertificateAnswer(
-            AttributedURIType logicalAddress, ReceiveMedicalCertificateAnswerType request) {
+        AttributedURIType logicalAddress, ReceiveMedicalCertificateAnswerType request) {
 
         ReceiveMedicalCertificateAnswerResponseType response = new ReceiveMedicalCertificateAnswerResponseType();
 
@@ -98,6 +97,6 @@ public class ReceiveAnswerResponderImpl implements ReceiveMedicalCertificateAnsw
     private void sendNotification(FragaSvar fragaSvar) {
         notificationService.sendNotificationForAnswerRecieved(fragaSvar);
         LOGGER.debug("Notification sent: an answer with id '{}' (related to certificate with id '{}') was received from FK.",
-                fragaSvar.getInternReferens(), fragaSvar.getIntygsReferens().getIntygsId());
+            fragaSvar.getInternReferens(), fragaSvar.getIntygsReferens().getIntygsId());
     }
 }

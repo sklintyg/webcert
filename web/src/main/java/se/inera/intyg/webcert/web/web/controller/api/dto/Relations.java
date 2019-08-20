@@ -29,6 +29,7 @@ import se.inera.intyg.webcert.common.model.WebcertCertificateRelation;
 public class Relations {
 
     public static class FrontendRelations {
+
         WebcertCertificateRelation replacedByUtkast;
         WebcertCertificateRelation replacedByIntyg;
         WebcertCertificateRelation complementedByUtkast;

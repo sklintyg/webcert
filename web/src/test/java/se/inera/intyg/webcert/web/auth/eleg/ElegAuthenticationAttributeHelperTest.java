@@ -18,12 +18,12 @@
  */
 package se.inera.intyg.webcert.web.auth.eleg;
 
+import static org.junit.Assert.assertEquals;
+
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.security.saml.SAMLCredential;
 import se.inera.intyg.webcert.web.auth.common.BaseSAMLCredentialTest;
-
-import static org.junit.Assert.assertEquals;
 
 /**
  * Created by eriklupander on 2015-08-26.

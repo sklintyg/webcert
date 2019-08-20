@@ -18,8 +18,9 @@
  */
 package se.inera.intyg.webcert.web.service.underskrift.nias;
 
+import com.secmaker.netid.nias.v1.NetiDAccessServerSoap;
+import com.secmaker.netid.nias.v1.ResultCollect;
 import java.nio.charset.Charset;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,10 +28,6 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
-
-import com.secmaker.netid.nias.v1.NetiDAccessServerSoap;
-import com.secmaker.netid.nias.v1.ResultCollect;
-
 import se.inera.intyg.webcert.web.service.underskrift.UnderskriftService;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturStatus;
 import se.inera.intyg.webcert.web.service.underskrift.tracker.RedisTicketTracker;
@@ -93,78 +90,78 @@ public class NiasCollectPollerImpl implements NiasCollectPoller {
                     LOG.info("NIAS collect for '{}' returned progressStatus: '{}'", orderRef, resp.getProgressStatus());
 
                     switch (resp.getProgressStatus()) {
-                    case "COMPLETE":
-                        String subjectSerialNumber = resp.getUserInfo().getPersonalNumber();
-                        boolean isValid = false;
-                        if (webCertUser.getPersonId() != null) {
-                            isValid = subjectSerialNumber.replaceAll("\\-", "")
+                        case "COMPLETE":
+                            String subjectSerialNumber = resp.getUserInfo().getPersonalNumber();
+                            boolean isValid = false;
+                            if (webCertUser.getPersonId() != null) {
+                                isValid = subjectSerialNumber.replaceAll("\\-", "")
                                     .equals(webCertUser.getPersonId().replaceAll("\\-", ""));
-                        }
-                        if (!isValid && webCertUser.getHsaId() != null) {
-                            isValid = subjectSerialNumber.replaceAll("\\-", "")
+                            }
+                            if (!isValid && webCertUser.getHsaId() != null) {
+                                isValid = subjectSerialNumber.replaceAll("\\-", "")
                                     .equals(webCertUser.getHsaId().replaceAll("\\-", ""));
-                        }
+                            }
 
-                        if (!isValid) {
-                            throw new IllegalStateException(
+                            if (!isValid) {
+                                throw new IllegalStateException(
                                     "Could not process NIAS Collect COMPLETE response, subject serialNumber did not match "
-                                            + "issuing WebCertUser.");
-                        }
+                                        + "issuing WebCertUser.");
+                            }
 
-                        underskriftService.netidSignature(ticketId, resp.getSignature().getBytes(Charset.forName("UTF-8")),
+                            underskriftService.netidSignature(ticketId, resp.getSignature().getBytes(Charset.forName("UTF-8")),
                                 resp.getUserInfo().getCertificate());
-                        LOG.info("NetiD Access Server Signature was successfully persisted and ticket updated.");
-                        return;
-                    case "USER_SIGN":
-                        redisTicketTracker.updateStatus(ticketId, SignaturStatus.VANTA_SIGN);
-                        break;
-                    case "OUTSTANDING_TRANSACTION":
-                        break;
+                            LOG.info("NetiD Access Server Signature was successfully persisted and ticket updated.");
+                            return;
+                        case "USER_SIGN":
+                            redisTicketTracker.updateStatus(ticketId, SignaturStatus.VANTA_SIGN);
+                            break;
+                        case "OUTSTANDING_TRANSACTION":
+                            break;
 
-                    case "NO_CLIENT":
-                        redisTicketTracker.updateStatus(ticketId, SignaturStatus.NO_CLIENT);
-                        LOG.info("NIAS collect returned ProgressStatusType: {}, "
-                                + "has the user started their NetID Access application?",
+                        case "NO_CLIENT":
+                            redisTicketTracker.updateStatus(ticketId, SignaturStatus.NO_CLIENT);
+                            LOG.info("NIAS collect returned ProgressStatusType: {}, "
+                                    + "has the user started their NetID Access application?",
                                 resp.getProgressStatus());
-                        break;
-                    case "USER_CANCEL":
+                            break;
+                        case "USER_CANCEL":
                         case "CANCELLED":
                             redisTicketTracker.updateStatus(ticketId, SignaturStatus.AVBRUTEN);
                             LOG.info("NIAS signing {} cancelled due to progress state {}", ticketId, resp.getProgressStatus());
                             return;
-                    case "EXPIRED_TRANSACTION":
-                    case "ALREADY_COLLECTED":
-                        redisTicketTracker.updateStatus(ticketId, SignaturStatus.ERROR);
-                        LOG.error("NIAS signing {} aborted due to progress state {}", ticketId, resp.getProgressStatus());
-                        return;
-                    case "SIGN_VALIDATION_FAILED":
-                        redisTicketTracker.updateStatus(ticketId, SignaturStatus.ERROR);
-                        LOG.error("NIAS signing {} failed, NetiD Access did not accept the sign validation. "
+                        case "EXPIRED_TRANSACTION":
+                        case "ALREADY_COLLECTED":
+                            redisTicketTracker.updateStatus(ticketId, SignaturStatus.ERROR);
+                            LOG.error("NIAS signing {} aborted due to progress state {}", ticketId, resp.getProgressStatus());
+                            return;
+                        case "SIGN_VALIDATION_FAILED":
+                            redisTicketTracker.updateStatus(ticketId, SignaturStatus.ERROR);
+                            LOG.error("NIAS signing {} failed, NetiD Access did not accept the sign validation. "
                                 + "Progress state {}", ticketId, resp.getProgressStatus());
-                        return;
-                    case "UNKNOWN_USER":
-                        redisTicketTracker.updateStatus(ticketId, SignaturStatus.ERROR);
-                        LOG.error("NIAS signing {} failed, NetiD Access did not accept the specified user. "
+                            return;
+                        case "UNKNOWN_USER":
+                            redisTicketTracker.updateStatus(ticketId, SignaturStatus.ERROR);
+                            LOG.error("NIAS signing {} failed, NetiD Access did not accept the specified user. "
                                 + "Progress state {}", ticketId, resp.getProgressStatus());
-                        return;
-                    case "INVALID_DEVICESW":
-                    case "ACCESS_DENIED_RP":
-                    case "INVALID_PARAMETERS":
-                        redisTicketTracker.updateStatus(ticketId, SignaturStatus.ERROR);
-                        LOG.error("NIAS signing {} failed, NetiD Access reported a technical problem or bad signing request. "
+                            return;
+                        case "INVALID_DEVICESW":
+                        case "ACCESS_DENIED_RP":
+                        case "INVALID_PARAMETERS":
+                            redisTicketTracker.updateStatus(ticketId, SignaturStatus.ERROR);
+                            LOG.error("NIAS signing {} failed, NetiD Access reported a technical problem or bad signing request. "
                                 + "Progress state {}", ticketId, resp.getProgressStatus());
-                        return;
-                    case "INTERNAL_ERROR":
-                        redisTicketTracker.updateStatus(ticketId, SignaturStatus.ERROR);
-                        LOG.error("NIAS signing {} failed, NetiD Access reported an unspecified internal error. Progress "
+                            return;
+                        case "INTERNAL_ERROR":
+                            redisTicketTracker.updateStatus(ticketId, SignaturStatus.ERROR);
+                            LOG.error("NIAS signing {} failed, NetiD Access reported an unspecified internal error. Progress "
                                 + "state {}", ticketId, resp.getProgressStatus());
-                        return;
+                            return;
 
-                    case "RETRY":
-                        redisTicketTracker.updateStatus(ticketId, SignaturStatus.ERROR);
-                        LOG.error("NIAS signing {} failed, NetiD Access reported retry, which may indicate an internal "
+                        case "RETRY":
+                            redisTicketTracker.updateStatus(ticketId, SignaturStatus.ERROR);
+                            LOG.error("NIAS signing {} failed, NetiD Access reported retry, which may indicate an internal "
                                 + "intermittent issue on their side. Progress state {}", ticketId, resp.getProgressStatus());
-                        return;
+                            return;
                     }
 
                 } catch (Exception ex) {
@@ -194,7 +191,7 @@ public class NiasCollectPollerImpl implements NiasCollectPoller {
     private void applySecurityContextToThreadLocal() {
         if (securityContext == null) {
             throw new IllegalStateException(
-                    "Cannot start NIAS poller thread, no securityContext was bound to the NiasCollectPollerImpl instance.");
+                "Cannot start NIAS poller thread, no securityContext was bound to the NiasCollectPollerImpl instance.");
         }
         SecurityContextHolder.setContext(securityContext);
     }

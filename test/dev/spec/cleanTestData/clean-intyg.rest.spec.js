@@ -23,7 +23,7 @@ var testdataHelper = wcTestTools.helpers.restTestdata;
 
 describe('Clean intyg via rest', function() {
 
-    it('should login rest client and clean all intyg', function() {
-        testdataHelper.deleteAllIntyg();
-    });
+  it('should login rest client and clean all intyg', function() {
+    testdataHelper.deleteAllIntyg();
+  });
 });

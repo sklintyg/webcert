@@ -17,93 +17,93 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-angular.module('webcert').factory('webcert.UtkastFilterModel', [ '$filter', function($filter) {
-    'use strict';
+angular.module('webcert').factory('webcert.UtkastFilterModel', ['$filter', function($filter) {
+  'use strict';
 
-    /**
-     * Constructor
-     */
-    function UtkastFilterModel(pageSize) {
-        this.pageSize = pageSize;
-        this.selection = {};
-        this.reset();
+  /**
+   * Constructor
+   */
+  function UtkastFilterModel(pageSize) {
+    this.pageSize = pageSize;
+    this.selection = {};
+    this.reset();
+  }
+
+  UtkastFilterModel.prototype.reset = function() {
+    this.startFrom = 0;
+
+    this.selection.notified = 'NOTIFIED_ALL'; // 3-state, undefined, true, false
+    this.notifiedOptions = [{
+      id: 'NOTIFIED_ALL',
+      label: 'Visa alla'
+    }, {
+      id: 'NOTIFIED_YES',
+      label: 'Vidarebefordrade'
+    }, {
+      id: 'NOTIFIED_NO',
+      label: 'Ej vidarebefordrade'
+    }];
+
+    this.selection.status = null;
+    this.statusOptions = [{
+      id: null,
+      label: 'Visa alla'
+    }, {
+      id: 'DRAFT_INCOMPLETE',
+      label: 'Uppgifter saknas'
+    }, {
+      id: 'DRAFT_COMPLETE',
+      label: 'Kan signeras'
+    }, {
+      id: 'DRAFT_LOCKED',
+      label: 'Låsta'
+    }];
+
+    this.selection.savedFrom = undefined; //Date
+    this.selection.savedTo = undefined; //Date
+    this.selection.savedBy = undefined; // selected doctors hasId
+    this.savedByOptions = this.savedByOptions || [];
+    this.selection.orderBy = 'senastSparadDatum';
+    this.selection.orderAscending = true;
+  };
+
+  UtkastFilterModel.prototype.convertToPayload = function() {
+
+    function convertNotified(value) {
+      switch (value) {
+      case 'NOTIFIED_YES':
+        return true;
+      case 'NOTIFIED_NO':
+        return false;
+      default:
+        return undefined;
+      }
     }
 
-    UtkastFilterModel.prototype.reset = function() {
-        this.startFrom = 0;
-
-        this.selection.notified = 'NOTIFIED_ALL'; // 3-state, undefined, true, false
-        this.notifiedOptions = [ {
-            id: 'NOTIFIED_ALL',
-            label: 'Visa alla'
-        }, {
-            id: 'NOTIFIED_YES',
-            label: 'Vidarebefordrade'
-        }, {
-            id: 'NOTIFIED_NO',
-            label: 'Ej vidarebefordrade'
-        } ];
-
-        this.selection.status = null;
-        this.statusOptions = [ {
-            id: null,
-            label: 'Visa alla'
-        }, {
-            id: 'DRAFT_INCOMPLETE',
-            label: 'Uppgifter saknas'
-        }, {
-            id: 'DRAFT_COMPLETE',
-            label: 'Kan signeras'
-        }, {
-            id: 'DRAFT_LOCKED',
-            label: 'Låsta'
-        } ];
-
-        this.selection.savedFrom = undefined; //Date
-        this.selection.savedTo = undefined; //Date
-        this.selection.savedBy = undefined; // selected doctors hasId
-        this.savedByOptions = this.savedByOptions || [];
-        this.selection.orderBy = 'senastSparadDatum';
-        this.selection.orderAscending = true;
+    var query = {
+      startFrom: this.startFrom,
+      pageSize: this.pageSize
     };
+    query.savedBy = this.selection.savedBy;
+    query.notified = convertNotified(this.selection.notified);
+    query.status = this.selection.status;
 
-    UtkastFilterModel.prototype.convertToPayload = function() {
+    query.savedFrom = $filter('date')(this.selection.savedFrom, 'yyyy-MM-dd');
+    if (this.selection.savedTo) {
+      // Date is used as datetime on backend
+      var to = moment(this.selection.savedTo);
+      to.add(1, 'd');
+      query.savedTo = to.format('YYYY-MM-DD');
+    }
 
-        function convertNotified(value) {
-            switch (value) {
-            case 'NOTIFIED_YES':
-                return true;
-            case 'NOTIFIED_NO':
-                return false;
-            default:
-                return undefined;
-            }
-        }
+    query.orderBy = this.selection.orderBy;
+    query.orderAscending = this.selection.orderAscending;
+    return query;
+  };
 
-        var query = {
-            startFrom: this.startFrom,
-            pageSize: this.pageSize
-        };
-        query.savedBy = this.selection.savedBy;
-        query.notified = convertNotified(this.selection.notified);
-        query.status = this.selection.status;
+  UtkastFilterModel.build = function(pageSize) {
+    return new UtkastFilterModel(pageSize);
+  };
 
-        query.savedFrom = $filter('date')(this.selection.savedFrom, 'yyyy-MM-dd');
-        if (this.selection.savedTo) {
-            // Date is used as datetime on backend
-            var to = moment(this.selection.savedTo);
-            to.add(1, 'd');
-            query.savedTo = to.format('YYYY-MM-DD');
-        }
-
-        query.orderBy = this.selection.orderBy;
-        query.orderAscending = this.selection.orderAscending;
-        return query;
-    };
-
-    UtkastFilterModel.build = function(pageSize) {
-        return new UtkastFilterModel(pageSize);
-    };
-
-    return UtkastFilterModel;
-} ]);
+  return UtkastFilterModel;
+}]);

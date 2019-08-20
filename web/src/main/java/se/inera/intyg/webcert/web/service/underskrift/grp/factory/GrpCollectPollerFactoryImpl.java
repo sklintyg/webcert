@@ -21,7 +21,6 @@ package se.inera.intyg.webcert.web.service.underskrift.grp.factory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
-
 import se.inera.intyg.webcert.web.service.underskrift.grp.GrpCollectPoller;
 
 /**

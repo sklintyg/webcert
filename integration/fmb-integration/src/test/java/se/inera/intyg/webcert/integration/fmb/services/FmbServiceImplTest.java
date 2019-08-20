@@ -24,6 +24,11 @@ import static org.mockito.Mockito.times;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.MoreCollectors;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -32,11 +37,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
 import se.inera.intyg.webcert.integration.fmb.consumer.FmbConsumer;
 import se.inera.intyg.webcert.integration.fmb.model.Kod;
 import se.inera.intyg.webcert.integration.fmb.model.fmdxinfo.FmdxData;
@@ -134,8 +134,8 @@ public class FmbServiceImplTest {
         Mockito.verify(diagnosInformationRepository, times(1)).save(fmbCaptor.capture());
         assertEquals(1, fmbCaptor.getValue().size());
         assertEquals(beskrivning, fmbCaptor.getValue().get(0).getBeskrivningList().stream()
-                .filter(besk -> besk.getBeskrivningTyp() == BeskrivningTyp.FUNKTIONSNEDSATTNING)
-                .collect(MoreCollectors.onlyElement()).getBeskrivningText());
+            .filter(besk -> besk.getBeskrivningTyp() == BeskrivningTyp.FUNKTIONSNEDSATTNING)
+            .collect(MoreCollectors.onlyElement()).getBeskrivningText());
     }
 
     @Test
@@ -153,8 +153,9 @@ public class FmbServiceImplTest {
         Mockito.verify(diagnosInformationRepository, times(1)).save(fmbCaptor.capture());
         assertEquals(1, fmbCaptor.getValue().size());
         assertEquals(beskrivning, fmbCaptor.getValue().get(0).getBeskrivningList().stream()
-                .filter(besk -> besk.getBeskrivningTyp() == BeskrivningTyp.FUNKTIONSNEDSATTNING)
-                .collect(MoreCollectors.onlyElement()).getBeskrivningText());    }
+            .filter(besk -> besk.getBeskrivningTyp() == BeskrivningTyp.FUNKTIONSNEDSATTNING)
+            .collect(MoreCollectors.onlyElement()).getBeskrivningText());
+    }
 
     @Test
     public void testUpdateDiagnosInfoWillNotBeDoneIfTypfallCouldNotBeFetched() throws Exception {

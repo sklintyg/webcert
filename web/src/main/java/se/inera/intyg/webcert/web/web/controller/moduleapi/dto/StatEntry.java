@@ -24,6 +24,7 @@ package se.inera.intyg.webcert.web.web.controller.moduleapi.dto;
  * @author marced
  */
 public class StatEntry {
+
     private long unsignedCerts;
     private long unhandledQuestions;
 

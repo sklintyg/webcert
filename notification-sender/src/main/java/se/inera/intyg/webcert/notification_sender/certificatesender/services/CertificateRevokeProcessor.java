@@ -20,14 +20,11 @@ package se.inera.intyg.webcert.notification_sender.certificatesender.services;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
+import com.google.common.base.Strings;
 import javax.xml.ws.WebServiceException;
-
 import org.apache.camel.Body;
 import org.apache.camel.Header;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import com.google.common.base.Strings;
-
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.common.support.modules.support.api.exception.ExternalServiceCallException;
@@ -42,31 +39,31 @@ public class CertificateRevokeProcessor {
     private IntygModuleRegistry registry;
 
     public void process(@Body String xmlBody,
-            @Header(Constants.INTYGS_ID) String intygsId,
-            @Header(Constants.LOGICAL_ADDRESS) String logicalAddress,
-            @Header(Constants.INTYGS_TYP) String intygsTyp,
-            @Header(Constants.INTYGS_TYP_VERSION) String intygsTypVersion)
-            throws TemporaryException, PermanentException {
+        @Header(Constants.INTYGS_ID) String intygsId,
+        @Header(Constants.LOGICAL_ADDRESS) String logicalAddress,
+        @Header(Constants.INTYGS_TYP) String intygsTyp,
+        @Header(Constants.INTYGS_TYP_VERSION) String intygsTypVersion)
+        throws TemporaryException, PermanentException {
 
         checkArgument(!Strings.isNullOrEmpty(intygsId), "Message of type %s does not have a %s header.", Constants.REVOKE_MESSAGE,
-                Constants.INTYGS_ID);
+            Constants.INTYGS_ID);
         checkArgument(!Strings.isNullOrEmpty(logicalAddress), "Message of type %s does not have a %s header.", Constants.REVOKE_MESSAGE,
-                Constants.LOGICAL_ADDRESS);
+            Constants.LOGICAL_ADDRESS);
         checkArgument(!Strings.isNullOrEmpty(intygsTyp), "Message of type %s does not have a %s header.", Constants.REVOKE_MESSAGE,
-                Constants.INTYGS_TYP);
+            Constants.INTYGS_TYP);
         checkArgument(!Strings.isNullOrEmpty(intygsTypVersion), "Message of type %s does not have a %s header.", Constants.REVOKE_MESSAGE,
-                Constants.INTYGS_TYP_VERSION);
+            Constants.INTYGS_TYP_VERSION);
 
         try {
             ModuleApi moduleApi = registry.getModuleApi(intygsTyp, intygsTypVersion);
             moduleApi.revokeCertificate(xmlBody, logicalAddress);
         } catch (ExternalServiceCallException e) {
             switch (e.getErroIdEnum()) {
-            case TECHNICAL_ERROR:
-            case APPLICATION_ERROR:
-                throw new TemporaryException(e.getMessage());
-            default:
-                throw new PermanentException(e.getMessage());
+                case TECHNICAL_ERROR:
+                case APPLICATION_ERROR:
+                    throw new TemporaryException(e.getMessage());
+                default:
+                    throw new PermanentException(e.getMessage());
             }
         } catch (ModuleException e) {
             throw new PermanentException(e.getMessage());

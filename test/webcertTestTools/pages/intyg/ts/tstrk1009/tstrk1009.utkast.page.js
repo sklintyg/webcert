@@ -29,44 +29,44 @@ var testTools = require('common-testtools');
 testTools.protractorHelpers.init();
 
 var TsTrk1009Utkast = BaseTsUtkast._extend({
-    init: function init() {
-        init._super.call(this);
-        this.intygType = 'tstrk1009';
-        this.intygTypeVersion = '1.0';
-        this.at = element(by.id('edit-tstrk1009'));
+  init: function init() {
+    init._super.call(this);
+    this.intygType = 'tstrk1009';
+    this.intygTypeVersion = '1.0';
+    this.at = element(by.id('edit-tstrk1009'));
 
-        this.identitetStyrktGenom = element(by.id('form_identitetStyrktGenom-typ'));
+    this.identitetStyrktGenom = element(by.id('form_identitetStyrktGenom-typ'));
 
-        this.anmalanAvser = {
-            OLAMPLIGHET: element(by.id('anmalanAvser.typ-OLAMPLIGHET')),
-            SANNOLIK_OLAMPLIGHET: element(by.id('anmalanAvser.typ-SANNOLIK_OLAMPLIGHET'))
-        }
-
-        this.medicinskaForhallanden = element(by.id('medicinskaForhallanden'));
-        this.senasteUndersokningsdatum = element(by.id('datepicker_senasteUndersokningsdatum'));
-
-        this.intygetAvserBehorigheter = element(by.id('form_intygetAvserBehorigheter-typer')).all(by.css('label'));
-
-        this.informationOmTsBeslutOnskas = element(by.id('informationOmTsBeslutOnskas'));
-    },
-    fillInIdentitetStyrktGenom1009: function(idtyp) {
-        return this.identitetStyrktGenom.element(by.cssContainingText('label', idtyp)).click();
-    },
-    fillAnmalanAvser: function(anmalanAvser) {
-        this.anmalanAvser[anmalanAvser].click();
-    },
-    fillMedicinskaForhallanden: function(medicinskaForhallanden, senasteUndersokningsdatum){
-        this.medicinskaForhallanden.sendKeys(medicinskaForhallanden);
-        this.senasteUndersokningsdatum.sendKeys(senasteUndersokningsdatum);
-    },
-    fillBehorigheter: function(behorigheter){
-        return pageHelpers.selectAllCheckBoxes(this.intygetAvserBehorigheter, behorigheter);
-    },
-    fillInformationOmTsBeslutOnskas: function(informationOmTsBeslutOnskas) {
-        if(informationOmTsBeslutOnskas){
-            this.informationOmTsBeslutOnskas.click();
-        }
+    this.anmalanAvser = {
+      OLAMPLIGHET: element(by.id('anmalanAvser.typ-OLAMPLIGHET')),
+      SANNOLIK_OLAMPLIGHET: element(by.id('anmalanAvser.typ-SANNOLIK_OLAMPLIGHET'))
     }
+
+    this.medicinskaForhallanden = element(by.id('medicinskaForhallanden'));
+    this.senasteUndersokningsdatum = element(by.id('datepicker_senasteUndersokningsdatum'));
+
+    this.intygetAvserBehorigheter = element(by.id('form_intygetAvserBehorigheter-typer')).all(by.css('label'));
+
+    this.informationOmTsBeslutOnskas = element(by.id('informationOmTsBeslutOnskas'));
+  },
+  fillInIdentitetStyrktGenom1009: function(idtyp) {
+    return this.identitetStyrktGenom.element(by.cssContainingText('label', idtyp)).click();
+  },
+  fillAnmalanAvser: function(anmalanAvser) {
+    this.anmalanAvser[anmalanAvser].click();
+  },
+  fillMedicinskaForhallanden: function(medicinskaForhallanden, senasteUndersokningsdatum) {
+    this.medicinskaForhallanden.sendKeys(medicinskaForhallanden);
+    this.senasteUndersokningsdatum.sendKeys(senasteUndersokningsdatum);
+  },
+  fillBehorigheter: function(behorigheter) {
+    return pageHelpers.selectAllCheckBoxes(this.intygetAvserBehorigheter, behorigheter);
+  },
+  fillInformationOmTsBeslutOnskas: function(informationOmTsBeslutOnskas) {
+    if (informationOmTsBeslutOnskas) {
+      this.informationOmTsBeslutOnskas.click();
+    }
+  }
 });
 
 module.exports = new TsTrk1009Utkast();

@@ -18,6 +18,28 @@
  */
 package se.inera.intyg.webcert.web.web.controller.integration;
 
+import static org.junit.Assert.assertEquals;
+import static org.mockito.AdditionalMatchers.or;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.net.URI;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriBuilder;
+import javax.ws.rs.core.UriInfo;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -39,29 +61,6 @@ import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.PrepareRedirectToIntyg;
-
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriBuilder;
-import javax.ws.rs.core.UriInfo;
-import java.net.URI;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import static org.junit.Assert.assertEquals;
-import static org.mockito.AdditionalMatchers.or;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.isNull;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 /**
  * @author Magnus Ekstrand on 2017-10-25.
@@ -103,7 +102,7 @@ public class IntygIntegrationControllerTest {
         when(uriBuilder.buildFromMap(any())).thenReturn(URI.create(""));
 
         when(integrationService.prepareRedirectToIntyg(anyString(), anyString(), any()))
-                .thenReturn(createPrepareRedirectToIntyg());
+            .thenReturn(createPrepareRedirectToIntyg());
         when(authoritiesResolver.getFeatures(any())).thenReturn(new HashMap<>());
 
         testee.setUrlBaseTemplate("baseTemplate");
@@ -117,7 +116,7 @@ public class IntygIntegrationControllerTest {
 
         String ref = "referens";
         IntegrationParameters parameters = new IntegrationParameters(ref, null, ALTERNATE_SSN, null, null, null, null,
-                null, null, false, false, false, false);
+            null, null, false, false, false, false);
 
         WebCertUser user = createDefaultUser();
         user.setParameters(parameters);
@@ -132,7 +131,7 @@ public class IntygIntegrationControllerTest {
     @Test
     public void referenceNotPersistedIfNotSupplied() {
         IntegrationParameters parameters = new IntegrationParameters(null, null, ALTERNATE_SSN, null, null, null, null,
-                null, null, false, false, false, false);
+            null, null, false, false, false, false);
 
         WebCertUser user = createDefaultUser();
         user.setParameters(parameters);
@@ -147,7 +146,7 @@ public class IntygIntegrationControllerTest {
     @Test
     public void invalidParametersShouldNotFailOnNullPatientInfo() {
         IntegrationParameters parameters = new IntegrationParameters(null, null, ALTERNATE_SSN, null, null, null, null, null, null, false,
-                false, false, false);
+            false, false, false);
 
         WebCertUser user = createDefaultUser();
         user.setParameters(parameters);
@@ -163,7 +162,7 @@ public class IntygIntegrationControllerTest {
         String intygTyp = "nonExistant";
         when(moduleRegistry.getModuleIdFromExternalId(intygTyp.toUpperCase())).thenReturn("");
         testee.getRedirectToIntyg(null, intygTyp, "intygId", null, null, null, null, null, null, null, null, null, null, false, false,
-                false, true);
+            false, true);
     }
 
     @Test(expected = IllegalStateException.class)
@@ -227,19 +226,19 @@ public class IntygIntegrationControllerTest {
 
     private WebCertUser createDefaultUser() {
         return createUser(AuthoritiesConstants.ROLE_LAKARE,
-                createPrivilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG,
-                        Arrays.asList("lisjp", "ts-bas"), // p1 is restricted to these intygstyper
-                        Arrays.asList(
-                                createRequestOrigin(UserOriginType.DJUPINTEGRATION.name(), Arrays.asList("lisjp")),
-                                createRequestOrigin(UserOriginType.DJUPINTEGRATION.name(), Arrays.asList("ts-bas")))),
-                Stream.of(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST, "base_feature")
-                        .collect(Collectors.toMap(Function.identity(), s -> {
-                            Feature feature = new Feature();
-                            feature.setName(s);
-                            feature.setIntygstyper(Arrays.asList("lisjp"));
-                            return feature;
-                        })),
-                UserOriginType.DJUPINTEGRATION.name());
+            createPrivilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG,
+                Arrays.asList("lisjp", "ts-bas"), // p1 is restricted to these intygstyper
+                Arrays.asList(
+                    createRequestOrigin(UserOriginType.DJUPINTEGRATION.name(), Arrays.asList("lisjp")),
+                    createRequestOrigin(UserOriginType.DJUPINTEGRATION.name(), Arrays.asList("ts-bas")))),
+            Stream.of(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST, "base_feature")
+                .collect(Collectors.toMap(Function.identity(), s -> {
+                    Feature feature = new Feature();
+                    feature.setName(s);
+                    feature.setIntygstyper(Arrays.asList("lisjp"));
+                    return feature;
+                })),
+            UserOriginType.DJUPINTEGRATION.name());
     }
 
 }

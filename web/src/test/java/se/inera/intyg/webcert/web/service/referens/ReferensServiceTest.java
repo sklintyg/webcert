@@ -18,6 +18,12 @@
  */
 package se.inera.intyg.webcert.web.service.referens;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -27,11 +33,9 @@ import org.mockito.junit.MockitoJUnitRunner;
 import se.inera.intyg.webcert.persistence.referens.model.Referens;
 import se.inera.intyg.webcert.persistence.referens.repository.ReferensRepository;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
-
 @RunWith(MockitoJUnitRunner.class)
 public class ReferensServiceTest {
+
     private String intygsId = "intygsId";
     private String referens = "referens";
     private Referens ref = new Referens();

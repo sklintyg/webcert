@@ -19,28 +19,28 @@
 package se.inera.intyg.webcert.intygstjanststub;
 
 import com.google.common.base.Preconditions;
+import java.util.Optional;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
-import se.riv.clinicalprocess.healthcond.certificate.types.v2.HsaId;
-import se.riv.clinicalprocess.healthcond.certificate.types.v2.IIType;
-import se.riv.clinicalprocess.healthcond.rehabilitation.v1.IntygsLista;
-import se.riv.clinicalprocess.healthcond.rehabilitation.v1.Vardgivare;
-import java.util.Optional;
 import se.inera.intyg.clinicalprocess.healthcond.rehabilitation.listactivesickleavesforcareunit.v1.ListActiveSickLeavesForCareUnitResponderInterface;
 import se.inera.intyg.clinicalprocess.healthcond.rehabilitation.listactivesickleavesforcareunit.v1.ListActiveSickLeavesForCareUnitResponseType;
 import se.inera.intyg.clinicalprocess.healthcond.rehabilitation.listactivesickleavesforcareunit.v1.ListActiveSickLeavesForCareUnitType;
 import se.inera.intyg.clinicalprocess.healthcond.rehabilitation.listactivesickleavesforcareunit.v1.ResultCodeEnum;
+import se.riv.clinicalprocess.healthcond.certificate.types.v2.HsaId;
+import se.riv.clinicalprocess.healthcond.certificate.types.v2.IIType;
+import se.riv.clinicalprocess.healthcond.rehabilitation.v1.IntygsLista;
+import se.riv.clinicalprocess.healthcond.rehabilitation.v1.Vardgivare;
 
 @Service
 public class ListActiveSickLeavesForCareUnitStub implements ListActiveSickLeavesForCareUnitResponderInterface {
 
     @Override
     public ListActiveSickLeavesForCareUnitResponseType listActiveSickLeavesForCareUnit(
-            final String s, final ListActiveSickLeavesForCareUnitType parameters) {
+        final String s, final ListActiveSickLeavesForCareUnitType parameters) {
 
         Optional<String> personnummer = Optional.ofNullable(parameters.getPersonId())
-                .map(IIType::getExtension)
-                .map(StringUtils::trim);
+            .map(IIType::getExtension)
+            .map(StringUtils::trim);
 
         Preconditions.checkArgument(personnummer.isPresent());
         Preconditions.checkArgument(StringUtils.isNotEmpty(personnummer.get()));

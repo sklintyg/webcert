@@ -28,64 +28,64 @@ var IntygPage = wcTestTools.pages.intyg.ts.trk1062.intyg;
 
 describe('Create and Sign tstrk1062 utkast', function() {
 
-    var utkastId = null,
-        data = null;
+  var utkastId = null,
+      data = null;
 
-    beforeAll(function() {
-        browser.ignoreSynchronization = false;
-        specHelper.login();
-        specHelper.createUtkastForPatient('191212121212', 'tstrk1062');
+  beforeAll(function() {
+    browser.ignoreSynchronization = false;
+    specHelper.login();
+    specHelper.createUtkastForPatient('191212121212', 'tstrk1062');
+  });
+
+  it('Spara undan intygsId från URL', function() {
+    UtkastPage.disableAutosave();
+
+    specHelper.getUtkastIdFromUrl().then(function(id) {
+      utkastId = id;
     });
 
-    it('Spara undan intygsId från URL', function() {
-        UtkastPage.disableAutosave();
+    data = wcTestTools.testdata.ts.trk1062.get(utkastId);
+  });
 
-        specHelper.getUtkastIdFromUrl().then(function(id) {
-            utkastId = id;
-        });
-
-        data = wcTestTools.testdata.ts.trk1062.get(utkastId);
+  describe('Fyll i intyget', function() {
+    it('fillIntygetAvser', function() {
+      UtkastPage.fillIntygetAvser(data.intygetAvser);
     });
-
-    describe('Fyll i intyget', function() {
-        it('fillIntygetAvser', function() {
-            UtkastPage.fillIntygetAvser(data.intygetAvser);
-        });
-        it('fillIdentitet', function() {
-            UtkastPage.fillIdentitet(data.identitet);
-        });
-        it('fillAllmant', function() {
-            UtkastPage.fillAllmant(data.allmant);
-        });
-        it('fillLakemedelsbehandling', function() {
-            UtkastPage.fillLakemedelsbehandling(data.lakemedelsbehandling);
-        });
-        it('fillSymptom', function() {
-            UtkastPage.fillSymptom(data.symptom);
-        });
-        it('fillOvrigt', function() {
-            UtkastPage.fillOvrigt(data.ovrigt);
-        });
-        it('fillBedomning', function() {
-            UtkastPage.enableAutosave();
-            UtkastPage.fillBedomning(data.bedomning);
-        });
+    it('fillIdentitet', function() {
+      UtkastPage.fillIdentitet(data.identitet);
     });
-
-    it('Signera intyget', function() {
-        UtkastPage.whenSigneraButtonIsEnabled();
-
-        UtkastPage.signeraButtonClick();
-
-        expect(IntygPage.isAt()).toBeTruthy();
+    it('fillAllmant', function() {
+      UtkastPage.fillAllmant(data.allmant);
     });
-
-    it('Verifiera intyg', function() {
-        IntygPage.verify(data);
+    it('fillLakemedelsbehandling', function() {
+      UtkastPage.fillLakemedelsbehandling(data.lakemedelsbehandling);
     });
-
-    afterAll(function() {
-        testdataHelper.deleteIntyg(utkastId);
-        testdataHelper.deleteUtkast(utkastId);
+    it('fillSymptom', function() {
+      UtkastPage.fillSymptom(data.symptom);
     });
+    it('fillOvrigt', function() {
+      UtkastPage.fillOvrigt(data.ovrigt);
+    });
+    it('fillBedomning', function() {
+      UtkastPage.enableAutosave();
+      UtkastPage.fillBedomning(data.bedomning);
+    });
+  });
+
+  it('Signera intyget', function() {
+    UtkastPage.whenSigneraButtonIsEnabled();
+
+    UtkastPage.signeraButtonClick();
+
+    expect(IntygPage.isAt()).toBeTruthy();
+  });
+
+  it('Verifiera intyg', function() {
+    IntygPage.verify(data);
+  });
+
+  afterAll(function() {
+    testdataHelper.deleteIntyg(utkastId);
+    testdataHelper.deleteUtkast(utkastId);
+  });
 });

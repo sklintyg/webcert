@@ -18,13 +18,12 @@
  */
 package se.inera.intyg.webcert.web.web.controller.legacyintegration;
 
-import io.swagger.annotations.Api;
-import se.inera.intyg.infra.security.common.model.UserOriginType;
+import static se.inera.intyg.infra.security.common.model.AuthoritiesConstants.ROLE_PRIVATLAKARE;
 
+import io.swagger.annotations.Api;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.MediaType;
-
-import static se.inera.intyg.infra.security.common.model.AuthoritiesConstants.ROLE_PRIVATLAKARE;
+import se.inera.intyg.infra.security.common.model.UserOriginType;
 
 /**
  * Created by eriklupander on 2015-10-08.
@@ -37,7 +36,7 @@ public class PrivatePractitionerFragaSvarUthoppController extends FragaSvarUthop
 
     @Override
     protected String[] getGrantedRoles() {
-        return new String[] { ROLE_PRIVATLAKARE };
+        return new String[]{ROLE_PRIVATLAKARE};
     }
 
     @Override

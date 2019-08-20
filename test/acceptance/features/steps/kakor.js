@@ -23,18 +23,16 @@
 /*jshint newcap:false */
 //TODO Uppgradera Jshint p.g.a. newcap kommer bli depricated. (klarade inte att ignorera i grunt-task)
 
-
 /*
  *	Stödlib och ramverk
  *
  */
 
 const {
-    Given, // jshint ignore:line
-    When, // jshint ignore:line
-    Then // jshint ignore:line
+  Given, // jshint ignore:line
+  When, // jshint ignore:line
+  Then // jshint ignore:line
 } = require('cucumber');
-
 
 var sokSkrivIntygPage = pages.sokSkrivIntyg.pickPatient;
 var helpers = require('./helpers');
@@ -44,33 +42,32 @@ var helpers = require('./helpers');
  *
  */
 
-
 /*
  *	Test steg
  *
  */
 
-
 Then(/^ska jag( inte)? se en varning om kakor$/, function(inte, callback) {
-    var shouldBeVisible = (inte === undefined); //Om 'inte' finns med i stegnamnet
-    logger.silly('shouldBeVisible:' + shouldBeVisible);
-    expect(sokSkrivIntygPage.cookie.consentBanner.element(by.tagName('button')).isPresent()).to.eventually.equal(shouldBeVisible).then(function() {
+  var shouldBeVisible = (inte === undefined); //Om 'inte' finns med i stegnamnet
+  logger.silly('shouldBeVisible:' + shouldBeVisible);
+  expect(sokSkrivIntygPage.cookie.consentBanner.element(by.tagName('button')).isPresent()).to.eventually.equal(shouldBeVisible).then(
+      function() {
         if (!inte) {
-            inte = '';
+          inte = '';
         }
         logger.info('OK - Varning syns' + inte);
-    }, function(reason) {
+      }, function(reason) {
         callback('FEL : ' + reason);
-    }).then(callback);
+      }).then(callback);
 });
 
 When(/^jag accepterar kakor$/, function(callback) {
-    sokSkrivIntygPage.cookie.consentBtn.sendKeys(protractor.Key.SPACE)
-        .then(callback());
+  sokSkrivIntygPage.cookie.consentBtn.sendKeys(protractor.Key.SPACE)
+  .then(callback());
 });
 
 Given(/^laddar om sidan$/, function() {
-    return browser.refresh().then(function() {
-        return helpers.mediumDelay();
-    });
+  return browser.refresh().then(function() {
+    return helpers.mediumDelay();
+  });
 });

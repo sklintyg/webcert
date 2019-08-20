@@ -22,7 +22,6 @@ import org.apache.cxf.annotations.SchemaValidation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.web.converter.ArendeConverter;
 import se.inera.intyg.webcert.web.service.arende.ArendeService;
@@ -35,6 +34,7 @@ import se.riv.clinicalprocess.healthcond.certificate.v3.ResultType;
 
 @SchemaValidation
 public class SendMessageToCareResponderImpl implements SendMessageToCareResponderInterface {
+
     private static final Logger LOG = LoggerFactory.getLogger(SendMessageToCareResponderImpl.class);
 
     @Autowired
@@ -53,18 +53,18 @@ public class SendMessageToCareResponderImpl implements SendMessageToCareResponde
         } catch (WebCertServiceException e) {
             result.setResultCode(ResultCodeType.ERROR);
             switch (e.getErrorCode()) {
-            case INVALID_STATE:
-            case DATA_NOT_FOUND:
-            case EXTERNAL_SYSTEM_PROBLEM:
-                result.setErrorId(ErrorIdType.VALIDATION_ERROR);
-                result.setResultText(e.getMessage());
-                LOG.warn("{}: {}", e.getErrorCode().name(), e.getMessage());
-                break;
-            default:
-                result.setErrorId(ErrorIdType.APPLICATION_ERROR);
-                result.setResultText(e.getMessage());
-                LOG.error("Could not process incoming message to care. Cause is: {}", e.getMessage());
-                break;
+                case INVALID_STATE:
+                case DATA_NOT_FOUND:
+                case EXTERNAL_SYSTEM_PROBLEM:
+                    result.setErrorId(ErrorIdType.VALIDATION_ERROR);
+                    result.setResultText(e.getMessage());
+                    LOG.warn("{}: {}", e.getErrorCode().name(), e.getMessage());
+                    break;
+                default:
+                    result.setErrorId(ErrorIdType.APPLICATION_ERROR);
+                    result.setResultText(e.getMessage());
+                    LOG.error("Could not process incoming message to care. Cause is: {}", e.getMessage());
+                    break;
             }
         }
 

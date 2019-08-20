@@ -18,136 +18,150 @@
  */
 
 describe('EjSigneradeUtkastCtrlSpec', function() {
-    'use strict';
+  'use strict';
 
-    var $controller;
-    var $scope;
-    var $timeout;
-    var $httpBackend;
-    var mockResponse;
-    var mockFactory;
-    var utkastNotifyService;
-    var utkastFilterModel;
-    var emptyFilter;
+  var $controller;
+  var $scope;
+  var $timeout;
+  var $httpBackend;
+  var mockResponse;
+  var mockFactory;
+  var utkastNotifyService;
+  var utkastFilterModel;
+  var emptyFilter;
 
-    beforeEach(function() {
+  beforeEach(function() {
 
-        module('htmlTemplates');
-        module('webcertTest');
-        module('webcert', ['$provide', function($provide) {
+    module('htmlTemplates');
+    module('webcertTest');
+    module('webcert', ['$provide', function($provide) {
 
-            var webcertTest = angular.injector(['webcertTest', 'ng']);
-            mockFactory = webcertTest.get('mockFactory');
+      var webcertTest = angular.injector(['webcertTest', 'ng']);
+      mockFactory = webcertTest.get('mockFactory');
 
-            var statService = jasmine.createSpyObj('common.statService', [ 'refreshStat' ]);
-            $provide.value('common.statService', statService);
+      var statService = jasmine.createSpyObj('common.statService', ['refreshStat']);
+      $provide.value('common.statService', statService);
 
-            var User = mockFactory.buildUserMinimal();
-            $provide.value('common.User', User);
-            $provide.value('common.UserModel', { userContext: { authenticationScheme: null }, getActiveFeatures: function() {},
-                hasIntygsTyp: function() {return true;}, isLakare: function() {return true;} });
-            $provide.value('common.dialogService', mockFactory.buildDialogService());
-            utkastNotifyService = jasmine.createSpyObj('common.UtkastNotifyService', [ 'onNotifyChange', 'notifyUtkast' ]);
-            $provide.value('common.UtkastNotifyService', utkastNotifyService);
-            var featureService = jasmine.createSpyObj('common.featureService', [ 'isFeatureActive' ]);
-            featureService.features = {};
-            $provide.value('common.featureService', featureService);
-            $provide.value('common.authorityService', jasmine.createSpyObj('common.authorityService', [ 'isAuthorityActive' ]));
-            $provide.value('common.moduleService', {});
-            $provide.value('common.messageService', {});
-            $provide.value('common.DateUtilsService', { addStrictDateParser: function(){} });
-        }]);
+      var User = mockFactory.buildUserMinimal();
+      $provide.value('common.User', User);
+      $provide.value('common.UserModel', {
+        userContext: {authenticationScheme: null}, getActiveFeatures: function() {
+        },
+        hasIntygsTyp: function() {
+          return true;
+        }, isLakare: function() {
+          return true;
+        }
+      });
+      $provide.value('common.dialogService', mockFactory.buildDialogService());
+      utkastNotifyService = jasmine.createSpyObj('common.UtkastNotifyService', ['onNotifyChange', 'notifyUtkast']);
+      $provide.value('common.UtkastNotifyService', utkastNotifyService);
+      var featureService = jasmine.createSpyObj('common.featureService', ['isFeatureActive']);
+      featureService.features = {};
+      $provide.value('common.featureService', featureService);
+      $provide.value('common.authorityService', jasmine.createSpyObj('common.authorityService', ['isAuthorityActive']));
+      $provide.value('common.moduleService', {});
+      $provide.value('common.messageService', {});
+      $provide.value('common.DateUtilsService', {
+        addStrictDateParser: function() {
+        }
+      });
+    }]);
 
-        inject(['$rootScope', '$httpBackend', '$controller', '$timeout', 'mockResponse', 'webcert.UtkastFilterModel', '$templateCache',
-            function($rootScope, _$httpBackend_, _$controller_, _$timeout_, _mockResponse_, _utkastFilterModel_, $templateCache) {
+    inject(['$rootScope', '$httpBackend', '$controller', '$timeout', 'mockResponse', 'webcert.UtkastFilterModel', '$templateCache',
+      function($rootScope, _$httpBackend_, _$controller_, _$timeout_, _mockResponse_, _utkastFilterModel_, $templateCache) {
 
-                $templateCache.put('/web/webjars/common/webcert/components/headers/wcHeader.partial.html', '');
+        $templateCache.put('/web/webjars/common/webcert/components/headers/wcHeader.partial.html', '');
 
-                $scope = $rootScope.$new();
-                $scope.filterFormElement = {
-                    'filter-changedate-from': { $error: {}},
-                    'filter-changedate-to': { $error: {}}
-                };
-                $scope.viewState = {
-                    activeErrorMessageKey: null,
-                    inlineErrorMessageKey: null
-                };
+        $scope = $rootScope.$new();
+        $scope.filterFormElement = {
+          'filter-changedate-from': {$error: {}},
+          'filter-changedate-to': {$error: {}}
+        };
+        $scope.viewState = {
+          activeErrorMessageKey: null,
+          inlineErrorMessageKey: null
+        };
 
-                $httpBackend = _$httpBackend_;
-                $controller = _$controller_;
-                $timeout = _$timeout_;
-                mockResponse = _mockResponse_;
-                utkastFilterModel = _utkastFilterModel_;
-                emptyFilter = _utkastFilterModel_.build();
+        $httpBackend = _$httpBackend_;
+        $controller = _$controller_;
+        $timeout = _$timeout_;
+        mockResponse = _mockResponse_;
+        utkastFilterModel = _utkastFilterModel_;
+        emptyFilter = _utkastFilterModel_.build();
 
-                $httpBackend.expectGET('/api/utkast/?orderAscending=true&orderBy=senastSparadDatum&pageSize=10&startFrom=0').respond(200, mockResponse.utkastList);
-                $controller('webcert.EjSigneradeUtkastCtrl', { $scope: $scope });
-                $httpBackend.flush();
-                $timeout.flush();
-            }]);
+        $httpBackend.expectGET('/api/utkast/?orderAscending=true&orderBy=senastSparadDatum&pageSize=10&startFrom=0').respond(200,
+            mockResponse.utkastList);
+        $controller('webcert.EjSigneradeUtkastCtrl', {$scope: $scope});
+        $httpBackend.flush();
+        $timeout.flush();
+      }]);
+  });
+
+  describe('ejSigneradeUtkast controller startup', function() {
+
+    it('should load utkast list on valid response', function() {
+      $httpBackend.expectGET('/api/utkast/?orderAscending=true&orderBy=senastSparadDatum&pageSize=10&startFrom=0').respond(200,
+          mockResponse.utkastList);
+      $controller('webcert.EjSigneradeUtkastCtrl', {$scope: $scope});
+      $httpBackend.flush();
+      $timeout.flush();
     });
 
-    describe('ejSigneradeUtkast controller startup', function() {
+    it('should update error message if loading fails', function() {
+      $httpBackend.expectGET('/api/utkast/?orderAscending=true&orderBy=senastSparadDatum&pageSize=10&startFrom=0').respond(500);
+      $controller('webcert.EjSigneradeUtkastCtrl', {$scope: $scope});
+      $httpBackend.flush();
+      expect($scope.widgetState.activeErrorMessageKey).not.toBeNull();
+    });
+  });
 
-        it('should load utkast list on valid response', function() {
-            $httpBackend.expectGET('/api/utkast/?orderAscending=true&orderBy=senastSparadDatum&pageSize=10&startFrom=0').respond(200, mockResponse.utkastList);
-            $controller('webcert.EjSigneradeUtkastCtrl', { $scope: $scope });
-            $httpBackend.flush();
-            $timeout.flush();
-        });
+  describe('ejSigneradeUtkast controller filter', function() {
 
-        it('should update error message if loading fails', function() {
-            $httpBackend.expectGET('/api/utkast/?orderAscending=true&orderBy=senastSparadDatum&pageSize=10&startFrom=0').respond(500);
-            $controller('webcert.EjSigneradeUtkastCtrl', { $scope: $scope });
-            $httpBackend.flush();
-            expect($scope.widgetState.activeErrorMessageKey).not.toBeNull();
-        });
+    it('should update error message if loading fails', function() {
+      $httpBackend.expectGET('/api/utkast/?orderAscending=true&orderBy=senastSparadDatum&pageSize=10&startFrom=0').respond(500);
+      $controller('webcert.EjSigneradeUtkastCtrl', {$scope: $scope});
+      $httpBackend.flush();
+      expect($scope.widgetState.activeErrorMessageKey).not.toBeNull();
     });
 
-    describe('ejSigneradeUtkast controller filter', function() {
+    it('should get utkast list based on date filter', function() {
+      $httpBackend.expectGET(
+          '/api/utkast?orderAscending=true&orderBy=senastSparadDatum&pageSize=10&savedFrom=2015-10-10&savedTo=2015-01-11&startFrom=0')
+      .respond(200, {results: [], totalCount: 0});
 
-        it('should update error message if loading fails', function() {
-            $httpBackend.expectGET('/api/utkast/?orderAscending=true&orderBy=senastSparadDatum&pageSize=10&startFrom=0').respond(500);
-            $controller('webcert.EjSigneradeUtkastCtrl', { $scope: $scope });
-            $httpBackend.flush();
-            expect($scope.widgetState.activeErrorMessageKey).not.toBeNull();
-        });
-        
-        it('should get utkast list based on date filter', function() {
-            $httpBackend.expectGET('/api/utkast?orderAscending=true&orderBy=senastSparadDatum&pageSize=10&savedFrom=2015-10-10&savedTo=2015-01-11&startFrom=0')
-              .respond(200, {results: [], totalCount: 0});
-
-            $scope.filter.selection.savedTo = '2015-01-10';
-            $scope.filter.selection.savedFrom = '2015-10-10';
-            $scope.filterDrafts();
-            $httpBackend.flush();
-            expect($scope.widgetState.currentList.length).toBe(0);
-        });
-
-        it('should handle error if list could not be fetched from server', function() {
-            $httpBackend.expectGET('/api/utkast?orderAscending=true&orderBy=senastSparadDatum&pageSize=10&startFrom=0').respond(500);
-            $scope.filterDrafts();
-            $httpBackend.flush();
-            expect($scope.widgetState.activeErrorMessageKey).not.toBeNull();
-        });
+      $scope.filter.selection.savedTo = '2015-01-10';
+      $scope.filter.selection.savedFrom = '2015-10-10';
+      $scope.filterDrafts();
+      $httpBackend.flush();
+      expect($scope.widgetState.currentList.length).toBe(0);
     });
 
-    describe('fetch more button', function() {
-        it('should fetch PAGE_SIZE more results if user clicks', function() {
-            $httpBackend.expectGET('/api/utkast?orderAscending=true&orderBy=senastSparadDatum&pageSize=10&startFrom=10').respond(200, {results:[]});
-            $scope.fetchMore();
-            $httpBackend.flush();
-            expect($scope.widgetState.currentFilterRequest.startFrom).toBe(10);
-            expect($scope.widgetState.activeErrorMessageKey).toBeNull();
-        });
-
-        it('should update error message if fetch failed', function() {
-            $httpBackend.expectGET('/api/utkast?orderAscending=true&orderBy=senastSparadDatum&pageSize=10&startFrom=10').respond(500);
-            $scope.fetchMore();
-            $httpBackend.flush();
-            expect($scope.widgetState.currentFilterRequest.startFrom).toBe(10);
-            expect($scope.widgetState.activeErrorMessageKey).not.toBeNull();
-        });
+    it('should handle error if list could not be fetched from server', function() {
+      $httpBackend.expectGET('/api/utkast?orderAscending=true&orderBy=senastSparadDatum&pageSize=10&startFrom=0').respond(500);
+      $scope.filterDrafts();
+      $httpBackend.flush();
+      expect($scope.widgetState.activeErrorMessageKey).not.toBeNull();
     });
+  });
+
+  describe('fetch more button', function() {
+    it('should fetch PAGE_SIZE more results if user clicks', function() {
+      $httpBackend.expectGET('/api/utkast?orderAscending=true&orderBy=senastSparadDatum&pageSize=10&startFrom=10').respond(200,
+          {results: []});
+      $scope.fetchMore();
+      $httpBackend.flush();
+      expect($scope.widgetState.currentFilterRequest.startFrom).toBe(10);
+      expect($scope.widgetState.activeErrorMessageKey).toBeNull();
+    });
+
+    it('should update error message if fetch failed', function() {
+      $httpBackend.expectGET('/api/utkast?orderAscending=true&orderBy=senastSparadDatum&pageSize=10&startFrom=10').respond(500);
+      $scope.fetchMore();
+      $httpBackend.flush();
+      expect($scope.widgetState.currentFilterRequest.startFrom).toBe(10);
+      expect($scope.widgetState.activeErrorMessageKey).not.toBeNull();
+    });
+  });
 
 });

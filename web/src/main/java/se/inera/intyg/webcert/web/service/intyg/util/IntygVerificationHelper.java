@@ -22,13 +22,13 @@ import static java.util.Objects.isNull;
 import static org.apache.commons.collections.CollectionUtils.isEmpty;
 
 import com.google.common.collect.Lists;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import java.lang.invoke.MethodHandles;
 import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import se.inera.intyg.common.support.model.CertificateState;
 import se.inera.intyg.common.support.model.Status;
 import se.inera.intyg.common.support.model.UtkastStatus;
@@ -50,12 +50,12 @@ public final class IntygVerificationHelper {
     public static void verifyIsSigned(final IntygContentHolder intyg, final IntygServiceImpl.IntygOperation operation) {
 
         final List<Status> states = (isNull(intyg) || isEmpty(intyg.getStatuses()))
-                ? Lists.newArrayList()
-                : intyg.getStatuses();
+            ? Lists.newArrayList()
+            : intyg.getStatuses();
 
         if (states.stream().noneMatch(status -> CertificateState.RECEIVED.equals(status.getType()) && status.getTimestamp() != null)) {
             final String message = MessageFormat.format("Certificate {0} is not signed, cannot {1} an unsigned certificate",
-                    intyg.getUtlatande().getId(), operation.getValue());
+                intyg.getUtlatande().getId(), operation.getValue());
             LOG.debug(message);
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, message);
         }
@@ -64,10 +64,10 @@ public final class IntygVerificationHelper {
     public static void verifyIsSigned(final Utkast intyg, final IntygServiceImpl.IntygOperation operation) {
 
         if (intyg.getSignatur() == null
-                || intyg.getSignatur().getSigneringsDatum() == null
-                || !Objects.equals(intyg.getStatus(), UtkastStatus.SIGNED)) {
+            || intyg.getSignatur().getSigneringsDatum() == null
+            || !Objects.equals(intyg.getStatus(), UtkastStatus.SIGNED)) {
             final String message = MessageFormat.format("Certificate {0} is not signed, cannot {1} an unsigned certificate",
-                    intyg.getIntygsId(), operation.getValue());
+                intyg.getIntygsId(), operation.getValue());
             LOG.debug(message);
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, message);
         }
@@ -78,13 +78,13 @@ public final class IntygVerificationHelper {
         if (certificate.getUtlatande().getSignature() == null) {
 
             final List<Status> states = (isNull(certificate.getMetaData()) || isEmpty(certificate.getMetaData().getStatus())
-                    ? Collections.emptyList()
-                    : certificate.getMetaData().getStatus());
+                ? Collections.emptyList()
+                : certificate.getMetaData().getStatus());
 
             if (states.stream().noneMatch(state -> CertificateState.RECEIVED.equals(state.getType()) && state.getTimestamp() != null)) {
 
                 final String message = MessageFormat.format("Certificate {0} is not signed, cannot {1} an unsigned certificate",
-                        certificate.getUtlatande().getId(), operation.getValue());
+                    certificate.getUtlatande().getId(), operation.getValue());
 
                 LOG.debug(message);
                 throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, message);
@@ -96,7 +96,7 @@ public final class IntygVerificationHelper {
         if (intyg.isRevoked()) {
 
             final String message = MessageFormat.format("certificate with id '{0}' is revoked, cannot {1} a revoked certificate",
-                    intyg.getUtlatande().getId(), operation.getValue());
+                intyg.getUtlatande().getId(), operation.getValue());
 
             LOG.debug(message);
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, message);
@@ -107,7 +107,7 @@ public final class IntygVerificationHelper {
         if (intyg.getAterkalladDatum() != null) {
 
             final String message = MessageFormat.format("certificate with id '{0}' is revoked, cannot {1} a revoked certificate",
-                    intyg.getIntygsId(), operation.getValue());
+                intyg.getIntygsId(), operation.getValue());
 
             LOG.debug(message);
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, message);
@@ -118,20 +118,19 @@ public final class IntygVerificationHelper {
         if (certificate.isRevoked()) {
 
             final String message = MessageFormat.format("certificate with id '{0}' is revoked, cannot {1} a revoked certificate",
-                    certificate.getUtlatande().getId(), operation.getValue());
+                certificate.getUtlatande().getId(), operation.getValue());
 
             LOG.debug(message);
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, message);
         }
 
-
         final List<Status> states = (isNull(certificate.getMetaData()) || isEmpty(certificate.getMetaData().getStatus())
-                ? Collections.emptyList()
-                : certificate.getMetaData().getStatus());
+            ? Collections.emptyList()
+            : certificate.getMetaData().getStatus());
 
         if (states.stream().anyMatch(state -> CertificateState.CANCELLED.equals(state.getType()) && state.getTimestamp() != null)) {
             final String message = MessageFormat.format("certificate with id '{0}' is revoked, cannot {1} a revoked certificate",
-                    certificate.getUtlatande().getId(), operation.getValue());
+                certificate.getUtlatande().getId(), operation.getValue());
 
             LOG.debug(message);
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, message);

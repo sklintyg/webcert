@@ -31,7 +31,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -40,7 +39,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.core.io.ClassPathResource;
-
 import se.inera.intyg.common.fk7263.model.internal.Fk7263Utlatande;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.model.CertificateState;
@@ -101,7 +99,7 @@ public class CopyCompletionUtkastBuilderTest extends AbstractBuilderTest {
         CreateCompletionCopyRequest copyRequest = buildCompletionRequest();
         copyRequest.setMeddelandeId("meddelandeId");
         Person patientDetails = new Person(PATIENT_SSN, false, false, PATIENT_FNAME, PATIENT_MNAME, PATIENT_LNAME, "Postadr", "12345",
-                "postort");
+            "postort");
 
         ValidateDraftResponse vdr = new ValidateDraftResponse(ValidationStatus.VALID, new ArrayList<>());
         when(mockModuleApi.validateDraft(isNull())).thenReturn(vdr);
@@ -109,7 +107,7 @@ public class CopyCompletionUtkastBuilderTest extends AbstractBuilderTest {
         when(mockModuleApi.getUtlatandeFromJson(any(String.class))).thenReturn(utlatande);
 
         CopyUtkastBuilderResponse builderResponse = copyCompletionBuilder.populateCopyUtkastFromSignedIntyg(copyRequest, patientDetails,
-                true, false);
+            true, false);
 
         assertNotNull(builderResponse.getUtkastCopy());
         assertNotNull(builderResponse.getUtkastCopy().getModel());
@@ -126,7 +124,7 @@ public class CopyCompletionUtkastBuilderTest extends AbstractBuilderTest {
         // verify full name is set
         assertNotNull(requestCaptor.getValue().getPatient().getFullstandigtNamn());
         assertEquals(PATIENT_FNAME + " " + PATIENT_MNAME + " " + PATIENT_LNAME,
-                requestCaptor.getValue().getPatient().getFullstandigtNamn());
+            requestCaptor.getValue().getPatient().getFullstandigtNamn());
     }
 
     @Test
@@ -139,13 +137,13 @@ public class CopyCompletionUtkastBuilderTest extends AbstractBuilderTest {
 
         copyRequest.setMeddelandeId("meddelandeId");
         Person patientDetails = new Person(PATIENT_SSN, false, false, PATIENT_FNAME, PATIENT_MNAME, PATIENT_LNAME, "Postadr", "12345",
-                "postort");
+            "postort");
 
         ValidateDraftResponse vdr = new ValidateDraftResponse(ValidationStatus.VALID, new ArrayList<>());
         when(mockModuleApi.validateDraft(isNull())).thenReturn(vdr);
 
         CopyUtkastBuilderResponse builderResponse = copyCompletionBuilder.populateCopyUtkastFromOrignalUtkast(copyRequest, patientDetails,
-                true, false);
+            true, false);
 
         assertNotNull(builderResponse.getUtkastCopy());
         assertNotNull(builderResponse.getUtkastCopy().getModel());
@@ -169,7 +167,7 @@ public class CopyCompletionUtkastBuilderTest extends AbstractBuilderTest {
         when(moduleRegistry.getModuleApi(intygsTyp, intygsTypVersion)).thenReturn(mockModuleApi);
         when(mockIntygService.fetchIntygData(INTYG_ID, intygsTyp, false)).thenReturn(createIntygContentHolder());
         when(mockModuleApi.validateDraft(isNull()))
-                .thenReturn(new ValidateDraftResponse(ValidationStatus.VALID, new ArrayList<>()));
+            .thenReturn(new ValidateDraftResponse(ValidationStatus.VALID, new ArrayList<>()));
         Utlatande utlatande = new Fk7263Utlatande();
         when(mockModuleApi.getUtlatandeFromJson(any(String.class))).thenReturn(utlatande);
         when(arendeService.getArende(meddelandeId)).thenReturn(arende);
@@ -179,7 +177,7 @@ public class CopyCompletionUtkastBuilderTest extends AbstractBuilderTest {
         copyRequest.setTyp(intygsTyp);
         copyRequest.setOriginalIntygTyp(intygsTyp);
         Person patientDetails = new Person(PATIENT_SSN, false, false, PATIENT_FNAME, PATIENT_MNAME, PATIENT_LNAME, "Postadr", "12345",
-                "postort");
+            "postort");
 
         copyCompletionBuilder.populateCopyUtkastFromSignedIntyg(copyRequest, patientDetails, true, false);
 
@@ -204,7 +202,7 @@ public class CopyCompletionUtkastBuilderTest extends AbstractBuilderTest {
         when(moduleRegistry.getModuleApi(intygsTyp, intygsTypVersion)).thenReturn(mockModuleApi);
         when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(createOriginalUtkast());
         when(mockModuleApi.validateDraft(isNull()))
-                .thenReturn(new ValidateDraftResponse(ValidationStatus.VALID, new ArrayList<>()));
+            .thenReturn(new ValidateDraftResponse(ValidationStatus.VALID, new ArrayList<>()));
         when(arendeService.getArende(meddelandeId)).thenReturn(arende);
         Utlatande utlatande = new Fk7263Utlatande();
         when(mockModuleApi.getUtlatandeFromJson(any(String.class))).thenReturn(utlatande);
@@ -214,7 +212,7 @@ public class CopyCompletionUtkastBuilderTest extends AbstractBuilderTest {
         copyRequest.setTyp(intygsTyp);
         copyRequest.setOriginalIntygTyp(intygsTyp);
         Person patientDetails = new Person(PATIENT_SSN, false, false, PATIENT_FNAME, PATIENT_MNAME, PATIENT_LNAME, "Postadr", "12345",
-                "postort");
+            "postort");
 
         copyCompletionBuilder.populateCopyUtkastFromOrignalUtkast(copyRequest, patientDetails, true, false);
 
@@ -237,20 +235,20 @@ public class CopyCompletionUtkastBuilderTest extends AbstractBuilderTest {
         status.add(new Status(CertificateState.RECEIVED, "HSVARD", LocalDateTime.now()));
         status.add(new Status(CertificateState.SENT, "FKASSA", LocalDateTime.now()));
         Fk7263Utlatande utlatande = new CustomObjectMapper().readValue(new ClassPathResource(
-                "IntygDraftServiceImplTest/utlatande.json").getFile(), Fk7263Utlatande.class);
+            "IntygDraftServiceImplTest/utlatande.json").getFile(), Fk7263Utlatande.class);
         return IntygContentHolder.builder()
-                .setContents("<external-json/>")
-                .setUtlatande(utlatande)
-                .setStatuses(status)
-                .setRevoked(false)
-                .setRelations(new Relations())
-                // .setReplacedByRelation(null)
-                // .setComplementedByRelation(null)
-                .setDeceased(false)
-                .setSekretessmarkering(false)
-                .setPatientNameChangedInPU(false)
-                .setPatientAddressChangedInPU(false)
-                .build();
+            .setContents("<external-json/>")
+            .setUtlatande(utlatande)
+            .setStatuses(status)
+            .setRevoked(false)
+            .setRelations(new Relations())
+            // .setReplacedByRelation(null)
+            // .setComplementedByRelation(null)
+            .setDeceased(false)
+            .setSekretessmarkering(false)
+            .setPatientNameChangedInPU(false)
+            .setPatientAddressChangedInPU(false)
+            .build();
     }
 
     private Utkast createOriginalUtkast() {

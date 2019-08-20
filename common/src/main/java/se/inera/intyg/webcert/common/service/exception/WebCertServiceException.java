@@ -31,7 +31,7 @@ public final class WebCertServiceException extends RuntimeException {
 
     /**
      * @param errorCode error code
-     * @param message   - Custom error message
+     * @param message - Custom error message
      */
     public WebCertServiceException(WebCertServiceErrorCodeEnum errorCode, String message) {
         super(message);

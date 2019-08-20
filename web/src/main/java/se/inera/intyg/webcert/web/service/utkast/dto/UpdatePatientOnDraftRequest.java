@@ -24,6 +24,7 @@ import se.inera.intyg.schemas.contract.Personnummer;
  * Created by marced on 2016-11-30.
  */
 public class UpdatePatientOnDraftRequest {
+
     private Personnummer personnummer;
     private Personnummer oldPersonnummer;
     private String draftId;

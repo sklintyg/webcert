@@ -21,6 +21,7 @@ package se.inera.intyg.webcert.web.integration.interactions.receivemedicalcertif
 // CHECKSTYLE:OFF LineLength
 
 import com.google.common.base.Joiner;
+import java.util.List;
 import org.apache.cxf.annotations.SchemaValidation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,8 +35,6 @@ import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.intyg.webcert.web.converter.FragaSvarConverter;
 import se.inera.intyg.webcert.web.service.fragasvar.FragaSvarService;
 import se.inera.intyg.webcert.web.service.notification.NotificationService;
-
-import java.util.List;
 
 // CHECKSTYLE:ON LineLength
 
@@ -58,7 +57,7 @@ public class ReceiveQuestionResponderImpl implements ReceiveMedicalCertificateQu
 
     @Override
     public ReceiveMedicalCertificateQuestionResponseType receiveMedicalCertificateQuestion(
-            AttributedURIType logicalAddress, ReceiveMedicalCertificateQuestionType request) {
+        AttributedURIType logicalAddress, ReceiveMedicalCertificateQuestionType request) {
 
         ReceiveMedicalCertificateQuestionResponseType response = new ReceiveMedicalCertificateQuestionResponseType();
 
@@ -87,7 +86,7 @@ public class ReceiveQuestionResponderImpl implements ReceiveMedicalCertificateQu
     private void sendNotification(FragaSvar fragaSvar) {
         notificationService.sendNotificationForQuestionReceived(fragaSvar);
         LOGGER.debug("Notification sent: a question with id '{}' (related to certificate with id '{}') was received from FK.",
-                fragaSvar.getInternReferens(), fragaSvar.getIntygsReferens().getIntygsId());
+            fragaSvar.getInternReferens(), fragaSvar.getIntygsReferens().getIntygsId());
     }
 
 }

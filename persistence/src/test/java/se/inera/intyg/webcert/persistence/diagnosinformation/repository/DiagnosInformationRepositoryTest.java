@@ -26,7 +26,6 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -36,7 +35,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
-
 import se.inera.intyg.webcert.persistence.fmb.model.dto.MaximalSjukskrivningstidDagar;
 import se.inera.intyg.webcert.persistence.fmb.model.fmb.Beskrivning;
 import se.inera.intyg.webcert.persistence.fmb.model.fmb.BeskrivningTyp;
@@ -46,8 +44,8 @@ import se.inera.intyg.webcert.persistence.fmb.model.fmb.TypFall;
 import se.inera.intyg.webcert.persistence.fmb.repository.DiagnosInformationRepository;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "classpath:repository-context.xml" })
-@ActiveProfiles({ "dev", "unit-testing" })
+@ContextConfiguration(locations = {"classpath:repository-context.xml"})
+@ActiveProfiles({"dev", "unit-testing"})
 @Transactional
 public class DiagnosInformationRepositoryTest {
 
@@ -67,36 +65,36 @@ public class DiagnosInformationRepositoryTest {
         final String symptomPrognosBehandling = "symptomPrognosBehandling";
         final String informationOmRehabilitering = "informationOmRehabilitering";
         final List<Beskrivning> beskrivningList = Arrays.asList(new Beskrivning(BeskrivningTyp.FUNKTIONSNEDSATTNING,
-                "beskrivningText", null));
+            "beskrivningText", null));
 
         final List<Icd10Kod> icd10KodList = Arrays
-                .asList(createIcd10Item("A10", Arrays.asList(
-                        createTypFall(14, "2", "wk"),
-                        createTypFall(10, "10", "d"))),
-                        createIcd10Item("B10", Arrays.asList(
-                                createTypFall(9, "9", "d"),
-                                createTypFall(61, "2", "mo"))));
+            .asList(createIcd10Item("A10", Arrays.asList(
+                createTypFall(14, "2", "wk"),
+                createTypFall(10, "10", "d"))),
+                createIcd10Item("B10", Arrays.asList(
+                    createTypFall(9, "9", "d"),
+                    createTypFall(61, "2", "mo"))));
         final LocalDateTime senastUppdaterad = LocalDateTime.now();
 
         DiagnosInformation.DiagnosInformationBuilder diagnosInformationBuilder = DiagnosInformation.DiagnosInformationBuilder
-                .aDiagnosInformation()
-                .forsakringsmedicinskInformation(forsakringsmedicinskInformation)
-                .symptomPrognosBehandling(symptomPrognosBehandling)
-                .informationOmRehabilitering(informationOmRehabilitering)
-                .beskrivningList(beskrivningList)
-                .icd10KodList(icd10KodList)
-                .senastUppdaterad(senastUppdaterad);
+            .aDiagnosInformation()
+            .forsakringsmedicinskInformation(forsakringsmedicinskInformation)
+            .symptomPrognosBehandling(symptomPrognosBehandling)
+            .informationOmRehabilitering(informationOmRehabilitering)
+            .beskrivningList(beskrivningList)
+            .icd10KodList(icd10KodList)
+            .senastUppdaterad(senastUppdaterad);
 
         diagnosInfoA10B10 = repo.save(diagnosInformationBuilder.build());
     }
 
     private TypFall createTypFall(int maxRekDagar, String sourceValue, String sourceUnit) {
         return TypFall.TypFallBuilder.aTypFall()
-                .typfallsMening("Beskrivning " + maxRekDagar)
-                .maximalSjukrivningstidDagar(maxRekDagar)
-                .maximalSjukrivningstidSourceValue(sourceValue)
-                .maximalSjukrivningstidSourceUnit(sourceUnit)
-                .build();
+            .typfallsMening("Beskrivning " + maxRekDagar)
+            .maximalSjukrivningstidDagar(maxRekDagar)
+            .maximalSjukrivningstidSourceValue(sourceValue)
+            .maximalSjukrivningstidSourceUnit(sourceUnit)
+            .build();
 
     }
 

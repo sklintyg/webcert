@@ -18,18 +18,6 @@
  */
 package se.inera.intyg.webcert.web.security;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.security.web.savedrequest.DefaultSavedRequest;
-
-import se.inera.intyg.webcert.web.auth.RedisSavedRequestCache;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -38,6 +26,16 @@ import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static se.inera.intyg.webcert.web.auth.common.AuthConstants.SPRING_SECURITY_SAVED_REQUEST_KEY;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.security.web.savedrequest.DefaultSavedRequest;
+import se.inera.intyg.webcert.web.auth.RedisSavedRequestCache;
 
 /**
  * Created by Magnus Ekstrand on 03/12/15.
@@ -66,9 +64,9 @@ public class WebCertUserOriginTest {
     @Test
     public void testUthoppRegexp() throws Exception {
         assertTrue("/webcert/web/user/certificate/99aaa4f1-d862-4750-a628-f7dcb9c8bac0/questions"
-                .matches(WebCertUserOrigin.REGEXP_REQUESTURI_UTHOPP));
+            .matches(WebCertUserOrigin.REGEXP_REQUESTURI_UTHOPP));
         assertFalse("/webcert/web/user/certificate/99aaa4f1-d862-4750-a628-f7dcb9c8bac0/questions/"
-                .matches(WebCertUserOrigin.REGEXP_REQUESTURI_UTHOPP));
+            .matches(WebCertUserOrigin.REGEXP_REQUESTURI_UTHOPP));
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -97,7 +95,7 @@ public class WebCertUserOriginTest {
         when(defaultSavedRequest.getRequestURI()).thenReturn("/visa/intyg/luse/99aaa4f1-d862-4750-a628-f7dcb9c8bac0");
 
         when(redisSavedRequestCache.getRequest(any(HttpServletRequest.class), isNull()))
-                .thenReturn(defaultSavedRequest);
+            .thenReturn(defaultSavedRequest);
         String res = webcertUserOrigin.resolveOrigin(buildRequest(null));
 
         assertEquals("DJUPINTEGRATION", res);
@@ -120,7 +118,7 @@ public class WebCertUserOriginTest {
     @Test
     public void testResolveOriginUthopp() {
         String res = webcertUserOrigin
-                .resolveOrigin(buildRequest("/webcert/web/user/certificate/luse/99aaa4f1-d862-4750-a628-f7dcb9c8bac0/questions"));
+            .resolveOrigin(buildRequest("/webcert/web/user/certificate/luse/99aaa4f1-d862-4750-a628-f7dcb9c8bac0/questions"));
 
         assertEquals("UTHOPP", res);
     }

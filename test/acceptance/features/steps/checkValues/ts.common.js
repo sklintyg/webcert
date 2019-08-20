@@ -23,7 +23,6 @@
 
 var tsBasIntygPage = pages.intyg.ts.bas.intyg;
 
-
 // Vi behöver inte kontrollera address (adress i PU prioriteras)
 /*function checkPatientadress(adressObj) {
     return Promise.all([
@@ -33,67 +32,68 @@ var tsBasIntygPage = pages.intyg.ts.bas.intyg;
     ]);
 }*/
 module.exports = {
-    checkValues: function(intyg) {
-        logger.info('-- Kontrollerar Transportstyrelsens läkarintyg diabetes & Transportstyrelsens läkarintyg högre körkortsbehörighet (gemensama fält) --');
+  checkValues: function(intyg) {
+    logger.info(
+        '-- Kontrollerar Transportstyrelsens läkarintyg diabetes & Transportstyrelsens läkarintyg högre körkortsbehörighet (gemensama fält) --');
 
-        var promiseArr = [];
+    var promiseArr = [];
 
-        var selectedTypes = intyg.korkortstyper.sort(function(a, b) {
-            var allTypes = ['AM', 'A1', 'A2', 'A', 'B', 'BE', 'Traktor', 'C1', 'C1E', 'C', 'CE', 'D1', 'D1E', 'D', 'DE', 'Taxi'];
-            return allTypes.indexOf(a) - allTypes.indexOf(b);
-        });
-        selectedTypes = selectedTypes.join(', ');
+    var selectedTypes = intyg.korkortstyper.sort(function(a, b) {
+      var allTypes = ['AM', 'A1', 'A2', 'A', 'B', 'BE', 'Traktor', 'C1', 'C1E', 'C', 'CE', 'D1', 'D1E', 'D', 'DE', 'Taxi'];
+      return allTypes.indexOf(a) - allTypes.indexOf(b);
+    });
+    selectedTypes = selectedTypes.join(', ');
 
+    // if (intyg.isKopia) {
+    //logger.info('Kontrollerar inte angiven patientadress pga att intyget är en kopia och kan ha automatiskt uppdaterad adress');
 
+    logger.info('Kontrollera inte address då denna är hämtad från PU och inget testfallet angett');
+    /* Kontrollera inte address då denna är hämtad från PU och inget testfallet angett */
+    /*promiseArr.push(checkPatientadress(this.patient.adress).then(function(value) {
+        logger.info('OK - checkPatientadress = ' + value);
+    }, function(reason) {
+        throw ('FEL - checkPatientadress: ' + reason);
+    }));*/
+    // }
 
-        // if (intyg.isKopia) {
-        //logger.info('Kontrollerar inte angiven patientadress pga att intyget är en kopia och kan ha automatiskt uppdaterad adress');
+    promiseArr.push(expect(tsBasIntygPage.intygetAvser.getText()).to.eventually.contain(selectedTypes).then(function(value) {
+      logger.info('OK - Körkortstyper = ' + value);
+    }, function(reason) {
+      throw ('FEL - Körkortstyper: ' + reason);
+    }));
 
-        logger.info('Kontrollera inte address då denna är hämtad från PU och inget testfallet angett');
-        /* Kontrollera inte address då denna är hämtad från PU och inget testfallet angett */
-        /*promiseArr.push(checkPatientadress(this.patient.adress).then(function(value) {
-            logger.info('OK - checkPatientadress = ' + value);
-        }, function(reason) {
-            throw ('FEL - checkPatientadress: ' + reason);
-        }));*/
-        // }
-
-        promiseArr.push(expect(tsBasIntygPage.intygetAvser.getText()).to.eventually.contain(selectedTypes).then(function(value) {
-            logger.info('OK - Körkortstyper = ' + value);
-        }, function(reason) {
-            throw ('FEL - Körkortstyper: ' + reason);
-        }));
-
-        if (intyg.identitetStyrktGenom.indexOf('Försäkran enligt 18 kap') > -1) {
-            var txt = 'Försäkran enligt 18 kap 4 §';
-            promiseArr.push(expect(tsBasIntygPage.idStarktGenom.getText()).to.eventually.contain(txt).then(function(value) {
-                logger.info('OK - Identitet styrkt genom = ' + value);
-            }, function(reason) {
-                throw ('FEL - Identitet styrkt genom: ' + reason);
-            }));
-        } else {
-            promiseArr.push(expect(tsBasIntygPage.idStarktGenom.getText()).to.eventually.contain(intyg.identitetStyrktGenom).then(function(value) {
-                logger.info('OK - Identitet styrkt genom = ' + value);
-            }, function(reason) {
-                throw ('FEL - Identitet styrkt genom: ' + reason);
-            }));
-        }
-
-        //Bedömning
-        if (intyg.bedomning.stallningstagande !== 'Kan inte ta ställning') {
-            promiseArr.push(expect(tsBasIntygPage.falt1.bedomning.getText()).to.eventually.contain(selectedTypes).then(function(value) {
-                logger.info('OK - Bedömningen avser körkortstyper = ' + value);
-            }, function(reason) {
-                throw ('FEL - Bedömningen avser körkortstyper: ' + reason);
-            }));
-        } else {
-            promiseArr.push(expect(tsBasIntygPage.falt1.bedomning.getText()).to.eventually.contain(intyg.bedomning.stallningstagande).then(function() {
-                logger.info('OK bedömning -' + intyg.bedomning.stallningstagande);
-            }, function(reason) {
-                throw ('FEL bedömning- ' + intyg.bedomning.stallningstagande + ' ' + reason);
-            }));
-        }
-
-        return Promise.all(promiseArr);
+    if (intyg.identitetStyrktGenom.indexOf('Försäkran enligt 18 kap') > -1) {
+      var txt = 'Försäkran enligt 18 kap 4 §';
+      promiseArr.push(expect(tsBasIntygPage.idStarktGenom.getText()).to.eventually.contain(txt).then(function(value) {
+        logger.info('OK - Identitet styrkt genom = ' + value);
+      }, function(reason) {
+        throw ('FEL - Identitet styrkt genom: ' + reason);
+      }));
+    } else {
+      promiseArr.push(
+          expect(tsBasIntygPage.idStarktGenom.getText()).to.eventually.contain(intyg.identitetStyrktGenom).then(function(value) {
+            logger.info('OK - Identitet styrkt genom = ' + value);
+          }, function(reason) {
+            throw ('FEL - Identitet styrkt genom: ' + reason);
+          }));
     }
+
+    //Bedömning
+    if (intyg.bedomning.stallningstagande !== 'Kan inte ta ställning') {
+      promiseArr.push(expect(tsBasIntygPage.falt1.bedomning.getText()).to.eventually.contain(selectedTypes).then(function(value) {
+        logger.info('OK - Bedömningen avser körkortstyper = ' + value);
+      }, function(reason) {
+        throw ('FEL - Bedömningen avser körkortstyper: ' + reason);
+      }));
+    } else {
+      promiseArr.push(
+          expect(tsBasIntygPage.falt1.bedomning.getText()).to.eventually.contain(intyg.bedomning.stallningstagande).then(function() {
+            logger.info('OK bedömning -' + intyg.bedomning.stallningstagande);
+          }, function(reason) {
+            throw ('FEL bedömning- ' + intyg.bedomning.stallningstagande + ' ' + reason);
+          }));
+    }
+
+    return Promise.all(promiseArr);
+  }
 };

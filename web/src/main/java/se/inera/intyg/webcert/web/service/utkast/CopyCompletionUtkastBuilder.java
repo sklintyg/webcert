@@ -18,11 +18,9 @@
  */
 package se.inera.intyg.webcert.web.service.utkast;
 
+import com.google.common.base.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import com.google.common.base.Strings;
-
 import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.model.common.internal.Relation;
@@ -66,7 +64,7 @@ public class CopyCompletionUtkastBuilder extends AbstractUtkastBuilder<CreateCom
 
     @Override
     protected String getInternalModel(Utlatande template, ModuleApi moduleApi, AbstractCreateCopyRequest copyRequest,
-                                      Person person, Relation relation, String newDraftCopyId) throws ModuleException {
+        Person person, Relation relation, String newDraftCopyId) throws ModuleException {
         CreateDraftCopyHolder draftCopyHolder = createModuleRequestForCopying(copyRequest, person, relation, newDraftCopyId);
         CreateCompletionCopyRequest retyped = (CreateCompletionCopyRequest) copyRequest;
 

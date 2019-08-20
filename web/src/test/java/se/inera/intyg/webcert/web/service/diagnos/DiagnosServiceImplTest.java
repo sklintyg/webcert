@@ -34,14 +34,12 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 import java.util.List;
-
 import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
 import se.inera.intyg.common.support.common.enumerations.Diagnoskodverk;
 import se.inera.intyg.webcert.web.service.diagnos.dto.DiagnosResponse;
 import se.inera.intyg.webcert.web.service.diagnos.dto.DiagnosResponseType;
@@ -59,9 +57,11 @@ public class DiagnosServiceImplTest {
 
     @Test
     public void testGetICD10DiagnosisByCode() {
-        assertEquals("Null should return invalid", DiagnosResponseType.INVALID_CODE, service.getDiagnosisByCode(null, ICD_10).getResultat());
+        assertEquals("Null should return invalid", DiagnosResponseType.INVALID_CODE,
+            service.getDiagnosisByCode(null, ICD_10).getResultat());
         assertEquals("Empty should return invalid", DiagnosResponseType.INVALID_CODE, service.getDiagnosisByCode("", ICD_10).getResultat());
-        assertEquals("Spaces should return invalid", DiagnosResponseType.INVALID_CODE, service.getDiagnosisByCode(" ", ICD_10).getResultat());
+        assertEquals("Spaces should return invalid", DiagnosResponseType.INVALID_CODE,
+            service.getDiagnosisByCode(" ", ICD_10).getResultat());
 
         assertEquals(DiagnosResponseType.NOT_FOUND, service.getDiagnosisByCode("A11", ICD_10).getResultat());
 
@@ -72,9 +72,11 @@ public class DiagnosServiceImplTest {
 
     @Test
     public void testGetKSH97PDiagnosisByCode() {
-        assertEquals("Null should return invalid", DiagnosResponseType.INVALID_CODE, service.getDiagnosisByCode(null, KSH97P).getResultat());
+        assertEquals("Null should return invalid", DiagnosResponseType.INVALID_CODE,
+            service.getDiagnosisByCode(null, KSH97P).getResultat());
         assertEquals("Empty should return invalid", DiagnosResponseType.INVALID_CODE, service.getDiagnosisByCode("", KSH97P).getResultat());
-        assertEquals("Spaces should return invalid", DiagnosResponseType.INVALID_CODE, service.getDiagnosisByCode(" ", KSH97P).getResultat());
+        assertEquals("Spaces should return invalid", DiagnosResponseType.INVALID_CODE,
+            service.getDiagnosisByCode(" ", KSH97P).getResultat());
 
         assertEquals(DiagnosResponseType.NOT_FOUND, service.getDiagnosisByCode("A11", KSH97P).getResultat());
 
@@ -85,7 +87,8 @@ public class DiagnosServiceImplTest {
 
     @Test
     public void testGetICD10DiagnosisByCodeDiagnoskodverk() {
-        assertEquals("Empty should return invalid", DiagnosResponseType.INVALID_CODE, service.getDiagnosisByCode("", Diagnoskodverk.ICD_10_SE).getResultat());
+        assertEquals("Empty should return invalid", DiagnosResponseType.INVALID_CODE,
+            service.getDiagnosisByCode("", Diagnoskodverk.ICD_10_SE).getResultat());
 
         assertEquals(DiagnosResponseType.NOT_FOUND, service.getDiagnosisByCode("A11", Diagnoskodverk.ICD_10_SE).getResultat());
 
@@ -96,7 +99,8 @@ public class DiagnosServiceImplTest {
 
     @Test
     public void testGetKSH97PDiagnosisByCodeDiagnoskodverk() {
-        assertEquals("Empty should return invalid", DiagnosResponseType.INVALID_CODE, service.getDiagnosisByCode("", Diagnoskodverk.KSH_97_P).getResultat());
+        assertEquals("Empty should return invalid", DiagnosResponseType.INVALID_CODE,
+            service.getDiagnosisByCode("", Diagnoskodverk.KSH_97_P).getResultat());
 
         assertEquals(DiagnosResponseType.NOT_FOUND, service.getDiagnosisByCode("A11", Diagnoskodverk.KSH_97_P).getResultat());
 
@@ -120,12 +124,12 @@ public class DiagnosServiceImplTest {
          */
         // Then
         assertThat(result, allOf(
-                is(notNullValue()),
-                is(either(
-                        allOf(
-                                hasProperty("resultat", equalTo(DiagnosResponseType.OK)),
-                                hasProperty("diagnoser", hasSize(lessThanOrEqualTo(greaterThanZero)))))
-                                        .or(hasProperty("resultat", equalTo(DiagnosResponseType.NOT_FOUND))))));
+            is(notNullValue()),
+            is(either(
+                allOf(
+                    hasProperty("resultat", equalTo(DiagnosResponseType.OK)),
+                    hasProperty("diagnoser", hasSize(lessThanOrEqualTo(greaterThanZero)))))
+                .or(hasProperty("resultat", equalTo(DiagnosResponseType.NOT_FOUND))))));
     }
 
     @Test
@@ -140,15 +144,15 @@ public class DiagnosServiceImplTest {
 
         // Then
         assertThat(result, allOf(
-                is(notNullValue()),
-                is(either(
-                        allOf(// Successfully limited amount of results?
-                                hasProperty("resultat", equalTo(DiagnosResponseType.OK)),
-                                hasProperty("diagnoser", hasSize(equalTo(arbitraryChosenUpperBound)))))
-                                        .or(allOf(// Or, there were too few results to reach upper limit?
-                                                hasProperty("resultat", equalTo(nonLimitedResults.getResultat())),
-                                                hasProperty("diagnoser", equalTo(nonLimitedResults.getDiagnoser())),
-                                                hasProperty("diagnoser", hasSize(lessThanOrEqualTo(arbitraryChosenUpperBound))))))));
+            is(notNullValue()),
+            is(either(
+                allOf(// Successfully limited amount of results?
+                    hasProperty("resultat", equalTo(DiagnosResponseType.OK)),
+                    hasProperty("diagnoser", hasSize(equalTo(arbitraryChosenUpperBound)))))
+                .or(allOf(// Or, there were too few results to reach upper limit?
+                    hasProperty("resultat", equalTo(nonLimitedResults.getResultat())),
+                    hasProperty("diagnoser", equalTo(nonLimitedResults.getDiagnoser())),
+                    hasProperty("diagnoser", hasSize(lessThanOrEqualTo(arbitraryChosenUpperBound))))))));
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -202,7 +206,8 @@ public class DiagnosServiceImplTest {
     @Test
     public void testSearchDiagnosisByDescriptionInvalid() {
         assertEquals(DiagnosResponseType.INVALID_SEARCH_STRING, service.searchDiagnosisByDescription("", KSH97P, 1).getResultat());
-        assertEquals(DiagnosResponseType.INVALID_CODE_SYSTEM, service.searchDiagnosisByDescription("A11", "unknown-code-system", 1).getResultat());
+        assertEquals(DiagnosResponseType.INVALID_CODE_SYSTEM,
+            service.searchDiagnosisByDescription("A11", "unknown-code-system", 1).getResultat());
         assertEquals(DiagnosResponseType.NOT_FOUND, service.searchDiagnosisByDescription("345345", ICD_10, 1).getResultat());
         assertEquals(DiagnosResponseType.NOT_FOUND, service.searchDiagnosisByDescription("345345", KSH97P, 1).getResultat());
         assertEquals(DiagnosResponseType.INVALID_CODE_SYSTEM, service.searchDiagnosisByDescription("A11", null, 1).getResultat());
@@ -224,20 +229,20 @@ public class DiagnosServiceImplTest {
         DiagnosResponse result = service.searchDiagnosisByDescription(searchTerm, ICD_10, greaterThanZero);
 
         // Then
-        assertThat(result, Matchers.<DiagnosResponse> allOf(
-                is(notNullValue()),
-                is(either(
-                        allOf(
-                                hasProperty("resultat", equalTo(DiagnosResponseType.OK)),
-                                hasProperty("diagnoser", hasSize(greaterThan(0)))))
-                                        .or(hasProperty("resultat", equalTo(DiagnosResponseType.NOT_FOUND))))));
+        assertThat(result, Matchers.<DiagnosResponse>allOf(
+            is(notNullValue()),
+            is(either(
+                allOf(
+                    hasProperty("resultat", equalTo(DiagnosResponseType.OK)),
+                    hasProperty("diagnoser", hasSize(greaterThan(0)))))
+                .or(hasProperty("resultat", equalTo(DiagnosResponseType.NOT_FOUND))))));
 
         assertEquals("Null should return invalid", DiagnosResponseType.INVALID_SEARCH_STRING,
-                service.searchDiagnosisByDescription(null, ICD_10, 5).getResultat());
+            service.searchDiagnosisByDescription(null, ICD_10, 5).getResultat());
         assertEquals("Empty should return invalid", DiagnosResponseType.INVALID_SEARCH_STRING,
-                service.searchDiagnosisByDescription("", ICD_10, 5).getResultat());
+            service.searchDiagnosisByDescription("", ICD_10, 5).getResultat());
         assertEquals("Spaces should return invalid", DiagnosResponseType.INVALID_SEARCH_STRING,
-                service.searchDiagnosisByDescription(" ", ICD_10, 5).getResultat());
+            service.searchDiagnosisByDescription(" ", ICD_10, 5).getResultat());
     }
 
     @Test
@@ -252,15 +257,15 @@ public class DiagnosServiceImplTest {
 
         // Then
         assertThat(result, allOf(
-                is(notNullValue()),
-                is(either(
-                        allOf(// Successfully limited amount of results?
-                                hasProperty("resultat", equalTo(DiagnosResponseType.OK)),
-                                hasProperty("diagnoser", hasSize(equalTo(arbitraryChosenUpperBound)))))
-                                        .or(allOf(// Or, there were too few results to reach upper limit?
-                                                hasProperty("resultat", equalTo(nonLimitedResults.getResultat())),
-                                                hasProperty("diagnoser", equalTo(nonLimitedResults.getDiagnoser())),
-                                                hasProperty("diagnoser", hasSize(lessThanOrEqualTo(arbitraryChosenUpperBound))))))));
+            is(notNullValue()),
+            is(either(
+                allOf(// Successfully limited amount of results?
+                    hasProperty("resultat", equalTo(DiagnosResponseType.OK)),
+                    hasProperty("diagnoser", hasSize(equalTo(arbitraryChosenUpperBound)))))
+                .or(allOf(// Or, there were too few results to reach upper limit?
+                    hasProperty("resultat", equalTo(nonLimitedResults.getResultat())),
+                    hasProperty("diagnoser", equalTo(nonLimitedResults.getDiagnoser())),
+                    hasProperty("diagnoser", hasSize(lessThanOrEqualTo(arbitraryChosenUpperBound))))))));
     }
 
     @Test(expected = IllegalArgumentException.class)

@@ -18,6 +18,18 @@
  */
 package se.inera.intyg.webcert.web.integration.registry;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.util.Optional;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -30,19 +42,6 @@ import se.inera.intyg.common.support.modules.support.api.notification.SchemaVers
 import se.inera.intyg.webcert.persistence.integreradenhet.model.IntegreradEnhet;
 import se.inera.intyg.webcert.persistence.integreradenhet.repository.IntegreradEnhetRepository;
 import se.inera.intyg.webcert.web.integration.registry.dto.IntegreradEnhetEntry;
-
-import java.util.Optional;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class IntegreradeEnheterRegistryImplTest {
@@ -109,6 +108,18 @@ public class IntegreradeEnheterRegistryImplTest {
 
         boolean result = registry.isEnhetIntegrerad(enhetsId, Fk7263EntryPoint.MODULE_ID);
         assertFalse(result);
+    }
+
+    @Test
+    public void testGetIntegreradEnhet() {
+        final String enhetsId = "enhetsId";
+
+        IntegreradEnhet enhet = new IntegreradEnhet();
+        enhet.setEnhetsId(enhetsId);
+        when(integreradEnhetRepository.findOne(eq(enhetsId))).thenReturn(enhet);
+
+        IntegreradEnhet integreradEnhet = registry.getIntegreradEnhet(enhetsId);
+        assertEquals(integreradEnhet.getEnhetsId(), enhetsId);
     }
 
     @Test

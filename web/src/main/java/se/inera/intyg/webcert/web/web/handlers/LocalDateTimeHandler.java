@@ -23,7 +23,6 @@ import java.lang.reflect.Type;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-
 import javax.ws.rs.ext.ParamConverter;
 
 /**
@@ -41,6 +40,7 @@ public class LocalDateTimeHandler implements javax.ws.rs.ext.ParamConverterProvi
     }
 
     private static class LocalDateTimeParamConverter implements ParamConverter<LocalDateTime> {
+
         @Override
         public LocalDateTime fromString(String value) {
             if (value.contains("T")) {

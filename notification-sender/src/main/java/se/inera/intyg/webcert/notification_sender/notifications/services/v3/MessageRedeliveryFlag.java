@@ -46,6 +46,7 @@ public class MessageRedeliveryFlag {
 
     // state for flag
     static class StatusFlag {
+
         private long successTimestamp;
 
         public long getSuccessTimestamp() {
@@ -97,7 +98,6 @@ public class MessageRedeliveryFlag {
      * Lower error flag.
      *
      * @param key the key.
-     * @param messageTimestamp
      */
     public void lowerError(final String key, long messageTimestamp) {
         final ValueOperations<String, String> ops = stringRedisTemplate.opsForValue();

@@ -18,10 +18,8 @@
  */
 package se.inera.intyg.webcert.web.service.intyg.config;
 
-import java.text.MessageFormat;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
-
+import java.text.MessageFormat;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 public class SendIntygConfiguration {

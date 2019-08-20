@@ -18,36 +18,36 @@
  */
 
 angular.module('webcert').factory('webcert.IntygProxy',
-    [ '$http', '$stateParams', '$log', 'common.statService',
-        function($http, $stateParams, $log, statService) {
-            'use strict';
+    ['$http', '$stateParams', '$log', 'common.statService',
+      function($http, $stateParams, $log, statService) {
+        'use strict';
 
-             /*
-             * Load certificate list of all certificates for a person
-             */
-            function _getIntygForPatient(personId, onSuccess, onError) {
-                $log.debug('getIntygForPatient type:' + personId);
-                var restPath = '/api/intyg/person/' + personId;
-                $http.get(restPath).then(function(response) {
-                    $log.debug(restPath + ' response:' + angular.toJson(response.data));
-                    var offlineMode = response.headers('offline_mode');
-                    if (typeof offlineMode !== 'undefined' && offlineMode === 'true') {
-                        if(!response.status){
-                            onError('offline_mode', 'info.intygload.offline');
-                        } else {
-                            onError(response.status, 'info.intygload.offline');
-                        }
-                    }
-                    onSuccess(response.data);
-                }, function(response) {
-                    $log.error('error ' + response.status);
-                    // Let calling code handle the error of no data response
-                    onError(response.status, 'common.error.' + response.data.errorCode.toLowerCase());
-                });
+        /*
+        * Load certificate list of all certificates for a person
+        */
+        function _getIntygForPatient(personId, onSuccess, onError) {
+          $log.debug('getIntygForPatient type:' + personId);
+          var restPath = '/api/intyg/person/' + personId;
+          $http.get(restPath).then(function(response) {
+            $log.debug(restPath + ' response:' + angular.toJson(response.data));
+            var offlineMode = response.headers('offline_mode');
+            if (typeof offlineMode !== 'undefined' && offlineMode === 'true') {
+              if (!response.status) {
+                onError('offline_mode', 'info.intygload.offline');
+              } else {
+                onError(response.status, 'info.intygload.offline');
+              }
             }
+            onSuccess(response.data);
+          }, function(response) {
+            $log.error('error ' + response.status);
+            // Let calling code handle the error of no data response
+            onError(response.status, 'common.error.' + response.data.errorCode.toLowerCase());
+          });
+        }
 
-             // Return public API for the service
-            return {
-                getIntygForPatient: _getIntygForPatient
-            };
-        }]);
+        // Return public API for the service
+        return {
+          getIntygForPatient: _getIntygForPatient
+        };
+      }]);
