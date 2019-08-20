@@ -18,7 +18,7 @@ ext {
     intygClinicalprocessSchemasVersion = "1.0.22"
     ppSchemasVersion = "1.0.5"
     ppTermsSchemasVersion = "1.0.5"
-    rivtaClinicalprocessSchemasVersion = "4.0.3"
+    rivtaClinicalprocessSchemasVersion = "4.0.4"
     rivtaItintegrationMonitoringSchemasVersion = "1.0.0.5"
 
     activeMqVersion = "5.13.5"
