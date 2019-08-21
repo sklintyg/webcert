@@ -23,12 +23,11 @@ import static org.junit.Assert.assertEquals;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Unmarshaller;
-import javax.xml.transform.stream.StreamSource;
+import javax.xml.bind.JAXBElement;
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 import se.inera.ifv.insuranceprocess.healthreporting.receivemedicalcertificatequestionsponder.v1.QuestionFromFkType;
+import se.inera.intyg.common.support.xml.XmlMarshallerHelper;
 import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
 import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
 
@@ -54,15 +53,13 @@ public class FragaSvarConverterTest {
         JsonNode tree = objectMapper.valueToTree(object);
         JsonNode expectedTree = objectMapper.readTree(new ClassPathResource(fileName).getInputStream());
         assertEquals("JSON does not match expectation. Resulting JSON is \n" + tree.toString() + "\n", expectedTree,
-            tree);
+                tree);
     }
 
     private QuestionFromFkType question(String fileName) throws Exception {
-        JAXBContext jaxbContext = JAXBContext.newInstance(QuestionFromFkType.class);
-        Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-        return unmarshaller.unmarshal(
-            new StreamSource(new ClassPathResource(fileName).getInputStream()),
-            QuestionFromFkType.class).getValue();
+        ClassPathResource resource = new ClassPathResource(fileName);
+        JAXBElement<QuestionFromFkType> jaxbElement = XmlMarshallerHelper.unmarshal(resource.getInputStream());
+        return jaxbElement.getValue();
     }
 
 }

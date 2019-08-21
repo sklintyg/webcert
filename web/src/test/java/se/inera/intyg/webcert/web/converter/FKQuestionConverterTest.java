@@ -20,18 +20,13 @@ package se.inera.intyg.webcert.web.converter;
 
 import static org.junit.Assert.assertEquals;
 
-import java.io.StringWriter;
-import java.io.Writer;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
-import javax.xml.transform.stream.StreamSource;
+import javax.xml.bind.JAXBElement;
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 import se.inera.ifv.insuranceprocess.healthreporting.receivemedicalcertificatequestionsponder.v1.QuestionFromFkType;
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificatequestionresponder.v1.ObjectFactory;
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificatequestionresponder.v1.QuestionToFkType;
+import se.inera.intyg.common.support.xml.XmlMarshallerHelper;
 import se.inera.intyg.webcert.persistence.fragasvar.model.Amne;
 import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
 
@@ -44,38 +39,25 @@ public class FKQuestionConverterTest {
     private FragaSvarConverter fragaSvarConverter = new FragaSvarConverter();
 
     private QuestionFromFkType inflateQuestionFromFK() throws Exception {
-        JAXBContext jaxbContext = JAXBContext
-            .newInstance(QuestionFromFkType.class);
-        Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-        return unmarshaller.unmarshal(new StreamSource(new ClassPathResource("FragaSvarConverterTest/question.xml").getInputStream()),
-            QuestionFromFkType.class).getValue();
+        ClassPathResource resource = new ClassPathResource("FragaSvarConverterTest/question.xml");
+        JAXBElement<QuestionFromFkType> jaxbElement = XmlMarshallerHelper.unmarshal(resource.getInputStream());
+        return jaxbElement.getValue();
     }
 
     private QuestionToFkType inflateQuestionToFK() throws Exception {
-        JAXBContext jaxbContext = JAXBContext
-            .newInstance(QuestionToFkType.class);
-        Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-        return unmarshaller.unmarshal(new StreamSource(new ClassPathResource("FragaSvarConverterTest/question_to_fk.xml").getInputStream()),
-            QuestionToFkType.class).getValue();
+        ClassPathResource resource = new ClassPathResource("FragaSvarConverterTest/question_to_fk.xml");
+        JAXBElement<QuestionToFkType> jaxbElement = XmlMarshallerHelper.unmarshal(resource.getInputStream());
+        return jaxbElement.getValue();
     }
 
-    private String jaxbToXml(QuestionToFkType object) throws JAXBException {
+    private String jaxbToXml(QuestionToFkType object) {
         ObjectFactory objectFactory = new ObjectFactory();
-        Writer writer = new StringWriter();
-
-        // Init JAXB context
-        JAXBContext jaxbContext = JAXBContext.newInstance(QuestionToFkType.class);
-        Marshaller marshaller = jaxbContext.createMarshaller();
-
-        // Create a string representation from JAXB element
-        marshaller.marshal(objectFactory.createQuestion(object), writer);
-
-        return writer.toString();
+        JAXBElement<QuestionToFkType> jaxbElement = objectFactory.createQuestion(object);
+        return XmlMarshallerHelper.marshal(jaxbElement);
     }
 
     @Test
     public void testConvertQuestion() throws Exception {
-
         QuestionFromFkType questionFromFK = inflateQuestionFromFK();
         QuestionToFkType referenceQuestionToFK = inflateQuestionToFK();
 
