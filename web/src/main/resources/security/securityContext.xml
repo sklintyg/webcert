@@ -693,7 +693,7 @@
     <!-- Handler for successful logout -->
     <bean id="successLogoutHandler"
         class="org.springframework.security.web.authentication.logout.SimpleUrlLogoutSuccessHandler">
-      <property name="defaultTargetUrl" value="/error.jsp?reason=logout"/>
+      <property name="defaultTargetUrl" value="/"/>
     </bean>
 
   </beans>
