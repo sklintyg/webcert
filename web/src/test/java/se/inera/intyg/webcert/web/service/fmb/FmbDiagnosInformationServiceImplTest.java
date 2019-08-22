@@ -23,6 +23,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.anySet;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doReturn;
 import static se.inera.intyg.webcert.persistence.fmb.model.fmb.Beskrivning.BeskrivningBuilder.aBeskrivning;
@@ -175,8 +176,8 @@ public class FmbDiagnosInformationServiceImplTest {
 
     @Test
     public void testMultipleTypFall() {
-
-        final DiagnosInformation diagnosInformation = createDiagnosInformation("test1", "test2", "A10");
+        final DiagnosInformation diagnosInformation =
+            createDiagnosInformation("test1", "test2", "A10");
 
         doReturn(Optional.of(diagnosInformation))
             .when(diagnosInformationRepository)
@@ -202,7 +203,6 @@ public class FmbDiagnosInformationServiceImplTest {
 
     @Test
     public void faultySearch() {
-
         doReturn(Optional.empty())
             .when(diagnosInformationRepository)
             .findFirstByIcd10KodList_kod(anyString());
@@ -226,6 +226,45 @@ public class FmbDiagnosInformationServiceImplTest {
         assertEquals(icd10.toUpperCase(), response.get().getIcd10Code());
     }
 
+    @Test
+    public void testWithSpecificIcd10CodeResultingInItsParentIcd10Kod() {
+
+        final int foreslagen = 1;
+        final int tidigare = 12;
+
+        final int f31Rekommenderad = 744;
+        final String f31SourceValue = "24";
+        final String f31SourceUnit = "mo";
+
+        final String icd10KodSpecific = "F314";
+        final String icd10KodParent = "F31";
+
+        final List<MaximalSjukskrivningstidDagar> max = Lists
+            .newArrayList(MaximalSjukskrivningstidDagar.of("F31", f31Rekommenderad, f31SourceValue, f31SourceUnit));
+
+        doReturn(max)
+            .when(diagnosInformationRepository)
+            .findMaximalSjukrivningstidDagarByIcd10Koder(anySet());
+
+        doReturn(tidigare)
+            .when(sjukfallService)
+            .totalSjukskrivningstidForPatientAndCareUnit(any(Personnummer.class));
+
+        final MaximalSjukskrivningstidRequest request = MaximalSjukskrivningstidRequest.of(
+            Icd10KoderRequest.of("F314", null, null),
+            Personnummer.createPersonnummer("191212121212").get(),
+            foreslagen);
+
+        doReturn(Optional.of(createDiagnosInformation("typfall1", "typfall2", icd10KodParent)))
+            .when(diagnosInformationRepository)
+            .findFirstByIcd10KodList_kod(eq(icd10KodSpecific));
+
+        MaximalSjukskrivningstidResponse response =
+            diagnosInformationService.validateSjukskrivningtidForPatient(request);
+
+        assertThat(response).isNotNull();
+        assertThat(response.getAktuellIcd10Kod()).isEqualTo(icd10KodParent);
+    }
 
     private DiagnosInformation createDiagnosInformation(final String firstTypFallText, final String secondTypfalltext,
         final String... icd10Koder) {
