@@ -75,17 +75,41 @@ allprojects {
         mavenLocal()
         maven {
             url "https://build-inera.nordicmedtest.se/nexus/repository/releases/"
+            content {
+                // this repository *only* contains artifacts with group "my.company"
+                includeGroupByRegex "se\\.inera.*"
+                includeGroupByRegex "se\\.riv.*"
+                includeGroupByRegex "se\\.funktionstjanster.*"
+                includeGroupByRegex "se\\.skltp.*"
+                includeGroupByRegex "com\\.secmaker\\.netid.*"
+            }
             mavenContent {
                 releasesOnly()
             }
         }
         maven {
             url "https://build-inera.nordicmedtest.se/nexus/repository/snapshots/"
+            content {
+                // this repository *only* contains artifacts with group "my.company"
+                includeGroupByRegex "se\\.inera.*"
+            }
             mavenContent {
                 snapshotsOnly()
             }
         }
-        jcenter()
+        maven {
+            url "https://build-inera.nordicmedtest.se/nexus/repository/jcenter/"
+            content {
+                // this repository contains everything BUT artifacts with group starting with "my.company"
+                excludeGroupByRegex "se\\.inera.*"
+            }
+        }
+        jcenter {
+            content {
+                // this repository contains everything BUT artifacts with group starting with "my.company"
+                excludeGroupByRegex "se\\.inera.*"
+            }
+        }
     }
 
     dependencies {

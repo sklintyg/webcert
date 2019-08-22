@@ -1,6 +1,7 @@
 pluginManagement {
     repositories {
         maven { url "https://build-inera.nordicmedtest.se/nexus/repository/releases/" }
+        maven { url "https://build-inera.nordicmedtest.se/nexus/repository/jcenter/"}
         gradlePluginPortal()
     }
 }
