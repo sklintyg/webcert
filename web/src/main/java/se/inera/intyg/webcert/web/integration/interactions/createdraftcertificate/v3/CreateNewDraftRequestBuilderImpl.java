@@ -28,6 +28,7 @@ import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.webcert.web.integration.util.HoSPersonHelper;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftRequest;
 import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v3.Intyg;
+import se.riv.clinicalprocess.healthcond.certificate.v33.Forifyllnad;
 
 @Component(value = "createNewDraftRequestBuilderImplV2")
 public class CreateNewDraftRequestBuilderImpl implements CreateNewDraftRequestBuilder {
@@ -40,9 +41,11 @@ public class CreateNewDraftRequestBuilderImpl implements CreateNewDraftRequestBu
         HoSPersonal hosPerson = createHoSPerson(intyg.getSkapadAv(),
             HoSPersonHelper.createVardenhetFromIntygUser(intyg.getSkapadAv().getEnhet().getEnhetsId().getExtension(), user));
         HoSPersonHelper.enrichHoSPerson(hosPerson, user);
+        //TODO: if (user.isFeatureActive())
+        Forifyllnad forifyllnad = intyg.getForifyllnad();
         return new CreateNewDraftRequest(null, moduleRegistry.getModuleIdFromExternalId(intyg.getTypAvIntyg().getCode()), intygTypeVersion,
             null, hosPerson,
-            TransportConverterUtil.getPatient(intyg.getPatient(), true), intyg.getRef());
+            TransportConverterUtil.getPatient(intyg.getPatient(), true), intyg.getRef(), forifyllnad);
     }
 
     private HoSPersonal createHoSPerson(

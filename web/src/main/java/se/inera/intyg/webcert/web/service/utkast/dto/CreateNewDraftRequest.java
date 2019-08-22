@@ -21,6 +21,7 @@ package se.inera.intyg.webcert.web.service.utkast.dto;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.model.common.internal.Patient;
+import se.riv.clinicalprocess.healthcond.certificate.v33.Forifyllnad;
 
 public class CreateNewDraftRequest {
 
@@ -38,17 +39,19 @@ public class CreateNewDraftRequest {
 
     private HoSPersonal hosPerson;
 
+    private Forifyllnad forifyllnad;
+
     public CreateNewDraftRequest() {
         // Needed for deserialization
     }
 
     public CreateNewDraftRequest(String intygId, String intygType, String intygTypeVersion, UtkastStatus status, HoSPersonal hosPerson,
         Patient patient) {
-        this(intygId, intygType, intygTypeVersion, status, hosPerson, patient, null);
+        this(intygId, intygType, intygTypeVersion, status, hosPerson, patient, null, null);
     }
 
     public CreateNewDraftRequest(String intygId, String intygType, String intygTypeVersion, UtkastStatus status, HoSPersonal hosPerson,
-        Patient patient, String referens) {
+        Patient patient, String referens, Forifyllnad forifyllnad) {
         this.intygId = intygId;
         this.intygType = intygType;
         this.intygTypeVersion = intygTypeVersion;
@@ -56,6 +59,7 @@ public class CreateNewDraftRequest {
         this.status = status;
         this.hosPerson = hosPerson;
         this.patient = patient;
+        this.forifyllnad = forifyllnad;
     }
 
     public String getIntygId() {
@@ -112,5 +116,13 @@ public class CreateNewDraftRequest {
 
     public void setIntygTypeVersion(String intygTypeVersion) {
         this.intygTypeVersion = intygTypeVersion;
+    }
+
+    public Forifyllnad getForifyllnad() {
+        return forifyllnad;
+    }
+
+    public void setForifyllnad(Forifyllnad forifyllnad) {
+        this.forifyllnad = forifyllnad;
     }
 }

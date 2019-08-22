@@ -738,7 +738,8 @@ public class UtkastServiceImpl implements UtkastService {
     }
 
     private CreateNewDraftHolder createModuleRequest(CreateNewDraftRequest request) {
-        return new CreateNewDraftHolder(request.getIntygId(), request.getIntygTypeVersion(), request.getHosPerson(), request.getPatient());
+        return new CreateNewDraftHolder(request.getIntygId(), request.getIntygTypeVersion(), request.getHosPerson(), request.getPatient(),
+            request.getForifyllnad());
     }
 
     private Utkast getIntygAsDraft(String intygsId, String intygType) {
