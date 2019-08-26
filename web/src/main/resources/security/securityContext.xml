@@ -324,7 +324,7 @@
     </security:http>
 
     <!-- JWT based OAuth authentication -->
-    <security:http use-expressions="false" entry-point-ref="http403ForbiddenEntryPoint" pattern="(\/oauth\/token)" request-matcher="regex">
+    <security:http use-expressions="false" entry-point-ref="http403ForbiddenEntryPoint" pattern="(\/oauth\/token\/.*)" request-matcher="regex">
       <security:csrf disabled="true"/>
       <security:logout logout-url="/logout" logout-success-url="/empty.html" invalidate-session="true"/>
       <security:intercept-url pattern="/**" access="IS_AUTHENTICATED_FULLY"/>
