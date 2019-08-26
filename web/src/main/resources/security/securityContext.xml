@@ -257,14 +257,12 @@
   </beans>
 
   <!-- ======================================================================== -->
-  <!-- The wc-security-test profile support both Säkerhetstjänst and Fake login -->
+  <!-- JWT based OAuth authentication, for test and prod -->
   <!-- ======================================================================== -->
-  <beans profile="wc-security-test">
-
-    <!-- JWT based OAuth authentication -->
+  <beans profile="prod,wc-security-prod,wc-security-test">
     <security:http use-expressions="false" entry-point-ref="http403ForbiddenEntryPoint" pattern="(\/oauth\/token\/.*)" request-matcher="regex">
       <security:csrf disabled="true"/>
-      <security:logout logout-url="/logout" logout-success-url="/welcome.html" invalidate-session="true"/>
+      <security:logout logout-url="/logout" logout-success-url="/" invalidate-session="true"/>
       <security:intercept-url pattern="/**" access="IS_AUTHENTICATED_FULLY"/>
       <security:custom-filter position="PRE_AUTH_FILTER" ref="jwtAuthFilter"/>
       <security:request-cache ref="redisSavedRequestCache"/>
@@ -274,7 +272,12 @@
         <security:header ref="xFrameOptionsHeaderWriter"/>
       </security:headers>
     </security:http>
+  </beans>
 
+  <!-- ======================================================================== -->
+  <!-- The wc-security-test profile support both Säkerhetstjänst and Fake login -->
+  <!-- ======================================================================== -->
+  <beans profile="wc-security-test">
     <!-- /visa/intyg/ and /webcert/web are deep-integration links used by VAS and Cosmic and should use SAML SSO -->
     <security:http use-expressions="false" request-matcher="regex" pattern="(\/fake)|(\/welcome.html)|(\/saml\/.*)|(\/visa\/intyg\/.*)|(\/webcert\/web\/.*)|(\/web\/maillink\/.*)" entry-point-ref="samlEntryPoint">
       <security:csrf disabled="true"/>
@@ -322,20 +325,6 @@
     <security:http entry-point-ref="http403ForbiddenEntryPoint" pattern="(\/swagger-ui\/.*)|(\/pubapp\/simulator\/.*)|(\/pubapp\/apis\/.*)|(\/pubapp\/signapp\/.*)" request-matcher="regex">
       <security:access-denied-handler ref="accessDeniedHandler"/>
       <security:intercept-url pattern="/**" access="denyAll"/>
-    </security:http>
-
-    <!-- JWT based OAuth authentication -->
-    <security:http use-expressions="false" entry-point-ref="http403ForbiddenEntryPoint" pattern="(\/oauth\/token)" request-matcher="regex">
-      <security:csrf disabled="true"/>
-      <security:logout logout-url="/logout" logout-success-url="/empty.html" invalidate-session="true"/>
-      <security:intercept-url pattern="/**" access="IS_AUTHENTICATED_FULLY"/>
-      <security:custom-filter position="PRE_AUTH_FILTER" ref="jwtAuthFilter"/>
-      <security:request-cache ref="redisSavedRequestCache"/>
-      <security:session-management session-authentication-strategy-ref="registerSessionAuthenticationStrategy"/>
-      <security:headers>
-        <security:frame-options disabled="true"/>
-        <security:header ref="xFrameOptionsHeaderWriter"/>
-      </security:headers>
     </security:http>
 
     <!-- /visa/intyg/ and /webcert/web are deep-integration links used by VAS and Cosmic and should use SAML SSO -->
