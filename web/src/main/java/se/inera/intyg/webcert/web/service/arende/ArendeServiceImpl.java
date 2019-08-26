@@ -83,7 +83,9 @@ import se.inera.intyg.webcert.web.service.fragasvar.FragaSvarService;
 import se.inera.intyg.webcert.web.service.fragasvar.dto.FrageStallare;
 import se.inera.intyg.webcert.web.service.fragasvar.dto.QueryFragaSvarParameter;
 import se.inera.intyg.webcert.web.service.fragasvar.dto.QueryFragaSvarResponse;
+import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.intyg.converter.IntygModuleFacade;
+import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.notification.NotificationEvent;
 import se.inera.intyg.webcert.web.service.notification.NotificationService;
@@ -94,6 +96,7 @@ import se.inera.intyg.webcert.web.service.util.StatisticsGroupByUtil;
 import se.inera.intyg.webcert.web.web.controller.api.dto.AnsweredWithIntyg;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeConversationView;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeListItem;
+import se.inera.intyg.webcert.web.web.controller.api.dto.IntygTypeInfo;
 import se.inera.intyg.webcert.web.web.util.access.AccessResultExceptionHelper;
 import se.riv.clinicalprocess.healthcond.certificate.sendMessageToRecipient.v2.SendMessageToRecipientType;
 
@@ -162,6 +165,8 @@ public class ArendeServiceImpl implements ArendeService {
     private CertificateAccessService certificateAccessService;
     @Autowired
     private AccessResultExceptionHelper accessResultExceptionHelper;
+    @Autowired
+    private IntygService intygService;
 
     private AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
 
@@ -857,6 +862,11 @@ public class ArendeServiceImpl implements ArendeService {
 
     private Utlatande getUtlatande(String intygsId) {
         final Utkast utkast = utkastRepository.findOne(intygsId);
+        if (utkast == null) {
+            final IntygTypeInfo intygTypInfo = intygService.getIntygTypeInfo(intygsId, null);
+            final IntygContentHolder intygContentHolder = intygService.fetchIntygData(intygsId, intygTypInfo.getIntygType(), true, false);
+            return intygContentHolder.getUtlatande();
+        }
         return getUtlatande(utkast);
     }
 
