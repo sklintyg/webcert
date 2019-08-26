@@ -88,7 +88,9 @@ import se.inera.intyg.webcert.web.service.fragasvar.FragaSvarService;
 import se.inera.intyg.webcert.web.service.fragasvar.dto.FrageStallare;
 import se.inera.intyg.webcert.web.service.fragasvar.dto.QueryFragaSvarParameter;
 import se.inera.intyg.webcert.web.service.fragasvar.dto.QueryFragaSvarResponse;
+import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.intyg.converter.IntygModuleFacade;
+import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.notification.NotificationEvent;
 import se.inera.intyg.webcert.web.service.notification.NotificationService;
@@ -99,6 +101,7 @@ import se.inera.intyg.webcert.web.service.util.StatisticsGroupByUtil;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeConversationView;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeListItem;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeView;
+import se.inera.intyg.webcert.web.web.controller.api.dto.IntygTypeInfo;
 import se.inera.intyg.webcert.web.web.util.access.AccessResultExceptionHelper;
 import se.inera.intyg.webcert.web.web.util.resourcelinks.dto.ActionLinkType;
 import se.riv.infrastructure.directory.v1.PersonInformationType;
@@ -194,6 +197,9 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
 
     @Mock
     private AccessResultExceptionHelper accessResultExceptionHelper;
+
+    @Mock
+    private IntygService intygService;
 
     @InjectMocks
     private ArendeServiceImpl service;
@@ -1039,6 +1045,72 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         assertEquals(DECEMBER_YEAR_9999, result.get(1).getSenasteHandelse());
         assertEquals(FEBRUARY, result.get(2).getSenasteHandelse());
         assertEquals(JANUARY, result.get(3).getSenasteHandelse());
+    }
+
+    @Test
+    public void testGetArendeForIntygNotInWC() {
+        List<Arende> arendeList = new ArrayList<>();
+
+        arendeList.add(buildArende(UUID.randomUUID().toString(), DECEMBER_YEAR_9999, FEBRUARY));
+        arendeList.add(buildArende(UUID.randomUUID().toString(), JANUARY, JANUARY));
+        arendeList.get(1).setSvarPaId(arendeList.get(0).getMeddelandeId()); // svar
+        arendeList.add(buildArende(UUID.randomUUID().toString(), DECEMBER_YEAR_9999, DECEMBER_YEAR_9999));
+        arendeList.get(2).setAmne(ArendeAmne.PAMINN);
+        arendeList.get(2).setPaminnelseMeddelandeId(arendeList.get(0).getMeddelandeId()); // paminnelse
+        arendeList.add(buildArende(UUID.randomUUID().toString(), FEBRUARY, FEBRUARY));
+        arendeList.add(buildArende(UUID.randomUUID().toString(), DECEMBER_YEAR_9999, DECEMBER_YEAR_9999));
+        arendeList.add(buildArende(UUID.randomUUID().toString(), JANUARY, JANUARY));
+
+        when(arendeRepository.findByIntygsId(INTYG_ID)).thenReturn(arendeList);
+
+        final String intygsTyp = "Intygstyp";
+        final IntygTypeInfo intygTypeInfo = mock(IntygTypeInfo.class);
+        final IntygContentHolder intygContentHolder = mock(IntygContentHolder.class);
+
+        final Utlatande utlatande = mock(Utlatande.class);
+        doReturn(utlatande).when(modelFacade).getUtlatandeFromInternalModel(any(), any());
+
+        final GrundData grundData = mock(GrundData.class);
+        doReturn(grundData).when(utlatande).getGrundData();
+
+        final HoSPersonal skapadAv = mock(HoSPersonal.class);
+        doReturn(skapadAv).when(grundData).getSkapadAv();
+
+        final se.inera.intyg.common.support.model.common.internal.Vardenhet vardenhet = mock(
+                se.inera.intyg.common.support.model.common.internal.Vardenhet.class);
+        doReturn(vardenhet).when(skapadAv).getVardenhet();
+
+        final Patient patient = mock(Patient.class);
+        doReturn(patient).when(grundData).getPatient();
+
+        final Personnummer personnummer = Personnummer.createPersonnummer(PERSON_ID).get();
+        doReturn(personnummer).when(patient).getPersonId();
+
+        when(webcertUserService.getUser()).thenReturn(createUser());
+        when(utkastRepository.findOne(INTYG_ID)).thenReturn(null);
+        when(intygService.getIntygTypeInfo(INTYG_ID, null)).thenReturn(intygTypeInfo);
+        when(intygTypeInfo.getIntygType()).thenReturn(intygsTyp);
+        when(intygService.fetchIntygData(INTYG_ID, intygsTyp, true, false)).thenReturn(intygContentHolder);
+        when(intygContentHolder.getUtlatande()).thenReturn(utlatande);
+
+        List<ArendeConversationView> result = service.getArenden(INTYG_ID);
+
+        verify(arendeRepository).findByIntygsId(INTYG_ID);
+        verify(webcertUserService).getUser();
+
+        assertEquals(4, result.size());
+        assertEquals(1, result.get(0).getPaminnelser().size());
+        assertEquals(arendeList.get(0).getMeddelandeId(), result.get(0).getFraga().getInternReferens());
+        assertEquals(arendeList.get(1).getMeddelandeId(), result.get(0).getSvar().getInternReferens());
+        assertEquals(arendeList.get(2).getMeddelandeId(), result.get(0).getPaminnelser().get(0).getInternReferens());
+        assertEquals(arendeList.get(3).getMeddelandeId(), result.get(2).getFraga().getInternReferens());
+        assertEquals(arendeList.get(4).getMeddelandeId(), result.get(1).getFraga().getInternReferens());
+        assertEquals(arendeList.get(5).getMeddelandeId(), result.get(3).getFraga().getInternReferens());
+        assertEquals(DECEMBER_YEAR_9999, result.get(0).getSenasteHandelse());
+        assertEquals(DECEMBER_YEAR_9999, result.get(1).getSenasteHandelse());
+        assertEquals(FEBRUARY, result.get(2).getSenasteHandelse());
+        assertEquals(JANUARY, result.get(3).getSenasteHandelse());
+
     }
 
     @Test(expected = WebCertServiceException.class)
