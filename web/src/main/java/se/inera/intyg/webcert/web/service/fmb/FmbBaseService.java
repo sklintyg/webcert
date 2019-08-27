@@ -27,6 +27,8 @@ import se.inera.intyg.webcert.persistence.fmb.repository.DiagnosInformationRepos
 
 public abstract class FmbBaseService {
 
+    public static final int MINIMUM_NUMBER_OF_CODE_CHARACTERS = 3;
+
     protected DiagnosInformationRepository repository;
 
     protected FmbBaseService(final DiagnosInformationRepository repository) {
@@ -35,7 +37,7 @@ public abstract class FmbBaseService {
 
     protected Tuple2<String, Optional<DiagnosInformation>> searchDiagnosInformationByIcd10Kod(final String icd10Kod) {
 
-        final int minCharCount = 3;
+        final int minCharCount = MINIMUM_NUMBER_OF_CODE_CHARACTERS;
 
         String choppedCode = icd10Kod;
         Optional<DiagnosInformation> diagnosInformation = Optional.empty();

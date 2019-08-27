@@ -27,7 +27,11 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.primitives.Ints;
 import io.vavr.Tuple2;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -81,6 +85,12 @@ public class FmbDiagnosInformationServiceImpl extends FmbBaseService implements 
     }
 
     @Override
+    public Optional<FmbResponse> findFmbDiagnosInformationByIcd10Kod(final String icd10Kod) {
+        Preconditions.checkArgument(Objects.nonNull(icd10Kod));
+        return getFmbContent(icd10Kod);
+    }
+
+    @Override
     public MaximalSjukskrivningstidResponse validateSjukskrivningtidForPatient(
         final MaximalSjukskrivningstidRequest maximalSjukskrivningstidRequest) {
 
@@ -90,8 +100,9 @@ public class FmbDiagnosInformationServiceImpl extends FmbBaseService implements 
 
         authorityAsserter.assertIsAuthorized(personnummer, AuthoritiesConstants.PRIVILEGE_SIGNERA_INTYG);
 
-        final Optional<MaximalSjukskrivningstidDagar> maxRek = findMaximalSjukrivningstidDagarByIcd10Koder(icd10Koder);
         final int totalt = sjukfallService.totalSjukskrivningstidForPatientAndCareUnit(personnummer);
+        final Collection<String> validIcd10Codes = getValidIcd10Codes(icd10Koder.getIcd10Codes());
+        final Optional<MaximalSjukskrivningstidDagar> maxRek = findMaximalSjukrivningstidDagarByIcd10Koder(validIcd10Codes);
 
         return maxRek
             .map(rek -> MaximalSjukskrivningstidResponse.fromFmbRekommendation(
@@ -101,19 +112,8 @@ public class FmbDiagnosInformationServiceImpl extends FmbBaseService implements 
                 totalt, foreslagen));
     }
 
-    private String toDisplayFormat(String maximalSjukrivningstidSourceValue, String maximalSjukrivningstidSourceUnit) {
-        return TidEnhet.of(maximalSjukrivningstidSourceUnit)
-            .map(te -> te.getUnitDisplayValue(Ints.tryParse(maximalSjukrivningstidSourceValue))).orElse("");
-    }
-
-    @Override
-    public Optional<FmbResponse> findFmbDiagnosInformationByIcd10Kod(final String icd10Kod) {
-        Preconditions.checkArgument(Objects.nonNull(icd10Kod));
-        return getFmbContent(icd10Kod);
-    }
-
-    private Optional<MaximalSjukskrivningstidDagar> findMaximalSjukrivningstidDagarByIcd10Koder(final Icd10KoderRequest icd10KoderRequest) {
-        return repository.findMaximalSjukrivningstidDagarByIcd10Koder(icd10KoderRequest.getIcd10Codes()).stream().findFirst();
+    private Optional<MaximalSjukskrivningstidDagar> findMaximalSjukrivningstidDagarByIcd10Koder(Collection<String> icd10Codes) {
+        return repository.findMaximalSjukrivningstidDagarByIcd10Koder(new HashSet<>(icd10Codes)).stream().findFirst();
     }
 
     private Optional<FmbResponse> getFmbContent(final String icd10Kod) {
@@ -131,6 +131,15 @@ public class FmbDiagnosInformationServiceImpl extends FmbBaseService implements 
         }
 
         return Optional.empty();
+    }
+
+    private List<String> getValidIcd10Codes(final Collection<String> icd10Codes) {
+        return Optional.ofNullable(icd10Codes).orElseGet(Collections::emptyList).stream()
+            .map(this::searchDiagnosInformationByIcd10Kod)
+            .filter(tuple -> tuple._2.isPresent())
+            .map(tuple -> tuple._1)
+            .distinct()
+            .collect(Collectors.toList());
     }
 
     private FmbResponse convertToResponse(
@@ -216,4 +225,10 @@ public class FmbDiagnosInformationServiceImpl extends FmbBaseService implements 
             referensLink,
             fmbFormList);
     }
+
+    private String toDisplayFormat(String maximalSjukrivningstidSourceValue, String maximalSjukrivningstidSourceUnit) {
+        return TidEnhet.of(maximalSjukrivningstidSourceUnit)
+            .map(te -> te.getUnitDisplayValue(Ints.tryParse(maximalSjukrivningstidSourceValue))).orElse("");
+    }
+
 }
