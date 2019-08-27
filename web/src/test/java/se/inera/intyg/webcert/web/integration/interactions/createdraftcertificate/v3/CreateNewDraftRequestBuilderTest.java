@@ -136,7 +136,7 @@ public class CreateNewDraftRequestBuilderTest extends BaseCreateDraftCertificate
                 Feature feature = new Feature();
                 feature.setName(s);
                 feature.setGlobal(true);
-                feature.setIntygstyper(Arrays.asList(CERT_TYPE));
+                feature.setIntygstyper(Arrays.asList(CERT_TYPE.toLowerCase()));
                 return feature;
             })));
 
