@@ -182,9 +182,9 @@ public class UtkastServiceImpl implements UtkastService {
         if (!Strings.isNullOrEmpty(request.getReferens())) {
             referensService.saveReferens(request.getIntygId(), request.getReferens());
         }
-
+        int nrPrefillElements = request.getForifyllnad().isPresent() ? request.getForifyllnad().get().getSvar().size() : 0;
         monitoringService.logUtkastCreated(savedUtkast.getIntygsId(),
-            savedUtkast.getIntygsTyp(), savedUtkast.getEnhetsId(), savedUtkast.getSkapadAv().getHsaId());
+            savedUtkast.getIntygsTyp(), savedUtkast.getEnhetsId(), savedUtkast.getSkapadAv().getHsaId(), nrPrefillElements);
 
         // Notify stakeholders when a draft has been created
         sendNotification(savedUtkast, Event.CREATED);

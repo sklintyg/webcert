@@ -19,10 +19,16 @@
 package se.inera.intyg.webcert.web.integration.interactions.createdraftcertificate.v3;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
+import java.util.Arrays;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -30,6 +36,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
+import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.infra.security.common.model.Feature;
+import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.webcert.web.integration.interactions.createdraftcertificate.BaseCreateDraftCertificateTest;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftRequest;
@@ -40,11 +49,12 @@ import se.riv.clinicalprocess.healthcond.certificate.types.v3.HsaId;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.PersonId;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.TypAvIntyg;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Patient;
+import se.riv.clinicalprocess.healthcond.certificate.v3.Svar;
+import se.riv.clinicalprocess.healthcond.certificate.v33.Forifyllnad;
+import se.riv.clinicalprocess.healthcond.certificate.v33.ObjectFactory;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CreateNewDraftRequestBuilderTest extends BaseCreateDraftCertificateTest {
-
-    private static final String CERT_TYPE = "LUSE";
 
     public static final String PERSONNUMMER = "191212121212";
     public static final String FORNAMN = "Adam";
@@ -53,6 +63,7 @@ public class CreateNewDraftRequestBuilderTest extends BaseCreateDraftCertificate
     public static final String PATIENT_POSTADRESS = "postadress";
     public static final String PATIENT_POSTNUMMER = "postnummer";
     public static final String PATIENT_POSTORT = "postort";
+    private static final String CERT_TYPE = "LUSE";
     private static final String INTYG_TYPE_VERSION = "1.0";
 
     private WebCertUser user;
@@ -101,7 +112,6 @@ public class CreateNewDraftRequestBuilderTest extends BaseCreateDraftCertificate
 
     @Test
     public void testBuildCreateNewDraftRequestWithHsaBefattningAndSpecialityNames() {
-
         CreateNewDraftRequest res = builder.buildCreateNewDraftRequest(createIntyg(), INTYG_TYPE_VERSION, user);
 
         assertNotNull(res);
@@ -109,6 +119,58 @@ public class CreateNewDraftRequestBuilderTest extends BaseCreateDraftCertificate
         assertEquals(TITLE_CODE, res.getHosPerson().getBefattningar().get(0));
         assertEquals(ALLMAN_MEDICIN, res.getHosPerson().getSpecialiteter().get(0));
         assertEquals(INVARTES_MEDICIN, res.getHosPerson().getSpecialiteter().get(1));
+    }
+
+    @Test
+    public void testBuildCreateNewDraftRequestWithForifyllnadFeatureEnabled() {
+
+        final Intyg intyg = createIntyg();
+        Forifyllnad forifyllnad = new ObjectFactory().createForifyllnad();
+        Svar svar = new se.riv.clinicalprocess.healthcond.certificate.v3.ObjectFactory().createSvar();
+        forifyllnad.getSvar().add(svar);
+        intyg.setForifyllnad(forifyllnad);
+        IntygUser prefillUser = buildWebCertUser();
+        prefillUser.changeValdVardenhet(UNIT_HSAID);
+        prefillUser.setFeatures(Stream.of(AuthoritiesConstants.FEATURE_ENABLE_CREATE_DRAFT_PREFILL)
+            .collect(Collectors.toMap(Function.identity(), s -> {
+                Feature feature = new Feature();
+                feature.setName(s);
+                feature.setGlobal(true);
+                feature.setIntygstyper(Arrays.asList(CERT_TYPE));
+                return feature;
+            })));
+
+        CreateNewDraftRequest res = builder.buildCreateNewDraftRequest(intyg, INTYG_TYPE_VERSION, prefillUser);
+
+        assertNotNull(res);
+        assertNotNull(res.getHosPerson());
+        assertTrue(res.getForifyllnad().isPresent());
+        assertEquals(forifyllnad, res.getForifyllnad().get());
+    }
+    @Test
+    public void testBuildCreateNewDraftRequestWithForifyllnadFeatureDisabled() {
+
+        final Intyg intyg = createIntyg();
+        Forifyllnad forifyllnad = new ObjectFactory().createForifyllnad();
+        Svar svar = new se.riv.clinicalprocess.healthcond.certificate.v3.ObjectFactory().createSvar();
+        forifyllnad.getSvar().add(svar);
+        intyg.setForifyllnad(forifyllnad);
+        IntygUser prefillUser = buildWebCertUser();
+        prefillUser.changeValdVardenhet(UNIT_HSAID);
+        prefillUser.setFeatures(Stream.of(AuthoritiesConstants.FEATURE_ENABLE_CREATE_DRAFT_PREFILL)
+            .collect(Collectors.toMap(Function.identity(), s -> {
+                Feature feature = new Feature();
+                feature.setName(s);
+                feature.setGlobal(true);
+                feature.setIntygstyper(Arrays.asList("annat"));
+                return feature;
+            })));
+
+        CreateNewDraftRequest res = builder.buildCreateNewDraftRequest(intyg, INTYG_TYPE_VERSION, prefillUser);
+
+        assertNotNull(res);
+        assertNotNull(res.getHosPerson());
+        assertFalse(res.getForifyllnad().isPresent());
     }
 
     private Intyg createIntyg() {
