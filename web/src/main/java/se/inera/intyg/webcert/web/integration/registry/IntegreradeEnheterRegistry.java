@@ -33,6 +33,8 @@ public interface IntegreradeEnheterRegistry {
 
     IntegreradEnhet getIntegreradEnhet(String enhetsId);
 
+    List<IntegreradEnhet> getAllIntegreradEnhet();
+
     void addIfSameVardgivareButDifferentUnits(String orgEnhetsHsaId, IntegreradEnhetEntry newEntry, String intygType);
 
     void deleteIntegreradEnhet(String hsaId);

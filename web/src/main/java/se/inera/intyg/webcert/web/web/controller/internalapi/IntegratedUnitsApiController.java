@@ -48,7 +48,7 @@ public class IntegratedUnitsApiController {
     @Path("/all")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public Response getAllIntegratedUnits() {
-        return Response.ok(integreradeEnheterRegistry.getIntegreradeVardenheter()).build();
+        return Response.ok(integreradeEnheterRegistry.getAllIntegreradEnhet()).build();
     }
 
 }
