@@ -18,9 +18,11 @@
  */
 package se.inera.intyg.webcert.web.service.utkast.dto;
 
+import java.util.Optional;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.model.common.internal.Patient;
+import se.riv.clinicalprocess.healthcond.certificate.v33.Forifyllnad;
 
 public class CreateNewDraftRequest {
 
@@ -38,17 +40,19 @@ public class CreateNewDraftRequest {
 
     private HoSPersonal hosPerson;
 
+    private Optional<Forifyllnad> forifyllnad = Optional.empty();
+
     public CreateNewDraftRequest() {
         // Needed for deserialization
     }
 
     public CreateNewDraftRequest(String intygId, String intygType, String intygTypeVersion, UtkastStatus status, HoSPersonal hosPerson,
         Patient patient) {
-        this(intygId, intygType, intygTypeVersion, status, hosPerson, patient, null);
+        this(intygId, intygType, intygTypeVersion, status, hosPerson, patient, null, Optional.empty());
     }
-
+    // CHECKSTYLE:OFF ParameterNumber
     public CreateNewDraftRequest(String intygId, String intygType, String intygTypeVersion, UtkastStatus status, HoSPersonal hosPerson,
-        Patient patient, String referens) {
+        Patient patient, String referens, Optional<Forifyllnad> forifyllnad) {
         this.intygId = intygId;
         this.intygType = intygType;
         this.intygTypeVersion = intygTypeVersion;
@@ -56,7 +60,9 @@ public class CreateNewDraftRequest {
         this.status = status;
         this.hosPerson = hosPerson;
         this.patient = patient;
+        this.forifyllnad = forifyllnad;
     }
+    // CHECKSTYLE:ON ParameterNumber
 
     public String getIntygId() {
         return intygId;
@@ -112,5 +118,13 @@ public class CreateNewDraftRequest {
 
     public void setIntygTypeVersion(String intygTypeVersion) {
         this.intygTypeVersion = intygTypeVersion;
+    }
+
+    public Optional<Forifyllnad> getForifyllnad() {
+        return forifyllnad;
+    }
+
+    public void setForifyllnad(Optional<Forifyllnad> forifyllnad) {
+        this.forifyllnad = forifyllnad;
     }
 }

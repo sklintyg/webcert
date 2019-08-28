@@ -18,31 +18,57 @@
  */
 package se.inera.intyg.webcert.web.integration.interactions.createdraftcertificate.v3;
 
+import java.util.Optional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.common.support.modules.converter.TransportConverterUtil;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
+import se.inera.intyg.infra.security.authorities.validation.AuthoritiesValidator;
+import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.webcert.web.integration.util.HoSPersonHelper;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftRequest;
 import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v3.Intyg;
+import se.riv.clinicalprocess.healthcond.certificate.v33.Forifyllnad;
 
 @Component(value = "createNewDraftRequestBuilderImplV2")
 public class CreateNewDraftRequestBuilderImpl implements CreateNewDraftRequestBuilder {
 
+    private static final Logger LOG = LoggerFactory.getLogger(CreateNewDraftRequestBuilderImpl.class);
     @Autowired
     private IntygModuleRegistry moduleRegistry;
+    private AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
 
     @Override
     public CreateNewDraftRequest buildCreateNewDraftRequest(Intyg intyg, String intygTypeVersion, IntygUser user) {
         HoSPersonal hosPerson = createHoSPerson(intyg.getSkapadAv(),
             HoSPersonHelper.createVardenhetFromIntygUser(intyg.getSkapadAv().getEnhet().getEnhetsId().getExtension(), user));
         HoSPersonHelper.enrichHoSPerson(hosPerson, user);
-        return new CreateNewDraftRequest(null, moduleRegistry.getModuleIdFromExternalId(intyg.getTypAvIntyg().getCode()), intygTypeVersion,
+        String intygsType = moduleRegistry.getModuleIdFromExternalId(intyg.getTypAvIntyg().getCode());
+        Optional<Forifyllnad> forifyllnad = getOptionalForifyllnadIfApplicable(intygsType, intyg.getForifyllnad(), user);
+
+        return new CreateNewDraftRequest(null, intygsType, intygTypeVersion,
             null, hosPerson,
-            TransportConverterUtil.getPatient(intyg.getPatient(), true), intyg.getRef());
+            TransportConverterUtil.getPatient(intyg.getPatient(), true), intyg.getRef(), forifyllnad);
+    }
+
+    private Optional<Forifyllnad> getOptionalForifyllnadIfApplicable(String intygsType, Forifyllnad forifyllnad, IntygUser user) {
+        if (forifyllnad != null && forifyllnad.getSvar().size() > 0) {
+            if (authoritiesValidator.given(user, intygsType).features(AuthoritiesConstants.FEATURE_ENABLE_CREATE_DRAFT_PREFILL)
+                .isVerified()) {
+                return Optional.of(forifyllnad);
+            } else {
+                LOG.info(
+                    AuthoritiesConstants.FEATURE_ENABLE_CREATE_DRAFT_PREFILL
+                        + " feature NOT enabled for " + intygsType + " but forifyllnad info was present in request.");
+                return Optional.empty();
+            }
+        }
+        return Optional.empty();
     }
 
     private HoSPersonal createHoSPerson(

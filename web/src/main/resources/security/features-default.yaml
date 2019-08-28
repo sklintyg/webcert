@@ -73,6 +73,7 @@ knownFeatures:
   - &kf200 NOTIFICATION_DISCARD_FELB
   - &kf210 FEATURE_UNIKT_UNDANTAG_OM_SENASTE_INTYG
   - &kf220 OAUTH_AUTHENTICATION
+  - &kf230 CREATE_DRAFT_PREFILL
 
 # Aktiverade features i Webcert
 features:
@@ -315,6 +316,12 @@ features:
     name: *kf220
     desc: Inloggning med OAuth
     global: true
+  - &f230
+    name: *kf230
+    desc: Aktivera stöd för förifyllnad vid CreateDraftCertificate
+    global: true
+    intygstyper:
+      - *ki050 # LISJP
 
 pilots:
   - name: TEST_PILOT
