@@ -29,6 +29,8 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -120,6 +122,21 @@ public class IntegreradeEnheterRegistryImplTest {
 
         IntegreradEnhet integreradEnhet = registry.getIntegreradEnhet(enhetsId);
         assertEquals(integreradEnhet.getEnhetsId(), enhetsId);
+    }
+
+    @Test
+    public void testGetAllIntegreradEnhet() {
+        IntegreradEnhet enhet1 = new IntegreradEnhet();
+        enhet1.setEnhetsId("enhetsId1");
+        IntegreradEnhet enhet2 = new IntegreradEnhet();
+        enhet2.setEnhetsId("enhetsId2");
+        List<IntegreradEnhet> list = new ArrayList<>();
+        list.add(enhet1);
+        list.add(enhet2);
+        when(integreradEnhetRepository.findAll()).thenReturn(list);
+
+        List<IntegreradEnhet> result = registry.getAllIntegreradEnhet();
+        assertEquals(result.size(), list.size());
     }
 
     @Test

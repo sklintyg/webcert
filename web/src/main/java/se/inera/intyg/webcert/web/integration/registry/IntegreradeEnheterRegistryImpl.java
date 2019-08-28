@@ -100,6 +100,14 @@ public class IntegreradeEnheterRegistryImpl implements IntegreradeEnheterRegistr
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public List<IntegreradEnhet> getAllIntegreradEnhet() {
+        List<IntegreradEnhet> result = new ArrayList<>();
+        integreradEnhetRepository.findAll().forEach(result::add);
+        return result;
+    }
+
+    @Override
     @Transactional
     public void addIfSameVardgivareButDifferentUnits(String orgEnhetsHsaId, IntegreradEnhetEntry newEntry, String intygType) {
         if (getSchemaVersion(orgEnhetsHsaId, intygType).isPresent()) {
