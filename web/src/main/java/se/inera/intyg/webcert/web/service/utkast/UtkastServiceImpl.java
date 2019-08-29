@@ -93,6 +93,13 @@ import se.inera.intyg.webcert.web.web.util.access.AccessResultExceptionHelper;
 @Service
 public class UtkastServiceImpl implements UtkastService {
 
+    public enum Event {
+        CHANGED,
+        CREATED,
+        DELETED,
+        REVOKED
+    }
+
     private static final Set<UtkastStatus> ALL_EDITABLE_DRAFT_STATUSES = UtkastStatus.getEditableDraftStatuses();
     private static final Set<UtkastStatus> ALL_DRAFT_STATUSES_INCLUDE_LOCKED = UtkastStatus.getDraftStatuses();
 
@@ -923,13 +930,6 @@ public class UtkastServiceImpl implements UtkastService {
         if (utkast.getPatientEfternamn() != null && !utkast.getPatientEfternamn().equals(patient.getEfternamn())) {
             utkast.setPatientEfternamn(patient.getEfternamn());
         }
-    }
-
-    public enum Event {
-        CHANGED,
-        CREATED,
-        DELETED,
-        REVOKED
     }
 
     private void verifyAccessToForwardDraft(Utkast utkast) {

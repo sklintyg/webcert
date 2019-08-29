@@ -62,8 +62,7 @@ public class CopyUtkastServiceHelper {
     }
 
     public CreateUtkastFromTemplateRequest createUtkastFromDifferentIntygTypeRequest(String orgIntygsId, String newIntygsTyp,
-        String orgIntygsTyp,
-        CopyIntygRequest request) {
+        String orgIntygsTyp, CopyIntygRequest request) {
         HoSPersonal hosPerson = createHoSPersonFromUser();
         Patient patient = createPatientFromCopyIntygRequest(request);
 

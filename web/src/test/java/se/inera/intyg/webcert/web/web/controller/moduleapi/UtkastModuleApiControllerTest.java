@@ -21,6 +21,7 @@ package se.inera.intyg.webcert.web.web.controller.moduleapi;
 import static javax.ws.rs.core.Response.Status.OK;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -35,6 +36,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -80,16 +82,19 @@ import se.inera.intyg.webcert.web.service.relation.CertificateRelationService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.utkast.CopyUtkastService;
+import se.inera.intyg.webcert.web.service.utkast.UtkastCandidateServiceImpl;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateUtkastFromTemplateRequest;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateUtkastFromTemplateResponse;
 import se.inera.intyg.webcert.web.service.utkast.dto.DraftValidation;
 import se.inera.intyg.webcert.web.service.utkast.dto.DraftValidationMessage;
 import se.inera.intyg.webcert.web.service.utkast.dto.SaveDraftResponse;
+import se.inera.intyg.webcert.web.service.utkast.dto.UtkastCandidateMetaData;
 import se.inera.intyg.webcert.web.service.utkast.util.CopyUtkastServiceHelper;
 import se.inera.intyg.webcert.web.web.controller.api.dto.CopyIntygResponse;
 import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
+import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.DraftHolder;
 import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.RevokeSignedIntygParameter;
 import se.inera.intyg.webcert.web.web.util.access.AccessResultExceptionHelper;
 import se.inera.intyg.webcert.web.web.util.resourcelinks.ResourceLinkHelper;
@@ -103,17 +108,18 @@ public class UtkastModuleApiControllerTest {
 
     private static final UtkastStatus UTKAST_STATUS = UtkastStatus.DRAFT_COMPLETE;
 
+    private static final String UTKAST_ENHETSID = "SE0987654321";
     private static final String UTKAST_ENHETSNAMN = "Enhetsnamn";
-
     private static final String UTKAST_VARDGIVARNAMN = "Vardgivarnamn";
-
     private static final String UTKAST_MODEL = "<Model>";
-
     private static final String UTKAST_PERSONNUMMER = "19121212-1212";
+
     private static final String INTYG_TYPE_VERSION = "1.0";
 
     private HttpServletRequest request;
     private HttpSession session;
+
+    private WebCertUser webCertUser;
 
     @Mock
     private IntygTextsService intygTextsService;
@@ -154,6 +160,9 @@ public class UtkastModuleApiControllerTest {
     @Mock
     private AccessResultExceptionHelper accessResultExceptionHelper;
 
+    @Mock
+    private UtkastCandidateServiceImpl utkastCandidateService;
+
     @Spy
     private CopyUtkastServiceHelper copyUtkastServiceHelper = new CopyUtkastServiceHelper();
 
@@ -165,11 +174,12 @@ public class UtkastModuleApiControllerTest {
         copyUtkastServiceHelper.setWebCertUserService(webcertUserService);
 
         session = mock(HttpSession.class);
-        request = mock(HttpServletRequest.class);
         Mockito.doNothing().when(session).removeAttribute("lastSavedDraft");
-        when(request.getSession(true)).thenReturn(session);
-        when(patientDetailsResolver.resolvePatient(any(Personnummer.class), anyString(), anyString())).thenReturn(buildPatient());
 
+        request = mock(HttpServletRequest.class);
+        when(request.getSession(true)).thenReturn(session);
+
+        when(patientDetailsResolver.resolvePatient(any(Personnummer.class), anyString(), anyString())).thenReturn(buildPatient());
         when(moduleRegistry.getModuleApi(anyString(), anyString())).thenReturn(moduleApi);
         when(moduleApi.getUtlatandeFromJson(anyString())).thenReturn(new Fk7263Utlatande());
         when(moduleApi.updateBeforeSave(anyString(), any(Patient.class))).thenReturn("MODEL");
@@ -179,19 +189,15 @@ public class UtkastModuleApiControllerTest {
     public void testGetDraft() throws Exception {
         String intygTyp = "fk7263";
         String intygId = "intyg1";
+
+        setupGrundData();
         setupUser(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG, intygTyp, false, AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);
 
         when(utkastService.getDraft(CERTIFICATE_ID, intygTyp)).thenReturn(buildUtkast(intygTyp, intygId));
         when(certificateRelationService.getRelations(eq(intygId))).thenReturn(new Relations());
 
-        final Utlatande utlatande = mock(Utlatande.class);
-        doReturn(utlatande).when(moduleApi).getUtlatandeFromJson(any());
-        final GrundData grundData = mock(GrundData.class);
-        doReturn(grundData).when(utlatande).getGrundData();
-        final HoSPersonal skapadAv = mock(HoSPersonal.class);
-        doReturn(skapadAv).when(grundData).getSkapadAv();
-
         Response response = moduleApiController.getDraft(intygTyp, CERTIFICATE_ID, request);
+
         verify(utkastService).getDraft(CERTIFICATE_ID, intygTyp);
         assertEquals(OK.getStatusCode(), response.getStatus());
     }
@@ -201,7 +207,10 @@ public class UtkastModuleApiControllerTest {
         // Given
         String intygsTyp = "gdspinae-intygsTyp";
         String intygsId = "gdspinae-intygsId";
+
+        setupGrundData();
         setupUser(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG, intygsTyp, false, AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);
+
         when(utkastService.getDraft(CERTIFICATE_ID, intygsTyp)).thenReturn(buildUtkast(intygsTyp, intygsId));
         when(certificateRelationService.getRelations(eq(intygsId))).thenReturn(new Relations());
 
@@ -216,13 +225,6 @@ public class UtkastModuleApiControllerTest {
             .thenReturn(patientWithIncompleteAddress);
 
         doReturn(buildUtkast("intygtyp", "intygsid")).when(utkastService).getDraft(anyString(), anyString());
-
-        final Utlatande utlatande = mock(Utlatande.class);
-        doReturn(utlatande).when(moduleApi).getUtlatandeFromJson(any());
-        final GrundData grundData = mock(GrundData.class);
-        doReturn(grundData).when(utlatande).getGrundData();
-        final HoSPersonal skapadAv = mock(HoSPersonal.class);
-        doReturn(skapadAv).when(grundData).getSkapadAv();
 
         // When
         Response response = moduleApiController.getDraft(intygsTyp, CERTIFICATE_ID, request);
@@ -240,7 +242,11 @@ public class UtkastModuleApiControllerTest {
         // Given
         String intygsTyp = "gdsnpinaii-intygsTyp";
         String intygsId = "gdsnpinaii-intygsId";
+
+        setupGrundData();
         setupUser(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG, intygsTyp, false, AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);
+
+
         when(utkastService.getDraft(CERTIFICATE_ID, intygsTyp)).thenReturn(buildUtkast(intygsTyp, intygsId));
         when(certificateRelationService.getRelations(eq(intygsId))).thenReturn(new Relations());
 
@@ -251,15 +257,9 @@ public class UtkastModuleApiControllerTest {
         patientWithIncompleteAddress.setPostadress(postadress);
         patientWithIncompleteAddress.setPostort(postort);
         patientWithIncompleteAddress.setPostnummer(postnummer);
+
         when(patientDetailsResolver.resolvePatient(any(Personnummer.class), anyString(), anyString()))
             .thenReturn(patientWithIncompleteAddress);
-
-        final Utlatande utlatande = mock(Utlatande.class);
-        doReturn(utlatande).when(moduleApi).getUtlatandeFromJson(any());
-        final GrundData grundData = mock(GrundData.class);
-        doReturn(grundData).when(utlatande).getGrundData();
-        final HoSPersonal skapadAv = mock(HoSPersonal.class);
-        doReturn(skapadAv).when(grundData).getSkapadAv();
 
         // When
         Response response = moduleApiController.getDraft(intygsTyp, CERTIFICATE_ID, request);
@@ -371,7 +371,7 @@ public class UtkastModuleApiControllerTest {
         String intygId = "intygId";
         String newIntygId = "newIntygId";
         String intygTyp = "fk7263";
-        String intygTypeVersion = "1.0";
+        String intygTypeVersion = INTYG_TYPE_VERSION;
 
         setupUser(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG, intygTyp, false, AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);
 
@@ -395,7 +395,7 @@ public class UtkastModuleApiControllerTest {
     public void testCopyUtkastKopieraOKFalse() {
         String intygTyp = "fk7263";
         String intygId = "intyg1";
-        String intygTypeVersion = "1.0";
+        String intygTypeVersion = INTYG_TYPE_VERSION;
         String newIntygId = "newIntygId";
         IntegrationParameters integrationParameters = IntegrationParameters.of("", "", "", "", "", "", "", "", "", false, false, false,
             false);
@@ -403,7 +403,7 @@ public class UtkastModuleApiControllerTest {
             AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);
 
         Utkast utkast = new Utkast();
-        utkast.setPatientPersonnummer(Personnummer.createPersonnummer("19121212-1212").get());
+        utkast.setPatientPersonnummer(createPnr("19121212-1212"));
         when(utkastService.getDraft(eq(intygId), eq(intygTyp))).thenReturn(utkast);
 
         ArgumentCaptor<CreateUtkastFromTemplateRequest> captor = ArgumentCaptor.forClass(CreateUtkastFromTemplateRequest.class);
@@ -433,6 +433,65 @@ public class UtkastModuleApiControllerTest {
         assertEquals(OK.getStatusCode(), response.getStatus());
     }
 
+    @Test
+    public void testUtkastCandidateWhenCriteriasFound() throws Exception {
+        String intygIdCandidate = "candidate-intyg-id";
+        String intygType = "ag7804";
+
+        setupGrundData();
+        setupUser(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG, intygType, false, AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);
+
+        when(certificateRelationService.getRelations(eq(CERTIFICATE_ID)))
+            .thenReturn(new Relations());
+        when(utkastService.getDraft(CERTIFICATE_ID, intygType))
+            .thenReturn(buildUtkast(intygType, CERTIFICATE_ID, 0L, UtkastStatus.DRAFT_INCOMPLETE));
+        when(utkastCandidateService.getCandidateMetaData(any(ModuleApi.class), any(Patient.class), anyBoolean()))
+            .thenReturn(Optional.of(createCandidateMetaData(intygIdCandidate, intygType, INTYG_TYPE_VERSION)));
+
+        Response response = moduleApiController.getDraft(intygType, CERTIFICATE_ID, request);
+
+        verify(utkastService).getDraft(CERTIFICATE_ID, intygType);
+        verify(utkastCandidateService).getCandidateMetaData(any(ModuleApi.class), any(Patient.class), anyBoolean());
+
+        DraftHolder draftHolder = (DraftHolder) response.getEntity();
+        assertEquals(intygIdCandidate, draftHolder.getCandidateMetaData().getIntygId());
+        assertEquals(intygType, draftHolder.getCandidateMetaData().getIntygType());
+        assertEquals(INTYG_TYPE_VERSION, draftHolder.getCandidateMetaData().getIntygTypeVersion());
+    }
+
+    @Test
+    public void testUtkastCandidateWhenNoCriteriasFound() throws Exception {
+        String intygType = "ag7804";
+
+        setupGrundData();
+        setupUser(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG, intygType, false, AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);
+
+        when(certificateRelationService.getRelations(eq(CERTIFICATE_ID)))
+            .thenReturn(new Relations());
+        when(utkastService.getDraft(CERTIFICATE_ID, intygType))
+            .thenReturn(buildUtkast(intygType, CERTIFICATE_ID, 0L, UtkastStatus.DRAFT_INCOMPLETE));
+        when(utkastCandidateService.getCandidateMetaData(any(ModuleApi.class), any(Patient.class), anyBoolean()))
+            .thenReturn(Optional.ofNullable(null));
+
+        Response response = moduleApiController.getDraft(intygType, CERTIFICATE_ID, request);
+
+        verify(utkastService).getDraft(CERTIFICATE_ID, intygType);
+        verify(utkastCandidateService).getCandidateMetaData(any(ModuleApi.class), any(Patient.class), anyBoolean());
+
+        DraftHolder draftHolder = (DraftHolder) response.getEntity();
+        assertNull(draftHolder.getCandidateMetaData());
+    }
+
+    private UtkastCandidateMetaData createCandidateMetaData(String intygId, String intygType, String intygTypeVersion) {
+        return new UtkastCandidateMetaData.Builder()
+            .with(builder -> {
+                builder.intygId = intygId;
+                builder.intygType = intygType;
+                builder.intygTypeVersion = intygTypeVersion;
+            })
+            .create();
+    }
+
     private DraftValidation buildDraftValidation() {
         DraftValidation validation = new DraftValidation();
         validation.setMessages(new ArrayList<>());
@@ -441,10 +500,15 @@ public class UtkastModuleApiControllerTest {
     }
 
     private Utkast buildUtkast(String intygType, String intygId) {
+        return buildUtkast(intygType, intygId, UTKAST_VERSION, UTKAST_STATUS);
+    }
+
+    private Utkast buildUtkast(String intygType, String intygId, long utkastVersion, UtkastStatus utkastStatus) {
         Utkast utkast = new Utkast();
-        utkast.setVersion(UTKAST_VERSION);
+        utkast.setVersion(utkastVersion);
         utkast.setVidarebefordrad(false);
-        utkast.setStatus(UTKAST_STATUS);
+        utkast.setStatus(utkastStatus);
+        utkast.setEnhetsId(UTKAST_ENHETSID);
         utkast.setEnhetsNamn(UTKAST_ENHETSNAMN);
         utkast.setVardgivarNamn(UTKAST_VARDGIVARNAMN);
         utkast.setModel(UTKAST_MODEL);
@@ -456,10 +520,29 @@ public class UtkastModuleApiControllerTest {
     }
 
     private Patient buildPatient() {
+        return buildPatient("Tolvan", "Tolvansson", createPnr(UTKAST_PERSONNUMMER));
+    }
+
+    private Patient buildPatient(String fornamn, String efternamn, Personnummer personnummer) {
         Patient patient = new Patient();
         patient.setFornamn("Tolvan");
         patient.setEfternamn("Tolvansson");
+        patient.setPersonId(personnummer);
         return patient;
+    }
+
+    private Personnummer createPnr(String pnr) {
+        return Personnummer.createPersonnummer(pnr)
+            .orElseThrow(() -> new IllegalArgumentException("Could not parse passed personnummer: " + pnr));
+    }
+
+    private void setupGrundData() throws ModuleException, IOException {
+        final Utlatande utlatande = mock(Utlatande.class);
+        doReturn(utlatande).when(moduleApi).getUtlatandeFromJson(any());
+        final GrundData grundData = mock(GrundData.class);
+        doReturn(grundData).when(utlatande).getGrundData();
+        final HoSPersonal skapadAv = mock(HoSPersonal.class);
+        doReturn(skapadAv).when(grundData).getSkapadAv();
     }
 
     private void setupUser(String privilegeString, String intygType, boolean coherentJournaling, String... features) {
@@ -480,15 +563,23 @@ public class UtkastModuleApiControllerTest {
             return feature;
         })));
         user.setParameters(integrationParameters);
+
         Privilege privilege = new Privilege();
         privilege.setIntygstyper(Arrays.asList(intygType));
+
         RequestOrigin requestOrigin = new RequestOrigin();
         requestOrigin.setName("NORMAL");
         requestOrigin.setIntygstyper(privilege.getIntygstyper());
+
         privilege.setRequestOrigins(Arrays.asList(requestOrigin));
+
         user.getAuthorities().put(privilegeString, privilege);
         user.setOrigin("NORMAL");
         user.setAuthenticationMethod(AuthenticationMethod.FAKE);
-        when(webcertUserService.getUser()).thenReturn(user);
+
+        this.webCertUser = user;
+
+        when(webcertUserService.getUser()).thenReturn(webCertUser);
     }
+
 }
