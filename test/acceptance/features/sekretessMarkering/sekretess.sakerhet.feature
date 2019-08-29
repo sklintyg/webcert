@@ -72,7 +72,7 @@ Scenario: Rehabkoordinator ska inte kunna se sekrettessmarkerade intyg.
 #LÅG PRIO / Manuella Tester:
 
 #@ts
-#Scenario: TS-intyg Översiktssidan ska inte lista intyg med sekretessmarkerade patienter
+#Scenario: TS-intyg Översiktssidan ska inte lista intyg med sekretessmarkerade/skyddade patienter
 #Låg prio: Kan inte autotestas på ett enkelt sätt då vi inte vet vilka intygsidn som ska saknas eftersom att dom inte ska kunna skapas. 
 #kanske går via nytt personnummer / djupintegration (Skapa på patient utan S-markering, ändra personnummer till ett sekretessmarkerat via djupintegration)
 

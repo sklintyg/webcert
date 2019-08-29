@@ -263,7 +263,7 @@ public class UtkastApiController extends AbstractApiController {
     private QueryIntygResponse performUtkastFilterQuery(UtkastFilter filter) {
 
         // INTYG-4486: We can not get a totalCount with pageSize set if since we need to lookup/verify
-        // sekretess!=UNDEFINED each entry from puService - even if user has authority to view sekretessmarkerade
+        // sekretess!=UNDEFINED each entry from puService - even if user has authority to view sekretessmarkerade/skyddade
         // resources.
         Integer pageSize = filter.getPageSize();
 

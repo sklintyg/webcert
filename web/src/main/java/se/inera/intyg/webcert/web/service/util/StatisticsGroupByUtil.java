@@ -63,7 +63,7 @@ public class StatisticsGroupByUtil {
      * map: EnhetsId -> number of id for that unit.
      *
      * @param groupableItems Each item is an array of: id, enhetsId, personnummer, intygsTyp.
-     * @return Map with enhetsId -> count, with personummer being sekretessmarkerade has been removed.
+     * @return Map with enhetsId -> count, with personummer being sekretessmarkerade/skyddade has been removed.
      */
     public Map<String, Long> toSekretessFilteredMap(List<GroupableItem> groupableItems) {
         if (groupableItems == null || groupableItems.size() == 0) {
