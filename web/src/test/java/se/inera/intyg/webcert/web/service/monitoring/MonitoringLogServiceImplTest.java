@@ -377,8 +377,16 @@ public class MonitoringLogServiceImplTest {
 
     @Test
     public void shouldLogUtkastCreated() {
-        logService.logUtkastCreated(INTYGS_ID, INTYGS_TYP, ENHET, HSA_ID);
-        verifyLog(Level.INFO, "UTKAST_CREATED Utkast 'INTYGS_ID' of type 'INTYGS_TYP' created by 'HSA_ID' on unit 'ENHET'");
+        logService.logUtkastCreated(INTYGS_ID, INTYGS_TYP, ENHET, HSA_ID, 0);
+        verifyLog(Level.INFO,
+            "UTKAST_CREATED Utkast 'INTYGS_ID' of type 'INTYGS_TYP' created by 'HSA_ID' on unit 'ENHET'");
+    }
+
+    @Test
+    public void shouldLogUtkastCreatedWithPrefill() {
+        logService.logUtkastCreated(INTYGS_ID, INTYGS_TYP, ENHET, HSA_ID, 2);
+        verifyLog(Level.INFO,
+            "UTKAST_CREATED_PREFILL Utkast 'INTYGS_ID' of type 'INTYGS_TYP' created with '2' forifyllnad svar by 'HSA_ID' on unit 'ENHET'");
     }
 
     @Test

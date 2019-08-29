@@ -158,8 +158,12 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
     }
 
     @Override
-    public void logUtkastCreated(String intygsId, String intygsTyp, String unitHsaId, String userHsaId) {
-        logEvent(MonitoringEvent.UTKAST_CREATED, intygsId, intygsTyp, userHsaId, unitHsaId);
+    public void logUtkastCreated(String intygsId, String intygsTyp, String unitHsaId, String userHsaId, int nrPrefillElements) {
+        if (nrPrefillElements > 0) {
+            logEvent(MonitoringEvent.UTKAST_CREATED_PREFILL, intygsId, intygsTyp, nrPrefillElements, userHsaId, unitHsaId);
+        } else {
+            logEvent(MonitoringEvent.UTKAST_CREATED, intygsId, intygsTyp, userHsaId, unitHsaId);
+        }
     }
 
     @Override
@@ -375,6 +379,7 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
         INTYG_COPIED_COMPLETION("Utkast '{}' created as a completion copy of '{}'"),
         UTKAST_READ("Utkast '{}' of type '{}' was read"),
         UTKAST_CREATED("Utkast '{}' of type '{}' created by '{}' on unit '{}'"),
+        UTKAST_CREATED_PREFILL("Utkast '{}' of type '{}' created with '{}' forifyllnad svar by '{}' on unit '{}'"),
         UTKAST_EDITED("Utkast '{}' of type '{}' was edited"),
         UTKAST_PATIENT_UPDATED("Patient details for utkast '{}' of type '{}' updated"),
         UTKAST_CONCURRENTLY_EDITED("Utkast '{}' of type '{}' was concurrently edited by multiple users"),
