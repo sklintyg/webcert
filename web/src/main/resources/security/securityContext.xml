@@ -465,6 +465,7 @@
           <property name="authnContexts">
             <list>
               <!-- Important: In the custom WebcertSAMLEntryPoint we mutate these for the authnRequests due to SSO problems -->
+              <value>urn:oasis:names:tc:SAML:2.0:ac:classes:TLSClient</value>
               <value>http://id.sambi.se/loa/loa3</value>
               <value>urn:oasis:names:tc:SAML:2.0:ac:classes:SoftwarePKI</value>
             </list>
@@ -543,7 +544,7 @@
                 <property name="parserPool" ref="parserPool"/>
               </bean>
             </constructor-arg>
-            <property name="metadataTrustCheck" value="true"/>
+            <property name="metadataTrustCheck" value="false"/>
 
             <constructor-arg>
               <bean class="org.springframework.security.saml.metadata.ExtendedMetadata">
@@ -579,7 +580,7 @@
               </bean>
             </constructor-arg>
 
-            <property name="metadataTrustCheck" value="true"/>
+            <property name="metadataTrustCheck" value="false"/>
           </bean>
           <!-- END IDENTITY PROVIDER BEAN FOR SITHS -->
         </list>
@@ -668,9 +669,17 @@
     </bean>
 
     <!-- Provider of default SAML Context -->
-    <bean id="contextProvider" class="org.springframework.security.saml.context.SAMLContextProviderImpl">
-      <property name="keyManager" ref="keyManager"/>
+    <bean id="contextProvider" class="org.springframework.security.saml.context.SAMLContextProviderLB">
+      <property name="keyManager" ref="keyManager" />
+      <property name="scheme" value="https"/>
+      <property name="serverName" value="verifiering.webcert.intygstjanster.se"/>
+      <property name="serverPort" value="443"/>
+      <property name="includeServerPortInRequestURL" value="false"/>
+      <property name="contextPath" value="/"/>
     </bean>
+<!--    <bean id="contextProvider" class="org.springframework.security.saml.context.SAMLContextProviderImpl">-->
+<!--      <property name="keyManager" ref="keyManager"/>-->
+<!--    </bean>-->
 
     <!-- Logout handler terminating local session -->
     <bean id="logoutHandler" class="org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler"/>
