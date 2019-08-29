@@ -47,6 +47,7 @@ data:
   LOG_QUEUENAME: "demo.log.queue"
   MAIL_HOST: ""
   REDIS_KEY_TTL: "3600"
+  INTERNAL_API_PORT: "8081"
 kind: ConfigMap
 metadata:
   name: webcert-demo-configmap-envvar
