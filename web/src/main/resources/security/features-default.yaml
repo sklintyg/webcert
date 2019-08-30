@@ -224,13 +224,6 @@ features:
       - *ki111 # AF00251
       - *ki130 # TSTRK1062
       - *ki140 # TSTRK1009
-  - &f100
-    name: *kf100
-    desc: Arbetsgivarutskrift
-    global: true
-    intygstyper:
-      - *ki010 # FK7263
-      - *ki050 # LISJP
   - &f110
     name: *kf110
     desc: JS loggning

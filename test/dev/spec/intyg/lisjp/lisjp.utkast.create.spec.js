@@ -196,8 +196,6 @@ describe('Create and Sign lisjp utkast', function() {
         IntygPage.closeReceiverApproval(false);
         expect(IntygPage.getReceiverApprovalDialog().isPresent()).toBeFalsy();
       });
-
-      expect(IntygPage.skrivUtBtn.isPresent()).toBeFalsy();
     });
     afterAll(function() {
       testdataHelper.deleteIntyg(utkastId);
