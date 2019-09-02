@@ -1,6 +1,6 @@
 apiVersion: v1
 data:
-  SPRING_PROFILES_ACTIVE: "dev,caching-enabled,ia-stub"
+  SPRING_PROFILES_ACTIVE: "test,wc-all-stubs,caching-enabled,wc-security-test,ia-stub,testability-api,skip-init-data,it-af-stub,it-fk-stub,it-ts-stub"
   CONFIG_DIR: "${config.folder}"
   LOGBACK_FILE: "classpath:logback-ocp.xml"
   REDIS_HOST: "${redis.service.host}"
