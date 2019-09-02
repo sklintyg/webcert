@@ -26,8 +26,6 @@ import io.jsonwebtoken.MissingClaimException;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationServiceException;
@@ -48,13 +46,11 @@ import se.inera.intyg.webcert.web.service.jwt.JwtValidationService;
  */
 public class JwtAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
 
-    private static final Logger LOG = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
-
     @Autowired
     private JwtValidationService jwtValidationService;
 
     @Autowired
-    private FeaturesHelper featuresHelper;
+    protected FeaturesHelper featuresHelper;
 
     protected JwtAuthenticationFilter(RequestMatcher requestMatcher) {
         super(requestMatcher);
@@ -111,7 +107,7 @@ public class JwtAuthenticationFilter extends AbstractAuthenticationProcessingFil
         return getAuthenticationManager().authenticate(new JwtAuthenticationToken(employeeHsaId));
     }
 
-    private String extractAccessToken(HttpServletRequest request) {
+    protected String extractAccessToken(HttpServletRequest request) {
 
         if (!request.getMethod().equalsIgnoreCase(HttpMethod.POST.name())) {
             throw new AuthenticationServiceException("Only HTTP POST is supported.");
