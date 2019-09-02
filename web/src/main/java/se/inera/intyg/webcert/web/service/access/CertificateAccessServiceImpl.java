@@ -70,8 +70,7 @@ public class CertificateAccessServiceImpl implements CertificateAccessService {
     @Override
     public AccessResult allowToReplace(String certificateType, Vardenhet vardenhet, Personnummer personnummer) {
         return getAccessServiceEvaluation().given(getUser(), certificateType)
-                .feature(AuthoritiesConstants.FEATURE_MAKULERA_INTYG)
-                .privilege(AuthoritiesConstants.PRIVILEGE_MAKULERA_INTYG)
+                .privilege(AuthoritiesConstants.PRIVILEGE_ERSATTA_INTYG)
                 .careUnit(vardenhet)
                 .patient(personnummer)
                 .excludeCertificateTypesForDeceased(DbModuleEntryPoint.MODULE_ID, DoiModuleEntryPoint.MODULE_ID)
