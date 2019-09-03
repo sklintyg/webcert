@@ -470,51 +470,22 @@ roles:
       - <<: *p160 # SKAPA_NY_FRAGA
         requestOrigins:
           - <<: *ro010 # NORMAL
-            intygstyper:
-              - *ki040 # lisjp
-              - *ki050 # luse
-              - *ki060 # luae_na
-              - *ki070 # luae_fs
           - <<: *ro020 # DJUPINTEGRATION
-            intygstyper:
-              - *ki040 # lisjp
-              - *ki050 # luse
-              - *ki060 # luae_na
-              - *ki070 # luae_fs
           - <<: *ro030 # UTHOPP
       - <<: *p170 # LASA_FRAGA
         requestOrigins:
           - <<: *ro010 # NORMAL
             intygstyper:
-              - *ki040 # lisjp
-              - *ki050 # luse
-              - *ki060 # luae_na
-              - *ki070 # luae_fs
           - <<: *ro040 # READONLY
             intygstyper:
               - *ki010 # fk7163
               - *ki040 # lisjp
           - <<: *ro020 # DJUPINTEGRATION
-            intygstyper:
-              - *ki040 # lisjp
-              - *ki050 # luse
-              - *ki060 # luae_na
-              - *ki070 # luae_fs
           - <<: *ro030 # UTHOPP
       - <<: *p180 # BESVARA_FRAGA
         requestOrigins:
           - <<: *ro010 # NORMAL
-            intygstyper:
-              - *ki040 # lisjp
-              - *ki050 # luse
-              - *ki060 # luae_na
-              - *ki070 # luae_fs
           - <<: *ro020 # DJUPINTEGRATION
-            intygstyper:
-              - *ki040 # lisjp
-              - *ki050 # luse
-              - *ki060 # luae_na
-              - *ki070 # luae_fs
           - <<: *ro030 # UTHOPP
   - &r020
     name: *kr020 # PRIVATLAKARE
@@ -589,27 +560,12 @@ roles:
       - <<: *p160 # SKAPA_NY_FRAGA
         requestOrigins:
           - <<: *ro010 # NORMAL
-            intygstyper:
-              - *ki040 # lisjp
-              - *ki050 # luse
-              - *ki060 # luae_na
-              - *ki070 # luae_fs
       - <<: *p170 # LASA_FRAGA
         requestOrigins:
           - <<: *ro010 # NORMAL
-            intygstyper:
-              - *ki040 # lisjp
-              - *ki050 # luse
-              - *ki060 # luae_na
-              - *ki070 # luae_fs
       - <<: *p180 # BESVARA_FRAGA
         requestOrigins:
           - <<: *ro010 # NORMAL
-            intygstyper:
-              - *ki040 # lisjp
-              - *ki050 # luse
-              - *ki060 # luae_na
-              - *ki070 # luae_fs
   - &r030
     name: *kr030 # TANDLAKARE
     desc: Tandläkare
@@ -935,51 +891,21 @@ roles:
       - <<: *p160 # SKAPA_NY_FRAGA
         requestOrigins:
           - <<: *ro010 # NORMAL
-            intygstyper:
-              - *ki040 # lisjp
-              - *ki050 # luse
-              - *ki060 # luae_na
-              - *ki070 # luae_fs
           - <<: *ro020 # DJUPINTEGRATION
-            intygstyper:
-              - *ki040 # lisjp
-              - *ki050 # luse
-              - *ki060 # luae_na
-              - *ki070 # luae_fs
           - <<: *ro030 # UTHOPP
       - <<: *p170 # LASA_FRAGA
         requestOrigins:
           - <<: *ro010 # NORMAL
-            intygstyper:
-              - *ki040 # lisjp
-              - *ki050 # luse
-              - *ki060 # luae_na
-              - *ki070 # luae_fs
           - <<: *ro040 # READONLY
             intygstyper:
               - *ki010 # fk7263
               - *ki040 # lisjp
           - <<: *ro020 # DJUPINTEGRATION
-            intygstyper:
-              - *ki040 # lisjp
-              - *ki050 # luse
-              - *ki060 # luae_na
-              - *ki070 # luae_fs
           - <<: *ro030 # UTHOPP
       - <<: *p180 # BESVARA_FRAGA
         requestOrigins:
           - <<: *ro010 # NORMAL
-            intygstyper:
-              - *ki040 # lisjp
-              - *ki050 # luse
-              - *ki060 # luae_na
-              - *ki070 # luae_fs
           - <<: *ro020 # DJUPINTEGRATION
-            intygstyper:
-              - *ki040 # lisjp
-              - *ki050 # luse
-              - *ki060 # luae_na
-              - *ki070 # luae_fs
           - <<: *ro030 # UTHOPP
 
 
