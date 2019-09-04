@@ -21,22 +21,20 @@ package se.inera.intyg.webcert.web.auth;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
-
 import org.opensaml.saml2.metadata.provider.MetadataProviderException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.saml.SAMLEntryPoint;
 import org.springframework.security.saml.context.SAMLMessageContext;
 import org.springframework.security.saml.websso.WebSSOProfileOptions;
-
 import se.inera.intyg.webcert.web.auth.common.AuthConstants;
 
 /**
  * Custom SAMLEntryPoint for Webcert that overrides the generation of AuthnContexts based on metadata alias:
  *
- * For SITHS (defaultAlias), we only supply the {@link AuthConstants#HTTP_ID_SAMBI_SE_LOA_LOA3}
+ * For SITHS (defaultAlias), we only supply the {@link AuthConstants#URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_TLS_CLIENT}
  *
- * For ELEG (eleg), we do not specify anything. This is due to SSO problems at CGIs end when a previously authenticated
- * identity is validated against the IdP to access another system in the same federation.
+ * For ELEG (eleg), we do not specify anything. This is due to SSO problems at CGIs end when a previously authenticated identity is
+ * validated against the IdP to access another system in the same federation.
  *
  * Created by eriklupander on 2015-11-24.
  */
@@ -45,17 +43,14 @@ public class WebcertSAMLEntryPoint extends SAMLEntryPoint {
     /**
      * Override from superclass, see class comment for details.
      *
-     * @param context
-     *            containing local entity
-     * @param exception
-     *            exception causing invocation of this entry point (can be null)
+     * @param context containing local entity
+     * @param exception exception causing invocation of this entry point (can be null)
      * @return populated webSSOprofile
-     * @throws MetadataProviderException
-     *             in case metadata loading fails
+     * @throws MetadataProviderException in case metadata loading fails
      */
     @Override
     protected WebSSOProfileOptions getProfileOptions(SAMLMessageContext context, AuthenticationException exception)
-            throws MetadataProviderException {
+        throws MetadataProviderException {
 
         WebSSOProfileOptions ssoProfileOptions;
         if (defaultOptions != null) {
@@ -75,7 +70,7 @@ public class WebcertSAMLEntryPoint extends SAMLEntryPoint {
 
     private Collection<String> buildTlsClientAuthContexts() {
         Set<String> set = new HashSet<>();
-        set.add(AuthConstants.HTTP_ID_SAMBI_SE_LOA_LOA3);
+        set.add(AuthConstants.URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_TLS_CLIENT);
         return set;
     }
 }
