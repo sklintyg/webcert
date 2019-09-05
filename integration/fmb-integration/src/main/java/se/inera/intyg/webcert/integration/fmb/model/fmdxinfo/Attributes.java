@@ -213,6 +213,10 @@ public class Attributes {
         return diagnosrubrik;
     }
 
+    public Optional<String> getOptionalDiagnosrubrik() {
+        return Optional.ofNullable(diagnosrubrik);
+    }
+
     @JsonProperty("diagnosrubrik")
     public void setDiagnosrubrik(String diagnosrubrik) {
         this.diagnosrubrik = diagnosrubrik;

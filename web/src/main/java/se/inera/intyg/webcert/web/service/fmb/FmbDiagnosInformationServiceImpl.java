@@ -153,6 +153,9 @@ public class FmbDiagnosInformationServiceImpl extends FmbBaseService implements 
             .filter(icd10Kod -> StringUtils.equalsIgnoreCase(icd10Kod.getKod(), upperCaseIcd10))
             .collect(onlyElement());
 
+        final String relatedDiagnoses = diagnosInformation.getIcd10KodList().stream().map(Icd10Kod::getKod)
+            .collect(Collectors.joining(", "));
+
         final Optional<Beskrivning> aktivitetsBegransing = diagnosInformation.getBeskrivningList().stream()
             .filter(beskrivning -> Objects.equals(beskrivning.getBeskrivningTyp(), BeskrivningTyp.AKTIVITETSBEGRANSNING))
             .filter(beskrivning -> StringUtils.isNotEmpty(beskrivning.getBeskrivningText()))
@@ -168,7 +171,6 @@ public class FmbDiagnosInformationServiceImpl extends FmbBaseService implements 
             .map(TypFall::getTypfallsMening)
             .distinct()
             .collect(Collectors.toList());
-
         final String generell = diagnosInformation.getForsakringsmedicinskInformation();
 
         final String symptom = diagnosInformation.getSymptomPrognosBehandling();
@@ -217,10 +219,13 @@ public class FmbDiagnosInformationServiceImpl extends FmbBaseService implements 
         final Optional<Referens> referens = diagnosInformation.getReferensList().stream().findFirst();
         final String referensDescription = referens.map(Referens::getText).orElse(null);
         final String referensLink = referens.map(Referens::getUri).orElse(null);
+        final String diagnosRubrik = diagnosInformation.getDiagnosrubrik();
 
         return FmbResponse.of(
             upperCaseIcd10,
             icd10CodeDeskription,
+            diagnosRubrik,
+            relatedDiagnoses,
             referensDescription,
             referensLink,
             fmbFormList);
