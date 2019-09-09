@@ -61,6 +61,7 @@ public class DiagnosInformationRepositoryTest {
 
     @Before
     public void setup() {
+        final String diagnosRubrik = "diagnosRubrik";
         final String forsakringsmedicinskInformation = "forsakringsmedicinskInformation";
         final String symptomPrognosBehandling = "symptomPrognosBehandling";
         final String informationOmRehabilitering = "informationOmRehabilitering";
@@ -78,6 +79,7 @@ public class DiagnosInformationRepositoryTest {
 
         DiagnosInformation.DiagnosInformationBuilder diagnosInformationBuilder = DiagnosInformation.DiagnosInformationBuilder
             .aDiagnosInformation()
+            .diagnosRubrik(diagnosRubrik)
             .forsakringsmedicinskInformation(forsakringsmedicinskInformation)
             .symptomPrognosBehandling(symptomPrognosBehandling)
             .informationOmRehabilitering(informationOmRehabilitering)

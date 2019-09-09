@@ -65,6 +65,7 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.MaximalSjukskrivningsti
 @RunWith(MockitoJUnitRunner.class)
 public class FmbDiagnosInformationServiceImplTest {
 
+    protected static final String DIAGNOSRUBRIK_PREFIX = "diagnosrubrik-";
     @Mock
     private DiagnosService diagnosService;
 
@@ -149,7 +150,7 @@ public class FmbDiagnosInformationServiceImplTest {
     @Test
     public void testDuplicateTexts() {
 
-        final DiagnosInformation diagnosInformation = createDiagnosInformation("test", "test", "A10");
+        final DiagnosInformation diagnosInformation = createDiagnosInformation("test", "test", "A10", "B20");
 
         doReturn(Optional.of(diagnosInformation))
             .when(diagnosInformationRepository)
@@ -169,6 +170,8 @@ public class FmbDiagnosInformationServiceImplTest {
             .findAny()
             .orElse(Lists.emptyList());
 
+        assertEquals(DIAGNOSRUBRIK_PREFIX + "A10", response.get().getDiagnosTitle());
+        assertEquals("A10, B20", response.get().getRelatedDiagnoses());
         assertEquals(1, count);
         assertEquals("test", contentList.get(0).getText());
         assertNull(contentList.get(0).getList());
@@ -269,6 +272,7 @@ public class FmbDiagnosInformationServiceImplTest {
     private DiagnosInformation createDiagnosInformation(final String firstTypFallText, final String secondTypfalltext,
         final String... icd10Koder) {
         return aDiagnosInformation()
+            .diagnosRubrik(DIAGNOSRUBRIK_PREFIX + Arrays.stream(icd10Koder).findFirst().orElse("NONE"))
             .forsakringsmedicinskInformation("info")
             .symptomPrognosBehandling("behandling x")
             .beskrivningList(ImmutableList.of(
