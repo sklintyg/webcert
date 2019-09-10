@@ -42,11 +42,14 @@ import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.GrundData;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.model.common.internal.Patient;
+import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.common.support.model.common.internal.Vardgivare;
+import se.inera.intyg.common.support.modules.mapper.Mapper;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
+import se.inera.intyg.common.support.modules.support.api.dto.CreateDraftCopyHolder;
 import se.inera.intyg.common.support.modules.support.api.dto.CreateNewDraftHolder;
 import se.inera.intyg.common.support.modules.support.api.dto.ValidateDraftResponse;
 import se.inera.intyg.common.support.modules.support.api.dto.ValidationMessage;
@@ -87,7 +90,9 @@ import se.inera.intyg.webcert.web.service.utkast.dto.DraftValidationMessage;
 import se.inera.intyg.webcert.web.service.utkast.dto.PreviousIntyg;
 import se.inera.intyg.webcert.web.service.utkast.dto.SaveDraftResponse;
 import se.inera.intyg.webcert.web.service.utkast.dto.UpdatePatientOnDraftRequest;
+import se.inera.intyg.webcert.web.service.utkast.dto.UpdateUtkastFromTemplateRequest;
 import se.inera.intyg.webcert.web.service.utkast.util.CreateIntygsIdStrategy;
+import se.inera.intyg.webcert.web.service.utkast.util.UtkastServiceHelper;
 import se.inera.intyg.webcert.web.web.util.access.AccessResultExceptionHelper;
 
 @Service
@@ -152,6 +157,10 @@ public class UtkastServiceImpl implements UtkastService {
     @Autowired
     private HsaEmployeeService hsaEmployeeService;
 
+    @Autowired
+    private UtkastServiceHelper utkastServiceHelper;
+
+
     public static boolean isUtkast(Utkast utkast) {
         return utkast != null && ALL_DRAFT_STATUSES_INCLUDE_LOCKED.contains(utkast.getStatus());
     }
@@ -203,6 +212,55 @@ public class UtkastServiceImpl implements UtkastService {
         return savedUtkast;
     }
 
+    /**
+     * Update a utkast with data from an existing certificate.
+     *
+     * @return {@link UpdateUtkastFromTemplateRequest}
+     */
+    @Override
+    public SaveDraftResponse updateDraft(String fromIntygId, String fromIntygType, String toUtkastId, String toUtkastType) {
+
+        // Get the draft (copy to)
+        Utkast to = getIntygAsDraft(toUtkastId, toUtkastType);
+
+        // Apply business rules
+        if (to.getStatus() != UtkastStatus.DRAFT_INCOMPLETE && to.getVersion() != 0) {
+            throw new WebCertServiceException(
+                WebCertServiceErrorCodeEnum.INVALID_STATE,
+                "The draft (utkast) you are trying to copy data to must have status DRAFT_INCOMPLETE and version 0");
+        }
+
+        try {
+            Utlatande fromUtlatande = utkastServiceHelper.getUtlatande(fromIntygId, fromIntygType, false, true);
+
+            String draftVersion = to.getIntygTypeVersion();
+            if (draftVersion == null) {
+                draftVersion = fromUtlatande.getTextVersion();
+                if (draftVersion == null) {
+                    throw new WebCertServiceException(
+                        WebCertServiceErrorCodeEnum.MISSING_PARAMETER, "Expected type version to be set but value is null");
+                }
+            }
+
+            // Get mapper and copy data to draft
+            CreateDraftCopyHolder draftCopyHolder = new CreateDraftCopyHolder(toUtkastId, getHosPersonal(to));
+            draftCopyHolder.setPatient(getPatientFromDraft(to));
+            draftCopyHolder.setIntygTypeVersion(draftVersion);
+
+            ModuleApi toModuleApi = getModuleApi(toUtkastType, draftVersion);
+            Mapper moduleMapper = toModuleApi.getMapper().orElseThrow(() ->
+                new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM,
+                    String.format("Error copying data from intyg '%s' to utkast '%s'", fromIntygId, toUtkastId)));
+            String draftAsJson = moduleMapper.map(fromUtlatande, draftCopyHolder).json();
+
+            return saveDraft(to.getIntygsId(), to.getVersion(), draftAsJson, true);
+
+        } catch (ModuleException | ModuleNotFoundException | IOException e) {
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM,
+                String.format("Error copying data from intyg '%s' to utkast '%s'", fromIntygId, toUtkastId), e);
+        }
+    }
+
     @Override
     public String getQuestions(String intygsTyp, String version) {
         String questionsAsJson = intygTextsService.getIntygTexts(intygsTyp, version);
@@ -215,7 +273,6 @@ public class UtkastServiceImpl implements UtkastService {
     @Override
     @Transactional
     public void setKlarForSigneraAndSendStatusMessage(String intygsId, String intygType) {
-
         validateUserAllowedToSendKFSignNotification(intygsId, intygType);
 
         Utkast utkast = getIntygAsDraft(intygsId, intygType);
@@ -457,12 +514,12 @@ public class UtkastServiceImpl implements UtkastService {
 
         // Notify stakeholders when a draft has been changed/updated
         try {
-            ModuleApi moduleApi = moduleRegistry.getModuleApi(intygType, utkast.getIntygTypeVersion());
+            ModuleApi moduleApi = getModuleApi(intygType, utkast.getIntygTypeVersion());
             if (moduleApi.shouldNotify(persistedJson, draftAsJson)) {
                 LOG.debug("*** Detected changes in model, sending notification! ***");
                 sendNotification(utkast, Event.CHANGED);
             }
-        } catch (ModuleException | ModuleNotFoundException e) {
+        } catch (ModuleException e) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, e);
         }
 
@@ -509,7 +566,7 @@ public class UtkastServiceImpl implements UtkastService {
         final ModuleApi moduleApi = getModuleApi(utkast.getIntygsTyp(), utkast.getIntygTypeVersion());
 
         // INTYG-4086
-        Patient draftPatient = getPatientFromCurrentDraft(moduleApi, utkast.getModel());
+        Patient draftPatient = getPatientFromCDraft(moduleApi, utkast.getModel());
 
         Optional<Personnummer> optionalPnr = Optional.ofNullable(request.getPersonnummer());
         Optional<Personnummer> optionalDraftPnr = Optional.ofNullable(draftPatient.getPersonId());
@@ -582,14 +639,11 @@ public class UtkastServiceImpl implements UtkastService {
 
     @Override
     public DraftValidation validateDraft(String intygId, String intygType, String draftAsJson) {
-        LOG.debug("Validating Intyg '{}' with type '{}'", intygId, intygType);
+        LOG.debug("Validating draft with id '{}' and type '{}'", intygId, intygType);
 
         try {
-            ModuleApi moduleApi = moduleRegistry.getModuleApi(intygType,
-                moduleRegistry.resolveVersionFromUtlatandeJson(intygType, draftAsJson));
-            ValidateDraftResponse validateDraftResponse = moduleApi.validateDraft(draftAsJson);
-
-            return convertToDraftValidation(validateDraftResponse);
+            ModuleApi moduleApi = getModuleApi(intygType, moduleRegistry.resolveVersionFromUtlatandeJson(intygType, draftAsJson));
+            return convertToDraftValidation(moduleApi.validateDraft(draftAsJson));
         } catch (ModuleException | ModuleNotFoundException me) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, me);
         }
@@ -700,16 +754,21 @@ public class UtkastServiceImpl implements UtkastService {
         }
     }
 
-    private Patient getPatientFromCurrentDraft(ModuleApi moduleApi, String draftModel) {
+    private Patient getPatientFromDraft(Utkast utkast) {
+        final ModuleApi moduleApi = getModuleApi(utkast.getIntygsTyp(), utkast.getIntygTypeVersion());
+        return getPatientFromCDraft(moduleApi, utkast.getModel());
+    }
+
+    private Patient getPatientFromCDraft(ModuleApi moduleApi, String draftModel) {
         try {
             return moduleApi.getUtlatandeFromJson(draftModel).getGrundData().getPatient();
-
         } catch (ModuleException | IOException e) {
             if (e.getCause() != null && e.getCause().getCause() != null) {
                 // This error message is helpful when debugging save problems.
                 LOG.debug(e.getCause().getCause().getMessage());
             }
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, "Could not get Patient from draft", e);
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM,
+                "Could not get Patient object from draft", e);
         }
     }
 
@@ -750,7 +809,6 @@ public class UtkastServiceImpl implements UtkastService {
     }
 
     private Utkast getIntygAsDraft(String intygsId, String intygType) {
-
         LOG.debug("Fetching utkast '{}'", intygsId);
 
         Utkast utkast = utkastRepository.findByIntygsIdAndIntygsTyp(intygsId, intygType);
@@ -861,7 +919,6 @@ public class UtkastServiceImpl implements UtkastService {
     }
 
     private void sendNotification(Utkast utkast, Event event) {
-
         switch (event) {
             case CHANGED:
                 notificationService.sendNotificationForDraftChanged(utkast);
@@ -878,6 +935,15 @@ public class UtkastServiceImpl implements UtkastService {
         }
     }
 
+    private HoSPersonal getHosPersonal(Utkast utkast) throws IOException, ModuleException {
+        ModuleApi moduleApi = getModuleApi(utkast.getIntygsTyp(), utkast.getIntygTypeVersion());
+
+        GrundData grundData = moduleApi.getUtlatandeFromJson(utkast.getModel()).getGrundData();
+        Vardenhet vardenhet = grundData.getSkapadAv().getVardenhet();
+
+        return IntygConverterUtil.buildHosPersonalFromWebCertUser(webCertUserService.getUser(), vardenhet);
+    }
+
     private void updateUtkastModel(Utkast utkast, String modelJson) {
         WebCertUser user = webCertUserService.getUser();
 
@@ -891,8 +957,6 @@ public class UtkastServiceImpl implements UtkastService {
             utkast.setSenastSparadAv(UpdateUserUtil.createVardpersonFromWebCertUser(user));
             utkast.setPatientPersonnummer(grundData.getPatient().getPersonId());
             String updatedInternal = moduleApi.updateBeforeSave(modelJson, hosPerson);
-            // String updatedInternalWithResolvedPatient = moduleApi.updateBeforeSave(updatedInternal,
-            // updatedPatientForSaving);
             utkast.setModel(updatedInternal);
 
             updatePatientNameFromModel(utkast, grundData.getPatient());
@@ -952,4 +1016,5 @@ public class UtkastServiceImpl implements UtkastService {
 
         return vardenhet;
     }
+
 }

@@ -29,6 +29,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.Patient;
+import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.support.api.GetCopyFromCriteria;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.infra.integration.hsa.model.SelectableVardenhet;
@@ -38,6 +39,8 @@ import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEn
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
+import se.inera.intyg.webcert.web.service.intyg.IntygService;
+import se.inera.intyg.webcert.web.service.intyg.converter.IntygModuleFacade;
 import se.inera.intyg.webcert.web.service.log.LogService;
 import se.inera.intyg.webcert.web.service.log.dto.LogUser;
 import se.inera.intyg.webcert.web.service.log.factory.LogRequestFactory;
@@ -53,6 +56,15 @@ public class UtkastCandidateServiceImpl {
 
     @Autowired
     private WebCertUserService webCertUserService;
+
+    @Autowired
+    private IntygModuleFacade moduleFacade;
+
+    @Autowired
+    private IntygModuleRegistry moduleRegistry;
+
+    @Autowired
+    private IntygService intygService;
 
     @Autowired
     private UtkastRepository utkastRepository;

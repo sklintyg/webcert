@@ -44,6 +44,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.OptimisticLockingFailureException;
 import se.inera.intyg.common.services.texts.IntygTextsService;
 import se.inera.intyg.common.support.model.UtkastStatus;
+import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.model.common.internal.Patient;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.support.model.common.internal.Vardenhet;
@@ -58,6 +59,7 @@ import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
+import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.intyg.webcert.web.service.access.AccessResult;
 import se.inera.intyg.webcert.web.service.access.DraftAccessService;
 import se.inera.intyg.webcert.web.service.access.LockedDraftAccessService;
@@ -74,6 +76,7 @@ import se.inera.intyg.webcert.web.service.utkast.dto.SaveDraftResponse;
 import se.inera.intyg.webcert.web.service.utkast.dto.UtkastCandidateMetaData;
 import se.inera.intyg.webcert.web.service.utkast.util.CopyUtkastServiceHelper;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
+import se.inera.intyg.webcert.web.web.controller.api.dto.CopyFromCandidateRequest;
 import se.inera.intyg.webcert.web.web.controller.api.dto.CopyIntygRequest;
 import se.inera.intyg.webcert.web.web.controller.api.dto.CopyIntygResponse;
 import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
@@ -216,69 +219,6 @@ public class UtkastModuleApiController extends AbstractApiController {
         }
     }
 
-    private Patient getPatientDataFromPU(String intygsTyp, Utkast utkast) {
-        Patient resolvedPatientData = patientDetailsResolver.resolvePatient(
-            utkast.getPatientPersonnummer(), intygsTyp, utkast.getIntygTypeVersion());
-        if (resolvedPatientData == null) {
-            throw new WebCertServiceException(
-                WebCertServiceErrorCodeEnum.PU_PROBLEM, "Could not resolve Patient in PU-service when opening draft.");
-        }
-        return resolvedPatientData;
-    }
-
-    private DraftHolder createDraftHolder(Utkast utkast, Patient savedPatientData, Patient resolvedPatientData) {
-        DraftHolder draftHolder = new DraftHolder();
-        draftHolder.setVersion(utkast.getVersion());
-        draftHolder.setVidarebefordrad(utkast.getVidarebefordrad());
-        draftHolder.setStatus(utkast.getStatus());
-        draftHolder.setEnhetsNamn(utkast.getEnhetsNamn());
-        draftHolder.setVardgivareNamn(utkast.getVardgivarNamn());
-        draftHolder.setKlartForSigneringDatum(utkast.getKlartForSigneringDatum());
-        draftHolder.setAterkalladDatum(utkast.getAterkalladDatum());
-        draftHolder.setCreated(utkast.getSkapad());
-        draftHolder.setRevokedAt(utkast.getAterkalladDatum());
-
-        // Upgrade to latest minor version available for major version of the intygtype
-        draftHolder.setLatestTextVersion(
-            intygTextsService.getLatestVersionForSameMajorVersion(utkast.getIntygsTyp(), utkast.getIntygTypeVersion()));
-
-        // Handle relations
-        Relations relations1 = certificateRelationService.getRelations(utkast.getIntygsId());
-        draftHolder.setRelations(relations1);
-
-        // Update patient information
-        draftHolder.setPatientResolved(true); // Is the patientResolved property unnecessary?
-        draftHolder.setSekretessmarkering(resolvedPatientData.isSekretessmarkering());
-        draftHolder.setAvliden(resolvedPatientData.isAvliden());
-
-        draftHolder.setPatientNameChangedInPU(patientDetailsResolver.isPatientNamedChanged(savedPatientData, resolvedPatientData));
-
-        if (resolvedPatientData.isCompleteAddressProvided()) {
-            draftHolder.setValidPatientAddressAquiredFromPU(true);
-            draftHolder.setPatientAddressChangedInPU(patientDetailsResolver.isPatientAddressChanged(savedPatientData, resolvedPatientData));
-        } else {
-            // Overwrite retrieved address data with saved one.
-            draftHolder.setValidPatientAddressAquiredFromPU(false);
-            draftHolder.setPatientAddressChangedInPU(false);
-        }
-
-        return draftHolder;
-    }
-
-    // Copied from IntygServiceImpl, INTYG-5380
-    private static void copyOldAddressToNewPatientData(Patient oldPatientData, Patient newPatientData) {
-        if (oldPatientData == null) {
-            newPatientData.setPostadress(null);
-            newPatientData.setPostnummer(null);
-            newPatientData.setPostort(null);
-        } else {
-            newPatientData.setPostadress(oldPatientData.getPostadress());
-            newPatientData.setPostnummer(oldPatientData.getPostnummer());
-            newPatientData.setPostort(oldPatientData.getPostort());
-
-        }
-    }
-
     /**
      * Persists the supplied draft certificate using the intygId as key.
      *
@@ -351,6 +291,55 @@ public class UtkastModuleApiController extends AbstractApiController {
         LOG.debug("Utkast validation on '{}' is {}", intygsId, validateResponse.isDraftValid() ? "valid" : "invalid");
         return Response.ok().entity(validateResponse).build();
     }
+
+    /**
+     * Copy data from a signed certificate (candidate) to an existing draft
+     */
+    @POST
+    @Path("/{intygsTyp}/{intygsId}/copyfromcandidate")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    @PrometheusTimeMethod
+    public Response copyFromCandidate(
+        @PathParam("intygsTyp") String intygsTyp,
+        @PathParam("intygsId") String intygsId,
+        CopyFromCandidateRequest request) {
+
+        LOG.debug("Attempting to copy data from certificate with type '{}' and id '{}' to draft with type '{}' and id '{}'",
+            request.getCandidateType(), request.getCandidateId(), intygsTyp, intygsId);
+
+        try {
+            SaveDraftResponse response = utkastService.updateDraft(
+                request.getCandidateId(), request.getCandidateType(), intygsId, intygsTyp);
+
+            return Response.ok().entity(response).build();
+
+        } catch (OptimisticLockException | OptimisticLockingFailureException e) {
+            monitoringLogService.logUtkastConcurrentlyEdited(intygsId, intygsTyp);
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.CONCURRENT_MODIFICATION, e.getMessage());
+        } catch (Exception e) {
+            LOG.error("Failed to copy data from certificate with type '{}' and id '{}' to draft with type '{}' and id '{}'.",
+                request.getCandidateType(), request.getCandidateId(), intygsTyp, intygsId);
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, e.getMessage());
+        }
+    }
+
+    private HoSPersonal createHoSPersonal(VardpersonReferens skapadAv) {
+        HoSPersonal hoSPersonal = new HoSPersonal();
+        hoSPersonal.setPersonId(skapadAv.getHsaId());
+        hoSPersonal.setFullstandigtNamn(skapadAv.getNamn());
+        return hoSPersonal;
+    }
+
+    private Patient createPatient(Utkast utkast) {
+        Patient patient = new Patient();
+        patient.setPersonId(utkast.getPatientPersonnummer());
+        patient.setFornamn(utkast.getPatientFornamn());
+        patient.setMellannamn(utkast.getPatientMellannamn());
+        patient.setEfternamn(utkast.getPatientEfternamn());
+        return patient;
+    }
+
 
     /**
      * Create a new utkast from locked utkast.
@@ -448,6 +437,69 @@ public class UtkastModuleApiController extends AbstractApiController {
         utkastService.revokeLockedDraft(intygsId, intygsTyp, param.getMessage(), param.getReason());
 
         return Response.ok().build();
+    }
+
+    private Patient getPatientDataFromPU(String intygsTyp, Utkast utkast) {
+        Patient resolvedPatientData = patientDetailsResolver.resolvePatient(
+            utkast.getPatientPersonnummer(), intygsTyp, utkast.getIntygTypeVersion());
+        if (resolvedPatientData == null) {
+            throw new WebCertServiceException(
+                WebCertServiceErrorCodeEnum.PU_PROBLEM, "Could not resolve Patient in PU-service when opening draft.");
+        }
+        return resolvedPatientData;
+    }
+
+    private DraftHolder createDraftHolder(Utkast utkast, Patient savedPatientData, Patient resolvedPatientData) {
+        DraftHolder draftHolder = new DraftHolder();
+        draftHolder.setVersion(utkast.getVersion());
+        draftHolder.setVidarebefordrad(utkast.getVidarebefordrad());
+        draftHolder.setStatus(utkast.getStatus());
+        draftHolder.setEnhetsNamn(utkast.getEnhetsNamn());
+        draftHolder.setVardgivareNamn(utkast.getVardgivarNamn());
+        draftHolder.setKlartForSigneringDatum(utkast.getKlartForSigneringDatum());
+        draftHolder.setAterkalladDatum(utkast.getAterkalladDatum());
+        draftHolder.setCreated(utkast.getSkapad());
+        draftHolder.setRevokedAt(utkast.getAterkalladDatum());
+
+        // Upgrade to latest minor version available for major version of the intygtype
+        draftHolder.setLatestTextVersion(
+            intygTextsService.getLatestVersionForSameMajorVersion(utkast.getIntygsTyp(), utkast.getIntygTypeVersion()));
+
+        // Handle relations
+        Relations relations1 = certificateRelationService.getRelations(utkast.getIntygsId());
+        draftHolder.setRelations(relations1);
+
+        // Update patient information
+        draftHolder.setPatientResolved(true); // Is the patientResolved property unnecessary?
+        draftHolder.setSekretessmarkering(resolvedPatientData.isSekretessmarkering());
+        draftHolder.setAvliden(resolvedPatientData.isAvliden());
+
+        draftHolder.setPatientNameChangedInPU(patientDetailsResolver.isPatientNamedChanged(savedPatientData, resolvedPatientData));
+
+        if (resolvedPatientData.isCompleteAddressProvided()) {
+            draftHolder.setValidPatientAddressAquiredFromPU(true);
+            draftHolder.setPatientAddressChangedInPU(patientDetailsResolver.isPatientAddressChanged(savedPatientData, resolvedPatientData));
+        } else {
+            // Overwrite retrieved address data with saved one.
+            draftHolder.setValidPatientAddressAquiredFromPU(false);
+            draftHolder.setPatientAddressChangedInPU(false);
+        }
+
+        return draftHolder;
+    }
+
+    // Copied from IntygServiceImpl, INTYG-5380
+    private static void copyOldAddressToNewPatientData(Patient oldPatientData, Patient newPatientData) {
+        if (oldPatientData == null) {
+            newPatientData.setPostadress(null);
+            newPatientData.setPostnummer(null);
+            newPatientData.setPostort(null);
+        } else {
+            newPatientData.setPostadress(oldPatientData.getPostadress());
+            newPatientData.setPostnummer(oldPatientData.getPostnummer());
+            newPatientData.setPostort(oldPatientData.getPostort());
+
+        }
     }
 
     private void validateAllowToReadUtkast(Utkast utkast, Personnummer personnummer) {

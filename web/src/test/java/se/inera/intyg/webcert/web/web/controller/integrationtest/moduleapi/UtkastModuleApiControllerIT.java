@@ -40,7 +40,7 @@ import se.inera.intyg.webcert.web.web.controller.integrationtest.BaseRestIntegra
 import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.RevokeSignedIntygParameter;
 
 /**
- * Basic test suite that verifies that the endpoint (/moduleapi/utkast) is available and respond according to
+ * Basic test suite that verifies that the endpoint (‘/moduleapi/utkast) is available and respond according to
  * specification.
  *
  * Created by marhes on 18/01/16.

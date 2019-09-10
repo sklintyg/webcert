@@ -53,7 +53,7 @@ import se.inera.intyg.webcert.web.service.log.factory.LogRequestFactory;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.util.UpdateUserUtil;
 import se.inera.intyg.webcert.web.service.utkast.dto.AbstractCreateCopyRequest;
-import se.inera.intyg.webcert.web.service.utkast.dto.CopyUtkastBuilderResponse;
+import se.inera.intyg.webcert.web.service.utkast.dto.UtkastBuilderResponse;
 import se.inera.intyg.webcert.web.service.utkast.util.CreateIntygsIdStrategy;
 
 public abstract class AbstractUtkastBuilder<T extends AbstractCreateCopyRequest> implements CopyUtkastBuilder<T> {
@@ -91,7 +91,7 @@ public abstract class AbstractUtkastBuilder<T extends AbstractCreateCopyRequest>
      * webcert.web.service.utkast.dto.CreateNewDraftCopyRequest, se.inera.intyg.webcert.integration.pu.model.Person)
      */
     @Override
-    public CopyUtkastBuilderResponse populateCopyUtkastFromSignedIntyg(T copyRequest, Person patientDetails, boolean addRelation,
+    public UtkastBuilderResponse populateCopyUtkastFromSignedIntyg(T copyRequest, Person patientDetails, boolean addRelation,
         boolean coherentJournaling) throws ModuleNotFoundException, ModuleException {
 
         String orignalIntygsId = copyRequest.getOriginalIntygId();
@@ -112,7 +112,7 @@ public abstract class AbstractUtkastBuilder<T extends AbstractCreateCopyRequest>
 
         LOG.debug("Populating copy with details from signed Intyg '{}'", orignalIntygsId);
 
-        CopyUtkastBuilderResponse builderResponse = new CopyUtkastBuilderResponse();
+        UtkastBuilderResponse builderResponse = new UtkastBuilderResponse();
         builderResponse.setOrginalEnhetsId(vardenhet.getEnhetsid());
         builderResponse.setOrginalEnhetsNamn(vardenhet.getEnhetsnamn());
         builderResponse.setOrginalVardgivarId(vardenhet.getVardgivare().getVardgivarid());
@@ -132,8 +132,7 @@ public abstract class AbstractUtkastBuilder<T extends AbstractCreateCopyRequest>
 
         // NOTE: See INTYG-7212 can we really just take textVersion of orgUtlatande like when db->doi?
         Utkast utkast = buildUtkastCopy(copyRequest, newDraftCopyId, intygsTyp, signedIntygHolder.getUtlatande().getTextVersion(),
-            addRelation, relation,
-            draftCopyJson, utkastStatus);
+            addRelation, relation, draftCopyJson, utkastStatus);
 
         if (patientDetails != null) {
             populatePatientDetailsFromPerson(utkast, patientDetails);
@@ -145,7 +144,7 @@ public abstract class AbstractUtkastBuilder<T extends AbstractCreateCopyRequest>
 
         replacePatientPersonnummerWithNew(utkast, copyRequest);
 
-        builderResponse.setUtkastCopy(utkast);
+        builderResponse.setUtkast(utkast);
 
         return builderResponse;
     }
@@ -161,7 +160,7 @@ public abstract class AbstractUtkastBuilder<T extends AbstractCreateCopyRequest>
      */
     @Override
     @Transactional(readOnly = true)
-    public CopyUtkastBuilderResponse populateCopyUtkastFromOrignalUtkast(T copyRequest, Person patientDetails, boolean addRelation,
+    public UtkastBuilderResponse populateCopyUtkastFromOrignalUtkast(T copyRequest, Person patientDetails, boolean addRelation,
         boolean coherentJournaling) throws ModuleNotFoundException, ModuleException {
 
         String orignalIntygsId = copyRequest.getOriginalIntygId();
@@ -184,7 +183,7 @@ public abstract class AbstractUtkastBuilder<T extends AbstractCreateCopyRequest>
             logService.logReadIntyg(logRequest);
         }
 
-        CopyUtkastBuilderResponse builderResponse = new CopyUtkastBuilderResponse();
+        UtkastBuilderResponse builderResponse = new UtkastBuilderResponse();
         builderResponse.setOrginalEnhetsId(orgUtkast.getEnhetsId());
         builderResponse.setOrginalEnhetsNamn(orgUtkast.getEnhetsNamn());
         builderResponse.setOrginalVardgivarId(orgUtkast.getVardgivarId());
@@ -216,7 +215,7 @@ public abstract class AbstractUtkastBuilder<T extends AbstractCreateCopyRequest>
 
         replacePatientPersonnummerWithNew(utkast, copyRequest);
 
-        builderResponse.setUtkastCopy(utkast);
+        builderResponse.setUtkast(utkast);
 
         return builderResponse;
     }
@@ -229,10 +228,9 @@ public abstract class AbstractUtkastBuilder<T extends AbstractCreateCopyRequest>
 
     // CHECKSTYLE:OFF ParameterNumber
     protected Utkast buildUtkastCopy(T copyRequest, String utkastId, String utkastTyp, String intygTypeVersion, boolean addRelation,
-        Relation relation,
-        String draftCopyJson, UtkastStatus utkastStatus) {
-        Utkast utkast = new Utkast();
+        Relation relation, String draftCopyJson, UtkastStatus utkastStatus) {
 
+        Utkast utkast = new Utkast();
         utkast.setIntygsId(utkastId);
         utkast.setIntygsTyp(utkastTyp);
         utkast.setIntygTypeVersion(intygTypeVersion);
