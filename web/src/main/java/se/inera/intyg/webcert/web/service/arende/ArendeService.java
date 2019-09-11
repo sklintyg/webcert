@@ -82,4 +82,6 @@ public interface ArendeService {
     String getLatestMeddelandeIdForCurrentCareUnit(String intygsId);
 
     List<Arende> getKompletteringar(List<String> intygsIds);
+
+    List<Arende> getArendenInternal(String intygsId);
 }

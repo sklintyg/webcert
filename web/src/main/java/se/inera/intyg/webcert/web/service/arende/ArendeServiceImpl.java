@@ -278,7 +278,7 @@ public class ArendeServiceImpl implements ArendeService {
 
         WebCertUser user = webcertUserService.getUser();
 
-        List<Arende> allArende = getArendeForIntygId(intygsId, user);
+        List<Arende> allArende = getArendeForIntygId(intygsId);
         List<Arende> arendeList = filterKompletteringar(allArende);
 
         Arende latestKomplArende = getLatestKomplArende(intygsId, arendeList);
@@ -320,7 +320,7 @@ public class ArendeServiceImpl implements ArendeService {
             .collect(Collectors.toList());
     }
 
-    private List<Arende> getArendeForIntygId(String intygsId, WebCertUser user) {
+    private List<Arende> getArendeForIntygId(String intygsId) {
         return arendeRepository.findByIntygsId(intygsId);
     }
 
@@ -429,8 +429,7 @@ public class ArendeServiceImpl implements ArendeService {
 
     @Override
     public List<ArendeConversationView> getArenden(String intygsId) {
-        WebCertUser user = webcertUserService.getUser();
-        List<Arende> arendeList = getArendeForIntygId(intygsId, user);
+        List<Arende> arendeList = getArendeForIntygId(intygsId);
 
         validateAccessRightsToReadArenden(intygsId);
 
@@ -668,7 +667,11 @@ public class ArendeServiceImpl implements ArendeService {
     @Override
     public String getLatestMeddelandeIdForCurrentCareUnit(String intygsId) {
         WebCertUser user = webcertUserService.getUser();
-        List<Arende> arendeList = filterKompletteringar(getArendeForIntygId(intygsId, user));
+        List<Arende> arendeListForCurrentUnit = getArendeForIntygId(intygsId).stream()
+            .filter(isCorrectEnhet(user))
+            .collect(Collectors.toList());
+
+        List<Arende> arendeList = filterKompletteringar(arendeListForCurrentUnit);
 
         return getLatestKomplArende(intygsId, arendeList).getMeddelandeId();
     }
@@ -676,6 +679,11 @@ public class ArendeServiceImpl implements ArendeService {
     @Override
     public List<Arende> getKompletteringar(List<String> intygsIds) {
         return arendeRepository.findByIntygsIdAndType(intygsIds, ArendeAmne.KOMPLT);
+    }
+
+    @Override
+    public List<Arende> getArendenInternal(String intygsId) {
+        return arendeRepository.findByIntygsId(intygsId);
     }
 
     @VisibleForTesting

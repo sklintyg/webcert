@@ -286,6 +286,8 @@ public class UtkastBootstrapBean {
         utkast.setIntygsId(json.getId());
         utkast.setIntygsTyp(json.getTyp());
         utkast.setIntygTypeVersion(json.getTextVersion() == null ? "1.0" : json.getTextVersion());
+
+        LocalDateTime signedDate = json.getGrundData().getSigneringsdatum();
         if (status != UtkastStatus.SIGNED) {
             json.getGrundData().setSigneringsdatum(null);
         }
@@ -303,6 +305,7 @@ public class UtkastBootstrapBean {
         vardRef.setNamn(json.getGrundData().getSkapadAv().getFullstandigtNamn());
         utkast.setSenastSparadAv(vardRef);
         utkast.setSkapadAv(vardRef);
+        utkast.setSkapad(signedDate.minusMinutes(2));
 
         utkast.setStatus(status);
         if (status == UtkastStatus.SIGNED) {
@@ -312,7 +315,7 @@ public class UtkastBootstrapBean {
             utkast.setSkickadTillMottagare("FKASSA");
             utkast.setSkickadTillMottagareDatum(json.getGrundData().getSigneringsdatum().plusMinutes(2));
         }
-        utkast.setSenastSparadDatum(json.getGrundData().getSigneringsdatum());
+        utkast.setSenastSparadDatum(signedDate);
         utkast.setVardgivarId(json.getGrundData().getSkapadAv().getVardenhet().getVardgivare().getVardgivarid());
         utkast.setVardgivarNamn(json.getGrundData().getSkapadAv().getVardenhet().getVardgivare().getVardgivarnamn());
         utkast.setVersion(1);

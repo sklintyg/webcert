@@ -19,8 +19,6 @@
 package se.inera.intyg.webcert.web.web.controller.integration;
 
 import com.google.common.base.Strings;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
@@ -37,8 +35,6 @@ import se.inera.intyg.webcert.web.service.utkast.dto.UpdatePatientOnDraftRequest
  */
 @Service
 public class IntygIntegrationServiceImpl extends IntegrationServiceImpl {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(IntygIntegrationServiceImpl.class);
 
     @Autowired
     private MonitoringLogService monitoringLog;

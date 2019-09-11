@@ -18,8 +18,6 @@
  */
 package se.inera.intyg.webcert.web.web.controller.integration;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.infra.security.authorities.validation.AuthoritiesValidator;
@@ -31,7 +29,6 @@ import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
-import se.inera.intyg.webcert.web.service.intyg.IntygServiceImpl;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.utkast.UtkastServiceImpl;
@@ -43,8 +40,6 @@ import se.inera.intyg.webcert.web.web.controller.integration.dto.PrepareRedirect
  */
 @Service
 public abstract class IntegrationServiceImpl implements IntegrationService {
-
-    private static final Logger LOG = LoggerFactory.getLogger(IntygServiceImpl.class);
 
     protected AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
 
