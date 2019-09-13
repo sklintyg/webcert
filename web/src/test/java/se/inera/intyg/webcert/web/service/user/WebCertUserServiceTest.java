@@ -70,6 +70,9 @@ public class WebCertUserServiceTest extends AuthoritiesConfigurationTestSetup {
 
     private static final String MOTTAGNING_1 = "VG1VE1M1";
     private static final String MOTTAGNING_2 = "VG1VE1M2";
+
+    private static final String MOTTAGNING_3 = "VG1VE2M1";
+
     @InjectMocks
     public WebCertUserServiceImpl webcertUserService = new WebCertUserServiceImpl();
     @Mock
@@ -209,12 +212,67 @@ public class WebCertUserServiceTest extends AuthoritiesConfigurationTestSetup {
     }
 
     @Test
-    public void testUserHasNoReadOnlyAccessToParentVardEnhetWhenDJUPINTEGRATION() {
+    public void testUserHasReadOnlyAccessToParentVardEnhetWhenDJUPINTEGRATION() {
         WebCertUser user = setupUserMottagningAccessTest();
         user.changeValdVardenhet(MOTTAGNING_1);
         user.setOrigin(UserOriginType.DJUPINTEGRATION.name());
 
-        assertFalse(webcertUserService.isAuthorizedForUnit(VARDENHET_1, true));
+        assertTrue(webcertUserService.isAuthorizedForUnit(VARDENHET_1, true));
+    }
+
+    @Test
+    public void testUserHasReadOnlyAccessToSiblingMottagningWhenDJUPINTEGRATION() {
+        WebCertUser user = setupUserMottagningAccessTest();
+        user.changeValdVardenhet(MOTTAGNING_1);
+        user.setOrigin(UserOriginType.DJUPINTEGRATION.name());
+
+        assertTrue(webcertUserService.isAuthorizedForUnit(MOTTAGNING_2, true));
+    }
+
+    @Test
+    public void testUserHasReadOnlyAccessToCousinMottagningWhenDJUPINTEGRATION() {
+        WebCertUser user = setupUserMottagningAccessTest();
+        user.changeValdVardenhet(MOTTAGNING_1);
+        user.setOrigin(UserOriginType.DJUPINTEGRATION.name());
+
+        assertTrue(webcertUserService.isAuthorizedForUnit(MOTTAGNING_2, true));
+    }
+
+    @Test
+    public void testUserHasAccessToParentVardEnhetWhenDJUPINTEGRATION() {
+        WebCertUser user = setupUserMottagningAccessTest();
+        user.changeValdVardenhet(MOTTAGNING_1);
+        user.setOrigin(UserOriginType.DJUPINTEGRATION.name());
+
+        assertTrue(webcertUserService.isAuthorizedForUnit(VARDENHET_1, false));
+    }
+
+    @Test
+    public void testUserHasAccessToSiblingMottagningWhenDJUPINTEGRATION() {
+        WebCertUser user = setupUserMottagningAccessTest();
+        user.changeValdVardenhet(MOTTAGNING_1);
+        user.setOrigin(UserOriginType.DJUPINTEGRATION.name());
+
+        assertTrue(webcertUserService.isAuthorizedForUnit(MOTTAGNING_2, false));
+    }
+
+    @Test
+    public void testUserHasNoAccessToCousinMottagningWhenDJUPINTEGRATION() {
+        WebCertUser user = setupUserMottagningAccessTest();
+        user.changeValdVardenhet(MOTTAGNING_1);
+        user.setOrigin(UserOriginType.DJUPINTEGRATION.name());
+
+        assertFalse(webcertUserService.isAuthorizedForUnit(MOTTAGNING_3, false));
+    }
+
+    @Test
+    public void testUserHasNoAccessToMottagningMissingVardenhetWhenDJUPINTEGRATION() {
+        WebCertUser user = setupUserMottagningAccessTest();
+        user.setValdVardenhet(buildMottagning1());
+        user.setOrigin(UserOriginType.DJUPINTEGRATION.name());
+        user.getVardgivare().remove(0);
+
+        assertFalse(webcertUserService.isAuthorizedForUnit(MOTTAGNING_3, false));
     }
 
     @Test

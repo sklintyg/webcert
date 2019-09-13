@@ -126,7 +126,7 @@ public class CertificateAccessServiceImpl implements CertificateAccessService {
             .checkInactiveCareUnit(true)
             .checkRenew(true)
             .checkPatientSecrecy()
-            .checkUnit(true, false)
+            .checkUnit(false, false)
             .evaluate();
     }
 
