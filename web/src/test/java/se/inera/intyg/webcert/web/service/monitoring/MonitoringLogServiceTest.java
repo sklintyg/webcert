@@ -28,6 +28,8 @@ import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.classic.spi.LoggingEvent;
 import ch.qos.logback.core.Appender;
+import com.google.common.collect.ImmutableMap;
+import java.util.Map;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -37,6 +39,7 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.slf4j.LoggerFactory;
+import se.inera.intyg.infra.security.common.model.Role;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
 
 /**
@@ -69,8 +72,7 @@ public class MonitoringLogServiceTest {
 
     @Test
     public void testThatMonitoringLogProducesLogMessage() {
-
-        monitoringLogService.logUserLogin("ABC123", "test-scheme", UserOriginType.NORMAL.name());
+        monitoringLogService.logUserLogin("ABC123", "user-role", "role-type-name", "test-scheme", UserOriginType.NORMAL.name());
 
         verify(mockAppender).doAppend(captorLoggingEvent.capture());
 
@@ -82,6 +84,8 @@ public class MonitoringLogServiceTest {
         assertThat(loggingEvent.getFormattedMessage(), containsString("USER_LOGIN"));
         assertThat(loggingEvent.getFormattedMessage(), containsString("ABC123"));
         assertThat(loggingEvent.getFormattedMessage(), containsString("test-scheme"));
+        assertThat(loggingEvent.getFormattedMessage(), containsString("user-role"));
+        assertThat(loggingEvent.getFormattedMessage(), containsString("role-type-name"));
         assertThat(loggingEvent.getFormattedMessage(), containsString(UserOriginType.NORMAL.name()));
     }
 

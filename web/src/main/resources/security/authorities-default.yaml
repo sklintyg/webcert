@@ -962,19 +962,25 @@ titles:
     role: *r030 # TANDLAKARE
 
 # Kombination befattningskoder och gruppförskrivarkoder
+# roleTypeName används för loggningssyften för att se mer detaljer om typ av läkare-roll.
 titleCodes:
   - titleCode: 204010
     groupPrescriptionCode:
     role: *r010 # LAKARE
+    roleTypeName: Läkare - AT
   - titleCode: 203090
     groupPrescriptionCode: 9300005
     role: *r010 # LAKARE
+    roleTypeName: Läkare - inom EU
   - titleCode: 203090
     groupPrescriptionCode: 9400003
     role: *r010 # LAKARE
+    roleTypeName: Läkare - utom EU
   - titleCode: 204090
     groupPrescriptionCode: 9100009
     role: *r010 # LAKARE
+    roleTypeName: Läkare - Vikariat
   - titleCode: 204090
     groupPrescriptionCode: 9200007
     role: *r010 # LAKARE
+    roleTypeName: Läkare - Student
