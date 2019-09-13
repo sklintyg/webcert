@@ -19,7 +19,6 @@
 package se.inera.intyg.webcert.web.service.user;
 
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -40,10 +39,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.annotations.VisibleForTesting;
 
-import se.inera.intyg.infra.integration.hsa.model.Mottagning;
-import se.inera.intyg.infra.integration.hsa.model.SelectableVardenhet;
-import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
-import se.inera.intyg.infra.integration.hsa.model.Vardgivare;
 import se.inera.intyg.infra.security.authorities.AuthoritiesResolverUtil;
 import se.inera.intyg.infra.security.authorities.CommonAuthoritiesResolver;
 import se.inera.intyg.infra.security.common.model.IntygUser;
@@ -215,46 +210,11 @@ public class WebCertUserServiceImpl implements WebCertUserService {
             if (isReadOnlyOperation && vardgivarHsaId != null) {
                 return user.getValdVardgivare().getId().equals(vardgivarHsaId);
             }
-            return isUserLoggedInOnSameCareUnit(user, enhetsHsaId);
+            return CareUnitAccessHelper.userIsLoggedInOnEnhetOrUnderenhet(user, enhetsHsaId);
         } else if (origin.equals(UserOriginType.READONLY.name())) {
             return CareUnitAccessHelper.userIsLoggedInOnEnhetOrUnderenhet(user, enhetsHsaId);
         } else {
             return user.getIdsOfSelectedVardenhet().contains(enhetsHsaId);
         }
-    }
-
-    private boolean isUserLoggedInOnSameCareUnit(WebCertUser user, String certificateUnitId) {
-        final List<String> unitIds = new ArrayList<>();
-
-        final SelectableVardenhet loggedInUnit = user.getValdVardenhet();
-
-        if (loggedInUnit instanceof Vardenhet) {
-            unitIds.addAll(loggedInUnit.getHsaIds());
-        }
-
-        if (loggedInUnit instanceof Mottagning) {
-            final Vardenhet loggedInCareUnit = getLoggedInCareUnit(user, (Mottagning) loggedInUnit);
-            if (loggedInCareUnit != null) {
-                unitIds.addAll(loggedInCareUnit.getHsaIds());
-            } else {
-                unitIds.addAll(loggedInUnit.getHsaIds());
-            }
-        }
-
-        return unitIds.contains(certificateUnitId);
-    }
-
-    private Vardenhet getLoggedInCareUnit(WebCertUser user, Mottagning loggedInUnit) {
-        final List<Vardgivare> careProviderList = user.getVardgivare();
-        for (Vardgivare careProvider : careProviderList) {
-            for (Vardenhet careUnit : careProvider.getVardenheter()) {
-                for (Mottagning unit : careUnit.getMottagningar()) {
-                    if (unit.getId().equalsIgnoreCase(loggedInUnit.getId())) {
-                        return careUnit;
-                    }
-                }
-            }
-        }
-        return null;
     }
 }

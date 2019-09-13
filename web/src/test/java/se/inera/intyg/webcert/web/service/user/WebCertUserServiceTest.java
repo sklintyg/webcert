@@ -269,16 +269,6 @@ public class WebCertUserServiceTest extends AuthoritiesConfigurationTestSetup {
     }
 
     @Test
-    public void testUserHasAccessToMottagningMissingVardenhetWhenDJUPINTEGRATION() {
-        WebCertUser user = setupUserMottagningAccessTest();
-        user.setValdVardenhet(buildMottagning1());
-        user.setOrigin(UserOriginType.DJUPINTEGRATION.name());
-        user.getVardgivare().remove(0);
-
-        assertTrue(webcertUserService.isAuthorizedForUnit(MOTTAGNING_1, false));
-    }
-
-    @Test
     public void testUserHasNoAccessToMottagningMissingVardenhetWhenDJUPINTEGRATION() {
         WebCertUser user = setupUserMottagningAccessTest();
         user.setValdVardenhet(buildMottagning1());
