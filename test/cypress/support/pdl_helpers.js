@@ -53,6 +53,7 @@ export const enumHandelseArgument = {
     TRANSP: "Intyg skickat till mottagare TRANSP",
     AF: "Intyg skickat till mottagare AF",
     SKV: "Intyg skickat till mottagare SKV",
+    SOS: "Intyg skickat till mottagare SOS",
     LÄSASJF: "Läsning i enlighet med sammanhållen journalföring",
     UTSKRIFT: "Intyg utskrivet",
     UTSKRIFTUTKAST: "Utkastet utskrivet",
