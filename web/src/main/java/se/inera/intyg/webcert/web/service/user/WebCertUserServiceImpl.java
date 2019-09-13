@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
+
 import javax.servlet.http.HttpSession;
 
 import org.slf4j.Logger;
@@ -37,6 +38,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.annotations.VisibleForTesting;
+
 import se.inera.intyg.infra.security.authorities.AuthoritiesResolverUtil;
 import se.inera.intyg.infra.security.authorities.CommonAuthoritiesResolver;
 import se.inera.intyg.infra.security.common.model.IntygUser;
@@ -159,7 +161,6 @@ public class WebCertUserServiceImpl implements WebCertUserService {
     /**
      * Note - this is just a proxy for accessing
      * {@link CareUnitAccessHelper#userIsLoggedInOnEnhetOrUnderenhet(IntygUser, String)}.
-     *
      * @param enhetId HSA-id of a vardenhet or mottagning.
      * @return True if the current IntygUser has access to the specified enhetsId including mottagningsnivå.
      */
@@ -209,7 +210,7 @@ public class WebCertUserServiceImpl implements WebCertUserService {
             if (isReadOnlyOperation && vardgivarHsaId != null) {
                 return user.getValdVardgivare().getId().equals(vardgivarHsaId);
             }
-            return user.getIdsOfSelectedVardenhet().contains(enhetsHsaId);
+            return CareUnitAccessHelper.userIsLoggedInOnEnhetOrUnderenhet(user, enhetsHsaId);
         } else if (origin.equals(UserOriginType.READONLY.name())) {
             return CareUnitAccessHelper.userIsLoggedInOnEnhetOrUnderenhet(user, enhetsHsaId);
         } else {
