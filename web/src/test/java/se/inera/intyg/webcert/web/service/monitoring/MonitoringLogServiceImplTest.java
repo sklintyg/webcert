@@ -357,7 +357,7 @@ public class MonitoringLogServiceImplTest {
     public void shouldLogUserLogin() {
         logService.logUserLogin(HSA_ID, USER_ROLE, USER_ROLE_TYPE_NAME, AUTH_SCHEME, UserOriginType.NORMAL.name());
         verifyLog(Level.INFO,
-            "USER_LOGIN Login user 'HSA_ID' as role 'USER_ROLE' ('USER_ROLE_TYPE_NAME') using scheme 'AUTH_SCHEME' with origin 'NORMAL'");
+            "USER_LOGIN Login user 'HSA_ID' as role 'USER_ROLE' roleTypeName 'USER_ROLE_TYPE_NAME' using scheme 'AUTH_SCHEME' with origin 'NORMAL'");
     }
 
     @Test

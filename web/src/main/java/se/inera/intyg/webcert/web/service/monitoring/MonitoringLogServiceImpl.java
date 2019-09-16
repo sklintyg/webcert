@@ -349,7 +349,7 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
     private enum MonitoringEvent {
         MAIL_SENT("Mail sent to unit '{}' for {}"),
         MAIL_MISSING_ADDRESS("Mail sent to admin on behalf of unit '{}' for {}"),
-        USER_LOGIN("Login user '{}' as role '{}' ('{}') using scheme '{}' with origin '{}'"),
+        USER_LOGIN("Login user '{}' as role '{}' roleTypeName '{}' using scheme '{}' with origin '{}'"),
         USER_LOGOUT("Logout user '{}' using scheme '{}'"),
         USER_SESSION_EXPIRY("Session expired for user '{}' using scheme '{}'"),
         USER_MISSING_MIU("No valid MIU was found for user '{}'"),
