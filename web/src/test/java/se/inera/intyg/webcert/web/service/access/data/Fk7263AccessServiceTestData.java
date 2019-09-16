@@ -25,11 +25,11 @@ import java.util.List;
 
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 
-public class LisjpAccessServiceTestData implements AccessServiceTestData {
+public class Fk7263AccessServiceTestData implements AccessServiceTestData {
     private static List<String> FEATURES = Arrays.asList(
             AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST,
             AuthoritiesConstants.FEATURE_UTSKRIFT,
-            AuthoritiesConstants.PRIVILEGE_MAKULERA_INTYG,
+            AuthoritiesConstants.FEATURE_MAKULERA_INTYG,
             AuthoritiesConstants.FEATURE_SKICKA_INTYG,
             AuthoritiesConstants.FEATURE_SKAPA_NYFRAGA,
             AuthoritiesConstants.FEATURE_HANTERA_FRAGOR);
@@ -38,10 +38,7 @@ public class LisjpAccessServiceTestData implements AccessServiceTestData {
             AuthoritiesConstants.PRIVILEGE_VISA_INTYG,
             AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT,
             AuthoritiesConstants.PRIVILEGE_MAKULERA_INTYG,
-            AuthoritiesConstants.PRIVILEGE_ERSATTA_INTYG,
-            AuthoritiesConstants.PRIVILEGE_SVARA_MED_NYTT_INTYG,
             AuthoritiesConstants.PRIVILEGE_BESVARA_KOMPLETTERINGSFRAGA,
-            AuthoritiesConstants.PRIVILEGE_VIDAREBEFORDRA_FRAGASVAR,
             AuthoritiesConstants.PRIVILEGE_LASA_FRAGA,
             AuthoritiesConstants.PRIVILEGE_SKAPA_NYFRAGA,
             AuthoritiesConstants.PRIVILEGE_BESVARA_FRAGA,

@@ -183,4 +183,18 @@ public interface CertificateAccessService {
      *         AccessResult which contains the answer if the user is allowed or not.
      */
     AccessResult allowToForwardQuestions(String certificateType, Vardenhet careUnit, Personnummer patient);
+
+    /**
+     * Check if the user is allowed to set complement question as handled for a certificate.
+     *
+     * @param certificateType
+     *            The type of the certificate being checked.
+     * @param careUnit
+     *            The careUnit which the certificate belongs to.
+     * @param patient
+     *            The patient which the certificate belongs to.
+     * @return
+     *         AccessResult which contains the answer if the user is allowed or not.
+     */
+    AccessResult allowToSetComplementAsHandled(String certificateType, Vardenhet careUnit, Personnummer patient);
 }
