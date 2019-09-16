@@ -89,6 +89,7 @@ knownPrivileges:
   - &kp160 SKAPA_NY_FRAGA
   - &kp170 LASA_FRAGA
   - &kp180 BESVARA_FRAGA
+  - &kp190 KOPIERA_FRAN_KANDIDAT
 
 # De roller som systemet har
 knownRoles:
@@ -346,6 +347,13 @@ privileges:
       - *ki060 # luae_na
       - *ki070 # luae_fs
     requestOrigins: # Implicit alla
+  - &p190
+    name: *kp190
+    desc: Kopiera data från signerat intyg (kandidat) till utkast som skapats upp via djupintegration
+    intygstyper:
+      - *ki120 # ag7804
+    requestOrigins:
+      - *ro020 # DJUPINTEGRATION
 # Roller
 roles:
   - &r010
@@ -516,6 +524,11 @@ roles:
               - *ki060 # luae_na
               - *ki070 # luae_fs
           - <<: *ro030 # UTHOPP
+      - <<: *p190 # KOPIERA_FRAN_KANDIDAT
+        requestOrigins:
+          - <<: *ro020 # DJUPINTEGRATION
+            intygstyper:
+              - *ki120 # ag7804
   - &r020
     name: *kr020 # PRIVATLAKARE
     desc: Privatläkare
@@ -864,6 +877,11 @@ roles:
           - <<: *ro030 # UTHOPP
             intygstyper:
               - *ki010
+      - <<: *p190 # KOPIERA_FRAN_KANDIDAT
+        requestOrigins:
+          - <<: *ro020 # DJUPINTEGRATION
+            intygstyper:
+              - *ki120 # ag7804
   - &r040
     name: *kr040 # VARDADMINISTRATOR
     desc: Vårdadministratör

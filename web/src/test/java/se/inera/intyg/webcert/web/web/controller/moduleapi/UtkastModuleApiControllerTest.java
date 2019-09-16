@@ -21,7 +21,9 @@ package se.inera.intyg.webcert.web.web.controller.moduleapi;
 import static javax.ws.rs.core.Response.Status.OK;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -36,10 +38,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import javax.persistence.OptimisticLockException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -53,7 +55,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
-import se.inera.intyg.common.fk7263.model.internal.Fk7263Utlatande;
 import se.inera.intyg.common.services.texts.IntygTextsService;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.GrundData;
@@ -71,6 +72,7 @@ import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.Feature;
 import se.inera.intyg.infra.security.common.model.Privilege;
 import se.inera.intyg.infra.security.common.model.RequestOrigin;
+import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
@@ -91,6 +93,7 @@ import se.inera.intyg.webcert.web.service.utkast.dto.DraftValidationMessage;
 import se.inera.intyg.webcert.web.service.utkast.dto.SaveDraftResponse;
 import se.inera.intyg.webcert.web.service.utkast.dto.UtkastCandidateMetaData;
 import se.inera.intyg.webcert.web.service.utkast.util.CopyUtkastServiceHelper;
+import se.inera.intyg.webcert.web.web.controller.api.dto.CopyFromCandidateRequest;
 import se.inera.intyg.webcert.web.web.controller.api.dto.CopyIntygResponse;
 import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
@@ -99,7 +102,7 @@ import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.RevokeSignedIntyg
 import se.inera.intyg.webcert.web.web.util.access.AccessResultExceptionHelper;
 import se.inera.intyg.webcert.web.web.util.resourcelinks.ResourceLinkHelper;
 
-@RunWith(MockitoJUnitRunner.Silent.class)
+@RunWith(MockitoJUnitRunner.class)
 public class UtkastModuleApiControllerTest {
 
     private static final String CERTIFICATE_ID = "123";
@@ -181,24 +184,24 @@ public class UtkastModuleApiControllerTest {
 
         when(patientDetailsResolver.resolvePatient(any(Personnummer.class), anyString(), anyString())).thenReturn(buildPatient());
         when(moduleRegistry.getModuleApi(anyString(), anyString())).thenReturn(moduleApi);
-        when(moduleApi.getUtlatandeFromJson(anyString())).thenReturn(new Fk7263Utlatande());
         when(moduleApi.updateBeforeSave(anyString(), any(Patient.class))).thenReturn("MODEL");
     }
 
     @Test
     public void testGetDraft() throws Exception {
-        String intygTyp = "fk7263";
-        String intygId = "intyg1";
+        String intygsTyp = "fk7263";
+        String intygsId = "intyg1";
 
         setupGrundData();
-        setupUser(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG, intygTyp, false, AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);
+        setupUser(intygsTyp, false, UserOriginType.NORMAL.name(),
+            Arrays.asList(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG), Arrays.asList(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST));
 
-        when(utkastService.getDraft(CERTIFICATE_ID, intygTyp)).thenReturn(buildUtkast(intygTyp, intygId));
-        when(certificateRelationService.getRelations(eq(intygId))).thenReturn(new Relations());
+        when(utkastService.getDraft(CERTIFICATE_ID, intygsTyp)).thenReturn(buildUtkast(intygsTyp, intygsId));
+        when(certificateRelationService.getRelations(eq(intygsId))).thenReturn(new Relations());
 
-        Response response = moduleApiController.getDraft(intygTyp, CERTIFICATE_ID, request);
+        Response response = moduleApiController.getDraft(intygsTyp, CERTIFICATE_ID, request);
 
-        verify(utkastService).getDraft(CERTIFICATE_ID, intygTyp);
+        verify(utkastService).getDraft(CERTIFICATE_ID, intygsTyp);
         assertEquals(OK.getStatusCode(), response.getStatus());
     }
 
@@ -209,10 +212,8 @@ public class UtkastModuleApiControllerTest {
         String intygsId = "gdspinae-intygsId";
 
         setupGrundData();
-        setupUser(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG, intygsTyp, false, AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);
-
-        when(utkastService.getDraft(CERTIFICATE_ID, intygsTyp)).thenReturn(buildUtkast(intygsTyp, intygsId));
-        when(certificateRelationService.getRelations(eq(intygsId))).thenReturn(new Relations());
+        setupUser(intygsTyp, false, UserOriginType.NORMAL.name(),
+            Arrays.asList(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG), Arrays.asList(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST));
 
         String postadress = "gdspinae-postadress";
         String postort = "gdspinae-postort";
@@ -244,7 +245,8 @@ public class UtkastModuleApiControllerTest {
         String intygsId = "gdsnpinaii-intygsId";
 
         setupGrundData();
-        setupUser(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG, intygsTyp, false, AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);
+        setupUser(intygsTyp, false, UserOriginType.NORMAL.name(),
+            Arrays.asList(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG), Arrays.asList(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST));
 
 
         when(utkastService.getDraft(CERTIFICATE_ID, intygsTyp)).thenReturn(buildUtkast(intygsTyp, intygsId));
@@ -273,93 +275,104 @@ public class UtkastModuleApiControllerTest {
 
     @Test
     public void testSaveDraft() {
-        String intygTyp = "fk7263";
-        String intygId = "intyg1";
+        String intygsTyp = "fk7263";
+        String intygsId = "intyg1";
         String draftAsJson = "test";
         byte[] payload = draftAsJson.getBytes();
-        setupUser(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG, intygTyp, false, AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);
 
-        when(utkastService.saveDraft(intygId, UTKAST_VERSION, draftAsJson, true))
+        setupUser(intygsTyp, false, UserOriginType.NORMAL.name(),
+            Arrays.asList(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG), Arrays.asList(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST));
+
+        when(utkastService.saveDraft(intygsId, UTKAST_VERSION, draftAsJson, true))
             .thenReturn(new SaveDraftResponse(UTKAST_VERSION, UtkastStatus.DRAFT_COMPLETE));
 
         doReturn(buildUtkast("intygtyp", "intygsid")).when(utkastService).getDraft(anyString(), anyString(), anyBoolean());
 
-        Response response = moduleApiController.saveDraft(intygTyp, intygId, UTKAST_VERSION, false, payload, request);
+        Response response = moduleApiController.saveDraft(intygsTyp, intygsId, UTKAST_VERSION, false, payload, request);
 
-        verify(utkastService).saveDraft(intygId, UTKAST_VERSION, draftAsJson, true);
+        verify(utkastService).saveDraft(intygsId, UTKAST_VERSION, draftAsJson, true);
         assertEquals(OK.getStatusCode(), response.getStatus());
     }
 
     @Test(expected = WebCertServiceException.class)
     public void testSaveDraftOptimisticLockException() {
-        String intygTyp = "fk7263";
-        String intygId = "intyg1";
+        String intygsTyp = "fk7263";
+        String intygsId = "intyg1";
         String draftAsJson = "test";
         byte[] payload = draftAsJson.getBytes();
-        setupUser(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG, intygTyp, false, AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);
 
-        when(utkastService.saveDraft(intygId, UTKAST_VERSION, draftAsJson, true)).thenThrow(new OptimisticLockException(""));
+        setupUser(intygsTyp, false, UserOriginType.NORMAL.name(),
+            Arrays.asList(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG), Arrays.asList(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST));
+
+        when(utkastService.saveDraft(intygsId, UTKAST_VERSION, draftAsJson, true)).thenThrow(new OptimisticLockException(""));
         doReturn(buildUtkast("intygtyp", "intygsid")).when(utkastService).getDraft(anyString(), anyString(), anyBoolean());
 
         try {
-            moduleApiController.saveDraft(intygTyp, intygId, UTKAST_VERSION, false, payload, request);
+            moduleApiController.saveDraft(intygsTyp, intygsId, UTKAST_VERSION, false, payload, request);
         } finally {
-            verify(monitoringLogService).logUtkastConcurrentlyEdited(intygId, intygTyp);
+            verify(monitoringLogService).logUtkastConcurrentlyEdited(intygsId, intygsTyp);
         }
     }
 
     @Test
     public void testValidateDraft() {
-        String intygTyp = "fk7263";
-        String intygId = "intyg1";
+        String intygsTyp = "fk7263";
+        String intygsId = "intyg1";
         String draftAsJson = "test";
         byte[] payload = draftAsJson.getBytes();
-        setupUser(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG, intygTyp, false, AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);
 
-        when(utkastService.validateDraft(intygId, intygTyp, draftAsJson)).thenReturn(buildDraftValidation());
+        setupUser(intygsTyp, false, UserOriginType.NORMAL.name(),
+            Arrays.asList(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG), Arrays.asList(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST));
+
+        when(utkastService.validateDraft(intygsId, intygsTyp, draftAsJson)).thenReturn(buildDraftValidation());
 
         doReturn(buildUtkast("intygtyp", "intygsid")).when(utkastService).getDraft(anyString(), anyString(), anyBoolean());
 
-        Response response = moduleApiController.validateDraft(intygTyp, intygId, payload);
+        Response response = moduleApiController.validateDraft(intygsTyp, intygsId, payload);
 
-        verify(utkastService).validateDraft(intygId, intygTyp, draftAsJson);
+        verify(utkastService).validateDraft(intygsId, intygsTyp, draftAsJson);
         assertEquals(OK.getStatusCode(), response.getStatus());
     }
 
     @Test
     public void testDiscardDraft() {
-        String intygTyp = "fk7263";
-        String intygId = "intyg1";
-        setupUser(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG, intygTyp, false, AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);
+        String intygsTyp = "fk7263";
+        String intygsId = "intyg1";
+
+        setupUser(intygsTyp, false, UserOriginType.NORMAL.name(),
+            Arrays.asList(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG), Arrays.asList(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST));
 
         doReturn(buildUtkast("intygtyp", "intygsid")).when(utkastService).getDraft(anyString(), anyString(), anyBoolean());
 
-        Response response = moduleApiController.discardDraft(intygTyp, intygId, UTKAST_VERSION, request);
+        Response response = moduleApiController.discardDraft(intygsTyp, intygsId, UTKAST_VERSION, request);
 
-        verify(utkastService).deleteUnsignedDraft(intygId, UTKAST_VERSION);
+        verify(utkastService).deleteUnsignedDraft(intygsId, UTKAST_VERSION);
         assertEquals(OK.getStatusCode(), response.getStatus());
     }
 
     @Test
     public void testValidateDraftWithWarningsArePropagatedToCaller() {
-        String intygTyp = "fk7263";
-        String intygId = "intyg1";
+        String intygsTyp = "fk7263";
+        String intygsId = "intyg1";
         String draftAsJson = "test";
         byte[] payload = draftAsJson.getBytes();
-        setupUser(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG, intygTyp, false, AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);
+
+        setupUser(intygsTyp, false, UserOriginType.NORMAL.name(),
+            Arrays.asList(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG), Arrays.asList(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST));
+
         DraftValidation draftValidation = buildDraftValidation();
         draftValidation.addWarning(
             new DraftValidationMessage("category", "field", ValidationMessageType.WARN, "this.is.a.message", "dy.nam.ic.key"));
 
-        when(utkastService.validateDraft(intygId, intygTyp, draftAsJson)).thenReturn(draftValidation);
+        when(utkastService.validateDraft(intygsId, intygsTyp, draftAsJson)).thenReturn(draftValidation);
 
         doReturn(buildUtkast("intygtyp", "intygsid")).when(utkastService).getDraft(anyString(), anyString(), anyBoolean());
 
-        Response response = moduleApiController.validateDraft(intygTyp, intygId, payload);
+        Response response = moduleApiController.validateDraft(intygsTyp, intygsId, payload);
 
         DraftValidation entity = (DraftValidation) response.getEntity();
 
-        verify(utkastService).validateDraft(intygId, intygTyp, draftAsJson);
+        verify(utkastService).validateDraft(intygsId, intygsTyp, draftAsJson);
         assertEquals(OK.getStatusCode(), response.getStatus());
         assertEquals(ValidationStatus.VALID, entity.getStatus());
         assertEquals(0, entity.getMessages().size());
@@ -368,118 +381,159 @@ public class UtkastModuleApiControllerTest {
 
     @Test
     public void testCopyUtkast() {
-        String intygId = "intygId";
-        String newIntygId = "newIntygId";
-        String intygTyp = "fk7263";
-        String intygTypeVersion = INTYG_TYPE_VERSION;
+        String intygsId = "intygId";
+        String intygsTyp = "fk7263";
+        String intygsTypVersion = INTYG_TYPE_VERSION;
+        String newIntygsId = "newIntygId";
 
-        setupUser(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG, intygTyp, false, AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);
+        setupUser(intygsTyp, false, UserOriginType.NORMAL.name(),
+            Arrays.asList(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG), Arrays.asList(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST));
 
         Utkast utkast = new Utkast();
         utkast.setPatientPersonnummer(Personnummer.createPersonnummer("19121212-1212").get());
-        when(utkastService.getDraft(eq(intygId), eq(intygTyp))).thenReturn(utkast);
+        when(utkastService.getDraft(eq(intygsId), eq(intygsTyp))).thenReturn(utkast);
 
         ArgumentCaptor<CreateUtkastFromTemplateRequest> captor = ArgumentCaptor.forClass(CreateUtkastFromTemplateRequest.class);
         when(copyUtkastService.createUtkastCopy(captor.capture()))
-            .thenReturn(new CreateUtkastFromTemplateResponse(intygTyp, intygTypeVersion, newIntygId, intygId));
+            .thenReturn(new CreateUtkastFromTemplateResponse(intygsTyp, intygsTypVersion, newIntygsId, intygsId));
 
-        Response response = moduleApiController.copyUtkast(intygTyp, intygId);
+        Response response = moduleApiController.copyUtkast(intygsTyp, intygsId);
 
         verify(copyUtkastService).createUtkastCopy(any());
         verifyNoMoreInteractions(copyUtkastService);
-        assertEquals(newIntygId, ((CopyIntygResponse) response.getEntity()).getIntygsUtkastId());
-        assertEquals(intygTyp, ((CopyIntygResponse) response.getEntity()).getIntygsTyp());
+        assertEquals(newIntygsId, ((CopyIntygResponse) response.getEntity()).getIntygsUtkastId());
+        assertEquals(intygsTyp, ((CopyIntygResponse) response.getEntity()).getIntygsTyp());
     }
 
     @Test
     public void testCopyUtkastKopieraOKFalse() {
-        String intygTyp = "fk7263";
-        String intygId = "intyg1";
-        String intygTypeVersion = INTYG_TYPE_VERSION;
+        String intygsTyp = "fk7263";
+        String intygsId = "intyg1";
+        String intygsTypVersion = INTYG_TYPE_VERSION;
         String newIntygId = "newIntygId";
+
         IntegrationParameters integrationParameters = IntegrationParameters.of("", "", "", "", "", "", "", "", "", false, false, false,
             false);
-        setupUser(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG, intygTyp, integrationParameters,
-            AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);
+
+        setupUser(intygsTyp, integrationParameters, UserOriginType.NORMAL.name(),
+            Arrays.asList(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG), Arrays.asList(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST));
 
         Utkast utkast = new Utkast();
         utkast.setPatientPersonnummer(createPnr("19121212-1212"));
-        when(utkastService.getDraft(eq(intygId), eq(intygTyp))).thenReturn(utkast);
+        when(utkastService.getDraft(eq(intygsId), eq(intygsTyp))).thenReturn(utkast);
 
         ArgumentCaptor<CreateUtkastFromTemplateRequest> captor = ArgumentCaptor.forClass(CreateUtkastFromTemplateRequest.class);
         when(copyUtkastService.createUtkastCopy(captor.capture()))
-            .thenReturn(new CreateUtkastFromTemplateResponse(intygTyp, intygTypeVersion, newIntygId, intygId));
+            .thenReturn(new CreateUtkastFromTemplateResponse(intygsTyp, intygsTypVersion, newIntygId, intygsId));
 
-        Response response = moduleApiController.copyUtkast(intygTyp, intygId);
+        Response response = moduleApiController.copyUtkast(intygsTyp, intygsId);
 
         verify(copyUtkastService).createUtkastCopy(any());
         verifyNoMoreInteractions(copyUtkastService);
         assertEquals(newIntygId, ((CopyIntygResponse) response.getEntity()).getIntygsUtkastId());
-        assertEquals(intygTyp, ((CopyIntygResponse) response.getEntity()).getIntygsTyp());
+        assertEquals(intygsTyp, ((CopyIntygResponse) response.getEntity()).getIntygsTyp());
     }
 
     @Test
     public void testRevokeLockedDraft() {
-        String intygTyp = "fk7263";
-        String intygId = "intyg1";
-        setupUser(AuthoritiesConstants.PRIVILEGE_MAKULERA_INTYG, intygTyp, false, AuthoritiesConstants.FEATURE_MAKULERA_INTYG);
+        String intygsTyp = "fk7263";
+        String intygsId = "intyg1";
+
+        setupUser(intygsTyp, false, UserOriginType.NORMAL.name(),
+            Arrays.asList(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG), Arrays.asList(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST));
+
         RevokeSignedIntygParameter param = new RevokeSignedIntygParameter();
 
         doReturn(buildUtkast("intygtyp", "intygsid")).when(utkastService).getDraft(anyString(), anyString(), anyBoolean());
 
-        Response response = moduleApiController.revokeLockedDraft(intygTyp, intygId, param);
+        Response response = moduleApiController.revokeLockedDraft(intygsTyp, intygsId, param);
 
-        verify(utkastService).revokeLockedDraft(intygId, intygTyp, param.getMessage(), param.getReason());
+        verify(utkastService).revokeLockedDraft(intygsId, intygsTyp, param.getMessage(), param.getReason());
         assertEquals(OK.getStatusCode(), response.getStatus());
     }
 
     @Test
-    public void testUtkastCandidateWhenCriteriasFound() throws Exception {
-        String intygIdCandidate = "candidate-intyg-id";
-        String intygType = "ag7804";
+    public void verifyCandidateMetaDataWhenCandidateFound() throws Exception {
+        String intygsId = CERTIFICATE_ID;
+        String intygsTyp = "ag7804";
+        String intygsIdCandidate = "candidate-intyg-id";
+        String intygsTypCandidate = "lisjp";
 
         setupGrundData();
-        setupUser(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG, intygType, false, AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);
+        setupUser(intygsTyp, false, UserOriginType.NORMAL.name(),
+            Arrays.asList(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG), Arrays.asList(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST));
 
-        when(certificateRelationService.getRelations(eq(CERTIFICATE_ID)))
+        when(certificateRelationService.getRelations(eq(intygsId)))
             .thenReturn(new Relations());
-        when(utkastService.getDraft(CERTIFICATE_ID, intygType))
-            .thenReturn(buildUtkast(intygType, CERTIFICATE_ID, 0L, UtkastStatus.DRAFT_INCOMPLETE));
+        when(utkastService.getDraft(intygsId, intygsTyp))
+            .thenReturn(buildUtkast(intygsTyp, intygsId, 0L, UtkastStatus.DRAFT_INCOMPLETE));
         when(utkastCandidateService.getCandidateMetaData(any(ModuleApi.class), any(Patient.class), anyBoolean()))
-            .thenReturn(Optional.of(createCandidateMetaData(intygIdCandidate, intygType, INTYG_TYPE_VERSION)));
+            .thenReturn(Optional.of(createCandidateMetaData(intygsIdCandidate, intygsTypCandidate, INTYG_TYPE_VERSION)));
 
-        Response response = moduleApiController.getDraft(intygType, CERTIFICATE_ID, request);
+        Response response = moduleApiController.getDraft(intygsTyp, intygsId, request);
 
-        verify(utkastService).getDraft(CERTIFICATE_ID, intygType);
+        verify(utkastService).getDraft(intygsId, intygsTyp);
         verify(utkastCandidateService).getCandidateMetaData(any(ModuleApi.class), any(Patient.class), anyBoolean());
 
         DraftHolder draftHolder = (DraftHolder) response.getEntity();
-        assertEquals(intygIdCandidate, draftHolder.getCandidateMetaData().getIntygId());
-        assertEquals(intygType, draftHolder.getCandidateMetaData().getIntygType());
+        assertEquals(intygsIdCandidate, draftHolder.getCandidateMetaData().getIntygId());
+        assertEquals(intygsTypCandidate, draftHolder.getCandidateMetaData().getIntygType());
         assertEquals(INTYG_TYPE_VERSION, draftHolder.getCandidateMetaData().getIntygTypeVersion());
     }
 
     @Test
-    public void testUtkastCandidateWhenNoCriteriasFound() throws Exception {
-        String intygType = "ag7804";
+    public void verifyCandidateMetaDataWhenCandidateNotFound() throws Exception {
+        String intygsId = CERTIFICATE_ID;
+        String intygsTyp = "ag7804";
 
         setupGrundData();
-        setupUser(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG, intygType, false, AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);
+        setupUser(intygsTyp, false, UserOriginType.NORMAL.name(),
+            Arrays.asList(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG), Arrays.asList(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST));
 
-        when(certificateRelationService.getRelations(eq(CERTIFICATE_ID)))
+        when(certificateRelationService.getRelations(eq(intygsId)))
             .thenReturn(new Relations());
-        when(utkastService.getDraft(CERTIFICATE_ID, intygType))
-            .thenReturn(buildUtkast(intygType, CERTIFICATE_ID, 0L, UtkastStatus.DRAFT_INCOMPLETE));
+        when(utkastService.getDraft(intygsId, intygsTyp))
+            .thenReturn(buildUtkast(intygsTyp, intygsId, 0L, UtkastStatus.DRAFT_INCOMPLETE));
         when(utkastCandidateService.getCandidateMetaData(any(ModuleApi.class), any(Patient.class), anyBoolean()))
             .thenReturn(Optional.ofNullable(null));
 
-        Response response = moduleApiController.getDraft(intygType, CERTIFICATE_ID, request);
+        Response response = moduleApiController.getDraft(intygsTyp, intygsId, request);
 
-        verify(utkastService).getDraft(CERTIFICATE_ID, intygType);
+        verify(utkastService).getDraft(intygsId, intygsTyp);
         verify(utkastCandidateService).getCandidateMetaData(any(ModuleApi.class), any(Patient.class), anyBoolean());
 
         DraftHolder draftHolder = (DraftHolder) response.getEntity();
         assertNull(draftHolder.getCandidateMetaData());
+    }
+
+    @Test
+    public void updateUtkastWithDataFromCandidate() throws Exception {
+        String intygsId = CERTIFICATE_ID;
+        String intygsTyp = "ag7804";
+        String intygsIdCandidate = "candidate-intyg-id";
+        String intygsTypCandidate = "lisjp";
+
+        setupGrundData();
+        setupUser(intygsTyp, false, UserOriginType.DJUPINTEGRATION.name(),
+            Arrays.asList(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG, AuthoritiesConstants.PRIVILEGE_COPY_FROM_CANDIDATE),
+            Arrays.asList(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST));
+
+        when(utkastService.updateDraftFromCandidate(anyString(), anyString(), anyString(), anyString()))
+            .thenReturn(new SaveDraftResponse(1L, UtkastStatus.DRAFT_INCOMPLETE));
+
+        CopyFromCandidateRequest request = new CopyFromCandidateRequest();
+        request.setCandidateId(intygsIdCandidate);
+        request.setCandidateType(intygsTypCandidate);
+        request.setCandidateTypeVersion(INTYG_TYPE_VERSION);
+
+        Response response = moduleApiController.copyFromCandidate(intygsTyp, intygsId, request);
+
+        verify(utkastService).updateDraftFromCandidate(anyString(), anyString(), anyString(), anyString());
+
+        SaveDraftResponse saveDraftResponse = (SaveDraftResponse) response.getEntity();
+        assertNotNull(saveDraftResponse);
+        assertTrue(saveDraftResponse.getVersion() > 0);
+        assertEquals(UtkastStatus.DRAFT_INCOMPLETE, saveDraftResponse.getStatus());
     }
 
     private UtkastCandidateMetaData createCandidateMetaData(String intygId, String intygType, String intygTypeVersion) {
@@ -545,17 +599,18 @@ public class UtkastModuleApiControllerTest {
         doReturn(skapadAv).when(grundData).getSkapadAv();
     }
 
-    private void setupUser(String privilegeString, String intygType, boolean coherentJournaling, String... features) {
+    private void setupUser(String intygType, boolean coherentJournaling, String origin, List<String> privileges, List<String> features) {
         IntegrationParameters integrationParameters = new IntegrationParameters("", "", "", "", "", "", "", "", "", coherentJournaling,
             false, false, true);
-
-        setupUser(privilegeString, intygType, integrationParameters, features);
+        setupUser(intygType, integrationParameters, origin, privileges, features);
     }
 
-    private void setupUser(String privilegeString, String intygType, IntegrationParameters integrationParameters, String... features) {
+    private void setupUser(String intygType, IntegrationParameters integrationParameters,
+        String origin, List<String> privileges, List<String> features) {
+
         WebCertUser user = new WebCertUser();
         user.setAuthorities(new HashMap<>());
-        user.setFeatures(Stream.of(features).collect(Collectors.toMap(Function.identity(), s -> {
+        user.setFeatures(features.stream().collect(Collectors.toMap(Function.identity(), s -> {
             Feature feature = new Feature();
             feature.setName(s);
             feature.setIntygstyper(Arrays.asList(intygType));
@@ -566,6 +621,7 @@ public class UtkastModuleApiControllerTest {
 
         Privilege privilege = new Privilege();
         privilege.setIntygstyper(Arrays.asList(intygType));
+        privileges.forEach(s -> user.getAuthorities().put(s, privilege));
 
         RequestOrigin requestOrigin = new RequestOrigin();
         requestOrigin.setName("NORMAL");
@@ -573,8 +629,7 @@ public class UtkastModuleApiControllerTest {
 
         privilege.setRequestOrigins(Arrays.asList(requestOrigin));
 
-        user.getAuthorities().put(privilegeString, privilege);
-        user.setOrigin("NORMAL");
+        user.setOrigin(requestOrigin.getName());
         user.setAuthenticationMethod(AuthenticationMethod.FAKE);
 
         this.webCertUser = user;

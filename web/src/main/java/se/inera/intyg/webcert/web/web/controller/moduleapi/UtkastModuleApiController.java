@@ -44,7 +44,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.OptimisticLockingFailureException;
 import se.inera.intyg.common.services.texts.IntygTextsService;
 import se.inera.intyg.common.support.model.UtkastStatus;
-import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.model.common.internal.Patient;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.support.model.common.internal.Vardenhet;
@@ -59,7 +58,6 @@ import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
-import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.intyg.webcert.web.service.access.AccessResult;
 import se.inera.intyg.webcert.web.service.access.DraftAccessService;
 import se.inera.intyg.webcert.web.service.access.LockedDraftAccessService;
@@ -102,6 +100,9 @@ public class UtkastModuleApiController extends AbstractApiController {
     private UtkastService utkastService;
 
     @Autowired
+    private UtkastCandidateServiceImpl utkastCandidateService;
+
+    @Autowired
     private MonitoringLogService monitoringLogService;
 
     @Autowired
@@ -133,9 +134,6 @@ public class UtkastModuleApiController extends AbstractApiController {
 
     @Autowired
     private AccessResultExceptionHelper accessResultExceptionHelper;
-
-    @Autowired
-    private UtkastCandidateServiceImpl utkastCandidateService;
 
     /*
     @Autowired
@@ -293,7 +291,7 @@ public class UtkastModuleApiController extends AbstractApiController {
     }
 
     /**
-     * Copy data from a signed certificate (candidate) to an existing draft
+     * Copy data from a signed certificate (candidate) to an existing draft.
      */
     @POST
     @Path("/{intygsTyp}/{intygsId}/copyfromcandidate")
@@ -309,7 +307,7 @@ public class UtkastModuleApiController extends AbstractApiController {
             request.getCandidateType(), request.getCandidateId(), intygsTyp, intygsId);
 
         try {
-            SaveDraftResponse response = utkastService.updateDraft(
+            SaveDraftResponse response = utkastService.updateDraftFromCandidate(
                 request.getCandidateId(), request.getCandidateType(), intygsId, intygsTyp);
 
             return Response.ok().entity(response).build();
@@ -323,23 +321,6 @@ public class UtkastModuleApiController extends AbstractApiController {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, e.getMessage());
         }
     }
-
-    private HoSPersonal createHoSPersonal(VardpersonReferens skapadAv) {
-        HoSPersonal hoSPersonal = new HoSPersonal();
-        hoSPersonal.setPersonId(skapadAv.getHsaId());
-        hoSPersonal.setFullstandigtNamn(skapadAv.getNamn());
-        return hoSPersonal;
-    }
-
-    private Patient createPatient(Utkast utkast) {
-        Patient patient = new Patient();
-        patient.setPersonId(utkast.getPatientPersonnummer());
-        patient.setFornamn(utkast.getPatientFornamn());
-        patient.setMellannamn(utkast.getPatientMellannamn());
-        patient.setEfternamn(utkast.getPatientEfternamn());
-        return patient;
-    }
-
 
     /**
      * Create a new utkast from locked utkast.

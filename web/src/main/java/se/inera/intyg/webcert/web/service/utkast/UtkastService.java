@@ -63,12 +63,11 @@ public interface UtkastService {
      *
      * @return {@link UpdateUtkastFromTemplateRequest}
      */
-    SaveDraftResponse updateDraft(String fromIntygId, String fromIntygType, String toUtkastId, String toUtkastType);
+    SaveDraftResponse updateDraftFromCandidate(String fromIntygId, String fromIntygType, String toUtkastId, String toUtkastType);
 
     Utkast setNotifiedOnDraft(String intygsId, long version, Boolean notified);
 
     SaveDraftResponse saveDraft(String intygId, long version, String draftAsJson, boolean createPdlLogEvent);
-
 
     void updatePatientOnDraft(UpdatePatientOnDraftRequest request);
 
