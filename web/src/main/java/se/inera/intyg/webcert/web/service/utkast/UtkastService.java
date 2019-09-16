@@ -31,7 +31,6 @@ import se.inera.intyg.webcert.web.service.utkast.dto.DraftValidation;
 import se.inera.intyg.webcert.web.service.utkast.dto.PreviousIntyg;
 import se.inera.intyg.webcert.web.service.utkast.dto.SaveDraftResponse;
 import se.inera.intyg.webcert.web.service.utkast.dto.UpdatePatientOnDraftRequest;
-import se.inera.intyg.webcert.web.service.utkast.dto.UpdateUtkastFromTemplateRequest;
 
 public interface UtkastService {
 
@@ -59,9 +58,9 @@ public interface UtkastService {
     Utkast getDraft(String intygId, String intygType, boolean createPdlLogEvent);
 
     /**
-     * Update a utkast with data from an existing certificate.
+     * Updates an Utkast with data from an existing signed certificate.
      *
-     * @return {@link UpdateUtkastFromTemplateRequest}
+     * @return {@link SaveDraftResponse}
      */
     SaveDraftResponse updateDraftFromCandidate(String fromIntygId, String fromIntygType, String toUtkastId, String toUtkastType);
 

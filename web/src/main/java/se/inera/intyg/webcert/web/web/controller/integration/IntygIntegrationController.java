@@ -64,7 +64,7 @@ import se.inera.intyg.webcert.web.web.controller.integration.dto.PrepareRedirect
  * @author bensam
  */
 @Path("/intyg")
-@Api(value = "intyg (Dj upintegration)", description = "REST API för Djupintegration", produces = MediaType.APPLICATION_JSON)
+@Api(value = "intyg (Djupintegration)", description = "REST API för Djupintegration", produces = MediaType.APPLICATION_JSON)
 // CHECKSTYLE:OFF ParameterNumber
 public class IntygIntegrationController extends BaseIntegrationController {
 

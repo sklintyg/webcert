@@ -24,7 +24,7 @@ import java.util.function.Consumer;
 /**
  * @author Magnus Ekstrand on 2019-08-27.
  */
-public class UtkastCandidateMetaData {
+public final class UtkastCandidateMetaData {
 
     private String intygId;
     private String intygType;

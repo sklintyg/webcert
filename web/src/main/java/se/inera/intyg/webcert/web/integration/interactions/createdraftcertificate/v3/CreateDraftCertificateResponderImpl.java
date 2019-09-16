@@ -32,8 +32,6 @@ import se.inera.intyg.common.support.integration.converter.util.ResultTypeUtil;
 import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.common.support.model.common.internal.Vardgivare;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
-import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
-import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
 import se.inera.intyg.infra.security.authorities.validation.AuthoritiesValidator;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
@@ -164,7 +162,7 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
         WebCertServiceErrorCodeEnum uniqueErrorCode = utkastUnique.orElse(intygUnique.orElse(null));
 
         if (uniqueErrorCode != null) {
-            String uniqueErrorString = null;
+            String uniqueErrorString;
             switch (uniqueErrorCode) {
                 case UTKAST_FROM_SAME_VARDGIVARE_EXISTS:
                     uniqueErrorString = "Draft of this type must be unique within caregiver.";
@@ -195,16 +193,6 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
         // Standard draft creation
         Utkast utkast = createNewDraft(utkastsParams, latestIntygTypeVersion, user);
 
-        ////////////////////////////////////////////////////////////////////////////////////////////////////
-        // TODO: Move this to UtkastModuleApiController
-        // Check if we should prefill values from other signed intyg
-        //ModuleApi moduleApi = getModuleApi(intygsTyp, latestIntygTypeVersion);
-        //Optional<GetCopyFromCandidate> copyFromCandidate = getCopyFromCandidate(moduleApi, user, personnummer);
-        //if (copyFromCandidate.isPresent()) {
-        //    decorateNewDraftFromCopyCandidate(utkast, moduleApi, copyFromCandidate.get(), intygsTyp, user);
-        //}
-        ////////////////////////////////////////////////////////////////////////////////////////////////////
-
         return createSuccessResponse(utkast.getIntygsId(), invokingUnitHsaId);
     }
 
@@ -220,16 +208,6 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
         addVardenhetToRegistry(draftRequest);
 
         return utkastService.createNewDraft(draftRequest);
-    }
-
-
-    private ModuleApi getModuleApi(String intygsTyp, String latestIntygTypeVersion) {
-        try {
-            return moduleRegistry.getModuleApi(intygsTyp, latestIntygTypeVersion);
-        } catch (ModuleNotFoundException e) {
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM,
-                "Failed to get getModuleApi for intygsType " + intygsTyp + ", version " + latestIntygTypeVersion, e);
-        }
     }
 
     /**

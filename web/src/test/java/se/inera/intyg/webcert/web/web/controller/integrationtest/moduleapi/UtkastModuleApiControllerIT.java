@@ -213,7 +213,6 @@ public class UtkastModuleApiControllerIT extends BaseRestIntegrationTest {
     @Test
     public void testCopyFromCandidate() {
         String intygType = "lisjp";
-        String intygTypeVersion = "1.0";
         String utkastType = "ag7804";
 
         // Set up auth precondition
@@ -228,7 +227,6 @@ public class UtkastModuleApiControllerIT extends BaseRestIntegrationTest {
         CopyFromCandidateRequest request = new CopyFromCandidateRequest();
         request.setCandidateId(intygId);
         request.setCandidateType(intygType);
-        request.setCandidateTypeVersion(intygTypeVersion);
 
         spec()
             .body(request)

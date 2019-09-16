@@ -524,7 +524,6 @@ public class UtkastModuleApiControllerTest {
         CopyFromCandidateRequest request = new CopyFromCandidateRequest();
         request.setCandidateId(intygsIdCandidate);
         request.setCandidateType(intygsTypCandidate);
-        request.setCandidateTypeVersion(INTYG_TYPE_VERSION);
 
         Response response = moduleApiController.copyFromCandidate(intygsTyp, intygsId, request);
 

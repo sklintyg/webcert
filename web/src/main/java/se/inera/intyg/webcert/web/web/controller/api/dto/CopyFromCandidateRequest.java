@@ -22,8 +22,6 @@ public class CopyFromCandidateRequest {
 
     private String candidateId;
     private String candidateType;
-    private String candidateTypeVersion;
-
 
     // getters and setters
 
@@ -43,11 +41,4 @@ public class CopyFromCandidateRequest {
         this.candidateType = candidateType;
     }
 
-    public String getCandidateTypeVersion() {
-        return candidateTypeVersion;
-    }
-
-    public void setCandidateTypeVersion(String candidateTypeVersion) {
-        this.candidateTypeVersion = candidateTypeVersion;
-    }
 }
