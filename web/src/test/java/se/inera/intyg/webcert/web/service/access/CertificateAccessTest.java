@@ -1042,6 +1042,106 @@ public abstract class CertificateAccessTest extends AccessTest {
     abstract protected void assertAllowToAnswerAdminQuestionNoConditionsDifferentUnit(AccessResult actualValue);
 
     @Test
+    public void isAllowToSetComplementAsHandledNoConditions() {
+        setupMocksForNoConditions();
+
+        assertAllowToSetComplementAsHandledNoConditions(
+                accessService.allowToSetComplementAsHandled(intygsTyp, vardenhet, PERSONNUMMER));
+    }
+
+    abstract protected void assertAllowToSetComplementAsHandledNoConditions(AccessResult actualValue);
+
+    @Test
+    public void isAllowToSetComplementAsHandledOnDeceasedPatient() {
+        setupMocksForDeceasedPatient();
+
+        assertAllowToSetComplementAsHandledOnDeceasedPatient(
+                accessService.allowToSetComplementAsHandled(intygsTyp, vardenhet, PERSONNUMMER));
+    }
+
+    abstract protected void assertAllowToSetComplementAsHandledOnDeceasedPatient(AccessResult actualValue);
+
+    @Test
+    public void isAllowToSetComplementAsHandledOnInactiveUnit() {
+        setupMocksForInactiveUnit();
+
+        assertAllowToSetComplementAsHandledOnInactiveUnit(
+                accessService.allowToSetComplementAsHandled(intygsTyp, vardenhet, PERSONNUMMER));
+    }
+
+    abstract protected void assertAllowToSetComplementAsHandledOnInactiveUnit(AccessResult actualValue);
+
+    @Test
+    public void isAllowToSetComplementAsHandledOnRenewFalse() {
+        setupMocksForOnRenewFalse();
+
+        assertAllowToSetComplementAsHandledOnRenewFalse(
+                accessService.allowToSetComplementAsHandled(intygsTyp, vardenhet, PERSONNUMMER));
+    }
+
+    abstract protected void assertAllowToSetComplementAsHandledOnRenewFalse(AccessResult actualValue);
+
+    @Test
+    public void isAllowToSetComplementAsHandledOnSekretessPatientOnSameUnit() {
+        setupMocksForOnSekretessPatient();
+
+        assertAllowToSetComplementAsHandledOnSekretessPatientOnSameUnit(
+                accessService.allowToSetComplementAsHandled(intygsTyp, vardenhet, PERSONNUMMER));
+    }
+
+    abstract protected void assertAllowToSetComplementAsHandledOnSekretessPatientOnSameUnit(AccessResult actualValue);
+
+    @Test
+    public void isAllowToSetComplementAsHandledOnSekretessPatientOnDifferentUnit() {
+        setupMocksForOnSekretessPatientDifferentUnit();
+
+        assertAllowToSetComplementAsHandledOnSekretessPatientOnDifferentUnit(
+                accessService.allowToSetComplementAsHandled(intygsTyp, vardenhet, PERSONNUMMER));
+    }
+
+    abstract protected void assertAllowToSetComplementAsHandledOnSekretessPatientOnDifferentUnit(AccessResult actualValue);
+
+    @Test
+    public void isAllowToSetComplementAsHandledOnDeceasedPatientOnDifferentUnit() {
+        setupMocksForDeceasedPatientDifferentUnit();
+
+        assertAllowToSetComplementAsHandledOnDeceasedPatientOnDifferentUnit(
+                accessService.allowToSetComplementAsHandled(intygsTyp, vardenhet, PERSONNUMMER));
+    }
+
+    abstract protected void assertAllowToSetComplementAsHandledOnDeceasedPatientOnDifferentUnit(AccessResult actualValue);
+
+    @Test
+    public void isAllowToSetComplementAsHandledOnInactiveUnitOnDifferentUnit() {
+        setupMocksForInactiveUnitDifferentUnit();
+
+        assertAllowToSetComplementAsHandledOnInactiveUnitOnDifferentUnit(
+                accessService.allowToSetComplementAsHandled(intygsTyp, vardenhet, PERSONNUMMER));
+    }
+
+    abstract protected void assertAllowToSetComplementAsHandledOnInactiveUnitOnDifferentUnit(AccessResult actualValue);
+
+    @Test
+    public void isAllowToSetComplementAsHandledOnRenewFalseOnDifferentUnit() {
+        setupMocksForOnRenewFalseDifferentUnit();
+
+        assertAllowToSetComplementAsHandledOnRenewFalseOnDifferentUnit(
+                accessService.allowToSetComplementAsHandled(intygsTyp, vardenhet, PERSONNUMMER));
+    }
+
+    abstract protected void assertAllowToSetComplementAsHandledOnRenewFalseOnDifferentUnit(AccessResult actualValue);
+
+    @Test
+    public void isAllowToSetComplementAsHandledNoConditionsDifferentUnit() {
+        setupMocksForNoConditionsDifferentUnit();
+
+        assertAllowToSetComplementAsHandledNoConditionsDifferentUnit(
+                accessService.allowToSetComplementAsHandled(intygsTyp, vardenhet, PERSONNUMMER));
+    }
+
+    abstract protected void assertAllowToSetComplementAsHandledNoConditionsDifferentUnit(AccessResult actualValue);
+
+    @Test
     public void isAllowToReadQuestionsNoConditions() {
         setupMocksForNoConditions();
 

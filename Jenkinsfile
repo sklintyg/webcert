@@ -3,7 +3,7 @@
 def buildVersion = "6.4.1.${BUILD_NUMBER}"
 
 def commonVersion = "3.10.1.+"
-def infraVersion = "3.10.0.+"
+def infraVersion = "3.10.1.+"
 def refDataVersion = "1.0-SNAPSHOT"
 def versionFlags = "-DbuildVersion=${buildVersion} -DcommonVersion=${commonVersion} -DinfraVersion=${infraVersion} -DrefDataVersion=${refDataVersion}"
 
