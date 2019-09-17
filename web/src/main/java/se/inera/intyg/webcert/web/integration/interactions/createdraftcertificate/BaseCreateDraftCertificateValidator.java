@@ -172,7 +172,7 @@ public abstract class BaseCreateDraftCertificateValidator {
                 .privilege(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT)
                 .isVerified()) {
                 errors.addError(
-                    "Du saknar behörighet. För att hantera intyg för patienter med sekretessmarkering krävs "
+                    "Du saknar behörighet. För att hantera intyg för patienter med skyddade personuppgifter krävs "
                         + "att du har befattningen läkare eller tandläkare");
             }
         }
@@ -182,7 +182,7 @@ public abstract class BaseCreateDraftCertificateValidator {
         if (!authoritiesHelper.getIntygstyperAllowedForSekretessmarkering().contains(intygsTyp)) {
             switch (sekretessStatus) {
                 case TRUE:
-                    errors.addError("Intygstypen {0} kan inte utfärdas för patienter med sekretessmarkering.", intygsTyp);
+                    errors.addError("Intygstypen {0} kan inte utfärdas för patienter med skyddade personuppgifter.", intygsTyp);
                     break;
                 case UNDEFINED:
                     errors.addError("Cannot issue intyg type {0} for unknown patient. Might be due "

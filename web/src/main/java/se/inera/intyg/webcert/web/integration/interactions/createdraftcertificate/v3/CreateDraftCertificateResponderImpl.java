@@ -184,7 +184,7 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
 
         if (AuthoritiesHelperUtil.mayNotCreateUtkastForSekretessMarkerad(sekretessStatus, user, intygsTyp)) {
             return createErrorResponse("Intygstypen " + intygsTyp.toUpperCase()
-                + " kan inte utfärdas för patienter med sekretessmarkering", ErrorIdType.APPLICATION_ERROR);
+                + " kan inte utfärdas för patienter med skyddade personuppgifter", ErrorIdType.APPLICATION_ERROR);
         }
 
         Map<String, Map<String, PreviousIntyg>> intygstypToPreviousIntyg = utkastService.checkIfPersonHasExistingIntyg(personnummer, user);
