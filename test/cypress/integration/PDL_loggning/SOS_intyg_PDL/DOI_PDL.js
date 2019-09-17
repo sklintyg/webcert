@@ -70,8 +70,11 @@ describe('Dödsorsaks-intyg', function () {
         intyg.sektionDödsorsaksUppgifterna(this.intygsdata.dödsorsaksuppgifter);
         pdlEventArray.push(DoiPdlEvent(this, pdl.enumHandelse.SKRIVA, undefined, this.utkastId, this.vårdenhet.uppdragsnamn, this.vårdenhet.vårdgivareId, this.vårdenhet.vårdgivareNamn, this.vårdenhet.id, this.vårdenhet.namn));
 
+        // Provar att lägga in en wait här då signering misslyckas pga "Behörighet saknas" ??? :S
+        cy.wait(3000);
+
         // Signerar och skickar intyget och populerar pdl-arrayen med förväntade logposter "Signera", "Utskrift" med argument att det är skickat till SKV och "Läsa"
-        intyg.signeraOchSkicka();
+        intyg.signeraOchSkicka();       
         pdlEventArray.push(DoiPdlEvent(this, pdl.enumHandelse.SIGNERA, undefined, this.utkastId, this.vårdenhet.uppdragsnamn, this.vårdenhet.vårdgivareId, this.vårdenhet.vårdgivareNamn, this.vårdenhet.id, this.vårdenhet.namn));
         pdlEventArray.push(DoiPdlEvent(this, pdl.enumHandelse.UTSKRIFT, pdl.enumHandelseArgument.SOS, this.utkastId, this.vårdenhet.uppdragsnamn, this.vårdenhet.vårdgivareId, this.vårdenhet.vårdgivareNamn, this.vårdenhet.id, this.vårdenhet.namn));
         pdlEventArray.push(DoiPdlEvent(this, pdl.enumHandelse.LÄSA, undefined, this.utkastId, this.vårdenhet.uppdragsnamn, this.vårdenhet.vårdgivareId, this.vårdenhet.vårdgivareNamn, this.vårdenhet.id, this.vårdenhet.namn));
