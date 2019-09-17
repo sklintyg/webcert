@@ -189,7 +189,6 @@ public class DraftAccessServiceImpl implements DraftAccessService {
             .patient(patient)
             .checkPatientDeceased(true)
             .checkInactiveCareUnit(true)
-            .checkPatientSecrecy()
             .checkUnit(false, false)
             .evaluate();
     }
