@@ -23,11 +23,14 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
+import com.google.common.collect.ImmutableMap;
+import java.util.Map;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import se.inera.intyg.infra.security.common.model.Role;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
@@ -46,13 +49,18 @@ public class WebcertLoggingSessionRegistryImplTest {
         final String hsaId = "hsa-id";
         final String authenticationScheme = "authenticationScheme";
         final String origin = "origin";
+        Map<String, Role> roles = ImmutableMap.of("LAKARE", new Role());
+        final String roleTypeName = "Läkare-AT-typ";
+
         WebCertUser principal = mock(WebCertUser.class);
         when(principal.getHsaId()).thenReturn(hsaId);
         when(principal.getAuthenticationScheme()).thenReturn(authenticationScheme);
         when(principal.getOrigin()).thenReturn(origin);
+        when(principal.getRoles()).thenReturn(roles);
+        when(principal.getRoleTypeName()).thenReturn(roleTypeName);
         loggingSessionRegistry.registerNewSession(sessionId, principal);
 
-        verify(monitoringService).logUserLogin(hsaId, authenticationScheme, origin);
+        verify(monitoringService).logUserLogin(hsaId, roles.keySet().iterator().next(), roleTypeName, authenticationScheme, origin);
     }
 
     @Test

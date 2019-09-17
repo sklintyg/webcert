@@ -49,8 +49,8 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
     }
 
     @Override
-    public void logUserLogin(String userHsaId, String authScheme, String origin) {
-        logEvent(MonitoringEvent.USER_LOGIN, userHsaId, authScheme, origin);
+    public void logUserLogin(String userHsaId, String role, String roleTypeName, String authScheme, String origin) {
+        logEvent(MonitoringEvent.USER_LOGIN, userHsaId, role, roleTypeName != null ? roleTypeName : role, authScheme, origin);
     }
 
     @Override
@@ -349,7 +349,7 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
     private enum MonitoringEvent {
         MAIL_SENT("Mail sent to unit '{}' for {}"),
         MAIL_MISSING_ADDRESS("Mail sent to admin on behalf of unit '{}' for {}"),
-        USER_LOGIN("Login user '{}' using scheme '{}' with origin '{}'"),
+        USER_LOGIN("Login user '{}' as role '{}' roleTypeName '{}' using scheme '{}' with origin '{}'"),
         USER_LOGOUT("Logout user '{}' using scheme '{}'"),
         USER_SESSION_EXPIRY("Session expired for user '{}' using scheme '{}'"),
         USER_MISSING_MIU("No valid MIU was found for user '{}'"),

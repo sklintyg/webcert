@@ -67,6 +67,7 @@ public class WebCertUser extends IntygUser {
         this.roles = intygUser.getRoles();
         this.authorities = intygUser.getAuthorities();
         this.origin = intygUser.getOrigin();
+        this.roleTypeName = intygUser.getRoleTypeName();
     }
 
     public Map<String, String> getAnvandarPreference() {
