@@ -20,9 +20,9 @@ package se.inera.intyg.webcert.web.service.utkast.dto;
 
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 
-public class CopyUtkastBuilderResponse {
+public class UtkastBuilderResponse {
 
-    private Utkast utkastCopy;
+    private Utkast utkast;
 
     private String orginalEnhetsId;
 
@@ -32,12 +32,12 @@ public class CopyUtkastBuilderResponse {
 
     private String orginalVardgivarNamn;
 
-    public Utkast getUtkastCopy() {
-        return utkastCopy;
+    public Utkast getUtkast() {
+        return utkast;
     }
 
-    public void setUtkastCopy(Utkast utkastCopy) {
-        this.utkastCopy = utkastCopy;
+    public void setUtkast(Utkast utkast) {
+        this.utkast = utkast;
     }
 
     public String getOrginalEnhetsId() {

@@ -97,7 +97,7 @@ public class NotificationPatientEnricherTest {
         assertEquals("191212121212", p.getPersonId().getExtension());
         assertEquals("", p.getFornamn());
         assertEquals("", p.getMellannamn());
-        assertEquals("Sekretessmarkering", p.getEfternamn());
+        assertEquals("Skyddade personuppgifter", p.getEfternamn());
         assertEquals("", p.getPostadress());
         assertEquals("", p.getPostnummer());
         assertEquals("", p.getPostort());

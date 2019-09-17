@@ -54,7 +54,7 @@ import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
 import se.inera.intyg.webcert.web.service.log.LogService;
 import se.inera.intyg.webcert.web.service.log.factory.LogRequestFactory;
-import se.inera.intyg.webcert.web.service.utkast.dto.CopyUtkastBuilderResponse;
+import se.inera.intyg.webcert.web.service.utkast.dto.UtkastBuilderResponse;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateRenewalCopyRequest;
 import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
 
@@ -100,16 +100,16 @@ public class CreateRenewalCopyUtkastBuilderImplTest extends AbstractBuilderTest 
         ValidateDraftResponse vdr = new ValidateDraftResponse(ValidationStatus.VALID, new ArrayList<>());
         when(mockModuleApi.validateDraft(anyString())).thenReturn(vdr);
 
-        CopyUtkastBuilderResponse builderResponse = renewalBuilder.populateCopyUtkastFromSignedIntyg(renewalRequest, patientDetails, false,
+        UtkastBuilderResponse builderResponse = renewalBuilder.populateCopyUtkastFromSignedIntyg(renewalRequest, patientDetails, false,
             false);
 
-        assertNotNull(builderResponse.getUtkastCopy());
-        assertNotNull(builderResponse.getUtkastCopy().getModel());
-        assertEquals(INTYG_TYPE, builderResponse.getUtkastCopy().getIntygsTyp());
-        assertEquals(PATIENT_SSN, builderResponse.getUtkastCopy().getPatientPersonnummer());
-        assertEquals(PATIENT_FNAME, builderResponse.getUtkastCopy().getPatientFornamn());
-        assertEquals(PATIENT_MNAME, builderResponse.getUtkastCopy().getPatientMellannamn());
-        assertEquals(PATIENT_LNAME, builderResponse.getUtkastCopy().getPatientEfternamn());
+        assertNotNull(builderResponse.getUtkast());
+        assertNotNull(builderResponse.getUtkast().getModel());
+        assertEquals(INTYG_TYPE, builderResponse.getUtkast().getIntygsTyp());
+        assertEquals(PATIENT_SSN, builderResponse.getUtkast().getPatientPersonnummer());
+        assertEquals(PATIENT_FNAME, builderResponse.getUtkast().getPatientFornamn());
+        assertEquals(PATIENT_MNAME, builderResponse.getUtkast().getPatientMellannamn());
+        assertEquals(PATIENT_LNAME, builderResponse.getUtkast().getPatientEfternamn());
 
         ArgumentCaptor<CreateDraftCopyHolder> requestCaptor = ArgumentCaptor.forClass(CreateDraftCopyHolder.class);
         verify(mockModuleApi).createRenewalFromTemplate(requestCaptor.capture(), any());
@@ -135,17 +135,17 @@ public class CreateRenewalCopyUtkastBuilderImplTest extends AbstractBuilderTest 
         ValidateDraftResponse vdr = new ValidateDraftResponse(ValidationStatus.VALID, new ArrayList<>());
         when(mockModuleApi.validateDraft(anyString())).thenReturn(vdr);
 
-        CopyUtkastBuilderResponse builderResponse = renewalBuilder.populateCopyUtkastFromOrignalUtkast(renewalRequest, patientDetails,
+        UtkastBuilderResponse builderResponse = renewalBuilder.populateCopyUtkastFromOrignalUtkast(renewalRequest, patientDetails,
             false,
             false);
 
-        assertNotNull(builderResponse.getUtkastCopy());
-        assertNotNull(builderResponse.getUtkastCopy().getModel());
-        assertEquals(INTYG_TYPE, builderResponse.getUtkastCopy().getIntygsTyp());
-        assertEquals(PATIENT_SSN, builderResponse.getUtkastCopy().getPatientPersonnummer());
-        assertEquals(PATIENT_FNAME, builderResponse.getUtkastCopy().getPatientFornamn());
-        assertNotNull(builderResponse.getUtkastCopy().getPatientMellannamn());
-        assertEquals(PATIENT_LNAME, builderResponse.getUtkastCopy().getPatientEfternamn());
+        assertNotNull(builderResponse.getUtkast());
+        assertNotNull(builderResponse.getUtkast().getModel());
+        assertEquals(INTYG_TYPE, builderResponse.getUtkast().getIntygsTyp());
+        assertEquals(PATIENT_SSN, builderResponse.getUtkast().getPatientPersonnummer());
+        assertEquals(PATIENT_FNAME, builderResponse.getUtkast().getPatientFornamn());
+        assertNotNull(builderResponse.getUtkast().getPatientMellannamn());
+        assertEquals(PATIENT_LNAME, builderResponse.getUtkast().getPatientEfternamn());
     }
 
     @Test
@@ -163,15 +163,15 @@ public class CreateRenewalCopyUtkastBuilderImplTest extends AbstractBuilderTest 
         ValidateDraftResponse vdr = new ValidateDraftResponse(ValidationStatus.VALID, new ArrayList<>());
         when(mockModuleApi.validateDraft(anyString())).thenReturn(vdr);
 
-        CopyUtkastBuilderResponse builderResponse = renewalBuilder.populateCopyUtkastFromOrignalUtkast(renewalRequest, null, false, false);
+        UtkastBuilderResponse builderResponse = renewalBuilder.populateCopyUtkastFromOrignalUtkast(renewalRequest, null, false, false);
 
-        assertNotNull(builderResponse.getUtkastCopy());
-        assertNotNull(builderResponse.getUtkastCopy().getModel());
-        assertEquals(INTYG_TYPE, builderResponse.getUtkastCopy().getIntygsTyp());
-        assertEquals(PATIENT_NEW_SSN, builderResponse.getUtkastCopy().getPatientPersonnummer());
-        assertEquals(PATIENT_FNAME, builderResponse.getUtkastCopy().getPatientFornamn());
-        assertNotNull(builderResponse.getUtkastCopy().getPatientMellannamn());
-        assertEquals(PATIENT_LNAME, builderResponse.getUtkastCopy().getPatientEfternamn());
+        assertNotNull(builderResponse.getUtkast());
+        assertNotNull(builderResponse.getUtkast().getModel());
+        assertEquals(INTYG_TYPE, builderResponse.getUtkast().getIntygsTyp());
+        assertEquals(PATIENT_NEW_SSN, builderResponse.getUtkast().getPatientPersonnummer());
+        assertEquals(PATIENT_FNAME, builderResponse.getUtkast().getPatientFornamn());
+        assertNotNull(builderResponse.getUtkast().getPatientMellannamn());
+        assertEquals(PATIENT_LNAME, builderResponse.getUtkast().getPatientEfternamn());
     }
 
     @Test
@@ -187,15 +187,15 @@ public class CreateRenewalCopyUtkastBuilderImplTest extends AbstractBuilderTest 
         ValidateDraftResponse vdr = new ValidateDraftResponse(ValidationStatus.VALID, new ArrayList<>());
         when(mockModuleApi.validateDraft(anyString())).thenReturn(vdr);
 
-        CopyUtkastBuilderResponse builderResponse = renewalBuilder.populateCopyUtkastFromSignedIntyg(renewalRequest, null, false, false);
+        UtkastBuilderResponse builderResponse = renewalBuilder.populateCopyUtkastFromSignedIntyg(renewalRequest, null, false, false);
 
-        assertNotNull(builderResponse.getUtkastCopy());
-        assertNotNull(builderResponse.getUtkastCopy().getModel());
-        assertEquals(INTYG_TYPE, builderResponse.getUtkastCopy().getIntygsTyp());
-        assertEquals(PATIENT_SSN, builderResponse.getUtkastCopy().getPatientPersonnummer());
-        assertEquals("Test", builderResponse.getUtkastCopy().getPatientFornamn());
-        assertNull(builderResponse.getUtkastCopy().getPatientMellannamn());
-        assertEquals("Testorsson", builderResponse.getUtkastCopy().getPatientEfternamn());
+        assertNotNull(builderResponse.getUtkast());
+        assertNotNull(builderResponse.getUtkast().getModel());
+        assertEquals(INTYG_TYPE, builderResponse.getUtkast().getIntygsTyp());
+        assertEquals(PATIENT_SSN, builderResponse.getUtkast().getPatientPersonnummer());
+        assertEquals("Test", builderResponse.getUtkast().getPatientFornamn());
+        assertNull(builderResponse.getUtkast().getPatientMellannamn());
+        assertEquals("Testorsson", builderResponse.getUtkast().getPatientEfternamn());
     }
 
     @Test

@@ -52,7 +52,6 @@ import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.common.support.model.common.internal.Vardgivare;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
-import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.infra.integration.pu.model.Person;
 import se.inera.intyg.infra.integration.pu.model.PersonSvar;
 import se.inera.intyg.infra.integration.pu.services.PUService;
@@ -69,7 +68,6 @@ import se.inera.intyg.webcert.web.service.access.CertificateAccessService;
 import se.inera.intyg.webcert.web.service.access.DraftAccessService;
 import se.inera.intyg.webcert.web.service.access.LockedDraftAccessService;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
-import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
 import se.inera.intyg.webcert.web.service.log.LogService;
 import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
 import se.inera.intyg.webcert.web.service.log.factory.LogRequestFactory;
@@ -79,7 +77,6 @@ import se.inera.intyg.webcert.web.service.referens.ReferensService;
 import se.inera.intyg.webcert.web.service.relation.CertificateRelationService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
-import se.inera.intyg.webcert.web.service.utkast.dto.CopyUtkastBuilderResponse;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateCompletionCopyRequest;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateCompletionCopyResponse;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateRenewalCopyRequest;
@@ -88,7 +85,8 @@ import se.inera.intyg.webcert.web.service.utkast.dto.CreateReplacementCopyReques
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateReplacementCopyResponse;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateUtkastFromTemplateRequest;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateUtkastFromTemplateResponse;
-import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
+import se.inera.intyg.webcert.web.service.utkast.dto.UtkastBuilderResponse;
+import se.inera.intyg.webcert.web.service.utkast.util.UtkastServiceHelper;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
 import se.inera.intyg.webcert.web.web.util.access.AccessResultExceptionHelper;
 
@@ -121,6 +119,9 @@ public class CopyUtkastServiceImplTest {
 
     private static final String MEDDELANDE_ID = "13";
     private static final String KOMMENTAR = "Kommentar";
+
+    @Mock
+    private UtkastServiceHelper utkastServiceHelper;
 
     @Mock
     private UtkastRepository mockUtkastRepository;
@@ -320,7 +321,7 @@ public class CopyUtkastServiceImplTest {
 
         when(mockUtkastRepository.exists(INTYG_ID)).thenReturn(Boolean.FALSE);
 
-        CopyUtkastBuilderResponse resp = createCopyUtkastBuilderResponse();
+        UtkastBuilderResponse resp = createCopyUtkastBuilderResponse();
         when(createReplacementUtkastBuilder.populateCopyUtkastFromSignedIntyg(any(CreateReplacementCopyRequest.class), any(Person.class),
             eq(true), any(boolean.class))).thenReturn(resp);
 
@@ -350,7 +351,7 @@ public class CopyUtkastServiceImplTest {
         user.setParameters(new IntegrationParameters(reference, "", "", "", "", "", "", "", "", false, false, false, true));
         when(userService.getUser()).thenReturn(user);
 
-        CopyUtkastBuilderResponse resp = createCopyUtkastBuilderResponse();
+        UtkastBuilderResponse resp = createCopyUtkastBuilderResponse();
 
         WebcertCertificateRelation ersattRelation = new WebcertCertificateRelation(INTYG_ID, RelationKod.ERSATT, LocalDateTime.now(),
             UtkastStatus.SIGNED, false);
@@ -387,7 +388,7 @@ public class CopyUtkastServiceImplTest {
 
         when(mockUtkastRepository.exists(INTYG_ID)).thenReturn(Boolean.TRUE);
 
-        CopyUtkastBuilderResponse resp = createCopyUtkastBuilderResponse();
+        UtkastBuilderResponse resp = createCopyUtkastBuilderResponse();
         when(copyCompletionUtkastBuilder.populateCopyUtkastFromOrignalUtkast(any(CreateCompletionCopyRequest.class), any(Person.class),
             any(boolean.class), any(boolean.class))).thenReturn(resp);
 
@@ -419,7 +420,7 @@ public class CopyUtkastServiceImplTest {
 
         when(mockUtkastRepository.exists(INTYG_ID)).thenReturn(Boolean.TRUE);
 
-        CopyUtkastBuilderResponse resp = createCopyUtkastBuilderResponse();
+        UtkastBuilderResponse resp = createCopyUtkastBuilderResponse();
         when(createRenewalCopyUtkastBuilder.populateCopyUtkastFromOrignalUtkast(any(CreateRenewalCopyRequest.class), any(Person.class),
             any(boolean.class), any(boolean.class))).thenReturn(resp);
 
@@ -485,7 +486,7 @@ public class CopyUtkastServiceImplTest {
 
         when(mockUtkastRepository.exists(INTYG_ID)).thenReturn(Boolean.TRUE);
 
-        CopyUtkastBuilderResponse resp = createCopyUtkastBuilderResponse();
+        UtkastBuilderResponse resp = createCopyUtkastBuilderResponse();
         when(createRenewalCopyUtkastBuilder.populateCopyUtkastFromOrignalUtkast(
             any(CreateRenewalCopyRequest.class),
             isNull(),
@@ -526,7 +527,7 @@ public class CopyUtkastServiceImplTest {
 
         when(mockUtkastRepository.exists(INTYG_ID)).thenReturn(Boolean.FALSE);
 
-        CopyUtkastBuilderResponse resp = createCopyUtkastBuilderResponse();
+        UtkastBuilderResponse resp = createCopyUtkastBuilderResponse();
         when(createRenewalCopyUtkastBuilder.populateCopyUtkastFromSignedIntyg(
             any(CreateRenewalCopyRequest.class),
             isNull(),
@@ -570,7 +571,7 @@ public class CopyUtkastServiceImplTest {
 
         when(mockUtkastRepository.exists(INTYG_ID)).thenReturn(Boolean.FALSE);
 
-        CopyUtkastBuilderResponse resp = createCopyUtkastBuilderResponse();
+        UtkastBuilderResponse resp = createCopyUtkastBuilderResponse();
         when(createRenewalCopyUtkastBuilder.populateCopyUtkastFromSignedIntyg(
             any(CreateRenewalCopyRequest.class),
             isNull(),
@@ -616,7 +617,7 @@ public class CopyUtkastServiceImplTest {
 
         when(mockUtkastRepository.exists(INTYG_ID)).thenReturn(Boolean.TRUE);
 
-        CopyUtkastBuilderResponse resp = createCopyUtkastBuilderResponse();
+        UtkastBuilderResponse resp = createCopyUtkastBuilderResponse();
         when(createUtkastFromTemplateBuilder.populateCopyUtkastFromOrignalUtkast(any(CreateUtkastFromTemplateRequest.class),
             any(Person.class),
             any(boolean.class), any(boolean.class))).thenReturn(resp);
@@ -650,7 +651,7 @@ public class CopyUtkastServiceImplTest {
 
         when(mockUtkastRepository.exists(INTYG_ID)).thenReturn(Boolean.TRUE);
 
-        CopyUtkastBuilderResponse resp = createCopyUtkastBuilderResponse();
+        UtkastBuilderResponse resp = createCopyUtkastBuilderResponse();
         when(createUtkastCopyBuilder.populateCopyUtkastFromOrignalUtkast(any(CreateUtkastFromTemplateRequest.class), any(Person.class),
             any(boolean.class), any(boolean.class))).thenReturn(resp);
 
@@ -766,10 +767,10 @@ public class CopyUtkastServiceImplTest {
         copyService.createUtkastCopy(renewalRequest);
     }
 
-    private CopyUtkastBuilderResponse createCopyUtkastBuilderResponse() {
-        CopyUtkastBuilderResponse resp = new CopyUtkastBuilderResponse();
+    private UtkastBuilderResponse createCopyUtkastBuilderResponse() {
+        UtkastBuilderResponse resp = new UtkastBuilderResponse();
         resp.setOrginalEnhetsId(VARDENHET_ID);
-        resp.setUtkastCopy(createCopyUtkast());
+        resp.setUtkast(createCopyUtkast());
         return resp;
     }
 
@@ -834,31 +835,8 @@ public class CopyUtkastServiceImplTest {
     private void setupMockForAccessService() {
         final Utlatande utlatande = mock(Utlatande.class);
 
-        final IntygContentHolder intygContentHolder = IntygContentHolder.builder()
-            .setRevoked(false)
-            .setRelations(new Relations())
-            .setDeceased(false)
-            .setSekretessmarkering(false)
-            .setPatientNameChangedInPU(false)
-            .setPatientAddressChangedInPU(false)
-            .setUtlatande(utlatande).build();
-
-        doReturn(intygContentHolder).when(intygService).fetchIntygData(anyString(), anyString(), anyBoolean(), anyBoolean());
-
-        Utkast utkast = new Utkast();
-        utkast.setStatus(UtkastStatus.DRAFT_LOCKED);
-        utkast.setPatientPersonnummer(Personnummer.createPersonnummer("191212121212").get());
-        utkast.setModel("");
-        utkast.setIntygsTyp("");
-        utkast.setIntygTypeVersion("");
-
-        when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(utkast);
-
-        final ModuleApi moduleApi = mock(ModuleApi.class);
-
         try {
-            doReturn(moduleApi).when(moduleRegistry).getModuleApi(anyString(), anyString());
-            doReturn(utlatande).when(moduleApi).getUtlatandeFromJson(anyString());
+            doReturn(utlatande).when(utkastServiceHelper).getUtlatande(anyString(), anyString(), anyBoolean(), anyBoolean());
         } catch (Exception ex) {
             fail();
         }

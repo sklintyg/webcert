@@ -19,15 +19,9 @@
 package se.inera.intyg.webcert.web.integration.interactions.createdraftcertificate.v3;
 
 import com.google.common.base.Joiner;
-import com.google.common.base.Strings;
-import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import org.apache.cxf.annotations.SchemaValidation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,19 +29,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import se.inera.intyg.common.services.texts.IntygTextsService;
 import se.inera.intyg.common.support.integration.converter.util.ResultTypeUtil;
-import se.inera.intyg.common.support.model.UtkastStatus;
-import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.common.support.model.common.internal.Vardgivare;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
-import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
-import se.inera.intyg.common.support.modules.support.api.GetCopyFromCandidate;
-import se.inera.intyg.common.support.modules.support.api.GetCopyFromCriteria;
-import se.inera.intyg.common.support.modules.support.api.ModuleApi;
-import se.inera.intyg.common.support.modules.support.api.dto.CreateDraftCopyHolder;
-import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
 import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
-import se.inera.intyg.infra.integration.hsa.model.SelectableVardenhet;
 import se.inera.intyg.infra.security.authorities.validation.AuthoritiesValidator;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.IntygUser;
@@ -58,18 +43,12 @@ import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.integration.tak.model.TakResult;
 import se.inera.intyg.webcert.integration.tak.service.TakService;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
-import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.auth.WebcertUserDetailsService;
 import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistry;
 import se.inera.intyg.webcert.web.integration.registry.dto.IntegreradEnhetEntry;
 import se.inera.intyg.webcert.web.integration.util.AuthoritiesHelperUtil;
 import se.inera.intyg.webcert.web.integration.util.HoSPersonHelper;
 import se.inera.intyg.webcert.web.integration.validators.ResultValidator;
-import se.inera.intyg.webcert.web.service.intyg.converter.IntygModuleFacade;
-import se.inera.intyg.webcert.web.service.intyg.converter.IntygModuleFacadeException;
-import se.inera.intyg.webcert.web.service.log.LogService;
-import se.inera.intyg.webcert.web.service.log.dto.LogUser;
-import se.inera.intyg.webcert.web.service.log.factory.LogRequestFactory;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
@@ -114,18 +93,6 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
 
     @Autowired
     private IntygTextsService intygTextsService;
-
-    @Autowired
-    private UtkastRepository utkastRepository;
-
-    @Autowired
-    private IntygModuleFacade moduleFacade;
-
-    @Autowired
-    private LogService logService;
-
-    @Autowired
-    private LogRequestFactory logRequestFactory;
 
     @Lazy
     @Autowired
@@ -184,7 +151,7 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
 
         if (AuthoritiesHelperUtil.mayNotCreateUtkastForSekretessMarkerad(sekretessStatus, user, intygsTyp)) {
             return createErrorResponse("Intygstypen " + intygsTyp.toUpperCase()
-                + " kan inte utfärdas för patienter med sekretessmarkering", ErrorIdType.APPLICATION_ERROR);
+                + " kan inte utfärdas för patienter med skyddade personuppgifter", ErrorIdType.APPLICATION_ERROR);
         }
 
         Map<String, Map<String, PreviousIntyg>> intygstypToPreviousIntyg = utkastService.checkIfPersonHasExistingIntyg(personnummer, user);
@@ -195,7 +162,7 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
         WebCertServiceErrorCodeEnum uniqueErrorCode = utkastUnique.orElse(intygUnique.orElse(null));
 
         if (uniqueErrorCode != null) {
-            String uniqueErrorString = null;
+            String uniqueErrorString;
             switch (uniqueErrorCode) {
                 case UTKAST_FROM_SAME_VARDGIVARE_EXISTS:
                     uniqueErrorString = "Draft of this type must be unique within caregiver.";
@@ -226,13 +193,6 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
         // Standard draft creation
         Utkast utkast = createNewDraft(utkastsParams, latestIntygTypeVersion, user);
 
-        // Check if we should prefill values from other signed intyg
-        ModuleApi moduleApi = getModuleApi(intygsTyp, latestIntygTypeVersion);
-        Optional<GetCopyFromCandidate> copyFromCandidate = getCopyFromCandidate(moduleApi, user, personnummer);
-        if (copyFromCandidate.isPresent()) {
-            decorateNewDraftFromCopyCandidate(utkast, moduleApi, copyFromCandidate.get(), intygsTyp, user);
-        }
-
         return createSuccessResponse(utkast.getIntygsId(), invokingUnitHsaId);
     }
 
@@ -248,93 +208,6 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
         addVardenhetToRegistry(draftRequest);
 
         return utkastService.createNewDraft(draftRequest);
-    }
-
-    private void decorateNewDraftFromCopyCandidate(Utkast utkast, ModuleApi moduleApi, GetCopyFromCandidate getCopyFromCandidate,
-        String sourceIntygsTyp, IntygUser intygUser) {
-
-        try {
-            Utlatande utkastUtlatande = moduleApi.getUtlatandeFromJson(utkast.getModel());
-            CreateDraftCopyHolder draftCopyHolder = new CreateDraftCopyHolder(utkast.getIntygsId(),
-                utkastUtlatande.getGrundData().getSkapadAv());
-            draftCopyHolder.setPatient(utkastUtlatande.getGrundData().getPatient());
-            draftCopyHolder.setIntygTypeVersion(utkast.getIntygTypeVersion());
-
-            Utlatande copyFromUtlatande = moduleFacade.getCertificate(getCopyFromCandidate.getIntygId(),
-                getCopyFromCandidate.getIntygType(), getCopyFromCandidate.getIntygTypeVersion()).getUtlatande();
-
-            final String updatedUtkastModel = moduleApi.createNewInternalFromTemplate(draftCopyHolder, copyFromUtlatande);
-            utkast.setModel(updatedUtkastModel);
-            utkastRepository.save(utkast);
-
-            // PDL Log read access to copyFromCandidate Utlatande
-            logService.logReadIntyg(logRequestFactory.createLogRequestFromUtlatande(copyFromUtlatande, false), createLogUser(intygUser));
-
-        } catch (ModuleException | IOException | IntygModuleFacadeException e) {
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM,
-                "Failed to get decorateNewDraftFromCopyCandidate for intygsType " + sourceIntygsTyp, e);
-
-        }
-
-    }
-
-    private LogUser createLogUser(IntygUser intygUser) {
-        SelectableVardenhet valdVardenhet = intygUser.getValdVardenhet();
-        SelectableVardenhet valdVardgivare = intygUser.getValdVardgivare();
-
-        return new LogUser.Builder(intygUser.getHsaId(), valdVardenhet.getId(), valdVardgivare.getId())
-            .userName(intygUser.getNamn())
-            .userAssignment(intygUser.getSelectedMedarbetarUppdragNamn())
-            .userTitle(intygUser.getTitel())
-            .enhetsNamn(valdVardenhet.getNamn())
-            .vardgivareNamn(valdVardgivare.getNamn())
-            .build();
-    }
-
-    protected Optional<GetCopyFromCandidate> getCopyFromCandidate(ModuleApi moduleApi, IntygUser user,
-        Personnummer personnummer) {
-
-        final Optional<GetCopyFromCriteria> copyFromCriteria = moduleApi.getCopyFromCriteria();
-
-        if (!copyFromCriteria.isPresent()) {
-            return Optional.empty();
-        }
-
-        Set<String> validIntygType = new HashSet<>();
-        validIntygType.add(copyFromCriteria.get().getIntygType());
-
-        List<Utkast> toFilter = utkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(personnummer.getPersonnummerWithDash(),
-            validIntygType);
-
-        LocalDateTime earliestValidDate = LocalDateTime.now().minusDays(copyFromCriteria.get().getMaxAgeDays());
-
-        final Optional<Utkast> candidate = toFilter.stream()
-            .filter(utkast -> utkast.getStatus() == UtkastStatus.SIGNED)
-            .filter(utkast -> utkast.getEnhetsId().equals(user.getValdVardenhet().getId()))
-            .filter(utkast -> utkast.getAterkalladDatum() == null)
-            .filter(utkast -> sameMajorVersion(utkast.getIntygTypeVersion(), copyFromCriteria.get().getIntygTypeMajorVersion()))
-            .filter(utkast -> utkast.getSignatur().getSigneringsDatum().isAfter(earliestValidDate))
-            .filter(utkast -> utkast.getSignatur().getSigneradAv().equals(user.getHsaId()))
-            .sorted(Comparator.comparing(u -> u.getSignatur().getSigneringsDatum(), Comparator.reverseOrder()))
-            .findFirst();
-
-        return candidate.isPresent() ? Optional.of(new GetCopyFromCandidate(candidate.get().getIntygsTyp(),
-            candidate.get().getIntygTypeVersion(), candidate.get().getIntygsId())) : Optional.empty();
-
-    }
-
-    private boolean sameMajorVersion(String intygTypeVersion, String intygTypeMajorVersion) {
-        return !Strings.isNullOrEmpty(intygTypeVersion) && !Strings.isNullOrEmpty(intygTypeMajorVersion)
-            && intygTypeVersion.startsWith(intygTypeMajorVersion + ".");
-    }
-
-    private ModuleApi getModuleApi(String intygsTyp, String latestIntygTypeVersion) {
-        try {
-            return moduleRegistry.getModuleApi(intygsTyp, latestIntygTypeVersion);
-        } catch (ModuleNotFoundException e) {
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM,
-                "Failed to get getModuleApi for intygsType " + intygsTyp + ", version " + latestIntygTypeVersion, e);
-        }
     }
 
     /**

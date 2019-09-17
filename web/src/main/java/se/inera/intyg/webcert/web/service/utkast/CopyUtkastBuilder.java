@@ -22,15 +22,15 @@ import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
 import se.inera.intyg.infra.integration.pu.model.Person;
 import se.inera.intyg.webcert.web.service.utkast.dto.AbstractCreateCopyRequest;
-import se.inera.intyg.webcert.web.service.utkast.dto.CopyUtkastBuilderResponse;
+import se.inera.intyg.webcert.web.service.utkast.dto.UtkastBuilderResponse;
 
 public interface CopyUtkastBuilder<T extends AbstractCreateCopyRequest> {
 
-    CopyUtkastBuilderResponse populateCopyUtkastFromOrignalUtkast(T copyRequest, Person patientDetails, boolean addRelation,
+    UtkastBuilderResponse populateCopyUtkastFromOrignalUtkast(T copyRequest, Person patientDetails, boolean addRelation,
         boolean coherentJournaling)
         throws ModuleNotFoundException, ModuleException;
 
-    CopyUtkastBuilderResponse populateCopyUtkastFromSignedIntyg(T copyRequest, Person patientDetails, boolean addRelation,
+    UtkastBuilderResponse populateCopyUtkastFromSignedIntyg(T copyRequest, Person patientDetails, boolean addRelation,
         boolean coherentJournaling)
         throws ModuleNotFoundException, ModuleException;
 

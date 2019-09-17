@@ -39,7 +39,7 @@ import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
 public class NotificationPatientEnricher {
 
     private static final Logger LOG = LoggerFactory.getLogger(NotificationPatientEnricher.class);
-    private static final String SEKRETESSMARKERING = "Sekretessmarkering";
+    private static final String SEKRETESSMARKERING = "Skyddade personuppgifter";
     private static final String EMPTY_STRING = "";
 
     @Autowired

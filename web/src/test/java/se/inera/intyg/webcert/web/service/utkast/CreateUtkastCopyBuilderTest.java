@@ -53,7 +53,7 @@ import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
 import se.inera.intyg.webcert.web.service.log.LogService;
 import se.inera.intyg.webcert.web.service.log.factory.LogRequestFactory;
-import se.inera.intyg.webcert.web.service.utkast.dto.CopyUtkastBuilderResponse;
+import se.inera.intyg.webcert.web.service.utkast.dto.UtkastBuilderResponse;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateUtkastFromTemplateRequest;
 import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
 
@@ -99,17 +99,17 @@ public class CreateUtkastCopyBuilderTest extends AbstractBuilderTest {
         ValidateDraftResponse vdr = new ValidateDraftResponse(ValidationStatus.VALID, new ArrayList<>());
         when(mockModuleApiDOI.validateDraft(anyString())).thenReturn(vdr);
 
-        CopyUtkastBuilderResponse builderResponse = createUtkastCopyBuilder
+        UtkastBuilderResponse builderResponse = createUtkastCopyBuilder
             .populateCopyUtkastFromSignedIntyg(createUtkastFromTemplateRequest, patientDetails, false,
                 false);
 
-        assertNotNull(builderResponse.getUtkastCopy());
-        assertNotNull(builderResponse.getUtkastCopy().getModel());
-        assertEquals(INTYG_TYPE_2, builderResponse.getUtkastCopy().getIntygsTyp());
-        assertEquals(PATIENT_SSN, builderResponse.getUtkastCopy().getPatientPersonnummer());
-        assertEquals(PATIENT_FNAME, builderResponse.getUtkastCopy().getPatientFornamn());
-        assertEquals(PATIENT_MNAME, builderResponse.getUtkastCopy().getPatientMellannamn());
-        assertEquals(PATIENT_LNAME, builderResponse.getUtkastCopy().getPatientEfternamn());
+        assertNotNull(builderResponse.getUtkast());
+        assertNotNull(builderResponse.getUtkast().getModel());
+        assertEquals(INTYG_TYPE_2, builderResponse.getUtkast().getIntygsTyp());
+        assertEquals(PATIENT_SSN, builderResponse.getUtkast().getPatientPersonnummer());
+        assertEquals(PATIENT_FNAME, builderResponse.getUtkast().getPatientFornamn());
+        assertEquals(PATIENT_MNAME, builderResponse.getUtkast().getPatientMellannamn());
+        assertEquals(PATIENT_LNAME, builderResponse.getUtkast().getPatientEfternamn());
 
         ArgumentCaptor<CreateDraftCopyHolder> requestCaptor = ArgumentCaptor.forClass(CreateDraftCopyHolder.class);
         verify(mockModuleApiDOI).createNewInternalFromTemplate(requestCaptor.capture(), any());
@@ -119,8 +119,8 @@ public class CreateUtkastCopyBuilderTest extends AbstractBuilderTest {
         assertEquals(PATIENT_FNAME + " " + PATIENT_MNAME + " " + PATIENT_LNAME,
             requestCaptor.getValue().getPatient().getFullstandigtNamn());
 
-        assertNull(builderResponse.getUtkastCopy().getRelationKod());
-        assertNull(builderResponse.getUtkastCopy().getRelationIntygsId());
+        assertNull(builderResponse.getUtkast().getRelationKod());
+        assertNull(builderResponse.getUtkast().getRelationIntygsId());
     }
 
     @Test
@@ -138,20 +138,20 @@ public class CreateUtkastCopyBuilderTest extends AbstractBuilderTest {
         ValidateDraftResponse vdr = new ValidateDraftResponse(ValidationStatus.VALID, new ArrayList<>());
         when(mockModuleApiDOI.validateDraft(anyString())).thenReturn(vdr);
 
-        CopyUtkastBuilderResponse builderResponse = createUtkastCopyBuilder
+        UtkastBuilderResponse builderResponse = createUtkastCopyBuilder
             .populateCopyUtkastFromOrignalUtkast(createUtkastFromTemplateRequest, patientDetails, true,
                 false);
 
-        assertNotNull(builderResponse.getUtkastCopy());
-        assertNotNull(builderResponse.getUtkastCopy().getModel());
-        assertEquals(INTYG_TYPE_2, builderResponse.getUtkastCopy().getIntygsTyp());
-        assertEquals(PATIENT_SSN, builderResponse.getUtkastCopy().getPatientPersonnummer());
-        assertEquals(PATIENT_FNAME, builderResponse.getUtkastCopy().getPatientFornamn());
-        assertNotNull(builderResponse.getUtkastCopy().getPatientMellannamn());
-        assertEquals(PATIENT_LNAME, builderResponse.getUtkastCopy().getPatientEfternamn());
+        assertNotNull(builderResponse.getUtkast());
+        assertNotNull(builderResponse.getUtkast().getModel());
+        assertEquals(INTYG_TYPE_2, builderResponse.getUtkast().getIntygsTyp());
+        assertEquals(PATIENT_SSN, builderResponse.getUtkast().getPatientPersonnummer());
+        assertEquals(PATIENT_FNAME, builderResponse.getUtkast().getPatientFornamn());
+        assertNotNull(builderResponse.getUtkast().getPatientMellannamn());
+        assertEquals(PATIENT_LNAME, builderResponse.getUtkast().getPatientEfternamn());
 
-        assertEquals(RelationKod.KOPIA, builderResponse.getUtkastCopy().getRelationKod());
-        assertEquals(INTYG_ID, builderResponse.getUtkastCopy().getRelationIntygsId());
+        assertEquals(RelationKod.KOPIA, builderResponse.getUtkast().getRelationKod());
+        assertEquals(INTYG_ID, builderResponse.getUtkast().getRelationIntygsId());
     }
 
     private CreateUtkastFromTemplateRequest buildCreateUtkastFromTemplateRequest() {

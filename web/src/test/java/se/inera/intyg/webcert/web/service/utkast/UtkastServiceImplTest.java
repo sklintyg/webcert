@@ -47,6 +47,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import javax.persistence.OptimisticLockException;
 import org.junit.Assert;
@@ -63,6 +64,7 @@ import se.inera.intyg.common.support.model.common.internal.GrundData;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.model.common.internal.Patient;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
+import se.inera.intyg.common.support.modules.mapper.Mapper;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
@@ -105,6 +107,7 @@ import se.inera.intyg.webcert.web.service.utkast.dto.PreviousIntyg;
 import se.inera.intyg.webcert.web.service.utkast.dto.SaveDraftResponse;
 import se.inera.intyg.webcert.web.service.utkast.dto.UpdatePatientOnDraftRequest;
 import se.inera.intyg.webcert.web.service.utkast.util.CreateIntygsIdStrategy;
+import se.inera.intyg.webcert.web.service.utkast.util.UtkastServiceHelper;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
 import se.inera.intyg.webcert.web.web.util.access.AccessResultExceptionHelper;
 
@@ -115,12 +118,12 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
     private static final long INTYG_VERSION = 2;
 
     private static final String INTYG_ID = "abc123";
-    private static final String INTYG_COPY_ID = "def456";
-    private static final String INTYG_JSON = "A bit of text representing json";
+    private static final String INTYG_ID_COPY = "def456";
     private static final String INTYG_TYPE = "fk7263";
-    private static final String INTYG_TYPE_VERSION = "1.0";
-
     private static final String INTYG_TYPE2 = "lisjp";
+    private static final String INTYG_TYPE_VERSION = "1.0";
+    private static final String INTYG_JSON = "A bit of text representing json";
+
     private static final String UTKAST_ENHETS_ID = "hsa123";
 
     private static final String USER_REFERENCE = "some-ref";
@@ -131,7 +134,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
     private static final Personnummer PERSONNUMMER = createPnr(PERSON_ID);
 
     @Mock
-    private UtkastRepository mockUtkastRepository;
+    private UtkastRepository utkastRepository;
     @Mock
     private IntygModuleRegistry moduleRegistry;
     @Mock
@@ -145,7 +148,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
     @Mock
     private NotificationService notificationService;
     @Mock
-    private MonitoringLogService mockMonitoringService;
+    private MonitoringLogService monitoringService;
     @Mock
     private AuthoritiesHelper authoritiesHelper;
     @Mock
@@ -158,25 +161,27 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
     private DraftAccessService draftAccessService;
     @Mock
     private AccessResultExceptionHelper accessResultExceptionHelper;
+    @Mock
+    private UtkastServiceHelper utkastServiceHelper;
+    @Mock
+    private ModuleApi moduleApi;
 
     @Spy
     private CreateIntygsIdStrategy mockIdStrategy = new CreateIntygsIdStrategy() {
         @Override
         public String createId() {
-            return INTYG_COPY_ID;
+            return INTYG_ID_COPY;
         }
     };
 
     @InjectMocks
-    private UtkastService draftService = new UtkastServiceImpl();
-
-    @Mock
-    private ModuleApi mockModuleApi;
+    private UtkastService utkastService = new UtkastServiceImpl();
 
     private Utkast utkast;
     private Utkast lockedUtkast;
     private Utkast revokedLockedUtkast;
     private Utkast signedUtkast;
+
     private HoSPersonal hoSPerson;
     private Patient defaultPatient;
 
@@ -216,9 +221,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         vardenhet.setEpost("ingen@ingen.se");
         vardenhet.setVardgivare(vardgivare);
 
-        VardpersonReferens vardperson = new VardpersonReferens();
-        vardperson.setHsaId(hoSPerson.getPersonId());
-        vardperson.setNamn(hoSPerson.getFullstandigtNamn());
+        VardpersonReferens vardperson = setupVardperson(hoSPerson);
 
         hoSPerson.setVardenhet(vardenhet);
 
@@ -237,6 +240,13 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         when(logRequestFactory.createLogRequestFromUtkast(any(Utkast.class))).thenReturn(new LogRequest());
     }
 
+    private VardpersonReferens setupVardperson(HoSPersonal hoSPerson) {
+        VardpersonReferens vardperson = new VardpersonReferens();
+        vardperson.setHsaId(hoSPerson.getPersonId());
+        vardperson.setNamn(hoSPerson.getFullstandigtNamn());
+        return vardperson;
+    }
+
     @Test
     public void testReferensGetsPersistedWhenSupplied() throws ModuleNotFoundException, IOException, ModuleException {
         CreateNewDraftRequest request = buildCreateNewDraftRequest();
@@ -244,7 +254,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
         setupReferensMocks();
 
-        Utkast res = draftService.createNewDraft(request);
+        Utkast res = utkastService.createNewDraft(request);
         assertNotNull(res.getSkapad());
         verify(referensService).saveReferens(INTYG_ID, REFERENS);
 
@@ -257,7 +267,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
         setupReferensMocks();
 
-        Utkast res = draftService.createNewDraft(request);
+        Utkast res = utkastService.createNewDraft(request);
         assertNotNull(res.getSkapad());
         verify(referensService, times(0)).saveReferens(INTYG_ID, REFERENS);
     }
@@ -269,41 +279,21 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
         setupReferensMocks();
 
-        Utkast res = draftService.createNewDraft(request);
+        Utkast res = utkastService.createNewDraft(request);
         assertNotNull(res.getSkapad());
         verify(referensService, times(0)).saveReferens(INTYG_ID, REFERENS);
-    }
-
-    private void setupReferensMocks() throws ModuleNotFoundException, ModuleException, IOException {
-        ValidationMessage valMsg = new ValidationMessage("a.category", "a.field.somewhere", ValidationMessageType.OTHER,
-            "This is soooo wrong!");
-        ValidateDraftResponse validationResponse = new ValidateDraftResponse(ValidationStatus.INVALID, Collections.singletonList(valMsg));
-        Utlatande utlatande = mock(Utlatande.class);
-        when(moduleRegistry.getModuleApi(anyString(), anyString())).thenReturn(mockModuleApi);
-        when(mockUtkastRepository.save(any(Utkast.class))).then(invocation -> invocation.getArguments()[0]);
-    }
-
-    private CreateNewDraftRequest buildCreateNewDraftRequest() {
-        CreateNewDraftRequest request = new CreateNewDraftRequest();
-        request.setHosPerson(hoSPerson);
-        request.setIntygId(INTYG_ID);
-        request.setIntygType(INTYG_TYPE);
-        request.setIntygTypeVersion(INTYG_TYPE_VERSION);
-        request.setPatient(defaultPatient);
-        request.setStatus(UtkastStatus.DRAFT_INCOMPLETE);
-        return request;
     }
 
     @Test
     public void testDeleteDraftThatIsUnsigned() {
         WebCertUser user = createUser();
 
-        when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(utkast);
+        when(utkastRepository.findOne(INTYG_ID)).thenReturn(utkast);
 
-        draftService.deleteUnsignedDraft(INTYG_ID, utkast.getVersion());
+        utkastService.deleteUnsignedDraft(INTYG_ID, utkast.getVersion());
 
-        verify(mockUtkastRepository).findOne(INTYG_ID);
-        verify(mockUtkastRepository).delete(utkast);
+        verify(utkastRepository).findOne(INTYG_ID);
+        verify(utkastRepository).delete(utkast);
 
         // Assert notification message
         verify(notificationService).sendNotificationForDraftDeleted(any(Utkast.class));
@@ -311,24 +301,24 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         // Assert pdl log
         verify(logService).logDeleteIntyg(any(LogRequest.class));
 
-        verify(mockMonitoringService).logUtkastDeleted(INTYG_ID, INTYG_TYPE);
+        verify(monitoringService).logUtkastDeleted(INTYG_ID, INTYG_TYPE);
     }
 
     @Test
     public void testDeleteDraftWrongVersion() {
         WebCertUser user = createUser();
 
-        when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(utkast);
+        when(utkastRepository.findOne(INTYG_ID)).thenReturn(utkast);
 
         try {
-            draftService.deleteUnsignedDraft(INTYG_ID, utkast.getVersion() - 1);
+            utkastService.deleteUnsignedDraft(INTYG_ID, utkast.getVersion() - 1);
             Assert.fail("OptimisticLockException expected");
         } catch (OptimisticLockException e) {
             // Expected
         }
 
-        verify(mockUtkastRepository).findOne(INTYG_ID);
-        verifyNoMoreInteractions(mockUtkastRepository);
+        verify(utkastRepository).findOne(INTYG_ID);
+        verifyNoMoreInteractions(utkastRepository);
 
         // Assert notification message
         verifyZeroInteractions(notificationService);
@@ -336,31 +326,31 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         // Assert pdl log
         verifyZeroInteractions(logService);
 
-        verifyZeroInteractions(mockMonitoringService);
+        verifyZeroInteractions(monitoringService);
     }
 
     @Test(expected = WebCertServiceException.class)
     public void testDeleteDraftThatIsSigned() {
-        when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(signedUtkast);
-        draftService.deleteUnsignedDraft(INTYG_ID, signedUtkast.getVersion());
+        when(utkastRepository.findOne(INTYG_ID)).thenReturn(signedUtkast);
+        utkastService.deleteUnsignedDraft(INTYG_ID, signedUtkast.getVersion());
     }
 
     @Test(expected = WebCertServiceException.class)
     public void testDeleteDraftThatDoesNotExist() {
-        when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(null);
-        draftService.deleteUnsignedDraft(INTYG_ID, 0);
+        when(utkastRepository.findOne(INTYG_ID)).thenReturn(null);
+        utkastService.deleteUnsignedDraft(INTYG_ID, 0);
     }
 
     @Test(expected = OptimisticLockException.class)
     public void testDeleteDraftThatIsSignedWrongVersion() {
-        when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(signedUtkast);
-        draftService.deleteUnsignedDraft(INTYG_ID, signedUtkast.getVersion() - 1);
+        when(utkastRepository.findOne(INTYG_ID)).thenReturn(signedUtkast);
+        utkastService.deleteUnsignedDraft(INTYG_ID, signedUtkast.getVersion() - 1);
     }
 
     @Test(expected = WebCertServiceException.class)
     public void testDeleteDraftThatIsLocked() {
-        when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(lockedUtkast);
-        draftService.deleteUnsignedDraft(INTYG_ID, lockedUtkast.getVersion());
+        when(utkastRepository.findOne(INTYG_ID)).thenReturn(lockedUtkast);
+        utkastService.deleteUnsignedDraft(INTYG_ID, lockedUtkast.getVersion());
 
         // Assert notification message
         verifyZeroInteractions(notificationService);
@@ -368,7 +358,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         // Assert pdl log
         verifyZeroInteractions(logService);
 
-        verifyZeroInteractions(mockMonitoringService);
+        verifyZeroInteractions(monitoringService);
     }
 
     @Test
@@ -383,18 +373,18 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         grunddata.setPatient(defaultPatient);
         when(utlatande.getGrundData()).thenReturn(grunddata);
 
-        when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(utkast);
-        when(moduleRegistry.getModuleApi(INTYG_TYPE, INTYG_TYPE_VERSION)).thenReturn(mockModuleApi);
-        when(mockModuleApi.validateDraft(anyString())).thenReturn(validationResponse);
-        when(mockModuleApi.getUtlatandeFromJson(anyString())).thenReturn(utlatande);
-        when(mockUtkastRepository.save(utkast)).thenReturn(utkast);
-        when(mockModuleApi.shouldNotify(any(String.class), any(String.class))).thenReturn(true);
+        when(utkastRepository.findOne(INTYG_ID)).thenReturn(utkast);
+        when(moduleRegistry.getModuleApi(INTYG_TYPE, INTYG_TYPE_VERSION)).thenReturn(moduleApi);
+        when(moduleApi.validateDraft(anyString())).thenReturn(validationResponse);
+        when(moduleApi.getUtlatandeFromJson(anyString())).thenReturn(utlatande);
+        when(utkastRepository.save(utkast)).thenReturn(utkast);
+        when(moduleApi.shouldNotify(any(String.class), any(String.class))).thenReturn(true);
         when(userService.getUser()).thenReturn(user);
-        when(mockModuleApi.updateBeforeSave(anyString(), any(HoSPersonal.class))).thenReturn("{}");
+        when(moduleApi.updateBeforeSave(anyString(), any(HoSPersonal.class))).thenReturn("{}");
 
-        SaveDraftResponse res = draftService.saveDraft(INTYG_ID, UTKAST_VERSION, INTYG_JSON, true);
+        SaveDraftResponse res = utkastService.saveDraft(INTYG_ID, UTKAST_VERSION, INTYG_JSON, true);
 
-        verify(mockUtkastRepository).save(any(Utkast.class));
+        verify(utkastRepository).save(any(Utkast.class));
 
         // Assert notification message
         verify(notificationService).sendNotificationForDraftChanged(any(Utkast.class));
@@ -402,7 +392,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         // Assert pdl log
         verify(logService).logUpdateIntyg(any(LogRequest.class));
 
-        verify(mockMonitoringService).logUtkastEdited(INTYG_ID, INTYG_TYPE);
+        verify(monitoringService).logUtkastEdited(INTYG_ID, INTYG_TYPE);
 
         assertNotNull("An DraftValidation should be returned", res);
         assertEquals("Validation should fail", UtkastStatus.DRAFT_INCOMPLETE, res.getStatus());
@@ -420,25 +410,25 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         grunddata.setPatient(defaultPatient);
         when(utlatande.getGrundData()).thenReturn(grunddata);
 
-        when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(utkast);
-        when(moduleRegistry.getModuleApi(INTYG_TYPE, INTYG_TYPE_VERSION)).thenReturn(mockModuleApi);
-        when(mockModuleApi.validateDraft(anyString())).thenReturn(validationResponse);
-        when(mockModuleApi.getUtlatandeFromJson(anyString())).thenReturn(utlatande);
-        when(mockUtkastRepository.save(utkast)).thenReturn(utkast);
-        when(mockModuleApi.shouldNotify(any(String.class), any(String.class))).thenReturn(true);
+        when(utkastRepository.findOne(INTYG_ID)).thenReturn(utkast);
+        when(moduleRegistry.getModuleApi(INTYG_TYPE, INTYG_TYPE_VERSION)).thenReturn(moduleApi);
+        when(moduleApi.validateDraft(anyString())).thenReturn(validationResponse);
+        when(moduleApi.getUtlatandeFromJson(anyString())).thenReturn(utlatande);
+        when(utkastRepository.save(utkast)).thenReturn(utkast);
+        when(moduleApi.shouldNotify(any(String.class), any(String.class))).thenReturn(true);
         when(userService.getUser()).thenReturn(user);
-        when(mockModuleApi.updateBeforeSave(anyString(), any(HoSPersonal.class))).thenReturn("{}");
+        when(moduleApi.updateBeforeSave(anyString(), any(HoSPersonal.class))).thenReturn("{}");
 
-        SaveDraftResponse res = draftService.saveDraft(INTYG_ID, UTKAST_VERSION, INTYG_JSON, false);
+        SaveDraftResponse res = utkastService.saveDraft(INTYG_ID, UTKAST_VERSION, INTYG_JSON, false);
 
-        verify(mockUtkastRepository).save(any(Utkast.class));
+        verify(utkastRepository).save(any(Utkast.class));
 
         // Assert notification message
         verify(notificationService).sendNotificationForDraftChanged(any(Utkast.class));
 
         // Assert that no logs are called
         verifyZeroInteractions(logService);
-        verifyZeroInteractions(mockMonitoringService);
+        verifyZeroInteractions(monitoringService);
 
         assertNotNull("An DraftValidation should be returned", res);
         assertEquals("Validation should fail", UtkastStatus.DRAFT_INCOMPLETE, res.getStatus());
@@ -447,21 +437,21 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
     @Test(expected = WebCertServiceException.class)
     public void testSaveDraftThatIsSigned() {
 
-        when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(signedUtkast);
+        when(utkastRepository.findOne(INTYG_ID)).thenReturn(signedUtkast);
 
-        draftService.saveDraft(INTYG_ID, INTYG_VERSION, INTYG_JSON, false);
+        utkastService.saveDraft(INTYG_ID, INTYG_VERSION, INTYG_JSON, false);
 
-        verify(mockUtkastRepository).findOne(INTYG_ID);
+        verify(utkastRepository).findOne(INTYG_ID);
     }
 
     @Test(expected = WebCertServiceException.class)
     public void testSaveDraftThatIsLocked() {
 
-        when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(lockedUtkast);
+        when(utkastRepository.findOne(INTYG_ID)).thenReturn(lockedUtkast);
 
-        draftService.saveDraft(INTYG_ID, INTYG_VERSION, INTYG_JSON, false);
+        utkastService.saveDraft(INTYG_ID, INTYG_VERSION, INTYG_JSON, false);
 
-        verify(mockUtkastRepository).findOne(INTYG_ID);
+        verify(utkastRepository).findOne(INTYG_ID);
     }
 
     @SuppressWarnings("unchecked")
@@ -475,13 +465,13 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         when(utlatande.getGrundData()).thenReturn(grunddata);
 
         when(userService.getUser()).thenReturn(user);
-        when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(utkast);
-        when(moduleRegistry.getModuleApi(INTYG_TYPE, INTYG_TYPE_VERSION)).thenReturn(mockModuleApi);
-        when(mockModuleApi.updateBeforeSave(anyString(), any(HoSPersonal.class))).thenReturn("{}");
-        when(mockModuleApi.getUtlatandeFromJson(anyString())).thenReturn(utlatande);
-        when(mockModuleApi.validateDraft(anyString())).thenThrow(ModuleException.class);
+        when(utkastRepository.findOne(INTYG_ID)).thenReturn(utkast);
+        when(moduleRegistry.getModuleApi(INTYG_TYPE, INTYG_TYPE_VERSION)).thenReturn(moduleApi);
+        when(moduleApi.updateBeforeSave(anyString(), any(HoSPersonal.class))).thenReturn("{}");
+        when(moduleApi.getUtlatandeFromJson(anyString())).thenReturn(utlatande);
+        when(moduleApi.validateDraft(anyString())).thenThrow(ModuleException.class);
 
-        draftService.saveDraft(INTYG_ID, UTKAST_VERSION, INTYG_JSON, false);
+        utkastService.saveDraft(INTYG_ID, UTKAST_VERSION, INTYG_JSON, false);
     }
 
     @Test
@@ -489,59 +479,50 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         ValidationMessage valMsg = new ValidationMessage("a", "field.somewhere", ValidationMessageType.OTHER, "This is soooo wrong!");
         ValidateDraftResponse validationResponse = new ValidateDraftResponse(ValidationStatus.INVALID, Collections.singletonList(valMsg));
 
-        when(moduleRegistry.getModuleApi(INTYG_TYPE, INTYG_TYPE_VERSION)).thenReturn(mockModuleApi);
-        when(mockModuleApi.validateDraft(INTYG_JSON)).thenReturn(validationResponse);
+        when(moduleRegistry.getModuleApi(INTYG_TYPE, INTYG_TYPE_VERSION)).thenReturn(moduleApi);
+        when(moduleApi.validateDraft(INTYG_JSON)).thenReturn(validationResponse);
 
-        DraftValidation res = draftService.validateDraft(INTYG_ID, INTYG_TYPE, INTYG_JSON);
+        DraftValidation res = utkastService.validateDraft(INTYG_ID, INTYG_TYPE, INTYG_JSON);
 
         assertNotNull(res);
         assertFalse(res.isDraftValid());
         assertEquals(1, res.getMessages().size());
 
-        verify(mockModuleApi).validateDraft(INTYG_JSON);
+        verify(moduleApi).validateDraft(INTYG_JSON);
     }
 
     @Test
     public void testNotifyDraft() {
+        when(utkastRepository.findOne(INTYG_ID)).thenReturn(utkast);
+        when(utkastRepository.save(utkast)).thenReturn(utkast);
 
-        when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(utkast);
-        when(mockUtkastRepository.save(utkast)).thenReturn(utkast);
-
-        draftService.setNotifiedOnDraft(INTYG_ID, utkast.getVersion(), true);
+        utkastService.setNotifiedOnDraft(INTYG_ID, utkast.getVersion(), true);
 
         assertTrue(utkast.getVidarebefordrad());
     }
 
     @Test(expected = WebCertServiceException.class)
     public void testNotifyDraftThatDoesNotExist() {
-
-        when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(null);
-
-        draftService.setNotifiedOnDraft(INTYG_ID, 0, true);
+        when(utkastRepository.findOne(INTYG_ID)).thenReturn(null);
+        utkastService.setNotifiedOnDraft(INTYG_ID, 0, true);
     }
 
     @Test(expected = OptimisticLockException.class)
     public void testNotifyDraftWrongVersion() {
-
-        when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(utkast);
-
-        draftService.setNotifiedOnDraft(INTYG_ID, utkast.getVersion() - 1, true);
+        when(utkastRepository.findOne(INTYG_ID)).thenReturn(utkast);
+        utkastService.setNotifiedOnDraft(INTYG_ID, utkast.getVersion() - 1, true);
     }
 
     @Test(expected = WebCertServiceException.class)
     public void testNotifyDraftThatIsSigned() {
-
-        when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(signedUtkast);
-
-        draftService.setNotifiedOnDraft(INTYG_ID, 0, true);
+        when(utkastRepository.findOne(INTYG_ID)).thenReturn(signedUtkast);
+        utkastService.setNotifiedOnDraft(INTYG_ID, 0, true);
     }
 
     @Test(expected = WebCertServiceException.class)
     public void testNotifyDraftThatIsLocked() {
-
-        when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(lockedUtkast);
-
-        draftService.setNotifiedOnDraft(INTYG_ID, 0, true);
+        when(utkastRepository.findOne(INTYG_ID)).thenReturn(lockedUtkast);
+        utkastService.setNotifiedOnDraft(INTYG_ID, 0, true);
     }
 
     @Test
@@ -561,17 +542,17 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         // Make a spy out of the utkast so we can verify invocations on the setters with proper names further down.
         utkast = spy(utkast);
 
-        when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(utkast);
-        when(moduleRegistry.getModuleApi(INTYG_TYPE, INTYG_TYPE_VERSION)).thenReturn(mockModuleApi);
-        when(mockModuleApi.validateDraft(anyString())).thenReturn(validationResponse);
-        when(mockModuleApi.getUtlatandeFromJson(anyString())).thenReturn(utlatande);
-        when(mockUtkastRepository.save(utkast)).thenReturn(utkast);
+        when(utkastRepository.findOne(INTYG_ID)).thenReturn(utkast);
+        when(moduleRegistry.getModuleApi(INTYG_TYPE, INTYG_TYPE_VERSION)).thenReturn(moduleApi);
+        when(moduleApi.validateDraft(anyString())).thenReturn(validationResponse);
+        when(moduleApi.getUtlatandeFromJson(anyString())).thenReturn(utlatande);
+        when(utkastRepository.save(utkast)).thenReturn(utkast);
         when(userService.getUser()).thenReturn(user);
-        when(mockModuleApi.updateBeforeSave(anyString(), any(HoSPersonal.class))).thenReturn("{}");
+        when(moduleApi.updateBeforeSave(anyString(), any(HoSPersonal.class))).thenReturn("{}");
 
-        draftService.saveDraft(INTYG_ID, UTKAST_VERSION, INTYG_JSON, false);
+        utkastService.saveDraft(INTYG_ID, UTKAST_VERSION, INTYG_JSON, false);
 
-        verify(mockUtkastRepository).save(any(Utkast.class));
+        verify(utkastRepository).save(any(Utkast.class));
         verify(utkast).setPatientFornamn("Tolvan");
         verify(utkast).setPatientEfternamn("Tolvansson");
         verify(utkast).setPatientPersonnummer(any(Personnummer.class));
@@ -599,17 +580,17 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         // Make a spy out of the utkast so we can verify invocations on the setters with proper names further down.
         utkast = spy(utkast);
 
-        when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(utkast);
-        when(moduleRegistry.getModuleApi(INTYG_TYPE, INTYG_TYPE_VERSION)).thenReturn(mockModuleApi);
-        when(mockModuleApi.updateBeforeSave(anyString(), any(Patient.class))).thenReturn("{}");
-        when(mockModuleApi.getUtlatandeFromJson(anyString())).thenReturn(utlatande);
-        when(mockUtkastRepository.save(utkast)).thenReturn(utkast);
+        when(utkastRepository.findOne(INTYG_ID)).thenReturn(utkast);
+        when(moduleRegistry.getModuleApi(INTYG_TYPE, INTYG_TYPE_VERSION)).thenReturn(moduleApi);
+        when(moduleApi.updateBeforeSave(anyString(), any(Patient.class))).thenReturn("{}");
+        when(moduleApi.getUtlatandeFromJson(anyString())).thenReturn(utlatande);
+        when(utkastRepository.save(utkast)).thenReturn(utkast);
         when(userService.getUser()).thenReturn(user);
-        when(mockModuleApi.updateBeforeSave(anyString(), any(HoSPersonal.class))).thenReturn("{}");
+        when(moduleApi.updateBeforeSave(anyString(), any(HoSPersonal.class))).thenReturn("{}");
 
-        draftService.updatePatientOnDraft(request);
+        utkastService.updatePatientOnDraft(request);
 
-        verify(mockUtkastRepository).save(any(Utkast.class));
+        verify(utkastRepository).save(any(Utkast.class));
         verify(notificationService).sendNotificationForDraftChanged(any(Utkast.class));
         verify(utkast).setPatientPersonnummer(any(Personnummer.class));
         assertEquals(expectedPatientId, user.getParameters().getBeforeAlternateSsn());
@@ -633,14 +614,14 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         // Make a spy out of the utkast so we can verify invocations on the setters with proper names further down.
         utkast = spy(utkast);
 
-        when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(utkast);
-        when(moduleRegistry.getModuleApi(INTYG_TYPE, INTYG_TYPE_VERSION)).thenReturn(mockModuleApi);
-        when(mockModuleApi.getUtlatandeFromJson(anyString())).thenReturn(utlatande);
+        when(utkastRepository.findOne(INTYG_ID)).thenReturn(utkast);
+        when(moduleRegistry.getModuleApi(INTYG_TYPE, INTYG_TYPE_VERSION)).thenReturn(moduleApi);
+        when(moduleApi.getUtlatandeFromJson(anyString())).thenReturn(utlatande);
         when(userService.getUser()).thenReturn(user);
 
-        draftService.updatePatientOnDraft(request);
+        utkastService.updatePatientOnDraft(request);
 
-        verify(mockUtkastRepository, never()).save(any(Utkast.class));
+        verify(utkastRepository, never()).save(any(Utkast.class));
         verify(notificationService, never()).sendNotificationForDraftChanged(any(Utkast.class));
         verify(utkast, never()).setPatientPersonnummer(any(Personnummer.class));
         assertEquals(defaultPatient.getPersonId().getPersonnummer(), user.getParameters().getBeforeAlternateSsn());
@@ -665,14 +646,14 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         // Make a spy out of the utkast so we can verify invocations on the setters with proper names further down.
         utkast = spy(utkast);
 
-        when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(utkast);
-        when(moduleRegistry.getModuleApi(INTYG_TYPE, INTYG_TYPE_VERSION)).thenReturn(mockModuleApi);
-        when(mockModuleApi.getUtlatandeFromJson(anyString())).thenReturn(utlatande);
+        when(utkastRepository.findOne(INTYG_ID)).thenReturn(utkast);
+        when(moduleRegistry.getModuleApi(INTYG_TYPE, INTYG_TYPE_VERSION)).thenReturn(moduleApi);
+        when(moduleApi.getUtlatandeFromJson(anyString())).thenReturn(utlatande);
         when(userService.getUser()).thenReturn(user);
 
-        draftService.updatePatientOnDraft(request);
+        utkastService.updatePatientOnDraft(request);
 
-        verify(mockUtkastRepository, never()).save(any(Utkast.class));
+        verify(utkastRepository, never()).save(any(Utkast.class));
         verify(notificationService, never()).sendNotificationForDraftChanged(any(Utkast.class));
         verify(utkast, never()).setPatientPersonnummer(any(Personnummer.class));
         assertEquals(defaultPatient.getPersonId().getPersonnummer(), user.getParameters().getBeforeAlternateSsn());
@@ -696,12 +677,12 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         // Make a spy out of the utkast so we can verify invocations on the setters with proper names further down.
         utkast = spy(utkast);
 
-        when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(utkast);
+        when(utkastRepository.findOne(INTYG_ID)).thenReturn(utkast);
         when(userService.getUser()).thenReturn(user);
 
-        draftService.updatePatientOnDraft(request);
+        utkastService.updatePatientOnDraft(request);
 
-        verifyNoMoreInteractions(mockUtkastRepository, notificationService);
+        verifyNoMoreInteractions(utkastRepository, notificationService);
     }
 
     @Test(expected = WebCertServiceException.class)
@@ -711,12 +692,12 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
         WebCertUser user = createUser();
 
-        when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(lockedUtkast);
+        when(utkastRepository.findOne(INTYG_ID)).thenReturn(lockedUtkast);
         when(userService.getUser()).thenReturn(user);
 
-        draftService.updatePatientOnDraft(request);
+        utkastService.updatePatientOnDraft(request);
 
-        verify(mockUtkastRepository, never()).save(any(Utkast.class));
+        verify(utkastRepository, never()).save(any(Utkast.class));
         verify(utkast, never()).setPatientPersonnummer(any(Personnummer.class));
 
         // Assert notification message
@@ -725,7 +706,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         // Assert pdl log
         verifyZeroInteractions(logService);
 
-        verifyZeroInteractions(mockMonitoringService);
+        verifyZeroInteractions(monitoringService);
     }
 
     @Test
@@ -747,17 +728,17 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         // Make a spy out of the utkast so we can verify invocations on the setters with proper names further down.
         utkast = spy(utkast);
 
-        when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(utkast);
-        when(moduleRegistry.getModuleApi(INTYG_TYPE, INTYG_TYPE_VERSION)).thenReturn(mockModuleApi);
-        when(mockModuleApi.validateDraft(anyString())).thenReturn(validationResponse);
-        when(mockModuleApi.getUtlatandeFromJson(anyString())).thenReturn(utlatande);
-        when(mockUtkastRepository.save(utkast)).thenReturn(utkast);
+        when(utkastRepository.findOne(INTYG_ID)).thenReturn(utkast);
+        when(moduleRegistry.getModuleApi(INTYG_TYPE, INTYG_TYPE_VERSION)).thenReturn(moduleApi);
+        when(moduleApi.validateDraft(anyString())).thenReturn(validationResponse);
+        when(moduleApi.getUtlatandeFromJson(anyString())).thenReturn(utlatande);
+        when(utkastRepository.save(utkast)).thenReturn(utkast);
         when(userService.getUser()).thenReturn(user);
-        when(mockModuleApi.updateBeforeSave(anyString(), any(HoSPersonal.class))).thenReturn("{}");
+        when(moduleApi.updateBeforeSave(anyString(), any(HoSPersonal.class))).thenReturn("{}");
 
-        draftService.saveDraft(INTYG_ID, UTKAST_VERSION, INTYG_JSON, false);
+        utkastService.saveDraft(INTYG_ID, UTKAST_VERSION, INTYG_JSON, false);
 
-        verify(mockUtkastRepository).save(any(Utkast.class));
+        verify(utkastRepository).save(any(Utkast.class));
         verify(utkast, times(0)).setPatientFornamn(null);
         verify(utkast, times(0)).setPatientEfternamn("Tolvansson");
         verify(utkast).setPatientPersonnummer(any(Personnummer.class));
@@ -765,9 +746,9 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
     @Test
     public void testValidateValidDraftWithWarningsIncludesWarningsInResponse() throws ModuleException, ModuleNotFoundException {
-        when(moduleRegistry.getModuleApi(anyString(), anyString())).thenReturn(mockModuleApi);
-        when(mockModuleApi.validateDraft(anyString())).thenReturn(buildValidationResponse());
-        DraftValidation validationResult = draftService.validateDraft(INTYG_ID, INTYG_TYPE, utkast.getModel());
+        when(moduleRegistry.getModuleApi(anyString(), anyString())).thenReturn(moduleApi);
+        when(moduleApi.validateDraft(anyString())).thenReturn(buildValidationResponse());
+        DraftValidation validationResult = utkastService.validateDraft(INTYG_ID, INTYG_TYPE, utkast.getModel());
         assertEquals(1, validationResult.getWarnings().size());
         assertEquals(0, validationResult.getMessages().size());
     }
@@ -776,28 +757,28 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
     public void testSetKlarForSigneraStatusMessageSent() {
         WebCertUser user = createUser();
         when(userService.getUser()).thenReturn(user);
-        when(mockUtkastRepository.findByIntygsIdAndIntygsTyp(INTYG_ID, "luae_fs")).thenReturn(utkast);
-        when(mockUtkastRepository.save(utkast)).thenReturn(utkast);
+        when(utkastRepository.findByIntygsIdAndIntygsTyp(INTYG_ID, "luae_fs")).thenReturn(utkast);
+        when(utkastRepository.save(utkast)).thenReturn(utkast);
         when(authoritiesHelper.getIntygstyperForPrivilege(any(UserDetails.class), anyString()))
             .thenReturn(new HashSet<>(Arrays.asList("lisjp", "luse", "luae_fs", "luae_na")));
 
-        draftService.setKlarForSigneraAndSendStatusMessage(INTYG_ID, "luae_fs");
+        utkastService.setKlarForSigneraAndSendStatusMessage(INTYG_ID, "luae_fs");
 
         verify(notificationService).sendNotificationForDraftReadyToSign(utkast);
-        verify(mockMonitoringService).logUtkastMarkedAsReadyToSignNotificationSent(INTYG_ID, "luae_fs");
-        verify(mockUtkastRepository).save(utkast);
+        verify(monitoringService).logUtkastMarkedAsReadyToSignNotificationSent(INTYG_ID, "luae_fs");
+        verify(utkastRepository).save(utkast);
     }
 
     @Test(expected = WebCertServiceException.class)
     public void testSetKlarForSigneraStatusMessageSentThrowsExceptionForLakare() {
-        draftService.setKlarForSigneraAndSendStatusMessage(INTYG_ID, INTYG_TYPE);
+        utkastService.setKlarForSigneraAndSendStatusMessage(INTYG_ID, INTYG_TYPE);
     }
 
     @Test(expected = WebCertServiceException.class)
     public void testSetKlarForSigneraStatusMessageSentThrowsExceptionForInvalidIntygsTyp() {
         when(authoritiesHelper.getIntygstyperForPrivilege(any(), any()))
             .thenReturn(new HashSet<>(Arrays.asList("lisjp", "luse", "luae_fs", "luae_na")));
-        draftService.setKlarForSigneraAndSendStatusMessage(INTYG_ID, INTYG_TYPE);
+        utkastService.setKlarForSigneraAndSendStatusMessage(INTYG_ID, INTYG_TYPE);
     }
 
     @Test(expected = WebCertServiceException.class)
@@ -806,14 +787,14 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         when(userService.getUser()).thenReturn(user);
         when(authoritiesHelper.getIntygstyperForPrivilege(any(UserDetails.class), anyString()))
             .thenReturn(new HashSet<>(Arrays.asList("lisjp", "luse", "luae_fs", "luae_na")));
-        when(mockUtkastRepository.findByIntygsIdAndIntygsTyp(INTYG_ID, "luae_fs")).thenReturn(signedUtkast);
+        when(utkastRepository.findByIntygsIdAndIntygsTyp(INTYG_ID, "luae_fs")).thenReturn(signedUtkast);
 
-        draftService.setKlarForSigneraAndSendStatusMessage(INTYG_ID, "luae_fs");
+        utkastService.setKlarForSigneraAndSendStatusMessage(INTYG_ID, "luae_fs");
 
         // Assert notification message
         verifyZeroInteractions(notificationService);
 
-        verifyZeroInteractions(mockMonitoringService);
+        verifyZeroInteractions(monitoringService);
     }
 
     @Test(expected = WebCertServiceException.class)
@@ -822,14 +803,14 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         when(userService.getUser()).thenReturn(user);
         when(authoritiesHelper.getIntygstyperForPrivilege(any(UserDetails.class), anyString()))
             .thenReturn(new HashSet<>(Arrays.asList("lisjp", "luse", "luae_fs", "luae_na")));
-        when(mockUtkastRepository.findByIntygsIdAndIntygsTyp(INTYG_ID, "luae_fs")).thenReturn(lockedUtkast);
+        when(utkastRepository.findByIntygsIdAndIntygsTyp(INTYG_ID, "luae_fs")).thenReturn(lockedUtkast);
 
-        draftService.setKlarForSigneraAndSendStatusMessage(INTYG_ID, "luae_fs");
+        utkastService.setKlarForSigneraAndSendStatusMessage(INTYG_ID, "luae_fs");
 
         // Assert notification message
         verifyZeroInteractions(notificationService);
 
-        verifyZeroInteractions(mockMonitoringService);
+        verifyZeroInteractions(monitoringService);
     }
 
     @Test
@@ -846,17 +827,17 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         doi.setVardgivarId("other");
 
         when(authoritiesHelper.getIntygstyperForFeature(any(), any(), any())).thenReturn(activeModules);
-        when(mockUtkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(PERSONNUMMER.getPersonnummerWithDash(), activeModules))
+        when(utkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(PERSONNUMMER.getPersonnummerWithDash(), activeModules))
             .thenReturn(Arrays.asList(db1, db2, doi));
 
-        Map<String, Map<String, PreviousIntyg>> res = draftService.checkIfPersonHasExistingIntyg(PERSONNUMMER, createUser());
+        Map<String, Map<String, PreviousIntyg>> res = utkastService.checkIfPersonHasExistingIntyg(PERSONNUMMER, createUser());
 
         assertNotNull(res.get("utkast"));
         assertTrue(res.get("utkast").get("db").isSameVardgivare());
         assertEquals(res.get("utkast").get("db").getLatestIntygsId(), "db2");
         assertFalse(res.get("utkast").get("doi").isSameVardgivare());
 
-        verify(mockUtkastRepository).findAllByPatientPersonnummerAndIntygsTypIn(eq(PERSONNUMMER.getPersonnummerWithDash()),
+        verify(utkastRepository).findAllByPatientPersonnummerAndIntygsTypIn(eq(PERSONNUMMER.getPersonnummerWithDash()),
             eq(activeModules));
     }
 
@@ -874,16 +855,16 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         db2.setSkapad(LocalDateTime.parse("2018-04-23T00:00:00"));
 
         when(authoritiesHelper.getIntygstyperForFeature(any(), any(), any())).thenReturn(activeModules);
-        when(mockUtkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(PERSONNUMMER.getPersonnummerWithDash(), activeModules))
+        when(utkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(PERSONNUMMER.getPersonnummerWithDash(), activeModules))
             .thenReturn(Arrays.asList(db1, db2));
 
-        Map<String, Map<String, PreviousIntyg>> res = draftService.checkIfPersonHasExistingIntyg(PERSONNUMMER, createUser());
+        Map<String, Map<String, PreviousIntyg>> res = utkastService.checkIfPersonHasExistingIntyg(PERSONNUMMER, createUser());
 
         assertNotNull(res.get("utkast"));
         assertTrue(res.get("utkast").get("db").isSameVardgivare());
         assertEquals(res.get("utkast").get("db").getLatestIntygsId(), "db1");
 
-        verify(mockUtkastRepository).findAllByPatientPersonnummerAndIntygsTypIn(eq(PERSONNUMMER.getPersonnummerWithDash()),
+        verify(utkastRepository).findAllByPatientPersonnummerAndIntygsTypIn(eq(PERSONNUMMER.getPersonnummerWithDash()),
             eq(activeModules));
     }
 
@@ -902,17 +883,17 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         doi.setVardgivarId("other");
 
         when(authoritiesHelper.getIntygstyperForFeature(any(), any(), any())).thenReturn(activeModules);
-        when(mockUtkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(PERSONNUMMER.getPersonnummerWithDash(), activeModules))
+        when(utkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(PERSONNUMMER.getPersonnummerWithDash(), activeModules))
             .thenReturn(Arrays.asList(db1, db2, doi));
 
-        Map<String, Map<String, PreviousIntyg>> res = draftService.checkIfPersonHasExistingIntyg(PERSONNUMMER, createUser());
+        Map<String, Map<String, PreviousIntyg>> res = utkastService.checkIfPersonHasExistingIntyg(PERSONNUMMER, createUser());
 
         assertNotNull(res.get("intyg"));
         assertTrue(res.get("intyg").get("db").isSameVardgivare());
         assertEquals(res.get("intyg").get("db").getLatestIntygsId(), "db2");
         assertFalse(res.get("intyg").get("doi").isSameVardgivare());
 
-        verify(mockUtkastRepository).findAllByPatientPersonnummerAndIntygsTypIn(eq(PERSONNUMMER.getPersonnummerWithDash()),
+        verify(utkastRepository).findAllByPatientPersonnummerAndIntygsTypIn(eq(PERSONNUMMER.getPersonnummerWithDash()),
             eq(activeModules));
     }
 
@@ -928,16 +909,16 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         db2.setVardgivarId(vardgivareId);
 
         when(authoritiesHelper.getIntygstyperForFeature(any(), any(), any())).thenReturn(activeModules);
-        when(mockUtkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(PERSONNUMMER.getPersonnummerWithDash(), activeModules))
+        when(utkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(PERSONNUMMER.getPersonnummerWithDash(), activeModules))
             .thenReturn(Arrays.asList(db1, db2));
 
-        Map<String, Map<String, PreviousIntyg>> res = draftService.checkIfPersonHasExistingIntyg(PERSONNUMMER, createUser());
+        Map<String, Map<String, PreviousIntyg>> res = utkastService.checkIfPersonHasExistingIntyg(PERSONNUMMER, createUser());
 
         assertNotNull(res.get("intyg"));
         assertTrue(res.get("intyg").get("db").isSameVardgivare());
         assertEquals(res.get("intyg").get("db").getLatestIntygsId(), "db2");
 
-        verify(mockUtkastRepository).findAllByPatientPersonnummerAndIntygsTypIn(eq(PERSONNUMMER.getPersonnummerWithDash()),
+        verify(utkastRepository).findAllByPatientPersonnummerAndIntygsTypIn(eq(PERSONNUMMER.getPersonnummerWithDash()),
             eq(activeModules));
     }
 
@@ -953,16 +934,16 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         db2.setVardgivarId(vardgivareId);
 
         when(authoritiesHelper.getIntygstyperForFeature(any(), any(), any())).thenReturn(activeModules);
-        when(mockUtkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(PERSONNUMMER.getPersonnummerWithDash(), activeModules))
+        when(utkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(PERSONNUMMER.getPersonnummerWithDash(), activeModules))
             .thenReturn(Arrays.asList(db1, db2));
 
-        Map<String, Map<String, PreviousIntyg>> res = draftService.checkIfPersonHasExistingIntyg(PERSONNUMMER, createUser());
+        Map<String, Map<String, PreviousIntyg>> res = utkastService.checkIfPersonHasExistingIntyg(PERSONNUMMER, createUser());
 
         assertNotNull(res.get("intyg"));
         assertTrue(res.get("intyg").get("db").isSameVardgivare());
         assertEquals(res.get("intyg").get("db").getLatestIntygsId(), "db1");
 
-        verify(mockUtkastRepository).findAllByPatientPersonnummerAndIntygsTypIn(eq(PERSONNUMMER.getPersonnummerWithDash()),
+        verify(utkastRepository).findAllByPatientPersonnummerAndIntygsTypIn(eq(PERSONNUMMER.getPersonnummerWithDash()),
             eq(activeModules));
     }
 
@@ -971,16 +952,16 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         List<GroupableItem> queryResult = new ArrayList<>();
 
         when(userService.getUser()).thenReturn(createUser());
-        when(mockUtkastRepository.getIntygWithStatusesByEnhetsId(anyList(), anySet(), anySet())).thenReturn(queryResult);
+        when(utkastRepository.getIntygWithStatusesByEnhetsId(anyList(), anySet(), anySet())).thenReturn(queryResult);
 
         Map<String, Long> resultMap = new HashMap<>();
         resultMap.put("HSA1", 2L);
 
         when(statisticsGroupByUtil.toSekretessFilteredMap(queryResult)).thenReturn(resultMap);
 
-        Map<String, Long> result = draftService.getNbrOfUnsignedDraftsByCareUnits(Arrays.asList("HSA1", "HSA2"));
+        Map<String, Long> result = utkastService.getNbrOfUnsignedDraftsByCareUnits(Arrays.asList("HSA1", "HSA2"));
 
-        verify(mockUtkastRepository, times(1)).getIntygWithStatusesByEnhetsId(anyList(), anySet(), anySet());
+        verify(utkastRepository, times(1)).getIntygWithStatusesByEnhetsId(anyList(), anySet(), anySet());
         verify(statisticsGroupByUtil, times(1)).toSekretessFilteredMap(queryResult);
 
         assertEquals(1, result.size());
@@ -1004,13 +985,13 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
         List<Utkast> utkastList = Arrays.asList(utkast1, utkast2);
 
-        when(mockUtkastRepository.findDraftsByNotLockedOrSignedAndSkapadBefore(any())).thenReturn(utkastList);
+        when(utkastRepository.findDraftsByNotLockedOrSignedAndSkapadBefore(any())).thenReturn(utkastList);
 
-        int changed = draftService.lockOldDrafts(lockedAfterDay, today);
+        int changed = utkastService.lockOldDrafts(lockedAfterDay, today);
 
         assertEquals(2, changed);
-        verify(mockUtkastRepository, times(2)).save(any(Utkast.class));
-        verify(mockUtkastRepository, times(2)).removeRelationsToDraft(anyString());
+        verify(utkastRepository, times(2)).save(any(Utkast.class));
+        verify(utkastRepository, times(2)).removeRelationsToDraft(anyString());
 
         assertNull(utkast1.getRelationIntygsId());
         assertNull(utkast1.getRelationKod());
@@ -1023,76 +1004,129 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
     public void testRevokeLockedDraft() {
         WebCertUser user = createUser();
         when(userService.getUser()).thenReturn(user);
-        when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(lockedUtkast);
+        when(utkastRepository.findOne(INTYG_ID)).thenReturn(lockedUtkast);
 
         String reason = "reason";
         String revokeMessage = "revokeMessage";
 
-        draftService.revokeLockedDraft(INTYG_ID, INTYG_TYPE, revokeMessage, reason);
+        utkastService.revokeLockedDraft(INTYG_ID, INTYG_TYPE, revokeMessage, reason);
 
         // Assert notification message
         verify(notificationService).sendNotificationForDraftRevoked(any(Utkast.class));
-        verify(mockUtkastRepository, times(1)).save(lockedUtkast);
-        verify(mockMonitoringService).logUtkastRevoked(INTYG_ID, user.getHsaId(), reason, revokeMessage);
+        verify(utkastRepository, times(1)).save(lockedUtkast);
+        verify(monitoringService).logUtkastRevoked(INTYG_ID, user.getHsaId(), reason, revokeMessage);
         verify(logService).logRevokeIntyg(any());
     }
 
     @Test(expected = WebCertServiceException.class)
     public void testRevokeLockedDraftNull() {
-        when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(null);
+        when(utkastRepository.findOne(INTYG_ID)).thenReturn(null);
 
-        draftService.revokeLockedDraft(INTYG_ID, INTYG_TYPE, "", "");
-        verifyZeroInteractions(mockMonitoringService);
+        utkastService.revokeLockedDraft(INTYG_ID, INTYG_TYPE, "", "");
+        verifyZeroInteractions(monitoringService);
         verifyZeroInteractions(logService);
     }
 
     @Test(expected = WebCertServiceException.class)
     public void testRevokeLockedDraftNotLocked() {
-        when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(utkast);
+        when(utkastRepository.findOne(INTYG_ID)).thenReturn(utkast);
 
-        draftService.revokeLockedDraft(INTYG_ID, INTYG_TYPE, "", "");
-        verifyZeroInteractions(mockMonitoringService);
+        utkastService.revokeLockedDraft(INTYG_ID, INTYG_TYPE, "", "");
+        verifyZeroInteractions(monitoringService);
         verifyZeroInteractions(logService);
     }
 
     @Test(expected = WebCertServiceException.class)
     public void testRevokeLockedDraftSigned() {
-        when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(signedUtkast);
+        when(utkastRepository.findOne(INTYG_ID)).thenReturn(signedUtkast);
 
-        draftService.revokeLockedDraft(INTYG_ID, INTYG_TYPE, "", "");
-        verifyZeroInteractions(mockMonitoringService);
+        utkastService.revokeLockedDraft(INTYG_ID, INTYG_TYPE, "", "");
+        verifyZeroInteractions(monitoringService);
         verifyZeroInteractions(logService);
     }
 
     @Test(expected = WebCertServiceException.class)
     public void testRevokeLockedDraftTypeMissMatch() {
-        when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(lockedUtkast);
+        when(utkastRepository.findOne(INTYG_ID)).thenReturn(lockedUtkast);
 
-        draftService.revokeLockedDraft(INTYG_ID, INTYG_TYPE2, "", "");
-        verifyZeroInteractions(mockMonitoringService);
+        utkastService.revokeLockedDraft(INTYG_ID, INTYG_TYPE2, "", "");
+        verifyZeroInteractions(monitoringService);
         verifyZeroInteractions(logService);
     }
 
     @Test(expected = WebCertServiceException.class)
     public void testRevokeLockedDraftAlreadyRevoked() {
-        when(mockUtkastRepository.findOne(INTYG_ID)).thenReturn(lockedUtkast);
+        when(utkastRepository.findOne(INTYG_ID)).thenReturn(lockedUtkast);
 
-        draftService.revokeLockedDraft(INTYG_ID, INTYG_TYPE2, "", "");
-        verifyZeroInteractions(mockMonitoringService);
+        utkastService.revokeLockedDraft(INTYG_ID, INTYG_TYPE2, "", "");
+        verifyZeroInteractions(monitoringService);
         verifyZeroInteractions(logService);
     }
 
-    private Patient getUpdatedPatient() {
-        Patient newPatient = new Patient();
-        newPatient.setEfternamn("updated lastName");
-        newPatient.setMellannamn("updated middle-name");
-        newPatient.setFornamn("updated firstName");
-        newPatient.setFullstandigtNamn("updated full name");
-        newPatient.setPersonId(createPnr("19121272-1212"));
-        newPatient.setPostadress("updated postal address");
-        newPatient.setPostnummer("1111111");
-        newPatient.setPostort("updated post city");
-        return newPatient;
+    @Test
+    public void testUpdateDraftFromCandidate() throws Exception {
+        String fromIntygId = INTYG_ID;
+        String fromIntygType = INTYG_TYPE2;
+        String toIntygId = "ghi789";
+        String toIntygType = "ag7804";
+
+        VardpersonReferens vardperson = setupVardperson(hoSPerson);
+
+        signedUtkast = createUtkast(fromIntygId, INTYG_VERSION, fromIntygType, UtkastStatus.SIGNED,
+            LocalDateTime.parse("2018-04-23T00:00:00"), INTYG_JSON, vardperson, PERSONNUMMER);
+        utkast = createUtkast(toIntygId, 0, toIntygType, UtkastStatus.DRAFT_INCOMPLETE,
+            null, INTYG_JSON, vardperson, PERSONNUMMER);
+
+        Utkast savedUtkast = utkast;
+        savedUtkast.setVersion(utkast.getVersion() + 1);
+
+        Utlatande utlatande = mock(Utlatande.class);
+        GrundData grunddata = new GrundData();
+        grunddata.setSkapadAv(new HoSPersonal());
+        grunddata.setPatient(defaultPatient);
+
+        Mapper mapper = mock(Mapper.class);
+
+        when(utlatande.getGrundData()).thenReturn(grunddata);
+        when(mapper.map(any(), any())).thenReturn(mapper);
+        when(mapper.json()).thenReturn(INTYG_JSON);
+
+        when(utkastRepository.findByIntygsIdAndIntygsTyp(toIntygId, toIntygType)).thenReturn(utkast);
+        when(moduleRegistry.getModuleApi(toIntygType, INTYG_TYPE_VERSION)).thenReturn(moduleApi);
+        when(moduleApi.getUtlatandeFromJson(anyString())).thenReturn(utlatande);
+        when(utkastRepository.save(utkast)).thenReturn(savedUtkast);
+        when(moduleApi.shouldNotify(any(String.class), any(String.class))).thenReturn(true);
+        when(userService.getUser()).thenReturn(createUser());
+        when(utkastServiceHelper.getUtlatande(fromIntygId, fromIntygType, false, true)).thenReturn(utlatande);
+        when(moduleApi.getMapper()).thenReturn(Optional.of(mapper));
+        when(moduleApi.updateBeforeSave(anyString(), any(HoSPersonal.class))).thenReturn("{}");
+
+        SaveDraftResponse res = utkastService.updateDraftFromCandidate(fromIntygId, fromIntygType, toIntygId, toIntygType);
+
+        verify(utkastRepository).save(any(Utkast.class));
+
+        // Assert notification message
+        verify(notificationService).sendNotificationForDraftChanged(any(Utkast.class));
+
+        // Assert pdl log
+        verify(logService).logUpdateIntyg(any(LogRequest.class));
+
+        verify(monitoringService).logUtkastEdited(toIntygId, toIntygType);
+
+        assertNotNull("An DraftValidation should be returned", res);
+        assertEquals("The status should still be incomplete", UtkastStatus.DRAFT_INCOMPLETE, res.getStatus());
+        assertTrue("The saved draft version should be greater than zero", res.getVersion() > 0);
+    }
+
+    private CreateNewDraftRequest buildCreateNewDraftRequest() {
+        CreateNewDraftRequest request = new CreateNewDraftRequest();
+        request.setHosPerson(hoSPerson);
+        request.setIntygId(INTYG_ID);
+        request.setIntygType(INTYG_TYPE);
+        request.setIntygTypeVersion(INTYG_TYPE_VERSION);
+        request.setPatient(defaultPatient);
+        request.setStatus(UtkastStatus.DRAFT_INCOMPLETE);
+        return request;
     }
 
     private ValidateDraftResponse buildValidationResponse() {
@@ -1158,6 +1192,28 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         user.setParameters(new IntegrationParameters(USER_REFERENCE, "", "", "", "", "", "", "", "", false, false, false, true));
 
         return user;
+    }
+
+    private Patient getUpdatedPatient() {
+        Patient newPatient = new Patient();
+        newPatient.setEfternamn("updated lastName");
+        newPatient.setMellannamn("updated middle-name");
+        newPatient.setFornamn("updated firstName");
+        newPatient.setFullstandigtNamn("updated full name");
+        newPatient.setPersonId(createPnr("19121272-1212"));
+        newPatient.setPostadress("updated postal address");
+        newPatient.setPostnummer("1111111");
+        newPatient.setPostort("updated post city");
+        return newPatient;
+    }
+
+    private void setupReferensMocks() throws ModuleNotFoundException, ModuleException, IOException {
+        ValidationMessage valMsg = new ValidationMessage("a.category", "a.field.somewhere", ValidationMessageType.OTHER,
+            "This is soooo wrong!");
+        ValidateDraftResponse validationResponse = new ValidateDraftResponse(ValidationStatus.INVALID, Collections.singletonList(valMsg));
+        Utlatande utlatande = mock(Utlatande.class);
+        when(moduleRegistry.getModuleApi(anyString(), anyString())).thenReturn(moduleApi);
+        when(utkastRepository.save(any(Utkast.class))).then(invocation -> invocation.getArguments()[0]);
     }
 
 }

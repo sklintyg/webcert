@@ -57,6 +57,13 @@ public interface UtkastService {
      */
     Utkast getDraft(String intygId, String intygType, boolean createPdlLogEvent);
 
+    /**
+     * Updates an Utkast with data from an existing signed certificate.
+     *
+     * @return {@link SaveDraftResponse}
+     */
+    SaveDraftResponse updateDraftFromCandidate(String fromIntygId, String fromIntygType, String toUtkastId, String toUtkastType);
+
     Utkast setNotifiedOnDraft(String intygsId, long version, Boolean notified);
 
     SaveDraftResponse saveDraft(String intygId, long version, String draftAsJson, boolean createPdlLogEvent);

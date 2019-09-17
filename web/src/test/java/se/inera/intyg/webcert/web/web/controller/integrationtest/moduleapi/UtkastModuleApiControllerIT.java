@@ -36,11 +36,12 @@ import java.util.Map;
 import org.junit.Test;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
+import se.inera.intyg.webcert.web.web.controller.api.dto.CopyFromCandidateRequest;
 import se.inera.intyg.webcert.web.web.controller.integrationtest.BaseRestIntegrationTest;
 import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.RevokeSignedIntygParameter;
 
 /**
- * Basic test suite that verifies that the endpoint (/moduleapi/utkast) is available and respond according to
+ * Basic test suite that verifies that the endpoint (‘/moduleapi/utkast) is available and respond according to
  * specification.
  *
  * Created by marhes on 18/01/16.
@@ -207,6 +208,33 @@ public class UtkastModuleApiControllerIT extends BaseRestIntegrationTest {
 
         assertFalse(Strings.isNullOrEmpty(aterkalladDatum));
         assertEquals(LocalDate.now(), LocalDateTime.parse(aterkalladDatum).toLocalDate());
+    }
+
+    @Test
+    public void testCopyFromCandidate() {
+        String intygType = "lisjp";
+        String utkastType = "ag7804";
+
+        // Set up auth precondition
+        RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
+
+        // Change users origin
+        changeOriginTo("DJUPINTEGRATION");
+
+        String intygId = createSignedIntyg("lisjp", DEFAULT_PATIENT_PERSONNUMMER);
+        String utkastId = createUtkast("ag7804", DEFAULT_PATIENT_PERSONNUMMER);
+
+        CopyFromCandidateRequest request = new CopyFromCandidateRequest();
+        request.setCandidateId(intygId);
+        request.setCandidateType(intygType);
+
+        spec()
+            .body(request)
+            .expect().statusCode(200)
+            .when().post(MODULEAPI_UTKAST_BASE + "/" + utkastType + "/" + utkastId + "/copyfromcandidate")
+            .then()
+            .body("status", equalTo(UtkastStatus.DRAFT_INCOMPLETE.name()))
+            .body("version",  equalTo(0));
     }
 
 }
