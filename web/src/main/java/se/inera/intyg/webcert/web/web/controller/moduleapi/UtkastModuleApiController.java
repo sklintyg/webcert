@@ -135,20 +135,6 @@ public class UtkastModuleApiController extends AbstractApiController {
     @Autowired
     private AccessResultExceptionHelper accessResultExceptionHelper;
 
-    /*
-    @Autowired
-    private UtkastRepository utkastRepository;
-
-    @Autowired
-    private IntygModuleFacade moduleFacade;
-
-    @Autowired
-    private LogService logService;
-
-    @Autowired
-    private LogRequestFactory logRequestFactory;
-    */
-
     /**
      * Returns the draft certificate as JSON identified by the intygId.
      *
