@@ -156,7 +156,6 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
     @Override
     @Transactional(readOnly = true)
     public Patient resolvePatient(Personnummer personnummer, String intygsTyp, String intygsTypVersion) {
-
         WebCertUser user;
         if (webCertUserService.hasAuthenticationContext()) {
             user = webCertUserService.getUser();

@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.web.web.controller.api;
+package se.inera.intyg.webcert.web.web.controller.moduleapi;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -37,11 +37,10 @@ import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.infra.dynamiclink.service.DynamicLinkService;
 import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.webcert.web.web.controller.api.ModuleApiController;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ModuleApiControllerTest {
-
-    private static final String DYNAMIC_LINK_PLACEHOLDER = "<LINK:";
 
     private static final String MODULE_ID_1 = "intygType1";
     private static final String MODULE_ID_2 = "intygType2";

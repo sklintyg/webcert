@@ -23,6 +23,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import se.inera.intyg.common.support.model.UtkastStatus;
+import se.inera.intyg.webcert.web.service.utkast.dto.UtkastCandidateMetaData;
 import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
 import se.inera.intyg.webcert.web.web.util.resourcelinks.dto.ActionLink;
 
@@ -49,6 +50,7 @@ public class DraftHolder {
     private String latestTextVersion;
 
     private Relations relations = new Relations();
+
     private LocalDateTime klartForSigneringDatum;
     private LocalDateTime aterkalladDatum;
     private LocalDateTime created;
@@ -62,6 +64,11 @@ public class DraftHolder {
     private boolean patientAddressChangedInPU = false;
 
     private List<ActionLink> links = new ArrayList<>();
+
+    private UtkastCandidateMetaData candidateMetaData;
+
+
+    // Getters and Setters
 
     public long getVersion() {
         return version;
@@ -213,5 +220,13 @@ public class DraftHolder {
 
     public void addLink(ActionLink link) {
         this.links.add(link);
+    }
+
+    public UtkastCandidateMetaData getCandidateMetaData() {
+        return candidateMetaData;
+    }
+
+    public void setCandidateMetaData(UtkastCandidateMetaData candidateMetaData) {
+        this.candidateMetaData = candidateMetaData;
     }
 }

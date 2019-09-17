@@ -142,7 +142,7 @@ public class IntygServiceImpl implements IntygService {
     private UtkastRepository utkastRepository;
 
     @Autowired
-    private IntygModuleFacade modelFacade;
+    private IntygModuleFacade moduleFacade;
 
     @Autowired
     private IntygModuleRegistry moduleRegistry;
@@ -378,7 +378,7 @@ public class IntygServiceImpl implements IntygService {
 
             validateAccessToPrintIntyg(intyg.getUtlatande(), isEmployerCopy);
 
-            IntygPdf intygPdf = modelFacade.convertFromInternalToPdfDocument(intygsTyp, intyg.getContents(), intyg.getStatuses(),
+            IntygPdf intygPdf = moduleFacade.convertFromInternalToPdfDocument(intygsTyp, intyg.getContents(), intyg.getStatuses(),
                 utkastStatus, isEmployerCopy);
 
             // Log print as PDF to PDL log
@@ -449,7 +449,7 @@ public class IntygServiceImpl implements IntygService {
         final Optional<Utkast> optionalUtkast = Optional.ofNullable(utkastRepository.findOne(intygsId));
 
         final Utlatande utlatande = optionalUtkast
-            .map(utkast -> modelFacade.getUtlatandeFromInternalModel(utkast.getIntygsTyp(), utkast.getModel()))
+            .map(utkast -> moduleFacade.getUtlatandeFromInternalModel(utkast.getIntygsTyp(), utkast.getModel()))
             .orElseGet(() -> getIntygData(intygsId, typ, false).getUtlatande());
 
         validateAccessToSendIntyg(utlatande);
@@ -461,7 +461,7 @@ public class IntygServiceImpl implements IntygService {
             final CertificateResponse certificate;
             try {
                 final IntygTypeInfo intygTypeInfo = getIntygTypeInfoFromIT(intygsId);
-                certificate = modelFacade.getCertificate(intygsId, typ, intygTypeInfo.getIntygTypeVersion());
+                certificate = moduleFacade.getCertificate(intygsId, typ, intygTypeInfo.getIntygTypeVersion());
             } catch (IntygModuleFacadeException e) {
                 throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, e);
             }
@@ -545,7 +545,7 @@ public class IntygServiceImpl implements IntygService {
         }
 
         try {
-            certificateSenderService.revokeCertificate(intygsId, modelFacade.getRevokeCertificateRequest(intygsTyp, intyg.getUtlatande(),
+            certificateSenderService.revokeCertificate(intygsId, moduleFacade.getRevokeCertificateRequest(intygsTyp, intyg.getUtlatande(),
                 IntygConverterUtil.buildHosPersonalFromWebCertUser(webCertUserService.getUser(), null), revokeMessage), intygsTyp,
                 intyg.getUtlatande().getTextVersion());
             whenSuccessfulRevoke(intyg.getUtlatande(), reason);
@@ -748,7 +748,7 @@ public class IntygServiceImpl implements IntygService {
     private IntygContentHolder getIntygData(String intygId, String typ, boolean relations) {
         try {
             String intygTypeVersion = getIntygTypeInfo(intygId).getIntygTypeVersion();
-            CertificateResponse certificate = modelFacade.getCertificate(intygId, typ, intygTypeVersion);
+            CertificateResponse certificate = moduleFacade.getCertificate(intygId, typ, intygTypeVersion);
             String internalIntygJsonModel = certificate.getInternalModel();
 
             final Personnummer personId = certificate.getUtlatande().getGrundData().getPatient().getPersonId();
@@ -851,7 +851,7 @@ public class IntygServiceImpl implements IntygService {
                 newPatientData.setPersonId(utkast.getPatientPersonnummer());
             }
 
-            Utlatande utlatande = modelFacade.getUtlatandeFromInternalModel(utkast.getIntygsTyp(), utkast.getModel());
+            Utlatande utlatande = moduleFacade.getUtlatandeFromInternalModel(utkast.getIntygsTyp(), utkast.getModel());
 
             // INTYG-5354, INTYG-5380: Don't use incomplete address from external data sources (PU/js).
             if (!newPatientData.isCompleteAddressProvided()) {
@@ -863,7 +863,7 @@ public class IntygServiceImpl implements IntygService {
             String internalIntygJsonModel = moduleRegistry.getModuleApi(utkast.getIntygsTyp(), utkast.getIntygTypeVersion())
                 .updateBeforeViewing(utkast.getModel(), newPatientData);
 
-            utlatande = modelFacade.getUtlatandeFromInternalModel(utkast.getIntygsTyp(), internalIntygJsonModel);
+            utlatande = moduleFacade.getUtlatandeFromInternalModel(utkast.getIntygsTyp(), internalIntygJsonModel);
             List<Status> statuses = IntygConverterUtil.buildStatusesFromUtkast(utkast);
             Relations certificateRelations = certificateRelationService.getRelations(utkast.getIntygsId());
 
