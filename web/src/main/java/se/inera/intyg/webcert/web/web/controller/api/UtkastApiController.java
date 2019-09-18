@@ -21,7 +21,6 @@ package se.inera.intyg.webcert.web.web.controller.api;
 import io.swagger.annotations.Api;
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -301,15 +300,7 @@ public class UtkastApiController extends AbstractApiController {
 
             // Get lakare name
             Set<String> hsaIds = listIntygEntries.stream().map(ListIntygEntry::getUpdatedSignedById).collect(Collectors.toSet());
-            Map<String, String> hsaIdNameMap = new HashMap<>();
-
-            hsaIds.forEach(hsaId -> {
-                String name = getLakareName(hsaId);
-
-                if (name != null) {
-                    hsaIdNameMap.put(hsaId, name);
-                }
-            });
+            Map<String, String> hsaIdNameMap = ArendeConverter.getNamesByHsaIds(hsaIds, hsaEmployeeService);
 
             // Update lakare name
             listIntygEntries.forEach(row -> {
@@ -325,15 +316,6 @@ public class UtkastApiController extends AbstractApiController {
         QueryIntygResponse response = new QueryIntygResponse(listIntygEntries);
         response.setTotalCount(totalCountOfFilteredIntyg);
         return response;
-    }
-
-    private String getLakareName(String hsaId) {
-        try {
-            return ArendeConverter.getNameByHsaId(hsaId, hsaEmployeeService);
-        } catch (Exception e) {
-            LOG.debug("Läkare namn not found", e);
-            return null;
-        }
     }
 
     private Comparator<ListIntygEntry> getIntygComparator(String orderBy, Boolean ascending) {

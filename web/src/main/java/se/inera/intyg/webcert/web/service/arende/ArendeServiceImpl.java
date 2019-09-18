@@ -408,28 +408,24 @@ public class ArendeServiceImpl implements ArendeService {
 
         lakareFragaSvarList.putAll(lakareArendeList);
 
+        Map<String, String> hsaToNameMap = ArendeConverter.getNamesByHsaIds(lakareFragaSvarList.keySet(), hsaEmployeeService);
+
         return lakareFragaSvarList.entrySet().stream()
             .map(lakare -> {
-                String name = getLakareName(lakare.getKey());
+                String hsaId = lakare.getKey();
+                String name = lakare.getValue();
 
-                if (name == null) {
-                    name = lakare.getValue();
+                if (hsaToNameMap.containsKey(hsaId)) {
+                    name = hsaToNameMap.get(hsaId);
                 }
 
-                return new Lakare(lakare.getKey(), name);
+                return new Lakare(hsaId, name);
             })
             .sorted(Comparator.comparing(Lakare::getName))
             .collect(Collectors.toList());
     }
 
-    private String getLakareName(String hsaId) {
-        try {
-            return ArendeConverter.getNameByHsaId(hsaId, hsaEmployeeService);
-        } catch (Exception e) {
-            LOG.debug("Läkare namn not found", e);
-            return null;
-        }
-    }
+
 
     @Override
     public List<ArendeConversationView> getArenden(String intygsId) {
@@ -502,15 +498,7 @@ public class ArendeServiceImpl implements ArendeService {
 
             // Get lakare name
             Set<String> hsaIds = resultList.stream().map(ArendeListItem::getSigneratAv).collect(Collectors.toSet());
-            Map<String, String> hsaIdNameMap = new HashMap<>();
-
-            hsaIds.forEach(hsaId -> {
-                String name = getLakareName(hsaId);
-
-                if (name != null) {
-                    hsaIdNameMap.put(hsaId, name);
-                }
-            });
+            Map<String, String> hsaIdNameMap = ArendeConverter.getNamesByHsaIds(hsaIds, hsaEmployeeService);
 
             // Update lakare name
             resultList.forEach(row -> {
