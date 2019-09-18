@@ -398,17 +398,17 @@ public class ArendeServiceImpl implements ArendeService {
             enhetsIdParams.addAll(webcertUserService.getUser().getIdsOfSelectedVardenhet());
         }
 
-        Map<String, String> lakreArendeList = arendeRepository.findSigneratAvByEnhet(enhetsIdParams).stream()
+        Map<String, String> lakareArendeList = arendeRepository.findSigneratAvByEnhet(enhetsIdParams).stream()
             .collect(Collectors.toMap(arr -> (String) arr[0], arr -> (String) arr[1]));
 
         // We need to maintain backwards compatibility. When FragaSvar no longer exist remove this part and return above
         // arendeList
-        Map<String, String> fragaSvarList = fragaSvarService.getFragaSvarHsaIdByEnhet(enhetsId).stream()
+        Map<String, String> lakareFragaSvarList = fragaSvarService.getFragaSvarHsaIdByEnhet(enhetsId).stream()
             .collect(Collectors.toMap(Lakare::getHsaId, Lakare::getName));
 
-        fragaSvarList.putAll(lakreArendeList);
+        lakareFragaSvarList.putAll(lakareArendeList);
 
-        return fragaSvarList.entrySet().stream()
+        return lakareFragaSvarList.entrySet().stream()
             .map(lakare -> {
                 String name = getLakareName(lakare.getKey());
 
