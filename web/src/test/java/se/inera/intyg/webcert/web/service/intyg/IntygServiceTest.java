@@ -997,7 +997,7 @@ public class IntygServiceTest {
         intygService.handleAfterSigned(utkast);
 
         verify(certificateSenderService).sendCertificate(eq(intygId), any(), anyString(), eq(recipient), eq(true));
-        verify(mockMonitoringService).logIntygSent(intygId, recipient);
+        verify(mockMonitoringService).logIntygSent(intygId, intygTyp, recipient);
         verify(logservice).logSendIntygToRecipient(any(LogRequest.class));
         verify(arendeService).closeCompletionsAsHandled(relationIntygId, intygTyp);
         verify(notificationService).sendNotificationForIntygSent(intygId);
@@ -1050,7 +1050,7 @@ public class IntygServiceTest {
         intygService.handleAfterSigned(utkast);
 
         verify(certificateSenderService).sendCertificate(eq(intygId), any(), anyString(), eq(recipient), eq(true));
-        verify(mockMonitoringService).logIntygSent(intygId, recipient);
+        verify(mockMonitoringService).logIntygSent(intygId, intygTyp, recipient);
         verify(logservice).logSendIntygToRecipient(any(LogRequest.class));
         verify(arendeService, never()).closeCompletionsAsHandled(relationIntygId, intygTyp);
         verify(notificationService).sendNotificationForIntygSent(intygId);

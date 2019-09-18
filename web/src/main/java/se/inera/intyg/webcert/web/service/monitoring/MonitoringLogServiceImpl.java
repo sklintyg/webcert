@@ -128,13 +128,13 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
     }
 
     @Override
-    public void logIntygSent(String intygsId, String recipient) {
-        logEvent(MonitoringEvent.INTYG_SENT, intygsId, recipient);
+    public void logIntygSent(String intygsId, String intygsTyp, String recipient) {
+        logEvent(MonitoringEvent.INTYG_SENT, intygsId, intygsTyp, recipient);
     }
 
     @Override
-    public void logIntygRevoked(String intygsId, String userHsaId, String reason) {
-        logEvent(MonitoringEvent.INTYG_REVOKED, intygsId, userHsaId, reason);
+    public void logIntygRevoked(String intygsId, String intygsTyp, String userHsaId, String reason) {
+        logEvent(MonitoringEvent.INTYG_REVOKED, intygsId, intygsTyp, userHsaId, reason);
     }
 
     @Override
@@ -371,8 +371,8 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
         INTYG_PRINT_PDF("Intyg '{}' of type '{}' was printed as PDF with '{}' content"),
         INTYG_SIGNED("Intyg '{}' of type '{}' signed by '{}' using scheme '{}' and relation code '{}'"),
         INTYG_REGISTERED("Intyg '{}' of type '{}' registered with Intygstjänsten"),
-        INTYG_SENT("Intyg '{}' sent to recipient '{}'"),
-        INTYG_REVOKED("Intyg '{}' revoked by '{}' reason '{}'"),
+        INTYG_SENT("Intyg '{}' of type '{}' sent to recipient '{}'"),
+        INTYG_REVOKED("Intyg '{}' of type '{}' revoked by '{}' reason '{}'"),
         INTYG_COPIED("Utkast '{}' created as a copy of '{}'"),
         INTYG_COPIED_RENEWAL("Utkast '{}' created as a renewal copy of '{}'"),
         INTYG_COPIED_REPLACEMENT("Utkast '{}' created as a replacement copy of '{}'"),
