@@ -61,6 +61,7 @@ import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import javax.xml.ws.WebServiceException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -973,18 +974,44 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         final String[] lakare3 = {"hsaid3", "namn3"};
         final String[] lakare4 = {"hsaid4", "namn4"};
         final String[] lakare4_1 = {"hsaid4", "namn4_1"};
-        final List<Object[]> repoResult = Arrays.asList(lakare1, lakare2, lakare3, lakare4_1);
+        final List<Object[]> repoResult = Arrays.asList(lakare1, lakare2, lakare3, lakare4);
         final List<Object[]> expected = Arrays.asList(lakare1, lakare2, lakare3, lakare4);
 
         WebCertUser user = Mockito.mock(WebCertUser.class);
         when(user.getIdsOfSelectedVardenhet()).thenReturn(selectedUnits);
         when(webcertUserService.getUser()).thenReturn(user);
         when(arendeRepository.findSigneratAvByEnhet(selectedUnits)).thenReturn(repoResult);
-        when(fragaSvarService.getFragaSvarHsaIdByEnhet(eq(null))).thenReturn(Arrays.asList(new Lakare(lakare4[0], lakare4[1])));
+        when(fragaSvarService.getFragaSvarHsaIdByEnhet(eq(null))).thenReturn(Arrays.asList(new Lakare(lakare4_1[0], lakare4_1[1])));
 
         List<Lakare> res = service.listSignedByForUnits(null);
 
         assertEquals(expected.stream().map(arr -> new Lakare((String) arr[0], (String) arr[0])).collect(Collectors.toList()), res);
+
+        verify(webcertUserService).getUser();
+        verify(arendeRepository).findSigneratAvByEnhet(selectedUnits);
+    }
+
+    @Test
+    public void testListSignedByForUnitsNoHsa() {
+        final List<String> selectedUnits = Arrays.asList("enhet1", "enhet2");
+        final String[] lakare1 = {"hsaid1", "namn1"};
+        final String[] lakare2 = {"hsaid2", "namn2"};
+        final String[] lakare3 = {"hsaid3", "namn3"};
+        final String[] lakare4 = {"hsaid4", "namn4"};
+        final String[] lakare4_1 = {"hsaid4", "namn4_1"};
+        final List<Object[]> repoResult = Arrays.asList(lakare1, lakare2, lakare3, lakare4);
+        final List<Object[]> expected = Arrays.asList(lakare1, lakare2, lakare3, lakare4);
+
+        WebCertUser user = Mockito.mock(WebCertUser.class);
+        when(user.getIdsOfSelectedVardenhet()).thenReturn(selectedUnits);
+        when(webcertUserService.getUser()).thenReturn(user);
+        when(arendeRepository.findSigneratAvByEnhet(selectedUnits)).thenReturn(repoResult);
+        when(fragaSvarService.getFragaSvarHsaIdByEnhet(eq(null))).thenReturn(Arrays.asList(new Lakare(lakare4_1[0], lakare4_1[1])));
+        when(hsaEmployeeService.getEmployee(anyString(), any())).thenThrow(WebServiceException.class);
+
+        List<Lakare> res = service.listSignedByForUnits(null);
+
+        assertEquals(expected.stream().map(arr -> new Lakare((String) arr[0], (String) arr[1])).collect(Collectors.toList()), res);
 
         verify(webcertUserService).getUser();
         verify(arendeRepository).findSigneratAvByEnhet(selectedUnits);
@@ -1153,6 +1180,36 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
 
         assertEquals(2, response.getResults().size());
         // assertEquals(3, response.getTotalCount());
+    }
+
+    @Test
+    public void testFilterArendeHsaNotFound() {
+        WebCertUser webCertUser = createUser();
+        when(webcertUserService.getUser()).thenReturn(webCertUser);
+        when(webcertUserService.isAuthorizedForUnit(any(String.class), eq(true))).thenReturn(true);
+
+        List<Arende> queryResults = new ArrayList<>();
+        queryResults.add(buildArende(UUID.randomUUID().toString(), LocalDateTime.now(), null));
+        queryResults.add(buildArende(UUID.randomUUID().toString(), LocalDateTime.now().minusDays(1), null));
+
+        when(arendeRepository.filterArende(any(Filter.class))).thenReturn(queryResults);
+
+        QueryFragaSvarResponse fsResponse = new QueryFragaSvarResponse();
+        fsResponse.setResults(new ArrayList<>());
+        fsResponse.setTotalCount(0);
+
+        when(fragaSvarService.filterFragaSvar(any(Filter.class))).thenReturn(fsResponse);
+
+        when(hsaEmployeeService.getEmployee(anyString(), any())).thenThrow(WebServiceException.class);
+
+
+        QueryFragaSvarParameter params = new QueryFragaSvarParameter();
+        QueryFragaSvarResponse response = service.filterArende(params);
+
+        verify(arendeRepository).filterArende(any(Filter.class));
+        verify(fragaSvarService).filterFragaSvar(any(Filter.class));
+
+        assertEquals(2, response.getResults().size());
     }
 
     @Test

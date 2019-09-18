@@ -43,6 +43,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.ws.rs.core.Response;
+import javax.xml.ws.WebServiceException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -277,6 +278,37 @@ public class UtkastApiControllerTest {
     }
 
     @Test
+    public void testFilterDraftsForUnitHsaNotFound() {
+        String hsaIdNotFound = "notFoundHsa";
+        String nameNotFound = "notFoundName";
+        String hsaIdFound = "hsaIdFound";
+
+        setupUser(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT, LuseEntryPoint.MODULE_ID,
+            AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);
+
+        when(hsaEmployeeService.getEmployee(eq(hsaIdNotFound), any())).thenThrow(WebServiceException.class);
+
+        Utkast utkast2 = buildUtkast(PATIENT_PERSONNUMMER, new VardpersonReferens(hsaIdFound, "nameFoundAndReplaced"));
+        utkast2.setSenastSparadDatum(LocalDateTime.now().plusDays(1));
+
+        when(utkastService.filterIntyg(any()))
+            .thenReturn(Arrays.asList(
+                buildUtkast(PATIENT_PERSONNUMMER, new VardpersonReferens(hsaIdNotFound, nameNotFound)),
+                utkast2));
+
+        final Response response = utkastController.filterDraftsForUnit(buildQueryIntygParameter());
+        final QueryIntygResponse queryIntygResponse = response.readEntity(QueryIntygResponse.class);
+        assertEquals(2, queryIntygResponse.getTotalCount());
+        assertEquals(2, queryIntygResponse.getResults().size());
+
+        assertEquals(hsaIdFound, queryIntygResponse.getResults().get(0).getUpdatedSignedById());
+        assertEquals(hsaIdFound, queryIntygResponse.getResults().get(0).getUpdatedSignedBy());
+
+        assertEquals(hsaIdNotFound, queryIntygResponse.getResults().get(1).getUpdatedSignedById());
+        assertEquals(nameNotFound, queryIntygResponse.getResults().get(1).getUpdatedSignedBy());
+    }
+
+    @Test
     public void testFilterDraftsForUnitSkipsSekretessIntygForUserWithoutAuthorithy() {
         setupUser("", LuseEntryPoint.MODULE_ID, AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);
 
@@ -385,11 +417,15 @@ public class UtkastApiControllerTest {
     }
 
     private Utkast buildUtkast(Personnummer personnr) {
+        return buildUtkast(personnr, new VardpersonReferens("hsa1", "name"));
+    }
+
+    private Utkast buildUtkast(Personnummer personnr, VardpersonReferens vardperson) {
         Utkast utkast = new Utkast();
         utkast.setIntygsTyp("luse");
         utkast.setVardgivarId("456");
         utkast.setStatus(UtkastStatus.DRAFT_COMPLETE);
-        utkast.setSenastSparadAv(new VardpersonReferens("hsa1", "name"));
+        utkast.setSenastSparadAv(vardperson);
         utkast.setSenastSparadDatum(LocalDateTime.now());
         utkast.setPatientPersonnummer(personnr);
 
