@@ -18,6 +18,26 @@
  */
 package se.inera.intyg.webcert.web.converter;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import javax.xml.ws.WebServiceException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -316,6 +336,32 @@ public class ArendeConverterTest {
         assertEquals(Boolean.FALSE, res.getVidarebefordrad());
         assertNotEquals(meddelandeId, res.getMeddelandeId());
         assertEquals(vardaktorName, res.getVardaktorName());
+    }
+
+    @Test
+    public void getNamesByHsaIds() {
+        String id1 = "not_found";
+        String id2 = "foundId";
+
+        List<String> hsaIds = Arrays.asList(id1, id2);
+
+        when(hsaEmployeeService.getEmployee(eq(id1), any())).thenThrow(WebServiceException.class);
+
+        when(hsaEmployeeService.getEmployee(eq(id2), any())).thenAnswer(invocation -> {
+            PersonInformationType personInformation = new PersonInformationType();
+            personInformation.setMiddleAndSurName((String) invocation.getArguments()[0]);
+
+            List<PersonInformationType> personInformationTypeList = new ArrayList<>();
+            personInformationTypeList.add(personInformation);
+            return personInformationTypeList;
+        });
+
+        Map<String, String> map = ArendeConverter.getNamesByHsaIds(hsaIds, hsaEmployeeService);
+
+        assertNotNull(map);
+        assertEquals(1, map.size());
+        assertTrue(map.containsKey(id2));
+        assertFalse(map.containsKey(id1));
     }
 
     private SendMessageToCareType createSendMessageToCare(String amneskod, String intygId, String kontaktInfo, String skickatAv,
