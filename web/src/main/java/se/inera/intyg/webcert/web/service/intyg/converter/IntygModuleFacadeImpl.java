@@ -26,7 +26,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import se.inera.intyg.common.support.model.CertificateState;
 import se.inera.intyg.common.support.model.Status;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
@@ -77,11 +76,6 @@ public class IntygModuleFacadeImpl implements IntygModuleFacade {
             LOG.error("ModuleNotFoundException occured for intygstyp '{}' when generating PDF document from internal", intygType);
             throw new IntygModuleFacadeException("ModuleNotFoundException occured when registering certificate", e);
         }
-    }
-
-    // If there either are no statuses, or if there is no RECEIVED status, this intyg has not yet been signed.
-    private boolean isUtkast(List<Status> statuses) {
-        return statuses == null || statuses.stream().noneMatch(s -> s.getType() == CertificateState.RECEIVED);
     }
 
     @Override

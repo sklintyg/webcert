@@ -53,7 +53,6 @@ import se.inera.intyg.webcert.web.service.underskrift.tracker.RedisTicketTracker
 import se.inera.intyg.webcert.web.service.underskrift.xmldsig.XmlUnderskriftServiceImpl;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
-import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 import se.inera.intyg.webcert.web.web.util.access.AccessResultExceptionHelper;
 
 @Service
@@ -72,9 +71,6 @@ public class UnderskriftServiceImpl implements UnderskriftService {
 
     @Autowired
     private UtkastRepository utkastRepository;
-
-    @Autowired
-    private UtkastService utkastService;
 
     @Autowired
     private IntygModuleRegistry moduleRegistry;

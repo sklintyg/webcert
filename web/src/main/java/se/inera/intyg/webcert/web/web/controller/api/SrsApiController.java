@@ -37,8 +37,6 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import org.apache.commons.lang3.EnumUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.intyg.clinicalprocess.healthcond.srs.getconsent.v1.Samtyckesstatus;
 import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v2.Utdatafilter;
@@ -57,7 +55,6 @@ import se.inera.intyg.webcert.web.service.diagnos.DiagnosService;
 import se.inera.intyg.webcert.web.service.diagnos.dto.DiagnosResponse;
 import se.inera.intyg.webcert.web.service.diagnos.dto.DiagnosResponseType;
 import se.inera.intyg.webcert.web.service.log.LogService;
-import se.inera.intyg.webcert.web.service.log.factory.LogRequestFactory;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
@@ -67,8 +64,6 @@ import se.riv.clinicalprocess.healthcond.certificate.types.v2.ResultCodeEnum;
 @Path("/srs")
 @Api(value = "srs", description = "REST API för Stöd för rätt sjukskrivning", produces = MediaType.APPLICATION_JSON)
 public class SrsApiController extends AbstractApiController {
-
-    private static final Logger LOG = LoggerFactory.getLogger(SrsApiController.class);
 
     private static final int OK = 200;
     private static final int NO_CONTENT = 204;
@@ -88,9 +83,6 @@ public class SrsApiController extends AbstractApiController {
 
     @Autowired
     private DiagnosService diagnosService;
-
-    @Autowired
-    private LogRequestFactory logRequestFactory;
 
     @POST
     @Path("/{intygId}/{personnummer}/{diagnosisCode}")

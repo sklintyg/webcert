@@ -18,12 +18,9 @@
  */
 package se.inera.intyg.webcert.web.service.underskrift;
 
-import java.nio.charset.Charset;
 import java.time.LocalDateTime;
 import java.util.Base64;
 import javax.xml.bind.JAXBElement;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.w3._2000._09.xmldsig_.KeyInfoType;
 import org.w3._2000._09.xmldsig_.ObjectFactory;
@@ -47,10 +44,6 @@ import se.inera.intyg.webcert.web.service.underskrift.xmldsig.UtkastModelToXMLCo
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 public abstract class BaseXMLSignatureService extends BaseSignatureService {
-
-    private static final Logger LOG = LoggerFactory.getLogger(BaseXMLSignatureService.class);
-    private static final String DIGEST_ALGORITHM = "SHA-256";
-    private static final Charset UTF_8 = Charset.forName("UTF-8");
 
     @Autowired
     private UtkastModelToXMLConverter utkastModelToXMLConverter;

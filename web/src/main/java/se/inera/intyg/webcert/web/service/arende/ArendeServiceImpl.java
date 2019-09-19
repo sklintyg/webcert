@@ -429,9 +429,9 @@ public class ArendeServiceImpl implements ArendeService {
 
     @Override
     public List<ArendeConversationView> getArenden(String intygsId) {
-        List<Arende> arendeList = getArendeForIntygId(intygsId);
-
         validateAccessRightsToReadArenden(intygsId);
+
+        List<Arende> arendeList = getArendeForIntygId(intygsId);
 
         return getArendeConversationViewList(intygsId, arendeList);
     }

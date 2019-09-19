@@ -1052,12 +1052,10 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
 
         when(arendeRepository.findByIntygsId(INTYG_ID)).thenReturn(arendeList);
 
-        when(webcertUserService.getUser()).thenReturn(createUser());
         setupMockForAccessService(ActionLinkType.LASA_FRAGA);
         List<ArendeConversationView> result = service.getArenden(INTYG_ID);
 
         verify(arendeRepository).findByIntygsId(INTYG_ID);
-        verify(webcertUserService).getUser();
 
         assertEquals(4, result.size());
         assertEquals(1, result.get(0).getPaminnelser().size());
@@ -1112,7 +1110,6 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         final Personnummer personnummer = Personnummer.createPersonnummer(PERSON_ID).get();
         doReturn(personnummer).when(patient).getPersonId();
 
-        when(webcertUserService.getUser()).thenReturn(createUser());
         when(utkastRepository.findOne(INTYG_ID)).thenReturn(null);
         when(intygService.getIntygTypeInfo(INTYG_ID, null)).thenReturn(intygTypeInfo);
         when(intygTypeInfo.getIntygType()).thenReturn(intygsTyp);
@@ -1122,7 +1119,6 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         List<ArendeConversationView> result = service.getArenden(INTYG_ID);
 
         verify(arendeRepository).findByIntygsId(INTYG_ID);
-        verify(webcertUserService).getUser();
 
         assertEquals(4, result.size());
         assertEquals(1, result.get(0).getPaminnelser().size());

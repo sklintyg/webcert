@@ -19,12 +19,16 @@
 package se.inera.intyg.webcert.web.web.controller.internalapi;
 
 import io.swagger.annotations.Api;
+import java.util.Optional;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 import org.springframework.beans.factory.annotation.Autowired;
+import se.inera.intyg.infra.intyginfo.dto.WcIntygInfo;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.webcert.web.service.intyginfo.IntygInfoService;
 
@@ -41,9 +45,15 @@ public class IntygInfoApiController {
     @Path("/{intygId}")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
-    public IntygInfoResponse getIntygInfo(@PathParam("intygId") String intygId) {
+    public Response getIntygInfo(@PathParam("intygId") String intygId) {
 
-        return intygInfoService.getIntygInfo(intygId);
+        Optional<WcIntygInfo> wcIntygInfo = intygInfoService.getIntygInfo(intygId);
+
+        if (!wcIntygInfo.isPresent()) {
+            return Response.status(Status.NOT_FOUND).build();
+        }
+
+        return Response.ok(wcIntygInfo.get()).build();
     }
 
 }
