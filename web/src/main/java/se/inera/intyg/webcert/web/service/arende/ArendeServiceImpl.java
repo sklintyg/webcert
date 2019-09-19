@@ -24,7 +24,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -402,27 +401,31 @@ public class ArendeServiceImpl implements ArendeService {
             enhetsIdParams.addAll(webcertUserService.getUser().getIdsOfSelectedVardenhet());
         }
 
-        List<String> arendeListHsaId = arendeRepository.findSigneratAvByEnhet(enhetsIdParams).stream()
-                .map(arr -> (String) arr[0])
-                .collect(Collectors.toList());
+        Map<String, String> lakareArendeList = arendeRepository.findSigneratAvByEnhet(enhetsIdParams).stream()
+            .collect(Collectors.toMap(arr -> (String) arr[0], arr -> (String) arr[1]));
 
         // We need to maintain backwards compatibility. When FragaSvar no longer exist remove this part and return above
         // arendeList
-        List<String> fragaSvarListHsaId = fragaSvarService.getFragaSvarHsaIdByEnhet(enhetsId).stream()
-                .map(Lakare::getHsaId)
-                .collect(Collectors.toList());
+        Map<String, String> lakareFragaSvarList = fragaSvarService.getFragaSvarHsaIdByEnhet(enhetsId).stream()
+            .collect(Collectors.toMap(Lakare::getHsaId, Lakare::getName));
 
-        Set<String> hsaIds = new HashSet<>(arendeListHsaId);
-        hsaIds.addAll(fragaSvarListHsaId);
+        lakareFragaSvarList.putAll(lakareArendeList);
 
-        return hsaIds.stream()
-                .map(hsaId -> new Lakare(hsaId, getLakareName(hsaId)))
-                .sorted(Comparator.comparing(Lakare::getName))
-                .collect(Collectors.toList());
-    }
+        Map<String, String> hsaToNameMap = ArendeConverter.getNamesByHsaIds(lakareFragaSvarList.keySet(), hsaEmployeeService);
 
-    private String getLakareName(String hsaId) {
-        return ArendeConverter.getNameByHsaId(hsaId, hsaEmployeeService);
+        return lakareFragaSvarList.entrySet().stream()
+            .map(lakare -> {
+                String hsaId = lakare.getKey();
+                String name = lakare.getValue();
+
+                if (hsaToNameMap.containsKey(hsaId)) {
+                    name = hsaToNameMap.get(hsaId);
+                }
+
+                return new Lakare(hsaId, name);
+            })
+            .sorted(Comparator.comparing(Lakare::getName))
+            .collect(Collectors.toList());
     }
 
     @Override
@@ -496,7 +499,7 @@ public class ArendeServiceImpl implements ArendeService {
 
             // Get lakare name
             Set<String> hsaIds = resultList.stream().map(ArendeListItem::getSigneratAv).collect(Collectors.toSet());
-            Map<String, String> hsaIdNameMap = hsaIds.stream().collect(Collectors.toMap(a -> a, this::getLakareName));
+            Map<String, String> hsaIdNameMap = ArendeConverter.getNamesByHsaIds(hsaIds, hsaEmployeeService);
 
             // Update lakare name
             resultList.forEach(row -> {
