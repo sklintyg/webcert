@@ -129,7 +129,7 @@ public class IntygServiceRevokeTest extends AbstractIntygServiceTest {
         verify(intygRepository).save(any(Utkast.class));
         verify(certificateSenderService, times(1)).revokeCertificate(eq(INTYG_ID), any(), eq(INTYG_TYP_FK), eq(INTYG_TYPE_VERSION));
         verify(moduleFacade, times(1)).getRevokeCertificateRequest(eq(INTYG_TYP_FK), any(), any(), eq(REVOKE_MSG));
-        verify(monitoringService).logIntygRevoked(INTYG_ID, HSA_ID, REVOKE_REASON);
+        verify(monitoringService).logIntygRevoked(INTYG_ID, INTYG_TYP_FK, HSA_ID, REVOKE_REASON);
 
         assertEquals(IntygServiceResult.OK, res);
     }

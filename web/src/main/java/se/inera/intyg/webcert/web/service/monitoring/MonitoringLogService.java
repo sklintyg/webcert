@@ -55,9 +55,9 @@ public interface MonitoringLogService extends AuthenticationLogger {
 
     void logIntygRegistered(String intygsId, String intygsTyp);
 
-    void logIntygSent(String intygsId, String recipient);
+    void logIntygSent(String intygsId, String intygsTyp, String recipient);
 
-    void logIntygRevoked(String intygsId, String hsaId, String reason);
+    void logIntygRevoked(String intygsId, String intygsTyp, String hsaId, String reason);
 
     void logIntygCopied(String copyIntygsId, String originalIntygId);
 

@@ -181,14 +181,14 @@ public class MonitoringLogServiceImplTest {
 
     @Test
     public void shouldLogIntygRevoked() {
-        logService.logIntygRevoked(INTYGS_ID, HSA_ID, REASON);
-        verifyLog(Level.INFO, "INTYG_REVOKED Intyg 'INTYGS_ID' revoked by 'HSA_ID' reason 'REASON'");
+        logService.logIntygRevoked(INTYGS_ID, INTYGS_TYP, HSA_ID, REASON);
+        verifyLog(Level.INFO, "INTYG_REVOKED Intyg 'INTYGS_ID' of type 'INTYGS_TYP' revoked by 'HSA_ID' reason 'REASON'");
     }
 
     @Test
     public void shouldLogIntygSent() {
-        logService.logIntygSent(INTYGS_ID, RECIPIENT);
-        verifyLog(Level.INFO, "INTYG_SENT Intyg 'INTYGS_ID' sent to recipient 'RECIPIENT'");
+        logService.logIntygSent(INTYGS_ID, INTYGS_TYP, RECIPIENT);
+        verifyLog(Level.INFO, "INTYG_SENT Intyg 'INTYGS_ID' of type 'INTYGS_TYP' sent to recipient 'RECIPIENT'");
     }
 
     @Test
