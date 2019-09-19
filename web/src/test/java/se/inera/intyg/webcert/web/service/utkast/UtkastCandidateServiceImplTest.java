@@ -24,11 +24,14 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.google.common.collect.ImmutableMap;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -40,18 +43,26 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.stubbing.Answer;
 import se.inera.intyg.common.ag7804.v1.rest.Ag7804ModuleApiV1;
 import se.inera.intyg.common.support.common.enumerations.SignaturTyp;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.Patient;
 import se.inera.intyg.common.support.modules.support.api.GetCopyFromCriteria;
 import se.inera.intyg.infra.integration.hsa.model.SelectableVardenhet;
+import se.inera.intyg.infra.integration.pu.services.PUService;
+import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.infra.security.common.model.Role;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.persistence.utkast.model.Signatur;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
+import se.inera.intyg.webcert.web.service.access.AccessResult;
+import se.inera.intyg.webcert.web.service.access.AccessResultCode;
+import se.inera.intyg.webcert.web.service.access.DraftAccessServiceImpl;
 import se.inera.intyg.webcert.web.service.log.LogService;
 import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
 import se.inera.intyg.webcert.web.service.log.dto.LogUser;
@@ -69,6 +80,9 @@ public class UtkastCandidateServiceImplTest {
     private WebCertUser webCertUser;
 
     @Mock
+    DraftAccessServiceImpl draftAccessService;
+
+    @Mock
     private WebCertUserService webCertUserService;
 
     @Mock
@@ -76,6 +90,9 @@ public class UtkastCandidateServiceImplTest {
 
     @Mock
     private UtkastRepository utkastRepository;
+
+    @Mock
+    private PUService puService;
 
     @Mock
     private LogService logService;
@@ -90,29 +107,45 @@ public class UtkastCandidateServiceImplTest {
     public void setup()  {
         webCertUser = mock(WebCertUser.class);
         when(webCertUserService.getUser()).thenReturn(webCertUser);
+
+        doAnswer(new Answer<Boolean>() {
+            @Override
+            public Boolean answer(final InvocationOnMock invocation) {
+                final Object[] args = invocation.getArguments();
+                return isUserLoggedInOnEnhetOrUnderenhet((String) args[0]);
+            }
+        }).when(webCertUserService).isUserLoggedInOnEnhetOrUnderenhet(anyString());
     }
 
     @Test
     public void getCandidateMetaDataWhenMatchingCriterias() {
         String intygIdCandidate = "correct-candidate-intygid";
-        String intygType = "ag7804";
+        String intygType = "lisjp";
         String intygTypeVersion = "1.0";
 
         when(webCertUser.getValdVardgivare()).thenReturn(createSelectableVardenhet("correct-vg-hsaid"));
         when(webCertUser.getValdVardenhet()).thenReturn(createSelectableVardenhet("correct-ve-hsaid"));
         when(webCertUser.getHsaId()).thenReturn("correct-user-hsaid");
 
+        when(draftAccessService.allowToCopyFromCandidate(anyString(), any(Personnummer.class))).
+            thenReturn(AccessResult.create(AccessResultCode.NO_PROBLEM, ""));
+
         Optional<GetCopyFromCriteria> copyFromCriteria = Optional.of(new GetCopyFromCriteria(intygType, "1", 10));
         when(ag7804ModuleApiV1Mock.getCopyFromCriteria()).thenReturn(copyFromCriteria);
 
-        Patient patient = createPatient("Lill-Tolvan", "Tolvansson", createPnr("20121212-1212"));
+        Patient patient = createPatient("Lilltolvan", "Tolvansson", createPnr("20121212-1212"));
         Set<String> validIntygType = new HashSet<>();
         validIntygType.add(copyFromCriteria.get().getIntygType());
 
+        when(logRequestFactory.createLogRequestFromUtkast(any(Utkast.class), anyBoolean())).thenReturn(new LogRequest());
+
+        // - - - - - - - - - - - - - - - - - - -
+        // Run tests as Läkare
+        // - - - - - - - - - - - - - - - - - - -
+        when(webCertUser.getRoles()).thenReturn(ImmutableMap.of(AuthoritiesConstants.ROLE_LAKARE, new Role()));
+
+        // Signed by user itself on the same care unit
         List<Utkast> candidates = Arrays.asList(
-            createCandidate(UtkastStatus.SIGNED,
-                "correct-ve-hsaid", null,
-                "correct-but-to-old-intygId", intygType, intygTypeVersion, LocalDateTime.now().minusDays(20), "correct-user-hsaid"),
             createCandidate(UtkastStatus.SIGNED,
                 "correct-ve-hsaid", null,
                 intygIdCandidate, intygType, intygTypeVersion, LocalDateTime.now(), "correct-user-hsaid"));
@@ -120,22 +153,53 @@ public class UtkastCandidateServiceImplTest {
         when(utkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(patient.getPersonId().getPersonnummerWithDash(), validIntygType))
             .thenReturn(candidates);
 
-        when(logRequestFactory.createLogRequestFromUtkast(any(Utkast.class), anyBoolean())).thenReturn(new LogRequest());
+        assertTrue(utkastCandidateService.getCandidateMetaData(ag7804ModuleApiV1Mock, patient, false).isPresent());
 
-        Optional<UtkastCandidateMetaData> metaData = utkastCandidateService.getCandidateMetaData(ag7804ModuleApiV1Mock, patient, false);
+        // Signed by other user on the same care unit
+        candidates = Arrays.asList(
+            createCandidate(UtkastStatus.SIGNED,
+                "correct-ve-hsaid", null,
+                "intygId", intygType, intygTypeVersion, LocalDateTime.now(), "other-user-hsaid"));
 
-        // Assert
-        assertTrue(metaData.isPresent());
-        assertEquals(intygIdCandidate, metaData.get().getIntygId());
-        assertEquals(intygTypeVersion, metaData.get().getIntygTypeVersion());
+        when(utkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(patient.getPersonId().getPersonnummerWithDash(), validIntygType))
+            .thenReturn(candidates);
+
+        assertTrue(utkastCandidateService.getCandidateMetaData(ag7804ModuleApiV1Mock, patient, false).isPresent());
+
+        // Signed by other user and on a care sub unit
+        candidates = Arrays.asList(
+            createCandidate(UtkastStatus.SIGNED,
+                "correct-veunder-hsaid", null,
+                "intygId", intygType, intygTypeVersion, LocalDateTime.now(), "other-user-hsaid"));
+
+        when(utkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(patient.getPersonId().getPersonnummerWithDash(), validIntygType))
+            .thenReturn(candidates);
+
+        assertTrue(utkastCandidateService.getCandidateMetaData(ag7804ModuleApiV1Mock, patient, false).isPresent());
+
+        // - - - - - - - - - - - - - - - - - - -
+        // Run tests as Vårdadministratör
+        // - - - - - - - - - - - - - - - - - - -
+        when(webCertUser.getRoles()).thenReturn(ImmutableMap.of(AuthoritiesConstants.ROLE_ADMIN, new Role()));
+
+        // Signed by 'läkare' on the same care unit
+        candidates = Arrays.asList(
+            createCandidate(UtkastStatus.SIGNED,
+                "correct-ve-hsaid", null,
+                "intygId", intygType, intygTypeVersion, LocalDateTime.now(), "other-user-hsaid"));
+
+        when(utkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(patient.getPersonId().getPersonnummerWithDash(), validIntygType))
+            .thenReturn(candidates);
+
+        assertTrue(utkastCandidateService.getCandidateMetaData(ag7804ModuleApiV1Mock, patient, false).isPresent());
 
         // PDL-logging shall be invoked
-        verify(logService).logReadIntyg(any(LogRequest.class), any(LogUser.class));
+        verify(logService, times(4)).logReadIntyg(any(LogRequest.class), any(LogUser.class));
     }
 
     @Test
-    public void getCandidateMetaDataWhenNoCriteria() {
-        Patient patient = createPatient("Lill-Tolvan", "Tolvansson", createPnr("20121212-1212"));
+    public void getCandidateMetaDataWhenMissingCopyFromCriteria() {
+        Patient patient = createPatient("Lilltolvan", "Tolvansson", createPnr("20121212-1212"));
         when(ag7804ModuleApiV1Mock.getCopyFromCriteria()).thenReturn(Optional.empty());
 
         assertFalse(utkastCandidateService.getCandidateMetaData(ag7804ModuleApiV1Mock, patient, false).isPresent());
@@ -145,46 +209,65 @@ public class UtkastCandidateServiceImplTest {
     }
 
     @Test
-    public void getCandidateMetaDataWhenNoMatchingCriterias() {
-        String intygType = "ag7804";
+    public void getCandidateMetaDataWhenAccessIsDenied() {
+        String intygType = "lisjp";
         String intygTypeVersion = "1.0";
 
-        when(webCertUser.getValdVardenhet()).thenReturn(createSelectableVardenhet("correct-user-hsaid"));
+        when(draftAccessService.allowToCopyFromCandidate(anyString(), any(Personnummer.class))).
+            thenReturn(AccessResult.create(AccessResultCode.AUTHORIZATION_SEKRETESS,
+                "User missing required privilege or cannot handle sekretessmarkerad patient"));
 
         Optional<GetCopyFromCriteria> copyFromCriteria = Optional.of(new GetCopyFromCriteria(intygType, "1", 10));
         when(ag7804ModuleApiV1Mock.getCopyFromCriteria()).thenReturn(copyFromCriteria);
 
-        Patient patient = createPatient("Lill-Tolvan", "Tolvansson", createPnr("20121212-1212"));
+        Patient patient = createPatient("Lilltolvan", "Tolvansson", createPnr("20121212-1212"));
         Set<String> validIntygType = new HashSet<>();
         validIntygType.add(copyFromCriteria.get().getIntygType());
 
-        // Signed by other user
-        List<Utkast> candidates = Arrays.asList(
-            createCandidate(UtkastStatus.SIGNED,
-                "correct-ve-hsaid", null,
-                "intygId", intygType, intygTypeVersion, LocalDateTime.now(), "INcorrect-user-hsaid"));
-
-        when(utkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(patient.getPersonId().getPersonnummerWithDash(), validIntygType))
-            .thenReturn(candidates);
-
         assertFalse(utkastCandidateService.getCandidateMetaData(ag7804ModuleApiV1Mock, patient, false).isPresent());
+
+        // No PDL-logging shall be invoked
+        verify(logService, times(0)).logReadIntyg(any(LogRequest.class));
+    }
+
+    @Test
+    public void getCandidateMetaDataWhenNoMatchingCriterias() {
+        String intygType = "lisjp";
+        String intygTypeVersion = "1.0";
+
+        when(webCertUser.getValdVardenhet()).thenReturn(createSelectableVardenhet("correct-user-hsaid"));
+
+        when(draftAccessService.allowToCopyFromCandidate(anyString(), any(Personnummer.class))).
+            thenReturn(AccessResult.create(AccessResultCode.NO_PROBLEM, ""));
+
+        Optional<GetCopyFromCriteria> copyFromCriteria = Optional.of(new GetCopyFromCriteria(intygType, "1", 10));
+        when(ag7804ModuleApiV1Mock.getCopyFromCriteria()).thenReturn(copyFromCriteria);
+
+        Patient patient = createPatient("Lilltolvan", "Tolvansson", createPnr("20121212-1212"));
+        Set<String> validIntygType = new HashSet<>();
+        validIntygType.add(copyFromCriteria.get().getIntygType());
+
+        // - - - - - - - - - - - - - - - - - - -
+        // Run tests as Läkare
+        // - - - - - - - - - - - - - - - - - - -
+        when(webCertUser.getRoles()).thenReturn(ImmutableMap.of(AuthoritiesConstants.ROLE_LAKARE, new Role()));
 
         // Not Signed
-        candidates = Arrays.asList(
+        List<Utkast> candidates = Arrays.asList(
             createCandidate(UtkastStatus.DRAFT_COMPLETE,
                 "correct-ve-hsaid", null,
-                "intygId", intygType, intygType, LocalDateTime.now(), "correct-user-hsaid"));
+                "intygId", intygType, intygTypeVersion, LocalDateTime.now(), "correct-user-hsaid"));
 
         when(utkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(patient.getPersonId().getPersonnummerWithDash(), validIntygType))
             .thenReturn(candidates);
 
         assertFalse(utkastCandidateService.getCandidateMetaData(ag7804ModuleApiV1Mock, patient, false).isPresent());
 
-        // Wrong enhetsId
+        // Wrong enhetsId - candidate is written on a unit that is not users current unit or a sub unit.
         candidates = Arrays.asList(
             createCandidate(UtkastStatus.SIGNED,
                 "INcorrect-ve-hsaid", null,
-                "intygId", intygType, intygType, LocalDateTime.now(), "correct-user-hsaid"));
+                "intygId", intygType, intygTypeVersion, LocalDateTime.now(), "correct-user-hsaid"));
 
         when(utkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(patient.getPersonId().getPersonnummerWithDash(), validIntygType))
             .thenReturn(candidates);
@@ -195,7 +278,7 @@ public class UtkastCandidateServiceImplTest {
         candidates = Arrays.asList(
             createCandidate(UtkastStatus.SIGNED,
                 "correct-ve-hsaid", LocalDateTime.now(),
-                "intygId", intygType, intygType, LocalDateTime.now(), "correct-user-hsaid"));
+                "intygId", intygType, intygTypeVersion, LocalDateTime.now(), "correct-user-hsaid"));
 
         when(utkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(patient.getPersonId().getPersonnummerWithDash(), validIntygType))
             .thenReturn(candidates);
@@ -206,7 +289,7 @@ public class UtkastCandidateServiceImplTest {
         candidates = Arrays.asList(
             createCandidate(UtkastStatus.SIGNED,
                 "correct-ve-hsaid", null,
-                "intygId", intygType, intygType, LocalDateTime.now().minusDays(20), "correct-user-hsaid"));
+                "intygId", intygType, intygTypeVersion, LocalDateTime.now().minusDays(20), "correct-user-hsaid"));
 
         when(utkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(patient.getPersonId().getPersonnummerWithDash(), validIntygType))
             .thenReturn(candidates);
@@ -218,6 +301,22 @@ public class UtkastCandidateServiceImplTest {
             createCandidate(UtkastStatus.SIGNED,
                 "correct-ve-hsaid", null,
                 "intygId", intygType, "2.0", LocalDateTime.now(), "correct-user-hsaid"));
+
+        when(utkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(patient.getPersonId().getPersonnummerWithDash(), validIntygType))
+            .thenReturn(candidates);
+
+        assertFalse(utkastCandidateService.getCandidateMetaData(ag7804ModuleApiV1Mock, patient, false).isPresent());
+
+        // - - - - - - - - - - - - - - - - - - -
+        // Run tests as Vårdadministratör
+        // - - - - - - - - - - - - - - - - - - -
+        when(webCertUser.getRoles()).thenReturn(ImmutableMap.of(AuthoritiesConstants.ROLE_ADMIN, new Role()));
+
+        // Wrong enhetsId - user and candidate must be on the same unit.
+        candidates = Arrays.asList(
+            createCandidate(UtkastStatus.SIGNED,
+                "INcorrect-ve-hsaid", null,
+                "intygId", intygType, intygTypeVersion, LocalDateTime.now(), "correct-user-hsaid"));
 
         when(utkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(patient.getPersonId().getPersonnummerWithDash(), validIntygType))
             .thenReturn(candidates);
@@ -237,12 +336,22 @@ public class UtkastCandidateServiceImplTest {
         when(webCertUser.getValdVardenhet()).thenReturn(createSelectableVardenhet("correct-ve-hsaid"));
         when(webCertUser.getHsaId()).thenReturn("correct-user-hsaid");
 
+        when(draftAccessService.allowToCopyFromCandidate(anyString(), any(Personnummer.class))).
+            thenReturn(AccessResult.create(AccessResultCode.NO_PROBLEM, ""));
+
         Optional<GetCopyFromCriteria> copyFromCriteria = Optional.of(new GetCopyFromCriteria(intygType, "1", 10));
         when(ag7804ModuleApiV1Mock.getCopyFromCriteria()).thenReturn(copyFromCriteria);
 
-        Patient patient = createPatient("Lill-Tolvan", "Tolvansson", createPnr("20121212-1212"));
+        when(logRequestFactory.createLogRequestFromUtkast(any(Utkast.class), anyBoolean())).thenReturn(new LogRequest());
+
+        Patient patient = createPatient("Lilltolvan", "Tolvansson", createPnr("20121212-1212"));
         Set<String> validIntygType = new HashSet<>();
         validIntygType.add(copyFromCriteria.get().getIntygType());
+
+        // - - - - - - - - - - - - - - - - - - -
+        // Run tests as Läkare
+        // - - - - - - - - - - - - - - - - - - -
+        when(webCertUser.getRoles()).thenReturn(ImmutableMap.of(AuthoritiesConstants.ROLE_LAKARE, new Role()));
 
         List<Utkast> candidates = Arrays.asList(
             createCandidate(UtkastStatus.DRAFT_COMPLETE, // Revoked status
@@ -269,14 +378,6 @@ public class UtkastCandidateServiceImplTest {
                 intygTypeVersion,
                 LocalDateTime.now().minusDays(4),
                 "correct-user-hsaid"),
-            createCandidate(UtkastStatus.SIGNED, // Revoked yesterday
-                "correct-ve-hsaid",
-                LocalDateTime.now().minusDays(1),
-                "bad-id-5",
-                intygType,
-                intygTypeVersion,
-                LocalDateTime.now().minusDays(2),
-                "correct-user-hsaid"),
             createCandidate(UtkastStatus.SIGNED, // The one that should be selected
                 "correct-ve-hsaid",
                 null,
@@ -285,29 +386,25 @@ public class UtkastCandidateServiceImplTest {
                 intygTypeVersion,
                 LocalDateTime.now().minusDays(2),
                 "correct-user-hsaid"),
-            createCandidate(UtkastStatus.SIGNED, // Signed by other user
+            createCandidate(UtkastStatus.SIGNED, // Revoked yesterday
                 "correct-ve-hsaid",
-                null,
-                "bad-id-6",
+                LocalDateTime.now().minusDays(1),
+                "bad-id-5",
                 intygType,
                 intygTypeVersion,
-                LocalDateTime.now(),
-                "BAD-user-hsaid"));
+                LocalDateTime.now().minusDays(2),
+                "correct-user-hsaid"));
 
         when(utkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(patient.getPersonId().getPersonnummerWithDash(), validIntygType))
             .thenReturn(candidates);
 
-        when(logRequestFactory.createLogRequestFromUtkast(any(Utkast.class), anyBoolean())).thenReturn(new LogRequest());
-
         Optional<UtkastCandidateMetaData> metaData = utkastCandidateService.getCandidateMetaData(ag7804ModuleApiV1Mock, patient, false);
 
-        // Assert
         assertTrue(metaData.isPresent());
-        assertEquals("expected-intygsid", metaData.get().getIntygId());
-        assertEquals(intygTypeVersion, metaData.get().getIntygTypeVersion());
+        assertEquals(metaData.get().getIntygId(), "expected-intygsid");
 
         // PDL-logging shall be invoked
-        verify(logService).logReadIntyg(any(LogRequest.class), any(LogUser.class));
+        verify(logService, times(1)).logReadIntyg(any(LogRequest.class), any(LogUser.class));
     }
 
     // CHECKSTYLE:OFF ParameterNumber
@@ -334,7 +431,7 @@ public class UtkastCandidateServiceImplTest {
 
     private Patient createPatient(String fornamn, String efternamn, Personnummer personnummer) {
         Patient patient = new Patient();
-        patient.setFornamn("Tolvan");
+        patient.setFornamn("Lilltolvan");
         patient.setEfternamn("Tolvansson");
         patient.setPersonId(personnummer);
         return patient;
@@ -362,6 +459,16 @@ public class UtkastCandidateServiceImplTest {
                 return null;
             }
         };
+    }
+
+    private Boolean isUserLoggedInOnEnhetOrUnderenhet(String enhetsId) {
+        if ("correct-ve-hsaid".equals(enhetsId)) {
+            return true;
+        }
+        if ("correct-veunder-hsaid".equals(enhetsId)) {
+            return true;
+        }
+        return false;
     }
 
 }

@@ -281,10 +281,10 @@ public class WebCertUserServiceTest extends AuthoritiesConfigurationTestSetup {
     }
 
     private void assertUserHasExpectedAccess() {
-        assertTrue(webcertUserService.userIsLoggedInOnEnhetOrUnderenhet(MOTTAGNING_1));
-        assertTrue(webcertUserService.userIsLoggedInOnEnhetOrUnderenhet(MOTTAGNING_2));
-        assertTrue(webcertUserService.userIsLoggedInOnEnhetOrUnderenhet(VARDENHET_1));
-        assertFalse(webcertUserService.userIsLoggedInOnEnhetOrUnderenhet(VARDENHET_2));
+        assertTrue(webcertUserService.isUserLoggedInOnEnhetOrUnderenhet(MOTTAGNING_1));
+        assertTrue(webcertUserService.isUserLoggedInOnEnhetOrUnderenhet(MOTTAGNING_2));
+        assertTrue(webcertUserService.isUserLoggedInOnEnhetOrUnderenhet(VARDENHET_1));
+        assertFalse(webcertUserService.isUserLoggedInOnEnhetOrUnderenhet(VARDENHET_2));
     }
 
     private Mottagning buildMottagning1() {

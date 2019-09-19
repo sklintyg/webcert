@@ -487,7 +487,7 @@ public final class AccessServiceEvaluation {
     }
 
     private boolean isUserLoggedInOnDifferentUnit(String enhetsId) {
-        return enhetsId != null && !webCertUserService.userIsLoggedInOnEnhetOrUnderenhet(enhetsId);
+        return enhetsId != null && !webCertUserService.isUserLoggedInOnEnhetOrUnderenhet(enhetsId);
     }
 
     private Optional<AccessResult> isUniqueUtkastRuleValid(String intygsTyp, WebCertUser user, Personnummer personnummer,

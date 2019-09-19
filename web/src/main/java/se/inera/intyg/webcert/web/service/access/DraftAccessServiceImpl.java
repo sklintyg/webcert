@@ -175,20 +175,17 @@ public class DraftAccessServiceImpl implements DraftAccessService {
      * Check if the user is allowed to update a draft with information from a candidate (i.e. signed certificate).
      *
      * @param certificateType The type of the certificate being checked.
-     * @param careUnit The careUnit which the certificate belongs to.
      * @param patient The patient which the certificate belongs to.
      * @return AccessResult which contains the answer if the user is allowed or not.
      */
     @Override
-    public AccessResult allowToCopyFromCandidate(String certificateType, Vardenhet careUnit, Personnummer patient) {
+    public AccessResult allowToCopyFromCandidate(String certificateType, Personnummer patient) {
         return getAccessServiceEvaluation().given(getUser(), certificateType)
-            .feature(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
-            .privilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG)
             .privilege(AuthoritiesConstants.PRIVILEGE_COPY_FROM_CANDIDATE)
-            .careUnit(careUnit)
             .patient(patient)
-            .checkPatientDeceased(true)
             .checkInactiveCareUnit(true)
+            .checkPatientDeceased(true)
+            .checkPatientSecrecy()
             .checkUnit(false, false)
             .evaluate();
     }
