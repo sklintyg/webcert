@@ -33,9 +33,6 @@ import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.Patient;
 import se.inera.intyg.common.support.modules.support.api.GetCopyFromCriteria;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
-import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
-import se.inera.intyg.infra.security.common.model.IntygUser;
-import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
@@ -75,8 +72,6 @@ public class UtkastCandidateServiceImpl {
 
     public Optional<UtkastCandidateMetaData> getCandidateMetaData(ModuleApi moduleApi, Patient patient, boolean isCoherentJournaling) {
         UtkastCandidateMetaData metaData = null;
-        WebCertUser user = webCertUserService.getUser();
-
         // Finns det några urvalskriterier?
         final Optional<GetCopyFromCriteria> copyFromCriteria = moduleApi.getCopyFromCriteria();
         if (!copyFromCriteria.isPresent()) {
@@ -92,7 +87,7 @@ public class UtkastCandidateServiceImpl {
 
         try {
             // Lookup certificate candidate
-            Optional<Utkast> candidate = findCandidate(copyFromCriteria.get(), user, patient.getPersonId());
+            Optional<Utkast> candidate = findCandidate(copyFromCriteria.get(), patient);
 
             if (candidate.isPresent()) {
                 Utkast utkast = candidate.get();
@@ -110,7 +105,7 @@ public class UtkastCandidateServiceImpl {
                 // PDL Log read access to copyFromCandidate Utlatande
                 logService.logReadIntyg(
                     logRequestFactory.createLogRequestFromUtkast(
-                        utkast, isCoherentJournaling), LogUtil.getLogUser(user));
+                        utkast, isCoherentJournaling), LogUtil.getLogUser(getUser()));
             }
 
             return Optional.ofNullable(metaData);
@@ -124,30 +119,16 @@ public class UtkastCandidateServiceImpl {
     /*
      * The requirements to select an candidate was implemented while working on JIRA-number INTYGFV-10834.
      */
-    private Optional<Utkast> findCandidate(GetCopyFromCriteria copyFromCriteria, IntygUser user, Personnummer personnummer) {
+    private Optional<Utkast> findCandidate(GetCopyFromCriteria copyFromCriteria, Patient patient) {
         if (copyFromCriteria == null) {
             return Optional.empty();
         }
 
-        // Är patienten i fråga sekretessmarkerad?
-        // Endast läkare och tandläkare har rätt att söka efter intyg i så fall.
-        /*
-        try {
-            if (isSekretessmarkerad(personnummer)) {
-                if (!hasRole(AuthoritiesConstants.ROLE_LAKARE, user) && !hasRole(AuthoritiesConstants.ROLE_TANDLAKARE, user)) {
-                    return Optional.empty();
-                }
-            }
-        } catch (Exception e) {
-            LOG.warn(e.getMessage());
-            return Optional.empty();
-        }
-        */
-
         Set<String> validIntygType = new HashSet<>();
         validIntygType.add(copyFromCriteria.getIntygType());
 
-        List<Utkast> candidates = utkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(personnummer.getPersonnummerWithDash(),
+        List<Utkast> candidates = utkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(
+            patient.getPersonId().getPersonnummerWithDash(),
             validIntygType);
 
         LocalDateTime earliestValidDate = LocalDateTime.now().minusDays(copyFromCriteria.getMaxAgeDays());
@@ -158,7 +139,7 @@ public class UtkastCandidateServiceImpl {
             .filter(candidate -> candidate.getAterkalladDatum() == null)
             .filter(candidate -> candidate.getSignatur().getSigneringsDatum().isAfter(earliestValidDate))
             .filter(candidate -> filterOnMajorVersion(candidate.getIntygTypeVersion(), copyFromCriteria.getIntygTypeMajorVersion()))
-            .filter(candidate -> filterOnUnit(candidate, user))
+            .filter(candidate -> filterOnUnit(candidate, patient))
             .sorted(Comparator.comparing(u -> u.getSignatur().getSigneringsDatum(), Comparator.reverseOrder()))
             .findFirst();
     }
@@ -168,22 +149,32 @@ public class UtkastCandidateServiceImpl {
             && intygTypeVersion.startsWith(intygTypeMajorVersion + ".");
     }
 
-    private boolean filterOnUnit(Utkast candidate, IntygUser user) {
-        if (hasRole(AuthoritiesConstants.ROLE_LAKARE, user) || hasRole(AuthoritiesConstants.ROLE_TANDLAKARE, user)) {
-            // För läkare och tandläkare så räcker det med att vara inloggad på enhet eller någon av dess underenheter
-            return webCertUserService.isUserLoggedInOnEnhetOrUnderenhet(candidate.getEnhetsId());
-        } else if (hasRole(AuthoritiesConstants.ROLE_ADMIN, user)) {
-            // En våradministratör måste vara inloaggad på samma enhet som intyget
+    /*
+     * Läkare och tandläkare ska få träff på intyg på eventuell underenhet
+     * till den enhet man är inloggad på, men vårdadministratör ska endast
+     * få träff på intyg på exakt samma enhet.
+     */
+    private boolean filterOnUnit(Utkast candidate, Patient patient) {
+        WebCertUser user = getUser();
+
+        if (!user.isLakare()) {
             return candidate.getEnhetsId().equals(user.getValdVardenhet().getId());
         }
-        return false;
+
+        // Om intyget är utfärdat på en underenhet ska intyg utfärdade
+        // på patient med skyddade personuppgifter filtreras bort.
+        // Dvs intyg för patient med skyddade uppgifter ska bara komma
+        // med om intyget hör till exakt samma enhet som användaren har
+        // i överhoppet från sitt journalsystem.
+        if (patient.isSekretessmarkering()) {
+            return candidate.getEnhetsId().equals(user.getValdVardenhet().getId());
+        }
+
+        return webCertUserService.isUserAllowedAccessToUnit(candidate.getEnhetsId());
     }
 
-    private boolean hasRole(String role, IntygUser user) {
-        if (user.getRoles() == null || user.getRoles().size() == 0) {
-            return false;
-        }
-        return user.getRoles().containsKey(role);
+    private WebCertUser getUser() {
+        return webCertUserService.getUser();
     }
 
 }

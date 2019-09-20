@@ -31,7 +31,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.google.common.collect.ImmutableMap;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -53,8 +52,6 @@ import se.inera.intyg.common.support.model.common.internal.Patient;
 import se.inera.intyg.common.support.modules.support.api.GetCopyFromCriteria;
 import se.inera.intyg.infra.integration.hsa.model.SelectableVardenhet;
 import se.inera.intyg.infra.integration.pu.services.PUService;
-import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
-import se.inera.intyg.infra.security.common.model.Role;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.persistence.utkast.model.Signatur;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
@@ -112,9 +109,9 @@ public class UtkastCandidateServiceImplTest {
             @Override
             public Boolean answer(final InvocationOnMock invocation) {
                 final Object[] args = invocation.getArguments();
-                return isUserLoggedInOnEnhetOrUnderenhet((String) args[0]);
+                return isUserAllowedAccessToUnit((String) args[0]);
             }
-        }).when(webCertUserService).isUserLoggedInOnEnhetOrUnderenhet(anyString());
+        }).when(webCertUserService).isUserAllowedAccessToUnit(anyString());
     }
 
     @Test
@@ -142,7 +139,7 @@ public class UtkastCandidateServiceImplTest {
         // - - - - - - - - - - - - - - - - - - -
         // Run tests as Läkare
         // - - - - - - - - - - - - - - - - - - -
-        when(webCertUser.getRoles()).thenReturn(ImmutableMap.of(AuthoritiesConstants.ROLE_LAKARE, new Role()));
+        when(webCertUser.isLakare()).thenReturn(true);
 
         // Signed by user itself on the same care unit
         List<Utkast> candidates = Arrays.asList(
@@ -180,7 +177,7 @@ public class UtkastCandidateServiceImplTest {
         // - - - - - - - - - - - - - - - - - - -
         // Run tests as Vårdadministratör
         // - - - - - - - - - - - - - - - - - - -
-        when(webCertUser.getRoles()).thenReturn(ImmutableMap.of(AuthoritiesConstants.ROLE_ADMIN, new Role()));
+        when(webCertUser.isLakare()).thenReturn(false);
 
         // Signed by 'läkare' on the same care unit
         candidates = Arrays.asList(
@@ -250,7 +247,7 @@ public class UtkastCandidateServiceImplTest {
         // - - - - - - - - - - - - - - - - - - -
         // Run tests as Läkare
         // - - - - - - - - - - - - - - - - - - -
-        when(webCertUser.getRoles()).thenReturn(ImmutableMap.of(AuthoritiesConstants.ROLE_LAKARE, new Role()));
+        when(webCertUser.isLakare()).thenReturn(true);
 
         // Not Signed
         List<Utkast> candidates = Arrays.asList(
@@ -310,7 +307,7 @@ public class UtkastCandidateServiceImplTest {
         // - - - - - - - - - - - - - - - - - - -
         // Run tests as Vårdadministratör
         // - - - - - - - - - - - - - - - - - - -
-        when(webCertUser.getRoles()).thenReturn(ImmutableMap.of(AuthoritiesConstants.ROLE_ADMIN, new Role()));
+        when(webCertUser.isLakare()).thenReturn(false);
 
         // Wrong enhetsId - user and candidate must be on the same unit.
         candidates = Arrays.asList(
@@ -351,7 +348,7 @@ public class UtkastCandidateServiceImplTest {
         // - - - - - - - - - - - - - - - - - - -
         // Run tests as Läkare
         // - - - - - - - - - - - - - - - - - - -
-        when(webCertUser.getRoles()).thenReturn(ImmutableMap.of(AuthoritiesConstants.ROLE_LAKARE, new Role()));
+        when(webCertUser.isLakare()).thenReturn(true);
 
         List<Utkast> candidates = Arrays.asList(
             createCandidate(UtkastStatus.DRAFT_COMPLETE, // Revoked status
@@ -407,6 +404,81 @@ public class UtkastCandidateServiceImplTest {
         verify(logService, times(1)).logReadIntyg(any(LogRequest.class), any(LogUser.class));
     }
 
+    @Test
+    public void getCandidateMetaDataWhenPatientIsSekretessmarkerad() {
+        String intygIdCandidate = "correct-candidate-intygid";
+        String intygType = "ag7804";
+        String intygTypeVersion = "1.0";
+
+        when(webCertUser.getValdVardgivare()).thenReturn(createSelectableVardenhet("correct-vg-hsaid"));
+        when(webCertUser.getValdVardenhet()).thenReturn(createSelectableVardenhet("correct-ve-hsaid"));
+        when(webCertUser.getHsaId()).thenReturn("correct-user-hsaid");
+
+        when(draftAccessService.allowToCopyFromCandidate(anyString(), any(Personnummer.class))).
+            thenReturn(AccessResult.create(AccessResultCode.NO_PROBLEM, ""));
+
+        Optional<GetCopyFromCriteria> copyFromCriteria = Optional.of(new GetCopyFromCriteria(intygType, "1", 10));
+        when(ag7804ModuleApiV1Mock.getCopyFromCriteria()).thenReturn(copyFromCriteria);
+
+        when(logRequestFactory.createLogRequestFromUtkast(any(Utkast.class), anyBoolean())).thenReturn(new LogRequest());
+
+        Patient patient = createPatient("Lilltolvan", "Tolvansson", createPnr("20121212-1212"), true);
+        Set<String> validIntygType = new HashSet<>();
+        validIntygType.add(copyFromCriteria.get().getIntygType());
+
+        // - - - - - - - - - - - - - - - - - - -
+        // Run tests as Läkare
+        // - - - - - - - - - - - - - - - - - - -
+        when(webCertUser.isLakare()).thenReturn(true);
+
+        // Signed by user herself on the same care unit
+        List<Utkast> candidates = Arrays.asList(
+            createCandidate(UtkastStatus.SIGNED,
+                "correct-ve-hsaid", null,
+                intygIdCandidate, intygType, intygTypeVersion, LocalDateTime.now(), "correct-user-hsaid"));
+
+        when(utkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(patient.getPersonId().getPersonnummerWithDash(), validIntygType))
+            .thenReturn(candidates);
+
+        assertTrue(utkastCandidateService.getCandidateMetaData(ag7804ModuleApiV1Mock, patient, false).isPresent());
+
+        // Signed by other user on the same care unit
+        candidates = Arrays.asList(
+            createCandidate(UtkastStatus.SIGNED,
+                "correct-ve-hsaid", null,
+                "intygId", intygType, intygTypeVersion, LocalDateTime.now(), "other-user-hsaid"));
+
+        when(utkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(patient.getPersonId().getPersonnummerWithDash(), validIntygType))
+            .thenReturn(candidates);
+
+        assertTrue(utkastCandidateService.getCandidateMetaData(ag7804ModuleApiV1Mock, patient, false).isPresent());
+
+        // Signed by user herself but on different unit
+        candidates = Arrays.asList(
+            createCandidate(UtkastStatus.SIGNED,
+                "correct-veunder-hsaid", null,
+                "intygId", intygType, intygTypeVersion, LocalDateTime.now(), "correct-user-hsaid"));
+
+        when(utkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(patient.getPersonId().getPersonnummerWithDash(), validIntygType))
+            .thenReturn(candidates);
+
+        assertFalse(utkastCandidateService.getCandidateMetaData(ag7804ModuleApiV1Mock, patient, false).isPresent());
+
+        // Signed by other user and on different unit
+        candidates = Arrays.asList(
+            createCandidate(UtkastStatus.SIGNED,
+                "correct-veunder-hsaid", null,
+                "intygId", intygType, intygTypeVersion, LocalDateTime.now(), "other-user-hsaid"));
+
+        when(utkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(patient.getPersonId().getPersonnummerWithDash(), validIntygType))
+            .thenReturn(candidates);
+
+        assertFalse(utkastCandidateService.getCandidateMetaData(ag7804ModuleApiV1Mock, patient, false).isPresent());
+
+        // PDL-logging shall be invoked
+        verify(logService, times(2)).logReadIntyg(any(LogRequest.class), any(LogUser.class));
+    }
+
     // CHECKSTYLE:OFF ParameterNumber
     private Utkast createCandidate(UtkastStatus utkastStatus, String enhetsId, LocalDateTime revokedDate, String intygId,
         String intygType, String intygTypeVersion, LocalDateTime signDate, String signedBy) {
@@ -437,6 +509,12 @@ public class UtkastCandidateServiceImplTest {
         return patient;
     }
 
+    private Patient createPatient(String fornamn, String efternamn, Personnummer personnummer, boolean sekretessmarkering) {
+        Patient patient = createPatient(fornamn, efternamn, personnummer);
+        patient.setSekretessmarkering(sekretessmarkering);
+        return patient;
+    }
+
     private Personnummer createPnr(String pnr) {
         return Personnummer.createPersonnummer(pnr)
             .orElseThrow(() -> new IllegalArgumentException("Could not parse passed personnummer: " + pnr));
@@ -461,7 +539,7 @@ public class UtkastCandidateServiceImplTest {
         };
     }
 
-    private Boolean isUserLoggedInOnEnhetOrUnderenhet(String enhetsId) {
+    private Boolean isUserAllowedAccessToUnit(String enhetsId) {
         if ("correct-ve-hsaid".equals(enhetsId)) {
             return true;
         }
