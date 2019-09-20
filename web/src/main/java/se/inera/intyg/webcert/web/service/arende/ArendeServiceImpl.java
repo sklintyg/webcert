@@ -402,12 +402,12 @@ public class ArendeServiceImpl implements ArendeService {
         }
 
         Map<String, String> lakareArendeList = arendeRepository.findSigneratAvByEnhet(enhetsIdParams).stream()
-            .collect(Collectors.toMap(arr -> (String) arr[0], arr -> (String) arr[1]));
+            .collect(Collectors.toMap(arr -> (String) arr[0], arr -> (String) arr[1], (a1, a2) -> a1));
 
         // We need to maintain backwards compatibility. When FragaSvar no longer exist remove this part and return above
         // arendeList
         Map<String, String> lakareFragaSvarList = fragaSvarService.getFragaSvarHsaIdByEnhet(enhetsId).stream()
-            .collect(Collectors.toMap(Lakare::getHsaId, Lakare::getName));
+            .collect(Collectors.toMap(Lakare::getHsaId, Lakare::getName, (a1, a2) -> a1));
 
         lakareFragaSvarList.putAll(lakareArendeList);
 
