@@ -998,8 +998,9 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         final String[] lakare2 = {"hsaid2", "namn2"};
         final String[] lakare3 = {"hsaid3", "namn3"};
         final String[] lakare4 = {"hsaid4", "namn4"};
+        final String[] lakare4_2 = {"hsaid4", "namn4_2"};
         final String[] lakare4_1 = {"hsaid4", "namn4_1"};
-        final List<Object[]> repoResult = Arrays.asList(lakare1, lakare2, lakare3, lakare4);
+        final List<Object[]> repoResult = Arrays.asList(lakare1, lakare2, lakare3, lakare4, lakare4_2);
         final List<Object[]> expected = Arrays.asList(lakare1, lakare2, lakare3, lakare4);
 
         WebCertUser user = Mockito.mock(WebCertUser.class);
