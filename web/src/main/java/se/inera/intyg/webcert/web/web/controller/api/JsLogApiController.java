@@ -78,6 +78,9 @@ public class JsLogApiController extends AbstractApiController {
         case SIGNING_FAILED:
             monitoringService.logUtkastSignFailed(request.getInfo().get(ERROR_MESSAGE), request.getInfo().get(INTYG_ID));
             break;
+        case IDP_CONNECTIVITY_CHECK:
+            monitoringService.logIdpConnectivityCheck(request.getInfo().get(IP), request.getInfo().get(CONNECTIVITY));
+            break;
         default:
             return status(BAD_REQUEST).build();
         }

@@ -109,6 +109,8 @@ public interface MonitoringLogService extends AuthenticationLogger {
 
     void logUtkastMarkedAsReadyToSignNotificationSent(String intygsId, String intygsTyp);
 
+    void logIdpConnectivityCheck(String ip, String connectivity);
+
     // SRS
 
     void logSrsLoaded(String userClientContext, String intygsId, String caregiverId, String careUnitId, String diagnosisCode);

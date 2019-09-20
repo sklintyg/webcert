@@ -73,6 +73,7 @@ knownFeatures:
   - &kf200 NOTIFICATION_DISCARD_FELB
   - &kf210 FEATURE_UNIKT_UNDANTAG_OM_SENASTE_INTYG
   - &kf220 OAUTH_AUTHENTICATION
+  - &kf240 IDP_CONNECTIVITY_CHECK
 
 # Aktiverade features i Webcert
 features:
@@ -314,6 +315,10 @@ features:
   - &f220
     name: *kf220
     desc: Inloggning med OAuth
+    global: true
+  - &f240
+    name: *kf240
+    desc: Aktivera IDP konnektivitetskontroll
     global: true
 
 pilots:

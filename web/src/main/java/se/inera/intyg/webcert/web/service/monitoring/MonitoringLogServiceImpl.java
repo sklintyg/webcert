@@ -18,15 +18,19 @@
  */
 package se.inera.intyg.webcert.web.service.monitoring;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Joiner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.util.logging.LogMarkers;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.persistence.fragasvar.model.Amne;
+import se.inera.intyg.webcert.web.service.user.WebCertUserService;
+import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 import java.util.List;
 
@@ -38,6 +42,9 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
     private static final String SPACE = " ";
 
     private static final Logger LOG = LoggerFactory.getLogger(MonitoringLogService.class);
+
+    @Autowired
+    private WebCertUserService webCertUserService;
 
     @Override
     public void logMailSent(String unitHsaId, String reason) {
@@ -255,6 +262,30 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
     }
 
     @Override
+    public void logIdpConnectivityCheck(String ip, String connectivity) {
+
+        String connectivityResult = "";
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        try {
+            IdpConnectivity[] conn = objectMapper.readValue(connectivity, IdpConnectivity[].class);
+            for (IdpConnectivity connection : conn) {
+                connectivityResult += connection.url + (connection.connected ? " OK" : " Not OK") + "! ";
+            }
+        } catch (Exception e) {
+            //Exceptions to be ignored
+        }
+
+        WebCertUser user = webCertUserService.getUser();
+
+        logEvent(MonitoringEvent.IDP_CONNECTIVITY_CHECK,
+            ip,
+            user.getValdVardgivare() != null ? user.getValdVardgivare().getId() : "null",
+            user.getValdVardenhet() != null ? user.getValdVardenhet().getId() : "null",
+            connectivityResult);
+    }
+
+    @Override
     public void logRevokedPrint(String intygsId, String intygsType) {
         logEvent(MonitoringEvent.REVOKED_PRINT, intygsId, intygsType);
     }
@@ -408,7 +439,9 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
         SRS_STATISTICS_LINK_CLICKED(
                 "SRS statistics link clicked in client context '{}' for intyg '{}' with caregiver '{}' and care unit '{}'"),
 
-        SRS_GET_SRS_FOR_DIAGNOSIS_CODE("SRS information retreived for diagnosis code '{}'");
+        SRS_GET_SRS_FOR_DIAGNOSIS_CODE("SRS information retreived for diagnosis code '{}'"),
+
+        IDP_CONNECTIVITY_CHECK("IDP Connectivity for ip '{}' with care giver '{}' and care unit '{}': {}");
 
         private final String msg;
 
