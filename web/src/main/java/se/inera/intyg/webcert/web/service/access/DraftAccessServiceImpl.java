@@ -53,16 +53,9 @@ public class DraftAccessServiceImpl implements DraftAccessService {
 
     @Override
     public AccessResult allowToCreateDraft(String certificateType, Personnummer patient) {
-        final WebCertUser user = getUser();
+        final Vardenhet vardenhet = getVardenhet();
 
-        final Vardgivare vardgivare = new Vardgivare();
-        vardgivare.setVardgivarid(user.getValdVardgivare().getId());
-
-        final Vardenhet vardenhet = new Vardenhet();
-        vardenhet.setVardgivare(vardgivare);
-        vardenhet.setEnhetsid(user.getValdVardenhet().getId());
-
-        return getAccessServiceEvaluation().given(user, certificateType)
+        return getAccessServiceEvaluation().given(getUser(), certificateType)
             .feature(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
             .privilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG)
             .careUnit(vardenhet)
@@ -180,9 +173,15 @@ public class DraftAccessServiceImpl implements DraftAccessService {
      */
     @Override
     public AccessResult allowToCopyFromCandidate(String certificateType, Personnummer patient) {
+        final Vardenhet vardenhet = getVardenhet();
+
         return getAccessServiceEvaluation().given(getUser(), certificateType)
+            .feature(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
+            .privilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG)
+            .privilege(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT)
             .privilege(AuthoritiesConstants.PRIVILEGE_COPY_FROM_CANDIDATE)
             .patient(patient)
+            .careUnit(vardenhet)
             .checkInactiveCareUnit(true)
             .checkPatientDeceased(true)
             .checkPatientSecrecy()
@@ -197,4 +196,17 @@ public class DraftAccessServiceImpl implements DraftAccessService {
     private WebCertUser getUser() {
         return webCertUserService.getUser();
     }
+
+    private Vardenhet getVardenhet() {
+        final WebCertUser user = getUser();
+
+        final Vardgivare vardgivare = new Vardgivare();
+        vardgivare.setVardgivarid(user.getValdVardgivare().getId());
+
+        final Vardenhet vardenhet = new Vardenhet();
+        vardenhet.setVardgivare(vardgivare);
+        vardenhet.setEnhetsid(user.getValdVardenhet().getId());
+        return vardenhet;
+    }
+
 }
