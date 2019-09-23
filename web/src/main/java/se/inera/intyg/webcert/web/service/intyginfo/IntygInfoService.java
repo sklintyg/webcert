@@ -20,7 +20,9 @@
 package se.inera.intyg.webcert.web.service.intyginfo;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -44,6 +46,8 @@ import se.inera.intyg.infra.intyginfo.dto.WcIntygInfo;
 import se.inera.intyg.webcert.common.model.WebcertCertificateRelation;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
+import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
+import se.inera.intyg.webcert.persistence.fragasvar.repository.FragaSvarRepository;
 import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
 import se.inera.intyg.webcert.persistence.handelse.repository.HandelseRepository;
 import se.inera.intyg.webcert.persistence.model.Status;
@@ -68,6 +72,9 @@ public class IntygInfoService {
     private ArendeService arendeService;
 
     @Autowired
+    private FragaSvarRepository fragaSvarRepository;
+
+    @Autowired
     private IntygModuleRegistry moduleRegistry;
 
     @Autowired
@@ -86,14 +93,17 @@ public class IntygInfoService {
         WcIntygInfo response = new WcIntygInfo();
 
         boolean foundHandelser = addHandelse(intygId, response);
+        boolean foundArenden = addArendeInformation(intygId, response);
 
-        // Not found but maybe handelser
+        // Utkast not found but may have arenden (created in other system) or handelser (deleted utkast)
         if (utkast == null) {
-            if (foundHandelser) {
+            if (foundHandelser || foundArenden) {
                 response.setIntygId(intygId);
+
+                return Optional.of(response);
             }
 
-            return foundHandelser ? Optional.of(response) : Optional.empty();
+            return Optional.empty();
         }
 
         response.setIntygId(utkast.getIntygsId());
@@ -127,10 +137,6 @@ public class IntygInfoService {
             }
         }
 
-        if (UtkastStatus.SIGNED.equals(utkast.getStatus())) {
-            addArendeInformation(response);
-        }
-
         addEvents(utkast, response);
         addRelations(intygId, response);
 
@@ -139,50 +145,53 @@ public class IntygInfoService {
 
     private boolean addHandelse(String intygsId, WcIntygInfo response) {
         List<Handelse> handelses = handelseRepository.findByIntygsId(intygsId);
+        List<IntygInfoEvent> events = new ArrayList<>();
 
         handelses.forEach(handelse -> {
             switch (handelse.getCode()) {
 
                 case SKAPAT:
-                    response.getEvents().add(new IntygInfoEvent(Source.WEBCERT, handelse.getTimestamp(), IntygInfoEventType.IS101));
+                    events.add(new IntygInfoEvent(Source.WEBCERT, handelse.getTimestamp(), IntygInfoEventType.IS101));
                     break;
                 case ANDRAT:
-                    response.getEvents().add(new IntygInfoEvent(Source.WEBCERT, handelse.getTimestamp(), IntygInfoEventType.IS102));
+                    events.add(new IntygInfoEvent(Source.WEBCERT, handelse.getTimestamp(), IntygInfoEventType.IS102));
                     break;
                 case RADERA:
-                    response.getEvents().add(new IntygInfoEvent(Source.WEBCERT, handelse.getTimestamp(), IntygInfoEventType.IS103));
+                    events.add(new IntygInfoEvent(Source.WEBCERT, handelse.getTimestamp(), IntygInfoEventType.IS103));
                     break;
                 case KFSIGN:
-                    response.getEvents().add(new IntygInfoEvent(Source.WEBCERT, handelse.getTimestamp(), IntygInfoEventType.IS105));
+                    events.add(new IntygInfoEvent(Source.WEBCERT, handelse.getTimestamp(), IntygInfoEventType.IS105));
                     break;
                 case SIGNAT:
-                    response.getEvents().add(new IntygInfoEvent(Source.WEBCERT, handelse.getTimestamp(), IntygInfoEventType.IS106));
+                    events.add(new IntygInfoEvent(Source.WEBCERT, handelse.getTimestamp(), IntygInfoEventType.IS106));
                     break;
                 case SKICKA:
-                    response.getEvents().add(new IntygInfoEvent(Source.WEBCERT, handelse.getTimestamp(), IntygInfoEventType.IS107));
+                    events.add(new IntygInfoEvent(Source.WEBCERT, handelse.getTimestamp(), IntygInfoEventType.IS107));
                     break;
                 case MAKULE:
-                    response.getEvents().add(new IntygInfoEvent(Source.WEBCERT, handelse.getTimestamp(), IntygInfoEventType.IS108));
+                    events.add(new IntygInfoEvent(Source.WEBCERT, handelse.getTimestamp(), IntygInfoEventType.IS108));
                     break;
                 case NYFRFM:
-                    response.getEvents().add(new IntygInfoEvent(Source.WEBCERT, handelse.getTimestamp(), IntygInfoEventType.IS109));
+                    events.add(new IntygInfoEvent(Source.WEBCERT, handelse.getTimestamp(), IntygInfoEventType.IS109));
                     break;
                 case NYFRFV:
-                    response.getEvents().add(new IntygInfoEvent(Source.WEBCERT, handelse.getTimestamp(), IntygInfoEventType.IS110));
+                    events.add(new IntygInfoEvent(Source.WEBCERT, handelse.getTimestamp(), IntygInfoEventType.IS110));
                     break;
                 case NYSVFM:
-                    response.getEvents().add(new IntygInfoEvent(Source.WEBCERT, handelse.getTimestamp(), IntygInfoEventType.IS111));
+                    events.add(new IntygInfoEvent(Source.WEBCERT, handelse.getTimestamp(), IntygInfoEventType.IS111));
                     break;
                 case HANFRFM:
-                    response.getEvents().add(new IntygInfoEvent(Source.WEBCERT, handelse.getTimestamp(), IntygInfoEventType.IS112));
+                    events.add(new IntygInfoEvent(Source.WEBCERT, handelse.getTimestamp(), IntygInfoEventType.IS112));
                     break;
                 case HANFRFV:
-                    response.getEvents().add(new IntygInfoEvent(Source.WEBCERT, handelse.getTimestamp(), IntygInfoEventType.IS113));
+                    events.add(new IntygInfoEvent(Source.WEBCERT, handelse.getTimestamp(), IntygInfoEventType.IS113));
                     break;
             }
         });
 
-        return !handelses.isEmpty();
+        response.getEvents().addAll(events);
+
+        return !events.isEmpty();
     }
 
     private void addRelations(String intygsId, WcIntygInfo response) {
@@ -201,7 +210,8 @@ public class IntygInfoService {
                 case KOMPLT:
                     type = IntygInfoEventType.IS014;
                     break;
-                default:
+                case KOPIA:
+                    break;
             }
 
             if (type != null && relation.getStatus().equals(UtkastStatus.SIGNED)) {
@@ -268,8 +278,11 @@ public class IntygInfoService {
         } else {
             // Last saved
             IntygInfoEvent changed = new IntygInfoEvent(Source.WEBCERT, utkast.getSenastSparadDatum(), IntygInfoEventType.IS010);
-            changed.addData("hsaId", utkast.getSenastSparadAv().getHsaId());
-            changed.addData("name", utkast.getSenastSparadAv().getNamn());
+
+            if (!Objects.isNull(utkast.getSenastSparadAv())) {
+                changed.addData("hsaId", utkast.getSenastSparadAv().getHsaId());
+                changed.addData("name", utkast.getSenastSparadAv().getNamn());
+            }
             events.add(changed);
         }
 
@@ -291,11 +304,30 @@ public class IntygInfoService {
         }
     }
 
-    private void addArendeInformation(WcIntygInfo response) {
-        List<Arende> arenden = arendeService.getArendenInternal(response.getIntygId());
+    private boolean addArendeInformation(String intygId, WcIntygInfo response) {
+        List<Arende> arenden = arendeService.getArendenInternal(intygId);
+        List<FragaSvar> fragaSvarList = fragaSvarRepository.findByIntygsReferensIntygsId(intygId);
+
+        List<Arende> arendeList = fragaSvarList.stream().map(fragaSvar -> {
+            Arende arende = new Arende();
+            arende.setStatus(fragaSvar.getStatus());
+
+            Optional<ArendeAmne> arendeAmne = ArendeAmne.fromAmne(fragaSvar.getAmne());
+
+            if (arendeAmne.isPresent()) {
+                arende.setAmne(arendeAmne.get());
+            }
+
+            arende.setSkickatAv(fragaSvar.getFrageStallare());
+            arende.setSkickatTidpunkt(fragaSvar.getFrageSkickadDatum());
+
+            return arende;
+        }).collect(Collectors.toList());
+
+        arendeList.addAll(arenden);
 
         // Kompletteringar
-        List<Arende> kompletteringarQuestions = arenden.stream()
+        List<Arende> kompletteringarQuestions = arendeList.stream()
             .filter(a -> ArendeAmne.KOMPLT.equals(a.getAmne()))
             .filter(a -> ArendeViewConverter.getArendeType(a).equals(ArendeType.FRAGA))
             .collect(Collectors.toList());
@@ -307,7 +339,7 @@ public class IntygInfoService {
         Set<Status> answeredOrClosed = Stream.of(Status.ANSWERED, Status.CLOSED).collect(Collectors.toSet());
         Set<ArendeAmne> adminQuestionTypes = Stream.of(ArendeAmne.AVSTMN, ArendeAmne.KONTKT, ArendeAmne.OVRIGT).collect(Collectors.toSet());
 
-        List<Arende> adminQuestions = arenden.stream()
+        List<Arende> adminQuestions = arendeList.stream()
             .filter(a -> adminQuestionTypes.contains(a.getAmne()))
             .filter(a -> ArendeViewConverter.getArendeType(a).equals(ArendeType.FRAGA))
             .collect(Collectors.toList());
@@ -337,7 +369,7 @@ public class IntygInfoService {
             response.getEvents().add(event);
         });
         // kompletterings begäran svar
-        arenden.stream()
+        arendeList.stream()
             .filter(a -> ArendeAmne.KOMPLT.equals(a.getAmne()))
             .filter(a -> ArendeViewConverter.getArendeType(a).equals(ArendeType.SVAR))
             .forEach(arende -> {
@@ -359,7 +391,7 @@ public class IntygInfoService {
             }
         });
         // Besvarade av vården
-        arenden.stream()
+        arendeList.stream()
             .filter(a -> adminQuestionTypes.contains(a.getAmne()))
             .filter(a -> ArendeViewConverter.getArendeType(a).equals(ArendeType.SVAR))
             .filter(a -> FrageStallare.WEBCERT.getKod().equals(a.getSkickatAv()))
@@ -380,7 +412,7 @@ public class IntygInfoService {
             }
         });
         // Besvarade av mottagare
-        arenden.stream()
+        arendeList.stream()
             .filter(a -> adminQuestionTypes.contains(a.getAmne()))
             .filter(a -> ArendeViewConverter.getArendeType(a).equals(ArendeType.SVAR))
             .filter(a -> !FrageStallare.WEBCERT.getKod().equals(a.getSkickatAv()))
@@ -389,5 +421,7 @@ public class IntygInfoService {
                 event.addData("intygsmottagare", arende.getSkickatAv());
                 response.getEvents().add(event);
             });
+
+        return !arendeList.isEmpty();
     }
 }

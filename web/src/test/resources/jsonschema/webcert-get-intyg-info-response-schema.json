@@ -1,0 +1,93 @@
+{
+  "type": "object",
+  "required": [
+    "intygId",
+    "events"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "intygId": {
+      "type": "string"
+    },
+    "intygType": {
+      "type": "string"
+    },
+    "intygVersion": {
+      "type": "string"
+    },
+    "signedDate": {
+      "type": "string"
+    },
+    "sentToRecipient": {
+      "type": "string"
+    },
+    "signedByName": {
+      "type": "string"
+    },
+    "signedByHsaId": {
+      "type": "string"
+    },
+    "signedByEmail": {
+      "type": "string"
+    },
+    "careUnitName": {
+      "type": "string"
+    },
+    "careUnitHsaId": {
+      "type": "string"
+    },
+    "careGiverName": {
+      "type": "string"
+    },
+    "careGiverHsaId": {
+      "type": "string"
+    },
+    "adminQuestionsReceived": {
+      "type": "number"
+    },
+    "adminQuestionsReceivedAnswered": {
+      "type": "number"
+    },
+    "adminQuestionsSent": {
+      "type": "number"
+    },
+    "adminQuestionsSentAnswered": {
+      "type": "number"
+    },
+    "draftCreated": {
+      "type": "string"
+    },
+    "komletteingar": {
+      "type": "number"
+    },
+    "komletteingarAnswered": {
+      "type": "number"
+    },
+    "events":  {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "date",
+          "source",
+          "type"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "date": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "source": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          }
+        }
+      }
+    }
+  }
+}
