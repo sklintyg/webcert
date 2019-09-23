@@ -182,7 +182,7 @@ public class UtkastModuleApiController extends AbstractApiController {
             // candidate information to copy data from
             if (utkast.getStatus().equals(UtkastStatus.DRAFT_INCOMPLETE) && utkast.getVersion() == 0) {
                 Optional<UtkastCandidateMetaData> metaData =
-                    utkastCandidateService.getCandidateMetaData(moduleApi, resolvedPatientData, false);
+                    utkastCandidateService.getCandidateMetaData(moduleApi, intygsTyp, resolvedPatientData, false);
                 // Update draft with meta data
                 newDraft.setCandidateMetaData(metaData.orElse(null));
             }

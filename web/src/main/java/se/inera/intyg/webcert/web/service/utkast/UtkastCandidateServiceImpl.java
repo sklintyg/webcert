@@ -70,7 +70,7 @@ public class UtkastCandidateServiceImpl {
     private LogRequestFactory logRequestFactory;
 
 
-    public Optional<UtkastCandidateMetaData> getCandidateMetaData(ModuleApi moduleApi, Patient patient, boolean isCoherentJournaling) {
+    public Optional<UtkastCandidateMetaData> getCandidateMetaData(ModuleApi moduleApi, String intygType, Patient patient, boolean isCoherentJournaling) {
         UtkastCandidateMetaData metaData = null;
 
         // Finns det några urvalskriterier?
@@ -81,7 +81,7 @@ public class UtkastCandidateServiceImpl {
 
         // Kontrollera användarens rättigheter
         AccessResult accessResult =
-            draftAccessService.allowToCopyFromCandidate(copyFromCriteria.get().getIntygType(), patient.getPersonId());
+            draftAccessService.allowToCopyFromCandidate(intygType, patient.getPersonId());
         if (accessResult.isDenied()) {
             return Optional.empty();
         }

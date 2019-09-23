@@ -467,13 +467,13 @@ public class UtkastModuleApiControllerTest {
             .thenReturn(new Relations());
         when(utkastService.getDraft(intygsId, intygsTyp))
             .thenReturn(buildUtkast(intygsTyp, intygsId, 0L, UtkastStatus.DRAFT_INCOMPLETE));
-        when(utkastCandidateService.getCandidateMetaData(any(ModuleApi.class), any(Patient.class), anyBoolean()))
+        when(utkastCandidateService.getCandidateMetaData(any(ModuleApi.class), anyString(), any(Patient.class), anyBoolean()))
             .thenReturn(Optional.of(createCandidateMetaData(intygsIdCandidate, intygsTypCandidate, INTYG_TYPE_VERSION)));
 
         Response response = moduleApiController.getDraft(intygsTyp, intygsId, request);
 
         verify(utkastService).getDraft(intygsId, intygsTyp);
-        verify(utkastCandidateService).getCandidateMetaData(any(ModuleApi.class), any(Patient.class), anyBoolean());
+        verify(utkastCandidateService).getCandidateMetaData(any(ModuleApi.class), anyString(), any(Patient.class), anyBoolean());
 
         DraftHolder draftHolder = (DraftHolder) response.getEntity();
         assertEquals(intygsIdCandidate, draftHolder.getCandidateMetaData().getIntygId());
@@ -494,13 +494,13 @@ public class UtkastModuleApiControllerTest {
             .thenReturn(new Relations());
         when(utkastService.getDraft(intygsId, intygsTyp))
             .thenReturn(buildUtkast(intygsTyp, intygsId, 0L, UtkastStatus.DRAFT_INCOMPLETE));
-        when(utkastCandidateService.getCandidateMetaData(any(ModuleApi.class), any(Patient.class), anyBoolean()))
+        when(utkastCandidateService.getCandidateMetaData(any(ModuleApi.class), anyString(), any(Patient.class), anyBoolean()))
             .thenReturn(Optional.ofNullable(null));
 
         Response response = moduleApiController.getDraft(intygsTyp, intygsId, request);
 
         verify(utkastService).getDraft(intygsId, intygsTyp);
-        verify(utkastCandidateService).getCandidateMetaData(any(ModuleApi.class), any(Patient.class), anyBoolean());
+        verify(utkastCandidateService).getCandidateMetaData(any(ModuleApi.class), anyString(), any(Patient.class), anyBoolean());
 
         DraftHolder draftHolder = (DraftHolder) response.getEntity();
         assertNull(draftHolder.getCandidateMetaData());
