@@ -1,6 +1,6 @@
 apiVersion: v1
 data:
-  SPRING_PROFILES_ACTIVE: "dev,caching-enabled,ia-stub"
+  SPRING_PROFILES_ACTIVE: "test,wc-all-stubs,caching-enabled,wc-security-test,ia-stub,testability-api,skip-init-data,it-af-stub,it-fk-stub,it-ts-stub"
   CONFIG_DIR: "${config.folder}"
   LOGBACK_FILE: "classpath:logback-ocp.xml"
   REDIS_HOST: "${redis.service.host}"
@@ -18,8 +18,8 @@ data:
   NTJP_WS_TRUSTSTORE_FILE: "${certificate.folder}/truststore.jks"
   NTJP_WS_CERTIFICATE_TYPE: "JKS"
   NTJP_WS_TRUSTSTORE_TYPE: "JKS"
-  CGI_GRP_WS_CERTIFICATE_FILE: ""
-  CGI_GRP_WS_CERTIFICATE_TYPE: ""
+  CGI_GRP_WS_CERTIFICATE_FILE: "${certificate.folder}/test.intygstjanster.sjunet.org.jks"
+  CGI_GRP_WS_CERTIFICATE_TYPE: "JKS"
   CGI_GRP_WS_TRUSTSTORE_FILE: "${certificate.folder}/grp.test.truststore.jks"
   CGI_GRP_WS_TRUSTSTORE_TYPE: "JKS"
   SAKERHETSTJANST_SAML_IDP_METADATA_URL: "https://idp.ineradev.org:443/saml"

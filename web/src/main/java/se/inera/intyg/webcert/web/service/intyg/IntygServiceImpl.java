@@ -477,7 +477,7 @@ public class IntygServiceImpl implements IntygService {
 
         SendIntygConfiguration sendConfig = new SendIntygConfiguration(recipient, webCertUserService.getUser());
 
-        monitoringService.logIntygSent(intygsId, recipient);
+        monitoringService.logIntygSent(intygsId, utlatande.getTyp(), recipient);
 
         // send PDL log event
         LogRequest logRequest = logRequestFactory.createLogRequestFromUtlatande(utlatande);
@@ -906,7 +906,7 @@ public class IntygServiceImpl implements IntygService {
         String intygsId = intyg.getId();
 
         String hsaId = webCertUserService.getUser().getHsaId();
-        monitoringService.logIntygRevoked(intygsId, hsaId, reason);
+        monitoringService.logIntygRevoked(intygsId, intyg.getTyp(), hsaId, reason);
 
         // First: send a notification informing stakeholders that this certificate has been revoked
         notificationService.sendNotificationForIntygRevoked(intygsId);

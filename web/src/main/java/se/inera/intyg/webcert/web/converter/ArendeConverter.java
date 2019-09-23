@@ -20,9 +20,15 @@ package se.inera.intyg.webcert.web.converter;
 
 import com.google.common.base.Strings;
 import java.time.LocalDateTime;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import javax.xml.ws.WebServiceException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import se.inera.intyg.infra.integration.hsa.services.HsaEmployeeService;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
@@ -37,6 +43,8 @@ import se.riv.clinicalprocess.healthcond.certificate.sendMessageToCare.v2.SendMe
 import se.riv.clinicalprocess.healthcond.certificate.sendMessageToCare.v2.SendMessageToCareType.Komplettering;
 
 public final class ArendeConverter {
+
+    private static final Logger LOG = LoggerFactory.getLogger(ArendeConverter.class);
 
     private ArendeConverter() {
     }
@@ -147,7 +155,7 @@ public final class ArendeConverter {
         }
     }
 
-    public static String getNameByHsaId(String hsaId, HsaEmployeeService hsaEmployeeService) {
+    private static String getNameByHsaId(String hsaId, HsaEmployeeService hsaEmployeeService) {
         try {
             return hsaEmployeeService.getEmployee(hsaId, null)
                 .stream()
@@ -161,6 +169,29 @@ public final class ArendeConverter {
         } catch (WebServiceException e) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.EXTERNAL_SYSTEM_PROBLEM,
                 "Could not communicate with HSA. Cause: " + e.getMessage());
+        }
+    }
+
+    public static Map<String, String> getNamesByHsaIds(Collection<String> hsaIds, HsaEmployeeService hsaEmployeeService) {
+        Map<String, String> hsaIdNameMap = new HashMap<>();
+
+        hsaIds.forEach(hsaId -> {
+            Optional<String> name = getNameByHsaIdNullIfNotFound(hsaId, hsaEmployeeService);
+
+            if (name.isPresent()) {
+                hsaIdNameMap.put(hsaId, name.get());
+            }
+        });
+
+        return hsaIdNameMap;
+    }
+
+    private static Optional<String> getNameByHsaIdNullIfNotFound(String hsaId, HsaEmployeeService hsaEmployeeService) {
+        try {
+            return Optional.of(getNameByHsaId(hsaId, hsaEmployeeService));
+        } catch (Exception e) {
+            LOG.debug("Name not found for hsaId " + hsaId, e);
+            return Optional.empty();
         }
     }
 }

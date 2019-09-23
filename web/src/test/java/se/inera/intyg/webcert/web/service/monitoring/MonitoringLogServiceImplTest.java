@@ -65,6 +65,9 @@ public class MonitoringLogServiceImplTest {
     private static final long INTERN_REFERENS = 97;
     private static final Amne AMNE = Amne.ARBETSTIDSFORLAGGNING;
     private static final String PERSON_ID = "19121212-1212";
+    private static final String USER_ROLE = "USER_ROLE";
+    private static final String USER_ROLE_TYPE_NAME = "USER_ROLE_TYPE_NAME";
+
 
     private static final Personnummer PERSON_NUMMER = Personnummer.createPersonnummer(PERSON_ID).get();
 
@@ -178,14 +181,14 @@ public class MonitoringLogServiceImplTest {
 
     @Test
     public void shouldLogIntygRevoked() {
-        logService.logIntygRevoked(INTYGS_ID, HSA_ID, REASON);
-        verifyLog(Level.INFO, "INTYG_REVOKED Intyg 'INTYGS_ID' revoked by 'HSA_ID' reason 'REASON'");
+        logService.logIntygRevoked(INTYGS_ID, INTYGS_TYP, HSA_ID, REASON);
+        verifyLog(Level.INFO, "INTYG_REVOKED Intyg 'INTYGS_ID' of type 'INTYGS_TYP' revoked by 'HSA_ID' reason 'REASON'");
     }
 
     @Test
     public void shouldLogIntygSent() {
-        logService.logIntygSent(INTYGS_ID, RECIPIENT);
-        verifyLog(Level.INFO, "INTYG_SENT Intyg 'INTYGS_ID' sent to recipient 'RECIPIENT'");
+        logService.logIntygSent(INTYGS_ID, INTYGS_TYP, RECIPIENT);
+        verifyLog(Level.INFO, "INTYG_SENT Intyg 'INTYGS_ID' of type 'INTYGS_TYP' sent to recipient 'RECIPIENT'");
     }
 
     @Test
@@ -352,8 +355,9 @@ public class MonitoringLogServiceImplTest {
 
     @Test
     public void shouldLogUserLogin() {
-        logService.logUserLogin(HSA_ID, AUTH_SCHEME, UserOriginType.NORMAL.name());
-        verifyLog(Level.INFO, "USER_LOGIN Login user 'HSA_ID' using scheme 'AUTH_SCHEME' with origin 'NORMAL'");
+        logService.logUserLogin(HSA_ID, USER_ROLE, USER_ROLE_TYPE_NAME, AUTH_SCHEME, UserOriginType.NORMAL.name());
+        verifyLog(Level.INFO,
+            "USER_LOGIN Login user 'HSA_ID' as role 'USER_ROLE' roleTypeName 'USER_ROLE_TYPE_NAME' using scheme 'AUTH_SCHEME' with origin 'NORMAL'");
     }
 
     @Test

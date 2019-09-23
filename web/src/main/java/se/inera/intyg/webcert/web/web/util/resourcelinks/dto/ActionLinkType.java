@@ -101,6 +101,11 @@ public enum ActionLinkType {
     BESVARA_KOMPLETTERING,
 
     /**
+     * Answer a complement question related to a certificate with a message (and not a new certificate).
+     */
+    BESVARA_KOMPLETTERING_MED_MEDDELANDE,
+
+    /**
      * Read questions related to a certificate.
      */
     LASA_FRAGA,

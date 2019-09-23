@@ -45,7 +45,10 @@ public class WebcertLoggingSessionRegistryImpl extends SessionRegistryImpl {
 
         if (principal != null && principal instanceof WebCertUser) {
             WebCertUser user = (WebCertUser) principal;
-            monitoringService.logUserLogin(user.getHsaId(), user.getAuthenticationScheme(), user.getOrigin());
+            String userRole =
+                user.getRoles() != null && user.getRoles().size() == 1 ? user.getRoles().keySet().iterator().next() : "noRole?";
+            monitoringService
+                .logUserLogin(user.getHsaId(), userRole, user.getRoleTypeName(), user.getAuthenticationScheme(), user.getOrigin());
         }
 
         super.registerNewSession(sessionId, principal);

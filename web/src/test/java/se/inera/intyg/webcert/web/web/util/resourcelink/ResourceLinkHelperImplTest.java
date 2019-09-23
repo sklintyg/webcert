@@ -188,6 +188,8 @@ public class ResourceLinkHelperImplTest {
         doReturn(AccessResult.noProblem()).when(certificateAccessService).allowToAnswerAdminQuestion(intygsTyp, vardenhet, patient);
         doReturn(AccessResult.noProblem()).when(certificateAccessService).allowToAnswerComplementQuestion(intygsTyp, vardenhet, patient,
             true);
+        doReturn(AccessResult.noProblem()).when(certificateAccessService).allowToAnswerComplementQuestion(intygsTyp, vardenhet, patient,
+            false);
         doReturn(AccessResult.noProblem()).when(certificateAccessService).allowToForwardQuestions(intygsTyp, vardenhet, patient);
 
         final List<ActionLink> expectedLinks = new ArrayList<>();
@@ -198,6 +200,7 @@ public class ResourceLinkHelperImplTest {
         expectedLinks.add(new ActionLink(ActionLinkType.LASA_FRAGA));
         expectedLinks.add(new ActionLink(ActionLinkType.BESVARA_FRAGA));
         expectedLinks.add(new ActionLink(ActionLinkType.BESVARA_KOMPLETTERING));
+        expectedLinks.add(new ActionLink(ActionLinkType.BESVARA_KOMPLETTERING_MED_MEDDELANDE));
         expectedLinks.add(new ActionLink(ActionLinkType.VIDAREBEFODRA_FRAGA));
 
         final DraftHolder draftHolder = new DraftHolder();
@@ -231,6 +234,9 @@ public class ResourceLinkHelperImplTest {
             .allowToAnswerComplementQuestion(intygsTyp, vardenhet, patient,
                 true);
         doReturn(AccessResult.create(AccessResultCode.AUTHORIZATION_VALIDATION, "No access")).when(certificateAccessService)
+            .allowToAnswerComplementQuestion(intygsTyp, vardenhet, patient,
+                false);
+        doReturn(AccessResult.create(AccessResultCode.AUTHORIZATION_VALIDATION, "No access")).when(certificateAccessService)
             .allowToForwardQuestions(intygsTyp, vardenhet, patient);
 
         final List<ActionLink> expectedLinks = new ArrayList<>();
@@ -261,6 +267,8 @@ public class ResourceLinkHelperImplTest {
         doReturn(AccessResult.noProblem()).when(certificateAccessService).allowToAnswerAdminQuestion(intygsTyp, vardenhet, patient);
         doReturn(AccessResult.noProblem()).when(certificateAccessService).allowToAnswerComplementQuestion(intygsTyp, vardenhet, patient,
             true);
+        doReturn(AccessResult.noProblem()).when(certificateAccessService).allowToAnswerComplementQuestion(intygsTyp, vardenhet, patient,
+            false);
         doReturn(AccessResult.noProblem()).when(certificateAccessService).allowToForwardQuestions(intygsTyp, vardenhet, patient);
 
         final List<ActionLink> expectedLinks = new ArrayList<>();
@@ -273,6 +281,7 @@ public class ResourceLinkHelperImplTest {
         expectedLinks.add(new ActionLink(ActionLinkType.LASA_FRAGA));
         expectedLinks.add(new ActionLink(ActionLinkType.BESVARA_FRAGA));
         expectedLinks.add(new ActionLink(ActionLinkType.BESVARA_KOMPLETTERING));
+        expectedLinks.add(new ActionLink(ActionLinkType.BESVARA_KOMPLETTERING_MED_MEDDELANDE));
         expectedLinks.add(new ActionLink(ActionLinkType.VIDAREBEFODRA_FRAGA));
 
         final Utlatande utlatande = mock(Utlatande.class);
@@ -328,6 +337,9 @@ public class ResourceLinkHelperImplTest {
         doReturn(AccessResult.create(AccessResultCode.AUTHORIZATION_VALIDATION, "No access")).when(certificateAccessService)
             .allowToAnswerComplementQuestion(intygsTyp, vardenhet, patient,
                 true);
+        doReturn(AccessResult.create(AccessResultCode.AUTHORIZATION_VALIDATION, "No access")).when(certificateAccessService)
+            .allowToAnswerComplementQuestion(intygsTyp, vardenhet, patient,
+                false);
         doReturn(AccessResult.create(AccessResultCode.AUTHORIZATION_VALIDATION, "No access")).when(certificateAccessService)
             .allowToForwardQuestions(intygsTyp, vardenhet, patient);
 

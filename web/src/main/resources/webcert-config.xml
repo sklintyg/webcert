@@ -123,8 +123,10 @@
     <bean id="IntegreradeEnheterBootstrapBean" class="se.inera.intyg.webcert.web.service.util.IntegreradeEnheterBootstrapBean" />
   </beans>
 
-  <beans profile="dev,wc-init-data,test,demo">
-    <bean id="UtkastBootstrapBean" class="se.inera.intyg.webcert.web.bootstrap.UtkastBootstrapBean" />
+  <beans profile="!skip-init-data">
+    <beans profile="dev,wc-init-data,test,demo">
+      <bean id="UtkastBootstrapBean" class="se.inera.intyg.webcert.web.bootstrap.UtkastBootstrapBean" />
+    </beans>
   </beans>
 
   <beans>

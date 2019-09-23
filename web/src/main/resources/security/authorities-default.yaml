@@ -478,51 +478,22 @@ roles:
       - <<: *p160 # SKAPA_NY_FRAGA
         requestOrigins:
           - <<: *ro010 # NORMAL
-            intygstyper:
-              - *ki040 # lisjp
-              - *ki050 # luse
-              - *ki060 # luae_na
-              - *ki070 # luae_fs
           - <<: *ro020 # DJUPINTEGRATION
-            intygstyper:
-              - *ki040 # lisjp
-              - *ki050 # luse
-              - *ki060 # luae_na
-              - *ki070 # luae_fs
           - <<: *ro030 # UTHOPP
       - <<: *p170 # LASA_FRAGA
         requestOrigins:
           - <<: *ro010 # NORMAL
             intygstyper:
-              - *ki040 # lisjp
-              - *ki050 # luse
-              - *ki060 # luae_na
-              - *ki070 # luae_fs
           - <<: *ro040 # READONLY
             intygstyper:
               - *ki010 # fk7163
               - *ki040 # lisjp
           - <<: *ro020 # DJUPINTEGRATION
-            intygstyper:
-              - *ki040 # lisjp
-              - *ki050 # luse
-              - *ki060 # luae_na
-              - *ki070 # luae_fs
           - <<: *ro030 # UTHOPP
       - <<: *p180 # BESVARA_FRAGA
         requestOrigins:
           - <<: *ro010 # NORMAL
-            intygstyper:
-              - *ki040 # lisjp
-              - *ki050 # luse
-              - *ki060 # luae_na
-              - *ki070 # luae_fs
           - <<: *ro020 # DJUPINTEGRATION
-            intygstyper:
-              - *ki040 # lisjp
-              - *ki050 # luse
-              - *ki060 # luae_na
-              - *ki070 # luae_fs
           - <<: *ro030 # UTHOPP
       - <<: *p190 # KOPIERA_FRAN_KANDIDAT
         requestOrigins:
@@ -1013,19 +984,25 @@ titles:
     role: *r030 # TANDLAKARE
 
 # Kombination befattningskoder och gruppförskrivarkoder
+# roleTypeName används för loggningssyften för att se mer detaljer om typ av läkare-roll.
 titleCodes:
   - titleCode: 204010
     groupPrescriptionCode:
     role: *r010 # LAKARE
+    roleTypeName: Läkare - AT
   - titleCode: 203090
     groupPrescriptionCode: 9300005
     role: *r010 # LAKARE
+    roleTypeName: Läkare - inom EU
   - titleCode: 203090
     groupPrescriptionCode: 9400003
     role: *r010 # LAKARE
+    roleTypeName: Läkare - utom EU
   - titleCode: 204090
     groupPrescriptionCode: 9100009
     role: *r010 # LAKARE
+    roleTypeName: Läkare - Vikariat
   - titleCode: 204090
     groupPrescriptionCode: 9200007
     role: *r010 # LAKARE
+    roleTypeName: Läkare - Student

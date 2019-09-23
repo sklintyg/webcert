@@ -140,6 +140,7 @@ public class FmbServiceImpl implements FmbService {
                 final List<Icd10Kod> icd10KodList = convertToIcd10KodList(attributes, typfall);
 
                 return aDiagnosInformation()
+                    .diagnosRubrik(attributes.getOptionalDiagnosrubrik().orElse(null))
                     .forsakringsmedicinskInformation(attributes.getOptionalForsakringsmedicinskinformation()
                         .map(Markup::getMarkup)
                         .orElse(null))

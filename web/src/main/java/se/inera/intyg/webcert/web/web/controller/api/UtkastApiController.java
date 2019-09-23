@@ -300,7 +300,7 @@ public class UtkastApiController extends AbstractApiController {
 
             // Get lakare name
             Set<String> hsaIds = listIntygEntries.stream().map(ListIntygEntry::getUpdatedSignedById).collect(Collectors.toSet());
-            Map<String, String> hsaIdNameMap = hsaIds.stream().collect(Collectors.toMap(a -> a, this::getLakareName));
+            Map<String, String> hsaIdNameMap = ArendeConverter.getNamesByHsaIds(hsaIds, hsaEmployeeService);
 
             // Update lakare name
             listIntygEntries.forEach(row -> {
@@ -316,10 +316,6 @@ public class UtkastApiController extends AbstractApiController {
         QueryIntygResponse response = new QueryIntygResponse(listIntygEntries);
         response.setTotalCount(totalCountOfFilteredIntyg);
         return response;
-    }
-
-    private String getLakareName(String hsaId) {
-        return ArendeConverter.getNameByHsaId(hsaId, hsaEmployeeService);
     }
 
     private Comparator<ListIntygEntry> getIntygComparator(String orderBy, Boolean ascending) {

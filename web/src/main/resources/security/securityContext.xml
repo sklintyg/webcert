@@ -380,10 +380,16 @@
         class="se.inera.intyg.webcert.web.auth.eleg.FakeElegAuthenticationProvider">
       <property name="elegWebCertUserDetailsService" ref="elegWebCertUserDetailsService"/>
     </bean>
-
+    <bean id="jwtAuthFilter" class="se.inera.intyg.webcert.web.auth.oidc.jwt.FakeJwtAuthenticationFilter">
+      <constructor-arg index="0" ref="saveRequestMatcher" />
+      <property name="authenticationManager" ref="authenticationManager"/>
+      <property name="sessionAuthenticationStrategy" ref="registerSessionAuthenticationStrategy"/>
+      <property name="authenticationSuccessHandler" ref="jwtSuccessHandler"/>
+      <property name="authenticationFailureHandler" ref="failureHandler"/>
+    </bean>
   </beans>
 
-  <beans>
+  <beans profile="prod,wc-security-prod">
     <bean id="jwtAuthFilter" class="se.inera.intyg.webcert.web.auth.oidc.jwt.JwtAuthenticationFilter">
       <constructor-arg index="0" ref="saveRequestMatcher" />
       <property name="authenticationManager" ref="authenticationManager"/>
@@ -391,6 +397,9 @@
       <property name="authenticationSuccessHandler" ref="jwtSuccessHandler"/>
       <property name="authenticationFailureHandler" ref="failureHandler"/>
     </bean>
+  </beans>
+
+  <beans>
     <bean id="jwtSuccessHandler"
           class="se.inera.intyg.webcert.web.auth.oidc.jwt.JwtAuthenticationSuccessHandler">
     </bean>

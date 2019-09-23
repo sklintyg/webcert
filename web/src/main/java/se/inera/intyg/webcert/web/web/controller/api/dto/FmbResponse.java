@@ -32,6 +32,12 @@ public final class FmbResponse {
     @ApiModelProperty(name = "ICD10 description", dataType = "String")
     private String icd10Description;
 
+    @ApiModelProperty(name = "FMB diagnose title", dataType = "String")
+    private String diagnosTitle;
+
+    @ApiModelProperty(name = "FMB related diagnose codes", dataType = "String")
+    private String relatedDiagnoses;
+
     @ApiModelProperty(name = "Reference description", dataType = "String")
     private String referenceDescription;
 
@@ -47,15 +53,30 @@ public final class FmbResponse {
     private FmbResponse(
         final String icd10Code,
         final String icd10Description,
+        final String diagnosTitle,
+        final String relatedDiagnoses,
         final String referenceDescription,
         final String referenceLink,
         final List<FmbForm> forms) {
         this.icd10Code = icd10Code;
         this.icd10Description = icd10Description;
+        this.diagnosTitle = diagnosTitle;
+        this.relatedDiagnoses = relatedDiagnoses;
         this.referenceDescription = referenceDescription;
         this.referenceLink = referenceLink;
         this.forms = Collections.unmodifiableList(forms);
 
+    }
+
+    public static FmbResponse of(
+        final String icd10Code,
+        final String icd10Description,
+        final String diagnosTitle,
+        final String relatedDiagnoses,
+        final String referenceDescription,
+        final String referenceLink,
+        final List<FmbForm> forms) {
+        return new FmbResponse(icd10Code, icd10Description, diagnosTitle, relatedDiagnoses, referenceDescription, referenceLink, forms);
     }
 
     public String getIcd10Code() {
@@ -70,21 +91,20 @@ public final class FmbResponse {
         return icd10Description;
     }
 
+    public String getDiagnosTitle() {
+        return diagnosTitle;
+    }
+
+    public String getRelatedDiagnoses() {
+        return relatedDiagnoses;
+    }
+
     public String getReferenceDescription() {
         return referenceDescription;
     }
 
     public String getReferenceLink() {
         return referenceLink;
-    }
-
-    public static FmbResponse of(
-        final String icd10Code,
-        final String icd10Description,
-        final String referenceDescription,
-        final String referenceLink,
-        final List<FmbForm> forms) {
-        return new FmbResponse(icd10Code, icd10Description, referenceDescription, referenceLink, forms);
     }
 
 }

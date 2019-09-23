@@ -439,14 +439,23 @@ public class UtkastServiceImpl implements UtkastService {
 
         List<Object[]> result = utkastRepository.findDistinctLakareFromIntygEnhetAndStatuses(enhetsId, ALL_DRAFT_STATUSES_INCLUDE_LOCKED);
 
+        Set<String> hsaIDs = result.stream().map(arr -> (String) arr[0]).collect(Collectors.toSet());
+
+        Map<String, String> hsaToNameMap = ArendeConverter.getNamesByHsaIds(hsaIDs, hsaEmployeeService);
+
         return result.stream()
-            .map(lakareArr -> new Lakare((String) lakareArr[0], getLakareName((String) lakareArr[0])))
+            .map(lakareArr -> {
+                String hsaId = (String) lakareArr[0];
+                String name = (String) lakareArr[1];
+
+                if (hsaToNameMap.containsKey(hsaId)) {
+                    name = hsaToNameMap.get(hsaId);
+                }
+
+                return new Lakare(hsaId, name);
+            })
             .sorted(Comparator.comparing(Lakare::getName))
             .collect(Collectors.toList());
-    }
-
-    private String getLakareName(String hsaId) {
-        return ArendeConverter.getNameByHsaId(hsaId, hsaEmployeeService);
     }
 
     @Override
@@ -1036,6 +1045,7 @@ public class UtkastServiceImpl implements UtkastService {
         // Verify access
         final AccessResult accessResult = draftAccessService.allowToCopyFromCandidate(
             utkast.getIntygsTyp(),
+            getVardenhet(utkast),
             utkast.getPatientPersonnummer());
 
         accessResultExceptionHelper.throwExceptionIfDenied(accessResult);

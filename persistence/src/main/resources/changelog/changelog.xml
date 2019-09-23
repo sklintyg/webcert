@@ -1252,4 +1252,12 @@
     </addColumn>
   </changeSet>
 
+  <changeSet id="61" author="mc">
+    <addColumn tableName="FMB_DIAGNOS_INFORMATION">
+      <column name="DIAGNOS_RUBRIK" type="varchar(512)">
+        <constraints nullable="true"/>
+      </column>
+    </addColumn>
+  </changeSet>
+
 </databaseChangeLog>

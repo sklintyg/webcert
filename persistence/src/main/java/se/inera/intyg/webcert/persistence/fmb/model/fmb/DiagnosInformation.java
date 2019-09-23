@@ -42,6 +42,9 @@ public final class DiagnosInformation {
     @Column(name = "ID")
     private Long id;
 
+    @Column(name = "DIAGNOS_RUBRIK", nullable = true)
+    private String diagnosrubrik;
+
     @Column(name = "FORSAKRINGSMEDICINSK_INFORMATION", nullable = false)
     private String forsakringsmedicinskInformation;
 
@@ -70,7 +73,9 @@ public final class DiagnosInformation {
     protected DiagnosInformation() {
     }
 
+    // CHECKSTYLE:OFF ParameterNumber
     private DiagnosInformation(
+        final String diagnosRubrik,
         final String forsakringsmedicinskInformation,
         final String symptomPrognosBehandling,
         final String informationOmRehabilitering,
@@ -78,6 +83,7 @@ public final class DiagnosInformation {
         final List<Icd10Kod> icd10KodList,
         final List<Referens> referensList,
         final LocalDateTime senastUppdaterad) {
+        this.diagnosrubrik = diagnosRubrik;
         this.forsakringsmedicinskInformation = forsakringsmedicinskInformation;
         this.symptomPrognosBehandling = symptomPrognosBehandling;
         this.informationOmRehabilitering = informationOmRehabilitering;
@@ -86,9 +92,14 @@ public final class DiagnosInformation {
         this.referensList = referensList;
         this.senastUppdaterad = senastUppdaterad;
     }
+    // CHECKSTYLE:ON ParameterNumber
 
     public Long getId() {
         return id;
+    }
+
+    public String getDiagnosrubrik() {
+        return diagnosrubrik;
     }
 
     public String getForsakringsmedicinskInformation() {
@@ -121,6 +132,7 @@ public final class DiagnosInformation {
 
     public static final class DiagnosInformationBuilder {
 
+        private String diagnosRubrik;
         private String forsakringsmedicinskInformation;
         private String symptomPrognosBehandling;
         private String informationOmRehabilitering;
@@ -134,6 +146,11 @@ public final class DiagnosInformation {
 
         public static DiagnosInformationBuilder aDiagnosInformation() {
             return new DiagnosInformationBuilder();
+        }
+
+        public DiagnosInformationBuilder diagnosRubrik(String diagnosRubrik) {
+            this.diagnosRubrik = diagnosRubrik;
+            return this;
         }
 
         public DiagnosInformationBuilder forsakringsmedicinskInformation(String forsakringsmedicinskInformation) {
@@ -173,6 +190,7 @@ public final class DiagnosInformation {
 
         public DiagnosInformation build() {
             return new DiagnosInformation(
+                diagnosRubrik,
                 forsakringsmedicinskInformation,
                 symptomPrognosBehandling,
                 informationOmRehabilitering,
