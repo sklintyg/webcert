@@ -251,8 +251,9 @@
 
     // Inject language resources
     app.run(['$log', '$rootScope', '$window', '$location', '$state', '$q', '$uibModalStack', 'common.messageService', 'common.moduleService',
-             'common.UserModel', 'webcert.messages', 'common.MonitoringLogService', 'common.dynamicLinkService',
-        function($log, $rootScope, $window, $location, $state, $q, $uibModalStack, messageService, moduleService, UserModel, wcMessages, MonitoringLogService, dynamicLinkService) {
+             'common.UserModel', 'webcert.messages', 'common.MonitoringLogService', 'common.dynamicLinkService', 'idpConnectivityService',
+        function($log, $rootScope, $window, $location, $state, $q, $uibModalStack, messageService, moduleService, UserModel, wcMessages,
+            MonitoringLogService, dynamicLinkService, idpConnectivityService) {
 
             $rootScope.lang = 'sv';
             $rootScope.DEFAULT_LANG = 'sv';
@@ -301,6 +302,7 @@
                         }
                     } else {
                         if (!redirectToUnitSelection()) {
+                            idpConnectivityService.checkAndLogConnectivity();
                             termsCheck();
 
                             if (fromState.name !== 'webcert.terms' || !UserModel.transitioning) {

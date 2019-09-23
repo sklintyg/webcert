@@ -31,6 +31,9 @@ public class MonitoringRequest {
     public static final String USER_CLIENT_CONTEXT = "userClientContext";
     public static final String MAIN_DIAGNOSIS_CODE = "mainDiagnosisCode";
     public static final String ERROR_MESSAGE = "errorMessage";
+    public static final String IP = "ip";
+    public static final String CONNECTIVITY = "connectivity";
+
     private MonitoringRequestEvent event;
     private Map<String, String> info;
 
@@ -61,6 +64,8 @@ public class MonitoringRequest {
             return info != null && info.get(INTYG_ID) != null && info.get(INTYG_TYPE) != null;
         case SIGNING_FAILED:
             return info != null && info.get(ERROR_MESSAGE) != null && info.get(INTYG_ID) != null;
+        case IDP_CONNECTIVITY_CHECK:
+            return info != null && info.get(IP) != null && info.get(CONNECTIVITY) != null;
         case SRS_LOADED:
             return info != null && info.get(INTYG_ID) != null && info.get(USER_CLIENT_CONTEXT) != null
                     && info.get(CARE_UNIT_ID) != null && info.get(CAREGIVER_ID) != null && info.get(MAIN_DIAGNOSIS_CODE) != null;
@@ -85,6 +90,7 @@ public class MonitoringRequest {
         SCREEN_RESOLUTION,
         DIAGNOSKODVERK_CHANGED,
         SIGNING_FAILED,
+        IDP_CONNECTIVITY_CHECK,
         SRS_LOADED,
         SRS_PANEL_ACTIVATED,
         SRS_CONSENT_ANSWERED,
