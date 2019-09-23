@@ -5,5 +5,5 @@
   "buildArgs": "--refresh-dependencies clean build camelTest testReport sonarqube -PcodeQuality -PcodeCoverage -DgruntColors=false",
   "tests": [ "restAssuredTest", "protractorTest" ],
   "uploadArchives": true,
-  "backingService": "intygstjanst-test:3.9.0.+"
+  "backingService": "intygstjanst-test:3.9.1.+"
 }
