@@ -1045,7 +1045,6 @@ public class UtkastServiceImpl implements UtkastService {
         // Verify access
         final AccessResult accessResult = draftAccessService.allowToCopyFromCandidate(
             utkast.getIntygsTyp(),
-            getVardenhet(utkast),
             utkast.getPatientPersonnummer());
 
         accessResultExceptionHelper.throwExceptionIfDenied(accessResult);
