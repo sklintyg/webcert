@@ -33,8 +33,10 @@ import com.jayway.restassured.response.Response;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Map;
+import org.junit.Before;
 import org.junit.Test;
 import se.inera.intyg.common.support.model.UtkastStatus;
+import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.web.web.controller.api.dto.CopyFromCandidateRequest;
 import se.inera.intyg.webcert.web.web.controller.integrationtest.BaseRestIntegrationTest;
@@ -48,9 +50,25 @@ import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.RevokeSignedIntyg
  */
 public class UtkastModuleApiControllerIT extends BaseRestIntegrationTest {
 
+    public static final String TESTABILITY_BASE = "/testability/intyg";
+
     public static final String MODULEAPI_UTKAST_BASE = "moduleapi/utkast";
     public static final String GRPAPI_STUBBE_BASE = "services/grp-api";
-    public static final String TESTABILITY_BASE = "/testability/intyg";
+    public static final String PUAPI_BASE = "services/api/pu-api";
+
+    public static final String PUAPI_SEKRETESS = PUAPI_BASE + "/person/%s/sekretessmarkerad?value=%s";
+
+    public static final int HTTP_OK = 200;
+    public static final int HTTP_FOUND = 302;
+    public static final int HTTP_ISE = 500; // Internal Server Error
+
+    @Before
+    public void setup() {
+        // Försäkrar att patienten inte är sekretessmarkerad
+        spec()
+            .expect().statusCode(HTTP_OK)
+            .when().get(String.format(PUAPI_SEKRETESS, DEFAULT_PATIENT_PERSONNUMMER, "false"));
+    }
 
     @Test
     public void testGetDraft() {
@@ -60,7 +78,7 @@ public class UtkastModuleApiControllerIT extends BaseRestIntegrationTest {
         String intygsId = createUtkast(intygsTyp, DEFAULT_PATIENT_PERSONNUMMER);
 
         spec()
-            .expect().statusCode(200)
+            .expect().statusCode(HTTP_OK)
             .when().get(MODULEAPI_UTKAST_BASE + "/" + intygsTyp + "/" + intygsId)
             .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-get-utkast-response-schema.json"));
     }
@@ -73,7 +91,7 @@ public class UtkastModuleApiControllerIT extends BaseRestIntegrationTest {
         String intygsId = createUtkast(intygsTyp, DEFAULT_PATIENT_PERSONNUMMER);
         // Then logout
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId).redirects().follow(false)
-            .expect().statusCode(302)
+            .expect().statusCode(HTTP_FOUND)
             .when().get("logout");
 
         // Next, create new user credentials with another care unit B, and attempt to access the certificate created in
@@ -82,7 +100,7 @@ public class UtkastModuleApiControllerIT extends BaseRestIntegrationTest {
         changeOriginTo("DJUPINTEGRATION");
 
         spec()
-            .expect().statusCode(500)
+            .expect().statusCode(HTTP_ISE)
             .when().get(MODULEAPI_UTKAST_BASE + "/" + intygsTyp + "/" + intygsId)
             .then()
             .body("errorCode", equalTo(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM.name()))
@@ -97,7 +115,7 @@ public class UtkastModuleApiControllerIT extends BaseRestIntegrationTest {
         String intygsId = createUtkast(intygsTyp, DEFAULT_PATIENT_PERSONNUMMER);
 
         Response responseIntyg = spec()
-            .expect().statusCode(200)
+            .expect().statusCode(HTTP_OK)
             .when().get(MODULEAPI_UTKAST_BASE + "/" + intygsTyp + "/" + intygsId)
             .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-get-utkast-response-schema.json")).extract().response();
 
@@ -107,7 +125,7 @@ public class UtkastModuleApiControllerIT extends BaseRestIntegrationTest {
 
         spec()
             .body(content)
-            .expect().statusCode(200)
+            .expect().statusCode(HTTP_OK)
             .when().put(MODULEAPI_UTKAST_BASE + "/" + intygsTyp + "/" + intygsId + "/" + version)
             .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-save-draft-response-schema.json"))
             .body("version", equalTo(Integer.parseInt(version) + 1));
@@ -121,7 +139,7 @@ public class UtkastModuleApiControllerIT extends BaseRestIntegrationTest {
         String intygsId = createUtkast(intygsTyp, DEFAULT_PATIENT_PERSONNUMMER);
 
         Response responseIntyg = spec()
-            .expect().statusCode(200)
+            .expect().statusCode(HTTP_OK)
             .when().get(MODULEAPI_UTKAST_BASE + "/" + intygsTyp + "/" + intygsId)
             .then()
             .body(matchesJsonSchemaInClasspath("jsonschema/webcert-get-utkast-response-schema.json"))
@@ -132,7 +150,7 @@ public class UtkastModuleApiControllerIT extends BaseRestIntegrationTest {
 
         spec()
             .body(content).pathParams("intygsTyp", intygsTyp, "intygsId", intygsId)
-            .expect().statusCode(200)
+            .expect().statusCode(HTTP_OK)
             .when().post(MODULEAPI_UTKAST_BASE + "/{intygsTyp}/{intygsId}/validate")
             .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-validate-draft-response-schema.json"));
     }
@@ -145,7 +163,7 @@ public class UtkastModuleApiControllerIT extends BaseRestIntegrationTest {
         String intygsId = createUtkast(intygsTyp, DEFAULT_PATIENT_PERSONNUMMER);
 
         Response responseIntyg = spec()
-            .expect().statusCode(200)
+            .expect().statusCode(HTTP_OK)
             .when().get(MODULEAPI_UTKAST_BASE + "/" + intygsTyp + "/" + intygsId)
             .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-get-utkast-response-schema.json")).extract().response();
 
@@ -153,11 +171,11 @@ public class UtkastModuleApiControllerIT extends BaseRestIntegrationTest {
         String version = model.getString("version");
 
         spec()
-            .expect().statusCode(200)
+            .expect().statusCode(HTTP_OK)
             .when().delete(MODULEAPI_UTKAST_BASE + "/" + intygsTyp + "/" + intygsId + "/" + version);
 
         spec()
-            .expect().statusCode(500)
+            .expect().statusCode(HTTP_ISE)
             .when().get(MODULEAPI_UTKAST_BASE + "/" + intygsTyp + "/" + intygsId)
             .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-error-response-schema.json"))
             .body("errorCode", equalTo(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND.name()))
@@ -174,12 +192,12 @@ public class UtkastModuleApiControllerIT extends BaseRestIntegrationTest {
         // Update draft via testability-api
         spec()
             .body(UtkastStatus.DRAFT_LOCKED.name()).pathParams("intygsId", intygsId)
-            .expect().statusCode(200)
+            .expect().statusCode(HTTP_OK)
             .when().put(TESTABILITY_BASE + "/{intygsId}/status");
 
         // Check that draft is locked
         spec()
-            .expect().statusCode(200)
+            .expect().statusCode(HTTP_OK)
             .when().get(MODULEAPI_UTKAST_BASE + "/" + intygsTyp + "/" + intygsId)
             .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-get-utkast-response-schema.json"))
             .body("status", equalTo(UtkastStatus.DRAFT_LOCKED.name()));
@@ -191,12 +209,12 @@ public class UtkastModuleApiControllerIT extends BaseRestIntegrationTest {
 
         spec()
             .body(parameter)
-            .expect().statusCode(200)
+            .expect().statusCode(HTTP_OK)
             .when().post(MODULEAPI_UTKAST_BASE + "/" + intygsTyp + "/" + intygsId + "/aterkalla");
 
         // Check if draft is revoked
         Response response = spec()
-            .expect().statusCode(200)
+            .expect().statusCode(HTTP_OK)
             .when().get(MODULEAPI_UTKAST_BASE + "/" + intygsTyp + "/" + intygsId)
             .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-get-utkast-response-schema.json")).extract().response();
 
@@ -211,17 +229,19 @@ public class UtkastModuleApiControllerIT extends BaseRestIntegrationTest {
     }
 
     @Test
-    public void testCopyFromCandidate() {
+    public void testCopyFromCandidateWhenUserIsLakare() {
         String intygType = "lisjp";
         String utkastType = "ag7804";
 
         // Set up auth precondition
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
 
+        // Create the candidate
+        String intygId = createSignedIntyg("lisjp", DEFAULT_PATIENT_PERSONNUMMER);
+
         // Change users origin
         changeOriginTo("DJUPINTEGRATION");
 
-        String intygId = createSignedIntyg("lisjp", DEFAULT_PATIENT_PERSONNUMMER);
         String utkastId = createUtkast("ag7804", DEFAULT_PATIENT_PERSONNUMMER);
 
         CopyFromCandidateRequest request = new CopyFromCandidateRequest();
@@ -230,11 +250,110 @@ public class UtkastModuleApiControllerIT extends BaseRestIntegrationTest {
 
         spec()
             .body(request)
-            .expect().statusCode(200)
+            .expect().statusCode(HTTP_OK)
             .when().post(MODULEAPI_UTKAST_BASE + "/" + utkastType + "/" + utkastId + "/copyfromcandidate")
             .then()
             .body("status", equalTo(UtkastStatus.DRAFT_INCOMPLETE.name()))
             .body("version",  equalTo(0));
+    }
+
+    @Test
+    public void testCopyFromCandidateWhenUserIsLakareAndPatientHasSekretessmarkering() {
+        String intygType = "lisjp";
+        String utkastType = "ag7804";
+
+        // Set up auth precondition
+        RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
+
+        // Create the candidate
+        String intygId = createSignedIntyg("lisjp", DEFAULT_PATIENT_PERSONNUMMER);
+
+        // Change users origin
+        changeOriginTo("DJUPINTEGRATION");
+
+        String utkastId = createUtkast("ag7804", DEFAULT_PATIENT_PERSONNUMMER);
+
+        CopyFromCandidateRequest request = new CopyFromCandidateRequest();
+        request.setCandidateId(intygId);
+        request.setCandidateType(intygType);
+
+        // Sätter patient till sekretessmarkerad
+        spec()
+            .expect().statusCode(HTTP_OK)
+            .when().get(String.format(PUAPI_SEKRETESS, DEFAULT_PATIENT_PERSONNUMMER, "true"));
+
+        spec()
+            .body(request)
+            .expect().statusCode(HTTP_OK)
+            .when().post(MODULEAPI_UTKAST_BASE + "/" + utkastType + "/" + utkastId + "/copyfromcandidate")
+            .then()
+            .body("status", equalTo(UtkastStatus.DRAFT_INCOMPLETE.name()))
+            .body("version",  equalTo(0));
+    }
+
+    @Test
+    public void testCopyFromCandidateWhenUserIsNotLakare() {
+        String intygType = "lisjp";
+        String utkastType = "ag7804";
+
+        // Set up auth precondition
+        RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
+
+        // Create the candidate
+        String intygId = createSignedIntyg("lisjp", DEFAULT_PATIENT_PERSONNUMMER);
+
+        // Change users origin and role
+        changeOriginTo("DJUPINTEGRATION");
+        changeRoleTo(AuthoritiesConstants.ROLE_ADMIN);
+
+        String utkastId = createUtkast("ag7804", DEFAULT_PATIENT_PERSONNUMMER);
+
+        CopyFromCandidateRequest request = new CopyFromCandidateRequest();
+        request.setCandidateId(intygId);
+        request.setCandidateType(intygType);
+
+        spec()
+            .body(request)
+            .expect().statusCode(HTTP_OK)
+            .when().post(MODULEAPI_UTKAST_BASE + "/" + utkastType + "/" + utkastId + "/copyfromcandidate")
+            .then()
+            .body("status", equalTo(UtkastStatus.DRAFT_INCOMPLETE.name()))
+            .body("version",  equalTo(0));
+    }
+
+    @Test
+    public void testCopyFromCandidateWhenUserIsNotLakareAndPatientHasSekretessmarkering() {
+        String intygType = "lisjp";
+        String utkastType = "ag7804";
+
+        // Set up auth precondition
+        RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
+
+        // Create the candidate
+        String intygId = createSignedIntyg("lisjp", DEFAULT_PATIENT_PERSONNUMMER);
+
+        // Change users origin and role
+        changeOriginTo("DJUPINTEGRATION");
+        changeRoleTo(AuthoritiesConstants.ROLE_ADMIN);
+
+        String utkastId = createUtkast("ag7804", DEFAULT_PATIENT_PERSONNUMMER);
+
+        CopyFromCandidateRequest request = new CopyFromCandidateRequest();
+        request.setCandidateId(intygId);
+        request.setCandidateType(intygType);
+
+        // Sätter patient till sekretessmarkerad
+        spec()
+            .expect().statusCode(HTTP_OK)
+            .when().get(String.format(PUAPI_SEKRETESS, DEFAULT_PATIENT_PERSONNUMMER, "true"));
+
+        spec()
+            .body(request)
+            .expect().statusCode(HTTP_ISE)
+            .when().post(MODULEAPI_UTKAST_BASE + "/" + utkastType + "/" + utkastId + "/copyfromcandidate")
+            .then()
+            .body("errorCode", equalTo(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM_SEKRETESSMARKERING.name()))
+            .body("message", not(isEmptyString()));
     }
 
 }

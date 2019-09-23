@@ -232,8 +232,6 @@ public class UtkastCandidateServiceImplTest {
         String intygType = "lisjp";
         String intygTypeVersion = "1.0";
 
-        when(webCertUser.getValdVardenhet()).thenReturn(createSelectableVardenhet("correct-user-hsaid"));
-
         when(draftAccessService.allowToCopyFromCandidate(anyString(), any(Personnummer.class))).
             thenReturn(AccessResult.create(AccessResultCode.NO_PROBLEM, ""));
 
@@ -462,7 +460,7 @@ public class UtkastCandidateServiceImplTest {
         when(utkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(patient.getPersonId().getPersonnummerWithDash(), validIntygType))
             .thenReturn(candidates);
 
-        assertFalse(utkastCandidateService.getCandidateMetaData(ag7804ModuleApiV1Mock, patient, false).isPresent());
+        assertTrue(utkastCandidateService.getCandidateMetaData(ag7804ModuleApiV1Mock, patient, false).isPresent());
 
         // Signed by other user and on different unit
         candidates = Arrays.asList(
@@ -473,10 +471,23 @@ public class UtkastCandidateServiceImplTest {
         when(utkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(patient.getPersonId().getPersonnummerWithDash(), validIntygType))
             .thenReturn(candidates);
 
+        assertTrue(utkastCandidateService.getCandidateMetaData(ag7804ModuleApiV1Mock, patient, false).isPresent());
+
+        // - - - - - - - - - - - - - - - - - - -
+        // Run tests as Vårdadministratör
+        // - - - - - - - - - - - - - - - - - - -
+        when(webCertUser.isLakare()).thenReturn(false);
+
+        // Signed by a doctor on same unit
+        candidates = Arrays.asList(
+            createCandidate(UtkastStatus.SIGNED,
+                "correct-ve-hsaid", null,
+                "intygId", intygType, intygTypeVersion, LocalDateTime.now(), "other-user-hsaid"));
+
         assertFalse(utkastCandidateService.getCandidateMetaData(ag7804ModuleApiV1Mock, patient, false).isPresent());
 
         // PDL-logging shall be invoked
-        verify(logService, times(2)).logReadIntyg(any(LogRequest.class), any(LogUser.class));
+        verify(logService, times(4)).logReadIntyg(any(LogRequest.class), any(LogUser.class));
     }
 
     // CHECKSTYLE:OFF ParameterNumber

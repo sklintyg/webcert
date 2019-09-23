@@ -289,6 +289,8 @@ public class UtkastModuleApiController extends AbstractApiController {
         @PathParam("intygsId") String intygsId,
         CopyFromCandidateRequest request) {
 
+        boolean error = true;
+
         LOG.debug("Attempting to copy data from certificate with type '{}' and id '{}' to draft with type '{}' and id '{}'",
             request.getCandidateType(), request.getCandidateId(), intygsTyp, intygsId);
 
@@ -296,15 +298,21 @@ public class UtkastModuleApiController extends AbstractApiController {
             SaveDraftResponse response = utkastService.updateDraftFromCandidate(
                 request.getCandidateId(), request.getCandidateType(), intygsId, intygsTyp);
 
+            error = false;
             return Response.ok().entity(response).build();
 
         } catch (OptimisticLockException | OptimisticLockingFailureException e) {
             monitoringLogService.logUtkastConcurrentlyEdited(intygsId, intygsTyp);
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.CONCURRENT_MODIFICATION, e.getMessage());
+        } catch (WebCertServiceException e) {
+            throw e;
         } catch (Exception e) {
-            LOG.error("Failed to copy data from certificate with type '{}' and id '{}' to draft with type '{}' and id '{}'.",
-                request.getCandidateType(), request.getCandidateId(), intygsTyp, intygsId);
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, e.getMessage());
+        } finally {
+            if (error) {
+                LOG.error("Failed to copy data from certificate with type '{}' and id '{}' to draft with type '{}' and id '{}'.",
+                    request.getCandidateType(), request.getCandidateId(), intygsTyp, intygsId);
+            }
         }
     }
 

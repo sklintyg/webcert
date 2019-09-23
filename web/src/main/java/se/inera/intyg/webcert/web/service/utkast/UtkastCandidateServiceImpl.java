@@ -72,6 +72,7 @@ public class UtkastCandidateServiceImpl {
 
     public Optional<UtkastCandidateMetaData> getCandidateMetaData(ModuleApi moduleApi, Patient patient, boolean isCoherentJournaling) {
         UtkastCandidateMetaData metaData = null;
+
         // Finns det några urvalskriterier?
         final Optional<GetCopyFromCriteria> copyFromCriteria = moduleApi.getCopyFromCriteria();
         if (!copyFromCriteria.isPresent()) {
@@ -82,6 +83,12 @@ public class UtkastCandidateServiceImpl {
         AccessResult accessResult =
             draftAccessService.allowToCopyFromCandidate(copyFromCriteria.get().getIntygType(), patient.getPersonId());
         if (accessResult.isDenied()) {
+            return Optional.empty();
+        }
+
+        // Är användaren vårdadministratör får denne inte hantera patienter
+        // som har sekretessmarkering
+        if (!getUser().isLakare() && patient.isSekretessmarkering()) {
             return Optional.empty();
         }
 
@@ -139,7 +146,7 @@ public class UtkastCandidateServiceImpl {
             .filter(candidate -> candidate.getAterkalladDatum() == null)
             .filter(candidate -> candidate.getSignatur().getSigneringsDatum().isAfter(earliestValidDate))
             .filter(candidate -> filterOnMajorVersion(candidate.getIntygTypeVersion(), copyFromCriteria.getIntygTypeMajorVersion()))
-            .filter(candidate -> filterOnUnit(candidate, patient))
+            .filter(candidate -> filterOnUnit(candidate))
             .sorted(Comparator.comparing(u -> u.getSignatur().getSigneringsDatum(), Comparator.reverseOrder()))
             .findFirst();
     }
@@ -150,26 +157,10 @@ public class UtkastCandidateServiceImpl {
     }
 
     /*
-     * Läkare och tandläkare ska få träff på intyg på eventuell underenhet
-     * till den enhet man är inloggad på, men vårdadministratör ska endast
-     * få träff på intyg på exakt samma enhet.
+     * Användare ska få träff på intyg på inloggad enhet eller på
+     * eventuell underenhet till den enhet man är inloggad på.
      */
-    private boolean filterOnUnit(Utkast candidate, Patient patient) {
-        WebCertUser user = getUser();
-
-        if (!user.isLakare()) {
-            return candidate.getEnhetsId().equals(user.getValdVardenhet().getId());
-        }
-
-        // Om intyget är utfärdat på en underenhet ska intyg utfärdade
-        // på patient med skyddade personuppgifter filtreras bort.
-        // Dvs intyg för patient med skyddade uppgifter ska bara komma
-        // med om intyget hör till exakt samma enhet som användaren har
-        // i överhoppet från sitt journalsystem.
-        if (patient.isSekretessmarkering()) {
-            return candidate.getEnhetsId().equals(user.getValdVardenhet().getId());
-        }
-
+    private boolean filterOnUnit(Utkast candidate) {
         return webCertUserService.isUserAllowedAccessToUnit(candidate.getEnhetsId());
     }
 

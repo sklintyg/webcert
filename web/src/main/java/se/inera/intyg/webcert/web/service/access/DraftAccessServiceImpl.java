@@ -178,7 +178,6 @@ public class DraftAccessServiceImpl implements DraftAccessService {
         return getAccessServiceEvaluation().given(getUser(), certificateType)
             .feature(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
             .privilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG)
-            .privilege(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT)
             .privilege(AuthoritiesConstants.PRIVILEGE_COPY_FROM_CANDIDATE)
             .patient(patient)
             .careUnit(vardenhet)
