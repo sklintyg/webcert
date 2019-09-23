@@ -101,6 +101,8 @@ public interface MonitoringLogService extends AuthenticationLogger {
 
     void logScreenResolution(String width, String height);
 
+    void logBrowserInfo(String browserName, String browserVersion, String osFamily, String osVersion, String width, String height);
+
     void logRevokedPrint(String intygsId, String intygsTyp);
 
     void logUtkastPatientDetailsUpdated(String intygsId, String intygsTyp);

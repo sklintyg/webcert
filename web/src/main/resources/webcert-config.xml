@@ -64,6 +64,8 @@
   <context:component-scan base-package="se.inera.intyg.infra.sjukfall.services" />
 
   <beans>
+    <bean id="userAgentParser" class="se.inera.intyg.infra.monitoring.logging.UserAgentParser" />
+
     <bean class="org.springframework.context.support.PropertySourcesPlaceholderConfigurer">
       <property name="locations">
         <list>

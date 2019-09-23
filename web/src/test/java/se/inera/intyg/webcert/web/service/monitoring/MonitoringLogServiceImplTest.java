@@ -443,6 +443,11 @@ public class MonitoringLogServiceImplTest {
     }
 
     @Test
+    public void shouldLogBrowserInfo() {
+        logService.logBrowserInfo("BROWSERNAME", "VERSION","OS", "OS-VERSION", "WIDTH", "HEIGHT");
+        verifyLog(Level.INFO, "BROWSER_INFO Name 'BROWSERNAME' Version 'VERSION' OSFamily 'OS' OSVersion 'OS-VERSION' Width 'WIDTH' Height 'HEIGHT'");
+    }
+    @Test
     public void shouldLogRevokedPrinted() {
         logService.logRevokedPrint(INTYGS_ID, INTYGS_TYP);
         verifyLog(Level.INFO, "REVOKED_PRINT Revoked intyg 'INTYGS_ID' of type 'INTYGS_TYP' printed");
