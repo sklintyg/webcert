@@ -196,7 +196,7 @@
    // Workaround for bug #1404
     // https://github.com/angular/angular.js/issues/1404
     // Source: http://plnkr.co/edit/hSMzWC?p=preview
-  
+
       // Decorators that update form input names and interpolates them. Needed for datepicker directives templates dynamic name attributes
       app.config(function($provide) {
           $provide.decorator('ngModelDirective', function($delegate) {
@@ -252,9 +252,9 @@
 
   // Inject language resources
   app.run(['$log', '$rootScope', '$window', '$location', '$state', '$q', '$uibModalStack', 'common.messageService', 'common.moduleService',
-    'common.UserModel', 'webcert.messages', 'common.MonitoringLogService', 'common.dynamicLinkService',
+    'common.UserModel', 'webcert.messages', 'common.MonitoringLogService', 'common.dynamicLinkService', 'idpConnectivityService',
     function($log, $rootScope, $window, $location, $state, $q, $uibModalStack, messageService, moduleService, UserModel, wcMessages,
-        MonitoringLogService, dynamicLinkService) {
+        MonitoringLogService, dynamicLinkService, idpConnectivityService) {
 
       $rootScope.lang = 'sv';
       $rootScope.DEFAULT_LANG = 'sv';
@@ -303,6 +303,7 @@
               }
             } else {
               if (!redirectToUnitSelection()) {
+                idpConnectivityService.checkAndLogConnectivity();
                 termsCheck();
 
                 if (fromState.name !== 'webcert.terms' || !UserModel.transitioning) {
