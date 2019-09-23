@@ -1,0 +1,9 @@
+{
+  "appVersion": "6.5.0",
+  "commonVersion": "3.11.0.+",
+  "infraVersion": "3.11.0.+",
+  "buildArgs": "--refresh-dependencies clean build camelTest testReport sonarqube -PcodeQuality -PcodeCoverage -DgruntColors=false",
+  "tests": [ "restAssuredTest", "protractorTest" ],
+  "uploadArchives": true,
+  "backingService": "intygstjanst-test"
+}
