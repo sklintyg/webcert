@@ -256,7 +256,10 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
     public void logScreenResolution(String width, String height) {
         logEvent(MonitoringEvent.SCREEN_RESOLUTION, width, height);
     }
-
+    @Override
+    public void logBrowserInfo(String browserName, String browserVersion, String osFamily, String osVersion, String width, String height) {
+        logEvent(MonitoringEvent.BROWSER_INFO, browserName, browserVersion, osFamily, osVersion, width, height);
+    }
     @Override
     public void logRevokedPrint(String intygsId, String intygsType) {
         logEvent(MonitoringEvent.REVOKED_PRINT, intygsId, intygsType);
@@ -401,6 +404,7 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
         REVOKED_PRINT("Revoked intyg '{}' of type '{}' printed"),
         DIAGNOSKODVERK_CHANGED("Diagnoskodverk changed for utkast '{}' of type '{}'"),
         SCREEN_RESOLUTION("Width '{}', height '{}'"),
+        BROWSER_INFO("Name '{}' Version '{}' OSFamily '{}' OSVersion '{}' Width '{}' Height '{}'"),
 
         SRS_LOADED("SRS loaded in client context '{}' for intyg '{}' and diagnosis code '{}' with caregiver '{}' and care unit '{}'"),
         SRS_PANEL_ACTIVATED("SRS panel activated in client context '{}' for intyg '{}' with caregiver '{}' and care unit '{}'"),
