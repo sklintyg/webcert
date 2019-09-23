@@ -37,8 +37,6 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import org.apache.commons.httpclient.HttpStatus;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.schemas.contract.Personnummer;
@@ -51,10 +49,6 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.MaximalSjukskrivningsti
 @Path("/fmb")
 @Api(value = "fmb", description = "REST API för Försäkringsmedicinskt beslutsstöd", produces = MediaType.APPLICATION_JSON)
 public class FmbApiController extends AbstractApiController {
-
-    private static final int MIN_ICD10_POSITION = 3;
-
-    private static final Logger LOG = LoggerFactory.getLogger(FmbApiController.class);
 
     private static final int OK = 200;
     private static final int BAD_REQUEST = 400;

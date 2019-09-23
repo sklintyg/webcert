@@ -70,7 +70,7 @@ public class ArendeViewConverter {
         return thread.stream().anyMatch(a -> getArendeType(a) == ArendeType.FRAGA);
     }
 
-    private static ArendeType getArendeType(Arende arende) {
+    public static ArendeType getArendeType(Arende arende) {
         if (ArendeAmne.PAMINN == arende.getAmne()) {
             return ArendeType.PAMINNELSE;
         } else if (arende.getSvarPaId() != null) {

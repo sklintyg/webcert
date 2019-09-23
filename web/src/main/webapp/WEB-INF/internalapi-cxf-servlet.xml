@@ -36,6 +36,7 @@
   <jaxrs:server address="/">
     <jaxrs:serviceBeans>
       <bean class="se.inera.intyg.webcert.web.web.controller.internalapi.IntegratedUnitsApiController" />
+      <bean class="se.inera.intyg.webcert.web.web.controller.internalapi.IntygInfoApiController" />
     </jaxrs:serviceBeans>
     <jaxrs:providers>
       <ref bean="jacksonJsonProvider" />
