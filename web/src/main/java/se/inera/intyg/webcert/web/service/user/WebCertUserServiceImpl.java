@@ -162,7 +162,7 @@ public class WebCertUserServiceImpl implements WebCertUserService {
      * @return True if the current IntygUser has access to the specified enhetsId including mottagningsnivå.
      */
     @Override
-    public boolean userIsLoggedInOnEnhetOrUnderenhet(String enhetId) {
+    public boolean isUserAllowedAccessToUnit(String enhetId) {
         return CareUnitAccessHelper.userIsLoggedInOnEnhetOrUnderenhet(getUser(), enhetId);
     }
 

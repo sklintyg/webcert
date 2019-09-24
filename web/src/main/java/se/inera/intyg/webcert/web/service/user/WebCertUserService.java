@@ -77,7 +77,7 @@ public interface WebCertUserService {
      * @param enhetId HSA-id of a vardenhet or mottagning.
      * @return True if the current IntygUser has access to the specified enhetsId including mottagningsnivå.
      */
-    boolean userIsLoggedInOnEnhetOrUnderenhet(String enhetId);
+    boolean isUserAllowedAccessToUnit(String enhetId);
 
     /**
      * Schedule removal of backend session (both HttpSession and Spring session) for user.

@@ -970,7 +970,11 @@ roles:
               - *ki060 # luae_na
               - *ki070 # luae_fs
           - <<: *ro030 # UTHOPP
-
+      - <<: *p190 # KOPIERA_FRAN_KANDIDAT
+        requestOrigins:
+          - <<: *ro020 # DJUPINTEGRATION
+            intygstyper:
+              - *ki120 # ag7804
 
 # Legitimerade yrkesroller
 titles:

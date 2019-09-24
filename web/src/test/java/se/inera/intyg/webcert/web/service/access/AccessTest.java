@@ -73,7 +73,7 @@ abstract public class AccessTest {
         doReturn(SekretessStatus.FALSE)
             .when(patientDetailsResolver).getSekretessStatus(PERSONNUMMER);
         doReturn(true)
-            .when(webCertUserService).userIsLoggedInOnEnhetOrUnderenhet(enhetsId);
+            .when(webCertUserService).isUserAllowedAccessToUnit(enhetsId);
         doReturn(AccessServiceTestToolkit.createEmptyPreviousForUtkast(intygsTyp))
             .when(utkastService).checkIfPersonHasExistingIntyg(PERSONNUMMER, user);
         doReturn(selectedVardgivare).when(user).getValdVardgivare();
@@ -96,7 +96,7 @@ abstract public class AccessTest {
         doReturn(SekretessStatus.FALSE)
             .when(patientDetailsResolver).getSekretessStatus(PERSONNUMMER);
         doReturn(false)
-            .when(webCertUserService).userIsLoggedInOnEnhetOrUnderenhet(enhetsId);
+            .when(webCertUserService).isUserAllowedAccessToUnit(enhetsId);
         doReturn(AccessServiceTestToolkit.createEmptyPreviousForUtkast(intygsTyp))
             .when(utkastService).checkIfPersonHasExistingIntyg(PERSONNUMMER, user);
         doReturn(selectedVardgivare).when(user).getValdVardgivare();
@@ -119,7 +119,7 @@ abstract public class AccessTest {
         doReturn(SekretessStatus.FALSE)
             .when(patientDetailsResolver).getSekretessStatus(PERSONNUMMER);
         doReturn(true)
-            .when(webCertUserService).userIsLoggedInOnEnhetOrUnderenhet(enhetsId);
+            .when(webCertUserService).isUserAllowedAccessToUnit(enhetsId);
         doReturn(AccessServiceTestToolkit.createEmptyPreviousForUtkast(intygsTyp))
             .when(utkastService).checkIfPersonHasExistingIntyg(PERSONNUMMER, user);
         doReturn(selectedVardgivare).when(user).getValdVardgivare();
@@ -142,7 +142,7 @@ abstract public class AccessTest {
         doReturn(SekretessStatus.FALSE)
             .when(patientDetailsResolver).getSekretessStatus(PERSONNUMMER);
         doReturn(false)
-            .when(webCertUserService).userIsLoggedInOnEnhetOrUnderenhet(enhetsId);
+            .when(webCertUserService).isUserAllowedAccessToUnit(enhetsId);
         doReturn(AccessServiceTestToolkit.createEmptyPreviousForUtkast(intygsTyp))
             .when(utkastService).checkIfPersonHasExistingIntyg(PERSONNUMMER, user);
         doReturn(selectedVardgivare).when(user).getValdVardgivare();
@@ -165,7 +165,7 @@ abstract public class AccessTest {
         doReturn(SekretessStatus.FALSE)
             .when(patientDetailsResolver).getSekretessStatus(PERSONNUMMER);
         doReturn(true)
-            .when(webCertUserService).userIsLoggedInOnEnhetOrUnderenhet(enhetsId);
+            .when(webCertUserService).isUserAllowedAccessToUnit(enhetsId);
         doReturn(AccessServiceTestToolkit.createEmptyPreviousForUtkast(intygsTyp))
             .when(utkastService).checkIfPersonHasExistingIntyg(PERSONNUMMER, user);
         doReturn(selectedVardgivare).when(user).getValdVardgivare();
@@ -188,7 +188,7 @@ abstract public class AccessTest {
         doReturn(SekretessStatus.FALSE)
             .when(patientDetailsResolver).getSekretessStatus(PERSONNUMMER);
         doReturn(false)
-            .when(webCertUserService).userIsLoggedInOnEnhetOrUnderenhet(enhetsId);
+            .when(webCertUserService).isUserAllowedAccessToUnit(enhetsId);
         doReturn(AccessServiceTestToolkit.createEmptyPreviousForUtkast(intygsTyp))
             .when(utkastService).checkIfPersonHasExistingIntyg(PERSONNUMMER, user);
         doReturn(selectedVardgivare).when(user).getValdVardgivare();
@@ -211,7 +211,7 @@ abstract public class AccessTest {
         doReturn(SekretessStatus.FALSE)
             .when(patientDetailsResolver).getSekretessStatus(PERSONNUMMER);
         doReturn(true)
-            .when(webCertUserService).userIsLoggedInOnEnhetOrUnderenhet(enhetsId);
+            .when(webCertUserService).isUserAllowedAccessToUnit(enhetsId);
         doReturn(AccessServiceTestToolkit.createEmptyPreviousForUtkast(intygsTyp))
             .when(utkastService).checkIfPersonHasExistingIntyg(PERSONNUMMER, user);
         doReturn(selectedVardgivare).when(user).getValdVardgivare();
@@ -234,7 +234,7 @@ abstract public class AccessTest {
         doReturn(SekretessStatus.FALSE)
             .when(patientDetailsResolver).getSekretessStatus(PERSONNUMMER);
         doReturn(false)
-            .when(webCertUserService).userIsLoggedInOnEnhetOrUnderenhet(enhetsId);
+            .when(webCertUserService).isUserAllowedAccessToUnit(enhetsId);
         doReturn(AccessServiceTestToolkit.createEmptyPreviousForUtkast(intygsTyp))
             .when(utkastService).checkIfPersonHasExistingIntyg(PERSONNUMMER, user);
         doReturn(selectedVardgivare).when(user).getValdVardgivare();
@@ -257,7 +257,7 @@ abstract public class AccessTest {
         doReturn(SekretessStatus.TRUE)
             .when(patientDetailsResolver).getSekretessStatus(PERSONNUMMER);
         doReturn(true)
-            .when(webCertUserService).userIsLoggedInOnEnhetOrUnderenhet(enhetsId);
+            .when(webCertUserService).isUserAllowedAccessToUnit(enhetsId);
         doReturn(AccessServiceTestToolkit.createEmptyPreviousForUtkast(intygsTyp))
             .when(utkastService).checkIfPersonHasExistingIntyg(PERSONNUMMER, user);
         doReturn(selectedVardgivare).when(user).getValdVardgivare();
@@ -280,7 +280,7 @@ abstract public class AccessTest {
         doReturn(SekretessStatus.TRUE)
             .when(patientDetailsResolver).getSekretessStatus(PERSONNUMMER);
         doReturn(false)
-            .when(webCertUserService).userIsLoggedInOnEnhetOrUnderenhet(enhetsId);
+            .when(webCertUserService).isUserAllowedAccessToUnit(enhetsId);
         doReturn(AccessServiceTestToolkit.createEmptyPreviousForUtkast(intygsTyp))
             .when(utkastService).checkIfPersonHasExistingIntyg(PERSONNUMMER, user);
         doReturn(selectedVardgivare).when(user).getValdVardgivare();

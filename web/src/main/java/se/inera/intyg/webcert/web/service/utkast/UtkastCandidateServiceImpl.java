@@ -25,24 +25,22 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.Patient;
-import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.support.api.GetCopyFromCriteria;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
-import se.inera.intyg.infra.integration.hsa.model.SelectableVardenhet;
-import se.inera.intyg.infra.security.common.model.IntygUser;
-import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
-import se.inera.intyg.webcert.web.service.intyg.IntygService;
-import se.inera.intyg.webcert.web.service.intyg.converter.IntygModuleFacade;
+import se.inera.intyg.webcert.web.service.access.AccessResult;
+import se.inera.intyg.webcert.web.service.access.DraftAccessService;
 import se.inera.intyg.webcert.web.service.log.LogService;
-import se.inera.intyg.webcert.web.service.log.dto.LogUser;
+import se.inera.intyg.webcert.web.service.log.LogUtil;
 import se.inera.intyg.webcert.web.service.log.factory.LogRequestFactory;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
@@ -54,17 +52,13 @@ import se.inera.intyg.webcert.web.service.utkast.dto.UtkastCandidateMetaData;
 @Service
 public class UtkastCandidateServiceImpl {
 
+    private static final Logger LOG = LoggerFactory.getLogger(UtkastCandidateServiceImpl.class);
+
+    @Autowired
+    private DraftAccessService draftAccessService;
+
     @Autowired
     private WebCertUserService webCertUserService;
-
-    @Autowired
-    private IntygModuleFacade moduleFacade;
-
-    @Autowired
-    private IntygModuleRegistry moduleRegistry;
-
-    @Autowired
-    private IntygService intygService;
 
     @Autowired
     private UtkastRepository utkastRepository;
@@ -76,13 +70,31 @@ public class UtkastCandidateServiceImpl {
     private LogRequestFactory logRequestFactory;
 
 
-    public Optional<UtkastCandidateMetaData> getCandidateMetaData(ModuleApi moduleApi, Patient patient, boolean isCoherentJournaling) {
+    public Optional<UtkastCandidateMetaData> getCandidateMetaData(ModuleApi moduleApi, String intygType, Patient patient, boolean isCoherentJournaling) {
         UtkastCandidateMetaData metaData = null;
-        WebCertUser user = webCertUserService.getUser();
+
+        // Finns det några urvalskriterier?
+        final Optional<GetCopyFromCriteria> copyFromCriteria = moduleApi.getCopyFromCriteria();
+        if (!copyFromCriteria.isPresent()) {
+            return Optional.empty();
+        }
+
+        // Kontrollera användarens rättigheter
+        AccessResult accessResult =
+            draftAccessService.allowToCopyFromCandidate(intygType, patient.getPersonId());
+        if (accessResult.isDenied()) {
+            return Optional.empty();
+        }
+
+        // Är användaren vårdadministratör får denne inte hantera patienter
+        // som har sekretessmarkering
+        if (!getUser().isLakare() && patient.isSekretessmarkering()) {
+            return Optional.empty();
+        }
 
         try {
             // Lookup certificate candidate
-            Optional<Utkast> candidate = findCandidate(moduleApi, user, patient.getPersonId());
+            Optional<Utkast> candidate = findCandidate(copyFromCriteria.get(), patient);
 
             if (candidate.isPresent()) {
                 Utkast utkast = candidate.get();
@@ -98,7 +110,9 @@ public class UtkastCandidateServiceImpl {
                     .create();
 
                 // PDL Log read access to copyFromCandidate Utlatande
-                logService.logReadIntyg(logRequestFactory.createLogRequestFromUtkast(utkast, isCoherentJournaling), createLogUser(user));
+                logService.logReadIntyg(
+                    logRequestFactory.createLogRequestFromUtkast(
+                        utkast, isCoherentJournaling), LogUtil.getLogUser(getUser()));
             }
 
             return Optional.ofNullable(metaData);
@@ -107,54 +121,51 @@ public class UtkastCandidateServiceImpl {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM,
                 "Failed to lookup a candidate to copy certificate information from", e);
         }
-
     }
 
-    private Optional<Utkast> findCandidate(ModuleApi moduleApi, IntygUser user, Personnummer personnummer) {
-        final Optional<GetCopyFromCriteria> copyFromCriteria = moduleApi.getCopyFromCriteria();
-        if (!copyFromCriteria.isPresent()) {
+    /*
+     * The requirements to select an candidate was implemented while working on JIRA-number INTYGFV-10834.
+     */
+    private Optional<Utkast> findCandidate(GetCopyFromCriteria copyFromCriteria, Patient patient) {
+        if (copyFromCriteria == null) {
             return Optional.empty();
         }
 
         Set<String> validIntygType = new HashSet<>();
-        validIntygType.add(copyFromCriteria.get().getIntygType());
+        validIntygType.add(copyFromCriteria.getIntygType());
 
-        List<Utkast> toFilter = utkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(personnummer.getPersonnummerWithDash(),
+        List<Utkast> candidates = utkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(
+            patient.getPersonId().getPersonnummerWithDash(),
             validIntygType);
 
-        LocalDateTime earliestValidDate = LocalDateTime.now().minusDays(copyFromCriteria.get().getMaxAgeDays());
+        LocalDateTime earliestValidDate = LocalDateTime.now().minusDays(copyFromCriteria.getMaxAgeDays());
 
         // This is the candidate to present
-        final Optional<Utkast> candidate = toFilter.stream()
-            .filter(utkast -> utkast.getStatus() == UtkastStatus.SIGNED)
-            .filter(utkast -> utkast.getEnhetsId().equals(user.getValdVardenhet().getId()))
-            .filter(utkast -> utkast.getAterkalladDatum() == null)
-            .filter(utkast -> sameMajorVersion(utkast.getIntygTypeVersion(), copyFromCriteria.get().getIntygTypeMajorVersion()))
-            .filter(utkast -> utkast.getSignatur().getSigneringsDatum().isAfter(earliestValidDate))
-            .filter(utkast -> utkast.getSignatur().getSigneradAv().equals(user.getHsaId()))
+        return candidates.stream()
+            .filter(candidate -> candidate.getStatus() == UtkastStatus.SIGNED)
+            .filter(candidate -> candidate.getAterkalladDatum() == null)
+            .filter(candidate -> candidate.getSignatur().getSigneringsDatum().isAfter(earliestValidDate))
+            .filter(candidate -> filterOnMajorVersion(candidate.getIntygTypeVersion(), copyFromCriteria.getIntygTypeMajorVersion()))
+            .filter(candidate -> filterOnUnit(candidate))
             .sorted(Comparator.comparing(u -> u.getSignatur().getSigneringsDatum(), Comparator.reverseOrder()))
             .findFirst();
-
-        return candidate;
     }
 
-    private LogUser createLogUser(IntygUser intygUser) {
-        SelectableVardenhet valdVardenhet = intygUser.getValdVardenhet();
-        SelectableVardenhet valdVardgivare = intygUser.getValdVardgivare();
-
-        return new LogUser.Builder(intygUser.getHsaId(), valdVardenhet.getId(), valdVardgivare.getId())
-            .userName(intygUser.getNamn())
-            .userAssignment(intygUser.getSelectedMedarbetarUppdragNamn())
-            .userTitle(intygUser.getTitel())
-            .enhetsNamn(valdVardenhet.getNamn())
-            .vardgivareNamn(valdVardgivare.getNamn())
-            .build();
-    }
-
-    private boolean sameMajorVersion(String intygTypeVersion, String intygTypeMajorVersion) {
+    private boolean filterOnMajorVersion(String intygTypeVersion, String intygTypeMajorVersion) {
         return !Strings.isNullOrEmpty(intygTypeVersion) && !Strings.isNullOrEmpty(intygTypeMajorVersion)
             && intygTypeVersion.startsWith(intygTypeMajorVersion + ".");
     }
 
+    /*
+     * Användare ska få träff på intyg på inloggad enhet eller på
+     * eventuell underenhet till den enhet man är inloggad på.
+     */
+    private boolean filterOnUnit(Utkast candidate) {
+        return webCertUserService.isUserAllowedAccessToUnit(candidate.getEnhetsId());
+    }
+
+    private WebCertUser getUser() {
+        return webCertUserService.getUser();
+    }
 
 }
