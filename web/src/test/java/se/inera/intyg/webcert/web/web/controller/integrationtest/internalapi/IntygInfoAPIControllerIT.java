@@ -31,7 +31,7 @@ import se.inera.intyg.webcert.web.web.controller.integrationtest.BaseRestIntegra
 /**
  * Very basic test of the FMB API that requests an icd10 code known to have fmb info and one that doesn't.
  */
-public class IntygInfoAPIControllerIT extends BaseRestIntegrationTest {
+public class IntygInfoAPIControllerIT extends InternalApiBaseRestIntegrationTest {
 
     public static final int OK = HttpStatus.OK.value();
     public static final int NOT_FOUND = HttpStatus.NOT_FOUND.value();
