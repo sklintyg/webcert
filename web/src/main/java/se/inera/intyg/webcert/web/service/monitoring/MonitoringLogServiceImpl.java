@@ -18,8 +18,11 @@
  */
 package se.inera.intyg.webcert.web.service.monitoring;
 
+import static se.inera.intyg.webcert.persistence.fragasvar.model.Amne.KOMPLETTERING_AV_LAKARINTYG;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Joiner;
+import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,10 +34,6 @@ import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.persistence.fragasvar.model.Amne;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
-
-import java.util.List;
-
-import static se.inera.intyg.webcert.persistence.fragasvar.model.Amne.KOMPLETTERING_AV_LAKARINTYG;
 
 @Service
 public class MonitoringLogServiceImpl implements MonitoringLogService {
@@ -264,13 +263,13 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
     @Override
     public void logIdpConnectivityCheck(String ip, String connectivity) {
 
-        String connectivityResult = "";
+        StringBuilder connectivityResult = new StringBuilder();
         ObjectMapper objectMapper = new ObjectMapper();
 
         try {
             IdpConnectivity[] conn = objectMapper.readValue(connectivity, IdpConnectivity[].class);
             for (IdpConnectivity connection : conn) {
-                connectivityResult += connection.url + (connection.connected ? " OK" : " Not OK") + "! ";
+                connectivityResult.append(connection.url).append(connection.connected ? " OK" : " Not OK").append("! ");
             }
         } catch (Exception e) {
             //Exceptions to be ignored
@@ -282,7 +281,7 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
             ip,
             user.getValdVardgivare() != null ? user.getValdVardgivare().getId() : "null",
             user.getValdVardenhet() != null ? user.getValdVardenhet().getId() : "null",
-            connectivityResult);
+            connectivityResult.toString());
     }
 
     @Override
