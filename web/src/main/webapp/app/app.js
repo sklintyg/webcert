@@ -348,11 +348,21 @@
         $log.debug('$viewContentLoaded - fired after dom rendered', event);
       });
 
-      // INTYG-3069
+      // INTYG-3069, INTYGFV-12307
       // Once per session we want to log relevant information about the users environment.
-      // As of now this is limited to screen resolution.
+      function getNetIdVersion() {
+        try {
+          var version = iid_GetProperty('Version'); //jshint ignore:line
+          return version ? version : 'n/a';
+        } catch (e) {
+          return 'n/a';
+        }
+      }
+
+      // As of now this is limited to screen resolution and netId version (if present).
+      // The server also extracts info about browser type, version etc using userAgent header.
       if (user) {
-        MonitoringLogService.screenResolution($window.innerWidth, $window.innerHeight);
+        MonitoringLogService.browserInfo($window.innerWidth, $window.innerHeight, getNetIdVersion());
       }
 
       $window.onbeforeunload = function() {

@@ -19,7 +19,8 @@
 package se.inera.intyg.webcert.web.web.controller.integrationtest.api;
 
 import static se.inera.intyg.webcert.web.web.controller.api.dto.MonitoringRequest.HEIGHT;
-import static se.inera.intyg.webcert.web.web.controller.api.dto.MonitoringRequest.MonitoringRequestEvent.SCREEN_RESOLUTION;
+import static se.inera.intyg.webcert.web.web.controller.api.dto.MonitoringRequest.MonitoringRequestEvent.BROWSER_INFO;
+import static se.inera.intyg.webcert.web.web.controller.api.dto.MonitoringRequest.NET_ID_VERSION;
 import static se.inera.intyg.webcert.web.web.controller.api.dto.MonitoringRequest.WIDTH;
 
 import com.jayway.restassured.RestAssured;
@@ -61,10 +62,11 @@ public class JsLogAPIControllerIT extends BaseRestIntegrationTest {
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
 
         MonitoringRequest request = new MonitoringRequest();
-        request.setEvent(SCREEN_RESOLUTION);
+        request.setEvent(BROWSER_INFO);
         HashMap<String, String> info = new HashMap<>();
         info.put(HEIGHT, "1080");
         info.put(WIDTH, "1920");
+        info.put(NET_ID_VERSION, "11.0");
         request.setInfo(info);
 
         spec()

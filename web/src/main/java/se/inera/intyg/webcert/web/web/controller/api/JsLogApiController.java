@@ -29,6 +29,7 @@ import static se.inera.intyg.webcert.web.web.controller.api.dto.MonitoringReques
 import static se.inera.intyg.webcert.web.web.controller.api.dto.MonitoringRequest.INTYG_ID;
 import static se.inera.intyg.webcert.web.web.controller.api.dto.MonitoringRequest.INTYG_TYPE;
 import static se.inera.intyg.webcert.web.web.controller.api.dto.MonitoringRequest.MAIN_DIAGNOSIS_CODE;
+import static se.inera.intyg.webcert.web.web.controller.api.dto.MonitoringRequest.NET_ID_VERSION;
 import static se.inera.intyg.webcert.web.web.controller.api.dto.MonitoringRequest.USER_CLIENT_CONTEXT;
 import static se.inera.intyg.webcert.web.web.controller.api.dto.MonitoringRequest.WIDTH;
 
@@ -83,15 +84,16 @@ public class JsLogApiController extends AbstractApiController {
         }
 
         switch (request.getEvent()) {
-            case SCREEN_RESOLUTION:
-                monitoringService.logScreenResolution(request.getInfo().get(WIDTH), request.getInfo().get(HEIGHT));
+            case BROWSER_INFO:
                 final UserAgentInfo userAgentInfo = userAgentParser.parse(userAgent);
                 monitoringService
                     .logBrowserInfo(userAgentInfo.getBrowserName(),
                         userAgentInfo.getBrowserVersion(),
                         userAgentInfo.getOsFamily(),
-                        userAgentInfo.getOsVersion(), request.getInfo().get(WIDTH),
-                        request.getInfo().get(HEIGHT));
+                        userAgentInfo.getOsVersion(),
+                        request.getInfo().get(WIDTH),
+                        request.getInfo().get(HEIGHT),
+                        request.getInfo().get(NET_ID_VERSION));
                 break;
             case DIAGNOSKODVERK_CHANGED:
                 monitoringService.logDiagnoskodverkChanged(request.getInfo().get(INTYG_ID), request.getInfo().get(INTYG_TYPE));

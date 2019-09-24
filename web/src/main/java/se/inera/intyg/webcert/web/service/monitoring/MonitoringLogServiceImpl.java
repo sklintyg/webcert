@@ -253,13 +253,11 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
     }
 
     @Override
-    public void logScreenResolution(String width, String height) {
-        logEvent(MonitoringEvent.SCREEN_RESOLUTION, width, height);
+    public void logBrowserInfo(String browserName, String browserVersion, String osFamily, String osVersion, String width, String height,
+        String netIdVersion) {
+        logEvent(MonitoringEvent.BROWSER_INFO, browserName, browserVersion, osFamily, osVersion, width, height, netIdVersion);
     }
-    @Override
-    public void logBrowserInfo(String browserName, String browserVersion, String osFamily, String osVersion, String width, String height) {
-        logEvent(MonitoringEvent.BROWSER_INFO, browserName, browserVersion, osFamily, osVersion, width, height);
-    }
+
     @Override
     public void logRevokedPrint(String intygsId, String intygsType) {
         logEvent(MonitoringEvent.REVOKED_PRINT, intygsId, intygsType);
@@ -403,8 +401,7 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
         LOGIN_OTHER_CAREGIVER("Viewed intyg '{}' of type '{}' on other caregiver '{}' unit '{}'"),
         REVOKED_PRINT("Revoked intyg '{}' of type '{}' printed"),
         DIAGNOSKODVERK_CHANGED("Diagnoskodverk changed for utkast '{}' of type '{}'"),
-        SCREEN_RESOLUTION("Width '{}', height '{}'"),
-        BROWSER_INFO("Name '{}' Version '{}' OSFamily '{}' OSVersion '{}' Width '{}' Height '{}'"),
+        BROWSER_INFO("Name '{}' Version '{}' OSFamily '{}' OSVersion '{}' Width '{}' Height '{}' NetIdVersion '{}'"),
 
         SRS_LOADED("SRS loaded in client context '{}' for intyg '{}' and diagnosis code '{}' with caregiver '{}' and care unit '{}'"),
         SRS_PANEL_ACTIVATED("SRS panel activated in client context '{}' for intyg '{}' with caregiver '{}' and care unit '{}'"),

@@ -24,6 +24,7 @@ public class MonitoringRequest {
 
     public static final String WIDTH = "width";
     public static final String HEIGHT = "height";
+    public static final String NET_ID_VERSION = "netIdVersion";
     public static final String INTYG_ID = "intygId";
     public static final String INTYG_TYPE = "intygType";
     public static final String CAREGIVER_ID = "caregiverId";
@@ -55,8 +56,8 @@ public class MonitoringRequest {
             return false;
         }
         switch (event) {
-            case SCREEN_RESOLUTION:
-                return info != null && info.get(WIDTH) != null && info.get(HEIGHT) != null;
+            case BROWSER_INFO:
+                return info != null && info.get(WIDTH) != null && info.get(HEIGHT) != null && info.get(NET_ID_VERSION) != null;
             case DIAGNOSKODVERK_CHANGED:
                 return info != null && info.get(INTYG_ID) != null && info.get(INTYG_TYPE) != null;
             case SIGNING_FAILED:
@@ -82,7 +83,7 @@ public class MonitoringRequest {
     }
 
     public enum MonitoringRequestEvent {
-        SCREEN_RESOLUTION,
+        BROWSER_INFO,
         DIAGNOSKODVERK_CHANGED,
         SIGNING_FAILED,
         SRS_LOADED,

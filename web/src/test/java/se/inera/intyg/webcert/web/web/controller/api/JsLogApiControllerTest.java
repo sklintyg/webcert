@@ -28,8 +28,8 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static se.inera.intyg.webcert.web.web.controller.api.dto.MonitoringRequest.INTYG_ID;
 import static se.inera.intyg.webcert.web.web.controller.api.dto.MonitoringRequest.INTYG_TYPE;
+import static se.inera.intyg.webcert.web.web.controller.api.dto.MonitoringRequest.MonitoringRequestEvent.BROWSER_INFO;
 import static se.inera.intyg.webcert.web.web.controller.api.dto.MonitoringRequest.MonitoringRequestEvent.DIAGNOSKODVERK_CHANGED;
-import static se.inera.intyg.webcert.web.web.controller.api.dto.MonitoringRequest.MonitoringRequestEvent.SCREEN_RESOLUTION;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -72,20 +72,22 @@ public class JsLogApiControllerTest {
         request.setEvent(DIAGNOSKODVERK_CHANGED);
         assertEquals(BAD_REQUEST.getStatusCode(), controller.monitoring(request, null).getStatus());
 
-        request.setEvent(SCREEN_RESOLUTION);
+        request.setEvent(BROWSER_INFO);
         assertEquals(BAD_REQUEST.getStatusCode(), controller.monitoring(request, null).getStatus());
     }
 
     @Test
-    public void testMonitoringScreenResolution() {
+    public void testMonitoringBrowserInfo() {
         final String height = "height";
         final String width = "width";
+        final String netIdVersion = "netIdVersion";
 
         MonitoringRequest request = new MonitoringRequest();
-        request.setEvent(SCREEN_RESOLUTION);
+        request.setEvent(BROWSER_INFO);
         Map<String, String> extraInfo = new HashMap<>();
         extraInfo.put(MonitoringRequest.HEIGHT, height);
         extraInfo.put(MonitoringRequest.WIDTH, width);
+        extraInfo.put(MonitoringRequest.NET_ID_VERSION, netIdVersion);
         request.setInfo(extraInfo);
 
         Response response = controller.monitoring(request, userAgentString);
@@ -93,8 +95,7 @@ public class JsLogApiControllerTest {
         assertNotNull(response);
         assertEquals(OK.getStatusCode(), response.getStatus());
 
-        verify(monLog).logScreenResolution(width, height);
-        verify(monLog).logBrowserInfo("IE", "1.0", "OS", "1.1", width, height);
+        verify(monLog).logBrowserInfo("IE", "1.0", "OS", "1.1", width, height, netIdVersion);
         verifyNoMoreInteractions(monLog);
     }
 
