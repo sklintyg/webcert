@@ -51,7 +51,7 @@ angular.module('webcert').factory('idpConnectivityService', ['$http', '$q', '$wi
 
                     testUrl: function () {
                         var _this = this;
-                        this.promise = new $q(function (resolve, reject) {
+                        this.promise = $q(function (resolve, reject) {
                             _this.url = url;
                             var image = new Image();
 
