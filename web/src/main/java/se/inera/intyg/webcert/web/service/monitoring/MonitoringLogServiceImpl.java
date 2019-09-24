@@ -268,13 +268,13 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
     @Override
     public void logIdpConnectivityCheck(String ip, String connectivity) {
 
-        String connectivityResult = "";
+        StringBuilder connectivityResult = new StringBuilder();
         ObjectMapper objectMapper = new ObjectMapper();
 
         try {
             IdpConnectivity[] conn = objectMapper.readValue(connectivity, IdpConnectivity[].class);
             for (IdpConnectivity connection : conn) {
-                connectivityResult += connection.url + (connection.connected ? " OK" : " Not OK") + "! ";
+                connectivityResult.append(connection.url).append(connection.connected ? " OK" : " Not OK").append("! ");
             }
         } catch (Exception e) {
             //Exceptions to be ignored
@@ -286,7 +286,7 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
             ip,
             user.getValdVardgivare() != null ? user.getValdVardgivare().getId() : "null",
             user.getValdVardenhet() != null ? user.getValdVardenhet().getId() : "null",
-            connectivityResult);
+            connectivityResult.toString());
     }
 
     @Override
