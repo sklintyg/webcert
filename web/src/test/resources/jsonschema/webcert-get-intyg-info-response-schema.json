@@ -42,25 +42,25 @@
     "careGiverHsaId": {
       "type": "string"
     },
-    "adminQuestionsReceived": {
+    "administrativaFragorReceived": {
       "type": "number"
     },
-    "adminQuestionsReceivedAnswered": {
+    "administrativaFragorReceivedAnswered": {
       "type": "number"
     },
-    "adminQuestionsSent": {
+    "administrativaFragorSent": {
       "type": "number"
     },
-    "adminQuestionsSentAnswered": {
+    "administrativaFragorSentAnswered": {
       "type": "number"
     },
     "draftCreated": {
       "type": "string"
     },
-    "komletteingar": {
+    "kompletteringar": {
       "type": "number"
     },
-    "komletteingarAnswered": {
+    "kompletteringarAnswered": {
       "type": "number"
     },
     "events":  {
