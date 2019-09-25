@@ -151,8 +151,8 @@ public class IntygInfoServiceTest {
         WcIntygInfo intygInfo = optIntygInfo.get();
 
         assertEquals(1, intygInfo.getEvents().size());
-        assertEquals(1, intygInfo.getKomletteingar());
-        assertEquals(1, intygInfo.getKomletteingarAnswered());
+        assertEquals(1, intygInfo.getKompletteringar());
+        assertEquals(1, intygInfo.getKompletteringarAnswered());
         verifyZeroInteractions(moduleRegistry);
         verifyZeroInteractions(relationService);
     }
@@ -175,10 +175,10 @@ public class IntygInfoServiceTest {
         WcIntygInfo intygInfo = optIntygInfo.get();
 
         assertEquals(2, intygInfo.getEvents().size());
-        assertEquals(0, intygInfo.getKomletteingar());
-        assertEquals(0, intygInfo.getKomletteingarAnswered());
-        assertEquals(1, intygInfo.getAdminQuestionsReceived());
-        assertEquals(1, intygInfo.getAdminQuestionsReceivedAnswered());
+        assertEquals(0, intygInfo.getKompletteringar());
+        assertEquals(0, intygInfo.getKompletteringarAnswered());
+        assertEquals(1, intygInfo.getAdministrativaFragorReceived());
+        assertEquals(1, intygInfo.getAdministrativaFragorReceivedAnswered());
         verifyZeroInteractions(moduleRegistry);
         verifyZeroInteractions(relationService);
     }
@@ -216,10 +216,10 @@ public class IntygInfoServiceTest {
         assertEquals(utkast.getSkickadTillMottagareDatum(), intygInfo.getSentToRecipient());
 
         assertEquals(9, intygInfo.getEvents().size());
-        assertEquals(0, intygInfo.getKomletteingar());
-        assertEquals(0, intygInfo.getKomletteingarAnswered());
-        assertEquals(0, intygInfo.getAdminQuestionsReceived());
-        assertEquals(0, intygInfo.getAdminQuestionsReceivedAnswered());
+        assertEquals(0, intygInfo.getKompletteringar());
+        assertEquals(0, intygInfo.getKompletteringarAnswered());
+        assertEquals(0, intygInfo.getAdministrativaFragorReceived());
+        assertEquals(0, intygInfo.getAdministrativaFragorReceivedAnswered());
 
         verify(handelseRepository).findByIntygsId(intygId);
         verifyZeroInteractions(moduleRegistry);
@@ -278,10 +278,10 @@ public class IntygInfoServiceTest {
         assertEquals(utkast.getSkickadTillMottagareDatum(), intygInfo.getSentToRecipient());
 
         assertEquals(14, intygInfo.getEvents().size());
-        assertEquals(1, intygInfo.getKomletteingar());
-        assertEquals(1, intygInfo.getKomletteingarAnswered());
-        assertEquals(1, intygInfo.getAdminQuestionsReceived());
-        assertEquals(1, intygInfo.getAdminQuestionsReceivedAnswered());
+        assertEquals(1, intygInfo.getKompletteringar());
+        assertEquals(1, intygInfo.getKompletteringarAnswered());
+        assertEquals(1, intygInfo.getAdministrativaFragorReceived());
+        assertEquals(1, intygInfo.getAdministrativaFragorReceivedAnswered());
 
         verify(handelseRepository).findByIntygsId(intygId);
         verify(moduleRegistry).getModuleApi(utkast.getIntygsTyp(), utkast.getIntygTypeVersion());

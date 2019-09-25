@@ -333,8 +333,8 @@ public class IntygInfoService {
             .collect(Collectors.toList());
         long answered = kompletteringarQuestions.stream().filter(a -> Status.CLOSED.equals(a.getStatus())).count();
 
-        response.setKomletteingar(kompletteringarQuestions.size());
-        response.setKomletteingarAnswered((int) answered);
+        response.setKompletteringar(kompletteringarQuestions.size());
+        response.setKompletteringarAnswered((int) answered);
 
         Set<Status> answeredOrClosed = Stream.of(Status.ANSWERED, Status.CLOSED).collect(Collectors.toSet());
         Set<ArendeAmne> adminQuestionTypes = Stream.of(ArendeAmne.AVSTMN, ArendeAmne.KONTKT, ArendeAmne.OVRIGT).collect(Collectors.toSet());
@@ -350,8 +350,8 @@ public class IntygInfoService {
             .collect(Collectors.toList());
         long adminQuestionsSentAnswered = adminQuestionsSent.stream().filter(a -> answeredOrClosed.contains(a.getStatus())).count();
 
-        response.setAdminQuestionsSent(adminQuestionsSent.size());
-        response.setAdminQuestionsSentAnswered((int) adminQuestionsSentAnswered);
+        response.setAdministrativaFragorSent(adminQuestionsSent.size());
+        response.setAdministrativaFragorSentAnswered((int) adminQuestionsSentAnswered);
 
         // Admin frågor mottagna
         List<Arende> adminQuestionsRecieved = adminQuestions.stream()
@@ -359,8 +359,8 @@ public class IntygInfoService {
             .collect(Collectors.toList());
         long adminQuestionsRecievedAnswered = adminQuestionsRecieved.stream().filter(a -> answeredOrClosed.contains(a.getStatus())).count();
 
-        response.setAdminQuestionsReceived(adminQuestionsRecieved.size());
-        response.setAdminQuestionsReceivedAnswered((int) adminQuestionsRecievedAnswered);
+        response.setAdministrativaFragorReceived(adminQuestionsRecieved.size());
+        response.setAdministrativaFragorReceivedAnswered((int) adminQuestionsRecievedAnswered);
 
         // Kompletterings begäran
         kompletteringarQuestions.forEach(arende -> {
