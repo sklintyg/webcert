@@ -41,6 +41,7 @@
     <jaxrs:providers>
       <ref bean="jacksonJsonProvider" />
       <ref bean="webcertRestExceptionHandler" />
+      <ref bean="localDateTimeHandler"/>
     </jaxrs:providers>
     <jaxrs:extensionMappings>
       <entry key="json" value="application/json" />
