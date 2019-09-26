@@ -21,6 +21,7 @@ package se.inera.intyg.webcert.web.service.access;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import se.inera.intyg.common.db.support.DbModuleEntryPoint;
 import se.inera.intyg.common.doi.support.DoiModuleEntryPoint;
 import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
@@ -48,8 +49,8 @@ public class CertificateAccessServiceImpl implements CertificateAccessService {
 
     @Autowired
     public CertificateAccessServiceImpl(final WebCertUserService webCertUserService,
-        final PatientDetailsResolver patientDetailsResolver,
-        final UtkastService utkastService) {
+            final PatientDetailsResolver patientDetailsResolver,
+            final UtkastService utkastService) {
         this.webCertUserService = webCertUserService;
         this.patientDetailsResolver = patientDetailsResolver;
         this.utkastService = utkastService;
@@ -69,8 +70,7 @@ public class CertificateAccessServiceImpl implements CertificateAccessService {
     @Override
     public AccessResult allowToReplace(String certificateType, Vardenhet vardenhet, Personnummer personnummer) {
         return getAccessServiceEvaluation().given(getUser(), certificateType)
-            .feature(AuthoritiesConstants.FEATURE_MAKULERA_INTYG)
-            .privilege(AuthoritiesConstants.PRIVILEGE_MAKULERA_INTYG)
+            .privilege(AuthoritiesConstants.PRIVILEGE_ERSATTA_INTYG)
             .careUnit(vardenhet)
             .patient(personnummer)
             .excludeCertificateTypesForDeceased(DbModuleEntryPoint.MODULE_ID, DoiModuleEntryPoint.MODULE_ID)
@@ -161,7 +161,7 @@ public class CertificateAccessServiceImpl implements CertificateAccessService {
 
     @Override
     public AccessResult allowToAnswerComplementQuestion(String certificateType, Vardenhet careUnit, Personnummer patient,
-        boolean newCertificate) {
+            boolean newCertificate) {
         return getAccessServiceEvaluation().given(getUser(), certificateType)
             .feature(AuthoritiesConstants.FEATURE_HANTERA_FRAGOR)
             .privilege(AuthoritiesConstants.PRIVILEGE_BESVARA_KOMPLETTERINGSFRAGA)
