@@ -58,11 +58,25 @@ public interface UtkastService {
     Utkast getDraft(String intygId, String intygType, boolean createPdlLogEvent);
 
     /**
-     * Updates an Utkast with data from an existing signed certificate.
+     * Updates a draft (i.e Utkast) with data from an existing signed certificate.
      *
-     * @return {@link SaveDraftResponse}
+     * @param fromIntygId the identifier of the certificate we want to copy data from
+     * @param fromIntygType the type of the certificate we want to copy data from
+     * @param toUtkastId the identifier of the draft that we are copying data to
+     * @param toUtkastType the type of the draft that we are copying data to
+     * @return a response with the updated draft's status and version
      */
     SaveDraftResponse updateDraftFromCandidate(String fromIntygId, String fromIntygType, String toUtkastId, String toUtkastType);
+
+    /**
+     * Updates a draft (i.e Utkast) with data from an existing signed certificate.
+     *
+     * @param fromIntygId the identifier of the certificate we want to copy data from
+     * @param fromIntygType the type of the certificate we want to copy data from
+     * @param toUtkast the draft that we are copying data to
+     * @return a response with the updated draft's status and version
+     */
+    SaveDraftResponse updateDraftFromCandidate(String fromIntygId, String fromIntygType, Utkast toUtkast);
 
     Utkast setNotifiedOnDraft(String intygsId, long version, Boolean notified);
 

@@ -45,7 +45,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.model.UtkastStatus;
-import se.inera.intyg.common.support.model.common.internal.GrundData;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.model.common.internal.Patient;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
@@ -64,9 +63,9 @@ import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistry;
 import se.inera.intyg.webcert.web.integration.registry.dto.IntegreradEnhetEntry;
-import se.inera.intyg.webcert.web.service.access.CertificateAccessService;
-import se.inera.intyg.webcert.web.service.access.DraftAccessService;
-import se.inera.intyg.webcert.web.service.access.LockedDraftAccessService;
+import se.inera.intyg.webcert.web.service.access.CertificateAccessServiceHelper;
+import se.inera.intyg.webcert.web.service.access.DraftAccessServiceHelper;
+import se.inera.intyg.webcert.web.service.access.LockedDraftAccessServiceHelper;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.log.LogService;
 import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
@@ -88,7 +87,6 @@ import se.inera.intyg.webcert.web.service.utkast.dto.CreateUtkastFromTemplateRes
 import se.inera.intyg.webcert.web.service.utkast.dto.UtkastBuilderResponse;
 import se.inera.intyg.webcert.web.service.utkast.util.UtkastServiceHelper;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
-import se.inera.intyg.webcert.web.web.util.access.AccessResultExceptionHelper;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CopyUtkastServiceImplTest {
@@ -119,6 +117,10 @@ public class CopyUtkastServiceImplTest {
 
     private static final String MEDDELANDE_ID = "13";
     private static final String KOMMENTAR = "Kommentar";
+
+    private HoSPersonal hoSPerson;
+
+    private Patient patient;
 
     @Mock
     private UtkastServiceHelper utkastServiceHelper;
@@ -175,26 +177,20 @@ public class CopyUtkastServiceImplTest {
     private UtkastService utkastService;
 
     @Mock
-    private CertificateAccessService certificateAccessService;
-
-    @Mock
-    private LockedDraftAccessService lockedDraftAccessService;
-
-    @Mock
-    private DraftAccessService draftAccessService;
-
-    @Mock
-    private AccessResultExceptionHelper accessResultExceptionHelper;
-
-    @Mock
     private IntygModuleRegistry moduleRegistry;
+
+    @Mock
+    private CertificateAccessServiceHelper certificateAccessServiceHelper;
+
+    @Mock
+    private LockedDraftAccessServiceHelper lockedDraftAccessServiceHelper;
+
+    @Mock
+    private DraftAccessServiceHelper draftAccessServiceHelper;
 
     @InjectMocks
     private CopyUtkastService copyService = new CopyUtkastServiceImpl();
 
-    private HoSPersonal hoSPerson;
-
-    private Patient patient;
 
     @Before
     public void setup() {
@@ -261,7 +257,7 @@ public class CopyUtkastServiceImplTest {
         CreateRenewalCopyRequest renewalCopyRequest = buildRenewalRequest();
 
         try {
-            setupMockForAccessService();
+            setupMockForGettingUtlatande();
             CreateRenewalCopyResponse copyResp = copyService.createRenewalCopy(renewalCopyRequest);
             fail("An exception should have been thrown.");
         } catch (Exception e) {
@@ -284,7 +280,7 @@ public class CopyUtkastServiceImplTest {
         when(mockUtkastRepository.findByIntygsIdAndIntygsTyp(INTYG_ID, INTYG_TYPE)).thenReturn(createCopyUtkast());
 
         try {
-            setupMockForAccessService();
+            setupMockForGettingUtlatande();
             copyService.createRenewalCopy(buildRenewalRequest());
             fail("An exception should have been thrown.");
         } catch (Exception e) {
@@ -303,7 +299,7 @@ public class CopyUtkastServiceImplTest {
         when(mockUtkastRepository.findByIntygsIdAndIntygsTyp(INTYG_ID, INTYG_TYPE)).thenReturn(createCopyUtkast());
 
         try {
-            setupMockForAccessService();
+            setupMockForGettingUtlatande();
             copyService.createReplacementCopy(buildReplacementCopyRequest());
             fail("An exception should have been thrown.");
         } catch (Exception e) {
@@ -326,7 +322,7 @@ public class CopyUtkastServiceImplTest {
             eq(true), any(boolean.class))).thenReturn(resp);
 
         CreateReplacementCopyRequest copyReq = buildReplacementCopyRequest();
-        setupMockForAccessService();
+        setupMockForGettingUtlatande();
         CreateReplacementCopyResponse copyResp = copyService.createReplacementCopy(copyReq);
 
         assertNotNull(copyResp);
@@ -358,7 +354,7 @@ public class CopyUtkastServiceImplTest {
         when(certificateRelationService.getNewestRelationOfType(INTYG_ID, RelationKod.ERSATT, Arrays.asList(UtkastStatus.values())))
             .thenReturn(Optional.of(ersattRelation));
 
-        setupMockForAccessService();
+        setupMockForGettingUtlatande();
 
         CreateReplacementCopyRequest copyReq = buildReplacementCopyRequest();
 
@@ -393,7 +389,7 @@ public class CopyUtkastServiceImplTest {
             any(boolean.class), any(boolean.class))).thenReturn(resp);
 
         CreateCompletionCopyRequest copyReq = buildCompletionRequest();
-        setupMockForAccessService();
+        setupMockForGettingUtlatande();
         CreateCompletionCopyResponse copyResp = copyService.createCompletion(copyReq);
 
         assertNotNull(copyResp);
@@ -429,7 +425,7 @@ public class CopyUtkastServiceImplTest {
 
         CreateRenewalCopyRequest copyReq = buildRenewalRequest();
 
-        setupMockForAccessService();
+        setupMockForGettingUtlatande();
 
         CreateRenewalCopyResponse renewalResponse = copyService.createRenewalCopy(copyReq);
 
@@ -463,7 +459,7 @@ public class CopyUtkastServiceImplTest {
         CreateRenewalCopyRequest copyReq = buildRenewalRequest();
 
         try {
-            setupMockForAccessService();
+            setupMockForGettingUtlatande();
             copyService.createRenewalCopy(copyReq);
             fail("An exception should have been thrown.");
         } catch (Exception e) {
@@ -496,7 +492,7 @@ public class CopyUtkastServiceImplTest {
         CreateRenewalCopyRequest copyReq = buildRenewalRequest();
         copyReq.setDjupintegrerad(true);
 
-        setupMockForAccessService();
+        setupMockForGettingUtlatande();
         CreateRenewalCopyResponse renewalResponse = copyService.createRenewalCopy(copyReq);
 
         assertNotNull(renewalResponse);
@@ -536,7 +532,7 @@ public class CopyUtkastServiceImplTest {
 
         CreateRenewalCopyRequest renewRequest = buildRenewalRequest();
         renewRequest.setDjupintegrerad(true);
-        setupMockForAccessService();
+        setupMockForGettingUtlatande();
         CreateRenewalCopyResponse renewalCopyResponse = copyService.createRenewalCopy(renewRequest);
 
         assertNotNull(renewalCopyResponse);
@@ -582,7 +578,7 @@ public class CopyUtkastServiceImplTest {
         copyReq.setNyttPatientPersonnummer(PATIENT_NEW_SSN);
         copyReq.setDjupintegrerad(true);
 
-        setupMockForAccessService();
+        setupMockForGettingUtlatande();
         CreateRenewalCopyResponse renewalCopyResponse = copyService.createRenewalCopy(copyReq);
 
         assertNotNull(renewalCopyResponse);
@@ -662,7 +658,7 @@ public class CopyUtkastServiceImplTest {
         when(utkastService.getDraft(INTYG_ID, INTYG_TYPE)).thenReturn(utkast);
 
         CreateUtkastFromTemplateRequest copyReq = buildUtkastCopyRequest();
-        setupMockForAccessService();
+        setupMockForGettingUtlatande();
         CreateUtkastFromTemplateResponse utkastCopyResponse = copyService.createUtkastCopy(copyReq);
 
         assertNotNull(utkastCopyResponse);
@@ -688,7 +684,7 @@ public class CopyUtkastServiceImplTest {
         when(utkastService.getDraft(INTYG_ID, INTYG_TYPE)).thenReturn(utkast);
 
         CreateUtkastFromTemplateRequest copyReq = buildUtkastCopyRequest();
-        setupMockForAccessService();
+        setupMockForGettingUtlatande();
         copyService.createUtkastCopy(copyReq);
     }
 
@@ -702,7 +698,7 @@ public class CopyUtkastServiceImplTest {
         when(utkastService.getDraft(INTYG_ID, INTYG_TYPE)).thenReturn(utkast);
 
         CreateUtkastFromTemplateRequest copyReq = buildUtkastCopyRequest();
-        setupMockForAccessService();
+        setupMockForGettingUtlatande();
         copyService.createUtkastCopy(copyReq);
     }
 
@@ -720,7 +716,7 @@ public class CopyUtkastServiceImplTest {
             .thenReturn(Optional.of(webcertRelation));
 
         CreateUtkastFromTemplateRequest copyReq = buildUtkastCopyRequest();
-        setupMockForAccessService();
+        setupMockForGettingUtlatande();
         copyService.createUtkastCopy(copyReq);
     }
 
@@ -729,7 +725,7 @@ public class CopyUtkastServiceImplTest {
         when(intygService.isRevoked(anyString(), anyString(), anyBoolean())).thenReturn(true);
 
         CreateRenewalCopyRequest copyReq = buildRenewalRequest();
-        setupMockForAccessService();
+        setupMockForGettingUtlatande();
         copyService.createRenewalCopy(copyReq);
     }
 
@@ -738,7 +734,7 @@ public class CopyUtkastServiceImplTest {
         when(intygService.isRevoked(anyString(), anyString(), anyBoolean())).thenReturn(true);
 
         CreateCompletionCopyRequest completionRequest = buildCompletionRequest();
-        setupMockForAccessService();
+        setupMockForGettingUtlatande();
         copyService.createCompletion(completionRequest);
     }
 
@@ -747,7 +743,7 @@ public class CopyUtkastServiceImplTest {
         when(intygService.isRevoked(anyString(), anyString(), anyBoolean())).thenReturn(true);
 
         CreateRenewalCopyRequest renewalRequest = buildRenewalRequest();
-        setupMockForAccessService();
+        setupMockForGettingUtlatande();
         copyService.createRenewalCopy(renewalRequest);
     }
 
@@ -832,7 +828,7 @@ public class CopyUtkastServiceImplTest {
             .orElseThrow(() -> new IllegalArgumentException("Could not parse passed personnummer: " + personId));
     }
 
-    private void setupMockForAccessService() {
+    private void setupMockForGettingUtlatande() {
         final Utlatande utlatande = mock(Utlatande.class);
 
         try {
@@ -840,21 +836,5 @@ public class CopyUtkastServiceImplTest {
         } catch (Exception ex) {
             fail();
         }
-
-        final GrundData grundData = mock(GrundData.class);
-        doReturn(grundData).when(utlatande).getGrundData();
-
-        final HoSPersonal skapadAv = mock(HoSPersonal.class);
-        doReturn(skapadAv).when(grundData).getSkapadAv();
-
-        final se.inera.intyg.common.support.model.common.internal.Vardenhet vardenhet = mock(
-            se.inera.intyg.common.support.model.common.internal.Vardenhet.class);
-        doReturn(vardenhet).when(skapadAv).getVardenhet();
-
-        final Patient patient = mock(Patient.class);
-        doReturn(patient).when(grundData).getPatient();
-
-        final Personnummer personnummer = Personnummer.createPersonnummer("191212121212").get();
-        doReturn(personnummer).when(patient).getPersonId();
     }
 }

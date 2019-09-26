@@ -67,6 +67,7 @@ public class LockedDraftAccessServiceImpl implements LockedDraftAccessService {
         return getAccessServiceEvaluation().given(getUser(), certificateType)
             .feature(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
             .privilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG)
+            .privilege(AuthoritiesConstants.PRIVILEGE_KOPIERA_LAST_UTKAST)
             .careUnit(careUnit)
             .patient(patient)
             .checkPatientDeceased(false)

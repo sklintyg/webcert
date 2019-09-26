@@ -20,8 +20,6 @@
 package se.inera.intyg.webcert.web.service.utkast.util;
 
 import java.io.IOException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
@@ -40,8 +38,6 @@ import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
 @Component
 public final class UtkastServiceHelper {
 
-    private static final Logger LOG = LoggerFactory.getLogger(UtkastServiceHelper.class);
-
     @Autowired
     private IntygModuleRegistry moduleRegistry;
 
@@ -51,8 +47,6 @@ public final class UtkastServiceHelper {
     @Autowired
     UtkastRepository utkastRepository;
 
-    private UtkastServiceHelper() {
-    }
 
     public Utlatande getUtlatande(String intygId, String intygsTyp, boolean coherentJournaling, boolean pdlLoggning)
         throws ModuleException, ModuleNotFoundException {

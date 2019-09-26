@@ -21,13 +21,14 @@ package se.inera.intyg.webcert.web.web.controller.api.dto;
 public class CopyIntygResponse {
 
     private String intygsUtkastId;
-
     private String intygsTyp;
-
     private String intygTypeVersion;
 
-    public CopyIntygResponse(String intygsUtkastId, String intygsTyp, String intygTypeVersion) {
+    public CopyIntygResponse() {
         super();
+    }
+
+    public CopyIntygResponse(String intygsUtkastId, String intygsTyp, String intygTypeVersion) {
         this.intygsUtkastId = intygsUtkastId;
         this.intygsTyp = intygsTyp;
         this.intygTypeVersion = intygTypeVersion;
@@ -37,19 +38,24 @@ public class CopyIntygResponse {
         return intygsUtkastId;
     }
 
-    public void setIntygsUtkastId(String intygsUtkastId) {
-        this.intygsUtkastId = intygsUtkastId;
-    }
-
     public String getIntygsTyp() {
         return intygsTyp;
+    }
+
+    public String getIntygTypeVersion() {
+        return intygTypeVersion;
+    }
+
+    public void setIntygsUtkastId(String intygsUtkastId) {
+        this.intygsUtkastId = intygsUtkastId;
     }
 
     public void setIntygsTyp(String intygsTyp) {
         this.intygsTyp = intygsTyp;
     }
 
-    public String getIntygTypeVersion() {
-        return intygTypeVersion;
+    public void setIntygTypeVersion(String intygTypeVersion) {
+        this.intygTypeVersion = intygTypeVersion;
     }
+
 }

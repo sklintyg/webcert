@@ -94,6 +94,7 @@ public abstract class BaseRestIntegrationTest {
     protected static FakeCredentials LEONIE_KOEHL = new FakeCredentials.FakeCredentialsBuilder("TSTNMT2321000156-103F",
         "TSTNMT2321000156-1039").legitimeradeYrkesgrupper(LAKARE).build();
 
+
     /**
      * Has multiple vardenheter.
      */
@@ -202,9 +203,18 @@ public abstract class BaseRestIntegrationTest {
      */
     protected String createUtkast(String intygsTyp, String patientPersonNummer) {
         CreateUtkastRequest utkastRequest = createUtkastRequest(intygsTyp, patientPersonNummer);
+        return createUtkast(utkastRequest);
+    }
 
+    /**
+     * Helper method to create an utkast of a given type for a given patient.
+     * The request will be made with the current auth session.
+     *
+     * @return Id for the new utkast
+     */
+    protected String createUtkast(CreateUtkastRequest utkastRequest) {
         Response response = spec()
-            .pathParam("intygstyp", intygsTyp).contentType(ContentType.JSON).body(utkastRequest)
+            .pathParam("intygstyp", utkastRequest.getIntygType()).contentType(ContentType.JSON).body(utkastRequest)
             .expect().statusCode(200)
             .when().post("api/utkast/{intygstyp}")
             .then().body(matchesJsonSchemaInClasspath("jsonschema/webcert-generic-utkast-response-schema.json"))
@@ -214,7 +224,7 @@ public abstract class BaseRestIntegrationTest {
         JsonPath draft = new JsonPath(response.body().asString());
         JsonPath model = new JsonPath(draft.getString("model"));
 
-        assertEquals(formatPersonnummer(patientPersonNummer), model.getString("grundData.patient.personId"));
+        assertEquals(formatPersonnummer(utkastRequest.getPatientPersonnummer().getPersonnummer()), model.getString("grundData.patient.personId"));
 
         final String utkastId = model.getString("id");
         assertTrue(utkastId.length() > 0);

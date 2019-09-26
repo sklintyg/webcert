@@ -34,8 +34,6 @@ import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.Patient;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
-import se.inera.intyg.common.support.model.common.internal.Vardenhet;
-import se.inera.intyg.common.support.model.common.internal.Vardgivare;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
 import se.inera.intyg.infra.integration.pu.model.Person;
@@ -49,10 +47,9 @@ import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistry;
 import se.inera.intyg.webcert.web.integration.registry.dto.IntegreradEnhetEntry;
-import se.inera.intyg.webcert.web.service.access.AccessResult;
-import se.inera.intyg.webcert.web.service.access.CertificateAccessService;
-import se.inera.intyg.webcert.web.service.access.DraftAccessService;
-import se.inera.intyg.webcert.web.service.access.LockedDraftAccessService;
+import se.inera.intyg.webcert.web.service.access.CertificateAccessServiceHelper;
+import se.inera.intyg.webcert.web.service.access.DraftAccessServiceHelper;
+import se.inera.intyg.webcert.web.service.access.LockedDraftAccessServiceHelper;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.log.LogService;
 import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
@@ -74,7 +71,6 @@ import se.inera.intyg.webcert.web.service.utkast.dto.CreateUtkastFromTemplateReq
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateUtkastFromTemplateResponse;
 import se.inera.intyg.webcert.web.service.utkast.dto.UtkastBuilderResponse;
 import se.inera.intyg.webcert.web.service.utkast.util.UtkastServiceHelper;
-import se.inera.intyg.webcert.web.web.util.access.AccessResultExceptionHelper;
 
 @Service
 public class CopyUtkastServiceImpl implements CopyUtkastService {
@@ -138,19 +134,17 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
     private ReferensService referensService;
 
     @Autowired
-    private CertificateAccessService certificateAccessService;
-
-    @Autowired
-    private LockedDraftAccessService lockedDraftAccessService;
-
-    @Autowired
-    private DraftAccessService draftAccessService;
-
-    @Autowired
-    private AccessResultExceptionHelper accessResultExceptionHelper;
-
-    @Autowired
     private UtkastServiceHelper utkastServiceHelper;
+
+    @Autowired
+    private CertificateAccessServiceHelper certificateAccessServiceHelper;
+
+    @Autowired
+    private DraftAccessServiceHelper draftAccessServiceHelper;
+
+    @Autowired
+    private LockedDraftAccessServiceHelper lockedDraftAccessServiceHelper;
+
 
     /*
      * (non-Javadoc)
@@ -175,7 +169,7 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
                 coherentJournaling,
                 false);
 
-            validateAccessToComplementIntyg(utlatande);
+            certificateAccessServiceHelper.validateAccessToComplementIntyg(utlatande);
 
             if (intygService.isRevoked(copyRequest.getOriginalIntygId(), copyRequest.getTyp(), false)) {
                 LOG.debug("Cannot create completion copy of certificate with id '{}', the certificate is revoked", originalIntygId);
@@ -223,12 +217,13 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
                 coherentJournaling,
                 false);
 
-            validateAccessToRenewIntyg(utlatande);
+            certificateAccessServiceHelper.validateAccessToRenewIntyg(utlatande);
 
             if (intygService.isRevoked(copyRequest.getOriginalIntygId(), copyRequest.getOriginalIntygTyp(), coherentJournaling)) {
                 LOG.debug("Cannot renew certificate with id '{}', the certificate is revoked", originalIntygId);
                 throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, "Original certificate is revoked");
             }
+
             verifyNotReplacedWithSigned(copyRequest.getOriginalIntygId(), "create renewal");
             verifyNotComplementedWithSigned(copyRequest.getOriginalIntygId(), "create renewal");
             verifySigned(originalIntygId, copyRequest.getOriginalIntygTyp(), "create renewal");
@@ -267,7 +262,7 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
                 replacementRequest.isCoherentJournaling(),
                 false);
 
-            validateAccessToReplaceIntyg(utlatande);
+            certificateAccessServiceHelper.validateAccessToReplaceIntyg(utlatande);
 
             if (intygService.isRevoked(replacementRequest.getOriginalIntygId(), replacementRequest.getTyp(),
                 replacementRequest.isCoherentJournaling())) {
@@ -317,7 +312,7 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
             // We need to validate access logic early and then depend on patient information available.
             Person patientDetails = updatePatientDetails(templateRequest, false);
 
-            validateAccessToCreateUtkast(templateRequest.getTyp(), patientDetails.getPersonnummer());
+            draftAccessServiceHelper.validateAccessToCreateUtkast(templateRequest.getTyp(), patientDetails.getPersonnummer());
 
             verifyNotReplacedWithSigned(templateRequest.getOriginalIntygId(), "create utkast from template");
 
@@ -356,17 +351,17 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
 
             Utkast utkast = utkastService.getDraft(copyRequest.getOriginalIntygId(), copyRequest.getOriginalIntygTyp());
 
-            validateAccessToCopyLockedUtkast(utkast);
+            lockedDraftAccessServiceHelper.validateAccessToCopyLockedUtkast(utkast);
 
             // Validate draft locked
             if (!UtkastStatus.DRAFT_LOCKED.equals(utkast.getStatus())) {
-                LOG.info("User is not allowed to copy intyg with status: {}", utkast.getStatus());
-                final String message = "Copy failed due to wrong utkast status";
-                throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, message);
+                final String message = "Copy failed due to wrong utkast status. Expected '%s' but was '%s'";
+                throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE,
+                    String.format(message, UtkastStatus.DRAFT_LOCKED.name(), utkast.getStatus().name()));
             }
 
             if (utkast.getAterkalladDatum() != null) {
-                LOG.debug("Cannot create utkast from utkast certificate with id '{}', the certificate is revoked", originalIntygId);
+                LOG.debug("Cannot create utkast from utkast certificate with id '{}', the utkast is revoked", originalIntygId);
                 throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, "Original certificate is revoked");
             }
 
@@ -627,7 +622,6 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
     }
 
     private void checkIntegreradEnhet(UtkastBuilderResponse builderResponse) {
-
         String orginalEnhetsId = builderResponse.getOrginalEnhetsId();
         Utkast utkastCopy = builderResponse.getUtkast();
 
@@ -638,71 +632,8 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
         integreradeEnheterRegistry.addIfSameVardgivareButDifferentUnits(orginalEnhetsId, newEntry, utkastCopy.getIntygsTyp());
     }
 
-    private void validateAccessToRenewIntyg(Utlatande utlatande) {
-        final AccessResult accessResult = certificateAccessService.allowToRenew(
-            utlatande.getTyp(),
-            getVardenhet(utlatande),
-            getPersonnummer(utlatande));
-
-        accessResultExceptionHelper.throwExceptionIfDenied(accessResult);
-    }
-
-    private void validateAccessToComplementIntyg(Utlatande utlatande) {
-        final AccessResult accessResult = certificateAccessService.allowToAnswerComplementQuestion(
-            utlatande.getTyp(),
-            getVardenhet(utlatande),
-            getPersonnummer(utlatande),
-            true);
-
-        accessResultExceptionHelper.throwExceptionIfDenied(accessResult);
-    }
-
-    private void validateAccessToReplaceIntyg(Utlatande utlatande) {
-        final AccessResult accessResult = certificateAccessService.allowToReplace(
-            utlatande.getTyp(),
-            getVardenhet(utlatande),
-            getPersonnummer(utlatande));
-
-        accessResultExceptionHelper.throwExceptionIfDenied(accessResult);
-    }
-
-    private void validateAccessToCopyLockedUtkast(Utkast utkast) {
-        final AccessResult accessResult = lockedDraftAccessService.allowedToCopyLockedUtkast(
-            utkast.getIntygsTyp(),
-            getVardenhet(utkast),
-            utkast.getPatientPersonnummer());
-
-        accessResultExceptionHelper.throwExceptionIfDenied(accessResult);
-    }
-
-    private void validateAccessToCreateUtkast(String intygsTyp, Personnummer personnummer) {
-        final AccessResult accessResult = draftAccessService.allowToCreateDraft(
-            intygsTyp,
-            personnummer);
-
-        accessResultExceptionHelper.throwExceptionIfDenied(accessResult);
-    }
-
-    private Vardenhet getVardenhet(Utlatande utlatande) {
-        return utlatande.getGrundData().getSkapadAv().getVardenhet();
-    }
-
-    private Personnummer getPersonnummer(Utlatande utlatande) {
-        return utlatande.getGrundData().getPatient().getPersonId();
-    }
-
     private boolean isCoherentJournaling(WebCertUser user) {
         return user != null && user.getParameters() != null && user.getParameters().isSjf();
     }
 
-    private Vardenhet getVardenhet(Utkast utkast) {
-        final Vardgivare vardgivare = new Vardgivare();
-        vardgivare.setVardgivarid(utkast.getVardgivarId());
-
-        final Vardenhet vardenhet = new Vardenhet();
-        vardenhet.setEnhetsid(utkast.getEnhetsId());
-        vardenhet.setVardgivare(vardgivare);
-
-        return vardenhet;
-    }
 }
