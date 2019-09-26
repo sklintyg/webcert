@@ -57,6 +57,7 @@ import se.inera.intyg.webcert.persistence.arende.model.Arende;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.persistence.fragasvar.model.Amne;
 import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
+import se.inera.intyg.webcert.persistence.fragasvar.model.IntygsReferens;
 import se.inera.intyg.webcert.persistence.fragasvar.repository.FragaSvarRepository;
 import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
 import se.inera.intyg.webcert.persistence.handelse.repository.HandelseRepository;
@@ -150,7 +151,7 @@ public class IntygInfoServiceTest {
 
         WcIntygInfo intygInfo = optIntygInfo.get();
 
-        assertEquals(1, intygInfo.getEvents().size());
+        assertEquals(2, intygInfo.getEvents().size());
         assertEquals(1, intygInfo.getKompletteringar());
         assertEquals(1, intygInfo.getKompletteringarAnswered());
         verifyZeroInteractions(moduleRegistry);
@@ -158,7 +159,7 @@ public class IntygInfoServiceTest {
     }
 
     @Test
-    public void onlyFragaSvar() {
+    public void onlyFragaSvar() throws ModuleNotFoundException {
         String intygId = "onlyFragasvar";
         when(utkastRepository.findOne(anyString())).thenReturn(null);
         when(handelseRepository.findByIntygsId(anyString())).thenReturn(new ArrayList<>());
@@ -277,7 +278,7 @@ public class IntygInfoServiceTest {
         assertEquals(utkast.getSkapad(), intygInfo.getDraftCreated());
         assertEquals(utkast.getSkickadTillMottagareDatum(), intygInfo.getSentToRecipient());
 
-        assertEquals(14, intygInfo.getEvents().size());
+        assertEquals(15, intygInfo.getEvents().size());
         assertEquals(1, intygInfo.getKompletteringar());
         assertEquals(1, intygInfo.getKompletteringarAnswered());
         assertEquals(1, intygInfo.getAdministrativaFragorReceived());
@@ -347,6 +348,9 @@ public class IntygInfoServiceTest {
         fragaSvar.setFrageSkickadDatum(LocalDateTime.now());
         fragaSvar.setFrageStallare(skickatAv);
         fragaSvar.setStatus(status);
+        IntygsReferens intygsReferens = new IntygsReferens();
+        intygsReferens.setIntygsTyp("lisjp");
+        fragaSvar.setIntygsReferens(intygsReferens);
 
         return fragaSvar;
     }
@@ -358,6 +362,7 @@ public class IntygInfoServiceTest {
         arende.setIntygsId(intygId);
         arende.setSkickatAv(skickatAv);
         arende.setStatus(status);
+        arende.setIntygTyp("lisjp");
 
         return arende;
     }

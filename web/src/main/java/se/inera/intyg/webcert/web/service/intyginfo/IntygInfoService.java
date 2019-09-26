@@ -211,6 +211,7 @@ public class IntygInfoService {
                     type = IntygInfoEventType.IS014;
                     break;
                 case KOPIA:
+                    type = IntygInfoEventType.IS026;
                     break;
             }
 
@@ -321,6 +322,10 @@ public class IntygInfoService {
             arende.setSkickatAv(fragaSvar.getFrageStallare());
             arende.setSkickatTidpunkt(fragaSvar.getFrageSkickadDatum());
 
+            if (fragaSvar.getInternReferens() != null) {
+                arende.setIntygTyp(fragaSvar.getIntygsReferens().getIntygsTyp());
+            }
+
             return arende;
         }).collect(Collectors.toList());
 
@@ -367,6 +372,13 @@ public class IntygInfoService {
             IntygInfoEvent event = new IntygInfoEvent(Source.WEBCERT, arende.getSkickatTidpunkt(), IntygInfoEventType.IS011);
             event.addData("intygsmottagare", arende.getSkickatAv());
             response.getEvents().add(event);
+
+            // Hanterad
+            if (Status.CLOSED.equals(arende.getStatus())) {
+                IntygInfoEvent event2 = new IntygInfoEvent(Source.WEBCERT, arende.getSenasteHandelse(), IntygInfoEventType.IS016);
+                event.addData("intygsmottagare", arende.getSkickatAv());
+                response.getEvents().add(event2);
+            }
         });
         // kompletterings begäran svar
         arendeList.stream()
@@ -403,6 +415,13 @@ public class IntygInfoService {
         // Skickade från vården
         adminQuestionsSent.forEach(arende -> {
             IntygInfoEvent event = new IntygInfoEvent(Source.WEBCERT, arende.getSkickatTidpunkt(), IntygInfoEventType.IS013);
+
+            try {
+                event.addData("intygsmottagare", moduleRegistry.getModuleEntryPoint(arende.getIntygTyp()).getDefaultRecipient());
+            } catch (ModuleNotFoundException e) {
+                LOG.info("Couldn't find moduleEntryPoint", e);
+            }
+
             response.getEvents().add(event);
 
             // Hanterad
