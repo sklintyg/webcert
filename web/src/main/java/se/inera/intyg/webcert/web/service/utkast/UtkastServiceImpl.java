@@ -227,7 +227,7 @@ public class UtkastServiceImpl implements UtkastService {
         String toIntygsType = to.getIntygsTyp();
 
         // Draft must be incomplete and only just created (no saving or updates).
-        if (to.getStatus() != UtkastStatus.DRAFT_INCOMPLETE && to.getVersion() != 0) {
+        if (!UtkastStatus.DRAFT_INCOMPLETE.equals(to.getStatus()) && to.getVersion() != 0) {
             throw new WebCertServiceException(
                 WebCertServiceErrorCodeEnum.INVALID_STATE,
                 "The draft (utkast) you are trying to copy data to must have status DRAFT_INCOMPLETE and version 0");
