@@ -30,7 +30,7 @@ var testdataHelper = wcTestTools.helpers.restTestdata;
 var intygGenerator = wcTestTools.intygGenerator;
 var restTestdataHelper = wcTestTools.helpers.restTestdata;
 
-fdescribe('Luse locked utkast kopiera tests', function() {
+describe('Luse locked utkast kopiera tests', function() {
   var intygId = 'luse-locked-utkast-1';
 
   beforeAll(function() {
