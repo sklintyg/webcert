@@ -48,27 +48,46 @@ describe('Luse locked utkast kopiera tests', function() {
     testdataHelper.deleteUtkast(intygId);
   });
 
-  it('should load utkast and possible to copy', function() {
-    LuseUtkastPage.get(intygId);
-    expect(LuseUtkastPage.kopiera.btn.isPresent()).toBeTruthy();
-  });
+  describe('allow access to copy', function() {
+    it('should load utkast and possible to copy', function() {
+      LuseUtkastPage.get(intygId);
+      expect(LuseUtkastPage.kopiera.btn.isPresent()).toBeTruthy();
+    });
 
-  it('copy draft', function() {
-    LuseUtkastPage.kopiera.btn.sendKeys(protractor.Key.SPACE);
+    it('copy draft', function() {
+      LuseUtkastPage.kopiera.btn.sendKeys(protractor.Key.SPACE);
+      LuseUtkastPage.kopiera.confirm.sendKeys(protractor.Key.SPACE);
+    });
 
-    LuseUtkastPage.kopiera.confirm.sendKeys(protractor.Key.SPACE);
-  });
+    it('validate', function() {
+      expect(LuseUtkastPage.skrivUtBtn.isPresent()).toBeTruthy();
+      expect(LuseUtkastPage.radera.knapp.isPresent()).toBeTruthy();
+      expect(LuseUtkastPage.signeraButton.isPresent()).toBeTruthy();
 
-  it('Validate', function() {
-    expect(LuseUtkastPage.skrivUtBtn.isPresent()).toBeTruthy();
-    expect(LuseUtkastPage.radera.knapp.isPresent()).toBeTruthy();
-    expect(LuseUtkastPage.signeraButton.isPresent()).toBeTruthy();
+      expect(LuseUtkastPage.makulera.btn.isPresent()).toBeFalsy();
+      expect(LuseUtkastPage.kopiera.btn.isPresent()).toBeFalsy();
 
-    expect(LuseUtkastPage.makulera.btn.isPresent()).toBeFalsy();
-    expect(LuseUtkastPage.kopiera.btn.isPresent()).toBeFalsy();
-
-    specHelper.getUtkastIdFromUrl().then(function(id) {
-      expect(intygId).not.toEqual(id);
+      specHelper.getUtkastIdFromUrl().then(function(id) {
+        expect(intygId).not.toEqual(id);
+      });
     });
   });
+
+  describe('not allowed access to copy when origin is UTHOPP', function() {
+    beforeAll(function() {
+      // Must ignore sync while setting user.
+      // Protractor complains that it cannot sync with angular on the
+      // testability page loaded during setUserOrigin
+      browser.ignoreSynchronization = true;
+      specHelper.setUserOrigin('UTHOPP').then(function() {
+        browser.ignoreSynchronization = false;
+      });
+    });
+
+    it('should load utkast but no copy button should be present', function() {
+      LuseUtkastPage.get(intygId);
+      expect(LuseUtkastPage.kopiera.btn.isPresent()).toBeFalsy();
+    });
+  });
+
 });

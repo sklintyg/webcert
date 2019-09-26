@@ -242,6 +242,7 @@ public class IntygModuleApiController extends AbstractApiController {
             LOG.error("Request to create renewal of '{}' is not valid", orgIntygsId);
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, "Missing vital arguments in payload");
         }
+
         CreateRenewalCopyRequest serviceRequest = copyUtkastServiceHelper.createRenewalCopyRequest(orgIntygsId, intygsTyp, request);
         CreateRenewalCopyResponse serviceResponse = copyUtkastService.createRenewalCopy(serviceRequest);
 

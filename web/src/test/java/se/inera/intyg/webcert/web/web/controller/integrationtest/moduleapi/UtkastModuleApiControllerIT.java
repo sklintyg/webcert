@@ -20,6 +20,7 @@ package se.inera.intyg.webcert.web.web.controller.integrationtest.moduleapi;
 
 import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.isEmptyString;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.hamcrest.core.IsNot.not;
@@ -32,13 +33,18 @@ import com.jayway.restassured.path.json.JsonPath;
 import com.jayway.restassured.response.Response;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.Map;
+import java.util.stream.Collectors;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.util.StringUtils;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.web.web.controller.api.dto.CopyFromCandidateRequest;
+import se.inera.intyg.webcert.web.web.controller.api.dto.CopyIntygResponse;
+import se.inera.intyg.webcert.web.web.controller.api.dto.CreateUtkastRequest;
 import se.inera.intyg.webcert.web.web.controller.integrationtest.BaseRestIntegrationTest;
 import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.RevokeSignedIntygParameter;
 
@@ -229,6 +235,91 @@ public class UtkastModuleApiControllerIT extends BaseRestIntegrationTest {
     }
 
     @Test
+    public void testCopyUtkastFromAnotherUtkastWithStatusLocked() {
+        // Set up auth precondition
+        RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
+
+        String intygsTyp = "luse";
+        CreateUtkastRequest request = createUtkastRequest(intygsTyp, DEFAULT_PATIENT_PERSONNUMMER);
+        String intygsId = createUtkast(request);
+
+        // Update draft via testability-api
+        spec()
+            .body(UtkastStatus.DRAFT_LOCKED.name()).pathParams("intygsId", intygsId)
+            .expect().statusCode(HTTP_OK)
+            .when().put(TESTABILITY_BASE + "/{intygsId}/status");
+
+        // Check that draft is locked
+        spec()
+            .expect().statusCode(HTTP_OK)
+            .when().get(MODULEAPI_UTKAST_BASE + "/" + intygsTyp + "/" + intygsId)
+            .then()
+            .body(matchesJsonSchemaInClasspath("jsonschema/webcert-get-utkast-response-schema.json"))
+            .body("status", equalTo(UtkastStatus.DRAFT_LOCKED.name()));
+
+        CopyIntygResponse copyIntygResponse = spec()
+            .pathParams("intygsTyp", intygsTyp, "intygsId", intygsId)
+            .expect().statusCode(HTTP_OK)
+            .when().post(MODULEAPI_UTKAST_BASE + "/{intygsTyp}/{intygsId}/copy")
+            .then().extract().response().as(CopyIntygResponse.class);
+
+        assertEquals(intygsTyp, copyIntygResponse.getIntygsTyp());
+        assertEquals(LUSE_BASE_INTYG_TYPE_VERSION, copyIntygResponse.getIntygTypeVersion());
+
+        // Check draft that was created during the copy
+        Response createdDraft = spec()
+            .expect().statusCode(HTTP_OK)
+            .when().get(MODULEAPI_UTKAST_BASE + "/" + intygsTyp + "/" + copyIntygResponse.getIntygsUtkastId())
+            .then()
+            .body(matchesJsonSchemaInClasspath("jsonschema/webcert-get-utkast-response-schema.json"))
+            .extract().response();
+
+        // Assert content in created draft
+        JsonPath model = new JsonPath(createdDraft.body().asString());
+
+        assertEquals(UtkastStatus.DRAFT_INCOMPLETE.name(), model.getString("status"));
+        assertEquals(DEFAULT_LAKARE.getHsaId(), model.getString("content.grundData.skapadAv.personId"));
+        assertEquals("Jan Nilsson", model.getString("content.grundData.skapadAv.fullstandigtNamn"));
+        assertEquals(request.getPatientPersonnummer().getPersonnummer(), model.getString("content.grundData.patient.personId"));
+        assertEquals(getFullName(request), model.getString("content.grundData.patient.fullstandigtNamn"));
+    }
+
+    @Test
+    public void testCopyUtkastFromAnotherUtkastWithStatusLockedAndInvalidOrigin() {
+        // Set up auth precondition
+        // Set up auth precondition
+        RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
+
+        String intygsTyp = "luse";
+        CreateUtkastRequest request = createUtkastRequest(intygsTyp, DEFAULT_PATIENT_PERSONNUMMER);
+        String intygsId = createUtkast(request);
+
+        // Update draft via testability-api
+        spec()
+            .body(UtkastStatus.DRAFT_LOCKED.name()).pathParams("intygsId", intygsId)
+            .expect().statusCode(HTTP_OK)
+            .when().put(TESTABILITY_BASE + "/{intygsId}/status");
+
+        // Check that draft is locked
+        spec()
+            .expect().statusCode(HTTP_OK)
+            .when().get(MODULEAPI_UTKAST_BASE + "/" + intygsTyp + "/" + intygsId)
+            .then()
+            .body(matchesJsonSchemaInClasspath("jsonschema/webcert-get-utkast-response-schema.json"))
+            .body("status", equalTo(UtkastStatus.DRAFT_LOCKED.name()));
+
+        changeOriginTo("UTHOPP");
+
+        spec()
+            .pathParams("intygsTyp", intygsTyp, "intygsId", intygsId)
+            .expect().statusCode(HTTP_ISE)
+            .when().post(MODULEAPI_UTKAST_BASE + "/{intygsTyp}/{intygsId}/copy")
+            .then()
+            .body("errorCode", equalTo(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM.name()))
+            .body("message", containsString("KOPIERA_LAST_UTKAST"));
+    }
+
+    @Test
     public void testCopyFromCandidateWhenUserIsLakare() {
         String intygType = "lisjp";
         String utkastType = "ag7804";
@@ -354,6 +445,19 @@ public class UtkastModuleApiControllerIT extends BaseRestIntegrationTest {
             .then()
             .body("errorCode", equalTo(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM_SEKRETESSMARKERING.name()))
             .body("message", not(isEmptyString()));
+    }
+
+    private String getFullName(CreateUtkastRequest request) {
+        return getFullName(
+            request.getPatientFornamn(),
+            request.getPatientMellannamn(),
+            request.getPatientEfternamn());
+    }
+
+    private String getFullName(String... strings) {
+        return Arrays.stream(strings)
+            .filter(StringUtils::hasText)
+            .collect(Collectors.joining(" "));
     }
 
 }

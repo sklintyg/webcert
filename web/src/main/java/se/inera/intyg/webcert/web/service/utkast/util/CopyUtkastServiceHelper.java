@@ -161,7 +161,7 @@ public class CopyUtkastServiceHelper {
     private void addPersonnummerToRequest(AbstractCreateCopyRequest req, IntegrationParameters parameters) {
         if (parameters != null) {
             Optional<Personnummer> optionalPnr = createOptPnr(parameters.getAlternateSsn());
-            if (isNewValidPatientPersonId(optionalPnr)) {
+            if (optionalPnr.isPresent() || SamordningsnummerValidator.isSamordningsNummer(optionalPnr)) {
                 LOG.debug("Adding new personnummer to request");
                 req.setNyttPatientPersonnummer(optionalPnr.get());
             }
@@ -171,11 +171,6 @@ public class CopyUtkastServiceHelper {
     private HoSPersonal createHoSPersonFromUser() {
         WebCertUser user = webCertUserService.getUser();
         return IntygConverterUtil.buildHosPersonalFromWebCertUser(user, null);
-    }
-
-    private boolean isNewValidPatientPersonId(Optional<Personnummer> newPersonnummer) {
-        return (newPersonnummer != null
-            && (newPersonnummer.isPresent() || SamordningsnummerValidator.isSamordningsNummer(newPersonnummer)));
     }
 
     private Optional<Personnummer> createOptPnr(String personId) {

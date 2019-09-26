@@ -70,8 +70,7 @@ import se.inera.intyg.webcert.persistence.utkast.repository.UtkastFilter;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.converter.ArendeConverter;
 import se.inera.intyg.webcert.web.converter.util.IntygConverterUtil;
-import se.inera.intyg.webcert.web.service.access.AccessResult;
-import se.inera.intyg.webcert.web.service.access.DraftAccessService;
+import se.inera.intyg.webcert.web.service.access.DraftAccessServiceHelper;
 import se.inera.intyg.webcert.web.service.dto.Lakare;
 import se.inera.intyg.webcert.web.service.log.LogService;
 import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
@@ -92,7 +91,6 @@ import se.inera.intyg.webcert.web.service.utkast.dto.SaveDraftResponse;
 import se.inera.intyg.webcert.web.service.utkast.dto.UpdatePatientOnDraftRequest;
 import se.inera.intyg.webcert.web.service.utkast.util.CreateIntygsIdStrategy;
 import se.inera.intyg.webcert.web.service.utkast.util.UtkastServiceHelper;
-import se.inera.intyg.webcert.web.web.util.access.AccessResultExceptionHelper;
 
 @Service
 public class UtkastServiceImpl implements UtkastService {
@@ -148,10 +146,7 @@ public class UtkastServiceImpl implements UtkastService {
     private ReferensService referensService;
 
     @Autowired
-    private DraftAccessService draftAccessService;
-
-    @Autowired
-    private AccessResultExceptionHelper accessResultExceptionHelper;
+    private DraftAccessServiceHelper draftAccessServiceHelper;
 
     @Autowired
     private HsaEmployeeService hsaEmployeeService;
@@ -209,18 +204,34 @@ public class UtkastServiceImpl implements UtkastService {
     }
 
     /**
-     * Update a utkast with data from an existing certificate.
-     *
+     * @see UtkastService#updateDraftFromCandidate(String, String, String, String)
      * @return {@link SaveDraftResponse}
      */
     @Override
     public SaveDraftResponse updateDraftFromCandidate(String fromIntygId, String fromIntygType, String toUtkastId, String toUtkastType) {
+        Utkast toUtkast = getIntygAsDraft(toUtkastId, toUtkastType);
+        verifyUtkastExists(toUtkast, toUtkastId, toUtkastType,
+            "The draft with id '" + toUtkastId + "' cannot be updated since it could not be found");
 
-        // Get the draft (copy to)
-        Utkast to = getIntygAsDraft(toUtkastId, toUtkastType);
+        return updateDraftFromCandidate(fromIntygId, fromIntygType, toUtkast);
+    }
 
-        verifyUtkastExists(to, toUtkastId, toUtkastType, "The draft to copy candidate information to doesn't exist");
-        verifyAccessToCopyFromCandidate(to);
+    /**
+     * @see UtkastService#updateDraftFromCandidate(String, String, Utkast)
+     * @return {@link SaveDraftResponse}
+     */
+    @Override
+    public SaveDraftResponse updateDraftFromCandidate(String fromIntygId, String fromIntygType, Utkast toUtkast) {
+        Utkast to = toUtkast;
+        String toIntygsId = to.getIntygsId();
+        String toIntygsType = to.getIntygsTyp();
+
+        // Draft must be incomplete and only just created (no saving or updates).
+        if (!UtkastStatus.DRAFT_INCOMPLETE.equals(to.getStatus()) && to.getVersion() != 0) {
+            throw new WebCertServiceException(
+                WebCertServiceErrorCodeEnum.INVALID_STATE,
+                "The draft (utkast) you are trying to copy data to must have status DRAFT_INCOMPLETE and version 0");
+        }
 
         try {
             Utlatande fromUtlatande = utkastServiceHelper.getUtlatande(fromIntygId, fromIntygType, false, true);
@@ -235,14 +246,14 @@ public class UtkastServiceImpl implements UtkastService {
             }
 
             // Get mapper and copy data to draft
-            CreateDraftCopyHolder draftCopyHolder = new CreateDraftCopyHolder(toUtkastId, getHosPersonal(to));
+            CreateDraftCopyHolder draftCopyHolder = new CreateDraftCopyHolder(toIntygsId, getHosPersonal(to));
             draftCopyHolder.setPatient(getPatientFromDraft(to));
             draftCopyHolder.setIntygTypeVersion(draftVersion);
 
-            ModuleApi toModuleApi = getModuleApi(toUtkastType, draftVersion);
+            ModuleApi toModuleApi = getModuleApi(toIntygsType, draftVersion);
             Mapper moduleMapper = toModuleApi.getMapper().orElseThrow(() ->
                 new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM,
-                    String.format("Error copying data from intyg '%s' to utkast '%s'", fromIntygId, toUtkastId)));
+                    String.format("Error copying data from intyg '%s' to utkast '%s'", fromIntygId, toIntygsId)));
             String draftAsJson = moduleMapper.map(fromUtlatande, draftCopyHolder).json();
 
             // Keep persisted json for comparsion
@@ -253,7 +264,7 @@ public class UtkastServiceImpl implements UtkastService {
 
             // Save the updated draft
             to = saveDraft(to);
-            LOG.debug("Utkast '{}' updated", to.getIntygsId());
+            LOG.debug("Utkast '{}' updated", toIntygsId);
 
             // Notify stakeholders when a draft has been changed/updated
             sendNotificationWhenDraftChanged(to, persistedJson);
@@ -268,8 +279,9 @@ public class UtkastServiceImpl implements UtkastService {
 
         } catch (ModuleException | ModuleNotFoundException | IOException e) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM,
-                String.format("Error copying data from intyg '%s' to utkast '%s'", fromIntygId, toUtkastId), e);
+                String.format("Error copying data from intyg '%s' to utkast '%s'", fromIntygId, toIntygsId), e);
         }
+
     }
 
     @Override
@@ -611,7 +623,7 @@ public class UtkastServiceImpl implements UtkastService {
         Utkast utkast = utkastRepository.findOne(intygsId);
 
         verifyUtkastExists(utkast, intygsId, null, "The draft could not be set to notified since it could not be found");
-        verifyAccessToForwardDraft(utkast);
+        draftAccessServiceHelper.verifyAccessToForwardDraft(utkast);
 
         // check that the draft is still unsigned
         if (!isTheDraftStillADraft(utkast.getStatus())) {
@@ -886,7 +898,6 @@ public class UtkastServiceImpl implements UtkastService {
         }
     }
 
-
     private Utkast persistNewDraft(CreateNewDraftRequest request, String draftAsJson) {
         Utkast utkast = new Utkast();
 
@@ -1030,32 +1041,6 @@ public class UtkastServiceImpl implements UtkastService {
         if (utkast.getPatientEfternamn() != null && !utkast.getPatientEfternamn().equals(patient.getEfternamn())) {
             utkast.setPatientEfternamn(patient.getEfternamn());
         }
-    }
-
-    private void verifyAccessToForwardDraft(Utkast utkast) {
-        final AccessResult accessResult = draftAccessService.allowToForwardDraft(
-            utkast.getIntygsTyp(),
-            getVardenhet(utkast),
-            utkast.getPatientPersonnummer());
-
-        accessResultExceptionHelper.throwExceptionIfDenied(accessResult);
-    }
-
-    private void verifyAccessToCopyFromCandidate(Utkast utkast) {
-        // Verify access
-        final AccessResult accessResult = draftAccessService.allowToCopyFromCandidate(
-            utkast.getIntygsTyp(),
-            utkast.getPatientPersonnummer());
-
-        accessResultExceptionHelper.throwExceptionIfDenied(accessResult);
-
-        // Draft must be incomplete and only just created (no saving).
-        if (utkast.getStatus() != UtkastStatus.DRAFT_INCOMPLETE && utkast.getVersion() != 0) {
-            throw new WebCertServiceException(
-                WebCertServiceErrorCodeEnum.INVALID_STATE,
-                "The draft (utkast) you are trying to copy data to must have status DRAFT_INCOMPLETE and version 0");
-        }
-
     }
 
 }

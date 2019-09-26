@@ -824,6 +824,43 @@
             }
           },
           "type": "object"
+        },
+        "KOPIERA_LAST_UTKAST": {
+          "additionalProperties": false,
+          "properties": {
+            "desc": {
+              "type": "string"
+            },
+            "intygstyper": {
+              "additionalItems": false,
+              "items": {},
+              "minItems": 0,
+              "type": "array"
+            },
+            "name": {
+              "type": "string"
+            },
+            "requestOrigins": {
+              "additionalItems": false,
+              "items": {
+                "additionalProperties": false,
+                "properties": {
+                  "intygstyper": {
+                    "additionalItems": false,
+                    "items": {},
+                    "minItems": 0,
+                    "type": "array"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                }
+              },
+              "minItems": 0,
+              "type": "array"
+            }
+          },
+          "type": "object"
         }
       },
       "type": "object"

@@ -29,6 +29,7 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -74,10 +75,11 @@ import se.inera.intyg.infra.security.common.model.Privilege;
 import se.inera.intyg.infra.security.common.model.RequestOrigin;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
-import se.inera.intyg.webcert.web.service.access.DraftAccessService;
-import se.inera.intyg.webcert.web.service.access.LockedDraftAccessService;
+import se.inera.intyg.webcert.web.service.access.DraftAccessServiceHelper;
+import se.inera.intyg.webcert.web.service.access.LockedDraftAccessServiceHelper;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 import se.inera.intyg.webcert.web.service.relation.CertificateRelationService;
@@ -99,7 +101,6 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
 import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.DraftHolder;
 import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.RevokeSignedIntygParameter;
-import se.inera.intyg.webcert.web.web.util.access.AccessResultExceptionHelper;
 import se.inera.intyg.webcert.web.web.util.resourcelinks.ResourceLinkHelper;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -134,6 +135,9 @@ public class UtkastModuleApiControllerTest {
     private UtkastService utkastService;
 
     @Mock
+    private UtkastCandidateServiceImpl utkastCandidateService;
+
+    @Mock
     private WebCertUserService webcertUserService;
 
     @Mock
@@ -152,19 +156,13 @@ public class UtkastModuleApiControllerTest {
     private CopyUtkastService copyUtkastService;
 
     @Mock
-    private DraftAccessService draftAccessService;
-
-    @Mock
-    private LockedDraftAccessService lockedDraftAccessService;
-
-    @Mock
     private ResourceLinkHelper resourceLinkHelper;
 
     @Mock
-    private AccessResultExceptionHelper accessResultExceptionHelper;
+    private DraftAccessServiceHelper draftAccessServiceHelper;
 
     @Mock
-    private UtkastCandidateServiceImpl utkastCandidateService;
+    private LockedDraftAccessServiceHelper lockedDraftAccessServiceHelper;
 
     @Spy
     private CopyUtkastServiceHelper copyUtkastServiceHelper = new CopyUtkastServiceHelper();
@@ -387,7 +385,8 @@ public class UtkastModuleApiControllerTest {
         String newIntygsId = "newIntygId";
 
         setupUser(intygsTyp, false, UserOriginType.NORMAL.name(),
-            Arrays.asList(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG), Arrays.asList(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST));
+            Arrays.asList(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG),
+            Arrays.asList(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST));
 
         Utkast utkast = new Utkast();
         utkast.setPatientPersonnummer(Personnummer.createPersonnummer("19121212-1212").get());
@@ -403,6 +402,23 @@ public class UtkastModuleApiControllerTest {
         verifyNoMoreInteractions(copyUtkastService);
         assertEquals(newIntygsId, ((CopyIntygResponse) response.getEntity()).getIntygsUtkastId());
         assertEquals(intygsTyp, ((CopyIntygResponse) response.getEntity()).getIntygsTyp());
+    }
+
+    @Test(expected = WebCertServiceException.class)
+    public void testCopyUtkastWhenUtkastIsLockedAndAccessIsDenied() {
+        String intygsId = "intygId";
+        String intygsTyp = "fk7263";
+
+        when(utkastService.getDraft(eq(intygsId), eq(intygsTyp))).thenReturn(mock(Utkast.class));
+
+        doThrow(
+            new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM_SEKRETESSMARKERING, "Some error message")
+        ).when(lockedDraftAccessServiceHelper).validateAccessToCopyLockedUtkast(any(Utkast.class));
+
+        moduleApiController.copyUtkast(intygsTyp, intygsId);
+
+        verify(utkastService).getDraft(eq(intygsId), eq(intygsTyp));
+        verify(lockedDraftAccessServiceHelper).validateAccessToCopyLockedUtkast(any(Utkast.class));
     }
 
     @Test
@@ -518,7 +534,8 @@ public class UtkastModuleApiControllerTest {
             Arrays.asList(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG, AuthoritiesConstants.PRIVILEGE_COPY_FROM_CANDIDATE),
             Arrays.asList(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST));
 
-        when(utkastService.updateDraftFromCandidate(anyString(), anyString(), anyString(), anyString()))
+        when(utkastService.getDraft(anyString(), anyString(), anyBoolean())).thenReturn(mock(Utkast.class));
+        when(utkastService.updateDraftFromCandidate(anyString(), anyString(), any(Utkast.class)))
             .thenReturn(new SaveDraftResponse(1L, UtkastStatus.DRAFT_INCOMPLETE));
 
         CopyFromCandidateRequest request = new CopyFromCandidateRequest();
@@ -527,7 +544,7 @@ public class UtkastModuleApiControllerTest {
 
         Response response = moduleApiController.copyFromCandidate(intygsTyp, intygsId, request);
 
-        verify(utkastService).updateDraftFromCandidate(anyString(), anyString(), anyString(), anyString());
+        verify(utkastService).updateDraftFromCandidate(anyString(), anyString(), any(Utkast.class));
 
         SaveDraftResponse saveDraftResponse = (SaveDraftResponse) response.getEntity();
         assertNotNull(saveDraftResponse);

@@ -89,7 +89,7 @@ import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.auth.bootstrap.AuthoritiesConfigurationTestSetup;
-import se.inera.intyg.webcert.web.service.access.DraftAccessService;
+import se.inera.intyg.webcert.web.service.access.DraftAccessServiceHelper;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.log.LogService;
 import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
@@ -109,7 +109,6 @@ import se.inera.intyg.webcert.web.service.utkast.dto.UpdatePatientOnDraftRequest
 import se.inera.intyg.webcert.web.service.utkast.util.CreateIntygsIdStrategy;
 import se.inera.intyg.webcert.web.service.utkast.util.UtkastServiceHelper;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
-import se.inera.intyg.webcert.web.web.util.access.AccessResultExceptionHelper;
 
 @RunWith(MockitoJUnitRunner.class)
 public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
@@ -158,11 +157,9 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
     @Mock
     private StatisticsGroupByUtil statisticsGroupByUtil;
     @Mock
-    private DraftAccessService draftAccessService;
-    @Mock
-    private AccessResultExceptionHelper accessResultExceptionHelper;
-    @Mock
     private UtkastServiceHelper utkastServiceHelper;
+    @Mock
+    private DraftAccessServiceHelper draftAccessServiceHelper;
     @Mock
     private ModuleApi moduleApi;
 
