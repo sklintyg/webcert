@@ -269,9 +269,9 @@ public class UtkastApiController extends AbstractApiController {
 
         filter.setPageSize(null);
 
+        final Comparator<ListIntygEntry> intygComparator = getIntygComparator(filter.getOrderBy(), filter.getOrderAscending());
         List<ListIntygEntry> listIntygEntries = IntygDraftsConverter
-            .convertUtkastsToListIntygEntries(utkastService.filterIntyg(filter),
-                getIntygComparator(filter.getOrderBy(), filter.getOrderAscending()));
+            .convertUtkastsToListIntygEntries(utkastService.filterIntyg(filter), intygComparator);
 
         // INTYG-4486, INTYG-4086: Always filter out any items with UNDEFINED sekretessmarkering status and not
         // authorized
@@ -300,7 +300,7 @@ public class UtkastApiController extends AbstractApiController {
 
             // Get lakare name
             Set<String> hsaIds = listIntygEntries.stream().map(ListIntygEntry::getUpdatedSignedById).collect(Collectors.toSet());
-            Map<String, String> hsaIdNameMap = ArendeConverter.getNamesByHsaIds(hsaIds, hsaEmployeeService);
+            Map<String, String> hsaIdNameMap = getNamesByHsaIds(hsaIds);
 
             // Update lakare name
             listIntygEntries.forEach(row -> {
@@ -312,10 +312,14 @@ public class UtkastApiController extends AbstractApiController {
             // Index out of range
             listIntygEntries.clear();
         }
-
+        listIntygEntries.sort(intygComparator);
         QueryIntygResponse response = new QueryIntygResponse(listIntygEntries);
         response.setTotalCount(totalCountOfFilteredIntyg);
         return response;
+    }
+
+    Map<String, String> getNamesByHsaIds(Set<String> hsaIds) {
+        return ArendeConverter.getNamesByHsaIds(hsaIds, hsaEmployeeService);
     }
 
     private Comparator<ListIntygEntry> getIntygComparator(String orderBy, Boolean ascending) {
@@ -328,8 +332,7 @@ public class UtkastApiController extends AbstractApiController {
                 comparator = Comparator.comparing(ListIntygEntry::getStatus);
                 break;
             case "patientPersonnummer":
-                comparator = (ie1, ie2) -> ie2.getPatientId().toString()
-                    .compareTo(ie1.getPatientId().toString());
+                comparator = Comparator.comparing(ie -> ie.getPatientId().getPersonnummer());
                 break;
             case "senastSparadAv":
                 comparator = Comparator.comparing(ListIntygEntry::getUpdatedSignedBy);

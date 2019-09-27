@@ -470,7 +470,6 @@ public class ArendeServiceImpl implements ArendeService {
 
         QueryFragaSvarResponse fsResults = fragaSvarService.filterFragaSvar(filter);
         results.addAll(fsResults.getResults());
-        results.sort(getComparator(filterParameters.getOrderBy(), filterParameters.getOrderAscending()));
         QueryFragaSvarResponse response = new QueryFragaSvarResponse();
 
         Map<Personnummer, SekretessStatus> sekretessStatusMap = patientDetailsResolver.getSekretessStatusForList(results.stream()
@@ -492,23 +491,30 @@ public class ArendeServiceImpl implements ArendeService {
         if (originalStartFrom >= results.size()) {
             response.setResults(new ArrayList<>());
         } else {
-            List<ArendeListItem> resultList = results
-                .subList(originalStartFrom, Math.min(originalPageSize + originalStartFrom, results.size()));
-
             // Get lakare name
-            Set<String> hsaIds = resultList.stream().map(ArendeListItem::getSigneratAv).collect(Collectors.toSet());
-            Map<String, String> hsaIdNameMap = ArendeConverter.getNamesByHsaIds(hsaIds, hsaEmployeeService);
+            Set<String> hsaIds = results.stream().map(ArendeListItem::getSigneratAv).collect(Collectors.toSet());
+            Map<String, String> hsaIdNameMap = getNamesByHsaIds(hsaIds);
 
             // Update lakare name
-            resultList.forEach(row -> {
+            results.forEach(row -> {
                 if (hsaIdNameMap.containsKey(row.getSigneratAv())) {
                     row.setSigneratAvNamn(hsaIdNameMap.get(row.getSigneratAv()));
                 }
             });
 
+            results.sort(getComparator(filterParameters.getOrderBy(), filterParameters.getOrderAscending()));
+
+            List<ArendeListItem> resultList = results
+                .subList(originalStartFrom, Math.min(originalPageSize + originalStartFrom, results.size()));
+
             response.setResults(resultList);
         }
+
         return response;
+    }
+
+    Map<String, String> getNamesByHsaIds(Set<String> hsaIds) {
+        return ArendeConverter.getNamesByHsaIds(hsaIds, hsaEmployeeService);
     }
 
     private static String getAmneString(String amne, Status status, Boolean paminnelse, String fragestallare) {

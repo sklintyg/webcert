@@ -50,6 +50,7 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.common.luse.support.LuseEntryPoint;
@@ -274,7 +275,65 @@ public class UtkastApiControllerTest {
         final QueryIntygResponse queryIntygResponse = response.readEntity(QueryIntygResponse.class);
         assertEquals(2, queryIntygResponse.getTotalCount());
         assertEquals(2, queryIntygResponse.getResults().size());
+    }
 
+    @Test
+    public void testFilterDraftsForUnitSortingBySparadAvIsCorrectWhenNamesAreUpdatedFromHsaINTYGFV12187() {
+        //Given
+        setupUser(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT, LuseEntryPoint.MODULE_ID,
+            AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);
+
+        final Utkast utkast1 = buildUtkast(PATIENT_PERSONNUMMER, new VardpersonReferens("lakareid1", "lakarenamn1"));
+        final Utkast utkast2 = buildUtkast(PATIENT_PERSONNUMMER, new VardpersonReferens("lakareid2", "lakarenamn2"));
+        final Utkast utkast3 = buildUtkast(PATIENT_PERSONNUMMER, new VardpersonReferens("lakareid3", "lakarenamn3"));
+        when(utkastService.filterIntyg(any())).thenReturn(Arrays.asList(utkast1, utkast3, utkast2));
+
+        final QueryIntygParameter filterParameters = buildQueryIntygParameter();
+        filterParameters.setOrderAscending(true);
+        filterParameters.setOrderBy("senastSparadAv");
+
+        final UtkastApiController utkastControllerSpy = Mockito.spy(utkastController);
+        final HashMap<String, String> nameByHsaid = new HashMap<>();
+        nameByHsaid.put("lakareid1", "b");
+        nameByHsaid.put("lakareid2", "c");
+        nameByHsaid.put("lakareid3", "a");
+        Mockito.doReturn(nameByHsaid).when(utkastControllerSpy).getNamesByHsaIds(any());
+
+        //When
+        final Response response = utkastControllerSpy.filterDraftsForUnit(filterParameters);
+        final QueryIntygResponse queryIntygResponse = response.readEntity(QueryIntygResponse.class);
+
+        //Then
+        assertEquals(3, queryIntygResponse.getResults().size());
+        assertEquals("lakareid3", queryIntygResponse.getResults().get(0).getUpdatedSignedById());
+        assertEquals("lakareid1", queryIntygResponse.getResults().get(1).getUpdatedSignedById());
+        assertEquals("lakareid2", queryIntygResponse.getResults().get(2).getUpdatedSignedById());
+    }
+
+    @Test
+    public void testFilterDraftsForUnitSortingByPersonnummerIsCorrectINTYGFV12187() {
+        //Given
+        setupUser(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT, LuseEntryPoint.MODULE_ID,
+            AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);
+
+        final Utkast utkast1 = buildUtkast(createPnr("19121211-1212"));
+        final Utkast utkast2 = buildUtkast(createPnr("19121212-1212"));
+        final Utkast utkast3 = buildUtkast(createPnr("19121213-1212"));
+        when(utkastService.filterIntyg(any())).thenReturn(Arrays.asList(utkast1, utkast3, utkast2));
+
+        final QueryIntygParameter filterParameters = buildQueryIntygParameter();
+        filterParameters.setOrderAscending(false);
+        filterParameters.setOrderBy("patientPersonnummer");
+
+        //When
+        final Response response = utkastController.filterDraftsForUnit(filterParameters);
+        final QueryIntygResponse queryIntygResponse = response.readEntity(QueryIntygResponse.class);
+
+        //Then
+        assertEquals(3, queryIntygResponse.getResults().size());
+        assertEquals(utkast3.getPatientPersonnummer().getPersonnummer(), queryIntygResponse.getResults().get(0).getPatientId().getPersonnummer());
+        assertEquals(utkast2.getPatientPersonnummer().getPersonnummer(), queryIntygResponse.getResults().get(1).getPatientId().getPersonnummer());
+        assertEquals(utkast1.getPatientPersonnummer().getPersonnummer(), queryIntygResponse.getResults().get(2).getPatientId().getPersonnummer());
     }
 
     @Test
