@@ -74,6 +74,7 @@ knownFeatures:
   - &kf210 FEATURE_UNIKT_UNDANTAG_OM_SENASTE_INTYG
   - &kf220 OAUTH_AUTHENTICATION
   - &kf230 CREATE_DRAFT_PREFILL
+  - &kf240 IDP_CONNECTIVITY_CHECK
 
 # Aktiverade features i Webcert
 features:
@@ -315,6 +316,10 @@ features:
     global: true
     intygstyper:
       - *ki050 # LISJP
+  - &f240
+    name: *kf240
+    desc: Aktivera IDP konnektivitetskontroll
+    global: true
 
 pilots:
   - name: TEST_PILOT

@@ -56,6 +56,7 @@
   <security:http security="none" pattern="/services/**"/>
   <security:http security="none" pattern="/monitoring/**"/>
   <security:http security="none" pattern="/internalapi/**"/>
+  <security:http security="none" pattern="/idpcheck.html"/>
   <security:http security="none" create-session="never" pattern="/metrics"/>
 
   <security:http security="none" pattern="/favicon.ico"/>

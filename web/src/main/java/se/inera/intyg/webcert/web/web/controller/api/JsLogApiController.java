@@ -24,10 +24,12 @@ import static javax.ws.rs.core.Response.ok;
 import static javax.ws.rs.core.Response.status;
 import static se.inera.intyg.webcert.web.web.controller.api.dto.MonitoringRequest.CAREGIVER_ID;
 import static se.inera.intyg.webcert.web.web.controller.api.dto.MonitoringRequest.CARE_UNIT_ID;
+import static se.inera.intyg.webcert.web.web.controller.api.dto.MonitoringRequest.CONNECTIVITY;
 import static se.inera.intyg.webcert.web.web.controller.api.dto.MonitoringRequest.ERROR_MESSAGE;
 import static se.inera.intyg.webcert.web.web.controller.api.dto.MonitoringRequest.HEIGHT;
 import static se.inera.intyg.webcert.web.web.controller.api.dto.MonitoringRequest.INTYG_ID;
 import static se.inera.intyg.webcert.web.web.controller.api.dto.MonitoringRequest.INTYG_TYPE;
+import static se.inera.intyg.webcert.web.web.controller.api.dto.MonitoringRequest.IP;
 import static se.inera.intyg.webcert.web.web.controller.api.dto.MonitoringRequest.MAIN_DIAGNOSIS_CODE;
 import static se.inera.intyg.webcert.web.web.controller.api.dto.MonitoringRequest.NET_ID_VERSION;
 import static se.inera.intyg.webcert.web.web.controller.api.dto.MonitoringRequest.USER_CLIENT_CONTEXT;
@@ -100,6 +102,9 @@ public class JsLogApiController extends AbstractApiController {
                 break;
             case SIGNING_FAILED:
                 monitoringService.logUtkastSignFailed(request.getInfo().get(ERROR_MESSAGE), request.getInfo().get(INTYG_ID));
+                break;
+            case IDP_CONNECTIVITY_CHECK:
+                monitoringService.logIdpConnectivityCheck(request.getInfo().get(IP), request.getInfo().get(CONNECTIVITY));
                 break;
             default:
                 return status(BAD_REQUEST).build();
