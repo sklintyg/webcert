@@ -169,6 +169,7 @@ dependencies {
     compile "se.inera.intyg.infra:sjukfall-engine:${infraVersion}"
     compile "se.inera.intyg.infra:ia-integration:${infraVersion}"
     compile "se.inera.intyg.infra:intyginfo:${infraVersion}"
+    compile "se.inera.intyg.infra:integreradeenheter:${infraVersion}"
 
     compile "se.inera.intyg.common:ts-bas:${commonVersion}"
     compile "se.inera.intyg.common:ts-diabetes:${commonVersion}"

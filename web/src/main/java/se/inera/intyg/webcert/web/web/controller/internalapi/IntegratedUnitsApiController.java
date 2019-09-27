@@ -19,14 +19,17 @@
 package se.inera.intyg.webcert.web.web.controller.internalapi;
 
 import io.swagger.annotations.Api;
+import java.util.Optional;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 import org.springframework.beans.factory.annotation.Autowired;
-import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistry;
+import se.inera.intyg.infra.integreradeenheter.IntegratedUnitDTO;
+import se.inera.intyg.webcert.web.service.integreradeenheter.IntegreradeEnheterService;
 
 @Path("/integratedUnits")
 @Api(value = "/internalapi/integratedUnits", produces = MediaType.APPLICATION_JSON)
@@ -35,20 +38,27 @@ public class IntegratedUnitsApiController {
     private static final String UTF_8_CHARSET = ";charset=utf-8";
 
     @Autowired
-    private IntegreradeEnheterRegistry integreradeEnheterRegistry;
+    private IntegreradeEnheterService integreradeEnheterService;
 
     @GET
     @Path("/{hsaId}")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public Response getIntegratedUnit(@PathParam("hsaId") String hsaId) {
-        return Response.ok(integreradeEnheterRegistry.getIntegreradEnhet(hsaId)).build();
+
+        Optional<IntegratedUnitDTO> unit = integreradeEnheterService.getIntegratedUnit(hsaId);
+
+        if (!unit.isPresent()) {
+            return Response.status(Status.NOT_FOUND).build();
+        }
+
+        return Response.ok(unit.get()).build();
     }
 
     @GET
     @Path("/all")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public Response getAllIntegratedUnits() {
-        return Response.ok(integreradeEnheterRegistry.getAllIntegreradEnhet()).build();
+        return Response.ok(integreradeEnheterService.getAllIntegratedUnits()).build();
     }
 
 }
