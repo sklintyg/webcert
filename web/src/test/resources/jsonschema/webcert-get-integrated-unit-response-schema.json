@@ -1,0 +1,31 @@
+{
+  "type": "object",
+  "required": [
+    "enhetsId",
+    "enhetsNamn",
+    "vardgivarId",
+    "vardgivarNamn",
+    "skapadDatum"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "enhetsId": {
+      "type": "string"
+    },
+    "enhetsNamn": {
+      "type": "string"
+    },
+    "vardgivarId": {
+      "type": "string"
+    },
+    "vardgivarNamn": {
+      "type": "string"
+    },
+    "skapadDatum": {
+      "type": "string"
+    },
+    "senasteKontrollDatum": {
+      "type": "string"
+    }
+  }
+}

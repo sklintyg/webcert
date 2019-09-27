@@ -21,9 +21,13 @@ package se.inera.intyg.webcert.web.web.controller.integrationtest.internalapi;
 import com.jayway.restassured.RestAssured;
 import java.io.FileNotFoundException;
 import org.junit.Before;
+import org.springframework.http.HttpStatus;
 import se.inera.intyg.webcert.web.web.controller.integrationtest.BaseRestIntegrationTest;
 
 public abstract class InternalApiBaseRestIntegrationTest extends BaseRestIntegrationTest {
+
+    public static final int OK = HttpStatus.OK.value();
+    public static final int NOT_FOUND = HttpStatus.NOT_FOUND.value();
 
     /**
      * Common setup for all tests
