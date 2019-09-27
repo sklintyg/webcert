@@ -558,6 +558,56 @@ public class FkCertificateAccessTest extends CertificateAccessTest {
     }
 
     @Override
+    protected void assertAllowToSetComplementAsHandledNoConditions(AccessResult actualValue) {
+        assertEquals(AccessResultCode.NO_PROBLEM, actualValue.getCode());
+    }
+
+    @Override
+    protected void assertAllowToSetComplementAsHandledOnDeceasedPatient(AccessResult actualValue) {
+        assertEquals(AccessResultCode.NO_PROBLEM, actualValue.getCode());
+    }
+
+    @Override
+    protected void assertAllowToSetComplementAsHandledOnInactiveUnit(AccessResult actualValue) {
+        assertEquals(AccessResultCode.NO_PROBLEM, actualValue.getCode());
+    }
+
+    @Override
+    protected void assertAllowToSetComplementAsHandledOnRenewFalse(AccessResult actualValue) {
+        assertEquals(AccessResultCode.NO_PROBLEM, actualValue.getCode());
+    }
+
+    @Override
+    protected void assertAllowToSetComplementAsHandledOnSekretessPatientOnSameUnit(AccessResult actualValue) {
+        assertEquals(AccessResultCode.NO_PROBLEM, actualValue.getCode());
+    }
+
+    @Override
+    protected void assertAllowToSetComplementAsHandledOnSekretessPatientOnDifferentUnit(AccessResult actualValue) {
+        assertEquals(AccessResultCode.AUTHORIZATION_SEKRETESS_UNIT, actualValue.getCode());
+    }
+
+    @Override
+    protected void assertAllowToSetComplementAsHandledOnDeceasedPatientOnDifferentUnit(AccessResult actualValue) {
+        assertEquals(AccessResultCode.DECEASED_PATIENT, actualValue.getCode());
+    }
+
+    @Override
+    protected void assertAllowToSetComplementAsHandledOnInactiveUnitOnDifferentUnit(AccessResult actualValue) {
+        assertEquals(AccessResultCode.INACTIVE_UNIT, actualValue.getCode());
+    }
+
+    @Override
+    protected void assertAllowToSetComplementAsHandledOnRenewFalseOnDifferentUnit(AccessResult actualValue) {
+        assertEquals(AccessResultCode.RENEW_FALSE, actualValue.getCode());
+    }
+
+    @Override
+    protected void assertAllowToSetComplementAsHandledNoConditionsDifferentUnit(AccessResult actualValue) {
+        assertEquals(AccessResultCode.AUTHORIZATION_DIFFERENT_UNIT, actualValue.getCode());
+    }
+
+    @Override
     protected void assertAllowToReadQuestionsNoConditions(AccessResult actualValue) {
         assertEquals(AccessResultCode.NO_PROBLEM, actualValue.getCode());
     }

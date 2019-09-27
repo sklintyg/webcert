@@ -714,6 +714,31 @@
           },
           "type": "object"
         },
+        "MARKERA_KOMPLETTERING_SOM_HANTERAD": {
+          "name": "MARKERA_KOMPLETTERING_SOM_HANTERAD",
+          "desc": "Markera komplettering som hanterad",
+          "intygstyper": [
+            "fk7263",
+            "lisjp",
+            "luse",
+            "luae_na",
+            "luae_fs"
+          ],
+          "requestOrigins": [
+            {
+              "name": "NORMAL",
+              "intygstyper": []
+            },
+            {
+              "name": "DJUPINTEGRATION",
+              "intygstyper": []
+            },
+            {
+              "name": "UTHOPP",
+              "intygstyper": []
+            }
+          ]
+        },
         "HANTERA_SEKRETESSMARKERAD_PATIENT": {
           "additionalProperties": true,
           "properties": {

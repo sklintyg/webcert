@@ -113,5 +113,10 @@ public enum ActionLinkType {
     /**
      * Forward questions related to a certificate.
      */
-    VIDAREBEFODRA_FRAGA
+    VIDAREBEFODRA_FRAGA,
+
+    /**
+     * Set complement question as handled.
+     */
+    MARKERA_KOMPLETTERING_SOM_HANTERAD
 }
