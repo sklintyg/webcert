@@ -199,6 +199,10 @@ public class ResourceLinkHelperImpl implements ResourceLinkHelper {
             actionLinkList.add(new ActionLink(ActionLinkType.VIDAREBEFODRA_FRAGA));
         }
 
+        if (certificateAccessService.allowToSetComplementAsHandled(intygsTyp, vardenhet, personnummer).isAllowed()) {
+            actionLinkList.add(new ActionLink(ActionLinkType.MARKERA_KOMPLETTERING_SOM_HANTERAD));
+        }
+
         return actionLinkList;
     }
 }

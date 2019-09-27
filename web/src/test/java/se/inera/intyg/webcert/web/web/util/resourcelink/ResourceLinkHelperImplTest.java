@@ -29,11 +29,13 @@ import static org.mockito.Mockito.mock;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.GrundData;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
@@ -187,7 +189,8 @@ public class ResourceLinkHelperImplTest {
         doReturn(AccessResult.noProblem()).when(certificateAccessService).allowToReadQuestions(intygsTyp, vardenhet, patient);
         doReturn(AccessResult.noProblem()).when(certificateAccessService).allowToAnswerAdminQuestion(intygsTyp, vardenhet, patient);
         doReturn(AccessResult.noProblem()).when(certificateAccessService).allowToAnswerComplementQuestion(intygsTyp, vardenhet, patient,
-            true);
+                true);
+        doReturn(AccessResult.noProblem()).when(certificateAccessService).allowToSetComplementAsHandled(intygsTyp, vardenhet, patient);
         doReturn(AccessResult.noProblem()).when(certificateAccessService).allowToAnswerComplementQuestion(intygsTyp, vardenhet, patient,
             false);
         doReturn(AccessResult.noProblem()).when(certificateAccessService).allowToForwardQuestions(intygsTyp, vardenhet, patient);
@@ -202,6 +205,7 @@ public class ResourceLinkHelperImplTest {
         expectedLinks.add(new ActionLink(ActionLinkType.BESVARA_KOMPLETTERING));
         expectedLinks.add(new ActionLink(ActionLinkType.BESVARA_KOMPLETTERING_MED_MEDDELANDE));
         expectedLinks.add(new ActionLink(ActionLinkType.VIDAREBEFODRA_FRAGA));
+        expectedLinks.add(new ActionLink(ActionLinkType.MARKERA_KOMPLETTERING_SOM_HANTERAD));
 
         final DraftHolder draftHolder = new DraftHolder();
 
@@ -237,6 +241,8 @@ public class ResourceLinkHelperImplTest {
             .allowToAnswerComplementQuestion(intygsTyp, vardenhet, patient,
                 false);
         doReturn(AccessResult.create(AccessResultCode.AUTHORIZATION_VALIDATION, "No access")).when(certificateAccessService)
+            .allowToSetComplementAsHandled(intygsTyp, vardenhet, patient);
+        doReturn(AccessResult.create(AccessResultCode.AUTHORIZATION_VALIDATION, "No access")).when(certificateAccessService)
             .allowToForwardQuestions(intygsTyp, vardenhet, patient);
 
         final List<ActionLink> expectedLinks = new ArrayList<>();
@@ -269,6 +275,7 @@ public class ResourceLinkHelperImplTest {
             true);
         doReturn(AccessResult.noProblem()).when(certificateAccessService).allowToAnswerComplementQuestion(intygsTyp, vardenhet, patient,
             false);
+        doReturn(AccessResult.noProblem()).when(certificateAccessService).allowToSetComplementAsHandled(intygsTyp, vardenhet, patient);
         doReturn(AccessResult.noProblem()).when(certificateAccessService).allowToForwardQuestions(intygsTyp, vardenhet, patient);
 
         final List<ActionLink> expectedLinks = new ArrayList<>();
@@ -283,6 +290,7 @@ public class ResourceLinkHelperImplTest {
         expectedLinks.add(new ActionLink(ActionLinkType.BESVARA_KOMPLETTERING));
         expectedLinks.add(new ActionLink(ActionLinkType.BESVARA_KOMPLETTERING_MED_MEDDELANDE));
         expectedLinks.add(new ActionLink(ActionLinkType.VIDAREBEFODRA_FRAGA));
+        expectedLinks.add(new ActionLink(ActionLinkType.MARKERA_KOMPLETTERING_SOM_HANTERAD));
 
         final Utlatande utlatande = mock(Utlatande.class);
         doReturn(intygsTyp).when(utlatande).getTyp();
@@ -340,6 +348,8 @@ public class ResourceLinkHelperImplTest {
         doReturn(AccessResult.create(AccessResultCode.AUTHORIZATION_VALIDATION, "No access")).when(certificateAccessService)
             .allowToAnswerComplementQuestion(intygsTyp, vardenhet, patient,
                 false);
+        doReturn(AccessResult.create(AccessResultCode.AUTHORIZATION_VALIDATION, "No access")).when(certificateAccessService)
+            .allowToSetComplementAsHandled(intygsTyp, vardenhet, patient);
         doReturn(AccessResult.create(AccessResultCode.AUTHORIZATION_VALIDATION, "No access")).when(certificateAccessService)
             .allowToForwardQuestions(intygsTyp, vardenhet, patient);
 

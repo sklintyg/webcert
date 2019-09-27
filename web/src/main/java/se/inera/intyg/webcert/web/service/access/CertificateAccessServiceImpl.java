@@ -227,6 +227,21 @@ public class CertificateAccessServiceImpl implements CertificateAccessService {
             .evaluate();
     }
 
+    @Override
+    public AccessResult allowToSetComplementAsHandled(String certificateType, Vardenhet careUnit, Personnummer patient) {
+        return getAccessServiceEvaluation().given(getUser(), certificateType)
+                .feature(AuthoritiesConstants.FEATURE_HANTERA_FRAGOR)
+                .privilege(AuthoritiesConstants.PRIVILEGE_MARKERA_KOMPLETTERING_SOM_HANTERAD)
+                .careUnit(careUnit)
+                .patient(patient)
+                .checkPatientDeceased(true)
+                .checkInactiveCareUnit(true)
+                .checkRenew(true)
+                .checkPatientSecrecy()
+                .checkUnit(false, false)
+                .evaluate();
+    }
+
     private AccessServiceEvaluation getAccessServiceEvaluation() {
         return AccessServiceEvaluation.create(this.webCertUserService, this.patientDetailsResolver, this.utkastService);
     }
