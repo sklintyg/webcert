@@ -948,14 +948,7 @@ public class IntygServiceImpl implements IntygService {
     }
 
     private boolean isDeceased(Personnummer personnummer) {
-        WebCertUser user = webCertUserService.getUser();
-        boolean deceasedAccordingToPu = patientDetailsResolver.isAvliden(personnummer);
-        if (UserOriginType.DJUPINTEGRATION.name().equals(user.getOrigin())) {
-            // INTYG-4469
-            return deceasedAccordingToPu || (user.getParameters() != null && user.getParameters().isPatientDeceased());
-        } else {
-            return deceasedAccordingToPu;
-        }
+        return patientDetailsResolver.isAvliden(personnummer);
     }
 
     private void validateAccessToPrintIntyg(Utlatande utlatande, boolean isEmployer) {

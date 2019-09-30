@@ -134,7 +134,6 @@ public class PatientDetailsResolverTest {
         when(integratedWebCertUser.getParameters()).thenReturn(buildIntegrationParameters());
         when(integratedWebCertUser.getOrigin()).thenReturn(UserOriginType.DJUPINTEGRATION.name());
 
-        when(freeWebCertUser.getParameters()).thenReturn(null);
         when(freeWebCertUser.getOrigin()).thenReturn(UserOriginType.NORMAL.name());
         when(moduleRegistry.moduleExists(anyString())).thenReturn(true);
 
@@ -228,7 +227,7 @@ public class PatientDetailsResolverTest {
         assertNull(patient.getPostadress());
         assertNull(patient.getPostnummer());
         assertNull(patient.getPostort());
-        assertEquals(PU_AVLIDEN || INTEGR_AVLIDEN, patient.isAvliden());
+        assertEquals(PU_AVLIDEN, patient.isAvliden());
         assertEquals(false, patient.isSekretessmarkering());
     }
 
@@ -294,7 +293,7 @@ public class PatientDetailsResolverTest {
         assertEquals(INTEGR_POST_ADDR, patient.getPostadress());
         assertEquals(INTEGR_POST_NR, patient.getPostnummer());
         assertEquals(INTEGR_POST_ORT, patient.getPostort());
-        assertEquals(PU_AVLIDEN || INTEGR_AVLIDEN, patient.isAvliden());
+        assertEquals(PU_AVLIDEN, patient.isAvliden());
         assertEquals(false, patient.isSekretessmarkering());
     }
 
@@ -315,7 +314,7 @@ public class PatientDetailsResolverTest {
         assertEquals(POST_ADDR, patient.getPostadress());
         assertEquals(POST_NR, patient.getPostnummer());
         assertEquals(POST_ORT, patient.getPostort());
-        assertEquals(PU_AVLIDEN || INTEGR_AVLIDEN, patient.isAvliden());
+        assertEquals(PU_AVLIDEN, patient.isAvliden());
         assertEquals(false, patient.isSekretessmarkering());
     }
 
@@ -410,7 +409,7 @@ public class PatientDetailsResolverTest {
         assertEquals(POST_ADDR, patient.getPostadress());
         assertEquals(POST_NR, patient.getPostnummer());
         assertEquals(POST_ORT, patient.getPostort());
-        assertEquals(PU_AVLIDEN || INTEGR_AVLIDEN, patient.isAvliden());
+        assertEquals(PU_AVLIDEN, patient.isAvliden());
         assertEquals(false, patient.isSekretessmarkering());
     }
 
@@ -485,7 +484,7 @@ public class PatientDetailsResolverTest {
         assertEquals(DB_POST_ADDR, patient.getPostadress());
         assertEquals(DB_POST_NR, patient.getPostnummer());
         assertEquals(DB_POST_ORT, patient.getPostort());
-        assertEquals(PU_AVLIDEN || INTEGR_AVLIDEN, patient.isAvliden());
+        assertEquals(PU_AVLIDEN, patient.isAvliden());
         assertEquals(false, patient.isSekretessmarkering());
     }
 
@@ -510,7 +509,7 @@ public class PatientDetailsResolverTest {
         assertEquals(POST_ADDR, patient.getPostadress());
         assertEquals(POST_NR, patient.getPostnummer());
         assertEquals(POST_ORT, patient.getPostort());
-        assertEquals(PU_AVLIDEN || INTEGR_AVLIDEN, patient.isAvliden());
+        assertEquals(PU_AVLIDEN, patient.isAvliden());
         assertEquals(false, patient.isSekretessmarkering());
     }
 
