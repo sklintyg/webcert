@@ -91,6 +91,7 @@ knownPrivileges:
   - &kp180 BESVARA_FRAGA
   - &kp190 KOPIERA_FRAN_KANDIDAT
   - &kp200 KOPIERA_LAST_UTKAST
+  - &kp210 MARKERA_KOMPLETTERING_SOM_HANTERAD
 
 # De roller som systemet har
 knownRoles:
@@ -376,6 +377,16 @@ privileges:
     requestOrigins:
       - *ro010 # NORMAL
       - *ro020 # DJUPINTEGRATION
+  - &p210
+    name: *kp210
+    desc: Markera komplettering som hanterad
+    intygstyper:
+      - *ki010 # fk7263
+      - *ki040 # lisjp
+      - *ki050 # luse
+      - *ki060 # luae_na
+      - *ki070 # luae_fs
+    requestOrigins: # Implicit alla
 
 # Roller
 roles:
@@ -524,6 +535,11 @@ roles:
             intygstyper:
               - *ki120 # ag7804
       - <<: *p200 # KOPIERA_LAST_UTKAST
+      - <<: *p210 # MARKERA_KOMPLETTERING_SOM_HANTERAD
+        requestOrigins:
+          - <<: *ro010 # NORMAL
+          - <<: *ro020 # DJUPINTEGRATION
+          - <<: *ro030 # UTHOPP
   - &r020
     name: *kr020 # PRIVATLAKARE
     desc: Privatläkare
@@ -619,6 +635,9 @@ roles:
               - *ki060 # luae_na
               - *ki070 # luae_fs
       - <<: *p200 # KOPIERA_LAST_UTKAST
+      - <<: *p210 # MARKERA_KOMPLETTERING_SOM_HANTERAD
+        requestOrigins:
+          - <<: *ro010 # NORMAL
   - &r030
     name: *kr030 # TANDLAKARE
     desc: Tandläkare
@@ -885,6 +904,20 @@ roles:
           - *ki110 # ag114
           - *ki120 # ag7804
           - *ki111 # af00251
+      - <<: *p210 # MARKERA_KOMPLETTERING_SOM_HANTERAD
+        intygstyper:
+        requestOrigins:
+          - <<: *ro010 # NORMAL
+            intygstyper:
+              - *ki010 # fk7263
+              - *ki040 # lisjp
+          - <<: *ro020 # DJUPINTEGRATION
+            intygstyper:
+              - *ki010 # fk7263
+              - *ki040 # lisjp
+          - <<: *ro030 # UTHOPP
+            intygstyper:
+              - *ki010 # fk7263
   - &r040
     name: *kr040 # VARDADMINISTRATOR
     desc: Vårdadministratör
@@ -1008,6 +1041,11 @@ roles:
             intygstyper:
               - *ki120 # ag7804
       - <<: *p200 # KOPIERA_LAST_UTKAST
+      - <<: *p210 # MARKERA_KOMPLETTERING_SOM_HANTERAD
+        requestOrigins:
+          - <<: *ro010 # NORMAL
+          - <<: *ro020 # DJUPINTEGRATION
+          - <<: *ro030 # UTHOPP
 
 # Legitimerade yrkesroller
 titles:
