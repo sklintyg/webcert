@@ -96,7 +96,7 @@ public class FmbSjukfallServiceImpl implements FmbSjukfallService {
         final ListActiveSickLeavesForCareUnitResponseType response = sickLeavesForCareUnit.listActiveSickLeavesForCareUnit("", request);
 
         final IntygsLista intygsLista = response.getIntygsLista();
-        // check for null (might be root-cause to INTYGFV-.ViewIntegrationControllerIT12314)
+        // check for null (might be root-cause to INTYGFV-12314)
         final List<IntygsData> intygsData = Objects.isNull(intygsLista) ? Collections.emptyList() : intygsLista.getIntygsData();
         final List<IntygData> intygData = IntygstjanstConverter.toSjukfallFormat(intygsData);
 
