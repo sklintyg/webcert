@@ -20,6 +20,7 @@
 package se.inera.intyg.webcert.web.service.intyginfo;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -216,8 +217,7 @@ public class IntygInfoService {
             }
 
             if (type != null && relation.getStatus().equals(UtkastStatus.SIGNED)) {
-                IntygInfoEvent relationEvent = new IntygInfoEvent(Source.WEBCERT, relation.getSkapad(), type);
-                relationEvent.addData("intygsId", relation.getIntygsId());
+                IntygInfoEvent relationEvent = createEvent(relation.getSkapad(), type, "intygsId", relation.getIntygsId());
 
                 Utkast relatedIntyg = utkastRepository.findOne(relation.getIntygsId());
                 if (relatedIntyg != null) {
@@ -234,7 +234,7 @@ public class IntygInfoService {
         List<IntygInfoEvent> events = response.getEvents();
 
         // Created by
-        IntygInfoEvent createdBy = new IntygInfoEvent(Source.WEBCERT, utkast.getSkapad(), IntygInfoEventType.IS001);
+        IntygInfoEvent createdBy = createEvent(utkast.getSkapad(), IntygInfoEventType.IS001);
         createdBy.addData("hsaId", utkast.getSkapadAv().getHsaId());
         createdBy.addData("name", utkast.getSkapadAv().getNamn());
         events.add(createdBy);
@@ -258,9 +258,7 @@ public class IntygInfoService {
                     break;
             }
 
-            IntygInfoEvent relation = new IntygInfoEvent(Source.WEBCERT, utkast.getSkapad(), type);
-            relation.addData("intygsId", utkast.getRelationIntygsId());
-            events.add(relation);
+            events.add(createEvent(utkast.getSkapad(), type, "intygsId", utkast.getRelationIntygsId()));
         }
 
         // Locked
@@ -273,12 +271,13 @@ public class IntygInfoService {
 
         // Signed
         if (UtkastStatus.SIGNED.equals(utkast.getStatus())) {
-            IntygInfoEvent signed = new IntygInfoEvent(Source.WEBCERT, utkast.getSignatur().getSigneringsDatum(), IntygInfoEventType.IS004);
-            signed.addData("hsaId", utkast.getSignatur().getSigneradAv());
-            events.add(signed);
+            events.add(createEvent(
+                utkast.getSignatur().getSigneringsDatum(),
+                IntygInfoEventType.IS004,
+                "hsaId", utkast.getSignatur().getSigneradAv()));
         } else {
             // Last saved
-            IntygInfoEvent changed = new IntygInfoEvent(Source.WEBCERT, utkast.getSenastSparadDatum(), IntygInfoEventType.IS010);
+            IntygInfoEvent changed = createEvent(utkast.getSenastSparadDatum(), IntygInfoEventType.IS010);
 
             if (!Objects.isNull(utkast.getSenastSparadAv())) {
                 changed.addData("hsaId", utkast.getSenastSparadAv().getHsaId());
@@ -289,19 +288,18 @@ public class IntygInfoService {
 
         // Klart för signering
         if (utkast.getKlartForSigneringDatum() != null) {
-            events.add(new IntygInfoEvent(Source.WEBCERT, utkast.getKlartForSigneringDatum(), IntygInfoEventType.IS018));
+            events.add(createEvent(utkast.getKlartForSigneringDatum(), IntygInfoEventType.IS018));
         }
 
         // Makulerad
         if (utkast.getAterkalladDatum() != null) {
-            events.add(new IntygInfoEvent(Source.WEBCERT, utkast.getAterkalladDatum(), IntygInfoEventType.IS009));
+            events.add(createEvent(utkast.getAterkalladDatum(), IntygInfoEventType.IS009));
         }
 
         // Skickat
         if (utkast.getSkickadTillMottagareDatum() != null) {
-            IntygInfoEvent sent = new IntygInfoEvent(Source.WEBCERT, utkast.getSkickadTillMottagareDatum(), IntygInfoEventType.IS006);
-            sent.addData("intygsmottagare", utkast.getSkickadTillMottagare());
-            events.add(sent);
+            events.add(createEvent(utkast.getSkickadTillMottagareDatum(), IntygInfoEventType.IS006,
+                "intygsmottagare", utkast.getSkickadTillMottagare()));
         }
     }
 
@@ -369,15 +367,13 @@ public class IntygInfoService {
 
         // Kompletterings begäran
         kompletteringarQuestions.forEach(arende -> {
-            IntygInfoEvent event = new IntygInfoEvent(Source.WEBCERT, arende.getSkickatTidpunkt(), IntygInfoEventType.IS011);
-            event.addData("intygsmottagare", arende.getSkickatAv());
-            response.getEvents().add(event);
+            response.getEvents()
+                .add(createEvent(arende.getSkickatTidpunkt(), IntygInfoEventType.IS011, "intygsmottagare", arende.getSkickatAv()));
 
             // Hanterad
             if (Status.CLOSED.equals(arende.getStatus())) {
-                IntygInfoEvent event2 = new IntygInfoEvent(Source.WEBCERT, arende.getSenasteHandelse(), IntygInfoEventType.IS016);
-                event.addData("intygsmottagare", arende.getSkickatAv());
-                response.getEvents().add(event2);
+                response.getEvents()
+                    .add(createEvent(arende.getSenasteHandelse(), IntygInfoEventType.IS016, "intygsmottagare", arende.getSkickatAv()));
             }
         });
         // kompletterings begäran svar
@@ -385,21 +381,18 @@ public class IntygInfoService {
             .filter(a -> ArendeAmne.KOMPLT.equals(a.getAmne()))
             .filter(a -> ArendeViewConverter.getArendeType(a).equals(ArendeType.SVAR))
             .forEach(arende -> {
-                IntygInfoEvent event = new IntygInfoEvent(Source.WEBCERT, arende.getSkickatTidpunkt(), IntygInfoEventType.IS015);
-                response.getEvents().add(event);
+                response.getEvents().add(createEvent(arende.getSkickatTidpunkt(), IntygInfoEventType.IS015));
             });
 
         // Mottagna från intygsmottagare
         adminQuestionsRecieved.forEach(arende -> {
-            IntygInfoEvent event = new IntygInfoEvent(Source.WEBCERT, arende.getSkickatTidpunkt(), IntygInfoEventType.IS012);
-            event.addData("intygsmottagare", arende.getSkickatAv());
-            response.getEvents().add(event);
+            response.getEvents()
+                .add(createEvent(arende.getSkickatTidpunkt(), IntygInfoEventType.IS012, "intygsmottagare", arende.getSkickatAv()));
 
             // Hanterad
             if (Status.CLOSED.equals(arende.getStatus())) {
-                IntygInfoEvent event2 = new IntygInfoEvent(Source.WEBCERT, arende.getSenasteHandelse(), IntygInfoEventType.IS017);
-                event.addData("intygsmottagare", arende.getSkickatAv());
-                response.getEvents().add(event2);
+                response.getEvents()
+                    .add(createEvent(arende.getSenasteHandelse(), IntygInfoEventType.IS017, "intygsmottagare", arende.getSkickatAv()));
             }
         });
         // Besvarade av vården
@@ -408,8 +401,7 @@ public class IntygInfoService {
             .filter(a -> ArendeViewConverter.getArendeType(a).equals(ArendeType.SVAR))
             .filter(a -> FrageStallare.WEBCERT.getKod().equals(a.getSkickatAv()))
             .forEach(arende -> {
-                IntygInfoEvent event = new IntygInfoEvent(Source.WEBCERT, arende.getSkickatTidpunkt(), IntygInfoEventType.IS023);
-                response.getEvents().add(event);
+                response.getEvents().add(createEvent(arende.getSkickatTidpunkt(), IntygInfoEventType.IS023));
             });
 
         // Skickade från vården
@@ -426,8 +418,7 @@ public class IntygInfoService {
 
             // Hanterad
             if (Status.CLOSED.equals(arende.getStatus())) {
-                IntygInfoEvent event2 = new IntygInfoEvent(Source.WEBCERT, arende.getSenasteHandelse(), IntygInfoEventType.IS025);
-                response.getEvents().add(event2);
+                response.getEvents().add(createEvent(arende.getSenasteHandelse(), IntygInfoEventType.IS025));
             }
         });
         // Besvarade av mottagare
@@ -436,11 +427,24 @@ public class IntygInfoService {
             .filter(a -> ArendeViewConverter.getArendeType(a).equals(ArendeType.SVAR))
             .filter(a -> !FrageStallare.WEBCERT.getKod().equals(a.getSkickatAv()))
             .forEach(arende -> {
-                IntygInfoEvent event = new IntygInfoEvent(Source.WEBCERT, arende.getSkickatTidpunkt(), IntygInfoEventType.IS024);
-                event.addData("intygsmottagare", arende.getSkickatAv());
-                response.getEvents().add(event);
+                response.getEvents()
+                    .add(createEvent(arende.getSkickatTidpunkt(), IntygInfoEventType.IS024, "intygsmottagare", arende.getSkickatAv()));
             });
 
         return !arendeList.isEmpty();
+    }
+
+    private IntygInfoEvent createEvent(LocalDateTime date, IntygInfoEventType type) {
+        return createEvent(date, type, null, null);
+    }
+
+    private IntygInfoEvent createEvent(LocalDateTime date, IntygInfoEventType type, String key1, String data1) {
+        IntygInfoEvent event = new IntygInfoEvent(Source.WEBCERT, date, type);
+
+        if (!Objects.isNull(key1)) {
+            event.addData(key1, data1);
+        }
+
+        return event;
     }
 }

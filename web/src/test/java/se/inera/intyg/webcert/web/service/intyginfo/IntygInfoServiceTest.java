@@ -118,7 +118,7 @@ public class IntygInfoServiceTest {
         when(fragaSvarRepository.findByIntygsReferensIntygsId(anyString())).thenReturn(new ArrayList<>());
 
         List<Handelse> handelser = new ArrayList<>();
-        handelser.add(createHandlese(HandelsekodEnum.SKAPAT, intygId));
+        handelser.add(createHandelse(HandelsekodEnum.SKAPAT, intygId));
 
         when(handelseRepository.findByIntygsId(anyString())).thenReturn(handelser);
 
@@ -194,8 +194,8 @@ public class IntygInfoServiceTest {
         when(utkastRepository.findOne(anyString())).thenReturn(utkast);
 
         List<Handelse> handelser = new ArrayList<>();
-        handelser.add(createHandlese(HandelsekodEnum.SKAPAT, intygId));
-        handelser.add(createHandlese(HandelsekodEnum.ANDRAT, intygId));
+        handelser.add(createHandelse(HandelsekodEnum.SKAPAT, intygId));
+        handelser.add(createHandelse(HandelsekodEnum.ANDRAT, intygId));
         when(handelseRepository.findByIntygsId(anyString())).thenReturn(handelser);
 
         // Act
@@ -238,9 +238,9 @@ public class IntygInfoServiceTest {
         when(utkastRepository.findOne(eq(intygId))).thenReturn(utkast);
 
         List<Handelse> handelser = new ArrayList<>();
-        handelser.add(createHandlese(HandelsekodEnum.SKAPAT, intygId));
-        handelser.add(createHandlese(HandelsekodEnum.ANDRAT, intygId));
-        handelser.add(createHandlese(HandelsekodEnum.KFSIGN, intygId));
+        handelser.add(createHandelse(HandelsekodEnum.SKAPAT, intygId));
+        handelser.add(createHandelse(HandelsekodEnum.ANDRAT, intygId));
+        handelser.add(createHandelse(HandelsekodEnum.KFSIGN, intygId));
         when(handelseRepository.findByIntygsId(anyString())).thenReturn(handelser);
 
         List<Arende> arende = new ArrayList<>();
@@ -367,7 +367,7 @@ public class IntygInfoServiceTest {
         return arende;
     }
 
-    private Handelse createHandlese(HandelsekodEnum code, String intygId) {
+    private Handelse createHandelse(HandelsekodEnum code, String intygId) {
         Handelse handelse = new Handelse();
         handelse.setCode(code);
         handelse.setIntygsId(intygId);
