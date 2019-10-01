@@ -252,13 +252,14 @@
 
   // Inject language resources
   app.run(['$log', '$rootScope', '$window', '$location', '$state', '$q', '$uibModalStack', 'common.messageService', 'common.moduleService',
-    'common.UserModel', 'webcert.messages', 'common.MonitoringLogService', 'common.dynamicLinkService', 'idpConnectivityService',
+    'common.UserModel', 'webcert.messages', 'common.MonitoringLogService', 'common.dynamicLinkService', 'idpConnectivityService', 'moduleConfig',
     function($log, $rootScope, $window, $location, $state, $q, $uibModalStack, messageService, moduleService, UserModel, wcMessages,
-        MonitoringLogService, dynamicLinkService, idpConnectivityService) {
+        MonitoringLogService, dynamicLinkService, idpConnectivityService, moduleConfig) {
 
       $rootScope.lang = 'sv';
       $rootScope.DEFAULT_LANG = 'sv';
       $rootScope.testModeActive = false;
+      $rootScope.banners = moduleConfig.BANNERS;
 
       UserModel.setUser(user);
       UserModel.termsAccepted = user && user.privatLakareAvtalGodkand;
