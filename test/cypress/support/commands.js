@@ -399,11 +399,13 @@ function verifieraHändelserFörIntyg(förväntadeHändelser, arr) {
         // Underelement 'Patient'
         var patient = resource.getElementsByTagName('patient')[0];
         assert.equal(patient.children.length, 1, "Kontrollerar antal underelement till 'patient', index " + j);
-        // PatientId har i StoreLog V2 byggts ut till två underelement, "root" och "extension" där den sistnämnda är patientid
+        // PatientId har i StoreLog V2 byggts ut till två underelement, "root" och "extension" där den sistnämnda är patientid ??!! 
+        // ?? Denna ändring verkar ha blivit reversed då root och extension tillsynes inte längre finns ??
         var patientId = patient.getElementsByTagName('patientId')[0];
-        assert.equal(patientId.getElementsByTagName('extension')[0].innerText,
-                        förväntadeHändelser[j].resources.resource.patient.patientId,
-                        "Kontrollerar 'patientid', index " + j);
+        // assert.equal(patientId.getElementsByTagName('extension')[0].innerText,
+        //                 förväntadeHändelser[j].resources.resource.patient.patientId,
+        //                 "Kontrollerar 'patientid', index " + j);
+        assert.equal(patientId.innerText, förväntadeHändelser[j].resources.resource.patient.patientId, "Kontrollerar 'patientid', index " + j);
 
         // Underelement 'CareProvider'
         var careproviderResources = resource.getElementsByTagName('careprovider')[0];
