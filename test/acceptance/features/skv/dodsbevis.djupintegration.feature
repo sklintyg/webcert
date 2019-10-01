@@ -16,7 +16,7 @@ Scenario: PS-03 - Patienten har fått ett nytt personnummer
     Och jag fyller i alla nödvändiga fält för intyget
     Och jag signerar intyget
     Och jag går in på intygsutkastet via djupintegrationslänk med ett annat personnummer
-    Så ska ett varning-meddelande visa "Patientens personummer har ändrats"
+    Så ska ett varning-meddelande visa "Patientens personnummer har ändrats"
 
 @RESERVNUMMER @PS-07
 Scenario: PS-07 - Patienten har fått ett reservnummer
