@@ -26,6 +26,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
+import se.inera.intyg.common.services.texts.IntygTextsService;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.GrundData;
 import se.inera.intyg.common.support.model.common.internal.Patient;
@@ -83,6 +85,9 @@ public abstract class AbstractUtkastBuilder<T extends AbstractCreateCopyRequest>
     @Autowired
     private LogRequestFactory logRequestFactory;
 
+    @Autowired
+    private IntygTextsService intygTextsService;
+
     /*
      * (non-Javadoc)
      *
@@ -118,8 +123,9 @@ public abstract class AbstractUtkastBuilder<T extends AbstractCreateCopyRequest>
         builderResponse.setOrginalVardgivarId(vardenhet.getVardgivare().getVardgivarid());
         builderResponse.setOrginalVardgivarNamn(vardenhet.getVardgivare().getVardgivarnamn());
 
-        // NOTE: see INTYG-7212 can we really just take textVersion of orgUtlatande like when db->doi?
-        ModuleApi moduleApi = moduleRegistry.getModuleApi(intygsTyp, signedIntygHolder.getUtlatande().getTextVersion());
+        // Make sure the new Draft gets correct typeVersion.
+        ensureCorrectNewVersion(copyRequest, signedIntygHolder.getUtlatande().getTextVersion());
+        ModuleApi moduleApi = moduleRegistry.getModuleApi(intygsTyp, copyRequest.getTypVersion());
 
         // Set relation to null if not applicable
         Relation relation = createRelation(copyRequest);
@@ -131,7 +137,7 @@ public abstract class AbstractUtkastBuilder<T extends AbstractCreateCopyRequest>
         UtkastStatus utkastStatus = validateDraft(moduleApi, draftCopyJson);
 
         // NOTE: See INTYG-7212 can we really just take textVersion of orgUtlatande like when db->doi?
-        Utkast utkast = buildUtkastCopy(copyRequest, newDraftCopyId, intygsTyp, signedIntygHolder.getUtlatande().getTextVersion(),
+        Utkast utkast = buildUtkastCopy(copyRequest, newDraftCopyId, intygsTyp, copyRequest.getTypVersion(),
             addRelation, relation, draftCopyJson, utkastStatus);
 
         if (patientDetails != null) {
@@ -147,6 +153,22 @@ public abstract class AbstractUtkastBuilder<T extends AbstractCreateCopyRequest>
         builderResponse.setUtkast(utkast);
 
         return builderResponse;
+    }
+
+    /**
+     * Makes sure that the new draft gets a suitable version accoring to business rules for versioning of intygtypes.
+     * see GE-012 Versionshantering av intygstyper
+     * see WC-F016
+     */
+    private void ensureCorrectNewVersion(T copyRequest, String originalVersion) {
+        if (StringUtils.isEmpty(copyRequest.getTypVersion())) {
+            String version = intygTextsService
+                .getLatestVersionForSameMajorVersion(copyRequest.getTyp(), originalVersion);
+            if (version == null) {
+                version = originalVersion;
+            }
+            copyRequest.setTypVersion(version);
+        }
     }
 
     public abstract Relation createRelation(T copyRequest);
@@ -190,9 +212,11 @@ public abstract class AbstractUtkastBuilder<T extends AbstractCreateCopyRequest>
         builderResponse.setOrginalVardgivarNamn(orgUtkast.getVardgivarNamn());
 
         LOG.debug("Populating copy with details from Utkast '{}'", orignalIntygsId);
-        // NOTE: see INTYG-7212 can we really just take textVersion of orgUtlatande like when db->doi?
-        // The new Utkast's version is assumed to be of the same version as original.
-        ModuleApi moduleApi = moduleRegistry.getModuleApi(copyRequest.getTyp(), orgUtkast.getIntygTypeVersion());
+
+        // Make sure the new Draft gets correct typeVersion.
+        ensureCorrectNewVersion(copyRequest, orgUtkast.getIntygTypeVersion());
+
+        ModuleApi moduleApi = moduleRegistry.getModuleApi(copyRequest.getTyp(), copyRequest.getTypVersion());
 
         // Set relation to null if not applicable
         Relation relation = createRelation(copyRequest);
@@ -202,9 +226,7 @@ public abstract class AbstractUtkastBuilder<T extends AbstractCreateCopyRequest>
             newDraftCopyId);
 
         UtkastStatus utkastStatus = validateDraft(moduleApi, draftCopyJson);
-        // NOTE: See INTYG-7212 can we really just take textVersion of orgUtlatande like when db->doi?
-        // I.e when copying within the same intygType A -> A this should be OK, but maybe not for DB -> DOI
-        Utkast utkast = buildUtkastCopy(copyRequest, newDraftCopyId, copyRequest.getTyp(), orgUtkast.getIntygTypeVersion(), addRelation,
+        Utkast utkast = buildUtkastCopy(copyRequest, newDraftCopyId, copyRequest.getTyp(), copyRequest.getTypVersion(), addRelation,
             relation, draftCopyJson, utkastStatus);
 
         if (patientDetails != null) {
