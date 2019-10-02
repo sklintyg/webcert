@@ -21,7 +21,7 @@ Scenario: PS-03 - Patienten har fått ett nytt personnummer
     Och jag fyller i alla nödvändiga fält för intyget
     Och jag signerar intyget
     Och jag går in på intygsutkastet via djupintegrationslänk med ett annat personnummer
-    Så ska ett varning-meddelande visa "Patientens personummer har ändrats"
+    Så ska ett varning-meddelande visa "Patientens personnummer har ändrats"
 
     När jag förnyar intyget
 	Och jag fyller i nödvändig information ( om intygstyp är "Läkarintyg för sjukpenning")

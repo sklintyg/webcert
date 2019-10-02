@@ -22,15 +22,31 @@ import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
 
 import com.jayway.restassured.RestAssured;
+import com.jayway.restassured.http.ContentType;
+import com.jayway.restassured.response.Response;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import se.inera.intyg.webcert.web.web.controller.integrationtest.BaseRestIntegrationTest;
+import se.inera.intyg.webcert.web.web.controller.testability.dto.IntegreradEnhetEntryWithSchemaVersion;
 
 /**
  * Very basic test of the FMB API that requests an icd10 code known to have fmb info and one that doesn't.
  */
 public class IntegratedUnitsApiControllerIT extends InternalApiBaseRestIntegrationTest {
 
+    private static String ENHET_1 = "enhet-test123";
     private String url = "/internalapi/integratedUnits/";
+
+    @Before
+    public void setup() {
+        createIntegreradEnhet(ENHET_1);
+    }
+
+    @After
+    public void after() {
+        deleteIntegreradEnhet(ENHET_1);
+    }
 
     @Test
     public void getAllIntegratedUnits() {
@@ -47,12 +63,11 @@ public class IntegratedUnitsApiControllerIT extends InternalApiBaseRestIntegrati
     @Test
     public void getIntegratedUnit() {
         RestAssured.sessionId = getAuthSession(DEFAULT_LAKARE);
-        String unitId = "SE4815162344-1A02";
 
         given().cookie("ROUTEID", BaseRestIntegrationTest.routeId)
             .expect().statusCode(OK)
             .when()
-            .get( url + unitId)
+            .get( url + ENHET_1)
             .then()
             .body(matchesJsonSchemaInClasspath("jsonschema/webcert-get-integrated-unit-response-schema.json"));
     }
@@ -62,6 +77,24 @@ public class IntegratedUnitsApiControllerIT extends InternalApiBaseRestIntegrati
         given().expect().statusCode(NOT_FOUND)
             .when()
             .get( url + "NOT_FOUND");
+    }
+
+    private void deleteIntegreradEnhet(String enhetsId) {
+        Response response = spec().delete("testability/integreradevardenheter/" + enhetsId);
+    }
+
+    private void createIntegreradEnhet(String enhetsId) {
+        IntegreradEnhetEntryWithSchemaVersion enhet = new IntegreradEnhetEntryWithSchemaVersion();
+        enhet.setEnhetsId(enhetsId);
+        enhet.setEnhetsNamn("enhet1-namn");
+        enhet.setVardgivareId("vg1-id");
+        enhet.setVardgivareNamn("vg1-namn");
+
+        Response response = spec()
+            .contentType(ContentType.JSON).body(enhet)
+            .expect().statusCode(200)
+            .when().post("testability/integreradevardenheter")
+            .then().extract().response();
     }
 
 }

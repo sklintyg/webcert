@@ -80,7 +80,7 @@ describe('Djupintegration on luse with updated personnummer', function() {
         });
         expect(LuseIntygPage.isAt()).toBeTruthy();
         expect(LuseIntygPage.newPersonIdMessage.isDisplayed()).toBeTruthy();
-        expect(LuseIntygPage.newPersonIdMessageText.getText()).toBe('Patientens personummer har ändrats');
+        expect(LuseIntygPage.newPersonIdMessageText.getText()).toBe('Patientens personnummer har ändrats');
       });
     });
 
@@ -93,7 +93,7 @@ describe('Djupintegration on luse with updated personnummer', function() {
         });
         expect(LuseIntygPage.isAt()).toBeTruthy();
         expect(LuseIntygPage.newPersonIdMessage.isDisplayed()).toBeTruthy();
-        expect(LuseIntygPage.newPersonIdMessageText.getText()).toBe('Patientens personummer har ändrats');
+        expect(LuseIntygPage.newPersonIdMessageText.getText()).toBe('Patientens personnummer har ändrats');
       });
     });
 
@@ -155,7 +155,7 @@ describe('Djupintegration on luse with updated personnummer', function() {
       });
       expect(LuseUtkastPage.isAt()).toBeTruthy();
       expect(LuseUtkastPage.newPersonIdMessage.isDisplayed()).toBeTruthy();
-      expect(LuseUtkastPage.newPersonIdMessageText.getText()).toBe('Patientens personummer har ändrats');
+      expect(LuseUtkastPage.newPersonIdMessageText.getText()).toBe('Patientens personnummer har ändrats');
     });
 
     it('should display new person id message with samordningsnummer', function() {
@@ -164,7 +164,7 @@ describe('Djupintegration on luse with updated personnummer', function() {
       });
       expect(LuseUtkastPage.isAt()).toBeTruthy();
       expect(LuseUtkastPage.newPersonIdMessage.isDisplayed()).toBeTruthy();
-      expect(LuseUtkastPage.newPersonIdMessageText.getText()).toBe('Patientens personummer har ändrats');
+      expect(LuseUtkastPage.newPersonIdMessageText.getText()).toBe('Patientens personnummer har ändrats');
     });
 
     it('should display new person id message with reservenumber', function() {

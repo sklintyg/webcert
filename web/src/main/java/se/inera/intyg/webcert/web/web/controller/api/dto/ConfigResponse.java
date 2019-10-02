@@ -22,7 +22,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.util.List;
-import se.inera.intyg.infra.integration.ia.model.Banner;
+import se.inera.intyg.infra.driftbannerdto.Banner;
 
 @ApiModel(description = "The global configuration of Webcert")
 public class ConfigResponse {

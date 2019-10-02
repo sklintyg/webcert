@@ -20,6 +20,7 @@ package se.inera.intyg.webcert.web.service.intyg;
 
 import static se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum.DATA_NOT_FOUND;
 import static se.inera.intyg.webcert.web.service.intyg.util.IntygVerificationHelper.verifyIsNotRevoked;
+import static se.inera.intyg.webcert.web.service.intyg.util.IntygVerificationHelper.verifyIsNotSent;
 import static se.inera.intyg.webcert.web.service.intyg.util.IntygVerificationHelper.verifyIsSigned;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -457,6 +458,7 @@ public class IntygServiceImpl implements IntygService {
         if (optionalUtkast.isPresent()) {
             verifyIsNotRevoked(optionalUtkast.get(), IntygOperation.SEND);
             verifyIsSigned(optionalUtkast.get(), IntygOperation.SEND);
+            verifyIsNotSent(optionalUtkast.get(), IntygOperation.SEND);
         } else {
             final CertificateResponse certificate;
             try {
@@ -467,6 +469,7 @@ public class IntygServiceImpl implements IntygService {
             }
             verifyIsNotRevoked(certificate, IntygOperation.SEND);
             verifyIsSigned(certificate, IntygOperation.SEND);
+            verifyIsNotSent(certificate, IntygOperation.SEND);
 
         }
 

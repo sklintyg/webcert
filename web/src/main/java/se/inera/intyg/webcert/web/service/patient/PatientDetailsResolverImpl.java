@@ -208,9 +208,7 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
             resolvePatientAdressDetails(patient, resolveOrder, personSvar, user, predecessor);
         }
 
-        if (resolveOrder.getAvlidenStrategy() != null) {
-            resolvePatientAvlidenDetails(patient, personSvar);
-        }
+        resolvePatientAvlidenDetails(patient, personSvar);
 
         if (resolveOrder.getOtherStrategy() != null) {
             resolvePatientOtherDetails(patient, resolveOrder, personSvar, user, predecessor);
@@ -376,15 +374,12 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
 
     private boolean isPuOnlyStrategy(PatientDetailResolveOrder resolveOrder) {
         return resolveOrder.getOtherStrategy().stream().allMatch(it -> it.equals(PatientDetailResolveOrder.ResolveOrder.PU))
-            && resolveOrder.getAvlidenStrategy().stream().allMatch(it -> it.equals(PatientDetailResolveOrder.ResolveOrder.PU))
             && resolveOrder.getAdressStrategy().stream().allMatch(it -> it.equals(PatientDetailResolveOrder.ResolveOrder.PU));
     }
 
     private boolean isPredecessorStrategy(PatientDetailResolveOrder resolveOrder) {
         return (resolveOrder.getAdressStrategy() != null
             && resolveOrder.getAdressStrategy().stream().anyMatch(it -> it.equals(PatientDetailResolveOrder.ResolveOrder.PREDECESSOR)))
-            || (resolveOrder.getAvlidenStrategy() != null && resolveOrder.getAvlidenStrategy().stream()
-            .anyMatch(it -> it.equals(PatientDetailResolveOrder.ResolveOrder.PREDECESSOR)))
             || (resolveOrder.getOtherStrategy() != null && resolveOrder.getOtherStrategy().stream()
             .anyMatch(it -> it.equals(PatientDetailResolveOrder.ResolveOrder.PREDECESSOR)));
     }
