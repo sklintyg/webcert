@@ -86,6 +86,7 @@ public class CreateRenewalCopyUtkastBuilderImplTest extends AbstractBuilderTest 
     @Test
     public void testPopulateRenewalUtkastFromSignedIntyg() throws Exception {
 
+        when(intygTextsService.getLatestVersionForSameMajorVersion(anyString(), anyString())).thenReturn("1.2");
         IntygContentHolder ich = createIntygContentHolder();
         when(mockIntygService.fetchIntygData(INTYG_ID, INTYG_TYPE, false)).thenReturn(ich);
 
@@ -106,6 +107,7 @@ public class CreateRenewalCopyUtkastBuilderImplTest extends AbstractBuilderTest 
         assertNotNull(builderResponse.getUtkast());
         assertNotNull(builderResponse.getUtkast().getModel());
         assertEquals(INTYG_TYPE, builderResponse.getUtkast().getIntygsTyp());
+        assertEquals("1.2", builderResponse.getUtkast().getIntygTypeVersion());
         assertEquals(PATIENT_SSN, builderResponse.getUtkast().getPatientPersonnummer());
         assertEquals(PATIENT_FNAME, builderResponse.getUtkast().getPatientFornamn());
         assertEquals(PATIENT_MNAME, builderResponse.getUtkast().getPatientMellannamn());

@@ -18,11 +18,14 @@
  */
 package se.inera.intyg.webcert.web.service.utkast;
 
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 import org.junit.Before;
 import org.mockito.Mock;
 import org.mockito.Spy;
+import se.inera.intyg.common.services.texts.IntygTextsService;
+import se.inera.intyg.common.services.texts.repo.IntygTextsRepository;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.model.common.internal.Patient;
 import se.inera.intyg.common.support.model.common.internal.Vardenhet;
@@ -68,6 +71,9 @@ public class AbstractBuilderTest {
     @Mock
     protected WebCertUserService webcertUserService;
 
+    @Mock
+    protected IntygTextsService intygTextsService;
+
     @Spy
     protected CreateIntygsIdStrategy mockIdStrategy = new CreateIntygsIdStrategy() {
         @Override
@@ -103,6 +109,10 @@ public class AbstractBuilderTest {
     @Before
     public void expectCallToWebcertUserService() {
         when(webcertUserService.isAuthorizedForUnit(VARDGIVARE_ID, VARDENHET_ID, true)).thenReturn(true);
+    }
+    @Before
+    public void expectCallIntygTextService() {
+        when(intygTextsService.getLatestVersionForSameMajorVersion(anyString(), anyString())).thenReturn("1.0");
     }
 
     protected static Personnummer createPnr(String personId) {
