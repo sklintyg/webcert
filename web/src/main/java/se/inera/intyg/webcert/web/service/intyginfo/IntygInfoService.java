@@ -107,6 +107,7 @@ public class IntygInfoService {
             return Optional.empty();
         }
 
+        response.setCreatedInWC(true);
         response.setIntygId(utkast.getIntygsId());
         response.setIntygType(utkast.getIntygsTyp());
         response.setIntygVersion(utkast.getIntygTypeVersion());
@@ -148,16 +149,21 @@ public class IntygInfoService {
         List<Handelse> handelses = handelseRepository.findByIntygsId(intygsId);
         List<IntygInfoEvent> events = new ArrayList<>();
 
-        handelses.forEach(handelse -> {
+        boolean createdInWC = false;
+
+        for (Handelse handelse : handelses) {
             switch (handelse.getCode()) {
 
                 case SKAPAT:
+                    createdInWC = true;
                     events.add(new IntygInfoEvent(Source.WEBCERT, handelse.getTimestamp(), IntygInfoEventType.IS101));
                     break;
                 case ANDRAT:
+                    createdInWC = true;
                     events.add(new IntygInfoEvent(Source.WEBCERT, handelse.getTimestamp(), IntygInfoEventType.IS102));
                     break;
                 case RADERA:
+                    createdInWC = true;
                     events.add(new IntygInfoEvent(Source.WEBCERT, handelse.getTimestamp(), IntygInfoEventType.IS103));
                     break;
                 case KFSIGN:
@@ -188,7 +194,9 @@ public class IntygInfoService {
                     events.add(new IntygInfoEvent(Source.WEBCERT, handelse.getTimestamp(), IntygInfoEventType.IS113));
                     break;
             }
-        });
+        }
+
+        response.setCreatedInWC(createdInWC);
 
         response.getEvents().addAll(events);
 
@@ -216,7 +224,7 @@ public class IntygInfoService {
                     break;
             }
 
-            if (type != null && relation.getStatus().equals(UtkastStatus.SIGNED)) {
+            if (type != null) {
                 IntygInfoEvent relationEvent = createEvent(relation.getSkapad(), type, "intygsId", relation.getIntygsId());
 
                 Utkast relatedIntyg = utkastRepository.findOne(relation.getIntygsId());
@@ -340,11 +348,11 @@ public class IntygInfoService {
         response.setKompletteringarAnswered((int) answered);
 
         Set<Status> answeredOrClosed = Stream.of(Status.ANSWERED, Status.CLOSED).collect(Collectors.toSet());
-        Set<ArendeAmne> adminQuestionTypes = Stream.of(ArendeAmne.AVSTMN, ArendeAmne.KONTKT, ArendeAmne.OVRIGT).collect(Collectors.toSet());
+        Set<ArendeType> fragaOrPaminnelse = Stream.of(ArendeType.FRAGA, ArendeType.PAMINNELSE).collect(Collectors.toSet());
 
         List<Arende> adminQuestions = arendeList.stream()
-            .filter(a -> adminQuestionTypes.contains(a.getAmne()))
-            .filter(a -> ArendeViewConverter.getArendeType(a).equals(ArendeType.FRAGA))
+            .filter(a -> !ArendeAmne.KOMPLT.equals(a.getAmne()))
+            .filter(a -> fragaOrPaminnelse.contains(ArendeViewConverter.getArendeType(a)))
             .collect(Collectors.toList());
 
         // Admin frågor skickade
@@ -397,7 +405,7 @@ public class IntygInfoService {
         });
         // Besvarade av vården
         arendeList.stream()
-            .filter(a -> adminQuestionTypes.contains(a.getAmne()))
+            .filter(a -> !ArendeAmne.KOMPLT.equals(a.getAmne()))
             .filter(a -> ArendeViewConverter.getArendeType(a).equals(ArendeType.SVAR))
             .filter(a -> FrageStallare.WEBCERT.getKod().equals(a.getSkickatAv()))
             .forEach(arende -> {
@@ -423,7 +431,7 @@ public class IntygInfoService {
         });
         // Besvarade av mottagare
         arendeList.stream()
-            .filter(a -> adminQuestionTypes.contains(a.getAmne()))
+            .filter(a -> !ArendeAmne.KOMPLT.equals(a.getAmne()))
             .filter(a -> ArendeViewConverter.getArendeType(a).equals(ArendeType.SVAR))
             .filter(a -> !FrageStallare.WEBCERT.getKod().equals(a.getSkickatAv()))
             .forEach(arende -> {
