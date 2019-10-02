@@ -47,6 +47,28 @@ public final class IntygVerificationHelper {
 
     }
 
+    private static void intygAlreadySentError(String intygsId, String operation) {
+        final String message = MessageFormat.format("Certificate {0} is sent, cannot {1} an already sent certificate",
+            intygsId, operation);
+        LOG.debug(message);
+        throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, message);
+    }
+
+    public static void verifyIsNotSent(final Utkast intyg, final IntygServiceImpl.IntygOperation operation) {
+        if (intyg.getSkickadTillMottagare() != null && intyg.getSkickadTillMottagare().trim().length() > 0) {
+            intygAlreadySentError(intyg.getIntygsId(), operation.getValue());
+        }
+    }
+
+    public static void verifyIsNotSent(final CertificateResponse certificate, final IntygServiceImpl.IntygOperation operation) {
+        final List<Status> states = (isNull(certificate.getMetaData()) || isEmpty(certificate.getMetaData().getStatus())
+            ? Collections.emptyList()
+            : certificate.getMetaData().getStatus());
+        if (states.stream().anyMatch(state -> CertificateState.SENT.equals(state.getType()) && state.getTimestamp() != null)) {
+            intygAlreadySentError(certificate.getUtlatande().getId(), operation.getValue());
+        }
+    }
+
     public static void verifyIsSigned(final IntygContentHolder intyg, final IntygServiceImpl.IntygOperation operation) {
 
         final List<Status> states = (isNull(intyg) || isEmpty(intyg.getStatuses()))
