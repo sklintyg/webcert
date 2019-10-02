@@ -63,6 +63,9 @@
     "kompletteringarAnswered": {
       "type": "number"
     },
+    "createdInWC": {
+      "type": "boolean"
+    },
     "events":  {
       "type": "array",
       "items": {
