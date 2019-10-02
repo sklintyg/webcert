@@ -259,7 +259,6 @@
       $rootScope.lang = 'sv';
       $rootScope.DEFAULT_LANG = 'sv';
       $rootScope.testModeActive = false;
-      $rootScope.banners = moduleConfig.BANNERS;
 
       UserModel.setUser(user);
       UserModel.termsAccepted = user && user.privatLakareAvtalGodkand;
