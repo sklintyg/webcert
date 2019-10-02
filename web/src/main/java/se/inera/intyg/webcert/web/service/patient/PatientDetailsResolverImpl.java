@@ -130,12 +130,7 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
     @Override
     public boolean isAvliden(Personnummer personnummer) {
         PersonSvar personSvar = getPersonSvar(personnummer);
-        boolean avlidenPU = personSvar.getStatus() == PersonSvar.Status.FOUND && personSvar.getPerson().isAvliden();
-
-        WebCertUser user = webCertUserService.hasAuthenticationContext() ? webCertUserService.getUser() : null;
-        boolean avlidenIntegration = user != null && user.getParameters() != null && user.getParameters().isPatientDeceased();
-
-        return avlidenPU || avlidenIntegration;
+        return personSvar.getStatus() == PersonSvar.Status.FOUND && personSvar.getPerson().isAvliden();
     }
 
     @Override
@@ -213,9 +208,7 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
             resolvePatientAdressDetails(patient, resolveOrder, personSvar, user, predecessor);
         }
 
-        if (resolveOrder.getAvlidenStrategy() != null) {
-            resolvePatientAvlidenDetails(patient, resolveOrder, personSvar, user, predecessor);
-        }
+        resolvePatientAvlidenDetails(patient, personSvar);
 
         if (resolveOrder.getOtherStrategy() != null) {
             resolvePatientOtherDetails(patient, resolveOrder, personSvar, user, predecessor);
@@ -247,28 +240,8 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
         }
     }
 
-    private void resolvePatientAvlidenDetails(Patient patient, PatientDetailResolveOrder resolveOrder,
-        PersonSvar personSvar, WebCertUser user, Utlatande predecessor) {
-        List<PatientDetailResolveOrder.ResolveOrder> avlidenStrategy = resolveOrder.getAvlidenStrategy();
-        int index = 0;
-        boolean done = false;
-        while (index < avlidenStrategy.size() && !done) {
-            switch (avlidenStrategy.get(index)) {
-                case PARAMS:
-                    done = setAvlidenFromParams(patient, user);
-                    break;
-                case PU:
-                    done = setAvlidenFromPu(patient, personSvar);
-                    break;
-                case PARAMS_OR_PU:
-                    done = setAvlidenFromParamsOrPU(patient, personSvar, user);
-                    break;
-                case PREDECESSOR:
-                    done = setAvlidenFromPredecessor(patient, predecessor);
-                    break;
-            }
-            index++;
-        }
+    private void resolvePatientAvlidenDetails(Patient patient, PersonSvar personSvar) {
+        setAvlidenFromPu(patient, personSvar);
     }
 
     private void resolvePatientOtherDetails(Patient patient, PatientDetailResolveOrder resolveOrder,
@@ -334,33 +307,9 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
         return false;
     }
 
-    private boolean setAvlidenFromParamsOrPU(Patient patient, PersonSvar personSvar, WebCertUser user) {
-        patient.setAvliden(
-            (personSvar.getStatus() == PersonSvar.Status.FOUND && personSvar.getPerson().isAvliden())
-                || (user.getParameters() != null && user.getParameters().isPatientDeceased())
-                || (personSvar.getStatus() != PersonSvar.Status.FOUND && user.getParameters() == null));
-        return true;
-    }
-
-    private boolean setAvlidenFromPredecessor(Patient patient, Utlatande predecessor) {
-        if (predecessor != null) {
-            patient.setAvliden(predecessor.getGrundData().getPatient().isAvliden());
-            return true;
-        }
-        return false;
-    }
-
     private boolean setAvlidenFromPu(Patient patient, PersonSvar personSvar) {
         if (personSvar.getStatus().equals(PersonSvar.Status.FOUND)) {
             patient.setAvliden(personSvar.getPerson().isAvliden());
-            return true;
-        }
-        return false;
-    }
-
-    private boolean setAvlidenFromParams(Patient patient, WebCertUser user) {
-        if (user.getOrigin().equals(UserOriginType.DJUPINTEGRATION.name())) {
-            patient.setAvliden(user.getParameters().isPatientDeceased());
             return true;
         }
         return false;
@@ -425,15 +374,12 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
 
     private boolean isPuOnlyStrategy(PatientDetailResolveOrder resolveOrder) {
         return resolveOrder.getOtherStrategy().stream().allMatch(it -> it.equals(PatientDetailResolveOrder.ResolveOrder.PU))
-            && resolveOrder.getAvlidenStrategy().stream().allMatch(it -> it.equals(PatientDetailResolveOrder.ResolveOrder.PU))
             && resolveOrder.getAdressStrategy().stream().allMatch(it -> it.equals(PatientDetailResolveOrder.ResolveOrder.PU));
     }
 
     private boolean isPredecessorStrategy(PatientDetailResolveOrder resolveOrder) {
         return (resolveOrder.getAdressStrategy() != null
             && resolveOrder.getAdressStrategy().stream().anyMatch(it -> it.equals(PatientDetailResolveOrder.ResolveOrder.PREDECESSOR)))
-            || (resolveOrder.getAvlidenStrategy() != null && resolveOrder.getAvlidenStrategy().stream()
-            .anyMatch(it -> it.equals(PatientDetailResolveOrder.ResolveOrder.PREDECESSOR)))
             || (resolveOrder.getOtherStrategy() != null && resolveOrder.getOtherStrategy().stream()
             .anyMatch(it -> it.equals(PatientDetailResolveOrder.ResolveOrder.PREDECESSOR)));
     }
