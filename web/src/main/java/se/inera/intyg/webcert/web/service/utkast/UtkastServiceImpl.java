@@ -234,7 +234,7 @@ public class UtkastServiceImpl implements UtkastService {
         }
 
         try {
-            Utlatande fromUtlatande = utkastServiceHelper.getUtlatande(fromIntygId, fromIntygType, false, true);
+            Utlatande fromUtlatande = utkastServiceHelper.getUtlatandeFromIT(fromIntygId, fromIntygType, false, true);
 
             String draftVersion = to.getIntygTypeVersion();
             if (draftVersion == null) {
@@ -277,7 +277,7 @@ public class UtkastServiceImpl implements UtkastService {
 
             return new SaveDraftResponse(to.getVersion(), to.getStatus());
 
-        } catch (ModuleException | ModuleNotFoundException | IOException e) {
+        } catch (ModuleException | IOException e) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM,
                 String.format("Error copying data from intyg '%s' to utkast '%s'", fromIntygId, toIntygsId), e);
         }
