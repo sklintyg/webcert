@@ -43,7 +43,7 @@
 </head>
 <body>
 
-  <service-banner id="service-banners" banners="$root.banners"></service-banner>
+  <wc-service-banner id="service-banners"></wc-service-banner>
   <wc-cookie-banner></wc-cookie-banner>
 
   <div ui-view="header" autoscroll="true" id="wcHeader"></div>
