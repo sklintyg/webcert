@@ -21,7 +21,9 @@ package se.inera.intyg.webcert.web.service.fmb.sjukfall;
 import io.vavr.control.Try;
 import java.lang.invoke.MethodHandles;
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -44,6 +46,7 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.riv.clinicalprocess.healthcond.certificate.types.v2.HsaId;
 import se.riv.clinicalprocess.healthcond.certificate.types.v2.PersonId;
 import se.riv.clinicalprocess.healthcond.rehabilitation.v1.IntygsData;
+import se.riv.clinicalprocess.healthcond.rehabilitation.v1.IntygsLista;
 
 @Service
 public class FmbSjukfallServiceImpl implements FmbSjukfallService {
@@ -69,20 +72,21 @@ public class FmbSjukfallServiceImpl implements FmbSjukfallService {
         this.webCertUserService = webCertUserService;
     }
 
+    // INTYGFV-12314: Sometimes getAktivtSjukfallForPatientAndEnhet() raises a NullPointerException,
+    // and therefore more detailed logging has been enabled.
     @Override
     public int totalSjukskrivningstidForPatientAndCareUnit(final Personnummer personnummer) {
 
-        LOG.debug("Starting: " + MESSAGE);
+        LOG.debug("Starting: {}", MESSAGE);
 
         final Try<List<SjukfallEnhet>> sjukfallUppslag = Try.of(() -> getAktivtSjukfallForPatientAndEnhet(personnummer));
 
         if (sjukfallUppslag.isFailure()) {
-            LOG.error("Failed: " + MESSAGE);
-            sjukfallUppslag.getCause().printStackTrace();
+            LOG.error("Unable to get sjukfall: ", sjukfallUppslag.getCause());
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.EXTERNAL_SYSTEM_PROBLEM, "Failed: " + MESSAGE);
-        } else {
-            LOG.debug("Done: " + MESSAGE);
         }
+
+        LOG.debug("Done: {}",  MESSAGE);
 
         return getTotaltAntalDagar(sjukfallUppslag.get());
     }
@@ -91,7 +95,9 @@ public class FmbSjukfallServiceImpl implements FmbSjukfallService {
         final ListActiveSickLeavesForCareUnitType request = createRequest(personnummer);
         final ListActiveSickLeavesForCareUnitResponseType response = sickLeavesForCareUnit.listActiveSickLeavesForCareUnit("", request);
 
-        final List<IntygsData> intygsData = response.getIntygsLista().getIntygsData();
+        final IntygsLista intygsLista = response.getIntygsLista();
+        // check for null (might be root-cause to INTYGFV-12314)
+        final List<IntygsData> intygsData = Objects.isNull(intygsLista) ? Collections.emptyList() : intygsLista.getIntygsData();
         final List<IntygData> intygData = IntygstjanstConverter.toSjukfallFormat(intygsData);
 
         final LocalDate now = LocalDate.now();
