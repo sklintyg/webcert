@@ -39,14 +39,17 @@ import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
 public final class UtkastServiceHelper {
 
     @Autowired
+    UtkastRepository utkastRepository;
+    @Autowired
     private IntygModuleRegistry moduleRegistry;
-
     @Autowired
     private IntygService intygService;
 
-    @Autowired
-    UtkastRepository utkastRepository;
+    public Utlatande getUtlatandeFromIT(String intygId, String intygsTyp, boolean coherentJournaling, boolean pdlLoggning) {
+        IntygContentHolder signedIntygHolder = intygService.fetchIntygData(intygId, intygsTyp, coherentJournaling, pdlLoggning);
+        return signedIntygHolder.getUtlatande();
 
+    }
 
     public Utlatande getUtlatande(String intygId, String intygsTyp, boolean coherentJournaling, boolean pdlLoggning)
         throws ModuleException, ModuleNotFoundException {
