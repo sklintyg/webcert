@@ -252,7 +252,8 @@
 
   // Inject language resources
   app.run(['$log', '$rootScope', '$window', '$location', '$state', '$q', '$uibModalStack', 'common.messageService', 'common.moduleService',
-    'common.UserModel', 'webcert.messages', 'common.MonitoringLogService', 'common.dynamicLinkService', 'idpConnectivityService', 'moduleConfig',
+    'common.UserModel', 'webcert.messages', 'common.MonitoringLogService', 'common.dynamicLinkService', 'idpConnectivityService',
+    'moduleConfig',
     function($log, $rootScope, $window, $location, $state, $q, $uibModalStack, messageService, moduleService, UserModel, wcMessages,
         MonitoringLogService, dynamicLinkService, idpConnectivityService, moduleConfig) {
 
@@ -303,7 +304,10 @@
               }
             } else {
               if (!redirectToUnitSelection()) {
-                idpConnectivityService.checkAndLogConnectivity();
+                if (isNotRedirectedToUnitSelection(toState.name) && !UserModel.idpConnectivityChecked) {
+                  UserModel.idpConnectivityChecked = true;
+                  idpConnectivityService.checkAndLogConnectivity();
+                }
                 termsCheck();
 
                 if (fromState.name !== 'webcert.terms' || !UserModel.transitioning) {
@@ -348,6 +352,15 @@
       $rootScope.$on('$viewContentLoaded', function(event) {
         $log.debug('$viewContentLoaded - fired after dom rendered', event);
       });
+
+      /**
+       * Check so the toState isn't redirected to unit selection for the user. It considered both origin NORMAL and DJUPINTEGRATION scenarios.
+       * @param toStateName Name of toState
+       * @returns {boolean} True if it isn't a redirection to unit selection
+       */
+      function isNotRedirectedToUnitSelection(toStateName) {
+        return toStateName !== 'integrationenhetsval' && toStateName !== 'normal-origin-enhetsval';
+      }
 
       // INTYG-3069, INTYGFV-12307
       // Once per session we want to log relevant information about the users environment.
