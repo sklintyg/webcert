@@ -93,6 +93,7 @@ import se.inera.intyg.common.support.modules.support.api.dto.CertificateResponse
 import se.inera.intyg.common.support.modules.support.api.notification.ArendeCount;
 import se.inera.intyg.common.support.xml.XmlMarshallerHelper;
 import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
+import se.inera.intyg.infra.integration.hsa.model.SelectableVardenhet;
 import se.inera.intyg.infra.integration.pu.model.Person;
 import se.inera.intyg.infra.integration.pu.model.PersonSvar;
 import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
@@ -235,6 +236,15 @@ public class IntygServiceTest {
     @Mock
     private AccessResultExceptionHelper accessResultExceptionHelper;
 
+    @Mock
+    SelectableVardenhet vardgivare;
+
+    @Mock
+    WebCertUser user;
+
+    @Mock
+    IntegrationParameters intParam;
+
     @InjectMocks
     private IntygDraftsConverter intygConverter = new IntygDraftsConverter();
 
@@ -343,6 +353,49 @@ public class IntygServiceTest {
         when(logRequestFactory.createLogRequestFromUtlatande(any(Utlatande.class))).thenReturn(new LogRequest());
         when(logRequestFactory.createLogRequestFromUtlatande(any(Utlatande.class), anyBoolean())).thenReturn(new LogRequest());
     }
+
+    private void setupUserAndVardgivare(){
+        when(webCertUserService.getUser()).thenReturn(user);
+        when(user.getOrigin()).thenReturn(UserOriginType.DJUPINTEGRATION.name());
+        when(user.getValdVardgivare()).thenReturn(vardgivare);
+        when(vardgivare.getId()).thenReturn("VardgivarId");
+        when(user.getParameters()).thenReturn(intParam);
+    }
+
+    @Test
+    public void testCheckSjfSameEnhetSjf() {
+        setupUserAndVardgivare();
+        when(intParam.isSjf()).thenReturn(true);
+        intygService.fetchIntygAsPdf(CERTIFICATE_ID, CERTIFICATE_TYPE, false);
+        verify(logRequestFactory).createLogRequestFromUtlatande(any(Utlatande.class), eq(false));
+    }
+
+    @Test
+    public void testCheckSjfSameEnhet() {
+        setupUserAndVardgivare();
+        when(intParam.isSjf()).thenReturn(false);
+        intygService.fetchIntygAsPdf(CERTIFICATE_ID, CERTIFICATE_TYPE, false);
+        verify(logRequestFactory).createLogRequestFromUtlatande(any(Utlatande.class), eq(false));
+    }
+
+    @Test
+    public void testCheckSjfDifferentEnhetIsSjf() {
+        setupUserAndVardgivare();
+        when(vardgivare.getId()).thenReturn("12345");
+        when(intParam.isSjf()).thenReturn(true);
+        intygService.fetchIntygAsPdf(CERTIFICATE_ID, CERTIFICATE_TYPE, false);
+        verify(logRequestFactory).createLogRequestFromUtlatande(any(Utlatande.class), eq(true));
+    }
+
+    @Test
+    public void testCheckSjfDifferentEnhetNotSjf() {
+        setupUserAndVardgivare();
+        when(vardgivare.getId()).thenReturn("12345");
+        when(intParam.isSjf()).thenReturn(false);
+        intygService.fetchIntygAsPdf(CERTIFICATE_ID, CERTIFICATE_TYPE, false);
+        verify(logRequestFactory).createLogRequestFromUtlatande(any(Utlatande.class), eq(false));
+    }
+
 
     @Test
     public void testFetchIntyg() throws Exception {
@@ -814,6 +867,7 @@ public class IntygServiceTest {
     @SuppressWarnings("unchecked")
     @Test
     public void testFetchUtkastAsPdfFromWebCert() throws IOException, IntygModuleFacadeException {
+        setupUserAndVardgivare();
         when(utkastRepository.findOne(CERTIFICATE_ID)).thenReturn(getDraft(CERTIFICATE_ID, UtkastStatus.DRAFT_INCOMPLETE));
         when(moduleFacade.convertFromInternalToPdfDocument(anyString(), anyString(), anyList(), any(UtkastStatus.class), anyBoolean()))
                 .thenReturn(buildPdfDocument());
@@ -862,6 +916,7 @@ public class IntygServiceTest {
     @SuppressWarnings("unchecked")
     @Test
     public void testFetchLockedDraftAsPdfFromWebCert() throws IOException, IntygModuleFacadeException {
+        setupUserAndVardgivare();
         when(utkastRepository.findOne(CERTIFICATE_ID)).thenReturn(getDraft(CERTIFICATE_ID, UtkastStatus.DRAFT_LOCKED));
         when(moduleFacade.convertFromInternalToPdfDocument(anyString(), anyString(), anyList(), any(UtkastStatus.class), anyBoolean()))
                 .thenReturn(buildPdfDocument());
@@ -878,6 +933,7 @@ public class IntygServiceTest {
     @SuppressWarnings("unchecked")
     @Test
     public void testFetchIntygAsPdfFromIntygstjansten() throws IOException, IntygModuleFacadeException {
+        setupUserAndVardgivare();
         when(utkastRepository.findOne(CERTIFICATE_ID)).thenReturn(null);
         when(moduleFacade.convertFromInternalToPdfDocument(anyString(), anyString(), anyList(), any(UtkastStatus.class), anyBoolean()))
                 .thenReturn(buildPdfDocument());
@@ -912,6 +968,7 @@ public class IntygServiceTest {
     @Test
     public void testLoggingFetchIntygAsPdfWithDraft() throws IOException, IntygModuleFacadeException {
         final Utkast draft = getDraft(CERTIFICATE_ID);
+        setupUserAndVardgivare();
         when(utkastRepository.findOne(CERTIFICATE_ID)).thenReturn(draft);
 
         Fk7263Utlatande utlatande = objectMapper.readValue(draft.getModel(), Fk7263Utlatande.class);
@@ -932,6 +989,7 @@ public class IntygServiceTest {
 
     @Test
     public void testLoggingFetchIntygAsPdfWithSJF() throws IOException, IntygModuleFacadeException {
+        setupUserAndVardgivare();
         // Set up user
         IntegrationParameters parameters = new IntegrationParameters(null, null, null, null, null, null, null, null, null, true, false,
                 false, false);

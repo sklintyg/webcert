@@ -353,6 +353,16 @@ public class IntygServiceImpl implements IntygService {
             .collect(Collectors.toSet());
     }
 
+    private boolean checkSjf(IntygContentHolder intyg) {
+        WebCertUser user = webCertUserService.getUser();
+        if (intyg.getUtlatande().getGrundData().getSkapadAv().getVardenhet().getVardgivare().getVardgivarid().
+            equals(user.getValdVardgivare().getId())) {
+            return false;
+        } else {
+            return userIsDjupintegreradWithSjf();
+        }
+    }
+
     @Override
     public IntygPdf fetchIntygAsPdf(String intygsId, String intygsTyp, boolean isEmployerCopy) {
         try {
@@ -383,7 +393,7 @@ public class IntygServiceImpl implements IntygService {
                 utkastStatus, isEmployerCopy);
 
             // Log print as PDF to PDL log
-            logPdfPrinting(intyg, userIsDjupintegreradWithSjf(), isEmployerCopy);
+            logPdfPrinting(intyg, checkSjf(intyg), isEmployerCopy);
 
             return intygPdf;
 
@@ -412,7 +422,6 @@ public class IntygServiceImpl implements IntygService {
         final String intygsTyp = intyg.getUtlatande().getTyp();
 
         LogRequest logRequest = logRequestFactory.createLogRequestFromUtlatande(intyg.getUtlatande(), coherentJournaling);
-
         // Are we printing a draft?
         if (intyg.getUtlatande().getGrundData().getSigneringsdatum() == null) {
             // Log printing of draft
