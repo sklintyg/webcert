@@ -104,9 +104,7 @@ allprojects {
 
     task createVersionPropertyFile(type: VersionPropertyFileTask)
 
-    configurations.archives.with {
-        artifacts.remove artifacts.find { !it.name.equals("webcert-liquibase-runner") }
-    }
+    uploadArchives.enabled = false
 
     uploadArchives.repositories.mavenDeployer {
         repository(url: "https://build-inera.nordicmedtest.se/nexus/repository/releases/") {

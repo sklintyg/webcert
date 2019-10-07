@@ -23,6 +23,8 @@ startScripts {
     }
 }
 
+uploadArchives.enabled = true
+
 artifacts {
     archives distZip
 }
