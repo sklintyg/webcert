@@ -1,21 +1,19 @@
 #!groovy
 
-def buildVersion = "6.5.0.${BUILD_NUMBER}-nightly"
+node {
+    def buildVersion = "6.5.0.${BUILD_NUMBER}-nightly"
 
-def commonVersion = "3.11.0.+"
-def infraVersion = "3.11.0.+"
-def refDataVersion = "1.0-SNAPSHOT"
-def versionFlags = "-DbuildVersion=${buildVersion} -DcommonVersion=${commonVersion} -DinfraVersion=${infraVersion} -DrefDataVersion=${refDataVersion}"
+    def commonVersion = "3.11.0.+"
+    def infraVersion = "3.11.0.+"
+    def refDataVersion = "1.0-SNAPSHOT"
+    def versionFlags = "-DbuildVersion=${buildVersion} -DcommonVersion=${commonVersion} -DinfraVersion=${infraVersion} -DrefDataVersion=${refDataVersion}"
 
-stage('checkout') {
-    node {
+    stage('checkout') {
         git url: "https://github.com/sklintyg/webcert.git", branch: GIT_BRANCH
         util.run { checkout scm }
     }
-}
 
-stage('owasp') {
-    node {
+    stage('owasp') {
         try {
             shgradle "--refresh-dependencies clean dependencyCheckAggregate ${versionFlags}"
         } finally {
@@ -23,10 +21,8 @@ stage('owasp') {
                 reportFiles: 'dependency-check-report.html', reportName: 'OWASP dependency-check'
         }
     }
-}
 
-stage('sonarqube') {
-    node {
+    stage('sonarqube') {
         shgradle "sonarqube ${versionFlags}"
     }
 }
