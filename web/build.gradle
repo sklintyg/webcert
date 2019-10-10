@@ -93,9 +93,8 @@ task restAssuredTest(type: Test) {
 }
 
 gretty {
-    servletContainer = 'jetty9'
+    servletContainer = 'tomcat9'
     contextPath = '/'
-    contextConfigFile = file("src/main/webapp/WEB-INF/jetty-web.xml")
 
     integrationTestTask = null
     scanInterval = 0
@@ -227,5 +226,6 @@ dependencies {
 
     annotationProcessor "com.google.auto.value:auto-value:${autovalueVersion}"
 
+    gretty "org.eclipse.jetty:apache-jstl:${apacheJstlVersion}"
     gretty "se.inera.intyg.refdata:refdata:${refDataVersion}"
 }

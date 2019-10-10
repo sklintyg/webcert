@@ -44,6 +44,7 @@ ext {
     opensamlVersion = "2.5.3"
     restassuredVersion = "2.9.0"
     servletApiVersion = "3.1.0"
+    apacheJstlVersion = "9.3.6.v20151106"
     springDataVersion = "1.11.12.RELEASE"
     springDataRedisVersion = "1.8.12.RELEASE"
     springSecurityVersion = "4.2.5.RELEASE"
