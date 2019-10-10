@@ -194,6 +194,13 @@
         <url-pattern>/metrics</url-pattern>
     </servlet-mapping>
 
+    <!-- when running local tomcat9 via gretty in unminified mode, some json files (e.g app/app-deps.json) are served by tomcat and must
+         have correct mimetype in order for the client to work correctly -->
+    <mime-mapping>
+        <extension>json</extension>
+        <mime-type>application/json;charset=utf-8</mime-type>
+    </mime-mapping>
+
     <filter>
         <filter-name>springSessionRepositoryFilter</filter-name>
         <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
