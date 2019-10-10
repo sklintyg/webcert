@@ -1302,6 +1302,17 @@ public class IntygServiceTest {
     }
 
     @Test
+    public void testDeceasedIsNotSetForDeadPatientDjupintegration() {
+        when(webcertUser.getOrigin()).thenReturn(UserOriginType.DJUPINTEGRATION.name());
+        when(webcertUser.getParameters())
+            .thenReturn(new IntegrationParameters("", "", "", "", "", "", "", "", "", false, true, false, true));
+        when(patientDetailsResolver.resolvePatient(any(Personnummer.class), anyString(), anyString()))
+            .thenReturn(buildPatient(false, true));
+        IntygContentHolder intygData = intygService.fetchIntygData(CERTIFICATE_ID, CERTIFICATE_TYPE, false);
+        assertFalse(intygData.isDeceased());
+    }
+
+    @Test
     public void testThatCompletePatientAddressIsUsed() throws Exception {
         // Given
         String postadress = "ttipafpinu-postadress";
