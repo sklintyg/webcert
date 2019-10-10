@@ -90,6 +90,7 @@ public class FmbDiagnosInformationServiceImplTest {
         final String sourceValue = "2";
         final String sourceUnit = "wk";
 
+        final DiagnosInformation diagnosInformation = createDiagnosInformation("test", "test", "A10", "B20");
         final List<MaximalSjukskrivningstidDagar> max = Lists
             .newArrayList(MaximalSjukskrivningstidDagar.of("kod1", rekommenderad, sourceValue, sourceUnit));
 
@@ -100,6 +101,10 @@ public class FmbDiagnosInformationServiceImplTest {
         doReturn(tidigare)
             .when(sjukfallService)
             .totalSjukskrivningstidForPatientAndCareUnit(any(Personnummer.class));
+
+        doReturn(Optional.of(diagnosInformation))
+            .when(diagnosInformationRepository)
+            .findFirstByIcd10KodList_kod(anyString());
 
         final MaximalSjukskrivningstidRequest request = MaximalSjukskrivningstidRequest.of(
             Icd10KoderRequest.of("kod1", "kod2", "kod3"), Personnummer.createPersonnummer("191212121212").get(), foreslagen);
@@ -123,6 +128,7 @@ public class FmbDiagnosInformationServiceImplTest {
         final String sourceValue = "1";
         final String sourceUnit = "wk";
 
+        final DiagnosInformation diagnosInformation = createDiagnosInformation("test", "test", "A10", "B20");
         final List<MaximalSjukskrivningstidDagar> max = Lists
             .newArrayList(MaximalSjukskrivningstidDagar.of("kod1", rekommenderad, sourceValue, sourceUnit));
 
@@ -133,6 +139,10 @@ public class FmbDiagnosInformationServiceImplTest {
         doReturn(tidigare)
             .when(sjukfallService)
             .totalSjukskrivningstidForPatientAndCareUnit(any(Personnummer.class));
+
+        doReturn(Optional.of(diagnosInformation))
+            .when(diagnosInformationRepository)
+            .findFirstByIcd10KodList_kod(anyString());
 
         final MaximalSjukskrivningstidRequest request = MaximalSjukskrivningstidRequest.of(
             Icd10KoderRequest.of("kod1", "kod2", "kod3"), Personnummer.createPersonnummer("191212121212").get(), foreslagen);

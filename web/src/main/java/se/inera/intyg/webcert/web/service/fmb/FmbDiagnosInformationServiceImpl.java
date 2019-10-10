@@ -113,7 +113,11 @@ public class FmbDiagnosInformationServiceImpl extends FmbBaseService implements 
     }
 
     private Optional<MaximalSjukskrivningstidDagar> findMaximalSjukrivningstidDagarByIcd10Koder(Collection<String> icd10Codes) {
-        return repository.findMaximalSjukrivningstidDagarByIcd10Koder(new HashSet<>(icd10Codes)).stream().findFirst();
+        if (!icd10Codes.isEmpty()) {
+            return repository.findMaximalSjukrivningstidDagarByIcd10Koder(new HashSet<>(icd10Codes)).stream().findFirst();
+        } else {
+            return Optional.empty();
+        }
     }
 
     private Optional<FmbResponse> getFmbContent(final String icd10Kod) {
