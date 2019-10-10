@@ -337,6 +337,7 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
 
     private boolean setAdressFromParams(Patient patient, WebCertUser user) {
         if (user.getOrigin().equals(UserOriginType.DJUPINTEGRATION.name())
+            && user.getParameters() != null
             && isNotNullOrEmpty(user.getParameters().getPostadress())
             && isNotNullOrEmpty(user.getParameters().getPostnummer())
             && isNotNullOrEmpty(user.getParameters().getPostort())) {
