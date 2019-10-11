@@ -1,5 +1,5 @@
 {
-  "baseUrl": "https://webcert-devtest-tintyg.app-test1.ind-ocp.sth.basefarm.net",
+  "baseUrl": "https://webcert-reltest-tintyg.app-test1.ind-ocp.sth.basefarm.net",
   "env": {
     "intygMockBaseUrl": "http://mocks.sm.nordicmedtest.se:43000",
     "logSenderTimeout": 35000,

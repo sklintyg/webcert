@@ -3,8 +3,6 @@
 import * as intyg from '../../../support/AF_intyg/af00251Intyg'
 import * as pdl from '../../../support/pdl_helpers'
 
-// LISJP = Läkarintyg för sjukpenning, FK 7804
-
 var pdlEventArray = [];
 
 function Af00251PdlEvent(env, actType, actArgs, actLevel, assignment, vgId_mod, vgNamn_mod, veId_mod, veNamn_mod) {

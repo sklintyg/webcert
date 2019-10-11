@@ -92,9 +92,11 @@ export function skrivUt(typAvUtskrift, intygsId, intygsTyp){
 
 export function fornya() {
     cy.get('#fornyaBtn').click();
-    if (cy.get('#button1fornya-dialog')) {
-        cy.get('#button1fornya-dialog').click();
-    }
+    cy.get('body').then((ele) => {
+        if(ele.text().includes('De uppgifter som inte kommer med till det nya utkastet är:')) {
+            cy.get('#button1fornya-dialog').click();
+        }
+    })
 }
 
 export function raderaUtkast() {

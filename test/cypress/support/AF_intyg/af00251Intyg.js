@@ -2,6 +2,8 @@
 
 // Datumen är inte specifika för något testfall
 
+export {besökÖnskadUrl, loggaUtLoggaIn} from '../FK_intyg/fk_helpers';
+
 // -------------------- 'Smittbärarpenning' --------------------
 // Ej implementerad än
 

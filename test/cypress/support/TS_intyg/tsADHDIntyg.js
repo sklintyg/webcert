@@ -1,6 +1,7 @@
 // Intyget är uppdelat på samma sätt som det är uppdelat när det fylls i genom WebCert
 
 // Datumen är inte specifika för något testfall
+export {besökÖnskadUrl, loggaUtLoggaIn} from '../FK_intyg/fk_helpers';
 
 // -------------------- 'Intyget avser' --------------------
 export function sektionIntygetAvser(intygetAvser) {
