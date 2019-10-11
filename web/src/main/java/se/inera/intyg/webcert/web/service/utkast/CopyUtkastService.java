@@ -51,11 +51,11 @@ public interface CopyUtkastService {
     CreateReplacementCopyResponse createReplacementCopy(CreateReplacementCopyRequest copyRequest);
 
     /**
-     * Create a new utkast from template.
+     * Create a new utkast from a signed template intyg.
      *
      * @return {@link CreateUtkastFromTemplateRequest}
      */
-    CreateUtkastFromTemplateResponse createUtkastFromTemplate(CreateUtkastFromTemplateRequest copyRequest);
+    CreateUtkastFromTemplateResponse createUtkastFromSignedTemplate(CreateUtkastFromTemplateRequest copyRequest);
 
     /**
      * Create a new utkast from utkast.

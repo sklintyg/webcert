@@ -560,14 +560,14 @@ public class IntygModuleApiControllerTest {
         user.setOrigin("NORMAL");
 
         ArgumentCaptor<CreateUtkastFromTemplateRequest> captor = ArgumentCaptor.forClass(CreateUtkastFromTemplateRequest.class);
-        when(copyUtkastService.createUtkastFromTemplate(captor.capture()))
+        when(copyUtkastService.createUtkastFromSignedTemplate(captor.capture()))
             .thenReturn(new CreateUtkastFromTemplateResponse(newCertificateType, CERTIFICATE_VERSION, newIntygId, CERTIFICATE_ID));
         when(webcertUserService.getUser()).thenReturn(user);
 
         Response response = moduleApiController
-            .createUtkastFromTemplate(copyIntygRequest, CERTIFICATE_TYPE, CERTIFICATE_ID, newCertificateType);
+            .createUtkastFromSignedTemplate(copyIntygRequest, CERTIFICATE_TYPE, CERTIFICATE_ID, newCertificateType);
 
-        verify(copyUtkastService).createUtkastFromTemplate(any());
+        verify(copyUtkastService).createUtkastFromSignedTemplate(any());
         verifyNoMoreInteractions(copyUtkastService);
         assertEquals(newIntygId, ((CopyIntygResponse) response.getEntity()).getIntygsUtkastId());
         assertEquals(newCertificateType, ((CopyIntygResponse) response.getEntity()).getIntygsTyp());
@@ -583,7 +583,7 @@ public class IntygModuleApiControllerTest {
         when(webcertUserService.getUser()).thenReturn(user);
 
         try {
-            moduleApiController.createUtkastFromTemplate(new CopyIntygRequest(), CERTIFICATE_TYPE, CERTIFICATE_ID, CERTIFICATE_TYPE);
+            moduleApiController.createUtkastFromSignedTemplate(new CopyIntygRequest(), CERTIFICATE_TYPE, CERTIFICATE_ID, CERTIFICATE_TYPE);
         } finally {
             verifyZeroInteractions(copyUtkastService);
         }

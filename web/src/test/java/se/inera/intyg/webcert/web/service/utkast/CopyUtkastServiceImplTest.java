@@ -611,16 +611,14 @@ public class CopyUtkastServiceImplTest {
         user.setParameters(new IntegrationParameters(reference, "", "", "", "", "", "", "", "", false, false, false, true));
         when(userService.getUser()).thenReturn(user);
 
-        when(mockUtkastRepository.exists(INTYG_ID)).thenReturn(Boolean.TRUE);
-
         UtkastBuilderResponse resp = createCopyUtkastBuilderResponse();
-        when(createUtkastFromTemplateBuilder.populateCopyUtkastFromOrignalUtkast(any(CreateUtkastFromTemplateRequest.class),
+        when(createUtkastFromTemplateBuilder.populateCopyUtkastFromSignedIntyg(any(CreateUtkastFromTemplateRequest.class),
             any(Person.class),
             any(boolean.class), any(boolean.class))).thenReturn(resp);
 
         CreateUtkastFromTemplateRequest copyReq = buildUtkastFromTemplateRequest();
 
-        CreateUtkastFromTemplateResponse utkastCopyResponse = copyService.createUtkastFromTemplate(copyReq);
+        CreateUtkastFromTemplateResponse utkastCopyResponse = copyService.createUtkastFromSignedTemplate(copyReq);
 
         assertNotNull(utkastCopyResponse);
         assertEquals(INTYG_COPY_ID, utkastCopyResponse.getNewDraftIntygId());
@@ -628,7 +626,7 @@ public class CopyUtkastServiceImplTest {
         assertEquals(INTYG_ID, utkastCopyResponse.getOriginalIntygId());
 
         verify(mockPUService).getPerson(PATIENT_SSN);
-        verify(createUtkastFromTemplateBuilder).populateCopyUtkastFromOrignalUtkast(any(CreateUtkastFromTemplateRequest.class),
+        verify(createUtkastFromTemplateBuilder).populateCopyUtkastFromSignedIntyg(any(CreateUtkastFromTemplateRequest.class),
             any(Person.class),
             any(boolean.class), eq(false));
         verify(mockUtkastRepository).save(any(Utkast.class));
@@ -752,7 +750,7 @@ public class CopyUtkastServiceImplTest {
         when(intygService.isRevoked(anyString(), anyString(), anyBoolean())).thenReturn(true);
 
         CreateUtkastFromTemplateRequest renewalRequest = buildUtkastFromTemplateRequest();
-        copyService.createUtkastFromTemplate(renewalRequest);
+        copyService.createUtkastFromSignedTemplate(renewalRequest);
     }
 
     @Test(expected = WebCertServiceException.class)

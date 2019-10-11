@@ -256,7 +256,7 @@ public class IntygModuleApiController extends AbstractApiController {
     }
 
     /**
-     * Create a new utkast from a template.
+     * Create a new utkast from a signed template.
      * <p>
      * Usually (but not necessarily) the template is of a different intygType than the new utkast.
      */
@@ -264,7 +264,7 @@ public class IntygModuleApiController extends AbstractApiController {
     @Path("/{intygsTyp}/{intygsId}/{newIntygsTyp}/create")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    public Response createUtkastFromTemplate(CopyIntygRequest request, @PathParam("intygsTyp") String orgIntygsTyp,
+    public Response createUtkastFromSignedTemplate(CopyIntygRequest request, @PathParam("intygsTyp") String orgIntygsTyp,
         @PathParam("intygsId") String orgIntygsId, @PathParam("newIntygsTyp") String newIntygsTyp) {
 
         LOG.debug("Attempting to create a new certificate with type {} from certificate with type {} and id '{}'", newIntygsTyp,
@@ -279,7 +279,7 @@ public class IntygModuleApiController extends AbstractApiController {
 
         serviceRequest.setTypVersion(intygTextsService.getLatestVersion(newIntygsTyp));
 
-        CreateUtkastFromTemplateResponse serviceResponse = copyUtkastService.createUtkastFromTemplate(serviceRequest);
+        CreateUtkastFromTemplateResponse serviceResponse = copyUtkastService.createUtkastFromSignedTemplate(serviceRequest);
 
         LOG.debug("Created a new draft with id: '{}' and type: {} from certificate with type: {} and id '{}'.",
             serviceResponse.getNewDraftIntygId(), serviceResponse.getNewDraftIntygType(), orgIntygsTyp, orgIntygsId);
