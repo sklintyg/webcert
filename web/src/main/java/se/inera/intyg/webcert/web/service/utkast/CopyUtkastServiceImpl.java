@@ -294,7 +294,7 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
     }
 
     @Override
-    public CreateUtkastFromTemplateResponse createUtkastFromTemplate(CreateUtkastFromTemplateRequest templateRequest) {
+    public CreateUtkastFromTemplateResponse createUtkastFromSignedTemplate(CreateUtkastFromTemplateRequest templateRequest) {
         String originalIntygId = templateRequest.getOriginalIntygId();
 
         LOG.debug("Creating utkast from template (certificate). Certificate = '{}'", originalIntygId);
@@ -316,8 +316,8 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
 
             verifyNotReplacedWithSigned(templateRequest.getOriginalIntygId(), "create utkast from template");
 
-            UtkastBuilderResponse builderResponse = buildUtkastFromTemplateBuilderResponse(templateRequest, patientDetails,
-                originalIntygId, true, coherentJournaling);
+            UtkastBuilderResponse builderResponse = buildUtkastFromSignedTemplateBuilderResponse(templateRequest, patientDetails,
+                true, coherentJournaling);
 
             Utkast savedUtkast = saveAndNotify(builderResponse, user);
 
@@ -496,21 +496,12 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
         return builderResponse;
     }
 
-    private UtkastBuilderResponse buildUtkastFromTemplateBuilderResponse(CreateUtkastFromTemplateRequest copyRequest,
-        Person patientDetails, String originalIntygId, boolean addRelation, boolean coherentJournaling)
+    private UtkastBuilderResponse buildUtkastFromSignedTemplateBuilderResponse(CreateUtkastFromTemplateRequest copyRequest,
+        Person patientDetails, boolean addRelation, boolean coherentJournaling)
         throws ModuleNotFoundException, ModuleException {
 
-        UtkastBuilderResponse builderResponse;
-
-        if (utkastRepository.exists(originalIntygId)) {
-            builderResponse = createUtkastFromTemplateBuilder.populateCopyUtkastFromOrignalUtkast(copyRequest, patientDetails, addRelation,
+         return createUtkastFromTemplateBuilder.populateCopyUtkastFromSignedIntyg(copyRequest, patientDetails, addRelation,
                 coherentJournaling);
-        } else {
-            builderResponse = createUtkastFromTemplateBuilder.populateCopyUtkastFromSignedIntyg(copyRequest, patientDetails, addRelation,
-                coherentJournaling);
-        }
-
-        return builderResponse;
     }
 
     private UtkastBuilderResponse buildUtkastCopyBuilderResponse(CreateUtkastFromTemplateRequest copyRequest,
