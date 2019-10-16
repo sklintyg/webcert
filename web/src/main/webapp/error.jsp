@@ -88,22 +88,7 @@
               </wc-alert-message>
               <jsp:include page="login.jsp" />
             </c:when>
-
-            <c:when test="${param.reason eq 'timeout'}">
-              <h1><spring:message code="info.loggedout.title" /></h1>
-              <wc-alert-message alert-id="loggedOut" alert-severity="info">
-                <spring:message code="error.sessiontimeout.text" />
-              </wc-alert-message>
-              <jsp:include page="login.jsp" />
-            </c:when>
-
-            <c:when test="${param.reason eq 'timeout_integration'}">
-              <h1><spring:message code="info.loggedout.title" /></h1>
-              <wc-alert-message alert-id="loggedOut" alert-severity="info">
-                <spring:message code="error.sessiontimeout.integration.text" />
-              </wc-alert-message>
-            </c:when>
-
+            
             <c:when test="${param.reason eq 'denied'}">
               <h1><spring:message code="error.noauth.title" /></h1>
               <wc-alert-message alert-id="noAuth" alert-severity="warning">

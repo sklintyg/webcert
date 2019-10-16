@@ -169,7 +169,7 @@
       $httpProvider.interceptors.push('common.httpRequestInterceptorCacheBuster');
 
       // Configure 403 interceptor provider
-      http403ResponseInterceptorProvider.setRedirectUrl('/error.jsp');
+      http403ResponseInterceptorProvider.setRedirectUrl('/new-error.jsp');
       $httpProvider.interceptors.push('common.http403ResponseInterceptor');
 
       // Enable debug logging
