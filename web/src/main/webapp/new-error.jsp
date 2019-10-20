@@ -41,7 +41,7 @@
       media="screen">
 
 </head>
-<body ng-app="timeoutErrorApp">
+<body>
   <div class="wc-app-header-wrapper">
     <wc-app-header is-empty="true"></wc-app-header>
   </div>
