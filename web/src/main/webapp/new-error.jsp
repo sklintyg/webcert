@@ -53,7 +53,7 @@
   </c:choose>
   <c:choose>
     <c:when test="${param.reason eq 'timeout_integration'}">
-      <wc-error error-msg="<spring:message code="error.timeout.integration.text" />" error-title="<spring:message code="error.timeout.title" />" browser-warning="checkBrowserWarning"></wc-error>
+      <wc-error error-msg="<spring:message code="error.timeout.integration.text" />" error-title="<spring:message code="error.timeout.title" />"></wc-error>
     </c:when>
   </c:choose>
 
@@ -96,20 +96,5 @@
       <script type="text/javascript" src="/app/app.js"></script>
     </c:otherwise>
   </c:choose>
-
-  <script>
-    angular.module('timeoutErrorApp', [
-      'timeoutErrorApp.controllers'
-    ]);
-    angular.module('timeoutErrorApp.controllers', []).
-    controller('timeoutErrorController', function($scope) {
-      $scope.checkBrowserWarning = function() {
-        var re = /(?:Chrome\/\d+)|(?:Edge\/\d+)/;
-        var userAgent = $window.navigator.userAgent;
-        return re.test(userAgent);
-      }
-    });
-  </script>
-
 </body>
 </html>
