@@ -30,13 +30,19 @@ import org.apache.camel.spring.SpringRouteBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.w3._2002._06.xmldsig_filter2.XPathType;
 import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.webcert.common.Constants;
 import se.inera.intyg.webcert.common.sender.exception.DiscardCandidateException;
 import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
+import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareType;
+import se.riv.clinicalprocess.healthcond.certificate.types.v3.DatePeriodType;
+import se.riv.clinicalprocess.healthcond.certificate.types.v3.PQType;
+import se.riv.clinicalprocess.healthcond.certificate.types.v3.PartialDateType;
 
 public class NotificationRouteBuilder extends SpringRouteBuilder {
+
     private static final Logger LOG = LoggerFactory.getLogger(NotificationRouteBuilder.class);
 
     private static final long DEFAULT_TIMEOUT = 60000L;
@@ -74,92 +80,92 @@ public class NotificationRouteBuilder extends SpringRouteBuilder {
         // Do note that the above only applies to non-fk7263 ANDRAD, all others will be forwarded directly.
 
         from(notificationForAggregationQueue).routeId("aggregateNotification")
-                .onException(Exception.class).to("direct:temporaryErrorHandlerEndpoint").end()
-                .transacted("txTemplate")
-                .choice()
-                .when(header(NotificationRouteHeaders.INTYGS_TYP).isEqualTo(Fk7263EntryPoint.MODULE_ID))
-                .to(notificationQueue)
-                .when(directRoutingPredicate())
-                .to(notificationQueue)
-                .otherwise()
-                .wireTap("direct:signatWireTap")
-                .aggregate(new GroupedExchangeAggregationStrategy())
-                .constant(true)
-                .completionInterval(batchAggregationTimeout)
-                .forceCompletionOnStop()
-                .to("bean:notificationAggregator")
-                .split(body())
-                .to(notificationQueue).end()
-                .end();
+            .onException(Exception.class).to("direct:temporaryErrorHandlerEndpoint").end()
+            .transacted("txTemplate")
+            .choice()
+            .when(header(NotificationRouteHeaders.INTYGS_TYP).isEqualTo(Fk7263EntryPoint.MODULE_ID))
+            .to(notificationQueue)
+            .when(directRoutingPredicate())
+            .to(notificationQueue)
+            .otherwise()
+            .wireTap("direct:signatWireTap")
+            .aggregate(new GroupedExchangeAggregationStrategy())
+            .constant(true)
+            .completionInterval(batchAggregationTimeout)
+            .forceCompletionOnStop()
+            .to("bean:notificationAggregator")
+            .split(body())
+            .to(notificationQueue).end()
+            .end();
 
         // The wiretap is used to directly forward SIGNAT messages (see INTYG-2744) to the send queue while the original
         // SIGNAT is passed on into the aggregation phase. The aggregation phase never emits any SIGNAT, only ANDRAT.
         from("direct:signatWireTap")
-                .choice()
-                .when(header(NotificationRouteHeaders.HANDELSE).isEqualTo(HandelsekodEnum.SIGNAT.value()))
-                .to(notificationQueue)
-                .end();
+            .choice()
+            .when(header(NotificationRouteHeaders.HANDELSE).isEqualTo(HandelsekodEnum.SIGNAT.value()))
+            .to(notificationQueue)
+            .end();
 
         // All routes below relate to pre WC 5.0 notification sending, e.g. all that enters
         // 'receiveNotificationRequestEndpoint'
         // should have normal resend semantics etc. Reads from the notificationQueue.
         from("receiveNotificationRequestEndpoint").routeId("transformNotification")
-                .onException(TemporaryException.class).to("direct:temporaryErrorHandlerEndpoint").end()
-                .onException(Exception.class).handled(true).to("direct:permanentErrorHandlerEndpoint").end()
-                .transacted("txTemplate")
-                .unmarshal("notificationMessageDataFormat")
-                .to("bean:notificationTransformer")
-                .marshal(jaxbMessageDataFormatV3)
-                .to("sendNotificationWSEndpoint");
+            .onException(TemporaryException.class).to("direct:temporaryErrorHandlerEndpoint").end()
+            .onException(Exception.class).handled(true).to("direct:permanentErrorHandlerEndpoint").end()
+            .transacted("txTemplate")
+            .unmarshal("notificationMessageDataFormat")
+            .to("bean:notificationTransformer")
+            .marshal(jaxbMessageDataFormatV3)
+            .to("sendNotificationWSEndpoint");
 
         from("sendNotificationWSEndpoint").routeId("sendNotificationToWS")
-                .errorHandler(transactionErrorHandler().logExhausted(false))
-                .onException(TemporaryException.class).to("direct:temporaryErrorHandlerEndpoint").end()
-                .onException(DiscardCandidateException.class)
-                .handled(isTimeToDiscard()).to("direct:discardCandidateErrorHandlerEndpoint").end()
-                .onException(Exception.class).handled(true).to("direct:permanentErrorHandlerEndpoint").end()
-                .transacted("txTemplate")
-                .unmarshal(jaxbMessageDataFormatV3)
-                .to("bean:notificationWSClientV3");
+            .errorHandler(transactionErrorHandler().logExhausted(false))
+            .onException(TemporaryException.class).to("direct:temporaryErrorHandlerEndpoint").end()
+            .onException(DiscardCandidateException.class)
+            .handled(isTimeToDiscard()).to("direct:discardCandidateErrorHandlerEndpoint").end()
+            .onException(Exception.class).handled(true).to("direct:permanentErrorHandlerEndpoint").end()
+            .transacted("txTemplate")
+            .unmarshal(jaxbMessageDataFormatV3)
+            .to("bean:notificationWSClientV3");
 
         from("direct:permanentErrorHandlerEndpoint").routeId("errorLogging")
-                .log(LoggingLevel.ERROR, LOG,
-                        simple("Permanent exception for intygs-id: ${header[intygsId]}, to: ${header[logiskAdress]}"
-                                + ", with message: ${exception.message}\n ${exception.stacktrace}")
-                                        .getText())
-                .stop();
+            .log(LoggingLevel.ERROR, LOG,
+                simple("Permanent exception for intygs-id: ${header[intygsId]}, to: ${header[logiskAdress]}"
+                    + ", with message: ${exception.message}\n ${exception.stacktrace}")
+                    .getText())
+            .stop();
 
         from("direct:discardCandidateErrorHandlerEndpoint").routeId("discardCandidateErrorLogging")
-                .choice()
-                .when(isTimeToDiscard())
-                .log(LoggingLevel.WARN, LOG,
-                        simple("Throwing away notification (COSMIC typ B) after trying to deliver ${header[handelse]} "
-                                + "notification ${header[JMSXDeliveryCount]} times for intygs-id: ${header[intygsId]}"
-                                + ", to: ${header[logiskAdress]}").getText())
-                .when(header("JMSRedelivered").isEqualTo(false))
-                .log(LoggingLevel.INFO, LOG,
-                        simple("Caught error for ${header[handelse]} notification (total delivery count 1) "
-                                + "of COSMIC typ B for intygs-id: ${header[intygsId]}, to: ${header[logiskAdress]}")
-                                        .getText())
-                .otherwise()
-                .log(LoggingLevel.INFO, LOG,
-                        simple("Caught error for ${header[handelse]} notification (total delivery count "
-                                + "${header[JMSXDeliveryCount]}) of COSMIC typ B for intygs-id: ${header[intygsId]}"
-                                + ", to: ${header[logiskAdress]}").getText())
-                .stop();
+            .choice()
+            .when(isTimeToDiscard())
+            .log(LoggingLevel.WARN, LOG,
+                simple("Throwing away notification (COSMIC typ B) after trying to deliver ${header[handelse]} "
+                    + "notification ${header[JMSXDeliveryCount]} times for intygs-id: ${header[intygsId]}"
+                    + ", to: ${header[logiskAdress]}").getText())
+            .when(header("JMSRedelivered").isEqualTo(false))
+            .log(LoggingLevel.INFO, LOG,
+                simple("Caught error for ${header[handelse]} notification (total delivery count 1) "
+                    + "of COSMIC typ B for intygs-id: ${header[intygsId]}, to: ${header[logiskAdress]}")
+                    .getText())
+            .otherwise()
+            .log(LoggingLevel.INFO, LOG,
+                simple("Caught error for ${header[handelse]} notification (total delivery count "
+                    + "${header[JMSXDeliveryCount]}) of COSMIC typ B for intygs-id: ${header[intygsId]}"
+                    + ", to: ${header[logiskAdress]}").getText())
+            .stop();
 
         from("direct:temporaryErrorHandlerEndpoint").routeId("temporaryErrorLogging")
-                .choice()
-                .when(header(Constants.JMS_REDELIVERED).isEqualTo("false"))
-                .log(LoggingLevel.ERROR, LOG,
-                        simple("Temporary exception for intygs-id: ${header[intygsId]}, to: ${header[logiskAdress]}, "
-                                + "with message: ${exception.message}\n ${exception.stacktrace}")
-                                        .getText())
-                .otherwise()
-                .log(LoggingLevel.WARN, LOG,
-                        simple("Temporary exception for intygs-id: ${header[intygsId]}, to: ${header[logiskAdress]}, "
-                                + "with message: ${exception.message}").getText())
-                .stop();
+            .choice()
+            .when(header(Constants.JMS_REDELIVERED).isEqualTo("false"))
+            .log(LoggingLevel.ERROR, LOG,
+                simple("Temporary exception for intygs-id: ${header[intygsId]}, to: ${header[logiskAdress]}, "
+                    + "with message: ${exception.message}\n ${exception.stacktrace}")
+                    .getText())
+            .otherwise()
+            .log(LoggingLevel.WARN, LOG,
+                simple("Temporary exception for intygs-id: ${header[intygsId]}, to: ${header[logiskAdress]}, "
+                    + "with message: ${exception.message}").getText())
+            .stop();
     }
 
     /*
@@ -169,9 +175,9 @@ public class NotificationRouteBuilder extends SpringRouteBuilder {
      */
     private Predicate directRoutingPredicate() {
         return PredicateBuilder
-                .and(
-                        header(NotificationRouteHeaders.HANDELSE).isNotEqualTo(HandelsekodEnum.ANDRAT.value()),
-                        header(NotificationRouteHeaders.HANDELSE).isNotEqualTo(HandelsekodEnum.SIGNAT.value()));
+            .and(
+                header(NotificationRouteHeaders.HANDELSE).isNotEqualTo(HandelsekodEnum.ANDRAT.value()),
+                header(NotificationRouteHeaders.HANDELSE).isNotEqualTo(HandelsekodEnum.SIGNAT.value()));
     }
 
     private Predicate isTimeToDiscard(final int limit) {
@@ -181,8 +187,8 @@ public class NotificationRouteBuilder extends SpringRouteBuilder {
             return PredicateBuilder.constant(true);
         } else {
             return PredicateBuilder.and(
-                    header("JMSRedelivered").isEqualTo(true),
-                    header("JMSXDeliveryCount").isGreaterThan(limit));
+                header("JMSRedelivered").isEqualTo(true),
+                header("JMSXDeliveryCount").isGreaterThan(limit));
         }
     }
 
@@ -193,18 +199,16 @@ public class NotificationRouteBuilder extends SpringRouteBuilder {
 
     // CHECKSTYLE:OFF LineLength
     private JaxbDataFormat initializeJaxbMessageDataFormatV3() throws JAXBException {
-        final String contextPath = "se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3"
-            + ":se.riv.clinicalprocess.healthcond.certificate.types.v3"
-            + ":org.w3._2002._06.xmldsig_filter2";
-
-        JAXBContext jaxbContext = JAXBContext.newInstance(contextPath);
-        JaxbDataFormat jaxbDataFormat = new JaxbDataFormat(jaxbContext);
-        jaxbDataFormat.setPartClass(
-                "se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareType");
-        jaxbDataFormat
-                .setPartNamespace(new QName("urn:riv:clinicalprocess:healthcond:certificate:CertificateStatusUpdateForCareResponder:3",
-                        "CertificateStatusUpdateForCare"));
-        return jaxbDataFormat;
+        // We need to register DatePeriodType with the JAXBContext explicitly for some reason.
+        JaxbDataFormat jaxbMessageDataFormatV3 = new JaxbDataFormat(
+            JAXBContext.newInstance(CertificateStatusUpdateForCareType.class, DatePeriodType.class, PartialDateType.class,
+                XPathType.class, PQType.class));
+        jaxbMessageDataFormatV3.setPartClass(
+            "se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareType");
+        jaxbMessageDataFormatV3
+            .setPartNamespace(new QName("urn:riv:clinicalprocess:healthcond:certificate:CertificateStatusUpdateForCareResponder:3",
+                "CertificateStatusUpdateForCare"));
+        return jaxbMessageDataFormatV3;
     }
     // CHECKSTYLE:ON LineLength
 
