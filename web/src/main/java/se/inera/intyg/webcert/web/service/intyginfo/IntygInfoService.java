@@ -272,7 +272,9 @@ public class IntygInfoService {
         // Locked
         if (UtkastStatus.DRAFT_LOCKED.equals(utkast.getStatus())) {
             IntygInfoEvent locked = new IntygInfoEvent(Source.WEBCERT);
-            locked.setDate(utkast.getSkapad().plusDays(lockedAfterDay));
+            if (utkast.getSkapad() != null) {
+                locked.setDate(utkast.getSkapad().plusDays(lockedAfterDay));
+            }
             locked.setType(IntygInfoEventType.IS003);
             events.add(locked);
         }
