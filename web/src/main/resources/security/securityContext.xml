@@ -51,6 +51,7 @@
   <security:http security="none" pattern="/version.jsp"/>
   <security:http security="none" pattern="/empty.html"/>
   <security:http security="none" pattern="/error.jsp"/>
+  <security:http security="none" pattern="/new-error.jsp"/>
   <security:http security="none" pattern="/saml/web/**"/>
   <security:http security="none" pattern="/saml2/web/**"/>
   <security:http security="none" pattern="/services/**"/>
