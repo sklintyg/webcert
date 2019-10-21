@@ -25,10 +25,11 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.HashSet;
-import javax.xml.bind.JAXBElement;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.Unmarshaller;
+import javax.xml.transform.stream.StreamSource;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -41,7 +42,6 @@ import se.inera.ifv.insuranceprocess.healthreporting.receivemedicalcertificatequ
 import se.inera.ifv.insuranceprocess.healthreporting.receivemedicalcertificatequestionsponder.v1.ReceiveMedicalCertificateQuestionType;
 import se.inera.ifv.insuranceprocess.healthreporting.v2.ErrorIdEnum;
 import se.inera.ifv.insuranceprocess.healthreporting.v2.ResultCodeEnum;
-import se.inera.intyg.common.support.xml.XmlMarshallerHelper;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.persistence.fragasvar.model.Amne;
 import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
@@ -75,7 +75,7 @@ public class ReceiveQuestionResponderImplTest {
     private ReceiveQuestionResponderImpl receiveQuestionResponder;
 
     @Test
-    public void testReceiveQuestionOK() throws Exception {
+    public void testReceiveQuestionOK() {
         FragaSvar fraga = buildFraga(INTEGRERAD_ENHET, Status.PENDING_INTERNAL_ACTION);
         when(mockFragaSvarService.processIncomingQuestion(any(FragaSvar.class))).thenReturn(fraga);
 
@@ -90,7 +90,7 @@ public class ReceiveQuestionResponderImplTest {
     }
 
     @Test
-    public void testReceiveQuestionValidationError() throws Exception {
+    public void testReceiveQuestionValidationError() {
         ReceiveMedicalCertificateQuestionType request = createRequest("RecieveQuestionAnswerResponders/question-from-fk-integrated.xml");
         request.getQuestion().setAmne(null); // invalid
         ReceiveMedicalCertificateQuestionResponseType response = receiveQuestionResponder.receiveMedicalCertificateQuestion(null, request);
@@ -104,12 +104,9 @@ public class ReceiveQuestionResponderImplTest {
         assertEquals("Amne är felaktigt", response.getResult().getErrorText());
     }
 
-    private ReceiveMedicalCertificateQuestionType createRequest(String questionFile) throws IOException {
-        ClassPathResource resource = new ClassPathResource(questionFile);
-        JAXBElement<QuestionFromFkType> jaxbElement = XmlMarshallerHelper.unmarshal(resource.getInputStream());
-
+    private ReceiveMedicalCertificateQuestionType createRequest(String questionFile) {
         ReceiveMedicalCertificateQuestionType request = new ReceiveMedicalCertificateQuestionType();
-        QuestionFromFkType question = jaxbElement.getValue();
+        QuestionFromFkType question = inflateQuestion(questionFile);
 
         if (question == null) {
             throw new RuntimeException("Could not inflate file");
@@ -117,6 +114,20 @@ public class ReceiveQuestionResponderImplTest {
 
         request.setQuestion(question);
         return request;
+    }
+
+    private QuestionFromFkType inflateQuestion(String filePath) {
+        try {
+            JAXBContext jaxbContext = JAXBContext.newInstance(QuestionFromFkType.class);
+            Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+            QuestionFromFkType question = unmarshaller
+                .unmarshal(new StreamSource(new ClassPathResource(filePath).getInputStream()),
+                    QuestionFromFkType.class)
+                .getValue();
+            return question;
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     private FragaSvar buildFraga(String vardpersonEnhetsId, Status status) {
