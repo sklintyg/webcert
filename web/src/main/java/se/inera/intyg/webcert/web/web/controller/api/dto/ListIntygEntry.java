@@ -18,10 +18,12 @@
  */
 package se.inera.intyg.webcert.web.web.controller.api.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.web.util.resourcelinks.dto.ActionLink;
 
@@ -36,6 +38,9 @@ public class ListIntygEntry {
     private String intygType;
 
     private String intygTypeVersion;
+
+    @JsonIgnore
+    private String intygTypeName;
 
     private String status;
 
@@ -59,6 +64,7 @@ public class ListIntygEntry {
     private boolean avliden = false;
 
     private List<ActionLink> links = new ArrayList<>();
+
 
     public String getIntygId() {
         return intygId;
@@ -90,6 +96,14 @@ public class ListIntygEntry {
 
     public void setIntygType(String intygType) {
         this.intygType = intygType;
+    }
+
+    public String getIntygTypeName() {
+        return this.intygTypeName;
+    }
+
+    public void setIntygTypeName(String intygTypeName) {
+        this.intygTypeName = intygTypeName;
     }
 
     public String getStatus() {

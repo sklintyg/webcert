@@ -23,10 +23,12 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
 import se.inera.intyg.common.support.model.CertificateState;
 import se.inera.intyg.common.support.model.StatusKod;
 import se.inera.intyg.common.support.model.UtkastStatus;
@@ -65,10 +67,10 @@ public class IntygDraftsConverter {
             .collect(Collectors.toList());
     }
 
-    public static List<ListIntygEntry> convertUtkastsToListIntygEntries(List<Utkast> utkastList, Comparator<ListIntygEntry> comparator) {
+    public static List<ListIntygEntry> convertUtkastsToListIntygEntries(List<Utkast> utkastList) {
         return utkastList.stream()
             .map(IntygDraftsConverter::convertUtkastToListIntygEntry)
-            .sorted((comparator == null ? INTYG_ENTRY_DATE_COMPARATOR_DESC : comparator))
+            .sorted(INTYG_ENTRY_DATE_COMPARATOR_DESC)
             .collect(Collectors.toList());
     }
 

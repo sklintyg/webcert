@@ -72,6 +72,7 @@ import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.SekretessStatus;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
+import se.inera.intyg.webcert.web.converter.util.IntygDraftDecorator;
 import se.inera.intyg.webcert.web.service.access.AccessResult;
 import se.inera.intyg.webcert.web.service.access.DraftAccessService;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
@@ -123,6 +124,9 @@ public class UtkastApiControllerTest {
 
     @Mock
     private HsaEmployeeService hsaEmployeeService;
+
+    @Mock
+    private IntygDraftDecorator intygDraftDecorator;
 
     @InjectMocks
     private UtkastApiController utkastController;
