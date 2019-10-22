@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.stereotype.Component;
+import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.ModuleEntryPoint;
@@ -70,14 +71,7 @@ public class IntygDraftDecorator {
     }
 
     private void addCertificateStatusName(ListIntygEntry listIntygEntry) {
-        if (listIntygEntry.getStatus() != null) {
-            if (listIntygEntry.getStatus().equals("DRAFT_LOCKED")) {
-                listIntygEntry.setStatusName("Utkast, låst");
-            } else if (listIntygEntry.getStatus().equals("DRAFT_COMPLETE")) {
-                listIntygEntry.setStatusName("Utkast, kan signeras");
-            } else if (listIntygEntry.getStatus().equals("DRAFT_INCOMPLETE")) {
-                listIntygEntry.setStatusName("Utkast, uppgifter saknas");
-            }
-        }
+        UtkastStatus status = UtkastStatus.fromValue(listIntygEntry.getStatus());
+        listIntygEntry.setStatusName(status.getKlartext());
     }
 }
