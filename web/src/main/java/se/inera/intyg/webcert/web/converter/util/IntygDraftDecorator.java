@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.stereotype.Component;
+import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.ModuleEntryPoint;
@@ -59,5 +60,18 @@ public class IntygDraftDecorator {
             listIntygEntry.setIntygTypeName(listIntygEntry.getIntygType());
             LOG.error("Could not find ModuleEntryPoint for certificate type: " + listIntygEntry.getIntygType());
         }
+    }
+
+    /**
+     * Decorates the {@link ListIntygEntry} with the display name of the certificate status.
+     * @param listIntygEntries  {@link List} of {@link ListIntygEntry} to decorate.
+     */
+    public void decorateWithCertificateStatusName(List<ListIntygEntry> listIntygEntries) {
+        listIntygEntries.stream().forEach(listIntygEntry -> addCertificateStatusName(listIntygEntry));
+    }
+
+    private void addCertificateStatusName(ListIntygEntry listIntygEntry) {
+        UtkastStatus status = UtkastStatus.fromValue(listIntygEntry.getStatus());
+        listIntygEntry.setStatusName(status.getKlartext());
     }
 }
