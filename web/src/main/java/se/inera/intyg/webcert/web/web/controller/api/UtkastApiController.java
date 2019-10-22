@@ -18,13 +18,13 @@
  */
 package se.inera.intyg.webcert.web.web.controller.api;
 
-import io.swagger.annotations.Api;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -35,9 +35,12 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import io.swagger.annotations.Api;
 import se.inera.intyg.common.services.texts.IntygTextsService;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.Patient;
@@ -53,6 +56,7 @@ import se.inera.intyg.webcert.persistence.utkast.repository.UtkastFilter;
 import se.inera.intyg.webcert.web.converter.ArendeConverter;
 import se.inera.intyg.webcert.web.converter.IntygDraftsConverter;
 import se.inera.intyg.webcert.web.converter.util.IntygConverterUtil;
+import se.inera.intyg.webcert.web.converter.util.IntygDraftDecorator;
 import se.inera.intyg.webcert.web.service.access.AccessResult;
 import se.inera.intyg.webcert.web.service.access.AccessResultCode;
 import se.inera.intyg.webcert.web.service.access.DraftAccessService;
@@ -105,6 +109,9 @@ public class UtkastApiController extends AbstractApiController {
 
     @Autowired
     private HsaEmployeeService hsaEmployeeService;
+
+    @Autowired
+    private IntygDraftDecorator intygDraftDecorator;
 
     /**
      * Create a new draft.
@@ -269,9 +276,7 @@ public class UtkastApiController extends AbstractApiController {
 
         filter.setPageSize(null);
 
-        final Comparator<ListIntygEntry> intygComparator = getIntygComparator(filter.getOrderBy(), filter.getOrderAscending());
-        List<ListIntygEntry> listIntygEntries = IntygDraftsConverter
-            .convertUtkastsToListIntygEntries(utkastService.filterIntyg(filter), intygComparator);
+        List<ListIntygEntry> listIntygEntries = IntygDraftsConverter.convertUtkastsToListIntygEntries(utkastService.filterIntyg(filter));
 
         // INTYG-4486, INTYG-4086: Always filter out any items with UNDEFINED sekretessmarkering status and not
         // authorized
@@ -312,7 +317,11 @@ public class UtkastApiController extends AbstractApiController {
             // Index out of range
             listIntygEntries.clear();
         }
+
+        final Comparator<ListIntygEntry> intygComparator = getIntygComparator(filter.getOrderBy(), filter.getOrderAscending());
+        intygDraftDecorator.decorateWithCertificateTypeName(listIntygEntries);
         listIntygEntries.sort(intygComparator);
+
         QueryIntygResponse response = new QueryIntygResponse(listIntygEntries);
         response.setTotalCount(totalCountOfFilteredIntyg);
         return response;
@@ -326,7 +335,7 @@ public class UtkastApiController extends AbstractApiController {
         Comparator<ListIntygEntry> comparator;
         switch (orderBy) {
             case "intygsTyp":
-                comparator = Comparator.comparing(ListIntygEntry::getIntygType);
+                comparator = Comparator.comparing(ListIntygEntry::getIntygTypeName);
                 break;
             case "status":
                 comparator = Comparator.comparing(ListIntygEntry::getStatus);
