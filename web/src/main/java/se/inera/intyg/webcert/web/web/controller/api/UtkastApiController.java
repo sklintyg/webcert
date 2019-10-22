@@ -320,6 +320,7 @@ public class UtkastApiController extends AbstractApiController {
 
         final Comparator<ListIntygEntry> intygComparator = getIntygComparator(filter.getOrderBy(), filter.getOrderAscending());
         intygDraftDecorator.decorateWithCertificateTypeName(listIntygEntries);
+        intygDraftDecorator.decorateWithCertificateStatusName(listIntygEntries);
         listIntygEntries.sort(intygComparator);
 
         QueryIntygResponse response = new QueryIntygResponse(listIntygEntries);
@@ -338,7 +339,7 @@ public class UtkastApiController extends AbstractApiController {
                 comparator = Comparator.comparing(ListIntygEntry::getIntygTypeName);
                 break;
             case "status":
-                comparator = Comparator.comparing(ListIntygEntry::getStatus);
+                comparator = Comparator.comparing(ListIntygEntry::getStatusName);
                 break;
             case "patientPersonnummer":
                 comparator = Comparator.comparing(ie -> ie.getPatientId().getPersonnummer());

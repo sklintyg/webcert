@@ -44,6 +44,9 @@ public class ListIntygEntry {
 
     private String status;
 
+    @JsonIgnore
+    private String statusName;
+
     private LocalDateTime lastUpdatedSigned;
 
     private String updatedSignedBy;
@@ -112,6 +115,14 @@ public class ListIntygEntry {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public String getStatusName() {
+        return statusName;
+    }
+
+    public void setStatusName(String statusName) {
+        this.statusName = statusName;
     }
 
     public LocalDateTime getLastUpdatedSigned() {

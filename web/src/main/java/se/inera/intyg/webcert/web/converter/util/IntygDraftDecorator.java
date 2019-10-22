@@ -60,4 +60,24 @@ public class IntygDraftDecorator {
             LOG.error("Could not find ModuleEntryPoint for certificate type: " + listIntygEntry.getIntygType());
         }
     }
+
+    /**
+     * Decorates the {@link ListIntygEntry} with the display name of the certificate status.
+     * @param listIntygEntries  {@link List} of {@link ListIntygEntry} to decorate.
+     */
+    public void decorateWithCertificateStatusName(List<ListIntygEntry> listIntygEntries) {
+        listIntygEntries.stream().forEach(listIntygEntry -> addCertificateStatusName(listIntygEntry));
+    }
+
+    private void addCertificateStatusName(ListIntygEntry listIntygEntry) {
+        if (listIntygEntry.getStatus() != null) {
+            if (listIntygEntry.getStatus().equals("DRAFT_LOCKED")) {
+                listIntygEntry.setStatusName("Utkast, låst");
+            } else if (listIntygEntry.getStatus().equals("DRAFT_COMPLETE")) {
+                listIntygEntry.setStatusName("Utkast, kan signeras");
+            } else if (listIntygEntry.getStatus().equals("DRAFT_INCOMPLETE")) {
+                listIntygEntry.setStatusName("Utkast, uppgifter saknas");
+            }
+        }
+    }
 }

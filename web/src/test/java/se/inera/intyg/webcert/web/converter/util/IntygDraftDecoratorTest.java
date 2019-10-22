@@ -97,15 +97,29 @@ public class IntygDraftDecoratorTest {
         assertEquals("TypeThree", listIntygEntries.get(3).getIntygTypeName());
     }
 
+    @Test
+    public void testDecorateWithCertificateStatusName() throws Exception {
+        final List<ListIntygEntry> listIntygEntries = getIntygEntryList();
+        intygDraftDecorator.decorateWithCertificateStatusName(listIntygEntries);
+
+        assertEquals(3, listIntygEntries.size());
+        assertEquals("Utkast, låst", listIntygEntries.get(0).getStatusName());
+        assertEquals("Utkast, kan signeras", listIntygEntries.get(1).getStatusName());
+        assertEquals("Utkast, uppgifter saknas", listIntygEntries.get(2).getStatusName());
+    }
+
     private List<ListIntygEntry> getIntygEntryList() {
         final ListIntygEntry listIntygEntryOne = new ListIntygEntry();
         listIntygEntryOne.setIntygType("TypeOne");
+        listIntygEntryOne.setStatus("DRAFT_LOCKED");
 
         final ListIntygEntry listIntygEntryTwo = new ListIntygEntry();
         listIntygEntryTwo.setIntygType("TypeTwo");
+        listIntygEntryTwo.setStatus("DRAFT_COMPLETE");
 
         final ListIntygEntry listIntygEntryThree = new ListIntygEntry();
         listIntygEntryThree.setIntygType("TypeOne");
+        listIntygEntryThree.setStatus("DRAFT_INCOMPLETE");
 
         final List<ListIntygEntry> listIntygEntries = new ArrayList<>();
         listIntygEntries.add(listIntygEntryOne);
