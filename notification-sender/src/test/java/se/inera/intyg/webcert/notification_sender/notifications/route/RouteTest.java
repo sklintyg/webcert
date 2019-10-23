@@ -39,6 +39,7 @@ import org.apache.camel.test.spring.CamelTestContextBootstrapper;
 import org.apache.camel.test.spring.MockEndpointsAndSkip;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -201,6 +202,7 @@ public class RouteTest {
         assertIsSatisfied(signatWireTap);
     }
 
+    @Ignore("This test is unstable, INTYGFV-12301")
     @Test
     public void testRoutesDirectlyToNotificationQueueForLuaeFsSkapad() throws InterruptedException, ModuleException {
         // Given
