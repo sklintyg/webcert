@@ -63,6 +63,7 @@ import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
 import se.inera.intyg.webcert.notification_sender.notifications.helper.NotificationTestHelper;
 import se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders;
 
+@Ignore("This test is unstable, INTYGFV-12301")
 @RunWith(CamelSpringJUnit4ClassRunner.class)
 @ContextConfiguration("/notifications/unit-test-notification-sender-config.xml")
 @BootstrapWith(CamelTestContextBootstrapper.class)
@@ -202,7 +203,6 @@ public class RouteTest {
         assertIsSatisfied(signatWireTap);
     }
 
-    @Ignore("This test is unstable, INTYGFV-12301")
     @Test
     public void testRoutesDirectlyToNotificationQueueForLuaeFsSkapad() throws InterruptedException, ModuleException {
         // Given
