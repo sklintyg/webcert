@@ -21,9 +21,11 @@ package se.inera.intyg.webcert.web.web.controller.integrationtest.integration;
 import static com.jayway.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.Matchers.isEmptyOrNullString;
+import static org.hamcrest.Matchers.stringContainsInOrder;
 import static org.springframework.security.web.header.writers.frameoptions.XFrameOptionsHeaderWriter.XFRAME_OPTIONS_HEADER;
 
 import com.jayway.restassured.RestAssured;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import javax.servlet.http.HttpServletResponse;
@@ -37,7 +39,6 @@ import se.inera.intyg.webcert.web.web.controller.integrationtest.BaseRestIntegra
 public class ViewIntegrationControllerIT extends BaseRestIntegrationTest {
 
     private static final String ORIGIN = "READONLY";
-    private static final String LISJP_EXPECTED_VERSION = "1.1";
 
     /**
      * Verify that a doctor can use a draft redirect link
@@ -64,7 +65,7 @@ public class ViewIntegrationControllerIT extends BaseRestIntegrationTest {
             .expect().statusCode(HttpServletResponse.SC_TEMPORARY_REDIRECT)
             .when().get("/visa/intyg/{intygsId}/readonly")
             .then()
-            .header(HttpHeaders.LOCATION, endsWith("/intyg-read-only/lisjp/" + LISJP_EXPECTED_VERSION + "/" + utkastId))
+            .header(HttpHeaders.LOCATION, stringContainsInOrder(Arrays.asList("/intyg-read-only/lisjp/1." , utkastId)))
             .header(XFRAME_OPTIONS_HEADER, isEmptyOrNullString());
     }
 
