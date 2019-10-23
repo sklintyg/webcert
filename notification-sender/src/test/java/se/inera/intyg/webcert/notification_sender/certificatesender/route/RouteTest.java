@@ -31,6 +31,7 @@ import org.apache.camel.test.spring.CamelSpringJUnit4ClassRunner;
 import org.apache.camel.test.spring.CamelTestContextBootstrapper;
 import org.apache.camel.test.spring.MockEndpointsAndSkip;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -151,6 +152,7 @@ public class RouteTest {
         assertIsSatisfied(permanentErrorHandlerEndpoint);
     }
 
+    @Ignore("This test is unstable, INTYGFV-12301")
     @Test
     public void testNormalSendMessageRoute() throws InterruptedException {
         // Given
