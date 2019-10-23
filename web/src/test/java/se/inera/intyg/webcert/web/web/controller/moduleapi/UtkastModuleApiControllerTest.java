@@ -57,6 +57,7 @@ import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
 import se.inera.intyg.common.services.texts.IntygTextsService;
+import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.GrundData;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
@@ -495,6 +496,30 @@ public class UtkastModuleApiControllerTest {
         assertEquals(intygsIdCandidate, draftHolder.getCandidateMetaData().getIntygId());
         assertEquals(intygsTypCandidate, draftHolder.getCandidateMetaData().getIntygType());
         assertEquals(INTYG_TYPE_VERSION, draftHolder.getCandidateMetaData().getIntygTypeVersion());
+    }
+    @Test
+    public void verifyCandidateMetaDataNotRequestedWhenHavingRelations() throws Exception {
+        String intygsId = CERTIFICATE_ID;
+        String intygsTyp = "ag7804";
+
+        setupGrundData();
+        setupUser(intygsTyp, false, UserOriginType.NORMAL.name(),
+            Arrays.asList(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG), Arrays.asList(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST));
+
+        when(certificateRelationService.getRelations(eq(intygsId)))
+            .thenReturn(new Relations());
+        final Utkast utkast = buildUtkast(intygsTyp, intygsId, 0L, UtkastStatus.DRAFT_INCOMPLETE);
+        utkast.setRelationKod(RelationKod.FRLANG);
+        when(utkastService.getDraft(intygsId, intygsTyp))
+            .thenReturn(utkast);
+
+        Response response = moduleApiController.getDraft(intygsTyp, intygsId, request);
+
+        verify(utkastService).getDraft(intygsId, intygsTyp);
+
+
+        DraftHolder draftHolder = (DraftHolder) response.getEntity();
+        assertNull(draftHolder.getCandidateMetaData());
     }
 
     @Test

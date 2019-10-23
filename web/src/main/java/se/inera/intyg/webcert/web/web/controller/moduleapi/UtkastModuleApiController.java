@@ -171,9 +171,9 @@ public class UtkastModuleApiController extends AbstractApiController {
             //utkast.setModel(updatedModel);
             newDraft.setContent(updatedModel);
 
-            // If utkast actually is a newly created draft, we shall provide
+            // If utkast actually is a newly created draft (without relations, e.g FORNYA,ERSATT), we shall provide
             // candidate information to copy data from
-            if (utkast.getStatus().equals(UtkastStatus.DRAFT_INCOMPLETE) && utkast.getVersion() == 0) {
+            if (utkast.getStatus().equals(UtkastStatus.DRAFT_INCOMPLETE) && utkast.getVersion() == 0 && utkast.getRelationKod() == null) {
                 Optional<UtkastCandidateMetaData> metaData =
                     utkastCandidateService.getCandidateMetaData(moduleApi, intygsTyp, resolvedPatientData, false);
                 // Update draft with meta data
