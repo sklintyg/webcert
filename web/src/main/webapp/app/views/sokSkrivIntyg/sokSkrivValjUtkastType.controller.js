@@ -20,11 +20,11 @@ angular.module('webcert').controller('webcert.SokSkrivValjUtkastTypeCtrl',
     ['$log', '$scope', '$stateParams', '$state', '$location', '$rootScope', '$q',
       'webcert.SokSkrivIntygViewstate', 'webcert.IntygTypeSelectorModel', 'common.PatientModel',
       'webcert.IntygProxy', 'webcert.UtkastProxy', 'webcert.SokSkrivValjUtkastService', 'common.ObjectHelper',
-      'common.UtkastProxy', 'common.authorityService', 'common.UserModel', 'common.moduleService', 'common.User',
+      'common.UtkastProxy', 'common.authorityService', 'common.UserModel', 'common.moduleService', 'common.User', 'common.messageService',
       function($log, $scope, $stateParams, $state, $location, $rootScope, $q,
           Viewstate, IntygTypeSelectorModel, PatientModel,
           IntygProxy, UtkastProxy, Service, ObjectHelper,
-          commonUtkastProxy, authorityService, UserModel, moduleService, UserService) {
+          commonUtkastProxy, authorityService, UserModel, moduleService, UserService, messageService) {
         'use strict';
 
         var favouriteList,
@@ -134,6 +134,7 @@ angular.module('webcert').controller('webcert.SokSkrivValjUtkastTypeCtrl',
             Viewstate.intygListUnhandled.forEach(function(intyg) {
               intyg.intygTypeName = getTypeName(intyg.intygType);
               setExtendedStatus(intyg);
+              setExtendedStatusName(intyg);
             });
             Service.updateIntygList(Viewstate);
             Viewstate.unsigned = Service.hasUnsigned(Viewstate.currentList);
@@ -166,6 +167,10 @@ angular.module('webcert').controller('webcert.SokSkrivValjUtkastTypeCtrl',
               intyg.extendedStatus = intyg.status;
             }
           }
+        }
+
+        function setExtendedStatusName(intyg) {
+          intyg.extendedStatusName = messageService.getProperty('intyg.status.' + intyg.extendedStatus.toLowerCase());
         }
 
         function isErsatt(intyg) {
