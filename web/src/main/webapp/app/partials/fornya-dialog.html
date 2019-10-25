@@ -36,7 +36,7 @@
       >
         <span dynamic-label key="{{button2text}}"></span>
       </wc-button>
-      <div class="webcert-top-padding-section" ng-show="model.showerror">
+      <div class="webcert-top-padding-section" ng-if="model.showerror">
         <wc-alert-message alert-severity="danger" class="alert-dialog-error"
                           alert-message-id="{{model.errormessageid}}"></wc-alert-message>
       </div>
