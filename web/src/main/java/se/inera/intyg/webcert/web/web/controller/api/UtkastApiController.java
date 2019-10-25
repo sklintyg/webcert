@@ -292,6 +292,11 @@ public class UtkastApiController extends AbstractApiController {
         // INTYG-4086: Mark all remaining ListIntygEntry having a patient with sekretessmarkering
         listIntygEntries.stream().forEach(lie -> markSekretessMarkering(lie, sekretessStatusMap));
 
+        final Comparator<ListIntygEntry> intygComparator = getIntygComparator(filter.getOrderBy(), filter.getOrderAscending());
+        intygDraftDecorator.decorateWithCertificateTypeName(listIntygEntries);
+        intygDraftDecorator.decorateWithCertificateStatusName(listIntygEntries);
+        listIntygEntries.sort(intygComparator);
+
         int totalCountOfFilteredIntyg = listIntygEntries.size();
 
         // Now that we have filtered for sekretess == UNDEFINED and sekretess authorization - we apply the pagination
@@ -318,9 +323,6 @@ public class UtkastApiController extends AbstractApiController {
             listIntygEntries.clear();
         }
 
-        final Comparator<ListIntygEntry> intygComparator = getIntygComparator(filter.getOrderBy(), filter.getOrderAscending());
-        intygDraftDecorator.decorateWithCertificateTypeName(listIntygEntries);
-        intygDraftDecorator.decorateWithCertificateStatusName(listIntygEntries);
         listIntygEntries.sort(intygComparator);
 
         QueryIntygResponse response = new QueryIntygResponse(listIntygEntries);
