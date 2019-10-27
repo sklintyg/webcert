@@ -25,7 +25,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+
 import javax.validation.constraints.NotNull;
+
 import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.infra.security.authorities.validation.AuthExpectationSpecification;
 import se.inera.intyg.infra.security.authorities.validation.AuthoritiesValidator;
@@ -464,9 +466,16 @@ public final class AccessServiceEvaluation {
             return Optional.empty();
         }
 
-        if (user.getOrigin().equals(UserOriginType.DJUPINTEGRATION.name())) {
+        if (isDjupIntegrationAndDoctor(user)) {
             final String vardgivarId = vardenhet.getVardgivare().getVardgivarid();
             if (isReadOnlyOperation && vardgivarId != null && !user.getValdVardgivare().getId().equals(vardgivarId)) {
+                return Optional.of(AccessResult.create(AccessResultCode.AUTHORIZATION_DIFFERENT_UNIT,
+                    "User is logged in on a different unit than the draft/certificate"));
+            }
+        }
+
+        if (isDjupIntegrationAndVardadministrator(user)) {
+            if (isUserLoggedInOnDifferentUnit(vardenhet.getEnhetsid())) {
                 return Optional.of(AccessResult.create(AccessResultCode.AUTHORIZATION_DIFFERENT_UNIT,
                     "User is logged in on a different unit than the draft/certificate"));
             }
@@ -484,6 +493,14 @@ public final class AccessServiceEvaluation {
         }
 
         return Optional.empty();
+    }
+
+    private boolean isDjupIntegrationAndDoctor(WebCertUser user) {
+        return user.getOrigin().equals(UserOriginType.DJUPINTEGRATION.name()) && user.isLakare();
+    }
+
+    private boolean isDjupIntegrationAndVardadministrator(WebCertUser user) {
+        return user.getOrigin().equals(UserOriginType.DJUPINTEGRATION.name()) && !user.isLakare();
     }
 
     private boolean isUserLoggedInOnDifferentUnit(String enhetsId) {
