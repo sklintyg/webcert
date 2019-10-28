@@ -18,15 +18,18 @@
  */
 package se.inera.intyg.webcert.web.service.utkast;
 
-import com.google.common.base.Joiner;
-import com.google.common.base.Strings;
 import java.io.IOException;
 import java.util.Arrays;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
+
+import com.google.common.base.Joiner;
+import com.google.common.base.Strings;
+
 import se.inera.intyg.common.services.texts.IntygTextsService;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.GrundData;
@@ -49,10 +52,6 @@ import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.converter.util.IntygConverterUtil;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
-import se.inera.intyg.webcert.web.service.log.LogService;
-import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
-import se.inera.intyg.webcert.web.service.log.factory.LogRequestFactory;
-import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.util.UpdateUserUtil;
 import se.inera.intyg.webcert.web.service.utkast.dto.AbstractCreateCopyRequest;
 import se.inera.intyg.webcert.web.service.utkast.dto.UtkastBuilderResponse;
@@ -75,15 +74,6 @@ public abstract class AbstractUtkastBuilder<T extends AbstractCreateCopyRequest>
 
     @Autowired
     private UtkastRepository utkastRepository;
-
-    @Autowired
-    private WebCertUserService webCertUserService;
-
-    @Autowired
-    private LogService logService;
-
-    @Autowired
-    private LogRequestFactory logRequestFactory;
 
     @Autowired
     private IntygTextsService intygTextsService;
@@ -198,11 +188,6 @@ public abstract class AbstractUtkastBuilder<T extends AbstractCreateCopyRequest>
             orgUtlatande = orgModuleApi.getUtlatandeFromJson(orgUtkast.getModel());
         } catch (IOException e) {
             throw new ModuleException("Could not convert original certificate to Utlatande", e);
-        }
-
-        if (coherentJournaling) {
-            LogRequest logRequest = logRequestFactory.createLogRequestFromUtkast(orgUtkast, coherentJournaling);
-            logService.logReadIntyg(logRequest);
         }
 
         UtkastBuilderResponse builderResponse = new UtkastBuilderResponse();
