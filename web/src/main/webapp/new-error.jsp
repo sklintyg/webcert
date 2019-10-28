@@ -47,14 +47,18 @@
   </div>
   <c:choose>
     <c:when test="${param.reason eq 'timeout'}">
+    <div class="webcert-workarea-page container-fluid index-vy">
       <wc-error error-msg="<spring:message code="error.timeout.text" />" error-title="<spring:message code="error.timeout.title" />" redirecting-link="<spring:message code="error.timeout.showlogin" />"></wc-error>
-      <wc-footer></wc-footer>
+    </div>
+    <wc-footer/>
     </c:when>
   </c:choose>
   <c:choose>
     <c:when test="${param.reason eq 'timeout_integration'}">
+    <div class="webcert-workarea-page container-fluid index-vy">
       <wc-error error-msg="<spring:message code="error.timeout.integration.text" />" error-title="<spring:message code="error.timeout.title" />"></wc-error>
-    </c:when>
+    </div>
+      </c:when>
   </c:choose>
 
   <c:choose>
