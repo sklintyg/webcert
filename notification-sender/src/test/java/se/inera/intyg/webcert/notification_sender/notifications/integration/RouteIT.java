@@ -76,7 +76,7 @@ public class RouteIT extends AbstractBaseIT {
 
     @Test
     public void ensureUserIdExists() {
-        NotificationMessage msg = createNotificationMessage("1", "fk7263", HandelsekodEnum.SKAPAT);
+        NotificationMessage msg = createNotificationMessage("1", LocalDateTime.now(), "fk7263", HandelsekodEnum.SKAPAT);
 
         sendMessage(msg);
 
@@ -108,6 +108,7 @@ public class RouteIT extends AbstractBaseIT {
                 List<NotificationStubEntry> notificationMessages = certificateStatusUpdateForCareResponderV3.getNotificationMessages();
                 for (NotificationStubEntry nse : notificationMessages) {
                     if (nse.handelseTyp.equals(HandelsekodEnum.SIGNAT.value())) {
+                        System.out.println("*** second: " + second + " AND nse.handelseTid: " + nse.handelseTid + " ***");
                         assertEquals(second, nse.handelseTid);
                     }
                 }
@@ -119,11 +120,11 @@ public class RouteIT extends AbstractBaseIT {
     @Test
     public void ensureAggregatorFiltersOutAndratMessagesWhenSigned() throws Exception {
 
-        NotificationMessage notificationMessage1 = createNotificationMessage("intyg1", LocalDateTime.now(), HandelsekodEnum.SKAPAT,
+        NotificationMessage notificationMessage1 = createNotificationMessage("intyg1", LocalDateTime.now().minusSeconds(15), HandelsekodEnum.SKAPAT,
             "luae_fs", SchemaVersion.VERSION_3);
-        NotificationMessage notificationMessage2 = createNotificationMessage("intyg1", LocalDateTime.now(), HandelsekodEnum.ANDRAT,
+        NotificationMessage notificationMessage2 = createNotificationMessage("intyg1", LocalDateTime.now().minusSeconds(10), HandelsekodEnum.ANDRAT,
             "luae_fs", SchemaVersion.VERSION_3);
-        NotificationMessage notificationMessage3 = createNotificationMessage("intyg1", LocalDateTime.now(), HandelsekodEnum.ANDRAT,
+        NotificationMessage notificationMessage3 = createNotificationMessage("intyg1", LocalDateTime.now().minusSeconds(5), HandelsekodEnum.ANDRAT,
             "luae_fs", SchemaVersion.VERSION_3);
         NotificationMessage notificationMessage4 = createNotificationMessage("intyg1", LocalDateTime.now(), HandelsekodEnum.SIGNAT,
             "luae_fs", SchemaVersion.VERSION_3);
@@ -158,9 +159,9 @@ public class RouteIT extends AbstractBaseIT {
             SchemaVersion.VERSION_3);
 
         // 3 messages
-        NotificationMessage fk1 = createNotificationMessage("intyg2", "fk7263", HandelsekodEnum.SKAPAT);
-        NotificationMessage fk2 = createNotificationMessage("intyg2", "fk7263", HandelsekodEnum.ANDRAT);
-        NotificationMessage fk3 = createNotificationMessage("intyg2", "fk7263", HandelsekodEnum.SIGNAT);
+        NotificationMessage fk1 = createNotificationMessage("intyg2", LocalDateTime.now().minusSeconds(10), "fk7263", HandelsekodEnum.SKAPAT);
+        NotificationMessage fk2 = createNotificationMessage("intyg2", LocalDateTime.now().minusSeconds(5), "fk7263", HandelsekodEnum.ANDRAT);
+        NotificationMessage fk3 = createNotificationMessage("intyg2", LocalDateTime.now(), "fk7263", HandelsekodEnum.SIGNAT);
 
         // 2 messages
         NotificationMessage luaefs4 = createNotificationMessage("intyg3", LocalDateTime.now(), HandelsekodEnum.MAKULE, "luae_fs",
@@ -185,9 +186,9 @@ public class RouteIT extends AbstractBaseIT {
 
     @Test
     public void ensureStubReceivedAllMessages() throws Exception {
-        NotificationMessage notificationMessage1 = createNotificationMessage("intyg1", "fk7263", HandelsekodEnum.SKAPAT);
-        NotificationMessage notificationMessage2 = createNotificationMessage("intyg2", "fk7263", HandelsekodEnum.ANDRAT);
-        NotificationMessage notificationMessage3 = createNotificationMessage("intyg3", "fk7263", HandelsekodEnum.SIGNAT);
+        NotificationMessage notificationMessage1 = createNotificationMessage("intyg1", LocalDateTime.now().minusSeconds(10), "fk7263", HandelsekodEnum.SKAPAT);
+        NotificationMessage notificationMessage2 = createNotificationMessage("intyg2", LocalDateTime.now().minusSeconds(5),"fk7263", HandelsekodEnum.ANDRAT);
+        NotificationMessage notificationMessage3 = createNotificationMessage("intyg3", LocalDateTime.now(), "fk7263", HandelsekodEnum.SIGNAT);
 
         sendMessage(notificationMessage1);
         sendMessage(notificationMessage2);
@@ -208,8 +209,8 @@ public class RouteIT extends AbstractBaseIT {
             .thenReturn(NotificationTestHelper.createIntyg("fk7263", "1.0", FALLERAT_MEDDELANDE + "2"))
             .thenReturn(NotificationTestHelper.createIntyg("fk7263", "1.0", "korrekt-meddelande-1"));
 
-        NotificationMessage notificationMessage1 = createNotificationMessage(intygsId1, "fk7263", HandelsekodEnum.SKAPAT);
-        NotificationMessage notificationMessage2 = createNotificationMessage(intygsId2, "fk7263", HandelsekodEnum.ANDRAT);
+        NotificationMessage notificationMessage1 = createNotificationMessage(intygsId1, LocalDateTime.now().minusSeconds(5), "fk7263", HandelsekodEnum.SKAPAT);
+        NotificationMessage notificationMessage2 = createNotificationMessage(intygsId2, LocalDateTime.now(), "fk7263", HandelsekodEnum.ANDRAT);
 
         sendMessage(notificationMessage1);
         sendMessage(notificationMessage2);

@@ -102,8 +102,8 @@ public abstract class AbstractBaseIT {
         certificateStatusUpdateForCareResponderV3.reset();
     }
 
-    NotificationMessage createNotificationMessage(String intygsId1, String intygsTyp, HandelsekodEnum handelseType) {
-        return createNotificationMessage(intygsId1, LocalDateTime.now(), handelseType, intygsTyp, SchemaVersion.VERSION_3);
+    NotificationMessage createNotificationMessage(String intygsId1, LocalDateTime handelseTid, String intygsTyp, HandelsekodEnum handelseType) {
+        return createNotificationMessage(intygsId1, handelseTid, handelseType, intygsTyp, SchemaVersion.VERSION_3);
     }
 
     NotificationMessage createNotificationMessage(String intygsId, LocalDateTime handelseTid, HandelsekodEnum handelseType,
