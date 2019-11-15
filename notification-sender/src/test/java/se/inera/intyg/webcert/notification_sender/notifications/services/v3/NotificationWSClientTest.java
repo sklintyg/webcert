@@ -28,16 +28,23 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.lang.reflect.Field;
+
 import javax.xml.namespace.QName;
 import javax.xml.soap.SOAPFactory;
 import javax.xml.ws.WebServiceException;
 import javax.xml.ws.soap.SOAPFaultException;
+
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+
 import se.inera.intyg.common.support.Constants;
+import se.inera.intyg.infra.security.authorities.FeaturesHelper;
+import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.webcert.common.sender.exception.PermanentException;
 import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareResponderInterface;
@@ -56,7 +63,6 @@ public class NotificationWSClientTest {
     private static final String USER_ID = "hsaId";
     private static final String CORRELATION_ID = "correlationid";
 
-
     @InjectMocks
     private NotificationWSClient notificationWsClient;
 
@@ -65,6 +71,17 @@ public class NotificationWSClientTest {
 
     @Mock
     private MessageRedeliveryFlag messageRedeliveryFlag;
+
+    @Mock
+    private FeaturesHelper featuresHelper;
+
+    @Before
+    public void reset() throws Exception {
+        // Reset the private static member, so it is possible to test when the feature isn't active
+        final Field field = NotificationWSClient.class.getDeclaredField("isFilterOutdatedMessagesFeatureActive");
+        field.setAccessible(true);
+        field.set(null, null);
+    }
 
     @Test(expected = TemporaryException.class)
     public void testSendStatusUpdateClientThrowsTemporaryException() throws Exception {
@@ -135,6 +152,7 @@ public class NotificationWSClientTest {
 
     @Test
     public void testOutdatedMessageIgnored() throws Exception {
+        when(featuresHelper.isFeatureActive(AuthoritiesConstants.FEATURE_ENABLE_FILTER_OUTDATED_MESSAGES)).thenReturn(true);
         when(messageRedeliveryFlag.isOutdated(anyString(), anyLong())).thenReturn(true);
         sendStatusUpdate(createRequest());
         verify(messageRedeliveryFlag, times(1)).isOutdated(anyString(), anyLong());
@@ -144,6 +162,7 @@ public class NotificationWSClientTest {
 
     @Test
     public void testMessageFlagLowered() throws Exception {
+        when(featuresHelper.isFeatureActive(AuthoritiesConstants.FEATURE_ENABLE_FILTER_OUTDATED_MESSAGES)).thenReturn(true);
         when(statusUpdateForCareClient.certificateStatusUpdateForCare(anyString(), any(CertificateStatusUpdateForCareType.class)))
             .thenReturn(buildResponse(ResultCodeType.OK, null, null));
         when(messageRedeliveryFlag.isOutdated(anyString(), anyLong())).thenReturn(false);
@@ -154,6 +173,7 @@ public class NotificationWSClientTest {
 
     @Test
     public void testMessageFlagRaisedAppError() throws Exception {
+        when(featuresHelper.isFeatureActive(AuthoritiesConstants.FEATURE_ENABLE_FILTER_OUTDATED_MESSAGES)).thenReturn(true);
         when(statusUpdateForCareClient.certificateStatusUpdateForCare(anyString(), any(CertificateStatusUpdateForCareType.class)))
             .thenReturn(buildResponse(ResultCodeType.ERROR, ErrorIdType.TECHNICAL_ERROR, "error text"));
         try {
@@ -167,6 +187,7 @@ public class NotificationWSClientTest {
 
     @Test
     public void testMessageFlagRaisedCommError() throws Exception {
+        when(featuresHelper.isFeatureActive(AuthoritiesConstants.FEATURE_ENABLE_FILTER_OUTDATED_MESSAGES)).thenReturn(true);
         when(statusUpdateForCareClient.certificateStatusUpdateForCare(anyString(), any(CertificateStatusUpdateForCareType.class)))
             .thenThrow(new WebServiceException());
         try {
@@ -176,6 +197,17 @@ public class NotificationWSClientTest {
         verify(messageRedeliveryFlag, times(1)).isOutdated(anyString(), anyLong());
         verify(messageRedeliveryFlag, times(0)).lowerError(anyString(), anyLong());
         verify(messageRedeliveryFlag, times(1)).raiseError(anyString());
+    }
+
+    @Test
+    public void testFilterOutdatedMessagesInactive()  throws Exception {
+        when(featuresHelper.isFeatureActive(AuthoritiesConstants.FEATURE_ENABLE_FILTER_OUTDATED_MESSAGES)).thenReturn(false);
+        when(statusUpdateForCareClient.certificateStatusUpdateForCare(anyString(), any(CertificateStatusUpdateForCareType.class)))
+            .thenReturn(buildResponse(ResultCodeType.OK, null, null));
+        sendStatusUpdate(createRequest());
+        verify(messageRedeliveryFlag, times(0)).isOutdated(anyString(), anyLong());
+        verify(messageRedeliveryFlag, times(0)).lowerError(anyString(), anyLong());
+        verify(messageRedeliveryFlag, times(0)).raiseError(anyString());
     }
 
     void sendStatusUpdate(CertificateStatusUpdateForCareType request) throws Exception {
