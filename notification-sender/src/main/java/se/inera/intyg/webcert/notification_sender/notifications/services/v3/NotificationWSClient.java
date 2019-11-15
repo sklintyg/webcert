@@ -24,11 +24,14 @@ import static se.inera.intyg.common.support.Constants.HSA_ID_OID;
 
 import java.util.Objects;
 import java.util.function.Function;
+
 import javax.xml.ws.soap.SOAPFaultException;
+
 import org.apache.camel.Header;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.infra.security.authorities.FeaturesHelper;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
@@ -51,6 +54,8 @@ public class NotificationWSClient {
 
     private static final String MARSALLING_ERROR = "Marshalling Error";
     private static final String UNMARSALLING_ERROR = "Unmarshalling Error";
+
+    private static Boolean isFilterOutdatedMessagesFeatureActive = null;
 
     // keep track of context, see NotificationInInterceptor
     static class MessageContext {
@@ -120,7 +125,7 @@ public class NotificationWSClient {
 
         final MessageContext mc = MessageContext.of(request, logicalAddress, correlationId);
 
-        if (messageRedeliveryFlag.isOutdated(mc.key(), messageTimestamp)) {
+        if (isFilterOutdatedMessagesFeatureActive() && messageRedeliveryFlag.isOutdated(mc.key(), messageTimestamp)) {
             LOG.info("WSClient outdated status update for {} is silently dropped", mc);
             return;
         }
@@ -137,9 +142,13 @@ public class NotificationWSClient {
                 case OK:
                     break;
             }
-            messageRedeliveryFlag.lowerError(mc.key(), messageTimestamp);
+            if (isFilterOutdatedMessagesFeatureActive()) {
+                messageRedeliveryFlag.lowerError(mc.key(), messageTimestamp);
+            }
         } catch (TemporaryException e) {
-            messageRedeliveryFlag.raiseError(mc.key());
+            if (isFilterOutdatedMessagesFeatureActive()) {
+                messageRedeliveryFlag.raiseError(mc.key());
+            }
             throw e;
         }
     }
@@ -174,10 +183,7 @@ public class NotificationWSClient {
                 mc.correlationId(), msg, result.getErrorId(), result.getResultText());
 
         if (ErrorIdType.TECHNICAL_ERROR.equals(result.getErrorId())) {
-            // Added ugly null check to make notification_sender testSendStatusUpdateErrorTechnical pass
-            // The featuresHelper does not seem to load properly in the gradle tests
-            if (Objects.nonNull(featuresHelper)
-                && featuresHelper.isFeatureActive(AuthoritiesConstants.FEATURE_NOTIFICATION_DISCARD_FELB)) {
+            if (featuresHelper.isFeatureActive(AuthoritiesConstants.FEATURE_NOTIFICATION_DISCARD_FELB)) {
                 if (result.getResultText()
                     .startsWith("Certificate not found in COSMIC and ref field is missing, cannot store certificate. "
                         + "Possible race condition. Retry later when the certificate may have been stored in COSMIC.")
@@ -211,5 +217,17 @@ public class NotificationWSClient {
     // returns message context
     static MessageContext messageContext() {
         return messageContextTL.get();
+    }
+
+    /**
+     * FEATURE_ENABLE_FILTER_OUTDATED_MESSAGES is only checked once and stored in a static member.
+     * @return  true/false depending if the feature is active or not.
+     */
+    private boolean isFilterOutdatedMessagesFeatureActive() {
+        if (isFilterOutdatedMessagesFeatureActive == null) {
+            isFilterOutdatedMessagesFeatureActive =
+                featuresHelper.isFeatureActive(AuthoritiesConstants.FEATURE_ENABLE_FILTER_OUTDATED_MESSAGES);
+        }
+        return isFilterOutdatedMessagesFeatureActive;
     }
 }
