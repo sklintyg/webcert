@@ -8,5 +8,5 @@
     "protractorTest"
   ],
   "uploadArchives": true,
-  "backingService": "intygstjanst-test:3.10.0.+"
+  "backingService": "intygstjanst-test:3.11.0.+"
 }
