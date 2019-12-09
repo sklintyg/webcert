@@ -63,11 +63,13 @@ angular.module('webcert').directive('wcEnhetArendenFilter', [
           };
 
           function updateArendenList() {
+            enhetArendenModel.enhetId = vardenhetFilterModel.selectedUnit;
             $rootScope.$broadcast('enhetArendenList.requestListUpdate', {startFrom: 0});
           }
 
           function resetFrom() {
             enhetArendenFilterModel.reset();
+            vardenhetFilterModel.reset();
             resetInvalidData();
             $scope.showDateFromErrors = false;
             $scope.showDateToErrors = false;
@@ -84,15 +86,14 @@ angular.module('webcert').directive('wcEnhetArendenFilter', [
 
           // Broadcast by vardenhet filter directive on load and selection
           $scope.$on('wcVardenhetFilter.unitSelected', function(event, unit) {
-
-            // If we change enhet then we probably don't want the same filter criterias
-            if (unit.id !== enhetArendenModel.enhetId) {
-              resetFrom();
+            if(unit !== undefined) {
+              enhetArendenModel.enhetId = unit.id;
+              vardenhetFilterModel.selectedUnitName = unit.namn;
+              if(unit.id === vardenhetFilterModel.ALL_ARENDEN){
+                vardenhetFilterModel.selectedUnitName = vardenhetFilterModel.selectedUnitName.toLowerCase();
+              }
+              enhetArendenFilterService.initLakareList(unit.id);
             }
-            enhetArendenModel.enhetId = unit.id;
-
-            enhetArendenFilterService.initLakareList(unit.id); // Update lakare list for filter form
-            updateArendenList();
           });
         };
 

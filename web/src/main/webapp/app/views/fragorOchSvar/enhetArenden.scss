@@ -1,14 +1,14 @@
 #enhet-arenden-header {
 
   .header-content {
-    padding-left: 102px;
+    padding-left: 32px;
     position: relative;
   }
 
   .page-header-icon {
-    position: absolute;
-    left: 40px;
-    top: 6px;
+    display: inline-block;
+    padding-right: 15px;
+    float: left;
   }
 
   .page-heading1 {

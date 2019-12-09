@@ -38,6 +38,7 @@ angular.module('webcert').directive('wcEnhetArendenList', [
       controller: function($scope) {
         $scope.listModel = enhetArendenListModel;
         $scope.vardenhetFilterModel = vardenhetFilterModel;
+        $scope.selectedUnitName = vardenhetFilterModel.selectedUnitName;
 
         $scope.forwardTooltip = messageService.getProperty('th.help.forward');
         $scope.openTooltip = messageService.getProperty('th.help.open');
@@ -45,16 +46,6 @@ angular.module('webcert').directive('wcEnhetArendenList', [
 
         $scope.orderBy = enhetArendenFilterModel.filterForm.orderBy;
         $scope.orderAscending = enhetArendenFilterModel.filterForm.orderAscending;
-
-        $scope.$watch('vardenhetFilterModel.selectedUnit', function() {
-          if (vardenhetFilterModel.selectedUnit) {
-            $scope.selectedUnitName = vardenhetFilterModel.selectedUnit.namn;
-
-            if (vardenhetFilterModel.selectedUnit.id === vardenhetFilterModel.ALL_ARENDEN) {
-              $scope.selectedUnitName = $scope.selectedUnitName.toLowerCase();
-            }
-          }
-        });
 
         var vidarebefordraArendeMailModel = null;
 
@@ -78,6 +69,11 @@ angular.module('webcert').directive('wcEnhetArendenList', [
             enhetArendenListModel.prevFilterQuery = arendenListResult.query;
             enhetArendenListModel.totalCount = arendenListResult.totalCount;
             enhetArendenListModel.arendenList = arendenListResult.arendenList;
+
+            if (vardenhetFilterModel.selectedUnitName) {
+              $scope.selectedUnitName = vardenhetFilterModel.selectedUnitName;
+            }
+
             if (firstRun) {
               $scope.totalCount = arendenListResult.totalCount;
             }

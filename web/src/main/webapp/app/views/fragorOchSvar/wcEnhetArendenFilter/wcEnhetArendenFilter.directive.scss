@@ -18,13 +18,14 @@ wc-enhet-arenden-filter {
     }
   }
   
-  .col-md-2, .col-md-3 {
+  .col-md-2, .col-md-3 .col-md-6 {
       padding-left: 13px;
       padding-right: 12px;
   }
 
   .buttons {
-    padding-top: 12px;
+    padding-top: 20px;
+    float: right;
     .btn {
       min-height: 40px;
     }
@@ -32,5 +33,12 @@ wc-enhet-arenden-filter {
 
   input.ng-invalid-valid-pnr.ng-touched:not(.ng-empty) {
     border-color: $wc-color-11;
+  }
+
+  @media (max-width: 992px) {
+    .buttons {
+      float: left;
+      padding-top: 0;
+    }
   }
 }
