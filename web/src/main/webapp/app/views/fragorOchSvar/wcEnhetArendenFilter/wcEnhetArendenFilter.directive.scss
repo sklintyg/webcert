@@ -35,7 +35,7 @@ wc-enhet-arenden-filter {
     border-color: $wc-color-11;
   }
 
-  @media (max-width: 992px) {
+  @media (max-width: $screen-md-min) {
     .buttons {
       float: left;
       padding-top: 0;
