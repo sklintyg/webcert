@@ -26,6 +26,7 @@ angular.module('webcert').factory('webcert.UtkastFilterModel', ['$filter', funct
   function UtkastFilterModel(pageSize) {
     this.pageSize = pageSize;
     this.selection = {};
+    this.selection.pnr = '';
     this.reset();
   }
 
@@ -87,6 +88,7 @@ angular.module('webcert').factory('webcert.UtkastFilterModel', ['$filter', funct
     query.savedBy = this.selection.savedBy;
     query.notified = convertNotified(this.selection.notified);
     query.status = this.selection.status;
+    query.patientId = this.selection.pnr;
 
     query.savedFrom = $filter('date')(this.selection.savedFrom, 'yyyy-MM-dd');
     if (this.selection.savedTo) {

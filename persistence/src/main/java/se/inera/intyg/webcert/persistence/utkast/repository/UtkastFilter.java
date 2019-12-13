@@ -45,6 +45,8 @@ public class UtkastFilter {
 
     private Boolean orderAscending;
 
+    private String patientId;
+
     public UtkastFilter(String unitHsaId) {
         this.unitHsaId = unitHsaId;
     }
@@ -59,6 +61,14 @@ public class UtkastFilter {
 
     public void setUnitHsaId(String unitHsaId) {
         this.unitHsaId = unitHsaId;
+    }
+
+    public String getPatientId() {
+        return patientId;
+    }
+
+    public void setPatientId(String patientId) {
+        this.patientId = patientId;
     }
 
     public String getSavedByHsaId() {
