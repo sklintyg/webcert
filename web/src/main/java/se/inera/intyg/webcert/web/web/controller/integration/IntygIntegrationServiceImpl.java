@@ -18,12 +18,15 @@
  */
 package se.inera.intyg.webcert.web.web.controller.integration;
 
-import com.google.common.base.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import com.google.common.base.Strings;
+
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
+import se.inera.intyg.webcert.web.service.access.DraftAccessServiceHelper;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
@@ -42,6 +45,9 @@ public class IntygIntegrationServiceImpl extends IntegrationServiceImpl {
     @Autowired
     private UtkastService utkastService;
 
+    @Autowired
+    private DraftAccessServiceHelper draftAccessServiceHelper;
+
     @Override
     void ensurePreparation(String intygTyp, String intygId, Utkast utkast, WebCertUser user, Personnummer prepareBeforeAlternateSsn) {
         if (utkast != null) {
@@ -52,7 +58,7 @@ public class IntygIntegrationServiceImpl extends IntegrationServiceImpl {
 
             // INTYG-3212: ArendeDraft patient info should always be up-to-date with the patient info supplied by the
             // integrating journaling system
-            if (UtkastServiceImpl.isEditableUtkast(utkast)) {
+            if (UtkastServiceImpl.isEditableUtkast(utkast) && draftAccessServiceHelper.isAllowedToEditUtkast(utkast)) {
                 ensureDraftPatientInfoUpdated(intygTyp, intygId, utkast.getVersion(), user, prepareBeforeAlternateSsn);
             }
 

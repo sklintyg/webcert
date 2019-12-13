@@ -20,6 +20,7 @@ package se.inera.intyg.webcert.web.service.access;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.web.util.UtkastUtil;
@@ -55,13 +56,20 @@ public final class DraftAccessServiceHelper {
         accessResultExceptionHelper.throwExceptionIfDenied(accessResult);
     }
 
+    public boolean isAllowedToEditUtkast(Utkast utkast) {
+        return evaluateAllowToEditUtkast(utkast).isAllowed();
+    }
+
     public void validateAllowToEditUtkast(Utkast utkast) {
-        final AccessResult accessResult = draftAccessService.allowToEditDraft(
+        final AccessResult accessResult = evaluateAllowToEditUtkast(utkast);
+        accessResultExceptionHelper.throwExceptionIfDenied(accessResult);
+    }
+
+    private AccessResult evaluateAllowToEditUtkast(Utkast utkast) {
+        return draftAccessService.allowToEditDraft(
             utkast.getIntygsTyp(),
             UtkastUtil.getVardenhet(utkast),
             utkast.getPatientPersonnummer());
-
-        accessResultExceptionHelper.throwExceptionIfDenied(accessResult);
     }
 
     public void validateAllowToDeleteUtkast(Utkast utkast) {
@@ -90,6 +98,4 @@ public final class DraftAccessServiceHelper {
 
         accessResultExceptionHelper.throwExceptionIfDenied(accessResult);
     }
-
-
 }
