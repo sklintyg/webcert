@@ -24,7 +24,9 @@ angular.module('webcert').constant('webcert.messages', {
     'webcert.description': 'Välkommen till Webcert.',
     'dashboard.title': 'Mina andra enheter',
     'dashboard.unanswered.title': 'Ej hanterade ärenden',
-    'dashboard.unsigned.title': 'Ej signerade utkast',
+    'dashboard.unanswered.subtitle': 'Nedan visas alla ej hanterade ärenden, så som kompletteringsbegäran och administrativa frågor, för den eller de enheter du väljer.',
+
+'dashboard.unsigned.title': 'Ej signerade utkast',
     'dashboard.unsigned.subtitle': 'Nedan visas alla ej signerade utkast för den enhet du är inloggad på.',
     'dashboard.about.title': 'Om Webcert',
 

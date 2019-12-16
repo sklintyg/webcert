@@ -26,23 +26,31 @@ describe('wcEnhetArendenFilter', function() {
   var element;
   var enhetArendenFilterModel;
   var enhetArendenFilterService;
+  var vardenhetFilterModel;
+  var User;
 
   beforeEach(function() {
 
     module('htmlTemplates');
     module('webcertTest');
     module('webcert', ['$provide', function($provide) {
-      $provide.value('webcert.vardenhetFilterModel', {});
+      $provide.value('webcert.vardenhetFilterModel',
+          jasmine.createSpyObj('webcert.vardenhetFilterModel', ['initialize', 'reset', 'selectUnitById']));
+      $provide.value('common.User',
+          jasmine.createSpyObj('common.User', ['getValdVardenhet', 'getValdVardgivare', 'getVardenhetFilterList']));
+      $provide.value('common.statService', jasmine.createSpyObj('common.statService', ['refreshStat', 'getLatestData']));
       $provide.value('common.UserModel', jasmine.createSpyObj('common.UserModel',
           ['isLakare', 'isTandlakare', 'isPrivatLakare', 'isDjupintegration', 'isVardAdministrator']));
     }]);
 
-    inject(['$rootScope', '$compile', 'webcert.enhetArendenFilterModel', 'webcert.enhetArendenFilterService', '$httpBackend',
-      function(_$rootScope_, _$compile_, _enhetArendenFilterModel_, _enhetArendenFilterService_, _$httpBackend_) {
+    inject(['$rootScope', '$compile', 'webcert.enhetArendenFilterModel', 'webcert.enhetArendenFilterService', '$httpBackend', 'webcert.vardenhetFilterModel', 'common.User',
+      function(_$rootScope_, _$compile_, _enhetArendenFilterModel_, _enhetArendenFilterService_, _$httpBackend_, _vardenhetFilterModel_, _User_) {
         $rootScope = _$rootScope_;
         $compile = _$compile_;
         enhetArendenFilterModel = _enhetArendenFilterModel_;
         enhetArendenFilterService = _enhetArendenFilterService_;
+        vardenhetFilterModel = _vardenhetFilterModel_;
+        User = _User_;
 
         _$httpBackend_.expectGET('/api/fragasvar/lakare').respond(200, []);
 
@@ -56,6 +64,11 @@ describe('wcEnhetArendenFilter', function() {
   describe('filterList', function() {
 
     it('should send event updating arenden list', function() {
+
+      vardenhetFilterModel.units = [
+        {id: 'wc-all'},
+        {id: '2'}
+      ];
 
       // Make sure update list event is called
       spyOn($rootScope, '$broadcast').and.stub();
@@ -78,15 +91,17 @@ describe('wcEnhetArendenFilter', function() {
   });
 
   describe('events', function() {
-
     it('should update active unit and update lakare list wcVardenhetFilter.unitSelected message is received', function() {
 
-      spyOn(enhetArendenFilterModel, 'reset').and.callThrough();
+      vardenhetFilterModel.units = [
+        {id: 'wc-all'},
+        {id: '2'}
+      ];
+
       spyOn(enhetArendenFilterService, 'initLakareList').and.stub();
 
       $scope.$broadcast('wcVardenhetFilter.unitSelected', {id: 'unitId'});
 
-      expect(enhetArendenFilterModel.reset).toHaveBeenCalled();
       expect(enhetArendenFilterService.initLakareList).toHaveBeenCalledWith('unitId');
     });
   });

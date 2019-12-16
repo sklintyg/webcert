@@ -1,11 +1,10 @@
 <div>
-
-  <div ng-show="totalCount > 0"> <!-- NOTE: must be ng-show since event from vardenhetfilter is sent to filter controller which doesnt exist with ng-if -->
-    <h2 class="page-heading1">
-      Ärenden visas för {{ selectedUnitName }}
-    </h2>
-    <wc-enhet-arenden-filter></wc-enhet-arenden-filter>
-  </div>
+    <div ng-show="totalCount > 0"> <!-- NOTE: must be ng-show since event from vardenhetfilter is sent to filter controller which doesnt exist with ng-if -->
+      <wc-enhet-arenden-filter></wc-enhet-arenden-filter>
+      <h2 class="page-heading1 centered-constrained-content">
+        Ärenden visas för {{ selectedUnitName }}
+      </h2>
+    </div>
 
   <!-- loading animation table result -->
   <wc-spinner label="info.running.query" show-spinner="listModel.viewState.runningQuery">
