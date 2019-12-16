@@ -74,6 +74,11 @@ angular.module('webcert').directive('wcUtkastFilter', ['$timeout', 'webcert.Utka
                 $scope.filterForm['filter-changedate-to'].$setViewValue('');
               }
 
+              angular.element('#filter-person-id').val('');
+              if ($scope.filterForm.pnr) {
+                $scope.filterForm.pnr.$setViewValue('');
+              }
+
               $scope.showDateFromErrors = false;
               $scope.showDateToErrors = false;
             }

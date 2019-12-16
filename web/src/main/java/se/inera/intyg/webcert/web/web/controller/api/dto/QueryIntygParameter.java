@@ -41,6 +41,16 @@ public class QueryIntygParameter {
 
     private Boolean orderAscending;
 
+    private String patientId;
+
+    public String getPatientId() {
+        return patientId;
+    }
+
+    public void setPatientId(String pnr) {
+        patientId = pnr;
+    }
+
     public Integer getStartFrom() {
         return startFrom;
     }

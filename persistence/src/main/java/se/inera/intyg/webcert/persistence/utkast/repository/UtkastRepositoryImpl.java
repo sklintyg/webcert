@@ -95,6 +95,10 @@ public class UtkastRepositoryImpl implements UtkastFilteredRepositoryCustom {
             pred = builder.and(pred, builder.equal(root.<Boolean>get("vidarebefordrad"), filter.getNotified()));
         }
 
+        if (filter.getPatientId() != null && !filter.getPatientId().equals("")) {
+            pred = builder.and(pred, builder.equal(root.<String>get("patientPersonnummer"), filter.getPatientId()));
+        }
+
         if (filter.getSavedFrom() != null) {
             pred = builder.and(pred, builder.greaterThanOrEqualTo(root.<LocalDateTime>get("senastSparadDatum"), filter.getSavedFrom()));
         }
