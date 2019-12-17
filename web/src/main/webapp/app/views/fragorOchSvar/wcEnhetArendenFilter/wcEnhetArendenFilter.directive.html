@@ -45,16 +45,7 @@
                      ng-class="{'validation-error' : hasValidationError('specifikation',  $index)}">
         </wc-dropdown>
       </div>
-      <div class="col-md-2 form-group" id="enhetArendePnr">
-          <label>Patient</label>
-          <input class="form-control" name="pnr" type="text"
-                 id="filter-person-id"
-                 placeholder="ååååmmdd-nnnn"
-                 ng-model="enhetArendenFilterModel.filterForm.patientPersonId"
-                 wc-person-number
-                 maxlength="13"/>
-        <span class="errorText" ng-if="filterForm.pnr.$invalid && filterForm.pnr.$touched && filterForm.pnr.$viewValue != ''"><p>Ange ett giltigt person- eller samordningsnummer.</p></span>
-      </div>
+
       <div class="col-md-2 form-group" id="filterFormSigneratAv">
         <label>Signerat av</label>
         <wc-dropdown data-items="enhetArendenFilterModel.lakareList"
@@ -69,15 +60,16 @@
       </div>
 
       <div class="col-md-2 form-group" id="enhetArendePnr">
-          <label>Personnummer</label>
-          <input class="form-control" name="pnr" type="text"
-                 id="filter-person-id"
-                 placeholder="ååååmmdd-nnnn"
-                 ng-model="enhetArendenFilterModel.filterForm.patientPersonId"
-                 wc-person-number
-                 maxlength="13"/>
+        <label>Patient</label>
+        <input class="form-control" name="pnr" type="text"
+               id="filter-person-id"
+               placeholder="ååååmmdd-nnnn"
+               ng-model="enhetArendenFilterModel.filterForm.patientPersonId"
+               wc-person-number
+               maxlength="13"/>
         <span class="errorText" ng-if="filterForm.pnr.$invalid && filterForm.pnr.$touched && filterForm.pnr.$viewValue != ''"><p>Ange ett giltigt person- eller samordningsnummer.</p></span>
       </div>
+
       <!-- Skickat/mottaget -->
       <div class="col-md-6 form-group">
         <label>Skickat datum</label><br>
