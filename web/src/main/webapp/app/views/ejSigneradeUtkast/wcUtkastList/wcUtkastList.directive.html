@@ -20,16 +20,16 @@
   </thead>
   <tbody>
     <tr ng-repeat="intyg in utkastList">
-      <td>{{::getTypeName(intyg.intygType)}}</td>
-      <td><span dynamic-label key="intyg.status.{{::intyg.status}}"></span></td>
-      <td class="unbreakable">{{::intyg.lastUpdatedSigned | date:'short'}}</td>
-      <td class="unbreakable">{{::intyg.patientId | PersonIdFormatter}}
+      <td ng-class="{'highlight': sortingProperty == 'intygsTyp'}">{{::getTypeName(intyg.intygType)}}</td>
+      <td ng-class="{'highlight': sortingProperty == 'status'}"><span dynamic-label key="intyg.status.{{::intyg.status}}"></span></td>
+      <td class="unbreakable" ng-class="{'highlight': sortingProperty == 'senastSparadDatum'}">{{::intyg.lastUpdatedSigned | date:'short'}}</td>
+      <td class="unbreakable" ng-class="{'highlight': sortingProperty == 'patientPersonnummer'}">{{::intyg.patientId | PersonIdFormatter}}
         <wc-sekretess-avliden-ikon uuid="intyg.intygId"
                                    sekretessmarkering="intyg.sekretessmarkering"
                                    avliden="intyg.avliden"></wc-sekretess-avliden-ikon>
       </td>
-      <td>{{::intyg.updatedSignedBy}}</td>
-      <td class="center">
+      <td ng-class="{'highlight': sortingProperty == 'senastSparadAv'}">{{::intyg.updatedSignedBy}}</td>
+      <td class="center" ng-class="{'highlight': sortingProperty == 'vidarebefordrad'}">
           <i ng-attr-id="vidarebefordrad_{{intyg.intygId}}" ng-if="intyg.vidarebefordrad" class="material-icons checkmark">check</i>
       </td>
 
