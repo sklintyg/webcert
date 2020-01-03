@@ -101,7 +101,7 @@ angular.module('webcert').service('webcert.enhetArendenFilterModel', [
         changedFrom: undefined,
         changedTo: undefined,
         orderBy: 'receivedDate',
-        orderAscending: true,
+        orderAscending: false,
         patientPersonId: ''
       };
     };

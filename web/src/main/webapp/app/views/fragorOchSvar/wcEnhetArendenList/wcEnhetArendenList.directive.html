@@ -50,14 +50,14 @@
             </thead>
             <tbody>
             <tr ng-repeat="arende in listModel.arendenList">
-              <td><span ng-show="arende.paminnelse">Påminnelse:</span> <span dynamic-label key="arende.measure.{{arende.measureResKey}}"></span></td>
-              <td><span dynamic-label key="common.arende.fragestallare.{{arende.fragestallare}}"></span></td>
-              <td id="patientId-{{arende.meddelandeId}}" class="unbreakable">{{arende.patientId | PersonIdFormatter}} <i class="material-icons md-18 md-icon-security"
+              <td ng-class="{'highlight': orderBy == 'amne'}"><span ng-show="arende.paminnelse">Påminnelse:</span> <span dynamic-label key="arende.measure.{{arende.measureResKey}}"></span></td>
+              <td ng-class="{'highlight': orderBy == 'fragestallare'}"><span dynamic-label key="common.arende.fragestallare.{{arende.fragestallare}}"></span></td>
+              <td ng-class="{'highlight': orderBy == 'patientId'}"id="patientId-{{arende.meddelandeId}}" class="unbreakable">{{arende.patientId | PersonIdFormatter}} <i class="material-icons md-18 md-icon-security"
                 uib-popover="Patienten har skyddade personuppgifter." popover-popup-delay="300" popover-append-to-body="true"
                 popover-placement="auto top" ng-if="arende.sekretessmarkering">security</i></td>
-              <td>{{arende.signeratAvNamn}}</td>
-              <td class="unbreakable">{{arende.receivedDate | date:'short'}}</td>
-              <td class="center">
+              <td ng-class="{'highlight': orderBy == 'signeratAvNamn'}">{{arende.signeratAvNamn}}</td>
+              <td class="unbreakable" ng-class="{'highlight': orderBy == 'receivedDate'}">{{arende.receivedDate | date:'short'}}</td>
+              <td class="center" ng-class="{'highlight': orderBy == 'vidarebefordrad'}">
                 <div ng-if="showVidarebefodra(arende)" class="center">
                   <div ng-if="arende.vidarebefordrad"><i class="material-icons check-color">check</i></div>
                 </div>

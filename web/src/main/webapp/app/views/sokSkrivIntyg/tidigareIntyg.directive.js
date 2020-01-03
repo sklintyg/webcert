@@ -67,6 +67,8 @@ angular.module('webcert').directive('wcTidigareIntyg',
             scope.orderByProperty = function(property) {
               if (scope.orderProperty === property) {
                 scope.orderAscending = !scope.orderAscending;
+              } else if(property === 'lastUpdatedSigned') {
+                scope.orderAscending = false;
               } else {
                 scope.orderAscending = true;
               }

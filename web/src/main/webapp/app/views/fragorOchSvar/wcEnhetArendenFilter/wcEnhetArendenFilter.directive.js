@@ -62,9 +62,9 @@ angular.module('webcert').directive('wcEnhetArendenFilter', [
             return vardenhetFilterModel.units ? vardenhetFilterModel.units[0].fragaSvar === 0 : true;
           };
 
-          function updateArendenList() {
+          function updateArendenList(reset) {
             enhetArendenModel.enhetId = vardenhetFilterModel.selectedUnit;
-            $rootScope.$broadcast('enhetArendenList.requestListUpdate', {startFrom: 0});
+            $rootScope.$broadcast('enhetArendenList.requestListUpdate', {startFrom: 0, reset: reset});
           }
 
           function resetFrom() {
@@ -77,11 +77,11 @@ angular.module('webcert').directive('wcEnhetArendenFilter', [
 
           $scope.resetFilterForm = function() {
             resetFrom();
-            updateArendenList();
+            updateArendenList(true);
           };
 
           $scope.filterList = function() {
-            updateArendenList();
+            updateArendenList(false);
           };
 
           // Broadcast by vardenhet filter directive on load and selection

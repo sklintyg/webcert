@@ -44,6 +44,7 @@ h2 {
   border-collapse: separate;
   border-spacing: 0 0;
   margin-bottom: 0;
+  height: 1px;
 
   .btn-primary {
     padding: 7px 15px;
@@ -53,6 +54,11 @@ h2 {
   .btn-secondary {
     padding: 7px 15px;
     min-width: 50px;
+  }
+
+  .highlight {
+    background: linear-gradient( rgba(112, 116, 138, .1), rgba(112, 116, 138, .1)),
+    linear-gradient(rgba(112, 116, 138, .1), rgba(112, 116, 138, .1));
   }
 
   // Table header ---------------
