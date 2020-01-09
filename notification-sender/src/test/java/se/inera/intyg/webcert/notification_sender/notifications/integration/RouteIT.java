@@ -31,6 +31,8 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.ContextConfiguration;
 
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
@@ -39,6 +41,7 @@ import se.inera.intyg.common.support.modules.support.api.notification.SchemaVers
 import se.inera.intyg.webcert.notification_sender.mocks.NotificationStubEntry;
 import se.inera.intyg.webcert.notification_sender.notifications.helper.NotificationTestHelper;
 
+@DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
 @ContextConfiguration("/notifications/integration-test-notification-sender-config.xml")
 public class RouteIT extends AbstractBaseIT {
 
