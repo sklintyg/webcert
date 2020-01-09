@@ -22,6 +22,8 @@ angular.module('webcert').service('webcert.enhetArendenListModel', [
   function(enhetArendenModel) {
     'use strict';
 
+    this.DEFAULT_PAGE = 1;
+
     this.reset = function() {
       // General directive viewstate
       this.viewState = {

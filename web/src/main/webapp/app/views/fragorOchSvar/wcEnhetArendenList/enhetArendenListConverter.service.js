@@ -25,8 +25,6 @@ angular.module('webcert').factory('webcert.enhetArendenConverterService',
         // Filter query request model. Actual model expected by backend proxy
         var defaultFilterQuery = {
           enhetId: undefined,
-          startFrom: 0,
-          pageSize: enhetArendenModel.PAGE_SIZE,
 
           questionFromFK: false,
           questionFromWC: false,
@@ -66,6 +64,14 @@ angular.module('webcert').factory('webcert.enhetArendenConverterService',
 
           if (filterForm.changedTo) {
             filterQuery.changedTo = $filter('date')(filterForm.changedTo, 'yyyy-MM-dd');
+          }
+
+          if (filterForm.pageSize) {
+            filterQuery.pageSize = filterForm.pageSize;
+          }
+
+          if (filterForm.startFrom) {
+            filterQuery.startFrom = filterForm.startFrom;
           }
 
           if (filterForm.questionFrom === 'FK') {

@@ -34,6 +34,25 @@
     padding-top: 18px;
   }
 
+  .chosenPage {
+    color: $wc-color-21;
+  }
+
+  .disabledPage {
+    color: $wc-color-22;
+    cursor: text !important;
+  }
+
+  #pageNumbers {
+    float: right;
+
+    span {
+      float: right;
+      padding-left: 20px;
+      cursor: pointer;
+    }
+  }
+
 }
 
 wc-enhet-arenden-filter {

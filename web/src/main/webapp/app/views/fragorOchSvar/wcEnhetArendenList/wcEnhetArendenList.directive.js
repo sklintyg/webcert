@@ -55,6 +55,47 @@ angular.module('webcert').directive('wcEnhetArendenList', [
           enhetArendenFilterModel.filterForm.lakareSelector = enhetArendenFilterModel.lakareList[0].id;
         }
 
+        $scope.listInit = function() {
+          $scope.listModel.limit = enhetArendenModel.PAGE_SIZE;
+          $scope.listModel.chosenPage = $scope.listModel.DEFAULT_PAGE;
+        };
+
+        $scope.getPages = function() {
+          $scope.listModel.pagesList = new Array(0);
+          $scope.listModel.nbrOfPages = Math.ceil($scope.listModel.totalCount / $scope.listModel.limit);
+
+          if($scope.listModel.chosenPage === undefined || $scope.listModel.chosenPage <= 0 || $scope.listModel.chosenPage > $scope.listModel.nbrOfPages) {
+            $scope.listModel.chosenPage = $scope.listModel.DEFAULT_PAGE;
+          }
+          if($scope.listModel.nbrOfPages >= 1 && $scope.listModel.limit !== $scope.listModel.totalCount) {
+            $scope.listModel.pagesList = new Array($scope.listModel.nbrOfPages);
+          }
+        };
+
+        $scope.getLimits = function() {
+          $scope.limitList = [];
+          var count = 0;
+
+          if ($scope.listModel.limit === undefined || $scope.listModel.limit <= 0 || $scope.listModel.limit > $scope.listModel.totalCount) {
+            $scope.listModel.limit = enhetArendenModel.PAGE_SIZE;
+          }
+
+          if ($scope.listModel.totalCount < enhetArendenModel.PAGE_SIZE) {
+            return null;
+          }
+
+          if ($scope.listModel.totalCount > 10) {
+            $scope.limitList[count++] = {id: 10, label: '10'};
+          }
+          if ($scope.listModel.totalCount > 25) {
+            $scope.limitList[count++] = {id: 25, label: '25'};
+          }
+          if ($scope.listModel.totalCount > 50) {
+            $scope.limitList[count++] = {id: 50, label: '50'};
+          }
+          $scope.limitList[count] = {id: $scope.listModel.totalCount, label: 'alla'};
+        };
+
         updateArenden(null, {startFrom: 0}, true);
 
         // When other directives want to request list update
@@ -68,12 +109,16 @@ angular.module('webcert').directive('wcEnhetArendenList', [
           if(data.reset) {
             $scope.orderBy = 'receivedDate';
             $scope.orderAscending = false;
+            $scope.listInit();
           }
 
           enhetArendenListService.getArenden(data.startFrom).then(function(arendenListResult) {
             enhetArendenListModel.prevFilterQuery = arendenListResult.query;
             enhetArendenListModel.totalCount = arendenListResult.totalCount;
             enhetArendenListModel.arendenList = arendenListResult.arendenList;
+
+            $scope.getLimits();
+            $scope.getPages();
 
             if (vardenhetFilterModel.selectedUnitName) {
               $scope.selectedUnitName = vardenhetFilterModel.selectedUnitName;
@@ -89,7 +134,6 @@ angular.module('webcert').directive('wcEnhetArendenList', [
             if (spinnerWaiting) {
               $timeout.cancel(spinnerWaiting);
             }
-
             enhetArendenListModel.viewState.runningQuery = false;
 
             if ($scope.totalCount === undefined || $scope.totalCount === 0) {
@@ -105,10 +149,11 @@ angular.module('webcert').directive('wcEnhetArendenList', [
                 if (spinnerWaiting) {
                   $timeout.cancel(spinnerWaiting);
                 }
-
                 enhetArendenListModel.viewState.runningQuery = false;
               });
             }
+            $scope.listModel.startPoint = data.startFrom + 1;
+            $scope.listModel.endPoint = data.startFrom + $scope.listModel.arendenList.length;
           });
         }
 
@@ -126,27 +171,27 @@ angular.module('webcert').directive('wcEnhetArendenList', [
           return ResourceLinkService.isLinkTypeExists(arende.links, 'VIDAREBEFODRA_FRAGA');
         };
 
-        $scope.fetchMore = function() {
-          enhetArendenListModel.viewState.fetchingMoreInProgress = true;
-          enhetArendenListModel.viewState.activeErrorMessageKey = null;
-          enhetArendenListService.getArenden(
-              enhetArendenListModel.prevFilterQuery.startFrom + enhetArendenModel.PAGE_SIZE).then(
-              function(arendenListResult) {
+        $scope.fetchArenden = function() {
+          enhetArendenFilterModel.filterForm.pageSize = $scope.listModel.limit;
+          updateArenden(null, {startFrom: 0}, true);
+        };
 
-                // Add fetch more result to existing list
-                enhetArendenListModel.prevFilterQuery = arendenListResult.query;
-                enhetArendenListModel.totalCount = arendenListResult.totalCount;
-                var arendenList = enhetArendenListModel.arendenList;
-                for (var i = 0; i < arendenListResult.arendenList.length; i++) {
-                  arendenList.push(arendenListResult.arendenList[i]);
-                }
-                enhetArendenListModel.fetchingMoreInProgress = false;
+        $scope.updatePage = function(chosenPage) {
+          enhetArendenFilterModel.filterForm.pageSize = $scope.listModel.limit;
+          $scope.listModel.chosenPage = chosenPage;
+          updateArenden(null, {startFrom: ($scope.listModel.chosenPage - 1) * $scope.listModel.limit }, true);
+        };
 
-              }, function(errorData) {
-                $log.debug('Query Error: ' + errorData);
-                enhetArendenListModel.fetchingMoreInProgress = false;
-                enhetArendenListModel.viewState.activeErrorMessageKey = 'info.query.error';
-              });
+        $scope.getPreviousPage = function() {
+          if($scope.listModel.chosenPage > $scope.listModel.DEFAULT_PAGE) {
+            $scope.updatePage($scope.listModel.chosenPage - 1);
+          }
+        };
+
+        $scope.getNextPage = function() {
+          if($scope.listModel.chosenPage < $scope.listModel.nbrOfPages) {
+            $scope.updatePage($scope.listModel.chosenPage + 1);
+          }
         };
 
         $scope.openIntyg = function(intygId, intygTyp) {
@@ -203,9 +248,10 @@ angular.module('webcert').directive('wcEnhetArendenList', [
           $scope.orderBy = enhetArendenFilterModel.filterForm.orderBy;
           $scope.orderAscending = enhetArendenFilterModel.filterForm.orderAscending;
 
-          updateArenden(null, {startFrom: 0});
+          updateArenden(null, {startFrom: $scope.listModel.startPoint - 1});
         };
 
+        $scope.listInit();
       }
     };
   }]);
