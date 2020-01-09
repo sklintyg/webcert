@@ -1,3 +1,22 @@
+/*
+ * Copyright (C) 2020 Inera AB (http://www.inera.se)
+ *
+ * This file is part of sklintyg (https://github.com/sklintyg).
+ *
+ * sklintyg is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * sklintyg is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 //-----------------------------------------------------------------------------
 // UTF8 converter
 //-----------------------------------------------------------------------------
@@ -58,7 +77,7 @@ var UTF8 = {
         var i = 0;
         if (text != null) {
             // Text is either latin-1 or utf-8 encoded, let's assume utf8 if text contain
-            // C3h followed by a character with 0x80 set. C3h is Ã in latin-1, so we may
+            // C3h followed by a character with 0x80 set. C3h is ï¿½ in latin-1, so we may
             // fail, but not likely...
             for (i = 0; i < text.length; i++) {
                 if (((i + 1) < text.length) && (text.charCodeAt(i) == 0xC3)) {
@@ -66,7 +85,7 @@ var UTF8 = {
                     encode = false;
                     i++;
                     if ((text.charCodeAt(i) & 0x80) == 0) {
-                        // Not two bytes, so text contain latin1 Ã
+                        // Not two bytes, so text contain latin1 ï¿½
                         encode = true;
                         break;
                     }
