@@ -1,45 +1,21 @@
-/******************************************************************************
-Net iD Javascript API
- 
-@version: 1.1.5 - 2016-03-02
-@copyright: SecMaker AB (http://www.secmaker.com/)
-
-This script should work with all versions of Net iD plugin. The intention is
-to hide all problems with different web-browser versions and/or OS platforms. 
-The only supported functions are:
-
-- iid_IsAvailable
-- iid_GetProperty
-- iid_SetProperty
-- iid_EnumProperty
-- iid_Invoke
-
-Everything else may/will change with future updates. An update will replace the 
-existing file with a new version and only the functions listed above will 
-be guaranteed to exist. 
-
-The function iid_IsAvailable is used for detection of the plugin, the other 
-functions are documented in Net iD Enterprise Developers Guide.
-
-USAGE: Add this script and start using the functions above:
-
-<script type="text/javascript" src="_netid.js"></script>
- 
-ERROR: If the functions above isn't loading correct, i.e. new version of IE, 
-contact support@secmaker.com for an updated version of this script.
-
-NOTE: The plugin object must not be 'hidden', i.e. display:none, since some
-web-browsers will not allow it to execute while hidden. The default plugin 
-object will be created with 0px width/height at bottom of page within a 'div'
-using the object id from constant IID_NAME_PLACE. If you get presentation
-problem with this approach, you may declare a 'div' with that id somewhere else 
-and it will be used, since this place holder 'div' is only created when it is 
-missing. 
-
-DISCLAIMER: The script is provided "as is" and SecMaker expressly disclaims any 
-warranties, including as regards fitness for purpose, freedom from errors and 
-bugs or that defects in the script will be corrected. 
-******************************************************************************/
+/*
+ * Copyright (C) 2020 Inera AB (http://www.inera.se)
+ *
+ * This file is part of sklintyg (https://github.com/sklintyg).
+ *
+ * sklintyg is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * sklintyg is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
 //-----------------------------------------------------------------------------
 // Constants
