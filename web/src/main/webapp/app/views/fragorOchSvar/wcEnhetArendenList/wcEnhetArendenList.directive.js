@@ -58,18 +58,27 @@ angular.module('webcert').directive('wcEnhetArendenList', [
         $scope.listInit = function() {
           $scope.listModel.limit = enhetArendenModel.PAGE_SIZE;
           $scope.listModel.chosenPage = $scope.listModel.DEFAULT_PAGE;
+          $scope.listModel.chosenNumberPage = 1;
         };
 
         $scope.getPages = function() {
           $scope.listModel.pagesList = new Array(0);
           $scope.listModel.nbrOfPages = Math.ceil($scope.listModel.totalCount / $scope.listModel.limit);
 
-          if($scope.listModel.chosenPage === undefined || $scope.listModel.chosenPage <= 0 || $scope.listModel.chosenPage > $scope.listModel.nbrOfPages) {
+          if ($scope.listModel.chosenPage === undefined || $scope.listModel.chosenPage <= 0 || $scope.listModel.chosenPage > $scope.listModel.nbrOfPages) {
             $scope.listModel.chosenPage = $scope.listModel.DEFAULT_PAGE;
           }
-          if($scope.listModel.nbrOfPages >= 1 && $scope.listModel.limit !== $scope.listModel.totalCount) {
-            $scope.listModel.pagesList = new Array($scope.listModel.nbrOfPages);
+          
+          if ($scope.listModel.nbrOfPages >= 1 && $scope.listModel.limit < $scope.listModel.totalCount) {
+            if ($scope.listModel.nbrOfPages > $scope.listModel.DEFAULT_NUMBER_PAGES * $scope.listModel.chosenNumberPage) {
+              $scope.listModel.pagesList = new Array($scope.listModel.DEFAULT_NUMBER_PAGES);
+            } else if($scope.listModel.nbrOfPages >  $scope.listModel.DEFAULT_NUMBER_PAGES) {
+              $scope.listModel.pagesList = new Array($scope.listModel.nbrOfPages -  $scope.listModel.DEFAULT_NUMBER_PAGES * ($scope.listModel.chosenNumberPage - 1));
+            } else {
+              $scope.listModel.pagesList = new Array($scope.listModel.nbrOfPages);
+            }
           }
+          $scope.listModel.gettingPage = false;
         };
 
         $scope.getLimits = function() {
@@ -172,27 +181,45 @@ angular.module('webcert').directive('wcEnhetArendenList', [
         };
 
         $scope.fetchArenden = function() {
+          if($scope.listModel.limit !== enhetArendenFilterModel.filterForm.pageSize) {
+            $scope.listModel.chosenPage = $scope.listModel.DEFAULT_PAGE;
+           }
           enhetArendenFilterModel.filterForm.pageSize = $scope.listModel.limit;
           updateArenden(null, {startFrom: 0}, true);
         };
 
         $scope.updatePage = function(chosenPage) {
-          enhetArendenFilterModel.filterForm.pageSize = $scope.listModel.limit;
-          $scope.listModel.chosenPage = chosenPage;
-          updateArenden(null, {startFrom: ($scope.listModel.chosenPage - 1) * $scope.listModel.limit }, true);
+          if(chosenPage != $scope.listModel.chosenPage) {
+            enhetArendenFilterModel.filterForm.pageSize = $scope.listModel.limit;
+            $scope.listModel.chosenPage = chosenPage;
+            updateArenden(null, {startFrom: ($scope.listModel.chosenPage - 1) * $scope.listModel.limit}, true);
+          }
         };
 
         $scope.getPreviousPage = function() {
           if($scope.listModel.chosenPage > $scope.listModel.DEFAULT_PAGE) {
+            if($scope.listModel.chosenPage === $scope.listModel.DEFAULT_NUMBER_PAGES * ($scope.listModel.chosenNumberPage - 1) + 1 &&
+                $scope.listModel.chosenPage > $scope.listModel.DEFAULT_NUMBER_PAGES) {
+              $scope.listModel.gettingPage = true;
+              $scope.listModel.chosenNumberPage--;
+            }
             $scope.updatePage($scope.listModel.chosenPage - 1);
           }
         };
 
         $scope.getNextPage = function() {
           if($scope.listModel.chosenPage < $scope.listModel.nbrOfPages) {
+            if($scope.listModel.chosenPage % $scope.listModel.DEFAULT_NUMBER_PAGES === 0) {
+              $scope.listModel.gettingPage = true;
+              $scope.listModel.chosenNumberPage++;
+            }
             $scope.updatePage($scope.listModel.chosenPage + 1);
           }
         };
+
+        $scope.getPageFromIndex = function(index) {
+          return (index + 1) + ($scope.listModel.chosenNumberPage - 1) * $scope.listModel.DEFAULT_NUMBER_PAGES;
+        }
 
         $scope.openIntyg = function(intygId, intygTyp) {
           $log.debug('open intyg ' + intygId + ' of type ' + intygTyp);

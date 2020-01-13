@@ -18,18 +18,19 @@
 
       <wc-no-arenden-message ng-if="totalCount == 0"></wc-no-arenden-message>
 
-      <div class="col-md-1 form-group" ng-show="listModel.totalCount > 10">
+      <div id="limitDropDown" class="col-md-2 form-group" ng-show="listModel.totalCount > 10">
         <div class="form-inline">
-          <span>Visa</span>
+          <span class="inline-block">Visa</span>
           <wc-dropdown
-                          data-items="limitList"
-                          id="pageSizePicker"
-                          label="pageSizePicker"
-                          ng-model="listModel.limit"
-                          use-dynamic-label="false"
-                          data-on-select="fetchArenden()">
+              class="inline-block"
+              data-items="limitList"
+              id="pageSizePicker"
+              label="pageSizePicker"
+              ng-model="listModel.limit"
+              use-dynamic-label="false"
+              data-on-select="fetchArenden()">
           </wc-dropdown>
-          <span>resultat</span>
+          <span class="inline-block">resultat</span>
         </div>
       </div>
 
@@ -100,11 +101,16 @@
         {{ listModel.startPoint }} - {{ listModel.endPoint }} av
         {{listModel.totalCount}} träff<span ng-show="listModel.totalCount > 1">ar</span>
       </div>
-      <div id="pageNumbers" class="col-md-6" ng-show="listModel.pagesList.length > 1">
-        <span ng-click="getNextPage()" ng-class="{'disabledPage': listModel.chosenPage >= listModel.nbrOfPages}">Nästa</span>
-        <span ng-repeat="page in listModel.pagesList track by $index" ng-click="updatePage(listModel.nbrOfPages - $index)" ng-class="{'chosenPage': listModel.chosenPage == listModel.nbrOfPages - $index}">{{ listModel.nbrOfPages - $index }} </span>
-        <span ng-click="getPreviousPage()" ng-class="{'disabledPage': listModel.chosenPage <= 1}">Föregående</span>
-
+      <div id="pageNumbers" class="col-md-6" ng-show="(listModel.pagesList.length > 1 || listModel.chosenNumberPage > 1) && !listModel.gettingPage">
+        <div id="numbers">
+          <span ng-click="getPreviousPage()" ng-class="{'disabledPage': listModel.chosenPage <= 1}">Föregående</span>
+          <span ng-repeat="page in listModel.pagesList track by $index"
+                ng-click="updatePage(getPageFromIndex($index))"
+                ng-class="{'chosenPage': listModel.chosenPage == getPageFromIndex($index)}">
+                {{getPageFromIndex($index)}}
+          </span>
+          <span ng-click="getNextPage()" ng-class="{'disabledPage': listModel.chosenPage >= listModel.nbrOfPages}">Nästa</span>
+        </div>
       </div>
     </div>
   </wc-spinner>
