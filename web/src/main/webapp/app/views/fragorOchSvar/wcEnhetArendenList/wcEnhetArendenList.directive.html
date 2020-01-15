@@ -91,17 +91,11 @@
         {{ listModel.startPoint }} - {{ listModel.endPoint }} av
         {{listModel.totalCount}} träff<span ng-show="listModel.totalCount > 1">ar</span>
       </div>
-      <div id="pageNumbers" class="col-md-6" ng-show="(listModel.pagesList.length > 1 || listModel.chosenNumberPage > 1) && !listModel.gettingPage">
-        <div id="numbers">
-          <span ng-click="getPreviousPage()" ng-class="{'disabledPage': listModel.chosenPage <= 1}">Föregående</span>
-          <span ng-repeat="page in listModel.pagesList track by $index"
-                ng-click="updatePage(getPageFromIndex($index))"
-                ng-class="{'chosenPage': listModel.chosenPage == getPageFromIndex($index)}">
-                {{getPageFromIndex($index)}}
-          </span>
-          <span ng-click="getNextPage()" ng-class="{'disabledPage': listModel.chosenPage >= listModel.nbrOfPages}">Nästa</span>
-        </div>
-      </div>
+      <wc-list-page-numbers class="col-md-6"
+                            ng-show="(listModel.pagesList.length > 1 || listModel.chosenNumberPage > 1) && !listModel.gettingPage"
+                            list-model="listModel"
+                            filter-model="filterModel">
+      </wc-list-page-numbers>
     </div>
   </wc-spinner>
 </div>

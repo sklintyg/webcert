@@ -62,26 +62,6 @@ angular.module('webcert').directive('wcEnhetArendenList', [
           $scope.listModel.chosenNumberPage = $scope.listModel.DEFAULT_PAGE;
         };
 
-        $scope.getPages = function() {
-          $scope.listModel.pagesList = new Array(0);
-          $scope.listModel.nbrOfPages = Math.ceil($scope.listModel.totalCount / $scope.listModel.limit);
-
-          if ($scope.listModel.chosenPage === undefined || $scope.listModel.chosenPage <= 0 || $scope.listModel.chosenPage > $scope.listModel.nbrOfPages) {
-            $scope.listModel.chosenPage = $scope.listModel.DEFAULT_PAGE;
-          }
-          
-          if ($scope.listModel.nbrOfPages >= 1 && $scope.listModel.limit < $scope.listModel.totalCount) {
-            if ($scope.listModel.nbrOfPages > $scope.listModel.DEFAULT_NUMBER_PAGES * $scope.listModel.chosenNumberPage) {
-              $scope.listModel.pagesList = new Array($scope.listModel.DEFAULT_NUMBER_PAGES);
-            } else if($scope.listModel.nbrOfPages >  $scope.listModel.DEFAULT_NUMBER_PAGES) {
-              $scope.listModel.pagesList = new Array($scope.listModel.nbrOfPages -  $scope.listModel.DEFAULT_NUMBER_PAGES * ($scope.listModel.chosenNumberPage - 1));
-            } else {
-              $scope.listModel.pagesList = new Array($scope.listModel.nbrOfPages);
-            }
-          }
-          $scope.listModel.gettingPage = false;
-        };
-
         updateArenden(null, {startFrom: 0}, true);
 
         // When other directives want to request list update
@@ -137,7 +117,7 @@ angular.module('webcert').directive('wcEnhetArendenList', [
             }
 
             $rootScope.$broadcast('wcLimitDropdown.getLimits');
-            $scope.getPages();
+            $rootScope.$broadcast('wcListPageNumbers.getPages');
 
             $scope.listModel.startPoint = data.startFrom + 1;
             $scope.listModel.endPoint = data.startFrom + $scope.listModel.arendenList.length;
@@ -156,39 +136,6 @@ angular.module('webcert').directive('wcEnhetArendenList', [
 
         $scope.showVidarebefodra = function(arende) {
           return ResourceLinkService.isLinkTypeExists(arende.links, 'VIDAREBEFODRA_FRAGA');
-        };
-
-        $scope.updatePage = function(chosenPage) {
-          if(chosenPage !== $scope.listModel.chosenPage) {
-            enhetArendenFilterModel.filterForm.pageSize = $scope.listModel.limit;
-            $scope.listModel.chosenPage = chosenPage;
-            updateArenden(null, {startFrom: ($scope.listModel.chosenPage - 1) * $scope.listModel.limit}, true);
-          }
-        };
-
-        $scope.getPreviousPage = function() {
-          if($scope.listModel.chosenPage > $scope.listModel.DEFAULT_PAGE) {
-            if($scope.listModel.chosenPage === $scope.listModel.DEFAULT_NUMBER_PAGES * ($scope.listModel.chosenNumberPage - 1) + 1 &&
-                $scope.listModel.chosenPage > $scope.listModel.DEFAULT_NUMBER_PAGES) {
-              $scope.listModel.gettingPage = true;
-              $scope.listModel.chosenNumberPage--;
-            }
-            $scope.updatePage($scope.listModel.chosenPage - 1);
-          }
-        };
-
-        $scope.getNextPage = function() {
-          if($scope.listModel.chosenPage < $scope.listModel.nbrOfPages) {
-            if($scope.listModel.chosenPage % $scope.listModel.DEFAULT_NUMBER_PAGES === 0) {
-              $scope.listModel.gettingPage = true;
-              $scope.listModel.chosenNumberPage++;
-            }
-            $scope.updatePage($scope.listModel.chosenPage + 1);
-          }
-        };
-
-        $scope.getPageFromIndex = function(index) {
-          return (index + 1) + ($scope.listModel.chosenNumberPage - 1) * $scope.listModel.DEFAULT_NUMBER_PAGES;
         };
 
         $scope.openIntyg = function(intygId, intygTyp) {
