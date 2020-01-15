@@ -18,10 +18,10 @@
  */
 package se.inera.intyg.webcert.web.web.controller.moduleapi;
 
-import io.swagger.annotations.Api;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.Optional;
+
 import javax.persistence.OptimisticLockException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -38,10 +38,13 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.OptimisticLockingFailureException;
+
+import io.swagger.annotations.Api;
 import se.inera.intyg.common.services.texts.IntygTextsService;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.Patient;
@@ -292,7 +295,7 @@ public class UtkastModuleApiController extends AbstractApiController {
         Utkast utkast = utkastService.getDraft(intygsId, intygsTyp, false);
 
         // Do authorization check
-        draftAccessServiceHelper.verifyAccessToCopyFromCandidate(utkast);
+        draftAccessServiceHelper.validateAllowToCopyFromCandidate(utkast);
 
         try {
             SaveDraftResponse response =

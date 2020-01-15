@@ -62,7 +62,6 @@ public class IntygIntegrationServiceImpl extends IntegrationServiceImpl {
                 ensureDraftPatientInfoUpdated(intygTyp, intygId, utkast.getVersion(), user, prepareBeforeAlternateSsn);
             }
 
-            // Monitoring log the usage of coherent journaling
             logSammanhallenSjukforing(intygTyp, intygId, utkast, user);
         }
     }

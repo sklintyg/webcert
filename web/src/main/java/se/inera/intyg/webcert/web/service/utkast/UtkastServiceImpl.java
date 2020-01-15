@@ -18,7 +18,6 @@
  */
 package se.inera.intyg.webcert.web.service.utkast;
 
-import com.google.common.base.Strings;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -31,12 +30,17 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+
 import javax.persistence.OptimisticLockException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.google.common.base.Strings;
+
 import se.inera.intyg.common.services.texts.IntygTextsService;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.GrundData;
@@ -623,7 +627,7 @@ public class UtkastServiceImpl implements UtkastService {
         Utkast utkast = utkastRepository.findOne(intygsId);
 
         verifyUtkastExists(utkast, intygsId, null, "The draft could not be set to notified since it could not be found");
-        draftAccessServiceHelper.verifyAccessToForwardDraft(utkast);
+        draftAccessServiceHelper.validateAllowToForwardDraft(utkast);
 
         // check that the draft is still unsigned
         if (!isTheDraftStillADraft(utkast.getStatus())) {
