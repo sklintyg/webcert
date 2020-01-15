@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Inera AB (http://www.inera.se)
+ * Copyright (C) 2020 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -257,6 +257,7 @@ public class UtkastApiController extends AbstractApiController {
             utkastFilter.setSavedFrom(filterParameters.getSavedFrom());
             utkastFilter.setSavedTo(filterParameters.getSavedTo());
             utkastFilter.setSavedByHsaId(filterParameters.getSavedBy());
+            utkastFilter.setPatientId(filterParameters.getPatientId());
             utkastFilter.setNotified(filterParameters.getNotified());
             utkastFilter.setPageSize(filterParameters.getPageSize() == null ? DEFAULT_PAGE_SIZE : filterParameters.getPageSize());
             utkastFilter.setStartFrom(filterParameters.getStartFrom() == null ? 0 : filterParameters.getStartFrom());

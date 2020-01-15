@@ -91,11 +91,11 @@
                                 <tbody ng-show="viewState.currentList.length>0">
                                 <tr ng-repeat="intyg in viewState.currentList | orderBy: (orderProperty === 'lastUpdatedSigned' ? orderProperty : [orderProperty, '-lastUpdatedSigned']): !orderAscending"
                                     class="intygList">
-                                    <td>{{intyg.intygTypeName}}</td>
-                                    <td class="unbreakable"><span dynamic-label
+                                    <td  ng-class="{'highlight': orderProperty == 'intygTypeName'}">{{intyg.intygTypeName}}</td>
+                                    <td class="unbreakable" ng-class="{'highlight': orderProperty == 'extendedStatusName'}"><span dynamic-label
                                                                   key="intyg.status.{{intyg.extendedStatus}}"></span></td>
-                                    <td class="unbreakable">{{intyg.lastUpdatedSigned | date:'short'}}</td>
-                                    <td class="unbreakable">{{intyg.updatedSignedBy}}</td>
+                                    <td class="unbreakable" ng-class="{'highlight': orderProperty == 'lastUpdatedSigned'}">{{intyg.lastUpdatedSigned | date:'short'}}</td>
+                                    <td class="unbreakable" ng-class="{'highlight': orderProperty == 'updatedSignedBy'}">{{intyg.updatedSignedBy}}</td>
                                     <td class="text-right" ng-if="!patientModel.avliden">
                                         <button type="button"
                                                 wc-authority="FORNYA_INTYG"

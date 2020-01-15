@@ -22,16 +22,39 @@ wc-utkast-filter {
     }
   }
 
+  .errorText {
+    p {
+      margin: 4px 0 0 0;
+      color: $wc-color-11;
+    }
+  }
+
   .btn {
     min-height: 38px;
   }
 
-  .col-md-2, .col-md-3 {
+  .col-md-2, .col-md-3 .col-md-6 {
     padding-left: 13px;
     padding-right: 12px;
+    padding-bottom: 0;
+    padding-top: 0;
   }
+
+  .col-md-6 {
+    padding-top: 15px;
+  }
+
 
   .buttons {
     padding-top:24px;
+    float: right;
   }
+
+  @media (max-width: $screen-md-min) {
+    .buttons {
+      float: left;
+      padding-top: 0;
+    }
+  }
+
 }

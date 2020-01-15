@@ -13,18 +13,19 @@ wc-enhet-arenden-filter {
 
   .errorText {
     p {
-       padding: 4px 0 0 0;
+       margin: 4px 0 0 0;
        color: $wc-color-11;
     }
   }
   
-  .col-md-2, .col-md-3 {
+  .col-md-2, .col-md-3 .col-md-6 {
       padding-left: 13px;
       padding-right: 12px;
   }
 
   .buttons {
-    padding-top: 12px;
+    padding-top: 20px;
+    float: right;
     .btn {
       min-height: 40px;
     }
@@ -32,5 +33,12 @@ wc-enhet-arenden-filter {
 
   input.ng-invalid-valid-pnr.ng-touched:not(.ng-empty) {
     border-color: $wc-color-11;
+  }
+
+  @media (max-width: $screen-md-min) {
+    .buttons {
+      float: left;
+      padding-top: 0;
+    }
   }
 }

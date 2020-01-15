@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Inera AB (http://www.inera.se)
+ * Copyright (C) 2020 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -113,8 +113,8 @@ describe('wcEnhetArendenList', function() {
       $provide.value('common.ArendeVidarebefordraHelper', ArendeVidarebefordraHelper);
 
       $provide.value('common.ArendeProxy', {});
-      $provide.value('webcert.vardenhetFilterModel', {});
-
+      $provide.value('webcert.vardenhetFilterModel',
+          jasmine.createSpyObj('webcert.vardenhetFilterModel', ['initialize', 'reset', 'selectUnitById']));
       // Because of filter used in template
       $provide.value('PersonIdFormatterFilter', function() {
       });
@@ -133,6 +133,9 @@ describe('wcEnhetArendenList', function() {
 
       $provide.value('common.UserModel', UserModel);
       $provide.value('common.messageService', jasmine.createSpyObj('common.messageService', ['getProperty']));
+
+      $provide.value('common.User',
+          jasmine.createSpyObj('common.User', ['getValdVardenhet', 'getValdVardgivare', 'getVardenhetFilterList']));
 
       $provide.value('common.statService', {
         getLatestData: function() {
@@ -154,7 +157,6 @@ describe('wcEnhetArendenList', function() {
       var $window = {};
       $window.location = {};
       $window.document = window.document; // document is now needed for ngCookies
-
       //configure this value with the provider.
       $provide.value('$window', $window);
     }]);

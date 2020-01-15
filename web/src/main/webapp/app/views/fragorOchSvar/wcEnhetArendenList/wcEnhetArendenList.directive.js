@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Inera AB (http://www.inera.se)
+ * Copyright (C) 2020 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -38,6 +38,7 @@ angular.module('webcert').directive('wcEnhetArendenList', [
       controller: function($scope) {
         $scope.listModel = enhetArendenListModel;
         $scope.vardenhetFilterModel = vardenhetFilterModel;
+        $scope.selectedUnitName = vardenhetFilterModel.selectedUnitName;
 
         $scope.forwardTooltip = messageService.getProperty('th.help.forward');
         $scope.openTooltip = messageService.getProperty('th.help.open');
@@ -45,16 +46,6 @@ angular.module('webcert').directive('wcEnhetArendenList', [
 
         $scope.orderBy = enhetArendenFilterModel.filterForm.orderBy;
         $scope.orderAscending = enhetArendenFilterModel.filterForm.orderAscending;
-
-        $scope.$watch('vardenhetFilterModel.selectedUnit', function() {
-          if (vardenhetFilterModel.selectedUnit) {
-            $scope.selectedUnitName = vardenhetFilterModel.selectedUnit.namn;
-
-            if (vardenhetFilterModel.selectedUnit.id === vardenhetFilterModel.ALL_ARENDEN) {
-              $scope.selectedUnitName = $scope.selectedUnitName.toLowerCase();
-            }
-          }
-        });
 
         var vidarebefordraArendeMailModel = null;
 
@@ -74,10 +65,20 @@ angular.module('webcert').directive('wcEnhetArendenList', [
 
           enhetArendenListModel.viewState.activeErrorMessageKey = null;
 
+          if(data.reset) {
+            $scope.orderBy = 'receivedDate';
+            $scope.orderAscending = false;
+          }
+
           enhetArendenListService.getArenden(data.startFrom).then(function(arendenListResult) {
             enhetArendenListModel.prevFilterQuery = arendenListResult.query;
             enhetArendenListModel.totalCount = arendenListResult.totalCount;
             enhetArendenListModel.arendenList = arendenListResult.arendenList;
+
+            if (vardenhetFilterModel.selectedUnitName) {
+              $scope.selectedUnitName = vardenhetFilterModel.selectedUnitName;
+            }
+
             if (firstRun) {
               $scope.totalCount = arendenListResult.totalCount;
             }
@@ -193,8 +194,10 @@ angular.module('webcert').directive('wcEnhetArendenList', [
           if (enhetArendenFilterModel.filterForm.orderBy === property) {
             enhetArendenFilterModel.filterForm.orderAscending =
                 !enhetArendenFilterModel.filterForm.orderAscending;
-          } else {
+          } else if(property === 'receivedDate') {
             enhetArendenFilterModel.filterForm.orderAscending = false;
+          } else {
+            enhetArendenFilterModel.filterForm.orderAscending = true;
           }
           enhetArendenFilterModel.filterForm.orderBy = property;
           $scope.orderBy = enhetArendenFilterModel.filterForm.orderBy;

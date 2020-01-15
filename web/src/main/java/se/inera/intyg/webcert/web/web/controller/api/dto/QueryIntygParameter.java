@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Inera AB (http://www.inera.se)
+ * Copyright (C) 2020 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -40,6 +40,16 @@ public class QueryIntygParameter {
     private String orderBy;
 
     private Boolean orderAscending;
+
+    private String patientId;
+
+    public String getPatientId() {
+        return patientId;
+    }
+
+    public void setPatientId(String pnr) {
+        patientId = pnr;
+    }
 
     public Integer getStartFrom() {
         return startFrom;

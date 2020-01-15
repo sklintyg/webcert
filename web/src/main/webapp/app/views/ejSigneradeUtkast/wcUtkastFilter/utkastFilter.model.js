@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Inera AB (http://www.inera.se)
+ * Copyright (C) 2020 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -26,6 +26,7 @@ angular.module('webcert').factory('webcert.UtkastFilterModel', ['$filter', funct
   function UtkastFilterModel(pageSize) {
     this.pageSize = pageSize;
     this.selection = {};
+    this.selection.pnr = '';
     this.reset();
   }
 
@@ -64,7 +65,7 @@ angular.module('webcert').factory('webcert.UtkastFilterModel', ['$filter', funct
     this.selection.savedBy = undefined; // selected doctors hasId
     this.savedByOptions = this.savedByOptions || [];
     this.selection.orderBy = 'senastSparadDatum';
-    this.selection.orderAscending = true;
+    this.selection.orderAscending = false;
   };
 
   UtkastFilterModel.prototype.convertToPayload = function() {
@@ -87,6 +88,7 @@ angular.module('webcert').factory('webcert.UtkastFilterModel', ['$filter', funct
     query.savedBy = this.selection.savedBy;
     query.notified = convertNotified(this.selection.notified);
     query.status = this.selection.status;
+    query.patientId = this.selection.pnr;
 
     query.savedFrom = $filter('date')(this.selection.savedFrom, 'yyyy-MM-dd');
     if (this.selection.savedTo) {

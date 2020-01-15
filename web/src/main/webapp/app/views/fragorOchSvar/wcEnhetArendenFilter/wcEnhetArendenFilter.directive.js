@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Inera AB (http://www.inera.se)
+ * Copyright (C) 2020 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -62,12 +62,14 @@ angular.module('webcert').directive('wcEnhetArendenFilter', [
             return vardenhetFilterModel.units ? vardenhetFilterModel.units[0].fragaSvar === 0 : true;
           };
 
-          function updateArendenList() {
-            $rootScope.$broadcast('enhetArendenList.requestListUpdate', {startFrom: 0});
+          function updateArendenList(reset) {
+            enhetArendenModel.enhetId = vardenhetFilterModel.selectedUnit;
+            $rootScope.$broadcast('enhetArendenList.requestListUpdate', {startFrom: 0, reset: reset});
           }
 
           function resetFrom() {
             enhetArendenFilterModel.reset();
+            vardenhetFilterModel.reset();
             resetInvalidData();
             $scope.showDateFromErrors = false;
             $scope.showDateToErrors = false;
@@ -75,24 +77,23 @@ angular.module('webcert').directive('wcEnhetArendenFilter', [
 
           $scope.resetFilterForm = function() {
             resetFrom();
-            updateArendenList();
+            updateArendenList(true);
           };
 
           $scope.filterList = function() {
-            updateArendenList();
+            updateArendenList(false);
           };
 
           // Broadcast by vardenhet filter directive on load and selection
           $scope.$on('wcVardenhetFilter.unitSelected', function(event, unit) {
-
-            // If we change enhet then we probably don't want the same filter criterias
-            if (unit.id !== enhetArendenModel.enhetId) {
-              resetFrom();
+            if(unit !== undefined) {
+              enhetArendenModel.enhetId = unit.id;
+              vardenhetFilterModel.selectedUnitName = unit.namn;
+              if(unit.id === vardenhetFilterModel.ALL_ARENDEN){
+                vardenhetFilterModel.selectedUnitName = vardenhetFilterModel.selectedUnitName.toLowerCase();
+              }
+              enhetArendenFilterService.initLakareList(unit.id);
             }
-            enhetArendenModel.enhetId = unit.id;
-
-            enhetArendenFilterService.initLakareList(unit.id); // Update lakare list for filter form
-            updateArendenList();
           });
         };
 

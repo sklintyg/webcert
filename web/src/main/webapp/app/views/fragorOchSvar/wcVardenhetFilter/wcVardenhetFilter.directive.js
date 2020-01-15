@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Inera AB (http://www.inera.se)
+ * Copyright (C) 2020 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -29,6 +29,21 @@ angular.module('webcert').directive('wcVardenhetFilter',
           scope: {},
           templateUrl: '/app/views/fragorOchSvar/wcVardenhetFilter/wcVardenhetFilter.directive.html',
           controller: function($scope) {
+            $scope.initUnitList = function() {
+              vardenhetFilterModel.loadingUnit = true;
+              $scope.unitsList = angular.copy(vardenhetFilterModel.units);
+              for(var i = 0; i < $scope.unitsList.length; i++) {
+                $scope.unitsList[i].label = $scope.unitsList[i].namn;
+                $scope.unitsList[i].number = $scope.unitsList[i].fragaSvar ? $scope.unitsList[i].fragaSvar : 0;
+                $scope.unitsList[i].isSubcategory = $scope.isUnderenhet(i);
+              }
+              vardenhetFilterModel.selectedUnit = 'wc-all';
+              vardenhetFilterModel.loadingUnit = false;
+            };
+
+            $scope.isUnderenhet = function(index) {
+              return index >= 2;
+            };
 
             this.$onInit = function() {
               vardenhetFilterModel.initialize(User.getVardenhetFilterList(User.getValdVardenhet()));
@@ -40,21 +55,12 @@ angular.module('webcert').directive('wcVardenhetFilter',
               }
               $scope.$on('statService.stat-update', updateStats);
 
-              /**
-               * Toggles if the enheter without an active question should
-               * be shown
-               */
-              $scope.toggleShowInactive = function() {
-                vardenhetFilterModel.showInactive = !vardenhetFilterModel.showInactive;
-              };
-
-              $scope.selectUnit = function(unit) {
-                vardenhetFilterModel.selectedUnit = unit;
-                $rootScope.$broadcast('wcVardenhetFilter.unitSelected', vardenhetFilterModel.selectedUnit);
-              };
+              $scope.$watch('vardenhetFilterModel.selectedUnit', function(){
+                $rootScope.$broadcast('wcVardenhetFilter.unitSelected', vardenhetFilterModel.selectUnitById(vardenhetFilterModel.units, vardenhetFilterModel.selectedUnit));
+              });
 
               $scope.$watch('vardenhetFilterModel.units', function() {
-                $scope.showSelect =
+                vardenhetFilterModel.showSelectUnit =
                     vardenhetFilterModel.units && vardenhetFilterModel.units.length > 2 && vardenhetFilterModel.units[0].fragaSvar > 0;
               });
             };
@@ -97,6 +103,9 @@ angular.module('webcert').directive('wcVardenhetFilter',
                   });
                 }
               });
+              vardenhetFilterModel.showSelectUnit =
+                  vardenhetFilterModel.units && vardenhetFilterModel.units.length > 2 && vardenhetFilterModel.units[0].fragaSvar > 0;
+              $scope.initUnitList();
             }
 
           }

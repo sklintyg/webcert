@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Inera AB (http://www.inera.se)
+ * Copyright (C) 2020 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -90,7 +90,7 @@ describe('EjSigneradeUtkastCtrlSpec', function() {
         utkastFilterModel = _utkastFilterModel_;
         emptyFilter = _utkastFilterModel_.build();
 
-        $httpBackend.expectGET('/api/utkast/?orderAscending=true&orderBy=senastSparadDatum&pageSize=10&startFrom=0').respond(200,
+        $httpBackend.expectGET('/api/utkast/?orderAscending=false&orderBy=senastSparadDatum&pageSize=10&patientId=&startFrom=0').respond(200,
             mockResponse.utkastList);
         $controller('webcert.EjSigneradeUtkastCtrl', {$scope: $scope});
         $httpBackend.flush();
@@ -101,7 +101,7 @@ describe('EjSigneradeUtkastCtrlSpec', function() {
   describe('ejSigneradeUtkast controller startup', function() {
 
     it('should load utkast list on valid response', function() {
-      $httpBackend.expectGET('/api/utkast/?orderAscending=true&orderBy=senastSparadDatum&pageSize=10&startFrom=0').respond(200,
+      $httpBackend.expectGET('/api/utkast/?orderAscending=false&orderBy=senastSparadDatum&pageSize=10&patientId=&startFrom=0').respond(200,
           mockResponse.utkastList);
       $controller('webcert.EjSigneradeUtkastCtrl', {$scope: $scope});
       $httpBackend.flush();
@@ -109,7 +109,7 @@ describe('EjSigneradeUtkastCtrlSpec', function() {
     });
 
     it('should update error message if loading fails', function() {
-      $httpBackend.expectGET('/api/utkast/?orderAscending=true&orderBy=senastSparadDatum&pageSize=10&startFrom=0').respond(500);
+      $httpBackend.expectGET('/api/utkast/?orderAscending=false&orderBy=senastSparadDatum&pageSize=10&patientId=&startFrom=0').respond(500);
       $controller('webcert.EjSigneradeUtkastCtrl', {$scope: $scope});
       $httpBackend.flush();
       expect($scope.widgetState.activeErrorMessageKey).not.toBeNull();
@@ -119,7 +119,7 @@ describe('EjSigneradeUtkastCtrlSpec', function() {
   describe('ejSigneradeUtkast controller filter', function() {
 
     it('should update error message if loading fails', function() {
-      $httpBackend.expectGET('/api/utkast/?orderAscending=true&orderBy=senastSparadDatum&pageSize=10&startFrom=0').respond(500);
+      $httpBackend.expectGET('/api/utkast/?orderAscending=false&orderBy=senastSparadDatum&pageSize=10&patientId=&startFrom=0').respond(500);
       $controller('webcert.EjSigneradeUtkastCtrl', {$scope: $scope});
       $httpBackend.flush();
       expect($scope.widgetState.activeErrorMessageKey).not.toBeNull();
@@ -127,7 +127,7 @@ describe('EjSigneradeUtkastCtrlSpec', function() {
 
     it('should get utkast list based on date filter', function() {
       $httpBackend.expectGET(
-          '/api/utkast?orderAscending=true&orderBy=senastSparadDatum&pageSize=10&savedFrom=2015-10-10&savedTo=2015-01-11&startFrom=0')
+          '/api/utkast?orderAscending=false&orderBy=senastSparadDatum&pageSize=10&patientId=&savedFrom=2015-10-10&savedTo=2015-01-11&startFrom=0')
       .respond(200, {results: [], totalCount: 0});
 
       $scope.filter.selection.savedTo = '2015-01-10';
@@ -138,7 +138,7 @@ describe('EjSigneradeUtkastCtrlSpec', function() {
     });
 
     it('should handle error if list could not be fetched from server', function() {
-      $httpBackend.expectGET('/api/utkast?orderAscending=true&orderBy=senastSparadDatum&pageSize=10&startFrom=0').respond(500);
+      $httpBackend.expectGET('/api/utkast?orderAscending=false&orderBy=senastSparadDatum&pageSize=10&patientId=&startFrom=0').respond(500);
       $scope.filterDrafts();
       $httpBackend.flush();
       expect($scope.widgetState.activeErrorMessageKey).not.toBeNull();
@@ -147,7 +147,7 @@ describe('EjSigneradeUtkastCtrlSpec', function() {
 
   describe('fetch more button', function() {
     it('should fetch PAGE_SIZE more results if user clicks', function() {
-      $httpBackend.expectGET('/api/utkast?orderAscending=true&orderBy=senastSparadDatum&pageSize=10&startFrom=10').respond(200,
+      $httpBackend.expectGET('/api/utkast?orderAscending=false&orderBy=senastSparadDatum&pageSize=10&patientId=&startFrom=10').respond(200,
           {results: []});
       $scope.fetchMore();
       $httpBackend.flush();
@@ -156,7 +156,7 @@ describe('EjSigneradeUtkastCtrlSpec', function() {
     });
 
     it('should update error message if fetch failed', function() {
-      $httpBackend.expectGET('/api/utkast?orderAscending=true&orderBy=senastSparadDatum&pageSize=10&startFrom=10').respond(500);
+      $httpBackend.expectGET('/api/utkast?orderAscending=false&orderBy=senastSparadDatum&pageSize=10&patientId=&startFrom=10').respond(500);
       $scope.fetchMore();
       $httpBackend.flush();
       expect($scope.widgetState.currentFilterRequest.startFrom).toBe(10);

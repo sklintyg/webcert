@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Inera AB (http://www.inera.se)
+ * Copyright (C) 2020 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -93,6 +93,10 @@ public class UtkastRepositoryImpl implements UtkastFilteredRepositoryCustom {
 
         if (filter.getNotified() != null) {
             pred = builder.and(pred, builder.equal(root.<Boolean>get("vidarebefordrad"), filter.getNotified()));
+        }
+
+        if (filter.getPatientId() != null && !filter.getPatientId().equals("")) {
+            pred = builder.and(pred, builder.equal(root.<String>get("patientPersonnummer"), filter.getPatientId()));
         }
 
         if (filter.getSavedFrom() != null) {

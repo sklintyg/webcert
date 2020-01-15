@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Inera AB (http://www.inera.se)
+ * Copyright (C) 2020 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -20,6 +20,7 @@ package se.inera.intyg.webcert.notification_sender.notifications.helper;
 
 import java.time.LocalDate;
 import java.time.Year;
+
 import se.inera.intyg.common.support.modules.converter.InternalConverterUtil;
 import se.inera.intyg.infra.integration.pu.model.Person;
 import se.inera.intyg.schemas.contract.Personnummer;

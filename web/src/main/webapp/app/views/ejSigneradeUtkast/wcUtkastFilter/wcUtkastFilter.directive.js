@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Inera AB (http://www.inera.se)
+ * Copyright (C) 2020 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -72,6 +72,11 @@ angular.module('webcert').directive('wcUtkastFilter', ['$timeout', 'webcert.Utka
               if ($scope.filterForm['filter-changedate-from'] && $scope.filterForm['filter-changedate-to']) {
                 $scope.filterForm['filter-changedate-from'].$setViewValue('');
                 $scope.filterForm['filter-changedate-to'].$setViewValue('');
+              }
+
+              angular.element('#filter-person-id').val('');
+              if ($scope.filterForm.pnr) {
+                $scope.filterForm.pnr.$setViewValue('');
               }
 
               $scope.showDateFromErrors = false;

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Inera AB (http://www.inera.se)
+ * Copyright (C) 2020 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -24,11 +24,15 @@ angular.module('webcert').service('webcert.vardenhetFilterModel', [
 
     this.units = null;
     this.selectedUnit = null;
+    this.selectedUnitName = null;
 
     this.showInactive = false;
     this.ALL_ARENDEN = 'wc-all';
+    this.ALL_ARENDEN_NAME = 'alla enheter';
+    this.showSelectUnit = true;
 
     this.initialize = function(vardEnheter) {
+      this.reset();
       this.units = vardEnheter;
       if (this.units) {
         this.units = this.units.slice(0, 1)
@@ -40,7 +44,7 @@ angular.module('webcert').service('webcert.vardenhetFilterModel', [
 
         //initial selection, now handles cases when no enhetsId cookie has been set.
         if (this.units.length > 2 && $cookies.getObject('enhetsId')) {
-          this.selectedUnit = selectUnitById(this.units, $cookies.getObject('enhetsId'));
+          this.selectedUnit = this.selectUnitById(this.units, $cookies.getObject('enhetsId'));
         } else {
           this.selectedUnit = selectFirstUnit(this.units);
         }
@@ -56,13 +60,18 @@ angular.module('webcert').service('webcert.vardenhetFilterModel', [
       }
     }
 
-    function selectUnitById(units, unitName) {
-      for (var count = 0; count < units.length; count++) {
-        if (units[count].id === unitName) {
-          return units[count];
+    this.selectUnitById = function(units, unitName) {
+        for (var count = 0; units && count < units.length; count++) {
+          if (units[count].id === unitName) {
+            return units[count];
+          }
         }
-      }
       return selectFirstUnit(units);
-    }
+    };
+
+    this.reset = function() {
+      this.selectedUnit = this.ALL_ARENDEN;
+      this.selectedUnitName = this.ALL_ARENDEN_NAME;
+    };
 
   }]);

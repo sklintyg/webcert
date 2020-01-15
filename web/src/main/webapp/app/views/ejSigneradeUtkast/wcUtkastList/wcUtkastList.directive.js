@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Inera AB (http://www.inera.se)
+ * Copyright (C) 2020 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -27,14 +27,12 @@ angular.module('webcert').directive('wcUtkastList',
           replace: false,
           scope: {
             utkastList: '=',
-            filter: '=',
+            sortingProperty: '=',
+            sortingAscending: '=',
             onOrder: '&'
           },
           templateUrl: '/app/views/ejSigneradeUtkast/wcUtkastList/wcUtkastList.directive.html',
           controller: function($scope) {
-
-            $scope.sortingProperty = $scope.filter.selection.orderBy;
-            $scope.sortingAscending = $scope.filter.selection.orderAscending;
 
             $scope.getTypeName = function(intygsType) {
               return moduleService.getModuleName(intygsType);
@@ -60,9 +58,12 @@ angular.module('webcert').directive('wcUtkastList',
             };
 
             $scope.orderByProperty = function(property) {
-              var ascending = false;
-              if ($scope.filter.selection.orderBy === property) {
-                ascending = !$scope.filter.selection.orderAscending;
+              var ascending = true;
+              if(property === 'senastSparadDatum'){
+                ascending = false;
+              }
+              if ($scope.sortingProperty === property) {
+                ascending = !$scope.sortingAscending;
               }
               $scope.sortingProperty = property;
               $scope.sortingAscending = ascending;

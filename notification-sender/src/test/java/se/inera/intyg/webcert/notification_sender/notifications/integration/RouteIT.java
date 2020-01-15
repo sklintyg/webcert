@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Inera AB (http://www.inera.se)
+ * Copyright (C) 2020 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -29,14 +29,19 @@ import static se.inera.intyg.webcert.notification_sender.mocks.v3.CertificateSta
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+
 import org.junit.Test;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.ContextConfiguration;
+
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
 import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
 import se.inera.intyg.webcert.notification_sender.mocks.NotificationStubEntry;
 import se.inera.intyg.webcert.notification_sender.notifications.helper.NotificationTestHelper;
 
+@DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
 @ContextConfiguration("/notifications/integration-test-notification-sender-config.xml")
 public class RouteIT extends AbstractBaseIT {
 

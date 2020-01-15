@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Inera AB (http://www.inera.se)
+ * Copyright (C) 2020 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -101,7 +101,7 @@ angular.module('webcert').service('webcert.enhetArendenFilterModel', [
         changedFrom: undefined,
         changedTo: undefined,
         orderBy: 'receivedDate',
-        orderAscending: true,
+        orderAscending: false,
         patientPersonId: ''
       };
     };
