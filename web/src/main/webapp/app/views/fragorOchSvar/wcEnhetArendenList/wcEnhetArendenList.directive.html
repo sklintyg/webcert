@@ -18,21 +18,11 @@
 
       <wc-no-arenden-message ng-if="totalCount == 0"></wc-no-arenden-message>
 
-      <div id="limitDropDown" class="col-md-2 form-group" ng-show="listModel.totalCount > 10">
-        <div class="form-inline">
-          <span class="inline-block">Visa</span>
-          <wc-dropdown
-              class="inline-block"
-              data-items="limitList"
-              id="pageSizePicker"
-              label="pageSizePicker"
-              ng-model="listModel.limit"
-              use-dynamic-label="false"
-              data-on-select="fetchArenden()">
-          </wc-dropdown>
-          <span class="inline-block">resultat</span>
-        </div>
-      </div>
+      <wc-limit-dropdown  class="col-md-2 form-group"
+                          ng-show="listModel.totalCount > 10"
+                          list-model="listModel"
+                          filter-model="filterModel">
+      </wc-limit-dropdown>
 
       <!-- arende table - Frågor och svar-tabell -->
       <div class="row" id="arendeTable" ng-show="totalCount > 0">

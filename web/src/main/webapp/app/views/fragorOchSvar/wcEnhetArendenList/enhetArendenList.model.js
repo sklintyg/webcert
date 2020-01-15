@@ -24,6 +24,7 @@ angular.module('webcert').service('webcert.enhetArendenListModel', [
 
     this.DEFAULT_PAGE = 1;
     this.DEFAULT_NUMBER_PAGES = 10;
+    this.DEFAULT_PAGE_SIZE = 10;
 
     this.reset = function() {
       // General directive viewstate

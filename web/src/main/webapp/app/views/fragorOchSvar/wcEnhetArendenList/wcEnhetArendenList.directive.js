@@ -35,8 +35,9 @@ angular.module('webcert').directive('wcEnhetArendenList', [
       replace: false,
       scope: {},
       templateUrl: '/app/views/fragorOchSvar/wcEnhetArendenList/wcEnhetArendenList.directive.html',
-      controller: function($scope) {
+      controller: function($scope, $rootScope) {
         $scope.listModel = enhetArendenListModel;
+        $scope.filterModel = enhetArendenFilterModel;
         $scope.vardenhetFilterModel = vardenhetFilterModel;
         $scope.selectedUnitName = vardenhetFilterModel.selectedUnitName;
 
@@ -56,9 +57,9 @@ angular.module('webcert').directive('wcEnhetArendenList', [
         }
 
         $scope.listInit = function() {
-          $scope.listModel.limit = enhetArendenModel.PAGE_SIZE;
+          $scope.listModel.limit = $scope.listModel.DEFAULT_PAGE_SIZE;
           $scope.listModel.chosenPage = $scope.listModel.DEFAULT_PAGE;
-          $scope.listModel.chosenNumberPage = 1;
+          $scope.listModel.chosenNumberPage = $scope.listModel.DEFAULT_PAGE;
         };
 
         $scope.getPages = function() {
@@ -81,30 +82,6 @@ angular.module('webcert').directive('wcEnhetArendenList', [
           $scope.listModel.gettingPage = false;
         };
 
-        $scope.getLimits = function() {
-          $scope.limitList = [];
-          var count = 0;
-
-          if ($scope.listModel.limit === undefined || $scope.listModel.limit <= 0 || $scope.listModel.limit > $scope.listModel.totalCount) {
-            $scope.listModel.limit = enhetArendenModel.PAGE_SIZE;
-          }
-
-          if ($scope.listModel.totalCount < enhetArendenModel.PAGE_SIZE) {
-            return null;
-          }
-
-          if ($scope.listModel.totalCount > 10) {
-            $scope.limitList[count++] = {id: 10, label: '10'};
-          }
-          if ($scope.listModel.totalCount > 25) {
-            $scope.limitList[count++] = {id: 25, label: '25'};
-          }
-          if ($scope.listModel.totalCount > 50) {
-            $scope.limitList[count++] = {id: 50, label: '50'};
-          }
-          $scope.limitList[count] = {id: $scope.listModel.totalCount, label: 'alla'};
-        };
-
         updateArenden(null, {startFrom: 0}, true);
 
         // When other directives want to request list update
@@ -125,9 +102,6 @@ angular.module('webcert').directive('wcEnhetArendenList', [
             enhetArendenListModel.prevFilterQuery = arendenListResult.query;
             enhetArendenListModel.totalCount = arendenListResult.totalCount;
             enhetArendenListModel.arendenList = arendenListResult.arendenList;
-
-            $scope.getLimits();
-            $scope.getPages();
 
             if (vardenhetFilterModel.selectedUnitName) {
               $scope.selectedUnitName = vardenhetFilterModel.selectedUnitName;
@@ -161,6 +135,10 @@ angular.module('webcert').directive('wcEnhetArendenList', [
                 enhetArendenListModel.viewState.runningQuery = false;
               });
             }
+
+            $rootScope.$broadcast('wcLimitDropdown.getLimits');
+            $scope.getPages();
+
             $scope.listModel.startPoint = data.startFrom + 1;
             $scope.listModel.endPoint = data.startFrom + $scope.listModel.arendenList.length;
           });
@@ -180,16 +158,8 @@ angular.module('webcert').directive('wcEnhetArendenList', [
           return ResourceLinkService.isLinkTypeExists(arende.links, 'VIDAREBEFODRA_FRAGA');
         };
 
-        $scope.fetchArenden = function() {
-          if($scope.listModel.limit !== enhetArendenFilterModel.filterForm.pageSize) {
-            $scope.listModel.chosenPage = $scope.listModel.DEFAULT_PAGE;
-           }
-          enhetArendenFilterModel.filterForm.pageSize = $scope.listModel.limit;
-          updateArenden(null, {startFrom: 0}, true);
-        };
-
         $scope.updatePage = function(chosenPage) {
-          if(chosenPage != $scope.listModel.chosenPage) {
+          if(chosenPage !== $scope.listModel.chosenPage) {
             enhetArendenFilterModel.filterForm.pageSize = $scope.listModel.limit;
             $scope.listModel.chosenPage = chosenPage;
             updateArenden(null, {startFrom: ($scope.listModel.chosenPage - 1) * $scope.listModel.limit}, true);
@@ -219,7 +189,7 @@ angular.module('webcert').directive('wcEnhetArendenList', [
 
         $scope.getPageFromIndex = function(index) {
           return (index + 1) + ($scope.listModel.chosenNumberPage - 1) * $scope.listModel.DEFAULT_NUMBER_PAGES;
-        }
+        };
 
         $scope.openIntyg = function(intygId, intygTyp) {
           $log.debug('open intyg ' + intygId + ' of type ' + intygTyp);
