@@ -21,14 +21,16 @@ package se.inera.intyg.webcert.web.web.util.resourcelinks;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.common.support.model.common.internal.Vardgivare;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.service.access.CertificateAccessService;
-import se.inera.intyg.webcert.web.service.access.DraftAccessService;
+import se.inera.intyg.webcert.web.service.access.DraftAccessServiceHelper;
 import se.inera.intyg.webcert.web.service.access.LockedDraftAccessService;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeListItem;
@@ -45,7 +47,7 @@ import se.inera.intyg.webcert.web.web.util.resourcelinks.dto.ActionLinkType;
 public class ResourceLinkHelperImpl implements ResourceLinkHelper {
 
     @Autowired
-    private DraftAccessService draftAccessService;
+    private DraftAccessServiceHelper draftAccessServiceHelper;
 
     @Autowired
     private LockedDraftAccessService lockedDraftAccessService;
@@ -62,7 +64,7 @@ public class ResourceLinkHelperImpl implements ResourceLinkHelper {
 
     @Override
     public void decorateIntygModuleWithValidActionLinks(IntygModuleDTO intygModuleDTO, Personnummer patient) {
-        if (draftAccessService.allowToCreateDraft(intygModuleDTO.getId(), patient).isAllowed()) {
+        if (draftAccessServiceHelper.isAllowedToCreateUtkast(intygModuleDTO.getId(), patient)) {
             intygModuleDTO.addLink(new ActionLink(ActionLinkType.SKAPA_UTKAST));
         }
     }
@@ -87,15 +89,15 @@ public class ResourceLinkHelperImpl implements ResourceLinkHelper {
 
         } else {
 
-            if (draftAccessService.allowToEditDraft(certificateType, careUnit, patient).isAllowed()) {
+            if (draftAccessServiceHelper.isAllowedToEditUtkast(certificateType, careUnit, patient)) {
                 draftHolder.addLink(new ActionLink(ActionLinkType.REDIGERA_UTKAST));
             }
 
-            if (draftAccessService.allowToDeleteDraft(certificateType, careUnit, patient).isAllowed()) {
+            if (draftAccessServiceHelper.isAllowedToDeleteUtkast(certificateType, careUnit, patient)) {
                 draftHolder.addLink(new ActionLink(ActionLinkType.TA_BORT_UTKAST));
             }
 
-            if (draftAccessService.allowToPrintDraft(certificateType, careUnit, patient).isAllowed()) {
+            if (draftAccessServiceHelper.isAllowedToPrintUtkast(certificateType, careUnit, patient)) {
                 draftHolder.addLink(new ActionLink(ActionLinkType.SKRIV_UT_UTKAST));
             }
 

@@ -36,12 +36,14 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.infra.integration.hsa.model.SelectableVardenhet;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
@@ -55,6 +57,7 @@ import se.inera.intyg.webcert.common.model.SekretessStatus;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
+import se.inera.intyg.webcert.web.service.access.DraftAccessServiceHelper;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
@@ -101,6 +104,9 @@ public class IntygIntegrationServiceImplTest {
     @Mock
     private IntygService intygService;
 
+    @Mock
+    private DraftAccessServiceHelper draftAccessServiceHelper;
+
     @InjectMocks
     private IntygIntegrationServiceImpl testee;
 
@@ -117,6 +123,7 @@ public class IntygIntegrationServiceImplTest {
         // given
         when(utkastRepository.findOne(anyString())).thenReturn(createUtkast());
         when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.FALSE);
+        when(draftAccessServiceHelper.isAllowedToEditUtkast(any(Utkast.class))).thenReturn(true);
 
         IntegrationParameters parameters = new IntegrationParameters(null, null, ALTERNATE_SSN,
             "Nollan", null, "Nollansson", "Nollgatan", "000000", "Nollby",
@@ -132,6 +139,34 @@ public class IntygIntegrationServiceImplTest {
         verify(utkastRepository).findOne(anyString());
         verify(patientDetailsResolver).getSekretessStatus(any(Personnummer.class));
         verify(utkastService, times(1)).updatePatientOnDraft(any());
+
+        assertEquals(INTYGSTYP, prepareRedirectToIntyg.getIntygTyp());
+        assertEquals(INTYGSTYP_VERSION, prepareRedirectToIntyg.getIntygTypeVersion());
+        assertEquals(INTYGSID, prepareRedirectToIntyg.getIntygId());
+        assertTrue(prepareRedirectToIntyg.isUtkast());
+    }
+
+    @Test
+    public void prepareRedirectToIntygSuccessWithoutUpdatingPatient() {
+        // given
+        when(utkastRepository.findOne(anyString())).thenReturn(createUtkast());
+        when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.FALSE);
+        when(draftAccessServiceHelper.isAllowedToEditUtkast(any(Utkast.class))).thenReturn(false);
+
+        IntegrationParameters parameters = new IntegrationParameters(null, null, ALTERNATE_SSN,
+            "Nollan", null, "Nollansson", "Nollgatan", "000000", "Nollby",
+            false, false, false, false);
+
+        WebCertUser user = createDefaultUser();
+        user.setParameters(parameters);
+
+        // when
+        PrepareRedirectToIntyg prepareRedirectToIntyg = testee.prepareRedirectToIntyg(INTYGSTYP, INTYGSID, user);
+
+        // then
+        verify(utkastRepository).findOne(anyString());
+        verify(patientDetailsResolver).getSekretessStatus(any(Personnummer.class));
+        verify(utkastService, times(0)).updatePatientOnDraft(any());
 
         assertEquals(INTYGSTYP, prepareRedirectToIntyg.getIntygTyp());
         assertEquals(INTYGSTYP_VERSION, prepareRedirectToIntyg.getIntygTypeVersion());
@@ -174,6 +209,7 @@ public class IntygIntegrationServiceImplTest {
         // given
         when(utkastRepository.findOne(anyString())).thenReturn(createUtkast());
         when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.TRUE);
+        when(draftAccessServiceHelper.isAllowedToEditUtkast(any(Utkast.class))).thenReturn(true);
 
         IntegrationParameters parameters = new IntegrationParameters(null, null, ALTERNATE_SSN,
             "Nollan", null, "Nollansson", "Nollgatan", "000000", "Nollby",
@@ -207,6 +243,7 @@ public class IntygIntegrationServiceImplTest {
         // given
         when(utkastRepository.findOne(anyString())).thenReturn(createUtkast());
         when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.FALSE);
+        when(draftAccessServiceHelper.isAllowedToEditUtkast(any(Utkast.class))).thenReturn(true);
 
         IntegrationParameters parameters = new IntegrationParameters(null, null, ALTERNATE_SSN,
             "Nollan", null, "Nollansson", "Nollgatan", "000000", "Nollby",
@@ -228,6 +265,7 @@ public class IntygIntegrationServiceImplTest {
         // given
         when(utkastRepository.findOne(anyString())).thenReturn(createUtkast());
         when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.FALSE);
+        when(draftAccessServiceHelper.isAllowedToEditUtkast(any(Utkast.class))).thenReturn(true);
 
         IntegrationParameters parameters = new IntegrationParameters(null, null, ALTERNATE_SSN,
             "Nollan", null, "Nollansson", "Nollgatan", "000000", "Nollby",

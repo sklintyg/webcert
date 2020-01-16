@@ -18,18 +18,21 @@
  */
 package se.inera.intyg.webcert.web.service.utkast;
 
-import com.google.common.base.Strings;
 import java.text.MessageFormat;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Optional;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.google.common.base.Strings;
+
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.Patient;
@@ -312,7 +315,7 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
             // We need to validate access logic early and then depend on patient information available.
             Person patientDetails = updatePatientDetails(templateRequest, false);
 
-            draftAccessServiceHelper.validateAccessToCreateUtkast(templateRequest.getTyp(), patientDetails.getPersonnummer());
+            draftAccessServiceHelper.validateAllowToCreateUtkast(templateRequest.getTyp(), patientDetails.getPersonnummer());
 
             verifyNotReplacedWithSigned(templateRequest.getOriginalIntygId(), "create utkast from template");
 

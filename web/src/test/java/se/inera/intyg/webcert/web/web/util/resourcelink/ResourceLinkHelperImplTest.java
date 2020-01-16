@@ -47,7 +47,7 @@ import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.service.access.AccessResult;
 import se.inera.intyg.webcert.web.service.access.AccessResultCode;
 import se.inera.intyg.webcert.web.service.access.CertificateAccessService;
-import se.inera.intyg.webcert.web.service.access.DraftAccessService;
+import se.inera.intyg.webcert.web.service.access.DraftAccessServiceHelper;
 import se.inera.intyg.webcert.web.service.access.LockedDraftAccessService;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeListItem;
@@ -62,7 +62,7 @@ import se.inera.intyg.webcert.web.web.util.resourcelinks.dto.ActionLinkType;
 public class ResourceLinkHelperImplTest {
 
     @Mock
-    private DraftAccessService draftAccessService;
+    private DraftAccessServiceHelper draftAccessServiceHelper;
 
     @Mock
     private LockedDraftAccessService lockedDraftAccessService;
@@ -78,7 +78,7 @@ public class ResourceLinkHelperImplTest {
         final String intygsTyp = "intygstyp";
         final Personnummer personnummer = Personnummer.createPersonnummer("191212121212").get();
 
-        doReturn(AccessResult.noProblem()).when(draftAccessService).allowToCreateDraft(intygsTyp, personnummer);
+        doReturn(true).when(draftAccessServiceHelper).isAllowedToCreateUtkast(intygsTyp, personnummer);
 
         final ActionLink expectedActionLink = new ActionLink();
         expectedActionLink.setType(ActionLinkType.SKAPA_UTKAST);
@@ -99,8 +99,8 @@ public class ResourceLinkHelperImplTest {
         final String intygsTyp = "intygstyp";
         final Personnummer personnummer = Personnummer.createPersonnummer("191212121212").get();
 
-        doReturn(AccessResult.create(AccessResultCode.AUTHORIZATION_VALIDATION, "No access")).when(draftAccessService)
-            .allowToCreateDraft(intygsTyp, personnummer);
+        doReturn(false).when(draftAccessServiceHelper)
+            .isAllowedToCreateUtkast(intygsTyp, personnummer);
 
         final ActionLink expectedActionLink = new ActionLink();
 
@@ -182,9 +182,9 @@ public class ResourceLinkHelperImplTest {
         final Personnummer patient = Personnummer.createPersonnummer("191212121212").get();
         final Vardenhet vardenhet = mock(Vardenhet.class);
 
-        doReturn(AccessResult.noProblem()).when(draftAccessService).allowToEditDraft(intygsTyp, vardenhet, patient);
-        doReturn(AccessResult.noProblem()).when(draftAccessService).allowToDeleteDraft(intygsTyp, vardenhet, patient);
-        doReturn(AccessResult.noProblem()).when(draftAccessService).allowToPrintDraft(intygsTyp, vardenhet, patient);
+        doReturn(true).when(draftAccessServiceHelper).isAllowedToEditUtkast(intygsTyp, vardenhet, patient);
+        doReturn(true).when(draftAccessServiceHelper).isAllowedToDeleteUtkast(intygsTyp, vardenhet, patient);
+        doReturn(true).when(draftAccessServiceHelper).isAllowedToPrintUtkast(intygsTyp, vardenhet, patient);
         doReturn(AccessResult.noProblem()).when(certificateAccessService).allowToCreateQuestion(intygsTyp, vardenhet, patient);
         doReturn(AccessResult.noProblem()).when(certificateAccessService).allowToReadQuestions(intygsTyp, vardenhet, patient);
         doReturn(AccessResult.noProblem()).when(certificateAccessService).allowToAnswerAdminQuestion(intygsTyp, vardenhet, patient);
@@ -222,12 +222,9 @@ public class ResourceLinkHelperImplTest {
         final Personnummer patient = Personnummer.createPersonnummer("191212121212").get();
         final Vardenhet vardenhet = mock(Vardenhet.class);
 
-        doReturn(AccessResult.create(AccessResultCode.AUTHORIZATION_VALIDATION, "No access")).when(draftAccessService)
-            .allowToEditDraft(intygsTyp, vardenhet, patient);
-        doReturn(AccessResult.create(AccessResultCode.AUTHORIZATION_VALIDATION, "No access")).when(draftAccessService)
-            .allowToDeleteDraft(intygsTyp, vardenhet, patient);
-        doReturn(AccessResult.create(AccessResultCode.AUTHORIZATION_VALIDATION, "No access")).when(draftAccessService)
-            .allowToPrintDraft(intygsTyp, vardenhet, patient);
+        doReturn(false).when(draftAccessServiceHelper).isAllowedToEditUtkast(intygsTyp, vardenhet, patient);
+        doReturn(false).when(draftAccessServiceHelper).isAllowedToDeleteUtkast(intygsTyp, vardenhet, patient);
+        doReturn(false).when(draftAccessServiceHelper).isAllowedToPrintUtkast(intygsTyp, vardenhet, patient);
         doReturn(AccessResult.create(AccessResultCode.AUTHORIZATION_VALIDATION, "No access")).when(certificateAccessService)
             .allowToCreateQuestion(intygsTyp, vardenhet, patient);
         doReturn(AccessResult.create(AccessResultCode.AUTHORIZATION_VALIDATION, "No access")).when(certificateAccessService)
