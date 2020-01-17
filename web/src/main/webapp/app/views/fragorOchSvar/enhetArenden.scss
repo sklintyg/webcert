@@ -38,46 +38,17 @@
     float: right;
   }
 
-  #pageNumbers {
-    float: right;
-    padding-right: 0;
-
-    span {
-
-      padding-left: 20px;
-      cursor: pointer;
-    }
-
-    span:hover {
-      color: $wc-color-21;
-    }
-
-    .chosenPage {
-      color: $wc-color-21;
-    }
-
-    .disabledPage {
-      color: $wc-color-22;
-      cursor: text !important;
-    }
-
-    .disabledPage:hover {
-        color: $wc-color-22;
-    }
-  }
-
-  #limitDropDown {
-    padding-left: 0;
-    wc-dropdown {
-      min-width: 70px;
-      padding: 0 3px 0 3px;
-    }
-  }
-
   #showing-nr-hits {
     padding-left: 0;
   }
 
+  wc-limit-dropdown {
+    padding-left: 0px;
+  }
+
+  wc-list-page-numbers {
+    padding-right: 0px;
+  }
 }
 
 wc-enhet-arenden-filter {

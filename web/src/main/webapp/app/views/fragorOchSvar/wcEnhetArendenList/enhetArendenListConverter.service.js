@@ -42,7 +42,7 @@ angular.module('webcert').factory('webcert.enhetArendenConverterService',
           patientPersonId: undefined
         };
 
-        function _convertFormModelToFilterQuery(filterForm, enhetId) {
+        function _convertFormModelToFilterQuery(filterForm, enhetId, pageSize) {
           /*jshint maxcomplexity:false */
 
           // Converts view values and sets them on a copy of query object
@@ -66,8 +66,8 @@ angular.module('webcert').factory('webcert.enhetArendenConverterService',
             filterQuery.changedTo = $filter('date')(filterForm.changedTo, 'yyyy-MM-dd');
           }
 
-          if (filterForm.pageSize) {
-            filterQuery.pageSize = filterForm.pageSize;
+          if (pageSize) {
+            filterQuery.pageSize = pageSize;
           }
 
           if (filterForm.startFrom) {

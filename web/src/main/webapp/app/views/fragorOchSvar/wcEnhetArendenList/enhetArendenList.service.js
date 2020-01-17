@@ -31,7 +31,7 @@ angular.module('webcert').factory('webcert.enhetArendenListService',
           var deferred = $q.defer();
 
           var filterQuery = enhetArendenConverterService.convertFormModelToFilterQuery(enhetArendenFilterModel.filterForm,
-              enhetArendenModel.enhetId);
+              enhetArendenModel.enhetId, enhetArendenFilterModel.pageSize);
           filterQuery.startFrom = startFrom;
           enhetArendenProxy.getArenden(filterQuery, function(successData) {
 

@@ -145,23 +145,4 @@ describe('EjSigneradeUtkastCtrlSpec', function() {
     });
   });
 
-  describe('fetch more button', function() {
-    it('should fetch PAGE_SIZE more results if user clicks', function() {
-      $httpBackend.expectGET('/api/utkast?orderAscending=false&orderBy=senastSparadDatum&pageSize=10&patientId=&startFrom=10').respond(200,
-          {results: []});
-      $scope.fetchMore();
-      $httpBackend.flush();
-      expect($scope.widgetState.currentFilterRequest.startFrom).toBe(10);
-      expect($scope.widgetState.activeErrorMessageKey).toBeNull();
-    });
-
-    it('should update error message if fetch failed', function() {
-      $httpBackend.expectGET('/api/utkast?orderAscending=false&orderBy=senastSparadDatum&pageSize=10&patientId=&startFrom=10').respond(500);
-      $scope.fetchMore();
-      $httpBackend.flush();
-      expect($scope.widgetState.currentFilterRequest.startFrom).toBe(10);
-      expect($scope.widgetState.activeErrorMessageKey).not.toBeNull();
-    });
-  });
-
 });

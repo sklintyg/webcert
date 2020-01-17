@@ -92,7 +92,7 @@
         {{listModel.totalCount}} träff<span ng-show="listModel.totalCount > 1">ar</span>
       </div>
       <wc-list-page-numbers class="col-md-6"
-                            ng-show="(listModel.pagesList.length > 1 || listModel.chosenNumberPage > 1) && !listModel.gettingPage"
+                            ng-show="(listModel.pagesList.length > 1 || listModel.chosenPageList > 1) && !listModel.gettingPage"
                             list-model="listModel"
                             filter-model="filterModel">
       </wc-list-page-numbers>

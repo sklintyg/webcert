@@ -26,6 +26,7 @@ angular.module('webcert').directive('wcUtkastFilter', ['$timeout', 'webcert.Utka
           templateUrl: '/app/views/ejSigneradeUtkast/wcUtkastFilter/wcUtkastFilter.directive.html',
           scope: {
             onSearch: '&',
+            onReset: '&',
             filter: '='
           },
           controller: function($scope) {
@@ -54,12 +55,13 @@ angular.module('webcert').directive('wcUtkastFilter', ['$timeout', 'webcert.Utka
               $scope.widgetState.searched = true;
               $scope.onSearch();
             };
+
             //Clicked Återställ
             $scope.resetFilter = function() {
               resetFilterState();
               $scope.widgetState.searched = false;
               $timeout(function() {
-                $scope.onSearch();
+                $scope.onReset();
               });
 
             };

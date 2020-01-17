@@ -43,7 +43,6 @@ angular.module('webcert').directive('wcEnhetArendenList', [
 
         $scope.forwardTooltip = messageService.getProperty('th.help.forward');
         $scope.openTooltip = messageService.getProperty('th.help.open');
-        $scope.moreHitsTooltip = messageService.getProperty('th.help.morehits');
 
         $scope.orderBy = enhetArendenFilterModel.filterForm.orderBy;
         $scope.orderAscending = enhetArendenFilterModel.filterForm.orderAscending;
@@ -58,8 +57,9 @@ angular.module('webcert').directive('wcEnhetArendenList', [
 
         $scope.listInit = function() {
           $scope.listModel.limit = $scope.listModel.DEFAULT_PAGE_SIZE;
+          $scope.filterModel.pageSize = $scope.listModel.limit;
           $scope.listModel.chosenPage = $scope.listModel.DEFAULT_PAGE;
-          $scope.listModel.chosenNumberPage = $scope.listModel.DEFAULT_PAGE;
+          $scope.listModel.chosenPageList = $scope.listModel.DEFAULT_PAGE;
         };
 
         updateArenden(null, {startFrom: 0}, true);
@@ -132,7 +132,7 @@ angular.module('webcert').directive('wcEnhetArendenList', [
           }
         }
 
-        $scope.$on('enhetArendenList.requestListUpdate', updateArenden);
+        $scope.$on($scope.listModel.LIST_NAME + '.requestListUpdate', updateArenden);
 
         $scope.showVidarebefodra = function(arende) {
           return ResourceLinkService.isLinkTypeExists(arende.links, 'VIDAREBEFODRA_FRAGA');
