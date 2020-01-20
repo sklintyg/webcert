@@ -35,14 +35,14 @@ angular.module('webcert').directive('wcEnhetArendenList', [
       replace: false,
       scope: {},
       templateUrl: '/app/views/fragorOchSvar/wcEnhetArendenList/wcEnhetArendenList.directive.html',
-      controller: function($scope) {
+      controller: function($scope, $rootScope) {
         $scope.listModel = enhetArendenListModel;
+        $scope.filterModel = enhetArendenFilterModel;
         $scope.vardenhetFilterModel = vardenhetFilterModel;
         $scope.selectedUnitName = vardenhetFilterModel.selectedUnitName;
 
         $scope.forwardTooltip = messageService.getProperty('th.help.forward');
         $scope.openTooltip = messageService.getProperty('th.help.open');
-        $scope.moreHitsTooltip = messageService.getProperty('th.help.morehits');
 
         $scope.orderBy = enhetArendenFilterModel.filterForm.orderBy;
         $scope.orderAscending = enhetArendenFilterModel.filterForm.orderAscending;
@@ -54,6 +54,13 @@ angular.module('webcert').directive('wcEnhetArendenList', [
         } else {
           enhetArendenFilterModel.filterForm.lakareSelector = enhetArendenFilterModel.lakareList[0].id;
         }
+
+        $scope.listInit = function() {
+          $scope.listModel.limit = $scope.listModel.DEFAULT_PAGE_SIZE;
+          $scope.filterModel.pageSize = $scope.listModel.limit;
+          $scope.listModel.chosenPage = $scope.listModel.DEFAULT_PAGE;
+          $scope.listModel.chosenPageList = $scope.listModel.DEFAULT_PAGE;
+        };
 
         updateArenden(null, {startFrom: 0}, true);
 
@@ -68,6 +75,7 @@ angular.module('webcert').directive('wcEnhetArendenList', [
           if(data.reset) {
             $scope.orderBy = 'receivedDate';
             $scope.orderAscending = false;
+            $scope.listInit();
           }
 
           enhetArendenListService.getArenden(data.startFrom).then(function(arendenListResult) {
@@ -89,7 +97,6 @@ angular.module('webcert').directive('wcEnhetArendenList', [
             if (spinnerWaiting) {
               $timeout.cancel(spinnerWaiting);
             }
-
             enhetArendenListModel.viewState.runningQuery = false;
 
             if ($scope.totalCount === undefined || $scope.totalCount === 0) {
@@ -105,10 +112,15 @@ angular.module('webcert').directive('wcEnhetArendenList', [
                 if (spinnerWaiting) {
                   $timeout.cancel(spinnerWaiting);
                 }
-
                 enhetArendenListModel.viewState.runningQuery = false;
               });
             }
+
+            $rootScope.$broadcast('wcListDropdown.getLimits');
+            $rootScope.$broadcast('wcListPageNumbers.getPages');
+
+            $scope.listModel.startPoint = data.startFrom + 1;
+            $scope.listModel.endPoint = data.startFrom + $scope.listModel.arendenList.length;
           });
         }
 
@@ -120,33 +132,10 @@ angular.module('webcert').directive('wcEnhetArendenList', [
           }
         }
 
-        $scope.$on('enhetArendenList.requestListUpdate', updateArenden);
+        $scope.$on($scope.listModel.LIST_NAME + '.requestListUpdate', updateArenden);
 
         $scope.showVidarebefodra = function(arende) {
           return ResourceLinkService.isLinkTypeExists(arende.links, 'VIDAREBEFODRA_FRAGA');
-        };
-
-        $scope.fetchMore = function() {
-          enhetArendenListModel.viewState.fetchingMoreInProgress = true;
-          enhetArendenListModel.viewState.activeErrorMessageKey = null;
-          enhetArendenListService.getArenden(
-              enhetArendenListModel.prevFilterQuery.startFrom + enhetArendenModel.PAGE_SIZE).then(
-              function(arendenListResult) {
-
-                // Add fetch more result to existing list
-                enhetArendenListModel.prevFilterQuery = arendenListResult.query;
-                enhetArendenListModel.totalCount = arendenListResult.totalCount;
-                var arendenList = enhetArendenListModel.arendenList;
-                for (var i = 0; i < arendenListResult.arendenList.length; i++) {
-                  arendenList.push(arendenListResult.arendenList[i]);
-                }
-                enhetArendenListModel.fetchingMoreInProgress = false;
-
-              }, function(errorData) {
-                $log.debug('Query Error: ' + errorData);
-                enhetArendenListModel.fetchingMoreInProgress = false;
-                enhetArendenListModel.viewState.activeErrorMessageKey = 'info.query.error';
-              });
         };
 
         $scope.openIntyg = function(intygId, intygTyp) {
@@ -203,9 +192,10 @@ angular.module('webcert').directive('wcEnhetArendenList', [
           $scope.orderBy = enhetArendenFilterModel.filterForm.orderBy;
           $scope.orderAscending = enhetArendenFilterModel.filterForm.orderAscending;
 
-          updateArenden(null, {startFrom: 0});
+          updateArenden(null, {startFrom: $scope.listModel.startPoint - 1});
         };
 
+        $scope.listInit();
       }
     };
   }]);

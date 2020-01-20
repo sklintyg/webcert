@@ -143,7 +143,6 @@ angular.module('webcert').constant('webcert.messages', {
     'th.help.arende-forwarded': 'Visar om ärendet är vidarebefordrat.',
     'th.help.forward': 'Skapar ett e-postmeddelande i din e-postklient med en direktlänk till frågan/svaret.',
     'th.help.open': 'Öppnar intyget och frågan/svaret.',
-    'th.help.morehits': 'Visa fler frågor/svar.',
 
     //DOI Dialog
     'doi.label.titleText': 'Dödsbevis saknas',

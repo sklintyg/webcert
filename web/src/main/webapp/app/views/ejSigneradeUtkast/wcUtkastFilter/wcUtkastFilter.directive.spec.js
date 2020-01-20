@@ -68,7 +68,7 @@ describe('wcUtkastFilterSpec', function() {
         emptyFilter = _utkastFilterModel_.build();
 
         var tpl = angular.element(
-            '<wc-utkast-filter on-search="testFilter()" filter="filter"></wc-utkast-filter>'
+            '<wc-utkast-filter on-search="testFilter()" on-reset="testFilter()" filter="filter"></wc-utkast-filter>'
         );
         $scope = $rootScope.$new();
         $scope.filter = emptyFilter;

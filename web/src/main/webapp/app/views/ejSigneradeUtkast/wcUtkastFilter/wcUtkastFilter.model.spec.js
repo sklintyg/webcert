@@ -35,22 +35,14 @@ describe('wcUtkastFilterModel', function() {
     }]);
   });
 
-  it('should initilize correctly', function() {
-    var model = wcUtkastFilterModel.build(100);
-
-    expect(model.pageSize).toEqual(100);
-
-  });
-
   it('should convertToPayload correctly', function() {
-    var model = wcUtkastFilterModel.build(100);
+    var model = wcUtkastFilterModel.build();
     model.selection.status = 'DRAFT_COMPLETE';
     model.selection.notified = 'NOTIFIED_NO';
     model.selection.savedFrom = new Date('2018-02-03T16:24:00');
     model.selection.savedTo = new Date('2018-02-09T16:24:00');
     var payload = model.convertToPayload();
 
-    expect(payload.pageSize).toEqual(100);
     expect(payload.startFrom).toEqual(0);
     expect(payload.status).toBe('DRAFT_COMPLETE');
     expect(payload.notified).toBe(false);
@@ -61,8 +53,8 @@ describe('wcUtkastFilterModel', function() {
   });
 
   it('should reset correctly', function() {
-    var pristine = wcUtkastFilterModel.build(100);
-    var model = wcUtkastFilterModel.build(100);
+    var pristine = wcUtkastFilterModel.build();
+    var model = wcUtkastFilterModel.build();
     model.selection.status = 'DRAFT_COMPLETE';
     model.selection.notified = 'NOTIFIED_NO';
     model.selection.savedFrom = new Date();

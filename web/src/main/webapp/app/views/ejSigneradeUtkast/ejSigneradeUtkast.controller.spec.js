@@ -90,7 +90,7 @@ describe('EjSigneradeUtkastCtrlSpec', function() {
         utkastFilterModel = _utkastFilterModel_;
         emptyFilter = _utkastFilterModel_.build();
 
-        $httpBackend.expectGET('/api/utkast/?orderAscending=false&orderBy=senastSparadDatum&pageSize=10&patientId=&startFrom=0').respond(200,
+        $httpBackend.expectGET('/api/utkast/?orderAscending=false&orderBy=senastSparadDatum&patientId=&startFrom=0').respond(200,
             mockResponse.utkastList);
         $controller('webcert.EjSigneradeUtkastCtrl', {$scope: $scope});
         $httpBackend.flush();
@@ -101,7 +101,7 @@ describe('EjSigneradeUtkastCtrlSpec', function() {
   describe('ejSigneradeUtkast controller startup', function() {
 
     it('should load utkast list on valid response', function() {
-      $httpBackend.expectGET('/api/utkast/?orderAscending=false&orderBy=senastSparadDatum&pageSize=10&patientId=&startFrom=0').respond(200,
+      $httpBackend.expectGET('/api/utkast/?orderAscending=false&orderBy=senastSparadDatum&patientId=&startFrom=0').respond(200,
           mockResponse.utkastList);
       $controller('webcert.EjSigneradeUtkastCtrl', {$scope: $scope});
       $httpBackend.flush();
@@ -109,7 +109,7 @@ describe('EjSigneradeUtkastCtrlSpec', function() {
     });
 
     it('should update error message if loading fails', function() {
-      $httpBackend.expectGET('/api/utkast/?orderAscending=false&orderBy=senastSparadDatum&pageSize=10&patientId=&startFrom=0').respond(500);
+      $httpBackend.expectGET('/api/utkast/?orderAscending=false&orderBy=senastSparadDatum&patientId=&startFrom=0').respond(500);
       $controller('webcert.EjSigneradeUtkastCtrl', {$scope: $scope});
       $httpBackend.flush();
       expect($scope.widgetState.activeErrorMessageKey).not.toBeNull();
@@ -119,7 +119,7 @@ describe('EjSigneradeUtkastCtrlSpec', function() {
   describe('ejSigneradeUtkast controller filter', function() {
 
     it('should update error message if loading fails', function() {
-      $httpBackend.expectGET('/api/utkast/?orderAscending=false&orderBy=senastSparadDatum&pageSize=10&patientId=&startFrom=0').respond(500);
+      $httpBackend.expectGET('/api/utkast/?orderAscending=false&orderBy=senastSparadDatum&patientId=&startFrom=0').respond(500);
       $controller('webcert.EjSigneradeUtkastCtrl', {$scope: $scope});
       $httpBackend.flush();
       expect($scope.widgetState.activeErrorMessageKey).not.toBeNull();
@@ -132,34 +132,15 @@ describe('EjSigneradeUtkastCtrlSpec', function() {
 
       $scope.filter.selection.savedTo = '2015-01-10';
       $scope.filter.selection.savedFrom = '2015-10-10';
-      $scope.filterDrafts();
+      $scope.onSearch();
       $httpBackend.flush();
       expect($scope.widgetState.currentList.length).toBe(0);
     });
 
     it('should handle error if list could not be fetched from server', function() {
       $httpBackend.expectGET('/api/utkast?orderAscending=false&orderBy=senastSparadDatum&pageSize=10&patientId=&startFrom=0').respond(500);
-      $scope.filterDrafts();
+      $scope.onSearch();
       $httpBackend.flush();
-      expect($scope.widgetState.activeErrorMessageKey).not.toBeNull();
-    });
-  });
-
-  describe('fetch more button', function() {
-    it('should fetch PAGE_SIZE more results if user clicks', function() {
-      $httpBackend.expectGET('/api/utkast?orderAscending=false&orderBy=senastSparadDatum&pageSize=10&patientId=&startFrom=10').respond(200,
-          {results: []});
-      $scope.fetchMore();
-      $httpBackend.flush();
-      expect($scope.widgetState.currentFilterRequest.startFrom).toBe(10);
-      expect($scope.widgetState.activeErrorMessageKey).toBeNull();
-    });
-
-    it('should update error message if fetch failed', function() {
-      $httpBackend.expectGET('/api/utkast?orderAscending=false&orderBy=senastSparadDatum&pageSize=10&patientId=&startFrom=10').respond(500);
-      $scope.fetchMore();
-      $httpBackend.flush();
-      expect($scope.widgetState.currentFilterRequest.startFrom).toBe(10);
       expect($scope.widgetState.activeErrorMessageKey).not.toBeNull();
     });
   });

@@ -26,6 +26,19 @@
 }
 
 #unsigned-draft-body {
+
+  wc-list-number-of-hits {
+    padding-left: 0px !important;
+  }
+
+  wc-list-dropdown {
+    padding-left: 0px;
+  }
+
+  wc-list-page-numbers {
+    padding-right: 0px;
+  }
+
   &.webcert-workarea-page {
     padding-left: 41px;
   }
