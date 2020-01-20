@@ -86,11 +86,7 @@
       </div>
 
       <div ng-if="listModel.totalCount == 0 && totalCount > 0">Inga resultat att visa.</div>
-      <!-- Search hits -->
-      <div id="showing-nr-hits" class="col-md-6" ng-show="listModel.totalCount > 0">Visar
-        {{ listModel.startPoint }} - {{ listModel.endPoint }} av
-        {{listModel.totalCount}} träff<span ng-show="listModel.totalCount > 1">ar</span>
-      </div>
+      <wc-number-of-hits id="showing-nr-hits" class="col-md-6" list-model="listModel"></wc-number-of-hits>
       <wc-list-page-numbers class="col-md-6"
                             ng-show="(listModel.pagesList.length > 1 || listModel.chosenPageList > 1) && !listModel.gettingPage"
                             list-model="listModel"

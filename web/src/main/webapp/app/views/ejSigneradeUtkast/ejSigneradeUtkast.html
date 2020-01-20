@@ -54,10 +54,7 @@
             </div>
           </div>
 
-          <div id="showing-nr-hits" class="col-md-6" ng-show="widgetState.totalCount > 0">Visar
-            {{ widgetState.startPoint }} - {{ widgetState.endPoint }} av
-            {{widgetState.totalCount}} träff<span ng-show="widgetState.totalCount > 1">ar</span>
-          </div>
+          <wc-number-of-hits id="showing-nr-hits" class="col-md-6" list-model="widgetState"></wc-number-of-hits>
 
           <wc-list-page-numbers class="col-md-6"
                                 ng-show="(widgetState.pagesList.length > 1 || widgetState.chosenPageList > 1) && !widgetState.gettingPage"

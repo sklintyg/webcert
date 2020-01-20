@@ -90,7 +90,7 @@ angular.module('webcert').controller('webcert.EjSigneradeUtkastCtrl',
             $scope.listInit();
           }
           $scope.updateLists();
-        }
+        };
 
         $scope.listInit = function() {
           $scope.widgetState.limit = $scope.widgetState.DEFAULT_PAGE_SIZE;
@@ -106,12 +106,12 @@ angular.module('webcert').controller('webcert.EjSigneradeUtkastCtrl',
 
         $scope.onSearch = function () {
           filterDrafts(null, { startFrom: -1 });
-        }
+        };
 
         $scope.onReset = function () {
           $scope.listInit();
           $scope.onSearch();
-        }
+        };
 
         function filterDrafts(event, data) {
           $log.debug('filterDrafts');
