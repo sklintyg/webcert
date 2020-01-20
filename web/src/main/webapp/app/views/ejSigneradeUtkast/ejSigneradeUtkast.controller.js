@@ -100,7 +100,7 @@ angular.module('webcert').controller('webcert.EjSigneradeUtkastCtrl',
         };
 
         $scope.updateLists = function() {
-          $rootScope.$broadcast('wcLimitDropdown.getLimits');
+          $rootScope.$broadcast('wcListDropdown.getLimits');
           $rootScope.$broadcast('wcListPageNumbers.getPages');
         };
 

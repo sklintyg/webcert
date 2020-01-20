@@ -116,7 +116,7 @@ angular.module('webcert').directive('wcEnhetArendenList', [
               });
             }
 
-            $rootScope.$broadcast('wcLimitDropdown.getLimits');
+            $rootScope.$broadcast('wcListDropdown.getLimits');
             $rootScope.$broadcast('wcListPageNumbers.getPages');
 
             $scope.listModel.startPoint = data.startFrom + 1;

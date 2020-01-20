@@ -38,11 +38,11 @@
             <span dynamic-label key="{{widgetState.activeErrorMessageKey}}"></span>
           </wc-alert-message>
 
-          <wc-limit-dropdown  class="col-md-2 form-group"
+          <wc-list-dropdown  class="col-md-2 form-group"
                               ng-show="widgetState.totalCount > widgetState.DEFAULT_PAGE_SIZE"
                               list-model="widgetState"
                               filter-model="filter">
-          </wc-limit-dropdown>
+          </wc-list-dropdown>
 
           <div class="row ng-hide" id="unsignedCertTable" ng-show="!widgetState.initialQueryWasEmpty">
             <wc-utkast-list utkast-list="widgetState.currentList" class="col-md-12"
@@ -54,7 +54,7 @@
             </div>
           </div>
 
-          <wc-number-of-hits id="showing-nr-hits" class="col-md-6" list-model="widgetState"></wc-number-of-hits>
+          <wc-list-number-of-hits id="showing-nr-hits" class="col-md-6" list-model="widgetState"></wc-list-number-of-hits>
 
           <wc-list-page-numbers class="col-md-6"
                                 ng-show="(widgetState.pagesList.length > 1 || widgetState.chosenPageList > 1) && !widgetState.gettingPage"
