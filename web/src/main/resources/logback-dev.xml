@@ -119,6 +119,9 @@
 
   <logger name="se.inera.intyg.infra" level="info" />
 
+  <!-- Logger from saml info -->
+  <logger name="org.springframework.security.saml.log.SAMLDefaultLogger" level="info" />
+
   <!-- Log service for monitoring and audit information -->
   <logger name="se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService" level="info" />
 
