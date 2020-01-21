@@ -54,7 +54,7 @@
             </div>
           </div>
 
-          <wc-list-number-of-hits id="showing-nr-hits" class="col-md-6" list-model="widgetState"></wc-list-number-of-hits>
+          <wc-list-number-of-hits ng-if="listModel.totalCount > 0" id="showing-nr-hits" class="col-md-6" list-model="widgetState"></wc-list-number-of-hits>
 
           <wc-list-page-numbers class="col-md-6"
                                 ng-show="(widgetState.pagesList.length > 1 || widgetState.chosenPageList > 1) && !widgetState.gettingPage"

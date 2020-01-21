@@ -1,9 +1,9 @@
 <div>
     <div ng-show="totalCount > 0"> <!-- NOTE: must be ng-show since event from vardenhetfilter is sent to filter controller which doesnt exist with ng-if -->
-      <wc-enhet-arenden-filter></wc-enhet-arenden-filter>
       <h2 class="page-heading1 centered-constrained-content">
         Ärenden visas för {{ selectedUnitName }}
       </h2>
+      <wc-enhet-arenden-filter></wc-enhet-arenden-filter>
     </div>
 
   <!-- loading animation table result -->
@@ -86,7 +86,7 @@
       </div>
 
       <div ng-if="listModel.totalCount == 0 && totalCount > 0">Inga resultat att visa.</div>
-      <wc-list-number-of-hits id="showing-nr-hits" class="col-md-6" list-model="listModel"></wc-list-number-of-hits>
+      <wc-list-number-of-hits ng-if="listModel.totalCount > 0" id="showing-nr-hits" class="col-md-6" list-model="listModel"></wc-list-number-of-hits>
       <wc-list-page-numbers class="col-md-6"
                             ng-show="(listModel.pagesList.length > 1 || listModel.chosenPageList > 1) && !listModel.gettingPage"
                             list-model="listModel"
