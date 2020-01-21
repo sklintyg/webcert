@@ -146,7 +146,431 @@ function skapaUtkast(fx, intygstyp) {
         });
     });
 }
+// Skapa ett förifyllt LISJP
+function skapaLISJPIfylltUtkast(fx, intygstyp) {
+    const vårdpersonal = fx.vårdpersonal;
+    const vårdtagare = fx.vårdtagare;
+    const vårdenhet = fx.vårdenhet;
+    
+    expect(vårdpersonal).to.exist;
+    expect(vårdtagare).to.exist;
+    expect(vårdenhet).to.exist;
 
+    expect(Object.values(implementeradeIntyg)).to.include.members([intygstyp]);
+
+    const theRequest = cy.request({
+        method: 'POST',
+        url: '/services/create-draft-certificate/v3.0',
+        body:
+        '<soapenv:Envelope\
+        xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"\
+        xmlns:urn="urn:riv:itintegration:registry:1" xmlns:urn1="urn:riv:clinicalprocess:healthcond:certificate:CreateDraftCertificateResponder:3" xmlns:urn2="urn:riv:clinicalprocess:healthcond:certificate:types:3" xmlns:urn3="urn:riv:clinicalprocess:healthcond:certificate:3" xmlns:urn4="urn:riv:clinicalprocess:healthcond:certificate:3.2" xmlns:urn5="urn:riv:clinicalprocess:healthcond:certificate:3.3">\
+        <soapenv:Header>\
+            <urn:LogicalAddress>?</urn:LogicalAddress>\
+        </soapenv:Header>\
+        <soapenv:Body>\
+        <urn1:CreateDraftCertificate xmlns:urn="urn:riv:itintegration:registry:1" xmlns:urn1="urn:riv:clinicalprocess:healthcond:certificate:CreateDraftCertificateResponder:3" xmlns:urn2="urn:riv:clinicalprocess:healthcond:certificate:types:3" xmlns:urn3="urn:riv:clinicalprocess:healthcond:certificate:3" xmlns:urn5="urn:riv:clinicalprocess:healthcond:certificate:3.3">\
+        <urn1:intyg>\
+            <urn1:typAvIntyg>\
+            <urn2:code>'+ intygstyp +'</urn2:code>\
+            <urn2:codeSystem>b64ea353-e8f6-4832-b563-fc7d46f29548</urn2:codeSystem>\
+            </urn1:typAvIntyg>\
+            <urn1:patient>\
+            <urn3:person-id>\
+                <urn2:root>1.2.752.129.2.1.3.1</urn2:root>\
+                <urn2:extension>'+ vårdtagare.personnummerKompakt +'</urn2:extension>\
+            </urn3:person-id>\
+            <urn3:fornamn>'+ vårdtagare.förnamn +'</urn3:fornamn>\
+            <urn3:efternamn>'+ vårdtagare.efternamn +'</urn3:efternamn>\
+            <urn3:postadress>'+ vårdtagare.postadress +'</urn3:postadress>\
+            <urn3:postnummer>'+ vårdtagare.postnummer +'</urn3:postnummer>\
+            <urn3:postort>'+ vårdtagare.postort +'</urn3:postort>\
+            </urn1:patient>\
+            <urn1:skapadAv>\
+            <urn1:personal-id>\
+                <urn2:root>1.2.752.129.2.1.4.1</urn2:root>\
+                <urn2:extension>' + vårdpersonal.hsaId + '</urn2:extension>\
+            </urn1:personal-id>\
+            <urn1:fullstandigtNamn>' + vårdpersonal.förnamn + ' ' + vårdpersonal.efternamn + '</urn1:fullstandigtNamn>\
+                <urn1:enhet>\
+                    <urn1:enhets-id>\
+                    <urn2:root>1.2.752.129.2.1.4.1</urn2:root>\
+                    <urn2:extension>' + vårdenhet.id + '</urn2:extension>\
+                    </urn1:enhets-id>\
+                    <urn1:enhetsnamn>' + vårdenhet.namn + '</urn1:enhetsnamn>\
+                </urn1:enhet>\
+            </urn1:skapadAv>\
+            <urn1:ref>journal-system-referens</urn1:ref>\
+            <urn5:forifyllnad>\
+            <urn5:svar id="27">\
+                <urn3:delsvar id="27.1">false</urn3:delsvar>\
+            </urn5:svar>\
+            <urn5:svar id="1">\
+                <urn3:instans>1</urn3:instans>\
+                <urn3:delsvar id="1.1">\
+                <urn2:cv>\
+                    <urn2:code>UNDERSOKNING</urn2:code>\
+                    <urn2:codeSystem>KV_FKMU_0001</urn2:codeSystem>\
+                    <urn2:displayName>Min undersökning av patienten</urn2:displayName>\
+                </urn2:cv>\
+                </urn3:delsvar>\
+                <urn3:delsvar id="1.2">ADADADADADADAD</urn3:delsvar>\
+            </urn5:svar>\
+            <urn5:svar id="1">\
+                <urn3:delsvar id="1.1">\
+                <urn2:cv>\
+                    <urn2:code>TELEFONKONTAKT</urn2:code>\
+                    <urn2:codeSystem>KV_FKMU_0001</urn2:codeSystem>\
+                    <urn2:displayName>Min telefonkontakt med patienten</urn2:displayName>\
+                </urn2:cv>\
+                </urn3:delsvar>\
+                <urn3:delsvar id="1.2">2017-05-26</urn3:delsvar>\
+            </urn5:svar>\
+            <urn5:svar id="1">\
+                <urn3:instans>3</urn3:instans>\
+                <urn3:delsvar id="1.1">\
+                <urn2:cv>\
+                    <urn2:code>JOURNALUPPGIFTER</urn2:code>\
+                    <urn2:codeSystem>KV_FKMU_0001</urn2:codeSystem>\
+                    <urn2:displayName>Journaluppgifter från den</urn2:displayName>\
+                </urn2:cv>\
+                </urn3:delsvar>\
+            </urn5:svar>\
+            <urn5:svar id="1">\
+                <urn3:instans>4</urn3:instans>\
+                <urn3:delsvar id="1.1">\
+                <urn2:cv>\
+                    <urn2:code>ANNAT</urn2:code>\
+                    <urn2:codeSystem>KV_FKMU_0001</urn2:codeSystem>\
+                    <urn2:displayName>Annat</urn2:displayName>\
+                </urn2:cv>\
+                </urn3:delsvar>\
+                <urn3:delsvar id="1.2">2017-05-26</urn3:delsvar>\
+                <urn3:delsvar id="1.3">baserat på annat</urn3:delsvar>\
+            </urn5:svar>\
+            <urn5:svar id="28">\
+                <urn3:instans>1</urn3:instans>\
+                <urn3:delsvar id="28.1">\
+                <urn2:cv>\
+                    <urn2:code>NUVARANDE_ARBETE</urn2:code>\
+                    <urn2:codeSystem>KV_FKMU_0002</urn2:codeSystem>\
+                    <urn2:displayName>Nuvarande arbete</urn2:displayName>\
+                </urn2:cv>\
+                </urn3:delsvar>\
+            </urn5:svar>\
+            <urn5:svar id="28">\
+                <urn3:instans>2</urn3:instans>\
+                <urn3:delsvar id="28.1">\
+                <urn2:cv>\
+                    <urn2:code>ARBETSSOKANDE</urn2:code>\
+                    <urn2:codeSystem>KV_FKMU_0002</urn2:codeSystem>\
+                    <urn2:displayName>Arbetssökande</urn2:displayName>\
+                </urn2:cv>\
+                </urn3:delsvar>\
+            </urn5:svar>\
+            <urn5:svar id="28">\
+                <urn3:instans>3</urn3:instans>\
+                <urn3:delsvar id="28.1">\
+                <urn2:cv>\
+                    <urn2:code>FORALDRALEDIG</urn2:code>\
+                    <urn2:codeSystem>KV_FKMU_0002</urn2:codeSystem>\
+                    <urn2:displayName>Föräldraledighet för vård av barn</urn2:displayName>\
+                </urn2:cv>\
+                </urn3:delsvar>\
+            </urn5:svar>\
+            <urn5:svar id="28">\
+                <urn3:instans>4</urn3:instans>\
+                <urn3:delsvar id="28.1">\
+                <urn2:cv>\
+                    <urn2:code>STUDIER</urn2:code>\
+                    <urn2:codeSystem>KV_FKMU_0002</urn2:codeSystem>\
+                    <urn2:displayName>Studier</urn2:displayName>\
+                </urn2:cv>\
+                </urn3:delsvar>\
+            </urn5:svar>\
+            <urn5:svar id="29">\
+                <urn3:delsvar id="29.1">Ett yrke med arbetsuppgifter</urn3:delsvar>\
+            </urn5:svar>\
+            <urn5:svar id="6">\
+                <urn3:delsvar id="6.2">\
+                <urn2:cv>\
+                    <urn2:code>M79</urn2:code>\
+                    <urn2:codeSystem>1.2.752.116.1.1.1.1.3</urn2:codeSystem>\
+                    <urn2:displayName>Icke specificerad akut infektion i nedre luftvägarna</urn2:displayName>\
+                </urn2:cv>\
+                </urn3:delsvar>\
+                <urn3:delsvar id="6.1">Icke specificerad akut infektion i nedre luftvägarna</urn3:delsvar>\
+                <urn3:delsvar id="6.4">\
+                <urn2:cv>\
+                    <urn2:code>M46</urn2:code>\
+                    <urn2:codeSystem>1.2.752.116.1.1.1.1.3</urn2:codeSystem>\
+                    <urn2:displayName>Andra inflammatoriska sjukdomar i ryggraden</urn2:displayName>\
+                </urn2:cv>\
+                </urn3:delsvar>\
+                <urn3:delsvar id="6.3">Andra inflammatoriska sjukdomar i ryggraden</urn3:delsvar>\
+                <urn3:delsvar id="6.6">\
+                <urn2:cv>\
+                    <urn2:code>S22</urn2:code>\
+                    <urn2:codeSystem>1.2.752.116.1.1.1.1.3</urn2:codeSystem>\
+                    <urn2:displayName>234Fraktur på revben, bröstbenet och bröstkotpelaren</urn2:displayName>\
+                </urn2:cv>\
+                </urn3:delsvar>\
+                <urn3:delsvar id="6.5"></urn3:delsvar>\
+            </urn5:svar>\
+            <urn5:svar id="35">\
+                <urn3:delsvar id="35.1">Funktionell nedsättning</urn3:delsvar>\
+            </urn5:svar>\
+            <urn5:svar id="17">\
+                <urn3:delsvar id="17.1">Begränsning i aktivitet</urn3:delsvar>\
+            </urn5:svar>\
+            <urn5:svar id="19">\
+                <urn3:delsvar id="19.1">En pågående behandling</urn3:delsvar>\
+            </urn5:svar>\
+            <urn5:svar id="20">\
+                <urn3:delsvar id="20.1">En planerad behandling</urn3:delsvar>\
+            </urn5:svar>\
+            <urn5:svar id="32">\
+                <urn3:instans>1</urn3:instans>\
+                <urn3:delsvar id="32.1">\
+                <urn2:cv>\
+                    <urn2:code>HELT_NEDSATT</urn2:code>\
+                    <urn2:codeSystem>KV_FKMU_0003</urn2:codeSystem>\
+                    <urn2:displayName>100%</urn2:displayName>\
+                </urn2:cv>\
+                </urn3:delsvar>\
+                <urn3:delsvar id="32.2">\
+                <urn2:datePeriod>\
+                    <urn2:start>2017-06-19</urn2:start>\
+                    <urn2:end>2017-07-10</urn2:end>\
+                </urn2:datePeriod>\
+                </urn3:delsvar>\
+            </urn5:svar>\
+            <urn5:svar id="32">\
+                <urn3:instans>2</urn3:instans>\
+                <urn3:delsvar id="32.1">\
+                <urn2:cv>\
+                    <urn2:code>TRE_FJARDEDEL</urn2:code>\
+                    <urn2:codeSystem>KV_FKMU_0003</urn2:codeSystem>\
+                    <urn2:displayName>75%</urn2:displayName>\
+                </urn2:cv>\
+                </urn3:delsvar>\
+                <urn3:delsvar id="32.2">\
+                <urn2:datePeriod>\
+                    <urn2:start>2017-05-28</urn2:start>\
+                    <urn2:end>2017-06-18</urn2:end>\
+                </urn2:datePeriod>\
+                </urn3:delsvar>\
+            </urn5:svar>\
+            <urn5:svar id="32">\
+                <urn3:instans>3</urn3:instans>\
+                <urn3:delsvar id="32.1">\
+                <urn2:cv>\
+                    <urn2:code>HALFTEN</urn2:code>\
+                    <urn2:codeSystem>KV_FKMU_0003</urn2:codeSystem>\
+                    <urn2:displayName>50%</urn2:displayName>\
+                </urn2:cv>\
+                </urn3:delsvar>\
+                <urn3:delsvar id="32.2">\
+                <urn2:datePeriod>\
+                    <urn2:start>2017-05-27</urn2:start>\
+                    <urn2:end>2017-05-27</urn2:end>\
+                </urn2:datePeriod>\
+                </urn3:delsvar>\
+            </urn5:svar>\
+            <urn5:svar id="32">\
+                <urn3:instans>4</urn3:instans>\
+                <urn3:delsvar id="32.1">\
+                <urn2:cv>\
+                    <urn2:code>EN_FJARDEDEL</urn2:code>\
+                    <urn2:codeSystem>KV_FKMU_0003</urn2:codeSystem>\
+                    <urn2:displayName>25%</urn2:displayName>\
+                </urn2:cv>\
+                </urn3:delsvar>\
+                <urn3:delsvar id="32.2">\
+                <urn2:datePeriod>\
+                    <urn2:start>2017-05-26</urn2:start>\
+                    <urn2:end>2017-05-26</urn2:end>\
+                </urn2:datePeriod>\
+                </urn3:delsvar>\
+            </urn5:svar>\
+            <urn5:svar id="37">\
+                <urn3:delsvar id="37.1">Arbetsförmågan bedöms nedsatt en längre tid.</urn3:delsvar>\
+            </urn5:svar>\
+            <urn5:svar id="33">\
+                <urn3:delsvar id="33.1">true</urn3:delsvar>\
+                <urn3:delsvar id="33.2">Ett medicinskt skäl till annan förläggning</urn3:delsvar>\
+            </urn5:svar>\
+            <urn5:svar id="3999">\
+                <urn3:delsvar id="34.1">true</urn3:delsvar>\
+            </urn5:svar>\
+            <urn5:svar id="39">\
+                <urn3:delsvar id="39.1">\
+                <urn2:cv>\
+                    <urn2:code>ATER_X_ANTAL_DGR</urn2:code>\
+                    <urn2:codeSystem>KV_FKMU_0006</urn2:codeSystem>\
+                    <urn2:displayName>Patienten kommer med stor sannolikhet att återgå helt i nuvarande sysselsättning efter x antal dagar</urn2:displayName>\
+                </urn2:cv>\
+                </urn3:delsvar>\
+                <urn3:delsvar id="39.3">\
+                <urn2:cv>\
+                    <urn2:code>NITTIO_DGR</urn2:code>\
+                    <urn2:codeSystem>KV_FKMU_0007</urn2:codeSystem>\
+                    <urn2:displayName>90 dagar</urn2:displayName>\
+                </urn2:cv>\
+                </urn3:delsvar>\
+            </urn5:svar>\
+            <urn5:svar id="40">\
+                <urn3:instans>1</urn3:instans>\
+                <urn3:delsvar id="40.1">\
+                <urn2:cv>\
+                    <urn2:code>ARBETSTRANING</urn2:code>\
+                    <urn2:codeSystem>KV_FKMU_0004</urn2:codeSystem>\
+                    <urn2:displayName>Arbetsträning</urn2:displayName>\
+                </urn2:cv>\
+                </urn3:delsvar>\
+            </urn5:svar>\
+            <urn5:svar id="40">\
+                <urn3:instans>2</urn3:instans>\
+                <urn3:delsvar id="40.1">\
+                <urn2:cv>\
+                    <urn2:code>ARBETSANPASSNING</urn2:code>\
+                    <urn2:codeSystem>KV_FKMU_0004</urn2:codeSystem>\
+                    <urn2:displayName>Arbetsanpassning</urn2:displayName>\
+                </urn2:cv>\
+                </urn3:delsvar>\
+            </urn5:svar>\
+            <urn5:svar id="40">\
+                <urn3:instans>3</urn3:instans>\
+                <urn3:delsvar id="40.1">\
+                <urn2:cv>\
+                    <urn2:code>SOKA_NYTT_ARBETE</urn2:code>\
+                    <urn2:codeSystem>KV_FKMU_0004</urn2:codeSystem>\
+                    <urn2:displayName>Söka nytt arbete</urn2:displayName>\
+                </urn2:cv>\
+                </urn3:delsvar>\
+            </urn5:svar>\
+            <urn5:svar id="40">\
+                <urn3:instans>4</urn3:instans>\
+                <urn3:delsvar id="40.1">\
+                <urn2:cv>\
+                    <urn2:code>BESOK_ARBETSPLATS</urn2:code>\
+                    <urn2:codeSystem>KV_FKMU_0004</urn2:codeSystem>\
+                    <urn2:displayName>Besök på arbetsplatsen</urn2:displayName>\
+                </urn2:cv>\
+                </urn3:delsvar>\
+            </urn5:svar>\
+            <urn5:svar id="40">\
+                <urn3:instans>5</urn3:instans>\
+                <urn3:delsvar id="40.1">\
+                <urn2:cv>\
+                    <urn2:code>ERGONOMISK</urn2:code>\
+                    <urn2:codeSystem>KV_FKMU_0004</urn2:codeSystem>\
+                    <urn2:displayName>Ergonomisk bedömning</urn2:displayName>\
+                </urn2:cv>\
+                </urn3:delsvar>\
+            </urn5:svar>\
+            <urn5:svar id="40">\
+                <urn3:instans>6</urn3:instans>\
+                <urn3:delsvar id="40.1">\
+                <urn2:cv>\
+                    <urn2:code>HJALPMEDEL</urn2:code>\
+                    <urn2:codeSystem>KV_FKMU_0004</urn2:codeSystem>\
+                    <urn2:displayName>Hjälpmedel</urn2:displayName>\
+                </urn2:cv>\
+                </urn3:delsvar>\
+            </urn5:svar>\
+            <urn5:svar id="40">\
+                <urn3:instans>7</urn3:instans>\
+                <urn3:delsvar id="40.1">\
+                <urn2:cv>\
+                    <urn2:code>KONFLIKTHANTERING</urn2:code>\
+                    <urn2:codeSystem>KV_FKMU_0004</urn2:codeSystem>\
+                    <urn2:displayName>Konflikthantering</urn2:displayName>\
+                </urn2:cv>\
+                </urn3:delsvar>\
+            </urn5:svar>\
+            <urn5:svar id="40">\
+                <urn3:instans>8</urn3:instans>\
+                <urn3:delsvar id="40.1">\
+                <urn2:cv>\
+                    <urn2:code>KONTAKT_FHV</urn2:code>\
+                    <urn2:codeSystem>KV_FKMU_0004</urn2:codeSystem>\
+                    <urn2:displayName>Kontakt med företagshälsovård</urn2:displayName>\
+                </urn2:cv>\
+                </urn3:delsvar>\
+            </urn5:svar>\
+            <urn5:svar id="40">\
+                <urn3:instans>9</urn3:instans>\
+                <urn3:delsvar id="40.1">\
+                <urn2:cv>\
+                    <urn2:code>OMFORDELNING</urn2:code>\
+                    <urn2:codeSystem>KV_FKMU_0004</urn2:codeSystem>\
+                    <urn2:displayName>Omfördelning av arbetsuppgifter</urn2:displayName>\
+                </urn2:cv>\
+                </urn3:delsvar>\
+            </urn5:svar>\
+            <urn5:svar id="40">\
+                <urn3:instans>10</urn3:instans>\
+                <urn3:delsvar id="40.1">\
+                <urn2:cv>\
+                    <urn2:code>OVRIGA_ATGARDER</urn2:code>\
+                    <urn2:codeSystem>KV_FKMU_0004</urn2:codeSystem>\
+                    <urn2:displayName>Övrigt</urn2:displayName>\
+                </urn2:cv>\
+                </urn3:delsvar>\
+            </urn5:svar>\
+            <urn5:svar id="44">\
+                <urn3:delsvar id="44.1">Övriga åtgärder finns</urn3:delsvar>\
+            </urn5:svar>\
+            <urn5:svar id="25">\
+                <urn3:delsvar id="25.1">En del övrigt om patienten</urn3:delsvar>\
+            </urn5:svar>\
+            <urn5:svar id="26">\
+                <urn3:delsvar id="26.1">true</urn3:delsvar>\
+                <urn3:delsvar id="26.2">Gillar att prata i telefon</urn3:delsvar>\
+            </urn5:svar>\
+            </urn5:forifyllnad>\
+        </urn1:intyg>\
+        </urn1:CreateDraftCertificate>\
+        </soapenv:Body>\
+        </soapenv:Envelope>'
+    }).then((resp) => {
+        expect(resp.status).to.equal(200);
+
+        cy.wrap(resp).its('body').then((body) => {
+
+            // Check för att konstatera att responsen på tjänsteanropet innehåller resultCode och att värdet är OK
+            expect(body).to.contain("resultCode");
+            
+            var resultCodeStart = "<ns5:resultCode>"
+            var resultCodeEnd = "</ns5:resultCode>"
+            var resultCodeStartIdx = body.indexOf(resultCodeStart);
+            var resultCodeEndIdx = body.indexOf(resultCodeEnd);
+            var resultCode = body.substring(resultCodeStartIdx + resultCodeStart.length, resultCodeEndIdx);
+            expect(resultCode).to.equal("OK");
+            cy.log(resultCode);
+
+            // Lokalisera intygs-id:t i response body och returnera värdet.
+            // Det ligger mellan desa två strängar:
+            var substringStart = "ns3:extension";
+            var subStringEnd = "</ns3:extension>";
+
+            var subStringStartIndex = body.indexOf(substringStart);
+            var subStringEndIndex = body.indexOf(subStringEnd);
+
+            var certificateId = body.substring(subStringStartIndex + substringStart.length + 1, subStringEndIndex);
+
+            // Utan detta klagar Cypress på att man blandar synkron och asynkron kod
+            cy.wrap(certificateId).then((id) => {
+                return id;
+            })
+        });
+    });
+}
+// Skapa ett förifyllt LISJP-utkast via createdraft-anrop och returnera id:t
+Cypress.Commands.add("skapaLISJPIfylltUtkast", fx => {
+    return skapaLISJPIfylltUtkast(fx, implementeradeIntyg.LISJP);
+});
 // Skapa ett LISJP-utkast via createdraft-anrop och returnera id:t
 Cypress.Commands.add("skapaLisjpUtkast", fx => {
     return skapaUtkast(fx, implementeradeIntyg.LISJP);
