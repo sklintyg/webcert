@@ -78,7 +78,7 @@ export function signeraOchSkicka() {
     // TODO: Utan wait så tappas ofta slutet på texten bort i sista textboxen.
     // Antagligen hinner WebCert inte auto-spara innan man trycker på "signera".
     // Wait är dock ett anti-pattern så finns något annat sätt så är det att föredra.
-    cy.wait(1000);
+    cy.wait(8000);
 
     cy.contains("Klart att signera");
     cy.contains("Obligatoriska uppgifter saknas").should('not.exist');

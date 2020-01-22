@@ -30,7 +30,7 @@ describe('TS-Anmälan-intyg', function () {
         cy.loggaInVårdpersonalIntegrerat(this.vårdpersonal, this.vårdenhet);
 
         const normalUrl = "/visa/intyg/" + this.utkastId + "?enhet=" + this.vårdenhet.id + 
-        '&fornamn=Balanar&efternamn=Nattj%C3%A4gare&postadress=Bryggaregatan%2011&postnummer=65340&postort=Karlstad';
+        '&postadress=Bryggaregatan%2011&postnummer=65340&postort=Karlstad';
         const avlidenUrl = "/visa/intyg/" + this.utkastId + "?enhet=" + this.vårdenhet.id + '&avliden=true';
         const ändratNamnUrl = "/visa/intyg/" + this.utkastId + "?enhet=" + this.vårdenhet.id + 
         '&fornamn=Gunilla&efternamn=Karlsson&postadress=Bryggaregatan%2011&postnummer=65340&postort=Karlstad';
@@ -71,71 +71,14 @@ describe('TS-Anmälan-intyg', function () {
 
         // Verifiera att endast observandum med information om att patienten är avliden visas
         loggaUtOchInVerifieraPara(this.vårdpersonal, this.vårdenhet, avlidenUrl, "avliden", "Anmälan avser", "avliden", "utkast");
-        // cy.clearCookies();
-        // cy.visit('/logout');
-        // cy.loggaInVårdpersonalIntegrerat(this.vårdpersonal, this.vårdenhet);
-        // cy.visit(avlidenUrl);
-        // cy.url().should('include', this.utkastId);
-        // cy.log('Överhoppsparametrar: avliden');
-        // cy.contains("Anmälan avser");
-        // cy.get('#ta-bort-utkast').should('exist');
-        // overhopp.verifyPatStatus("avliden");
-
-        // Verifiera att endast observandum om att patientens namn skiljer sig från Journalsystemet visas
-        cy.clearCookies();
-        cy.visit('/logout');
-        cy.loggaInVårdpersonalIntegrerat(this.vårdpersonal, this.vårdenhet);
-        cy.visit(ändratNamnUrl);
-        cy.url().should('include', this.utkastId);
-        cy.log('Överhoppsparametrar: fornamn & efternamn');
-        cy.contains("Anmälan avser");
-        cy.get('#ta-bort-utkast').should('exist');
-        overhopp.verifyPatStatus("patientNamn");
-
+         // Verifiera att endast observandum om att patientens namn skiljer sig från Journalsystemet visas
+        loggaUtOchInVerifieraPara(this.vårdpersonal, this.vårdenhet, ändratNamnUrl, "patientNamn", "Anmälan avser", "patientNamn", "utkast");
         // Verifiera att endast observandum om att personen har ett sammordningsnummer kopplat till ett reservnummer
-        cy.clearCookies();
-        cy.visit('/logout');
-        cy.loggaInVårdpersonalIntegrerat(this.vårdpersonal, this.vårdenhet);
-        cy.visit(reservNrUrl);
-        cy.url().should('include', this.utkastId);
-        cy.log('Överhoppsparametrar: alternatePatientSSn (reservnummer)');
-        cy.contains("Anmälan avser");
-        cy.get('#ta-bort-utkast').should('exist');
-        overhopp.verifyPatStatus("reservnummer");
-
+        loggaUtOchInVerifieraPara(this.vårdpersonal, this.vårdenhet, reservNrUrl, "reservnummer", "Anmälan avser", "reservnummer", "utkast");
         // Verifiera att inga observandum visas när inga överhoppsparametrar skickas med
-        cy.clearCookies();
-        cy.visit('/logout');
-        cy.loggaInVårdpersonalIntegrerat(this.vårdpersonal, this.vårdenhet);
-        cy.visit(normalUrl);
-        cy.url().should('include', this.utkastId);
-        cy.log('Överhoppsparametrar: Ingen');
-        cy.contains("Anmälan avser");
-        cy.get('#ta-bort-utkast').should('exist');
-        overhopp.verifyPatStatus("utanParameter");
-
-        // Verifiera att observandum om att patientens personnummer har ändrats visas
-        cy.clearCookies();
-        cy.visit('/logout');
-        cy.loggaInVårdpersonalIntegrerat(this.vårdpersonal, this.vårdenhet);
-        cy.visit(ändratPnrUrl);
-        cy.url().should('include', this.utkastId);
-        cy.log('Överhoppsparametrar: alternatePatientSSn (ändrat personnummer)');
-        cy.contains("Anmälan avser");
-        cy.get('#ta-bort-utkast').should('exist');
-        overhopp.verifyPatStatus("ändratPnr");
-
-        // Verifiera att inga observandum visas när inga överhoppsparametrar skickas med
-        cy.clearCookies();
-        cy.visit('/logout');
-        cy.loggaInVårdpersonalIntegrerat(this.vårdpersonal, this.vårdenhet);
-        cy.visit(originalPnrUrl);
-        cy.url().should('include', this.utkastId);
-        cy.log('Överhoppsparametrar: alternatePatientSSn (ändrat tillbaka personnummer)');
-        cy.contains("Anmälan avser");
-        cy.get('#ta-bort-utkast').should('exist');
-        overhopp.verifyPatStatus("ändratPnr");
-
+        loggaUtOchInVerifieraPara(this.vårdpersonal, this.vårdenhet, normalUrl, "utanParameter", "Anmälan avser", "utanParameter", "utkast");
+       // Verifiera att observandum om att patientens personnummer har ändrats visas
+        loggaUtOchInVerifieraPara(this.vårdpersonal, this.vårdenhet, ändratPnrUrl, "ändratPnr", "Anmälan avser", "ändratPnr", "utkast");
         //Fyll i och signera intyget
         intyg.sektionIdentitet(this.intygsdata.identitet);
         intyg.sektionAnmälan(this.intygsdata.anmälan);
@@ -143,74 +86,23 @@ describe('TS-Anmälan-intyg', function () {
         intyg.sektionBedömning(this.intygsdata.bedömning);
         intyg.sektionInfoOmBeslut(this.intygsdata.info);
         intyg.signeraOchSkicka();
-
+       
         // --- Verifera observandum triggade utifrån olika uthoppsparametrar i intyg --- //
 
         // Verifiera att endast observandum med information om att patienten är avliden visas
-        cy.clearCookies();
-        cy.visit('/logout');
-        cy.loggaInVårdpersonalIntegrerat(this.vårdpersonal, this.vårdenhet);
-        cy.visit(avlidenUrl);
-        cy.url().should('include', this.utkastId);
-        cy.log('Överhoppsparametrar: avliden');
-        cy.contains("Anmälan avser");
-        cy.get('#makuleraBtn').should('exist');
-        overhopp.verifyPatStatus("avliden");
-
+        loggaUtOchInVerifieraPara(this.vårdpersonal, this.vårdenhet, avlidenUrl, "avliden", "Anmälan avser", "avliden", "intyg");
         // Verifiera att endast observandum om att patientens namn skiljer sig från Journalsystemet visas
-        cy.clearCookies();
-        cy.visit('/logout');
-        cy.loggaInVårdpersonalIntegrerat(this.vårdpersonal, this.vårdenhet);
-        cy.visit(ändratNamnUrl);
-        cy.url().should('include', this.utkastId);
-        cy.log('Överhoppsparametrar: fornamn & efternamn');
-        cy.contains("Anmälan avser");
-        cy.get('#makuleraBtn').should('exist');
-        overhopp.verifyPatStatus("patientNamn");
-
-        // Verifiera att endast observandum om att personen har ett sammordningsnummer kopplat till ett reservnummer
-        cy.clearCookies();
-        cy.visit('/logout');
-        cy.loggaInVårdpersonalIntegrerat(this.vårdpersonal, this.vårdenhet);
-        cy.visit(reservNrUrl);
-        cy.url().should('include', this.utkastId);
-        cy.log('Överhoppsparametrar: alternatePatientSSn (reservnummer)');
-        cy.contains("Anmälan avser");
-        cy.get('#makuleraBtn').should('exist');
-        overhopp.verifyPatStatus("reservnummer");
-
+        loggaUtOchInVerifieraPara(this.vårdpersonal, this.vårdenhet, ändratNamnUrl, "patientNamn", "Anmälan avser", "patientNamn", "intyg");
+        // Verifiera att endast observandum om att personen har ett sammordningsnummer kopplat till ett reservnummer visas
+        loggaUtOchInVerifieraPara(this.vårdpersonal, this.vårdenhet, reservNrUrl, "reservnummer", "Anmälan avser", "reservnummer", "intyg");
         // Verifiera att inga observandum visas när inga överhoppsparametrar skickas med
-        cy.clearCookies();
-        cy.visit('/logout');
-        cy.loggaInVårdpersonalIntegrerat(this.vårdpersonal, this.vårdenhet);
-        cy.visit(normalUrl);
-        cy.url().should('include', this.utkastId);
-        cy.log('Överhoppsparametrar: Ingen');
-        cy.contains("Anmälan avser");
-        cy.get('#makuleraBtn').should('exist');
-        overhopp.verifyPatStatus("utanParameter");
-
+        loggaUtOchInVerifieraPara(this.vårdpersonal, this.vårdenhet, normalUrl, "utanParameter", "Anmälan avser", "utanParameter", "intyg");
         // Verifiera att observandum om att patientens personnummer har ändrats visas
-        cy.clearCookies();
-        cy.visit('/logout');
-        cy.loggaInVårdpersonalIntegrerat(this.vårdpersonal, this.vårdenhet);
-        cy.visit(ändratPnrUrl);
-        cy.url().should('include', this.utkastId);
-        cy.log('Överhoppsparametrar: alternatePatientSSn (ändrat personnummer)');
-        cy.contains("Anmälan avser");
-        cy.get('#makuleraBtn').should('exist');
-        overhopp.verifyPatStatus("ändratPnr");
-
+        loggaUtOchInVerifieraPara(this.vårdpersonal, this.vårdenhet, ändratPnrUrl, "ändratPnr", "Anmälan avser", "ändratPnr", "intyg");
         // Verifiera att inga observandum visas när inga överhoppsparametrar skickas med
-        cy.clearCookies();
-        cy.visit('/logout');
-        cy.loggaInVårdpersonalIntegrerat(this.vårdpersonal, this.vårdenhet);
-        cy.visit(originalPnrUrl);
-        cy.url().should('include', this.utkastId);
-        cy.log('Överhoppsparametrar: alternatePatientSSn (ändrat tillbaka personnummer)');
-        cy.contains("Anmälan avser");
-        cy.get('#makuleraBtn').should('exist');
-        overhopp.verifyPatStatus("utanParameter");
+        loggaUtOchInVerifieraPara(this.vårdpersonal, this.vårdenhet, normalUrl, "utanParameter", "Anmälan avser", "utanParameter", "intyg");
+
+       
 
         // // Skickar intyget till FK samt populerar pdl-arrayen med förväntad logpost "Utskrift" med argument att det är skickat till FK
         // intyg.skickaTillFk();

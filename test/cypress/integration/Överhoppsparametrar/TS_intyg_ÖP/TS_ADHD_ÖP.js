@@ -36,19 +36,22 @@ describe('TS-ADHD-intyg', function () {
         '&postadress=Bryggaregatan%2011&postnummer=65340&postort=Karlstad&alternatePatientSSn=191212121212';
         const reservNrUrl = "/visa/intyg/" + this.utkastId + "?enhet=" + this.vårdenhet.id + 
         '&postadress=Bryggaregatan%2011&postnummer=65340&postort=Karlstad&alternatePatientSSn=19270926308A';
+        const adressUrl = "/visa/intyg/" + this.utkastId + "?enhet=" + this.vårdenhet.id + 
+        '&postadress=Drygaregatan%2011&postnummer=65340&postort=Karlstad';
         //reservnummer = 19270926308A
         //samordningsnummer = 196812732391
 
         // --- Verifera observandum triggade utifrån olika uthoppsparametrar i intygsutkast --- //
 
-        // Verifiera att inga observandum visas när inga överhoppsparametrar skickas med
+        // Verifiera att inga observandum visas när inga överhoppsparametrar skickas med i ett utkast
         intyg.besökÖnskadUrl(normalUrl, this.vårdpersonal, this.vårdenhet, this.utkastId);
         cy.contains("Intyget avser").should('exist');
         cy.get('#ta-bort-utkast').should('exist');
         cy.log('Överhoppsparametrar: Ingen');
+        cy.log("Verifierar utanParameter 1");
         overhopp.verifyPatStatus("utanParameter");
 
-        // Verifiera att endast observandum med information om att patienten är avliden visas
+        // Verifiera att inte observandum med information om att patienten är avliden visas
         cy.clearCookies();
         cy.visit('/logout');
         cy.loggaInVårdpersonalIntegrerat(this.vårdpersonal, this.vårdenhet);
@@ -57,6 +60,7 @@ describe('TS-ADHD-intyg', function () {
         cy.log('Överhoppsparametrar: avliden');
         cy.contains("Intyget avser");
         cy.get('#ta-bort-utkast').should('exist');
+        cy.log("Verifierar avliden");
         overhopp.verifyPatStatus("avliden");
 
         // Verifiera att endast observandum om att patientens namn skiljer sig från Journalsystemet visas
@@ -68,6 +72,7 @@ describe('TS-ADHD-intyg', function () {
         cy.log('Överhoppsparametrar: fornamn & efternamn');
         cy.contains("Intyget avser");
         cy.get('#ta-bort-utkast').should('exist');
+        cy.log("Verifierar patientNamn");
         overhopp.verifyPatStatus("patientNamn");
 
         // Verifiera att endast observandum om att personen har ett sammordningsnummer kopplat till ett reservnummer
@@ -79,6 +84,7 @@ describe('TS-ADHD-intyg', function () {
         cy.log('Överhoppsparametrar: alternatePatientSSn (reservnummer)');
         cy.contains("Intyget avser");
         cy.get('#ta-bort-utkast').should('exist');
+        cy.log("Verifierar reservnummer");
         overhopp.verifyPatStatus("reservnummer");
 
         // Verifiera att inga observandum visas när inga överhoppsparametrar skickas med
@@ -90,6 +96,7 @@ describe('TS-ADHD-intyg', function () {
         cy.log('Överhoppsparametrar: Ingen');
         cy.contains("Intyget avser");
         cy.get('#ta-bort-utkast').should('exist');
+        cy.log("Verifierar utanParameter 2");
         overhopp.verifyPatStatus("utanParameter");
 
         // Verifiera att observandum om att patientens personnummer har ändrats visas
@@ -101,9 +108,10 @@ describe('TS-ADHD-intyg', function () {
         cy.log('Överhoppsparametrar: alternatePatientSSn (ändrat personnummer)');
         cy.contains("Intyget avser");
         cy.get('#ta-bort-utkast').should('exist');
+        cy.log("Verifierar ändratPnr");
         overhopp.verifyPatStatus("ändratPnr");
 
-        // Verifiera att inga observandum visas när inga överhoppsparametrar skickas med
+        // Verifiera att observandum om att patientens personnummer har ändrats visas
         cy.clearCookies();
         cy.visit('/logout');
         cy.loggaInVårdpersonalIntegrerat(this.vårdpersonal, this.vårdenhet);
@@ -111,6 +119,7 @@ describe('TS-ADHD-intyg', function () {
         cy.url().should('include', this.utkastId);
         cy.log('Överhoppsparametrar: alternatePatientSSn (ändrat tillbaka personnummer)');
         cy.contains("Intyget avser");
+        cy.log("Verifierar ändratPnr andra gången");
         overhopp.verifyPatStatus("ändratPnr");
 
         //Fyll i och signera intyget
@@ -124,8 +133,8 @@ describe('TS-ADHD-intyg', function () {
         intyg.signera();
 
         // --- Verifera observandum triggade utifrån olika uthoppsparametrar i intyg --- //
-
-        // Verifiera att endast observandum med information om att patienten är avliden visas
+        
+        // Verifiera att inte observandum med information om att patienten är avliden visas
         cy.clearCookies();
         cy.visit('/logout');
         cy.loggaInVårdpersonalIntegrerat(this.vårdpersonal, this.vårdenhet);
@@ -134,6 +143,7 @@ describe('TS-ADHD-intyg', function () {
         cy.log('Överhoppsparametrar: avliden');
         cy.contains("Intyget avser");
         cy.get('#makuleraBtn').should('exist');
+        cy.log("Verifierar avliden");
         overhopp.verifyPatStatus("avliden");
 
         // Verifiera att endast observandum om att patientens namn skiljer sig från Journalsystemet visas
@@ -145,6 +155,7 @@ describe('TS-ADHD-intyg', function () {
         cy.log('Överhoppsparametrar: fornamn & efternamn');
         cy.contains("Intyget avser");
         cy.get('#makuleraBtn').should('exist');
+        cy.log("Verifierar patientNamn");
         overhopp.verifyPatStatus("patientNamn");
 
         // Verifiera att endast observandum om att personen har ett sammordningsnummer kopplat till ett reservnummer
@@ -156,6 +167,7 @@ describe('TS-ADHD-intyg', function () {
         cy.log('Överhoppsparametrar: alternatePatientSSn (reservnummer)');
         cy.contains("Intyget avser");
         cy.get('#makuleraBtn').should('exist');
+        cy.log("Verifierar ändratPnr reservnummer");
         overhopp.verifyPatStatus("reservnummer");
 
         // Verifiera att inga observandum visas när inga överhoppsparametrar skickas med
@@ -167,6 +179,7 @@ describe('TS-ADHD-intyg', function () {
         cy.log('Överhoppsparametrar: Ingen');
         cy.contains("Intyget avser");
         cy.get('#makuleraBtn').should('exist');
+        cy.log("Verifierar  utanParameter 3");
         overhopp.verifyPatStatus("utanParameter");
 
         // Verifiera att observandum om att patientens personnummer har ändrats visas
@@ -178,17 +191,19 @@ describe('TS-ADHD-intyg', function () {
         cy.log('Överhoppsparametrar: alternatePatientSSn (ändrat personnummer)');
         cy.contains("Intyget avser");
         cy.get('#makuleraBtn').should('exist');
+        cy.log("Verifierar ändratPnr ");
         overhopp.verifyPatStatus("ändratPnr");
 
         // Verifiera att inga observandum visas när inga överhoppsparametrar skickas med
         cy.clearCookies();
         cy.visit('/logout');
         cy.loggaInVårdpersonalIntegrerat(this.vårdpersonal, this.vårdenhet);
-        cy.visit(originalPnrUrl);
+        cy.visit(normalUrl);
         cy.url().should('include', this.utkastId);
         cy.log('Överhoppsparametrar: alternatePatientSSn (ändrat tillbaka personnummer)');
         cy.contains("Intyget avser");
         cy.get('#makuleraBtn').should('exist');
+        cy.log("Verifierar utanParameter");
         overhopp.verifyPatStatus("utanParameter");
 
         // // Skickar intyget till FK samt populerar pdl-arrayen med förväntad logpost "Utskrift" med argument att det är skickat till FK

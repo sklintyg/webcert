@@ -10,6 +10,7 @@ export function verifyPatStatus(arg) {
             cy.contains('Patientens personnummer har ändrats').should('not.exist');
             cy.get('#saknarAdress').should('not.exist');
             break;
+
         case "avliden":
             // Ska ej synas
             cy.get('#intyg-djupintegration-name-changed').should('not.exist');
@@ -18,6 +19,7 @@ export function verifyPatStatus(arg) {
             cy.contains('Patienten har samordningsnummer kopplat till reservnummer:').should('not.exist');
             cy.contains('Patienten är avliden').should('not.exist');
             break;
+
         case "patientNamn":
             // Ska ej synas
             cy.contains('Patienten är avliden').should('not.exist');
@@ -33,6 +35,7 @@ export function verifyPatStatus(arg) {
             cy.contains('Patientens namn som visas i intyget har hämtats från Personuppgiftstjänsten och skiljer sig från det som är lagrat i journalsystemet.').should('exist');
             cy.get('#confirmationOkButton').click();
             break;
+
         case "reservnummer":
             // Ska ej synas
             cy.contains('Patienten är avliden').should('not.exist');
@@ -48,16 +51,18 @@ export function verifyPatStatus(arg) {
             cy.contains('Om ett intyg skapas utifrån detta intyg kommer det nya intyget skrivas på samordningsnumret.').should('exist');
             cy.get('#confirmationOkButton').click();
             break;
+        
         case "ändratPnr":
             // Ska ej synas
             cy.contains('Patienten är avliden').should('not.exist');
             cy.get('#intyg-djupintegration-name-changed').should('not.exist');
             cy.get('#saknarAdress').should('not.exist');
             cy.contains('Patienten har samordningsnummer kopplat till reservnummer:').should('not.exist');
-            // Ska synas
+            // Ska synas            
             cy.get('#wc-new-person-id-message-text').should('exist');
             cy.contains('Patientens personnummer har ändrats').should('exist');
             break;
+            
         case "adressSaknasTSBAS":
             // Ska ej synas
             cy.contains('Patienten är avliden').should('not.exist');
