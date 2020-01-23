@@ -19,16 +19,19 @@
 
 package se.inera.intyg.webcert.web.auth;
 
+import java.util.List;
 import org.opensaml.common.SAMLObject;
+import org.opensaml.saml2.core.impl.IssuerImpl;
+import org.opensaml.saml2.core.impl.StatusImpl;
+import org.opensaml.xml.XMLObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.saml.SAMLConstants;
 import org.springframework.security.saml.context.SAMLMessageContext;
 import org.springframework.security.saml.log.SAMLDefaultLogger;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 
 public class SAMLStatusLogger extends SAMLDefaultLogger {
@@ -52,17 +55,24 @@ public class SAMLStatusLogger extends SAMLDefaultLogger {
 
         if (!log.isWarnEnabled()) return;
 
-        if (context.getInboundSAMLMessage() != null) {
+        if (context.getInboundSAMLMessage() != null && SAMLConstants.FAILURE.equals(result)) {
             SAMLObject samlObj = context.getInboundSAMLMessage();
-            Element responseObj = samlObj.getDOM();
 
-            Node issuerNode = responseObj.getFirstChild();
-            String issuer = issuerNode.getFirstChild().getNodeValue();
-            Node signatureNode = issuerNode.getNextSibling();
-            Node statusNode = signatureNode.getNextSibling();
-            Node statusCodeNode = statusNode.getFirstChild();
-            Node statusMessageNode = statusCodeNode.getNextSibling();
-            String status = statusMessageNode.getFirstChild().getNodeValue();
+            List<XMLObject> tmp = samlObj.getOrderedChildren();
+
+            String issuer = null;
+            String status = null;
+
+            for (XMLObject obj : tmp) {
+                if (obj instanceof IssuerImpl){
+                    IssuerImpl issuerObj = (IssuerImpl) obj;
+                    issuer = issuerObj.getValue();
+                }
+                else if (obj instanceof StatusImpl){
+                    StatusImpl statusObj = (StatusImpl) obj;
+                    status = statusObj.getStatusMessage() != null ? statusObj.getStatusMessage().getMessage() : null;
+                }
+            }
 
             logService.logSamlStatusForFailedLogin(issuer, status);
         }
