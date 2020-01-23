@@ -26,7 +26,7 @@ describe('TS-DIABETES-intyg', function () {
         cy.loggaInVårdpersonalIntegrerat(this.vårdpersonal, this.vårdenhet);
 
         const normalUrl = "/visa/intyg/" + this.utkastId + "?enhet=" + this.vårdenhet.id + 
-        '&fornamn=Balanar&efternamn=Nattj%C3%A4gare&postadress=Bryggaregatan%2011&postnummer=65340&postort=Karlstad';
+        '&postadress=Bryggaregatan%2011&postnummer=65340&postort=Karlstad';
         const avlidenUrl = "/visa/intyg/" + this.utkastId + "?enhet=" + this.vårdenhet.id + '&avliden=true';
         const ändratNamnUrl = "/visa/intyg/" + this.utkastId + "?enhet=" + this.vårdenhet.id + 
         '&fornamn=Gunilla&efternamn=Karlsson&postadress=Bryggaregatan%2011&postnummer=65340&postort=Karlstad';
@@ -185,9 +185,9 @@ describe('TS-DIABETES-intyg', function () {
         cy.clearCookies();
         cy.visit('/logout');
         cy.loggaInVårdpersonalIntegrerat(this.vårdpersonal, this.vårdenhet);
-        cy.visit(originalPnrUrl);
+        cy.visit(normalUrl);
         cy.url().should('include', this.utkastId);
-        cy.log('Överhoppsparametrar: alternatePatientSSn (ändrat tillbaka personnummer)');
+        cy.log('Överhoppsparametrar: Inga');
         cy.contains("Intyget avser");
         cy.get('#makuleraBtn').should('exist');
         overhopp.verifyPatStatus("utanParameter");

@@ -158,7 +158,7 @@ describe('TS-BAS-intyg', function () {
         cy.log('Överhoppsparametrar: fornamn & efternamn');
         cy.contains("Intyget avser");
         cy.get('#makuleraBtn').should('exist');
-        overhopp.verifyPatStatus("utanParameter"); // För TS bas intyg v<7.0 är det bara i utkast man får upp observandum att att patients namn skiljer sig
+        overhopp.verifyPatStatus("utanParameter"); // För TS bas intyg v<7.0 är det bara i utkast man får upp observandum att patients namn skiljer sig
 
         // Verifiera att endast observandum om att personen har ett sammordningsnummer kopplat till ett reservnummer
         cy.clearCookies();
@@ -197,13 +197,14 @@ describe('TS-BAS-intyg', function () {
         cy.clearCookies();
         cy.visit('/logout');
         cy.loggaInVårdpersonalIntegrerat(this.vårdpersonal, this.vårdenhet);
-        cy.visit(originalPnrUrl);
+        cy.visit(normalUrl);
         cy.url().should('include', this.utkastId);
         cy.log('Överhoppsparametrar: alternatePatientSSn (ändrat tillbaka personnummer)');
         cy.contains("Intyget avser");
         cy.get('#makuleraBtn').should('exist');
         overhopp.verifyPatStatus("utanParameter");
 
+        
         // // Skickar intyget till FK samt populerar pdl-arrayen med förväntad logpost "Utskrift" med argument att det är skickat till FK
         // intyg.skickaTillFk();
     });
