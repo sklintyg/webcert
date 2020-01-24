@@ -370,6 +370,11 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
         logEvent(MonitoringEvent.SRS_STATISTICS_LINK_CLICKED, userClientContext, intygsId, caregiverId, careUnitId);
     }
 
+    @Override
+    public void logSamlStatusForFailedLogin(String issuer, String samlStatus) {
+        logEvent(MonitoringEvent.SAML_STATUS_LOGIN_FAIL, issuer, samlStatus);
+    }
+
     private void logEvent(MonitoringEvent logEvent, Object... logMsgArgs) {
 
         StringBuilder logMsg = new StringBuilder();
@@ -457,7 +462,10 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
 
         SRS_GET_SRS_FOR_DIAGNOSIS_CODE("SRS information retreived for diagnosis code '{}'"),
 
-        IDP_CONNECTIVITY_CHECK("IDP Connectivity for ip '{}' with care giver '{}' and care unit '{}': {}");
+        IDP_CONNECTIVITY_CHECK("IDP Connectivity for ip '{}' with care giver '{}' and care unit '{}': {}"),
+
+        SAML_STATUS_LOGIN_FAIL("Login failed at IDP '{}' with status message '{}'");
+
 
         private final String msg;
 

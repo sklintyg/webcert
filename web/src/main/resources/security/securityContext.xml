@@ -68,7 +68,7 @@
   </bean>
 
   <!-- Logger for SAML messages and events -->
-  <bean id="samlLogger" class="org.springframework.security.saml.log.SAMLDefaultLogger">
+  <bean id="samlLogger" class="se.inera.intyg.webcert.web.auth.SAMLStatusLogger">
     <property name="logMessages" value="true"/>
     <property name="logErrors" value="true"/>
   </bean>
