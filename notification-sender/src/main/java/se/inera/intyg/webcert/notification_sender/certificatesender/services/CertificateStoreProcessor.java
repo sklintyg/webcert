@@ -62,7 +62,7 @@ public class CertificateStoreProcessor {
         } catch (WebServiceException e) {
             throw new TemporaryException(e.getMessage());
         } catch (Exception e) {
-            throw new PermanentException(e.getMessage());
+            throw new TemporaryException(e);
         }
     }
 }
