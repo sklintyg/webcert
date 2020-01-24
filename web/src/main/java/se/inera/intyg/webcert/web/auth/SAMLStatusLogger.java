@@ -35,7 +35,8 @@ import org.springframework.security.saml.log.SAMLDefaultLogger;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 
 public class SAMLStatusLogger extends SAMLDefaultLogger {
-    private final static Logger log = LoggerFactory.getLogger(SAMLStatusLogger.class);
+
+    private final Logger log = LoggerFactory.getLogger(SAMLStatusLogger.class);
 
     @Autowired
     private MonitoringLogService logService;
@@ -53,7 +54,9 @@ public class SAMLStatusLogger extends SAMLDefaultLogger {
     @Override
     public void log(String operation, String result, SAMLMessageContext context, Authentication a, Exception e) {
 
-        if (!log.isWarnEnabled()) return;
+        if (!log.isWarnEnabled()) {
+            return;
+        }
 
         if (context.getInboundSAMLMessage() != null && SAMLConstants.FAILURE.equals(result)) {
             SAMLObject samlObj = context.getInboundSAMLMessage();
@@ -64,11 +67,10 @@ public class SAMLStatusLogger extends SAMLDefaultLogger {
             String status = null;
 
             for (XMLObject obj : tmp) {
-                if (obj instanceof IssuerImpl){
+                if (obj instanceof IssuerImpl) {
                     IssuerImpl issuerObj = (IssuerImpl) obj;
                     issuer = issuerObj.getValue();
-                }
-                else if (obj instanceof StatusImpl){
+                } else if (obj instanceof StatusImpl) {
                     StatusImpl statusObj = (StatusImpl) obj;
                     status = statusObj.getStatusMessage() != null ? statusObj.getStatusMessage().getMessage() : null;
                 }
