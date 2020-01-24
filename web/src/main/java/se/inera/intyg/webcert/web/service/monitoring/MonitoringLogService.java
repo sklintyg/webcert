@@ -139,6 +139,6 @@ public interface MonitoringLogService extends AuthenticationLogger {
     void logGetSrsForDiagnose(String diagnosisCode);
 
     // Saml
-    void logSamlStatusForFailedLogin(String issuer, String SamlStatus);
+    void logSamlStatusForFailedLogin(String issuer, String samlStatus);
 
 }
