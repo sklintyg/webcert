@@ -166,9 +166,9 @@ describe('AFMU-intyg', function () {
         cy.clearCookies();
         cy.visit('/logout');
         cy.loggaInVårdpersonalIntegrerat(this.vårdpersonal, this.vårdenhet);
-        cy.visit(originalPnrUrl);
+        cy.visit(normalUrl);
         cy.url().should('include', this.utkastId);
-        cy.log('Överhoppsparametrar: alternatePatientSSn (ändrat tillbaka personnummer)');
+        cy.log('Överhoppsparametrar: Ingen');
         cy.contains("Funktionsnedsättning");
         overhopp.verifyPatStatus("utanParameter");
 
