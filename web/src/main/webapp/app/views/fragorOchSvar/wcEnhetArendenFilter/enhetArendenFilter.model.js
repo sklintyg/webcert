@@ -89,6 +89,7 @@ angular.module('webcert').service('webcert.enhetArendenFilterModel', [
 
     // Filter form model
     this.filterForm = {};
+    this.pageSize = 0;
 
     this.reset = function() {
       var defaultLakare = this.defaultLakareSelector || defaultLakareList[0].id;

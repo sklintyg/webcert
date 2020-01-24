@@ -21,14 +21,11 @@
  * Controller for logic related to listing unsigned certs
  */
 angular.module('webcert').controller('webcert.EjSigneradeUtkastCtrl',
-    ['$log', '$scope', '$timeout', '$window', 'common.dialogService', 'webcert.UtkastFilterModel', 'webcert.UtkastProxy', 'common.User',
-      function($log, $scope, $timeout, $window, dialogService, UtkastFilterModel, UtkastProxy, User) {
+    ['$log', '$scope', '$timeout', '$rootScope', '$window', 'common.dialogService', 'webcert.UtkastFilterModel', 'webcert.UtkastProxy', 'common.User',
+      function($log, $scope, $timeout, $rootScope, $window, dialogService, UtkastFilterModel, UtkastProxy, User) {
         'use strict';
 
-        // Constant settings
-        var PAGE_SIZE = 10;
-
-        $scope.filter = UtkastFilterModel.build(PAGE_SIZE);
+        $scope.filter = UtkastFilterModel.build();
 
         // Exposed page state variables
         $scope.widgetState = {
@@ -53,7 +50,12 @@ angular.module('webcert').controller('webcert.EjSigneradeUtkastCtrl',
 
           // List data
           totalCount: 0,
-          currentList: undefined
+          currentList: undefined,
+
+          DEFAULT_PAGE: 1,
+          DEFAULT_PAGE_SIZE: 10,
+          DEFAULT_NUMBER_PAGES: 10,
+          LIST_NAME: 'utkastList'
         };
 
         /**
@@ -65,8 +67,7 @@ angular.module('webcert').controller('webcert.EjSigneradeUtkastCtrl',
 
           $scope.widgetState.doneLoading = true;
           $scope.widgetState.activeErrorMessageKey = null;
-          $scope.widgetState.currentList = data.results;
-          $scope.widgetState.totalCount = data.totalCount;
+          $scope.updateView(data);
           $scope.widgetState.initialQueryWasEmpty = (data.totalCount === 0 && !$scope.widgetState.filteredYet);
 
         }, function() {
@@ -78,14 +79,50 @@ angular.module('webcert').controller('webcert.EjSigneradeUtkastCtrl',
         /**
          * Exposed scope functions
          **/
-        $scope.filterDrafts = function() {
+        $scope.updateView = function(data) {
+          $scope.widgetState.currentList = data.results;
+          $scope.widgetState.totalCount = data.totalCount;
+          data.startFrom = data.startFrom >= 0 ? data.startFrom : 0;
+          $scope.widgetState.startPoint = data.startFrom + 1;
+          $scope.widgetState.endPoint = data.startFrom + $scope.widgetState.currentList.length;
+
+          if(data.totalCount === 0) {
+            $scope.listInit();
+          }
+          $scope.updateLists();
+        };
+
+        $scope.listInit = function() {
+          $scope.widgetState.limit = $scope.widgetState.DEFAULT_PAGE_SIZE;
+          $scope.filter.pageSize = $scope.widgetState.DEFAULT_PAGE_SIZE;
+          $scope.widgetState.chosenPage = $scope.widgetState.DEFAULT_PAGE;
+          $scope.widgetState.chosenPageList = $scope.widgetState.DEFAULT_PAGE;
+        };
+
+        $scope.updateLists = function() {
+          $rootScope.$broadcast('wcListDropdown.getLimits');
+          $rootScope.$broadcast('wcListPageNumbers.getPages');
+        };
+
+        $scope.onSearch = function () {
+          filterDrafts(null, { startFrom: -1 });
+        };
+
+        $scope.onReset = function () {
+          $scope.listInit();
+          $scope.onSearch();
+        };
+
+        function filterDrafts(event, data) {
           $log.debug('filterDrafts');
 
           $scope.widgetState.activeErrorMessageKey = null;
           $scope.widgetState.filteredYet = true;
           $scope.widgetState.initialQueryWasEmpty = false;
 
-          $scope.widgetState.currentFilterRequest.startFrom = 0;
+          if (data.startFrom >= 0) {
+            $scope.filter.startFrom = data.startFrom;
+          }
 
           $scope.widgetState.currentFilterRequest = $scope.filter.convertToPayload();
 
@@ -93,8 +130,9 @@ angular.module('webcert').controller('webcert.EjSigneradeUtkastCtrl',
             $scope.widgetState.runningQuery = true;
           }, 700);
           UtkastProxy.getUtkastFetchMore($scope.widgetState.currentFilterRequest, function(successData) {
-            $scope.widgetState.currentList = successData.results;
-            $scope.widgetState.totalCount = successData.totalCount;
+             data.results = successData.results;
+             data.totalCount = successData.totalCount;
+            $scope.updateView(data);
             if (spinnerWaiting) {
               $timeout.cancel(spinnerWaiting);
             }
@@ -107,38 +145,17 @@ angular.module('webcert').controller('webcert.EjSigneradeUtkastCtrl',
             }
             $scope.widgetState.runningQuery = false;
           });
-        };
-
-        $scope.showFetchMore = function() {
-          return ($scope.widgetState.currentFilterRequest.startFrom + PAGE_SIZE < $scope.widgetState.totalCount) || $scope.widgetState.fetchingMoreInProgress;
-        };
-
-        $scope.fetchMore = function() {
-          $log.debug('fetchMore');
-          $scope.widgetState.activeErrorMessageKey = null;
-          $scope.widgetState.fetchingMoreInProgress = true;
-          //Change nothing but
-          $scope.widgetState.currentFilterRequest.startFrom += PAGE_SIZE;
-
-          UtkastProxy.getUtkastFetchMore($scope.widgetState.currentFilterRequest, function(successData) {
-            $scope.widgetState.fetchingMoreInProgress = false;
-            for (var i = 0; i < successData.results.length; i++) {
-              $scope.widgetState.currentList.push(successData.results[i]);
-            }
-          }, function() {
-            $scope.widgetState.fetchingMoreInProgress = false;
-            $log.debug('Query Error');
-            $scope.widgetState.activeErrorMessageKey = 'info.query.error';
-          });
-        };
+        }
 
         $scope.orderByProperty = function(property, ascending) {
           $log.debug('orderByProperty');
           $scope.filter.selection.orderBy = property;
           $scope.filter.selection.orderAscending = ascending;
 
-          $scope.filterDrafts();
+          filterDrafts(null,{startFrom: $scope.widgetState.startPoint - 1});
 
         };
 
+        $scope.listInit();
+        $scope.$on($scope.widgetState.LIST_NAME + '.requestListUpdate', filterDrafts);
       }]);

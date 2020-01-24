@@ -1101,7 +1101,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         doReturn(skapadAv).when(grundData).getSkapadAv();
 
         final se.inera.intyg.common.support.model.common.internal.Vardenhet vardenhet = mock(
-                se.inera.intyg.common.support.model.common.internal.Vardenhet.class);
+            se.inera.intyg.common.support.model.common.internal.Vardenhet.class);
         doReturn(vardenhet).when(skapadAv).getVardenhet();
 
         final Patient patient = mock(Patient.class);
@@ -1198,7 +1198,6 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         when(fragaSvarService.filterFragaSvar(any(Filter.class))).thenReturn(fsResponse);
 
         when(hsaEmployeeService.getEmployee(anyString(), any())).thenThrow(WebServiceException.class);
-
 
         QueryFragaSvarParameter params = new QueryFragaSvarParameter();
         QueryFragaSvarResponse response = service.filterArende(params);
@@ -1536,7 +1535,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         kompl.setAmne(ArendeAmne.KOMPLT);
         List<Arende> arendeList = Collections.singletonList(kompl);
 
-        when(webcertUserService.getUser()).thenReturn(createUser());
+        when(webcertUserService.isAuthorizedForUnit(any(String.class), eq(false))).thenReturn(true);
         when(arendeRepository.findByIntygsId(eq(INTYG_ID))).thenReturn(arendeList);
 
         assertEquals(MEDDELANDE_ID, service.getLatestMeddelandeIdForCurrentCareUnit(INTYG_ID));

@@ -217,14 +217,6 @@ describe('wcEnhetArendenList', function() {
           testIntygsReferens.intygsId);
     });
 
-    it('should fetch PAGE_SIZE more results if user clicks fetch more button', function() {
-      enhetArendenListModel.prevFilterQuery.startFrom = 0;
-      enhetArendenListModel.arendenList = [];
-      $scope.fetchMore();
-      $scope.$digest(); // $q
-      expect(enhetArendenListModel.arendenList.length).toBe(3);
-    });
-
   });
 
   describe('vidarebefordra', function() {

@@ -18,7 +18,7 @@
       <wc-spinner label="info.querydraft.inprogress" show-spinner="!widgetState.doneLoading">
 
 
-        <wc-utkast-filter filter="filter" on-search="filterDrafts()" ng-show="!widgetState.initialQueryWasEmpty"
+        <wc-utkast-filter filter="filter" on-search="onSearch()" on-reset="onReset()" ng-show="!widgetState.initialQueryWasEmpty"
                           class="ng-hide"></wc-utkast-filter>
 
         <wc-spinner label="info.querydraft.inprogress" show-spinner="widgetState.runningQuery">
@@ -38,12 +38,11 @@
             <span dynamic-label key="{{widgetState.activeErrorMessageKey}}"></span>
           </wc-alert-message>
 
-
-          <div id="showing-nr-hits" ng-show="widgetState.totalCount>0">Visar
-            {{widgetState.currentList.length}} av
-            {{widgetState.totalCount}} träffar
-          </div>
-
+          <wc-list-dropdown  class="col-md-2 form-group"
+                              ng-show="widgetState.totalCount > widgetState.DEFAULT_PAGE_SIZE"
+                              list-model="widgetState"
+                              filter-model="filter">
+          </wc-list-dropdown>
 
           <div class="row ng-hide" id="unsignedCertTable" ng-show="!widgetState.initialQueryWasEmpty">
             <wc-utkast-list utkast-list="widgetState.currentList" class="col-md-12"
@@ -55,17 +54,13 @@
             </div>
           </div>
 
+          <wc-list-number-of-hits ng-if="widgetState.totalCount > 0" id="showing-nr-hits" class="col-md-6" list-model="widgetState"></wc-list-number-of-hits>
 
-          <wc-button
-              ng-if="showFetchMore()"
-              btn-id="fetchMoreDraftsButton"
-              btn-class="btn-default"
-              btn-click="fetchMore()"
-              btn-disabled="widgetState.fetchingMoreInProgress"
-              loading="widgetState.fetchingMoreInProgress"
-              btn-tooltip="Visa fler utkast">
-            Visa fler träffar
-          </wc-button>
+          <wc-list-page-numbers class="col-md-6"
+                                ng-show="(widgetState.pagesList.length > 1 || widgetState.chosenPageList > 1) && !widgetState.gettingPage"
+                                list-model="widgetState"
+                                filter-model="filter">
+          </wc-list-page-numbers>
 
         </wc-spinner>
         <!-- spinner end -->

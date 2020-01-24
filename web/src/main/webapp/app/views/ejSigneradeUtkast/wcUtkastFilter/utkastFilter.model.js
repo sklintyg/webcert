@@ -23,8 +23,7 @@ angular.module('webcert').factory('webcert.UtkastFilterModel', ['$filter', funct
   /**
    * Constructor
    */
-  function UtkastFilterModel(pageSize) {
-    this.pageSize = pageSize;
+  function UtkastFilterModel() {
     this.selection = {};
     this.selection.pnr = '';
     this.reset();

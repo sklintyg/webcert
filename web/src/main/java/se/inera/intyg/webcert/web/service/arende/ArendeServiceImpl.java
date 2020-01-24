@@ -170,8 +170,8 @@ public class ArendeServiceImpl implements ArendeService {
         return a -> a.getSvarPaId() == null;
     }
 
-    private static Predicate<Arende> isCorrectEnhet(WebCertUser user) {
-        return a -> user.getIdsOfSelectedVardenhet().contains(a.getEnhetId());
+    private static Predicate<Arende> isCorrectEnhet(WebCertUserService webcertUserService) {
+        return a -> webcertUserService.isAuthorizedForUnit(a.getEnhetId(), false);
     }
 
     private static Predicate<Arende> isCorrectAmne(ArendeAmne arendeAmne) {
@@ -328,8 +328,6 @@ public class ArendeServiceImpl implements ArendeService {
     @Transactional
     public List<ArendeConversationView> setForwarded(String intygsId) {
 
-        WebCertUser user = webcertUserService.getUser();
-
         List<Arende> allArende = arendeRepository.findByIntygsId(intygsId);
 
         validateAccessRightsToForwardQuestions(intygsId);
@@ -337,7 +335,7 @@ public class ArendeServiceImpl implements ArendeService {
         List<Arende> arendenToForward = arendeRepository.save(
             allArende
                 .stream()
-                .filter(isCorrectEnhet(user))
+                .filter(isCorrectEnhet(webcertUserService))
                 .peek(Arende::setArendeToVidareBerordrat)
                 .collect(Collectors.toList()));
 
@@ -424,7 +422,6 @@ public class ArendeServiceImpl implements ArendeService {
             .sorted(Comparator.comparing(Lakare::getName))
             .collect(Collectors.toList());
     }
-
 
 
     @Override
@@ -672,9 +669,8 @@ public class ArendeServiceImpl implements ArendeService {
 
     @Override
     public String getLatestMeddelandeIdForCurrentCareUnit(String intygsId) {
-        WebCertUser user = webcertUserService.getUser();
         List<Arende> arendeListForCurrentUnit = getArendeForIntygId(intygsId).stream()
-            .filter(isCorrectEnhet(user))
+            .filter(isCorrectEnhet(webcertUserService))
             .collect(Collectors.toList());
 
         List<Arende> arendeList = filterKompletteringar(arendeListForCurrentUnit);
