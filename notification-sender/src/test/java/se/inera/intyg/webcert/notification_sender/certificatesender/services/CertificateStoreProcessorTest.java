@@ -135,7 +135,7 @@ public class CertificateStoreProcessorTest {
         certificateStoreProcessor.process(BODY, "fk7263", LOGICAL_ADDRESS1);
     }
 
-    @Test(expected = PermanentException.class)
+    @Test(expected = TemporaryException.class)
     public void testStoreCertificateThrowsPermanentOnException() throws Exception {
         // Given
         doThrow(new RuntimeException()).when(moduleApi).registerCertificate(anyString(), anyString());
