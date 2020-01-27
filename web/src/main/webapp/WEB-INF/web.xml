@@ -251,10 +251,10 @@
 
     <filter>
         <filter-name>sessionTimeoutFilter</filter-name>
-        <filter-class>se.inera.intyg.webcert.web.auth.SessionTimeoutFilter</filter-class>
+        <filter-class>se.inera.intyg.infra.security.filter.SessionTimeoutFilter</filter-class>
         <init-param>
-            <param-name>ignoredUrl</param-name>
-            <param-value>/moduleapi/stat</param-value>
+            <param-name>skipRenewSessionUrls</param-name>
+            <param-value>/moduleapi/stat,/api/session-auth-check/ping</param-value>
         </init-param>
     </filter>
     <filter-mapping>
