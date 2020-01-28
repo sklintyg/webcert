@@ -107,7 +107,7 @@
             </div>
           </div>
       </div>
-      <div class="col-md-6 form-group">
+      <div class="form-group" ng-class="{'col-md-6': vardenhetFilterModel.showSelectUnit, 'col-md-4': !vardenhetFilterModel.showSelectUnit}">
         <!-- buttons -->
         <div class="buttons">
           <button type="button" id="filter-arende-btn" ng-disabled="filterForm.$invalid" class="btn btn-success" ng-click="filterArendeBtnTooltipShow=false;filterList()" uib-popover="Sök efter frågor och svar."

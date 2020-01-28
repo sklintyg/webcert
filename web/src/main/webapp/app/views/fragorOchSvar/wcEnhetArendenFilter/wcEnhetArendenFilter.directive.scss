@@ -24,10 +24,10 @@ wc-enhet-arenden-filter {
   }
 
   .buttons {
-    padding-top: 20px;
+    padding-top: 25px;
     float: right;
     .btn {
-      min-height: 40px;
+      min-height: 38px;
     }
   }
 
@@ -35,9 +35,10 @@ wc-enhet-arenden-filter {
     border-color: $wc-color-11;
   }
 
-  @media (max-width: $screen-md-min) {
+  @media (max-width: 991px) {
     .buttons {
       float: left;
+      padding-left: 0px;
       padding-top: 0;
     }
   }

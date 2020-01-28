@@ -1,6 +1,6 @@
 wc-utkast-filter {
   display: block;
-  padding: 20px 0;
+  padding: 20px 0 45px;
 
   label {
     @extend %wc-typo-06;
@@ -33,27 +33,33 @@ wc-utkast-filter {
     min-height: 38px;
   }
 
-  .col-md-2, .col-md-3 .col-md-6 {
+  .col-md-2, .col-md-3 .col-md-5 {
     padding-left: 13px;
     padding-right: 12px;
     padding-bottom: 0;
     padding-top: 0;
   }
 
-  .col-md-6 {
+  .col-md-5 {
     padding-top: 15px;
   }
 
 
   .buttons {
-    padding-top:24px;
+    padding-top: 40px;
     float: right;
   }
 
-  @media (max-width: $screen-md-min) {
+  @media (max-width: 991px) {
+    .col-md-2, .col-md-3, .col-md-5 {
+      padding-bottom: 15px;
+      padding-top: 0;
+    }
+
     .buttons {
       float: left;
-      padding-top: 0;
+      padding-left: 0;
+      padding-top: 0px;
     }
   }
 
