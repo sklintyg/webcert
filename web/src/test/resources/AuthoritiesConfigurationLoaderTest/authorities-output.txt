@@ -3,7 +3,7 @@ Released: Wed Nov 18 01:00:00 CET 2015
 Changedby: Magnus Ekstrand
 KnownRequestOrigins: [NORMAL, DJUPINTEGRATION, UTHOPP, READONLY]
 KnownRoles: [LAKARE, PRIVATLAKARE, TANDLAKARE, VARDADMINISTRATOR]
-KnownPrivileges: [VISA_INTYG, SKRIVA_INTYG, SIGNERA_INTYG, MAKULERA_INTYG, FORNYA_INTYG, FILTRERA_PA_LAKARE, HANTERA_SEKRETESSMARKERAD_PATIENT]
+KnownPrivileges: [VISA_INTYG, SKRIVA_INTYG, SIGNERA_INTYG, MAKULERA_INTYG, FORNYA_INTYG, HANTERA_SEKRETESSMARKERAD_PATIENT]
 KnownIntygstyper: [fk7263, ts-bas, ts-diabetes]
 RequestOrigins: [
 RequestOrigin{name='NORMAL',intygstyper=[]},
@@ -16,7 +16,6 @@ Privilege { name='SKRIVA_INTYG', desc='Skriva intyg', intygstyper= [fk7263], req
 Privilege { name='SIGNERA_INTYG', desc='Signera intyg', intygstyper= [], requestOrigins= []},
 Privilege { name='MAKULERA_INTYG', desc='Makulera intyg', intygstyper= [], requestOrigins= [RequestOrigin{name='NORMAL',intygstyper=[]}, RequestOrigin{name='DJUPINTEGRATION',intygstyper=[fk7263]}]},
 Privilege { name='FORNYA_INTYG', desc='Förnya intyg', intygstyper= [fk7263], requestOrigins= []},
-Privilege { name='FILTRERA_PA_LAKARE', desc='Filtrera på annan läkare', intygstyper= [], requestOrigins= [RequestOrigin{name='NORMAL',intygstyper=[]}]},
 Privilege {name='HANTERA_SEKRETESSMARKERAD_PATIENT',desc='Hantera patient med sekretessmarkering',intygstyper=[fk7263],requestOrigins=[RequestOrigin{name='NORMAL',intygstyper=[]},RequestOrigin{name='DJUPINTEGRATION',intygstyper=[fk7263]}]}]
 Roles: [
 Role { name='LAKARE', desc='Läkare', privileges= [

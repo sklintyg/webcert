@@ -61,7 +61,6 @@ angular.module('webcert').factory('webcert.UtkastFilterModel', ['$filter', funct
 
     this.selection.savedFrom = undefined; //Date
     this.selection.savedTo = undefined; //Date
-    this.selection.savedBy = undefined; // selected doctors hasId
     this.savedByOptions = this.savedByOptions || [];
     this.selection.orderBy = 'senastSparadDatum';
     this.selection.orderAscending = false;

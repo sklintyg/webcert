@@ -23,7 +23,6 @@ knownPrivileges:
   - &kp010 SIGNERA_INTYG
   - &kp020 MAKULERA_INTYG
   - &kp030 FORNYA_INTYG
-  - &kp070 FILTRERA_PA_LAKARE
   - &kp140 HANTERA_SEKRETESSMARKERAD_PATIENT
   - &kp050 VIDAREBEFORDRA_FRAGASVAR
   - &kp060 BESVARA_KOMPLETTERINGSFRAGA
@@ -84,12 +83,6 @@ privileges:
     intygstyper:
       - *ki010 # FK7263
     requestOrigins: # Implicit alla
-  - &p070
-    name: *kp070
-    desc: Filtrera på annan läkare
-    intygstyper: # Implicit alla
-    requestOrigins:
-      - *ro010 # NORMAL
   - &p140
     name: *kp140
     desc: Hantera patient med sekretessmarkering
