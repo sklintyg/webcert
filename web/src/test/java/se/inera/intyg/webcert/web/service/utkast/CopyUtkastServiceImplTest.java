@@ -240,11 +240,6 @@ public class CopyUtkastServiceImplTest {
             .thenReturn(Optional.empty());
     }
 
-    @Before
-    public void expectFindByIntygsIdAndIntygsTypToReturnSignedUtkast() {
-        when(mockUtkastRepository.findByIntygsIdAndIntygsTyp(INTYG_ID, INTYG_TYPE)).thenReturn(createSignedUtkast());
-    }
-
     @Test(expected = WebCertServiceException.class)
     public void testRenewalCopyFailIfSignedReplacementExists() throws Exception {
 
@@ -280,8 +275,6 @@ public class CopyUtkastServiceImplTest {
         WebCertUser user = new WebCertUser();
         user.setParameters(new IntegrationParameters(reference, "", "", "", "", "", "", "", "", false, false, false, true));
 
-        when(mockUtkastRepository.findByIntygsIdAndIntygsTyp(INTYG_ID, INTYG_TYPE)).thenReturn(createCopyUtkast());
-
         try {
             setupMockForGettingUtlatande();
             copyService.createRenewalCopy(buildRenewalRequest());
@@ -298,8 +291,6 @@ public class CopyUtkastServiceImplTest {
 
         WebCertUser user = new WebCertUser();
         user.setParameters(new IntegrationParameters(reference, "", "", "", "", "", "", "", "", false, false, false, true));
-
-        when(mockUtkastRepository.findByIntygsIdAndIntygsTyp(INTYG_ID, INTYG_TYPE)).thenReturn(createCopyUtkast());
 
         try {
             setupMockForGettingUtlatande();
