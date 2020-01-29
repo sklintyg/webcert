@@ -18,21 +18,29 @@
  */
 package se.inera.intyg.webcert.web.service.fmb.sjukfall;
 
-import io.vavr.control.Try;
+import static java.time.temporal.ChronoUnit.DAYS;
+
 import java.lang.invoke.MethodHandles;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+
+import io.vavr.control.Try;
 import se.inera.intyg.clinicalprocess.healthcond.rehabilitation.listactivesickleavesforcareunit.v1.ListActiveSickLeavesForCareUnitResponderInterface;
 import se.inera.intyg.clinicalprocess.healthcond.rehabilitation.listactivesickleavesforcareunit.v1.ListActiveSickLeavesForCareUnitResponseType;
 import se.inera.intyg.clinicalprocess.healthcond.rehabilitation.listactivesickleavesforcareunit.v1.ListActiveSickLeavesForCareUnitType;
 import se.inera.intyg.infra.integration.hsa.model.Mottagning;
 import se.inera.intyg.infra.integration.hsa.model.Vardenhet;
 import se.inera.intyg.infra.integration.hsa.model.Vardgivare;
+import se.inera.intyg.infra.sjukfall.dto.Formaga;
 import se.inera.intyg.infra.sjukfall.dto.IntygData;
 import se.inera.intyg.infra.sjukfall.dto.IntygParametrar;
 import se.inera.intyg.infra.sjukfall.dto.SjukfallEnhet;
@@ -43,6 +51,7 @@ import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.web.service.fmb.sjukfall.converter.IntygstjanstConverter;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
+import se.inera.intyg.webcert.web.web.controller.api.dto.Period;
 import se.riv.clinicalprocess.healthcond.certificate.types.v2.HsaId;
 import se.riv.clinicalprocess.healthcond.certificate.types.v2.PersonId;
 import se.riv.clinicalprocess.healthcond.rehabilitation.v1.IntygsData;
@@ -75,24 +84,44 @@ public class FmbSjukfallServiceImpl implements FmbSjukfallService {
     // INTYGFV-12314: Sometimes getAktivtSjukfallForPatientAndEnhet() raises a NullPointerException,
     // and therefore more detailed logging has been enabled.
     @Override
-    public int totalSjukskrivningstidForPatientAndCareUnit(final Personnummer personnummer) {
+    public int totalSjukskrivningstidForPatientAndCareUnit(final Personnummer personnummer, List<Period> periods) {
 
         LOG.debug("Starting: {}", MESSAGE);
 
-        final Try<List<SjukfallEnhet>> sjukfallUppslag = Try.of(() -> getAktivtSjukfallForPatientAndEnhet(personnummer));
+        final Try<List<SjukfallEnhet>> sjukfallUppslag = Try.of(() -> getAktivtSjukfallForPatientAndEnhet(personnummer, periods));
 
         if (sjukfallUppslag.isFailure()) {
             LOG.error("Unable to get sjukfall: ", sjukfallUppslag.getCause());
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.EXTERNAL_SYSTEM_PROBLEM, "Failed: " + MESSAGE);
         }
 
-        LOG.debug("Done: {}",  MESSAGE);
+        LOG.debug("Done: {}", MESSAGE);
 
-        return getTotaltAntalDagar(sjukfallUppslag.get());
+        if (isThereActiveSickLeaves(sjukfallUppslag)) {
+            return getTotaltAntalDagar(sjukfallUppslag.get());
+        } else {
+            // If there are no active sickleaves, then return the total number of days for the periods passed.
+            return getTotalNumberOfDaysFromPeriods(periods);
+        }
     }
 
-    private List<SjukfallEnhet> getAktivtSjukfallForPatientAndEnhet(final Personnummer personnummer) {
-        final ListActiveSickLeavesForCareUnitType request = createRequest(personnummer);
+    private boolean isThereActiveSickLeaves(Try<List<SjukfallEnhet>> sjukfallUppslag) {
+        return sjukfallUppslag.get().size() > 0;
+    }
+
+    /**
+     * Calculate the sum of periods and adding one day to include both start and end date.
+     * @param periods   Periods to calculate the sum.
+     * @return  Total number of days.
+     */
+    private int getTotalNumberOfDaysFromPeriods(List<Period> periods) {
+        return periods.stream()
+            .mapToInt(period -> Long.valueOf(DAYS.between(period.getFrom(), period.getTom())).intValue() + 1)
+            .sum();
+    }
+
+    private List<SjukfallEnhet> getAktivtSjukfallForPatientAndEnhet(final Personnummer personnummer, final List<Period> periods) {
+        final ListActiveSickLeavesForCareUnitType request = createRequest(personnummer, periods);
         final ListActiveSickLeavesForCareUnitResponseType response = sickLeavesForCareUnit.listActiveSickLeavesForCareUnit("", request);
 
         final IntygsLista intygsLista = response.getIntygsLista();
@@ -100,14 +129,66 @@ public class FmbSjukfallServiceImpl implements FmbSjukfallService {
         final List<IntygsData> intygsData = Objects.isNull(intygsLista) ? Collections.emptyList() : intygsLista.getIntygsData();
         final List<IntygData> intygData = IntygstjanstConverter.toSjukfallFormat(intygsData);
 
-        final LocalDate now = LocalDate.now();
-        final IntygParametrar intygParametrar = new IntygParametrar(MAX_GLAPP, MAX_SEDAN_SJUKAVSLUT, now);
+        final LocalDate aktivtDatum;
+        if (intygsData.size() > 0) {
+            // If an active sick leave already exists, then add an intygData representing the periods passed.
+            // Calculate the active date to use, based on the sick leave.
+            intygData.add(createIntygDataFromPeriods(periods,
+                intygData.get(0).getVardenhetId(),
+                intygData.get(0).getVardgivareId(),
+                intygData.get(0).getPatientId()));
+            aktivtDatum = calculateWhichActiveDateToUse(intygData);
+        } else {
+            // If no active sick leave exists, then add an intygData representing the period passed and use the first periods
+            // from date as the active date.
+            intygData.add(createIntygDataFromPeriods(periods,
+                request.getEnhetsId().getExtension(),
+                request.getEnhetsId().getExtension(),
+                personnummer.getPersonnummer()));
+            aktivtDatum = periods.get(0).getFrom();
+        }
+
+        final IntygParametrar intygParametrar = new IntygParametrar(MAX_GLAPP, MAX_SEDAN_SJUKAVSLUT, aktivtDatum);
 
         return sjukfallEngineService.beraknaSjukfallForEnhet(intygData, intygParametrar);
     }
 
+    private IntygData createIntygDataFromPeriods(List<Period> periods, String vardenhetId, String vardgivareId, String patientId) {
+        final IntygData intygData = new IntygData();
+        intygData.setVardenhetId(vardenhetId);
+        intygData.setVardgivareId(vardgivareId);
+        intygData.setPatientId(patientId);
 
-    private ListActiveSickLeavesForCareUnitType createRequest(final Personnummer personnummer) {
+        final List<Formaga> formagaList = new ArrayList<>(periods.size());
+        for (Period period : periods) {
+            formagaList.add(new Formaga(period.getFrom(), period.getTom(), period.getNedsattning()));
+        }
+        intygData.setFormagor(formagaList);
+
+        return intygData;
+    }
+
+    /**
+     * Calculation of Sjukfall is usually based on current date. But in order to make correct calculations when the sjukfall is either
+     * in the past or the future, the date intervals of formaga needs to be considered.
+     *
+     * If the last formagas slutdatum is in the past, then use that date instead of now.
+     *
+     * @param intygData List of intygData to consider.
+     * @return  Date to consider as active.
+     */
+    private LocalDate calculateWhichActiveDateToUse(List<IntygData> intygData) {
+        final LocalDate now = LocalDate.now();
+
+        final LocalDate slutdatum = intygData.stream()
+            .flatMap(intyg -> intyg.getFormagor().stream())
+            .reduce(((formaga, formaga2) -> formaga.getSlutdatum().compareTo(formaga2.getSlutdatum()) >= 0 ? formaga : formaga2))
+            .get().getSlutdatum();
+
+        return now.compareTo(slutdatum) >= 0 ? slutdatum : now;
+    }
+
+    private ListActiveSickLeavesForCareUnitType createRequest(final Personnummer personnummer, final List<Period> periods) {
 
         PersonId personId = new PersonId();
         personId.setExtension(personnummer.getOriginalPnr());
@@ -120,10 +201,32 @@ public class FmbSjukfallServiceImpl implements FmbSjukfallService {
 
         ListActiveSickLeavesForCareUnitType request = new ListActiveSickLeavesForCareUnitType();
         request.setPersonId(personId);
-        request.setMaxDagarSedanAvslut(MAX_SEDAN_SJUKAVSLUT);
+
+        request.setMaxDagarSedanAvslut(calculateMaxDaysSinceNow(periods));
         request.setEnhetsId(hsaId);
 
         return request;
+    }
+
+    /**
+     * Calculate how many days since now sickleaves should be considered. Normally when checking active sickleaves, it is considered
+     * active now. But because list of periods can be in the past, the calculation needs to consider that.
+     *
+     * Add the difference between the ealiest from date and now to the MAX_GAP to cater for this.
+     *
+     * @param periods Periods to calculate max days since now.
+     * @return  Number of max days since now.
+     */
+    private int calculateMaxDaysSinceNow(List<Period> periods) {
+        if (periods.size() == 0) {
+            return MAX_GLAPP;
+        }
+
+        Collections.sort(periods, Comparator.comparing(Period::getFrom));
+
+        final LocalDate date = periods.get(0).getFrom();
+        final int diffToNow = (int) ChronoUnit.DAYS.between(date, LocalDate.now());
+        return diffToNow + MAX_GLAPP;
     }
 
     private String getEnhetsIdForQueryingIntygstjansten(WebCertUser user) {

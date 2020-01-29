@@ -18,16 +18,19 @@
  */
 package se.inera.intyg.webcert.web.web.controller.api.dto;
 
+import java.util.List;
+
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
+
 import se.inera.intyg.schemas.contract.Personnummer;
 
 public final class MaximalSjukskrivningstidRequest {
 
     private Icd10KoderRequest icd10Koder;
     private Personnummer personnummer;
-    private Integer foreslagenSjukskrivningstid;
+    private List<Period> periods;
 
     public MaximalSjukskrivningstidRequest() {
     }
@@ -35,10 +38,10 @@ public final class MaximalSjukskrivningstidRequest {
     private MaximalSjukskrivningstidRequest(
         final Icd10KoderRequest icd10Koder,
         final Personnummer personnummer,
-        final Integer foreslagenSjukskrivningstid) {
+        final List<Period> periods) {
         this.icd10Koder = icd10Koder;
         this.personnummer = personnummer;
-        this.foreslagenSjukskrivningstid = foreslagenSjukskrivningstid;
+        this.periods = periods;
     }
 
     public Icd10KoderRequest getIcd10Koder() {
@@ -57,19 +60,19 @@ public final class MaximalSjukskrivningstidRequest {
         this.personnummer = personnummer;
     }
 
-    public Integer getForeslagenSjukskrivningstid() {
-        return foreslagenSjukskrivningstid;
+    public List<Period> getPeriods() {
+        return periods;
     }
 
-    public void setForeslagenSjukskrivningstid(final Integer foreslagenSjukskrivningstid) {
-        this.foreslagenSjukskrivningstid = foreslagenSjukskrivningstid;
+    public void setPeriods(List<Period> periods) {
+        this.periods = periods;
     }
 
     public static MaximalSjukskrivningstidRequest of(
         final Icd10KoderRequest icd10Koder,
         final Personnummer personnummer,
-        final Integer foreslagenSjukskrivningstid) {
-        return new MaximalSjukskrivningstidRequest(icd10Koder, personnummer, foreslagenSjukskrivningstid);
+        final List<Period> periods) {
+        return new MaximalSjukskrivningstidRequest(icd10Koder, personnummer, periods);
     }
 
     @Override
@@ -87,7 +90,7 @@ public final class MaximalSjukskrivningstidRequest {
         return new EqualsBuilder()
             .append(icd10Koder, request.icd10Koder)
             .append(personnummer, request.personnummer)
-            .append(foreslagenSjukskrivningstid, request.foreslagenSjukskrivningstid)
+            .append(periods, request.periods)
             .isEquals();
     }
 
@@ -97,7 +100,7 @@ public final class MaximalSjukskrivningstidRequest {
         return new HashCodeBuilder(17, 37)
             .append(icd10Koder)
             .append(personnummer)
-            .append(foreslagenSjukskrivningstid)
+            .append(periods)
             .toHashCode();
         // CHECKSTYLE:ON MagicNumber
     }
@@ -107,7 +110,7 @@ public final class MaximalSjukskrivningstidRequest {
         return new ToStringBuilder(this)
             .append("icd10Koder", icd10Koder)
             .append("personnummer", personnummer)
-            .append("foreslagenSjukskrivningstid", foreslagenSjukskrivningstid)
+            .append("periods", periods)
             .toString();
     }
 }
