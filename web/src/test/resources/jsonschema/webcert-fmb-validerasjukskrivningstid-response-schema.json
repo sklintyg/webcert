@@ -3,16 +3,10 @@
   "title": "Response schema for a fmb query by icd10 code",
   "type": "object",
   "properties": {
-    "foreslagenSjukskrivningstid": {
-      "type": "integer"
-    },
     "overskriderRekommenderadSjukskrivningstid": {
       "type": "boolean"
     },
-    "totalTidigareSjukskrivningstid": {
-      "type": "integer"
-    },
-    "totalSjukskrivningstidInklusiveForeslagen": {
+    "totalSjukskrivningstid": {
       "type": "integer"
     },
     "maximaltRekommenderadSjukskrivningstid": {
@@ -27,10 +21,8 @@
   },
   "additionalProperties": false,
   "required": [
-    "foreslagenSjukskrivningstid",
     "overskriderRekommenderadSjukskrivningstid",
-    "totalTidigareSjukskrivningstid",
-    "totalSjukskrivningstidInklusiveForeslagen",
+    "totalSjukskrivningstid",
     "maximaltRekommenderadSjukskrivningstid",
     "aktuellIcd10Kod",
     "maximaltRekommenderadSjukskrivningstidSource"
