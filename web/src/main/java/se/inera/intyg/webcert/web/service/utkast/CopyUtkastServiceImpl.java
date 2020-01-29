@@ -229,7 +229,7 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
 
             verifyNotReplacedWithSigned(copyRequest.getOriginalIntygId(), "create renewal");
             verifyNotComplementedWithSigned(copyRequest.getOriginalIntygId(), "create renewal");
-            verifySigned(originalIntygId, copyRequest.getOriginalIntygTyp(), "create renewal");
+            verifySigned(utlatande, "create renewal");
 
             UtkastBuilderResponse builderResponse = buildRenewalUtkastBuilderResponse(copyRequest, originalIntygId, coherentJournaling);
 
@@ -275,7 +275,7 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
             }
             verifyNotReplaced(originalIntygId, "create replacement");
             verifyNotComplementedWithSigned(originalIntygId, "create replacement");
-            verifySigned(originalIntygId, replacementRequest.getOriginalIntygTyp(), "create replacement");
+            verifySigned(utlatande, "create replacement");
 
             UtkastBuilderResponse builderResponse = buildReplacementUtkastBuilderResponse(replacementRequest, originalIntygId);
 
@@ -387,12 +387,10 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
         }
     }
 
-    private void verifySigned(final String originalIntygId, final String originalIntygTyp, final String operation) {
-        final Utkast utkast = utkastRepository.findByIntygsIdAndIntygsTyp(originalIntygId, originalIntygTyp);
-        if (utkast == null || UtkastServiceImpl.isUtkast(utkast) || utkast.getSignatur() == null) {
+    private void verifySigned(final Utlatande utlatande, final String operation) {
+        if (utlatande.getGrundData().getSigneringsdatum() == null) {
             final String message = MessageFormat.format("Certificate {0} is not signed, cannot {1} an unsigned certificate",
-                originalIntygId, operation);
-
+                utlatande.getId(), operation);
             LOG.debug(message);
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, message);
         }

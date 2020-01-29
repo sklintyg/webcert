@@ -37,14 +37,17 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.model.UtkastStatus;
+import se.inera.intyg.common.support.model.common.internal.GrundData;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.model.common.internal.Patient;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
@@ -322,7 +325,7 @@ public class CopyUtkastServiceImplTest {
             eq(true), any(boolean.class))).thenReturn(resp);
 
         CreateReplacementCopyRequest copyReq = buildReplacementCopyRequest();
-        setupMockForGettingUtlatande();
+        setupMockForGettingUtlatande(true);
         CreateReplacementCopyResponse copyResp = copyService.createReplacementCopy(copyReq);
 
         assertNotNull(copyResp);
@@ -425,7 +428,7 @@ public class CopyUtkastServiceImplTest {
 
         CreateRenewalCopyRequest copyReq = buildRenewalRequest();
 
-        setupMockForGettingUtlatande();
+        setupMockForGettingUtlatande(true);
 
         CreateRenewalCopyResponse renewalResponse = copyService.createRenewalCopy(copyReq);
 
@@ -492,7 +495,7 @@ public class CopyUtkastServiceImplTest {
         CreateRenewalCopyRequest copyReq = buildRenewalRequest();
         copyReq.setDjupintegrerad(true);
 
-        setupMockForGettingUtlatande();
+        setupMockForGettingUtlatande(true);
         CreateRenewalCopyResponse renewalResponse = copyService.createRenewalCopy(copyReq);
 
         assertNotNull(renewalResponse);
@@ -532,7 +535,7 @@ public class CopyUtkastServiceImplTest {
 
         CreateRenewalCopyRequest renewRequest = buildRenewalRequest();
         renewRequest.setDjupintegrerad(true);
-        setupMockForGettingUtlatande();
+        setupMockForGettingUtlatande(true);
         CreateRenewalCopyResponse renewalCopyResponse = copyService.createRenewalCopy(renewRequest);
 
         assertNotNull(renewalCopyResponse);
@@ -578,7 +581,7 @@ public class CopyUtkastServiceImplTest {
         copyReq.setNyttPatientPersonnummer(PATIENT_NEW_SSN);
         copyReq.setDjupintegrerad(true);
 
-        setupMockForGettingUtlatande();
+        setupMockForGettingUtlatande(true);
         CreateRenewalCopyResponse renewalCopyResponse = copyService.createRenewalCopy(copyReq);
 
         assertNotNull(renewalCopyResponse);
@@ -827,10 +830,20 @@ public class CopyUtkastServiceImplTest {
     }
 
     private void setupMockForGettingUtlatande() {
+        setupMockForGettingUtlatande(false);
+    }
+
+    private void setupMockForGettingUtlatande(boolean signed) {
         final Utlatande utlatande = mock(Utlatande.class);
+        final GrundData grundData = new GrundData();
 
         try {
             doReturn(utlatande).when(utkastServiceHelper).getUtlatande(anyString(), anyString(), anyBoolean(), anyBoolean());
+            if (signed) {
+                grundData.setSigneringsdatum(LocalDateTime.now());
+            }
+            doReturn(grundData).when(utlatande).getGrundData();
+
         } catch (Exception ex) {
             fail();
         }
