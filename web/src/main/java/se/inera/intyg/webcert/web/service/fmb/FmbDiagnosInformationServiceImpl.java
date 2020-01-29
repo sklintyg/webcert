@@ -22,11 +22,6 @@ import static com.google.common.collect.MoreCollectors.onlyElement;
 import static com.google.common.collect.MoreCollectors.toOptional;
 import static java.util.Objects.nonNull;
 
-import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
-import com.google.common.primitives.Ints;
-import io.vavr.Tuple2;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -35,9 +30,17 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
+
+import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
+import com.google.common.primitives.Ints;
+
+import io.vavr.Tuple2;
 import se.inera.intyg.common.support.common.enumerations.Diagnoskodverk;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.schemas.contract.Personnummer;
@@ -64,6 +67,7 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.FmbResponse;
 import se.inera.intyg.webcert.web.web.controller.api.dto.Icd10KoderRequest;
 import se.inera.intyg.webcert.web.web.controller.api.dto.MaximalSjukskrivningstidRequest;
 import se.inera.intyg.webcert.web.web.controller.api.dto.MaximalSjukskrivningstidResponse;
+import se.inera.intyg.webcert.web.web.controller.api.dto.Period;
 
 @Service
 public class FmbDiagnosInformationServiceImpl extends FmbBaseService implements FmbDiagnosInformationService {
@@ -95,21 +99,21 @@ public class FmbDiagnosInformationServiceImpl extends FmbBaseService implements 
         final MaximalSjukskrivningstidRequest maximalSjukskrivningstidRequest) {
 
         final Personnummer personnummer = maximalSjukskrivningstidRequest.getPersonnummer();
-        final Integer foreslagen = maximalSjukskrivningstidRequest.getForeslagenSjukskrivningstid();
+        final List<Period> periods = maximalSjukskrivningstidRequest.getPeriods();
         final Icd10KoderRequest icd10Koder = maximalSjukskrivningstidRequest.getIcd10Koder();
 
         authorityAsserter.assertIsAuthorized(personnummer, AuthoritiesConstants.PRIVILEGE_SIGNERA_INTYG);
 
-        final int totalt = sjukfallService.totalSjukskrivningstidForPatientAndCareUnit(personnummer);
+        final int total = sjukfallService.totalSjukskrivningstidForPatientAndCareUnit(personnummer, periods);
         final Collection<String> validIcd10Codes = getValidIcd10Codes(icd10Koder.getIcd10Codes());
         final Optional<MaximalSjukskrivningstidDagar> maxRek = findMaximalSjukrivningstidDagarByIcd10Koder(validIcd10Codes);
 
         return maxRek
             .map(rek -> MaximalSjukskrivningstidResponse.fromFmbRekommendation(
-                totalt, foreslagen, rek.getMaximalSjukrivningstidDagar(), rek.getIcd10Kod(),
+                total, rek.getMaximalSjukrivningstidDagar(), rek.getIcd10Kod(),
                 toDisplayFormat(rek.getMaximalSjukrivningstidSourceValue(), rek.getMaximalSjukrivningstidSourceUnit())))
             .orElseGet(() -> MaximalSjukskrivningstidResponse.ingenFmbRekommendation(
-                totalt, foreslagen));
+                total));
     }
 
     private Optional<MaximalSjukskrivningstidDagar> findMaximalSjukrivningstidDagarByIcd10Koder(Collection<String> icd10Codes) {
