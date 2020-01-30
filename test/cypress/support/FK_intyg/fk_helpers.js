@@ -23,7 +23,11 @@ export function loggaUtLoggaIn(vårdpersonal, vårdenhet) {
     cy.visit('/logout');
     cy.loggaInVårdpersonalIntegrerat(vårdpersonal, vårdenhet);
 }
-
+export function loggaUt() {
+    // loggar ut 
+    cy.clearCookies();
+    cy.visit('/logout');
+}
 export function sektionÖvrigt(övrigt) {
     cy.get("#ovrigt").type(övrigt.text);
 }
@@ -115,3 +119,15 @@ export function makuleraIntyg(arg) {
         cy.get('#button1makulera-dialog').click();
     }
 }
+export function komplettera(existerar) {
+    //TODO fixa en bättre logik
+    if((existerar =='kompl'))
+    {
+        cy.log('Existerar lika med true');
+        cy.get('#komplettera-open-utkast').click();
+    }
+    else{
+        cy.log('Existerar lika med false');
+        cy.get('#komplettera-intyg > span').click();  
+     } 
+ }

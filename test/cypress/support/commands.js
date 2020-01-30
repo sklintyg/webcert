@@ -55,6 +55,9 @@ Cypress.Commands.add("loggaInVårdpersonalNormal", (vårdpersonal, vårdenhet) =
 Cypress.Commands.add("loggaInVårdpersonalIntegrerat", (vårdpersonal, vårdenhet) => {
     loggaInVårdpersonal(vårdpersonal, vårdenhet, true);
 });
+Cypress.Commands.add("loggaUt",() => {
+  //  loggaUt();
+});
 
 // Skapa ett utkast enligt intygstyp
 function skapaUtkast(fx, intygstyp) {
@@ -567,6 +570,92 @@ function skapaLISJPIfylltUtkast(fx, intygstyp) {
         });
     });
 }
+function skapaKomplettering(fx) {
+    const vårdpersonal = fx.vårdpersonal;
+    const vårdtagare = fx.vårdtagare;
+    const vårdenhet = fx.vårdenhet;
+    const intygsID = fx.utkastId
+    const meddelandeId = generateQuickGuid();
+    expect(intygsID).to.exist;
+    expect(vårdpersonal).to.exist;
+    expect(vårdtagare).to.exist;
+    expect(vårdenhet).to.exist;
+    //expect(Object.values(implementeradeIntyg)).to.include.members([intygstyp]);
+    cy.log(vårdtagare.personnummerKompakt + vårdtagare.förnamn +vårdtagare.efternamn + vårdtagare.postadress + vårdtagare.postnummer + vårdtagare.postort);
+    cy.request({
+        method: 'POST',
+        url: '/services/send-message-to-care/v2.0',
+        body:'<soapenv:Envelope\
+        xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"\
+        xmlns:urn="urn:riv:itintegration:registry:1" xmlns:urn1="urn:riv:clinicalprocess:healthcond:certificate:SendMessageToCareResponder:2" xmlns:urn2="urn:riv:clinicalprocess:healthcond:certificate:types:3" xmlns:urn3="urn:riv:clinicalprocess:healthcond:certificate:3">\
+        <soapenv:Header>\
+                <urn:LogicalAddress>?</urn:LogicalAddress>\
+            </soapenv:Header>\
+            <soapenv:Body>\
+                <urn1:SendMessageToCare>\
+                    <urn1:meddelande-id>'+ meddelandeId +'</urn1:meddelande-id>\
+                    <urn1:skickatTidpunkt>2016-07-13T17:23:00</urn1:skickatTidpunkt>\
+                    <urn1:intygs-id>\
+                        <urn2:root />\
+                        <urn2:extension>'+ intygsID +'</urn2:extension>\
+                    </urn1:intygs-id>\
+                    <urn1:patientPerson-id>\
+                        <urn2:root>1.2.752.129.2.1.3.1</urn2:root>\
+                        <urn2:extension>'+ vårdtagare.personnummerKompakt +'</urn2:extension>\
+                    </urn1:patientPerson-id>\
+                    <urn1:logiskAdressMottagare>'+ vårdenhet +'</urn1:logiskAdressMottagare>\
+                    <urn1:amne>\
+                        <urn2:code>KOMPLT</urn2:code>\
+                        <urn2:codeSystem>ffa59d8f-8d7e-46ae-ac9e-31804e8e8499</urn2:codeSystem>\
+                    </urn1:amne>\
+                    <urn1:rubrik>Komplettering</urn1:rubrik>\
+                    <urn1:meddelande>Komplettering</urn1:meddelande>\
+                    <urn1:skickatAv>\
+                        <urn1:part>\
+                        <urn2:code>FKASSA</urn2:code>\
+                        <urn2:codeSystem>769bb12b-bd9f-4203-a5cd-fd14f2eb3b80</urn2:codeSystem>\
+                        </urn1:part>\
+                    </urn1:skickatAv>\
+                    <urn1:komplettering>\
+                        <urn1:frage-id>1</urn1:frage-id>\
+                        <urn1:instans>1</urn1:instans>\
+                        <urn1:text>Detta är kompletteringstexten...</urn1:text>\
+                    </urn1:komplettering>\
+                </urn1:SendMessageToCare>\
+            </soapenv:Body>\
+            </soapenv:Envelope>'
+        }).then((resp) => {
+            expect(resp.status).to.equal(200);
+    
+            cy.wrap(resp).its('body').then((body) => {
+    
+                // Check för att konstatera att responsen på tjänsteanropet innehåller resultCode och att värdet är OK
+                expect(body).to.contain("resultCode");
+                
+                var resultCodeStart = "<ns5:resultCode>"
+                var resultCodeEnd = "</ns5:resultCode>"
+                var resultCodeStartIdx = body.indexOf(resultCodeStart);
+                var resultCodeEndIdx = body.indexOf(resultCodeEnd);
+                var resultCode = body.substring(resultCodeStartIdx + resultCodeStart.length, resultCodeEndIdx);
+                expect(resultCode).to.equal("OK");
+                cy.log(resultCode);
+                
+                // Utan detta klagar Cypress på att man blandar synkron och asynkron kod
+                cy.wrap(resultCode).then((resCode) => {
+                    return resCode;
+                })
+                
+            });
+        });
+}
+
+function generateQuickGuid() {
+    return Math.random().toString(36).substring(2, 15) +
+        Math.random().toString(36).substring(2, 15);
+}
+Cypress.Commands.add("skapaKomplettering", fx => {
+    return skapaKomplettering(fx);
+});     
 // Skapa ett förifyllt LISJP-utkast via createdraft-anrop och returnera id:t
 Cypress.Commands.add("skapaLISJPIfylltUtkast", fx => {
     return skapaLISJPIfylltUtkast(fx, implementeradeIntyg.LISJP);

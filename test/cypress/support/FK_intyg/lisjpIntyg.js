@@ -6,7 +6,7 @@ import * as fk from './fk_helpers'
 
 // De funktioner etc. som är gemensamma för alla FK-intyg kan exporteras direkt
 export {besökÖnskadUrl, loggaUtLoggaIn, sektionÖvrigt, sektionKontakt,
-        skickaTillFk, fornya, raderaUtkast, makuleraIntyg} from './fk_helpers';
+        skickaTillFk, fornya, raderaUtkast, makuleraIntyg,komplettera} from './fk_helpers';
 
 // -------------------- 'Smittbärarpenning' --------------------
 // Ej implementerad än
@@ -324,3 +324,7 @@ export function verifieraDiagnosUnderStatistik(diagnoskod) {
     cy.contains("Statistik").click();
     cy.get('#nationalStatisticsHeader').contains(diagnoskod);
 }
+export function kompletteraLisjp(existera){
+    fk.komplettera(existera);
+}
+
