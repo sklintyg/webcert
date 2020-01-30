@@ -22,6 +22,7 @@ import static java.time.temporal.ChronoUnit.DAYS;
 
 import java.lang.invoke.MethodHandles;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -164,6 +165,10 @@ public class FmbSjukfallServiceImpl implements FmbSjukfallService {
             formagaList.add(new Formaga(period.getFrom(), period.getTom(), period.getNedsattning()));
         }
         intygData.setFormagor(formagaList);
+
+        // Set signing date time to now. Reason for this is to make sure that the sjukfall-logic can evaluate
+        // which certificate is considered active, if multiple certificates span over the same period.
+        intygData.setSigneringsTidpunkt(LocalDateTime.now());
 
         return intygData;
     }
