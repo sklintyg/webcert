@@ -25,9 +25,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-
+import java.util.StringJoiner;
 import javax.validation.constraints.NotNull;
-
 import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.infra.security.authorities.validation.AuthExpectationSpecification;
 import se.inera.intyg.infra.security.authorities.validation.AuthoritiesValidator;
@@ -42,8 +41,8 @@ import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 import se.inera.intyg.webcert.web.service.utkast.dto.PreviousIntyg;
 
 /**
- * Implementation used to evaluate access criterias. Set the criterias that will be considered and then call
- * evaluate(). Make sure to set basic information as user, certificateType, careUnit and patient first.
+ * Implementation used to evaluate access criterias. Set the criterias that will be considered and then call evaluate(). Make sure to set
+ * basic information as user, certificateType, careUnit and patient first.
  */
 public final class AccessServiceEvaluation {
 
@@ -104,8 +103,8 @@ public final class AccessServiceEvaluation {
     }
 
     /**
-     * Specifies which user and certificate type this evaluation will be done for. If called more than once,
-     * the old values will be overridden.
+     * Specifies which user and certificate type this evaluation will be done for. If called more than once, the old values will be
+     * overridden.
      *
      * @param user Current user.
      * @param certificateType Certificate type being evaluated.
@@ -201,8 +200,8 @@ public final class AccessServiceEvaluation {
     }
 
     /**
-     * Set certificate types that should be excluded from checkPatientDeceased. This means that the certificate types
-     * will be allowed. This method can be called multiple times.
+     * Set certificate types that should be excluded from checkPatientDeceased. This means that the certificate types will be allowed. This
+     * method can be called multiple times.
      *
      * @param certificateType Certificate types to exclude
      * @return AccessServiceEvaluation
@@ -213,8 +212,8 @@ public final class AccessServiceEvaluation {
     }
 
     /**
-     * Set certificate types that should always be invalid when checkPatientDeceased. This means that the
-     * certificate types will never be allowed if patient is deceased. This method can be called multiple times.
+     * Set certificate types that should always be invalid when checkPatientDeceased. This means that the certificate types will never be
+     * allowed if patient is deceased. This method can be called multiple times.
      *
      * @param certificateType Certificate types that are invalid
      * @return AccessServiceEvaluation
@@ -237,8 +236,8 @@ public final class AccessServiceEvaluation {
     }
 
     /**
-     * Set certificate types that should be excluded from checkInactiveCareUnit. This means that the certificate types
-     * will be allowed. This method can be called multiple times.
+     * Set certificate types that should be excluded from checkInactiveCareUnit. This means that the certificate types will be allowed. This
+     * method can be called multiple times.
      *
      * @param certificateType Certificate types to exclude
      * @return AccessServiceEvaluation
@@ -271,8 +270,8 @@ public final class AccessServiceEvaluation {
     }
 
     /**
-     * Set certificate types that should be excluded from checkRenew. This means that the certificate types
-     * will be allowed. This method can be called multiple times.
+     * Set certificate types that should be excluded from checkRenew. This means that the certificate types will be allowed. This method can
+     * be called multiple times.
      *
      * @param certificateType Certificate types to exclude
      * @return AccessServiceEvaluation
@@ -318,8 +317,8 @@ public final class AccessServiceEvaluation {
     }
 
     /**
-     * Set certificate types that should be excluded from checkUnit. This means that the certificate types
-     * will be allowed. This method can be called multiple times.
+     * Set certificate types that should be excluded from checkUnit. This means that the certificate types will be allowed. This method can
+     * be called multiple times.
      *
      * @param certificateType Certificate types to exclude
      * @return AccessServiceEvaluation
@@ -343,11 +342,11 @@ public final class AccessServiceEvaluation {
         }
 
         if (checkInactiveCareUnit && !excludeInactiveCertificateTypes.contains(certificateType) && !accessResult.isPresent()) {
-            accessResult = isInactiveUnitRuleValid(user, certificateType, careUnit.getEnhetsid(), allowInactiveForSameUnit);
+            accessResult = isInactiveUnitRuleValid(user, careUnit.getEnhetsid(), allowInactiveForSameUnit);
         }
 
         if (checkRenew && !excludeRenewCertificateTypes.contains(certificateType) && !accessResult.isPresent()) {
-            accessResult = isRenewRuleValid(user, certificateType, careUnit.getEnhetsid(), allowRenewForSameUnit);
+            accessResult = isRenewRuleValid(user, careUnit.getEnhetsid(), allowRenewForSameUnit);
         }
 
         if (checkPatientSecrecy && !accessResult.isPresent()) {
@@ -355,7 +354,7 @@ public final class AccessServiceEvaluation {
         }
 
         if (checkUnit && !excludeUnitCertificateTypes.contains(certificateType) && !accessResult.isPresent()) {
-            accessResult = isUnitRuleValid(certificateType, careUnit, user, allowSJF, isReadOnlyOperation);
+            accessResult = isUnitRuleValid(careUnit, user, allowSJF, isReadOnlyOperation);
         }
 
         if (checkUnique && !accessResult.isPresent()) {
@@ -401,37 +400,38 @@ public final class AccessServiceEvaluation {
 
         if (patientDetailsResolver.isAvliden(personnummer)) {
 
+            String errorMessage = "Patienten avliden";
             if (invalidDeceasedCertificateTypes.contains(intygsTyp)) {
-                return Optional.of(AccessResult.create(AccessResultCode.DECEASED_PATIENT, "Patienten avliden"));
+                return Optional.of(AccessResult.create(AccessResultCode.DECEASED_PATIENT, createMessage(errorMessage)));
             }
 
             if (isUserLoggedInOnDifferentUnit(enhetsId) || !allowDeceasedForSameUnit) {
-                return Optional.of(AccessResult.create(AccessResultCode.DECEASED_PATIENT, "Patienten avliden"));
+                return Optional.of(AccessResult.create(AccessResultCode.DECEASED_PATIENT, createMessage(errorMessage)));
             }
 
             if (enhetsId == null && isAuthorized(intygsTyp, user, Arrays.asList(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST_AVLIDEN),
                 Collections.emptyList()).isPresent()) {
-                return Optional.of(AccessResult.create(AccessResultCode.DECEASED_PATIENT, "Patienten avliden"));
+                return Optional.of(AccessResult.create(AccessResultCode.DECEASED_PATIENT, createMessage(errorMessage)));
             }
         }
 
         return Optional.empty();
     }
 
-    private Optional<AccessResult> isInactiveUnitRuleValid(WebCertUser user, String intygsTyp, String enhetsId,
+    private Optional<AccessResult> isInactiveUnitRuleValid(WebCertUser user, String enhetsId,
         boolean allowInactiveForSameUnit) {
         if (user.getParameters() != null && user.getParameters().isInactiveUnit()) {
             if (isUserLoggedInOnDifferentUnit(enhetsId) || !allowInactiveForSameUnit) {
-                return Optional.of(AccessResult.create(AccessResultCode.INACTIVE_UNIT, "Parameter inactive unit"));
+                return Optional.of(AccessResult.create(AccessResultCode.INACTIVE_UNIT, createMessage("Parameter inactive unit")));
             }
         }
         return Optional.empty();
     }
 
-    private Optional<AccessResult> isRenewRuleValid(WebCertUser user, String intygsTyp, String enhetsId, boolean allowRenewForSameUnit) {
+    private Optional<AccessResult> isRenewRuleValid(WebCertUser user, String enhetsId, boolean allowRenewForSameUnit) {
         if (user.getParameters() != null && !user.getParameters().isFornyaOk()
             && (isUserLoggedInOnDifferentUnit(enhetsId) || !allowRenewForSameUnit)) {
-            return Optional.of(AccessResult.create(AccessResultCode.RENEW_FALSE, "Parameter renewOK is false"));
+            return Optional.of(AccessResult.create(AccessResultCode.RENEW_FALSE, createMessage("Parameter renewOK is false")));
         }
 
         return Optional.empty();
@@ -440,7 +440,8 @@ public final class AccessServiceEvaluation {
     private Optional<AccessResult> isSekretessRuleValid(String intygsTyp, String enhetsId, WebCertUser user, Personnummer personnummer) {
         final SekretessStatus sekretessStatus = patientDetailsResolver.getSekretessStatus(personnummer);
         if (SekretessStatus.UNDEFINED.equals(sekretessStatus)) {
-            return Optional.of(AccessResult.create(AccessResultCode.PU_PROBLEM, "PU-Service not available to resolve sekretess"));
+            return Optional
+                .of(AccessResult.create(AccessResultCode.PU_PROBLEM, createMessage("PU-Service not available to resolve sekretess")));
         }
 
         if (SekretessStatus.TRUE.equals(sekretessStatus)) {
@@ -448,48 +449,49 @@ public final class AccessServiceEvaluation {
                 Arrays.asList(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT));
             if (accessResult.isPresent()) {
                 return Optional.of(AccessResult.create(AccessResultCode.AUTHORIZATION_SEKRETESS,
-                    "User missing required privilege or cannot handle sekretessmarkerad patient"));
+                    createMessage("User missing required privilege or cannot handle sekretessmarkerad patient")));
             }
             if (isUserLoggedInOnDifferentUnit(enhetsId)) {
                 return Optional.of(AccessResult.create(AccessResultCode.AUTHORIZATION_SEKRETESS_UNIT,
-                    "User not logged in on same unit as draft/intyg unit for sekretessmarkerad patient."));
+                    createMessage("User not logged in on same unit as draft/intyg unit for sekretessmarkerad patient.")));
             }
         }
 
         return Optional.empty();
     }
 
-    private Optional<AccessResult> isUnitRuleValid(String intygsTyp, Vardenhet vardenhet, WebCertUser user, boolean allowSJF,
+    private Optional<AccessResult> isUnitRuleValid(Vardenhet vardenhet, WebCertUser user, boolean allowSJF,
         boolean isReadOnlyOperation) {
 
         if (allowSJF && user.isLakare() && user.getParameters() != null && user.getParameters().isSjf()) {
             return Optional.empty();
         }
 
+        final String errorMessage = "User is logged in on a different unit than the draft/certificate";
         if (isDjupIntegrationAndDoctor(user)) {
             final String vardgivarId = vardenhet.getVardgivare().getVardgivarid();
             if (isReadOnlyOperation && vardgivarId != null && !user.getValdVardgivare().getId().equals(vardgivarId)) {
                 return Optional.of(AccessResult.create(AccessResultCode.AUTHORIZATION_DIFFERENT_UNIT,
-                    "User is logged in on a different unit than the draft/certificate"));
+                    createMessage(errorMessage)));
             }
         }
 
         if (isDjupIntegrationAndVardadministrator(user)) {
             if (isUserLoggedInOnDifferentUnit(vardenhet.getEnhetsid())) {
                 return Optional.of(AccessResult.create(AccessResultCode.AUTHORIZATION_DIFFERENT_UNIT,
-                    "User is logged in on a different unit than the draft/certificate"));
+                    createMessage(errorMessage)));
             }
         }
 
         if (user.getOrigin().equals(UserOriginType.READONLY.name()) && isUserLoggedInOnDifferentUnit(vardenhet.getEnhetsid())) {
             return Optional.of(AccessResult.create(AccessResultCode.AUTHORIZATION_DIFFERENT_UNIT,
-                "User is logged in on a different unit than the draft/certificate"));
+                createMessage(errorMessage)));
         }
 
         if (!webCertUserService.isAuthorizedForUnit(vardenhet.getVardgivare().getVardgivarid(), vardenhet.getEnhetsid(),
             isReadOnlyOperation)) {
             return Optional.of(AccessResult.create(AccessResultCode.AUTHORIZATION_DIFFERENT_UNIT,
-                "User is logged in on a different unit than the draft/certificate"));
+                createMessage(errorMessage)));
         }
 
         return Optional.empty();
@@ -519,19 +521,19 @@ public final class AccessServiceEvaluation {
             if (!onlyCertificate && utkastExists != null && utkastExists.isSameVardgivare()) {
                 if (isUniqueUtkastFeatureEnabled(intygsTyp, user)) {
                     return Optional.of(AccessResult.create(AccessResultCode.UNIQUE_DRAFT,
-                        "Already exists drafts for this patient"));
+                        createMessage("Already exists drafts for this patient")));
                 }
             } else {
                 if (intygExists != null) {
                     if (isUniqueFeatureEnabled(intygsTyp, user)) {
                         return Optional.of(
                             AccessResult.create(AccessResultCode.UNIQUE_CERTIFICATE,
-                                "Already exists certificates for this patient"));
+                                createMessage("Already exists certificates for this patient")));
                     }
 
                     if (intygExists.isSameVardgivare() && isUniqueIntygFeatureEnabled(intygsTyp, user)) {
                         return Optional.of(AccessResult.create(AccessResultCode.UNIQUE_CERTIFICATE,
-                            "Already exists certificates for this care provider on this patient"));
+                            createMessage("Already exists certificates for this care provider on this patient")));
                     }
                 }
             }
@@ -563,5 +565,22 @@ public final class AccessServiceEvaluation {
             .features(AuthoritiesConstants.FEATURE_UNIKT_INTYG, AuthoritiesConstants.FEATURE_UNIKT_INTYG_INOM_VG,
                 AuthoritiesConstants.FEATURE_UNIKT_UTKAST_INOM_VG)
             .isVerified();
+    }
+
+    private String createMessage(String message) {
+
+        StringJoiner sj = new StringJoiner(", ", " [", "]");
+
+        if (careUnit != null) {
+            sj.add("unit '" + careUnit.getEnhetsid() + "'");
+        }
+        if (user != null) {
+            sj.add("user '" + user.getHsaId() + "'");
+        }
+
+        if (sj.length() > 0) {
+            return message + sj.toString();
+        }
+        return message;
     }
 }
